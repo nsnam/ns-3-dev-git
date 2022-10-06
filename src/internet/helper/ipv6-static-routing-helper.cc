@@ -82,7 +82,7 @@ Ipv6StaticRoutingHelper::GetStaticRouting (Ptr<Ipv6> ipv6) const
         }
     }
   NS_LOG_LOGIC ("Static routing not found");
-  return 0;
+  return nullptr;
 }
 
 void

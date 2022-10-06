@@ -60,8 +60,8 @@ MsduAggregator::~MsduAggregator ()
 void
 MsduAggregator::DoDispose ()
 {
-  m_mac = 0;
-  m_htFem = 0;
+  m_mac = nullptr;
+  m_htFem = nullptr;
   Object::DoDispose ();
 }
 

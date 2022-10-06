@@ -81,7 +81,7 @@ PacketSink::GetTypeId ()
 PacketSink::PacketSink ()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
+  m_socket = nullptr;
   m_totalRx = 0;
 }
 
@@ -113,7 +113,7 @@ PacketSink::GetAcceptedSockets () const
 void PacketSink::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
+  m_socket = nullptr;
   m_socketList.clear ();
 
   // chain up

@@ -590,8 +590,8 @@ void
 MakeBoundCallbackTestCase::DoSetup ()
 {
   gMakeBoundCallbackTest1 = 0;
-  gMakeBoundCallbackTest2 = 0;
-  gMakeBoundCallbackTest3a = 0;
+  gMakeBoundCallbackTest2 = nullptr;
+  gMakeBoundCallbackTest3a = nullptr;
   gMakeBoundCallbackTest3b = 0;
   gMakeBoundCallbackTest4a = 0;
   gMakeBoundCallbackTest4b = 0;

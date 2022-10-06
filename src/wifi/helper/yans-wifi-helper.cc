@@ -52,7 +52,7 @@ Ptr<YansWifiChannel>
 YansWifiChannelHelper::Create () const
 {
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
-  Ptr<PropagationLossModel> prev = 0;
+  Ptr<PropagationLossModel> prev = nullptr;
   for (std::vector<ObjectFactory>::const_iterator i = m_propagationLoss.begin (); i != m_propagationLoss.end (); ++i)
     {
       Ptr<PropagationLossModel> cur = (*i).Create<PropagationLossModel> ();
@@ -79,7 +79,7 @@ YansWifiChannelHelper::AssignStreams (Ptr<YansWifiChannel> c, int64_t stream)
 
 YansWifiPhyHelper::YansWifiPhyHelper ()
   : WifiPhyHelper (1),    // YANS phy is not used for 11be devices
-    m_channel (0)
+    m_channel (nullptr)
 {
   m_phy.at (0).SetTypeId ("ns3::YansWifiPhy");
   SetInterferenceHelper ("ns3::InterferenceHelper");

@@ -71,7 +71,7 @@ public:
    * \param nextHop the IP address of the next hop
    * \param lifetime the lifetime of the entry
    */
-  RoutingTableEntry (Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address (), bool vSeqNo = false, uint32_t seqNo = 0,
+  RoutingTableEntry (Ptr<NetDevice> dev = nullptr,Ipv4Address dst = Ipv4Address (), bool vSeqNo = false, uint32_t seqNo = 0,
                      Ipv4InterfaceAddress iface = Ipv4InterfaceAddress (), uint16_t  hops = 0,
                      Ipv4Address nextHop = Ipv4Address (), Time lifetime = Simulator::Now ());
 

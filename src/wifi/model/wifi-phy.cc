@@ -331,7 +331,7 @@ WifiPhy::WifiPhy ()
     m_rxMpduReferenceNumber (0xffffffff),
     m_endPhyRxEvent (),
     m_endTxEvent (),
-    m_currentEvent (0),
+    m_currentEvent (nullptr),
     m_previouslyRxPpduUid (UINT64_MAX),
     m_standard (WIFI_STANDARD_UNSPECIFIED),
     m_band (WIFI_PHY_BAND_UNSPECIFIED),
@@ -344,7 +344,7 @@ WifiPhy::WifiPhy ()
     m_channelAccessRequested (false),
     m_txSpatialStreams (1),
     m_rxSpatialStreams (1),
-    m_wifiRadioEnergyModel (0),
+    m_wifiRadioEnergyModel (nullptr),
     m_timeLastPreambleDetected (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
@@ -367,29 +367,29 @@ WifiPhy::DoDispose ()
     {
       phyEntity.second->CancelAllEvents ();
     }
-  m_device = 0;
-  m_mobility = 0;
-  m_frameCaptureModel = 0;
-  m_preambleDetectionModel = 0;
-  m_wifiRadioEnergyModel = 0;
-  m_postReceptionErrorModel = 0;
+  m_device = nullptr;
+  m_mobility = nullptr;
+  m_frameCaptureModel = nullptr;
+  m_preambleDetectionModel = nullptr;
+  m_wifiRadioEnergyModel = nullptr;
+  m_postReceptionErrorModel = nullptr;
   if (m_interference)
     {
       m_interference->Dispose ();
     }
-  m_interference = 0;
-  m_random = 0;
-  m_state = 0;
-  m_currentEvent = 0;
+  m_interference = nullptr;
+  m_random = nullptr;
+  m_state = nullptr;
+  m_currentEvent = nullptr;
   for (auto & preambleEvent : m_currentPreambleEvents)
     {
-      preambleEvent.second = 0;
+      preambleEvent.second = nullptr;
     }
   m_currentPreambleEvents.clear ();
 
   for (auto & phyEntity : m_phyEntities)
     {
-      phyEntity.second = 0;
+      phyEntity.second = nullptr;
     }
   m_phyEntities.clear ();
 }
@@ -1033,7 +1033,7 @@ WifiPhy::GetDelayUntilChannelSwitch ()
 {
   m_powerRestricted = false;
   m_channelAccessRequested = false;
-  m_currentEvent = 0;
+  m_currentEvent = nullptr;
   m_currentPreambleEvents.clear ();
   if (!IsInitialized ())
     {
@@ -1674,7 +1674,7 @@ WifiPhy::Reset ()
 {
   NS_LOG_FUNCTION (this);
   m_currentPreambleEvents.clear ();
-  m_currentEvent = 0;
+  m_currentEvent = nullptr;
   for (auto & phyEntity : m_phyEntities)
     {
       phyEntity.second->CancelAllEvents ();
@@ -1962,7 +1962,7 @@ WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
               break;
             }
         }
-      m_currentEvent = 0;
+      m_currentEvent = nullptr;
     }
 }
 

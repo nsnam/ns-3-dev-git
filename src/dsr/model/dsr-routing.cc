@@ -114,20 +114,20 @@ TypeId DsrRouting::GetTypeId ()
     .AddAttribute ("RouteCache",
                    "The route cache for saving routes from "
                    "route discovery process.",
-                   PointerValue (0),
+                   PointerValue (nullptr),
                    MakePointerAccessor (&DsrRouting::SetRouteCache,
                                         &DsrRouting::GetRouteCache),
                    MakePointerChecker<DsrRouteCache> ())
     .AddAttribute ("RreqTable",
                    "The request table to manage route requests.",
-                   PointerValue (0),
+                   PointerValue (nullptr),
                    MakePointerAccessor (&DsrRouting::SetRequestTable,
                                         &DsrRouting::GetRequestTable),
                    MakePointerChecker<DsrRreqTable> ())
     .AddAttribute ("PassiveBuffer",
                    "The passive buffer to manage "
                    "promisucously received passive ack.",
-                   PointerValue (0),
+                   PointerValue (nullptr),
                    MakePointerAccessor (&DsrRouting::SetPassiveBuffer,
                                         &DsrRouting::GetPassiveBuffer),
                    MakePointerChecker<DsrPassiveBuffer> ())
@@ -549,7 +549,7 @@ void
 DsrRouting::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_node = 0;
+  m_node = nullptr;
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
       // Disable layer 2 link state monitoring (if possible)
@@ -640,7 +640,7 @@ DsrRouting::GetNodeWithAddress (Ipv4Address ipv4Address)
           return node;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 bool DsrRouting::IsLinkCache ()
@@ -704,7 +704,7 @@ DsrRouting::GetIPfromMAC (Mac48Address address)
           return ipv4->GetAddress (1, 0).GetLocal ();
         }
     }
-  return 0;
+  return nullptr;
 }
 
 void DsrRouting::PrintVector (std::vector<Ipv4Address>& vec)
@@ -2867,7 +2867,7 @@ DsrRouting::SendErrorRequest (DsrOptionRerrUnreachHeader &rerr, uint8_t protocol
       Ptr<Packet> packet = Create<Packet> ();
       Ipv4Address originalDst = rerr.GetOriginalDst ();
       // Create an empty route ptr
-      Ptr<Ipv4Route> route = 0;
+      Ptr<Ipv4Route> route = nullptr;
       /*
        * Construct the route request option header
        */
@@ -3130,7 +3130,7 @@ DsrRouting::SendRequest (Ptr<Packet> packet,
   //m_downTarget (packet, source, m_broadcast, GetProtocolNumber (), 0);
 
   /// \todo New DsrNetworkQueueEntry
-  DsrNetworkQueueEntry newEntry (packet, source, m_broadcast, Simulator::Now (), 0);
+  DsrNetworkQueueEntry newEntry (packet, source, m_broadcast, Simulator::Now (), nullptr);
   if (dsrNetworkQueue->Enqueue (newEntry))
     {
       Scheduler (priority);
@@ -3560,7 +3560,7 @@ Ptr<dsr::DsrOptions> DsrRouting::GetOption (int optionNumber)
           return *i;
         }
     }
-  return 0;
+  return nullptr;
 }
 }  /* namespace dsr */
 }  /* namespace ns3 */

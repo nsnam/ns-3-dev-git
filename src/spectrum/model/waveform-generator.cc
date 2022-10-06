@@ -35,10 +35,10 @@ NS_LOG_COMPONENT_DEFINE ("WaveformGenerator");
 NS_OBJECT_ENSURE_REGISTERED (WaveformGenerator);
 
 WaveformGenerator::WaveformGenerator ()
-  : m_mobility (0),
-  m_netDevice (0),
-  m_channel (0),
-  m_txPowerSpectralDensity (0),
+  : m_mobility (nullptr),
+  m_netDevice (nullptr),
+  m_channel (nullptr),
+  m_txPowerSpectralDensity (nullptr),
   m_startTime (Seconds (0))
 {
 
@@ -55,9 +55,9 @@ void
 WaveformGenerator::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_channel = 0;
-  m_netDevice = 0;
-  m_mobility = 0;
+  m_channel = nullptr;
+  m_netDevice = nullptr;
+  m_mobility = nullptr;
   if (m_nextWave.IsRunning ())
     {
       m_nextWave.Cancel ();
@@ -115,7 +115,7 @@ Ptr<const SpectrumModel>
 WaveformGenerator::GetRxSpectrumModel () const
 {
   // this device is not interested in RX
-  return 0;
+  return nullptr;
 }
 
 void
@@ -206,7 +206,7 @@ WaveformGenerator::GenerateWaveform ()
   txParams->txAntenna = m_antenna;
 
   NS_LOG_LOGIC ("generating waveform : " << *m_txPowerSpectralDensity);
-  m_phyTxStartTrace (0);
+  m_phyTxStartTrace (nullptr);
   m_channel->StartTx (txParams);
 
   NS_LOG_LOGIC ("scheduling next waveform");

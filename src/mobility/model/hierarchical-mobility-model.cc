@@ -50,8 +50,8 @@ HierarchicalMobilityModel::GetTypeId ()
 }
 
 HierarchicalMobilityModel::HierarchicalMobilityModel ()
-  : m_child (0),
-    m_parent (0)
+  : m_child (nullptr),
+    m_parent (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }

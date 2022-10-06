@@ -134,7 +134,7 @@ main (int argc, char *argv[])
           auto resultNs = std::chrono::duration_cast<std::chrono::nanoseconds> (end - start);
           resultNs = std::min (resultNs, minResultNs);
           fclose (file);
-          file = 0;
+          file = nullptr;
           std::cout << "."; std::cout.flush ();
         }
       std::cout << std::endl;

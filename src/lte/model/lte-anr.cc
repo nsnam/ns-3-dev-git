@@ -37,7 +37,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteAnr);
 
 
 LteAnr::LteAnr (uint16_t servingCellId)
-  : m_anrSapUser (0),
+  : m_anrSapUser (nullptr),
     m_threshold (0),
     m_measId (0),
     m_servingCellId (servingCellId)

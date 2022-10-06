@@ -130,10 +130,10 @@ BasicAddTestCase::DoRun ()
   std::string found;
 
   Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add (Ptr<Object> (0, false), "Name One", objectOne);
+  Names::Add (Ptr<Object> (nullptr, false), "Name One", objectOne);
 
   Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add (Ptr<Object> (0, false), "Name Two", objectTwo);
+  Names::Add (Ptr<Object> (nullptr, false), "Name Two", objectTwo);
 
   Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
   Names::Add (objectOne, "Child", childOfObjectOne);
@@ -395,7 +395,7 @@ BasicRenameTestCase::DoRun ()
   std::string found;
 
   Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add (Ptr<Object> (0, false), "Name", objectOne);
+  Names::Add (Ptr<Object> (nullptr, false), "Name", objectOne);
 
   Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
   Names::Add (objectOne, "Child", childOfObjectOne);
@@ -403,7 +403,7 @@ BasicRenameTestCase::DoRun ()
   found = Names::FindName (objectOne);
   NS_TEST_ASSERT_MSG_EQ (found, "Name", "Could not Names::Add and Names::FindName an Object");
 
-  Names::Rename (Ptr<Object> (0, false), "Name", "New Name");
+  Names::Rename (Ptr<Object> (nullptr, false), "Name", "New Name");
 
   found = Names::FindName (objectOne);
   NS_TEST_ASSERT_MSG_EQ (found, "New Name", "Could not Names::Rename an Object");
@@ -709,10 +709,10 @@ BasicFindTestCase::DoRun ()
   Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
   Names::Add ("Name Two/Child", childOfObjectTwo);
 
-  found = Names::Find<TestObject> (Ptr<Object> (0, false), "Name One");
+  found = Names::Find<TestObject> (Ptr<Object> (nullptr, false), "Name One");
   NS_TEST_ASSERT_MSG_EQ (found, objectOne, "Could not find a previously named Object via object context");
 
-  found = Names::Find<TestObject> (Ptr<Object> (0, false), "Name Two");
+  found = Names::Find<TestObject> (Ptr<Object> (nullptr, false), "Name Two");
   NS_TEST_ASSERT_MSG_EQ (found, objectTwo, "Could not find a previously named Object via object context");
 
   found = Names::Find<TestObject> (objectOne, "Child");

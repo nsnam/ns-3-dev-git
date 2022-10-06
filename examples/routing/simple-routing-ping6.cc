@@ -67,7 +67,7 @@ public:
    */
   inline void PrintRoutingTable (Ptr<Node>& n)
   {
-    Ptr<Ipv6StaticRouting> routing = 0;
+    Ptr<Ipv6StaticRouting> routing = nullptr;
     Ipv6StaticRoutingHelper routingHelper;
     Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
     uint32_t nbRoutes = 0;

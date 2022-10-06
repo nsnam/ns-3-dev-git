@@ -41,7 +41,7 @@ MeshL2RoutingProtocol::GetTypeId ()
 
 MeshL2RoutingProtocol::~MeshL2RoutingProtocol ()
 {
-  m_mp = 0;
+  m_mp = nullptr;
 }
 
 void

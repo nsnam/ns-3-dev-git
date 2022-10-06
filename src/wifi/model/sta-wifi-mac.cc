@@ -824,7 +824,7 @@ StaWifiMac::Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             {
               NS_ASSERT (hdr->GetAddr3 () == GetBssid (0));  // TODO use appropriate linkId
               DeaggregateAmsduAndForward (mpdu);
-              packet = 0;
+              packet = nullptr;
             }
           else
             {

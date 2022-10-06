@@ -258,8 +258,8 @@ std::istream& operator>> (std::istream& is, Address & address)
   std::string type = v.substr (0, firstDash-0);
   std::string len = v.substr (firstDash+1, secondDash-(firstDash+1));
 
-  address.m_type = strtoul (type.c_str(), 0, 16);
-  address.m_len = strtoul (len.c_str(), 0, 16);
+  address.m_type = strtoul (type.c_str(), nullptr, 16);
+  address.m_len = strtoul (len.c_str(), nullptr, 16);
   NS_ASSERT (address.m_len <= Address::MAX_SIZE);
 
   std::string::size_type col = secondDash + 1;
@@ -271,13 +271,13 @@ std::istream& operator>> (std::istream& is, Address & address)
       if (next == std::string::npos)
         {
           tmp = v.substr (col, v.size ()-col);
-          address.m_data[i] = strtoul (tmp.c_str(), 0, 16);
+          address.m_data[i] = strtoul (tmp.c_str(), nullptr, 16);
           break;
         }
       else
         {
           tmp = v.substr (col, next-col);
-          address.m_data[i] = strtoul (tmp.c_str(), 0, 16);
+          address.m_data[i] = strtoul (tmp.c_str(), nullptr, 16);
           col = next + 1;
         }
     }

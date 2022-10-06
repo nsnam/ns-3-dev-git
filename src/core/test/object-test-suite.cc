@@ -396,7 +396,7 @@ AggregateObjectTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_NE (baseB, nullptr, "Unable to CreateObject<BaseA>");
 
   baseA->AggregateObject (baseB);
-  baseA = 0;
+  baseA = nullptr;
 
   baseA = baseB->GetObject<BaseA> ();
   NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to GetObject on released object");

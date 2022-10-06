@@ -159,15 +159,15 @@ WimaxNetDevice::DoDispose ()
 {
 
   m_phy->Dispose ();
-  m_phy = 0;
-  m_node = 0;
-  m_initialRangingConnection = 0;
-  m_broadcastConnection = 0;
-  m_connectionManager = 0;
-  m_burstProfileManager = 0;
-  m_bandwidthManager = 0;
-  m_connectionManager = 0;
-  m_bandwidthManager = 0;
+  m_phy = nullptr;
+  m_node = nullptr;
+  m_initialRangingConnection = nullptr;
+  m_broadcastConnection = nullptr;
+  m_connectionManager = nullptr;
+  m_burstProfileManager = nullptr;
+  m_bandwidthManager = nullptr;
+  m_connectionManager = nullptr;
+  m_bandwidthManager = nullptr;
 
   NetDevice::DoDispose ();
 }

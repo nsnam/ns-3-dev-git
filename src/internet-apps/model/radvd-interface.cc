@@ -86,7 +86,7 @@ RadvdInterface::~RadvdInterface ()
   /* clear prefixes */
   for (RadvdPrefixListI it = m_prefixes.begin (); it != m_prefixes.end (); ++it)
     {
-      (*it) = 0;
+      (*it) = nullptr;
     }
   m_prefixes.clear ();
 }

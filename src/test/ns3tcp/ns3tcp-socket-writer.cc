@@ -23,14 +23,14 @@
 namespace ns3
 {
 
-SocketWriter::SocketWriter () : m_node (0), m_socket (0), m_isSetup (false), m_isConnected (false)
+SocketWriter::SocketWriter () : m_node (nullptr), m_socket (nullptr), m_isSetup (false), m_isConnected (false)
 {
 }
 
 SocketWriter::~SocketWriter ()
 {
-  m_socket = 0;
-  m_node = 0;
+  m_socket = nullptr;
+  m_node = nullptr;
 }
 
 /* static */

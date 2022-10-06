@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("simpleOfdmWimaxChannel");
 
 SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel ()
 {
-  m_loss = 0;
+  m_loss = nullptr;
 }
 
 SimpleOfdmWimaxChannel::~SimpleOfdmWimaxChannel ()
@@ -82,7 +82,7 @@ SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel (PropModel propModel)
       break;
 
     default:
-      m_loss = 0;
+      m_loss = nullptr;
     }
 
 }
@@ -109,7 +109,7 @@ SimpleOfdmWimaxChannel::SetPropagationModel (PropModel propModel)
       break;
 
     default:
-      m_loss = 0;
+      m_loss = nullptr;
     }
 
 }
@@ -141,7 +141,7 @@ SimpleOfdmWimaxChannel::DoGetDevice (std::size_t index) const
     }
 
   NS_FATAL_ERROR ("Unable to get device");
-  return 0;
+  return nullptr;
 }
 
 void
@@ -157,8 +157,8 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
                               Ptr<PacketBurst> burst)
 {
   double rxPowerDbm = 0;
-  Ptr<MobilityModel> senderMobility = 0;
-  Ptr<MobilityModel> receiverMobility = 0;
+  Ptr<MobilityModel> senderMobility = nullptr;
+  Ptr<MobilityModel> receiverMobility = nullptr;
   senderMobility = phy->GetDevice ()->GetNode ()->GetObject<MobilityModel> ();
   simpleOfdmSendParam * param;
   for (std::list<Ptr<SimpleOfdmWimaxPhy> >::iterator iter = m_phyList.begin (); iter != m_phyList.end (); ++iter)

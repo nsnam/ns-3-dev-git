@@ -43,7 +43,7 @@ const char * const PREFIX = "hwmp-proactive-regression-test";
 
 
 HwmpProactiveRegressionTest::HwmpProactiveRegressionTest () : TestCase ("HWMP proactive regression test"),
-                                                              m_nodes (0),
+                                                              m_nodes (nullptr),
                                                               m_time (Seconds (5)),
                                                               m_sentPktsCounter (0)
 {
@@ -68,7 +68,7 @@ HwmpProactiveRegressionTest::DoRun ()
 
   CheckResults ();
 
-  delete m_nodes, m_nodes = 0;
+  delete m_nodes, m_nodes = nullptr;
 }
 void
 HwmpProactiveRegressionTest::CreateNodes ()

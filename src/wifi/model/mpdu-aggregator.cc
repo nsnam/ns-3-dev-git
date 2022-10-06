@@ -66,7 +66,7 @@ MpduAggregator::~MpduAggregator ()
 void
 MpduAggregator::DoDispose ()
 {
-  m_mac = 0;
+  m_mac = nullptr;
   Object::DoDispose ();
 }
 
@@ -223,7 +223,7 @@ MpduAggregator::GetNextAmpdu (Ptr<WifiMpdu> mpdu, WifiTxParameters& txParams,
 
           // If allowed by the BA agreement, get the next MPDU
           auto peekedMpdu = qosTxop->PeekNextMpdu (SINGLE_LINK_OP_ID, tid, recipient, nextMpdu);
-          nextMpdu = 0;
+          nextMpdu = nullptr;
 
           if (peekedMpdu)
             {

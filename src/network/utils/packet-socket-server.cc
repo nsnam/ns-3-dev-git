@@ -58,7 +58,7 @@ PacketSocketServer::PacketSocketServer ()
   NS_LOG_FUNCTION (this);
   m_pktRx = 0;
   m_bytesRx = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_localAddressSet = false;
 }
 

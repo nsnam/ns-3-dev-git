@@ -40,7 +40,7 @@
 const char * const PREFIX = "hwmp-reactive-regression-test";
 
 HwmpReactiveRegressionTest::HwmpReactiveRegressionTest () : TestCase ("HWMP on-demand regression test"),
-                                                            m_nodes (0),
+                                                            m_nodes (nullptr),
                                                             m_time (Seconds (10)),
                                                             m_sentPktsCounter (0)
 {
@@ -63,7 +63,7 @@ HwmpReactiveRegressionTest::DoRun ()
   Simulator::Destroy ();
 
   CheckResults ();
-  delete m_nodes, m_nodes = 0;
+  delete m_nodes, m_nodes = nullptr;
 }
 void
 HwmpReactiveRegressionTest::CreateNodes ()

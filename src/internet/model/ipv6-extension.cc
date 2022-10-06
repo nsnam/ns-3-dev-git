@@ -326,7 +326,7 @@ void Ipv6ExtensionFragment::DoDispose ()
 
   for (MapFragments_t::iterator it = m_fragments.begin (); it != m_fragments.end (); it++)
     {
-      it->second = 0;
+      it->second = nullptr;
     }
 
   m_fragments.clear ();
@@ -552,21 +552,21 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Hea
             {
               Ipv6ExtensionHopByHopHeader * p =
                 dynamic_cast<Ipv6ExtensionHopByHopHeader *> (it->first);
-              NS_ASSERT (p != 0);
+              NS_ASSERT (p != nullptr);
               fragment->AddHeader (*p);
             }
           else if (it->second == Ipv6Header::IPV6_EXT_ROUTING)
             {
               Ipv6ExtensionLooseRoutingHeader * p =
                 dynamic_cast<Ipv6ExtensionLooseRoutingHeader *> (it->first);
-              NS_ASSERT (p != 0);
+              NS_ASSERT (p != nullptr);
               fragment->AddHeader (*p);
             }
           else if (it->second == Ipv6Header::IPV6_EXT_DESTINATION)
             {
               Ipv6ExtensionDestinationHeader * p =
                 dynamic_cast<Ipv6ExtensionDestinationHeader *> (it->first);
-              NS_ASSERT (p != 0);
+              NS_ASSERT (p != nullptr);
               fragment->AddHeader (*p);
             }
         }
@@ -861,7 +861,7 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet,
       return routingLength;
     }
 
-  return ipv6ExtensionRouting->Process (packet, offset, ipv6Header, dst, (uint8_t *)0, stopProcessing, isDropped, dropReason);
+  return ipv6ExtensionRouting->Process (packet, offset, ipv6Header, dst, (uint8_t *)nullptr, stopProcessing, isDropped, dropReason);
 }
 
 
@@ -894,10 +894,10 @@ void Ipv6ExtensionRoutingDemux::DoDispose ()
   for (Ipv6ExtensionRoutingList_t::iterator it = m_extensionsRouting.begin (); it != m_extensionsRouting.end (); it++)
     {
       (*it)->Dispose ();
-      *it = 0;
+      *it = nullptr;
     }
   m_extensionsRouting.clear ();
-  m_node = 0;
+  m_node = nullptr;
   Object::DoDispose ();
 }
 
@@ -922,7 +922,7 @@ Ptr<Ipv6ExtensionRouting> Ipv6ExtensionRoutingDemux::GetExtensionRouting (uint8_
           return *i;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 void Ipv6ExtensionRoutingDemux::Remove (Ptr<Ipv6ExtensionRouting> extensionRouting)
@@ -1073,7 +1073,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet,
   Socket::SocketErrno err;
   NS_ASSERT (ipv6rp);
 
-  Ptr<Ipv6Route> rtentry = ipv6rp->RouteOutput (p, ipv6header, 0, err);
+  Ptr<Ipv6Route> rtentry = ipv6rp->RouteOutput (p, ipv6header, nullptr, err);
 
   if (rtentry)
     {

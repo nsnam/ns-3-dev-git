@@ -413,7 +413,7 @@ BenchSuite::Log () const
 Ptr<RandomVariableStream>
 GetRandomStream (std::string filename)
 {
-  Ptr<RandomVariableStream> stream = 0;
+  Ptr<RandomVariableStream> stream = nullptr;
 
   if (filename == "")
     {

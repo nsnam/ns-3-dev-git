@@ -307,13 +307,13 @@ std::string
 MakeTemporaryDirectoryName ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  char *path = NULL;
+  char *path = nullptr;
 
   path = std::getenv ("TMP");
-  if (path == NULL || std::strlen (path) == 0)
+  if (path == nullptr || std::strlen (path) == 0)
     {
       path = std::getenv ("TEMP");
-      if (path == NULL || std::strlen (path) == 0)
+      if (path == nullptr || std::strlen (path) == 0)
         {
           path = const_cast<char *> ("/tmp");
         }
@@ -323,13 +323,13 @@ MakeTemporaryDirectoryName ()
   // Just in case the user wants to go back and find the output, we give
   // a hint as to which dir we created by including a time hint.
   //
-  time_t now = time (NULL);
+  time_t now = time (nullptr);
   struct tm *tm_now = localtime (&now);
   //
   // But we also randomize the name in case there are multiple users doing
   // this at the same time
   //
-  srand (time (0));
+  srand (time (nullptr));
   long int n = rand ();
 
   //

@@ -88,8 +88,8 @@ const uint16_t NUM_UPLINK_CONFS (sizeof (g_frStrictUplinkDefaultConfiguration) /
 
 
 LteFrStrictAlgorithm::LteFrStrictAlgorithm ()
-  : m_ffrSapUser (0),
-    m_ffrRrcSapUser (0),
+  : m_ffrSapUser (nullptr),
+    m_ffrRrcSapUser (nullptr),
     m_dlEdgeSubBandOffset (0),
     m_dlEdgeSubBandwidth (0),
     m_ulEdgeSubBandOffset (0),

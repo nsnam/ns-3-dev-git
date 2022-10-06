@@ -339,23 +339,23 @@ WifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_rxMiddle = 0;
-  m_txMiddle = 0;
+  m_rxMiddle = nullptr;
+  m_txMiddle = nullptr;
   m_links.clear ();
 
   if (m_txop)
     {
       m_txop->Dispose ();
     }
-  m_txop = 0;
+  m_txop = nullptr;
 
   for (auto it = m_edca.begin (); it != m_edca.end (); ++it)
     {
       it->second->Dispose ();
-      it->second = 0;
+      it->second = nullptr;
     }
 
-  m_device = 0;
+  m_device = nullptr;
   if (m_scheduler != nullptr)
     {
       m_scheduler->Dispose ();

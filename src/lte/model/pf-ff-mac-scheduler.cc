@@ -49,15 +49,15 @@ NS_OBJECT_ENSURE_REGISTERED (PfFfMacScheduler);
 
 
 PfFfMacScheduler::PfFfMacScheduler ()
-  : m_cschedSapUser (0),
-    m_schedSapUser (0),
+  : m_cschedSapUser (nullptr),
+    m_schedSapUser (nullptr),
     m_timeWindow (99.0),
     m_nextRntiUl (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new MemberCschedSapProvider<PfFfMacScheduler> (this);
   m_schedSapProvider = new MemberSchedSapProvider<PfFfMacScheduler> (this);
-  m_ffrSapProvider = 0;
+  m_ffrSapProvider = nullptr;
   m_ffrSapUser = new MemberLteFfrSapUser<PfFfMacScheduler> (this);
 }
 

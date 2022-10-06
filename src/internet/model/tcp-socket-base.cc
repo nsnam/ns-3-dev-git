@@ -465,7 +465,7 @@ TcpSocketBase::~TcpSocketBase ()
       m_tcp->DeAllocate (m_endPoint6);
       NS_ASSERT (m_endPoint6 == nullptr);
     }
-  m_tcp = 0;
+  m_tcp = nullptr;
   CancelAllTimers ();
 }
 
@@ -517,7 +517,7 @@ TcpSocketBase::Bind ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint = m_tcp->Allocate ();
-  if (0 == m_endPoint)
+  if (nullptr == m_endPoint)
     {
       m_errno = ERROR_ADDRNOTAVAIL;
       return -1;
@@ -533,7 +533,7 @@ TcpSocketBase::Bind6 ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = m_tcp->Allocate6 ();
-  if (0 == m_endPoint6)
+  if (nullptr == m_endPoint6)
     {
       m_errno = ERROR_ADDRNOTAVAIL;
       return -1;
@@ -571,7 +571,7 @@ TcpSocketBase::Bind (const Address &address)
         {
           m_endPoint = m_tcp->Allocate (GetBoundNetDevice (), ipv4, port);
         }
-      if (0 == m_endPoint)
+      if (nullptr == m_endPoint)
         {
           m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
           return -1;
@@ -598,7 +598,7 @@ TcpSocketBase::Bind (const Address &address)
         {
           m_endPoint6 = m_tcp->Allocate6 (GetBoundNetDevice (), ipv6, port);
         }
-      if (0 == m_endPoint6)
+      if (nullptr == m_endPoint6)
         {
           m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
           return -1;

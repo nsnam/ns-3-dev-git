@@ -241,7 +241,7 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
       devB->AggregateObject (ndqiB);
     }
 
-  Ptr<PointToPointChannel> channel = 0;
+  Ptr<PointToPointChannel> channel = nullptr;
 
   // If MPI is enabled, we need to see if both nodes have the same system id
   // (rank), and the rank is the same as this instance.  If both are true,

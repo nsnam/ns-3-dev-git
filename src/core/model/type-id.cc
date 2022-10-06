@@ -1170,7 +1170,7 @@ TypeId::LookupTraceSourceByName (std::string name,
       nextTid = tid.GetParent ();
     }
   while (nextTid != tid);
-  return 0;
+  return nullptr;
 }
 
 Ptr<const TraceSourceAccessor>

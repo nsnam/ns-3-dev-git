@@ -71,14 +71,14 @@ SSLinkManager::SSLinkManager (Ptr<SubscriberStationNetDevice> ss)
 
 SSLinkManager::~SSLinkManager ()
 {
-  m_ss = 0;
+  m_ss = nullptr;
 }
 
 
 void
 SSLinkManager::DoDispose ()
 {
-  m_ss = 0;
+  m_ss = nullptr;
 }
 
 void
@@ -402,8 +402,8 @@ SSLinkManager::PerformRanging (Cid cid,
           // code to move to new channel/frequency goes here
         }
       // deassigning basic and primary CIDs
-      m_ss->SetBasicConnection (0);
-      m_ss->SetPrimaryConnection (0);
+      m_ss->SetBasicConnection (nullptr);
+      m_ss->SetPrimaryConnection (nullptr);
       m_ss->SetAreManagementConnectionsAllocated (false);
     }
   else

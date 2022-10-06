@@ -45,8 +45,8 @@ GlobalValue::GlobalValue (std::string name, std::string help,
                           Ptr<const AttributeChecker> checker)
   : m_name (name),
     m_help (help),
-    m_initialValue (0),
-    m_currentValue (0),
+    m_initialValue (nullptr),
+    m_currentValue (nullptr),
     m_checker (checker)
 {
   NS_LOG_FUNCTION (name << help << &initialValue << checker);
@@ -70,7 +70,7 @@ GlobalValue::InitializeFromEnv ()
   NS_LOG_FUNCTION (this);
 
   const char *envVar = getenv ("NS_GLOBAL_VALUE");
-  if (envVar == 0 || std::strlen (envVar) == 0)
+  if (envVar == nullptr || std::strlen (envVar) == 0)
     {
       return;
     }
@@ -123,7 +123,7 @@ GlobalValue::GetValue (AttributeValue &value) const
       return;
     }
   StringValue *str = dynamic_cast<StringValue *> (&value);
-  if (str == 0)
+  if (str == nullptr)
     {
       NS_FATAL_ERROR ("GlobalValue name=" << m_name << ": input value is not a string");
     }

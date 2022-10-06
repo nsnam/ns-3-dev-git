@@ -72,8 +72,8 @@ void
 QosFrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_edca = 0;
-  m_edcaBackingOff = 0;
+  m_edca = nullptr;
+  m_edcaBackingOff = nullptr;
   m_pifsRecoveryEvent.Cancel ();
   FrameExchangeManager::DoDispose ();
 }
@@ -110,7 +110,7 @@ QosFrameExchangeManager::SendCfEndIfNeeded ()
     }
 
   m_edca->NotifyChannelReleased (m_linkId);
-  m_edca = 0;
+  m_edca = nullptr;
   return false;
 }
 
@@ -126,7 +126,7 @@ QosFrameExchangeManager::PifsRecovery ()
       > Simulator::Now () - m_phy->GetPifs ())
     {
       m_edca->NotifyChannelReleased (m_linkId);
-      m_edca = 0;
+      m_edca = nullptr;
     }
   else
     {
@@ -162,7 +162,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<Txop> edca, uint16_t allowedWidt
   // TODO This will become an assert once no Txop is installed on a QoS station
   if (!edca->IsQosTxop ())
     {
-      m_edca = 0;
+      m_edca = nullptr;
       return FrameExchangeManager::StartTransmission (edca, allowedWidth);
     }
 
@@ -202,7 +202,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
       NS_ASSERT (!m_initialFrame);
 
       // clear the member variable
-      m_edcaBackingOff = 0;
+      m_edcaBackingOff = nullptr;
     }
 
   if (m_edca->GetTxopLimit (m_linkId).IsStrictlyPositive ())
@@ -228,7 +228,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
           // TXOP not even started, return false
           NS_LOG_DEBUG ("No frame transmitted");
           m_edca->NotifyChannelReleased (m_linkId);
-          m_edca = 0;
+          m_edca = nullptr;
           return false;
         }
 
@@ -255,7 +255,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
 
   NS_LOG_DEBUG ("No frame transmitted");
   m_edca->NotifyChannelReleased (m_linkId);
-  m_edca = 0;
+  m_edca = nullptr;
   return false;
 }
 
@@ -559,7 +559,7 @@ QosFrameExchangeManager::TransmissionSucceeded ()
   else
     {
       m_edca->NotifyChannelReleased (m_linkId);
-      m_edca = 0;
+      m_edca = nullptr;
     }
   m_initialFrame = false;
 }
@@ -582,7 +582,7 @@ QosFrameExchangeManager::TransmissionFailed ()
       // of an MPDU in the initial PPDU of a TXOP fails (Sec. 10.22.2.2 of 802.11-2016)
       NS_LOG_DEBUG ("TX of the initial frame of a TXOP failed: terminate TXOP");
       m_edca->NotifyChannelReleased (m_linkId);
-      m_edca = 0;
+      m_edca = nullptr;
     }
   else
     {
@@ -608,7 +608,7 @@ QosFrameExchangeManager::TransmissionFailed ()
           NS_LOG_DEBUG ("TX of a non-initial frame of a TXOP failed: invoke backoff");
           m_edca->Txop::NotifyChannelReleased (m_linkId);
           m_edcaBackingOff = m_edca;
-          m_edca = 0;
+          m_edca = nullptr;
         }
     }
   m_initialFrame = false;

@@ -87,10 +87,10 @@ BulkSendApplication::GetTypeId ()
 
 
 BulkSendApplication::BulkSendApplication ()
-  : m_socket (0),
+  : m_socket (nullptr),
     m_connected (false),
     m_totBytes (0),
-    m_unsentPacket (0)
+    m_unsentPacket (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -119,8 +119,8 @@ BulkSendApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_socket = 0;
-  m_unsentPacket = 0;
+  m_socket = nullptr;
+  m_unsentPacket = nullptr;
   // chain up
   Application::DoDispose ();
 }
@@ -249,7 +249,7 @@ void BulkSendApplication::SendData (const Address &from, const Address &to)
         {
           m_totBytes += actual;
           m_txTrace (packet);
-          m_unsentPacket = 0;
+          m_unsentPacket = nullptr;
         }
       else if (actual == -1)
         {

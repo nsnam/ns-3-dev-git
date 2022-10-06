@@ -320,7 +320,7 @@ RoutingProtocol::~RoutingProtocol ()
 void
 RoutingProtocol::DoDispose ()
 {
-  m_ipv4 = 0;
+  m_ipv4 = nullptr;
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::iterator iter =
          m_socketAddresses.begin (); iter != m_socketAddresses.end (); iter++)
     {
@@ -1040,7 +1040,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   else
     {
       rreqHeader.SetUnknownSeqno (true);
-      Ptr<NetDevice> dev = 0;
+      Ptr<NetDevice> dev = nullptr;
       RoutingTableEntry newEntry (/*dev=*/ dev,
                                   /*dst=*/ dst,
                                   /*vSeqNo=*/ false,

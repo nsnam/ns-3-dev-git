@@ -86,7 +86,7 @@ namespace {
 
 // The set of marked times
 // static
-Time::MarkedTimes * Time::g_markingTimes = 0;
+Time::MarkedTimes * Time::g_markingTimes = nullptr;
 
 /// The static mutex for critical sections around modification of Time::g_markingTimes.
 static std::mutex g_markingMutex;
@@ -307,7 +307,7 @@ Time::ClearMarkedTimes ()
     {
       NS_LOG_LOGIC ("clearing MarkedTimes");
       g_markingTimes->erase (g_markingTimes->begin (), g_markingTimes->end ());
-      g_markingTimes = 0;
+      g_markingTimes = nullptr;
     }
 }  // Time::ClearMarkedTimes
 
@@ -319,7 +319,7 @@ Time::Mark (Time * const time)
   std::unique_lock lock {g_markingMutex};
 
   NS_LOG_FUNCTION (time);
-  NS_ASSERT (time != 0);
+  NS_ASSERT (time != nullptr);
 
   // Repeat the g_markingTimes test here inside the CriticalSection,
   // since earlier test was outside and might be stale.
@@ -345,7 +345,7 @@ Time::Clear (Time * const time)
   std::unique_lock lock {g_markingMutex};
 
   NS_LOG_FUNCTION (time);
-  NS_ASSERT (time != 0);
+  NS_ASSERT (time != nullptr);
 
   if (g_markingTimes)
     {
@@ -376,7 +376,7 @@ Time::ConvertTimes (const enum Unit unit)
 
   NS_LOG_FUNCTION_NOARGS ();
 
-  NS_ASSERT_MSG (g_markingTimes != 0,
+  NS_ASSERT_MSG (g_markingTimes != nullptr,
                  "No MarkedTimes registry. "
                  "Time::SetResolution () called more than once?");
 
@@ -400,7 +400,7 @@ Time::ConvertTimes (const enum Unit unit)
   // Assert above already guarantees g_markingTimes != 0
   NS_LOG_LOGIC ("clearing MarkedTimes");
   g_markingTimes->erase (g_markingTimes->begin (), g_markingTimes->end ());
-  g_markingTimes = 0;
+  g_markingTimes = nullptr;
 
 }  // Time::ConvertTimes ()
 
@@ -531,7 +531,7 @@ MakeTimeChecker (const Time min, const Time max)
     {
       NS_LOG_FUNCTION (&value);
       const TimeValue *v = dynamic_cast<const TimeValue *> (&value);
-      if (v == 0)
+      if (v == nullptr)
         {
           return false;
         }
@@ -564,7 +564,7 @@ MakeTimeChecker (const Time min, const Time max)
       NS_LOG_FUNCTION (&source << &destination);
       const TimeValue *src = dynamic_cast<const TimeValue *> (&source);
       TimeValue *dst = dynamic_cast<TimeValue *> (&destination);
-      if (src == 0 || dst == 0)
+      if (src == nullptr || dst == nullptr)
         {
           return false;
         }

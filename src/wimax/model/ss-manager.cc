@@ -51,7 +51,7 @@ SSManager::~SSManager ()
       delete *iter;
     }
   delete m_ssRecords;
-  m_ssRecords = 0;
+  m_ssRecords = nullptr;
 }
 
 SSRecord*
@@ -74,7 +74,7 @@ SSManager::GetSSRecord (const Mac48Address &macAddress) const
     }
 
   NS_LOG_DEBUG ("GetSSRecord: SSRecord not found!");
-  return 0;
+  return nullptr;
 }
 
 SSRecord*
@@ -101,7 +101,7 @@ SSManager::GetSSRecord (Cid cid) const
     }
 
   NS_LOG_DEBUG ("GetSSRecord: SSRecord not found!");
-  return 0;
+  return nullptr;
 }
 
 std::vector<SSRecord*>*
@@ -127,7 +127,7 @@ bool
 SSManager::IsRegistered (const Mac48Address &macAddress) const
 {
   SSRecord *ssRecord = GetSSRecord (macAddress);
-  return ssRecord != 0 && ssRecord->GetRangingStatus () == WimaxNetDevice::RANGING_STATUS_SUCCESS;
+  return ssRecord != nullptr && ssRecord->GetRangingStatus () == WimaxNetDevice::RANGING_STATUS_SUCCESS;
 }
 
 void

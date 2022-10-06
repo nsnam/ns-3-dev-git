@@ -125,18 +125,18 @@ AlohaNoackNetDevice::AlohaNoackNetDevice ()
 AlohaNoackNetDevice::~AlohaNoackNetDevice ()
 {
   NS_LOG_FUNCTION (this);
-  m_queue = 0;
+  m_queue = nullptr;
 }
 
 void
 AlohaNoackNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_queue = 0;
-  m_node = 0;
-  m_channel = 0;
-  m_currentPkt = 0;
-  m_phy = 0;
+  m_queue = nullptr;
+  m_node = nullptr;
+  m_channel = nullptr;
+  m_currentPkt = nullptr;
+  m_phy = nullptr;
   m_phyMacTxStartCallback = MakeNullCallback< bool, Ptr<Packet> > ();
   NetDevice::DoDispose ();
 }

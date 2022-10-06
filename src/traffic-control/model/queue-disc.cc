@@ -64,7 +64,7 @@ void
 QueueDiscClass::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_queueDisc = 0;
+  m_queueDisc = nullptr;
   Object::DoDispose ();
 }
 
@@ -385,9 +385,9 @@ QueueDisc::DoDispose ()
   m_queues.clear ();
   m_filters.clear ();
   m_classes.clear ();
-  m_devQueueIface = 0;
+  m_devQueueIface = nullptr;
   m_send = nullptr;
-  m_requeued = 0;
+  m_requeued = nullptr;
   m_internalQueueDbeFunctor = nullptr;
   m_internalQueueDadFunctor = nullptr;
   m_childQueueDiscDbeFunctor = nullptr;
@@ -902,7 +902,7 @@ QueueDisc::Dequeue ()
 
   if (item)
     {
-      m_requeued = 0;
+      m_requeued = nullptr;
       if (m_peeked)
         {
           // If the packet was requeued because a peek operation was requested
@@ -1020,7 +1020,7 @@ QueueDisc::DequeuePacket ()
         if (!m_devQueueIface || !m_devQueueIface->GetTxQueue (m_requeued->GetTxQueueIndex ())->IsStopped ())
           {
             item = m_requeued;
-            m_requeued = 0;
+            m_requeued = nullptr;
             if (m_peeked)
               {
                 // If the packet was requeued because a peek operation was requested

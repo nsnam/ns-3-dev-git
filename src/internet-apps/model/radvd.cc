@@ -75,10 +75,10 @@ Radvd::~Radvd ()
   NS_LOG_FUNCTION (this);
   for (RadvdInterfaceListI it = m_configurations.begin (); it != m_configurations.end (); ++it)
     {
-      *it = 0;
+      *it = nullptr;
     }
   m_configurations.clear ();
-  m_recvSocket = 0;
+  m_recvSocket = nullptr;
 }
 
 void Radvd::DoDispose ()
@@ -86,12 +86,12 @@ void Radvd::DoDispose ()
   NS_LOG_FUNCTION (this);
 
   m_recvSocket->Close ();
-  m_recvSocket = 0;
+  m_recvSocket = nullptr;
 
   for (SocketMapI it = m_sendSockets.begin (); it != m_sendSockets.end (); ++it)
     {
       it->second->Close ();
-      it->second = 0;
+      it->second = nullptr;
     }
 
   Application::DoDispose ();
@@ -285,7 +285,7 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 void Radvd::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
-  Ptr<Packet> packet = 0;
+  Ptr<Packet> packet = nullptr;
   Address from;
 
   while ((packet = socket->RecvFrom (from)))

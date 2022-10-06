@@ -662,7 +662,7 @@ template <typename T>
 void
 Ptr<T>::Acquire () const
 {
-  if (m_ptr != 0)
+  if (m_ptr != nullptr)
     {
       m_ptr->Ref ();
     }
@@ -670,7 +670,7 @@ Ptr<T>::Acquire () const
 
 template <typename T>
 Ptr<T>::Ptr ()
-  : m_ptr (0)
+  : m_ptr (nullptr)
 {}
 
 template <typename T>
@@ -695,7 +695,7 @@ Ptr<T>::Ptr (Ptr const&o)
   : m_ptr (nullptr)
 {
   T* ptr = PeekPointer (o);
-  if (ptr != 0)
+  if (ptr != nullptr)
     {
        m_ptr = ptr;
        Acquire ();
@@ -712,7 +712,7 @@ Ptr<T>::Ptr (Ptr<U> const &o)
 template <typename T>
 Ptr<T>::~Ptr ()
 {
-  if (m_ptr != 0)
+  if (m_ptr != nullptr)
     {
       m_ptr->Unref ();
     }
@@ -726,7 +726,7 @@ Ptr<T>::operator = (Ptr const& o)
     {
       return *this;
     }
-  if (m_ptr != 0)
+  if (m_ptr != nullptr)
     {
       m_ptr->Unref ();
     }
@@ -781,7 +781,7 @@ Ptr<T>::operator Tester * () const // NS_DEPRECATED_3_37
 template <typename T>
 Ptr<T>::operator bool() const
 {
-  return m_ptr != 0;
+  return m_ptr != nullptr;
 }
 
 

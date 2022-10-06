@@ -43,7 +43,7 @@ const char * const PREFIX = "hwmp-target-flags-regression-test";
 
 
 HwmpDoRfRegressionTest::HwmpDoRfRegressionTest () : TestCase ("HWMP target flags regression test"),
-                                                    m_nodes (0),
+                                                    m_nodes (nullptr),
                                                     m_time (Seconds (5)),
                                                     m_sentPktsCounterA (0),
                                                     m_sentPktsCounterB (0),
@@ -71,7 +71,7 @@ HwmpDoRfRegressionTest::DoRun ()
 
   CheckResults ();
 
-  delete m_nodes, m_nodes = 0;
+  delete m_nodes, m_nodes = nullptr;
 }
 
 void

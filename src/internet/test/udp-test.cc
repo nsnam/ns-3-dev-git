@@ -411,8 +411,8 @@ UdpSocketImplTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the first interface's address");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "trivial");
 
-  m_receivedPacket = 0;
-  m_receivedPacket2 = 0;
+  m_receivedPacket = nullptr;
+  m_receivedPacket2 = nullptr;
 
   // Simple Link-local multicast test
 

@@ -271,7 +271,7 @@ TrafficControlHelper::Uninstall (Ptr<NetDevice> d)
   NS_ASSERT (ndqi);
   for (std::size_t i = 0; i < ndqi->GetNTxQueues (); i++)
     {
-      ndqi->GetTxQueue (i)->SetQueueLimits (0);
+      ndqi->GetTxQueue (i)->SetQueueLimits (nullptr);
     }
 }
 

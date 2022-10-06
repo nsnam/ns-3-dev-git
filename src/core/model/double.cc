@@ -61,7 +61,7 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
     {
       NS_LOG_FUNCTION (&value);
       const DoubleValue *v = dynamic_cast<const DoubleValue *> (&value);
-      if (v == 0)
+      if (v == nullptr)
         {
           return false;
         }
@@ -94,7 +94,7 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
       NS_LOG_FUNCTION (&source << &destination);
       const DoubleValue *src = dynamic_cast<const DoubleValue *> (&source);
       DoubleValue *dst = dynamic_cast<DoubleValue *> (&destination);
-      if (src == 0 || dst == 0)
+      if (src == nullptr || dst == nullptr)
         {
           return false;
         }

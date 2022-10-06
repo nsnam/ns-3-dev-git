@@ -55,26 +55,26 @@ UanNetDevice::Clear ()
       return;
     }
   m_cleared = true;
-  m_node = 0;
+  m_node = nullptr;
   if (m_channel)
     {
       m_channel->Clear ();
-      m_channel = 0;
+      m_channel = nullptr;
     }
   if (m_mac)
     {
       m_mac->Clear ();
-      m_mac = 0;
+      m_mac = nullptr;
     }
   if (m_phy)
     {
       m_phy->Clear ();
-      m_phy = 0;
+      m_phy = nullptr;
     }
   if (m_trans)
     {
       m_trans->Clear ();
-      m_trans = 0;
+      m_trans = nullptr;
     }
 }
 

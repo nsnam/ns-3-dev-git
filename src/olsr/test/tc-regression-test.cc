@@ -62,9 +62,9 @@ TcRegressionTest::DoRun ()
   Simulator::Stop (m_time);
   Simulator::Run ();
 
-  m_rxSocketA = 0;
-  m_rxSocketB = 0;
-  m_rxSocketC = 0;
+  m_rxSocketA = nullptr;
+  m_rxSocketB = nullptr;
+  m_rxSocketC = nullptr;
   Simulator::Destroy ();
 }
 

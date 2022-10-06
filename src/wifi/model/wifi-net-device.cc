@@ -123,11 +123,11 @@ void
 WifiNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_node = 0;
+  m_node = nullptr;
   if (m_mac)
     {
       m_mac->Dispose ();
-      m_mac = 0;
+      m_mac = nullptr;
     }
   for (auto& phy : m_phys)
     {
@@ -150,22 +150,22 @@ WifiNetDevice::DoDispose ()
   if (m_htConfiguration)
     {
       m_htConfiguration->Dispose ();
-      m_htConfiguration = 0;
+      m_htConfiguration = nullptr;
     }
   if (m_vhtConfiguration)
     {
       m_vhtConfiguration->Dispose ();
-      m_vhtConfiguration = 0;
+      m_vhtConfiguration = nullptr;
     }
   if (m_heConfiguration)
     {
       m_heConfiguration->Dispose ();
-      m_heConfiguration = 0;
+      m_heConfiguration = nullptr;
     }
   if (m_ehtConfiguration)
     {
       m_ehtConfiguration->Dispose ();
-      m_ehtConfiguration = 0;
+      m_ehtConfiguration = nullptr;
     }
   NetDevice::DoDispose ();
 }

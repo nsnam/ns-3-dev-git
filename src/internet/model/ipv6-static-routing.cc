@@ -47,7 +47,7 @@ TypeId Ipv6StaticRouting::GetTypeId ()
 }
 
 Ipv6StaticRouting::Ipv6StaticRouting ()
-  : m_ipv6 (0)
+  : m_ipv6 (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -241,7 +241,7 @@ Ipv6MulticastRoutingTableEntry Ipv6StaticRouting::GetMulticastRoute (uint32_t in
           tmp++;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 bool Ipv6StaticRouting::RemoveMulticastRoute (Ipv6Address origin, Ipv6Address group, uint32_t inputInterface)
@@ -322,7 +322,7 @@ bool Ipv6StaticRouting::LookupRoute (const Ipv6RoutingTableEntry &route, uint32_
 Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> interface)
 {
   NS_LOG_FUNCTION (this << dst << interface);
-  Ptr<Ipv6Route> rtentry = 0;
+  Ptr<Ipv6Route> rtentry = nullptr;
   uint16_t longestMask = 0;
   uint32_t shortestMetric = 0xffffffff;
 
@@ -425,14 +425,14 @@ void Ipv6StaticRouting::DoDispose ()
     }
   m_multicastRoutes.clear ();
 
-  m_ipv6 = 0;
+  m_ipv6 = nullptr;
   Ipv6RoutingProtocol::DoDispose ();
 }
 
 Ptr<Ipv6MulticastRoute> Ipv6StaticRouting::LookupStatic (Ipv6Address origin, Ipv6Address group, uint32_t interface)
 {
   NS_LOG_FUNCTION (this << origin << group << interface);
-  Ptr<Ipv6MulticastRoute> mrtentry = 0;
+  Ptr<Ipv6MulticastRoute> mrtentry = nullptr;
 
   for (MulticastRoutesI i = m_multicastRoutes.begin (); i != m_multicastRoutes.end (); i++)
     {
@@ -488,7 +488,7 @@ Ipv6RoutingTableEntry Ipv6StaticRouting::GetDefaultRoute ()
   NS_LOG_FUNCTION (this);
   Ipv6Address dst ("::");
   uint32_t shortestMetric = 0xffffffff;
-  Ipv6RoutingTableEntry* result = 0;
+  Ipv6RoutingTableEntry* result = nullptr;
 
   for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); it++)
     {
@@ -536,7 +536,7 @@ Ipv6RoutingTableEntry Ipv6StaticRouting::GetRoute (uint32_t index) const
     }
   NS_ASSERT (false);
   // quiet compiler.
-  return 0;
+  return nullptr;
 }
 
 uint32_t Ipv6StaticRouting::GetMetric (uint32_t index) const
@@ -596,7 +596,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &
 {
   NS_LOG_FUNCTION (this << header << oif);
   Ipv6Address destination = header.GetDestination ();
-  Ptr<Ipv6Route> rtentry = 0;
+  Ptr<Ipv6Route> rtentry = nullptr;
 
   if (destination.IsMulticast ())
     {

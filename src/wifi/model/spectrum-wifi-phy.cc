@@ -91,10 +91,10 @@ void
 SpectrumWifiPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_channel = 0;
-  m_wifiSpectrumPhyInterface = 0;
-  m_antenna = 0;
-  m_rxSpectrumModel = 0;
+  m_channel = nullptr;
+  m_wifiSpectrumPhyInterface = nullptr;
+  m_antenna = nullptr;
+  m_rxSpectrumModel = nullptr;
   m_ruBands.clear ();
   WifiPhy::DoDispose ();
 }
@@ -128,7 +128,7 @@ SpectrumWifiPhy::GetRxSpectrumModel ()
       if (GetFrequency () == 0)
         {
           NS_LOG_DEBUG ("Frequency is not set; returning 0");
-          return 0;
+          return nullptr;
         }
       else
         {

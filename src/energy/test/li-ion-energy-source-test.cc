@@ -53,7 +53,7 @@ LiIonEnergyTestCase::LiIonEnergyTestCase ()
 
 LiIonEnergyTestCase::~LiIonEnergyTestCase ()
 {
-  m_node = 0;
+  m_node = nullptr;
 }
 
 void

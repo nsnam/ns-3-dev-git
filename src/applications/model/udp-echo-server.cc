@@ -67,8 +67,8 @@ UdpEchoServer::UdpEchoServer ()
 UdpEchoServer::~UdpEchoServer()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
-  m_socket6 = 0;
+  m_socket = nullptr;
+  m_socket6 = nullptr;
 }
 
 void

@@ -55,7 +55,7 @@ BridgeChannel::~BridgeChannel ()
   for (std::vector< Ptr<Channel> >::iterator iter = m_bridgedChannels.begin ();
        iter != m_bridgedChannels.end (); iter++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   m_bridgedChannels.clear ();
 }
@@ -93,7 +93,7 @@ BridgeChannel::GetDevice (std::size_t i) const
         }
       ndevices += (*iter)->GetNDevices ();
     }
-  return NULL;
+  return nullptr;
 }
 
 

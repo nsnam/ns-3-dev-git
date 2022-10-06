@@ -36,7 +36,7 @@ NoOpComponentCarrierManager::NoOpComponentCarrierManager ()
   m_ccmRrcSapProvider = new MemberLteCcmRrcSapProvider<NoOpComponentCarrierManager> (this);
   m_ccmMacSapUser = new MemberLteCcmMacSapUser<NoOpComponentCarrierManager> (this);
   m_macSapProvider = new EnbMacMemberLteMacSapProvider <NoOpComponentCarrierManager> (this);
-  m_ccmRrcSapUser  = 0;
+  m_ccmRrcSapUser  = nullptr;
 }
 
 NoOpComponentCarrierManager::~NoOpComponentCarrierManager ()

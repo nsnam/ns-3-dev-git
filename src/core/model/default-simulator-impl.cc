@@ -84,7 +84,7 @@ DefaultSimulatorImpl::DoDispose ()
       Scheduler::Event next = m_events->RemoveNext ();
       next.impl->Unref ();
     }
-  m_events = 0;
+  m_events = nullptr;
   SimulatorImpl::DoDispose ();
 }
 void
@@ -362,7 +362,7 @@ DefaultSimulatorImpl::IsExpired (const EventId &id) const
 {
   if (id.GetUid () == EventId::UID::DESTROY)
     {
-      if (id.PeekEventImpl () == 0
+      if (id.PeekEventImpl () == nullptr
           || id.PeekEventImpl ()->IsCancelled ())
         {
           return true;
@@ -377,7 +377,7 @@ DefaultSimulatorImpl::IsExpired (const EventId &id) const
         }
       return true;
     }
-  if (id.PeekEventImpl () == 0
+  if (id.PeekEventImpl () == nullptr
       || id.GetTs () < m_currentTs
       || (id.GetTs () == m_currentTs && id.GetUid () <= m_currentUid)
       || id.PeekEventImpl ()->IsCancelled ())

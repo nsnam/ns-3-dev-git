@@ -35,8 +35,8 @@ NS_OBJECT_ENSURE_REGISTERED (UanMacCw);
 
 UanMacCw::UanMacCw ()
   : UanMac (),
-  m_phy (0),
-  m_pktTx (0),
+  m_phy (nullptr),
+  m_pktTx (nullptr),
   m_txOngoing (false),
   m_state (IDLE),
   m_cleared (false)
@@ -57,11 +57,11 @@ UanMacCw::Clear ()
       return;
     }
   m_cleared = true;
-  m_pktTx = 0;
+  m_pktTx = nullptr;
   if (m_phy)
     {
       m_phy->Clear ();
-      m_phy = 0;
+      m_phy = nullptr;
     }
   m_sendEvent.Cancel ();
   m_txOngoing = false;
@@ -374,7 +374,7 @@ UanMacCw::SendPacket ()
   NS_ASSERT (m_state == RUNNING);
   m_state = TX;
   m_phy->SendPacket (m_pktTx,m_pktTxProt);
-  m_pktTx = 0;
+  m_pktTx = nullptr;
   m_sendTime = Seconds (0);
   m_savedDelayS = Seconds (0);
 }

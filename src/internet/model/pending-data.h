@@ -48,7 +48,7 @@ public:
    * \param msg message size
    * \param resp response size
    */
-  PendingData (uint32_t s, uint8_t* d = NULL, uint32_t msg = 0, uint32_t resp = 0);
+  PendingData (uint32_t s, uint8_t* d = nullptr, uint32_t msg = 0, uint32_t resp = 0);
   /**
    * Constructor from string
    * \param s string
@@ -78,7 +78,7 @@ public:
    * \param s the data size.
    * \param d the data to store.
    */
-  virtual void Add (uint32_t s, const uint8_t* d = 0); //
+  virtual void Add (uint32_t s, const uint8_t* d = nullptr); //
   /**
    * \brief Add some data to end
    * \param p packet containing the data.

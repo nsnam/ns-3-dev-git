@@ -324,7 +324,7 @@ PacketTagList::PacketTagList ()
 PacketTagList::PacketTagList (PacketTagList const &o)
   : m_next (o.m_next)
 {
-  if (m_next != 0)
+  if (m_next != nullptr)
     {
       m_next->count++;
     }
@@ -340,7 +340,7 @@ PacketTagList::operator = (PacketTagList const &o)
     }
   RemoveAll ();
   m_next = o.m_next;
-  if (m_next != 0)
+  if (m_next != nullptr)
     {
       m_next->count++;
     }
@@ -355,27 +355,27 @@ PacketTagList::~PacketTagList ()
 void
 PacketTagList::RemoveAll ()
 {
-  struct TagData *prev = 0;
-  for (struct TagData *cur = m_next; cur != 0; cur = cur->next)
+  struct TagData *prev = nullptr;
+  for (struct TagData *cur = m_next; cur != nullptr; cur = cur->next)
     {
       cur->count--;
       if (cur->count > 0)
         {
           break;
         }
-      if (prev != 0)
+      if (prev != nullptr)
         {
           prev->~TagData ();
           std::free (prev);
         }
       prev = cur;
     }
-  if (prev != 0)
+  if (prev != nullptr)
     {
       prev->~TagData ();
       std::free (prev);
     }
-  m_next = 0;
+  m_next = nullptr;
 }
 
 } // namespace ns3

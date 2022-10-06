@@ -44,9 +44,9 @@ void
 SpectrumChannel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_propagationLoss = 0;
-  m_propagationDelay = 0;
-  m_spectrumPropagationLoss = 0;
+  m_propagationLoss = nullptr;
+  m_propagationDelay = nullptr;
+  m_spectrumPropagationLoss = nullptr;
 }
 
 TypeId
@@ -72,7 +72,7 @@ SpectrumChannel::GetTypeId ()
 
     .AddAttribute ("PropagationLossModel",
                    "A pointer to the propagation loss model attached to this channel.",
-                   PointerValue (0),
+                   PointerValue (nullptr),
                    MakePointerAccessor (&SpectrumChannel::m_propagationLoss),
                    MakePointerChecker<PropagationLossModel> ())
 

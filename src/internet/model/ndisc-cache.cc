@@ -64,9 +64,9 @@ void NdiscCache::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Flush ();
-  m_device = 0;
-  m_interface = 0;
-  m_icmpv6 = 0;
+  m_device = nullptr;
+  m_interface = nullptr;
+  m_icmpv6 = nullptr;
   Object::DoDispose ();
 }
 
@@ -102,7 +102,7 @@ NdiscCache::Entry* NdiscCache::Lookup (Ipv6Address dst)
       return entry;
     }
   NS_LOG_LOGIC ("Nothing found");
-  return 0;
+  return nullptr;
 }
 
 std::list<NdiscCache::Entry*> NdiscCache::LookupInverse (Address dst)

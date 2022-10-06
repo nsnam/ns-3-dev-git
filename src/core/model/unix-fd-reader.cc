@@ -177,7 +177,7 @@ void FdReader::Run ()
       int r;
       fd_set readfds = rfds;
 
-      r = select (nfds, &readfds, NULL, NULL, NULL);
+      r = select (nfds, &readfds, nullptr, nullptr, nullptr);
       if (r == -1 && errno != EINTR)
         {
           NS_FATAL_ERROR ("select() failed: " << std::strerror (errno));

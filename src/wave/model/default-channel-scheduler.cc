@@ -75,7 +75,7 @@ DefaultChannelScheduler::DefaultChannelScheduler ()
     m_channelAccess (NoAccess),
     m_waitChannelNumber (0),
     m_waitExtend (0),
-    m_coordinationListener (0)
+    m_coordinationListener (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -95,10 +95,10 @@ void
 DefaultChannelScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_coordinator = 0;
+  m_coordinator = nullptr;
   if (m_coordinationListener)
     {
-      m_coordinationListener = 0;
+      m_coordinationListener = nullptr;
     }
   if (!m_waitEvent.IsExpired ())
     {
@@ -108,7 +108,7 @@ DefaultChannelScheduler::DoDispose ()
     {
       m_waitEvent.Cancel ();
     }
-  m_phy = 0;
+  m_phy = nullptr;
   ChannelScheduler::DoDispose ();
 }
 

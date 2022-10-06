@@ -130,8 +130,8 @@ NixVectorRouting<T>::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  m_node = 0;
-  m_ip = 0;
+  m_node = nullptr;
+  m_ip = nullptr;
 
   T::DoDispose ();
 }
@@ -203,7 +203,7 @@ NixVectorRouting<T>::GetNixVector (Ptr<Node> source, IpAddress dest, Ptr<NetDevi
   if ( !destNode )
     {
       NS_LOG_ERROR ("No routing path exists");
-      return 0;
+      return nullptr;
     }
 
   // if source == dest, then we have a special case
@@ -212,7 +212,7 @@ NixVectorRouting<T>::GetNixVector (Ptr<Node> source, IpAddress dest, Ptr<NetDevi
   if (source == destNode)
     {
       NS_LOG_DEBUG ("Do not process packets to self");
-      return 0;
+      return nullptr;
     }
   else
     {
@@ -229,13 +229,13 @@ NixVectorRouting<T>::GetNixVector (Ptr<Node> source, IpAddress dest, Ptr<NetDevi
           else
             {
               NS_LOG_ERROR ("No routing path exists");
-              return 0;
+              return nullptr;
             }
         }
       else
         {
           NS_LOG_ERROR ("No routing path exists");
-          return 0;
+          return nullptr;
         }
 
     }
@@ -259,7 +259,7 @@ NixVectorRouting<T>::GetNixVectorInCache (const IpAddress &address, bool &foundI
 
   // not in cache
   foundInCache = false;
-  return 0;
+  return nullptr;
 }
 
 template <typename T>
@@ -278,7 +278,7 @@ NixVectorRouting<T>::GetIpRouteInCache (IpAddress address)
     }
 
   // not in cache
-  return 0;
+  return nullptr;
 }
 
 template <typename T>
@@ -519,7 +519,7 @@ NixVectorRouting<T>::GetNodeByIp (IpAddress dest) const
   if(iter == g_ipAddressToNodeMap.end ())
     {
       NS_LOG_ERROR ("Couldn't find dest node given the IP" << dest);
-      destNode = 0;
+      destNode = nullptr;
     }
   else
     {
@@ -546,7 +546,7 @@ NixVectorRouting<T>::GetInterfaceByNetDevice (Ptr<NetDevice> netDevice) const
   if(iter == g_netdeviceToIpInterfaceMap.end ())
     {
       NS_LOG_ERROR ("Couldn't find IpInterface node given the NetDevice" << netDevice);
-      ipInterface = 0;
+      ipInterface = nullptr;
     }
   else
     {
@@ -628,7 +628,7 @@ NixVectorRouting<T>::NetDeviceIsBridged (Ptr<NetDevice> nd) const
         }
     }
   NS_LOG_LOGIC ("Net device " << nd << " is not bridged");
-  return 0;
+  return nullptr;
 }
 
 template <typename T>
@@ -913,7 +913,7 @@ NixVectorRouting<T>::RouteInput (Ptr<const Packet> p, const IpHeader &header, Pt
     {
       NS_LOG_LOGIC ("NixVector epoch mismatch (" << nixVector->GetEpoch () << " Vs " << g_epoch
                                                  << ") - rebuilding it");
-      nixVector = GetNixVector (m_node, destAddress, 0);
+      nixVector = GetNixVector (m_node, destAddress, nullptr);
       p->SetNixVector (nixVector);
     }
 
@@ -1091,7 +1091,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
   std::queue< Ptr<Node> > greyNodeList;  // discovered nodes with unexplored children
 
   // reset the parent vector
-  parentVector.assign (numberOfNodes, 0); // initialize to 0
+  parentVector.assign (numberOfNodes, nullptr); // initialize to 0
 
   // Add the source node to the queue, set its parent to itself
   greyNodeList.push (source);

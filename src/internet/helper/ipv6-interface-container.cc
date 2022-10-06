@@ -104,7 +104,7 @@ void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (uint32_t router)
     {
       if (other != router)
         {
-          Ptr<Ipv6StaticRouting> routing = 0;
+          Ptr<Ipv6StaticRouting> routing = nullptr;
           Ipv6StaticRoutingHelper routingHelper;
 
           ipv6 = m_interfaces[other].first;
@@ -143,7 +143,7 @@ void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (Ipv6Address routerAddres
     {
       if (other != routerIndex)
         {
-          Ptr<Ipv6StaticRouting> routing = 0;
+          Ptr<Ipv6StaticRouting> routing = nullptr;
           Ipv6StaticRoutingHelper routingHelper;
 
           Ptr<Ipv6> ipv6 = m_interfaces[other].first;
@@ -164,7 +164,7 @@ void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, uint32_t router)
   Ipv6Address routerAddress = GetLinkLocalAddress (router);
   NS_ASSERT_MSG (routerAddress != Ipv6Address::GetAny (), "No link-local address found on router, aborting");
 
-  Ptr<Ipv6StaticRouting> routing = 0;
+  Ptr<Ipv6StaticRouting> routing = nullptr;
   Ipv6StaticRoutingHelper routingHelper;
 
   routing = routingHelper.GetStaticRouting (ipv6);
@@ -201,7 +201,7 @@ void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, Ipv6Address routerAddr
 
   Ptr<Ipv6> ipv6 = m_interfaces[i].first;
   Ipv6Address routerLinkLocalAddress = GetLinkLocalAddress (routerIndex);
-  Ptr<Ipv6StaticRouting> routing = 0;
+  Ptr<Ipv6StaticRouting> routing = nullptr;
   Ipv6StaticRoutingHelper routingHelper;
 
   routing = routingHelper.GetStaticRouting (ipv6);

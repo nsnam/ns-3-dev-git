@@ -43,7 +43,7 @@ TraceFadingLossModel::TraceFadingLossModel ()
   : m_streamsAssigned (false)
 {
   NS_LOG_FUNCTION (this);
-  SetNext (NULL);
+  SetNext (nullptr);
 }
 
 

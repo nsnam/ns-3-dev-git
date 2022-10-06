@@ -178,7 +178,7 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (2.0),&BindSock, srcSocket3, SrcToRtr2);
   Simulator::Schedule (Seconds (2.1),&StartFlow, srcSocket3, dstaddr, dstport);
   // Fourth again as normal (goes via Rtr1)
-  Simulator::Schedule (Seconds (3.0),&BindSock, srcSocket4, Ptr<NetDevice>(0));
+  Simulator::Schedule (Seconds (3.0),&BindSock, srcSocket4, Ptr<NetDevice>(nullptr));
   Simulator::Schedule (Seconds (3.1),&StartFlow, srcSocket4, dstaddr, dstport);
   // If you uncomment what's below, it results in ASSERT failing since you can't
   // bind to a socket not existing on a node

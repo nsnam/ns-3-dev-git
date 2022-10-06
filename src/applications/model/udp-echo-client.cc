@@ -87,19 +87,19 @@ UdpEchoClient::UdpEchoClient ()
 {
   NS_LOG_FUNCTION (this);
   m_sent = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_sendEvent = EventId ();
-  m_data = 0;
+  m_data = nullptr;
   m_dataSize = 0;
 }
 
 UdpEchoClient::~UdpEchoClient()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
+  m_socket = nullptr;
 
   delete [] m_data;
-  m_data = 0;
+  m_data = nullptr;
   m_dataSize = 0;
 }
 
@@ -186,7 +186,7 @@ UdpEchoClient::StopApplication ()
     {
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
-      m_socket = 0;
+      m_socket = nullptr;
     }
 
   Simulator::Cancel (m_sendEvent);
@@ -203,7 +203,7 @@ UdpEchoClient::SetDataSize (uint32_t dataSize)
   // neither will we.
   //
   delete [] m_data;
-  m_data = 0;
+  m_data = nullptr;
   m_dataSize = 0;
   m_size = dataSize;
 }

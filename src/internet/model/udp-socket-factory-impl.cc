@@ -25,7 +25,7 @@
 namespace ns3 {
 
 UdpSocketFactoryImpl::UdpSocketFactoryImpl ()
-  : m_udp (0)
+  : m_udp (nullptr)
 {
 }
 UdpSocketFactoryImpl::~UdpSocketFactoryImpl ()
@@ -48,7 +48,7 @@ UdpSocketFactoryImpl::CreateSocket ()
 void
 UdpSocketFactoryImpl::DoDispose ()
 {
-  m_udp = 0;
+  m_udp = nullptr;
   UdpSocketFactory::DoDispose ();
 }
 

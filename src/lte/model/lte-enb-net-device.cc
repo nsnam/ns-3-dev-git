@@ -142,8 +142,8 @@ TypeId LteEnbNetDevice::GetTypeId ()
 LteEnbNetDevice::LteEnbNetDevice ()
   : m_isConstructed (false),
     m_isConfigured (false),
-    m_anr (0),
-    m_componentCarrierManager(0)
+    m_anr (nullptr),
+    m_componentCarrierManager(nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -159,24 +159,24 @@ LteEnbNetDevice::DoDispose ()
   NS_LOG_FUNCTION (this);
 
   m_rrc->Dispose ();
-  m_rrc = 0;
+  m_rrc = nullptr;
 
   m_handoverAlgorithm->Dispose ();
-  m_handoverAlgorithm = 0;
+  m_handoverAlgorithm = nullptr;
 
   if (m_anr)
     {
       m_anr->Dispose ();
-      m_anr = 0;
+      m_anr = nullptr;
     }
   m_componentCarrierManager->Dispose();
-  m_componentCarrierManager = 0;
+  m_componentCarrierManager = nullptr;
   // ComponentCarrierEnb::DoDispose() will call DoDispose
   // of its PHY, MAC, FFR and scheduler instance
   for (uint32_t i = 0; i < m_ccMap.size (); i++)
     {
       m_ccMap.at (i)->Dispose ();
-      m_ccMap.at (i) = 0;
+      m_ccMap.at (i) = nullptr;
     }
 
   LteNetDevice::DoDispose ();

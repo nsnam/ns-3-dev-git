@@ -68,7 +68,7 @@ CalendarScheduler::~CalendarScheduler ()
 {
   NS_LOG_FUNCTION (this);
   delete [] m_buckets;
-  m_buckets = 0;
+  m_buckets = nullptr;
 }
 void
 CalendarScheduler::SetReverse (bool reverse)
@@ -185,7 +185,7 @@ CalendarScheduler::PeekNext () const
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
   Scheduler::Event minEvent;
-  minEvent.impl = 0;
+  minEvent.impl = nullptr;
   minEvent.key.m_ts = UINT64_MAX;
   minEvent.key.m_uid = UINT32_MAX;
   minEvent.key.m_context = 0;

@@ -117,7 +117,7 @@ NetAnimExperiment::ReceivePacket (Ptr<Socket> socket)
     {
       m_bytesTotal += packet->GetSize ();
     }
-  packet = 0;
+  packet = nullptr;
 }
 
 void
@@ -222,27 +222,27 @@ NetAnimExperiment::Run (UanHelper &uan)
     AnimationInterface anim(traceFileName.c_str ());
 
     Simulator::Run ();
-    sinkNode = 0;
-    sinkSocket = 0;
-    pos = 0;
-    channel = 0;
-    prop = 0;
+    sinkNode = nullptr;
+    sinkSocket = nullptr;
+    pos = nullptr;
+    channel = nullptr;
+    prop = nullptr;
     for (uint32_t i=0; i < nc.GetN (); i++)
       {
-        nc.Get (i) = 0;
+        nc.Get (i) = nullptr;
       }
     for (uint32_t i=0; i < sink.GetN (); i++)
       {
-        sink.Get (i) = 0;
+        sink.Get (i) = nullptr;
       }
 
     for (uint32_t i=0; i < devices.GetN (); i++)
       {
-        devices.Get (i) = 0;
+        devices.Get (i) = nullptr;
       }
     for (uint32_t i=0; i < sinkdev.GetN (); i++)
       {
-        sinkdev.Get (i) = 0;
+        sinkdev.Get (i) = nullptr;
       }
 
     Simulator::Destroy ();
@@ -297,8 +297,8 @@ main (int argc, char **argv)
 
   exp.Run (uan);
 
-  per = 0;
-  sinr = 0;
+  per = nullptr;
+  sinr = nullptr;
 
 }
 

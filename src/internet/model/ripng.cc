@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("RipNg");
 NS_OBJECT_ENSURE_REGISTERED (RipNg);
 
 RipNg::RipNg ()
-  : m_ipv6 (0), m_splitHorizonStrategy (RipNg::POISON_REVERSE), m_initialized (false)
+  : m_ipv6 (nullptr), m_splitHorizonStrategy (RipNg::POISON_REVERSE), m_initialized (false)
 {
   m_rng = CreateObject<UniformRandomVariable> ();
 }
@@ -183,7 +183,7 @@ Ptr<Ipv6Route> RipNg::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<
   NS_LOG_FUNCTION (this << header << oif);
 
   Ipv6Address destination = header.GetDestination ();
-  Ptr<Ipv6Route> rtentry = 0;
+  Ptr<Ipv6Route> rtentry = nullptr;
 
   if (destination.IsMulticast ())
     {
@@ -547,9 +547,9 @@ void RipNg::DoDispose ()
   m_unicastSocketList.clear ();
 
   m_multicastRecvSocket->Close ();
-  m_multicastRecvSocket = 0;
+  m_multicastRecvSocket = nullptr;
 
-  m_ipv6 = 0;
+  m_ipv6 = nullptr;
 
   Ipv6RoutingProtocol::DoDispose ();
 }
@@ -558,7 +558,7 @@ Ptr<Ipv6Route> RipNg::Lookup (Ipv6Address dst, bool setSource, Ptr<NetDevice> in
 {
   NS_LOG_FUNCTION (this << dst << interface);
 
-  Ptr<Ipv6Route> rtentry = 0;
+  Ptr<Ipv6Route> rtentry = nullptr;
   uint16_t longestMask = 0;
 
   /* when sending on link-local multicast, there have to be interface specified */

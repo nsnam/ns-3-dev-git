@@ -239,7 +239,7 @@ void
 RedQueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_uv = 0;
+  m_uv = nullptr;
   QueueDisc::DoDispose ();
 }
 
@@ -818,7 +818,7 @@ RedQueueDisc::DoDequeue ()
       m_idle = 1;
       m_idleTime = Simulator::Now ();
 
-      return 0;
+      return nullptr;
     }
   else
     {
@@ -841,7 +841,7 @@ RedQueueDisc::DoPeek ()
   if (GetInternalQueue (0)->IsEmpty ())
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   Ptr<const QueueDiscItem> item = GetInternalQueue (0)->Peek ();

@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumPropagationLossModel");
 NS_OBJECT_ENSURE_REGISTERED (SpectrumPropagationLossModel);
 
 SpectrumPropagationLossModel::SpectrumPropagationLossModel ()
-  : m_next (0)
+  : m_next (nullptr)
 {
 }
 
@@ -41,7 +41,7 @@ SpectrumPropagationLossModel::~SpectrumPropagationLossModel ()
 void
 SpectrumPropagationLossModel::DoDispose ()
 {
-  m_next = 0;
+  m_next = nullptr;
 }
 
 TypeId

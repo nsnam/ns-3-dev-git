@@ -194,7 +194,7 @@ public:
     /** \brief Create the link, it will be in INITIALIZING state
      *
      */
-    Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
+    Link() : m_state (INITIALIZING), m_src (nullptr), m_dst (nullptr) {}
 
     WireState                  m_state; //!< State of the link
     Ptr<PointToPointNetDevice> m_src;   //!< First NetDevice

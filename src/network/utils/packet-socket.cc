@@ -157,7 +157,7 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
     }
   else
     {
-      dev = 0;
+      dev = nullptr;
     }
   m_node->RegisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this),
                                    address.GetProtocol (), dev);
@@ -454,7 +454,7 @@ PacketSocket::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
 
   if (m_deliveryQueue.empty () )
     {
-      return 0;
+      return nullptr;
     }
   Ptr<Packet> p = m_deliveryQueue.front ().first;
   fromAddress = m_deliveryQueue.front ().second;
@@ -466,7 +466,7 @@ PacketSocket::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
     }
   else
     {
-      p = 0;
+      p = nullptr;
     }
   return p;
 }

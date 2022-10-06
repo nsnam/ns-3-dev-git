@@ -47,7 +47,7 @@ UplinkSchedulerMBQoS::UplinkSchedulerMBQoS (Time time)
 
 UplinkSchedulerMBQoS::~UplinkSchedulerMBQoS ()
 {
-  SetBs (0);
+  SetBs (nullptr);
   m_uplinkAllocations.clear ();
 }
 

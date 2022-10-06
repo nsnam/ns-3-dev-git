@@ -45,7 +45,7 @@ NS_OBJECT_ENSURE_REGISTERED (ThreeGppHttpClient);
 
 ThreeGppHttpClient::ThreeGppHttpClient ()
   : m_state (NOT_STARTED),
-  m_socket (0),
+  m_socket (nullptr),
   m_objectBytesToBeReceived (0),
   m_objectClientTs (MilliSeconds (0)),
   m_objectServerTs (MilliSeconds (0)),
@@ -714,7 +714,7 @@ ThreeGppHttpClient::Receive (Ptr<Packet> packet)
                         << " (" << m_objectBytesToBeReceived << " bytes).");
       // Stop expecting any more packet of this object.
       m_objectBytesToBeReceived = 0;
-      m_constructedPacket = NULL;
+      m_constructedPacket = nullptr;
     }
   else
     {

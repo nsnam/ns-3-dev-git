@@ -712,7 +712,7 @@ PacketMetadata::PacketMetadata (PacketMetadata const &o)
     m_used (o.m_used),
     m_packetUid (o.m_packetUid)
 {
-  NS_ASSERT (m_data != 0);
+  NS_ASSERT (m_data != nullptr);
   NS_ASSERT (m_data->m_count < std::numeric_limits<uint32_t>::max());
   m_data->m_count++;
 }
@@ -722,14 +722,14 @@ PacketMetadata::operator = (PacketMetadata const& o)
   if (m_data != o.m_data)
     {
       // not self assignment
-      NS_ASSERT (m_data != 0);
+      NS_ASSERT (m_data != nullptr);
       m_data->m_count--;
       if (m_data->m_count == 0)
         {
           PacketMetadata::Recycle (m_data);
         }
       m_data = o.m_data;
-      NS_ASSERT (m_data != 0);
+      NS_ASSERT (m_data != nullptr);
       m_data->m_count++;
     }
   m_head = o.m_head;
@@ -740,7 +740,7 @@ PacketMetadata::operator = (PacketMetadata const& o)
 }
 PacketMetadata::~PacketMetadata ()
 {
-  NS_ASSERT (m_data != 0);
+  NS_ASSERT (m_data != nullptr);
   m_data->m_count--;
   if (m_data->m_count == 0)
     {

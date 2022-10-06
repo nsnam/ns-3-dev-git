@@ -61,14 +61,14 @@ FdReader::Data FdNetDeviceFdReader::DoRead ()
   NS_LOG_FUNCTION (this);
 
   uint8_t *buf = (uint8_t *)malloc (m_bufferSize);
-  NS_ABORT_MSG_IF (buf == 0, "malloc() failed");
+  NS_ABORT_MSG_IF (buf == nullptr, "malloc() failed");
 
   NS_LOG_LOGIC ("Calling read on fd " << m_fd);
   ssize_t len = read (m_fd, buf, m_bufferSize);
   if (len <= 0)
     {
       free (buf);
-      buf = 0;
+      buf = nullptr;
       len = 0;
     }
   NS_LOG_LOGIC ("Read " << len << " bytes on fd " << m_fd);
@@ -166,12 +166,12 @@ FdNetDevice::GetTypeId ()
 }
 
 FdNetDevice::FdNetDevice ()
-  : m_node (0),
+  : m_node (nullptr),
     m_ifIndex (0),
     // Defaults to Ethernet v2 MTU
     m_mtu (1500),
     m_fd (-1),
-    m_fdReader (0),
+    m_fdReader (nullptr),
     m_isBroadcast (true),
     m_isMulticast (false),
     m_startEvent (),
@@ -287,7 +287,7 @@ FdNetDevice::StopDevice ()
   if (m_fdReader)
     {
       m_fdReader->Stop ();
-      m_fdReader = 0;
+      m_fdReader = nullptr;
     }
 
   if (m_fd != -1)
@@ -330,7 +330,7 @@ FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
       struct timespec time = {
         0, 100000000L
       };                                        // 100 ms
-      nanosleep (&time, NULL);
+      nanosleep (&time, nullptr);
     }
   else
     {
@@ -419,7 +419,7 @@ FdNetDevice::ForwardUp ()
 {
   NS_LOG_FUNCTION (this);
 
-  uint8_t *buf = 0;
+  uint8_t *buf = nullptr;
   ssize_t len = 0;
 
   if (m_pendingQueue.empty())
@@ -450,7 +450,7 @@ FdNetDevice::ForwardUp ()
   //
   Ptr<Packet> packet = Create<Packet> (reinterpret_cast<const uint8_t *> (buf), len);
   FreeBuffer (buf);
-  buf = 0;
+  buf = nullptr;
 
   //
   // Trace sinks will expect complete packets, not packets without some of the
@@ -703,7 +703,7 @@ FdNetDevice::GetIfIndex () const
 Ptr<Channel>
 FdNetDevice::GetChannel () const
 {
-  return NULL;
+  return nullptr;
 }
 
 bool

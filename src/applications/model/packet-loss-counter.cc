@@ -32,7 +32,7 @@ PacketLossCounter::PacketLossCounter (uint8_t bitmapSize)
   : m_lost (0),
     m_bitMapSize (0),
     m_lastMaxSeqNum (0),
-    m_receiveBitMap (0)
+    m_receiveBitMap (nullptr)
 {
   NS_LOG_FUNCTION (this << bitmapSize);
   SetBitMapSize (bitmapSize);
@@ -58,7 +58,7 @@ PacketLossCounter::SetBitMapSize (uint16_t winSize)
 
   NS_ASSERT_MSG (winSize%8==0,"The packet window size should be a multiple of 8");
   m_bitMapSize = winSize/8;
-  if (m_receiveBitMap!=0)
+  if (m_receiveBitMap!=nullptr)
     {
       delete [] m_receiveBitMap;
     }

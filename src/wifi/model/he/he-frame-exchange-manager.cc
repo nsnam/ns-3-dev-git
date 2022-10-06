@@ -85,11 +85,11 @@ void
 HeFrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_apMac = 0;
-  m_staMac = 0;
+  m_apMac = nullptr;
+  m_staMac = nullptr;
   m_psduMap.clear ();
   m_txParams.Clear ();
-  m_muScheduler = 0;
+  m_muScheduler = nullptr;
   m_multiStaBaEvent.Cancel ();
   VhtFrameExchangeManager::DoDispose ();
 }

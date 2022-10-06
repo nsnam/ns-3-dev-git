@@ -141,7 +141,7 @@ SystemWallClockMs::~SystemWallClockMs ()
 {
   NS_LOG_FUNCTION (this);
   delete m_priv;
-  m_priv = 0;
+  m_priv = nullptr;
 }
 
 void

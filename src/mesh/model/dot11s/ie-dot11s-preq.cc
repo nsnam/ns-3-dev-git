@@ -375,7 +375,7 @@ IePreq::ClearDestinationAddressElements ()
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j
        != m_destinations.end (); j++)
     {
-      (*j) = 0;
+      (*j) = nullptr;
     }
   m_destinations.clear ();
   m_destCount = 0;

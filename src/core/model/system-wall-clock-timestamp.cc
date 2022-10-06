@@ -38,7 +38,7 @@ SystemWallClockTimestamp::SystemWallClockTimestamp ()
 void
 SystemWallClockTimestamp::Stamp ()
 {
-  std::time_t seconds  = std::time (NULL);
+  std::time_t seconds  = std::time (nullptr);
   m_diff = seconds - m_last;
   m_last = seconds;
 }

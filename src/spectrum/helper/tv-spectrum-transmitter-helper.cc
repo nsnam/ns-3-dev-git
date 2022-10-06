@@ -96,7 +96,7 @@ const double japanEndFrequencies[63] = {0, 96e6, 102e6, 108e6, 176e6, 182e6,
   764e6, 770e6};
 
 TvSpectrumTransmitterHelper::TvSpectrumTransmitterHelper ()
-  : m_channel (0),
+  : m_channel (nullptr),
     m_uniRand (CreateObject<UniformRandomVariable> ())
 {
   NS_LOG_FUNCTION (this);
@@ -105,8 +105,8 @@ TvSpectrumTransmitterHelper::TvSpectrumTransmitterHelper ()
 
 TvSpectrumTransmitterHelper::~TvSpectrumTransmitterHelper ()
 {
-  m_channel = 0;
-  m_uniRand = 0;
+  m_channel = nullptr;
+  m_uniRand = nullptr;
   NS_LOG_FUNCTION (this);
 }
 

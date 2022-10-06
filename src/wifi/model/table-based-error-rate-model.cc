@@ -69,7 +69,7 @@ TableBasedErrorRateModel::TableBasedErrorRateModel ()
 TableBasedErrorRateModel::~TableBasedErrorRateModel ()
 {
   NS_LOG_FUNCTION (this);
-  m_fallbackErrorModel = 0;
+  m_fallbackErrorModel = nullptr;
 }
 
 

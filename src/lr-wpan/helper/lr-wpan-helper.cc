@@ -94,7 +94,7 @@ LrWpanHelper::LrWpanHelper (bool useMultiModelSpectrumChannel)
 LrWpanHelper::~LrWpanHelper ()
 {
   m_channel->Dispose ();
-  m_channel = 0;
+  m_channel = nullptr;
 }
 
 void

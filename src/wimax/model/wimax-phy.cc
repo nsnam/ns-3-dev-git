@@ -84,7 +84,7 @@ WimaxPhy::WimaxPhy ()
     m_psPerFrame (0),
     m_symbolsPerFrame (0)
 {
-  m_mobility = 0;
+  m_mobility = nullptr;
   m_duplex = 0;
   m_txFrequency = 0;
   m_rxFrequency = 0;
@@ -98,8 +98,8 @@ WimaxPhy::~WimaxPhy ()
 void
 WimaxPhy::DoDispose ()
 {
-  m_device = 0;
-  m_channel = 0;
+  m_device = nullptr;
+  m_channel = nullptr;
 }
 
 void

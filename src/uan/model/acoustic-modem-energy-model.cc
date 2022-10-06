@@ -77,8 +77,8 @@ AcousticModemEnergyModel::AcousticModemEnergyModel ()
   m_currentState = UanPhy::IDLE;  // initially IDLE
   m_lastUpdateTime = Seconds (0.0);
   m_energyDepletionCallback.Nullify ();
-  m_node = 0;
-  m_source = 0;
+  m_node = nullptr;
+  m_source = nullptr;
 }
 
 AcousticModemEnergyModel::~AcousticModemEnergyModel ()
@@ -304,8 +304,8 @@ void
 AcousticModemEnergyModel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
-  m_source = 0;
+  m_node = nullptr;
+  m_source = nullptr;
   m_energyDepletionCallback.Nullify ();
 }
 

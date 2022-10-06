@@ -78,12 +78,12 @@ static bool initialized = false; //!< Initialization flag
 // Public methods
 
 AnimationInterface::AnimationInterface (const std::string fn)
-  : m_f (0),
-    m_routingF (0),
+  : m_f (nullptr),
+    m_routingF (nullptr),
     m_mobilityPollInterval (Seconds (0.25)),
     m_outputFileName (fn),
     gAnimUid (0),
-    m_writeCallback (0),
+    m_writeCallback (nullptr),
     m_started (false),
     m_enablePacketMetadata (false),
     m_startTime (Seconds (0)),
@@ -311,7 +311,7 @@ AnimationInterface::SetAnimWriteCallback (AnimWriteCallback cb)
 void
 AnimationInterface::ResetAnimWriteCallback ()
 {
-  m_writeCallback = 0;
+  m_writeCallback = nullptr;
 }
 
 void
@@ -963,7 +963,7 @@ AnimationInterface::WifiPhyRxBeginTrace (std::string context, Ptr<const Packet> 
         }
       Ptr <Node> txNode = NodeList::GetNode (m_macToNodeIdMap[oss.str ()]);
       UpdatePosition (txNode);
-      AnimPacketInfo pktInfo (0, Simulator::Now (), m_macToNodeIdMap[oss.str ()]);
+      AnimPacketInfo pktInfo (nullptr, Simulator::Now (), m_macToNodeIdMap[oss.str ()]);
       AddPendingPacket (AnimationInterface::WIFI, animUid, pktInfo);
       NS_LOG_WARN ("WifiPhyRxBegin: unknown Uid, but we are adding a wifi packet");
     }
@@ -1088,7 +1088,7 @@ AnimationInterface::WavePhyRxBeginTrace (std::string context, Ptr<const Packet> 
         }
       Ptr <Node> txNode = NodeList::GetNode (m_macToNodeIdMap[oss.str ()]);
       UpdatePosition (txNode);
-      AnimPacketInfo pktInfo (0, Simulator::Now (), m_macToNodeIdMap[oss.str ()]);
+      AnimPacketInfo pktInfo (nullptr, Simulator::Now (), m_macToNodeIdMap[oss.str ()]);
       AddPendingPacket (AnimationInterface::WAVE, animUid, pktInfo);
       NS_LOG_WARN ("WavePhyRxBegin: unknown Uid, but we are adding a wave packet");
     }
@@ -1365,7 +1365,7 @@ AnimationInterface::PurgePendingPackets (AnimationInterface::ProtocolType protoc
 AnimationInterface::AnimUidPacketInfoMap *
 AnimationInterface::ProtocolTypeToPendingPackets (AnimationInterface::ProtocolType protocolType)
 {
-  AnimUidPacketInfoMap * pendingPackets = 0;
+  AnimUidPacketInfoMap * pendingPackets = nullptr;
   switch (protocolType)
     {
     case AnimationInterface::WIFI:
@@ -1502,7 +1502,7 @@ AnimationInterface::StopAnimation (bool onlyAnimation)
       // Terminate the anim element
       WriteXmlClose ("anim");
       std::fclose (m_f);
-      m_f = 0;
+      m_f = nullptr;
     }
   if (onlyAnimation)
     {
@@ -1512,7 +1512,7 @@ AnimationInterface::StopAnimation (bool onlyAnimation)
     {
       WriteXmlClose ("anim", true);
       std::fclose (m_routingF);
-      m_routingF = 0;
+      m_routingF = nullptr;
     }
 }
 
@@ -2143,7 +2143,7 @@ AnimationInterface::SetOutputFile (const std::string& fn, bool routing)
     }
 
   NS_LOG_INFO ("Creating new trace file:" << fn.c_str ());
-  FILE * f = 0;
+  FILE * f = nullptr;
   f = std::fopen (fn.c_str (), "w");
   if (!f)
     {
@@ -2295,7 +2295,7 @@ AnimationInterface::TrackIpv4RoutePaths ()
       Ipv4Header header;
       header.SetDestination (Ipv4Address (trackElement.destination.c_str ()));
       Socket::SocketErrno sockerr;
-      Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, 0, sockerr);
+      Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, nullptr, sockerr);
       Ipv4RoutePathElements rpElements;
       if (!rt)
         {
@@ -2423,7 +2423,7 @@ AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::string 
   Ipv4Header header;
   header.SetDestination (Ipv4Address (to.c_str ()));
   Socket::SocketErrno sockerr;
-  Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, 0, sockerr);
+  Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, nullptr, sockerr);
   if (!rt)
     {
       return;
@@ -2935,7 +2935,7 @@ AnimByteTag::Get () const
 }
 
 AnimationInterface::AnimPacketInfo::AnimPacketInfo ()
-  : m_txnd (0),
+  : m_txnd (nullptr),
     m_txNodeId (0),
     m_fbTx (0),
     m_lbTx (0),

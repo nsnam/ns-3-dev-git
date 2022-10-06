@@ -140,12 +140,12 @@ UanPhyDual::Clear ()
   if (m_phy1)
     {
       m_phy1->Clear ();
-      m_phy1 = 0;
+      m_phy1 = nullptr;
     }
   if (m_phy2)
     {
       m_phy2->Clear ();
-      m_phy2 = 0;
+      m_phy2 = nullptr;
     }
 }
 void

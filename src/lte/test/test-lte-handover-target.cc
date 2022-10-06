@@ -155,7 +155,7 @@ LteHandoverTargetTestCase::LteHandoverTargetTestCase (std::string name, Vector u
     m_sourceCellId (sourceCellId),
     m_targetCellId (targetCellId),
     m_handoverAlgorithmType (handoverAlgorithmType),
-    m_sourceEnbDev (0),
+    m_sourceEnbDev (nullptr),
     m_hasHandoverOccurred (false)
 {
   NS_LOG_INFO (this << " name=" << name);

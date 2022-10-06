@@ -155,13 +155,13 @@ LteSpectrumPhy::~LteSpectrumPhy ()
 void LteSpectrumPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_channel = 0;
-  m_mobility = 0;
-  m_device = 0;
+  m_channel = nullptr;
+  m_mobility = nullptr;
+  m_device = nullptr;
   m_interferenceData->Dispose ();
-  m_interferenceData = 0;
+  m_interferenceData = nullptr;
   m_interferenceCtrl->Dispose ();
-  m_interferenceCtrl = 0;
+  m_interferenceCtrl = nullptr;
   m_ltePhyRxDataEndErrorCallback = MakeNullCallback< void > ();
   m_ltePhyRxDataEndOkCallback    = MakeNullCallback< void, Ptr<Packet> >  ();
   m_ltePhyRxCtrlEndOkCallback = MakeNullCallback< void, std::list<Ptr<LteControlMessage> > > ();
@@ -346,8 +346,8 @@ LteSpectrumPhy::Reset ()
   m_expectedTbs.clear ();
   m_txControlMessageList.clear ();
   m_rxPacketBurstList.clear ();
-  m_txPacketBurst = 0;
-  m_rxSpectrumModel = 0;
+  m_txPacketBurst = nullptr;
+  m_rxSpectrumModel = nullptr;
 
   // Detach from the channel, because receiving any signal without
   // spectrum model is an error.
@@ -629,7 +629,7 @@ LteSpectrumPhy::EndTxData ()
 
   NS_ASSERT (m_state == TX_DATA);
   m_phyTxEndTrace (m_txPacketBurst);
-  m_txPacketBurst = 0;
+  m_txPacketBurst = nullptr;
   ChangeState (IDLE);
 }
 

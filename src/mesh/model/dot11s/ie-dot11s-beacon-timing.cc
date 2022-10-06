@@ -118,7 +118,7 @@ IeBeaconTiming::ClearTimingElement ()
 {
   for (NeighboursTimingUnitsList::iterator j = m_neighbours.begin (); j != m_neighbours.end (); j++)
     {
-      (*j) = 0;
+      (*j) = nullptr;
     }
   m_neighbours.clear ();
 }

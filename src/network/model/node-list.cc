@@ -130,7 +130,7 @@ Ptr<NodeListPriv> *
 NodeListPriv::DoGet ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  static Ptr<NodeListPriv> ptr = 0;
+  static Ptr<NodeListPriv> ptr = nullptr;
   if (!ptr)
     {
       ptr = CreateObject<NodeListPriv> ();
@@ -144,7 +144,7 @@ NodeListPriv::Delete ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::UnregisterRootNamespaceObject (Get ());
-  (*DoGet ()) = 0;
+  (*DoGet ()) = nullptr;
 }
 
 
@@ -165,7 +165,7 @@ NodeListPriv::DoDispose ()
     {
       Ptr<Node> node = *i;
       node->Dispose ();
-      *i = 0;
+      *i = nullptr;
     }
   m_nodes.erase (m_nodes.begin (), m_nodes.end ());
   Object::DoDispose ();

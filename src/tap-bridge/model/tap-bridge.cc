@@ -56,7 +56,7 @@ FdReader::Data TapBridgeFdReader::DoRead ()
 
   uint32_t bufferSize = 65536;
   uint8_t *buf = (uint8_t *)std::malloc (bufferSize);
-  NS_ABORT_MSG_IF (buf == 0, "malloc() failed");
+  NS_ABORT_MSG_IF (buf == nullptr, "malloc() failed");
 
   NS_LOG_LOGIC ("Calling read on tap device fd " << m_fd);
   ssize_t len = read (m_fd, buf, bufferSize);
@@ -64,7 +64,7 @@ FdReader::Data TapBridgeFdReader::DoRead ()
     {
       NS_LOG_INFO ("TapBridgeFdReader::DoRead(): done");
       std::free (buf);
-      buf = 0;
+      buf = nullptr;
       len = 0;
     }
 
@@ -142,12 +142,12 @@ TapBridge::GetTypeId ()
 }
 
 TapBridge::TapBridge ()
-  : m_node (0),
+  : m_node (nullptr),
     m_ifIndex (0),
     m_sock (-1),
     m_startEvent (),
     m_stopEvent (),
-    m_fdReader (0),
+    m_fdReader (nullptr),
     m_ns3AddressRewritten (false)
 {
   NS_LOG_FUNCTION (this);
@@ -162,9 +162,9 @@ TapBridge::~TapBridge()
   StopTapDevice ();
 
   delete [] m_packetBuffer;
-  m_packetBuffer = 0;
+  m_packetBuffer = nullptr;
 
-  m_bridgedDevice = 0;
+  m_bridgedDevice = nullptr;
 }
 
 void
@@ -247,7 +247,7 @@ TapBridge::StopTapDevice ()
   if (m_fdReader)
     {
       m_fdReader->Stop ();
-      m_fdReader = 0;
+      m_fdReader = nullptr;
     }
 
   if (m_sock != -1)
@@ -526,7 +526,7 @@ TapBridge::CreateTap ()
                          ossMode.str ().c_str (),             // argv[6] (-o<operating mode>)
                          ossPath.str ().c_str (),             // argv[7] (-p<path>)
                          ossVerbose.str ().c_str (),          // argv[8] (-v)
-                         (char *)NULL);
+                         (char *)nullptr);
 
       //
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
@@ -610,7 +610,7 @@ TapBridge::CreateTap ()
       // data we expect to receive and point it to buffer.
       //
       struct msghdr msg;
-      msg.msg_name = 0;
+      msg.msg_name = nullptr;
       msg.msg_namelen = 0;
       msg.msg_iov = &iov;
       msg.msg_iovlen = 1;
@@ -631,7 +631,7 @@ TapBridge::CreateTap ()
       // one we're interested in.
       //
       struct cmsghdr *cmsg;
-      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != NULL; cmsg = CMSG_NXTHDR (&msg, cmsg))
+      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != nullptr; cmsg = CMSG_NXTHDR (&msg, cmsg))
         {
           if (cmsg->cmsg_level == SOL_SOCKET &&
               cmsg->cmsg_type == SCM_RIGHTS)
@@ -655,7 +655,7 @@ TapBridge::CreateTap ()
                 }
             }
         }
-      if (cmsg == NULL)
+      if (cmsg == nullptr)
         {
           NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
         }
@@ -697,7 +697,7 @@ TapBridge::ReadCallback (uint8_t *buf, ssize_t len)
 {
   NS_LOG_FUNCTION (this << buf << len);
 
-  NS_ASSERT_MSG (buf != 0, "invalid buf argument");
+  NS_ASSERT_MSG (buf != nullptr, "invalid buf argument");
   NS_ASSERT_MSG (len > 0, "invalid len argument");
 
   //
@@ -751,7 +751,7 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, ssize_t len)
   //
   Ptr<Packet> packet = Create<Packet> (reinterpret_cast<const uint8_t *> (buf), len);
   std::free (buf);
-  buf = 0;
+  buf = nullptr;
 
   //
   // Make sure the packet we received is reasonable enough for the rest of the
@@ -860,7 +860,7 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
   EthernetHeader header (false);
   if (pktSize < header.GetSerializedSize ())
     {
-      return 0;
+      return nullptr;
     }
 
   uint32_t headerSize = p->PeekHeader (header);
@@ -885,7 +885,7 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
       LlcSnapHeader llc;
       if (pktSize < llc.GetSerializedSize ())
         {
-          return 0;
+          return nullptr;
         }
 
       p->RemoveHeader (llc);
@@ -1044,7 +1044,7 @@ Ptr<Channel>
 TapBridge::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
-  return 0;
+  return nullptr;
 }
 
 void

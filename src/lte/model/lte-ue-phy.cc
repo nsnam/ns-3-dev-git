@@ -154,8 +154,8 @@ LteUePhy::LteUePhy ()
 
 LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_uePhySapUser (0),
-    m_ueCphySapUser (0),
+    m_uePhySapUser (nullptr),
+    m_ueCphySapUser (nullptr),
     m_state (CELL_SEARCH),
     m_subframeNo (0),
     m_rsReceivedPowerUpdated (false),

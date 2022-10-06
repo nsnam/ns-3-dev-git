@@ -227,7 +227,7 @@ SendSocket (const char *path, int fd)
   // for.
   //
   struct msghdr msg;
-  msg.msg_name = 0;
+  msg.msg_name = nullptr;
   msg.msg_namelen = 0;
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
@@ -355,12 +355,12 @@ main (int argc, char *argv[])
 {
   int c;
   char *dev = (char *)"";
-  char *gw = NULL;
-  char *ip = NULL;
-  char *mac = NULL;
-  char *netmask = NULL;
-  char *operatingMode = NULL;
-  char *path = NULL;
+  char *gw = nullptr;
+  char *ip = nullptr;
+  char *mac = nullptr;
+  char *netmask = nullptr;
+  char *operatingMode = nullptr;
+  char *path = nullptr;
 
   opterr = 0;
 
@@ -408,7 +408,7 @@ main (int argc, char *argv[])
   // so it can talk to the ns-3 network.  This ip address is provided in
   // gw.
   //
-  ABORT_IF (gw == NULL, "Gateway Address is a required argument", 0);
+  ABORT_IF (gw == nullptr, "Gateway Address is a required argument", 0);
   LOG ("Provided Gateway Address is \"" << gw << "\"");
 
   //
@@ -416,7 +416,7 @@ main (int argc, char *argv[])
   // allocating.  This address is allocated in the simulation and assigned to
   // the tap bridge.  This address is given in ip.
   //
-  ABORT_IF (ip == NULL, "IP Address is a required argument", 0);
+  ABORT_IF (ip == nullptr, "IP Address is a required argument", 0);
   LOG ("Provided IP Address is \"" << ip << "\"");
 
   //
@@ -425,7 +425,7 @@ main (int argc, char *argv[])
   // the bridged device.  This allows packets addressed to the bridged device
   // to appear in the Linux host as if they were received there.
   //
-  ABORT_IF (mac == NULL, "MAC Address is a required argument", 0);
+  ABORT_IF (mac == nullptr, "MAC Address is a required argument", 0);
   LOG ("Provided MAC Address is \"" << mac << "\"");
 
   //
@@ -433,13 +433,13 @@ main (int argc, char *argv[])
   // allocating.  This mask is allocated in the simulation and given to
   // the bridged device.
   //
-  ABORT_IF (netmask == NULL, "Net Mask is a required argument", 0);
+  ABORT_IF (netmask == nullptr, "Net Mask is a required argument", 0);
   LOG ("Provided Net Mask is \"" << netmask << "\"");
 
   //
   // We have got to know whether or not to create the TAP.
   //
-  ABORT_IF (operatingMode == NULL, "Operating Mode is a required argument", 0);
+  ABORT_IF (operatingMode == nullptr, "Operating Mode is a required argument", 0);
   LOG ("Provided Operating Mode is \"" << operatingMode << "\"");
 
   //
@@ -453,7 +453,7 @@ main (int argc, char *argv[])
   // us.  We see it here as the "path" string.  We can't do anything useful
   // unless we have that string.
   //
-  ABORT_IF (path == NULL, "path is a required argument", 0);
+  ABORT_IF (path == nullptr, "path is a required argument", 0);
   LOG ("Provided path is \"" << path << "\"");
 
   //

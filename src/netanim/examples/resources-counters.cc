@@ -28,7 +28,7 @@
 
 using namespace ns3;
 
-AnimationInterface * pAnim = 0;
+AnimationInterface * pAnim = nullptr;
 
 /// RGB struture
 struct rgb {

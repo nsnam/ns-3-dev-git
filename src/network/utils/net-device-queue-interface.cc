@@ -52,9 +52,9 @@ NetDeviceQueue::~NetDeviceQueue ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_queueLimits = 0;
+  m_queueLimits = nullptr;
   m_wakeCallback.Nullify ();
-  m_device = 0;
+  m_device = nullptr;
 }
 
 bool

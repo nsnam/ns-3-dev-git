@@ -370,10 +370,10 @@ LteTestMac::GetTypeId ()
 LteTestMac::LteTestMac ()
 {
   NS_LOG_FUNCTION (this);
-  m_device = 0;
+  m_device = nullptr;
   m_macSapProvider = new EnbMacMemberLteMacSapProvider<LteTestMac> (this);
-  m_macSapUser = 0;
-  m_macLoopback = 0;
+  m_macSapUser = nullptr;
+  m_macLoopback = nullptr;
   m_pdcpHeaderPresent = false;
   m_rlcHeaderType = UM_RLC_HEADER;
   m_txOpportunityMode = MANUAL_MODE;
@@ -406,7 +406,7 @@ LteTestMac::DoDispose ()
 //   delete m_cschedSapUser;
 //   delete m_enbPhySapUser;
 
-  m_device = 0;
+  m_device = nullptr;
 }
 
 void
@@ -682,7 +682,7 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
 NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc);
 
 EpcTestRrc::EpcTestRrc ()
-  : m_s1SapProvider (0)
+  : m_s1SapProvider (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_s1SapUser = new MemberEpcEnbS1SapUser<EpcTestRrc> (this);

@@ -202,8 +202,8 @@ public:
 Ipv6FragmentationTest::Ipv6FragmentationTest ()
   : TestCase ("Verify the IPv6 layer 3 protocol fragmentation and reassembly")
 {
-  m_socketServer = 0;
-  m_data = 0;
+  m_socketServer = nullptr;
+  m_data = nullptr;
   m_dataSize = 0;
   m_size = 0;
   m_icmpType = 0;
@@ -216,7 +216,7 @@ Ipv6FragmentationTest::~Ipv6FragmentationTest ()
     {
       delete[] m_data;
     }
-  m_data = 0;
+  m_data = nullptr;
   m_dataSize = 0;
 }
 

@@ -73,7 +73,7 @@ namespace {
 std::list<std::ostream*> ** PeekStreamList ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  static std::list<std::ostream*> *streams = 0;
+  static std::list<std::ostream*> *streams = nullptr;
   return &streams;
 }
 
@@ -87,7 +87,7 @@ std::list<std::ostream*> * GetStreamList ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::list<std::ostream*> **pstreams = PeekStreamList ();
-  if (*pstreams == 0)
+  if (*pstreams == nullptr)
     {
       *pstreams = new std::list<std::ostream*> ();
     }
@@ -108,7 +108,7 @@ UnregisterStream (std::ostream* stream)
 {
   NS_LOG_FUNCTION (stream);
   std::list<std::ostream*> **pl = PeekStreamList ();
-  if (*pl == 0)
+  if (*pl == nullptr)
     {
       return;
     }
@@ -116,7 +116,7 @@ UnregisterStream (std::ostream* stream)
   if ((*pl)->empty ())
     {
       delete *pl;
-      *pl = 0;
+      *pl = nullptr;
     }
 }
 
@@ -150,7 +150,7 @@ FlushStreams ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::list<std::ostream*> **pl = PeekStreamList ();
-  if (*pl == 0)
+  if (*pl == nullptr)
     {
       return;
     }
@@ -162,7 +162,7 @@ FlushStreams ()
    * duration of this function. */
   struct sigaction hdl;
   hdl.sa_handler = sigHandler;
-  sigaction (SIGSEGV, &hdl, 0);
+  sigaction (SIGSEGV, &hdl, nullptr);
 
   std::list<std::ostream*> *l = *pl;
 
@@ -176,10 +176,10 @@ FlushStreams ()
 
   /* Restore default SIGSEGV handler (Not that it matters anyway) */
   hdl.sa_handler = SIG_DFL;
-  sigaction (SIGSEGV, &hdl, 0);
+  sigaction (SIGSEGV, &hdl, nullptr);
 
   /* Flush all opened FILE* */
-  std::fflush (0);
+  std::fflush (nullptr);
 
   /* Flush stdandard streams - shouldn't be required (except for clog) */
   std::cout.flush ();
@@ -187,7 +187,7 @@ FlushStreams ()
   std::clog.flush ();
 
   delete l;
-  *pl = 0;
+  *pl = nullptr;
 }
 
 } // namespace FatalImpl

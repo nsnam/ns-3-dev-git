@@ -142,10 +142,10 @@ void
 Txop::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_queue = 0;
-  m_mac = 0;
-  m_rng = 0;
-  m_txMiddle = 0;
+  m_queue = nullptr;
+  m_mac = nullptr;
+  m_rng = nullptr;
+  m_txMiddle = nullptr;
   m_links.clear ();
 }
 

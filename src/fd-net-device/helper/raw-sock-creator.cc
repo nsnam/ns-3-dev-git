@@ -43,7 +43,7 @@ int
 main (int argc, char *argv[])
 {
   int c;
-  char *path = NULL;
+  char *path = nullptr;
 
   opterr = 0;
 
@@ -71,7 +71,7 @@ main (int argc, char *argv[])
   // us.  We see it here as the "path" string.  We can't do anything useful
   // unless we have that string.
   //
-  ABORT_IF (path == NULL, "path is a required argument", 0);
+  ABORT_IF (path == nullptr, "path is a required argument", 0);
   LOG ("Provided path is \"" << path << "\"");
   //
   // The whole reason for all of the hoops we went through to call out to this

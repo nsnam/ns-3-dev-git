@@ -31,8 +31,8 @@ NS_OBJECT_ENSURE_REGISTERED (LteFfrSimple);
 
 
 LteFfrSimple::LteFfrSimple ()
-  : m_ffrSapUser (0),
-    m_ffrRrcSapUser (0),
+  : m_ffrSapUser (nullptr),
+    m_ffrRrcSapUser (nullptr),
     m_dlOffset (0),
     m_dlSubBand (0),
     m_ulOffset (0),

@@ -48,13 +48,13 @@ BurstProfileManager::BurstProfileManager (Ptr<WimaxNetDevice> device)
 
 BurstProfileManager::~BurstProfileManager ()
 {
-  m_device = 0;
+  m_device = nullptr;
 }
 
 void
 BurstProfileManager::DoDispose ()
 {
-  m_device = 0;
+  m_device = nullptr;
 }
 
 

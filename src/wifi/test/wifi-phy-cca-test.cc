@@ -228,7 +228,7 @@ void
 WifiPhyCcaThresholdsTest::DoTeardown ()
 {
   m_device->Dispose ();
-  m_device = 0;
+  m_device = nullptr;
 }
 
 void

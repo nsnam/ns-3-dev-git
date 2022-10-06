@@ -605,7 +605,7 @@ PacketTest::DoRun ()
   // force caching a buffer of the right size.
   frag0 = Create<Packet> (1000);
   frag0->AddHeader (ATestHeader<10> ());
-  frag0 = 0;
+  frag0 = nullptr;
 
   p = Create<Packet> (1000);
   p->AddByteTag (ATestTag<20> ());
@@ -613,7 +613,7 @@ PacketTest::DoRun ()
   frag0 = p->CreateFragment (10, 90);
   CHECK (p, 1, E (20, 0, 1000));
   CHECK (frag0, 1, E (20, 0, 90));
-  p = 0;
+  p = nullptr;
   frag0->AddHeader (ATestHeader<10> ());
   CHECK (frag0, 1, E (20, 10, 100));
 
@@ -900,7 +900,7 @@ private:
    */
   int RemoveTime (const PacketTagList & ref,
                   ATestTagBase & t,
-                  const char * msg = 0);
+                  const char * msg = nullptr);
 
   /**
    * Prints the remove time

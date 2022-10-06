@@ -220,7 +220,7 @@ public:
    */
   void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
                    const Address &saddr, const Address &daddr,
-                   Ptr<NetDevice> oif = 0) const;
+                   Ptr<NetDevice> oif = nullptr) const;
 
   /**
    * \brief Make a socket fully operational
@@ -339,7 +339,7 @@ private:
    */
   void SendPacketV4 (Ptr<Packet> pkt, const TcpHeader &outgoing,
                      const Ipv4Address &saddr, const Ipv4Address &daddr,
-                     Ptr<NetDevice> oif = 0) const;
+                     Ptr<NetDevice> oif = nullptr) const;
 
   /**
    * \brief Send a packet via TCP (IPv6)
@@ -352,7 +352,7 @@ private:
    */
   void SendPacketV6 (Ptr<Packet> pkt, const TcpHeader &outgoing,
                      const Ipv6Address &saddr, const Ipv6Address &daddr,
-                     Ptr<NetDevice> oif = 0) const;
+                     Ptr<NetDevice> oif = nullptr) const;
 };
 
 } // namespace ns3

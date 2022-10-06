@@ -40,7 +40,7 @@ NS_OBJECT_ENSURE_REGISTERED (UplinkSchedulerSimple);
 
 UplinkSchedulerSimple::UplinkSchedulerSimple ()
 {
-  SetBs (0);
+  SetBs (nullptr);
   SetTimeStampIrInterval (Seconds (0));
   SetNrIrOppsAllocated (0);
   SetIsIrIntrvlAllocated (false);
@@ -62,7 +62,7 @@ UplinkSchedulerSimple::UplinkSchedulerSimple (Ptr<BaseStationNetDevice> bs)
 
 UplinkSchedulerSimple::~UplinkSchedulerSimple ()
 {
-  SetBs (0);
+  SetBs (nullptr);
   m_uplinkAllocations.clear ();
 }
 

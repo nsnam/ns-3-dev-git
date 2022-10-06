@@ -46,8 +46,8 @@ static const Time RRC_IDEAL_MSG_DELAY = MilliSeconds (0);
 NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolIdeal);
 
 LteUeRrcProtocolIdeal::LteUeRrcProtocolIdeal ()
-  :  m_ueRrcSapProvider (0),
-     m_enbRrcSapProvider (0)
+  :  m_ueRrcSapProvider (nullptr),
+     m_enbRrcSapProvider (nullptr)
 {
   m_ueRrcSapUser = new MemberLteUeRrcSapUser<LteUeRrcProtocolIdeal> (this);
 }
@@ -61,7 +61,7 @@ LteUeRrcProtocolIdeal::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_ueRrcSapUser;
-  m_rrc = 0;
+  m_rrc = nullptr;
 }
 
 TypeId
@@ -238,7 +238,7 @@ LteUeRrcProtocolIdeal::SetEnbRrcSapProvider ()
 NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolIdeal);
 
 LteEnbRrcProtocolIdeal::LteEnbRrcProtocolIdeal ()
-  :  m_enbRrcSapProvider (0)
+  :  m_enbRrcSapProvider (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_enbRrcSapUser = new MemberLteEnbRrcSapUser<LteEnbRrcProtocolIdeal> (this);
@@ -344,7 +344,7 @@ LteEnbRrcProtocolIdeal::DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParam
   // just create empty entry, the UeRrcSapProvider will be set by the
   // ue upon connection request or connection reconfiguration
   // completed
-  m_enbRrcSapProviderMap[rnti] = 0;
+  m_enbRrcSapProviderMap[rnti] = nullptr;
 
 }
 

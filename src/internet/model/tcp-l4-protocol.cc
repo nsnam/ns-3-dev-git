@@ -163,19 +163,19 @@ TcpL4Protocol::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_sockets.clear ();
 
-  if (m_endPoints != 0)
+  if (m_endPoints != nullptr)
     {
       delete m_endPoints;
-      m_endPoints = 0;
+      m_endPoints = nullptr;
     }
 
-  if (m_endPoints6 != 0)
+  if (m_endPoints6 != nullptr)
     {
       delete m_endPoints6;
-      m_endPoints6 = 0;
+      m_endPoints6 = nullptr;
     }
 
-  m_node = 0;
+  m_node = nullptr;
   m_downTarget.Nullify ();
   m_downTarget6.Nullify ();
   IpL4Protocol::DoDispose ();
@@ -326,7 +326,7 @@ TcpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
   dst |= payload[3];
 
   Ipv4EndPoint *endPoint = m_endPoints->SimpleLookup (payloadSource, src, payloadDestination, dst);
-  if (endPoint != 0)
+  if (endPoint != nullptr)
     {
       endPoint->ForwardIcmp (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
     }
@@ -353,7 +353,7 @@ TcpL4Protocol::ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
   dst |= payload[3];
 
   Ipv6EndPoint *endPoint = m_endPoints6->SimpleLookup (payloadSource, src, payloadDestination, dst);
-  if (endPoint != 0)
+  if (endPoint != nullptr)
     {
       endPoint->ForwardIcmp (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
     }
@@ -593,7 +593,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
       else
         {
           NS_LOG_ERROR ("No IPV4 Routing Protocol");
-          route = 0;
+          route = nullptr;
         }
       m_downTarget (packet, saddr, daddr, PROT_NUMBER, route);
     }
@@ -647,7 +647,7 @@ TcpL4Protocol::SendPacketV6 (Ptr<Packet> packet, const TcpHeader &outgoing,
       else
         {
           NS_LOG_ERROR ("No IPV6 Routing Protocol");
-          route = 0;
+          route = nullptr;
         }
       m_downTarget6 (packet, saddr, daddr, PROT_NUMBER, route);
     }

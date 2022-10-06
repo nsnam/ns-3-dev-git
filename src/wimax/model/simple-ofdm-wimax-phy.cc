@@ -237,8 +237,8 @@ SimpleOfdmWimaxPhy::DoDispose ()
 {
   delete m_receivedFecBlocks;
   delete m_fecBlocks;
-  m_receivedFecBlocks = 0;
-  m_fecBlocks = 0;
+  m_receivedFecBlocks = nullptr;
+  m_fecBlocks = nullptr;
   delete m_snrToBlockErrorRateManager;
   WimaxPhy::DoDispose ();
 }
@@ -253,7 +253,7 @@ void
 SimpleOfdmWimaxPhy::Send (SendParams *params)
 {
   OfdmSendParams *o_params = dynamic_cast<OfdmSendParams*> (params);
-  NS_ASSERT (o_params !=0);
+  NS_ASSERT (o_params !=nullptr);
   Send (o_params->GetBurst (),
         (WimaxPhy::ModulationType) o_params->GetModulationType (),
         o_params->GetDirection ());
@@ -297,7 +297,7 @@ SimpleOfdmWimaxPhy::StartSendDummyFecBlock (bool isFirstBlock,
     }
 
   SimpleOfdmWimaxChannel *channel = dynamic_cast<SimpleOfdmWimaxChannel*> (PeekPointer (GetChannel ()));
-  NS_ASSERT (channel != 0);
+  NS_ASSERT (channel != nullptr);
 
   if (m_nrRemainingBlocksToSend==1)
     {

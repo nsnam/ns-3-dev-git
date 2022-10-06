@@ -59,7 +59,7 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std
     {
       NS_LOG_FUNCTION (&value);
       const UintegerValue *v = dynamic_cast<const UintegerValue *> (&value);
-      if (v == 0)
+      if (v == nullptr)
         {
           return false;
         }
@@ -92,7 +92,7 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std
       NS_LOG_FUNCTION (&source << &destination);
       const UintegerValue *src = dynamic_cast<const UintegerValue *> (&source);
       UintegerValue *dst = dynamic_cast<UintegerValue *> (&destination);
-      if (src == 0 || dst == 0)
+      if (src == nullptr || dst == nullptr)
         {
           return false;
         }

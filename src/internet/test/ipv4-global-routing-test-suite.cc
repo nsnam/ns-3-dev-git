@@ -613,7 +613,7 @@ BridgeTest::DoRun ()
   Ptr<Ipv4GlobalRouting> globalRouting4 = routing4->GetObject <Ipv4GlobalRouting> ();
   NS_TEST_ASSERT_MSG_NE (globalRouting4, nullptr, "Error-- no Ipv4GlobalRouting object");
 
-  Ipv4RoutingTableEntry* route = 0;
+  Ipv4RoutingTableEntry* route = nullptr;
   // n0
   // Test that the right number of routes found
   uint32_t nRoutes0 = globalRouting0->GetNRoutes ();
@@ -633,7 +633,7 @@ BridgeTest::DoRun ()
 
   // n1
   // Test that the right number of routes found
-  route = 0;
+  route = nullptr;
   uint32_t nRoutes1 = globalRouting1->GetNRoutes ();
   NS_LOG_DEBUG ("BridgeTest nRoutes1 " << nRoutes1);
   NS_TEST_ASSERT_MSG_EQ (nRoutes1, 3, "Error-- not three entries");
@@ -653,7 +653,7 @@ BridgeTest::DoRun ()
   NS_LOG_DEBUG ("BridgeTest skip print out of n2 and n3, go next to node n4");
 
   // n4
-  route = 0;
+  route = nullptr;
   // Test that the right number of routes found
   uint32_t nRoutes4 = globalRouting4->GetNRoutes ();
   NS_LOG_DEBUG ("BridgeTest nRoutes4 " << nRoutes4);
@@ -782,7 +782,7 @@ TwoBridgeTest::DoRun ()
   Ptr<Ipv4GlobalRouting> globalRouting4 = routing4->GetObject <Ipv4GlobalRouting> ();
   NS_TEST_ASSERT_MSG_NE (globalRouting4, nullptr, "Error-- no Ipv4GlobalRouting object");
 
-  Ipv4RoutingTableEntry* route = 0;
+  Ipv4RoutingTableEntry* route = nullptr;
   // n0
   // Test that the right number of routes found
   uint32_t nRoutes0 = globalRouting0->GetNRoutes ();
@@ -804,7 +804,7 @@ TwoBridgeTest::DoRun ()
 
   // n4
   // Test that the right number of routes found
-  route = 0;
+  route = nullptr;
   uint32_t nRoutes4 = globalRouting4->GetNRoutes ();
   NS_LOG_DEBUG ("BridgeTest nRoutes4 " << nRoutes4);
   NS_TEST_ASSERT_MSG_EQ (nRoutes4, 2, "Error-- not two entries");
@@ -883,7 +883,7 @@ Ipv4DynamicGlobalRoutingTestCase::~Ipv4DynamicGlobalRoutingTestCase ()
         {
           iter->second = false;
           iter->first->Close ();
-          iter->first = 0;
+          iter->first = nullptr;
         }
     }
 }
@@ -937,7 +937,7 @@ Ipv4DynamicGlobalRoutingTestCase::ShutDownSock (uint8_t index)
 {
   m_sendSocks[index].second = false;
   m_sendSocks[index].first->Close ();
-  m_sendSocks[index].first = 0;
+  m_sendSocks[index].first = nullptr;
 }
 
 // Test derived from examples/routing/dynamic-global-routing.cc

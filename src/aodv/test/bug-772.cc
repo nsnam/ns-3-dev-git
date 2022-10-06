@@ -48,7 +48,7 @@ using namespace ns3;
 //-----------------------------------------------------------------------------
 Bug772ChainTest::Bug772ChainTest (const char * const prefix, const char * const proto, Time t, uint32_t size)
   : TestCase ("Bug 772 UDP and TCP chain regression test"),
-    m_nodes (0),
+    m_nodes (nullptr),
     m_prefix (prefix),
     m_proto (proto),
     m_time (t),
@@ -99,7 +99,7 @@ Bug772ChainTest::DoRun ()
 
   CheckResults ();
 
-  delete m_nodes, m_nodes = 0;
+  delete m_nodes, m_nodes = nullptr;
 }
 
 void

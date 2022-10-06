@@ -278,7 +278,7 @@ private:
    * \param interface output interface if any (put 0 otherwise)
    * \return Ipv6Route to route the packet to reach dest address
    */
-  Ptr<Ipv6Route> LookupStatic (Ipv6Address dest, Ptr<NetDevice> = 0);
+  Ptr<Ipv6Route> LookupStatic (Ipv6Address dest, Ptr<NetDevice> = nullptr);
 
   /**
    * \brief Lookup in the multicast forwarding table for destination.

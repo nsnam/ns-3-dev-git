@@ -390,7 +390,7 @@ private:
    * \param oif output interface if any (put 0 otherwise)
    * \return Ipv4Route to route the packet to reach dest address
    */
-  Ptr<Ipv4Route> LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif = 0);
+  Ptr<Ipv4Route> LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif = nullptr);
 
   /**
    * \brief Lookup in the multicast forwarding table for destination.

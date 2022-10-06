@@ -292,12 +292,12 @@ int
 main (int argc, char *argv[])
 {
   int c;
-  char *dev = NULL;
-  char *ip4 = NULL;
-  char *ip6 = NULL;
-  char *mac = NULL;
-  char *netmask = NULL;
-  char *path = NULL;
+  char *dev = nullptr;
+  char *ip4 = nullptr;
+  char *ip6 = nullptr;
+  char *mac = nullptr;
+  char *netmask = nullptr;
+  char *path = nullptr;
   int tap = false;
   int pi = false;
   int prefix = -1;
@@ -352,10 +352,10 @@ main (int argc, char *argv[])
   // allocating.  This address is allocated in the simulation and assigned to
   // the tap bridge.  This address is given in ip.
   //
-  ABORT_IF (ip4 == NULL && ip6 == NULL, "IP Address is a required argument", 0);
+  ABORT_IF (ip4 == nullptr && ip6 == nullptr, "IP Address is a required argument", 0);
   if (ip4)
     {
-      ABORT_IF (netmask == NULL, "Net mask is a required argument", 0);
+      ABORT_IF (netmask == nullptr, "Net mask is a required argument", 0);
       LOG ("Provided IP v4 Address is \"" << ip4 << "\"");
       LOG ("Provided IP v4 Net Mask is \"" << netmask << "\"");
     }
@@ -372,7 +372,7 @@ main (int argc, char *argv[])
   // the bridged device.  This allows packets addressed to the bridged device
   // to appear in the Linux host as if they were received there.
   //
-  ABORT_IF (mac == NULL, "MAC Address is a required argument", 0);
+  ABORT_IF (mac == nullptr, "MAC Address is a required argument", 0);
   LOG ("Provided MAC Address is \"" << mac << "\"");
 
   //
@@ -406,7 +406,7 @@ main (int argc, char *argv[])
   // us.  We see it here as the "path" string.  We can't do anything useful
   // unless we have that string.
   //
-  ABORT_IF (path == NULL, "path is a required argument", 0);
+  ABORT_IF (path == nullptr, "path is a required argument", 0);
   LOG ("Provided path is \"" << path << "\"");
 
   //

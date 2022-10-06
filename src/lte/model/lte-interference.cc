@@ -50,9 +50,9 @@ LteInterference::DoDispose ()
   m_rsPowerChunkProcessorList.clear ();
   m_sinrChunkProcessorList.clear ();
   m_interfChunkProcessorList.clear ();
-  m_rxSignal = 0;
-  m_allSignals = 0;
-  m_noise = 0;
+  m_rxSignal = nullptr;
+  m_allSignals = nullptr;
+  m_noise = nullptr;
   Object::DoDispose ();
 }
 

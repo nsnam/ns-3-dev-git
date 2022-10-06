@@ -237,8 +237,8 @@ HwmpProtocol::DoDispose ()
   m_hwmpSeqnoMetricDatabase.clear ();
   m_interfaces.clear ();
   m_rqueue.clear ();
-  m_rtable = 0;
-  m_mp = 0;
+  m_rtable = nullptr;
+  m_mp = nullptr;
 }
 
 bool
@@ -998,7 +998,7 @@ HwmpProtocol::DequeueFirstPacketByDst (Mac48Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
   QueuedPacket retval;
-  retval.pkt = 0;
+  retval.pkt = nullptr;
   for (std::vector<QueuedPacket>::iterator i = m_rqueue.begin (); i != m_rqueue.end (); i++)
     {
       if ((*i).dst == dst)
@@ -1016,7 +1016,7 @@ HwmpProtocol::DequeueFirstPacket ()
 {
   NS_LOG_FUNCTION (this);
   QueuedPacket retval;
-  retval.pkt = 0;
+  retval.pkt = nullptr;
   if (m_rqueue.size () != 0)
     {
       retval = m_rqueue[0];
@@ -1304,7 +1304,7 @@ HwmpProtocol::GetRoutingTable () const
 }
 
 HwmpProtocol::QueuedPacket::QueuedPacket () :
-  pkt (0),
+  pkt (nullptr),
   protocol (0),
   inInterface (0)
 {

@@ -128,7 +128,7 @@ TcpFastRetrTest::ConfigureEnvironment ()
 Ptr<ErrorModel>
 TcpFastRetrTest::CreateSenderErrorModel ()
 {
-  return 0;
+  return nullptr;
 }
 
 Ptr<ErrorModel>

@@ -54,7 +54,7 @@ Ipv4StaticRouting::GetTypeId ()
 }
 
 Ipv4StaticRouting::Ipv4StaticRouting ()
-  : m_ipv4 (0)
+  : m_ipv4 (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -184,7 +184,7 @@ Ipv4StaticRouting::GetMulticastRoute (uint32_t index) const
           tmp++;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 bool
@@ -252,7 +252,7 @@ Ptr<Ipv4Route>
 Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
 {
   NS_LOG_FUNCTION (this << dest << " " << oif);
-  Ptr<Ipv4Route> rtentry = 0;
+  Ptr<Ipv4Route> rtentry = nullptr;
   uint16_t longest_mask = 0;
   uint32_t shortest_metric = 0xffffffff;
   /* when sending on local multicast, there have to be interface specified */
@@ -337,7 +337,7 @@ Ipv4StaticRouting::LookupStatic (
   uint32_t    interface)
 {
   NS_LOG_FUNCTION (this << origin << " " << group << " " << interface);
-  Ptr<Ipv4MulticastRoute> mrtentry = 0;
+  Ptr<Ipv4MulticastRoute> mrtentry = nullptr;
 
   for (MulticastRoutesI i = m_multicastRoutes.begin ();
        i != m_multicastRoutes.end ();
@@ -396,7 +396,7 @@ Ipv4StaticRouting::GetDefaultRoute ()
   // Basically a repeat of LookupStatic, retained for backward compatibility
   Ipv4Address dest ("0.0.0.0");
   uint32_t shortest_metric = 0xffffffff;
-  Ipv4RoutingTableEntry *result = 0;
+  Ipv4RoutingTableEntry *result = nullptr;
   for (NetworkRoutesI i = m_networkRoutes.begin ();
        i != m_networkRoutes.end ();
        i++)
@@ -443,7 +443,7 @@ Ipv4StaticRouting::GetRoute (uint32_t index) const
     }
   NS_ASSERT (false);
   // quiet compiler.
-  return 0;
+  return nullptr;
 }
 
 uint32_t
@@ -490,7 +490,7 @@ Ipv4StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<Net
 {
   NS_LOG_FUNCTION (this << p<< header << oif << sockerr);
   Ipv4Address destination = header.GetDestination ();
-  Ptr<Ipv4Route> rtentry = 0;
+  Ptr<Ipv4Route> rtentry = nullptr;
 
   // Multicast goes here
   if (destination.IsMulticast ())
@@ -610,7 +610,7 @@ Ipv4StaticRouting::DoDispose ()
     {
       delete (*i);
     }
-  m_ipv4 = 0;
+  m_ipv4 = nullptr;
   Ipv4RoutingProtocol::DoDispose ();
 }
 

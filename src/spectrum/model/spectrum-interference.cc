@@ -32,10 +32,10 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumInterference");
 
 SpectrumInterference::SpectrumInterference ()
   : m_receiving (false),
-    m_rxSignal (0),
-    m_allSignals (0),
-    m_noise (0),
-    m_errorModel (0)
+    m_rxSignal (nullptr),
+    m_allSignals (nullptr),
+    m_noise (nullptr),
+    m_errorModel (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -60,10 +60,10 @@ void
 SpectrumInterference::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_rxSignal = 0;
-  m_allSignals = 0;
-  m_noise = 0;
-  m_errorModel = 0;
+  m_rxSignal = nullptr;
+  m_allSignals = nullptr;
+  m_noise = nullptr;
+  m_errorModel = nullptr;
   Object::DoDispose ();
 }
 

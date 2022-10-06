@@ -588,7 +588,7 @@ UeManager::RecvIdealUeContextRemoveRequest (uint16_t rnti)
   NS_LOG_FUNCTION (this << m_rnti);
 
   //release the bearer info for the UE at SGW/PGW
-  if (m_rrc->m_s1SapProvider != 0) //if EPC is enabled
+  if (m_rrc->m_s1SapProvider != nullptr) //if EPC is enabled
     {
       for (const auto &it:m_drbMap)
         {
@@ -1140,7 +1140,7 @@ UeManager::RecvRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupComplet
           m_pendingStartDataRadioBearers = true;
         }
 
-      if (m_rrc->m_s1SapProvider != 0)
+      if (m_rrc->m_s1SapProvider != nullptr)
         {
           m_rrc->m_s1SapProvider->InitialUeMessage (m_imsi, m_rnti);
           SwitchToState (ATTACH_REQUEST);
@@ -1294,7 +1294,7 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                                         << " RSRQ " << (it->haveRsrqResult ? (uint16_t) it->rsrqResult : 255));
     }
 
-  if ((m_rrc->m_handoverManagementSapProvider != 0)
+  if ((m_rrc->m_handoverManagementSapProvider != nullptr)
       && (m_rrc->m_handoverMeasIds.find (measId) != m_rrc->m_handoverMeasIds.end ()))
     {
       // this measurement was requested by the handover algorithm
@@ -1302,7 +1302,7 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                                                             msg.measResults);
     }
 
-  if ((m_rrc->m_ccmRrcSapProvider != 0)
+  if ((m_rrc->m_ccmRrcSapProvider != nullptr)
       && (m_rrc->m_componentCarrierMeasIds.find (measId) != m_rrc->m_componentCarrierMeasIds.end ()))
     {
       // this measurement was requested by the handover algorithm
@@ -1310,7 +1310,7 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                                                 msg.measResults);
     }
 
-  if ((m_rrc->m_anrSapProvider != 0)
+  if ((m_rrc->m_anrSapProvider != nullptr)
       && (m_rrc->m_anrMeasIds.find (measId) != m_rrc->m_anrMeasIds.end ()))
     {
       // this measurement was requested by the ANR function
@@ -1751,15 +1751,15 @@ UeManager::BuildNonCriticalExtensionConfigurationCa ()
 NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc);
 
 LteEnbRrc::LteEnbRrc ()
-  : m_x2SapProvider (0),
+  : m_x2SapProvider (nullptr),
     m_cmacSapProvider (0),
-    m_handoverManagementSapProvider (0),
-    m_ccmRrcSapProvider (0),
-    m_anrSapProvider (0),
+    m_handoverManagementSapProvider (nullptr),
+    m_ccmRrcSapProvider (nullptr),
+    m_anrSapProvider (nullptr),
     m_ffrRrcSapProvider (0),
-    m_rrcSapUser (0),
-    m_macSapProvider (0),
-    m_s1SapProvider (0),
+    m_rrcSapUser (nullptr),
+    m_macSapProvider (nullptr),
+    m_s1SapProvider (nullptr),
     m_cphySapProvider (0),
     m_configured (false),
     m_lastAllocatedRnti (0),
@@ -3010,7 +3010,7 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
   Ptr<UeManager> ueManager = GetUeManager (rnti);
   NS_ASSERT_MSG (ueManager, "Cannot find UE context with RNTI " << rnti);
 
-  if (m_anrSapProvider != 0 && !HasCellId (targetCellId))
+  if (m_anrSapProvider != nullptr && !HasCellId (targetCellId))
     {
       // ensure that proper neighbour relationship exists between source and target cells
       bool noHo = m_anrSapProvider->GetNoHo (targetCellId);
@@ -3123,7 +3123,7 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
       m_cmacSapProvider.at (i)->RemoveUe (rnti);
       m_cphySapProvider.at (i)->RemoveUe (rnti);
     }
-  if (m_s1SapProvider != 0)
+  if (m_s1SapProvider != nullptr)
     {
       m_s1SapProvider->UeContextRelease (rnti);
     }
@@ -3177,7 +3177,7 @@ LteEnbRrc::AddX2Neighbour (uint16_t cellId)
 {
   NS_LOG_FUNCTION (this << cellId);
 
-  if (m_anrSapProvider != 0)
+  if (m_anrSapProvider != nullptr)
     {
       m_anrSapProvider->AddNeighbourRelation (cellId);
     }

@@ -148,7 +148,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::SendPacket (double rxPowerDbm
 
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
 
@@ -198,7 +198,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::RxFailure (Ptr<const WifiPsdu
 
 TestThresholdPreambleDetectionWithoutFrameCapture::~TestThresholdPreambleDetectionWithoutFrameCapture ()
 {
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -224,7 +224,7 @@ void
 TestThresholdPreambleDetectionWithoutFrameCapture::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -516,7 +516,7 @@ TestThresholdPreambleDetectionWithFrameCapture::SendPacket (double rxPowerDbm)
 
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
 
@@ -566,7 +566,7 @@ TestThresholdPreambleDetectionWithFrameCapture::RxFailure (Ptr<const WifiPsdu> p
 
 TestThresholdPreambleDetectionWithFrameCapture::~TestThresholdPreambleDetectionWithFrameCapture ()
 {
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -597,7 +597,7 @@ void
 TestThresholdPreambleDetectionWithFrameCapture::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -1038,7 +1038,7 @@ TestSimpleFrameCaptureModel::SendPacket (double rxPowerDbm, uint32_t packetSize)
 
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
 
@@ -1109,7 +1109,7 @@ TestSimpleFrameCaptureModel::Expect1500BPacketDropped ()
 
 TestSimpleFrameCaptureModel::~TestSimpleFrameCaptureModel ()
 {
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -1140,7 +1140,7 @@ void
 TestSimpleFrameCaptureModel::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -1255,7 +1255,7 @@ TestPhyHeadersReception::SendPacket (double rxPowerDbm)
 
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
 
@@ -1283,7 +1283,7 @@ TestPhyHeadersReception::DoCheckPhyState (WifiPhyState expectedState)
 
 TestPhyHeadersReception::~TestPhyHeadersReception ()
 {
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -1302,7 +1302,7 @@ void
 TestPhyHeadersReception::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -1567,7 +1567,7 @@ TestAmpduReception::TestAmpduReception ()
 
 TestAmpduReception::~TestAmpduReception ()
 {
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -1776,7 +1776,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
 
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
 
@@ -1812,7 +1812,7 @@ void
 TestAmpduReception::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void

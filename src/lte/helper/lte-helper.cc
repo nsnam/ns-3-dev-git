@@ -202,8 +202,8 @@ void
 LteHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_downlinkChannel = 0;
-  m_uplinkChannel = 0;
+  m_downlinkChannel = nullptr;
+  m_uplinkChannel = nullptr;
   m_componentCarrierPhyParams.clear();
   Object::DoDispose ();
 }

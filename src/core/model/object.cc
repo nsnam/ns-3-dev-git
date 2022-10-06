@@ -47,7 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("Object");
 NS_OBJECT_ENSURE_REGISTERED (Object);
 
 Object::AggregateIterator::AggregateIterator ()
-  : m_object (0),
+  : m_object (nullptr),
     m_current (0)
 {
   NS_LOG_FUNCTION (this);
@@ -126,7 +126,7 @@ Object::~Object ()
     {
       std::free (m_aggregates);
     }
-  m_aggregates = 0;
+  m_aggregates = nullptr;
 }
 Object::Object (const Object &o)
   : m_tid (o.m_tid),
@@ -177,7 +177,7 @@ Object::DoGetObject (TypeId tid) const
           return const_cast<Object *> (current);
         }
     }
-  return 0;
+  return nullptr;
 }
 void
 Object::Initialize ()

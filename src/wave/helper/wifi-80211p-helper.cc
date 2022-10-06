@@ -75,10 +75,10 @@ NetDeviceContainer
 Wifi80211pHelper::Install (const WifiPhyHelper &phyHelper, const WifiMacHelper &macHelper, NodeContainer c) const
 {
   [[maybe_unused]] QosWaveMacHelper const * qosMac = dynamic_cast <QosWaveMacHelper const *> (&macHelper);
-  if (qosMac == 0)
+  if (qosMac == nullptr)
     {
       [[maybe_unused]] NqosWaveMacHelper const * nqosMac = dynamic_cast <NqosWaveMacHelper const *> (&macHelper);
-      if (nqosMac == 0)
+      if (nqosMac == nullptr)
         {
           NS_FATAL_ERROR ("the macHelper should be either QosWaveMacHelper or NqosWaveMacHelper"
                           ", or should be the subclass of QosWaveMacHelper or NqosWaveMacHelper");

@@ -472,7 +472,7 @@ Object::GetObject () const
   // This is an optimization: if the cast works (which is likely),
   // things will be pretty fast.
   T *result = dynamic_cast<T *> (m_aggregates->buffer[0]);
-  if (result != 0)
+  if (result != nullptr)
     {
       return Ptr<T> (result);
     }
@@ -482,7 +482,7 @@ Object::GetObject () const
     {
       return Ptr<T> (static_cast<T *> (PeekPointer (found)));
     }
-  return 0;
+  return nullptr;
 }
 
 /**
@@ -508,7 +508,7 @@ Object::GetObject (TypeId tid) const
     {
       return Ptr<T> (static_cast<T *> (PeekPointer (found)));
     }
-  return 0;
+  return nullptr;
 }
 
 /**

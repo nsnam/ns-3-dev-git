@@ -69,7 +69,7 @@ public:
   /** Destructor */
   ~UanPacketArrival()
   {
-    m_packet = 0;
+    m_packet = nullptr;
   }
 
   /**

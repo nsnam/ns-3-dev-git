@@ -146,8 +146,8 @@ LteRlcAm::DoDispose ()
   m_retxBufferSize = 0;
   m_rxonBuffer.clear ();
   m_sdusBuffer.clear ();
-  m_keepS0 = 0;
-  m_controlPduBuffer = 0;
+  m_keepS0 = nullptr;
+  m_controlPduBuffer = nullptr;
 
   LteRlc::DoDispose ();
 }
@@ -385,7 +385,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   m_txedBufferSize += m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
 
                   m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
-                  m_retxBuffer.at (seqNumberValue).m_pdu = 0;
+                  m_retxBuffer.at (seqNumberValue).m_pdu = nullptr;
                   m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
                   m_retxBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
 
@@ -532,7 +532,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
             }
           // Segment is completely taken or
           // the remaining segment is given back to the transmission buffer
-          firstSegment = 0;
+          firstSegment = nullptr;
 
           // Put status tag once it has been adjusted
           newSegment->AddPacketTag (newTag);
@@ -540,7 +540,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           // Add Segment to Data field
           dataFieldAddedSize = newSegment->GetSize ();
           dataField.push_back (newSegment);
-          newSegment = 0;
+          newSegment = nullptr;
 
           // ExtensionBit (Next_Segment - 1) = 0
           rlcAmHeader.PushExtensionBit (LteRlcAmHeader::DATA_FIELD_FOLLOWS);
@@ -562,7 +562,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
           dataField.push_back (firstSegment);
-          firstSegment = 0;
+          firstSegment = nullptr;
 
           // ExtensionBit (Next_Segment - 1) = 0
           rlcAmHeader.PushExtensionBit (LteRlcAmHeader::DATA_FIELD_FOLLOWS);
@@ -1072,7 +1072,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                   m_retxBufferSize += m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
 
                   m_txedBufferSize -= m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
-                  m_txedBuffer.at (seqNumberValue).m_pdu = 0;
+                  m_txedBuffer.at (seqNumberValue).m_pdu = nullptr;
                   m_txedBuffer.at (seqNumberValue).m_retxCount = 0;
                   m_txedBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                 }
@@ -1089,7 +1089,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                   NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from txedBuffer");
                   //               NS_LOG_INFO ("m_txedBuffer( " << m_vtA << " )->GetSize = " << m_txedBuffer.at (m_vtA.GetValue ())->GetSize ());
                   m_txedBufferSize -= m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
-                  m_txedBuffer.at (seqNumberValue).m_pdu = 0;
+                  m_txedBuffer.at (seqNumberValue).m_pdu = nullptr;
                   m_txedBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                   NS_ASSERT (!m_retxBuffer.at (seqNumberValue).m_pdu);
                 }
@@ -1098,7 +1098,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                 {
                   NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from retxBuffer");
                   m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
-                  m_retxBuffer.at (seqNumberValue).m_pdu = 0;
+                  m_retxBuffer.at (seqNumberValue).m_pdu = nullptr;
                   m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
                   m_retxBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                 }
@@ -1466,7 +1466,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Deliver one or multiple PDUs
@@ -1484,7 +1484,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Deliver zero, one or multiple PDUs
@@ -1509,7 +1509,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Discard SI or SN
@@ -1539,7 +1539,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Discard SI or SN
@@ -1729,7 +1729,7 @@ LteRlcAm::ExpirePollRetransmitTimer ()
                m_retxBufferSize += m_retxBuffer.at (snValue).m_pdu->GetSize ();
 
                m_txedBufferSize -= m_txedBuffer.at (snValue).m_pdu->GetSize ();
-               m_txedBuffer.at (snValue).m_pdu = 0;
+               m_txedBuffer.at (snValue).m_pdu = nullptr;
                m_txedBuffer.at (snValue).m_retxCount = 0;
                m_txedBuffer.at (snValue).m_waitingSince = MilliSeconds (0);
              }

@@ -87,7 +87,7 @@ WifiRadioEnergyModel::GetTypeId ()
 }
 
 WifiRadioEnergyModel::WifiRadioEnergyModel ()
-  : m_source (0),
+  : m_source (nullptr),
     m_currentState (WifiPhyState::IDLE),
     m_lastUpdateTime (Seconds (0.0)),
     m_nPendingChangeState (0)
@@ -104,7 +104,7 @@ WifiRadioEnergyModel::WifiRadioEnergyModel ()
 WifiRadioEnergyModel::~WifiRadioEnergyModel ()
 {
   NS_LOG_FUNCTION (this);
-  m_txCurrentModel = 0;
+  m_txCurrentModel = nullptr;
   delete m_listener;
 }
 
@@ -390,7 +390,7 @@ void
 WifiRadioEnergyModel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_source = NULL;
+  m_source = nullptr;
   m_energyDepletionCallback.Nullify ();
 }
 

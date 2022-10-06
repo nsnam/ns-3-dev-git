@@ -272,10 +272,10 @@ TestCase::Result::Result ()
 
 
 TestCase::TestCase (std::string name)
-  : m_parent (0),
+  : m_parent (nullptr),
     m_dataDir (""),
-    m_runner (0),
-    m_result (0),
+    m_runner (nullptr),
+    m_result (nullptr),
     m_name (name),
     m_duration (TestCase::QUICK)
 {
@@ -285,8 +285,8 @@ TestCase::TestCase (std::string name)
 TestCase::~TestCase ()
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_runner == 0);
-  m_parent = 0;
+  NS_ASSERT (m_runner == nullptr);
+  m_parent = nullptr;
   delete m_result;
   for (std::vector<TestCase *>::const_iterator i = m_children.begin (); i != m_children.end (); ++i)
     {
@@ -364,7 +364,7 @@ TestCase::Run (TestRunnerImpl *runner)
 out:
   m_result->clock.End ();
   DoTeardown ();
-  m_runner = 0;
+  m_runner = nullptr;
 }
 std::string
 TestCase::GetName () const
@@ -388,7 +388,7 @@ TestCase::ReportTestFailure (std::string cond, std::string actual,
                                                 message, file, line));
   // set childrenFailed flag on parents.
   TestCase *current = m_parent;
-  while (current != 0)
+  while (current != nullptr)
     {
       current->m_result->childrenFailed = true;
       current = current->m_parent;
@@ -413,11 +413,11 @@ TestCase::CreateDataDirFilename (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
   const TestCase *current = this;
-  while (current != 0 && current->m_dataDir == "")
+  while (current != nullptr && current->m_dataDir == "")
     {
       current = current->m_parent;
     }
-  if (current == 0)
+  if (current == nullptr)
     {
       NS_FATAL_ERROR ("No one called SetDataDir prior to calling this function");
     }
@@ -438,7 +438,7 @@ TestCase::CreateTempDirFilename (std::string filename)
     {
       std::list<std::string> names;
       const TestCase *current = this;
-      while (current != 0)
+      while (current != nullptr)
         {
           names.push_front (current->m_name);
           current = current->m_parent;
@@ -665,7 +665,7 @@ void
 TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int level)
 {
   NS_LOG_FUNCTION (this << test << os << xml << level);
-  if (test->m_result == 0)
+  if (test->m_result == nullptr)
     {
       // Do not print reports for tests that were not run.
       return;
@@ -788,7 +788,7 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
   for (std::list<TestCase *>::const_iterator i = begin; i != end; ++i)
     {
       TestSuite * test = dynamic_cast<TestSuite *> (*i);
-      NS_ASSERT (test != 0);
+      NS_ASSERT (test != nullptr);
       if (printTestType)
         {
           std::cout << label[test->GetTestType ()];
@@ -881,7 +881,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
   char ** argi = argv;
   ++argi;
 
-  while (*argi != 0)
+  while (*argi != nullptr)
     {
       char *arg = *argi;
 

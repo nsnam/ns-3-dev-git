@@ -542,7 +542,7 @@ Queue<Item, Container>::DoDequeue (ConstIterator pos)
   if (m_nPackets.Get () == 0)
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   Ptr<Item> item = MakeGetItem<Container>::GetItem (m_packets, pos);
@@ -571,7 +571,7 @@ Queue<Item, Container>::DoRemove (ConstIterator pos)
   if (m_nPackets.Get () == 0)
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   Ptr<Item> item = MakeGetItem<Container>::GetItem (m_packets, pos);
@@ -623,7 +623,7 @@ Queue<Item, Container>::DoPeek (ConstIterator pos) const
   if (m_nPackets.Get () == 0)
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   return MakeGetItem<Container>::GetItem (m_packets, pos);

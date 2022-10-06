@@ -373,7 +373,7 @@ Ptr<Node> DsrOptions::GetNodeWithAddress (Ipv4Address ipv4Address)
           return node;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 NS_OBJECT_ENSURE_REGISTERED (DsrOptionPad1);

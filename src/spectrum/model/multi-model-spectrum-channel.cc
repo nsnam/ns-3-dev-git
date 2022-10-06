@@ -416,7 +416,7 @@ MultiModelSpectrumChannel::GetDevice (std::size_t i) const
         }
     }
   NS_FATAL_ERROR ("m_numDevices > actual number of devices");
-  return 0;
+  return nullptr;
 }
 
 } // namespace ns3

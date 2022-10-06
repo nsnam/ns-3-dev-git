@@ -60,15 +60,15 @@ Tlv::Tlv ()
 {
   m_type = 0;
   m_length = 0;
-  m_value = 0;
+  m_value = nullptr;
 }
 
 Tlv::~Tlv ()
 {
-  if (m_value != 0)
+  if (m_value != nullptr)
     {
       delete m_value;
-      m_value = 0;
+      m_value = nullptr;
     }
 }
 
@@ -88,7 +88,7 @@ Tlv::Tlv (const Tlv & tlv)
 Tlv &
 Tlv::operator = (Tlv const& o)
 {
-  if (m_value != 0)
+  if (m_value != nullptr)
     {
       delete m_value;
     }
@@ -953,11 +953,11 @@ ProtocolTlvValue::ProtocolTlvValue ()
 }
 ProtocolTlvValue::~ProtocolTlvValue ()
 {
-  if (m_protocol != 0)
+  if (m_protocol != nullptr)
     {
       m_protocol->clear ();
       delete m_protocol;
-      m_protocol = 0;
+      m_protocol = nullptr;
     }
 }
 
@@ -1026,11 +1026,11 @@ Ipv4AddressTlvValue::Ipv4AddressTlvValue ()
 
 Ipv4AddressTlvValue::~Ipv4AddressTlvValue ()
 {
-  if (m_ipv4Addr != 0)
+  if (m_ipv4Addr != nullptr)
     {
       m_ipv4Addr->clear ();
       delete m_ipv4Addr;
-      m_ipv4Addr = 0;
+      m_ipv4Addr = nullptr;
     }
 }
 

@@ -56,10 +56,10 @@ void Ipv6ExtensionDemux::DoDispose ()
   for (Ipv6ExtensionList_t::iterator it = m_extensions.begin (); it != m_extensions.end (); it++)
     {
       (*it)->Dispose ();
-      *it = 0;
+      *it = nullptr;
     }
   m_extensions.clear ();
-  m_node = 0;
+  m_node = nullptr;
   Object::DoDispose ();
 }
 
@@ -82,7 +82,7 @@ Ptr<Ipv6Extension> Ipv6ExtensionDemux::GetExtension (uint8_t extensionNumber)
           return *i;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 void Ipv6ExtensionDemux::Remove (Ptr<Ipv6Extension> extension)

@@ -77,9 +77,9 @@ FrameExchangeManager::Reset ()
       m_navResetEvent.Cancel ();
     }
   m_navEnd = Simulator::Now ();
-  m_mpdu = 0;
+  m_mpdu = nullptr;
   m_txParams.Clear ();
-  m_dcf = 0;
+  m_dcf = nullptr;
 }
 
 void
@@ -87,19 +87,19 @@ FrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Reset ();
-  m_fragmentedPacket = 0;
-  m_mac = 0;
-  m_txMiddle = 0;
-  m_rxMiddle = 0;
-  m_channelAccessManager = 0;
-  m_protectionManager = 0;
-  m_ackManager = 0;
+  m_fragmentedPacket = nullptr;
+  m_mac = nullptr;
+  m_txMiddle = nullptr;
+  m_rxMiddle = nullptr;
+  m_channelAccessManager = nullptr;
+  m_protectionManager = nullptr;
+  m_ackManager = nullptr;
   if (m_phy)
     {
       m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
                                             MakeCallback (&FrameExchangeManager::RxStartIndication, this));
     }
-  m_phy = 0;
+  m_phy = nullptr;
   Object::DoDispose ();
 }
 
@@ -316,7 +316,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
     {
       NS_LOG_DEBUG ("Queue empty");
       m_dcf->NotifyChannelReleased (m_linkId);
-      m_dcf = 0;
+      m_dcf = nullptr;
       return false;
     }
 
@@ -472,7 +472,7 @@ FrameExchangeManager::SendMpdu ()
   if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
       // we are done with frames that do not require acknowledgment
-      m_mpdu = 0;
+      m_mpdu = nullptr;
     }
 }
 
@@ -798,7 +798,7 @@ FrameExchangeManager::TransmissionSucceeded ()
   else
     {
       m_dcf->NotifyChannelReleased (m_linkId);
-      m_dcf = 0;
+      m_dcf = nullptr;
     }
 }
 
@@ -808,7 +808,7 @@ FrameExchangeManager::TransmissionFailed ()
   NS_LOG_FUNCTION (this);
   // A non-QoS station always releases the channel upon a transmission failure
   m_dcf->NotifyChannelReleased (m_linkId);
-  m_dcf = 0;
+  m_dcf = nullptr;
 }
 
 void
@@ -835,7 +835,7 @@ FrameExchangeManager::NormalAckTimeout (Ptr<WifiMpdu> mpdu, const WifiTxVector& 
       m_dcf->UpdateFailedCw (m_linkId);
     }
 
-  m_mpdu = 0;
+  m_mpdu = nullptr;
   TransmissionFailed ();
 }
 
@@ -1152,7 +1152,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSign
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
           ReceivedNormalAck (m_mpdu, m_txParams.m_txVector, txVector, rxSignalInfo, tag.Get ());
-          m_mpdu = 0;
+          m_mpdu = nullptr;
         }
     }
   else if (hdr.IsMgt ())

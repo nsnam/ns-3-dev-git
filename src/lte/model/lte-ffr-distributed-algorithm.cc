@@ -30,8 +30,8 @@ NS_OBJECT_ENSURE_REGISTERED (LteFfrDistributedAlgorithm);
 
 
 LteFfrDistributedAlgorithm::LteFfrDistributedAlgorithm ()
-  : m_ffrSapUser (0),
-    m_ffrRrcSapUser (0)
+  : m_ffrSapUser (nullptr),
+    m_ffrRrcSapUser (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_ffrSapProvider = new MemberLteFfrSapProvider<LteFfrDistributedAlgorithm> (this);
@@ -515,8 +515,8 @@ LteFfrDistributedAlgorithm::Calculate ()
               continue;
             }
 
-          servingCellMeasures = 0;
-          neighbourCellMeasures = 0;
+          servingCellMeasures = nullptr;
+          neighbourCellMeasures = nullptr;
 
           it2 = it1->second.find (m_cellId);
           if (it2 != it1->second.end ())

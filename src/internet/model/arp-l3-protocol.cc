@@ -73,7 +73,7 @@ ArpL3Protocol::GetTypeId ()
 }
 
 ArpL3Protocol::ArpL3Protocol ()
-  : m_tc (0)
+  : m_tc (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -136,8 +136,8 @@ ArpL3Protocol::DoDispose ()
       cache->Dispose ();
     }
   m_cacheList.clear ();
-  m_node = 0;
-  m_tc = 0;
+  m_node = nullptr;
+  m_tc = nullptr;
   Object::DoDispose ();
 }
 
@@ -168,7 +168,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
     }
   NS_ASSERT (false);
   // quiet compiler
-  return 0;
+  return nullptr;
 }
 
 void
@@ -234,7 +234,7 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
           found = true;
           Ipv4Address from = arp.GetSourceIpv4Address ();
           ArpCache::Entry *entry = cache->Lookup (from);
-          if (entry != 0)
+          if (entry != nullptr)
             {
               if (entry->IsWaitReply ())
                 {
@@ -285,7 +285,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, const Ipv4Header & ipHeader, Ipv4Addr
 {
   NS_LOG_FUNCTION (this << packet << destination << device << cache << hardwareDestination);
   ArpCache::Entry *entry = cache->Lookup (destination);
-  if (entry != 0)
+  if (entry != nullptr)
     {
       if (entry->IsExpired ())
         {

@@ -58,7 +58,7 @@ public:
    * \param exp expiration time
    * \param p protocol number
    */
-  DsrPassiveBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
+  DsrPassiveBuffEntry (Ptr<const Packet> pa = nullptr, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
                        Ipv4Address n = Ipv4Address (), uint16_t i = 0, uint16_t f = 0, uint8_t seg = 0, Time exp = Simulator::Now (),
                        uint8_t p = 0)
     : m_packet (pa),

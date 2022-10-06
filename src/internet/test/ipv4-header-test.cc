@@ -240,7 +240,7 @@ Ipv4HeaderTest::DoRun ()
       m_receivedHeader.Print (std::cout);
       std::cout << std::endl;
       m_receivedPacket->RemoveAllByteTags ();
-      m_receivedPacket = 0;
+      m_receivedPacket = nullptr;
     }
 
   // Ecn tests
@@ -259,7 +259,7 @@ Ipv4HeaderTest::DoRun ()
       m_receivedHeader.Print (std::cout);
       std::cout << std::endl;
       m_receivedPacket->RemoveAllByteTags ();
-      m_receivedPacket = 0;
+      m_receivedPacket = nullptr;
     }
 
   Simulator::Destroy ();

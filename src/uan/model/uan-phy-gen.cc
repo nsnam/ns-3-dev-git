@@ -494,15 +494,15 @@ UanPhyPerUmodem::CalcPer (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 UanPhyGen::UanPhyGen ()
   : UanPhy (),
   m_state (IDLE),
-  m_channel (0),
-  m_transducer (0),
-  m_device (0),
-  m_mac (0),
+  m_channel (nullptr),
+  m_transducer (nullptr),
+  m_device (nullptr),
+  m_mac (nullptr),
   m_txPwrDb (0),
   m_rxThreshDb (0),
   m_ccaThreshDb (0),
-  m_pktRx (0),
-  m_pktTx (0),
+  m_pktRx (nullptr),
+  m_pktTx (nullptr),
   m_cleared (false)
 {
   m_pg = CreateObject<UniformRandomVariable> ();
@@ -527,34 +527,34 @@ UanPhyGen::Clear ()
   if (m_channel)
     {
       m_channel->Clear ();
-      m_channel = 0;
+      m_channel = nullptr;
     }
   if (m_transducer)
     {
       m_transducer->Clear ();
-      m_transducer = 0;
+      m_transducer = nullptr;
     }
   if (m_device)
     {
       m_device->Clear ();
-      m_device = 0;
+      m_device = nullptr;
     }
   if (m_mac)
     {
       m_mac->Clear ();
-      m_mac = 0;
+      m_mac = nullptr;
     }
   if (m_per)
     {
       m_per->Clear ();
-      m_per = 0;
+      m_per = nullptr;
     }
   if (m_sinr)
     {
       m_sinr->Clear ();
-      m_sinr = 0;
+      m_sinr = nullptr;
     }
-  m_pktRx = 0;
+  m_pktRx = nullptr;
 }
 
 void
@@ -664,13 +664,13 @@ UanPhyGen::EnergyDepletionHandler ()
     {
       Simulator::Cancel (m_txEndEvent);
       NotifyTxDrop (m_pktTx);
-      m_pktTx = 0;
+      m_pktTx = nullptr;
     }
   if (m_rxEndEvent.IsRunning ())
     {
       Simulator::Cancel (m_rxEndEvent);
       NotifyRxDrop (m_pktRx);
-      m_pktRx = 0;
+      m_pktRx = nullptr;
     }
 }
 
@@ -710,7 +710,7 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
   if (m_pktRx)
     {
       m_minRxSinrDb = -1e30;
-      m_pktRx = 0;
+      m_pktRx = nullptr;
     }
 
   m_transducer->Transmit (Ptr<UanPhy> (this), pkt, m_txPwrDb, txMode);
@@ -734,7 +734,7 @@ UanPhyGen::TxEndEvent ()
     }
 
   NS_ASSERT (m_state == TX);
-  if (GetInterferenceDb ( (Ptr<Packet>) 0) > m_ccaThreshDb)
+  if (GetInterferenceDb ( (Ptr<Packet>) nullptr) > m_ccaThreshDb)
     {
       m_state = CCABUSY;
       NotifyListenersCcaStart ();
@@ -825,7 +825,7 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
       break;
     }
 
-  if (m_state == IDLE && GetInterferenceDb ( (Ptr<Packet>) 0) > m_ccaThreshDb)
+  if (m_state == IDLE && GetInterferenceDb ( (Ptr<Packet>) nullptr) > m_ccaThreshDb)
     {
       m_state = CCABUSY;
       NotifyListenersCcaStart ();
@@ -844,13 +844,13 @@ UanPhyGen::RxEndEvent (Ptr<Packet> pkt, [[maybe_unused]] double rxPowerDb, UanTx
   if (m_state == DISABLED || m_state == SLEEP)
     {
       NS_LOG_DEBUG ("Sleep mode or dead. Dropping packet");
-      m_pktRx = 0;
+      m_pktRx = nullptr;
       NotifyRxDrop (pkt); // traced source netanim
       return;
     }
 
   NotifyRxEnd (pkt); // traced source netanim
-  if (GetInterferenceDb ( (Ptr<Packet>) 0) > m_ccaThreshDb)
+  if (GetInterferenceDb ( (Ptr<Packet>) nullptr) > m_ccaThreshDb)
     {
       m_state = CCABUSY;
       NotifyListenersCcaStart ();
@@ -881,7 +881,7 @@ UanPhyGen::RxEndEvent (Ptr<Packet> pkt, [[maybe_unused]] double rxPowerDb, UanTx
         }
     }
 
-  m_pktRx = 0;
+  m_pktRx = nullptr;
 }
 
 void
@@ -1017,7 +1017,7 @@ UanPhyGen::SetSleepMode (bool sleep )
     }
   else if (m_state == SLEEP)
     {
-      if (GetInterferenceDb ((Ptr<Packet>) 0) > m_ccaThreshDb)
+      if (GetInterferenceDb ((Ptr<Packet>) nullptr) > m_ccaThreshDb)
         {
           m_state = CCABUSY;
           NotifyListenersCcaStart ();

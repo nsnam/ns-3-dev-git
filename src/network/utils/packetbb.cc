@@ -182,7 +182,7 @@ PbbTlvBlock::Clear ()
   NS_LOG_FUNCTION (this);
   for (Iterator iter = Begin (); iter != End (); iter++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   m_tlvList.clear ();
 }
@@ -422,7 +422,7 @@ PbbAddressTlvBlock::Clear ()
   NS_LOG_FUNCTION (this);
   for (Iterator iter = Begin (); iter != End (); iter++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   m_tlvList.clear ();
 }
@@ -826,7 +826,7 @@ PbbPacket::MessageClear ()
   NS_LOG_FUNCTION (this);
   for (MessageIterator iter = MessageBegin (); iter != MessageEnd (); iter++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   m_messageList.clear ();
 }
@@ -1394,7 +1394,7 @@ PbbMessage::AddressBlockClear ()
        iter != AddressBlockEnd ();
        iter++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   return m_addressBlockList.clear ();
 }
@@ -1521,7 +1521,7 @@ PbbMessage::DeserializeMessage (Buffer::Iterator &start)
       newmsg = Create<PbbMessageIpv6> ();
       break;
     default:
-      return 0;
+      return nullptr;
       break;
     }
   newmsg->Deserialize (start);

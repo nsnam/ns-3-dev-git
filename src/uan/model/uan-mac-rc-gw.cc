@@ -80,7 +80,7 @@ UanMacRcGw::Clear ()
   if (m_phy)
     {
       m_phy->Clear ();
-      m_phy = 0;
+      m_phy = nullptr;
     }
   m_propDelay.clear ();
   std::map<Mac8Address, AckData>::iterator it = m_ackData.begin ();

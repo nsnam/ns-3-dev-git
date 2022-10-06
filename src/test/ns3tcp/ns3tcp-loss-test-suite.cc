@@ -296,7 +296,7 @@ Ns3TcpLossTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t)
           std::clog << "Submitting " << toWrite
                     << " bytes to TCP socket" << std::endl;
         }
-      int amountSent = localSocket->Send (0, toWrite, 0);
+      int amountSent = localSocket->Send (nullptr, toWrite, 0);
       NS_ASSERT (amountSent > 0);  // Given GetTxAvailable() non-zero, amountSent should not be zero
       m_currentTxBytes += amountSent;
     }

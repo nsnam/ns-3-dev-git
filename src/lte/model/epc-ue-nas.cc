@@ -60,7 +60,7 @@ NS_OBJECT_ENSURE_REGISTERED (EpcUeNas);
 EpcUeNas::EpcUeNas ()
   : m_state (OFF),
     m_csgId (0),
-    m_asSapProvider (0),
+    m_asSapProvider (nullptr),
     m_bidCounter (0)
 {
   NS_LOG_FUNCTION (this);

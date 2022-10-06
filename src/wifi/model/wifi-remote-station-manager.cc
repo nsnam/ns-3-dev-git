@@ -1294,10 +1294,10 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_dsssSupported = false;
   state->m_erpOfdmSupported = false;
   state->m_ofdmSupported = false;
-  state->m_htCapabilities = 0;
-  state->m_vhtCapabilities = 0;
-  state->m_heCapabilities = 0;
-  state->m_ehtCapabilities = 0;
+  state->m_htCapabilities = nullptr;
+  state->m_vhtCapabilities = nullptr;
+  state->m_heCapabilities = nullptr;
+  state->m_ehtCapabilities = nullptr;
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
   state->m_guardInterval = GetGuardInterval ();
   state->m_ness = 0;

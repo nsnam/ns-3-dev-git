@@ -125,7 +125,7 @@ ExampleAsTestCase::DoRun ()
 
   // Check that we're not just introspecting the command-line
   const char * envVar = std::getenv ("NS_COMMANDLINE_INTROSPECTION");
-  if (envVar != 0 && std::strlen (envVar) != 0)
+  if (envVar != nullptr && std::strlen (envVar) != 0)
     {
       return;
     }

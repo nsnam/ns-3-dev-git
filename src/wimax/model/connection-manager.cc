@@ -46,7 +46,7 @@ TypeId ConnectionManager::GetTypeId ()
 }
 
 ConnectionManager::ConnectionManager ()
-  : m_cidFactory (0)
+  : m_cidFactory (nullptr)
 {
 }
 
@@ -153,7 +153,7 @@ ConnectionManager::GetConnection (Cid cid)
         }
     }
 
-  return 0;
+  return nullptr;
 }
 
 std::vector<Ptr<WimaxConnection> >

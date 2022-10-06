@@ -128,15 +128,15 @@ bool CqaKeyDescComparator (uint16_t key1, uint16_t key2)
 
 
 CqaFfMacScheduler::CqaFfMacScheduler ()
-  :   m_cschedSapUser (0),
-    m_schedSapUser (0),
+  :   m_cschedSapUser (nullptr),
+    m_schedSapUser (nullptr),
     m_timeWindow (99.0),
     m_nextRntiUl (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new MemberCschedSapProvider<CqaFfMacScheduler> (this);
   m_schedSapProvider = new MemberSchedSapProvider<CqaFfMacScheduler> (this);
-  m_ffrSapProvider = 0;
+  m_ffrSapProvider = nullptr;
   m_ffrSapUser = new MemberLteFfrSapUser<CqaFfMacScheduler> (this);
 }
 

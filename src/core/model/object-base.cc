@@ -57,7 +57,7 @@ EnvDictionary (std::string key)
   if (dict.size () == 0)
     {
       const char *envVar = getenv ("NS_ATTRIBUTE_DEFAULT");
-      if (envVar != 0 && std::strlen (envVar) > 0)
+      if (envVar != nullptr && std::strlen (envVar) > 0)
         {
           std::string env = envVar;
           std::string::size_type cur = 0;
@@ -311,7 +311,7 @@ ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
       return;
     }
   StringValue *str = dynamic_cast<StringValue *> (&value);
-  if (str == 0)
+  if (str == nullptr)
     {
       NS_FATAL_ERROR ("Attribute name=" << name << " tid=" << tid.GetName () << ": input value is not a string");
     }
@@ -346,7 +346,7 @@ ObjectBase::GetAttributeFailSafe (std::string name, AttributeValue &value) const
       return true;
     }
   StringValue *str = dynamic_cast<StringValue *> (&value);
-  if (str == 0)
+  if (str == nullptr)
     {
       return false;
     }

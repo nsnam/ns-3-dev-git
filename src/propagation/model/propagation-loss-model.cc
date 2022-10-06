@@ -49,7 +49,7 @@ PropagationLossModel::GetTypeId ()
 }
 
 PropagationLossModel::PropagationLossModel ()
-  : m_next (0)
+  : m_next (nullptr)
 {
 }
 

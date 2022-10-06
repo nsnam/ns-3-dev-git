@@ -30,7 +30,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteFrNoOpAlgorithm);
 
 
 LteFrNoOpAlgorithm::LteFrNoOpAlgorithm ()
-  : m_ffrSapUser (0), m_ffrRrcSapUser (0)
+  : m_ffrSapUser (nullptr), m_ffrRrcSapUser (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_ffrSapProvider = new MemberLteFfrSapProvider<LteFrNoOpAlgorithm> (this);

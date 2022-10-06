@@ -153,7 +153,7 @@ public:
       iterator += i;
       if (iterator >= m_end)
         {
-          return 0;
+          return nullptr;
         }
       return *iterator;
     }

@@ -83,7 +83,7 @@ void
 Application::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_node = nullptr;
   m_startEvent.Cancel ();
   m_stopEvent.Cancel ();
   Object::DoDispose ();

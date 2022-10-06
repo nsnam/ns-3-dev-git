@@ -39,10 +39,10 @@ NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhy");
 NS_OBJECT_ENSURE_REGISTERED (HalfDuplexIdealPhy);
 
 HalfDuplexIdealPhy::HalfDuplexIdealPhy ()
-  : m_mobility (0),
-    m_netDevice (0),
-    m_channel (0),
-    m_txPsd (0),
+  : m_mobility (nullptr),
+    m_netDevice (nullptr),
+    m_channel (nullptr),
+    m_txPsd (nullptr),
     m_state (IDLE)
 {
   m_interference.SetErrorModel (CreateObject<ShannonSpectrumErrorModel> ());
@@ -57,13 +57,13 @@ void
 HalfDuplexIdealPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_mobility = 0;
-  m_netDevice = 0;
-  m_channel = 0;
-  m_txPsd = 0;
-  m_rxPsd = 0;
-  m_txPacket = 0;
-  m_rxPacket = 0;
+  m_mobility = nullptr;
+  m_netDevice = nullptr;
+  m_channel = nullptr;
+  m_txPsd = nullptr;
+  m_rxPsd = nullptr;
+  m_txPacket = nullptr;
+  m_rxPacket = nullptr;
   m_phyMacTxEndCallback      = MakeNullCallback< void, Ptr<const Packet> > ();
   m_phyMacRxStartCallback    = MakeNullCallback< void > ();
   m_phyMacRxEndErrorCallback = MakeNullCallback< void > ();
@@ -189,7 +189,7 @@ HalfDuplexIdealPhy::GetRxSpectrumModel () const
     }
   else
     {
-      return 0;
+      return nullptr;
     }
 }
 
@@ -332,7 +332,7 @@ HalfDuplexIdealPhy::EndTx ()
       m_phyMacTxEndCallback (m_txPacket);
     }
 
-  m_txPacket = 0;
+  m_txPacket = nullptr;
   ChangeState (IDLE);
 }
 
@@ -412,7 +412,7 @@ HalfDuplexIdealPhy::AbortRx ()
   m_interference.AbortRx ();
   m_phyRxAbortTrace (m_rxPacket);
   m_endRxEventId.Cancel ();
-  m_rxPacket = 0;
+  m_rxPacket = nullptr;
   ChangeState (IDLE);
 }
 
@@ -455,8 +455,8 @@ HalfDuplexIdealPhy::EndRx ()
     }
 
   ChangeState (IDLE);
-  m_rxPacket = 0;
-  m_rxPsd = 0;
+  m_rxPacket = nullptr;
+  m_rxPsd = nullptr;
 }
 
 

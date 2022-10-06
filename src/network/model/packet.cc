@@ -88,7 +88,7 @@ PacketTagIterator::PacketTagIterator (const struct PacketTagList::TagData *head)
 bool
 PacketTagIterator::HasNext () const
 {
-  return m_current != 0;
+  return m_current != nullptr;
 }
 PacketTagIterator::Item
 PacketTagIterator::Next ()
@@ -137,7 +137,7 @@ Packet::Packet ()
      * global UID
      */
     m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, 0),
-    m_nixVector (0)
+    m_nixVector (nullptr)
 {
   m_globalUid++;
 }
@@ -149,7 +149,7 @@ Packet::Packet (const Packet &o)
     m_metadata (o.m_metadata)
 {
   o.m_nixVector ? m_nixVector = o.m_nixVector->Copy ()
-    : m_nixVector = 0;
+    : m_nixVector = nullptr;
 }
 
 Packet &
@@ -164,7 +164,7 @@ Packet::operator = (const Packet &o)
   m_packetTagList = o.m_packetTagList;
   m_metadata = o.m_metadata;
   o.m_nixVector ? m_nixVector = o.m_nixVector->Copy ()
-    : m_nixVector = 0;
+    : m_nixVector = nullptr;
   return *this;
 }
 
@@ -179,7 +179,7 @@ Packet::Packet (uint32_t size)
      * global UID
      */
     m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, size),
-    m_nixVector (0)
+    m_nixVector (nullptr)
 {
   m_globalUid++;
 }
@@ -188,7 +188,7 @@ Packet::Packet (uint8_t const *buffer, uint32_t size, bool magic)
     m_byteTagList (),
     m_packetTagList (),
     m_metadata (0,0),
-    m_nixVector (0)
+    m_nixVector (nullptr)
 {
   NS_ASSERT (magic);
   Deserialize (buffer, size);
@@ -205,7 +205,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
      * global UID
      */
     m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, size),
-    m_nixVector (0)
+    m_nixVector (nullptr)
 {
   m_globalUid++;
   m_buffer.AddAtStart (size);
@@ -219,7 +219,7 @@ Packet::Packet (const Buffer &buffer,  const ByteTagList &byteTagList,
     m_byteTagList (byteTagList),
     m_packetTagList (packetTagList),
     m_metadata (metadata),
-    m_nixVector (0)
+    m_nixVector (nullptr)
 {
 }
 
@@ -410,7 +410,7 @@ Packet::PrintByteTags (std::ostream &os) const
           continue;
         }
       Tag *tag = dynamic_cast<Tag *> (constructor ());
-      NS_ASSERT (tag != 0);
+      NS_ASSERT (tag != nullptr);
       os << " ";
       item.GetTag (*tag);
       tag->Print (os);
@@ -465,9 +465,9 @@ Packet::Print (std::ostream &os) const
                 Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
                 NS_ASSERT (!constructor.IsNull ());
                 ObjectBase *instance = constructor ();
-                NS_ASSERT (instance != 0);
+                NS_ASSERT (instance != nullptr);
                 Chunk *chunk = dynamic_cast<Chunk *> (instance);
-                NS_ASSERT (chunk != 0);
+                NS_ASSERT (chunk != nullptr);
                 if (item.type == PacketMetadata::Item::HEADER)
                   {
                     Buffer::Iterator end = item.current;
@@ -999,7 +999,7 @@ Packet::PrintPacketTags (std::ostream &os) const
       NS_ASSERT (!constructor.IsNull ());
       ObjectBase *instance = constructor ();
       Tag *tag = dynamic_cast<Tag *> (instance);
-      NS_ASSERT (tag != 0);
+      NS_ASSERT (tag != nullptr);
       item.GetTag (*tag);
       tag->Print (os);
       delete tag;

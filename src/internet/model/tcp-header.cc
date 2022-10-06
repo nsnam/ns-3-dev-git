@@ -504,7 +504,7 @@ TcpHeader::GetOption(uint8_t kind) const
         }
     }
 
-  return 0;
+  return nullptr;
 }
 
 bool

@@ -105,7 +105,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
   {
     bool Check (const AttributeValue &value) const override
     {
-      return dynamic_cast<const T *> (&value) != 0;
+      return dynamic_cast<const T *> (&value) != nullptr;
     }
     std::string GetValueTypeName () const override
     {
@@ -127,7 +127,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
     {
       const T *src = dynamic_cast<const T *> (&source);
       T *dst = dynamic_cast<T *> (&destination);
-      if (src == 0 || dst == 0)
+      if (src == nullptr || dst == nullptr)
         {
           return false;
         }

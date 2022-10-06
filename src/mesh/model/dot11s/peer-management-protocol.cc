@@ -95,7 +95,7 @@ PeerManagementProtocol::PeerManagementProtocol () :
 }
 PeerManagementProtocol::~PeerManagementProtocol ()
 {
-  m_meshId = 0;
+  m_meshId = nullptr;
 }
 void
 PeerManagementProtocol::DoDispose ()
@@ -106,7 +106,7 @@ PeerManagementProtocol::DoDispose ()
     {
       for (PeerLinksOnInterface::iterator i = j->second.begin (); i != j->second.end (); i++)
         {
-          (*i) = 0;
+          (*i) = nullptr;
         }
       j->second.clear ();
     }
@@ -147,7 +147,7 @@ PeerManagementProtocol::GetBeaconTimingElement (uint32_t interface)
 {
   if (!GetBeaconCollisionAvoidance ())
     {
-      return 0;
+      return nullptr;
     }
   Ptr<IeBeaconTiming> retval = Create<IeBeaconTiming> ();
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
@@ -303,9 +303,9 @@ PeerManagementProtocol::FindPeerLink (uint32_t interface, Mac48Address peerAddre
         {
           if ((*i)->LinkIsIdle ())
             {
-              (*i) = 0;
+              (*i) = nullptr;
               (iface->second).erase (i);
-              return 0;
+              return nullptr;
             }
           else
             {
@@ -313,7 +313,7 @@ PeerManagementProtocol::FindPeerLink (uint32_t interface, Mac48Address peerAddre
             }
         }
     }
-  return 0;
+  return nullptr;
 }
 void
 PeerManagementProtocol::SetPeerLinkStatusCallback (

@@ -62,8 +62,8 @@ public:
    * \param exp expiration time
    * \param r Route
    */
-  DsrNetworkQueueEntry (Ptr<const Packet> pa = 0, Ipv4Address s = Ipv4Address (), Ipv4Address n = Ipv4Address (),
-                        Time exp = Simulator::Now (), Ptr<Ipv4Route> r = 0)
+  DsrNetworkQueueEntry (Ptr<const Packet> pa = nullptr, Ipv4Address s = Ipv4Address (), Ipv4Address n = Ipv4Address (),
+                        Time exp = Simulator::Now (), Ptr<Ipv4Route> r = nullptr)
     : m_packet (pa),
       m_srcAddr (s),
       m_nextHopAddr (n),

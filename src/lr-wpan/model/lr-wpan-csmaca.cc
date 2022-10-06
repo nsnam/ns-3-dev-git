@@ -69,7 +69,7 @@ LrWpanCsmaCa::LrWpanCsmaCa ()
 
 LrWpanCsmaCa::~LrWpanCsmaCa ()
 {
-  m_mac = 0;
+  m_mac = nullptr;
 }
 
 void
@@ -79,7 +79,7 @@ LrWpanCsmaCa::DoDispose ()
   m_lrWpanMacTransCostCallback = MakeNullCallback <void, uint32_t> ();
 
   Cancel ();
-  m_mac = 0;
+  m_mac = nullptr;
 }
 
 void

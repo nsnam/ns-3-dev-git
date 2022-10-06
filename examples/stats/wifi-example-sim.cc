@@ -75,7 +75,7 @@ int main (int argc, char *argv[]) {
 
   {
     std::stringstream sstr;
-    sstr << "run-" << time (NULL);
+    sstr << "run-" << time (nullptr);
     runID = sstr.str ();
   }
 
@@ -299,7 +299,7 @@ int main (int argc, char *argv[]) {
   //--------------------------------------------
 
   // Pick an output writer based in the requested format.
-  Ptr<DataOutputInterface> output = 0;
+  Ptr<DataOutputInterface> output = nullptr;
   if (format == "omnet") {
       NS_LOG_INFO ("Creating omnet formatted data output.");
       output = CreateObject<OmnetDataOutput>();

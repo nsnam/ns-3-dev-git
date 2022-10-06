@@ -189,7 +189,7 @@ CsmaNetDevice::CsmaNetDevice ()
   NS_LOG_FUNCTION (this);
   m_txMachineState = READY;
   m_tInterframeGap = Seconds (0);
-  m_channel = 0;
+  m_channel = nullptr;
 
   //
   // We would like to let the attribute system take care of initializing the
@@ -208,16 +208,16 @@ CsmaNetDevice::CsmaNetDevice ()
 CsmaNetDevice::~CsmaNetDevice()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_queue = 0;
+  m_queue = nullptr;
 }
 
 void
 CsmaNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_channel = 0;
-  m_node = 0;
-  m_queue = 0;
+  m_channel = nullptr;
+  m_node = nullptr;
+  m_queue = nullptr;
   NetDevice::DoDispose ();
 }
 
@@ -456,7 +456,7 @@ CsmaNetDevice::TransmitStart ()
   if (IsSendEnabled () == false)
     {
       m_phyTxDropTrace (m_currentPkt);
-      m_currentPkt = 0;
+      m_currentPkt = nullptr;
       return;
     }
 
@@ -510,7 +510,7 @@ CsmaNetDevice::TransmitStart ()
         {
           NS_LOG_WARN ("Channel TransmitStart returns an error");
           m_phyTxDropTrace (m_currentPkt);
-          m_currentPkt = 0;
+          m_currentPkt = nullptr;
           m_txMachineState = READY;
         }
       else
@@ -543,7 +543,7 @@ CsmaNetDevice::TransmitAbort ()
   NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
 
   m_phyTxDropTrace (m_currentPkt);
-  m_currentPkt = 0;
+  m_currentPkt = nullptr;
 
   NS_ASSERT_MSG (m_txMachineState == BACKOFF, "Must be in BACKOFF state to abort.  Tx state is: " << m_txMachineState);
 
@@ -599,7 +599,7 @@ CsmaNetDevice::TransmitCompleteEvent ()
 
   m_channel->TransmitEnd ();
   m_phyTxEndTrace (m_currentPkt);
-  m_currentPkt = 0;
+  m_currentPkt = nullptr;
 
   NS_LOG_LOGIC ("Schedule TransmitReadyEvent in " << m_tInterframeGap.As (Time::S));
 

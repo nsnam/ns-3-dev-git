@@ -282,7 +282,7 @@ template <typename... Ts>
 void
 TrickleTimer::SetArguments (Ts&&... args)
 {
-  if (m_impl == 0)
+  if (m_impl == nullptr)
     {
       NS_FATAL_ERROR ("You cannot set the arguments of a TrickleTimer before setting its function.");
       return;

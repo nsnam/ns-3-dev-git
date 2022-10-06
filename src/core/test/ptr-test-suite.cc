@@ -300,7 +300,7 @@ PtrTestCase::DoRun ()
         Ptr<NoCount const> p1 = p;
       }
       raw = GetPointer (p);
-      p = 0;
+      p = nullptr;
     }
     NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 0, "012");
     delete raw;

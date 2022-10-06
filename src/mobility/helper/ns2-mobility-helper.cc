@@ -238,7 +238,7 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
   Ptr<Object> object = store.Get (id);
   if (!object)
     {
-      return 0;
+      return nullptr;
     }
   Ptr<ConstantVelocityMobilityModel> model = object->GetObject<ConstantVelocityMobilityModel> ();
   if (!model)

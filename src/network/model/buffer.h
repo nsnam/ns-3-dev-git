@@ -817,7 +817,7 @@ Buffer::Iterator::Iterator ()
     m_dataStart (0),
     m_dataEnd (0),
     m_current (0),
-    m_data (0)
+    m_data (nullptr)
 {
 }
 Buffer::Iterator::Iterator (Buffer const*buffer)

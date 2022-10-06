@@ -75,7 +75,7 @@ void
 TrafficControlLayer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_node = nullptr;
   m_handlers.clear ();
   m_netDevices.clear ();
   Object::DoDispose ();
@@ -235,7 +235,7 @@ TrafficControlLayer::GetRootQueueDiscOnDevice (Ptr<NetDevice> device) const
 
   if (ndi == m_netDevices.end ())
     {
-      return 0;
+      return nullptr;
     }
   return ndi->second.m_rootQueueDisc;
 }
@@ -258,7 +258,7 @@ TrafficControlLayer::DeleteRootQueueDiscOnDevice (Ptr<NetDevice> device)
                  "No root queue disc installed on device " << device);
 
   // remove the root queue disc
-  ndi->second.m_rootQueueDisc = 0;
+  ndi->second.m_rootQueueDisc = nullptr;
   for (auto& q : ndi->second.m_queueDiscsToWake)
     {
       q->SetNetDeviceQueueInterface (nullptr);

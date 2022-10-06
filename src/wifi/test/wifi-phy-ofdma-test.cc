@@ -243,7 +243,7 @@ OfdmaSpectrumWifiPhy::DoInitialize ()
 void
 OfdmaSpectrumWifiPhy::DoDispose ()
 {
-  m_ofdmTestHePhy = 0;
+  m_ofdmTestHePhy = nullptr;
   SpectrumWifiPhy::DoDispose ();
 }
 
@@ -739,15 +739,15 @@ void
 TestDlOfdmaPhyTransmission::DoTeardown ()
 {
   m_phyAp->Dispose ();
-  m_phyAp = 0;
+  m_phyAp = nullptr;
   m_phySta1->Dispose ();
-  m_phySta1 = 0;
+  m_phySta1 = nullptr;
   m_phySta2->Dispose ();
-  m_phySta2 = 0;
+  m_phySta2 = nullptr;
   m_phySta3->Dispose ();
-  m_phySta3 = 0;
+  m_phySta3 = nullptr;
   m_phyInterferer->Dispose ();
-  m_phyInterferer = 0;
+  m_phyInterferer = nullptr;
 }
 
 void
@@ -1340,13 +1340,13 @@ void
 TestDlOfdmaPhyPuncturing::DoTeardown ()
 {
   m_phyAp->Dispose ();
-  m_phyAp = 0;
+  m_phyAp = nullptr;
   m_phySta1->Dispose ();
-  m_phySta1 = 0;
+  m_phySta1 = nullptr;
   m_phySta2->Dispose ();
-  m_phySta2 = 0;
+  m_phySta2 = nullptr;
   m_phyInterferer->Dispose ();
-  m_phyInterferer = 0;
+  m_phyInterferer = nullptr;
 }
 
 void
@@ -1617,11 +1617,11 @@ void
 TestUlOfdmaPpduUid::DoTeardown ()
 {
   m_phyAp->Dispose ();
-  m_phyAp = 0;
+  m_phyAp = nullptr;
   m_phySta1->Dispose ();
-  m_phySta1 = 0;
+  m_phySta1 = nullptr;
   m_phySta2->Dispose ();
-  m_phySta2 = 0;
+  m_phySta2 = nullptr;
 }
 
 void
@@ -1997,7 +1997,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerWatts, m_phy->GetGuardBandwidth (channelWidth));
   Ptr<WifiSpectrumSignalParameters> rxParams = Create<WifiSpectrumSignalParameters> ();
   rxParams->psd = rxPsd;
-  rxParams->txPhy = 0;
+  rxParams->txPhy = nullptr;
   rxParams->duration = nonOfdmaDuration;
   rxParams->ppdu = ppdu;
 
@@ -2016,7 +2016,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   Ptr<SpectrumValue> rxPsdOfdma = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (DEFAULT_FREQUENCY, DEFAULT_CHANNEL_WIDTH, txPowerWatts, DEFAULT_GUARD_WIDTH, band);
   Ptr<WifiSpectrumSignalParameters> rxParamsOfdma = Create<WifiSpectrumSignalParameters> ();
   rxParamsOfdma->psd = rxPsd;
-  rxParamsOfdma->txPhy = 0;
+  rxParamsOfdma->txPhy = nullptr;
   rxParamsOfdma->duration = ppduDuration - nonOfdmaDuration;
   rxParamsOfdma->ppdu = ppduOfdma;
   Simulator::Schedule (nonOfdmaDuration, &TestMultipleHeTbPreambles::RxHeTbPpduOfdmaPart, this, rxParamsOfdma);
@@ -2067,7 +2067,7 @@ void
 TestMultipleHeTbPreambles::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 void
@@ -3061,15 +3061,15 @@ void
 TestUlOfdmaPhyTransmission::DoTeardown ()
 {
   m_phyAp->Dispose ();
-  m_phyAp = 0;
+  m_phyAp = nullptr;
   m_phySta1->Dispose ();
-  m_phySta1 = 0;
+  m_phySta1 = nullptr;
   m_phySta2->Dispose ();
-  m_phySta2 = 0;
+  m_phySta2 = nullptr;
   m_phySta3->Dispose ();
-  m_phySta3 = 0;
+  m_phySta3 = nullptr;
   m_phyInterferer->Dispose ();
-  m_phyInterferer = 0;
+  m_phyInterferer = nullptr;
 }
 
 void
@@ -3986,13 +3986,13 @@ void
 TestPhyPaddingExclusion::DoTeardown ()
 {
   m_phyAp->Dispose ();
-  m_phyAp = 0;
+  m_phyAp = nullptr;
   m_phySta1->Dispose ();
-  m_phySta1 = 0;
+  m_phySta1 = nullptr;
   m_phySta2->Dispose ();
-  m_phySta2 = 0;
+  m_phySta2 = nullptr;
   m_phyInterferer->Dispose ();
-  m_phyInterferer = 0;
+  m_phyInterferer = nullptr;
 }
 
 void
@@ -4183,10 +4183,10 @@ TestUlOfdmaPowerControl::TestUlOfdmaPowerControl ()
 
 TestUlOfdmaPowerControl::~TestUlOfdmaPowerControl ()
 {
-  m_phyAp = 0;
-  m_apDev = 0;
-  m_sta1Dev = 0;
-  m_sta2Dev = 0;
+  m_phyAp = nullptr;
+  m_apDev = nullptr;
+  m_sta1Dev = nullptr;
+  m_sta2Dev = nullptr;
 }
 
 void
@@ -4388,13 +4388,13 @@ void
 TestUlOfdmaPowerControl::DoTeardown ()
 {
   m_phyAp->Dispose ();
-  m_phyAp = 0;
+  m_phyAp = nullptr;
   m_apDev->Dispose ();
-  m_apDev = 0;
+  m_apDev = nullptr;
   m_sta1Dev->Dispose ();
-  m_sta1Dev = 0;
+  m_sta1Dev = nullptr;
   m_sta2Dev->Dispose ();
-  m_sta2Dev = 0;
+  m_sta2Dev = nullptr;
 }
 
 void

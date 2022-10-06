@@ -77,7 +77,7 @@ DhcpClient::DhcpClient ()
 {
   NS_LOG_FUNCTION (this);
   m_server = Ipv4Address::GetAny ();
-  m_socket = 0;
+  m_socket = nullptr;
   m_refreshEvent = EventId ();
   m_requestEvent = EventId ();
   m_discoverEvent = EventId ();
@@ -93,7 +93,7 @@ DhcpClient::DhcpClient (Ptr<NetDevice> netDevice)
   NS_LOG_FUNCTION (this << netDevice);
   m_device = netDevice;
   m_server = Ipv4Address::GetAny ();
-  m_socket = 0;
+  m_socket = nullptr;
   m_refreshEvent = EventId ();
   m_requestEvent = EventId ();
   m_discoverEvent = EventId ();
@@ -130,7 +130,7 @@ DhcpClient::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_device = 0;
+  m_device = nullptr;
 
   // Stop all the timers
   m_refreshEvent.Cancel ();

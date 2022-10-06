@@ -146,7 +146,7 @@ ConfigStore::~ConfigStore ()
 {
   NS_LOG_FUNCTION (this);
   delete m_file;
-  m_file = 0;
+  m_file = nullptr;
 }
 
 void

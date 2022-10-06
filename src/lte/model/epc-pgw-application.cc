@@ -135,9 +135,9 @@ EpcPgwApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_s5uSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
-  m_s5uSocket = 0;
+  m_s5uSocket = nullptr;
   m_s5cSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
-  m_s5cSocket = 0;
+  m_s5cSocket = nullptr;
 }
 
 EpcPgwApplication::EpcPgwApplication (const Ptr<VirtualNetDevice> tunDevice, Ipv4Address s5Addr,

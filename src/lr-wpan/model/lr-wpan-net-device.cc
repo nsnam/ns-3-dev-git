@@ -96,10 +96,10 @@ LrWpanNetDevice::DoDispose ()
   m_mac->Dispose ();
   m_phy->Dispose ();
   m_csmaca->Dispose ();
-  m_phy = 0;
-  m_mac = 0;
-  m_csmaca = 0;
-  m_node = 0;
+  m_phy = nullptr;
+  m_mac = nullptr;
+  m_csmaca = nullptr;
+  m_node = nullptr;
   // chain up.
   NetDevice::DoDispose ();
 

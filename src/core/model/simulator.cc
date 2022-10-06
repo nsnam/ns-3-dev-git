@@ -85,7 +85,7 @@ static GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
  */
 static SimulatorImpl ** PeekImpl ()
 {
-  static SimulatorImpl *impl = 0;
+  static SimulatorImpl *impl = nullptr;
   return &impl;
 }
 
@@ -101,7 +101,7 @@ static SimulatorImpl * GetImpl ()
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
    */
-  if (*pimpl == 0)
+  if (*pimpl == nullptr)
     {
       {
         ObjectFactory factory;
@@ -138,7 +138,7 @@ Simulator::Destroy ()
   NS_LOG_FUNCTION_NOARGS ();
 
   SimulatorImpl **pimpl = PeekImpl ();
-  if (*pimpl == 0)
+  if (*pimpl == nullptr)
     {
       return;
     }
@@ -147,11 +147,11 @@ Simulator::Destroy ()
    * legal), Simulator::GetImpl will trigger again an infinite recursion until
    * the stack explodes.
    */
-  LogSetTimePrinter (0);
-  LogSetNodePrinter (0);
+  LogSetTimePrinter (nullptr);
+  LogSetNodePrinter (nullptr);
   (*pimpl)->Destroy ();
   (*pimpl)->Unref ();
-  *pimpl = 0;
+  *pimpl = nullptr;
 }
 
 void
@@ -257,7 +257,7 @@ Simulator::DoScheduleDestroy (EventImpl *impl)
 void
 Simulator::Remove (const EventId &id)
 {
-  if (*PeekImpl () == 0)
+  if (*PeekImpl () == nullptr)
     {
       return;
     }
@@ -267,7 +267,7 @@ Simulator::Remove (const EventId &id)
 void
 Simulator::Cancel (const EventId &id)
 {
-  if (*PeekImpl () == 0)
+  if (*PeekImpl () == nullptr)
     {
       return;
     }
@@ -277,7 +277,7 @@ Simulator::Cancel (const EventId &id)
 bool
 Simulator::IsExpired (const EventId &id)
 {
-  if (*PeekImpl () == 0)
+  if (*PeekImpl () == nullptr)
     {
       return true;
     }
@@ -313,7 +313,7 @@ Simulator::GetSystemId ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (*PeekImpl () != 0)
+  if (*PeekImpl () != nullptr)
     {
       return GetImpl ()->GetSystemId ();
     }
@@ -327,7 +327,7 @@ void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
   NS_LOG_FUNCTION (impl);
-  if (*PeekImpl () != 0)
+  if (*PeekImpl () != nullptr)
     {
       NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
     }

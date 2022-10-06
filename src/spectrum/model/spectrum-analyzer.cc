@@ -35,11 +35,11 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzer");
 NS_OBJECT_ENSURE_REGISTERED (SpectrumAnalyzer);
 
 SpectrumAnalyzer::SpectrumAnalyzer ()
-  : m_mobility (0),
-    m_netDevice (0),
-    m_channel (0),
-    m_spectrumModel (0),
-    m_sumPowerSpectralDensity (0),
+  : m_mobility (nullptr),
+    m_netDevice (nullptr),
+    m_channel (nullptr),
+    m_spectrumModel (nullptr),
+    m_sumPowerSpectralDensity (nullptr),
     m_resolution (MilliSeconds (50)),
     m_active (false)
 {
@@ -57,12 +57,12 @@ void
 SpectrumAnalyzer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_mobility = 0;
-  m_netDevice = 0;
-  m_channel = 0;
-  m_spectrumModel = 0;
-  m_sumPowerSpectralDensity = 0;
-  m_energySpectralDensity = 0;
+  m_mobility = nullptr;
+  m_netDevice = nullptr;
+  m_channel = nullptr;
+  m_spectrumModel = nullptr;
+  m_sumPowerSpectralDensity = nullptr;
+  m_energySpectralDensity = nullptr;
   SpectrumPhy::DoDispose ();
 }
 

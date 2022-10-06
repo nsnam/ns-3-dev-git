@@ -73,7 +73,7 @@ RandomVariableStream::GetTypeId ()
 }
 
 RandomVariableStream::RandomVariableStream ()
-  : m_rng (0)
+  : m_rng (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1460,7 +1460,7 @@ DeterministicRandomVariable::DeterministicRandomVariable ()
   :
     m_count (0),
     m_next (0),
-    m_data (0)
+    m_data (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1468,7 +1468,7 @@ DeterministicRandomVariable::~DeterministicRandomVariable ()
 {
   // Delete any values currently set.
   NS_LOG_FUNCTION (this);
-  if (m_data != 0)
+  if (m_data != nullptr)
     {
       delete[] m_data;
     }
@@ -1479,7 +1479,7 @@ DeterministicRandomVariable::SetValueArray (double* values, std::size_t length)
 {
   NS_LOG_FUNCTION (this << values << length);
   // Delete any values currently set.
-  if (m_data != 0)
+  if (m_data != nullptr)
     {
       delete[] m_data;
     }

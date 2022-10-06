@@ -278,7 +278,7 @@ public:
     CallbackImpl<R,UArgs...> const *otherDerived =
       dynamic_cast<CallbackImpl<R,UArgs...> const *> (PeekPointer (other));
 
-    if (otherDerived == 0)
+    if (otherDerived == nullptr)
       {
         return false;
       }
@@ -531,12 +531,12 @@ public:
    */
   bool IsNull () const
   {
-    return (DoPeekImpl () == 0);
+    return (DoPeekImpl () == nullptr);
   }
   /** Discard the implementation, set it to null */
   void Nullify ()
   {
-    m_impl = 0;
+    m_impl = nullptr;
   }
 
   /**
@@ -606,7 +606,7 @@ private:
   bool DoCheckType (Ptr<const CallbackImplBase> other) const
   {
     if (other &&
-        dynamic_cast<const CallbackImpl<R,UArgs...> *> (PeekPointer (other)) != 0)
+        dynamic_cast<const CallbackImpl<R,UArgs...> *> (PeekPointer (other)) != nullptr)
       {
         return true;
       }

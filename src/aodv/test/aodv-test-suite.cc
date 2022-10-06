@@ -36,7 +36,7 @@ namespace aodv {
 struct NeighborTest : public TestCase
 {
   NeighborTest () : TestCase ("Neighbor"),
-                    neighbor (0)
+                    neighbor (nullptr)
   {
   }
   void DoRun () override;

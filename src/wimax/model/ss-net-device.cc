@@ -243,8 +243,8 @@ SubscriberStationNetDevice::InitSubscriberStationNetDevice ()
   m_areManagementConnectionsAllocated = false;
   m_areServiceFlowsAllocated = false;
 
-  m_basicConnection = 0;
-  m_primaryConnection = 0;
+  m_basicConnection = nullptr;
+  m_primaryConnection = nullptr;
 
   m_dlBurstProfile = new OfdmDlBurstProfile ();
   m_ulBurstProfile = new OfdmUlBurstProfile ();
@@ -270,15 +270,15 @@ SubscriberStationNetDevice::DoDispose ()
 {
   delete m_dlBurstProfile;
   delete m_ulBurstProfile;
-  m_scheduler = 0;
-  m_serviceFlowManager = 0;
-  m_basicConnection = 0;
-  m_primaryConnection = 0;
-  m_classifier = 0;
-  m_dlBurstProfile = 0;
-  m_ulBurstProfile = 0;
+  m_scheduler = nullptr;
+  m_serviceFlowManager = nullptr;
+  m_basicConnection = nullptr;
+  m_primaryConnection = nullptr;
+  m_classifier = nullptr;
+  m_dlBurstProfile = nullptr;
+  m_ulBurstProfile = nullptr;
 
-  m_linkManager = 0;
+  m_linkManager = nullptr;
 
   m_asciiTxQueueEnqueueCb.Nullify ();
   m_asciiTxQueueDequeueCb.Nullify ();
@@ -644,7 +644,7 @@ SubscriberStationNetDevice::DoSend (Ptr<Packet> packet,
   NS_LOG_INFO ("\t\tPacket Size:  " << packet->GetSize () );
   NS_LOG_INFO ("\t\tProtocol:    " << protocolNumber );
 
-  ServiceFlow *serviceFlow = 0;
+  ServiceFlow *serviceFlow = nullptr;
 
   if (IsRegistered ())
     {
@@ -670,7 +670,7 @@ SubscriberStationNetDevice::DoSend (Ptr<Packet> packet,
       serviceFlow = m_classifier->Classify (packet, GetServiceFlowManager (), ServiceFlow::SF_DIRECTION_UP);
     }
 
-  if ((protocolNumber != 2048) || (serviceFlow == NULL))
+  if ((protocolNumber != 2048) || (serviceFlow == nullptr))
     {
       serviceFlow = *GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_ALL).begin ();
       NS_LOG_INFO ("\tNo service flows matches...using the default one.");
@@ -1200,7 +1200,7 @@ SubscriberStationNetDevice::ProcessUlMap (const UlMap &ulmap)
 
             {
 
-              Ptr<WimaxConnection> connection = NULL;
+              Ptr<WimaxConnection> connection = nullptr;
               Simulator::Schedule (timeToAllocation,
                                    &SubscriberStationNetDevice::SendBurst,
                                    this,

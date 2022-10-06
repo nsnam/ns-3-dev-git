@@ -56,7 +56,7 @@ WifiPpdu::~WifiPpdu ()
 {
   for (auto & psdu : m_psdus)
     {
-      psdu.second = 0;
+      psdu.second = nullptr;
     }
   m_psdus.clear ();
 }

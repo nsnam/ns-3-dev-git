@@ -76,7 +76,7 @@ uint32_t Buffer::g_recommendedStart = 0;
 #define DESTROYED ((Buffer::FreeList*)MAGIC_DESTROYED)
 #define UNINITIALIZED ((Buffer::FreeList*)0)
 uint32_t Buffer::g_maxSize = 0;
-Buffer::FreeList *Buffer::g_freeList = 0;
+Buffer::FreeList *Buffer::g_freeList = nullptr;
 struct Buffer::LocalStaticDestructor Buffer::g_localStaticDestructor;
 
 Buffer::LocalStaticDestructor::~LocalStaticDestructor()

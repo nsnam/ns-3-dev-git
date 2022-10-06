@@ -314,7 +314,7 @@ private:
    * \param interface output interface if any (put 0 otherwise)
    * \return Ipv6Route to route the packet to reach dest address
    */
-  Ptr<Ipv6Route> Lookup (Ipv6Address dest, bool setSource, Ptr<NetDevice> = 0);
+  Ptr<Ipv6Route> Lookup (Ipv6Address dest, bool setSource, Ptr<NetDevice> = nullptr);
 
   /**
    * Receive and process unicast packet

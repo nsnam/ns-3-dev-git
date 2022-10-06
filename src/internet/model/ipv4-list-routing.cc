@@ -43,7 +43,7 @@ Ipv4ListRouting::GetTypeId ()
 
 
 Ipv4ListRouting::Ipv4ListRouting ()
-  : m_ipv4 (0)
+  : m_ipv4 (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -63,10 +63,10 @@ Ipv4ListRouting::DoDispose ()
       // Note:  Calling dispose on these protocols causes memory leak
       //        The routing protocols should not maintain a pointer to
       //        this object, so Dispose() shouldn't be necessary.
-      (*rprotoIter).second = 0;
+      (*rprotoIter).second = nullptr;
     }
   m_routingProtocols.clear ();
-  m_ipv4 = 0;
+  m_ipv4 = nullptr;
 }
 
 void
@@ -121,7 +121,7 @@ Ipv4ListRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
   NS_LOG_LOGIC ("Done checking " << GetTypeId ());
   NS_LOG_LOGIC ("");
   sockerr = Socket::ERROR_NOROUTETOHOST;
-  return 0;
+  return nullptr;
 }
 
 // Patterned after Linux ip_route_input and ip_route_input_slow
@@ -286,7 +286,7 @@ Ipv4ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
           return (*rprotoIter).second;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 bool

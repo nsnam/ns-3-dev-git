@@ -51,7 +51,7 @@ Event::Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time durat
 
 Event::~Event ()
 {
-  m_ppdu = 0;
+  m_ppdu = nullptr;
   m_rxPowerW.clear ();
 }
 
@@ -149,7 +149,7 @@ InterferenceHelper::NiChange::NiChange (double power, Ptr<Event> event)
 
 InterferenceHelper::NiChange::~NiChange ()
 {
-  m_event = 0;
+  m_event = nullptr;
 }
 
 double
@@ -176,7 +176,7 @@ InterferenceHelper::NiChange::GetEvent () const
  ****************************************************************/
 
 InterferenceHelper::InterferenceHelper ()
-  : m_errorRateModel (0),
+  : m_errorRateModel (nullptr),
     m_numRxAntennas (1),
     m_rxing (false)
 {
@@ -204,7 +204,7 @@ InterferenceHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   RemoveBands ();
-  m_errorRateModel = 0;
+  m_errorRateModel = nullptr;
 }
 
 Ptr<Event>
@@ -249,7 +249,7 @@ InterferenceHelper::AddBand (WifiSpectrumBand band)
   auto result = m_niChangesPerBand.insert ({band, niChanges});
   NS_ASSERT (result.second);
   // Always have a zero power noise event in the list
-  AddNiChangeEvent (Time (0), NiChange (0.0, 0), result.first);
+  AddNiChangeEvent (Time (0), NiChange (0.0, nullptr), result.first);
   m_firstPowerPerBand.insert ({band, 0.0});
 }
 
@@ -625,7 +625,7 @@ InterferenceHelper::EraseEvents ()
     {
       niIt->second.clear ();
       // Always have a zero power noise event in the list
-      AddNiChangeEvent (Time (0), NiChange (0.0, 0), niIt);
+      AddNiChangeEvent (Time (0), NiChange (0.0, nullptr), niIt);
       m_firstPowerPerBand.at (niIt->first) = 0.0;
     }
   m_rxing = false;

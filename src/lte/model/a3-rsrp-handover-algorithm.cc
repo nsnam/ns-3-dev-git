@@ -34,7 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED (A3RsrpHandoverAlgorithm);
 
 
 A3RsrpHandoverAlgorithm::A3RsrpHandoverAlgorithm ()
-  : m_handoverManagementSapUser (0)
+  : m_handoverManagementSapUser (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_handoverManagementSapProvider = new MemberLteHandoverManagementSapProvider<A3RsrpHandoverAlgorithm> (this);

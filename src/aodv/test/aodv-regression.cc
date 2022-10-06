@@ -72,7 +72,7 @@ public:
  */
 ChainRegressionTest::ChainRegressionTest (const char * const prefix, Time t, uint32_t size, Time arpAliveTimeout)
   : TestCase ("AODV chain regression test"),
-    m_nodes (0),
+    m_nodes (nullptr),
     m_prefix (prefix),
     m_time (t),
     m_size (size),
@@ -137,7 +137,7 @@ ChainRegressionTest::DoRun ()
 
   CheckResults ();
 
-  delete m_nodes, m_nodes = 0;
+  delete m_nodes, m_nodes = nullptr;
 }
 
 void

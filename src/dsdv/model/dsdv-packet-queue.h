@@ -57,7 +57,7 @@ public:
    * \param ucb the UnicastForwardCallback function
    * \param ecb the ErrorCallback function
    */
-  QueueEntry (Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header (),
+  QueueEntry (Ptr<const Packet> pa = nullptr, Ipv4Header const & h = Ipv4Header (),
               UnicastForwardCallback ucb = UnicastForwardCallback (),
               ErrorCallback ecb = ErrorCallback ())
     : m_packet (pa),

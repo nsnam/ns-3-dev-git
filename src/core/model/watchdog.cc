@@ -32,7 +32,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("Watchdog");
 
 Watchdog::Watchdog ()
-  : m_impl (0),
+  : m_impl (nullptr),
     m_event (),
     m_end (MicroSeconds (0))
 {

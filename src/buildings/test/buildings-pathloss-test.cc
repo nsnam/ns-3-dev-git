@@ -258,7 +258,7 @@ BuildingsPathlossTestCase::CreateMobilityModel (uint16_t index)
       break;
 
     default:
-      mm = 0;
+      mm = nullptr;
       break;
     }
   Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> ();

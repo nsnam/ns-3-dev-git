@@ -196,7 +196,7 @@ Ipv6ForwardingTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "IPv6 Forwarding off");
 
   m_receivedPacket->RemoveAllByteTags ();
-  m_receivedPacket = 0;
+  m_receivedPacket = nullptr;
 
   ipv6 = fwNode->GetObject<Ipv6> ();
   ipv6->SetAttribute("IpForward", BooleanValue (true));

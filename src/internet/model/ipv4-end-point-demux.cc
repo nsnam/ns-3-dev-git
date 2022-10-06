@@ -83,7 +83,7 @@ Ipv4EndPointDemux::Allocate ()
   if (port == 0)
     {
       NS_LOG_WARN ("Ephemeral port allocation failed.");
-      return 0;
+      return nullptr;
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (Ipv4Address::GetAny (), port);
   m_endPoints.push_back (endPoint);
@@ -99,7 +99,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address)
   if (port == 0)
     {
       NS_LOG_WARN ("Ephemeral port allocation failed.");
-      return 0;
+      return nullptr;
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port);
   m_endPoints.push_back (endPoint);
@@ -119,10 +119,10 @@ Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ptr<NetDevice> boundNetDevice, Ipv4Address address, uint16_t port)
 {
   NS_LOG_FUNCTION (this << address << port << boundNetDevice);
-  if (LookupLocal (boundNetDevice, address, port) || LookupLocal (0, address, port))
+  if (LookupLocal (boundNetDevice, address, port) || LookupLocal (nullptr, address, port))
     {
       NS_LOG_WARN ("Duplicated endpoint.");
-      return 0;
+      return nullptr;
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port);
   m_endPoints.push_back (endPoint);
@@ -145,7 +145,7 @@ Ipv4EndPointDemux::Allocate (Ptr<NetDevice> boundNetDevice,
           ((*i)->GetBoundNetDevice () == boundNetDevice || !(*i)->GetBoundNetDevice ()))
         {
           NS_LOG_WARN ("Duplicated endpoint.");
-          return 0;
+          return nullptr;
         }
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (localAddress, localPort);
@@ -346,7 +346,7 @@ Ipv4EndPointDemux::SimpleLookup (Ipv4Address daddr,
   // this code is a copy/paste version of an old BSD ip stack lookup
   // function.
   uint32_t genericity = 3;
-  Ipv4EndPoint *generic = 0;
+  Ipv4EndPoint *generic = nullptr;
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
       if ((*i)->GetLocalPort () != dport)

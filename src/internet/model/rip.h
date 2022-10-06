@@ -309,7 +309,7 @@ private:
    * \param interface output interface if any (put 0 otherwise)
    * \return Ipv4Route to route the packet to reach dest address
    */
-  Ptr<Ipv4Route> Lookup (Ipv4Address dest, bool setSource, Ptr<NetDevice> = 0);
+  Ptr<Ipv4Route> Lookup (Ipv4Address dest, bool setSource, Ptr<NetDevice> = nullptr);
 
   /**
    * Receive and process unicast packet

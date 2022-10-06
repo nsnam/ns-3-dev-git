@@ -54,11 +54,11 @@ EpcSgwApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_s1uSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
-  m_s1uSocket = 0;
+  m_s1uSocket = nullptr;
   m_s5uSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
-  m_s5uSocket = 0;
+  m_s5uSocket = nullptr;
   m_s5cSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
-  m_s5cSocket = 0;
+  m_s5cSocket = nullptr;
 }
 
 TypeId

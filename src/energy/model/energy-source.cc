@@ -230,7 +230,7 @@ EnergySource::BreakDeviceEnergyModelRefCycle ()
   NS_LOG_FUNCTION (this);
   m_models.Clear ();
   m_harvesters.clear ();
-  m_node = NULL;
+  m_node = nullptr;
 }
 
 } // namespace ns3

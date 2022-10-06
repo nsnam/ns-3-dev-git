@@ -54,10 +54,10 @@ Ipv6Interface::Ipv6Interface ()
   : m_ifup (false),
     m_forwarding (true),
     m_metric (1),
-    m_node (0),
-    m_device (0),
-    m_tc (0),
-    m_ndCache (0),
+    m_node (nullptr),
+    m_device (nullptr),
+    m_tc (nullptr),
+    m_ndCache (nullptr),
     m_curHopLimit (0),
     m_baseReachableTime (0),
     m_reachableTime (0),
@@ -73,10 +73,10 @@ Ipv6Interface::~Ipv6Interface ()
 void Ipv6Interface::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
-  m_device = 0;
-  m_tc = 0;
-  m_ndCache = 0;
+  m_node = nullptr;
+  m_device = nullptr;
+  m_tc = nullptr;
+  m_ndCache = nullptr;
   Object::DoDispose ();
 }
 

@@ -46,7 +46,7 @@ VsaManager::GetTypeId ()
 }
 
 VsaManager::VsaManager ()
-  : m_device (0)
+  : m_device (nullptr)
 {
   m_vsaReceived = MakeNullCallback<bool, Ptr<const Packet>,const Address &, uint32_t, uint32_t> ();
 }
@@ -61,7 +61,7 @@ VsaManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   RemoveAll ();
-  m_device = 0;
+  m_device = nullptr;
 }
 
 void
@@ -199,7 +199,7 @@ VsaManager::RemoveAll ()
         {
           (*i)->repeat.Cancel ();
         }
-      (*i)->vsc = 0;
+      (*i)->vsc = nullptr;
       delete (*i);
     }
   m_vsas.clear ();
@@ -218,7 +218,7 @@ VsaManager::RemoveByChannel (uint32_t channelNumber)
             {
               (*i)->repeat.Cancel ();
             }
-          (*i)->vsc = 0;
+          (*i)->vsc = nullptr;
           delete (*i);
           i = m_vsas.erase (i);
         }
@@ -243,7 +243,7 @@ VsaManager::RemoveByOrganizationIdentifier (const OrganizationIdentifier &oi)
             {
               (*i)->repeat.Cancel ();
             }
-          (*i)->vsc = 0;
+          (*i)->vsc = nullptr;
           delete (*i);
           i = m_vsas.erase (i);
         }

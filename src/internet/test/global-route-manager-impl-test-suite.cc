@@ -69,7 +69,7 @@ GlobalRouteManagerImplTestCase::DoRun ()
     {
       SPFVertex *v = candidate.Pop ();
       delete v;
-      v = 0;
+      v = nullptr;
     }
 
   // Build fake link state database; four routers (0-3), 3 point-to-point

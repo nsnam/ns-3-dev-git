@@ -50,7 +50,7 @@ static bool
 CheckFileExists (std::string filename)
 {
   FILE * p = std::fopen (filename.c_str (), "rb");
-  if (p == 0)
+  if (p == nullptr)
     {
       return false;
     }
@@ -64,7 +64,7 @@ static bool
 CheckFileLength (std::string filename, uint64_t sizeExpected)
 {
   FILE * p = std::fopen (filename.c_str (), "rb");
-  if (p == 0)
+  if (p == nullptr)
     {
       return false;
     }
@@ -555,7 +555,7 @@ FileHeaderTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (val32, 1234, "Data length type written incorrectly");
 
   std::fclose (p);
-  p = 0;
+  p = nullptr;
 
   //
   // We wrote a little-endian file out correctly, now let's see if we can read
@@ -634,7 +634,7 @@ FileHeaderTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (val32, Swap (uint32_t (1234)), "Data length type written incorrectly");
 
   std::fclose (p);
-  p = 0;
+  p = nullptr;
 
   //
   // We wrote an opposite-endian file out correctly, now let's see if we can read
@@ -830,7 +830,7 @@ RecordHeaderTestCase::DoRun ()
     }
 
   std::fclose (p);
-  p = 0;
+  p = nullptr;
 
   //
   // Let's see if the PcapFile object can figure out how to do the same thing and
@@ -940,7 +940,7 @@ RecordHeaderTestCase::DoRun ()
     }
 
   std::fclose (p);
-  p = 0;
+  p = nullptr;
 
   //
   // Let's see if the PcapFile object can figure out how to do the same thing and

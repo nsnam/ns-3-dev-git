@@ -36,7 +36,7 @@ Timer::Timer ()
   : m_flags (CHECK_ON_DESTROY),
     m_delay (FemtoSeconds (0)),
     m_event (),
-    m_impl (0)
+    m_impl (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -45,7 +45,7 @@ Timer::Timer (enum DestroyPolicy destroyPolicy)
   : m_flags (destroyPolicy),
     m_delay (FemtoSeconds (0)),
     m_event (),
-    m_impl (0)
+    m_impl (nullptr)
 {
   NS_LOG_FUNCTION (this << destroyPolicy);
 }
@@ -165,7 +165,7 @@ void
 Timer::Schedule (Time delay)
 {
   NS_LOG_FUNCTION (this << delay);
-  NS_ASSERT (m_impl != 0);
+  NS_ASSERT (m_impl != nullptr);
   if (m_event.IsRunning ())
     {
       NS_FATAL_ERROR ("Event is still running while re-scheduling.");

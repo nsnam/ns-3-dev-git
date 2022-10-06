@@ -99,7 +99,7 @@ UdpTraceClient::UdpTraceClient ()
 {
   NS_LOG_FUNCTION (this);
   m_sent = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_sendEvent = EventId ();
   m_maxPacketSize = 1400;
 }
@@ -109,13 +109,13 @@ UdpTraceClient::UdpTraceClient (Ipv4Address ip, uint16_t port,
 {
   NS_LOG_FUNCTION (this);
   m_sent = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_sendEvent = EventId ();
   m_peerAddress = ip;
   m_peerPort = port;
   m_currentEntry = 0;
   m_maxPacketSize = 1400;
-  if (traceFile != NULL)
+  if (traceFile != nullptr)
     {
       SetTraceFile (traceFile);
     }

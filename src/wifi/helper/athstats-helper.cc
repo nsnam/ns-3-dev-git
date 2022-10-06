@@ -125,7 +125,7 @@ AthstatsWifiTraceSink::AthstatsWifiTraceSink ()
     m_phyRxOkCount (0),
     m_phyRxErrorCount (0),
     m_phyTxCount (0),
-    m_writer (0)
+    m_writer (nullptr)
 {
   Simulator::ScheduleNow (&AthstatsWifiTraceSink::WriteStats, this);
 }
@@ -134,7 +134,7 @@ AthstatsWifiTraceSink::~AthstatsWifiTraceSink ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_writer != 0)
+  if (m_writer != nullptr)
     {
       NS_LOG_LOGIC ("m_writer nonzero " << m_writer);
       if (m_writer->is_open ())
@@ -147,7 +147,7 @@ AthstatsWifiTraceSink::~AthstatsWifiTraceSink ()
       delete m_writer;
 
       NS_LOG_LOGIC ("m_writer = 0");
-      m_writer = 0;
+      m_writer = nullptr;
     }
   else
     {
@@ -241,7 +241,7 @@ void
 AthstatsWifiTraceSink::Open (std::string const &name)
 {
   NS_LOG_FUNCTION (this << name);
-  NS_ABORT_MSG_UNLESS (m_writer == 0, "AthstatsWifiTraceSink::Open (): m_writer already allocated (std::ofstream leak detected)");
+  NS_ABORT_MSG_UNLESS (m_writer == nullptr, "AthstatsWifiTraceSink::Open (): m_writer already allocated (std::ofstream leak detected)");
 
   m_writer = new std::ofstream ();
   NS_ABORT_MSG_UNLESS (m_writer, "AthstatsWifiTraceSink::Open (): Cannot allocate m_writer");

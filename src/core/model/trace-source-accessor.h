@@ -125,7 +125,7 @@ Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor (T a);
 static inline
 Ptr<const TraceSourceAccessor> MakeEmptyTraceSourceAccessor ()
 {
-  return Ptr<const TraceSourceAccessor> (0);
+  return Ptr<const TraceSourceAccessor> (nullptr);
 }
 
 } // namespace ns3
@@ -155,7 +155,7 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
     bool ConnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const override
     {
       T *p = dynamic_cast<T*> (obj);
-      if (p == 0)
+      if (p == nullptr)
         {
           return false;
         }
@@ -165,7 +165,7 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
     bool Connect (ObjectBase *obj, std::string context, const CallbackBase &cb) const override
     {
       T *p = dynamic_cast<T*> (obj);
-      if (p == 0)
+      if (p == nullptr)
         {
           return false;
         }
@@ -175,7 +175,7 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
     bool DisconnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const override
     {
       T *p = dynamic_cast<T*> (obj);
-      if (p == 0)
+      if (p == nullptr)
         {
           return false;
         }
@@ -185,7 +185,7 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
     bool Disconnect (ObjectBase *obj, std::string context, const CallbackBase &cb) const override
     {
       T *p = dynamic_cast<T*> (obj);
-      if (p == 0)
+      if (p == nullptr)
         {
           return false;
         }

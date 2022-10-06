@@ -33,7 +33,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("FileHelper");
 
 FileHelper::FileHelper ()
-  : m_aggregator                     (0),
+  : m_aggregator                     (nullptr),
     m_fileProbeCount                 (0),
     m_fileType                       (FileAggregator::SPACE_SEPARATED),
     m_outputFileNameWithoutExtension ("file-helper"),
@@ -47,7 +47,7 @@ FileHelper::FileHelper ()
 
 FileHelper::FileHelper (const std::string &outputFileNameWithoutExtension,
                         enum FileAggregator::FileType fileType)
-  : m_aggregator                     (0),
+  : m_aggregator                     (nullptr),
     m_fileProbeCount                 (0),
     m_fileType                       (fileType),
     m_outputFileNameWithoutExtension (outputFileNameWithoutExtension),

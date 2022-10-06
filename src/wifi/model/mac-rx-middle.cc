@@ -200,7 +200,7 @@ MacRxMiddle::Lookup (const WifiMacHeader *hdr)
     {
       /* only for QoS data non-broadcast frames */
       originator = m_qosOriginatorStatus[std::make_pair (source, hdr->GetQosTid ())];
-      if (originator == 0)
+      if (originator == nullptr)
         {
           originator = new OriginatorRxStatus ();
           m_qosOriginatorStatus[std::make_pair (source, hdr->GetQosTid ())] = originator;
@@ -214,7 +214,7 @@ MacRxMiddle::Lookup (const WifiMacHeader *hdr)
        * see section 7.1.3.4.1
        */
       originator = m_originatorStatus[source];
-      if (originator == 0)
+      if (originator == nullptr)
         {
           originator = new OriginatorRxStatus ();
           m_originatorStatus[source] = originator;
@@ -257,7 +257,7 @@ MacRxMiddle::HandleFragments (Ptr<const Packet> packet, const WifiMacHeader *hdr
             {
               NS_LOG_DEBUG ("non-ordered fragment");
             }
-          return 0;
+          return nullptr;
         }
       else
         {
@@ -273,7 +273,7 @@ MacRxMiddle::HandleFragments (Ptr<const Packet> packet, const WifiMacHeader *hdr
           else
             {
               NS_LOG_DEBUG ("non-ordered fragment");
-              return 0;
+              return nullptr;
             }
         }
     }
@@ -286,7 +286,7 @@ MacRxMiddle::HandleFragments (Ptr<const Packet> packet, const WifiMacHeader *hdr
                         ", size=" << packet->GetSize ());
           originator->AccumulateFirstFragment (packet);
           originator->SetSequenceControl (hdr->GetSequenceControl ());
-          return 0;
+          return nullptr;
         }
       else
         {

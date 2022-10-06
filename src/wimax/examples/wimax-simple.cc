@@ -192,9 +192,9 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Starting simulation.....");
   Simulator::Run ();
 
-  ss[0] = 0;
-  ss[1] = 0;
-  bs = 0;
+  ss[0] = nullptr;
+  ss[1] = nullptr;
+  bs = nullptr;
 
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");

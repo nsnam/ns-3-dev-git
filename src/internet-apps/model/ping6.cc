@@ -79,7 +79,7 @@ Ping6::Ping6 ()
 {
   NS_LOG_FUNCTION (this);
   m_sent = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_seq = 0;
   m_ipInterfaceIndex = 0;
   m_ifIndex = 0;
@@ -89,7 +89,7 @@ Ping6::Ping6 ()
 Ping6::~Ping6 ()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
+  m_socket = nullptr;
 }
 
 void Ping6::DoDispose ()
@@ -250,7 +250,7 @@ void Ping6::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 
-  Ptr<Packet> packet=0;
+  Ptr<Packet> packet=nullptr;
   Address from;
   while ((packet = socket->RecvFrom (from)))
     {

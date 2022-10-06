@@ -183,7 +183,7 @@ public:
   }
   bool Check (const AttributeValue &value) const override
   {
-    return dynamic_cast<const ObjectPtrContainerValue *> (&value) != 0;
+    return dynamic_cast<const ObjectPtrContainerValue *> (&value) != nullptr;
   }
   std::string GetValueTypeName () const override
   {
@@ -205,7 +205,7 @@ public:
   {
     const ObjectPtrContainerValue *src = dynamic_cast<const ObjectPtrContainerValue *> (&source);
     ObjectPtrContainerValue *dst = dynamic_cast<ObjectPtrContainerValue *> (&destination);
-    if (src == 0 || dst == 0)
+    if (src == nullptr || dst == nullptr)
       {
         return false;
       }
@@ -259,7 +259,7 @@ MakeObjectPtrContainerAccessor (Ptr<U> (T::*get)(INDEX) const,
     bool DoGetN (const ObjectBase *object, std::size_t *n) const override
     {
       const T *obj = dynamic_cast<const T *> (object);
-      if (obj == 0)
+      if (obj == nullptr)
         {
           return false;
         }

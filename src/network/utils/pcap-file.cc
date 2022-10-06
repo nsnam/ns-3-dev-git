@@ -218,7 +218,7 @@ PcapFile::WriteFileHeader ()
   // the pointer headerOut selects either the swapped or non-swapped version of
   // the pcap file header.
   //
-  PcapFileHeader *headerOut = 0;
+  PcapFileHeader *headerOut = nullptr;
 
   if (m_swapMode == false)
     {

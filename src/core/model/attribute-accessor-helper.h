@@ -178,12 +178,12 @@ public:
   bool Set (ObjectBase * object, const AttributeValue & val) const override
   {
     const U *value = dynamic_cast<const U *> (&val);
-    if (value == 0)
+    if (value == nullptr)
       {
         return false;
       }
     T *obj = dynamic_cast<T *> (object);
-    if (obj == 0)
+    if (obj == nullptr)
       {
         return false;
       }
@@ -205,12 +205,12 @@ public:
   bool Get (const ObjectBase * object, AttributeValue &val) const override
   {
     U *value = dynamic_cast<U *> (&val);
-    if (value == 0)
+    if (value == nullptr)
       {
         return false;
       }
     const T *obj = dynamic_cast<const T *> (object);
-    if (obj == 0)
+    if (obj == nullptr)
       {
         return false;
       }

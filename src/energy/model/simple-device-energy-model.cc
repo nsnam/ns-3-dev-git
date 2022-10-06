@@ -50,7 +50,7 @@ SimpleDeviceEnergyModel::SimpleDeviceEnergyModel ()
   NS_LOG_FUNCTION (this);
   m_lastUpdateTime = Seconds (0.0);
   m_actualCurrentA = 0.0;
-  m_source = 0;
+  m_source = nullptr;
 }
 
 SimpleDeviceEnergyModel::~SimpleDeviceEnergyModel ()
@@ -120,7 +120,7 @@ void
 SimpleDeviceEnergyModel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_source = 0;
+  m_source = nullptr;
 }
 
 double

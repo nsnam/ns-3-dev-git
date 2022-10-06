@@ -51,7 +51,7 @@ public:
     typename PathCache::iterator it = m_pathCache.find (key);
     if (it == m_pathCache.end ())
       {
-        return 0;
+        return nullptr;
       }
     return it->second;
   };

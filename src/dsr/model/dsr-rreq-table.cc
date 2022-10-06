@@ -220,7 +220,7 @@ DsrRreqTable::FindUnidirectional (Ipv4Address neighbor)
           return &(*i);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 bool

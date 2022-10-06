@@ -56,7 +56,7 @@ BSLinkManager::BSLinkManager (Ptr<BaseStationNetDevice> bs)
 
 BSLinkManager::~BSLinkManager ()
 {
-  m_bs = 0;
+  m_bs = nullptr;
 }
 
 uint8_t
@@ -155,7 +155,7 @@ void
 BSLinkManager::PerformInitialRanging (Cid cid, RngReq *rngreq, RngRsp *rngrsp)
 {
 
-  SSRecord *ssRecord = 0;
+  SSRecord *ssRecord = nullptr;
   bool isOldSS = m_bs->GetSSManager ()->IsInRecord (rngreq->GetMacAddress ());
   if (isOldSS)
     {

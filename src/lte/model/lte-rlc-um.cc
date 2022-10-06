@@ -233,7 +233,7 @@ LteRlcUm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
             }
           // Segment is completely taken or
           // the remaining segment is given back to the transmission buffer
-          firstSegment = 0;
+          firstSegment = nullptr;
 
           // Put status tag once it has been adjusted
           newSegment->AddPacketTag (newTag);
@@ -241,7 +241,7 @@ LteRlcUm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           // Add Segment to Data field
           dataFieldAddedSize = newSegment->GetSize ();
           dataField.push_back (newSegment);
-          newSegment = 0;
+          newSegment = nullptr;
 
           // ExtensionBit (Next_Segment - 1) = 0
           rlcHeader.PushExtensionBit (LteRlcHeader::DATA_FIELD_FOLLOWS);
@@ -262,7 +262,7 @@ LteRlcUm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
           dataField.push_back (firstSegment);
-          firstSegment = 0;
+          firstSegment = nullptr;
 
           // ExtensionBit (Next_Segment - 1) = 0
           rlcHeader.PushExtensionBit (LteRlcHeader::DATA_FIELD_FOLLOWS);
@@ -462,7 +462,7 @@ LteRlcUm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
      )
     {
       NS_LOG_LOGIC ("PDU discarded");
-      rxPduParams.p = 0;
+      rxPduParams.p = nullptr;
       return;
     }
   else
@@ -943,7 +943,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Deliver one or multiple PDUs
@@ -961,7 +961,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Deliver zero, one or multiple PDUs
@@ -986,7 +986,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Discard SI or SN
@@ -1016,7 +1016,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * Discard S0
                                */
-                              m_keepS0 = 0;
+                              m_keepS0 = nullptr;
 
                               /**
                                * Discard SI or SN

@@ -141,7 +141,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
 {
   NS_LOG_FUNCTION (this << dest << oif);
   NS_LOG_LOGIC ("Looking for route for destination " << dest);
-  Ptr<Ipv4Route> rtentry = 0;
+  Ptr<Ipv4Route> rtentry = nullptr;
   // store all available routes that bring packets to their destination
   typedef std::vector<Ipv4RoutingTableEntry*> RouteVec_t;
   RouteVec_t allRoutes;
@@ -241,7 +241,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
     }
   else
     {
-      return 0;
+      return nullptr;
     }
 }
 
@@ -303,7 +303,7 @@ Ipv4GlobalRouting::GetRoute (uint32_t index) const
     }
   NS_ASSERT (false);
   // quiet compiler.
-  return 0;
+  return nullptr;
 }
 void
 Ipv4GlobalRouting::RemoveRoute (uint32_t index)
@@ -469,7 +469,7 @@ Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<Net
   if (header.GetDestination ().IsMulticast ())
     {
       NS_LOG_LOGIC ("Multicast destination-- returning false");
-      return 0; // Let other routing protocols try to handle this
+      return nullptr; // Let other routing protocols try to handle this
     }
 //
 // See if this is a unicast packet we have a route for.

@@ -69,9 +69,9 @@ ComponentCarrierUe::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
   m_mac->Dispose ();
-  m_mac = 0;
+  m_mac = nullptr;
   Object::DoDispose ();
 }
 

@@ -36,8 +36,8 @@ LrWpanInterferenceHelper::LrWpanInterferenceHelper (Ptr<const SpectrumModel> spe
 
 LrWpanInterferenceHelper::~LrWpanInterferenceHelper ()
 {
-  m_spectrumModel = 0;
-  m_signal = 0;
+  m_spectrumModel = nullptr;
+  m_signal = nullptr;
   m_signals.clear ();
 }
 

@@ -190,7 +190,7 @@ PcapFileWrapper::Read (Time &t)
 
   if (m_file.Fail())
     {
-      return 0;
+      return nullptr;
     }
 
   if (m_file.IsNanoSecMode())

@@ -41,7 +41,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WimaxHelper");
 
 WimaxHelper::WimaxHelper ()
-  : m_channel (0)
+  : m_channel (nullptr)
 {
 }
 

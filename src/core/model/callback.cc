@@ -90,7 +90,7 @@ CallbackImplBase::Demangle (const std::string& mangled)
 
   int status;
   char* demangled = abi::__cxa_demangle (mangled.c_str (),
-                                         NULL, NULL, &status);
+                                         nullptr, nullptr, &status);
 
   std::string ret;
   if (status == 0)

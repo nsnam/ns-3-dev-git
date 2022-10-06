@@ -97,7 +97,7 @@ ServiceFlow* ServiceFlowManager::DoClassify (Ipv4Address srcAddress,
             }
         }
     }
-  return 0;
+  return nullptr;
 }
 
 ServiceFlow*
@@ -112,7 +112,7 @@ ServiceFlowManager::GetServiceFlow (uint32_t sfid) const
     }
 
   NS_LOG_DEBUG ("GetServiceFlow: service flow not found!");
-  return 0;
+  return nullptr;
 }
 
 ServiceFlow*
@@ -127,7 +127,7 @@ ServiceFlowManager::GetServiceFlow (Cid cid) const
     }
 
   NS_LOG_DEBUG ("GetServiceFlow: service flow not found!");
-  return 0;
+  return nullptr;
 }
 
 std::vector<ServiceFlow*>
@@ -180,7 +180,7 @@ ServiceFlowManager::GetNextServiceFlowToAllocate ()
           return (*iter);
         }
     }
-  return 0;
+  return nullptr;
 }
 
 uint32_t

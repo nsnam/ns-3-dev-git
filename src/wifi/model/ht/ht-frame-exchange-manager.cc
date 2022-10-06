@@ -69,9 +69,9 @@ HtFrameExchangeManager::DoDispose ()
   m_agreements.clear ();
   m_pendingAgreements.clear ();
   m_pendingAddBaResp.clear ();
-  m_msduAggregator = 0;
-  m_mpduAggregator = 0;
-  m_psdu = 0;
+  m_msduAggregator = nullptr;
+  m_mpduAggregator = nullptr;
+  m_psdu = nullptr;
   m_txParams.Clear ();
   QosFrameExchangeManager::DoDispose ();
 }
@@ -885,7 +885,7 @@ HtFrameExchangeManager::SendPsdu ()
   if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
       // we are done in case the A-MPDU does not require acknowledgment
-      m_psdu = 0;
+      m_psdu = nullptr;
     }
 }
 
@@ -1161,7 +1161,7 @@ HtFrameExchangeManager::BlockAckTimeout (Ptr<WifiPsdu> psdu, const WifiTxVector&
       m_edca->UpdateFailedCw (m_linkId);
     }
 
-  m_psdu = 0;
+  m_psdu = nullptr;
   TransmissionFailed ();
 }
 
@@ -1366,7 +1366,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSi
           // Reset the CW
           m_edca->ResetCw (m_linkId);
 
-          m_psdu = 0;
+          m_psdu = nullptr;
           TransmissionSucceeded ();
         }
       else if (hdr.IsBlockAckReq ())

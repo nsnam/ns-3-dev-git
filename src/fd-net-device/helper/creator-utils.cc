@@ -128,7 +128,7 @@ SendSocket (const char *path, int fd, const int magic_number)
   // for.
   //
   struct msghdr msg;
-  msg.msg_name = 0;
+  msg.msg_name = nullptr;
   msg.msg_namelen = 0;
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;

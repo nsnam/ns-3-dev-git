@@ -55,7 +55,7 @@ SingleModelSpectrumChannel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_phyList.clear ();
-  m_spectrumModel = 0;
+  m_spectrumModel = nullptr;
   SpectrumChannel::DoDispose ();
 }
 

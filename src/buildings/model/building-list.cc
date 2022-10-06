@@ -124,7 +124,7 @@ BuildingListPriv::Get ()
 Ptr<BuildingListPriv> *
 BuildingListPriv::DoGet ()
 {
-  static Ptr<BuildingListPriv> ptr = 0;
+  static Ptr<BuildingListPriv> ptr = nullptr;
   if (!ptr)
     {
       ptr = CreateObject<BuildingListPriv> ();
@@ -138,7 +138,7 @@ BuildingListPriv::Delete ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::UnregisterRootNamespaceObject (Get ());
-  (*DoGet ()) = 0;
+  (*DoGet ()) = nullptr;
 }
 
 
@@ -158,7 +158,7 @@ BuildingListPriv::DoDispose ()
     {
       Ptr<Building> building = *i;
       building->Dispose ();
-      *i = 0;
+      *i = nullptr;
     }
   m_buildings.erase (m_buildings.begin (), m_buildings.end ());
   Object::DoDispose ();

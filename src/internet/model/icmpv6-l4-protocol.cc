@@ -134,7 +134,7 @@ TypeId Icmpv6L4Protocol::GetInstanceTypeId () const
 }
 
 Icmpv6L4Protocol::Icmpv6L4Protocol ()
-  : m_node (0)
+  : m_node (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -151,12 +151,12 @@ void Icmpv6L4Protocol::DoDispose ()
     {
       Ptr<NdiscCache> cache = *it;
       cache->Dispose ();
-      cache = 0;
+      cache = nullptr;
     }
   m_cacheList.clear ();
   m_downTarget.Nullify ();
 
-  m_node = 0;
+  m_node = nullptr;
   IpL4Protocol::DoDispose ();
 }
 
@@ -423,7 +423,7 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
 {
   NS_LOG_FUNCTION (this << lla << src << dst << interface);
   Address hardwareAddress;
-  NdiscCache::Entry* entry = 0;
+  NdiscCache::Entry* entry = nullptr;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
 
   /* check if we have this address in our cache */
@@ -528,7 +528,7 @@ void Icmpv6L4Protocol::HandleRS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   packet->RemoveHeader (rsHeader);
   Address hardwareAddress;
   Icmpv6OptionLinkLayerAddress lla (1);
-  NdiscCache::Entry* entry = 0;
+  NdiscCache::Entry* entry = nullptr;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
 
   if (src != Ipv6Address::GetAny ())
@@ -596,7 +596,7 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
       return;
     }
 
-  NdiscCache::Entry* entry = 0;
+  NdiscCache::Entry* entry = nullptr;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
   uint8_t flags = 0;
 
@@ -747,7 +747,7 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   Ipv6Address target = naHeader.GetIpv6Target ();
 
   Address hardwareAddress;
-  NdiscCache::Entry* entry = 0;
+  NdiscCache::Entry* entry = nullptr;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
   std::list<NdiscCache::Ipv6PayloadHeaderPair> waiting;
 
@@ -940,7 +940,7 @@ void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const 
   if (hasLla)
     {
       /* update the cache if needed */
-      NdiscCache::Entry* entry = 0;
+      NdiscCache::Entry* entry = nullptr;
       Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
 
       entry = cache->Lookup (redirTarget);
@@ -1070,7 +1070,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Add
 
   tag.SetHopLimit (ttl);
   packet->AddPacketTag (tag);
-  m_downTarget (packet, src, dst, PROT_NUMBER, 0);
+  m_downTarget (packet, src, dst, PROT_NUMBER, nullptr);
 }
 
 void Icmpv6L4Protocol::DelayedSendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Address dst, uint8_t ttl)
@@ -1088,7 +1088,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
   SocketIpv6HopLimitTag tag;
   Socket::SocketErrno err;
   Ptr<Ipv6Route> route;
-  Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
+  Ptr<NetDevice> oif (nullptr); //specify non-zero if bound to a source address
 
   header.SetDestination (dst);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, oif, err);
@@ -1486,7 +1486,7 @@ Ptr<NdiscCache> Icmpv6L4Protocol::FindCache (Ptr<NetDevice> device)
 
   NS_ASSERT_MSG (false, "Icmpv6L4Protocol can not find a NDIS Cache for device " << device);
   /* quiet compiler */
-  return 0;
+  return nullptr;
 }
 
 Ptr<NdiscCache> Icmpv6L4Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface)

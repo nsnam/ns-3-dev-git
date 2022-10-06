@@ -60,21 +60,21 @@ AttributeChecker::CreateValidValue (const AttributeValue &value) const
     }
   // attempt to convert to string.
   const StringValue *str = dynamic_cast<const StringValue *> (&value);
-  if (str == 0)
+  if (str == nullptr)
     {
-      return 0;
+      return nullptr;
     }
   // attempt to convert back to value.
   Ptr<AttributeValue> v = Create ();
   bool ok = v->DeserializeFromString (str->Get (), this);
   if (!ok)
     {
-      return 0;
+      return nullptr;
     }
   ok = Check (*v);
   if (!ok)
     {
-      return 0;
+      return nullptr;
     }
   return v;
 }

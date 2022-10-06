@@ -56,7 +56,7 @@ PacketProbe::GetTypeId ()
 PacketProbe::PacketProbe ()
 {
   NS_LOG_FUNCTION (this);
-  m_packet = 0;
+  m_packet = nullptr;
 }
 
 PacketProbe::~PacketProbe ()

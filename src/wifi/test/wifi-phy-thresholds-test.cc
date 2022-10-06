@@ -156,7 +156,7 @@ WifiPhyThresholdsTest::MakeWifiSignal (double txPowerWatts)
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, CHANNEL_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
   return txParams;
@@ -168,7 +168,7 @@ WifiPhyThresholdsTest::MakeForeignSignal (double txPowerWatts)
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, CHANNEL_WIDTH);
   Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = Seconds (0.5);
   return txParams;
 }
@@ -247,7 +247,7 @@ void
 WifiPhyThresholdsTest::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 /**

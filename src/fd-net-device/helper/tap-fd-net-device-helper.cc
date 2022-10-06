@@ -273,7 +273,7 @@ TapFdNetDeviceHelper::CreateFileDescriptor () const
                          ossMode.str ().c_str (),           // argv[7] (-t <tap>)
                          ossPI.str ().c_str (),             // argv[8] (-h <pi>)
                          ossPath.str ().c_str (),           // argv[9] (-p<path>)
-                         (char *)NULL);
+                         (char *)nullptr);
 
       //
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
@@ -353,7 +353,7 @@ TapFdNetDeviceHelper::CreateFileDescriptor () const
       // data we expect to receive and point it to buffer.
       //
       struct msghdr msg;
-      msg.msg_name = 0;
+      msg.msg_name = nullptr;
       msg.msg_namelen = 0;
       msg.msg_iov = &iov;
       msg.msg_iovlen = 1;
@@ -374,7 +374,7 @@ TapFdNetDeviceHelper::CreateFileDescriptor () const
       // one we're interested in.
       //
       struct cmsghdr *cmsg;
-      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != NULL; cmsg = CMSG_NXTHDR (&msg, cmsg))
+      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != nullptr; cmsg = CMSG_NXTHDR (&msg, cmsg))
         {
           if (cmsg->cmsg_level == SOL_SOCKET
               && cmsg->cmsg_type == SCM_RIGHTS)

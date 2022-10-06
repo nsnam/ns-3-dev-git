@@ -130,7 +130,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidt
     {
       NS_LOG_DEBUG ("Queue empty");
       m_dcf->NotifyChannelReleased (0);
-      m_dcf = 0;
+      m_dcf = nullptr;
       return false;
     }
 
@@ -169,8 +169,8 @@ void
 WaveFrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_scheduler = 0;
-  m_coordinator = 0;
+  m_scheduler = nullptr;
+  m_coordinator = nullptr;
   FrameExchangeManager::DoDispose ();
 }
 

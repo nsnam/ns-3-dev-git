@@ -270,7 +270,7 @@ LrWpanPhy::GetRxSpectrumModel () const
     }
   else
     {
-      return 0;
+      return nullptr;
     }
 }
 
@@ -507,7 +507,7 @@ LrWpanPhy::EndRx (Ptr<SpectrumSignalParameters> par)
           // The packet was destroyed, drop it.
           m_phyRxDropTrace (currentPacket);
         }
-      Ptr<LrWpanSpectrumSignalParameters> none = 0;
+      Ptr<LrWpanSpectrumSignalParameters> none = nullptr;
       m_currentRxPacket = std::make_pair (none, true);
 
       if (!m_isRxCanceled)
@@ -988,7 +988,7 @@ LrWpanPhy::PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id,
                 {
                   m_currentTxPacket.second = true;
                   m_pdDataRequest.Cancel ();
-                  m_currentTxPacket.first = 0;
+                  m_currentTxPacket.first = nullptr;
                   if (!m_pdDataConfirmCallback.IsNull ())
                     {
                       m_pdDataConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
@@ -1161,7 +1161,7 @@ LrWpanPhy::PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id,
                 {
                   m_currentTxPacket.second = true;
                   m_pdDataRequest.Cancel ();
-                  m_currentTxPacket.first = 0;
+                  m_currentTxPacket.first = nullptr;
                   if (!m_pdDataConfirmCallback.IsNull ())
                     {
                       m_pdDataConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
@@ -1462,7 +1462,7 @@ LrWpanPhy::EndTx ()
           m_pdDataConfirmCallback (m_trxState);
         }
     }
-  m_currentTxPacket.first = 0;
+  m_currentTxPacket.first = nullptr;
   m_currentTxPacket.second = false;
 
 
@@ -1654,11 +1654,11 @@ LrWpanPhy::SetPhyOption (LrWpanPhyOption phyOption)
   m_noise = psdHelper.CreateNoisePowerSpectralDensity (m_phyPIBAttributes.phyCurrentChannel);
   m_signal = Create<LrWpanInterferenceHelper> (m_noise->GetSpectrumModel ());
   m_rxLastUpdate = Seconds (0);
-  Ptr<Packet> none_packet = 0;
-  Ptr<LrWpanSpectrumSignalParameters> none_params = 0;
+  Ptr<Packet> none_packet = nullptr;
+  Ptr<LrWpanSpectrumSignalParameters> none_params = nullptr;
   m_currentRxPacket = std::make_pair (none_params, true);
   m_currentTxPacket = std::make_pair (none_packet, true);
-  m_errorModel = 0;
+  m_errorModel = nullptr;
 
 }
 

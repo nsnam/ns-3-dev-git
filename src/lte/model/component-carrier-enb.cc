@@ -82,22 +82,22 @@ ComponentCarrierEnb::DoDispose ()
   if (m_phy)
     {
       m_phy->Dispose ();
-      m_phy = 0;
+      m_phy = nullptr;
     }
   if (m_mac)
     {
       m_mac->Dispose ();
-      m_mac = 0;
+      m_mac = nullptr;
     }
   if (m_scheduler)
     {
       m_scheduler->Dispose ();
-      m_scheduler = 0;
+      m_scheduler = nullptr;
     }
   if (m_ffrAlgorithm)
     {
       m_ffrAlgorithm->Dispose ();
-      m_ffrAlgorithm = 0;
+      m_ffrAlgorithm = nullptr;
     }
 
   Object::DoDispose ();

@@ -128,13 +128,13 @@ void
 LteUeNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_targetEnb = 0;
+  m_targetEnb = nullptr;
 
   m_rrc->Dispose ();
-  m_rrc = 0;
+  m_rrc = nullptr;
 
   m_nas->Dispose ();
-  m_nas = 0;
+  m_nas = nullptr;
   for (uint32_t i = 0; i < m_ccMap.size (); i++)
     {
       m_ccMap.at (i)->Dispose ();

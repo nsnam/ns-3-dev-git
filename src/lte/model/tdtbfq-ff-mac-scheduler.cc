@@ -50,15 +50,15 @@ NS_OBJECT_ENSURE_REGISTERED (TdTbfqFfMacScheduler);
 
 
 TdTbfqFfMacScheduler::TdTbfqFfMacScheduler ()
-  :   m_cschedSapUser (0),
-    m_schedSapUser (0),
+  :   m_cschedSapUser (nullptr),
+    m_schedSapUser (nullptr),
     m_nextRntiUl (0),
     bankSize (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new MemberCschedSapProvider<TdTbfqFfMacScheduler> (this);
   m_schedSapProvider = new MemberSchedSapProvider<TdTbfqFfMacScheduler> (this);
-  m_ffrSapProvider = 0;
+  m_ffrSapProvider = nullptr;
   m_ffrSapUser = new MemberLteFfrSapUser<TdTbfqFfMacScheduler> (this);
 }
 

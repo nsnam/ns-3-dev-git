@@ -462,7 +462,7 @@ Names::Find (std::string path)
     }
   else
     {
-      return 0;
+      return nullptr;
     }
 }
 
@@ -478,7 +478,7 @@ Names::Find (std::string path, std::string name)
     }
   else
     {
-      return 0;
+      return nullptr;
     }
 }
 
@@ -494,7 +494,7 @@ Names::Find (Ptr<Object> context, std::string name)
     }
   else
     {
-      return 0;
+      return nullptr;
     }
 }
 

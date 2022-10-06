@@ -154,7 +154,7 @@ void
 PieQueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_uv = 0;
+  m_uv = nullptr;
   m_rtrsEvent.Cancel ();
   QueueDisc::DoDispose ();
 }
@@ -475,7 +475,7 @@ PieQueueDisc::DoDequeue ()
   if (GetInternalQueue (0)->IsEmpty ())
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();

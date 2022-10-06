@@ -25,7 +25,7 @@
 namespace ns3 {
 
 TcpSocketFactoryImpl::TcpSocketFactoryImpl ()
-  : m_tcp (0)
+  : m_tcp (nullptr)
 {
 }
 TcpSocketFactoryImpl::~TcpSocketFactoryImpl ()
@@ -48,7 +48,7 @@ TcpSocketFactoryImpl::CreateSocket ()
 void
 TcpSocketFactoryImpl::DoDispose ()
 {
-  m_tcp = 0;
+  m_tcp = nullptr;
   TcpSocketFactory::DoDispose ();
 }
 

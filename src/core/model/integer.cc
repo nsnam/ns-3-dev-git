@@ -60,7 +60,7 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
     {
       NS_LOG_FUNCTION (&value);
       const IntegerValue *v = dynamic_cast<const IntegerValue *> (&value);
-      if (v == 0)
+      if (v == nullptr)
         {
           return false;
         }
@@ -93,7 +93,7 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
       NS_LOG_FUNCTION (&src << &dst);
       const IntegerValue *source = dynamic_cast<const IntegerValue *> (&src);
       IntegerValue *destination = dynamic_cast<IntegerValue *> (&dst);
-      if (source == 0 || destination == 0)
+      if (source == nullptr || destination == nullptr)
         {
           return false;
         }

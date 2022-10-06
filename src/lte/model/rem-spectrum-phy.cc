@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("RemSpectrumPhy");
 NS_OBJECT_ENSURE_REGISTERED (RemSpectrumPhy);
 
 RemSpectrumPhy::RemSpectrumPhy ()
-  : m_mobility (0),
+  : m_mobility (nullptr),
     m_referenceSignalPower (0),
     m_sumPower (0),
     m_active (true),
@@ -59,7 +59,7 @@ void
 RemSpectrumPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_mobility = 0;
+  m_mobility = nullptr;
   SpectrumPhy::DoDispose ();
 }
 
@@ -105,7 +105,7 @@ RemSpectrumPhy::GetMobility () const
 Ptr<NetDevice>
 RemSpectrumPhy::GetDevice () const
 {
-  return 0;
+  return nullptr;
 }
 
 Ptr<const SpectrumModel>
@@ -117,7 +117,7 @@ RemSpectrumPhy::GetRxSpectrumModel () const
 Ptr<Object>
 RemSpectrumPhy::GetAntenna () const
 {
-  return 0;
+  return nullptr;
 }
 
 

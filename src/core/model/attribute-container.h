@@ -303,7 +303,7 @@ private:
 
 template <class A, template <class...> class C>
 AttributeContainerChecker<A, C>::AttributeContainerChecker ()
-  : m_itemchecker (0)
+  : m_itemchecker (nullptr)
 {}
 
 template <class A, template <class...> class C>

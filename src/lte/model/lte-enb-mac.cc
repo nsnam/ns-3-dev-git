@@ -380,7 +380,7 @@ LteEnbMac::GetTypeId ()
 
 
 LteEnbMac::LteEnbMac ():
-m_ccmMacSapUser (0)
+m_ccmMacSapUser (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_macSapProvider = new EnbMacMemberLteMacSapProvider<LteEnbMac> (this);

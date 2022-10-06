@@ -231,7 +231,7 @@ Ipv4L3Protocol::GetProtocol (int protocolNumber, int32_t interfaceIndex) const
       return i->second;
     }
 
-  return 0;
+  return nullptr;
 }
 
 void
@@ -308,24 +308,24 @@ Ipv4L3Protocol::DoDispose ()
   NS_LOG_FUNCTION (this);
   for (L4List_t::iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
-      i->second = 0;
+      i->second = nullptr;
     }
   m_protocols.clear ();
 
   for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
     {
-      *i = 0;
+      *i = nullptr;
     }
   m_interfaces.clear ();
   m_reverseInterfacesContainer.clear ();
 
   m_sockets.clear ();
-  m_node = 0;
-  m_routingProtocol = 0;
+  m_node = nullptr;
+  m_routingProtocol = nullptr;
 
   for (MapFragments_t::iterator it = m_fragments.begin (); it != m_fragments.end (); it++)
     {
-      it->second = 0;
+      it->second = nullptr;
     }
 
   m_fragments.clear ();
@@ -350,7 +350,7 @@ Ipv4L3Protocol::SetupLoopback ()
   NS_LOG_FUNCTION (this);
 
   Ptr<Ipv4Interface> interface = CreateObject<Ipv4Interface> ();
-  Ptr<LoopbackNetDevice> device = 0;
+  Ptr<LoopbackNetDevice> device = nullptr;
   // First check whether an existing LoopbackNetDevice exists on the node
   for (uint32_t i = 0; i < m_node->GetNDevices (); i++)
     {
@@ -432,7 +432,7 @@ Ipv4L3Protocol::GetInterface (uint32_t index) const
     {
       return m_interfaces[index];
     }
-  return 0;
+  return nullptr;
 }
 
 uint32_t
@@ -683,7 +683,7 @@ Ipv4L3Protocol::GetIcmp () const
     }
   else
     {
-      return 0;
+      return nullptr;
     }
 }
 
@@ -879,7 +879,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   // 4) packet is not broadcast, and route is NULL (e.g., a raw socket call)
   NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 4:  not broadcast and passed in with no route " << destination);
   Socket::SocketErrno errno_;
-  Ptr<NetDevice> oif (0); // unused for now
+  Ptr<NetDevice> oif (nullptr); // unused for now
   Ptr<Ipv4Route> newRoute;
   if (m_routingProtocol)
     {
@@ -1557,7 +1557,7 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
     {
       packet = fragments->GetPacket ();
       m_timeoutEventList.erase (fragments->GetTimeoutIter ());
-      fragments = 0;
+      fragments = nullptr;
       m_fragments.erase (key);
       ret = true;
     }
@@ -1727,7 +1727,7 @@ Ipv4L3Protocol::HandleFragmentsTimeout (FragmentKey_t key, Ipv4Header & ipHeader
   m_dropTrace (ipHeader, packet, DROP_FRAGMENT_TIMEOUT, this, iif);
 
   // clear the buffers
-  it->second = 0;
+  it->second = nullptr;
 
   m_fragments.erase (key);
 }

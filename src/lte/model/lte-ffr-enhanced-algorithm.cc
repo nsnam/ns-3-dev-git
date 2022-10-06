@@ -95,8 +95,8 @@ const uint16_t NUM_UPLINK_CONFS (sizeof (g_ffrEnhancedUplinkDefaultConfiguration
 
 
 LteFfrEnhancedAlgorithm::LteFfrEnhancedAlgorithm ()
-  : m_ffrSapUser (0),
-    m_ffrRrcSapUser (0),
+  : m_ffrSapUser (nullptr),
+    m_ffrRrcSapUser (nullptr),
     m_measId (0)
 {
   NS_LOG_FUNCTION (this);

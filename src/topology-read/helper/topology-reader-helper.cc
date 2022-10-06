@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("TopologyReaderHelper");
 
 TopologyReaderHelper::TopologyReaderHelper ()
 {
-  m_inputModel = 0;
+  m_inputModel = nullptr;
 }
 
 void

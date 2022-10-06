@@ -114,12 +114,12 @@ OnOffApplication::GetTypeId ()
 
 
 OnOffApplication::OnOffApplication ()
-  : m_socket (0),
+  : m_socket (nullptr),
     m_connected (false),
     m_residualBits (0),
     m_lastStartTime (Seconds (0)),
     m_totBytes (0),
-    m_unsentPacket (0)
+    m_unsentPacket (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -158,8 +158,8 @@ OnOffApplication::DoDispose ()
   NS_LOG_FUNCTION (this);
 
   CancelEvents ();
-  m_socket = 0;
-  m_unsentPacket = 0;
+  m_socket = nullptr;
+  m_unsentPacket = nullptr;
   // chain up
   Application::DoDispose ();
 }
@@ -258,7 +258,7 @@ void OnOffApplication::CancelEvents ()
     {
       NS_LOG_DEBUG ("Discarding cached packet upon CancelEvents ()");
     }
-  m_unsentPacket = 0;
+  m_unsentPacket = nullptr;
 }
 
 // Event handlers
@@ -354,7 +354,7 @@ void OnOffApplication::SendPacket ()
     {
       m_txTrace (packet);
       m_totBytes += m_pktSize;
-      m_unsentPacket = 0;
+      m_unsentPacket = nullptr;
       Address localAddress;
       m_socket->GetSockName (localAddress);
       if (InetSocketAddress::IsMatchingType (m_peer))

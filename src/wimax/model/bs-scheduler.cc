@@ -72,12 +72,12 @@ BSScheduler::~BSScheduler ()
   while (downlinkBursts->size ())
     {
       pair = downlinkBursts->front ();
-      pair.second = 0;
+      pair.second = nullptr;
       delete pair.first;
     }
-  SetBs (0);
+  SetBs (nullptr);
   delete m_downlinkBursts;
-  m_downlinkBursts = 0;
+  m_downlinkBursts = nullptr;
 }
 
 void

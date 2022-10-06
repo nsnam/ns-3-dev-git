@@ -220,8 +220,8 @@ SimpleNetDevice::GetTypeId ()
 }
 
 SimpleNetDevice::SimpleNetDevice ()
-  : m_channel (0),
-    m_node (0),
+  : m_channel (nullptr),
+    m_node (nullptr),
     m_mtu (0xffff),
     m_ifIndex (0),
     m_linkUp (false)
@@ -534,9 +534,9 @@ void
 SimpleNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_channel = 0;
-  m_node = 0;
-  m_receiveErrorModel = 0;
+  m_channel = nullptr;
+  m_node = nullptr;
+  m_receiveErrorModel = nullptr;
   m_queue->Dispose ();
   if (FinishTransmissionEvent.IsRunning ())
     {

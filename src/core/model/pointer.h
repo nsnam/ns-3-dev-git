@@ -132,7 +132,7 @@ class PointerChecker : public ns3::PointerChecker
   bool Check (const AttributeValue &val) const override
   {
     const PointerValue *value = dynamic_cast<const PointerValue *> (&val);
-    if (value == 0)
+    if (value == nullptr)
       {
         return false;
       }
@@ -141,7 +141,7 @@ class PointerChecker : public ns3::PointerChecker
         return true;
       }
     T *ptr = dynamic_cast<T*> (PeekPointer (value->GetObject ()));
-    if (ptr == 0)
+    if (ptr == nullptr)
       {
         return false;
       }
@@ -168,7 +168,7 @@ class PointerChecker : public ns3::PointerChecker
   {
     const PointerValue *src = dynamic_cast<const PointerValue *> (&source);
     PointerValue *dst = dynamic_cast<PointerValue *> (&destination);
-    if (src == 0 || dst == 0)
+    if (src == nullptr || dst == nullptr)
       {
         return false;
       }

@@ -57,7 +57,7 @@ UanTransducerHd::Clear ()
   if (m_channel)
     {
       m_channel->Clear ();
-      m_channel = 0;
+      m_channel = nullptr;
     }
 
   UanPhyList::iterator it = m_phyList.begin ();
@@ -66,13 +66,13 @@ UanTransducerHd::Clear ()
       if (*it)
         {
           (*it)->Clear ();
-          *it = 0;
+          *it = nullptr;
         }
     }
   ArrivalList::iterator ait = m_arrivalList.begin ();
   for (; ait != m_arrivalList.end (); ait++)
     {
-      ait->GetPacket () = 0;
+      ait->GetPacket () = nullptr;
     }
   m_phyList.clear ();
   m_arrivalList.clear ();

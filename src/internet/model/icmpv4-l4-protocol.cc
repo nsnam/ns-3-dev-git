@@ -51,7 +51,7 @@ Icmpv4L4Protocol::GetTypeId ()
 }
 
 Icmpv4L4Protocol::Icmpv4L4Protocol ()
-  : m_node (0)
+  : m_node (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -120,7 +120,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
   header.SetProtocol (PROT_NUMBER);
   Socket::SocketErrno errno_;
   Ptr<Ipv4Route> route;
-  Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
+  Ptr<NetDevice> oif (nullptr); //specify non-zero if bound to a source address
   route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
   if (route)
     {
@@ -209,7 +209,7 @@ Icmpv4L4Protocol::HandleEcho (Ptr<Packet> p,
   Icmpv4Echo echo;
   p->RemoveHeader (echo);
   reply->AddHeader (echo);
-  SendMessage (reply, destination, source, Icmpv4Header::ICMPV4_ECHO_REPLY, 0, 0);
+  SendMessage (reply, destination, source, Icmpv4Header::ICMPV4_ECHO_REPLY, 0, nullptr);
 }
 void
 Icmpv4L4Protocol::Forward (Ipv4Address source, Icmpv4Header icmp,
@@ -295,7 +295,7 @@ void
 Icmpv4L4Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_node = nullptr;
   m_downTarget.Nullify ();
   IpL4Protocol::DoDispose ();
 }

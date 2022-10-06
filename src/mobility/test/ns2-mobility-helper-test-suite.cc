@@ -307,7 +307,7 @@ public:
 
     // to be used as temporary variable for test cases.
     // Note that test suite takes care of deleting all test cases.
-    Ns2MobilityHelperTest * t (0);
+    Ns2MobilityHelperTest * t (nullptr);
 
     // Initial position
     t = new Ns2MobilityHelperTest ("initial position", Seconds (1));

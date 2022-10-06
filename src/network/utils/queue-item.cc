@@ -35,7 +35,7 @@ QueueItem::QueueItem (Ptr<Packet> p)
 QueueItem::~QueueItem ()
 {
   NS_LOG_FUNCTION (this);
-  m_packet = 0;
+  m_packet = nullptr;
 }
 
 Ptr<Packet>

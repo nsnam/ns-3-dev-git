@@ -85,7 +85,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
     bool DoGetN (const ObjectBase *object, std::size_t *n) const override
     {
       const T *obj = dynamic_cast<const T *> (object);
-      if (obj == 0)
+      if (obj == nullptr)
         {
           return false;
         }
@@ -109,7 +109,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
         }
       NS_ASSERT (false);
       // quiet compiler.
-      return 0;
+      return nullptr;
     }
     U T::*m_memberVector;
   } *spec = new MemberStdContainer ();

@@ -340,7 +340,7 @@ RrcConnectionRequestTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (source.GetMmec (),destination.GetMmec (), "Different m_mmec!");
   NS_TEST_ASSERT_MSG_EQ (source.GetMtmsi (),destination.GetMtmsi (), "Different m_mTmsi!");
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -394,7 +394,7 @@ RrcConnectionSetupTestCase::DoRun ()
 
   AssertEqualRadioResourceConfigDedicated (source.GetRadioResourceConfigDedicated (),destination.GetRadioResourceConfigDedicated ());
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -445,7 +445,7 @@ RrcConnectionSetupCompleteTestCase::DoRun ()
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -497,7 +497,7 @@ RrcConnectionReconfigurationCompleteTestCase::DoRun ()
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -707,7 +707,7 @@ RrcConnectionReconfigurationTestCase::DoRun ()
       AssertEqualRadioResourceConfigDedicated (source.GetRadioResourceConfigDedicated (), destination.GetRadioResourceConfigDedicated ());
     }
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -786,7 +786,7 @@ HandoverPreparationInfoTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (source.GetAsConfig ().sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity, destination.GetAsConfig ().sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity, "csgIdentity");
   NS_TEST_ASSERT_MSG_EQ (source.GetAsConfig ().sourceDlCarrierFreq, destination.GetAsConfig ().sourceDlCarrierFreq, "sourceDlCarrierFreq");
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -841,7 +841,7 @@ RrcConnectionReestablishmentRequestTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (source.GetUeIdentity ().physCellId, destination.GetUeIdentity ().physCellId, "physCellId");
   NS_TEST_ASSERT_MSG_EQ (source.GetReestablishmentCause (),destination.GetReestablishmentCause (), "ReestablishmentCause");
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -894,7 +894,7 @@ RrcConnectionReestablishmentTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
   AssertEqualRadioResourceConfigDedicated (source.GetRadioResourceConfigDedicated (),destination.GetRadioResourceConfigDedicated ());
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -945,7 +945,7 @@ RrcConnectionReestablishmentCompleteTestCase::DoRun ()
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -996,7 +996,7 @@ RrcConnectionRejectTestCase::DoRun ()
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetMessage ().waitTime, destination.GetMessage ().waitTime, "Different waitTime!");
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**
@@ -1112,7 +1112,7 @@ MeasurementReportTestCase::DoRun ()
         }
     }
 
-  packet = 0;
+  packet = nullptr;
 }
 
 /**

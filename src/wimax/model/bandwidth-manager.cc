@@ -60,7 +60,7 @@ BandwidthManager::~BandwidthManager ()
 void
 BandwidthManager::DoDispose ()
 {
-  m_device = 0;
+  m_device = nullptr;
 }
 
 uint32_t
@@ -127,7 +127,7 @@ ServiceFlow*
 BandwidthManager::SelectFlowForRequest (uint32_t &bytesToRequest)
 {
   Ptr<Packet> packet;
-  ServiceFlow *serviceFlow = 0;
+  ServiceFlow *serviceFlow = nullptr;
 
   Ptr<SubscriberStationNetDevice> ss = m_device->GetObject<SubscriberStationNetDevice> ();
   std::vector<ServiceFlow*> serviceFlows = ss->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_ALL);

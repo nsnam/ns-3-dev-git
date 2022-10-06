@@ -61,7 +61,7 @@ RecipientBlockAckAgreement::~RecipientBlockAckAgreement ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_bufferedMpdus.clear ();
-  m_rxMiddle = 0;
+  m_rxMiddle = nullptr;
 }
 
 void

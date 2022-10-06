@@ -534,7 +534,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
                 }
               // attempt to cast to a pointer checker.
               const PointerChecker *pChecker = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
-              if (pChecker != 0)
+              if (pChecker != nullptr)
                 {
                   NS_LOG_DEBUG ("GetAttribute(ptr)=" << info.name << " on path=" << GetResolvedPath ());
                   PointerValue pValue;
@@ -555,7 +555,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
               // attempt to cast to an object vector.
               const ObjectPtrContainerChecker *vectorChecker =
                 dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
-              if (vectorChecker != 0)
+              if (vectorChecker != nullptr)
                 {
                   NS_LOG_DEBUG ("GetAttribute(vector)=" << info.name << " on path=" << GetResolvedPath () << pathLeft);
                   foundMatch = true;
@@ -776,7 +776,7 @@ public:
   // the root pointer zeroed indicates to the resolver that it should start
   // looking at the root of the "/Names" namespace during this go.
   //
-  resolver.Resolve (0);
+  resolver.Resolve (nullptr);
 
   return MatchContainer (resolver.m_objects, resolver.m_contexts, path);
 }

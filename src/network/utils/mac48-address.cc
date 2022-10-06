@@ -293,13 +293,13 @@ std::istream& operator>> (std::istream& is, Mac48Address & address)
       if (next == std::string::npos)
         {
           tmp = v.substr (col, v.size ()-col);
-          address.m_address[i] = strtoul (tmp.c_str(), 0, 16);
+          address.m_address[i] = strtoul (tmp.c_str(), nullptr, 16);
           break;
         }
       else
         {
           tmp = v.substr (col, next-col);
-          address.m_address[i] = strtoul (tmp.c_str(), 0, 16);
+          address.m_address[i] = strtoul (tmp.c_str(), nullptr, 16);
           col = next + 1;
         }
     }

@@ -33,7 +33,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("EventId");
 
 EventId::EventId ()
-  : m_eventImpl (0),
+  : m_eventImpl (nullptr),
     m_ts (0),
     m_context (0),
     m_uid (0)

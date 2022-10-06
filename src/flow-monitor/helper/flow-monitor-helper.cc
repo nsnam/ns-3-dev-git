@@ -43,9 +43,9 @@ FlowMonitorHelper::~FlowMonitorHelper ()
   if (m_flowMonitor)
     {
       m_flowMonitor->Dispose ();
-      m_flowMonitor = 0;
-      m_flowClassifier4 = 0;
-      m_flowClassifier6 = 0;
+      m_flowMonitor = nullptr;
+      m_flowClassifier4 = nullptr;
+      m_flowClassifier6 = nullptr;
     }
 }
 

@@ -68,7 +68,7 @@ SSRecord::Initialize ()
 SSRecord::~SSRecord ()
 {
   delete m_serviceFlows;
-  m_serviceFlows = 0;
+  m_serviceFlows = nullptr;
 }
 
 void

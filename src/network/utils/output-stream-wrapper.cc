@@ -51,7 +51,7 @@ OutputStreamWrapper::~OutputStreamWrapper ()
   NS_LOG_FUNCTION (this);
   FatalImpl::UnregisterStream (m_ostream);
   if (m_destroyable) delete m_ostream;
-  m_ostream = 0;
+  m_ostream = nullptr;
 }
 
 std::ostream *

@@ -51,7 +51,7 @@ SsServiceFlowManager::SsServiceFlowManager (Ptr<SubscriberStationNetDevice> devi
     m_currentTransactionId (0),
     m_transactionIdIndex (1),
     m_dsaReqRetries (0),
-    m_pendingServiceFlow (0)
+    m_pendingServiceFlow (nullptr)
 {
 }
 
@@ -120,7 +120,7 @@ void
 SsServiceFlowManager::InitiateServiceFlows ()
 {
   ServiceFlow *serviceFlow = GetNextServiceFlowToAllocate ();
-  NS_ASSERT_MSG (serviceFlow != 0,"Error while initiating a new service flow: All service flows have been initiated");
+  NS_ASSERT_MSG (serviceFlow != nullptr,"Error while initiating a new service flow: All service flows have been initiated");
   m_pendingServiceFlow = serviceFlow;
   ScheduleDsaReq (m_pendingServiceFlow);
 }
@@ -210,7 +210,7 @@ SsServiceFlowManager::ProcessDsaRsp (const DsaRsp &dsaRsp)
   m_device->Enqueue (dsaAck, MacHeaderType (), ss->GetPrimaryConnection ());
 
   m_dsaReqRetries = 0;
-  if (m_pendingServiceFlow == NULL)
+  if (m_pendingServiceFlow == nullptr)
     {
       // May be the DSA-ACK was not received by the SS
       return;
@@ -227,10 +227,10 @@ SsServiceFlowManager::ProcessDsaRsp (const DsaRsp &dsaRsp)
   ss->GetConnectionManager ()->AddConnection (transportConnection,
                                               Cid::TRANSPORT);
   m_pendingServiceFlow->SetIsEnabled (true);
-  m_pendingServiceFlow = 0;
+  m_pendingServiceFlow = nullptr;
   // check if all service flow have been initiated
   ServiceFlow * serviceFlow = GetNextServiceFlowToAllocate ();
-  if (serviceFlow == 0)
+  if (serviceFlow == nullptr)
     {
       ss->SetAreServiceFlowsAllocated (true);
     }

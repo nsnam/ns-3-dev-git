@@ -192,7 +192,7 @@ Node::DoDispose ()
     {
       Ptr<NetDevice> device = *i;
       device->Dispose ();
-      *i = 0;
+      *i = nullptr;
     }
   m_devices.clear ();
   for (std::vector<Ptr<Application> >::iterator i = m_applications.begin ();
@@ -200,7 +200,7 @@ Node::DoDispose ()
     {
       Ptr<Application> application = *i;
       application->Dispose ();
-      *i = 0;
+      *i = nullptr;
     }
   m_applications.clear ();
   Object::DoDispose ();

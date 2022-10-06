@@ -40,8 +40,8 @@ X2IfaceInfo::X2IfaceInfo (Ipv4Address remoteIpAddr, Ptr<Socket> localCtrlPlaneSo
 
 X2IfaceInfo::~X2IfaceInfo ()
 {
-  m_localCtrlPlaneSocket = 0;
-  m_localUserPlaneSocket = 0;
+  m_localCtrlPlaneSocket = nullptr;
+  m_localUserPlaneSocket = nullptr;
 }
 
 X2IfaceInfo&

@@ -132,7 +132,7 @@ VirtualNetDevice::~VirtualNetDevice()
 void VirtualNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_node = 0;
+  m_node = nullptr;
   NetDevice::DoDispose ();
 }
 

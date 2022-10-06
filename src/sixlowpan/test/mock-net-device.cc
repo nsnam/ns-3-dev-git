@@ -53,7 +53,7 @@ MockNetDevice::GetTypeId ()
 }
 
 MockNetDevice::MockNetDevice ()
-  : m_node (0),
+  : m_node (nullptr),
     m_mtu (0xffff),
     m_ifIndex (0),
     m_linkUp (true)
@@ -96,7 +96,7 @@ Ptr<Channel>
 MockNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
-  return 0;
+  return nullptr;
 }
 
 void
@@ -316,7 +316,7 @@ void
 MockNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_node = nullptr;
   m_rxCallback.Nullify ();
   m_promiscCallback.Nullify ();
   m_sendCallback.Nullify ();

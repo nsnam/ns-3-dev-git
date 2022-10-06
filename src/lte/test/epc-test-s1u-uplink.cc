@@ -163,7 +163,7 @@ EpsBearerTagUdpClient::EpsBearerTagUdpClient ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_sent = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_sendEvent = EventId ();
 }
 
@@ -173,7 +173,7 @@ EpsBearerTagUdpClient::EpsBearerTagUdpClient (uint16_t rnti, uint8_t bid)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_sent = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_sendEvent = EventId ();
 }
 

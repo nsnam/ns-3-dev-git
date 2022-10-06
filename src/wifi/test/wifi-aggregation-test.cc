@@ -309,12 +309,12 @@ AmpduAggregationTest::DoRun ()
   Simulator::Destroy ();
 
   m_manager->Dispose ();
-  m_manager = 0;
+  m_manager = nullptr;
 
   m_device->Dispose ();
-  m_device = 0;
+  m_device = nullptr;
 
-  htConfiguration = 0;
+  htConfiguration = nullptr;
 }
 
 /**
@@ -543,8 +543,8 @@ TwoLevelAggregationTest::DoRun ()
   Simulator::Destroy ();
 
   m_device->Dispose ();
-  m_device = 0;
-  htConfiguration = 0;
+  m_device = nullptr;
+  htConfiguration = nullptr;
 }
 
 /**
@@ -710,14 +710,14 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   Simulator::Destroy ();
 
   m_manager->Dispose ();
-  m_manager = 0;
+  m_manager = nullptr;
 
   m_device->Dispose ();
-  m_device = 0;
+  m_device = nullptr;
 
-  htConfiguration = 0;
-  vhtConfiguration = 0;
-  heConfiguration = 0;
+  htConfiguration = nullptr;
+  vhtConfiguration = nullptr;
+  heConfiguration = nullptr;
 }
 
 void

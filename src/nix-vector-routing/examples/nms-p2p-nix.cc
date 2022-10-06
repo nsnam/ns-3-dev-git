@@ -85,7 +85,7 @@ public:
     for (size_t i = 0; i < m_xMax; i++)
       delete[] p[i];
     delete[] p;
-    p = 0;
+    p = nullptr;
   }
 
   /**
@@ -127,10 +127,10 @@ public:
     for (size_t i = 0; i < m_xMax; i++)
       {
         delete p[i];
-        p[i] = 0;
+        p[i] = nullptr;
       }
     delete[] p;
-    p = 0;
+    p = nullptr;
   }
 
   /**

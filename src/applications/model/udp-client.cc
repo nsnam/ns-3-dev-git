@@ -78,7 +78,7 @@ UdpClient::UdpClient ()
   NS_LOG_FUNCTION (this);
   m_sent = 0;
   m_totalTx = 0;
-  m_socket = 0;
+  m_socket = nullptr;
   m_sendEvent = EventId ();
 }
 

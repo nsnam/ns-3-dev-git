@@ -59,7 +59,7 @@ Ipv6RawSocketImpl::Ipv6RawSocketImpl ()
 {
   NS_LOG_FUNCTION (this);
   m_err = Socket::ERROR_NOTERROR;
-  m_node = 0;
+  m_node = nullptr;
   m_src = Ipv6Address::GetAny ();
   m_dst = Ipv6Address::GetAny ();
   m_protocol = 0;
@@ -75,7 +75,7 @@ Ipv6RawSocketImpl::~Ipv6RawSocketImpl ()
 void Ipv6RawSocketImpl::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_node = nullptr;
   Socket::DoDispose ();
 }
 
@@ -246,7 +246,7 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
       Ipv6Header hdr;
       hdr.SetDestination (dst);
       SocketErrno err = ERROR_NOTERROR;
-      Ptr<Ipv6Route> route = 0;
+      Ptr<Ipv6Route> route = nullptr;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
 
       if (!m_src.IsAny ())
@@ -312,7 +312,7 @@ Ptr<Packet> Ipv6RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Addre
 
   if (m_data.empty ())
     {
-      return 0;
+      return nullptr;
     }
 
   /* get packet */

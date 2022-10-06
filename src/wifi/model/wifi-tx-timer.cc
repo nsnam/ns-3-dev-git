@@ -40,7 +40,7 @@ WifiTxTimer::WifiTxTimer ()
 WifiTxTimer::~WifiTxTimer ()
 {
   m_timeoutEvent.Cancel ();
-  m_impl = 0;
+  m_impl = nullptr;
 }
 
 void
@@ -128,7 +128,7 @@ WifiTxTimer::Cancel ()
 {
   NS_LOG_FUNCTION (this << GetReasonString (m_reason));
   m_timeoutEvent.Cancel ();
-  m_impl = 0;
+  m_impl = nullptr;
 }
 
 Time

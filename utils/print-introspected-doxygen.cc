@@ -433,7 +433,7 @@ StaticInformation::DoGather (TypeId tid)
     {
       struct TypeId::AttributeInformation info = tid.GetAttribute(i);
       const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
-      if (ptrChecker != 0)
+      if (ptrChecker != nullptr)
         {
           TypeId pointee = ptrChecker->GetPointeeTypeId ();
 
@@ -458,7 +458,7 @@ StaticInformation::DoGather (TypeId tid)
         }
       // attempt to cast to an object vector.
       const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
-      if (vectorChecker != 0)
+      if (vectorChecker != nullptr)
         {
           TypeId item = vectorChecker->GetItemTypeId ();
           m_currentPath.push_back (info.name + "/[i]");
@@ -721,7 +721,7 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 		{
 		  const PointerChecker *ptrChecker =
 		    dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
-		  if (ptrChecker != 0)
+		  if (ptrChecker != nullptr)
 		    {
 		      os << reference << "ns3::Ptr" << "< "
 			 << reference << ptrChecker->GetPointeeTypeId ().GetName ()
@@ -733,7 +733,7 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 		{
 		  const ObjectPtrContainerChecker * ptrChecker =
 		    dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
-		  if (ptrChecker != 0)
+		  if (ptrChecker != nullptr)
 		    {
 		      os << reference << "ns3::Ptr" << "< "
 			 << reference << ptrChecker->GetItemTypeId ().GetName ()

@@ -180,7 +180,7 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
       break;
     default:
       NS_FATAL_ERROR ("Channel width " << channelWidth << " should be correctly set.");
-      return 0;
+      return nullptr;
     }
 
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));

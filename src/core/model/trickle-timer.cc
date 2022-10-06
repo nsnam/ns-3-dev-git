@@ -28,7 +28,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("TrickleTimer");
 
 TrickleTimer::TrickleTimer ()
-  : m_impl (0),
+  : m_impl (nullptr),
     m_timerExpiration (),
     m_intervalExpiration (),
     m_currentInterval (Time(0)),
@@ -44,7 +44,7 @@ TrickleTimer::TrickleTimer ()
 }
 
 TrickleTimer::TrickleTimer (Time minInterval, uint8_t doublings, uint16_t redundancy)
-  : m_impl (0),
+  : m_impl (nullptr),
     m_timerExpiration (),
     m_intervalExpiration (),
     m_currentInterval (Time(0)),

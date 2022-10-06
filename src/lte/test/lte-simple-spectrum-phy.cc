@@ -50,9 +50,9 @@ LteSimpleSpectrumPhy::~LteSimpleSpectrumPhy ()
 void LteSimpleSpectrumPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_channel = 0;
-  m_mobility = 0;
-  m_device = 0;
+  m_channel = nullptr;
+  m_mobility = nullptr;
+  m_device = nullptr;
   SpectrumPhy::DoDispose ();
 }
 

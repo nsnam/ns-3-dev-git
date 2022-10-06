@@ -67,7 +67,7 @@ EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   NS_LOG_FUNCTION (this << checker);
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
-  NS_ASSERT (p != 0);
+  NS_ASSERT (p != nullptr);
   std::string name = p->GetName (m_value);
   return name;
 }
@@ -76,7 +76,7 @@ EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
 {
   NS_LOG_FUNCTION (this << value << checker);
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
-  NS_ASSERT (p != 0);
+  NS_ASSERT (p != nullptr);
   m_value = p->GetValue (value);
   return true;
 }
@@ -131,7 +131,7 @@ EnumChecker::Check (const AttributeValue &value) const
 {
   NS_LOG_FUNCTION (this << &value);
   const EnumValue *p = dynamic_cast<const EnumValue *> (&value);
-  if (p == 0)
+  if (p == nullptr)
     {
       return false;
     }
@@ -178,7 +178,7 @@ EnumChecker::Copy (const AttributeValue &source, AttributeValue &destination) co
   NS_LOG_FUNCTION (this << &source << &destination);
   const EnumValue *src = dynamic_cast<const EnumValue *> (&source);
   EnumValue *dst = dynamic_cast<EnumValue *> (&destination);
-  if (src == 0 || dst == 0)
+  if (src == nullptr || dst == nullptr)
     {
       return false;
     }

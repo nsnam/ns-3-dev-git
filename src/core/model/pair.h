@@ -196,8 +196,8 @@ private:
 
 template <class A, class B>
 PairChecker<A, B>::PairChecker ()
-  : m_firstchecker (0),
-  m_secondchecker (0)
+  : m_firstchecker (nullptr),
+  m_secondchecker (nullptr)
 {}
 
 template <class A, class B>

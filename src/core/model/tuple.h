@@ -411,7 +411,7 @@ public:
   {
     const TupleValue<Args...> *src = dynamic_cast<const TupleValue<Args...> *> (&source);
     TupleValue<Args...> *dst = dynamic_cast<TupleValue<Args...> *> (&destination);
-    if (src == 0 || dst == 0)
+    if (src == nullptr || dst == nullptr)
       {
         return false;
       }

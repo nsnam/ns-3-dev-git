@@ -254,7 +254,7 @@ WimaxMacQueue::Dequeue (MacHeaderType::HeaderType packetType)
           return fragment;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 Ptr<Packet>
@@ -323,7 +323,7 @@ WimaxMacQueue::Dequeue (MacHeaderType::HeaderType packetType, uint32_t available
       m_traceDequeue (fragment);
       return fragment;
     }
-  return 0;
+  return nullptr;
 }
 
 Ptr<Packet>
@@ -340,7 +340,7 @@ WimaxMacQueue::Peek (GenericMacHeader &hdr) const
       return packet;
     }
 
-  return 0;
+  return nullptr;
 }
 
 Ptr<Packet>
@@ -358,7 +358,7 @@ WimaxMacQueue::Peek (GenericMacHeader &hdr, Time &timeStamp) const
       return packet;
     }
 
-  return 0;
+  return nullptr;
 }
 
 Ptr<Packet>
@@ -379,7 +379,7 @@ WimaxMacQueue::Peek (MacHeaderType::HeaderType packetType) const
       return packet;
     }
 
-  return 0;
+  return nullptr;
 }
 
 Ptr<Packet>
@@ -402,7 +402,7 @@ WimaxMacQueue::Peek (MacHeaderType::HeaderType packetType,
       return packet;
     }
 
-  return 0;
+  return nullptr;
 }
 
 uint32_t

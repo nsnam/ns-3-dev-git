@@ -87,7 +87,7 @@ IpcsClassifier::Classify (Ptr<const Packet> packet,
   else
     {
       NS_LOG_INFO ("\t\t\tUnknown protocol: " << protocol);
-      return 0;
+      return nullptr;
     }
 
   NS_LOG_INFO ("Classifing packet: src_addr=" << source_address << " dst_addr="

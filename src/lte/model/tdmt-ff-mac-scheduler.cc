@@ -49,8 +49,8 @@ NS_OBJECT_ENSURE_REGISTERED (TdMtFfMacScheduler);
 
 
 TdMtFfMacScheduler::TdMtFfMacScheduler ()
-  :   m_cschedSapUser (0),
-    m_schedSapUser (0),
+  :   m_cschedSapUser (nullptr),
+    m_schedSapUser (nullptr),
     m_nextRntiUl (0)
 {
   m_amc = CreateObject <LteAmc> ();

@@ -58,7 +58,7 @@ SSScheduler::~SSScheduler ()
 void
 SSScheduler::DoDispose ()
 {
-  m_ss = 0;
+  m_ss = nullptr;
 }
 
 void
@@ -246,7 +246,7 @@ SSScheduler::SelectConnection ()
       return m_ss->GetBroadcastConnection ();
     }
   NS_LOG_INFO ("NO connection is selected!");
-  return 0;
+  return nullptr;
 }
 
 } // namespace ns3

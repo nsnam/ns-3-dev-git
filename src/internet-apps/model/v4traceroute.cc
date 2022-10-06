@@ -88,7 +88,7 @@ V4TraceRoute::GetTypeId ()
 V4TraceRoute::V4TraceRoute ()
   : m_interval (Seconds (0)),
     m_size (56),
-    m_socket (0),
+    m_socket (nullptr),
     m_seq (0),
     m_verbose (true),
     m_probeCount (0),
@@ -193,7 +193,7 @@ V4TraceRoute::DoDispose ()
       StopApplication ();
     }
 
-  m_socket = 0;
+  m_socket = nullptr;
   Application::DoDispose ();
 }
 

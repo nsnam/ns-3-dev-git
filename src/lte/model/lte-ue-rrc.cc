@@ -124,10 +124,10 @@ NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
 
 LteUeRrc::LteUeRrc ()
   : m_cmacSapProvider (0),
-    m_rrcSapUser (0),
-    m_macSapProvider (0),
-    m_asSapUser (0),
-    m_ccmRrcSapProvider (0),
+    m_rrcSapUser (nullptr),
+    m_macSapProvider (nullptr),
+    m_asSapUser (nullptr),
+    m_ccmRrcSapProvider (nullptr),
     m_state (IDLE_START),
     m_imsi (0),
     m_rnti (0),
@@ -148,8 +148,8 @@ LteUeRrc::LteUeRrc ()
   NS_LOG_FUNCTION (this);
   m_cphySapUser.push_back (new MemberLteUeCphySapUser<LteUeRrc> (this));
   m_cmacSapUser.push_back (new UeMemberLteUeCmacSapUser (this));
-  m_cphySapProvider.push_back (0);
-  m_cmacSapProvider.push_back (0);
+  m_cphySapProvider.push_back (nullptr);
+  m_cmacSapProvider.push_back (nullptr);
   m_rrcSapProvider = new MemberLteUeRrcSapProvider<LteUeRrc> (this);
   m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
   m_asSapProvider = new MemberLteAsSapProvider<LteUeRrc> (this);
@@ -545,7 +545,7 @@ LteUeRrc::DoInitialize ()
   m_srb0->m_srbIdentity = 0;
   LteUeRrcSapUser::SetupParameters ueParams;
   ueParams.srb0SapProvider = m_srb0->m_rlc->GetLteRlcSapProvider ();
-  ueParams.srb1SapProvider = 0;
+  ueParams.srb1SapProvider = nullptr;
   m_rrcSapUser->Setup (ueParams);
 
   // CCCH (LCID 0) is pre-configured, here is the hardcoded configuration:
@@ -575,8 +575,8 @@ LteUeRrc::InitializeSap ()
         {
           m_cphySapUser.push_back (new MemberLteUeCphySapUser<LteUeRrc> (this));
           m_cmacSapUser.push_back (new UeMemberLteUeCmacSapUser (this));
-          m_cphySapProvider.push_back (0);
-          m_cmacSapProvider.push_back (0);
+          m_cphySapProvider.push_back (nullptr);
+          m_cmacSapProvider.push_back (nullptr);
         }
     }
 }
@@ -1109,7 +1109,7 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
             // if we did so. Hence we schedule it for later disposal
             m_srb1Old = m_srb1;
             Simulator::ScheduleNow (&LteUeRrc::DisposeOldSrb1, this);
-            m_srb1 = 0; // new instance will be be created within ApplyRadioResourceConfigDedicated
+            m_srb1 = nullptr; // new instance will be be created within ApplyRadioResourceConfigDedicated
 
             m_drbMap.clear (); // dispose all DRBs
             ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
@@ -3208,7 +3208,7 @@ void
 LteUeRrc::DisposeOldSrb1 ()
 {
   NS_LOG_FUNCTION (this);
-  m_srb1Old = 0;
+  m_srb1Old = nullptr;
 }
 
 uint8_t

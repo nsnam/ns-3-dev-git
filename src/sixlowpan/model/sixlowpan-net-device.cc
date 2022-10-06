@@ -125,12 +125,12 @@ TypeId SixLowPanNetDevice::GetTypeId ()
 }
 
 SixLowPanNetDevice::SixLowPanNetDevice ()
-  : m_node (0),
-  m_netDevice (0),
+  : m_node (nullptr),
+  m_netDevice (nullptr),
   m_ifIndex (0)
 {
   NS_LOG_FUNCTION (this);
-  m_netDevice = 0;
+  m_netDevice = nullptr;
   m_rng = CreateObject<UniformRandomVariable> ();
   m_bc0Serial = 0;
 }
@@ -170,8 +170,8 @@ void SixLowPanNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_netDevice = 0;
-  m_node = 0;
+  m_netDevice = nullptr;
+  m_node = nullptr;
 
   m_timeoutEventList.clear ();
   if (m_timeoutEvent.IsRunning ())
@@ -181,7 +181,7 @@ void SixLowPanNetDevice::DoDispose ()
 
   for (MapFragmentsI_t iter = m_fragments.begin (); iter != m_fragments.end (); iter++)
     {
-      iter->second = 0;
+      iter->second = nullptr;
     }
   m_fragments.clear ();
 
@@ -2401,7 +2401,7 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
             }
 
           m_timeoutEventList.erase (m_fragments[oldestKey]->GetTimeoutIter ());
-          m_fragments[oldestKey] = 0;
+          m_fragments[oldestKey] = nullptr;
           m_fragments.erase (oldestKey);
 
         }
@@ -2437,7 +2437,7 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
 
       NS_LOG_LOGIC ("Rebuilt packet. Size " << packet->GetSize () << " - " << *packet);
       m_timeoutEventList.erase (fragments->GetTimeoutIter ());
-      fragments = 0;
+      fragments = nullptr;
       m_fragments.erase (key);
       return true;
     }
@@ -2592,7 +2592,7 @@ void SixLowPanNetDevice::HandleFragmentsTimeout (FragmentKey_t key, uint32_t iif
       m_dropTrace (DROP_FRAGMENT_TIMEOUT, *fragIter, this, iif);
     }
   // clear the buffers
-  it->second = 0;
+  it->second = nullptr;
 
   m_fragments.erase (key);
 }

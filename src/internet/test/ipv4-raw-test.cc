@@ -319,8 +319,8 @@ Ipv4RawSocketImplTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 143, "recv: 255.255.255.255");
 #endif
 
-  m_receivedPacket = 0;
-  m_receivedPacket2 = 0;
+  m_receivedPacket = nullptr;
+  m_receivedPacket2 = nullptr;
 
   // Simple getpeername tests
 

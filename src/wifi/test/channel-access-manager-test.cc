@@ -415,7 +415,7 @@ template <typename TxopType>
 void
 TxopTest<TxopType>::DoDispose ()
 {
-  m_test = 0;
+  m_test = nullptr;
   TxopType::DoDispose ();
 }
 
@@ -615,15 +615,15 @@ ChannelAccessManagerTest<TxopType>::EndTest ()
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), true, "Have no internal collisions");
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedBackoff.empty (), true, "Have no expected backoffs");
       state->Dispose ();
-      state = 0;
+      state = nullptr;
     }
   m_txop.clear ();
 
   m_ChannelAccessManager->RemovePhyListener (m_phy);
   m_phy->Dispose ();
   m_ChannelAccessManager->Dispose ();
-  m_ChannelAccessManager = 0;
-  m_feManager = 0;
+  m_ChannelAccessManager = nullptr;
+  m_feManager = nullptr;
   Simulator::Destroy ();
 }
 

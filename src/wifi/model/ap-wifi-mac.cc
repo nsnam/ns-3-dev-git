@@ -121,7 +121,7 @@ ApWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_beaconTxop->Dispose ();
-  m_beaconTxop = 0;
+  m_beaconTxop = nullptr;
   m_enableBeaconGeneration = false;
   WifiMac::DoDispose ();
 }
@@ -1401,7 +1401,7 @@ ApWifiMac::Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                     {
                       NS_LOG_DEBUG ("Received A-MSDU from=" << from << ", size=" << packet->GetSize ());
                       DeaggregateAmsduAndForward (mpdu);
-                      packet = 0;
+                      packet = nullptr;
                     }
                   else
                     {

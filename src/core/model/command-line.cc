@@ -410,7 +410,7 @@ CommandLine::PrintDoxygenUsage () const
   NS_LOG_FUNCTION (this);
 
   const char * envVar = std::getenv ("NS_COMMANDLINE_INTROSPECTION");
-  if (envVar == 0 || std::strlen (envVar) == 0)
+  if (envVar == nullptr || std::strlen (envVar) == 0)
     {
       return;
     }
@@ -796,7 +796,7 @@ CommandLine::GetExtraNonOption (std::size_t i) const
   if (m_nonOptions.size () >= i + m_NNonOptions)
     {
       auto ip = dynamic_cast<StringItem *> (m_nonOptions[i + m_NNonOptions]);
-      if (ip != NULL)
+      if (ip != nullptr)
         {
           value = ip->m_value;
         }

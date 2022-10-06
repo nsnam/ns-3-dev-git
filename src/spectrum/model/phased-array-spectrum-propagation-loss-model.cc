@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("PhasedArraySpectrumPropagationLossModel");
 NS_OBJECT_ENSURE_REGISTERED (PhasedArraySpectrumPropagationLossModel);
 
 PhasedArraySpectrumPropagationLossModel::PhasedArraySpectrumPropagationLossModel ()
-  : m_next (0)
+  : m_next (nullptr)
 {
 }
 
@@ -41,7 +41,7 @@ PhasedArraySpectrumPropagationLossModel::~PhasedArraySpectrumPropagationLossMode
 void
 PhasedArraySpectrumPropagationLossModel::DoDispose ()
 {
-  m_next = 0;
+  m_next = nullptr;
 }
 
 TypeId

@@ -45,7 +45,7 @@ OlsrState::FindMprSelectorTuple (Ipv4Address const &mainAddr)
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -119,7 +119,7 @@ OlsrState::FindNeighborTuple (Ipv4Address const &mainAddr)
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 const NeighborTuple*
@@ -133,7 +133,7 @@ OlsrState::FindSymNeighborTuple (Ipv4Address const &mainAddr) const
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 NeighborTuple*
@@ -147,7 +147,7 @@ OlsrState::FindNeighborTuple (Ipv4Address const &mainAddr, uint8_t willingness)
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -209,7 +209,7 @@ OlsrState::FindTwoHopNeighborTuple (Ipv4Address const &neighborMainAddr,
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -301,7 +301,7 @@ OlsrState::FindDuplicateTuple (Ipv4Address const &addr, uint16_t sequenceNumber)
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -337,7 +337,7 @@ OlsrState::FindLinkTuple (Ipv4Address const & ifaceAddr)
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 LinkTuple*
@@ -358,7 +358,7 @@ OlsrState::FindSymLinkTuple (Ipv4Address const &ifaceAddr, Time now)
             }
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -396,7 +396,7 @@ OlsrState::FindTopologyTuple (Ipv4Address const &destAddr,
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 TopologyTuple*
@@ -410,7 +410,7 @@ OlsrState::FindNewerTopologyTuple (Ipv4Address const & lastAddr, uint16_t ansn)
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -463,7 +463,7 @@ OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr)
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 const IfaceAssocTuple*
@@ -477,7 +477,7 @@ OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr) const
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -528,7 +528,7 @@ OlsrState::FindAssociationTuple (const Ipv4Address &gatewayAddr, const Ipv4Addre
           return &(*it);
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 void

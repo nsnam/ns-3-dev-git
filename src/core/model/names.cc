@@ -80,7 +80,7 @@ public:
 };
 
 NameNode::NameNode ()
-  : m_parent (0), m_name (""), m_object (0)
+  : m_parent (nullptr), m_name (""), m_object (nullptr)
 {}
 
 NameNode::NameNode (const NameNode &nameNode)
@@ -277,9 +277,9 @@ NamesPriv::NamesPriv ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_root.m_parent = 0;
+  m_root.m_parent = nullptr;
   m_root.m_name = "Names";
-  m_root.m_object = 0;
+  m_root.m_object = nullptr;
 }
 
 NamesPriv::~NamesPriv ()
@@ -305,9 +305,9 @@ NamesPriv::Clear ()
 
   m_objectMap.clear ();
 
-  m_root.m_parent = 0;
+  m_root.m_parent = nullptr;
   m_root.m_name = "Names";
-  m_root.m_object = 0;
+  m_root.m_object = nullptr;
   m_root.m_nameMap.clear ();
 }
 
@@ -379,7 +379,7 @@ NamesPriv::Add (std::string path, std::string name, Ptr<Object> object)
   NS_LOG_FUNCTION (this << path << name << object);
   if (path == "/Names")
     {
-      return Add (Ptr<Object> (0, false), name, object);
+      return Add (Ptr<Object> (nullptr, false), name, object);
     }
   return Add (Find (path), name, object);
 }
@@ -395,7 +395,7 @@ NamesPriv::Add (Ptr<Object> context, std::string name, Ptr<Object> object)
       return false;
     }
 
-  NameNode *node = 0;
+  NameNode *node = nullptr;
   if (context)
     {
       node = IsNamed (context);
@@ -489,7 +489,7 @@ NamesPriv::Rename (std::string path, std::string oldname, std::string newname)
   NS_LOG_FUNCTION (this << path << oldname << newname);
   if (path == "/Names")
     {
-      return Rename (Ptr<Object> (0, false), oldname, newname);
+      return Rename (Ptr<Object> (nullptr, false), oldname, newname);
     }
   return Rename (Find (path), oldname, newname);
 }
@@ -499,7 +499,7 @@ NamesPriv::Rename (Ptr<Object> context, std::string oldname, std::string newname
 {
   NS_LOG_FUNCTION (this << context << oldname << newname);
 
-  NameNode *node = 0;
+  NameNode *node = nullptr;
   if (context)
     {
       node = IsNamed (context);
@@ -581,7 +581,7 @@ NamesPriv::FindPath (Ptr<Object> object)
       path = "/" + p->m_name + path;
       NS_LOG_LOGIC ("path is " << path);
     }
-  while ((p = p->m_parent) != 0);
+  while ((p = p->m_parent) != nullptr);
 
   return path;
 }
@@ -644,7 +644,7 @@ NamesPriv::Find (std::string path)
           if (i == node->m_nameMap.end ())
             {
               NS_LOG_LOGIC ("Name does not exist in name map");
-              return 0;
+              return nullptr;
             }
           else
             {
@@ -665,7 +665,7 @@ NamesPriv::Find (std::string path)
           if (i == node->m_nameMap.end ())
             {
               NS_LOG_LOGIC ("Name does not exist in name map");
-              return 0;
+              return nullptr;
             }
           else
             {
@@ -678,7 +678,7 @@ NamesPriv::Find (std::string path)
     }
 
   NS_ASSERT_MSG (node, "NamesPriv::Find(): Internal error:  this can't happen");
-  return 0;
+  return nullptr;
 }
 
 Ptr<Object>
@@ -688,7 +688,7 @@ NamesPriv::Find (std::string path, std::string name)
 
   if (path == "/Names")
     {
-      return Find (Ptr<Object> (0, false), name);
+      return Find (Ptr<Object> (nullptr, false), name);
     }
   return Find (Find (path), name);
 }
@@ -698,7 +698,7 @@ NamesPriv::Find (Ptr<Object> context, std::string name)
 {
   NS_LOG_FUNCTION (this << context << name);
 
-  NameNode *node = 0;
+  NameNode *node = nullptr;
 
   if (!context)
     {
@@ -708,10 +708,10 @@ NamesPriv::Find (Ptr<Object> context, std::string name)
   else
     {
       node = IsNamed (context);
-      if (node == 0)
+      if (node == nullptr)
         {
           NS_LOG_LOGIC ("Context does not point to a previously named node");
-          return 0;
+          return nullptr;
         }
     }
 
@@ -719,7 +719,7 @@ NamesPriv::Find (Ptr<Object> context, std::string name)
   if (i == node->m_nameMap.end ())
     {
       NS_LOG_LOGIC ("Name does not exist in name map");
-      return 0;
+      return nullptr;
     }
   else
     {
@@ -737,7 +737,7 @@ NamesPriv::IsNamed (Ptr<Object> object)
   if (i == m_objectMap.end ())
     {
       NS_LOG_LOGIC ("Object does not exist in object map, returning NameNode 0");
-      return 0;
+      return nullptr;
     }
   else
     {

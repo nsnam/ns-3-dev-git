@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("UplinkScheduler");
 NS_OBJECT_ENSURE_REGISTERED (UplinkScheduler);
 
 UplinkScheduler::UplinkScheduler ()
-  : m_bs (0),
+  : m_bs (nullptr),
     m_timeStampIrInterval (Seconds (0)),
     m_nrIrOppsAllocated (0),
     m_isIrIntrvlAllocated (false),
@@ -62,7 +62,7 @@ UplinkScheduler::UplinkScheduler (Ptr<BaseStationNetDevice> bs)
 
 UplinkScheduler::~UplinkScheduler ()
 {
-  m_bs = 0;
+  m_bs = nullptr;
   m_uplinkAllocations.clear ();
 }
 void

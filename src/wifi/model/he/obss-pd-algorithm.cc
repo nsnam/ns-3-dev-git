@@ -74,7 +74,7 @@ void
 ObssPdAlgorithm::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_device = 0;
+  m_device = nullptr;
 }
 
 void

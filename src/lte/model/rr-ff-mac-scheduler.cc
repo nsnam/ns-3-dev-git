@@ -51,8 +51,8 @@ NS_OBJECT_ENSURE_REGISTERED (RrFfMacScheduler);
 
 
 RrFfMacScheduler::RrFfMacScheduler ()
-  :   m_cschedSapUser (0),
-    m_schedSapUser (0),
+  :   m_cschedSapUser (nullptr),
+    m_schedSapUser (nullptr),
     m_nextRntiDl (0),
     m_nextRntiUl (0)
 {

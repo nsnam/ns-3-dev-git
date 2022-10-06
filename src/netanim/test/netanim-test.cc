@@ -80,7 +80,7 @@ private:
 };
 
 AbstractAnimationInterfaceTestCase::AbstractAnimationInterfaceTestCase (std::string name) :
-  TestCase (name), m_anim (NULL), m_traceFileName ("netanim-test.xml")
+  TestCase (name), m_anim (nullptr), m_traceFileName ("netanim-test.xml")
 {
 }
 

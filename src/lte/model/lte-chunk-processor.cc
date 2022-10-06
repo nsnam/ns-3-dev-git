@@ -50,7 +50,7 @@ void
 LteChunkProcessor::Start ()
 {
   NS_LOG_FUNCTION (this);
-  m_sumValues = 0;
+  m_sumValues = nullptr;
   m_totDuration = MicroSeconds (0);
 }
 

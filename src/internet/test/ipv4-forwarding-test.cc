@@ -206,7 +206,7 @@ Ipv4ForwardingTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "IPv4 Forwarding on");
 
   m_receivedPacket->RemoveAllByteTags ();
-  m_receivedPacket = 0;
+  m_receivedPacket = nullptr;
 
   Ptr<Ipv4> ipv4 = fwNode->GetObject<Ipv4> ();
   ipv4->SetAttribute("IpForward", BooleanValue (false));

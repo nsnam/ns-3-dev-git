@@ -77,7 +77,7 @@ Sender::Sender()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_interval = CreateObject<ConstantRandomVariable> ();
-  m_socket = 0;
+  m_socket = nullptr;
 }
 
 Sender::~Sender()
@@ -90,7 +90,7 @@ Sender::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  m_socket = 0;
+  m_socket = nullptr;
   // chain up
   Application::DoDispose ();
 }
@@ -169,11 +169,11 @@ Receiver::GetTypeId ()
 }
 
 Receiver::Receiver() :
-  m_calc (0),
-  m_delay (0)
+  m_calc (nullptr),
+  m_delay (nullptr)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_socket = 0;
+  m_socket = nullptr;
 }
 
 Receiver::~Receiver()
@@ -186,7 +186,7 @@ Receiver::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  m_socket = 0;
+  m_socket = nullptr;
   // chain up
   Application::DoDispose ();
 }

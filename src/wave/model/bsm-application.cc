@@ -48,16 +48,16 @@ BsmApplication::GetTypeId ()
 }
 
 BsmApplication::BsmApplication ()
-  : m_waveBsmStats (0),
+  : m_waveBsmStats (nullptr),
     m_txSafetyRangesSq (),
     m_TotalSimTime (Seconds (10)),
     m_wavePacketSize (200),
     m_numWavePackets (1),
     m_waveInterval (MilliSeconds (100)),
     m_gpsAccuracyNs (10000),
-    m_adhocTxInterfaces (0),
-    m_nodesMoving (0),
-    m_unirv (0),
+    m_adhocTxInterfaces (nullptr),
+    m_nodesMoving (nullptr),
+    m_unirv (nullptr),
     m_nodeId (0),
     m_chAccessMode (0),
     m_txMaxDelay (MilliSeconds (10)),

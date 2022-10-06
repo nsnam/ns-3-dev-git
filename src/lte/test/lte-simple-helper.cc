@@ -79,12 +79,12 @@ void
 LteSimpleHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_phyChannel = 0;
+  m_phyChannel = nullptr;
 
   m_enbMac->Dispose ();
-  m_enbMac = 0;
+  m_enbMac = nullptr;
   m_ueMac->Dispose ();
-  m_ueMac = 0;
+  m_ueMac = nullptr;
 
   Object::DoDispose ();
 }

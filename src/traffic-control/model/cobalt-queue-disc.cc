@@ -270,7 +270,7 @@ void
 CobaltQueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_uv = 0;
+  m_uv = nullptr;
   QueueDisc::DoDispose ();
 }
 
@@ -281,7 +281,7 @@ CobaltQueueDisc::DoPeek ()
   if (GetInternalQueue (0)->IsEmpty ())
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   Ptr<const QueueDiscItem> item = GetInternalQueue (0)->Peek ();
@@ -366,7 +366,7 @@ CobaltQueueDisc::DoDequeue ()
           int64_t now = CoDelGetTime ();
           // Call this to update Blue's drop probability
           CobaltQueueEmpty (now);
-          return 0;
+          return nullptr;
         }
 
       int64_t now = CoDelGetTime ();

@@ -36,19 +36,19 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("RawTextConfig");
 
 RawTextConfigSave::RawTextConfigSave ()
-  : m_os (0)
+  : m_os (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
 RawTextConfigSave::~RawTextConfigSave ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_os != 0)
+  if (m_os != nullptr)
     {
       m_os->close ();
     }
   delete m_os;
-  m_os = 0;
+  m_os = nullptr;
 }
 void
 RawTextConfigSave::SetFilename (std::string filename)
@@ -183,18 +183,18 @@ private:
 }
 
 RawTextConfigLoad::RawTextConfigLoad ()
-  : m_is (0)
+  : m_is (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
 RawTextConfigLoad::~RawTextConfigLoad ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_is != 0)
+  if (m_is != nullptr)
     {
       m_is->close ();
       delete m_is;
-      m_is = 0;
+      m_is = nullptr;
     }
 }
 void

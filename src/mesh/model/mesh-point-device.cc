@@ -71,9 +71,9 @@ MeshPointDevice::MeshPointDevice () :
 MeshPointDevice::~MeshPointDevice ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
-  m_channel = 0;
-  m_routingProtocol = 0;
+  m_node = nullptr;
+  m_channel = nullptr;
+  m_routingProtocol = nullptr;
 }
 
 void
@@ -82,12 +82,12 @@ MeshPointDevice::DoDispose ()
   NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<NetDevice> >::iterator iter = m_ifaces.begin (); iter != m_ifaces.end (); iter++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   m_ifaces.clear ();
-  m_node = 0;
-  m_channel = 0;
-  m_routingProtocol = 0;
+  m_node = nullptr;
+  m_channel = nullptr;
+  m_routingProtocol = nullptr;
   NetDevice::DoDispose ();
 
 }
@@ -360,7 +360,7 @@ MeshPointDevice::GetInterface (uint32_t n) const
         }
     }
   NS_FATAL_ERROR ("Mesh point interface is not found by index");
-  return 0;
+  return nullptr;
 }
 std::vector<Ptr<NetDevice> >
 MeshPointDevice::GetInterfaces () const

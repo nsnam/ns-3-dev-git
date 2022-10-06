@@ -46,7 +46,7 @@ Ipv4Interface::GetTypeId ()
     .SetGroupName ("Internet")
     .AddAttribute ("ArpCache",
                    "The arp cache for this ipv4 interface",
-                   PointerValue (0),
+                   PointerValue (nullptr),
                    MakePointerAccessor (&Ipv4Interface::SetArpCache,
                                         &Ipv4Interface::GetArpCache),
                    MakePointerChecker<ArpCache> ())
@@ -64,10 +64,10 @@ Ipv4Interface::Ipv4Interface ()
   : m_ifup (false),
     m_forwarding (true),
     m_metric (1),
-    m_node (0),
-    m_device (0),
-    m_tc (0),
-    m_cache (0)
+    m_node (nullptr),
+    m_device (nullptr),
+    m_tc (nullptr),
+    m_cache (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -81,10 +81,10 @@ void
 Ipv4Interface::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
-  m_device = 0;
-  m_tc = 0;
-  m_cache = 0;
+  m_node = nullptr;
+  m_device = nullptr;
+  m_tc = nullptr;
+  m_cache = nullptr;
   Object::DoDispose ();
 }
 

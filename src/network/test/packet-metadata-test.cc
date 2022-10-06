@@ -373,7 +373,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, uint32_t n, ...)
         {
           Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
           HistoryHeaderBase *header = dynamic_cast<HistoryHeaderBase *> (constructor ());
-          if (header == 0)
+          if (header == nullptr)
             {
               goto error;
             }
@@ -389,7 +389,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, uint32_t n, ...)
         {
           Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
           HistoryTrailerBase *trailer = dynamic_cast<HistoryTrailerBase *> (constructor ());
-          if (trailer == 0)
+          if (trailer == nullptr)
             {
               goto error;
             }

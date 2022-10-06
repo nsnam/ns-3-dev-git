@@ -220,7 +220,7 @@ Icmpv4Echo::~Icmpv4Echo ()
 {
   NS_LOG_FUNCTION (this);
   delete [] m_data;
-  m_data = 0;
+  m_data = nullptr;
   m_dataSize = 0;
 }
 TypeId

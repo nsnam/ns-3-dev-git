@@ -84,7 +84,7 @@ WaveNetDevice::GetTypeId ()
 }
 
 WaveNetDevice::WaveNetDevice ()
-  : m_txProfile (0)
+  : m_txProfile (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -98,10 +98,10 @@ void
 WaveNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_txProfile != 0)
+  if (m_txProfile != nullptr)
     {
       delete m_txProfile;
-      m_txProfile = 0;
+      m_txProfile = nullptr;
     }
   for (PhyEntitiesI i = m_phyEntities.begin (); i != m_phyEntities.end (); ++i)
     {
@@ -122,10 +122,10 @@ WaveNetDevice::DoDispose ()
   m_channelManager->Dispose ();
   m_channelScheduler->Dispose ();
   m_vsaManager->Dispose ();
-  m_channelCoordinator = 0;
-  m_channelManager = 0;
-  m_channelScheduler = 0;
-  m_vsaManager = 0;
+  m_channelCoordinator = nullptr;
+  m_channelManager = nullptr;
+  m_channelScheduler = nullptr;
+  m_vsaManager = nullptr;
   // chain up.
   WifiNetDevice::DoDispose ();
 }
@@ -305,7 +305,7 @@ bool
 WaveNetDevice::RegisterTxProfile (const TxProfile & txprofile)
 {
   NS_LOG_FUNCTION (this << &txprofile);
-  if (m_txProfile != 0)
+  if (m_txProfile != nullptr)
     {
       return false;
     }
@@ -354,7 +354,7 @@ WaveNetDevice::DeleteTxProfile (uint32_t channelNumber)
     {
       return false;
     }
-  if (m_txProfile == 0)
+  if (m_txProfile == nullptr)
     {
       return false;
     }
@@ -364,7 +364,7 @@ WaveNetDevice::DeleteTxProfile (uint32_t channelNumber)
     }
 
   delete m_txProfile;
-  m_txProfile = 0;
+  m_txProfile = nullptr;
   return true;
 }
 
@@ -599,7 +599,7 @@ bool
 WaveNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocol)
 {
   NS_LOG_FUNCTION (this << packet << dest << protocol);
-  if (m_txProfile == 0)
+  if (m_txProfile == nullptr)
     {
       NS_LOG_DEBUG ("there is no tx profile registered for transmission");
       return false;

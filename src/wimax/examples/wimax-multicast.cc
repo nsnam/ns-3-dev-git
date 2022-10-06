@@ -302,12 +302,12 @@ int main (int argc, char *argv[])
 
   for (int i = 0; i < nbSS; i++)
     {
-      ss[i] = 0;
-      SSPosition[i] = 0;
-      SSPosAllocator[i] = 0;
+      ss[i] = nullptr;
+      SSPosition[i] = nullptr;
+      SSPosAllocator[i] = nullptr;
     }
 
-  bs = 0;
+  bs = nullptr;
 
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");

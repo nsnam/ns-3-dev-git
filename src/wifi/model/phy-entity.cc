@@ -694,7 +694,7 @@ PhyEntity::DoEndReceivePayload (Ptr<const WifiPpdu> ppdu)
   NS_ASSERT (m_wifiPhy->GetLastRxEndTime () == Simulator::Now ());
   NotifyInterferenceRxEndAndClear (false); //don't reset WifiPhy
 
-  m_wifiPhy->m_currentEvent = 0;
+  m_wifiPhy->m_currentEvent = nullptr;
   m_wifiPhy->m_currentPreambleEvents.clear ();
   m_endRxPayloadEvents.clear ();
 }
@@ -910,7 +910,7 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
           //Do not erase events if there are still pending preamble events to be processed
           m_wifiPhy->m_interference->NotifyRxEnd (Simulator::Now ());
         }
-      m_wifiPhy->m_currentEvent = 0;
+      m_wifiPhy->m_currentEvent = nullptr;
       //Cancel preamble reception
       m_wifiPhy->m_endPhyRxEvent.Cancel ();
     }
@@ -1003,7 +1003,7 @@ PhyEntity::ResetReceive (Ptr<Event> event)
   m_wifiPhy->m_interference->NotifyRxEnd (Simulator::Now ());
   NS_ASSERT (m_endRxPayloadEvents.size () == 1 && m_endRxPayloadEvents.front ().IsExpired ());
   m_endRxPayloadEvents.clear ();
-  m_wifiPhy->m_currentEvent = 0;
+  m_wifiPhy->m_currentEvent = nullptr;
   m_wifiPhy->m_currentPreambleEvents.clear ();
   m_wifiPhy->SwitchMaybeToCcaBusy (event->GetPpdu ());
 }

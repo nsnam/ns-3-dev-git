@@ -262,15 +262,15 @@ BaseStationNetDevice::DoDispose ()
 {
   delete m_cidFactory;
 
-  m_linkManager = 0;
-  m_ssManager = 0;
-  m_bsClassifier = 0;
-  m_serviceFlowManager = 0;
-  m_uplinkScheduler = 0;
-  m_cidFactory = 0;
-  m_ssManager = 0;
-  m_uplinkScheduler = 0;
-  m_scheduler = 0;
+  m_linkManager = nullptr;
+  m_ssManager = nullptr;
+  m_bsClassifier = nullptr;
+  m_serviceFlowManager = nullptr;
+  m_uplinkScheduler = nullptr;
+  m_cidFactory = nullptr;
+  m_ssManager = nullptr;
+  m_uplinkScheduler = nullptr;
+  m_scheduler = nullptr;
 
   WimaxNetDevice::DoDispose ();
 }
@@ -613,7 +613,7 @@ BaseStationNetDevice::DoSend (Ptr<Packet> packet,
                               uint16_t protocolNumber)
 {
   Ptr<PacketBurst> burst = Create<PacketBurst> ();
-  ServiceFlow *serviceFlow = 0;
+  ServiceFlow *serviceFlow = nullptr;
 
   NS_LOG_INFO ("BS (" << source << "):");
   NS_LOG_INFO ("\tSending packet...");
@@ -627,12 +627,12 @@ BaseStationNetDevice::DoSend (Ptr<Packet> packet,
       serviceFlow = m_bsClassifier->Classify (packet, GetServiceFlowManager (), ServiceFlow::SF_DIRECTION_DOWN);
     }
 
-  if (protocolNumber != 2048 || serviceFlow == 0)
+  if (protocolNumber != 2048 || serviceFlow == nullptr)
     {
       serviceFlow = *GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_ALL).begin ();
     }
 
-  if (serviceFlow == 0)
+  if (serviceFlow == nullptr)
     {
       NS_LOG_INFO ("No Service Flow!!");
       m_bsTxDropTrace (packet);
@@ -684,7 +684,7 @@ BaseStationNetDevice::DoReceive (Ptr<Packet> packet)
   GrantManagementSubheader grantMgmntSubhdr;
   Mac48Address source;
   LlcSnapHeader llc;
-  Ptr<WimaxConnection> connection = 0;
+  Ptr<WimaxConnection> connection = nullptr;
   FragmentationSubheader fragSubhdr;
   bool fragmentation = false;  // it becomes true when there is a fragmentation subheader
 
@@ -976,7 +976,7 @@ BaseStationNetDevice::SendBursts ()
 
       if (cid != GetInitialRangingConnection ()->GetCid () && cid != GetBroadcastConnection ()->GetCid ())
         {
-          if (m_serviceFlowManager->GetServiceFlow (cid) != 0)
+          if (m_serviceFlowManager->GetServiceFlow (cid) != nullptr)
             {
               modulationType = GetBurstProfileManager ()->GetModulationType (diuc, WimaxNetDevice::DIRECTION_DOWNLINK);
             }
@@ -1149,7 +1149,7 @@ BaseStationNetDevice::SetUlBurstProfiles (Ucd *ucd)
 Ptr<WimaxConnection>
 BaseStationNetDevice::GetConnection (Cid cid)
 {
-  Ptr<WimaxConnection> connection = 0;
+  Ptr<WimaxConnection> connection = nullptr;
   if (cid.IsInitialRanging ())
     {
       return GetInitialRangingConnection ();

@@ -20,7 +20,7 @@
 using namespace ns3;
 
 TutorialApp::TutorialApp ()
-  : m_socket (0),
+  : m_socket (nullptr),
     m_peer (),
     m_packetSize (0),
     m_nPackets (0),
@@ -33,7 +33,7 @@ TutorialApp::TutorialApp ()
 
 TutorialApp::~TutorialApp ()
 {
-  m_socket = 0;
+  m_socket = nullptr;
 }
 
 /* static */

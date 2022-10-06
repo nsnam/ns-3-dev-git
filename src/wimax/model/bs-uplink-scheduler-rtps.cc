@@ -42,7 +42,7 @@ NS_OBJECT_ENSURE_REGISTERED (UplinkSchedulerRtps);
 
 UplinkSchedulerRtps::UplinkSchedulerRtps ()
 {
-  SetBs (0);
+  SetBs (nullptr);
   SetTimeStampIrInterval (Seconds (0));
   SetNrIrOppsAllocated (0);
   SetIsIrIntrvlAllocated (false);
@@ -64,7 +64,7 @@ UplinkSchedulerRtps::UplinkSchedulerRtps (Ptr<BaseStationNetDevice> bs)
 
 UplinkSchedulerRtps::~UplinkSchedulerRtps ()
 {
-  SetBs (0);
+  SetBs (nullptr);
   m_uplinkAllocations.clear ();
 }
 

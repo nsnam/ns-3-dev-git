@@ -87,7 +87,7 @@ operator<< (std::ostream& os, const SPFVertex::ListOfSPFVertex_t& vs)
 SPFVertex::SPFVertex () :
   m_vertexType (VertexUnknown),
   m_vertexId ("255.255.255.255"),
-  m_lsa (0),
+  m_lsa (nullptr),
   m_distanceFromRoot (SPF_INFINITY),
   m_rootOif (SPF_INFINITY),
   m_nextHop ("0.0.0.0"),
@@ -159,10 +159,10 @@ SPFVertex::~SPFVertex ()
       // p is removed from the children list when p is deleted
       SPFVertex* p = m_children.front ();
       // 'p' == 0, this child is already deleted by its other parent
-      if (p == 0) continue;
+      if (p == nullptr) continue;
       NS_LOG_LOGIC ("Parent vertex-" << m_vertexId << " deleting its child vertex-" << p->GetVertexId ());
       delete p;
-      p = 0;
+      p = nullptr;
     }
   m_children.clear ();
   // delete parents
@@ -248,7 +248,7 @@ SPFVertex::GetParent (uint32_t i) const
   if (m_parents.size () <= i)
     {
       NS_LOG_LOGIC ("Index to SPFVertex's parent is out-of-range.");
-      return 0;
+      return nullptr;
     }
   ListOfSPFVertex_t::const_iterator iter = m_parents.begin ();
   while (i-- > 0)
@@ -377,7 +377,7 @@ SPFVertex::GetChild (uint32_t n) const
         }
     }
   NS_ASSERT_MSG (false, "Index <n> out of range.");
-  return 0;
+  return nullptr;
 }
 
 uint32_t
@@ -502,7 +502,7 @@ GlobalRouteManagerLSDB::GetLSA (Ipv4Address addr) const
           return i->second;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 GlobalRoutingLSA*
@@ -527,7 +527,7 @@ GlobalRouteManagerLSDB::GetLSAByLinkData (Ipv4Address addr) const
             }
         }
     }
-  return 0;
+  return nullptr;
 }
 
 // ---------------------------------------------------------------------------
@@ -538,7 +538,7 @@ GlobalRouteManagerLSDB::GetLSAByLinkData (Ipv4Address addr) const
 
 GlobalRouteManagerImpl::GlobalRouteManagerImpl ()
   :
-    m_spfroot (0)
+    m_spfroot (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_lsdb = new GlobalRouteManagerLSDB ();
@@ -747,9 +747,9 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 {
   NS_LOG_FUNCTION (this << v << &candidate);
 
-  SPFVertex* w = 0;
-  GlobalRoutingLSA* w_lsa = 0;
-  GlobalRoutingLinkRecord *l = 0;
+  SPFVertex* w = nullptr;
+  GlobalRoutingLSA* w_lsa = nullptr;
+  GlobalRoutingLinkRecord *l = nullptr;
   uint32_t distance = 0;
   uint32_t numRecordsInVertex = 0;
 //
@@ -779,7 +779,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // shortest path calculation.
 //
           l = v->GetLSA ()->GetLinkRecord (i);
-          NS_ASSERT (l != 0);
+          NS_ASSERT (l != nullptr);
           if (l->GetLinkType () == GlobalRoutingLinkRecord::StubNetwork)
             {
               NS_LOG_LOGIC ("Found a Stub record to " << l->GetLinkId ());
@@ -849,7 +849,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
       if (v->GetLSA ()->GetLSType () == GlobalRoutingLSA::RouterLSA)
         {
-          NS_ASSERT (l != 0);
+          NS_ASSERT (l != nullptr);
           distance = v->GetDistanceFromRoot () + l->GetMetric ();
         }
       else
@@ -1042,7 +1042,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // SPFGetLink.
 //
           NS_ASSERT (l);
-          GlobalRoutingLinkRecord *linkRemote = 0;
+          GlobalRoutingLinkRecord *linkRemote = nullptr;
           linkRemote = SPFGetNextLink (w, v, linkRemote);
 //
 // At this point, <l> is the Global Router Link Record describing the point-
@@ -1103,7 +1103,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // router.  The list of next hops is then determined by
 // examining the destination's router-LSA...
           NS_ASSERT (w->GetVertexType () == SPFVertex::VertexRouter);
-          GlobalRoutingLinkRecord *linkRemote = 0;
+          GlobalRoutingLinkRecord *linkRemote = nullptr;
           while ((linkRemote = SPFGetNextLink (w, v, linkRemote)))
             {
 /* ...For each link in the router-LSA that points back to the
@@ -1179,7 +1179,7 @@ GlobalRouteManagerImpl::SPFGetNextLink (
 // If prev_link is 0, we are really looking for the first link, not the next
 // link.
 //
-  if (prev_link == 0)
+  if (prev_link == nullptr)
     {
       skip = false;
       found_prev_link = true;
@@ -1236,7 +1236,7 @@ GlobalRouteManagerImpl::SPFGetNextLink (
             }
         }
     }
-  return 0;
+  return nullptr;
 }
 
 //
@@ -1262,7 +1262,7 @@ GlobalRouteManagerImpl::CheckForStubNode (Ipv4Address root)
   GlobalRoutingLSA *rlsa = m_lsdb->GetLSA (root);
   Ipv4Address myRouterId = rlsa->GetLinkStateId ();
   int transits = 0;
-  GlobalRoutingLinkRecord *transitLink = 0;
+  GlobalRoutingLinkRecord *transitLink = nullptr;
   for (uint32_t i = 0; i < rlsa->GetNLinkRecords (); i++)
     {
       GlobalRoutingLinkRecord *l = rlsa->GetLinkRecord (i);
@@ -1500,7 +1500,7 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 // possibly do it again for the next router.
 //
   delete m_spfroot;
-  m_spfroot = 0;
+  m_spfroot = nullptr;
 }
 
 void
@@ -2197,7 +2197,7 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
     {
       SPFVertex* parent;
       // check if all parents of vertex v
-      if ((parent = v->GetParent (i++)) == 0) break;
+      if ((parent = v->GetParent (i++)) == nullptr) break;
       parent->AddChild (v);
     }
 }

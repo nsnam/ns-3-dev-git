@@ -282,8 +282,8 @@ Ipv4FlowProbe::GetTypeId ()
 void
 Ipv4FlowProbe::DoDispose ()
 {
-  m_ipv4 = 0;
-  m_classifier = 0;
+  m_ipv4 = nullptr;
+  m_classifier = nullptr;
   FlowProbe::DoDispose ();
 }
 

@@ -306,8 +306,8 @@ LrWpanAckTestCase::DoRun ()
   NS_TEST_EXPECT_MSG_LT (m_replySentTime, m_replyArrivalTime, "The reply was sent before the reply arrived (as expected)");
   NS_TEST_EXPECT_MSG_EQ (ackCounter, expectedAckCount, "The right amount of ACKs have been seen on the channel (as expected)");
 
-  m_dev0 = 0;
-  m_dev1 = 0;
+  m_dev0 = nullptr;
+  m_dev1 = nullptr;
 
   Simulator::Destroy ();
 }

@@ -42,8 +42,8 @@ const Time RRC_REAL_MSG_DELAY = MilliSeconds (0);
 NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolReal);
 
 LteUeRrcProtocolReal::LteUeRrcProtocolReal ()
-  :  m_ueRrcSapProvider (0),
-    m_enbRrcSapProvider (0)
+  :  m_ueRrcSapProvider (nullptr),
+    m_enbRrcSapProvider (nullptr)
 {
   m_ueRrcSapUser = new MemberLteUeRrcSapUser<LteUeRrcProtocolReal> (this);
   m_completeSetupParameters.srb0SapUser = new LteRlcSpecificLteRlcSapUser<LteUeRrcProtocolReal> (this);
@@ -61,7 +61,7 @@ LteUeRrcProtocolReal::DoDispose ()
   delete m_ueRrcSapUser;
   delete m_completeSetupParameters.srb0SapUser;
   delete m_completeSetupParameters.srb1SapUser;
-  m_rrc = 0;
+  m_rrc = nullptr;
 }
 
 TypeId
@@ -378,7 +378,7 @@ LteUeRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters
 NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolReal);
 
 LteEnbRrcProtocolReal::LteEnbRrcProtocolReal ()
-  :  m_enbRrcSapProvider (0)
+  :  m_enbRrcSapProvider (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_enbRrcSapUser = new MemberLteEnbRrcSapUser<LteEnbRrcProtocolReal> (this);
@@ -492,7 +492,7 @@ LteEnbRrcProtocolReal::DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParame
   // just create empty entry, the UeRrcSapProvider will be set by the
   // ue upon connection request or connection reconfiguration
   // completed
-  m_enbRrcSapProviderMap[rnti] = 0;
+  m_enbRrcSapProviderMap[rnti] = nullptr;
 
   // Store SetupUeParameters
   m_setupUeParametersMap[rnti] = params;

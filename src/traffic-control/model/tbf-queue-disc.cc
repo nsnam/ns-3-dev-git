@@ -288,7 +288,7 @@ TbfQueueDisc::DoDequeue ()
           NS_LOG_LOGIC("Waking Event Scheduled in " << requiredDelayTime.As (Time::S));
         }
     }
-  return 0;
+  return nullptr;
 }
 
 bool

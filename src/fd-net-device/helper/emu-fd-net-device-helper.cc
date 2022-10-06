@@ -298,7 +298,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor () const
       status = ::execlp (RAW_SOCK_CREATOR,
                          RAW_SOCK_CREATOR,                            // argv[0] (filename)
                          oss.str ().c_str (),                           // argv[1] (-p<path?
-                         (char *)NULL);
+                         (char *)nullptr);
 
       //
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
@@ -381,7 +381,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor () const
       // data we expect to receive and point it to buffer.
       //
       struct msghdr msg;
-      msg.msg_name = 0;
+      msg.msg_name = nullptr;
       msg.msg_namelen = 0;
       msg.msg_iov = &iov;
       msg.msg_iovlen = 1;
@@ -405,7 +405,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor () const
       // one we're interested in.
       //
       struct cmsghdr *cmsg;
-      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != NULL; cmsg = CMSG_NXTHDR (&msg, cmsg))
+      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != nullptr; cmsg = CMSG_NXTHDR (&msg, cmsg))
         {
           if (cmsg->cmsg_level == SOL_SOCKET
               && cmsg->cmsg_type == SCM_RIGHTS)

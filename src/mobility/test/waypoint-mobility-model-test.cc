@@ -197,7 +197,7 @@ private:
 void
 WaypointMobilityModelAddWaypointTest::DoTeardown ()
 {
-  m_mobilityModel = 0;
+  m_mobilityModel = nullptr;
 }
 
 void

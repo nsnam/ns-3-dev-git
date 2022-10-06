@@ -76,7 +76,7 @@ protected:
   struct Data
   {
     /** Default constructor, with null buffer and zero length. */
-    Data () : m_buf (0), m_len (0)
+    Data () : m_buf (nullptr), m_len (0)
     {}
     /**
      * Construct from a buffer of a given length.

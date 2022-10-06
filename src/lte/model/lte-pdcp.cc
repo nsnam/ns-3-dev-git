@@ -69,8 +69,8 @@ LtePdcpSpecificLteRlcSapUser::ReceivePdcpPdu (Ptr<Packet> p)
 NS_OBJECT_ENSURE_REGISTERED (LtePdcp);
 
 LtePdcp::LtePdcp ()
-  : m_pdcpSapUser (0),
-    m_rlcSapProvider (0),
+  : m_pdcpSapUser (nullptr),
+    m_rlcSapProvider (nullptr),
     m_rnti (0),
     m_lcid (0),
     m_txSequenceNumber (0),

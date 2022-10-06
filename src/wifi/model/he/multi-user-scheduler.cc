@@ -85,9 +85,9 @@ void
 MultiUserScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_apMac = 0;
-  m_heFem = 0;
-  m_edca = 0;
+  m_apMac = nullptr;
+  m_heFem = nullptr;
+  m_edca = nullptr;
   m_dlInfo.psduMap.clear ();
   m_dlInfo.txParams.Clear ();
   m_ulInfo.txParams.Clear ();

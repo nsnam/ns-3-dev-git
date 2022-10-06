@@ -98,8 +98,8 @@ template <typename T>
 T **
 SimulationSingleton<T>::GetObject ()
 {
-  static T *pobject = 0;
-  if (pobject == 0)
+  static T *pobject = nullptr;
+  if (pobject == nullptr)
     {
       pobject = new T ();
       Simulator::ScheduleDestroy (&SimulationSingleton<T>::DeleteObject);
@@ -113,7 +113,7 @@ SimulationSingleton<T>::DeleteObject ()
 {
   T **ppobject = GetObject ();
   delete (*ppobject);
-  *ppobject = 0;
+  *ppobject = nullptr;
 }
 
 } // namespace ns3

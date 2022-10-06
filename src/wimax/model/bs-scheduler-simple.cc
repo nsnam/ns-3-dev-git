@@ -54,7 +54,7 @@ TypeId BSSchedulerSimple::GetTypeId ()
 BSSchedulerSimple::BSSchedulerSimple ()
   : m_downlinkBursts (new std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > ())
 {
-  SetBs (0);
+  SetBs (nullptr);
 }
 
 BSSchedulerSimple::BSSchedulerSimple (Ptr<BaseStationNetDevice> bs)
@@ -72,12 +72,12 @@ BSSchedulerSimple::~BSSchedulerSimple ()
   while (downlinkBursts->size ())
     {
       pair = downlinkBursts->front ();
-      pair.second = 0;
+      pair.second = nullptr;
       delete pair.first;
     }
-  SetBs (0);
+  SetBs (nullptr);
   delete m_downlinkBursts;
-  m_downlinkBursts = 0;
+  m_downlinkBursts = nullptr;
 }
 
 std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
@@ -220,7 +220,7 @@ void BSSchedulerSimple::Schedule ()
 
 bool BSSchedulerSimple::SelectConnection (Ptr<WimaxConnection> &connection)
 {
-  connection = 0;
+  connection = nullptr;
   Time currentTime = Simulator::Now ();
   std::vector<Ptr<WimaxConnection> >::const_iterator iter1;
   std::vector<ServiceFlow*>::iterator iter2;

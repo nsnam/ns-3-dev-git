@@ -33,7 +33,7 @@ WifiInformationElementVector::~WifiInformationElementVector ()
 {
   for (IE_VECTOR::iterator i = m_elements.begin (); i != m_elements.end (); i++)
     {
-      *i = 0;
+      *i = nullptr;
     }
   m_elements.clear ();
 }
@@ -164,7 +164,7 @@ WifiInformationElementVector::FindFirst (WifiInformationElementId id) const
           return (*i);
         }
     }
-  return 0;
+  return nullptr;
 }
 
 uint32_t

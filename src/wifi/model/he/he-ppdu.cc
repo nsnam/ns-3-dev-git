@@ -52,7 +52,7 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, ui
   NS_LOG_FUNCTION (this << psdus << txVector << txCenterFreq << ppduDuration << band << uid << flag);
 
   //overwrite with map (since only first element used by OfdmPpdu)
-  m_psdus.begin ()->second = 0;
+  m_psdus.begin ()->second = nullptr;
   m_psdus.clear ();
   m_psdus = psdus;
   if (txVector.IsMu ())

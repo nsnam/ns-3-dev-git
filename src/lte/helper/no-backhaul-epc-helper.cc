@@ -296,12 +296,12 @@ NoBackhaulEpcHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_tunDevice->SetSendCallback (MakeNullCallback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> ());
-  m_tunDevice = 0;
-  m_sgwApp = 0;
+  m_tunDevice = nullptr;
+  m_sgwApp = nullptr;
   m_sgw->Dispose ();
-  m_pgwApp = 0;
+  m_pgwApp = nullptr;
   m_pgw->Dispose ();
-  m_mmeApp = 0;
+  m_mmeApp = nullptr;
   m_mme->Dispose ();
 }
 

@@ -91,7 +91,7 @@ CommandLineTestCaseBase::Parse (CommandLine &cmd, int n, ...)
 
   int argc = n + 1;  // test name will go in argv[0], other n to follow
   char ** argv = new char* [argc + 1];  // extra entry for final null
-  argv[argc] = 0;
+  argv[argc] = nullptr;
 
   argv[0] = new char [strlen (ss.str ().c_str ()) + 1];
   strcpy (argv[0], ss.str ().c_str ());

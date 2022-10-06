@@ -237,7 +237,7 @@ RoutingProtocol::~RoutingProtocol ()
 void
 RoutingProtocol::DoDispose ()
 {
-  m_ipv4 = 0;
+  m_ipv4 = nullptr;
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::iterator iter = m_socketAddresses.begin (); iter
        != m_socketAddresses.end (); iter++)
     {

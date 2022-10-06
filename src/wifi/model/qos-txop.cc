@@ -116,8 +116,8 @@ QosTxop::DoDispose ()
     {
       m_baManager->Dispose ();
     }
-  m_baManager = 0;
-  m_qosBlockedDestinations = 0;
+  m_baManager = nullptr;
+  m_qosBlockedDestinations = nullptr;
   Txop::DoDispose ();
 }
 

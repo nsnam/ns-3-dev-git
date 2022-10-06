@@ -56,10 +56,10 @@ void Ipv6OptionDemux::DoDispose ()
   for (Ipv6OptionList_t::iterator it = m_options.begin (); it != m_options.end (); it++)
     {
       (*it)->Dispose ();
-      *it = 0;
+      *it = nullptr;
     }
   m_options.clear ();
-  m_node = 0;
+  m_node = nullptr;
   Object::DoDispose ();
 }
 
@@ -82,7 +82,7 @@ Ptr<Ipv6Option> Ipv6OptionDemux::GetOption (int optionNumber)
           return *i;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 void Ipv6OptionDemux::Remove (Ptr<Ipv6Option> option)

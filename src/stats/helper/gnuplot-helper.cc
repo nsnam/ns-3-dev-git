@@ -35,7 +35,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("GnuplotHelper");
 
 GnuplotHelper::GnuplotHelper ()
-  : m_aggregator                     (0),
+  : m_aggregator                     (nullptr),
     m_plotProbeCount                 (0),
     m_outputFileNameWithoutExtension ("gnuplot-helper"),
     m_title                          ("Gnuplot Helper Plot"),
@@ -54,7 +54,7 @@ GnuplotHelper::GnuplotHelper (const std::string &outputFileNameWithoutExtension,
                               const std::string &xLegend,
                               const std::string &yLegend,
                               const std::string &terminalType)
-  : m_aggregator                     (0),
+  : m_aggregator                     (nullptr),
     m_plotProbeCount                 (0),
     m_outputFileNameWithoutExtension (outputFileNameWithoutExtension),
     m_title                          (title),

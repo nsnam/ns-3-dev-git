@@ -343,7 +343,7 @@ public:
         /*
          * Verify if neither the entry are not 0 and they equal to each other
          */
-        if (((*i) == 0) || ((*j) == 0))
+        if (((*i) == nullptr) || ((*j) == nullptr))
           {
             return false;
           }

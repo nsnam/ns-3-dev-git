@@ -37,13 +37,13 @@ namespace ns3
 MeshHelper::MeshHelper () :
   m_nInterfaces (1),
   m_spreadChannelPolicy (ZERO_CHANNEL),
-  m_stack (0),
+  m_stack (nullptr),
   m_standard (WIFI_STANDARD_80211a)
 {
 }
 MeshHelper::~MeshHelper ()
 {
-  m_stack = 0;
+  m_stack = nullptr;
 }
 void
 MeshHelper::SetSpreadInterfaceChannels (enum ChannelPolicy policy)

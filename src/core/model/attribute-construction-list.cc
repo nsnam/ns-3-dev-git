@@ -70,7 +70,7 @@ AttributeConstructionList::Find (Ptr<const AttributeChecker> checker) const
           return k->value;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 AttributeConstructionList::CIterator

@@ -52,7 +52,7 @@ Socket::Socket ()
     m_ipv6RecvHopLimit (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_boundnetdevice = 0;
+  m_boundnetdevice = nullptr;
   m_recvPktInfo = false;
 
   m_priority = 0;

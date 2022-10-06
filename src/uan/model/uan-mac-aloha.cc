@@ -54,7 +54,7 @@ UanMacAloha::Clear ()
   if (m_phy)
     {
       m_phy->Clear ();
-      m_phy = 0;
+      m_phy = nullptr;
     }
 }
 

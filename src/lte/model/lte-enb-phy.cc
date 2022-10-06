@@ -151,8 +151,8 @@ LteEnbPhy::LteEnbPhy ()
 
 LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_enbPhySapUser (0),
-    m_enbCphySapUser (0),
+    m_enbPhySapUser (nullptr),
+    m_enbCphySapUser (nullptr),
     m_nrFrames (0),
     m_nrSubFrames (0),
     m_srsPeriodicity (0),

@@ -387,7 +387,7 @@ FqCobaltQueueDisc::DoDequeue ()
       if (!found)
         {
           NS_LOG_DEBUG ("No flow found to dequeue a packet");
-          return 0;
+          return nullptr;
         }
 
       item = flow->GetQueueDisc ()->Dequeue ();

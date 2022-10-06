@@ -68,7 +68,7 @@ WimaxConnection::WimaxConnection (Cid cid, enum Cid::Type type)
   : m_cid (cid),
     m_cidType (type),
     m_queue (CreateObject<WimaxMacQueue> (1024)),
-    m_serviceFlow (0)
+    m_serviceFlow (nullptr)
 {
 }
 
@@ -79,7 +79,7 @@ WimaxConnection::~WimaxConnection ()
 void
 WimaxConnection::DoDispose ()
 {
-  m_queue = 0;
+  m_queue = nullptr;
   // m_serviceFlow = 0;
 }
 

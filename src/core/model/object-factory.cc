@@ -95,7 +95,7 @@ ObjectFactory::Create () const
   Callback<ObjectBase *> cb = m_tid.GetConstructor ();
   ObjectBase *base = cb ();
   Object *derived = dynamic_cast<Object *> (base);
-  NS_ASSERT (derived != 0);
+  NS_ASSERT (derived != nullptr);
   derived->SetTypeId (m_tid);
   derived->Construct (m_parameters);
   Ptr<Object> object = Ptr<Object> (derived, false);

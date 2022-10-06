@@ -57,7 +57,7 @@ ApplicationPacketProbe::GetTypeId ()
 ApplicationPacketProbe::ApplicationPacketProbe ()
 {
   NS_LOG_FUNCTION (this);
-  m_packet = 0;
+  m_packet = nullptr;
 }
 
 ApplicationPacketProbe::~ApplicationPacketProbe ()

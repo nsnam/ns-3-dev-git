@@ -80,9 +80,9 @@ void
 EpcEnbApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_lteSocket = 0;
-  m_lteSocket6 = 0;
-  m_s1uSocket = 0;
+  m_lteSocket = nullptr;
+  m_lteSocket6 = nullptr;
+  m_s1uSocket = nullptr;
   delete m_s1SapProvider;
   delete m_s1apSapEnb;
 }
@@ -91,8 +91,8 @@ EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> lteSock
   : m_lteSocket (lteSocket),
     m_lteSocket6 (lteSocket6),
     m_gtpuUdpPort (2152), // fixed by the standard
-    m_s1SapUser (0),
-    m_s1apSapMme (0),
+    m_s1SapUser (nullptr),
+    m_s1apSapMme (nullptr),
     m_cellId (cellId)
 {
   NS_LOG_FUNCTION (this << lteSocket << lteSocket6 << cellId);

@@ -42,7 +42,7 @@ LoopbackNetDevice::GetTypeId ()
 }
 
 LoopbackNetDevice::LoopbackNetDevice ()
-  : m_node (0),
+  : m_node (nullptr),
     m_mtu (0xffff),
     m_ifIndex (0),
     m_address (Mac48Address ("00:00:00:00:00:00"))
@@ -94,7 +94,7 @@ LoopbackNetDevice::GetIfIndex () const
 Ptr<Channel>
 LoopbackNetDevice::GetChannel () const
 {
-  return 0;
+  return nullptr;
 }
 
 void
@@ -224,7 +224,7 @@ LoopbackNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void
 LoopbackNetDevice::DoDispose ()
 {
-  m_node = 0;
+  m_node = nullptr;
   NetDevice::DoDispose ();
 }
 

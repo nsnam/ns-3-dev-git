@@ -68,7 +68,7 @@ V4Ping::GetTypeId ()
 V4Ping::V4Ping ()
   : m_interval (Seconds (1)),
     m_size (56),
-    m_socket (0),
+    m_socket (nullptr),
     m_seq (0),
     m_verbose (false),
     m_recv (0)
@@ -90,7 +90,7 @@ V4Ping::DoDispose ()
       StopApplication ();
     }
 
-  m_socket = 0;
+  m_socket = nullptr;
   Application::DoDispose ();
 }
 

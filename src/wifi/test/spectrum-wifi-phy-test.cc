@@ -137,7 +137,7 @@ SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, GUARD_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
-  txParams->txPhy = 0;
+  txParams->txPhy = nullptr;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
 
@@ -190,7 +190,7 @@ void
 SpectrumWifiPhyBasicTest::DoTeardown ()
 {
   m_phy->Dispose ();
-  m_phy = 0;
+  m_phy = nullptr;
 }
 
 // Test that the expected number of packet receptions occur.
@@ -407,8 +407,8 @@ SpectrumWifiPhyFilterTest::SendPpdu ()
 
 SpectrumWifiPhyFilterTest::~SpectrumWifiPhyFilterTest ()
 {
-  m_txPhy = 0;
-  m_rxPhy = 0;
+  m_txPhy = nullptr;
+  m_rxPhy = nullptr;
 }
 
 void
@@ -509,9 +509,9 @@ void
 SpectrumWifiPhyFilterTest::DoTeardown ()
 {
   m_txPhy->Dispose ();
-  m_txPhy = 0;
+  m_txPhy = nullptr;
   m_rxPhy->Dispose ();
-  m_rxPhy = 0;
+  m_rxPhy = nullptr;
 }
 
 void

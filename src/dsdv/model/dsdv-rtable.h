@@ -69,7 +69,7 @@ public:
    * \param settlingTime the settling time
    * \param changedEntries flag for changed entries
    */
-  RoutingTableEntry (Ptr<NetDevice> dev = 0, Ipv4Address dst = Ipv4Address (), uint32_t seqNo = 0,
+  RoutingTableEntry (Ptr<NetDevice> dev = nullptr, Ipv4Address dst = Ipv4Address (), uint32_t seqNo = 0,
                      Ipv4InterfaceAddress iface = Ipv4InterfaceAddress (), uint32_t hops = 0, Ipv4Address nextHop = Ipv4Address (),
                      Time lifetime = Simulator::Now (), Time settlingTime = Simulator::Now (), bool changedEntries = false);
 

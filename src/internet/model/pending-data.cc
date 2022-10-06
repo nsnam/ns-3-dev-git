@@ -84,7 +84,7 @@ PendingData* PendingData::Copy () const
 PendingData* PendingData::CopyS (uint32_t s)
 { // Copy, but with new size (assumes no associated data);
   NS_LOG_FUNCTION (this << s);
-  return new PendingData (s, 0, msgSize, responseSize);
+  return new PendingData (s, nullptr, msgSize, responseSize);
 }
 
 PendingData* PendingData::CopySD (uint32_t s, uint8_t* d)

@@ -85,7 +85,7 @@ CandidateQueue::Clear ()
     {
       SPFVertex *p = Pop ();
       delete p;
-      p = 0;
+      p = nullptr;
     }
 }
 
@@ -107,7 +107,7 @@ CandidateQueue::Pop ()
   NS_LOG_FUNCTION (this);
   if (m_candidates.empty ())
     {
-      return 0;
+      return nullptr;
     }
 
   SPFVertex *v = m_candidates.front ();
@@ -121,7 +121,7 @@ CandidateQueue::Top () const
   NS_LOG_FUNCTION (this);
   if (m_candidates.empty ())
     {
-      return 0;
+      return nullptr;
     }
 
   return m_candidates.front ();
@@ -156,7 +156,7 @@ CandidateQueue::Find (const Ipv4Address addr) const
         }
     }
 
-  return 0;
+  return nullptr;
 }
 
 void

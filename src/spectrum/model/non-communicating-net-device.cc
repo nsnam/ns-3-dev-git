@@ -64,9 +64,9 @@ void
 NonCommunicatingNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
-  m_channel = 0;
-  m_phy = 0;
+  m_node = nullptr;
+  m_channel = nullptr;
+  m_phy = nullptr;
   NetDevice::DoDispose ();
 }
 

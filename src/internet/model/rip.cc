@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("Rip");
 NS_OBJECT_ENSURE_REGISTERED (Rip);
 
 Rip::Rip ()
-  : m_ipv4 (0), m_splitHorizonStrategy (Rip::POISON_REVERSE), m_initialized (false)
+  : m_ipv4 (nullptr), m_splitHorizonStrategy (Rip::POISON_REVERSE), m_initialized (false)
 {
   m_rng = CreateObject<UniformRandomVariable> ();
 }
@@ -191,7 +191,7 @@ Ptr<Ipv4Route> Rip::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<Ne
   NS_LOG_FUNCTION (this << header << oif);
 
   Ipv4Address destination = header.GetDestination ();
-  Ptr<Ipv4Route> rtentry = 0;
+  Ptr<Ipv4Route> rtentry = nullptr;
 
   if (destination.IsMulticast ())
     {
@@ -574,9 +574,9 @@ void Rip::DoDispose ()
   m_unicastSocketList.clear ();
 
   m_multicastRecvSocket->Close ();
-  m_multicastRecvSocket = 0;
+  m_multicastRecvSocket = nullptr;
 
-  m_ipv4 = 0;
+  m_ipv4 = nullptr;
 
   Ipv4RoutingProtocol::DoDispose ();
 }
@@ -585,7 +585,7 @@ Ptr<Ipv4Route> Rip::Lookup (Ipv4Address dst, bool setSource, Ptr<NetDevice> inte
 {
   NS_LOG_FUNCTION (this << dst << interface);
 
-  Ptr<Ipv4Route> rtentry = 0;
+  Ptr<Ipv4Route> rtentry = nullptr;
   uint16_t longestMask = 0;
 
   /* when sending on local multicast, there have to be interface specified */

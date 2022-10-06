@@ -164,7 +164,7 @@ void
 ChannelScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_device = 0;
+  m_device = nullptr;
 }
 
 } // namespace ns3

@@ -50,7 +50,7 @@ NS_OBJECT_ENSURE_REGISTERED (ThreeGppHttpServer);
 
 ThreeGppHttpServer::ThreeGppHttpServer ()
   : m_state (NOT_STARTED),
-  m_initialSocket (0),
+  m_initialSocket (nullptr),
   m_txBuffer (Create<ThreeGppHttpServerTxBuffer> ()),
   m_httpVariables (CreateObject<ThreeGppHttpVariables> ())
 {

@@ -65,7 +65,7 @@ BridgeNetDevice::GetTypeId ()
 
 
 BridgeNetDevice::BridgeNetDevice ()
-  : m_node (0),
+  : m_node (nullptr),
     m_ifIndex (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -83,11 +83,11 @@ BridgeNetDevice::DoDispose ()
   NS_LOG_FUNCTION_NOARGS ();
   for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin (); iter != m_ports.end (); iter++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   m_ports.clear ();
-  m_channel = 0;
-  m_node = 0;
+  m_channel = nullptr;
+  m_node = nullptr;
   NetDevice::DoDispose ();
 }
 
@@ -228,7 +228,7 @@ Ptr<NetDevice> BridgeNetDevice::GetLearnedState (Mac48Address source)
             }
         }
     }
-  return NULL;
+  return nullptr;
 }
 
 uint32_t

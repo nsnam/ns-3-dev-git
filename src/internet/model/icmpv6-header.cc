@@ -1058,7 +1058,7 @@ TypeId Icmpv6DestinationUnreachable::GetInstanceTypeId () const
 }
 
 Icmpv6DestinationUnreachable::Icmpv6DestinationUnreachable ()
-  : m_packet (0)
+  : m_packet (nullptr)
 {
   NS_LOG_FUNCTION (this);
   SetType (ICMPV6_ERROR_DESTINATION_UNREACHABLE);
@@ -1152,7 +1152,7 @@ TypeId Icmpv6TooBig::GetInstanceTypeId () const
 }
 
 Icmpv6TooBig::Icmpv6TooBig ()
-  : m_packet (0),
+  : m_packet (nullptr),
     m_mtu (0)
 {
   NS_LOG_FUNCTION (this);
@@ -1259,7 +1259,7 @@ TypeId Icmpv6TimeExceeded::GetInstanceTypeId () const
 }
 
 Icmpv6TimeExceeded::Icmpv6TimeExceeded ()
-  : m_packet (0)
+  : m_packet (nullptr)
 {
   NS_LOG_FUNCTION (this);
   SetType (ICMPV6_ERROR_TIME_EXCEEDED);
@@ -1354,7 +1354,7 @@ TypeId Icmpv6ParameterError::GetInstanceTypeId () const
 }
 
 Icmpv6ParameterError::Icmpv6ParameterError ()
-  : m_packet (0),
+  : m_packet (nullptr),
     m_ptr (0)
 {
   NS_LOG_FUNCTION (this);
@@ -1920,7 +1920,7 @@ TypeId Icmpv6OptionRedirected::GetInstanceTypeId () const
 }
 
 Icmpv6OptionRedirected::Icmpv6OptionRedirected ()
-  : m_packet (0)
+  : m_packet (nullptr)
 {
   NS_LOG_FUNCTION (this);
   SetType (Icmpv6Header::ICMPV6_OPT_REDIRECTED);
@@ -1929,7 +1929,7 @@ Icmpv6OptionRedirected::Icmpv6OptionRedirected ()
 Icmpv6OptionRedirected::~Icmpv6OptionRedirected ()
 {
   NS_LOG_FUNCTION (this);
-  m_packet = 0;
+  m_packet = nullptr;
 }
 
 void Icmpv6OptionRedirected::SetPacket (Ptr<Packet> packet)

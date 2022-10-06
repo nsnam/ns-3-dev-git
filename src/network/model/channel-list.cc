@@ -128,7 +128,7 @@ Ptr<ChannelListPriv> *
 ChannelListPriv::DoGet ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  static Ptr<ChannelListPriv> ptr = 0;
+  static Ptr<ChannelListPriv> ptr = nullptr;
   if (!ptr)
     {
       ptr = CreateObject<ChannelListPriv> ();
@@ -143,7 +143,7 @@ ChannelListPriv::Delete ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::UnregisterRootNamespaceObject (Get ());
-  (*DoGet ()) = 0;
+  (*DoGet ()) = nullptr;
 }
 
 ChannelListPriv::ChannelListPriv ()
@@ -164,7 +164,7 @@ ChannelListPriv::DoDispose ()
     {
       Ptr<Channel> channel = *i;
       channel->Dispose ();
-      *i = 0;
+      *i = nullptr;
     }
   m_channels.erase (m_channels.begin (), m_channels.end ());
   Object::DoDispose ();

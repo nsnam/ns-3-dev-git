@@ -112,7 +112,7 @@ ChannelAccessManager::ChannelAccessManager ()
     m_lastSwitchingEnd (MicroSeconds (0)),
     m_sleeping (false),
     m_off (false),
-    m_phyListener (0),
+    m_phyListener (nullptr),
     m_linkId (0)
 {
   NS_LOG_FUNCTION (this);
@@ -123,7 +123,7 @@ ChannelAccessManager::~ChannelAccessManager ()
 {
   NS_LOG_FUNCTION (this);
   delete m_phyListener;
-  m_phyListener = 0;
+  m_phyListener = nullptr;
 }
 
 void
@@ -133,17 +133,17 @@ ChannelAccessManager::DoDispose ()
   for (Ptr<Txop> i : m_txops)
     {
       i->Dispose ();
-      i = 0;
+      i = nullptr;
     }
-  m_phy = 0;
-  m_feManager = 0;
+  m_phy = nullptr;
+  m_feManager = nullptr;
 }
 
 void
 ChannelAccessManager::SetupPhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  NS_ASSERT (m_phyListener == 0);
+  NS_ASSERT (m_phyListener == nullptr);
   m_phyListener = new PhyListener (this);
   phy->RegisterListener (m_phyListener);
   m_phy = phy;
@@ -154,12 +154,12 @@ void
 ChannelAccessManager::RemovePhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  if (m_phyListener != 0)
+  if (m_phyListener != nullptr)
     {
       phy->UnregisterListener (m_phyListener);
       delete m_phyListener;
-      m_phyListener = 0;
-      m_phy = 0;
+      m_phyListener = nullptr;
+      m_phy = nullptr;
     }
 }
 

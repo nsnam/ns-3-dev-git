@@ -78,7 +78,7 @@ Reservation::~Reservation ()
   std::list<std::pair <Ptr<Packet>, Mac8Address > >::iterator it;
   for (it = m_pktList.begin (); it != m_pktList.end (); it++)
     {
-      it->first = Ptr<Packet> ((Packet *) 0);
+      it->first = Ptr<Packet> ((Packet *) nullptr);
     }
   m_pktList.clear ();
   m_timestamp.clear ();
@@ -184,12 +184,12 @@ UanMacRc::Clear ()
   if (m_phy)
     {
       m_phy->Clear ();
-      m_phy = 0;
+      m_phy = nullptr;
     }
   std::list<std::pair <Ptr<Packet>, Mac8Address > >::iterator it;
   for (it = m_pktQueue.begin (); it != m_pktQueue.end (); it++)
     {
-      it->first = 0;
+      it->first = nullptr;
     }
   m_pktQueue.clear ();
   m_resList.clear ();

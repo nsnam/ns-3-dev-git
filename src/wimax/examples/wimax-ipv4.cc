@@ -210,11 +210,11 @@ int main (int argc, char *argv[])
   delete[] udpServer;
   for (int i = 0; i < nbSS; i++)
     {
-      ss[i] = 0;
+      ss[i] = nullptr;
     }
   delete[] ss;
 
-  bs = 0;
+  bs = nullptr;
 
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");

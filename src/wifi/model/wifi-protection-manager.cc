@@ -54,7 +54,7 @@ void
 WifiProtectionManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_mac = 0;
+  m_mac = nullptr;
   Object::DoDispose ();
 }
 

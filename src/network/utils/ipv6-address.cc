@@ -155,8 +155,8 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
   unsigned char tmp[16];
   unsigned char* tp = tmp;
   unsigned char* const endp = tp + 16;
-  unsigned char* colonp = 0;
-  const char* xdigits = 0;
+  unsigned char* colonp = nullptr;
+  const char* xdigits = nullptr;
 #if 0
   const char* curtok = 0;
 #endif
@@ -179,14 +179,14 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 #endif
   while ((ch = *address++) != '\0')
     {
-      const char *pch = 0;
+      const char *pch = nullptr;
 
-      if ((pch = strchr ((xdigits = xdigits_l), ch)) == 0)
+      if ((pch = strchr ((xdigits = xdigits_l), ch)) == nullptr)
         {
           pch = strchr ((xdigits = xdigits_u), ch);
         }
 
-      if (pch != 0)
+      if (pch != nullptr)
         {
           val <<= 4;
           val |= (pch - xdigits);
@@ -246,7 +246,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
       *tp++ = (unsigned char) val & 0xff;
     }
 
-  if (colonp != 0)
+  if (colonp != nullptr)
     {
       /*
        * Since some memmove ()'s erroneously fail to handle

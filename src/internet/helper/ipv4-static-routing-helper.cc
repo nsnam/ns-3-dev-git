@@ -81,7 +81,7 @@ Ipv4StaticRoutingHelper::GetStaticRouting (Ptr<Ipv4> ipv4) const
         }
     }
   NS_LOG_LOGIC ("Static routing not found");
-  return 0;
+  return nullptr;
 }
 
 void

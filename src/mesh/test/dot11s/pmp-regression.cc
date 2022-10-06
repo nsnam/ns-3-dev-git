@@ -40,7 +40,7 @@ using namespace ns3;
 const char * const PREFIX = "pmp-regression-test";
 
 PeerManagementProtocolRegressionTest::PeerManagementProtocolRegressionTest () : TestCase ("PMP regression test"),
-                                                                                m_nodes (0),
+                                                                                m_nodes (nullptr),
                                                                                 m_time (Seconds (1))
 {
 }
@@ -64,7 +64,7 @@ PeerManagementProtocolRegressionTest::DoRun ()
 
   CheckResults ();
 
-  delete m_nodes, m_nodes = 0;
+  delete m_nodes, m_nodes = nullptr;
 }
 
 void

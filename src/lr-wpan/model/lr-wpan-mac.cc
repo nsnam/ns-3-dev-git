@@ -2622,7 +2622,7 @@ LrWpanMac::RemovePendTxQElement (Ptr<Packet> p)
         }
     }
 
-  p = 0;
+  p = nullptr;
 }
 
 void

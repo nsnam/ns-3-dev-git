@@ -81,10 +81,10 @@ LtePhy::DoDispose ()
   m_packetBurstQueue.clear ();
   m_controlMessagesQueue.clear ();
   m_downlinkSpectrumPhy->Dispose ();
-  m_downlinkSpectrumPhy = 0;
+  m_downlinkSpectrumPhy = nullptr;
   m_uplinkSpectrumPhy->Dispose ();
-  m_uplinkSpectrumPhy = 0;
-  m_netDevice = 0;
+  m_uplinkSpectrumPhy = nullptr;
+  m_netDevice = nullptr;
   Object::DoDispose ();
 }
 
@@ -208,7 +208,7 @@ LtePhy::GetPacketBurst ()
     {
       m_packetBurstQueue.erase (m_packetBurstQueue.begin ());
       m_packetBurstQueue.push_back (CreateObject <PacketBurst> ());
-      return (0);
+      return (nullptr);
     }
 }
 

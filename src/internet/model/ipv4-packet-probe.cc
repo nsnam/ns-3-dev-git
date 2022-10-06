@@ -57,9 +57,9 @@ Ipv4PacketProbe::GetTypeId ()
 Ipv4PacketProbe::Ipv4PacketProbe ()
 {
   NS_LOG_FUNCTION (this);
-  m_packet    = 0;
+  m_packet    = nullptr;
   m_packetSizeOld = 0;
-  m_ipv4      = 0;
+  m_ipv4      = nullptr;
   m_interface = 0;
 }
 

@@ -38,15 +38,15 @@ NS_LOG_COMPONENT_DEFINE ("TvSpectrumTransmitter");
 NS_OBJECT_ENSURE_REGISTERED (TvSpectrumTransmitter);
 
 TvSpectrumTransmitter::TvSpectrumTransmitter ()
-  : m_mobility (0),
+  : m_mobility (nullptr),
     m_antenna (CreateObject<IsotropicAntennaModel> ()),
-    m_netDevice (0),
-    m_channel (0),
+    m_netDevice (nullptr),
+    m_channel (nullptr),
     m_tvType (TVTYPE_8VSB),
     m_startFrequency (500e6),
     m_channelBandwidth (6e6),
     m_basePsd (20),
-    m_txPsd (0),
+    m_txPsd (nullptr),
     m_startingTime (Seconds (0)),
     m_transmitDuration (Seconds (0.2)),
     m_active (false)
@@ -56,11 +56,11 @@ TvSpectrumTransmitter::TvSpectrumTransmitter ()
 
 TvSpectrumTransmitter::~TvSpectrumTransmitter ()
 {
-  m_mobility = 0;
-  m_antenna = 0;
-  m_netDevice = 0;
-  m_channel = 0;
-  m_txPsd = 0;
+  m_mobility = nullptr;
+  m_antenna = nullptr;
+  m_netDevice = nullptr;
+  m_channel = nullptr;
+  m_txPsd = nullptr;
   NS_LOG_FUNCTION (this);
 }
 
@@ -161,7 +161,7 @@ Ptr<const SpectrumModel>
 TvSpectrumTransmitter::GetRxSpectrumModel () const
 {
   NS_LOG_FUNCTION (this);
-  return 0;
+  return nullptr;
 }
 
 Ptr<Object>

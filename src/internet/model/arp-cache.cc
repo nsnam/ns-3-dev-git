@@ -85,8 +85,8 @@ ArpCache::GetTypeId ()
 }
 
 ArpCache::ArpCache ()
-  : m_device (0),
-    m_interface (0)
+  : m_device (nullptr),
+    m_interface (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -101,8 +101,8 @@ ArpCache::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Flush ();
-  m_device = 0;
-  m_interface = 0;
+  m_device = nullptr;
+  m_interface = nullptr;
   if (!m_waitReplyTimer.IsRunning ())
     {
       m_waitReplyTimer.Cancel ();
@@ -200,7 +200,7 @@ ArpCache::HandleWaitReplyTimeout ()
   for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
     {
       entry = (*i).second;
-      if (entry != 0 && entry->IsWaitReply ())
+      if (entry != nullptr && entry->IsWaitReply ())
         {
           if (entry->GetRetries () < m_maxRetries)
             {
@@ -344,7 +344,7 @@ ArpCache::Lookup (Ipv4Address to)
     {
       return it->second;
     }
-  return 0;
+  return nullptr;
 }
 
 ArpCache::Entry *
@@ -550,7 +550,7 @@ ArpCache::Entry::DequeuePending ()
   if (m_pending.empty ())
     {
       Ipv4Header h;
-      return Ipv4PayloadHeaderPair (0, h);
+      return Ipv4PayloadHeaderPair (nullptr, h);
     }
   else
     {

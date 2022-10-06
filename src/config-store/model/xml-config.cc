@@ -34,7 +34,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("XmlConfig");
 
 XmlConfigSave::XmlConfigSave ()
-  : m_writer (0)
+  : m_writer (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -50,7 +50,7 @@ XmlConfigSave::SetFilename (std::string filename)
 
   /* Create a new XmlWriter for uri, with no compression. */
   m_writer = xmlNewTextWriterFilename (filename.c_str (), 0);
-  if (m_writer == NULL)
+  if (m_writer == nullptr)
     {
       NS_FATAL_ERROR ("Error creating the XML writer");
     }
@@ -62,7 +62,7 @@ XmlConfigSave::SetFilename (std::string filename)
   /* Start the document with the XML default for the version,
    * encoding utf-8 and the default for the standalone
    * declaration. */
-  rc = xmlTextWriterStartDocument (m_writer, NULL, "utf-8", NULL);
+  rc = xmlTextWriterStartDocument (m_writer, nullptr, "utf-8", nullptr);
   if (rc < 0)
     {
       NS_FATAL_ERROR ("Error at xmlTextWriterStartDocument");
@@ -79,7 +79,7 @@ XmlConfigSave::SetFilename (std::string filename)
 XmlConfigSave::~XmlConfigSave ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_writer == 0)
+  if (m_writer == nullptr)
     {
       return;
     }
@@ -95,7 +95,7 @@ XmlConfigSave::~XmlConfigSave ()
     }
 
   xmlFreeTextWriter (m_writer);
-  m_writer = 0;
+  m_writer = nullptr;
 }
 void
 XmlConfigSave::Default ()
@@ -303,7 +303,7 @@ void
 XmlConfigLoad::Default ()
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
-  if (reader == NULL)
+  if (reader == nullptr)
     {
       NS_FATAL_ERROR ("Error at xmlReaderForFile");
     }
@@ -312,19 +312,19 @@ XmlConfigLoad::Default ()
   while (rc > 0)
     {
       const xmlChar *type = xmlTextReaderConstName (reader);
-      if (type == 0)
+      if (type == nullptr)
         {
           NS_FATAL_ERROR ("Invalid value");
         }
       if (std::string ((char*)type) == "default")
         {
           xmlChar *name = xmlTextReaderGetAttribute (reader, BAD_CAST "name");
-          if (name == 0)
+          if (name == nullptr)
             {
               NS_FATAL_ERROR ("Error getting attribute 'name'");
             }
           xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
-          if (value == 0)
+          if (value == nullptr)
             {
               NS_FATAL_ERROR ("Error getting attribute 'value'");
             }
@@ -341,7 +341,7 @@ void
 XmlConfigLoad::Global ()
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
-  if (reader == NULL)
+  if (reader == nullptr)
     {
       NS_FATAL_ERROR ("Error at xmlReaderForFile");
     }
@@ -350,19 +350,19 @@ XmlConfigLoad::Global ()
   while (rc > 0)
     {
       const xmlChar *type = xmlTextReaderConstName (reader);
-      if (type == 0)
+      if (type == nullptr)
         {
           NS_FATAL_ERROR ("Invalid value");
         }
       if (std::string ((char*)type) == "global")
         {
           xmlChar *name = xmlTextReaderGetAttribute (reader, BAD_CAST "name");
-          if (name == 0)
+          if (name == nullptr)
             {
               NS_FATAL_ERROR ("Error getting attribute 'name'");
             }
           xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
-          if (value == 0)
+          if (value == nullptr)
             {
               NS_FATAL_ERROR ("Error getting attribute 'value'");
             }
@@ -379,7 +379,7 @@ void
 XmlConfigLoad::Attributes ()
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
-  if (reader == NULL)
+  if (reader == nullptr)
     {
       NS_FATAL_ERROR ("Error at xmlReaderForFile");
     }
@@ -388,19 +388,19 @@ XmlConfigLoad::Attributes ()
   while (rc > 0)
     {
       const xmlChar *type = xmlTextReaderConstName (reader);
-      if (type == 0)
+      if (type == nullptr)
         {
           NS_FATAL_ERROR ("Invalid value");
         }
       if (std::string ((char*)type) == "value")
         {
           xmlChar *path = xmlTextReaderGetAttribute (reader, BAD_CAST "path");
-          if (path == 0)
+          if (path == nullptr)
             {
               NS_FATAL_ERROR ("Error getting attribute 'path'");
             }
           xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
-          if (value == 0)
+          if (value == nullptr)
             {
               NS_FATAL_ERROR ("Error getting attribute 'value'");
             }

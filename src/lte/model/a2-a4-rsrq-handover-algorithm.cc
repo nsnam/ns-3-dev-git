@@ -45,7 +45,7 @@ NS_OBJECT_ENSURE_REGISTERED (A2A4RsrqHandoverAlgorithm);
 A2A4RsrqHandoverAlgorithm::A2A4RsrqHandoverAlgorithm ()
   : m_servingCellThreshold (30),
     m_neighbourCellOffset (1),
-    m_handoverManagementSapUser (0)
+    m_handoverManagementSapUser (nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_handoverManagementSapProvider = new MemberLteHandoverManagementSapProvider<A2A4RsrqHandoverAlgorithm> (this);

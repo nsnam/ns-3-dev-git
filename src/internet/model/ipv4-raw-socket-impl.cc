@@ -55,7 +55,7 @@ Ipv4RawSocketImpl::Ipv4RawSocketImpl ()
 {
   NS_LOG_FUNCTION (this);
   m_err = Socket::ERROR_NOTERROR;
-  m_node = 0;
+  m_node = nullptr;
   m_src = Ipv4Address::GetAny ();
   m_dst = Ipv4Address::GetAny ();
   m_protocol = 0;
@@ -74,7 +74,7 @@ void
 Ipv4RawSocketImpl::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_node = nullptr;
   Socket::DoDispose ();
 }
 
@@ -387,7 +387,7 @@ Ipv4RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
   NS_LOG_FUNCTION (this << maxSize << flags << fromAddress);
   if (m_recv.empty ())
     {
-      return 0;
+      return nullptr;
     }
   struct Data data = m_recv.front ();
   m_recv.pop_front ();

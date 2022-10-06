@@ -89,7 +89,7 @@ FifoQueueDisc::DoDequeue ()
   if (!item)
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   return item;
@@ -105,7 +105,7 @@ FifoQueueDisc::DoPeek ()
   if (!item)
     {
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
 
   return item;

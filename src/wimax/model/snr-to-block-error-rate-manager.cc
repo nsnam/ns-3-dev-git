@@ -293,7 +293,7 @@ SNRToBlockErrorRateManager::GetBlockErrorRate (double SNR, uint8_t modulation)
       return 0;
     }
 
-  std::vector<SNRToBlockErrorRateRecord *> *record = 0;
+  std::vector<SNRToBlockErrorRateRecord *> *record = nullptr;
 
   record = m_recordModulation[modulation];
 
@@ -331,7 +331,7 @@ SNRToBlockErrorRateManager::GetSNRToBlockErrorRateRecord (double SNR,
       return new SNRToBlockErrorRateRecord (SNR, 0, 0, 0, 0, 0);
     }
 
-  std::vector<SNRToBlockErrorRateRecord *> *record = 0;
+  std::vector<SNRToBlockErrorRateRecord *> *record = nullptr;
   record = m_recordModulation[modulation];
 
   if (SNR <= (record->at (0)->GetSNRValue ()))

@@ -79,7 +79,7 @@ LteNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_node = 0;
+  m_node = nullptr;
   NetDevice::DoDispose ();
 }
 
@@ -89,7 +89,7 @@ LteNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   // we can't return a meaningful channel here, because LTE devices using FDD have actually two channels.
-  return 0;
+  return nullptr;
 }
 
 

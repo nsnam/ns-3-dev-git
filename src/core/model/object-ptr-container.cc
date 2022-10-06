@@ -58,7 +58,7 @@ ObjectPtrContainerValue::Get (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   Iterator it = m_objects.find (i);
-  Ptr<Object> value = 0;
+  Ptr<Object> value = nullptr;
   if ( it != m_objects.end () )
     {
       value = m_objects.find (i)->second;
@@ -108,7 +108,7 @@ ObjectPtrContainerAccessor::Get (const ObjectBase * object, AttributeValue &valu
 {
   NS_LOG_FUNCTION (this << object << &value);
   ObjectPtrContainerValue *v = dynamic_cast<ObjectPtrContainerValue *> (&value);
-  if (v == 0)
+  if (v == nullptr)
     {
       return false;
     }

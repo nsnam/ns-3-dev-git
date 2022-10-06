@@ -211,7 +211,7 @@ GlobalRoutingLSA::CopyLinkRecords (const GlobalRoutingLSA& lsa)
       pDst->SetMetric (pSrc->GetMetric ());
 
       m_linkRecords.push_back (pDst);
-      pDst = 0;
+      pDst = nullptr;
     }
 
   m_attachedRouters = lsa.m_attachedRouters;
@@ -235,7 +235,7 @@ GlobalRoutingLSA::ClearLinkRecords ()
 
       GlobalRoutingLinkRecord *p = *i;
       delete p;
-      p = 0;
+      p = nullptr;
 
       *i = 0;
     }
@@ -273,7 +273,7 @@ GlobalRoutingLSA::GetLinkRecord (uint32_t n) const
         }
     }
   NS_ASSERT_MSG (false, "GlobalRoutingLSA::GetLinkRecord (): invalid index");
-  return 0;
+  return nullptr;
 }
 
 bool
@@ -546,7 +546,7 @@ void
 GlobalRouter::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_routingProtocol = 0;
+  m_routingProtocol = nullptr;
   for (InjectedRoutesI k = m_injectedRoutes.begin ();
        k != m_injectedRoutes.end ();
        k = m_injectedRoutes.erase (k))
@@ -568,7 +568,7 @@ GlobalRouter::ClearLSAs ()
 
       GlobalRoutingLSA *p = *i;
       delete p;
-      p = 0;
+      p = nullptr;
 
       *i = 0;
     }
@@ -698,7 +698,7 @@ GlobalRouter::DiscoverLSAs ()
   NS_LOG_LOGIC ("========== LSA for node " << node->GetId () << " ==========");
   NS_LOG_LOGIC (*pLSA);
   m_LSAs.push_back (pLSA);
-  pLSA = 0;
+  pLSA = nullptr;
 
   //
   // Now, determine whether we need to build a NetworkLSA.  This is the case if
@@ -751,7 +751,7 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
   NS_LOG_FUNCTION (this << nd << pLSA << &c);
 
   GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
-  NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessSingleBroadcastLink(): Can't alloc link record");
+  NS_ABORT_MSG_IF (plr == nullptr, "GlobalRouter::ProcessSingleBroadcastLink(): Can't alloc link record");
 
   //
   // We have some preliminaries to do to get enough information to proceed.
@@ -806,7 +806,7 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
       plr->SetLinkData (maskLocalAddr);
       plr->SetMetric (metricLocal);
       pLSA->AddLinkRecord (plr);
-      plr = 0;
+      plr = nullptr;
     }
   else
     {
@@ -853,7 +853,7 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
       plr->SetLinkData (addrLocal);
       plr->SetMetric (metricLocal);
       pLSA->AddLinkRecord (plr);
-      plr = 0;
+      plr = nullptr;
     }
 }
 
@@ -1119,24 +1119,24 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
       NS_LOG_LOGIC ("Remote side interface " << interfaceRemote << " is up-- add a type 1 link");
 
       plr  = new GlobalRoutingLinkRecord;
-      NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
+      NS_ABORT_MSG_IF (plr == nullptr, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
       plr->SetLinkType (GlobalRoutingLinkRecord::PointToPoint);
       plr->SetLinkId (rtrIdRemote);
       plr->SetLinkData (addrLocal);
       plr->SetMetric (metricLocal);
       pLSA->AddLinkRecord (plr);
-      plr = 0;
+      plr = nullptr;
     }
 
   // Regardless of state of peer, add a type 3 link (RFC 2328: 12.4.1.1)
   plr = new GlobalRoutingLinkRecord;
-  NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
+  NS_ABORT_MSG_IF (plr == nullptr, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
   plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
   plr->SetLinkId (addrRemote);
   plr->SetLinkData (Ipv4Address (maskRemote.Get ()));  // Frown
   plr->SetMetric (metricLocal);
   pLSA->AddLinkRecord (plr);
-  plr = 0;
+  plr = nullptr;
 }
 
 void
@@ -1170,7 +1170,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
 
       GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
-      NS_ABORT_MSG_IF (pLSA == 0, "GlobalRouter::BuildNetworkLSAs(): Can't alloc link record");
+      NS_ABORT_MSG_IF (pLSA == nullptr, "GlobalRouter::BuildNetworkLSAs(): Can't alloc link record");
 
       pLSA->SetLSType (GlobalRoutingLSA::NetworkLSA);
       pLSA->SetLinkStateId (addrLocal);
@@ -1247,7 +1247,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       m_LSAs.push_back (pLSA);
       NS_LOG_LOGIC ("========== LSA for node " << node->GetId () << " ==========");
       NS_LOG_LOGIC (*pLSA);
-      pLSA = 0;
+      pLSA = nullptr;
     }
 }
 
@@ -1622,7 +1622,7 @@ GlobalRouter::GetInjectedRoute (uint32_t index)
     }
   NS_ASSERT (false);
   // quiet compiler.
-  return 0;
+  return nullptr;
 }
 
 uint32_t
@@ -1700,7 +1700,7 @@ GlobalRouter::GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const
     {
       NS_ASSERT_MSG (false,
                      "GlobalRouter::GetAdjacent (): Wrong or confused channel?");
-      return 0;
+      return nullptr;
     }
 }
 
@@ -1744,7 +1744,7 @@ GlobalRouter::NetDeviceIsBridged (Ptr<NetDevice> nd) const
         }
     }
   NS_LOG_LOGIC ("Net device " << nd << " is not bridged");
-  return 0;
+  return nullptr;
 }
 
 //

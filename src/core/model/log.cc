@@ -44,12 +44,12 @@ namespace ns3 {
  * The Log TimePrinter.
  * This is private to the logging implementation.
  */
-static TimePrinter g_logTimePrinter = 0;
+static TimePrinter g_logTimePrinter = nullptr;
 /**
  * \ingroup logging
  * The Log NodePrinter.
  */
-static NodePrinter g_logNodePrinter = 0;
+static NodePrinter g_logNodePrinter = nullptr;
 
 /**
  * \ingroup logging
@@ -82,7 +82,7 @@ LogComponent::GetComponentList ()
 PrintList::PrintList ()
 {
   const char *envVar = std::getenv ("NS_LOG");
-  if (envVar == 0 || std::strlen (envVar) == 0)
+  if (envVar == nullptr || std::strlen (envVar) == 0)
     {
       return;
     }
@@ -145,7 +145,7 @@ void
 LogComponent::EnvVarCheck ()
 {
   const char *envVar = std::getenv ("NS_LOG");
-  if (envVar == 0 || std::strlen (envVar) == 0)
+  if (envVar == nullptr || std::strlen (envVar) == 0)
     {
       return;
     }
@@ -528,7 +528,7 @@ static bool ComponentExists (std::string componentName)
 static void CheckEnvironmentVariables ()
 {
   const char *envVar = std::getenv ("NS_LOG");
-  if (envVar == 0 || std::strlen (envVar) == 0)
+  if (envVar == nullptr || std::strlen (envVar) == 0)
     {
       return;
     }

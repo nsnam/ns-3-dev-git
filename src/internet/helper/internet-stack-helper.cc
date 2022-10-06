@@ -104,8 +104,8 @@ static InterfaceFileMapIpv6 g_interfaceFileMapIpv6; //!< A mapping of Ipv6/inter
 static InterfaceStreamMapIpv6 g_interfaceStreamMapIpv6; //!< A mapping of Ipv6/interface pairs to pcap files
 
 InternetStackHelper::InternetStackHelper ()
-  : m_routing (0),
-    m_routingv6 (0),
+  : m_routing (nullptr),
+    m_routingv6 (nullptr),
     m_ipv4Enabled (true),
     m_ipv6Enabled (true),
     m_ipv4ArpJitterEnabled (true),
@@ -163,9 +163,9 @@ void
 InternetStackHelper::Reset ()
 {
   delete m_routing;
-  m_routing = 0;
+  m_routing = nullptr;
   delete m_routingv6;
-  m_routingv6 = 0;
+  m_routingv6 = nullptr;
   m_ipv4Enabled = true;
   m_ipv6Enabled = true;
   m_ipv4ArpJitterEnabled = true;

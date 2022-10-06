@@ -56,7 +56,7 @@ BSSchedulerRtps::GetTypeId ()
 BSSchedulerRtps::BSSchedulerRtps ()
   : m_downlinkBursts (new std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > ())
 {
-  SetBs (0);
+  SetBs (nullptr);
 }
 
 BSSchedulerRtps::BSSchedulerRtps (Ptr<BaseStationNetDevice> bs)
@@ -75,13 +75,13 @@ BSSchedulerRtps::~BSSchedulerRtps ()
   while (downlinkBursts->size ())
     {
       pair = downlinkBursts->front ();
-      pair.second = 0;
+      pair.second = nullptr;
       delete pair.first;
     }
 
-  SetBs (0);
+  SetBs (nullptr);
   delete m_downlinkBursts;
-  m_downlinkBursts = 0;
+  m_downlinkBursts = nullptr;
 }
 
 std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*

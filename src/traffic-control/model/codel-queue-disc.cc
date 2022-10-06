@@ -242,7 +242,7 @@ CoDelQueueDisc::DoDequeue ()
       // Leave dropping state when queue is empty
       m_dropping = false;
       NS_LOG_LOGIC ("Queue empty");
-      return 0;
+      return nullptr;
     }
   uint32_t ldelay = Time2CoDel (Simulator::Now () - item->GetTimeStamp ());
   if (item && m_useL4s)

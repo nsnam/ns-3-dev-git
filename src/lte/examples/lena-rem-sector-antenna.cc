@@ -221,7 +221,7 @@ main (int argc, char *argv[])
 //  GtkConfigStore config;
 //  config.ConfigureAttributes ();
 
-  lteHelper = 0;
+  lteHelper = nullptr;
   Simulator::Destroy ();
   return 0;
 }

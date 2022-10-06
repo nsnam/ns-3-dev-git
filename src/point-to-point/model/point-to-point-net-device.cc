@@ -175,9 +175,9 @@ PointToPointNetDevice::GetTypeId ()
 PointToPointNetDevice::PointToPointNetDevice ()
   :
     m_txMachineState (READY),
-    m_channel (0),
+    m_channel (nullptr),
     m_linkUp (false),
-    m_currentPkt (0)
+    m_currentPkt (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -210,11 +210,11 @@ void
 PointToPointNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
-  m_channel = 0;
-  m_receiveErrorModel = 0;
-  m_currentPkt = 0;
-  m_queue = 0;
+  m_node = nullptr;
+  m_channel = nullptr;
+  m_receiveErrorModel = nullptr;
+  m_currentPkt = nullptr;
+  m_queue = nullptr;
   NetDevice::DoDispose ();
 }
 
@@ -279,7 +279,7 @@ PointToPointNetDevice::TransmitComplete ()
   NS_ASSERT_MSG (m_currentPkt, "PointToPointNetDevice::TransmitComplete(): m_currentPkt zero");
 
   m_phyTxEndTrace (m_currentPkt);
-  m_currentPkt = 0;
+  m_currentPkt = nullptr;
 
   Ptr<Packet> p = m_queue->Dequeue ();
   if (!p)

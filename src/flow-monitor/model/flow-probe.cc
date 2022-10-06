@@ -49,7 +49,7 @@ FlowProbe::FlowProbe (Ptr<FlowMonitor> flowMonitor)
 void
 FlowProbe::DoDispose ()
 {
-  m_flowMonitor = 0;
+  m_flowMonitor = nullptr;
   Object::DoDispose ();
 }
 

@@ -198,8 +198,8 @@ RoutingProtocol::GetTypeId ()
 
 
 RoutingProtocol::RoutingProtocol ()
-  : m_routingTableAssociation (0),
-  m_ipv4 (0),
+  : m_routingTableAssociation (nullptr),
+  m_ipv4 (nullptr),
   m_helloTimer (Timer::CANCEL_ON_DESTROY),
   m_tcTimer (Timer::CANCEL_ON_DESTROY),
   m_midTimer (Timer::CANCEL_ON_DESTROY),
@@ -246,14 +246,14 @@ RoutingProtocol::GetIpv4 () const
 
 void RoutingProtocol::DoDispose ()
 {
-  m_ipv4 = 0;
-  m_hnaRoutingTable = 0;
-  m_routingTableAssociation = 0;
+  m_ipv4 = nullptr;
+  m_hnaRoutingTable = nullptr;
+  m_routingTableAssociation = nullptr;
 
   if (m_recvSocket)
     {
       m_recvSocket->Close ();
-      m_recvSocket = 0;
+      m_recvSocket = nullptr;
     }
 
   for (std::map< Ptr<Socket>, Ipv4InterfaceAddress >::iterator iter = m_sendSockets.begin ();
@@ -528,7 +528,7 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
 //           peerMainAddress = inetSourceAddr.GetIpv4 () ;
 //         }
 
-      if (duplicated == NULL)
+      if (duplicated == nullptr)
         {
           switch (messageHeader.GetMessageType ())
             {
@@ -617,7 +617,7 @@ RoutingProtocol::Degree (NeighborTuple const &tuple)
         {
           const NeighborTuple *nb_tuple =
             m_state.FindNeighborTuple (nb2hop_tuple.neighborMainAddr);
-          if (nb_tuple == NULL)
+          if (nb_tuple == nullptr)
             {
               degree++;
             }
@@ -888,7 +888,7 @@ RoutingProtocol::MprComputation  ()
       // reachability, select the node as MPR whose D(y) is
       // greater. Remove the nodes from N2 which are now covered
       // by a node in the MPR set.
-      NeighborTuple const *max = NULL;
+      NeighborTuple const *max = nullptr;
       int max_r = 0;
       for (std::set<int>::iterator it = rs.begin (); it != rs.end (); it++)
         {
@@ -901,7 +901,7 @@ RoutingProtocol::MprComputation  ()
                it2 != reachability[r].end (); it2++)
             {
               const NeighborTuple *nb_tuple = *it2;
-              if (max == NULL || nb_tuple->willingness > max->willingness)
+              if (max == nullptr || nb_tuple->willingness > max->willingness)
                 {
                   max = nb_tuple;
                   max_r = r;
@@ -925,7 +925,7 @@ RoutingProtocol::MprComputation  ()
             }
         }
 
-      if (max != NULL)
+      if (max != nullptr)
         {
           mprSet.insert (max->neighborMainAddr);
           CoverTwoHopNeighbors (max->neighborMainAddr, N2);
@@ -962,7 +962,7 @@ RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
   const IfaceAssocTuple *tuple =
     m_state.FindIfaceAssocTuple (iface_addr);
 
-  if (tuple != NULL)
+  if (tuple != nullptr)
     {
       return tuple->mainAddr;
     }
@@ -992,7 +992,7 @@ RoutingProtocol::RoutingTableComputation  ()
       if (nb_tuple.status == NeighborTuple::STATUS_SYM)
         {
           bool nb_main_addr = false;
-          const LinkTuple *lt = NULL;
+          const LinkTuple *lt = nullptr;
           const LinkSet &linkSet = m_state.GetLinks ();
           for (LinkSet::const_iterator it2 = linkSet.begin ();
                it2 != linkSet.end (); it2++)
@@ -1033,7 +1033,7 @@ RoutingProtocol::RoutingTableComputation  ()
           //      R_dist       = 1;
           //      R_iface_addr = L_local_iface_addr of the
           //                     associated link tuple.
-          if (!nb_main_addr && lt != NULL)
+          if (!nb_main_addr && lt != nullptr)
             {
               NS_LOG_LOGIC ("no R_dest_addr is equal to the main address of the neighbor "
                             "=> adding additional routing entry");
@@ -1353,7 +1353,7 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
   // 1. If the sender interface of this message is not in the symmetric
   // 1-hop neighborhood of this node, the message MUST be discarded.
   const LinkTuple *link_tuple = m_state.FindSymLinkTuple (senderIface, now);
-  if (link_tuple == NULL)
+  if (link_tuple == nullptr)
     {
       return;
     }
@@ -1365,7 +1365,7 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
   // performed.
   const TopologyTuple *topologyTuple =
     m_state.FindNewerTopologyTuple (msg.GetOriginatorAddress (), tc.ansn);
-  if (topologyTuple != NULL)
+  if (topologyTuple != nullptr)
     {
       return;
     }
@@ -1390,7 +1390,7 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
       TopologyTuple *topologyTuple =
         m_state.FindTopologyTuple (addr, msg.GetOriginatorAddress ());
 
-      if (topologyTuple != NULL)
+      if (topologyTuple != nullptr)
         {
           topologyTuple->expirationTime = now + msg.GetVTime ();
         }
@@ -1444,7 +1444,7 @@ RoutingProtocol::ProcessMid (const olsr::MessageHeader &msg,
   // 1. If the sender interface of this message is not in the symmetric
   // 1-hop neighborhood of this node, the message MUST be discarded.
   const LinkTuple *linkTuple = m_state.FindSymLinkTuple (senderIface, now);
-  if (linkTuple == NULL)
+  if (linkTuple == nullptr)
     {
       NS_LOG_LOGIC ("Node " << m_mainAddress <<
                     ": the sender interface of this message is not in the "
@@ -1514,7 +1514,7 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
   // 1. If the sender interface of this message is not in the symmetric
   // 1-hop neighborhood of this node, the message MUST be discarded.
   const LinkTuple *link_tuple = m_state.FindSymLinkTuple (senderIface, now);
-  if (link_tuple == NULL)
+  if (link_tuple == nullptr)
     {
       return;
     }
@@ -1533,7 +1533,7 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
       //          A_netmask      == netmask
       //      then the holding time for that tuple MUST be set to:
       //          A_time         =  current time + validity time
-      if (tuple != NULL)
+      if (tuple != nullptr)
         {
           tuple->expirationTime = now + msg.GetVTime ();
         }
@@ -1573,14 +1573,14 @@ RoutingProtocol::ForwardDefault (olsr::MessageHeader olsrMessage,
   // If the sender interface address is not in the symmetric
   // 1-hop neighborhood the message must not be forwarded
   const LinkTuple *linkTuple = m_state.FindSymLinkTuple (senderAddress, now);
-  if (linkTuple == NULL)
+  if (linkTuple == nullptr)
     {
       return;
     }
 
   // If the message has already been considered for forwarding,
   // it must not be retransmitted again
-  if (duplicated != NULL && duplicated->retransmitted)
+  if (duplicated != nullptr && duplicated->retransmitted)
     {
       NS_LOG_LOGIC (Simulator::Now () << "Node " << m_mainAddress << " does not forward a message received"
                     " from " << olsrMessage.GetOriginatorAddress () << " because it is duplicated");
@@ -1595,7 +1595,7 @@ RoutingProtocol::ForwardDefault (olsr::MessageHeader olsrMessage,
     {
       const MprSelectorTuple *mprselTuple =
         m_state.FindMprSelectorTuple (GetMainAddress (senderAddress));
-      if (mprselTuple != NULL)
+      if (mprselTuple != nullptr)
         {
           olsrMessage.SetTimeToLive (olsrMessage.GetTimeToLive () - 1);
           olsrMessage.SetHopCount (olsrMessage.GetHopCount () + 1);
@@ -1607,7 +1607,7 @@ RoutingProtocol::ForwardDefault (olsr::MessageHeader olsrMessage,
     }
 
   // Update duplicate tuple...
-  if (duplicated != NULL)
+  if (duplicated != nullptr)
     {
       duplicated->expirationTime = now + OLSR_DUP_HOLD_TIME;
       duplicated->retransmitted = retransmitted;
@@ -2009,7 +2009,7 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
 
   NS_ASSERT (msg.GetVTime () > Seconds (0));
   LinkTuple *link_tuple = m_state.FindLinkTuple (senderIface);
-  if (link_tuple == NULL)
+  if (link_tuple == nullptr)
     {
       LinkTuple newLinkTuple;
       // We have to create a new tuple
@@ -2148,7 +2148,7 @@ RoutingProtocol::PopulateNeighborSet (const olsr::MessageHeader &msg,
                                       const olsr::MessageHeader::Hello &hello)
 {
   NeighborTuple *nb_tuple = m_state.FindNeighborTuple (msg.GetOriginatorAddress ());
-  if (nb_tuple != NULL)
+  if (nb_tuple != nullptr)
     {
       nb_tuple->willingness = hello.willingness;
     }
@@ -2221,7 +2221,7 @@ RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                     m_state.FindTwoHopNeighborTuple (msg.GetOriginatorAddress (), nb2hop_addr);
                   NS_LOG_LOGIC ("Adding the 2-hop neighbor"
                                 << (nb2hop_tuple ? " (refreshing existing entry)" : ""));
-                  if (nb2hop_tuple == NULL)
+                  if (nb2hop_tuple == nullptr)
                     {
                       TwoHopNeighborTuple new_nb2hop_tuple;
                       new_nb2hop_tuple.neighborMainAddr = msg.GetOriginatorAddress ();
@@ -2291,7 +2291,7 @@ RoutingProtocol::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                   // We must create a new entry into the mpr selector set
                   MprSelectorTuple *existing_mprsel_tuple =
                     m_state.FindMprSelectorTuple (msg.GetOriginatorAddress ());
-                  if (existing_mprsel_tuple == NULL)
+                  if (existing_mprsel_tuple == nullptr)
                     {
                       MprSelectorTuple mprsel_tuple;
 
@@ -2436,13 +2436,13 @@ RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
   NeighborTuple *nb_tuple =
     m_state.FindNeighborTuple (GetMainAddress (tuple.neighborIfaceAddr));
 
-  if (nb_tuple == NULL)
+  if (nb_tuple == nullptr)
     {
       LinkTupleAdded (tuple, willingness);
       nb_tuple = m_state.FindNeighborTuple (GetMainAddress (tuple.neighborIfaceAddr));
     }
 
-  if (nb_tuple != NULL)
+  if (nb_tuple != nullptr)
     {
       int statusBefore = nb_tuple->status;
 
@@ -2681,7 +2681,7 @@ RoutingProtocol::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumb
 {
   DuplicateTuple *tuple =
     m_state.FindDuplicateTuple (address, sequenceNumber);
-  if (tuple == NULL)
+  if (tuple == nullptr)
     {
       return;
     }
@@ -2704,7 +2704,7 @@ RoutingProtocol::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
 
   // the tuple parameter may be a stale copy; get a newer version from m_state
   LinkTuple *tuple = m_state.FindLinkTuple (neighborIfaceAddr);
-  if (tuple == NULL)
+  if (tuple == nullptr)
     {
       return;
     }
@@ -2740,7 +2740,7 @@ RoutingProtocol::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Addre
 {
   TwoHopNeighborTuple *tuple;
   tuple = m_state.FindTwoHopNeighborTuple (neighborMainAddr, twoHopNeighborAddr);
-  if (tuple == NULL)
+  if (tuple == nullptr)
     {
       return;
     }
@@ -2760,7 +2760,7 @@ void
 RoutingProtocol::MprSelTupleTimerExpire (Ipv4Address mainAddr)
 {
   MprSelectorTuple *tuple = m_state.FindMprSelectorTuple (mainAddr);
-  if (tuple == NULL)
+  if (tuple == nullptr)
     {
       return;
     }
@@ -2780,7 +2780,7 @@ void
 RoutingProtocol::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
 {
   TopologyTuple *tuple = m_state.FindTopologyTuple (destAddr, lastAddr);
-  if (tuple == NULL)
+  if (tuple == nullptr)
     {
       return;
     }
@@ -2800,7 +2800,7 @@ void
 RoutingProtocol::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
 {
   IfaceAssocTuple *tuple = m_state.FindIfaceAssocTuple (ifaceAddr);
-  if (tuple == NULL)
+  if (tuple == nullptr)
     {
       return;
     }
@@ -2820,7 +2820,7 @@ void
 RoutingProtocol::AssociationTupleTimerExpire (Ipv4Address gatewayAddr, Ipv4Address networkAddr, Ipv4Mask netmask)
 {
   AssociationTuple *tuple = m_state.FindAssociationTuple (gatewayAddr, networkAddr, netmask);
-  if (tuple == NULL)
+  if (tuple == nullptr)
     {
       return;
     }

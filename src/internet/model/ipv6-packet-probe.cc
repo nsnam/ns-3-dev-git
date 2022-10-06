@@ -58,9 +58,9 @@ Ipv6PacketProbe::GetTypeId ()
 Ipv6PacketProbe::Ipv6PacketProbe ()
 {
   NS_LOG_FUNCTION (this);
-  m_packet    = 0;
+  m_packet    = nullptr;
   m_packetSizeOld = 0;
-  m_ipv6      = 0;
+  m_ipv6      = nullptr;
   m_interface = 0;
 }
 

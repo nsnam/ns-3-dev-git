@@ -95,12 +95,12 @@ FlowMonitor::DoDispose ()
       iter != m_classifiers.end ();
       iter ++)
     {
-      *iter = 0;
+      *iter = nullptr;
     }
   for (uint32_t i = 0; i < m_flowProbes.size (); i++)
     {
       m_flowProbes[i]->Dispose ();
-      m_flowProbes[i] = 0;
+      m_flowProbes[i] = nullptr;
     }
   Object::DoDispose ();
 }

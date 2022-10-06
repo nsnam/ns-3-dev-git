@@ -34,7 +34,7 @@ ServiceFlow::ServiceFlow (Direction direction)
   m_type = SF_TYPE_PROVISIONED;
   m_record = new ServiceFlowRecord ();
   m_sfid = 0;
-  m_connection = 0;
+  m_connection = nullptr;
   m_isEnabled = false;
   m_isMulticast = false;
   m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
@@ -44,7 +44,7 @@ ServiceFlow::ServiceFlow ()
   : m_sfid (0),
     m_direction (SF_DIRECTION_DOWN),
     m_type (SF_TYPE_PROVISIONED),
-    m_connection (0),
+    m_connection (nullptr),
     m_isEnabled (false),
     m_record (new ServiceFlowRecord ())
 {
@@ -71,7 +71,7 @@ ServiceFlow::ServiceFlow (uint32_t sfid, Direction direction, Ptr<WimaxConnectio
 ServiceFlow::ServiceFlow (Tlv tlv)
 {
   InitValues ();
-  m_connection = 0;
+  m_connection = nullptr;
   m_isEnabled = 0;
   m_record = new ServiceFlowRecord ();
   NS_ASSERT_MSG (tlv.GetType () == Tlv::UPLINK_SERVICE_FLOW || tlv.GetType () == Tlv::DOWNLINK_SERVICE_FLOW,
@@ -179,12 +179,12 @@ ServiceFlow::ServiceFlow (Tlv tlv)
 
 ServiceFlow::~ServiceFlow ()
 {
-  if (m_record != 0)
+  if (m_record != nullptr)
     {
       delete m_record;
-      m_record = 0;
+      m_record = nullptr;
     }
-  m_connection = 0;
+  m_connection = nullptr;
 }
 
 void
@@ -253,7 +253,7 @@ ServiceFlow::GetQueue () const
 {
   if (!m_connection)
     {
-      return 0;
+      return nullptr;
     }
   return m_connection->GetQueue ();
 }
@@ -766,7 +766,7 @@ ServiceFlow::operator = (ServiceFlow const& o)
   m_isEnabled = o.GetIsEnabled ();
   m_isMulticast = o.GetIsMulticast ();
   m_modulationType = o.GetModulation ();
-  if (m_record != 0)
+  if (m_record != nullptr)
     {
       delete m_record;
     }
@@ -797,7 +797,7 @@ ServiceFlow::GetSchedulingTypeStr () const
     default:
       NS_FATAL_ERROR ("Invalid scheduling type");
     }
-  return 0;
+  return nullptr;
 }
 
 Tlv

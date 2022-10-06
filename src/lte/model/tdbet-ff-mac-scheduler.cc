@@ -49,8 +49,8 @@ NS_OBJECT_ENSURE_REGISTERED (TdBetFfMacScheduler);
 
 
 TdBetFfMacScheduler::TdBetFfMacScheduler ()
-  :   m_cschedSapUser (0),
-    m_schedSapUser (0),
+  :   m_cschedSapUser (nullptr),
+    m_schedSapUser (nullptr),
     m_timeWindow (99.0),
     m_nextRntiUl (0)
 {

@@ -60,8 +60,8 @@ HelloRegressionTest::DoRun ()
   Simulator::Stop (m_time);
   Simulator::Run ();
 
-  m_rxSocketA = 0;
-  m_rxSocketB = 0;
+  m_rxSocketA = nullptr;
+  m_rxSocketB = nullptr;
   Simulator::Destroy ();
 }
 

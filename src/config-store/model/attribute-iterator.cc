@@ -204,7 +204,7 @@ AttributeIterator::DoIterate (Ptr<Object> object)
         {
           struct TypeId::AttributeInformation info = tid.GetAttribute(i);
           const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
-          if (ptrChecker != 0)
+          if (ptrChecker != nullptr)
             {
               NS_LOG_DEBUG ("pointer attribute " << info.name);
               PointerValue ptr;
@@ -223,7 +223,7 @@ AttributeIterator::DoIterate (Ptr<Object> object)
             }
           // attempt to cast to an object container
           const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
-          if (vectorChecker != 0)
+          if (vectorChecker != nullptr)
             {
               NS_LOG_DEBUG ("ObjectPtrContainer attribute " << info.name);
               ObjectPtrContainerValue vector;

@@ -143,7 +143,7 @@ ByteTagList::ByteTagList ()
     m_maxEnd (INT32_MIN),
     m_adjustment (0),
     m_used (0),
-    m_data (0)
+    m_data (nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -155,7 +155,7 @@ ByteTagList::ByteTagList (const ByteTagList &o)
     m_data (o.m_data)
 {
   NS_LOG_FUNCTION (this << &o);
-  if (m_data != 0)
+  if (m_data != nullptr)
     {
       m_data->count++;
     }
@@ -174,7 +174,7 @@ ByteTagList::operator = (const ByteTagList &o)
   m_adjustment = o.m_adjustment;
   m_data = o.m_data;
   m_used = o.m_used;
-  if (m_data != 0)
+  if (m_data != nullptr)
     {
       m_data->count++;
     }
@@ -184,7 +184,7 @@ ByteTagList::~ByteTagList ()
 {
   NS_LOG_FUNCTION (this);
   Deallocate (m_data);
-  m_data = 0;
+  m_data = nullptr;
   m_used = 0;
 }
 
@@ -194,7 +194,7 @@ ByteTagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
   NS_LOG_FUNCTION (this << tid << bufferSize << start << end);
   uint32_t spaceNeeded = m_used + bufferSize + 4 + 4 + 4 + 4;
   NS_ASSERT (m_used <= spaceNeeded);
-  if (m_data == 0)
+  if (m_data == nullptr)
     {
       m_data = Allocate (spaceNeeded);
       m_used = 0;
@@ -247,7 +247,7 @@ ByteTagList::RemoveAll ()
   m_minStart = INT32_MAX;
   m_maxEnd = INT32_MIN;
   m_adjustment = 0;
-  m_data = 0;
+  m_data = nullptr;
   m_used = 0;
 }
 
@@ -264,9 +264,9 @@ ByteTagList::Iterator
 ByteTagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
 {
   NS_LOG_FUNCTION (this << offsetStart << offsetEnd);
-  if (m_data == 0)
+  if (m_data == nullptr)
     {
-      return Iterator (0, 0, offsetStart, offsetEnd, 0);
+      return Iterator (nullptr, nullptr, offsetStart, offsetEnd, 0);
     }
   else
     {
@@ -349,7 +349,7 @@ ByteTagList::Allocate (uint32_t size)
     {
       struct ByteTagListData *data = g_freeList.back ();
       g_freeList.pop_back ();
-      NS_ASSERT (data != 0);
+      NS_ASSERT (data != nullptr);
       if (data->size >= size)
         {
           data->count = 1;
@@ -371,7 +371,7 @@ void
 ByteTagList::Deallocate (struct ByteTagListData *data)
 {
   NS_LOG_FUNCTION (this << data);
-  if (data == 0)
+  if (data == nullptr)
     {
       return;
     }
@@ -461,7 +461,7 @@ ByteTagList::Serialize (uint32_t* buffer, uint32_t maxSize) const
   uint32_t* p = buffer;
   uint32_t size = 0;
 
-  uint32_t* numberOfTags = 0;
+  uint32_t* numberOfTags = nullptr;
 
   if (size + 4 <= maxSize)
     {

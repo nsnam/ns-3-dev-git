@@ -94,8 +94,8 @@ AcousticModemEnergyTestCase::AcousticModemEnergyTestCase ()
 
 AcousticModemEnergyTestCase::~AcousticModemEnergyTestCase ()
 {
-  m_node = 0;
-  m_gateway = 0;
+  m_node = nullptr;
+  m_gateway = nullptr;
 }
 
 void
@@ -253,7 +253,7 @@ AcousticModemEnergyDepletionTestCase::AcousticModemEnergyDepletionTestCase ()
 
 AcousticModemEnergyDepletionTestCase::~AcousticModemEnergyDepletionTestCase ()
 {
-  m_node = 0;
+  m_node = nullptr;
 }
 
 void
