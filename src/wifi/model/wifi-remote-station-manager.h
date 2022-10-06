@@ -735,8 +735,10 @@ public:
    */
   void SetMldAddress (const Mac48Address& address, const Mac48Address& mldAddress);
   /**
-   * Get the address of the MLD the given station is affiliated with, if any,
-   * or the broadcast address, otherwise.
+   * Get the address of the MLD the given station is affiliated with, if any.
+   * Note that an MLD address is only present if an ML discovery/setup was performed
+   * with the given station (which requires both this station and the given
+   * station to be MLDs).
    *
    * \param address the MAC address of the remote station
    * \return the address of the MLD the given station is affiliated with, if any
