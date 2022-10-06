@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
   std::ofstream tablefile ("table-frame-success-rate-be.plt");
 
   // clang-format off
-  std::vector <std::string> modes = {
+  const std::vector <std::string> modes {
     "EhtMcs0",
     "EhtMcs1",
     "EhtMcs2",

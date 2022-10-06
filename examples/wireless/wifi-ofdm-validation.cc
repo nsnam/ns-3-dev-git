@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
   std::ofstream tablefile ("table-frame-success-rate-ofdm.plt");
 
   // clang-format off
-  std::vector <std::string> modes = {
+  const std::vector <std::string> modes {
     "OfdmRate6Mbps",
     "OfdmRate9Mbps",
     "OfdmRate12Mbps",
