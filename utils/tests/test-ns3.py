@@ -428,42 +428,7 @@ class NS3StyleTestCase(unittest.TestCase):
         if NS3StyleTestCase.starting_diff is None:
             self.skipTest("Unmet dependencies")
 
-    def test_01_CheckWhitespace(self):
-        """!
-        Check if there is any difference between tracked file after
-        applying whitespace trimming, uncrustify and cmake-format
-        @return None
-        """
-
-        # Trim all trailing whitespaces in the repository
-        return_code, stdout, stderr = run_program("./utils/trim-trailing-whitespace.py", "./", python=True)
-        self.assertEqual(return_code, 0)
-
-        # Check if the diff still is the same
-        new_diff = NS3StyleTestCase.repo.head.commit.diff(None)
-        self.assertEqual(NS3StyleTestCase.starting_diff, new_diff)
-
-    def test_02_CheckUncrustify(self):
-        """!
-        Check if there is any difference between tracked file after
-        applying uncrustify
-        @return None
-        """
-
-        for required_program in ["bash", "find", "xargs", "uncrustify"]:
-            if shutil.which(required_program) is None:
-                self.skipTest("%s was not found" % required_program)
-
-        # Run in-place uncrustify for each *.cc and *.h file
-        uncrustify_cmd = """-c "find . -type f -name '*.[cc|h]' | xargs -I{} ./utils/check-style.py -i -f {}" """
-        return_code, stdout, stderr = run_program("bash", uncrustify_cmd)
-        self.assertEqual(return_code, 0)
-
-        # Check if the diff still is the same
-        new_diff = NS3StyleTestCase.repo.head.commit.diff(None)
-        self.assertEqual(NS3StyleTestCase.starting_diff, new_diff)
-
-    def test_03_CheckCMakeFormat(self):
+    def test_01_CheckCMakeFormat(self):
         """!
         Check if there is any difference between tracked file after
         applying cmake-format
@@ -1005,7 +970,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Build target before using below
         run_ns3("configure -G \"{generator}\" -d release --enable-verbose")
-        run_ns3("build scratch-simulator")
+        return_code, stdout, stderr = run_ns3("build scratch-simulator")
 
         # Run all cases and then check outputs
         return_code0, stdout0, stderr0 = run_ns3("--dry-run run scratch-simulator")
