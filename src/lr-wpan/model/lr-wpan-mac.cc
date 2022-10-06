@@ -406,8 +406,8 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
 
   // IEEE 802.15.4-2006 (7.5.6.1)
   // Src & Dst PANs are identical, PAN compression is ON
-  // only the dst PAN is serialized making the MAC header 2 bytes smaller)
-  if ((params.m_dstAddrMode != NO_PANID_ADDR && params.m_dstAddrMode != NO_PANID_ADDR)
+  // only the dst PAN is serialized making the MAC header 2 bytes smaller
+  if ((params.m_dstAddrMode != NO_PANID_ADDR && params.m_srcAddrMode != NO_PANID_ADDR)
       && (macHdr.GetDstPanId () == macHdr.GetSrcPanId ()))
     {
       macHdr.SetPanIdComp ();
@@ -3409,4 +3409,3 @@ LrWpanMac::isTxAckReq (void)
 }
 
 } // namespace ns3
-
