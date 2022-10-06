@@ -53,12 +53,17 @@ struct HeMuUserInfo
   bool operator!= (const HeMuUserInfo& other) const;
 };
 
-/// HE SIG-B Content Channels STA ID Allocation
+/// A vector of subcarrier group
 using SubcarrierGroups = std::vector<HeRu::SubcarrierGroup>;
+
+/// Maximum number of HE-SIG-B content channels
 constexpr size_t WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS = 2;
+
+/// HE SIG-B Content Channels STA ID Allocation
 using ContentChannelAllocation = std::vector<std::vector<uint16_t>>;
 
-using RuAllocation = std::vector<uint8_t>; //<! 8 bit RU_ALLOCATION per 20 MHz
+/// 8 bit RU_ALLOCATION per 20 MHz
+using RuAllocation = std::vector<uint8_t>;
 
 /**
  * This class mimics the TXVECTOR which is to be
@@ -480,7 +485,7 @@ private:
                                       This list shall be used only for HE MU */
   std::vector<bool> m_inactiveSubchannels; /**< Bitmap of inactive subchannels used for preamble puncturing */
 
-  WifiMode m_sigBMcs; //<! MCS_SIG_B per Table 27-1 IEEE 802.11ax-2021
+  WifiMode m_sigBMcs; /**< MCS_SIG_B per Table 27-1 IEEE 802.11ax-2021 */
 
   mutable RuAllocation m_ruAllocation; /**< RU allocations that are going to be carried
                                             in SIG-B common field per Table 27-1 IEEE */

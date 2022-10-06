@@ -285,7 +285,8 @@ public:
   /// \return RU_ALLOCATION value
   static uint8_t GetEqualizedRuAllocation (RuType ruType, bool isOdd);
 
-  static constexpr uint8_t EMPTY_242_TONE_RU = 113;
+/// Empty 242-tone RU identifier
+static constexpr uint8_t EMPTY_242_TONE_RU = 113;
 };
 
 /**
