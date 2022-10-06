@@ -381,7 +381,7 @@ namespace {
 /**
  * Constructor class for DSSS modes
  */
-static class ConstructorDsss
+class ConstructorDsss
 {
 public:
   ConstructorDsss ()

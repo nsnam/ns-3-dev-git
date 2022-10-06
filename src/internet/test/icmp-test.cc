@@ -59,26 +59,24 @@
 //         however, the hopLimit is not enough and n1 reply to n0 with an ICMPV6 time exceed error.
 
 
-#include "ns3/ipv4-address-helper.h"
-#include "ns3/ipv6-address-helper.h"
-#include "ns3/simple-net-device.h"
-#include "ns3/simple-net-device-helper.h"
-#include "ns3/simulator.h"
-#include "ns3/icmpv6-header.h"
-#include "ns3/icmpv4.h"
-#include "ns3/socket.h"
-#include "ns3/socket-factory.h"
-#include "ns3/uinteger.h"
 #include "ns3/assert.h"
-#include "ns3/log.h"
+#include "ns3/icmpv4.h"
+#include "ns3/icmpv6-header.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/ipv6-static-routing-helper.h"
+#include "ns3/ipv6-address-helper.h"
 #include "ns3/ipv6-routing-helper.h"
+#include "ns3/ipv6-static-routing-helper.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
-#include "ns3/internet-stack-helper.h"
-
+#include "ns3/simple-net-device-helper.h"
+#include "ns3/simple-net-device.h"
+#include "ns3/simulator.h"
+#include "ns3/socket-factory.h"
+#include "ns3/socket.h"
 #include "ns3/test.h"
+#include "ns3/uinteger.h"
 
 using namespace ns3;
 

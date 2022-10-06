@@ -231,7 +231,8 @@ LteEnbNetDevice::GetCellIds () const
 {
   std::vector<uint16_t> cellIds;
 
-  for (auto &it: m_ccMap)
+  cellIds.reserve(m_ccMap.size());
+for (auto &it: m_ccMap)
     {
       cellIds.push_back (it.second->GetCellId ());
     }

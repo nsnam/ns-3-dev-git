@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
   serverApp.Stop (Seconds (simulationTime + 1));
 
   UdpClientHelper client (staNodeInterface.GetAddress (0), port);
-  client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  client.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
   client.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   client.SetAttribute ("PacketSize", UintegerValue (1472)); //bytes
 

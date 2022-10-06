@@ -85,7 +85,7 @@ TraceCwnd (std::string cwndTrFileName)
     }
   else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (cwndTrFileName.c_str ());
+      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (cwndTrFileName);
       Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",MakeBoundCallback (&CwndTracer, stream));
     }
 }
@@ -101,7 +101,7 @@ int main (int argc, char *argv[])
   uint32_t queueDiscSize = 1000;  //in packets
   uint32_t queueSize = 10;        //in packets
   uint32_t pktSize = 1458;        //in bytes. 1458 to prevent fragments
-  float startTime = 0.1f;
+  float startTime = 0.1F;
   float simDuration = 60;         //in seconds
 
   bool isPcapEnabled = true;

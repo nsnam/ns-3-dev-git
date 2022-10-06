@@ -264,7 +264,7 @@ PrioQueueDiscTestCase::DoRun ()
     {
       pf2->SetReturnValue (4+i);
       NS_TEST_ASSERT_MSG_EQ (qdisc->GetBandForPriority (0), 0, "The band for priority 0 must be band 0");
-      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+3u,
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+3U,
                              "There should be " << i+3 << " packets in the child queue disc "
                              << qdisc->GetBandForPriority (0));
 
@@ -273,7 +273,7 @@ PrioQueueDiscTestCase::DoRun ()
       // packet is assigned band 0
       uids[0].push (item->GetPacket ()->GetUid ());
 
-      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+4u,
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+4U,
                              "There should be " << i+4 << " packets in the child queue disc "
                              << qdisc->GetBandForPriority (0));
     }

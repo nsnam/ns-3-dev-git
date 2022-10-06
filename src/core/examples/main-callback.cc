@@ -42,7 +42,7 @@ namespace {
  * \param [in] b The second argument.
  * \returns The first argument.
  */
-static double
+double
 CbOne (double a, double b)
 {
   std::cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;

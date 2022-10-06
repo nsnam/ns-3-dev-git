@@ -92,7 +92,7 @@ EventGarbageCollector::Cleanup ()
 
 EventGarbageCollector::~EventGarbageCollector ()
 {
-  for (auto event : m_events)
+  for (const auto& event : m_events)
     {
       Simulator::Cancel (event);
     }

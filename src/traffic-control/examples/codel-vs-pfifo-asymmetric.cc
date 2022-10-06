@@ -98,7 +98,7 @@ TraceCwnd (std::string cwndTrFileName)
     }
   else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (cwndTrFileName.c_str ());
+      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (cwndTrFileName);
       Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",MakeBoundCallback (&CwndTracer, stream));
     }
 }
@@ -131,7 +131,7 @@ TraceSojourn (std::string sojournTrFileName)
     }
   else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (sojournTrFileName.c_str ());
+      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (sojournTrFileName);
       Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/SojournTime", MakeBoundCallback (&SojournTracer, stream));
     }
 }
@@ -165,7 +165,7 @@ TraceQueueLength (std::string queueLengthTrFileName)
     }
   else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (queueLengthTrFileName.c_str ());
+      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (queueLengthTrFileName);
       Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/BytesInQueue", MakeBoundCallback (&QueueLengthTracer, stream));
     }
 }
@@ -198,7 +198,7 @@ TraceEveryDrop (std::string everyDropTrFileName)
     }
   else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (everyDropTrFileName.c_str ());
+      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (everyDropTrFileName);
       Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/Drop", MakeBoundCallback (&EveryDropTracer, stream));
     }
 }
@@ -241,7 +241,7 @@ TraceDroppingState (std::string dropStateTrFileName)
     }
   else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dropStateTrFileName.c_str ());
+      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dropStateTrFileName);
       Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
     }
 }
@@ -305,7 +305,7 @@ int main (int argc, char *argv[])
   uint32_t numOfDownLoadOnOffFlows = 1;   // # of download onoff flows
   bool isPcapEnabled = true;
 
-  float startTime = 0.1f;
+  float startTime = 0.1F;
   float simDuration = 60;        //in seconds
 
   std::string fileNamePrefix = "codel-vs-pfifo-fast-asymmetric";

@@ -219,7 +219,7 @@ NetAnimExperiment::Run (UanHelper &uan)
     m_bytesTotal = 0;
 
     std::string traceFileName = "uan-animation.xml";
-    AnimationInterface anim(traceFileName.c_str ());
+    AnimationInterface anim(traceFileName);
 
     Simulator::Run ();
     sinkNode = nullptr;

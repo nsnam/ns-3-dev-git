@@ -132,7 +132,7 @@ int main (int argc, char *argv[])
   std::string flowsDatarate = "20Mbps";
   uint32_t flowsPacketsSize = 1000;
 
-  float startTime = 0.1f; // in s
+  float startTime = 0.1F; // in s
   float simDuration = 60;
   float samplingPeriod = 1;
 

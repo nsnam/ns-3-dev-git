@@ -1592,7 +1592,7 @@ namespace {
 /**
  * Constructor class for HE modes
  */
-static class ConstructorHe
+class ConstructorHe
 {
 public:
   ConstructorHe ()

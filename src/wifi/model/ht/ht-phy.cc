@@ -840,7 +840,7 @@ namespace {
 /**
  * Constructor class for HT modes
  */
-static class ConstructorHt
+class ConstructorHt
 {
 public:
   ConstructorHt ()

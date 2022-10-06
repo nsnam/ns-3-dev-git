@@ -231,7 +231,7 @@ static void
 TraceCwnd (std::string cwnd_tr_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  cWndStream[nodeId] = ascii.CreateFileStream (cwnd_tr_file_name.c_str ());
+  cWndStream[nodeId] = ascii.CreateFileStream (cwnd_tr_file_name);
   Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
                    MakeCallback (&CwndTracer));
 }
@@ -246,7 +246,7 @@ static void
 TraceSsThresh (std::string ssthresh_tr_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  ssThreshStream[nodeId] = ascii.CreateFileStream (ssthresh_tr_file_name.c_str ());
+  ssThreshStream[nodeId] = ascii.CreateFileStream (ssthresh_tr_file_name);
   Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/SlowStartThreshold",
                    MakeCallback (&SsThreshTracer));
 }
@@ -261,7 +261,7 @@ static void
 TraceRtt (std::string rtt_tr_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  rttStream[nodeId] = ascii.CreateFileStream (rtt_tr_file_name.c_str ());
+  rttStream[nodeId] = ascii.CreateFileStream (rtt_tr_file_name);
   Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/RTT",
                    MakeCallback (&RttTracer));
 }
@@ -276,7 +276,7 @@ static void
 TraceRto (std::string rto_tr_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  rtoStream[nodeId] = ascii.CreateFileStream (rto_tr_file_name.c_str ());
+  rtoStream[nodeId] = ascii.CreateFileStream (rto_tr_file_name);
   Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/RTO",
                    MakeCallback (&RtoTracer));
 }
@@ -291,7 +291,7 @@ static void
 TraceNextTx (std::string &next_tx_seq_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  nextTxStream[nodeId] = ascii.CreateFileStream (next_tx_seq_file_name.c_str ());
+  nextTxStream[nodeId] = ascii.CreateFileStream (next_tx_seq_file_name);
   Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/NextTxSequence",
                    MakeCallback (&NextTxTracer));
 }
@@ -306,7 +306,7 @@ static void
 TraceInFlight (std::string &in_flight_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  inFlightStream[nodeId] = ascii.CreateFileStream (in_flight_file_name.c_str ());
+  inFlightStream[nodeId] = ascii.CreateFileStream (in_flight_file_name);
   Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/BytesInFlight",
                    MakeCallback (&InFlightTracer));
 }
@@ -321,7 +321,7 @@ static void
 TraceNextRx (std::string &next_rx_seq_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  nextRxStream[nodeId] = ascii.CreateFileStream (next_rx_seq_file_name.c_str ());
+  nextRxStream[nodeId] = ascii.CreateFileStream (next_rx_seq_file_name);
   Config::Connect ("/NodeList/" + std::to_string (nodeId) +
                        "/$ns3::TcpL4Protocol/SocketList/1/RxBuffer/NextRxSequence",
                    MakeCallback (&NextRxTracer));
@@ -535,7 +535,7 @@ int main (int argc, char *argv[])
       std::ofstream ascii;
       Ptr<OutputStreamWrapper> ascii_wrap;
       ascii.open ((prefix_file_name + "-ascii").c_str ());
-      ascii_wrap = new OutputStreamWrapper ((prefix_file_name + "-ascii").c_str (),
+      ascii_wrap = new OutputStreamWrapper (prefix_file_name + "-ascii",
                                             std::ios::out);
       stack.EnableAsciiIpv4All (ascii_wrap);
 

@@ -432,7 +432,7 @@ main (int argc, char *argv[])
       PointToPointHelper ptp;
       std::stringstream stmp;
       stmp << pathOut << "/red";
-      ptp.EnablePcapAll (stmp.str ().c_str ());
+      ptp.EnablePcapAll (stmp.str ());
     }
 
   Ptr<FlowMonitor> flowmon;
@@ -461,7 +461,7 @@ main (int argc, char *argv[])
       std::stringstream stmp;
       stmp << pathOut << "/red.flowmon";
 
-      flowmon->SerializeToXmlFile (stmp.str ().c_str (), false, false);
+      flowmon->SerializeToXmlFile (stmp.str (), false, false);
     }
 
   if (printRedStats)

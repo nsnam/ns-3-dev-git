@@ -315,7 +315,7 @@ int main (int argc, char *argv[])
                   for (std::size_t i = 0; i < nStations; i++)
                     {
                       UdpClientHelper client (serverInterfaces.GetAddress (i), port);
-                      client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+                      client.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
                       client.SetAttribute ("Interval", TimeValue (Time ("0.00001"))); //packets/s
                       client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
                       ApplicationContainer clientApp = client.Install (clientNodes.Get (i));

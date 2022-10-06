@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
 
   std::cout << "Split path:\n";
   auto items = Split (path);
-  for (auto item : items)
+  for (const auto& item : items)
     {
       std::cout << "    '" << item << "'\n";
     }
@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
 
   std::cout << "Files in the directory: \n";
   auto files = ReadFiles (path);
-  for (auto item : files)
+  for (const auto& item : files)
     {
       std::cout << "    '" << item << "'\n";
     }

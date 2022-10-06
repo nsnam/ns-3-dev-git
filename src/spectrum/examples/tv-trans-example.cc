@@ -84,7 +84,8 @@ int main (int argc, char** argv)
 
   /* frequency range for spectrum analyzer */
   std::vector<double> freqs;
-  for (int i = 0; i < 200; ++i)
+  freqs.reserve(200);
+for (int i = 0; i < 200; ++i)
     {
       freqs.push_back ((i + 5200) * 1e5);
     }

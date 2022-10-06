@@ -235,7 +235,7 @@ VhtCapabilities::SetMaxAmpduLength (uint32_t maxampdulength)
 {
   for (uint8_t i = 0; i <= 7; i++)
     {
-      if ((1ul << (13 + i)) - 1 == maxampdulength)
+      if ((1UL << (13 + i)) - 1 == maxampdulength)
         {
           m_maxAmpduLengthExponent = i;
           return;
@@ -355,7 +355,7 @@ VhtCapabilities::GetTxStbc () const
 uint32_t
 VhtCapabilities::GetMaxAmpduLength () const
 {
-  return (1ul << (13 + m_maxAmpduLengthExponent)) - 1;
+  return (1UL << (13 + m_maxAmpduLengthExponent)) - 1;
 }
 
 bool

@@ -513,13 +513,13 @@ AttributeTestCase<T>::CheckGetCodePaths (
   //
   // Get an Attribute value through its StringValue representation.
   //
-  bool ok1 = p->GetAttributeFailSafe (attributeName.c_str (), stringValue);
+  bool ok1 = p->GetAttributeFailSafe (attributeName, stringValue);
   bool ok2 = stringValue.Get () == expectedString;
 
   //
   // Get the existing boolean value through its particular type representation.
   //
-  bool ok3 = p->GetAttributeFailSafe (attributeName.c_str (), actualValue);
+  bool ok3 = p->GetAttributeFailSafe (attributeName, actualValue);
   bool ok4 = expectedValue.Get () == actualValue.Get ();
 
   return ok1 && ok2 && ok3 && ok4;

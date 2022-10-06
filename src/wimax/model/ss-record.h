@@ -22,15 +22,16 @@
 #ifndef SS_RECORD_H
 #define SS_RECORD_H
 
-#include <stdint.h>
-#include <ostream>
-#include "ns3/mac48-address.h"
-#include "wimax-connection.h"
-#include "wimax-phy.h"
-#include "wimax-net-device.h"
-#include "ns3/ipv4-address.h"
-#include <stdint.h>
 #include "service-flow.h"
+#include "wimax-connection.h"
+#include "wimax-net-device.h"
+#include "wimax-phy.h"
+
+#include "ns3/ipv4-address.h"
+#include "ns3/mac48-address.h"
+
+#include <ostream>
+#include <stdint.h>
 
 namespace ns3 {
 

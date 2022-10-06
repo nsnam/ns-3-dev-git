@@ -651,7 +651,7 @@ namespace {
 /**
  * Constructor class for VHT modes
  */
-static class ConstructorVht
+class ConstructorVht
 {
 public:
   ConstructorVht ()

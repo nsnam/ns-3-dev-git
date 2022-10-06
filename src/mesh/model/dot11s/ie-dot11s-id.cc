@@ -145,7 +145,7 @@ std::istream &operator >> (std::istream &is, IeMeshId &a)
 {
   std::string str;
   is >> str;
-  a = IeMeshId (str.c_str ());
+  a = IeMeshId (str);
   return is;
 }
 

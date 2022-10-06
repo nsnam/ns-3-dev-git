@@ -1351,9 +1351,9 @@ WifiMac::GetHtCapabilities (uint8_t linkId) const
   uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
                                        m_beMaxAmpduSize, m_bkMaxAmpduSize});
   // round to the next power of two minus one
-  maxAmpduLength = (1ul << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
+  maxAmpduLength = (1UL << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
   // The maximum A-MPDU length in HT capabilities elements ranges from 2^13-1 to 2^16-1
-  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 8191u), 65535u));
+  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 8191U), 65535U));
 
   capabilities.SetLSigProtectionSupport (true);
   uint64_t maxSupportedRate = 0; //in bit/s
@@ -1411,9 +1411,9 @@ WifiMac::GetVhtCapabilities (uint8_t linkId) const
   uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
                                        m_beMaxAmpduSize, m_bkMaxAmpduSize});
   // round to the next power of two minus one
-  maxAmpduLength = (1ul << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
+  maxAmpduLength = (1UL << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
   // The maximum A-MPDU length in VHT capabilities elements ranges from 2^13-1 to 2^20-1
-  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 8191u), 1048575u));
+  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 8191U), 1048575U));
 
   capabilities.SetRxLdpc (htConfiguration->GetLdpcSupported ());
   capabilities.SetShortGuardIntervalFor80Mhz ((phy->GetChannelWidth () == 80) && sgiSupported);
@@ -1493,9 +1493,9 @@ WifiMac::GetHeCapabilities (uint8_t linkId) const
   uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
                                         m_beMaxAmpduSize, m_bkMaxAmpduSize});
   // round to the next power of two minus one
-  maxAmpduLength = (1ul << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
+  maxAmpduLength = (1UL << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
   // The maximum A-MPDU length in HE capabilities elements ranges from 2^20-1 to 2^23-1
-  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 1048575u), 8388607u));
+  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 1048575U), 8388607U));
 
   uint8_t maxMcs = 0;
   for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_HE))

@@ -79,7 +79,6 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 
 #include <cstdlib>
 #include <cxxabi.h>
-#include "log.h"
 
 namespace ns3 {
 

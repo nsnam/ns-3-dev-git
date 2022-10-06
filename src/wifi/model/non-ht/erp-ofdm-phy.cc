@@ -245,7 +245,7 @@ namespace {
 /**
  * Constructor class for ERP-OFDM modes
  */
-static class ConstructorErpOfdm
+class ConstructorErpOfdm
 {
 public:
   ConstructorErpOfdm ()

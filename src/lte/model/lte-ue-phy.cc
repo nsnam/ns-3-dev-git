@@ -1097,7 +1097,8 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
             }
           NS_LOG_INFO (this << " UL DCI");
           std::vector <int> ulRb;
-          for (int i = 0; i < dci.m_rbLen; i++)
+          ulRb.reserve(dci.m_rbLen);
+for (int i = 0; i < dci.m_rbLen; i++)
             {
               ulRb.push_back (i + dci.m_rbStart);
               //NS_LOG_DEBUG (this << " UE RB " << i + dci.m_rbStart);
@@ -1139,7 +1140,8 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
                       NS_LOG_INFO ("received RAR RNTI " << m_raRnti);
                       // set the uplink bandwidth according to the UL grant
                       std::vector <int> ulRb;
-                      for (int i = 0; i < it->rarPayload.m_grant.m_rbLen; i++)
+                      ulRb.reserve(it->rarPayload.m_grant.m_rbLen);
+for (int i = 0; i < it->rarPayload.m_grant.m_rbLen; i++)
                         {
                           ulRb.push_back (i + it->rarPayload.m_grant.m_rbStart);
                         }

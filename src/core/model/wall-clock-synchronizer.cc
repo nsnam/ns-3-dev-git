@@ -16,14 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <ctime>       // clock_t
-#include <chrono>
-
-#include "log.h"
 #include "wall-clock-synchronizer.h"
 
-#include <condition_variable>
+#include "log.h"
+
 #include <chrono>
+#include <condition_variable>
+#include <ctime>       // clock_t
 #include <mutex>
 
 /**

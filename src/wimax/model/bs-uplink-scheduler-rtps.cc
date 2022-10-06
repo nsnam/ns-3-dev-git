@@ -312,15 +312,14 @@ UplinkSchedulerRtps::Schedule ()
                                                                                      WimaxNetDevice::DIRECTION_UPLINK));
 
               // allocate unicast polls for nrtPS flows if bandwidth is available
-              if (availableSymbols)
-                {
+              
                   ServiceBandwidthRequests (ssRecord,
                                             ServiceFlow::SF_TYPE_NRTPS,
                                             ulMapIe,
                                             modulationType,
                                             symbolsToAllocation,
                                             availableSymbols);
-                }
+                
               // finally allocate unicast polls for BE flows if bandwidth is available
               if (availableSymbols)
                 {

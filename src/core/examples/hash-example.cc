@@ -205,7 +205,7 @@ public:
 
     std::cout << GetName () << ": " << m_coll.size () << " collisions:"
               << std::endl;
-    for (auto collision : m_coll)
+    for (const auto& collision : m_coll)
       {
         uint64_t h = collision.first;
 
@@ -373,7 +373,7 @@ public:
   {
     ReportExpectedCollisions ();
 
-    for (auto collider : m_hashes)
+    for (const auto& collider : m_hashes)
       {
         collider.Report ();
       }
@@ -485,7 +485,7 @@ public:
               << (m_files.size () == 1 ? "y" : "ies")
               << std::endl;
 
-    for (auto dictFile : m_files)
+    for (const auto& dictFile : m_files)
       {
         std::cout << "Dictionary file: " << dictFile << std::endl;
 

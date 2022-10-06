@@ -72,7 +72,7 @@ MyModel::HandleEvent (double value)
  *
  * \param [in] model The MyModel object to start.
  */
-static void
+void
 ExampleFunction (MyModel *model)
 {
   std::cout << "ExampleFunction received event at "
@@ -83,7 +83,7 @@ ExampleFunction (MyModel *model)
 /**
  * Simple function event handler; this function is called randomly.
  */
-static void
+void
 RandomFunction ()
 {
   std::cout << "RandomFunction received event at "
@@ -91,7 +91,7 @@ RandomFunction ()
 }
 
 /** Simple function event handler; the corresponding event is cancelled. */
-static void
+void
 CancelledEvent ()
 {
   std::cout << "I should never be called... " << std::endl;

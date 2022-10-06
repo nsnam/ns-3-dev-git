@@ -21,18 +21,19 @@
  */
 
 #include "three-gpp-channel-model.h"
-#include "ns3/log.h"
-#include "ns3/phased-array-model.h"
-#include "ns3/node.h"
+
 #include "ns3/double.h"
-#include "ns3/string.h"
 #include "ns3/integer.h"
+#include "ns3/log.h"
+#include "ns3/mobility-model.h"
+#include "ns3/node.h"
+#include "ns3/phased-array-model.h"
+#include "ns3/pointer.h"
+#include "ns3/string.h"
+#include <ns3/simulator.h>
+
 #include <algorithm>
 #include <random>
-#include "ns3/log.h"
-#include <ns3/simulator.h>
-#include "ns3/mobility-model.h"
-#include "ns3/pointer.h"
 
 namespace ns3 {
 

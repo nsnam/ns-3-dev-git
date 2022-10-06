@@ -139,7 +139,7 @@ QosTxop::GetQosQueueSize (uint8_t tid, Mac48Address receiver) const
   WifiContainerQueueId queueId {WIFI_QOSDATA_UNICAST_QUEUE, receiver, tid};
   uint32_t bufferSize = m_queue->GetNBytes (queueId);
   // A queue size value of 254 is used for all sizes greater than 64 768 octets.
-  uint8_t queueSize = static_cast<uint8_t> (std::ceil (std::min (bufferSize, 64769u) / 256.0));
+  uint8_t queueSize = static_cast<uint8_t> (std::ceil (std::min (bufferSize, 64769U) / 256.0));
   NS_LOG_DEBUG ("Buffer size=" << bufferSize << " Queue Size=" << +queueSize);
   return queueSize;
 }

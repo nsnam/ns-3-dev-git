@@ -129,7 +129,7 @@ operator >> (std::istream &is, Ssid &ssid)
 {
   std::string str;
   is >> str;
-  ssid = Ssid (str.c_str ());
+  ssid = Ssid (str);
   return is;
 }
 

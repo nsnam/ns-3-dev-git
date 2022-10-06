@@ -22,13 +22,11 @@
 #define UAN_MAC_H
 
 #include "ns3/address.h"
+#include "ns3/mac8-address.h"
+#include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
-
-#include "ns3/address.h"
-#include "ns3/nstime.h"
 #include "ns3/ptr.h"
-#include "ns3/mac8-address.h"
 
 namespace ns3 {
 

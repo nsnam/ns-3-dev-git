@@ -2339,7 +2339,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   if (m_asciiTrace != 0)
     {
       AsciiTraceHelper ascii;
-      Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( (m_trName + ".tr").c_str ());
+      Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( m_trName + ".tr");
       wifiPhy.EnableAsciiAll (osw);
       wavePhy.EnableAsciiAll (osw);
     }

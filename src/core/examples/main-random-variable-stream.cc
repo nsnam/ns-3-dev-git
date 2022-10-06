@@ -70,7 +70,7 @@ double dround (double number, double precision)
  * \param [in] impulses Set the plot style to IMPULSES.
  * \return The histogram as a GnuPlot data set.
  */
-static GnuplotDataset
+GnuplotDataset
 Histogram (Ptr<RandomVariableStream> rndvar,
            unsigned int probes, double precision,
            const std::string& title, bool impulses = false)

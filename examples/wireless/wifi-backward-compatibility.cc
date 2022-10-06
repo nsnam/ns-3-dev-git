@@ -209,7 +209,7 @@ int main (int argc, char *argv[])
   if (apHasTraffic)
     {
       UdpClientHelper apClient (staNodeInterface.GetAddress (0), 5001);
-      apClient.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+      apClient.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
       apClient.SetAttribute ("Interval", TimeValue (Time ("0.00001"))); //packets/s
       apClient.SetAttribute ("PacketSize", UintegerValue (payloadSize)); //bytes
       ApplicationContainer apClientApp = apClient.Install (wifiApNode.Get (0));
@@ -220,7 +220,7 @@ int main (int argc, char *argv[])
   if (staHasTraffic)
     {
       UdpClientHelper staClient (apNodeInterface.GetAddress (0), 9);
-      staClient.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+      staClient.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
       staClient.SetAttribute ("Interval", TimeValue (Time ("0.00001"))); //packets/s
       staClient.SetAttribute ("PacketSize", UintegerValue (payloadSize)); //bytes
       ApplicationContainer staClientApp = staClient.Install (wifiStaNode.Get (0));

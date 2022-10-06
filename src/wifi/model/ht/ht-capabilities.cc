@@ -140,7 +140,7 @@ HtCapabilities::SetMaxAmpduLength (uint32_t maxAmpduLength)
 {
   for (uint8_t i = 0; i <= 3; i++)
     {
-      if ((1ul << (13 + i)) - 1 == maxAmpduLength)
+      if ((1UL << (13 + i)) - 1 == maxAmpduLength)
         {
           m_maxAmpduLengthExponent = i;
           return;
@@ -216,7 +216,7 @@ HtCapabilities::GetMaxAmsduLength () const
 uint32_t
 HtCapabilities::GetMaxAmpduLength () const
 {
-  return (1ul << (13 + m_maxAmpduLengthExponent)) - 1;
+  return (1UL << (13 + m_maxAmpduLengthExponent)) - 1;
 }
 
 bool

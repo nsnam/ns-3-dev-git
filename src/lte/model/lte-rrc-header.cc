@@ -4604,10 +4604,10 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
 // Constructor
 RrcConnectionRequestHeader::RrcConnectionRequestHeader () : RrcUlCcchMessage ()
 {
-  m_mmec = std::bitset<8> (0ul);
-  m_mTmsi = std::bitset<32> (0ul);
+  m_mmec = std::bitset<8> (0UL);
+  m_mTmsi = std::bitset<32> (0UL);
   m_establishmentCause = MO_SIGNALLING;
-  m_spare = std::bitset<1> (0ul);
+  m_spare = std::bitset<1> (0UL);
 }
 
 // Destructor

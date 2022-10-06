@@ -187,8 +187,8 @@ CollisionTestCase::DoRun ()
        << "'" << t3Name << "', '" << t4Name << "'"
        << " in reverse alphabetical order:"
        << std::endl;
-  TypeId t3 (t3Name.c_str ());
-  TypeId t4 (t4Name.c_str ());
+  TypeId t3 (t3Name);
+  TypeId t4 (t4Name);
 
   // Check that they are alphabetical: t3 name > t4 name
   NS_TEST_ASSERT_MSG_NE ( (t3.GetHash () & HashChainFlag), 0,

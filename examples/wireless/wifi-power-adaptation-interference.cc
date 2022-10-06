@@ -669,7 +669,7 @@ int main (int argc, char *argv[])
 
   //Plots for AP0
   std::ofstream outfileTh0 (("throughput-" + outputFileName + "-0.plt").c_str ());
-  Gnuplot gnuplot = Gnuplot (("throughput-" + outputFileName + "-0.eps").c_str (), "Throughput");
+  Gnuplot gnuplot = Gnuplot ("throughput-" + outputFileName + "-0.eps", "Throughput");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Throughput (Mb/s)");
   gnuplot.SetTitle ("Throughput (AP0 to STA) vs time");
@@ -681,7 +681,7 @@ int main (int argc, char *argv[])
       || manager == "ns3::RrpaaWifiManager")
     {
       std::ofstream outfilePower0 (("power-" + outputFileName + "-0.plt").c_str ());
-      gnuplot = Gnuplot (("power-" + outputFileName + "-0.eps").c_str (), "Average Transmit Power");
+      gnuplot = Gnuplot ("power-" + outputFileName + "-0.eps", "Average Transmit Power");
       gnuplot.SetTerminal ("post eps color enhanced");
       gnuplot.SetLegend ("Time (seconds)", "Power (mW)");
       gnuplot.SetTitle ("Average transmit power (AP0 to STA) vs time");
@@ -690,7 +690,7 @@ int main (int argc, char *argv[])
     }
 
   std::ofstream outfileTx0 (("tx-" + outputFileName + "-0.plt").c_str ());
-  gnuplot = Gnuplot (("tx-" + outputFileName + "-0.eps").c_str (), "Time in TX State");
+  gnuplot = Gnuplot ("tx-" + outputFileName + "-0.eps", "Time in TX State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP0 in TX state vs time");
@@ -698,7 +698,7 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileTx0);
 
   std::ofstream outfileRx0 (("rx-" + outputFileName + "-0.plt").c_str ());
-  gnuplot = Gnuplot (("rx-" + outputFileName + "-0.eps").c_str (), "Time in RX State");
+  gnuplot = Gnuplot ("rx-" + outputFileName + "-0.eps", "Time in RX State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP0 in RX state vs time");
@@ -706,7 +706,7 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileRx0);
 
   std::ofstream outfileBusy0 (("busy-" + outputFileName + "-0.plt").c_str ());
-  gnuplot = Gnuplot (("busy-" + outputFileName + "-0.eps").c_str (), "Time in Busy State");
+  gnuplot = Gnuplot ("busy-" + outputFileName + "-0.eps", "Time in Busy State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP0 in Busy state vs time");
@@ -714,7 +714,7 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileBusy0);
 
   std::ofstream outfileIdle0 (("idle-" + outputFileName + "-0.plt").c_str ());
-  gnuplot = Gnuplot (("idle-" + outputFileName + "-0.eps").c_str (), "Time in Idle State");
+  gnuplot = Gnuplot ("idle-" + outputFileName + "-0.eps", "Time in Idle State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP0 in Idle state vs time");
@@ -723,7 +723,7 @@ int main (int argc, char *argv[])
 
   //Plots for AP1
   std::ofstream outfileTh1 (("throughput-" + outputFileName + "-1.plt").c_str ());
-  gnuplot = Gnuplot (("throughput-" + outputFileName + "-1.eps").c_str (), "Throughput");
+  gnuplot = Gnuplot ("throughput-" + outputFileName + "-1.eps", "Throughput");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Throughput (Mb/s)");
   gnuplot.SetTitle ("Throughput (AP1 to STA) vs time");
@@ -735,7 +735,7 @@ int main (int argc, char *argv[])
       || manager == "ns3::RrpaaWifiManager")
     {
       std::ofstream outfilePower1 (("power-" + outputFileName + "-1.plt").c_str ());
-      gnuplot = Gnuplot (("power-" + outputFileName + "-1.eps").c_str (), "Average Transmit Power");
+      gnuplot = Gnuplot ("power-" + outputFileName + "-1.eps", "Average Transmit Power");
       gnuplot.SetTerminal ("post eps color enhanced");
       gnuplot.SetLegend ("Time (seconds)", "Power (mW)");
       gnuplot.SetTitle ("Average transmit power (AP1 to STA) vs time");
@@ -744,7 +744,7 @@ int main (int argc, char *argv[])
     }
 
   std::ofstream outfileTx1 (("tx-" + outputFileName + "-1.plt").c_str ());
-  gnuplot = Gnuplot (("tx-" + outputFileName + "-1.eps").c_str (), "Time in TX State");
+  gnuplot = Gnuplot ("tx-" + outputFileName + "-1.eps", "Time in TX State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP1 in TX state vs time");
@@ -752,7 +752,7 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileTx1);
 
   std::ofstream outfileRx1 (("rx-" + outputFileName + "-1.plt").c_str ());
-  gnuplot = Gnuplot (("rx-" + outputFileName + "-1.eps").c_str (), "Time in RX State");
+  gnuplot = Gnuplot ("rx-" + outputFileName + "-1.eps", "Time in RX State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP1 in RX state vs time");
@@ -760,7 +760,7 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileRx1);
 
   std::ofstream outfileBusy1 (("busy-" + outputFileName + "-1.plt").c_str ());
-  gnuplot = Gnuplot (("busy-" + outputFileName + "-1.eps").c_str (), "Time in Busy State");
+  gnuplot = Gnuplot ("busy-" + outputFileName + "-1.eps", "Time in Busy State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP1 in Busy state vs time");
@@ -768,7 +768,7 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileBusy1);
 
   std::ofstream outfileIdle1 (("idle-" + outputFileName + "-1.plt").c_str ());
-  gnuplot = Gnuplot (("idle-" + outputFileName + "-1.eps").c_str (), "Time in Idle State");
+  gnuplot = Gnuplot ("idle-" + outputFileName + "-1.eps", "Time in Idle State");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Percent");
   gnuplot.SetTitle ("Percentage time AP1 in Idle state vs time");

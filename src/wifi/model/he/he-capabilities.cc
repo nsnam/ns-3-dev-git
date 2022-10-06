@@ -542,7 +542,7 @@ HeCapabilities::SetMaxAmpduLength (uint32_t maxAmpduLength)
 {
   for (uint8_t i = 0; i <= 3; i++)
     {
-      if ((1ul << (20 + i)) - 1 == maxAmpduLength)
+      if ((1UL << (20 + i)) - 1 == maxAmpduLength)
         {
           m_maxAmpduLengthExponent = i;
           return;
@@ -605,7 +605,7 @@ HeCapabilities::GetHighestNssSupported () const
 uint32_t
 HeCapabilities::GetMaxAmpduLength () const
 {
-  return std::min<uint32_t> ((1ul << (20 + m_maxAmpduLengthExponent)) - 1, 6500631);
+  return std::min<uint32_t> ((1UL << (20 + m_maxAmpduLengthExponent)) - 1, 6500631);
 }
 
 std::ostream &

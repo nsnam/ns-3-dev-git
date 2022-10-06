@@ -321,7 +321,7 @@ void
 StaticInformation::Print () const
 {
   NS_LOG_FUNCTION (this);
-  for (auto item : m_output)
+  for (const auto& item : m_output)
     {
       std::cout << item.first.GetName () << " -> " << item.second << std::endl;
     }
@@ -333,7 +333,7 @@ StaticInformation::GetCurrentPath () const
 {
   NS_LOG_FUNCTION (this);
   std::ostringstream oss;
-  for (auto item : m_currentPath)
+  for (const auto& item : m_currentPath)
     {
       oss << "/" << item;
     }
@@ -353,7 +353,7 @@ bool
 StaticInformation::HasAlreadyBeenProcessed (TypeId tid) const
 {
   NS_LOG_FUNCTION (this << tid);
-  for (auto it : m_alreadyProcessed)
+  for (const auto& it : m_alreadyProcessed)
     {
       if (it == tid)
 	{
@@ -369,7 +369,7 @@ StaticInformation::Get (TypeId tid) const
 {
   NS_LOG_FUNCTION (this << tid);
   std::vector<std::string> paths;
-  for (auto item : m_output)
+  for (const auto& item : m_output)
     {
       if (item.first == tid)
 	{
@@ -482,7 +482,7 @@ StaticInformation::DoGather (TypeId tid)
           m_currentPath.pop_back ();
         }
     }
-  for (auto item : m_aggregates)
+  for (const auto& item : m_aggregates)
     {
       if (item.first == tid || item.second == tid)
         {
@@ -619,7 +619,7 @@ GetNameMap ()
 
   // Type names without TypeIds
   std::vector<std::string> noTids = info.GetNoTypeIds ();
-  for (auto item : noTids)
+  for (const auto& item : noTids)
     {
       nameMap[item] = -1;
     }
@@ -662,7 +662,7 @@ PrintConfigPaths (std::ostream & os, const TypeId tid)
 	 << " with Config::Set and Config::Connect:"
 	 << std::endl;
       os << listStart << std::endl;
-      for (auto path : paths)
+      for (const auto& path : paths)
 	{
 	  os << listLineStart
              <<   "\"" << path << "\""
@@ -977,7 +977,7 @@ PrintTypeIdBlocks (std::ostream & os)
 
   // Iterate over the map, which will print the class names in
   // alphabetical order.
-  for (auto item : nameMap)
+  for (const auto& item : nameMap)
     {
       // Handle only real TypeIds
       if (item.second < 0)
@@ -1032,7 +1032,7 @@ PrintAllTypeIds (std::ostream & os)
   NameMap nameMap = GetNameMap ();
   // Iterate over the map, which will print the class names in
   // alphabetical order.
-  for (auto item : nameMap)
+  for (const auto& item : nameMap)
     {
       // Handle only real TypeIds
       if (item.second < 0)
@@ -1080,7 +1080,7 @@ PrintAllAttributes (std::ostream & os)
   NameMap nameMap = GetNameMap ();
   // Iterate over the map, which will print the class names in
   // alphabetical order.
-  for (auto item: nameMap)
+  for (const auto& item: nameMap)
     {
       // Handle only real TypeIds
       if (item.second < 0)
@@ -1176,7 +1176,7 @@ PrintAllLogComponents (std::ostream & os)
   // Find longest log name
   std::size_t widthL = std::string ("Log Component").size ();
   std::size_t widthR = std::string ("file").size ();
-  for (auto it : (*logs))
+  for (const auto& it : (*logs))
     {
       widthL = std::max (widthL, it.first.size ());
       std::string file = it.second->File ();
@@ -1201,7 +1201,7 @@ PrintAllLogComponents (std::ostream & os)
      << std::endl;
 
   LogComponent::ComponentList::const_iterator it;
-  for (auto it : (*logs))
+  for (const auto& it : (*logs))
     {
       std::string file = it.second->File ();
       // Strip leading "../" related to depth in build directory
@@ -1244,7 +1244,7 @@ PrintAllTraceSources (std::ostream & os)
 
   // Iterate over the map, which will print the class names in
   // alphabetical order.
-  for (auto item : nameMap)
+  for (const auto& item : nameMap)
     {
       // Handle only real TypeIds
       if (item.second < 0)

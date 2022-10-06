@@ -923,7 +923,8 @@ TdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
     {
       // assign all RBGs to this UE
       std::vector <uint16_t> tempMap;
-      for (int i = 0; i < rbgNum; i++)
+      tempMap.reserve(rbgNum);
+for (int i = 0; i < rbgNum; i++)
         {
           tempMap.push_back (i);
         }

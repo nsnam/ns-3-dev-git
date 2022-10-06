@@ -2779,7 +2779,7 @@ AnimationInterface::AnimXmlElement::AddAttribute (std::string attribute, T value
   std::ostringstream oss;
   oss << std::setprecision (10);
   oss << value;
-  std::string attributeString = attribute.c_str ();
+  std::string attributeString = attribute;
   if (xmlEscape)
     {
       attributeString += "=\"";

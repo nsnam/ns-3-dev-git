@@ -32,7 +32,7 @@ namespace {
  * \ingroup packet
  * \brief Zero-filled buffer.
  */
-static struct Zeroes
+struct Zeroes
 {
   Zeroes ()
     : size (1000)

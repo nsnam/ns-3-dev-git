@@ -531,7 +531,7 @@ int main (int argc, char *argv[])
   Simulator::Run ();
 
   std::ofstream outfile (("throughput-" + outputFileName + ".plt").c_str ());
-  Gnuplot gnuplot = Gnuplot (("throughput-" + outputFileName + ".eps").c_str (), "Throughput");
+  Gnuplot gnuplot = Gnuplot ("throughput-" + outputFileName + ".eps", "Throughput");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Throughput (Mb/s)");
   gnuplot.SetTitle ("Throughput (AP to STA) vs time");
@@ -543,7 +543,7 @@ int main (int argc, char *argv[])
       || manager == "ns3::RrpaaWifiManager")
     {
       std::ofstream outfile2 (("power-" + outputFileName + ".plt").c_str ());
-      gnuplot = Gnuplot (("power-" + outputFileName + ".eps").c_str (), "Average Transmit Power");
+      gnuplot = Gnuplot ("power-" + outputFileName + ".eps", "Average Transmit Power");
       gnuplot.SetTerminal ("post eps color enhanced");
       gnuplot.SetLegend ("Time (seconds)", "Power (mW)");
       gnuplot.SetTitle ("Average transmit power (AP to STA) vs time");

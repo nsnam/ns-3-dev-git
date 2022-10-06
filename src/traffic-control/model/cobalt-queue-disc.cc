@@ -223,7 +223,7 @@ CobaltQueueDisc::NewtonStep ()
   NS_LOG_FUNCTION (this);
   uint32_t invsqrt = ((uint32_t) m_recInvSqrt);
   uint32_t invsqrt2 = ((uint64_t) invsqrt * invsqrt) >> 32;
-  uint64_t val = (3ll << 32) - ((uint64_t) m_count * invsqrt2);
+  uint64_t val = (3LL << 32) - ((uint64_t) m_count * invsqrt2);
 
   val >>= 2; /* avoid overflow */
   val = (val * invsqrt) >> (32 - 2 + 1);

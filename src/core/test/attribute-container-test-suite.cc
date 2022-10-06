@@ -285,7 +285,7 @@ AttributeContainerTestCase::DoRun ()
 
     NS_TEST_ASSERT_MSG_EQ (3, ac.GetN (), "Container size mismatch");
     auto aciter = ac.Begin ();
-    for (auto v: ref)
+    for (const auto& v: ref)
       {
         NS_TEST_ASSERT_MSG_NE (true, (aciter == ac.End ()), "AC iterator reached end");
         NS_TEST_ASSERT_MSG_EQ (v, (*aciter)->Get (), "Incorrect value");
@@ -477,14 +477,14 @@ AttributeContainerSetGetTestCase::DoRun ()
     // could possibly make custom assignment operator to make assignment statement work
     std::map<std::string, int> mapstrint;
     auto lst = value.Get ();
-    for (auto l : lst)
+    for (const auto& l : lst)
       {
         mapstrint[l.first] = l.second;
       }
 
     NS_TEST_ASSERT_MSG_EQ (map.size (), mapstrint.size (), "mapstrint wrong size");
     auto iter = map.begin ();
-    for (auto v: mapstrint)
+    for (const auto& v: mapstrint)
       {
         NS_TEST_ASSERT_MSG_EQ (v, *iter, "Incorrect value in mapstrint");
         ++iter;

@@ -148,7 +148,7 @@ template <typename T> void
 PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileWrapper> file)
 {
   bool result =
-    object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));
+    object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultSink, file));
   NS_ASSERT_MSG (result == true, "PcapHelper::HookDefaultSink():  Unable to hook \"" << tracename << "\"");
 }
 

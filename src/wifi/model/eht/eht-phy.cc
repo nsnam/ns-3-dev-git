@@ -367,7 +367,7 @@ namespace {
 /**
  * Constructor class for EHT modes
  */
-static class ConstructorEht
+class ConstructorEht
 {
 public:
   ConstructorEht ()

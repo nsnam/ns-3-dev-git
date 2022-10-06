@@ -646,7 +646,7 @@ namespace {
 /**
  * Constructor class for OFDM modes
  */
-static class ConstructorOfdm
+class ConstructorOfdm
 {
 public:
   ConstructorOfdm ()

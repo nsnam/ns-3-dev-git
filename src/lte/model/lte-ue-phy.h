@@ -26,17 +26,16 @@
 #define LTE_UE_PHY_H
 
 
-#include <ns3/lte-phy.h>
 #include <ns3/ff-mac-common.h>
-
+#include <ns3/lte-amc.h>
 #include <ns3/lte-control-messages.h>
-#include <ns3/lte-amc.h>
-#include <ns3/lte-ue-phy-sap.h>
+#include <ns3/lte-phy.h>
 #include <ns3/lte-ue-cphy-sap.h>
-#include <ns3/ptr.h>
-#include <ns3/lte-amc.h>
-#include <set>
+#include <ns3/lte-ue-phy-sap.h>
 #include <ns3/lte-ue-power-control.h>
+#include <ns3/ptr.h>
+
+#include <set>
 
 
 namespace ns3 {

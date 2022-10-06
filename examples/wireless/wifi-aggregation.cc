@@ -262,7 +262,7 @@ int main (int argc, char *argv[])
   serverAppA.Stop (Seconds (simulationTime + 1));
 
   UdpClientHelper clientA (StaInterfaceA.GetAddress (0), port);
-  clientA.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientA.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
   clientA.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientA.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
@@ -276,7 +276,7 @@ int main (int argc, char *argv[])
   serverAppB.Stop (Seconds (simulationTime + 1));
 
   UdpClientHelper clientB (StaInterfaceB.GetAddress (0), port);
-  clientB.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientB.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
   clientB.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientB.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
@@ -290,7 +290,7 @@ int main (int argc, char *argv[])
   serverAppC.Stop (Seconds (simulationTime + 1));
 
   UdpClientHelper clientC (StaInterfaceC.GetAddress (0), port);
-  clientC.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientC.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
   clientC.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientC.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
@@ -304,7 +304,7 @@ int main (int argc, char *argv[])
   serverAppD.Stop (Seconds (simulationTime + 1));
 
   UdpClientHelper clientD (StaInterfaceD.GetAddress (0), port);
-  clientD.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientD.SetAttribute ("MaxPackets", UintegerValue (4294967295U));
   clientD.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientD.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 

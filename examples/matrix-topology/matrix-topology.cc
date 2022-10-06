@@ -268,7 +268,7 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Configure Tracing.");
 
   AsciiTraceHelper ascii;
-  p2p.EnableAsciiAll (ascii.CreateFileStream (tr_name.c_str ()));
+  p2p.EnableAsciiAll (ascii.CreateFileStream (tr_name));
   // p2p.EnablePcapAll (pcap_name.c_str());
 
   // Ptr<FlowMonitor> flowmon;
@@ -277,7 +277,7 @@ int main (int argc, char *argv[])
 
   // Configure animator with default settings
 
-  AnimationInterface anim (anim_name.c_str ());
+  AnimationInterface anim (anim_name);
   NS_LOG_INFO ("Run Simulation.");
 
   Simulator::Stop (Seconds (SimTime));

@@ -44,7 +44,8 @@ public:
   {
 
     std::vector<double> freqs;
-    for (int i = 0; i < 100; ++i)
+    freqs.reserve(100);
+for (int i = 0; i < 100; ++i)
       {
         freqs.push_back ((i + 2400) * 1e6);
       }

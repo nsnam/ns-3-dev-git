@@ -1073,7 +1073,7 @@ MinstrelWifiManager::PrintTable (MinstrelWifiRemoteStation *station)
           station->m_statsFile << ' ';
         }
 
-      float tmpTh = rate.throughput / 100000.0f;
+      float tmpTh = rate.throughput / 100000.0F;
       station->m_statsFile << "   " <<
         std::setw (17) << GetSupported (station, i) << "  " <<
         std::setw (2) << i << "  " <<

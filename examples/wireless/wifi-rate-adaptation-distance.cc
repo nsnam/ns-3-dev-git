@@ -350,7 +350,7 @@ int main (int argc, char *argv[])
   Simulator::Run ();
 
   std::ofstream outfile (("throughput-" + outputFileName + ".plt").c_str ());
-  Gnuplot gnuplot = Gnuplot (("throughput-" + outputFileName + ".eps").c_str (), "Throughput");
+  Gnuplot gnuplot = Gnuplot ("throughput-" + outputFileName + ".eps", "Throughput");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Throughput (Mb/s)");
   gnuplot.SetTitle ("Throughput (AP to STA) vs time");
