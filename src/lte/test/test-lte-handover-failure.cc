@@ -27,6 +27,7 @@
 #include <ns3/config.h>
 #include <ns3/boolean.h>
 #include <ns3/simulator.h>
+#include <ns3/rng-seed-manager.h>
 
 #include <ns3/node-container.h>
 #include <ns3/net-device-container.h>
@@ -199,6 +200,10 @@ LteHandoverFailureTestCase::DoRun ()
 {
 
   NS_LOG_INFO (this << " " << GetName ());
+  uint32_t previousSeed = RngSeedManager::GetSeed ();
+  uint64_t previousRun = RngSeedManager::GetRun ();
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (2);
 
   /*
    * Helpers.
@@ -282,6 +287,8 @@ LteHandoverFailureTestCase::DoRun ()
   Simulator::Run ();
   Simulator::Destroy ();
 
+  RngSeedManager::SetSeed (previousSeed);
+  RngSeedManager::SetRun (previousRun);
 } // end of void LteHandoverFailureTestCase::DoRun ()
 
 
