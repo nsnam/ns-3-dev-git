@@ -84,22 +84,22 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   GaussMarkovMobilityModel ();
 private:
   /**
    * Initialize the model and calculate new velocity, direction, and pitch
    */
-  void Start (void);
+  void Start ();
   /**
    * Perform a walk operation
    * \param timeLeft time until Start method is called again
    */
   void DoWalk (Time timeLeft);
-  virtual void DoDispose (void);
-  virtual Vector DoGetPosition (void) const;
+  virtual void DoDispose ();
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
   virtual int64_t DoAssignStreams (int64_t);
   ConstantVelocityHelper m_helper; //!< constant velocity helper
   Time m_timeStep; //!< duraiton after which direction and speed should change

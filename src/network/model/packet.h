@@ -64,19 +64,19 @@ public:
     /**
      * \returns the ns3::TypeId associated to this tag.
      */
-    TypeId GetTypeId (void) const;
+    TypeId GetTypeId () const;
     /**
      * \returns the index of the first byte tagged by this tag.
      *
      * \brief The index is an offset from the start of the packet.
      */
-    uint32_t GetStart (void) const;
+    uint32_t GetStart () const;
     /**
      * \returns the index of the last byte tagged by this tag.
      *
      * \brief The index is an offset from the start of the packet.
      */
-    uint32_t GetEnd (void) const;
+    uint32_t GetEnd () const;
     /**
      * \brief Read the requested tag and store it in the user-provided tag instance.
      *
@@ -106,11 +106,11 @@ private:
   /**
    * \returns true if calling Next is safe, false otherwise.
    */
-  bool HasNext (void) const;
+  bool HasNext () const;
   /**
    * \returns the next item found and prepare for the next one.
    */
-  Item Next (void);
+  Item Next ();
 private:
   /// Friend class
   friend class Packet;
@@ -140,7 +140,7 @@ public:
     /**
      * \returns the ns3::TypeId associated to this tag.
      */
-    TypeId GetTypeId (void) const;
+    TypeId GetTypeId () const;
     /**
      * Read the requested tag and store it in the user-provided tag instance.
      *
@@ -163,11 +163,11 @@ private:
   /**
    * \returns true if calling Next is safe, false otherwise.
    */
-  bool HasNext (void) const;
+  bool HasNext () const;
   /**
    * \returns the next item found and prepare for the next one.
    */
-  Item Next (void);
+  Item Next ();
 private:
   /// Friend class
   friend class Packet;
@@ -301,7 +301,7 @@ public:
    *
    * \returns the size in bytes of the packet
    */
-  inline uint32_t GetSize (void) const;
+  inline uint32_t GetSize () const;
   /**
    * \brief Add header to this packet.
    *
@@ -451,7 +451,7 @@ public:
    * the original packet, even though they both share the
    * same datasets internally.
    */
-  Ptr<Packet> Copy (void) const;
+  Ptr<Packet> Copy () const;
 
   /**
    * \brief Returns the packet's Uid.
@@ -472,7 +472,7 @@ public:
    * \returns an integer identifier which uniquely
    *          identifies this packet.
    */
-  uint64_t GetUid (void) const;
+  uint64_t GetUid () const;
 
   /**
    * \brief Print the packet contents.
@@ -493,7 +493,7 @@ public:
    *
    * \return String representation
    */
-  std::string ToString (void) const;
+  std::string ToString () const;
 
   /**
    * \brief Returns an iterator which points to the first 'item'
@@ -507,7 +507,7 @@ public:
    *
    * \sa EnablePrinting EnableChecking
    */
-  PacketMetadata::ItemIterator BeginItem (void) const;
+  PacketMetadata::ItemIterator BeginItem () const;
 
   /**
    * \brief Enable printing packets metadata.
@@ -518,7 +518,7 @@ public:
    * you need to invoke this method at least once during the
    * simulation setup and before any packet is created.
    */
-  static void EnablePrinting (void);
+  static void EnablePrinting ();
   /**
    * \brief Enable packets metadata checking.
    *
@@ -529,7 +529,7 @@ public:
    * was actually present at the front of the packet. These
    * errors will be detected and will abort the program.
    */
-  static void EnableChecking (void);
+  static void EnableChecking ();
 
   /**
    * \brief Returns number of bytes required for packet
@@ -542,7 +542,7 @@ public:
    * in order to determine the size of the buffer
    * required for serialization
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize a packet, tags, and metadata into a byte buffer.
@@ -597,7 +597,7 @@ public:
    *
    * \returns an iterator over the set of byte tags included in this packet.
    */
-  ByteTagIterator GetByteTagIterator (void) const;
+  ByteTagIterator GetByteTagIterator () const;
   /**
    * \brief Finds the first tag matching the parameter Tag type
    *
@@ -612,7 +612,7 @@ public:
   /**
    * \brief Remove all byte tags stored in this packet.
    */
-  void RemoveAllByteTags (void);
+  void RemoveAllByteTags ();
 
   /**
    * \param os output stream in which the data should be printed.
@@ -663,7 +663,7 @@ public:
   /**
    * \brief Remove all packet tags.
    */
-  void RemoveAllPacketTags (void);
+  void RemoveAllPacketTags ();
 
   /**
    * \brief Print the list of packet tags.
@@ -682,7 +682,7 @@ public:
    * \returns an object which can be used to iterate over the list of
    *  packet tags.
    */
-  PacketTagIterator GetPacketTagIterator (void) const;
+  PacketTagIterator GetPacketTagIterator () const;
 
   /**
    * \brief Set the packet nix-vector.
@@ -708,7 +708,7 @@ public:
    *
    * \returns the Nix vector
    */
-  Ptr<NixVector> GetNixVector (void) const;
+  Ptr<NixVector> GetNixVector () const;
 
   /**
    * TracedCallback signature for Ptr<Packet>
@@ -853,7 +853,7 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
 namespace ns3 {
 
 uint32_t
-Packet::GetSize (void) const
+Packet::GetSize () const
 {
   return m_buffer.GetSize ();
 }

@@ -44,11 +44,11 @@ public:
   /**
    * \return true if the 'fail' bit is set in the underlying iostream, false otherwise.
    */
-  bool Fail (void) const;
+  bool Fail () const;
   /**
    * \return true if the 'eof' bit is set in the underlying iostream, false otherwise.
    */
-  bool Eof (void) const;
+  bool Eof () const;
 
   /**
    * Create a new ascii file or open an existing ascii file.
@@ -61,7 +61,7 @@ public:
   /**
    * Close the underlying file.
    */
-  void Close (void);
+  void Close ();
 
   /**
    * \brief Read next line from file

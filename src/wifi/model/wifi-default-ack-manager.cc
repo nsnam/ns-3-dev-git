@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiDefaultAckManager");
 NS_OBJECT_ENSURE_REGISTERED (WifiDefaultAckManager);
 
 TypeId
-WifiDefaultAckManager::GetTypeId (void)
+WifiDefaultAckManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiDefaultAckManager")
     .SetParent<WifiAckManager> ()

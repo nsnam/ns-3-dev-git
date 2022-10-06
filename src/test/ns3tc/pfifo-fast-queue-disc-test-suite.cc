@@ -43,7 +43,7 @@ public:
   virtual ~PfifoFastQueueDiscTosPrioritization ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet and checks that it's added to the proper band.
    *
@@ -83,7 +83,7 @@ PfifoFastQueueDiscTosPrioritization::TestTosValue (Ptr<PfifoFastQueueDisc> queue
 }
 
 void
-PfifoFastQueueDiscTosPrioritization::DoRun (void)
+PfifoFastQueueDiscTosPrioritization::DoRun ()
 {
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObject<PfifoFastQueueDisc> ();
   for (uint16_t i = 0; i < 3; i++)
@@ -129,7 +129,7 @@ public:
   virtual ~PfifoFastQueueDiscDscpPrioritization ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet and checks that it's added to the proper band.
    *
@@ -169,7 +169,7 @@ PfifoFastQueueDiscDscpPrioritization::TestDscpValue (Ptr<PfifoFastQueueDisc> que
 }
 
 void
-PfifoFastQueueDiscDscpPrioritization::DoRun (void)
+PfifoFastQueueDiscDscpPrioritization::DoRun ()
 {
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObject<PfifoFastQueueDisc> ();
   for (uint16_t i = 0; i < 3; i++)
@@ -220,7 +220,7 @@ public:
   virtual ~PfifoFastQueueDiscOverflow ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    *
@@ -256,7 +256,7 @@ PfifoFastQueueDiscOverflow::AddPacket (Ptr<PfifoFastQueueDisc> queue, Ipv4Header
 }
 
 void
-PfifoFastQueueDiscOverflow::DoRun (void)
+PfifoFastQueueDiscOverflow::DoRun ()
 {
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObjectWithAttributes<PfifoFastQueueDisc> ("MaxSize", StringValue ("6p"));
   Ptr<DropTailQueue<QueueDiscItem> > band0 = CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> > ("MaxSize", StringValue ("6p"));
@@ -302,7 +302,7 @@ public:
   virtual ~PfifoFastQueueDiscNoPriority ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 PfifoFastQueueDiscNoPriority::PfifoFastQueueDiscNoPriority ()
@@ -315,7 +315,7 @@ PfifoFastQueueDiscNoPriority::~PfifoFastQueueDiscNoPriority ()
 }
 
 void
-PfifoFastQueueDiscNoPriority::DoRun (void)
+PfifoFastQueueDiscNoPriority::DoRun ()
 {
   // all packets with non-IP headers should enqueue in band 1
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObject<PfifoFastQueueDisc> ();

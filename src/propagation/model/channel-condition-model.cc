@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("ChannelConditionModel");
 NS_OBJECT_ENSURE_REGISTERED (ChannelCondition);
 
 TypeId
-ChannelCondition::GetTypeId (void)
+ChannelCondition::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ChannelCondition")
     .SetParent<Object> ()
@@ -161,7 +161,7 @@ std::ostream& operator<< (std::ostream& os, ChannelCondition::LosConditionValue 
 NS_OBJECT_ENSURE_REGISTERED (ChannelConditionModel);
 
 TypeId
-ChannelConditionModel::GetTypeId (void)
+ChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ChannelConditionModel")
     .SetParent<Object> ()
@@ -181,7 +181,7 @@ ChannelConditionModel::~ChannelConditionModel ()
 NS_OBJECT_ENSURE_REGISTERED (AlwaysLosChannelConditionModel);
 
 TypeId
-AlwaysLosChannelConditionModel::GetTypeId (void)
+AlwaysLosChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AlwaysLosChannelConditionModel")
     .SetParent<Object> ()
@@ -217,7 +217,7 @@ AlwaysLosChannelConditionModel::AssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (NeverLosChannelConditionModel);
 
 TypeId
-NeverLosChannelConditionModel::GetTypeId (void)
+NeverLosChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NeverLosChannelConditionModel")
     .SetParent<Object> ()
@@ -253,7 +253,7 @@ NeverLosChannelConditionModel::AssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (NeverLosVehicleChannelConditionModel);
 
 TypeId
-NeverLosVehicleChannelConditionModel::GetTypeId (void)
+NeverLosVehicleChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NeverLosVehicleChannelConditionModel")
     .SetParent<ChannelConditionModel> ()
@@ -290,7 +290,7 @@ NeverLosVehicleChannelConditionModel::AssignStreams (int64_t /* stream */)
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppChannelConditionModel);
 
 TypeId
-ThreeGppChannelConditionModel::GetTypeId (void)
+ThreeGppChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppChannelConditionModel")
     .SetParent<ChannelConditionModel> ()
@@ -527,7 +527,7 @@ ThreeGppChannelConditionModel::GetKey (Ptr<const MobilityModel> a, Ptr<const Mob
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppRmaChannelConditionModel);
 
 TypeId
-ThreeGppRmaChannelConditionModel::GetTypeId (void)
+ThreeGppRmaChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppRmaChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()
@@ -573,7 +573,7 @@ ThreeGppRmaChannelConditionModel::ComputePlos (Ptr<const MobilityModel> a,
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppUmaChannelConditionModel);
 
 TypeId
-ThreeGppUmaChannelConditionModel::GetTypeId (void)
+ThreeGppUmaChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppUmaChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()
@@ -641,7 +641,7 @@ ThreeGppUmaChannelConditionModel::ComputePlos (Ptr<const MobilityModel> a,
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppUmiStreetCanyonChannelConditionModel);
 
 TypeId
-ThreeGppUmiStreetCanyonChannelConditionModel::GetTypeId (void)
+ThreeGppUmiStreetCanyonChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppUmiStreetCanyonChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()
@@ -694,7 +694,7 @@ ThreeGppUmiStreetCanyonChannelConditionModel::ComputePlos (Ptr<const MobilityMod
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppIndoorMixedOfficeChannelConditionModel);
 
 TypeId
-ThreeGppIndoorMixedOfficeChannelConditionModel::GetTypeId (void)
+ThreeGppIndoorMixedOfficeChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppIndoorMixedOfficeChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()
@@ -751,7 +751,7 @@ ThreeGppIndoorMixedOfficeChannelConditionModel::ComputePlos (Ptr<const MobilityM
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppIndoorOpenOfficeChannelConditionModel);
 
 TypeId
-ThreeGppIndoorOpenOfficeChannelConditionModel::GetTypeId (void)
+ThreeGppIndoorOpenOfficeChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppIndoorOpenOfficeChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()

@@ -39,7 +39,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   PacketSocketFactory ();
 
@@ -48,7 +48,7 @@ public:
    *
    * \return a pointer to the created socket
    */
-  virtual Ptr<Socket> CreateSocket (void);
+  virtual Ptr<Socket> CreateSocket ();
 };
 
 } // namespace ns3

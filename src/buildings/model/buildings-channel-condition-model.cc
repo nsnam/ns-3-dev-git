@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("BuildingsChannelConditionModel");
 NS_OBJECT_ENSURE_REGISTERED (BuildingsChannelConditionModel);
 
 TypeId
-BuildingsChannelConditionModel::GetTypeId (void)
+BuildingsChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BuildingsChannelConditionModel")
     .SetParent<ChannelConditionModel> ()

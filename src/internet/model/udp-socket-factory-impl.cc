@@ -40,13 +40,13 @@ UdpSocketFactoryImpl::SetUdp (Ptr<UdpL4Protocol> udp)
 }
 
 Ptr<Socket>
-UdpSocketFactoryImpl::CreateSocket (void)
+UdpSocketFactoryImpl::CreateSocket ()
 {
   return m_udp->CreateSocket ();
 }
 
 void
-UdpSocketFactoryImpl::DoDispose (void)
+UdpSocketFactoryImpl::DoDispose ()
 {
   m_udp = 0;
   UdpSocketFactory::DoDispose ();

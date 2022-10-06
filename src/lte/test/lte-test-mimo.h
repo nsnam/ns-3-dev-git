@@ -56,7 +56,7 @@ public:
   virtual ~LenaMimoTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Get RLC buffer sample

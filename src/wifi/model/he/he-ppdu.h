@@ -58,11 +58,11 @@ public:
      * \brief Get the type ID.
      * \return the object TypeId
      */
-    static TypeId GetTypeId (void);
+    static TypeId GetTypeId ();
 
-    TypeId GetInstanceTypeId (void) const override;
+    TypeId GetInstanceTypeId () const override;
     void Print (std::ostream &os) const override;
-    uint32_t GetSerializedSize (void) const override;
+    uint32_t GetSerializedSize () const override;
     void Serialize (Buffer::Iterator start) const override;
     uint32_t Deserialize (Buffer::Iterator start) override;
 
@@ -84,7 +84,7 @@ public:
      *
      * \return the MCS field of HE-SIG-A1
      */
-    uint8_t GetMcs (void) const;
+    uint8_t GetMcs () const;
     /**
      * Fill the BSS Color field of HE-SIG-A1.
      *
@@ -96,7 +96,7 @@ public:
      *
      * \return the BSS Color field in the HE-SIG-A1
      */
-    uint8_t GetBssColor (void) const;
+    uint8_t GetBssColor () const;
     /**
      * Fill the channel width field of HE-SIG-A1 (in MHz).
      *
@@ -108,7 +108,7 @@ public:
      *
      * \return the channel width (in MHz)
      */
-    uint16_t GetChannelWidth (void) const;
+    uint16_t GetChannelWidth () const;
     /**
      * Fill the GI + LTF size field of HE-SIG-A1.
      *
@@ -121,7 +121,7 @@ public:
      *
      * \return the guard interval (in nanoseconds)
      */
-    uint16_t GetGuardInterval (void) const;
+    uint16_t GetGuardInterval () const;
     /**
      * Fill the number of streams field of HE-SIG-A1.
      *
@@ -133,7 +133,7 @@ public:
      *
      * \return the number of streams
      */
-    uint8_t GetNStreams (void) const;
+    uint8_t GetNStreams () const;
 
   private:
     //HE-SIG-A1 fields
@@ -193,11 +193,11 @@ public:
    */
   virtual ~HePpdu ();
 
-  Time GetTxDuration (void) const override;
-  Ptr<WifiPpdu> Copy (void) const override;
-  WifiPpduType GetType (void) const override;
-  uint16_t GetStaId (void) const override;
-  uint16_t GetTransmissionChannelWidth (void) const override;
+  Time GetTxDuration () const override;
+  Ptr<WifiPpdu> Copy () const override;
+  WifiPpduType GetType () const override;
+  uint16_t GetStaId () const override;
+  uint16_t GetTransmissionChannelWidth () const override;
   bool CanBeReceived (uint16_t p20MinFreq, uint16_t p20MaxFreq) const override;
 
   /**
@@ -214,7 +214,7 @@ public:
    *
    * \see TxPsdFlag
    */
-  TxPsdFlag GetTxPsdFlag (void) const;
+  TxPsdFlag GetTxPsdFlag () const;
 
   /**
    * \param flag the transmit PSD flag set for this PPDU
@@ -239,24 +239,24 @@ public:
   bool IsAllocated (uint16_t staId) const;
 
 protected:
-  std::string PrintPayload (void) const override;
-  WifiTxVector DoGetTxVector (void) const override;
+  std::string PrintPayload () const override;
+  WifiTxVector DoGetTxVector () const override;
 
   /**
    * Return true if the PPDU is a MU PPDU
    * \return true if the PPDU is a MU PPDU
    */
-  virtual bool IsMu (void) const;
+  virtual bool IsMu () const;
   /**
    * Return true if the PPDU is a DL MU PPDU
    * \return true if the PPDU is a DL MU PPDU
    */
-  virtual bool IsDlMu (void) const;
+  virtual bool IsDlMu () const;
   /**
    * Return true if the PPDU is an UL MU PPDU
    * \return true if the PPDU is an UL MU PPDU
    */
-  virtual bool IsUlMu (void) const;
+  virtual bool IsUlMu () const;
 
   /**
    * Fill in the HE PHY headers.

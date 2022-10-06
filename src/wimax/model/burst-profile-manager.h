@@ -43,24 +43,24 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Constructor
    *
    * \param device WIMAX device
    */
   BurstProfileManager (Ptr<WimaxNetDevice> device);
-  ~BurstProfileManager (void);
+  ~BurstProfileManager ();
 
   // Delete copy constructor and assignment operator to avoid misuse
   BurstProfileManager (const BurstProfileManager &) = delete;
   BurstProfileManager &operator= (const BurstProfileManager &) = delete;
 
-  void DoDispose (void);
+  void DoDispose ();
   /**
    * \returns the number of available burst profile
    */
-  uint16_t GetNrBurstProfilesToDefine (void);
+  uint16_t GetNrBurstProfilesToDefine ();
 
   /**
    * \brief returns the modulation type of a given iuc
@@ -101,7 +101,7 @@ public:
    * \brief Get burst profile to request
    * \returns the burst profile for SS
    */
-  uint8_t GetBurstProfileToRequest (void);
+  uint8_t GetBurstProfileToRequest ();
 private:
   Ptr<WimaxNetDevice> m_device; ///< the device
 };

@@ -49,7 +49,7 @@ public:
   virtual ~MobilityTraceTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 MobilityTraceTestCase::MobilityTraceTestCase ()
@@ -63,7 +63,7 @@ MobilityTraceTestCase::~MobilityTraceTestCase ()
 }
 
 void
-MobilityTraceTestCase::DoRun (void)
+MobilityTraceTestCase::DoRun ()
 {
   //***************************************************************************
   // Create the new mobility trace.

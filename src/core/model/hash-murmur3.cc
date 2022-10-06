@@ -570,7 +570,7 @@ Murmur3::GetHash64  (const char * buffer, const std::size_t size)
 }
 
 void
-Murmur3::clear (void)
+Murmur3::clear ()
 {
   m_hash32 = (uint32_t)SEED;
   m_size32 = 0;

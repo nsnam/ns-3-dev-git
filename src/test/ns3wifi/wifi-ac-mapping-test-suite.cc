@@ -57,7 +57,7 @@ public:
    * \param expectedQueue the expected queue disc index
    */
   WifiAcMappingTest (uint8_t tos, uint8_t expectedQueue);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /**
@@ -127,7 +127,7 @@ WifiAcMappingTest::PacketEnqueuedInWifiMacQueue (uint8_t tos, uint16_t* count, P
 }
 
 void
-WifiAcMappingTest::DoRun (void)
+WifiAcMappingTest::DoRun ()
 {
   WifiHelper wifi;
   WifiMacHelper wifiMac;

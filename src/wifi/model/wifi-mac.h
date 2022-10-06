@@ -94,7 +94,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   WifiMac ();
   virtual ~WifiMac ();
@@ -114,7 +114,7 @@ public:
    *
    * \return the device this PHY is associated with
    */
-  Ptr<WifiNetDevice> GetDevice (void) const;
+  Ptr<WifiNetDevice> GetDevice () const;
 
   /**
    * Get the Frame Exchange Manager associated with the given link
@@ -137,7 +137,7 @@ public:
    *
    * \return the number of links used by this MAC
    */
-  uint8_t GetNLinks (void) const;
+  uint8_t GetNLinks () const;
   /**
    * Get the ID of the link having the given MAC address, if any.
    *
@@ -151,7 +151,7 @@ public:
    *
    * \return a smart pointer to Txop
    */
-  Ptr<Txop> GetTxop (void) const;
+  Ptr<Txop> GetTxop () const;
   /**
    * Accessor for a specified EDCA object
    *
@@ -187,7 +187,7 @@ public:
    *
    * \return the wifi MAC queue scheduler
    */
-  Ptr<WifiMacQueueScheduler> GetMacQueueScheduler (void) const;
+  Ptr<WifiMacQueueScheduler> GetMacQueueScheduler () const;
 
    /**
    * This method is invoked by a subclass to specify what type of
@@ -202,7 +202,7 @@ public:
    *
    * \return the type of station.
    */
-  TypeOfStation GetTypeOfStation (void) const;
+  TypeOfStation GetTypeOfStation () const;
 
  /**
    * \param ssid the current SSID of this MAC layer.
@@ -215,7 +215,7 @@ public:
    * filtering on the incoming frame path may affect the overall
    * behavior.
    */
-  void SetPromisc (void);
+  void SetPromisc ();
   /**
    * Enable or disable CTS-to-self feature.
    *
@@ -227,11 +227,11 @@ public:
   /**
    * \return the MAC address associated to this MAC layer.
    */
-  Mac48Address GetAddress (void) const;
+  Mac48Address GetAddress () const;
   /**
    * \return the SSID which this MAC layer is going to try to stay in.
    */
-  Ssid GetSsid (void) const;
+  Ssid GetSsid () const;
   /**
    * \param address the current address of this MAC layer.
    */
@@ -283,7 +283,7 @@ public:
    * This function returns true if sending from arbitrary address is supported,
    * false otherwise.
    */
-  virtual bool SupportsSendFrom (void) const;
+  virtual bool SupportsSendFrom () const;
 
   /**
    * \param phys the physical layers attached to this MAC.
@@ -297,7 +297,7 @@ public:
   /**
    * Remove currently attached WifiPhy objects from this MAC.
    */
-  void ResetWifiPhys (void);
+  void ResetWifiPhys ();
 
   /**
    * \param stationManager the station manager attached to this MAC.
@@ -395,26 +395,26 @@ public:
   /**
    * \return pointer to HtConfiguration if it exists
    */
-  Ptr<HtConfiguration> GetHtConfiguration (void) const;
+  Ptr<HtConfiguration> GetHtConfiguration () const;
   /**
    * \return pointer to VhtConfiguration if it exists
    */
-  Ptr<VhtConfiguration> GetVhtConfiguration (void) const;
+  Ptr<VhtConfiguration> GetVhtConfiguration () const;
   /**
    * \return pointer to HeConfiguration if it exists
    */
-  Ptr<HeConfiguration> GetHeConfiguration (void) const;
+  Ptr<HeConfiguration> GetHeConfiguration () const;
   /**
    * \return pointer to EhtConfiguration if it exists
    */
-  Ptr<EhtConfiguration> GetEhtConfiguration (void) const;
+  Ptr<EhtConfiguration> GetEhtConfiguration () const;
 
   /**
    * Return the extended capabilities of the device.
    *
    * \return the extended capabilities that we support
    */
-  ExtendedCapabilities GetExtendedCapabilities (void) const;
+  ExtendedCapabilities GetExtendedCapabilities () const;
   /**
    * Return the HT capabilities of the device for the given link.
    *
@@ -538,32 +538,32 @@ protected:
   /**
    * \return whether the device supports short slot time capability.
    */
-  bool GetShortSlotTimeSupported (void) const;
+  bool GetShortSlotTimeSupported () const;
 
   /**
    * Accessor for the AC_VO channel access function
    *
    * \return a smart pointer to QosTxop
    */
-  Ptr<QosTxop> GetVOQueue (void) const;
+  Ptr<QosTxop> GetVOQueue () const;
   /**
    * Accessor for the AC_VI channel access function
    *
    * \return a smart pointer to QosTxop
    */
-  Ptr<QosTxop> GetVIQueue (void) const;
+  Ptr<QosTxop> GetVIQueue () const;
   /**
    * Accessor for the AC_BE channel access function
    *
    * \return a smart pointer to QosTxop
    */
-  Ptr<QosTxop> GetBEQueue (void) const;
+  Ptr<QosTxop> GetBEQueue () const;
   /**
    * Accessor for the AC_BK channel access function
    *
    * \return a smart pointer to QosTxop
    */
-  Ptr<QosTxop> GetBKQueue (void) const;
+  Ptr<QosTxop> GetBKQueue () const;
 
   /**
    * This method acts as the MacRxMiddle receive callback and is
@@ -683,7 +683,7 @@ private:
    *
    * \return a unique pointer to the created LinkEntity object
    */
-  virtual std::unique_ptr<LinkEntity> CreateLinkEntity (void) const;
+  virtual std::unique_ptr<LinkEntity> CreateLinkEntity () const;
 
   /**
    * Enable or disable ERP support for the given link.

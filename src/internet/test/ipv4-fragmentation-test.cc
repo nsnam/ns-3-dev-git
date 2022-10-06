@@ -112,7 +112,7 @@ class Ipv4FragmentationTest: public TestCase
   bool m_broadcast;       //!< broadcast packets
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Constructor
    * \param broadcast send broadcast packets (true) or unicast packets (false)
@@ -168,7 +168,7 @@ public:
    * \brief Send a packet.
    * \returns The sent packet.
    */
-  Ptr<Packet> SendClient (void);
+  Ptr<Packet> SendClient ();
 
 };
 
@@ -298,7 +298,7 @@ Ipv4FragmentationTest::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataS
   m_size = dataSize;
 }
 
-Ptr<Packet> Ipv4FragmentationTest::SendClient (void)
+Ptr<Packet> Ipv4FragmentationTest::SendClient ()
 {
   Ptr<Packet> p;
   if (m_dataSize)
@@ -331,7 +331,7 @@ Ptr<Packet> Ipv4FragmentationTest::SendClient (void)
 }
 
 void
-Ipv4FragmentationTest::DoRun (void)
+Ipv4FragmentationTest::DoRun ()
 {
   // set the arp cache to something quite high
   // we shouldn't need because the NetDevice used doesn't need arp, but still

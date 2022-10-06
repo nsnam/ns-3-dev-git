@@ -67,7 +67,7 @@ SimpleNetDeviceHelper::SetNetDevicePointToPointMode (bool pointToPointMode)
 }
 
 void
-SimpleNetDeviceHelper::DisableFlowControl (void)
+SimpleNetDeviceHelper::DisableFlowControl ()
 {
   m_enableFlowControl = false;
 }

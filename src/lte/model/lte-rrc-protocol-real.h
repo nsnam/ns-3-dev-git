@@ -64,12 +64,12 @@ public:
   virtual ~LteUeRrcProtocolReal ();
 
   // inherited from Object
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set LTE UE RRC SAP provider function
@@ -197,12 +197,12 @@ public:
   virtual ~LteEnbRrcProtocolReal ();
 
   // inherited from Object
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set LTE ENB RRC SAP provider function

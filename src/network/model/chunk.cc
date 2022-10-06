@@ -25,7 +25,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (Chunk);
 
 TypeId
-Chunk::GetTypeId (void)
+Chunk::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Chunk")
     .SetParent<ObjectBase> ()

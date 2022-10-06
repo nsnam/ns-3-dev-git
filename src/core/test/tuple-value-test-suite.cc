@@ -79,7 +79,7 @@ public:
    * Get tuple1
    * \return tuple1
    */
-  Tuple1 GetTuple1 (void) const;
+  Tuple1 GetTuple1 () const;
   /**
    * Set tuple2
    * \param tuple tuple value
@@ -89,7 +89,7 @@ public:
    * Get tuple2
    * \return tuple2
    */
-  Tuple2 GetTuple2 (void) const;
+  Tuple2 GetTuple2 () const;
 
 private:
   Tuple1 m_tuple1;     //!< first tuple
@@ -135,7 +135,7 @@ TupleObject::SetTuple1 (const Tuple1& tuple)
 }
 
 TupleObject::Tuple1
-TupleObject::GetTuple1 (void) const
+TupleObject::GetTuple1 () const
 {
   return m_tuple1;
 }
@@ -147,7 +147,7 @@ TupleObject::SetTuple2 (const Tuple2& tuple)
 }
 
 TupleObject::Tuple2
-TupleObject::GetTuple2 (void) const
+TupleObject::GetTuple2 () const
 {
   return m_tuple2;
 }

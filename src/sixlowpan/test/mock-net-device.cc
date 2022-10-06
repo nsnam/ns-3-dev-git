@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("MockNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (MockNetDevice);
 
 TypeId
-MockNetDevice::GetTypeId (void)
+MockNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MockNetDevice")
     .SetParent<NetDevice> ()
@@ -86,14 +86,14 @@ MockNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-MockNetDevice::GetIfIndex (void) const
+MockNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
 
 Ptr<Channel>
-MockNetDevice::GetChannel (void) const
+MockNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   return 0;
@@ -107,7 +107,7 @@ MockNetDevice::SetAddress (Address address)
 }
 
 Address
-MockNetDevice::GetAddress (void) const
+MockNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_address;
@@ -122,14 +122,14 @@ MockNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-MockNetDevice::GetMtu (void) const
+MockNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;
 }
 
 bool
-MockNetDevice::IsLinkUp (void) const
+MockNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkUp;
@@ -143,7 +143,7 @@ MockNetDevice::AddLinkChangeCallback (Callback<void> callback)
 }
 
 bool
-MockNetDevice::IsBroadcast (void) const
+MockNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -163,7 +163,7 @@ MockNetDevice::IsBroadcast (void) const
 }
 
 Address
-MockNetDevice::GetBroadcast (void) const
+MockNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -182,7 +182,7 @@ MockNetDevice::GetBroadcast (void) const
 }
 
 bool
-MockNetDevice::IsMulticast (void) const
+MockNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -238,7 +238,7 @@ Address MockNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-MockNetDevice::IsPointToPoint (void) const
+MockNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -249,7 +249,7 @@ MockNetDevice::IsPointToPoint (void) const
 }
 
 bool
-MockNetDevice::IsBridge (void) const
+MockNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -282,7 +282,7 @@ MockNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& de
 
 
 Ptr<Node>
-MockNetDevice::GetNode (void) const
+MockNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -295,7 +295,7 @@ MockNetDevice::SetNode (Ptr<Node> node)
 }
 
 bool
-MockNetDevice::NeedsArp (void) const
+MockNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -313,7 +313,7 @@ MockNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 }
 
 void
-MockNetDevice::DoDispose (void)
+MockNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
@@ -331,7 +331,7 @@ MockNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-MockNetDevice::SupportsSendFrom (void) const
+MockNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION (this);
   return true;

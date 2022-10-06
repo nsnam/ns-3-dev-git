@@ -78,10 +78,10 @@ public:
   /**
    * Check correctness of transmitted frames
    */
-  void CheckResults (void);
+  void CheckResults ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /// Information about transmitted frames
   struct FrameInfo
@@ -147,7 +147,7 @@ WifiTxopTest::Transmit (std::string context, WifiConstPsduMap psduMap, WifiTxVec
 }
 
 void
-WifiTxopTest::DoRun (void)
+WifiTxopTest::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (40);
@@ -320,7 +320,7 @@ WifiTxopTest::DoRun (void)
 }
 
 void
-WifiTxopTest::CheckResults (void)
+WifiTxopTest::CheckResults ()
 {
   Time tEnd;                         // TX end for a frame
   Time tStart;                       // TX start fot the next frame

@@ -38,7 +38,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   WifiTxCurrentModel ();
   virtual ~WifiTxCurrentModel ();
@@ -88,7 +88,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   LinearWifiTxCurrentModel ();
   virtual ~LinearWifiTxCurrentModel ();

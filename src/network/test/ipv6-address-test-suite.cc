@@ -32,7 +32,7 @@ public:
   virtual ~Ipv6AddressTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Ipv6AddressTestCase::Ipv6AddressTestCase ()
@@ -45,7 +45,7 @@ Ipv6AddressTestCase::~Ipv6AddressTestCase ()
 }
 
 void
-Ipv6AddressTestCase::DoRun (void)
+Ipv6AddressTestCase::DoRun ()
 {
   Ipv6Address ip = Ipv6Address ("2001:db8::1");
   uint8_t ipBytes[16];

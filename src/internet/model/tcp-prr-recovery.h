@@ -46,12 +46,12 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Create an unbound tcp socket.
    */
-  TcpPrrRecovery (void);
+  TcpPrrRecovery ();
 
   /**
    * \brief Copy constructor
@@ -59,7 +59,7 @@ public:
    */
   TcpPrrRecovery (const TcpPrrRecovery& sock);
 
-  virtual ~TcpPrrRecovery (void) override;
+  virtual ~TcpPrrRecovery () override;
 
   /**
    * \brief Reduction Bound variant (CRB or SSRB)

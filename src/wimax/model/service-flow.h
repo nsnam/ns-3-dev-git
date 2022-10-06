@@ -96,7 +96,7 @@ public:
    * \brief creates a TLV from this service flow
    * \return the created tlv
    */
-  Tlv ToTlv (void) const;
+  Tlv ToTlv () const;
   /**
    * \brief creates a service flow from a TLV
    * \param tlv the tlv from which the service flow will be created
@@ -139,7 +139,7 @@ public:
   ServiceFlow (uint32_t sfid,
                enum Direction direction,
                Ptr<WimaxConnection> connection);
-  ~ServiceFlow (void);
+  ~ServiceFlow ();
   /**
    * assignment operator
    * \param o the service flow to assign
@@ -148,7 +148,7 @@ public:
   ServiceFlow & operator = (ServiceFlow const& o);
 
   /// Initial values
-  void InitValues (void);
+  void InitValues ();
   /**
    * Set direction
    * \param direction the direction value
@@ -158,7 +158,7 @@ public:
    * Get direction
    * \returns the direction
    */
-  enum Direction GetDirection (void) const;
+  enum Direction GetDirection () const;
   /**
    * Copy parameters from another service flow
    * \param sf the service flow
@@ -174,7 +174,7 @@ public:
    * Get type of service flow
    * \returns the type
    */
-  enum Type GetType (void) const;
+  enum Type GetType () const;
   /**
    * Set connection
    * \param connection the connection
@@ -185,7 +185,7 @@ public:
    * been associated yet to a connection.
    * \returns pointer to the WimaxConnection
    */
-  Ptr<WimaxConnection> GetConnection (void) const;
+  Ptr<WimaxConnection> GetConnection () const;
 
   /**
    * Set is enabled flag
@@ -196,7 +196,7 @@ public:
    * Get is enabled flag
    * \returns is enabled
    */
-  bool GetIsEnabled (void) const;
+  bool GetIsEnabled () const;
 
   /**
    * Set service flow record
@@ -207,24 +207,24 @@ public:
    * Get service flow record
    * \returns pointer to the service flow record
    */
-  ServiceFlowRecord* GetRecord (void) const;
+  ServiceFlowRecord* GetRecord () const;
 
   // wrapper functions
   /**
    * Get pointer to queue
    * \returns pointer to the wimax mac queue
    */
-  Ptr<WimaxMacQueue> GetQueue (void) const;
+  Ptr<WimaxMacQueue> GetQueue () const;
   /**
    * Get scheduling type
    * \returns the scheduling type
    */
-  enum ServiceFlow::SchedulingType GetSchedulingType (void) const;
+  enum ServiceFlow::SchedulingType GetSchedulingType () const;
   /**
    * Check if packets are present
    * \returns true if there are packets
    */
-  bool HasPackets (void) const;
+  bool HasPackets () const;
   /**
    * Check if packets of particular type are present
    * \param packetType the packet type to select
@@ -233,27 +233,27 @@ public:
   bool HasPackets (MacHeaderType::HeaderType packetType) const;
 
   /// shall be called only by BS
-  void CleanUpQueue (void);
+  void CleanUpQueue ();
 
   /// Print QOS parameters
-  void PrintQoSParameters (void) const;
+  void PrintQoSParameters () const;
 
   /**
    * Get scheduling type string
    * \returns the name of the scheduling type
    */
-  char* GetSchedulingTypeStr (void) const;
+  char* GetSchedulingTypeStr () const;
 
   /**
    * Get SFID
    * \returns the SFID
    */
-  uint32_t GetSfid (void) const;
+  uint32_t GetSfid () const;
   /**
    * Get CID
    * \returns the CID
    */
-  uint16_t GetCid (void) const;
+  uint16_t GetCid () const;
   /**
    * Get service class name
    * \returns the service class name
@@ -263,142 +263,142 @@ public:
    * Get QOS parameter set type
    * \returns the QOS parameter set type
    */
-  uint8_t GetQosParamSetType (void) const;
+  uint8_t GetQosParamSetType () const;
   /**
    * Get traffic priority
    * \returns the traffic priority
    */
-  uint8_t GetTrafficPriority (void) const;
+  uint8_t GetTrafficPriority () const;
   /**
    * Get max sustained traffic rate
    * \returns the maximum sustained traffic rate
    */
-  uint32_t GetMaxSustainedTrafficRate (void) const;
+  uint32_t GetMaxSustainedTrafficRate () const;
   /**
    * Get max traffic burst
    * \returns the maximum traffic burst
    */
-  uint32_t GetMaxTrafficBurst (void) const;
+  uint32_t GetMaxTrafficBurst () const;
   /**
    * Get minimum reserved traffic rate
    * \returns the minimum reserved traffic rate
    */
-  uint32_t GetMinReservedTrafficRate (void) const;
+  uint32_t GetMinReservedTrafficRate () const;
   /**
    * Get minimum tolerable traffic rate
    * \returns the minimum tolerable traffic rate
    */
-  uint32_t GetMinTolerableTrafficRate (void) const;
+  uint32_t GetMinTolerableTrafficRate () const;
   /**
    * Get service scheduling type
    * \returns the scheduling type
    */
-  enum ServiceFlow::SchedulingType GetServiceSchedulingType (void) const;
+  enum ServiceFlow::SchedulingType GetServiceSchedulingType () const;
   /**
    * Get request transmission policy
    * \returns the request transmission policy
    */
-  uint32_t GetRequestTransmissionPolicy (void) const;
+  uint32_t GetRequestTransmissionPolicy () const;
   /**
    * Get tolerated jitter
    * \returns the tolerated jitter
    */
-  uint32_t GetToleratedJitter (void) const;
+  uint32_t GetToleratedJitter () const;
   /**
    * Get maximum latency
    * \returns the maximum latency
    */
-  uint32_t GetMaximumLatency (void) const;
+  uint32_t GetMaximumLatency () const;
   /**
    * Get fixed versus varaiable SDU indicator
    * \returns the fixed vs variable SDU indicator
    */
-  uint8_t GetFixedversusVariableSduIndicator (void) const;
+  uint8_t GetFixedversusVariableSduIndicator () const;
   /**
    * Get SDU size
    * \returns the SDU size
    */
-  uint8_t GetSduSize (void) const;
+  uint8_t GetSduSize () const;
   /**
    * Get target SAID
    * \returns the target SAID
    */
-  uint16_t GetTargetSAID (void) const;
+  uint16_t GetTargetSAID () const;
   /**
    * Get ARQ enable
    * \returns the ARQ enable
    */
-  uint8_t GetArqEnable (void) const;
+  uint8_t GetArqEnable () const;
   /**
    * Get ARQ retry timeout transmit
    * \returns the ARQ retry timeout
    */
-  uint16_t GetArqWindowSize (void) const;
+  uint16_t GetArqWindowSize () const;
   /**
    * Get ARQ retry timeout transmit
    * \returns the ARQ retry timeout transmit
    */
-  uint16_t GetArqRetryTimeoutTx (void) const;
+  uint16_t GetArqRetryTimeoutTx () const;
   /**
    * Get ARQ retry timeout receive
    * \returns the ARQ retry timeout receive
    */
-  uint16_t GetArqRetryTimeoutRx (void) const;
+  uint16_t GetArqRetryTimeoutRx () const;
   /**
    * Get ARQ block lifetime
    * \returns the ARQ block lifetime
    */
-  uint16_t GetArqBlockLifeTime (void) const;
+  uint16_t GetArqBlockLifeTime () const;
   /**
    * Get ARQ sync loss
    * \returns the ARQ sync loss value
    */
-  uint16_t GetArqSyncLoss (void) const;
+  uint16_t GetArqSyncLoss () const;
   /**
    * Get ARQ deliver in order
    * \returns the ARQ deliver in order
    */
-  uint8_t GetArqDeliverInOrder (void) const;
+  uint8_t GetArqDeliverInOrder () const;
   /**
    * Get ARQ purge timeout
    * \returns the ARQ purge timeout value
    */
-  uint16_t GetArqPurgeTimeout (void) const;
+  uint16_t GetArqPurgeTimeout () const;
   /**
    * Get ARQ block size
    * \returns the ARQ block size
    */
-  uint16_t GetArqBlockSize (void) const;
+  uint16_t GetArqBlockSize () const;
   /**
    * Get CS specification
    * \returns the CS specification
    */
-  enum CsSpecification GetCsSpecification (void) const;
+  enum CsSpecification GetCsSpecification () const;
   /**
    * Get convergence sublayer
    * \returns the convergence sublayer
    */
-  CsParameters GetConvergenceSublayerParam (void) const;
+  CsParameters GetConvergenceSublayerParam () const;
   /**
    * Get unsolicited grant interval
    * \returns the unsolicited grant interval
    */
-  uint16_t GetUnsolicitedGrantInterval (void) const;
+  uint16_t GetUnsolicitedGrantInterval () const;
   /**
    * Get unsolicited polling interval
    * \returns the unsolicited polling interval
    */
-  uint16_t GetUnsolicitedPollingInterval (void) const;
+  uint16_t GetUnsolicitedPollingInterval () const;
   /**
    * Get is multicast
    * \returns the is multicast flag
    */
-  bool GetIsMulticast (void) const;
+  bool GetIsMulticast () const;
   /**
    * Get modulation
    * \returns the modulation
    */
-  enum WimaxPhy::ModulationType GetModulation (void) const;
+  enum WimaxPhy::ModulationType GetModulation () const;
 
   /**
    * Set SFID

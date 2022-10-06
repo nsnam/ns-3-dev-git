@@ -64,7 +64,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   virtual ~IpL4Protocol ();
 
@@ -72,7 +72,7 @@ public:
    * \brief Returns the protocol number of this protocol.
    * \returns the protocol number.
    */
-  virtual int GetProtocolNumber (void) const = 0;
+  virtual int GetProtocolNumber () const = 0;
 
   /**
    * \brief Called from lower-level layers to send the packet up in the stack.
@@ -168,7 +168,7 @@ public:
    *
    * \return current Callback for the L4 protocol
    */
-  virtual DownTargetCallback GetDownTarget (void) const = 0;
+  virtual DownTargetCallback GetDownTarget () const = 0;
 
   /**
    * This method allows a caller to get the current down target callback
@@ -176,7 +176,7 @@ public:
    *
    * \return current Callback for the L4 protocol
    */
-  virtual DownTargetCallback6 GetDownTarget6 (void) const = 0;
+  virtual DownTargetCallback6 GetDownTarget6 () const = 0;
 };
 
 } // Namespace ns3

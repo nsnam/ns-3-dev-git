@@ -45,7 +45,7 @@ class UanTest : public TestCase
 public:
   UanTest ();
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 private:
   /**
    * Create node function
@@ -261,7 +261,7 @@ UanTest::DoPhyTests ()
 }
 
 void
-UanTest::DoRun (void)
+UanTest::DoRun ()
 {
 
   Ptr<UanPhyPerUmodem> per = CreateObject<UanPhyPerUmodem> ();

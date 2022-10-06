@@ -40,13 +40,13 @@ class LteRadioBearerInfo : public Object
 {
 
 public:
-  LteRadioBearerInfo (void);
-  virtual ~LteRadioBearerInfo (void);
+  LteRadioBearerInfo ();
+  virtual ~LteRadioBearerInfo ();
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Ptr<LteRlc> m_rlc; ///< RLC
   Ptr<LtePdcp> m_pdcp; ///< PDCP
@@ -65,7 +65,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   uint8_t m_srbIdentity; ///< SRB indentity
   LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config
@@ -84,7 +84,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   EpsBearer m_epsBearer; ///< EPS bearer
   uint8_t m_epsBearerIdentity; ///< EPS bearer identity

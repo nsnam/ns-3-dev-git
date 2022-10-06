@@ -51,7 +51,7 @@ public:
 
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   double m_a; //!< angle in degrees
   double m_b; //!< expected angle in radians
@@ -104,7 +104,7 @@ public:
 
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   double m_a; //!< angle in radians
   double m_b; //!< expected angle in degrees

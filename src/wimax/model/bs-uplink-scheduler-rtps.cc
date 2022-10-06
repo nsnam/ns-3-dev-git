@@ -62,14 +62,14 @@ UplinkSchedulerRtps::UplinkSchedulerRtps (Ptr<BaseStationNetDevice> bs)
   SetUcdTimeStamp (Simulator::Now ());
 }
 
-UplinkSchedulerRtps::~UplinkSchedulerRtps (void)
+UplinkSchedulerRtps::~UplinkSchedulerRtps ()
 {
   SetBs (0);
   m_uplinkAllocations.clear ();
 }
 
 TypeId
-UplinkSchedulerRtps::GetTypeId (void)
+UplinkSchedulerRtps::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UplinkSchedulerRtps")
     .SetParent<UplinkScheduler> ()
@@ -80,7 +80,7 @@ UplinkSchedulerRtps::GetTypeId (void)
 }
 
 std::list<OfdmUlMapIe>
-UplinkSchedulerRtps::GetUplinkAllocations (void) const
+UplinkSchedulerRtps::GetUplinkAllocations () const
 {
   return m_uplinkAllocations;
 }
@@ -142,7 +142,7 @@ UplinkSchedulerRtps::GetChannelDescriptorsToUpdate (bool &updateDcd, bool &updat
 }
 
 uint32_t
-UplinkSchedulerRtps::CalculateAllocationStartTime (void)
+UplinkSchedulerRtps::CalculateAllocationStartTime ()
 {
   return GetBs ()->GetNrDlSymbols () * GetBs ()->GetPhy ()->GetPsPerSymbol () + GetBs ()->GetTtg ();
 }
@@ -161,7 +161,7 @@ UplinkSchedulerRtps::AddUplinkAllocation (OfdmUlMapIe &ulMapIe,
 }
 
 void
-UplinkSchedulerRtps::Schedule (void)
+UplinkSchedulerRtps::Schedule ()
 {
   m_uplinkAllocations.clear ();
   SetIsIrIntrvlAllocated (false);

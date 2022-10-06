@@ -102,12 +102,12 @@ class WifiTest : public TestCase
 public:
   WifiTest ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
   /// Run one function
-  void RunOne (void);
+  void RunOne ();
   /**
    * Create one function
    * \param pos the position
@@ -182,7 +182,7 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
 }
 
 void
-WifiTest::RunOne (void)
+WifiTest::RunOne ()
 {
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   Ptr<PropagationDelayModel> propDelay = m_propDelay.Create<PropagationDelayModel> ();
@@ -201,7 +201,7 @@ WifiTest::RunOne (void)
 }
 
 void
-WifiTest::DoRun (void)
+WifiTest::DoRun ()
 {
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
@@ -244,7 +244,7 @@ public:
   QosUtilsIsOldPacketTest () : TestCase ("QosUtilsIsOldPacket")
   {
   }
-  void DoRun (void) override
+  void DoRun () override
   {
     //startingSeq=0, seqNum=2047
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2047), false, "2047 is new in comparison to 0");
@@ -274,7 +274,7 @@ class InterferenceHelperSequenceTest : public TestCase
 public:
   InterferenceHelperSequenceTest ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -362,7 +362,7 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
 }
 
 void
-InterferenceHelperSequenceTest::DoRun (void)
+InterferenceHelperSequenceTest::DoRun ()
 {
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
@@ -459,7 +459,7 @@ class DcfImmediateAccessBroadcastTestCase : public TestCase
 public:
   DcfImmediateAccessBroadcastTestCase ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -512,7 +512,7 @@ DcfImmediateAccessBroadcastTestCase::SendOnePacket (Ptr<WifiNetDevice> dev)
 }
 
 void
-DcfImmediateAccessBroadcastTestCase::DoRun (void)
+DcfImmediateAccessBroadcastTestCase::DoRun ()
 {
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
@@ -616,7 +616,7 @@ public:
   Bug730TestCase ();
   virtual ~Bug730TestCase ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -653,7 +653,7 @@ Bug730TestCase::Receive (std::string context, Ptr<const Packet> p, const Address
 
 
 void
-Bug730TestCase::DoRun (void)
+Bug730TestCase::DoRun ()
 {
   m_received = 0;
 
@@ -753,7 +753,7 @@ public:
   QosFragmentationTestCase ();
   virtual ~QosFragmentationTestCase ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -810,7 +810,7 @@ QosFragmentationTestCase::Transmit (std::string context, Ptr<const Packet> p, do
 }
 
 void
-QosFragmentationTestCase::DoRun (void)
+QosFragmentationTestCase::DoRun ()
 {
   NodeContainer wifiStaNode;
   wifiStaNode.Create (1);
@@ -911,7 +911,7 @@ class SetChannelFrequencyTest : public TestCase
 public:
   SetChannelFrequencyTest ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -1342,7 +1342,7 @@ public:
   Bug2222TestCase ();
   virtual ~Bug2222TestCase ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -1374,7 +1374,7 @@ Bug2222TestCase::TxDataFailedTrace (std::string context, Mac48Address adr)
 }
 
 void
-Bug2222TestCase::DoRun (void)
+Bug2222TestCase::DoRun ()
 {
   m_countInternalCollisions = 0;
 
@@ -1478,7 +1478,7 @@ class Bug2843TestCase : public TestCase
 public:
   Bug2843TestCase ();
   virtual ~Bug2843TestCase ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -1559,7 +1559,7 @@ Bug2843TestCase::SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevic
 }
 
 void
-Bug2843TestCase::DoRun (void)
+Bug2843TestCase::DoRun ()
 {
   uint16_t channelWidth = 40; // at least 40 MHz expected here
 
@@ -1653,13 +1653,13 @@ class Bug2831TestCase : public TestCase
 public:
   Bug2831TestCase ();
   virtual ~Bug2831TestCase ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
    * Function called to change the supported channel width at runtime
    */
-  void ChangeSupportedChannelWidth (void);
+  void ChangeSupportedChannelWidth ();
   /**
    * Callback triggered when a packet is received by the PHYs
    * \param context the context
@@ -1728,7 +1728,7 @@ Bug2831TestCase::RxCallback (std::string context, Ptr<const Packet> p, RxPowerWa
 }
 
 void
-Bug2831TestCase::DoRun (void)
+Bug2831TestCase::DoRun ()
 {
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   ObjectFactory propDelay;
@@ -1856,7 +1856,7 @@ class StaWifiMacScanningTestCase : public TestCase
 public:
   StaWifiMacScanningTestCase ();
   virtual ~StaWifiMacScanningTestCase ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -1977,7 +1977,7 @@ StaWifiMacScanningTestCase::Setup (bool nearestApBeaconGeneration, bool staActiv
 }
 
 void
-StaWifiMacScanningTestCase::DoRun (void)
+StaWifiMacScanningTestCase::DoRun ()
 {
   {
     NodeContainer nodes = Setup (false, false);
@@ -2048,7 +2048,7 @@ class Bug2470TestCase : public TestCase
 public:
   Bug2470TestCase ();
   virtual ~Bug2470TestCase ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -2246,7 +2246,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
 }
 
 void
-Bug2470TestCase::DoRun (void)
+Bug2470TestCase::DoRun ()
 {
   // Create ReceiveListErrorModel to corrupt ADDBA req packet. We use ReceiveListErrorModel
   // instead of ListErrorModel since packet UID is incremented between simulations. But
@@ -2336,7 +2336,7 @@ class Issue40TestCase : public TestCase
 public:
   Issue40TestCase ();
   virtual ~Issue40TestCase ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -2493,7 +2493,7 @@ Issue40TestCase::RunOne (bool useAmpdu)
 }
 
 void
-Issue40TestCase::DoRun (void)
+Issue40TestCase::DoRun ()
 {
   //Test without A-MPDU
   RunOne (false);
@@ -2520,7 +2520,7 @@ class Issue169TestCase : public TestCase
 public:
   Issue169TestCase ();
   virtual ~Issue169TestCase ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -2574,7 +2574,7 @@ Issue169TestCase::TxCallback (std::string context, WifiConstPsduMap psdus, WifiT
 }
 
 void
-Issue169TestCase::DoRun (void)
+Issue169TestCase::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -2650,7 +2650,7 @@ class IdealRateManagerChannelWidthTest : public TestCase
 public:
   IdealRateManagerChannelWidthTest ();
   virtual ~IdealRateManagerChannelWidthTest ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -2723,7 +2723,7 @@ IdealRateManagerChannelWidthTest::CheckLastSelectedMode (WifiMode expectedMode)
 }
 
 void
-IdealRateManagerChannelWidthTest::DoRun (void)
+IdealRateManagerChannelWidthTest::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -2804,7 +2804,7 @@ class IdealRateManagerMimoTest : public TestCase
 public:
   IdealRateManagerMimoTest ();
   virtual ~IdealRateManagerMimoTest ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -2903,7 +2903,7 @@ IdealRateManagerMimoTest::CheckLastSelectedMode (WifiMode expectedMode)
 }
 
 void
-IdealRateManagerMimoTest::DoRun (void)
+IdealRateManagerMimoTest::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -3099,7 +3099,7 @@ private:
    * \returns true if data rates are the same, false otherwise
    */
   bool CheckDataRate (HeRu::RuType ruType, std::string mcs, uint8_t nss, uint16_t guardInterval, uint16_t expectedDataRate);
-  void DoRun (void) override;
+  void DoRun () override;
 };
 
 HeRuMcsDataRateTestCase::HeRuMcsDataRateTestCase ()
@@ -3129,7 +3129,7 @@ HeRuMcsDataRateTestCase::CheckDataRate (HeRu::RuType ruType, std::string mcs, ui
 }
 
 void
-HeRuMcsDataRateTestCase::DoRun (void)
+HeRuMcsDataRateTestCase::DoRun ()
 {
   bool retval = true;
 

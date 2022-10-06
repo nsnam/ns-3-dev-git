@@ -36,7 +36,7 @@ PacketSocketAddress::SetProtocol (uint16_t protocol)
   m_protocol = protocol;
 }
 void
-PacketSocketAddress::SetAllDevices (void)
+PacketSocketAddress::SetAllDevices ()
 {
   NS_LOG_FUNCTION (this);
   m_isSingleDevice = false;
@@ -57,25 +57,25 @@ PacketSocketAddress::SetPhysicalAddress (const Address address)
 }
 
 uint16_t
-PacketSocketAddress::GetProtocol (void) const
+PacketSocketAddress::GetProtocol () const
 {
   NS_LOG_FUNCTION (this);
   return m_protocol;
 }
 bool
-PacketSocketAddress::IsSingleDevice (void) const
+PacketSocketAddress::IsSingleDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_isSingleDevice;
 }
 uint32_t
-PacketSocketAddress::GetSingleDevice (void) const
+PacketSocketAddress::GetSingleDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_device;
 }
 Address
-PacketSocketAddress::GetPhysicalAddress (void) const
+PacketSocketAddress::GetPhysicalAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_address;
@@ -87,7 +87,7 @@ PacketSocketAddress::operator Address () const
 }
 
 Address
-PacketSocketAddress::ConvertTo (void) const
+PacketSocketAddress::ConvertTo () const
 {
   NS_LOG_FUNCTION (this);
   Address address;
@@ -141,7 +141,7 @@ PacketSocketAddress::IsMatchingType (const Address &address)
   return address.IsMatchingType (GetType ());
 }
 uint8_t
-PacketSocketAddress::GetType (void)
+PacketSocketAddress::GetType ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();

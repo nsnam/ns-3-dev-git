@@ -52,10 +52,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TcpSocket (void);
-  virtual ~TcpSocket (void);
+  TcpSocket ();
+  virtual ~TcpSocket ();
 
   /**
    * \ingroup tcp
@@ -106,7 +106,7 @@ private:
    * \brief Get the send buffer size.
    * \returns the buffer size (in bytes)
    */
-  virtual uint32_t GetSndBufSize (void) const = 0;
+  virtual uint32_t GetSndBufSize () const = 0;
 
   /**
    * \brief Set the receive buffer size.
@@ -118,7 +118,7 @@ private:
    * \brief Get the receive buffer size.
    * \returns the buffer size (in bytes)
    */
-  virtual uint32_t GetRcvBufSize (void) const = 0;
+  virtual uint32_t GetRcvBufSize () const = 0;
 
   /**
    * \brief Set the segment size.
@@ -130,7 +130,7 @@ private:
    * \brief Get the segment size.
    * \returns the segment size (in bytes)
    */
-  virtual uint32_t GetSegSize (void) const = 0;
+  virtual uint32_t GetSegSize () const = 0;
 
   /**
    * \brief Set the initial Slow Start Threshold.
@@ -142,7 +142,7 @@ private:
    * \brief Get the initial Slow Start Threshold.
    * \returns the Slow Start Threshold (in bytes)
    */
-  virtual uint32_t GetInitialSSThresh (void) const = 0;
+  virtual uint32_t GetInitialSSThresh () const = 0;
 
   /**
    * \brief Set the initial Congestion Window.
@@ -154,7 +154,7 @@ private:
    * \brief Get the initial Congestion Window.
    * \returns the initial congestion window (in segments)
    */
-  virtual uint32_t GetInitialCwnd (void) const = 0;
+  virtual uint32_t GetInitialCwnd () const = 0;
 
   /**
    * \brief Set the connection timeout.
@@ -166,7 +166,7 @@ private:
    * \brief Get the connection timeout.
    * \returns the connection timeout
    */
-  virtual Time GetConnTimeout (void) const = 0;
+  virtual Time GetConnTimeout () const = 0;
 
   /**
    * \brief Set the number of connection retries before giving up.
@@ -178,7 +178,7 @@ private:
    * \brief Get the number of connection retries before giving up.
    * \returns the number of connection retries
    */
-  virtual uint32_t GetSynRetries (void) const = 0;
+  virtual uint32_t GetSynRetries () const = 0;
 
   /**
    * \brief Set the number of data transmission retries before giving up.
@@ -190,7 +190,7 @@ private:
    * \brief Get the number of data transmission retries before giving up.
    * \returns the number of data transmission retries
    */
-  virtual uint32_t GetDataRetries (void) const = 0;
+  virtual uint32_t GetDataRetries () const = 0;
 
   /**
    * \brief Set the time to delay an ACK.
@@ -202,7 +202,7 @@ private:
    * \brief Get the time to delay an ACK.
    * \returns the time to delay an ACK
    */
-  virtual Time GetDelAckTimeout (void) const = 0;
+  virtual Time GetDelAckTimeout () const = 0;
 
   /**
    * \brief Set the number of packet to fire an ACK before delay timeout.
@@ -214,7 +214,7 @@ private:
    * \brief Get the number of packet to fire an ACK before delay timeout.
    * \returns the number of packet to fire an ACK before delay timeout
    */
-  virtual uint32_t GetDelAckMaxCount (void) const = 0;
+  virtual uint32_t GetDelAckMaxCount () const = 0;
 
   /**
    * \brief Enable/Disable Nagle's algorithm.
@@ -226,7 +226,7 @@ private:
    * \brief Check if Nagle's algorithm is enabled or not.
    * \returns true if Nagle's algorithm is DISABLED
    */
-  virtual bool GetTcpNoDelay (void) const = 0;
+  virtual bool GetTcpNoDelay () const = 0;
 
   /**
    * \brief Set the timeout for persistent connection
@@ -248,7 +248,7 @@ private:
    *
    * \returns the persistent timeout
    */
-  virtual Time GetPersistTimeout (void) const = 0;
+  virtual Time GetPersistTimeout () const = 0;
 
 };
 

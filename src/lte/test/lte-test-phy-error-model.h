@@ -58,7 +58,7 @@ public:
   virtual ~LenaDataPhyErrorModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Builds the test name string based on provided parameter values
    * \param nUser the number of UE nodes
@@ -103,7 +103,7 @@ public:
   virtual ~LenaDlCtrlPhyErrorModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Build name string
    * \param nUser the number of UE nodes

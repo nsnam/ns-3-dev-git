@@ -56,7 +56,7 @@ public:
    */
   void LeaseObtained (std::string context, const Ipv4Address& newAddress);
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv4Address m_leasedAddress[3]; //!< Address given to the nodes
 };
 
@@ -81,7 +81,7 @@ DhcpTestCase::LeaseObtained (std::string context, const Ipv4Address& newAddress)
 }
 
 void
-DhcpTestCase::DoRun (void)
+DhcpTestCase::DoRun ()
 {
   /*Set up devices*/
   NodeContainer nodes;

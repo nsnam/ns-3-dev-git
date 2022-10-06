@@ -72,7 +72,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -120,7 +120,7 @@ Ipv4StaticRoutingSlash32TestCase::SendData (Ptr<Socket> socket, std::string to)
 // (a.a.a.a/32)A<--x.x.x.0/30-->B<--y.y.y.0/30-->C(c.c.c.c/32)
 //
 void
-Ipv4StaticRoutingSlash32TestCase::DoRun (void)
+Ipv4StaticRoutingSlash32TestCase::DoRun ()
 {
   Ptr<Node> nA = CreateObject<Node> ();
   Ptr<Node> nB = CreateObject<Node> ();

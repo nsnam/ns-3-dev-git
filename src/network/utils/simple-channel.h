@@ -50,7 +50,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   SimpleChannel ();
 
   /**
@@ -94,7 +94,7 @@ public:
   virtual void UnBlackList (Ptr<SimpleNetDevice> from, Ptr<SimpleNetDevice> to);
 
   // inherited from ns3::Channel
-  virtual std::size_t GetNDevices (void) const;
+  virtual std::size_t GetNDevices () const;
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
 private:

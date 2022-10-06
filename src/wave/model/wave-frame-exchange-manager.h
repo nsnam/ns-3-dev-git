@@ -51,7 +51,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   WaveFrameExchangeManager ();
   virtual ~WaveFrameExchangeManager ();
 
@@ -65,7 +65,7 @@ public:
 
 protected:
   // Overridden from FrameExchangeManager
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /**

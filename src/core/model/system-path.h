@@ -56,7 +56,7 @@ namespace SystemPath {
  *
  * \return The directory in which the currently-executing binary is located
  */
-std::string FindSelfDirectory (void);
+std::string FindSelfDirectory ();
 
 /**
  * \ingroup systempath
@@ -131,7 +131,7 @@ std::list<std::string> ReadFiles (std::string path);
  *
  * \return A path which identifies a temporary directory.
  */
-std::string MakeTemporaryDirectoryName (void);
+std::string MakeTemporaryDirectoryName ();
 
 /**
  * \ingroup systempath

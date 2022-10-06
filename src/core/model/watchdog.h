@@ -111,7 +111,7 @@ public:
 
 private:
   /** Internal callback invoked when the timer expires. */
-  void Expire (void);
+  void Expire ();
   /**
    * The timer implementation, which contains the bound callback
    * function and arguments.

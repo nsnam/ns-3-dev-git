@@ -148,7 +148,7 @@ class Ipv4DeduplicationTest : public TestCase
   std::map<std::string, uint32_t> m_dropCountMap; //!< map of received packets (node name, counter)
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Constructor
@@ -279,7 +279,7 @@ Ipv4DeduplicationTest::MakeName (bool enabled, Time expire)
 }
 
 void
-Ipv4DeduplicationTest::DoRun (void)
+Ipv4DeduplicationTest::DoRun ()
 {
   // multicast target
   const std::string targetAddr = "239.192.100.1";
@@ -548,8 +548,8 @@ static Ipv4DeduplicationTestSuite g_ipv4DeduplicationTestSuite; //!< Static vari
 class Ipv4DeduplicationPerformanceTest : public TestCase
 {
   public:
-    Ipv4DeduplicationPerformanceTest (void);
-    virtual void DoRun (void);
+    Ipv4DeduplicationPerformanceTest ();
+    virtual void DoRun ();
   private:
     std::vector <Ptr<Socket> > m_sockets; //!< sockets in use
     std::vector <uint8_t> m_txPackets;  //!< transmitted packets for each socket
@@ -571,7 +571,7 @@ Ipv4DeduplicationPerformanceTest::Ipv4DeduplicationPerformanceTest ()
 }
 
 void
-Ipv4DeduplicationPerformanceTest::DoRun (void)
+Ipv4DeduplicationPerformanceTest::DoRun ()
 {
   // multicast target
   const std::string targetAddr = "239.192.100.1";

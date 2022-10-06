@@ -73,7 +73,7 @@ public:
 
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Angles m_a; //!< Antenna angle
   double m_b; //!< Horizontal and Vertical Beamwidth
   double m_o; //!< Orientation

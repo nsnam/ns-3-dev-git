@@ -45,7 +45,7 @@ DsssPpdu::~DsssPpdu ()
 }
 
 WifiTxVector
-DsssPpdu::DoGetTxVector (void) const
+DsssPpdu::DoGetTxVector () const
 {
   WifiTxVector txVector;
   txVector.SetPreambleType (m_preamble);
@@ -55,7 +55,7 @@ DsssPpdu::DoGetTxVector (void) const
 }
 
 Time
-DsssPpdu::GetTxDuration (void) const
+DsssPpdu::GetTxDuration () const
 {
   Time ppduDuration = Seconds (0);
   const WifiTxVector& txVector = GetTxVector ();
@@ -64,7 +64,7 @@ DsssPpdu::GetTxDuration (void) const
 }
 
 Ptr<WifiPpdu>
-DsssPpdu::Copy (void) const
+DsssPpdu::Copy () const
 {
   return Create<DsssPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq, GetTxDuration (), m_uid);
 }
@@ -80,7 +80,7 @@ DsssPpdu::DsssSigHeader::~DsssSigHeader ()
 }
 
 TypeId
-DsssPpdu::DsssSigHeader::GetTypeId (void)
+DsssPpdu::DsssSigHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DsssSigHeader")
     .SetParent<Header> ()
@@ -91,7 +91,7 @@ DsssPpdu::DsssSigHeader::GetTypeId (void)
 }
 
 TypeId
-DsssPpdu::DsssSigHeader::GetInstanceTypeId (void) const
+DsssPpdu::DsssSigHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -104,7 +104,7 @@ DsssPpdu::DsssSigHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-DsssPpdu::DsssSigHeader::GetSerializedSize (void) const
+DsssPpdu::DsssSigHeader::GetSerializedSize () const
 {
   return 6;
 }
@@ -139,7 +139,7 @@ DsssPpdu::DsssSigHeader::SetRate (uint64_t rate)
 }
 
 uint64_t
-DsssPpdu::DsssSigHeader::GetRate (void) const
+DsssPpdu::DsssSigHeader::GetRate () const
 {
   uint64_t rate = 0;
   switch (m_rate)
@@ -170,7 +170,7 @@ DsssPpdu::DsssSigHeader::SetLength (uint16_t length)
 }
 
 uint16_t
-DsssPpdu::DsssSigHeader::GetLength (void) const
+DsssPpdu::DsssSigHeader::GetLength () const
 {
   return m_length;
 }

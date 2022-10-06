@@ -55,17 +55,17 @@ public:
   /**
    * \return the correct packet size (header plus payload).
    */
-  virtual uint32_t GetSize (void) const;
+  virtual uint32_t GetSize () const;
 
   /**
    * \return the header stored in this item..
    */
-  const ArpHeader & GetHeader (void) const;
+  const ArpHeader & GetHeader () const;
 
   /**
    * \brief Add the header to the packet
    */
-  virtual void AddHeader (void);
+  virtual void AddHeader ();
 
   /**
    * \brief Print the item contents.
@@ -77,7 +77,7 @@ public:
    * \brief Inherited from the base class, but we cannot mark ARP packets
    * \return false
    */
-  virtual bool Mark (void);
+  virtual bool Mark ();
 
   /**
    * \brief Computes the hash of the packet's 5-tuple

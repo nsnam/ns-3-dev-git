@@ -66,7 +66,7 @@ UanMacAloha::DoDispose ()
 }
 
 TypeId
-UanMacAloha::GetTypeId (void)
+UanMacAloha::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanMacAloha")
     .SetParent<UanMac> ()

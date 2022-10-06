@@ -132,7 +132,7 @@ Ipv6Address Ipv6Header::GetDestinationAddress () const
   return GetDestination ();
 }
 
-TypeId Ipv6Header::GetTypeId (void)
+TypeId Ipv6Header::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6Header")
     .SetParent<Header> ()
@@ -142,7 +142,7 @@ TypeId Ipv6Header::GetTypeId (void)
   return tid;
 }
 
-TypeId Ipv6Header::GetInstanceTypeId (void) const
+TypeId Ipv6Header::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -219,7 +219,7 @@ void Ipv6Header::SetEcn (EcnType ecn)
   m_trafficClass |= ecn;
 }
 
-Ipv6Header::DscpType Ipv6Header::GetDscp (void) const
+Ipv6Header::DscpType Ipv6Header::GetDscp () const
 {
   NS_LOG_FUNCTION (this);
   // Extract only first 6 bits of TOS byte, i.e 0xFC
@@ -279,7 +279,7 @@ std::string Ipv6Header::DscpTypeToString (DscpType dscp) const
 }
 
 Ipv6Header::EcnType
-Ipv6Header::GetEcn (void) const
+Ipv6Header::GetEcn () const
 {
   NS_LOG_FUNCTION (this);
   // Extract only last 2 bits of Traffic Class byte, i.e 0x3

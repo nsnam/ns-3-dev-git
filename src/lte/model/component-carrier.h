@@ -43,12 +43,12 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   ComponentCarrier ();
 
-  virtual ~ComponentCarrier (void);
-  virtual void DoDispose (void);
+  virtual ~ComponentCarrier ();
+  virtual void DoDispose ();
 
   /**
    * \return the uplink bandwidth in RBs
@@ -173,7 +173,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor
@@ -183,7 +183,7 @@ public:
   /**
    * \brief ~ComponentCarrierBaseStation
    */
-  virtual ~ComponentCarrierBaseStation (void) override;
+  virtual ~ComponentCarrierBaseStation () override;
 
   /**
    * Get cell identifier

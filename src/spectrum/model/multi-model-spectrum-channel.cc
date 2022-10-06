@@ -94,7 +94,7 @@ MultiModelSpectrumChannel::DoDispose ()
 }
 
 TypeId
-MultiModelSpectrumChannel::GetTypeId (void)
+MultiModelSpectrumChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MultiModelSpectrumChannel")
     .SetParent<SpectrumChannel> ()
@@ -384,7 +384,7 @@ MultiModelSpectrumChannel::StartRx (Ptr<SpectrumSignalParameters> params, Ptr<Sp
 }
 
 std::size_t
-MultiModelSpectrumChannel::GetNDevices (void) const
+MultiModelSpectrumChannel::GetNDevices () const
 {
   return m_numDevices;
 }

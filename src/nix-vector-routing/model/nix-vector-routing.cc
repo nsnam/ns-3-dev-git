@@ -56,7 +56,7 @@ typename NixVectorRouting<T>::NetDeviceToIpInterfaceMap NixVectorRouting<T>::g_n
 
 template <typename T>
 TypeId
-NixVectorRouting<T>::GetTypeId (void)
+NixVectorRouting<T>::GetTypeId ()
 {
   std::string name;
   if constexpr (std::is_same_v<T, Ipv4RoutingProtocol>)
@@ -147,7 +147,7 @@ NixVectorRouting<T>::SetNode (Ptr<Node> node)
 
 template <typename T>
 void
-NixVectorRouting<T>::FlushGlobalNixRoutingCache (void) const
+NixVectorRouting<T>::FlushGlobalNixRoutingCache () const
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -173,7 +173,7 @@ NixVectorRouting<T>::FlushGlobalNixRoutingCache (void) const
 
 template <typename T>
 void
-NixVectorRouting<T>::FlushNixCache (void) const
+NixVectorRouting<T>::FlushNixCache () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_nixCache.clear ();
@@ -181,7 +181,7 @@ NixVectorRouting<T>::FlushNixCache (void) const
 
 template <typename T>
 void
-NixVectorRouting<T>::FlushIpRouteCache (void) const
+NixVectorRouting<T>::FlushIpRouteCache () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ipRouteCache.clear ();
@@ -456,7 +456,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
 
 template <typename T>
 void
-NixVectorRouting<T>::BuildIpAddressToNodeMap (void) const
+NixVectorRouting<T>::BuildIpAddressToNodeMap () const
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1370,7 +1370,7 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
 
 template <typename T>
 void
-NixVectorRouting<T>::CheckCacheStateAndFlush (void) const
+NixVectorRouting<T>::CheckCacheStateAndFlush () const
 {
   if (g_isCacheDirty)
     {

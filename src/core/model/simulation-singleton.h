@@ -56,7 +56,7 @@ public:
    *
    * \returns A pointer to the singleton instance.
    */
-  static T * Get (void);
+  static T * Get ();
 
 private:
 
@@ -69,10 +69,10 @@ private:
    *
    * \returns The address of the pointer holding the static instance.
    */
-  static T ** GetObject (void);
+  static T ** GetObject ();
 
   /** Delete the static instance. */
-  static void DeleteObject (void);
+  static void DeleteObject ();
 };
 
 } // namespace ns3
@@ -88,7 +88,7 @@ namespace ns3 {
 
 template <typename T>
 T *
-SimulationSingleton<T>::Get (void)
+SimulationSingleton<T>::Get ()
 {
   T ** ppobject = GetObject ();
   return *ppobject;
@@ -96,7 +96,7 @@ SimulationSingleton<T>::Get (void)
 
 template <typename T>
 T **
-SimulationSingleton<T>::GetObject (void)
+SimulationSingleton<T>::GetObject ()
 {
   static T *pobject = 0;
   if (pobject == 0)
@@ -109,7 +109,7 @@ SimulationSingleton<T>::GetObject (void)
 
 template <typename T>
 void
-SimulationSingleton<T>::DeleteObject (void)
+SimulationSingleton<T>::DeleteObject ()
 {
   T **ppobject = GetObject ();
   delete (*ppobject);

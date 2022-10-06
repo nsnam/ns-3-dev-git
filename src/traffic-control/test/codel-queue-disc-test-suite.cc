@@ -77,8 +77,8 @@ public:
   CodelQueueDiscTestItem (const CodelQueueDiscTestItem &) = delete;
   CodelQueueDiscTestItem & operator = (const CodelQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark(void);
+  virtual void AddHeader ();
+  virtual bool Mark();
 
 private:
   bool m_ecnCapablePacket; ///< ECN capable packet?
@@ -95,12 +95,12 @@ CodelQueueDiscTestItem::~CodelQueueDiscTestItem ()
 }
 
 void
-CodelQueueDiscTestItem::AddHeader (void)
+CodelQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-CodelQueueDiscTestItem::Mark (void)
+CodelQueueDiscTestItem::Mark ()
 {
   if (m_ecnCapablePacket)
     {
@@ -124,7 +124,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicEnqueueDequeue (QueueSizeUnit mode);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   QueueSizeUnit m_mode; ///< mode
@@ -137,7 +137,7 @@ CoDelQueueDiscBasicEnqueueDequeue::CoDelQueueDiscBasicEnqueueDequeue (QueueSizeU
 }
 
 void
-CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
+CoDelQueueDiscBasicEnqueueDequeue::DoRun ()
 {
   Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
 
@@ -244,7 +244,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicOverflow (QueueSizeUnit mode);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /**
@@ -264,7 +264,7 @@ CoDelQueueDiscBasicOverflow::CoDelQueueDiscBasicOverflow (QueueSizeUnit mode)
 }
 
 void
-CoDelQueueDiscBasicOverflow::DoRun (void)
+CoDelQueueDiscBasicOverflow::DoRun ()
 {
   Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
   uint32_t pktSize = 1000;
@@ -323,7 +323,7 @@ class CoDelQueueDiscNewtonStepTest : public TestCase
 {
 public:
   CoDelQueueDiscNewtonStepTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 CoDelQueueDiscNewtonStepTest::CoDelQueueDiscNewtonStepTest ()
@@ -332,7 +332,7 @@ CoDelQueueDiscNewtonStepTest::CoDelQueueDiscNewtonStepTest ()
 }
 
 void
-CoDelQueueDiscNewtonStepTest::DoRun (void)
+CoDelQueueDiscNewtonStepTest::DoRun ()
 {
   Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
 
@@ -361,7 +361,7 @@ class CoDelQueueDiscControlLawTest : public TestCase
 {
 public:
   CoDelQueueDiscControlLawTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Codel control law function
    * \param t
@@ -387,7 +387,7 @@ CoDelQueueDiscControlLawTest::_codel_control_law (uint32_t t, uint32_t interval,
 // End Linux borrrow
 
 void
-CoDelQueueDiscControlLawTest::DoRun (void)
+CoDelQueueDiscControlLawTest::DoRun ()
 {
   Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
 
@@ -422,7 +422,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicDrop (QueueSizeUnit mode);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /**
@@ -461,7 +461,7 @@ CoDelQueueDiscBasicDrop::DropNextTracer ([[maybe_unused]] uint32_t oldVal, [[may
 }
 
 void
-CoDelQueueDiscBasicDrop::DoRun (void)
+CoDelQueueDiscBasicDrop::DoRun ()
 {
   Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
   uint32_t pktSize = 1000;
@@ -591,7 +591,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicMark (QueueSizeUnit mode);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /**
@@ -634,7 +634,7 @@ CoDelQueueDiscBasicMark::DropNextTracer ([[maybe_unused]] uint32_t oldVal, [[may
 }
 
 void
-CoDelQueueDiscBasicMark::DoRun (void)
+CoDelQueueDiscBasicMark::DoRun ()
 {
   // Test is divided into 4 sub test cases:
   // 1) Packets are not ECN capable.

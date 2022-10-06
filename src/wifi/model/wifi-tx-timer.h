@@ -100,7 +100,7 @@ public:
    *
    * \return the reason why the timer was started
    */
-  Reason GetReason (void) const;
+  Reason GetReason () const;
 
   /**
    * Get a string associated with the given reason
@@ -115,12 +115,12 @@ public:
    *
    * \return true if the timer is running
    */
-  bool IsRunning (void) const;
+  bool IsRunning () const;
 
   /**
    * Cancel the timer.
    */
-  void Cancel (void);
+  void Cancel ();
 
   /**
    * Get the remaining time until the timer will expire.
@@ -128,7 +128,7 @@ public:
    * \return the remaining time until the timer will expire.
    *         If the timer is not running, this method returns zero.
    */
-  Time GetDelayLeft (void) const;
+  Time GetDelayLeft () const;
 
   /**
    * MPDU response timeout callback typedef
@@ -187,7 +187,7 @@ private:
   /**
    * Internal callback invoked when the timer expires.
    */
-  void Expire (void);
+  void Expire ();
 
   /**
    * This method is called when the timer expires to feed the MPDU response

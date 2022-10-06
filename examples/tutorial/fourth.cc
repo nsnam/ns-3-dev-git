@@ -34,7 +34,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("MyObject")
       .SetParent<Object> ()

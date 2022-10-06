@@ -54,7 +54,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   WifiPhy ();
   virtual ~WifiPhy ();
@@ -64,7 +64,7 @@ public:
    *
    * \return the WifiPhyStateHelper of this PHY
    */
-  Ptr<WifiPhyStateHelper> GetState (void) const;
+  Ptr<WifiPhyStateHelper> GetState () const;
 
   /**
    * \param callback the callback to invoke
@@ -110,7 +110,7 @@ public:
    * For HE receptions only, check and possibly modify the transmit power restriction state at
    * the end of PPDU reception.
    */
-  void EndReceiveInterBss (void);
+  void EndReceiveInterBss ();
 
   /**
    * Get a WifiConstPsduMap from a PSDU and the TXVECTOR to use to send the PSDU.
@@ -152,48 +152,48 @@ public:
   /**
    * Put in sleep mode.
    */
-  void SetSleepMode (void);
+  void SetSleepMode ();
   /**
    * Resume from sleep mode.
    */
-  void ResumeFromSleep (void);
+  void ResumeFromSleep ();
   /**
    * Put in off mode.
    */
-  void SetOffMode (void);
+  void SetOffMode ();
   /**
    * Resume from off mode.
    */
-  void ResumeFromOff (void);
+  void ResumeFromOff ();
 
   /**
    * \return true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
    */
-  bool IsStateIdle (void) const;
+  bool IsStateIdle () const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::CCA_BUSY, false otherwise.
    */
-  bool IsStateCcaBusy (void) const;
+  bool IsStateCcaBusy () const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::RX, false otherwise.
    */
-  bool IsStateRx (void) const;
+  bool IsStateRx () const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::TX, false otherwise.
    */
-  bool IsStateTx (void) const;
+  bool IsStateTx () const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::SWITCHING, false otherwise.
    */
-  bool IsStateSwitching (void) const;
+  bool IsStateSwitching () const;
   /**
    * \return true if the current state of the PHY layer is WifiPhy::SLEEP, false otherwise.
    */
-  bool IsStateSleep (void) const;
+  bool IsStateSleep () const;
   /**
    * \return true if the current state of the PHY layer is WifiPhy::OFF, false otherwise.
    */
-  bool IsStateOff (void) const;
+  bool IsStateOff () const;
 
   /**
    * \return the predicted delay until this PHY can become WifiPhy::IDLE.
@@ -201,20 +201,20 @@ public:
    * The PHY will never become WifiPhy::IDLE _before_ the delay returned by
    * this method but it could become really idle later.
    */
-  Time GetDelayUntilIdle (void);
+  Time GetDelayUntilIdle ();
 
   /**
    * Return the start time of the last received packet.
    *
    * \return the start time of the last received packet
    */
-  Time GetLastRxStartTime (void) const;
+  Time GetLastRxStartTime () const;
   /**
    * Return the end time of the last received packet.
    *
    * \return the end time of the last received packet
    */
-  Time GetLastRxEndTime (void) const;
+  Time GetLastRxEndTime () const;
 
   /**
    * \param size the number of bytes in the packet to send
@@ -259,7 +259,7 @@ public:
   /**
    * \return the preamble detection duration, which is the time correlation needs to detect the start of an incoming frame.
    */
-  static Time GetPreambleDetectionDuration (void);
+  static Time GetPreambleDetectionDuration ();
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -311,7 +311,7 @@ public:
    *
    * \return the list of supported (non-MCS) modes.
    */
-  std::list<WifiMode> GetModeList (void) const;
+  std::list<WifiMode> GetModeList () const;
   /**
    * Get the list of supported (non-MCS) modes for the given modulation class (i.e.
    * corresponding to a given PHY entity).
@@ -338,7 +338,7 @@ public:
    *
    * \return the default WifiMode
    */
-  WifiMode GetDefaultMode (void) const;
+  WifiMode GetDefaultMode () const;
   /**
    * Check if the given MCS of the given modulation class is supported by the PHY.
    *
@@ -370,7 +370,7 @@ public:
    *
    * \return the SIFS duration
    */
-  Time GetSifs (void) const;
+  Time GetSifs () const;
   /**
    * Set the slot duration for this PHY.
    *
@@ -382,7 +382,7 @@ public:
    *
    * \return the slot duration
    */
-  Time GetSlot (void) const;
+  Time GetSlot () const;
   /**
    * Set the PCF Interframe Space (PIFS) for this PHY.
    *
@@ -394,19 +394,19 @@ public:
    *
    * \return the PIFS duration
    */
-  Time GetPifs (void) const;
+  Time GetPifs () const;
   /**
    * Return the estimated Ack TX time for this PHY.
    *
    * \return the estimated Ack TX time
    */
-  Time GetAckTxTime (void) const;
+  Time GetAckTxTime () const;
   /**
    * Return the estimated BlockAck TX time for this PHY.
    *
    * \return the estimated BlockAck TX time
    */
-  Time GetBlockAckTxTime (void) const;
+  Time GetBlockAckTxTime () const;
 
   /**
    * Get the maximum PSDU size in bytes for the given modulation class.
@@ -426,13 +426,13 @@ public:
   *
   * \return the list of BSS membership selectors.
   */
-  std::list<uint8_t> GetBssMembershipSelectorList (void) const;
+  std::list<uint8_t> GetBssMembershipSelectorList () const;
   /**
    * \return the number of supported MCSs.
    *
    * \see GetMcsList (void)
    */
-  uint16_t GetNMcs (void) const;
+  uint16_t GetNMcs () const;
   /**
    * The WifiPhy::GetMcsList() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
@@ -441,7 +441,7 @@ public:
    *
    * \return the list of supported MCSs.
    */
-  std::list<WifiMode> GetMcsList (void) const;
+  std::list<WifiMode> GetMcsList () const;
   /**
    * Get the list of supported MCSs for the given modulation class (i.e.
    * corresponding to a given PHY entity).
@@ -469,11 +469,11 @@ public:
    *
    * \return the current channel number
    */
-  uint8_t GetChannelNumber (void) const;
+  uint8_t GetChannelNumber () const;
   /**
    * \return the required time for channel switch operation of this WifiPhy
    */
-  Time GetChannelSwitchDelay (void) const;
+  Time GetChannelSwitchDelay () const;
 
   /**
    * Configure the PHY-level parameters for different Wi-Fi standard.
@@ -487,28 +487,28 @@ public:
    *
    * \return the Wi-Fi standard that has been configured
    */
-  WifiStandard GetStandard (void) const;
+  WifiStandard GetStandard () const;
 
   /**
    * Get the configured Wi-Fi band
    *
    * \return the Wi-Fi band that has been configured
    */
-  WifiPhyBand GetPhyBand (void) const;
+  WifiPhyBand GetPhyBand () const;
 
   /**
    * Get a const reference to the operating channel
    *
    * \return a const reference to the operating channel
    */
-  const WifiPhyOperatingChannel& GetOperatingChannel (void) const;
+  const WifiPhyOperatingChannel& GetOperatingChannel () const;
 
   /**
    * Return the Channel this WifiPhy is connected to.
    *
    * \return the Channel this WifiPhy is connected to
    */
-  virtual Ptr<Channel> GetChannel (void) const = 0;
+  virtual Ptr<Channel> GetChannel () const = 0;
 
   /**
    * Public method used to fire a PhyTxBegin trace.
@@ -703,7 +703,7 @@ public:
    *
    * \return the receive sensitivity threshold in dBm
    */
-  double GetRxSensitivity (void) const;
+  double GetRxSensitivity () const;
   /**
    * Sets the CCA energy detection threshold (dBm). The energy of a all received signals
    * should be higher than this threshold to allow the PHY layer to declare CCA BUSY state.
@@ -716,7 +716,7 @@ public:
    *
    * \return the CCA energy detection threshold in dBm
    */
-  double GetCcaEdThreshold (void) const;
+  double GetCcaEdThreshold () const;
   /**
    * Sets the CCA sensitivity threshold (dBm). The energy of a received wifi signal
    * should be higher than this threshold to allow the PHY layer to declare CCA BUSY state.
@@ -729,7 +729,7 @@ public:
    *
    * \return the CCA sensitivity threshold in dBm
    */
-  double GetCcaSensitivityThreshold (void) const;
+  double GetCcaSensitivityThreshold () const;
   /**
    * Sets the RX loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
    *
@@ -747,7 +747,7 @@ public:
    *
    * \return the minimum available transmission power level (dBm)
    */
-  double GetTxPowerStart (void) const;
+  double GetTxPowerStart () const;
   /**
    * Sets the maximum available transmission power level (dBm).
    *
@@ -759,7 +759,7 @@ public:
    *
    * \return the maximum available transmission power level (dBm)
    */
-  double GetTxPowerEnd (void) const;
+  double GetTxPowerEnd () const;
   /**
    * Sets the number of transmission power levels available between the
    * minimum level and the maximum level. Transmission power levels are
@@ -773,7 +773,7 @@ public:
    *
    * \return the number of available transmission power levels
    */
-  uint8_t GetNTxPower (void) const;
+  uint8_t GetNTxPower () const;
   /**
    * Sets the transmission gain (dB).
    *
@@ -785,7 +785,7 @@ public:
    *
    * \return the transmission gain in dB
    */
-  double GetTxGain (void) const;
+  double GetTxGain () const;
   /**
    * Sets the reception gain (dB).
    *
@@ -797,7 +797,7 @@ public:
    *
    * \return the reception gain in dB
    */
-  double GetRxGain (void) const;
+  double GetRxGain () const;
 
   /**
    * Sets the device this PHY is associated with.
@@ -810,7 +810,7 @@ public:
    *
    * \return the device this PHY is associated with
    */
-  Ptr<WifiNetDevice> GetDevice (void) const;
+  Ptr<WifiNetDevice> GetDevice () const;
   /**
    * \brief assign a mobility model to this device
    *
@@ -831,7 +831,7 @@ public:
    *
    * \return the mobility model this PHY is associated with
    */
-  Ptr<MobilityModel> GetMobility (void) const;
+  Ptr<MobilityModel> GetMobility () const;
 
   using ChannelTuple = std::tuple<uint8_t /* channel number */,
                                   uint16_t /* channel width */,
@@ -858,15 +858,15 @@ public:
   /**
    * \return whether it is prohibited to change PHY band after initialization
    */
-  bool HasFixedPhyBand (void) const;
+  bool HasFixedPhyBand () const;
   /**
    * \return the operating center frequency (MHz)
    */
-  uint16_t GetFrequency (void) const;
+  uint16_t GetFrequency () const;
   /**
    * \return the index of the primary 20 MHz channel
    */
-  uint8_t GetPrimary20Index (void) const;
+  uint8_t GetPrimary20Index () const;
   /**
    * \param antennas the number of antennas on this node.
    */
@@ -874,7 +874,7 @@ public:
   /**
    * \return the number of antennas on this device
    */
-  uint8_t GetNumberOfAntennas (void) const;
+  uint8_t GetNumberOfAntennas () const;
   /**
    * \param streams the maximum number of supported TX spatial streams.
    */
@@ -882,7 +882,7 @@ public:
   /**
    * \return the maximum number of supported TX spatial streams
    */
-  uint8_t GetMaxSupportedTxSpatialStreams (void) const;
+  uint8_t GetMaxSupportedTxSpatialStreams () const;
   /**
    * \param streams the maximum number of supported RX spatial streams.
    */
@@ -890,7 +890,7 @@ public:
   /**
    * \return the maximum number of supported RX spatial streams
    */
-  uint8_t GetMaxSupportedRxSpatialStreams (void) const;
+  uint8_t GetMaxSupportedRxSpatialStreams () const;
   /**
    * Enable or disable short PHY preamble.
    *
@@ -902,7 +902,7 @@ public:
    *
    * \returns if short PHY preamble is supported or not
    */
-  bool GetShortPhyPreambleSupported (void) const;
+  bool GetShortPhyPreambleSupported () const;
 
   /**
    * Sets the interference helper.
@@ -951,7 +951,7 @@ public:
   /**
    * \return the channel width in MHz
    */
-  uint16_t GetChannelWidth (void) const;
+  uint16_t GetChannelWidth () const;
 
   /**
    * Get the power of the given power level in dBm.
@@ -987,7 +987,7 @@ public:
    * The PHY will use this information to determine whether
    * it should use power restriction as imposed by OBSS_PD SR.
    */
-  void NotifyChannelAccessRequested (void);
+  void NotifyChannelAccessRequested ();
 
 
   /**
@@ -1042,7 +1042,7 @@ public:
   /**
    * \return the UID of the previously received PPDU (reset to UINT64_MAX upon transmission)
    */
-  uint64_t GetPreviouslyRxPpduUid (void) const;
+  uint64_t GetPreviouslyRxPpduUid () const;
 
   /**
    * \param currentChannelWidth channel width of the current transmission (MHz)
@@ -1066,7 +1066,7 @@ public:
    *
    * This method is only relevant for SpectrumWifiPhy.
    */
-  virtual std::tuple<double, double, double> GetTxMaskRejectionParams (void) const = 0;
+  virtual std::tuple<double, double, double> GetTxMaskRejectionParams () const = 0;
 
   /**
    * Get channel number of the primary channel
@@ -1087,12 +1087,12 @@ public:
   virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * Reset data upon end of TX or RX
    */
-  void Reset (void);
+  void Reset ();
 
   /**
    * Perform any actions necessary when user changes operating channel after
@@ -1103,11 +1103,11 @@ protected:
    *         be performed or a negative value indicating that channel switch is
    *         currently not possible (i.e., the radio is in sleep mode)
    */
-  Time GetDelayUntilChannelSwitch (void);
+  Time GetDelayUntilChannelSwitch ();
   /**
    * Actually switch channel based on the stored channel settings.
    */
-  virtual void DoChannelSwitch (void);
+  virtual void DoChannelSwitch ();
 
   /**
    * Check if PHY state should move to CCA busy state based on current
@@ -1177,47 +1177,47 @@ private:
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
    */
-  void Configure80211a (void);
+  void Configure80211a ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11b standard.
    */
-  void Configure80211b (void);
+  void Configure80211b ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11g standard.
    */
-  void Configure80211g (void);
+  void Configure80211g ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11p standard.
    */
-  void Configure80211p (void);
+  void Configure80211p ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11n standard.
    */
-  void Configure80211n (void);
+  void Configure80211n ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11ac standard.
    */
-  void Configure80211ac (void);
+  void Configure80211ac ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11ax standard.
    */
-  void Configure80211ax (void);
+  void Configure80211ax ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11be standard.
    */
-  void Configure80211be (void);
+  void Configure80211be ();
   /**
    * Configure the device MCS set with the appropriate HtMcs modes for
    * the number of available transmit spatial streams
    */
-  void ConfigureHtDeviceMcsSet (void);
+  void ConfigureHtDeviceMcsSet ();
   /**
    * Add the given MCS to the device MCS set.
    *
@@ -1227,7 +1227,7 @@ private:
   /**
    * Rebuild the mapping of MCS values to indices in the device MCS set.
    */
-  void RebuildMcsMap (void);
+  void RebuildMcsMap ();
 
   /**
    * Due to newly arrived signal, the current reception cannot be continued and has to be aborted
@@ -1349,7 +1349,7 @@ private:
    * For PHY entities supported by a given WifiPhy instance,
    * \see m_phyEntities.
    */
-  static std::map<WifiModulationClass, Ptr<PhyEntity> > & GetStaticPhyEntities (void);
+  static std::map<WifiModulationClass, Ptr<PhyEntity> > & GetStaticPhyEntities ();
 
   WifiStandard m_standard;                  //!< WifiStandard
   WifiPhyBand m_band;                       //!< WifiPhyBand

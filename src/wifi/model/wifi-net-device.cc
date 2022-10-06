@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (WifiNetDevice);
 
 TypeId
-WifiNetDevice::GetTypeId (void)
+WifiNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
@@ -120,7 +120,7 @@ WifiNetDevice::~WifiNetDevice ()
 }
 
 void
-WifiNetDevice::DoDispose (void)
+WifiNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
@@ -171,7 +171,7 @@ WifiNetDevice::DoDispose (void)
 }
 
 void
-WifiNetDevice::DoInitialize (void)
+WifiNetDevice::DoInitialize ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -197,7 +197,7 @@ WifiNetDevice::DoInitialize (void)
 }
 
 void
-WifiNetDevice::CompleteConfig (void)
+WifiNetDevice::CompleteConfig ()
 {
   if (!m_mac
       || m_phys.empty ()
@@ -229,7 +229,7 @@ WifiNetDevice::SetStandard (WifiStandard standard)
 }
 
 WifiStandard
-WifiNetDevice::GetStandard (void) const
+WifiNetDevice::GetStandard () const
 {
   return m_standard;
 }
@@ -278,13 +278,13 @@ WifiNetDevice::SetRemoteStationManagers (const std::vector<Ptr<WifiRemoteStation
 }
 
 Ptr<WifiMac>
-WifiNetDevice::GetMac (void) const
+WifiNetDevice::GetMac () const
 {
   return m_mac;
 }
 
 Ptr<WifiPhy>
-WifiNetDevice::GetPhy (void) const
+WifiNetDevice::GetPhy () const
 {
   return GetPhy (SINGLE_LINK_OP_ID);
 }
@@ -297,19 +297,19 @@ WifiNetDevice::GetPhy (uint8_t i) const
 }
 
 const std::vector<Ptr<WifiPhy>>&
-WifiNetDevice::GetPhys (void) const
+WifiNetDevice::GetPhys () const
 {
   return m_phys;
 }
 
 uint8_t
-WifiNetDevice::GetNPhys (void) const
+WifiNetDevice::GetNPhys () const
 {
   return GetPhys ().size ();
 }
 
 Ptr<WifiRemoteStationManager>
-WifiNetDevice::GetRemoteStationManager (void) const
+WifiNetDevice::GetRemoteStationManager () const
 {
   return GetRemoteStationManager (0);
 }
@@ -322,13 +322,13 @@ WifiNetDevice::GetRemoteStationManager (uint8_t linkId) const
 }
 
 const std::vector<Ptr<WifiRemoteStationManager>>&
-WifiNetDevice::GetRemoteStationManagers (void) const
+WifiNetDevice::GetRemoteStationManagers () const
 {
   return m_stationManagers;
 }
 
 uint8_t
-WifiNetDevice::GetNRemoteStationManagers (void) const
+WifiNetDevice::GetNRemoteStationManagers () const
 {
   return GetRemoteStationManagers ().size ();
 }
@@ -340,13 +340,13 @@ WifiNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-WifiNetDevice::GetIfIndex (void) const
+WifiNetDevice::GetIfIndex () const
 {
   return m_ifIndex;
 }
 
 Ptr<Channel>
-WifiNetDevice::GetChannel (void) const
+WifiNetDevice::GetChannel () const
 {
   for (uint8_t i = 1; i < GetNPhys (); i++)
     {
@@ -366,7 +366,7 @@ WifiNetDevice::SetAddress (Address address)
 }
 
 Address
-WifiNetDevice::GetAddress (void) const
+WifiNetDevice::GetAddress () const
 {
   return m_mac->GetAddress ();
 }
@@ -383,13 +383,13 @@ WifiNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-WifiNetDevice::GetMtu (void) const
+WifiNetDevice::GetMtu () const
 {
   return m_mtu;
 }
 
 bool
-WifiNetDevice::IsLinkUp (void) const
+WifiNetDevice::IsLinkUp () const
 {
   return !m_phys.empty () && m_linkUp;
 }
@@ -401,19 +401,19 @@ WifiNetDevice::AddLinkChangeCallback (Callback<void> callback)
 }
 
 bool
-WifiNetDevice::IsBroadcast (void) const
+WifiNetDevice::IsBroadcast () const
 {
   return true;
 }
 
 Address
-WifiNetDevice::GetBroadcast (void) const
+WifiNetDevice::GetBroadcast () const
 {
   return Mac48Address::GetBroadcast ();
 }
 
 bool
-WifiNetDevice::IsMulticast (void) const
+WifiNetDevice::IsMulticast () const
 {
   return true;
 }
@@ -430,13 +430,13 @@ Address WifiNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-WifiNetDevice::IsPointToPoint (void) const
+WifiNetDevice::IsPointToPoint () const
 {
   return false;
 }
 
 bool
-WifiNetDevice::IsBridge (void) const
+WifiNetDevice::IsBridge () const
 {
   return false;
 }
@@ -459,7 +459,7 @@ WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolN
 }
 
 Ptr<Node>
-WifiNetDevice::GetNode (void) const
+WifiNetDevice::GetNode () const
 {
   return m_node;
 }
@@ -472,7 +472,7 @@ WifiNetDevice::SetNode (const Ptr<Node> node)
 }
 
 bool
-WifiNetDevice::NeedsArp (void) const
+WifiNetDevice::NeedsArp () const
 {
   return true;
 }
@@ -526,14 +526,14 @@ WifiNetDevice::ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
 }
 
 void
-WifiNetDevice::LinkUp (void)
+WifiNetDevice::LinkUp ()
 {
   m_linkUp = true;
   m_linkChanges ();
 }
 
 void
-WifiNetDevice::LinkDown (void)
+WifiNetDevice::LinkDown ()
 {
   m_linkUp = false;
   m_linkChanges ();
@@ -567,7 +567,7 @@ WifiNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-WifiNetDevice::SupportsSendFrom (void) const
+WifiNetDevice::SupportsSendFrom () const
 {
   return m_mac->SupportsSendFrom ();
 }
@@ -579,7 +579,7 @@ WifiNetDevice::SetHtConfiguration (Ptr<HtConfiguration> htConfiguration)
 }
 
 Ptr<HtConfiguration>
-WifiNetDevice::GetHtConfiguration (void) const
+WifiNetDevice::GetHtConfiguration () const
 {
   return (m_standard >= WIFI_STANDARD_80211n ? m_htConfiguration : nullptr);
 }
@@ -591,7 +591,7 @@ WifiNetDevice::SetVhtConfiguration (Ptr<VhtConfiguration> vhtConfiguration)
 }
 
 Ptr<VhtConfiguration>
-WifiNetDevice::GetVhtConfiguration (void) const
+WifiNetDevice::GetVhtConfiguration () const
 {
   return (m_standard >= WIFI_STANDARD_80211ac ? m_vhtConfiguration : nullptr);
 }
@@ -603,7 +603,7 @@ WifiNetDevice::SetHeConfiguration (Ptr<HeConfiguration> heConfiguration)
 }
 
 Ptr<HeConfiguration>
-WifiNetDevice::GetHeConfiguration (void) const
+WifiNetDevice::GetHeConfiguration () const
 {
   return (m_standard >= WIFI_STANDARD_80211ax ? m_heConfiguration : nullptr);
 }
@@ -615,7 +615,7 @@ WifiNetDevice::SetEhtConfiguration (Ptr<EhtConfiguration> ehtConfiguration)
 }
 
 Ptr<EhtConfiguration>
-WifiNetDevice::GetEhtConfiguration (void) const
+WifiNetDevice::GetEhtConfiguration () const
 {
   return (m_standard >= WIFI_STANDARD_80211be ? m_ehtConfiguration : nullptr);
 }

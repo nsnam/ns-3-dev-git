@@ -31,7 +31,7 @@ public:
    * \brief Get the type ID of this class.
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Ipv4RawSocketImpl ();
 
@@ -47,24 +47,24 @@ public:
    * \brief Get socket type (NS3_SOCK_RAW)
    * \return socket type
    */
-  virtual enum Socket::SocketType GetSocketType (void) const;
+  virtual enum Socket::SocketType GetSocketType () const;
 
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
   virtual int Bind (const Address &address);
   virtual int Bind ();
   virtual int Bind6 ();
   virtual int GetSockName (Address &address) const;
   virtual int GetPeerName (Address &address) const;
-  virtual int Close (void);
-  virtual int ShutdownSend (void);
-  virtual int ShutdownRecv (void);
+  virtual int Close ();
+  virtual int ShutdownSend ();
+  virtual int ShutdownRecv ();
   virtual int Connect (const Address &address);
-  virtual int Listen (void);
-  virtual uint32_t GetTxAvailable (void) const;
+  virtual int Listen ();
+  virtual uint32_t GetTxAvailable () const;
   virtual int Send (Ptr<Packet> p, uint32_t flags);
   virtual int SendTo (Ptr<Packet> p, uint32_t flags,
                       const Address &toAddress);
-  virtual uint32_t GetRxAvailable (void) const;
+  virtual uint32_t GetRxAvailable () const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
                                 Address &fromAddress);
@@ -88,7 +88,7 @@ public:
   virtual bool GetAllowBroadcast () const;
 
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \struct Data

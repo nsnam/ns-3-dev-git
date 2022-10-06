@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("DynamicQueueLimits");
 NS_OBJECT_ENSURE_REGISTERED (DynamicQueueLimits);
 
 TypeId
-DynamicQueueLimits::GetTypeId (void)
+DynamicQueueLimits::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DynamicQueueLimits")
     .SetParent<Object> ()

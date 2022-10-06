@@ -101,7 +101,7 @@ LenaHarqTestCase::~LenaHarqTestCase ()
 }
 
 void
-LenaHarqTestCase::DoRun (void)
+LenaHarqTestCase::DoRun ()
 {
 
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (m_amcBer));

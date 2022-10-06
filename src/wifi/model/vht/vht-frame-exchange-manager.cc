@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("VhtFrameExchangeManager");
 NS_OBJECT_ENSURE_REGISTERED (VhtFrameExchangeManager);
 
 TypeId
-VhtFrameExchangeManager::GetTypeId (void)
+VhtFrameExchangeManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::VhtFrameExchangeManager")
     .SetParent<HtFrameExchangeManager> ()

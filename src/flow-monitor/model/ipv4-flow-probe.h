@@ -51,7 +51,7 @@ public:
 
   /// Register this type.
   /// \return The TypeId.
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /// \brief enumeration of possible reasons why a packet may be dropped
   enum DropReason
@@ -83,7 +83,7 @@ public:
 
 protected:
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /// Log a packet being sent

@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (LrWpanNetDevice);
 
 TypeId
-LrWpanNetDevice::GetTypeId (void)
+LrWpanNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanNetDevice")
     .SetParent<NetDevice> ()
@@ -90,7 +90,7 @@ LrWpanNetDevice::~LrWpanNetDevice ()
 
 
 void
-LrWpanNetDevice::DoDispose (void)
+LrWpanNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_mac->Dispose ();
@@ -106,7 +106,7 @@ LrWpanNetDevice::DoDispose (void)
 }
 
 void
-LrWpanNetDevice::DoInitialize (void)
+LrWpanNetDevice::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_phy->Initialize ();
@@ -116,7 +116,7 @@ LrWpanNetDevice::DoInitialize (void)
 
 
 void
-LrWpanNetDevice::CompleteConfig (void)
+LrWpanNetDevice::CompleteConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (!m_mac
@@ -182,21 +182,21 @@ LrWpanNetDevice::SetChannel (Ptr<SpectrumChannel> channel)
 }
 
 Ptr<LrWpanMac>
-LrWpanNetDevice::GetMac (void) const
+LrWpanNetDevice::GetMac () const
 {
   // NS_LOG_FUNCTION (this);
   return m_mac;
 }
 
 Ptr<LrWpanPhy>
-LrWpanNetDevice::GetPhy (void) const
+LrWpanNetDevice::GetPhy () const
 {
   NS_LOG_FUNCTION (this);
   return m_phy;
 }
 
 Ptr<LrWpanCsmaCa>
-LrWpanNetDevice::GetCsmaCa (void) const
+LrWpanNetDevice::GetCsmaCa () const
 {
   NS_LOG_FUNCTION (this);
   return m_csmaca;
@@ -209,21 +209,21 @@ LrWpanNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-LrWpanNetDevice::GetIfIndex (void) const
+LrWpanNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
 
 Ptr<Channel>
-LrWpanNetDevice::GetChannel (void) const
+LrWpanNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   return m_phy->GetChannel ();
 }
 
 void
-LrWpanNetDevice::LinkUp (void)
+LrWpanNetDevice::LinkUp ()
 {
   NS_LOG_FUNCTION (this);
   m_linkUp = true;
@@ -231,7 +231,7 @@ LrWpanNetDevice::LinkUp (void)
 }
 
 void
-LrWpanNetDevice::LinkDown (void)
+LrWpanNetDevice::LinkDown ()
 {
   NS_LOG_FUNCTION (this);
   m_linkUp = false;
@@ -239,7 +239,7 @@ LrWpanNetDevice::LinkDown (void)
 }
 
 Ptr<SpectrumChannel>
-LrWpanNetDevice::DoGetChannel (void) const
+LrWpanNetDevice::DoGetChannel () const
 {
   NS_LOG_FUNCTION (this);
   return m_phy->GetChannel ();
@@ -274,7 +274,7 @@ LrWpanNetDevice::SetAddress (Address address)
 }
 
 Address
-LrWpanNetDevice::GetAddress (void) const
+LrWpanNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -296,7 +296,7 @@ LrWpanNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-LrWpanNetDevice::GetMtu (void) const
+LrWpanNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   // Maximum payload size is: max psdu - frame control - seqno - addressing - security - fcs
@@ -307,7 +307,7 @@ LrWpanNetDevice::GetMtu (void) const
 }
 
 bool
-LrWpanNetDevice::IsLinkUp (void) const
+LrWpanNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_phy && m_linkUp;
@@ -321,14 +321,14 @@ LrWpanNetDevice::AddLinkChangeCallback (Callback<void> callback)
 }
 
 bool
-LrWpanNetDevice::IsBroadcast (void) const
+LrWpanNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 
 Address
-LrWpanNetDevice::GetBroadcast (void) const
+LrWpanNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -338,7 +338,7 @@ LrWpanNetDevice::GetBroadcast (void) const
 }
 
 bool
-LrWpanNetDevice::IsMulticast (void) const
+LrWpanNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
@@ -362,14 +362,14 @@ LrWpanNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-LrWpanNetDevice::IsBridge (void) const
+LrWpanNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool
-LrWpanNetDevice::IsPointToPoint (void) const
+LrWpanNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -428,7 +428,7 @@ LrWpanNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Addr
 }
 
 Ptr<Node>
-LrWpanNetDevice::GetNode (void) const
+LrWpanNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -443,7 +443,7 @@ LrWpanNetDevice::SetNode (Ptr<Node> node)
 }
 
 bool
-LrWpanNetDevice::NeedsArp (void) const
+LrWpanNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   return true;
@@ -484,7 +484,7 @@ LrWpanNetDevice::McpsDataIndication (McpsDataIndicationParams params, Ptr<Packet
 }
 
 bool
-LrWpanNetDevice::SupportsSendFrom (void) const
+LrWpanNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return false;

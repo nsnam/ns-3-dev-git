@@ -86,7 +86,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   // inherited from SpectrumErrorModel
   void StartRx (Ptr<const Packet> p);
   void EvaluateChunk (const SpectrumValue& sinr, Time duration);

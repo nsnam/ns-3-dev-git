@@ -160,7 +160,7 @@ InternetStackHelper::operator = (const InternetStackHelper &o)
 }
 
 void
-InternetStackHelper::Reset (void)
+InternetStackHelper::Reset ()
 {
   delete m_routing;
   m_routing = 0;
@@ -269,7 +269,7 @@ InternetStackHelper::Install (NodeContainer c) const
 }
 
 void
-InternetStackHelper::InstallAll (void) const
+InternetStackHelper::InstallAll () const
 {
   Install (NodeContainer::GetGlobal ());
 }

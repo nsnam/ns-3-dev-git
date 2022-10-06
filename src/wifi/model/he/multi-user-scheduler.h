@@ -53,7 +53,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   MultiUserScheduler ();
   virtual ~MultiUserScheduler ();
 
@@ -103,7 +103,7 @@ public:
    *
    * \return the information required to perform a DL MU transmission
    */
-  DlMuInfo& GetDlMuInfo (void);
+  DlMuInfo& GetDlMuInfo ();
 
   /**
    * Get the information required to solicit an UL MU transmission. Note
@@ -111,7 +111,7 @@ public:
    *
    * \return the information required to solicit an UL MU transmission
    */
-  UlMuInfo& GetUlMuInfo (void);
+  UlMuInfo& GetUlMuInfo ();
 
 protected:
   /**
@@ -119,7 +119,7 @@ protected:
    *
    * \return the station manager attached to the AP
    */
-  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager () const;
 
   /**
    * Get an MPDU containing the given Trigger Frame.
@@ -135,7 +135,7 @@ protected:
    *
    * \return the format of the last transmission
    */
-  TxFormat GetLastTxFormat (void) const;
+  TxFormat GetLastTxFormat () const;
 
   /**
    * Get the maximum size in bytes among the A-MPDUs containing QoS Null frames
@@ -150,9 +150,9 @@ protected:
    */
   uint32_t GetMaxSizeOfQosNullAmpdu (const CtrlTriggerHeader& trigger) const;
 
-  void DoDispose (void) override;
-  void NotifyNewAggregate (void) override;
-  void DoInitialize (void) override;
+  void DoDispose () override;
+  void NotifyNewAggregate () override;
+  void DoInitialize () override;
 
   Ptr<ApWifiMac> m_apMac;                //!< the AP wifi MAC
   Ptr<HeFrameExchangeManager> m_heFem;   //!< HE Frame Exchange Manager
@@ -174,35 +174,35 @@ private:
    * such as requesting channel access (if not requested already) and restarting
    * the channel access request timer.
    */
-  void AccessReqTimeout (void);
+  void AccessReqTimeout ();
 
   /**
    * Select the format of the next transmission.
    *
    * \return the format of the next transmission
    */
-  virtual TxFormat SelectTxFormat (void) = 0;
+  virtual TxFormat SelectTxFormat () = 0;
 
   /**
    * Compute the information required to perform a DL MU transmission.
    *
    * \return the information required to perform a DL MU transmission
    */
-  virtual DlMuInfo ComputeDlMuInfo (void) = 0;
+  virtual DlMuInfo ComputeDlMuInfo () = 0;
 
   /**
    * Prepare the information required to solicit an UL MU transmission.
    *
    * \return the information required to solicit an UL MU transmission
    */
-  virtual UlMuInfo ComputeUlMuInfo (void) = 0;
+  virtual UlMuInfo ComputeUlMuInfo () = 0;
 
   /**
    * Ensure that the Trigger Frame returned in case of UL MU transmission is
    * correct. Currently, this method sets the CS Required, the AP Tx Power and
    * the UL Target Receive Power subfields.
    */
-  void CheckTriggerFrame (void);
+  void CheckTriggerFrame ();
 
   TxFormat m_lastTxFormat {NO_TX};       ///< the format of last transmission
   DlMuInfo m_dlInfo;                     ///< information required to perform a DL MU transmission

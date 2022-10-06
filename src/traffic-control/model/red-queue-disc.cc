@@ -71,7 +71,7 @@ NS_LOG_COMPONENT_DEFINE ("RedQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (RedQueueDisc);
 
-TypeId RedQueueDisc::GetTypeId (void)
+TypeId RedQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RedQueueDisc")
     .SetParent<QueueDisc> ()
@@ -236,7 +236,7 @@ RedQueueDisc::~RedQueueDisc ()
 }
 
 void
-RedQueueDisc::DoDispose (void)
+RedQueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_uv = 0;
@@ -256,7 +256,7 @@ RedQueueDisc::SetAredAlpha (double alpha)
 }
 
 double
-RedQueueDisc::GetAredAlpha (void)
+RedQueueDisc::GetAredAlpha ()
 {
   NS_LOG_FUNCTION (this);
   return m_alpha;
@@ -275,7 +275,7 @@ RedQueueDisc::SetAredBeta (double beta)
 }
 
 double
-RedQueueDisc::GetAredBeta (void)
+RedQueueDisc::GetAredBeta ()
 {
   NS_LOG_FUNCTION (this);
   return m_beta;
@@ -294,7 +294,7 @@ RedQueueDisc::SetFengAdaptiveA (double a)
 }
 
 double
-RedQueueDisc::GetFengAdaptiveA (void)
+RedQueueDisc::GetFengAdaptiveA ()
 {
   NS_LOG_FUNCTION (this);
   return m_a;
@@ -313,7 +313,7 @@ RedQueueDisc::SetFengAdaptiveB (double b)
 }
 
 double
-RedQueueDisc::GetFengAdaptiveB (void)
+RedQueueDisc::GetFengAdaptiveB ()
 {
   NS_LOG_FUNCTION (this);
   return m_b;
@@ -450,7 +450,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
  * and didn't seem worth the trouble...
  */
 void
-RedQueueDisc::InitializeParams (void)
+RedQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Initializing RED params.");
@@ -711,7 +711,7 @@ RedQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 
 // Returns a probability using these function parameters for the DropEarly function
 double
-RedQueueDisc::CalculatePNew (void)
+RedQueueDisc::CalculatePNew ()
 {
   NS_LOG_FUNCTION (this);
   double p;
@@ -808,7 +808,7 @@ RedQueueDisc::ModifyP (double p, uint32_t size)
 }
 
 Ptr<QueueDiscItem>
-RedQueueDisc::DoDequeue (void)
+RedQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -835,7 +835,7 @@ RedQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-RedQueueDisc::DoPeek (void)
+RedQueueDisc::DoPeek ()
 {
   NS_LOG_FUNCTION (this);
   if (GetInternalQueue (0)->IsEmpty ())
@@ -853,7 +853,7 @@ RedQueueDisc::DoPeek (void)
 }
 
 bool
-RedQueueDisc::CheckConfig (void)
+RedQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)

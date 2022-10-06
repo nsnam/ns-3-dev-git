@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("IpcsClassifier");
 
 NS_OBJECT_ENSURE_REGISTERED (IpcsClassifier);
 
-TypeId IpcsClassifier::GetTypeId (void)
+TypeId IpcsClassifier::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::IpcsClassifier")
     .SetParent<Object> ()
@@ -45,11 +45,11 @@ TypeId IpcsClassifier::GetTypeId (void)
   return tid;
 }
 
-IpcsClassifier::IpcsClassifier (void)
+IpcsClassifier::IpcsClassifier ()
 {
 }
 
-IpcsClassifier::~IpcsClassifier (void)
+IpcsClassifier::~IpcsClassifier ()
 {
 }
 

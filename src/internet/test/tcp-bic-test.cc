@@ -53,7 +53,7 @@ public:
                        const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Update the TCP socket state.
@@ -65,7 +65,7 @@ private:
   /**
    * \brief Execute the test.
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
 
   uint32_t m_cWnd;        //!< Congestion window.
   uint32_t m_segmentSize; //!< Segment size.
@@ -212,12 +212,12 @@ public:
                        const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Execute the test.
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
 
   uint32_t m_cWnd;        //!< Congestion window.
   uint32_t m_segmentSize; //!< Segment size.

@@ -42,8 +42,8 @@ public:
    * @brief Get the type ID.
    * @returns the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * This method is used by Packet::AddHeader to store the header into the byte
@@ -52,7 +52,7 @@ public:
    *
    * @returns The expected size of the header.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * This method is used by Packet::AddHeader to store the header into the byte

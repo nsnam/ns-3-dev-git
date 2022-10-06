@@ -107,7 +107,7 @@ public:
    * conjunction with the Ptr template which would make calling Ref
    * unnecessary and dangerous.
    */
-  inline void Ref (void) const
+  inline void Ref () const
   {
     NS_ASSERT (m_count < std::numeric_limits<uint32_t>::max ());
     m_count++;
@@ -118,7 +118,7 @@ public:
    * conjunction with the Ptr template which would make calling Ref
    * unnecessary and dangerous.
    */
-  inline void Unref (void) const
+  inline void Unref () const
   {
     m_count--;
     if (m_count == 0)
@@ -133,7 +133,7 @@ public:
    *
    * \return The reference count.
    */
-  inline uint32_t GetReferenceCount (void) const
+  inline uint32_t GetReferenceCount () const
   {
     return m_count;
   }

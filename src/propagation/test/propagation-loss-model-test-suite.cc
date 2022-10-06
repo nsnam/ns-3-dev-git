@@ -53,7 +53,7 @@ public:
   virtual ~FriisPropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /// Test vector
   typedef struct {
@@ -77,7 +77,7 @@ FriisPropagationLossModelTestCase::~FriisPropagationLossModelTestCase ()
 }
 
 void
-FriisPropagationLossModelTestCase::DoRun (void)
+FriisPropagationLossModelTestCase::DoRun ()
 {
   // The ns-3 testing manual gives more background on the values selected
   // for this test.  First, set a few defaults.
@@ -158,7 +158,7 @@ public:
   virtual ~TwoRayGroundPropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /// Test vector
   typedef struct {
@@ -183,7 +183,7 @@ TwoRayGroundPropagationLossModelTestCase::~TwoRayGroundPropagationLossModelTestC
 }
 
 void
-TwoRayGroundPropagationLossModelTestCase::DoRun (void)
+TwoRayGroundPropagationLossModelTestCase::DoRun ()
 {
   // the test vectors have been determined for a wavelength of 0.125 m
   // which corresponds to a frequency of 2398339664.0 Hz in the vacuum
@@ -293,7 +293,7 @@ public:
   virtual ~LogDistancePropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /// Test vector
   typedef struct {
@@ -317,7 +317,7 @@ LogDistancePropagationLossModelTestCase::~LogDistancePropagationLossModelTestCas
 }
 
 void
-LogDistancePropagationLossModelTestCase::DoRun (void)
+LogDistancePropagationLossModelTestCase::DoRun ()
 {
   // reference loss at 2.4 GHz is 40.045997
   Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (40.045997));
@@ -387,7 +387,7 @@ public:
   virtual ~MatrixPropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 MatrixPropagationLossModelTestCase::MatrixPropagationLossModelTestCase ()
@@ -400,7 +400,7 @@ MatrixPropagationLossModelTestCase::~MatrixPropagationLossModelTestCase ()
 }
 
 void
-MatrixPropagationLossModelTestCase::DoRun (void)
+MatrixPropagationLossModelTestCase::DoRun ()
 {
   Ptr<MobilityModel> m[3];
   for (int i = 0; i < 3; ++i)
@@ -440,7 +440,7 @@ public:
   virtual ~RangePropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RangePropagationLossModelTestCase::RangePropagationLossModelTestCase ()
@@ -453,7 +453,7 @@ RangePropagationLossModelTestCase::~RangePropagationLossModelTestCase ()
 }
 
 void
-RangePropagationLossModelTestCase::DoRun (void)
+RangePropagationLossModelTestCase::DoRun ()
 {
   Config::SetDefault ("ns3::RangePropagationLossModel::MaxRange", DoubleValue (127.2));
   Ptr<MobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();

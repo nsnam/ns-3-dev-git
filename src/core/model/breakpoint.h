@@ -82,7 +82,7 @@ namespace ns3 {
  *
  * Normally you should not call this function directly.
  */
-void BreakpointFallback (void);
+void BreakpointFallback ();
 
 
 } // namespace ns3

@@ -667,7 +667,7 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   //MAC sublayer constants
   /**
    * The minimum number of octets added by the MAC sublayer to the PSDU.
@@ -712,15 +712,15 @@ public:
   /**
    * Default constructor.
    */
-  LrWpanMac (void);
-  virtual ~LrWpanMac (void);
+  LrWpanMac ();
+  virtual ~LrWpanMac ();
 
   /**
    * Check if the receiver will be enabled when the MAC is idle.
    *
    * \return true, if the receiver is enabled during idle periods, false otherwise
    */
-  bool GetRxOnWhenIdle (void);
+  bool GetRxOnWhenIdle ();
 
   /**
    * Set if the receiver should be enabled when the MAC is idle.
@@ -742,7 +742,7 @@ public:
    *
    * \return the short address
    */
-  Mac16Address GetShortAddress (void) const;
+  Mac16Address GetShortAddress () const;
 
   /**
    * Set the extended address of this MAC.
@@ -756,7 +756,7 @@ public:
    *
    * \return the extended address
    */
-  Mac64Address GetExtendedAddress (void) const;
+  Mac64Address GetExtendedAddress () const;
 
   /**
    * Set the PAN id used by this MAC.
@@ -770,21 +770,21 @@ public:
    *
    * \return the PAN id.
    */
-  uint16_t GetPanId (void) const;
+  uint16_t GetPanId () const;
 
   /**
    *  Get the coordinator short address currently associated to this device.
    *
    *  \return The coordinator short address
    */
-  Mac16Address GetCoordShortAddress (void) const;
+  Mac16Address GetCoordShortAddress () const;
 
   /**
    *  Get the coordinator extended address currently associated to this device.
    *
    *  \return The coordinator extended address
    */
-  Mac64Address GetCoordExtAddress (void) const;
+  Mac64Address GetCoordExtAddress () const;
 
   /**
    *  IEEE 802.15.4-2006, section 7.1.1.1
@@ -873,7 +873,7 @@ public:
    *
    * \return the PHY
    */
-  Ptr<LrWpanPhy> GetPhy (void);
+  Ptr<LrWpanPhy> GetPhy ();
 
   /**
    * Set the callback for the indication of an incoming data packet.
@@ -1042,7 +1042,7 @@ public:
    *
    * \return current association status
    */
-  LrWpanAssociationStatus GetAssociationStatus (void) const;
+  LrWpanAssociationStatus GetAssociationStatus () const;
 
   /**
    * Set the current association status.
@@ -1296,19 +1296,19 @@ public:
    *
    * \return the maximum number symbols to wait for an acknowledgment frame
    */
-  uint64_t GetMacAckWaitDuration (void) const;
+  uint64_t GetMacAckWaitDuration () const;
 
   /**
    * Get the macMaxFrameRetries attribute value.
    *
    * \return the maximum number of retries
    */
-  uint8_t GetMacMaxFrameRetries (void) const;
+  uint8_t GetMacMaxFrameRetries () const;
 
   /**
    * Print the number of elements in the packet transmit queue.
    */
-  void PrintTransmitQueueSize (void);
+  void PrintTransmitQueueSize ();
 
   /**
    * Set the macMaxFrameRetries attribute value.
@@ -1322,7 +1322,7 @@ public:
    *
    * \return True if m_txPkt (packet awaiting to be sent) destination is its coordinator
    */
-  bool isCoordDest (void);
+  bool isCoordDest ();
 
   /**
    * Check if the packet destination is its coordinator
@@ -1350,14 +1350,14 @@ public:
    *
    *\return packet number of symbols
    * */
-  uint64_t GetTxPacketSymbols (void);
+  uint64_t GetTxPacketSymbols ();
 
   /**
    * Check if the packet to transmit requires acknowledgment
    *
    *\return True if the Tx packet requires acknowledgment
    * */
-  bool isTxAckReq (void);
+  bool isTxAckReq ();
 
   /**
    * Print the Pending transaction list.
@@ -1393,8 +1393,8 @@ public:
 
 protected:
   // Inherited from Object.
-  virtual void DoInitialize (void);
-  virtual void DoDispose (void);
+  virtual void DoInitialize ();
+  virtual void DoDispose ();
 
 private:
 
@@ -1423,17 +1423,17 @@ private:
   /**
    * Called to send a single beacon frame.
    */
-  void SendOneBeacon (void);
+  void SendOneBeacon ();
 
   /**
    * Called to send an associate request command.
    */
-  void SendAssocRequestCommand (void);
+  void SendAssocRequestCommand ();
 
   /**
    * Used to send a data request command (i.e. Request the coordinator to send the association response)
    */
-  void SendDataRequestCommand (void);
+  void SendDataRequestCommand ();
 
   /**
     * Called to send an associate response command.
@@ -1445,32 +1445,32 @@ private:
   /**
    * Called after m_assocRespCmdWaitTime timeout while waiting for an association response command.
    */
-  void LostAssocRespCommand (void);
+  void LostAssocRespCommand ();
 
   /**
    * Called to send a beacon request command.
    */
-  void SendBeaconRequestCommand (void);
+  void SendBeaconRequestCommand ();
 
   /**
    * Called to end a MLME-START.request after changing the page and channel number.
    */
-  void EndStartRequest (void);
+  void EndStartRequest ();
 
   /**
    * Called at the end of the current channel scan (Active or Passive) for a given duration.
    */
-  void EndChannelScan (void);
+  void EndChannelScan ();
 
   /**
    * Called at the end of one ED channel scan.
    */
-  void EndChannelEnergyScan (void);
+  void EndChannelEnergyScan ();
 
   /**
    * Called to end an MLME-ASSOCIATE.request after changing the page and channel number.
    */
-  void EndAssociateRequest (void);
+  void EndAssociateRequest ();
 
   /**
    * Called to begin the Contention Free Period (CFP) in a
@@ -1500,12 +1500,12 @@ private:
    * Called after the end of an INCOMING superframe to start the moment a
    * device waits for a new incoming beacon.
    */
-  void AwaitBeacon (void);
+  void AwaitBeacon ();
 
   /**
    * Called if the device is unable to locate a beacon in the time set by MLME-SYNC.request.
    */
-  void BeaconSearchTimeout (void);
+  void BeaconSearchTimeout ();
 
   /**
    * Send an acknowledgment packet for the given sequence number.
@@ -1531,7 +1531,7 @@ private:
    * Handle an ACK timeout with a packet retransmission, if there are
    * retransmission left, or a packet drop.
    */
-  void AckWaitTimeout (void);
+  void AckWaitTimeout ();
 
   /**
    * After a successful transmission of a frame (beacon, data) or an ack frame reception,
@@ -1548,7 +1548,7 @@ private:
    *
    * \return true, if the packet should be retransmitted, false otherwise.
    */
-  bool PrepareRetransmission (void);
+  bool PrepareRetransmission ();
 
   /**
    * Adds a packet to the pending transactions list (Indirect transmissions).
@@ -1568,7 +1568,7 @@ private:
   /**
    * Purge expired transactions from the pending transactions list.
    */
-  void PurgeInd (void);
+  void PurgeInd ();
 
   /**
    * Remove an element from the pending transaction list.
@@ -1582,7 +1582,7 @@ private:
    * queue and the MAC is idle, pick the first one and initiate a packet
    * transmission.
    */
-  void CheckQueue (void);
+  void CheckQueue ();
 
   /**
    * Constructs a Superframe specification field from the local information,
@@ -1590,7 +1590,7 @@ private:
    *
    * \returns the Superframe specification field
    */
-  SuperframeField GetSuperframeField (void);
+  SuperframeField GetSuperframeField ();
 
   /**
    * Constructs the Guaranteed Time Slots (GTS) Fields from local information.
@@ -1598,7 +1598,7 @@ private:
    *
    * \returns the Guaranteed Time Slots (GTS) Fields
    */
-  GtsFields GetGtsFields (void);
+  GtsFields GetGtsFields ();
 
   /**
    * Constructs Pending Address Fields from the local information,
@@ -1606,7 +1606,7 @@ private:
    *
    * \returns the Pending Address Fields
    */
-  PendingAddrFields GetPendingAddrFields (void);
+  PendingAddrFields GetPendingAddrFields ();
 
   /**
    * The trace source is fired at the end of any Interframe Space (IFS).

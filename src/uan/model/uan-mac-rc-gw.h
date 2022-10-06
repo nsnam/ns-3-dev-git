@@ -64,13 +64,13 @@ public:
    * Register this type.
    * \return The type ID.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // Inherited methods
   virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual void Clear (void);
+  virtual void Clear ();
   int64_t AssignStreams (int64_t stream);
 
   /**
@@ -185,9 +185,9 @@ private:
   void ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode);
 
   /** Cycle through pending requests. */
-  void StartCycle (void);
+  void StartCycle ();
   /** End cycle by scheduling pending ACKs. */
-  void EndCycle (void);
+  void EndCycle ();
   /**
    * Send packet on PHY.
    *
@@ -196,7 +196,7 @@ private:
    */
   void SendPacket (Ptr<Packet> pkt, uint32_t rate);
   /** Set state to INCYCLE. */
-  void CycleStarted (void);
+  void CycleStarted ();
   /**
    * PHY receive error callback.
    *
@@ -222,7 +222,7 @@ private:
    *
    * \return Vector of expected propagation delays.
    */
-  std::vector<double>  GetExpPdk (void);
+  std::vector<double>  GetExpPdk ();
   /**
    * Throughput for \pname{a} reservations with framesize \pname{ld},
    * given expected delays exppdk.
@@ -281,7 +281,7 @@ private:
    *
    * \return Optimum number.
    */
-  uint32_t FindOptA (void);
+  uint32_t FindOptA ();
 protected:
   virtual void DoDispose ();
 

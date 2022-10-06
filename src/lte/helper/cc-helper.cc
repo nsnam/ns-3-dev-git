@@ -37,19 +37,19 @@ NS_LOG_COMPONENT_DEFINE ("CcHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (CcHelper);
 
-CcHelper::CcHelper (void)
+CcHelper::CcHelper ()
 {
   NS_LOG_FUNCTION (this);
   m_ccFactory.SetTypeId (ComponentCarrier::GetTypeId ());
 }
 
 void
-CcHelper::DoInitialize (void)
+CcHelper::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-TypeId CcHelper::GetTypeId (void)
+TypeId CcHelper::GetTypeId ()
 {
   static TypeId
     tid =
@@ -87,7 +87,7 @@ TypeId CcHelper::GetTypeId (void)
   return tid;
 }
 
-CcHelper::~CcHelper (void)
+CcHelper::~CcHelper ()
 {
   NS_LOG_FUNCTION (this);
 }

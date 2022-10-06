@@ -44,7 +44,7 @@ public:
 	BasicEnergyHarvesterTestCase ();
   ~BasicEnergyHarvesterTestCase ();
 
-  void DoRun (void);
+  void DoRun ();
 
   double m_timeS;     //!< Time, in seconds
   double m_tolerance; //!< Tolerance for energy estimation

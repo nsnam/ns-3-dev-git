@@ -57,12 +57,12 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   Emitter ();
 private:
-  void DoInitialize (void);
+  void DoInitialize ();
   /// Generate data.
-  void Emit (void);
+  void Emit ();
 
   TracedValue<Time> m_interval;  //!< Interarrival time between events.
   Time m_last;                   //!< Current interarrival time.
@@ -72,7 +72,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (Emitter);
 
 TypeId
-Emitter::GetTypeId (void)
+Emitter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Emitter")
     .SetParent<Object> ()
@@ -86,7 +86,7 @@ Emitter::GetTypeId (void)
   return tid;
 }
 
-Emitter::Emitter (void)
+Emitter::Emitter ()
   : m_interval (Seconds (0)),
     m_last (Seconds (0))
 {
@@ -94,13 +94,13 @@ Emitter::Emitter (void)
 }
 
 void
-Emitter::DoInitialize (void)
+Emitter::DoInitialize ()
 {
   Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Emit, this);
 }
 
 void
-Emitter::Emit (void)
+Emitter::Emit ()
 {
   NS_LOG_DEBUG ("Emitting at " << Simulator::Now ().As (Time::S));
   m_interval = Simulator::Now () - m_last;

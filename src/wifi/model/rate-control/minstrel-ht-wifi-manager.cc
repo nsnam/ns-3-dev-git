@@ -73,7 +73,7 @@ struct MinstrelHtWifiRemoteStation : MinstrelWifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (MinstrelHtWifiManager);
 
 TypeId
-MinstrelHtWifiManager::GetTypeId (void)
+MinstrelHtWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MinstrelHtWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -406,7 +406,7 @@ MinstrelHtWifiManager::AddMpduTxTime (uint8_t groupId, WifiMode mode, Time t)
 }
 
 WifiRemoteStation *
-MinstrelHtWifiManager::DoCreateStation (void) const
+MinstrelHtWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   MinstrelHtWifiRemoteStation *station = new MinstrelHtWifiRemoteStation ();
@@ -2009,7 +2009,7 @@ MinstrelHtWifiManager::GetHeDeviceMcsList () const
 }
 
 WifiModeList
-MinstrelHtWifiManager::GetVhtDeviceMcsList (void) const
+MinstrelHtWifiManager::GetVhtDeviceMcsList () const
 {
   WifiModeList vhtMcsList;
   for (const auto & mode : GetPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
@@ -2020,7 +2020,7 @@ MinstrelHtWifiManager::GetVhtDeviceMcsList (void) const
 }
 
 WifiModeList
-MinstrelHtWifiManager::GetHtDeviceMcsList (void) const
+MinstrelHtWifiManager::GetHtDeviceMcsList () const
 {
   WifiModeList htMcsList;
   for (const auto & mode : GetPhy ()->GetMcsList (WIFI_MOD_CLASS_HT))

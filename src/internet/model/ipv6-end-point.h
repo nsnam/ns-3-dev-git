@@ -131,7 +131,7 @@ public:
    *
    * \returns Pointer to interface.
    */
-  Ptr<NetDevice> GetBoundNetDevice (void);
+  Ptr<NetDevice> GetBoundNetDevice ();
 
   /**
    * \brief Set the reception callback.
@@ -189,7 +189,7 @@ public:
    * \brief Checks if the endpoint can receive packets.
    * \returns true if the endpoint can receive packets.
    */
-  bool IsRxEnabled (void);
+  bool IsRxEnabled ();
 
 private:
   /**

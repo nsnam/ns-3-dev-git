@@ -83,7 +83,7 @@ public:
    */
   TupleValue (const result_type &value);
 
-  Ptr<AttributeValue> Copy (void) const override;
+  Ptr<AttributeValue> Copy () const override;
   bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
   std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
 
@@ -94,7 +94,7 @@ public:
    * a tuple of Ptr<AV> where AV is a class derived from AttributeValue.
    * \return stored values as a std::tuple
    */
-  result_type Get (void) const;
+  result_type Get () const;
   /**
    * Set the stored values.
    */
@@ -104,7 +104,7 @@ public:
    * Get the attribute values as a tuple.
    * \return the attribute values as a tuple
    */
-  value_type GetValue (void) const;
+  value_type GetValue () const;
 
   /**
    * Set the given variable to the values stored by this TupleValue object.
@@ -161,7 +161,7 @@ public:
    *
    * \return the checkers for all tuple elements
    */
-  virtual const std::vector<Ptr<const AttributeChecker>>& GetCheckers (void) const = 0;
+  virtual const std::vector<Ptr<const AttributeChecker>>& GetCheckers () const = 0;
 };
 
 
@@ -229,7 +229,7 @@ TupleValue<Args...>::TupleValue (const result_type &value)
 
 template <class... Args>
 Ptr<AttributeValue>
-TupleValue<Args...>::Copy (void) const
+TupleValue<Args...>::Copy () const
 {
   return Create <TupleValue <Args...>> (Get ());
 }
@@ -311,7 +311,7 @@ TupleValue<Args...>::SerializeToString (Ptr<const AttributeChecker> checker) con
 
 template <class... Args>
 typename TupleValue<Args...>::result_type
-TupleValue<Args...>::Get (void) const
+TupleValue<Args...>::Get () const
 {
   return std::apply ([](Args... values)
                      {
@@ -333,7 +333,7 @@ TupleValue<Args...>::Set (const typename TupleValue<Args...>::result_type &value
 
 template <class... Args>
 typename TupleValue<Args...>::value_type
-TupleValue<Args...>::GetValue (void) const
+TupleValue<Args...>::GetValue () const
 {
   return m_value;
 }
@@ -373,7 +373,7 @@ public:
     : m_checkers {checkers...}
   {
   }
-  const std::vector<Ptr<const AttributeChecker>>& GetCheckers (void) const override
+  const std::vector<Ptr<const AttributeChecker>>& GetCheckers () const override
   {
     return m_checkers;
   }
@@ -391,19 +391,19 @@ public:
                        },
                        v->GetValue ());
   }
-  std::string GetValueTypeName (void) const override
+  std::string GetValueTypeName () const override
   {
     return "ns3::TupleValue";
   }
-  bool HasUnderlyingTypeInformation (void) const override
+  bool HasUnderlyingTypeInformation () const override
   {
     return false;
   }
-  std::string GetUnderlyingTypeInformation (void) const override
+  std::string GetUnderlyingTypeInformation () const override
   {
     return "";
   }
-  Ptr<AttributeValue> Create (void) const override
+  Ptr<AttributeValue> Create () const override
   {
     return ns3::Create<TupleValue<Args...>> ();
   }

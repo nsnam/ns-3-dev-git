@@ -22,7 +22,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketState);
 
 TypeId
-TcpSocketState::GetTypeId (void)
+TcpSocketState::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSocketState")
     .SetParent<Object> ()

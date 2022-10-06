@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("AcousticModemEnergyModel");
 NS_OBJECT_ENSURE_REGISTERED (AcousticModemEnergyModel);
 
 TypeId
-AcousticModemEnergyModel::GetTypeId (void)
+AcousticModemEnergyModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AcousticModemEnergyModel")
     .SetParent<DeviceEnergyModel> ()
@@ -94,7 +94,7 @@ AcousticModemEnergyModel::SetNode (Ptr<Node> node)
 }
 
 Ptr<Node>
-AcousticModemEnergyModel::GetNode (void) const
+AcousticModemEnergyModel::GetNode () const
 {
   return m_node;
 }
@@ -108,14 +108,14 @@ AcousticModemEnergyModel::SetEnergySource (Ptr<EnergySource> source)
 }
 
 double
-AcousticModemEnergyModel::GetTotalEnergyConsumption (void) const
+AcousticModemEnergyModel::GetTotalEnergyConsumption () const
 {
   NS_LOG_FUNCTION (this);
   return m_totalEnergyConsumption;
 }
 
 double
-AcousticModemEnergyModel::GetTxPowerW (void) const
+AcousticModemEnergyModel::GetTxPowerW () const
 {
   NS_LOG_FUNCTION (this);
   return m_txPowerW;
@@ -129,7 +129,7 @@ AcousticModemEnergyModel::SetTxPowerW (double txPowerW)
 }
 
 double
-AcousticModemEnergyModel::GetRxPowerW (void) const
+AcousticModemEnergyModel::GetRxPowerW () const
 {
   NS_LOG_FUNCTION (this);
   return m_rxPowerW;
@@ -143,7 +143,7 @@ AcousticModemEnergyModel::SetRxPowerW (double rxPowerW)
 }
 
 double
-AcousticModemEnergyModel::GetIdlePowerW (void) const
+AcousticModemEnergyModel::GetIdlePowerW () const
 {
   NS_LOG_FUNCTION (this);
   return m_idlePowerW;
@@ -157,7 +157,7 @@ AcousticModemEnergyModel::SetIdlePowerW (double idlePowerW)
 }
 
 double
-AcousticModemEnergyModel::GetSleepPowerW (void) const
+AcousticModemEnergyModel::GetSleepPowerW () const
 {
   NS_LOG_FUNCTION (this);
   return m_sleepPowerW;
@@ -171,7 +171,7 @@ AcousticModemEnergyModel::SetSleepPowerW (double sleepPowerW)
 }
 
 int
-AcousticModemEnergyModel::GetCurrentState (void) const
+AcousticModemEnergyModel::GetCurrentState () const
 {
   NS_LOG_FUNCTION (this);
   return m_currentState;
@@ -255,7 +255,7 @@ AcousticModemEnergyModel::ChangeState (int newState)
 }
 
 void
-AcousticModemEnergyModel::HandleEnergyDepletion (void)
+AcousticModemEnergyModel::HandleEnergyDepletion ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("AcousticModemEnergyModel:Energy is depleted at node #" <<
@@ -272,7 +272,7 @@ AcousticModemEnergyModel::HandleEnergyDepletion (void)
 }
 
 void
-AcousticModemEnergyModel::HandleEnergyRecharged (void)
+AcousticModemEnergyModel::HandleEnergyRecharged ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("AcousticModemEnergyModel:Energy is recharged at node #" <<
@@ -289,7 +289,7 @@ AcousticModemEnergyModel::HandleEnergyRecharged (void)
 }
 
 void
-AcousticModemEnergyModel::HandleEnergyChanged (void)
+AcousticModemEnergyModel::HandleEnergyChanged ()
 {
   NS_LOG_FUNCTION (this);
   //Not implemented
@@ -301,7 +301,7 @@ AcousticModemEnergyModel::HandleEnergyChanged (void)
  */
 
 void
-AcousticModemEnergyModel::DoDispose (void)
+AcousticModemEnergyModel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
@@ -310,7 +310,7 @@ AcousticModemEnergyModel::DoDispose (void)
 }
 
 double
-AcousticModemEnergyModel::DoGetCurrentA (void) const
+AcousticModemEnergyModel::DoGetCurrentA () const
 {
   NS_LOG_FUNCTION (this);
 

@@ -92,7 +92,7 @@ public:
    *
    * \return the QoS Info field in the MuEdcaParameterSet information element
    */
-  uint8_t GetQosInfo (void) const;
+  uint8_t GetQosInfo () const;
   /**
    * Get the AIFSN subfield of the ACI/AIFSN field in the MU AC Parameter Record
    * field corresponding to the given AC Index (<i>aci</i>).

@@ -44,7 +44,7 @@ EpcHelper::~EpcHelper ()
 }
 
 TypeId
-EpcHelper::GetTypeId (void)
+EpcHelper::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcHelper")
     .SetParent<Object> ()

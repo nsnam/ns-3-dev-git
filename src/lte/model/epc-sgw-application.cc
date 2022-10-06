@@ -62,7 +62,7 @@ EpcSgwApplication::DoDispose ()
 }
 
 TypeId
-EpcSgwApplication::GetTypeId (void)
+EpcSgwApplication::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcSgwApplication")
     .SetParent<Object> ()

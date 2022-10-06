@@ -60,7 +60,7 @@ SingleModelSpectrumChannel::DoDispose ()
 }
 
 TypeId
-SingleModelSpectrumChannel::GetTypeId (void)
+SingleModelSpectrumChannel::GetTypeId ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::SingleModelSpectrumChannel")
@@ -218,7 +218,7 @@ SingleModelSpectrumChannel::StartRx (Ptr<SpectrumSignalParameters> params, Ptr<S
 }
 
 std::size_t
-SingleModelSpectrumChannel::GetNDevices (void) const
+SingleModelSpectrumChannel::GetNDevices () const
 {
   NS_LOG_FUNCTION (this);
   return m_phyList.size ();

@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiTxCurrentModel");
 NS_OBJECT_ENSURE_REGISTERED (WifiTxCurrentModel);
 
 TypeId
-WifiTxCurrentModel::GetTypeId (void)
+WifiTxCurrentModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiTxCurrentModel")
     .SetParent<Object> ()
@@ -50,7 +50,7 @@ WifiTxCurrentModel::~WifiTxCurrentModel()
 NS_OBJECT_ENSURE_REGISTERED (LinearWifiTxCurrentModel);
 
 TypeId
-LinearWifiTxCurrentModel::GetTypeId (void)
+LinearWifiTxCurrentModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LinearWifiTxCurrentModel")
     .SetParent<WifiTxCurrentModel> ()

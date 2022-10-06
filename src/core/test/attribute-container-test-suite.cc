@@ -80,7 +80,7 @@ public:
    *
    * \return the vector of ints
    */
-  std::vector<int> GetIntVec (void) const;
+  std::vector<int> GetIntVec () const;
 
   /**
    * \brief Stream insertion operator.
@@ -152,7 +152,7 @@ AttributeContainerObject::SetIntVec (std::vector<int> vec)
 }
 
 std::vector<int>
-AttributeContainerObject::GetIntVec (void) const
+AttributeContainerObject::GetIntVec () const
 {
   return m_intvec;
 }
@@ -305,7 +305,7 @@ public:
   virtual ~AttributeContainerSerializationTestCase () {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 AttributeContainerSerializationTestCase::AttributeContainerSerializationTestCase ()
@@ -315,7 +315,7 @@ AttributeContainerSerializationTestCase::AttributeContainerSerializationTestCase
 }
 
 void
-AttributeContainerSerializationTestCase::DoRun (void)
+AttributeContainerSerializationTestCase::DoRun ()
 {
   {
     // notice embedded spaces
@@ -395,7 +395,7 @@ public:
   virtual ~AttributeContainerSetGetTestCase () {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 AttributeContainerSetGetTestCase::AttributeContainerSetGetTestCase ()
@@ -405,7 +405,7 @@ AttributeContainerSetGetTestCase::AttributeContainerSetGetTestCase ()
 }
 
 void
-AttributeContainerSetGetTestCase::DoRun (void)
+AttributeContainerSetGetTestCase::DoRun ()
 {
   Ptr<AttributeContainerObject> obj = CreateObject<AttributeContainerObject> ();
   {

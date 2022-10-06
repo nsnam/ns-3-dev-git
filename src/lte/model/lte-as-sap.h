@@ -72,7 +72,7 @@ public:
    * attempt to connect at the earliest possible time (e.g. after it camps to a
    * suitable cell).
    */
-  virtual void Connect (void) = 0;
+  virtual void Connect () = 0;
 
   /**
    * \brief Send a data packet.
@@ -156,7 +156,7 @@ public:
   virtual void SetCsgWhiteList (uint32_t csgId);
   virtual void StartCellSelection (uint32_t dlEarfcn);
   virtual void ForceCampedOnEnb (uint16_t cellId, uint32_t dlEarfcn);
-  virtual void Connect (void);
+  virtual void Connect ();
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
 

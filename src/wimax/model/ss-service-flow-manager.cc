@@ -55,13 +55,13 @@ SsServiceFlowManager::SsServiceFlowManager (Ptr<SubscriberStationNetDevice> devi
 {
 }
 
-SsServiceFlowManager::~SsServiceFlowManager (void)
+SsServiceFlowManager::~SsServiceFlowManager ()
 {
 }
 
 /* static */
 TypeId
-SsServiceFlowManager::GetTypeId (void)
+SsServiceFlowManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SsServiceFlowManager")
     .SetParent<ServiceFlowManager> ()
@@ -72,7 +72,7 @@ SsServiceFlowManager::GetTypeId (void)
 }
 
 void
-SsServiceFlowManager::DoDispose (void)
+SsServiceFlowManager::DoDispose ()
 {
   ServiceFlowManager::DoDispose ();
 }
@@ -84,19 +84,19 @@ SsServiceFlowManager::SetMaxDsaReqRetries (uint8_t maxDsaReqRetries)
 }
 
 uint8_t
-SsServiceFlowManager::GetMaxDsaReqRetries (void) const
+SsServiceFlowManager::GetMaxDsaReqRetries () const
 {
   return m_maxDsaReqRetries;
 }
 
 EventId
-SsServiceFlowManager::GetDsaRspTimeoutEvent (void) const
+SsServiceFlowManager::GetDsaRspTimeoutEvent () const
 {
   return m_dsaRspTimeoutEvent;
 }
 
 EventId
-SsServiceFlowManager::GetDsaAckTimeoutEvent (void) const
+SsServiceFlowManager::GetDsaAckTimeoutEvent () const
 {
   return m_dsaAckTimeoutEvent;
 }
@@ -117,7 +117,7 @@ SsServiceFlowManager::AddServiceFlow (ServiceFlow *serviceFlow)
 
 
 void
-SsServiceFlowManager::InitiateServiceFlows (void)
+SsServiceFlowManager::InitiateServiceFlows ()
 {
   ServiceFlow *serviceFlow = GetNextServiceFlowToAllocate ();
   NS_ASSERT_MSG (serviceFlow != 0,"Error while initiating a new service flow: All service flows have been initiated");
@@ -140,7 +140,7 @@ SsServiceFlowManager::CreateDsaReq (const ServiceFlow *serviceFlow)
 }
 
 Ptr<Packet>
-SsServiceFlowManager::CreateDsaAck (void)
+SsServiceFlowManager::CreateDsaAck ()
 {
   DsaAck dsaAck;
   dsaAck.SetTransactionId (m_dsaReq.GetTransactionId ());

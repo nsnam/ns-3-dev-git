@@ -69,7 +69,7 @@ Ssid::IsEqual (const Ssid& o) const
 }
 
 bool
-Ssid::IsBroadcast (void) const
+Ssid::IsBroadcast () const
 {
   if (m_ssid[0] == 0)
     {
@@ -79,7 +79,7 @@ Ssid::IsBroadcast (void) const
 }
 
 char *
-Ssid::PeekString (void) const
+Ssid::PeekString () const
 {
   //It is safe to return a pointer to the buffer because it is
   //guaranteed to be zero-terminated.

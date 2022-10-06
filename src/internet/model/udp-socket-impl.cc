@@ -53,7 +53,7 @@ static const uint32_t MAX_IPV4_UDP_DATAGRAM_SIZE = 65507; //!< Maximum UDP datag
 
 // Add attributes generic to all UdpSockets to base class UdpSocket
 TypeId
-UdpSocketImpl::GetTypeId (void)
+UdpSocketImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpSocketImpl")
     .SetParent<UdpSocket> ()
@@ -150,34 +150,34 @@ UdpSocketImpl::SetUdp (Ptr<UdpL4Protocol> udp)
 
 
 enum Socket::SocketErrno
-UdpSocketImpl::GetErrno (void) const
+UdpSocketImpl::GetErrno () const
 {
   NS_LOG_FUNCTION (this);
   return m_errno;
 }
 
 enum Socket::SocketType
-UdpSocketImpl::GetSocketType (void) const
+UdpSocketImpl::GetSocketType () const
 {
   return NS3_SOCK_DGRAM;
 }
 
 Ptr<Node>
-UdpSocketImpl::GetNode (void) const
+UdpSocketImpl::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
 }
 
 void
-UdpSocketImpl::Destroy (void)
+UdpSocketImpl::Destroy ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint = 0;
 }
 
 void
-UdpSocketImpl::Destroy6 (void)
+UdpSocketImpl::Destroy6 ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = 0;
@@ -185,7 +185,7 @@ UdpSocketImpl::Destroy6 (void)
 
 /* Deallocate the end point and cancel all the timers */
 void
-UdpSocketImpl::DeallocateEndPoint (void)
+UdpSocketImpl::DeallocateEndPoint ()
 {
   if (m_endPoint != 0)
     {
@@ -203,7 +203,7 @@ UdpSocketImpl::DeallocateEndPoint (void)
 
 
 int
-UdpSocketImpl::FinishBind (void)
+UdpSocketImpl::FinishBind ()
 {
   NS_LOG_FUNCTION (this);
   bool done = false;
@@ -229,7 +229,7 @@ UdpSocketImpl::FinishBind (void)
 }
 
 int
-UdpSocketImpl::Bind (void)
+UdpSocketImpl::Bind ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint = m_udp->Allocate ();
@@ -241,7 +241,7 @@ UdpSocketImpl::Bind (void)
 }
 
 int
-UdpSocketImpl::Bind6 (void)
+UdpSocketImpl::Bind6 ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = m_udp->Allocate6 ();
@@ -353,7 +353,7 @@ UdpSocketImpl::Bind (const Address &address)
 }
 
 int
-UdpSocketImpl::ShutdownSend (void)
+UdpSocketImpl::ShutdownSend ()
 {
   NS_LOG_FUNCTION (this);
   m_shutdownSend = true;
@@ -361,7 +361,7 @@ UdpSocketImpl::ShutdownSend (void)
 }
 
 int
-UdpSocketImpl::ShutdownRecv (void)
+UdpSocketImpl::ShutdownRecv ()
 {
   NS_LOG_FUNCTION (this);
   m_shutdownRecv = true;
@@ -377,7 +377,7 @@ UdpSocketImpl::ShutdownRecv (void)
 }
 
 int
-UdpSocketImpl::Close (void)
+UdpSocketImpl::Close ()
 {
   NS_LOG_FUNCTION (this);
   if (m_shutdownRecv == true && m_shutdownSend == true)
@@ -423,7 +423,7 @@ UdpSocketImpl::Connect (const Address & address)
 }
 
 int
-UdpSocketImpl::Listen (void)
+UdpSocketImpl::Listen ()
 {
   m_errno = Socket::ERROR_OPNOTSUPP;
   return -1;
@@ -789,7 +789,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
 // size of underlying link; we are not checking that now.
 // \todo Check MTU size of underlying link
 uint32_t
-UdpSocketImpl::GetTxAvailable (void) const
+UdpSocketImpl::GetTxAvailable () const
 {
   NS_LOG_FUNCTION (this);
   // No finite send buffer is modelled, but we must respect
@@ -820,7 +820,7 @@ UdpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 }
 
 uint32_t
-UdpSocketImpl::GetRxAvailable (void) const
+UdpSocketImpl::GetRxAvailable () const
 {
   NS_LOG_FUNCTION (this);
   // We separately maintain this state to avoid walking the queue
@@ -1146,7 +1146,7 @@ UdpSocketImpl::SetRcvBufSize (uint32_t size)
 }
 
 uint32_t
-UdpSocketImpl::GetRcvBufSize (void) const
+UdpSocketImpl::GetRcvBufSize () const
 {
   return m_rcvBufSize;
 }
@@ -1158,7 +1158,7 @@ UdpSocketImpl::SetIpMulticastTtl (uint8_t ipTtl)
 }
 
 uint8_t
-UdpSocketImpl::GetIpMulticastTtl (void) const
+UdpSocketImpl::GetIpMulticastTtl () const
 {
   return m_ipMulticastTtl;
 }
@@ -1170,7 +1170,7 @@ UdpSocketImpl::SetIpMulticastIf (int32_t ipIf)
 }
 
 int32_t
-UdpSocketImpl::GetIpMulticastIf (void) const
+UdpSocketImpl::GetIpMulticastIf () const
 {
   return m_ipMulticastIf;
 }
@@ -1182,7 +1182,7 @@ UdpSocketImpl::SetIpMulticastLoop (bool loop)
 }
 
 bool
-UdpSocketImpl::GetIpMulticastLoop (void) const
+UdpSocketImpl::GetIpMulticastLoop () const
 {
   return m_ipMulticastLoop;
 }
@@ -1193,7 +1193,7 @@ UdpSocketImpl::SetMtuDiscover (bool discover)
   m_mtuDiscover = discover;
 }
 bool
-UdpSocketImpl::GetMtuDiscover (void) const
+UdpSocketImpl::GetMtuDiscover () const
 {
   return m_mtuDiscover;
 }

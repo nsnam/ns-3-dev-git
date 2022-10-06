@@ -49,7 +49,7 @@ MgtProbeRequestHeader::SetSsid (Ssid&& ssid)
 }
 
 const Ssid&
-MgtProbeRequestHeader::GetSsid (void) const
+MgtProbeRequestHeader::GetSsid () const
 {
   return m_ssid;
 }
@@ -79,7 +79,7 @@ MgtProbeRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedC
 }
 
 const std::optional<ExtendedCapabilities>&
-MgtProbeRequestHeader::GetExtendedCapabilities (void) const
+MgtProbeRequestHeader::GetExtendedCapabilities () const
 {
   return m_extendedCapability;
 }
@@ -97,7 +97,7 @@ MgtProbeRequestHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
 }
 
 const std::optional<HtCapabilities>&
-MgtProbeRequestHeader::GetHtCapabilities (void) const
+MgtProbeRequestHeader::GetHtCapabilities () const
 {
   return m_htCapability;
 }
@@ -115,7 +115,7 @@ MgtProbeRequestHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
 }
 
 const std::optional<VhtCapabilities>&
-MgtProbeRequestHeader::GetVhtCapabilities (void) const
+MgtProbeRequestHeader::GetVhtCapabilities () const
 {
   return m_vhtCapability;
 }
@@ -133,7 +133,7 @@ MgtProbeRequestHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
 }
 
 const std::optional<HeCapabilities>&
-MgtProbeRequestHeader::GetHeCapabilities (void) const
+MgtProbeRequestHeader::GetHeCapabilities () const
 {
   return m_heCapability;
 }
@@ -151,19 +151,19 @@ MgtProbeRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
 }
 
 const std::optional<EhtCapabilities>&
-MgtProbeRequestHeader::GetEhtCapabilities (void) const
+MgtProbeRequestHeader::GetEhtCapabilities () const
 {
   return m_ehtCapability;
 }
 
 const SupportedRates&
-MgtProbeRequestHeader::GetSupportedRates (void) const
+MgtProbeRequestHeader::GetSupportedRates () const
 {
   return m_rates;
 }
 
 uint32_t
-MgtProbeRequestHeader::GetSerializedSize (void) const
+MgtProbeRequestHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += m_ssid.GetSerializedSize ();
@@ -178,7 +178,7 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
 }
 
 TypeId
-MgtProbeRequestHeader::GetTypeId (void)
+MgtProbeRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtProbeRequestHeader")
     .SetParent<Header> ()
@@ -189,7 +189,7 @@ MgtProbeRequestHeader::GetTypeId (void)
 }
 
 TypeId
-MgtProbeRequestHeader::GetInstanceTypeId (void) const
+MgtProbeRequestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -257,19 +257,19 @@ MgtProbeResponseHeader::GetTimestamp ()
 }
 
 const Ssid&
-MgtProbeResponseHeader::GetSsid (void) const
+MgtProbeResponseHeader::GetSsid () const
 {
   return m_ssid;
 }
 
 uint64_t
-MgtProbeResponseHeader::GetBeaconIntervalUs (void) const
+MgtProbeResponseHeader::GetBeaconIntervalUs () const
 {
   return m_beaconInterval;
 }
 
 const SupportedRates&
-MgtProbeResponseHeader::GetSupportedRates (void) const
+MgtProbeResponseHeader::GetSupportedRates () const
 {
   return m_rates;
 }
@@ -287,7 +287,7 @@ MgtProbeResponseHeader::SetCapabilities (CapabilityInformation&& capabilities)
 }
 
 const CapabilityInformation&
-MgtProbeResponseHeader::GetCapabilities (void) const
+MgtProbeResponseHeader::GetCapabilities () const
 {
   return m_capability;
 }
@@ -305,7 +305,7 @@ MgtProbeResponseHeader::SetExtendedCapabilities (ExtendedCapabilities&& extended
 }
 
 const std::optional<ExtendedCapabilities>&
-MgtProbeResponseHeader::GetExtendedCapabilities (void) const
+MgtProbeResponseHeader::GetExtendedCapabilities () const
 {
   return m_extendedCapability;
 }
@@ -323,7 +323,7 @@ MgtProbeResponseHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
 }
 
 const std::optional<HtCapabilities>&
-MgtProbeResponseHeader::GetHtCapabilities (void) const
+MgtProbeResponseHeader::GetHtCapabilities () const
 {
   return m_htCapability;
 }
@@ -341,7 +341,7 @@ MgtProbeResponseHeader::SetHtOperation (HtOperation&& htOperation)
 }
 
 const std::optional<HtOperation>&
-MgtProbeResponseHeader::GetHtOperation (void) const
+MgtProbeResponseHeader::GetHtOperation () const
 {
   return m_htOperation;
 }
@@ -359,7 +359,7 @@ MgtProbeResponseHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
 }
 
 const std::optional<VhtCapabilities>&
-MgtProbeResponseHeader::GetVhtCapabilities (void) const
+MgtProbeResponseHeader::GetVhtCapabilities () const
 {
   return m_vhtCapability;
 }
@@ -377,7 +377,7 @@ MgtProbeResponseHeader::SetVhtOperation (VhtOperation&& vhtOperation)
 }
 
 const std::optional<VhtOperation>&
-MgtProbeResponseHeader::GetVhtOperation (void) const
+MgtProbeResponseHeader::GetVhtOperation () const
 {
   return m_vhtOperation;
 }
@@ -395,7 +395,7 @@ MgtProbeResponseHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
 }
 
 const std::optional<HeCapabilities>&
-MgtProbeResponseHeader::GetHeCapabilities (void) const
+MgtProbeResponseHeader::GetHeCapabilities () const
 {
   return m_heCapability;
 }
@@ -413,7 +413,7 @@ MgtProbeResponseHeader::SetHeOperation (HeOperation&& heOperation)
 }
 
 const std::optional<HeOperation>&
-MgtProbeResponseHeader::GetHeOperation (void) const
+MgtProbeResponseHeader::GetHeOperation () const
 {
   return m_heOperation;
 }
@@ -431,7 +431,7 @@ MgtProbeResponseHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
 }
 
 const std::optional<EhtCapabilities>&
-MgtProbeResponseHeader::GetEhtCapabilities (void) const
+MgtProbeResponseHeader::GetEhtCapabilities () const
 {
   return m_ehtCapability;
 }
@@ -479,7 +479,7 @@ MgtProbeResponseHeader::SetDsssParameterSet (DsssParameterSet&& dsssParameterSet
 }
 
 const std::optional<DsssParameterSet>&
-MgtProbeResponseHeader::GetDsssParameterSet (void) const
+MgtProbeResponseHeader::GetDsssParameterSet () const
 {
   return m_dsssParameterSet;
 }
@@ -497,7 +497,7 @@ MgtProbeResponseHeader::SetErpInformation (ErpInformation&& erpInformation)
 }
 
 const std::optional<ErpInformation>&
-MgtProbeResponseHeader::GetErpInformation (void) const
+MgtProbeResponseHeader::GetErpInformation () const
 {
   return m_erpInformation;
 }
@@ -551,31 +551,31 @@ MgtProbeResponseHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElement
 }
 
 const std::optional<EdcaParameterSet>&
-MgtProbeResponseHeader::GetEdcaParameterSet (void) const
+MgtProbeResponseHeader::GetEdcaParameterSet () const
 {
   return m_edcaParameterSet;
 }
 
 const std::optional<MuEdcaParameterSet>&
-MgtProbeResponseHeader::GetMuEdcaParameterSet (void) const
+MgtProbeResponseHeader::GetMuEdcaParameterSet () const
 {
   return m_muEdcaParameterSet;
 }
 
 const std::optional<ReducedNeighborReport>&
-MgtProbeResponseHeader::GetReducedNeighborReport (void) const
+MgtProbeResponseHeader::GetReducedNeighborReport () const
 {
   return m_reducedNeighborReport;
 }
 
 const std::optional<MultiLinkElement>&
-MgtProbeResponseHeader::GetMultiLinkElement (void) const
+MgtProbeResponseHeader::GetMultiLinkElement () const
 {
   return m_multiLinkElement;
 }
 
 TypeId
-MgtProbeResponseHeader::GetTypeId (void)
+MgtProbeResponseHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtProbeResponseHeader")
     .SetParent<Header> ()
@@ -586,13 +586,13 @@ MgtProbeResponseHeader::GetTypeId (void)
 }
 
 TypeId
-MgtProbeResponseHeader::GetInstanceTypeId (void) const
+MgtProbeResponseHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-MgtProbeResponseHeader::GetSerializedSize (void) const
+MgtProbeResponseHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 8; //timestamp
@@ -698,7 +698,7 @@ NS_OBJECT_ENSURE_REGISTERED (MgtBeaconHeader);
 
 /* static */
 TypeId
-MgtBeaconHeader::GetTypeId (void)
+MgtBeaconHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtBeaconHeader")
     .SetParent<MgtProbeResponseHeader> ()
@@ -767,7 +767,7 @@ MgtAssocRequestHeader::SetCapabilities (CapabilityInformation&& capabilities)
 }
 
 const CapabilityInformation&
-MgtAssocRequestHeader::GetCapabilities (void) const
+MgtAssocRequestHeader::GetCapabilities () const
 {
   return m_capability;
 }
@@ -785,7 +785,7 @@ MgtAssocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedC
 }
 
 const std::optional<ExtendedCapabilities>&
-MgtAssocRequestHeader::GetExtendedCapabilities (void) const
+MgtAssocRequestHeader::GetExtendedCapabilities () const
 {
   return m_extendedCapability;
 }
@@ -803,7 +803,7 @@ MgtAssocRequestHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
 }
 
 const std::optional<HtCapabilities>&
-MgtAssocRequestHeader::GetHtCapabilities (void) const
+MgtAssocRequestHeader::GetHtCapabilities () const
 {
   return m_htCapability;
 }
@@ -821,7 +821,7 @@ MgtAssocRequestHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
 }
 
 const std::optional<VhtCapabilities>&
-MgtAssocRequestHeader::GetVhtCapabilities (void) const
+MgtAssocRequestHeader::GetVhtCapabilities () const
 {
   return m_vhtCapability;
 }
@@ -839,7 +839,7 @@ MgtAssocRequestHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
 }
 
 const std::optional<HeCapabilities>&
-MgtAssocRequestHeader::GetHeCapabilities (void) const
+MgtAssocRequestHeader::GetHeCapabilities () const
 {
   return m_heCapability;
 }
@@ -857,7 +857,7 @@ MgtAssocRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
 }
 
 const std::optional<EhtCapabilities>&
-MgtAssocRequestHeader::GetEhtCapabilities (void) const
+MgtAssocRequestHeader::GetEhtCapabilities () const
 {
   return m_ehtCapability;
 }
@@ -875,31 +875,31 @@ MgtAssocRequestHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElement)
 }
 
 const std::optional<MultiLinkElement>&
-MgtAssocRequestHeader::GetMultiLinkElement (void) const
+MgtAssocRequestHeader::GetMultiLinkElement () const
 {
   return m_multiLinkElement;
 }
 
 const Ssid&
-MgtAssocRequestHeader::GetSsid (void) const
+MgtAssocRequestHeader::GetSsid () const
 {
   return m_ssid;
 }
 
 const SupportedRates&
-MgtAssocRequestHeader::GetSupportedRates (void) const
+MgtAssocRequestHeader::GetSupportedRates () const
 {
   return m_rates;
 }
 
 uint16_t
-MgtAssocRequestHeader::GetListenInterval (void) const
+MgtAssocRequestHeader::GetListenInterval () const
 {
   return m_listenInterval;
 }
 
 TypeId
-MgtAssocRequestHeader::GetTypeId (void)
+MgtAssocRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtAssocRequestHeader")
     .SetParent<Header> ()
@@ -910,13 +910,13 @@ MgtAssocRequestHeader::GetTypeId (void)
 }
 
 TypeId
-MgtAssocRequestHeader::GetInstanceTypeId (void) const
+MgtAssocRequestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-MgtAssocRequestHeader::GetSerializedSize (void) const
+MgtAssocRequestHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += m_capability.GetSerializedSize ();
@@ -1040,7 +1040,7 @@ MgtReassocRequestHeader::SetCapabilities (CapabilityInformation&& capabilities)
 }
 
 const CapabilityInformation&
-MgtReassocRequestHeader::GetCapabilities (void) const
+MgtReassocRequestHeader::GetCapabilities () const
 {
   return m_capability;
 }
@@ -1058,7 +1058,7 @@ MgtReassocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extende
 }
 
 const std::optional<ExtendedCapabilities>&
-MgtReassocRequestHeader::GetExtendedCapabilities (void) const
+MgtReassocRequestHeader::GetExtendedCapabilities () const
 {
   return m_extendedCapability;
 }
@@ -1076,7 +1076,7 @@ MgtReassocRequestHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
 }
 
 const std::optional<HtCapabilities>&
-MgtReassocRequestHeader::GetHtCapabilities (void) const
+MgtReassocRequestHeader::GetHtCapabilities () const
 {
   return m_htCapability;
 }
@@ -1094,7 +1094,7 @@ MgtReassocRequestHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
 }
 
 const std::optional<VhtCapabilities>&
-MgtReassocRequestHeader::GetVhtCapabilities (void) const
+MgtReassocRequestHeader::GetVhtCapabilities () const
 {
   return m_vhtCapability;
 }
@@ -1112,7 +1112,7 @@ MgtReassocRequestHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
 }
 
 const std::optional<HeCapabilities>&
-MgtReassocRequestHeader::GetHeCapabilities (void) const
+MgtReassocRequestHeader::GetHeCapabilities () const
 {
   return m_heCapability;
 }
@@ -1130,7 +1130,7 @@ MgtReassocRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
 }
 
 const std::optional<EhtCapabilities>&
-MgtReassocRequestHeader::GetEhtCapabilities (void) const
+MgtReassocRequestHeader::GetEhtCapabilities () const
 {
   return m_ehtCapability;
 }
@@ -1148,25 +1148,25 @@ MgtReassocRequestHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElemen
 }
 
 const std::optional<MultiLinkElement>&
-MgtReassocRequestHeader::GetMultiLinkElement (void) const
+MgtReassocRequestHeader::GetMultiLinkElement () const
 {
   return m_multiLinkElement;
 }
 
 const Ssid&
-MgtReassocRequestHeader::GetSsid (void) const
+MgtReassocRequestHeader::GetSsid () const
 {
   return m_ssid;
 }
 
 const SupportedRates&
-MgtReassocRequestHeader::GetSupportedRates (void) const
+MgtReassocRequestHeader::GetSupportedRates () const
 {
   return m_rates;
 }
 
 uint16_t
-MgtReassocRequestHeader::GetListenInterval (void) const
+MgtReassocRequestHeader::GetListenInterval () const
 {
   return m_listenInterval;
 }
@@ -1178,7 +1178,7 @@ MgtReassocRequestHeader::SetCurrentApAddress (Mac48Address currentApAddr)
 }
 
 TypeId
-MgtReassocRequestHeader::GetTypeId (void)
+MgtReassocRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtReassocRequestHeader")
     .SetParent<Header> ()
@@ -1189,13 +1189,13 @@ MgtReassocRequestHeader::GetTypeId (void)
 }
 
 TypeId
-MgtReassocRequestHeader::GetInstanceTypeId (void) const
+MgtReassocRequestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-MgtReassocRequestHeader::GetSerializedSize (void) const
+MgtReassocRequestHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += m_capability.GetSerializedSize ();
@@ -1281,13 +1281,13 @@ MgtAssocResponseHeader::~MgtAssocResponseHeader ()
 }
 
 StatusCode
-MgtAssocResponseHeader::GetStatusCode (void)
+MgtAssocResponseHeader::GetStatusCode ()
 {
   return m_code;
 }
 
 const SupportedRates&
-MgtAssocResponseHeader::GetSupportedRates (void) const
+MgtAssocResponseHeader::GetSupportedRates () const
 {
   return m_rates;
 }
@@ -1323,7 +1323,7 @@ MgtAssocResponseHeader::SetCapabilities (CapabilityInformation&& capabilities)
 }
 
 const CapabilityInformation&
-MgtAssocResponseHeader::GetCapabilities (void) const
+MgtAssocResponseHeader::GetCapabilities () const
 {
   return m_capability;
 }
@@ -1341,7 +1341,7 @@ MgtAssocResponseHeader::SetExtendedCapabilities (ExtendedCapabilities&& extended
 }
 
 const std::optional<ExtendedCapabilities>&
-MgtAssocResponseHeader::GetExtendedCapabilities (void) const
+MgtAssocResponseHeader::GetExtendedCapabilities () const
 {
   return m_extendedCapability;
 }
@@ -1359,7 +1359,7 @@ MgtAssocResponseHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
 }
 
 const std::optional<HtCapabilities>&
-MgtAssocResponseHeader::GetHtCapabilities (void) const
+MgtAssocResponseHeader::GetHtCapabilities () const
 {
   return m_htCapability;
 }
@@ -1377,7 +1377,7 @@ MgtAssocResponseHeader::SetHtOperation (HtOperation&& htOperation)
 }
 
 const std::optional<HtOperation>&
-MgtAssocResponseHeader::GetHtOperation (void) const
+MgtAssocResponseHeader::GetHtOperation () const
 {
   return m_htOperation;
 }
@@ -1395,7 +1395,7 @@ MgtAssocResponseHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
 }
 
 const std::optional<VhtCapabilities>&
-MgtAssocResponseHeader::GetVhtCapabilities (void) const
+MgtAssocResponseHeader::GetVhtCapabilities () const
 {
   return m_vhtCapability;
 }
@@ -1413,7 +1413,7 @@ MgtAssocResponseHeader::SetVhtOperation (VhtOperation&& vhtOperation)
 }
 
 const std::optional<VhtOperation>&
-MgtAssocResponseHeader::GetVhtOperation (void) const
+MgtAssocResponseHeader::GetVhtOperation () const
 {
   return m_vhtOperation;
 }
@@ -1431,7 +1431,7 @@ MgtAssocResponseHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
 }
 
 const std::optional<HeCapabilities>&
-MgtAssocResponseHeader::GetHeCapabilities (void) const
+MgtAssocResponseHeader::GetHeCapabilities () const
 {
   return m_heCapability;
 }
@@ -1449,7 +1449,7 @@ MgtAssocResponseHeader::SetHeOperation (HeOperation&& heOperation)
 }
 
 const std::optional<HeOperation>&
-MgtAssocResponseHeader::GetHeOperation (void) const
+MgtAssocResponseHeader::GetHeOperation () const
 {
   return m_heOperation;
 }
@@ -1467,7 +1467,7 @@ MgtAssocResponseHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
 }
 
 const std::optional<EhtCapabilities>&
-MgtAssocResponseHeader::GetEhtCapabilities (void) const
+MgtAssocResponseHeader::GetEhtCapabilities () const
 {
   return m_ehtCapability;
 }
@@ -1485,7 +1485,7 @@ MgtAssocResponseHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElement
 }
 
 const std::optional<MultiLinkElement>&
-MgtAssocResponseHeader::GetMultiLinkElement (void) const
+MgtAssocResponseHeader::GetMultiLinkElement () const
 {
   return m_multiLinkElement;
 }
@@ -1497,7 +1497,7 @@ MgtAssocResponseHeader::SetAssociationId (uint16_t aid)
 }
 
 uint16_t
-MgtAssocResponseHeader::GetAssociationId (void) const
+MgtAssocResponseHeader::GetAssociationId () const
 {
   return m_aid;
 }
@@ -1515,7 +1515,7 @@ MgtAssocResponseHeader::SetErpInformation (ErpInformation&& erpInformation)
 }
 
 const std::optional<ErpInformation>&
-MgtAssocResponseHeader::GetErpInformation (void) const
+MgtAssocResponseHeader::GetErpInformation () const
 {
   return m_erpInformation;
 }
@@ -1545,19 +1545,19 @@ MgtAssocResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParame
 }
 
 const std::optional<EdcaParameterSet>&
-MgtAssocResponseHeader::GetEdcaParameterSet (void) const
+MgtAssocResponseHeader::GetEdcaParameterSet () const
 {
   return m_edcaParameterSet;
 }
 
 const std::optional<MuEdcaParameterSet>&
-MgtAssocResponseHeader::GetMuEdcaParameterSet (void) const
+MgtAssocResponseHeader::GetMuEdcaParameterSet () const
 {
   return m_muEdcaParameterSet;
 }
 
 TypeId
-MgtAssocResponseHeader::GetTypeId (void)
+MgtAssocResponseHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtAssocResponseHeader")
     .SetParent<Header> ()
@@ -1568,13 +1568,13 @@ MgtAssocResponseHeader::GetTypeId (void)
 }
 
 TypeId
-MgtAssocResponseHeader::GetInstanceTypeId (void) const
+MgtAssocResponseHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-MgtAssocResponseHeader::GetSerializedSize (void) const
+MgtAssocResponseHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += m_capability.GetSerializedSize ();
@@ -2205,7 +2205,7 @@ MgtAddBaRequestHeader::MgtAddBaRequestHeader ()
 }
 
 TypeId
-MgtAddBaRequestHeader::GetTypeId (void)
+MgtAddBaRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtAddBaRequestHeader")
     .SetParent<Header> ()
@@ -2216,7 +2216,7 @@ MgtAddBaRequestHeader::GetTypeId (void)
 }
 
 TypeId
-MgtAddBaRequestHeader::GetInstanceTypeId (void) const
+MgtAddBaRequestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -2227,7 +2227,7 @@ MgtAddBaRequestHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-MgtAddBaRequestHeader::GetSerializedSize (void) const
+MgtAddBaRequestHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 1; //Dialog token
@@ -2308,49 +2308,49 @@ MgtAddBaRequestHeader::SetAmsduSupport (bool supported)
 }
 
 uint8_t
-MgtAddBaRequestHeader::GetTid (void) const
+MgtAddBaRequestHeader::GetTid () const
 {
   return m_tid;
 }
 
 bool
-MgtAddBaRequestHeader::IsImmediateBlockAck (void) const
+MgtAddBaRequestHeader::IsImmediateBlockAck () const
 {
   return m_policy == 1;
 }
 
 uint16_t
-MgtAddBaRequestHeader::GetTimeout (void) const
+MgtAddBaRequestHeader::GetTimeout () const
 {
   return m_timeoutValue;
 }
 
 uint16_t
-MgtAddBaRequestHeader::GetBufferSize (void) const
+MgtAddBaRequestHeader::GetBufferSize () const
 {
   return m_bufferSize;
 }
 
 bool
-MgtAddBaRequestHeader::IsAmsduSupported (void) const
+MgtAddBaRequestHeader::IsAmsduSupported () const
 {
   return m_amsduSupport == 1;
 }
 
 uint16_t
-MgtAddBaRequestHeader::GetStartingSequence (void) const
+MgtAddBaRequestHeader::GetStartingSequence () const
 {
   return m_startingSeq;
 }
 
 uint16_t
-MgtAddBaRequestHeader::GetStartingSequenceControl (void) const
+MgtAddBaRequestHeader::GetStartingSequenceControl () const
 {
   return (m_startingSeq << 4) & 0xfff0;
 }
 
 uint16_t
-MgtAddBaRequestHeader::GetParameterSet (void) const
+MgtAddBaRequestHeader::GetParameterSet () const
 {
   uint16_t res = 0;
   res |= m_amsduSupport;
@@ -2395,7 +2395,7 @@ MgtAddBaResponseHeader::GetTypeId ()
 }
 
 TypeId
-MgtAddBaResponseHeader::GetInstanceTypeId (void) const
+MgtAddBaResponseHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -2407,7 +2407,7 @@ MgtAddBaResponseHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-MgtAddBaResponseHeader::GetSerializedSize (void) const
+MgtAddBaResponseHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 1; //Dialog token
@@ -2482,43 +2482,43 @@ MgtAddBaResponseHeader::SetAmsduSupport (bool supported)
 }
 
 StatusCode
-MgtAddBaResponseHeader::GetStatusCode (void) const
+MgtAddBaResponseHeader::GetStatusCode () const
 {
   return m_code;
 }
 
 uint8_t
-MgtAddBaResponseHeader::GetTid (void) const
+MgtAddBaResponseHeader::GetTid () const
 {
   return m_tid;
 }
 
 bool
-MgtAddBaResponseHeader::IsImmediateBlockAck (void) const
+MgtAddBaResponseHeader::IsImmediateBlockAck () const
 {
   return m_policy == 1;
 }
 
 uint16_t
-MgtAddBaResponseHeader::GetTimeout (void) const
+MgtAddBaResponseHeader::GetTimeout () const
 {
   return m_timeoutValue;
 }
 
 uint16_t
-MgtAddBaResponseHeader::GetBufferSize (void) const
+MgtAddBaResponseHeader::GetBufferSize () const
 {
   return m_bufferSize;
 }
 
 bool
-MgtAddBaResponseHeader::IsAmsduSupported (void) const
+MgtAddBaResponseHeader::IsAmsduSupported () const
 {
   return m_amsduSupport == 1;
 }
 
 uint16_t
-MgtAddBaResponseHeader::GetParameterSet (void) const
+MgtAddBaResponseHeader::GetParameterSet () const
 {
   uint16_t res = 0;
   res |= m_amsduSupport;
@@ -2550,7 +2550,7 @@ MgtDelBaHeader::MgtDelBaHeader ()
 }
 
 TypeId
-MgtDelBaHeader::GetTypeId (void)
+MgtDelBaHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtDelBaHeader")
     .SetParent<Header> ()
@@ -2561,7 +2561,7 @@ MgtDelBaHeader::GetTypeId (void)
 }
 
 TypeId
-MgtDelBaHeader::GetInstanceTypeId (void) const
+MgtDelBaHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -2572,7 +2572,7 @@ MgtDelBaHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-MgtDelBaHeader::GetSerializedSize (void) const
+MgtDelBaHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 2; //DelBa parameter set
@@ -2598,13 +2598,13 @@ MgtDelBaHeader::Deserialize (Buffer::Iterator start)
 }
 
 bool
-MgtDelBaHeader::IsByOriginator (void) const
+MgtDelBaHeader::IsByOriginator () const
 {
   return m_initiator == 1;
 }
 
 uint8_t
-MgtDelBaHeader::GetTid (void) const
+MgtDelBaHeader::GetTid () const
 {
   NS_ASSERT (m_tid < 16);
   uint8_t tid = static_cast<uint8_t> (m_tid);
@@ -2612,13 +2612,13 @@ MgtDelBaHeader::GetTid (void) const
 }
 
 void
-MgtDelBaHeader::SetByOriginator (void)
+MgtDelBaHeader::SetByOriginator ()
 {
   m_initiator = 1;
 }
 
 void
-MgtDelBaHeader::SetByRecipient (void)
+MgtDelBaHeader::SetByRecipient ()
 {
   m_initiator = 0;
 }
@@ -2631,7 +2631,7 @@ MgtDelBaHeader::SetTid (uint8_t tid)
 }
 
 uint16_t
-MgtDelBaHeader::GetParameterSet (void) const
+MgtDelBaHeader::GetParameterSet () const
 {
   uint16_t res = 0;
   res |= m_initiator << 11;

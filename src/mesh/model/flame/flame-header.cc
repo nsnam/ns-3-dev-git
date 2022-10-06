@@ -36,7 +36,7 @@ FlameHeader::~FlameHeader ()
 {
 }
 TypeId
-FlameHeader::GetTypeId (void)
+FlameHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::flame::FlameHeader")
     .SetParent<Header> ()
@@ -45,7 +45,7 @@ FlameHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-FlameHeader::GetInstanceTypeId (void) const
+FlameHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -56,7 +56,7 @@ FlameHeader::Print (std::ostream &os) const
      << ", Orig Destination= " << m_origDst << ", Orig Source= " << m_origSrc;
 }
 uint32_t
-FlameHeader::GetSerializedSize (void) const
+FlameHeader::GetSerializedSize () const
 {
   return 1 // Reserved
          + 1 // Cost

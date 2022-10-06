@@ -153,7 +153,7 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
 }
 
 void
-LteLinkAdaptationTestCase::DoRun (void)
+LteLinkAdaptationTestCase::DoRun ()
 {
   Config::Reset ();
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));

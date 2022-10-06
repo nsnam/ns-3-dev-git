@@ -52,19 +52,19 @@ ErpInformation::SetNonErpPresent (uint8_t nonErpPresent)
 }
 
 uint8_t
-ErpInformation::GetBarkerPreambleMode (void) const
+ErpInformation::GetBarkerPreambleMode () const
 {
   return ((m_erpInformation >> 2) & 0x01);
 }
 
 uint8_t
-ErpInformation::GetUseProtection (void) const
+ErpInformation::GetUseProtection () const
 {
   return ((m_erpInformation >> 1) & 0x01);
 }
 
 uint8_t
-ErpInformation::GetNonErpPresent (void) const
+ErpInformation::GetNonErpPresent () const
 {
   return (m_erpInformation & 0x01);
 }

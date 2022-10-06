@@ -64,7 +64,7 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);

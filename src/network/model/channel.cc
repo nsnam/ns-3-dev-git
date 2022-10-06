@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("Channel");
 NS_OBJECT_ENSURE_REGISTERED (Channel);
 
 TypeId
-Channel::GetTypeId (void)
+Channel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Channel")
     .SetParent<Object> ()
@@ -56,7 +56,7 @@ Channel::~Channel ()
 }
 
 uint32_t
-Channel::GetId (void) const
+Channel::GetId () const
 {
   NS_LOG_FUNCTION (this);
   return m_id;

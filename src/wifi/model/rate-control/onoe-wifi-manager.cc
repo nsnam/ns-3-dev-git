@@ -51,7 +51,7 @@ struct OnoeWifiRemoteStation : public WifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (OnoeWifiManager);
 
 TypeId
-OnoeWifiManager::GetTypeId (void)
+OnoeWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OnoeWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -109,7 +109,7 @@ OnoeWifiManager::DoInitialize ()
 }
 
 WifiRemoteStation *
-OnoeWifiManager::DoCreateStation (void) const
+OnoeWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   OnoeWifiRemoteStation *station = new OnoeWifiRemoteStation ();

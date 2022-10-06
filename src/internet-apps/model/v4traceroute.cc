@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("V4TraceRoute");
 NS_OBJECT_ENSURE_REGISTERED (V4TraceRoute);
 
 TypeId
-V4TraceRoute::GetTypeId (void)
+V4TraceRoute::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::V4TraceRoute")
     .SetParent<Application> ()
@@ -114,7 +114,7 @@ V4TraceRoute::Print (Ptr<OutputStreamWrapper> stream)
 }
 
 void
-V4TraceRoute::StartApplication (void)
+V4TraceRoute::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Application started");
@@ -153,7 +153,7 @@ V4TraceRoute::StartApplication (void)
 
 
 void
-V4TraceRoute::StopApplication (void)
+V4TraceRoute::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -184,7 +184,7 @@ V4TraceRoute::StopApplication (void)
 }
 
 void
-V4TraceRoute::DoDispose (void)
+V4TraceRoute::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -199,7 +199,7 @@ V4TraceRoute::DoDispose (void)
 
 
 uint32_t
-V4TraceRoute::GetApplicationId (void) const
+V4TraceRoute::GetApplicationId () const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Node> node = GetNode ();
@@ -424,7 +424,7 @@ V4TraceRoute::Send ()
 
 
 void
-V4TraceRoute::StartWaitReplyTimer (void)
+V4TraceRoute::StartWaitReplyTimer ()
 {
   NS_LOG_FUNCTION (this);
   if (!m_waitIcmpReplyTimer.IsRunning ())
@@ -440,7 +440,7 @@ V4TraceRoute::StartWaitReplyTimer (void)
 
 
 void
-V4TraceRoute::HandleWaitReplyTimeout (void)
+V4TraceRoute::HandleWaitReplyTimeout ()
 {
   if (m_ttl < m_maxTtl + 1)
     {

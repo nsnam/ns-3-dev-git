@@ -123,21 +123,21 @@ WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t ns
 }
 
 WifiCodeRate
-WifiMode::GetCodeRate (void) const
+WifiMode::GetCodeRate () const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->GetCodeRateCallback ();
 }
 
 uint16_t
-WifiMode::GetConstellationSize (void) const
+WifiMode::GetConstellationSize () const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->GetConstellationSizeCallback ();
 }
 
 std::string
-WifiMode::GetUniqueName (void) const
+WifiMode::GetUniqueName () const
 {
   //needed for ostream printing of the invalid mode
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
@@ -145,14 +145,14 @@ WifiMode::GetUniqueName (void) const
 }
 
 bool
-WifiMode::IsMandatory (void) const
+WifiMode::IsMandatory () const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->isMandatory;
 }
 
 uint8_t
-WifiMode::GetMcsValue (void) const
+WifiMode::GetMcsValue () const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass >= WIFI_MOD_CLASS_HT)
@@ -168,7 +168,7 @@ WifiMode::GetMcsValue (void) const
 }
 
 uint32_t
-WifiMode::GetUid (void) const
+WifiMode::GetUid () const
 {
   return m_uid;
 }
@@ -181,7 +181,7 @@ WifiMode::GetModulationClass () const
 }
 
 uint64_t
-WifiMode::GetNonHtReferenceRate (void) const
+WifiMode::GetNonHtReferenceRate () const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   NS_ASSERT_MSG (!item->GetNonHtReferenceRateCallback.IsNull (), "Trying to get HT reference rate for a non-HT rate");
@@ -394,7 +394,7 @@ WifiModeFactory::Get (uint32_t uid)
 }
 
 WifiModeFactory *
-WifiModeFactory::GetFactory (void)
+WifiModeFactory::GetFactory ()
 {
   static bool isFirstTime = true;
   static WifiModeFactory factory;

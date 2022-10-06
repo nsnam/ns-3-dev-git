@@ -53,14 +53,14 @@ public:
    * Get the registered TypeId for this class.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**  \copydoc Simulator::Destroy   */
   virtual void Destroy () = 0;
   /** \copydoc Simulator::IsFinished */
-  virtual bool IsFinished (void) const = 0;
+  virtual bool IsFinished () const = 0;
   /** \copydoc Simulator::Stop(void) */
-  virtual void Stop (void) = 0;
+  virtual void Stop () = 0;
   /** \copydoc Simulator::Stop(const Time&) */
   virtual void Stop (const Time &delay) = 0;
   /** \copydoc Simulator::Schedule(const Time&,const Ptr<EventImpl>&) */
@@ -78,13 +78,13 @@ public:
   /** \copydoc Simulator::IsExpired */
   virtual bool IsExpired (const EventId &id) const = 0;
   /** \copydoc Simulator::Run */
-  virtual void Run (void) = 0;
+  virtual void Run () = 0;
   /** \copydoc Simulator::Now */
-  virtual Time Now (void) const = 0;
+  virtual Time Now () const = 0;
   /** \copydoc Simulator::GetDelayLeft */
   virtual Time GetDelayLeft (const EventId &id) const = 0;
   /** \copydoc Simulator::GetMaximumSimulationTime */
-  virtual Time GetMaximumSimulationTime (void) const = 0;
+  virtual Time GetMaximumSimulationTime () const = 0;
   /**
    * Set the Scheduler to be used to manage the event list.
    *
@@ -98,9 +98,9 @@ public:
   /** \copydoc Simulator::GetSystemId */
   virtual uint32_t GetSystemId () const = 0;
   /** \copydoc Simulator::GetContext */
-  virtual uint32_t GetContext (void) const = 0;
+  virtual uint32_t GetContext () const = 0;
   /** \copydoc Simulator::GetEventCount */
-  virtual uint64_t GetEventCount (void) const = 0;
+  virtual uint64_t GetEventCount () const = 0;
 
   /**
    * Hook called before processing each event.

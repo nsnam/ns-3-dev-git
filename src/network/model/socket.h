@@ -70,10 +70,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  Socket (void);
-  virtual ~Socket (void);
+  Socket ();
+  virtual ~Socket ();
 
   /**
    * \enum SocketErrno
@@ -158,16 +158,16 @@ public:
    *         socket. Each socket's errno is initialized to zero
    *         when the socket is created.
    */
-  virtual enum Socket::SocketErrno GetErrno (void) const = 0;
+  virtual enum Socket::SocketErrno GetErrno () const = 0;
   /**
     * \return the socket type, analogous to getsockopt (SO_TYPE)
     */
-  virtual enum Socket::SocketType GetSocketType (void) const = 0;
+  virtual enum Socket::SocketType GetSocketType () const = 0;
   /**
    * \brief Return the node this socket is associated with.
    * \returns the node
    */
-  virtual Ptr<Node> GetNode (void) const = 0;
+  virtual Ptr<Node> GetNode () const = 0;
   /**
    * \brief Specify callbacks to allow the caller to determine if
    * the connection succeeds of fails.
@@ -283,7 +283,7 @@ public:
    * After the Close call, the socket is no longer valid, and cannot
    * safely be used for subsequent operations.
    */
-  virtual int Close (void) = 0;
+  virtual int Close () = 0;
 
   /**
    * \returns zero on success, -1 on failure.
@@ -291,7 +291,7 @@ public:
    * Do not allow any further Send calls. This method is typically
    * implemented for Tcp sockets by a half close.
    */
-  virtual int ShutdownSend (void) = 0;
+  virtual int ShutdownSend () = 0;
 
   /**
    * \returns zero on success, -1 on failure.
@@ -299,7 +299,7 @@ public:
    * Do not allow any further Recv calls. This method is typically
    * implemented for Tcp sockets by a half close.
    */
-  virtual int ShutdownRecv (void) = 0;
+  virtual int ShutdownRecv () = 0;
 
   /**
    * \brief Initiate a connection to a remote host
@@ -312,7 +312,7 @@ public:
    * \brief Listen for incoming connections.
    * \returns 0 on success, -1 on error (in which case errno is set).
    */
-  virtual int Listen (void) = 0;
+  virtual int Listen () = 0;
 
   /**
    * \brief Returns the number of bytes which can be sent in a single call
@@ -326,7 +326,7 @@ public:
    *
    * \returns The number of bytes which can be sent in a single Send call.
    */
-  virtual uint32_t GetTxAvailable (void) const = 0;
+  virtual uint32_t GetTxAvailable () const = 0;
 
   /**
    * \brief Send data (or dummy data) to the remote host
@@ -399,7 +399,7 @@ public:
    * \returns the number of bytes which can be returned from one or
    *          multiple Recv calls.
    */
-  virtual uint32_t GetRxAvailable (void) const = 0;
+  virtual uint32_t GetRxAvailable () const = 0;
 
   /**
    * \brief Read data from the socket
@@ -537,7 +537,7 @@ public:
    * \returns Ptr<Packet> of the next in-sequence packet.  Returns
    * 0 if the socket cannot return a next in-sequence packet.
    */
-  Ptr<Packet> Recv (void);
+  Ptr<Packet> Recv ();
 
   /**
    * \brief Recv data (or dummy data) from the remote host
@@ -700,7 +700,7 @@ public:
    *
    * \return The priority value
    */
-  uint8_t GetPriority (void) const;
+  uint8_t GetPriority () const;
 
   /**
    * \brief Return the priority corresponding to a given TOS value
@@ -800,7 +800,7 @@ public:
    *
    * \return The raw IP TOS value
    */
-  uint8_t GetIpTos (void) const;
+  uint8_t GetIpTos () const;
 
   /**
    * \brief Tells a socket to pass information about IP Type of Service up the stack
@@ -823,7 +823,7 @@ public:
    *
    * \return Whether the IP_RECVTOS is set
    */
-  bool IsIpRecvTos (void) const;
+  bool IsIpRecvTos () const;
 
   /**
    * \brief Manually set IPv6 Traffic Class field
@@ -845,7 +845,7 @@ public:
    *
    * \return The raw IPV6_TCLASS value
    */
-  uint8_t GetIpv6Tclass (void) const;
+  uint8_t GetIpv6Tclass () const;
 
   /**
    * \brief Tells a socket to pass information about IPv6 Traffic Class up the stack
@@ -868,7 +868,7 @@ public:
    *
    * \return Whether the IPV6_RECVTCLASS is set
    */
-  bool IsIpv6RecvTclass (void) const;
+  bool IsIpv6RecvTclass () const;
 
   /**
    * \brief Manually set IP Time to Live field
@@ -888,7 +888,7 @@ public:
    *
    * \return The raw IP TTL value
    */
-  virtual uint8_t GetIpTtl (void) const;
+  virtual uint8_t GetIpTtl () const;
 
   /**
    * \brief Tells a socket to pass information about IP_TTL up the stack
@@ -911,7 +911,7 @@ public:
    *
    * \return Whether the IP_RECVTTL is set
    */
-  bool IsIpRecvTtl (void) const;
+  bool IsIpRecvTtl () const;
 
   /**
    * \brief Manually set IPv6 Hop Limit
@@ -931,7 +931,7 @@ public:
    *
    * \return The raw IPv6 Hop Limit value
    */
-  virtual uint8_t GetIpv6HopLimit (void) const;
+  virtual uint8_t GetIpv6HopLimit () const;
 
   /**
    * \brief Tells a socket to pass information about IPv6 Hop Limit up the stack
@@ -954,7 +954,7 @@ public:
    *
    * \return Whether the IPV6_RECVHOPLIMIT is set
    */
-  bool IsIpv6RecvHopLimit (void) const;
+  bool IsIpv6RecvHopLimit () const;
 
   /**
    * \brief Joins a IPv6 multicast group.
@@ -983,32 +983,32 @@ public:
   /**
    * \brief Leaves IPv6 multicast group this socket is joined to.
    */
-  virtual void Ipv6LeaveGroup (void);
+  virtual void Ipv6LeaveGroup ();
 
 protected:
   /**
    * \brief Notify through the callback (if set) that the connection has been
    *        established.
    */
-  void NotifyConnectionSucceeded (void);
+  void NotifyConnectionSucceeded ();
 
   /**
    * \brief Notify through the callback (if set) that the connection has not been
    *        established due to an error.
    */
-  void NotifyConnectionFailed (void);
+  void NotifyConnectionFailed ();
 
   /**
    * \brief Notify through the callback (if set) that the connection has been
    *        closed.
    */
-  void NotifyNormalClose (void);
+  void NotifyNormalClose ();
 
   /**
    * \brief Notify through the callback (if set) that the connection has been
    *        closed due to an error.
    */
-  void NotifyErrorClose (void);
+  void NotifyErrorClose ();
 
   /**
    * \brief Notify through the callback (if set) that an incoming connection
@@ -1048,31 +1048,31 @@ protected:
   /**
    * \brief Notify through the callback (if set) that some data have been received.
    */
-  void NotifyDataRecv (void);
+  void NotifyDataRecv ();
 
   // inherited function, no doc necessary
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Checks if the socket has a specific IPv6 Tclass set
    *
    * \returns true if the socket has a IPv6 Tclass set, false otherwise.
    */
-  bool IsManualIpv6Tclass (void) const;
+  bool IsManualIpv6Tclass () const;
 
   /**
    * \brief Checks if the socket has a specific IPv4 TTL set
    *
    * \returns true if the socket has a IPv4 TTL set, false otherwise.
    */
-  bool IsManualIpTtl (void) const;
+  bool IsManualIpTtl () const;
 
   /**
    * \brief Checks if the socket has a specific IPv6 Hop Limit set
    *
    * \returns true if the socket has a IPv6 Hop Limit set, false otherwise.
    */
-  bool IsManualIpv6HopLimit (void) const;
+  bool IsManualIpv6HopLimit () const;
 
   Ptr<NetDevice> m_boundnetdevice; //!< the device this socket is bound to (might be null).
   bool m_recvPktInfo; //!< if the socket should add packet info tags to the packet forwarded to L4.
@@ -1130,19 +1130,19 @@ public:
    *
    * \returns the TTL
    */
-  uint8_t GetTtl (void) const;
+  uint8_t GetTtl () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   // inherited function, no need to doc.
   virtual void Serialize (TagBuffer i) const;
@@ -1178,19 +1178,19 @@ public:
    *
    * \returns the Hop Limit
    */
-  uint8_t GetHopLimit (void) const;
+  uint8_t GetHopLimit () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   // inherited function, no need to doc.
   virtual void Serialize (TagBuffer i) const;
@@ -1217,31 +1217,31 @@ public:
   /**
    * \brief Enables the DF (Don't Fragment) flag
    */
-  void Enable (void);
+  void Enable ();
 
   /**
    * \brief Disables the DF (Don't Fragment) flag
    */
-  void Disable (void);
+  void Disable ();
 
   /**
    * \brief Checks if the DF (Don't Fragment) flag is set
    *
    * \returns true if DF is set.
    */
-  bool IsEnabled (void) const;
+  bool IsEnabled () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   // inherited function, no need to doc.
   virtual void Serialize (TagBuffer i) const;
@@ -1276,19 +1276,19 @@ public:
    *
    * \returns the TOS
    */
-  uint8_t GetTos (void) const;
+  uint8_t GetTos () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   // inherited function, no need to doc.
   virtual void Serialize (TagBuffer i) const;
@@ -1322,19 +1322,19 @@ public:
    *
    * \returns the priority
    */
-  uint8_t GetPriority (void) const;
+  uint8_t GetPriority () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   // inherited function, no need to doc.
   virtual void Serialize (TagBuffer i) const;
@@ -1369,19 +1369,19 @@ public:
    *
    * \returns the Tclass
    */
-  uint8_t GetTclass (void) const;
+  uint8_t GetTclass () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   // inherited function, no need to doc.
   virtual void Serialize (TagBuffer i) const;

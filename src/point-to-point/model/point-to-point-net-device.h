@@ -67,7 +67,7 @@ public:
    *
    * \return The TypeId for this class
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Construct a PointToPointNetDevice
@@ -129,7 +129,7 @@ public:
    *
    * \returns Ptr to the queue.
    */
-  Ptr<Queue<Packet> > GetQueue (void) const;
+  Ptr<Queue<Packet> > GetQueue () const;
 
   /**
    * Attach a receive ErrorModel to the PointToPointNetDevice.
@@ -156,43 +156,43 @@ public:
   // The remaining methods are documented in ns3::NetDevice*
 
   virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
+  virtual uint32_t GetIfIndex () const;
 
-  virtual Ptr<Channel> GetChannel (void) const;
+  virtual Ptr<Channel> GetChannel () const;
 
   virtual void SetAddress (Address address);
-  virtual Address GetAddress (void) const;
+  virtual Address GetAddress () const;
 
   virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu (void) const;
+  virtual uint16_t GetMtu () const;
 
-  virtual bool IsLinkUp (void) const;
+  virtual bool IsLinkUp () const;
 
   virtual void AddLinkChangeCallback (Callback<void> callback);
 
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
+  virtual bool IsBroadcast () const;
+  virtual Address GetBroadcast () const;
 
-  virtual bool IsMulticast (void) const;
+  virtual bool IsMulticast () const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
 
-  virtual bool IsPointToPoint (void) const;
-  virtual bool IsBridge (void) const;
+  virtual bool IsPointToPoint () const;
+  virtual bool IsBridge () const;
 
   virtual bool Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
 
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
   virtual void SetNode (Ptr<Node> node);
 
-  virtual bool NeedsArp (void) const;
+  virtual bool NeedsArp () const;
 
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
   virtual Address GetMulticast (Ipv6Address addr) const;
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom (void) const;
+  virtual bool SupportsSendFrom () const;
 
 protected:
   /**
@@ -206,13 +206,13 @@ private:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \returns the address of the remote device connected to this device
    * through the point to point channel.
    */
-  Address GetRemote (void) const;
+  Address GetRemote () const;
 
   /**
    * Adds the necessary headers and trailers to a packet of data in order to
@@ -255,14 +255,14 @@ private:
    * The TransmitComplete method is used internally to finish the process
    * of sending a packet out on the channel.
    */
-  void TransmitComplete (void);
+  void TransmitComplete ();
 
   /**
    * \brief Make the link up and running
    *
    * It calls also the linkChange callback.
    */
-  void NotifyLinkUp (void);
+  void NotifyLinkUp ();
 
   /**
    * Enumeration of the states of the transmit machine of the net device.

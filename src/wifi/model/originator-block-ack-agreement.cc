@@ -45,37 +45,37 @@ OriginatorBlockAckAgreement::SetState (State state)
 }
 
 bool
-OriginatorBlockAckAgreement::IsPending (void) const
+OriginatorBlockAckAgreement::IsPending () const
 {
   return m_state == PENDING;
 }
 
 bool
-OriginatorBlockAckAgreement::IsEstablished (void) const
+OriginatorBlockAckAgreement::IsEstablished () const
 {
   return m_state == ESTABLISHED;
 }
 
 bool
-OriginatorBlockAckAgreement::IsRejected (void) const
+OriginatorBlockAckAgreement::IsRejected () const
 {
   return m_state == REJECTED;
 }
 
 bool
-OriginatorBlockAckAgreement::IsNoReply (void) const
+OriginatorBlockAckAgreement::IsNoReply () const
 {
   return m_state == NO_REPLY;
 }
 
 bool
-OriginatorBlockAckAgreement::IsReset (void) const
+OriginatorBlockAckAgreement::IsReset () const
 {
   return m_state == RESET;
 }
 
 uint16_t
-OriginatorBlockAckAgreement::GetStartingSequence (void) const
+OriginatorBlockAckAgreement::GetStartingSequence () const
 {
   if (m_txWindow.GetWinSize () == 0)
     {
@@ -92,13 +92,13 @@ OriginatorBlockAckAgreement::GetDistance (uint16_t seqNumber) const
 }
 
 void
-OriginatorBlockAckAgreement::InitTxWindow (void)
+OriginatorBlockAckAgreement::InitTxWindow ()
 {
   m_txWindow.Init (m_startingSeq, m_bufferSize);
 }
 
 void
-OriginatorBlockAckAgreement::AdvanceTxWindow (void)
+OriginatorBlockAckAgreement::AdvanceTxWindow ()
 {
   while (m_txWindow.At (0))
     {

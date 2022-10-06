@@ -52,14 +52,14 @@ public:
    * \brief Register this type and get the TypeId.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** Default constructor */
   FormattingTestObject ();
   /**
    * Get the test variable
    * \returns the test variable
    */
-  Ptr<RandomVariableStream> GetTestVariable (void) const;
+  Ptr<RandomVariableStream> GetTestVariable () const;
 
 private:
   Ptr<RandomVariableStream> m_testVariable; //!< The test variable
@@ -68,7 +68,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (FormattingTestObject);
 
 TypeId
-FormattingTestObject::GetTypeId (void)
+FormattingTestObject::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FormattingTestObject")
     .SetParent<Object> ()
@@ -85,7 +85,7 @@ FormattingTestObject::FormattingTestObject ()
 {}
 
 Ptr<RandomVariableStream>
-FormattingTestObject::GetTestVariable (void) const
+FormattingTestObject::GetTestVariable () const
 {
   return m_testVariable;
 }
@@ -110,7 +110,7 @@ public:
    * Create an Object as configured by SetAttribute
    * \returns the newly created Object
    */
-  Ptr<Object> CreateFromFactory (void);
+  Ptr<Object> CreateFromFactory ();
 
 private:
   ObjectFactory m_factory; //!< Object factory
@@ -128,7 +128,7 @@ FormattingTestObjectHelper::SetAttribute (std::string name, const AttributeValue
 }
 
 Ptr<Object>
-FormattingTestObjectHelper::CreateFromFactory (void)
+FormattingTestObjectHelper::CreateFromFactory ()
 {
   return m_factory.Create ();
 }

@@ -79,31 +79,31 @@ public:
    *
    * \return the TXVECTOR of the PPDU.
    */
-  WifiTxVector GetTxVector (void) const;
+  WifiTxVector GetTxVector () const;
 
   /**
    * Get the payload of the PPDU.
    *
    * \return the PSDU
    */
-  Ptr<const WifiPsdu> GetPsdu (void) const;
+  Ptr<const WifiPsdu> GetPsdu () const;
 
   /**
    * \return c\ true if the PPDU's transmission was aborted due to transmitter switch off
    */
-  bool IsTruncatedTx (void) const;
+  bool IsTruncatedTx () const;
 
   /**
    * Indicate that the PPDU's transmission was aborted due to transmitter switch off.
    */
-  void SetTruncatedTx (void);
+  void SetTruncatedTx ();
 
   /**
    * Get the total transmission duration of the PPDU.
    *
    * \return the transmission duration of the PPDU
    */
-  virtual Time GetTxDuration (void) const;
+  virtual Time GetTxDuration () const;
 
   /**
    * Get the channel width over which the PPDU will effectively be
@@ -111,7 +111,7 @@ public:
    *
    * \return the effective channel width (in MHz) used for the tranmsission
    */
-  virtual uint16_t GetTransmissionChannelWidth (void) const;
+  virtual uint16_t GetTransmissionChannelWidth () const;
 
   /**
    * Check whether the given PPDU overlaps a given channel.
@@ -137,19 +137,19 @@ public:
    * Get the modulation used for the PPDU.
    * \return the modulation used for the PPDU
    */
-  WifiModulationClass GetModulation (void) const;
+  WifiModulationClass GetModulation () const;
 
   /**
    * Get the UID of the PPDU.
    * \return the UID of the PPDU
    */
-  uint64_t GetUid (void) const;
+  uint64_t GetUid () const;
 
   /**
    * Get the preamble of the PPDU.
    * \return the preamble of the PPDU
    */
-  WifiPreamble GetPreamble (void) const;
+  WifiPreamble GetPreamble () const;
 
   /**
    * \brief Print the PPDU contents.
@@ -160,27 +160,27 @@ public:
    * \brief Copy this instance.
    * \return a Ptr to a copy of this instance.
    */
-  virtual Ptr<WifiPpdu> Copy (void) const;
+  virtual Ptr<WifiPpdu> Copy () const;
 
   /**
    * Return the PPDU type (\see WifiPpduType)
    * \return the PPDU type
    */
-  virtual WifiPpduType GetType (void) const;
+  virtual WifiPpduType GetType () const;
 
   /**
    * Get the ID of the STA that transmitted the PPDU for UL MU,
    * SU_STA_ID otherwise.
    * \return the ID of the STA that transmitted the PPDU for UL MU, SU_STA_ID otherwise
    */
-  virtual uint16_t GetStaId (void) const;
+  virtual uint16_t GetStaId () const;
 
 protected:
   /**
    * \brief Print the payload of the PPDU.
    * \return information on the payload part of the PPDU
    */
-  virtual std::string PrintPayload (void) const;
+  virtual std::string PrintPayload () const;
 
   WifiPreamble m_preamble;          //!< the PHY preamble
   WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
@@ -194,7 +194,7 @@ private:
    *
    * \return the TXVECTOR of the PPDU.
    */
-  virtual WifiTxVector DoGetTxVector (void) const;
+  virtual WifiTxVector DoGetTxVector () const;
 
   bool m_truncatedTx;     //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
   uint8_t m_txPowerLevel; //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)

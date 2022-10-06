@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("SimpleOfdmWimaxPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (SimpleOfdmWimaxPhy);
 
-TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
+TypeId SimpleOfdmWimaxPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SimpleOfdmWimaxPhy")
     .SetParent<WimaxPhy> ()
@@ -132,7 +132,7 @@ TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
 }
 
 void
-SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy (void)
+SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy ()
 {
   m_fecBlockSize = 0;
   m_nrFecBlocksSent = 0;
@@ -164,7 +164,7 @@ SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy (void)
   m_snrToBlockErrorRateManager = new SNRToBlockErrorRateManager ();
 }
 
-SimpleOfdmWimaxPhy::SimpleOfdmWimaxPhy (void)
+SimpleOfdmWimaxPhy::SimpleOfdmWimaxPhy ()
 {
   m_URNG = CreateObject<UniformRandomVariable> ();
 
@@ -180,7 +180,7 @@ SimpleOfdmWimaxPhy::SimpleOfdmWimaxPhy (char * tracesPath)
   m_snrToBlockErrorRateManager->LoadTraces ();
 }
 
-SimpleOfdmWimaxPhy::~SimpleOfdmWimaxPhy (void)
+SimpleOfdmWimaxPhy::~SimpleOfdmWimaxPhy ()
 {
 
 }
@@ -199,7 +199,7 @@ SimpleOfdmWimaxPhy::SetSNRToBlockErrorRateTracesPath (char * tracesPath)
 }
 
 uint32_t
-SimpleOfdmWimaxPhy::GetBandwidth (void) const
+SimpleOfdmWimaxPhy::GetBandwidth () const
 {
   return WimaxPhy::GetChannelBandwidth ();
 }
@@ -211,7 +211,7 @@ SimpleOfdmWimaxPhy::SetBandwidth (uint32_t BW)
 }
 
 double
-SimpleOfdmWimaxPhy::GetTxPower (void) const
+SimpleOfdmWimaxPhy::GetTxPower () const
 {
   return m_txPower;
 }
@@ -222,7 +222,7 @@ SimpleOfdmWimaxPhy::SetTxPower (double txPower)
 }
 
 double
-SimpleOfdmWimaxPhy::GetNoiseFigure (void) const
+SimpleOfdmWimaxPhy::GetNoiseFigure () const
 {
   return m_noiseFigure;
 }
@@ -233,7 +233,7 @@ SimpleOfdmWimaxPhy::SetNoiseFigure (double noiseFigure)
 }
 
 void
-SimpleOfdmWimaxPhy::DoDispose (void)
+SimpleOfdmWimaxPhy::DoDispose ()
 {
   delete m_receivedFecBlocks;
   delete m_fecBlocks;
@@ -261,7 +261,7 @@ SimpleOfdmWimaxPhy::Send (SendParams *params)
 }
 
 WimaxPhy::PhyType
-SimpleOfdmWimaxPhy::GetPhyType (void) const
+SimpleOfdmWimaxPhy::GetPhyType () const
 {
   return WimaxPhy::simpleOfdmWimaxPhy;
 }
@@ -343,7 +343,7 @@ SimpleOfdmWimaxPhy::EndSendFecBlock (WimaxPhy::ModulationType modulationType,
 }
 
 void
-SimpleOfdmWimaxPhy::EndSend (void)
+SimpleOfdmWimaxPhy::EndSend ()
 {
   SetState (PHY_STATE_IDLE);
 }
@@ -613,7 +613,7 @@ SimpleOfdmWimaxPhy::RecreateBuffer ()
 }
 
 void
-SimpleOfdmWimaxPhy::DoSetDataRates (void)
+SimpleOfdmWimaxPhy::DoSetDataRates ()
 {
   m_dataRateBpsk12 = CalculateDataRate (MODULATION_TYPE_BPSK_12); // 6912000 bps
   m_dataRateQpsk12 = CalculateDataRate (MODULATION_TYPE_QPSK_12); // 13824000
@@ -816,21 +816,21 @@ SimpleOfdmWimaxPhy::SetBlockParameters (uint32_t burstSize, WimaxPhy::Modulation
 }
 
 uint16_t
-SimpleOfdmWimaxPhy::DoGetTtg (void) const
+SimpleOfdmWimaxPhy::DoGetTtg () const
 {
   // assumed equal to 2 symbols
   return 2 * GetPsPerSymbol ();
 }
 
 uint16_t
-SimpleOfdmWimaxPhy::DoGetRtg (void) const
+SimpleOfdmWimaxPhy::DoGetRtg () const
 {
   // assumed equal to 2 symbols
   return 2 * GetPsPerSymbol ();
 }
 
 uint8_t
-SimpleOfdmWimaxPhy::DoGetFrameDurationCode (void) const
+SimpleOfdmWimaxPhy::DoGetFrameDurationCode () const
 {
   uint16_t duration = 0;
   duration = (uint16_t)(GetFrameDuration ().GetSeconds () * 10000);
@@ -933,7 +933,7 @@ SimpleOfdmWimaxPhy::GetNrBlocks (uint32_t burstSize, WimaxPhy::ModulationType mo
 /*---------------------PHY parameters functions-----------------------*/
 
 void
-SimpleOfdmWimaxPhy::DoSetPhyParameters (void)
+SimpleOfdmWimaxPhy::DoSetPhyParameters ()
 {
   /*Calculations as per section 8.3.2.
    Currently assuming license-exempt 5 GHz band. For channel bandwidth 20 MHz (Table B.28, page 812) and frame duration 10 ms
@@ -968,14 +968,14 @@ SimpleOfdmWimaxPhy::DoSetNfft (uint16_t nfft)
 }
 
 uint16_t
-SimpleOfdmWimaxPhy::DoGetNfft (void) const
+SimpleOfdmWimaxPhy::DoGetNfft () const
 {
   return m_nfft;
 
 }
 
 double
-SimpleOfdmWimaxPhy::DoGetSamplingFactor (void) const
+SimpleOfdmWimaxPhy::DoGetSamplingFactor () const
 {
   // sampling factor (n), see Table 213, page 429
 
@@ -1011,7 +1011,7 @@ SimpleOfdmWimaxPhy::DoGetSamplingFactor (void) const
 }
 
 double
-SimpleOfdmWimaxPhy::DoGetSamplingFrequency (void) const
+SimpleOfdmWimaxPhy::DoGetSamplingFrequency () const
 {
   // sampling frequency (Fs), see 8.3.2.2
 
@@ -1019,7 +1019,7 @@ SimpleOfdmWimaxPhy::DoGetSamplingFrequency (void) const
 }
 
 double
-SimpleOfdmWimaxPhy::DoGetGValue (void) const
+SimpleOfdmWimaxPhy::DoGetGValue () const
 {
 
   return m_g;
@@ -1045,19 +1045,19 @@ SimpleOfdmWimaxPhy::SetRxGain (double txRain)
 }
 
 double
-SimpleOfdmWimaxPhy::GetTxGain (void) const
+SimpleOfdmWimaxPhy::GetTxGain () const
 {
   return m_txGain;
 }
 
 double
-SimpleOfdmWimaxPhy::GetRxGain (void) const
+SimpleOfdmWimaxPhy::GetRxGain () const
 {
   return m_rxGain;
 }
 
 std::string
-SimpleOfdmWimaxPhy::GetTraceFilePath (void) const
+SimpleOfdmWimaxPhy::GetTraceFilePath () const
 {
   return (m_snrToBlockErrorRateManager->GetTraceFilePath ());
 }

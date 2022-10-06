@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4ListRouting");
 NS_OBJECT_ENSURE_REGISTERED (Ipv4ListRouting);
 
 TypeId
-Ipv4ListRouting::GetTypeId (void)
+Ipv4ListRouting::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4ListRouting")
     .SetParent<Ipv4RoutingProtocol> ()
@@ -54,7 +54,7 @@ Ipv4ListRouting::~Ipv4ListRouting ()
 }
 
 void
-Ipv4ListRouting::DoDispose (void)
+Ipv4ListRouting::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
@@ -86,7 +86,7 @@ Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit 
 }
 
 void
-Ipv4ListRouting::DoInitialize (void)
+Ipv4ListRouting::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
@@ -262,7 +262,7 @@ Ipv4ListRouting::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, i
 }
 
 uint32_t
-Ipv4ListRouting::GetNRoutingProtocols (void) const
+Ipv4ListRouting::GetNRoutingProtocols () const
 {
   NS_LOG_FUNCTION (this);
   return m_routingProtocols.size ();

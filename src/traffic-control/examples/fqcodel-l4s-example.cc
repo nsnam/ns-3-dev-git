@@ -419,7 +419,7 @@ ScheduleN0TcpRttTraceConnection (std::ofstream* ofStream)
 }
 
 void
-ScheduleN0PacketSinkConnection (void)
+ScheduleN0PacketSinkConnection ()
 {
   Config::ConnectWithoutContext ("/NodeList/6/ApplicationList/*/$ns3::PacketSink/Rx", MakeCallback (&TraceN0Rx));
 }
@@ -437,7 +437,7 @@ ScheduleN1TcpRttTraceConnection (std::ofstream* ofStream)
 }
 
 void
-ScheduleN1PacketSinkConnection (void)
+ScheduleN1PacketSinkConnection ()
 {
   Config::ConnectWithoutContext ("/NodeList/7/ApplicationList/*/$ns3::PacketSink/Rx", MakeCallback (&TraceN1Rx));
 }

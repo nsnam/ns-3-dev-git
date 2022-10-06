@@ -52,13 +52,13 @@ public:
    * \param bs base station device
    */
   BSScheduler (Ptr<BaseStationNetDevice> bs);
-  ~BSScheduler (void);
+  ~BSScheduler ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief This function returns all the downlink bursts scheduled for the next
@@ -66,7 +66,7 @@ public:
    * \returns  all the downlink bursts scheduled for the next downlink sub-frame
    */
   virtual std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
-  GetDownlinkBursts (void) const = 0;
+  GetDownlinkBursts () const = 0;
   /**
    * \brief This function adds a downlink burst to the list of downlink bursts
    * scheduled for the next downlink sub-frame
@@ -83,7 +83,7 @@ public:
   /**
    * \brief the scheduling function for the downlink subframe.
    */
-  virtual void Schedule (void) = 0;
+  virtual void Schedule () = 0;
   /**
    * \brief Selects a connection from the list of connections having packets to be sent .
    * \param connection will point to a connection that have packets to be sent
@@ -106,7 +106,7 @@ public:
    * \brief Get the base station.
    * \returns the base station net device
    */
-  virtual Ptr<BaseStationNetDevice> GetBs (void);
+  virtual Ptr<BaseStationNetDevice> GetBs ();
   /**
    * \brief Set the base station.
    * \param bs the base station net device

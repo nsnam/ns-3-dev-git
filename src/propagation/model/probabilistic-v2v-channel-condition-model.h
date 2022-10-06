@@ -44,7 +44,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor for the ProbabilisticV2vUrbanChannelConditionModel class
@@ -96,7 +96,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor for the ProbabilisticV2vHighwayChannelConditionModel class

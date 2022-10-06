@@ -74,7 +74,7 @@ public:
   /**
    * \returns a deep copy of this class, wrapped into an Attribute object.
    */
-  virtual Ptr<AttributeValue> Copy (void) const = 0;
+  virtual Ptr<AttributeValue> Copy () const = 0;
   /**
    * \param [in] checker The checker associated to the attribute
    * \returns A string representation of this value.
@@ -141,12 +141,12 @@ public:
    * \return true if this accessor supports the Get operation, false
    *         otherwise.
    */
-  virtual bool HasGetter (void) const = 0;
+  virtual bool HasGetter () const = 0;
   /**
    * \return true if this accessor supports the Set operation, false
    *         otherwise.
    */
-  virtual bool HasSetter (void) const = 0;
+  virtual bool HasSetter () const = 0;
 };
 
 /**
@@ -192,7 +192,7 @@ public:
    * A typical return value here is FooValue where Foo is the name of the
    * type being wrapped.
    */
-  virtual std::string GetValueTypeName (void) const = 0;
+  virtual std::string GetValueTypeName () const = 0;
   /**
    * \returns true if this checker has information about the underlying
    *          C++ type, false otherwise.
@@ -200,12 +200,12 @@ public:
    * If this method returns false, the return value of the GetUnderlyingTypeInformation
    * method cannot be relied upon.
    */
-  virtual bool HasUnderlyingTypeInformation (void) const = 0;
+  virtual bool HasUnderlyingTypeInformation () const = 0;
   /**
    * \returns a human-readable representation of information about
    *          the underlying C++ type.
    */
-  virtual std::string GetUnderlyingTypeInformation (void) const = 0;
+  virtual std::string GetUnderlyingTypeInformation () const = 0;
   /**
    * \returns a new instance of an AttributeValue (wrapper in an Attribute
    *          instance) which matches the type of the underlying attribute.
@@ -213,7 +213,7 @@ public:
    * This method is typically used to create a temporary variable prior
    * to calling Attribute::DeserializeFromString.
    */
-  virtual Ptr<AttributeValue> Create (void) const = 0;
+  virtual Ptr<AttributeValue> Create () const = 0;
   /**
    * Copy the source to the destination
 
@@ -239,7 +239,7 @@ private:
   /**
    * \returns a deep copy of this class, wrapped into an Attribute object.
    */
-  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual Ptr<AttributeValue> Copy () const;
   /**
    * \param [in] checker The checker associated to the attribute
    * \returns a string representation of this value.
@@ -270,8 +270,8 @@ public:
   ~EmptyAttributeAccessor ();
   virtual bool Set (ObjectBase * object, const AttributeValue &value) const;
   virtual bool Get (const ObjectBase * object, AttributeValue &attribute) const;
-  virtual bool HasGetter (void) const;
-  virtual bool HasSetter (void) const;
+  virtual bool HasGetter () const;
+  virtual bool HasSetter () const;
 };
 
 /**
@@ -299,10 +299,10 @@ public:
   EmptyAttributeChecker ();
   ~EmptyAttributeChecker ();
   virtual bool Check (const AttributeValue &value) const;
-  virtual std::string GetValueTypeName (void) const;
-  virtual bool HasUnderlyingTypeInformation (void) const;
-  virtual std::string GetUnderlyingTypeInformation (void) const;
-  virtual Ptr<AttributeValue> Create (void) const;
+  virtual std::string GetValueTypeName () const;
+  virtual bool HasUnderlyingTypeInformation () const;
+  virtual std::string GetUnderlyingTypeInformation () const;
+  virtual Ptr<AttributeValue> Create () const;
   virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const;
 };
 

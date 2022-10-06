@@ -33,8 +33,8 @@ class NetworkNumber6AllocatorTestCase : public TestCase
 {
 public:
   NetworkNumber6AllocatorTestCase ();
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 NetworkNumber6AllocatorTestCase::NetworkNumber6AllocatorTestCase ()
@@ -42,12 +42,12 @@ NetworkNumber6AllocatorTestCase::NetworkNumber6AllocatorTestCase ()
 {
 }
 void
-NetworkNumber6AllocatorTestCase::DoTeardown (void)
+NetworkNumber6AllocatorTestCase::DoTeardown ()
 {
   Ipv6AddressGenerator::Reset ();
 }
 void
-NetworkNumber6AllocatorTestCase::DoRun (void)
+NetworkNumber6AllocatorTestCase::DoRun ()
 {
   Ipv6Address network;
 
@@ -85,8 +85,8 @@ class AddressAllocator6TestCase : public TestCase
 public:
   AddressAllocator6TestCase ();
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 AddressAllocator6TestCase::AddressAllocator6TestCase ()
@@ -95,7 +95,7 @@ AddressAllocator6TestCase::AddressAllocator6TestCase ()
 }
 
 void
-AddressAllocator6TestCase::DoRun (void)
+AddressAllocator6TestCase::DoRun ()
 {
   Ipv6Address address;
 
@@ -122,7 +122,7 @@ AddressAllocator6TestCase::DoRun (void)
 }
 
 void
-AddressAllocator6TestCase::DoTeardown (void)
+AddressAllocator6TestCase::DoTeardown ()
 {
   Ipv6AddressGenerator::Reset ();
   Simulator::Destroy ();
@@ -139,8 +139,8 @@ class NetworkAndAddress6TestCase : public TestCase
 {
 public:
   NetworkAndAddress6TestCase ();
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 NetworkAndAddress6TestCase::NetworkAndAddress6TestCase ()
@@ -149,14 +149,14 @@ NetworkAndAddress6TestCase::NetworkAndAddress6TestCase ()
 }
 
 void
-NetworkAndAddress6TestCase::DoTeardown (void)
+NetworkAndAddress6TestCase::DoTeardown ()
 {
   Ipv6AddressGenerator::Reset ();
   Simulator::Destroy ();
 }
 
 void
-NetworkAndAddress6TestCase::DoRun (void)
+NetworkAndAddress6TestCase::DoRun ()
 {
   Ipv6Address address;
   Ipv6Address network;
@@ -186,8 +186,8 @@ class ExampleAddress6GeneratorTestCase : public TestCase
 public:
   ExampleAddress6GeneratorTestCase ();
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 ExampleAddress6GeneratorTestCase::ExampleAddress6GeneratorTestCase ()
@@ -196,13 +196,13 @@ ExampleAddress6GeneratorTestCase::ExampleAddress6GeneratorTestCase ()
 }
 
 void
-ExampleAddress6GeneratorTestCase::DoTeardown (void)
+ExampleAddress6GeneratorTestCase::DoTeardown ()
 {
   Ipv6AddressGenerator::Reset ();
 }
 
 void
-ExampleAddress6GeneratorTestCase::DoRun (void)
+ExampleAddress6GeneratorTestCase::DoRun ()
 {
   Ipv6Address address;
 
@@ -242,8 +242,8 @@ class AddressCollision6TestCase : public TestCase
 public:
   AddressCollision6TestCase ();
 private:
-  void DoRun (void);
-  void DoTeardown (void);
+  void DoRun ();
+  void DoTeardown ();
 };
 
 AddressCollision6TestCase::AddressCollision6TestCase ()
@@ -252,13 +252,13 @@ AddressCollision6TestCase::AddressCollision6TestCase ()
 }
 
 void
-AddressCollision6TestCase::DoTeardown (void)
+AddressCollision6TestCase::DoTeardown ()
 {
   Ipv6AddressGenerator::Reset ();
   Simulator::Destroy ();
 }
 void
-AddressCollision6TestCase::DoRun (void)
+AddressCollision6TestCase::DoRun ()
 {
   Ipv6AddressGenerator::AddAllocated ("0::0:5");
   Ipv6AddressGenerator::AddAllocated ("0::0:10");

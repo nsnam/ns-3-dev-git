@@ -64,20 +64,20 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   TestMultiUserScheduler ();
   virtual ~TestMultiUserScheduler ();
 
 private:
   // Implementation of pure virtual methods of MultiUserScheduler class
-  TxFormat SelectTxFormat (void) override;
-  DlMuInfo ComputeDlMuInfo (void) override;
-  UlMuInfo ComputeUlMuInfo (void) override;
+  TxFormat SelectTxFormat () override;
+  DlMuInfo ComputeDlMuInfo () override;
+  UlMuInfo ComputeUlMuInfo () override;
 
   /**
    * Compute the TX vector to use for MU PPDUs.
    */
-  void ComputeWifiTxVector (void);
+  void ComputeWifiTxVector ();
 
   TxFormat m_txFormat;              //!< the format of next transmission
   TriggerFrameType m_ulTriggerType; //!< Trigger Frame type for UL MU
@@ -92,7 +92,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (TestMultiUserScheduler);
 
 TypeId
-TestMultiUserScheduler::GetTypeId (void)
+TestMultiUserScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TestMultiUserScheduler")
     .SetParent<MultiUserScheduler> ()
@@ -115,7 +115,7 @@ TestMultiUserScheduler::~TestMultiUserScheduler ()
 }
 
 MultiUserScheduler::TxFormat
-TestMultiUserScheduler::SelectTxFormat (void)
+TestMultiUserScheduler::SelectTxFormat ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -258,7 +258,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
 }
 
 void
-TestMultiUserScheduler::ComputeWifiTxVector (void)
+TestMultiUserScheduler::ComputeWifiTxVector ()
 {
   if (m_txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
     {
@@ -316,14 +316,14 @@ TestMultiUserScheduler::ComputeWifiTxVector (void)
 }
 
 MultiUserScheduler::DlMuInfo
-TestMultiUserScheduler::ComputeDlMuInfo (void)
+TestMultiUserScheduler::ComputeDlMuInfo ()
 {
   NS_LOG_FUNCTION (this);
   return DlMuInfo {m_psduMap, std::move (m_txParams)};
 }
 
 MultiUserScheduler::UlMuInfo
-TestMultiUserScheduler::ComputeUlMuInfo (void)
+TestMultiUserScheduler::ComputeUlMuInfo ()
 {
   NS_LOG_FUNCTION (this);
   return UlMuInfo {m_trigger, m_triggerHdr, std::move (m_txParams)};
@@ -403,7 +403,7 @@ public:
   void CheckResults (Time sifs, Time slotTime, uint8_t aifsn);
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   static constexpr uint16_t m_muTimerRes = 8192; ///< MU timer resolution in usec
 
@@ -1164,7 +1164,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
 }
 
 void
-OfdmaAckSequenceTest::DoRun (void)
+OfdmaAckSequenceTest::DoRun ()
 {
   uint32_t previousSeed = RngSeedManager::GetSeed ();
   uint64_t previousRun = RngSeedManager::GetRun ();

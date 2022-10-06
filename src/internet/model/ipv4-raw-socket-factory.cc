@@ -27,7 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketFactory");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4RawSocketFactory);
 
-TypeId Ipv4RawSocketFactory::GetTypeId (void)
+TypeId Ipv4RawSocketFactory::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4RawSocketFactory")
     .SetParent<SocketFactory> ()

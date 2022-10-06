@@ -45,7 +45,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * create a pinger applications
@@ -72,14 +72,14 @@ private:
   void Read32 (const uint8_t *buffer, uint32_t &data);
 
   // inherited from Application base class.
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
-  virtual void DoDispose (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
+  virtual void DoDispose ();
   /**
    * \brief Return the application ID in the node.
    * \returns the application id
    */
-  uint32_t GetApplicationId (void) const;
+  uint32_t GetApplicationId () const;
   /**
    * \brief Receive an ICMP Echo
    * \param socket the receiving socket

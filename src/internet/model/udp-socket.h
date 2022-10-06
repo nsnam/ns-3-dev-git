@@ -52,10 +52,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  UdpSocket (void);
-  virtual ~UdpSocket (void);
+  UdpSocket ();
+  virtual ~UdpSocket ();
 
   /**
    * \brief Corresponds to socket option MCAST_JOIN_GROUP
@@ -114,7 +114,7 @@ private:
    * \brief Get the receiving buffer size
    * \returns the buffer size
    */
-  virtual uint32_t GetRcvBufSize (void) const = 0;
+  virtual uint32_t GetRcvBufSize () const = 0;
   /**
    * \brief Set the IP multicast TTL
    * \param ipTtl the IP multicast TTL
@@ -124,7 +124,7 @@ private:
    * \brief Get the IP multicast TTL
    * \returns the IP multicast TTL
    */
-  virtual uint8_t GetIpMulticastTtl (void) const = 0;
+  virtual uint8_t GetIpMulticastTtl () const = 0;
   /**
    * \brief Set the IP multicast interface
    * \param ipIf the IP multicast interface
@@ -134,7 +134,7 @@ private:
    * \brief Get the IP multicast interface
    * \returns the IP multicast interface
    */
-  virtual int32_t GetIpMulticastIf (void) const = 0;
+  virtual int32_t GetIpMulticastIf () const = 0;
   /**
    * \brief Set the IP multicast loop capability
    *
@@ -154,7 +154,7 @@ private:
    *
    * \returns the IP multicast loop capability
    */
-  virtual bool GetIpMulticastLoop (void) const = 0;
+  virtual bool GetIpMulticastLoop () const = 0;
   /**
    * \brief Set the MTU discover capability
    *
@@ -166,7 +166,7 @@ private:
    *
    * \returns the MTU discover capability
    */
-  virtual bool GetMtuDiscover (void) const = 0;
+  virtual bool GetMtuDiscover () const = 0;
 };
 
 } // namespace ns3

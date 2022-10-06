@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketFilter");
 NS_OBJECT_ENSURE_REGISTERED (PacketFilter);
 
 TypeId
-PacketFilter::GetTypeId (void)
+PacketFilter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PacketFilter")
     .SetParent<Object> ()

@@ -24,7 +24,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (ConstantPositionMobilityModel);
 
 TypeId
-ConstantPositionMobilityModel::GetTypeId (void)
+ConstantPositionMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ConstantPositionMobilityModel")
     .SetParent<MobilityModel> ()
@@ -42,7 +42,7 @@ ConstantPositionMobilityModel::~ConstantPositionMobilityModel ()
 }
 
 Vector
-ConstantPositionMobilityModel::DoGetPosition (void) const
+ConstantPositionMobilityModel::DoGetPosition () const
 {
   return m_position;
 }
@@ -53,7 +53,7 @@ ConstantPositionMobilityModel::DoSetPosition (const Vector &position)
   NotifyCourseChange ();
 }
 Vector
-ConstantPositionMobilityModel::DoGetVelocity (void) const
+ConstantPositionMobilityModel::DoGetVelocity () const
 {
   return Vector (0.0, 0.0, 0.0);
 }

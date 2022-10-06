@@ -173,7 +173,7 @@ public:
   /**
    * \return the number of WifiModes supported by this entity
    */
-  virtual uint8_t GetNumModes (void) const;
+  virtual uint8_t GetNumModes () const;
 
   /**
    * Get the WifiMode corresponding to the given MCS index.
@@ -200,7 +200,7 @@ public:
    * \return true if the handled WifiModes are MCSs,
    *         false if they are non-MCS modes
    */
-  virtual bool HandlesMcsModes (void) const;
+  virtual bool HandlesMcsModes () const;
 
   /**
    * Get the WifiMode for the SIG field specified by the PPDU field.
@@ -217,13 +217,13 @@ public:
    *
    * \return a const iterator to the first WifiMode.
    */
-  std::list<WifiMode>::const_iterator begin (void) const;
+  std::list<WifiMode>::const_iterator begin () const;
   /**
    * \brief Return a const iterator to past-the-last WifiMode
    *
    * \return a const iterator to past-the-last WifiMode.
    */
-  std::list<WifiMode>::const_iterator end (void) const;
+  std::list<WifiMode>::const_iterator end () const;
 
   /**
    * Return the field following the provided one.
@@ -287,7 +287,7 @@ public:
    *
    * \return the maximum PSDU size in bytes
    */
-  virtual uint32_t GetMaxPsduSize (void) const = 0;
+  virtual uint32_t GetMaxPsduSize () const = 0;
 
   /**
    * A pair containing information on the PHY header chunk, namely
@@ -403,11 +403,11 @@ public:
   /**
    * Cancel and clear all running events.
    */
-  virtual void CancelAllEvents (void);
+  virtual void CancelAllEvents ();
   /**
    * \return \c true if there is no end preamble detection event running, \c false otherwise
    */
-  bool NoEndPreambleDetectionEvents (void) const;
+  bool NoEndPreambleDetectionEvents () const;
   /**
    * Cancel and eventually clear all end preamble detection events.
    *
@@ -501,7 +501,7 @@ protected:
    *
    * \return the PPDU formats of the PHY
    */
-  virtual const PpduFormats & GetPpduFormats (void) const = 0;
+  virtual const PpduFormats & GetPpduFormats () const = 0;
 
   /**
    * Start receiving a given field, perform amendment-specific actions, and
@@ -702,7 +702,7 @@ protected:
    *
    * \return a uniform random value
    */
-  double GetRandomValue (void) const;
+  double GetRandomValue () const;
   /**
    * Obtain the SNR and PER of the PPDU field from the WifiPhy's InterferenceHelper class.
    * Wrapper used by child classes.
@@ -726,14 +726,14 @@ protected:
    *
    * \return the pointer to the current event
    */
-  Ptr<const Event> GetCurrentEvent (void) const;
+  Ptr<const Event> GetCurrentEvent () const;
   /**
    * Get the map of current preamble events (stored in WifiPhy).
    * Wrapper used by child classes.
    *
    * \return the reference to the map of current preamble events
    */
-  const std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > & GetCurrentPreambleEvents (void) const;
+  const std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > & GetCurrentPreambleEvents () const;
   /**
    * Add an entry to the map of current preamble events (stored in WifiPhy).
    * Wrapper used by child classes.
@@ -866,7 +866,7 @@ protected:
    *
    * Wrapper method used by child classes for PSD generation.
    */
-  std::tuple<double, double, double> GetTxMaskRejectionParams (void) const;
+  std::tuple<double, double, double> GetTxMaskRejectionParams () const;
 
   using CcaIndication = std::optional<std::pair<Time, WifiChannelListType>>; //!< CCA end time and its corresponding channel list type (can be std::nullopt if IDLE)
 

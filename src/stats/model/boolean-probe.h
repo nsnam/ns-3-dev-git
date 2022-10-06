@@ -58,7 +58,7 @@ public:
   /**
    * \return the most recent value
    */
-  bool GetValue (void) const;
+  bool GetValue () const;
 
   /**
    * \param value set the traced bool to a new value

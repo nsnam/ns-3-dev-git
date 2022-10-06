@@ -43,7 +43,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Increments the packet counter by one
@@ -68,7 +68,7 @@ protected:
   /**
    * Dispose of this Object.
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   // end class PacketCounterCalculator
 };
@@ -91,7 +91,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Increments the packet stats by the size of the packet
@@ -112,7 +112,7 @@ public:
                     Mac48Address realto);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   // end class PacketSizeMinMaxAvgTotalCalculator
 };

@@ -46,7 +46,7 @@ Ipv4ListRoutingHelper::Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &o)
 }
 
 Ipv4ListRoutingHelper*
-Ipv4ListRoutingHelper::Copy (void) const
+Ipv4ListRoutingHelper::Copy () const
 {
   return new Ipv4ListRoutingHelper (*this);
 }

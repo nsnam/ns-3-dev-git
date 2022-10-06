@@ -118,35 +118,35 @@ public:
    * \return true if the current state of this agreement is PENDING,
    *         false otherwise
    */
-  bool IsPending (void) const;
+  bool IsPending () const;
   /**
    * Check if the current state of this agreement is ESTABLISHED.
    *
    * \return true if the current state of this agreement is ESTABLISHED,
    *         false otherwise
    */
-  bool IsEstablished (void) const;
+  bool IsEstablished () const;
   /**
    * Check if the current state of this agreement is NO_REPLY.
    *
    * \return true if the current state of this agreement is NO_REPLY,
    *         false otherwise
    */
-  bool IsNoReply (void) const;
+  bool IsNoReply () const;
   /**
    * Check if the current state of this agreement is RESET.
    *
    * \return true if the current state of this agreement is RESET,
    *         false otherwise
    */
-  bool IsReset (void) const;
+  bool IsReset () const;
   /**
    * Check if the current state of this agreement is REJECTED.
    *
    * \return true if the current state of this agreement is REJECTED,
    *         false otherwise
    */
-  bool IsRejected (void) const;
+  bool IsRejected () const;
 
   /**
    * Return the starting sequence number of the transmit window, if a transmit
@@ -155,7 +155,7 @@ public:
    *
    * \return the starting sequence number.
    */
-  uint16_t GetStartingSequence (void) const override;
+  uint16_t GetStartingSequence () const override;
 
   /**
    * Get the distance between the current starting sequence number and the
@@ -170,7 +170,7 @@ public:
    * Initialize the originator's transmit window by setting its size and starting
    * sequence number equal to the values stored by the BlockAckAgreement base class.
    */
-  void InitTxWindow (void);
+  void InitTxWindow ();
 
   /**
    * Advance the transmit window so as to include the transmitted MPDU, if the
@@ -200,7 +200,7 @@ private:
    * Advance the transmit window so that the starting sequence number is the
    * nearest unacknowledged MPDU.
    */
-  void AdvanceTxWindow (void);
+  void AdvanceTxWindow ();
 
   State m_state;                 ///< state
   BlockAckWindow m_txWindow;     ///< originator's transmit window

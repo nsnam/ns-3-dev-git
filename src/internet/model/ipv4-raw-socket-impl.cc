@@ -20,7 +20,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketImpl");
 NS_OBJECT_ENSURE_REGISTERED (Ipv4RawSocketImpl);
 
 TypeId
-Ipv4RawSocketImpl::GetTypeId (void)
+Ipv4RawSocketImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4RawSocketImpl")
     .SetParent<Socket> ()
@@ -71,7 +71,7 @@ Ipv4RawSocketImpl::SetNode (Ptr<Node> node)
 }
 
 void
-Ipv4RawSocketImpl::DoDispose (void)
+Ipv4RawSocketImpl::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
@@ -79,21 +79,21 @@ Ipv4RawSocketImpl::DoDispose (void)
 }
 
 enum Socket::SocketErrno
-Ipv4RawSocketImpl::GetErrno (void) const
+Ipv4RawSocketImpl::GetErrno () const
 {
   NS_LOG_FUNCTION (this);
   return m_err;
 }
 
 enum Socket::SocketType
-Ipv4RawSocketImpl::GetSocketType (void) const
+Ipv4RawSocketImpl::GetSocketType () const
 {
   NS_LOG_FUNCTION (this);
   return NS3_SOCK_RAW;
 }
 
 Ptr<Node>
-Ipv4RawSocketImpl::GetNode (void) const
+Ipv4RawSocketImpl::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -112,14 +112,14 @@ Ipv4RawSocketImpl::Bind (const Address &address)
   return 0;
 }
 int
-Ipv4RawSocketImpl::Bind (void)
+Ipv4RawSocketImpl::Bind ()
 {
   NS_LOG_FUNCTION (this);
   m_src = Ipv4Address::GetAny ();
   return 0;
 }
 int
-Ipv4RawSocketImpl::Bind6 (void)
+Ipv4RawSocketImpl::Bind6 ()
 {
   NS_LOG_FUNCTION (this);
   return (-1);
@@ -147,7 +147,7 @@ Ipv4RawSocketImpl::GetPeerName (Address &address) const
   return 0;
 }
 int
-Ipv4RawSocketImpl::Close (void)
+Ipv4RawSocketImpl::Close ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
@@ -158,14 +158,14 @@ Ipv4RawSocketImpl::Close (void)
   return 0;
 }
 int
-Ipv4RawSocketImpl::ShutdownSend (void)
+Ipv4RawSocketImpl::ShutdownSend ()
 {
   NS_LOG_FUNCTION (this);
   m_shutdownSend = true;
   return 0;
 }
 int
-Ipv4RawSocketImpl::ShutdownRecv (void)
+Ipv4RawSocketImpl::ShutdownRecv ()
 {
   NS_LOG_FUNCTION (this);
   m_shutdownRecv = true;
@@ -189,14 +189,14 @@ Ipv4RawSocketImpl::Connect (const Address &address)
   return 0;
 }
 int
-Ipv4RawSocketImpl::Listen (void)
+Ipv4RawSocketImpl::Listen ()
 {
   NS_LOG_FUNCTION (this);
   m_err = Socket::ERROR_OPNOTSUPP;
   return -1;
 }
 uint32_t
-Ipv4RawSocketImpl::GetTxAvailable (void) const
+Ipv4RawSocketImpl::GetTxAvailable () const
 {
   NS_LOG_FUNCTION (this);
   return 0xffffffff;
@@ -363,7 +363,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
   return 0;
 }
 uint32_t
-Ipv4RawSocketImpl::GetRxAvailable (void) const
+Ipv4RawSocketImpl::GetRxAvailable () const
 {
   NS_LOG_FUNCTION (this);
   uint32_t rx = 0;

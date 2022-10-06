@@ -61,7 +61,7 @@ BooleanProbe::~BooleanProbe ()
 }
 
 bool
-BooleanProbe::GetValue (void) const
+BooleanProbe::GetValue () const
 {
   NS_LOG_FUNCTION (this);
   return m_output;

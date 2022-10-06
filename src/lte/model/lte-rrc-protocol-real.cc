@@ -65,7 +65,7 @@ LteUeRrcProtocolReal::DoDispose ()
 }
 
 TypeId
-LteUeRrcProtocolReal::GetTypeId (void)
+LteUeRrcProtocolReal::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteUeRrcProtocolReal")
     .SetParent<Object> ()
@@ -406,7 +406,7 @@ LteEnbRrcProtocolReal::DoDispose ()
 }
 
 TypeId
-LteEnbRrcProtocolReal::GetTypeId (void)
+LteEnbRrcProtocolReal::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteEnbRrcProtocolReal")
     .SetParent<Object> ()

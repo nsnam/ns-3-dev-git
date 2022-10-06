@@ -87,7 +87,7 @@ public:
    * Allocate a new Mac64Address.
    * \returns newly allocated mac64Address
    */
-  static Mac64Address Allocate (void);
+  static Mac64Address Allocate ();
 
   /**
    * Reset the Mac64Address allocation index.
@@ -110,13 +110,13 @@ private:
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   /**
    * \brief Return the Type of address.
    * \return type of address
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
 
   /**
    * \brief Equal to operator.

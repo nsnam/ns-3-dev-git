@@ -42,7 +42,7 @@ ConstantObssPdAlgorithm::ConstantObssPdAlgorithm ()
 }
 
 TypeId
-ConstantObssPdAlgorithm::GetTypeId (void)
+ConstantObssPdAlgorithm::GetTypeId ()
 {
   static ns3::TypeId tid = ns3::TypeId ("ns3::ConstantObssPdAlgorithm")
     .SetParent<ObssPdAlgorithm> ()

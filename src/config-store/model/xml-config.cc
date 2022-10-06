@@ -98,7 +98,7 @@ XmlConfigSave::~XmlConfigSave ()
   m_writer = 0;
 }
 void
-XmlConfigSave::Default (void)
+XmlConfigSave::Default ()
 {
   class XmlDefaultIterator : public AttributeDefaultIterator
   {
@@ -177,7 +177,7 @@ private:
 }
 
 void
-XmlConfigSave::Attributes (void)
+XmlConfigSave::Attributes ()
 {
   class XmlTextAttributeIterator : public AttributeIterator
   {
@@ -251,7 +251,7 @@ public:
 }
 
 void
-XmlConfigSave::Global (void)
+XmlConfigSave::Global ()
 {
   int rc;
   for (GlobalValue::Iterator i = GlobalValue::Begin (); i != GlobalValue::End (); ++i)
@@ -300,7 +300,7 @@ XmlConfigLoad::SetFilename (std::string filename)
   m_filename = filename;
 }
 void
-XmlConfigLoad::Default (void)
+XmlConfigLoad::Default ()
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
   if (reader == NULL)
@@ -338,7 +338,7 @@ XmlConfigLoad::Default (void)
   xmlFreeTextReader (reader);
 }
 void
-XmlConfigLoad::Global (void)
+XmlConfigLoad::Global ()
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
   if (reader == NULL)
@@ -376,7 +376,7 @@ XmlConfigLoad::Global (void)
   xmlFreeTextReader (reader);
 }
 void
-XmlConfigLoad::Attributes (void)
+XmlConfigLoad::Attributes ()
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
   if (reader == NULL)

@@ -117,7 +117,7 @@ public:
   void SrsTxPowerTrace (uint16_t cellId, uint16_t rnti, double txPower);
 
 protected:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Ptr<MobilityModel> m_ueMobility; ///< UE mobility model
   Time m_teleportTime; ///< teleport time
@@ -150,7 +150,7 @@ public:
   virtual ~LteUplinkOpenLoopPowerControlTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 /**
@@ -171,7 +171,7 @@ public:
   virtual ~LteUplinkClosedLoopPowerControlAbsoluteModeTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 /**
@@ -192,7 +192,7 @@ public:
   virtual ~LteUplinkClosedLoopPowerControlAccumulatedModeTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 #endif /* LTE_TEST_UPLINK_POWER_CONTROL_H */

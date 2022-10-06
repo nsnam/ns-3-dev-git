@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("RandomWalk2dOutdoor");
 NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dOutdoorMobilityModel);
 
 TypeId
-RandomWalk2dOutdoorMobilityModel::GetTypeId (void)
+RandomWalk2dOutdoorMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RandomWalk2dOutdoorMobilityModel")
     .SetParent<MobilityModel> ()
@@ -96,14 +96,14 @@ RandomWalk2dOutdoorMobilityModel::GetTypeId (void)
 }
 
 void
-RandomWalk2dOutdoorMobilityModel::DoInitialize (void)
+RandomWalk2dOutdoorMobilityModel::DoInitialize ()
 {
   DoInitializePrivate ();
   MobilityModel::DoInitialize ();
 }
 
 void
-RandomWalk2dOutdoorMobilityModel::DoInitializePrivate (void)
+RandomWalk2dOutdoorMobilityModel::DoInitializePrivate ()
 {
   m_helper.Update ();
   double speed = m_speed->GetValue ();
@@ -402,13 +402,13 @@ RandomWalk2dOutdoorMobilityModel::AvoidBuilding (Time delayLeft, Vector intersec
 }
 
 void
-RandomWalk2dOutdoorMobilityModel::DoDispose (void)
+RandomWalk2dOutdoorMobilityModel::DoDispose ()
 {
   // chain up
   MobilityModel::DoDispose ();
 }
 Vector
-RandomWalk2dOutdoorMobilityModel::DoGetPosition (void) const
+RandomWalk2dOutdoorMobilityModel::DoGetPosition () const
 {
   m_helper.UpdateWithBounds (m_bounds);
   return m_helper.GetCurrentPosition ();
@@ -422,7 +422,7 @@ RandomWalk2dOutdoorMobilityModel::DoSetPosition (const Vector &position)
   m_event = Simulator::ScheduleNow (&RandomWalk2dOutdoorMobilityModel::DoInitializePrivate, this);
 }
 Vector
-RandomWalk2dOutdoorMobilityModel::DoGetVelocity (void) const
+RandomWalk2dOutdoorMobilityModel::DoGetVelocity () const
 {
   return m_helper.GetVelocity ();
 }

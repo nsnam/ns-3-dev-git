@@ -50,49 +50,49 @@ EventId::EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t context, uin
   NS_LOG_FUNCTION (this << impl << ts << context << uid);
 }
 void
-EventId::Cancel (void)
+EventId::Cancel ()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Cancel (*this);
 }
 void
-EventId::Remove (void)
+EventId::Remove ()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Remove (*this);
 }
 bool
-EventId::IsExpired (void) const
+EventId::IsExpired () const
 {
   NS_LOG_FUNCTION (this);
   return Simulator::IsExpired (*this);
 }
 bool
-EventId::IsRunning (void) const
+EventId::IsRunning () const
 {
   NS_LOG_FUNCTION (this);
   return !IsExpired ();
 }
 EventImpl *
-EventId::PeekEventImpl (void) const
+EventId::PeekEventImpl () const
 {
   NS_LOG_FUNCTION (this);
   return PeekPointer (m_eventImpl);
 }
 uint64_t
-EventId::GetTs (void) const
+EventId::GetTs () const
 {
   NS_LOG_FUNCTION (this);
   return m_ts;
 }
 uint32_t
-EventId::GetContext (void) const
+EventId::GetContext () const
 {
   NS_LOG_FUNCTION (this);
   return m_context;
 }
 uint32_t
-EventId::GetUid (void) const
+EventId::GetUid () const
 {
   NS_LOG_FUNCTION (this);
   return m_uid;

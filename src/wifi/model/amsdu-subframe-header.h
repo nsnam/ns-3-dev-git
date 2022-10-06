@@ -40,11 +40,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const override;
+  TypeId GetInstanceTypeId () const override;
   void Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize (void) const override;
+  uint32_t GetSerializedSize () const override;
   void Serialize (Buffer::Iterator start) const override;
   uint32_t Deserialize (Buffer::Iterator start) override;
 
@@ -67,17 +67,17 @@ public:
    * Get destination address function
    * \returns the destination MAC address
    */
-  Mac48Address GetDestinationAddr (void) const;
+  Mac48Address GetDestinationAddr () const;
   /**
    * Get source address function
    * \returns the source MAC address
    */
-  Mac48Address GetSourceAddr (void) const;
+  Mac48Address GetSourceAddr () const;
   /**
    * Get length function
    * \returns the length in bytes
    */
-  uint16_t GetLength (void) const;
+  uint16_t GetLength () const;
 
 private:
   Mac48Address m_da; ///< destination address

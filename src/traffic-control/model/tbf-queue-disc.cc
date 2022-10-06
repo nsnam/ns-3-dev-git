@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("TbfQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (TbfQueueDisc);
 
-TypeId TbfQueueDisc::GetTypeId (void)
+TypeId TbfQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TbfQueueDisc")
     .SetParent<QueueDisc> ()
@@ -102,7 +102,7 @@ TbfQueueDisc::~TbfQueueDisc ()
 }
 
 void
-TbfQueueDisc::DoDispose (void)
+TbfQueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   QueueDisc::DoDispose ();
@@ -116,7 +116,7 @@ TbfQueueDisc::SetBurst (uint32_t burst)
 }
 
 uint32_t
-TbfQueueDisc::GetBurst (void) const
+TbfQueueDisc::GetBurst () const
 {
   NS_LOG_FUNCTION (this);
   return m_burst;
@@ -130,7 +130,7 @@ TbfQueueDisc::SetMtu (uint32_t mtu)
 }
 
 uint32_t
-TbfQueueDisc::GetMtu (void) const
+TbfQueueDisc::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;
@@ -144,7 +144,7 @@ TbfQueueDisc::SetRate (DataRate rate)
 }
 
 DataRate
-TbfQueueDisc::GetRate (void) const
+TbfQueueDisc::GetRate () const
 {
   NS_LOG_FUNCTION (this);
   return m_rate;
@@ -158,21 +158,21 @@ TbfQueueDisc::SetPeakRate (DataRate peakRate)
 }
 
 DataRate
-TbfQueueDisc::GetPeakRate (void) const
+TbfQueueDisc::GetPeakRate () const
 {
   NS_LOG_FUNCTION (this);
   return m_peakRate;
 }
 
 uint32_t
-TbfQueueDisc::GetFirstBucketTokens (void) const
+TbfQueueDisc::GetFirstBucketTokens () const
 {
   NS_LOG_FUNCTION (this);
   return m_btokens;
 }
 
 uint32_t
-TbfQueueDisc::GetSecondBucketTokens (void) const
+TbfQueueDisc::GetSecondBucketTokens () const
 {
   NS_LOG_FUNCTION (this);
   return m_ptokens;
@@ -194,7 +194,7 @@ TbfQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-TbfQueueDisc::DoDequeue (void)
+TbfQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<const QueueDiscItem> itemPeek = GetQueueDiscClass (0)->GetQueueDisc ()->Peek ();
@@ -292,7 +292,7 @@ TbfQueueDisc::DoDequeue (void)
 }
 
 bool
-TbfQueueDisc::CheckConfig (void)
+TbfQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNInternalQueues () > 0)
@@ -369,7 +369,7 @@ TbfQueueDisc::CheckConfig (void)
 }
 
 void
-TbfQueueDisc::InitializeParams (void)
+TbfQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
   // Token Buckets are full at the beginning.

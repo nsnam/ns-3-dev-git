@@ -37,7 +37,7 @@ AmpduSubframeHeader::GetTypeId ()
 }
 
 TypeId
-AmpduSubframeHeader::GetInstanceTypeId (void) const
+AmpduSubframeHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -99,19 +99,19 @@ AmpduSubframeHeader::SetEof (bool eof)
 }
 
 uint16_t
-AmpduSubframeHeader::GetLength (void) const
+AmpduSubframeHeader::GetLength () const
 {
   return m_length;
 }
 
 bool
-AmpduSubframeHeader::GetEof (void) const
+AmpduSubframeHeader::GetEof () const
 {
   return m_eof;
 }
 
 bool
-AmpduSubframeHeader::IsSignatureValid (void) const
+AmpduSubframeHeader::IsSignatureValid () const
 {
   return m_signature == 0x4E;
 }

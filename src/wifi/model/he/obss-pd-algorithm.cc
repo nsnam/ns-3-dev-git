@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("ObssPdAlgorithm");
 NS_OBJECT_ENSURE_REGISTERED (ObssPdAlgorithm);
 
 TypeId
-ObssPdAlgorithm::GetTypeId (void)
+ObssPdAlgorithm::GetTypeId ()
 {
   static ns3::TypeId tid = ns3::TypeId ("ns3::ObssPdAlgorithm")
     .SetParent<Object> ()
@@ -71,7 +71,7 @@ ObssPdAlgorithm::GetTypeId (void)
 }
 
 void
-ObssPdAlgorithm::DoDispose (void)
+ObssPdAlgorithm::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_device = 0;
@@ -118,7 +118,7 @@ ObssPdAlgorithm::SetObssPdLevel (double level)
 }
 
 double
-ObssPdAlgorithm::GetObssPdLevel (void) const
+ObssPdAlgorithm::GetObssPdLevel () const
 {
   return m_obssPdLevel;
 }

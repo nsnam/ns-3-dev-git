@@ -54,13 +54,13 @@ public:
    * Return true if broadcast (if first octet of Mesh ID is zero)
    * \returns true if broadcast
    */
-  bool IsBroadcast (void) const;
+  bool IsBroadcast () const;
   //uint32_t GetLength (void) const;
   /**
    * Peek the IeMeshId as a string value
    * \returns the mesh ID as a string
    */
-  char *PeekString (void) const;
+  char *PeekString () const;
 
   // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;

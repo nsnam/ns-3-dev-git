@@ -56,7 +56,7 @@ FdNetDeviceFdReader::SetBufferSize (uint32_t bufferSize)
   m_bufferSize = bufferSize;
 }
 
-FdReader::Data FdNetDeviceFdReader::DoRead (void)
+FdReader::Data FdNetDeviceFdReader::DoRead ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -78,7 +78,7 @@ FdReader::Data FdNetDeviceFdReader::DoRead (void)
 NS_OBJECT_ENSURE_REGISTERED (FdNetDevice);
 
 TypeId
-FdNetDevice::GetTypeId (void)
+FdNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FdNetDevice")
     .SetParent<NetDevice> ()
@@ -186,7 +186,7 @@ FdNetDevice::~FdNetDevice ()
 }
 
 void
-FdNetDevice::DoInitialize (void)
+FdNetDevice::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   Start (m_tStart);
@@ -199,7 +199,7 @@ FdNetDevice::DoInitialize (void)
 }
 
 void
-FdNetDevice::DoDispose (void)
+FdNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   StopDevice ();
@@ -215,7 +215,7 @@ FdNetDevice::SetEncapsulationMode (enum EncapsulationMode mode)
 }
 
 FdNetDevice::EncapsulationMode
-FdNetDevice::GetEncapsulationMode (void) const
+FdNetDevice::GetEncapsulationMode () const
 {
   NS_LOG_FUNCTION (this);
   return m_encapMode;
@@ -238,7 +238,7 @@ FdNetDevice::Stop (Time tStop)
 }
 
 void
-FdNetDevice::StartDevice (void)
+FdNetDevice::StartDevice ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -257,7 +257,7 @@ FdNetDevice::StartDevice (void)
 }
 
 Ptr<FdReader>
-FdNetDevice::DoCreateFdReader (void)
+FdNetDevice::DoCreateFdReader ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -268,19 +268,19 @@ FdNetDevice::DoCreateFdReader (void)
 }
 
 void
-FdNetDevice::DoFinishStartingDevice (void)
+FdNetDevice::DoFinishStartingDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-FdNetDevice::DoFinishStoppingDevice (void)
+FdNetDevice::DoFinishStoppingDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-FdNetDevice::StopDevice (void)
+FdNetDevice::StopDevice ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -415,7 +415,7 @@ FdNetDevice::FreeBuffer (uint8_t *buf)
 }
 
 void
-FdNetDevice::ForwardUp (void)
+FdNetDevice::ForwardUp ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -664,7 +664,7 @@ FdNetDevice::SetFileDescriptor (int fd)
 }
 
 int
-FdNetDevice::GetFileDescriptor (void) const
+FdNetDevice::GetFileDescriptor () const
 {
   return m_fd;
 }
@@ -676,13 +676,13 @@ FdNetDevice::SetAddress (Address address)
 }
 
 Address
-FdNetDevice::GetAddress (void) const
+FdNetDevice::GetAddress () const
 {
   return m_address;
 }
 
 void
-FdNetDevice::NotifyLinkUp (void)
+FdNetDevice::NotifyLinkUp ()
 {
   m_linkUp = true;
   m_linkChangeCallbacks ();
@@ -695,13 +695,13 @@ FdNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-FdNetDevice::GetIfIndex (void) const
+FdNetDevice::GetIfIndex () const
 {
   return m_ifIndex;
 }
 
 Ptr<Channel>
-FdNetDevice::GetChannel (void) const
+FdNetDevice::GetChannel () const
 {
   return NULL;
 }
@@ -720,13 +720,13 @@ FdNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-FdNetDevice::GetMtu (void) const
+FdNetDevice::GetMtu () const
 {
   return m_mtu;
 }
 
 bool
-FdNetDevice::IsLinkUp (void) const
+FdNetDevice::IsLinkUp () const
 {
   return m_linkUp;
 }
@@ -738,7 +738,7 @@ FdNetDevice::AddLinkChangeCallback (Callback<void> callback)
 }
 
 bool
-FdNetDevice::IsBroadcast (void) const
+FdNetDevice::IsBroadcast () const
 {
   return m_isBroadcast;
 }
@@ -750,13 +750,13 @@ FdNetDevice::SetIsBroadcast (bool broadcast)
 }
 
 Address
-FdNetDevice::GetBroadcast (void) const
+FdNetDevice::GetBroadcast () const
 {
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-FdNetDevice::IsMulticast (void) const
+FdNetDevice::IsMulticast () const
 {
   return m_isMulticast;
 }
@@ -780,19 +780,19 @@ FdNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-FdNetDevice::IsBridge (void) const
+FdNetDevice::IsBridge () const
 {
   return false;
 }
 
 bool
-FdNetDevice::IsPointToPoint (void) const
+FdNetDevice::IsPointToPoint () const
 {
   return false;
 }
 
 Ptr<Node>
-FdNetDevice::GetNode (void) const
+FdNetDevice::GetNode () const
 {
   return m_node;
 }
@@ -809,7 +809,7 @@ FdNetDevice::SetNode (Ptr<Node> node)
 }
 
 bool
-FdNetDevice::NeedsArp (void) const
+FdNetDevice::NeedsArp () const
 {
   return true;
 }
@@ -827,7 +827,7 @@ FdNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-FdNetDevice::SupportsSendFrom (void) const
+FdNetDevice::SupportsSendFrom () const
 {
   return true;
 }

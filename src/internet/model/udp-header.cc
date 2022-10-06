@@ -46,7 +46,7 @@ UdpHeader::~UdpHeader ()
 }
 
 void
-UdpHeader::EnableChecksums (void)
+UdpHeader::EnableChecksums ()
 {
   m_calcChecksum = true;
 }
@@ -62,12 +62,12 @@ UdpHeader::SetSourcePort (uint16_t port)
   m_sourcePort = port;
 }
 uint16_t
-UdpHeader::GetSourcePort (void) const
+UdpHeader::GetSourcePort () const
 {
   return m_sourcePort;
 }
 uint16_t
-UdpHeader::GetDestinationPort (void) const
+UdpHeader::GetDestinationPort () const
 {
   return m_destinationPort;
 }
@@ -133,7 +133,7 @@ UdpHeader::CalculateHeaderChecksum (uint16_t size) const
 }
 
 bool
-UdpHeader::IsChecksumOk (void) const
+UdpHeader::IsChecksumOk () const
 {
   return m_goodChecksum;
 }
@@ -151,7 +151,7 @@ UdpHeader::ForcePayloadSize (uint16_t payloadSize)
 }
 
 TypeId
-UdpHeader::GetTypeId (void)
+UdpHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpHeader")
     .SetParent<Header> ()
@@ -161,7 +161,7 @@ UdpHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-UdpHeader::GetInstanceTypeId (void) const
+UdpHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -175,7 +175,7 @@ UdpHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-UdpHeader::GetSerializedSize (void) const
+UdpHeader::GetSerializedSize () const
 {
   return 8;
 }

@@ -35,7 +35,7 @@ SocketWriter::~SocketWriter ()
 
 /* static */
 TypeId
-SocketWriter::GetTypeId (void)
+SocketWriter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SocketWriter")
     .SetParent<Application> ()

@@ -52,7 +52,7 @@ public:
   virtual ~BulkSendBasicTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Record a packet successfully sent
    * \param p the packet
@@ -90,7 +90,7 @@ BulkSendBasicTestCase::ReceiveRx (Ptr<const Packet> p, const Address& addr)
 }
 
 void
-BulkSendBasicTestCase::DoRun (void)
+BulkSendBasicTestCase::DoRun ()
 {
   Ptr<Node> sender = CreateObject<Node> ();
   Ptr<Node> receiver = CreateObject<Node> ();
@@ -148,7 +148,7 @@ public:
   virtual ~BulkSendSeqTsSizeTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Record a packet successfully sent
    * \param p the packet
@@ -205,7 +205,7 @@ BulkSendSeqTsSizeTestCase::ReceiveRx (Ptr<const Packet> p, const Address &from, 
 }
 
 void
-BulkSendSeqTsSizeTestCase::DoRun (void)
+BulkSendSeqTsSizeTestCase::DoRun ()
 {
   Ptr<Node> sender = CreateObject<Node> ();
   Ptr<Node> receiver = CreateObject<Node> ();

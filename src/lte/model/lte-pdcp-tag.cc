@@ -42,7 +42,7 @@ PdcpTag::PdcpTag (Time senderTimestamp)
 }
 
 TypeId
-PdcpTag::GetTypeId (void)
+PdcpTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PdcpTag")
     .SetParent<Tag> ()
@@ -52,13 +52,13 @@ PdcpTag::GetTypeId (void)
 }
 
 TypeId
-PdcpTag::GetInstanceTypeId (void) const
+PdcpTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-PdcpTag::GetSerializedSize (void) const
+PdcpTag::GetSerializedSize () const
 {
   return sizeof(Time);
 }
@@ -86,7 +86,7 @@ PdcpTag::Print (std::ostream &os) const
 }
 
 Time
-PdcpTag::GetSenderTimestamp (void) const
+PdcpTag::GetSenderTimestamp () const
 {
   return m_senderTimestamp;
 }

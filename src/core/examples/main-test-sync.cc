@@ -50,7 +50,7 @@ bool gFirstRun = false;
 
 /** An event method called many times from the background thread. */
 void
-inserted_function (void)
+inserted_function ()
 {
   NS_ASSERT (gFirstRun);
   NS_LOG_UNCOND ("inserted_function() called at " <<
@@ -59,7 +59,7 @@ inserted_function (void)
 
 /** An event method called many times from the main thread. */
 void
-background_function (void)
+background_function ()
 {
   NS_ASSERT (gFirstRun);
   NS_LOG_UNCOND ("background_function() called at " <<
@@ -68,7 +68,7 @@ background_function (void)
 
 /** An event method called once from the main thread. */
 void
-first_function (void)
+first_function ()
 {
   NS_LOG_UNCOND ("first_function() called at " <<
                  Simulator::Now ().GetSeconds () << " s");
@@ -82,7 +82,7 @@ public:
   /** Constructor. */
   FakeNetDevice ();
   /** The thread entry point. */
-  void Doit3 (void);
+  void Doit3 ();
 };
 
 FakeNetDevice::FakeNetDevice ()
@@ -91,7 +91,7 @@ FakeNetDevice::FakeNetDevice ()
 }
 
 void
-FakeNetDevice::Doit3 (void)
+FakeNetDevice::Doit3 ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::this_thread::sleep_for (std::chrono::seconds (1));
@@ -116,7 +116,7 @@ FakeNetDevice::Doit3 (void)
  * \c inserted_function.
  */
 void
-test (void)
+test ()
 {
   GlobalValue::Bind ("SimulatorImplementationType",
                      StringValue ("ns3::RealtimeSimulatorImpl"));

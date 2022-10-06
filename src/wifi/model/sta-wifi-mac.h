@@ -150,7 +150,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   StaWifiMac ();
   virtual ~StaWifiMac ();
@@ -182,7 +182,7 @@ public:
    * Forward a probe request packet to the DCF. The standard is not clear on the correct
    * queue for management frames if QoS is supported. We always use the DCF.
    */
-  void SendProbeRequest (void);
+  void SendProbeRequest ();
 
   /**
    * This method is called after wait beacon timeout or wait probe request timeout has
@@ -198,14 +198,14 @@ public:
    *
    * \return true if we are associated with an AP, false otherwise
    */
-  bool IsAssociated (void) const;
+  bool IsAssociated () const;
 
   /**
    * Return the association ID.
    *
    * \return the association ID
    */
-  uint16_t GetAssociationId (void) const;
+  uint16_t GetAssociationId () const;
 
   void NotifyChannelSwitching (uint8_t linkId) override;
 
@@ -272,7 +272,7 @@ private:
    *
    * \return true if active probing is enabled, false otherwise
    */
-  bool GetActiveProbing (void) const;
+  bool GetActiveProbing () const;
 
   /**
    * Determine whether the supported rates indicated in a given Beacon frame or
@@ -286,7 +286,7 @@ private:
   bool CheckSupportedRates (std::variant<MgtBeaconHeader, MgtProbeResponseHeader> frame, uint8_t linkId);
 
   void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
-  std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
+  std::unique_ptr<LinkEntity> CreateLinkEntity () const override;
 
   /**
    * Process the Beacon frame received on the given link.
@@ -349,23 +349,23 @@ private:
    * Try to ensure that we are associated with an AP by taking an appropriate action
    * depending on the current association status.
    */
-  void TryToEnsureAssociated (void);
+  void TryToEnsureAssociated ();
   /**
    * This method is called after the association timeout occurred. We switch the state to
    * WAIT_ASSOC_RESP and re-send an association request.
    */
-  void AssocRequestTimeout (void);
+  void AssocRequestTimeout ();
   /**
    * Start the scanning process which trigger active or passive scanning based on the
    * active probing flag.
    */
-  void StartScanning (void);
+  void StartScanning ();
   /**
    * Return whether we are waiting for an association response from an AP.
    *
    * \return true if we are waiting for an association response from an AP, false otherwise
    */
-  bool IsWaitAssocResp (void) const;
+  bool IsWaitAssocResp () const;
   /**
    * This method is called after we have not received a beacon from the AP
    * on the given link.
@@ -442,7 +442,7 @@ private:
   /**
    * Indicate that PHY capabilities have changed.
    */
-  void PhyCapabilitiesChanged (void);
+  void PhyCapabilitiesChanged ();
 
   /**
    * Get the current primary20 channel used on the given link as a
@@ -453,8 +453,8 @@ private:
    */
   WifiScanParams::Channel GetCurrentChannel (uint8_t linkId) const;
 
-  void DoInitialize (void) override;
-  void DoDispose (void) override;
+  void DoInitialize () override;
+  void DoDispose () override;
 
   MacState m_state;            ///< MAC state
   uint16_t m_aid;              ///< Association AID

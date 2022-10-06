@@ -54,7 +54,7 @@ PhyRxStatsCalculator::~PhyRxStatsCalculator ()
 }
 
 TypeId
-PhyRxStatsCalculator::GetTypeId (void)
+PhyRxStatsCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PhyRxStatsCalculator")
     .SetParent<LteStatsCalculator> ()
@@ -81,7 +81,7 @@ PhyRxStatsCalculator::SetUlRxOutputFilename (std::string outputFilename)
 }
 
 std::string
-PhyRxStatsCalculator::GetUlRxOutputFilename (void)
+PhyRxStatsCalculator::GetUlRxOutputFilename ()
 {
   return LteStatsCalculator::GetUlOutputFilename ();
 }
@@ -93,7 +93,7 @@ PhyRxStatsCalculator::SetDlRxOutputFilename (std::string outputFilename)
 }
 
 std::string
-PhyRxStatsCalculator::GetDlRxOutputFilename (void)
+PhyRxStatsCalculator::GetDlRxOutputFilename ()
 {
   return LteStatsCalculator::GetDlOutputFilename ();
 }

@@ -26,7 +26,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxMacToMacHeader);
 
-WimaxMacToMacHeader::WimaxMacToMacHeader (void)
+WimaxMacToMacHeader::WimaxMacToMacHeader ()
   : m_len (0)
 {
 }
@@ -36,14 +36,14 @@ WimaxMacToMacHeader::WimaxMacToMacHeader (uint32_t len)
 {
 }
 
-WimaxMacToMacHeader::~WimaxMacToMacHeader (void)
+WimaxMacToMacHeader::~WimaxMacToMacHeader ()
 {
 }
 
 
 
 TypeId
-WimaxMacToMacHeader::GetTypeId (void)
+WimaxMacToMacHeader::GetTypeId ()
 {
   static TypeId tid =
     TypeId ("ns3::WimaxMacToMacHeader")
@@ -55,13 +55,13 @@ WimaxMacToMacHeader::GetTypeId (void)
 }
 
 TypeId
-WimaxMacToMacHeader::GetInstanceTypeId (void) const
+WimaxMacToMacHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint8_t
-WimaxMacToMacHeader::GetSizeOfLen (void) const
+WimaxMacToMacHeader::GetSizeOfLen () const
 {
   uint8_t sizeOfLen = 1;
 
@@ -79,7 +79,7 @@ WimaxMacToMacHeader::GetSizeOfLen (void) const
 }
 
 uint32_t
-WimaxMacToMacHeader::GetSerializedSize (void) const
+WimaxMacToMacHeader::GetSerializedSize () const
 {
   uint8_t sizeOfLen = GetSizeOfLen ();
   if (sizeOfLen==1)

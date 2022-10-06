@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("BSLinkManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BSLinkManager);
 
-TypeId BSLinkManager::GetTypeId (void)
+TypeId BSLinkManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BSLinkManager")
     .SetParent<Object> ()
@@ -54,13 +54,13 @@ BSLinkManager::BSLinkManager (Ptr<BaseStationNetDevice> bs)
   tries = 0;
 }
 
-BSLinkManager::~BSLinkManager (void)
+BSLinkManager::~BSLinkManager ()
 {
   m_bs = 0;
 }
 
 uint8_t
-BSLinkManager::CalculateRangingOppsToAllocate (void)
+BSLinkManager::CalculateRangingOppsToAllocate ()
 {
   // randomly selecting TOs up to 10, shall actually be decided by scheduler
   return rand () % 8 + 2;
@@ -327,7 +327,7 @@ BSLinkManager::DeallocateCids (Cid cid)
 }
 
 uint64_t
-BSLinkManager::SelectDlChannel (void)
+BSLinkManager::SelectDlChannel ()
 {
   // Values according to WirelessMAN-OFDM RF profile for 10 MHz channelization
   // Section 12.3.3.1 from IEEE 802.16-2004 standard
@@ -338,21 +338,21 @@ BSLinkManager::SelectDlChannel (void)
 }
 
 bool
-BSLinkManager::ChangeDlChannel (void)
+BSLinkManager::ChangeDlChannel ()
 {
   // code to decide if SS shall move to a new channel/frequency goes here
   return false;
 }
 
 uint32_t
-BSLinkManager::GetNewDlChannel (void)
+BSLinkManager::GetNewDlChannel ()
 {
   // code to determine suggested new frequency goes here
   return 100;
 }
 
 uint8_t
-BSLinkManager::GetSignalQuality (void)
+BSLinkManager::GetSignalQuality ()
 {
   // code to measure signal quality goes here
   uint8_t signalQuality = m_signalQuality;
@@ -361,7 +361,7 @@ BSLinkManager::GetSignalQuality (void)
 }
 
 bool
-BSLinkManager::IsRangingAcceptable (void)
+BSLinkManager::IsRangingAcceptable ()
 {
   return GetSignalQuality () > m_signalQualityThreshold;
 }

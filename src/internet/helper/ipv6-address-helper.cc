@@ -119,7 +119,7 @@ Ipv6Address Ipv6AddressHelper::NewAddress (Address addr)
   return Ipv6Address ("::");
 }
 
-Ipv6Address Ipv6AddressHelper::NewAddress (void)
+Ipv6Address Ipv6AddressHelper::NewAddress ()
 {
   NS_LOG_FUNCTION (this);
 //
@@ -167,7 +167,7 @@ Ipv6Address Ipv6AddressHelper::NewAddress (void)
   return addr;
 }
 
-void Ipv6AddressHelper::NewNetwork (void)
+void Ipv6AddressHelper::NewNetwork ()
 {
   NS_LOG_FUNCTION (this);
 

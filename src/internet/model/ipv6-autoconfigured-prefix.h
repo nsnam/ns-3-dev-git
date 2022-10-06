@@ -99,7 +99,7 @@ public:
    * \brief Get the prefix valid life time.
    * \return valid life time
    */
-  uint32_t GetValidLifeTime (void) const;
+  uint32_t GetValidLifeTime () const;
 
   /**
    * \brief Set the prefix valid life time.

@@ -107,7 +107,7 @@ EnvDictionary (std::string key)
  * \return The TypeId for ObjectBase.
  */
 static TypeId
-GetObjectIid (void)
+GetObjectIid ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   TypeId tid = TypeId ("ns3::ObjectBase");
@@ -117,7 +117,7 @@ GetObjectIid (void)
 }
 
 TypeId
-ObjectBase::GetTypeId (void)
+ObjectBase::GetTypeId ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = GetObjectIid ();
@@ -130,7 +130,7 @@ ObjectBase::~ObjectBase ()
 }
 
 void
-ObjectBase::NotifyConstructionCompleted (void)
+ObjectBase::NotifyConstructionCompleted ()
 {
   NS_LOG_FUNCTION (this);
 }

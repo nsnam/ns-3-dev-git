@@ -26,7 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpRateOps");
 NS_OBJECT_ENSURE_REGISTERED (TcpRateOps);
 
 TypeId
-TcpRateOps::GetTypeId (void)
+TcpRateOps::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpRateOps")
     .SetParent<Object> ()
@@ -38,7 +38,7 @@ TcpRateOps::GetTypeId (void)
 NS_OBJECT_ENSURE_REGISTERED (TcpRateLinux);
 
 TypeId
-TcpRateLinux::GetTypeId (void)
+TcpRateLinux::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpRateLinux")
     .SetParent<TcpRateOps> ()

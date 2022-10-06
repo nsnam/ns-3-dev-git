@@ -101,7 +101,7 @@ BoxLineIntersectionTestCase::BuildNameString (uint16_t indexPos1, uint16_t index
 }
 
 void
-BoxLineIntersectionTestCase::DoRun (void)
+BoxLineIntersectionTestCase::DoRun ()
 {
 
   Vector pos1 = CreatePosition (m_indexPos1, (m_box.zMax - m_box.zMin));

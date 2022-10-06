@@ -52,7 +52,7 @@ public:
    *
    * \returns The device name of this device.
    */
-  std::string GetDeviceName (void);
+  std::string GetDeviceName ();
 
   /**
    * Set the device name of this device.
@@ -89,7 +89,7 @@ protected:
    * socket.  We do this to avoid having the entire simulation running as root.
    * \return the rawSocket number
    */
-  virtual int CreateFileDescriptor (void) const;
+  virtual int CreateFileDescriptor () const;
 
   /**
    * The Unix/Linux name of the underlying device (e.g., eth0)

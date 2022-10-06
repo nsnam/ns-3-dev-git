@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("InetTopologyReader");
 
 NS_OBJECT_ENSURE_REGISTERED (InetTopologyReader);
 
-TypeId InetTopologyReader::GetTypeId (void)
+TypeId InetTopologyReader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::InetTopologyReader")
     .SetParent<TopologyReader> ()
@@ -61,7 +61,7 @@ InetTopologyReader::~InetTopologyReader ()
 }
 
 NodeContainer
-InetTopologyReader::Read (void)
+InetTopologyReader::Read ()
 {
   std::ifstream topgen;
   topgen.open (GetFileName ().c_str ());

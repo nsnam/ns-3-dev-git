@@ -49,7 +49,7 @@ Bar::Bar (Ptr<const WifiMpdu> bar, uint8_t tid, bool skipIfNoDataQueued)
 NS_OBJECT_ENSURE_REGISTERED (BlockAckManager);
 
 TypeId
-BlockAckManager::GetTypeId (void)
+BlockAckManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BlockAckManager")
     .SetParent<Object> ()

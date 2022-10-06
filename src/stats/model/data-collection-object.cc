@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("DataCollectionObject");
 NS_OBJECT_ENSURE_REGISTERED (DataCollectionObject);
 
 TypeId
-DataCollectionObject::GetTypeId (void)
+DataCollectionObject::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DataCollectionObject")
     .SetParent<Object> ()
@@ -57,13 +57,13 @@ DataCollectionObject::~DataCollectionObject ()
 }
 
 bool
-DataCollectionObject::IsEnabled (void) const
+DataCollectionObject::IsEnabled () const
 {
   return m_enabled;
 }
 
 std::string
-DataCollectionObject::GetName (void) const
+DataCollectionObject::GetName () const
 {
   return m_name;
 }
@@ -81,14 +81,14 @@ DataCollectionObject::SetName (std::string name)
 }
 
 void
-DataCollectionObject::Enable (void)
+DataCollectionObject::Enable ()
 {
   NS_LOG_FUNCTION (this);
   m_enabled = true;
 }
 
 void
-DataCollectionObject::Disable (void)
+DataCollectionObject::Disable ()
 {
   NS_LOG_FUNCTION (this);
   m_enabled = false;

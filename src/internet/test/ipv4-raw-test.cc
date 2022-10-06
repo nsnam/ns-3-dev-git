@@ -88,7 +88,7 @@ class Ipv4RawSocketImplTest : public TestCase
   void SendData_IpHdr (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv4RawSocketImplTest ();
 
   /**
@@ -201,7 +201,7 @@ Ipv4RawSocketImplTest::SendData_IpHdr (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv4RawSocketImplTest::DoRun (void)
+Ipv4RawSocketImplTest::DoRun ()
 {
   // Create topology
 

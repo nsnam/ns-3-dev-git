@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("DhcpServer");
 NS_OBJECT_ENSURE_REGISTERED (DhcpServer);
 
 TypeId
-DhcpServer::GetTypeId (void)
+DhcpServer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DhcpServer")
     .SetParent<Application> ()
@@ -101,13 +101,13 @@ DhcpServer::~DhcpServer ()
 }
 
 void
-DhcpServer::DoDispose (void)
+DhcpServer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
-void DhcpServer::StartApplication (void)
+void DhcpServer::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 

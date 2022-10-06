@@ -29,7 +29,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxConnection);
 
-TypeId WimaxConnection::GetTypeId (void)
+TypeId WimaxConnection::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WimaxConnection")
 
@@ -72,31 +72,31 @@ WimaxConnection::WimaxConnection (Cid cid, enum Cid::Type type)
 {
 }
 
-WimaxConnection::~WimaxConnection (void)
+WimaxConnection::~WimaxConnection ()
 {
 }
 
 void
-WimaxConnection::DoDispose (void)
+WimaxConnection::DoDispose ()
 {
   m_queue = 0;
   // m_serviceFlow = 0;
 }
 
 Cid
-WimaxConnection::GetCid (void) const
+WimaxConnection::GetCid () const
 {
   return m_cid;
 }
 
 enum Cid::Type
-WimaxConnection::GetType (void) const
+WimaxConnection::GetType () const
 {
   return m_cidType;
 }
 
 Ptr<WimaxMacQueue>
-WimaxConnection::GetQueue (void) const
+WimaxConnection::GetQueue () const
 {
   return m_queue;
 }
@@ -108,13 +108,13 @@ WimaxConnection::SetServiceFlow (ServiceFlow *serviceFlow)
 }
 
 ServiceFlow*
-WimaxConnection::GetServiceFlow (void) const
+WimaxConnection::GetServiceFlow () const
 {
   return m_serviceFlow;
 }
 
 uint8_t
-WimaxConnection::GetSchedulingType (void) const
+WimaxConnection::GetSchedulingType () const
 {
   return m_serviceFlow->GetSchedulingType ();
 }
@@ -139,7 +139,7 @@ WimaxConnection::Dequeue (MacHeaderType::HeaderType packetType, uint32_t availab
 }
 
 bool
-WimaxConnection::HasPackets (void) const
+WimaxConnection::HasPackets () const
 {
   return !m_queue->IsEmpty ();
 }
@@ -151,7 +151,7 @@ WimaxConnection::HasPackets (MacHeaderType::HeaderType packetType) const
 }
 
 std::string
-WimaxConnection::GetTypeStr (void) const
+WimaxConnection::GetTypeStr () const
 {
   switch (m_cidType)
     {
@@ -182,7 +182,7 @@ WimaxConnection::GetTypeStr (void) const
 
 // Defragmentation Function
 const
-WimaxConnection::FragmentsQueue WimaxConnection::GetFragmentsQueue (void) const
+WimaxConnection::FragmentsQueue WimaxConnection::GetFragmentsQueue () const
 {
   return m_fragmentsQueue;
 }
@@ -194,7 +194,7 @@ WimaxConnection::FragmentEnqueue (Ptr<const Packet>  fragment)
 }
 
 void
-WimaxConnection::ClearFragmentsQueue (void)
+WimaxConnection::ClearFragmentsQueue ()
 {
   m_fragmentsQueue.clear ();
 }

@@ -42,7 +42,7 @@ protected:
   /// Constructor
   /// \param flowMonitor the FlowMonitor this probe is associated with
   FlowProbe (Ptr<FlowMonitor> flowMonitor);
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 public:
   virtual ~FlowProbe ();
@@ -53,7 +53,7 @@ public:
 
   /// Register this type.
   /// \return The TypeId.
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /// Structure to hold the statistics of a flow
   struct FlowStats

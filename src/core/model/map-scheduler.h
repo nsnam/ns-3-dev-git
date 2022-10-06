@@ -66,7 +66,7 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** Constructor. */
   MapScheduler ();
@@ -75,9 +75,9 @@ public:
 
   // Inherited
   virtual void Insert (const Scheduler::Event &ev);
-  virtual bool IsEmpty (void) const;
-  virtual Scheduler::Event PeekNext (void) const;
-  virtual Scheduler::Event RemoveNext (void);
+  virtual bool IsEmpty () const;
+  virtual Scheduler::Event PeekNext () const;
+  virtual Scheduler::Event RemoveNext ();
   virtual void Remove (const Scheduler::Event &ev);
 
 private:

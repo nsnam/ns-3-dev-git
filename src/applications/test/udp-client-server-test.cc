@@ -56,7 +56,7 @@ public:
   virtual ~UdpClientServerTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -69,7 +69,7 @@ UdpClientServerTestCase::~UdpClientServerTestCase ()
 {
 }
 
-void UdpClientServerTestCase::DoRun (void)
+void UdpClientServerTestCase::DoRun ()
 {
   NodeContainer n;
   n.Create (2);
@@ -130,7 +130,7 @@ public:
   virtual ~UdpTraceClientServerTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -143,7 +143,7 @@ UdpTraceClientServerTestCase::~UdpTraceClientServerTestCase ()
 {
 }
 
-void UdpTraceClientServerTestCase::DoRun (void)
+void UdpTraceClientServerTestCase::DoRun ()
 {
   NodeContainer n;
   n.Create (2);
@@ -199,7 +199,7 @@ public:
   virtual ~PacketLossCounterTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -212,7 +212,7 @@ PacketLossCounterTestCase::~PacketLossCounterTestCase ()
 {
 }
 
-void PacketLossCounterTestCase::DoRun (void)
+void PacketLossCounterTestCase::DoRun ()
 {
   PacketLossCounter lossCounter (32);
   lossCounter.NotifyReceived (32); //out of order
@@ -274,7 +274,7 @@ public:
   virtual ~UdpEchoClientSetFillTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -287,7 +287,7 @@ UdpEchoClientSetFillTestCase::~UdpEchoClientSetFillTestCase ()
 {
 }
 
-void UdpEchoClientSetFillTestCase::DoRun (void)
+void UdpEchoClientSetFillTestCase::DoRun ()
 {
   NodeContainer nodes;
   nodes.Create (2);

@@ -24,7 +24,7 @@
 namespace ns3 {
 
 /* static */
-TypeId FlowProbe::GetTypeId (void)
+TypeId FlowProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FlowProbe")
     .SetParent<Object> ()
@@ -47,7 +47,7 @@ FlowProbe::FlowProbe (Ptr<FlowMonitor> flowMonitor)
 }
 
 void
-FlowProbe::DoDispose (void)
+FlowProbe::DoDispose ()
 {
   m_flowMonitor = 0;
   Object::DoDispose ();

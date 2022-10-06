@@ -59,17 +59,17 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   SteadyStateRandomWaypointMobilityModel ();
 protected:
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 private:
   /**
    * Configure random variables based on attributes; calculate the steady
    * state probability that node is initially paused; schedule either end
    * of pause time or initial motion of the node.
    */
-  void DoInitializePrivate (void);
+  void DoInitializePrivate ();
   /**
    * Use provided destination to calculate travel delay, and schedule a
    * Start() event at that time.
@@ -79,14 +79,14 @@ private:
   /**
    * Start a pause period and schedule the ending of the pause
    */
-  void Start (void);
+  void Start ();
   /**
    * Start a motion period and schedule the ending of the motion
    */
-  void BeginWalk (void);
-  virtual Vector DoGetPosition (void) const;
+  void BeginWalk ();
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
   virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper; //!< helper for velocity computations

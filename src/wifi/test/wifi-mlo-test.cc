@@ -73,7 +73,7 @@ public:
   virtual ~GetRnrLinkInfoTest () = default;
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 GetRnrLinkInfoTest::GetRnrLinkInfoTest ()
@@ -82,7 +82,7 @@ GetRnrLinkInfoTest::GetRnrLinkInfoTest ()
 }
 
 void
-GetRnrLinkInfoTest::DoRun (void)
+GetRnrLinkInfoTest::DoRun ()
 {
   ReducedNeighborReport rnr;
   std::size_t nbrId;
@@ -231,12 +231,12 @@ private:
   /**
    * Check correctness of Multi-Link Setup procedure.
    */
-  void CheckMlSetup (void);
+  void CheckMlSetup ();
 
   /**
    * Check that links that are not setup on the non-AP MLD are disabled.
    */
-  void CheckDisabledLinks (void);
+  void CheckDisabledLinks ();
 
   /**
    * Check correctness of the given Beacon frame.
@@ -262,7 +262,7 @@ private:
    */
   void CheckAssocResponse (Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /// Information about transmitted frames
   struct FrameInfo
@@ -358,7 +358,7 @@ MultiLinkSetupTest::GetPhyBandFromChannelStr(const std::string& str)
 }
 
 void
-MultiLinkSetupTest::DoRun (void)
+MultiLinkSetupTest::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (2);
@@ -613,7 +613,7 @@ MultiLinkSetupTest::CheckAssocResponse (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 }
 
 void
-MultiLinkSetupTest::CheckMlSetup (void)
+MultiLinkSetupTest::CheckMlSetup ()
 {
   /**
    * Check outcome of Multi-Link Setup
@@ -678,7 +678,7 @@ MultiLinkSetupTest::CheckMlSetup (void)
 }
 
 void
-MultiLinkSetupTest::CheckDisabledLinks (void)
+MultiLinkSetupTest::CheckDisabledLinks ()
 {
   for (std::size_t linkId = 0; linkId < m_staChannels.size (); linkId++)
     {

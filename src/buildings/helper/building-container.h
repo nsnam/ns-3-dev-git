@@ -84,7 +84,7 @@ public:
    *
    * \returns an iterator which refers to the first Building in the container.
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which indicates past-the-last Building in the
@@ -105,7 +105,7 @@ public:
    *
    * \returns an iterator which indicates an ending condition for a loop.
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \brief Get the number of Ptr<Building> stored in this container.
@@ -127,7 +127,7 @@ public:
    *
    * \returns the number of Ptr<Building> stored in this container.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Get the Ptr<Building> stored in this container at a given
@@ -198,7 +198,7 @@ public:
    *
    * \returns a BuildingContainer which contains a list of all Buildings.
    */
-  static BuildingContainer GetGlobal (void);
+  static BuildingContainer GetGlobal ();
 
 private:
   std::vector<Ptr<Building> > m_buildings; //!< Building container

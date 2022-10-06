@@ -79,13 +79,13 @@ ByteTagList::Iterator::Item::Item (TagBuffer buf_)
 }
 
 bool
-ByteTagList::Iterator::HasNext (void) const
+ByteTagList::Iterator::HasNext () const
 {
   NS_LOG_FUNCTION (this);
   return m_current < m_end;
 }
 struct ByteTagList::Iterator::Item
-ByteTagList::Iterator::Next (void)
+ByteTagList::Iterator::Next ()
 {
   NS_ASSERT (HasNext ());
   struct Item item = Item (TagBuffer (m_current+16, m_end));
@@ -99,7 +99,7 @@ ByteTagList::Iterator::Next (void)
   return item;
 }
 void
-ByteTagList::Iterator::PrepareForNext (void)
+ByteTagList::Iterator::PrepareForNext ()
 {
   NS_LOG_FUNCTION (this);
   while (m_current < m_end)
@@ -131,7 +131,7 @@ ByteTagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetSta
 }
 
 uint32_t
-ByteTagList::Iterator::GetOffsetStart (void) const
+ByteTagList::Iterator::GetOffsetStart () const
 {
   NS_LOG_FUNCTION (this);
   return m_offsetStart;
@@ -240,7 +240,7 @@ ByteTagList::Add (const ByteTagList &o)
 }
 
 void
-ByteTagList::RemoveAll (void)
+ByteTagList::RemoveAll ()
 {
   NS_LOG_FUNCTION (this);
   Deallocate (m_data);
@@ -252,7 +252,7 @@ ByteTagList::RemoveAll (void)
 }
 
 ByteTagList::Iterator
-ByteTagList::BeginAll (void) const
+ByteTagList::BeginAll () const
 {
   NS_LOG_FUNCTION (this);
   // I am not totally sure but I might need to use
@@ -425,7 +425,7 @@ ByteTagList::Deallocate (struct ByteTagListData *data)
 #endif /* USE_FREE_LIST */
 
 uint32_t
-ByteTagList::GetSerializedSize (void) const
+ByteTagList::GetSerializedSize () const
 {
   NS_LOG_FUNCTION_NOARGS ();
 

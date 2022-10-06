@@ -45,7 +45,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   WifiSpectrumPhyInterface ();
   /**
    * Connect SpectrumWifiPhy object
@@ -64,7 +64,7 @@ public:
 
 
 private:
-  void DoDispose (void) override;
+  void DoDispose () override;
 
   Ptr<SpectrumWifiPhy> m_spectrumWifiPhy; ///< spectrum PHY
   Ptr<NetDevice> m_netDevice; ///< the device

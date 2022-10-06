@@ -216,10 +216,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const override;
-  uint32_t GetSerializedSize (void) const override;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
   void Serialize (Buffer::Iterator start) const override;
   uint32_t Deserialize (Buffer::Iterator start) override;
   void Print (std::ostream &os) const override;
@@ -248,7 +248,7 @@ ns3::TypeId TestHeader::GetTypeId()
 }
 
 TypeId
-TestHeader::GetInstanceTypeId (void) const
+TestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -259,7 +259,7 @@ TestHeader::Print (std::ostream& os) const
 }
 
 uint32_t
-TestHeader::GetSerializedSize (void) const
+TestHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   for (const auto& elem : m_elements)
@@ -345,7 +345,7 @@ public:
   void CheckSerializedByte (const Buffer& buffer, uint32_t position, uint8_t value);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   bool m_extended;     //!< whether the IE includes an Element ID Extension field
 };
@@ -375,7 +375,7 @@ WifiIeFragmentationTest::CheckSerializedByte (const Buffer& buffer, uint32_t pos
 }
 
 void
-WifiIeFragmentationTest::DoRun (void)
+WifiIeFragmentationTest::DoRun ()
 {
   // maximum IE size to avoid incurring IE fragmentation
   uint16_t limit = m_extended ? 254 : 255;

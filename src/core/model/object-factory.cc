@@ -49,7 +49,7 @@ ObjectFactory::SetTypeId (std::string tid)
   m_tid = TypeId::LookupByName (tid);
 }
 bool
-ObjectFactory::IsTypeIdSet (void) const
+ObjectFactory::IsTypeIdSet () const
 {
   if (m_tid.GetUid () != 0)
     {
@@ -82,14 +82,14 @@ ObjectFactory::DoSet (const std::string &name, const AttributeValue &value)
 }
 
 TypeId
-ObjectFactory::GetTypeId (void) const
+ObjectFactory::GetTypeId () const
 {
   NS_LOG_FUNCTION (this);
   return m_tid;
 }
 
 Ptr<Object>
-ObjectFactory::Create (void) const
+ObjectFactory::Create () const
 {
   NS_LOG_FUNCTION (this);
   Callback<ObjectBase *> cb = m_tid.GetConstructor ();

@@ -111,7 +111,7 @@ public:
    */
   UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s, uint8_t componentCarrierId);
 
-  virtual ~UeManager (void);
+  virtual ~UeManager ();
 
   // inherited from Object
 protected:
@@ -122,7 +122,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the identifiers of the source eNB for the case where a UE
@@ -339,13 +339,13 @@ public:
    * \return the RNTI, i.e., an UE identifier that is unique within
    * the cell
    */
-  uint16_t GetRnti (void) const;
+  uint16_t GetRnti () const;
 
   /**
    *
    * \return the IMSI, i.e., a globally unique UE identifier
    */
-  uint64_t GetImsi (void) const;
+  uint64_t GetImsi () const;
 
   /**
    *
@@ -357,7 +357,7 @@ public:
    *
    * \return the SRS Configuration Index
    */
-  uint16_t GetSrsConfigurationIndex (void) const;
+  uint16_t GetSrsConfigurationIndex () const;
 
   /**
    * Set the SRS configuration index and do the necessary reconfiguration
@@ -690,13 +690,13 @@ public:
 
   // inherited from Object
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 public:
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the X2 SAP this RRC should interact with
@@ -1475,7 +1475,7 @@ private:
    *
    * \return the newly allocated SRS configuration index
    */
-  uint16_t GetNewSrsConfigurationIndex (void);
+  uint16_t GetNewSrsConfigurationIndex ();
 
   /**
    * remove a previously allocated SRS configuration index

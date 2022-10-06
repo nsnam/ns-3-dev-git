@@ -62,13 +62,13 @@ public:
   virtual ~SpectrumChannel ();
 
   // inherited from Object
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Add the single-frequency propagation loss model to be used
@@ -101,20 +101,20 @@ public:
    * Get the frequency-dependent propagation loss model.
    * \returns a pointer to the propagation loss model.
    */
-  Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
+  Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel ();
 
   /**
    * Get the frequency-dependent propagation loss model that is
    * compatible with the phased antenna arrays at TX and RX
    * \returns a pointer to the propagation loss model.
    */
-  Ptr<PhasedArraySpectrumPropagationLossModel> GetPhasedArraySpectrumPropagationLossModel (void);
+  Ptr<PhasedArraySpectrumPropagationLossModel> GetPhasedArraySpectrumPropagationLossModel ();
 
   /**
    * Get the propagation loss model.
    * \returns a pointer to the propagation loss model.
    */
-  Ptr<PropagationLossModel> GetPropagationLossModel (void);
+  Ptr<PropagationLossModel> GetPropagationLossModel ();
 
   /**
    * Used by attached PHY instances to transmit signals on the channel

@@ -55,31 +55,31 @@ public:
    *
    * \return the PPDU
    */
-  Ptr<const WifiPpdu> GetPpdu (void) const;
+  Ptr<const WifiPpdu> GetPpdu () const;
   /**
    * Return the start time of the signal.
    *
    * \return the start time of the signal
    */
-  Time GetStartTime (void) const;
+  Time GetStartTime () const;
   /**
    * Return the end time of the signal.
    *
    * \return the end time of the signal
    */
-  Time GetEndTime (void) const;
+  Time GetEndTime () const;
   /**
    * Return the duration of the signal.
    *
    * \return the duration of the signal
    */
-  Time GetDuration (void) const;
+  Time GetDuration () const;
   /**
    * Return the total received power (W).
    *
    * \return the total received power (W)
    */
-  double GetRxPowerW (void) const;
+  double GetRxPowerW () const;
   /**
    * Return the received power (W) for a given band.
    *
@@ -92,13 +92,13 @@ public:
    *
    * \return the received power (W) for all bands.
    */
-  const RxPowerWattPerChannelBand& GetRxPowerWPerBand (void) const;
+  const RxPowerWattPerChannelBand& GetRxPowerWPerBand () const;
   /**
    * Return the TXVECTOR of the PPDU.
    *
    * \return the TXVECTOR of the PPDU
    */
-  const WifiTxVector& GetTxVector (void) const;
+  const WifiTxVector& GetTxVector () const;
   /**
    * Update the received power (W) for all bands, i.e. add up the received power
    * to the current received power, for each band.
@@ -140,7 +140,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Add a frequency band.
@@ -152,7 +152,7 @@ public:
   /**
    * Remove the frequency bands.
    */
-  void RemoveBands (void);
+  void RemoveBands ();
 
   /**
    * Set the noise figure.
@@ -172,7 +172,7 @@ public:
    *
    * \return Error rate model
    */
-  Ptr<ErrorRateModel> GetErrorRateModel (void) const;
+  Ptr<ErrorRateModel> GetErrorRateModel () const;
   /**
    * Set the number of RX antennas in the receiver corresponding to this
    * interference helper.
@@ -265,7 +265,7 @@ public:
   /**
    * Erase all events.
    */
-  void EraseEvents (void);
+  void EraseEvents ();
 
   /**
    * Update event to scale its received power (W) per band.
@@ -276,7 +276,7 @@ public:
   void UpdateEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower);
 
 protected:
-  void DoDispose (void) override;
+  void DoDispose () override;
 
   /**
    * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
@@ -335,7 +335,7 @@ private:
      *
      * \return the power in watts
      */
-    double GetPower (void) const;
+    double GetPower () const;
     /**
      * Add a given amount of power.
      *
@@ -347,7 +347,7 @@ private:
      *
      * \return the event
      */
-    Ptr<Event> GetEvent (void) const;
+    Ptr<Event> GetEvent () const;
 
   private:
     double m_power; ///< power in watts

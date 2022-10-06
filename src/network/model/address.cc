@@ -65,14 +65,14 @@ Address::operator = (const Address &address)
 }
 
 bool
-Address::IsInvalid (void) const
+Address::IsInvalid () const
 {
   NS_LOG_FUNCTION (this);
   return m_len == 0 && m_type == 0;
 }
 
 uint8_t
-Address::GetLength (void) const
+Address::GetLength () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_len <= MAX_SIZE);
@@ -135,7 +135,7 @@ Address::IsMatchingType (uint8_t type) const
 }
 
 uint8_t
-Address::Register (void)
+Address::Register ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = 1;
@@ -144,7 +144,7 @@ Address::Register (void)
 }
 
 uint32_t
-Address::GetSerializedSize (void) const
+Address::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   return 1 + 1 + m_len;

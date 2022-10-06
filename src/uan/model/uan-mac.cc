@@ -30,7 +30,7 @@ UanMac::UanMac ()
 
 }
 
-TypeId UanMac::GetTypeId (void)
+TypeId UanMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanMac")
     .SetParent<Object> ()
@@ -52,7 +52,7 @@ UanMac::GetTxModeIndex ()
 }
 
 Address
-UanMac::GetAddress (void)
+UanMac::GetAddress ()
 {
   return m_address;
 }
@@ -64,7 +64,7 @@ UanMac::SetAddress (Mac8Address addr)
 }
 
 Address
-UanMac::GetBroadcast (void) const
+UanMac::GetBroadcast () const
 {
   Mac8Address broadcast = Mac8Address (255);
   return broadcast;

@@ -36,7 +36,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Create a position located at coordinates (0,0,0)
    */
@@ -44,9 +44,9 @@ public:
   virtual ~ConstantPositionMobilityModel ();
 
 private:
-  virtual Vector DoGetPosition (void) const;
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
 
   Vector m_position; //!< the constant position
 };

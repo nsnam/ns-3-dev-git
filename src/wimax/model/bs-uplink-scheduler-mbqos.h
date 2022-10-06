@@ -76,19 +76,19 @@ public:
    * \param time the time
    */
   UplinkSchedulerMBQoS (Time time);
-  ~UplinkSchedulerMBQoS (void);
+  ~UplinkSchedulerMBQoS ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Get uplink allocations
    * \returns std::list<OfdmUlMapIe>
    */
-  std::list<OfdmUlMapIe> GetUplinkAllocations (void) const;
+  std::list<OfdmUlMapIe> GetUplinkAllocations () const;
 
   /**
    * Determines if channel descriptors sent in the current frame are
@@ -103,7 +103,7 @@ public:
    * Calculate allocation start time
    * \returns the allocation start time
    */
-  uint32_t CalculateAllocationStartTime (void);
+  uint32_t CalculateAllocationStartTime ();
   /**
    * Add uplink allocation
    * \param ulMapIe the UL map IE
@@ -119,7 +119,7 @@ public:
   /**
    * Schedule function
    */
-  void Schedule (void);
+  void Schedule ();
   /**
    * Service unsolicited grants
    * \param ssRecord the SS record
@@ -206,7 +206,7 @@ public:
    * \brief Reset the current window.
    * According to a configured time, reset the window.
    */
-  void UplinkSchedWindowTimer (void);
+  void UplinkSchedWindowTimer ();
 
   /**
    * \param priority Priority of queue
@@ -237,7 +237,7 @@ public:
   /**
    * This method is called once to initialize window.
    */
-  void InitOnce (void);
+  void InitOnce ();
 
   /**
    * \param jobs List of jobs

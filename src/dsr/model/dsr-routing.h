@@ -281,7 +281,7 @@ public:
    * \brief Get the dsr protocol number.
    * \return protocol number
    */
-  int GetProtocolNumber (void) const;
+  int GetProtocolNumber () const;
   /**
    * \brief The send buffer timer expire.
    */
@@ -641,8 +641,8 @@ public:
 
   void SetDownTarget (IpL4Protocol::DownTargetCallback callback);
   void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback);
-  IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
-  IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+  IpL4Protocol::DownTargetCallback GetDownTarget () const;
+  IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
   /**
    * \brief Process method
    * Called from Ipv4L3Protocol::Receive.
@@ -711,7 +711,7 @@ protected:
   /**
    * \brief Drop trace callback.
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * The trace for drop, receive and send data packets
    */

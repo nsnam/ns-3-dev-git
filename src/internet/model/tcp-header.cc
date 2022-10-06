@@ -80,7 +80,7 @@ TcpHeader::FlagsToString (uint8_t flags, const std::string& delimiter)
 }
 
 void
-TcpHeader::EnableChecksums (void)
+TcpHeader::EnableChecksums ()
 {
   m_calcChecksum = true;
 }
@@ -261,13 +261,13 @@ TcpHeader::CalculateHeaderChecksum (uint16_t size) const
 }
 
 bool
-TcpHeader::IsChecksumOk (void) const
+TcpHeader::IsChecksumOk () const
 {
   return m_goodChecksum;
 }
 
 TypeId
-TcpHeader::GetTypeId (void)
+TcpHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpHeader")
     .SetParent<Header> ()
@@ -278,7 +278,7 @@ TcpHeader::GetTypeId (void)
 }
 
 TypeId
-TcpHeader::GetInstanceTypeId (void) const
+TcpHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -306,7 +306,7 @@ TcpHeader::Print (std::ostream &os)  const
 }
 
 uint32_t
-TcpHeader::GetSerializedSize (void)  const
+TcpHeader::GetSerializedSize ()  const
 {
   return CalculateHeaderLength () * 4;
 }

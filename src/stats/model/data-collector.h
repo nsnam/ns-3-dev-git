@@ -55,7 +55,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Provide specific parameters to the DataCollector

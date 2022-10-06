@@ -86,7 +86,7 @@ PssFfMacScheduler::DoDispose ()
 }
 
 TypeId
-PssFfMacScheduler::GetTypeId (void)
+PssFfMacScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PssFfMacScheduler")
     .SetParent<FfMacScheduler> ()
@@ -2245,7 +2245,7 @@ PssFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sche
 }
 
 void
-PssFfMacScheduler::RefreshDlCqiMaps (void)
+PssFfMacScheduler::RefreshDlCqiMaps ()
 {
   // refresh DL CQI P01 Map
   std::map <uint16_t,uint32_t>::iterator itP10 = m_p10CqiTimers.begin ();
@@ -2296,7 +2296,7 @@ PssFfMacScheduler::RefreshDlCqiMaps (void)
 
 
 void
-PssFfMacScheduler::RefreshUlCqiMaps (void)
+PssFfMacScheduler::RefreshUlCqiMaps ()
 {
   // refresh UL CQI  Map
   std::map <uint16_t,uint32_t>::iterator itUl = m_ueCqiTimers.begin ();

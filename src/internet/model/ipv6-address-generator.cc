@@ -114,7 +114,7 @@ public:
   /**
    * \brief Reset the networks and Ipv6Address to zero
    */
-  void Reset (void);
+  void Reset ();
 
   /**
    * \brief Add the Ipv6Address to the list of IPv6 entries
@@ -148,7 +148,7 @@ public:
   /**
    * \brief Used to turn off fatal errors and assertions, for testing
    */
-  void TestMode (void);
+  void TestMode ();
 
 private:
   static const uint32_t N_BITS = 128; //!< the number of bits in the address
@@ -201,7 +201,7 @@ Ipv6AddressGeneratorImpl::Ipv6AddressGeneratorImpl ()
 }
 
 void
-Ipv6AddressGeneratorImpl::Reset (void)
+Ipv6AddressGeneratorImpl::Reset ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -630,7 +630,7 @@ Ipv6AddressGeneratorImpl::IsNetworkAllocated (const Ipv6Address address, const I
 
 
 void
-Ipv6AddressGeneratorImpl::TestMode (void)
+Ipv6AddressGeneratorImpl::TestMode ()
 {
   NS_LOG_FUNCTION (this);
   m_test = true;
@@ -730,7 +730,7 @@ Ipv6AddressGenerator::NextAddress (const Ipv6Prefix prefix)
 }
 
 void
-Ipv6AddressGenerator::Reset (void)
+Ipv6AddressGenerator::Reset ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -766,7 +766,7 @@ Ipv6AddressGenerator::IsNetworkAllocated (const Ipv6Address addr, const Ipv6Pref
 }
 
 void
-Ipv6AddressGenerator::TestMode (void)
+Ipv6AddressGenerator::TestMode ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 

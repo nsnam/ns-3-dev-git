@@ -60,9 +60,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 protected:
-  void DoDispose (void);
+  void DoDispose ();
 
 public:
 
@@ -91,7 +91,7 @@ public:
    * Destructor
    *
    */
-  virtual ~EpcEnbApplication (void);
+  virtual ~EpcEnbApplication ();
 
 
   /**

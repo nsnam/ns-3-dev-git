@@ -49,7 +49,7 @@ DsdvHeader::~DsdvHeader ()
 }
 
 TypeId
-DsdvHeader::GetTypeId (void)
+DsdvHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsdv::DsdvHeader")
     .SetParent<Header> ()

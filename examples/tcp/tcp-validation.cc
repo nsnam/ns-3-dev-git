@@ -545,7 +545,7 @@ ScheduleSecondDctcpTraceConnection (std::ofstream* ofStream)
  * Schedule trace connection.
  */
 void
-ScheduleFirstPacketSinkConnection (void)
+ScheduleFirstPacketSinkConnection ()
 {
   Config::ConnectWithoutContextFailSafe ("/NodeList/6/ApplicationList/*/$ns3::PacketSink/Rx", MakeCallback (&TraceFirstRx));
 }
@@ -576,7 +576,7 @@ ScheduleSecondTcpRttTraceConnection (std::ofstream* ofStream)
  * Schedule trace connection.
  */
 void
-ScheduleSecondPacketSinkConnection (void)
+ScheduleSecondPacketSinkConnection ()
 {
   Config::ConnectWithoutContext ("/NodeList/7/ApplicationList/*/$ns3::PacketSink/Rx", MakeCallback (&TraceSecondRx));
 }

@@ -35,7 +35,7 @@ SeqTsSizeHeader::SeqTsSizeHeader ()
 }
 
 TypeId
-SeqTsSizeHeader::GetTypeId (void)
+SeqTsSizeHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SeqTsSizeHeader")
     .SetParent<SeqTsHeader> ()
@@ -46,7 +46,7 @@ SeqTsSizeHeader::GetTypeId (void)
 }
 
 TypeId
-SeqTsSizeHeader::GetInstanceTypeId (void) const
+SeqTsSizeHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -58,7 +58,7 @@ SeqTsSizeHeader::SetSize (uint64_t size)
 }
 
 uint64_t
-SeqTsSizeHeader::GetSize (void) const
+SeqTsSizeHeader::GetSize () const
 {
   return m_size;
 }
@@ -72,7 +72,7 @@ SeqTsSizeHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-SeqTsSizeHeader::GetSerializedSize (void) const
+SeqTsSizeHeader::GetSerializedSize () const
 {
   return SeqTsHeader::GetSerializedSize () + 8;
 }

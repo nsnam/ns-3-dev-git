@@ -37,7 +37,7 @@ UanNoiseModelDefault::~UanNoiseModelDefault ()
 }
 
 TypeId
-UanNoiseModelDefault::GetTypeId (void)
+UanNoiseModelDefault::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanNoiseModelDefault")
     .SetParent<UanNoiseModel> ()

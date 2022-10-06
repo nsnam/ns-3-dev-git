@@ -106,13 +106,13 @@ public:
    *
    * \return the TID with lower priority
    */
-  uint8_t GetLowTid (void) const;
+  uint8_t GetLowTid () const;
   /**
    * Get the TID with higher priority
    *
    * \return the TID with higher priority
    */
-  uint8_t GetHighTid (void) const;
+  uint8_t GetHighTid () const;
   /**
    * Given a TID belonging to this Access Category, get the other TID of this AC.
    *

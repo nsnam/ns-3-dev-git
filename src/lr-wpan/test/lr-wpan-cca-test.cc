@@ -93,7 +93,7 @@ private:
    */
   static void PhyRxDrop (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, Ptr<const Packet> packet);
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   LrWpanPhyEnumeration m_status; //!< PHY status.
 
@@ -156,7 +156,7 @@ void LrWpanCcaTestCase::PhyRxDrop (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDev
 }
 
 void
-LrWpanCcaTestCase::DoRun (void)
+LrWpanCcaTestCase::DoRun ()
 {
   // Tx Power: 0 dBm
   // Receiver Sensitivity: -106.58 dBm

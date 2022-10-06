@@ -36,7 +36,7 @@ ArpQueueDiscItem::~ArpQueueDiscItem ()
   NS_LOG_FUNCTION (this);
 }
 
-uint32_t ArpQueueDiscItem::GetSize (void) const
+uint32_t ArpQueueDiscItem::GetSize () const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> p = GetPacket ();
@@ -50,12 +50,12 @@ uint32_t ArpQueueDiscItem::GetSize (void) const
 }
 
 const ArpHeader&
-ArpQueueDiscItem::GetHeader (void) const
+ArpQueueDiscItem::GetHeader () const
 {
   return m_header;
 }
 
-void ArpQueueDiscItem::AddHeader (void)
+void ArpQueueDiscItem::AddHeader ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -81,7 +81,7 @@ ArpQueueDiscItem::Print (std::ostream& os) const
 }
 
 bool
-ArpQueueDiscItem::Mark (void)
+ArpQueueDiscItem::Mark ()
 {
   NS_LOG_FUNCTION (this);
   return false;

@@ -80,7 +80,7 @@ IePeerManagement::GetPeerLinkId () const
 }
 
 uint16_t
-IePeerManagement::GetInformationFieldSize (void) const
+IePeerManagement::GetInformationFieldSize () const
 {
   return m_length;
 }

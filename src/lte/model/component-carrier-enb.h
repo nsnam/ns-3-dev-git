@@ -51,22 +51,22 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   ComponentCarrierEnb ();
 
-  virtual ~ComponentCarrierEnb (void);
-  virtual void DoDispose (void);
+  virtual ~ComponentCarrierEnb ();
+  virtual void DoDispose ();
 
   /**
    * \return a pointer to the physical layer.
    */
-  Ptr<LteEnbPhy> GetPhy (void);
+  Ptr<LteEnbPhy> GetPhy ();
 
   /**
    * \return a pointer to the MAC layer.
    */
-  Ptr<LteEnbMac> GetMac (void);
+  Ptr<LteEnbMac> GetMac ();
 
   /**
    * \return a pointer to the Ffr Algorithm.
@@ -103,7 +103,7 @@ public:
 
 protected:
 
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 private:
   Ptr<LteEnbPhy> m_phy; ///< the Phy instance of this eNodeB component carrier

@@ -59,7 +59,7 @@ LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 
 
 TypeId
-LtePhy::GetTypeId (void)
+LtePhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LtePhy")
     .SetParent<Object> ()
@@ -139,7 +139,7 @@ LtePhy::SetTti (double tti)
 
 
 double
-LtePhy::GetTti (void) const
+LtePhy::GetTti () const
 {
   NS_LOG_FUNCTION (this << m_tti);
   return m_tti;
@@ -183,7 +183,7 @@ LtePhy::GetSrsSubframeOffset (uint16_t srcCi) const
 }
 
 uint8_t
-LtePhy::GetRbgSize (void) const
+LtePhy::GetRbgSize () const
 {
   return m_rbgSize;
 }
@@ -195,7 +195,7 @@ LtePhy::SetMacPdu (Ptr<Packet> p)
 }
 
 Ptr<PacketBurst>
-LtePhy::GetPacketBurst (void)
+LtePhy::GetPacketBurst ()
 {
   if (m_packetBurstQueue.at (0)->GetSize () > 0)
     {
@@ -222,7 +222,7 @@ LtePhy::SetControlMessages (Ptr<LteControlMessage> m)
 }
 
 std::list<Ptr<LteControlMessage> >
-LtePhy::GetControlMessages (void)
+LtePhy::GetControlMessages ()
 {
   NS_LOG_FUNCTION (this);
   if (m_controlMessagesQueue.at (0).size () > 0)

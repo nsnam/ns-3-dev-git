@@ -42,7 +42,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \param guardInterval the supported HE guard interval
@@ -51,7 +51,7 @@ public:
   /**
    * \return the supported HE guard interval
    */
-  Time GetGuardInterval (void) const;
+  Time GetGuardInterval () const;
   /**
    * \param bssColor the BSS color
    */
@@ -59,7 +59,7 @@ public:
   /**
    * \return the BSS color
    */
-  uint8_t GetBssColor (void) const;
+  uint8_t GetBssColor () const;
   /**
    * \param maxTbPpduDelay the maximum TB PPDU delay
    */
@@ -67,7 +67,7 @@ public:
   /**
    * \return the maximum TB PPDU delay
    */
-  Time GetMaxTbPpduDelay (void) const;
+  Time GetMaxTbPpduDelay () const;
   /**
    * \param size the MPDU buffer size to receive A-MPDUs
    */
@@ -75,7 +75,7 @@ public:
   /**
    * \return the MPDU buffer size to receive A-MPDUs
    */
-  uint16_t GetMpduBufferSize (void) const;
+  uint16_t GetMpduBufferSize () const;
 
 
 private:

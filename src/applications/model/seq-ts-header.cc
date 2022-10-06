@@ -44,21 +44,21 @@ SeqTsHeader::SetSeq (uint32_t seq)
   m_seq = seq;
 }
 uint32_t
-SeqTsHeader::GetSeq (void) const
+SeqTsHeader::GetSeq () const
 {
   NS_LOG_FUNCTION (this);
   return m_seq;
 }
 
 Time
-SeqTsHeader::GetTs (void) const
+SeqTsHeader::GetTs () const
 {
   NS_LOG_FUNCTION (this);
   return TimeStep (m_ts);
 }
 
 TypeId
-SeqTsHeader::GetTypeId (void)
+SeqTsHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SeqTsHeader")
     .SetParent<Header> ()
@@ -68,7 +68,7 @@ SeqTsHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-SeqTsHeader::GetInstanceTypeId (void) const
+SeqTsHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -79,7 +79,7 @@ SeqTsHeader::Print (std::ostream &os) const
   os << "(seq=" << m_seq << " time=" << TimeStep (m_ts).As (Time::S) << ")";
 }
 uint32_t
-SeqTsHeader::GetSerializedSize (void) const
+SeqTsHeader::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   return 4+8;

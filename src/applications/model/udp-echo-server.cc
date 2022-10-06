@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
 NS_OBJECT_ENSURE_REGISTERED (UdpEchoServer);
 
 TypeId
-UdpEchoServer::GetTypeId (void)
+UdpEchoServer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpEchoServer")
     .SetParent<Application> ()
@@ -72,14 +72,14 @@ UdpEchoServer::~UdpEchoServer()
 }
 
 void
-UdpEchoServer::DoDispose (void)
+UdpEchoServer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-UdpEchoServer::StartApplication (void)
+UdpEchoServer::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 

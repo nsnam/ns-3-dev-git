@@ -80,7 +80,7 @@ public:
   virtual ~LteEnbAntennaTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   double m_orientationDegrees; ///< antenna orientation in degrees
   double m_beamwidthDegrees; ///< antenna beamwidth in degrees
@@ -119,7 +119,7 @@ LteEnbAntennaTestCase::~LteEnbAntennaTestCase ()
 }
 
 void
-LteEnbAntennaTestCase::DoRun (void)
+LteEnbAntennaTestCase::DoRun ()
 {
   Config::Reset ();
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));

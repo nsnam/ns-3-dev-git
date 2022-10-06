@@ -38,8 +38,8 @@ namespace ns3 {
 class DcdChannelEncodings
 {
 public:
-  DcdChannelEncodings (void);
-  virtual ~DcdChannelEncodings (void);
+  DcdChannelEncodings ();
+  virtual ~DcdChannelEncodings ();
 
   /**
    * Set BS EIRP field
@@ -61,23 +61,23 @@ public:
    * Get BS EIRP field
    * \returns the BS EIRP
    */
-  uint16_t GetBsEirp (void) const;
+  uint16_t GetBsEirp () const;
   /**
    * Get EIRX IR MAX field
    * \returns the EIRX IR MAX
    */
-  uint16_t GetEirxPIrMax (void) const;
+  uint16_t GetEirxPIrMax () const;
   /**
    * Get frequency function
    * \returns the frequency
    */
-  uint32_t GetFrequency (void) const;
+  uint32_t GetFrequency () const;
 
   /**
    * Get size field
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 
   /**
    * Write item
@@ -132,8 +132,8 @@ namespace ns3 {
 class OfdmDcdChannelEncodings : public DcdChannelEncodings
 {
 public:
-  OfdmDcdChannelEncodings (void);
-  ~OfdmDcdChannelEncodings (void);
+  OfdmDcdChannelEncodings ();
+  ~OfdmDcdChannelEncodings ();
 
   /**
    * Set channel number field
@@ -171,39 +171,39 @@ public:
    * Get channel number field
    * \returns the channel number
    */
-  uint8_t GetChannelNr (void) const;
+  uint8_t GetChannelNr () const;
   /**
    * Get TTG field
    * \returns the TTG
    */
-  uint8_t GetTtg (void) const;
+  uint8_t GetTtg () const;
   /**
    * Get RTG field
    * \returns the RTG
    */
-  uint8_t GetRtg (void) const;
+  uint8_t GetRtg () const;
 
   /**
    * Get base station ID field
    * \returns the base station MAC address
    */
-  Mac48Address GetBaseStationId (void) const;
+  Mac48Address GetBaseStationId () const;
   /**
    * Get frame duration code field
    * \returns the frame duration code
    */
-  uint8_t GetFrameDurationCode (void) const;
+  uint8_t GetFrameDurationCode () const;
   /**
    * Get frame number field
    * \returns the frame number
    */
-  uint32_t GetFrameNumber (void) const;
+  uint32_t GetFrameNumber () const;
 
   /**
    * Get size field
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 private:
   /**
    * Write item
@@ -270,8 +270,8 @@ public:
     DIUC_END_OF_MAP
   };
 
-  OfdmDlBurstProfile (void);
-  ~OfdmDlBurstProfile (void);
+  OfdmDlBurstProfile ();
+  ~OfdmDlBurstProfile ();
 
   /**
    * Set type field
@@ -299,17 +299,17 @@ public:
    * Get type function
    * \returns the type
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
   /** \returns the length field */
-  uint8_t GetLength (void) const;
+  uint8_t GetLength () const;
   /** \returns the DIUC field */
-  uint8_t GetDiuc (void) const;
+  uint8_t GetDiuc () const;
 
   /** \returns the FEC code type */
-  uint8_t GetFecCodeType (void) const;
+  uint8_t GetFecCodeType () const;
 
   /** \returns the size */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 
   /**
    * Write item
@@ -355,8 +355,8 @@ namespace ns3 {
 class Dcd : public Header
 {
 public:
-  Dcd (void);
-  virtual ~Dcd (void);
+  Dcd ();
+  virtual ~Dcd ();
 
   /**
    * Set configuration change count field
@@ -383,36 +383,36 @@ public:
    * Get configuration change count field
    * \returns the configuration change count
    */
-  uint8_t GetConfigurationChangeCount (void) const;
+  uint8_t GetConfigurationChangeCount () const;
   /**
    * Get channel encodings field
    * \returns the channel encodings
    */
-  OfdmDcdChannelEncodings GetChannelEncodings (void) const;
+  OfdmDcdChannelEncodings GetChannelEncodings () const;
   /**
    * Get DL burst profile field
    * \returns the DL burst profiles
    */
-  std::vector<OfdmDlBurstProfile> GetDlBurstProfiles (void) const;
+  std::vector<OfdmDlBurstProfile> GetDlBurstProfiles () const;
   /**
    * Get number DL burst profiles field
    * \returns the number of DL burst profiles
    */
-  uint8_t GetNrDlBurstProfiles (void) const;
+  uint8_t GetNrDlBurstProfiles () const;
 
   /**
    * Get name field
    * \returns the name string
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -446,8 +446,8 @@ namespace ns3 {
 class OfdmDlMapIe
 {
 public:
-  OfdmDlMapIe (void);
-  ~OfdmDlMapIe (void);
+  OfdmDlMapIe ();
+  ~OfdmDlMapIe ();
 
   /**
    * Set CID function
@@ -474,28 +474,28 @@ public:
    * Set CID field
    * \returns the CID
    */
-  Cid GetCid (void) const;
+  Cid GetCid () const;
   /**
    * Get DIUC field
    * \returns the DIUC
    */
-  uint8_t GetDiuc (void) const;
+  uint8_t GetDiuc () const;
   /**
    * Get preamble present field
    * \returns the preamble present indicator
    */
-  uint8_t GetPreamblePresent (void) const;
+  uint8_t GetPreamblePresent () const;
   /**
    * Get start time field
    * \returns the start time
    */
-  uint16_t GetStartTime (void) const;
+  uint16_t GetStartTime () const;
 
   /**
    * Get size
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 
   /**
    * Wrtie item
@@ -541,8 +541,8 @@ namespace ns3 {
 class DlMap : public Header
 {
 public:
-  DlMap (void);
-  virtual ~DlMap (void);
+  DlMap ();
+  virtual ~DlMap ();
 
   /**
    * Set DCD count field
@@ -564,31 +564,31 @@ public:
    * Get DCD count field
    * \returns the DCD count
    */
-  uint8_t GetDcdCount (void) const;
+  uint8_t GetDcdCount () const;
   /**
    * Get base station ID field
    * \returns the MAC address
    */
-  Mac48Address GetBaseStationId (void) const;
+  Mac48Address GetBaseStationId () const;
   /**
    * Get DL Map elements field
    * \returns the DL map elements
    */
-  std::list<OfdmDlMapIe> GetDlMapElements (void) const;
+  std::list<OfdmDlMapIe> GetDlMapElements () const;
 
   /**
    * Get name field
    * \returns the name string
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:

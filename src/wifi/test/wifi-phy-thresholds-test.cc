@@ -117,8 +117,8 @@ protected:
   uint32_t m_ccabusyStateCount; ///< count number of PHY state change to CCA_BUSY state
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
 };
 
 WifiPhyThresholdsTest::WifiPhyThresholdsTest (std::string test_name)
@@ -228,7 +228,7 @@ WifiPhyThresholdsTest::PhyStateChanged (Time start, Time duration, WifiPhyState 
 }
 
 void
-WifiPhyThresholdsTest::DoSetup (void)
+WifiPhyThresholdsTest::DoSetup ()
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -244,7 +244,7 @@ WifiPhyThresholdsTest::DoSetup (void)
 }
 
 void
-WifiPhyThresholdsTest::DoTeardown (void)
+WifiPhyThresholdsTest::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
@@ -264,7 +264,7 @@ class WifiPhyThresholdsWeakWifiSignalTest : public WifiPhyThresholdsTest
 public:
   WifiPhyThresholdsWeakWifiSignalTest ();
   virtual ~WifiPhyThresholdsWeakWifiSignalTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 WifiPhyThresholdsWeakWifiSignalTest::WifiPhyThresholdsWeakWifiSignalTest ()
@@ -277,7 +277,7 @@ WifiPhyThresholdsWeakWifiSignalTest::~WifiPhyThresholdsWeakWifiSignalTest ()
 }
 
 void
-WifiPhyThresholdsWeakWifiSignalTest::DoRun (void)
+WifiPhyThresholdsWeakWifiSignalTest::DoRun ()
 {
   double txPowerWatts = DbmToW (-110);
 
@@ -304,7 +304,7 @@ class WifiPhyThresholdsWeakForeignSignalTest : public WifiPhyThresholdsTest
 public:
   WifiPhyThresholdsWeakForeignSignalTest ();
   virtual ~WifiPhyThresholdsWeakForeignSignalTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 WifiPhyThresholdsWeakForeignSignalTest::WifiPhyThresholdsWeakForeignSignalTest ()
@@ -317,7 +317,7 @@ WifiPhyThresholdsWeakForeignSignalTest::~WifiPhyThresholdsWeakForeignSignalTest 
 }
 
 void
-WifiPhyThresholdsWeakForeignSignalTest::DoRun (void)
+WifiPhyThresholdsWeakForeignSignalTest::DoRun ()
 {
   double txPowerWatts = DbmToW (-90);
 
@@ -344,7 +344,7 @@ class WifiPhyThresholdsStrongWifiSignalTest : public WifiPhyThresholdsTest
 public:
   WifiPhyThresholdsStrongWifiSignalTest ();
   virtual ~WifiPhyThresholdsStrongWifiSignalTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 WifiPhyThresholdsStrongWifiSignalTest::WifiPhyThresholdsStrongWifiSignalTest ()
@@ -357,7 +357,7 @@ WifiPhyThresholdsStrongWifiSignalTest::~WifiPhyThresholdsStrongWifiSignalTest ()
 }
 
 void
-WifiPhyThresholdsStrongWifiSignalTest::DoRun (void)
+WifiPhyThresholdsStrongWifiSignalTest::DoRun ()
 {
   double txPowerWatts = DbmToW (-60);
 
@@ -388,7 +388,7 @@ class WifiPhyThresholdsStrongForeignSignalTest : public WifiPhyThresholdsTest
 public:
   WifiPhyThresholdsStrongForeignSignalTest ();
   virtual ~WifiPhyThresholdsStrongForeignSignalTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 WifiPhyThresholdsStrongForeignSignalTest::WifiPhyThresholdsStrongForeignSignalTest ()
@@ -401,7 +401,7 @@ WifiPhyThresholdsStrongForeignSignalTest::~WifiPhyThresholdsStrongForeignSignalT
 }
 
 void
-WifiPhyThresholdsStrongForeignSignalTest::DoRun (void)
+WifiPhyThresholdsStrongForeignSignalTest::DoRun ()
 {
   double txPowerWatts = DbmToW (-60);
 

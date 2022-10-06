@@ -94,13 +94,13 @@ struct CommonInfoBasicMle
    *
    * \return the Presence Bitmap subfield of the Common Info field
    */
-  uint16_t GetPresenceBitmap (void) const;
+  uint16_t GetPresenceBitmap () const;
   /**
    * Get the size of the serialized Common Info field
    *
    * \return the size of the serialized Common Info field
    */
-  uint8_t GetSize (void) const;
+  uint8_t GetSize () const;
   /**
    * Serialize the Common Info field
    *
@@ -187,7 +187,7 @@ public:
    *
    * \return the Multi-Link element variant
    */
-  Variant GetVariant (void) const;
+  Variant GetVariant () const;
 
   /**
    * Set the MLD MAC Address subfield in the Common Info field. Make sure that
@@ -203,7 +203,7 @@ public:
    *
    * \return the MLD MAC Address subfield in the Common Info field.
    */
-  Mac48Address GetMldMacAddress (void) const;
+  Mac48Address GetMldMacAddress () const;
 
   /**
    * Set the Link ID Info subfield in the Common Info field. Make sure that
@@ -219,14 +219,14 @@ public:
    * \return true if the Link ID Info subfield in the Common Info field is present
    *         and false otherwise
    */
-  bool HasLinkIdInfo (void) const;
+  bool HasLinkIdInfo () const;
   /**
    * Return the Link ID Info subfield in the Common Info field. Make sure that
    * this is a Basic Multi-Link Element and the Link ID Info subfield is present.
    *
    * \return the Link ID Info subfield in the Common Info field
    */
-  uint8_t GetLinkIdInfo (void) const;
+  uint8_t GetLinkIdInfo () const;
 
   /**
    * Set the BSS Parameters Change Count subfield in the Common Info field. Make sure that
@@ -242,14 +242,14 @@ public:
    * \return true if the BSS Parameters Change Count subfield in the Common Info field is present
    *         and false otherwise
    */
-  bool HasBssParamsChangeCount (void) const;
+  bool HasBssParamsChangeCount () const;
   /**
    * Return the BSS Parameters Change Count subfield in the Common Info field. Make sure that
    * this is a Basic Multi-Link Element and the BSS Parameters Change Count subfield is present.
    *
    * \return the BSS Parameters Change Count subfield in the Common Info field
    */
-  uint8_t GetBssParamsChangeCount (void) const;
+  uint8_t GetBssParamsChangeCount () const;
 
   /**
    * Set the Medium Synchronization Duration subfield of the Medium Synchronization
@@ -284,7 +284,7 @@ public:
    * \return true if the Medium Synchronization Delay Information subfield in the
    * Common Info field is present and false otherwise
    */
-  bool HasMediumSyncDelayInfo (void) const;
+  bool HasMediumSyncDelayInfo () const;
   /**
    * Get the Medium Synchronization Duration subfield of the Medium Synchronization
    * Delay information in the Common Info field. Make sure that this is a Basic
@@ -292,14 +292,14 @@ public:
    *
    * \return the timer duration
    */
-  Time GetMediumSyncDelayTimer (void) const;
+  Time GetMediumSyncDelayTimer () const;
   /**
    * Get the Medium Synchronization OFDM ED Threshold in dBm. Make sure that this is a Basic
    * Multi-Link Element and the Medium Synchronization Duration subfield is present.
    *
    * \return the threshold in dBm
    */
-  int8_t GetMediumSyncOfdmEdThreshold (void) const;
+  int8_t GetMediumSyncOfdmEdThreshold () const;
   /**
    * Get the maximum number of TXOPs a non-AP STA is allowed to attempt to initiate
    * while the MediumSyncDelay timer is running at a non-AP STA. Make sure that this is a
@@ -307,7 +307,7 @@ public:
    *
    * \return the number of TXOPs
    */
-  uint8_t GetMediumSyncMaxNTxops (void) const;
+  uint8_t GetMediumSyncMaxNTxops () const;
 
   /**
    * \ingroup wifi
@@ -366,16 +366,16 @@ public:
      *
      * \return the Link ID subfield in the STA Control field
      */
-    uint8_t GetLinkId (void) const;
+    uint8_t GetLinkId () const;
 
     /**
      * Set the Complete Profile flag in the STA Control field
      */
-    void SetCompleteProfile (void);
+    void SetCompleteProfile ();
     /**
      * \return whether the Complete Profile flag in the STA Control field is set
      */
-    bool IsCompleteProfileSet (void) const;
+    bool IsCompleteProfileSet () const;
 
     /**
      * Set the STA MAC Address subfield in the STA Info field
@@ -388,13 +388,13 @@ public:
      *
      * \return true if the STA MAC Address subfield in the STA Info field is present
      */
-    bool HasStaMacAddress (void) const;
+    bool HasStaMacAddress () const;
     /**
      * Get the STA MAC Address subfield in the STA Info field, if present
      *
      * \return the STA MAC Address subfield in the STA Info field, if present
      */
-    Mac48Address GetStaMacAddress (void) const;
+    Mac48Address GetStaMacAddress () const;
 
     /**
      * Include the given (Re)Association Request frame body in the STA Profile field
@@ -411,21 +411,21 @@ public:
      *
      * \return true if an Association Request frame body is included
      */
-    bool HasAssocRequest (void) const;
+    bool HasAssocRequest () const;
     /**
      * Return true if a Reassociation Request frame body is included in the
      * STA Profile field of this Per-STA Profile subelement
      *
      * \return true if a Reassociation Request frame body is included
      */
-    bool HasReassocRequest (void) const;
+    bool HasReassocRequest () const;
     /**
      * Get the (Re)Association Request frame body included in the STA Profile
      * field of this Per-STA Profile subelement
      *
      * \return the (Re)Association Request frame body
      */
-    AssocReqRefVariant GetAssocRequest (void) const;
+    AssocReqRefVariant GetAssocRequest () const;
 
     /**
      * Include the given (Re)Association Response frame body in the STA Profile field
@@ -442,14 +442,14 @@ public:
      *
      * \return true if a (Re)Association Response frame body is included
      */
-    bool HasAssocResponse (void) const;
+    bool HasAssocResponse () const;
     /**
      * Get the (Re)Association Response frame body included in the STA Profile
      * field of this Per-STA Profile subelement
      *
      * \return the (Re)Association Response frame body
      */
-    MgtAssocResponseHeader& GetAssocResponse (void) const;
+    MgtAssocResponseHeader& GetAssocResponse () const;
 
     /**
      * Get the size in bytes of the serialized STA Info Length subfield of
@@ -457,7 +457,7 @@ public:
      *
      * \return the size in bytes of the serialized STA Info Length subfield
      */
-    uint8_t GetStaInfoLength (void) const;
+    uint8_t GetStaInfoLength () const;
 
   private:
     uint16_t GetInformationFieldSize () const override;
@@ -476,13 +476,13 @@ public:
   /**
    * Add a Per-STA Profile Subelement in the Link Info field
    */
-  void AddPerStaProfileSubelement (void);
+  void AddPerStaProfileSubelement ();
   /**
    * Return the number of Per-STA Profile Subelement in the Link Info field
    *
    * \return the number of Per-STA Profile Subelement in the Link Info field
    */
-  std::size_t GetNPerStaProfileSubelements (void) const;
+  std::size_t GetNPerStaProfileSubelements () const;
   /**
    * Get a reference to the <i>i</i>-th Per-STA Profile Subelement in the Link Info field
    *

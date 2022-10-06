@@ -52,7 +52,7 @@ RatioToDb (double ratio)
 }
 
 uint32_t
-GetAckSize (void)
+GetAckSize ()
 {
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
@@ -97,7 +97,7 @@ GetMuBarSize (std::list<BlockAckReqType> types)
 }
 
 uint32_t
-GetRtsSize (void)
+GetRtsSize ()
 {
   WifiMacHeader rts;
   rts.SetType (WIFI_MAC_CTL_RTS);
@@ -105,7 +105,7 @@ GetRtsSize (void)
 }
 
 uint32_t
-GetCtsSize (void)
+GetCtsSize ()
 {
   WifiMacHeader cts;
   cts.SetType (WIFI_MAC_CTL_CTS);

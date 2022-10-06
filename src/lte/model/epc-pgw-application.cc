@@ -113,7 +113,7 @@ EpcPgwApplication::UeInfo::SetUeAddr6 (Ipv6Address ueAddr)
 /////////////////////////
 
 TypeId
-EpcPgwApplication::GetTypeId (void)
+EpcPgwApplication::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcPgwApplication")
     .SetParent<Object> ()

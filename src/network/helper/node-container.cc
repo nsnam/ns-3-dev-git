@@ -56,19 +56,19 @@ NodeContainer::NodeContainer (uint32_t n, uint32_t systemId /* = 0 */)
 }
 
 NodeContainer::Iterator
-NodeContainer::Begin (void) const
+NodeContainer::Begin () const
 {
   return m_nodes.begin ();
 }
 
 NodeContainer::Iterator
-NodeContainer::End (void) const
+NodeContainer::End () const
 {
   return m_nodes.end ();
 }
 
 uint32_t
-NodeContainer::GetN (void) const
+NodeContainer::GetN () const
 {
   return m_nodes.size ();
 }

@@ -83,7 +83,7 @@ public:
   virtual ~RandCartAroundGeoTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * name function
    * \param originLatitude the origin latitude
@@ -135,7 +135,7 @@ RandCartAroundGeoTestCase::~RandCartAroundGeoTestCase ()
 }
 
 void
-RandCartAroundGeoTestCase::DoRun (void)
+RandCartAroundGeoTestCase::DoRun ()
 {
   std::list<Vector> points =  GeographicPositions::RandCartesianPointsAroundGeographicPoint (m_originLatitude,
                                                                                              m_originLongitude,

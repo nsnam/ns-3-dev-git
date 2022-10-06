@@ -60,7 +60,7 @@ BuildingsPropagationLossModel::ShadowingLoss::GetReceiver () const
 }
 
 TypeId
-BuildingsPropagationLossModel::GetTypeId (void)
+BuildingsPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BuildingsPropagationLossModel")
 

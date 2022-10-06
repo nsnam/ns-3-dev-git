@@ -53,7 +53,7 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   MobilityBuildingInfo ();
 
   /**
@@ -68,7 +68,7 @@ public:
    *
    * \return true if the MobilityBuildingInfo instance is indoor, false otherwise
    */
-  bool IsIndoor (void);
+  bool IsIndoor ();
 
   /**
    * \brief Mark this MobilityBuildingInfo instance as indoor
@@ -100,21 +100,21 @@ public:
    *
    * \return The floor number
    */
-  uint8_t GetFloorNumber (void);
+  uint8_t GetFloorNumber ();
 
   /**
    * \brief Get the room number along x-axis at which the MobilityBuildingInfo instance is located
    *
    * \return The room number
    */
-  uint8_t GetRoomNumberX (void);
+  uint8_t GetRoomNumberX ();
 
   /**
    * \brief Get the room number along y-axis at which the MobilityBuildingInfo instance is located
    *
    * \return The room number
    */
-  uint8_t GetRoomNumberY (void);
+  uint8_t GetRoomNumberY ();
 
   /**
    * \brief Get the building in which the MobilityBuildingInfo instance is located

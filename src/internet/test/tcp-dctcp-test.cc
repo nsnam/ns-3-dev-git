@@ -195,7 +195,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   uint32_t m_dataPacketSent;  //!< Number of packets sent
   uint8_t m_testCase;         //!< Test type
@@ -223,13 +223,13 @@ public:
 protected:
   virtual uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
   virtual void ReTxTimeout ();
-  Ptr<TcpSocketBase> Fork (void);
+  Ptr<TcpSocketBase> Fork ();
 };
 
 NS_OBJECT_ENSURE_REGISTERED (TcpDctcpCongestedRouter);
 
 TypeId
-TcpDctcpCongestedRouter::GetTypeId (void)
+TcpDctcpCongestedRouter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpDctcpCongestedRouter")
     .SetParent<TcpSocketMsgBase> ()
@@ -469,7 +469,7 @@ TcpDctcpCongestedRouter::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize,
 }
 
 Ptr<TcpSocketBase>
-TcpDctcpCongestedRouter::Fork (void)
+TcpDctcpCongestedRouter::Fork ()
 {
   return CopyObject<TcpDctcpCongestedRouter> (this);
 }
@@ -535,10 +535,10 @@ public:
                      SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /** \brief Execute the test
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
 
   uint32_t m_cWnd;                        //!< cWnd
   uint32_t m_segmentSize;                 //!< segment size

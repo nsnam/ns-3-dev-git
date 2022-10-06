@@ -50,7 +50,7 @@ NS_LOG_COMPONENT_DEFINE ("ApWifiMac");
 NS_OBJECT_ENSURE_REGISTERED (ApWifiMac);
 
 TypeId
-ApWifiMac::GetTypeId (void)
+ApWifiMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ApWifiMac")
     .SetParent<WifiMac> ()
@@ -133,7 +133,7 @@ ApWifiMac::ApLinkEntity::~ApLinkEntity ()
 }
 
 std::unique_ptr<WifiMac::LinkEntity>
-ApWifiMac::CreateLinkEntity (void) const
+ApWifiMac::CreateLinkEntity () const
 {
   return std::make_unique<ApLinkEntity> ();
 }
@@ -189,7 +189,7 @@ ApWifiMac::SetBeaconGeneration (bool enable)
 }
 
 Time
-ApWifiMac::GetBeaconInterval (void) const
+ApWifiMac::GetBeaconInterval () const
 {
   NS_LOG_FUNCTION (this);
   return m_beaconInterval;
@@ -384,7 +384,7 @@ ApWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 }
 
 bool
-ApWifiMac::SupportsSendFrom (void) const
+ApWifiMac::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION (this);
   return true;
@@ -523,7 +523,7 @@ ApWifiMac::GetEdcaParameterSet (uint8_t linkId) const
 }
 
 std::optional<MuEdcaParameterSet>
-ApWifiMac::GetMuEdcaParameterSet (void) const
+ApWifiMac::GetMuEdcaParameterSet () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (GetHeSupported ());
@@ -1778,7 +1778,7 @@ ApWifiMac::DeaggregateAmsduAndForward (Ptr<const WifiMpdu> mpdu)
 }
 
 void
-ApWifiMac::DoInitialize (void)
+ApWifiMac::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_beaconTxop->Initialize ();

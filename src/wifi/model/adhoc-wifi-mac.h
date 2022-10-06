@@ -39,7 +39,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   AdhocWifiMac ();
   virtual ~AdhocWifiMac ();

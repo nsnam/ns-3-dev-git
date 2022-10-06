@@ -554,7 +554,7 @@ WifiPhyHelper::SetPcapDataLinkType (SupportedPcapDataLinkTypes dlt)
 }
 
 PcapHelper::DataLinkType
-WifiPhyHelper::GetPcapDataLinkType (void) const
+WifiPhyHelper::GetPcapDataLinkType () const
 {
   return m_pcapDlt;
 }
@@ -723,7 +723,7 @@ WifiHelper::SetStandard (WifiStandard standard)
 }
 
 void
-WifiHelper::DisableFlowControl (void)
+WifiHelper::DisableFlowControl ()
 {
   m_enableFlowControl = false;
 }
@@ -850,7 +850,7 @@ WifiHelper::Install (const WifiPhyHelper &phy,
 }
 
 void
-WifiHelper::EnableLogComponents (void)
+WifiHelper::EnableLogComponents ()
 {
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnableAll (LOG_PREFIX_NODE);

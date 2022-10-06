@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("DefaultSimulatorImpl");
 NS_OBJECT_ENSURE_REGISTERED (DefaultSimulatorImpl);
 
 TypeId
-DefaultSimulatorImpl::GetTypeId (void)
+DefaultSimulatorImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DefaultSimulatorImpl")
     .SetParent<SimulatorImpl> ()
@@ -74,7 +74,7 @@ DefaultSimulatorImpl::~DefaultSimulatorImpl ()
 }
 
 void
-DefaultSimulatorImpl::DoDispose (void)
+DefaultSimulatorImpl::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   ProcessEventsWithContext ();
@@ -122,13 +122,13 @@ DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 
 // System ID for non-distributed simulation is always zero
 uint32_t
-DefaultSimulatorImpl::GetSystemId (void) const
+DefaultSimulatorImpl::GetSystemId () const
 {
   return 0;
 }
 
 void
-DefaultSimulatorImpl::ProcessOneEvent (void)
+DefaultSimulatorImpl::ProcessOneEvent ()
 {
   Scheduler::Event next = m_events->RemoveNext ();
 
@@ -150,13 +150,13 @@ DefaultSimulatorImpl::ProcessOneEvent (void)
 }
 
 bool
-DefaultSimulatorImpl::IsFinished (void) const
+DefaultSimulatorImpl::IsFinished () const
 {
   return m_events->IsEmpty () || m_stop;
 }
 
 void
-DefaultSimulatorImpl::ProcessEventsWithContext (void)
+DefaultSimulatorImpl::ProcessEventsWithContext ()
 {
   if (m_eventsWithContextEmpty)
     {
@@ -186,7 +186,7 @@ DefaultSimulatorImpl::ProcessEventsWithContext (void)
 }
 
 void
-DefaultSimulatorImpl::Run (void)
+DefaultSimulatorImpl::Run ()
 {
   NS_LOG_FUNCTION (this);
   // Set the current threadId as the main threadId
@@ -205,7 +205,7 @@ DefaultSimulatorImpl::Run (void)
 }
 
 void
-DefaultSimulatorImpl::Stop (void)
+DefaultSimulatorImpl::Stop ()
 {
   NS_LOG_FUNCTION (this);
   m_stop = true;
@@ -296,7 +296,7 @@ DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 }
 
 Time
-DefaultSimulatorImpl::Now (void) const
+DefaultSimulatorImpl::Now () const
 {
   // Do not add function logging here, to avoid stack overflow
   return TimeStep (m_currentTs);
@@ -391,19 +391,19 @@ DefaultSimulatorImpl::IsExpired (const EventId &id) const
 }
 
 Time
-DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
+DefaultSimulatorImpl::GetMaximumSimulationTime () const
 {
   return TimeStep (0x7fffffffffffffffLL);
 }
 
 uint32_t
-DefaultSimulatorImpl::GetContext (void) const
+DefaultSimulatorImpl::GetContext () const
 {
   return m_currentContext;
 }
 
 uint64_t
-DefaultSimulatorImpl::GetEventCount (void) const
+DefaultSimulatorImpl::GetEventCount () const
 {
   return m_eventCount;
 }

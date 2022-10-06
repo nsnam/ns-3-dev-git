@@ -69,7 +69,7 @@ LteUePowerControl::DoDispose ()
 }
 
 TypeId
-LteUePowerControl::GetTypeId (void)
+LteUePowerControl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteUePowerControl")
     .SetParent<Object> ()

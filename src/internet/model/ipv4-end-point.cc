@@ -50,7 +50,7 @@ Ipv4EndPoint::~Ipv4EndPoint ()
 }
 
 Ipv4Address
-Ipv4EndPoint::GetLocalAddress (void)
+Ipv4EndPoint::GetLocalAddress ()
 {
   NS_LOG_FUNCTION (this);
   return m_localAddr;
@@ -64,21 +64,21 @@ Ipv4EndPoint::SetLocalAddress (Ipv4Address address)
 }
 
 uint16_t
-Ipv4EndPoint::GetLocalPort (void)
+Ipv4EndPoint::GetLocalPort ()
 {
   NS_LOG_FUNCTION (this);
   return m_localPort;
 }
 
 Ipv4Address
-Ipv4EndPoint::GetPeerAddress (void)
+Ipv4EndPoint::GetPeerAddress ()
 {
   NS_LOG_FUNCTION (this);
   return m_peerAddr;
 }
 
 uint16_t
-Ipv4EndPoint::GetPeerPort (void)
+Ipv4EndPoint::GetPeerPort ()
 {
   NS_LOG_FUNCTION (this);
   return m_peerPort;
@@ -100,7 +100,7 @@ Ipv4EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
 }
 
 Ptr<NetDevice>
-Ipv4EndPoint::GetBoundNetDevice (void)
+Ipv4EndPoint::GetBoundNetDevice ()
 {
   NS_LOG_FUNCTION (this);
   return m_boundnetdevice;

@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4");
 NS_OBJECT_ENSURE_REGISTERED (Ipv4);
 
 TypeId
-Ipv4::GetTypeId (void)
+Ipv4::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4")
     .SetParent<Object> ()

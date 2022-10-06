@@ -47,7 +47,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief FqPieFlow constructor
    */
@@ -75,7 +75,7 @@ public:
    * \brief Get the deficit for this flow
    * \return the deficit for this flow
    */
-  int32_t GetDeficit (void) const;
+  int32_t GetDeficit () const;
   /**
    * \brief Increase the deficit for this flow
    * \param deficit the amount by which the deficit is to be increased
@@ -90,7 +90,7 @@ public:
    * \brief Get the status of this flow
    * \return the status of this flow
    */
-  FlowStatus GetStatus (void) const;
+  FlowStatus GetStatus () const;
   /**
    * \brief Set the index for this flow
    * \param index the index for this flow
@@ -100,7 +100,7 @@ public:
    * \brief Get the index of this flow
    * \return the index of this flow
    */
-  uint32_t GetIndex (void) const;
+  uint32_t GetIndex () const;
 
 private:
   int32_t m_deficit;    //!< the deficit for this flow
@@ -122,7 +122,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief FqPieQueueDisc constructor
    */
@@ -142,7 +142,7 @@ public:
    *
    * \returns The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
    */
-  uint32_t GetQuantum (void) const;
+  uint32_t GetQuantum () const;
 
   // Reasons for dropping packets
   static constexpr const char* UNCLASSIFIED_DROP = "Unclassified drop";  //!< No packet filter able to classify packet
@@ -150,15 +150,15 @@ public:
 
 private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual bool CheckConfig (void);
-  virtual void InitializeParams (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
+  virtual bool CheckConfig ();
+  virtual void InitializeParams ();
 
   /**
    * \brief Drop a packet from the head of the queue with the largest current byte count
    * \return the index of the queue with the largest current byte count
    */
-  uint32_t FqPieDrop (void);
+  uint32_t FqPieDrop ();
 
   /**
    * Compute the index of the queue for the flow having the given flowHash,

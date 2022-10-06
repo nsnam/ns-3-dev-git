@@ -59,7 +59,7 @@ private:
 };
 
 TypeId
-DefaultChannelScheduler::GetTypeId (void)
+DefaultChannelScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DefaultChannelScheduler")
     .SetParent<ChannelScheduler> ()
@@ -85,14 +85,14 @@ DefaultChannelScheduler::~DefaultChannelScheduler ()
 }
 
 void
-DefaultChannelScheduler::DoInitialize (void)
+DefaultChannelScheduler::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   ChannelScheduler::DoInitialize ();
 }
 
 void
-DefaultChannelScheduler::DoDispose (void)
+DefaultChannelScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_coordinator = 0;
@@ -322,7 +322,7 @@ DefaultChannelScheduler::AssignExtendedAccess (uint32_t channelNumber, uint32_t 
 }
 
 bool
-DefaultChannelScheduler::AssignDefaultCchAccess (void)
+DefaultChannelScheduler::AssignDefaultCchAccess ()
 {
   NS_LOG_FUNCTION (this);
   if (m_channelAccess == DefaultCchAccess)

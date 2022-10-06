@@ -39,11 +39,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const override;
+  TypeId GetInstanceTypeId () const override;
   void Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize (void) const override;
+  uint32_t GetSerializedSize () const override;
   void Serialize (Buffer::Iterator start) const override;
   uint32_t Deserialize (Buffer::Iterator start) override;
 
@@ -64,13 +64,13 @@ public:
    *
    * \return the length field in bytes
    */
-  uint16_t GetLength (void) const;
+  uint16_t GetLength () const;
   /**
    * Return the EOF field.
    *
    * \return the EOF field
    */
-  bool GetEof (void) const;
+  bool GetEof () const;
   /**
    * Return whether the pattern stored in the delimiter
    * signature field is correct, i.e. corresponds to the
@@ -78,7 +78,7 @@ public:
    *
    * \return true if the signature is valid, false otherwise
    */
-  bool IsSignatureValid (void) const;
+  bool IsSignatureValid () const;
 
 private:
   uint16_t m_length;   //!< length field in bytes

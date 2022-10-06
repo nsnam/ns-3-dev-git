@@ -91,9 +91,9 @@ public:
   virtual ~WriteModeCreateTestCase ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   std::string m_testFilename; //!< File name
 };
@@ -108,7 +108,7 @@ WriteModeCreateTestCase::~WriteModeCreateTestCase ()
 }
 
 void
-WriteModeCreateTestCase::DoSetup (void)
+WriteModeCreateTestCase::DoSetup ()
 {
   std::stringstream filename;
   uint32_t n = rand ();
@@ -117,7 +117,7 @@ WriteModeCreateTestCase::DoSetup (void)
 }
 
 void
-WriteModeCreateTestCase::DoTeardown (void)
+WriteModeCreateTestCase::DoTeardown ()
 {
   if (remove (m_testFilename.c_str ()))
     {
@@ -126,7 +126,7 @@ WriteModeCreateTestCase::DoTeardown (void)
 }
 
 void
-WriteModeCreateTestCase::DoRun (void)
+WriteModeCreateTestCase::DoRun ()
 {
   PcapFile f;
 
@@ -209,9 +209,9 @@ public:
   virtual ~ReadModeCreateTestCase ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   std::string m_testFilename; //!< File name
 };
@@ -226,7 +226,7 @@ ReadModeCreateTestCase::~ReadModeCreateTestCase ()
 }
 
 void
-ReadModeCreateTestCase::DoSetup (void)
+ReadModeCreateTestCase::DoSetup ()
 {
   std::stringstream filename;
   uint32_t n = rand ();
@@ -235,7 +235,7 @@ ReadModeCreateTestCase::DoSetup (void)
 }
 
 void
-ReadModeCreateTestCase::DoTeardown (void)
+ReadModeCreateTestCase::DoTeardown ()
 {
   if (remove (m_testFilename.c_str ()))
     {
@@ -244,7 +244,7 @@ ReadModeCreateTestCase::DoTeardown (void)
 }
 
 void
-ReadModeCreateTestCase::DoRun (void)
+ReadModeCreateTestCase::DoRun ()
 {
   PcapFile f;
 
@@ -431,9 +431,9 @@ public:
   virtual ~FileHeaderTestCase ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   std::string m_testFilename; //!< File name
 };
@@ -448,7 +448,7 @@ FileHeaderTestCase::~FileHeaderTestCase ()
 }
 
 void
-FileHeaderTestCase::DoSetup (void)
+FileHeaderTestCase::DoSetup ()
 {
   std::stringstream filename;
   uint32_t n = rand ();
@@ -457,7 +457,7 @@ FileHeaderTestCase::DoSetup (void)
 }
 
 void
-FileHeaderTestCase::DoTeardown (void)
+FileHeaderTestCase::DoTeardown ()
 {
   if (remove (m_testFilename.c_str ()))
     {
@@ -466,7 +466,7 @@ FileHeaderTestCase::DoTeardown (void)
 }
 
 void
-FileHeaderTestCase::DoRun (void)
+FileHeaderTestCase::DoRun ()
 {
   PcapFile f;
 
@@ -675,9 +675,9 @@ public:
   virtual ~RecordHeaderTestCase ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   std::string m_testFilename; //!< File name
 };
@@ -692,7 +692,7 @@ RecordHeaderTestCase::~RecordHeaderTestCase ()
 }
 
 void
-RecordHeaderTestCase::DoSetup (void)
+RecordHeaderTestCase::DoSetup ()
 {
   std::stringstream filename;
   uint32_t n = rand ();
@@ -701,7 +701,7 @@ RecordHeaderTestCase::DoSetup (void)
 }
 
 void
-RecordHeaderTestCase::DoTeardown (void)
+RecordHeaderTestCase::DoTeardown ()
 {
   if (remove (m_testFilename.c_str ()))
     {
@@ -710,7 +710,7 @@ RecordHeaderTestCase::DoTeardown (void)
 }
 
 void
-RecordHeaderTestCase::DoRun (void)
+RecordHeaderTestCase::DoRun ()
 {
   PcapFile f;
 
@@ -984,9 +984,9 @@ public:
   virtual ~ReadFileTestCase ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   std::string m_testFilename; //!< File name
 };
@@ -1001,12 +1001,12 @@ ReadFileTestCase::~ReadFileTestCase ()
 }
 
 void
-ReadFileTestCase::DoSetup (void)
+ReadFileTestCase::DoSetup ()
 {
 }
 
 void
-ReadFileTestCase::DoTeardown (void)
+ReadFileTestCase::DoTeardown ()
 {
 }
 
@@ -1041,7 +1041,7 @@ static const PacketEntry knownPackets[] = {
 
 
 void
-ReadFileTestCase::DoRun (void)
+ReadFileTestCase::DoRun ()
 {
   PcapFile f;
 
@@ -1098,7 +1098,7 @@ public:
   DiffTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 DiffTestCase::DiffTestCase ()
@@ -1107,7 +1107,7 @@ DiffTestCase::DiffTestCase ()
 }
 
 void
-DiffTestCase::DoRun (void)
+DiffTestCase::DoRun ()
 {
   //
   // Check that PcapDiff(file, file) is false

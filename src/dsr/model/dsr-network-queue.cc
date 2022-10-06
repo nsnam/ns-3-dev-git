@@ -47,7 +47,7 @@ namespace dsr {
 NS_OBJECT_ENSURE_REGISTERED (DsrNetworkQueue);
 
 TypeId
-DsrNetworkQueue::GetTypeId (void)
+DsrNetworkQueue::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrNetworkQueue")
     .SetParent<Object> ()
@@ -89,13 +89,13 @@ DsrNetworkQueue::SetMaxNetworkDelay (Time delay)
 }
 
 uint32_t
-DsrNetworkQueue::GetMaxNetworkSize (void) const
+DsrNetworkQueue::GetMaxNetworkSize () const
 {
   return m_maxSize;
 }
 
 Time
-DsrNetworkQueue::GetMaxNetworkDelay (void) const
+DsrNetworkQueue::GetMaxNetworkDelay () const
 {
   return m_maxDelay;
 }
@@ -165,7 +165,7 @@ DsrNetworkQueue::Dequeue (DsrNetworkQueueEntry & entry)
 }
 
 void
-DsrNetworkQueue::Cleanup (void)
+DsrNetworkQueue::Cleanup ()
 {
   NS_LOG_FUNCTION (this);
   if (m_dsrNetworkQueue.empty ())
@@ -199,7 +199,7 @@ DsrNetworkQueue::GetSize ()
 }
 
 void
-DsrNetworkQueue::Flush (void)
+DsrNetworkQueue::Flush ()
 {
   NS_LOG_FUNCTION (this);
   m_dsrNetworkQueue.erase (m_dsrNetworkQueue.begin (), m_dsrNetworkQueue.end ());

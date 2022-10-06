@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanCsmaCa");
 NS_OBJECT_ENSURE_REGISTERED (LrWpanCsmaCa);
 
 TypeId
-LrWpanCsmaCa::GetTypeId (void)
+LrWpanCsmaCa::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanCsmaCa")
     .SetParent<Object> ()
@@ -89,34 +89,34 @@ LrWpanCsmaCa::SetMac (Ptr<LrWpanMac> mac)
 }
 
 Ptr<LrWpanMac>
-LrWpanCsmaCa::GetMac (void) const
+LrWpanCsmaCa::GetMac () const
 {
   return m_mac;
 }
 
 void
-LrWpanCsmaCa::SetSlottedCsmaCa (void)
+LrWpanCsmaCa::SetSlottedCsmaCa ()
 {
   NS_LOG_FUNCTION (this);
   m_isSlotted = true;
 }
 
 void
-LrWpanCsmaCa::SetUnSlottedCsmaCa (void)
+LrWpanCsmaCa::SetUnSlottedCsmaCa ()
 {
   NS_LOG_FUNCTION (this);
   m_isSlotted = false;
 }
 
 bool
-LrWpanCsmaCa::IsSlottedCsmaCa (void) const
+LrWpanCsmaCa::IsSlottedCsmaCa () const
 {
   NS_LOG_FUNCTION (this);
   return (m_isSlotted);
 }
 
 bool
-LrWpanCsmaCa::IsUnSlottedCsmaCa (void) const
+LrWpanCsmaCa::IsUnSlottedCsmaCa () const
 {
   NS_LOG_FUNCTION (this);
   return (!m_isSlotted);
@@ -131,7 +131,7 @@ LrWpanCsmaCa::SetMacMinBE (uint8_t macMinBE)
 }
 
 uint8_t
-LrWpanCsmaCa::GetMacMinBE (void) const
+LrWpanCsmaCa::GetMacMinBE () const
 {
   NS_LOG_FUNCTION (this);
   return m_macMinBE;
@@ -146,7 +146,7 @@ LrWpanCsmaCa::SetMacMaxBE (uint8_t macMaxBE)
 }
 
 uint8_t
-LrWpanCsmaCa::GetMacMaxBE (void) const
+LrWpanCsmaCa::GetMacMaxBE () const
 {
   NS_LOG_FUNCTION (this);
   return m_macMaxBE;
@@ -161,7 +161,7 @@ LrWpanCsmaCa::SetMacMaxCSMABackoffs (uint8_t macMaxCSMABackoffs)
 }
 
 uint8_t
-LrWpanCsmaCa::GetMacMaxCSMABackoffs (void) const
+LrWpanCsmaCa::GetMacMaxCSMABackoffs () const
 {
   NS_LOG_FUNCTION (this);
   return m_macMaxCSMABackoffs;
@@ -175,14 +175,14 @@ LrWpanCsmaCa::SetUnitBackoffPeriod (uint64_t unitBackoffPeriod)
 }
 
 uint64_t
-LrWpanCsmaCa::GetUnitBackoffPeriod (void) const
+LrWpanCsmaCa::GetUnitBackoffPeriod () const
 {
   NS_LOG_FUNCTION (this);
   return m_aUnitBackoffPeriod;
 }
 
 Time
-LrWpanCsmaCa::GetTimeToNextSlot (void) const
+LrWpanCsmaCa::GetTimeToNextSlot () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -570,13 +570,13 @@ LrWpanCsmaCa::AssignStreams (int64_t stream)
 }
 
 uint8_t
-LrWpanCsmaCa::GetNB (void)
+LrWpanCsmaCa::GetNB ()
 {
   return m_NB;
 }
 
 bool
-LrWpanCsmaCa::GetBatteryLifeExtension (void)
+LrWpanCsmaCa::GetBatteryLifeExtension ()
 {
   return m_macBattLifeExt;
 }

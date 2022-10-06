@@ -41,7 +41,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual ~PropagationDelayModel ();
   /**
    * \param a the source
@@ -87,7 +87,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Use the default parameters from PropagationDelayRandomDistribution.
@@ -112,7 +112,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Use the default parameters from PropagationDelayConstantSpeed.
@@ -126,7 +126,7 @@ public:
   /**
    * \returns the current propagation speed (m/s).
    */
-  double GetSpeed (void) const;
+  double GetSpeed () const;
 private:
   int64_t DoAssignStreams (int64_t stream) override;
   double m_speed; //!< speed

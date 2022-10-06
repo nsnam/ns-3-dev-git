@@ -67,25 +67,25 @@ public:
    * \brief Get the packet stored in this item
    * \return the packet stored in this item.
    */
-  Ptr<const Packet> GetPacket (void) const;
+  Ptr<const Packet> GetPacket () const;
 
   /**
    * \brief Get the header stored in this item
    * \return the header stored in this item.
    */
-  const WifiMacHeader& GetHeader (void) const;
+  const WifiMacHeader& GetHeader () const;
 
   /**
    * \brief Get the header stored in this item
    * \return the header stored in this item.
    */
-  WifiMacHeader& GetHeader (void);
+  WifiMacHeader& GetHeader ();
 
   /**
    * \brief Return the destination address present in the header
    * \return the destination address
    */
-  Mac48Address GetDestinationAddress (void) const;
+  Mac48Address GetDestinationAddress () const;
 
   /**
    * \brief Return the size of the packet stored by this item, including header
@@ -93,7 +93,7 @@ public:
    *
    * \return the size of the packet stored by this item in bytes.
    */
-  uint32_t GetSize (void) const;
+  uint32_t GetSize () const;
 
   /**
    * \brief Return the size in bytes of the packet or control header or management
@@ -102,13 +102,13 @@ public:
    * \return the size in bytes of the packet or control header or management header
    *         stored by this item
    */
-  uint32_t GetPacketSize (void) const;
+  uint32_t GetPacketSize () const;
 
   /**
    * Return true if this item contains an MSDU fragment, false otherwise
    * \return true if this item contains an MSDU fragment, false otherwise
    */
-  bool IsFragment (void) const;
+  bool IsFragment () const;
 
   /**
    * \brief Aggregate the MSDU contained in the given MPDU to this MPDU (thus
@@ -128,13 +128,13 @@ public:
    *
    * \return a constant iterator pointing to the first MSDU in the list of aggregated MSDUs
    */
-  DeaggregatedMsdusCI begin (void) const;
+  DeaggregatedMsdusCI begin () const;
   /**
    * \brief Get a constant iterator indicating past-the-last MSDU in the list of aggregated MSDUs.
    *
    * \return a constant iterator indicating past-the-last MSDU in the list of aggregated MSDUs
    */
-  DeaggregatedMsdusCI end (void) const;
+  DeaggregatedMsdusCI end () const;
 
   /// Const iterator typedef
   typedef std::list<WifiMacQueueElem>::iterator Iterator;
@@ -157,18 +157,18 @@ public:
    *
    * \return true if this item is stored in some queue, false otherwise
    */
-  bool IsQueued (void) const;
+  bool IsQueued () const;
   /**
    * Get the AC of the queue this item is stored into. Abort if this item
    * is not stored in a queue.
    *
    * \return the AC of the queue this item is stored into
    */
-  AcIndex GetQueueAc (void) const;
+  AcIndex GetQueueAc () const;
   /**
    * \return the expiry time of this MPDU
    */
-  Time GetExpiryTime (void) const;
+  Time GetExpiryTime () const;
 
   /**
    * \brief Get the MAC protocol data unit (MPDU) corresponding to this item
@@ -176,22 +176,22 @@ public:
    *        header and trailer)
    * \return the MAC protocol data unit corresponding to this item.
    */
-  Ptr<Packet> GetProtocolDataUnit (void) const;
+  Ptr<Packet> GetProtocolDataUnit () const;
 
   /**
    * Mark this MPDU as being in flight (only used if Block Ack agreement established).
    */
-  void SetInFlight (void);
+  void SetInFlight ();
   /**
    * Mark this MPDU as not being in flight (only used if Block Ack agreement established).
    */
-  void ResetInFlight (void);
+  void ResetInFlight ();
   /**
    * Return true if this MPDU is in flight, false otherwise.
    *
    * \return true if this MPDU is in flight, false otherwise
    */
-  bool IsInFlight (void) const;
+  bool IsInFlight () const;
 
   /**
    * \brief Print the item contents.

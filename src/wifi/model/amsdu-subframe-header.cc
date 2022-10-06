@@ -37,7 +37,7 @@ AmsduSubframeHeader::GetTypeId ()
 }
 
 TypeId
-AmsduSubframeHeader::GetInstanceTypeId (void) const
+AmsduSubframeHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -100,19 +100,19 @@ AmsduSubframeHeader::SetLength (uint16_t length)
 }
 
 Mac48Address
-AmsduSubframeHeader::GetDestinationAddr (void) const
+AmsduSubframeHeader::GetDestinationAddr () const
 {
   return m_da;
 }
 
 Mac48Address
-AmsduSubframeHeader::GetSourceAddr (void) const
+AmsduSubframeHeader::GetSourceAddr () const
 {
   return m_sa;
 }
 
 uint16_t
-AmsduSubframeHeader::GetLength (void) const
+AmsduSubframeHeader::GetLength () const
 {
   return m_length;
 }

@@ -42,7 +42,7 @@ Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper (const Ipv4StaticRoutingHelper 
 }
 
 Ipv4StaticRoutingHelper*
-Ipv4StaticRoutingHelper::Copy (void) const
+Ipv4StaticRoutingHelper::Copy () const
 {
   return new Ipv4StaticRoutingHelper (*this);
 }

@@ -54,7 +54,7 @@ RipNg::~RipNg ()
 }
 
 TypeId
-RipNg::GetTypeId (void)
+RipNg::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RipNg")
     .SetParent<Ipv6RoutingProtocol> ()
@@ -1340,7 +1340,7 @@ void RipNgRoutingTableEntry::SetRouteStatus (Status_e status)
     }
 }
 
-RipNgRoutingTableEntry::Status_e RipNgRoutingTableEntry::GetRouteStatus (void) const
+RipNgRoutingTableEntry::Status_e RipNgRoutingTableEntry::GetRouteStatus () const
 {
   return m_status;
 }
@@ -1350,7 +1350,7 @@ void RipNgRoutingTableEntry::SetRouteChanged (bool changed)
   m_changed = changed;
 }
 
-bool RipNgRoutingTableEntry::IsRouteChanged (void) const
+bool RipNgRoutingTableEntry::IsRouteChanged () const
 {
   return m_changed;
 }

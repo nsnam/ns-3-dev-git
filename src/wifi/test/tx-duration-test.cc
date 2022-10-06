@@ -46,7 +46,7 @@ class TxDurationTest : public TestCase
 public:
   TxDurationTest ();
   virtual ~TxDurationTest ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -314,7 +314,7 @@ TxDurationTest::CalculateTxDurationUsingList (std::list<uint32_t> sizes, std::li
 }
 
 void
-TxDurationTest::DoRun (void)
+TxDurationTest::DoRun ()
 {
   bool retval = true;
 
@@ -573,7 +573,7 @@ class HeSigBDurationTest : public TestCase
 public:
   HeSigBDurationTest ();
   virtual ~HeSigBDurationTest ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -616,7 +616,7 @@ HeSigBDurationTest::BuildTxVector (uint16_t bw, std::list <HeMuUserInfo> userInf
 }
 
 void
-HeSigBDurationTest::DoRun (void)
+HeSigBDurationTest::DoRun ()
 {
   const auto & hePhy = WifiPhy::GetStaticPhyEntity(WIFI_MOD_CLASS_HE);
 
@@ -693,7 +693,7 @@ class PhyHeaderSectionsTest : public TestCase
 public:
   PhyHeaderSectionsTest ();
   virtual ~PhyHeaderSectionsTest ();
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -745,7 +745,7 @@ PhyHeaderSectionsTest::CheckPhyHeaderSections (PhyEntity::PhyHeaderSections obta
 }
 
 void
-PhyHeaderSectionsTest::DoRun (void)
+PhyHeaderSectionsTest::DoRun ()
 {
   Time ppduStart = Seconds (1.0);
   Ptr<PhyEntity> phyEntity;

@@ -70,7 +70,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpSocketBase");
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketBase);
 
 TypeId
-TcpSocketBase::GetTypeId (void)
+TcpSocketBase::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSocketBase")
     .SetParent<TcpSocket> ()
@@ -247,7 +247,7 @@ TcpSocketBase::GetInstanceTypeId () const
   return TcpSocketBase::GetTypeId ();
 }
 
-TcpSocketBase::TcpSocketBase (void)
+TcpSocketBase::TcpSocketBase ()
   : TcpSocket ()
 {
   NS_LOG_FUNCTION (this);
@@ -440,7 +440,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
   NS_ASSERT (ok == true);
 }
 
-TcpSocketBase::~TcpSocketBase (void)
+TcpSocketBase::~TcpSocketBase ()
 {
   NS_LOG_FUNCTION (this);
   m_node = nullptr;
@@ -492,28 +492,28 @@ TcpSocketBase::SetRtt (Ptr<RttEstimator> rtt)
 
 /* Inherit from Socket class: Returns error code */
 enum Socket::SocketErrno
-TcpSocketBase::GetErrno (void) const
+TcpSocketBase::GetErrno () const
 {
   return m_errno;
 }
 
 /* Inherit from Socket class: Returns socket type, NS3_SOCK_STREAM */
 enum Socket::SocketType
-TcpSocketBase::GetSocketType (void) const
+TcpSocketBase::GetSocketType () const
 {
   return NS3_SOCK_STREAM;
 }
 
 /* Inherit from Socket class: Returns associated node */
 Ptr<Node>
-TcpSocketBase::GetNode (void) const
+TcpSocketBase::GetNode () const
 {
   return m_node;
 }
 
 /* Inherit from Socket class: Bind socket to an end-point in TcpL4Protocol */
 int
-TcpSocketBase::Bind (void)
+TcpSocketBase::Bind ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint = m_tcp->Allocate ();
@@ -529,7 +529,7 @@ TcpSocketBase::Bind (void)
 }
 
 int
-TcpSocketBase::Bind6 (void)
+TcpSocketBase::Bind6 ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = m_tcp->Allocate6 ();
@@ -627,7 +627,7 @@ TcpSocketBase::SetInitialSSThresh (uint32_t threshold)
 }
 
 uint32_t
-TcpSocketBase::GetInitialSSThresh (void) const
+TcpSocketBase::GetInitialSSThresh () const
 {
   return m_tcb->m_initialSsThresh;
 }
@@ -642,7 +642,7 @@ TcpSocketBase::SetInitialCwnd (uint32_t cwnd)
 }
 
 uint32_t
-TcpSocketBase::GetInitialCwnd (void) const
+TcpSocketBase::GetInitialCwnd () const
 {
   return m_tcb->m_initialCWnd;
 }
@@ -725,7 +725,7 @@ TcpSocketBase::Connect (const Address & address)
 
 /* Inherit from Socket class: Listen on the endpoint for an incoming connection */
 int
-TcpSocketBase::Listen (void)
+TcpSocketBase::Listen ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -743,7 +743,7 @@ TcpSocketBase::Listen (void)
 
 /* Inherit from Socket class: Kill this socket and signal the peer (if any) */
 int
-TcpSocketBase::Close (void)
+TcpSocketBase::Close ()
 {
   NS_LOG_FUNCTION (this);
   /// \internal
@@ -771,7 +771,7 @@ TcpSocketBase::Close (void)
 
 /* Inherit from Socket class: Signal a termination of send */
 int
-TcpSocketBase::ShutdownSend (void)
+TcpSocketBase::ShutdownSend ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -805,7 +805,7 @@ TcpSocketBase::ShutdownSend (void)
 
 /* Inherit from Socket class: Signal a termination of receive */
 int
-TcpSocketBase::ShutdownRecv (void)
+TcpSocketBase::ShutdownRecv ()
 {
   NS_LOG_FUNCTION (this);
   m_shutdownRecv = true;
@@ -907,7 +907,7 @@ TcpSocketBase::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
 
 /* Inherit from Socket class: Get the max number of bytes an app can send */
 uint32_t
-TcpSocketBase::GetTxAvailable (void) const
+TcpSocketBase::GetTxAvailable () const
 {
   NS_LOG_FUNCTION (this);
   return m_txBuffer->Available ();
@@ -915,7 +915,7 @@ TcpSocketBase::GetTxAvailable (void) const
 
 /* Inherit from Socket class: Get the max number of bytes an app can read */
 uint32_t
-TcpSocketBase::GetRxAvailable (void) const
+TcpSocketBase::GetRxAvailable () const
 {
   NS_LOG_FUNCTION (this);
   return m_tcb->m_rxBuffer->Available ();
@@ -991,7 +991,7 @@ TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
 
 /* Clean up after Bind. Set up callback functions in the end-point. */
 int
-TcpSocketBase::SetupCallback (void)
+TcpSocketBase::SetupCallback ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1017,7 +1017,7 @@ TcpSocketBase::SetupCallback (void)
 
 /* Perform the real connection tasks: Send SYN if allowed, RST if invalid */
 int
-TcpSocketBase::DoConnect (void)
+TcpSocketBase::DoConnect ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1049,7 +1049,7 @@ TcpSocketBase::DoConnect (void)
 /* Do the action to close the socket. Usually send a packet with appropriate
     flags depended on the current m_state. */
 int
-TcpSocketBase::DoClose (void)
+TcpSocketBase::DoClose ()
 {
   NS_LOG_FUNCTION (this);
   switch (m_state)
@@ -1091,7 +1091,7 @@ TcpSocketBase::DoClose (void)
 
 /* Peacefully close the socket by notifying the upper layer and deallocate end point */
 void
-TcpSocketBase::CloseAndNotify (void)
+TcpSocketBase::CloseAndNotify ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -2588,7 +2588,7 @@ TcpSocketBase::PeerClose (Ptr<Packet> p, const TcpHeader& tcpHeader)
 
 /* Received a in-sequence FIN. Close down this socket. */
 void
-TcpSocketBase::DoPeerClose (void)
+TcpSocketBase::DoPeerClose ()
 {
   NS_ASSERT (m_state == ESTABLISHED || m_state == SYN_RCVD ||
              m_state == FIN_WAIT_1 || m_state == FIN_WAIT_2);
@@ -2629,7 +2629,7 @@ TcpSocketBase::DoPeerClose (void)
 /* Kill this socket. This is a callback function configured to m_endpoint in
    SetupCallback(), invoked when the endpoint is destroyed. */
 void
-TcpSocketBase::Destroy (void)
+TcpSocketBase::Destroy ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint = nullptr;
@@ -2645,7 +2645,7 @@ TcpSocketBase::Destroy (void)
 /* Kill this socket. This is a callback function configured to m_endpoint in
    SetupCallback(), invoked when the endpoint is destroyed. */
 void
-TcpSocketBase::Destroy6 (void)
+TcpSocketBase::Destroy6 ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = nullptr;
@@ -2788,7 +2788,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
 
 /* This function closes the endpoint completely. Called upon RST_TX action. */
 void
-TcpSocketBase::SendRST (void)
+TcpSocketBase::SendRST ()
 {
   NS_LOG_FUNCTION (this);
   SendEmptyPacket (TcpHeader::RST);
@@ -2798,7 +2798,7 @@ TcpSocketBase::SendRST (void)
 
 /* Deallocate the end point and cancel all the timers */
 void
-TcpSocketBase::DeallocateEndPoint (void)
+TcpSocketBase::DeallocateEndPoint ()
 {
   if (m_endPoint != nullptr)
     {
@@ -3373,7 +3373,7 @@ TcpSocketBase::BytesInFlight () const
 }
 
 uint32_t
-TcpSocketBase::Window (void) const
+TcpSocketBase::Window () const
 {
   return std::min (m_rWnd.Get (), m_tcb->m_cWnd.Get ());
 }
@@ -3748,7 +3748,7 @@ TcpSocketBase::ReTxTimeout ()
 }
 
 void
-TcpSocketBase::DelAckTimeout (void)
+TcpSocketBase::DelAckTimeout ()
 {
   m_delAckCount = 0;
   m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_DELAYED_ACK);
@@ -3764,7 +3764,7 @@ TcpSocketBase::DelAckTimeout (void)
 }
 
 void
-TcpSocketBase::LastAckTimeout (void)
+TcpSocketBase::LastAckTimeout ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -3919,7 +3919,7 @@ TcpSocketBase::SetSndBufSize (uint32_t size)
 }
 
 uint32_t
-TcpSocketBase::GetSndBufSize (void) const
+TcpSocketBase::GetSndBufSize () const
 {
   return m_txBuffer->MaxBufferSize ();
 }
@@ -3951,7 +3951,7 @@ TcpSocketBase::SetRcvBufSize (uint32_t size)
 }
 
 uint32_t
-TcpSocketBase::GetRcvBufSize (void) const
+TcpSocketBase::GetRcvBufSize () const
 {
   return m_tcb->m_rxBuffer->MaxBufferSize ();
 }
@@ -3967,7 +3967,7 @@ TcpSocketBase::SetSegSize (uint32_t size)
 }
 
 uint32_t
-TcpSocketBase::GetSegSize (void) const
+TcpSocketBase::GetSegSize () const
 {
   return m_tcb->m_segmentSize;
 }
@@ -3980,7 +3980,7 @@ TcpSocketBase::SetConnTimeout (Time timeout)
 }
 
 Time
-TcpSocketBase::GetConnTimeout (void) const
+TcpSocketBase::GetConnTimeout () const
 {
   return m_cnTimeout;
 }
@@ -3993,7 +3993,7 @@ TcpSocketBase::SetSynRetries (uint32_t count)
 }
 
 uint32_t
-TcpSocketBase::GetSynRetries (void) const
+TcpSocketBase::GetSynRetries () const
 {
   return m_synRetries;
 }
@@ -4006,7 +4006,7 @@ TcpSocketBase::SetDataRetries (uint32_t retries)
 }
 
 uint32_t
-TcpSocketBase::GetDataRetries (void) const
+TcpSocketBase::GetDataRetries () const
 {
   NS_LOG_FUNCTION (this);
   return m_dataRetries;
@@ -4020,7 +4020,7 @@ TcpSocketBase::SetDelAckTimeout (Time timeout)
 }
 
 Time
-TcpSocketBase::GetDelAckTimeout (void) const
+TcpSocketBase::GetDelAckTimeout () const
 {
   return m_delAckTimeout;
 }
@@ -4033,7 +4033,7 @@ TcpSocketBase::SetDelAckMaxCount (uint32_t count)
 }
 
 uint32_t
-TcpSocketBase::GetDelAckMaxCount (void) const
+TcpSocketBase::GetDelAckMaxCount () const
 {
   return m_delAckMaxCount;
 }
@@ -4046,7 +4046,7 @@ TcpSocketBase::SetTcpNoDelay (bool noDelay)
 }
 
 bool
-TcpSocketBase::GetTcpNoDelay (void) const
+TcpSocketBase::GetTcpNoDelay () const
 {
   return m_noDelay;
 }
@@ -4059,7 +4059,7 @@ TcpSocketBase::SetPersistTimeout (Time timeout)
 }
 
 Time
-TcpSocketBase::GetPersistTimeout (void) const
+TcpSocketBase::GetPersistTimeout () const
 {
   return m_persistTimeout;
 }
@@ -4072,7 +4072,7 @@ TcpSocketBase::SetAllowBroadcast (bool allowBroadcast)
 }
 
 bool
-TcpSocketBase::GetAllowBroadcast (void) const
+TcpSocketBase::GetAllowBroadcast () const
 {
   return false;
 }
@@ -4308,7 +4308,7 @@ TcpSocketBase::SetMinRto (Time minRto)
 }
 
 Time
-TcpSocketBase::GetMinRto (void) const
+TcpSocketBase::GetMinRto () const
 {
   return m_minRto;
 }
@@ -4321,19 +4321,19 @@ TcpSocketBase::SetClockGranularity (Time clockGranularity)
 }
 
 Time
-TcpSocketBase::GetClockGranularity (void) const
+TcpSocketBase::GetClockGranularity () const
 {
   return m_clockGranularity;
 }
 
 Ptr<TcpTxBuffer>
-TcpSocketBase::GetTxBuffer (void) const
+TcpSocketBase::GetTxBuffer () const
 {
   return m_txBuffer;
 }
 
 Ptr<TcpRxBuffer>
-TcpSocketBase::GetRxBuffer (void) const
+TcpSocketBase::GetRxBuffer () const
 {
   return m_tcb->m_rxBuffer;
 }
@@ -4425,7 +4425,7 @@ TcpSocketBase::SetRecoveryAlgorithm (Ptr<TcpRecoveryOps> recovery)
 }
 
 Ptr<TcpSocketBase>
-TcpSocketBase::Fork (void)
+TcpSocketBase::Fork ()
 {
   return CopyObject<TcpSocketBase> (this);
 }
@@ -4442,7 +4442,7 @@ TcpSocketBase::SafeSubtraction (uint32_t a, uint32_t b)
 }
 
 void
-TcpSocketBase::NotifyPacingPerformed (void)
+TcpSocketBase::NotifyPacingPerformed ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Performing Pacing");
@@ -4450,7 +4450,7 @@ TcpSocketBase::NotifyPacingPerformed (void)
 }
 
 bool
-TcpSocketBase::IsPacingEnabled (void) const
+TcpSocketBase::IsPacingEnabled () const
 {
   if (!m_tcb->m_pacing)
     {
@@ -4472,7 +4472,7 @@ TcpSocketBase::IsPacingEnabled (void) const
 }
 
 void
-TcpSocketBase::UpdatePacingRate (void)
+TcpSocketBase::UpdatePacingRate ()
 {
   NS_LOG_FUNCTION (this << m_tcb);
 
@@ -4540,13 +4540,13 @@ TcpSocketBase::SetUseEcn (TcpSocketState::UseEcn_t useEcn)
 }
 
 uint32_t
-TcpSocketBase::GetRWnd (void) const
+TcpSocketBase::GetRWnd () const
 {
   return m_rWnd.Get ();
 }
 
 SequenceNumber32
-TcpSocketBase::GetHighRxAck (void) const
+TcpSocketBase::GetHighRxAck () const
 {
   return m_highRxAckMark.Get ();
 }

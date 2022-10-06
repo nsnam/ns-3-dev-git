@@ -79,7 +79,7 @@ UanNetDevice::Clear ()
 }
 
 void
-UanNetDevice::DoInitialize (void)
+UanNetDevice::DoInitialize ()
 {
   m_phy->Initialize ();
   m_mac->Initialize ();
@@ -194,7 +194,7 @@ UanNetDevice::SetChannel (Ptr<UanChannel> channel)
 }
 
 Ptr<UanChannel>
-UanNetDevice::DoGetChannel (void) const
+UanNetDevice::DoGetChannel () const
 {
   return m_channel;
 
@@ -287,7 +287,7 @@ UanNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-UanNetDevice::IsBridge (void) const
+UanNetDevice::IsBridge () const
 {
   return false;
 }
@@ -351,7 +351,7 @@ UanNetDevice::ForwardUp (Ptr<Packet> pkt, uint16_t protocolNumber, const Mac8Add
 }
 
 Ptr<UanTransducer>
-UanNetDevice::GetTransducer (void) const
+UanNetDevice::GetTransducer () const
 {
   return m_trans;
 }
@@ -394,7 +394,7 @@ UanNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-UanNetDevice::SupportsSendFrom (void) const
+UanNetDevice::SupportsSendFrom () const
 {
   return false;
 }

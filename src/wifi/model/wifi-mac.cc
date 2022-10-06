@@ -61,7 +61,7 @@ WifiMac::~WifiMac ()
 }
 
 TypeId
-WifiMac::GetTypeId (void)
+WifiMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
@@ -384,7 +384,7 @@ WifiMac::SetTypeOfStation (TypeOfStation type)
 }
 
 TypeOfStation
-WifiMac::GetTypeOfStation (void) const
+WifiMac::GetTypeOfStation () const
 {
   return m_typeOfStation;
 }
@@ -396,7 +396,7 @@ WifiMac::SetDevice (const Ptr<WifiNetDevice> device)
 }
 
 Ptr<WifiNetDevice>
-WifiMac::GetDevice (void) const
+WifiMac::GetDevice () const
 {
   return m_device;
 }
@@ -409,7 +409,7 @@ WifiMac::SetAddress (Mac48Address address)
 }
 
 Mac48Address
-WifiMac::GetAddress (void) const
+WifiMac::GetAddress () const
 {
   return m_address;
 }
@@ -422,7 +422,7 @@ WifiMac::SetSsid (Ssid ssid)
 }
 
 Ssid
-WifiMac::GetSsid (void) const
+WifiMac::GetSsid () const
 {
   return m_ssid;
 }
@@ -441,7 +441,7 @@ WifiMac::GetBssid (uint8_t linkId) const
 }
 
 void
-WifiMac::SetPromisc (void)
+WifiMac::SetPromisc ()
 {
   for (auto& link : m_links)
     {
@@ -515,7 +515,7 @@ WifiMac::SetMacQueueScheduler (Ptr<WifiMacQueueScheduler> scheduler)
 }
 
 Ptr<WifiMacQueueScheduler>
-WifiMac::GetMacQueueScheduler (void) const
+WifiMac::GetMacQueueScheduler () const
 {
   return m_scheduler;
 }
@@ -837,7 +837,7 @@ WifiMac::GetWifiRemoteStationManager (uint8_t linkId) const
 }
 
 std::unique_ptr<WifiMac::LinkEntity>
-WifiMac::CreateLinkEntity (void) const
+WifiMac::CreateLinkEntity () const
 {
   return std::make_unique<LinkEntity> ();
 }
@@ -851,7 +851,7 @@ WifiMac::GetLink (uint8_t linkId) const
 }
 
 uint8_t
-WifiMac::GetNLinks (void) const
+WifiMac::GetNLinks () const
 {
   return m_links.size ();
 }
@@ -903,7 +903,7 @@ WifiMac::GetWifiPhy (uint8_t linkId) const
 }
 
 void
-WifiMac::ResetWifiPhys (void)
+WifiMac::ResetWifiPhys ()
 {
   NS_LOG_FUNCTION (this);
   for (auto& link : m_links)
@@ -1008,13 +1008,13 @@ WifiMac::SetShortSlotTimeSupported (bool enable)
 }
 
 bool
-WifiMac::GetShortSlotTimeSupported (void) const
+WifiMac::GetShortSlotTimeSupported () const
 {
   return m_shortSlotTimeSupported;
 }
 
 bool
-WifiMac::SupportsSendFrom (void) const
+WifiMac::SupportsSendFrom () const
 {
   return false;
 }
@@ -1184,31 +1184,31 @@ WifiMac::DeaggregateAmsduAndForward (Ptr<const WifiMpdu> mpdu)
 }
 
 Ptr<HtConfiguration>
-WifiMac::GetHtConfiguration (void) const
+WifiMac::GetHtConfiguration () const
 {
   return GetDevice ()->GetHtConfiguration ();
 }
 
 Ptr<VhtConfiguration>
-WifiMac::GetVhtConfiguration (void) const
+WifiMac::GetVhtConfiguration () const
 {
   return GetDevice ()->GetVhtConfiguration ();
 }
 
 Ptr<HeConfiguration>
-WifiMac::GetHeConfiguration (void) const
+WifiMac::GetHeConfiguration () const
 {
   return GetDevice ()->GetHeConfiguration ();
 }
 
 Ptr<EhtConfiguration>
-WifiMac::GetEhtConfiguration (void) const
+WifiMac::GetEhtConfiguration () const
 {
   return GetDevice ()->GetEhtConfiguration ();
 }
 
 bool
-WifiMac::GetHtSupported (void) const
+WifiMac::GetHtSupported () const
 {
   return bool (GetDevice ()->GetHtConfiguration ());
 }
@@ -1313,7 +1313,7 @@ WifiMac::SetBkBlockAckInactivityTimeout (uint16_t timeout)
 }
 
 ExtendedCapabilities
-WifiMac::GetExtendedCapabilities (void) const
+WifiMac::GetExtendedCapabilities () const
 {
   NS_LOG_FUNCTION (this);
   ExtendedCapabilities capabilities;

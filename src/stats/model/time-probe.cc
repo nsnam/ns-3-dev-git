@@ -62,7 +62,7 @@ TimeProbe::~TimeProbe ()
 }
 
 double
-TimeProbe::GetValue (void) const
+TimeProbe::GetValue () const
 {
   NS_LOG_FUNCTION (this);
   return m_output;

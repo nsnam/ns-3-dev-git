@@ -45,7 +45,7 @@ PhasedArraySpectrumPropagationLossModel::DoDispose ()
 }
 
 TypeId
-PhasedArraySpectrumPropagationLossModel::GetTypeId (void)
+PhasedArraySpectrumPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PhasedArraySpectrumPropagationLossModel")
     .SetParent<Object> ()

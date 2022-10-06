@@ -50,7 +50,7 @@ NS_LOG_COMPONENT_DEFINE ("QosTxop");
 NS_OBJECT_ENSURE_REGISTERED (QosTxop);
 
 TypeId
-QosTxop::GetTypeId (void)
+QosTxop::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QosTxop")
     .SetParent<ns3::Txop> ()
@@ -109,7 +109,7 @@ QosTxop::~QosTxop ()
 }
 
 void
-QosTxop::DoDispose (void)
+QosTxop::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   if (m_baManager)
@@ -122,7 +122,7 @@ QosTxop::DoDispose (void)
 }
 
 std::unique_ptr<Txop::LinkEntity>
-QosTxop::CreateLinkEntity (void) const
+QosTxop::CreateLinkEntity () const
 {
   return std::make_unique<QosLinkEntity> ();
 }
@@ -240,7 +240,7 @@ QosTxop::GetAifsn (uint8_t linkId) const
 }
 
 Ptr<BlockAckManager>
-QosTxop::GetBaManager (void)
+QosTxop::GetBaManager ()
 {
   return m_baManager;
 }
@@ -292,7 +292,7 @@ QosTxop::ScheduleBar (Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued)
 }
 
 bool
-QosTxop::UseExplicitBarAfterMissedBlockAck (void) const
+QosTxop::UseExplicitBarAfterMissedBlockAck () const
 {
   return m_useExplicitBarAfterMissedBlockAck;
 }
@@ -646,14 +646,14 @@ QosTxop::SetBlockAckInactivityTimeout (uint16_t timeout)
 }
 
 uint8_t
-QosTxop::GetBlockAckThreshold (void) const
+QosTxop::GetBlockAckThreshold () const
 {
   NS_LOG_FUNCTION (this);
   return m_blockAckThreshold;
 }
 
 uint16_t
-QosTxop::GetBlockAckInactivityTimeout (void) const
+QosTxop::GetBlockAckInactivityTimeout () const
 {
   return m_blockAckInactivityTimeout;
 }
@@ -698,7 +698,7 @@ QosTxop::SetAddBaResponseTimeout (Time addBaResponseTimeout)
 }
 
 Time
-QosTxop::GetAddBaResponseTimeout (void) const
+QosTxop::GetAddBaResponseTimeout () const
 {
   return m_addBaResponseTimeout;
 }
@@ -711,19 +711,19 @@ QosTxop::SetFailedAddBaTimeout (Time failedAddBaTimeout)
 }
 
 Time
-QosTxop::GetFailedAddBaTimeout (void) const
+QosTxop::GetFailedAddBaTimeout () const
 {
   return m_failedAddBaTimeout;
 }
 
 bool
-QosTxop::IsQosTxop (void) const
+QosTxop::IsQosTxop () const
 {
   return true;
 }
 
 AcIndex
-QosTxop::GetAccessCategory (void) const
+QosTxop::GetAccessCategory () const
 {
   return m_ac;
 }

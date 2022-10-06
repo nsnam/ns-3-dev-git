@@ -44,14 +44,14 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Constructor
    *
    * \param bs base station device
    */
   BSLinkManager (Ptr<BaseStationNetDevice> bs);
-  ~BSLinkManager (void);
+  ~BSLinkManager ();
 
   // Delete copy constructor and assignment operator to avoid misuse
   BSLinkManager (const BSLinkManager &) = delete;
@@ -60,11 +60,11 @@ public:
   /**
    * \return the ranging opportunities to allocate
    */
-  uint8_t CalculateRangingOppsToAllocate (void);
+  uint8_t CalculateRangingOppsToAllocate ();
   /**
    * \return an available downlink channel
    */
-  uint64_t SelectDlChannel (void);
+  uint64_t SelectDlChannel ();
   /**
    * \brief process a ranging request message
    * \param cid the connection identifier in which the ranging message was received
@@ -142,22 +142,22 @@ private:
    * Change DL channel function
    * \returns true if the DL channel changed
    */
-  bool ChangeDlChannel (void);
+  bool ChangeDlChannel ();
   /**
    * Get new DL channel function
    * \returns the new DL channel
    */
-  uint32_t GetNewDlChannel (void);
+  uint32_t GetNewDlChannel ();
   /**
    * Get signal quality function
    * \returns the signal quality
    */
-  uint8_t GetSignalQuality (void);
+  uint8_t GetSignalQuality ();
   /**
    * Is ranging acceptable function
    * \returns true if ranging is acceptable
    */
-  bool IsRangingAcceptable (void);
+  bool IsRangingAcceptable ();
 
   Ptr<BaseStationNetDevice> m_bs; ///< base station
 

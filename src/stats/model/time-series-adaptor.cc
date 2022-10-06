@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("TimeSeriesAdaptor");
 NS_OBJECT_ENSURE_REGISTERED (TimeSeriesAdaptor);
 
 TypeId
-TimeSeriesAdaptor::GetTypeId (void)
+TimeSeriesAdaptor::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TimeSeriesAdaptor")
     .SetParent<DataCollectionObject> ()

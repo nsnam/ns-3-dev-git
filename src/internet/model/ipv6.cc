@@ -31,7 +31,7 @@ namespace ns3
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6);
 
-TypeId Ipv6::GetTypeId (void)
+TypeId Ipv6::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6")
     .SetParent<Object> ()

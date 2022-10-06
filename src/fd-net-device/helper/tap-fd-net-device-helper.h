@@ -114,7 +114,7 @@ protected:
    * TAP device and obtain the file descriptor associated to it.
    * \returns The file descriptor associated with the TAP device.
    */
-  virtual int CreateFileDescriptor (void) const;
+  virtual int CreateFileDescriptor () const;
 
   /**
    * The TAP device flag IFF_NO_PI.

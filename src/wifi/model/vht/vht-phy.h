@@ -61,7 +61,7 @@ public:
   virtual ~VhtPhy ();
 
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
-  const PpduFormats & GetPpduFormats (void) const override;
+  const PpduFormats & GetPpduFormats () const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
   Time GetLSigDuration (WifiPreamble preamble) const override;
   Time GetTrainingDuration (const WifiTxVector& txVector,
@@ -75,7 +75,7 @@ public:
   /**
    * \return the WifiMode used for the SIG-A field
    */
-  virtual WifiMode GetSigAMode (void) const;
+  virtual WifiMode GetSigAMode () const;
   /**
    * \param txVector the transmission parameters
    * \return the WifiMode used for the SIG-B field
@@ -96,7 +96,7 @@ public:
   /**
    * Initialize all VHT modes.
    */
-  static void InitializeModes (void);
+  static void InitializeModes ();
   /**
    * Return the VHT MCS corresponding to
    * the provided index.
@@ -111,61 +111,61 @@ public:
    *
    * \return MCS 0 from VHT MCS values
    */
-  static WifiMode GetVhtMcs0 (void);
+  static WifiMode GetVhtMcs0 ();
   /**
    * Return MCS 1 from VHT MCS values.
    *
    * \return MCS 1 from VHT MCS values
    */
-  static WifiMode GetVhtMcs1 (void);
+  static WifiMode GetVhtMcs1 ();
   /**
    * Return MCS 2 from VHT MCS values.
    *
    * \return MCS 2 from VHT MCS values
    */
-  static WifiMode GetVhtMcs2 (void);
+  static WifiMode GetVhtMcs2 ();
   /**
    * Return MCS 3 from VHT MCS values.
    *
    * \return MCS 3 from VHT MCS values
    */
-  static WifiMode GetVhtMcs3 (void);
+  static WifiMode GetVhtMcs3 ();
   /**
    * Return MCS 4 from VHT MCS values.
    *
    * \return MCS 4 from VHT MCS values
    */
-  static WifiMode GetVhtMcs4 (void);
+  static WifiMode GetVhtMcs4 ();
   /**
    * Return MCS 5 from VHT MCS values.
    *
    * \return MCS 5 from VHT MCS values
    */
-  static WifiMode GetVhtMcs5 (void);
+  static WifiMode GetVhtMcs5 ();
   /**
    * Return MCS 6 from VHT MCS values.
    *
    * \return MCS 6 from VHT MCS values
    */
-  static WifiMode GetVhtMcs6 (void);
+  static WifiMode GetVhtMcs6 ();
   /**
    * Return MCS 7 from VHT MCS values.
    *
    * \return MCS 7 from VHT MCS values
    */
-  static WifiMode GetVhtMcs7 (void);
+  static WifiMode GetVhtMcs7 ();
   /**
    * Return MCS 8 from VHT MCS values.
    *
    * \return MCS 8 from VHT MCS values
    */
-  static WifiMode GetVhtMcs8 (void);
+  static WifiMode GetVhtMcs8 ();
   /**
    * Return MCS 9 from VHT MCS values.
    *
    * \return MCS 9 from VHT MCS values
    */
-  static WifiMode GetVhtMcs9 (void);
+  static WifiMode GetVhtMcs9 ();
 
   /**
    * Return the coding rate corresponding to
@@ -265,12 +265,12 @@ public:
   static bool IsAllowed (const WifiTxVector& txVector);
 
 protected:
-  WifiMode GetHtSigMode (void) const override;
-  Time GetHtSigDuration (void) const override;
+  WifiMode GetHtSigMode () const override;
+  Time GetHtSigDuration () const override;
   uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
-  uint32_t GetMaxPsduSize (void) const override;
+  uint32_t GetMaxPsduSize () const override;
   CcaIndication GetCcaIndication (const Ptr<const WifiPpdu> ppdu) override;
 
   /**
@@ -326,7 +326,7 @@ protected:
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
 private:
-  void BuildModeList (void) override;
+  void BuildModeList () override;
 
   /**
    * Return the VHT MCS corresponding to

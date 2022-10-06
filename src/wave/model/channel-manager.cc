@@ -26,7 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("ChannelManager");
 NS_OBJECT_ENSURE_REGISTERED (ChannelManager);
 
 TypeId
-ChannelManager::GetTypeId (void)
+ChannelManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ChannelManager")
     .SetParent<Object> ()
@@ -54,14 +54,14 @@ ChannelManager::~ChannelManager ()
 }
 
 uint32_t
-ChannelManager::GetCch (void)
+ChannelManager::GetCch ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return CCH;
 }
 
 std::vector<uint32_t>
-ChannelManager::GetSchs (void)
+ChannelManager::GetSchs ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::vector<uint32_t> schs;
@@ -75,7 +75,7 @@ ChannelManager::GetSchs (void)
 }
 
 std::vector<uint32_t>
-ChannelManager::GetWaveChannels (void)
+ChannelManager::GetWaveChannels ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::vector<uint32_t> channels;
@@ -90,7 +90,7 @@ ChannelManager::GetWaveChannels (void)
 }
 
 uint32_t
-ChannelManager::GetNumberOfWaveChannels (void)
+ChannelManager::GetNumberOfWaveChannels ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static  uint32_t NumberOfWaveChannels  = GetWaveChannels ().size ();
@@ -170,7 +170,7 @@ ChannelManager::GetManagementPowerLevel (uint32_t channelNumber)
 }
 
 void
-ChannelManager::DoDispose (void)
+ChannelManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   std::map<uint32_t, WaveChannel *> ::iterator i;

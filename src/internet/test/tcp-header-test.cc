@@ -57,8 +57,8 @@ public:
   TcpHeaderGetSetTestCase (std::string name);
 protected:
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
 };
 
@@ -66,7 +66,7 @@ TcpHeaderGetSetTestCase::TcpHeaderGetSetTestCase (std::string name) : TestCase (
 {
 }
 
-void TcpHeaderGetSetTestCase::DoRun (void)
+void TcpHeaderGetSetTestCase::DoRun ()
 {
   uint16_t sourcePort;        // Source port
   uint16_t destinationPort;   // Destination port
@@ -142,7 +142,7 @@ void TcpHeaderGetSetTestCase::DoRun (void)
     }
 }
 
-void TcpHeaderGetSetTestCase::DoTeardown (void)
+void TcpHeaderGetSetTestCase::DoTeardown ()
 {
 }
 
@@ -162,8 +162,8 @@ public:
   TcpHeaderWithRFC793OptionTestCase (std::string name);
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   /**
    * \brief Check an header with only one kind of option.
@@ -367,7 +367,7 @@ public:
   TcpHeaderFlagsToString (std::string name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 TcpHeaderFlagsToString::TcpHeaderFlagsToString (std::string name)
@@ -376,7 +376,7 @@ TcpHeaderFlagsToString::TcpHeaderFlagsToString (std::string name)
 }
 
 void
-TcpHeaderFlagsToString::DoRun (void)
+TcpHeaderFlagsToString::DoRun ()
 {
   std::string str, target;
   str = TcpHeader::FlagsToString (0x0);

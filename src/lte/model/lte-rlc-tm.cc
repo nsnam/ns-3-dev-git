@@ -43,7 +43,7 @@ LteRlcTm::~LteRlcTm ()
 }
 
 TypeId
-LteRlcTm::GetTypeId (void)
+LteRlcTm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRlcTm")
     .SetParent<LteRlc> ()
@@ -177,7 +177,7 @@ LteRlcTm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 
 
 void
-LteRlcTm::DoReportBufferStatus (void)
+LteRlcTm::DoReportBufferStatus ()
 {
   Time holDelay (0);
   uint32_t queueSize = 0;
@@ -203,7 +203,7 @@ LteRlcTm::DoReportBufferStatus (void)
 }
 
 void
-LteRlcTm::ExpireRbsTimer (void)
+LteRlcTm::ExpireRbsTimer ()
 {
   NS_LOG_LOGIC ("RBS Timer expires");
 

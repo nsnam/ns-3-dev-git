@@ -464,7 +464,7 @@ public:
   }
 
   /** \return The default dictionary path. */
-  static std::string GetDefault (void)
+  static std::string GetDefault ()
   {
     return "/usr/share/dict/words";
   }

@@ -56,7 +56,7 @@ struct RraaWifiRemoteStation : public WifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (RraaWifiManager);
 
 TypeId
-RraaWifiManager::GetTypeId (void)
+RraaWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RraaWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -201,7 +201,7 @@ RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, WifiMode mode) c
 }
 
 WifiRemoteStation *
-RraaWifiManager::DoCreateStation (void) const
+RraaWifiManager::DoCreateStation () const
 {
   RraaWifiRemoteStation *station = new RraaWifiRemoteStation ();
   station->m_initialized = false;

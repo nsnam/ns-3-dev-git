@@ -60,7 +60,7 @@ UanPhyCalcSinrDefault::~UanPhyCalcSinrDefault ()
 }
 
 TypeId
-UanPhyCalcSinrDefault::GetTypeId (void)
+UanPhyCalcSinrDefault::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhyCalcSinrDefault")
     .SetParent<UanPhyCalcSinr> ()
@@ -108,7 +108,7 @@ UanPhyCalcSinrFhFsk::~UanPhyCalcSinrFhFsk ()
 }
 
 TypeId
-UanPhyCalcSinrFhFsk::GetTypeId (void)
+UanPhyCalcSinrFhFsk::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhyCalcSinrFhFsk")
     .SetParent<UanPhyCalcSinr> ()
@@ -218,7 +218,7 @@ UanPhyPerGenDefault::~UanPhyPerGenDefault ()
 
 }
 TypeId
-UanPhyPerGenDefault::GetTypeId (void)
+UanPhyPerGenDefault::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhyPerGenDefault")
     .SetParent<UanPhyPer> ()
@@ -260,7 +260,7 @@ UanPhyPerCommonModes::~UanPhyPerCommonModes ()
 }
 
 TypeId
-UanPhyPerCommonModes::GetTypeId (void)
+UanPhyPerCommonModes::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhyPerCommonModes")
     .SetParent<UanPhyPer> ()
@@ -394,7 +394,7 @@ UanPhyPerUmodem::~UanPhyPerUmodem ()
 
 }
 
-TypeId UanPhyPerUmodem::GetTypeId (void)
+TypeId UanPhyPerUmodem::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhyPerUmodem")
     .SetParent<UanPhyPer> ()
@@ -566,7 +566,7 @@ UanPhyGen::DoDispose ()
 }
 
 UanModesList
-UanPhyGen::GetDefaultModes (void)
+UanPhyGen::GetDefaultModes ()
 {
   UanModesList l;
 
@@ -580,7 +580,7 @@ UanPhyGen::GetDefaultModes (void)
 }
 
 TypeId
-UanPhyGen::GetTypeId (void)
+UanPhyGen::GetTypeId ()
 {
 
   static TypeId tid = TypeId ("ns3::UanPhyGen")
@@ -896,33 +896,33 @@ UanPhyGen::SetReceiveErrorCallback (RxErrCallback cb)
   m_recErrCb = cb;
 }
 bool
-UanPhyGen::IsStateSleep (void)
+UanPhyGen::IsStateSleep ()
 {
   return m_state == SLEEP;
 }
 bool
-UanPhyGen::IsStateIdle (void)
+UanPhyGen::IsStateIdle ()
 {
   return m_state == IDLE;
 }
 bool
-UanPhyGen::IsStateBusy (void)
+UanPhyGen::IsStateBusy ()
 {
   return !IsStateIdle () && !IsStateSleep ();
 }
 bool
-UanPhyGen::IsStateRx (void)
+UanPhyGen::IsStateRx ()
 {
   return m_state == RX;
 }
 bool
-UanPhyGen::IsStateTx (void)
+UanPhyGen::IsStateTx ()
 {
   return m_state == TX;
 }
 
 bool
-UanPhyGen::IsStateCcaBusy (void)
+UanPhyGen::IsStateCcaBusy ()
 {
   return m_state == CCABUSY;
 }
@@ -945,37 +945,37 @@ UanPhyGen::SetCcaThresholdDb (double thresh)
 }
 
 double
-UanPhyGen::GetTxPowerDb (void)
+UanPhyGen::GetTxPowerDb ()
 {
   return m_txPwrDb;
 
 }
 
 double
-UanPhyGen::GetRxThresholdDb (void)
+UanPhyGen::GetRxThresholdDb ()
 {
   return m_rxThreshDb;
 }
 double
-UanPhyGen::GetCcaThresholdDb (void)
+UanPhyGen::GetCcaThresholdDb ()
 {
   return m_ccaThreshDb;
 }
 
 Ptr<UanChannel>
-UanPhyGen::GetChannel (void) const
+UanPhyGen::GetChannel () const
 {
   return m_channel;
 }
 
 Ptr<UanNetDevice>
-UanPhyGen::GetDevice (void) const
+UanPhyGen::GetDevice () const
 {
   return m_device;
 }
 
 Ptr<UanTransducer>
-UanPhyGen::GetTransducer (void)
+UanPhyGen::GetTransducer ()
 {
   return m_transducer;
 }
@@ -1052,7 +1052,7 @@ UanPhyGen::NotifyTransStartTx (Ptr<Packet> packet, [[maybe_unused]] double txPow
 }
 
 void
-UanPhyGen::NotifyIntChange (void)
+UanPhyGen::NotifyIntChange ()
 {
   if (m_state == CCABUSY && GetInterferenceDb (Ptr<Packet> ()) < m_ccaThreshDb)
     {
@@ -1102,7 +1102,7 @@ UanPhyGen::KpToDb (double kp)
 }
 
 void
-UanPhyGen::NotifyListenersRxStart (void)
+UanPhyGen::NotifyListenersRxStart ()
 {
   ListenerList::const_iterator it = m_listeners.begin ();
   for (; it != m_listeners.end (); it++)
@@ -1112,7 +1112,7 @@ UanPhyGen::NotifyListenersRxStart (void)
 
 }
 void
-UanPhyGen::NotifyListenersRxGood (void)
+UanPhyGen::NotifyListenersRxGood ()
 {
   ListenerList::const_iterator it = m_listeners.begin ();
   for (; it != m_listeners.end (); it++)
@@ -1121,7 +1121,7 @@ UanPhyGen::NotifyListenersRxGood (void)
     }
 }
 void
-UanPhyGen::NotifyListenersRxBad (void)
+UanPhyGen::NotifyListenersRxBad ()
 {
   ListenerList::const_iterator it = m_listeners.begin ();
   for (; it != m_listeners.end (); it++)
@@ -1130,7 +1130,7 @@ UanPhyGen::NotifyListenersRxBad (void)
     }
 }
 void
-UanPhyGen::NotifyListenersCcaStart (void)
+UanPhyGen::NotifyListenersCcaStart ()
 {
   ListenerList::const_iterator it = m_listeners.begin ();
   for (; it != m_listeners.end (); it++)
@@ -1139,7 +1139,7 @@ UanPhyGen::NotifyListenersCcaStart (void)
     }
 }
 void
-UanPhyGen::NotifyListenersCcaEnd (void)
+UanPhyGen::NotifyListenersCcaEnd ()
 {
   ListenerList::const_iterator it = m_listeners.begin ();
   for (; it != m_listeners.end (); it++)
@@ -1159,7 +1159,7 @@ UanPhyGen::NotifyListenersTxStart (Time duration)
 }
 
 void
-UanPhyGen::NotifyListenersTxEnd (void)
+UanPhyGen::NotifyListenersTxEnd ()
 {
   ListenerList::const_iterator it = m_listeners.begin ();
   for (; it != m_listeners.end (); it++)
@@ -1169,7 +1169,7 @@ UanPhyGen::NotifyListenersTxEnd (void)
 }
 
 uint32_t
-UanPhyGen::GetNModes (void)
+UanPhyGen::GetNModes ()
 {
   return m_modes.GetNModes ();
 }
@@ -1183,7 +1183,7 @@ UanPhyGen::GetMode (uint32_t n)
 }
 
 Ptr<Packet>
-UanPhyGen::GetPacketRx (void) const
+UanPhyGen::GetPacketRx () const
 {
   return m_pktRx;
 }

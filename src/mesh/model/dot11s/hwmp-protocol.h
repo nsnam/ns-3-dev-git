@@ -169,7 +169,7 @@ public:
    * \brief Get pointer to HWMP routing table
    * \return pointer to routing table
    */
-  Ptr<HwmpRtable> GetRoutingTable (void) const;
+  Ptr<HwmpRtable> GetRoutingTable () const;
 
 private:
   /// allow HwmpProtocolMac class friend access

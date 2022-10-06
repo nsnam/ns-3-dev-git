@@ -64,7 +64,7 @@ WifiTxParameters::operator= (const WifiTxParameters& txParams)
 }
 
 void
-WifiTxParameters::Clear (void)
+WifiTxParameters::Clear ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -89,7 +89,7 @@ WifiTxParameters::GetPsduInfo (Mac48Address receiver) const
 }
 
 const WifiTxParameters::PsduInfoMap&
-WifiTxParameters::GetPsduInfoMap (void) const
+WifiTxParameters::GetPsduInfoMap () const
 {
   return m_info;
 }

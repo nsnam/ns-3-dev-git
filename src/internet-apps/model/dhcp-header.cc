@@ -82,7 +82,7 @@ void DhcpHeader::SetType (uint8_t type)
   m_bootp = (m_op == 0||m_op == 2) ? 1 : 2;
 }
 
-uint8_t DhcpHeader::GetType (void) const
+uint8_t DhcpHeader::GetType () const
 {
   return m_op;
 }
@@ -98,7 +98,7 @@ void DhcpHeader::SetTran (uint32_t tran)
   m_xid = tran;
 }
 
-uint32_t DhcpHeader::GetTran (void) const
+uint32_t DhcpHeader::GetTran () const
 {
   return m_xid;
 }
@@ -134,7 +134,7 @@ void DhcpHeader::SetYiaddr (Ipv4Address addr)
   m_yiAddr = addr;
 }
 
-Ipv4Address DhcpHeader::GetYiaddr (void) const
+Ipv4Address DhcpHeader::GetYiaddr () const
 {
   return m_yiAddr;
 }
@@ -149,7 +149,7 @@ void DhcpHeader::SetDhcps (Ipv4Address addr)
   m_dhcps = addr;
 }
 
-Ipv4Address DhcpHeader::GetDhcps (void) const
+Ipv4Address DhcpHeader::GetDhcps () const
 {
   return m_dhcps;
 }
@@ -164,7 +164,7 @@ void DhcpHeader::SetReq (Ipv4Address addr)
   m_req = addr;
 }
 
-Ipv4Address DhcpHeader::GetReq (void) const
+Ipv4Address DhcpHeader::GetReq () const
 {
   return m_req;
 }
@@ -179,7 +179,7 @@ void DhcpHeader::SetMask (uint32_t addr)
   m_mask = addr;
 }
 
-uint32_t DhcpHeader::GetMask (void) const
+uint32_t DhcpHeader::GetMask () const
 {
   return m_mask;
 }
@@ -194,7 +194,7 @@ void DhcpHeader::SetRouter (Ipv4Address addr)
   m_route = addr;
 }
 
-Ipv4Address DhcpHeader::GetRouter (void) const
+Ipv4Address DhcpHeader::GetRouter () const
 {
   return m_route;
 }
@@ -209,7 +209,7 @@ void DhcpHeader::SetLease (uint32_t time)
   m_lease = time;
 }
 
-uint32_t DhcpHeader::GetLease (void) const
+uint32_t DhcpHeader::GetLease () const
 {
   return m_lease;
 }
@@ -224,7 +224,7 @@ void DhcpHeader::SetRenew (uint32_t time)
   m_renew = time;
 }
 
-uint32_t DhcpHeader::GetRenew (void) const
+uint32_t DhcpHeader::GetRenew () const
 {
   return m_renew;
 }
@@ -239,7 +239,7 @@ void DhcpHeader::SetRebind (uint32_t time)
   m_rebind = time;
 }
 
-uint32_t DhcpHeader::GetRebind (void) const
+uint32_t DhcpHeader::GetRebind () const
 {
   return m_rebind;
 }
@@ -254,12 +254,12 @@ void DhcpHeader::ResetOpt ()
     }
 }
 
-uint32_t DhcpHeader::GetSerializedSize (void) const
+uint32_t DhcpHeader::GetSerializedSize () const
 {
   return m_len;
 }
 
-TypeId DhcpHeader::GetTypeId (void)
+TypeId DhcpHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DhcpHeader")
     .SetParent<Header> ()
@@ -269,7 +269,7 @@ TypeId DhcpHeader::GetTypeId (void)
   return tid;
 }
 
-TypeId DhcpHeader::GetInstanceTypeId (void) const
+TypeId DhcpHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }

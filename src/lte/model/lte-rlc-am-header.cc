@@ -57,7 +57,7 @@ LteRlcAmHeader::~LteRlcAmHeader ()
 }
 
 void
-LteRlcAmHeader::SetDataPdu (void)
+LteRlcAmHeader::SetDataPdu ()
 {
   m_headerLength = 4;
   m_dataControlBit = DATA_PDU;
@@ -70,12 +70,12 @@ LteRlcAmHeader::SetControlPdu (uint8_t controlPduType)
   m_controlPduType = controlPduType;
 }
 bool
-LteRlcAmHeader::IsDataPdu (void) const
+LteRlcAmHeader::IsDataPdu () const
 {
   return m_dataControlBit == DATA_PDU;
 }
 bool
-LteRlcAmHeader::IsControlPdu (void) const
+LteRlcAmHeader::IsControlPdu () const
 {
   return m_dataControlBit == CONTROL_PDU;
 }
@@ -130,7 +130,7 @@ LteRlcAmHeader::PushLengthIndicator (uint16_t lengthIndicator)
 
 
 uint8_t
-LteRlcAmHeader::PopExtensionBit (void)
+LteRlcAmHeader::PopExtensionBit ()
 {
   uint8_t extensionBit = m_extensionBits.front ();
   m_extensionBits.pop_front ();
@@ -139,7 +139,7 @@ LteRlcAmHeader::PopExtensionBit (void)
 }
 
 uint16_t
-LteRlcAmHeader::PopLengthIndicator (void)
+LteRlcAmHeader::PopLengthIndicator ()
 {
   uint16_t lengthIndicator = m_lengthIndicators.front ();
   m_lengthIndicators.pop_front ();
@@ -168,7 +168,7 @@ LteRlcAmHeader::SetPollingBit (uint8_t pollingBit)
 }
 
 uint8_t
-LteRlcAmHeader::GetPollingBit (void) const
+LteRlcAmHeader::GetPollingBit () const
 {
   return m_pollingBit;
 }
@@ -181,7 +181,7 @@ LteRlcAmHeader::SetLastSegmentFlag (uint8_t lsf)
 }
 
 uint8_t
-LteRlcAmHeader::GetLastSegmentFlag (void) const
+LteRlcAmHeader::GetLastSegmentFlag () const
 {
   return m_lastSegmentFlag;
 }
@@ -194,13 +194,13 @@ LteRlcAmHeader::SetSegmentOffset (uint16_t segmentOffset)
 }
 
 uint16_t
-LteRlcAmHeader::GetSegmentOffset (void) const
+LteRlcAmHeader::GetSegmentOffset () const
 {
   return m_segmentOffset;
 }
 
 uint16_t
-LteRlcAmHeader::GetLastOffset (void) const
+LteRlcAmHeader::GetLastOffset () const
 {
   return m_lastOffset;
 }
@@ -265,7 +265,7 @@ LteRlcAmHeader::IsNackPresent (SequenceNumber10 nack)
 }
 
 int
-LteRlcAmHeader::PopNack (void)
+LteRlcAmHeader::PopNack ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_dataControlBit == CONTROL_PDU && m_controlPduType == LteRlcAmHeader::STATUS_PDU,
@@ -283,14 +283,14 @@ LteRlcAmHeader::PopNack (void)
 
 
 SequenceNumber10
-LteRlcAmHeader::GetAckSn (void) const
+LteRlcAmHeader::GetAckSn () const
 {
   return m_ackSn;
 }
 
 
 TypeId
-LteRlcAmHeader::GetTypeId (void)
+LteRlcAmHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRlcAmHeader")
     .SetParent<Header> ()
@@ -301,7 +301,7 @@ LteRlcAmHeader::GetTypeId (void)
 }
 
 TypeId
-LteRlcAmHeader::GetInstanceTypeId (void) const
+LteRlcAmHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -361,7 +361,7 @@ LteRlcAmHeader::Print (std::ostream &os)  const
     }
 }
 
-uint32_t LteRlcAmHeader::GetSerializedSize (void) const
+uint32_t LteRlcAmHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }

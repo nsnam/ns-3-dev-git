@@ -68,7 +68,7 @@ NS_OBJECT_ENSURE_REGISTERED (ThompsonSamplingWifiManager);
 NS_LOG_COMPONENT_DEFINE ("ThompsonSamplingWifiManager");
 
 TypeId
-ThompsonSamplingWifiManager::GetTypeId (void)
+ThompsonSamplingWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThompsonSamplingWifiManager")
     .SetParent<WifiRemoteStationManager> ()

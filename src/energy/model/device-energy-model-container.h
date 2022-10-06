@@ -102,7 +102,7 @@ public:
    *     }
    * \endcode
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which refers to the last DeviceEnergyModel pointer
@@ -123,14 +123,14 @@ public:
    *     }
    * \endcode
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \brief Get the number of Ptr<DeviceEnergyModel> stored in this container.
    *
    * \returns The number of Ptr<DeviceEnergyModel> stored in this container.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Get the i-th Ptr<DeviceEnergyModel> stored in this container.
@@ -166,7 +166,7 @@ public:
   /**
    * \brief Removes all elements in the container.
    */
-  void Clear (void);
+  void Clear ();
 
 private:
   std::vector< Ptr<DeviceEnergyModel> > m_models; //!< Container of Energy models

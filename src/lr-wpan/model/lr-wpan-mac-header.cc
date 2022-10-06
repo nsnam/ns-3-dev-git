@@ -62,7 +62,7 @@ LrWpanMacHeader::~LrWpanMacHeader ()
 
 
 enum LrWpanMacHeader::LrWpanMacType
-LrWpanMacHeader::GetType (void) const
+LrWpanMacHeader::GetType () const
 {
   switch (m_fctrlFrmType)
     {
@@ -86,7 +86,7 @@ LrWpanMacHeader::GetType (void) const
 
 
 uint16_t
-LrWpanMacHeader::GetFrameControl (void) const
+LrWpanMacHeader::GetFrameControl () const
 {
   uint16_t val = 0;
 
@@ -104,81 +104,81 @@ LrWpanMacHeader::GetFrameControl (void) const
 }
 
 bool
-LrWpanMacHeader::IsSecEnable (void) const
+LrWpanMacHeader::IsSecEnable () const
 {
   return (m_fctrlSecU == 1);
 }
 
 bool
-LrWpanMacHeader::IsFrmPend (void) const
+LrWpanMacHeader::IsFrmPend () const
 {
   return (m_fctrlFrmPending == 1);
 }
 
 bool
-LrWpanMacHeader::IsAckReq (void) const
+LrWpanMacHeader::IsAckReq () const
 {
   return (m_fctrlAckReq == 1);
 }
 
 bool
-LrWpanMacHeader::IsPanIdComp (void) const
+LrWpanMacHeader::IsPanIdComp () const
 {
   return (m_fctrlPanIdComp == 1);
 }
 
 uint8_t
-LrWpanMacHeader::GetFrmCtrlRes (void) const
+LrWpanMacHeader::GetFrmCtrlRes () const
 {
   return (m_fctrlReserved);
 }
 
 uint8_t
-LrWpanMacHeader::GetDstAddrMode (void) const
+LrWpanMacHeader::GetDstAddrMode () const
 {
   return m_fctrlDstAddrMode;
 }
 
 uint8_t
-LrWpanMacHeader::GetFrameVer (void) const
+LrWpanMacHeader::GetFrameVer () const
 {
   return m_fctrlFrmVer;
 }
 
 uint8_t
-LrWpanMacHeader::GetSrcAddrMode (void) const
+LrWpanMacHeader::GetSrcAddrMode () const
 {
   return m_fctrlSrcAddrMode;
 }
 
 
 uint8_t
-LrWpanMacHeader::GetSeqNum (void) const
+LrWpanMacHeader::GetSeqNum () const
 {
   return(m_SeqNum);
 }
 
 
 uint16_t
-LrWpanMacHeader::GetDstPanId (void) const
+LrWpanMacHeader::GetDstPanId () const
 {
   return(m_addrDstPanId);
 }
 
 
 Mac16Address
-LrWpanMacHeader::GetShortDstAddr (void) const
+LrWpanMacHeader::GetShortDstAddr () const
 {
   return(m_addrShortDstAddr);
 }
 Mac64Address
-LrWpanMacHeader::GetExtDstAddr (void) const
+LrWpanMacHeader::GetExtDstAddr () const
 {
   return(m_addrExtDstAddr);
 }
 
 uint16_t
-LrWpanMacHeader::GetSrcPanId (void) const
+LrWpanMacHeader::GetSrcPanId () const
 {
   return(m_addrSrcPanId);
 }
@@ -186,19 +186,19 @@ LrWpanMacHeader::GetSrcPanId (void) const
 
 
 Mac16Address
-LrWpanMacHeader::GetShortSrcAddr (void) const
+LrWpanMacHeader::GetShortSrcAddr () const
 {
   return(m_addrShortSrcAddr);
 }
 Mac64Address
-LrWpanMacHeader::GetExtSrcAddr (void) const
+LrWpanMacHeader::GetExtSrcAddr () const
 {
   return(m_addrExtSrcAddr);
 }
 
 
 uint8_t
-LrWpanMacHeader::GetSecControl (void) const
+LrWpanMacHeader::GetSecControl () const
 {
   uint8_t val = 0;
 
@@ -210,68 +210,68 @@ LrWpanMacHeader::GetSecControl (void) const
 }
 
 uint32_t
-LrWpanMacHeader::GetFrmCounter (void) const
+LrWpanMacHeader::GetFrmCounter () const
 {
   return(m_auxFrmCntr);
 }
 
 uint8_t
-LrWpanMacHeader::GetSecLevel (void) const
+LrWpanMacHeader::GetSecLevel () const
 {
   return (m_secctrlSecLevel);
 }
 
 uint8_t
-LrWpanMacHeader::GetKeyIdMode (void) const
+LrWpanMacHeader::GetKeyIdMode () const
 {
   return(m_secctrlKeyIdMode);
 }
 
 uint8_t
-LrWpanMacHeader::GetSecCtrlReserved (void) const
+LrWpanMacHeader::GetSecCtrlReserved () const
 {
   return (m_secctrlReserved);
 }
 
 uint32_t
-LrWpanMacHeader::GetKeyIdSrc32 (void) const
+LrWpanMacHeader::GetKeyIdSrc32 () const
 {
   return(m_auxKeyIdKeySrc32);
 }
 
 uint64_t
-LrWpanMacHeader::GetKeyIdSrc64 (void) const
+LrWpanMacHeader::GetKeyIdSrc64 () const
 {
 
   return(m_auxKeyIdKeySrc64);
 }
 
 uint8_t
-LrWpanMacHeader::GetKeyIdIndex (void) const
+LrWpanMacHeader::GetKeyIdIndex () const
 {
   return(m_auxKeyIdKeyIndex);
 }
 
 bool
-LrWpanMacHeader::IsBeacon (void) const
+LrWpanMacHeader::IsBeacon () const
 {
   return(m_fctrlFrmType == LRWPAN_MAC_BEACON);
 }
 
 bool
-LrWpanMacHeader::IsData (void) const
+LrWpanMacHeader::IsData () const
 {
   return(m_fctrlFrmType == LRWPAN_MAC_DATA);
 }
 
 bool
-LrWpanMacHeader::IsAcknowledgment (void) const
+LrWpanMacHeader::IsAcknowledgment () const
 {
   return(m_fctrlFrmType == LRWPAN_MAC_ACKNOWLEDGMENT);
 }
 
 bool
-LrWpanMacHeader::IsCommand (void) const
+LrWpanMacHeader::IsCommand () const
 {
   return(m_fctrlFrmType == LRWPAN_MAC_COMMAND);
 }
@@ -301,55 +301,55 @@ LrWpanMacHeader::SetFrameControl (uint16_t frameControl)
 
 
 void
-LrWpanMacHeader::SetSecEnable (void)
+LrWpanMacHeader::SetSecEnable ()
 {
   m_fctrlSecU = 1;
 }
 
 
 void
-LrWpanMacHeader::SetSecDisable (void)
+LrWpanMacHeader::SetSecDisable ()
 {
   m_fctrlSecU = 0;
 }
 
 
 void
-LrWpanMacHeader::SetFrmPend (void)
+LrWpanMacHeader::SetFrmPend ()
 {
   m_fctrlFrmPending = 1;
 }
 
 
 void
-LrWpanMacHeader::SetNoFrmPend (void)
+LrWpanMacHeader::SetNoFrmPend ()
 {
   m_fctrlFrmPending = 0;
 }
 
 
 void
-LrWpanMacHeader::SetAckReq (void)
+LrWpanMacHeader::SetAckReq ()
 {
   m_fctrlAckReq = 1;
 }
 
 
 void
-LrWpanMacHeader::SetNoAckReq (void)
+LrWpanMacHeader::SetNoAckReq ()
 {
   m_fctrlAckReq = 0;
 }
 
 
 void
-LrWpanMacHeader::SetPanIdComp (void)
+LrWpanMacHeader::SetPanIdComp ()
 {
   m_fctrlPanIdComp = 1;
 }
 
 
-void LrWpanMacHeader::SetNoPanIdComp (void)
+void LrWpanMacHeader::SetNoPanIdComp ()
 {
   m_fctrlPanIdComp = 0;
 }
@@ -474,7 +474,7 @@ LrWpanMacHeader::SetKeyId (uint64_t keySrc,
 }
 
 TypeId
-LrWpanMacHeader::GetTypeId (void)
+LrWpanMacHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanMacHeader")
     .SetParent<Header> ()
@@ -484,7 +484,7 @@ LrWpanMacHeader::GetTypeId (void)
 }
 
 TypeId
-LrWpanMacHeader::GetInstanceTypeId (void) const
+LrWpanMacHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -553,7 +553,7 @@ LrWpanMacHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-LrWpanMacHeader::GetSerializedSize (void) const
+LrWpanMacHeader::GetSerializedSize () const
 {
   /*
    * Each mac header will have

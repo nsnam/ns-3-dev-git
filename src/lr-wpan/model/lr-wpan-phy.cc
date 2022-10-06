@@ -78,7 +78,7 @@ LrWpanPhy::ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION] = {
   { 8.0, 2.0, 2.0}};
 
 TypeId
-LrWpanPhy::GetTypeId (void)
+LrWpanPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanPhy")
     .SetParent<SpectrumPhy> ()
@@ -127,7 +127,7 @@ LrWpanPhy::GetTypeId (void)
   return tid;
 }
 
-LrWpanPhy::LrWpanPhy (void)
+LrWpanPhy::LrWpanPhy ()
   : m_edRequest (),
     m_setTRXState ()
 {
@@ -148,11 +148,11 @@ LrWpanPhy::LrWpanPhy (void)
   ChangeTrxState (IEEE_802_15_4_PHY_TRX_OFF);
 }
 
-LrWpanPhy::~LrWpanPhy (void)
+LrWpanPhy::~LrWpanPhy ()
 {}
 
 void
-LrWpanPhy::DoInitialize (void)
+LrWpanPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -175,7 +175,7 @@ LrWpanPhy::DoInitialize (void)
 }
 
 void
-LrWpanPhy::DoDispose (void)
+LrWpanPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -213,7 +213,7 @@ LrWpanPhy::DoDispose (void)
 }
 
 Ptr<NetDevice>
-LrWpanPhy::GetDevice (void) const
+LrWpanPhy::GetDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_device;
@@ -221,7 +221,7 @@ LrWpanPhy::GetDevice (void) const
 
 
 Ptr<MobilityModel>
-LrWpanPhy::GetMobility (void) const
+LrWpanPhy::GetMobility () const
 {
   NS_LOG_FUNCTION (this);
   return m_mobility;
@@ -253,7 +253,7 @@ LrWpanPhy::SetChannel (Ptr<SpectrumChannel> c)
 
 
 Ptr<SpectrumChannel>
-LrWpanPhy::GetChannel (void)
+LrWpanPhy::GetChannel ()
 {
   NS_LOG_FUNCTION (this);
   return m_channel;
@@ -261,7 +261,7 @@ LrWpanPhy::GetChannel (void)
 
 
 Ptr<const SpectrumModel>
-LrWpanPhy::GetRxSpectrumModel (void) const
+LrWpanPhy::GetRxSpectrumModel () const
 {
   NS_LOG_FUNCTION (this);
   if (m_txPsd)
@@ -275,7 +275,7 @@ LrWpanPhy::GetRxSpectrumModel (void) const
 }
 
 Ptr<Object>
-LrWpanPhy::GetAntenna (void) const
+LrWpanPhy::GetAntenna () const
 {
   NS_LOG_FUNCTION (this);
   return m_antenna;
@@ -408,7 +408,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 }
 
 void
-LrWpanPhy::CheckInterference (void)
+LrWpanPhy::CheckInterference ()
 {
   // Calculate whether packet was lost.
   LrWpanSpectrumValueHelper psdHelper;
@@ -620,7 +620,7 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
 }
 
 void
-LrWpanPhy::PlmeCcaRequest (void)
+LrWpanPhy::PlmeCcaRequest ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -647,14 +647,14 @@ LrWpanPhy::PlmeCcaRequest (void)
 }
 
 void
-LrWpanPhy::CcaCancel (void)
+LrWpanPhy::CcaCancel ()
 {
   NS_LOG_FUNCTION (this);
   m_ccaRequest.Cancel ();
 }
 
 void
-LrWpanPhy::PlmeEdRequest (void)
+LrWpanPhy::PlmeEdRequest ()
 {
   NS_LOG_FUNCTION (this);
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON || m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
@@ -1290,7 +1290,7 @@ LrWpanPhy::ChangeTrxState (LrWpanPhyEnumeration newState)
 }
 
 bool
-LrWpanPhy::PhyIsBusy (void) const
+LrWpanPhy::PhyIsBusy () const
 {
   NS_LOG_FUNCTION (this << m_trxState);
   return ((m_trxState == IEEE_802_15_4_PHY_BUSY_TX)
@@ -1315,7 +1315,7 @@ LrWpanPhy::CancelEd (LrWpanPhyEnumeration state)
 }
 
 void
-LrWpanPhy::EndEd (void)
+LrWpanPhy::EndEd ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1347,7 +1347,7 @@ LrWpanPhy::EndEd (void)
 }
 
 void
-LrWpanPhy::EndCca (void)
+LrWpanPhy::EndCca ()
 {
   NS_LOG_FUNCTION (this);
   LrWpanPhyEnumeration sensedChannelState = IEEE_802_15_4_PHY_UNSPECIFIED;
@@ -1421,7 +1421,7 @@ LrWpanPhy::EndCca (void)
 }
 
 void
-LrWpanPhy::EndSetTRXState (void)
+LrWpanPhy::EndSetTRXState ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1436,7 +1436,7 @@ LrWpanPhy::EndSetTRXState (void)
 }
 
 void
-LrWpanPhy::EndTx (void)
+LrWpanPhy::EndTx ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1505,13 +1505,13 @@ LrWpanPhy::CalculateTxTime (Ptr<const Packet> packet)
 }
 
 uint8_t
-LrWpanPhy::GetCurrentPage (void) const
+LrWpanPhy::GetCurrentPage () const
 {
   return m_phyPIBAttributes.phyCurrentPage;
 }
 
 uint8_t
-LrWpanPhy::GetCurrentChannelNum (void) const
+LrWpanPhy::GetCurrentChannelNum () const
 {
   return m_phyPIBAttributes.phyCurrentChannel;
 }
@@ -1538,7 +1538,7 @@ LrWpanPhy::GetDataOrSymbolRate (bool isData)
 }
 
 Time
-LrWpanPhy::GetPpduHeaderTxTime (void)
+LrWpanPhy::GetPpduHeaderTxTime ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1663,7 +1663,7 @@ LrWpanPhy::SetPhyOption (LrWpanPhyOption phyOption)
 }
 
 LrWpanPhyOption
-LrWpanPhy::GetMyPhyOption (void)
+LrWpanPhy::GetMyPhyOption ()
 {
   NS_LOG_FUNCTION (this);
   return m_phyOption;
@@ -1688,7 +1688,7 @@ LrWpanPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
 }
 
 Ptr<const SpectrumValue>
-LrWpanPhy::GetNoisePowerSpectralDensity (void)
+LrWpanPhy::GetNoisePowerSpectralDensity ()
 {
   NS_LOG_FUNCTION (this);
   return m_noise;
@@ -1703,14 +1703,14 @@ LrWpanPhy::SetErrorModel (Ptr<LrWpanErrorModel> e)
 }
 
 Ptr<LrWpanErrorModel>
-LrWpanPhy::GetErrorModel (void) const
+LrWpanPhy::GetErrorModel () const
 {
   NS_LOG_FUNCTION (this);
   return m_errorModel;
 }
 
 uint64_t
-LrWpanPhy::GetPhySHRDuration (void) const
+LrWpanPhy::GetPhySHRDuration () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_phyOption < IEEE_802_15_4_INVALID_PHY_OPTION);
@@ -1720,7 +1720,7 @@ LrWpanPhy::GetPhySHRDuration (void) const
 }
 
 double
-LrWpanPhy::GetPhySymbolsPerOctet (void) const
+LrWpanPhy::GetPhySymbolsPerOctet () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_phyOption < IEEE_802_15_4_INVALID_PHY_OPTION);
@@ -1729,7 +1729,7 @@ LrWpanPhy::GetPhySymbolsPerOctet (void) const
 }
 
 double
-LrWpanPhy::GetCurrentSignalPsd (void)
+LrWpanPhy::GetCurrentSignalPsd ()
 {
   double powerWatts = LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd (), m_phyPIBAttributes.phyCurrentChannel);
   return WToDbm (powerWatts);

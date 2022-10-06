@@ -93,13 +93,13 @@ Tap::Tap (Time delay, std::complex<double> amp)
 }
 
 std::complex<double>
-Tap::GetAmp (void) const
+Tap::GetAmp () const
 {
   return m_amplitude;
 }
 
 Time
-Tap::GetDelay (void) const
+Tap::GetDelay () const
 {
   return m_delay;
 }
@@ -173,25 +173,25 @@ UanPdp::SetResolution (Time resolution)
   m_resolution = resolution;
 }
 UanPdp::Iterator
-UanPdp::GetBegin (void) const
+UanPdp::GetBegin () const
 {
   return m_taps.begin ();
 }
 
 UanPdp::Iterator
-UanPdp::GetEnd (void) const
+UanPdp::GetEnd () const
 {
   return m_taps.end ();
 }
 
 uint32_t
-UanPdp::GetNTaps (void) const
+UanPdp::GetNTaps () const
 {
   return static_cast<uint32_t> (m_taps.size ());
 }
 
 Time
-UanPdp::GetResolution (void) const
+UanPdp::GetResolution () const
 {
   return m_resolution;
 }
@@ -330,7 +330,7 @@ UanPdp::SumTapsC (Time begin, Time end) const
 }
 
 UanPdp
-UanPdp::NormalizeToSumNc (void) const
+UanPdp::NormalizeToSumNc () const
 {
   double sumNc = 0.0;
   std::vector<Tap> newTaps;
@@ -349,7 +349,7 @@ UanPdp::NormalizeToSumNc (void) const
 }
 
 UanPdp
-UanPdp::CreateImpulsePdp (void)
+UanPdp::CreateImpulsePdp ()
 {
   UanPdp pdp;
   pdp.SetResolution (Seconds (0));
@@ -359,7 +359,7 @@ UanPdp::CreateImpulsePdp (void)
 
 NS_OBJECT_ENSURE_REGISTERED (UanPropModel);
 
-TypeId UanPropModel::GetTypeId (void)
+TypeId UanPropModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPropModel")
     .SetParent<Object> ()
@@ -369,12 +369,12 @@ TypeId UanPropModel::GetTypeId (void)
 }
 
 void
-UanPropModel::Clear (void)
+UanPropModel::Clear ()
 {
 }
 
 void
-UanPropModel::DoDispose (void)
+UanPropModel::DoDispose ()
 {
   Clear ();
   Object::DoDispose ();

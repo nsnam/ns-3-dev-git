@@ -117,7 +117,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Returns whether the DataCalculator is enabled
@@ -177,7 +177,7 @@ protected:
   std::string m_key;      //!< Key value
   std::string m_context;  //!< Context value
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   EventId m_startEvent; //!< Start event

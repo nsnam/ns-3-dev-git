@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("AdhocWifiMac");
 NS_OBJECT_ENSURE_REGISTERED (AdhocWifiMac);
 
 TypeId
-AdhocWifiMac::GetTypeId (void)
+AdhocWifiMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AdhocWifiMac")
     .SetParent<WifiMac> ()

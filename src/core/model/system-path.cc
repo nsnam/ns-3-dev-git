@@ -138,7 +138,7 @@ Dirname (std::string path)
 }
 
 std::string
-FindSelfDirectory (void)
+FindSelfDirectory ()
 {
   /**
    * This function returns the path to the running $PREFIX.
@@ -304,7 +304,7 @@ ReadFiles (std::string path)
 }
 
 std::string
-MakeTemporaryDirectoryName (void)
+MakeTemporaryDirectoryName ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   char *path = NULL;

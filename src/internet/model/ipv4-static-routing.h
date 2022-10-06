@@ -69,7 +69,7 @@ public:
    * \brief The interface Id associated with this class.
    * \return type identifier
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Ipv4StaticRouting ();
   virtual ~Ipv4StaticRouting ();
@@ -179,7 +179,7 @@ public:
  * \warning The default route counts as one of the routes.
  * \return number of entries
  */
-  uint32_t GetNRoutes (void) const;
+  uint32_t GetNRoutes () const;
 
 /**
  * \brief Get the default route with lowest metric from the static routing table.
@@ -190,7 +190,7 @@ public:
  *
  * \see Ipv4RoutingTableEntry
  */
-  Ipv4RoutingTableEntry GetDefaultRoute (void);
+  Ipv4RoutingTableEntry GetDefaultRoute ();
 
 /**
  * \brief Get a route from the static unicast routing table.
@@ -292,7 +292,7 @@ public:
  * \warning The default multicast route counts as one of the routes.
  * \return number of entries
  */
-  uint32_t GetNMulticastRoutes (void) const;
+  uint32_t GetNMulticastRoutes () const;
 
 /**
  * \brief Get a route from the static multicast routing table.
@@ -355,7 +355,7 @@ public:
   void RemoveMulticastRoute (uint32_t index);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /// Container for the network routes

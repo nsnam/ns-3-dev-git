@@ -90,7 +90,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   EnergySource ();
   virtual ~EnergySource ();
 
@@ -100,7 +100,7 @@ public:
    * Set method is to be defined in child class only if necessary. For sources
    * with a fixed supply voltage, set method is not needed.
    */
-  virtual double GetSupplyVoltage (void) const = 0;
+  virtual double GetSupplyVoltage () const = 0;
 
   /**
    * \returns Initial energy (capacity) of the energy source.
@@ -108,26 +108,26 @@ public:
    * Set method is to be defined in child class only if necessary. For sources
    * with a fixed initial energy (energy capacity), set method is not needed.
    */
-  virtual double GetInitialEnergy (void) const = 0;
+  virtual double GetInitialEnergy () const = 0;
 
   /**
    * \returns Remaining energy at the energy source.
    */
-  virtual double GetRemainingEnergy (void) = 0;
+  virtual double GetRemainingEnergy () = 0;
 
   /**
    * \return Energy fraction = remaining energy / initial energy [0, 1]
    *
    * This function returns the percentage of energy left in the energy source.
    */
-  virtual double GetEnergyFraction (void) = 0;
+  virtual double GetEnergyFraction () = 0;
 
   /**
    * This function goes through the list of DeviceEnergyModels to obtain total
    * current draw at the energy source and updates remaining energy. Called by
    * DeviceEnergyModels to inform EnergySource of a state change.
    */
-  virtual void UpdateEnergySource (void) = 0;
+  virtual void UpdateEnergySource () = 0;
 
   /**
    * \brief Sets pointer to node containing this EnergySource.
@@ -142,7 +142,7 @@ public:
    * When a subclass needs to get access to the underlying node base class to
    * print the nodeId for example, it can invoke this method.
    */
-  Ptr<Node> GetNode (void) const;
+  Ptr<Node> GetNode () const;
 
   /**
    * \param deviceEnergyModelPtr Pointer to device energy model.
@@ -169,14 +169,14 @@ public:
    * not aggregated to the node, therefore we need to manually start them here.
    * Called by EnergySourceContainer, which is aggregated to the node.
    */
-  void InitializeDeviceModels (void);
+  void InitializeDeviceModels ();
 
   /**
    * Calls Dispose () method of the device energy models. Device energy models
    * are not aggregated to the node, therefore we need to manually start them
    * here. Called by EnergySourceContainer, which is aggregated to the node.
    */
-  void DisposeDeviceModels (void);
+  void DisposeDeviceModels ();
 
   /**
    * \param energyHarvesterPtr Pointer to energy harvester.
@@ -197,7 +197,7 @@ private:
    *
    * Defined in ns3::Object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /**
@@ -223,25 +223,25 @@ protected:
   /**
    * \returns Total current draw from all DeviceEnergyModels.
    */
-  double CalculateTotalCurrent (void);
+  double CalculateTotalCurrent ();
 
   /**
    * This function notifies all DeviceEnergyModel of energy depletion event. It
    * is called by the child EnergySource class when energy depletion happens.
    */
-  void NotifyEnergyDrained (void);
+  void NotifyEnergyDrained ();
 
   /**
    * This function notifies all DeviceEnergyModel of energy recharged event. It
    * is called by the child EnergySource class when energy source is recharged.
    */
-  void NotifyEnergyRecharged (void);
+  void NotifyEnergyRecharged ();
 
   /**
    * This function notifies all DeviceEnergyModel of energy changed event. It
    * is called by the child EnergySource class when energy source is changed.
    */
-  void NotifyEnergyChanged (void);
+  void NotifyEnergyChanged ();
 
   /**
    * This function is called to break reference cycle between EnergySource and
@@ -252,7 +252,7 @@ protected:
    * Normally this work will be completed by the DoDispose function. However it
    * will be overridden in the child class. Hence we introduced this function.
    */
-  void BreakDeviceEnergyModelRefCycle (void);
+  void BreakDeviceEnergyModelRefCycle ();
 
 };
 

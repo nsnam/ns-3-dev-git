@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("QosFrameExchangeManager");
 NS_OBJECT_ENSURE_REGISTERED (QosFrameExchangeManager);
 
 TypeId
-QosFrameExchangeManager::GetTypeId (void)
+QosFrameExchangeManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QosFrameExchangeManager")
     .SetParent<FrameExchangeManager> ()
@@ -69,7 +69,7 @@ QosFrameExchangeManager::~QosFrameExchangeManager ()
 }
 
 void
-QosFrameExchangeManager::DoDispose (void)
+QosFrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_edca = 0;
@@ -79,7 +79,7 @@ QosFrameExchangeManager::DoDispose (void)
 }
 
 bool
-QosFrameExchangeManager::SendCfEndIfNeeded (void)
+QosFrameExchangeManager::SendCfEndIfNeeded ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_edca);
@@ -115,7 +115,7 @@ QosFrameExchangeManager::SendCfEndIfNeeded (void)
 }
 
 void
-QosFrameExchangeManager::PifsRecovery (void)
+QosFrameExchangeManager::PifsRecovery ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_edca);
@@ -136,7 +136,7 @@ QosFrameExchangeManager::PifsRecovery (void)
 }
 
 void
-QosFrameExchangeManager::CancelPifsRecovery (void)
+QosFrameExchangeManager::CancelPifsRecovery ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_pifsRecoveryEvent.IsRunning ());
@@ -536,7 +536,7 @@ QosFrameExchangeManager::ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVe
 }
 
 void
-QosFrameExchangeManager::TransmissionSucceeded (void)
+QosFrameExchangeManager::TransmissionSucceeded ()
 {
   NS_LOG_DEBUG (this);
 
@@ -565,7 +565,7 @@ QosFrameExchangeManager::TransmissionSucceeded (void)
 }
 
 void
-QosFrameExchangeManager::TransmissionFailed (void)
+QosFrameExchangeManager::TransmissionFailed ()
 {
   NS_LOG_FUNCTION (this);
 

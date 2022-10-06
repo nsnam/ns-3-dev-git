@@ -74,7 +74,7 @@ public:
   PairValue (const result_type &value); // "import" constructor
 
   // Inherited
-  Ptr<AttributeValue> Copy (void) const;
+  Ptr<AttributeValue> Copy () const;
   bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
   std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
 
@@ -85,7 +85,7 @@ public:
    * a pair of Ptr<AV> where AV is a class derived from AttributeValue.
    * \return stored value as std::pair<A, B>.
    */
-  result_type Get (void) const;
+  result_type Get () const;
   /* Documented by print-introspected-doxygen.cc */
   void Set (const result_type &value);
 
@@ -115,7 +115,7 @@ public:
    *
    * \return std::pair with AttributeChecker for each of abscissa and ordinate.
    */
-  virtual checker_pair_type GetCheckers (void) const = 0;
+  virtual checker_pair_type GetCheckers () const = 0;
 };
 
 /**
@@ -150,7 +150,7 @@ MakePairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeCh
  * \return Pointer to PairChecker instance.
  */
 template <class A, class B>
-Ptr<AttributeChecker> MakePairChecker (void);
+Ptr<AttributeChecker> MakePairChecker ();
 
 template <typename A, typename B, typename T1>
 Ptr<const AttributeAccessor> MakePairAccessor (T1 a1);
@@ -177,7 +177,7 @@ class PairChecker : public ns3::PairChecker
 {
 public:
   /** Default c'tor. */
-  PairChecker (void);
+  PairChecker ();
   /**
    * Construct from a pair of AttributeChecker's.
    * \param firstchecker The AttributeChecker for first.
@@ -185,7 +185,7 @@ public:
    */
   PairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
   void SetCheckers (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
-  typename ns3::PairChecker::checker_pair_type GetCheckers (void) const;
+  typename ns3::PairChecker::checker_pair_type GetCheckers () const;
 
 private:
   /** The first checker. */
@@ -195,7 +195,7 @@ private:
 };
 
 template <class A, class B>
-PairChecker<A, B>::PairChecker (void)
+PairChecker<A, B>::PairChecker ()
   : m_firstchecker (0),
   m_secondchecker (0)
 {}
@@ -216,7 +216,7 @@ PairChecker<A, B>::SetCheckers (Ptr<const AttributeChecker> firstchecker, Ptr<co
 
 template <class A, class B>
 typename ns3::PairChecker::checker_pair_type
-PairChecker<A, B>::GetCheckers (void) const
+PairChecker<A, B>::GetCheckers () const
 {
   return std::make_pair (m_firstchecker, m_secondchecker);
 }
@@ -242,7 +242,7 @@ MakePairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeCh
 
 template <class A, class B>
 Ptr<AttributeChecker>
-MakePairChecker (void)
+MakePairChecker ()
 {
   std::string pairName;
   std::string underlyingType;
@@ -277,7 +277,7 @@ PairValue<A, B>::PairValue (const typename PairValue<A, B>::result_type &value)
 
 template <class A, class B>
 Ptr<AttributeValue>
-PairValue<A, B>::Copy (void) const
+PairValue<A, B>::Copy () const
 {
   auto p = Create <PairValue <A, B> > ();
   // deep copy if non-null
@@ -327,7 +327,7 @@ PairValue<A, B>::SerializeToString (Ptr<const AttributeChecker> checker) const
 
 template <class A, class B>
 typename PairValue<A, B>::result_type
-PairValue<A, B>::Get (void) const
+PairValue<A, B>::Get () const
 {
   return std::make_pair (m_value.first->Get (), m_value.second->Get ());
 }

@@ -65,7 +65,7 @@ public:
   DsdvHeaderTestCase ();
   ~DsdvHeaderTestCase ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsdvHeaderTestCase::DsdvHeaderTestCase ()
   : TestCase ("Verifying the DSDV header")
@@ -121,7 +121,7 @@ public:
   DsdvTableTestCase ();
   ~DsdvTableTestCase ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 
 DsdvTableTestCase::DsdvTableTestCase ()

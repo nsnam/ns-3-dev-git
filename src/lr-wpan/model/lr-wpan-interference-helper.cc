@@ -34,7 +34,7 @@ LrWpanInterferenceHelper::LrWpanInterferenceHelper (Ptr<const SpectrumModel> spe
   m_signal = Create<SpectrumValue> (m_spectrumModel);
 }
 
-LrWpanInterferenceHelper::~LrWpanInterferenceHelper (void)
+LrWpanInterferenceHelper::~LrWpanInterferenceHelper ()
 {
   m_spectrumModel = 0;
   m_signal = 0;
@@ -78,7 +78,7 @@ LrWpanInterferenceHelper::RemoveSignal (Ptr<const SpectrumValue> signal)
 }
 
 void
-LrWpanInterferenceHelper::ClearSignals (void)
+LrWpanInterferenceHelper::ClearSignals ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -87,7 +87,7 @@ LrWpanInterferenceHelper::ClearSignals (void)
 }
 
 Ptr<SpectrumValue>
-LrWpanInterferenceHelper::GetSignalPsd (void) const
+LrWpanInterferenceHelper::GetSignalPsd () const
 {
   NS_LOG_FUNCTION (this);
 

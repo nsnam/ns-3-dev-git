@@ -72,7 +72,7 @@ public:
    *
    * \return A pointer to the singleton instance.
    */
-  static T * Get (void);
+  static T * Get ();
 
 protected:
   /** Constructor. */
@@ -97,7 +97,7 @@ namespace ns3 {
 
 template <typename T>
 T *
-Singleton<T>::Get (void)
+Singleton<T>::Get ()
 {
   static T object;
   return &object;

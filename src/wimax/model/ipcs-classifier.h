@@ -43,9 +43,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  IpcsClassifier (void);
-  ~IpcsClassifier (void);
+  static TypeId GetTypeId ();
+  IpcsClassifier ();
+  ~IpcsClassifier ();
   /**
    * \brief classify a packet in a service flow
    * \param packet the packet to classify

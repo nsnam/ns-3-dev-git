@@ -55,7 +55,7 @@ protected:
   double m_f; ///< the frequency
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 LteEarfcnTestCase::LteEarfcnTestCase (const char* str, uint32_t earfcn, double f)
@@ -71,7 +71,7 @@ LteEarfcnTestCase::~LteEarfcnTestCase ()
 }
 
 void
-LteEarfcnTestCase::DoRun (void)
+LteEarfcnTestCase::DoRun ()
 {
   double f = LteSpectrumValueHelper::GetCarrierFrequency (m_earfcn);
   NS_TEST_ASSERT_MSG_EQ_TOL (f, m_f, 0.0000001, "wrong frequency");
@@ -99,7 +99,7 @@ public:
   LteEarfcnDlTestCase (const char* str, uint32_t earfcn, double f);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 LteEarfcnDlTestCase::LteEarfcnDlTestCase (const char* str, uint32_t earfcn, double f)
@@ -108,7 +108,7 @@ LteEarfcnDlTestCase::LteEarfcnDlTestCase (const char* str, uint32_t earfcn, doub
 }
 
 void
-LteEarfcnDlTestCase::DoRun (void)
+LteEarfcnDlTestCase::DoRun ()
 {
 //   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
@@ -140,7 +140,7 @@ public:
   LteEarfcnUlTestCase (const char* str, uint32_t earfcn, double f);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 LteEarfcnUlTestCase::LteEarfcnUlTestCase (const char* str, uint32_t earfcn, double f)
@@ -149,7 +149,7 @@ LteEarfcnUlTestCase::LteEarfcnUlTestCase (const char* str, uint32_t earfcn, doub
 }
 
 void
-LteEarfcnUlTestCase::DoRun (void)
+LteEarfcnUlTestCase::DoRun ()
 {
   double f = LteSpectrumValueHelper::GetUplinkCarrierFrequency (m_earfcn);
   NS_TEST_ASSERT_MSG_EQ_TOL (f, m_f, 0.0000001, "wrong frequency");

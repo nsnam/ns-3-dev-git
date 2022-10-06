@@ -53,7 +53,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Creates an empty EnergyHarvesterContainer.
    */
@@ -110,7 +110,7 @@ public:
    *     }
    * \endcode
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which refers to the last EnergyHarvester pointer
@@ -131,14 +131,14 @@ public:
    *     }
    * \endcode
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \brief Get the number of Ptr<EnergyHarvester> stored in this container.
    *
    * \returns The number of Ptr<EnergyHarvester> stored in this container.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Get the i-th Ptr<EnergyHarvester> stored in this container.
@@ -174,15 +174,15 @@ public:
   /**
    * \brief Removes all elements in the container.
    */
-  void Clear (void);
+  void Clear ();
 
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Calls Object::Initialize () for all EnergySource objects.
    */
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 private:
   std::vector< Ptr<EnergyHarvester> > m_harvesters; //!< Harvester container

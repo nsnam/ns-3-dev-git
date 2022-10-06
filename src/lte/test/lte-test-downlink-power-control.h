@@ -81,7 +81,7 @@ public:
   virtual ~LteDownlinkPowerControlSpectrumValueTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ptr<SpectrumValue> m_actual; ///< actual Tx Power Spectral Density
   Ptr<SpectrumValue> m_expected; ///< expected Tx Power Spectral Density
 
@@ -109,7 +109,7 @@ public:
   virtual ~LteDownlinkPowerControlTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   bool m_changePdschConfigDedicated; ///< PDSCH config dedicated change
   LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated; ///< PDSCH config dedicated
@@ -165,7 +165,7 @@ public:
    */
   void ChangePdschConfigDedicated (uint16_t rnti, uint8_t pa);
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   bool m_useIdealRrc; ///< use ideal RRC?
 
   bool m_changePdschConfigDedicatedTriggered; ///< change PDSCH config dedicated triggered?

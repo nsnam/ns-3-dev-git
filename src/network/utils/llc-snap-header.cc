@@ -41,21 +41,21 @@ LlcSnapHeader::SetType (uint16_t type)
   m_etherType = type;
 }
 uint16_t
-LlcSnapHeader::GetType (void)
+LlcSnapHeader::GetType ()
 {
   NS_LOG_FUNCTION (this);
   return m_etherType;
 }
 
 uint32_t
-LlcSnapHeader::GetSerializedSize (void) const
+LlcSnapHeader::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   return LLC_SNAP_HEADER_LENGTH;
 }
 
 TypeId
-LlcSnapHeader::GetTypeId (void)
+LlcSnapHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LlcSnapHeader")
     .SetParent<Header> ()
@@ -65,7 +65,7 @@ LlcSnapHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-LlcSnapHeader::GetInstanceTypeId (void) const
+LlcSnapHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }

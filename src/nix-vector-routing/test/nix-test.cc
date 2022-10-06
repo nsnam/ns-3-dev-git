@@ -98,7 +98,7 @@ class NixVectorRoutingTest : public TestCase
   void SendData (Time delay, Ptr<Socket> socket, Ipv6Address to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   NixVectorRoutingTest ();
 
   /**
@@ -155,7 +155,7 @@ NixVectorRoutingTest::SendData (Time delay, Ptr<Socket> socket, Ipv6Address to)
 }
 
 void
-NixVectorRoutingTest::DoRun (void)
+NixVectorRoutingTest::DoRun ()
 {
   // Create topology
   NodeContainer nSrcnA;

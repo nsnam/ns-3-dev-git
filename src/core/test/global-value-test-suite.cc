@@ -53,7 +53,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 GlobalValueTestCase::GlobalValueTestCase ()
@@ -61,7 +61,7 @@ GlobalValueTestCase::GlobalValueTestCase ()
 {}
 
 void
-GlobalValueTestCase::DoRun (void)
+GlobalValueTestCase::DoRun ()
 {
   //
   // Typically these are static globals but we can make one on the stack to

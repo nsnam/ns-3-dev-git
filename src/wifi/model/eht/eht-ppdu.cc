@@ -40,7 +40,7 @@ EhtPpdu::~EhtPpdu ()
 }
 
 WifiPpduType
-EhtPpdu::GetType (void) const
+EhtPpdu::GetType () const
 {
   if (m_muUserInfos.empty ())
     {
@@ -59,19 +59,19 @@ EhtPpdu::GetType (void) const
 }
 
 bool
-EhtPpdu::IsDlMu (void) const
+EhtPpdu::IsDlMu () const
 {
   return (m_preamble == WIFI_PREAMBLE_EHT_MU) && !m_muUserInfos.empty ();
 }
 
 bool
-EhtPpdu::IsUlMu (void) const
+EhtPpdu::IsUlMu () const
 {
   return (m_preamble == WIFI_PREAMBLE_EHT_TB) && !m_muUserInfos.empty ();
 }
 
 WifiTxVector
-EhtPpdu::DoGetTxVector (void) const
+EhtPpdu::DoGetTxVector () const
 {
   // FIXME: define EHT PHY headers
   WifiTxVector txVector;
@@ -91,7 +91,7 @@ EhtPpdu::DoGetTxVector (void) const
 }
 
 Ptr<WifiPpdu>
-EhtPpdu::Copy (void) const
+EhtPpdu::Copy () const
 {
   return ns3::Copy (Ptr (this));
 }

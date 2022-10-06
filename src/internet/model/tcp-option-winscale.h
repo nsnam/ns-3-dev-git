@@ -54,8 +54,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   TcpOptionWinScale ();
   virtual ~TcpOptionWinScale ();
@@ -64,14 +64,14 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint8_t GetKind () const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Get the scale value (uint8_t)
    * \return The scale value
    */
-  uint8_t GetScale (void) const;
+  uint8_t GetScale () const;
 
   /**
    * \brief Set the scale option

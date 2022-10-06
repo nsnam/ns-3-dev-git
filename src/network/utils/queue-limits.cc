@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("QueueLimits");
 NS_OBJECT_ENSURE_REGISTERED (QueueLimits);
 
 TypeId
-QueueLimits::GetTypeId (void)
+QueueLimits::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QueueLimits")
     .SetParent<Object> ()

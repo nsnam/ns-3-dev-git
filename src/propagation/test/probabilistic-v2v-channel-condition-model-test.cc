@@ -64,7 +64,7 @@ private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Evaluates the channel condition between two nodes by calling the method
@@ -119,7 +119,7 @@ V2vUrbanProbChCondModelTestCase::EvaluateChannelCondition (Ptr<MobilityModel> a,
 }
 
 void
-V2vUrbanProbChCondModelTestCase::DoRun (void)
+V2vUrbanProbChCondModelTestCase::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -256,7 +256,7 @@ private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Evaluates the channel condition between two nodes by calling the method
@@ -311,7 +311,7 @@ V2vHighwayProbChCondModelTestCase::EvaluateChannelCondition (Ptr<MobilityModel> 
 }
 
 void
-V2vHighwayProbChCondModelTestCase::DoRun (void)
+V2vHighwayProbChCondModelTestCase::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);

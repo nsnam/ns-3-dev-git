@@ -61,7 +61,7 @@ public:
    */
   Time m_slotTime;
 
-  Backoff (void);
+  Backoff ();
   /**
    * \brief Constructor
    * \param slotTime Length of one slot
@@ -83,17 +83,17 @@ public:
    * successfully transmitted and that the number of retries should be
    * reset to 0.
    */
-  void ResetBackoffTime (void);
+  void ResetBackoffTime ();
 
   /**
    * \return True if the maximum number of retries has been reached
    */
-  bool MaxRetriesReached (void);
+  bool MaxRetriesReached ();
 
   /**
    * Increments the number of retries by 1.
    */
-  void IncrNumRetries (void);
+  void IncrNumRetries ();
 
  /**
   * Assign a fixed random variable stream number to the random variables

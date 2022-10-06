@@ -42,7 +42,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   NodeListPriv ();
   ~NodeListPriv ();
 
@@ -59,13 +59,13 @@ public:
    * \returns a C++ iterator located at the beginning of this
    *          list.
    */
-  NodeList::Iterator Begin (void) const;
+  NodeList::Iterator Begin () const;
 
   /**
    * \returns a C++ iterator located at the end of this
    *          list.
    */
-  NodeList::Iterator End (void) const;
+  NodeList::Iterator End () const;
 
   /**
    * \param n index of requested node.
@@ -76,30 +76,30 @@ public:
   /**
    * \returns the number of nodes currently in the list.
    */
-  uint32_t GetNNodes (void);
+  uint32_t GetNNodes ();
 
   /**
    * \brief Get the node list object
    * \returns the node list
    */
-  static Ptr<NodeListPriv> Get (void);
+  static Ptr<NodeListPriv> Get ();
 
 private:
   /**
    * \brief Get the node list object
    * \returns the node list
    */
-  static Ptr<NodeListPriv> *DoGet (void);
+  static Ptr<NodeListPriv> *DoGet ();
 
   /**
    * \brief Delete the nodes list object
    */
-  static void Delete (void);
+  static void Delete ();
 
   /**
    * \brief Dispose the nodes in the list
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   std::vector<Ptr<Node> > m_nodes; //!< node objects container
 };
@@ -107,7 +107,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (NodeListPriv);
 
 TypeId
-NodeListPriv::GetTypeId (void)
+NodeListPriv::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NodeListPriv")
     .SetParent<Object> ()
@@ -121,13 +121,13 @@ NodeListPriv::GetTypeId (void)
 }
 
 Ptr<NodeListPriv>
-NodeListPriv::Get (void)
+NodeListPriv::Get ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return *DoGet ();
 }
 Ptr<NodeListPriv> *
-NodeListPriv::DoGet (void)
+NodeListPriv::DoGet ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Ptr<NodeListPriv> ptr = 0;
@@ -140,7 +140,7 @@ NodeListPriv::DoGet (void)
   return &ptr;
 }
 void
-NodeListPriv::Delete (void)
+NodeListPriv::Delete ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::UnregisterRootNamespaceObject (Get ());
@@ -157,7 +157,7 @@ NodeListPriv::~NodeListPriv ()
   NS_LOG_FUNCTION (this);
 }
 void
-NodeListPriv::DoDispose (void)
+NodeListPriv::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<Node> >::iterator i = m_nodes.begin ();
@@ -183,19 +183,19 @@ NodeListPriv::Add (Ptr<Node> node)
 
 }
 NodeList::Iterator
-NodeListPriv::Begin (void) const
+NodeListPriv::Begin () const
 {
   NS_LOG_FUNCTION (this);
   return m_nodes.begin ();
 }
 NodeList::Iterator
-NodeListPriv::End (void) const
+NodeListPriv::End () const
 {
   NS_LOG_FUNCTION (this);
   return m_nodes.end ();
 }
 uint32_t
-NodeListPriv::GetNNodes (void)
+NodeListPriv::GetNNodes ()
 {
   NS_LOG_FUNCTION (this);
   return m_nodes.size ();
@@ -226,13 +226,13 @@ NodeList::Add (Ptr<Node> node)
   return NodeListPriv::Get ()->Add (node);
 }
 NodeList::Iterator
-NodeList::Begin (void)
+NodeList::Begin ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return NodeListPriv::Get ()->Begin ();
 }
 NodeList::Iterator
-NodeList::End (void)
+NodeList::End ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return NodeListPriv::Get ()->End ();
@@ -244,7 +244,7 @@ NodeList::GetNode (uint32_t n)
   return NodeListPriv::Get ()->GetNode (n);
 }
 uint32_t
-NodeList::GetNNodes (void)
+NodeList::GetNNodes ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return NodeListPriv::Get ()->GetNNodes ();

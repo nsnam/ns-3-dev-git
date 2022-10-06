@@ -94,7 +94,7 @@ public:
    * Get the name of this object type.
    * \return The object type as a string.
    */
-  virtual std::string GetTypeid (void) const = 0;
+  virtual std::string GetTypeid () const = 0;
 
 protected:
   /**
@@ -109,7 +109,7 @@ protected:
    * \returns The result of applying typeid to the template type \pname{T}.
    */
   template <typename T>
-  static std::string GetCppTypeid (void)
+  static std::string GetCppTypeid ()
   {
     std::string typeName;
     try
@@ -253,14 +253,14 @@ public:
    * Get the stored function.
    * \return A const reference to the stored function.
    */
-  const std::function<R(UArgs...)>& GetFunction (void) const
+  const std::function<R(UArgs...)>& GetFunction () const
   { return m_func; }
 
   /**
    * Get the vector of callback components.
    * \return A const reference to the vector of callback components.
    */
-  const CallbackComponentVector& GetComponents (void) const
+  const CallbackComponentVector& GetComponents () const
   { return m_components; }
 
   /**
@@ -310,12 +310,12 @@ public:
     return true;
   }
 
-  virtual std::string GetTypeid (void) const
+  virtual std::string GetTypeid () const
   {
     return DoGetTypeid ();
   }
   /** \copydoc GetTypeid(). */
-  static std::string DoGetTypeid (void)
+  static std::string DoGetTypeid ()
   {
     static std::vector<std::string> vec = { GetCppTypeid<R> (), GetCppTypeid<UArgs> ()... };
 
@@ -353,7 +353,7 @@ public:
   CallbackBase () : m_impl ()
   {}
   /** \return The impl pointer */
-  Ptr<CallbackImplBase> GetImpl (void) const
+  Ptr<CallbackImplBase> GetImpl () const
   {
     return m_impl;
   }
@@ -529,12 +529,12 @@ public:
    *
    * \return \c true if I don't have an implementation
    */
-  bool IsNull (void) const
+  bool IsNull () const
   {
     return (DoPeekImpl () == 0);
   }
   /** Discard the implementation, set it to null */
-  void Nullify (void)
+  void Nullify ()
   {
     m_impl = 0;
   }
@@ -594,7 +594,7 @@ public:
 
 private:
   /** \return The pimpl pointer */
-  CallbackImpl<R,UArgs...> *DoPeekImpl (void) const {
+  CallbackImpl<R,UArgs...> *DoPeekImpl () const {
     return static_cast<CallbackImpl<R,UArgs...> *> (PeekPointer (m_impl));
   }
   /**
@@ -694,7 +694,7 @@ Callback<R,Args...> MakeCallback (R (*fnPtr)(Args...)) {
  * and potentially returning a value.
  */
 template <typename R, typename... Args>
-Callback<R,Args...> MakeNullCallback (void) {
+Callback<R,Args...> MakeNullCallback () {
   return Callback<R,Args...> ();
 }
 
@@ -765,7 +765,7 @@ public:
   template <typename T>
   bool GetAccessor (T &value) const;
   /** \return A copy of this CallBack */
-  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual Ptr<AttributeValue> Copy () const;
   /**
    * Serialize to string
    * \param [in] checker The checker to validate with

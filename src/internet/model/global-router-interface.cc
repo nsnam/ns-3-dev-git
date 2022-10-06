@@ -72,7 +72,7 @@ GlobalRoutingLinkRecord::~GlobalRoutingLinkRecord ()
 }
 
 Ipv4Address
-GlobalRoutingLinkRecord::GetLinkId (void) const
+GlobalRoutingLinkRecord::GetLinkId () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkId;
@@ -86,7 +86,7 @@ GlobalRoutingLinkRecord::SetLinkId (Ipv4Address addr)
 }
 
 Ipv4Address
-GlobalRoutingLinkRecord::GetLinkData (void) const
+GlobalRoutingLinkRecord::GetLinkData () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkData;
@@ -100,7 +100,7 @@ GlobalRoutingLinkRecord::SetLinkData (Ipv4Address addr)
 }
 
 GlobalRoutingLinkRecord::LinkType
-GlobalRoutingLinkRecord::GetLinkType (void) const
+GlobalRoutingLinkRecord::GetLinkType () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkType;
@@ -115,7 +115,7 @@ GlobalRoutingLinkRecord::SetLinkType (
 }
 
 uint16_t
-GlobalRoutingLinkRecord::GetMetric (void) const
+GlobalRoutingLinkRecord::GetMetric () const
 {
   NS_LOG_FUNCTION (this);
   return m_metric;
@@ -224,7 +224,7 @@ GlobalRoutingLSA::~GlobalRoutingLSA()
 }
 
 void
-GlobalRoutingLSA::ClearLinkRecords (void)
+GlobalRoutingLSA::ClearLinkRecords ()
 {
   NS_LOG_FUNCTION (this);
   for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
@@ -252,7 +252,7 @@ GlobalRoutingLSA::AddLinkRecord (GlobalRoutingLinkRecord* lr)
 }
 
 uint32_t
-GlobalRoutingLSA::GetNLinkRecords (void) const
+GlobalRoutingLSA::GetNLinkRecords () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkRecords.size ();
@@ -277,14 +277,14 @@ GlobalRoutingLSA::GetLinkRecord (uint32_t n) const
 }
 
 bool
-GlobalRoutingLSA::IsEmpty (void) const
+GlobalRoutingLSA::IsEmpty () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkRecords.size () == 0;
 }
 
 GlobalRoutingLSA::LSType
-GlobalRoutingLSA::GetLSType (void) const
+GlobalRoutingLSA::GetLSType () const
 {
   NS_LOG_FUNCTION (this);
   return m_lsType;
@@ -298,7 +298,7 @@ GlobalRoutingLSA::SetLSType (GlobalRoutingLSA::LSType typ)
 }
 
 Ipv4Address
-GlobalRoutingLSA::GetLinkStateId (void) const
+GlobalRoutingLSA::GetLinkStateId () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkStateId;
@@ -312,7 +312,7 @@ GlobalRoutingLSA::SetLinkStateId (Ipv4Address addr)
 }
 
 Ipv4Address
-GlobalRoutingLSA::GetAdvertisingRouter (void) const
+GlobalRoutingLSA::GetAdvertisingRouter () const
 {
   NS_LOG_FUNCTION (this);
   return m_advertisingRtr;
@@ -333,14 +333,14 @@ GlobalRoutingLSA::SetNetworkLSANetworkMask (Ipv4Mask mask)
 }
 
 Ipv4Mask
-GlobalRoutingLSA::GetNetworkLSANetworkMask (void) const
+GlobalRoutingLSA::GetNetworkLSANetworkMask () const
 {
   NS_LOG_FUNCTION (this);
   return m_networkLSANetworkMask;
 }
 
 GlobalRoutingLSA::SPFStatus
-GlobalRoutingLSA::GetStatus (void) const
+GlobalRoutingLSA::GetStatus () const
 {
   NS_LOG_FUNCTION (this);
   return m_status;
@@ -355,7 +355,7 @@ GlobalRoutingLSA::AddAttachedRouter (Ipv4Address addr)
 }
 
 uint32_t
-GlobalRoutingLSA::GetNAttachedRouters (void) const
+GlobalRoutingLSA::GetNAttachedRouters () const
 {
   NS_LOG_FUNCTION (this);
   return m_attachedRouters.size ();
@@ -387,7 +387,7 @@ GlobalRoutingLSA::SetStatus (GlobalRoutingLSA::SPFStatus status)
 }
 
 Ptr<Node>
-GlobalRoutingLSA::GetNode (void) const
+GlobalRoutingLSA::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return NodeList::GetNode (m_node_id);
@@ -508,7 +508,7 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 NS_OBJECT_ENSURE_REGISTERED (GlobalRouter);
 
 TypeId
-GlobalRouter::GetTypeId (void)
+GlobalRouter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GlobalRouter")
     .SetParent<Object> ()
@@ -536,7 +536,7 @@ GlobalRouter::SetRoutingProtocol (Ptr<Ipv4GlobalRouting> routing)
   m_routingProtocol = routing;
 }
 Ptr<Ipv4GlobalRouting>
-GlobalRouter::GetRoutingProtocol (void)
+GlobalRouter::GetRoutingProtocol ()
 {
   NS_LOG_FUNCTION (this);
   return m_routingProtocol;
@@ -577,7 +577,7 @@ GlobalRouter::ClearLSAs ()
 }
 
 Ipv4Address
-GlobalRouter::GetRouterId (void) const
+GlobalRouter::GetRouterId () const
 {
   NS_LOG_FUNCTION (this);
   return m_routerId;
@@ -1553,7 +1553,7 @@ GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd) const
 }
 
 uint32_t
-GlobalRouter::GetNumLSAs (void) const
+GlobalRouter::GetNumLSAs () const
 {
   NS_LOG_FUNCTION (this);
   return m_LSAs.size ();
@@ -1751,7 +1751,7 @@ GlobalRouter::NetDeviceIsBridged (Ptr<NetDevice> nd) const
 // Start a new enumeration of an L2 broadcast domain by clearing m_bridgesVisited
 //
 void
-GlobalRouter::ClearBridgesVisited (void) const
+GlobalRouter::ClearBridgesVisited () const
 {
   m_bridgesVisited.clear();
 }

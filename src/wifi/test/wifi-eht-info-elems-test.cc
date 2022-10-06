@@ -59,7 +59,7 @@ public:
                                         std::vector<MultiLinkElement::PerStaProfileSubelement> subelements);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   WifiMacType m_frameType;     //!< the type of frame possibly included in the MLE
 };
@@ -104,7 +104,7 @@ BasicMultiLinkElementTest::GetMultiLinkElement (const CommonInfoBasicMle& common
 }
 
 void
-BasicMultiLinkElementTest::DoRun (void)
+BasicMultiLinkElementTest::DoRun ()
 {
   CommonInfoBasicMle commonInfo =
     {
@@ -195,7 +195,7 @@ public:
                                                   PhyOpChannelIt channel6It);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 ReducedNeighborReportTest::ReducedNeighborReportTest ()
@@ -279,7 +279,7 @@ ReducedNeighborReportTest::GetReducedNeighborReport (PhyOpChannelIt channel2_4It
 }
 
 void
-ReducedNeighborReportTest::DoRun (void)
+ReducedNeighborReportTest::DoRun ()
 {
   PhyOpChannelIt channel2_4It, channel5It, channel6It;
   channel2_4It = channel5It = channel6It = WifiPhyOperatingChannel::m_frequencyChannels.cbegin ();

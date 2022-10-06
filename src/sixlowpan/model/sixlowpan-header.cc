@@ -104,7 +104,7 @@ SixLowPanHc1::SixLowPanHc1 ()
 {
 }
 
-TypeId SixLowPanHc1::GetTypeId (void)
+TypeId SixLowPanHc1::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanHc1")
     .SetParent<Header> ()
@@ -113,7 +113,7 @@ TypeId SixLowPanHc1::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanHc1::GetInstanceTypeId (void) const
+TypeId SixLowPanHc1::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -552,7 +552,7 @@ SixLowPanFrag1::SixLowPanFrag1 ()
 {
 }
 
-TypeId SixLowPanFrag1::GetTypeId (void)
+TypeId SixLowPanFrag1::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanFrag1")
     .SetParent<Header> ()
@@ -561,7 +561,7 @@ TypeId SixLowPanFrag1::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanFrag1::GetInstanceTypeId (void) const
+TypeId SixLowPanFrag1::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -642,7 +642,7 @@ SixLowPanFragN::SixLowPanFragN ()
 /*
  * SixLowPanFragmentOffset
  */
-TypeId SixLowPanFragN::GetTypeId (void)
+TypeId SixLowPanFragN::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanFragN")
     .SetParent<Header> ()
@@ -651,7 +651,7 @@ TypeId SixLowPanFragN::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanFragN::GetInstanceTypeId (void) const
+TypeId SixLowPanFragN::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -739,7 +739,7 @@ SixLowPanIpv6::SixLowPanIpv6 ()
 {
 }
 
-TypeId SixLowPanIpv6::GetTypeId (void)
+TypeId SixLowPanIpv6::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanIpv6")
     .SetParent<Header> ()
@@ -748,7 +748,7 @@ TypeId SixLowPanIpv6::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanIpv6::GetInstanceTypeId (void) const
+TypeId SixLowPanIpv6::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -804,7 +804,7 @@ SixLowPanIphc::SixLowPanIphc (uint8_t dispatch)
   m_srcdstContextId = 0;
 }
 
-TypeId SixLowPanIphc::GetTypeId (void)
+TypeId SixLowPanIphc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanIphc")
     .SetParent<Header> ()
@@ -813,7 +813,7 @@ TypeId SixLowPanIphc::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanIphc::GetInstanceTypeId (void) const
+TypeId SixLowPanIphc::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -1227,7 +1227,7 @@ void SixLowPanIphc::SetTf (TrafficClassFlowLabel_e tfField)
   m_baseFormat |= (field << 11);
 }
 
-SixLowPanIphc::TrafficClassFlowLabel_e SixLowPanIphc::GetTf (void) const
+SixLowPanIphc::TrafficClassFlowLabel_e SixLowPanIphc::GetTf () const
 {
   return TrafficClassFlowLabel_e ((m_baseFormat >> 11) & 0x3);
 }
@@ -1238,7 +1238,7 @@ void SixLowPanIphc::SetNh (bool nhField)
   m_baseFormat |= (field << 10);
 }
 
-bool SixLowPanIphc::GetNh (void) const
+bool SixLowPanIphc::GetNh () const
 {
   return ((m_baseFormat >> 10) & 0x1);
 }
@@ -1249,7 +1249,7 @@ void SixLowPanIphc::SetHlim (Hlim_e hlimField)
   m_baseFormat |= (field << 8);
 }
 
-SixLowPanIphc::Hlim_e SixLowPanIphc::GetHlim (void) const
+SixLowPanIphc::Hlim_e SixLowPanIphc::GetHlim () const
 {
   return Hlim_e ((m_baseFormat >> 8) & 0x3);
 }
@@ -1260,7 +1260,7 @@ void SixLowPanIphc::SetCid (bool cidField)
   m_baseFormat |= (field << 7);
 }
 
-bool SixLowPanIphc::GetCid (void) const
+bool SixLowPanIphc::GetCid () const
 {
   return ((m_baseFormat >> 7) & 0x1);
 }
@@ -1271,7 +1271,7 @@ void SixLowPanIphc::SetSac (bool sacField)
   m_baseFormat |= (field << 6);
 }
 
-bool SixLowPanIphc::GetSac (void) const
+bool SixLowPanIphc::GetSac () const
 {
   return ((m_baseFormat >> 6) & 0x1);
 }
@@ -1282,12 +1282,12 @@ void SixLowPanIphc::SetSam (HeaderCompression_e samField)
   m_baseFormat |= (field << 4);
 }
 
-SixLowPanIphc::HeaderCompression_e SixLowPanIphc::GetSam (void) const
+SixLowPanIphc::HeaderCompression_e SixLowPanIphc::GetSam () const
 {
   return HeaderCompression_e ((m_baseFormat >> 4) & 0x3);
 }
 
-const uint8_t* SixLowPanIphc::GetSrcInlinePart (void) const
+const uint8_t* SixLowPanIphc::GetSrcInlinePart () const
 {
   return m_srcInlinePart;
 }
@@ -1305,7 +1305,7 @@ void SixLowPanIphc::SetM (bool mField)
   m_baseFormat |= (field << 3);
 }
 
-bool SixLowPanIphc::GetM (void) const
+bool SixLowPanIphc::GetM () const
 {
   return ((m_baseFormat >> 3) & 0x1);
 }
@@ -1316,7 +1316,7 @@ void SixLowPanIphc::SetDac (bool dacField)
   m_baseFormat |= (field << 2);
 }
 
-bool SixLowPanIphc::GetDac (void) const
+bool SixLowPanIphc::GetDac () const
 {
   return ((m_baseFormat >> 2) & 0x1);
 }
@@ -1327,12 +1327,12 @@ void SixLowPanIphc::SetDam (HeaderCompression_e damField)
   m_baseFormat |= field;
 }
 
-SixLowPanIphc::HeaderCompression_e SixLowPanIphc::GetDam (void) const
+SixLowPanIphc::HeaderCompression_e SixLowPanIphc::GetDam () const
 {
   return HeaderCompression_e (m_baseFormat & 0x3);
 }
 
-const uint8_t* SixLowPanIphc::GetDstInlinePart (void) const
+const uint8_t* SixLowPanIphc::GetDstInlinePart () const
 {
   return m_dstInlinePart;
 }
@@ -1350,7 +1350,7 @@ void SixLowPanIphc::SetSrcContextId (uint8_t srcContextId)
   m_srcdstContextId |= srcContextId << 4;
 }
 
-uint8_t SixLowPanIphc::GetSrcContextId (void) const
+uint8_t SixLowPanIphc::GetSrcContextId () const
 {
   return ( m_srcdstContextId >> 4);
 }
@@ -1361,7 +1361,7 @@ void SixLowPanIphc::SetDstContextId (uint8_t dstContextId)
   m_srcdstContextId |= (dstContextId & 0xF);
 }
 
-uint8_t SixLowPanIphc::GetDstContextId (void) const
+uint8_t SixLowPanIphc::GetDstContextId () const
 {
   return (m_srcdstContextId & 0xF);
 }
@@ -1372,7 +1372,7 @@ void SixLowPanIphc::SetEcn (uint8_t ecn)
   m_ecn = ecn;
 }
 
-uint8_t SixLowPanIphc::GetEcn (void) const
+uint8_t SixLowPanIphc::GetEcn () const
 {
   return m_ecn;
 }
@@ -1383,7 +1383,7 @@ void SixLowPanIphc::SetDscp (uint8_t dscp)
   m_dscp = dscp;
 }
 
-uint8_t SixLowPanIphc::GetDscp (void) const
+uint8_t SixLowPanIphc::GetDscp () const
 {
   return m_dscp;
 }
@@ -1394,7 +1394,7 @@ void SixLowPanIphc::SetFlowLabel (uint32_t flowLabel)
   m_flowLabel = flowLabel;
 }
 
-uint32_t SixLowPanIphc::GetFlowLabel (void) const
+uint32_t SixLowPanIphc::GetFlowLabel () const
 {
   return m_flowLabel;
 }
@@ -1404,7 +1404,7 @@ void SixLowPanIphc::SetNextHeader (uint8_t nextHeader)
   m_nextHeader = nextHeader;
 }
 
-uint8_t SixLowPanIphc::GetNextHeader (void) const
+uint8_t SixLowPanIphc::GetNextHeader () const
 {
   return m_nextHeader;
 }
@@ -1414,7 +1414,7 @@ void SixLowPanIphc::SetHopLimit (uint8_t hopLimit)
   m_hopLimit = hopLimit;
 }
 
-uint8_t SixLowPanIphc::GetHopLimit (void) const
+uint8_t SixLowPanIphc::GetHopLimit () const
 {
   return m_hopLimit;
 }
@@ -1438,7 +1438,7 @@ SixLowPanNhcExtension::SixLowPanNhcExtension ()
   m_nhcBlobLength = 0;
 }
 
-TypeId SixLowPanNhcExtension::GetTypeId (void)
+TypeId SixLowPanNhcExtension::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanNhcExtension")
     .SetParent<Header> ()
@@ -1447,7 +1447,7 @@ TypeId SixLowPanNhcExtension::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanNhcExtension::GetInstanceTypeId (void) const
+TypeId SixLowPanNhcExtension::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -1494,7 +1494,7 @@ uint32_t SixLowPanNhcExtension::Deserialize (Buffer::Iterator start)
 }
 
 SixLowPanDispatch::NhcDispatch_e
-SixLowPanNhcExtension::GetNhcDispatchType (void) const
+SixLowPanNhcExtension::GetNhcDispatchType () const
 {
   return SixLowPanDispatch::LOWPAN_NHC;
 }
@@ -1505,7 +1505,7 @@ void SixLowPanNhcExtension::SetEid (Eid_e extensionHeaderType)
   m_nhcExtensionHeader |= (field << 1);
 }
 
-SixLowPanNhcExtension::Eid_e SixLowPanNhcExtension::GetEid (void) const
+SixLowPanNhcExtension::Eid_e SixLowPanNhcExtension::GetEid () const
 {
   return Eid_e ((m_nhcExtensionHeader >> 1) & 0x7);
 }
@@ -1515,7 +1515,7 @@ void SixLowPanNhcExtension::SetNextHeader (uint8_t nextHeader)
   m_nhcNextHeader = nextHeader;
 }
 
-uint8_t SixLowPanNhcExtension::GetNextHeader (void) const
+uint8_t SixLowPanNhcExtension::GetNextHeader () const
 {
   return m_nhcNextHeader;
 }
@@ -1526,7 +1526,7 @@ void SixLowPanNhcExtension::SetNh (bool nhField)
   m_nhcExtensionHeader |= field;
 }
 
-bool SixLowPanNhcExtension::GetNh (void) const
+bool SixLowPanNhcExtension::GetNh () const
 {
   return m_nhcExtensionHeader & 0x01;
 }
@@ -1567,7 +1567,7 @@ SixLowPanUdpNhcExtension::SixLowPanUdpNhcExtension ()
   m_dstPort = 0;
 }
 
-TypeId SixLowPanUdpNhcExtension::GetTypeId (void)
+TypeId SixLowPanUdpNhcExtension::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanUdpNhcExtension")
     .SetParent<Header> ()
@@ -1576,7 +1576,7 @@ TypeId SixLowPanUdpNhcExtension::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanUdpNhcExtension::GetInstanceTypeId (void) const
+TypeId SixLowPanUdpNhcExtension::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -1688,7 +1688,7 @@ uint32_t SixLowPanUdpNhcExtension::Deserialize (Buffer::Iterator start)
 }
 
 SixLowPanDispatch::NhcDispatch_e
-SixLowPanUdpNhcExtension::GetNhcDispatchType (void) const
+SixLowPanUdpNhcExtension::GetNhcDispatchType () const
 {
   return SixLowPanDispatch::LOWPAN_UDPNHC;
 }
@@ -1699,7 +1699,7 @@ void SixLowPanUdpNhcExtension::SetPorts (Ports_e ports)
   m_baseFormat |= field;
 }
 
-SixLowPanUdpNhcExtension::Ports_e SixLowPanUdpNhcExtension::GetPorts (void) const
+SixLowPanUdpNhcExtension::Ports_e SixLowPanUdpNhcExtension::GetPorts () const
 {
   return Ports_e (m_baseFormat & 0x3);
 }
@@ -1709,7 +1709,7 @@ void SixLowPanUdpNhcExtension::SetSrcPort (uint16_t srcport)
   m_srcPort = srcport;
 }
 
-uint16_t SixLowPanUdpNhcExtension::GetSrcPort (void) const
+uint16_t SixLowPanUdpNhcExtension::GetSrcPort () const
 {
   return m_srcPort;
 }
@@ -1719,7 +1719,7 @@ void SixLowPanUdpNhcExtension::SetDstPort (uint16_t dstport)
   m_dstPort = dstport;
 }
 
-uint16_t SixLowPanUdpNhcExtension::GetDstPort (void) const
+uint16_t SixLowPanUdpNhcExtension::GetDstPort () const
 {
   return m_dstPort;
 }
@@ -1730,7 +1730,7 @@ void SixLowPanUdpNhcExtension::SetC (bool cField)
   m_baseFormat |= (field << 2);
 }
 
-bool SixLowPanUdpNhcExtension::GetC (void) const
+bool SixLowPanUdpNhcExtension::GetC () const
 {
   return ((m_baseFormat >> 2) & 0x1);
 }
@@ -1740,7 +1740,7 @@ void SixLowPanUdpNhcExtension::SetChecksum (uint16_t checksum)
   m_checksum = checksum;
 }
 
-uint16_t SixLowPanUdpNhcExtension::GetChecksum (void) const
+uint16_t SixLowPanUdpNhcExtension::GetChecksum () const
 {
   return m_checksum;
 }
@@ -1761,7 +1761,7 @@ SixLowPanBc0::SixLowPanBc0 ()
   m_seqNumber = 66;
 }
 
-TypeId SixLowPanBc0::GetTypeId (void)
+TypeId SixLowPanBc0::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanBc0")
     .SetParent<Header> ()
@@ -1770,7 +1770,7 @@ TypeId SixLowPanBc0::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanBc0::GetInstanceTypeId (void) const
+TypeId SixLowPanBc0::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -1813,7 +1813,7 @@ void SixLowPanBc0::SetSequenceNumber (uint8_t seqNumber)
   m_seqNumber = seqNumber;
 }
 
-uint8_t SixLowPanBc0::GetSequenceNumber (void) const
+uint8_t SixLowPanBc0::GetSequenceNumber () const
 {
   return m_seqNumber;
 }
@@ -1838,7 +1838,7 @@ SixLowPanMesh::SixLowPanMesh ()
   m_f = false;
 }
 
-TypeId SixLowPanMesh::GetTypeId (void)
+TypeId SixLowPanMesh::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanMesh")
     .SetParent<Header> ()
@@ -1847,7 +1847,7 @@ TypeId SixLowPanMesh::GetTypeId (void)
   return tid;
 }
 
-TypeId SixLowPanMesh::GetInstanceTypeId (void) const
+TypeId SixLowPanMesh::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -2019,7 +2019,7 @@ void SixLowPanMesh::SetOriginator (Address originator)
   m_src = originator;
 }
 
-Address SixLowPanMesh::GetOriginator (void) const
+Address SixLowPanMesh::GetOriginator () const
 {
   return m_src;
 }
@@ -2042,7 +2042,7 @@ void SixLowPanMesh::SetFinalDst (Address finalDst)
   m_dst = finalDst;
 }
 
-Address SixLowPanMesh::GetFinalDst (void) const
+Address SixLowPanMesh::GetFinalDst () const
 {
   return m_dst;
 }
@@ -2052,7 +2052,7 @@ void SixLowPanMesh::SetHopsLeft (uint8_t hopsLeft)
   m_hopsLeft = hopsLeft;
 }
 
-uint8_t SixLowPanMesh::GetHopsLeft (void) const
+uint8_t SixLowPanMesh::GetHopsLeft () const
 {
   return m_hopsLeft;
 }

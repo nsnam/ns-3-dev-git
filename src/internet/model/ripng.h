@@ -72,7 +72,7 @@ public:
     RIPNG_INVALID,
   };
 
-  RipNgRoutingTableEntry (void);
+  RipNgRoutingTableEntry ();
 
   /**
    * \brief Constructor
@@ -104,7 +104,7 @@ public:
    * \brief Get the route tag
    * \returns the route tag
    */
-  uint16_t GetRouteTag (void) const;
+  uint16_t GetRouteTag () const;
 
   /**
    * \brief Set the route metric
@@ -116,7 +116,7 @@ public:
    * \brief Get the route metric
    * \returns the route metric
    */
-  uint8_t GetRouteMetric (void) const;
+  uint8_t GetRouteMetric () const;
 
   /**
    * \brief Set the route status
@@ -128,7 +128,7 @@ public:
    * \brief Get the route status
    * \returns the route status
    */
-  Status_e GetRouteStatus (void) const;
+  Status_e GetRouteStatus () const;
 
   /**
    * \brief Set the route as changed
@@ -146,7 +146,7 @@ public:
    *
    * \returns true if route is changed
    */
-  bool IsRouteChanged (void) const;
+  bool IsRouteChanged () const;
 
 private:
   uint16_t m_tag; //!< route tag
@@ -182,7 +182,7 @@ public:
    * \brief Get the type ID
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // From Ipv6RoutingProtocol
   Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif,
@@ -364,7 +364,7 @@ private:
   /**
    * \brief Send Unsolicited Routing Updates on all interfaces.
    */
-  void SendUnsolicitedRouteUpdate (void);
+  void SendUnsolicitedRouteUpdate ();
 
   /**
    * \brief Invalidate a route.

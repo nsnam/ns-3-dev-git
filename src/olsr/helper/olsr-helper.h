@@ -63,7 +63,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  OlsrHelper* Copy (void) const;
+  OlsrHelper* Copy () const;
 
   /**
     * \param node the node for which an exception is to be defined

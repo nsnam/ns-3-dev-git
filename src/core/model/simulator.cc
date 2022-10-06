@@ -83,7 +83,7 @@ static GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
  * \brief Get the static SimulatorImpl instance.
  * \return The SimulatorImpl instance pointer.
  */
-static SimulatorImpl ** PeekImpl (void)
+static SimulatorImpl ** PeekImpl ()
 {
   static SimulatorImpl *impl = 0;
   return &impl;
@@ -95,7 +95,7 @@ static SimulatorImpl ** PeekImpl (void)
  * \return The singleton pointer.
  * \see Simulator::GetImplementation()
  */
-static SimulatorImpl * GetImpl (void)
+static SimulatorImpl * GetImpl ()
 {
   SimulatorImpl **pimpl = PeekImpl ();
   /* Please, don't include any calls to logging macros in this function
@@ -133,7 +133,7 @@ static SimulatorImpl * GetImpl (void)
 }
 
 void
-Simulator::Destroy (void)
+Simulator::Destroy ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -162,14 +162,14 @@ Simulator::SetScheduler (ObjectFactory schedulerFactory)
 }
 
 bool
-Simulator::IsFinished (void)
+Simulator::IsFinished ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ()->IsFinished ();
 }
 
 void
-Simulator::Run (void)
+Simulator::Run ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Time::ClearMarkedTimes ();
@@ -177,7 +177,7 @@ Simulator::Run (void)
 }
 
 void
-Simulator::Stop (void)
+Simulator::Stop ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("stop");
@@ -192,7 +192,7 @@ Simulator::Stop (Time const &delay)
 }
 
 Time
-Simulator::Now (void)
+Simulator::Now ()
 {
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
@@ -284,32 +284,32 @@ Simulator::IsExpired (const EventId &id)
   return GetImpl ()->IsExpired (id);
 }
 
-Time Now (void)
+Time Now ()
 {
   return Simulator::Now ();
 }
 
 Time
-Simulator::GetMaximumSimulationTime (void)
+Simulator::GetMaximumSimulationTime ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ()->GetMaximumSimulationTime ();
 }
 
 uint32_t
-Simulator::GetContext (void)
+Simulator::GetContext ()
 {
   return GetImpl ()->GetContext ();
 }
 
 uint64_t
-Simulator::GetEventCount (void)
+Simulator::GetEventCount ()
 {
   return GetImpl ()->GetEventCount ();
 }
 
 uint32_t
-Simulator::GetSystemId (void)
+Simulator::GetSystemId ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -350,7 +350,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 }
 
 Ptr<SimulatorImpl>
-Simulator::GetImplementation (void)
+Simulator::GetImplementation ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ();

@@ -63,7 +63,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Enumeration of the types of packets supported in the class.
@@ -141,7 +141,7 @@ public:
    *
    * \return a pointer to the queue.
    */
-  Ptr<Queue<Packet> > GetQueue (void) const;
+  Ptr<Queue<Packet> > GetQueue () const;
 
   /**
    * Attach a receive ErrorModel to the CsmaNetDevice.
@@ -173,7 +173,7 @@ public:
    *
    * \returns True if the send side is enabled, otherwise false.
    */
-  bool IsSendEnabled (void);
+  bool IsSendEnabled ();
 
   /**
    * Enable or disable the send side of the network device.
@@ -187,7 +187,7 @@ public:
    *
    * \returns True if the receiver side is enabled, otherwise false.
    */
-  bool IsReceiveEnabled (void);
+  bool IsReceiveEnabled ();
 
   /**
    * Enable or disable the receive side of the network device.
@@ -209,23 +209,23 @@ public:
    *
    * \returns The encapsulation mode of this device.
    */
-  CsmaNetDevice::EncapsulationMode  GetEncapsulationMode (void);
+  CsmaNetDevice::EncapsulationMode  GetEncapsulationMode ();
 
   //
   // The following methods are inherited from NetDevice base class.
   //
   virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
-  virtual Ptr<Channel> GetChannel (void) const;
+  virtual uint32_t GetIfIndex () const;
+  virtual Ptr<Channel> GetChannel () const;
   virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu (void) const;
+  virtual uint16_t GetMtu () const;
   virtual void SetAddress (Address address);
-  virtual Address GetAddress (void) const;
-  virtual bool IsLinkUp (void) const;
+  virtual Address GetAddress () const;
+  virtual bool IsLinkUp () const;
   virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
-  virtual bool IsMulticast (void) const;
+  virtual bool IsBroadcast () const;
+  virtual Address GetBroadcast () const;
+  virtual bool IsMulticast () const;
 
   /**
    * \brief Make and return a MAC multicast address using the provided
@@ -255,13 +255,13 @@ public:
    * Is this a point to point link?
    * \returns false.
    */
-  virtual bool IsPointToPoint (void) const;
+  virtual bool IsPointToPoint () const;
 
   /**
    * Is this a bridge?
    * \returns false.
    */
-  virtual bool IsBridge (void) const;
+  virtual bool IsBridge () const;
 
   /**
    * Start sending a packet down the channel.
@@ -289,7 +289,7 @@ public:
    *
    * \returns Ptr to the Node to which the device is attached.
    */
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
 
   /**
    * Set the node to which this device is being attached.
@@ -304,7 +304,7 @@ public:
    * \returns True if the encapsulation mode is set to a value that requires
    * ARP (IP_ARP or LLC).
    */
-  virtual bool NeedsArp (void) const;
+  virtual bool NeedsArp () const;
 
   /**
    * Set the callback to be used to notify higher layers when a packet has been
@@ -325,7 +325,7 @@ public:
 
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom (void) const;
+  virtual bool SupportsSendFrom () const;
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -342,7 +342,7 @@ protected:
    * Perform any object release functionality required to break reference
    * cycles in reference counted objects held by the device.
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * Adds the necessary headers and trailers to a packet of data in order to
@@ -415,7 +415,7 @@ private:
    * \see CsmaChannel::TransmitEnd ()
    * \see TransmitReadyEvent ()
    */
-  void TransmitCompleteEvent (void);
+  void TransmitCompleteEvent ();
 
   /**
    * Cause the Transmitter to Become Ready to Send Another Packet.
@@ -431,7 +431,7 @@ private:
    *
    * \see TransmitStart ()
    */
-  void TransmitReadyEvent (void);
+  void TransmitReadyEvent ();
 
   /**
    * Aborts the transmission of the current packet
@@ -440,12 +440,12 @@ private:
    * than the maximum allowed number of retries (channel always busy)
    * then the packet is dropped.
    */
-  void TransmitAbort (void);
+  void TransmitAbort ();
 
   /**
    * Notify any interested parties that the link has come up.
    */
-  void NotifyLinkUp (void);
+  void NotifyLinkUp ();
 
   /**
    * Device ID returned by the attached functions. It is used by the

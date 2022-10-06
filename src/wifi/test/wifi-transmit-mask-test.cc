@@ -71,8 +71,8 @@ public:
   virtual ~WifiOfdmMaskSlopesTestCase () = default;
 
 private:
-  void DoSetup (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoRun () override;
 
   /**
    * Interpolate PSD values for indexes between provided start and stop and append to provided
@@ -113,7 +113,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const std::string& name,
 }
 
 void
-WifiOfdmMaskSlopesTestCase::DoSetup (void)
+WifiOfdmMaskSlopesTestCase::DoSetup ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_expectedPsd.size () % 2 == 0); //start/stop pairs expected
@@ -227,7 +227,7 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues (IndexPowerVect &vect,
 }
 
 void
-WifiOfdmMaskSlopesTestCase::DoRun (void)
+WifiOfdmMaskSlopesTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
   double currentPowerDbr = 0.0; //have to work in dBr so as to compare with expected slopes

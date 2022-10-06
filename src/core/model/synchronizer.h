@@ -55,7 +55,7 @@ public:
    * Get the registered TypeId for this class.
    * @returns The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** Constructor. */
   Synchronizer ();
@@ -70,7 +70,7 @@ public:
    *
    * @returns @c true if locked with realtime, @c false if not.
    */
-  bool Realtime (void);
+  bool Realtime ();
 
   /**
    * @brief Retrieve the value of the origin of the underlying normalized wall
@@ -79,7 +79,7 @@ public:
    * @returns The normalized wall clock time (in Time resolution units).
    * @see SetOrigin
    */
-  uint64_t GetCurrentRealtime (void);
+  uint64_t GetCurrentRealtime ();
 
   /**
    * @brief Establish a correspondence between a simulation time and the
@@ -108,7 +108,7 @@ public:
    * @returns The simulation time used as the origin (in Time resolution units).
    * @see SetOrigin
    */
-  uint64_t GetOrigin (void);
+  uint64_t GetOrigin ();
 
   /**
    * @brief Retrieve the difference between the real time clock used to
@@ -158,7 +158,7 @@ public:
    * @see Synchronize
    * @see DoSignal
    */
-  void Signal (void);
+  void Signal ();
 
   /**
    * @brief Set the condition variable that tells a possible simulator thread
@@ -179,7 +179,7 @@ public:
    *
    * @see EventEnd
    */
-  void EventStart (void);
+  void EventStart ();
 
   /**
    * @brief Ask the synchronizer to return the time step between the instant
@@ -191,7 +191,7 @@ public:
    * @returns The elapsed real time, in ns.
    * @see EventStart
    */
-  uint64_t EventEnd (void);
+  uint64_t EventEnd ();
 
 protected:
   /**
@@ -231,7 +231,7 @@ protected:
    *
    * @returns @c true if locked with realtime, @c false if not.
    */
-  virtual bool DoRealtime (void) = 0;
+  virtual bool DoRealtime () = 0;
 
   /**
    * @brief Retrieve the value of the origin of the underlying normalized wall
@@ -243,7 +243,7 @@ protected:
    * @returns The normalized wall clock time (in nanosecond units).
    * @see SetOrigin
    */
-  virtual uint64_t DoGetCurrentRealtime (void) = 0;
+  virtual uint64_t DoGetCurrentRealtime () = 0;
 
   /**
    * @brief Wait until the real time is in sync with the specified simulation
@@ -277,7 +277,7 @@ protected:
    *
    * @see Signal
    */
-  virtual void DoSignal (void) = 0;
+  virtual void DoSignal () = 0;
 
   /**
    * @brief Set the condition variable to tell a possible simulator thread
@@ -304,14 +304,14 @@ protected:
    * @brief Record the normalized real time at which the current
    * event is starting execution.
    */
-  virtual void DoEventStart (void) = 0;
+  virtual void DoEventStart () = 0;
   /**
    * @brief Return the amount of real time elapsed since the last call
    * to EventStart.
    *
    * @returns The elapsed real time, in ns.
    */
-  virtual uint64_t DoEventEnd (void) = 0;
+  virtual uint64_t DoEventEnd () = 0;
 
   /** The real time, in ns, when SetOrigin was called. */
   uint64_t m_realtimeOriginNano;

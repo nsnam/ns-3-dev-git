@@ -37,7 +37,7 @@ class MeshStack : public Object
 public:
   /// \brief Register this type.
   /// \return The TypeId.
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Installs mesh stack. needed by helper only

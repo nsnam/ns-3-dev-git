@@ -47,7 +47,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   UdpClient ();
 
@@ -71,17 +71,17 @@ public:
   uint64_t GetTotalTx () const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
 
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Send a packet
    */
-  void Send (void);
+  void Send ();
 
   uint32_t m_count; //!< Maximum number of packets the application will send
   Time m_interval; //!< Packet inter-send time

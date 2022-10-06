@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ListRouting);
 
 TypeId
-Ipv6ListRouting::GetTypeId (void)
+Ipv6ListRouting::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6ListRouting")
     .SetParent<Ipv6RoutingProtocol> ()
@@ -55,7 +55,7 @@ Ipv6ListRouting::~Ipv6ListRouting ()
 }
 
 void
-Ipv6ListRouting::DoDispose (void)
+Ipv6ListRouting::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (Ipv6RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
@@ -254,7 +254,7 @@ Ipv6ListRouting::AddRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtocol, i
 }
 
 uint32_t
-Ipv6ListRouting::GetNRoutingProtocols (void) const
+Ipv6ListRouting::GetNRoutingProtocols () const
 {
   NS_LOG_FUNCTION (this);
   return m_routingProtocols.size ();

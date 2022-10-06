@@ -58,10 +58,10 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // Inherited methods
-  virtual std::size_t GetNDevices (void) const;
+  virtual std::size_t GetNDevices () const;
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
   /**
@@ -109,7 +109,7 @@ public:
 
   /**
    * Clear all pointer references. */
-  void Clear (void);
+  void Clear ();
 
 protected:
   UanDeviceList m_devList;     //!< The list of devices on this channel.
@@ -129,7 +129,7 @@ protected:
    */
   void SendUp (uint32_t i, Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 };  // class UanChannel
 

@@ -56,7 +56,7 @@ class SNRToBlockErrorRateManager
 {
 public:
   SNRToBlockErrorRateManager ();
-  ~SNRToBlockErrorRateManager (void);
+  ~SNRToBlockErrorRateManager ();
   /**
    * \brief Set the path of the repository containing the traces
    * \param traceFilePath the path to the repository.
@@ -65,7 +65,7 @@ public:
   /**
    * \return the path to the repository containing the traces.
    */
-  std::string GetTraceFilePath (void);
+  std::string GetTraceFilePath ();
   /**
    * \brief returns the Block Error Rate for a given modulation and SNR value
    * \param SNR the SNR value
@@ -86,15 +86,15 @@ public:
    * no repository is provided, default traces will be loaded from default-traces.h file
    */
 
-  void LoadTraces (void);
+  void LoadTraces ();
   /**
    * \brief Loads the default traces from default-traces.h file
    */
-  void LoadDefaultTraces (void);
+  void LoadDefaultTraces ();
   /**
    * \brief Reloads the trace
    */
-  void ReLoadTraces (void);
+  void ReLoadTraces ();
   /**
    * \brief If activate loss is called with false, all the returned BlcER will be 0 (no losses)
    * \param loss true to activates losses
@@ -102,7 +102,7 @@ public:
   void ActivateLoss (bool loss);
 private:
   /// Clear records function
-  void ClearRecords (void);
+  void ClearRecords ();
   uint8_t m_activateLoss; ///< activate loss
   std::string m_traceFilePath; ///< trace file path
 

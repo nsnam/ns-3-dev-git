@@ -311,7 +311,7 @@ VhtCapabilities::SetTxHighestSupportedLgiDataRate (uint16_t supportedDatarate)
 }
 
 uint16_t
-VhtCapabilities::GetMaxMpduLength (void) const
+VhtCapabilities::GetMaxMpduLength () const
 {
   if (m_maxMpduLength == 0)
     {
@@ -353,7 +353,7 @@ VhtCapabilities::GetTxStbc () const
 }
 
 uint32_t
-VhtCapabilities::GetMaxAmpduLength (void) const
+VhtCapabilities::GetMaxAmpduLength () const
 {
   return (1ul << (13 + m_maxAmpduLengthExponent)) - 1;
 }

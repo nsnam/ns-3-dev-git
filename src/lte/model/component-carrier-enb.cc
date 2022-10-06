@@ -35,7 +35,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("ComponentCarrierEnb");
 NS_OBJECT_ENSURE_REGISTERED (ComponentCarrierEnb);
 
-TypeId ComponentCarrierEnb::GetTypeId (void)
+TypeId ComponentCarrierEnb::GetTypeId ()
 {
   static TypeId
     tid =
@@ -70,7 +70,7 @@ ComponentCarrierEnb::ComponentCarrierEnb ()
   NS_LOG_FUNCTION (this);
 }
 
-ComponentCarrierEnb::~ComponentCarrierEnb (void)
+ComponentCarrierEnb::~ComponentCarrierEnb ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -105,7 +105,7 @@ ComponentCarrierEnb::DoDispose ()
 
 
 void
-ComponentCarrierEnb::DoInitialize (void)
+ComponentCarrierEnb::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_phy->Initialize ();

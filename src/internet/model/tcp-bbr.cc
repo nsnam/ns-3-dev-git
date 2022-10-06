@@ -33,7 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (TcpBbr);
 const double TcpBbr::PACING_GAIN_CYCLE [] = {5.0 / 4, 3.0 / 4, 1, 1, 1, 1, 1, 1};
 
 TypeId
-TcpBbr::GetTypeId (void)
+TcpBbr::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpBbr")
     .SetParent<TcpCongestionOps> ()
@@ -782,7 +782,7 @@ TcpBbr::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 }
 
 Ptr<TcpCongestionOps>
-TcpBbr::Fork (void)
+TcpBbr::Fork ()
 {
   return CopyObject<TcpBbr> (this);
 }

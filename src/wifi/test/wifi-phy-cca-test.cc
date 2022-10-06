@@ -79,25 +79,25 @@ public:
   WifiPhyCcaThresholdsTest ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Run tests for given CCA attributes
    */
-  void RunOne (void);
+  void RunOne ();
 
   /**
    * Create a dummy PSDU whose payload is 1000 bytes
    * \return a dummy PSDU whose payload is 1000 bytes
    */
-  Ptr<WifiPsdu> CreateDummyPsdu (void);
+  Ptr<WifiPsdu> CreateDummyPsdu ();
   /**
    * Create a non-HT PPDU
    * \return a non-HT PPDU
    */
-  Ptr<OfdmPpdu> CreateDummyNonHtPpdu (void);
+  Ptr<OfdmPpdu> CreateDummyNonHtPpdu ();
   /**
    * Create a HT PPDU
    * \param bandwidth the bandwidth used for the transmission the PPDU in MHz
@@ -149,7 +149,7 @@ WifiPhyCcaThresholdsTest::WifiPhyCcaThresholdsTest ()
 }
 
 Ptr<WifiPsdu>
-WifiPhyCcaThresholdsTest::CreateDummyPsdu (void)
+WifiPhyCcaThresholdsTest::CreateDummyPsdu ()
 {
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
@@ -159,7 +159,7 @@ WifiPhyCcaThresholdsTest::CreateDummyPsdu (void)
 }
 
 Ptr<OfdmPpdu>
-WifiPhyCcaThresholdsTest::CreateDummyNonHtPpdu (void)
+WifiPhyCcaThresholdsTest::CreateDummyNonHtPpdu ()
 {
   WifiTxVector txVector = WifiTxVector (OfdmPhy::GetOfdmRate6Mbps (), 0, WIFI_PREAMBLE_LONG, 800, 1, 1, 0, 20, false);
   Ptr<WifiPsdu> psdu = CreateDummyPsdu ();
@@ -200,7 +200,7 @@ WifiPhyCcaThresholdsTest::VerifyCcaThreshold (const Ptr<PhyEntity> phy, const Pt
 }
 
 void
-WifiPhyCcaThresholdsTest::DoSetup (void)
+WifiPhyCcaThresholdsTest::DoSetup ()
 {
   //WifiHelper::EnableLogComponents ();
   //LogComponentEnable ("WifiPhyCcaTest", LOG_LEVEL_ALL);
@@ -225,14 +225,14 @@ WifiPhyCcaThresholdsTest::DoSetup (void)
 }
 
 void
-WifiPhyCcaThresholdsTest::DoTeardown (void)
+WifiPhyCcaThresholdsTest::DoTeardown ()
 {
   m_device->Dispose ();
   m_device = 0;
 }
 
 void
-WifiPhyCcaThresholdsTest::RunOne (void)
+WifiPhyCcaThresholdsTest::RunOne ()
 {
   m_phy->SetCcaEdThreshold (m_CcaEdThresholdDbm);
   m_phy->SetCcaSensitivityThreshold (m_CcaSensitivityDbm);
@@ -376,7 +376,7 @@ WifiPhyCcaThresholdsTest::RunOne (void)
 }
 
 void
-WifiPhyCcaThresholdsTest::DoRun (void)
+WifiPhyCcaThresholdsTest::DoRun ()
 {
   //default attributes
   m_CcaEdThresholdDbm = -62.0;
@@ -454,12 +454,12 @@ public:
     NS_LOG_FUNCTION (this << duration);
   }
 
-  void NotifyRxEndOk (void) override
+  void NotifyRxEndOk () override
   {
     NS_LOG_FUNCTION (this);
   }
 
-  void NotifyRxEndError (void) override
+  void NotifyRxEndError () override
   {
     NS_LOG_FUNCTION (this);
   }
@@ -484,26 +484,26 @@ public:
   {
   }
 
-  void NotifySleep (void) override
+  void NotifySleep () override
   {
   }
 
-  void NotifyOff (void) override
+  void NotifyOff () override
   {
   }
 
-  void NotifyWakeup (void) override
+  void NotifyWakeup () override
   {
   }
 
-  void NotifyOn (void) override
+  void NotifyOn () override
   {
   }
 
   /**
    * Reset function
    */
-  void Reset (void)
+  void Reset ()
   {
     m_notifications = 0;
     m_endCcaBusy = Seconds (0);
@@ -530,9 +530,9 @@ public:
   WifiPhyCcaIndicationTest ();
 
 private:
-  void DoSetup (void) override;
-  void DoRun (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   /**
    * Send an HE SU PPDU
@@ -810,13 +810,13 @@ WifiPhyCcaIndicationTest::ScheduleTest (Time delay,
 }
 
 void
-WifiPhyCcaIndicationTest::Reset (void)
+WifiPhyCcaIndicationTest::Reset ()
 {
   m_rxPhyStateListener->Reset ();
 }
 
 void
-WifiPhyCcaIndicationTest::DoSetup (void)
+WifiPhyCcaIndicationTest::DoSetup ()
 {
   //WifiHelper::EnableLogComponents ();
   //LogComponentEnable ("WifiPhyCcaTest", LOG_LEVEL_ALL);
@@ -873,7 +873,7 @@ WifiPhyCcaIndicationTest::DoSetup (void)
 }
 
 void
-WifiPhyCcaIndicationTest::RunOne (void)
+WifiPhyCcaIndicationTest::RunOne ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -2056,7 +2056,7 @@ WifiPhyCcaIndicationTest::RunOne (void)
 }
 
 void
-WifiPhyCcaIndicationTest::DoRun (void)
+WifiPhyCcaIndicationTest::DoRun ()
 {
   m_frequency = 5180;
   m_channelWidth = 20;
@@ -2078,7 +2078,7 @@ WifiPhyCcaIndicationTest::DoRun (void)
 }
 
 void
-WifiPhyCcaIndicationTest::DoTeardown (void)
+WifiPhyCcaIndicationTest::DoTeardown ()
 {
   m_rxPhy->Dispose ();
   m_rxPhy = nullptr;

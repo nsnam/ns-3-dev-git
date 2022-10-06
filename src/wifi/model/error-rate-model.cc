@@ -26,7 +26,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (ErrorRateModel);
 
-TypeId ErrorRateModel::GetTypeId (void)
+TypeId ErrorRateModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ErrorRateModel")
     .SetParent<Object> ()
@@ -86,7 +86,7 @@ ErrorRateModel::GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector
 }
 
 bool
-ErrorRateModel::IsAwgn (void) const
+ErrorRateModel::IsAwgn () const
 {
   return true;
 }

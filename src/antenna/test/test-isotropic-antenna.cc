@@ -51,7 +51,7 @@ public:
 
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Angles m_a; //!< Antenna angle
   double m_expectedGain;  //!< Expected gain

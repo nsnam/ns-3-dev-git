@@ -44,7 +44,7 @@ public:
    * Create a phy helper in a default working state.
    * \return A phy helper
    */
-  static YansWavePhyHelper Default (void);
+  static YansWavePhyHelper Default ();
 
 private:
   /**
@@ -124,7 +124,7 @@ public:
    * a default multiple-channel scheduler DefaultChannelScheduler for
    * assigning channel access with these created entities.
    */
-  static WaveHelper Default (void);
+  static WaveHelper Default ();
 
   /**
    * \param channelNumbers the MAC entities will be created to support these channels for multiple channel operation.
@@ -184,7 +184,7 @@ public:
   /**
    * Helper to enable all WaveNetDevice log components with one statement
    */
-  static void EnableLogComponents (void);
+  static void EnableLogComponents ();
 
   /**
   * Assign a fixed random variable stream number to the random variables

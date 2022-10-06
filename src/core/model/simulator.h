@@ -103,7 +103,7 @@ public:
 
    * @return The SimulatorImpl singleton.
    */
-  static Ptr<SimulatorImpl> GetImplementation (void);
+  static Ptr<SimulatorImpl> GetImplementation ();
 
   /**
    * @brief Set the scheduler type with an ObjectFactory.
@@ -124,7 +124,7 @@ public:
    * to restart a new simulation with a set of calls to Simulator::Run,
    * Simulator::Schedule and Simulator::ScheduleWithContext.
    */
-  static void Destroy (void);
+  static void Destroy ();
 
   /**
    * Check if the simulation should finish.
@@ -135,7 +135,7 @@ public:
    *
    * @return @c true if no more events or stop time reached.
    */
-  static bool IsFinished (void);
+  static bool IsFinished ();
 
   /**
    * Run the simulation.
@@ -147,7 +147,7 @@ public:
    *     expiration time of the next event to be processed
    *     is greater than or equal to the stop time.
    */
-  static void Run (void);
+  static void Run ();
 
   /**
    * Tell the Simulator the calling event should be the last one
@@ -157,7 +157,7 @@ public:
    * event executed by the Simulator::Run method before
    * returning to the caller.
    */
-  static void Stop (void);
+  static void Stop ();
 
   /**
    * Schedule the time delay until the Simulator should stop.
@@ -186,7 +186,7 @@ public:
    *
    * @return The current simulation context
    */
-  static uint32_t GetContext (void);
+  static uint32_t GetContext ();
 
   /**
    * Context enum values.
@@ -207,7 +207,7 @@ public:
    * Get the number of events executed.
    * \returns The total number of events executed.
    */
-  static uint64_t GetEventCount (void);
+  static uint64_t GetEventCount ();
 
 
   /**
@@ -430,7 +430,7 @@ public:
    *
    * @returns The current virtual time.
    */
-  static Time Now (void);
+  static Time Now ();
 
   /**
    * Get the remaining time until this event will execute.
@@ -450,7 +450,7 @@ public:
    *
    * The returned value will always be bigger than or equal to Simulator::Now.
    */
-  static Time GetMaximumSimulationTime (void);
+  static Time GetMaximumSimulationTime ();
 
   /**
    * Schedule a future event execution (in the same context).
@@ -495,7 +495,7 @@ public:
    * in a distributed simulation.  For MPI this is the MPI rank.
    * @return The system id for this simulator.
    */
-  static uint32_t GetSystemId (void);
+  static uint32_t GetSystemId ();
 
 private:
   /**
@@ -533,7 +533,7 @@ private:
  * @endcode
  * @return The current simulation time.
  */
-Time Now (void);
+Time Now ();
 
 } // namespace ns3
 

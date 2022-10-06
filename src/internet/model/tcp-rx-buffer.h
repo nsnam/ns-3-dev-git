@@ -77,7 +77,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief Constructor
    * \param n initial Sequence number to be received
@@ -90,16 +90,16 @@ public:
    * \brief Get Next Rx Sequence number
    * \returns Next Rx Sequence number
    */
-  SequenceNumber32 NextRxSequence (void) const;
+  SequenceNumber32 NextRxSequence () const;
   /**
    * \brief Get the lowest sequence number that this TcpRxBuffer cannot accept
    * \returns the lowest sequence number that this TcpRxBuffer cannot accept
    */
-  SequenceNumber32 MaxRxSequence (void) const;
+  SequenceNumber32 MaxRxSequence () const;
   /**
    * \brief Increment the Next Sequence number
    */
-  void IncNextRxSequence (void);
+  void IncNextRxSequence ();
   /**
    * \brief Set the Next Sequence number
    * \param s the Sequence number
@@ -114,7 +114,7 @@ public:
    * \brief Get the Maximum buffer size
    * \returns the Maximum buffer size
    */
-  uint32_t MaxBufferSize (void) const;
+  uint32_t MaxBufferSize () const;
   /**
    * \brief Set the Maximum buffer size
    * \param s the Maximum buffer size
@@ -124,7 +124,7 @@ public:
    * \brief Get the actual buffer occupancy
    * \returns buffer occupancy (in bytes)
    */
-  uint32_t Size (void) const;
+  uint32_t Size () const;
   /**
    * \brief Get the actual number of bytes available to be read
    * \returns size of available data (in bytes)
@@ -134,7 +134,7 @@ public:
    * \brief Check if the buffer did receive all the data (and the connection is closed)
    * \returns true if all data have been received
    */
-  bool Finished (void);
+  bool Finished ();
 
   /**
    * Insert a packet into the buffer and update the availBytes counter to

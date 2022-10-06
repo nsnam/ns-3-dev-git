@@ -61,8 +61,8 @@ public:
   QueueDiscTestItem (const QueueDiscTestItem &) = delete;
   QueueDiscTestItem & operator = (const QueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark(void);
+  virtual void AddHeader ();
+  virtual bool Mark();
 };
 
 QueueDiscTestItem::QueueDiscTestItem (Ptr<Packet> p)
@@ -75,12 +75,12 @@ QueueDiscTestItem::~QueueDiscTestItem ()
 }
 
 void
-QueueDiscTestItem::AddHeader (void)
+QueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-QueueDiscTestItem::Mark (void)
+QueueDiscTestItem::Mark ()
 {
   return false;
 }
@@ -104,7 +104,7 @@ public:
   TcFlowControlTestCase (QueueSizeUnit tt, uint32_t deviceQueueLength, uint32_t totalTxPackets);
   virtual ~TcFlowControlTestCase ();
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Instruct a node to send a specified number of packets
    * \param n the node
@@ -184,7 +184,7 @@ TcFlowControlTestCase::CheckPacketsInQueueDisc (Ptr<NetDevice> dev, uint16_t nPa
 
 
 void
-TcFlowControlTestCase::DoRun (void)
+TcFlowControlTestCase::DoRun ()
 {
   NodeContainer n;
   n.Create (2);

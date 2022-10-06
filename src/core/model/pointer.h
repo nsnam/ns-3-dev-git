@@ -56,7 +56,7 @@ public:
    * Get the Object referenced by the PointerValue.
    * \returns The Object.
    */
-  Ptr<Object> GetObject (void) const;
+  Ptr<Object> GetObject () const;
 
   /**
    * Construct this PointerValue by referencing an explicit Object.
@@ -80,12 +80,12 @@ public:
 
   /** \tparam T \explicit The type to cast to. */
   template <typename T>
-  Ptr<T> Get (void) const;
+  Ptr<T> Get () const;
 
   template <typename T>
   bool GetAccessor (Ptr<T> &value) const;
 
-  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual Ptr<AttributeValue> Copy () const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
@@ -102,7 +102,7 @@ public:
    * Get the TypeId of the base type.
    * \returns The base TypeId.
    */
-  virtual TypeId GetPointeeTypeId (void) const = 0;
+  virtual TypeId GetPointeeTypeId () const = 0;
 };
 
 /**
@@ -111,7 +111,7 @@ public:
  * \returns The PointerChecker.
  */
 template <typename T>
-Ptr<AttributeChecker> MakePointerChecker (void);
+Ptr<AttributeChecker> MakePointerChecker ();
 
 } // namespace ns3
 
@@ -147,20 +147,20 @@ class PointerChecker : public ns3::PointerChecker
       }
     return true;
   }
-  virtual std::string GetValueTypeName (void) const
+  virtual std::string GetValueTypeName () const
   {
     return "ns3::PointerValue";
   }
-  virtual bool HasUnderlyingTypeInformation (void) const
+  virtual bool HasUnderlyingTypeInformation () const
   {
     return true;
   }
-  virtual std::string GetUnderlyingTypeInformation (void) const
+  virtual std::string GetUnderlyingTypeInformation () const
   {
     TypeId tid = T::GetTypeId ();
     return "ns3::Ptr< " + tid.GetName () + " >";
   }
-  virtual Ptr<AttributeValue> Create (void) const
+  virtual Ptr<AttributeValue> Create () const
   {
     return ns3::Create<PointerValue> ();
   }
@@ -175,7 +175,7 @@ class PointerChecker : public ns3::PointerChecker
     *dst = *src;
     return true;
   }
-  virtual TypeId GetPointeeTypeId (void) const
+  virtual TypeId GetPointeeTypeId () const
   {
     return T::GetTypeId ();
   }
@@ -198,7 +198,7 @@ PointerValue::Set (const Ptr<T> &object)
 
 template <typename T>
 Ptr<T>
-PointerValue::Get (void) const
+PointerValue::Get () const
 {
   T *v = dynamic_cast<T *> (PeekPointer (m_value));
   return v;
@@ -228,7 +228,7 @@ ATTRIBUTE_ACCESSOR_DEFINE (Pointer);
 
 template <typename T>
 Ptr<AttributeChecker>
-MakePointerChecker (void)
+MakePointerChecker ()
 {
   return Create<internal::PointerChecker<T> > ();
 }

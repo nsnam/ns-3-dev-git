@@ -38,7 +38,7 @@ Wifi80211pHelper::~Wifi80211pHelper ()
 }
 
 Wifi80211pHelper
-Wifi80211pHelper::Default (void)
+Wifi80211pHelper::Default ()
 {
   Wifi80211pHelper helper;
   helper.SetStandard (WIFI_STANDARD_80211p);
@@ -63,7 +63,7 @@ Wifi80211pHelper::SetStandard (enum WifiStandard standard)
 }
 
 void
-Wifi80211pHelper::EnableLogComponents (void)
+Wifi80211pHelper::EnableLogComponents ()
 {
   WifiHelper::EnableLogComponents ();
 

@@ -45,7 +45,7 @@ RipHelper::~RipHelper ()
 }
 
 RipHelper*
-RipHelper::Copy (void) const
+RipHelper::Copy () const
 {
   return new RipHelper (*this);
 }

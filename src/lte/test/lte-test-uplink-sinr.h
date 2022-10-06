@@ -67,7 +67,7 @@ public:
   virtual ~LteUplinkDataSinrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
   Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2
@@ -109,7 +109,7 @@ class LteUplinkSrsSinrTestCase : public TestCase
   void ReportSinr (const SpectrumValue& sinr);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
   Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2

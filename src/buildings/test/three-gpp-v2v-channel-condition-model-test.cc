@@ -64,7 +64,7 @@ private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -88,7 +88,7 @@ ThreeGppV2vBuildingsChCondModelTestCase::~ThreeGppV2vBuildingsChCondModelTestCas
 {}
 
 void
-ThreeGppV2vBuildingsChCondModelTestCase::DoRun (void)
+ThreeGppV2vBuildingsChCondModelTestCase::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -200,7 +200,7 @@ private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Evaluates the channel condition between two nodes by calling the method
@@ -248,7 +248,7 @@ ThreeGppV2vUrbanLosNlosvChCondModelTestCase::EvaluateChannelCondition (Ptr<Mobil
 }
 
 void
-ThreeGppV2vUrbanLosNlosvChCondModelTestCase::DoRun (void)
+ThreeGppV2vUrbanLosNlosvChCondModelTestCase::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -351,7 +351,7 @@ private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Evaluates the channel condition between two nodes by calling the method
@@ -399,7 +399,7 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::EvaluateChannelCondition (Ptr<Mob
 }
 
 void
-ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun (void)
+ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);

@@ -49,7 +49,7 @@ uint32_t WimaxNetDevice::m_nrFrames = 0;
 uint8_t WimaxNetDevice::m_direction = ~0;
 Time WimaxNetDevice::m_frameStartTime = Seconds (0);
 
-TypeId WimaxNetDevice::GetTypeId (void)
+TypeId WimaxNetDevice::GetTypeId ()
 {
   static TypeId
     tid =
@@ -135,7 +135,7 @@ TypeId WimaxNetDevice::GetTypeId (void)
   return tid;
 }
 
-WimaxNetDevice::WimaxNetDevice (void)
+WimaxNetDevice::WimaxNetDevice ()
   : m_state (0),
     m_symbolIndex (0),
     m_ttg (0),
@@ -150,12 +150,12 @@ WimaxNetDevice::WimaxNetDevice (void)
   m_frameStartTime = Seconds (0);
 }
 
-WimaxNetDevice::~WimaxNetDevice (void)
+WimaxNetDevice::~WimaxNetDevice ()
 {
 }
 
 void
-WimaxNetDevice::DoDispose (void)
+WimaxNetDevice::DoDispose ()
 {
 
   m_phy->Dispose ();
@@ -180,7 +180,7 @@ WimaxNetDevice::SetTtg (uint16_t ttg)
 }
 
 uint16_t
-WimaxNetDevice::GetTtg (void) const
+WimaxNetDevice::GetTtg () const
 {
   return m_ttg;
 }
@@ -192,7 +192,7 @@ WimaxNetDevice::SetRtg (uint16_t rtg)
 }
 
 uint16_t
-WimaxNetDevice::GetRtg (void) const
+WimaxNetDevice::GetRtg () const
 {
   return m_rtg;
 }
@@ -204,7 +204,7 @@ WimaxNetDevice::SetName (const std::string name)
 }
 
 std::string
-WimaxNetDevice::GetName (void) const
+WimaxNetDevice::GetName () const
 {
   return m_name;
 }
@@ -216,19 +216,19 @@ WimaxNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-WimaxNetDevice::GetIfIndex (void) const
+WimaxNetDevice::GetIfIndex () const
 {
   return m_ifIndex;
 }
 
 Ptr<Channel>
-WimaxNetDevice::GetChannel (void) const
+WimaxNetDevice::GetChannel () const
 {
   return DoGetChannel ();
 }
 
 Ptr<Channel>
-WimaxNetDevice::GetPhyChannel (void) const
+WimaxNetDevice::GetPhyChannel () const
 {
   return DoGetChannel ();
 }
@@ -245,13 +245,13 @@ WimaxNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-WimaxNetDevice::GetMtu (void) const
+WimaxNetDevice::GetMtu () const
 {
   return m_mtu;
 }
 
 bool
-WimaxNetDevice::IsLinkUp (void) const
+WimaxNetDevice::IsLinkUp () const
 {
 
   return m_phy && m_linkUp;
@@ -265,25 +265,25 @@ WimaxNetDevice::SetLinkChangeCallback (Callback<void> callback)
 }
 
 bool
-WimaxNetDevice::IsBroadcast (void) const
+WimaxNetDevice::IsBroadcast () const
 {
   return true;
 }
 
 Address
-WimaxNetDevice::GetBroadcast (void) const
+WimaxNetDevice::GetBroadcast () const
 {
   return Mac48Address::GetBroadcast ();
 }
 
 bool
-WimaxNetDevice::IsMulticast (void) const
+WimaxNetDevice::IsMulticast () const
 {
   return false;
 }
 
 Address
-WimaxNetDevice::GetMulticast (void) const
+WimaxNetDevice::GetMulticast () const
 {
   return Mac48Address ("01:00:5e:00:00:00");
 }
@@ -295,7 +295,7 @@ WimaxNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 }
 
 bool
-WimaxNetDevice::IsPointToPoint (void) const
+WimaxNetDevice::IsPointToPoint () const
 {
   return false;
 }
@@ -321,13 +321,13 @@ WimaxNetDevice::SetNode (Ptr<Node> node)
 }
 
 Ptr<Node>
-WimaxNetDevice::GetNode (void) const
+WimaxNetDevice::GetNode () const
 {
   return m_node;
 }
 
 bool
-WimaxNetDevice::NeedsArp (void) const
+WimaxNetDevice::NeedsArp () const
 {
   return false;
   /*
@@ -366,7 +366,7 @@ WimaxNetDevice::SetPhy (Ptr<WimaxPhy> phy)
 }
 
 Ptr<WimaxPhy>
-WimaxNetDevice::GetPhy (void) const
+WimaxNetDevice::GetPhy () const
 {
   return m_phy;
 }
@@ -393,7 +393,7 @@ WimaxNetDevice::SetNrFrames (uint32_t nrFrames)
   m_nrFrames = nrFrames;
 }
 
-uint32_t WimaxNetDevice::GetNrFrames (void) const
+uint32_t WimaxNetDevice::GetNrFrames () const
 {
 
   return m_nrFrames;
@@ -412,13 +412,13 @@ WimaxNetDevice::SetMacAddress (Mac48Address address)
 }
 
 Address
-WimaxNetDevice::GetAddress (void) const
+WimaxNetDevice::GetAddress () const
 {
   return m_address;
 }
 
 Mac48Address
-WimaxNetDevice::GetMacAddress (void) const
+WimaxNetDevice::GetMacAddress () const
 {
   return m_address;
 }
@@ -430,19 +430,19 @@ WimaxNetDevice::SetState (uint8_t state)
 }
 
 uint8_t
-WimaxNetDevice::GetState (void) const
+WimaxNetDevice::GetState () const
 {
   return m_state;
 }
 
 Ptr<WimaxConnection>
-WimaxNetDevice::GetInitialRangingConnection (void) const
+WimaxNetDevice::GetInitialRangingConnection () const
 {
   return m_initialRangingConnection;
 }
 
 Ptr<WimaxConnection>
-WimaxNetDevice::GetBroadcastConnection (void) const
+WimaxNetDevice::GetBroadcastConnection () const
 {
   return m_broadcastConnection;
 }
@@ -454,7 +454,7 @@ WimaxNetDevice::SetCurrentDcd (Dcd dcd)
 }
 
 Dcd
-WimaxNetDevice::GetCurrentDcd (void) const
+WimaxNetDevice::GetCurrentDcd () const
 {
   return m_currentDcd;
 }
@@ -466,13 +466,13 @@ WimaxNetDevice::SetCurrentUcd (Ucd ucd)
 }
 
 Ucd
-WimaxNetDevice::GetCurrentUcd (void) const
+WimaxNetDevice::GetCurrentUcd () const
 {
   return m_currentUcd;
 }
 
 Ptr<ConnectionManager>
-WimaxNetDevice::GetConnectionManager (void) const
+WimaxNetDevice::GetConnectionManager () const
 {
   return m_connectionManager;
 }
@@ -484,7 +484,7 @@ WimaxNetDevice::SetConnectionManager (Ptr<ConnectionManager> cm)
 }
 
 Ptr<BurstProfileManager>
-WimaxNetDevice::GetBurstProfileManager (void) const
+WimaxNetDevice::GetBurstProfileManager () const
 {
   return m_burstProfileManager;
 }
@@ -496,7 +496,7 @@ WimaxNetDevice::SetBurstProfileManager (Ptr<BurstProfileManager> bpm)
 }
 
 Ptr<BandwidthManager>
-WimaxNetDevice::GetBandwidthManager (void) const
+WimaxNetDevice::GetBandwidthManager () const
 {
   return m_bandwidthManager;
 }
@@ -508,7 +508,7 @@ WimaxNetDevice::SetBandwidthManager (Ptr<BandwidthManager> bwm)
 }
 
 void
-WimaxNetDevice::CreateDefaultConnections (void)
+WimaxNetDevice::CreateDefaultConnections ()
 {
   m_initialRangingConnection = CreateObject<WimaxConnection> (Cid::InitialRanging (), Cid::INITIAL_RANGING);
   m_broadcastConnection = CreateObject<WimaxConnection> (Cid::Broadcast (), Cid::BROADCAST);
@@ -529,13 +529,13 @@ WimaxNetDevice::Receive (Ptr<const PacketBurst> burst)
 }
 
 Ptr<WimaxChannel>
-WimaxNetDevice::DoGetChannel (void) const
+WimaxNetDevice::DoGetChannel () const
 {
   return m_phy->GetChannel ();
 }
 
 void
-WimaxNetDevice::SetReceiveCallback (void)
+WimaxNetDevice::SetReceiveCallback ()
 {
   m_phy->SetReceiveCallback (MakeCallback (&WimaxNetDevice::Receive, this));
 }
@@ -562,7 +562,7 @@ WimaxNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-WimaxNetDevice::IsPromisc (void)
+WimaxNetDevice::IsPromisc ()
 {
   return !(m_promiscRx.IsNull ());
 }
@@ -574,7 +574,7 @@ WimaxNetDevice::NotifyPromiscTrace (Ptr<Packet> p)
 }
 
 bool
-WimaxNetDevice::SupportsSendFrom (void) const
+WimaxNetDevice::SupportsSendFrom () const
 {
   return false;
 }
@@ -588,7 +588,7 @@ WimaxNetDevice::ForwardDown (Ptr<PacketBurst> burst, WimaxPhy::ModulationType mo
 }
 
 void
-WimaxNetDevice::InitializeChannels (void)
+WimaxNetDevice::InitializeChannels ()
 {
 
   // initializing vector of channels (or frequencies)
@@ -607,7 +607,7 @@ WimaxNetDevice::InitializeChannels (void)
 }
 
 bool
-WimaxNetDevice::IsBridge (void) const
+WimaxNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return false;

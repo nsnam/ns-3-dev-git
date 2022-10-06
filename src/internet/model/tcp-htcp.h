@@ -53,17 +53,17 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Create an unbound tcp socket.
    */
-  TcpHtcp (void);
+  TcpHtcp ();
   /**
    * \brief Copy constructor
    * \param sock the object to copy
    */
   TcpHtcp (const TcpHtcp& sock);
-  virtual ~TcpHtcp (void);
+  virtual ~TcpHtcp ();
   virtual std::string GetName () const;
   virtual Ptr<TcpCongestionOps> Fork ();
   virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
@@ -80,12 +80,12 @@ private:
   /**
    * \brief Updates the additive increase parameter for H-TCP
    */
-  void UpdateAlpha (void);
+  void UpdateAlpha ();
 
   /**
    * \brief Updates the multiplicative decrease factor beta for H-TCP
    */
-  void UpdateBeta (void);
+  void UpdateBeta ();
 
   // h-tcp variables
   double m_alpha;                    //!< AIMD additive increase parameter

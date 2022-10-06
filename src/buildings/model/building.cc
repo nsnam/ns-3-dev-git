@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("Building");
 NS_OBJECT_ENSURE_REGISTERED (Building);
 
 TypeId
-Building::GetTypeId (void)
+Building::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Building")
     .SetParent<Object> ()
@@ -129,7 +129,7 @@ Building::DoDispose ()
 }
 
 uint32_t
-Building::GetId (void) const
+Building::GetId () const
 {
   NS_LOG_FUNCTION (this);
   return m_buildingId;

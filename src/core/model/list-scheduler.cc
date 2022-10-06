@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("ListScheduler");
 NS_OBJECT_ENSURE_REGISTERED (ListScheduler);
 
 TypeId
-ListScheduler::GetTypeId (void)
+ListScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ListScheduler")
     .SetParent<Scheduler> ()
@@ -70,20 +70,20 @@ ListScheduler::Insert (const Event &ev)
   m_events.push_back (ev);
 }
 bool
-ListScheduler::IsEmpty (void) const
+ListScheduler::IsEmpty () const
 {
   NS_LOG_FUNCTION (this);
   return m_events.empty ();
 }
 Scheduler::Event
-ListScheduler::PeekNext (void) const
+ListScheduler::PeekNext () const
 {
   NS_LOG_FUNCTION (this);
   return m_events.front ();
 }
 
 Scheduler::Event
-ListScheduler::RemoveNext (void)
+ListScheduler::RemoveNext ()
 {
   NS_LOG_FUNCTION (this);
   Event next = m_events.front ();

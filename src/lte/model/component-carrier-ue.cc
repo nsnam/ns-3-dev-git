@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("ComponentCarrierUe");
 
 NS_OBJECT_ENSURE_REGISTERED ( ComponentCarrierUe);
 
-TypeId ComponentCarrierUe::GetTypeId (void)
+TypeId ComponentCarrierUe::GetTypeId ()
 {
   static TypeId
     tid =
@@ -59,7 +59,7 @@ ComponentCarrierUe::ComponentCarrierUe ()
   NS_LOG_FUNCTION (this);
 }
 
-ComponentCarrierUe::~ComponentCarrierUe (void)
+ComponentCarrierUe::~ComponentCarrierUe ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -77,7 +77,7 @@ ComponentCarrierUe::DoDispose ()
 
 
 void
-ComponentCarrierUe::DoInitialize (void)
+ComponentCarrierUe::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_phy->Initialize ();

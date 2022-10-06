@@ -81,25 +81,25 @@ WifiMacHeader::~WifiMacHeader ()
 }
 
 void
-WifiMacHeader::SetDsFrom (void)
+WifiMacHeader::SetDsFrom ()
 {
   m_ctrlFromDs = 1;
 }
 
 void
-WifiMacHeader::SetDsNotFrom (void)
+WifiMacHeader::SetDsNotFrom ()
 {
   m_ctrlFromDs = 0;
 }
 
 void
-WifiMacHeader::SetDsTo (void)
+WifiMacHeader::SetDsTo ()
 {
   m_ctrlToDs = 1;
 }
 
 void
-WifiMacHeader::SetDsNotTo (void)
+WifiMacHeader::SetDsNotTo ()
 {
   m_ctrlToDs = 0;
 }
@@ -321,32 +321,32 @@ void WifiMacHeader::SetFragmentNumber (uint8_t frag)
   m_seqFrag = frag;
 }
 
-void WifiMacHeader::SetNoMoreFragments (void)
+void WifiMacHeader::SetNoMoreFragments ()
 {
   m_ctrlMoreFrag = 0;
 }
 
-void WifiMacHeader::SetMoreFragments (void)
+void WifiMacHeader::SetMoreFragments ()
 {
   m_ctrlMoreFrag = 1;
 }
 
-void WifiMacHeader::SetOrder (void)
+void WifiMacHeader::SetOrder ()
 {
   m_ctrlOrder = 1;
 }
 
-void WifiMacHeader::SetNoOrder (void)
+void WifiMacHeader::SetNoOrder ()
 {
   m_ctrlOrder = 0;
 }
 
-void WifiMacHeader::SetRetry (void)
+void WifiMacHeader::SetRetry ()
 {
   m_ctrlRetry = 1;
 }
 
-void WifiMacHeader::SetNoRetry (void)
+void WifiMacHeader::SetNoRetry ()
 {
   m_ctrlRetry = 0;
 }
@@ -385,12 +385,12 @@ void WifiMacHeader::SetQosAckPolicy (QosAckPolicy policy)
     }
 }
 
-void WifiMacHeader::SetQosAmsdu (void)
+void WifiMacHeader::SetQosAmsdu ()
 {
   m_amsduPresent = 1;
 }
 
-void WifiMacHeader::SetQosNoAmsdu (void)
+void WifiMacHeader::SetQosNoAmsdu ()
 {
   m_amsduPresent = 0;
 }
@@ -407,7 +407,7 @@ WifiMacHeader::SetQosQueueSize (uint8_t size)
   m_qosStuff = size;
 }
 
-void WifiMacHeader::SetQosMeshControlPresent (void)
+void WifiMacHeader::SetQosMeshControlPresent ()
 {
   //Mark bit 0 of this variable instead of bit 8, since m_qosStuff is
   //shifted by one byte when serialized
@@ -423,31 +423,31 @@ void WifiMacHeader::SetQosNoMeshControlPresent ()
 
 
 Mac48Address
-WifiMacHeader::GetAddr1 (void) const
+WifiMacHeader::GetAddr1 () const
 {
   return m_addr1;
 }
 
 Mac48Address
-WifiMacHeader::GetAddr2 (void) const
+WifiMacHeader::GetAddr2 () const
 {
   return m_addr2;
 }
 
 Mac48Address
-WifiMacHeader::GetAddr3 (void) const
+WifiMacHeader::GetAddr3 () const
 {
   return m_addr3;
 }
 
 Mac48Address
-WifiMacHeader::GetAddr4 (void) const
+WifiMacHeader::GetAddr4 () const
 {
   return m_addr4;
 }
 
 WifiMacType
-WifiMacHeader::GetType (void) const
+WifiMacHeader::GetType () const
 {
   switch (m_ctrlType)
     {
@@ -545,44 +545,44 @@ WifiMacHeader::GetType (void) const
 }
 
 bool
-WifiMacHeader::IsFromDs (void) const
+WifiMacHeader::IsFromDs () const
 {
   return m_ctrlFromDs == 1;
 }
 
 bool
-WifiMacHeader::IsToDs (void) const
+WifiMacHeader::IsToDs () const
 {
   return m_ctrlToDs == 1;
 }
 
 bool
-WifiMacHeader::IsData (void) const
+WifiMacHeader::IsData () const
 {
   return (m_ctrlType == TYPE_DATA);
 
 }
 
 bool
-WifiMacHeader::IsQosData (void) const
+WifiMacHeader::IsQosData () const
 {
   return (m_ctrlType == TYPE_DATA && (m_ctrlSubtype & 0x08));
 }
 
 bool
-WifiMacHeader::IsCtl (void) const
+WifiMacHeader::IsCtl () const
 {
   return (m_ctrlType == TYPE_CTL);
 }
 
 bool
-WifiMacHeader::IsMgt (void) const
+WifiMacHeader::IsMgt () const
 {
   return (m_ctrlType == TYPE_MGT);
 }
 
 bool
-WifiMacHeader::IsCfPoll (void) const
+WifiMacHeader::IsCfPoll () const
 {
   switch (GetType ())
     {
@@ -601,7 +601,7 @@ WifiMacHeader::IsCfPoll (void) const
 }
 
 bool
-WifiMacHeader::IsCfEnd (void) const
+WifiMacHeader::IsCfEnd () const
 {
   switch (GetType ())
     {
@@ -614,7 +614,7 @@ WifiMacHeader::IsCfEnd (void) const
 }
 
 bool
-WifiMacHeader::IsCfAck (void) const
+WifiMacHeader::IsCfAck () const
 {
   switch (GetType ())
     {
@@ -631,7 +631,7 @@ WifiMacHeader::IsCfAck (void) const
 }
 
 bool
-WifiMacHeader::HasData (void) const
+WifiMacHeader::HasData () const
 {
   switch (GetType ())
     {
@@ -650,85 +650,85 @@ WifiMacHeader::HasData (void) const
 }
 
 bool
-WifiMacHeader::IsRts (void) const
+WifiMacHeader::IsRts () const
 {
   return (GetType () == WIFI_MAC_CTL_RTS);
 }
 
 bool
-WifiMacHeader::IsCts (void) const
+WifiMacHeader::IsCts () const
 {
   return (GetType () == WIFI_MAC_CTL_CTS);
 }
 
 bool
-WifiMacHeader::IsAck (void) const
+WifiMacHeader::IsAck () const
 {
   return (GetType () == WIFI_MAC_CTL_ACK);
 }
 
 bool
-WifiMacHeader::IsAssocReq (void) const
+WifiMacHeader::IsAssocReq () const
 {
   return (GetType () == WIFI_MAC_MGT_ASSOCIATION_REQUEST);
 }
 
 bool
-WifiMacHeader::IsAssocResp (void) const
+WifiMacHeader::IsAssocResp () const
 {
   return (GetType () == WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
 }
 
 bool
-WifiMacHeader::IsReassocReq (void) const
+WifiMacHeader::IsReassocReq () const
 {
   return (GetType () == WIFI_MAC_MGT_REASSOCIATION_REQUEST);
 }
 
 bool
-WifiMacHeader::IsReassocResp (void) const
+WifiMacHeader::IsReassocResp () const
 {
   return (GetType () == WIFI_MAC_MGT_REASSOCIATION_RESPONSE);
 }
 
 bool
-WifiMacHeader::IsProbeReq (void) const
+WifiMacHeader::IsProbeReq () const
 {
   return (GetType () == WIFI_MAC_MGT_PROBE_REQUEST);
 }
 
 bool
-WifiMacHeader::IsProbeResp (void) const
+WifiMacHeader::IsProbeResp () const
 {
   return (GetType () == WIFI_MAC_MGT_PROBE_RESPONSE);
 }
 
 bool
-WifiMacHeader::IsBeacon (void) const
+WifiMacHeader::IsBeacon () const
 {
   return (GetType () == WIFI_MAC_MGT_BEACON);
 }
 
 bool
-WifiMacHeader::IsDisassociation (void) const
+WifiMacHeader::IsDisassociation () const
 {
   return (GetType () == WIFI_MAC_MGT_DISASSOCIATION);
 }
 
 bool
-WifiMacHeader::IsAuthentication (void) const
+WifiMacHeader::IsAuthentication () const
 {
   return (GetType () == WIFI_MAC_MGT_AUTHENTICATION);
 }
 
 bool
-WifiMacHeader::IsDeauthentication (void) const
+WifiMacHeader::IsDeauthentication () const
 {
   return (GetType () == WIFI_MAC_MGT_DEAUTHENTICATION);
 }
 
 bool
-WifiMacHeader::IsAction (void) const
+WifiMacHeader::IsAction () const
 {
   return (GetType () == WIFI_MAC_MGT_ACTION);
 }
@@ -740,107 +740,107 @@ WifiMacHeader::IsActionNoAck () const
 }
 
 bool
-WifiMacHeader::IsMultihopAction (void) const
+WifiMacHeader::IsMultihopAction () const
 {
   return (GetType () == WIFI_MAC_MGT_MULTIHOP_ACTION);
 }
 
 bool
-WifiMacHeader::IsBlockAckReq (void) const
+WifiMacHeader::IsBlockAckReq () const
 {
   return (GetType () == WIFI_MAC_CTL_BACKREQ);
 }
 
 bool
-WifiMacHeader::IsBlockAck (void) const
+WifiMacHeader::IsBlockAck () const
 {
   return (GetType () == WIFI_MAC_CTL_BACKRESP);
 }
 
 bool
-WifiMacHeader::IsTrigger (void) const
+WifiMacHeader::IsTrigger () const
 {
   return (GetType () == WIFI_MAC_CTL_TRIGGER);
 }
 
 uint16_t
-WifiMacHeader::GetRawDuration (void) const
+WifiMacHeader::GetRawDuration () const
 {
   return m_duration;
 }
 
 Time
-WifiMacHeader::GetDuration (void) const
+WifiMacHeader::GetDuration () const
 {
   return MicroSeconds (m_duration);
 }
 
 uint16_t
-WifiMacHeader::GetSequenceControl (void) const
+WifiMacHeader::GetSequenceControl () const
 {
   return (m_seqSeq << 4) | m_seqFrag;
 }
 
 uint16_t
-WifiMacHeader::GetSequenceNumber (void) const
+WifiMacHeader::GetSequenceNumber () const
 {
   return m_seqSeq;
 }
 
 uint8_t
-WifiMacHeader::GetFragmentNumber (void) const
+WifiMacHeader::GetFragmentNumber () const
 {
   return m_seqFrag;
 }
 
 bool
-WifiMacHeader::IsRetry (void) const
+WifiMacHeader::IsRetry () const
 {
   return (m_ctrlRetry == 1);
 }
 
 bool
-WifiMacHeader::IsMoreData (void) const
+WifiMacHeader::IsMoreData () const
 {
   return (m_ctrlMoreData == 1);
 }
 
 bool
-WifiMacHeader::IsMoreFragments (void) const
+WifiMacHeader::IsMoreFragments () const
 {
   return (m_ctrlMoreFrag == 1);
 }
 
 bool
-WifiMacHeader::IsQosBlockAck (void) const
+WifiMacHeader::IsQosBlockAck () const
 {
   NS_ASSERT (IsQosData ());
   return (m_qosAckPolicy == 3);
 }
 
 bool
-WifiMacHeader::IsQosNoAck (void) const
+WifiMacHeader::IsQosNoAck () const
 {
   NS_ASSERT (IsQosData ());
   return (m_qosAckPolicy == 1);
 }
 
 bool
-WifiMacHeader::IsQosAck (void) const
+WifiMacHeader::IsQosAck () const
 {
   NS_ASSERT (IsQosData ());
   return (m_qosAckPolicy == 0);
 }
 
 bool
-WifiMacHeader::IsQosEosp (void) const
+WifiMacHeader::IsQosEosp () const
 {
   NS_ASSERT (IsQosData ());
   return (m_qosEosp == 1);
 }
 
 WifiMacHeader::QosAckPolicy
-WifiMacHeader::GetQosAckPolicy (void) const
+WifiMacHeader::GetQosAckPolicy () const
 {
   NS_ASSERT (IsQosData ());
   QosAckPolicy policy;
@@ -866,28 +866,28 @@ WifiMacHeader::GetQosAckPolicy (void) const
 }
 
 bool
-WifiMacHeader::IsQosAmsdu (void) const
+WifiMacHeader::IsQosAmsdu () const
 {
   NS_ASSERT (IsQosData ());
   return (m_amsduPresent == 1);
 }
 
 uint8_t
-WifiMacHeader::GetQosTid (void) const
+WifiMacHeader::GetQosTid () const
 {
   NS_ASSERT (IsQosData ());
   return m_qosTid;
 }
 
 uint8_t
-WifiMacHeader::GetQosQueueSize (void) const
+WifiMacHeader::GetQosQueueSize () const
 {
   NS_ASSERT (m_qosEosp == 1);
   return m_qosStuff;
 }
 
 uint16_t
-WifiMacHeader::GetFrameControl (void) const
+WifiMacHeader::GetFrameControl () const
 {
   uint16_t val = 0;
   val |= (m_ctrlType << 2) & (0x3 << 2);
@@ -903,7 +903,7 @@ WifiMacHeader::GetFrameControl (void) const
 }
 
 uint16_t
-WifiMacHeader::GetQosControl (void) const
+WifiMacHeader::GetQosControl () const
 {
   uint16_t val = 0;
   val |= m_qosTid;
@@ -944,7 +944,7 @@ WifiMacHeader::SetQosControl (uint16_t qos)
 }
 
 uint32_t
-WifiMacHeader::GetSize (void) const
+WifiMacHeader::GetSize () const
 {
   uint32_t size = 0;
   switch (m_ctrlType)
@@ -988,7 +988,7 @@ WifiMacHeader::GetSize (void) const
 }
 
 const char *
-WifiMacHeader::GetTypeString (void) const
+WifiMacHeader::GetTypeString () const
 {
 #define FOO(x) \
 case WIFI_MAC_ ## x: \
@@ -1046,7 +1046,7 @@ case WIFI_MAC_ ## x: \
 }
 
 TypeId
-WifiMacHeader::GetTypeId (void)
+WifiMacHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMacHeader")
     .SetParent<Header> ()
@@ -1057,7 +1057,7 @@ WifiMacHeader::GetTypeId (void)
 }
 
 TypeId
-WifiMacHeader::GetInstanceTypeId (void) const
+WifiMacHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -1166,7 +1166,7 @@ WifiMacHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-WifiMacHeader::GetSerializedSize (void) const
+WifiMacHeader::GetSerializedSize () const
 {
   return GetSize ();
 }

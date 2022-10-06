@@ -121,7 +121,7 @@ public:
    * \brief Get the MinInterval of the timer.
    * \return The MinInterval
    */
-  Time GetMinInterval (void) const;
+  Time GetMinInterval () const;
 
   /**
    * \brief Get the MaxInterval of the timer.
@@ -129,33 +129,33 @@ public:
    * The timer MaxInterval is always std::exp2 (doublings) * minInterval
    * \return The MaxInterval
    */
-  Time GetMaxInterval (void) const;
+  Time GetMaxInterval () const;
 
   /**
    * \brief Get the doublings of the timer.
    * \return The doublings
    */
-  uint8_t GetDoublings (void) const;
+  uint8_t GetDoublings () const;
 
   /**
    * \brief Get the Redundancy constant of the timer.
    * \return The Redundancy
    */
-  uint16_t GetRedundancy (void) const;
+  uint16_t GetRedundancy () const;
 
   /**
    * \returns The amount of time left until this timer expires.
    *
    * This method returns zero if the timer has never been started.
    */
-  Time GetDelayLeft (void) const;
+  Time GetDelayLeft () const;
 
   /**
    * \returns The amount of time left until this timer interval expires.
    *
    * This method returns zero if the timer has never been started.
    */
-  Time GetIntervalLeft (void) const;
+  Time GetIntervalLeft () const;
 
   /**
    * \brief Enable the timer.
@@ -223,9 +223,9 @@ public:
 
 private:
   /** Internal callback invoked when the timer expires. */
-  void TimerExpire (void);
+  void TimerExpire ();
   /** Internal callback invoked when the interval expires. */
-  void IntervalExpire (void);
+  void IntervalExpire ();
 
   /**
    * The timer implementation, which contains the bound callback

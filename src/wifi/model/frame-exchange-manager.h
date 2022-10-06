@@ -55,7 +55,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   FrameExchangeManager ();
   virtual ~FrameExchangeManager ();
 
@@ -131,7 +131,7 @@ public:
   /**
    * Remove WifiPhy associated with this FrameExchangeManager.
    */
-  virtual void ResetPhy (void);
+  virtual void ResetPhy ();
   /**
    * Set the Protection Manager to use
    *
@@ -155,7 +155,7 @@ public:
    *
    * \return the MAC address
    */
-  Mac48Address GetAddress (void) const;
+  Mac48Address GetAddress () const;
   /**
    * Set the Basic Service Set Identification.
    *
@@ -167,7 +167,7 @@ public:
    *
    * \return the BSSID
    */
-  Mac48Address GetBssid (void) const;
+  Mac48Address GetBssid () const;
   /**
    * Set the callback to invoke when an MPDU is dropped.
    *
@@ -183,28 +183,28 @@ public:
   /**
    * Enable promiscuous mode.
    */
-  void SetPromisc (void);
+  void SetPromisc ();
   /**
    * Check if the device is operating in promiscuous mode.
    *
    * \return true if the device is operating in promiscuous mode,
    *         false otherwise
    */
-  bool IsPromisc (void) const;
+  bool IsPromisc () const;
 
   /**
    * Get a const reference to the WifiTxTimer object.
    *
    * \return a const reference to the WifiTxTimer object
    */
-  const WifiTxTimer& GetWifiTxTimer (void) const;
+  const WifiTxTimer& GetWifiTxTimer () const;
 
   /**
    * Get the Protection Manager used by this node.
    *
    * \return the Protection Manager used by this node
    */
-  Ptr<WifiProtectionManager> GetProtectionManager (void) const;
+  Ptr<WifiProtectionManager> GetProtectionManager () const;
 
   /**
    * Calculate the time required to protect a frame according to the given
@@ -220,7 +220,7 @@ public:
    *
    * \return the Acknowledgment Manager used by this node
    */
-  Ptr<WifiAckManager> GetAckManager (void) const;
+  Ptr<WifiAckManager> GetAckManager () const;
 
   /**
    * Calculate the time required to acknowledge a frame according to the given
@@ -252,14 +252,14 @@ public:
    * the MAC layer that the device has been put into sleep mode. When the device is put
    * into sleep mode, pending MAC transmissions (RTS, CTS, Data and Ack) are cancelled.
    */
-  void NotifySleepNow (void);
+  void NotifySleepNow ();
 
   /**
    * This method is typically invoked by the PhyListener to notify
    * the MAC layer that the device has been put into off mode. When the device is put
    * into off mode, pending MAC transmissions (RTS, CTS, Data and Ack) are cancelled.
    */
-  void NotifyOffNow (void);
+  void NotifyOffNow ();
 
 protected:
   void DoDispose () override;
@@ -267,7 +267,7 @@ protected:
   /**
    * \return the remote station manager operating on our link
    */
-  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager () const;
 
   /**
    * Fragment the given MPDU if needed. If fragmentation is needed, return the
@@ -301,7 +301,7 @@ protected:
   /**
    * Reset the NAV upon expiration of the NAV reset timer.
    */
-  virtual void NavResetTimeout (void);
+  virtual void NavResetTimeout ();
 
   /**
    * This method handles the reception of an MPDU (possibly included in an A-MPDU)
@@ -528,19 +528,19 @@ protected:
    *
    * \return the next fragment of the current MSDU.
    */
-  Ptr<WifiMpdu> GetNextFragment (void);
+  Ptr<WifiMpdu> GetNextFragment ();
 
   /**
    * Take necessary actions upon a transmission success. A non-QoS station
    * transmits the next fragment, if any, or releases the channel, otherwise.
    */
-  virtual void TransmissionSucceeded (void);
+  virtual void TransmissionSucceeded ();
 
   /**
    * Take necessary actions upon a transmission failure. A non-QoS station
    * releases the channel when this method is called.
    */
-  virtual void TransmissionFailed (void);
+  virtual void TransmissionFailed ();
 
   /**
    * Called when the Ack timeout expires.
@@ -581,12 +581,12 @@ private:
   /**
    * Send the current MPDU, which can be acknowledged by a Normal Ack.
    */
-  void SendMpdu (void);
+  void SendMpdu ();
 
   /**
    * Reset this frame exchange manager.
    */
-  virtual void Reset (void);
+  virtual void Reset ();
 
   Ptr<WifiMpdu> m_mpdu;                   //!< the MPDU being transmitted
   WifiTxParameters m_txParams;                    //!< the TX parameters for the current frame

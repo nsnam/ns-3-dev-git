@@ -51,13 +51,13 @@ EnumValue::Set (int value)
   m_value = value;
 }
 int
-EnumValue::Get (void) const
+EnumValue::Get () const
 {
   NS_LOG_FUNCTION (this);
   return m_value;
 }
 Ptr<AttributeValue>
-EnumValue::Copy (void) const
+EnumValue::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return ns3::Create<EnumValue> (*this);
@@ -141,19 +141,19 @@ EnumChecker::Check (const AttributeValue &value) const
   return (it != m_valueSet.end ());
 }
 std::string
-EnumChecker::GetValueTypeName (void) const
+EnumChecker::GetValueTypeName () const
 {
   NS_LOG_FUNCTION (this);
   return "ns3::EnumValue";
 }
 bool
-EnumChecker::HasUnderlyingTypeInformation (void) const
+EnumChecker::HasUnderlyingTypeInformation () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 std::string
-EnumChecker::GetUnderlyingTypeInformation (void) const
+EnumChecker::GetUnderlyingTypeInformation () const
 {
   NS_LOG_FUNCTION (this);
   std::ostringstream oss;
@@ -166,7 +166,7 @@ EnumChecker::GetUnderlyingTypeInformation (void) const
   return oss.str ();
 }
 Ptr<AttributeValue>
-EnumChecker::Create (void) const
+EnumChecker::Create () const
 {
   NS_LOG_FUNCTION (this);
   return ns3::Create<EnumValue> ();

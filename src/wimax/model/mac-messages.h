@@ -59,14 +59,14 @@ public:
     MESSAGE_TYPE_DSA_ACK = 13
   };
 
-  ManagementMessageType (void);
+  ManagementMessageType ();
   /**
    * Constructor
    *
    * \param type message type
    */
   ManagementMessageType (uint8_t type);
-  virtual ~ManagementMessageType (void);
+  virtual ~ManagementMessageType ();
   /**
    * Set type field
    * \param type the type
@@ -76,18 +76,18 @@ public:
    * Get type field
    * \returns the type value
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
 
   /** \returns the name field */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -121,8 +121,8 @@ namespace ns3 {
 class RngRsp : public Header
 {
 public:
-  RngRsp (void);
-  virtual ~RngRsp (void);
+  RngRsp ();
+  virtual ~RngRsp ();
   /**
    * \brief set the  Tx timing offset adjustment (signed 32-bit).
    * \param timingAdjust The time required to advance SS transmission so frames
@@ -204,76 +204,76 @@ public:
    * \return Tx timing offset adjustment (signed 32-bit). The time required to advance SS transmission so frames
    *  arrive at the expected time instance at the BS.
    */
-  uint32_t GetTimingAdjust (void) const;
+  uint32_t GetTimingAdjust () const;
   /**
    *  \return the relative change in transmission power level that the SS should take in order that
    * transmissions arrive at the BS at the desired power. When subchannelization is employed, the
    * subscriber shall interpret the power offset adjustment as a required change to the transmitted power
    * density.
    */
-  uint8_t GetPowerLevelAdjust (void) const;
+  uint8_t GetPowerLevelAdjust () const;
   /**
    * \return the relative change in transmission frequency that the SS should take in order to better match
    * the BS. This is fine-frequency adjustment within a channel, not reassignment to a different channel.
    */
-  uint32_t GetOffsetFreqAdjust (void) const;
+  uint32_t GetOffsetFreqAdjust () const;
   /**
    * \return the range status.
    */
-  uint8_t GetRangStatus (void) const;
+  uint8_t GetRangStatus () const;
   /**
    * \return Center frequency, in kHz, of new downlink channel where the SS should redo initial ranging.
    */
-  uint32_t GetDlFreqOverride (void) const;
+  uint32_t GetDlFreqOverride () const;
   /**
    * \return The identifier of the uplink channel with which the SS is to redo initial ranging
    */
-  uint8_t GetUlChnlIdOverride (void) const;
+  uint8_t GetUlChnlIdOverride () const;
   /**
    * \return DlOperBurstProfile: This parameter is sent in response to the RNG-REQ Requested Downlink Burst Profile parameter
    */
-  uint16_t GetDlOperBurstProfile (void) const;
+  uint16_t GetDlOperBurstProfile () const;
   /**
    * \return MAC address
    */
-  Mac48Address GetMacAddress (void) const;
+  Mac48Address GetMacAddress () const;
   /**
    * \return basic CID
    */
-  Cid GetBasicCid (void) const;
+  Cid GetBasicCid () const;
   /**
    * \return primary CID
    */
-  Cid GetPrimaryCid (void) const;
+  Cid GetPrimaryCid () const;
   /**
    * \return AAS broadcast permission
    */
-  uint8_t GetAasBdcastPermission (void) const;
+  uint8_t GetAasBdcastPermission () const;
   /**
    * \return frame number
    */
-  uint32_t GetFrameNumber (void) const;
+  uint32_t GetFrameNumber () const;
   /**
    * \return initial range opp number
    */
-  uint8_t GetInitRangOppNumber (void) const;
+  uint8_t GetInitRangOppNumber () const;
   /**
    * \return range sub channel
    */
-  uint8_t GetRangSubchnl (void) const;
+  uint8_t GetRangSubchnl () const;
 
   /**
    * \return name string
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -404,31 +404,31 @@ public:
   /**
    * \return the service flow requested by this message
    */
-  ServiceFlow GetServiceFlow (void) const;
+  ServiceFlow GetServiceFlow () const;
   /**
    * \return the transaction ID
    */
-  uint16_t GetTransactionId (void) const;
+  uint16_t GetTransactionId () const;
   /**
    * \return the service flow identifier
    */
-  uint32_t GetSfid (void) const;
+  uint32_t GetSfid () const;
   /**
    * \return the connection identifier
    */
-  Cid GetCid (void) const;
+  Cid GetCid () const;
   /**
    * \return the service name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -474,8 +474,8 @@ namespace ns3 {
 class DsaRsp : public Header
 {
 public:
-  DsaRsp (void);
-  ~DsaRsp (void);
+  DsaRsp ();
+  ~DsaRsp ();
 
   /**
    * \brief set the transaction ID
@@ -485,7 +485,7 @@ public:
   /**
    * \return the transaction ID
    */
-  uint16_t GetTransactionId (void) const;
+  uint16_t GetTransactionId () const;
 
   /**
    * \brief set the confirmation code
@@ -495,7 +495,7 @@ public:
   /**
    * \return the confirmation code
    */
-  uint16_t GetConfirmationCode (void) const;
+  uint16_t GetConfirmationCode () const;
   /**
    * \brief set the service flow identifier
    * \param sfid the service flow identifier
@@ -504,7 +504,7 @@ public:
   /**
    * \return the service flow identifier
    */
-  uint32_t GetSfid (void) const;
+  uint32_t GetSfid () const;
   /**
    * \brief set the connection identifier
    * \param cid the connection identifier
@@ -513,7 +513,7 @@ public:
   /**
    * \return the connection identifier
    */
-  Cid GetCid (void) const;
+  Cid GetCid () const;
   /**
    * \brief specify a service flow to be requested by this message
    * \param sf the service flow
@@ -522,20 +522,20 @@ public:
   /**
    * \return the service flow requested by this message
    */
-  ServiceFlow GetServiceFlow (void) const;
+  ServiceFlow GetServiceFlow () const;
 
   /**
    * \return the service name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -573,8 +573,8 @@ class DsaAck : public Header
 {
 
 public:
-  DsaAck (void);
-  ~DsaAck (void);
+  DsaAck ();
+  ~DsaAck ();
 
   /**
    * Set transaction ID field
@@ -585,7 +585,7 @@ public:
    * Get transaction ID field
    * \returns the transaction ID
    */
-  uint16_t GetTransactionId (void) const;
+  uint16_t GetTransactionId () const;
 
   /**
    * Set confirmation code field
@@ -596,21 +596,21 @@ public:
    * Get confirmation code field
    * \returns the confirmation code
    */
-  uint16_t GetConfirmationCode (void) const;
+  uint16_t GetConfirmationCode () const;
 
   /**
    * Get name field
    * \return the name string
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -642,8 +642,8 @@ namespace ns3 {
 class RngReq : public Header
 {
 public:
-  RngReq (void);
-  virtual ~RngReq (void);
+  RngReq ();
+  virtual ~RngReq ();
 
   /**
    * Set request DL burst profile field
@@ -665,33 +665,33 @@ public:
    * Get request DL burst profile field
    * \returns the request DL burst profile
    */
-  uint8_t GetReqDlBurstProfile (void) const;
+  uint8_t GetReqDlBurstProfile () const;
   /**
    * Get MAC address field
    * \returns the MAC address
    */
-  Mac48Address GetMacAddress (void) const;
+  Mac48Address GetMacAddress () const;
   /**
    * Get ranging anomalies field
    * \returns the ranging anomalies
    */
-  uint8_t GetRangingAnomalies (void) const;
+  uint8_t GetRangingAnomalies () const;
 
   /**
    * \brief Get name field
    * \returns the name string
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
   /// Print debug function
-  void PrintDebug (void) const;
-  uint32_t GetSerializedSize (void) const;
+  void PrintDebug () const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:

@@ -240,7 +240,7 @@ LteAmc::~LteAmc ()
 }
 
 TypeId
-LteAmc::GetTypeId (void)
+LteAmc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteAmc")
   .SetParent<Object> ()

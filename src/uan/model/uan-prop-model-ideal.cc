@@ -35,7 +35,7 @@ UanPropModelIdeal::~UanPropModelIdeal ()
 }
 
 TypeId
-UanPropModelIdeal::GetTypeId (void)
+UanPropModelIdeal::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPropModelIdeal")
     .SetParent<UanPropModel> ()

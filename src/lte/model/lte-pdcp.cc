@@ -87,7 +87,7 @@ LtePdcp::~LtePdcp ()
 }
 
 TypeId
-LtePdcp::GetTypeId (void)
+LtePdcp::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LtePdcp")
     .SetParent<Object> ()

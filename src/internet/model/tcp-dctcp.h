@@ -42,7 +42,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Create an unbound tcp socket.
@@ -58,7 +58,7 @@ public:
   /**
    * \brief Destructor
    */
-  virtual ~TcpDctcp (void);
+  virtual ~TcpDctcp ();
 
   // Documented in base class
   virtual std::string GetName () const;

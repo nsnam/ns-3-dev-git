@@ -82,7 +82,7 @@ public:
   /**
    * Restore initial state.
    */
-  virtual void clear (void) = 0;
+  virtual void clear () = 0;
   /**
    * Constructor.
    */

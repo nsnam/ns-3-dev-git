@@ -83,7 +83,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * typedef for a callback to invoke when an MPDU is dropped.
@@ -227,13 +227,13 @@ public:
    *
    * \return the minimum contention window size.
    */
-  uint32_t GetMinCw (void) const;
+  uint32_t GetMinCw () const;
   /**
    * Return the minimum contention window size for each link.
    *
    * \return the minimum contention window size values.
    */
-  std::vector<uint32_t> GetMinCws (void) const;
+  std::vector<uint32_t> GetMinCws () const;
   /**
    * Return the minimum contention window size for the given link.
    *
@@ -247,13 +247,13 @@ public:
    *
    * \return the maximum contention window size.
    */
-  uint32_t GetMaxCw (void) const;
+  uint32_t GetMaxCw () const;
   /**
    * Return the maximum contention window size for each link.
    *
    * \return the maximum contention window size values.
    */
-  std::vector<uint32_t> GetMaxCws (void) const;
+  std::vector<uint32_t> GetMaxCws () const;
   /**
    * Return the maximum contention window size for the given link.
    *
@@ -267,13 +267,13 @@ public:
    *
    * \return the number of slots that make up an AIFS.
    */
-  uint8_t GetAifsn (void) const;
+  uint8_t GetAifsn () const;
   /**
    * Return the number of slots that make up an AIFS for each link.
    *
    * \return the number of slots that make up an AIFS for each link.
    */
-  std::vector<uint8_t> GetAifsns (void) const;
+  std::vector<uint8_t> GetAifsns () const;
   /**
    * Return the number of slots that make up an AIFS for the given link.
    *
@@ -286,13 +286,13 @@ public:
    *
    * \return the TXOP limit.
    */
-  Time GetTxopLimit (void) const;
+  Time GetTxopLimit () const;
   /**
    * Return the TXOP limit for each link.
    *
    * \return the TXOP limit for each link.
    */
-  std::vector<Time> GetTxopLimits (void) const;
+  std::vector<Time> GetTxopLimits () const;
   /**
    * Return the TXOP limit for the given link.
    *
@@ -327,7 +327,7 @@ public:
   /**
    * When off operation occurs, the queue gets cleaned up.
    */
-  virtual void NotifyOff (void);
+  virtual void NotifyOff ();
   /**
    * When wake up operation occurs on a link, channel access on that link
    * will be restarted.
@@ -338,7 +338,7 @@ public:
   /**
    * When on operation occurs, channel access will be started.
    */
-  virtual void NotifyOn (void);
+  virtual void NotifyOn ();
 
   /* Event handlers */
   /**
@@ -403,8 +403,8 @@ protected:
   ///< ChannelAccessManager associated class
   friend class ChannelAccessManager;
 
-  void DoDispose (void) override;
-  void DoInitialize (void) override;
+  void DoDispose () override;
+  void DoInitialize () override;
 
   /* Txop notifications forwarded here */
   /**
@@ -506,7 +506,7 @@ protected:
    *
    * \return the number of links
    */
-  uint8_t GetNLinks (void) const;
+  uint8_t GetNLinks () const;
 
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
@@ -528,7 +528,7 @@ private:
    *
    * \return a unique pointer to the created LinkEntity object
    */
-  virtual std::unique_ptr<LinkEntity> CreateLinkEntity (void) const;
+  virtual std::unique_ptr<LinkEntity> CreateLinkEntity () const;
 
   std::vector<std::unique_ptr<LinkEntity>> m_links; //!< vector of LinkEntity objects
 };

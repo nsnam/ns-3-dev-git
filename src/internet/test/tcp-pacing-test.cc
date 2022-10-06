@@ -122,7 +122,7 @@ protected:
   /**
    * \brief Update the expected interval at which next packet will be sent
    */
-  virtual void UpdateExpectedInterval (void);
+  virtual void UpdateExpectedInterval ();
 
   virtual void ConfigureEnvironment ();
   virtual void ConfigureProperties ();
@@ -241,7 +241,7 @@ TcpPacingTest::BytesInFlightTrace (uint32_t oldValue, uint32_t newValue)
 }
 
 void
-TcpPacingTest::UpdateExpectedInterval (void)
+TcpPacingTest::UpdateExpectedInterval ()
 {
   double_t factor;
   Time rtt = 2 * GetPropagationDelay ();

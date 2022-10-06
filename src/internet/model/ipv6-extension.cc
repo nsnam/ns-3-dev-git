@@ -635,7 +635,7 @@ Ipv6ExtensionFragment::FragmentsTimeoutsListI_t Ipv6ExtensionFragment::SetTimeou
   return (iter);
 }
 
-void Ipv6ExtensionFragment::HandleTimeout (void)
+void Ipv6ExtensionFragment::HandleTimeout ()
 {
   NS_LOG_FUNCTION (this);
   Time now = Simulator::Now ();

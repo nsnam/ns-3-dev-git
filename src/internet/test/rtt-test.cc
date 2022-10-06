@@ -39,8 +39,8 @@ public:
   RttEstimatorTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   /**
    * \brief Check RTT values.
@@ -83,7 +83,7 @@ RttEstimatorTestCase::CheckValuesWithTolerance (Ptr<RttEstimator> rtt, Time m, T
 
 
 void
-RttEstimatorTestCase::DoRun (void)
+RttEstimatorTestCase::DoRun ()
 {
   // Set to a non-default value
   Config::SetDefault ("ns3::RttEstimator::InitialEstimation", TimeValue (MilliSeconds (500)));
@@ -168,7 +168,7 @@ RttEstimatorTestCase::DoRun (void)
 }
 
 void
-RttEstimatorTestCase::DoTeardown (void)
+RttEstimatorTestCase::DoTeardown ()
 {
 }
 

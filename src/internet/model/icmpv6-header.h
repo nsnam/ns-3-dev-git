@@ -1637,7 +1637,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * \brief Constructor.

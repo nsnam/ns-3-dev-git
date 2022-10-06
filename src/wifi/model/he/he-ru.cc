@@ -422,21 +422,21 @@ HeRu::RuSpec::RuSpec (RuType ruType, std::size_t index, bool primary80MHz)
 }
 
 HeRu::RuType
-HeRu::RuSpec::GetRuType (void) const
+HeRu::RuSpec::GetRuType () const
 {
   NS_ABORT_MSG_IF (m_index == 0, "Undefined RU");
   return m_ruType;
 }
 
 std::size_t
-HeRu::RuSpec::GetIndex (void) const
+HeRu::RuSpec::GetIndex () const
 {
   NS_ABORT_MSG_IF (m_index == 0, "Undefined RU");
   return m_index;
 }
 
 bool
-HeRu::RuSpec::GetPrimary80MHz (void) const
+HeRu::RuSpec::GetPrimary80MHz () const
 {
   NS_ABORT_MSG_IF (m_index == 0, "Undefined RU");
   return m_primary80MHz;
@@ -461,13 +461,13 @@ HeRu::RuSpec::SetPhyIndex (uint16_t bw, uint8_t p20Index)
 }
 
 bool
-HeRu::RuSpec::IsPhyIndexSet (void) const
+HeRu::RuSpec::IsPhyIndexSet () const
 {
   return (m_phyIndex != 0);
 }
 
 std::size_t
-HeRu::RuSpec::GetPhyIndex (void) const
+HeRu::RuSpec::GetPhyIndex () const
 {
   NS_ABORT_MSG_IF (m_phyIndex == 0, "RU PHY index not set");
   return m_phyIndex;

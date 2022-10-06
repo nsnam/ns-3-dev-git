@@ -53,7 +53,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("ns3::SequenceNumberTestObj")
       .SetParent<Object> ()
@@ -66,7 +66,7 @@ public:
     return tid;
   }
 
-  TypeId GetInstanceTypeId (void) const
+  TypeId GetInstanceTypeId () const
   {
     return GetTypeId ();
   }
@@ -102,7 +102,7 @@ public:
 
   SequenceNumberTestCase ();
   virtual ~SequenceNumberTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 SequenceNumberTestCase::SequenceNumberTestCase ()
@@ -123,7 +123,7 @@ SequenceNumberTestCase::SequenceNumberTracer (SequenceNumber32 oldval, SequenceN
   m_newval = newval;
 }
 
-void SequenceNumberTestCase::DoRun (void)
+void SequenceNumberTestCase::DoRun ()
 {
 #define SEQ_TEST_ASSERT_EQUAL(a,b) NS_TEST_ASSERT_MSG_EQ (a,b, "foo")
 #define SEQ_TEST_ASSERT(a) NS_TEST_ASSERT_MSG_EQ (bool(a), true, "foo")

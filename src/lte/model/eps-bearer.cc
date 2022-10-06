@@ -42,7 +42,7 @@ AllocationRetentionPriority::AllocationRetentionPriority ()
 }
 
 TypeId
-EpsBearer::GetTypeId (void)
+EpsBearer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpsBearer")
     .SetParent<ObjectBase> ()

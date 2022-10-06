@@ -157,71 +157,71 @@ public:
    *
    * \return Capability information
    */
-  const CapabilityInformation& GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities () const;
   /**
    * Return the extended capabilities, if present.
    *
    * \return the extended capabilities, if present
    */
-  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities (void) const;
+  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities () const;
   /**
    * Return the HT capabilities, if present.
    *
    * \return HT capabilities, if present
    */
-  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities () const;
   /**
    * Return the VHT capabilities, if present.
    *
    * \return VHT capabilities, if present
    */
-  const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
+  const std::optional<VhtCapabilities>& GetVhtCapabilities () const;
   /**
    * Return the HE capabilities, if present.
    *
    * \return HE capabilities, if present
    */
-  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities () const;
   /**
    * Return the EHT capabilities, if present.
    *
    * \return EHT capabilities, if present
    */
-  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities () const;
   /**
    * Return the Service Set Identifier (SSID).
    *
    * \return SSID
    */
-  const Ssid& GetSsid (void) const;
+  const Ssid& GetSsid () const;
   /**
    * Return the supported rates.
    *
    * \return the supported rates
    */
-  const SupportedRates& GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates () const;
   /**
    * Return the listen interval.
    *
    * \return the listen interval
    */
-  uint16_t GetListenInterval (void) const;
+  uint16_t GetListenInterval () const;
   /**
    * Return the Multi-Link Element information element, if present.
    *
    * \return the Multi-Link Element information element, if present
    */
-  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement () const;
 
   /**
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const override;
+  TypeId GetInstanceTypeId () const override;
   void Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize (void) const override;
+  uint32_t GetSerializedSize () const override;
   void Serialize (Buffer::Iterator start) const override;
   uint32_t Deserialize (Buffer::Iterator start) override;
 
@@ -352,61 +352,61 @@ public:
    *
    * \return Capability information
    */
-  const CapabilityInformation& GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities () const;
   /**
    * Return the extended capabilities, if present.
    *
    * \return the extended capabilities, if present
    */
-  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities (void) const;
+  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities () const;
   /**
    * Return the HT capabilities, if present.
    *
    * \return HT capabilities, if present
    */
-  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities () const;
   /**
    * Return the VHT capabilities, if present.
    *
    * \return VHT capabilities, if present
    */
-  const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
+  const std::optional<VhtCapabilities>& GetVhtCapabilities () const;
   /**
    * Return the HE capabilities, if present.
    *
    * \return HE capabilities, if present
    */
-  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities () const;
   /**
    * Return the EHT capabilities, if present.
    *
    * \return EHT capabilities, if present
    */
-  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities () const;
   /**
    * Return the Service Set Identifier (SSID).
    *
    * \return SSID
    */
-  const Ssid& GetSsid (void) const;
+  const Ssid& GetSsid () const;
   /**
    * Return the supported rates.
    *
    * \return the supported rates
    */
-  const SupportedRates& GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates () const;
   /**
    * Return the Multi-Link Element information element, if present.
    *
    * \return the Multi-Link Element information element, if present
    */
-  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement () const;
   /**
    * Return the listen interval.
    *
    * \return the listen interval
    */
-  uint16_t GetListenInterval (void) const;
+  uint16_t GetListenInterval () const;
   /**
    * Set the address of the current access point.
    *
@@ -418,10 +418,10 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -456,97 +456,97 @@ public:
    *
    * \return the status code
    */
-  StatusCode GetStatusCode (void);
+  StatusCode GetStatusCode ();
   /**
    * Return the supported rates.
    *
    * \return the supported rates
    */
-  const SupportedRates& GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates () const;
   /**
    * Return the Capability information.
    *
    * \return Capability information
    */
-  const CapabilityInformation& GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities () const;
   /**
    * Return the extended capabilities, if present.
    *
    * \return the extended capabilities, if present
    */
-  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities (void) const;
+  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities () const;
   /**
    * Return the HT capabilities, if present.
    *
    * \return HT capabilities, if present
    */
-  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities () const;
   /**
    * Return the HT operation, if present.
    *
    * \return HT operation, if present
    */
-  const std::optional<HtOperation>& GetHtOperation (void) const;
+  const std::optional<HtOperation>& GetHtOperation () const;
   /**
    * Return the VHT capabilities, if present.
    *
    * \return VHT capabilities, if present
    */
-  const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
+  const std::optional<VhtCapabilities>& GetVhtCapabilities () const;
   /**
    * Return the VHT operation, if present.
    *
    * \return VHT operation, if present
    */
-  const std::optional<VhtOperation>& GetVhtOperation (void) const;
+  const std::optional<VhtOperation>& GetVhtOperation () const;
   /**
    * Return the HE capabilities, if present.
    *
    * \return HE capabilities, if present
    */
-  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities () const;
   /**
    * Return the HE operation, if present.
    *
    * \return HE operation, if present
    */
-  const std::optional<HeOperation>& GetHeOperation (void) const;
+  const std::optional<HeOperation>& GetHeOperation () const;
   /**
    * Return the EHT capabilities, if present.
    *
    * \return EHT capabilities, if present
    */
-  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities () const;
   /**
    * Return the Multi-Link Element information element, if present.
    *
    * \return the Multi-Link Element information element, if present
    */
-  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement () const;
   /**
    * Return the association ID.
    *
    * \return the association ID
    */
-  uint16_t GetAssociationId (void) const;
+  uint16_t GetAssociationId () const;
   /**
    * Return the ERP information, if present.
    *
    * \return the ERP information, if present
    */
-  const std::optional<ErpInformation>& GetErpInformation (void) const;
+  const std::optional<ErpInformation>& GetErpInformation () const;
   /**
    * Return the EDCA Parameter Set, if present.
    *
    * \return the EDCA Parameter Set, if present
    */
-  const std::optional<EdcaParameterSet>& GetEdcaParameterSet (void) const;
+  const std::optional<EdcaParameterSet>& GetEdcaParameterSet () const;
   /**
    * Return the MU EDCA Parameter Set, if present.
    *
    * \return the MU EDCA Parameter Set, if present
    */
-  const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet (void) const;
+  const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet () const;
   /**
    * Set the Capability information.
    *
@@ -705,10 +705,10 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -817,58 +817,58 @@ public:
    *
    * \return SSID
    */
-  const Ssid& GetSsid (void) const;
+  const Ssid& GetSsid () const;
 
   /**
    * Return the supported rates.
    *
    * \return the supported rates
    */
-  const SupportedRates& GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates () const;
 
   /**
    * Return the extended capabilities, if present.
    *
    * \return the extended capabilities, if present
    */
-  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities (void) const;
+  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities () const;
 
   /**
    * Return the HT capabilities, if present.
    *
    * \return HT capabilities, if present
    */
-  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities () const;
 
   /**
    * Return the VHT capabilities, if present.
    *
    * \return VHT capabilities, if present
    */
-  const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
+  const std::optional<VhtCapabilities>& GetVhtCapabilities () const;
 
   /**
    * Return the HE capabilities, if present.
    *
    * \return HE capabilities, if present
    */
-  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities () const;
 
   /**
    * Return the EHT capabilities, if present.
    *
    * \return EHT capabilities, if present
    */
-  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities () const;
 
   /**
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -899,110 +899,110 @@ public:
    *
    * \return SSID
    */
-  const Ssid& GetSsid (void) const;
+  const Ssid& GetSsid () const;
   /**
    * Return the beacon interval in microseconds unit.
    *
    * \return beacon interval in microseconds unit
    */
-  uint64_t GetBeaconIntervalUs (void) const;
+  uint64_t GetBeaconIntervalUs () const;
   /**
    * Return the supported rates.
    *
    * \return the supported rates
    */
-  const SupportedRates& GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates () const;
   /**
    * Return the Capability information.
    *
    * \return Capability information
    */
-  const CapabilityInformation& GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities () const;
   /**
    * Return the DSSS Parameter Set, if present.
    *
    * \return the DSSS Parameter Set, if present
    */
-  const std::optional<DsssParameterSet>& GetDsssParameterSet (void) const;
+  const std::optional<DsssParameterSet>& GetDsssParameterSet () const;
   /**
    * Return the extended capabilities, if present.
    *
    * \return the extended capabilities, if present
    */
-  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities (void) const;
+  const std::optional<ExtendedCapabilities>& GetExtendedCapabilities () const;
   /**
    * Return the HT capabilities, if present.
    *
    * \return HT capabilities, if present
    */
-  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities () const;
   /**
    * Return the HT operation, if present.
    *
    * \return HT operation, if present
    */
-  const std::optional<HtOperation>& GetHtOperation (void) const;
+  const std::optional<HtOperation>& GetHtOperation () const;
   /**
    * Return the VHT capabilities, if present.
    *
    * \return VHT capabilities, if present
    */
-  const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
+  const std::optional<VhtCapabilities>& GetVhtCapabilities () const;
   /**
    * Return the VHT operation, if present.
    *
    * \return VHT operation, if present
    */
-  const std::optional<VhtOperation>& GetVhtOperation (void) const;
+  const std::optional<VhtOperation>& GetVhtOperation () const;
   /**
    * Return the HE capabilities, if present.
    *
    * \return HE capabilities, if present
    */
-  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities () const;
   /**
    * Return the HE operation, if present.
    *
    * \return HE operation, if present
    */
-  const std::optional<HeOperation>& GetHeOperation (void) const;
+  const std::optional<HeOperation>& GetHeOperation () const;
   /**
    * Return the EHT capabilities, if present.
    *
    * \return EHT capabilities, if present
    */
-  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities () const;
   /**
    * Return the ERP information, if present.
    *
    * \return the ERP information, if present
    */
-  const std::optional<ErpInformation>& GetErpInformation (void) const;
+  const std::optional<ErpInformation>& GetErpInformation () const;
   /**
    * Return the EDCA Parameter Set, if present.
    *
    * \return the EDCA Parameter Set, if present
    */
-  const std::optional<EdcaParameterSet>& GetEdcaParameterSet (void) const;
+  const std::optional<EdcaParameterSet>& GetEdcaParameterSet () const;
   /**
    * Return the MU EDCA Parameter Set, if present.
    *
    * \return the MU EDCA Parameter Set, if present
    */
-  const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet (void) const;
+  const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet () const;
 
   /**
    * Return the Reduced Neighbor Report information element, if present.
    *
    * \return the Reduced Neighbor Report information element, if present
    */
-  const std::optional<ReducedNeighborReport>& GetReducedNeighborReport (void) const;
+  const std::optional<ReducedNeighborReport>& GetReducedNeighborReport () const;
   /**
    * Return the Multi-Link Element information element, if present.
    *
    * \return the Multi-Link Element information element, if present
    */
-  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement () const;
   /**
    * Set the Capability information.
    *
@@ -1191,10 +1191,10 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -1234,7 +1234,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 };
 
 
@@ -1450,7 +1450,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
   uint32_t GetSerializedSize () const;
@@ -1489,10 +1489,10 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -1540,37 +1540,37 @@ public:
    *
    * \return the starting sequence number
    */
-  uint16_t GetStartingSequence (void) const;
+  uint16_t GetStartingSequence () const;
   /**
    * Return the Traffic ID (TID).
    *
    * \return TID
    */
-  uint8_t GetTid (void) const;
+  uint8_t GetTid () const;
   /**
    * Return whether the Block Ack policy is immediate Block Ack.
    *
    * \return true if immediate Block Ack is being used, false otherwise
    */
-  bool IsImmediateBlockAck (void) const;
+  bool IsImmediateBlockAck () const;
   /**
    * Return the timeout.
    *
    * \return timeout
    */
-  uint16_t GetTimeout (void) const;
+  uint16_t GetTimeout () const;
   /**
    * Return the buffer size.
    *
    * \return the buffer size.
    */
-  uint16_t GetBufferSize (void) const;
+  uint16_t GetBufferSize () const;
   /**
    * Return whether A-MSDU capability is supported.
    *
    * \return true is A-MSDU is supported, false otherwise
    */
-  bool IsAmsduSupported (void) const;
+  bool IsAmsduSupported () const;
 
 private:
   /**
@@ -1578,7 +1578,7 @@ private:
    *
    * \return the raw parameter set
    */
-  uint16_t GetParameterSet (void) const;
+  uint16_t GetParameterSet () const;
   /**
    * Set the parameter set from the given raw value.
    *
@@ -1590,7 +1590,7 @@ private:
    *
    * \return the raw sequence control
    */
-  uint16_t GetStartingSequenceControl (void) const;
+  uint16_t GetStartingSequenceControl () const;
   /**
    * Set sequence control with the given raw value.
    *
@@ -1621,10 +1621,10 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -1672,37 +1672,37 @@ public:
    *
    * \return the status code
    */
-  StatusCode GetStatusCode (void) const;
+  StatusCode GetStatusCode () const;
   /**
    * Return the Traffic ID (TID).
    *
    * \return TID
    */
-  uint8_t GetTid (void) const;
+  uint8_t GetTid () const;
   /**
    * Return whether the Block Ack policy is immediate Block Ack.
    *
    * \return true if immediate Block Ack is being used, false otherwise
    */
-  bool IsImmediateBlockAck (void) const;
+  bool IsImmediateBlockAck () const;
   /**
    * Return the timeout.
    *
    * \return timeout
    */
-  uint16_t GetTimeout (void) const;
+  uint16_t GetTimeout () const;
   /**
    * Return the buffer size.
    *
    * \return the buffer size.
    */
-  uint16_t GetBufferSize (void) const;
+  uint16_t GetBufferSize () const;
   /**
    * Return whether A-MSDU capability is supported.
    *
    * \return true is A-MSDU is supported, false otherwise
    */
-  bool IsAmsduSupported (void) const;
+  bool IsAmsduSupported () const;
 
 
 private:
@@ -1711,7 +1711,7 @@ private:
    *
    * \return the raw parameter set
    */
-  uint16_t GetParameterSet (void) const;
+  uint16_t GetParameterSet () const;
   /**
    * Set the parameter set from the given raw value.
    *
@@ -1742,11 +1742,11 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const;
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -1756,13 +1756,13 @@ public:
    * \return true if the initiator bit in the DELBA is set,
    *         false otherwise
    */
-  bool IsByOriginator (void) const;
+  bool IsByOriginator () const;
   /**
    * Return the Traffic ID (TID).
    *
    * \return TID
    */
-  uint8_t GetTid (void) const;
+  uint8_t GetTid () const;
   /**
    * Set Traffic ID (TID).
    *
@@ -1772,11 +1772,11 @@ public:
   /**
    * Set the initiator bit in the DELBA.
    */
-  void SetByOriginator (void);
+  void SetByOriginator ();
   /**
    * Un-set the initiator bit in the DELBA.
    */
-  void SetByRecipient (void);
+  void SetByRecipient ();
 
 
 private:
@@ -1785,7 +1785,7 @@ private:
    *
    * \return the raw parameter set
    */
-  uint16_t GetParameterSet (void) const;
+  uint16_t GetParameterSet () const;
   /**
    * Set the parameter set from the given raw value.
    *

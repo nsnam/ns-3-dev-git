@@ -54,7 +54,7 @@ RadioBearerStatsCalculator::~RadioBearerStatsCalculator ()
 }
 
 TypeId
-RadioBearerStatsCalculator::GetTypeId (void)
+RadioBearerStatsCalculator::GetTypeId ()
 {
   static TypeId tid =
     TypeId ("ns3::RadioBearerStatsCalculator")
@@ -210,7 +210,7 @@ RadioBearerStatsCalculator::DlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
 }
 
 void
-RadioBearerStatsCalculator::ShowResults (void)
+RadioBearerStatsCalculator::ShowResults ()
 {
 
   NS_LOG_FUNCTION (this << GetUlOutputFilename ().c_str () << GetDlOutputFilename ().c_str ());
@@ -386,7 +386,7 @@ RadioBearerStatsCalculator::WriteDlResults (std::ofstream& outFile)
 }
 
 void
-RadioBearerStatsCalculator::ResetResults (void)
+RadioBearerStatsCalculator::ResetResults ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -406,7 +406,7 @@ RadioBearerStatsCalculator::ResetResults (void)
 }
 
 void
-RadioBearerStatsCalculator::RescheduleEndEpoch (void)
+RadioBearerStatsCalculator::RescheduleEndEpoch ()
 {
   NS_LOG_FUNCTION (this);
   m_endEpochEvent.Cancel ();
@@ -415,7 +415,7 @@ RadioBearerStatsCalculator::RescheduleEndEpoch (void)
 }
 
 void
-RadioBearerStatsCalculator::EndEpoch (void)
+RadioBearerStatsCalculator::EndEpoch ()
 {
   NS_LOG_FUNCTION (this);
   ShowResults ();
@@ -626,7 +626,7 @@ RadioBearerStatsCalculator::GetDlPduSizeStats (uint64_t imsi, uint8_t lcid)
 }
 
 std::string
-RadioBearerStatsCalculator::GetUlOutputFilename (void)
+RadioBearerStatsCalculator::GetUlOutputFilename ()
 {
   if (m_protocolType == "RLC")
     {
@@ -639,7 +639,7 @@ RadioBearerStatsCalculator::GetUlOutputFilename (void)
 }
 
 std::string
-RadioBearerStatsCalculator::GetDlOutputFilename (void)
+RadioBearerStatsCalculator::GetDlOutputFilename ()
 {
   if (m_protocolType == "RLC")
     {
@@ -658,7 +658,7 @@ RadioBearerStatsCalculator::SetUlPdcpOutputFilename (std::string outputFilename)
 }
 
 std::string
-RadioBearerStatsCalculator::GetUlPdcpOutputFilename (void)
+RadioBearerStatsCalculator::GetUlPdcpOutputFilename ()
 {
   return m_ulPdcpOutputFilename;
 }
@@ -669,7 +669,7 @@ RadioBearerStatsCalculator::SetDlPdcpOutputFilename (std::string outputFilename)
 }
 
 std::string
-RadioBearerStatsCalculator::GetDlPdcpOutputFilename (void)
+RadioBearerStatsCalculator::GetDlPdcpOutputFilename ()
 {
   return m_dlPdcpOutputFilename;
 }

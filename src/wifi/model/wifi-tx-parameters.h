@@ -67,7 +67,7 @@ public:
   /**
    * Reset the TX parameters.
    */
-  void Clear (void);
+  void Clear ();
 
   /**
    * Record that an MPDU is being added to the current frame. If an MPDU addressed
@@ -139,7 +139,7 @@ public:
    *
    * \return a const reference to the map containing information about PSDUs
    */
-  const PsduInfoMap& GetPsduInfoMap (void) const;
+  const PsduInfoMap& GetPsduInfoMap () const;
 
   /**
    * \brief Print the object contents.

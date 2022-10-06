@@ -52,7 +52,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Creates an empty EnergySourceContainer.
    */
@@ -108,7 +108,7 @@ public:
    *     }
    * \endcode
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which refers to the last EnergySource pointer in
@@ -129,14 +129,14 @@ public:
    *     }
    * \endcode
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \brief Get the number of Ptr<EnergySource> stored in this container.
    *
    * \returns The number of Ptr<EnergySource> stored in this container.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Get the i-th Ptr<EnergySource> stored in this container.
@@ -170,12 +170,12 @@ public:
   void Add (std::string sourceName);
 
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Calls Object::Start () for all EnergySource objects.
    */
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 private:
   std::vector< Ptr<EnergySource> > m_sources; //!< Energy source container

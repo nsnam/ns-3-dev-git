@@ -54,7 +54,7 @@ std::istream &operator >> (std::istream &is, Priomap &priomap)
   return is;
 }
 
-TypeId PrioQueueDisc::GetTypeId (void)
+TypeId PrioQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PrioQueueDisc")
     .SetParent<QueueDisc> ()
@@ -140,7 +140,7 @@ PrioQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-PrioQueueDisc::DoDequeue (void)
+PrioQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -161,7 +161,7 @@ PrioQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-PrioQueueDisc::DoPeek (void)
+PrioQueueDisc::DoPeek ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -182,7 +182,7 @@ PrioQueueDisc::DoPeek (void)
 }
 
 bool
-PrioQueueDisc::CheckConfig (void)
+PrioQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNInternalQueues () > 0)
@@ -216,7 +216,7 @@ PrioQueueDisc::CheckConfig (void)
 }
 
 void
-PrioQueueDisc::InitializeParams (void)
+PrioQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 }

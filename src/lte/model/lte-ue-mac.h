@@ -55,11 +55,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   LteUeMac ();
   virtual ~LteUeMac ();
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief TracedCallback signature for RA response timeout events
@@ -78,7 +78,7 @@ public:
   * \brief Get the LTE MAC SAP provider
   * \return a pointer to the LTE MAC SAP provider
   */
-  LteMacSapProvider*  GetLteMacSapProvider (void);
+  LteMacSapProvider*  GetLteMacSapProvider ();
   /**
   * \brief Set the LTE UE CMAC SAP user
   * \param s the LTE UE CMAC SAP User
@@ -88,7 +88,7 @@ public:
   * \brief Get the LTE CMAC SAP provider
   * \return a pointer to the LTE CMAC SAP provider
   */
-  LteUeCmacSapProvider*  GetLteUeCmacSapProvider (void);
+  LteUeCmacSapProvider*  GetLteUeCmacSapProvider ();
 
   /**
   * \brief Set the component carried ID
@@ -234,9 +234,9 @@ private:
   */
   void RaResponseTimeout (bool contention);
   /// Send report buffer status
-  void SendReportBufferStatus (void);
+  void SendReportBufferStatus ();
   /// Refresh HARQ processes packet buffer function
-  void RefreshHarqProcessesPacketBuffer (void);
+  void RefreshHarqProcessesPacketBuffer ();
 
   /// component carrier Id --> used to address sap
   uint8_t m_componentCarrierId;

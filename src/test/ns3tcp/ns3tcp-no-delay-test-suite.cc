@@ -56,7 +56,7 @@ public:
   virtual ~Ns3TcpNoDelayTestCase () {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   bool m_noDelay;       //!< Enable or disable TCP no delay option.
   bool m_writeResults;  //!< True if write PCAP files.
 
@@ -86,7 +86,7 @@ Ns3TcpNoDelayTestCase::SinkRx (std::string, Ptr<const Packet> p, const Address &
 }
 
 void
-Ns3TcpNoDelayTestCase::DoRun (void)
+Ns3TcpNoDelayTestCase::DoRun ()
 {
   uint16_t sinkPort = 50000;
   double sinkStopTime = 8;  // sec; will trigger Socket::Close

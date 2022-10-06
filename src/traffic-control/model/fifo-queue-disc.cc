@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("FifoQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (FifoQueueDisc);
 
-TypeId FifoQueueDisc::GetTypeId (void)
+TypeId FifoQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FifoQueueDisc")
     .SetParent<QueueDisc> ()
@@ -80,7 +80,7 @@ FifoQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-FifoQueueDisc::DoDequeue (void)
+FifoQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -96,7 +96,7 @@ FifoQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-FifoQueueDisc::DoPeek (void)
+FifoQueueDisc::DoPeek ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -112,7 +112,7 @@ FifoQueueDisc::DoPeek (void)
 }
 
 bool
-FifoQueueDisc::CheckConfig (void)
+FifoQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)
@@ -144,7 +144,7 @@ FifoQueueDisc::CheckConfig (void)
 }
 
 void
-FifoQueueDisc::InitializeParams (void)
+FifoQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 }

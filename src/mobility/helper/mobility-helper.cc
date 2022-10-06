@@ -64,14 +64,14 @@ MobilityHelper::PushReferenceMobilityModel (std::string referenceName)
 }
 
 void
-MobilityHelper::PopReferenceMobilityModel (void)
+MobilityHelper::PopReferenceMobilityModel ()
 {
   m_mobilityStack.pop_back ();
 }
 
 
 std::string
-MobilityHelper::GetMobilityModelType (void) const
+MobilityHelper::GetMobilityModelType () const
 {
   return m_mobility.GetTypeId ().GetName ();
 }
@@ -125,7 +125,7 @@ MobilityHelper::Install (NodeContainer c) const
 }
 
 void
-MobilityHelper::InstallAll (void)
+MobilityHelper::InstallAll ()
 {
   Install (NodeContainer::GetGlobal ());
 }

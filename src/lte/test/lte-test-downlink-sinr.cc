@@ -123,7 +123,7 @@ LteDownlinkDataSinrTestCase::~LteDownlinkDataSinrTestCase ()
 
 
 void
-LteDownlinkDataSinrTestCase::DoRun (void)
+LteDownlinkDataSinrTestCase::DoRun ()
 {
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   /**
@@ -291,7 +291,7 @@ LteDownlinkCtrlSinrTestCase::~LteDownlinkCtrlSinrTestCase ()
 }
 
 void
-LteDownlinkCtrlSinrTestCase::DoRun (void)
+LteDownlinkCtrlSinrTestCase::DoRun ()
 {
   /**
   * Instantiate a single receiving LteSpectrumPhy

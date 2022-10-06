@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (WaypointMobilityModel);
 
 
 TypeId
-WaypointMobilityModel::GetTypeId (void)
+WaypointMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WaypointMobilityModel")
     .SetParent<MobilityModel> ()
@@ -74,7 +74,7 @@ WaypointMobilityModel::~WaypointMobilityModel ()
 {
 }
 void
-WaypointMobilityModel::DoDispose (void)
+WaypointMobilityModel::DoDispose ()
 {
   MobilityModel::DoDispose ();
 }
@@ -99,19 +99,19 @@ WaypointMobilityModel::AddWaypoint (const Waypoint &waypoint)
     }
 }
 Waypoint
-WaypointMobilityModel::GetNextWaypoint (void) const
+WaypointMobilityModel::GetNextWaypoint () const
 {
   Update ();
   return m_next;
 }
 uint32_t
-WaypointMobilityModel::WaypointsLeft (void) const
+WaypointMobilityModel::WaypointsLeft () const
 {
   Update ();
   return m_waypoints.size ();
 }
 void
-WaypointMobilityModel::Update (void) const
+WaypointMobilityModel::Update () const
 {
   const Time now = Simulator::Now ();
   bool newWaypoint = false;
@@ -172,7 +172,7 @@ WaypointMobilityModel::Update (void) const
     }
 }
 Vector
-WaypointMobilityModel::DoGetPosition (void) const
+WaypointMobilityModel::DoGetPosition () const
 {
   Update ();
   return m_current.position;
@@ -200,7 +200,7 @@ WaypointMobilityModel::DoSetPosition (const Vector &position)
     }
 }
 void
-WaypointMobilityModel::EndMobility (void)
+WaypointMobilityModel::EndMobility ()
 {
   m_waypoints.clear ();
   m_current.time = Time(std::numeric_limits<uint64_t>::infinity());
@@ -208,7 +208,7 @@ WaypointMobilityModel::EndMobility (void)
   m_first = true;
 }
 Vector
-WaypointMobilityModel::DoGetVelocity (void) const
+WaypointMobilityModel::DoGetVelocity () const
 {
   return m_velocity;
 }

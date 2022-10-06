@@ -48,27 +48,27 @@ public:
   /**
    * Create a cid factory with a default value for m of 0x5500.
    */
-  CidFactory (void);
+  CidFactory ();
   /**
    * \brief This function returns the next basic CID.
    * \returns the next basic CID.
    */
-  Cid AllocateBasic (void);
+  Cid AllocateBasic ();
   /**
    * \brief This function returns the next primary basic CID.
    * \returns the next primary CID.
    */
-  Cid AllocatePrimary (void);
+  Cid AllocatePrimary ();
   /**
    * \brief This function returns the next Transport (or Secondary) CID.
    * \returns the next Transport (or Secondary) CID.
    */
-  Cid AllocateTransportOrSecondary (void);
+  Cid AllocateTransportOrSecondary ();
   /**
    * \brief This function returns the next Multicast CID.
    * \returns the next Multicast CID.
    */
-  Cid AllocateMulticast (void);
+  Cid AllocateMulticast ();
   /**
    * \brief This function returns the next CID for the specified type.
    * \param type CID type

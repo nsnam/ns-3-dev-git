@@ -84,7 +84,7 @@ public:
    *
    * \returns An EnergySourceContainer which contains all the EnergySources.
    */
-  EnergySourceContainer InstallAll (void) const;
+  EnergySourceContainer InstallAll () const;
 
 
 private:

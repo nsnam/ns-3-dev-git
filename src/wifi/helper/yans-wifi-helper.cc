@@ -40,7 +40,7 @@ YansWifiChannelHelper::YansWifiChannelHelper ()
 }
 
 YansWifiChannelHelper
-YansWifiChannelHelper::Default (void)
+YansWifiChannelHelper::Default ()
 {
   YansWifiChannelHelper helper;
   helper.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
@@ -49,7 +49,7 @@ YansWifiChannelHelper::Default (void)
 }
 
 Ptr<YansWifiChannel>
-YansWifiChannelHelper::Create (void) const
+YansWifiChannelHelper::Create () const
 {
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   Ptr<PropagationLossModel> prev = 0;

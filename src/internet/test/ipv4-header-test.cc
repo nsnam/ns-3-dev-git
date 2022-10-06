@@ -80,7 +80,7 @@ class Ipv4HeaderTest : public TestCase
   void SendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4Header::DscpType dscp, Ipv4Header::EcnType ecn);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv4HeaderTest ();
 
   /**
@@ -150,7 +150,7 @@ Ipv4HeaderTest::SendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4Hea
 }
 
 void
-Ipv4HeaderTest::DoRun (void)
+Ipv4HeaderTest::DoRun ()
 {
   // Create topology
 

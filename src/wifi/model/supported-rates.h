@@ -172,7 +172,7 @@ public:
    *
    * \return the number of supported rates
    */
-  uint8_t GetNRates (void) const;
+  uint8_t GetNRates () const;
   /**
    * Return the rate at the given index.
    * Return the rate (converted back to raw value) at the given index.

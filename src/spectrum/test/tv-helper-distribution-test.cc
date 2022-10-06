@@ -58,7 +58,7 @@ public:
   virtual ~TvHelperDistributionTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Build the test name
    * \param maxNumTransmitters maximum number of transmitters.
@@ -87,7 +87,7 @@ TvHelperDistributionTestCase::~TvHelperDistributionTestCase ()
 }
 
 void
-TvHelperDistributionTestCase::DoRun (void)
+TvHelperDistributionTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (m_maxNumTransmitters);
   TvSpectrumTransmitterHelper tvTransHelper;

@@ -53,7 +53,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual void DoDispose ();
 
   /**
@@ -68,7 +68,7 @@ public:
                      const Ptr<Socket> s5uSocket, const Ptr<Socket> s5cSocket);
 
   /** Destructor */
-  virtual ~EpcSgwApplication (void);
+  virtual ~EpcSgwApplication ();
 
 
   /**

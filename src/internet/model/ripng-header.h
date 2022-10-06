@@ -38,19 +38,19 @@ namespace ns3 {
 class RipNgRte : public Header
 {
 public:
-  RipNgRte (void);
+  RipNgRte ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -58,7 +58,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -83,7 +83,7 @@ public:
    * \brief Get the prefix
    * \returns the prefix
    */
-  Ipv6Address GetPrefix (void) const;
+  Ipv6Address GetPrefix () const;
 
   /**
    * \brief Set the prefix length
@@ -95,7 +95,7 @@ public:
    * \brief Get the prefix length
    * \returns the prefix length
    */
-  uint8_t GetPrefixLen (void) const;
+  uint8_t GetPrefixLen () const;
 
   /**
    * \brief Set the route tag
@@ -107,7 +107,7 @@ public:
    * \brief Get the route tag
    * \returns the route tag
    */
-  uint16_t GetRouteTag (void) const;
+  uint16_t GetRouteTag () const;
 
   /**
    * \brief Set the route metric
@@ -119,7 +119,7 @@ public:
    * \brief Get the route metric
    * \returns the route metric
    */
-  uint8_t GetRouteMetric (void) const;
+  uint8_t GetRouteMetric () const;
 
 
 private:
@@ -146,19 +146,19 @@ std::ostream & operator << (std::ostream & os, const RipNgRte & h);
 class RipNgHeader : public Header
 {
 public:
-  RipNgHeader (void);
+  RipNgHeader ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -166,7 +166,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -200,7 +200,7 @@ public:
    * \brief Get the command
    * \returns the command
    */
-  Command_e GetCommand (void) const;
+  Command_e GetCommand () const;
 
   /**
    * \brief Add a RTE to the message
@@ -217,13 +217,13 @@ public:
    * \brief Get the number of RTE included in the message
    * \returns the number of RTE in the message
    */
-  uint16_t GetRteNumber (void) const;
+  uint16_t GetRteNumber () const;
 
   /**
    * \brief Get the list of the RTEs included in the message
    * \returns the list of the RTEs in the message
    */
-  std::list<RipNgRte> GetRteList (void) const;
+  std::list<RipNgRte> GetRteList () const;
 
 private:
   uint8_t m_command; //!< command type

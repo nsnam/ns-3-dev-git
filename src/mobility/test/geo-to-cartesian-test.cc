@@ -517,7 +517,7 @@ public:
   virtual ~GeoToCartesianTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Name function
@@ -585,7 +585,7 @@ GeoToCartesianTestCase::~GeoToCartesianTestCase ()
 }
 
 void
-GeoToCartesianTestCase::DoRun (void)
+GeoToCartesianTestCase::DoRun ()
 {
   Vector cart = GeographicPositions::GeographicToCartesianCoordinates (m_latitude,
                                                                        m_longitude,
@@ -680,7 +680,7 @@ public:
   virtual ~CartesianToGeoTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Name function
@@ -746,7 +746,7 @@ CartesianToGeoTestCase::~CartesianToGeoTestCase ()
 }
 
 void
-CartesianToGeoTestCase::DoRun (void)
+CartesianToGeoTestCase::DoRun ()
 {
   Vector cart = GeographicPositions::GeographicToCartesianCoordinates (m_latitude,
                                                                        m_longitude,

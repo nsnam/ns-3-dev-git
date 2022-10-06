@@ -546,7 +546,7 @@ DsrRouting::GetElementsFromContext (std::string context)
 }
 
 void
-DsrRouting::DoDispose (void)
+DsrRouting::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
@@ -771,7 +771,7 @@ DsrRouting::SetRoute (Ipv4Address nextHop, Ipv4Address srcAddress)
 }
 
 int
-DsrRouting::GetProtocolNumber (void) const
+DsrRouting::GetProtocolNumber () const
 {
   // / This is the protocol number for DSR which is 48
   return PROT_NUMBER;
@@ -3534,13 +3534,13 @@ DsrRouting::SetDownTarget6 (DownTargetCallback6 callback)
 
 
 IpL4Protocol::DownTargetCallback
-DsrRouting::GetDownTarget (void) const
+DsrRouting::GetDownTarget () const
 {
   return m_downTarget;
 }
 
 IpL4Protocol::DownTargetCallback6
-DsrRouting::GetDownTarget6 (void) const
+DsrRouting::GetDownTarget6 () const
 {
   NS_FATAL_ERROR ("Unimplemented");
   return MakeNullCallback<void,Ptr<Packet>, Ipv6Address, Ipv6Address, uint8_t, Ptr<Ipv6Route> > ();

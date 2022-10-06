@@ -46,18 +46,18 @@ AsciiFile::~AsciiFile ()
 }
 
 bool
-AsciiFile::Fail (void) const
+AsciiFile::Fail () const
 {
   return m_file.fail ();
 }
 bool
-AsciiFile::Eof (void) const
+AsciiFile::Eof () const
 {
   return m_file.eof ();
 }
 
 void
-AsciiFile::Close (void)
+AsciiFile::Close ()
 {
   m_file.close ();
 }

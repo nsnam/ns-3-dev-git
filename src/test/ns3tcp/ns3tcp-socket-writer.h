@@ -39,7 +39,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Setup the socket.
@@ -62,8 +62,8 @@ public:
   void Close ();
 
 private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
   Address m_peer;         //!< Peer's address.
   Ptr<Node> m_node;       //!< Node pointer
   Ptr<Socket> m_socket;   //!< Socket.

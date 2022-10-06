@@ -38,7 +38,7 @@ Ipv6QueueDiscItem::~Ipv6QueueDiscItem ()
   NS_LOG_FUNCTION (this);
 }
 
-uint32_t Ipv6QueueDiscItem::GetSize (void) const
+uint32_t Ipv6QueueDiscItem::GetSize () const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> p = GetPacket ();
@@ -52,12 +52,12 @@ uint32_t Ipv6QueueDiscItem::GetSize (void) const
 }
 
 const Ipv6Header&
-Ipv6QueueDiscItem::GetHeader (void) const
+Ipv6QueueDiscItem::GetHeader () const
 {
   return m_header;
 }
 
-void Ipv6QueueDiscItem::AddHeader (void)
+void Ipv6QueueDiscItem::AddHeader ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -83,7 +83,7 @@ Ipv6QueueDiscItem::Print (std::ostream& os) const
 }
 
 bool
-Ipv6QueueDiscItem::Mark (void)
+Ipv6QueueDiscItem::Mark ()
 {
   NS_LOG_FUNCTION (this);
   if (!m_headerAdded && m_header.GetEcn () != Ipv6Header::ECN_NotECT)

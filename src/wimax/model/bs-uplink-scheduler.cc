@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("UplinkScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (UplinkScheduler);
 
-UplinkScheduler::UplinkScheduler (void)
+UplinkScheduler::UplinkScheduler ()
   : m_bs (0),
     m_timeStampIrInterval (Seconds (0)),
     m_nrIrOppsAllocated (0),
@@ -60,7 +60,7 @@ UplinkScheduler::UplinkScheduler (Ptr<BaseStationNetDevice> bs)
 {
 }
 
-UplinkScheduler::~UplinkScheduler (void)
+UplinkScheduler::~UplinkScheduler ()
 {
   m_bs = 0;
   m_uplinkAllocations.clear ();
@@ -72,7 +72,7 @@ UplinkScheduler::InitOnce ()
 }
 
 TypeId
-UplinkScheduler::GetTypeId (void)
+UplinkScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UplinkScheduler")
     .SetParent<Object> ()
@@ -82,7 +82,7 @@ UplinkScheduler::GetTypeId (void)
 }
 
 uint8_t
-UplinkScheduler::GetNrIrOppsAllocated (void) const
+UplinkScheduler::GetNrIrOppsAllocated () const
 {
   return m_nrIrOppsAllocated;
 }
@@ -94,7 +94,7 @@ UplinkScheduler::SetNrIrOppsAllocated (uint8_t nrIrOppsAllocated)
 }
 
 bool
-UplinkScheduler::GetIsIrIntrvlAllocated (void) const
+UplinkScheduler::GetIsIrIntrvlAllocated () const
 {
   return m_isIrIntrvlAllocated;
 }
@@ -107,7 +107,7 @@ UplinkScheduler::SetIsIrIntrvlAllocated (bool isIrIntrvlAllocated)
 }
 
 bool
-UplinkScheduler::GetIsInvIrIntrvlAllocated (void) const
+UplinkScheduler::GetIsInvIrIntrvlAllocated () const
 {
 
   return m_isInvIrIntrvlAllocated;
@@ -120,7 +120,7 @@ UplinkScheduler::SetIsInvIrIntrvlAllocated (bool isInvIrIntrvlAllocated)
 }
 
 Time
-UplinkScheduler::GetDcdTimeStamp (void) const
+UplinkScheduler::GetDcdTimeStamp () const
 {
   return m_dcdTimeStamp;
 }
@@ -132,7 +132,7 @@ UplinkScheduler::SetDcdTimeStamp (Time dcdTimeStamp)
 }
 
 Time
-UplinkScheduler::GetUcdTimeStamp (void) const
+UplinkScheduler::GetUcdTimeStamp () const
 {
   return m_ucdTimeStamp;
 }
@@ -144,13 +144,13 @@ UplinkScheduler::SetUcdTimeStamp (Time ucdTimeStamp)
 }
 
 std::list<OfdmUlMapIe>
-UplinkScheduler::GetUplinkAllocations (void) const
+UplinkScheduler::GetUplinkAllocations () const
 {
   return m_uplinkAllocations;
 }
 
 Time
-UplinkScheduler::GetTimeStampIrInterval (void)
+UplinkScheduler::GetTimeStampIrInterval ()
 {
   return m_timeStampIrInterval;
 }
@@ -162,7 +162,7 @@ UplinkScheduler::SetTimeStampIrInterval (Time timeStampIrInterval)
 }
 
 Ptr<BaseStationNetDevice>
-UplinkScheduler::GetBs (void)
+UplinkScheduler::GetBs ()
 {
   return m_bs;
 }

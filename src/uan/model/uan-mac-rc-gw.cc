@@ -100,7 +100,7 @@ UanMacRcGw::DoDispose ()
   UanMac::DoDispose ();
 }
 TypeId
-UanMacRcGw::GetTypeId (void)
+UanMacRcGw::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanMacRcGw")
     .SetParent<UanMac> ()
@@ -283,7 +283,7 @@ UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTxM
 }
 
 void
-UanMacRcGw::StartCycle (void)
+UanMacRcGw::StartCycle ()
 {
   uint32_t numRts = static_cast<uint32_t> (m_sortedRes.size ());
 
@@ -565,7 +565,7 @@ UanMacRcGw::ComputeAlpha (uint32_t totalFrames, uint32_t totalBytes,
 }
 
 std::vector<double>
-UanMacRcGw::GetExpPdk (void)
+UanMacRcGw::GetExpPdk ()
 {
   uint32_t n = m_numNodes;
   std::vector<double> pds;
@@ -690,7 +690,7 @@ UanMacRcGw::NchooseK (uint32_t n, uint32_t k)
 }
 
 uint32_t
-UanMacRcGw::FindOptA (void)
+UanMacRcGw::FindOptA ()
 {
   double tput = 0;
   uint32_t a = 1;

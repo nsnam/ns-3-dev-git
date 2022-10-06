@@ -42,7 +42,7 @@ ThreeGppAntennaModel::GetTypeId ()
   return tid;
 }
 
-ThreeGppAntennaModel::ThreeGppAntennaModel (void)
+ThreeGppAntennaModel::ThreeGppAntennaModel ()
   : m_verticalBeamwidthDegrees {65},
     m_horizontalBeamwidthDegrees {65},
     m_aMax {30},
@@ -51,7 +51,7 @@ ThreeGppAntennaModel::ThreeGppAntennaModel (void)
 {}
 
 
-ThreeGppAntennaModel::~ThreeGppAntennaModel (void)
+ThreeGppAntennaModel::~ThreeGppAntennaModel ()
 {}
 
 

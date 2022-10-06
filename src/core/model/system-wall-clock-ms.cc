@@ -41,15 +41,15 @@ class SystemWallClockMsPrivate
 {
 public:
   /** \copydoc SystemWallClockMs::Start() */
-  void Start (void);
+  void Start ();
   /** \copydoc SystemWallClockMs::End() */
-  int64_t End (void);
+  int64_t End ();
   /** \copydoc SystemWallClockMs::GetElapsedReal() */
-  int64_t GetElapsedReal (void) const;
+  int64_t GetElapsedReal () const;
   /** \copydoc SystemWallClockMs::GetElapsedUser() */
-  int64_t GetElapsedUser (void) const;
+  int64_t GetElapsedUser () const;
   /** \copydoc SystemWallClockMs::GetElapsedSystem() */
-  int64_t GetElapsedSystem (void) const;
+  int64_t GetElapsedSystem () const;
 
 private:
   std::chrono::system_clock::time_point m_startTime; //!< The wall clock start time.
@@ -59,14 +59,14 @@ private:
 };
 
 void
-SystemWallClockMsPrivate::Start (void)
+SystemWallClockMsPrivate::Start ()
 {
   NS_LOG_FUNCTION (this);
   m_startTime = std::chrono::system_clock::now ();
 }
 
 int64_t
-SystemWallClockMsPrivate::End (void)
+SystemWallClockMsPrivate::End ()
 {
   //
   // We need to return the number of milliseconds that have elapsed in some
@@ -111,21 +111,21 @@ SystemWallClockMsPrivate::End (void)
 }
 
 int64_t
-SystemWallClockMsPrivate::GetElapsedReal (void) const
+SystemWallClockMsPrivate::GetElapsedReal () const
 {
   NS_LOG_FUNCTION (this);
   return m_elapsedReal;
 }
 
 int64_t
-SystemWallClockMsPrivate::GetElapsedUser (void) const
+SystemWallClockMsPrivate::GetElapsedUser () const
 {
   NS_LOG_FUNCTION (this);
   return m_elapsedUser;
 }
 
 int64_t
-SystemWallClockMsPrivate::GetElapsedSystem (void) const
+SystemWallClockMsPrivate::GetElapsedSystem () const
 {
   NS_LOG_FUNCTION (this);
   return m_elapsedSystem;
@@ -145,35 +145,35 @@ SystemWallClockMs::~SystemWallClockMs ()
 }
 
 void
-SystemWallClockMs::Start (void)
+SystemWallClockMs::Start ()
 {
   NS_LOG_FUNCTION (this);
   m_priv->Start ();
 }
 
 int64_t
-SystemWallClockMs::End (void)
+SystemWallClockMs::End ()
 {
   NS_LOG_FUNCTION (this);
   return m_priv->End ();
 }
 
 int64_t
-SystemWallClockMs::GetElapsedReal (void) const
+SystemWallClockMs::GetElapsedReal () const
 {
   NS_LOG_FUNCTION (this);
   return m_priv->GetElapsedReal ();
 }
 
 int64_t
-SystemWallClockMs::GetElapsedUser (void) const
+SystemWallClockMs::GetElapsedUser () const
 {
   NS_LOG_FUNCTION (this);
   return m_priv->GetElapsedUser ();
 }
 
 int64_t
-SystemWallClockMs::GetElapsedSystem (void) const
+SystemWallClockMs::GetElapsedSystem () const
 {
   NS_LOG_FUNCTION (this);
   return m_priv->GetElapsedSystem ();

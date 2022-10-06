@@ -79,7 +79,7 @@ public:
    *
    * \returns a const iterator which refers to the first QueueDisc in the container.
    */
-  ConstIterator Begin (void) const;
+  ConstIterator Begin () const;
 
   /**
    * \brief Get a const iterator which indicates past-the-last QueueDisc in the
@@ -100,7 +100,7 @@ public:
    *
    * \returns a const iterator which indicates an ending condition for a loop.
    */
-  ConstIterator End (void) const;
+  ConstIterator End () const;
 
   /**
    * \brief Get the number of Ptr<QueueDisc> stored in this container.
@@ -122,7 +122,7 @@ public:
    *
    * \returns the number of Ptr<QueueDisc> stored in this container.
    */
-  std::size_t GetN (void) const;
+  std::size_t GetN () const;
 
   /**
    * \brief Get the Ptr<QueueDisc> stored in this container at a given

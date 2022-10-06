@@ -53,7 +53,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
   /**
    * \brief The couple of mobility node that form a fading channel realization

@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
 NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel);
 
 TypeId
-RandomWalk2dMobilityModel::GetTypeId (void)
+RandomWalk2dMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RandomWalk2dMobilityModel")
     .SetParent<MobilityModel> ()
@@ -75,14 +75,14 @@ RandomWalk2dMobilityModel::GetTypeId (void)
 }
 
 void
-RandomWalk2dMobilityModel::DoInitialize (void)
+RandomWalk2dMobilityModel::DoInitialize ()
 {
   DoInitializePrivate ();
   MobilityModel::DoInitialize ();
 }
 
 void
-RandomWalk2dMobilityModel::DoInitializePrivate (void)
+RandomWalk2dMobilityModel::DoInitializePrivate ()
 {
   m_helper.Update ();
   double speed = m_speed->GetValue ();
@@ -151,13 +151,13 @@ RandomWalk2dMobilityModel::Rebound (Time delayLeft)
 }
 
 void
-RandomWalk2dMobilityModel::DoDispose (void)
+RandomWalk2dMobilityModel::DoDispose ()
 {
   // chain up
   MobilityModel::DoDispose ();
 }
 Vector
-RandomWalk2dMobilityModel::DoGetPosition (void) const
+RandomWalk2dMobilityModel::DoGetPosition () const
 {
   m_helper.UpdateWithBounds (m_bounds);
   return m_helper.GetCurrentPosition ();
@@ -171,7 +171,7 @@ RandomWalk2dMobilityModel::DoSetPosition (const Vector &position)
   m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::DoInitializePrivate, this);
 }
 Vector
-RandomWalk2dMobilityModel::DoGetVelocity (void) const
+RandomWalk2dMobilityModel::DoGetVelocity () const
 {
   return m_helper.GetVelocity ();
 }

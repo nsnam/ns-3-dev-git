@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiChannel");
 NS_OBJECT_ENSURE_REGISTERED (YansWifiChannel);
 
 TypeId
-YansWifiChannel::GetTypeId (void)
+YansWifiChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::YansWifiChannel")
     .SetParent<Channel> ()
@@ -140,7 +140,7 @@ YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, double
 }
 
 std::size_t
-YansWifiChannel::GetNDevices (void) const
+YansWifiChannel::GetNDevices () const
 {
   return m_phyList.size ();
 }

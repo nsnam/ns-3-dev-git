@@ -88,7 +88,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   DummyCongControl ()
   {
@@ -114,7 +114,7 @@ private:
 };
 
 TypeId
-DummyCongControl::GetTypeId (void)
+DummyCongControl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DummyCongControl")
     .SetParent<TcpNewReno> ()

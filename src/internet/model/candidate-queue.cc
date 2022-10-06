@@ -78,7 +78,7 @@ CandidateQueue::~CandidateQueue()
 }
 
 void
-CandidateQueue::Clear (void)
+CandidateQueue::Clear ()
 {
   NS_LOG_FUNCTION (this);
   while (!m_candidates.empty ())
@@ -102,7 +102,7 @@ CandidateQueue::Push (SPFVertex *vNew)
 }
 
 SPFVertex *
-CandidateQueue::Pop (void)
+CandidateQueue::Pop ()
 {
   NS_LOG_FUNCTION (this);
   if (m_candidates.empty ())
@@ -116,7 +116,7 @@ CandidateQueue::Pop (void)
 }
 
 SPFVertex *
-CandidateQueue::Top (void) const
+CandidateQueue::Top () const
 {
   NS_LOG_FUNCTION (this);
   if (m_candidates.empty ())
@@ -128,14 +128,14 @@ CandidateQueue::Top (void) const
 }
 
 bool
-CandidateQueue::Empty (void) const
+CandidateQueue::Empty () const
 {
   NS_LOG_FUNCTION (this);
   return m_candidates.empty ();
 }
 
 uint32_t
-CandidateQueue::Size (void) const
+CandidateQueue::Size () const
 {
   NS_LOG_FUNCTION (this);
   return m_candidates.size ();
@@ -160,7 +160,7 @@ CandidateQueue::Find (const Ipv4Address addr) const
 }
 
 void
-CandidateQueue::Reorder (void)
+CandidateQueue::Reorder ()
 {
   NS_LOG_FUNCTION (this);
 

@@ -58,7 +58,7 @@ void LteSimpleSpectrumPhy::DoDispose ()
 
 
 TypeId
-LteSimpleSpectrumPhy::GetTypeId (void)
+LteSimpleSpectrumPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteSimpleSpectrumPhy")
     .SetParent<SpectrumPhy> ()

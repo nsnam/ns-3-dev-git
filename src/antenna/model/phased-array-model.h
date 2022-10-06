@@ -38,20 +38,20 @@ public:
   /**
    * Constructor
    */
-  PhasedArrayModel (void);
+  PhasedArrayModel ();
 
 
   /**
    * Destructor
    */
-  virtual ~PhasedArrayModel (void);
+  virtual ~PhasedArrayModel ();
 
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
 
   typedef std::vector<std::complex<double> > ComplexVector; //!< type definition for complex vectors
@@ -80,7 +80,7 @@ public:
    * Returns the number of antenna elements
    * \return the number of antenna elements
    */
-  virtual uint64_t GetNumberOfElements (void) const = 0;
+  virtual uint64_t GetNumberOfElements () const = 0;
 
 
   /**
@@ -94,7 +94,7 @@ public:
    * Returns the beamforming vector that is currently being used
    * \return the current beamforming vector
    */
-  ComplexVector GetBeamformingVector (void) const;
+  ComplexVector GetBeamformingVector () const;
 
 
   /**
@@ -124,7 +124,7 @@ public:
    * Returns a pointer to the AntennaModel instance used to model the elements of the array
    * \return pointer to the AntennaModel instance
    */
-  Ptr<const AntennaModel> GetAntennaElement (void) const;
+  Ptr<const AntennaModel> GetAntennaElement () const;
 
   /**
    * Returns the ID of this antenna array instance

@@ -39,7 +39,7 @@ static const double M_C = 3.0e8; //!< propagation velocity in free space
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppPropagationLossModel);
 
 TypeId
-ThreeGppPropagationLossModel::GetTypeId (void)
+ThreeGppPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppPropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -481,7 +481,7 @@ ThreeGppPropagationLossModel::GetVectorDifference (Ptr<MobilityModel> a, Ptr<Mob
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppRmaPropagationLossModel);
 
 TypeId
-ThreeGppRmaPropagationLossModel::GetTypeId (void)
+ThreeGppRmaPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppRmaPropagationLossModel")
     .SetParent<ThreeGppPropagationLossModel> ()
@@ -697,7 +697,7 @@ ThreeGppRmaPropagationLossModel::GetBpDistance (double frequency, double hA, dou
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppUmaPropagationLossModel);
 
 TypeId
-ThreeGppUmaPropagationLossModel::GetTypeId (void)
+ThreeGppUmaPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppUmaPropagationLossModel")
     .SetParent<ThreeGppPropagationLossModel> ()
@@ -923,7 +923,7 @@ ThreeGppUmaPropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppUmiStreetCanyonPropagationLossModel);
 
 TypeId
-ThreeGppUmiStreetCanyonPropagationLossModel::GetTypeId (void)
+ThreeGppUmiStreetCanyonPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppUmiStreetCanyonPropagationLossModel")
     .SetParent<ThreeGppPropagationLossModel> ()
@@ -1146,7 +1146,7 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetShadowingCorrelationDistance (Ch
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppIndoorOfficePropagationLossModel);
 
 TypeId
-ThreeGppIndoorOfficePropagationLossModel::GetTypeId (void)
+ThreeGppIndoorOfficePropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppIndoorOfficePropagationLossModel")
     .SetParent<ThreeGppPropagationLossModel> ()

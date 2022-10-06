@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("PfifoFastQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (PfifoFastQueueDisc);
 
-TypeId PfifoFastQueueDisc::GetTypeId (void)
+TypeId PfifoFastQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PfifoFastQueueDisc")
     .SetParent<QueueDisc> ()
@@ -98,7 +98,7 @@ PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-PfifoFastQueueDisc::DoDequeue (void)
+PfifoFastQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -119,7 +119,7 @@ PfifoFastQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-PfifoFastQueueDisc::DoPeek (void)
+PfifoFastQueueDisc::DoPeek ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -140,7 +140,7 @@ PfifoFastQueueDisc::DoPeek (void)
 }
 
 bool
-PfifoFastQueueDisc::CheckConfig (void)
+PfifoFastQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)
@@ -193,7 +193,7 @@ PfifoFastQueueDisc::CheckConfig (void)
 }
 
 void
-PfifoFastQueueDisc::InitializeParams (void)
+PfifoFastQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 }

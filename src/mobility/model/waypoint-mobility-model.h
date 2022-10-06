@@ -90,7 +90,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Create a path with no waypoints at location (0,0,0).
@@ -113,14 +113,14 @@ public:
    * Get the waypoint that this object is traveling towards.
    * \returns The waypoint
    */
-  Waypoint GetNextWaypoint (void) const;
+  Waypoint GetNextWaypoint () const;
 
   /**
    * Get the number of waypoints left for this object, excluding
    * the next one.
    * \returns The number of waypoints left
    */
-  uint32_t WaypointsLeft (void) const;
+  uint32_t WaypointsLeft () const;
 
   /**
    * Clear any existing waypoints and set the current waypoint
@@ -128,7 +128,7 @@ public:
    * not required. After calling this function, adding waypoints
    * behaves as it would for a new object.
    */
-  void EndMobility (void);
+  void EndMobility ();
 
 private:
   friend class ::WaypointMobilityModelNotifyTest; // To allow Update() calls and access to m_current
@@ -136,18 +136,18 @@ private:
   /**
    * Update the underlying state corresponding to the stored waypoints
    */
-  virtual void Update (void) const;
+  virtual void Update () const;
   /**
    * \brief The dispose method.
    *
    * Subclasses must override this method.
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * \brief Get current position.
    * \return A vector with the current position of the node.
    */
-  virtual Vector DoGetPosition (void) const;
+  virtual Vector DoGetPosition () const;
   /**
    * \brief Sets a new position for the node
    * \param position A vector to be added as the new position
@@ -157,7 +157,7 @@ private:
    * \brief Returns the current velocity of a node
    * \return The velocity vector of a node.
    */
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
 
 protected:
   /**

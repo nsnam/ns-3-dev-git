@@ -34,7 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED (TcpYeah);
 
 
 TypeId
-TcpYeah::GetTypeId (void)
+TcpYeah::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpYeah")
     .SetParent<TcpNewReno> ()
@@ -76,7 +76,7 @@ TcpYeah::GetTypeId (void)
   return tid;
 }
 
-TcpYeah::TcpYeah (void)
+TcpYeah::TcpYeah ()
   : TcpNewReno (),
     m_alpha (80),
     m_gamma (1),
@@ -126,13 +126,13 @@ TcpYeah::TcpYeah (const TcpYeah& sock)
   m_stcp = CopyObject (sock.m_stcp);
 }
 
-TcpYeah::~TcpYeah (void)
+TcpYeah::~TcpYeah ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<TcpCongestionOps>
-TcpYeah::Fork (void)
+TcpYeah::Fork ()
 {
   return CopyObject<TcpYeah> (this);
 }

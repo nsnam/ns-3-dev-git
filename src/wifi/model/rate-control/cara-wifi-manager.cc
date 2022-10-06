@@ -45,7 +45,7 @@ struct CaraWifiRemoteStation : public WifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (CaraWifiManager);
 
 TypeId
-CaraWifiManager::GetTypeId (void)
+CaraWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CaraWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -110,7 +110,7 @@ CaraWifiManager::DoInitialize ()
 }
 
 WifiRemoteStation *
-CaraWifiManager::DoCreateStation (void) const
+CaraWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   CaraWifiRemoteStation *station = new CaraWifiRemoteStation ();

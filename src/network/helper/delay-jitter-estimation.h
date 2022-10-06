@@ -64,14 +64,14 @@ public:
   /**
    * \returns the updated delay.
    */
-  Time GetLastDelay (void) const;
+  Time GetLastDelay () const;
   /**
    * The jitter is calculated using the \RFC{1889} (RTP) jitter
    * definition.
    *
    * \returns the updated jitter.
    */
-  uint64_t GetLastJitter (void) const;
+  uint64_t GetLastJitter () const;
 
 private:
   Time m_jitter;       //!< Jitter estimation

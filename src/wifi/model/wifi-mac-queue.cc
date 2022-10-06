@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
 NS_OBJECT_TEMPLATE_CLASS_TWO_DEFINE (Queue, WifiMpdu, WifiMacQueueContainer);
 
 TypeId
-WifiMacQueue::GetTypeId (void)
+WifiMacQueue::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMacQueue")
     .SetParent<Queue<WifiMpdu, WifiMacQueueContainer> > ()
@@ -70,7 +70,7 @@ WifiMacQueue::~WifiMacQueue ()
 }
 
 void
-WifiMacQueue::DoDispose (void)
+WifiMacQueue::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_scheduler = nullptr;
@@ -78,7 +78,7 @@ WifiMacQueue::DoDispose (void)
 }
 
 AcIndex
-WifiMacQueue::GetAc (void) const
+WifiMacQueue::GetAc () const
 {
   return m_ac;
 }
@@ -109,7 +109,7 @@ WifiMacQueue::ExtractExpiredMpdus (const WifiContainerQueueId& queueId) const
 }
 
 void
-WifiMacQueue::ExtractAllExpiredMpdus (void) const
+WifiMacQueue::ExtractAllExpiredMpdus () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -127,7 +127,7 @@ WifiMacQueue::ExtractAllExpiredMpdus (void) const
 }
 
 void
-WifiMacQueue::WipeAllExpiredMpdus (void)
+WifiMacQueue::WipeAllExpiredMpdus ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -175,7 +175,7 @@ WifiMacQueue::SetMaxDelay (Time delay)
 }
 
 Time
-WifiMacQueue::GetMaxDelay (void) const
+WifiMacQueue::GetMaxDelay () const
 {
   return m_maxDelay;
 }
@@ -223,7 +223,7 @@ WifiMacQueue::Insert (ConstIterator pos, Ptr<WifiMpdu> item)
 }
 
 Ptr<WifiMpdu>
-WifiMacQueue::Dequeue (void)
+WifiMacQueue::Dequeue ()
 {
   // An MPDU is dequeued when either is acknowledged or is dropped, hence a Dequeue
   // method without an argument makes no sense.
@@ -253,7 +253,7 @@ WifiMacQueue::DequeueIfQueued (const std::list<Ptr<const WifiMpdu>>& mpdus)
 }
 
 Ptr<const WifiMpdu>
-WifiMacQueue::Peek (void) const
+WifiMacQueue::Peek () const
 {
   // Need to specify the link ID
   NS_ABORT_MSG ("Not implemented by WifiMacQueue");
@@ -365,7 +365,7 @@ WifiMacQueue::PeekFirstAvailable (uint8_t linkId,
 }
 
 Ptr<WifiMpdu>
-WifiMacQueue::Remove (void)
+WifiMacQueue::Remove ()
 {
   return Remove (Peek (0));
 }

@@ -66,7 +66,7 @@ public:
   *
   * \returns The string of post-processing commands.
   */
-  virtual std::string GetPostProcessingCommand (void) const;
+  virtual std::string GetPostProcessingCommand () const;
 };
 
 CommandLineExampleTestCase::CommandLineExampleTestCase ()
@@ -79,7 +79,7 @@ CommandLineExampleTestCase::~CommandLineExampleTestCase ()
 {}
 
 std::string
-CommandLineExampleTestCase::GetPostProcessingCommand (void) const
+CommandLineExampleTestCase::GetPostProcessingCommand () const
 {
   //Delete the line that starts with Program Version:
   return std::string(R"__(| sed -e "/^Program Version:.*$/d")__");

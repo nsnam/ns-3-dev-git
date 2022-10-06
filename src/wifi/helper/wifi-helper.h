@@ -192,7 +192,7 @@ public:
    *
    * \returns The data link type of the pcap file (and packets) to be used
    */
-  PcapHelper::DataLinkType GetPcapDataLinkType (void) const;
+  PcapHelper::DataLinkType GetPcapDataLinkType () const;
 
 
 protected:
@@ -372,7 +372,7 @@ public:
    * as every packet enqueued to the traffic control layer queue disc will
    * be immediately dequeued.
    */
-  void DisableFlowControl (void);
+  void DisableFlowControl ();
 
   /**
    * \param phy the PHY helper to create PHY objects
@@ -479,7 +479,7 @@ public:
   /**
    * Helper to enable all WifiNetDevice log components with one statement
    */
-  static void EnableLogComponents (void);
+  static void EnableLogComponents ();
 
   /**
   * Assign a fixed random variable stream number to the random variables

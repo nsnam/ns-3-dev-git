@@ -57,7 +57,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   PacketSocketClient ();
 
@@ -73,15 +73,15 @@ public:
    * \brief Query the priority value of this socket
    * \return The priority value
    */
-  uint8_t GetPriority (void) const;
+  uint8_t GetPriority () const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
 
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Manually set the socket priority
@@ -92,7 +92,7 @@ private:
   /**
    * \brief Send a packet
    */
-  void Send (void);
+  void Send ();
 
   uint32_t m_maxPackets; //!< Maximum number of packets the application will send
   Time m_interval;       //!< Packet inter-send time

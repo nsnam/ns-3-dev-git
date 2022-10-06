@@ -660,7 +660,7 @@ private:
    * \brief Get IPv6 MTU discover state.
    * \return MTU discover state (enabled or not)
    */
-  virtual bool GetMtuDiscover (void) const;
+  virtual bool GetMtuDiscover () const;
 
   /**
    * \brief Set the ICMPv6 Redirect sending state.

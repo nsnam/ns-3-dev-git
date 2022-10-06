@@ -144,13 +144,13 @@ private:
 
   public:
     /** Constructor. */
-    CheckTvCb (void)  : m_value (0)  { }
+    CheckTvCb ()  : m_value (0)  { }
 
     /**
      * \brief Register this type.
      * \return The object TypeId.
      */
-    static TypeId GetTypeId (void)
+    static TypeId GetTypeId ()
     {
       static TypeId tid =
         TypeId ("CheckTvCb<" + TypeNameGet<T> () + ">")
@@ -214,7 +214,7 @@ private:
    * \tparam U \explicit The TracedValueCallback sink typedef type.
    */
   template <typename T, typename U>
-  void CheckType (void)
+  void CheckType ()
   {
     U sink = TracedValueCbSink<T>;
     CreateObject<CheckTvCb<T> > ()->Invoke (sink);
@@ -224,7 +224,7 @@ private:
 
   }  // CheckType<>()
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -234,7 +234,7 @@ TracedValueCallbackTestCase::TracedValueCallbackTestCase ()
 }
 
 void
-TracedValueCallbackTestCase::DoRun (void)
+TracedValueCallbackTestCase::DoRun ()
 {
   CheckType< bool,     TracedValueCallback::Bool   > ();
   CheckType< int8_t,   TracedValueCallback::Int8   > ();

@@ -76,7 +76,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   LiIonEnergySource ();
   virtual ~LiIonEnergySource ();
 
@@ -85,7 +85,7 @@ public:
    *
    * Implements GetInitialEnergy.
    */
-  virtual double GetInitialEnergy (void) const;
+  virtual double GetInitialEnergy () const;
 
   /**
    * \param initialEnergyJ Initial energy, in Joules
@@ -100,7 +100,7 @@ public:
    *
    * Implements GetSupplyVoltage.
    */
-  virtual double GetSupplyVoltage (void) const;
+  virtual double GetSupplyVoltage () const;
 
   /**
    * \param supplyVoltageV Initial Supply voltage at the energy source, in Volts.
@@ -115,14 +115,14 @@ public:
    *
    * Implements GetRemainingEnergy.
    */
-  virtual double GetRemainingEnergy (void);
+  virtual double GetRemainingEnergy ();
 
   /**
    * \returns Energy fraction.
    *
    * Implements GetEnergyFraction.
    */
-  virtual double GetEnergyFraction (void);
+  virtual double GetEnergyFraction ();
 
   /**
    * \param energyJ Amount of energy (in Joules) to decrease from energy source.
@@ -141,7 +141,7 @@ public:
   /**
    * Implements UpdateEnergySource.
    */
-  virtual void UpdateEnergySource (void);
+  virtual void UpdateEnergySource ();
 
   /**
    * \param interval Energy update interval.
@@ -153,17 +153,17 @@ public:
   /**
    * \returns The interval between each energy update.
    */
-  Time GetEnergyUpdateInterval (void) const;
+  Time GetEnergyUpdateInterval () const;
 private:
-  void DoInitialize (void);
-  void DoDispose (void);
+  void DoInitialize ();
+  void DoDispose ();
 
   /**
    * Handles the remaining energy going to zero event. This function notifies
    * all the energy models aggregated to the node about the energy being
    * depleted. Each energy model is then responsible for its own handler.
    */
-  void HandleEnergyDrainedEvent (void);
+  void HandleEnergyDrainedEvent ();
 
   /**
    * Calculates remaining energy. This function uses the total current from all
@@ -173,7 +173,7 @@ private:
    * This function subtracts the calculated energy to decrease from remaining
    * energy.
    */
-  void CalculateRemainingEnergy (void);
+  void CalculateRemainingEnergy ();
 
   /**
    *  \param current the actual discharge current value.

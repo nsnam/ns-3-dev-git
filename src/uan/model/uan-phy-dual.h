@@ -50,7 +50,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   virtual double CalcSinrDb (Ptr<Packet> pkt,
                              Time arrTime,
@@ -94,8 +94,8 @@ public:
 
   // Inherited methods:
   virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback);
-  virtual void EnergyDepletionHandler (void);
-  virtual void EnergyRechargeHandler (void);
+  virtual void EnergyDepletionHandler ();
+  virtual void EnergyRechargeHandler ();
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
 
   /**
@@ -114,62 +114,62 @@ public:
   virtual void SetTxPowerDb (double txpwr);
   virtual void SetRxThresholdDb (double thresh);
   virtual void SetCcaThresholdDb (double thresh);
-  virtual double GetTxPowerDb (void);
-  virtual double GetRxThresholdDb (void);
-  virtual double GetCcaThresholdDb (void);
-  virtual bool IsStateSleep (void);
-  virtual bool IsStateIdle (void);
-  virtual bool IsStateBusy (void);
-  virtual bool IsStateRx (void);
-  virtual bool IsStateTx (void);
-  virtual bool IsStateCcaBusy (void);
-  virtual Ptr<UanChannel> GetChannel (void) const;
-  virtual Ptr<UanNetDevice> GetDevice (void) const;
+  virtual double GetTxPowerDb ();
+  virtual double GetRxThresholdDb ();
+  virtual double GetCcaThresholdDb ();
+  virtual bool IsStateSleep ();
+  virtual bool IsStateIdle ();
+  virtual bool IsStateBusy ();
+  virtual bool IsStateRx ();
+  virtual bool IsStateTx ();
+  virtual bool IsStateCcaBusy ();
+  virtual Ptr<UanChannel> GetChannel () const;
+  virtual Ptr<UanNetDevice> GetDevice () const;
   virtual void SetChannel (Ptr<UanChannel> channel);
   virtual void SetDevice (Ptr<UanNetDevice> device);
   virtual void SetMac (Ptr<UanMac> mac);
   virtual void NotifyTransStartTx (Ptr<Packet> packet, double txPowerDb, UanTxMode txMode);
-  virtual void NotifyIntChange (void);
+  virtual void NotifyIntChange ();
   virtual void SetTransducer (Ptr<UanTransducer> trans);
-  virtual Ptr<UanTransducer> GetTransducer (void);
-  virtual uint32_t GetNModes (void);
+  virtual Ptr<UanTransducer> GetTransducer ();
+  virtual uint32_t GetNModes ();
   virtual UanTxMode GetMode (uint32_t n);
-  virtual void Clear (void);
+  virtual void Clear ();
   virtual void SetSleepMode ([[maybe_unused]] bool sleep)
   {
     /// \todo This method has to be implemented
   }
   int64_t AssignStreams (int64_t stream);
-  Ptr<Packet> GetPacketRx (void) const;
+  Ptr<Packet> GetPacketRx () const;
 
 
   /** \copydoc UanPhy::IsStateIdle */
-  bool IsPhy1Idle (void);
+  bool IsPhy1Idle ();
   /** \copydoc UanPhy::IsStateIdle */
-  bool IsPhy2Idle (void);
+  bool IsPhy2Idle ();
   /** \copydoc UanPhy::IsStateRx */
-  bool IsPhy1Rx (void);
+  bool IsPhy1Rx ();
   /** \copydoc UanPhy::IsStateRx */
-  bool IsPhy2Rx (void);
+  bool IsPhy2Rx ();
   /** \copydoc UanPhy::IsStateTx */
-  bool IsPhy1Tx (void);
+  bool IsPhy1Tx ();
   /** \copydoc UanPhy::IsStateTx */
-  bool IsPhy2Tx (void);
+  bool IsPhy2Tx ();
 
   // Attribute getters and setters
   /** \copydoc ns3::UanPhy::GetCcaThresholdDb() */
-  double GetCcaThresholdPhy1 (void) const;
+  double GetCcaThresholdPhy1 () const;
   /** \copydoc UanPhy::GetCcaThresholdDb() */
-  double GetCcaThresholdPhy2 (void) const;
+  double GetCcaThresholdPhy2 () const;
   /** \copydoc UanPhy::SetCcaThresholdDb */
   void SetCcaThresholdPhy1 (double thresh);
   /** \copydoc UanPhy::SetCcaThresholdDb */
   void SetCcaThresholdPhy2 (double thresh);
 
   /** \copydoc UanPhy::GetTxPowerDb */
-  double GetTxPowerDbPhy1 (void) const;
+  double GetTxPowerDbPhy1 () const;
   /** \copydoc UanPhy::GetTxPowerDb */
-  double GetTxPowerDbPhy2 (void) const;
+  double GetTxPowerDbPhy2 () const;
   /** \copydoc UanPhy::SetTxPowerDb */
   void SetTxPowerDbPhy1 (double txpwr);
   /** \copydoc UanPhy::SetTxPowerDb */
@@ -181,9 +181,9 @@ public:
    *
    * \return The mode list.
    */
-  UanModesList GetModesPhy1 (void) const;
+  UanModesList GetModesPhy1 () const;
   /** \copydoc GetModesPhy1 */
-  UanModesList GetModesPhy2 (void) const;
+  UanModesList GetModesPhy2 () const;
 
   /**
    * Set the available modes.
@@ -199,9 +199,9 @@ public:
    *
    * \return The error model.
    */
-  Ptr<UanPhyPer> GetPerModelPhy1 (void) const;
+  Ptr<UanPhyPer> GetPerModelPhy1 () const;
   /** \copydoc GetPerModelPhy1() */
-  Ptr<UanPhyPer> GetPerModelPhy2 (void) const;
+  Ptr<UanPhyPer> GetPerModelPhy2 () const;
 
   /**
    * Set the error probability model.
@@ -217,9 +217,9 @@ public:
    *
    * \return The SINR calculator.
    */
-  Ptr<UanPhyCalcSinr> GetSinrModelPhy1 (void) const;
+  Ptr<UanPhyCalcSinr> GetSinrModelPhy1 () const;
   /** \copydoc GetSinrModelPhy1 */
-  Ptr<UanPhyCalcSinr> GetSinrModelPhy2 (void) const;
+  Ptr<UanPhyCalcSinr> GetSinrModelPhy2 () const;
 
   /**
    * Set the SINR calculator.
@@ -232,9 +232,9 @@ public:
 
 
   /** \copydoc UanPhy::GetPacketRx */
-  Ptr<Packet> GetPhy1PacketRx (void) const;
+  Ptr<Packet> GetPhy1PacketRx () const;
   /** \copydoc UanPhy::GetPacketRx */
-  Ptr<Packet> GetPhy2PacketRx (void) const;
+  Ptr<Packet> GetPhy2PacketRx () const;
 
 
 private:

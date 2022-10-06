@@ -48,10 +48,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  ConnectionManager (void);
-  ~ConnectionManager (void);
-  void DoDispose (void);
+  static TypeId GetTypeId ();
+  ConnectionManager ();
+  ~ConnectionManager ();
+  void DoDispose ();
   /**
    * Set CID factory
    * \param cidFactory the CID factory
@@ -95,7 +95,7 @@ public:
   /**
    * \return true if one of the managed connection has at least one packet to send, false otherwise
    */
-  bool HasPackets (void) const;
+  bool HasPackets () const;
 private:
   std::vector<Ptr<WimaxConnection> > m_basicConnections; ///< basic connections
   std::vector<Ptr<WimaxConnection> > m_primaryConnections; ///< primary connections

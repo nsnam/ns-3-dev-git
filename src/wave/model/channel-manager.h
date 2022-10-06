@@ -66,28 +66,28 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   ChannelManager ();
   virtual ~ChannelManager ();
 
   /**
    * \return the channel number of WAVE CCH.
    */
-  static uint32_t GetCch (void);
+  static uint32_t GetCch ();
   /**
    * \return the channel number set of WAVE SCHs.
    */
-  static std::vector<uint32_t> GetSchs (void);
+  static std::vector<uint32_t> GetSchs ();
   /**
     * \return the channel number set of WAVE channels.
     *
     * The sequence is CCH, SCH1, SCH2, SCH3, SCH4, SCH5 and SCH6.
     */
-  static std::vector<uint32_t> GetWaveChannels (void);
+  static std::vector<uint32_t> GetWaveChannels ();
   /**
    * \return the number of WAVE channels.
    */
-  static uint32_t GetNumberOfWaveChannels (void);
+  static uint32_t GetNumberOfWaveChannels ();
   /**
    * \param channelNumber the specific channel
    * \return whether channel is valid CCH channel
@@ -133,7 +133,7 @@ public:
   uint32_t GetManagementPowerLevel (uint32_t channelNumber);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /// 1609.4-2010 Annex H

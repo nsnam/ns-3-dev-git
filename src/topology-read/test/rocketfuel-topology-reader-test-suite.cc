@@ -55,7 +55,7 @@ public:
   RocketfuelTopologyReaderWeightsTest ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RocketfuelTopologyReaderWeightsTest::RocketfuelTopologyReaderWeightsTest ()
@@ -63,7 +63,7 @@ RocketfuelTopologyReaderWeightsTest::RocketfuelTopologyReaderWeightsTest ()
 {}
 
 void
-RocketfuelTopologyReaderWeightsTest::DoRun (void)
+RocketfuelTopologyReaderWeightsTest::DoRun ()
 {
   Ptr<RocketfuelTopologyReader> inFile;
   NodeContainer nodes;
@@ -99,7 +99,7 @@ public:
   RocketfuelTopologyReaderMapsTest ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RocketfuelTopologyReaderMapsTest::RocketfuelTopologyReaderMapsTest ()
@@ -107,7 +107,7 @@ RocketfuelTopologyReaderMapsTest::RocketfuelTopologyReaderMapsTest ()
 {}
 
 void
-RocketfuelTopologyReaderMapsTest::DoRun (void)
+RocketfuelTopologyReaderMapsTest::DoRun ()
 {
   Ptr<RocketfuelTopologyReader> inFile;
   NodeContainer nodes;

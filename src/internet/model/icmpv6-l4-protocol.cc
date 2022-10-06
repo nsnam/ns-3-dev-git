@@ -1675,14 +1675,14 @@ Icmpv6L4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
 }
 
 IpL4Protocol::DownTargetCallback
-Icmpv6L4Protocol::GetDownTarget (void) const
+Icmpv6L4Protocol::GetDownTarget () const
 {
   NS_LOG_FUNCTION (this);
   return IpL4Protocol::DownTargetCallback ();
 }
 
 IpL4Protocol::DownTargetCallback6
-Icmpv6L4Protocol::GetDownTarget6 (void) const
+Icmpv6L4Protocol::GetDownTarget6 () const
 {
   NS_LOG_FUNCTION (this);
   return m_downTarget;

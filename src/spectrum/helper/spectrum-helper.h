@@ -111,7 +111,7 @@ public:
    *
    * Create a channel based on the configuration parameters set previously.
    */
-  Ptr<SpectrumChannel> Create (void) const;
+  Ptr<SpectrumChannel> Create () const;
 
 private:
   Ptr<SpectrumPropagationLossModel> m_spectrumPropagationLossModel; //!< Spectrum propagation loss model

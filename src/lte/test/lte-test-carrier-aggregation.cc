@@ -269,7 +269,7 @@ CarrierAggregationTestCase::~CarrierAggregationTestCase ()
 }
 
 void
-CarrierAggregationTestCase::DoRun (void)
+CarrierAggregationTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << m_nUser << m_dist << m_dlBandwidth << m_ulBandwidth << m_numberOfComponentCarriers);
 

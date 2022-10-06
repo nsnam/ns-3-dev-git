@@ -49,49 +49,49 @@ WifiMpdu::~WifiMpdu ()
 }
 
 Ptr<const Packet>
-WifiMpdu::GetPacket (void) const
+WifiMpdu::GetPacket () const
 {
   return m_packet;
 }
 
 const WifiMacHeader&
-WifiMpdu::GetHeader (void) const
+WifiMpdu::GetHeader () const
 {
   return m_header;
 }
 
 WifiMacHeader&
-WifiMpdu::GetHeader (void)
+WifiMpdu::GetHeader ()
 {
   return m_header;
 }
 
 Mac48Address
-WifiMpdu::GetDestinationAddress (void) const
+WifiMpdu::GetDestinationAddress () const
 {
   return m_header.GetAddr1 ();
 }
 
 uint32_t
-WifiMpdu::GetPacketSize (void) const
+WifiMpdu::GetPacketSize () const
 {
   return m_packet->GetSize ();
 }
 
 uint32_t
-WifiMpdu::GetSize (void) const
+WifiMpdu::GetSize () const
 {
   return GetPacketSize () + m_header.GetSerializedSize () + WIFI_MAC_FCS_LENGTH;
 }
 
 bool
-WifiMpdu::IsFragment (void) const
+WifiMpdu::IsFragment () const
 {
   return m_header.IsMoreFragments () || m_header.GetFragmentNumber () > 0;
 }
 
 Ptr<Packet>
-WifiMpdu::GetProtocolDataUnit (void) const
+WifiMpdu::GetProtocolDataUnit () const
 {
   Ptr<Packet> mpdu = m_packet->Copy ();
   mpdu->AddHeader (m_header);
@@ -182,7 +182,7 @@ WifiMpdu::DoAggregate (Ptr<const WifiMpdu> msdu)
 }
 
 bool
-WifiMpdu::IsQueued (void) const
+WifiMpdu::IsQueued () const
 {
   return m_queueIt.has_value ();
 }
@@ -201,45 +201,45 @@ WifiMpdu::GetQueueIt (WmqIteratorTag tag) const
 }
 
 AcIndex
-WifiMpdu::GetQueueAc (void) const
+WifiMpdu::GetQueueAc () const
 {
   NS_ASSERT (IsQueued ());
   return (*m_queueIt)->ac;
 }
 
 Time
-WifiMpdu::GetExpiryTime (void) const
+WifiMpdu::GetExpiryTime () const
 {
   NS_ASSERT (IsQueued ());
   return (*m_queueIt)->expiryTime;
 }
 
 void
-WifiMpdu::SetInFlight (void)
+WifiMpdu::SetInFlight ()
 {
   m_inFlight = true;
 }
 
 void
-WifiMpdu::ResetInFlight (void)
+WifiMpdu::ResetInFlight ()
 {
   m_inFlight = false;
 }
 
 bool
-WifiMpdu::IsInFlight (void) const
+WifiMpdu::IsInFlight () const
 {
   return m_inFlight;
 }
 
 WifiMpdu::DeaggregatedMsdusCI
-WifiMpdu::begin (void) const
+WifiMpdu::begin () const
 {
   return m_msduList.cbegin ();
 }
 
 WifiMpdu::DeaggregatedMsdusCI
-WifiMpdu::end (void) const
+WifiMpdu::end () const
 {
   return m_msduList.cend ();
 }

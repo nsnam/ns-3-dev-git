@@ -32,7 +32,7 @@ AttributeDefaultIterator::~AttributeDefaultIterator ()
 {
 }
 void
-AttributeDefaultIterator::Iterate (void)
+AttributeDefaultIterator::Iterate ()
 {
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
@@ -109,7 +109,7 @@ AttributeDefaultIterator::StartVisitTypeId (std::string name)
 {
 }
 void
-AttributeDefaultIterator::EndVisitTypeId (void)
+AttributeDefaultIterator::EndVisitTypeId ()
 {
 }
 

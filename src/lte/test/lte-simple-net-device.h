@@ -45,9 +45,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  LteSimpleNetDevice (void);
+  LteSimpleNetDevice ();
   /**
    * Constructor
    *
@@ -55,7 +55,7 @@ public:
    */
   LteSimpleNetDevice (Ptr<Node> node);
 
-  virtual ~LteSimpleNetDevice (void);
+  virtual ~LteSimpleNetDevice ();
   virtual void DoDispose ();
 
 
@@ -65,7 +65,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 };
 

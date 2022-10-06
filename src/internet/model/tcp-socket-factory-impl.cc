@@ -40,13 +40,13 @@ TcpSocketFactoryImpl::SetTcp (Ptr<TcpL4Protocol> tcp)
 }
 
 Ptr<Socket>
-TcpSocketFactoryImpl::CreateSocket (void)
+TcpSocketFactoryImpl::CreateSocket ()
 {
   return m_tcp->CreateSocket ();
 }
 
 void
-TcpSocketFactoryImpl::DoDispose (void)
+TcpSocketFactoryImpl::DoDispose ()
 {
   m_tcp = 0;
   TcpSocketFactory::DoDispose ();

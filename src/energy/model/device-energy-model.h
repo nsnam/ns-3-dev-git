@@ -54,7 +54,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   DeviceEnergyModel ();
   virtual ~DeviceEnergyModel ();
 
@@ -71,7 +71,7 @@ public:
    *
    * DeviceEnergyModel records its own energy consumption during simulation.
    */
-  virtual double GetTotalEnergyConsumption (void) const = 0;
+  virtual double GetTotalEnergyConsumption () const = 0;
 
   /**
    * \param newState New state the device is in.
@@ -89,25 +89,25 @@ public:
    * This function is called from the EnergySource to obtain the total current
    * draw at any given time during simulation.
    */
-  double GetCurrentA (void) const;
+  double GetCurrentA () const;
 
   /**
    * This function is called by the EnergySource object when energy stored in
    * the energy source is depleted. Should be implemented by child classes.
    */
-  virtual void HandleEnergyDepletion (void) = 0;
+  virtual void HandleEnergyDepletion () = 0;
 
   /**
    * This function is called by the EnergySource object when energy stored in
    * the energy source is recharged. Should be implemented by child classes.
    */
-  virtual void HandleEnergyRecharged (void) = 0;
+  virtual void HandleEnergyRecharged () = 0;
 
   /**
    * This function is called by the EnergySource object when energy stored in
    * the energy source is changed. Should be implemented by child classes.
    */
-  virtual void HandleEnergyChanged (void) = 0;
+  virtual void HandleEnergyChanged () = 0;
 
 
 private:
@@ -119,7 +119,7 @@ private:
    * devices who does know the current draw of its states, this method must be
    * overwritten.
    */
-  virtual double DoGetCurrentA (void) const;
+  virtual double DoGetCurrentA () const;
 
 };
 

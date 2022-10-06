@@ -41,7 +41,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   BasicEnergySource ();
   virtual ~BasicEnergySource ();
 
@@ -50,33 +50,33 @@ public:
    *
    * Implements GetInitialEnergy.
    */
-  virtual double GetInitialEnergy (void) const;
+  virtual double GetInitialEnergy () const;
 
   /**
    * \returns Supply voltage at the energy source.
    *
    * Implements GetSupplyVoltage.
    */
-  virtual double GetSupplyVoltage (void) const;
+  virtual double GetSupplyVoltage () const;
 
   /**
    * \return Remaining energy in energy source, in Joules
    *
    * Implements GetRemainingEnergy.
    */
-  virtual double GetRemainingEnergy (void);
+  virtual double GetRemainingEnergy ();
 
   /**
    * \returns Energy fraction.
    *
    * Implements GetEnergyFraction.
    */
-  virtual double GetEnergyFraction (void);
+  virtual double GetEnergyFraction ();
 
   /**
    * Implements UpdateEnergySource.
    */
-  virtual void UpdateEnergySource (void);
+  virtual void UpdateEnergySource ();
 
   /**
    * \param initialEnergyJ Initial energy, in Joules
@@ -104,22 +104,22 @@ public:
   /**
    * \returns The interval between each energy update.
    */
-  Time GetEnergyUpdateInterval (void) const;
+  Time GetEnergyUpdateInterval () const;
 
 
 private:
   /// Defined in ns3::Object
-  void DoInitialize (void);
+  void DoInitialize ();
 
   /// Defined in ns3::Object
-  void DoDispose (void);
+  void DoDispose ();
 
   /**
    * Handles the remaining energy going to zero event. This function notifies
    * all the energy models aggregated to the node about the energy being
    * depleted. Each energy model is then responsible for its own handler.
    */
-  void HandleEnergyDrainedEvent (void);
+  void HandleEnergyDrainedEvent ();
 
   /**
    * Handles the remaining energy exceeding the high threshold after it went
@@ -127,7 +127,7 @@ private:
    * aggregated to the node about the energy being recharged. Each energy model
    * is then responsible for its own handler.
    */
-  void HandleEnergyRechargedEvent (void);
+  void HandleEnergyRechargedEvent ();
 
   /**
    * Calculates remaining energy. This function uses the total current from all
@@ -137,7 +137,7 @@ private:
    * This function subtracts the calculated energy to decrease from remaining
    * energy.
    */
-  void CalculateRemainingEnergy (void);
+  void CalculateRemainingEnergy ();
 
 private:
   double m_initialEnergyJ;                //!< initial energy, in Joules

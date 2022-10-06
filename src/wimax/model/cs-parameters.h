@@ -68,16 +68,16 @@ public:
   /**
    * \return the  dynamic service classifier action
    */
-  enum Action GetClassifierDscAction (void) const;
+  enum Action GetClassifierDscAction () const;
   /**
    * \return the  the packet classifier rules
    */
-  IpcsClassifierRecord GetPacketClassifierRule (void) const;
+  IpcsClassifierRecord GetPacketClassifierRule () const;
   /**
    * \brief creates a tlv from the classifier record
    * \return the created tlv
    */
-  Tlv ToTlv (void) const;
+  Tlv ToTlv () const;
 
 private:
   enum Action m_classifierDscAction; ///< classifier DSC action

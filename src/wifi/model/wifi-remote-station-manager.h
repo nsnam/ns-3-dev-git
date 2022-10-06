@@ -132,7 +132,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   WifiRemoteStationManager ();
   virtual ~WifiRemoteStationManager ();
@@ -202,7 +202,7 @@ public:
    *
    * \return the fragmentation threshold
    */
-  uint32_t GetFragmentationThreshold (void) const;
+  uint32_t GetFragmentationThreshold () const;
   /**
    * Sets a fragmentation threshold. The method calls a private method
    * DoSetFragmentationThreshold that checks the validity of the value given.
@@ -286,43 +286,43 @@ public:
    *
    * \return true if HT capability support is enabled, false otherwise
    */
-  bool GetHtSupported (void) const;
+  bool GetHtSupported () const;
   /**
    * Return whether the device has VHT capability support enabled.
    *
    * \return true if VHT capability support is enabled, false otherwise
    */
-  bool GetVhtSupported (void) const;
+  bool GetVhtSupported () const;
   /**
    * Return whether the device has HE capability support enabled.
    *
    * \return true if HE capability support is enabled, false otherwise
    */
-  bool GetHeSupported (void) const;
+  bool GetHeSupported () const;
   /**
    * Return whether the device has EHT capability support enabled.
    *
    * \return true if EHT capability support is enabled, false otherwise
    */
-  bool GetEhtSupported (void) const;
+  bool GetEhtSupported () const;
   /**
    * Return whether the device has LDPC support enabled.
    *
    * \return true if LDPC support is enabled, false otherwise
    */
-  bool GetLdpcSupported (void) const;
+  bool GetLdpcSupported () const;
   /**
    * Return whether the device has SGI support enabled.
    *
    * \return true if SGI support is enabled, false otherwise
    */
-  bool GetShortGuardIntervalSupported (void) const;
+  bool GetShortGuardIntervalSupported () const;
   /**
    * Return the supported HE guard interval duration (in nanoseconds).
    *
    * \return the supported HE guard interval duration (in nanoseconds)
    */
-  uint16_t GetGuardInterval (void) const;
+  uint16_t GetGuardInterval () const;
   /**
    * Enable or disable protection for non-ERP stations.
    *
@@ -335,7 +335,7 @@ public:
    * \return true if protection for non-ERP stations is enabled,
    *         false otherwise
    */
-  bool GetUseNonErpProtection (void) const;
+  bool GetUseNonErpProtection () const;
   /**
    * Enable or disable protection for non-HT stations.
    *
@@ -348,7 +348,7 @@ public:
    * \return true if protection for non-HT stations is enabled,
    *         false otherwise
    */
-  bool GetUseNonHtProtection (void) const;
+  bool GetUseNonHtProtection () const;
   /**
    * Enable or disable short PHY preambles.
    *
@@ -361,7 +361,7 @@ public:
    * \return true if short PHY preambles are enabled,
    *         false otherwise
    */
-  bool GetShortPreambleEnabled (void) const;
+  bool GetShortPreambleEnabled () const;
   /**
    * Enable or disable short slot time.
    *
@@ -374,12 +374,12 @@ public:
    * \return true if short slot time is enabled,
    *         false otherwise
    */
-  bool GetShortSlotTimeEnabled (void) const;
+  bool GetShortSlotTimeEnabled () const;
 
   /**
    * Reset the station, invoked in a STA upon dis-association or in an AP upon reboot.
    */
-  void Reset (void);
+  void Reset ();
 
   /**
    * Invoked in a STA upon association to store the set of rates which belong to the
@@ -394,13 +394,13 @@ public:
    *
    * \return WifiMode the default transmission mode
    */
-  WifiMode GetDefaultMode (void) const;
+  WifiMode GetDefaultMode () const;
   /**
    * Return the number of basic modes we support.
    *
    * \return the number of basic modes we support
    */
-  uint8_t GetNBasicModes (void) const;
+  uint8_t GetNBasicModes () const;
   /**
    * Return a basic mode from the set of basic modes.
    *
@@ -414,7 +414,7 @@ public:
    *
    * \return the number of basic modes we support
    */
-  uint32_t GetNNonErpBasicModes (void) const;
+  uint32_t GetNNonErpBasicModes () const;
   /**
    * Return a basic mode from the set of basic modes that is not an ERP mode.
    *
@@ -478,7 +478,7 @@ public:
    *
    * \return the default WifiMode
    */
-  WifiMode GetDefaultMcs (void) const;
+  WifiMode GetDefaultMcs () const;
   /**
    * Return the default MCS to use to transmit frames to the given station.
    *
@@ -491,7 +491,7 @@ public:
    *
    * \return the number of basic MCS index
    */
-  uint8_t GetNBasicMcs (void) const;
+  uint8_t GetNBasicMcs () const;
   /**
    * Return the MCS at the given <i>list</i> index.
    *
@@ -609,7 +609,7 @@ public:
    *
    * \return WifiMode for non-unicast packets
    */
-  WifiMode GetNonUnicastMode (void) const;
+  WifiMode GetNonUnicastMode () const;
 
   /**
    * Invoked in a STA or AP to store the set of
@@ -783,7 +783,7 @@ public:
    * \return the transmission mode to use to send the CTS-to-self prior to the
    *         transmission of the data packet itself.
    */
-  WifiTxVector GetCtsToSelfTxVector (void);
+  WifiTxVector GetCtsToSelfTxVector ();
   /**
    * Return a TXVECTOR for the Ack frame given the destination and the mode of the Data
    * used by the sender.
@@ -943,7 +943,7 @@ public:
   /**
    * \return the default transmission power
    */
-  uint8_t GetDefaultTxPowerLevel (void) const;
+  uint8_t GetDefaultTxPowerLevel () const;
   /**
    * \param address of the remote station
    *
@@ -969,11 +969,11 @@ public:
   /**
    * \return the number of antennas supported by the PHY layer
    */
-  uint8_t GetNumberOfAntennas (void) const;
+  uint8_t GetNumberOfAntennas () const;
   /**
    * \return the maximum number of spatial streams supported by the PHY layer
    */
-  uint8_t GetMaxNumberOfTransmitStreams (void) const;
+  uint8_t GetMaxNumberOfTransmitStreams () const;
   /**
    * \returns whether LDPC should be used for a given destination address.
    *
@@ -1006,17 +1006,17 @@ public:
    *
    * \return a pointer to the WifiPhy
    */
-  Ptr<WifiPhy> GetPhy (void) const;
+  Ptr<WifiPhy> GetPhy () const;
   /**
    * Return the WifiMac.
    *
    * \return a pointer to the WifiMac
    */
-  Ptr<WifiMac> GetMac (void) const;
+  Ptr<WifiMac> GetMac () const;
 
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * Return whether mode associated with the specified station at the specified index.
    *
@@ -1229,7 +1229,7 @@ private:
   /**
    * \return a new station data structure
    */
-  virtual WifiRemoteStation* DoCreateStation (void) const = 0;
+  virtual WifiRemoteStation* DoCreateStation () const = 0;
   /**
     * \param station the station that we need to communicate
     * \param allowedWidth the allowed width in MHz to send a packet to the station
@@ -1357,7 +1357,7 @@ private:
    *
    * \return the fragmentation threshold
    */
-  uint32_t DoGetFragmentationThreshold (void) const;
+  uint32_t DoGetFragmentationThreshold () const;
   /**
    * Return the number of fragments needed for the given packet.
    *

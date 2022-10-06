@@ -53,9 +53,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  OcbWifiMac (void);
-  virtual ~OcbWifiMac (void);
+  static TypeId GetTypeId ();
+  OcbWifiMac ();
+  virtual ~OcbWifiMac ();
   /**
    * \param vsc management packet to send.
    * \param peer the address to which the packet should be sent.
@@ -84,7 +84,7 @@ public:
    * This method shall not be used in WAVE environment and
    * here it will overloaded to log warn message
    */
-  virtual Ssid GetSsid (void) const;
+  virtual Ssid GetSsid () const;
   /**
    * \param ssid the current ssid of this MAC layer.
    *
@@ -149,12 +149,12 @@ public:
    * To support MAC extension for multiple channel operation,
    * Suspend the activity in current MAC entity
    */
-  void Suspend (void);
+  void Suspend ();
   /**
    * To support MAC extension for multiple channel operation,
    * Resume the activity of suspended MAC entity
    */
-  void Resume (void);
+  void Resume ();
   /**
    * \param duration the virtual busy time for MAC entity
    *
@@ -173,7 +173,7 @@ public:
    * To support MAC extension for multiple channel operation,
    * Reset current MAC entity and flush its internal queues.
    */
-  void Reset (void);
+  void Reset ();
   /**
    * Set the PHY.
    *
@@ -184,7 +184,7 @@ public:
   // Inherited from base class
   virtual void ConfigureStandard (enum WifiStandard standard);
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 private:
   virtual void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId);
   virtual std::optional<uint8_t> GetLinkIdByAddress (const Mac48Address& address) const;

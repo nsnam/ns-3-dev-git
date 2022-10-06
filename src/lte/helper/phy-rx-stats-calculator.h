@@ -65,7 +65,7 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the name of the file where the UL Rx PHY statistics will be stored.
@@ -78,7 +78,7 @@ public:
    * Get the name of the file where the UL RX PHY statistics will be stored.
    * @return the name of the file where the UL RX PHY statistics will be stored
    */
-  std::string GetUlRxOutputFilename (void);
+  std::string GetUlRxOutputFilename ();
 
   /**
    * Set the name of the file where the DL RX PHY statistics will be stored.
@@ -91,7 +91,7 @@ public:
    * Get the name of the file where the DL RX PHY statistics will be stored.
    * @return the name of the file where the DL RX PHY statistics will be stored
    */
-  std::string GetDlRxOutputFilename (void);
+  std::string GetDlRxOutputFilename ();
 
   /**
    * Notifies the stats calculator that an downlink reception has occurred.

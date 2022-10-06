@@ -92,13 +92,13 @@ public:
    *
    * \returns the extension bit
    */
-  uint8_t PopExtensionBit (void);
+  uint8_t PopExtensionBit ();
   /**
    * Pop length indicator
    *
    * \returns the length indicator
    */
-  uint16_t PopLengthIndicator (void);
+  uint16_t PopLengthIndicator ();
 
   /// ExtensionBit_t typedef
   typedef enum {
@@ -123,10 +123,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 

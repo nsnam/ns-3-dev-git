@@ -340,7 +340,7 @@ ThreeGppHttpVariables::AssignStreams (int64_t stream)
 }
 
 void
-ThreeGppHttpVariables::DoInitialize (void)
+ThreeGppHttpVariables::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   UpdateMainObjectMuAndSigma ();
@@ -368,7 +368,7 @@ ThreeGppHttpVariables::SetMainObjectGenerationDelay (Time constant)
 }
 
 void
-ThreeGppHttpVariables::UpdateMainObjectMuAndSigma (void)
+ThreeGppHttpVariables::UpdateMainObjectMuAndSigma ()
 {
   NS_LOG_FUNCTION (this);
   const double a1 = std::pow (m_mainObjectSizeStdDev, 2.0);
@@ -382,7 +382,7 @@ ThreeGppHttpVariables::UpdateMainObjectMuAndSigma (void)
 }
 
 void
-ThreeGppHttpVariables::UpdateEmbeddedObjectMuAndSigma (void)
+ThreeGppHttpVariables::UpdateEmbeddedObjectMuAndSigma ()
 {
   NS_LOG_FUNCTION (this);
   const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);

@@ -30,7 +30,7 @@ namespace ns3 {
 class ChannelCoordinationListener : public SimpleRefCount<ChannelCoordinationListener>
 {
 public:
-  virtual ~ChannelCoordinationListener (void);
+  virtual ~ChannelCoordinationListener ();
   /**
    * \param duration the CCH access time (CCHI - GI) continues,
    */
@@ -75,26 +75,26 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   ChannelCoordinator ();
   virtual ~ChannelCoordinator ();
 
   /**
    * \return the default control channel interval for multi-channel operation (50 milliseconds).
    */
-  static Time GetDefaultCchInterval (void);
+  static Time GetDefaultCchInterval ();
   /**
    * \return the default service channel interval for multi-channel operation (50 milliseconds).
    */
-  static Time GetDefaultSchInterval (void);
+  static Time GetDefaultSchInterval ();
   /**
    * \return the default sync interval for multi-channel operation (100 milliseconds).
    */
-  static Time GetDefaultSyncInterval (void);
+  static Time GetDefaultSyncInterval ();
   /**
    * \return the default guard channel interval for multi-channel operation (4 milliseconds).
    */
-  static Time GetDefaultGuardInterval (void);
+  static Time GetDefaultGuardInterval ();
 
   /**
    * \param cchi the CCH interval for multi-channel operation.
@@ -103,7 +103,7 @@ public:
   /**
    * \return the CCH interval for multi-channel operation.
    */
-  Time GetCchInterval (void) const;
+  Time GetCchInterval () const;
   /**
    * \param schi the SCH interval for multi-channel operation.
    */
@@ -111,11 +111,11 @@ public:
   /**
    * \return the SCH interval for multi-channel operation.
    */
-  Time GetSchInterval (void) const;
+  Time GetSchInterval () const;
   /**
    * \return the Sync interval for multi-channel operation.
    */
-  Time GetSyncInterval (void) const;
+  Time GetSyncInterval () const;
   /**
    * \param guardi the guard interval for multi-channel operation.
    */
@@ -123,14 +123,14 @@ public:
   /**
    * \return the guard interval for multi-channel operation.
    */
-  Time GetGuardInterval (void) const;
+  Time GetGuardInterval () const;
   /**
    * \return whether current channel interval configuration is valid.
    *
    * If users set the channel intervals different from default values here,
    * it should be better to test whether the configuration is valid.
    */
-  bool IsValidConfig (void) const;
+  bool IsValidConfig () const;
 
   /**
    * \param duration the future time after duration
@@ -201,40 +201,40 @@ public:
   /**
    * Remove all listeners.
    */
-  void UnregisterAllListeners (void);
+  void UnregisterAllListeners ();
 
 private:
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
 
   /**
    * start to make channel coordination events
    */
-  void StartChannelCoordination (void);
+  void StartChannelCoordination ();
   /**
    * stop channel coordination events
    */
-  void StopChannelCoordination (void);
+  void StopChannelCoordination ();
   /**
    * notify listeners of a SCH slot start
    */
-  void NotifySchSlot (void);
+  void NotifySchSlot ();
   /**
    * notify listeners of a CCH slot start
    */
-  void NotifyCchSlot (void);
+  void NotifyCchSlot ();
   /**
    * notify listeners of a guard slot start
    */
-  void NotifyGuardSlot (void);
+  void NotifyGuardSlot ();
   /**
    * \return SCH channel access time which is SchInterval - GuardInterval, default 46ms
    */
-  Time GetSchSlot (void) const;
+  Time GetSchSlot () const;
   /**
    * \return CCH channel access time which is SchInterval - GuardInterval, default 46ms
    */
-  Time GetCchSlot (void) const;
+  Time GetCchSlot () const;
 
   Time m_cchi;  ///< CchInterval
   Time m_schi;  ///< SchInterval

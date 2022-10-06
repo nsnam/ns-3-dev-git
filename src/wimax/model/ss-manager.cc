@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("SSManager");
 
 NS_OBJECT_ENSURE_REGISTERED (SSManager);
 
-TypeId SSManager::GetTypeId (void)
+TypeId SSManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SSManager")
     .SetParent<Object> ()
@@ -39,12 +39,12 @@ TypeId SSManager::GetTypeId (void)
   return tid;
 }
 
-SSManager::SSManager (void)
+SSManager::SSManager ()
 {
   m_ssRecords = new std::vector<SSRecord*> ();
 }
 
-SSManager::~SSManager (void)
+SSManager::~SSManager ()
 {
   for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin (); iter != m_ssRecords->end (); ++iter)
     {
@@ -105,7 +105,7 @@ SSManager::GetSSRecord (Cid cid) const
 }
 
 std::vector<SSRecord*>*
-SSManager::GetSSRecords (void) const
+SSManager::GetSSRecords () const
 {
   return m_ssRecords;
 }
@@ -163,13 +163,13 @@ SSManager::GetMacAddress (Cid cid) const
 }
 
 uint32_t
-SSManager::GetNSSs (void) const
+SSManager::GetNSSs () const
 {
   return m_ssRecords->size ();
 }
 
 uint32_t
-SSManager::GetNRegisteredSSs (void) const
+SSManager::GetNRegisteredSSs () const
 {
   uint32_t nrSS = 0;
   for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin (); iter != m_ssRecords->end (); ++iter)

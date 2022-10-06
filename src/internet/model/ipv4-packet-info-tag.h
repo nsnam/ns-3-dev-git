@@ -63,7 +63,7 @@ public:
    *
    * \returns the address
    */
-  Ipv4Address GetAddress (void) const;
+  Ipv4Address GetAddress () const;
 
   /**
    * \brief Set the tag's receiving interface
@@ -76,7 +76,7 @@ public:
    *
    * \returns the interface index
    */
-  uint32_t GetRecvIf (void) const;
+  uint32_t GetRecvIf () const;
 
   /**
    * \brief Set the tag's Time to Live
@@ -89,15 +89,15 @@ public:
    * Implemented, but not used in the stack yet
    * \returns the TTL
    */
-  uint8_t GetTtl (void) const;
+  uint8_t GetTtl () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;

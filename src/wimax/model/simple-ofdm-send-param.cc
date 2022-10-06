@@ -24,7 +24,7 @@
 #include "simple-ofdm-wimax-channel.h"
 
 namespace ns3 {
-simpleOfdmSendParam::simpleOfdmSendParam (void)
+simpleOfdmSendParam::simpleOfdmSendParam ()
 {
   // m_fecBlock = 0;
   m_burstSize = 0;
@@ -70,7 +70,7 @@ simpleOfdmSendParam::simpleOfdmSendParam (uint32_t burstSize,
   m_burst = burst;
 }
 
-simpleOfdmSendParam::~simpleOfdmSendParam (void)
+simpleOfdmSendParam::~simpleOfdmSendParam ()
 {
 
 }
@@ -113,42 +113,42 @@ simpleOfdmSendParam::SetRxPowerDbm (double rxPowerDbm)
 }
 
 bvec
-simpleOfdmSendParam::GetFecBlock (void)
+simpleOfdmSendParam::GetFecBlock ()
 {
   return m_fecBlock;
 }
 uint32_t
-simpleOfdmSendParam::GetBurstSize (void)
+simpleOfdmSendParam::GetBurstSize ()
 {
   return m_burstSize;
 }
 bool
-simpleOfdmSendParam::GetIsFirstBlock (void)
+simpleOfdmSendParam::GetIsFirstBlock ()
 {
   return m_isFirstBlock;
 }
 uint64_t
-simpleOfdmSendParam::GetFrequency (void)
+simpleOfdmSendParam::GetFrequency ()
 {
   return m_frequency;
 }
 WimaxPhy::ModulationType
-simpleOfdmSendParam::GetModulationType (void)
+simpleOfdmSendParam::GetModulationType ()
 {
   return m_modulationType;
 }
 uint8_t
-simpleOfdmSendParam::GetDirection (void)
+simpleOfdmSendParam::GetDirection ()
 {
   return m_direction;
 }
 double
-simpleOfdmSendParam::GetRxPowerDbm (void)
+simpleOfdmSendParam::GetRxPowerDbm ()
 {
   return m_rxPowerDbm;
 }
 Ptr<PacketBurst>
-simpleOfdmSendParam::GetBurst (void)
+simpleOfdmSendParam::GetBurst ()
 {
   return m_burst;
 }

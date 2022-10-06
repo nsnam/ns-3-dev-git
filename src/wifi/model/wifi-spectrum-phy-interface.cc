@@ -32,7 +32,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (WifiSpectrumPhyInterface);
 
 TypeId
-WifiSpectrumPhyInterface::GetTypeId (void)
+WifiSpectrumPhyInterface::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiSpectrumPhyInterface")
     .SetParent<SpectrumPhy> ()
@@ -46,7 +46,7 @@ WifiSpectrumPhyInterface::WifiSpectrumPhyInterface ()
 }
 
 void
-WifiSpectrumPhyInterface::DoDispose (void)
+WifiSpectrumPhyInterface::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_spectrumWifiPhy = 0;
@@ -97,7 +97,7 @@ WifiSpectrumPhyInterface::GetRxSpectrumModel () const
 }
 
 Ptr<Object>
-WifiSpectrumPhyInterface::GetAntenna (void) const
+WifiSpectrumPhyInterface::GetAntenna () const
 {
   NS_LOG_FUNCTION (this);
   return m_spectrumWifiPhy->GetAntenna ();

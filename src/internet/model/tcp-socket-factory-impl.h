@@ -48,10 +48,10 @@ public:
    */
   void SetTcp (Ptr<TcpL4Protocol> tcp);
 
-  virtual Ptr<Socket> CreateSocket (void);
+  virtual Ptr<Socket> CreateSocket ();
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 private:
   Ptr<TcpL4Protocol> m_tcp; //!< the associated TCP L4 protocol
 };

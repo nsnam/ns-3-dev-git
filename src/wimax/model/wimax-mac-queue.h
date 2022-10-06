@@ -42,15 +42,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  WimaxMacQueue (void);
+  static TypeId GetTypeId ();
+  WimaxMacQueue ();
   /**
    * Constructor
    *
    * \param maxSize maximum size of queue
    */
   WimaxMacQueue (uint32_t maxSize);
-  ~WimaxMacQueue (void);
+  ~WimaxMacQueue ();
   /**
    * \brief set the maximum queue size
    * \param maxSize the max queue size
@@ -59,7 +59,7 @@ public:
   /**
    * \return the maximum queue size
    */
-  uint32_t GetMaxSize (void) const;
+  uint32_t GetMaxSize () const;
   /**
    * \brief Enqueue a packet
    * \param packet the packet to enqueue
@@ -122,7 +122,7 @@ public:
    * Check if queue is empty
    * \returns true if empty
    */
-  bool IsEmpty (void) const;
+  bool IsEmpty () const;
 
   /**
    * Exclusively for SS.
@@ -135,12 +135,12 @@ public:
    * Get size of queue
    * \returns the size
    */
-  uint32_t GetSize (void) const;
+  uint32_t GetSize () const;
   /**
    * Get number of bytes in queue
    * \returns the number of bytes
    */
-  uint32_t GetNBytes (void) const;
+  uint32_t GetNBytes () const;
 
   /**
    * Check for fragmentation of the first packet of the specified type
@@ -170,7 +170,7 @@ public:
    * Get queue length considering also the MAC overhead
    * \return queue length
    */
-  uint32_t GetQueueLengthWithMACOverhead (void);
+  uint32_t GetQueueLengthWithMACOverhead ();
   /// Set fragmentation function
   /**
    * Set fragmentation state for first packet of type packetType
@@ -192,7 +192,7 @@ public:
   /// QueueElement structure
   struct QueueElement
   {
-    QueueElement (void);
+    QueueElement ();
     /**
      * Constructor
      *
@@ -209,7 +209,7 @@ public:
      * Get size function
      * \returns the size
      */
-    uint32_t GetSize (void) const;
+    uint32_t GetSize () const;
     Ptr<Packet> m_packet; ///< packet
     MacHeaderType m_hdrType; ///< header type
     GenericMacHeader m_hdr; ///< header
@@ -226,9 +226,9 @@ public:
     uint32_t m_fragmentOffset; ///< tracks the start of the next fragment into the packet
 
     /// Set fragmentation
-    void SetFragmentation (void);
+    void SetFragmentation ();
     /// Set fragment number
-    void SetFragmentNumber (void);
+    void SetFragmentNumber ();
     /**
      * Set fragment offset
      * \param offset the offset
@@ -270,7 +270,7 @@ public:
    * Get packet queue function
    * \returns the packet queue
    */
-  const WimaxMacQueue::PacketQueue & GetPacketQueue (void) const;
+  const WimaxMacQueue::PacketQueue & GetPacketQueue () const;
 };
 
 } // namespace ns3

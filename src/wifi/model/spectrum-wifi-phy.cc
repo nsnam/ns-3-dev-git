@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumWifiPhy");
 NS_OBJECT_ENSURE_REGISTERED (SpectrumWifiPhy);
 
 TypeId
-SpectrumWifiPhy::GetTypeId (void)
+SpectrumWifiPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SpectrumWifiPhy")
     .SetParent<WifiPhy> ()
@@ -88,7 +88,7 @@ SpectrumWifiPhy::~SpectrumWifiPhy ()
 }
 
 void
-SpectrumWifiPhy::DoDispose (void)
+SpectrumWifiPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
@@ -100,7 +100,7 @@ SpectrumWifiPhy::DoDispose (void)
 }
 
 void
-SpectrumWifiPhy::DoInitialize (void)
+SpectrumWifiPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   WifiPhy::DoInitialize ();
@@ -142,7 +142,7 @@ SpectrumWifiPhy::GetRxSpectrumModel ()
 }
 
 void
-SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
+SpectrumWifiPhy::UpdateInterferenceHelperBands ()
 {
   NS_LOG_FUNCTION (this);
   uint16_t channelWidth = GetChannelWidth ();
@@ -211,7 +211,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
 }
 
 Ptr<Channel>
-SpectrumWifiPhy::GetChannel (void) const
+SpectrumWifiPhy::GetChannel () const
 {
   return m_channel;
 }
@@ -223,7 +223,7 @@ SpectrumWifiPhy::SetChannel (const Ptr<SpectrumChannel> channel)
 }
 
 void
-SpectrumWifiPhy::ResetSpectrumModel (void)
+SpectrumWifiPhy::ResetSpectrumModel ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (IsInitialized (), "Executing method before run-time");
@@ -237,7 +237,7 @@ SpectrumWifiPhy::ResetSpectrumModel (void)
 }
 
 void
-SpectrumWifiPhy::DoChannelSwitch (void)
+SpectrumWifiPhy::DoChannelSwitch ()
 {
   NS_LOG_FUNCTION (this);
   WifiPhy::DoChannelSwitch ();
@@ -381,7 +381,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 }
 
 Ptr<Object>
-SpectrumWifiPhy::GetAntenna (void) const
+SpectrumWifiPhy::GetAntenna () const
 {
   return m_antenna;
 }
@@ -423,7 +423,7 @@ SpectrumWifiPhy::Transmit (Ptr<WifiSpectrumSignalParameters> txParams)
 }
 
 uint32_t
-SpectrumWifiPhy::GetBandBandwidth (void) const
+SpectrumWifiPhy::GetBandBandwidth () const
 {
   uint32_t bandBandwidth = 0;
   switch (GetStandard ())
@@ -542,7 +542,7 @@ SpectrumWifiPhy::ConvertHeRuSubcarriers (uint16_t bandWidth, uint16_t guardBandw
 }
 
 std::tuple<double, double, double>
-SpectrumWifiPhy::GetTxMaskRejectionParams (void) const
+SpectrumWifiPhy::GetTxMaskRejectionParams () const
 {
   return std::make_tuple (m_txMaskInnerBandMinimumRejection,
                           m_txMaskOuterBandMinimumRejection,

@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("LteSimpleHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (LteSimpleHelper);
 
-LteSimpleHelper::LteSimpleHelper (void)
+LteSimpleHelper::LteSimpleHelper ()
 {
   NS_LOG_FUNCTION (this);
   m_enbDeviceFactory.SetTypeId (LteSimpleNetDevice::GetTypeId ());
@@ -44,7 +44,7 @@ LteSimpleHelper::LteSimpleHelper (void)
 }
 
 void
-LteSimpleHelper::DoInitialize (void)
+LteSimpleHelper::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -53,12 +53,12 @@ LteSimpleHelper::DoInitialize (void)
   Object::DoInitialize ();
 }
 
-LteSimpleHelper::~LteSimpleHelper (void)
+LteSimpleHelper::~LteSimpleHelper ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-TypeId LteSimpleHelper::GetTypeId (void)
+TypeId LteSimpleHelper::GetTypeId ()
 {
   static TypeId
   tid =
@@ -214,7 +214,7 @@ LteSimpleHelper::InstallSingleUeDevice (Ptr<Node> n)
 
 
 void
-LteSimpleHelper::EnableLogComponents (void)
+LteSimpleHelper::EnableLogComponents ()
 {
   LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
 
@@ -231,7 +231,7 @@ LteSimpleHelper::EnableLogComponents (void)
 }
 
 void
-LteSimpleHelper::EnableTraces (void)
+LteSimpleHelper::EnableTraces ()
 {
 //   EnableMacTraces ();
   EnableRlcTraces ();
@@ -239,7 +239,7 @@ LteSimpleHelper::EnableTraces (void)
 }
 
 void
-LteSimpleHelper::EnableRlcTraces (void)
+LteSimpleHelper::EnableRlcTraces ()
 {
   EnableDlRlcTraces ();
   EnableUlRlcTraces ();
@@ -286,7 +286,7 @@ LteSimpleHelperDlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::s
 }
 
 void
-LteSimpleHelper::EnableDlRlcTraces (void)
+LteSimpleHelper::EnableDlRlcTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -337,7 +337,7 @@ LteSimpleHelperUlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::s
 
 
 void
-LteSimpleHelper::EnableUlRlcTraces (void)
+LteSimpleHelper::EnableUlRlcTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -349,14 +349,14 @@ LteSimpleHelper::EnableUlRlcTraces (void)
 
 
 void
-LteSimpleHelper::EnablePdcpTraces (void)
+LteSimpleHelper::EnablePdcpTraces ()
 {
   EnableDlPdcpTraces ();
   EnableUlPdcpTraces ();
 }
 
 void
-LteSimpleHelper::EnableDlPdcpTraces (void)
+LteSimpleHelper::EnableDlPdcpTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -367,7 +367,7 @@ LteSimpleHelper::EnableDlPdcpTraces (void)
 }
 
 void
-LteSimpleHelper::EnableUlPdcpTraces (void)
+LteSimpleHelper::EnableUlPdcpTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 

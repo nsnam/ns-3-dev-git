@@ -54,19 +54,19 @@ MatchContainer::MatchContainer (const std::vector<Ptr<Object> > &objects,
   NS_LOG_FUNCTION (this << &objects << &contexts << path);
 }
 MatchContainer::Iterator
-MatchContainer::Begin (void) const
+MatchContainer::Begin () const
 {
   NS_LOG_FUNCTION (this);
   return m_objects.begin ();
 }
 MatchContainer::Iterator
-MatchContainer::End (void) const
+MatchContainer::End () const
 {
   NS_LOG_FUNCTION (this);
   return m_objects.end ();
 }
 std::size_t
-MatchContainer::GetN (void) const
+MatchContainer::GetN () const
 {
   NS_LOG_FUNCTION (this);
   return m_objects.size ();
@@ -84,7 +84,7 @@ MatchContainer::GetMatchedPath (uint32_t i) const
   return m_contexts[i];
 }
 std::string
-MatchContainer::GetPath (void) const
+MatchContainer::GetPath () const
 {
   NS_LOG_FUNCTION (this);
   return m_path;
@@ -321,7 +321,7 @@ public:
 
 private:
   /** Ensure the Config path starts and ends with a '/'. */
-  void Canonicalize (void);
+  void Canonicalize ();
   /**
    * Parse the next element in the Config path.
    *
@@ -348,7 +348,7 @@ private:
    *
    * \returns The current Config path.
    */
-  std::string GetResolvedPath (void) const;
+  std::string GetResolvedPath () const;
   /**
    * Handle one found object.
    *
@@ -375,7 +375,7 @@ Resolver::~Resolver ()
   NS_LOG_FUNCTION (this);
 }
 void
-Resolver::Canonicalize (void)
+Resolver::Canonicalize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -403,7 +403,7 @@ Resolver::Resolve (Ptr<Object> root)
 }
 
 std::string
-Resolver::GetResolvedPath (void) const
+Resolver::GetResolvedPath () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -640,7 +640,7 @@ public:
   void UnregisterRootNamespaceObject (Ptr<Object> obj);
 
   /** \copydoc ns3::Config::GetRootNamespaceObjectN() */
-  std::size_t GetRootNamespaceObjectN (void) const;
+  std::size_t GetRootNamespaceObjectN () const;
   /** \copydoc ns3::Config::GetRootNamespaceObject() */
   Ptr<Object> GetRootNamespaceObject (std::size_t i) const;
 
@@ -804,7 +804,7 @@ ConfigImpl::UnregisterRootNamespaceObject (Ptr<Object> obj)
 }
 
 std::size_t
-ConfigImpl::GetRootNamespaceObjectN (void) const
+ConfigImpl::GetRootNamespaceObjectN () const
 {
   NS_LOG_FUNCTION (this);
   return m_roots.size ();
@@ -817,7 +817,7 @@ ConfigImpl::GetRootNamespaceObject (std::size_t i) const
 }
 
 
-void Reset (void)
+void Reset ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   // First, let's reset the initial value of every attribute
@@ -955,7 +955,7 @@ void UnregisterRootNamespaceObject (Ptr<Object> obj)
   ConfigImpl::Get ()->UnregisterRootNamespaceObject (obj);
 }
 
-std::size_t GetRootNamespaceObjectN (void)
+std::size_t GetRootNamespaceObjectN ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return ConfigImpl::Get ()->GetRootNamespaceObjectN ();

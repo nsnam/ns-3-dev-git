@@ -36,19 +36,19 @@ ObjectPtrContainerValue::ObjectPtrContainerValue ()
 }
 
 ObjectPtrContainerValue::Iterator
-ObjectPtrContainerValue::Begin (void) const
+ObjectPtrContainerValue::Begin () const
 {
   NS_LOG_FUNCTION (this);
   return m_objects.begin ();
 }
 ObjectPtrContainerValue::Iterator
-ObjectPtrContainerValue::End (void) const
+ObjectPtrContainerValue::End () const
 {
   NS_LOG_FUNCTION (this);
   return m_objects.end ();
 }
 std::size_t
-ObjectPtrContainerValue::GetN (void) const
+ObjectPtrContainerValue::GetN () const
 {
   NS_LOG_FUNCTION (this);
   return m_objects.size ();
@@ -67,7 +67,7 @@ ObjectPtrContainerValue::Get (std::size_t i) const
 }
 
 Ptr<AttributeValue>
-ObjectPtrContainerValue::Copy (void) const
+ObjectPtrContainerValue::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return ns3::Create<ObjectPtrContainerValue> (*this);
@@ -128,13 +128,13 @@ ObjectPtrContainerAccessor::Get (const ObjectBase * object, AttributeValue &valu
   return true;
 }
 bool
-ObjectPtrContainerAccessor::HasGetter (void) const
+ObjectPtrContainerAccessor::HasGetter () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 bool
-ObjectPtrContainerAccessor::HasSetter (void) const
+ObjectPtrContainerAccessor::HasSetter () const
 {
   NS_LOG_FUNCTION (this);
   return false;

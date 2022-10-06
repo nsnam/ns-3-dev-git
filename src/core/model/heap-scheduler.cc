@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("HeapScheduler");
 NS_OBJECT_ENSURE_REGISTERED (HeapScheduler);
 
 TypeId
-HeapScheduler::GetTypeId (void)
+HeapScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HeapScheduler")
     .SetParent<Scheduler> ()
@@ -89,7 +89,7 @@ HeapScheduler::RightChild (std::size_t id) const
 }
 
 std::size_t
-HeapScheduler::Root (void) const
+HeapScheduler::Root () const
 {
   NS_LOG_FUNCTION (this);
   return 1;
@@ -103,7 +103,7 @@ HeapScheduler::IsRoot (std::size_t id) const
 }
 
 std::size_t
-HeapScheduler::Last (void) const
+HeapScheduler::Last () const
 {
   NS_LOG_FUNCTION (this);
   return m_heap.size () - 1;
@@ -143,14 +143,14 @@ HeapScheduler::Smallest (std::size_t a, std::size_t b) const
 }
 
 bool
-HeapScheduler::IsEmpty (void) const
+HeapScheduler::IsEmpty () const
 {
   NS_LOG_FUNCTION (this);
   return (m_heap.size () == 1);
 }
 
 void
-HeapScheduler::BottomUp (void)
+HeapScheduler::BottomUp ()
 {
   NS_LOG_FUNCTION (this);
   std::size_t index = Last ();
@@ -207,13 +207,13 @@ HeapScheduler::Insert (const Event &ev)
 }
 
 Scheduler::Event
-HeapScheduler::PeekNext (void) const
+HeapScheduler::PeekNext () const
 {
   NS_LOG_FUNCTION (this);
   return m_heap[Root ()];
 }
 Scheduler::Event
-HeapScheduler::RemoveNext (void)
+HeapScheduler::RemoveNext ()
 {
   NS_LOG_FUNCTION (this);
   Event next = m_heap[Root ()];

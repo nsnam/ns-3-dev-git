@@ -52,20 +52,20 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   UdpServer ();
   virtual ~UdpServer ();
   /**
    * \brief Returns the number of lost packets
    * \return the number of lost packets
    */
-  uint32_t GetLost (void) const;
+  uint32_t GetLost () const;
 
   /**
    * \brief Returns the number of received packets
    * \return the number of received packets
    */
-  uint64_t GetReceived (void) const;
+  uint64_t GetReceived () const;
 
   /**
    * \brief Returns the size of the window used for checking loss.
@@ -81,12 +81,12 @@ public:
    */
   void SetPacketWindowSize (uint16_t size);
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
 
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Handle a packet reception.

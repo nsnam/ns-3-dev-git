@@ -171,7 +171,7 @@ public:
    * Get the total number of type ids.
    * \returns The total number.
    */
-  uint16_t GetRegisteredN (void) const;
+  uint16_t GetRegisteredN () const;
   /**
    * Get a type id by index.
    *
@@ -599,7 +599,7 @@ IidManager::HasConstructor (uint16_t uid) const
 }
 
 uint16_t
-IidManager::GetRegisteredN (void) const
+IidManager::GetRegisteredN () const
 {
   NS_LOG_FUNCTION (IID << m_information.size ());
   return static_cast<uint16_t> (m_information.size ());
@@ -866,7 +866,7 @@ TypeId::LookupByHashFailSafe (hash_t hash, TypeId *tid)
 }
 
 uint16_t
-TypeId::GetRegisteredN (void)
+TypeId::GetRegisteredN ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return IidManager::Get ()->GetRegisteredN ();
@@ -940,14 +940,14 @@ TypeId::SetSize (std::size_t size)
   return *this;
 }
 TypeId
-TypeId::GetParent (void) const
+TypeId::GetParent () const
 {
   NS_LOG_FUNCTION (this);
   uint16_t parent = IidManager::Get ()->GetParent (m_tid);
   return TypeId (parent);
 }
 bool
-TypeId::HasParent (void) const
+TypeId::HasParent () const
 {
   NS_LOG_FUNCTION (this);
   uint16_t parent = IidManager::Get ()->GetParent (m_tid);
@@ -965,7 +965,7 @@ TypeId::IsChildOf (TypeId other) const
   return tmp == other && *this != other;
 }
 std::string
-TypeId::GetGroupName (void) const
+TypeId::GetGroupName () const
 {
   NS_LOG_FUNCTION (this);
   std::string groupName = IidManager::Get ()->GetGroupName (m_tid);
@@ -973,7 +973,7 @@ TypeId::GetGroupName (void) const
 }
 
 std::string
-TypeId::GetName (void) const
+TypeId::GetName () const
 {
   NS_LOG_FUNCTION (this);
   std::string name = IidManager::Get ()->GetName (m_tid);
@@ -981,13 +981,13 @@ TypeId::GetName (void) const
 }
 
 TypeId::hash_t
-TypeId::GetHash (void) const
+TypeId::GetHash () const
 {
   hash_t hash = IidManager::Get ()->GetHash (m_tid);
   return hash;
 }
 std::size_t
-TypeId::GetSize (void) const
+TypeId::GetSize () const
 {
   NS_LOG_FUNCTION (this);
   std::size_t size = IidManager::Get ()->GetSize (m_tid);
@@ -995,7 +995,7 @@ TypeId::GetSize (void) const
 }
 
 bool
-TypeId::HasConstructor (void) const
+TypeId::HasConstructor () const
 {
   NS_LOG_FUNCTION (this);
   bool hasConstructor = IidManager::Get ()->HasConstructor (m_tid);
@@ -1057,7 +1057,7 @@ TypeId::SetAttributeInitialValue (std::size_t i,
 
 
 Callback<ObjectBase *>
-TypeId::GetConstructor (void) const
+TypeId::GetConstructor () const
 {
   NS_LOG_FUNCTION (this);
   Callback<ObjectBase *>  cb = IidManager::Get ()->GetConstructor (m_tid);
@@ -1065,7 +1065,7 @@ TypeId::GetConstructor (void) const
 }
 
 bool
-TypeId::MustHideFromDocumentation (void) const
+TypeId::MustHideFromDocumentation () const
 {
   NS_LOG_FUNCTION (this);
   bool mustHide = IidManager::Get ()->MustHideFromDocumentation (m_tid);
@@ -1073,7 +1073,7 @@ TypeId::MustHideFromDocumentation (void) const
 }
 
 std::size_t
-TypeId::GetAttributeN (void) const
+TypeId::GetAttributeN () const
 {
   NS_LOG_FUNCTION (this);
   std::size_t n = IidManager::Get ()->GetAttributeN (m_tid);
@@ -1094,7 +1094,7 @@ TypeId::GetAttributeFullName (std::size_t i) const
 }
 
 std::size_t
-TypeId::GetTraceSourceN (void) const
+TypeId::GetTraceSourceN () const
 {
   NS_LOG_FUNCTION (this);
   return IidManager::Get ()->GetTraceSourceN (m_tid);
@@ -1124,7 +1124,7 @@ TypeId::AddTraceSource (std::string name,
 }
 
 TypeId
-TypeId::HideFromDocumentation (void)
+TypeId::HideFromDocumentation ()
 {
   NS_LOG_FUNCTION (this);
   IidManager::Get ()->HideFromDocumentation (m_tid);
@@ -1181,7 +1181,7 @@ TypeId::LookupTraceSourceByName (std::string name) const
 }
 
 uint16_t
-TypeId::GetUid (void) const
+TypeId::GetUid () const
 {
   NS_LOG_FUNCTION (this);
   return m_tid;

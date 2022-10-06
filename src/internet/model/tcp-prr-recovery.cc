@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpPrrRecovery");
 NS_OBJECT_ENSURE_REGISTERED (TcpPrrRecovery);
 
 TypeId
-TcpPrrRecovery::GetTypeId (void)
+TcpPrrRecovery::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpPrrRecovery")
     .SetParent<TcpClassicRecovery> ()
@@ -47,7 +47,7 @@ TcpPrrRecovery::GetTypeId (void)
   return tid;
 }
 
-TcpPrrRecovery::TcpPrrRecovery (void)
+TcpPrrRecovery::TcpPrrRecovery ()
   : TcpClassicRecovery ()
 {
   NS_LOG_FUNCTION (this);
@@ -63,7 +63,7 @@ TcpPrrRecovery::TcpPrrRecovery (const TcpPrrRecovery& recovery)
   NS_LOG_FUNCTION (this);
 }
 
-TcpPrrRecovery::~TcpPrrRecovery (void)
+TcpPrrRecovery::~TcpPrrRecovery ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -135,7 +135,7 @@ TcpPrrRecovery::UpdateBytesSent (uint32_t bytesSent)
 }
 
 Ptr<TcpRecoveryOps>
-TcpPrrRecovery::Fork (void)
+TcpPrrRecovery::Fork ()
 {
   return CopyObject<TcpPrrRecovery> (this);
 }

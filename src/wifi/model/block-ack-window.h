@@ -80,19 +80,19 @@ public:
    *
    * \return the current winStart value
    */
-  uint16_t GetWinStart (void) const;
+  uint16_t GetWinStart () const;
   /**
    * Get the current winEnd value.
    *
    * \return the current winEnd value
    */
-  uint16_t GetWinEnd (void) const;
+  uint16_t GetWinEnd () const;
   /**
    * Get the window size.
    *
    * \return the window size
    */
-  std::size_t GetWinSize (void) const;
+  std::size_t GetWinSize () const;
   /**
    * Get a reference to the element in the window having the given distance from
    * the current winStart. Note that the given distance must be less than the

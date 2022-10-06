@@ -36,8 +36,8 @@ namespace ns3 {
 class ServiceFlowRecord
 {
 public:
-  ServiceFlowRecord (void);
-  ~ServiceFlowRecord (void);
+  ServiceFlowRecord ();
+  ~ServiceFlowRecord ();
 
   /**
    * \brief Set the grant size (only for UGS service flows)
@@ -47,7 +47,7 @@ public:
   /**
    * \return the grant size (only for ugs service flows)
    */
-  uint32_t GetGrantSize (void) const;
+  uint32_t GetGrantSize () const;
   /**
    * \brief Set the grant time stamp. Used for data alocation for ugs flows, and unicast poll (bw request)
    * for non-UGS flows
@@ -57,7 +57,7 @@ public:
   /**
    * \return the grant time stamp. Used for data allocation for ugs flows, and unicast poll (bw request) for non-UGS flows
    */
-  Time GetGrantTimeStamp (void) const;
+  Time GetGrantTimeStamp () const;
   /**
    * \brief Set the DlTimeStamp.
    * \param dlTimeStamp time when this service flow's traffic was last sent.
@@ -66,7 +66,7 @@ public:
   /**
    * \return the DlTimeStamp: time when this service flow's traffic was last sent
    */
-  Time GetDlTimeStamp (void) const;
+  Time GetDlTimeStamp () const;
   /**
    * \brief set the number of sent packets in this service flow
    * \param pktsSent the number of sent packets
@@ -80,7 +80,7 @@ public:
   /**
    * \return the number of sent packet in this service flow
    */
-  uint32_t GetPktsSent (void) const;
+  uint32_t GetPktsSent () const;
   /**
    * \brief Set the number of received packets
    * \param pktsRcvd The number of received packets
@@ -94,7 +94,7 @@ public:
   /**
    * \return the number of received packet
    */
-  uint32_t GetPktsRcvd (void) const;
+  uint32_t GetPktsRcvd () const;
   /**
    * \brief Set the number of sent bytes
    * \param bytesSent the number of sent bytes
@@ -108,7 +108,7 @@ public:
   /**
    * \return The number of sent bytes
    */
-  uint32_t GetBytesSent (void) const;
+  uint32_t GetBytesSent () const;
   /**
    * \brief Set the number of received bytes
    * \param bytesRcvd the number of received bytes
@@ -122,7 +122,7 @@ public:
   /**
     * \return The number of received bytes
     */
-  uint32_t GetBytesRcvd (void) const;
+  uint32_t GetBytesRcvd () const;
 
   /**
     * \brief set the requested bandwidth
@@ -137,7 +137,7 @@ public:
   /**
     * \return The requested bandwidth
     */
-  uint32_t GetRequestedBandwidth (void);
+  uint32_t GetRequestedBandwidth ();
 
   /**
     * \brief set the granted bandwidth
@@ -152,7 +152,7 @@ public:
   /**
     * \return The granted bandwidth
     */
-  uint32_t GetGrantedBandwidth (void);
+  uint32_t GetGrantedBandwidth ();
 
   /**
     * \brief set the temporary granted bandwidth
@@ -167,7 +167,7 @@ public:
   /**
     * \return The temporary granted bandwidth
     */
-  uint32_t GetGrantedBandwidthTemp (void);
+  uint32_t GetGrantedBandwidthTemp ();
 
   /**
     * \brief set BW since last expiry
@@ -182,7 +182,7 @@ public:
   /**
     * \return The bandwidth since last expiry
     */
-  uint32_t GetBwSinceLastExpiry (void);
+  uint32_t GetBwSinceLastExpiry ();
 
   /**
     * \brief set last grant time
@@ -192,7 +192,7 @@ public:
   /**
     * \return The last grant time
     */
-  Time GetLastGrantTime (void) const;
+  Time GetLastGrantTime () const;
 
   /**
     * \brief set backlogged
@@ -207,7 +207,7 @@ public:
   /**
     * \return The number of backlogged
     */
-  uint32_t GetBacklogged (void) const;
+  uint32_t GetBacklogged () const;
 
   /**
     * \brief set temporary back logged
@@ -222,7 +222,7 @@ public:
   /**
     * \return The value of temporary backlogged
     */
-  uint32_t GetBackloggedTemp (void) const;
+  uint32_t GetBackloggedTemp () const;
 
 private:
   uint32_t m_grantSize; ///< only used for UGS flow

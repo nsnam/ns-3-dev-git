@@ -59,7 +59,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint32_t AODV_PORT;
 
   /// constructor
@@ -182,7 +182,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 private:
   /**
    * Notify that an MPDU was dropped.

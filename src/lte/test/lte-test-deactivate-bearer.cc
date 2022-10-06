@@ -127,7 +127,7 @@ LenaDeactivateBearerTestCase::~LenaDeactivateBearerTestCase ()
 }
 
 void
-LenaDeactivateBearerTestCase::DoRun (void)
+LenaDeactivateBearerTestCase::DoRun ()
 {
   uint32_t originalSeed = RngSeedManager::GetSeed ();
   uint32_t originalRun = RngSeedManager::GetRun ();

@@ -38,7 +38,7 @@ AttributeIterator::~AttributeIterator ()
 }
 
 void
-AttributeIterator::Iterate (void)
+AttributeIterator::Iterate ()
 {
   for (uint32_t i = 0; i < Config::GetRootNamespaceObjectN (); ++i)
     {
@@ -81,7 +81,7 @@ AttributeIterator::GetCurrentPath (std::string attr) const
 }
 
 std::string
-AttributeIterator::GetCurrentPath (void) const
+AttributeIterator::GetCurrentPath () const
 {
   std::ostringstream oss;
   for (uint32_t i = 0; i < m_currentPath.size (); ++i)
@@ -96,7 +96,7 @@ AttributeIterator::DoStartVisitObject (Ptr<Object> object)
 {
 }
 void
-AttributeIterator::DoEndVisitObject (void)
+AttributeIterator::DoEndVisitObject ()
 {
 }
 void
@@ -104,7 +104,7 @@ AttributeIterator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string
 {
 }
 void
-AttributeIterator::DoEndVisitPointerAttribute (void)
+AttributeIterator::DoEndVisitPointerAttribute ()
 {
 }
 void
@@ -112,7 +112,7 @@ AttributeIterator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string n
 {
 }
 void
-AttributeIterator::DoEndVisitArrayAttribute (void)
+AttributeIterator::DoEndVisitArrayAttribute ()
 {
 }
 void
@@ -120,7 +120,7 @@ AttributeIterator::DoStartVisitArrayItem (const ObjectPtrContainerValue &vector,
 {
 }
 void
-AttributeIterator::DoEndVisitArrayItem (void)
+AttributeIterator::DoEndVisitArrayItem ()
 {
 }
 
@@ -139,7 +139,7 @@ AttributeIterator::StartVisitObject (Ptr<Object> object)
   DoStartVisitObject (object);
 }
 void
-AttributeIterator::EndVisitObject (void)
+AttributeIterator::EndVisitObject ()
 {
   m_currentPath.pop_back ();
   DoEndVisitObject ();
@@ -152,7 +152,7 @@ AttributeIterator::StartVisitPointerAttribute (Ptr<Object> object, std::string n
   DoStartVisitPointerAttribute (object, name, value);
 }
 void
-AttributeIterator::EndVisitPointerAttribute (void)
+AttributeIterator::EndVisitPointerAttribute ()
 {
   m_currentPath.pop_back ();
   m_currentPath.pop_back ();
@@ -165,7 +165,7 @@ AttributeIterator::StartVisitArrayAttribute (Ptr<Object> object, std::string nam
   DoStartVisitArrayAttribute (object, name, vector);
 }
 void
-AttributeIterator::EndVisitArrayAttribute (void)
+AttributeIterator::EndVisitArrayAttribute ()
 {
   m_currentPath.pop_back ();
   DoEndVisitArrayAttribute ();
@@ -181,7 +181,7 @@ AttributeIterator::StartVisitArrayItem (const ObjectPtrContainerValue &vector, u
   DoStartVisitArrayItem (vector, index, item);
 }
 void
-AttributeIterator::EndVisitArrayItem (void)
+AttributeIterator::EndVisitArrayItem ()
 {
   m_currentPath.pop_back ();
   m_currentPath.pop_back ();

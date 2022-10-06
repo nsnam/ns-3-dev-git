@@ -86,7 +86,7 @@ public:
                      uint8_t mcs, uint16_t sizeTb);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 
   double m_d1; ///< distance between UE and ENB

@@ -54,7 +54,7 @@ Rip::~Rip ()
 }
 
 TypeId
-Rip::GetTypeId (void)
+Rip::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Rip")
     .SetParent<Ipv4RoutingProtocol> ()
@@ -1361,7 +1361,7 @@ void RipRoutingTableEntry::SetRouteStatus (Status_e status)
     }
 }
 
-RipRoutingTableEntry::Status_e RipRoutingTableEntry::GetRouteStatus (void) const
+RipRoutingTableEntry::Status_e RipRoutingTableEntry::GetRouteStatus () const
 {
   return m_status;
 }
@@ -1371,7 +1371,7 @@ void RipRoutingTableEntry::SetRouteChanged (bool changed)
   m_changed = changed;
 }
 
-bool RipRoutingTableEntry::IsRouteChanged (void) const
+bool RipRoutingTableEntry::IsRouteChanged () const
 {
   return m_changed;
 }

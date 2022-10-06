@@ -70,7 +70,7 @@ static ns3::GlobalValue g_rngRun ("RngRun",
                                   ns3::MakeUintegerChecker<uint64_t> ());
 
 
-uint32_t RngSeedManager::GetSeed (void)
+uint32_t RngSeedManager::GetSeed ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   UintegerValue seedValue;
@@ -99,7 +99,7 @@ uint64_t RngSeedManager::GetRun ()
   return run;
 }
 
-uint64_t RngSeedManager::GetNextStreamIndex (void)
+uint64_t RngSeedManager::GetNextStreamIndex ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   uint64_t next = g_nextStreamIndex;

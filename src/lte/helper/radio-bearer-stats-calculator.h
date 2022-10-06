@@ -92,20 +92,20 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   void DoDispose ();
 
   /**
    * Get the name of the file where the uplink statistics will be stored.
    * @return the name of the file where the uplink statistics will be stored
    */
-  std::string GetUlOutputFilename (void);
+  std::string GetUlOutputFilename ();
 
   /**
    * Get the name of the file where the downlink statistics will be stored.
    * @return the name of the file where the downlink statistics will be stored
    */
-  std::string GetDlOutputFilename (void);
+  std::string GetDlOutputFilename ();
 
   /**
    * Set the name of the file where the uplink PDCP statistics will be stored.
@@ -118,7 +118,7 @@ public:
    * Get the name of the file where the uplink PDCP statistics will be stored.
    * @return the name of the file where the uplink PDCP statistics will be stored
    */
-  std::string GetUlPdcpOutputFilename (void);
+  std::string GetUlPdcpOutputFilename ();
 
   /**
    * Set the name of the file where the downlink PDCP statistics will be stored.
@@ -131,7 +131,7 @@ public:
    * Get the name of the file where the downlink PDCP statistics will be stored.
    * @return the name of the file where the downlink PDCP statistics will be stored
    */
-  std::string GetDlPdcpOutputFilename (void);
+  std::string GetDlPdcpOutputFilename ();
 
 
   /**
@@ -356,7 +356,7 @@ private:
    * During next calls it opens output files in append mode.
    */
   void
-  ShowResults (void);
+  ShowResults ();
 
   /**
    * Writes collected statistics to UL output file and
@@ -378,7 +378,7 @@ private:
    * Erases collected statistics
    */
   void
-  ResetResults (void);
+  ResetResults ();
 
   /**
    * Reschedules EndEpoch event. Usually used after
@@ -391,7 +391,7 @@ private:
    * ShowResults() to write statistics to output files
    * and ResetResults() to clear collected statistics.
    */
-  void EndEpoch (void);
+  void EndEpoch ();
 
   EventId m_endEpochEvent; //!< Event id for next end epoch event
 

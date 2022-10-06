@@ -38,7 +38,7 @@ EhtConfiguration::~EhtConfiguration ()
 }
 
 TypeId
-EhtConfiguration::GetTypeId (void)
+EhtConfiguration::GetTypeId ()
 {
   static ns3::TypeId tid = ns3::TypeId ("ns3::EhtConfiguration")
     .SetParent<Object> ()

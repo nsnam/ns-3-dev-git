@@ -272,7 +272,7 @@ ThreeGppChannelModel::DoDispose ()
 }
 
 TypeId
-ThreeGppChannelModel::GetTypeId (void)
+ThreeGppChannelModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppChannelModel")
     .SetGroupName ("Spectrum")

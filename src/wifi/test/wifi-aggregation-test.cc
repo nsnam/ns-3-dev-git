@@ -70,7 +70,7 @@ private:
    */
   void MpduDiscarded (WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
 
-  void DoRun (void) override;
+  void DoRun () override;
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
   Ptr<StaWifiMac> m_mac; ///< Mac
   Ptr<YansWifiPhy> m_phy; ///< Phy
@@ -92,7 +92,7 @@ AmpduAggregationTest::MpduDiscarded (WifiMacDropReason, Ptr<const WifiMpdu>)
 }
 
 void
-AmpduAggregationTest::DoRun (void)
+AmpduAggregationTest::DoRun ()
 {
   /*
    * Create device and attach HT configuration.
@@ -329,7 +329,7 @@ public:
   TwoLevelAggregationTest ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
   Ptr<StaWifiMac> m_mac; ///< Mac
   Ptr<YansWifiPhy> m_phy; ///< Phy
@@ -343,7 +343,7 @@ TwoLevelAggregationTest::TwoLevelAggregationTest ()
 }
 
 void
-TwoLevelAggregationTest::DoRun (void)
+TwoLevelAggregationTest::DoRun ()
 {
   /*
    * Create device and attach HT configuration.
@@ -559,7 +559,7 @@ public:
   HeAggregationTest ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
   /**
    * Run test for a given buffer size
    *
@@ -752,7 +752,7 @@ public:
   PreservePacketsInAmpdus ();
   virtual ~PreservePacketsInAmpdus ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -824,7 +824,7 @@ PreservePacketsInAmpdus::NotifyMacForwardUp (Ptr<const Packet> p)
 }
 
 void
-PreservePacketsInAmpdus::DoRun (void)
+PreservePacketsInAmpdus::DoRun ()
 {
   NodeContainer wifiStaNode;
   wifiStaNode.Create (1);

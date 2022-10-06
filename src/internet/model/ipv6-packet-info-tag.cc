@@ -40,7 +40,7 @@ Ipv6PacketInfoTag::SetAddress (Ipv6Address addr)
 }
 
 Ipv6Address
-Ipv6PacketInfoTag::GetAddress (void) const
+Ipv6PacketInfoTag::GetAddress () const
 {
   return m_addr;
 }
@@ -52,7 +52,7 @@ Ipv6PacketInfoTag::SetRecvIf (uint32_t ifindex)
 }
 
 uint32_t
-Ipv6PacketInfoTag::GetRecvIf (void) const
+Ipv6PacketInfoTag::GetRecvIf () const
 {
   return m_ifindex;
 }
@@ -64,7 +64,7 @@ Ipv6PacketInfoTag::SetHoplimit (uint8_t ttl)
 }
 
 uint8_t
-Ipv6PacketInfoTag::GetHoplimit (void) const
+Ipv6PacketInfoTag::GetHoplimit () const
 {
   return m_hoplimit;
 }
@@ -76,14 +76,14 @@ Ipv6PacketInfoTag::SetTrafficClass (uint8_t tclass)
 }
 
 uint8_t
-Ipv6PacketInfoTag::GetTrafficClass (void) const
+Ipv6PacketInfoTag::GetTrafficClass () const
 {
   return m_tclass;
 }
 
 
 TypeId
-Ipv6PacketInfoTag::GetTypeId (void)
+Ipv6PacketInfoTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6PacketInfoTag")
     .SetParent<Tag> ()
@@ -93,13 +93,13 @@ Ipv6PacketInfoTag::GetTypeId (void)
   return tid;
 }
 TypeId
-Ipv6PacketInfoTag::GetInstanceTypeId (void) const
+Ipv6PacketInfoTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-Ipv6PacketInfoTag::GetSerializedSize (void) const
+Ipv6PacketInfoTag::GetSerializedSize () const
 {
   return 16
          + sizeof (uint8_t)

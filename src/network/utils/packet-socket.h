@@ -97,7 +97,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   PacketSocket ();
   virtual ~PacketSocket ();
@@ -108,9 +108,9 @@ public:
    */
   void SetNode (Ptr<Node> node);
 
-  virtual enum SocketErrno GetErrno (void) const;
-  virtual enum SocketType GetSocketType (void) const;
-  virtual Ptr<Node> GetNode (void) const;
+  virtual enum SocketErrno GetErrno () const;
+  virtual enum SocketType GetSocketType () const;
+  virtual Ptr<Node> GetNode () const;
   /**
    * \brief Bind the socket to the NetDevice and register the protocol handler.
    *
@@ -118,7 +118,7 @@ public:
    *
    * \returns 0 on success, -1 on failure.
    */
-  virtual int Bind (void);
+  virtual int Bind ();
   /**
    * \brief Bind the socket to the NetDevice and register the protocol handler.
    *
@@ -126,7 +126,7 @@ public:
    *
    * \returns 0 on success, -1 on failure.
    */
-  virtual int Bind6 (void);
+  virtual int Bind6 ();
   /**
    * \brief Bind the socket to the NetDevice and register the
    *        protocol handler specified in the address.
@@ -135,15 +135,15 @@ public:
    * \returns 0 on success, -1 on failure.
    */
   virtual int Bind (const Address & address);
-  virtual int Close (void);
-  virtual int ShutdownSend (void);
-  virtual int ShutdownRecv (void);
+  virtual int Close ();
+  virtual int ShutdownSend ();
+  virtual int ShutdownRecv ();
   virtual int Connect (const Address &address);
-  virtual int Listen (void);
-  virtual uint32_t GetTxAvailable (void) const;
+  virtual int Listen ();
+  virtual uint32_t GetTxAvailable () const;
   virtual int Send (Ptr<Packet> p, uint32_t flags);
   virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
-  virtual uint32_t GetRxAvailable (void) const;
+  virtual uint32_t GetRxAvailable () const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
                                 Address &fromAddress);
@@ -180,7 +180,7 @@ private:
    * \returns The minimum MTU
    */
   uint32_t GetMinMtu (PacketSocketAddress ad) const;
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief States of the socket
@@ -232,7 +232,7 @@ public:
    * Get the packet type
    * @return the packet type of the corresponding packet
    */
-  NetDevice::PacketType GetPacketType (void) const;
+  NetDevice::PacketType GetPacketType () const;
   /**
    * Set the destination address of the corresponding packet
    * @param a the destination address of the corresponding packet
@@ -242,15 +242,15 @@ public:
    * Get the destination address of the corresponding packet
    * @return the destination address of the corresponding packet
    */
-  Address GetDestAddress (void) const;
+  Address GetDestAddress () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
@@ -278,14 +278,14 @@ public:
    * Get the device name from where the corresponding packet is coming.
    * @return the device name from where the corresponding packet is coming.
    */
-  std::string GetDeviceName (void) const;
+  std::string GetDeviceName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;

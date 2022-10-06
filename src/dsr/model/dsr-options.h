@@ -78,7 +78,7 @@ public:
    * \brief Get the type identificator.
    * \return type identificator
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief Constructor.
    */

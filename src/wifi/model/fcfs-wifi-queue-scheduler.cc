@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("FcfsWifiQueueScheduler");
 NS_OBJECT_ENSURE_REGISTERED (FcfsWifiQueueScheduler);
 
 TypeId
-FcfsWifiQueueScheduler::GetTypeId (void)
+FcfsWifiQueueScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FcfsWifiQueueScheduler")
     .SetParent<WifiMacQueueSchedulerImpl<Time>> ()

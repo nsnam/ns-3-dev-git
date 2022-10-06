@@ -76,7 +76,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   PacketSink ();
 
   virtual ~PacketSink ();
@@ -89,12 +89,12 @@ public:
   /**
    * \return pointer to listening socket
    */
-  Ptr<Socket> GetListeningSocket (void) const;
+  Ptr<Socket> GetListeningSocket () const;
 
   /**
    * \return list of pointers to accepted sockets
    */
-  std::list<Ptr<Socket> > GetAcceptedSockets (void) const;
+  std::list<Ptr<Socket> > GetAcceptedSockets () const;
 
   /**
    * TracedCallback signature for a reception with addresses and SeqTsSizeHeader
@@ -108,11 +108,11 @@ public:
                                    const SeqTsSizeHeader &header);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 private:
   // inherited from Application base class.
-  virtual void StartApplication (void);    // Called at time specified by Start
-  virtual void StopApplication (void);     // Called at time specified by Stop
+  virtual void StartApplication ();    // Called at time specified by Start
+  virtual void StopApplication ();     // Called at time specified by Stop
 
   /**
    * \brief Handle a packet received by the application

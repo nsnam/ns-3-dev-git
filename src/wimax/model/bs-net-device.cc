@@ -51,7 +51,7 @@ NS_LOG_COMPONENT_DEFINE ("BaseStationNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (BaseStationNetDevice);
 
-TypeId BaseStationNetDevice::GetTypeId (void)
+TypeId BaseStationNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BaseStationNetDevice")
 
@@ -187,7 +187,7 @@ TypeId BaseStationNetDevice::GetTypeId (void)
   return tid;
 }
 
-BaseStationNetDevice::BaseStationNetDevice (void)
+BaseStationNetDevice::BaseStationNetDevice ()
 {
   InitBaseStationNetDevice ();
 }
@@ -253,12 +253,12 @@ BaseStationNetDevice::BaseStationNetDevice (Ptr<Node> node,
   m_scheduler = bsScheduler;
 }
 
-BaseStationNetDevice::~BaseStationNetDevice (void)
+BaseStationNetDevice::~BaseStationNetDevice ()
 {
 }
 
 void
-BaseStationNetDevice::DoDispose (void)
+BaseStationNetDevice::DoDispose ()
 {
   delete m_cidFactory;
 
@@ -282,7 +282,7 @@ BaseStationNetDevice::SetBsClassifier (Ptr<IpcsClassifier> bsc)
 }
 
 Ptr<IpcsClassifier>
-BaseStationNetDevice::GetBsClassifier (void) const
+BaseStationNetDevice::GetBsClassifier () const
 {
   return m_bsClassifier;
 }
@@ -294,7 +294,7 @@ BaseStationNetDevice::SetInitialRangingInterval (Time initialRangInterval)
 }
 
 Time
-BaseStationNetDevice::GetInitialRangingInterval (void) const
+BaseStationNetDevice::GetInitialRangingInterval () const
 {
   return m_initialRangInterval;
 }
@@ -306,7 +306,7 @@ BaseStationNetDevice::SetDcdInterval (Time dcdInterval)
 }
 
 Time
-BaseStationNetDevice::GetDcdInterval (void) const
+BaseStationNetDevice::GetDcdInterval () const
 {
   return m_dcdInterval;
 }
@@ -318,7 +318,7 @@ BaseStationNetDevice::SetUcdInterval (Time ucdInterval)
 }
 
 Time
-BaseStationNetDevice::GetUcdInterval (void) const
+BaseStationNetDevice::GetUcdInterval () const
 {
   return m_ucdInterval;
 }
@@ -330,7 +330,7 @@ BaseStationNetDevice::SetIntervalT8 (Time interval)
 }
 
 Time
-BaseStationNetDevice::GetIntervalT8 (void) const
+BaseStationNetDevice::GetIntervalT8 () const
 {
   return m_intervalT8;
 }
@@ -342,7 +342,7 @@ BaseStationNetDevice::SetMaxRangingCorrectionRetries (uint8_t maxRangCorrectionR
 }
 
 uint8_t
-BaseStationNetDevice::GetMaxRangingCorrectionRetries (void) const
+BaseStationNetDevice::GetMaxRangingCorrectionRetries () const
 {
   return m_maxRangCorrectionRetries;
 }
@@ -354,7 +354,7 @@ BaseStationNetDevice::SetMaxInvitedRangRetries (uint8_t maxInvitedRangRetries)
 }
 
 uint8_t
-BaseStationNetDevice::GetMaxInvitedRangRetries (void) const
+BaseStationNetDevice::GetMaxInvitedRangRetries () const
 {
   return m_maxInvitedRangRetries;
 }
@@ -366,7 +366,7 @@ BaseStationNetDevice::SetRangReqOppSize (uint8_t rangReqOppSize)
 }
 
 uint8_t
-BaseStationNetDevice::GetRangReqOppSize (void) const
+BaseStationNetDevice::GetRangReqOppSize () const
 {
   return m_rangReqOppSize;
 }
@@ -378,7 +378,7 @@ BaseStationNetDevice::SetBwReqOppSize (uint8_t bwReqOppSize)
 }
 
 uint8_t
-BaseStationNetDevice::GetBwReqOppSize (void) const
+BaseStationNetDevice::GetBwReqOppSize () const
 {
   return m_bwReqOppSize;
 }
@@ -390,7 +390,7 @@ BaseStationNetDevice::SetNrDlSymbols (uint32_t nrDlSymbols)
 }
 
 uint32_t
-BaseStationNetDevice::GetNrDlSymbols (void) const
+BaseStationNetDevice::GetNrDlSymbols () const
 {
   return m_nrDlSymbols;
 }
@@ -402,43 +402,43 @@ BaseStationNetDevice::SetNrUlSymbols (uint32_t nrUlSymbols)
 }
 
 uint32_t
-BaseStationNetDevice::GetNrUlSymbols (void) const
+BaseStationNetDevice::GetNrUlSymbols () const
 {
   return m_nrUlSymbols;
 }
 
 uint32_t
-BaseStationNetDevice::GetNrDcdSent (void) const
+BaseStationNetDevice::GetNrDcdSent () const
 {
   return m_nrDcdSent;
 }
 
 uint32_t
-BaseStationNetDevice::GetNrUcdSent (void) const
+BaseStationNetDevice::GetNrUcdSent () const
 {
   return m_nrUcdSent;
 }
 
 Time
-BaseStationNetDevice::GetDlSubframeStartTime (void) const
+BaseStationNetDevice::GetDlSubframeStartTime () const
 {
   return m_dlSubframeStartTime;
 }
 
 Time
-BaseStationNetDevice::GetUlSubframeStartTime (void) const
+BaseStationNetDevice::GetUlSubframeStartTime () const
 {
   return m_ulSubframeStartTime;
 }
 
 uint8_t
-BaseStationNetDevice::GetRangingOppNumber (void) const
+BaseStationNetDevice::GetRangingOppNumber () const
 {
   return m_rangingOppNumber;
 }
 
 Ptr<SSManager>
-BaseStationNetDevice::GetSSManager (void) const
+BaseStationNetDevice::GetSSManager () const
 {
   return m_ssManager;
 }
@@ -450,7 +450,7 @@ BaseStationNetDevice::SetSSManager (Ptr<SSManager> ssm)
 }
 
 Ptr<BsServiceFlowManager>
-BaseStationNetDevice::GetServiceFlowManager (void) const
+BaseStationNetDevice::GetServiceFlowManager () const
 {
   return m_serviceFlowManager;
 }
@@ -462,7 +462,7 @@ BaseStationNetDevice::SetServiceFlowManager (Ptr<BsServiceFlowManager> sfm)
 }
 
 Ptr<UplinkScheduler>
-BaseStationNetDevice::GetUplinkScheduler (void) const
+BaseStationNetDevice::GetUplinkScheduler () const
 {
   return m_uplinkScheduler;
 }
@@ -474,7 +474,7 @@ BaseStationNetDevice::SetUplinkScheduler (Ptr<UplinkScheduler> uls)
 }
 
 Ptr<BSLinkManager>
-BaseStationNetDevice::GetLinkManager (void) const
+BaseStationNetDevice::GetLinkManager () const
 {
   return m_linkManager;
 }
@@ -491,25 +491,25 @@ BaseStationNetDevice::SetBSScheduler (Ptr<BSScheduler> bss)
   m_scheduler = bss;
 }
 Ptr<BSScheduler>
-BaseStationNetDevice::GetBSScheduler (void) const
+BaseStationNetDevice::GetBSScheduler () const
 {
   return m_scheduler;
 }
 
 Time
-BaseStationNetDevice::GetPsDuration (void) const
+BaseStationNetDevice::GetPsDuration () const
 {
   return m_psDuration;
 }
 
 Time
-BaseStationNetDevice::GetSymbolDuration (void) const
+BaseStationNetDevice::GetSymbolDuration () const
 {
   return m_symbolDuration;
 }
 
 void
-BaseStationNetDevice::Start (void)
+BaseStationNetDevice::Start ()
 {
   SetReceiveCallback ();
   GetConnectionManager ()->SetCidFactory (m_cidFactory);
@@ -531,12 +531,12 @@ BaseStationNetDevice::Start (void)
 }
 
 void
-BaseStationNetDevice::Stop (void)
+BaseStationNetDevice::Stop ()
 {
 }
 
 void
-BaseStationNetDevice::StartFrame (void)
+BaseStationNetDevice::StartFrame ()
 {
   //setting DL/UL subframe allocation for this frame
   uint32_t symbolsPerFrame = GetPhy ()->GetSymbolsPerFrame ();
@@ -551,7 +551,7 @@ BaseStationNetDevice::StartFrame (void)
 }
 
 void
-BaseStationNetDevice::StartDlSubFrame (void)
+BaseStationNetDevice::StartDlSubFrame ()
 {
   m_dlSubframeStartTime = Simulator::Now (); // same as m_frameStartTime
 
@@ -570,7 +570,7 @@ BaseStationNetDevice::StartDlSubFrame (void)
 }
 
 void
-BaseStationNetDevice::EndDlSubFrame (void)
+BaseStationNetDevice::EndDlSubFrame ()
 {
   m_nrDlFrames++;
   SetState (BS_STATE_TTG);
@@ -578,7 +578,7 @@ BaseStationNetDevice::EndDlSubFrame (void)
 }
 
 void
-BaseStationNetDevice::StartUlSubFrame (void)
+BaseStationNetDevice::StartUlSubFrame ()
 {
   m_ulSubframeStartTime = Simulator::Now ();
 
@@ -593,7 +593,7 @@ BaseStationNetDevice::StartUlSubFrame (void)
 }
 
 void
-BaseStationNetDevice::EndUlSubFrame (void)
+BaseStationNetDevice::EndUlSubFrame ()
 {
   m_nrUlFrames++;
   SetState (BS_STATE_RTG);
@@ -601,7 +601,7 @@ BaseStationNetDevice::EndUlSubFrame (void)
 }
 
 void
-BaseStationNetDevice::EndFrame (void)
+BaseStationNetDevice::EndFrame ()
 {
   StartFrame ();
 }
@@ -878,7 +878,7 @@ BaseStationNetDevice::DoReceive (Ptr<Packet> packet)
 }
 
 void
-BaseStationNetDevice::CreateMapMessages (void)
+BaseStationNetDevice::CreateMapMessages ()
 {
   Ptr<Packet> dlmap, ulmap;
   bool sendDcd = false, sendUcd = false, updateDcd = false, updateUcd = false;
@@ -956,7 +956,7 @@ BaseStationNetDevice::CreateDescriptorMessages (bool sendDcd, bool sendUcd)
  is broadcast burst with MAC management messages. The rest of the bursts contain data packets.
  */
 void
-BaseStationNetDevice::SendBursts (void)
+BaseStationNetDevice::SendBursts ()
 {
   Time txTime = Seconds (0);
   std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > pair;
@@ -998,7 +998,7 @@ BaseStationNetDevice::SendBursts (void)
 }
 
 Ptr<Packet>
-BaseStationNetDevice::CreateDlMap (void)
+BaseStationNetDevice::CreateDlMap ()
 {
   m_nrDlAllocations = 0;
 
@@ -1033,7 +1033,7 @@ BaseStationNetDevice::CreateDlMap (void)
 }
 
 Ptr<Packet>
-BaseStationNetDevice::CreateDcd (void)
+BaseStationNetDevice::CreateDcd ()
 {
   Dcd dcd;
   OfdmDcdChannelEncodings chnlEncodings;
@@ -1061,7 +1061,7 @@ BaseStationNetDevice::CreateDcd (void)
 }
 
 Ptr<Packet>
-BaseStationNetDevice::CreateUlMap (void)
+BaseStationNetDevice::CreateUlMap ()
 {
   m_ulAllocationNumber = 0;
   m_rangingOppNumber = 0;
@@ -1087,7 +1087,7 @@ BaseStationNetDevice::CreateUlMap (void)
 }
 
 Ptr<Packet>
-BaseStationNetDevice::CreateUcd (void)
+BaseStationNetDevice::CreateUcd ()
 {
   Ucd ucd;
   ucd.SetConfigurationChangeCount (m_ucdConfigChangeCount);
@@ -1168,7 +1168,7 @@ BaseStationNetDevice::GetConnection (Cid cid)
 }
 
 void
-BaseStationNetDevice::MarkUplinkAllocations (void)
+BaseStationNetDevice::MarkUplinkAllocations ()
 {
   uint16_t symbolsToAllocation = 0;
   std::list<OfdmUlMapIe> uplinkAllocations = m_uplinkScheduler->GetUplinkAllocations ();
@@ -1201,7 +1201,7 @@ BaseStationNetDevice::MarkUplinkAllocationEnd (Time allocationEndTime, Cid cid, 
 }
 
 void
-BaseStationNetDevice::UplinkAllocationStart (void)
+BaseStationNetDevice::UplinkAllocationStart ()
 {
   m_ulAllocationNumber++;
 
@@ -1228,7 +1228,7 @@ BaseStationNetDevice::MarkRangingOppStart (Time rangingOppStartTime)
 }
 
 void
-BaseStationNetDevice::RangingOppStart (void)
+BaseStationNetDevice::RangingOppStart ()
 {
   m_rangingOppNumber++;
 

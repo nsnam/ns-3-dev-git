@@ -334,7 +334,7 @@ EnbMacMemberLteEnbPhySapUser::DlInfoListElementHarqFeeback (DlInfoListElement_s 
 
 
 TypeId
-LteEnbMac::GetTypeId (void)
+LteEnbMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteEnbMac")
     .SetParent<Object> ()
@@ -428,7 +428,7 @@ LteEnbMac::SetFfMacSchedSapProvider (FfMacSchedSapProvider* s)
 }
 
 FfMacSchedSapUser*
-LteEnbMac::GetFfMacSchedSapUser (void)
+LteEnbMac::GetFfMacSchedSapUser ()
 {
   return m_schedSapUser;
 }
@@ -440,7 +440,7 @@ LteEnbMac::SetFfMacCschedSapProvider (FfMacCschedSapProvider* s)
 }
 
 FfMacCschedSapUser*
-LteEnbMac::GetFfMacCschedSapUser (void)
+LteEnbMac::GetFfMacCschedSapUser ()
 {
   return m_cschedSapUser;
 }
@@ -454,7 +454,7 @@ LteEnbMac::SetLteMacSapUser (LteMacSapUser* s)
 }
 
 LteMacSapProvider*
-LteEnbMac::GetLteMacSapProvider (void)
+LteEnbMac::GetLteMacSapProvider ()
 {
   return m_macSapProvider;
 }
@@ -466,7 +466,7 @@ LteEnbMac::SetLteEnbCmacSapUser (LteEnbCmacSapUser* s)
 }
 
 LteEnbCmacSapProvider*
-LteEnbMac::GetLteEnbCmacSapProvider (void)
+LteEnbMac::GetLteEnbCmacSapProvider ()
 {
   return m_cmacSapProvider;
 }

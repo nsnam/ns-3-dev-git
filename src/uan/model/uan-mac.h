@@ -55,14 +55,14 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-   static TypeId GetTypeId (void);
+   static TypeId GetTypeId ();
 
   /**
    * Get the MAC Address.
    *
    * \return MAC Address.
    */
-  virtual Address GetAddress (void);
+  virtual Address GetAddress ();
 
   /**
    * Set the address.
@@ -104,10 +104,10 @@ public:
    *
    * \return The broadcast address.
    */
-  virtual Address GetBroadcast (void) const;
+  virtual Address GetBroadcast () const;
 
   /** Clears all pointer references. */
-  virtual void Clear (void) = 0;
+  virtual void Clear () = 0;
 
  /**
   * Assign a fixed random variable stream number to the random variables

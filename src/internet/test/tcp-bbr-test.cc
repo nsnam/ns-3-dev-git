@@ -45,11 +45,11 @@ public:
   TcpBbrPacingEnableTest (bool pacing, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Execute the test.
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
   bool m_pacing; //!< Initial pacing configuration.
 };
 
@@ -95,11 +95,11 @@ public:
   TcpBbrCheckGainValuesTest (TcpBbr::BbrMode_t state, double highGain, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Execute the test.
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
   TcpBbr::BbrMode_t m_mode; //!< BBR mode under test
   double m_highGain;        //!< Value of BBR high gain
 };

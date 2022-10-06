@@ -59,7 +59,7 @@ PhyStatsCalculator::~PhyStatsCalculator ()
 }
 
 TypeId
-PhyStatsCalculator::GetTypeId (void)
+PhyStatsCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PhyStatsCalculator")
     .SetParent<LteStatsCalculator> ()
@@ -91,7 +91,7 @@ PhyStatsCalculator::SetCurrentCellRsrpSinrFilename (std::string filename)
 }
 
 std::string
-PhyStatsCalculator::GetCurrentCellRsrpSinrFilename (void)
+PhyStatsCalculator::GetCurrentCellRsrpSinrFilename ()
 {
   return m_RsrpSinrFilename;
 }
@@ -103,7 +103,7 @@ PhyStatsCalculator::SetUeSinrFilename (std::string filename)
 }
 
 std::string
-PhyStatsCalculator::GetUeSinrFilename (void)
+PhyStatsCalculator::GetUeSinrFilename ()
 {
   return m_ueSinrFilename;
 }
@@ -115,7 +115,7 @@ PhyStatsCalculator::SetInterferenceFilename (std::string filename)
 }
 
 std::string
-PhyStatsCalculator::GetInterferenceFilename (void)
+PhyStatsCalculator::GetInterferenceFilename ()
 {
   return m_interferenceFilename;
 }

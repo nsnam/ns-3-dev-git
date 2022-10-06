@@ -47,7 +47,7 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   ParfWifiManager ();
   virtual ~ParfWifiManager ();
 
@@ -55,8 +55,8 @@ public:
 
 
 private:
-  void DoInitialize (void) override;
-  WifiRemoteStation * DoCreateStation (void) const override;
+  void DoInitialize () override;
+  WifiRemoteStation * DoCreateStation () const override;
   void DoReportRxOk (WifiRemoteStation *station,
                      double rxSnr, WifiMode txMode) override;
   void DoReportRtsFailed (WifiRemoteStation *station) override;

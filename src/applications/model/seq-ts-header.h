@@ -53,21 +53,21 @@ public:
   /**
    * \return the sequence number
    */
-  uint32_t GetSeq (void) const;
+  uint32_t GetSeq () const;
   /**
    * \return the time stamp
    */
-  Time GetTs (void) const;
+  Time GetTs () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 

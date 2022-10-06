@@ -50,7 +50,7 @@ public:
   OneVectorConstructorTestCase (Vector v, Angles a);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Vector m_v; //!< vector
   Angles m_a; //!< expected angle
@@ -104,7 +104,7 @@ public:
   TwoVectorsConstructorTestCase (Vector v, Vector o, Angles a);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Vector m_v; //!< point
   Vector m_o; //!< origin

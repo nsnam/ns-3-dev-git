@@ -42,7 +42,7 @@ PacketCounterCalculator::~PacketCounterCalculator()
 }
 /* static */
 TypeId
-PacketCounterCalculator::GetTypeId (void)
+PacketCounterCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PacketCounterCalculator")
     .SetParent<CounterCalculator<uint32_t> > ()
@@ -52,7 +52,7 @@ PacketCounterCalculator::GetTypeId (void)
   return tid;
 }
 void
-PacketCounterCalculator::DoDispose (void)
+PacketCounterCalculator::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -98,7 +98,7 @@ PacketSizeMinMaxAvgTotalCalculator::~PacketSizeMinMaxAvgTotalCalculator()
 }
 /* static */
 TypeId
-PacketSizeMinMaxAvgTotalCalculator::GetTypeId (void)
+PacketSizeMinMaxAvgTotalCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PacketSizeMinMaxAvgTotalCalculator")
     .SetParent<MinMaxAvgTotalCalculator<uint32_t> > ()
@@ -108,7 +108,7 @@ PacketSizeMinMaxAvgTotalCalculator::GetTypeId (void)
   return tid;
 }
 void
-PacketSizeMinMaxAvgTotalCalculator::DoDispose (void)
+PacketSizeMinMaxAvgTotalCalculator::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 

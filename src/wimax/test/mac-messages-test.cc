@@ -43,7 +43,7 @@ public:
   virtual ~DsaRequestTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -57,7 +57,7 @@ DsaRequestTestCase::~DsaRequestTestCase ()
 }
 
 void
-DsaRequestTestCase::DoRun (void)
+DsaRequestTestCase::DoRun ()
 {
   IpcsClassifierRecord classifier = IpcsClassifierRecord ();
   CsParameters csParam (CsParameters::ADD, classifier);

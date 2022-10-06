@@ -83,19 +83,19 @@ public:
   /**
    * \return The size of the payload in bytes
    */
-  uint16_t GetLengthType (void) const;
+  uint16_t GetLengthType () const;
   /**
    * \return The type of packet (only basic Ethernet is currently supported)
    */
-  ethernet_header_t GetPacketType (void) const;
+  ethernet_header_t GetPacketType () const;
   /**
    * \return The source address of this packet
    */
-  Mac48Address GetSource (void) const;
+  Mac48Address GetSource () const;
   /**
    * \return The destination address of this packet
    */
-  Mac48Address GetDestination (void) const;
+  Mac48Address GetDestination () const;
   /**
    * \return The value of the PreambleSfd field
    */
@@ -109,10 +109,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:

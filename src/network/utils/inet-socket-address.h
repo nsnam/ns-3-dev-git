@@ -71,15 +71,15 @@ public:
   /**
    * \returns the port number
    */
-  uint16_t GetPort (void) const;
+  uint16_t GetPort () const;
   /**
    * \returns the ipv4 address
    */
-  Ipv4Address GetIpv4 (void) const;
+  Ipv4Address GetIpv4 () const;
   /**
    * \returns the ToS
    */
-  uint8_t GetTos (void) const;
+  uint8_t GetTos () const;
 
   /**
    * \param port the new port number.
@@ -119,14 +119,14 @@ private:
    * \brief Convert to an Address type
    * \return the Address corresponding to this object.
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   /**
    * \brief Get the underlying address type (automatically assigned).
    *
    * \returns the address type
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
   Ipv4Address m_ipv4; //!< the IPv4 address
   uint16_t m_port;    //!< the port
   uint8_t m_tos;      //!< the ToS

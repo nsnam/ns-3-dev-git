@@ -50,7 +50,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** An enum representing the different working modes of this module. */
   enum Mode  {
     MODE_DISTANCE,
@@ -72,12 +72,12 @@ private:
   /**
    * Perform initialization of the object before MobilityModel::DoInitialize ()
    */
-  void DoInitializePrivate (void);
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
-  virtual Vector DoGetPosition (void) const;
+  void DoInitializePrivate ();
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
   virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper; //!< helper for this object

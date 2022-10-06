@@ -58,49 +58,49 @@ public:
    *
    * \return The modulation type.
    */
-  ModulationType GetModType (void) const;
+  ModulationType GetModType () const;
   /**
    * Get the data rate of the transmit mode.
    *
    * \return Data rate of the TX mode, in bits per second.
    */
-  uint32_t GetDataRateBps (void) const;
+  uint32_t GetDataRateBps () const;
   /**
    * Get the physical signaling rate.
    *
    * \return PHY rate in symbols per second.
    */
-  uint32_t GetPhyRateSps (void) const;
+  uint32_t GetPhyRateSps () const;
   /**
    * Get the transmission center frequency.
    *
    * \return Center frequency, in Hz.
    */
-  uint32_t GetCenterFreqHz (void) const;
+  uint32_t GetCenterFreqHz () const;
   /**
    * Get the transmission signal bandwidth.
    *
    * \return Bandwidth in Hz.
    */
-  uint32_t GetBandwidthHz (void) const;
+  uint32_t GetBandwidthHz () const;
   /**
    * Get the number of constellation points in the modulation scheme.
    *
    * \return Number of constellation points.
    */
-  uint32_t GetConstellationSize (void) const;
+  uint32_t GetConstellationSize () const;
   /**
    * Get the mode name.
    *
    * \return Name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * Get a unique id for the mode.
    *
    * \return Unique ID.
    */
-  uint32_t GetUid (void) const;
+  uint32_t GetUid () const;
 
 private:
   friend class UanTxModeFactory;
@@ -220,7 +220,7 @@ private:
    *
    * \return The global instance.
    */
-  static UanTxModeFactory &GetFactory (void);
+  static UanTxModeFactory &GetFactory ();
 
   /**
    * Get a mode by id.
@@ -282,7 +282,7 @@ public:
    *
    * \return Number of modes.
    */
-  uint32_t GetNModes (void) const;
+  uint32_t GetNModes () const;
 
 
 private:

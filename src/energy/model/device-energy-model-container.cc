@@ -57,21 +57,21 @@ DeviceEnergyModelContainer::DeviceEnergyModelContainer (const DeviceEnergyModelC
 }
 
 DeviceEnergyModelContainer::Iterator
-DeviceEnergyModelContainer::Begin (void) const
+DeviceEnergyModelContainer::Begin () const
 {
   NS_LOG_FUNCTION (this);
   return m_models.begin ();
 }
 
 DeviceEnergyModelContainer::Iterator
-DeviceEnergyModelContainer::End (void) const
+DeviceEnergyModelContainer::End () const
 {
   NS_LOG_FUNCTION (this);
   return m_models.end ();
 }
 
 uint32_t
-DeviceEnergyModelContainer::GetN (void) const
+DeviceEnergyModelContainer::GetN () const
 {
   NS_LOG_FUNCTION (this);
   return m_models.size ();
@@ -112,7 +112,7 @@ DeviceEnergyModelContainer::Add (std::string modelName)
 }
 
 void
-DeviceEnergyModelContainer::Clear (void)
+DeviceEnergyModelContainer::Clear ()
 {
   NS_LOG_FUNCTION (this);
   m_models.clear ();

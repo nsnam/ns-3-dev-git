@@ -40,7 +40,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   ChannelListPriv ();
   ~ChannelListPriv ();
 
@@ -57,12 +57,12 @@ public:
    * \returns a C++ iterator located at the beginning of this
    *          list.
    */
-  ChannelList::Iterator Begin (void) const;
+  ChannelList::Iterator Begin () const;
   /**
    * \returns a C++ iterator located at the end of this
    *          list.
    */
-  ChannelList::Iterator End (void) const;
+  ChannelList::Iterator End () const;
 
   /**
    * \param n index of requested channel.
@@ -73,30 +73,30 @@ public:
   /**
    * \returns the number of channels currently in the list.
    */
-  uint32_t GetNChannels (void);
+  uint32_t GetNChannels ();
 
   /**
    * \brief Get the channel list object
    * \returns the channel list
    */
-  static Ptr<ChannelListPriv> Get (void);
+  static Ptr<ChannelListPriv> Get ();
 
 private:
   /**
    * \brief Get the channel list object
    * \returns the channel list
    */
-  static Ptr<ChannelListPriv> *DoGet (void);
+  static Ptr<ChannelListPriv> *DoGet ();
 
   /**
    * \brief Delete the channel list object
    */
-  static void Delete (void);
+  static void Delete ();
 
   /**
    * \brief Dispose the channels in the list
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   std::vector<Ptr<Channel> > m_channels; //!< channel objects container
 };
@@ -104,7 +104,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (ChannelListPriv);
 
 TypeId
-ChannelListPriv::GetTypeId (void)
+ChannelListPriv::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ChannelListPriv")
     .SetParent<Object> ()
@@ -118,14 +118,14 @@ ChannelListPriv::GetTypeId (void)
 }
 
 Ptr<ChannelListPriv>
-ChannelListPriv::Get (void)
+ChannelListPriv::Get ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return *DoGet ();
 }
 
 Ptr<ChannelListPriv> *
-ChannelListPriv::DoGet (void)
+ChannelListPriv::DoGet ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Ptr<ChannelListPriv> ptr = 0;
@@ -139,7 +139,7 @@ ChannelListPriv::DoGet (void)
 }
 
 void
-ChannelListPriv::Delete (void)
+ChannelListPriv::Delete ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::UnregisterRootNamespaceObject (Get ());
@@ -156,7 +156,7 @@ ChannelListPriv::~ChannelListPriv ()
   NS_LOG_FUNCTION (this);
 }
 void
-ChannelListPriv::DoDispose (void)
+ChannelListPriv::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<Channel> >::iterator i = m_channels.begin ();
@@ -181,21 +181,21 @@ ChannelListPriv::Add (Ptr<Channel> channel)
 }
 
 ChannelList::Iterator
-ChannelListPriv::Begin (void) const
+ChannelListPriv::Begin () const
 {
   NS_LOG_FUNCTION (this);
   return m_channels.begin ();
 }
 
 ChannelList::Iterator
-ChannelListPriv::End (void) const
+ChannelListPriv::End () const
 {
   NS_LOG_FUNCTION (this);
   return m_channels.end ();
 }
 
 uint32_t
-ChannelListPriv::GetNChannels (void)
+ChannelListPriv::GetNChannels ()
 {
   NS_LOG_FUNCTION (this);
   return m_channels.size ();
@@ -218,14 +218,14 @@ ChannelList::Add (Ptr<Channel> channel)
 }
 
 ChannelList::Iterator
-ChannelList::Begin (void)
+ChannelList::Begin ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return ChannelListPriv::Get ()->Begin ();
 }
 
 ChannelList::Iterator
-ChannelList::End (void)
+ChannelList::End ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return ChannelListPriv::Get ()->End ();
@@ -239,7 +239,7 @@ ChannelList::GetChannel (uint32_t n)
 }
 
 uint32_t
-ChannelList::GetNChannels (void)
+ChannelList::GetNChannels ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return ChannelListPriv::Get ()->GetNChannels ();

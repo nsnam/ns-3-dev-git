@@ -116,35 +116,35 @@ public:
    * Read one byte, advance the "current" point by one,
    * and return the value read.
    */
-  TAG_BUFFER_INLINE uint8_t  ReadU8 (void);
+  TAG_BUFFER_INLINE uint8_t  ReadU8 ();
   /**
    * \returns the value read
    *
    * Read two bytes, advance the "current" point by two,
    * and return the value read.
    */
-  TAG_BUFFER_INLINE uint16_t ReadU16 (void);
+  TAG_BUFFER_INLINE uint16_t ReadU16 ();
   /**
    * \returns the value read
    *
    * Read four bytes, advance the "current" point by four,
    * and return the value read.
    */
-  TAG_BUFFER_INLINE uint32_t ReadU32 (void);
+  TAG_BUFFER_INLINE uint32_t ReadU32 ();
   /**
    * \returns the value read
    *
    * Read eight bytes, advance the "current" point by eight,
    * and return the value read.
    */
-  uint64_t ReadU64 (void);
+  uint64_t ReadU64 ();
   /**
    * \returns the value read
    *
    * Read a double, advance the "current" point by the size
    * of the data read, and, return the value read.
    */
-  double ReadDouble (void);
+  double ReadDouble ();
   /**
    * \param buffer a pointer to the buffer where data should be
    * written.
@@ -192,7 +192,7 @@ TagBuffer::WriteU32 (uint32_t data)
 }
 
 uint8_t
-TagBuffer::ReadU8 (void)
+TagBuffer::ReadU8 ()
 {
   NS_ASSERT (m_current + 1 <= m_end);
   uint8_t v;
@@ -202,7 +202,7 @@ TagBuffer::ReadU8 (void)
 }
 
 uint16_t
-TagBuffer::ReadU16 (void)
+TagBuffer::ReadU16 ()
 {
   uint8_t byte0 = ReadU8 ();
   uint8_t byte1 = ReadU8 ();
@@ -212,7 +212,7 @@ TagBuffer::ReadU16 (void)
   return data;
 }
 uint32_t
-TagBuffer::ReadU32 (void)
+TagBuffer::ReadU32 ()
 {
   uint8_t byte0 = ReadU8 ();
   uint8_t byte1 = ReadU8 ();

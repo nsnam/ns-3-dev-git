@@ -56,7 +56,7 @@ NixVectorHelper<T>::NixVectorHelper (const NixVectorHelper<T> &o)
 
 template <typename T>
 NixVectorHelper<T>*
-NixVectorHelper<T>::Copy (void) const
+NixVectorHelper<T>::Copy () const
 {
   return new NixVectorHelper<T> (*this);
 }

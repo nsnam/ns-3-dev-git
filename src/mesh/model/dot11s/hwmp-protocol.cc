@@ -1298,7 +1298,7 @@ HwmpProtocol::AssignStreams (int64_t stream)
 }
 
 Ptr<HwmpRtable>
-HwmpProtocol::GetRoutingTable (void) const
+HwmpProtocol::GetRoutingTable () const
 {
   return m_rtable;
 }

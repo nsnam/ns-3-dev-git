@@ -50,12 +50,12 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Create an unbound tcp socket.
    */
-  TcpHybla (void);
+  TcpHybla ();
 
   /**
    * \brief Copy constructor
@@ -63,7 +63,7 @@ public:
    */
   TcpHybla (const TcpHybla& sock);
 
-  virtual ~TcpHybla (void) override;
+  virtual ~TcpHybla () override;
 
   // Inherited
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,

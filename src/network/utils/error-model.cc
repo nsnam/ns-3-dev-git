@@ -79,7 +79,7 @@ NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
-TypeId ErrorModel::GetTypeId (void)
+TypeId ErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ErrorModel")
     .SetParent<Object> ()
@@ -115,28 +115,28 @@ ErrorModel::IsCorrupt (Ptr<Packet> p)
 }
 
 void
-ErrorModel::Reset (void)
+ErrorModel::Reset ()
 {
   NS_LOG_FUNCTION (this);
   DoReset ();
 }
 
 void
-ErrorModel::Enable (void)
+ErrorModel::Enable ()
 {
   NS_LOG_FUNCTION (this);
   m_enable = true;
 }
 
 void
-ErrorModel::Disable (void)
+ErrorModel::Disable ()
 {
   NS_LOG_FUNCTION (this);
   m_enable = false;
 }
 
 bool
-ErrorModel::IsEnabled (void) const
+ErrorModel::IsEnabled () const
 {
   NS_LOG_FUNCTION (this);
   return m_enable;
@@ -148,7 +148,7 @@ ErrorModel::IsEnabled (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
-TypeId RateErrorModel::GetTypeId (void)
+TypeId RateErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RateErrorModel")
     .SetParent<ErrorModel> ()
@@ -184,7 +184,7 @@ RateErrorModel::~RateErrorModel ()
 }
 
 RateErrorModel::ErrorUnit
-RateErrorModel::GetUnit (void) const
+RateErrorModel::GetUnit () const
 {
   NS_LOG_FUNCTION (this);
   return m_unit;
@@ -198,7 +198,7 @@ RateErrorModel::SetUnit (enum ErrorUnit error_unit)
 }
 
 double
-RateErrorModel::GetRate (void) const
+RateErrorModel::GetRate () const
 {
   NS_LOG_FUNCTION (this);
   return m_rate;
@@ -275,7 +275,7 @@ RateErrorModel::DoCorruptBit (Ptr<Packet> p)
 }
 
 void
-RateErrorModel::DoReset (void)
+RateErrorModel::DoReset ()
 {
   NS_LOG_FUNCTION (this);
   /* re-initialize any state; no-op for now */
@@ -288,7 +288,7 @@ RateErrorModel::DoReset (void)
 
 NS_OBJECT_ENSURE_REGISTERED (BurstErrorModel);
 
-TypeId BurstErrorModel::GetTypeId (void)
+TypeId BurstErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BurstErrorModel")
     .SetParent<ErrorModel> ()
@@ -322,7 +322,7 @@ BurstErrorModel::~BurstErrorModel ()
 }
 
 double
-BurstErrorModel::GetBurstRate (void) const
+BurstErrorModel::GetBurstRate () const
 {
   NS_LOG_FUNCTION (this);
   return m_burstRate;
@@ -402,7 +402,7 @@ BurstErrorModel::DoCorrupt (Ptr<Packet> p)
 }
 
 void
-BurstErrorModel::DoReset (void)
+BurstErrorModel::DoReset ()
 {
   NS_LOG_FUNCTION (this);
   m_counter = 0;
@@ -417,7 +417,7 @@ BurstErrorModel::DoReset (void)
 
 NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
-TypeId ListErrorModel::GetTypeId (void)
+TypeId ListErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ListErrorModel")
     .SetParent<ErrorModel> ()
@@ -438,7 +438,7 @@ ListErrorModel::~ListErrorModel ()
 }
 
 std::list<uint32_t>
-ListErrorModel::GetList (void) const
+ListErrorModel::GetList () const
 {
   NS_LOG_FUNCTION (this);
   return m_packetList;
@@ -475,7 +475,7 @@ ListErrorModel::DoCorrupt (Ptr<Packet> p)
 }
 
 void
-ListErrorModel::DoReset (void)
+ListErrorModel::DoReset ()
 {
   NS_LOG_FUNCTION (this);
   m_packetList.clear ();
@@ -487,7 +487,7 @@ ListErrorModel::DoReset (void)
 
 NS_OBJECT_ENSURE_REGISTERED (ReceiveListErrorModel);
 
-TypeId ReceiveListErrorModel::GetTypeId (void)
+TypeId ReceiveListErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ReceiveListErrorModel")
     .SetParent<ErrorModel> ()
@@ -510,7 +510,7 @@ ReceiveListErrorModel::~ReceiveListErrorModel ()
 }
 
 std::list<uint32_t>
-ReceiveListErrorModel::GetList (void) const
+ReceiveListErrorModel::GetList () const
 {
   NS_LOG_FUNCTION (this);
   return m_packetList;
@@ -544,7 +544,7 @@ ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p)
 }
 
 void
-ReceiveListErrorModel::DoReset (void)
+ReceiveListErrorModel::DoReset ()
 {
   NS_LOG_FUNCTION (this);
   m_packetList.clear ();
@@ -553,7 +553,7 @@ ReceiveListErrorModel::DoReset (void)
 
 NS_OBJECT_ENSURE_REGISTERED (BinaryErrorModel);
 
-TypeId BinaryErrorModel::GetTypeId (void)
+TypeId BinaryErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BinaryErrorModel")
     .SetParent<ErrorModel> ()
@@ -587,7 +587,7 @@ BinaryErrorModel::DoCorrupt (Ptr<Packet> p)
 }
 
 void
-BinaryErrorModel::DoReset (void)
+BinaryErrorModel::DoReset ()
 {
   NS_LOG_FUNCTION (this);
   m_counter = 0;

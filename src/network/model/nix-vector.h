@@ -68,7 +68,7 @@ public:
   /**
    * \return a copy of this nix-vector
    */
-  Ptr<NixVector> Copy (void) const;
+  Ptr<NixVector> Copy () const;
   /**
    * \param o the NixVector to copy to a new NixVector
    *          using a constructor
@@ -112,11 +112,11 @@ public:
    * \return number of bits remaining in the
    *         nix-vector (ie m_total - m_used)
    */
-  uint32_t GetRemainingBits (void) const;
+  uint32_t GetRemainingBits () const;
   /**
    * \return the number of bytes required for serialization
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * \return zero if buffer not large enough
    *

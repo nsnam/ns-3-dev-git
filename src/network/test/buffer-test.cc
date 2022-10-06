@@ -46,7 +46,7 @@ private:
    */
   void EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   BufferTest ();
 };
 
@@ -103,7 +103,7 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
   }
 
 void
-BufferTest::DoRun (void)
+BufferTest::DoRun ()
 {
   Buffer buffer;
   Buffer::Iterator i;

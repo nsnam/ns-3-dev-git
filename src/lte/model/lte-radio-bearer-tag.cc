@@ -28,7 +28,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteRadioBearerTag);
 
 TypeId
-LteRadioBearerTag::GetTypeId (void)
+LteRadioBearerTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRadioBearerTag")
     .SetParent<Tag> ()
@@ -47,7 +47,7 @@ LteRadioBearerTag::GetTypeId (void)
 }
 
 TypeId
-LteRadioBearerTag::GetInstanceTypeId (void) const
+LteRadioBearerTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -90,7 +90,7 @@ LteRadioBearerTag::SetLayer (uint8_t layer)
 }
 
 uint32_t
-LteRadioBearerTag::GetSerializedSize (void) const
+LteRadioBearerTag::GetSerializedSize () const
 {
   return 4;
 }

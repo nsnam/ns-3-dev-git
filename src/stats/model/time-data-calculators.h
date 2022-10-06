@@ -48,7 +48,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Updates all variables of TimeMinMaxAvgTotalCalculator
@@ -63,7 +63,7 @@ public:
   virtual void Output (DataOutputCallback &callback) const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   uint32_t m_count; //!< Count value of TimeMinMaxAvgTotalCalculator
   Time m_total;     //!< Total value of TimeMinMaxAvgTotalCalculator

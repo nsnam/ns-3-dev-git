@@ -135,12 +135,12 @@ public:
    * through the default constructor and it was never
    * re-initialized.
    */
-  bool IsInvalid (void) const;
+  bool IsInvalid () const;
   /**
    * \brief Get the length of the underlying address.
    * \returns the length of the underlying address.
    */
-  uint8_t GetLength (void) const;
+  uint8_t GetLength () const;
   /**
    * \brief Copy the address bytes into a buffer.
    * \param buffer buffer to copy the address bytes to.
@@ -203,14 +203,14 @@ public:
    * Allocate a new type id for a new type of address.
    * \returns a new type id.
    */
-  static uint8_t Register (void);
+  static uint8_t Register ();
   /**
    * Get the number of bytes needed to serialize the underlying Address
    * Typically, this is GetLength () + 2
    *
    * \returns the number of bytes required for an Address in serialized form
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize this address in host byte order to a byte buffer
    *

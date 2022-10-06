@@ -39,12 +39,12 @@ LteHexGridEnbTopologyHelper::LteHexGridEnbTopologyHelper ()
   NS_LOG_FUNCTION (this);
 }
 
-LteHexGridEnbTopologyHelper::~LteHexGridEnbTopologyHelper (void)
+LteHexGridEnbTopologyHelper::~LteHexGridEnbTopologyHelper ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-TypeId LteHexGridEnbTopologyHelper::GetTypeId (void)
+TypeId LteHexGridEnbTopologyHelper::GetTypeId ()
 {
   static TypeId
     tid =

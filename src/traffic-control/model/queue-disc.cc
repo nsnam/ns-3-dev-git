@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("QueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (QueueDiscClass);
 
-TypeId QueueDiscClass::GetTypeId (void)
+TypeId QueueDiscClass::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QueueDiscClass")
     .SetParent<Object> ()
@@ -61,7 +61,7 @@ QueueDiscClass::~QueueDiscClass ()
 }
 
 void
-QueueDiscClass::DoDispose (void)
+QueueDiscClass::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_queueDisc = 0;
@@ -69,7 +69,7 @@ QueueDiscClass::DoDispose (void)
 }
 
 Ptr<QueueDisc>
-QueueDiscClass::GetQueueDisc (void) const
+QueueDiscClass::GetQueueDisc () const
 {
   NS_LOG_FUNCTION (this);
   return m_queueDisc;
@@ -259,7 +259,7 @@ std::ostream & operator << (std::ostream &os, const QueueDisc::Stats &stats)
 
 NS_OBJECT_ENSURE_REGISTERED (QueueDisc);
 
-TypeId QueueDisc::GetTypeId (void)
+TypeId QueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QueueDisc")
     .SetParent<Object> ()
@@ -379,7 +379,7 @@ QueueDisc::~QueueDisc ()
 }
 
 void
-QueueDisc::DoDispose (void)
+QueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_queues.clear ();
@@ -396,7 +396,7 @@ QueueDisc::DoDispose (void)
 }
 
 void
-QueueDisc::DoInitialize (void)
+QueueDisc::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -416,7 +416,7 @@ QueueDisc::DoInitialize (void)
 }
 
 const QueueDisc::Stats&
-QueueDisc::GetStats (void)
+QueueDisc::GetStats ()
 {
   NS_ASSERT (m_stats.nTotalDroppedPackets == m_stats.nTotalDroppedPacketsBeforeEnqueue
              + m_stats.nTotalDroppedPacketsAfterDequeue);
@@ -442,14 +442,14 @@ QueueDisc::GetNPackets () const
 }
 
 uint32_t
-QueueDisc::GetNBytes (void) const
+QueueDisc::GetNBytes () const
 {
   NS_LOG_FUNCTION (this);
   return m_nBytes;
 }
 
 QueueSize
-QueueDisc::GetMaxSize (void) const
+QueueDisc::GetMaxSize () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -518,7 +518,7 @@ QueueDisc::SetMaxSize (QueueSize size)
 }
 
 QueueSize
-QueueDisc::GetCurrentSize (void)
+QueueDisc::GetCurrentSize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -541,7 +541,7 @@ QueueDisc::SetNetDeviceQueueInterface (Ptr<NetDeviceQueueInterface> ndqi)
 }
 
 Ptr<NetDeviceQueueInterface>
-QueueDisc::GetNetDeviceQueueInterface (void) const
+QueueDisc::GetNetDeviceQueueInterface () const
 {
   NS_LOG_FUNCTION (this);
   return m_devQueueIface;
@@ -555,7 +555,7 @@ QueueDisc::SetSendCallback (SendCallback func)
 }
 
 QueueDisc::SendCallback
-QueueDisc::GetSendCallback (void) const
+QueueDisc::GetSendCallback () const
 {
   NS_LOG_FUNCTION (this);
   return m_send;
@@ -569,7 +569,7 @@ QueueDisc::SetQuota (const uint32_t quota)
 }
 
 uint32_t
-QueueDisc::GetQuota (void) const
+QueueDisc::GetQuota () const
 {
   NS_LOG_FUNCTION (this);
   return m_quota;
@@ -603,7 +603,7 @@ QueueDisc::GetInternalQueue (std::size_t i) const
 }
 
 std::size_t
-QueueDisc::GetNInternalQueues (void) const
+QueueDisc::GetNInternalQueues () const
 {
   return m_queues.size ();
 }
@@ -623,7 +623,7 @@ QueueDisc::GetPacketFilter (std::size_t i) const
 }
 
 std::size_t
-QueueDisc::GetNPacketFilters (void) const
+QueueDisc::GetNPacketFilters () const
 {
   return m_filters.size ();
 }
@@ -664,7 +664,7 @@ QueueDisc::GetQueueDiscClass (std::size_t i) const
 }
 
 std::size_t
-QueueDisc::GetNQueueDiscClasses (void) const
+QueueDisc::GetNQueueDiscClasses () const
 {
   return m_classes.size ();
 }
@@ -684,7 +684,7 @@ QueueDisc::Classify (Ptr<QueueDiscItem> item)
 }
 
 QueueDisc::WakeMode
-QueueDisc::GetWakeMode (void) const
+QueueDisc::GetWakeMode () const
 {
   return WAKE_ROOT;
 }
@@ -891,7 +891,7 @@ QueueDisc::Enqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-QueueDisc::Dequeue (void)
+QueueDisc::Dequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -925,14 +925,14 @@ QueueDisc::Dequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-QueueDisc::Peek (void)
+QueueDisc::Peek ()
 {
   NS_LOG_FUNCTION (this);
   return DoPeek ();
 }
 
 Ptr<const QueueDiscItem>
-QueueDisc::DoPeek (void)
+QueueDisc::DoPeek ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -950,7 +950,7 @@ QueueDisc::DoPeek (void)
 }
 
 void
-QueueDisc::Run (void)
+QueueDisc::Run ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -971,7 +971,7 @@ QueueDisc::Run (void)
 }
 
 bool
-QueueDisc::RunBegin (void)
+QueueDisc::RunBegin ()
 {
   NS_LOG_FUNCTION (this);
   if (m_running)
@@ -984,14 +984,14 @@ QueueDisc::RunBegin (void)
 }
 
 void
-QueueDisc::RunEnd (void)
+QueueDisc::RunEnd ()
 {
   NS_LOG_FUNCTION (this);
   m_running = false;
 }
 
 bool
-QueueDisc::Restart (void)
+QueueDisc::Restart ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<QueueDiscItem> item = DequeuePacket();

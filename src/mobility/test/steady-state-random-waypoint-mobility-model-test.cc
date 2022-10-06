@@ -45,20 +45,20 @@ private:
   std::vector<Ptr<MobilityModel> > mobilityStack; ///< modility model
   double count; ///< count
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
   /// Distribution compare function
   void DistribCompare ();
 };
 
 void
-SteadyStateRandomWaypointTest::DoTeardown (void)
+SteadyStateRandomWaypointTest::DoTeardown ()
 {
   mobilityStack.clear();
 }
 
 void
-SteadyStateRandomWaypointTest::DoRun (void)
+SteadyStateRandomWaypointTest::DoRun ()
 {
   SeedManager::SetSeed (123);
 

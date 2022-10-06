@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("ThreeGppV2vPropagationLossModel");
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppV2vUrbanPropagationLossModel);
 
 TypeId
-ThreeGppV2vUrbanPropagationLossModel::GetTypeId (void)
+ThreeGppV2vUrbanPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppV2vUrbanPropagationLossModel")
     .SetParent<ThreeGppPropagationLossModel> ()
@@ -219,7 +219,7 @@ ThreeGppV2vUrbanPropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppV2vHighwayPropagationLossModel);
 
 TypeId
-ThreeGppV2vHighwayPropagationLossModel::GetTypeId (void)
+ThreeGppV2vHighwayPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppV2vHighwayPropagationLossModel")
     .SetParent<ThreeGppV2vUrbanPropagationLossModel> ()

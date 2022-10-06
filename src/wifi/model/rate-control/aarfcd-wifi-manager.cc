@@ -55,7 +55,7 @@ struct AarfcdWifiRemoteStation : public WifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (AarfcdWifiManager);
 
 TypeId
-AarfcdWifiManager::GetTypeId (void)
+AarfcdWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AarfcdWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -144,7 +144,7 @@ AarfcdWifiManager::DoInitialize ()
 }
 
 WifiRemoteStation *
-AarfcdWifiManager::DoCreateStation (void) const
+AarfcdWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   AarfcdWifiRemoteStation *station = new AarfcdWifiRemoteStation ();

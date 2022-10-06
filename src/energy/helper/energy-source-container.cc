@@ -28,7 +28,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (EnergySourceContainer);
 
 TypeId
-EnergySourceContainer::GetTypeId (void)
+EnergySourceContainer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EnergySourceContainer")
     .SetParent<Object> ()
@@ -67,19 +67,19 @@ EnergySourceContainer::EnergySourceContainer (const EnergySourceContainer &a,
 }
 
 EnergySourceContainer::Iterator
-EnergySourceContainer::Begin (void) const
+EnergySourceContainer::Begin () const
 {
   return m_sources.begin ();
 }
 
 EnergySourceContainer::Iterator
-EnergySourceContainer::End (void) const
+EnergySourceContainer::End () const
 {
   return m_sources.end ();
 }
 
 uint32_t
-EnergySourceContainer::GetN (void) const
+EnergySourceContainer::GetN () const
 {
   return m_sources.size ();
 }
@@ -119,7 +119,7 @@ EnergySourceContainer::Add (std::string sourceName)
  */
 
 void
-EnergySourceContainer::DoDispose (void)
+EnergySourceContainer::DoDispose ()
 {
   // call Object::Dispose for all EnergySource objects
   for (std::vector< Ptr<EnergySource> >::iterator i = m_sources.begin ();
@@ -132,7 +132,7 @@ EnergySourceContainer::DoDispose (void)
 }
 
 void
-EnergySourceContainer::DoInitialize (void)
+EnergySourceContainer::DoInitialize ()
 {
   // call Object::Start for all EnergySource objects
   for (std::vector< Ptr<EnergySource> >::iterator i = m_sources.begin ();

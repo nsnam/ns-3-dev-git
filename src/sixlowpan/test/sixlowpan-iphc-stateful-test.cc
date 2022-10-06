@@ -101,7 +101,7 @@ class SixlowpanIphcStatefulImplTest : public TestCase
   NetDeviceContainer m_sixDevices; //!< SixLowPanNetDevice container
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   SixlowpanIphcStatefulImplTest ();
 };
 
@@ -158,7 +158,7 @@ SixlowpanIphcStatefulImplTest::SendOnePacket (Ptr<NetDevice> device, Ipv6Address
 }
 
 void
-SixlowpanIphcStatefulImplTest::DoRun (void)
+SixlowpanIphcStatefulImplTest::DoRun ()
 {
   NodeContainer nodes;
   nodes.Create(2);

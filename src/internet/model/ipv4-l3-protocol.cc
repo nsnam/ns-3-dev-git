@@ -53,7 +53,7 @@ const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 
 TypeId
-Ipv4L3Protocol::GetTypeId (void)
+Ipv4L3Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4L3Protocol")
     .SetParent<Ipv4> ()
@@ -244,7 +244,7 @@ Ipv4L3Protocol::SetNode (Ptr<Node> node)
 }
 
 Ptr<Socket>
-Ipv4L3Protocol::CreateRawSocket (void)
+Ipv4L3Protocol::CreateRawSocket ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<Ipv4RawSocketImpl> socket = CreateObject<Ipv4RawSocketImpl> ();
@@ -296,14 +296,14 @@ Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 
 
 Ptr<Ipv4RoutingProtocol>
-Ipv4L3Protocol::GetRoutingProtocol (void) const
+Ipv4L3Protocol::GetRoutingProtocol () const
 {
   NS_LOG_FUNCTION (this);
   return m_routingProtocol;
 }
 
 void
-Ipv4L3Protocol::DoDispose (void)
+Ipv4L3Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (L4List_t::iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
@@ -345,7 +345,7 @@ Ipv4L3Protocol::DoDispose (void)
 }
 
 void
-Ipv4L3Protocol::SetupLoopback (void)
+Ipv4L3Protocol::SetupLoopback ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -436,7 +436,7 @@ Ipv4L3Protocol::GetInterface (uint32_t index) const
 }
 
 uint32_t
-Ipv4L3Protocol::GetNInterfaces (void) const
+Ipv4L3Protocol::GetNInterfaces () const
 {
   NS_LOG_FUNCTION (this);
   return m_interfaces.size ();
@@ -673,7 +673,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
 }
 
 Ptr<Icmpv4L4Protocol>
-Ipv4L3Protocol::GetIcmp (void) const
+Ipv4L3Protocol::GetIcmp () const
 {
   NS_LOG_FUNCTION (this);
   Ptr<IpL4Protocol> prot = GetProtocol (Icmpv4L4Protocol::GetStaticProtocolNumber ());
@@ -1407,7 +1407,7 @@ Ipv4L3Protocol::SetIpForward (bool forward)
 }
 
 bool
-Ipv4L3Protocol::GetIpForward (void) const
+Ipv4L3Protocol::GetIpForward () const
 {
   NS_LOG_FUNCTION (this);
   return m_ipForward;
@@ -1421,7 +1421,7 @@ Ipv4L3Protocol::SetWeakEsModel (bool model)
 }
 
 bool
-Ipv4L3Protocol::GetWeakEsModel (void) const
+Ipv4L3Protocol::GetWeakEsModel () const
 {
   NS_LOG_FUNCTION (this);
   return m_weakEsModel;
@@ -1804,7 +1804,7 @@ Ipv4L3Protocol::UpdateDuplicate (Ptr<const Packet> p, const Ipv4Header &header)
 }
 
 void
-Ipv4L3Protocol::RemoveDuplicates (void)
+Ipv4L3Protocol::RemoveDuplicates ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1855,7 +1855,7 @@ Ipv4L3Protocol::SetTimeout (FragmentKey_t key, Ipv4Header ipHeader, uint32_t iif
 }
 
 void
-Ipv4L3Protocol::HandleTimeout (void)
+Ipv4L3Protocol::HandleTimeout ()
 {
   Time now = Simulator::Now ();
 

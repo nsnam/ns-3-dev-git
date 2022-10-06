@@ -45,7 +45,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual void DoDispose ();
 
   /**
@@ -69,7 +69,7 @@ public:
 
 private:
   /// Expire RBS timer function
-  void ExpireRbsTimer (void);
+  void ExpireRbsTimer ();
   /// Report buffer status
   void DoReportBufferStatus ();
 

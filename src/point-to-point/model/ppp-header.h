@@ -64,20 +64,20 @@ public:
    *
    * \return The TypeId for this class
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Get the TypeId of the instance
    *
    * \return The TypeId for this instance
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
 
   virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Set the protocol type carried by this PPP packet
@@ -95,7 +95,7 @@ public:
    *
    * \return the protocol type being carried
    */
-  uint16_t GetProtocol (void);
+  uint16_t GetProtocol ();
 
 private:
 

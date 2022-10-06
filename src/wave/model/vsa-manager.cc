@@ -35,7 +35,7 @@ const static uint8_t oi_bytes_1609[5] = {0x00, 0x50, 0xC2, 0x4A, 0x40};
 const static OrganizationIdentifier oi_1609 = OrganizationIdentifier (oi_bytes_1609, 5);
 
 TypeId
-VsaManager::GetTypeId (void)
+VsaManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::VsaManager")
     .SetParent<Object> ()
@@ -45,19 +45,19 @@ VsaManager::GetTypeId (void)
   return tid;
 }
 
-VsaManager::VsaManager (void)
+VsaManager::VsaManager ()
   : m_device (0)
 {
   m_vsaReceived = MakeNullCallback<bool, Ptr<const Packet>,const Address &, uint32_t, uint32_t> ();
 }
 
-VsaManager::~VsaManager (void)
+VsaManager::~VsaManager ()
 {
 
 }
 
 void
-VsaManager::DoDispose (void)
+VsaManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   RemoveAll ();
@@ -65,7 +65,7 @@ VsaManager::DoDispose (void)
 }
 
 void
-VsaManager::DoInitialize (void)
+VsaManager::DoInitialize ()
 {
   std::map<uint32_t, Ptr<OcbWifiMac> > macs = m_device->GetMacs ();
   for (std::map<uint32_t, Ptr<OcbWifiMac> >::iterator i = macs.begin (); i != macs.end (); ++i)
@@ -189,7 +189,7 @@ VsaManager::DoSendVsa (enum VsaTransmitInterval  interval, uint32_t channel,
 }
 
 void
-VsaManager::RemoveAll (void)
+VsaManager::RemoveAll ()
 {
   NS_LOG_FUNCTION (this);
   for (std::vector<VsaWork *>::iterator i = m_vsas.begin ();

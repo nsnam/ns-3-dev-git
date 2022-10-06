@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("FrameExchangeManager");
 NS_OBJECT_ENSURE_REGISTERED (FrameExchangeManager);
 
 TypeId
-FrameExchangeManager::GetTypeId (void)
+FrameExchangeManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FrameExchangeManager")
     .SetParent<Object> ()
@@ -68,7 +68,7 @@ FrameExchangeManager::~FrameExchangeManager ()
 }
 
 void
-FrameExchangeManager::Reset (void)
+FrameExchangeManager::Reset ()
 {
   NS_LOG_FUNCTION (this);
   m_txTimer.Cancel ();
@@ -83,7 +83,7 @@ FrameExchangeManager::Reset (void)
 }
 
 void
-FrameExchangeManager::DoDispose (void)
+FrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Reset ();
@@ -111,7 +111,7 @@ FrameExchangeManager::SetProtectionManager (Ptr<WifiProtectionManager> protectio
 }
 
 Ptr<WifiProtectionManager>
-FrameExchangeManager::GetProtectionManager (void) const
+FrameExchangeManager::GetProtectionManager () const
 {
   return m_protectionManager;
 }
@@ -124,7 +124,7 @@ FrameExchangeManager::SetAckManager (Ptr<WifiAckManager> ackManager)
 }
 
 Ptr<WifiAckManager>
-FrameExchangeManager::GetAckManager (void) const
+FrameExchangeManager::GetAckManager () const
 {
   return m_ackManager;
 }
@@ -165,7 +165,7 @@ FrameExchangeManager::SetChannelAccessManager (const Ptr<ChannelAccessManager> c
 }
 
 Ptr<WifiRemoteStationManager>
-FrameExchangeManager::GetWifiRemoteStationManager (void) const
+FrameExchangeManager::GetWifiRemoteStationManager () const
 {
   return m_mac->GetWifiRemoteStationManager (m_linkId);
 }
@@ -181,7 +181,7 @@ FrameExchangeManager::SetWifiPhy (Ptr<WifiPhy> phy)
 }
 
 void
-FrameExchangeManager::ResetPhy (void)
+FrameExchangeManager::ResetPhy ()
 {
   NS_LOG_FUNCTION (this);
   if (m_phy)
@@ -204,7 +204,7 @@ FrameExchangeManager::SetAddress (Mac48Address address)
 }
 
 Mac48Address
-FrameExchangeManager::GetAddress (void) const
+FrameExchangeManager::GetAddress () const
 {
   return m_self;
 }
@@ -217,7 +217,7 @@ FrameExchangeManager::SetBssid (Mac48Address bssid)
 }
 
 Mac48Address
-FrameExchangeManager::GetBssid (void) const
+FrameExchangeManager::GetBssid () const
 {
   return m_bssid;
 }
@@ -237,19 +237,19 @@ FrameExchangeManager::SetAckedMpduCallback (AckedMpdu callback)
 }
 
 void
-FrameExchangeManager::SetPromisc (void)
+FrameExchangeManager::SetPromisc ()
 {
   m_promisc = true;
 }
 
 bool
-FrameExchangeManager::IsPromisc (void) const
+FrameExchangeManager::IsPromisc () const
 {
   return m_promisc;
 }
 
 const WifiTxTimer&
-FrameExchangeManager::GetWifiTxTimer (void) const
+FrameExchangeManager::GetWifiTxTimer () const
 {
   return m_txTimer;
 }
@@ -420,7 +420,7 @@ FrameExchangeManager::SendMpduWithProtection (Ptr<WifiMpdu> mpdu, WifiTxParamete
 }
 
 void
-FrameExchangeManager::SendMpdu (void)
+FrameExchangeManager::SendMpdu ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -756,7 +756,7 @@ FrameExchangeManager::SendNormalAck (const WifiMacHeader& hdr, const WifiTxVecto
 }
 
 Ptr<WifiMpdu>
-FrameExchangeManager::GetNextFragment (void)
+FrameExchangeManager::GetNextFragment ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_mpdu->GetHeader ().IsMoreFragments ());
@@ -782,7 +782,7 @@ FrameExchangeManager::GetNextFragment (void)
 }
 
 void
-FrameExchangeManager::TransmissionSucceeded (void)
+FrameExchangeManager::TransmissionSucceeded ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -803,7 +803,7 @@ FrameExchangeManager::TransmissionSucceeded (void)
 }
 
 void
-FrameExchangeManager::TransmissionFailed (void)
+FrameExchangeManager::TransmissionFailed ()
 {
   NS_LOG_FUNCTION (this);
   // A non-QoS station always releases the channel upon a transmission failure
@@ -963,14 +963,14 @@ FrameExchangeManager::NotifySwitchingStartNow (Time duration)
 }
 
 void
-FrameExchangeManager::NotifySleepNow (void)
+FrameExchangeManager::NotifySleepNow ()
 {
   NS_LOG_DEBUG ("Device in sleep mode. Cancelling MAC pending events");
   Reset ();
 }
 
 void
-FrameExchangeManager::NotifyOffNow (void)
+FrameExchangeManager::NotifyOffNow ()
 {
   NS_LOG_DEBUG ("Device is switched off. Cancelling MAC pending events");
   Reset ();
@@ -1086,7 +1086,7 @@ FrameExchangeManager::UpdateNav (Ptr<const WifiPsdu> psdu, const WifiTxVector& t
 }
 
 void
-FrameExchangeManager::NavResetTimeout (void)
+FrameExchangeManager::NavResetTimeout ()
 {
   NS_LOG_FUNCTION (this);
   m_navEnd = Simulator::Now ();

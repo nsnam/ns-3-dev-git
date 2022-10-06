@@ -32,7 +32,7 @@ namespace ns3 {
 
 
 SpectrumChannelHelper
-SpectrumChannelHelper::Default (void)
+SpectrumChannelHelper::Default ()
 {
   SpectrumChannelHelper h;
   h.SetChannel ("ns3::SingleModelSpectrumChannel");
@@ -57,7 +57,7 @@ SpectrumChannelHelper::AddSpectrumPropagationLoss (Ptr<SpectrumPropagationLossMo
 }
 
 Ptr<SpectrumChannel>
-SpectrumChannelHelper::Create (void) const
+SpectrumChannelHelper::Create () const
 {
   Ptr<SpectrumChannel> channel = (m_channel.Create ())->GetObject<SpectrumChannel> ();
   channel->AddSpectrumPropagationLossModel (m_spectrumPropagationLossModel);

@@ -67,24 +67,24 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
         }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetValueTypeName (void) const
+    virtual std::string GetValueTypeName () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       return "ns3::DoubleValue";
     }
-    virtual bool HasUnderlyingTypeInformation (void) const
+    virtual bool HasUnderlyingTypeInformation () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation (void) const
+    virtual std::string GetUnderlyingTypeInformation () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       std::ostringstream oss;
       oss << m_name << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Ptr<AttributeValue> Create (void) const
+    virtual Ptr<AttributeValue> Create () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       return ns3::Create<DoubleValue> ();

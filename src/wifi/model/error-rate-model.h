@@ -38,7 +38,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \param txVector a specific transmission vector including WifiMode
@@ -52,7 +52,7 @@ public:
    * \return true if the model is for AWGN channels,
    *         false otherwise
    */
-  virtual bool IsAwgn (void) const;
+  virtual bool IsAwgn () const;
 
   /**
    * This method returns the probability that the given 'chunk' of the

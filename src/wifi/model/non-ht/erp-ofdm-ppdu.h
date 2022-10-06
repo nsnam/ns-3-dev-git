@@ -60,10 +60,10 @@ public:
    */
   virtual ~ErpOfdmPpdu ();
 
-  Ptr<WifiPpdu> Copy (void) const override;
+  Ptr<WifiPpdu> Copy () const override;
 
 private:
-  WifiTxVector DoGetTxVector (void) const override;
+  WifiTxVector DoGetTxVector () const override;
 }; //class ErpOfdmPpdu
 
 } //namespace ns3

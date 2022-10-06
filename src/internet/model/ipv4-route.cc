@@ -39,7 +39,7 @@ Ipv4Route::SetDestination (Ipv4Address dest)
 }
 
 Ipv4Address
-Ipv4Route::GetDestination (void) const
+Ipv4Route::GetDestination () const
 {
   NS_LOG_FUNCTION (this);
   return m_dest;
@@ -53,7 +53,7 @@ Ipv4Route::SetSource (Ipv4Address src)
 }
 
 Ipv4Address
-Ipv4Route::GetSource (void) const
+Ipv4Route::GetSource () const
 {
   NS_LOG_FUNCTION (this);
   return m_source;
@@ -67,7 +67,7 @@ Ipv4Route::SetGateway (Ipv4Address gw)
 }
 
 Ipv4Address
-Ipv4Route::GetGateway (void) const
+Ipv4Route::GetGateway () const
 {
   NS_LOG_FUNCTION (this);
   return m_gateway;
@@ -81,7 +81,7 @@ Ipv4Route::SetOutputDevice (Ptr<NetDevice> outputDevice)
 }
 
 Ptr<NetDevice>
-Ipv4Route::GetOutputDevice (void) const
+Ipv4Route::GetOutputDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_outputDevice;
@@ -107,7 +107,7 @@ Ipv4MulticastRoute::SetGroup (const Ipv4Address group)
 }
 
 Ipv4Address
-Ipv4MulticastRoute::GetGroup (void) const
+Ipv4MulticastRoute::GetGroup () const
 {
   NS_LOG_FUNCTION (this);
   return m_group;
@@ -121,7 +121,7 @@ Ipv4MulticastRoute::SetOrigin (const Ipv4Address origin)
 }
 
 Ipv4Address
-Ipv4MulticastRoute::GetOrigin (void) const
+Ipv4MulticastRoute::GetOrigin () const
 {
   NS_LOG_FUNCTION (this);
   return m_origin;
@@ -135,7 +135,7 @@ Ipv4MulticastRoute::SetParent (uint32_t parent)
 }
 
 uint32_t
-Ipv4MulticastRoute::GetParent (void) const
+Ipv4MulticastRoute::GetParent () const
 {
   NS_LOG_FUNCTION (this);
   return m_parent;

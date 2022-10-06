@@ -81,19 +81,19 @@ public:
    * Return true if the PSDU is an S-MPDU
    * \return true if the PSDU is an S-MPDU.
    */
-  bool IsSingle (void) const;
+  bool IsSingle () const;
 
   /**
    * Return true if the PSDU is an S-MPDU or A-MPDU
    * \return true if the PSDU is an S-MPDU or A-MPDU.
    */
-  bool IsAggregate (void) const;
+  bool IsAggregate () const;
 
   /**
    * \brief Get the PSDU as a single packet
    * \return the PSDU.
    */
-  Ptr<const Packet> GetPacket (void) const;
+  Ptr<const Packet> GetPacket () const;
 
   /**
    * \brief Get the header of the i-th MPDU
@@ -134,19 +134,19 @@ public:
    * Get the Receiver Address (RA), which is common to all the MPDUs
    * \return the Receiver Address.
    */
-  Mac48Address GetAddr1 (void) const;
+  Mac48Address GetAddr1 () const;
 
   /**
    * Get the Transmitter Address (TA), which is common to all the MPDUs
    * \return the Transmitter Address.
    */
-  Mac48Address GetAddr2 (void) const;
+  Mac48Address GetAddr2 () const;
 
   /**
    * Get the duration from the Duration/ID field, which is common to all the MPDUs
    * \return the duration from the Duration/ID field.
    */
-  Time GetDuration (void) const;
+  Time GetDuration () const;
 
   /**
    * Set the Duration/ID field on all the MPDUs
@@ -161,7 +161,7 @@ public:
    *
    * \return the set of TIDs of the QoS Data frames included in the PSDU.
    */
-  std::set<uint8_t> GetTids (void) const;
+  std::set<uint8_t> GetTids () const;
 
   /**
    * Get the QoS Ack Policy of the QoS Data frames included in the PSDU that
@@ -200,42 +200,42 @@ public:
    *
    * \return the size of the PSDU.
    */
-  uint32_t GetSize (void) const;
+  uint32_t GetSize () const;
 
   /**
    * \brief Return the number of MPDUs constituting the PSDU
    *
    * \return the number of MPDUs constituting the PSDU.
    */
-  std::size_t GetNMpdus (void) const;
+  std::size_t GetNMpdus () const;
 
   /**
    * \brief Return a const iterator to the first MPDU
    *
    * \return a const iterator to the first MPDU.
    */
-  std::vector<Ptr<WifiMpdu>>::const_iterator begin (void) const;
+  std::vector<Ptr<WifiMpdu>>::const_iterator begin () const;
 
   /**
    * \brief Return an iterator to the first MPDU
    *
    * \return an iterator to the first MPDU.
    */
-  std::vector<Ptr<WifiMpdu>>::iterator begin (void);
+  std::vector<Ptr<WifiMpdu>>::iterator begin ();
 
   /**
    * \brief Return a const iterator to past-the-last MPDU
    *
    * \return a const iterator to past-the-last MPDU.
    */
-  std::vector<Ptr<WifiMpdu>>::const_iterator end (void) const;
+  std::vector<Ptr<WifiMpdu>>::const_iterator end () const;
 
   /**
    * \brief Return an iterator to past-the-last MPDU
    *
    * \return an iterator to past-the-last MPDU.
    */
-  std::vector<Ptr<WifiMpdu>>::iterator end (void);
+  std::vector<Ptr<WifiMpdu>>::iterator end ();
 
   /**
    * \brief Print the PSDU contents.

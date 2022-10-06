@@ -39,8 +39,8 @@ public:
   TcpTxBufferTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   /** \brief Test if a segment is really set as lost */
   void TestIsLost ();
@@ -57,7 +57,7 @@ private:
    * \brief Callback to provide a value of receiver window
    * \returns the receiver window size
    */
-  uint32_t GetRWnd (void) const;
+  uint32_t GetRWnd () const;
 };
 
 TcpTxBufferTestCase::TcpTxBufferTestCase ()
@@ -154,7 +154,7 @@ TcpTxBufferTestCase::TestIsLost ()
 }
 
 uint32_t
-TcpTxBufferTestCase::GetRWnd (void) const
+TcpTxBufferTestCase::GetRWnd () const
 {
   // Assume unlimited receiver window
   return std::numeric_limits<uint32_t>::max ();

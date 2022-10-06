@@ -156,7 +156,7 @@ LenaDataPhyErrorModelTestCase::~LenaDataPhyErrorModelTestCase ()
 }
 
 void
-LenaDataPhyErrorModelTestCase::DoRun (void)
+LenaDataPhyErrorModelTestCase::DoRun ()
 {
 
   double ber = 0.03;
@@ -311,7 +311,7 @@ LenaDlCtrlPhyErrorModelTestCase::~LenaDlCtrlPhyErrorModelTestCase ()
 }
 
 void
-LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
+LenaDlCtrlPhyErrorModelTestCase::DoRun ()
 {
 
   double ber = 0.03;

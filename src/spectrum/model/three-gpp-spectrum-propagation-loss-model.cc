@@ -57,7 +57,7 @@ ThreeGppSpectrumPropagationLossModel::DoDispose ()
 }
 
 TypeId
-ThreeGppSpectrumPropagationLossModel::GetTypeId (void)
+ThreeGppSpectrumPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppSpectrumPropagationLossModel")
     .SetParent<PhasedArraySpectrumPropagationLossModel> ()

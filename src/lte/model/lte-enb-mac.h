@@ -72,11 +72,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  LteEnbMac (void);
-  virtual ~LteEnbMac (void);
-  virtual void DoDispose (void);
+  LteEnbMac ();
+  virtual ~LteEnbMac ();
+  virtual void DoDispose ();
 
   /**
    * \brief Set the component carrier ID
@@ -92,7 +92,7 @@ public:
    * \brief Get the scheduler SAP user
    * \return a pointer to the SAP user of the scheduler
    */
-  FfMacSchedSapUser* GetFfMacSchedSapUser (void);
+  FfMacSchedSapUser* GetFfMacSchedSapUser ();
   /**
    * \brief Set the control scheduler SAP provider
    * \param s a pointer to the control scheduler SAP provider
@@ -102,7 +102,7 @@ public:
    * \brief Get the control scheduler SAP user
    * \return a pointer to the control scheduler SAP user
    */
-  FfMacCschedSapUser* GetFfMacCschedSapUser (void);
+  FfMacCschedSapUser* GetFfMacCschedSapUser ();
 
 
 
@@ -115,7 +115,7 @@ public:
    * \brief Get the MAC SAP provider
    * \return a pointer to the SAP provider of the MAC
    */
-  LteMacSapProvider* GetLteMacSapProvider (void);
+  LteMacSapProvider* GetLteMacSapProvider ();
   /**
    * \brief Set the control MAC SAP user
    * \param s a pointer to the control MAC SAP user
@@ -125,7 +125,7 @@ public:
    * \brief Get the control MAC SAP provider
    * \return a pointer to the control MAC SAP provider
    */
-  LteEnbCmacSapProvider* GetLteEnbCmacSapProvider (void);
+  LteEnbCmacSapProvider* GetLteEnbCmacSapProvider ();
 
 
   /**

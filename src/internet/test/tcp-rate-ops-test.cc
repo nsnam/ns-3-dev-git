@@ -57,7 +57,7 @@ public:
                          uint32_t testCase, std::string testName);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Send an application packet
@@ -173,7 +173,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   MimicCongControl ()
   {
@@ -187,7 +187,7 @@ public:
 };
 
 TypeId
-MimicCongControl::GetTypeId (void)
+MimicCongControl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MimicCongControl")
     .SetParent<TcpNewReno> ()
@@ -421,8 +421,8 @@ public:
   TcpRateLinuxWithBufferTest (uint32_t segmentSize, std::string desc);
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   /**
    * \brief Track the rate value of TcpRateLinux.

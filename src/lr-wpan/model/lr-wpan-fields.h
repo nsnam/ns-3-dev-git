@@ -95,42 +95,42 @@ public:
    * Get the Superframe Specification Beacon Order field.
    * \return the Superframe Specification Beacon Order field.
    */
-  uint8_t GetBeaconOrder (void) const;
+  uint8_t GetBeaconOrder () const;
   /**
    * Get the Superframe Specification Frame Order field.
    * \return The Superframe Specification Frame Order field.
    */
-  uint8_t GetFrameOrder (void) const;
+  uint8_t GetFrameOrder () const;
   /**
    * Get the the Final CAP Slot.
    * \returns The Final CAP Slot
    */
-  uint8_t GetFinalCapSlot (void) const;
+  uint8_t GetFinalCapSlot () const;
   /**
    * Check if the Battery Life Extension bit is enabled.
    * \returns true if the Battery Life Extension bit is enabled
    */
-  bool IsBattLifeExt (void) const;
+  bool IsBattLifeExt () const;
   /**
    * Check if the PAN Coordinator bit is enabled.
    * \returns true if the PAN Coordinator bit is enabled
    */
-  bool IsPanCoor (void) const;
+  bool IsPanCoor () const;
   /**
    * Check if the Association Permit bit is enabled.
    * \returns true if the Association Permit bit is enabled
    */
-  bool IsAssocPermit (void) const;
+  bool IsAssocPermit () const;
   /**
    * Get the Superframe specification information field.
    * \return the Superframe Specification Information field bits.
    */
-  uint16_t GetSuperframe (void) const;
+  uint16_t GetSuperframe () const;
   /**
    * Get the size of the serialized Superframe specification information field.
    * \return the size of the serialized field.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize the entire superframe specification field.
    * \param i an iterator which points to where the superframe specification field should be written.
@@ -180,12 +180,12 @@ public:
    * Get the GTS Specification Field from the GTS Fields
    * \return The GTS Spcecification Field
    */
-  uint8_t GetGtsSpecField (void) const;
+  uint8_t GetGtsSpecField () const;
   /**
    * Get the GTS Direction Field from the GTS Fields
    * \return The GTS Direction Field
    */
-  uint8_t GetGtsDirectionField (void) const;
+  uint8_t GetGtsDirectionField () const;
   /**
    * Set the GTS Specification Field to the GTS Fields
    * \param gtsSpec The GTS Specification Field to set.
@@ -200,12 +200,12 @@ public:
    *  Get the GTS Specification Permit. TRUE if coordinator is accepting GTS requests.
    *  \return True if the coordinator is accepting GTS request.
    */
-  bool GetGtsPermit (void) const;
+  bool GetGtsPermit () const;
   /**
    * Get the size of the serialized GTS fields.
    * \return the size of the serialized fields.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize the entire GTS fields.
    * \param i an iterator which points to where the superframe specification field should be written.
@@ -289,17 +289,17 @@ public:
    * Get the whole Pending Address Specification Field from the Pending Address Fields.
    * \return The Pending Address Specification Field.
    */
-  uint8_t GetPndAddrSpecField (void) const;
+  uint8_t GetPndAddrSpecField () const;
   /**
    * Get the number of Short Pending Address indicated in the Pending Address Specification Field.
    * \return The number Short Pending Address.
    */
-  uint8_t GetNumShortAddr (void) const;
+  uint8_t GetNumShortAddr () const;
   /**
    * Get the number of Extended Pending Address indicated in the Pending Address Specification Field.
    * \return The number Short Pending Address.
    */
-  uint8_t GetNumExtAddr (void) const;
+  uint8_t GetNumExtAddr () const;
 
   /**
     * Set the whole Pending Address Specification field. This field is part of the
@@ -311,7 +311,7 @@ public:
    * Get the size of the serialized Pending Address Fields.
    * \return the size of the serialized fields.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize the entire Pending Address Fields.
    * \param i an iterator which points to where the Pending Address Fields should be written.
@@ -362,7 +362,7 @@ public:
    * Get the size of the serialized Capability Information Field.
    * \return the size of the serialized field.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize the entire Capability Information Field.
    * \param i an iterator which points to where the Capability information field should be written.
@@ -379,27 +379,27 @@ public:
    * True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional Device (RFD).
    * \return True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional Device (RFD).
    */
-  bool IsDeviceTypeFfd (void) const;
+  bool IsDeviceTypeFfd () const;
   /**
    * True if the device is receiving power from alternating current mains.
    * \return True if the device is receiving power from alternating current mains.
    */
-  bool IsPowSrcAvailable (void) const;
+  bool IsPowSrcAvailable () const;
   /**
    * True if the device does not disable its receiver to conserve power during idle periods.
    * \return True if the device does not disable its receiver to conserve power during idle periods.
    */
-  bool IsReceiverOnWhenIdle (void) const;
+  bool IsReceiverOnWhenIdle () const;
   /**
    * True if the device is capable of sending and receiving cryptographically protected MAC frames.
    * \return True if the device is capable of sending and receiving cryptographically protected MAC frames.
    */
-  bool IsSecurityCapability (void) const;
+  bool IsSecurityCapability () const;
   /**
    * True if the device wishes the coordinator to allocate a short address as result of the association procedure.
    * \return True if the device wishes the coordinator to allocate a short address as result of the association procedure.
    */
-  bool IsShortAddrAllocOn (void) const;
+  bool IsShortAddrAllocOn () const;
   /**
    * Set the Device type in the Capability Information Field.
    * True = full functional device (FFD)  False = reduced functional device (RFD).

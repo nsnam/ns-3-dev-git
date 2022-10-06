@@ -90,7 +90,7 @@ public:
   /**
    * Restore initial state
    */
-  virtual void clear (void);
+  virtual void clear ();
 
 private:
   /**

@@ -79,9 +79,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  WimaxPhy (void);
-  virtual ~WimaxPhy (void);
+  static TypeId GetTypeId ();
+  WimaxPhy ();
+  virtual ~WimaxPhy ();
   /**
    * Attach the physical layer to a channel.
    * \param channel the channel to which the physical layer will be attached
@@ -90,7 +90,7 @@ public:
   /**
    * \return the channel to which this physical layer is attached
    */
-  Ptr<WimaxChannel> GetChannel (void) const;
+  Ptr<WimaxChannel> GetChannel () const;
   /**
    * \brief Set the device in which this physical layer is installed
    * \param device the device in which this physical layer is installed
@@ -99,7 +99,7 @@ public:
   /**
    * \return the the device in which this physical layer is installed
    */
-  Ptr<NetDevice> GetDevice (void) const;
+  Ptr<NetDevice> GetDevice () const;
   /**
    * \brief set the callback function to call when a burst is received
    * \param callback the callback function to call when a burst is received
@@ -108,7 +108,7 @@ public:
   /**
    * \return the receive callback
    */
-  Callback<void, Ptr<const PacketBurst> > GetReceiveCallback (void) const;
+  Callback<void, Ptr<const PacketBurst> > GetReceiveCallback () const;
   /**
    * \brief send a packet on the channel
    * \param params the parameters used to send the packet
@@ -118,7 +118,7 @@ public:
    * \brief Get the type of the physical layer
    * \returns the phy type
    */
-  virtual PhyType GetPhyType (void) const = 0;
+  virtual PhyType GetPhyType () const = 0;
   /**
    * \brief configure the physical layer in duplex mode
    * \param rxFrequency the reception frequency
@@ -134,17 +134,17 @@ public:
    * Get the reception frequency
    * \return the reception frequency
    */
-  uint64_t GetRxFrequency (void) const;
+  uint64_t GetRxFrequency () const;
   /**
    * Get the transmission frequency
    * \return the transmission frequency
    */
-  uint64_t GetTxFrequency (void) const;
+  uint64_t GetTxFrequency () const;
   /**
    * Get the scanning frequency
    * \return the scanning frequency
    */
-  uint64_t GetScanningFrequency (void) const;
+  uint64_t GetScanningFrequency () const;
   /**
    * Set the number of carriers in the physical frame
    * \brief Set the number of carriers in the physical frame
@@ -155,7 +155,7 @@ public:
    * Get the number of carriers in the physical frame
    * \return the number of carriers in the physical frame
    */
-  uint8_t GetNrCarriers (void) const;
+  uint8_t GetNrCarriers () const;
   /**
    * \brief Set the frame duration
    * \param frameDuration the frame duration
@@ -166,12 +166,12 @@ public:
    * This method is redundant with GetFrameDuration ()
    * \return the frame duration
    */
-  Time GetFrameDurationSec (void) const;
+  Time GetFrameDurationSec () const;
   /**
    * \brief Get the frame duration
    * \return the frame duration
    */
-  Time GetFrameDuration (void) const;
+  Time GetFrameDuration () const;
   /**
    * \brief set the frequency on which the device should lock
    * \param frequency the frequency to configure
@@ -181,7 +181,7 @@ public:
    * Get the frequency on which the device is locked
    * \return the frequency on which the device is locked
    */
-  uint32_t GetFrequency (void) const;
+  uint32_t GetFrequency () const;
   /**
    * \brief Set the channel bandwidth
    * \param channelBandwidth The channel bandwidth
@@ -191,22 +191,22 @@ public:
    * Get the channel bandwidth
    * \return the channel bandwidth
    */
-  uint32_t GetChannelBandwidth (void) const;
+  uint32_t GetChannelBandwidth () const;
   /**
    * Get the size of the FFT
    * \return the size of the FFT
    */
-  uint16_t GetNfft (void) const;
+  uint16_t GetNfft () const;
   /**
    * Get the sampling factor
    * \return the sampling factor
    */
-  double GetSamplingFactor (void) const;
+  double GetSamplingFactor () const;
   /**
    * Get the sampling frequency
    * \return the sampling frequency
    */
-  double GetSamplingFrequency (void) const;
+  double GetSamplingFrequency () const;
   /**
    * \brief set the physical slot duration
    * \param psDuration the physical slot duration
@@ -216,7 +216,7 @@ public:
    * Get the physical slot duration
    * \return the physical slot duration
    */
-  Time GetPsDuration (void) const;
+  Time GetPsDuration () const;
   /**
    * \brief set the OFDM symbol duration
    * \param symbolDuration the symbol duration
@@ -226,12 +226,12 @@ public:
    * Get the OFDM symbol duration
    * \return the symbol duration in second
    */
-  Time GetSymbolDuration (void) const;
+  Time GetSymbolDuration () const;
   /**
    * Get the guard interval factor (the ratio TG/Td)
    * \return the guard interval factor
    */
-  double GetGValue (void) const;
+  double GetGValue () const;
   /**
    * \brief set the number of physical slots per symbol
    * \param psPerSymbol the number of physical slots per symbol
@@ -241,7 +241,7 @@ public:
    * Get the number of physical slots per symbol
    * \return the number of physical slots per symbol
    */
-  uint16_t GetPsPerSymbol (void) const;
+  uint16_t GetPsPerSymbol () const;
 
   /**
    * \brief set the number of physical slots per frame
@@ -252,7 +252,7 @@ public:
    * Get the number of physical slots per frame
    * \return the number of physical slot per frame
    */
-  uint16_t GetPsPerFrame (void) const;
+  uint16_t GetPsPerFrame () const;
   /**
    * \brief set the number of symbols per frame
    * \param symbolsPerFrame the number of symbols per frame
@@ -262,12 +262,12 @@ public:
    * Get the number of symbols per frame
    * \return the number of symbols per frame
    */
-  uint32_t GetSymbolsPerFrame (void) const;
+  uint32_t GetSymbolsPerFrame () const;
   /**
    * Check if configured in duplex mode
    * \return true if the device is configured in duplex mode
    */
-  bool IsDuplex (void) const;
+  bool IsDuplex () const;
   /**
    * \brief set the state of the device
    * \param state the state to be set (PHY_STATE_IDLE, PHY_STATE_SCANNING, PHY_STATE_TX, PHY_STATE_RX)
@@ -277,7 +277,7 @@ public:
    * Get the state of the device
    * \return the state of the device (PHY_STATE_IDLE, PHY_STATE_SCANNING, PHY_STATE_TX, PHY_STATE_RX)
    */
-  PhyState GetState (void) const;
+  PhyState GetState () const;
   /**
    * \brief scan a frequency for maximum timeout seconds and call the callback if the frequency can be used
    * \param frequency the frequency to scan
@@ -289,16 +289,16 @@ public:
   /**
    * \brief calls the scanning call back function
    */
-  void SetScanningCallback (void) const;
+  void SetScanningCallback () const;
   /**
    * \brief Get channel search timeout event
    * \return event ID
    */
-  EventId GetChnlSrchTimeoutEvent (void) const;
+  EventId GetChnlSrchTimeoutEvent () const;
   /**
    * \brief calculates the data rate of each modulation and save them for future use
    */
-  void SetDataRates (void);
+  void SetDataRates ();
   /**
    * Get the data rate corresponding to a modulation type
    * \return the data rate
@@ -330,17 +330,17 @@ public:
    * Get the transmit/receive transition gap
    * \return the transmit/receive transition gap
    */
-  uint16_t GetTtg (void) const;
+  uint16_t GetTtg () const;
   /**
    * Get the receive/transmit transition gap
    * \return the receive/transmit transition gap
    */
-  uint16_t GetRtg (void) const;
+  uint16_t GetRtg () const;
   /**
    * Get the frame duration code
    * \return the frame duration code
    */
-  uint8_t GetFrameDurationCode (void) const;
+  uint8_t GetFrameDurationCode () const;
   /**
    * Get the frame duration corresponding to a given code
    * \param frameDurationCode the frame duration code to use
@@ -350,13 +350,13 @@ public:
   /**
    * \brief computes the Physical parameters and store them
    */
-  void SetPhyParameters (void);
-  virtual void DoDispose (void);
+  void SetPhyParameters ();
+  virtual void DoDispose ();
   /**
    * Get the mobility model of the device
    * \return the mobility model of the device
    */
-  virtual Ptr<Object> GetMobility (void);
+  virtual Ptr<Object> GetMobility ();
   /**
    * \brief set the mobility model of the device
    * \param mobility the mobility model to set
@@ -382,7 +382,7 @@ private:
    */
   void GetModulationFecParams (ModulationType modulationType, uint8_t &bitsPerSymbol, double &fecCode) const;
   /// End scanning
-  void EndScanning (void);
+  void EndScanning ();
   /**
    * Get transmission time
    * \param size the transmission size
@@ -396,7 +396,7 @@ private:
    */
   virtual void DoAttach (Ptr<WimaxChannel> channel) = 0;
   /// Set data rates
-  virtual void DoSetDataRates (void) = 0;
+  virtual void DoSetDataRates () = 0;
   /**
    * Get data rate
    * \param modulationType the modulation type
@@ -421,18 +421,18 @@ private:
    * Get TTG
    * \returns the TTG
    */
-  virtual uint16_t DoGetTtg (void) const = 0;
+  virtual uint16_t DoGetTtg () const = 0;
   /**
    * Get RTG
    * \returns the RTG
    */
-  virtual uint16_t DoGetRtg (void) const = 0;
+  virtual uint16_t DoGetRtg () const = 0;
 
   /**
    * Get frame duration code
    * \returns the frame duration code
    */
-  virtual uint8_t DoGetFrameDurationCode (void) const = 0;
+  virtual uint8_t DoGetFrameDurationCode () const = 0;
   /**
    * Get frame duration
    * \param frameDurationCode the frame duration code
@@ -442,27 +442,27 @@ private:
   /**
    * Set phy parameters
    */
-  virtual void DoSetPhyParameters (void) = 0;
+  virtual void DoSetPhyParameters () = 0;
   /**
    * Get sampling factor
    * \return the sampling factor
    */
-  virtual double DoGetSamplingFactor (void) const = 0;
+  virtual double DoGetSamplingFactor () const = 0;
   /**
    * Get NFFT
    * \returns the NFFT
    */
-  virtual uint16_t DoGetNfft (void) const = 0;
+  virtual uint16_t DoGetNfft () const = 0;
   /**
    * Get sampling frequency
    * \returns the sampling frequency
    */
-  virtual double DoGetSamplingFrequency (void) const = 0;
+  virtual double DoGetSamplingFrequency () const = 0;
   /**
    * Get G value
    * \returns he G value
    */
-  virtual double DoGetGValue (void) const = 0;
+  virtual double DoGetGValue () const = 0;
 
   Ptr<WimaxNetDevice> m_device; ///< the device
   Ptr<WimaxChannel> m_channel; ///< channel

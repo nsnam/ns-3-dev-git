@@ -55,7 +55,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the contention window size.
@@ -74,29 +74,29 @@ public:
    *
    * \return Contention window size.
    */
-  virtual uint32_t GetCw (void);
+  virtual uint32_t GetCw ();
   /**
    * Get the slot time duration.
    *
    * \return Slot time duration.
    */
-  virtual Time GetSlotTime (void);
+  virtual Time GetSlotTime ();
 
   // Inherited methods from UanMac
   virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual void Clear (void);
+  virtual void Clear ();
   int64_t AssignStreams (int64_t stream);
 
   // Inherited methods from UanPhyListener
-  virtual void NotifyRxStart (void);
-  virtual void NotifyRxEndOk (void);
-  virtual void NotifyRxEndError (void);
-  virtual void NotifyCcaStart (void);
-  virtual void NotifyCcaEnd (void);
+  virtual void NotifyRxStart ();
+  virtual void NotifyRxEndOk ();
+  virtual void NotifyRxEndError ();
+  virtual void NotifyCcaStart ();
+  virtual void NotifyCcaEnd ();
   virtual void NotifyTxStart (Time duration);
-  virtual void NotifyTxEnd (void);
+  virtual void NotifyTxEnd ();
 
   /**
    *  TracedCallback signature for enqueue/dequeue of a packet.
@@ -169,13 +169,13 @@ private:
    */
   void PhyRxPacketError (Ptr<Packet> packet, double sinr);
   /** Cancel SendEvent and save remaining delay. */
-  void SaveTimer (void);
+  void SaveTimer ();
   /** Schedule SendPacket after delay. */
-  void StartTimer (void);
+  void StartTimer ();
   /** Send packet on PHY. */
-  void SendPacket (void);
+  void SendPacket ();
   /** End TX state. */
-  void EndTx (void);
+  void EndTx ();
 
 protected:
   virtual void DoDispose ();

@@ -33,7 +33,7 @@ Header::~Header ()
 }
 
 TypeId
-Header::GetTypeId (void)
+Header::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Header")
     .SetParent<Chunk> ()

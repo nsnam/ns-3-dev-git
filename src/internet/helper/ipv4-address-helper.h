@@ -121,7 +121,7 @@ public:
    * @see SetBase
    * @see NewAddress
    */
-  Ipv4Address NewNetwork (void);
+  Ipv4Address NewNetwork ();
 
   /**
    * @brief Increment the IP address counter used to allocate IP addresses
@@ -147,7 +147,7 @@ public:
    * @see SetBase
    * @see NewNetwork
    */
-  Ipv4Address NewAddress (void);
+  Ipv4Address NewAddress ();
 
   /**
    * @brief Assign IP addresses to the net devices specified in the container

@@ -91,7 +91,7 @@ public:
    * This is called when a Block Ack agreement is destroyed to flush the
    * received packets.
    */
-  void Flush (void);
+  void Flush ();
 
 private:
   /**
@@ -101,7 +101,7 @@ private:
    * Set WinStartB to the value of the Sequence Number subfield of the last
    * MSDU or A-MSDU that was passed up to the next MAC process plus one.
    */
-  void PassBufferedMpdusUntilFirstLost (void);
+  void PassBufferedMpdusUntilFirstLost ();
 
   /**
    * Pass any complete MSDUs or A-MSDUs stored in the buffer with Sequence Number

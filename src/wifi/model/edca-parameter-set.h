@@ -171,103 +171,103 @@ public:
    *
    * \return the QoS Info field in the EdcaParameterSet information element
    */
-  uint8_t GetQosInfo (void) const;
+  uint8_t GetQosInfo () const;
   /**
    * Return the AC_BE AIFSN field in the EdcaParameterSet information element.
    *
    * \return the AC_BE AIFSN field in the EdcaParameterSet information element
    */
-  uint8_t GetBeAifsn (void) const;
+  uint8_t GetBeAifsn () const;
   /**
    * Return the AC_BE CWmin field in the EdcaParameterSet information element.
    *
    * \return the AC_BE CWmin field in the EdcaParameterSet information element
    */
-  uint32_t GetBeCWmin (void) const;
+  uint32_t GetBeCWmin () const;
   /**
    * Return the AC_BE CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_BE CWmax field in the EdcaParameterSet information element
    */
-  uint32_t GetBeCWmax (void) const;
+  uint32_t GetBeCWmax () const;
   /**
    * Return the AC_BE TXOP Limit field in the EdcaParameterSet information element.
    *
    * \return the AC_BE TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetBeTxopLimit (void) const;
+  uint16_t GetBeTxopLimit () const;
   /**
    * Return the AC_BK AIFSN field in the EdcaParameterSet information element.
    *
    * \return the AC_BK AIFSN field in the EdcaParameterSet information element
    */
-  uint8_t GetBkAifsn (void) const;
+  uint8_t GetBkAifsn () const;
   /**
    * Return the AC_BK CWmin field in the EdcaParameterSet information element.
    *
    * \return the AC_BK CWmin field in the EdcaParameterSet information element
    */
-  uint32_t GetBkCWmin (void) const;
+  uint32_t GetBkCWmin () const;
   /**
    * Return the AC_BK CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_BK CWmax field in the EdcaParameterSet information element
    */
-  uint32_t GetBkCWmax (void) const;
+  uint32_t GetBkCWmax () const;
   /**
    * Return the AC_BK TXOP Limit field in the EdcaParameterSet information element.
    *
    * \return the AC_BK TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetBkTxopLimit (void) const;
+  uint16_t GetBkTxopLimit () const;
   /**
    * Return the AC_VI AIFSN field in the EdcaParameterSet information element.
    *
    * \return the AC_VI AIFSN field in the EdcaParameterSet information element
    */
-  uint8_t GetViAifsn (void) const;
+  uint8_t GetViAifsn () const;
   /**
    * Return the AC_VI CWmin field in the EdcaParameterSet information element.
    *
    * \return the AC_VI CWmin field in the EdcaParameterSet information element
    */
-  uint32_t GetViCWmin (void) const;
+  uint32_t GetViCWmin () const;
   /**
    * Return the AC_VI CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_VI CWmax field in the EdcaParameterSet information element
    */
-  uint32_t GetViCWmax (void) const;
+  uint32_t GetViCWmax () const;
   /**
    * Return the AC_VI TXOP Limit field in the EdcaParameterSet information element.
    *
    * \return the AC_VI TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetViTxopLimit (void) const;
+  uint16_t GetViTxopLimit () const;
   /**
    * Return the AC_VO AIFSN field in the EdcaParameterSet information element.
    *
    * \return the AC_VO AIFSN field in the EdcaParameterSet information element
    */
-  uint8_t GetVoAifsn (void) const;
+  uint8_t GetVoAifsn () const;
   /**
    * Return the AC_VO CWmin field in the EdcaParameterSet information element.
    *
    * \return the AC_VO CWmin field in the EdcaParameterSet information element
    */
-  uint32_t GetVoCWmin (void) const;
+  uint32_t GetVoCWmin () const;
   /**
    * Return the AC_VO CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_VO CWmax field in the EdcaParameterSet information element
    */
-  uint32_t GetVoCWmax (void) const;
+  uint32_t GetVoCWmax () const;
   /**
    * Return the AC_VO TXOP Limit field in the EdcaParameterSet information element.
    *
    * \return the AC_VO TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetVoTxopLimit (void) const;
+  uint16_t GetVoTxopLimit () const;
 
 
 private:

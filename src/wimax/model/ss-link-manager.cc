@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("SSLinkManager");
 
 NS_OBJECT_ENSURE_REGISTERED (SSLinkManager);
 
-TypeId SSLinkManager::GetTypeId (void)
+TypeId SSLinkManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SSLinkManager")
     .SetParent<Object> ()
@@ -69,14 +69,14 @@ SSLinkManager::SSLinkManager (Ptr<SubscriberStationNetDevice> ss)
 
 }
 
-SSLinkManager::~SSLinkManager (void)
+SSLinkManager::~SSLinkManager ()
 {
   m_ss = 0;
 }
 
 
 void
-SSLinkManager::DoDispose (void)
+SSLinkManager::DoDispose ()
 {
   m_ss = 0;
 }
@@ -100,7 +100,7 @@ SSLinkManager::SetRangingIntervalFound (bool rangingIntervalFound)
 }
 
 bool
-SSLinkManager::GetRangingIntervalFound (void) const
+SSLinkManager::GetRangingIntervalFound () const
 {
   return m_rangingIntervalFound;
 }
@@ -118,13 +118,13 @@ SSLinkManager::SetRangingCW (uint8_t rangingCW)
 }
 
 void
-SSLinkManager::IncrementNrInvitedPollsRecvd (void)
+SSLinkManager::IncrementNrInvitedPollsRecvd ()
 {
   m_nrInvitedPollsRecvd++;
 }
 
 EventId
-SSLinkManager::GetDlMapSyncTimeoutEvent (void)
+SSLinkManager::GetDlMapSyncTimeoutEvent ()
 {
   return m_dlMapSyncTimeoutEvent;
 }
@@ -176,7 +176,7 @@ SSLinkManager::EndScanning (bool status, uint64_t frequency)
 }
 
 void
-SSLinkManager::StartSynchronizing (void)
+SSLinkManager::StartSynchronizing ()
 {
   m_ss->SetState (SubscriberStationNetDevice::SS_STATE_SYNCHRONIZING);
   m_ss->SetTimer (Simulator::Schedule (m_ss->GetIntervalT21 (),
@@ -246,7 +246,7 @@ SSLinkManager::SendRangingRequest (uint8_t uiuc, uint16_t allocationSize)
 }
 
 void
-SSLinkManager::StartContentionResolution (void)
+SSLinkManager::StartContentionResolution ()
 {
   NS_ASSERT_MSG (
     m_ss->GetState ()
@@ -286,7 +286,7 @@ SSLinkManager::StartContentionResolution (void)
 }
 
 void
-SSLinkManager::PerformBackoff (void)
+SSLinkManager::PerformBackoff ()
 {
   Time defferTime = Seconds (0);
   Time timeToAllocation = Seconds (0);
@@ -319,7 +319,7 @@ SSLinkManager::PerformBackoff (void)
 }
 
 void
-SSLinkManager::SelectRandomBackoff (void)
+SSLinkManager::SelectRandomBackoff ()
 {
   NS_ASSERT_MSG (m_rangingCW != 0 && m_rangingBO == 0,
                  "be sure that CW has been set and BO is not already set"); // ensuring CW has been set and BO is not already set
@@ -329,14 +329,14 @@ SSLinkManager::SelectRandomBackoff (void)
 }
 
 void
-SSLinkManager::IncreaseRangingRequestCW (void)
+SSLinkManager::IncreaseRangingRequestCW ()
 {
   m_rangingCW = std::min (uint8_t ((m_rangingCW * 2 + 1) - 1),
                           m_ss->GetCurrentUcd ().GetRangingBackoffEnd ());
 }
 
 void
-SSLinkManager::ResetRangingRequestCW (void)
+SSLinkManager::ResetRangingRequestCW ()
 {
   m_rangingCW = (uint8_t) std::pow ((double) 2,
                                     (double) m_ss->GetCurrentUcd ().GetRangingBackoffStart ()) - 1;
@@ -433,13 +433,13 @@ SSLinkManager::PerformRanging (Cid cid,
 }
 
 void
-SSLinkManager::DeleteUplinkParameters (void)
+SSLinkManager::DeleteUplinkParameters ()
 {
   m_ss->SetCurrentUcd (Ucd ());
 }
 
 bool
-SSLinkManager::IsUlChannelUsable (void)
+SSLinkManager::IsUlChannelUsable ()
 {
   // don't know how to check if usable, see Figure 58.
   return true; // temporarily assuming usable
@@ -464,13 +464,13 @@ SSLinkManager::AdjustRangingParameters (const RngRsp &rngrsp)
 }
 
 void
-SSLinkManager::NegotiateBasicCapabilities (void)
+SSLinkManager::NegotiateBasicCapabilities ()
 {
   // code to nagotiate basic capabilities goes here, ignored until very advanced stages
 }
 
 uint16_t
-SSLinkManager::CalculateMaxIRSignalStrength (void)
+SSLinkManager::CalculateMaxIRSignalStrength ()
 {
   // SS obtains RSSI measurement from the OFDM downlink preambles using a complex formula, page 486
   uint16_t rss = 1;
@@ -488,7 +488,7 @@ SSLinkManager::CalculateMaxIRSignalStrength (void)
 }
 
 uint16_t
-SSLinkManager::GetMinTransmitPowerLevel (void)
+SSLinkManager::GetMinTransmitPowerLevel ()
 {
   // code to calculate minimum transmit power level of the SS, see page 189 of amendment
   return 10; // temp

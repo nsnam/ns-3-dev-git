@@ -60,11 +60,11 @@ public:
      * \brief Get the type ID.
      * \return the object TypeId
      */
-    static TypeId GetTypeId (void);
+    static TypeId GetTypeId ();
 
-    TypeId GetInstanceTypeId (void) const override;
+    TypeId GetInstanceTypeId () const override;
     void Print (std::ostream &os) const override;
-    uint32_t GetSerializedSize (void) const override;
+    uint32_t GetSerializedSize () const override;
     void Serialize (Buffer::Iterator start) const override;
     uint32_t Deserialize (Buffer::Iterator start) override;
 
@@ -79,7 +79,7 @@ public:
      *
      * \return the RATE field of L-SIG expressed in bit/s
      */
-    uint64_t GetRate (void) const;
+    uint64_t GetRate () const;
     /**
      * Fill the LENGTH field of L-SIG (in bytes).
      *
@@ -91,7 +91,7 @@ public:
      *
      * \return the LENGTH field of L-SIG expressed in bytes
      */
-    uint16_t GetLength (void) const;
+    uint16_t GetLength () const;
 
   private:
     uint8_t m_rate;    ///< RATE field
@@ -114,11 +114,11 @@ public:
    */
   virtual ~DsssPpdu ();
 
-  Time GetTxDuration (void) const override;
-  Ptr<WifiPpdu> Copy (void) const override;
+  Time GetTxDuration () const override;
+  Ptr<WifiPpdu> Copy () const override;
 
 private:
-  WifiTxVector DoGetTxVector (void) const override;
+  WifiTxVector DoGetTxVector () const override;
 
   DsssSigHeader m_dsssSig;  //!< the DSSS SIG PHY header
 }; //class DsssPpdu

@@ -64,7 +64,7 @@ LteRlcUmTransmitterTestCase::~LteRlcUmTransmitterTestCase ()
 }
 
 void
-LteRlcUmTransmitterTestCase::DoRun (void)
+LteRlcUmTransmitterTestCase::DoRun ()
 {
   // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   // LogComponentEnable ("LteRlcUmTransmitterTest", logLevel);
@@ -127,7 +127,7 @@ LteRlcUmTransmitterOneSduTestCase::~LteRlcUmTransmitterOneSduTestCase ()
 }
 
 void
-LteRlcUmTransmitterOneSduTestCase::DoRun (void)
+LteRlcUmTransmitterOneSduTestCase::DoRun ()
 {
   // Create topology
   LteRlcUmTransmitterTestCase::DoRun ();
@@ -160,7 +160,7 @@ LteRlcUmTransmitterSegmentationTestCase::~LteRlcUmTransmitterSegmentationTestCas
 }
 
 void
-LteRlcUmTransmitterSegmentationTestCase::DoRun (void)
+LteRlcUmTransmitterSegmentationTestCase::DoRun ()
 {
   // Create topology
   LteRlcUmTransmitterTestCase::DoRun ();
@@ -202,7 +202,7 @@ LteRlcUmTransmitterConcatenationTestCase::~LteRlcUmTransmitterConcatenationTestC
 }
 
 void
-LteRlcUmTransmitterConcatenationTestCase::DoRun (void)
+LteRlcUmTransmitterConcatenationTestCase::DoRun ()
 {
   // Create topology
   LteRlcUmTransmitterTestCase::DoRun ();
@@ -237,7 +237,7 @@ LteRlcUmTransmitterReportBufferStatusTestCase::~LteRlcUmTransmitterReportBufferS
 }
 
 void
-LteRlcUmTransmitterReportBufferStatusTestCase::DoRun (void)
+LteRlcUmTransmitterReportBufferStatusTestCase::DoRun ()
 {
   // Create topology
   LteRlcUmTransmitterTestCase::DoRun ();

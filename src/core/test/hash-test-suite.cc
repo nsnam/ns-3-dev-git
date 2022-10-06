@@ -85,7 +85,7 @@ private:
    * \param [in] hash the hash value
    */
   void Check ( const std::string hashName, const int bits, const uint64_t hash);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };  // class HashTestCase
 
@@ -143,7 +143,7 @@ HashTestCase::Check ( std::string hashName, int bits, uint64_t hash)
 }
 
 void
-HashTestCase::DoRun (void)
+HashTestCase::DoRun ()
 {}
 
 
@@ -160,7 +160,7 @@ public:
   virtual ~DefaultHashTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 DefaultHashTestCase::DefaultHashTestCase ()
@@ -171,7 +171,7 @@ DefaultHashTestCase::~DefaultHashTestCase ()
 {}
 
 void
-DefaultHashTestCase::DoRun (void)
+DefaultHashTestCase::DoRun ()
 {
   std::cout << GetName () << "checking with key: \""
             << key << "\"" << std::endl;
@@ -196,7 +196,7 @@ public:
   virtual ~Fnv1aTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Fnv1aTestCase::Fnv1aTestCase ()
@@ -207,7 +207,7 @@ Fnv1aTestCase::~Fnv1aTestCase ()
 {}
 
 void
-Fnv1aTestCase::DoRun (void)
+Fnv1aTestCase::DoRun ()
 {
   Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
   hash32Reference = 0xa3fc0d6d;  // Fnv1a(key)
@@ -231,7 +231,7 @@ public:
   virtual ~Murmur3TestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Murmur3TestCase::Murmur3TestCase ()
@@ -242,7 +242,7 @@ Murmur3TestCase::~Murmur3TestCase ()
 {}
 
 void
-Murmur3TestCase::DoRun (void)
+Murmur3TestCase::DoRun ()
 {
   Hasher hasher = Hasher ( Create<Hash::Function::Murmur3> () );
   hash32Reference = 0x463d70e2;  // Murmur3(key)
@@ -319,7 +319,7 @@ public:
   virtual ~Hash32FunctionPtrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Hash32FunctionPtrTestCase::Hash32FunctionPtrTestCase ()
@@ -330,7 +330,7 @@ Hash32FunctionPtrTestCase::~Hash32FunctionPtrTestCase ()
 {}
 
 void
-Hash32FunctionPtrTestCase::DoRun (void)
+Hash32FunctionPtrTestCase::DoRun ()
 {
   Hasher hasher = Hasher ( Create<Hash::Function::Hash32> (&gnu_sum32) );
   hash32Reference = 0x41264126;  // Hash32FunctionPtr(key)
@@ -350,7 +350,7 @@ public:
   virtual ~Hash64FunctionPtrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Hash64FunctionPtrTestCase::Hash64FunctionPtrTestCase ()
@@ -361,7 +361,7 @@ Hash64FunctionPtrTestCase::~Hash64FunctionPtrTestCase ()
 {}
 
 void
-Hash64FunctionPtrTestCase::DoRun (void)
+Hash64FunctionPtrTestCase::DoRun ()
 {
   Hasher hasher = Hasher ( Create<Hash::Function::Hash64> (&gnu_sum64) );
   hash64Reference = 0x4126412641264126ULL;  // Hash64FunctionPtr(key)
@@ -381,7 +381,7 @@ public:
   virtual ~IncrementalTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Complute the hash test function
    * \param name the hash name
@@ -413,7 +413,7 @@ IncrementalTestCase::DoHash (const std::string name, Hasher hasher)
 }
 
 void
-IncrementalTestCase::DoRun (void)
+IncrementalTestCase::DoRun ()
 {
   key1 = "The quick brown ";
   key2 = "Incremental.";

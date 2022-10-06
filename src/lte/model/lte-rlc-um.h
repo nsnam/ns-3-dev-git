@@ -41,7 +41,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual void DoDispose ();
 
   /**
@@ -62,9 +62,9 @@ public:
 
 private:
   /// Expire reordering timer
-  void ExpireReorderingTimer (void);
+  void ExpireReorderingTimer ();
   /// Expire RBS timer
-  void ExpireRbsTimer (void);
+  void ExpireRbsTimer ();
 
   /**
    * Is inside reordering window function
@@ -75,7 +75,7 @@ private:
   bool IsInsideReorderingWindow (SequenceNumber10 seqNumber);
 
   /// Reassemble outside window
-  void ReassembleOutsideWindow (void);
+  void ReassembleOutsideWindow ();
   /**
    * Reassemble SN interval function
    *

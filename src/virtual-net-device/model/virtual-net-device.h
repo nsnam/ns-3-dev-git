@@ -68,7 +68,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   VirtualNetDevice ();
 
   virtual ~VirtualNetDevice ();
@@ -128,32 +128,32 @@ public:
 
   // inherited from NetDevice base class.
   virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
-  virtual Ptr<Channel> GetChannel (void) const;
+  virtual uint32_t GetIfIndex () const;
+  virtual Ptr<Channel> GetChannel () const;
   virtual void SetAddress (Address address);
-  virtual Address GetAddress (void) const;
-  virtual uint16_t GetMtu (void) const;
-  virtual bool IsLinkUp (void) const;
+  virtual Address GetAddress () const;
+  virtual uint16_t GetMtu () const;
+  virtual bool IsLinkUp () const;
   virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
-  virtual bool IsMulticast (void) const;
+  virtual bool IsBroadcast () const;
+  virtual Address GetBroadcast () const;
+  virtual bool IsMulticast () const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual bool IsPointToPoint (void) const;
+  virtual bool IsPointToPoint () const;
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
   virtual void SetNode (Ptr<Node> node);
-  virtual bool NeedsArp (void) const;
+  virtual bool NeedsArp () const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom () const;
-  virtual bool IsBridge (void) const;
+  virtual bool IsBridge () const;
 
 protected:
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
 

@@ -67,7 +67,7 @@ public:
   virtual ~LteInterferenceHardFrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   double m_d1; ///< distance between UE and ENB
   double m_d2; ///< distance between UE and other ENB
@@ -101,7 +101,7 @@ public:
   virtual ~LteInterferenceStrictFrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   double m_d1; ///< distance between UE and ENB
   double m_d2; ///< distance between UE and other ENB

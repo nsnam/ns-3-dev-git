@@ -49,7 +49,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Connect the WifiNetDevice and setup eventual callbacks.
@@ -89,11 +89,11 @@ public:
   /**
    * \return the current OBSS PD level in dBm.
    */
-  double GetObssPdLevel (void) const;
+  double GetObssPdLevel () const;
 
 
 protected:
-  void DoDispose (void) override;
+  void DoDispose () override;
 
   Ptr<WifiNetDevice> m_device; ///< Pointer to the WifiNetDevice
 

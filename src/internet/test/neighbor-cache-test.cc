@@ -108,7 +108,7 @@ class DynamicNeighborCacheTest : public TestCase
   void RemoveIpv6Address (Ptr<Ipv6Interface> ipv6Interface, uint32_t index);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   DynamicNeighborCacheTest ();
 
@@ -191,7 +191,7 @@ DynamicNeighborCacheTest::RemoveIpv6Address (Ptr<Ipv6Interface> ipv6Interface, u
 }
 
 void
-DynamicNeighborCacheTest::DoRun (void)
+DynamicNeighborCacheTest::DoRun ()
 {
   Ptr<Node> tx1Node = CreateObject<Node> ();
   Ptr<Node> tx2Node = CreateObject<Node> ();
@@ -504,7 +504,7 @@ DynamicNeighborCacheTest::DoRun (void)
 class ChannelTest : public TestCase
 {
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   ChannelTest ();
 
 private:
@@ -591,7 +591,7 @@ ChannelTest::DoRun ()
 class NetDeviceContainerTest : public TestCase
 {
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   NetDeviceContainerTest ();
 
 private:
@@ -678,7 +678,7 @@ NetDeviceContainerTest::DoRun ()
 class InterfaceContainerTest : public TestCase
 {
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   InterfaceContainerTest ();
 
 private:
@@ -767,7 +767,7 @@ InterfaceContainerTest::DoRun ()
 class FlushTest : public TestCase
 {
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   FlushTest ();
 
 private:
@@ -872,7 +872,7 @@ FlushTest::DoRun ()
 class DuplicateTest : public TestCase
 {
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   DuplicateTest ();
 
 private:
@@ -970,7 +970,7 @@ DuplicateTest::DoRun ()
 class DynamicPartialTest : public TestCase
 {
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   DynamicPartialTest ();
 
   /**

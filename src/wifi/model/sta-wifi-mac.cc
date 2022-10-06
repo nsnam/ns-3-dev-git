@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
 NS_OBJECT_ENSURE_REGISTERED (StaWifiMac);
 
 TypeId
-StaWifiMac::GetTypeId (void)
+StaWifiMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::StaWifiMac")
     .SetParent<WifiMac> ()
@@ -129,14 +129,14 @@ StaWifiMac::StaWifiMac ()
 }
 
 void
-StaWifiMac::DoInitialize (void)
+StaWifiMac::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   StartScanning ();
 }
 
 void
-StaWifiMac::DoDispose (void)
+StaWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   if (m_assocManager)
@@ -158,7 +158,7 @@ StaWifiMac::StaLinkEntity::~StaLinkEntity ()
 }
 
 std::unique_ptr<WifiMac::LinkEntity>
-StaWifiMac::CreateLinkEntity (void) const
+StaWifiMac::CreateLinkEntity () const
 {
   return std::make_unique<StaLinkEntity> ();
 }
@@ -186,7 +186,7 @@ StaWifiMac::SetAssocManager (Ptr<WifiAssocManager> assocManager)
 }
 
 uint16_t
-StaWifiMac::GetAssociationId (void) const
+StaWifiMac::GetAssociationId () const
 {
   NS_ASSERT_MSG (IsAssociated (), "This station is not associated to any AP");
   return m_aid;
@@ -205,7 +205,7 @@ StaWifiMac::SetActiveProbing (bool enable)
 }
 
 bool
-StaWifiMac::GetActiveProbing (void) const
+StaWifiMac::GetActiveProbing () const
 {
   return m_activeProbing;
 }
@@ -231,7 +231,7 @@ StaWifiMac::GetCurrentChannel (uint8_t linkId) const
 }
 
 void
-StaWifiMac::SendProbeRequest (void)
+StaWifiMac::SendProbeRequest ()
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
@@ -456,7 +456,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
 }
 
 void
-StaWifiMac::TryToEnsureAssociated (void)
+StaWifiMac::TryToEnsureAssociated ()
 {
   NS_LOG_FUNCTION (this);
   switch (m_state)
@@ -494,7 +494,7 @@ StaWifiMac::TryToEnsureAssociated (void)
 }
 
 void
-StaWifiMac::StartScanning (void)
+StaWifiMac::StartScanning ()
 {
   NS_LOG_FUNCTION (this);
   SetState (SCANNING);
@@ -596,7 +596,7 @@ StaWifiMac::ScanningTimeout (const std::optional<ApInfo>& bestAp)
 }
 
 void
-StaWifiMac::AssocRequestTimeout (void)
+StaWifiMac::AssocRequestTimeout ()
 {
   NS_LOG_FUNCTION (this);
   SetState (WAIT_ASSOC_RESP);
@@ -692,13 +692,13 @@ StaWifiMac::RestartBeaconWatchdog (Time delay, uint8_t linkId)
 }
 
 bool
-StaWifiMac::IsAssociated (void) const
+StaWifiMac::IsAssociated () const
 {
   return m_state == ASSOCIATED;
 }
 
 bool
-StaWifiMac::IsWaitAssocResp (void) const
+StaWifiMac::IsWaitAssocResp () const
 {
   return m_state == WAIT_ASSOC_RESP;
 }
@@ -1322,7 +1322,7 @@ StaWifiMac::SetMuEdcaParameters (AcIndex ac, uint16_t cwMin, uint16_t cwMax, uin
 }
 
 void
-StaWifiMac::PhyCapabilitiesChanged (void)
+StaWifiMac::PhyCapabilitiesChanged ()
 {
   NS_LOG_FUNCTION (this);
   if (IsAssociated ())

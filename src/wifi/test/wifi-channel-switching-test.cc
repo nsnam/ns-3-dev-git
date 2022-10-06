@@ -58,7 +58,7 @@ public:
   WifiChannelSwitchingTest ();
   virtual ~WifiChannelSwitchingTest ();
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Callback invoked when a station associates with an AP. Tracks the number of
@@ -86,11 +86,11 @@ public:
   /**
    * Send a packet from the AP to the STA through a packet socket
    */
-  void SendPacket (void);
+  void SendPacket ();
   /**
    * Request channel switch on both AP and STA
    */
-  void ChannelSwitch (void);
+  void ChannelSwitch ();
   /**
    * Callback invoked when the PHY on the given node changes state.
    *
@@ -170,7 +170,7 @@ WifiChannelSwitchingTest::L7Receive (Ptr<const Packet> p, const Address &addr)
 }
 
 void
-WifiChannelSwitchingTest::SendPacket (void)
+WifiChannelSwitchingTest::SendPacket ()
 {
   PacketSocketAddress socket;
   socket.SetSingleDevice (m_apDevice.Get (0)->GetIfIndex ());
@@ -199,7 +199,7 @@ WifiChannelSwitchingTest::SendPacket (void)
 }
 
 void
-WifiChannelSwitchingTest::ChannelSwitch (void)
+WifiChannelSwitchingTest::ChannelSwitch ()
 {
   NS_LOG_INFO ("CHANNEL SWITCH\n");
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/ChannelSettings",
@@ -217,7 +217,7 @@ WifiChannelSwitchingTest::StateChange (uint32_t nodeId, ns3::Time start, ns3::Ti
 }
 
 void
-WifiChannelSwitchingTest::DoRun (void)
+WifiChannelSwitchingTest::DoRun ()
 {
   Time simulationTime (Seconds (6.0));
 

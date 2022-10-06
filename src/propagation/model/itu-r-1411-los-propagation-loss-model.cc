@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("ItuR1411LosPropagationLossModel");
 NS_OBJECT_ENSURE_REGISTERED (ItuR1411LosPropagationLossModel);
 
 TypeId
-ItuR1411LosPropagationLossModel::GetTypeId (void)
+ItuR1411LosPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ItuR1411LosPropagationLossModel")
     .SetParent<PropagationLossModel> ()

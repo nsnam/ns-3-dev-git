@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (Kun2600MhzPropagationLossModel);
 
 
 TypeId
-Kun2600MhzPropagationLossModel::GetTypeId (void)
+Kun2600MhzPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Kun2600MhzPropagationLossModel")
     .SetParent<PropagationLossModel> ()

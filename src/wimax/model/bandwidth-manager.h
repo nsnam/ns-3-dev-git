@@ -58,20 +58,20 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Constructor
    *
    * \param device WIMAX device
    */
   BandwidthManager (Ptr<WimaxNetDevice> device);
-  ~BandwidthManager (void);
+  ~BandwidthManager ();
 
   // Delete copy constructor and assignment operator to avoid misuse
   BandwidthManager (const BandwidthManager &) = delete;
   BandwidthManager &operator= (const BandwidthManager &) = delete;
 
-  void DoDispose (void);
+  void DoDispose ();
 
   /**
    * Calculate allocation size function
@@ -98,12 +98,12 @@ public:
    */
   void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
   /// Set subframe ratio
-  void SetSubframeRatio (void);
+  void SetSubframeRatio ();
   /**
    * Get symbols per frame allocated
    * \returns the symbols per the frame allocated
    */
-  uint32_t GetSymbolsPerFrameAllocated (void);
+  uint32_t GetSymbolsPerFrameAllocated ();
 private:
   Ptr<WimaxNetDevice> m_device; ///< the device
   uint16_t m_nrBwReqsSent; ///< bandwidth requests sent

@@ -114,7 +114,7 @@ struct DeferredRouteOutputTag : public Tag
 };
 
 TypeId
-RoutingProtocol::GetTypeId (void)
+RoutingProtocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsdv::RoutingProtocol")
     .SetParent<Ipv4RoutingProtocol> ()

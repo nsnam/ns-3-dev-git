@@ -59,7 +59,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   PropagationLossModel ();
   virtual ~PropagationLossModel ();
@@ -155,7 +155,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
@@ -257,7 +257,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   FriisPropagationLossModel ();
 
   // Delete copy constructor and assignment operator to avoid misuse
@@ -289,16 +289,16 @@ public:
   /**
    * \return the minimum loss.
    */
-  double GetMinLoss (void) const;
+  double GetMinLoss () const;
 
   /**
    * \returns the current frequency (Hz)
    */
-  double GetFrequency (void) const;
+  double GetFrequency () const;
   /**
    * \returns the current system loss (dimension-less)
    */
-  double GetSystemLoss (void) const;
+  double GetSystemLoss () const;
 
 private:
   double DoCalcRxPower (double txPowerDbm,
@@ -361,7 +361,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   TwoRayGroundPropagationLossModel ();
 
   // Delete copy constructor and assignment operator to avoid misuse
@@ -392,17 +392,17 @@ public:
   /**
    * \returns the minimum distance.
    */
-  double GetMinDistance (void) const;
+  double GetMinDistance () const;
 
   /**
    * \returns the current frequency (Hz)
    */
-  double GetFrequency (void) const;
+  double GetFrequency () const;
 
   /**
    * \returns the current system loss (dimension-less)
    */
-  double GetSystemLoss (void) const;
+  double GetSystemLoss () const;
   /**
    * \param heightAboveZ the model antenna height above the node's Z coordinate
    *
@@ -464,7 +464,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   LogDistancePropagationLossModel ();
 
   // Delete copy constructor and assignment operator to avoid misuse
@@ -479,7 +479,7 @@ public:
   /**
    * \returns the current path loss exponent.
    */
-  double GetPathLossExponent (void) const;
+  double GetPathLossExponent () const;
 
   /**
    * Set the reference path loss at a given distance
@@ -499,7 +499,7 @@ private:
    *  Creates a default reference loss model
    * \return a default reference loss model
    */
-  static Ptr<PropagationLossModel> CreateDefaultReference (void);
+  static Ptr<PropagationLossModel> CreateDefaultReference ();
 
   double m_exponent; //!< model exponent
   double m_referenceDistance; //!< reference distance
@@ -553,7 +553,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   ThreeLogDistancePropagationLossModel ();
 
   // Delete copy constructor and assignment operator to avoid misuse
@@ -614,7 +614,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   NakagamiPropagationLossModel ();
 
@@ -662,7 +662,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   FixedRssLossModel ();
   virtual ~FixedRssLossModel ();
@@ -702,7 +702,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   MatrixPropagationLossModel ();
   virtual ~MatrixPropagationLossModel ();
@@ -760,7 +760,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   RangePropagationLossModel ();
 
   // Delete copy constructor and assignment operator to avoid misuse

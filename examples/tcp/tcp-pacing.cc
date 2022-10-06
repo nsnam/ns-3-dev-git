@@ -133,7 +133,7 @@ RxTracer (Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
 }
 
 void
-ConnectSocketTraces (void)
+ConnectSocketTraces ()
 {
   Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeCallback (&CwndTracer));
   Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/PacingRate", MakeCallback (&PacingRateTracer));

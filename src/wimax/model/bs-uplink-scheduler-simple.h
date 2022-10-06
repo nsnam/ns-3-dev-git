@@ -42,22 +42,22 @@ class ServiceFlow;
 class UplinkSchedulerSimple : public UplinkScheduler
 {
 public:
-  UplinkSchedulerSimple (void);
+  UplinkSchedulerSimple ();
   /**
    * Constructor
    *
    * \param bs base station device
    */
   UplinkSchedulerSimple (Ptr<BaseStationNetDevice> bs);
-  ~UplinkSchedulerSimple (void);
+  ~UplinkSchedulerSimple ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  std::list<OfdmUlMapIe> GetUplinkAllocations (void) const;
+  std::list<OfdmUlMapIe> GetUplinkAllocations () const;
 
   /**
    * \brief Determines if channel descriptors sent in the current frame are
@@ -70,12 +70,12 @@ public:
    *
    */
   void GetChannelDescriptorsToUpdate (bool& updateDcd, bool& updateUcd, bool& sendDcd, bool& sendUcd);
-  uint32_t CalculateAllocationStartTime (void);
+  uint32_t CalculateAllocationStartTime ();
   void AddUplinkAllocation (OfdmUlMapIe &ulMapIe,
                             const uint32_t &allocationSize,
                             uint32_t &symbolsToAllocation,
                             uint32_t &availableSymbols);
-  void Schedule (void);
+  void Schedule ();
   /**
    * Service Unsolicited Grants function
    * \param ssRecord Subscriber station record
@@ -143,7 +143,7 @@ public:
   void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
 
   /// Init once function
-  void InitOnce (void);
+  void InitOnce ();
 
   /**
    * Set requested bandwidth function

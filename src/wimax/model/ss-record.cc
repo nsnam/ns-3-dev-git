@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-SSRecord::SSRecord (void)
+SSRecord::SSRecord ()
 {
   Initialize ();
 }
@@ -44,7 +44,7 @@ SSRecord::SSRecord (Mac48Address macAddress, Ipv4Address IPaddress)
 }
 
 void
-SSRecord::Initialize (void)
+SSRecord::Initialize ()
 {
   m_basicCid = Cid ();
   m_primaryCid = Cid ();
@@ -65,7 +65,7 @@ SSRecord::Initialize (void)
   m_broadcast = 0;
 }
 
-SSRecord::~SSRecord (void)
+SSRecord::~SSRecord ()
 {
   delete m_serviceFlows;
   m_serviceFlows = 0;
@@ -77,7 +77,7 @@ SSRecord::SetIPAddress (Ipv4Address IPAddress)
   m_IPAddress = IPAddress;
 }
 
-Ipv4Address SSRecord::GetIPAddress (void)
+Ipv4Address SSRecord::GetIPAddress ()
 {
   return m_IPAddress;
 }
@@ -89,7 +89,7 @@ SSRecord::SetBasicCid (Cid basicCid)
 }
 
 Cid
-SSRecord::GetBasicCid (void) const
+SSRecord::GetBasicCid () const
 {
   return m_basicCid;
 }
@@ -101,7 +101,7 @@ SSRecord::SetPrimaryCid (Cid primaryCid)
 }
 
 Cid
-SSRecord::GetPrimaryCid (void) const
+SSRecord::GetPrimaryCid () const
 {
   return m_primaryCid;
 }
@@ -113,43 +113,43 @@ SSRecord::SetMacAddress (Mac48Address macAddress)
 }
 
 Mac48Address
-SSRecord::GetMacAddress (void) const
+SSRecord::GetMacAddress () const
 {
   return m_macAddress;
 }
 
 uint8_t
-SSRecord::GetRangingCorrectionRetries (void) const
+SSRecord::GetRangingCorrectionRetries () const
 {
   return m_rangingCorrectionRetries;
 }
 
 void
-SSRecord::ResetRangingCorrectionRetries (void)
+SSRecord::ResetRangingCorrectionRetries ()
 {
   m_rangingCorrectionRetries = 0;
 }
 
 void
-SSRecord::IncrementRangingCorrectionRetries (void)
+SSRecord::IncrementRangingCorrectionRetries ()
 {
   m_rangingCorrectionRetries++;
 }
 
 uint8_t
-SSRecord::GetInvitedRangRetries (void) const
+SSRecord::GetInvitedRangRetries () const
 {
   return m_invitedRangingRetries;
 }
 
 void
-SSRecord::ResetInvitedRangingRetries (void)
+SSRecord::ResetInvitedRangingRetries ()
 {
   m_invitedRangingRetries = 0;
 }
 
 void
-SSRecord::IncrementInvitedRangingRetries (void)
+SSRecord::IncrementInvitedRangingRetries ()
 {
   m_invitedRangingRetries++;
 }
@@ -161,7 +161,7 @@ SSRecord::SetModulationType (WimaxPhy::ModulationType modulationType)
 }
 
 WimaxPhy::ModulationType
-SSRecord::GetModulationType (void) const
+SSRecord::GetModulationType () const
 {
   return m_modulationType;
 }
@@ -173,25 +173,25 @@ SSRecord::SetRangingStatus (WimaxNetDevice::RangingStatus rangingStatus)
 }
 
 WimaxNetDevice::RangingStatus
-SSRecord::GetRangingStatus (void) const
+SSRecord::GetRangingStatus () const
 {
   return m_rangingStatus;
 }
 
 void
-SSRecord::EnablePollForRanging (void)
+SSRecord::EnablePollForRanging ()
 {
   m_pollForRanging = true;
 }
 
 void
-SSRecord::DisablePollForRanging (void)
+SSRecord::DisablePollForRanging ()
 {
   m_pollForRanging = false;
 }
 
 bool
-SSRecord::GetPollForRanging (void) const
+SSRecord::GetPollForRanging () const
 {
   return m_pollForRanging;
 }
@@ -203,7 +203,7 @@ SSRecord::SetAreServiceFlowsAllocated (bool val)
 }
 
 bool
-SSRecord::GetAreServiceFlowsAllocated (void) const
+SSRecord::GetAreServiceFlowsAllocated () const
 {
   return m_areServiceFlowsAllocated;
 }
@@ -215,7 +215,7 @@ SSRecord::SetPollMeBit (bool pollMeBit)
 }
 
 bool
-SSRecord::GetPollMeBit (void) const
+SSRecord::GetPollMeBit () const
 {
   return m_pollMeBit;
 }
@@ -246,13 +246,13 @@ SSRecord::SetIsBroadcastSS (bool broadcast_enable)
 }
 
 bool
-SSRecord::GetIsBroadcastSS (void)
+SSRecord::GetIsBroadcastSS ()
 {
   return m_broadcast;
 }
 
 bool
-SSRecord::GetHasServiceFlowUgs (void) const
+SSRecord::GetHasServiceFlowUgs () const
 {
   for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
     {
@@ -265,7 +265,7 @@ SSRecord::GetHasServiceFlowUgs (void) const
 }
 
 bool
-SSRecord::GetHasServiceFlowRtps (void) const
+SSRecord::GetHasServiceFlowRtps () const
 {
   for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
     {
@@ -278,7 +278,7 @@ SSRecord::GetHasServiceFlowRtps (void) const
 }
 
 bool
-SSRecord::GetHasServiceFlowNrtps (void) const
+SSRecord::GetHasServiceFlowNrtps () const
 {
   for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
     {
@@ -291,7 +291,7 @@ SSRecord::GetHasServiceFlowNrtps (void) const
 }
 
 bool
-SSRecord::GetHasServiceFlowBe (void) const
+SSRecord::GetHasServiceFlowBe () const
 {
   for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
     {
@@ -309,7 +309,7 @@ SSRecord::SetSfTransactionId (uint16_t sfTransactionId)
   m_sfTransactionId = sfTransactionId;
 }
 
-uint16_t SSRecord::GetSfTransactionId (void) const
+uint16_t SSRecord::GetSfTransactionId () const
 {
   return m_sfTransactionId;
 }
@@ -321,13 +321,13 @@ SSRecord::SetDsaRspRetries (uint8_t dsaRspRetries)
 }
 
 void
-SSRecord::IncrementDsaRspRetries (void)
+SSRecord::IncrementDsaRspRetries ()
 {
   m_dsaRspRetries++;
 }
 
 uint8_t
-SSRecord::GetDsaRspRetries (void) const
+SSRecord::GetDsaRspRetries () const
 {
   return m_dsaRspRetries;
 }
@@ -339,7 +339,7 @@ SSRecord::SetDsaRsp (DsaRsp dsaRsp)
 }
 
 DsaRsp
-SSRecord::GetDsaRsp (void) const
+SSRecord::GetDsaRsp () const
 {
   return m_dsaRsp;
 }

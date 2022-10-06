@@ -45,7 +45,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * First callback.
@@ -71,7 +71,7 @@ BasicTracedCallbackTestCase::CbOne ([[maybe_unused]] uint8_t a, [[maybe_unused]]
 
 
 void
-BasicTracedCallbackTestCase::DoRun (void)
+BasicTracedCallbackTestCase::DoRun ()
 {
   //
   // Disconnecting callbacks from a traced callback is based on the ability to

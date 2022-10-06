@@ -50,13 +50,13 @@ BsServiceFlowManager::BsServiceFlowManager (Ptr<BaseStationNetDevice> device)
   m_inuseScheduleDsaRspCid = Cid::InitialRanging ();
 }
 
-BsServiceFlowManager::~BsServiceFlowManager (void)
+BsServiceFlowManager::~BsServiceFlowManager ()
 {
 }
 
 /* static */
 TypeId
-BsServiceFlowManager::GetTypeId (void)
+BsServiceFlowManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BsServiceFlowManager")
     .SetParent<ServiceFlowManager> ()
@@ -67,7 +67,7 @@ BsServiceFlowManager::GetTypeId (void)
 }
 
 void
-BsServiceFlowManager::DoDispose (void)
+BsServiceFlowManager::DoDispose ()
 {
   ServiceFlowManager::DoDispose ();
 }
@@ -79,13 +79,13 @@ BsServiceFlowManager::SetMaxDsaRspRetries (uint8_t maxDsaRspRetries)
 }
 
 uint8_t
-BsServiceFlowManager::GetMaxDsaRspRetries (void) const
+BsServiceFlowManager::GetMaxDsaRspRetries () const
 {
   return m_maxDsaRspRetries;
 }
 
 EventId
-BsServiceFlowManager::GetDsaAckTimeoutEvent (void) const
+BsServiceFlowManager::GetDsaAckTimeoutEvent () const
 {
   return m_dsaAckTimeoutEvent;
 }

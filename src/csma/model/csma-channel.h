@@ -95,7 +95,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Create a CsmaChannel
@@ -254,13 +254,13 @@ public:
    * \return Returns the number of net devices that are currently
    * attached to the channel.
    */
-  uint32_t GetNumActDevices (void);
+  uint32_t GetNumActDevices ();
 
   /**
    * \return Returns the total number of devices including devices
    * that have been detached from the channel.
    */
-  virtual std::size_t GetNDevices (void) const;
+  virtual std::size_t GetNDevices () const;
 
   /**
    * \return Get a NetDevice pointer to a connected network device.
@@ -287,14 +287,14 @@ public:
    * \return Returns the DataRate to be used by device transmitters.
    * with deviceId i.
    */
-  DataRate GetDataRate (void);
+  DataRate GetDataRate ();
 
   /**
    * Get the assigned speed-of-light delay of the channel
    *
    * \return Returns the delay used by the channel.
    */
-  Time GetDelay (void);
+  Time GetDelay ();
 
 private:
   /**

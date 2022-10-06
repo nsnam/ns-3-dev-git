@@ -105,11 +105,11 @@ public:
    *
    * \return the number of Neighbor AP Information fields
    */
-  std::size_t GetNNbrApInfoFields (void) const;
+  std::size_t GetNNbrApInfoFields () const;
   /**
    * Add a Neighbor AP Information field
    */
-  void AddNbrApInfoField (void);
+  void AddNbrApInfoField ();
 
   /**
    * Set the Operating Class and the Channel Number fields of the given

@@ -64,7 +64,7 @@ RemSpectrumPhy::DoDispose ()
 }
 
 TypeId
-RemSpectrumPhy::GetTypeId (void)
+RemSpectrumPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RemSpectrumPhy")
     .SetParent<SpectrumPhy> ()

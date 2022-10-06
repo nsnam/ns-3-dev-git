@@ -122,7 +122,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("ns3::Derived")
       .AddConstructor<Derived> ()
@@ -155,7 +155,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("ns3::AttributeObjectTest")
       .AddConstructor<AttributeObjectTest> ()
@@ -290,20 +290,20 @@ public:
     return tid;
   }
 
-  AttributeObjectTest (void)
+  AttributeObjectTest ()
   {
   }
 
-  virtual ~AttributeObjectTest (void)
+  virtual ~AttributeObjectTest ()
   {}
 
   /// Add an object to the first vector.
-  void AddToVector1 (void)
+  void AddToVector1 ()
   {
     m_vector1.push_back (CreateObject<Derived> ());
   }
   /// Add an object to the second vector.
-  void AddToVector2 (void)
+  void AddToVector2 ()
   {
     m_vector2.push_back (CreateObject<Derived> ());
   }
@@ -353,7 +353,7 @@ private:
    * Get the m_boolTestA value.
    * \return the value of m_boolTestA.
    */
-  bool DoGetTestA (void) const
+  bool DoGetTestA () const
   {
     return m_boolTestA;
   }
@@ -361,7 +361,7 @@ private:
    * Get the m_int16SetGet value.
    * \return the value of m_int16SetGet.
    */
-  int16_t DoGetInt16 (void) const
+  int16_t DoGetInt16 () const
   {
     return m_int16SetGet;
   }
@@ -377,7 +377,7 @@ private:
    * Get the length of m_vector2.
    * \return the vector size.
    */
-  std::size_t DoGetVectorN (void) const
+  std::size_t DoGetVectorN () const
   {
     return m_vector2.size ();
   }
@@ -404,7 +404,7 @@ private:
    * Get the m_intSrc2 value.
    * \return the value of m_intSrc2.
    */
-  int8_t DoGetIntSrc (void) const
+  int8_t DoGetIntSrc () const
   {
     return m_intSrc2;
   }
@@ -422,7 +422,7 @@ private:
    * Get the m_enumSetGet value.
    * \return the value of m_enumSetGet.
    */
-  Test_e DoGetEnum (void) const
+  Test_e DoGetEnum () const
   {
     return m_enumSetGet;
   }
@@ -479,7 +479,7 @@ public:
   virtual ~AttributeTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the attribute path and value.
    * \param p The object to test.
@@ -529,7 +529,7 @@ AttributeTestCase<T>::CheckGetCodePaths (
 // The actual Attribute type test cases are specialized for each Attribute type
 // ===========================================================================
 template <> void
-AttributeTestCase<BooleanValue>::DoRun (void)
+AttributeTestCase<BooleanValue>::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -621,7 +621,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
 }
 
 template <> void
-AttributeTestCase<IntegerValue>::DoRun (void)
+AttributeTestCase<IntegerValue>::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -731,7 +731,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
 }
 
 template <> void
-AttributeTestCase<UintegerValue>::DoRun (void)
+AttributeTestCase<UintegerValue>::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -802,7 +802,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
 }
 
 template <> void
-AttributeTestCase<DoubleValue>::DoRun (void)
+AttributeTestCase<DoubleValue>::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -828,7 +828,7 @@ AttributeTestCase<DoubleValue>::DoRun (void)
 }
 
 template <> void
-AttributeTestCase<EnumValue>::DoRun (void)
+AttributeTestCase<EnumValue>::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -899,7 +899,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
 }
 
 template <> void
-AttributeTestCase<TimeValue>::DoRun (void)
+AttributeTestCase<TimeValue>::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -997,7 +997,7 @@ public:
   }
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /// Callback used in the test.
   Callback<void,int8_t> m_cbValue;
@@ -1019,7 +1019,7 @@ RandomVariableStreamAttributeTestCase::RandomVariableStreamAttributeTestCase (st
 {}
 
 void
-RandomVariableStreamAttributeTestCase::DoRun (void)
+RandomVariableStreamAttributeTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -1059,7 +1059,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 ObjectVectorAttributeTestCase::ObjectVectorAttributeTestCase (std::string description)
@@ -1067,7 +1067,7 @@ ObjectVectorAttributeTestCase::ObjectVectorAttributeTestCase (std::string descri
 {}
 
 void
-ObjectVectorAttributeTestCase::DoRun (void)
+ObjectVectorAttributeTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   ObjectVectorValue vector;
@@ -1130,7 +1130,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 ObjectMapAttributeTestCase::ObjectMapAttributeTestCase (std::string description)
@@ -1138,7 +1138,7 @@ ObjectMapAttributeTestCase::ObjectMapAttributeTestCase (std::string description)
 {}
 
 void
-ObjectMapAttributeTestCase::DoRun (void)
+ObjectMapAttributeTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   ObjectMapValue map;
@@ -1202,7 +1202,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 IntegerTraceSourceAttributeTestCase::IntegerTraceSourceAttributeTestCase (std::string description)
@@ -1210,7 +1210,7 @@ IntegerTraceSourceAttributeTestCase::IntegerTraceSourceAttributeTestCase (std::s
 {}
 
 void
-IntegerTraceSourceAttributeTestCase::DoRun (void)
+IntegerTraceSourceAttributeTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   IntegerValue iv;
@@ -1300,7 +1300,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Notify the call of source 1.
@@ -1319,7 +1319,7 @@ IntegerTraceSourceTestCase::IntegerTraceSourceTestCase (std::string description)
 {}
 
 void
-IntegerTraceSourceTestCase::DoRun (void)
+IntegerTraceSourceTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -1386,7 +1386,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Notify the call of source 2.
@@ -1407,7 +1407,7 @@ TracedCallbackTestCase::TracedCallbackTestCase (std::string description)
 {}
 
 void
-TracedCallbackTestCase::DoRun (void)
+TracedCallbackTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -1475,7 +1475,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Notify the call of source 2.
@@ -1496,7 +1496,7 @@ PointerAttributeTestCase::PointerAttributeTestCase (std::string description)
 {}
 
 void
-PointerAttributeTestCase::DoRun (void)
+PointerAttributeTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -1613,7 +1613,7 @@ public:
   }
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Callback<void,int8_t> m_cbValue; //!< The callback
 
@@ -1634,7 +1634,7 @@ CallbackValueTestCase::CallbackValueTestCase (std::string description)
 {}
 
 void
-CallbackValueTestCase::DoRun (void)
+CallbackValueTestCase::DoRun ()
 {
   Ptr<AttributeObjectTest> p;
   bool ok;

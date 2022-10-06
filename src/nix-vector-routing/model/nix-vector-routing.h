@@ -103,7 +103,7 @@ public:
    * @return The Interface ID
    * @see Object::GetObject ()
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * @brief Set the Node pointer of the node for which this
    * routing protocol is to be placed
@@ -122,7 +122,7 @@ public:
    * in const methods such as PrintRoutingTable.  Caches are stored in
    * mutable variables and flushed in const methods.
    */
-  void FlushGlobalNixRoutingCache (void) const;
+  void FlushGlobalNixRoutingCache () const;
 
   /**
    * @brief Print the Routing Path according to Nix Routing
@@ -143,20 +143,20 @@ private:
    * Flushes the cache which stores nix-vector based on
    * destination IP
    */
-  void FlushNixCache (void) const;
+  void FlushNixCache () const;
 
   /**
    * Flushes the cache which stores the Ip route
    * based on the destination IP
    */
-  void FlushIpRouteCache (void) const;
+  void FlushIpRouteCache () const;
 
   /**
    * Upon a run-time topology change caches are
    * flushed and the total number of neighbors is
    * reset to zero
    */
-  void ResetTotalNeighbors (void);
+  void ResetTotalNeighbors ();
 
   /**
    * Takes in the source node and dest IP and calls GetNodeByIp,
@@ -272,7 +272,7 @@ private:
    * \sa Ipv4RoutingProtocol::DoDispose
    * \sa Ipv6RoutingProtocol::DoDispose
    */
-  void DoDispose (void);
+  void DoDispose ();
 
   /// Map of IpAddress to NixVector
   typedef std::map<IpAddress, Ptr<NixVector> > NixMap_t;
@@ -437,12 +437,12 @@ private:
   /**
    * Flushes routing caches if required.
    */
-  void CheckCacheStateAndFlush (void) const;
+  void CheckCacheStateAndFlush () const;
 
   /**
    * Build map from IP Address to Node for faster lookup.
    */
-  void BuildIpAddressToNodeMap (void) const;
+  void BuildIpAddressToNodeMap () const;
 
   /**
    * Flag to mark when caches are dirty and need to be flushed.

@@ -259,7 +259,7 @@ LenaFdTbfqFfMacSchedulerTestCase1::~LenaFdTbfqFfMacSchedulerTestCase1 ()
 }
 
 void
-LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
+LenaFdTbfqFfMacSchedulerTestCase1::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
 
@@ -514,7 +514,7 @@ LenaFdTbfqFfMacSchedulerTestCase2::~LenaFdTbfqFfMacSchedulerTestCase2 ()
 }
 
 void
-LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
+LenaFdTbfqFfMacSchedulerTestCase2::DoRun ()
 {
 
   if (!m_errorModelEnabled)

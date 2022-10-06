@@ -41,7 +41,7 @@ class MyModel
 {
 public:
   /** Start model execution by scheduling a HandleEvent. */
-  void Start (void);
+  void Start ();
 
 private:
   /**
@@ -53,7 +53,7 @@ private:
 };
 
 void
-MyModel::Start (void)
+MyModel::Start ()
 {
   Simulator::Schedule (Seconds (10.0),
                        &MyModel::HandleEvent,
@@ -84,7 +84,7 @@ ExampleFunction (MyModel *model)
  * Simple function event handler; this function is called randomly.
  */
 static void
-RandomFunction (void)
+RandomFunction ()
 {
   std::cout << "RandomFunction received event at "
             << Simulator::Now ().GetSeconds () << "s" << std::endl;
@@ -92,7 +92,7 @@ RandomFunction (void)
 
 /** Simple function event handler; the corresponding event is cancelled. */
 static void
-CancelledEvent (void)
+CancelledEvent ()
 {
   std::cout << "I should never be called... " << std::endl;
 }

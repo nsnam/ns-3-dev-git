@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
 NS_OBJECT_ENSURE_REGISTERED (Ipv4Interface);
 
 TypeId
-Ipv4Interface::GetTypeId (void)
+Ipv4Interface::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4Interface")
     .SetParent<Object> ()
@@ -78,7 +78,7 @@ Ipv4Interface::~Ipv4Interface ()
 }
 
 void
-Ipv4Interface::DoDispose (void)
+Ipv4Interface::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
@@ -112,7 +112,7 @@ Ipv4Interface::SetTrafficControl (Ptr<TrafficControlLayer> tc)
 }
 
 void
-Ipv4Interface::DoSetup (void)
+Ipv4Interface::DoSetup ()
 {
   NS_LOG_FUNCTION (this);
   if (!m_node || !m_device)
@@ -128,7 +128,7 @@ Ipv4Interface::DoSetup (void)
 }
 
 Ptr<NetDevice>
-Ipv4Interface::GetDevice (void) const
+Ipv4Interface::GetDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_device;
@@ -142,7 +142,7 @@ Ipv4Interface::SetMetric (uint16_t metric)
 }
 
 uint16_t
-Ipv4Interface::GetMetric (void) const
+Ipv4Interface::GetMetric () const
 {
   NS_LOG_FUNCTION (this);
   return m_metric;
@@ -168,35 +168,35 @@ Ipv4Interface::GetArpCache () const
  * (where the device may be down but IP interface state is still up).
  */
 bool
-Ipv4Interface::IsUp (void) const
+Ipv4Interface::IsUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifup;
 }
 
 bool
-Ipv4Interface::IsDown (void) const
+Ipv4Interface::IsDown () const
 {
   NS_LOG_FUNCTION (this);
   return !m_ifup;
 }
 
 void
-Ipv4Interface::SetUp (void)
+Ipv4Interface::SetUp ()
 {
   NS_LOG_FUNCTION (this);
   m_ifup = true;
 }
 
 void
-Ipv4Interface::SetDown (void)
+Ipv4Interface::SetDown ()
 {
   NS_LOG_FUNCTION (this);
   m_ifup = false;
 }
 
 bool
-Ipv4Interface::IsForwarding (void) const
+Ipv4Interface::IsForwarding () const
 {
   NS_LOG_FUNCTION (this);
   return m_forwarding;
@@ -299,7 +299,7 @@ Ipv4Interface::Send (Ptr<Packet> p, const Ipv4Header & hdr, Ipv4Address dest)
 }
 
 uint32_t
-Ipv4Interface::GetNAddresses (void) const
+Ipv4Interface::GetNAddresses () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifaddrs.size ();

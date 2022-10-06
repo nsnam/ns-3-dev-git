@@ -47,7 +47,7 @@ Ipv6ListRoutingHelper::Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &o)
 }
 
 Ipv6ListRoutingHelper*
-Ipv6ListRoutingHelper::Copy (void) const
+Ipv6ListRoutingHelper::Copy () const
 {
   return new Ipv6ListRoutingHelper (*this);
 }

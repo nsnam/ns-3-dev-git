@@ -99,7 +99,7 @@ std::ostream& operator<< (std::ostream& os, HalfDuplexIdealPhy::State s)
 
 
 TypeId
-HalfDuplexIdealPhy::GetTypeId (void)
+HalfDuplexIdealPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HalfDuplexIdealPhy")
     .SetParent<SpectrumPhy> ()

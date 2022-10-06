@@ -64,7 +64,7 @@ class Ipv4PacketInfoTagTest : public TestCase
 public:
   Ipv4PacketInfoTagTest ();
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Receive callback.
@@ -117,7 +117,7 @@ Ipv4PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv4PacketInfoTagTest::DoRun (void)
+Ipv4PacketInfoTagTest::DoRun ()
 {
   Ptr<Node> node0 = CreateObject<Node> ();
   Ptr<Node> node1 = CreateObject<Node> ();

@@ -298,7 +298,7 @@ namespace ns3 {
  * Same as running your program with the NS_LOG environment
  * variable set as NS_LOG=print-list
  */
-void LogComponentPrintList (void);
+void LogComponentPrintList ();
 
 /**
  * Set the TimePrinter function to be used
@@ -313,7 +313,7 @@ void LogSetTimePrinter (TimePrinter lp);
  * Get the LogTimePrinter function currently in use.
  * \returns The current LogTimePrinter function.
  */
-TimePrinter LogGetTimePrinter (void);
+TimePrinter LogGetTimePrinter ();
 
 /**
  * Set the LogNodePrinter function to be used
@@ -328,7 +328,7 @@ void LogSetNodePrinter (NodePrinter np);
  * Get the LogNodePrinter function currently in use.
  * \returns The current LogNodePrinter function.
  */
-NodePrinter LogGetNodePrinter (void);
+NodePrinter LogGetNodePrinter ();
 
 
 /**
@@ -361,7 +361,7 @@ public:
    *
    * \return \c true if all levels are disabled.
    */
-  bool IsNoneEnabled (void) const;
+  bool IsNoneEnabled () const;
   /**
    * Enable this LogComponent at \c level
    *
@@ -379,12 +379,12 @@ public:
    *
    * \return The name of this LogComponent.
    */
-  char const * Name (void) const;
+  char const * Name () const;
   /**
    * Get the compilation unit defining this LogComponent.
    * \returns The file name.
    */
-  std::string File (void) const;
+  std::string File () const;
   /**
    * Get the string label for the given LogLevel.
    *
@@ -419,14 +419,14 @@ public:
    *
    * \returns The list of LogComponents.
    */
-  static ComponentList * GetComponentList (void);
+  static ComponentList * GetComponentList ();
 
 private:
   /**
    * Parse the `NS_LOG` environment variable for options relating to this
    * LogComponent.
    */
-  void EnvVarCheck (void);
+  void EnvVarCheck ();
 
   int32_t     m_levels;  //!< Enabled LogLevels.
   int32_t     m_mask;    //!< Blocked LogLevels.

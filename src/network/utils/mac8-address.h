@@ -95,7 +95,7 @@ public:
    *
    * \return Broadcast address.
    */
-  static Mac8Address GetBroadcast (void);
+  static Mac8Address GetBroadcast ();
 
   /**
    * Allocates Mac8Address from 0-254
@@ -131,13 +131,13 @@ private:
    *
    * \return The type value.
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
   /**
    * Convert to a generic Address.
    *
    * \return The Address value.
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   friend bool operator <  (const Mac8Address &a, const Mac8Address &b);
   friend bool operator == (const Mac8Address &a, const Mac8Address &b);

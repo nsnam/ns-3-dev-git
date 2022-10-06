@@ -42,7 +42,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual void DoDispose ();
 
   /**
@@ -70,17 +70,17 @@ private:
    * in the future, unless a timer is already running for the cache,
    * in which case this method does nothing.
    */
-  void ExpireReorderingTimer (void);
+  void ExpireReorderingTimer ();
   /// Expire poll retransmitter
-  void ExpirePollRetransmitTimer (void);
+  void ExpirePollRetransmitTimer ();
   /// Expire RBS timer
-  void ExpireRbsTimer (void);
+  void ExpireRbsTimer ();
 
   /**
    * method called when the T_status_prohibit timer expires
    *
    */
-  void ExpireStatusProhibitTimer (void);
+  void ExpireStatusProhibitTimer ();
 
   /**
    * method called when the T_status_prohibit timer expires

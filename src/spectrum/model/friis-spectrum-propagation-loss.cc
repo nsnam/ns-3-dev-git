@@ -39,7 +39,7 @@ FriisSpectrumPropagationLossModel::~FriisSpectrumPropagationLossModel ()
 
 
 TypeId
-FriisSpectrumPropagationLossModel::GetTypeId (void)
+FriisSpectrumPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FriisSpectrumPropagationLossModel")
     .SetParent<SpectrumPropagationLossModel> ()

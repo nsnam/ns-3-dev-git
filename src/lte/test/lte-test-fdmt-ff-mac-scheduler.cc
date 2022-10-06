@@ -180,7 +180,7 @@ LenaFdMtFfMacSchedulerTestCase::~LenaFdMtFfMacSchedulerTestCase ()
 
 
 void
-LenaFdMtFfMacSchedulerTestCase::DoRun (void)
+LenaFdMtFfMacSchedulerTestCase::DoRun ()
 {
 
   NS_LOG_FUNCTION (this << m_nUser << m_dist);

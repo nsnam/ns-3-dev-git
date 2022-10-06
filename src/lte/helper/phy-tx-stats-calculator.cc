@@ -53,7 +53,7 @@ PhyTxStatsCalculator::~PhyTxStatsCalculator ()
     }
 }
 TypeId
-PhyTxStatsCalculator::GetTypeId (void)
+PhyTxStatsCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PhyTxStatsCalculator")
     .SetParent<LteStatsCalculator> ()
@@ -80,7 +80,7 @@ PhyTxStatsCalculator::SetUlTxOutputFilename (std::string outputFilename)
 }
 
 std::string
-PhyTxStatsCalculator::GetUlTxOutputFilename (void)
+PhyTxStatsCalculator::GetUlTxOutputFilename ()
 {
   return LteStatsCalculator::GetUlOutputFilename ();
 }
@@ -92,7 +92,7 @@ PhyTxStatsCalculator::SetDlTxOutputFilename (std::string outputFilename)
 }
 
 std::string
-PhyTxStatsCalculator::GetDlTxOutputFilename (void)
+PhyTxStatsCalculator::GetDlTxOutputFilename ()
 {
   return LteStatsCalculator::GetDlOutputFilename ();
 }

@@ -46,7 +46,7 @@ TcpOption::~TcpOption ()
 }
 
 TypeId
-TcpOption::GetTypeId (void)
+TcpOption::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOption")
     .SetParent<Object> ()
@@ -56,7 +56,7 @@ TcpOption::GetTypeId (void)
 }
 
 TypeId
-TcpOption::GetInstanceTypeId (void) const
+TcpOption::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -128,7 +128,7 @@ TcpOptionUnknown::~TcpOptionUnknown ()
 }
 
 TypeId
-TcpOptionUnknown::GetTypeId (void)
+TcpOptionUnknown::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionUnknown")
     .SetParent<TcpOption> ()
@@ -139,7 +139,7 @@ TcpOptionUnknown::GetTypeId (void)
 }
 
 TypeId
-TcpOptionUnknown::GetInstanceTypeId (void) const
+TcpOptionUnknown::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -151,7 +151,7 @@ TcpOptionUnknown::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionUnknown::GetSerializedSize (void) const
+TcpOptionUnknown::GetSerializedSize () const
 {
   return m_size;
 }
@@ -191,7 +191,7 @@ TcpOptionUnknown::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionUnknown::GetKind (void) const
+TcpOptionUnknown::GetKind () const
 {
   return m_kind;
 }

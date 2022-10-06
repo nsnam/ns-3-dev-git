@@ -40,7 +40,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("WiFiDistanceApps");
 
 TypeId
-Sender::GetTypeId (void)
+Sender::GetTypeId ()
 {
   static TypeId tid = TypeId ("Sender")
     .SetParent<Application> ()
@@ -86,7 +86,7 @@ Sender::~Sender()
 }
 
 void
-Sender::DoDispose (void)
+Sender::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -155,7 +155,7 @@ void Sender::SendPacket ()
 //-- Receiver
 //------------------------------------------------------
 TypeId
-Receiver::GetTypeId (void)
+Receiver::GetTypeId ()
 {
   static TypeId tid = TypeId ("Receiver")
     .SetParent<Application> ()
@@ -182,7 +182,7 @@ Receiver::~Receiver()
 }
 
 void
-Receiver::DoDispose (void)
+Receiver::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -276,7 +276,7 @@ Receiver::Receive (Ptr<Socket> socket)
 //-- TimestampTag
 //------------------------------------------------------
 TypeId
-TimestampTag::GetTypeId (void)
+TimestampTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("TimestampTag")
     .SetParent<Tag> ()
@@ -290,13 +290,13 @@ TimestampTag::GetTypeId (void)
   return tid;
 }
 TypeId
-TimestampTag::GetInstanceTypeId (void) const
+TimestampTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-TimestampTag::GetSerializedSize (void) const
+TimestampTag::GetSerializedSize () const
 {
   return 8;
 }
@@ -320,7 +320,7 @@ TimestampTag::SetTimestamp (Time time)
   m_timestamp = time;
 }
 Time
-TimestampTag::GetTimestamp (void) const
+TimestampTag::GetTimestamp () const
 {
   return m_timestamp;
 }

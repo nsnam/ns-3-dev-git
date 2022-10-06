@@ -85,7 +85,7 @@ private:
   template <typename... Ts>
   class Checker;
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };  // TracedCallbackTypedefTestCase
 
@@ -104,7 +104,7 @@ namespace {
  * \return a container of strings representing the duplicates.
  */
 std::set<std::string>
-Duplicates (void)
+Duplicates ()
 {
   std::set<std::string> dupes;
 
@@ -294,7 +294,7 @@ public:
    * Invoke a TracedCallback.
    */
   template <typename U>
-  void Invoke (void)
+  void Invoke ()
   {
     U sink = TracedCbSink<Ts...>::Sink;
     Callback<void, Ts...> cb = MakeCallback (sink);
@@ -356,7 +356,7 @@ TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase ()
 
 
 void
-TracedCallbackTypedefTestCase::DoRun (void)
+TracedCallbackTypedefTestCase::DoRun ()
 {
 
   CHECK (dsr::DsrOptionSRHeader::TracedCallback,

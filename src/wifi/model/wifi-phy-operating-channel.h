@@ -67,7 +67,7 @@ public:
    *
    * \return true if a valid channel has been set, false otherwise
    */
-  bool IsSet (void) const;
+  bool IsSet () const;
   /**
    * Set the channel according to the specified parameters if a unique
    * frequency channel matches the specified criteria, or abort the
@@ -110,43 +110,43 @@ public:
    *
    * \return the channel number identifying the whole operating channel
    */
-  uint8_t GetNumber (void) const;
+  uint8_t GetNumber () const;
   /**
    * Return the center frequency of the operating channel (in MHz).
    *
    * \return the center frequency of the operating channel (in MHz)
    */
-  uint16_t GetFrequency (void) const;
+  uint16_t GetFrequency () const;
   /**
    * Return the width of the whole operating channel (in MHz).
    *
    * \return the width of the whole operating channel (in MHz)
    */
-  uint16_t GetWidth (void) const;
+  uint16_t GetWidth () const;
   /**
    * Return the PHY band of the operating channel
    *
    * \return the PHY band of the operating channel
    */
-  WifiPhyBand GetPhyBand (void) const;
+  WifiPhyBand GetPhyBand () const;
   /**
    * Return whether the operating channel is an OFDM channel.
    *
    * \return whether the operating channel is an OFDM channel
    */
-  bool IsOfdm (void) const;
+  bool IsOfdm () const;
   /**
    * Return whether the operating channel is a DSSS channel.
    *
    * \return whether the operating channel is a DSSS channel
    */
-  bool IsDsss (void) const;
+  bool IsDsss () const;
   /**
    * Return whether the operating channel is an 802.11p channel.
    *
    * \return whether the operating channel is an 802.11p channel
    */
-  bool Is80211p (void) const;
+  bool Is80211p () const;
 
   /**
    * If the operating channel width is a multiple of 20 MHz, return the index of the

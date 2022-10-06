@@ -79,7 +79,7 @@ FdMtFfMacScheduler::DoDispose ()
 }
 
 TypeId
-FdMtFfMacScheduler::GetTypeId (void)
+FdMtFfMacScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FdMtFfMacScheduler")
     .SetParent<FfMacScheduler> ()
@@ -1780,7 +1780,7 @@ FdMtFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sch
 }
 
 void
-FdMtFfMacScheduler::RefreshDlCqiMaps (void)
+FdMtFfMacScheduler::RefreshDlCqiMaps ()
 {
   // refresh DL CQI P01 Map
   std::map <uint16_t,uint32_t>::iterator itP10 = m_p10CqiTimers.begin ();
@@ -1831,7 +1831,7 @@ FdMtFfMacScheduler::RefreshDlCqiMaps (void)
 
 
 void
-FdMtFfMacScheduler::RefreshUlCqiMaps (void)
+FdMtFfMacScheduler::RefreshUlCqiMaps ()
 {
   // refresh UL CQI  Map
   std::map <uint16_t,uint32_t>::iterator itUl = m_ueCqiTimers.begin ();

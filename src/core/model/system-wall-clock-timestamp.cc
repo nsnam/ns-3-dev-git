@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-SystemWallClockTimestamp::SystemWallClockTimestamp (void)
+SystemWallClockTimestamp::SystemWallClockTimestamp ()
   : m_last (0),
     m_diff (0)
 {
@@ -36,7 +36,7 @@ SystemWallClockTimestamp::SystemWallClockTimestamp (void)
 }
 
 void
-SystemWallClockTimestamp::Stamp (void)
+SystemWallClockTimestamp::Stamp ()
 {
   std::time_t seconds  = std::time (NULL);
   m_diff = seconds - m_last;
@@ -44,7 +44,7 @@ SystemWallClockTimestamp::Stamp (void)
 }
 
 std::string
-SystemWallClockTimestamp::ToString (void) const
+SystemWallClockTimestamp::ToString () const
 {
   std::string now = std::ctime ( &m_last );
   now.resize (now.length () - 1);  // trim trailing newline
@@ -52,13 +52,13 @@ SystemWallClockTimestamp::ToString (void) const
 }
 
 std::time_t
-SystemWallClockTimestamp::GetLast (void) const
+SystemWallClockTimestamp::GetLast () const
 {
   return m_last;
 }
 
 std::time_t
-SystemWallClockTimestamp::GetInterval (void) const
+SystemWallClockTimestamp::GetInterval () const
 {
   return m_diff;
 }

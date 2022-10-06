@@ -64,7 +64,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint8_t PROT_NUMBER; //!< protocol number (0x11)
 
   UdpL4Protocol ();
@@ -80,19 +80,19 @@ public:
    */
   void SetNode (Ptr<Node> node);
 
-  virtual int GetProtocolNumber (void) const;
+  virtual int GetProtocolNumber () const;
 
   /**
    * \return A smart Socket pointer to a UdpSocket, allocated by this instance
    * of the UDP protocol
    */
-  Ptr<Socket> CreateSocket (void);
+  Ptr<Socket> CreateSocket ();
 
   /**
    * \brief Allocate an IPv4 Endpoint
    * \return the Endpoint
    */
-  Ipv4EndPoint *Allocate (void);
+  Ipv4EndPoint *Allocate ();
   /**
    * \brief Allocate an IPv4 Endpoint
    * \param address address to use
@@ -131,7 +131,7 @@ public:
    * \brief Allocate an IPv6 Endpoint
    * \return the Endpoint
    */
-  Ipv6EndPoint *Allocate6 (void);
+  Ipv6EndPoint *Allocate6 ();
   /**
    * \brief Allocate an IPv6 Endpoint
    * \param address address to use
@@ -246,11 +246,11 @@ public:
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
   virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
   // From IpL4Protocol
-  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
-  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget () const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /*
    * This function will notify other components connected to the node that a new stack member is now connected
    * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.

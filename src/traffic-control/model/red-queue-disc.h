@@ -83,7 +83,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief RedQueueDisc Constructor
    *
@@ -130,7 +130,7 @@ public:
     *
     * \returns The alpha value to adapt m_curMaxP.
     */
-   double GetAredAlpha (void);
+   double GetAredAlpha ();
 
    /**
     * \brief Set the beta value to adapt m_curMaxP.
@@ -144,7 +144,7 @@ public:
     *
     * \returns The beta value to adapt m_curMaxP.
     */
-   double GetAredBeta (void);
+   double GetAredBeta ();
 
    /**
     * \brief Set the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
@@ -158,7 +158,7 @@ public:
     *
     * \returns The alpha value to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   double GetFengAdaptiveA (void);
+   double GetFengAdaptiveA ();
 
    /**
     * \brief Set the beta value to adapt m_curMaxP in Feng's Adaptive RED.
@@ -172,7 +172,7 @@ public:
     *
     * \returns The beta value to adapt m_curMaxP in Feng's Adaptive RED.
     */
-   double GetFengAdaptiveB (void);
+   double GetFengAdaptiveB ();
 
   /**
    * \brief Set the thresh limits of RED.
@@ -203,13 +203,13 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual Ptr<const QueueDiscItem> DoPeek (void);
-  virtual bool CheckConfig (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
+  virtual Ptr<const QueueDiscItem> DoPeek ();
+  virtual bool CheckConfig ();
 
   /**
    * \brief Initialize the queue parameters.
@@ -219,7 +219,7 @@ private:
    * This should be fixed, but it would require some extra parameters,
    * and didn't seem worth the trouble...
    */
-  virtual void InitializeParams (void);
+  virtual void InitializeParams ();
   /**
    * \brief Compute the average queue size
    * \param nQueued number of queued packets
@@ -250,7 +250,7 @@ private:
    * \brief Returns a probability using these function parameters for the DropEarly function
    * \returns Prob. of packet drop before "count"
    */
-  double CalculatePNew (void);
+  double CalculatePNew ();
   /**
    * \brief Returns a probability using these function parameters for the DropEarly function
    * \param p Prob. of packet drop before "count"

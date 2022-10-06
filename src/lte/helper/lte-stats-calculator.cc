@@ -48,7 +48,7 @@ LteStatsCalculator::~LteStatsCalculator ()
 
 
 TypeId
-LteStatsCalculator::GetTypeId (void)
+LteStatsCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteStatsCalculator")
     .SetParent<Object> ()
@@ -66,7 +66,7 @@ LteStatsCalculator::SetUlOutputFilename (std::string outputFilename)
 }
 
 std::string
-LteStatsCalculator::GetUlOutputFilename (void)
+LteStatsCalculator::GetUlOutputFilename ()
 {
   return m_ulOutputFilename;
 }
@@ -78,7 +78,7 @@ LteStatsCalculator::SetDlOutputFilename (std::string outputFilename)
 }
 
 std::string
-LteStatsCalculator::GetDlOutputFilename (void)
+LteStatsCalculator::GetDlOutputFilename ()
 {
   return m_dlOutputFilename;
 }

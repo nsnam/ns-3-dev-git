@@ -53,7 +53,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Ipv4FqCobaltTestPacketFilter ();
   virtual ~Ipv4FqCobaltTestPacketFilter ();
@@ -75,7 +75,7 @@ private:
 };
 
 TypeId
-Ipv4FqCobaltTestPacketFilter::GetTypeId (void)
+Ipv4FqCobaltTestPacketFilter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4FqCobaltTestPacketFilter")
     .SetParent<Ipv4PacketFilter> ()
@@ -117,7 +117,7 @@ public:
   virtual ~FqCobaltQueueDiscNoSuitableFilter ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 FqCobaltQueueDiscNoSuitableFilter::FqCobaltQueueDiscNoSuitableFilter ()
@@ -130,7 +130,7 @@ FqCobaltQueueDiscNoSuitableFilter::~FqCobaltQueueDiscNoSuitableFilter ()
 }
 
 void
-FqCobaltQueueDiscNoSuitableFilter::DoRun (void)
+FqCobaltQueueDiscNoSuitableFilter::DoRun ()
 {
   // Packets that cannot be classified by the available filters should be dropped
   Ptr<FqCobaltQueueDisc> queueDisc = CreateObjectWithAttributes<FqCobaltQueueDisc> ("MaxSize", StringValue ("4p"));
@@ -170,7 +170,7 @@ public:
   virtual ~FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -198,7 +198,7 @@ FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit::AddPacket (Ptr<FqCobaltQueueDi
 }
 
 void
-FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
+FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit::DoRun ()
 {
   Ptr<FqCobaltQueueDisc> queueDisc = CreateObjectWithAttributes<FqCobaltQueueDisc> ("MaxSize", StringValue ("4p"));
 
@@ -246,7 +246,7 @@ public:
   virtual ~FqCobaltQueueDiscDeficit ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -274,7 +274,7 @@ FqCobaltQueueDiscDeficit::AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hd
 }
 
 void
-FqCobaltQueueDiscDeficit::DoRun (void)
+FqCobaltQueueDiscDeficit::DoRun ()
 {
   Ptr<FqCobaltQueueDisc> queueDisc = CreateObjectWithAttributes<FqCobaltQueueDisc> ();
 
@@ -395,7 +395,7 @@ public:
   virtual ~FqCobaltQueueDiscTCPFlowsSeparation ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -425,7 +425,7 @@ FqCobaltQueueDiscTCPFlowsSeparation::AddPacket (Ptr<FqCobaltQueueDisc> queue, Ip
 }
 
 void
-FqCobaltQueueDiscTCPFlowsSeparation::DoRun (void)
+FqCobaltQueueDiscTCPFlowsSeparation::DoRun ()
 {
   Ptr<FqCobaltQueueDisc> queueDisc = CreateObjectWithAttributes<FqCobaltQueueDisc> ("MaxSize", StringValue ("10p"));
 
@@ -489,7 +489,7 @@ public:
   virtual ~FqCobaltQueueDiscUDPFlowsSeparation ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue the queue disc
@@ -519,7 +519,7 @@ FqCobaltQueueDiscUDPFlowsSeparation::AddPacket (Ptr<FqCobaltQueueDisc> queue, Ip
 }
 
 void
-FqCobaltQueueDiscUDPFlowsSeparation::DoRun (void)
+FqCobaltQueueDiscUDPFlowsSeparation::DoRun ()
 {
   Ptr<FqCobaltQueueDisc> queueDisc = CreateObjectWithAttributes<FqCobaltQueueDisc> ("MaxSize", StringValue ("10p"));
 
@@ -597,7 +597,7 @@ public:
   virtual ~FqCobaltQueueDiscEcnMarking ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue the given number of packets.
    * \param queue The queue disc.
@@ -686,7 +686,7 @@ FqCobaltQueueDiscEcnMarking::DropNextTracer ([[maybe_unused]] int64_t oldVal, [[
 }
 
 void
-FqCobaltQueueDiscEcnMarking::DoRun (void)
+FqCobaltQueueDiscEcnMarking::DoRun ()
 {
   // Test is divided into 3 sub test cases:
   // 1) CeThreshold disabled
@@ -918,7 +918,7 @@ public:
   FqCobaltQueueDiscSetLinearProbing ();
   virtual ~FqCobaltQueueDiscSetLinearProbing ();
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -946,7 +946,7 @@ FqCobaltQueueDiscSetLinearProbing::AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4
 }
 
 void
-FqCobaltQueueDiscSetLinearProbing::DoRun (void)
+FqCobaltQueueDiscSetLinearProbing::DoRun ()
 {
   Ptr<FqCobaltQueueDisc> queueDisc = CreateObjectWithAttributes<FqCobaltQueueDisc> ("EnableSetAssociativeHash", BooleanValue (true));
   queueDisc->SetQuantum (90);
@@ -1035,7 +1035,7 @@ public:
   virtual ~FqCobaltQueueDiscL4sMode ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue the given number of packets.
    * \param queue The queue disc.
@@ -1115,7 +1115,7 @@ FqCobaltQueueDiscL4sMode::DequeueWithDelay (Ptr<FqCobaltQueueDisc> queue, double
 }
 
 void
-FqCobaltQueueDiscL4sMode::DoRun (void)
+FqCobaltQueueDiscL4sMode::DoRun ()
 {
   // Test is divided into 2 sub test cases:
   // 1) Without hash collisions

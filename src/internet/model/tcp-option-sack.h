@@ -53,8 +53,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   typedef std::pair<SequenceNumber32, SequenceNumber32> SackBlock; //!< SACK block definition
   typedef std::list<SackBlock> SackList;                           //!< SACK list definition
@@ -66,8 +66,8 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint8_t GetKind () const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Add a SACK block
@@ -79,18 +79,18 @@ public:
    * \brief Count the total number of SACK blocks
    * \return the total number of SACK blocks
    */
-  uint32_t GetNumSackBlocks (void) const;
+  uint32_t GetNumSackBlocks () const;
 
   /**
    * \brief Clear the SACK list
    */
-  void ClearSackList (void);
+  void ClearSackList ();
 
   /**
    * \brief Get the SACK list
    * \return the SACK list
    */
-  SackList GetSackList (void) const;
+  SackList GetSackList () const;
 
   friend std::ostream & operator<< (std::ostream & os, TcpOptionSack const & sackOption);
 

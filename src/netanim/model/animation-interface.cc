@@ -2882,7 +2882,7 @@ AnimationInterface::AnimXmlElement::ToString (bool autoClose)
 /***** AnimByteTag *****/
 
 TypeId
-AnimByteTag::GetTypeId (void)
+AnimByteTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AnimByteTag")
     .SetParent<Tag> ()
@@ -2893,13 +2893,13 @@ AnimByteTag::GetTypeId (void)
 }
 
 TypeId
-AnimByteTag::GetInstanceTypeId (void) const
+AnimByteTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-AnimByteTag::GetSerializedSize (void) const
+AnimByteTag::GetSerializedSize () const
 {
   return sizeof (uint64_t);
 }
@@ -2929,7 +2929,7 @@ AnimByteTag::Set (uint64_t AnimUid)
 }
 
 uint64_t
-AnimByteTag::Get (void) const
+AnimByteTag::Get () const
 {
   return m_AnimUid;
 }

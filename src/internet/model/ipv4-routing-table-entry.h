@@ -53,41 +53,41 @@ public:
   /**
    * \return True if this route is a host route (mask of all ones); false otherwise
    */
-  bool IsHost (void) const;
+  bool IsHost () const;
   /**
    * \return True if this route is not a host route (mask is not all ones); false otherwise
    *
    * This method is implemented as !IsHost ().
    */
-  bool IsNetwork (void) const;
+  bool IsNetwork () const;
   /**
    * \return True if this route is a default route; false otherwise
    */
-  bool IsDefault (void) const;
+  bool IsDefault () const;
   /**
    * \return True if this route is a gateway route; false otherwise
    */
-  bool IsGateway (void) const;
+  bool IsGateway () const;
   /**
    * \return address of the gateway stored in this entry
    */
-  Ipv4Address GetGateway (void) const;
+  Ipv4Address GetGateway () const;
   /**
    * \return The IPv4 address of the destination of this route
    */
-  Ipv4Address GetDest (void) const;
+  Ipv4Address GetDest () const;
   /**
    * \return The IPv4 network number of the destination of this route
    */
-  Ipv4Address GetDestNetwork (void) const;
+  Ipv4Address GetDestNetwork () const;
   /**
    * \return The IPv4 network mask of the destination of this route
    */
-  Ipv4Mask GetDestNetworkMask (void) const;
+  Ipv4Mask GetDestNetworkMask () const;
   /**
    * \return The Ipv4 interface number used for sending outgoing packets
    */
-  uint32_t GetInterface (void) const;
+  uint32_t GetInterface () const;
   /**
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param dest Ipv4Address of the destination
@@ -221,19 +221,19 @@ public:
   /**
    * \return The IPv4 address of the source of this route
    */
-  Ipv4Address GetOrigin (void) const;
+  Ipv4Address GetOrigin () const;
   /**
    * \return The IPv4 address of the multicast group of this route
    */
-  Ipv4Address GetGroup (void) const;
+  Ipv4Address GetGroup () const;
   /**
    * \return The IPv4 address of the input interface of this route
    */
-  uint32_t GetInputInterface (void) const;
+  uint32_t GetInputInterface () const;
   /**
    * \return The number of output interfaces of this route
    */
-  uint32_t GetNOutputInterfaces (void) const;
+  uint32_t GetNOutputInterfaces () const;
   /**
    * \param n interface index
    * \return A specified output interface.
@@ -242,7 +242,7 @@ public:
   /**
    * \return A vector of all of the output interfaces of this route.
    */
-  std::vector<uint32_t> GetOutputInterfaces (void) const;
+  std::vector<uint32_t> GetOutputInterfaces () const;
   /**
    * \return Ipv4MulticastRoutingTableEntry corresponding to the input parameters.
    * \param origin Source address for the multicast route

@@ -37,7 +37,7 @@ IeLinkMetricReport::ElementId () const
   return IE_MESH_LINK_METRIC_REPORT;
 }
 uint16_t
-IeLinkMetricReport::GetInformationFieldSize (void) const
+IeLinkMetricReport::GetInformationFieldSize () const
 {
   return sizeof (uint32_t);
 }

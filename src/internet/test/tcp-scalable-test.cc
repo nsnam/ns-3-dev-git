@@ -56,7 +56,7 @@ public:
                             const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   uint32_t m_cWnd;          //!< Congestion window.
   uint32_t m_segmentSize;   //!< Segment size.
@@ -122,7 +122,7 @@ public:
                             const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   uint32_t m_cWnd;          //!< Congestion window.
   uint32_t m_segmentSize;   //!< Segment size.

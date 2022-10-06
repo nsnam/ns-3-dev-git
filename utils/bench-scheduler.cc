@@ -111,14 +111,14 @@ public:
    *
    * \returns The Result.
    */
-  Result Run (void);
+  Result Run ();
 
 private:
   /**
    *  Event function. This checks for completion (total number of events
    *  executed) and schedules a new event if not complete.
    */
-  void Cb (void);
+  void Cb ();
 
   Ptr<RandomVariableStream> m_rand;    /**< Stream for event delays. */
   uint64_t m_population;               /**< Event population size. */
@@ -128,7 +128,7 @@ private:
 };  // class Bench
 
 Bench::Result
-Bench::Run (void)
+Bench::Run ()
 {
   SystemWallClockMs timer;
   double init, simu;
@@ -157,7 +157,7 @@ Bench::Run (void)
 }
 
 void
-Bench::Cb (void)
+Bench::Cb ()
 {
   if (m_count >= m_total)
     {

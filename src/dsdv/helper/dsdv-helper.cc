@@ -45,7 +45,7 @@ DsdvHelper::DsdvHelper () : Ipv4RoutingHelper ()
 }
 
 DsdvHelper*
-DsdvHelper::Copy (void) const
+DsdvHelper::Copy () const
 {
   return new DsdvHelper (*this);
 }

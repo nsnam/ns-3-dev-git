@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxMacQueue");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxMacQueue);
 
-WimaxMacQueue::QueueElement::QueueElement (void)
+WimaxMacQueue::QueueElement::QueueElement ()
   : m_packet (Create<Packet> ()),
     m_hdrType (MacHeaderType ()),
     m_hdr (
@@ -59,7 +59,7 @@ WimaxMacQueue::QueueElement::QueueElement (Ptr<Packet> packet,
 }
 
 uint32_t
-WimaxMacQueue::QueueElement::GetSize (void) const
+WimaxMacQueue::QueueElement::GetSize () const
 {
   uint32_t size = m_packet->GetSize () + m_hdrType.GetSerializedSize ();
 
@@ -75,7 +75,7 @@ WimaxMacQueue::QueueElement::GetSize (void) const
 }
 
 TypeId
-WimaxMacQueue::GetTypeId (void)
+WimaxMacQueue::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WimaxMacQueue")
     .SetParent<Object> ()
@@ -103,7 +103,7 @@ WimaxMacQueue::GetTypeId (void)
   return tid;
 }
 
-WimaxMacQueue::WimaxMacQueue (void)
+WimaxMacQueue::WimaxMacQueue ()
   : m_maxSize (0),
     m_bytes (0),
     m_nrDataPackets (0),
@@ -119,7 +119,7 @@ WimaxMacQueue::WimaxMacQueue (uint32_t maxSize)
 {
 }
 
-WimaxMacQueue::~WimaxMacQueue (void)
+WimaxMacQueue::~WimaxMacQueue ()
 {
 }
 
@@ -130,7 +130,7 @@ WimaxMacQueue::SetMaxSize (uint32_t maxSize)
 }
 
 uint32_t
-WimaxMacQueue::GetMaxSize (void) const
+WimaxMacQueue::GetMaxSize () const
 {
   return m_maxSize;
 }
@@ -406,18 +406,18 @@ WimaxMacQueue::Peek (MacHeaderType::HeaderType packetType,
 }
 
 uint32_t
-WimaxMacQueue::GetSize (void) const
+WimaxMacQueue::GetSize () const
 {
   return m_queue.size ();
 }
 
 uint32_t
-WimaxMacQueue::GetNBytes (void) const
+WimaxMacQueue::GetNBytes () const
 {
   return m_bytes;
 }
 
-uint32_t WimaxMacQueue::GetQueueLengthWithMACOverhead (void)
+uint32_t WimaxMacQueue::GetQueueLengthWithMACOverhead ()
 {
   uint32_t queueSize = GetNBytes ();
   // Add MAC Overhead
@@ -466,7 +466,7 @@ WimaxMacQueue::Pop (MacHeaderType::HeaderType packetType)
 }
 
 bool
-WimaxMacQueue::IsEmpty (void) const
+WimaxMacQueue::IsEmpty () const
 {
   return m_queue.empty ();
 }
@@ -487,7 +487,7 @@ WimaxMacQueue::IsEmpty (MacHeaderType::HeaderType packetType) const
 }
 
 const WimaxMacQueue::PacketQueue &
-WimaxMacQueue::GetPacketQueue (void) const
+WimaxMacQueue::GetPacketQueue () const
 {
   return m_queue;
 }

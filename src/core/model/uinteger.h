@@ -45,7 +45,7 @@ ATTRIBUTE_VALUE_DEFINE_WITH_NAME (uint64_t, Uinteger);
 ATTRIBUTE_ACCESSOR_DEFINE (Uinteger);
 
 template <typename T>
-Ptr<const AttributeChecker> MakeUintegerChecker (void);
+Ptr<const AttributeChecker> MakeUintegerChecker ();
 
 /**
  * Make a checker with a minimum value.
@@ -91,7 +91,7 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std
 
 
 template <typename T>
-Ptr<const AttributeChecker> MakeUintegerChecker (void)
+Ptr<const AttributeChecker> MakeUintegerChecker ()
 {
   return internal::MakeUintegerChecker (std::numeric_limits<T>::min (),
                                         std::numeric_limits<T>::max (),

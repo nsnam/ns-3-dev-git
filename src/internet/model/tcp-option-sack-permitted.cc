@@ -42,7 +42,7 @@ TcpOptionSackPermitted::~TcpOptionSackPermitted ()
 }
 
 TypeId
-TcpOptionSackPermitted::GetTypeId (void)
+TcpOptionSackPermitted::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionSackPermitted")
     .SetParent<TcpOption> ()
@@ -53,7 +53,7 @@ TcpOptionSackPermitted::GetTypeId (void)
 }
 
 TypeId
-TcpOptionSackPermitted::GetInstanceTypeId (void) const
+TcpOptionSackPermitted::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -65,7 +65,7 @@ TcpOptionSackPermitted::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionSackPermitted::GetSerializedSize (void) const
+TcpOptionSackPermitted::GetSerializedSize () const
 {
   return 2;
 }
@@ -100,7 +100,7 @@ TcpOptionSackPermitted::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionSackPermitted::GetKind (void) const
+TcpOptionSackPermitted::GetKind () const
 {
   return TcpOption::SACKPERMITTED;
 }

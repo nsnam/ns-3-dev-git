@@ -46,7 +46,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Updates all variables of MinMaxAvgTotalCalculator
@@ -109,7 +109,7 @@ protected:
   /**
    * Dispose of this Object.
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   uint32_t m_count;      //!< Count value of MinMaxAvgTotalCalculator
 
@@ -152,7 +152,7 @@ MinMaxAvgTotalCalculator<T>::~MinMaxAvgTotalCalculator()
 
 template <typename T>
 void
-MinMaxAvgTotalCalculator<T>::DoDispose (void)
+MinMaxAvgTotalCalculator<T>::DoDispose ()
 {
   DataCalculator::DoDispose ();
   // MinMaxAvgTotalCalculator::DoDispose
@@ -161,7 +161,7 @@ MinMaxAvgTotalCalculator<T>::DoDispose (void)
 /* static */
 template <typename T>
 TypeId
-MinMaxAvgTotalCalculator<T>::GetTypeId (void)
+MinMaxAvgTotalCalculator<T>::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MinMaxAvgTotalCalculator<"
                               + TypeNameGet<T> ()
@@ -277,7 +277,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Increments count by 1
@@ -305,7 +305,7 @@ protected:
   /**
    * Dispose of this Object.
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   T m_count; //!< Count value of CounterCalculator
 
@@ -327,7 +327,7 @@ CounterCalculator<T>::~CounterCalculator()
 /* static */
 template <typename T>
 TypeId
-CounterCalculator<T>::GetTypeId (void)
+CounterCalculator<T>::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CounterCalculator<"
                               + TypeNameGet<T> ()
@@ -341,7 +341,7 @@ CounterCalculator<T>::GetTypeId (void)
 
 template <typename T>
 void
-CounterCalculator<T>::DoDispose (void)
+CounterCalculator<T>::DoDispose ()
 {
   DataCalculator::DoDispose ();
   // CounterCalculator::DoDispose

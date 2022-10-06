@@ -47,7 +47,7 @@ EpcMmeApplication::DoDispose ()
 }
 
 TypeId
-EpcMmeApplication::GetTypeId (void)
+EpcMmeApplication::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcMmeApplication")
     .SetParent<Object> ()

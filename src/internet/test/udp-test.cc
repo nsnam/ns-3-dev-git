@@ -69,7 +69,7 @@ class UdpSocketLoopbackTest : public TestCase
 {
 public:
   UdpSocketLoopbackTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Receive a packet.
@@ -121,7 +121,7 @@ class Udp6SocketLoopbackTest : public TestCase
 {
 public:
   Udp6SocketLoopbackTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Receive a packet.
@@ -182,13 +182,13 @@ class UdpSocketImplTest : public TestCase
    * \brief Get the TOS of the received packet.
    * \returns The TOS.
    */
-  uint32_t GetTos (void);
+  uint32_t GetTos ();
 
   /**
    * \brief Get the priority of the received packet.
    * \returns The priority.
    */
-  uint32_t GetPriority (void);
+  uint32_t GetPriority ();
 
   /**
    * \brief Send data.
@@ -214,7 +214,7 @@ class UdpSocketImplTest : public TestCase
   void SendData (Ptr<Socket> socket);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   UdpSocketImplTest ();
 
   /**
@@ -264,12 +264,12 @@ void UdpSocketImplTest::SentPkt (Ptr<const QueueDiscItem> item)
   m_sentPacket = Create<Ipv4QueueDiscItem> (ipv4Item->GetPacket ()->Copy (), addr, 0, ipv4Item->GetHeader ());
 }
 
-uint32_t UdpSocketImplTest::GetTos (void)
+uint32_t UdpSocketImplTest::GetTos ()
 {
   return static_cast<uint32_t> (m_sentPacket->GetHeader ().GetTos ());
 }
 
-uint32_t UdpSocketImplTest::GetPriority (void)
+uint32_t UdpSocketImplTest::GetPriority ()
 {
   SocketPriorityTag priorityTag;
   bool found = m_sentPacket->GetPacket ()->PeekPacketTag (priorityTag);
@@ -310,7 +310,7 @@ UdpSocketImplTest::SendData (Ptr<Socket> socket)
 }
 
 void
-UdpSocketImplTest::DoRun (void)
+UdpSocketImplTest::DoRun ()
 {
   // Create topology
 
@@ -503,7 +503,7 @@ class Udp6SocketImplTest : public TestCase
   void SendDataTo (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Udp6SocketImplTest ();
 
   /**
@@ -588,7 +588,7 @@ Udp6SocketImplTest::SendDataTo (Ptr<Socket> socket, std::string to)
 }
 
 void
-Udp6SocketImplTest::DoRun (void)
+Udp6SocketImplTest::DoRun ()
 {
   // Create topology
 

@@ -39,7 +39,7 @@ TcpOptionTS::~TcpOptionTS ()
 }
 
 TypeId
-TcpOptionTS::GetTypeId (void)
+TcpOptionTS::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionTS")
     .SetParent<TcpOption> ()
@@ -50,7 +50,7 @@ TcpOptionTS::GetTypeId (void)
 }
 
 TypeId
-TcpOptionTS::GetInstanceTypeId (void) const
+TcpOptionTS::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -62,7 +62,7 @@ TcpOptionTS::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionTS::GetSerializedSize (void) const
+TcpOptionTS::GetSerializedSize () const
 {
   return 10;
 }
@@ -101,19 +101,19 @@ TcpOptionTS::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionTS::GetKind (void) const
+TcpOptionTS::GetKind () const
 {
   return TcpOption::TS;
 }
 
 uint32_t
-TcpOptionTS::GetTimestamp (void) const
+TcpOptionTS::GetTimestamp () const
 {
   return m_timestamp;
 }
 
 uint32_t
-TcpOptionTS::GetEcho (void) const
+TcpOptionTS::GetEcho () const
 {
   return m_echo;
 }

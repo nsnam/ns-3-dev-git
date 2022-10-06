@@ -85,7 +85,7 @@ LteRlcAm::~LteRlcAm ()
 }
 
 TypeId
-LteRlcAm::GetTypeId (void)
+LteRlcAm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRlcAm")
     .SetParent<LteRlc> ()
@@ -1583,7 +1583,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 }
 
 void
-LteRlcAm::DoReportBufferStatus (void)
+LteRlcAm::DoReportBufferStatus ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1654,7 +1654,7 @@ LteRlcAm::DoReportBufferStatus (void)
 
 
 void
-LteRlcAm::ExpireReorderingTimer (void)
+LteRlcAm::ExpireReorderingTimer ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Reordering Timer has expired");
@@ -1696,7 +1696,7 @@ LteRlcAm::ExpireReorderingTimer (void)
 }
 
 void
-LteRlcAm::ExpirePollRetransmitTimer (void)
+LteRlcAm::ExpirePollRetransmitTimer ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("PollRetransmit Timer has expired");
@@ -1741,13 +1741,13 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
 
 
 void
-LteRlcAm::ExpireStatusProhibitTimer (void)
+LteRlcAm::ExpireStatusProhibitTimer ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-LteRlcAm::ExpireRbsTimer (void)
+LteRlcAm::ExpireRbsTimer ()
 {
   NS_LOG_LOGIC ("RBS Timer expires");
 

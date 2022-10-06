@@ -461,7 +461,7 @@ private:
   /**
    * \brief Handles a fragmented packet timeout
    */
-  void HandleTimeout (void);
+  void HandleTimeout ();
 
   FragmentsTimeoutsList_t m_timeoutEventList;  //!< Timeout "events" container
   EventId m_timeoutEvent;  //!< Event for the next scheduled timeout

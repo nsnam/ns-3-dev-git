@@ -56,21 +56,21 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 protected:
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 private:
   /**
    * Get next position, begin moving towards it, schedule future pause event
    */
-  void BeginWalk (void);
+  void BeginWalk ();
   /**
    * Begin current pause event, schedule future walk event
    */
-  void DoInitializePrivate (void);
-  virtual Vector DoGetPosition (void) const;
+  void DoInitializePrivate ();
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
   virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper; //!< helper for velocity computations

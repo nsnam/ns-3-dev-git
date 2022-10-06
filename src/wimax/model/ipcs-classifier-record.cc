@@ -26,7 +26,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("IpcsClassifierRecord");
 
-IpcsClassifierRecord::IpcsClassifierRecord (void)
+IpcsClassifierRecord::IpcsClassifierRecord ()
 {
   m_priority = 255;
   m_priority = 0;
@@ -43,7 +43,7 @@ IpcsClassifierRecord::IpcsClassifierRecord (void)
   AddDstPortRange (0, 65535);
 }
 
-IpcsClassifierRecord::~IpcsClassifierRecord (void)
+IpcsClassifierRecord::~IpcsClassifierRecord ()
 {
 }
 
@@ -204,17 +204,17 @@ IpcsClassifierRecord::SetIndex (uint16_t index)
 }
 
 uint16_t
-IpcsClassifierRecord::GetIndex (void) const
+IpcsClassifierRecord::GetIndex () const
 {
   return m_index;
 }
 uint16_t
-IpcsClassifierRecord::GetCid (void) const
+IpcsClassifierRecord::GetCid () const
 {
   return m_cid;
 }
 uint8_t
-IpcsClassifierRecord::GetPriority (void) const
+IpcsClassifierRecord::GetPriority () const
 {
   return m_priority;
 }
@@ -304,7 +304,7 @@ IpcsClassifierRecord::CheckMatch (Ipv4Address srcAddress,
 }
 
 Tlv
-IpcsClassifierRecord::ToTlv (void) const
+IpcsClassifierRecord::ToTlv () const
 {
   Ipv4AddressTlvValue ipv4AddrValSrc;
   for (std::vector<struct ipv4Addr>::const_iterator iter = m_srcAddr.begin (); iter != m_srcAddr.end (); ++iter)

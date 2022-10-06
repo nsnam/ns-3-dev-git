@@ -72,7 +72,7 @@ NS_LOG_COMPONENT_DEFINE ("LteHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 
-LteHelper::LteHelper (void)
+LteHelper::LteHelper ()
   : m_fadingStreamsAssigned (false),
     m_imsiCounter (0),
     m_cellIdCounter {1}
@@ -86,7 +86,7 @@ LteHelper::LteHelper (void)
 }
 
 void
-LteHelper::DoInitialize (void)
+LteHelper::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   ChannelModelInitialization ();
@@ -98,12 +98,12 @@ LteHelper::DoInitialize (void)
 
 }
 
-LteHelper::~LteHelper (void)
+LteHelper::~LteHelper ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-TypeId LteHelper::GetTypeId (void)
+TypeId LteHelper::GetTypeId ()
 {
   static TypeId
     tid =
@@ -209,19 +209,19 @@ LteHelper::DoDispose ()
 }
 
 Ptr<SpectrumChannel>
-LteHelper::GetUplinkSpectrumChannel (void) const
+LteHelper::GetUplinkSpectrumChannel () const
 {
   return m_uplinkChannel;
 }
 
 Ptr<SpectrumChannel>
-LteHelper::GetDownlinkSpectrumChannel (void) const
+LteHelper::GetDownlinkSpectrumChannel () const
 {
   return m_downlinkChannel;
 }
 
 void
-LteHelper::ChannelModelInitialization (void)
+LteHelper::ChannelModelInitialization ()
 {
   // Channel Object (i.e. Ptr<SpectrumChannel>) are within a vector
   // PathLossModel Objects are vectors --> in InstallSingleEnb we will set the frequency
@@ -1320,7 +1320,7 @@ LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bear
 }
 
 void
-LteHelper::EnableLogComponents (void)
+LteHelper::EnableLogComponents ()
 {
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnableAll (LOG_PREFIX_FUNC);
@@ -1423,7 +1423,7 @@ LteHelper::EnableLogComponents (void)
 }
 
 void
-LteHelper::EnableTraces (void)
+LteHelper::EnableTraces ()
 {
   EnablePhyTraces ();
   EnableMacTraces ();
@@ -1432,7 +1432,7 @@ LteHelper::EnableTraces (void)
 }
 
 void
-LteHelper::EnableRlcTraces (void)
+LteHelper::EnableRlcTraces ()
 {
   NS_ASSERT_MSG (!m_rlcStats, "please make sure that LteHelper::EnableRlcTraces is called at most once");
   m_rlcStats = CreateObject<RadioBearerStatsCalculator> ("RLC");
@@ -1490,7 +1490,7 @@ LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 
 
 void
-LteHelper::EnablePhyTraces (void)
+LteHelper::EnablePhyTraces ()
 {
   EnableDlPhyTraces ();
   EnableUlPhyTraces ();
@@ -1501,28 +1501,28 @@ LteHelper::EnablePhyTraces (void)
 }
 
 void
-LteHelper::EnableDlTxPhyTraces (void)
+LteHelper::EnableDlTxPhyTraces ()
 {
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/DlPhyTransmission",
                    MakeBoundCallback (&PhyTxStatsCalculator::DlPhyTransmissionCallback, m_phyTxStats));
 }
 
 void
-LteHelper::EnableUlTxPhyTraces (void)
+LteHelper::EnableUlTxPhyTraces ()
 {
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/UlPhyTransmission",
                    MakeBoundCallback (&PhyTxStatsCalculator::UlPhyTransmissionCallback, m_phyTxStats));
 }
 
 void
-LteHelper::EnableDlRxPhyTraces (void)
+LteHelper::EnableDlRxPhyTraces ()
 {
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/DlSpectrumPhy/DlPhyReception",
                    MakeBoundCallback (&PhyRxStatsCalculator::DlPhyReceptionCallback, m_phyRxStats));
 }
 
 void
-LteHelper::EnableUlRxPhyTraces (void)
+LteHelper::EnableUlRxPhyTraces ()
 {
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/UlSpectrumPhy/UlPhyReception",
                    MakeBoundCallback (&PhyRxStatsCalculator::UlPhyReceptionCallback, m_phyRxStats));
@@ -1530,7 +1530,7 @@ LteHelper::EnableUlRxPhyTraces (void)
 
 
 void
-LteHelper::EnableMacTraces (void)
+LteHelper::EnableMacTraces ()
 {
   EnableDlMacTraces ();
   EnableUlMacTraces ();
@@ -1538,7 +1538,7 @@ LteHelper::EnableMacTraces (void)
 
 
 void
-LteHelper::EnableDlMacTraces (void)
+LteHelper::EnableDlMacTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
@@ -1546,7 +1546,7 @@ LteHelper::EnableDlMacTraces (void)
 }
 
 void
-LteHelper::EnableUlMacTraces (void)
+LteHelper::EnableUlMacTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbMac/UlScheduling",
@@ -1554,7 +1554,7 @@ LteHelper::EnableUlMacTraces (void)
 }
 
 void
-LteHelper::EnableDlPhyTraces (void)
+LteHelper::EnableDlPhyTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/ReportCurrentCellRsrpSinr",
@@ -1562,7 +1562,7 @@ LteHelper::EnableDlPhyTraces (void)
 }
 
 void
-LteHelper::EnableUlPhyTraces (void)
+LteHelper::EnableUlPhyTraces ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/ReportUeSinr",
@@ -1573,13 +1573,13 @@ LteHelper::EnableUlPhyTraces (void)
 }
 
 Ptr<RadioBearerStatsCalculator>
-LteHelper::GetRlcStats (void)
+LteHelper::GetRlcStats ()
 {
   return m_rlcStats;
 }
 
 void
-LteHelper::EnablePdcpTraces (void)
+LteHelper::EnablePdcpTraces ()
 {
   NS_ASSERT_MSG (!m_pdcpStats, "please make sure that LteHelper::EnablePdcpTraces is called at most once");
   m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ("PDCP");
@@ -1587,7 +1587,7 @@ LteHelper::EnablePdcpTraces (void)
 }
 
 Ptr<RadioBearerStatsCalculator>
-LteHelper::GetPdcpStats (void)
+LteHelper::GetPdcpStats ()
 {
   return m_pdcpStats;
 }

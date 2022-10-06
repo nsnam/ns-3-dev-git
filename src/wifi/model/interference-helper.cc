@@ -56,31 +56,31 @@ Event::~Event ()
 }
 
 Ptr<const WifiPpdu>
-Event::GetPpdu (void) const
+Event::GetPpdu () const
 {
   return m_ppdu;
 }
 
 Time
-Event::GetStartTime (void) const
+Event::GetStartTime () const
 {
   return m_startTime;
 }
 
 Time
-Event::GetEndTime (void) const
+Event::GetEndTime () const
 {
   return m_endTime;
 }
 
 Time
-Event::GetDuration (void) const
+Event::GetDuration () const
 {
   return m_endTime - m_startTime;
 }
 
 double
-Event::GetRxPowerW (void) const
+Event::GetRxPowerW () const
 {
   NS_ASSERT (m_rxPowerW.size () > 0);
   //The total RX power corresponds to the maximum over all the bands
@@ -100,13 +100,13 @@ Event::GetRxPowerW (WifiSpectrumBand band) const
 }
 
 const RxPowerWattPerChannelBand&
-Event::GetRxPowerWPerBand (void) const
+Event::GetRxPowerWPerBand () const
 {
   return m_rxPowerW;
 }
 
 const WifiTxVector&
-Event::GetTxVector (void) const
+Event::GetTxVector () const
 {
   return m_txVector;
 }
@@ -153,7 +153,7 @@ InterferenceHelper::NiChange::~NiChange ()
 }
 
 double
-InterferenceHelper::NiChange::GetPower (void) const
+InterferenceHelper::NiChange::GetPower () const
 {
   return m_power;
 }
@@ -165,7 +165,7 @@ InterferenceHelper::NiChange::AddPower (double power)
 }
 
 Ptr<Event>
-InterferenceHelper::NiChange::GetEvent (void) const
+InterferenceHelper::NiChange::GetEvent () const
 {
   return m_event;
 }
@@ -189,7 +189,7 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 TypeId
-InterferenceHelper::GetTypeId (void)
+InterferenceHelper::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::InterferenceHelper")
     .SetParent<ns3::Object> ()
@@ -200,7 +200,7 @@ InterferenceHelper::GetTypeId (void)
 }
 
 void
-InterferenceHelper::DoDispose (void)
+InterferenceHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   RemoveBands ();
@@ -229,7 +229,7 @@ InterferenceHelper::AddForeignSignal (Time duration, RxPowerWattPerChannelBand& 
 }
 
 void
-InterferenceHelper::RemoveBands(void)
+InterferenceHelper::RemoveBands()
 {
   NS_LOG_FUNCTION (this);
   for (auto it : m_niChangesPerBand)
@@ -266,7 +266,7 @@ InterferenceHelper::SetErrorRateModel (const Ptr<ErrorRateModel> rate)
 }
 
 Ptr<ErrorRateModel>
-InterferenceHelper::GetErrorRateModel (void) const
+InterferenceHelper::GetErrorRateModel () const
 {
   return m_errorRateModel;
 }
@@ -619,7 +619,7 @@ InterferenceHelper::CalculatePhyHeaderSnrPer (Ptr<Event> event, uint16_t channel
 }
 
 void
-InterferenceHelper::EraseEvents (void)
+InterferenceHelper::EraseEvents ()
 {
   for (auto niIt = m_niChangesPerBand.begin(); niIt != m_niChangesPerBand.end(); ++niIt)
     {

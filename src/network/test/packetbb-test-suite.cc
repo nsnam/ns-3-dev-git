@@ -47,16 +47,16 @@ public:
    */
   PbbTestCase (std::string name, Ptr<PbbPacket> packet,
                uint8_t * buffer, uint32_t size);
-  virtual ~PbbTestCase (void);
+  virtual ~PbbTestCase ();
 
 protected:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /// Serialization
-  void TestSerialize (void);
+  void TestSerialize ();
   /// Deserialization
-  void TestDeserialize (void);
+  void TestDeserialize ();
 
   Ptr<PbbPacket> m_refPacket; //!< Reference packet
   Buffer m_refBuffer; //!< Reference buffer
@@ -72,19 +72,19 @@ PbbTestCase::PbbTestCase (std::string name, Ptr<PbbPacket> packet,
   m_refBuffer.Begin ().Write (buffer, size);
 }
 
-PbbTestCase::~PbbTestCase (void)
+PbbTestCase::~PbbTestCase ()
 {
 }
 
 void
-PbbTestCase::DoRun (void)
+PbbTestCase::DoRun ()
 {
   TestSerialize ();
   TestDeserialize ();
 }
 
 void
-PbbTestCase::TestSerialize (void)
+PbbTestCase::TestSerialize ()
 {
   Buffer newBuffer;
   newBuffer.AddAtStart (m_refPacket->GetSerializedSize ());
@@ -101,7 +101,7 @@ PbbTestCase::TestSerialize (void)
 }
 
 void
-PbbTestCase::TestDeserialize (void)
+PbbTestCase::TestDeserialize ()
 {
   Ptr<PbbPacket> newPacket = Create<PbbPacket> ();
   uint32_t numbytes = newPacket->Deserialize (m_refBuffer.Begin ());

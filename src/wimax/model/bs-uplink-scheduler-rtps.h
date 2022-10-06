@@ -60,19 +60,19 @@ public:
    * \param bs base station device
    */
   UplinkSchedulerRtps (Ptr<BaseStationNetDevice> bs);
-  ~UplinkSchedulerRtps (void);
+  ~UplinkSchedulerRtps ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Get uplink allocations.
    * \returns std::list<OfdmUlMapIe>
    */
-  std::list<OfdmUlMapIe> GetUplinkAllocations (void) const;
+  std::list<OfdmUlMapIe> GetUplinkAllocations () const;
 
   /**
    * Determines if channel descriptors sent in the current frame are
@@ -87,7 +87,7 @@ public:
    * Calculate allocation start time function
    * \returns the allocation start time value
    */
-  uint32_t CalculateAllocationStartTime (void);
+  uint32_t CalculateAllocationStartTime ();
   /**
    * Add Uplink Allocation function
    * \param ulMapIe the UL map IE
@@ -102,7 +102,7 @@ public:
   /**
    * \brief Schedule function.
    */
-  void Schedule (void);
+  void Schedule ();
   /**
    * Service Unsolicited Grants function
    * \param ssRecord Subscriber station record
@@ -188,7 +188,7 @@ public:
   void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
 
   /// Init once function
-  void InitOnce (void);
+  void InitOnce ();
 
   /**
    * Set requested bandwidth function

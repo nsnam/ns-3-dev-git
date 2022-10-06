@@ -53,7 +53,7 @@ public:
   virtual ~Ns3TcpSocketTestCaseP2P () {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   bool m_writeResults;  //!< True if write PCAP files.
 
   /**
@@ -81,7 +81,7 @@ Ns3TcpSocketTestCaseP2P::SinkRx (std::string path, Ptr<const Packet> p, const Ad
 }
 
 void
-Ns3TcpSocketTestCaseP2P::DoRun (void)
+Ns3TcpSocketTestCaseP2P::DoRun ()
 {
   uint16_t sinkPort = 50000;
   double sinkStopTime = 40;  // sec; will trigger Socket::Close
@@ -170,7 +170,7 @@ public:
   virtual ~Ns3TcpSocketTestCaseCsma () {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   bool m_writeResults;  //!< True if write PCAP files.
 
   /**
@@ -198,7 +198,7 @@ Ns3TcpSocketTestCaseCsma::SinkRx (std::string path, Ptr<const Packet> p, const A
 }
 
 void
-Ns3TcpSocketTestCaseCsma::DoRun (void)
+Ns3TcpSocketTestCaseCsma::DoRun ()
 {
   uint16_t sinkPort = 50000;
   double sinkStopTime = 40;  // sec; will trigger Socket::Close

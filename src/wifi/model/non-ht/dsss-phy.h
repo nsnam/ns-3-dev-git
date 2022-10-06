@@ -55,18 +55,18 @@ public:
   virtual ~DsssPhy ();
 
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
-  const PpduFormats & GetPpduFormats (void) const override;
+  const PpduFormats & GetPpduFormats () const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
   Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                            uint16_t staId) const override;
   Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
-  uint32_t GetMaxPsduSize (void) const override;
+  uint32_t GetMaxPsduSize () const override;
 
   /**
    * Initialize all HR/DSSS modes.
    */
-  static void InitializeModes (void);
+  static void InitializeModes ();
   /**
    * Return a WifiMode for HR/DSSS
    * corresponding to the provided rate.
@@ -80,25 +80,25 @@ public:
    *
    * \return a WifiMode for DSSS at 1 Mbps
    */
-  static WifiMode GetDsssRate1Mbps (void);
+  static WifiMode GetDsssRate1Mbps ();
   /**
    * Return a WifiMode for DSSS at 2 Mbps.
    *
    * \return a WifiMode for DSSS at 2 Mbps
    */
-  static WifiMode GetDsssRate2Mbps (void);
+  static WifiMode GetDsssRate2Mbps ();
   /**
    * Return a WifiMode for HR/DSSS at 5.5 Mbps.
    *
    * \return a WifiMode for HR/DSSS at 5.5 Mbps
    */
-  static WifiMode GetDsssRate5_5Mbps (void);
+  static WifiMode GetDsssRate5_5Mbps ();
   /**
    * Return a WifiMode for HR/DSSS at 11 Mbps.
    *
    * \return a WifiMode for HR/DSSS at 11 Mbps
    */
-  static WifiMode GetDsssRate11Mbps (void);
+  static WifiMode GetDsssRate11Mbps ();
 
   /**
    * Return the WifiCodeRate from the DSSS or HR/DSSS mode's unique

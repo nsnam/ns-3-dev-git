@@ -50,7 +50,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TapBridge");
 
-FdReader::Data TapBridgeFdReader::DoRead (void)
+FdReader::Data TapBridgeFdReader::DoRead ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -76,7 +76,7 @@ FdReader::Data TapBridgeFdReader::DoRead (void)
 NS_OBJECT_ENSURE_REGISTERED (TapBridge);
 
 TypeId
-TapBridge::GetTypeId (void)
+TapBridge::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TapBridge")
     .SetParent<NetDevice> ()
@@ -198,7 +198,7 @@ TapBridge::Stop (Time tStop)
 }
 
 void
-TapBridge::StartTapDevice (void)
+TapBridge::StartTapDevice ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -240,7 +240,7 @@ TapBridge::StartTapDevice (void)
 }
 
 void
-TapBridge::StopTapDevice (void)
+TapBridge::StopTapDevice ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -258,7 +258,7 @@ TapBridge::StopTapDevice (void)
 }
 
 void
-TapBridge::CreateTap (void)
+TapBridge::CreateTap ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -907,7 +907,7 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
 }
 
 Ptr<NetDevice>
-TapBridge::GetBridgedNetDevice (void)
+TapBridge::GetBridgedNetDevice ()
 {
   NS_LOG_FUNCTION (this);
   return m_bridgedDevice;
@@ -1034,14 +1034,14 @@ TapBridge::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-TapBridge::GetIfIndex (void) const
+TapBridge::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
 
 Ptr<Channel>
-TapBridge::GetChannel (void) const
+TapBridge::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   return 0;
@@ -1055,7 +1055,7 @@ TapBridge::SetAddress (Address address)
 }
 
 Address
-TapBridge::GetAddress (void) const
+TapBridge::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_address;
@@ -1069,7 +1069,7 @@ TapBridge::SetMode (enum Mode mode)
 }
 
 TapBridge::Mode
-TapBridge::GetMode (void)
+TapBridge::GetMode ()
 {
   NS_LOG_FUNCTION (this);
   return m_mode;
@@ -1084,14 +1084,14 @@ TapBridge::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-TapBridge::GetMtu (void) const
+TapBridge::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;
 }
 
 void
-TapBridge::NotifyLinkUp (void)
+TapBridge::NotifyLinkUp ()
 {
   NS_LOG_FUNCTION (this);
   if (!m_linkUp)
@@ -1102,7 +1102,7 @@ TapBridge::NotifyLinkUp (void)
 }
 
 bool
-TapBridge::IsLinkUp (void) const
+TapBridge::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkUp;
@@ -1116,21 +1116,21 @@ TapBridge::AddLinkChangeCallback (Callback<void> callback)
 }
 
 bool
-TapBridge::IsBroadcast (void) const
+TapBridge::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 
 Address
-TapBridge::GetBroadcast (void) const
+TapBridge::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-TapBridge::IsMulticast (void) const
+TapBridge::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
@@ -1145,14 +1145,14 @@ TapBridge::GetMulticast (Ipv4Address multicastGroup) const
 }
 
 bool
-TapBridge::IsPointToPoint (void) const
+TapBridge::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool
-TapBridge::IsBridge (void) const
+TapBridge::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   //
@@ -1181,7 +1181,7 @@ TapBridge::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dst,
 }
 
 Ptr<Node>
-TapBridge::GetNode (void) const
+TapBridge::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -1195,7 +1195,7 @@ TapBridge::SetNode (Ptr<Node> node)
 }
 
 bool
-TapBridge::NeedsArp (void) const
+TapBridge::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   return true;

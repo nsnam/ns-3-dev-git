@@ -72,7 +72,7 @@ static PrintList g_printList;
 
 /* static */
 LogComponent::ComponentList *
-LogComponent::GetComponentList (void)
+LogComponent::GetComponentList ()
 {
   static LogComponent::ComponentList components;
   return &components;
@@ -142,7 +142,7 @@ GetLogComponent (const std::string name)
 }
 
 void
-LogComponent::EnvVarCheck (void)
+LogComponent::EnvVarCheck ()
 {
   const char *envVar = std::getenv ("NS_LOG");
   if (envVar == 0 || std::strlen (envVar) == 0)
@@ -286,7 +286,7 @@ LogComponent::IsEnabled (const enum LogLevel level) const
 }
 
 bool
-LogComponent::IsNoneEnabled (void) const
+LogComponent::IsNoneEnabled () const
 {
   return m_levels == 0;
 }
@@ -310,13 +310,13 @@ LogComponent::Disable (const enum LogLevel level)
 }
 
 char const *
-LogComponent::Name (void) const
+LogComponent::Name () const
 {
   return m_name.c_str ();
 }
 
 std::string
-LogComponent::File (void) const
+LogComponent::File () const
 {
   return m_file;
 }
@@ -422,7 +422,7 @@ LogComponentDisableAll (enum LogLevel level)
 }
 
 void
-LogComponentPrintList (void)
+LogComponentPrintList ()
 {
   LogComponent::ComponentList *components = LogComponent::GetComponentList ();
   for (LogComponent::ComponentList::const_iterator i = components->begin ();
@@ -525,7 +525,7 @@ static bool ComponentExists (std::string componentName)
  * Parse the \c NS_LOG environment variable.
  * This is private to the logging implementation.
  */
-static void CheckEnvironmentVariables (void)
+static void CheckEnvironmentVariables ()
 {
   const char *envVar = std::getenv ("NS_LOG");
   if (envVar == 0 || std::strlen (envVar) == 0)
@@ -626,7 +626,7 @@ void LogSetTimePrinter (TimePrinter printer)
    */
   CheckEnvironmentVariables ();
 }
-TimePrinter LogGetTimePrinter (void)
+TimePrinter LogGetTimePrinter ()
 {
   return g_logTimePrinter;
 }
@@ -635,7 +635,7 @@ void LogSetNodePrinter (NodePrinter printer)
 {
   g_logNodePrinter = printer;
 }
-NodePrinter LogGetNodePrinter (void)
+NodePrinter LogGetNodePrinter ()
 {
   return g_logNodePrinter;
 }

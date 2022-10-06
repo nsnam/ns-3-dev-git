@@ -49,7 +49,7 @@ PacketMetadata::DataFreeList::~DataFreeList ()
 }
 
 void
-PacketMetadata::Enable (void)
+PacketMetadata::Enable ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG (!m_metadataSkipped,
@@ -63,7 +63,7 @@ PacketMetadata::Enable (void)
 }
 
 void
-PacketMetadata::EnableChecking (void)
+PacketMetadata::EnableChecking ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Enable ();
@@ -130,7 +130,7 @@ PacketMetadata::IsPointerOk (uint16_t pointer) const
 }
 
 bool
-PacketMetadata::IsStateOk (void) const
+PacketMetadata::IsStateOk () const
 {
   NS_LOG_FUNCTION (this);
   bool ok = m_used <= m_data->m_size;
@@ -1014,7 +1014,7 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
   NS_ASSERT (IsStateOk ());
 }
 uint32_t
-PacketMetadata::GetTotalSize (void) const
+PacketMetadata::GetTotalSize () const
 {
   NS_LOG_FUNCTION (this);
   uint32_t totalSize = 0;
@@ -1037,7 +1037,7 @@ PacketMetadata::GetTotalSize (void) const
 }
 
 uint64_t
-PacketMetadata::GetUid (void) const
+PacketMetadata::GetUid () const
 {
   NS_LOG_FUNCTION (this);
   return m_packetUid;
@@ -1058,7 +1058,7 @@ PacketMetadata::ItemIterator::ItemIterator (const PacketMetadata *metadata, Buff
   NS_LOG_FUNCTION (this << metadata << &buffer);
 }
 bool
-PacketMetadata::ItemIterator::HasNext (void) const
+PacketMetadata::ItemIterator::HasNext () const
 {
   NS_LOG_FUNCTION (this);
   if (m_current == 0xffff)
@@ -1072,7 +1072,7 @@ PacketMetadata::ItemIterator::HasNext (void) const
   return true;
 }
 PacketMetadata::Item
-PacketMetadata::ItemIterator::Next (void)
+PacketMetadata::ItemIterator::Next ()
 {
   NS_LOG_FUNCTION (this);
   struct PacketMetadata::Item item;
@@ -1130,7 +1130,7 @@ PacketMetadata::ItemIterator::Next (void)
 }
 
 uint32_t
-PacketMetadata::GetSerializedSize (void) const
+PacketMetadata::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   uint32_t totalSize = 0;

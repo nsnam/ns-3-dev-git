@@ -110,7 +110,7 @@ LteInterferenceTestCase::~LteInterferenceTestCase ()
 }
 
 void
-LteInterferenceTestCase::DoRun (void)
+LteInterferenceTestCase::DoRun ()
 {
   NS_LOG_INFO (this << GetName ());
 

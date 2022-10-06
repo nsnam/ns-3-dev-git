@@ -51,12 +51,12 @@ public:
   virtual ~RadioEnvironmentMapHelper ();
 
   // inherited from Object
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \return the bandwidth (in num of RBs) over which SINR is calculated

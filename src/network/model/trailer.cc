@@ -33,7 +33,7 @@ Trailer::~Trailer ()
 }
 
 TypeId
-Trailer::GetTypeId (void)
+Trailer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Trailer")
     .SetParent<Chunk> ()

@@ -81,25 +81,25 @@ VhtOperation::SetBasicVhtMcsAndNssSet (uint16_t basicVhtMcsAndNssSet)
 }
 
 uint8_t
-VhtOperation::GetChannelWidth (void) const
+VhtOperation::GetChannelWidth () const
 {
   return m_channelWidth;
 }
 
 uint8_t
-VhtOperation::GetChannelCenterFrequencySegment0 (void) const
+VhtOperation::GetChannelCenterFrequencySegment0 () const
 {
   return m_channelCenterFrequencySegment0;
 }
 
 uint8_t
-VhtOperation::GetChannelCenterFrequencySegment1 (void) const
+VhtOperation::GetChannelCenterFrequencySegment1 () const
 {
   return m_channelCenterFrequencySegment1;
 }
 
 uint16_t
-VhtOperation::GetBasicVhtMcsAndNssSet (void) const
+VhtOperation::GetBasicVhtMcsAndNssSet () const
 {
   return m_basicVhtMcsAndNssSet;
 }

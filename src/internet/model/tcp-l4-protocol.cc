@@ -67,7 +67,7 @@ NS_OBJECT_ENSURE_REGISTERED (TcpL4Protocol);
 const uint8_t TcpL4Protocol::PROT_NUMBER = 6;
 
 TypeId
-TcpL4Protocol::GetTypeId (void)
+TcpL4Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpL4Protocol")
     .SetParent<IpL4Protocol> ()
@@ -152,13 +152,13 @@ TcpL4Protocol::NotifyNewAggregate ()
 }
 
 int
-TcpL4Protocol::GetProtocolNumber (void) const
+TcpL4Protocol::GetProtocolNumber () const
 {
   return PROT_NUMBER;
 }
 
 void
-TcpL4Protocol::DoDispose (void)
+TcpL4Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_sockets.clear ();
@@ -214,13 +214,13 @@ TcpL4Protocol::CreateSocket (TypeId congestionTypeId, TypeId recoveryTypeId)
 }
 
 Ptr<Socket>
-TcpL4Protocol::CreateSocket (void)
+TcpL4Protocol::CreateSocket ()
 {
   return CreateSocket (m_congestionTypeId, m_recoveryTypeId);
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (void)
+TcpL4Protocol::Allocate ()
 {
   NS_LOG_FUNCTION (this);
   return m_endPoints->Allocate ();
@@ -266,7 +266,7 @@ TcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 }
 
 Ipv6EndPoint *
-TcpL4Protocol::Allocate6 (void)
+TcpL4Protocol::Allocate6 ()
 {
   NS_LOG_FUNCTION (this);
   return m_endPoints6->Allocate ();
@@ -749,7 +749,7 @@ TcpL4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 }
 
 IpL4Protocol::DownTargetCallback
-TcpL4Protocol::GetDownTarget (void) const
+TcpL4Protocol::GetDownTarget () const
 {
   return m_downTarget;
 }
@@ -761,7 +761,7 @@ TcpL4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
 }
 
 IpL4Protocol::DownTargetCallback6
-TcpL4Protocol::GetDownTarget6 (void) const
+TcpL4Protocol::GetDownTarget6 () const
 {
   return m_downTarget6;
 }

@@ -76,7 +76,7 @@ Ipv4EndPointDemux::LookupLocal (Ptr<NetDevice> boundNetDevice, Ipv4Address addr,
 }
 
 Ipv4EndPoint *
-Ipv4EndPointDemux::Allocate (void)
+Ipv4EndPointDemux::Allocate ()
 {
   NS_LOG_FUNCTION (this);
   uint16_t port = AllocateEphemeralPort ();
@@ -176,7 +176,7 @@ Ipv4EndPointDemux::DeAllocate (Ipv4EndPoint *endPoint)
  * return list of all available Endpoints
  */
 Ipv4EndPointDemux::EndPoints
-Ipv4EndPointDemux::GetAllEndPoints (void)
+Ipv4EndPointDemux::GetAllEndPoints ()
 {
   NS_LOG_FUNCTION (this);
   EndPoints ret;
@@ -378,7 +378,7 @@ Ipv4EndPointDemux::SimpleLookup (Ipv4Address daddr,
   return generic;
 }
 uint16_t
-Ipv4EndPointDemux::AllocateEphemeralPort (void)
+Ipv4EndPointDemux::AllocateEphemeralPort ()
 {
   // Similar to counting up logic in netinet/in_pcb.c
   NS_LOG_FUNCTION (this);

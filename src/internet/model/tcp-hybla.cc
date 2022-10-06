@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpHybla");
 NS_OBJECT_ENSURE_REGISTERED (TcpHybla);
 
 TypeId
-TcpHybla::GetTypeId (void)
+TcpHybla::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpHybla")
     .SetParent<TcpNewReno> ()
@@ -164,7 +164,7 @@ TcpHybla::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 }
 
 Ptr<TcpCongestionOps>
-TcpHybla::Fork (void)
+TcpHybla::Fork ()
 {
   return CopyObject<TcpHybla> (this);
 }

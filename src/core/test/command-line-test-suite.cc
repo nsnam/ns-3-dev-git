@@ -131,7 +131,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -140,7 +140,7 @@ CommandLineBooleanTestCase::CommandLineBooleanTestCase ()
 {}
 
 void
-CommandLineBooleanTestCase::DoRun (void)
+CommandLineBooleanTestCase::DoRun ()
 {
   CommandLine cmd;
   bool myBool = true;
@@ -183,7 +183,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -192,7 +192,7 @@ CommandLineUint8tTestCase::CommandLineUint8tTestCase ()
 {}
 
 void
-CommandLineUint8tTestCase::DoRun (void)
+CommandLineUint8tTestCase::DoRun ()
 {
   CommandLine cmd;
   uint8_t myUint8 = 10;
@@ -218,7 +218,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -227,7 +227,7 @@ CommandLineIntTestCase::CommandLineIntTestCase ()
 {}
 
 void
-CommandLineIntTestCase::DoRun (void)
+CommandLineIntTestCase::DoRun ()
 {
   CommandLine cmd;
   bool myBool = true;
@@ -260,7 +260,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -269,7 +269,7 @@ CommandLineUnsignedIntTestCase::CommandLineUnsignedIntTestCase ()
 {}
 
 void
-CommandLineUnsignedIntTestCase::DoRun (void)
+CommandLineUnsignedIntTestCase::DoRun ()
 {
   CommandLine cmd;
   bool myBool = true;
@@ -299,7 +299,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -308,7 +308,7 @@ CommandLineStringTestCase::CommandLineStringTestCase ()
 {}
 
 void
-CommandLineStringTestCase::DoRun (void)
+CommandLineStringTestCase::DoRun ()
 {
   CommandLine cmd;
   uint32_t myUint32 = 10;
@@ -338,7 +338,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -347,7 +347,7 @@ CommandLineOrderTestCase::CommandLineOrderTestCase ()
 {}
 
 void
-CommandLineOrderTestCase::DoRun (void)
+CommandLineOrderTestCase::DoRun ()
 {
   CommandLine cmd;
   uint32_t myUint32 = 0;
@@ -374,7 +374,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -383,7 +383,7 @@ CommandLineInvalidTestCase::CommandLineInvalidTestCase ()
 {}
 
 void
-CommandLineInvalidTestCase::DoRun (void)
+CommandLineInvalidTestCase::DoRun ()
 {
   CommandLine cmd;
   uint32_t myUint32 = 0;
@@ -410,7 +410,7 @@ public:
 
 private:
   /** Run the test */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -419,7 +419,7 @@ CommandLineNonOptionTestCase::CommandLineNonOptionTestCase ()
 {}
 
 void
-CommandLineNonOptionTestCase::DoRun (void)
+CommandLineNonOptionTestCase::DoRun ()
 {
   CommandLine cmd;
   bool myBool = false;

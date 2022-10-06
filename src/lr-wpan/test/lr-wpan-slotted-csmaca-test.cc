@@ -103,7 +103,7 @@ private:
                                Ptr<LrWpanNetDevice> dev,
                                uint32_t trans);
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Time m_startCap;      //!< The time of the start of the Contention Access Period (CAP).
   Time m_apBoundary;    //!< Indicates the time after the calculation of the transaction cost (A boundary of an Active Period in the CAP)

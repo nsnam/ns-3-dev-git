@@ -43,7 +43,7 @@ EventImpl::EventImpl ()
 }
 
 void
-EventImpl::Invoke (void)
+EventImpl::Invoke ()
 {
   NS_LOG_FUNCTION (this);
   if (!m_cancel)
@@ -53,14 +53,14 @@ EventImpl::Invoke (void)
 }
 
 void
-EventImpl::Cancel (void)
+EventImpl::Cancel ()
 {
   NS_LOG_FUNCTION (this);
   m_cancel = true;
 }
 
 bool
-EventImpl::IsCancelled (void)
+EventImpl::IsCancelled ()
 {
   NS_LOG_FUNCTION (this);
   return m_cancel;

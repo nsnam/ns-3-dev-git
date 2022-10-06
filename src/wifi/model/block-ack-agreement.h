@@ -70,11 +70,11 @@ public:
   /**
    * Set block ack policy to immediate Ack.
    */
-  void SetImmediateBlockAck (void);
+  void SetImmediateBlockAck ();
   /**
    * Set block ack policy to delayed Ack.
    */
-  void SetDelayedBlockAck (void);
+  void SetDelayedBlockAck ();
   /**
    * Enable or disable A-MSDU support.
    *
@@ -86,57 +86,57 @@ public:
    *
    * \return TID
    */
-  uint8_t GetTid (void) const;
+  uint8_t GetTid () const;
   /**
    * Return the peer address.
    *
    * \return the peer MAC address
    */
-  Mac48Address GetPeer (void) const;
+  Mac48Address GetPeer () const;
   /**
    * Return the buffer size.
    *
    * \return the buffer size (in number of MPDUs)
    */
-  uint16_t GetBufferSize (void) const;
+  uint16_t GetBufferSize () const;
   /**
    * Return the timeout.
    *
    * \return the timeout
    */
-  uint16_t GetTimeout (void) const;
+  uint16_t GetTimeout () const;
   /**
    * Return the starting sequence number.
    *
    * \return starting sequence number
    */
-  virtual uint16_t GetStartingSequence (void) const;
+  virtual uint16_t GetStartingSequence () const;
   /**
    * Return the starting sequence control
    *
    * \return starting sequence control
    */
-  uint16_t GetStartingSequenceControl (void) const;
+  uint16_t GetStartingSequenceControl () const;
   /**
    * Return the last sequence number covered by the ack window
    *
    * \return ending sequence number
    */
-  uint16_t GetWinEnd (void) const;
+  uint16_t GetWinEnd () const;
   /**
    * Check whether the current ack policy is immediate BlockAck.
    *
    * \return true if the current ack policy is immediate BlockAck,
    *         false otherwise
    */
-  bool IsImmediateBlockAck (void) const;
+  bool IsImmediateBlockAck () const;
   /**
    * Check whether A-MSDU is supported
    *
    * \return true if A-MSDU is supported,
    *         false otherwise
    */
-  bool IsAmsduSupported (void) const;
+  bool IsAmsduSupported () const;
   /**
    * Enable or disable HT support.
    *
@@ -149,19 +149,19 @@ public:
    * \return true if HT is supported,
    *         false otherwise
    */
-  bool IsHtSupported (void) const;
+  bool IsHtSupported () const;
   /**
    * Get the type of the Block Acks sent by the recipient of this agreement.
    *
    * \return the type of the Block Acks sent by the recipient of this agreement
    */
-  BlockAckType GetBlockAckType (void) const;
+  BlockAckType GetBlockAckType () const;
   /**
    * Get the type of the Block Ack Requests sent by the originator of this agreement.
    *
    * \return the type of the Block Ack Requests sent by the originator of this agreement
    */
-  BlockAckReqType GetBlockAckReqType (void) const;
+  BlockAckReqType GetBlockAckReqType () const;
   /**
    * Get the distance between the given starting sequence number and the
    * given sequence number.

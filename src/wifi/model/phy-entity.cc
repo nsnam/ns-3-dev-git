@@ -101,7 +101,7 @@ PhyEntity::IsModeSupported (WifiMode mode) const
 }
 
 uint8_t
-PhyEntity::GetNumModes (void) const
+PhyEntity::GetNumModes () const
 {
   return m_modeList.size ();
 }
@@ -121,19 +121,19 @@ PhyEntity::IsMcsSupported (uint8_t /* index */) const
 }
 
 bool
-PhyEntity::HandlesMcsModes (void) const
+PhyEntity::HandlesMcsModes () const
 {
   return false;
 }
 
 std::list<WifiMode>::const_iterator
-PhyEntity::begin (void) const
+PhyEntity::begin () const
 {
   return m_modeList.begin ();
 }
 
 std::list<WifiMode>::const_iterator
-PhyEntity::end (void) const
+PhyEntity::end () const
 {
   return m_modeList.end ();
 }
@@ -741,7 +741,7 @@ PhyEntity::GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t /* sta
 }
 
 const std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > &
-PhyEntity::GetCurrentPreambleEvents (void) const
+PhyEntity::GetCurrentPreambleEvents () const
 {
   return m_wifiPhy->m_currentPreambleEvents;
 }
@@ -929,7 +929,7 @@ PhyEntity::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
 }
 
 void
-PhyEntity::CancelAllEvents (void)
+PhyEntity::CancelAllEvents ()
 {
   NS_LOG_FUNCTION (this);
   for (auto & endPreambleDetectionEvent : m_endPreambleDetectionEvents)
@@ -950,7 +950,7 @@ PhyEntity::CancelAllEvents (void)
 }
 
 bool
-PhyEntity::NoEndPreambleDetectionEvents (void) const
+PhyEntity::NoEndPreambleDetectionEvents () const
 {
   return m_endPreambleDetectionEvents.empty ();
 }
@@ -1016,7 +1016,7 @@ PhyEntity::DoResetReceive (Ptr<Event> event)
 }
 
 double
-PhyEntity::GetRandomValue (void) const
+PhyEntity::GetRandomValue () const
 {
   return m_wifiPhy->m_random->GetValue ();
 }
@@ -1028,7 +1028,7 @@ PhyEntity::GetRxPowerWForPpdu (Ptr<Event> event) const
 }
 
 Ptr<const Event>
-PhyEntity::GetCurrentEvent (void) const
+PhyEntity::GetCurrentEvent () const
 {
   return m_wifiPhy->m_currentEvent;
 }
@@ -1164,7 +1164,7 @@ PhyEntity::GetGuardBandwidth (uint16_t currentChannelWidth) const
 }
 
 std::tuple<double, double, double>
-PhyEntity::GetTxMaskRejectionParams (void) const
+PhyEntity::GetTxMaskRejectionParams () const
 {
   return m_wifiPhy->GetTxMaskRejectionParams ();
 }

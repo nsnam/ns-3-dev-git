@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxPhy);
 
-TypeId WimaxPhy::GetTypeId (void)
+TypeId WimaxPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WimaxPhy")
     .SetParent<Object> ()
@@ -72,7 +72,7 @@ TypeId WimaxPhy::GetTypeId (void)
   return tid;
 }
 
-WimaxPhy::WimaxPhy (void)
+WimaxPhy::WimaxPhy ()
   : m_state (PHY_STATE_IDLE),
     m_nrCarriers (0),
     m_frameDuration (Seconds (0.01)),
@@ -91,12 +91,12 @@ WimaxPhy::WimaxPhy (void)
 
 }
 
-WimaxPhy::~WimaxPhy (void)
+WimaxPhy::~WimaxPhy ()
 {
 }
 
 void
-WimaxPhy::DoDispose (void)
+WimaxPhy::DoDispose ()
 {
   m_device = 0;
   m_channel = 0;
@@ -110,7 +110,7 @@ WimaxPhy::Attach (Ptr<WimaxChannel> channel)
 }
 
 Ptr<WimaxChannel>
-WimaxPhy::GetChannel (void) const
+WimaxPhy::GetChannel () const
 {
   return m_channel;
 }
@@ -122,7 +122,7 @@ WimaxPhy::SetDevice (Ptr<WimaxNetDevice> device)
 }
 
 Ptr<NetDevice>
-WimaxPhy::GetDevice (void) const
+WimaxPhy::GetDevice () const
 {
   return m_device;
 }
@@ -140,7 +140,7 @@ WimaxPhy::StartScanning (uint64_t frequency, Time timeout, Callback<void, bool, 
 }
 
 void
-WimaxPhy::EndScanning (void)
+WimaxPhy::EndScanning ()
 {
   m_scanningCallback (false, m_scanningFrequency);
 }
@@ -152,7 +152,7 @@ WimaxPhy::SetReceiveCallback (Callback<void, Ptr<const PacketBurst> > callback)
 }
 
 Callback<void, Ptr<const PacketBurst> >
-WimaxPhy::GetReceiveCallback (void) const
+WimaxPhy::GetReceiveCallback () const
 {
   return m_rxCallback;
 }
@@ -172,19 +172,19 @@ WimaxPhy::SetSimplex (uint64_t frequency)
 }
 
 uint64_t
-WimaxPhy::GetRxFrequency (void) const
+WimaxPhy::GetRxFrequency () const
 {
   return m_rxFrequency;
 }
 
 uint64_t
-WimaxPhy::GetTxFrequency (void) const
+WimaxPhy::GetTxFrequency () const
 {
   return m_txFrequency;
 }
 
 uint64_t
-WimaxPhy::GetScanningFrequency (void) const
+WimaxPhy::GetScanningFrequency () const
 {
   return m_scanningFrequency;
 }
@@ -195,31 +195,31 @@ WimaxPhy::SetState (PhyState state)
   m_state = state;
 }
 
-WimaxPhy::PhyState WimaxPhy::GetState (void) const
+WimaxPhy::PhyState WimaxPhy::GetState () const
 {
   return m_state;
 }
 
 bool
-WimaxPhy::IsDuplex (void) const
+WimaxPhy::IsDuplex () const
 {
   return m_duplex;
 }
 
 EventId
-WimaxPhy::GetChnlSrchTimeoutEvent (void) const
+WimaxPhy::GetChnlSrchTimeoutEvent () const
 {
   return m_dlChnlSrchTimeoutEvent;
 }
 
 void
-WimaxPhy::SetScanningCallback (void) const
+WimaxPhy::SetScanningCallback () const
 {
   m_scanningCallback (true, GetScanningFrequency ());
 }
 
 void
-WimaxPhy::SetDataRates (void)
+WimaxPhy::SetDataRates ()
 {
   DoSetDataRates ();
 }
@@ -249,19 +249,19 @@ WimaxPhy::GetNrBytes (uint32_t symbols, WimaxPhy::ModulationType modulationType)
 }
 
 uint16_t
-WimaxPhy::GetTtg (void) const
+WimaxPhy::GetTtg () const
 {
   return DoGetTtg ();
 }
 
 uint16_t
-WimaxPhy::GetRtg (void) const
+WimaxPhy::GetRtg () const
 {
   return DoGetRtg ();
 }
 
 uint8_t
-WimaxPhy::GetFrameDurationCode (void) const
+WimaxPhy::GetFrameDurationCode () const
 {
   return DoGetFrameDurationCode ();
 }
@@ -275,7 +275,7 @@ WimaxPhy::GetFrameDuration (uint8_t frameDurationCode) const
 /*---------------------PHY parameters functions-----------------------*/
 
 void
-WimaxPhy::SetPhyParameters (void)
+WimaxPhy::SetPhyParameters ()
 {
   DoSetPhyParameters ();
 }
@@ -287,7 +287,7 @@ WimaxPhy::SetNrCarriers (uint8_t nrCarriers)
 }
 
 uint8_t
-WimaxPhy::GetNrCarriers (void) const
+WimaxPhy::GetNrCarriers () const
 {
   return m_nrCarriers;
 }
@@ -299,13 +299,13 @@ WimaxPhy::SetFrameDuration (Time frameDuration)
 }
 
 Time
-WimaxPhy::GetFrameDuration (void) const
+WimaxPhy::GetFrameDuration () const
 {
   return GetFrameDurationSec ();
 }
 
 Time
-WimaxPhy::GetFrameDurationSec (void) const
+WimaxPhy::GetFrameDurationSec () const
 {
   return m_frameDuration;
 }
@@ -317,7 +317,7 @@ WimaxPhy::SetFrequency (uint32_t frequency)
 }
 
 uint32_t
-WimaxPhy::GetFrequency (void) const
+WimaxPhy::GetFrequency () const
 {
   return m_frequency;
 }
@@ -329,25 +329,25 @@ WimaxPhy::SetChannelBandwidth (uint32_t channelBandwidth)
 }
 
 uint32_t
-WimaxPhy::GetChannelBandwidth (void) const
+WimaxPhy::GetChannelBandwidth () const
 {
   return m_channelBandwidth;
 }
 
 uint16_t
-WimaxPhy::GetNfft (void) const
+WimaxPhy::GetNfft () const
 {
   return DoGetNfft ();
 }
 
 double
-WimaxPhy::GetSamplingFactor (void) const
+WimaxPhy::GetSamplingFactor () const
 {
   return DoGetSamplingFactor ();
 }
 
 double
-WimaxPhy::GetSamplingFrequency (void) const
+WimaxPhy::GetSamplingFrequency () const
 {
   return DoGetSamplingFrequency ();
 }
@@ -359,7 +359,7 @@ WimaxPhy::SetPsDuration (Time psDuration)
 }
 
 Time
-WimaxPhy::GetPsDuration (void) const
+WimaxPhy::GetPsDuration () const
 {
   return m_psDuration;
 }
@@ -371,13 +371,13 @@ WimaxPhy::SetSymbolDuration (Time symbolDuration)
 }
 
 Time
-WimaxPhy::GetSymbolDuration (void) const
+WimaxPhy::GetSymbolDuration () const
 {
   return m_symbolDuration;
 }
 
 double
-WimaxPhy::GetGValue (void) const
+WimaxPhy::GetGValue () const
 {
   return DoGetGValue ();
 }
@@ -389,7 +389,7 @@ WimaxPhy::SetPsPerSymbol (uint16_t psPerSymbol)
 }
 
 uint16_t
-WimaxPhy::GetPsPerSymbol (void) const
+WimaxPhy::GetPsPerSymbol () const
 {
   return m_psPerSymbol;
 }
@@ -401,7 +401,7 @@ WimaxPhy::SetPsPerFrame (uint16_t psPerFrame)
 }
 
 uint16_t
-WimaxPhy::GetPsPerFrame (void) const
+WimaxPhy::GetPsPerFrame () const
 {
   return m_psPerFrame;
 }
@@ -413,12 +413,12 @@ WimaxPhy::SetSymbolsPerFrame (uint32_t symbolsPerFrame)
 }
 
 uint32_t
-WimaxPhy::GetSymbolsPerFrame (void) const
+WimaxPhy::GetSymbolsPerFrame () const
 {
   return m_symbolsPerFrame;
 }
 Ptr<Object>
-WimaxPhy::GetMobility (void)
+WimaxPhy::GetMobility ()
 {
   return m_mobility;
 }

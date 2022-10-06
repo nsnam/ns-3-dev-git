@@ -46,7 +46,7 @@ class GlobalRouteManagerImplTestCase : public TestCase
 {
 public:
   GlobalRouteManagerImplTestCase();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 GlobalRouteManagerImplTestCase::GlobalRouteManagerImplTestCase()
@@ -54,7 +54,7 @@ GlobalRouteManagerImplTestCase::GlobalRouteManagerImplTestCase()
 {
 }
 void
-GlobalRouteManagerImplTestCase::DoRun (void)
+GlobalRouteManagerImplTestCase::DoRun ()
 {
   CandidateQueue candidate;
 

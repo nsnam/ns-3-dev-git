@@ -39,14 +39,14 @@ QueueItem::~QueueItem ()
 }
 
 Ptr<Packet>
-QueueItem::GetPacket (void) const
+QueueItem::GetPacket () const
 {
   NS_LOG_FUNCTION (this);
   return m_packet;
 }
 
 uint32_t
-QueueItem::GetSize (void) const
+QueueItem::GetSize () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_packet);
@@ -88,21 +88,21 @@ QueueDiscItem::~QueueDiscItem()
 }
 
 Address
-QueueDiscItem::GetAddress (void) const
+QueueDiscItem::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_address;
 }
 
 uint16_t
-QueueDiscItem::GetProtocol (void) const
+QueueDiscItem::GetProtocol () const
 {
   NS_LOG_FUNCTION (this);
   return m_protocol;
 }
 
 uint8_t
-QueueDiscItem::GetTxQueueIndex (void) const
+QueueDiscItem::GetTxQueueIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_txq;
@@ -116,7 +116,7 @@ QueueDiscItem::SetTxQueueIndex (uint8_t txq)
 }
 
 Time
-QueueDiscItem::GetTimeStamp (void) const
+QueueDiscItem::GetTimeStamp () const
 {
   NS_LOG_FUNCTION (this);
   return m_tstamp;

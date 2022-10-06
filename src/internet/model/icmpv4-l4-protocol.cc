@@ -40,7 +40,7 @@ NS_OBJECT_ENSURE_REGISTERED (Icmpv4L4Protocol);
 const uint8_t Icmpv4L4Protocol::PROT_NUMBER = 1;
 
 TypeId
-Icmpv4L4Protocol::GetTypeId (void)
+Icmpv4L4Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv4L4Protocol")
     .SetParent<IpL4Protocol> ()
@@ -97,14 +97,14 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
 }
 
 uint16_t
-Icmpv4L4Protocol::GetStaticProtocolNumber (void)
+Icmpv4L4Protocol::GetStaticProtocolNumber ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return PROT_NUMBER;
 }
 
 int
-Icmpv4L4Protocol::GetProtocolNumber (void) const
+Icmpv4L4Protocol::GetProtocolNumber () const
 {
   NS_LOG_FUNCTION (this);
   return PROT_NUMBER;
@@ -292,7 +292,7 @@ Icmpv4L4Protocol::Receive (Ptr<Packet> p,
   return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 void
-Icmpv4L4Protocol::DoDispose (void)
+Icmpv4L4Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
@@ -314,14 +314,14 @@ Icmpv4L4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
 }
 
 IpL4Protocol::DownTargetCallback
-Icmpv4L4Protocol::GetDownTarget (void) const
+Icmpv4L4Protocol::GetDownTarget () const
 {
   NS_LOG_FUNCTION (this);
   return m_downTarget;
 }
 
 IpL4Protocol::DownTargetCallback6
-Icmpv4L4Protocol::GetDownTarget6 (void) const
+Icmpv4L4Protocol::GetDownTarget6 () const
 {
   NS_LOG_FUNCTION (this);
   return IpL4Protocol::DownTargetCallback6 ();

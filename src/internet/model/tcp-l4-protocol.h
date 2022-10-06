@@ -83,7 +83,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint8_t PROT_NUMBER; //!< protocol number (0x6)
 
   TcpL4Protocol ();
@@ -107,7 +107,7 @@ public:
    * \return A smart Socket pointer to a TcpSocket allocated by this instance
    * of the TCP protocol
    */
-  Ptr<Socket> CreateSocket (void);
+  Ptr<Socket> CreateSocket ();
 
   /**
    * \brief Create a TCP socket using the specified congestion control algorithm TypeId
@@ -136,7 +136,7 @@ public:
    * \brief Allocate an IPv4 Endpoint
    * \return the Endpoint
    */
-  Ipv4EndPoint *Allocate (void);
+  Ipv4EndPoint *Allocate ();
   /**
    * \brief Allocate an IPv4 Endpoint
    * \param address address to use
@@ -174,7 +174,7 @@ public:
    * \brief Allocate an IPv6 Endpoint
    * \return the Endpoint
    */
-  Ipv6EndPoint *Allocate6 (void);
+  Ipv6EndPoint *Allocate6 ();
   /**
    * \brief Allocate an IPv6 Endpoint
    * \param address address to use
@@ -269,12 +269,12 @@ public:
 
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
   virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
-  virtual int GetProtocolNumber (void) const;
-  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
-  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+  virtual int GetProtocolNumber () const;
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget () const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Setup socket factory and callbacks when aggregated to a node

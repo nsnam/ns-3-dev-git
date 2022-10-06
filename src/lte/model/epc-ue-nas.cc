@@ -81,7 +81,7 @@ EpcUeNas::DoDispose ()
 }
 
 TypeId
-EpcUeNas::GetTypeId (void)
+EpcUeNas::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcUeNas")
     .SetParent<Object> ()

@@ -58,8 +58,8 @@ public:
   AredQueueDiscTestItem (const AredQueueDiscTestItem &) = delete;
   AredQueueDiscTestItem & operator = (const AredQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark(void);
+  virtual void AddHeader ();
+  virtual bool Mark();
 };
 
 AredQueueDiscTestItem::AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
@@ -72,12 +72,12 @@ AredQueueDiscTestItem::~AredQueueDiscTestItem ()
 }
 
 void
-AredQueueDiscTestItem::AddHeader (void)
+AredQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-AredQueueDiscTestItem::Mark (void)
+AredQueueDiscTestItem::Mark ()
 {
   return false;
 }
@@ -92,7 +92,7 @@ class AredQueueDiscTestCase : public TestCase
 {
 public:
   AredQueueDiscTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 private:
   /**
    * Enqueue function
@@ -343,7 +343,7 @@ AredQueueDiscTestCase::EnqueueWithDelay (Ptr<RedQueueDisc> queue, uint32_t size,
 }
 
 void
-AredQueueDiscTestCase::DoRun (void)
+AredQueueDiscTestCase::DoRun ()
 {
   RunAredDiscTest (QueueSizeUnit::PACKETS);
   RunAredDiscTest (QueueSizeUnit::BYTES);

@@ -104,7 +104,7 @@ public:
                 std::ostream & os = std::cout);
 
   /** Destructor. */
-  ~ShowProgress (void);
+  ~ShowProgress ();
 
   /**
    * Set the target update interval, in wallclock time.
@@ -141,18 +141,18 @@ private:
    * Start the elapsed wallclock timestamp and print the start time.
    * This is triggered by the constructor.
    */
-  void Start (void);
+  void Start ();
 
   /**
    * Stop the elapsed wallclock timestamp and print the total elapsed time.
    * This is triggered by the destructor.
    */
-  void Stop (void);
+  void Stop ();
 
   /**
    * Schedule the next CheckProgress.
    */
-  void ScheduleCheckProgress (void);
+  void ScheduleCheckProgress ();
 
   /**
    * Check on execution progress.
@@ -160,7 +160,7 @@ private:
    * state on rate of progress, and decides if it's time to generate
    * output.
    */
-  void CheckProgress (void);
+  void CheckProgress ();
 
   /**
    * Show execution progress.

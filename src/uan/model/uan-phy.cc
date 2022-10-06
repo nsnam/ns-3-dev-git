@@ -24,7 +24,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinr);
 
-TypeId UanPhyCalcSinr::GetTypeId (void)
+TypeId UanPhyCalcSinr::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhyCalcSinr")
     .SetParent<Object> ()
@@ -47,7 +47,7 @@ UanPhyCalcSinr::DoDispose ()
 
 NS_OBJECT_ENSURE_REGISTERED (UanPhyPer);
 
-TypeId UanPhyPer::GetTypeId (void)
+TypeId UanPhyPer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhyPer")
     .SetParent<Object> ()
@@ -70,7 +70,7 @@ UanPhyPer::DoDispose ()
 
 NS_OBJECT_ENSURE_REGISTERED (UanPhy);
 
-TypeId UanPhy::GetTypeId (void)
+TypeId UanPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanPhy")
     .SetParent<Object> ()

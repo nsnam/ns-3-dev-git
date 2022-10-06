@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("ErrorChannel");
 NS_OBJECT_ENSURE_REGISTERED (ErrorChannel);
 
 TypeId
-ErrorChannel::GetTypeId (void)
+ErrorChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ErrorChannel")
     .SetParent<SimpleChannel> ()
@@ -136,7 +136,7 @@ ErrorChannel::Add (Ptr<SimpleNetDevice> device)
 }
 
 std::size_t
-ErrorChannel::GetNDevices (void) const
+ErrorChannel::GetNDevices () const
 {
   return m_devices.size ();
 }

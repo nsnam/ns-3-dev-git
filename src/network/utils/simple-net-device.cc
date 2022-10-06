@@ -44,10 +44,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
 
@@ -60,7 +60,7 @@ public:
    * Get the source address
    * \return the source address
    */
-  Mac48Address GetSrc (void) const;
+  Mac48Address GetSrc () const;
 
   /**
    * Set the destination address
@@ -71,7 +71,7 @@ public:
    * Get the destination address
    * \return the destination address
    */
-  Mac48Address GetDst (void) const;
+  Mac48Address GetDst () const;
 
   /**
    * Set the protocol number
@@ -82,7 +82,7 @@ public:
    * Get the protocol number
    * \return the protocol number
    */
-  uint16_t GetProto (void) const;
+  uint16_t GetProto () const;
 
   void Print (std::ostream &os) const;
 
@@ -96,7 +96,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (SimpleTag);
 
 TypeId
-SimpleTag::GetTypeId (void)
+SimpleTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SimpleTag")
     .SetParent<Tag> ()
@@ -106,13 +106,13 @@ SimpleTag::GetTypeId (void)
   return tid;
 }
 TypeId
-SimpleTag::GetInstanceTypeId (void) const
+SimpleTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-SimpleTag::GetSerializedSize (void) const
+SimpleTag::GetSerializedSize () const
 {
   return 8+8+2;
 }
@@ -144,7 +144,7 @@ SimpleTag::SetSrc (Mac48Address src)
 }
 
 Mac48Address
-SimpleTag::GetSrc (void) const
+SimpleTag::GetSrc () const
 {
   return m_src;
 }
@@ -156,7 +156,7 @@ SimpleTag::SetDst (Mac48Address dst)
 }
 
 Mac48Address
-SimpleTag::GetDst (void) const
+SimpleTag::GetDst () const
 {
   return m_dst;
 }
@@ -168,7 +168,7 @@ SimpleTag::SetProto (uint16_t proto)
 }
 
 uint16_t
-SimpleTag::GetProto (void) const
+SimpleTag::GetProto () const
 {
   return m_protocolNumber;
 }
@@ -184,7 +184,7 @@ SimpleTag::Print (std::ostream &os) const
 NS_OBJECT_ENSURE_REGISTERED (SimpleNetDevice);
 
 TypeId
-SimpleNetDevice::GetTypeId (void)
+SimpleNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SimpleNetDevice")
     .SetParent<NetDevice> ()
@@ -308,13 +308,13 @@ SimpleNetDevice::SetIfIndex (const uint32_t index)
   m_ifIndex = index;
 }
 uint32_t
-SimpleNetDevice::GetIfIndex (void) const
+SimpleNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
 Ptr<Channel>
-SimpleNetDevice::GetChannel (void) const
+SimpleNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   return m_channel;
@@ -326,7 +326,7 @@ SimpleNetDevice::SetAddress (Address address)
   m_address = Mac48Address::ConvertFrom (address);
 }
 Address
-SimpleNetDevice::GetAddress (void) const
+SimpleNetDevice::GetAddress () const
 {
   //
   // Implicit conversion from Mac48Address to Address
@@ -342,13 +342,13 @@ SimpleNetDevice::SetMtu (const uint16_t mtu)
   return true;
 }
 uint16_t
-SimpleNetDevice::GetMtu (void) const
+SimpleNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;
 }
 bool
-SimpleNetDevice::IsLinkUp (void) const
+SimpleNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkUp;
@@ -360,7 +360,7 @@ SimpleNetDevice::AddLinkChangeCallback (Callback<void> callback)
  m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 bool
-SimpleNetDevice::IsBroadcast (void) const
+SimpleNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -370,13 +370,13 @@ SimpleNetDevice::IsBroadcast (void) const
   return true;
 }
 Address
-SimpleNetDevice::GetBroadcast (void) const
+SimpleNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 bool
-SimpleNetDevice::IsMulticast (void) const
+SimpleNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -399,7 +399,7 @@ Address SimpleNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-SimpleNetDevice::IsPointToPoint (void) const
+SimpleNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -410,7 +410,7 @@ SimpleNetDevice::IsPointToPoint (void) const
 }
 
 bool
-SimpleNetDevice::IsBridge (void) const
+SimpleNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -502,7 +502,7 @@ SimpleNetDevice::FinishTransmission (Ptr<Packet> packet)
 }
 
 Ptr<Node>
-SimpleNetDevice::GetNode (void) const
+SimpleNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -514,7 +514,7 @@ SimpleNetDevice::SetNode (Ptr<Node> node)
   m_node = node;
 }
 bool
-SimpleNetDevice::NeedsArp (void) const
+SimpleNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   if (m_pointToPointMode)
@@ -531,7 +531,7 @@ SimpleNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 }
 
 void
-SimpleNetDevice::DoDispose (void)
+SimpleNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
@@ -554,7 +554,7 @@ SimpleNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-SimpleNetDevice::SupportsSendFrom (void) const
+SimpleNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION (this);
   return true;

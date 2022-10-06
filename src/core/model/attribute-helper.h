@@ -107,19 +107,19 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
     {
       return dynamic_cast<const T *> (&value) != 0;
     }
-    virtual std::string GetValueTypeName (void) const
+    virtual std::string GetValueTypeName () const
     {
       return m_type;
     }
-    virtual bool HasUnderlyingTypeInformation (void) const
+    virtual bool HasUnderlyingTypeInformation () const
     {
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation (void) const
+    virtual std::string GetUnderlyingTypeInformation () const
     {
       return m_underlying;
     }
-    virtual Ptr<AttributeValue> Create (void) const
+    virtual Ptr<AttributeValue> Create () const
     {
       return ns3::Create<T> ();
     }

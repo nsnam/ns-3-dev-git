@@ -54,7 +54,7 @@ public:
   /**
    * \return the most recent value
    */
-  uint16_t GetValue (void) const;
+  uint16_t GetValue () const;
 
   /**
    * \param value set the traced uint16_t to a new value

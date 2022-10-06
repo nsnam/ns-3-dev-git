@@ -62,11 +62,11 @@ public:
    */
   EnumValue (int value);
   void Set (int  value);
-  int Get (void) const;
+  int Get () const;
   template <typename T>
   bool GetAccessor (T & value) const;
 
-  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual Ptr<AttributeValue> Copy () const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
@@ -116,10 +116,10 @@ public:
 
   // Inherited
   virtual bool Check (const AttributeValue &value) const;
-  virtual std::string GetValueTypeName (void) const;
-  virtual bool HasUnderlyingTypeInformation (void) const;
-  virtual std::string GetUnderlyingTypeInformation (void) const;
-  virtual Ptr<AttributeValue> Create (void) const;
+  virtual std::string GetValueTypeName () const;
+  virtual bool HasUnderlyingTypeInformation () const;
+  virtual std::string GetUnderlyingTypeInformation () const;
+  virtual Ptr<AttributeValue> Create () const;
   virtual bool Copy (const AttributeValue &src, AttributeValue &dst) const;
 
 private:

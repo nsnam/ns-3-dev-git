@@ -48,7 +48,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   ItuR1411LosPropagationLossModel ();
   virtual ~ItuR1411LosPropagationLossModel ();

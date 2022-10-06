@@ -28,14 +28,14 @@ CapabilityInformation::CapabilityInformation ()
 }
 
 void
-CapabilityInformation::SetEss (void)
+CapabilityInformation::SetEss ()
 {
   Set (0);
   Clear (1);
 }
 
 void
-CapabilityInformation::SetIbss (void)
+CapabilityInformation::SetIbss ()
 {
   Clear (0);
   Set (1);
@@ -60,37 +60,37 @@ CapabilityInformation::SetShortSlotTime (bool shortSlotTime)
 }
 
 void
-CapabilityInformation::SetCfPollable (void)
+CapabilityInformation::SetCfPollable ()
 {
   Set (2);
 }
 
 bool
-CapabilityInformation::IsEss (void) const
+CapabilityInformation::IsEss () const
 {
   return Is (0);
 }
 
 bool
-CapabilityInformation::IsIbss (void) const
+CapabilityInformation::IsIbss () const
 {
   return Is (1);
 }
 
 bool
-CapabilityInformation::IsShortPreamble (void) const
+CapabilityInformation::IsShortPreamble () const
 {
   return Is (5);
 }
 
 bool
-CapabilityInformation::IsShortSlotTime (void) const
+CapabilityInformation::IsShortSlotTime () const
 {
   return Is (10);
 }
 
 bool
-CapabilityInformation::IsCfPollable (void) const
+CapabilityInformation::IsCfPollable () const
 {
   return Is (2);
 }
@@ -117,7 +117,7 @@ CapabilityInformation::Is (uint8_t n) const
 }
 
 uint32_t
-CapabilityInformation::GetSerializedSize (void) const
+CapabilityInformation::GetSerializedSize () const
 {
   return 2;
 }

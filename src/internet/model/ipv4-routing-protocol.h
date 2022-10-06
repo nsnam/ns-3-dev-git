@@ -60,7 +60,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /// Callback for unicast packets to be forwarded
   typedef Callback<void, Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &> UnicastForwardCallback;

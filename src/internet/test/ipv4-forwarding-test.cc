@@ -71,7 +71,7 @@ class Ipv4ForwardingTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv4ForwardingTest ();
 
   /**
@@ -112,7 +112,7 @@ Ipv4ForwardingTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv4ForwardingTest::DoRun (void)
+Ipv4ForwardingTest::DoRun ()
 {
   // Create topology
 

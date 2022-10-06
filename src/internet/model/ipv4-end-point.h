@@ -60,7 +60,7 @@ public:
    * \brief Get the local address.
    * \return the local address
    */
-  Ipv4Address GetLocalAddress (void);
+  Ipv4Address GetLocalAddress ();
 
   /**
    * \brief Set the local address.
@@ -72,19 +72,19 @@ public:
    * \brief Get the local port.
    * \return the local port
    */
-  uint16_t GetLocalPort (void);
+  uint16_t GetLocalPort ();
 
   /**
    * \brief Get the peer address.
    * \return the peer address
    */
-  Ipv4Address GetPeerAddress (void);
+  Ipv4Address GetPeerAddress ();
 
   /**
    * \brief Get the peer port.
    * \return the peer port
    */
-  uint16_t GetPeerPort (void);
+  uint16_t GetPeerPort ();
 
   /**
    * \brief Set the peer information (address and port).
@@ -122,7 +122,7 @@ public:
    *
    * \returns Pointer to interface.
    */
-  Ptr<NetDevice> GetBoundNetDevice (void);
+  Ptr<NetDevice> GetBoundNetDevice ();
 
   // Called from socket implementations to get notified about important events.
   /**
@@ -180,7 +180,7 @@ public:
    * \brief Checks if the endpoint can receive packets.
    * \returns true if the endpoint can receive packets.
    */
-  bool IsRxEnabled (void);
+  bool IsRxEnabled ();
 
 private:
   /**

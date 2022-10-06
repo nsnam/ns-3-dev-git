@@ -36,7 +36,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief DropTailQueue Constructor
    *
@@ -47,9 +47,9 @@ public:
   virtual ~DropTailQueue ();
 
   virtual bool Enqueue (Ptr<Item> item);
-  virtual Ptr<Item> Dequeue (void);
-  virtual Ptr<Item> Remove (void);
-  virtual Ptr<const Item> Peek (void) const;
+  virtual Ptr<Item> Dequeue ();
+  virtual Ptr<Item> Remove ();
+  virtual Ptr<const Item> Peek () const;
 
 private:
   using Queue<Item>::GetContainer;
@@ -68,7 +68,7 @@ private:
 
 template <typename Item>
 TypeId
-DropTailQueue<Item>::GetTypeId (void)
+DropTailQueue<Item>::GetTypeId ()
 {
   static TypeId tid = TypeId (GetTemplateClassName<DropTailQueue<Item>> ())
     .SetParent<Queue<Item> > ()
@@ -109,7 +109,7 @@ DropTailQueue<Item>::Enqueue (Ptr<Item> item)
 
 template <typename Item>
 Ptr<Item>
-DropTailQueue<Item>::Dequeue (void)
+DropTailQueue<Item>::Dequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -122,7 +122,7 @@ DropTailQueue<Item>::Dequeue (void)
 
 template <typename Item>
 Ptr<Item>
-DropTailQueue<Item>::Remove (void)
+DropTailQueue<Item>::Remove ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -135,7 +135,7 @@ DropTailQueue<Item>::Remove (void)
 
 template <typename Item>
 Ptr<const Item>
-DropTailQueue<Item>::Peek (void) const
+DropTailQueue<Item>::Peek () const
 {
   NS_LOG_FUNCTION (this);
 

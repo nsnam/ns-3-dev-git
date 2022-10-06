@@ -73,7 +73,7 @@ class Ipv4ListRoutingNegativeTestCase : public TestCase
 {
 public:
   Ipv4ListRoutingNegativeTestCase();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
@@ -81,7 +81,7 @@ Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
 {
 }
 void
-Ipv4ListRoutingNegativeTestCase::DoRun (void)
+Ipv4ListRoutingNegativeTestCase::DoRun ()
 {
   Ptr<Ipv4ListRouting> lr = CreateObject<Ipv4ListRouting> ();
   Ptr<Ipv4RoutingProtocol> aRouting = CreateObject<Ipv4ARouting> ();
@@ -107,7 +107,7 @@ class Ipv4ListRoutingPositiveTestCase : public TestCase
 {
 public:
   Ipv4ListRoutingPositiveTestCase();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()
@@ -115,7 +115,7 @@ Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()
 {
 }
 void
-Ipv4ListRoutingPositiveTestCase::DoRun (void)
+Ipv4ListRoutingPositiveTestCase::DoRun ()
 {
   Ptr<Ipv4ListRouting> lr = CreateObject<Ipv4ListRouting> ();
   Ptr<Ipv4RoutingProtocol> aRouting = CreateObject<Ipv4ARouting> ();

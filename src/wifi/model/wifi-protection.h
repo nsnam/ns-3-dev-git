@@ -60,7 +60,7 @@ struct WifiProtection
    * Clone this object.
    * \return a pointer to the cloned object
    */
-  virtual std::unique_ptr<WifiProtection> Copy (void) const = 0;
+  virtual std::unique_ptr<WifiProtection> Copy () const = 0;
 
   /**
    * \brief Print the object contents.
@@ -82,7 +82,7 @@ struct WifiNoProtection : public WifiProtection
 {
   WifiNoProtection ();
 
-  std::unique_ptr<WifiProtection> Copy (void) const override;
+  std::unique_ptr<WifiProtection> Copy () const override;
   void Print (std::ostream &os) const override;
 };
 
@@ -96,7 +96,7 @@ struct WifiRtsCtsProtection : public WifiProtection
 {
   WifiRtsCtsProtection ();
 
-  std::unique_ptr<WifiProtection> Copy (void) const override;
+  std::unique_ptr<WifiProtection> Copy () const override;
   void Print (std::ostream &os) const override;
 
   WifiTxVector rtsTxVector;       //!< RTS TXVECTOR
@@ -113,7 +113,7 @@ struct WifiCtsToSelfProtection : public WifiProtection
 {
   WifiCtsToSelfProtection ();
 
-  std::unique_ptr<WifiProtection> Copy (void) const override;
+  std::unique_ptr<WifiProtection> Copy () const override;
   void Print (std::ostream &os) const override;
 
   WifiTxVector ctsTxVector;       //!< CTS TXVECTOR

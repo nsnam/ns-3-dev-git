@@ -67,7 +67,7 @@ public:
    * \brief Get the type ID of this class.
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 };
 
 } // namespace ns3

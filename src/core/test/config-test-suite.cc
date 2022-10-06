@@ -63,7 +63,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Add node A function
@@ -91,12 +91,12 @@ public:
    * Get node A function
    * \returns the value of node a
    */
-  int8_t GetA (void) const;
+  int8_t GetA () const;
   /**
    * Get node b function
    * \returns the value of node b
    */
-  int8_t GetB (void) const;
+  int8_t GetB () const;
 
 private:
   std::vector<Ptr<ConfigTestObject> > m_nodesA; //!< NodesA attribute target.
@@ -109,7 +109,7 @@ private:
 };
 
 TypeId
-ConfigTestObject::GetTypeId (void)
+ConfigTestObject::GetTypeId ()
 {
   static TypeId tid = TypeId ("ConfigTestObject")
     .SetParent<Object> ()
@@ -173,13 +173,13 @@ ConfigTestObject::AddNodeB (Ptr<ConfigTestObject> b)
 }
 
 int8_t
-ConfigTestObject::GetA (void) const
+ConfigTestObject::GetA () const
 {
   return m_a;
 }
 
 int8_t
-ConfigTestObject::GetB (void) const
+ConfigTestObject::GetB () const
 {
   return m_b;
 }
@@ -195,17 +195,17 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** Constructor. */
-  DerivedConfigTestObject (void)
+  DerivedConfigTestObject ()
   {}
   /** Destructor */
-  virtual ~DerivedConfigTestObject (void)
+  virtual ~DerivedConfigTestObject ()
   {}
 };
 
 TypeId
-DerivedConfigTestObject::GetTypeId (void)
+DerivedConfigTestObject::GetTypeId ()
 {
   static TypeId tid = TypeId ("DerivedConfigTestObject")
     .SetParent<ConfigTestObject> ()
@@ -224,12 +224,12 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** Constructor. */
-  BaseConfigObject (void) : m_x (15)
+  BaseConfigObject () : m_x (15)
   {}
   /** Destructor. */
-  virtual ~BaseConfigObject (void)
+  virtual ~BaseConfigObject ()
   {}
 
 private:
@@ -237,7 +237,7 @@ private:
 };
 
 TypeId
-BaseConfigObject::GetTypeId (void)
+BaseConfigObject::GetTypeId ()
 {
   static TypeId tid = TypeId ("BaseConfigObject")
     .SetParent<Object> ()
@@ -260,17 +260,17 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** Constructor. */
-  DerivedConfigObject (void)
+  DerivedConfigObject ()
   {}
   /** Destructor. */
-  virtual ~DerivedConfigObject (void)
+  virtual ~DerivedConfigObject ()
   {}
 };
 
 TypeId
-DerivedConfigObject::GetTypeId (void)
+DerivedConfigObject::GetTypeId ()
 {
   static TypeId tid = TypeId ("DerivedConfigObject")
     .SetParent<BaseConfigObject> ()
@@ -293,7 +293,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RootNamespaceConfigTestCase::RootNamespaceConfigTestCase ()
@@ -301,7 +301,7 @@ RootNamespaceConfigTestCase::RootNamespaceConfigTestCase ()
 {}
 
 void
-RootNamespaceConfigTestCase::DoRun (void)
+RootNamespaceConfigTestCase::DoRun ()
 {
   IntegerValue iv;
   //
@@ -354,7 +354,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 UnderRootNamespaceConfigTestCase::UnderRootNamespaceConfigTestCase ()
@@ -362,7 +362,7 @@ UnderRootNamespaceConfigTestCase::UnderRootNamespaceConfigTestCase ()
 {}
 
 void
-UnderRootNamespaceConfigTestCase::DoRun (void)
+UnderRootNamespaceConfigTestCase::DoRun ()
 {
   IntegerValue iv;
   //
@@ -466,7 +466,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 ObjectVectorConfigTestCase::ObjectVectorConfigTestCase ()
@@ -474,7 +474,7 @@ ObjectVectorConfigTestCase::ObjectVectorConfigTestCase ()
 {}
 
 void
-ObjectVectorConfigTestCase::DoRun (void)
+ObjectVectorConfigTestCase::DoRun ()
 {
   IntegerValue iv;
 
@@ -644,7 +644,7 @@ public:
   }
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   int16_t m_newValue; //!< Flag to detect tracing result.
   std::string m_path; //!< The context path.
@@ -655,7 +655,7 @@ ObjectVectorTraceConfigTestCase::ObjectVectorTraceConfigTestCase ()
 {}
 
 void
-ObjectVectorTraceConfigTestCase::DoRun (void)
+ObjectVectorTraceConfigTestCase::DoRun ()
 {
   IntegerValue iv;
 
@@ -795,7 +795,7 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -804,7 +804,7 @@ SearchAttributesOfParentObjectsTestCase::SearchAttributesOfParentObjectsTestCase
 {}
 
 void
-SearchAttributesOfParentObjectsTestCase::DoRun (void)
+SearchAttributesOfParentObjectsTestCase::DoRun ()
 {
   IntegerValue iv;
   //

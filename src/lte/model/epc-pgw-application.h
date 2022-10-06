@@ -56,7 +56,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual void DoDispose ();
 
   /**
@@ -73,7 +73,7 @@ public:
                      const Ptr<Socket> s5uSocket, const Ptr<Socket> s5cSocket);
 
   /** Destructor */
-  virtual ~EpcPgwApplication (void);
+  virtual ~EpcPgwApplication ();
 
   /**
    * Method to be assigned to the callback of the SGi TUN VirtualNetDevice.

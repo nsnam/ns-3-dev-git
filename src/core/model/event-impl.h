@@ -52,19 +52,19 @@ public:
    * Called by the simulation engine to notify the event that it is time
    * to execute.
    */
-  void Invoke (void);
+  void Invoke ();
   /**
    * Marks the event as 'canceled'. The event is not removed from
    * the event list but the simulation engine will check its canceled status
    * before calling Invoke().
    */
-  void Cancel (void);
+  void Cancel ();
   /**
    * \returns true if the event has been canceled.
    *
    * Checked by the simulation engine before calling Invoke().
    */
-  bool IsCancelled (void);
+  bool IsCancelled ();
 
 protected:
   /**
@@ -73,7 +73,7 @@ protected:
    * This typically calls a method or function pointer with the
    * arguments bound by a call to one of the MakeEvent() functions.
    */
-  virtual void Notify (void) = 0;
+  virtual void Notify () = 0;
 
 private:
   bool m_cancel;  /**< Has this event been cancelled. */

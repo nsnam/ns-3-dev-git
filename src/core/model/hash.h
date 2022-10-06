@@ -170,7 +170,7 @@ public:
    *
    * \return This hasher.
    */
-  Hasher & clear (void);
+  Hasher & clear ();
 
 private:
   Ptr<Hash::Implementation> m_impl;  /**< Hash implementation. */
@@ -275,7 +275,7 @@ Hasher::GetHash64  (const std::string s)
   * \brief Get a reference to the static global hasher at g_hasher
   * \return Reference to the static Hasher instance.
   */
-Hasher& GetStaticHash (void);
+Hasher& GetStaticHash ();
 
 inline
 uint32_t

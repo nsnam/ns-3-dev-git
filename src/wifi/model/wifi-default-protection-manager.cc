@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiDefaultProtectionManager");
 NS_OBJECT_ENSURE_REGISTERED (WifiDefaultProtectionManager);
 
 TypeId
-WifiDefaultProtectionManager::GetTypeId (void)
+WifiDefaultProtectionManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiDefaultProtectionManager")
     .SetParent<WifiProtectionManager> ()

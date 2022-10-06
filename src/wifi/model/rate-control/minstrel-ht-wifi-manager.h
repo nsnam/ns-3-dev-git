@@ -226,7 +226,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   MinstrelHtWifiManager ();
   virtual ~MinstrelHtWifiManager ();
 
@@ -244,8 +244,8 @@ public:
 
 
 private:
-  void DoInitialize (void) override;
-  WifiRemoteStation * DoCreateStation (void) const override;
+  void DoInitialize () override;
+  WifiRemoteStation * DoCreateStation () const override;
   void DoReportRxOk (WifiRemoteStation *station,
                      double rxSnr, WifiMode txMode) override;
   void DoReportRtsFailed (WifiRemoteStation *station) override;
@@ -591,13 +591,13 @@ private:
    * Returns a list of only the VHT MCS supported by the device.
    * \returns the list of the VHT MCS supported
    */
-  WifiModeList GetVhtDeviceMcsList (void) const;
+  WifiModeList GetVhtDeviceMcsList () const;
 
   /**
    * Returns a list of only the HT MCS supported by the device.
    * \returns the list of the HT MCS supported
    */
-  WifiModeList GetHtDeviceMcsList (void) const;
+  WifiModeList GetHtDeviceMcsList () const;
 
   /**
    * Given the index of the current TX rate, check whether the channel width is

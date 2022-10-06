@@ -72,8 +72,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  BaseStationNetDevice (void);
+  static TypeId GetTypeId ();
+  BaseStationNetDevice ();
   /**
    * Constructor
    *
@@ -93,7 +93,7 @@ public:
                         Ptr<WimaxPhy> phy,
                         Ptr<UplinkScheduler> uplinkScheduler,
                         Ptr<BSScheduler> bsScheduler);
-  ~BaseStationNetDevice (void);
+  ~BaseStationNetDevice ();
   /**
    * \param initialRangInterval Time between initial ranging regions assigned by the BS
    */
@@ -101,11 +101,11 @@ public:
   /**
    * \brief initializes the BS net device and sets its parameters to the default values
    */
-  void InitBaseStationNetDevice (void);
+  void InitBaseStationNetDevice ();
   /**
    * \returns Time between initial ranging regions assigned by the BS
    */
-  Time GetInitialRangingInterval (void) const;
+  Time GetInitialRangingInterval () const;
   /**
    * \param dcdInterval Time between transmission of DCD messages
    */
@@ -113,7 +113,7 @@ public:
   /**
    * \returns the Time between transmission of DCD messages
    */
-  Time GetDcdInterval (void) const;
+  Time GetDcdInterval () const;
   /**
    * \param ucdInterval the Time between transmission of UCD messages
    */
@@ -121,7 +121,7 @@ public:
   /**
    * \returns Time between transmission of UCD messages
    */
-  Time GetUcdInterval (void) const;
+  Time GetUcdInterval () const;
   /**
    * \param interval the Wait for DSA/DSC Acknowledge timeout
    */
@@ -129,7 +129,7 @@ public:
   /**
    * \returns the Wait for DSA/DSC Acknowledge timeout
    */
-  Time GetIntervalT8 (void) const;
+  Time GetIntervalT8 () const;
   /**
    * \param maxRangCorrectionRetries the number of retries on contention Ranging Requests
    */
@@ -137,7 +137,7 @@ public:
   /**
    * \returns the number of retries on contention Ranging Requests
    */
-  uint8_t GetMaxRangingCorrectionRetries (void) const;
+  uint8_t GetMaxRangingCorrectionRetries () const;
   /**
    * \param maxInvitedRangRetries the number of retries on contention Ranging
    */
@@ -145,7 +145,7 @@ public:
   /**
    * \returns the number of retries on contention Ranging
    */
-  uint8_t GetMaxInvitedRangRetries (void) const;
+  uint8_t GetMaxInvitedRangRetries () const;
   /**
    * \param rangReqOppSize The ranging opportunity size in symbols
    */
@@ -153,7 +153,7 @@ public:
   /**
    * \returns The ranging opportunity size in symbols
    */
-  uint8_t GetRangReqOppSize (void) const;
+  uint8_t GetRangReqOppSize () const;
   /**
    * \param bwReqOppSize The bandwidth request opportunity size in symbols
    */
@@ -161,7 +161,7 @@ public:
   /**
    * \returns The bandwidth request opportunity size in symbols
    */
-  uint8_t GetBwReqOppSize (void) const;
+  uint8_t GetBwReqOppSize () const;
   /**
    * \param dlSymbols the number of symbols in the downlink sub-frame
    */
@@ -169,7 +169,7 @@ public:
   /**
    * \returns the number of symbols in the downlink sub-frame
    */
-  uint32_t GetNrDlSymbols (void) const;
+  uint32_t GetNrDlSymbols () const;
   /**
    * \param ulSymbols the number of symbols in the uplink sub-frame
    */
@@ -177,31 +177,31 @@ public:
   /**
    * \returns the number of symbols in the uplink sub-frame
    */
-  uint32_t GetNrUlSymbols (void) const;
+  uint32_t GetNrUlSymbols () const;
   /**
    * \returns the number dcd messages already sent
    */
-  uint32_t GetNrDcdSent (void) const;
+  uint32_t GetNrDcdSent () const;
   /**
    * \returns the number ucd messages already sent
    */
-  uint32_t GetNrUcdSent (void) const;
+  uint32_t GetNrUcdSent () const;
   /**
    * \returns the DL subframe start time
    */
-  Time GetDlSubframeStartTime (void) const;
+  Time GetDlSubframeStartTime () const;
   /**
    * \returns the UL subframe start time
    */
-  Time GetUlSubframeStartTime (void) const;
+  Time GetUlSubframeStartTime () const;
   /**
    * \returns the ranging opp number
    */
-  uint8_t GetRangingOppNumber (void) const;
+  uint8_t GetRangingOppNumber () const;
   /**
    * \returns a pointer to the SS manager
    */
-  Ptr<SSManager> GetSSManager (void) const;
+  Ptr<SSManager> GetSSManager () const;
   /**
    * \param ssManager the SS manager to be installed on the BS
    */
@@ -209,7 +209,7 @@ public:
   /**
    * \returns a pointer to the uplink scheduler installed on the device
    */
-  Ptr<UplinkScheduler> GetUplinkScheduler (void) const;
+  Ptr<UplinkScheduler> GetUplinkScheduler () const;
   /**
    * \param ulScheduler the ulScheduler to be isnstalled on the BS
    */
@@ -217,7 +217,7 @@ public:
   /**
    * \returns a pointer to the link manager installed on the BS
    */
-  Ptr<BSLinkManager> GetLinkManager (void) const;
+  Ptr<BSLinkManager> GetLinkManager () const;
   /**
    * \param bsSchedule the downlink scheduler to be installed on the BS
    */
@@ -225,7 +225,7 @@ public:
   /**
    * \returns The BS scheduler installed on the BS
    */
-  Ptr<BSScheduler> GetBSScheduler (void) const;
+  Ptr<BSScheduler> GetBSScheduler () const;
   /**
    * \param linkManager The link manager installed on the BS
    */
@@ -233,7 +233,7 @@ public:
   /**
    * \returns a pointer to the classifier installed on the BS
    */
-  Ptr<IpcsClassifier> GetBsClassifier (void) const;
+  Ptr<IpcsClassifier> GetBsClassifier () const;
   /**
    * \param classifier a classifier to be installed on the BS
    */
@@ -242,19 +242,19 @@ public:
   /**
    * \returns PS duration
    */
-  Time GetPsDuration (void) const;
+  Time GetPsDuration () const;
   /**
    * \returns symbol duration
    */
-  Time GetSymbolDuration (void) const;
+  Time GetSymbolDuration () const;
   /**
    * \brief Start device
    */
-  void Start (void);
+  void Start ();
   /**
    * \brief Stop device
    */
-  void Stop (void);
+  void Stop ();
   /**
    * \brief Enqueue a packet into a connection queue
    * \param packet the packet to be enqueued
@@ -272,7 +272,7 @@ public:
   /**
    * \brief Mark uplink allocations
    */
-  void MarkUplinkAllocations (void);
+  void MarkUplinkAllocations ();
   /**
    * \brief Mark ranging opp start
    * \param rangingOppStartTime start time
@@ -281,38 +281,38 @@ public:
   /**
    * \returns service flow manager
    */
-  Ptr<BsServiceFlowManager> GetServiceFlowManager (void) const;
+  Ptr<BsServiceFlowManager> GetServiceFlowManager () const;
   /**
    * \brief Set service flow manager
    * \param sfm the service flow manager
    */
   void SetServiceFlowManager (Ptr<BsServiceFlowManager> sfm);
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * \brief Start frame function
    */
-  void StartFrame (void);
+  void StartFrame ();
   /**
    * \brief Start DL subframe function
    */
-  void StartDlSubFrame (void);
+  void StartDlSubFrame ();
   /**
    * \brief End DL subframe function
    */
-  void EndDlSubFrame (void);
+  void EndDlSubFrame ();
   /**
    * \brief Start UL subframe function
    */
-  void StartUlSubFrame (void);
+  void StartUlSubFrame ();
   /**
    * \brief End UL subframe function
    */
-  void EndUlSubFrame (void);
+  void EndUlSubFrame ();
   /**
    * \brief End frame function
    */
-  void EndFrame (void);
+  void EndFrame ();
   /**
    * \brief Send packet
    * \param packet to send
@@ -330,7 +330,7 @@ private:
   /**
    * \brief creates the MAC management messages DL-MAP and UL-MAP
    */
-  void CreateMapMessages (void);
+  void CreateMapMessages ();
   /**
    * \brief creates the channel descriptor MAC management messages DCD and UCD
    * \param sendDcd true if send DCD
@@ -340,28 +340,28 @@ private:
   /**
    * \brief Send burst function
    */
-  void SendBursts (void);
+  void SendBursts ();
 
   /**
    * \brief Create DL map
    * \returns packet
    */
-  Ptr<Packet> CreateDlMap (void);
+  Ptr<Packet> CreateDlMap ();
   /**
    * \brief Create DCD
    * \returns packet
    */
-  Ptr<Packet> CreateDcd (void);
+  Ptr<Packet> CreateDcd ();
   /**
    * \brief Create UL map
    * \returns packet
    */
-  Ptr<Packet> CreateUlMap (void);
+  Ptr<Packet> CreateUlMap ();
   /**
    * \brief Create UCD
    * \returns packet
    */
-  Ptr<Packet> CreateUcd (void);
+  Ptr<Packet> CreateUcd ();
   /**
    * \brief Send DL burst profiles
    * \param dcd burst profile
@@ -388,7 +388,7 @@ private:
   /**
    * \brief Uplink allocation start
    */
-  void UplinkAllocationStart (void);
+  void UplinkAllocationStart ();
   /**
    * \brief Uplink allocation end
    * \param cid connection ID
@@ -398,7 +398,7 @@ private:
   /**
    * \brief Ranging opp start
    */
-  void RangingOppStart (void);
+  void RangingOppStart ();
 
   // parameters defined in Table 342
   Time m_initialRangInterval; ///< in seconds

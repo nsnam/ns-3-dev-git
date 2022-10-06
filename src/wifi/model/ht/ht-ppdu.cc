@@ -55,7 +55,7 @@ HtPpdu::~HtPpdu ()
 }
 
 WifiTxVector
-HtPpdu::DoGetTxVector (void) const
+HtPpdu::DoGetTxVector () const
 {
   WifiTxVector txVector;
   txVector.SetPreambleType (m_preamble);
@@ -68,7 +68,7 @@ HtPpdu::DoGetTxVector (void) const
 }
 
 Time
-HtPpdu::GetTxDuration (void) const
+HtPpdu::GetTxDuration () const
 {
   Time ppduDuration = Seconds (0);
   const WifiTxVector& txVector = GetTxVector ();
@@ -77,7 +77,7 @@ HtPpdu::GetTxDuration (void) const
 }
 
 Ptr<WifiPpdu>
-HtPpdu::Copy (void) const
+HtPpdu::Copy () const
 {
   return Create<HtPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq, GetTxDuration (), m_band, m_uid);
 }
@@ -96,7 +96,7 @@ HtPpdu::HtSigHeader::~HtSigHeader ()
 }
 
 TypeId
-HtPpdu::HtSigHeader::GetTypeId (void)
+HtPpdu::HtSigHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HtSigHeader")
     .SetParent<Header> ()
@@ -107,7 +107,7 @@ HtPpdu::HtSigHeader::GetTypeId (void)
 }
 
 TypeId
-HtPpdu::HtSigHeader::GetInstanceTypeId (void) const
+HtPpdu::HtSigHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -123,7 +123,7 @@ HtPpdu::HtSigHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-HtPpdu::HtSigHeader::GetSerializedSize (void) const
+HtPpdu::HtSigHeader::GetSerializedSize () const
 {
   return 6;
 }
@@ -136,7 +136,7 @@ HtPpdu::HtSigHeader::SetMcs (uint8_t mcs)
 }
 
 uint8_t
-HtPpdu::HtSigHeader::GetMcs (void) const
+HtPpdu::HtSigHeader::GetMcs () const
 {
   return m_mcs;
 }
@@ -148,7 +148,7 @@ HtPpdu::HtSigHeader::SetChannelWidth (uint16_t channelWidth)
 }
 
 uint16_t
-HtPpdu::HtSigHeader::GetChannelWidth (void) const
+HtPpdu::HtSigHeader::GetChannelWidth () const
 {
   return m_cbw20_40 ? 40 : 20;
 }
@@ -160,7 +160,7 @@ HtPpdu::HtSigHeader::SetHtLength (uint16_t length)
 }
 
 uint16_t
-HtPpdu::HtSigHeader::GetHtLength (void) const
+HtPpdu::HtSigHeader::GetHtLength () const
 {
   return m_htLength;
 }
@@ -172,7 +172,7 @@ HtPpdu::HtSigHeader::SetAggregation (bool aggregation)
 }
 
 bool
-HtPpdu::HtSigHeader::GetAggregation (void) const
+HtPpdu::HtSigHeader::GetAggregation () const
 {
   return m_aggregation;
 }
@@ -184,7 +184,7 @@ HtPpdu::HtSigHeader::SetShortGuardInterval (bool sgi)
 }
 
 bool
-HtPpdu::HtSigHeader::GetShortGuardInterval (void) const
+HtPpdu::HtSigHeader::GetShortGuardInterval () const
 {
   return m_sgi;
 }

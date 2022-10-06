@@ -56,8 +56,8 @@ public:
   FifoQueueDiscTestItem (const FifoQueueDiscTestItem &) = delete;
   FifoQueueDiscTestItem & operator = (const FifoQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark (void);
+  virtual void AddHeader ();
+  virtual bool Mark ();
 };
 
 FifoQueueDiscTestItem::FifoQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
@@ -70,12 +70,12 @@ FifoQueueDiscTestItem::~FifoQueueDiscTestItem ()
 }
 
 void
-FifoQueueDiscTestItem::AddHeader (void)
+FifoQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-FifoQueueDiscTestItem::Mark (void)
+FifoQueueDiscTestItem::Mark ()
 {
   return false;
 }
@@ -90,7 +90,7 @@ class FifoQueueDiscTestCase : public TestCase
 {
 public:
   FifoQueueDiscTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 private:
   /**
    * Run test function
@@ -235,7 +235,7 @@ FifoQueueDiscTestCase::RunFifoTest (QueueSizeUnit mode)
 }
 
 void
-FifoQueueDiscTestCase::DoRun (void)
+FifoQueueDiscTestCase::DoRun ()
 {
   RunFifoTest (QueueSizeUnit::PACKETS);
   RunFifoTest (QueueSizeUnit::BYTES);

@@ -69,7 +69,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -92,7 +92,7 @@ public:
    *
    * \return the Access Category of the packets stored in this queue
    */
-  AcIndex GetAc (void) const;
+  AcIndex GetAc () const;
 
   /**
    * Set the wifi MAC queue scheduler
@@ -112,7 +112,7 @@ public:
    *
    * \return the maximum delay
    */
-  Time GetMaxDelay (void) const;
+  Time GetMaxDelay () const;
 
   /**
    * Enqueue the given Wifi MAC queue item at the <i>end</i> of the queue.
@@ -126,7 +126,7 @@ public:
    *
    * \return the packet
    */
-  Ptr<WifiMpdu> Dequeue (void) override;
+  Ptr<WifiMpdu> Dequeue () override;
   /**
    * Dequeue the given MPDUs if they are stored in this queue.
    *
@@ -138,7 +138,7 @@ public:
    *
    * \return the packet
    */
-  Ptr<const WifiMpdu> Peek (void) const override;
+  Ptr<const WifiMpdu> Peek () const override;
   /**
    * Peek the packet in the front of the queue for transmission on the given
    * link. The packet is not removed.
@@ -201,7 +201,7 @@ public:
    *
    * \return the packet
    */
-  Ptr<WifiMpdu> Remove (void) override;
+  Ptr<WifiMpdu> Remove () override;
   /**
    * Remove the given item from the queue and return the item following the
    * removed one, if any, or a null pointer otherwise. If <i>removeExpired</i> is
@@ -272,16 +272,16 @@ public:
    * still accounted for in the overall statistics kept by the Queue base class)
    * in order to make this method const.
    */
-  void ExtractAllExpiredMpdus (void) const;
+  void ExtractAllExpiredMpdus () const;
   /**
    * Remove all MPDUs with expired lifetime from this WifiMacQueue object.
    */
-  void WipeAllExpiredMpdus (void);
+  void WipeAllExpiredMpdus ();
 
 protected:
   using Queue<WifiMpdu, WifiMacQueueContainer>::GetContainer;
 
-  void DoDispose (void) override;
+  void DoDispose () override;
 
 private:
   /**

@@ -53,17 +53,17 @@ class TrickleTimerTestCase : public TestCase
 public:
   /** Constructor. */
   TrickleTimerTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Function to invoke when TrickleTimer expires.
    */
-  void ExpireTimer (void);
+  void ExpireTimer ();
   std::vector<Time> m_expiredTimes;     //!< Time when TrickleTimer expired
 
   /**
    * Function to signal that the transient is over
    */
-  void TransientOver (void);
+  void TransientOver ();
 
   /**
    * Test the steady-state
@@ -92,7 +92,7 @@ TrickleTimerTestCase::TrickleTimerTestCase ()
 {}
 
 void
-TrickleTimerTestCase::ExpireTimer (void)
+TrickleTimerTestCase::ExpireTimer ()
 {
   if (m_enableDataCollection==false)
     {
@@ -103,7 +103,7 @@ TrickleTimerTestCase::ExpireTimer (void)
 }
 
 void
-TrickleTimerTestCase::TransientOver (void)
+TrickleTimerTestCase::TransientOver ()
 {
   m_enableDataCollection = true;
 }
@@ -178,7 +178,7 @@ TrickleTimerTestCase::ConsistentEvent (Time interval, TrickleTimer* tricklePtr)
 
 
 void
-TrickleTimerTestCase::DoRun (void)
+TrickleTimerTestCase::DoRun ()
 {
   TestSteadyState (Time (1));
   TestSteadyState (Seconds (1));

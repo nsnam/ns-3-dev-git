@@ -58,8 +58,8 @@ public:
   TbfQueueDiscTestItem (const TbfQueueDiscTestItem &) = delete;
   TbfQueueDiscTestItem & operator = (const TbfQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark (void);
+  virtual void AddHeader ();
+  virtual bool Mark ();
 };
 
 TbfQueueDiscTestItem::TbfQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
@@ -72,12 +72,12 @@ TbfQueueDiscTestItem::~TbfQueueDiscTestItem ()
 }
 
 void
-TbfQueueDiscTestItem::AddHeader (void)
+TbfQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-TbfQueueDiscTestItem::Mark (void)
+TbfQueueDiscTestItem::Mark ()
 {
   return false;
 }
@@ -92,7 +92,7 @@ class TbfQueueDiscTestCase : public TestCase
 {
 public:
   TbfQueueDiscTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 private:
   /**
    * Enqueue function
@@ -427,7 +427,7 @@ TbfQueueDiscTestCase::DequeueAndCheck (Ptr<TbfQueueDisc> queue, bool flag, std::
 }
 
 void
-TbfQueueDiscTestCase::DoRun (void)
+TbfQueueDiscTestCase::DoRun ()
 {
   RunTbfTest (QueueSizeUnit::PACKETS);
   RunTbfTest (QueueSizeUnit::BYTES);

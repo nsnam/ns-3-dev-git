@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("SimulatorImpl");
 NS_OBJECT_ENSURE_REGISTERED (SimulatorImpl);
 
 TypeId
-SimulatorImpl::GetTypeId (void)
+SimulatorImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SimulatorImpl")
     .SetParent<Object> ()

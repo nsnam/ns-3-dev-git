@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("WaveFrameExchangeManager");
 NS_OBJECT_ENSURE_REGISTERED (WaveFrameExchangeManager);
 
 TypeId
-WaveFrameExchangeManager::GetTypeId (void)
+WaveFrameExchangeManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WaveFrameExchangeManager")
     .SetParent<QosFrameExchangeManager> ()
@@ -166,7 +166,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidt
 }
 
 void
-WaveFrameExchangeManager::DoDispose (void)
+WaveFrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_scheduler = 0;

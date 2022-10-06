@@ -39,8 +39,8 @@ namespace ns3 {
 class UcdChannelEncodings
 {
 public:
-  UcdChannelEncodings (void);
-  virtual ~UcdChannelEncodings (void);
+  UcdChannelEncodings ();
+  virtual ~UcdChannelEncodings ();
 
   /**
    * Set BW request opp size
@@ -62,23 +62,23 @@ public:
    * Get BW request opp size
    * \returns the bandwidth request opp size
    */
-  uint16_t GetBwReqOppSize (void) const;
+  uint16_t GetBwReqOppSize () const;
   /**
    * Get range request opp size
    * \returns the ragning request opp size
    */
-  uint16_t GetRangReqOppSize (void) const;
+  uint16_t GetRangReqOppSize () const;
   /**
    * Get frequency
    * \returns the frequency
    */
-  uint32_t GetFrequency (void) const;
+  uint32_t GetFrequency () const;
 
   /**
    * Get size
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 
   /**
    * Write item
@@ -133,8 +133,8 @@ namespace ns3 {
 class OfdmUcdChannelEncodings : public UcdChannelEncodings
 {
 public:
-  OfdmUcdChannelEncodings (void);
-  ~OfdmUcdChannelEncodings (void);
+  OfdmUcdChannelEncodings ();
+  ~OfdmUcdChannelEncodings ();
 
   /**
    * Set SB channel reguest region full parameters
@@ -151,18 +151,18 @@ public:
    * Get SB channel request region full parameters
    * \returns the channel request region full parameters
    */
-  uint8_t GetSbchnlReqRegionFullParams (void) const;
+  uint8_t GetSbchnlReqRegionFullParams () const;
   /**
    * Get SB channel for control codes
    * \returns the channel for control codes
    */
-  uint8_t GetSbchnlFocContCodes (void) const;
+  uint8_t GetSbchnlFocContCodes () const;
 
   /**
    * Get size
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 private:
   /**
    * Write item
@@ -222,8 +222,8 @@ public:
     UIUC_END_OF_MAP
   };
 
-  OfdmUlBurstProfile (void);
-  ~OfdmUlBurstProfile (void);
+  OfdmUlBurstProfile ();
+  ~OfdmUlBurstProfile ();
 
   /**
    * Set type
@@ -250,28 +250,28 @@ public:
    * Get type
    * \returns the type
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
   /**
    * Get length
    * \returns the length
    */
-  uint8_t GetLength (void) const;
+  uint8_t GetLength () const;
   /**
    * Get UIUC
    * \returns the UIUC
    */
-  uint8_t GetUiuc (void) const;
+  uint8_t GetUiuc () const;
   /**
    * Get FEC code type
    * \returns the FEC code type
    */
-  uint8_t GetFecCodeType (void) const;
+  uint8_t GetFecCodeType () const;
 
   /**
    * Get size
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 
   /**
    * Write item
@@ -317,8 +317,8 @@ namespace ns3 {
 class Ucd : public Header
 {
 public:
-  Ucd (void);
-  virtual ~Ucd (void);
+  Ucd ();
+  virtual ~Ucd ();
 
   /**
    * Set configuration change count
@@ -365,56 +365,56 @@ public:
    * Get configuration change count
    * \returns the configuration change count
    */
-  uint8_t GetConfigurationChangeCount (void) const;
+  uint8_t GetConfigurationChangeCount () const;
   /**
    * Get ranging backoff start
    * \returns the ranging backoff start
    */
-  uint8_t GetRangingBackoffStart (void) const;
+  uint8_t GetRangingBackoffStart () const;
   /**
    * Get ranging backoff end
    * \returns the ranging backoff end value
    */
-  uint8_t GetRangingBackoffEnd (void) const;
+  uint8_t GetRangingBackoffEnd () const;
   /**
    * Get request backoff start
    * \returns the request backoff start value
    */
-  uint8_t GetRequestBackoffStart (void) const;
+  uint8_t GetRequestBackoffStart () const;
   /**
    * Get request backoff end
    * \returns the request backoff end value
    */
-  uint8_t GetRequestBackoffEnd (void) const;
+  uint8_t GetRequestBackoffEnd () const;
   /**
    * Get channel encodings
    * \returns the OFDM UCD channel encodings
    */
-  OfdmUcdChannelEncodings GetChannelEncodings (void) const;
+  OfdmUcdChannelEncodings GetChannelEncodings () const;
   /**
    * Get UL burst profiles
    * \returns the UL burst profile
    */
-  std::vector<OfdmUlBurstProfile> GetUlBurstProfiles (void) const;
+  std::vector<OfdmUlBurstProfile> GetUlBurstProfiles () const;
   /**
    * Get number UL burst profiles
    * \returns the number of UL burst profiles
    */
-  uint8_t GetNrUlBurstProfiles (void) const;
+  uint8_t GetNrUlBurstProfiles () const;
 
   /**
    * Get name
    * \returns the name string
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -452,8 +452,8 @@ namespace ns3 {
 class OfdmUlMapIe
 {
 public:
-  OfdmUlMapIe (void);
-  ~OfdmUlMapIe (void);
+  OfdmUlMapIe ();
+  ~OfdmUlMapIe ();
 
   /**
    * Set CID
@@ -490,38 +490,38 @@ public:
    * Get CID
    * \returns the CID
    */
-  Cid GetCid (void) const;
+  Cid GetCid () const;
   /**
    * Get start time
    * \returns the start time
    */
-  uint16_t GetStartTime (void) const;
+  uint16_t GetStartTime () const;
   /**
    * Get subchannel index
    * \returns the subchannel index
    */
-  uint8_t GetSubchannelIndex (void) const;
+  uint8_t GetSubchannelIndex () const;
   /**
    * Get UIUC
    * \returns the UIUC
    */
-  uint8_t GetUiuc (void) const;
+  uint8_t GetUiuc () const;
   /**
    * Get duration
    * \returns the duration
    */
-  uint16_t GetDuration (void) const;
+  uint16_t GetDuration () const;
   /**
    * Get Midamble repetition interval
    * \returns the midamble repetition interval
    */
-  uint8_t GetMidambleRepetitionInterval (void) const;
+  uint8_t GetMidambleRepetitionInterval () const;
 
   /**
    * Get size
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 
   /**
    * Write item
@@ -573,8 +573,8 @@ namespace ns3 {
 class UlMap : public Header
 {
 public:
-  UlMap (void);
-  virtual ~UlMap (void);
+  UlMap ();
+  virtual ~UlMap ();
 
   /**
    * Set UCD count
@@ -596,31 +596,31 @@ public:
    * Get UCD count
    * \returns the UCD count
    */
-  uint8_t GetUcdCount (void) const;
+  uint8_t GetUcdCount () const;
   /**
    * Get allocation start time
    * \returns the allocation start time
    */
-  uint32_t GetAllocationStartTime (void) const;
+  uint32_t GetAllocationStartTime () const;
   /**
    * Get UL map elements
    * \returns the UL map elements
    */
-  std::list<OfdmUlMapIe> GetUlMapElements (void) const;
+  std::list<OfdmUlMapIe> GetUlMapElements () const;
 
   /**
    * Get name
    * \returns the name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:

@@ -52,7 +52,7 @@ RrcAsn1Header::RrcAsn1Header ()
 }
 
 TypeId
-RrcAsn1Header::GetTypeId (void)
+RrcAsn1Header::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RrcAsn1Header")
     .SetParent<Header> ()
@@ -62,7 +62,7 @@ RrcAsn1Header::GetTypeId (void)
 }
 
 TypeId
-RrcAsn1Header::GetInstanceTypeId (void) const
+RrcAsn1Header::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -4615,7 +4615,7 @@ RrcConnectionRequestHeader::~RrcConnectionRequestHeader ()
 }
 
 TypeId
-RrcConnectionRequestHeader::GetTypeId (void)
+RrcConnectionRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RrcConnectionRequestHeader")
     .SetParent<Header> ()

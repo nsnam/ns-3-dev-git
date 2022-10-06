@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("Synchronizer");
 NS_OBJECT_ENSURE_REGISTERED (Synchronizer);
 
 TypeId
-Synchronizer::GetTypeId (void)
+Synchronizer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Synchronizer")
     .SetParent<Object> ()
@@ -54,14 +54,14 @@ Synchronizer::~Synchronizer ()
 }
 
 bool
-Synchronizer::Realtime (void)
+Synchronizer::Realtime ()
 {
   NS_LOG_FUNCTION (this);
   return DoRealtime ();
 }
 
 uint64_t
-Synchronizer::GetCurrentRealtime (void)
+Synchronizer::GetCurrentRealtime ()
 {
   NS_LOG_FUNCTION (this);
   return NanosecondToTimeStep (DoGetCurrentRealtime ());
@@ -76,7 +76,7 @@ Synchronizer::SetOrigin (uint64_t ts)
 }
 
 uint64_t
-Synchronizer::GetOrigin (void)
+Synchronizer::GetOrigin ()
 {
   NS_LOG_FUNCTION (this);
   return NanosecondToTimeStep (m_simOriginNano);
@@ -107,7 +107,7 @@ Synchronizer::Synchronize (uint64_t tsCurrent, uint64_t tsDelay)
 }
 
 void
-Synchronizer::Signal (void)
+Synchronizer::Signal ()
 {
   NS_LOG_FUNCTION (this);
   DoSignal ();
@@ -121,14 +121,14 @@ Synchronizer::SetCondition (bool cond)
 }
 
 void
-Synchronizer::EventStart (void)
+Synchronizer::EventStart ()
 {
   NS_LOG_FUNCTION (this);
   DoEventStart ();
 }
 
 uint64_t
-Synchronizer::EventEnd (void)
+Synchronizer::EventEnd ()
 {
   NS_LOG_FUNCTION (this);
   return NanosecondToTimeStep (DoEventEnd ());

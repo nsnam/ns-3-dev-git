@@ -39,9 +39,9 @@ public:
   virtual ~RawTextConfigSave (); //!< destructor
   // Inherited
   virtual void SetFilename (std::string filename);
-  virtual void Default (void);
-  virtual void Global (void);
-  virtual void Attributes (void);
+  virtual void Default ();
+  virtual void Global ();
+  virtual void Attributes ();
 private:
   /// Config store output stream
   std::ofstream *m_os;
@@ -59,9 +59,9 @@ public:
   virtual ~RawTextConfigLoad (); //!< destructor
   // Inherited
   virtual void SetFilename (std::string filename);
-  virtual void Default (void);
-  virtual void Global (void);
-  virtual void Attributes (void);
+  virtual void Default ();
+  virtual void Global ();
+  virtual void Attributes ();
 private:
   /**
    * Parse (potentially multi-) line configs into type, name, and values.

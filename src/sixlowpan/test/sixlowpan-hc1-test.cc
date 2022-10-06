@@ -65,7 +65,7 @@ class SixlowpanHc1ImplTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   SixlowpanHc1ImplTest ();
 
   /**
@@ -126,7 +126,7 @@ SixlowpanHc1ImplTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-SixlowpanHc1ImplTest::DoRun (void)
+SixlowpanHc1ImplTest::DoRun ()
 {
   // Create topology
   InternetStackHelper internet;

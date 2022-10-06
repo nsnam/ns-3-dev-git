@@ -75,7 +75,7 @@ UanMacCw::DoDispose ()
 }
 
 TypeId
-UanMacCw::GetTypeId (void)
+UanMacCw::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanMacCw")
     .SetParent<UanMac> ()
@@ -193,7 +193,7 @@ UanMacCw::AttachPhy (Ptr<UanPhy> phy)
 }
 
 void
-UanMacCw::NotifyRxStart (void)
+UanMacCw::NotifyRxStart ()
 {
   if (m_state == RUNNING)
     {
@@ -205,7 +205,7 @@ UanMacCw::NotifyRxStart (void)
 
 }
 void
-UanMacCw::NotifyRxEndOk (void)
+UanMacCw::NotifyRxEndOk ()
 {
   if (m_state == CCABUSY && !m_phy->IsStateCcaBusy ())
     {
@@ -217,7 +217,7 @@ UanMacCw::NotifyRxEndOk (void)
 
 }
 void
-UanMacCw::NotifyRxEndError (void)
+UanMacCw::NotifyRxEndError ()
 {
   if (m_state == CCABUSY && !m_phy->IsStateCcaBusy ())
     {
@@ -229,7 +229,7 @@ UanMacCw::NotifyRxEndError (void)
 
 }
 void
-UanMacCw::NotifyCcaStart (void)
+UanMacCw::NotifyCcaStart ()
 {
   if (m_state == RUNNING)
     {
@@ -241,7 +241,7 @@ UanMacCw::NotifyCcaStart (void)
 
 }
 void
-UanMacCw::NotifyCcaEnd (void)
+UanMacCw::NotifyCcaEnd ()
 {
   if (m_state == CCABUSY)
     {
@@ -268,7 +268,7 @@ UanMacCw::NotifyTxStart (Time duration)
 }
 
 void
-UanMacCw::NotifyTxEnd (void)
+UanMacCw::NotifyTxEnd ()
 {
   m_txOngoing = false;
 
@@ -284,7 +284,7 @@ UanMacCw::AssignStreams (int64_t stream)
 }
 
 void
-UanMacCw::EndTx (void)
+UanMacCw::EndTx ()
 {
   NS_ASSERT (m_state == TX || m_state == CCABUSY);
   if (m_state == TX)
@@ -316,12 +316,12 @@ UanMacCw::SetSlotTime (Time duration)
   m_slotTime = duration;
 }
 uint32_t
-UanMacCw::GetCw (void)
+UanMacCw::GetCw ()
 {
   return m_cw;
 }
 Time
-UanMacCw::GetSlotTime (void)
+UanMacCw::GetSlotTime ()
 {
   return m_slotTime;
 }
@@ -341,7 +341,7 @@ UanMacCw::PhyRxPacketError (Ptr<Packet> packet, [[maybe_unused]] double sinr)
 {
 }
 void
-UanMacCw::SaveTimer (void)
+UanMacCw::SaveTimer ()
 {
   NS_LOG_DEBUG ("Time " << Now ().As (Time::S) << " Addr " << GetAddress () << " Saving timer (Delay = " << (m_savedDelayS = m_sendTime - Now ()).As (Time::S) << ")");
   NS_ASSERT (m_pktTx);
@@ -352,7 +352,7 @@ UanMacCw::SaveTimer (void)
 
 }
 void
-UanMacCw::StartTimer (void)
+UanMacCw::StartTimer ()
 {
 
   m_sendTime = Simulator::Now () + m_savedDelayS;
@@ -368,7 +368,7 @@ UanMacCw::StartTimer (void)
 }
 
 void
-UanMacCw::SendPacket (void)
+UanMacCw::SendPacket ()
 {
   NS_LOG_DEBUG ("Time " << Now ().As (Time::S) << " Addr " << GetAddress () << " Transmitting ");
   NS_ASSERT (m_state == RUNNING);

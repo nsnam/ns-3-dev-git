@@ -250,7 +250,7 @@ public:
                         const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Calculate the Slow Start threshold.
    * \param cong The TCP state.

@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRouting");
 NS_OBJECT_ENSURE_REGISTERED (Ipv4StaticRouting);
 
 TypeId
-Ipv4StaticRouting::GetTypeId (void)
+Ipv4StaticRouting::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4StaticRouting")
     .SetParent<Ipv4RoutingProtocol> ()
@@ -157,7 +157,7 @@ Ipv4StaticRouting::SetDefaultMulticastRoute (uint32_t outputInterface)
 }
 
 uint32_t
-Ipv4StaticRouting::GetNMulticastRoutes (void) const
+Ipv4StaticRouting::GetNMulticastRoutes () const
 {
   NS_LOG_FUNCTION (this);
   return m_multicastRoutes.size ();
@@ -383,7 +383,7 @@ Ipv4StaticRouting::LookupStatic (
 }
 
 uint32_t
-Ipv4StaticRouting::GetNRoutes (void) const
+Ipv4StaticRouting::GetNRoutes () const
 {
   NS_LOG_FUNCTION (this);
   return m_networkRoutes.size ();
@@ -595,7 +595,7 @@ Ipv4StaticRouting::~Ipv4StaticRouting ()
 }
 
 void
-Ipv4StaticRouting::DoDispose (void)
+Ipv4StaticRouting::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (NetworkRoutesI j = m_networkRoutes.begin ();

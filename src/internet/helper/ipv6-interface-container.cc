@@ -33,13 +33,13 @@ Ipv6InterfaceContainer::Ipv6InterfaceContainer ()
 }
 
 Ipv6InterfaceContainer::Iterator
-Ipv6InterfaceContainer::Begin (void) const
+Ipv6InterfaceContainer::Begin () const
 {
   return m_interfaces.begin ();
 }
 
 Ipv6InterfaceContainer::Iterator
-Ipv6InterfaceContainer::End (void) const
+Ipv6InterfaceContainer::End () const
 {
   return m_interfaces.end ();
 }

@@ -123,9 +123,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  VsaManager (void);
-  virtual ~VsaManager (void);
+  static TypeId GetTypeId ();
+  VsaManager ();
+  virtual ~VsaManager ();
 
   /**
    * \param device WaveNetDevice associated with VsaManager
@@ -145,7 +145,7 @@ public:
   /**
    * cancel all VSA transmissions
    */
-  void RemoveAll (void);
+  void RemoveAll ();
   /**
    * \param channelNumber cancel VSA transmission specified by channel number
    */
@@ -155,8 +155,8 @@ public:
    */
   void RemoveByOrganizationIdentifier (const OrganizationIdentifier &oi);
 private:
-  void DoDispose (void);
-  void DoInitialize (void);
+  void DoDispose ();
+  void DoInitialize ();
 
   /**
    * \param mac the MAC entity which receives VSA frame

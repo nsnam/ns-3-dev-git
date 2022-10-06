@@ -57,7 +57,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhy");
 NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
 
 TypeId
-WifiPhy::GetTypeId (void)
+WifiPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
@@ -358,7 +358,7 @@ WifiPhy::~WifiPhy ()
 }
 
 void
-WifiPhy::DoDispose (void)
+WifiPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_endTxEvent.Cancel ();
@@ -395,14 +395,14 @@ WifiPhy::DoDispose (void)
 }
 
 std::map<WifiModulationClass, Ptr<PhyEntity> > &
-WifiPhy::GetStaticPhyEntities (void)
+WifiPhy::GetStaticPhyEntities ()
 {
     static std::map<WifiModulationClass, Ptr<PhyEntity> > g_staticPhyEntities;
     return g_staticPhyEntities;
 }
 
 Ptr<WifiPhyStateHelper>
-WifiPhy::GetState (void) const
+WifiPhy::GetState () const
 {
   return m_state;
 }
@@ -445,7 +445,7 @@ WifiPhy::SetRxSensitivity (double threshold)
 }
 
 double
-WifiPhy::GetRxSensitivity (void) const
+WifiPhy::GetRxSensitivity () const
 {
   return WToDbm (m_rxSensitivityW);
 }
@@ -458,7 +458,7 @@ WifiPhy::SetCcaEdThreshold (double threshold)
 }
 
 double
-WifiPhy::GetCcaEdThreshold (void) const
+WifiPhy::GetCcaEdThreshold () const
 {
   return WToDbm (m_ccaEdThresholdW);
 }
@@ -471,7 +471,7 @@ WifiPhy::SetCcaSensitivityThreshold (double threshold)
 }
 
 double
-WifiPhy::GetCcaSensitivityThreshold (void) const
+WifiPhy::GetCcaSensitivityThreshold () const
 {
   return WToDbm (m_ccaSensitivityThresholdW);
 }
@@ -495,7 +495,7 @@ WifiPhy::SetTxPowerStart (double start)
 }
 
 double
-WifiPhy::GetTxPowerStart (void) const
+WifiPhy::GetTxPowerStart () const
 {
   return m_txPowerBaseDbm;
 }
@@ -508,7 +508,7 @@ WifiPhy::SetTxPowerEnd (double end)
 }
 
 double
-WifiPhy::GetTxPowerEnd (void) const
+WifiPhy::GetTxPowerEnd () const
 {
   return m_txPowerEndDbm;
 }
@@ -521,7 +521,7 @@ WifiPhy::SetNTxPower (uint8_t n)
 }
 
 uint8_t
-WifiPhy::GetNTxPower (void) const
+WifiPhy::GetNTxPower () const
 {
   return m_nTxPower;
 }
@@ -534,7 +534,7 @@ WifiPhy::SetTxGain (double gain)
 }
 
 double
-WifiPhy::GetTxGain (void) const
+WifiPhy::GetTxGain () const
 {
   return m_txGainDb;
 }
@@ -547,7 +547,7 @@ WifiPhy::SetRxGain (double gain)
 }
 
 double
-WifiPhy::GetRxGain (void) const
+WifiPhy::GetRxGain () const
 {
   return m_rxGainDb;
 }
@@ -560,7 +560,7 @@ WifiPhy::SetShortPhyPreambleSupported (bool enable)
 }
 
 bool
-WifiPhy::GetShortPhyPreambleSupported (void) const
+WifiPhy::GetShortPhyPreambleSupported () const
 {
   return m_shortPreamble;
 }
@@ -572,7 +572,7 @@ WifiPhy::SetDevice (const Ptr<WifiNetDevice> device)
 }
 
 Ptr<WifiNetDevice>
-WifiPhy::GetDevice (void) const
+WifiPhy::GetDevice () const
 {
   return m_device;
 }
@@ -584,7 +584,7 @@ WifiPhy::SetMobility (const Ptr<MobilityModel> mobility)
 }
 
 Ptr<MobilityModel>
-WifiPhy::GetMobility (void) const
+WifiPhy::GetMobility () const
 {
   if (m_mobility)
     {
@@ -655,7 +655,7 @@ WifiPhy::GetPowerDbm (uint8_t power) const
 }
 
 Time
-WifiPhy::GetChannelSwitchDelay (void) const
+WifiPhy::GetChannelSwitchDelay () const
 {
   return m_channelSwitchDelay;
 }
@@ -713,7 +713,7 @@ WifiPhy::SetSifs (Time sifs)
 }
 
 Time
-WifiPhy::GetSifs (void) const
+WifiPhy::GetSifs () const
 {
   return m_sifs;
 }
@@ -725,7 +725,7 @@ WifiPhy::SetSlot (Time slot)
 }
 
 Time
-WifiPhy::GetSlot (void) const
+WifiPhy::GetSlot () const
 {
   return m_slot;
 }
@@ -737,25 +737,25 @@ WifiPhy::SetPifs (Time pifs)
 }
 
 Time
-WifiPhy::GetPifs (void) const
+WifiPhy::GetPifs () const
 {
   return m_pifs;
 }
 
 Time
-WifiPhy::GetAckTxTime (void) const
+WifiPhy::GetAckTxTime () const
 {
   return m_ackTxTime;
 }
 
 Time
-WifiPhy::GetBlockAckTxTime (void) const
+WifiPhy::GetBlockAckTxTime () const
 {
   return m_blockAckTxTime;
 }
 
 void
-WifiPhy::Configure80211a (void)
+WifiPhy::Configure80211a ()
 {
   NS_LOG_FUNCTION (this);
   AddPhyEntity (WIFI_MOD_CLASS_OFDM, Create<OfdmPhy> ());
@@ -770,7 +770,7 @@ WifiPhy::Configure80211a (void)
 }
 
 void
-WifiPhy::Configure80211b (void)
+WifiPhy::Configure80211b ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<DsssPhy> phyEntity = Create<DsssPhy> ();
@@ -787,7 +787,7 @@ WifiPhy::Configure80211b (void)
 }
 
 void
-WifiPhy::Configure80211g (void)
+WifiPhy::Configure80211g ()
 {
   NS_LOG_FUNCTION (this);
   // See Table 18-5 "ERP characteristics" of 802.11-2016
@@ -800,7 +800,7 @@ WifiPhy::Configure80211g (void)
 }
 
 void
-WifiPhy::Configure80211p (void)
+WifiPhy::Configure80211p ()
 {
   NS_LOG_FUNCTION (this);
   if (GetChannelWidth () == 10)
@@ -830,7 +830,7 @@ WifiPhy::Configure80211p (void)
 }
 
 void
-WifiPhy::Configure80211n (void)
+WifiPhy::Configure80211n ()
 {
   NS_LOG_FUNCTION (this);
   if (m_band == WIFI_PHY_BAND_2_4GHZ)
@@ -849,7 +849,7 @@ WifiPhy::Configure80211n (void)
 }
 
 void
-WifiPhy::Configure80211ac (void)
+WifiPhy::Configure80211ac ()
 {
   NS_LOG_FUNCTION (this);
   Configure80211n ();
@@ -857,7 +857,7 @@ WifiPhy::Configure80211ac (void)
 }
 
 void
-WifiPhy::Configure80211ax (void)
+WifiPhy::Configure80211ax ()
 {
   NS_LOG_FUNCTION (this);
   if (m_band == WIFI_PHY_BAND_2_4GHZ)
@@ -872,7 +872,7 @@ WifiPhy::Configure80211ax (void)
 }
 
 void
-WifiPhy::Configure80211be (void)
+WifiPhy::Configure80211be ()
 {
   NS_LOG_FUNCTION (this);
   Configure80211ax ();
@@ -935,44 +935,44 @@ WifiPhy::ConfigureStandard (WifiStandard standard)
 }
 
 WifiPhyBand
-WifiPhy::GetPhyBand (void) const
+WifiPhy::GetPhyBand () const
 {
   return m_band;
 }
 
 
 WifiStandard
-WifiPhy::GetStandard (void) const
+WifiPhy::GetStandard () const
 {
   return m_standard;
 }
 
 const WifiPhyOperatingChannel&
-WifiPhy::GetOperatingChannel (void) const
+WifiPhy::GetOperatingChannel () const
 {
   return m_operatingChannel;
 }
 
 uint16_t
-WifiPhy::GetFrequency (void) const
+WifiPhy::GetFrequency () const
 {
   return m_operatingChannel.GetFrequency ();
 }
 
 uint8_t
-WifiPhy::GetChannelNumber (void) const
+WifiPhy::GetChannelNumber () const
 {
   return m_operatingChannel.GetNumber ();
 }
 
 uint16_t
-WifiPhy::GetChannelWidth (void) const
+WifiPhy::GetChannelWidth () const
 {
   return m_operatingChannel.GetWidth ();
 }
 
 uint8_t
-WifiPhy::GetPrimary20Index (void) const
+WifiPhy::GetPrimary20Index () const
 {
   return m_operatingChannel.GetPrimaryChannelIndex (20);
 }
@@ -984,7 +984,7 @@ WifiPhy::SetFixedPhyBand (bool enable)
 }
 
 bool
-WifiPhy::HasFixedPhyBand (void) const
+WifiPhy::HasFixedPhyBand () const
 {
   return m_fixedPhyBand;
 }
@@ -1029,7 +1029,7 @@ WifiPhy::SetOperatingChannel (const ChannelTuple& channelTuple)
 }
 
 Time
-WifiPhy::GetDelayUntilChannelSwitch (void)
+WifiPhy::GetDelayUntilChannelSwitch ()
 {
   m_powerRestricted = false;
   m_channelAccessRequested = false;
@@ -1080,7 +1080,7 @@ WifiPhy::GetDelayUntilChannelSwitch (void)
 }
 
 void
-WifiPhy::DoChannelSwitch (void)
+WifiPhy::DoChannelSwitch ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1169,7 +1169,7 @@ WifiPhy::SetNumberOfAntennas (uint8_t antennas)
 }
 
 uint8_t
-WifiPhy::GetNumberOfAntennas (void) const
+WifiPhy::GetNumberOfAntennas () const
 {
   return m_numberOfAntennas;
 }
@@ -1200,7 +1200,7 @@ WifiPhy::SetMaxSupportedTxSpatialStreams (uint8_t streams)
 }
 
 uint8_t
-WifiPhy::GetMaxSupportedTxSpatialStreams (void) const
+WifiPhy::GetMaxSupportedTxSpatialStreams () const
 {
   return m_txSpatialStreams;
 }
@@ -1218,13 +1218,13 @@ WifiPhy::SetMaxSupportedRxSpatialStreams (uint8_t streams)
 }
 
 uint8_t
-WifiPhy::GetMaxSupportedRxSpatialStreams (void) const
+WifiPhy::GetMaxSupportedRxSpatialStreams () const
 {
   return m_rxSpatialStreams;
 }
 
 std::list<uint8_t>
-WifiPhy::GetBssMembershipSelectorList (void) const
+WifiPhy::GetBssMembershipSelectorList () const
 {
   std::list<uint8_t> list;
   for (const auto & phyEntity : m_phyEntities)
@@ -1239,7 +1239,7 @@ WifiPhy::GetBssMembershipSelectorList (void) const
 }
 
 void
-WifiPhy::SetSleepMode (void)
+WifiPhy::SetSleepMode ()
 {
   NS_LOG_FUNCTION (this);
   m_powerRestricted = false;
@@ -1273,7 +1273,7 @@ WifiPhy::SetSleepMode (void)
 }
 
 void
-WifiPhy::SetOffMode (void)
+WifiPhy::SetOffMode ()
 {
   NS_LOG_FUNCTION (this);
   m_powerRestricted = false;
@@ -1288,7 +1288,7 @@ WifiPhy::SetOffMode (void)
 }
 
 void
-WifiPhy::ResumeFromSleep (void)
+WifiPhy::ResumeFromSleep ()
 {
   NS_LOG_FUNCTION (this);
   m_currentPreambleEvents.clear ();
@@ -1319,7 +1319,7 @@ WifiPhy::ResumeFromSleep (void)
 }
 
 void
-WifiPhy::ResumeFromOff (void)
+WifiPhy::ResumeFromOff ()
 {
   NS_LOG_FUNCTION (this);
   switch (m_state->GetState ())
@@ -1350,7 +1350,7 @@ WifiPhy::ResumeFromOff (void)
 }
 
 Time
-WifiPhy::GetPreambleDetectionDuration (void)
+WifiPhy::GetPreambleDetectionDuration ()
 {
   return MicroSeconds (4);
 }
@@ -1664,13 +1664,13 @@ WifiPhy::Send (WifiConstPsduMap psdus, const WifiTxVector& txVector)
 }
 
 uint64_t
-WifiPhy::GetPreviouslyRxPpduUid (void) const
+WifiPhy::GetPreviouslyRxPpduUid () const
 {
   return m_previouslyRxPpduUid;
 }
 
 void
-WifiPhy::Reset (void)
+WifiPhy::Reset ()
 {
   NS_LOG_FUNCTION (this);
   m_currentPreambleEvents.clear ();
@@ -1710,7 +1710,7 @@ WifiPhy::ConvertHeRuSubcarriers (uint16_t bandWidth, uint16_t guardBandwidth,
 }
 
 void
-WifiPhy::EndReceiveInterBss (void)
+WifiPhy::EndReceiveInterBss ()
 {
   NS_LOG_FUNCTION (this);
   if (!m_channelAccessRequested)
@@ -1720,7 +1720,7 @@ WifiPhy::EndReceiveInterBss (void)
 }
 
 void
-WifiPhy::NotifyChannelAccessRequested (void)
+WifiPhy::NotifyChannelAccessRequested ()
 {
   NS_LOG_FUNCTION (this);
   m_channelAccessRequested = true;
@@ -1740,7 +1740,7 @@ WifiPhy::IsModeSupported (WifiMode mode) const
 }
 
 WifiMode
-WifiPhy::GetDefaultMode (void) const
+WifiPhy::GetDefaultMode () const
 {
   //Start from oldest standards and move up (guaranteed by fact that WifModulationClass is ordered)
   for (const auto & phyEntity : m_phyEntities)
@@ -1766,7 +1766,7 @@ WifiPhy::IsMcsSupported (WifiModulationClass modulation, uint8_t mcs) const
 }
 
 std::list<WifiMode>
-WifiPhy::GetModeList (void) const
+WifiPhy::GetModeList () const
 {
   std::list<WifiMode> list;
   for (const auto & phyEntity : m_phyEntities)
@@ -1801,7 +1801,7 @@ WifiPhy::GetModeList (WifiModulationClass modulation) const
 }
 
 uint16_t
-WifiPhy::GetNMcs (void) const
+WifiPhy::GetNMcs () const
 {
   uint16_t numMcs = 0;
   for (const auto & phyEntity : m_phyEntities)
@@ -1815,7 +1815,7 @@ WifiPhy::GetNMcs (void) const
 }
 
 std::list<WifiMode>
-WifiPhy::GetMcsList (void) const
+WifiPhy::GetMcsList () const
 {
   std::list<WifiMode> list;
   for (const auto & phyEntity : m_phyEntities)
@@ -1857,61 +1857,61 @@ WifiPhy::GetMcs (WifiModulationClass modulation, uint8_t mcs) const
 }
 
 bool
-WifiPhy::IsStateCcaBusy (void) const
+WifiPhy::IsStateCcaBusy () const
 {
   return m_state->IsStateCcaBusy ();
 }
 
 bool
-WifiPhy::IsStateIdle (void) const
+WifiPhy::IsStateIdle () const
 {
   return m_state->IsStateIdle ();
 }
 
 bool
-WifiPhy::IsStateRx (void) const
+WifiPhy::IsStateRx () const
 {
   return m_state->IsStateRx ();
 }
 
 bool
-WifiPhy::IsStateTx (void) const
+WifiPhy::IsStateTx () const
 {
   return m_state->IsStateTx ();
 }
 
 bool
-WifiPhy::IsStateSwitching (void) const
+WifiPhy::IsStateSwitching () const
 {
   return m_state->IsStateSwitching ();
 }
 
 bool
-WifiPhy::IsStateSleep (void) const
+WifiPhy::IsStateSleep () const
 {
   return m_state->IsStateSleep ();
 }
 
 bool
-WifiPhy::IsStateOff (void) const
+WifiPhy::IsStateOff () const
 {
   return m_state->IsStateOff ();
 }
 
 Time
-WifiPhy::GetDelayUntilIdle (void)
+WifiPhy::GetDelayUntilIdle ()
 {
   return m_state->GetDelayUntilIdle ();
 }
 
 Time
-WifiPhy::GetLastRxStartTime (void) const
+WifiPhy::GetLastRxStartTime () const
 {
   return m_state->GetLastRxStartTime ();
 }
 
 Time
-WifiPhy::GetLastRxEndTime (void) const
+WifiPhy::GetLastRxEndTime () const
 {
   return m_state->GetLastRxEndTime ();
 }

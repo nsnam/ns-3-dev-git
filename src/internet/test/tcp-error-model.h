@@ -42,7 +42,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   TcpGeneralErrorModel ();
 
   /**
@@ -86,7 +86,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   TcpSeqErrorModel () : TcpGeneralErrorModel () { }
 
   /**
@@ -110,7 +110,7 @@ protected:
   std::list<SequenceNumber32> m_seqToKill; //!< List of the sequence numbers to be dropped.
 
 private:
-  virtual void DoReset (void);
+  virtual void DoReset ();
 };
 
 /**
@@ -133,7 +133,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   TcpFlagErrorModel ();
 
   /**
@@ -171,7 +171,7 @@ protected:
   int16_t m_killNumber;  //!< The number of times the packet should be killed.
 
 private:
-  virtual void DoReset (void);
+  virtual void DoReset ();
 };
 
 } // namespace ns3

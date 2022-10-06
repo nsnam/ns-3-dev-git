@@ -50,7 +50,7 @@ Backoff::Backoff(Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t c
 }
 
 Time
-Backoff::GetBackoffTime (void)
+Backoff::GetBackoffTime ()
 {
   uint32_t ceiling;
 
@@ -77,19 +77,19 @@ Backoff::GetBackoffTime (void)
 }
 
 void
-Backoff::ResetBackoffTime (void)
+Backoff::ResetBackoffTime ()
 {
   m_numBackoffRetries = 0;
 }
 
 bool
-Backoff::MaxRetriesReached (void)
+Backoff::MaxRetriesReached ()
 {
   return (m_numBackoffRetries >= m_maxRetries);
 }
 
 void
-Backoff::IncrNumRetries (void)
+Backoff::IncrNumRetries ()
 {
   m_numBackoffRetries++;
 }

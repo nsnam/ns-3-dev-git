@@ -42,13 +42,13 @@ void
 NoneFileConfig::SetFilename (std::string filename)
 {}
 void
-NoneFileConfig::Default (void)
+NoneFileConfig::Default ()
 {}
 void
-NoneFileConfig::Global (void)
+NoneFileConfig::Global ()
 {}
 void
-NoneFileConfig::Attributes (void)
+NoneFileConfig::Attributes ()
 {}
 
 } // namespace ns3

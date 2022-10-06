@@ -52,7 +52,7 @@ LteTestUePhy::DoDispose ()
 }
 
 TypeId
-LteTestUePhy::GetTypeId (void)
+LteTestUePhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteTestUePhy")
     .SetParent<LtePhy> ()

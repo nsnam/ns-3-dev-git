@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("BasicEnergyHarvester");
 NS_OBJECT_ENSURE_REGISTERED (BasicEnergyHarvester);
 
 TypeId
-BasicEnergyHarvester::GetTypeId (void)
+BasicEnergyHarvester::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BasicEnergyHarvester")
   .SetParent<EnergyHarvester> ()
@@ -96,7 +96,7 @@ BasicEnergyHarvester::SetHarvestedPowerUpdateInterval (Time updateInterval)
 }
 
 Time
-BasicEnergyHarvester::GetHarvestedPowerUpdateInterval (void) const
+BasicEnergyHarvester::GetHarvestedPowerUpdateInterval () const
 {
   NS_LOG_FUNCTION (this);
   return m_harvestedPowerUpdateInterval;
@@ -107,7 +107,7 @@ BasicEnergyHarvester::GetHarvestedPowerUpdateInterval (void) const
  */
 
 void
-BasicEnergyHarvester::UpdateHarvestedPower (void)
+BasicEnergyHarvester::UpdateHarvestedPower ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
@@ -147,7 +147,7 @@ BasicEnergyHarvester::UpdateHarvestedPower (void)
 }
 
 void
-BasicEnergyHarvester::DoInitialize (void)
+BasicEnergyHarvester::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -157,13 +157,13 @@ BasicEnergyHarvester::DoInitialize (void)
 }
 
 void
-BasicEnergyHarvester::DoDispose (void)
+BasicEnergyHarvester::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-BasicEnergyHarvester::CalculateHarvestedPower (void)
+BasicEnergyHarvester::CalculateHarvestedPower ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -174,7 +174,7 @@ BasicEnergyHarvester::CalculateHarvestedPower (void)
 }
 
 double
-BasicEnergyHarvester::DoGetPower (void) const
+BasicEnergyHarvester::DoGetPower () const
 {
   NS_LOG_FUNCTION (this);
   return m_harvestedPower;

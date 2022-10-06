@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiDefaultAssocManager");
 NS_OBJECT_ENSURE_REGISTERED (WifiDefaultAssocManager);
 
 TypeId
-WifiDefaultAssocManager::GetTypeId (void)
+WifiDefaultAssocManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiDefaultAssocManager")
     .SetParent<WifiAssocManager> ()
@@ -61,7 +61,7 @@ WifiDefaultAssocManager::~WifiDefaultAssocManager ()
 }
 
 void
-WifiDefaultAssocManager::DoDispose (void)
+WifiDefaultAssocManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_probeRequestEvent.Cancel ();
@@ -77,7 +77,7 @@ WifiDefaultAssocManager::Compare (const StaWifiMac::ApInfo& lhs,
 }
 
 void
-WifiDefaultAssocManager::DoStartScanning (void)
+WifiDefaultAssocManager::DoStartScanning ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -109,7 +109,7 @@ WifiDefaultAssocManager::DoStartScanning (void)
 }
 
 void
-WifiDefaultAssocManager::EndScanning (void)
+WifiDefaultAssocManager::EndScanning ()
 {
   NS_LOG_FUNCTION (this);
 

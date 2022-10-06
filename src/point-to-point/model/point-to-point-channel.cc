@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointChannel");
 NS_OBJECT_ENSURE_REGISTERED (PointToPointChannel);
 
 TypeId
-PointToPointChannel::GetTypeId (void)
+PointToPointChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PointToPointChannel")
     .SetParent<Channel> ()
@@ -107,7 +107,7 @@ PointToPointChannel::TransmitStart (
 }
 
 std::size_t
-PointToPointChannel::GetNDevices (void) const
+PointToPointChannel::GetNDevices () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_nDevices;
@@ -129,7 +129,7 @@ PointToPointChannel::GetDevice (std::size_t i) const
 }
 
 Time
-PointToPointChannel::GetDelay (void) const
+PointToPointChannel::GetDelay () const
 {
   return m_delay;
 }
@@ -147,7 +147,7 @@ PointToPointChannel::GetDestination (uint32_t i) const
 }
 
 bool
-PointToPointChannel::IsInitialized (void) const
+PointToPointChannel::IsInitialized () const
 {
   NS_ASSERT (m_link[0].m_state != INITIALIZING);
   NS_ASSERT (m_link[1].m_state != INITIALIZING);

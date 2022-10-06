@@ -62,19 +62,19 @@ InetSocketAddress::InetSocketAddress (uint16_t port)
   NS_LOG_FUNCTION (this << port);
 }
 uint16_t
-InetSocketAddress::GetPort (void) const
+InetSocketAddress::GetPort () const
 {
   NS_LOG_FUNCTION (this);
   return m_port;
 }
 Ipv4Address
-InetSocketAddress::GetIpv4 (void) const
+InetSocketAddress::GetIpv4 () const
 {
   NS_LOG_FUNCTION (this);
   return m_ipv4;
 }
 uint8_t
-InetSocketAddress::GetTos (void) const
+InetSocketAddress::GetTos () const
 {
   NS_LOG_FUNCTION (this);
   return m_tos;
@@ -112,7 +112,7 @@ InetSocketAddress::operator Address () const
 }
 
 Address
-InetSocketAddress::ConvertTo (void) const
+InetSocketAddress::ConvertTo () const
 {
   NS_LOG_FUNCTION (this);
   uint8_t buf[7];
@@ -137,7 +137,7 @@ InetSocketAddress::ConvertFrom (const Address &address)
   return inet;
 }
 uint8_t
-InetSocketAddress::GetType (void)
+InetSocketAddress::GetType ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();

@@ -371,7 +371,7 @@ LteDownlinkPowerControlSpectrumValueTestCase::~LteDownlinkPowerControlSpectrumVa
 }
 
 void
-LteDownlinkPowerControlSpectrumValueTestCase::DoRun (void)
+LteDownlinkPowerControlSpectrumValueTestCase::DoRun ()
 {
   NS_LOG_INFO ("Creating LteDownlinkPowerControlSpectrumValueTestCase");
   NS_TEST_ASSERT_MSG_EQ (m_actual->GetSpectrumModelUid (), m_expected->GetSpectrumModelUid (), "SpectrumModel UID mismatch");
@@ -393,7 +393,7 @@ LteDownlinkPowerControlTestCase::~LteDownlinkPowerControlTestCase ()
 }
 
 void
-LteDownlinkPowerControlTestCase::DoRun (void)
+LteDownlinkPowerControlTestCase::DoRun ()
 {
   Config::Reset ();
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
@@ -535,7 +535,7 @@ LteDownlinkPowerControlRrcConnectionReconfigurationTestCase::ChangePdschConfigDe
 }
 
 void
-LteDownlinkPowerControlRrcConnectionReconfigurationTestCase::DoRun (void)
+LteDownlinkPowerControlRrcConnectionReconfigurationTestCase::DoRun ()
 {
   Config::Reset ();
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (m_useIdealRrc));

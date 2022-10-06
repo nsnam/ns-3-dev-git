@@ -68,19 +68,19 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Create an unbound tcp socket.
    */
-  TcpScalable (void);
+  TcpScalable ();
 
   /**
    * \brief Copy constructor
    * \param sock the object to copy
    */
   TcpScalable (const TcpScalable& sock);
-  virtual ~TcpScalable (void);
+  virtual ~TcpScalable ();
 
   virtual std::string GetName () const;
 

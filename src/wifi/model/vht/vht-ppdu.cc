@@ -54,7 +54,7 @@ VhtPpdu::~VhtPpdu ()
 }
 
 WifiTxVector
-VhtPpdu::DoGetTxVector (void) const
+VhtPpdu::DoGetTxVector () const
 {
   WifiTxVector txVector;
   txVector.SetPreambleType (m_preamble);
@@ -67,7 +67,7 @@ VhtPpdu::DoGetTxVector (void) const
 }
 
 Time
-VhtPpdu::GetTxDuration (void) const
+VhtPpdu::GetTxDuration () const
 {
   Time ppduDuration = Seconds (0);
   const WifiTxVector& txVector = GetTxVector ();
@@ -84,13 +84,13 @@ VhtPpdu::GetTxDuration (void) const
 }
 
 Ptr<WifiPpdu>
-VhtPpdu::Copy (void) const
+VhtPpdu::Copy () const
 {
   return Create<VhtPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq, GetTxDuration (), m_band, m_uid);
 }
 
 WifiPpduType
-VhtPpdu::GetType (void) const
+VhtPpdu::GetType () const
 {
   return (m_preamble == WIFI_PREAMBLE_VHT_MU) ? WIFI_PPDU_TYPE_DL_MU : WIFI_PPDU_TYPE_SU;
 }
@@ -110,7 +110,7 @@ VhtPpdu::VhtSigHeader::~VhtSigHeader ()
 }
 
 TypeId
-VhtPpdu::VhtSigHeader::GetTypeId (void)
+VhtPpdu::VhtSigHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::VhtSigHeader")
     .SetParent<Header> ()
@@ -121,7 +121,7 @@ VhtPpdu::VhtSigHeader::GetTypeId (void)
 }
 
 TypeId
-VhtPpdu::VhtSigHeader::GetInstanceTypeId (void) const
+VhtPpdu::VhtSigHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -137,7 +137,7 @@ VhtPpdu::VhtSigHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-VhtPpdu::VhtSigHeader::GetSerializedSize (void) const
+VhtPpdu::VhtSigHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 3; //VHT-SIG-A1
@@ -177,7 +177,7 @@ VhtPpdu::VhtSigHeader::SetChannelWidth (uint16_t channelWidth)
 }
 
 uint16_t
-VhtPpdu::VhtSigHeader::GetChannelWidth (void) const
+VhtPpdu::VhtSigHeader::GetChannelWidth () const
 {
   if (m_bw == 3)
     {
@@ -205,7 +205,7 @@ VhtPpdu::VhtSigHeader::SetNStreams (uint8_t nStreams)
 }
 
 uint8_t
-VhtPpdu::VhtSigHeader::GetNStreams (void) const
+VhtPpdu::VhtSigHeader::GetNStreams () const
 {
   return (m_nsts + 1);
 }
@@ -217,7 +217,7 @@ VhtPpdu::VhtSigHeader::SetShortGuardInterval (bool sgi)
 }
 
 bool
-VhtPpdu::VhtSigHeader::GetShortGuardInterval (void) const
+VhtPpdu::VhtSigHeader::GetShortGuardInterval () const
 {
   return m_sgi;
 }
@@ -229,7 +229,7 @@ VhtPpdu::VhtSigHeader::SetShortGuardIntervalDisambiguation (bool disambiguation)
 }
 
 bool
-VhtPpdu::VhtSigHeader::GetShortGuardIntervalDisambiguation (void) const
+VhtPpdu::VhtSigHeader::GetShortGuardIntervalDisambiguation () const
 {
   return m_sgi_disambiguation;
 }
@@ -242,7 +242,7 @@ VhtPpdu::VhtSigHeader::SetSuMcs (uint8_t mcs)
 }
 
 uint8_t
-VhtPpdu::VhtSigHeader::GetSuMcs (void) const
+VhtPpdu::VhtSigHeader::GetSuMcs () const
 {
   return m_suMcs;
 }

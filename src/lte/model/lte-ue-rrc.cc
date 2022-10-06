@@ -184,7 +184,7 @@ LteUeRrc::DoDispose ()
 }
 
 TypeId
-LteUeRrc::GetTypeId (void)
+LteUeRrc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteUeRrc")
     .SetParent<Object> ()
@@ -444,7 +444,7 @@ LteUeRrc::StorePreviousCellId (uint16_t cellId)
 }
 
 uint64_t
-LteUeRrc::GetImsi (void) const
+LteUeRrc::GetImsi () const
 {
   return m_imsi;
 }
@@ -506,7 +506,7 @@ LteUeRrc::GetUlEarfcn () const
 }
 
 LteUeRrc::State
-LteUeRrc::GetState (void) const
+LteUeRrc::GetState () const
 {
   NS_LOG_FUNCTION (this);
   return m_state;
@@ -528,7 +528,7 @@ LteUeRrc::SetUseRlcSm (bool val)
 
 
 void
-LteUeRrc::DoInitialize (void)
+LteUeRrc::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -559,7 +559,7 @@ LteUeRrc::DoInitialize (void)
 }
 
 void
-LteUeRrc::InitializeSap (void)
+LteUeRrc::InitializeSap ()
 {
   if (m_numberOfComponentCarriers < MIN_NO_CC || m_numberOfComponentCarriers > MAX_NO_CC)
     {

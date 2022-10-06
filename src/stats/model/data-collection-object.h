@@ -47,21 +47,21 @@ public:
   virtual ~DataCollectionObject ();
 
   /// Set the status of an individual object.
-  void Enable (void);
+  void Enable ();
   /// Unset the status of an individual object.
-  void Disable (void);
+  void Disable ();
 
   /**
    * Check the status of an individual object.
    * \return true if the object is enabled
    */
-  virtual bool IsEnabled (void) const;
+  virtual bool IsEnabled () const;
 
   /**
    * Get the object's name.
    * \return the object's name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
 
   /**
    * Set the object's name.

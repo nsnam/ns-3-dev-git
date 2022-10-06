@@ -65,7 +65,7 @@ public:
   Issue211Test ();
   virtual ~Issue211Test ();
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /**
@@ -103,7 +103,7 @@ Issue211Test::CalcThroughput (Ptr<UdpServer> server)
 }
 
 void
-Issue211Test::DoRun (void)
+Issue211Test::DoRun ()
 {
   Time simulationTime (Seconds (6.0));
   Time moveAwayTime (Seconds (2.0));

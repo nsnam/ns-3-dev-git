@@ -46,7 +46,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (SixLowPanNetDevice);
 
-TypeId SixLowPanNetDevice::GetTypeId (void)
+TypeId SixLowPanNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SixLowPanNetDevice")
     .SetParent<NetDevice> ()
@@ -385,13 +385,13 @@ void SixLowPanNetDevice::SetIfIndex (const uint32_t index)
   m_ifIndex = index;
 }
 
-uint32_t SixLowPanNetDevice::GetIfIndex (void) const
+uint32_t SixLowPanNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
 
-Ptr<Channel> SixLowPanNetDevice::GetChannel (void) const
+Ptr<Channel> SixLowPanNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -407,7 +407,7 @@ void SixLowPanNetDevice::SetAddress (Address address)
   m_netDevice->SetAddress (address);
 }
 
-Address SixLowPanNetDevice::GetAddress (void) const
+Address SixLowPanNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -423,7 +423,7 @@ bool SixLowPanNetDevice::SetMtu (const uint16_t mtu)
   return m_netDevice->SetMtu (mtu);
 }
 
-uint16_t SixLowPanNetDevice::GetMtu (void) const
+uint16_t SixLowPanNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -437,7 +437,7 @@ uint16_t SixLowPanNetDevice::GetMtu (void) const
   return mtu;
 }
 
-bool SixLowPanNetDevice::IsLinkUp (void) const
+bool SixLowPanNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -453,7 +453,7 @@ void SixLowPanNetDevice::AddLinkChangeCallback (Callback<void> callback)
   return m_netDevice->AddLinkChangeCallback (callback);
 }
 
-bool SixLowPanNetDevice::IsBroadcast (void) const
+bool SixLowPanNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -461,7 +461,7 @@ bool SixLowPanNetDevice::IsBroadcast (void) const
   return m_netDevice->IsBroadcast ();
 }
 
-Address SixLowPanNetDevice::GetBroadcast (void) const
+Address SixLowPanNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -469,7 +469,7 @@ Address SixLowPanNetDevice::GetBroadcast (void) const
   return m_netDevice->GetBroadcast ();
 }
 
-bool SixLowPanNetDevice::IsMulticast (void) const
+bool SixLowPanNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -493,7 +493,7 @@ Address SixLowPanNetDevice::GetMulticast (Ipv6Address addr) const
   return m_netDevice->GetMulticast (addr);
 }
 
-bool SixLowPanNetDevice::IsPointToPoint (void) const
+bool SixLowPanNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -501,7 +501,7 @@ bool SixLowPanNetDevice::IsPointToPoint (void) const
   return m_netDevice->IsPointToPoint ();
 }
 
-bool SixLowPanNetDevice::IsBridge (void) const
+bool SixLowPanNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -671,7 +671,7 @@ bool SixLowPanNetDevice::DoSend (Ptr<Packet> packet,
   return ret;
 }
 
-Ptr<Node> SixLowPanNetDevice::GetNode (void) const
+Ptr<Node> SixLowPanNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -683,7 +683,7 @@ void SixLowPanNetDevice::SetNode (Ptr<Node> node)
   m_node = node;
 }
 
-bool SixLowPanNetDevice::NeedsArp (void) const
+bool SixLowPanNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG ( m_netDevice, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
@@ -2623,7 +2623,7 @@ SixLowPanNetDevice::FragmentsTimeoutsListI_t SixLowPanNetDevice::SetTimeout (Fra
   return (iter);
 }
 
-void SixLowPanNetDevice::HandleTimeout (void)
+void SixLowPanNetDevice::HandleTimeout ()
 {
   Time now = Simulator::Now ();
 

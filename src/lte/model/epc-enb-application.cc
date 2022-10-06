@@ -59,7 +59,7 @@ operator < (const EpcEnbApplication::EpsFlowId_t& a, const EpcEnbApplication::Ep
 
 
 TypeId
-EpcEnbApplication::GetTypeId (void)
+EpcEnbApplication::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcEnbApplication")
     .SetParent<Object> ()
@@ -77,7 +77,7 @@ EpcEnbApplication::GetTypeId (void)
 }
 
 void
-EpcEnbApplication::DoDispose (void)
+EpcEnbApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_lteSocket = 0;
@@ -116,7 +116,7 @@ EpcEnbApplication::AddS1Interface (Ptr<Socket> s1uSocket, Ipv4Address enbAddress
 }
 
 
-EpcEnbApplication::~EpcEnbApplication (void)
+EpcEnbApplication::~EpcEnbApplication ()
 {
   NS_LOG_FUNCTION (this);
 }

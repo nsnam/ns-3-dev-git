@@ -42,7 +42,7 @@ NS_OBJECT_ENSURE_REGISTERED (RttEstimator);
 static const double TOLERANCE = 1e-6;
 
 TypeId
-RttEstimator::GetTypeId (void)
+RttEstimator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RttEstimator")
     .SetParent<Object> ()
@@ -57,13 +57,13 @@ RttEstimator::GetTypeId (void)
 }
 
 Time
-RttEstimator::GetEstimate (void) const
+RttEstimator::GetEstimate () const
 {
   return m_estimatedRtt;
 }
 
 Time
-RttEstimator::GetVariation (void) const
+RttEstimator::GetVariation () const
 {
   return m_estimatedVariation;
 }
@@ -100,7 +100,7 @@ RttEstimator::~RttEstimator ()
 }
 
 TypeId
-RttEstimator::GetInstanceTypeId (void) const
+RttEstimator::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -115,7 +115,7 @@ void RttEstimator::Reset ()
 }
 
 uint32_t
-RttEstimator::GetNSamples (void) const
+RttEstimator::GetNSamples () const
 {
   return m_nSamples;
 }
@@ -127,7 +127,7 @@ RttEstimator::GetNSamples (void) const
 NS_OBJECT_ENSURE_REGISTERED (RttMeanDeviation);
 
 TypeId
-RttMeanDeviation::GetTypeId (void)
+RttMeanDeviation::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RttMeanDeviation")
     .SetParent<RttEstimator> ()
@@ -159,7 +159,7 @@ RttMeanDeviation::RttMeanDeviation (const RttMeanDeviation& c)
 }
 
 TypeId
-RttMeanDeviation::GetInstanceTypeId (void) const
+RttMeanDeviation::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }

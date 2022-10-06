@@ -48,7 +48,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteNetDevice);
 // LteNetDevice
 ////////////////////////////////
 
-TypeId LteNetDevice::GetTypeId (void)
+TypeId LteNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteNetDevice")
     .SetParent<NetDevice> ()
@@ -62,20 +62,20 @@ TypeId LteNetDevice::GetTypeId (void)
   return tid;
 }
 
-LteNetDevice::LteNetDevice (void)
+LteNetDevice::LteNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 
-LteNetDevice::~LteNetDevice (void)
+LteNetDevice::~LteNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 
 void
-LteNetDevice::DoDispose (void)
+LteNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -85,7 +85,7 @@ LteNetDevice::DoDispose (void)
 
 
 Ptr<Channel>
-LteNetDevice::GetChannel (void) const
+LteNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   // we can't return a meaningful channel here, because LTE devices using FDD have actually two channels.
@@ -102,7 +102,7 @@ LteNetDevice::SetAddress (Address address)
 
 
 Address
-LteNetDevice::GetAddress (void) const
+LteNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_address;
@@ -117,7 +117,7 @@ LteNetDevice::SetNode (Ptr<Node> node)
 
 
 Ptr<Node>
-LteNetDevice::GetNode (void) const
+LteNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -141,7 +141,7 @@ LteNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address
 
 
 bool
-LteNetDevice::SupportsSendFrom (void) const
+LteNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -158,7 +158,7 @@ LteNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-LteNetDevice::GetMtu (void) const
+LteNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;
@@ -173,7 +173,7 @@ LteNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-LteNetDevice::GetIfIndex (void) const
+LteNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
@@ -181,7 +181,7 @@ LteNetDevice::GetIfIndex (void) const
 
 
 bool
-LteNetDevice::IsLinkUp (void) const
+LteNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkUp;
@@ -189,21 +189,21 @@ LteNetDevice::IsLinkUp (void) const
 
 
 bool
-LteNetDevice::IsBroadcast (void) const
+LteNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 
 Address
-LteNetDevice::GetBroadcast (void) const
+LteNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return Mac48Address::GetBroadcast ();
 }
 
 bool
-LteNetDevice::IsMulticast (void) const
+LteNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -211,7 +211,7 @@ LteNetDevice::IsMulticast (void) const
 
 
 bool
-LteNetDevice::IsPointToPoint (void) const
+LteNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -219,7 +219,7 @@ LteNetDevice::IsPointToPoint (void) const
 
 
 bool
-LteNetDevice::NeedsArp (void) const
+LteNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -227,7 +227,7 @@ LteNetDevice::NeedsArp (void) const
 
 
 bool
-LteNetDevice::IsBridge (void) const
+LteNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   return false;

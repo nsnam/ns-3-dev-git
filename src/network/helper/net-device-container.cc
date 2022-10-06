@@ -43,18 +43,18 @@ NetDeviceContainer::NetDeviceContainer (const NetDeviceContainer &a, const NetDe
 
 
 NetDeviceContainer::Iterator
-NetDeviceContainer::Begin (void) const
+NetDeviceContainer::Begin () const
 {
   return m_devices.begin ();
 }
 NetDeviceContainer::Iterator
-NetDeviceContainer::End (void) const
+NetDeviceContainer::End () const
 {
   return m_devices.end ();
 }
 
 uint32_t
-NetDeviceContainer::GetN (void) const
+NetDeviceContainer::GetN () const
 {
   return m_devices.size ();
 }

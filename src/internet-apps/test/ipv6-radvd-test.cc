@@ -51,7 +51,7 @@ public:
   virtual ~RadvdTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Checks the addresses on the selected NetDevices.
@@ -141,7 +141,7 @@ RadvdTestCase::CheckRouting (Ptr<NetDevice> n0Dev, Ptr<NetDevice> r0Dev, Ptr<Net
 }
 
 void
-RadvdTestCase::DoRun (void)
+RadvdTestCase::DoRun ()
 {
    // Create nodes
   Ptr<Node> n0 = CreateObject<Node> ();

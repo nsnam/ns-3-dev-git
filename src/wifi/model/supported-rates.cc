@@ -162,7 +162,7 @@ SupportedRates::IsBssMembershipSelectorRate (uint64_t bs) const
 }
 
 uint8_t
-SupportedRates::GetNRates (void) const
+SupportedRates::GetNRates () const
 {
   return m_nRates;
 }

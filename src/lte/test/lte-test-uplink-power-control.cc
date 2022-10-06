@@ -174,7 +174,7 @@ LteUplinkPowerControlTestCase::SrsTxPowerTrace (uint16_t cellId, uint16_t rnti, 
 }
 
 void
-LteUplinkPowerControlTestCase::DoRun (void)
+LteUplinkPowerControlTestCase::DoRun ()
 {
 }
 
@@ -190,7 +190,7 @@ LteUplinkOpenLoopPowerControlTestCase::~LteUplinkOpenLoopPowerControlTestCase ()
 }
 
 void
-LteUplinkOpenLoopPowerControlTestCase::DoRun (void)
+LteUplinkOpenLoopPowerControlTestCase::DoRun ()
 {
   Config::Reset ();
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
@@ -303,7 +303,7 @@ LteUplinkClosedLoopPowerControlAbsoluteModeTestCase::~LteUplinkClosedLoopPowerCo
 }
 
 void
-LteUplinkClosedLoopPowerControlAbsoluteModeTestCase::DoRun (void)
+LteUplinkClosedLoopPowerControlAbsoluteModeTestCase::DoRun ()
 {
   Config::Reset ();
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
@@ -416,7 +416,7 @@ LteUplinkClosedLoopPowerControlAccumulatedModeTestCase::~LteUplinkClosedLoopPowe
 }
 
 void
-LteUplinkClosedLoopPowerControlAccumulatedModeTestCase::DoRun (void)
+LteUplinkClosedLoopPowerControlAccumulatedModeTestCase::DoRun ()
 {
   Config::Reset ();
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));

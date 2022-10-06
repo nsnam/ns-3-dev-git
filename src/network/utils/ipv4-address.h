@@ -60,7 +60,7 @@ public:
    * Get the host-order 32-bit IP address
    * \return the host-order 32-bit IP address
    */
-  uint32_t Get (void) const;
+  uint32_t Get () const;
   /**
    * input address is in host order.
    * \param address The host order 32-bit address
@@ -101,27 +101,27 @@ public:
   /**
    * \return true if address is initialized (i.e., set to something), false otherwise
    */
-  bool IsInitialized (void) const;
+  bool IsInitialized () const;
   /**
     * \return true if address is 0.0.0.0; false otherwise
     */
-  bool IsAny (void) const;
+  bool IsAny () const;
   /**
     * \return true if address is 127.0.0.1; false otherwise
     */
-  bool IsLocalhost (void) const;
+  bool IsLocalhost () const;
   /**
     * \return true if address is 255.255.255.255; false otherwise
     */
-  bool IsBroadcast (void) const;
+  bool IsBroadcast () const;
   /**
     * \return true only if address is in the range 224.0.0.0 - 239.255.255.255
     */
-  bool IsMulticast (void) const;
+  bool IsMulticast () const;
   /**
     * \return true only if address is in local multicast address scope, 224.0.0.0/24
     */
-  bool IsLocalMulticast (void) const;
+  bool IsLocalMulticast () const;
   /**
    * \brief Combine this address with a network mask
    *
@@ -183,19 +183,19 @@ public:
   /**
    * \return the 0.0.0.0 address
    */
-  static Ipv4Address GetZero (void);
+  static Ipv4Address GetZero ();
   /**
    * \return the 0.0.0.0 address
    */
-  static Ipv4Address GetAny (void);
+  static Ipv4Address GetAny ();
   /**
    * \return the 255.255.255.255 address
    */
-  static Ipv4Address GetBroadcast (void);
+  static Ipv4Address GetBroadcast ();
   /**
    * \return the 127.0.0.1 address
    */
-  static Ipv4Address GetLoopback (void);
+  static Ipv4Address GetLoopback ();
 
 private:
 
@@ -203,14 +203,14 @@ private:
    * \brief Convert to an Address type
    * \return the Address corresponding to this object.
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   /**
    * \brief Get the underlying address type (automatically assigned).
    *
    * \returns the address type
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
   uint32_t m_address; //!< IPv4 address
   bool m_initialized; //!< IPv4 address has been explicitly initialized to a valid value.
 
@@ -280,7 +280,7 @@ public:
    * Get the host-order 32-bit IP mask
    * \return the host-order 32-bit IP mask
    */
-  uint32_t Get (void) const;
+  uint32_t Get () const;
   /**
    * input mask is in host order.
    * \param mask The host order 32-bit mask
@@ -290,7 +290,7 @@ public:
    * \brief Return the inverse mask in host order.
    * \return The inverse mask
    */
-  uint32_t GetInverse (void) const;
+  uint32_t GetInverse () const;
   /**
    * \brief Print this mask to the given output stream
    *
@@ -301,19 +301,19 @@ public:
   /**
    * \return the prefix length of mask (the yy in x.x.x.x/yy notation)
    */
-  uint16_t GetPrefixLength (void) const;
+  uint16_t GetPrefixLength () const;
   /**
    * \return the 255.0.0.0 mask corresponding to a typical loopback address
    */
-  static Ipv4Mask GetLoopback (void);
+  static Ipv4Mask GetLoopback ();
   /**
    * \return the 0.0.0.0 mask
    */
-  static Ipv4Mask GetZero (void);
+  static Ipv4Mask GetZero ();
   /**
    * \return the 255.255.255.255 mask
    */
-  static Ipv4Mask GetOnes (void);
+  static Ipv4Mask GetOnes ();
 
   /**
    * \brief Equal to operator.

@@ -69,8 +69,8 @@ public:
   virtual ~SpectrumWifiPhyBasicTest ();
 
 protected:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Make signal function
@@ -100,7 +100,7 @@ protected:
   uint32_t m_count; ///< count
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   uint64_t m_uid; //!< the UID to use for the PPDU
 };
@@ -173,7 +173,7 @@ SpectrumWifiPhyBasicTest::~SpectrumWifiPhyBasicTest ()
 // Create necessary objects, and inject signals.  Test that the expected
 // number of packet receptions occur.
 void
-SpectrumWifiPhyBasicTest::DoSetup (void)
+SpectrumWifiPhyBasicTest::DoSetup ()
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
@@ -187,7 +187,7 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
 }
 
 void
-SpectrumWifiPhyBasicTest::DoTeardown (void)
+SpectrumWifiPhyBasicTest::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
@@ -195,7 +195,7 @@ SpectrumWifiPhyBasicTest::DoTeardown (void)
 
 // Test that the expected number of packet receptions occur.
 void
-SpectrumWifiPhyBasicTest::DoRun (void)
+SpectrumWifiPhyBasicTest::DoRun ()
 {
   double txPowerWatts = 0.010;
   // Send packets spaced 1 second apart; all should be received
@@ -224,7 +224,7 @@ public:
    * Create a test PhyListener
    *
    */
-  TestPhyListener (void)
+  TestPhyListener ()
     : m_notifyRxStart (0),
       m_notifyRxEndOk (0),
       m_notifyRxEndError (0),
@@ -239,12 +239,12 @@ public:
     NS_LOG_FUNCTION (this << duration);
     ++m_notifyRxStart;
   }
-  void NotifyRxEndOk (void) override
+  void NotifyRxEndOk () override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyRxEndOk;
   }
-  void NotifyRxEndError (void) override
+  void NotifyRxEndError () override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyRxEndError;
@@ -262,16 +262,16 @@ public:
   void NotifySwitchingStart (Time duration) override
   {
   }
-  void NotifySleep (void) override
+  void NotifySleep () override
   {
   }
-  void NotifyOff (void) override
+  void NotifyOff () override
   {
   }
-  void NotifyWakeup (void) override
+  void NotifyWakeup () override
   {
   }
-  void NotifyOn (void) override
+  void NotifyOn () override
   {
   }
   uint32_t m_notifyRxStart; ///< notify receive start
@@ -292,8 +292,8 @@ public:
   SpectrumWifiPhyListenerTest ();
   virtual ~SpectrumWifiPhyListenerTest ();
 private:
-  void DoSetup (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoRun () override;
   TestPhyListener* m_listener; ///< listener
 };
 
@@ -307,7 +307,7 @@ SpectrumWifiPhyListenerTest::~SpectrumWifiPhyListenerTest ()
 }
 
 void
-SpectrumWifiPhyListenerTest::DoSetup (void)
+SpectrumWifiPhyListenerTest::DoSetup ()
 {
   SpectrumWifiPhyBasicTest::DoSetup ();
   m_listener = new TestPhyListener;
@@ -315,7 +315,7 @@ SpectrumWifiPhyListenerTest::DoSetup (void)
 }
 
 void
-SpectrumWifiPhyListenerTest::DoRun (void)
+SpectrumWifiPhyListenerTest::DoRun ()
 {
   double txPowerWatts = 0.010;
   Simulator::Schedule (Seconds (1), &SpectrumWifiPhyListenerTest::SendSignal, this, txPowerWatts);
@@ -349,9 +349,9 @@ public:
   virtual ~SpectrumWifiPhyFilterTest ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Run one function
@@ -361,7 +361,7 @@ private:
   /**
    * Send PPDU function
    */
-  void SendPpdu (void);
+  void SendPpdu ();
 
   /**
    * Callback triggered when a packet is received by the PHYs
@@ -392,7 +392,7 @@ SpectrumWifiPhyFilterTest::SpectrumWifiPhyFilterTest (std::string name)
 }
 
 void
-SpectrumWifiPhyFilterTest::SendPpdu (void)
+SpectrumWifiPhyFilterTest::SendPpdu ()
 {
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, m_txChannelWidth, false, false);
   Ptr<Packet> pkt = Create<Packet> (1000);
@@ -458,7 +458,7 @@ SpectrumWifiPhyFilterTest::RxCallback (Ptr<const Packet> p, RxPowerWattPerChanne
 }
 
 void
-SpectrumWifiPhyFilterTest::DoSetup (void)
+SpectrumWifiPhyFilterTest::DoSetup ()
 {
   //WifiHelper::EnableLogComponents ();
   //LogComponentEnable ("SpectrumWifiPhyBasicTest", LOG_LEVEL_ALL);
@@ -506,7 +506,7 @@ SpectrumWifiPhyFilterTest::DoSetup (void)
 }
 
 void
-SpectrumWifiPhyFilterTest::DoTeardown (void)
+SpectrumWifiPhyFilterTest::DoTeardown ()
 {
   m_txPhy->Dispose ();
   m_txPhy = 0;
@@ -515,7 +515,7 @@ SpectrumWifiPhyFilterTest::DoTeardown (void)
 }
 
 void
-SpectrumWifiPhyFilterTest::RunOne (void)
+SpectrumWifiPhyFilterTest::RunOne ()
 {
   uint16_t txFrequency;
   switch (m_txChannelWidth)
@@ -589,7 +589,7 @@ SpectrumWifiPhyFilterTest::RunOne (void)
 }
 
 void
-SpectrumWifiPhyFilterTest::DoRun (void)
+SpectrumWifiPhyFilterTest::DoRun ()
 {
   m_txChannelWidth = 20;
   m_rxChannelWidth = 20;

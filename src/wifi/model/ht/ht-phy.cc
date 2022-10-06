@@ -69,7 +69,7 @@ HtPhy::~HtPhy ()
 }
 
 void
-HtPhy::BuildModeList (void)
+HtPhy::BuildModeList ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_modeList.empty ());
@@ -118,13 +118,13 @@ HtPhy::IsMcsSupported (uint8_t index) const
 }
 
 bool
-HtPhy::HandlesMcsModes (void) const
+HtPhy::HandlesMcsModes () const
 {
   return true;
 }
 
 const PhyEntity::PpduFormats &
-HtPhy::GetPpduFormats (void) const
+HtPhy::GetPpduFormats () const
 {
   return m_htPpduFormats;
 }
@@ -146,19 +146,19 @@ HtPhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
 }
 
 WifiMode
-HtPhy::GetLSigMode (void)
+HtPhy::GetLSigMode ()
 {
   return GetOfdmRate6Mbps ();
 }
 
 WifiMode
-HtPhy::GetHtSigMode (void) const
+HtPhy::GetHtSigMode () const
 {
   return GetLSigMode (); //same number of data tones as OFDM (i.e. 48)
 }
 
 uint8_t
-HtPhy::GetBssMembershipSelector (void) const
+HtPhy::GetBssMembershipSelector () const
 {
   return m_bssMembershipSelector;
 }
@@ -178,7 +178,7 @@ HtPhy::SetMaxSupportedMcsIndexPerSs (uint8_t maxIndex)
 }
 
 uint8_t
-HtPhy::GetMaxSupportedMcsIndexPerSs (void) const
+HtPhy::GetMaxSupportedMcsIndexPerSs () const
 {
   return m_maxSupportedMcsIndexPerSs;
 }
@@ -255,7 +255,7 @@ HtPhy::GetTrainingDuration (const WifiTxVector& txVector,
 }
 
 Time
-HtPhy::GetHtSigDuration (void) const
+HtPhy::GetHtSigDuration () const
 {
   return MicroSeconds (8); //HT-SIG
 }
@@ -448,7 +448,7 @@ HtPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> /* ppdu *
 }
 
 void
-HtPhy::InitializeModes (void)
+HtPhy::InitializeModes ()
 {
   for (uint8_t i = 0; i < 32; ++i)
     {
@@ -779,7 +779,7 @@ HtPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 }
 
 uint32_t
-HtPhy::GetMaxPsduSize (void) const
+HtPhy::GetMaxPsduSize () const
 {
   return 65535;
 }

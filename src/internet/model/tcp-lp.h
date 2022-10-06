@@ -45,13 +45,13 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates an unbound tcp socket.
    *
    */
-  TcpLp (void);
+  TcpLp ();
 
   /**
    * \brief Copy constructor
@@ -60,7 +60,7 @@ public:
    */
   TcpLp (const TcpLp& sock);
 
-  virtual ~TcpLp (void);
+  virtual ~TcpLp ();
 
   /**
    * \brief Timing information on received ACK

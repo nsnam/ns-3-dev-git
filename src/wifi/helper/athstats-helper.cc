@@ -101,7 +101,7 @@ AthstatsHelper::EnableAthstats (std::string filename, NodeContainer n)
 NS_OBJECT_ENSURE_REGISTERED (AthstatsWifiTraceSink);
 
 TypeId
-AthstatsWifiTraceSink::GetTypeId (void)
+AthstatsWifiTraceSink::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AthstatsWifiTraceSink")
     .SetParent<Object> ()

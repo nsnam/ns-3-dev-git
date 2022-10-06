@@ -120,7 +120,7 @@ AsciiPhyReceiveSinkWithoutContext (
 
 /****************************** YansWavePhyHelper ***********************************/
 YansWavePhyHelper
-YansWavePhyHelper::Default (void)
+YansWavePhyHelper::Default ()
 {
   YansWavePhyHelper helper;
   helper.SetErrorRateModel ("ns3::NistErrorRateModel");
@@ -266,7 +266,7 @@ WaveHelper::~WaveHelper ()
 }
 
 WaveHelper
-WaveHelper::Default (void)
+WaveHelper::Default ()
 {
   WaveHelper helper;
   // default 7 MAC entities and single PHY device.
@@ -376,7 +376,7 @@ WaveHelper::Install (const WifiPhyHelper &phy, const WifiMacHelper &mac, std::st
 }
 
 void
-WaveHelper::EnableLogComponents (void)
+WaveHelper::EnableLogComponents ()
 {
   WifiHelper::EnableLogComponents ();
 

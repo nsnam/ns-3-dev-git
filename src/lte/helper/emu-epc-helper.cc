@@ -69,7 +69,7 @@ EmuEpcHelper::~EmuEpcHelper ()
 }
 
 TypeId
-EmuEpcHelper::GetTypeId (void)
+EmuEpcHelper::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EmuEpcHelper")
     .SetParent<EpcHelper> ()

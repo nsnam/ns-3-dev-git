@@ -39,7 +39,7 @@ public:
   virtual ~LrWpanSpectrumValueHelperTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 LrWpanSpectrumValueHelperTestCase::LrWpanSpectrumValueHelperTestCase ()
@@ -52,7 +52,7 @@ LrWpanSpectrumValueHelperTestCase::~LrWpanSpectrumValueHelperTestCase ()
 }
 
 void
-LrWpanSpectrumValueHelperTestCase::DoRun (void)
+LrWpanSpectrumValueHelperTestCase::DoRun ()
 {
   LrWpanSpectrumValueHelper helper;
   Ptr<SpectrumValue> value;

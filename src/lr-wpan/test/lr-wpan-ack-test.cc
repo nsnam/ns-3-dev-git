@@ -99,7 +99,7 @@ public:
   void DataConfirmDev1 (McpsDataConfirmParams params);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   std::string m_prefix; //!< Filename prefix
   Time m_requestTime; //!< Request time.
@@ -168,7 +168,7 @@ LrWpanAckTestCase::DataConfirmDev1 (McpsDataConfirmParams params)
 }
 
 void
-LrWpanAckTestCase::DoRun (void)
+LrWpanAckTestCase::DoRun ()
 {
   // Test setup:
   // Two nodes well in communication range.

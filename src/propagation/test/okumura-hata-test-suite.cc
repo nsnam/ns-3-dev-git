@@ -57,7 +57,7 @@ public:
   virtual ~OkumuraHataPropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Create a MobilityModel
@@ -94,7 +94,7 @@ OkumuraHataPropagationLossModelTestCase::~OkumuraHataPropagationLossModelTestCas
 
 
 void
-OkumuraHataPropagationLossModelTestCase::DoRun (void)
+OkumuraHataPropagationLossModelTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 

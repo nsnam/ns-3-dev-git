@@ -44,7 +44,7 @@ ConstantSpectrumPropagationLossModel::~ConstantSpectrumPropagationLossModel ()
 }
 
 TypeId
-ConstantSpectrumPropagationLossModel::GetTypeId (void)
+ConstantSpectrumPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ConstantSpectrumPropagationLossModel")
     .SetParent<SpectrumPropagationLossModel> ()

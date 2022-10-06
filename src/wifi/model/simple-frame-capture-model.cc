@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("SimpleFrameCaptureModel");
 NS_OBJECT_ENSURE_REGISTERED (SimpleFrameCaptureModel);
 
 TypeId
-SimpleFrameCaptureModel::GetTypeId (void)
+SimpleFrameCaptureModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SimpleFrameCaptureModel")
     .SetParent<FrameCaptureModel> ()
@@ -67,7 +67,7 @@ SimpleFrameCaptureModel::SetMargin (double margin)
 }
 
 double
-SimpleFrameCaptureModel::GetMargin (void) const
+SimpleFrameCaptureModel::GetMargin () const
 {
   return m_margin;
 }

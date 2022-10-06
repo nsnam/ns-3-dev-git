@@ -40,8 +40,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * Create an empty EpsBearerTag
@@ -79,12 +79,12 @@ public:
    * Get RNTI function
    * \returns the RNTI
    */
-  uint16_t GetRnti (void) const;
+  uint16_t GetRnti () const;
   /**
    * Get Bearer Id function
    * \returns the Bearer Id
    */
-  uint8_t GetBid (void) const;
+  uint8_t GetBid () const;
 
 private:
   uint16_t m_rnti; ///< RNTI value

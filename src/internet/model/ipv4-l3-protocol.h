@@ -84,7 +84,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint16_t PROT_NUMBER; //!< Protocol number (0x0800)
 
   Ipv4L3Protocol();
@@ -118,9 +118,9 @@ public:
   // functions defined in base class Ipv4
 
   void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol);
-  Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
+  Ptr<Ipv4RoutingProtocol> GetRoutingProtocol () const;
 
-  Ptr<Socket> CreateRawSocket (void);
+  Ptr<Socket> CreateRawSocket ();
   void DeleteRawSocket (Ptr<Socket> socket);
 
   virtual void Insert (Ptr<IpL4Protocol> protocol);
@@ -187,7 +187,7 @@ public:
    * \return IPv4 interface pointer
    */
   Ptr<Ipv4Interface> GetInterface (uint32_t i) const;
-  uint32_t GetNInterfaces (void) const;
+  uint32_t GetNInterfaces () const;
 
   int32_t GetInterfaceForAddress (Ipv4Address addr) const;
   int32_t GetInterfaceForPrefix (Ipv4Address addr, Ipv4Mask mask) const;
@@ -266,7 +266,7 @@ public:
 
 protected:
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * This function will notify other components connected to the node that a new stack member is now connected
    * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
@@ -281,9 +281,9 @@ private:
 
   // class Ipv4 attributes
   virtual void SetIpForward (bool forward);
-  virtual bool GetIpForward (void) const;
+  virtual bool GetIpForward () const;
   virtual void SetWeakEsModel (bool model);
-  virtual bool GetWeakEsModel (void) const;
+  virtual bool GetWeakEsModel () const;
 
   /**
    * \brief Decrease the identification value for a dropped or recursed packet
@@ -374,13 +374,13 @@ private:
   /**
    * \brief Setup loopback interface.
    */
-  void SetupLoopback (void);
+  void SetupLoopback ();
 
   /**
    * \brief Get ICMPv4 protocol.
    * \return Icmpv4L4Protocol pointer
    */
-  Ptr<Icmpv4L4Protocol> GetIcmp (void) const;
+  Ptr<Icmpv4L4Protocol> GetIcmp () const;
 
   /**
    * \brief Check if an IPv4 address is unicast.
@@ -513,7 +513,7 @@ private:
   /**
    * \brief Handles a fragmented packet timeout
    */
-  void HandleTimeout (void);
+  void HandleTimeout ();
 
   FragmentsTimeoutsList_t m_timeoutEventList;  //!< Timeout "events" container
 
@@ -607,7 +607,7 @@ private:
   /**
    * Remove expired duplicates packet entry
    */
-  void RemoveDuplicates (void);
+  void RemoveDuplicates ();
 
   bool                m_enableDpd;    //!< Enable multicast duplicate packet detection
   DupMap_t            m_dups;         //!< map of packet duplicate tuples to expiry event

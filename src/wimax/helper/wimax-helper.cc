@@ -40,12 +40,12 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WimaxHelper");
 
-WimaxHelper::WimaxHelper (void)
+WimaxHelper::WimaxHelper ()
   : m_channel (0)
 {
 }
 
-WimaxHelper::~WimaxHelper (void)
+WimaxHelper::~WimaxHelper ()
 {
 }
 
@@ -360,7 +360,7 @@ Ptr<WimaxNetDevice> WimaxHelper::Install (Ptr<Node> node,
 }
 
 void
-WimaxHelper::EnableLogComponents (void)
+WimaxHelper::EnableLogComponents ()
 {
   LogComponentEnable ("BandwidthManager", LOG_LEVEL_ALL);
   LogComponentEnable ("BSLinkManager", LOG_LEVEL_ALL);

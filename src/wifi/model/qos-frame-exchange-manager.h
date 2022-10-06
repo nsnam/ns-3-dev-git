@@ -40,7 +40,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   QosFrameExchangeManager ();
   virtual ~QosFrameExchangeManager ();
 
@@ -103,8 +103,8 @@ protected:
                          Time response) const override;
   Time GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector, Time txDuration,
                                Time response) const override;
-  void TransmissionSucceeded (void) override;
-  void TransmissionFailed (void) override;
+  void TransmissionSucceeded () override;
+  void TransmissionFailed () override;
   void ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
 
   /**
@@ -138,7 +138,7 @@ protected:
    * If the carrier sense indicates that the medium is idle, continue the TXOP.
    * Otherwise, release the channel.
    */
-  void PifsRecovery (void);
+  void PifsRecovery ();
 
   /**
    * Send a CF-End frame to indicate the completion of the TXOP, provided that
@@ -146,7 +146,7 @@ protected:
    *
    * \return true if a CF-End frame was sent, false otherwise
    */
-  virtual bool SendCfEndIfNeeded (void);
+  virtual bool SendCfEndIfNeeded ();
 
   /**
    * Set the TXOP holder, if needed, based on the received frame
@@ -167,7 +167,7 @@ private:
    * Cancel the PIFS recovery event and have the EDCAF attempting PIFS recovery
    * release the channel.
    */
-  void CancelPifsRecovery (void);
+  void CancelPifsRecovery ();
 
   bool m_initialFrame;                       //!< true if transmitting the initial frame of a TXOP
   bool m_pifsRecovery;                       //!< true if performing a PIFS recovery after failure

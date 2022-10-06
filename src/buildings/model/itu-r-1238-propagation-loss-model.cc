@@ -36,7 +36,7 @@ NS_OBJECT_ENSURE_REGISTERED (ItuR1238PropagationLossModel);
 
 
 TypeId
-ItuR1238PropagationLossModel::GetTypeId (void)
+ItuR1238PropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ItuR1238PropagationLossModel")
 

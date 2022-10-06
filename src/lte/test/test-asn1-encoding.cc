@@ -121,7 +121,7 @@ public:
    * \param s the reference name
    */
   RrcHeaderTestCase (std::string s);
-  virtual void DoRun (void) = 0;
+  virtual void DoRun () = 0;
   /**
    * \brief Create radio resource config dedicated
    * \returns LteRrcSap::RadioResourceConfigDedicated
@@ -301,7 +301,7 @@ class RrcConnectionRequestTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionRequestTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionRequestTestCase::RrcConnectionRequestTestCase () : RrcHeaderTestCase ("Testing RrcConnectionRequest")
@@ -309,7 +309,7 @@ RrcConnectionRequestTestCase::RrcConnectionRequestTestCase () : RrcHeaderTestCas
 }
 
 void
-RrcConnectionRequestTestCase::DoRun (void)
+RrcConnectionRequestTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionRequestTestCase ===========");
@@ -353,7 +353,7 @@ class RrcConnectionSetupTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionSetupTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionSetupTestCase::RrcConnectionSetupTestCase () : RrcHeaderTestCase ("Testing RrcConnectionSetupTestCase")
@@ -361,7 +361,7 @@ RrcConnectionSetupTestCase::RrcConnectionSetupTestCase () : RrcHeaderTestCase ("
 }
 
 void
-RrcConnectionSetupTestCase::DoRun (void)
+RrcConnectionSetupTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionSetupTestCase ===========");
@@ -407,7 +407,7 @@ class RrcConnectionSetupCompleteTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionSetupCompleteTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionSetupCompleteTestCase::RrcConnectionSetupCompleteTestCase () : RrcHeaderTestCase ("Testing RrcConnectionSetupCompleteTestCase")
@@ -415,7 +415,7 @@ RrcConnectionSetupCompleteTestCase::RrcConnectionSetupCompleteTestCase () : RrcH
 }
 
 void
-RrcConnectionSetupCompleteTestCase::DoRun (void)
+RrcConnectionSetupCompleteTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionSetupCompleteTestCase ===========");
@@ -458,7 +458,7 @@ class RrcConnectionReconfigurationCompleteTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReconfigurationCompleteTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionReconfigurationCompleteTestCase::RrcConnectionReconfigurationCompleteTestCase ()
@@ -467,7 +467,7 @@ RrcConnectionReconfigurationCompleteTestCase::RrcConnectionReconfigurationComple
 }
 
 void
-RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
+RrcConnectionReconfigurationCompleteTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionReconfigurationCompleteTestCase ===========");
@@ -510,7 +510,7 @@ class RrcConnectionReconfigurationTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReconfigurationTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionReconfigurationTestCase::RrcConnectionReconfigurationTestCase ()
@@ -519,7 +519,7 @@ RrcConnectionReconfigurationTestCase::RrcConnectionReconfigurationTestCase ()
 }
 
 void
-RrcConnectionReconfigurationTestCase::DoRun (void)
+RrcConnectionReconfigurationTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionReconfigurationTestCase ===========");
@@ -720,7 +720,7 @@ class HandoverPreparationInfoTestCase : public RrcHeaderTestCase
 {
 public:
   HandoverPreparationInfoTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 HandoverPreparationInfoTestCase::HandoverPreparationInfoTestCase () : RrcHeaderTestCase ("Testing HandoverPreparationInfoTestCase")
@@ -728,7 +728,7 @@ HandoverPreparationInfoTestCase::HandoverPreparationInfoTestCase () : RrcHeaderT
 }
 
 void
-HandoverPreparationInfoTestCase::DoRun (void)
+HandoverPreparationInfoTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= HandoverPreparationInfoTestCase ===========");
@@ -799,7 +799,7 @@ class RrcConnectionReestablishmentRequestTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReestablishmentRequestTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequestTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentRequestTestCase")
@@ -807,7 +807,7 @@ RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequest
 }
 
 void
-RrcConnectionReestablishmentRequestTestCase::DoRun (void)
+RrcConnectionReestablishmentRequestTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionReestablishmentRequestTestCase ===========");
@@ -854,7 +854,7 @@ class RrcConnectionReestablishmentTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReestablishmentTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentTestCase")
@@ -862,7 +862,7 @@ RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase () : 
 }
 
 void
-RrcConnectionReestablishmentTestCase::DoRun (void)
+RrcConnectionReestablishmentTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionReestablishmentTestCase ===========");
@@ -907,7 +907,7 @@ class RrcConnectionReestablishmentCompleteTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReestablishmentCompleteTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentCompleteTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentCompleteTestCase")
@@ -915,7 +915,7 @@ RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentComple
 }
 
 void
-RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
+RrcConnectionReestablishmentCompleteTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionReestablishmentCompleteTestCase ===========");
@@ -958,7 +958,7 @@ class RrcConnectionRejectTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionRejectTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 RrcConnectionRejectTestCase::RrcConnectionRejectTestCase () : RrcHeaderTestCase ("Testing RrcConnectionRejectTestCase")
@@ -966,7 +966,7 @@ RrcConnectionRejectTestCase::RrcConnectionRejectTestCase () : RrcHeaderTestCase 
 }
 
 void
-RrcConnectionRejectTestCase::DoRun (void)
+RrcConnectionRejectTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= RrcConnectionRejectTestCase ===========");
@@ -1009,7 +1009,7 @@ class MeasurementReportTestCase : public RrcHeaderTestCase
 {
 public:
   MeasurementReportTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 MeasurementReportTestCase::MeasurementReportTestCase () : RrcHeaderTestCase ("Testing MeasurementReportTestCase")
@@ -1017,7 +1017,7 @@ MeasurementReportTestCase::MeasurementReportTestCase () : RrcHeaderTestCase ("Te
 }
 
 void
-MeasurementReportTestCase::DoRun (void)
+MeasurementReportTestCase::DoRun ()
 {
   packet = Create<Packet> ();
   NS_LOG_DEBUG ("============= MeasurementReportTestCase ===========");

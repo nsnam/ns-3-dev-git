@@ -84,7 +84,7 @@ void Ipv6EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
   m_boundnetdevice = netdevice;
 }
 
-Ptr<NetDevice> Ipv6EndPoint::GetBoundNetDevice (void)
+Ptr<NetDevice> Ipv6EndPoint::GetBoundNetDevice ()
 {
   return m_boundnetdevice;
 }

@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiProtectionManager");
 NS_OBJECT_ENSURE_REGISTERED (WifiProtectionManager);
 
 TypeId
-WifiProtectionManager::GetTypeId (void)
+WifiProtectionManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiProtectionManager")
     .SetParent<Object> ()
@@ -51,7 +51,7 @@ WifiProtectionManager::~WifiProtectionManager ()
 }
 
 void
-WifiProtectionManager::DoDispose (void)
+WifiProtectionManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_mac = 0;
@@ -66,7 +66,7 @@ WifiProtectionManager::SetWifiMac (Ptr<WifiMac> mac)
 }
 
 Ptr<WifiRemoteStationManager>
-WifiProtectionManager::GetWifiRemoteStationManager (void) const
+WifiProtectionManager::GetWifiRemoteStationManager () const
 {
   return m_mac->GetWifiRemoteStationManager (m_linkId);
 }

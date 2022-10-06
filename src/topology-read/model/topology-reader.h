@@ -79,22 +79,22 @@ public:
      * \brief Returns a Ptr<Node> to the "from" node of the link.
      * \return A Ptr<Node> to the "from" node of the link.
      */
-    Ptr<Node> GetFromNode (void) const;
+    Ptr<Node> GetFromNode () const;
     /**
      * \brief Returns the name of the "from" node of the link.
      * \return The name of the "from" node of the link.
      */
-    std::string GetFromNodeName (void) const;
+    std::string GetFromNodeName () const;
     /**
      * \brief Returns a Ptr<Node> to the "to" node of the link.
      * \return A Ptr<Node> to the "to" node of the link.
      */
-    Ptr<Node> GetToNode (void) const;
+    Ptr<Node> GetToNode () const;
     /**
      * \brief Returns the name of the "to" node of the link.
      * \return The name of the "to" node of the link.
      */
-    std::string GetToNodeName (void) const;
+    std::string GetToNodeName () const;
     /**
      * \brief Returns the value of a link attribute. The attribute must exist.
      * \param [in] name the name of the attribute.
@@ -119,12 +119,12 @@ public:
      * \brief Returns an iterator to the begin of the attributes.
      * \return A const iterator to the first attribute of a link.
      */
-    ConstAttributesIterator AttributesBegin (void) const;
+    ConstAttributesIterator AttributesBegin () const;
     /**
      * \brief Returns an iterator to the end of the attributes.
      * \return A const iterator to the last attribute of a link.
      */
-    ConstAttributesIterator AttributesEnd (void) const;
+    ConstAttributesIterator AttributesEnd () const;
 
 private:
     Link ();
@@ -144,7 +144,7 @@ private:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   TopologyReader ();
   virtual ~TopologyReader ();
@@ -164,7 +164,7 @@ private:
    *
    * \return The container of the nodes created (or null if there was an error).
    */
-  virtual NodeContainer Read (void) = 0;
+  virtual NodeContainer Read () = 0;
 
   /**
    * \brief Sets the input file name.
@@ -176,31 +176,31 @@ private:
    * \brief Returns the input file name.
    * \return The input file name.
    */
-  std::string GetFileName (void) const;
+  std::string GetFileName () const;
 
   /**
    * \brief Returns an iterator to the the first link in this block.
    * \return A const iterator to the first link in this block.
    */
-  ConstLinksIterator LinksBegin (void) const;
+  ConstLinksIterator LinksBegin () const;
 
   /**
    * \brief Returns an iterator to the the last link in this block.
    * \return A const iterator to the last link in this block.
    */
-  ConstLinksIterator LinksEnd (void) const;
+  ConstLinksIterator LinksEnd () const;
 
   /**
    * \brief Returns the number of links in this block.
    * \return The number of links in this block.
    */
-  int LinksSize (void) const;
+  int LinksSize () const;
 
   /**
    * \brief Checks if the block contains any links.
    * \return True if there are no links in this block, false otherwise.
    */
-  bool LinksEmpty (void) const;
+  bool LinksEmpty () const;
 
   /**
    * \brief Adds a link to the topology.

@@ -66,7 +66,7 @@ NixVector::operator = (const NixVector &o)
 }
 
 Ptr<NixVector>
-NixVector::Copy (void) const
+NixVector::Copy () const
 {
   NS_LOG_FUNCTION (this);
   // we need to invoke the copy constructor directly
@@ -194,7 +194,7 @@ NixVector::ExtractNeighborIndex (uint32_t numberOfBits)
 }
 
 uint32_t
-NixVector::GetSerializedSize (void) const
+NixVector::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -318,7 +318,7 @@ NixVector::DumpNixVector (std::ostream &os) const
 }
 
 uint32_t
-NixVector::GetRemainingBits (void) const
+NixVector::GetRemainingBits () const
 {
   NS_LOG_FUNCTION (this);
 

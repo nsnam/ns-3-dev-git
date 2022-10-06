@@ -112,7 +112,7 @@ WifiTxVector::~WifiTxVector ()
 }
 
 bool
-WifiTxVector::GetModeInitialized (void) const
+WifiTxVector::GetModeInitialized () const
 {
   return m_modeInitialized;
 }
@@ -134,7 +134,7 @@ WifiTxVector::GetMode (uint16_t staId) const
 }
 
 WifiModulationClass
-WifiTxVector::GetModulationClass (void) const
+WifiTxVector::GetModulationClass () const
 {
   NS_ABORT_MSG_IF (!m_modeInitialized, "WifiTxVector mode must be set before using");
 
@@ -148,31 +148,31 @@ WifiTxVector::GetModulationClass (void) const
 }
 
 uint8_t
-WifiTxVector::GetTxPowerLevel (void) const
+WifiTxVector::GetTxPowerLevel () const
 {
   return m_txPowerLevel;
 }
 
 WifiPreamble
-WifiTxVector::GetPreambleType (void) const
+WifiTxVector::GetPreambleType () const
 {
   return m_preamble;
 }
 
 uint16_t
-WifiTxVector::GetChannelWidth (void) const
+WifiTxVector::GetChannelWidth () const
 {
   return m_channelWidth;
 }
 
 uint16_t
-WifiTxVector::GetGuardInterval (void) const
+WifiTxVector::GetGuardInterval () const
 {
   return m_guardInterval;
 }
 
 uint8_t
-WifiTxVector::GetNTx (void) const
+WifiTxVector::GetNTx () const
 {
   return m_nTx;
 }
@@ -190,7 +190,7 @@ WifiTxVector::GetNss (uint16_t staId) const
 }
 
 uint8_t
-WifiTxVector::GetNssMax (void) const
+WifiTxVector::GetNssMax () const
 {
   uint8_t nss = 0;
   if (IsMu ())
@@ -208,25 +208,25 @@ WifiTxVector::GetNssMax (void) const
 }
 
 uint8_t
-WifiTxVector::GetNess (void) const
+WifiTxVector::GetNess () const
 {
   return m_ness;
 }
 
 bool
-WifiTxVector::IsAggregation (void) const
+WifiTxVector::IsAggregation () const
 {
   return m_aggregation;
 }
 
 bool
-WifiTxVector::IsStbc (void) const
+WifiTxVector::IsStbc () const
 {
   return m_stbc;
 }
 
 bool
-WifiTxVector::IsLdpc (void) const
+WifiTxVector::IsLdpc () const
 {
   return m_ldpc;
 }
@@ -322,7 +322,7 @@ WifiTxVector::SetBssColor (uint8_t color)
 }
 
 uint8_t
-WifiTxVector::GetBssColor (void) const
+WifiTxVector::GetBssColor () const
 {
   return m_bssColor;
 }
@@ -334,7 +334,7 @@ WifiTxVector::SetLength (uint16_t length)
 }
 
 uint16_t
-WifiTxVector::GetLength (void) const
+WifiTxVector::GetLength () const
 {
   return m_length;
 }
@@ -372,7 +372,7 @@ WifiTxVector::GetRuAllocation () const
 }
 
 bool
-WifiTxVector::IsValid (void) const
+WifiTxVector::IsValid () const
 {
   if (!GetModeInitialized ())
     {
@@ -408,19 +408,19 @@ WifiTxVector::IsValid (void) const
 }
 
 bool
-WifiTxVector::IsMu (void) const
+WifiTxVector::IsMu () const
 {
   return ns3::IsMu (m_preamble);
 }
 
 bool
-WifiTxVector::IsDlMu (void) const
+WifiTxVector::IsDlMu () const
 {
   return ns3::IsDlMu (m_preamble);
 }
 
 bool
-WifiTxVector::IsUlMu (void) const
+WifiTxVector::IsUlMu () const
 {
   return ns3::IsUlMu (m_preamble);
 }
@@ -460,14 +460,14 @@ WifiTxVector::SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo)
 }
 
 const WifiTxVector::HeMuUserInfoMap&
-WifiTxVector::GetHeMuUserInfoMap (void) const
+WifiTxVector::GetHeMuUserInfoMap () const
 {
   NS_ABORT_MSG_IF (!IsMu (), "HE MU user info map only available for MU");
   return m_muUserInfos;
 }
 
 WifiTxVector::HeMuUserInfoMap&
-WifiTxVector::GetHeMuUserInfoMap (void)
+WifiTxVector::GetHeMuUserInfoMap ()
 {
   NS_ABORT_MSG_IF (!IsMu (), "HE MU user info map only available for MU");
   m_ruAllocation.clear ();
@@ -475,7 +475,7 @@ WifiTxVector::GetHeMuUserInfoMap (void)
 }
 
 std::pair<std::size_t, std::size_t>
-WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
+WifiTxVector::GetNumRusPerHeSigBContentChannel () const
 {
   //MU-MIMO is not handled for now, i.e. one station per RU
   auto ruAllocation = GetRuAllocation ();
@@ -529,7 +529,7 @@ WifiTxVector::SetInactiveSubchannels (const std::vector<bool>& inactiveSubchanne
 }
 
 const std::vector<bool>&
-WifiTxVector::GetInactiveSubchannels (void) const
+WifiTxVector::GetInactiveSubchannels () const
 {
   return m_inactiveSubchannels;
 }

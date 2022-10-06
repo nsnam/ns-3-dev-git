@@ -38,7 +38,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Setup the socket.
@@ -51,13 +51,13 @@ public:
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
 private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /// Schedule a new transmission.
-  void ScheduleTx (void);
+  void ScheduleTx ();
   /// Send a packet.
-  void SendPacket (void);
+  void SendPacket ();
 
   Ptr<Socket>     m_socket;       //!< The tranmission socket.
   Address         m_peer;         //!< The destination address.

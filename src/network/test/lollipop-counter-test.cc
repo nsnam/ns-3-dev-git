@@ -37,7 +37,7 @@ class LollipopCounterTest : public TestCase
 {
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   LollipopCounterTest ();
 
 };
@@ -48,7 +48,7 @@ LollipopCounterTest::LollipopCounterTest ()
 }
 
 void
-LollipopCounterTest::DoRun (void)
+LollipopCounterTest::DoRun ()
 {
 
   LollipopCounter<uint8_t> counter8a;

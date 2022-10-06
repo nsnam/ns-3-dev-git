@@ -202,7 +202,7 @@ LenaFdBetFfMacSchedulerTestCase1::~LenaFdBetFfMacSchedulerTestCase1 ()
 }
 
 void
-LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
+LenaFdBetFfMacSchedulerTestCase1::DoRun ()
 {
   if (!m_errorModelEnabled)
     {
@@ -369,7 +369,7 @@ LenaFdBetFfMacSchedulerTestCase2::~LenaFdBetFfMacSchedulerTestCase2 ()
 }
 
 void
-LenaFdBetFfMacSchedulerTestCase2::DoRun (void)
+LenaFdBetFfMacSchedulerTestCase2::DoRun ()
 {
 
   NS_LOG_FUNCTION (this);

@@ -32,8 +32,8 @@ class NetworkNumberAllocatorTestCase : public TestCase
 {
 public:
   NetworkNumberAllocatorTestCase ();
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 NetworkNumberAllocatorTestCase::NetworkNumberAllocatorTestCase ()
@@ -41,12 +41,12 @@ NetworkNumberAllocatorTestCase::NetworkNumberAllocatorTestCase ()
 {
 }
 void
-NetworkNumberAllocatorTestCase::DoTeardown (void)
+NetworkNumberAllocatorTestCase::DoTeardown ()
 {
   Ipv4AddressGenerator::Reset ();
 }
 void
-NetworkNumberAllocatorTestCase::DoRun (void)
+NetworkNumberAllocatorTestCase::DoRun ()
 {
   Ipv4Address network;
   Ipv4AddressGenerator::Init (Ipv4Address ("1.0.0.0"), Ipv4Mask ("255.0.0.0"),
@@ -89,8 +89,8 @@ class AddressAllocatorTestCase : public TestCase
 public:
   AddressAllocatorTestCase ();
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 AddressAllocatorTestCase::AddressAllocatorTestCase ()
@@ -99,7 +99,7 @@ AddressAllocatorTestCase::AddressAllocatorTestCase ()
 }
 
 void
-AddressAllocatorTestCase::DoRun (void)
+AddressAllocatorTestCase::DoRun ()
 {
   Ipv4Address address;
 
@@ -126,7 +126,7 @@ AddressAllocatorTestCase::DoRun (void)
 }
 
 void
-AddressAllocatorTestCase::DoTeardown (void)
+AddressAllocatorTestCase::DoTeardown ()
 {
   Ipv4AddressGenerator::Reset ();
   Simulator::Destroy ();
@@ -143,8 +143,8 @@ class NetworkAndAddressTestCase : public TestCase
 {
 public:
   NetworkAndAddressTestCase ();
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 NetworkAndAddressTestCase::NetworkAndAddressTestCase ()
@@ -153,14 +153,14 @@ NetworkAndAddressTestCase::NetworkAndAddressTestCase ()
 }
 
 void
-NetworkAndAddressTestCase::DoTeardown (void)
+NetworkAndAddressTestCase::DoTeardown ()
 {
   Ipv4AddressGenerator::Reset ();
   Simulator::Destroy ();
 }
 
 void
-NetworkAndAddressTestCase::DoRun (void)
+NetworkAndAddressTestCase::DoRun ()
 {
   Ipv4Address address;
   Ipv4Address network;
@@ -213,8 +213,8 @@ class ExampleAddressGeneratorTestCase : public TestCase
 public:
   ExampleAddressGeneratorTestCase ();
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 ExampleAddressGeneratorTestCase::ExampleAddressGeneratorTestCase ()
@@ -223,13 +223,13 @@ ExampleAddressGeneratorTestCase::ExampleAddressGeneratorTestCase ()
 }
 
 void
-ExampleAddressGeneratorTestCase::DoTeardown (void)
+ExampleAddressGeneratorTestCase::DoTeardown ()
 {
   Ipv4AddressGenerator::Reset ();
 }
 
 void
-ExampleAddressGeneratorTestCase::DoRun (void)
+ExampleAddressGeneratorTestCase::DoRun ()
 {
   Ipv4Address address;
   //
@@ -271,8 +271,8 @@ class AddressCollisionTestCase : public TestCase
 public:
   AddressCollisionTestCase ();
 private:
-  void DoRun (void);
-  void DoTeardown (void);
+  void DoRun ();
+  void DoTeardown ();
 };
 
 AddressCollisionTestCase::AddressCollisionTestCase ()
@@ -281,13 +281,13 @@ AddressCollisionTestCase::AddressCollisionTestCase ()
 }
 
 void
-AddressCollisionTestCase::DoTeardown (void)
+AddressCollisionTestCase::DoTeardown ()
 {
   Ipv4AddressGenerator::Reset ();
   Simulator::Destroy ();
 }
 void
-AddressCollisionTestCase::DoRun (void)
+AddressCollisionTestCase::DoRun ()
 {
   Ipv4AddressGenerator::AddAllocated ("0.0.0.5");
   Ipv4AddressGenerator::AddAllocated ("0.0.0.10");

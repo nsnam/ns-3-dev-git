@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-Cid::Cid (void)
+Cid::Cid ()
 {
   m_identifier = CID_UNINITIALIZED;
 }
@@ -37,49 +37,49 @@ Cid::Cid (uint16_t identifier)
   m_identifier = identifier;
 }
 
-Cid::~Cid (void)
+Cid::~Cid ()
 {
 }
 
 uint16_t
-Cid::GetIdentifier (void) const
+Cid::GetIdentifier () const
 {
   return m_identifier;
 }
 
 bool
-Cid::IsMulticast (void) const
+Cid::IsMulticast () const
 {
   return m_identifier >= 0xff00 && m_identifier <= 0xfffd;
 }
 bool
-Cid::IsBroadcast (void) const
+Cid::IsBroadcast () const
 {
   return *this == Broadcast ();
 }
 bool
-Cid::IsPadding (void) const
+Cid::IsPadding () const
 {
   return *this == Padding ();
 }
 bool
-Cid::IsInitialRanging (void) const
+Cid::IsInitialRanging () const
 {
   return *this == InitialRanging ();
 }
 
 Cid
-Cid::Broadcast (void)
+Cid::Broadcast ()
 {
   return 0xffff;
 }
 Cid
-Cid::Padding (void)
+Cid::Padding ()
 {
   return 0xfffe;
 }
 Cid
-Cid::InitialRanging (void)
+Cid::InitialRanging ()
 {
   return 0;
 }

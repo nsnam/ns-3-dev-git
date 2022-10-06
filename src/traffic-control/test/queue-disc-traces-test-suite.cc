@@ -45,8 +45,8 @@ public:
    */
   qdTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~qdTestItem ();
-  virtual void AddHeader (void);
-  virtual bool Mark (void);
+  virtual void AddHeader ();
+  virtual bool Mark ();
 };
 
 qdTestItem::qdTestItem (Ptr<Packet> p, const Address & addr)
@@ -59,12 +59,12 @@ qdTestItem::~qdTestItem ()
 }
 
 void
-qdTestItem::AddHeader (void)
+qdTestItem::AddHeader ()
 {
 }
 
 bool
-qdTestItem::Mark (void)
+qdTestItem::Mark ()
 {
   return false;
 }
@@ -85,9 +85,9 @@ public:
   TestChildQueueDisc ();
   virtual ~TestChildQueueDisc ();
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual bool CheckConfig (void);
-  virtual void InitializeParams (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
+  virtual bool CheckConfig ();
+  virtual void InitializeParams ();
 
   // Reasons for dropping packets
   static constexpr const char* BEFORE_ENQUEUE = "Before enqueue";  //!< Drop before enqueue
@@ -116,7 +116,7 @@ TestChildQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-TestChildQueueDisc::DoDequeue (void)
+TestChildQueueDisc::DoDequeue ()
 {
   Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();
 
@@ -130,14 +130,14 @@ TestChildQueueDisc::DoDequeue (void)
 }
 
 bool
-TestChildQueueDisc::CheckConfig (void)
+TestChildQueueDisc::CheckConfig ()
 {
   AddInternalQueue (CreateObject<DropTailQueue<QueueDiscItem> > ());
   return true;
 }
 
 void
-TestChildQueueDisc::InitializeParams (void)
+TestChildQueueDisc::InitializeParams ()
 {
 }
 
@@ -157,9 +157,9 @@ public:
   TestParentQueueDisc ();
   virtual ~TestParentQueueDisc ();
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual bool CheckConfig (void);
-  virtual void InitializeParams (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
+  virtual bool CheckConfig ();
+  virtual void InitializeParams ();
 };
 
 TestParentQueueDisc::TestParentQueueDisc ()
@@ -178,13 +178,13 @@ TestParentQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-TestParentQueueDisc::DoDequeue (void)
+TestParentQueueDisc::DoDequeue ()
 {
   return GetQueueDiscClass (0)->GetQueueDisc ()->Dequeue ();
 }
 
 bool
-TestParentQueueDisc::CheckConfig (void)
+TestParentQueueDisc::CheckConfig ()
 {
   Ptr<QueueDiscClass> c = CreateObject<QueueDiscClass> ();
   c->SetQueueDisc (CreateObject<TestChildQueueDisc> ());
@@ -193,7 +193,7 @@ TestParentQueueDisc::CheckConfig (void)
 }
 
 void
-TestParentQueueDisc::InitializeParams (void)
+TestParentQueueDisc::InitializeParams ()
 {
 }
 
@@ -326,7 +326,7 @@ class QueueDiscTracesTestCase : public TestCase
 {
 public:
   QueueDiscTracesTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Check that queued packets/bytes are consistent with what is expected
@@ -406,7 +406,7 @@ QueueDiscTracesTestCase::CheckDroppedAfterDequeue (Ptr<QueueDisc> qd, uint32_t n
 }
 
 void
-QueueDiscTracesTestCase::DoRun (void)
+QueueDiscTracesTestCase::DoRun ()
 {
   Address dest;
   uint32_t pktSizeUnit = 100;

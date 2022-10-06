@@ -110,7 +110,7 @@ LenaMimoTestCase::~LenaMimoTestCase ()
 }
 
 void
-LenaMimoTestCase::DoRun (void)
+LenaMimoTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));

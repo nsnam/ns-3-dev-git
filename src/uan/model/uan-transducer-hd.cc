@@ -109,20 +109,20 @@ UanTransducerHd::GetState () const
 
 
 bool
-UanTransducerHd::IsRx (void) const
+UanTransducerHd::IsRx () const
 {
   return m_state == RX;
 }
 
 bool
-UanTransducerHd::IsTx (void) const
+UanTransducerHd::IsTx () const
 {
   return m_state == TX;
 
 }
 
 const UanTransducer::ArrivalList &
-UanTransducerHd::GetArrivalList (void) const
+UanTransducerHd::GetArrivalList () const
 {
   return m_arrivalList;
 }
@@ -134,7 +134,7 @@ UanTransducerHd::SetRxGainDb (double gainDb)
 }
 
 double
-UanTransducerHd::GetRxGainDb (void)
+UanTransducerHd::GetRxGainDb ()
 {
   return m_rxGainDb;
 }
@@ -222,7 +222,7 @@ UanTransducerHd::Transmit (Ptr<UanPhy> src,
 }
 
 void
-UanTransducerHd::EndTx (void)
+UanTransducerHd::EndTx ()
 {
   NS_ASSERT (m_state == TX);
   m_state = RX;
@@ -236,7 +236,7 @@ UanTransducerHd::SetChannel (Ptr<UanChannel> chan)
 
 }
 Ptr<UanChannel>
-UanTransducerHd::GetChannel (void) const
+UanTransducerHd::GetChannel () const
 {
   return m_channel;
 }
@@ -247,7 +247,7 @@ UanTransducerHd::AddPhy (Ptr<UanPhy> phy)
 }
 
 const UanTransducer::UanPhyList &
-UanTransducerHd::GetPhyList (void) const
+UanTransducerHd::GetPhyList () const
 {
   return m_phyList;
 }

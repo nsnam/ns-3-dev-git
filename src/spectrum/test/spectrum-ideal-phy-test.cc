@@ -86,7 +86,7 @@ public:
   virtual ~SpectrumIdealPhyTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Get the test name
    * \param channelType Channel type
@@ -131,7 +131,7 @@ SpectrumIdealPhyTestCase::~SpectrumIdealPhyTestCase ()
 
 
 void
-SpectrumIdealPhyTestCase::DoRun (void)
+SpectrumIdealPhyTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (m_snrLinear << m_phyRate);
   double txPowerW = 0.1;

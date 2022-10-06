@@ -44,7 +44,7 @@ class PacketSocketAppsTest : public TestCase
   uint32_t m_receivedPacketNumber;  //!< Number of received packets
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   PacketSocketAppsTest ();
 
   /**
@@ -73,7 +73,7 @@ void PacketSocketAppsTest::ReceivePkt (Ptr<const Packet> packet, const Address &
 
 
 void
-PacketSocketAppsTest::DoRun (void)
+PacketSocketAppsTest::DoRun ()
 {
   // Create topology
 

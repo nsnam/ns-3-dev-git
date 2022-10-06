@@ -46,18 +46,18 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   RrMultiUserScheduler ();
   virtual ~RrMultiUserScheduler ();
 
 protected:
-  void DoDispose (void) override;
-  void DoInitialize (void) override;
+  void DoDispose () override;
+  void DoInitialize () override;
 
 private:
-  TxFormat SelectTxFormat (void) override;
-  DlMuInfo ComputeDlMuInfo (void) override;
-  UlMuInfo ComputeUlMuInfo (void) override;
+  TxFormat SelectTxFormat () override;
+  DlMuInfo ComputeDlMuInfo () override;
+  UlMuInfo ComputeUlMuInfo () override;
 
   /**
    * Check if it is possible to send a BSRP Trigger Frame given the current
@@ -65,7 +65,7 @@ private:
    *
    * \return UL_MU_TX if it is possible to send a BSRP TF, NO_TX otherwise
    */
-  virtual TxFormat TrySendingBsrpTf (void);
+  virtual TxFormat TrySendingBsrpTf ();
 
   /**
    * Check if it is possible to send a Basic Trigger Frame given the current
@@ -74,7 +74,7 @@ private:
    * \return UL_MU_TX if it is possible to send a Basic TF, DL_MU_TX if we can try
    *         to send a DL MU PPDU and NO_TX if the remaining time is too short
    */
-  virtual TxFormat TrySendingBasicTf (void);
+  virtual TxFormat TrySendingBasicTf ();
 
   /**
    * Check if it is possible to send a DL MU PPDU given the current
@@ -84,7 +84,7 @@ private:
    *         can be transmitted (e.g., there are no HE stations associated or sending
    *         a DL MU PPDU is not possible and m_forceDlOfdma is false) or NO_TX otherwise
    */
-  virtual TxFormat TrySendingDlMuPpdu (void);
+  virtual TxFormat TrySendingDlMuPpdu ();
 
   /**
    * Compute a TXVECTOR that can be used to construct a Trigger Frame to solicit

@@ -168,7 +168,7 @@ LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 }
 
 TypeId
-LteEnbPhy::GetTypeId (void)
+LteEnbPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteEnbPhy")
     .SetParent<LtePhy> ()
@@ -361,7 +361,7 @@ LteEnbPhy::SetMacChDelay (uint8_t delay)
 }
 
 uint8_t
-LteEnbPhy::GetMacChDelay (void) const
+LteEnbPhy::GetMacChDelay () const
 {
   return (m_macChTtiDelay);
 }
@@ -456,7 +456,7 @@ LteEnbPhy::SetDownlinkSubChannelsWithPowerAllocation (std::vector<int> mask)
 }
 
 std::vector<int>
-LteEnbPhy::GetDownlinkSubChannels (void)
+LteEnbPhy::GetDownlinkSubChannels ()
 {
   NS_LOG_FUNCTION (this);
   return m_listOfDownlinkSubchannel;
@@ -581,7 +581,7 @@ LteEnbPhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgL
 
 
 void
-LteEnbPhy::StartFrame (void)
+LteEnbPhy::StartFrame ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -600,7 +600,7 @@ LteEnbPhy::StartFrame (void)
 
 
 void
-LteEnbPhy::StartSubFrame (void)
+LteEnbPhy::StartSubFrame ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -804,7 +804,7 @@ LteEnbPhy::SendDataChannels (Ptr<PacketBurst> pb)
 
 
 void
-LteEnbPhy::EndSubFrame (void)
+LteEnbPhy::EndSubFrame ()
 {
   NS_LOG_FUNCTION (this << Simulator::Now ().As (Time::S));
   if (m_nrSubFrames == 10)
@@ -819,7 +819,7 @@ LteEnbPhy::EndSubFrame (void)
 
 
 void
-LteEnbPhy::EndFrame (void)
+LteEnbPhy::EndFrame ()
 {
   NS_LOG_FUNCTION (this << Simulator::Now ().As (Time::S));
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
@@ -1089,7 +1089,7 @@ LteEnbPhy::QueueUlDci (UlDciLteControlMessage m)
 }
 
 std::list<UlDciLteControlMessage>
-LteEnbPhy::DequeueUlDci (void)
+LteEnbPhy::DequeueUlDci ()
 {
   NS_LOG_FUNCTION (this);
   if (m_ulDciQueue.at (0).size () > 0)

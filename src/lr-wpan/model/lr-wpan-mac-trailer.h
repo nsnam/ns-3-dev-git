@@ -48,17 +48,17 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Default constructor for a MAC trailer with disabled FCS calculation.
    */
-  LrWpanMacTrailer (void);
+  LrWpanMacTrailer ();
 
   // Inherited from the Trailer class.
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
@@ -68,7 +68,7 @@ public:
    *
    * \return the FCS value.
    */
-  uint16_t GetFcs (void) const;
+  uint16_t GetFcs () const;
 
   /**
    * Calculate and set the FCS value based on the given packet.
@@ -99,7 +99,7 @@ public:
    *
    * \return true, if FCS calculation is enabled, false otherwise.
    */
-  bool IsFcsEnabled (void);
+  bool IsFcsEnabled ();
 
 private:
   /**

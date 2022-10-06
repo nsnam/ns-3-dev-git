@@ -54,7 +54,7 @@ using namespace ns3;
 class Ipv6DadTest : public TestCase
 {
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv6DadTest ();
 };
 
@@ -64,7 +64,7 @@ Ipv6DadTest::Ipv6DadTest ()
 }
 
 void
-Ipv6DadTest::DoRun (void)
+Ipv6DadTest::DoRun ()
 {
   // Create topology
 

@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("CsmaChannel");
 NS_OBJECT_ENSURE_REGISTERED (CsmaChannel);
 
 TypeId
-CsmaChannel::GetTypeId (void)
+CsmaChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CsmaChannel")
     .SetParent<Channel> ()
@@ -252,7 +252,7 @@ CsmaChannel::PropagationCompleteEvent ()
 }
 
 uint32_t
-CsmaChannel::GetNumActDevices (void)
+CsmaChannel::GetNumActDevices ()
 {
   int numActDevices = 0;
   std::vector<CsmaDeviceRec>::iterator it;
@@ -267,7 +267,7 @@ CsmaChannel::GetNumActDevices (void)
 }
 
 std::size_t
-CsmaChannel::GetNDevices (void) const
+CsmaChannel::GetNDevices () const
 {
   return m_deviceList.size ();
 }
@@ -302,7 +302,7 @@ CsmaChannel::GetDeviceNum (Ptr<CsmaNetDevice> device)
 }
 
 bool
-CsmaChannel::IsBusy (void)
+CsmaChannel::IsBusy ()
 {
   if (m_state == IDLE)
     {
@@ -315,19 +315,19 @@ CsmaChannel::IsBusy (void)
 }
 
 DataRate
-CsmaChannel::GetDataRate (void)
+CsmaChannel::GetDataRate ()
 {
   return m_bps;
 }
 
 Time
-CsmaChannel::GetDelay (void)
+CsmaChannel::GetDelay ()
 {
   return m_delay;
 }
 
 WireState
-CsmaChannel::GetState (void)
+CsmaChannel::GetState ()
 {
   return m_state;
 }

@@ -66,7 +66,7 @@ public:
    * \return true if we are de-fragmenting packets,
    *         false otherwise
    */
-  bool IsDeFragmenting (void) const
+  bool IsDeFragmenting () const
   {
     return m_defragmenting;
   }
@@ -142,7 +142,7 @@ public:
    *
    * \return the last sequence control
    */
-  uint16_t GetLastSequenceControl (void) const
+  uint16_t GetLastSequenceControl () const
   {
     return m_lastSequenceControl;
   }

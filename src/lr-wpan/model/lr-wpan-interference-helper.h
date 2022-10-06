@@ -45,7 +45,7 @@ public:
    */
   LrWpanInterferenceHelper (Ptr<const SpectrumModel> spectrumModel);
 
-  ~LrWpanInterferenceHelper (void);
+  ~LrWpanInterferenceHelper ();
 
   /**
    * Add the given signal to the set of accumulated signals. Never add the same
@@ -70,21 +70,21 @@ public:
   /**
    * Remove all currently accumulated signals.
    */
-  void ClearSignals (void);
+  void ClearSignals ();
 
   /**
    * Get the sum of all accumulated signals.
    *
    * \return the sum of the signals
    */
-  Ptr<SpectrumValue> GetSignalPsd (void) const;
+  Ptr<SpectrumValue> GetSignalPsd () const;
 
   /**
    * Get the SpectrumModel used by the helper.
    *
    * \return the helpers SpectrumModel
    */
-  Ptr<const SpectrumModel> GetSpectrumModel (void) const;
+  Ptr<const SpectrumModel> GetSpectrumModel () const;
 private:
   // Disable implicit copy constructors
   /**

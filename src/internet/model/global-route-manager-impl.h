@@ -135,7 +135,7 @@ public:
  * @see VertexType
  * @returns The VertexType of the current SPFVertex object.
  */
-  VertexType GetVertexType (void) const;
+  VertexType GetVertexType () const;
 
 /**
  * @brief Set the Vertex Type field of a SPFVertex object.
@@ -161,7 +161,7 @@ public:
  *
  * @returns The Ipv4Address Vertex ID of the current SPFVertex object.
  */
-  Ipv4Address GetVertexId (void) const;
+  Ipv4Address GetVertexId () const;
 
 /**
  * @brief Set the Vertex ID field of a SPFVertex object.
@@ -190,7 +190,7 @@ public:
  * @returns A pointer to the GlobalRoutingLSA found by the router represented
  * by this SPFVertex object.
  */
-  GlobalRoutingLSA* GetLSA (void) const;
+  GlobalRoutingLSA* GetLSA () const;
 
 /**
  * @brief Set the Global Router Link State Advertisement returned by the
@@ -227,7 +227,7 @@ public:
  *
  * @returns The distance, in hops, from the root SPFVertex to "this" SPFVertex.
  */
-  uint32_t GetDistanceFromRoot (void) const;
+  uint32_t GetDistanceFromRoot () const;
 
 /**
  * @brief Set the distance from the root vertex to "this" SPFVertex object.
@@ -445,7 +445,7 @@ public:
  * @returns The number of children of "this" SPFVertex (which reside in the
  * SPF tree).
  */
-  uint32_t GetNChildren (void) const;
+  uint32_t GetNChildren () const;
 
 /**
  * @brief Get a borrowed SPFVertex pointer to the specified child of "this"
@@ -519,7 +519,7 @@ public:
    * SPF computation
    * @returns value of underlying flag
    */
-  bool IsVertexProcessed (void) const;
+  bool IsVertexProcessed () const;
 
   /**
    * @brief Clear the value of the VertexProcessed flag
@@ -527,7 +527,7 @@ public:
    * Flag to note whether vertex has been processed in stage two of
    * SPF computation
    */
-  void ClearVertexProcessed (void);
+  void ClearVertexProcessed ();
 
 private:
   VertexType m_vertexType; //!< Vertex type

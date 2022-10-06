@@ -75,9 +75,9 @@ public:
   Ptr<AttributeValue> Find (Ptr<const AttributeChecker> checker) const;
 
   /** \returns The first item in the list */
-  CIterator Begin (void) const;
+  CIterator Begin () const;
   /** \returns The end of the list (iterator to one past the last). */
-  CIterator End (void) const;
+  CIterator End () const;
 
 private:
 

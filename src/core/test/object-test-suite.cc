@@ -50,7 +50,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static ns3::TypeId GetTypeId (void)
+  static ns3::TypeId GetTypeId ()
   {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:BaseA")
       .SetParent<Object> ()
@@ -75,7 +75,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static ns3::TypeId GetTypeId (void)
+  static ns3::TypeId GetTypeId ()
   {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:DerivedA")
       .SetParent<BaseA> ()
@@ -89,7 +89,7 @@ public:
   {}
 
 protected:
-  virtual void DoDispose (void)
+  virtual void DoDispose ()
   {
     BaseA::DoDispose ();
   }
@@ -106,7 +106,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static ns3::TypeId GetTypeId (void)
+  static ns3::TypeId GetTypeId ()
   {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:BaseB")
       .SetParent<Object> ()
@@ -131,7 +131,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static ns3::TypeId GetTypeId (void)
+  static ns3::TypeId GetTypeId ()
   {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:DerivedB")
       .SetParent<BaseB> ()
@@ -145,7 +145,7 @@ public:
   {}
 
 protected:
-  virtual void DoDispose (void)
+  virtual void DoDispose ()
   {
     BaseB::DoDispose ();
   }
@@ -176,7 +176,7 @@ public:
   virtual ~CreateObjectTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 CreateObjectTestCase::CreateObjectTestCase ()
@@ -187,7 +187,7 @@ CreateObjectTestCase::~CreateObjectTestCase ()
 {}
 
 void
-CreateObjectTestCase::DoRun (void)
+CreateObjectTestCase::DoRun ()
 {
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
   NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to CreateObject<BaseA>");
@@ -243,7 +243,7 @@ public:
   virtual ~AggregateObjectTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 AggregateObjectTestCase::AggregateObjectTestCase ()
@@ -254,7 +254,7 @@ AggregateObjectTestCase::~AggregateObjectTestCase ()
 {}
 
 void
-AggregateObjectTestCase::DoRun (void)
+AggregateObjectTestCase::DoRun ()
 {
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
   NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to CreateObject<BaseA>");
@@ -415,7 +415,7 @@ public:
   virtual ~ObjectFactoryTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 ObjectFactoryTestCase::ObjectFactoryTestCase ()
@@ -426,7 +426,7 @@ ObjectFactoryTestCase::~ObjectFactoryTestCase ()
 {}
 
 void
-ObjectFactoryTestCase::DoRun (void)
+ObjectFactoryTestCase::DoRun ()
 {
   ObjectFactory factory;
 

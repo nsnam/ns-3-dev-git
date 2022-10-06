@@ -168,14 +168,14 @@ public:
    *
    * \return azimuth angle in radians
    */
-  double GetAzimuth (void) const;
+  double GetAzimuth () const;
 
   /**
    * Getter for inclination angle
    *
    * \return inclination angle in radians
    */
-  double GetInclination (void) const;
+  double GetInclination () const;
 
   // friend methods
   /**
@@ -212,14 +212,14 @@ private:
     * and can be wrapped in [-M_PI, M_PI), an inclination angle outside
     * the [0, M_PI] range can be ambiguos and is thus not valid.
     */
-  void NormalizeAngles (void);
+  void NormalizeAngles ();
 
   /**
     * Check if Angle is valid or not
     * Warns the user if the Angle is undefined (non-finite azimuth or inclination),
     * throws an assert if the inclination angle is invalid (not in [0, M_PI])
     */
-  void CheckIfValid (void) const;
+  void CheckIfValid () const;
 
 
   double m_azimuth; //!< the azimuth angle in radians

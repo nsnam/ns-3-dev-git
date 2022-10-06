@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("TrafficControlLayer");
 NS_OBJECT_ENSURE_REGISTERED (TrafficControlLayer);
 
 TypeId
-TrafficControlLayer::GetTypeId (void)
+TrafficControlLayer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TrafficControlLayer")
     .SetParent<Object> ()
@@ -55,7 +55,7 @@ TrafficControlLayer::GetTypeId (void)
 }
 
 TypeId
-TrafficControlLayer::GetInstanceTypeId (void) const
+TrafficControlLayer::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -72,7 +72,7 @@ TrafficControlLayer::~TrafficControlLayer ()
 }
 
 void
-TrafficControlLayer::DoDispose (void)
+TrafficControlLayer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
@@ -82,7 +82,7 @@ TrafficControlLayer::DoDispose (void)
 }
 
 void
-TrafficControlLayer::DoInitialize (void)
+TrafficControlLayer::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -119,7 +119,7 @@ TrafficControlLayer::RegisterProtocolHandler (Node::ProtocolHandler handler,
 }
 
 void
-TrafficControlLayer::ScanDevices (void)
+TrafficControlLayer::ScanDevices ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -307,7 +307,7 @@ TrafficControlLayer::NotifyNewAggregate ()
 }
 
 uint32_t
-TrafficControlLayer::GetNDevices (void) const
+TrafficControlLayer::GetNDevices () const
 {
   return m_node->GetNDevices ();
 }

@@ -70,7 +70,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   WifiPhyStateHelper ();
 
@@ -103,67 +103,67 @@ public:
    *
    * \return the current state of WifiPhy
    */
-  WifiPhyState GetState (void) const;
+  WifiPhyState GetState () const;
   /**
    * Check whether the current state is CCA busy.
    *
    * \return true if the current state is CCA busy, false otherwise
    */
-  bool IsStateCcaBusy (void) const;
+  bool IsStateCcaBusy () const;
   /**
    * Check whether the current state is IDLE.
    *
    * \return true if the current state is IDLE, false otherwise
    */
-  bool IsStateIdle (void) const;
+  bool IsStateIdle () const;
   /**
    * Check whether the current state is RX.
    *
    * \return true if the current state is RX, false otherwise
    */
-  bool IsStateRx (void) const;
+  bool IsStateRx () const;
   /**
    * Check whether the current state is TX.
    *
    * \return true if the current state is TX, false otherwise
    */
-  bool IsStateTx (void) const;
+  bool IsStateTx () const;
   /**
    * Check whether the current state is SWITCHING.
    *
    * \return true if the current state is SWITCHING, false otherwise
    */
-  bool IsStateSwitching (void) const;
+  bool IsStateSwitching () const;
   /**
    * Check whether the current state is SLEEP.
    *
    * \return true if the current state is SLEEP, false otherwise
    */
-  bool IsStateSleep (void) const;
+  bool IsStateSleep () const;
   /**
    * Check whether the current state is OFF.
    *
    * \return true if the current state is OFF, false otherwise
    */
-  bool IsStateOff (void) const;
+  bool IsStateOff () const;
   /**
    * Return the time before the state is back to IDLE.
    *
    * \return the delay before the state is back to IDLE
    */
-  Time GetDelayUntilIdle (void) const;
+  Time GetDelayUntilIdle () const;
   /**
    * Return the time the last RX start.
    *
    * \return the time the last RX start.
    */
-  Time GetLastRxStartTime (void) const;
+  Time GetLastRxStartTime () const;
   /**
    * Return the time the last RX end.
    *
    * \return the time the last RX end.
    */
-  Time GetLastRxEndTime (void) const;
+  Time GetLastRxEndTime () const;
 
   /**
    * Switch state to TX for the given duration.
@@ -216,11 +216,11 @@ public:
   /**
    * Switch from RX after the reception was successful.
    */
-  void SwitchFromRxEndOk (void);
+  void SwitchFromRxEndOk ();
   /**
    * Switch from RX after the reception failed.
    */
-  void SwitchFromRxEndError (void);
+  void SwitchFromRxEndError ();
   /**
    * Abort current reception following a CCA reset request.
    * \param operatingWidth the channel width the PHY is operating on (in MHz)
@@ -241,19 +241,19 @@ public:
   /**
    * Switch to sleep mode.
    */
-  void SwitchToSleep (void);
+  void SwitchToSleep ();
   /**
    * Switch from sleep mode.
    */
-  void SwitchFromSleep (void);
+  void SwitchFromSleep ();
   /**
    * Switch to off mode.
    */
-  void SwitchToOff (void);
+  void SwitchToOff ();
   /**
    * Switch from off mode.
    */
-  void SwitchFromOff (void);
+  void SwitchFromOff ();
 
   /**
    * TracedCallback signature for state changes.
@@ -304,7 +304,7 @@ private:
   /**
    * Log the idle and CCA busy states.
    */
-  void LogPreviousIdleAndCcaBusyStates (void);
+  void LogPreviousIdleAndCcaBusyStates ();
 
   /**
    * Notify all WifiPhyListener that the transmission has started for the given duration.
@@ -322,11 +322,11 @@ private:
   /**
    * Notify all WifiPhyListener that the reception was successful.
    */
-  void NotifyRxEndOk (void);
+  void NotifyRxEndOk ();
   /**
    * Notify all WifiPhyListener that the reception was not successful.
    */
-  void NotifyRxEndError (void);
+  void NotifyRxEndError ();
   /**
    * Notify all WifiPhyListener that the CCA has started for the given duration.
    *
@@ -350,23 +350,23 @@ private:
   /**
    * Notify all WifiPhyListener that we are going to sleep
    */
-  void NotifySleep (void);
+  void NotifySleep ();
   /**
    * Notify all WifiPhyListener that we are going to switch off
    */
-  void NotifyOff (void);
+  void NotifyOff ();
   /**
    * Notify all WifiPhyListener that we woke up
    */
-  void NotifyWakeup (void);
+  void NotifyWakeup ();
   /**
    * Switch the state from RX.
    */
-  void DoSwitchFromRx (void);
+  void DoSwitchFromRx ();
   /**
    * Notify all WifiPhyListener that we are going to switch on
    */
-  void NotifyOn (void);
+  void NotifyOn ();
 
   /**
    * The trace source fired when state is changed.

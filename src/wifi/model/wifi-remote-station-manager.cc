@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiRemoteStationManager");
 NS_OBJECT_ENSURE_REGISTERED (WifiRemoteStationManager);
 
 TypeId
-WifiRemoteStationManager::GetTypeId (void)
+WifiRemoteStationManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiRemoteStationManager")
     .SetParent<Object> ()
@@ -133,7 +133,7 @@ WifiRemoteStationManager::~WifiRemoteStationManager ()
 }
 
 void
-WifiRemoteStationManager::DoDispose (void)
+WifiRemoteStationManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Reset ();
@@ -218,44 +218,44 @@ WifiRemoteStationManager::SetShortSlotTimeEnabled (bool enable)
 }
 
 bool
-WifiRemoteStationManager::GetShortSlotTimeEnabled (void) const
+WifiRemoteStationManager::GetShortSlotTimeEnabled () const
 {
   return m_shortSlotTimeEnabled;
 }
 
 bool
-WifiRemoteStationManager::GetShortPreambleEnabled (void) const
+WifiRemoteStationManager::GetShortPreambleEnabled () const
 {
   return m_shortPreambleEnabled;
 }
 
 bool
-WifiRemoteStationManager::GetHtSupported (void) const
+WifiRemoteStationManager::GetHtSupported () const
 {
   return bool (m_wifiPhy->GetDevice ()->GetHtConfiguration ());
 }
 
 bool
-WifiRemoteStationManager::GetVhtSupported (void) const
+WifiRemoteStationManager::GetVhtSupported () const
 {
   return (m_wifiPhy->GetDevice ()->GetVhtConfiguration ()
           && m_wifiPhy->GetPhyBand () != WIFI_PHY_BAND_2_4GHZ);
 }
 
 bool
-WifiRemoteStationManager::GetHeSupported (void) const
+WifiRemoteStationManager::GetHeSupported () const
 {
   return bool (m_wifiPhy->GetDevice ()->GetHeConfiguration ());
 }
 
 bool
-WifiRemoteStationManager::GetEhtSupported (void) const
+WifiRemoteStationManager::GetEhtSupported () const
 {
   return bool (m_wifiPhy->GetDevice ()->GetEhtConfiguration ());
 }
 
 bool
-WifiRemoteStationManager::GetLdpcSupported (void) const
+WifiRemoteStationManager::GetLdpcSupported () const
 {
   if (GetHtSupported ())
     {
@@ -267,7 +267,7 @@ WifiRemoteStationManager::GetLdpcSupported (void) const
 }
 
 bool
-WifiRemoteStationManager::GetShortGuardIntervalSupported (void) const
+WifiRemoteStationManager::GetShortGuardIntervalSupported () const
 {
   if (GetHtSupported ())
     {
@@ -282,7 +282,7 @@ WifiRemoteStationManager::GetShortGuardIntervalSupported (void) const
 }
 
 uint16_t
-WifiRemoteStationManager::GetGuardInterval (void) const
+WifiRemoteStationManager::GetGuardInterval () const
 {
   uint16_t gi = 0;
   if (GetHeSupported ())
@@ -295,7 +295,7 @@ WifiRemoteStationManager::GetGuardInterval (void) const
 }
 
 uint32_t
-WifiRemoteStationManager::GetFragmentationThreshold (void) const
+WifiRemoteStationManager::GetFragmentationThreshold () const
 {
   return DoGetFragmentationThreshold ();
 }
@@ -625,7 +625,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header, uint16_t
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetCtsToSelfTxVector (void)
+WifiRemoteStationManager::GetCtsToSelfTxVector ()
 {
   WifiMode defaultMode = GetDefaultMode ();
   WifiPreamble defaultPreamble;
@@ -1095,7 +1095,7 @@ WifiRemoteStationManager::SetUseNonErpProtection (bool enable)
 }
 
 bool
-WifiRemoteStationManager::GetUseNonErpProtection (void) const
+WifiRemoteStationManager::GetUseNonErpProtection () const
 {
   return m_useNonErpProtection;
 }
@@ -1108,7 +1108,7 @@ WifiRemoteStationManager::SetUseNonHtProtection (bool enable)
 }
 
 bool
-WifiRemoteStationManager::GetUseNonHtProtection (void) const
+WifiRemoteStationManager::GetUseNonHtProtection () const
 {
   return m_useNonHtProtection;
 }
@@ -1180,7 +1180,7 @@ WifiRemoteStationManager::DoSetFragmentationThreshold (uint32_t threshold)
 }
 
 uint32_t
-WifiRemoteStationManager::DoGetFragmentationThreshold (void) const
+WifiRemoteStationManager::DoGetFragmentationThreshold () const
 {
   return m_fragmentationThreshold;
 }
@@ -1250,7 +1250,7 @@ WifiRemoteStationManager::IsLastFragment (Ptr<const WifiMpdu> mpdu, uint32_t fra
 }
 
 uint8_t
-WifiRemoteStationManager::GetDefaultTxPowerLevel (void) const
+WifiRemoteStationManager::GetDefaultTxPowerLevel () const
 {
   return m_defaultTxPowerLevel;
 }
@@ -1503,13 +1503,13 @@ WifiRemoteStationManager::GetLdpcSupported (Mac48Address address) const
 }
 
 WifiMode
-WifiRemoteStationManager::GetDefaultMode (void) const
+WifiRemoteStationManager::GetDefaultMode () const
 {
   return m_defaultTxMode;
 }
 
 WifiMode
-WifiRemoteStationManager::GetDefaultMcs (void) const
+WifiRemoteStationManager::GetDefaultMcs () const
 {
   return m_defaultTxMcs;
 }
@@ -1540,7 +1540,7 @@ WifiRemoteStationManager::GetDefaultModeForSta (const WifiRemoteStation *st) con
 }
 
 void
-WifiRemoteStationManager::Reset (void)
+WifiRemoteStationManager::Reset ()
 {
   NS_LOG_FUNCTION (this);
   m_states.clear ();
@@ -1574,7 +1574,7 @@ WifiRemoteStationManager::AddBasicMode (WifiMode mode)
 }
 
 uint8_t
-WifiRemoteStationManager::GetNBasicModes (void) const
+WifiRemoteStationManager::GetNBasicModes () const
 {
   return static_cast<uint8_t> (m_bssBasicRateSet.size ());
 }
@@ -1587,7 +1587,7 @@ WifiRemoteStationManager::GetBasicMode (uint8_t i) const
 }
 
 uint32_t
-WifiRemoteStationManager::GetNNonErpBasicModes (void) const
+WifiRemoteStationManager::GetNNonErpBasicModes () const
 {
   uint32_t size = 0;
   for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
@@ -1641,7 +1641,7 @@ WifiRemoteStationManager::AddBasicMcs (WifiMode mcs)
 }
 
 uint8_t
-WifiRemoteStationManager::GetNBasicMcs (void) const
+WifiRemoteStationManager::GetNBasicMcs () const
 {
   return static_cast<uint8_t> (m_bssBasicMcsSet.size ());
 }
@@ -1654,7 +1654,7 @@ WifiRemoteStationManager::GetBasicMcs (uint8_t i) const
 }
 
 WifiMode
-WifiRemoteStationManager::GetNonUnicastMode (void) const
+WifiRemoteStationManager::GetNonUnicastMode () const
 {
   if (m_nonUnicastMode == WifiMode ())
     {
@@ -1797,13 +1797,13 @@ WifiRemoteStationManager::GetNess (const WifiRemoteStation *station) const
 }
 
 Ptr<WifiPhy>
-WifiRemoteStationManager::GetPhy (void) const
+WifiRemoteStationManager::GetPhy () const
 {
   return m_wifiPhy;
 }
 
 Ptr<WifiMac>
-WifiRemoteStationManager::GetMac (void) const
+WifiRemoteStationManager::GetMac () const
 {
   return m_wifiMac;
 }
@@ -1950,13 +1950,13 @@ WifiRemoteStationManager::SetDefaultTxPowerLevel (uint8_t txPower)
 }
 
 uint8_t
-WifiRemoteStationManager::GetNumberOfAntennas (void) const
+WifiRemoteStationManager::GetNumberOfAntennas () const
 {
   return m_wifiPhy->GetNumberOfAntennas ();
 }
 
 uint8_t
-WifiRemoteStationManager::GetMaxNumberOfTransmitStreams (void) const
+WifiRemoteStationManager::GetMaxNumberOfTransmitStreams () const
 {
   return m_wifiPhy->GetMaxSupportedTxSpatialStreams ();
 }

@@ -57,7 +57,7 @@ public:
    * \brief Get the type ID
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Ipv4Interface ();
   virtual ~Ipv4Interface();
@@ -90,7 +90,7 @@ public:
   /**
    * \returns the underlying NetDevice. This method cannot return zero.
    */
-  Ptr<NetDevice> GetDevice (void) const;
+  Ptr<NetDevice> GetDevice () const;
 
   /**
    * \return ARP cache used by this interface
@@ -113,7 +113,7 @@ public:
    * out.  It is used by ns-3 global routing, but other routing daemons
    * may choose to ignore it.
    */
-  uint16_t GetMetric (void) const;
+  uint16_t GetMetric () const;
 
   /**
    * These are IP interface states and may be distinct from
@@ -123,27 +123,27 @@ public:
   /**
    * \returns true if this interface is enabled, false otherwise.
    */
-  bool IsUp (void) const;
+  bool IsUp () const;
 
   /**
    * \returns true if this interface is disabled, false otherwise.
    */
-  bool IsDown (void) const;
+  bool IsDown () const;
 
   /**
    * Enable this interface
    */
-  void SetUp (void);
+  void SetUp ();
 
   /**
    * Disable this interface
    */
-  void SetDown (void);
+  void SetDown ();
 
   /**
    * \returns true if this interface is enabled for IP forwarding of input datagrams
    */
-  bool IsForwarding (void) const;
+  bool IsForwarding () const;
 
   /**
    * \param val Whether to enable or disable IP forwarding for input datagrams
@@ -175,7 +175,7 @@ public:
   /**
    * \returns the number of Ipv4InterfaceAddress stored on this interface
    */
-  uint32_t GetNAddresses (void) const;
+  uint32_t GetNAddresses () const;
 
   /**
    * \param index Index of Ipv4InterfaceAddress to remove
@@ -212,13 +212,13 @@ public:
 
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /**
    * \brief Initialize interface.
    */
-  void DoSetup (void);
+  void DoSetup ();
 
 
   /**

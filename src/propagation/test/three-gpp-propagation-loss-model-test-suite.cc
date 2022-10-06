@@ -59,7 +59,7 @@ private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -89,7 +89,7 @@ ThreeGppRmaPropagationLossModelTestCase::~ThreeGppRmaPropagationLossModelTestCas
 }
 
 void
-ThreeGppRmaPropagationLossModelTestCase::DoRun (void)
+ThreeGppRmaPropagationLossModelTestCase::DoRun ()
 {
   TestVector testVector;
 
@@ -218,7 +218,7 @@ private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -248,7 +248,7 @@ ThreeGppUmaPropagationLossModelTestCase::~ThreeGppUmaPropagationLossModelTestCas
 }
 
 void
-ThreeGppUmaPropagationLossModelTestCase::DoRun (void)
+ThreeGppUmaPropagationLossModelTestCase::DoRun ()
 {
   TestVector testVector;
 
@@ -377,7 +377,7 @@ private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -407,7 +407,7 @@ ThreeGppUmiPropagationLossModelTestCase::~ThreeGppUmiPropagationLossModelTestCas
 }
 
 void
-ThreeGppUmiPropagationLossModelTestCase::DoRun (void)
+ThreeGppUmiPropagationLossModelTestCase::DoRun ()
 {
   TestVector testVector;
 
@@ -530,7 +530,7 @@ private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -560,7 +560,7 @@ ThreeGppIndoorOfficePropagationLossModelTestCase::~ThreeGppIndoorOfficePropagati
 }
 
 void
-ThreeGppIndoorOfficePropagationLossModelTestCase::DoRun (void)
+ThreeGppIndoorOfficePropagationLossModelTestCase::DoRun ()
 {
   TestVector testVector;
 
@@ -699,7 +699,7 @@ private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -729,7 +729,7 @@ ThreeGppV2vUrbanPropagationLossModelTestCase::~ThreeGppV2vUrbanPropagationLossMo
 }
 
 void
-ThreeGppV2vUrbanPropagationLossModelTestCase::DoRun (void)
+ThreeGppV2vUrbanPropagationLossModelTestCase::DoRun ()
 {
   TestVector testVector;
 
@@ -854,7 +854,7 @@ private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -884,7 +884,7 @@ ThreeGppV2vHighwayPropagationLossModelTestCase::~ThreeGppV2vHighwayPropagationLo
 }
 
 void
-ThreeGppV2vHighwayPropagationLossModelTestCase::DoRun (void)
+ThreeGppV2vHighwayPropagationLossModelTestCase::DoRun ()
 {
   TestVector testVector;
 
@@ -987,7 +987,7 @@ public:
   virtual ~ThreeGppShadowingTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Run the experiment
@@ -1104,7 +1104,7 @@ ThreeGppShadowingTestCase::RunTest (uint16_t testNum, std::string propagationLos
 }
 
 void
-ThreeGppShadowingTestCase::DoRun (void)
+ThreeGppShadowingTestCase::DoRun ()
 {
   // The test scenario is composed of two nodes, one fixed
   // at position (0,0) and the other moving with constant velocity from

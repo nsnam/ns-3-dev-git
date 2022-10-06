@@ -91,7 +91,7 @@ void UnregisterStream (std::ostream* stream);
  *
  * DO NOT call this function until the program is ready to crash.
  */
-void FlushStreams (void);
+void FlushStreams ();
 
 } //FatalImpl
 } //ns3

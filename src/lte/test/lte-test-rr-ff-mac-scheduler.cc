@@ -178,7 +178,7 @@ LenaRrFfMacSchedulerTestCase::~LenaRrFfMacSchedulerTestCase ()
 }
 
 void
-LenaRrFfMacSchedulerTestCase::DoRun (void)
+LenaRrFfMacSchedulerTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << m_nUser << m_dist);
   if (!m_errorModelEnabled)

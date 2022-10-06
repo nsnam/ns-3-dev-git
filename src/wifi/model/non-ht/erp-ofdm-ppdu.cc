@@ -40,7 +40,7 @@ ErpOfdmPpdu::~ErpOfdmPpdu ()
 }
 
 WifiTxVector
-ErpOfdmPpdu::DoGetTxVector (void) const
+ErpOfdmPpdu::DoGetTxVector () const
 {
   WifiTxVector txVector;
   txVector.SetPreambleType (m_preamble);
@@ -51,7 +51,7 @@ ErpOfdmPpdu::DoGetTxVector (void) const
 }
 
 Ptr<WifiPpdu>
-ErpOfdmPpdu::Copy (void) const
+ErpOfdmPpdu::Copy () const
 {
   return Create<ErpOfdmPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq, m_band, m_uid);
 }

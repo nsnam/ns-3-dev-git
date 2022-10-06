@@ -38,18 +38,18 @@ public:
    * Create a NqosWaveMacHelper to make life easier for people who want to
    * work with non-QOS Wave MAC layers.
    */
-  NqosWaveMacHelper (void);
+  NqosWaveMacHelper ();
 
   /**
    * Destroy a NqosWaveMacHelper.
    */
-  virtual ~NqosWaveMacHelper (void);
+  virtual ~NqosWaveMacHelper ();
   /**
    * Create a mac helper in a default working state.
    * i.e., this is an ocb mac by default.
    * \returns NqosWaveMacHelper
    */
-  static NqosWaveMacHelper Default (void);
+  static NqosWaveMacHelper Default ();
   /**
    * \tparam Ts \deduced Argument types
    * \param type the type of ns3::WifiMac to create.
@@ -76,18 +76,18 @@ public:
    * Create a QosWaveMacHelper that is used to make life easier when working
    * with Wifi 802.11p devices using a QOS MAC layer.
    */
-  QosWaveMacHelper (void);
+  QosWaveMacHelper ();
 
   /**
    * Destroy a QosWaveMacHelper
    */
-  virtual ~QosWaveMacHelper (void);
+  virtual ~QosWaveMacHelper ();
 
   /**
    * Create a mac helper in a default working state.
    * \return A mac helper
    */
-  static QosWaveMacHelper Default (void);
+  static QosWaveMacHelper Default ();
 
   /**
    * \tparam Ts \deduced Argument types

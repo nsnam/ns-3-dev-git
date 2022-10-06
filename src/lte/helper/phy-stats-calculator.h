@@ -72,7 +72,7 @@ public:
    *  Register this type.
    *  @return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the name of the file where the RSRP/SINR statistics will be stored.
@@ -85,7 +85,7 @@ public:
    * Get the name of the file where the RSRP/SINR statistics will be stored.
    * @return the name of the file where the RSRP/SINR statistics will be stored
    */
-  std::string GetCurrentCellRsrpSinrFilename  (void);
+  std::string GetCurrentCellRsrpSinrFilename  ();
 
   /**
    * Set the name of the file where the UE SINR statistics will be stored.
@@ -98,7 +98,7 @@ public:
    * Get the name of the file where the UE SINR statistics will be stored.
    * @return the name of the file where the UE SINR statistics will be stored
    */
-  std::string GetUeSinrFilename (void);
+  std::string GetUeSinrFilename ();
 
   /**
    * Set the name of the file where the interference statistics will be stored.
@@ -111,7 +111,7 @@ public:
    * Get the name of the file where the interference statistics will be stored.
    * @return the name of the file where the interference statistics will be stored
    */
-  std::string GetInterferenceFilename (void);
+  std::string GetInterferenceFilename ();
 
   /**
    * Notifies the stats calculator that an RSRP and SINR report has occurred.

@@ -45,7 +45,7 @@ namespace dot11s {
 NS_OBJECT_ENSURE_REGISTERED (PeerManagementProtocol);
 
 TypeId
-PeerManagementProtocol::GetTypeId (void)
+PeerManagementProtocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dot11s::PeerManagementProtocol")
     .SetParent<Object> ()

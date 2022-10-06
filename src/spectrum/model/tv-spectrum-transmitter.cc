@@ -65,7 +65,7 @@ TvSpectrumTransmitter::~TvSpectrumTransmitter ()
 }
 
 TypeId
-TvSpectrumTransmitter::GetTypeId(void)
+TvSpectrumTransmitter::GetTypeId()
 {
   static TypeId tid = TypeId("ns3::TvSpectrumTransmitter")
     .SetParent<SpectrumPhy> ()

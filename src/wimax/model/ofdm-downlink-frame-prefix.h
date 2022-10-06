@@ -67,33 +67,33 @@ public:
    * Get rate ID field
    * \returns the rate ID
    */
-  uint8_t GetRateId (void) const;
+  uint8_t GetRateId () const;
   /**
    * Get DIUC field
    * \returns the DIUC
    */
-  uint8_t GetDiuc (void) const;
+  uint8_t GetDiuc () const;
   /**
    * Get preamble present field
    * \returns the preamble present
    */
-  uint8_t GetPreamblePresent (void) const;
+  uint8_t GetPreamblePresent () const;
   /**
    * Get length field
    * \returns the length
    */
-  uint16_t GetLength (void) const;
+  uint16_t GetLength () const;
   /**
    * Get start time field
    * \returns the start time
    */
-  uint16_t GetStartTime (void) const;
+  uint16_t GetStartTime () const;
 
   /**
    * Get size field
    * \returns the size
    */
-  uint16_t GetSize (void) const;
+  uint16_t GetSize () const;
 
   /**
    * Write item function
@@ -144,7 +144,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set base station ID field
@@ -176,35 +176,35 @@ public:
    * Get base station ID field
    * \returns the base station ID
    */
-  Mac48Address GetBaseStationId (void) const;
+  Mac48Address GetBaseStationId () const;
   /**
    * Get frame number field
    * \returns the frame number
    */
-  uint32_t GetFrameNumber (void) const;
+  uint32_t GetFrameNumber () const;
   /**
    * Get configuration change count field
    * \returns the configuration change count
    */
-  uint8_t GetConfigurationChangeCount (void) const;
+  uint8_t GetConfigurationChangeCount () const;
   /**
    * Get DL frame prefix elements
    * \returns the DL frame prefix elements
    */
-  std::vector<DlFramePrefixIe> GetDlFramePrefixElements (void) const;
+  std::vector<DlFramePrefixIe> GetDlFramePrefixElements () const;
   /**
    * Get HCS field
    * \returns the HCS
    */
-  uint8_t GetHcs (void) const;
+  uint8_t GetHcs () const;
 
   /**
    * Get name field
    * \returns the name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:

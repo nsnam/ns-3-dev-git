@@ -52,7 +52,7 @@ LteRlcUm::~LteRlcUm ()
 }
 
 TypeId
-LteRlcUm::GetTypeId (void)
+LteRlcUm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRlcUm")
     .SetParent<LteRlc> ()
@@ -1061,7 +1061,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
 
 
 void
-LteRlcUm::ReassembleOutsideWindow (void)
+LteRlcUm::ReassembleOutsideWindow ()
 {
   NS_LOG_LOGIC ("Reassemble Outside Window");
 
@@ -1118,7 +1118,7 @@ LteRlcUm::ReassembleSnInterval (SequenceNumber10 lowSeqNumber, SequenceNumber10 
 
 
 void
-LteRlcUm::DoReportBufferStatus (void)
+LteRlcUm::DoReportBufferStatus ()
 {
   Time holDelay (0);
   uint32_t queueSize = 0;
@@ -1145,7 +1145,7 @@ LteRlcUm::DoReportBufferStatus (void)
 
 
 void
-LteRlcUm::ExpireReorderingTimer (void)
+LteRlcUm::ExpireReorderingTimer ()
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid);
   NS_LOG_LOGIC ("Reordering timer has expired");
@@ -1184,7 +1184,7 @@ LteRlcUm::ExpireReorderingTimer (void)
 
 
 void
-LteRlcUm::ExpireRbsTimer (void)
+LteRlcUm::ExpireRbsTimer ()
 {
   NS_LOG_LOGIC ("RBS Timer expires");
 

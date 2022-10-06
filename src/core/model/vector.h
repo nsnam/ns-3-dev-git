@@ -358,7 +358,7 @@ ATTRIBUTE_ACCESSOR_DEFINE (Vector);
  * \returns The AttributeChecker.
  * \see AttributeChecker
  */
-Ptr<const AttributeChecker> MakeVectorChecker (void);
+Ptr<const AttributeChecker> MakeVectorChecker ();
 
 
 } // namespace ns3

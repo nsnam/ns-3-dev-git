@@ -50,7 +50,7 @@ public:
    * layer with constant rate OfdmRate6MbpsBW10MHz
    * and both objects using their default attribute values.
    */
-  static Wifi80211pHelper Default (void);
+  static Wifi80211pHelper Default ();
 
   /**
    * \param standard the phy standard to configure during installation
@@ -71,7 +71,7 @@ public:
   /**
    * Helper to enable all WifiNetDevice log components with one statement
    */
-  static void EnableLogComponents (void);
+  static void EnableLogComponents ();
 };
 
 }

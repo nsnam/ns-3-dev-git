@@ -78,25 +78,25 @@ public:
    *
    * \return the Channel Width field in the VHT Operation information element
    */
-  uint8_t GetChannelWidth (void) const;
+  uint8_t GetChannelWidth () const;
   /**
    * Return the Channel Center Frequency Segment 0 field in the VHT Operation information element.
    *
    * \return the Channel Center Frequency Segment 0 field in the VHT Operation information element
    */
-  uint8_t GetChannelCenterFrequencySegment0 (void) const;
+  uint8_t GetChannelCenterFrequencySegment0 () const;
   /**
    * Return the Channel Center Frequency Segment 1 field in the VHT Operation information element.
    *
    * \return the Channel Center Frequency Segment 1 field in the VHT Operation information element
    */
-  uint8_t GetChannelCenterFrequencySegment1 (void) const;
+  uint8_t GetChannelCenterFrequencySegment1 () const;
   /**
    * Return the Basic VHT-MCS And Nss field in the VHT Operation information element.
    *
    * \return the Basic VHT-MCS And Nss field in the VHT Operation information element
    */
-  uint16_t GetBasicVhtMcsAndNssSet (void) const;
+  uint16_t GetBasicVhtMcsAndNssSet () const;
 
 
 private:

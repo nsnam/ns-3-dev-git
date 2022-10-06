@@ -33,7 +33,7 @@ WifiMacTrailer::~WifiMacTrailer ()
 }
 
 TypeId
-WifiMacTrailer::GetTypeId (void)
+WifiMacTrailer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMacTrailer")
     .SetParent<Trailer> ()
@@ -44,7 +44,7 @@ WifiMacTrailer::GetTypeId (void)
 }
 
 TypeId
-WifiMacTrailer::GetInstanceTypeId (void) const
+WifiMacTrailer::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -55,7 +55,7 @@ WifiMacTrailer::Print (std::ostream &os) const
 }
 
 uint32_t
-WifiMacTrailer::GetSerializedSize (void) const
+WifiMacTrailer::GetSerializedSize () const
 {
   return WIFI_MAC_FCS_LENGTH;
 }

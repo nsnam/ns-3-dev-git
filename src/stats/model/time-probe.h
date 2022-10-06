@@ -59,7 +59,7 @@ public:
   /**
    * \return the most recent value (units of seconds)
    */
-  double GetValue (void) const;
+  double GetValue () const;
 
   /**
    * \param value set the traced Time to a new value

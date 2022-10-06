@@ -102,15 +102,15 @@ class SpectrumPropagationLossModel;
 class LteHelper : public Object
 {
 public:
-  LteHelper (void);
-  virtual ~LteHelper (void);
+  LteHelper ();
+  virtual ~LteHelper ();
 
   /**
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
-  virtual void DoDispose (void);
+  static TypeId GetTypeId ();
+  virtual void DoDispose ();
 
   /**
    * Set the EpcHelper to be used to setup the EPC network in
@@ -562,86 +562,86 @@ public:
   /**
    * Enables full-blown logging for major components of the LENA architecture.
    */
-  void EnableLogComponents (void);
+  void EnableLogComponents ();
 
   /**
    * Enables trace sinks for PHY, MAC, RLC and PDCP. To make sure all nodes are
    * traced, traces should be enabled once all UEs and eNodeBs are in place and
    * connected, just before starting the simulation.
    */
-  void EnableTraces (void);
+  void EnableTraces ();
 
   /**
    * Enable trace sinks for PHY layer.
    */
-  void EnablePhyTraces (void);
+  void EnablePhyTraces ();
 
   /**
    * Enable trace sinks for DL PHY layer.
    */
-  void EnableDlPhyTraces (void);
+  void EnableDlPhyTraces ();
 
   /**
    * Enable trace sinks for UL PHY layer.
    */
-  void EnableUlPhyTraces (void);
+  void EnableUlPhyTraces ();
 
   /**
    * Enable trace sinks for DL transmission PHY layer.
    */
-  void EnableDlTxPhyTraces (void);
+  void EnableDlTxPhyTraces ();
 
   /**
    * Enable trace sinks for UL transmission PHY layer.
    */
-  void EnableUlTxPhyTraces (void);
+  void EnableUlTxPhyTraces ();
 
   /**
    * Enable trace sinks for DL reception PHY layer.
    */
-  void EnableDlRxPhyTraces (void);
+  void EnableDlRxPhyTraces ();
 
   /**
    * Enable trace sinks for UL reception PHY layer.
    */
-  void EnableUlRxPhyTraces (void);
+  void EnableUlRxPhyTraces ();
 
   /**
    * Enable trace sinks for MAC layer.
    */
-  void EnableMacTraces (void);
+  void EnableMacTraces ();
 
   /**
    * Enable trace sinks for DL MAC layer.
    */
-  void EnableDlMacTraces (void);
+  void EnableDlMacTraces ();
 
   /**
    * Enable trace sinks for UL MAC layer.
    */
-  void EnableUlMacTraces (void);
+  void EnableUlMacTraces ();
 
   /**
    * Enable trace sinks for RLC layer.
    */
-  void EnableRlcTraces (void);
+  void EnableRlcTraces ();
 
   /**
    *
    * \return the RLC stats calculator object
    */
-  Ptr<RadioBearerStatsCalculator> GetRlcStats (void);
+  Ptr<RadioBearerStatsCalculator> GetRlcStats ();
 
   /**
    * Enable trace sinks for PDCP layer
    */
-  void EnablePdcpTraces (void);
+  void EnablePdcpTraces ();
 
   /**
    *
    * \return the PDCP stats calculator object
    */
-  Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
+  Ptr<RadioBearerStatsCalculator> GetPdcpStats ();
 
   /**
    * Assign a fixed random variable stream number to the random variables used.
@@ -665,18 +665,18 @@ public:
   /**
    * \return a pointer to the SpectrumChannel instance used for the uplink
    */
-  Ptr<SpectrumChannel> GetUplinkSpectrumChannel (void) const;
+  Ptr<SpectrumChannel> GetUplinkSpectrumChannel () const;
 
 
   /**
    * \return a pointer to the SpectrumChannel instance used for the downlink
    */
-  Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (void) const;
+  Ptr<SpectrumChannel> GetDownlinkSpectrumChannel () const;
 
 
 protected:
   // inherited from Object
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 private:
 
@@ -731,7 +731,7 @@ private:
   void DoDeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
 
   /// Function that performs a channel model initialization of all component carriers
-  void ChannelModelInitialization (void);
+  void ChannelModelInitialization ();
 
   /**
    * \brief This function create the component carrier based on provided configuration parameters

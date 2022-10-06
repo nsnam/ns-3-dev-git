@@ -50,7 +50,7 @@ public:
   virtual ~Ns3WimaxSimpleOFDMTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Run once function
    * \param FrameDuration the frame duration
@@ -104,7 +104,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRunOnce (double FrameDuration)
 }
 
 void
-Ns3WimaxSimpleOFDMTestCase::DoRun (void)
+Ns3WimaxSimpleOFDMTestCase::DoRun ()
 {
 
   double
@@ -132,7 +132,7 @@ public:
   virtual ~Ns3WimaxSNRtoBLERTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Run once function
    * \param modulationType the modulation type
@@ -168,7 +168,7 @@ bool Ns3WimaxSNRtoBLERTestCase::DoRunOnce (uint8_t modulationType)
 }
 
 void
-Ns3WimaxSNRtoBLERTestCase::DoRun (void)
+Ns3WimaxSNRtoBLERTestCase::DoRun ()
 {
   for (int i = 0; i < 7; i++)
     {

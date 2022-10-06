@@ -58,7 +58,7 @@ public:
    * To change the channel type, loss model, or delay model, the Get/Set
    * Channel methods may be used.
    */
-  LrWpanHelper (void);
+  LrWpanHelper ();
 
   /**
    * \brief Create a LrWpan helper in an empty state with either a
@@ -70,7 +70,7 @@ public:
    */
   LrWpanHelper (bool useMultiModelSpectrumChannel);
 
-  virtual ~LrWpanHelper (void);
+  virtual ~LrWpanHelper ();
 
   // Delete copy constructor and assignment operator to avoid misuse
   LrWpanHelper (const LrWpanHelper &) = delete;
@@ -80,7 +80,7 @@ public:
    * \brief Get the channel associated to this helper
    * \returns the channel
    */
-  Ptr<SpectrumChannel> GetChannel (void);
+  Ptr<SpectrumChannel> GetChannel ();
 
   /**
    * \brief Set the channel associated to this helper
@@ -132,7 +132,7 @@ public:
   /**
    * Helper to enable all LrWpan log components with one statement
    */
-  void EnableLogComponents (void);
+  void EnableLogComponents ();
 
   /**
    * \brief Transform the LrWpanPhyEnumeration enumeration into a printable string.

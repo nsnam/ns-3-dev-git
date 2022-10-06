@@ -68,7 +68,7 @@ WifiTxTimer::Reschedule (const Time& delay)
 }
 
 void
-WifiTxTimer::Expire (void)
+WifiTxTimer::Expire ()
 {
   NS_LOG_FUNCTION (this);
   Time now = Simulator::Now ();
@@ -84,7 +84,7 @@ WifiTxTimer::Expire (void)
 }
 
 WifiTxTimer::Reason
-WifiTxTimer::GetReason (void) const
+WifiTxTimer::GetReason () const
 {
   NS_ASSERT (IsRunning ());
   return m_reason;
@@ -118,13 +118,13 @@ case WAIT_ ## x: \
 }
 
 bool
-WifiTxTimer::IsRunning (void) const
+WifiTxTimer::IsRunning () const
 {
   return m_timeoutEvent.IsRunning ();
 }
 
 void
-WifiTxTimer::Cancel (void)
+WifiTxTimer::Cancel ()
 {
   NS_LOG_FUNCTION (this << GetReasonString (m_reason));
   m_timeoutEvent.Cancel ();
@@ -132,7 +132,7 @@ WifiTxTimer::Cancel (void)
 }
 
 Time
-WifiTxTimer::GetDelayLeft (void) const
+WifiTxTimer::GetDelayLeft () const
 {
   return Simulator::GetDelayLeft (m_timeoutEvent);
 }

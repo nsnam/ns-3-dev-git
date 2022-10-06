@@ -61,46 +61,46 @@ public:
    * \brief Check if the ARP is a request
    * \returns true if it is a request
    */
-  bool IsRequest (void) const;
+  bool IsRequest () const;
 
   /**
    * \brief Check if the ARP is a reply
    * \returns true if it is a reply
    */
-  bool IsReply (void) const;
+  bool IsReply () const;
 
   /**
    * \brief Returns the source hardware address
    * \returns the source hardware address
    */
-  Address GetSourceHardwareAddress (void) const;
+  Address GetSourceHardwareAddress () const;
 
   /**
    * \brief Returns the destination hardware address
    * \returns the destination hardware address
    */
-  Address GetDestinationHardwareAddress (void) const;
+  Address GetDestinationHardwareAddress () const;
 
   /**
    * \brief Returns the source IP address
    * \returns the source IP address
    */
-  Ipv4Address GetSourceIpv4Address (void) const;
+  Ipv4Address GetSourceIpv4Address () const;
 
   /**
    * \brief Returns the destination IP address
    * \returns the destination IP address
    */
-  Ipv4Address GetDestinationIpv4Address (void) const;
+  Ipv4Address GetDestinationIpv4Address () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 

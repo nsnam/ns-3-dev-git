@@ -68,7 +68,7 @@ Bug780Test::DoRun ()
 }
 
 void
-Bug780Test::CreateNodes (void)
+Bug780Test::CreateNodes ()
 {
   NodeContainer c;
   c.Create (3);

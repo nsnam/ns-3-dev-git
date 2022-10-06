@@ -118,7 +118,7 @@ public:
   virtual ~LteEpcE2eDataTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   std::vector<EnbTestData> m_enbTestData; ///< the ENB test data
 };
 

@@ -212,17 +212,17 @@ public:
   /**
    * Remove all tags from this list (up to the first merge).
    */
-  inline void RemoveAll (void);
+  inline void RemoveAll ();
   /**
    * \returns pointer to head of tag list
    */
-  const struct PacketTagList::TagData *Head (void) const;
+  const struct PacketTagList::TagData *Head () const;
   /**
    * Returns number of bytes required for packet serialization.
    *
    * \returns number of bytes required for packet serialization
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize the tag list into a byte buffer.
    *
@@ -353,7 +353,7 @@ PacketTagList::~PacketTagList ()
 }
 
 void
-PacketTagList::RemoveAll (void)
+PacketTagList::RemoveAll ()
 {
   struct TagData *prev = 0;
   for (struct TagData *cur = m_next; cur != 0; cur = cur->next)

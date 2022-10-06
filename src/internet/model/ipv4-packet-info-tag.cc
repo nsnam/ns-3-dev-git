@@ -44,7 +44,7 @@ Ipv4PacketInfoTag::SetAddress (Ipv4Address addr)
 }
 
 Ipv4Address
-Ipv4PacketInfoTag::GetAddress (void) const
+Ipv4PacketInfoTag::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_addr;
@@ -58,7 +58,7 @@ Ipv4PacketInfoTag::SetRecvIf (uint32_t ifindex)
 }
 
 uint32_t
-Ipv4PacketInfoTag::GetRecvIf (void) const
+Ipv4PacketInfoTag::GetRecvIf () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifindex;
@@ -72,7 +72,7 @@ Ipv4PacketInfoTag::SetTtl (uint8_t ttl)
 }
 
 uint8_t
-Ipv4PacketInfoTag::GetTtl (void) const
+Ipv4PacketInfoTag::GetTtl () const
 {
   NS_LOG_FUNCTION (this);
   return m_ttl;
@@ -81,7 +81,7 @@ Ipv4PacketInfoTag::GetTtl (void) const
 
 
 TypeId
-Ipv4PacketInfoTag::GetTypeId (void)
+Ipv4PacketInfoTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4PacketInfoTag")
     .SetParent<Tag> ()
@@ -91,14 +91,14 @@ Ipv4PacketInfoTag::GetTypeId (void)
   return tid;
 }
 TypeId
-Ipv4PacketInfoTag::GetInstanceTypeId (void) const
+Ipv4PacketInfoTag::GetInstanceTypeId () const
 {
   NS_LOG_FUNCTION (this);
   return GetTypeId ();
 }
 
 uint32_t
-Ipv4PacketInfoTag::GetSerializedSize (void) const
+Ipv4PacketInfoTag::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   return 4 + sizeof (uint32_t) + sizeof (uint8_t);

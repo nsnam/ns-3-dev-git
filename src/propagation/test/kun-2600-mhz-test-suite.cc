@@ -55,7 +55,7 @@ public:
   virtual ~Kun2600MhzPropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Create a MobilityModel
@@ -86,7 +86,7 @@ Kun2600MhzPropagationLossModelTestCase::~Kun2600MhzPropagationLossModelTestCase 
 
 
 void
-Kun2600MhzPropagationLossModelTestCase::DoRun (void)
+Kun2600MhzPropagationLossModelTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 

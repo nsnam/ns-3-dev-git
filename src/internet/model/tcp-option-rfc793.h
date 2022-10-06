@@ -39,15 +39,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint8_t GetKind () const;
+  virtual uint32_t GetSerializedSize () const;
 
 };
 
@@ -64,15 +64,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint8_t GetKind () const;
+  virtual uint32_t GetSerializedSize () const;
 };
 
 /**
@@ -88,21 +88,21 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint8_t GetKind () const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Get the Maximum Segment Size stored in the Option
    * \return The Maximum Segment Size
    */
-  uint16_t GetMSS (void) const;
+  uint16_t GetMSS () const;
   /**
    * \brief Set the Maximum Segment Size stored in the Option
    * \param mss The Maximum Segment Size

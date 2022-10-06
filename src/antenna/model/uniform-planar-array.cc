@@ -39,7 +39,7 @@ UniformPlanarArray::~UniformPlanarArray ()
 {}
 
 TypeId
-UniformPlanarArray::GetTypeId (void)
+UniformPlanarArray::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UniformPlanarArray")
     .SetParent<PhasedArrayModel> ()
@@ -102,7 +102,7 @@ UniformPlanarArray::SetNumColumns (uint32_t n)
 
 
 uint32_t
-UniformPlanarArray::GetNumColumns (void) const
+UniformPlanarArray::GetNumColumns () const
 {
   return m_numColumns;
 }
@@ -121,7 +121,7 @@ UniformPlanarArray::SetNumRows (uint32_t n)
 
 
 uint32_t
-UniformPlanarArray::GetNumRows (void) const
+UniformPlanarArray::GetNumRows () const
 {
   return m_numRows;
 }
@@ -165,7 +165,7 @@ UniformPlanarArray::SetAntennaHorizontalSpacing (double s)
 
 
 double
-UniformPlanarArray::GetAntennaHorizontalSpacing (void) const
+UniformPlanarArray::GetAntennaHorizontalSpacing () const
 {
   return m_disH;
 }
@@ -186,7 +186,7 @@ UniformPlanarArray::SetAntennaVerticalSpacing (double s)
 
 
 double
-UniformPlanarArray::GetAntennaVerticalSpacing (void) const
+UniformPlanarArray::GetAntennaVerticalSpacing () const
 {
   return m_disV;
 }

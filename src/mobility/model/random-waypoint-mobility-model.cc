@@ -30,7 +30,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (RandomWaypointMobilityModel);
 
 TypeId
-RandomWaypointMobilityModel::GetTypeId (void)
+RandomWaypointMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RandomWaypointMobilityModel")
     .SetParent<MobilityModel> ()
@@ -56,7 +56,7 @@ RandomWaypointMobilityModel::GetTypeId (void)
 }
 
 void
-RandomWaypointMobilityModel::BeginWalk (void)
+RandomWaypointMobilityModel::BeginWalk ()
 {
   m_helper.Update ();
   Vector m_current = m_helper.GetCurrentPosition ();
@@ -78,14 +78,14 @@ RandomWaypointMobilityModel::BeginWalk (void)
 }
 
 void
-RandomWaypointMobilityModel::DoInitialize (void)
+RandomWaypointMobilityModel::DoInitialize ()
 {
   DoInitializePrivate ();
   MobilityModel::DoInitialize ();
 }
 
 void
-RandomWaypointMobilityModel::DoInitializePrivate (void)
+RandomWaypointMobilityModel::DoInitializePrivate ()
 {
   m_helper.Update ();
   m_helper.Pause ();
@@ -95,7 +95,7 @@ RandomWaypointMobilityModel::DoInitializePrivate (void)
 }
 
 Vector
-RandomWaypointMobilityModel::DoGetPosition (void) const
+RandomWaypointMobilityModel::DoGetPosition () const
 {
   m_helper.Update ();
   return m_helper.GetCurrentPosition ();
@@ -108,7 +108,7 @@ RandomWaypointMobilityModel::DoSetPosition (const Vector &position)
   m_event = Simulator::ScheduleNow (&RandomWaypointMobilityModel::DoInitializePrivate, this);
 }
 Vector
-RandomWaypointMobilityModel::DoGetVelocity (void) const
+RandomWaypointMobilityModel::DoGetVelocity () const
 {
   return m_helper.GetVelocity ();
 }

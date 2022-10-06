@@ -41,7 +41,7 @@ public:
   LiIonEnergyTestCase ();
   ~LiIonEnergyTestCase ();
 
-  void DoRun (void);
+  void DoRun ();
 
   Ptr<Node> m_node; //!< Node to aggreagte the source to.
 };

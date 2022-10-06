@@ -99,7 +99,7 @@ public:
    * as every packet enqueued to the traffic control layer queue disc will
    * be immediately dequeued.
    */
-  void DisableFlowControl (void);
+  void DisableFlowControl ();
 
   /**
    * \param c a set of nodes

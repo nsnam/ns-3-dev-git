@@ -88,7 +88,7 @@ public:
    * Returns the center frequency
    * \return the center frequency in Hz
    */
-  double GetFrequency (void) const;
+  double GetFrequency () const;
 
   /**
    * Sets the propagation scenario
@@ -100,7 +100,7 @@ public:
    * Returns the propagation scenario
    * \return the propagation scenario
    */
-  std::string GetScenario (void) const;
+  std::string GetScenario () const;
 
   /**
    * Looks for the channel matrix associated to the aMob and bMob pair in m_channelMatrixMap.

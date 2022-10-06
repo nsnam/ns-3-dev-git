@@ -65,13 +65,13 @@ public:
    * \param bs base station device
    */
   BSSchedulerRtps (Ptr<BaseStationNetDevice> bs);
-  ~BSSchedulerRtps (void);
+  ~BSSchedulerRtps ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief This function returns all the downlink bursts scheduled for the next
@@ -79,7 +79,7 @@ public:
    * \returns  all the downlink bursts scheduled for the next downlink sub-frame
    */
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
-  GetDownlinkBursts (void) const;
+  GetDownlinkBursts () const;
 
   /**
    * \brief This function adds a downlink burst to the list of downlink bursts
@@ -94,7 +94,7 @@ public:
   /**
    * \brief Schedule function.
    */
-  void Schedule (void);
+  void Schedule ();
   /**
    * \brief Check for IR and Broadcast connections that have packets to transmit.
    * \param connection will point to a initial ranging or broadcast connection

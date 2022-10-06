@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("OrbisTopologyReader");
 
 NS_OBJECT_ENSURE_REGISTERED (OrbisTopologyReader);
 
-TypeId OrbisTopologyReader::GetTypeId (void)
+TypeId OrbisTopologyReader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OrbisTopologyReader")
     .SetParent<TopologyReader> ()
@@ -60,7 +60,7 @@ OrbisTopologyReader::~OrbisTopologyReader ()
 }
 
 NodeContainer
-OrbisTopologyReader::Read (void)
+OrbisTopologyReader::Read ()
 {
   std::ifstream topgen;
   topgen.open (GetFileName ().c_str ());

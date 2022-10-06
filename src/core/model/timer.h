@@ -162,47 +162,47 @@ public:
   /**
    * \returns The currently-configured delay for the next Schedule.
    */
-  Time GetDelay (void) const;
+  Time GetDelay () const;
   /**
    * \returns The amount of time left until this timer expires.
    *
    * This method returns zero if the timer is in EXPIRED state.
    */
-  Time GetDelayLeft (void) const;
+  Time GetDelayLeft () const;
   /**
    * Cancel the currently-running event if there is one. Do nothing
    * otherwise.
    */
-  void Cancel (void);
+  void Cancel ();
   /**
    * Remove from the simulation event-list the currently-running event
    * if there is one. Do nothing otherwise.
    */
-  void Remove (void);
+  void Remove ();
   /**
    * \return \c true if there is no currently-running event,
    * \c false otherwise.
    */
-  bool IsExpired (void) const;
+  bool IsExpired () const;
   /**
    * \return \c true if there is a currently-running event,
    * \c false otherwise.
    */
-  bool IsRunning (void) const;
+  bool IsRunning () const;
   /**
    * \returns \c true if this timer was suspended and not yet resumed,
    * \c false otherwise.
    */
-  bool IsSuspended (void) const;
+  bool IsSuspended () const;
   /**
    * \returns The current state of the timer.
    */
-  enum Timer::State GetState (void) const;
+  enum Timer::State GetState () const;
   /**
    * Schedule a new event using the currently-configured delay, function,
    * and arguments.
    */
-  void Schedule (void);
+  void Schedule ();
   /**
    * \param [in] delay the delay to use
    *
@@ -223,13 +223,13 @@ public:
    *
    * Calling Suspend on a non-running timer is an error.
    */
-  void Suspend (void);
+  void Suspend ();
   /**
    * Restart the timer to expire within the amount of time left saved
    * during Suspend.
    * Calling Resume without a prior call to Suspend is an error.
    */
-  void Resume (void);
+  void Resume ();
 
 private:
   /** Internal bit marking the suspended state. */

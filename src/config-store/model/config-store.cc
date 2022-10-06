@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("ConfigStore");
 NS_OBJECT_ENSURE_REGISTERED (ConfigStore);
 
 TypeId
-ConfigStore::GetTypeId (void)
+ConfigStore::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ConfigStore")
     .SetParent<ObjectBase> ()
@@ -78,7 +78,7 @@ ConfigStore::GetTypeId (void)
   return tid;
 }
 TypeId
-ConfigStore::GetInstanceTypeId (void) const
+ConfigStore::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -175,14 +175,14 @@ ConfigStore::SetSaveDeprecated (bool saveDeprecated)
 }
 
 void
-ConfigStore::ConfigureAttributes (void)
+ConfigStore::ConfigureAttributes ()
 {
   NS_LOG_FUNCTION (this);
   m_file->Attributes ();
 }
 
 void
-ConfigStore::ConfigureDefaults (void)
+ConfigStore::ConfigureDefaults ()
 {
   NS_LOG_FUNCTION (this);
   m_file->Default ();

@@ -68,7 +68,7 @@ class LteRlcAmE2eTestCase : public TestCase
     virtual ~LteRlcAmE2eTestCase ();
 
   private:
-    virtual void DoRun (void);
+    virtual void DoRun ();
 
     /**
      * DL drop event

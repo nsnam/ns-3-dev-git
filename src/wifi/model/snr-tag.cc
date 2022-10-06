@@ -30,7 +30,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (SnrTag);
 
 TypeId
-SnrTag::GetTypeId (void)
+SnrTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SnrTag")
     .SetParent<Tag> ()
@@ -45,7 +45,7 @@ SnrTag::GetTypeId (void)
 }
 
 TypeId
-SnrTag::GetInstanceTypeId (void) const
+SnrTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -56,7 +56,7 @@ SnrTag::SnrTag ()
 }
 
 uint32_t
-SnrTag::GetSerializedSize (void) const
+SnrTag::GetSerializedSize () const
 {
   return sizeof (double);
 }
@@ -86,7 +86,7 @@ SnrTag::Set (double snr)
 }
 
 double
-SnrTag::Get (void) const
+SnrTag::Get () const
 {
   return m_snr;
 }

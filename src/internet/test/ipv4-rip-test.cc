@@ -71,7 +71,7 @@ class Ipv4RipTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv4RipTest ();
 
   /**
@@ -116,7 +116,7 @@ Ipv4RipTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv4RipTest::DoRun (void)
+Ipv4RipTest::DoRun ()
 {
   // Create topology
 
@@ -293,7 +293,7 @@ class Ipv4RipCountToInfinityTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv4RipCountToInfinityTest ();
 
   /**
@@ -338,7 +338,7 @@ Ipv4RipCountToInfinityTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv4RipCountToInfinityTest::DoRun (void)
+Ipv4RipCountToInfinityTest::DoRun ()
 {
   // Create topology
 
@@ -508,7 +508,7 @@ class Ipv4RipSplitHorizonStrategyTest : public TestCase
   Rip::SplitHorizonType_e m_detectedStrategy; //!< Strategy detected.
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Constructor.
@@ -573,7 +573,7 @@ void Ipv4RipSplitHorizonStrategyTest::ReceivePktProbe (Ptr<Socket> socket)
 }
 
 void
-Ipv4RipSplitHorizonStrategyTest::DoRun (void)
+Ipv4RipSplitHorizonStrategyTest::DoRun ()
 {
   // Create topology
 

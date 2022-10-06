@@ -51,7 +51,7 @@ public:
    * Performs some tests involving state updates and the relative energy consumption
    * \return true is some error happened.
    */
-  bool DoRun (void);
+  bool DoRun ();
 
 private:
   /**
@@ -82,7 +82,7 @@ BasicEnergyUpdateTest::~BasicEnergyUpdateTest ()
 }
 
 bool
-BasicEnergyUpdateTest::DoRun (void)
+BasicEnergyUpdateTest::DoRun ()
 {
   // set types
   m_energySource.SetTypeId ("ns3::BasicEnergySource");
@@ -263,13 +263,13 @@ public:
    * Performs some tests involving energy depletion
    * \return true is some error happened.
    */
-  bool DoRun (void);
+  bool DoRun ();
 
 private:
   /**
    * Callback invoked when energy is drained from source.
    */
-  void DepletionHandler (void);
+  void DepletionHandler ();
 
   /**
    * \param simTimeS Simulation time, in seconds.
@@ -303,7 +303,7 @@ BasicEnergyDepletionTest::~BasicEnergyDepletionTest ()
 }
 
 bool
-BasicEnergyDepletionTest::DoRun (void)
+BasicEnergyDepletionTest::DoRun ()
 {
   /*
    * Run simulation with different simulation time and update interval.
@@ -328,7 +328,7 @@ BasicEnergyDepletionTest::DoRun (void)
 }
 
 void
-BasicEnergyDepletionTest::DepletionHandler (void)
+BasicEnergyDepletionTest::DepletionHandler ()
 {
   m_callbackCount++;
 }

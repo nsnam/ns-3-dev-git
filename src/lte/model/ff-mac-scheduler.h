@@ -75,12 +75,12 @@ public:
   virtual ~FfMacScheduler ();
 
   // inherited from Object
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * set the user part of the FfMacCschedSap that this Scheduler will

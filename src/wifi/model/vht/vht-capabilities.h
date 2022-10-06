@@ -120,7 +120,7 @@ public:
    *
    * \return the maximum MPDU length in bytes
    */
-  uint16_t GetMaxMpduLength (void) const;
+  uint16_t GetMaxMpduLength () const;
   /**
    * Get the supported channel width set.
    *
@@ -204,7 +204,7 @@ public:
    *
    * \return the maximum A-MPDU length in bytes
    */
-  uint32_t GetMaxAmpduLength (void) const;
+  uint32_t GetMaxAmpduLength () const;
 
 
 private:

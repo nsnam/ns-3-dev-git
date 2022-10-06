@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("MACMESSAGES");
 
 NS_OBJECT_ENSURE_REGISTERED (ManagementMessageType);
 
-ManagementMessageType::ManagementMessageType (void)
+ManagementMessageType::ManagementMessageType ()
   : m_type (~0)
 {
 }
@@ -42,7 +42,7 @@ ManagementMessageType::ManagementMessageType (uint8_t type)
 {
 }
 
-ManagementMessageType::~ManagementMessageType (void)
+ManagementMessageType::~ManagementMessageType ()
 {
 }
 
@@ -53,19 +53,19 @@ ManagementMessageType::SetType (uint8_t type)
 }
 
 uint8_t
-ManagementMessageType::GetType (void) const
+ManagementMessageType::GetType () const
 {
   return m_type;
 }
 
 std::string
-ManagementMessageType::GetName (void) const
+ManagementMessageType::GetName () const
 {
   return "Management Message Type";
 }
 
 TypeId
-ManagementMessageType::GetTypeId (void)
+ManagementMessageType::GetTypeId ()
 {
   static TypeId tid =
     TypeId ("ns3::ManagementMessageType")
@@ -77,7 +77,7 @@ ManagementMessageType::GetTypeId (void)
 }
 
 TypeId
-ManagementMessageType::GetInstanceTypeId (void) const
+ManagementMessageType::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -89,7 +89,7 @@ ManagementMessageType::Print (std::ostream &os) const
 }
 
 uint32_t
-ManagementMessageType::GetSerializedSize (void) const
+ManagementMessageType::GetSerializedSize () const
 {
   return 1;
 }
@@ -113,7 +113,7 @@ ManagementMessageType::Deserialize (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (RngReq);
 
-RngReq::RngReq (void)
+RngReq::RngReq ()
   : m_reserved (0),
     m_reqDlBurstProfile (0),
     m_macAddress (Mac48Address ("00:00:00:00:00:00")),
@@ -121,7 +121,7 @@ RngReq::RngReq (void)
 {
 }
 
-RngReq::~RngReq (void)
+RngReq::~RngReq ()
 {
 }
 
@@ -144,31 +144,31 @@ RngReq::SetRangingAnomalies (uint8_t rangingAnomalies)
 }
 
 uint8_t
-RngReq::GetReqDlBurstProfile (void) const
+RngReq::GetReqDlBurstProfile () const
 {
   return m_reqDlBurstProfile;
 }
 
 Mac48Address
-RngReq::GetMacAddress (void) const
+RngReq::GetMacAddress () const
 {
   return m_macAddress;
 }
 
 uint8_t
-RngReq::GetRangingAnomalies (void) const
+RngReq::GetRangingAnomalies () const
 {
   return m_rangingAnomalies;
 }
 
 std::string
-RngReq::GetName (void) const
+RngReq::GetName () const
 {
   return "RNG-REQ";
 }
 
 TypeId
-RngReq::GetTypeId (void)
+RngReq::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RngReq")
     .SetParent<Header> ()
@@ -179,7 +179,7 @@ RngReq::GetTypeId (void)
 }
 
 TypeId
-RngReq::GetInstanceTypeId (void) const
+RngReq::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -192,7 +192,7 @@ RngReq::Print (std::ostream &os) const
 }
 
 void
-RngReq::PrintDebug (void) const
+RngReq::PrintDebug () const
 {
   NS_LOG_DEBUG (" requested dl burst profile = " << (uint32_t) m_reqDlBurstProfile << ", mac address = "
                                                  << m_macAddress << ", ranging anomalies = "
@@ -200,7 +200,7 @@ RngReq::PrintDebug (void) const
 }
 
 uint32_t
-RngReq::GetSerializedSize (void) const
+RngReq::GetSerializedSize () const
 {
   return 1 + 1 + 6 + 1;
 }
@@ -231,7 +231,7 @@ RngReq::Deserialize (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (RngRsp);
 
-RngRsp::RngRsp (void)
+RngRsp::RngRsp ()
   : m_reserved (0),
     m_timingAdjust (0),
     m_powerLevelAdjust (0),
@@ -250,7 +250,7 @@ RngRsp::RngRsp (void)
 {
 }
 
-RngRsp::~RngRsp (void)
+RngRsp::~RngRsp ()
 {
 }
 
@@ -339,97 +339,97 @@ RngRsp::SetRangSubchnl (uint8_t rangSubchnl)
 }
 
 uint32_t
-RngRsp::GetTimingAdjust (void) const
+RngRsp::GetTimingAdjust () const
 {
   return m_timingAdjust;
 }
 
 uint8_t
-RngRsp::GetPowerLevelAdjust (void) const
+RngRsp::GetPowerLevelAdjust () const
 {
   return m_powerLevelAdjust;
 }
 
 uint32_t
-RngRsp::GetOffsetFreqAdjust (void) const
+RngRsp::GetOffsetFreqAdjust () const
 {
   return m_offsetFreqAdjust;
 }
 
 uint8_t
-RngRsp::GetRangStatus (void) const
+RngRsp::GetRangStatus () const
 {
   return m_rangStatus;
 }
 
 uint32_t
-RngRsp::GetDlFreqOverride (void) const
+RngRsp::GetDlFreqOverride () const
 {
   return m_dlFreqOverride;
 }
 
 uint8_t
-RngRsp::GetUlChnlIdOverride (void) const
+RngRsp::GetUlChnlIdOverride () const
 {
   return m_ulChnlIdOverride;
 }
 
 uint16_t
-RngRsp::GetDlOperBurstProfile (void) const
+RngRsp::GetDlOperBurstProfile () const
 {
   return m_dlOperBurstProfile;
 }
 
 Mac48Address
-RngRsp::GetMacAddress (void) const
+RngRsp::GetMacAddress () const
 {
   return m_macAddress;
 }
 
 Cid
-RngRsp::GetBasicCid (void) const
+RngRsp::GetBasicCid () const
 {
   return m_basicCid;
 }
 
 Cid
-RngRsp::GetPrimaryCid (void) const
+RngRsp::GetPrimaryCid () const
 {
   return m_primaryCid;
 }
 
 uint8_t
-RngRsp::GetAasBdcastPermission (void) const
+RngRsp::GetAasBdcastPermission () const
 {
   return m_aasBdcastPermission;
 }
 
 uint32_t
-RngRsp::GetFrameNumber (void) const
+RngRsp::GetFrameNumber () const
 {
   return m_frameNumber;
 }
 
 uint8_t
-RngRsp::GetInitRangOppNumber (void) const
+RngRsp::GetInitRangOppNumber () const
 {
   return m_initRangOppNumber;
 }
 
 uint8_t
-RngRsp::GetRangSubchnl (void) const
+RngRsp::GetRangSubchnl () const
 {
   return m_rangSubchnl;
 }
 
 std::string
-RngRsp::GetName (void) const
+RngRsp::GetName () const
 {
   return "RNG-RSP";
 }
 
 TypeId
-RngRsp::GetTypeId (void)
+RngRsp::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RngRsp")
     .SetParent<Header> ()
@@ -440,7 +440,7 @@ RngRsp::GetTypeId (void)
 }
 
 TypeId
-RngRsp::GetInstanceTypeId (void) const
+RngRsp::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -459,7 +459,7 @@ RngRsp::Print (std::ostream &os) const
 }
 
 uint32_t
-RngRsp::GetSerializedSize (void) const
+RngRsp::GetSerializedSize () const
 {
   return 1 + 4 + 1 + 4 + 1 + 4 + 1 + 2 + 6 + 2 + 2 + 1 + 4 + 1 + 1;
 }
@@ -512,7 +512,7 @@ RngRsp::Deserialize (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (DsaReq);
 
-DsaReq::DsaReq (void)
+DsaReq::DsaReq ()
   : m_transactionId (0),
     m_sfid (0),
     m_cid (),
@@ -526,7 +526,7 @@ DsaReq::DsaReq (ServiceFlow sf)
   m_serviceFlow = sf;
 }
 
-DsaReq::~DsaReq (void)
+DsaReq::~DsaReq ()
 {
 }
 
@@ -537,7 +537,7 @@ DsaReq::SetTransactionId (uint16_t transactionId)
 }
 
 uint16_t
-DsaReq::GetTransactionId (void) const
+DsaReq::GetTransactionId () const
 {
   return m_transactionId;
 }
@@ -549,7 +549,7 @@ DsaReq::SetSfid (uint32_t sfid)
 }
 
 uint32_t
-DsaReq::GetSfid (void) const
+DsaReq::GetSfid () const
 {
   return m_sfid;
 }
@@ -561,20 +561,20 @@ DsaReq::SetCid (Cid cid)
 }
 
 Cid
-DsaReq::GetCid (void) const
+DsaReq::GetCid () const
 {
   return m_cid;
 }
 
 
 std::string
-DsaReq::GetName (void) const
+DsaReq::GetName () const
 {
   return "DSA-REQ";
 }
 
 TypeId
-DsaReq::GetTypeId (void)
+DsaReq::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DsaReq")
     .SetParent<Header> ()
@@ -585,7 +585,7 @@ DsaReq::GetTypeId (void)
 }
 
 TypeId
-DsaReq::GetInstanceTypeId (void) const
+DsaReq::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -597,7 +597,7 @@ DsaReq::Print (std::ostream &os) const
 }
 
 uint32_t
-DsaReq::GetSerializedSize (void) const
+DsaReq::GetSerializedSize () const
 {
   Tlv t = m_serviceFlow.ToTlv ();
   uint32_t size = 2 + t.GetSerializedSize ();
@@ -625,7 +625,7 @@ DsaReq::Deserialize (Buffer::Iterator start)
 }
 
 ServiceFlow
-DsaReq::GetServiceFlow (void) const
+DsaReq::GetServiceFlow () const
 {
   return m_serviceFlow;
 }
@@ -640,7 +640,7 @@ DsaReq::SetServiceFlow (ServiceFlow sf)
 
 NS_OBJECT_ENSURE_REGISTERED (DsaRsp);
 
-DsaRsp::DsaRsp (void)
+DsaRsp::DsaRsp ()
   : m_transactionId (0),
     m_confirmationCode (0),
     m_sfid (0),
@@ -648,7 +648,7 @@ DsaRsp::DsaRsp (void)
 {
 }
 
-DsaRsp::~DsaRsp (void)
+DsaRsp::~DsaRsp ()
 {
 }
 
@@ -659,13 +659,13 @@ DsaRsp::SetTransactionId (uint16_t transactionId)
 }
 
 uint16_t
-DsaRsp::GetTransactionId (void) const
+DsaRsp::GetTransactionId () const
 {
   return m_transactionId;
 }
 
 ServiceFlow
-DsaRsp::GetServiceFlow (void) const
+DsaRsp::GetServiceFlow () const
 {
   return m_serviceFlow;
 }
@@ -683,7 +683,7 @@ DsaRsp::SetConfirmationCode (uint16_t confirmationCode)
 }
 
 uint16_t
-DsaRsp::GetConfirmationCode (void) const
+DsaRsp::GetConfirmationCode () const
 {
   return m_confirmationCode;
 }
@@ -695,7 +695,7 @@ DsaRsp::SetSfid (uint32_t sfid)
 }
 
 uint32_t
-DsaRsp::GetSfid (void) const
+DsaRsp::GetSfid () const
 {
   return m_sfid;
 }
@@ -707,19 +707,19 @@ DsaRsp::SetCid (Cid cid)
 }
 
 Cid
-DsaRsp::GetCid (void) const
+DsaRsp::GetCid () const
 {
   return m_cid;
 }
 
 std::string
-DsaRsp::GetName (void) const
+DsaRsp::GetName () const
 {
   return "DSA-RSP";
 }
 
 TypeId
-DsaRsp::GetTypeId (void)
+DsaRsp::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DsaRsp")
     .SetParent<Header> ()
@@ -730,7 +730,7 @@ DsaRsp::GetTypeId (void)
 }
 
 TypeId
-DsaRsp::GetInstanceTypeId (void) const
+DsaRsp::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -743,7 +743,7 @@ DsaRsp::Print (std::ostream &os) const
 }
 
 uint32_t
-DsaRsp::GetSerializedSize (void) const
+DsaRsp::GetSerializedSize () const
 {
   return 2 + 1 + m_serviceFlow.ToTlv ().GetSerializedSize ();
 }
@@ -776,13 +776,13 @@ DsaRsp::Deserialize (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (DsaAck);
 
-DsaAck::DsaAck (void)
+DsaAck::DsaAck ()
   : m_transactionId (0),
     m_confirmationCode (0)
 {
 }
 
-DsaAck::~DsaAck (void)
+DsaAck::~DsaAck ()
 {
 }
 
@@ -793,7 +793,7 @@ DsaAck::SetTransactionId (uint16_t transactionId)
 }
 
 uint16_t
-DsaAck::GetTransactionId (void) const
+DsaAck::GetTransactionId () const
 {
   return m_transactionId;
 }
@@ -805,19 +805,19 @@ DsaAck::SetConfirmationCode (uint16_t confirmationCode)
 }
 
 uint16_t
-DsaAck::GetConfirmationCode (void) const
+DsaAck::GetConfirmationCode () const
 {
   return m_confirmationCode;
 }
 
 std::string
-DsaAck::GetName (void) const
+DsaAck::GetName () const
 {
   return "DSA-ACK";
 }
 
 TypeId
-DsaAck::GetTypeId (void)
+DsaAck::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DsaAck")
     .SetParent<Header> ()
@@ -828,7 +828,7 @@ DsaAck::GetTypeId (void)
 }
 
 TypeId
-DsaAck::GetInstanceTypeId (void) const
+DsaAck::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -840,7 +840,7 @@ DsaAck::Print (std::ostream &os) const
 }
 
 uint32_t
-DsaAck::GetSerializedSize (void) const
+DsaAck::GetSerializedSize () const
 {
   return 2 + 1;
 }

@@ -53,8 +53,8 @@ public:
   RedQueueDiscTestItem (const RedQueueDiscTestItem &) = delete;
   RedQueueDiscTestItem & operator = (const RedQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark(void);
+  virtual void AddHeader ();
+  virtual bool Mark();
 
 private:
   bool m_ecnCapablePacket; ///< ECN capable packet?
@@ -67,12 +67,12 @@ RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr,
 }
 
 void
-RedQueueDiscTestItem::AddHeader (void)
+RedQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-RedQueueDiscTestItem::Mark (void)
+RedQueueDiscTestItem::Mark ()
 {
   if (m_ecnCapablePacket)
     {
@@ -91,7 +91,7 @@ class RedQueueDiscTestCase : public TestCase
 {
 public:
   RedQueueDiscTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 private:
   /**
    * Enqueue function
@@ -496,7 +496,7 @@ RedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t 
 }
 
 void
-RedQueueDiscTestCase::DoRun (void)
+RedQueueDiscTestCase::DoRun ()
 {
   RunRedTest (QueueSizeUnit::PACKETS);
   RunRedTest (QueueSizeUnit::BYTES);

@@ -49,7 +49,7 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** Constructor. */
   DefaultSimulatorImpl ();
@@ -58,8 +58,8 @@ public:
 
   // Inherited
   virtual void Destroy ();
-  virtual bool IsFinished (void) const;
-  virtual void Stop (void);
+  virtual bool IsFinished () const;
+  virtual void Stop ();
   virtual void Stop (const Time &delay);
   virtual EventId Schedule (const Time &delay, EventImpl *event);
   virtual void ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *event);
@@ -68,22 +68,22 @@ public:
   virtual void Remove (const EventId &id);
   virtual void Cancel (const EventId &id);
   virtual bool IsExpired (const EventId &id) const;
-  virtual void Run (void);
-  virtual Time Now (void) const;
+  virtual void Run ();
+  virtual Time Now () const;
   virtual Time GetDelayLeft (const EventId &id) const;
-  virtual Time GetMaximumSimulationTime (void) const;
+  virtual Time GetMaximumSimulationTime () const;
   virtual void SetScheduler (ObjectFactory schedulerFactory);
-  virtual uint32_t GetSystemId (void) const;
-  virtual uint32_t GetContext (void) const;
-  virtual uint64_t GetEventCount (void) const;
+  virtual uint32_t GetSystemId () const;
+  virtual uint32_t GetContext () const;
+  virtual uint64_t GetEventCount () const;
 
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /** Process the next event. */
-  void ProcessOneEvent (void);
+  void ProcessOneEvent ();
   /** Move events from a different context into the main event queue. */
-  void ProcessEventsWithContext (void);
+  void ProcessEventsWithContext ();
 
   /** Wrap an event with its execution context. */
   struct EventWithContext

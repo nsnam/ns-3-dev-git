@@ -38,19 +38,19 @@ Ipv4InterfaceContainer::Add (const Ipv4InterfaceContainer& other)
 }
 
 Ipv4InterfaceContainer::Iterator
-Ipv4InterfaceContainer::Begin (void) const
+Ipv4InterfaceContainer::Begin () const
 {
   return m_interfaces.begin ();
 }
 
 Ipv4InterfaceContainer::Iterator
-Ipv4InterfaceContainer::End (void) const
+Ipv4InterfaceContainer::End () const
 {
   return m_interfaces.end ();
 }
 
 uint32_t
-Ipv4InterfaceContainer::GetN (void) const
+Ipv4InterfaceContainer::GetN () const
 {
   return m_interfaces.size ();
 }

@@ -65,23 +65,23 @@ public:
   void SetUpdateTxCurrentCallback (UpdateTxCurrentCallback callback);
 
   void NotifyRxStart (Time duration) override;
-  void NotifyRxEndOk (void) override;
-  void NotifyRxEndError (void) override;
+  void NotifyRxEndOk () override;
+  void NotifyRxEndError () override;
   void NotifyTxStart (Time duration, double txPowerDbm) override;
   void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
                            const std::vector<Time>& per20MhzDurations) override;
   void NotifySwitchingStart (Time duration) override;
-  void NotifySleep (void) override;
-  void NotifyOff (void) override;
-  void NotifyWakeup (void) override;
-  void NotifyOn (void) override;
+  void NotifySleep () override;
+  void NotifyOff () override;
+  void NotifyWakeup () override;
+  void NotifyOn () override;
 
 
 private:
   /**
    * A helper function that makes scheduling m_changeStateCallback possible.
    */
-  void SwitchToIdle (void);
+  void SwitchToIdle ();
 
   /**
    * Change state callback used to notify the WifiRadioEnergyModel of a state
@@ -165,7 +165,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   WifiRadioEnergyModel ();
   virtual ~WifiRadioEnergyModel ();
 
@@ -183,7 +183,7 @@ public:
    *
    * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
    */
-  double GetTotalEnergyConsumption (void) const;
+  double GetTotalEnergyConsumption () const;
 
   // Setter & getters for state power consumption.
   /**
@@ -191,7 +191,7 @@ public:
    *
    * \returns idle current of the wifi device.
    */
-  double GetIdleCurrentA (void) const;
+  double GetIdleCurrentA () const;
   /**
    * \brief Sets idle current in Amperes.
    *
@@ -203,7 +203,7 @@ public:
    *
    * \returns CCA Busy current of the wifi device.
    */
-  double GetCcaBusyCurrentA (void) const;
+  double GetCcaBusyCurrentA () const;
   /**
    * \brief Sets CCA busy current in Amperes.
    *
@@ -215,7 +215,7 @@ public:
    *
    * \returns transmit current of the wifi device.
    */
-  double GetTxCurrentA (void) const;
+  double GetTxCurrentA () const;
   /**
    * \brief Sets transmit current in Amperes.
    *
@@ -227,7 +227,7 @@ public:
    *
    * \returns receive current of the wifi device.
    */
-  double GetRxCurrentA (void) const;
+  double GetRxCurrentA () const;
   /**
    * \brief Sets receive current in Amperes.
    *
@@ -239,7 +239,7 @@ public:
    *
    * \returns switching current of the wifi device.
    */
-  double GetSwitchingCurrentA (void) const;
+  double GetSwitchingCurrentA () const;
   /**
    * \brief Sets switching current in Amperes.
    *
@@ -251,7 +251,7 @@ public:
    *
    * \returns sleep current of the wifi device.
    */
-  double GetSleepCurrentA (void) const;
+  double GetSleepCurrentA () const;
   /**
    * \brief Sets sleep current in Amperes.
    *
@@ -262,7 +262,7 @@ public:
   /**
    * \returns Current state.
    */
-  WifiPhyState GetCurrentState (void) const;
+  WifiPhyState GetCurrentState () const;
 
   /**
    * \param callback Callback function.
@@ -312,30 +312,30 @@ public:
    *
    * Implements DeviceEnergyModel::HandleEnergyDepletion
    */
-  void HandleEnergyDepletion (void);
+  void HandleEnergyDepletion ();
 
   /**
    * \brief Handles energy recharged.
    *
    * Implements DeviceEnergyModel::HandleEnergyRecharged
    */
-  void HandleEnergyRecharged (void);
+  void HandleEnergyRecharged ();
 
   /**
    * \brief Handles energy changed.
    *
    * Implements DeviceEnergyModel::HandleEnergyChanged
    */
-  void HandleEnergyChanged (void);
+  void HandleEnergyChanged ();
 
   /**
    * \returns Pointer to the PHY listener.
    */
-  WifiRadioEnergyModelPhyListener * GetPhyListener (void);
+  WifiRadioEnergyModelPhyListener * GetPhyListener ();
 
 
 private:
-  void DoDispose (void);
+  void DoDispose ();
 
   /**
    * \param state the wifi state
@@ -348,7 +348,7 @@ private:
    *
    * Implements DeviceEnergyModel::GetCurrentA.
    */
-  double DoGetCurrentA (void) const;
+  double DoGetCurrentA () const;
 
   /**
    * \param state New state the radio device is currently in.

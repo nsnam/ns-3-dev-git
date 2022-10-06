@@ -132,7 +132,7 @@ LteUeMeasurementsTestCase::~LteUeMeasurementsTestCase ()
 {}
 
 void
-LteUeMeasurementsTestCase::DoRun (void)
+LteUeMeasurementsTestCase::DoRun ()
 {
   NS_LOG_INFO (this << " " << GetName ());
 

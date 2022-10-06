@@ -65,7 +65,7 @@ LteUeRrcProtocolIdeal::DoDispose ()
 }
 
 TypeId
-LteUeRrcProtocolIdeal::GetTypeId (void)
+LteUeRrcProtocolIdeal::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteUeRrcProtocolIdeal")
     .SetParent<Object> ()
@@ -257,7 +257,7 @@ LteEnbRrcProtocolIdeal::DoDispose ()
 }
 
 TypeId
-LteEnbRrcProtocolIdeal::GetTypeId (void)
+LteEnbRrcProtocolIdeal::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteEnbRrcProtocolIdeal")
     .SetParent<Object> ()
@@ -479,10 +479,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
@@ -504,7 +504,7 @@ IdealHandoverPreparationInfoHeader::SetMsgId (uint32_t id)
 
 
 TypeId
-IdealHandoverPreparationInfoHeader::GetTypeId (void)
+IdealHandoverPreparationInfoHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::IdealHandoverPreparationInfoHeader")
     .SetParent<Header> ()
@@ -515,7 +515,7 @@ IdealHandoverPreparationInfoHeader::GetTypeId (void)
 }
 
 TypeId
-IdealHandoverPreparationInfoHeader::GetInstanceTypeId (void) const
+IdealHandoverPreparationInfoHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -525,7 +525,7 @@ void IdealHandoverPreparationInfoHeader::Print (std::ostream &os)  const
   os << " msgId=" << m_msgId;
 }
 
-uint32_t IdealHandoverPreparationInfoHeader::GetSerializedSize (void) const
+uint32_t IdealHandoverPreparationInfoHeader::GetSerializedSize () const
 {
   return 4;
 }
@@ -600,10 +600,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
@@ -625,7 +625,7 @@ IdealHandoverCommandHeader::SetMsgId (uint32_t id)
 
 
 TypeId
-IdealHandoverCommandHeader::GetTypeId (void)
+IdealHandoverCommandHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::IdealHandoverCommandHeader")
     .SetParent<Header> ()
@@ -636,7 +636,7 @@ IdealHandoverCommandHeader::GetTypeId (void)
 }
 
 TypeId
-IdealHandoverCommandHeader::GetInstanceTypeId (void) const
+IdealHandoverCommandHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -646,7 +646,7 @@ void IdealHandoverCommandHeader::Print (std::ostream &os)  const
   os << " msgId=" << m_msgId;
 }
 
-uint32_t IdealHandoverCommandHeader::GetSerializedSize (void) const
+uint32_t IdealHandoverCommandHeader::GetSerializedSize () const
 {
   return 4;
 }

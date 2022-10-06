@@ -70,7 +70,7 @@ EhtPhy::~EhtPhy ()
 }
 
 void
-EhtPhy::BuildModeList (void)
+EhtPhy::BuildModeList ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_modeList.empty ());
@@ -115,7 +115,7 @@ EhtPhy::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
 }
 
 const PhyEntity::PpduFormats &
-EhtPhy::GetPpduFormats (void) const
+EhtPhy::GetPpduFormats () const
 {
   return m_ehtPpduFormats;
 }
@@ -177,7 +177,7 @@ EhtPhy::GetFailureReason (WifiPpduField field) const
 }
 
 void
-EhtPhy::InitializeModes (void)
+EhtPhy::InitializeModes ()
 {
   for (uint8_t i = 0; i <= 13; ++i)
     {

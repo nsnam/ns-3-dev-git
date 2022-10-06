@@ -54,13 +54,13 @@ ExampleAsTestCase::ExampleAsTestCase (const std::string name,
   NS_LOG_FUNCTION (this << name << program << dataDir << args);
 }
 
-ExampleAsTestCase::~ExampleAsTestCase (void)
+ExampleAsTestCase::~ExampleAsTestCase ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 std::string
-ExampleAsTestCase::GetCommandTemplate (void) const
+ExampleAsTestCase::GetCommandTemplate () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::string command ("%s ");
@@ -69,7 +69,7 @@ ExampleAsTestCase::GetCommandTemplate (void) const
 }
 
 std::string
-ExampleAsTestCase::GetPostProcessingCommand (void) const
+ExampleAsTestCase::GetPostProcessingCommand () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::string command ("");
@@ -77,7 +77,7 @@ ExampleAsTestCase::GetPostProcessingCommand (void) const
 }
 
 void
-ExampleAsTestCase::DoRun (void)
+ExampleAsTestCase::DoRun ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   // Set up the output file names

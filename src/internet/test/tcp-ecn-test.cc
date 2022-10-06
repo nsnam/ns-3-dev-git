@@ -96,7 +96,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   uint32_t m_dataPacketSent;  //!< Number of packets sent
   uint8_t m_testcase;         //!< Test case type
@@ -125,13 +125,13 @@ public:
 protected:
   virtual uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
   virtual void ReTxTimeout ();
-  Ptr<TcpSocketBase> Fork (void);
+  Ptr<TcpSocketBase> Fork ();
 };
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketCongestedRouter);
 
 TypeId
-TcpSocketCongestedRouter::GetTypeId (void)
+TcpSocketCongestedRouter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSocketCongestedRouter")
     .SetParent<TcpSocketMsgBase> ()
@@ -377,7 +377,7 @@ TcpSocketCongestedRouter::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize
 }
 
 Ptr<TcpSocketBase>
-TcpSocketCongestedRouter::Fork (void)
+TcpSocketCongestedRouter::Fork ()
 {
   return CopyObject<TcpSocketCongestedRouter> (this);
 }

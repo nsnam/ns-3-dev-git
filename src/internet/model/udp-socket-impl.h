@@ -73,7 +73,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Create an unbound udp socket.
    */
@@ -91,21 +91,21 @@ public:
    */
   void SetUdp (Ptr<UdpL4Protocol> udp);
 
-  virtual enum SocketErrno GetErrno (void) const;
-  virtual enum SocketType GetSocketType (void) const;
-  virtual Ptr<Node> GetNode (void) const;
-  virtual int Bind (void);
-  virtual int Bind6 (void);
+  virtual enum SocketErrno GetErrno () const;
+  virtual enum SocketType GetSocketType () const;
+  virtual Ptr<Node> GetNode () const;
+  virtual int Bind ();
+  virtual int Bind6 ();
   virtual int Bind (const Address &address);
-  virtual int Close (void);
-  virtual int ShutdownSend (void);
-  virtual int ShutdownRecv (void);
+  virtual int Close ();
+  virtual int ShutdownSend ();
+  virtual int ShutdownRecv ();
   virtual int Connect (const Address &address);
-  virtual int Listen (void);
-  virtual uint32_t GetTxAvailable (void) const;
+  virtual int Listen ();
+  virtual uint32_t GetTxAvailable () const;
   virtual int Send (Ptr<Packet> p, uint32_t flags);
   virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &address);
-  virtual uint32_t GetRxAvailable (void) const;
+  virtual uint32_t GetRxAvailable () const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
                                 Address &fromAddress);
@@ -121,15 +121,15 @@ public:
 private:
   // Attributes set through UdpSocket base class
   virtual void SetRcvBufSize (uint32_t size);
-  virtual uint32_t GetRcvBufSize (void) const;
+  virtual uint32_t GetRcvBufSize () const;
   virtual void SetIpMulticastTtl (uint8_t ipTtl);
-  virtual uint8_t GetIpMulticastTtl (void) const;
+  virtual uint8_t GetIpMulticastTtl () const;
   virtual void SetIpMulticastIf (int32_t ipIf);
-  virtual int32_t GetIpMulticastIf (void) const;
+  virtual int32_t GetIpMulticastIf () const;
   virtual void SetIpMulticastLoop (bool loop);
-  virtual bool GetIpMulticastLoop (void) const;
+  virtual bool GetIpMulticastLoop () const;
   virtual void SetMtuDiscover (bool discover);
-  virtual bool GetMtuDiscover (void) const;
+  virtual bool GetMtuDiscover () const;
 
 
   /**
@@ -143,7 +143,7 @@ private:
    * Finish the binding process
    * \returns 0 on success, -1 on failure
    */
-  int FinishBind (void);
+  int FinishBind ();
 
   /**
    * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
@@ -171,7 +171,7 @@ private:
    * This is a callback function configured to m_endpoint in
    * SetupCallback(), invoked when the endpoint is destroyed.
    */
-  void Destroy (void);
+  void Destroy ();
 
   /**
    * \brief Kill this socket by zeroing its attributes (IPv6)
@@ -179,12 +179,12 @@ private:
    * This is a callback function configured to m_endpoint in
    * SetupCallback(), invoked when the endpoint is destroyed.
    */
-  void Destroy6 (void);
+  void Destroy6 ();
 
   /**
    * \brief Deallocate m_endPoint and m_endPoint6
    */
-  void DeallocateEndPoint (void);
+  void DeallocateEndPoint ();
 
   /**
    * \brief Send a packet

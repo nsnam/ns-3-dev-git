@@ -32,19 +32,19 @@ QueueDiscContainer::QueueDiscContainer (Ptr<QueueDisc> qDisc)
 }
 
 QueueDiscContainer::ConstIterator
-QueueDiscContainer::Begin (void) const
+QueueDiscContainer::Begin () const
 {
   return m_queueDiscs.begin ();
 }
 
 QueueDiscContainer::ConstIterator
-QueueDiscContainer::End (void) const
+QueueDiscContainer::End () const
 {
   return m_queueDiscs.end ();
 }
 
 std::size_t
-QueueDiscContainer::GetN (void) const
+QueueDiscContainer::GetN () const
 {
   return m_queueDiscs.size ();
 }

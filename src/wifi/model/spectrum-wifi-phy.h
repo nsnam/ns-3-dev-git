@@ -61,16 +61,16 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   SpectrumWifiPhy ();
   virtual ~SpectrumWifiPhy ();
 
   // Implementation of pure virtual method.
   void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
-  Ptr<Channel> GetChannel (void) const override;
+  Ptr<Channel> GetChannel () const override;
   uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
-  std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;
+  std::tuple<double, double, double> GetTxMaskRejectionParams () const override;
 
   /**
    * Set the SpectrumChannel this SpectrumWifiPhy is to be connected to.
@@ -112,7 +112,7 @@ public:
    *
    * \return the AntennaModel used for reception
    */
-  Ptr<Object> GetAntenna (void) const;
+  Ptr<Object> GetAntenna () const;
   /**
    * \return the SpectrumModel that this SpectrumPhy expects to be used
    *         for all SpectrumValues that are passed to StartRx. If 0 is
@@ -123,7 +123,7 @@ public:
   /**
    * \return the width of each band (Hz)
    */
-  uint32_t GetBandBandwidth (void) const;
+  uint32_t GetBandBandwidth () const;
 
   /**
    * Callback invoked when the PHY model starts to process a signal
@@ -137,7 +137,7 @@ public:
 
   // The following method calls the base WifiPhy class method
   // but also generates a new SpectrumModel if called during runtime
-  void DoChannelSwitch (void) override;
+  void DoChannelSwitch () override;
 
   /**
    * This function is sending the signal to the Spectrum channel
@@ -148,8 +148,8 @@ public:
   void Transmit (Ptr<WifiSpectrumSignalParameters> txParams);
 
 protected:
-  void DoDispose (void) override;
-  void DoInitialize (void) override;
+  void DoDispose () override;
+  void DoInitialize () override;
 
   /**
    * Get the start band index and the stop band index for a given band
@@ -178,11 +178,11 @@ private:
   /**
    * Perform run-time spectrum model change
    */
-  void ResetSpectrumModel (void);
+  void ResetSpectrumModel ();
   /**
    * This function is called to update the bands handled by the InterferenceHelper.
    */
-  void UpdateInterferenceHelperBands (void);
+  void UpdateInterferenceHelperBands ();
 
   Ptr<SpectrumChannel> m_channel; //!< SpectrumChannel that this SpectrumWifiPhy is connected to
 

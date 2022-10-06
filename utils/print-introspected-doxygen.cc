@@ -230,7 +230,7 @@ public:
   /**
    * Print output in "a -> b" form on std::cout
    */
-  void Print (void) const;
+  void Print () const;
 
   /**
    * \return the configuration paths for tid
@@ -242,13 +242,13 @@ public:
   /**
    * \return the type names we couldn't aggregate.
    */
-  std::vector<std::string> GetNoTypeIds (void) const;
+  std::vector<std::string> GetNoTypeIds () const;
 
 private:
   /**
    * \return the current configuration path
    */
-  std::string GetCurrentPath (void) const;
+  std::string GetCurrentPath () const;
   /**
    * Gather attribute, configuration path information for tid
    *
@@ -318,7 +318,7 @@ StaticInformation::RecordAggregationInfo (std::string a, std::string b)
 
 
 void
-StaticInformation::Print (void) const
+StaticInformation::Print () const
 {
   NS_LOG_FUNCTION (this);
   for (auto item : m_output)
@@ -329,7 +329,7 @@ StaticInformation::Print (void) const
 
 
 std::string
-StaticInformation::GetCurrentPath (void) const
+StaticInformation::GetCurrentPath () const
 {
   NS_LOG_FUNCTION (this);
   std::ostringstream oss;
@@ -403,7 +403,7 @@ Uniquefy (T t)
 }
 
 std::vector<std::string>
-StaticInformation::GetNoTypeIds (void) const
+StaticInformation::GetNoTypeIds () const
 {
   NS_LOG_FUNCTION (this);
   Uniquefy (m_noTids);
@@ -581,7 +581,7 @@ typedef NameMap::const_iterator         NameMapIterator; ///< NameMap iterator
  * \returns NameMap
  */
 NameMap
-GetNameMap (void)
+GetNameMap ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 

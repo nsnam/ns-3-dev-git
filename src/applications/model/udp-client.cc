@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("UdpClient");
 NS_OBJECT_ENSURE_REGISTERED (UdpClient);
 
 TypeId
-UdpClient::GetTypeId (void)
+UdpClient::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpClient")
     .SetParent<Application> ()
@@ -103,14 +103,14 @@ UdpClient::SetRemote (Address addr)
 }
 
 void
-UdpClient::DoDispose (void)
+UdpClient::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-UdpClient::StartApplication (void)
+UdpClient::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -183,14 +183,14 @@ UdpClient::StartApplication (void)
 }
 
 void
-UdpClient::StopApplication (void)
+UdpClient::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Cancel (m_sendEvent);
 }
 
 void
-UdpClient::Send (void)
+UdpClient::Send ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_sendEvent.IsExpired ());

@@ -85,7 +85,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor.
@@ -113,7 +113,7 @@ public:
    *
    * \returns smart pointer to Ipv6RoutingProtocol object, or null pointer if none
    */
-  virtual Ptr<Ipv6RoutingProtocol> GetRoutingProtocol (void) const = 0;
+  virtual Ptr<Ipv6RoutingProtocol> GetRoutingProtocol () const = 0;
 
   /**
    * \brief Add a NetDevice interface.
@@ -131,7 +131,7 @@ public:
    * \brief Get number of interfaces.
    * \returns the number of interfaces added by the user.
    */
-  virtual uint32_t GetNInterfaces (void) const = 0;
+  virtual uint32_t GetNInterfaces () const = 0;
 
   /**
    * \brief Return the interface number of the interface that has been
@@ -404,7 +404,7 @@ private:
    * \brief Get IPv6 forwarding state.
    * \return forwarding state (enabled or not)
    */
-  virtual bool GetIpForward (void) const = 0;
+  virtual bool GetIpForward () const = 0;
 
   /**
    * \brief Set IPv6 MTU discover state.
@@ -416,7 +416,7 @@ private:
    * \brief Get IPv6 MTU discover state.
    * \return MTU discover state (enabled or not)
    */
-  virtual bool GetMtuDiscover (void) const = 0;
+  virtual bool GetMtuDiscover () const = 0;
 };
 
 } // namespace ns3

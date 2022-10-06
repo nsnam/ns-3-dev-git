@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpVeno");
 NS_OBJECT_ENSURE_REGISTERED (TcpVeno);
 
 TypeId
-TcpVeno::GetTypeId (void)
+TcpVeno::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpVeno")
     .SetParent<TcpNewReno> ()
@@ -49,7 +49,7 @@ TcpVeno::GetTypeId (void)
   return tid;
 }
 
-TcpVeno::TcpVeno (void)
+TcpVeno::TcpVeno ()
   : TcpNewReno (),
     m_baseRtt (Time::Max ()),
     m_minRtt (Time::Max ()),
@@ -77,13 +77,13 @@ TcpVeno::TcpVeno (const TcpVeno& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpVeno::~TcpVeno (void)
+TcpVeno::~TcpVeno ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<TcpCongestionOps>
-TcpVeno::Fork (void)
+TcpVeno::Fork ()
 {
   return CopyObject<TcpVeno> (this);
 }

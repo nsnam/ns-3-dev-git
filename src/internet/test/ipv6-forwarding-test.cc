@@ -69,7 +69,7 @@ class Ipv6ForwardingTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv6ForwardingTest ();
 
   /**
@@ -113,7 +113,7 @@ Ipv6ForwardingTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv6ForwardingTest::DoRun (void)
+Ipv6ForwardingTest::DoRun ()
 {
   // Create topology
 

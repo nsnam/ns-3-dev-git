@@ -63,7 +63,7 @@ AsciiLrWpanMacTransmitSinkWithoutContext (
   *stream->GetStream () << "t " << Simulator::Now ().As (Time::S) << " " << *p << std::endl;
 }
 
-LrWpanHelper::LrWpanHelper (void)
+LrWpanHelper::LrWpanHelper ()
 {
   m_channel = CreateObject<SingleModelSpectrumChannel> ();
 
@@ -91,14 +91,14 @@ LrWpanHelper::LrWpanHelper (bool useMultiModelSpectrumChannel)
   m_channel->SetPropagationDelayModel (delayModel);
 }
 
-LrWpanHelper::~LrWpanHelper (void)
+LrWpanHelper::~LrWpanHelper ()
 {
   m_channel->Dispose ();
   m_channel = 0;
 }
 
 void
-LrWpanHelper::EnableLogComponents (void)
+LrWpanHelper::EnableLogComponents ()
 {
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnableAll (LOG_PREFIX_FUNC);
@@ -193,7 +193,7 @@ LrWpanHelper::Install (NodeContainer c)
 
 
 Ptr<SpectrumChannel>
-LrWpanHelper::GetChannel (void)
+LrWpanHelper::GetChannel ()
 {
   return m_channel;
 }

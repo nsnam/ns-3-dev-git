@@ -50,7 +50,7 @@ public:
    * Get serialized size in bytes
    * \returns the serialized size
    */
-  virtual uint32_t GetSerializedSize (void) const = 0;
+  virtual uint32_t GetSerializedSize () const = 0;
   /**
    * Serialize to a buffer
    * \param start the iterator
@@ -67,7 +67,7 @@ public:
    * Copy function
    * \returns the TLV value
    */
-  virtual TlvValue * Copy (void) const = 0;
+  virtual TlvValue * Copy () const = 0;
 private:
 };
 
@@ -102,48 +102,48 @@ public:
    * \param value TLV value
    */
   Tlv (uint8_t type, uint64_t length, const TlvValue & value);
-  Tlv (void);
-  ~Tlv (void);
+  Tlv ();
+  ~Tlv ();
   /**
    * Register this type.
    * \return the TypeId.
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   /**
    * Get size of length field
    * \returns the size of length field
    */
-  uint8_t GetSizeOfLen (void) const;
+  uint8_t GetSizeOfLen () const;
   /**
    * Get type value
    * \returns the type
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
   /**
    * Get length value
    * \returns the length
    */
-  uint64_t GetLength (void) const;
+  uint64_t GetLength () const;
   /**
    * Peek value
    * \returns the TLV value
    */
-  TlvValue* PeekValue (void);
+  TlvValue* PeekValue ();
   /**
    * Copy TLV
    * \returns a pointer to a TLV copy
    */
-  Tlv * Copy (void) const;
+  Tlv * Copy () const;
   /**
    * Copy TlvValue
    * \returns the TLV value
    */
-  TlvValue * CopyValue (void) const;
+  TlvValue * CopyValue () const;
   /**
    * assignment operator
    * \param o the TLV to assign
@@ -177,8 +177,8 @@ public:
    */
   U8TlvValue (uint8_t value);
   U8TlvValue ();
-  ~U8TlvValue (void);
-  virtual uint32_t GetSerializedSize (void) const;
+  ~U8TlvValue ();
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start,uint64_t valueLen);
   /**
@@ -191,12 +191,12 @@ public:
    * Get value
    * \returns the value
    */
-  uint8_t GetValue (void) const;
+  uint8_t GetValue () const;
   /**
    * Copy
    * \returns a U8 TLV value
    */
-  U8TlvValue * Copy (void) const;
+  U8TlvValue * Copy () const;
 private:
   uint8_t  m_value; ///< value
 };
@@ -216,8 +216,8 @@ public:
    */
   U16TlvValue (uint16_t value);
   U16TlvValue ();
-  ~U16TlvValue (void);
-  virtual uint32_t GetSerializedSize (void) const;
+  ~U16TlvValue ();
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start,uint64_t valueLen);
   /**
@@ -230,12 +230,12 @@ public:
    * Get value
    * \returns the value
    */
-  uint16_t GetValue (void) const;
+  uint16_t GetValue () const;
   /**
    * Copy
    * \returns the U16 TLV value
    */
-  virtual U16TlvValue * Copy (void) const;
+  virtual U16TlvValue * Copy () const;
 private:
   uint16_t  m_value; ///< value
 };
@@ -255,9 +255,9 @@ public:
    */
   U32TlvValue (uint32_t value);
   U32TlvValue ();
-  ~U32TlvValue (void);
+  ~U32TlvValue ();
 
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLen);
   /**
@@ -270,12 +270,12 @@ public:
    * Get value
    * \returns the value
    */
-  uint32_t GetValue (void) const;
+  uint32_t GetValue () const;
   /**
    * Copy
    * \returns the U32 TLV Value
    */
-  virtual U32TlvValue * Copy (void) const;
+  virtual U32TlvValue * Copy () const;
 private:
   uint32_t  m_value; ///< value
 };
@@ -291,9 +291,9 @@ class VectorTlvValue : public TlvValue
 public:
   /// TLV vector iterator typedef
   typedef std::vector<Tlv*>::const_iterator Iterator;
-  VectorTlvValue (void);
-  ~VectorTlvValue (void);
-  virtual uint32_t GetSerializedSize (void) const;
+  VectorTlvValue ();
+  ~VectorTlvValue ();
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) = 0;
   /**
@@ -315,7 +315,7 @@ public:
    * Copy
    * \returns the vector TLV value
    */
-  virtual VectorTlvValue * Copy (void) const = 0;
+  virtual VectorTlvValue * Copy () const = 0;
 private:
   std::vector<Tlv*>  * m_tlvList; ///< tlv list
 };
@@ -364,7 +364,7 @@ public:
   };
   SfVectorTlvValue ();
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
-  virtual SfVectorTlvValue * Copy (void) const;
+  virtual SfVectorTlvValue * Copy () const;
 
 };
 // ==============================================================================
@@ -384,7 +384,7 @@ public:
   };
   CsParamVectorTlvValue ();
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
-  virtual CsParamVectorTlvValue * Copy (void) const;
+  virtual CsParamVectorTlvValue * Copy () const;
 private:
 };
 
@@ -411,7 +411,7 @@ public:
   };
   ClassificationRuleVectorTlvValue ();
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
-  virtual ClassificationRuleVectorTlvValue * Copy (void) const;
+  virtual ClassificationRuleVectorTlvValue * Copy () const;
 private:
 };
 
@@ -433,24 +433,24 @@ public:
    */
   TosTlvValue (uint8_t low, uint8_t high, uint8_t mask);
   ~TosTlvValue ();
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
   /**
    * Get low part
    * \returns the low part
    */
-  uint8_t GetLow (void) const;
+  uint8_t GetLow () const;
   /**
    * Get high part
    * \returns the high part
    */
-  uint8_t GetHigh (void) const;
+  uint8_t GetHigh () const;
   /**
    * Get the mask
    * \returns the mask
    */
-  uint8_t GetMask (void) const;
+  uint8_t GetMask () const;
   /**
    * Copy
    * \returns the TOS TLV value
@@ -480,7 +480,7 @@ public:
   typedef std::vector<struct PortRange>::const_iterator Iterator;
   PortRangeTlvValue ();
   ~PortRangeTlvValue ();
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
   /**
@@ -503,7 +503,7 @@ public:
    * Copy
    * \returns the port range tlv value
    */
-  virtual PortRangeTlvValue * Copy (void) const;
+  virtual PortRangeTlvValue * Copy () const;
 private:
   std::vector<struct PortRange> * m_portRange; ///< port range
 };
@@ -520,7 +520,7 @@ public:
   ~ProtocolTlvValue ();
   /// Iterator typedef
   typedef std::vector<uint8_t>::const_iterator Iterator;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
   /**
@@ -542,7 +542,7 @@ public:
    * Copy
    * \returns the protocol tlv value
    */
-  virtual ProtocolTlvValue * Copy (void) const;
+  virtual ProtocolTlvValue * Copy () const;
 private:
   std::vector<uint8_t> * m_protocol; ///< protocol
 };
@@ -566,7 +566,7 @@ public:
   typedef std::vector<struct ipv4Addr>::const_iterator Iterator;
   Ipv4AddressTlvValue ();
   ~Ipv4AddressTlvValue ();
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
   /**

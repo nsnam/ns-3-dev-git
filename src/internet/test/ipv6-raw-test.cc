@@ -77,7 +77,7 @@ class Ipv6RawSocketImplTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv6RawSocketImplTest ();
 
   /**
@@ -164,7 +164,7 @@ Ipv6RawSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv6RawSocketImplTest::DoRun (void)
+Ipv6RawSocketImplTest::DoRun ()
 {
   // Create topology
 

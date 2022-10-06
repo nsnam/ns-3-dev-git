@@ -47,7 +47,7 @@ public:
   virtual ~WaveformGeneratorTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Trace if the waveform is active
@@ -84,7 +84,7 @@ WaveformGeneratorTestCase::~WaveformGeneratorTestCase ()
 
 
 void
-WaveformGeneratorTestCase::DoRun (void)
+WaveformGeneratorTestCase::DoRun ()
 {
   Ptr<SpectrumValue> txPsd = MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo1 ();
 

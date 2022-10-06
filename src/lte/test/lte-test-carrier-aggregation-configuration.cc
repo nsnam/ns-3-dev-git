@@ -100,7 +100,7 @@ public:
   }
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Build name string function

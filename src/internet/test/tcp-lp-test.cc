@@ -53,7 +53,7 @@ public:
                   uint32_t segmentsAcked, uint32_t ssThresh, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   uint32_t m_cWnd;          //!< Congestion window size
   uint32_t m_segmentSize;   //!< Segment size
   uint32_t m_ssThresh;      //!< Slow start threshold
@@ -124,7 +124,7 @@ public:
                        uint32_t segmentsAcked, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   uint32_t m_cWnd;          //!< Congestion window size
   uint32_t m_segmentSize;   //!< Segment size
@@ -189,7 +189,7 @@ public:
                        uint32_t segmentsAcked, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   uint32_t m_cWnd;          //!< Congestion window size
   uint32_t m_segmentSize;   //!< Segment size

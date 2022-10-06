@@ -56,7 +56,7 @@ TraceFadingLossModel::~TraceFadingLossModel ()
 
 
 TypeId
-TraceFadingLossModel::GetTypeId (void)
+TraceFadingLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TraceFadingLossModel")
     .SetParent<SpectrumPropagationLossModel> ()

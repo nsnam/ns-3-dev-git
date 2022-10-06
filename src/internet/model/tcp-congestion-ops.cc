@@ -26,7 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpCongestionOps");
 NS_OBJECT_ENSURE_REGISTERED (TcpCongestionOps);
 
 TypeId
-TcpCongestionOps::GetTypeId (void)
+TcpCongestionOps::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpCongestionOps")
     .SetParent<Object> ()
@@ -93,7 +93,7 @@ TcpCongestionOps::CongControl (Ptr<TcpSocketState> tcb,
 NS_OBJECT_ENSURE_REGISTERED (TcpNewReno);
 
 TypeId
-TcpNewReno::GetTypeId (void)
+TcpNewReno::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpNewReno")
     .SetParent<TcpCongestionOps> ()
@@ -103,7 +103,7 @@ TcpNewReno::GetTypeId (void)
   return tid;
 }
 
-TcpNewReno::TcpNewReno (void) : TcpCongestionOps ()
+TcpNewReno::TcpNewReno () : TcpCongestionOps ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -114,7 +114,7 @@ TcpNewReno::TcpNewReno (const TcpNewReno& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpNewReno::~TcpNewReno (void)
+TcpNewReno::~TcpNewReno ()
 {
 }
 

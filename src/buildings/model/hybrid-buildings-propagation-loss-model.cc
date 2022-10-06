@@ -59,7 +59,7 @@ HybridBuildingsPropagationLossModel::~HybridBuildingsPropagationLossModel ()
 }
 
 TypeId
-HybridBuildingsPropagationLossModel::GetTypeId (void)
+HybridBuildingsPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HybridBuildingsPropagationLossModel")
 

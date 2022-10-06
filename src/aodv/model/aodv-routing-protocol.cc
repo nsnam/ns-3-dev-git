@@ -180,7 +180,7 @@ RoutingProtocol::RoutingProtocol ()
 }
 
 TypeId
-RoutingProtocol::GetTypeId (void)
+RoutingProtocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RoutingProtocol")
     .SetParent<Ipv4RoutingProtocol> ()
@@ -2184,7 +2184,7 @@ RoutingProtocol::FindSubnetBroadcastSocketWithInterfaceAddress (Ipv4InterfaceAdd
 }
 
 void
-RoutingProtocol::DoInitialize (void)
+RoutingProtocol::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   uint32_t startTime;

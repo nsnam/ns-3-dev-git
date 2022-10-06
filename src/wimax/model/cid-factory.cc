@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-CidFactory::CidFactory (void)
+CidFactory::CidFactory ()
   : m_m (0x5500),
     // this is an arbitrary default
     m_basicIdentifier (1),
@@ -38,7 +38,7 @@ CidFactory::CidFactory (void)
 }
 
 Cid
-CidFactory::AllocateBasic (void)
+CidFactory::AllocateBasic ()
 {
   NS_ASSERT (m_basicIdentifier < m_m);
   m_basicIdentifier++;
@@ -46,7 +46,7 @@ CidFactory::AllocateBasic (void)
 }
 
 Cid
-CidFactory::AllocatePrimary (void)
+CidFactory::AllocatePrimary ()
 {
   NS_ASSERT (m_primaryIdentifier < 2 * m_m);
   m_primaryIdentifier++;
@@ -54,7 +54,7 @@ CidFactory::AllocatePrimary (void)
 }
 
 Cid
-CidFactory::AllocateTransportOrSecondary (void)
+CidFactory::AllocateTransportOrSecondary ()
 {
   NS_ASSERT (m_transportOrSecondaryIdentifier < 0xfefe);
   m_transportOrSecondaryIdentifier++;
@@ -62,7 +62,7 @@ CidFactory::AllocateTransportOrSecondary (void)
 }
 
 Cid
-CidFactory::AllocateMulticast (void)
+CidFactory::AllocateMulticast ()
 {
   NS_ASSERT (m_multicastPollingIdentifier < 0xfffd);
   m_multicastPollingIdentifier++;

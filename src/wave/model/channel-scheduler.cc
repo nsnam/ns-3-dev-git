@@ -30,7 +30,7 @@ NS_OBJECT_ENSURE_REGISTERED (ChannelScheduler);
    * \return the object TypeId
    */
 TypeId
-ChannelScheduler::GetTypeId (void)
+ChannelScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ChannelScheduler")
     .SetParent<Object> ()
@@ -49,7 +49,7 @@ ChannelScheduler::~ChannelScheduler ()
 }
 
 void
-ChannelScheduler::DoInitialize (void)
+ChannelScheduler::DoInitialize ()
 {
   // assign default CCH access when the device is initialized
   AssignDefaultCchAccess ();
@@ -70,14 +70,14 @@ ChannelScheduler::IsChannelAccessAssigned (uint32_t channelNumber) const
 }
 
 bool
-ChannelScheduler::IsCchAccessAssigned (void) const
+ChannelScheduler::IsCchAccessAssigned () const
 {
   NS_LOG_FUNCTION (this);
   return (GetAssignedAccessType (CCH) != NoAccess);
 }
 
 bool
-ChannelScheduler::IsSchAccessAssigned (void) const
+ChannelScheduler::IsSchAccessAssigned () const
 {
   NS_LOG_FUNCTION (this);
   return (GetAssignedAccessType (SCH1) != NoAccess) || (GetAssignedAccessType (SCH2) != NoAccess)
@@ -104,7 +104,7 @@ ChannelScheduler::IsExtendedAccessAssigned (uint32_t channelNumber) const
   return (GetAssignedAccessType (channelNumber) == ExtendedAccess);
 }
 bool
-ChannelScheduler::IsDefaultCchAccessAssigned (void) const
+ChannelScheduler::IsDefaultCchAccessAssigned () const
 {
   NS_LOG_FUNCTION (this);
   return (GetAssignedAccessType (CCH) == DefaultCchAccess);
@@ -161,7 +161,7 @@ ChannelScheduler::StopSch (uint32_t channelNumber)
 }
 
 void
-ChannelScheduler::DoDispose (void)
+ChannelScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_device = 0;

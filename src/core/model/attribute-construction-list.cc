@@ -74,13 +74,13 @@ AttributeConstructionList::Find (Ptr<const AttributeChecker> checker) const
 }
 
 AttributeConstructionList::CIterator
-AttributeConstructionList::Begin (void) const
+AttributeConstructionList::Begin () const
 {
   NS_LOG_FUNCTION (this);
   return m_list.begin ();
 }
 AttributeConstructionList::CIterator
-AttributeConstructionList::End (void) const
+AttributeConstructionList::End () const
 {
   NS_LOG_FUNCTION (this);
   return m_list.end ();

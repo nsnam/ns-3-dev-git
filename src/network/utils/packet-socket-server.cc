@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocketServer");
 NS_OBJECT_ENSURE_REGISTERED (PacketSocketServer);
 
 TypeId
-PacketSocketServer::GetTypeId (void)
+PacketSocketServer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PacketSocketServer")
     .SetParent<Application> ()
@@ -68,14 +68,14 @@ PacketSocketServer::~PacketSocketServer ()
 }
 
 void
-PacketSocketServer::DoDispose (void)
+PacketSocketServer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-PacketSocketServer::StartApplication (void)
+PacketSocketServer::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_localAddressSet, "Local address not set");
@@ -91,7 +91,7 @@ PacketSocketServer::StartApplication (void)
 }
 
 void
-PacketSocketServer::StopApplication (void)
+PacketSocketServer::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
   m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());

@@ -42,7 +42,7 @@ WaveBsmStats::WaveBsmStats ()
 
 /* static */
 TypeId
-WaveBsmStats::GetTypeId (void)
+WaveBsmStats::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WaveBsmStats")
     .SetParent<Object> ()

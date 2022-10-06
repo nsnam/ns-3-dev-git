@@ -232,7 +232,7 @@ LteFrTestCase::UlDataRxStart (Ptr<const SpectrumValue> spectrumValue)
 
 
 void
-LteFrTestCase::DoRun (void)
+LteFrTestCase::DoRun ()
 {}
 
 
@@ -256,7 +256,7 @@ LteHardFrTestCase::~LteHardFrTestCase ()
 {}
 
 void
-LteHardFrTestCase::DoRun (void)
+LteHardFrTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteFrTestCase");
 
@@ -372,7 +372,7 @@ LteStrictFrTestCase::~LteStrictFrTestCase ()
 {}
 
 void
-LteStrictFrTestCase::DoRun (void)
+LteStrictFrTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteFrTestCase");
 
@@ -624,7 +624,7 @@ LteFrAreaTestCase::SetUlExpectedValues (double expectedUlPower, std::vector<bool
 }
 
 void
-LteFrAreaTestCase::DoRun (void)
+LteFrAreaTestCase::DoRun ()
 {}
 
 LteStrictFrAreaTestCase::LteStrictFrAreaTestCase (std::string name, std::string schedulerType)
@@ -637,7 +637,7 @@ LteStrictFrAreaTestCase::~LteStrictFrAreaTestCase ()
 {}
 
 void
-LteStrictFrAreaTestCase::DoRun (void)
+LteStrictFrAreaTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteStrictFrAreaTestCase");
 
@@ -823,7 +823,7 @@ LteSoftFrAreaTestCase::~LteSoftFrAreaTestCase ()
 {}
 
 void
-LteSoftFrAreaTestCase::DoRun (void)
+LteSoftFrAreaTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteSoftFrAreaTestCase");
 
@@ -1014,7 +1014,7 @@ LteSoftFfrAreaTestCase::~LteSoftFfrAreaTestCase ()
 {}
 
 void
-LteSoftFfrAreaTestCase::DoRun (void)
+LteSoftFfrAreaTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteSoftFfrAreaTestCase");
 
@@ -1237,7 +1237,7 @@ LteEnhancedFfrAreaTestCase::~LteEnhancedFfrAreaTestCase ()
 {}
 
 void
-LteEnhancedFfrAreaTestCase::DoRun (void)
+LteEnhancedFfrAreaTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteEnhancedFfrAreaTestCase");
 
@@ -1471,7 +1471,7 @@ LteDistributedFfrAreaTestCase::~LteDistributedFfrAreaTestCase ()
 {}
 
 void
-LteDistributedFfrAreaTestCase::DoRun (void)
+LteDistributedFfrAreaTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteDistributedFfrAreaTestCase");
 

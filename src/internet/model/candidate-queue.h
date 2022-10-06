@@ -76,7 +76,7 @@ public:
  *
  * @see SPFVertex
  */
-  void Clear (void);
+  void Clear ();
 
 /**
  * @brief Push a Shortest Path First Vertex pointer onto the queue according
@@ -102,7 +102,7 @@ public:
  * @see Top ()
  * @returns The Shortest Path First Vertex pointer at the top of the queue.
  */
-  SPFVertex* Pop (void);
+  SPFVertex* Pop ();
 
 /**
  * @brief Return the Shortest Path First Vertex pointer at the top of the
@@ -115,14 +115,14 @@ public:
  * @see Pop ()
  * @returns The Shortest Path First Vertex pointer at the top of the queue.
  */
-  SPFVertex* Top (void) const;
+  SPFVertex* Top () const;
 
 /**
  * @brief Test the Candidate Queue to determine if it is empty.
  *
  * @returns True if the queue is empty, false otherwise.
  */
-  bool Empty (void) const;
+  bool Empty () const;
 
 /**
  * @brief Return the number of Shortest Path First Vertex pointers presently
@@ -131,7 +131,7 @@ public:
  * @see SPFVertex
  * @returns The number of SPFVertex* pointers in the Candidate Queue.
  */
-  uint32_t Size (void) const;
+  uint32_t Size () const;
 
 /**
  * @brief Searches the Candidate Queue for a Shortest Path First Vertex
@@ -156,7 +156,7 @@ public:
  *
  * @see SPFVertex
  */
-  void Reorder (void);
+  void Reorder ();
 
 private:
 /**

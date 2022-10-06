@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("EnergySource");
 NS_OBJECT_ENSURE_REGISTERED (EnergySource);
 
 TypeId
-EnergySource::GetTypeId (void)
+EnergySource::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EnergySource")
     .SetParent<Object> ()
@@ -61,7 +61,7 @@ EnergySource::SetNode (Ptr<Node> node)
 }
 
 Ptr<Node>
-EnergySource::GetNode (void) const
+EnergySource::GetNode () const
 {
   return m_node;
 }
@@ -107,7 +107,7 @@ EnergySource::FindDeviceEnergyModels (std::string name)
 }
 
 void
-EnergySource::InitializeDeviceModels (void)
+EnergySource::InitializeDeviceModels ()
 {
   NS_LOG_FUNCTION (this);
   /*
@@ -122,7 +122,7 @@ EnergySource::InitializeDeviceModels (void)
 }
 
 void
-EnergySource::DisposeDeviceModels (void)
+EnergySource::DisposeDeviceModels ()
 {
   NS_LOG_FUNCTION (this);
   /*
@@ -149,7 +149,7 @@ EnergySource::ConnectEnergyHarvester (Ptr<EnergyHarvester> energyHarvesterPtr)
  */
 
 void
-EnergySource::DoDispose (void)
+EnergySource::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   BreakDeviceEnergyModelRefCycle ();
@@ -160,7 +160,7 @@ EnergySource::DoDispose (void)
  */
 
 double
-EnergySource::CalculateTotalCurrent (void)
+EnergySource::CalculateTotalCurrent ()
 {
   NS_LOG_FUNCTION (this);
   double totalCurrentA = 0.0;
@@ -189,7 +189,7 @@ EnergySource::CalculateTotalCurrent (void)
 }
 
 void
-EnergySource::NotifyEnergyDrained (void)
+EnergySource::NotifyEnergyDrained ()
 {
   NS_LOG_FUNCTION (this);
   // notify all device energy models installed on node
@@ -201,7 +201,7 @@ EnergySource::NotifyEnergyDrained (void)
 }
 
 void
-EnergySource::NotifyEnergyRecharged (void)
+EnergySource::NotifyEnergyRecharged ()
 {
   NS_LOG_FUNCTION (this);
   // notify all device energy models installed on node
@@ -213,7 +213,7 @@ EnergySource::NotifyEnergyRecharged (void)
 }
 
 void
-EnergySource::NotifyEnergyChanged (void)
+EnergySource::NotifyEnergyChanged ()
 {
   NS_LOG_FUNCTION (this);
   // notify all device energy models installed on node
@@ -225,7 +225,7 @@ EnergySource::NotifyEnergyChanged (void)
 }
 
 void
-EnergySource::BreakDeviceEnergyModelRefCycle (void)
+EnergySource::BreakDeviceEnergyModelRefCycle ()
 {
   NS_LOG_FUNCTION (this);
   m_models.Clear ();

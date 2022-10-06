@@ -44,7 +44,7 @@ public:
   virtual ~Ns3WimaxCsParamTlvTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -58,7 +58,7 @@ Ns3WimaxCsParamTlvTestCase::~Ns3WimaxCsParamTlvTestCase ()
 }
 
 void
-Ns3WimaxCsParamTlvTestCase::DoRun (void)
+Ns3WimaxCsParamTlvTestCase::DoRun ()
 {
 
   IpcsClassifierRecord classifier (Ipv4Address ("10.0.0.0"),
@@ -141,7 +141,7 @@ public:
   virtual ~Ns3WimaxSfTlvTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -155,7 +155,7 @@ Ns3WimaxSfTlvTestCase::~Ns3WimaxSfTlvTestCase ()
 }
 
 void
-Ns3WimaxSfTlvTestCase::DoRun (void)
+Ns3WimaxSfTlvTestCase::DoRun ()
 {
   IpcsClassifierRecord classifier = IpcsClassifierRecord ();
   CsParameters csParam (CsParameters::ADD, classifier);

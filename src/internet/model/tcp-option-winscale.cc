@@ -39,7 +39,7 @@ TcpOptionWinScale::~TcpOptionWinScale ()
 }
 
 TypeId
-TcpOptionWinScale::GetTypeId (void)
+TcpOptionWinScale::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionWinScale")
     .SetParent<TcpOption> ()
@@ -50,7 +50,7 @@ TcpOptionWinScale::GetTypeId (void)
 }
 
 TypeId
-TcpOptionWinScale::GetInstanceTypeId (void) const
+TcpOptionWinScale::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -62,7 +62,7 @@ TcpOptionWinScale::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionWinScale::GetSerializedSize (void) const
+TcpOptionWinScale::GetSerializedSize () const
 {
   return 3;
 }
@@ -98,13 +98,13 @@ TcpOptionWinScale::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionWinScale::GetKind (void) const
+TcpOptionWinScale::GetKind () const
 {
   return TcpOption::WINSCALE;
 }
 
 uint8_t
-TcpOptionWinScale::GetScale (void) const
+TcpOptionWinScale::GetScale () const
 {
   NS_ASSERT (m_scale <= 14);
 

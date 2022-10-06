@@ -86,7 +86,7 @@ class Ipv6PacketInfoTagTest : public TestCase
 public:
   Ipv6PacketInfoTagTest ();
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Receive callback.
    * \param socket Receiving socket.
@@ -138,7 +138,7 @@ Ipv6PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv6PacketInfoTagTest::DoRun (void)
+Ipv6PacketInfoTagTest::DoRun ()
 {
   Ptr<Node> node0 = CreateObject<Node> ();
   Ptr<Node> node1 = CreateObject<Node> ();

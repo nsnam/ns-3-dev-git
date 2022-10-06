@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("DhcpClient");
 NS_OBJECT_ENSURE_REGISTERED (DhcpClient);
 
 TypeId
-DhcpClient::GetTypeId (void)
+DhcpClient::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DhcpClient")
     .SetParent<Application> ()
@@ -109,7 +109,7 @@ DhcpClient::~DhcpClient ()
   NS_LOG_FUNCTION (this);
 }
 
-Ptr<NetDevice> DhcpClient::GetDhcpClientNetDevice (void)
+Ptr<NetDevice> DhcpClient::GetDhcpClientNetDevice ()
 {
   return m_device;
 }
@@ -120,13 +120,13 @@ void DhcpClient::SetDhcpClientNetDevice (Ptr<NetDevice> netDevice)
   m_device = netDevice;
 }
 
-Ipv4Address DhcpClient::GetDhcpServer (void)
+Ipv4Address DhcpClient::GetDhcpServer ()
 {
   return m_server;
 }
 
 void
-DhcpClient::DoDispose (void)
+DhcpClient::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -153,7 +153,7 @@ DhcpClient::AssignStreams (int64_t stream)
 }
 
 void
-DhcpClient::StartApplication (void)
+DhcpClient::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -236,7 +236,7 @@ DhcpClient::StopApplication ()
   m_socket->Close ();
 }
 
-void DhcpClient::LinkStateHandler (void)
+void DhcpClient::LinkStateHandler ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -322,7 +322,7 @@ void DhcpClient::NetHandler (Ptr<Socket> socket)
     }
 }
 
-void DhcpClient::Boot (void)
+void DhcpClient::Boot ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -363,7 +363,7 @@ void DhcpClient::OfferHandler (DhcpHeader header)
     }
 }
 
-void DhcpClient::Select (void)
+void DhcpClient::Select ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -387,7 +387,7 @@ void DhcpClient::Select (void)
   Request ();
 }
 
-void DhcpClient::Request (void)
+void DhcpClient::Request ()
 {
   NS_LOG_FUNCTION (this);
 

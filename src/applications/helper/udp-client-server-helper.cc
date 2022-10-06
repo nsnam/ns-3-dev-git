@@ -60,7 +60,7 @@ UdpServerHelper::Install (NodeContainer c)
 }
 
 Ptr<UdpServer>
-UdpServerHelper::GetServer (void)
+UdpServerHelper::GetServer ()
 {
   return m_server;
 }

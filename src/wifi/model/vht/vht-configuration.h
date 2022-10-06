@@ -45,7 +45,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Enable or disable 160 MHz operation support.
@@ -58,7 +58,7 @@ public:
    * \return true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is supported,
    *         false if 20 MHz, 40 MHz and 80 MHz operation is supported
    */
-  bool Get160MHzOperationSupported (void) const;
+  bool Get160MHzOperationSupported () const;
 
   using SecondaryCcaSensitivityThresholds = std::tuple<double, double, double>; //!< Tuple identifying CCA sensitivity thresholds for secondary channels
 
@@ -73,13 +73,13 @@ public:
   /**
    * \return the CCA sensitivity thresholds for PPDUs that do not occupy the primary channel
    */
-  SecondaryCcaSensitivityThresholds GetSecondaryCcaSensitivityThresholds (void) const;
+  SecondaryCcaSensitivityThresholds GetSecondaryCcaSensitivityThresholds () const;
 
   /**
    * \return the CCA sensitivity thresholds for PPDUs that do not occupy the primary channel,
    * indexed by signal bandwidth (MHz)
    */
-  const std::map<uint16_t, double>& GetSecondaryCcaSensitivityThresholdsPerBw (void) const;
+  const std::map<uint16_t, double>& GetSecondaryCcaSensitivityThresholdsPerBw () const;
 
 private:
   bool m_160MHzSupported;     ///< whether 160 MHz operation is supported

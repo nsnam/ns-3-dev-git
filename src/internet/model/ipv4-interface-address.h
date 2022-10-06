@@ -94,7 +94,7 @@ public:
    *       The method corresponds to the linux variable in_ifaddr.ifa_local
    *       `Ipv4InterfaceAddress::GetAddress` is to be preferred.
    */
-  Ipv4Address GetLocal (void) const;
+  Ipv4Address GetLocal () const;
 
   /**
    * \brief Get the local address
@@ -103,7 +103,7 @@ public:
    * \note Functially identical to `Ipv4InterfaceAddress::GetLocal`.
    *       This function is consistent with `Ipv6InterfaceAddress::GetAddress`.
    */
-  Ipv4Address GetAddress (void) const;
+  Ipv4Address GetAddress () const;
 
   /**
    * \brief Set the network mask
@@ -114,7 +114,7 @@ public:
    * \brief Get the network mask
    * \returns the network mask
    */
-  Ipv4Mask GetMask (void) const;
+  Ipv4Mask GetMask () const;
   /**
    * \brief Set the broadcast address
    * \param broadcast the broadcast address
@@ -124,7 +124,7 @@ public:
    * \brief Get the broadcast address
    * \returns the broadcast address
    */
-  Ipv4Address GetBroadcast (void) const;
+  Ipv4Address GetBroadcast () const;
 
   /**
    * \brief Set the scope.
@@ -136,7 +136,7 @@ public:
    * \brief Get address scope.
    * \return scope
    */
-  Ipv4InterfaceAddress::InterfaceAddressScope_e GetScope (void) const;
+  Ipv4InterfaceAddress::InterfaceAddressScope_e GetScope () const;
 
   /**
    * \brief Checks if the address is in the same subnet.
@@ -151,16 +151,16 @@ public:
    * Secondary address is used for multihoming
    * \returns true if the address is secondary
    */
-  bool IsSecondary (void) const;
+  bool IsSecondary () const;
 
   /**
    * \brief Make the address secondary (used for multihoming)
    */
-  void SetSecondary (void);
+  void SetSecondary ();
   /**
    * \brief Make the address primary
    */
-  void SetPrimary (void);
+  void SetPrimary ();
 
 private:
 

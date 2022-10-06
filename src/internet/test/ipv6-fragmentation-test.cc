@@ -123,7 +123,7 @@ class Ipv6FragmentationTest : public TestCase
   uint8_t m_icmpCode;     //!< ICMP code.
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv6FragmentationTest ();
   ~Ipv6FragmentationTest ();
 
@@ -175,7 +175,7 @@ public:
    * \brief Send a packet.
    * \returns The sent packet.
    */
-  Ptr<Packet> SendClient (void);
+  Ptr<Packet> SendClient ();
 
   /**
    * \brief Handle Server's incoming packets.
@@ -319,7 +319,7 @@ Ipv6FragmentationTest::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataS
   m_size = dataSize;
 }
 
-Ptr<Packet> Ipv6FragmentationTest::SendClient (void)
+Ptr<Packet> Ipv6FragmentationTest::SendClient ()
 {
   Ptr<Packet> p;
   if (m_dataSize)
@@ -351,7 +351,7 @@ void Ipv6FragmentationTest::HandleClientTx (Ptr<const Packet> packet, Ptr<Ipv6> 
 }
 
 void
-Ipv6FragmentationTest::DoRun (void)
+Ipv6FragmentationTest::DoRun ()
 {
   // Create topology
 

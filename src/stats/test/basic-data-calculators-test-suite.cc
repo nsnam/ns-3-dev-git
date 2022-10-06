@@ -40,7 +40,7 @@ public:
   virtual ~OneIntegerTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OneIntegerTestCase::OneIntegerTestCase ()
@@ -54,7 +54,7 @@ OneIntegerTestCase::~OneIntegerTestCase ()
 }
 
 void
-OneIntegerTestCase::DoRun (void)
+OneIntegerTestCase::DoRun ()
 {
   MinMaxAvgTotalCalculator<int> calculator;
 
@@ -112,7 +112,7 @@ public:
   virtual ~FiveIntegersTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 FiveIntegersTestCase::FiveIntegersTestCase ()
@@ -126,7 +126,7 @@ FiveIntegersTestCase::~FiveIntegersTestCase ()
 }
 
 void
-FiveIntegersTestCase::DoRun (void)
+FiveIntegersTestCase::DoRun ()
 {
   MinMaxAvgTotalCalculator<int> calculator;
 
@@ -184,7 +184,7 @@ public:
   virtual ~FiveDoublesTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 FiveDoublesTestCase::FiveDoublesTestCase ()
@@ -198,7 +198,7 @@ FiveDoublesTestCase::~FiveDoublesTestCase ()
 }
 
 void
-FiveDoublesTestCase::DoRun (void)
+FiveDoublesTestCase::DoRun ()
 {
   MinMaxAvgTotalCalculator<double> calculator;
 

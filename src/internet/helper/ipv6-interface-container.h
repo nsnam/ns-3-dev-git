@@ -71,7 +71,7 @@ public:
    *     }
    * \endcode
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Get the interface index for the specified node index.
@@ -129,7 +129,7 @@ public:
    *
    * \returns an iterator which refers to the first pair in the container.
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which indicates past-the-last Node in the
@@ -151,7 +151,7 @@ public:
    *
    * \returns an iterator which indicates an ending condition for a loop.
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \brief Fusion with another Ipv6InterfaceContainer.

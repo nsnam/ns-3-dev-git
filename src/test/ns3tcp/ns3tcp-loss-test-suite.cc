@@ -82,9 +82,9 @@ public:
   }
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   Ptr<OutputStreamWrapper> m_osw; //!< The output stream.
   std::string m_pcapFilename;     //!< The PCAP filename.
@@ -160,7 +160,7 @@ Ns3TcpLossTestCase::Ns3TcpLossTestCase (std::string tcpModel, uint32_t testCase)
 }
 
 void
-Ns3TcpLossTestCase::DoSetup (void)
+Ns3TcpLossTestCase::DoSetup ()
 {
   // This test was written before SACK was added to ns-3
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
@@ -192,7 +192,7 @@ Ns3TcpLossTestCase::DoSetup (void)
 }
 
 void
-Ns3TcpLossTestCase::DoTeardown (void)
+Ns3TcpLossTestCase::DoTeardown ()
 {
   m_pcapFile.Close ();
 }
@@ -333,7 +333,7 @@ Ns3TcpLossTestCase::StartFlow (Ptr<Socket> localSocket,
 }
 
 void
-Ns3TcpLossTestCase::DoRun (void)
+Ns3TcpLossTestCase::DoRun ()
 {
   // Network topology
   //

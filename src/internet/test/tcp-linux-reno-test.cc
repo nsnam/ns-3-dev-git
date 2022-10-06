@@ -181,7 +181,7 @@ TcpLinuxRenoSSTest::Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho 
 
 
 void
-TcpLinuxRenoSSTest::DoTeardown (void)
+TcpLinuxRenoSSTest::DoTeardown ()
 {
   NS_TEST_ASSERT_MSG_EQ (m_lastCwnd, m_expectedCwnd, "Congestion window did not evolve as expected");
   TcpGeneralTest::DoTeardown (); // call up to base class method to finish
@@ -350,7 +350,7 @@ TcpLinuxRenoCongAvoidTest::Rx (const Ptr<const Packet> p, const TcpHeader&h, Soc
 }
 
 void
-TcpLinuxRenoCongAvoidTest::DoTeardown (void)
+TcpLinuxRenoCongAvoidTest::DoTeardown ()
 {
   NS_TEST_ASSERT_MSG_EQ (m_lastCwnd, m_expectedCwnd, "Congestion window did not evolve as expected");
   TcpGeneralTest::DoTeardown (); // call up to base class method to finish

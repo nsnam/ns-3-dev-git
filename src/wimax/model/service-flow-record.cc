@@ -22,7 +22,7 @@
 
 namespace ns3 {
 
-ServiceFlowRecord::ServiceFlowRecord (void)
+ServiceFlowRecord::ServiceFlowRecord ()
   : m_grantSize (0),
     m_grantTimeStamp (Seconds (0)),
     m_dlTimeStamp (Seconds (0)),
@@ -41,7 +41,7 @@ ServiceFlowRecord::ServiceFlowRecord (void)
   m_grantedBandwidthTemp = 0;
 }
 
-ServiceFlowRecord::~ServiceFlowRecord (void)
+ServiceFlowRecord::~ServiceFlowRecord ()
 {
 }
 
@@ -52,7 +52,7 @@ ServiceFlowRecord::SetGrantSize (uint32_t grantSize)
 }
 
 uint32_t
-ServiceFlowRecord::GetGrantSize (void) const
+ServiceFlowRecord::GetGrantSize () const
 {
   return m_grantSize;
 }
@@ -64,7 +64,7 @@ ServiceFlowRecord::SetGrantTimeStamp (Time grantTimeStamp)
 }
 
 Time
-ServiceFlowRecord::GetGrantTimeStamp (void) const
+ServiceFlowRecord::GetGrantTimeStamp () const
 {
   return m_grantTimeStamp;
 }
@@ -76,7 +76,7 @@ ServiceFlowRecord::SetDlTimeStamp (Time dlTimeStamp)
 }
 
 Time
-ServiceFlowRecord::GetDlTimeStamp (void) const
+ServiceFlowRecord::GetDlTimeStamp () const
 {
   return m_dlTimeStamp;
 }
@@ -94,7 +94,7 @@ ServiceFlowRecord::UpdatePktsSent (uint32_t pktsSent)
 }
 
 uint32_t
-ServiceFlowRecord::GetPktsSent (void) const
+ServiceFlowRecord::GetPktsSent () const
 {
   return m_pktsSent;
 }
@@ -112,7 +112,7 @@ ServiceFlowRecord::UpdatePktsRcvd (uint32_t pktsRcvd)
 }
 
 uint32_t
-ServiceFlowRecord::GetPktsRcvd (void) const
+ServiceFlowRecord::GetPktsRcvd () const
 {
   return m_pktsRcvd;
 }
@@ -130,7 +130,7 @@ ServiceFlowRecord::UpdateBytesSent (uint32_t bytesSent)
 }
 
 uint32_t
-ServiceFlowRecord::GetBytesSent (void) const
+ServiceFlowRecord::GetBytesSent () const
 {
   return m_bytesSent;
 }
@@ -148,7 +148,7 @@ ServiceFlowRecord::UpdateBytesRcvd (uint32_t bytesRcvd)
 }
 
 uint32_t
-ServiceFlowRecord::GetBytesRcvd (void) const
+ServiceFlowRecord::GetBytesRcvd () const
 {
   return m_bytesRcvd;
 }
@@ -165,7 +165,7 @@ ServiceFlowRecord::UpdateRequestedBandwidth (uint32_t requestedBandwidth)
 }
 
 uint32_t
-ServiceFlowRecord::GetRequestedBandwidth (void)
+ServiceFlowRecord::GetRequestedBandwidth ()
 {
   return m_requestedBandwidth;
 }
@@ -183,7 +183,7 @@ ServiceFlowRecord::UpdateGrantedBandwidth (uint32_t grantedBandwidth)
 }
 
 uint32_t
-ServiceFlowRecord::GetGrantedBandwidth (void)
+ServiceFlowRecord::GetGrantedBandwidth ()
 {
   return m_grantedBandwidth;
 }
@@ -201,7 +201,7 @@ ServiceFlowRecord::UpdateGrantedBandwidthTemp (
 }
 
 uint32_t
-ServiceFlowRecord::GetGrantedBandwidthTemp (void)
+ServiceFlowRecord::GetGrantedBandwidthTemp ()
 {
   return m_grantedBandwidthTemp;
 }
@@ -213,7 +213,7 @@ ServiceFlowRecord::SetLastGrantTime (Time grantTime)
 }
 
 Time
-ServiceFlowRecord::GetLastGrantTime (void) const
+ServiceFlowRecord::GetLastGrantTime () const
 {
   return m_lastGrantTime;
 }
@@ -231,7 +231,7 @@ ServiceFlowRecord::IncreaseBacklogged (uint32_t backlogged)
 }
 
 uint32_t
-ServiceFlowRecord::GetBacklogged (void) const
+ServiceFlowRecord::GetBacklogged () const
 {
   return m_backlogged;
 }
@@ -249,7 +249,7 @@ ServiceFlowRecord::IncreaseBackloggedTemp (uint32_t backloggedTemp)
 }
 
 uint32_t
-ServiceFlowRecord::GetBackloggedTemp (void) const
+ServiceFlowRecord::GetBackloggedTemp () const
 {
   return m_backloggedTemp;
 }
@@ -267,7 +267,7 @@ ServiceFlowRecord::UpdateBwSinceLastExpiry (uint32_t bwSinceLastExpiry)
 }
 
 uint32_t
-ServiceFlowRecord::GetBwSinceLastExpiry (void)
+ServiceFlowRecord::GetBwSinceLastExpiry ()
 {
   return m_bwSinceLastExpiry;
 }

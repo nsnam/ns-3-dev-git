@@ -111,7 +111,7 @@ PacketHeader::~PacketHeader ()
 }
 
 TypeId
-PacketHeader::GetTypeId (void)
+PacketHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::olsr::PacketHeader")
     .SetParent<Header> ()
@@ -121,13 +121,13 @@ PacketHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-PacketHeader::GetInstanceTypeId (void) const
+PacketHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-PacketHeader::GetSerializedSize (void) const
+PacketHeader::GetSerializedSize () const
 {
   return OLSR_PKT_HEADER_SIZE;
 }
@@ -170,7 +170,7 @@ MessageHeader::~MessageHeader ()
 }
 
 TypeId
-MessageHeader::GetTypeId (void)
+MessageHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::olsr::MessageHeader")
     .SetParent<Header> ()
@@ -180,13 +180,13 @@ MessageHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-MessageHeader::GetInstanceTypeId (void) const
+MessageHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-MessageHeader::GetSerializedSize (void) const
+MessageHeader::GetSerializedSize () const
 {
   uint32_t size = OLSR_MSG_HEADER_SIZE;
   switch (m_messageType)
@@ -325,7 +325,7 @@ MessageHeader::Deserialize (Buffer::Iterator start)
 // ---------------- OLSR MID Message -------------------------------
 
 uint32_t
-MessageHeader::Mid::GetSerializedSize (void) const
+MessageHeader::Mid::GetSerializedSize () const
 {
   return this->interfaceAddresses.size () * IPV4_ADDRESS_SIZE;
 }
@@ -385,7 +385,7 @@ MessageHeader::Mid::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 // ---------------- OLSR HELLO Message -------------------------------
 
 uint32_t
-MessageHeader::Hello::GetSerializedSize (void) const
+MessageHeader::Hello::GetSerializedSize () const
 {
   uint32_t size = 4;
   for (std::vector<LinkMessage>::const_iterator iter = this->linkMessages.begin ();
@@ -499,7 +499,7 @@ MessageHeader::Hello::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 // ---------------- OLSR TC Message -------------------------------
 
 uint32_t
-MessageHeader::Tc::GetSerializedSize (void) const
+MessageHeader::Tc::GetSerializedSize () const
 {
   return 4 + this->neighborAddresses.size () * IPV4_ADDRESS_SIZE;
 }
@@ -566,7 +566,7 @@ MessageHeader::Tc::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 // ---------------- OLSR HNA Message -------------------------------
 
 uint32_t
-MessageHeader::Hna::GetSerializedSize (void) const
+MessageHeader::Hna::GetSerializedSize () const
 {
   return 2 * this->associations.size () * IPV4_ADDRESS_SIZE;
 }

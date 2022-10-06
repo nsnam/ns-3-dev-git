@@ -63,7 +63,7 @@ public:
    * Proceedings of the 2002 International Symposium on Low Power Electronics and Design, 2002. ISLPED '02.
    * doi: 10.1109/LPE.2002.146729
    */
-  void CreateLoadProfiles (void);
+  void CreateLoadProfiles ();
 
   /**
    * \param load Load value, in Amperes (A).
@@ -114,7 +114,7 @@ BatteryLifetimeTest::~BatteryLifetimeTest ()
 }
 
 void
-BatteryLifetimeTest::CreateLoadProfiles (void)
+BatteryLifetimeTest::CreateLoadProfiles ()
 {
   // create set of load profiles
   LoadProfile profile;

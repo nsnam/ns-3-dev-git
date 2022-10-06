@@ -101,21 +101,21 @@ private:
      *
      * \returns true if there are more Items in the list
      */
-    bool HasNext (void) const;
+    bool HasNext () const;
 
     /**
      * \brief Returns the next Item from the ByteTagList
      *
      * \returns the next Item in the ByteTagList
      */
-    struct ByteTagList::Iterator::Item Next (void);
+    struct ByteTagList::Iterator::Item Next ();
 
     /**
      * \brief Returns the offset from the start of the virtual byte buffer to the ByteTagList
      *
      * \returns offset to the start of this ByteTagList
      */
-    uint32_t GetOffsetStart (void) const;
+    uint32_t GetOffsetStart () const;
 private:
     /// Friend class
     friend class ByteTagList;
@@ -133,7 +133,7 @@ private:
     /**
      * \brief Prepare the iterator for the next tag
      */
-    void PrepareForNext (void);
+    void PrepareForNext ();
     uint8_t *m_current;     //!< Current tag
     uint8_t *m_end;         //!< End tag
     int32_t m_offsetStart;  //!< Offset to the start of the tag from the virtual byte buffer
@@ -191,7 +191,7 @@ private:
    *
    * Removes all of the tags from the ByteTagList
    */
-  void RemoveAll (void);
+  void RemoveAll ();
 
   /**
    * \param offsetStart the offset which uniquely identifies the first data byte
@@ -234,7 +234,7 @@ private:
    *
    * \returns number of bytes required for packet serialization
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize the tag list into a byte buffer.
    *
@@ -260,7 +260,7 @@ private:
    *
    * \returns an iterator
    */
-  ByteTagList::Iterator BeginAll (void) const;
+  ByteTagList::Iterator BeginAll () const;
 
   /**
    * \brief Allocate the memory for the ByteTagListData

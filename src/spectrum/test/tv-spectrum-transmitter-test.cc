@@ -60,7 +60,7 @@ public:
   virtual ~TvSpectrumTransmitterTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Build the test name
    * \param tvType TV type.
@@ -112,7 +112,7 @@ TvSpectrumTransmitterTestCase::~TvSpectrumTransmitterTestCase ()
 }
 
 void
-TvSpectrumTransmitterTestCase::DoRun (void)
+TvSpectrumTransmitterTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (m_startFrequency << m_basePsd << m_tvType);
 

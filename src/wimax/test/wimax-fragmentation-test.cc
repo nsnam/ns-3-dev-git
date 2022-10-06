@@ -43,7 +43,7 @@ public:
   virtual ~Ns3WimaxFragmentationTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -57,7 +57,7 @@ Ns3WimaxFragmentationTestCase::~Ns3WimaxFragmentationTestCase ()
 }
 
 void
-Ns3WimaxFragmentationTestCase::DoRun (void)
+Ns3WimaxFragmentationTestCase::DoRun ()
 {
   GenericMacHeader gnrcMacHdr;
   ManagementMessageType msgType;

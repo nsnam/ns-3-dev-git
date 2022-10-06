@@ -37,7 +37,7 @@ TutorialApp::~TutorialApp ()
 }
 
 /* static */
-TypeId TutorialApp::GetTypeId (void)
+TypeId TutorialApp::GetTypeId ()
 {
   static TypeId tid = TypeId ("TutorialApp")
     .SetParent<Application> ()
@@ -58,7 +58,7 @@ TutorialApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, ui
 }
 
 void
-TutorialApp::StartApplication (void)
+TutorialApp::StartApplication ()
 {
   m_running = true;
   m_packetsSent = 0;
@@ -68,7 +68,7 @@ TutorialApp::StartApplication (void)
 }
 
 void
-TutorialApp::StopApplication (void)
+TutorialApp::StopApplication ()
 {
   m_running = false;
 
@@ -84,7 +84,7 @@ TutorialApp::StopApplication (void)
 }
 
 void
-TutorialApp::SendPacket (void)
+TutorialApp::SendPacket ()
 {
   Ptr<Packet> packet = Create<Packet> (m_packetSize);
   m_socket->Send (packet);
@@ -96,7 +96,7 @@ TutorialApp::SendPacket (void)
 }
 
 void
-TutorialApp::ScheduleTx (void)
+TutorialApp::ScheduleTx ()
 {
   if (m_running)
     {

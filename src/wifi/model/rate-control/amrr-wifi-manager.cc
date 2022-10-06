@@ -52,7 +52,7 @@ struct AmrrWifiRemoteStation : public WifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (AmrrWifiManager);
 
 TypeId
-AmrrWifiManager::GetTypeId (void)
+AmrrWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AmrrWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -122,7 +122,7 @@ AmrrWifiManager::DoInitialize ()
 }
 
 WifiRemoteStation *
-AmrrWifiManager::DoCreateStation (void) const
+AmrrWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   AmrrWifiRemoteStation *station = new AmrrWifiRemoteStation ();

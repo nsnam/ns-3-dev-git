@@ -43,7 +43,7 @@ namespace ns3 {
  * \returns The type name as a string.
  */
 template <typename T>
-std::string TypeNameGet (void)
+std::string TypeNameGet ()
 {
   NS_FATAL_ERROR ("Type name not defined.");
   return "unknown";

@@ -75,7 +75,7 @@ private:
    */
   void StateChangeNotificationDev2 (std::string context, Time now, LrWpanPhyEnumeration oldState, LrWpanPhyEnumeration newState);
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   LrWpanPhyEnumeration m_dev0State; //!< Stores the PHY state of device 0 [00:01]
 
@@ -287,7 +287,7 @@ private:
    */
   void ScanConfirm (MlmeScanConfirmParams params);
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   std::vector <PanDescriptor> m_panDescriptorList; //!< The list of PAN descriptors accumulated during the scan
 

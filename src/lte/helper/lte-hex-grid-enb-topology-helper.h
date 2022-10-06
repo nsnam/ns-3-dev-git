@@ -36,15 +36,15 @@ namespace ns3 {
 class LteHexGridEnbTopologyHelper : public Object
 {
 public:
-  LteHexGridEnbTopologyHelper (void);
-  virtual ~LteHexGridEnbTopologyHelper (void);
+  LteHexGridEnbTopologyHelper ();
+  virtual ~LteHexGridEnbTopologyHelper ();
 
   /**
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
-  virtual void DoDispose (void);
+  static TypeId GetTypeId ();
+  virtual void DoDispose ();
 
 
   /**

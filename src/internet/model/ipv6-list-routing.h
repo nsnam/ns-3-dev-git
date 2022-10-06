@@ -46,7 +46,7 @@ public:
    * \brief Get the type ID of this class.
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor.
@@ -70,7 +70,7 @@ public:
    * \brief Get the number of routing protocols.
    * \return number of routing protocols in the list
    */
-  virtual uint32_t GetNRoutingProtocols (void) const;
+  virtual uint32_t GetNRoutingProtocols () const;
 
   /**
    * \brief Get pointer to routing protocol stored at index,
@@ -104,7 +104,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /**

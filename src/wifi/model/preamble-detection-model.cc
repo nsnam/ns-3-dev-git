@@ -24,7 +24,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (PreambleDetectionModel);
 
-TypeId PreambleDetectionModel::GetTypeId (void)
+TypeId PreambleDetectionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PreambleDetectionModel")
     .SetParent<Object> ()

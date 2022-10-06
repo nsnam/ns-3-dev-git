@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("DeviceEnergyModel");
 NS_OBJECT_ENSURE_REGISTERED (DeviceEnergyModel);
 
 TypeId
-DeviceEnergyModel::GetTypeId (void)
+DeviceEnergyModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DeviceEnergyModel")
     .SetParent<Object> ()
@@ -48,7 +48,7 @@ DeviceEnergyModel::~DeviceEnergyModel ()
 }
 
 double
-DeviceEnergyModel::GetCurrentA (void) const
+DeviceEnergyModel::GetCurrentA () const
 {
   NS_LOG_FUNCTION (this);
   return DoGetCurrentA ();
@@ -59,7 +59,7 @@ DeviceEnergyModel::GetCurrentA (void) const
  */
 
 double
-DeviceEnergyModel::DoGetCurrentA (void) const
+DeviceEnergyModel::DoGetCurrentA () const
 {
   NS_LOG_FUNCTION (this);
   return 0.0;

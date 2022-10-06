@@ -49,12 +49,12 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   YansWifiChannel ();
   virtual ~YansWifiChannel ();
 
-  std::size_t GetNDevices (void) const override;
+  std::size_t GetNDevices () const override;
   Ptr<NetDevice> GetDevice (std::size_t i) const override;
 
   /**

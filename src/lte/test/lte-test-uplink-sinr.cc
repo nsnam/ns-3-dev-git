@@ -132,7 +132,7 @@ LteUplinkDataSinrTestCase::~LteUplinkDataSinrTestCase ()
 
 
 void
-LteUplinkDataSinrTestCase::DoRun (void)
+LteUplinkDataSinrTestCase::DoRun ()
 {
   /**
    * Instantiate a single receiving LteSpectrumPhy
@@ -334,7 +334,7 @@ LteUplinkSrsSinrTestCase::ReportSinr (const SpectrumValue& sinr)
 }
 
 void
-LteUplinkSrsSinrTestCase::DoRun (void)
+LteUplinkSrsSinrTestCase::DoRun ()
 {
   /**
   * Instantiate a single receiving LteSpectrumPhy

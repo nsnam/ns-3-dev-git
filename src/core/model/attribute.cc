@@ -84,7 +84,7 @@ EmptyAttributeValue::EmptyAttributeValue ()
   NS_LOG_FUNCTION (this);
 }
 Ptr<AttributeValue>
-EmptyAttributeValue::Copy (void) const
+EmptyAttributeValue::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<EmptyAttributeValue> ();
@@ -125,13 +125,13 @@ EmptyAttributeAccessor::Get (const ObjectBase * object, AttributeValue &attribut
 }
 
 bool
-EmptyAttributeAccessor::HasGetter (void) const
+EmptyAttributeAccessor::HasGetter () const
 {
   return false;
 }
 
 bool
-EmptyAttributeAccessor::HasSetter (void) const
+EmptyAttributeAccessor::HasSetter () const
 {
   return false;
 }
@@ -150,25 +150,25 @@ EmptyAttributeChecker::Check (const AttributeValue &value) const
 }
 
 std::string
-EmptyAttributeChecker::GetValueTypeName (void) const
+EmptyAttributeChecker::GetValueTypeName () const
 {
   return "EmptyAttribute";
 }
 
 bool
-EmptyAttributeChecker::HasUnderlyingTypeInformation (void) const
+EmptyAttributeChecker::HasUnderlyingTypeInformation () const
 {
   return false;
 }
 
 std::string
-EmptyAttributeChecker::GetUnderlyingTypeInformation (void) const
+EmptyAttributeChecker::GetUnderlyingTypeInformation () const
 {
   return "";
 }
 
 Ptr<AttributeValue>
-EmptyAttributeChecker::Create (void) const
+EmptyAttributeChecker::Create () const
 {
   static EmptyAttributeValue t;
   return Ptr<AttributeValue> (&t, false);

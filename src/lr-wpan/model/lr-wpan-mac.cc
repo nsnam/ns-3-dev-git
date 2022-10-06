@@ -49,7 +49,7 @@ NS_OBJECT_ENSURE_REGISTERED (LrWpanMac);
 
 
 TypeId
-LrWpanMac::GetTypeId (void)
+LrWpanMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanMac")
     .SetParent<Object> ()
@@ -1399,7 +1399,7 @@ LrWpanMac::StartInactivePeriod (SuperframeType superframeType)
 }
 
 void
-LrWpanMac::AwaitBeacon (void)
+LrWpanMac::AwaitBeacon ()
 {
   m_incSuperframeStatus = BEACON;
 
@@ -1412,7 +1412,7 @@ LrWpanMac::AwaitBeacon (void)
 }
 
 void
-LrWpanMac::BeaconSearchTimeout (void)
+LrWpanMac::BeaconSearchTimeout ()
 {
   uint64_t symbolRate = (uint64_t) m_phy->GetDataOrSymbolRate (false); //symbols per second
 
@@ -1526,7 +1526,7 @@ LrWpanMac::SetPhy (Ptr<LrWpanPhy> phy)
 }
 
 Ptr<LrWpanPhy>
-LrWpanMac::GetPhy (void)
+LrWpanMac::GetPhy ()
 {
   return m_phy;
 }
@@ -2255,7 +2255,7 @@ LrWpanMac::RemoveFirstTxQElement ()
 }
 
 void
-LrWpanMac::AckWaitTimeout (void)
+LrWpanMac::AckWaitTimeout ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -2298,7 +2298,7 @@ LrWpanMac::IfsWaitTimeout (Time ifsTime)
 
 
 bool
-LrWpanMac::PrepareRetransmission (void)
+LrWpanMac::PrepareRetransmission ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -3265,7 +3265,7 @@ LrWpanMac::SetLrWpanMacState (LrWpanMacState macState)
 }
 
 LrWpanAssociationStatus
-LrWpanMac::GetAssociationStatus (void) const
+LrWpanMac::GetAssociationStatus () const
 {
   return m_associationStatus;
 }
@@ -3277,19 +3277,19 @@ LrWpanMac::SetAssociationStatus (LrWpanAssociationStatus status)
 }
 
 uint16_t
-LrWpanMac::GetPanId (void) const
+LrWpanMac::GetPanId () const
 {
   return m_macPanId;
 }
 
 Mac16Address
-LrWpanMac::GetCoordShortAddress (void) const
+LrWpanMac::GetCoordShortAddress () const
 {
   return m_macCoordShortAddress;
 }
 
 Mac64Address
-LrWpanMac::GetCoordExtAddress (void) const
+LrWpanMac::GetCoordExtAddress () const
 {
   return m_macCoordExtendedAddress;
 }
@@ -3311,20 +3311,20 @@ LrWpanMac::ChangeMacState (LrWpanMacState newState)
 }
 
 uint64_t
-LrWpanMac::GetMacAckWaitDuration (void) const
+LrWpanMac::GetMacAckWaitDuration () const
 {
   return m_csmaCa->GetUnitBackoffPeriod () + m_phy->aTurnaroundTime + m_phy->GetPhySHRDuration ()
          + ceil (6 * m_phy->GetPhySymbolsPerOctet ());
 }
 
 uint8_t
-LrWpanMac::GetMacMaxFrameRetries (void) const
+LrWpanMac::GetMacMaxFrameRetries () const
 {
   return m_macMaxFrameRetries;
 }
 
 void
-LrWpanMac::PrintTransmitQueueSize (void)
+LrWpanMac::PrintTransmitQueueSize ()
 {
   NS_LOG_DEBUG ("Transmit Queue Size: " << m_txQueue.size ());
 }
@@ -3336,7 +3336,7 @@ LrWpanMac::SetMacMaxFrameRetries (uint8_t retries)
 }
 
 bool
-LrWpanMac::isCoordDest (void)
+LrWpanMac::isCoordDest ()
 {
   NS_ASSERT (m_txPkt);
   LrWpanMacHeader macHdr;
@@ -3390,7 +3390,7 @@ LrWpanMac::SetAssociatedCoor (Mac64Address mac)
 
 
 uint64_t
-LrWpanMac::GetTxPacketSymbols (void)
+LrWpanMac::GetTxPacketSymbols ()
 {
   NS_ASSERT (m_txPkt);
   // Sync Header (SHR) +  8 bits PHY header (PHR) + PSDU
@@ -3399,7 +3399,7 @@ LrWpanMac::GetTxPacketSymbols (void)
 }
 
 bool
-LrWpanMac::isTxAckReq (void)
+LrWpanMac::isTxAckReq ()
 {
   NS_ASSERT (m_txPkt);
   LrWpanMacHeader macHdr;

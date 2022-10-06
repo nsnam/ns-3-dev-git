@@ -67,7 +67,7 @@ static const std::array<uint64_t, 4> s_dsssRatesBpsList = {1000000,  2000000, 55
  *
  * \return the DSSS rates in bits per second
  */
-const std::array<uint64_t, 4>& GetDsssRatesBpsList (void)
+const std::array<uint64_t, 4>& GetDsssRatesBpsList ()
 {
   return s_dsssRatesBpsList;
 };
@@ -118,7 +118,7 @@ DsssPhy::GetHeaderMode (const WifiTxVector& txVector) const
 }
 
 const PhyEntity::PpduFormats &
-DsssPhy::GetPpduFormats (void) const
+DsssPhy::GetPpduFormats () const
 {
   return m_dsssPpduFormats;
 }
@@ -258,7 +258,7 @@ DsssPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> /* ppdu
 }
 
 void
-DsssPhy::InitializeModes (void)
+DsssPhy::InitializeModes ()
 {
   for (const auto & rate : GetDsssRatesBpsList ())
     {
@@ -369,7 +369,7 @@ DsssPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 }
 
 uint32_t
-DsssPhy::GetMaxPsduSize (void) const
+DsssPhy::GetMaxPsduSize () const
 {
   return 4095;
 }

@@ -43,7 +43,7 @@ class ServiceFlow;
 class SSRecord
 {
 public:
-  SSRecord (void);
+  SSRecord ();
   /**
    * Constructor
    *
@@ -57,7 +57,7 @@ public:
    * \param IPaddress IP address
    */
   SSRecord (Mac48Address macAddress, Ipv4Address IPaddress);
-  ~SSRecord (void);
+  ~SSRecord ();
 
   /**
    * Set basic CID
@@ -68,7 +68,7 @@ public:
    * Get basic CID
    * \returns the basic CID
    */
-  Cid GetBasicCid (void) const;
+  Cid GetBasicCid () const;
 
   /**
    * Set primary CID
@@ -79,7 +79,7 @@ public:
    * Get primary CID
    * \returns the CID
    */
-  Cid GetPrimaryCid (void) const;
+  Cid GetPrimaryCid () const;
 
   /**
    * Set MAC address
@@ -90,26 +90,26 @@ public:
    * Get MAC address
    * \returns the MAC address
    */
-  Mac48Address GetMacAddress (void) const;
+  Mac48Address GetMacAddress () const;
 
   /**
    * Get ranging correction retries
    * \returns the ranging correction retries
    */
-  uint8_t GetRangingCorrectionRetries (void) const;
+  uint8_t GetRangingCorrectionRetries () const;
   /// Reset ranging correction retries
-  void ResetRangingCorrectionRetries (void);
+  void ResetRangingCorrectionRetries ();
   /// Increment ranging correction retries
-  void IncrementRangingCorrectionRetries (void);
+  void IncrementRangingCorrectionRetries ();
   /**
    * Get invited range retries
    * \returns the invited range retries
    */
-  uint8_t GetInvitedRangRetries (void) const;
+  uint8_t GetInvitedRangRetries () const;
   /// Reset invited ranging retries
-  void ResetInvitedRangingRetries (void);
+  void ResetInvitedRangingRetries ();
   /// Increment invited ranging retries
-  void IncrementInvitedRangingRetries (void);
+  void IncrementInvitedRangingRetries ();
   /**
    * Set modulation type
    * \param modulationType the modulation type
@@ -119,7 +119,7 @@ public:
    * Get modulation type
    * \returns the modulation type
    */
-  WimaxPhy::ModulationType GetModulationType (void) const;
+  WimaxPhy::ModulationType GetModulationType () const;
 
   /**
    * Set ranging status
@@ -130,23 +130,23 @@ public:
    * Get ranging status
    * \returns the ranging status
    */
-  WimaxNetDevice::RangingStatus GetRangingStatus (void) const;
+  WimaxNetDevice::RangingStatus GetRangingStatus () const;
 
   /// Enable poll for ranging function
-  void EnablePollForRanging (void);
+  void EnablePollForRanging ();
   /// Disable poll for ranging
-  void DisablePollForRanging (void);
+  void DisablePollForRanging ();
   /**
    * Get poll for ranging
    * \returns the poll for ranging flag
    */
-  bool GetPollForRanging (void) const;
+  bool GetPollForRanging () const;
 
   /**
    * Check if service flows are allocated
    * \returns true if service flows are allocated
    */
-  bool GetAreServiceFlowsAllocated (void) const;
+  bool GetAreServiceFlowsAllocated () const;
 
   /**
    * Set poll ME bit
@@ -157,7 +157,7 @@ public:
    * Get poll ME bit
    * \returns the poll me bit
    */
-  bool GetPollMeBit (void) const;
+  bool GetPollMeBit () const;
 
   /**
    * Add service flow
@@ -174,22 +174,22 @@ public:
    * Check if at least one flow has scheduling type SF_TYPE_UGS
    * \return true if at least one flow has scheduling type SF_TYPE_UGS
    */
-  bool GetHasServiceFlowUgs (void) const;
+  bool GetHasServiceFlowUgs () const;
   /**
    * Check if at least one flow has scheduling type SF_TYPE_RTPS
    * \return true if at least one flow has scheduling type SF_TYPE_RTPS
    */
-  bool GetHasServiceFlowRtps (void) const;
+  bool GetHasServiceFlowRtps () const;
   /**
    * Check if at least one flow has scheduling type SF_TYPE_NRTPS
    * \return true if at least one flow has scheduling type SF_TYPE_NRTPS
    */
-  bool GetHasServiceFlowNrtps (void) const;
+  bool GetHasServiceFlowNrtps () const;
   /**
    * Check if at least one flow has scheduling type SF_TYPE_BE
    * \return true if at least one flow has scheduling type SF_TYPE_BE
    */
-  bool GetHasServiceFlowBe (void) const;
+  bool GetHasServiceFlowBe () const;
 
   /**
    * Set SF transaction ID
@@ -200,7 +200,7 @@ public:
    * Get SF transaction ID
    * \returns the SF transaction ID
    */
-  uint16_t GetSfTransactionId (void) const;
+  uint16_t GetSfTransactionId () const;
 
   /**
    * Set DSA response retries
@@ -208,12 +208,12 @@ public:
    */
   void SetDsaRspRetries (uint8_t dsaRspRetries);
   /// Increment DAS response retries
-  void IncrementDsaRspRetries (void);
+  void IncrementDsaRspRetries ();
   /**
    * Get DSA response retries
    * \returns the DSA response retries
    */
-  uint8_t GetDsaRspRetries (void) const;
+  uint8_t GetDsaRspRetries () const;
 
   /**
    * Set DSA response
@@ -224,7 +224,7 @@ public:
    * Get DSA response
    * \returns the DSA response
    */
-  DsaRsp GetDsaRsp (void) const;
+  DsaRsp GetDsaRsp () const;
   /**
    * Set is broadcast SS
    * \param broadcast_enable the broadcast enable flag
@@ -234,13 +234,13 @@ public:
    * Get is broadcast SS
    * \returns the is broadcast SS flag
    */
-  bool GetIsBroadcastSS (void);
+  bool GetIsBroadcastSS ();
 
   /**
    * Get IP address
    * \returns the IP address
    */
-  Ipv4Address GetIPAddress (void);
+  Ipv4Address GetIPAddress ();
   /**
    * Set IP address
    * \param IPaddress the IP address
@@ -253,7 +253,7 @@ public:
   void SetAreServiceFlowsAllocated (bool val);
 private:
   /// Initialize
-  void Initialize (void);
+  void Initialize ();
 
   Mac48Address m_macAddress; ///< MAC address
   Ipv4Address m_IPAddress; ///< IP address

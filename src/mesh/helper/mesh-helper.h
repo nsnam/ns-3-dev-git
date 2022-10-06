@@ -162,7 +162,7 @@ public:
   /**
    * Helper to enable all MeshPointDevice log components with one statement
    */
-  static void EnableLogComponents (void);
+  static void EnableLogComponents ();
 
 private:
   /**

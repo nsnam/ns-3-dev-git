@@ -375,7 +375,7 @@ public:
    * \brief Get class TypeId
    * \return the TypeId for the class
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor
@@ -476,7 +476,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (RoutingHelper);
 
 TypeId
-RoutingHelper::GetTypeId (void)
+RoutingHelper::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RoutingHelper")
     .SetParent<Object> ()
@@ -715,7 +715,7 @@ public:
    * \brief Gets the class TypeId
    * \return the class TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor
@@ -767,7 +767,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (WifiPhyStats);
 
 TypeId
-WifiPhyStats::GetTypeId (void)
+WifiPhyStats::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiPhyStats")
     .SetParent<Object> ()

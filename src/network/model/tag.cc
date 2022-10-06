@@ -24,7 +24,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (Tag);
 
 TypeId
-Tag::GetTypeId (void)
+Tag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Tag")
     .SetParent<ObjectBase> ()

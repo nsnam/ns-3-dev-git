@@ -93,7 +93,7 @@ const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
  *
  * \return the OFDM rates in bits per second
  */
-const std::map<uint16_t, std::array<uint64_t, 8> >& GetOfdmRatesBpsList (void)
+const std::map<uint16_t, std::array<uint64_t, 8> >& GetOfdmRatesBpsList ()
 {
   return s_ofdmRatesBpsList;
 };
@@ -177,7 +177,7 @@ OfdmPhy::GetHeaderMode (const WifiTxVector& txVector) const
 }
 
 const PhyEntity::PpduFormats &
-OfdmPhy::GetPpduFormats (void) const
+OfdmPhy::GetPpduFormats () const
 {
   return m_ofdmPpduFormats;
 }
@@ -261,7 +261,7 @@ OfdmPhy::GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPh
 }
 
 uint8_t
-OfdmPhy::GetNumberServiceBits (void) const
+OfdmPhy::GetNumberServiceBits () const
 {
   return 16;
 }
@@ -351,7 +351,7 @@ OfdmPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> /* ppdu
 }
 
 void
-OfdmPhy::InitializeModes (void)
+OfdmPhy::InitializeModes ()
 {
   for (const auto & ratesPerBw : GetOfdmRatesBpsList ())
     {
@@ -583,7 +583,7 @@ OfdmPhy::CalculateDataRate (Time symbolDuration, uint16_t usableSubCarriers,
 }
 
 uint16_t
-OfdmPhy::GetUsableSubcarriers (void)
+OfdmPhy::GetUsableSubcarriers ()
 {
   return 48;
 }
@@ -611,7 +611,7 @@ OfdmPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 }
 
 uint32_t
-OfdmPhy::GetMaxPsduSize (void) const
+OfdmPhy::GetMaxPsduSize () const
 {
   return 4095;
 }

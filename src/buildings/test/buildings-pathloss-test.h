@@ -67,7 +67,7 @@ public:
   virtual ~BuildingsPathlossTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Create a mobility model based on its index
    * \param index MobilityModel index

@@ -126,13 +126,13 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief Constructor
    * \param n initial Sequence number to be transmitted
    */
   TcpTxBuffer (uint32_t n = 0);
-  virtual ~TcpTxBuffer (void);
+  virtual ~TcpTxBuffer ();
 
   // Accessors
 
@@ -140,25 +140,25 @@ public:
    * \brief Get the sequence number of the buffer head
    * \returns the first byte's sequence number
    */
-  SequenceNumber32 HeadSequence (void) const;
+  SequenceNumber32 HeadSequence () const;
 
   /**
    * \brief Get the sequence number of the buffer tail (plus one)
    * \returns the last byte's sequence number + 1
    */
-  SequenceNumber32 TailSequence (void) const;
+  SequenceNumber32 TailSequence () const;
 
   /**
    * \brief Returns total number of bytes in this buffer
    * \returns total number of bytes in this Tx buffer
    */
-  uint32_t Size (void) const;
+  uint32_t Size () const;
 
   /**
    * \brief Get the maximum buffer size
    * \returns the Tx window size (in bytes)
    */
-  uint32_t MaxBufferSize (void) const;
+  uint32_t MaxBufferSize () const;
 
   /**
    * \brief Set the maximum buffer size
@@ -170,7 +170,7 @@ public:
    * \brief check whether SACK is used on the corresponding TCP socket
    * \return true if SACK is used
    */
-  bool IsSackEnabled (void) const;
+  bool IsSackEnabled () const;
 
   /**
    * \brief tell tx-buffer whether SACK is used on this TCP socket
@@ -183,7 +183,7 @@ public:
    * \brief Returns the available capacity of this buffer
    * \returns available capacity in this Tx window
    */
-  uint32_t Available (void) const;
+  uint32_t Available () const;
 
   /**
    * \brief Set the DupAckThresh
@@ -206,7 +206,7 @@ public:
    *
    * \returns number of segments that have been transmitted more than once, without acknowledgment
    */
-  uint32_t GetRetransmitsCount (void) const;
+  uint32_t GetRetransmitsCount () const;
 
   /**
    * \brief Get the number of segments that we believe are lost in the network
@@ -214,13 +214,13 @@ public:
    * It is calculated in UpdateLostCount.
    * \return the number of lost segment
    */
-  uint32_t GetLost (void) const;
+  uint32_t GetLost () const;
 
   /**
    * \brief Get the number of segments that have been explicitly sacked by the receiver.
    * \return the number of sacked segment.
    */
-  uint32_t GetSacked (void) const;
+  uint32_t GetSacked () const;
 
   /**
    * \brief Append a data packet to the end of the buffer

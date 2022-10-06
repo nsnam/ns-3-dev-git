@@ -60,7 +60,7 @@ Uinteger16Probe::~Uinteger16Probe ()
 }
 
 uint16_t
-Uinteger16Probe::GetValue (void) const
+Uinteger16Probe::GetValue () const
 {
   NS_LOG_FUNCTION (this);
   return m_output;

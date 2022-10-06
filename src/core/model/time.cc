@@ -66,7 +66,7 @@ namespace {
    * \returns The array of scale factors between units.
    */
   long double *
-  InitUnitValue (void)
+  InitUnitValue ()
   {
     static long double values[Time::LAST];
     for (auto u = static_cast<int> (Time::Y); u != static_cast<int> (Time::LAST); ++u)
@@ -200,7 +200,7 @@ Time::Time (const std::string& s)
 
 // static
 struct Time::Resolution&
-Time::SetDefaultNsResolution (void)
+Time::SetDefaultNsResolution ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static struct Resolution resolution;
@@ -407,7 +407,7 @@ Time::ConvertTimes (const enum Unit unit)
 
 // static
 enum Time::Unit
-Time::GetResolution (void)
+Time::GetResolution ()
 {
   // No function log b/c it interferes with operator<<
   return PeekResolution ()->unit;
@@ -537,24 +537,24 @@ MakeTimeChecker (const Time min, const Time max)
         }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetValueTypeName (void) const
+    virtual std::string GetValueTypeName () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       return "ns3::TimeValue";
     }
-    virtual bool HasUnderlyingTypeInformation (void) const
+    virtual bool HasUnderlyingTypeInformation () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation (void) const
+    virtual std::string GetUnderlyingTypeInformation () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       std::ostringstream oss;
       oss << "Time" << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Ptr<AttributeValue> Create (void) const
+    virtual Ptr<AttributeValue> Create () const
     {
       NS_LOG_FUNCTION_NOARGS ();
       return ns3::Create<TimeValue> ();

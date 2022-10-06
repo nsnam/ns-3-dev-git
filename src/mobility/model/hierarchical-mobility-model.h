@@ -61,7 +61,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   HierarchicalMobilityModel ();
 
@@ -71,7 +71,7 @@ public:
    * Calling GetPosition() on the model returned by this method allows
    * one to access the position of the child relative to its parent.
    */
-  Ptr<MobilityModel> GetChild (void) const;
+  Ptr<MobilityModel> GetChild () const;
   /**
    * \return the parent mobility model.
    *
@@ -79,7 +79,7 @@ public:
    * one to access the position of the parent alone, which is used
    * as the reference position to which the child position is added.
    */
-  Ptr<MobilityModel> GetParent (void) const;
+  Ptr<MobilityModel> GetParent () const;
   /**
    * Sets the child mobility model to a new one, possibly replacing
    * an existing one.  If the child model is being replaced,
@@ -100,10 +100,10 @@ public:
   void SetParent (Ptr<MobilityModel> model);
 
 private:
-  virtual Vector DoGetPosition (void) const;
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
-  virtual void DoInitialize (void);
+  virtual Vector DoGetVelocity () const;
+  virtual void DoInitialize ();
   virtual int64_t DoAssignStreams (int64_t);
 
   /**

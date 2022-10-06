@@ -76,14 +76,14 @@ BlockAckAgreement::SetStartingSequenceControl (uint16_t seq)
 }
 
 void
-BlockAckAgreement::SetImmediateBlockAck (void)
+BlockAckAgreement::SetImmediateBlockAck ()
 {
   NS_LOG_FUNCTION (this);
   m_blockAckPolicy = 1;
 }
 
 void
-BlockAckAgreement::SetDelayedBlockAck (void)
+BlockAckAgreement::SetDelayedBlockAck ()
 {
   NS_LOG_FUNCTION (this);
   m_blockAckPolicy = 0;
@@ -97,57 +97,57 @@ BlockAckAgreement::SetAmsduSupport (bool supported)
 }
 
 uint8_t
-BlockAckAgreement::GetTid (void) const
+BlockAckAgreement::GetTid () const
 {
   return m_tid;
 }
 
 Mac48Address
-BlockAckAgreement::GetPeer (void) const
+BlockAckAgreement::GetPeer () const
 {
   NS_LOG_FUNCTION (this);
   return m_peer;
 }
 
 uint16_t
-BlockAckAgreement::GetBufferSize (void) const
+BlockAckAgreement::GetBufferSize () const
 {
   return m_bufferSize;
 }
 
 uint16_t
-BlockAckAgreement::GetTimeout (void) const
+BlockAckAgreement::GetTimeout () const
 {
   return m_timeout;
 }
 
 uint16_t
-BlockAckAgreement::GetStartingSequence (void) const
+BlockAckAgreement::GetStartingSequence () const
 {
   return m_startingSeq;
 }
 
 uint16_t
-BlockAckAgreement::GetStartingSequenceControl (void) const
+BlockAckAgreement::GetStartingSequenceControl () const
 {
   uint16_t seqControl = (m_startingSeq << 4) & 0xfff0;
   return seqControl;
 }
 
 bool
-BlockAckAgreement::IsImmediateBlockAck (void) const
+BlockAckAgreement::IsImmediateBlockAck () const
 {
   return m_blockAckPolicy == 1;
 }
 
 bool
-BlockAckAgreement::IsAmsduSupported (void) const
+BlockAckAgreement::IsAmsduSupported () const
 {
   return m_amsduSupported == 1;
 }
 
 uint16_t
-BlockAckAgreement::GetWinEnd (void) const
+BlockAckAgreement::GetWinEnd () const
 {
   return (GetStartingSequence () + GetBufferSize () - 1) % SEQNO_SPACE_SIZE;
 }
@@ -160,13 +160,13 @@ BlockAckAgreement::SetHtSupported (bool htSupported)
 }
 
 bool
-BlockAckAgreement::IsHtSupported (void) const
+BlockAckAgreement::IsHtSupported () const
 {
   return m_htSupported == 1;
 }
 
 BlockAckType
-BlockAckAgreement::GetBlockAckType (void) const
+BlockAckAgreement::GetBlockAckType () const
 {
   if (!m_htSupported)
     {
@@ -181,7 +181,7 @@ BlockAckAgreement::GetBlockAckType (void) const
 }
 
 BlockAckReqType
-BlockAckAgreement::GetBlockAckReqType (void) const
+BlockAckAgreement::GetBlockAckReqType () const
 {
   if (!m_htSupported)
     {

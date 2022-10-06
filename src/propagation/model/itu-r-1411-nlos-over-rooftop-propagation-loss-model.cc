@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (ItuR1411NlosOverRooftopPropagationLossModel);
 
 
 TypeId
-ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId (void)
+ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ItuR1411NlosOverRooftopPropagationLossModel")
     .SetParent<PropagationLossModel> ()

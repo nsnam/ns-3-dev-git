@@ -151,7 +151,7 @@ public:
    * Get inserted time stamp function
    * \returns the inserted time stamp
    */
-  Time GetInsertedTimeStamp (void) const
+  Time GetInsertedTimeStamp () const
   {
     return tstamp;
   }
@@ -181,7 +181,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   DsrNetworkQueue ();
   /**
@@ -248,17 +248,17 @@ public:
    *
    * \return the maximum queue size
    */
-  uint32_t GetMaxNetworkSize (void) const;
+  uint32_t GetMaxNetworkSize () const;
   /**
    * Return the maximum entry lifetime for this queue
    *
    * \return the maximum entry lifetime for this queue
    */
-  Time GetMaxNetworkDelay (void) const;
+  Time GetMaxNetworkDelay () const;
   /**
    * Clear the queue
    */
-  void Flush (void);
+  void Flush ();
 
   /**
    * Return the current queue entry
@@ -274,7 +274,7 @@ private:
   /**
    * Clean the queue by removing entries that exceeded lifetime.
    */
-  void Cleanup (void);
+  void Cleanup ();
   std::vector<DsrNetworkQueueEntry> m_dsrNetworkQueue; //!< Queue (vector) of entries
   uint32_t m_size; //!< Current queue size
   uint32_t m_maxSize; //!< Maximum queue size

@@ -67,14 +67,14 @@ class TimerStateTestCase : public TestCase
 {
 public:
   TimerStateTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 TimerStateTestCase::TimerStateTestCase ()
   : TestCase ("Check correct state transitions")
 {}
 void
-TimerStateTestCase::DoRun (void)
+TimerStateTestCase::DoRun ()
 {
   Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
 
@@ -116,8 +116,8 @@ class TimerTemplateTestCase : public TestCase
 {
 public:
   TimerTemplateTestCase ();
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   /// Member function with one int parameter.
   void bazi (int) {};
@@ -146,7 +146,7 @@ TimerTemplateTestCase::TimerTemplateTestCase ()
 {}
 
 void
-TimerTemplateTestCase::DoRun (void)
+TimerTemplateTestCase::DoRun ()
 {
   Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
 
@@ -211,7 +211,7 @@ TimerTemplateTestCase::DoRun (void)
 }
 
 void
-TimerTemplateTestCase::DoTeardown (void)
+TimerTemplateTestCase::DoTeardown ()
 {
   Simulator::Run ();
   Simulator::Destroy ();

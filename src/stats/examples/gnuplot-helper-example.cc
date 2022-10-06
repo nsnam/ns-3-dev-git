@@ -46,12 +46,12 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   Emitter ();
 private:
-  void DoInitialize (void);
+  void DoInitialize ();
   /// Counts how many time this function is called.
-  void Count (void);
+  void Count ();
 
   TracedValue<uint32_t> m_counter; //!< Simple counter
   Ptr<ExponentialRandomVariable> m_var; //!< Random number generator.
@@ -60,7 +60,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (Emitter);
 
 TypeId
-Emitter::GetTypeId (void)
+Emitter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Emitter")
     .SetParent<Object> ()
@@ -74,7 +74,7 @@ Emitter::GetTypeId (void)
   return tid;
 }
 
-Emitter::Emitter (void)
+Emitter::Emitter ()
 {
   NS_LOG_FUNCTION (this);
   m_counter = 0;
@@ -82,14 +82,14 @@ Emitter::Emitter (void)
 }
 
 void
-Emitter::DoInitialize (void)
+Emitter::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
 }
 
 void
-Emitter::Count (void)
+Emitter::Count ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("Counting at " << Simulator::Now ().As (Time::S));

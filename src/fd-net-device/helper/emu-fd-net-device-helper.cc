@@ -78,7 +78,7 @@ EmuFdNetDeviceHelper::HostQdiscBypass (bool hostQdiscBypass)
 }
 
 std::string
-EmuFdNetDeviceHelper::GetDeviceName (void)
+EmuFdNetDeviceHelper::GetDeviceName ()
 {
   return m_deviceName;
 }
@@ -214,7 +214,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
 }
 
 int
-EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
+EmuFdNetDeviceHelper::CreateFileDescriptor () const
 {
   NS_LOG_FUNCTION (this);
 

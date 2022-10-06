@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("ComponentCarrier");
 
 NS_OBJECT_ENSURE_REGISTERED ( ComponentCarrier);
 
-TypeId ComponentCarrier::GetTypeId (void)
+TypeId ComponentCarrier::GetTypeId ()
 {
   static TypeId
     tid =
@@ -92,7 +92,7 @@ ComponentCarrier::ComponentCarrier () : Object ()
   NS_LOG_FUNCTION (this);
 }
 
-ComponentCarrier::~ComponentCarrier (void)
+ComponentCarrier::~ComponentCarrier ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -227,7 +227,7 @@ ComponentCarrier::SetAsPrimary (bool primaryCarrier)
 
 NS_OBJECT_ENSURE_REGISTERED (ComponentCarrierBaseStation);
 
-TypeId ComponentCarrierBaseStation::GetTypeId (void)
+TypeId ComponentCarrierBaseStation::GetTypeId ()
 {
   static TypeId
     tid =
@@ -243,7 +243,7 @@ ComponentCarrierBaseStation::ComponentCarrierBaseStation () : ComponentCarrier (
   NS_LOG_FUNCTION (this);
 }
 
-ComponentCarrierBaseStation::~ComponentCarrierBaseStation (void)
+ComponentCarrierBaseStation::~ComponentCarrierBaseStation ()
 {
   NS_LOG_FUNCTION (this);
 }

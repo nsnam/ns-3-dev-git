@@ -64,7 +64,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  Ipv4ListRoutingHelper* Copy (void) const;
+  Ipv4ListRoutingHelper* Copy () const;
 
   /**
    * \param routing a routing helper

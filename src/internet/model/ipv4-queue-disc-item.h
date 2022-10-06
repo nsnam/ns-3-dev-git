@@ -54,17 +54,17 @@ public:
   /**
    * \return the correct packet size (header plus payload).
    */
-  virtual uint32_t GetSize (void) const;
+  virtual uint32_t GetSize () const;
 
   /**
    * \return the header stored in this item..
    */
-  const Ipv4Header & GetHeader (void) const;
+  const Ipv4Header & GetHeader () const;
 
   /**
    * \brief Add the header to the packet
    */
-  virtual void AddHeader (void);
+  virtual void AddHeader ();
 
   /**
    * \brief Print the item contents.
@@ -86,7 +86,7 @@ public:
    * ECN_ECT0 or ECN_ECT1 set.  If ECN_CE is already set, returns true.
    * \return true if the method results in a marked packet, false otherwise
    */
-  virtual bool Mark (void);
+  virtual bool Mark ();
 
   /**
    * \brief Computes the hash of the packet's 5-tuple

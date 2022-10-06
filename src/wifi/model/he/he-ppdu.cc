@@ -113,7 +113,7 @@ HePpdu::SetPhyHeaders (const WifiTxVector& txVector, Time ppduDuration)
 }
 
 WifiTxVector
-HePpdu::DoGetTxVector (void) const
+HePpdu::DoGetTxVector () const
 {
   WifiTxVector txVector;
   txVector.SetPreambleType (m_preamble);
@@ -137,7 +137,7 @@ HePpdu::DoGetTxVector (void) const
 }
 
 Time
-HePpdu::GetTxDuration (void) const
+HePpdu::GetTxDuration () const
 {
   Time ppduDuration = Seconds (0);
   const WifiTxVector& txVector = GetTxVector ();
@@ -158,13 +158,13 @@ HePpdu::GetTxDuration (void) const
 }
 
 Ptr<WifiPpdu>
-HePpdu::Copy (void) const
+HePpdu::Copy () const
 {
   return ns3::Copy (Ptr (this));
 }
 
 WifiPpduType
-HePpdu::GetType (void) const
+HePpdu::GetType () const
 {
   switch (m_preamble)
     {
@@ -178,19 +178,19 @@ HePpdu::GetType (void) const
 }
 
 bool
-HePpdu::IsMu (void) const
+HePpdu::IsMu () const
 {
   return (IsDlMu () || IsUlMu ());
 }
 
 bool
-HePpdu::IsDlMu (void) const
+HePpdu::IsDlMu () const
 {
   return (m_preamble == WIFI_PREAMBLE_HE_MU);
 }
 
 bool
-HePpdu::IsUlMu (void) const
+HePpdu::IsUlMu () const
 {
   return (m_preamble == WIFI_PREAMBLE_HE_TB);
 }
@@ -226,14 +226,14 @@ HePpdu::GetPsdu (uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
 }
 
 uint16_t
-HePpdu::GetStaId (void) const
+HePpdu::GetStaId () const
 {
   NS_ASSERT (IsUlMu ());
   return m_psdus.begin ()->first;
 }
 
 uint16_t
-HePpdu::GetTransmissionChannelWidth (void) const
+HePpdu::GetTransmissionChannelWidth () const
 {
   WifiTxVector txVector = GetTxVector ();
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && GetStaId () != SU_STA_ID)
@@ -264,7 +264,7 @@ HePpdu::CanBeReceived (uint16_t p20MinFreq, uint16_t p20MaxFreq) const
 }
 
 HePpdu::TxPsdFlag
-HePpdu::GetTxPsdFlag (void) const
+HePpdu::GetTxPsdFlag () const
 {
   return m_txPsdFlag;
 }
@@ -291,7 +291,7 @@ HePpdu::IsStaInContentChannel (uint16_t staId, std::size_t channelId) const
 }
 
 std::string
-HePpdu::PrintPayload (void) const
+HePpdu::PrintPayload () const
 {
   std::ostringstream ss;
   if (IsMu ())
@@ -324,7 +324,7 @@ HePpdu::HeSigHeader::~HeSigHeader ()
 }
 
 TypeId
-HePpdu::HeSigHeader::GetTypeId (void)
+HePpdu::HeSigHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HeSigHeader")
     .SetParent<Header> ()
@@ -335,7 +335,7 @@ HePpdu::HeSigHeader::GetTypeId (void)
 }
 
 TypeId
-HePpdu::HeSigHeader::GetInstanceTypeId (void) const
+HePpdu::HeSigHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -352,7 +352,7 @@ HePpdu::HeSigHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-HePpdu::HeSigHeader::GetSerializedSize (void) const
+HePpdu::HeSigHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 4; //HE-SIG-A1
@@ -378,7 +378,7 @@ HePpdu::HeSigHeader::SetMcs (uint8_t mcs)
 }
 
 uint8_t
-HePpdu::HeSigHeader::GetMcs (void) const
+HePpdu::HeSigHeader::GetMcs () const
 {
   return m_mcs;
 }
@@ -391,7 +391,7 @@ HePpdu::HeSigHeader::SetBssColor (uint8_t bssColor)
 }
 
 uint8_t
-HePpdu::HeSigHeader::GetBssColor (void) const
+HePpdu::HeSigHeader::GetBssColor () const
 {
   return m_bssColor;
 }
@@ -418,7 +418,7 @@ HePpdu::HeSigHeader::SetChannelWidth (uint16_t channelWidth)
 }
 
 uint16_t
-HePpdu::HeSigHeader::GetChannelWidth (void) const
+HePpdu::HeSigHeader::GetChannelWidth () const
 {
   if (m_bandwidth == 3)
     {
@@ -460,7 +460,7 @@ HePpdu::HeSigHeader::SetGuardIntervalAndLtfSize (uint16_t gi, uint8_t ltf)
 }
 
 uint16_t
-HePpdu::HeSigHeader::GetGuardInterval (void) const
+HePpdu::HeSigHeader::GetGuardInterval () const
 {
   if (m_gi_ltf_size == 3)
     {
@@ -485,7 +485,7 @@ HePpdu::HeSigHeader::SetNStreams (uint8_t nStreams)
 }
 
 uint8_t
-HePpdu::HeSigHeader::GetNStreams (void) const
+HePpdu::HeSigHeader::GetNStreams () const
 {
   return (m_nsts + 1);
 }

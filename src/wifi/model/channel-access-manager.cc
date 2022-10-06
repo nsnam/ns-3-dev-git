@@ -55,11 +55,11 @@ public:
   {
     m_cam->NotifyRxStartNow (duration);
   }
-  void NotifyRxEndOk (void)
+  void NotifyRxEndOk ()
   {
     m_cam->NotifyRxEndOkNow ();
   }
-  void NotifyRxEndError (void)
+  void NotifyRxEndError ()
   {
     m_cam->NotifyRxEndErrorNow ();
   }
@@ -76,19 +76,19 @@ public:
   {
     m_cam->NotifySwitchingStartNow (duration);
   }
-  void NotifySleep (void)
+  void NotifySleep ()
   {
     m_cam->NotifySleepNow ();
   }
-  void NotifyOff (void)
+  void NotifyOff ()
   {
     m_cam->NotifyOffNow ();
   }
-  void NotifyWakeup (void)
+  void NotifyWakeup ()
   {
     m_cam->NotifyWakeupNow ();
   }
-  void NotifyOn (void)
+  void NotifyOn ()
   {
     m_cam->NotifyOnNow ();
   }
@@ -127,7 +127,7 @@ ChannelAccessManager::~ChannelAccessManager ()
 }
 
 void
-ChannelAccessManager::DoDispose (void)
+ChannelAccessManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (Ptr<Txop> i : m_txops)
@@ -179,13 +179,13 @@ ChannelAccessManager::SetupFrameExchangeManager (Ptr<FrameExchangeManager> feMan
 }
 
 Time
-ChannelAccessManager::GetSlot (void) const
+ChannelAccessManager::GetSlot () const
 {
   return m_phy->GetSlot ();
 }
 
 Time
-ChannelAccessManager::GetSifs (void) const
+ChannelAccessManager::GetSifs () const
 {
   return m_phy->GetSifs ();
 }
@@ -204,7 +204,7 @@ ChannelAccessManager::Add (Ptr<Txop> txop)
 }
 
 void
-ChannelAccessManager::InitLastBusyStructs (void)
+ChannelAccessManager::InitLastBusyStructs ()
 {
   NS_LOG_FUNCTION (this);
   Time now = Simulator::Now ();
@@ -245,7 +245,7 @@ ChannelAccessManager::InitLastBusyStructs (void)
 }
 
 bool
-ChannelAccessManager::IsBusy (void) const
+ChannelAccessManager::IsBusy () const
 {
   NS_LOG_FUNCTION (this);
   Time now = Simulator::Now ();
@@ -350,7 +350,7 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop)
 }
 
 void
-ChannelAccessManager::DoGrantDcfAccess (void)
+ChannelAccessManager::DoGrantDcfAccess ()
 {
   NS_LOG_FUNCTION (this);
   uint32_t k = 0;
@@ -425,7 +425,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
 }
 
 void
-ChannelAccessManager::AccessTimeout (void)
+ChannelAccessManager::AccessTimeout ()
 {
   NS_LOG_FUNCTION (this);
   UpdateBackoff ();
@@ -503,7 +503,7 @@ ChannelAccessManager::GetBackoffEndFor (Ptr<Txop> txop)
 }
 
 void
-ChannelAccessManager::UpdateBackoff (void)
+ChannelAccessManager::UpdateBackoff ()
 {
   NS_LOG_FUNCTION (this);
   uint32_t k = 0;
@@ -538,7 +538,7 @@ ChannelAccessManager::UpdateBackoff (void)
 }
 
 void
-ChannelAccessManager::DoRestartAccessTimeoutIfNeeded (void)
+ChannelAccessManager::DoRestartAccessTimeoutIfNeeded ()
 {
   NS_LOG_FUNCTION (this);
   /**
@@ -637,7 +637,7 @@ ChannelAccessManager::NotifyRxStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyRxEndOkNow (void)
+ChannelAccessManager::NotifyRxEndOkNow ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end ok");
@@ -646,7 +646,7 @@ ChannelAccessManager::NotifyRxEndOkNow (void)
 }
 
 void
-ChannelAccessManager::NotifyRxEndErrorNow (void)
+ChannelAccessManager::NotifyRxEndErrorNow ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end error");
@@ -745,7 +745,7 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifySleepNow (void)
+ChannelAccessManager::NotifySleepNow ()
 {
   NS_LOG_FUNCTION (this);
   m_sleeping = true;
@@ -763,7 +763,7 @@ ChannelAccessManager::NotifySleepNow (void)
 }
 
 void
-ChannelAccessManager::NotifyOffNow (void)
+ChannelAccessManager::NotifyOffNow ()
 {
   NS_LOG_FUNCTION (this);
   m_off = true;
@@ -781,7 +781,7 @@ ChannelAccessManager::NotifyOffNow (void)
 }
 
 void
-ChannelAccessManager::NotifyWakeupNow (void)
+ChannelAccessManager::NotifyWakeupNow ()
 {
   NS_LOG_FUNCTION (this);
   m_sleeping = false;
@@ -800,7 +800,7 @@ ChannelAccessManager::NotifyWakeupNow (void)
 }
 
 void
-ChannelAccessManager::NotifyOnNow (void)
+ChannelAccessManager::NotifyOnNow ()
 {
   NS_LOG_FUNCTION (this);
   m_off = false;
@@ -852,7 +852,7 @@ ChannelAccessManager::NotifyAckTimeoutStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyAckTimeoutResetNow (void)
+ChannelAccessManager::NotifyAckTimeoutResetNow ()
 {
   NS_LOG_FUNCTION (this);
   m_lastAckTimeoutEnd = Simulator::Now ();
@@ -867,7 +867,7 @@ ChannelAccessManager::NotifyCtsTimeoutStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyCtsTimeoutResetNow (void)
+ChannelAccessManager::NotifyCtsTimeoutResetNow ()
 {
   NS_LOG_FUNCTION (this);
   m_lastCtsTimeoutEnd = Simulator::Now ();
@@ -875,7 +875,7 @@ ChannelAccessManager::NotifyCtsTimeoutResetNow (void)
 }
 
 void
-ChannelAccessManager::UpdateLastIdlePeriod (void)
+ChannelAccessManager::UpdateLastIdlePeriod ()
 {
   NS_LOG_FUNCTION (this);
   Time idleStart = std::max ({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd});

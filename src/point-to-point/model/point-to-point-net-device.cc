@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice);
 
 TypeId
-PointToPointNetDevice::GetTypeId (void)
+PointToPointNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PointToPointNetDevice")
     .SetParent<NetDevice> ()
@@ -263,7 +263,7 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 }
 
 void
-PointToPointNetDevice::TransmitComplete (void)
+PointToPointNetDevice::TransmitComplete ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -379,14 +379,14 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 }
 
 Ptr<Queue<Packet> >
-PointToPointNetDevice::GetQueue (void) const
+PointToPointNetDevice::GetQueue () const
 {
   NS_LOG_FUNCTION (this);
   return m_queue;
 }
 
 void
-PointToPointNetDevice::NotifyLinkUp (void)
+PointToPointNetDevice::NotifyLinkUp ()
 {
   NS_LOG_FUNCTION (this);
   m_linkUp = true;
@@ -401,13 +401,13 @@ PointToPointNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-PointToPointNetDevice::GetIfIndex (void) const
+PointToPointNetDevice::GetIfIndex () const
 {
   return m_ifIndex;
 }
 
 Ptr<Channel>
-PointToPointNetDevice::GetChannel (void) const
+PointToPointNetDevice::GetChannel () const
 {
   return m_channel;
 }
@@ -426,13 +426,13 @@ PointToPointNetDevice::SetAddress (Address address)
 }
 
 Address
-PointToPointNetDevice::GetAddress (void) const
+PointToPointNetDevice::GetAddress () const
 {
   return m_address;
 }
 
 bool
-PointToPointNetDevice::IsLinkUp (void) const
+PointToPointNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkUp;
@@ -450,7 +450,7 @@ PointToPointNetDevice::AddLinkChangeCallback (Callback<void> callback)
 // all of the devices on the network.
 //
 bool
-PointToPointNetDevice::IsBroadcast (void) const
+PointToPointNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
@@ -462,14 +462,14 @@ PointToPointNetDevice::IsBroadcast (void) const
 // broadcast address, so we make up something reasonable.
 //
 Address
-PointToPointNetDevice::GetBroadcast (void) const
+PointToPointNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-PointToPointNetDevice::IsMulticast (void) const
+PointToPointNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
@@ -490,14 +490,14 @@ PointToPointNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-PointToPointNetDevice::IsPointToPoint (void) const
+PointToPointNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 
 bool
-PointToPointNetDevice::IsBridge (void) const
+PointToPointNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -567,7 +567,7 @@ PointToPointNetDevice::SendFrom (Ptr<Packet> packet,
 }
 
 Ptr<Node>
-PointToPointNetDevice::GetNode (void) const
+PointToPointNetDevice::GetNode () const
 {
   return m_node;
 }
@@ -580,7 +580,7 @@ PointToPointNetDevice::SetNode (Ptr<Node> node)
 }
 
 bool
-PointToPointNetDevice::NeedsArp (void) const
+PointToPointNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -599,7 +599,7 @@ PointToPointNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallb
 }
 
 bool
-PointToPointNetDevice::SupportsSendFrom (void) const
+PointToPointNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -613,7 +613,7 @@ PointToPointNetDevice::DoMpiReceive (Ptr<Packet> p)
 }
 
 Address
-PointToPointNetDevice::GetRemote (void) const
+PointToPointNetDevice::GetRemote () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_channel->GetNDevices () == 2);
@@ -639,7 +639,7 @@ PointToPointNetDevice::SetMtu (uint16_t mtu)
 }
 
 uint16_t
-PointToPointNetDevice::GetMtu (void) const
+PointToPointNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;

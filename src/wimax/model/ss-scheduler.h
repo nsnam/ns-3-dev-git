@@ -46,14 +46,14 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Constructor
    *
    * \param ss subscriber station device
    */
   SSScheduler (Ptr<SubscriberStationNetDevice> ss);
-  ~SSScheduler (void);
+  ~SSScheduler ();
 
   // Delete copy constructor and assignment operator to avoid misuse
   SSScheduler (const SSScheduler &) = delete;
@@ -68,7 +68,7 @@ public:
    * Get the poll me value
    * \returns the poll me flag
    */
-  bool GetPollMe (void) const;
+  bool GetPollMe () const;
   /**
    * \return a list of packet to be sent in the next opportunity
    * \param availableSymbols the available resources in symbols
@@ -81,13 +81,13 @@ public:
                              MacHeaderType::HeaderType packetType, Ptr<WimaxConnection> &connection);
 
 
-  void DoDispose (void);
+  void DoDispose ();
 private:
   /**
    * Select connection
    * \returns pointer to the wimax connection
    */
-  Ptr<WimaxConnection> SelectConnection (void);
+  Ptr<WimaxConnection> SelectConnection ();
   Ptr<SubscriberStationNetDevice> m_ss; ///< the subscriber station
   bool m_pollMe; ///< poll me flag
 

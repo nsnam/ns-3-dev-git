@@ -51,14 +51,14 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
 
   // Inherited methods
   virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual void Clear (void);
+  virtual void Clear ();
   int64_t AssignStreams (int64_t stream);
 
 private:

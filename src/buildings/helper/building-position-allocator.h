@@ -45,10 +45,10 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -92,10 +92,10 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
 
   /**
    * \brief Set the random variable stream object that generates x-positions
@@ -146,10 +146,10 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -201,10 +201,10 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -250,9 +250,9 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   // inherited from PositionAllocator
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
 
   /**
    * Assign a fixed random variable stream number to the random variables

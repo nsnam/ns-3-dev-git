@@ -51,7 +51,7 @@ public:
    * \param schedulerFactory Scheduler factory.
    */
   SimulatorEventsTestCase (ObjectFactory schedulerFactory);
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Test Event.
    * \param value Event parameter.
@@ -66,17 +66,17 @@ public:
   /**
    * Test Event.
    */
-  void Eventfoo0 (void);
+  void Eventfoo0 ();
 
   /**
    * Get the simulator time.
    * \return The actual time [ms].
    */
-  uint64_t NowUs (void);
+  uint64_t NowUs ();
   /**
    * Checks that the events has been detroyed.
    */
-  void Destroy (void);
+  void Destroy ();
   /**
    * Checks that events are properly handled.
    * @{
@@ -99,7 +99,7 @@ SimulatorEventsTestCase::SimulatorEventsTestCase (ObjectFactory schedulerFactory
     m_schedulerFactory (schedulerFactory)
 {}
 uint64_t
-SimulatorEventsTestCase::NowUs (void)
+SimulatorEventsTestCase::NowUs ()
 {
   uint64_t ns = Now ().GetNanoSeconds ();
   return ns / 1000;
@@ -146,11 +146,11 @@ SimulatorEventsTestCase::EventD (int d)
 }
 
 void
-SimulatorEventsTestCase::Eventfoo0 (void)
+SimulatorEventsTestCase::Eventfoo0 ()
 {}
 
 void
-SimulatorEventsTestCase::Destroy (void)
+SimulatorEventsTestCase::Destroy ()
 {
   if (m_destroyId.IsExpired ())
     {
@@ -158,7 +158,7 @@ SimulatorEventsTestCase::Destroy (void)
     }
 }
 void
-SimulatorEventsTestCase::DoRun (void)
+SimulatorEventsTestCase::DoRun ()
 {
   m_a = true;
   m_b = false;
@@ -229,19 +229,19 @@ public:
    *
    * @{
    */
-  void Ref (void) const {};
-  void Unref (void) const {};
+  void Ref () const {};
+  void Unref () const {};
   /** @} */
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Function used for scheduling.
    *
    * @{
    */
-  void bar0 (void) {};
+  void bar0 () {};
   void bar1 (int) {};
   void bar2 (int, int) {};
   void bar3 (int, int, int) {};
@@ -258,7 +258,7 @@ private:
   void cbaz4 (const int &, const int &, const int &, const int &) {};
   void cbaz5 (const int &, const int &, const int &, const int &, const int &) {};
 
-  void bar0c (void) const {};
+  void bar0c () const {};
   void bar1c (int) const {};
   void bar2c (int, int) const {};
   void bar3c (int, int, int) const {};
@@ -282,7 +282,7 @@ private:
   *
   * @{
   */
-static void foo0 (void)
+static void foo0 ()
 {}
 static void foo1 (int)
 {}
@@ -320,7 +320,7 @@ SimulatorTemplateTestCase::SimulatorTemplateTestCase ()
   : TestCase ("Check that all templates are instantiated correctly. This is a compilation test, it cannot fail at runtime.")
 {}
 void
-SimulatorTemplateTestCase::DoRun (void)
+SimulatorTemplateTestCase::DoRun ()
 {
   // Test schedule of const methods
   Simulator::Schedule (Seconds (0.0), &SimulatorTemplateTestCase::bar0c, this);

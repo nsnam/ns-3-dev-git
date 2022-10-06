@@ -282,7 +282,7 @@ WifiPhyOperatingChannel::~WifiPhyOperatingChannel ()
 }
 
 bool
-WifiPhyOperatingChannel::IsSet (void) const
+WifiPhyOperatingChannel::IsSet () const
 {
   return m_channelIt != m_frequencyChannels.end ();
 }
@@ -378,49 +378,49 @@ WifiPhyOperatingChannel::FindFirst (uint8_t number, uint16_t frequency, uint16_t
 }
 
 uint8_t
-WifiPhyOperatingChannel::GetNumber (void) const
+WifiPhyOperatingChannel::GetNumber () const
 {
   NS_ASSERT (IsSet ());
   return std::get<0> (*m_channelIt);
 }
 
 uint16_t
-WifiPhyOperatingChannel::GetFrequency (void) const
+WifiPhyOperatingChannel::GetFrequency () const
 {
   NS_ASSERT (IsSet ());
   return std::get<1> (*m_channelIt);
 }
 
 uint16_t
-WifiPhyOperatingChannel::GetWidth (void) const
+WifiPhyOperatingChannel::GetWidth () const
 {
   NS_ASSERT (IsSet ());
   return std::get<2> (*m_channelIt);
 }
 
 WifiPhyBand
-WifiPhyOperatingChannel::GetPhyBand (void) const
+WifiPhyOperatingChannel::GetPhyBand () const
 {
   NS_ASSERT (IsSet ());
   return std::get<4> (*m_channelIt);
 }
 
 bool
-WifiPhyOperatingChannel::IsOfdm (void) const
+WifiPhyOperatingChannel::IsOfdm () const
 {
   NS_ASSERT (IsSet ());
   return std::get<FrequencyChannelType> (*m_channelIt) == WIFI_PHY_OFDM_CHANNEL;
 }
 
 bool
-WifiPhyOperatingChannel::IsDsss (void) const
+WifiPhyOperatingChannel::IsDsss () const
 {
   NS_ASSERT (IsSet ());
   return std::get<FrequencyChannelType> (*m_channelIt) == WIFI_PHY_DSSS_CHANNEL;
 }
 
 bool
-WifiPhyOperatingChannel::Is80211p (void) const
+WifiPhyOperatingChannel::Is80211p () const
 {
   NS_ASSERT (IsSet ());
   return std::get<FrequencyChannelType> (*m_channelIt) == WIFI_PHY_80211p_CHANNEL;

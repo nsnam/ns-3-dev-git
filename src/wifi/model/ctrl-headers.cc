@@ -45,7 +45,7 @@ CtrlBAckRequestHeader::~CtrlBAckRequestHeader ()
 }
 
 TypeId
-CtrlBAckRequestHeader::GetTypeId (void)
+CtrlBAckRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CtrlBAckRequestHeader")
     .SetParent<Header> ()
@@ -56,7 +56,7 @@ CtrlBAckRequestHeader::GetTypeId (void)
 }
 
 TypeId
-CtrlBAckRequestHeader::GetInstanceTypeId (void) const
+CtrlBAckRequestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -133,7 +133,7 @@ CtrlBAckRequestHeader::Deserialize (Buffer::Iterator start)
 }
 
 uint16_t
-CtrlBAckRequestHeader::GetBarControl (void) const
+CtrlBAckRequestHeader::GetBarControl () const
 {
   uint16_t res = 0;
   switch (m_barType.m_variant)
@@ -181,7 +181,7 @@ CtrlBAckRequestHeader::SetBarControl (uint16_t bar)
 }
 
 uint16_t
-CtrlBAckRequestHeader::GetStartingSequenceControl (void) const
+CtrlBAckRequestHeader::GetStartingSequenceControl () const
 {
   return (m_startingSeq << 4) & 0xfff0;
 }
@@ -205,7 +205,7 @@ CtrlBAckRequestHeader::SetType (BlockAckReqType type)
 }
 
 BlockAckReqType
-CtrlBAckRequestHeader::GetType (void) const
+CtrlBAckRequestHeader::GetType () const
 {
   return m_barType;
 }
@@ -223,44 +223,44 @@ CtrlBAckRequestHeader::SetStartingSequence (uint16_t seq)
 }
 
 bool
-CtrlBAckRequestHeader::MustSendHtImmediateAck (void) const
+CtrlBAckRequestHeader::MustSendHtImmediateAck () const
 {
   return m_barAckPolicy;
 }
 
 uint8_t
-CtrlBAckRequestHeader::GetTidInfo (void) const
+CtrlBAckRequestHeader::GetTidInfo () const
 {
   uint8_t tid = static_cast<uint8_t> (m_tidInfo);
   return tid;
 }
 
 uint16_t
-CtrlBAckRequestHeader::GetStartingSequence (void) const
+CtrlBAckRequestHeader::GetStartingSequence () const
 {
   return m_startingSeq;
 }
 
 bool
-CtrlBAckRequestHeader::IsBasic (void) const
+CtrlBAckRequestHeader::IsBasic () const
 {
   return m_barType.m_variant == BlockAckReqType::BASIC;
 }
 
 bool
-CtrlBAckRequestHeader::IsCompressed (void) const
+CtrlBAckRequestHeader::IsCompressed () const
 {
   return m_barType.m_variant == BlockAckReqType::COMPRESSED;
 }
 
 bool
-CtrlBAckRequestHeader::IsExtendedCompressed (void) const
+CtrlBAckRequestHeader::IsExtendedCompressed () const
 {
   return m_barType.m_variant == BlockAckReqType::EXTENDED_COMPRESSED;
 }
 
 bool
-CtrlBAckRequestHeader::IsMultiTid (void) const
+CtrlBAckRequestHeader::IsMultiTid () const
 {
   return m_barType.m_variant == BlockAckReqType::MULTI_TID;
 }
@@ -284,7 +284,7 @@ CtrlBAckResponseHeader::~CtrlBAckResponseHeader ()
 }
 
 TypeId
-CtrlBAckResponseHeader::GetTypeId (void)
+CtrlBAckResponseHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CtrlBAckResponseHeader")
     .SetParent<Header> ()
@@ -295,7 +295,7 @@ CtrlBAckResponseHeader::GetTypeId (void)
 }
 
 TypeId
-CtrlBAckResponseHeader::GetInstanceTypeId (void) const
+CtrlBAckResponseHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -319,7 +319,7 @@ CtrlBAckResponseHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-CtrlBAckResponseHeader::GetSerializedSize (void) const
+CtrlBAckResponseHeader::GetSerializedSize () const
 {
   // This method only makes use of the configured BA type, so that functions like
   // GetBlockAckSize () can easily return the size of a Block Ack of a given type
@@ -468,7 +468,7 @@ CtrlBAckResponseHeader::SetType (BlockAckType type)
 }
 
 BlockAckType
-CtrlBAckResponseHeader::GetType (void) const
+CtrlBAckResponseHeader::GetType () const
 {
   return m_baType;
 }
@@ -501,7 +501,7 @@ CtrlBAckResponseHeader::SetStartingSequence (uint16_t seq, std::size_t index)
 }
 
 bool
-CtrlBAckResponseHeader::MustSendHtImmediateAck (void) const
+CtrlBAckResponseHeader::MustSendHtImmediateAck () const
 {
   return m_baAckPolicy;
 }
@@ -537,31 +537,31 @@ CtrlBAckResponseHeader::GetStartingSequence (std::size_t index) const
 }
 
 bool
-CtrlBAckResponseHeader::IsBasic (void) const
+CtrlBAckResponseHeader::IsBasic () const
 {
   return m_baType.m_variant == BlockAckType::BASIC;
 }
 
 bool
-CtrlBAckResponseHeader::IsCompressed (void) const
+CtrlBAckResponseHeader::IsCompressed () const
 {
   return m_baType.m_variant == BlockAckType::COMPRESSED;
 }
 
 bool
-CtrlBAckResponseHeader::IsExtendedCompressed (void) const
+CtrlBAckResponseHeader::IsExtendedCompressed () const
 {
   return m_baType.m_variant == BlockAckType::EXTENDED_COMPRESSED;
 }
 
 bool
-CtrlBAckResponseHeader::IsMultiTid (void) const
+CtrlBAckResponseHeader::IsMultiTid () const
 {
   return m_baType.m_variant == BlockAckType::MULTI_TID;
 }
 
 bool
-CtrlBAckResponseHeader::IsMultiSta (void) const
+CtrlBAckResponseHeader::IsMultiSta () const
 {
   return m_baType.m_variant == BlockAckType::MULTI_STA;
 }
@@ -618,7 +618,7 @@ CtrlBAckResponseHeader::GetUnassociatedStaAddress (std::size_t index) const
 }
 
 std::size_t
-CtrlBAckResponseHeader::GetNPerAidTidInfoSubfields (void) const
+CtrlBAckResponseHeader::GetNPerAidTidInfoSubfields () const
 {
   NS_ASSERT (m_baType.m_variant == BlockAckType::MULTI_STA);
   return m_baInfo.size ();
@@ -642,7 +642,7 @@ CtrlBAckResponseHeader::FindPerAidTidInfoWithAid (uint16_t aid) const
 }
 
 uint16_t
-CtrlBAckResponseHeader::GetBaControl (void) const
+CtrlBAckResponseHeader::GetBaControl () const
 {
   uint16_t res = 0;
   if (m_baAckPolicy)
@@ -1120,7 +1120,7 @@ CtrlTriggerUserInfoField::Print (std::ostream &os) const
 }
 
 uint32_t
-CtrlTriggerUserInfoField::GetSerializedSize (void) const
+CtrlTriggerUserInfoField::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 5;   // User Info (excluding Trigger Dependent User Info)
@@ -1231,7 +1231,7 @@ CtrlTriggerUserInfoField::Deserialize (Buffer::Iterator start)
 }
 
 TriggerFrameType
-CtrlTriggerUserInfoField::GetType (void) const
+CtrlTriggerUserInfoField::GetType () const
 {
   return static_cast<TriggerFrameType> (m_triggerType);
 }
@@ -1243,19 +1243,19 @@ CtrlTriggerUserInfoField::SetAid12 (uint16_t aid)
 }
 
 uint16_t
-CtrlTriggerUserInfoField::GetAid12 (void) const
+CtrlTriggerUserInfoField::GetAid12 () const
 {
   return m_aid12;
 }
 
 bool
-CtrlTriggerUserInfoField::HasRaRuForAssociatedSta (void) const
+CtrlTriggerUserInfoField::HasRaRuForAssociatedSta () const
 {
   return (m_aid12 == 0);
 }
 
 bool
-CtrlTriggerUserInfoField::HasRaRuForUnassociatedSta (void) const
+CtrlTriggerUserInfoField::HasRaRuForUnassociatedSta () const
 {
   return (m_aid12 == 2045);
 }
@@ -1303,7 +1303,7 @@ CtrlTriggerUserInfoField::SetRuAllocation (HeRu::RuSpec ru)
 }
 
 HeRu::RuSpec
-CtrlTriggerUserInfoField::GetRuAllocation (void) const
+CtrlTriggerUserInfoField::GetRuAllocation () const
 {
   HeRu::RuType ruType;
   std::size_t index;
@@ -1362,7 +1362,7 @@ CtrlTriggerUserInfoField::SetUlFecCodingType (bool ldpc)
 }
 
 bool
-CtrlTriggerUserInfoField::GetUlFecCodingType (void) const
+CtrlTriggerUserInfoField::GetUlFecCodingType () const
 {
   return m_ulFecCodingType;
 }
@@ -1375,7 +1375,7 @@ CtrlTriggerUserInfoField::SetUlMcs (uint8_t mcs)
 }
 
 uint8_t
-CtrlTriggerUserInfoField::GetUlMcs (void) const
+CtrlTriggerUserInfoField::GetUlMcs () const
 {
   return m_ulMcs;
 }
@@ -1387,7 +1387,7 @@ CtrlTriggerUserInfoField::SetUlDcm (bool dcm)
 }
 
 bool
-CtrlTriggerUserInfoField::GetUlDcm (void) const
+CtrlTriggerUserInfoField::GetUlDcm () const
 {
   return m_ulDcm;
 }
@@ -1404,7 +1404,7 @@ CtrlTriggerUserInfoField::SetSsAllocation (uint8_t startingSs, uint8_t nSs)
 }
 
 uint8_t
-CtrlTriggerUserInfoField::GetStartingSs (void) const
+CtrlTriggerUserInfoField::GetStartingSs () const
 {
   if (m_aid12 == 0 || m_aid12 == 2045)
     {
@@ -1414,7 +1414,7 @@ CtrlTriggerUserInfoField::GetStartingSs (void) const
 }
 
 uint8_t
-CtrlTriggerUserInfoField::GetNss (void) const
+CtrlTriggerUserInfoField::GetNss () const
 {
   if (m_aid12 == 0 || m_aid12 == 2045)
     {
@@ -1434,7 +1434,7 @@ CtrlTriggerUserInfoField::SetRaRuInformation (uint8_t nRaRu, bool moreRaRu)
 }
 
 uint8_t
-CtrlTriggerUserInfoField::GetNRaRus (void) const
+CtrlTriggerUserInfoField::GetNRaRus () const
 {
   NS_ABORT_MSG_IF (m_aid12 != 0 && m_aid12 != 2045, "RA-RU Information subfield not present");
 
@@ -1442,7 +1442,7 @@ CtrlTriggerUserInfoField::GetNRaRus (void) const
 }
 
 bool
-CtrlTriggerUserInfoField::GetMoreRaRu (void) const
+CtrlTriggerUserInfoField::GetMoreRaRu () const
 {
   NS_ABORT_MSG_IF (m_aid12 != 0 && m_aid12 != 2045, "RA-RU Information subfield not present");
 
@@ -1450,7 +1450,7 @@ CtrlTriggerUserInfoField::GetMoreRaRu (void) const
 }
 
 void
-CtrlTriggerUserInfoField::SetUlTargetRssiMaxTxPower (void)
+CtrlTriggerUserInfoField::SetUlTargetRssiMaxTxPower ()
 {
   m_ulTargetRssi = 127;  // see Table 9-25i of 802.11ax amendment D3.0
 }
@@ -1464,13 +1464,13 @@ CtrlTriggerUserInfoField::SetUlTargetRssi (int8_t dBm)
 }
 
 bool
-CtrlTriggerUserInfoField::IsUlTargetRssiMaxTxPower (void) const
+CtrlTriggerUserInfoField::IsUlTargetRssiMaxTxPower () const
 {
   return (m_ulTargetRssi == 127);
 }
 
 int8_t
-CtrlTriggerUserInfoField::GetUlTargetRssi (void) const
+CtrlTriggerUserInfoField::GetUlTargetRssi () const
 {
   NS_ABORT_MSG_IF (m_ulTargetRssi == 127, "STA must use its max TX power");
 
@@ -1489,7 +1489,7 @@ CtrlTriggerUserInfoField::SetBasicTriggerDepUserInfo (uint8_t spacingFactor, uin
 }
 
 uint8_t
-CtrlTriggerUserInfoField::GetMpduMuSpacingFactor (void) const
+CtrlTriggerUserInfoField::GetMpduMuSpacingFactor () const
 {
   NS_ABORT_MSG_IF (m_triggerType != BASIC_TRIGGER, "Not a Basic Trigger Frame");
 
@@ -1497,7 +1497,7 @@ CtrlTriggerUserInfoField::GetMpduMuSpacingFactor (void) const
 }
 
 uint8_t
-CtrlTriggerUserInfoField::GetTidAggregationLimit (void) const
+CtrlTriggerUserInfoField::GetTidAggregationLimit () const
 {
   NS_ABORT_MSG_IF (m_triggerType != BASIC_TRIGGER, "Not a Basic Trigger Frame");
 
@@ -1505,7 +1505,7 @@ CtrlTriggerUserInfoField::GetTidAggregationLimit (void) const
 }
 
 AcIndex
-CtrlTriggerUserInfoField::GetPreferredAc (void) const
+CtrlTriggerUserInfoField::GetPreferredAc () const
 {
   NS_ABORT_MSG_IF (m_triggerType != BASIC_TRIGGER, "Not a Basic Trigger Frame");
 
@@ -1523,7 +1523,7 @@ CtrlTriggerUserInfoField::SetMuBarTriggerDepUserInfo (const CtrlBAckRequestHeade
 }
 
 const CtrlBAckRequestHeader&
-CtrlTriggerUserInfoField::GetMuBarTriggerDepUserInfo (void) const
+CtrlTriggerUserInfoField::GetMuBarTriggerDepUserInfo () const
 {
   NS_ABORT_MSG_IF (m_triggerType != MU_BAR_TRIGGER, "Not a MU-BAR Trigger frame");
 
@@ -1600,7 +1600,7 @@ CtrlTriggerHeader::operator= (const CtrlTriggerHeader& trigger)
 }
 
 TypeId
-CtrlTriggerHeader::GetTypeId (void)
+CtrlTriggerHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CtrlTriggerHeader")
     .SetParent<Header> ()
@@ -1611,7 +1611,7 @@ CtrlTriggerHeader::GetTypeId (void)
 }
 
 TypeId
-CtrlTriggerHeader::GetInstanceTypeId (void) const
+CtrlTriggerHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -1629,7 +1629,7 @@ CtrlTriggerHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-CtrlTriggerHeader::GetSerializedSize (void) const
+CtrlTriggerHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 8;  // Common Info (excluding Trigger Dependent Common Info)
@@ -1729,13 +1729,13 @@ CtrlTriggerHeader::SetType (TriggerFrameType type)
 }
 
 TriggerFrameType
-CtrlTriggerHeader::GetType (void) const
+CtrlTriggerHeader::GetType () const
 {
   return static_cast<TriggerFrameType> (m_triggerType);
 }
 
 const char *
-CtrlTriggerHeader::GetTypeString (void) const
+CtrlTriggerHeader::GetTypeString () const
 {
   return GetTypeString (GetType ());
 }
@@ -1765,49 +1765,49 @@ case x: \
 }
 
 bool
-CtrlTriggerHeader::IsBasic (void) const
+CtrlTriggerHeader::IsBasic () const
 {
   return (m_triggerType == BASIC_TRIGGER);
 }
 
 bool
-CtrlTriggerHeader::IsBfrp (void) const
+CtrlTriggerHeader::IsBfrp () const
 {
   return (m_triggerType == BFRP_TRIGGER);
 }
 
 bool
-CtrlTriggerHeader::IsMuBar (void) const
+CtrlTriggerHeader::IsMuBar () const
 {
   return (m_triggerType == MU_BAR_TRIGGER);
 }
 
 bool
-CtrlTriggerHeader::IsMuRts (void) const
+CtrlTriggerHeader::IsMuRts () const
 {
   return (m_triggerType == MU_RTS_TRIGGER);
 }
 
 bool
-CtrlTriggerHeader::IsBsrp (void) const
+CtrlTriggerHeader::IsBsrp () const
 {
   return (m_triggerType == BSRP_TRIGGER);
 }
 
 bool
-CtrlTriggerHeader::IsGcrMuBar (void) const
+CtrlTriggerHeader::IsGcrMuBar () const
 {
   return (m_triggerType == GCR_MU_BAR_TRIGGER);
 }
 
 bool
-CtrlTriggerHeader::IsBqrp (void) const
+CtrlTriggerHeader::IsBqrp () const
 {
   return (m_triggerType == BQRP_TRIGGER);
 }
 
 bool
-CtrlTriggerHeader::IsNfrp (void) const
+CtrlTriggerHeader::IsNfrp () const
 {
   return (m_triggerType == NFRP_TRIGGER);
 }
@@ -1819,7 +1819,7 @@ CtrlTriggerHeader::SetUlLength (uint16_t len)
 }
 
 uint16_t
-CtrlTriggerHeader::GetUlLength (void) const
+CtrlTriggerHeader::GetUlLength () const
 {
   return m_ulLength;
 }
@@ -1848,7 +1848,7 @@ CtrlTriggerHeader::SetMoreTF (bool more)
 }
 
 bool
-CtrlTriggerHeader::GetMoreTF (void) const
+CtrlTriggerHeader::GetMoreTF () const
 {
   return m_moreTF;
 }
@@ -1860,7 +1860,7 @@ CtrlTriggerHeader::SetCsRequired (bool cs)
 }
 
 bool
-CtrlTriggerHeader::GetCsRequired (void) const
+CtrlTriggerHeader::GetCsRequired () const
 {
   return m_csRequired;
 }
@@ -1889,7 +1889,7 @@ CtrlTriggerHeader::SetUlBandwidth (uint16_t bw)
 }
 
 uint16_t
-CtrlTriggerHeader::GetUlBandwidth (void) const
+CtrlTriggerHeader::GetUlBandwidth () const
 {
   return (1 << m_ulBandwidth) * 20;
 }
@@ -1916,7 +1916,7 @@ CtrlTriggerHeader::SetGiAndLtfType (uint16_t guardInterval, uint8_t ltfType)
 }
 
 uint16_t
-CtrlTriggerHeader::GetGuardInterval (void) const
+CtrlTriggerHeader::GetGuardInterval () const
 {
   if (m_giAndLtfType == 0 || m_giAndLtfType == 1)
     {
@@ -1933,7 +1933,7 @@ CtrlTriggerHeader::GetGuardInterval (void) const
 }
 
 uint8_t
-CtrlTriggerHeader::GetLtfType (void) const
+CtrlTriggerHeader::GetLtfType () const
 {
   if (m_giAndLtfType == 0)
     {
@@ -1963,7 +1963,7 @@ CtrlTriggerHeader::SetApTxPower (int8_t power)
 }
 
 int8_t
-CtrlTriggerHeader::GetApTxPower (void) const
+CtrlTriggerHeader::GetApTxPower () const
 {
   // see Table 9-25f "AP Tx Power subfield encoding" of 802.11ax amendment D3.0
   return static_cast<int8_t> (m_apTxPower) - 20;
@@ -1976,13 +1976,13 @@ CtrlTriggerHeader::SetUlSpatialReuse (uint16_t sr)
 }
 
 uint16_t
-CtrlTriggerHeader::GetUlSpatialReuse (void) const
+CtrlTriggerHeader::GetUlSpatialReuse () const
 {
   return m_ulSpatialReuse;
 }
 
 CtrlTriggerHeader
-CtrlTriggerHeader::GetCommonInfoField (void) const
+CtrlTriggerHeader::GetCommonInfoField () const
 {
   // make a copy of this Trigger Frame and remove the User Info fields from the copy
   CtrlTriggerHeader trigger (*this);
@@ -1991,7 +1991,7 @@ CtrlTriggerHeader::GetCommonInfoField (void) const
 }
 
 CtrlTriggerUserInfoField&
-CtrlTriggerHeader::AddUserInfoField (void)
+CtrlTriggerHeader::AddUserInfoField ()
 {
   m_userInfoFields.emplace_back (m_triggerType);
   return m_userInfoFields.back ();
@@ -2007,31 +2007,31 @@ CtrlTriggerHeader::AddUserInfoField (const CtrlTriggerUserInfoField& userInfo)
 }
 
 CtrlTriggerHeader::ConstIterator
-CtrlTriggerHeader::begin (void) const
+CtrlTriggerHeader::begin () const
 {
   return m_userInfoFields.begin ();
 }
 
 CtrlTriggerHeader::ConstIterator
-CtrlTriggerHeader::end (void) const
+CtrlTriggerHeader::end () const
 {
   return m_userInfoFields.end ();
 }
 
 CtrlTriggerHeader::Iterator
-CtrlTriggerHeader::begin (void)
+CtrlTriggerHeader::begin ()
 {
   return m_userInfoFields.begin ();
 }
 
 CtrlTriggerHeader::Iterator
-CtrlTriggerHeader::end (void)
+CtrlTriggerHeader::end ()
 {
   return m_userInfoFields.end ();
 }
 
 std::size_t
-CtrlTriggerHeader::GetNUserInfoFields (void) const
+CtrlTriggerHeader::GetNUserInfoFields () const
 {
   return m_userInfoFields.size ();
 }
@@ -2058,7 +2058,7 @@ CtrlTriggerHeader::FindUserInfoWithRaRuAssociated (ConstIterator start) const
 }
 
 CtrlTriggerHeader::ConstIterator
-CtrlTriggerHeader::FindUserInfoWithRaRuAssociated (void) const
+CtrlTriggerHeader::FindUserInfoWithRaRuAssociated () const
 {
   return FindUserInfoWithAid (0);
 }
@@ -2070,13 +2070,13 @@ CtrlTriggerHeader::FindUserInfoWithRaRuUnassociated (ConstIterator start) const
 }
 
 CtrlTriggerHeader::ConstIterator
-CtrlTriggerHeader::FindUserInfoWithRaRuUnassociated (void) const
+CtrlTriggerHeader::FindUserInfoWithRaRuUnassociated () const
 {
   return FindUserInfoWithAid (2045);
 }
 
 bool
-CtrlTriggerHeader::IsValid (void) const
+CtrlTriggerHeader::IsValid () const
 {
   // check that allocated RUs do not overlap
   // TODO This is not a problem in case of UL MU-MIMO

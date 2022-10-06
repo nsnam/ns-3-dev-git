@@ -122,13 +122,13 @@ public:
    * Remove the top item from the top of the stack of
    * "reference mobility models".
    */
-  void PopReferenceMobilityModel (void);
+  void PopReferenceMobilityModel ();
 
   /**
    * \return a string which contains the TypeId of the currently-selected
    *          mobility model.
    */
-  std::string GetMobilityModelType (void) const;
+  std::string GetMobilityModelType () const;
 
   /**
    * \brief "Layout" a single node according to the current position allocator type.
@@ -170,7 +170,7 @@ public:
    * Perform the work of MobilityHelper::Install on _all_ nodes which
    * exist in the simulation.
    */
-  void InstallAll (void);
+  void InstallAll ();
 
   /**
    * \param stream an output stream wrapper

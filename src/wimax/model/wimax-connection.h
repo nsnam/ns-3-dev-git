@@ -46,7 +46,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -55,23 +55,23 @@ public:
    * \param type CID type
    */
   WimaxConnection (Cid cid, enum Cid::Type type);
-  ~WimaxConnection (void);
+  ~WimaxConnection ();
 
   /**
    * Get CID function
    * \returns the CID
    */
-  Cid GetCid (void) const;
+  Cid GetCid () const;
 
   /**
    * Get type function
    * \returns the type
    */
-  enum Cid::Type GetType (void) const;
+  enum Cid::Type GetType () const;
   /**
    * \return the queue of the connection
    */
-  Ptr<WimaxMacQueue> GetQueue (void) const;
+  Ptr<WimaxMacQueue> GetQueue () const;
   /**
    * \brief set the service flow associated to this connection
    * \param serviceFlow The service flow to be associated to this connection
@@ -80,13 +80,13 @@ public:
   /**
    * \return the service flow associated to this connection
    */
-  ServiceFlow* GetServiceFlow (void) const;
+  ServiceFlow* GetServiceFlow () const;
 
   // wrapper functions
   /**
    * \return the scheduling type of this connection
    */
-  uint8_t GetSchedulingType (void) const;
+  uint8_t GetSchedulingType () const;
   /**
    * \brief enqueue a packet in the queue of the connection
    * \param packet the packet to be enqueued
@@ -114,7 +114,7 @@ public:
   /**
    * \return true if the connection has at least one packet in its queue, false otherwise
    */
-  bool HasPackets (void) const;
+  bool HasPackets () const;
   /**
    * \return true if the connection has at least one packet of type packetType in its queue, false otherwise
    * \param packetType type of packet to check in the queue
@@ -126,7 +126,7 @@ public:
    * Get type string
    * \returns the type string
    */
-  std::string GetTypeStr (void) const;
+  std::string GetTypeStr () const;
 
   /// Definition of Fragments Queue data type
   typedef std::list<Ptr<const Packet> > FragmentsQueue;
@@ -134,7 +134,7 @@ public:
    * \brief get a queue of received fragments
    * \returns the fragments queue
    */
-  const FragmentsQueue GetFragmentsQueue (void) const;
+  const FragmentsQueue GetFragmentsQueue () const;
   /**
    * \brief enqueue a received packet (that is a fragment) into the fragments queue
    * \param fragment received fragment
@@ -143,10 +143,10 @@ public:
   /**
    * \brief delete all enqueued fragments
    */
-  void ClearFragmentsQueue (void);
+  void ClearFragmentsQueue ();
 
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   Cid m_cid; ///< CID
   enum Cid::Type m_cidType; ///< CID type

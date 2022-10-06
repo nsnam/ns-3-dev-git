@@ -59,7 +59,7 @@ struct UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
 };
 
 TypeId
-UdpTraceClient::GetTypeId (void)
+UdpTraceClient::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpTraceClient")
     .SetParent<Application> ()
@@ -166,7 +166,7 @@ UdpTraceClient::SetMaxPacketSize (uint16_t maxPacketSize)
 }
 
 
-uint16_t UdpTraceClient::GetMaxPacketSize (void)
+uint16_t UdpTraceClient::GetMaxPacketSize ()
 {
   NS_LOG_FUNCTION (this);
   return m_maxPacketSize;
@@ -174,7 +174,7 @@ uint16_t UdpTraceClient::GetMaxPacketSize (void)
 
 
 void
-UdpTraceClient::DoDispose (void)
+UdpTraceClient::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
@@ -225,7 +225,7 @@ UdpTraceClient::LoadTrace (std::string filename)
 }
 
 void
-UdpTraceClient::LoadDefaultTrace (void)
+UdpTraceClient::LoadDefaultTrace ()
 {
   NS_LOG_FUNCTION (this);
   uint32_t prevTime = 0;
@@ -248,7 +248,7 @@ UdpTraceClient::LoadDefaultTrace (void)
 }
 
 void
-UdpTraceClient::StartApplication (void)
+UdpTraceClient::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -352,7 +352,7 @@ UdpTraceClient::SendPacket (uint32_t size)
 }
 
 void
-UdpTraceClient::Send (void)
+UdpTraceClient::Send ()
 {
   NS_LOG_FUNCTION (this);
 

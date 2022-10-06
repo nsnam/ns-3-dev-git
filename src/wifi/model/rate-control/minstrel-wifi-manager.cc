@@ -47,7 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("MinstrelWifiManager");
 NS_OBJECT_ENSURE_REGISTERED (MinstrelWifiManager);
 
 TypeId
-MinstrelWifiManager::GetTypeId (void)
+MinstrelWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MinstrelWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -173,7 +173,7 @@ MinstrelWifiManager::AddCalcTxTime (WifiMode mode, Time t)
 }
 
 WifiRemoteStation *
-MinstrelWifiManager::DoCreateStation (void) const
+MinstrelWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   MinstrelWifiRemoteStation *station = new MinstrelWifiRemoteStation ();

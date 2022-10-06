@@ -75,7 +75,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief Construct an empty Ipv4GlobalRouting routing protocol,
    *
@@ -176,7 +176,7 @@ public:
    * \warning The default route counts as one of the routes.
    * \returns the number of routes
    */
-  uint32_t GetNRoutes (void) const;
+  uint32_t GetNRoutes () const;
 
   /**
    * \brief Get a route from the global unicast routing table.
@@ -229,7 +229,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  void DoDispose (void);
+  void DoDispose ();
 
 private:
   /// Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently

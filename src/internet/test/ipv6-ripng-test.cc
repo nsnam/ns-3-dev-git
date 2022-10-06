@@ -70,7 +70,7 @@ class Ipv6RipngTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv6RipngTest ();
 
   /**
@@ -115,7 +115,7 @@ Ipv6RipngTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv6RipngTest::DoRun (void)
+Ipv6RipngTest::DoRun ()
 {
   // Create topology
 
@@ -293,7 +293,7 @@ class Ipv6RipngCountToInfinityTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv6RipngCountToInfinityTest ();
 
   /**
@@ -338,7 +338,7 @@ Ipv6RipngCountToInfinityTest::SendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-Ipv6RipngCountToInfinityTest::DoRun (void)
+Ipv6RipngCountToInfinityTest::DoRun ()
 {
   // Create topology
 
@@ -506,7 +506,7 @@ class Ipv6RipngSplitHorizonStrategyTest : public TestCase
   RipNg::SplitHorizonType_e m_detectedStrategy; //!< Strategy detected.
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Constructor.
    * \param strategy The SplitHorizon strategy.
@@ -569,7 +569,7 @@ void Ipv6RipngSplitHorizonStrategyTest::ReceivePktProbe (Ptr<Socket> socket)
 }
 
 void
-Ipv6RipngSplitHorizonStrategyTest::DoRun (void)
+Ipv6RipngSplitHorizonStrategyTest::DoRun ()
 {
   // Create topology
 

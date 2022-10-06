@@ -49,7 +49,7 @@ static GlobalValue g_checksumEnabled  = GlobalValue ("ChecksumEnabled",
                                                      MakeBooleanChecker ());
 
 TypeId
-Node::GetTypeId (void)
+Node::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
@@ -94,7 +94,7 @@ Node::Node(uint32_t sid)
 }
 
 void
-Node::Construct (void)
+Node::Construct ()
 {
   NS_LOG_FUNCTION (this);
   m_id = NodeList::Add (this);
@@ -106,21 +106,21 @@ Node::~Node ()
 }
 
 uint32_t
-Node::GetId (void) const
+Node::GetId () const
 {
   NS_LOG_FUNCTION (this);
   return m_id;
 }
 
 Time
-Node::GetLocalTime (void) const
+Node::GetLocalTime () const
 {
   NS_LOG_FUNCTION (this);
   return Simulator::Now ();
 }
 
 uint32_t
-Node::GetSystemId (void) const
+Node::GetSystemId () const
 {
   NS_LOG_FUNCTION (this);
   return m_sid;
@@ -149,7 +149,7 @@ Node::GetDevice (uint32_t index) const
   return m_devices[index];
 }
 uint32_t
-Node::GetNDevices (void) const
+Node::GetNDevices () const
 {
   NS_LOG_FUNCTION (this);
   return m_devices.size ();
@@ -175,7 +175,7 @@ Node::GetApplication (uint32_t index) const
   return m_applications[index];
 }
 uint32_t
-Node::GetNApplications (void) const
+Node::GetNApplications () const
 {
   NS_LOG_FUNCTION (this);
   return m_applications.size ();
@@ -206,7 +206,7 @@ Node::DoDispose ()
   Object::DoDispose ();
 }
 void
-Node::DoInitialize (void)
+Node::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
@@ -275,7 +275,7 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
 }
 
 bool
-Node::ChecksumEnabled (void)
+Node::ChecksumEnabled ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   BooleanValue val;

@@ -229,7 +229,7 @@ class CommandLine
 {
 public:
   /** Constructor */
-  CommandLine (void);
+  CommandLine ();
   /**
    * Construct and register the source file name.
    * This would typically be called by
@@ -346,7 +346,7 @@ public:
    *
    * \returns the number of non-option arguments found.
    */
-  std::size_t GetNExtraNonOptions (void) const;
+  std::size_t GetNExtraNonOptions () const;
 
   /**
    * Parse the program arguments
@@ -471,8 +471,8 @@ private:
   public:
     // Inherited
     bool Parse (const std::string value);
-    bool HasDefault (void) const;
-    std::string GetDefault (void) const;
+    bool HasDefault () const;
+    std::string GetDefault () const;
 
     std::string m_value;     /**< The argument value. */
   };  // class StringItem
@@ -485,8 +485,8 @@ private:
   {
   public:
     // Inherited
-    bool HasDefault (void) const;
-    std::string GetDefault (void) const;
+    bool HasDefault () const;
+    std::string GetDefault () const;
 
     /**
      * Parse from a string.
@@ -580,13 +580,13 @@ private:
    */
   void Copy (const CommandLine &cmd);
   /** Remove all arguments, Usage(), name */
-  void Clear (void);
+  void Clear ();
   /**
    * Append usage message in Doxygen format to the file indicated
    * by the NS_COMMANDLINE_INTROSPECTION environment variable.
    * This is typically only called once, by Parse().
    */
-  void PrintDoxygenUsage (void) const;
+  void PrintDoxygenUsage () const;
 
   typedef std::vector<Item *> Items;    /**< Argument list container */
   Items m_options;                      /**< The list of option arguments */

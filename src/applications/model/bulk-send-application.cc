@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("BulkSendApplication");
 NS_OBJECT_ENSURE_REGISTERED (BulkSendApplication);
 
 TypeId
-BulkSendApplication::GetTypeId (void)
+BulkSendApplication::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BulkSendApplication")
     .SetParent<Application> ()
@@ -108,14 +108,14 @@ BulkSendApplication::SetMaxBytes (uint64_t maxBytes)
 }
 
 Ptr<Socket>
-BulkSendApplication::GetSocket (void) const
+BulkSendApplication::GetSocket () const
 {
   NS_LOG_FUNCTION (this);
   return m_socket;
 }
 
 void
-BulkSendApplication::DoDispose (void)
+BulkSendApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -126,7 +126,7 @@ BulkSendApplication::DoDispose (void)
 }
 
 // Application Methods
-void BulkSendApplication::StartApplication (void) // Called at time specified by Start
+void BulkSendApplication::StartApplication () // Called at time specified by Start
 {
   NS_LOG_FUNCTION (this);
   Address from;
@@ -185,7 +185,7 @@ void BulkSendApplication::StartApplication (void) // Called at time specified by
     }
 }
 
-void BulkSendApplication::StopApplication (void) // Called at time specified by Stop
+void BulkSendApplication::StopApplication () // Called at time specified by Stop
 {
   NS_LOG_FUNCTION (this);
 

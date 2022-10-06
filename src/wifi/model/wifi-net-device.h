@@ -60,7 +60,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   WifiNetDevice ();
   virtual ~WifiNetDevice ();
@@ -80,7 +80,7 @@ public:
    *
    * \return the Wifi standard
    */
-  WifiStandard GetStandard (void) const;
+  WifiStandard GetStandard () const;
 
   /**
    * \param mac the MAC layer to use.
@@ -105,13 +105,13 @@ public:
   /**
    * \returns the MAC we are currently using.
    */
-  Ptr<WifiMac> GetMac (void) const;
+  Ptr<WifiMac> GetMac () const;
   /**
    * \returns the PHY we are currently using.
    *
    * This GetPhy variant is needed to keep using "Phy" in the path names.
    */
-  Ptr<WifiPhy> GetPhy (void) const;
+  Ptr<WifiPhy> GetPhy () const;
   /**
    * \param i the index (starting at 0) of the PHY object to retrieve
    * \returns the requested PHY object
@@ -120,18 +120,18 @@ public:
   /**
    * \returns a const reference to the vector of PHY objects
    */
-  virtual const std::vector<Ptr<WifiPhy>>& GetPhys (void) const;
+  virtual const std::vector<Ptr<WifiPhy>>& GetPhys () const;
   /**
    * \returns the number of PHY objects
    */
-  uint8_t GetNPhys (void) const;
+  uint8_t GetNPhys () const;
   /**
    * \returns the remote station manager we are currently using.
    *
    * This GetRemoteStationManager variant is needed to keep using "RemoteStationManager"
    * in the path names.
    */
-  Ptr<WifiRemoteStationManager> GetRemoteStationManager (void) const;
+  Ptr<WifiRemoteStationManager> GetRemoteStationManager () const;
   /**
    * \param linkId the ID (starting at 0) of the link of the RemoteStationManager
    *               object to retrieve
@@ -141,11 +141,11 @@ public:
   /**
    * \returns a const reference to the vector of remote station managers
    */
-  virtual const std::vector<Ptr<WifiRemoteStationManager>>& GetRemoteStationManagers (void) const;
+  virtual const std::vector<Ptr<WifiRemoteStationManager>>& GetRemoteStationManagers () const;
   /**
    * \returns the number of remote station managers
    */
-  uint8_t GetNRemoteStationManagers (void) const;
+  uint8_t GetNRemoteStationManagers () const;
 
   /**
    * \param htConfiguration pointer to HtConfiguration
@@ -154,7 +154,7 @@ public:
   /**
    * \return pointer to HtConfiguration if it exists
    */
-  Ptr<HtConfiguration> GetHtConfiguration (void) const;
+  Ptr<HtConfiguration> GetHtConfiguration () const;
   /**
    * \param vhtConfiguration pointer to VhtConfiguration
    */
@@ -162,7 +162,7 @@ public:
   /**
    * \return pointer to VhtConfiguration if it exists
    */
-  Ptr<VhtConfiguration> GetVhtConfiguration (void) const;
+  Ptr<VhtConfiguration> GetVhtConfiguration () const;
   /**
    * \param heConfiguration pointer to HeConfiguration
    */
@@ -170,7 +170,7 @@ public:
   /**
    * \return pointer to HeConfiguration if it exists
    */
-  Ptr<HeConfiguration> GetHeConfiguration (void) const;
+  Ptr<HeConfiguration> GetHeConfiguration () const;
   /**
    * \param ehtConfiguration pointer to EhtConfiguration
    */
@@ -178,37 +178,37 @@ public:
   /**
    * \return pointer to EhtConfiguration if it exists
    */
-  Ptr<EhtConfiguration> GetEhtConfiguration (void) const;
+  Ptr<EhtConfiguration> GetEhtConfiguration () const;
 
   void SetIfIndex (const uint32_t index) override;
-  uint32_t GetIfIndex (void) const override;
-  Ptr<Channel> GetChannel (void) const override;
+  uint32_t GetIfIndex () const override;
+  Ptr<Channel> GetChannel () const override;
   void SetAddress (Address address) override;
-  Address GetAddress (void) const override;
+  Address GetAddress () const override;
   bool SetMtu (const uint16_t mtu) override;
-  uint16_t GetMtu (void) const override;
-  bool IsLinkUp (void) const override;
+  uint16_t GetMtu () const override;
+  bool IsLinkUp () const override;
   void AddLinkChangeCallback (Callback<void> callback) override;
-  bool IsBroadcast (void) const override;
-  Address GetBroadcast (void) const override;
-  bool IsMulticast (void) const override;
+  bool IsBroadcast () const override;
+  Address GetBroadcast () const override;
+  bool IsMulticast () const override;
   Address GetMulticast (Ipv4Address multicastGroup) const override;
-  bool IsPointToPoint (void) const override;
-  bool IsBridge (void) const override;
+  bool IsPointToPoint () const override;
+  bool IsBridge () const override;
   bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
-  Ptr<Node> GetNode (void) const override;
+  Ptr<Node> GetNode () const override;
   void SetNode (const Ptr<Node> node) override;
-  bool NeedsArp (void) const override;
+  bool NeedsArp () const override;
   void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
   Address GetMulticast (Ipv6Address addr) const override;
   bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) override;
   void SetPromiscReceiveCallback (PromiscReceiveCallback cb) override;
-  bool SupportsSendFrom (void) const override;
+  bool SupportsSendFrom () const override;
 
 
 protected:
-  void DoDispose (void) override;
-  void DoInitialize (void) override;
+  void DoDispose () override;
+  void DoInitialize () override;
   /**
    * Receive a packet from the lower layer and pass the
    * packet up the stack.
@@ -225,16 +225,16 @@ private:
    * Set that the link is up. A link is always up in ad-hoc mode.
    * For a STA, a link is up when the STA is associated with an AP.
    */
-  void LinkUp (void);
+  void LinkUp ();
   /**
    * Set that the link is down (i.e. STA is not associated).
    */
-  void LinkDown (void);
+  void LinkDown ();
   /**
    * Complete the configuration of this Wi-Fi device by
    * connecting all lower components (e.g. MAC, WifiRemoteStation) together.
    */
-  void CompleteConfig (void);
+  void CompleteConfig ();
 
   Ptr<Node> m_node; //!< the node
   std::vector<Ptr<WifiPhy>> m_phys; //!< the phy objects

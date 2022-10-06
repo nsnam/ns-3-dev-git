@@ -61,13 +61,13 @@ public:
    *
    * \return the HE Operation Parameters field in the HE Operation information element
    */
-  uint32_t GetHeOperationParameters (void) const;
+  uint32_t GetHeOperationParameters () const;
   /**
    * Return the Basic HE-MCS And Nss field in the HE Operation information element.
    *
    * \return the Basic HE-MCS And Nss field in the HE Operation information element
    */
-  uint16_t GetBasicHeMcsAndNssSet (void) const;
+  uint16_t GetBasicHeMcsAndNssSet () const;
   /**
    * Set the BSS color
    * \param bssColor the BSS color value
@@ -77,7 +77,7 @@ public:
    * Get the BSS color
    * \return the BSS color value
    */
-  uint8_t GetBssColor (void) const;
+  uint8_t GetBssColor () const;
 
 
 private:

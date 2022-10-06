@@ -69,7 +69,7 @@ public:
    *
    * \returns The next random.
    */
-  double RandU01 (void);
+  double RandU01 ();
 
 private:
   /**

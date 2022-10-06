@@ -57,7 +57,7 @@ public:
   virtual ~EpsGtpuHeaderTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 

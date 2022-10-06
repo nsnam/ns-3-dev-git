@@ -88,7 +88,7 @@ public:
    * Allocate a new Mac48Address.
    * \returns newly allocated mac48Address
    */
-  static Mac48Address Allocate (void);
+  static Mac48Address Allocate ();
 
   /**
    * Reset the Mac48Address allocation index.
@@ -108,17 +108,17 @@ public:
   /**
    * \returns true if this is a broadcast address, false otherwise.
    */
-  bool IsBroadcast (void) const;
+  bool IsBroadcast () const;
 
   /**
    * \returns true if the group bit is set, false otherwise.
    */
-  bool IsGroup (void) const;
+  bool IsGroup () const;
 
   /**
    * \returns the broadcast address
    */
-  static Mac48Address GetBroadcast (void);
+  static Mac48Address GetBroadcast ();
 
   /**
    * \param address base IPv4 address
@@ -136,13 +136,13 @@ public:
   /**
    * \returns the multicast prefix (01:00:5e:00:00:00).
    */
-  static Mac48Address GetMulticastPrefix (void);
+  static Mac48Address GetMulticastPrefix ();
 
   /**
    * \brief Get the multicast prefix for IPv6 (33:33:00:00:00:00).
    * \returns a multicast address.
    */
-  static Mac48Address GetMulticast6Prefix (void);
+  static Mac48Address GetMulticast6Prefix ();
 
   /**
    * TracedCallback signature for Mac48Address
@@ -157,13 +157,13 @@ private:
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   /**
    * \brief Return the Type of address.
    * \return type of address
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
 
   /**
    * \brief Equal to operator.

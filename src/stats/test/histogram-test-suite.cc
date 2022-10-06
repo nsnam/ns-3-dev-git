@@ -32,7 +32,7 @@ class HistogramTestCase : public ns3::TestCase {
 private:
 public:
   HistogramTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 
 };
@@ -44,7 +44,7 @@ HistogramTestCase::HistogramTestCase ()
 
 
 void
-HistogramTestCase::DoRun (void)
+HistogramTestCase::DoRun ()
 {
   Histogram h0 (3.5);
   // Testing floating-point bin widths

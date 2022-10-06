@@ -36,7 +36,7 @@ Ptr<SpectrumModel> g_LrWpanSpectrumModel; //!< Global object used to initialize 
 class LrWpanSpectrumModelInitializer
 {
 public:
-  LrWpanSpectrumModelInitializer (void)
+  LrWpanSpectrumModelInitializer ()
   {
     NS_LOG_FUNCTION (this);
 
@@ -56,13 +56,13 @@ public:
 
 } g_LrWpanSpectrumModelInitializerInstance; //!< Global object used to initialize the LrWpan Spectrum Model
 
-LrWpanSpectrumValueHelper::LrWpanSpectrumValueHelper (void)
+LrWpanSpectrumValueHelper::LrWpanSpectrumValueHelper ()
 {
   NS_LOG_FUNCTION (this);
   m_noiseFactor = 1.0;
 }
 
-LrWpanSpectrumValueHelper::~LrWpanSpectrumValueHelper (void)
+LrWpanSpectrumValueHelper::~LrWpanSpectrumValueHelper ()
 {
   NS_LOG_FUNCTION (this);
 }

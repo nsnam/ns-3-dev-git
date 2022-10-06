@@ -50,7 +50,7 @@ SpectrumChannel::DoDispose ()
 }
 
 TypeId
-SpectrumChannel::GetTypeId (void)
+SpectrumChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SpectrumChannel")
     .SetParent<Channel> ()
@@ -155,14 +155,14 @@ SpectrumChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 }
 
 Ptr<SpectrumPropagationLossModel>
-SpectrumChannel::GetSpectrumPropagationLossModel (void)
+SpectrumChannel::GetSpectrumPropagationLossModel ()
 {
   NS_LOG_FUNCTION (this);
   return m_spectrumPropagationLoss;
 }
 
 Ptr<PhasedArraySpectrumPropagationLossModel>
-SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel (void)
+SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel ()
 {
   NS_LOG_FUNCTION (this);
   return m_phasedArraySpectrumPropagationLoss;

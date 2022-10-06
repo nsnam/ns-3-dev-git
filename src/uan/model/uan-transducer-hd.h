@@ -45,23 +45,23 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited methods
-  virtual State GetState (void) const;
-  virtual bool IsRx (void) const;
-  virtual bool IsTx (void) const;
-  virtual const ArrivalList &GetArrivalList (void) const;
+  virtual State GetState () const;
+  virtual bool IsRx () const;
+  virtual bool IsTx () const;
+  virtual const ArrivalList &GetArrivalList () const;
   virtual double ApplyRxGainDb (double rxPowerDb, UanTxMode mode);
   virtual void SetRxGainDb (double gainDb);
-  virtual double GetRxGainDb (void);
+  virtual double GetRxGainDb ();
   virtual void Receive (Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
   virtual void Transmit (Ptr<UanPhy> src, Ptr<Packet> packet, double txPowerDb, UanTxMode txMode);
   virtual void SetChannel (Ptr<UanChannel> chan);
-  virtual Ptr<UanChannel> GetChannel (void) const;
+  virtual Ptr<UanChannel> GetChannel () const;
   virtual void AddPhy (Ptr<UanPhy>);
-  virtual const UanPhyList &GetPhyList (void) const;
-  virtual void Clear (void);
+  virtual const UanPhyList &GetPhyList () const;
+  virtual void Clear ();
 
 private:
   State m_state;              //!< Transducer state.
@@ -80,7 +80,7 @@ private:
    */
   void RemoveArrival (UanPacketArrival arrival);
   /** Handle end of transmission event. */
-  void EndTx (void);
+  void EndTx ();
 protected:
   virtual void DoDispose ();
 

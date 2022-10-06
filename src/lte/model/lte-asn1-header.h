@@ -43,9 +43,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator bIterator) const;
 
   // Inherited from ns3::Header base class
@@ -62,7 +62,7 @@ public:
    * in child classes) as the meaningful information elements are in
    * the subclasses.
    */
-  virtual void PreSerialize (void) const = 0;
+  virtual void PreSerialize () const = 0;
 
 protected:
   mutable uint8_t m_serializationPendingBits; //!< pending bits

@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanErrorModel");
 NS_OBJECT_ENSURE_REGISTERED (LrWpanErrorModel);
 
 TypeId
-LrWpanErrorModel::GetTypeId (void)
+LrWpanErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanErrorModel")
     .SetParent<Object> ()
@@ -39,7 +39,7 @@ LrWpanErrorModel::GetTypeId (void)
   return tid;
 }
 
-LrWpanErrorModel::LrWpanErrorModel (void)
+LrWpanErrorModel::LrWpanErrorModel ()
 {
   m_binomialCoefficients[0]  = 1;
   m_binomialCoefficients[1]  = -16;

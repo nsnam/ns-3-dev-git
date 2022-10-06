@@ -99,7 +99,7 @@ Ipv4AddressHelper::SetBase (
 }
 
 Ipv4Address
-Ipv4AddressHelper::NewAddress (void)
+Ipv4AddressHelper::NewAddress ()
 {
 //
 // The way this is expected to be used is that an address and network number
@@ -123,7 +123,7 @@ Ipv4AddressHelper::NewAddress (void)
 }
 
 Ipv4Address
-Ipv4AddressHelper::NewNetwork (void)
+Ipv4AddressHelper::NewNetwork ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   ++m_network;

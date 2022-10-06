@@ -61,7 +61,7 @@ public:
                 const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Increases the TCP window.
    * \param cong The congestion control.

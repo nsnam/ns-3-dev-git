@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpLinuxReno");
 NS_OBJECT_ENSURE_REGISTERED (TcpLinuxReno);
 
 TypeId
-TcpLinuxReno::GetTypeId (void)
+TcpLinuxReno::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpLinuxReno")
     .SetParent<TcpCongestionOps> ()
@@ -40,7 +40,7 @@ TcpLinuxReno::GetTypeId (void)
   return tid;
 }
 
-TcpLinuxReno::TcpLinuxReno (void) : TcpCongestionOps ()
+TcpLinuxReno::TcpLinuxReno () : TcpCongestionOps ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -51,7 +51,7 @@ TcpLinuxReno::TcpLinuxReno (const TcpLinuxReno& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpLinuxReno::~TcpLinuxReno (void)
+TcpLinuxReno::~TcpLinuxReno ()
 {
 }
 

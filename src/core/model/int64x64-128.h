@@ -228,7 +228,7 @@ public:
    *
    * \return This value in floating form.
    */
-  inline double GetDouble (void) const
+  inline double GetDouble () const
   {
     const bool negative = _v < 0;
     const uint128_t value = negative ? -_v : _v;
@@ -244,7 +244,7 @@ public:
    *
    * \return The integer portion of this value.
    */
-  inline int64_t GetHigh (void) const
+  inline int64_t GetHigh () const
   {
     const int128_t retval = _v >> 64;
     return retval;
@@ -254,7 +254,7 @@ public:
    *
    * \return The fractional portion, unscaled, as an integer.
    */
-  inline uint64_t GetLow (void) const
+  inline uint64_t GetLow () const
   {
     const uint128_t retval = _v & HP_MASK_LO;
     return retval;
@@ -265,7 +265,7 @@ public:
    * Truncation is always toward zero,
    * \return The value truncated toward zero.
    */
-  int64_t GetInt (void) const
+  int64_t GetInt () const
   {
     const bool negative = _v < 0;
     const uint128_t value = negative ? -_v : _v;
@@ -280,7 +280,7 @@ public:
    * regardless of the current (floating) rounding mode.
    * \return The value rounded to the nearest int.
    */
-  int64_t Round (void) const
+  int64_t Round () const
   {
     const bool negative = _v < 0;
     int64x64_t value = (negative ? -(*this) : *this);

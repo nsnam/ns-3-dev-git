@@ -51,7 +51,7 @@ CallbackValue::Set (CallbackBase base)
   m_value = base;
 }
 Ptr<AttributeValue>
-CallbackValue::Copy (void) const
+CallbackValue::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<CallbackValue> (m_value);

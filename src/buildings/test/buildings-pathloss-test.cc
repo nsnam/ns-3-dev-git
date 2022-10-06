@@ -147,7 +147,7 @@ BuildingsPathlossTestCase::~BuildingsPathlossTestCase ()
 }
 
 void
-BuildingsPathlossTestCase::DoRun (void)
+BuildingsPathlossTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 

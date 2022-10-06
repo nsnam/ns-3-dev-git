@@ -44,7 +44,7 @@ public:
   virtual ~LrWpanPacketTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 LrWpanPacketTestCase::LrWpanPacketTestCase ()
@@ -57,7 +57,7 @@ LrWpanPacketTestCase::~LrWpanPacketTestCase ()
 }
 
 void
-LrWpanPacketTestCase::DoRun (void)
+LrWpanPacketTestCase::DoRun ()
 {
 
   LrWpanMacHeader macHdr (LrWpanMacHeader::LRWPAN_MAC_BEACON, 0);        //sequence number set to 0

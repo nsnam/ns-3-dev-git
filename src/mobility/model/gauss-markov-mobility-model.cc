@@ -30,7 +30,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (GaussMarkovMobilityModel);
 
 TypeId
-GaussMarkovMobilityModel::GetTypeId (void)
+GaussMarkovMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GaussMarkovMobilityModel")
     .SetParent<MobilityModel> ()
@@ -95,7 +95,7 @@ GaussMarkovMobilityModel::GaussMarkovMobilityModel ()
 }
 
 void
-GaussMarkovMobilityModel::Start (void)
+GaussMarkovMobilityModel::Start ()
 {
   if (m_meanVelocity == 0.0)
     {
@@ -193,14 +193,14 @@ GaussMarkovMobilityModel::DoWalk (Time delayLeft)
 }
 
 void
-GaussMarkovMobilityModel::DoDispose (void)
+GaussMarkovMobilityModel::DoDispose ()
 {
   // chain up
   MobilityModel::DoDispose ();
 }
 
 Vector
-GaussMarkovMobilityModel::DoGetPosition (void) const
+GaussMarkovMobilityModel::DoGetPosition () const
 {
   m_helper.Update ();
   return m_helper.GetCurrentPosition ();
@@ -213,7 +213,7 @@ GaussMarkovMobilityModel::DoSetPosition (const Vector &position)
   m_event = Simulator::ScheduleNow (&GaussMarkovMobilityModel::Start, this);
 }
 Vector
-GaussMarkovMobilityModel::DoGetVelocity (void) const
+GaussMarkovMobilityModel::DoGetVelocity () const
 {
   return m_helper.GetVelocity ();
 }

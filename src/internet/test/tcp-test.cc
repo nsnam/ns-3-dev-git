@@ -78,28 +78,28 @@ public:
                uint32_t serverReadSize,
                bool useIpv6);
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   /**
    * \brief Setup the test (IPv4 version).
    */
-  void SetupDefaultSim (void);
+  void SetupDefaultSim ();
   /**
    * \brief Setup the test (IPv6 version).
    */
-  void SetupDefaultSim6 (void);
+  void SetupDefaultSim6 ();
 
   /**
    * \brief Create a node with the Internet stack (IPv4 version).
    * \returns The new node.
    */
-  Ptr<Node> CreateInternetNode (void);
+  Ptr<Node> CreateInternetNode ();
   /**
    * \brief Create a node with the Internet stack (IPv6 version).
    * \returns The new node.
    */
-  Ptr<Node> CreateInternetNode6 (void);
+  Ptr<Node> CreateInternetNode6 ();
 
   /**
    * \brief Add a SimpleNetDevice to a node (IPv4 version).
@@ -207,7 +207,7 @@ TcpTestCase::TcpTestCase (uint32_t totalStreamSize,
 }
 
 void
-TcpTestCase::DoRun (void)
+TcpTestCase::DoRun ()
 {
   m_currentSourceTxBytes = 0;
   m_currentSourceRxBytes = 0;
@@ -244,7 +244,7 @@ TcpTestCase::DoRun (void)
                          "Source received back expected data buffers");
 }
 void
-TcpTestCase::DoTeardown (void)
+TcpTestCase::DoTeardown ()
 {
   delete [] m_sourceTxPayload;
   delete [] m_sourceRxPayload;
@@ -384,7 +384,7 @@ TcpTestCase::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char*
 }
 
 void
-TcpTestCase::SetupDefaultSim (void)
+TcpTestCase::SetupDefaultSim ()
 {
   const char* netmask = "255.255.255.0";
   const char* ipaddr0 = "192.168.1.1";
@@ -430,7 +430,7 @@ TcpTestCase::SetupDefaultSim (void)
 }
 
 void
-TcpTestCase::SetupDefaultSim6 (void)
+TcpTestCase::SetupDefaultSim6 ()
 {
   Ipv6Prefix prefix = Ipv6Prefix(64);
   Ipv6Address ipaddr0 = Ipv6Address("2001:0100:f00d:cafe::1");

@@ -67,7 +67,7 @@ private:
    * \returns the name string
    */
   static std::string BuildNameString (uint16_t nUser, double dist);
-  virtual void DoRun (void);
+  virtual void DoRun ();
   uint16_t m_nUser; ///< number of UE nodes
   double m_dist; ///< the distance between nodes
   uint16_t m_packetSize;  ///< the packet size in bytes
@@ -109,7 +109,7 @@ private:
    * \returns the name string
    */
   static std::string BuildNameString (uint16_t nUser, std::vector<double> dist);
-  virtual void DoRun (void);
+  virtual void DoRun ();
   uint16_t m_nUser; ///< number of UE nodes
   std::vector<double> m_dist; ///< the distance between nodes
   std::vector<uint16_t> m_packetSize;  ///< the packet size in bytes

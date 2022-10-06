@@ -74,7 +74,7 @@ public:
   virtual ~OfdmPhy ();
 
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
-  const PpduFormats & GetPpduFormats (void) const override;
+  const PpduFormats & GetPpduFormats () const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
   Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
@@ -85,7 +85,7 @@ public:
   /**
    * Initialize all OFDM modes (for all variants).
    */
-  static void InitializeModes (void);
+  static void InitializeModes ();
   /**
    * Return a WifiMode for OFDM
    * corresponding to the provided rate and
@@ -101,145 +101,145 @@ public:
    *
    * \return a WifiMode for OFDM at 6 Mbps
    */
-  static WifiMode GetOfdmRate6Mbps (void);
+  static WifiMode GetOfdmRate6Mbps ();
   /**
    * Return a WifiMode for OFDM at 9 Mbps.
    *
    * \return a WifiMode for OFDM at 9 Mbps
    */
-  static WifiMode GetOfdmRate9Mbps (void);
+  static WifiMode GetOfdmRate9Mbps ();
   /**
    * Return a WifiMode for OFDM at 12Mbps.
    *
    * \return a WifiMode for OFDM at 12 Mbps
    */
-  static WifiMode GetOfdmRate12Mbps (void);
+  static WifiMode GetOfdmRate12Mbps ();
   /**
    * Return a WifiMode for OFDM at 18 Mbps.
    *
    * \return a WifiMode for OFDM at 18 Mbps
    */
-  static WifiMode GetOfdmRate18Mbps (void);
+  static WifiMode GetOfdmRate18Mbps ();
   /**
    * Return a WifiMode for OFDM at 24 Mbps.
    *
    * \return a WifiMode for OFDM at 24 Mbps
    */
-  static WifiMode GetOfdmRate24Mbps (void);
+  static WifiMode GetOfdmRate24Mbps ();
   /**
    * Return a WifiMode for OFDM at 36 Mbps.
    *
    * \return a WifiMode for OFDM at 36 Mbps
    */
-  static WifiMode GetOfdmRate36Mbps (void);
+  static WifiMode GetOfdmRate36Mbps ();
   /**
    * Return a WifiMode for OFDM at 48 Mbps.
    *
    * \return a WifiMode for OFDM at 48 Mbps
    */
-  static WifiMode GetOfdmRate48Mbps (void);
+  static WifiMode GetOfdmRate48Mbps ();
   /**
    * Return a WifiMode for OFDM at 54 Mbps.
    *
    * \return a WifiMode for OFDM at 54 Mbps
    */
-  static WifiMode GetOfdmRate54Mbps (void);
+  static WifiMode GetOfdmRate54Mbps ();
   /**
    * Return a WifiMode for OFDM at 3 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 3 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate3MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate3MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 4.5 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 4.5 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate4_5MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate4_5MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 6 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 6 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate6MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate6MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 9 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 9 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate9MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate9MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 12 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 12 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate12MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate12MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 18 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 18 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate18MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate18MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 24 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 24 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate24MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate24MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 27 Mbps with 10 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 27 Mbps with 10 MHz channel spacing
    */
-  static WifiMode GetOfdmRate27MbpsBW10MHz (void);
+  static WifiMode GetOfdmRate27MbpsBW10MHz ();
   /**
    * Return a WifiMode for OFDM at 1.5 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 1.5 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate1_5MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate1_5MbpsBW5MHz ();
   /**
    * Return a WifiMode for OFDM at 2.25 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 2.25 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate2_25MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate2_25MbpsBW5MHz ();
   /**
    * Return a WifiMode for OFDM at 3 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 3 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate3MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate3MbpsBW5MHz ();
   /**
    * Return a WifiMode for OFDM at 4.5 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 4.5 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate4_5MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate4_5MbpsBW5MHz ();
   /**
    * Return a WifiMode for OFDM at 6 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 6 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate6MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate6MbpsBW5MHz ();
   /**
    * Return a WifiMode for OFDM at 9 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 9 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate9MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate9MbpsBW5MHz ();
   /**
    * Return a WifiMode for OFDM at 12 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 12 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate12MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate12MbpsBW5MHz ();
   /**
    * Return a WifiMode for OFDM at 13.5 Mbps with 5 MHz channel spacing.
    *
    * \return a WifiMode for OFDM at 13.5 Mbps with 5 MHz channel spacing
    */
-  static WifiMode GetOfdmRate13_5MbpsBW5MHz (void);
+  static WifiMode GetOfdmRate13_5MbpsBW5MHz ();
 
   /**
    * Return the WifiCodeRate from the OFDM mode's unique name using
@@ -316,7 +316,7 @@ public:
 protected:
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) const override;
-  uint32_t GetMaxPsduSize (void) const override;
+  uint32_t GetMaxPsduSize () const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
 
   /**
@@ -341,7 +341,7 @@ protected:
   /**
    * \return the number of service bits
    */
-  uint8_t GetNumberServiceBits (void) const;
+  uint8_t GetNumberServiceBits () const;
   /**
    * \param band the frequency band being used
    * \return the signal extension duration
@@ -415,7 +415,7 @@ protected:
   /**
    * \return the number of usable subcarriers for data
    */
-  static uint16_t GetUsableSubcarriers (void);
+  static uint16_t GetUsableSubcarriers ();
 
 
   /**

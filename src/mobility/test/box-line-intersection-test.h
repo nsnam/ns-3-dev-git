@@ -77,7 +77,7 @@ private:
    * \brief Setup the simulation according to the configuration set by the
    *        class constructor, run it, and verify the result.
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Create the position as per the given index
    *

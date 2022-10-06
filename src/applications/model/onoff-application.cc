@@ -50,7 +50,7 @@ NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 NS_OBJECT_ENSURE_REGISTERED (OnOffApplication);
 
 TypeId
-OnOffApplication::GetTypeId (void)
+OnOffApplication::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OnOffApplication")
     .SetParent<Application> ()
@@ -137,7 +137,7 @@ OnOffApplication::SetMaxBytes (uint64_t maxBytes)
 }
 
 Ptr<Socket>
-OnOffApplication::GetSocket (void) const
+OnOffApplication::GetSocket () const
 {
   NS_LOG_FUNCTION (this);
   return m_socket;
@@ -153,7 +153,7 @@ OnOffApplication::AssignStreams (int64_t stream)
 }
 
 void
-OnOffApplication::DoDispose (void)
+OnOffApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 

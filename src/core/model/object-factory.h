@@ -82,7 +82,7 @@ public:
    *
    * \return true if a TypeId has been configured to the ObjectFactory
    */
-  bool IsTypeIdSet (void) const;
+  bool IsTypeIdSet () const;
 
   /**
    * Set an attribute to be set during construction.
@@ -102,21 +102,21 @@ public:
    * Base case to stop the recursion performed by the templated version of this
    * method.
    */
-  void Set (void)
+  void Set ()
   { }
 
   /**
    * Get the TypeId which will be created by this ObjectFactory.
    * \returns The currently-selected TypeId.
    */
-  TypeId GetTypeId (void) const;
+  TypeId GetTypeId () const;
 
   /**
    * Create an Object instance of the configured TypeId.
    *
    * \returns A new object instance.
    */
-  Ptr<Object> Create (void) const;
+  Ptr<Object> Create () const;
   /**
    * Create an Object instance of the requested type.
    *
@@ -128,7 +128,7 @@ public:
    * \returns A new object instance.
    */
   template <typename T>
-  Ptr<T> Create (void) const;
+  Ptr<T> Create () const;
 
 private:
   /**
@@ -204,7 +204,7 @@ namespace ns3 {
 
 template <typename T>
 Ptr<T>
-ObjectFactory::Create (void) const
+ObjectFactory::Create () const
 {
   Ptr<Object> object = Create ();
   return object->GetObject<T> ();

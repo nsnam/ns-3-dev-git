@@ -56,7 +56,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QueueBase ();
   virtual ~QueueBase ();
@@ -85,85 +85,85 @@ public:
   /**
    * \return true if the queue is empty; false otherwise
    */
-  bool IsEmpty (void) const;
+  bool IsEmpty () const;
 
   /**
    * \return The number of packets currently stored in the Queue
    */
-  uint32_t GetNPackets (void) const;
+  uint32_t GetNPackets () const;
 
   /**
    * \return The number of bytes currently occupied by the packets in the Queue
    */
-  uint32_t GetNBytes (void) const;
+  uint32_t GetNBytes () const;
 
   /**
    * \return The current size of the Queue in terms of packets, if the maximum
    *         size is specified in packets, or bytes, otherwise
    */
-  QueueSize GetCurrentSize (void) const;
+  QueueSize GetCurrentSize () const;
 
   /**
    * \return The total number of bytes received by this Queue since the
    * simulation began, or since ResetStatistics was called, according to
    * whichever happened more recently
    */
-  uint32_t GetTotalReceivedBytes (void) const;
+  uint32_t GetTotalReceivedBytes () const;
 
   /**
    * \return The total number of packets received by this Queue since the
    * simulation began, or since ResetStatistics was called, according to
    * whichever happened more recently
    */
-  uint32_t GetTotalReceivedPackets (void) const;
+  uint32_t GetTotalReceivedPackets () const;
 
   /**
    * \return The total number of bytes dropped by this Queue since the
    * simulation began, or since ResetStatistics was called, according to
    * whichever happened more recently
    */
-  uint32_t GetTotalDroppedBytes (void) const;
+  uint32_t GetTotalDroppedBytes () const;
 
   /**
    * \return The total number of bytes dropped before enqueue by this Queue
    * since the simulation began, or since ResetStatistics was called, according
    * to whichever happened more recently
    */
-  uint32_t GetTotalDroppedBytesBeforeEnqueue (void) const;
+  uint32_t GetTotalDroppedBytesBeforeEnqueue () const;
 
   /**
    * \return The total number of bytes dropped after dequeue by this Queue
    * since the simulation began, or since ResetStatistics was called, according
    * to whichever happened more recently
    */
-  uint32_t GetTotalDroppedBytesAfterDequeue (void) const;
+  uint32_t GetTotalDroppedBytesAfterDequeue () const;
 
   /**
    * \return The total number of packets dropped by this Queue since the
    * simulation began, or since ResetStatistics was called, according to
    * whichever happened more recently
    */
-  uint32_t GetTotalDroppedPackets (void) const;
+  uint32_t GetTotalDroppedPackets () const;
 
   /**
    * \return The total number of packets dropped before enqueue by this Queue
    * since the simulation began, or since ResetStatistics was called, according
    * to whichever happened more recently
    */
-  uint32_t GetTotalDroppedPacketsBeforeEnqueue (void) const;
+  uint32_t GetTotalDroppedPacketsBeforeEnqueue () const;
 
   /**
    * \return The total number of packets dropped after dequeue by this Queue
    * since the simulation began, or since ResetStatistics was called, according
    * to whichever happened more recently
    */
-  uint32_t GetTotalDroppedPacketsAfterDequeue (void) const;
+  uint32_t GetTotalDroppedPacketsAfterDequeue () const;
 
   /**
    * Resets the counts for dropped packets, dropped bytes, received packets, and
    * received bytes.
    */
-  void ResetStatistics (void);
+  void ResetStatistics ();
 
   /**
    * \brief Set the maximum size of this queue
@@ -177,7 +177,7 @@ public:
   /**
    * \return the maximum size of this queue
    */
-  QueueSize GetMaxSize (void) const;
+  QueueSize GetMaxSize () const;
 
   /**
    * \brief Check if the queue would overflow with additional bytes or packets
@@ -270,7 +270,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Queue ();
   virtual ~Queue ();
@@ -287,28 +287,28 @@ public:
    * counting it and tracing it as dequeued
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  virtual Ptr<Item> Dequeue (void) = 0;
+  virtual Ptr<Item> Dequeue () = 0;
 
   /**
    * Remove an item from the Queue (each subclass defines the position),
    * counting it and tracing it as both dequeued and dropped
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  virtual Ptr<Item>  Remove (void) = 0;
+  virtual Ptr<Item>  Remove () = 0;
 
   /**
    * Get a copy of an item in the queue (each subclass defines the position)
    * without removing it
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  virtual Ptr<const Item> Peek (void) const = 0;
+  virtual Ptr<const Item> Peek () const = 0;
 
   /**
    * Flush the queue by calling Remove() on each item enqueued.  Note that
    * this operation will cause dequeue and drop counts to be incremented and
    * traces to be triggered for each Remove() action.
    */
-  void Flush (void);
+  void Flush ();
 
   /// Define ItemType as the type of the stored elements
   typedef Item ItemType;
@@ -324,7 +324,7 @@ protected:
    *
    * \return a const reference to the container of queue items
    */
-  const Container& GetContainer (void) const;
+  const Container& GetContainer () const;
 
   /**
    * Push an item in the queue
@@ -385,7 +385,7 @@ protected:
   void DropAfterDequeue (Ptr<Item> item);
 
   /** \copydoc ns3::Object::DoDispose */
-  void DoDispose (void) override;
+  void DoDispose () override;
 
 private:
   /**
@@ -450,7 +450,7 @@ private:
 
 template <typename Item, typename Container>
 TypeId
-Queue<Item, Container>::GetTypeId (void)
+Queue<Item, Container>::GetTypeId ()
 {
   std::string name = GetTemplateClassName<Queue<Item, Container>> ();
   auto startPos = name.find ('<') + 1;
@@ -492,7 +492,7 @@ Queue<Item, Container>::~Queue ()
 
 template <typename Item, typename Container>
 const Container&
-Queue<Item, Container>::GetContainer (void) const
+Queue<Item, Container>::GetContainer () const
 {
   return m_packets;
 }
@@ -596,7 +596,7 @@ Queue<Item, Container>::DoRemove (ConstIterator pos)
 
 template <typename Item, typename Container>
 void
-Queue<Item, Container>::Flush (void)
+Queue<Item, Container>::Flush ()
 {
   NS_LOG_FUNCTION (this);
   while (!IsEmpty ())
@@ -607,7 +607,7 @@ Queue<Item, Container>::Flush (void)
 
 template <typename Item, typename Container>
 void
-Queue<Item, Container>::DoDispose (void)
+Queue<Item, Container>::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_packets.clear ();

@@ -34,7 +34,7 @@ BeaconPayloadHeader::BeaconPayloadHeader ()
 NS_OBJECT_ENSURE_REGISTERED (BeaconPayloadHeader);
 
 TypeId
-BeaconPayloadHeader::GetTypeId (void)
+BeaconPayloadHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BeaconPayloadHeader")
     .SetParent<Header> ()
@@ -45,13 +45,13 @@ BeaconPayloadHeader::GetTypeId (void)
 }
 
 TypeId
-BeaconPayloadHeader::GetInstanceTypeId (void) const
+BeaconPayloadHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-BeaconPayloadHeader::GetSerializedSize (void) const
+BeaconPayloadHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += m_superframeField.GetSerializedSize ();
@@ -110,19 +110,19 @@ BeaconPayloadHeader::SetPndAddrFields (PendingAddrFields pndAddrFields)
 }
 
 SuperframeField
-BeaconPayloadHeader::GetSuperframeSpecField (void) const
+BeaconPayloadHeader::GetSuperframeSpecField () const
 {
   return m_superframeField;
 }
 
 GtsFields
-BeaconPayloadHeader::GetGtsFields (void) const
+BeaconPayloadHeader::GetGtsFields () const
 {
   return m_gtsFields;
 }
 
 PendingAddrFields
-BeaconPayloadHeader::GetPndAddrFields (void) const
+BeaconPayloadHeader::GetPndAddrFields () const
 {
   return m_pndAddrFields;
 }
@@ -145,7 +145,7 @@ CommandPayloadHeader::CommandPayloadHeader (enum MacCommand macCmd)
 NS_OBJECT_ENSURE_REGISTERED (CommandPayloadHeader);
 
 TypeId
-CommandPayloadHeader::GetTypeId (void)
+CommandPayloadHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CommandPayloadHeader")
     .SetParent<Header> ()
@@ -156,13 +156,13 @@ CommandPayloadHeader::GetTypeId (void)
 }
 
 TypeId
-CommandPayloadHeader::GetInstanceTypeId (void) const
+CommandPayloadHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-CommandPayloadHeader::GetSerializedSize (void) const
+CommandPayloadHeader::GetSerializedSize () const
 {
   uint32_t size = 1;
   // TODO: add missing serialize commands size when other commands are added.
@@ -314,7 +314,7 @@ CommandPayloadHeader::SetCapabilityField (CapabilityField  cap)
 }
 
 CommandPayloadHeader::MacCommand
-CommandPayloadHeader::GetCommandFrameType (void) const
+CommandPayloadHeader::GetCommandFrameType () const
 {
   switch (m_cmdFrameId)
     {
@@ -365,21 +365,21 @@ CommandPayloadHeader::SetAssociationStatus (AssocStatus  status)
 }
 
 Mac16Address
-CommandPayloadHeader::GetShortAddr (void) const
+CommandPayloadHeader::GetShortAddr () const
 {
   NS_ASSERT (m_cmdFrameId == ASSOCIATION_RESP);
   return m_shortAddr;
 }
 
 CommandPayloadHeader::AssocStatus
-CommandPayloadHeader::GetAssociationStatus (void) const
+CommandPayloadHeader::GetAssociationStatus () const
 {
   NS_ASSERT (m_cmdFrameId == ASSOCIATION_RESP);
   return m_assocStatus;
 }
 
 CapabilityField
-CommandPayloadHeader::GetCapabilityField (void) const
+CommandPayloadHeader::GetCapabilityField () const
 {
   NS_ASSERT (m_cmdFrameId == ASSOCIATION_REQ);
   return m_capabilityInfo;

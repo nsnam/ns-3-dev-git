@@ -55,11 +55,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   HeFrameExchangeManager ();
   virtual ~HeFrameExchangeManager ();
 
-  uint16_t GetSupportedBaBufferSize (void) const override;
+  uint16_t GetSupportedBaBufferSize () const override;
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
   void SetWifiMac (const Ptr<WifiMac> mac) override;
   void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const override;
@@ -219,7 +219,7 @@ private:
   /**
    * Send the current PSDU map as a DL MU PPDU.
    */
-  void SendPsduMap (void);
+  void SendPsduMap ();
 
   /**
    * Take the necessary actions when receiveing a Basic Trigger Frame.

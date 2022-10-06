@@ -55,7 +55,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   Cost231PropagationLossModel ();
 
   // Delete copy constructor and assignment operator to avoid misuse
@@ -101,27 +101,27 @@ public:
    * Get the BS antenna height
    * \returns BS antenna height [m]
    */
-  double GetBSAntennaHeight (void) const;
+  double GetBSAntennaHeight () const;
   /**
    * Get the SS antenna height
    * \returns SS antenna height [m]
    */
-  double GetSSAntennaHeight (void) const;
+  double GetSSAntennaHeight () const;
   /**
    * Get the minimum model distance
    * \returns the minimum model distance
    */
-  double GetMinDistance (void) const;
+  double GetMinDistance () const;
   /**
    * Get the wavelength
    * \returns the wavelength
    */
-  double GetLambda (void) const;
+  double GetLambda () const;
   /**
    * Get the shadowing value
    * \returns the shadowing value
    */
-  double GetShadowing (void);
+  double GetShadowing ();
   /**
    * Set the shadowing value
    * \param shadowing the shadowing value

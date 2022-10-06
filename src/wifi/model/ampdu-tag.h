@@ -40,9 +40,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const override;
+  TypeId GetInstanceTypeId () const override;
   void Serialize (TagBuffer i) const override;
   void Deserialize (TagBuffer i) override;
   uint32_t GetSerializedSize () const override;
@@ -70,13 +70,13 @@ public:
    *
    * Returns the remaining number of MPDUs in an A-MPDU
    */
-  uint8_t GetRemainingNbOfMpdus (void) const;
+  uint8_t GetRemainingNbOfMpdus () const;
   /**
    * \return the remaining duration of an A-MPDU
    *
    * Returns the remaining duration of an A-MPDU
    */
-  Time GetRemainingAmpduDuration (void) const;
+  Time GetRemainingAmpduDuration () const;
 
 
 private:

@@ -61,10 +61,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  LteUeNetDevice (void);
-  virtual ~LteUeNetDevice (void);
+  LteUeNetDevice ();
+  virtual ~LteUeNetDevice ();
   virtual void DoDispose ();
 
 
@@ -75,7 +75,7 @@ public:
    * \brief Get the MAC.
    * \return the LTE UE MAC
    */
-  Ptr<LteUeMac> GetMac (void) const;
+  Ptr<LteUeMac> GetMac () const;
 
   /**
    * \brief Get the RRC.
@@ -87,19 +87,19 @@ public:
    * \brief Get the Phy.
    * \return the LTE UE Phy
    */
-  Ptr<LteUePhy> GetPhy (void) const;
+  Ptr<LteUePhy> GetPhy () const;
 
   /**
    * \brief Get the NAS.
    * \return the LTE UE NAS
    */
-  Ptr<EpcUeNas> GetNas (void) const;
+  Ptr<EpcUeNas> GetNas () const;
 
   /**
    * \brief Get the componentn carrier manager.
    * \return the LTE UE component carrier manager
    */
-  Ptr<LteUeComponentCarrierManager> GetComponentCarrierManager (void) const;
+  Ptr<LteUeComponentCarrierManager> GetComponentCarrierManager () const;
 
   /**
    * \brief Get the IMSI.
@@ -152,7 +152,7 @@ public:
    * \brief Get the target eNB where the UE is registered
    * \return the pointer to the enb
    */
-  Ptr<LteEnbNetDevice> GetTargetEnb (void);
+  Ptr<LteEnbNetDevice> GetTargetEnb ();
 
   /**
    * \brief Set the ComponentCarrier Map for the UE
@@ -164,13 +164,13 @@ public:
    * \brief Get the ComponentCarrier Map for the UE
    * \returns the map of ComponentCarrierUe
    */
-  std::map< uint8_t, Ptr<ComponentCarrierUe> >  GetCcMap (void);
+  std::map< uint8_t, Ptr<ComponentCarrierUe> >  GetCcMap ();
 
 
 
 protected:
   // inherited from Object
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 
 private:

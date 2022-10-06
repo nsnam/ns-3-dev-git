@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("Tlv");
 
 /* static */
 TypeId
-Tlv::GetTypeId (void)
+Tlv::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Tlv")
     .SetParent<Header> ()
@@ -39,7 +39,7 @@ Tlv::GetTypeId (void)
   return tid;
 }
 
-TypeId Tlv::GetInstanceTypeId (void) const
+TypeId Tlv::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -73,7 +73,7 @@ Tlv::~Tlv ()
 }
 
 TlvValue *
-Tlv::CopyValue (void) const
+Tlv::CopyValue () const
 {
   return m_value->Copy ();
 }
@@ -100,13 +100,13 @@ Tlv::operator = (Tlv const& o)
 }
 
 uint32_t
-Tlv::GetSerializedSize (void) const
+Tlv::GetSerializedSize () const
 {
   return 1 + GetSizeOfLen () + m_value->GetSerializedSize ();
 }
 
 uint8_t
-Tlv::GetSizeOfLen (void) const
+Tlv::GetSizeOfLen () const
 {
   uint8_t sizeOfLen = 1;
 
@@ -211,23 +211,23 @@ Tlv::Deserialize (Buffer::Iterator i)
 }
 
 uint8_t
-Tlv::GetType (void) const
+Tlv::GetType () const
 {
   return m_type;
 }
 uint64_t
-Tlv::GetLength (void) const
+Tlv::GetLength () const
 {
   return m_length;
 }
 TlvValue*
-Tlv::PeekValue (void)
+Tlv::PeekValue ()
 {
   return m_value;
 }
 
 Tlv *
-Tlv::Copy (void) const
+Tlv::Copy () const
 {
   return new Tlv (m_type, m_length, *m_value);
 }
@@ -248,7 +248,7 @@ VectorTlvValue::~VectorTlvValue ()
 }
 
 uint32_t
-VectorTlvValue::GetSerializedSize (void) const
+VectorTlvValue::GetSerializedSize () const
 {
   uint32_t size = 0;
   for (std::vector<Tlv*>::const_iterator iter = m_tlvList->begin (); iter != m_tlvList->end (); ++iter)
@@ -293,7 +293,7 @@ SfVectorTlvValue::SfVectorTlvValue ()
 }
 
 SfVectorTlvValue *
-SfVectorTlvValue::Copy (void) const
+SfVectorTlvValue::Copy () const
 {
   SfVectorTlvValue * tmp = new SfVectorTlvValue ();
   for (std::vector<Tlv*>::const_iterator iter = Begin (); iter != End (); ++iter)
@@ -511,7 +511,7 @@ U8TlvValue::~U8TlvValue ()
 {
 }
 uint32_t
-U8TlvValue::GetSerializedSize (void) const
+U8TlvValue::GetSerializedSize () const
 {
   return 1;
 }
@@ -534,13 +534,13 @@ U8TlvValue::Deserialize (Buffer::Iterator i)
 }
 
 uint8_t
-U8TlvValue::GetValue (void) const
+U8TlvValue::GetValue () const
 {
   return m_value;
 }
 
 U8TlvValue *
-U8TlvValue::Copy (void) const
+U8TlvValue::Copy () const
 {
   U8TlvValue * tmp = new U8TlvValue (m_value);
   return tmp;
@@ -556,12 +556,12 @@ U16TlvValue::U16TlvValue ()
   m_value = 0;
 }
 
-U16TlvValue::~U16TlvValue (void)
+U16TlvValue::~U16TlvValue ()
 {
 }
 
 uint32_t
-U16TlvValue::GetSerializedSize (void) const
+U16TlvValue::GetSerializedSize () const
 {
   return 2;
 }
@@ -584,13 +584,13 @@ U16TlvValue::Deserialize (Buffer::Iterator i)
 }
 
 uint16_t
-U16TlvValue::GetValue (void) const
+U16TlvValue::GetValue () const
 {
   return m_value;
 }
 
 U16TlvValue *
-U16TlvValue::Copy (void) const
+U16TlvValue::Copy () const
 {
   U16TlvValue * tmp = new U16TlvValue (m_value);
   return tmp;
@@ -606,11 +606,11 @@ U32TlvValue::U32TlvValue ()
   m_value = 0;
 }
 
-U32TlvValue::~U32TlvValue (void)
+U32TlvValue::~U32TlvValue ()
 {
 }
 
-uint32_t U32TlvValue::GetSerializedSize (void) const
+uint32_t U32TlvValue::GetSerializedSize () const
 {
   return 4;
 }
@@ -632,13 +632,13 @@ U32TlvValue::Deserialize (Buffer::Iterator i)
   return 4;
 }
 uint32_t
-U32TlvValue::GetValue (void) const
+U32TlvValue::GetValue () const
 {
   return m_value;
 }
 
 U32TlvValue *
-U32TlvValue::Copy (void) const
+U32TlvValue::Copy () const
 {
   U32TlvValue * tmp = new U32TlvValue (m_value);
   return tmp;
@@ -699,7 +699,7 @@ CsParamVectorTlvValue::CsParamVectorTlvValue ()
 }
 
 CsParamVectorTlvValue *
-CsParamVectorTlvValue::Copy (void) const
+CsParamVectorTlvValue::Copy () const
 {
   CsParamVectorTlvValue * tmp = new CsParamVectorTlvValue ();
   for (std::vector<Tlv*>::const_iterator iter = Begin (); iter != End (); ++iter)
@@ -716,7 +716,7 @@ ClassificationRuleVectorTlvValue::ClassificationRuleVectorTlvValue ()
 }
 
 ClassificationRuleVectorTlvValue *
-ClassificationRuleVectorTlvValue::Copy (void) const
+ClassificationRuleVectorTlvValue::Copy () const
 {
   ClassificationRuleVectorTlvValue * tmp = new ClassificationRuleVectorTlvValue ();
   for (std::vector<Tlv*>::const_iterator iter = Begin (); iter != End (); ++iter)
@@ -835,7 +835,7 @@ TosTlvValue::~TosTlvValue ()
 }
 
 uint32_t
-TosTlvValue::GetSerializedSize (void) const
+TosTlvValue::GetSerializedSize () const
 {
   return 3;
 }
@@ -855,23 +855,23 @@ TosTlvValue::Deserialize (Buffer::Iterator i, uint64_t valueLength)
   return 3;
 }
 uint8_t
-TosTlvValue::GetLow (void) const
+TosTlvValue::GetLow () const
 {
   return m_low;
 }
 uint8_t
-TosTlvValue::GetHigh (void) const
+TosTlvValue::GetHigh () const
 {
   return m_high;
 }
 uint8_t
-TosTlvValue::GetMask (void) const
+TosTlvValue::GetMask () const
 {
   return m_mask;
 }
 
 TosTlvValue *
-TosTlvValue::Copy (void) const
+TosTlvValue::Copy () const
 {
   return new TosTlvValue (m_low, m_high, m_mask);
 }
@@ -888,7 +888,7 @@ PortRangeTlvValue::~PortRangeTlvValue ()
 }
 
 uint32_t
-PortRangeTlvValue::GetSerializedSize (void) const
+PortRangeTlvValue::GetSerializedSize () const
 {
   return m_portRange->size () * 4; // a port range is defined by 2 ports, each using 2 bytes
 }
@@ -923,19 +923,19 @@ PortRangeTlvValue::Add (uint16_t portLow, uint16_t portHigh)
   m_portRange->push_back (tmp);
 }
 PortRangeTlvValue::Iterator
-PortRangeTlvValue::Begin (void) const
+PortRangeTlvValue::Begin () const
 {
   return m_portRange->begin ();
 }
 
 PortRangeTlvValue::Iterator
-PortRangeTlvValue::End (void) const
+PortRangeTlvValue::End () const
 {
   return m_portRange->end ();
 }
 
 PortRangeTlvValue *
-PortRangeTlvValue::Copy (void) const
+PortRangeTlvValue::Copy () const
 {
   PortRangeTlvValue * tmp = new PortRangeTlvValue ();
   for (std::vector<struct PortRange>::const_iterator iter = m_portRange->begin (); iter != m_portRange->end (); ++iter)
@@ -962,7 +962,7 @@ ProtocolTlvValue::~ProtocolTlvValue ()
 }
 
 uint32_t
-ProtocolTlvValue::GetSerializedSize (void) const
+ProtocolTlvValue::GetSerializedSize () const
 {
   return m_protocol->size ();
 }
@@ -995,19 +995,19 @@ ProtocolTlvValue::Add (uint8_t protocol)
 }
 
 ProtocolTlvValue::Iterator
-ProtocolTlvValue::Begin (void) const
+ProtocolTlvValue::Begin () const
 {
   return m_protocol->begin ();
 }
 
 ProtocolTlvValue::Iterator
-ProtocolTlvValue::End (void) const
+ProtocolTlvValue::End () const
 {
   return m_protocol->end ();
 }
 
 ProtocolTlvValue*
-ProtocolTlvValue::Copy (void) const
+ProtocolTlvValue::Copy () const
 {
   ProtocolTlvValue* tmp = new ProtocolTlvValue ();
   for (std::vector<uint8_t>::const_iterator iter = m_protocol->begin (); iter != m_protocol->end (); ++iter)
@@ -1035,7 +1035,7 @@ Ipv4AddressTlvValue::~Ipv4AddressTlvValue ()
 }
 
 uint32_t
-Ipv4AddressTlvValue::GetSerializedSize (void) const
+Ipv4AddressTlvValue::GetSerializedSize () const
 {
   return m_ipv4Addr->size () * 8; // IPv4 address and mask are 4 bytes each
 }
@@ -1086,7 +1086,7 @@ Ipv4AddressTlvValue::End () const
 }
 
 Ipv4AddressTlvValue *
-Ipv4AddressTlvValue::Copy (void) const
+Ipv4AddressTlvValue::Copy () const
 {
   Ipv4AddressTlvValue * tmp = new Ipv4AddressTlvValue ();
   for (std::vector<struct ipv4Addr>::const_iterator iter = m_ipv4Addr->begin (); iter != m_ipv4Addr->end (); ++iter)

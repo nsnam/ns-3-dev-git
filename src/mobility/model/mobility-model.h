@@ -43,14 +43,14 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   MobilityModel ();
   virtual ~MobilityModel () = 0;
 
   /**
    * \return the current position
    */
-  Vector GetPosition (void) const;
+  Vector GetPosition () const;
   /**
    * This method may be used if the position returned may depend on some
    * reference position provided.  For example, in a hierarchical mobility
@@ -70,7 +70,7 @@ public:
   /**
    * \return the current velocity.
    */
-  Vector GetVelocity (void) const;
+  Vector GetVelocity () const;
   /**
    * \param position a reference to another mobility model
    * \return the distance between the two objects. Unit is meters.
@@ -103,7 +103,7 @@ protected:
    * Must be invoked by subclasses when the course of the
    * position changes to notify course change listeners.
    */
-  void NotifyCourseChange (void) const;
+  void NotifyCourseChange () const;
 private:
   /**
    * \return the current position.
@@ -111,7 +111,7 @@ private:
    * Concrete subclasses of this base class must
    * implement this method.
    */
-  virtual Vector DoGetPosition (void) const = 0;
+  virtual Vector DoGetPosition () const = 0;
   /**
    * \param referencePosition the reference position to consider
    * \return the current position.
@@ -133,7 +133,7 @@ private:
    * Concrete subclasses of this base class must
    * implement this method.
    */
-  virtual Vector DoGetVelocity (void) const = 0;
+  virtual Vector DoGetVelocity () const = 0;
   /**
    * The default implementation does nothing but return the passed-in
    * parameter.  Subclasses using random variables are expected to

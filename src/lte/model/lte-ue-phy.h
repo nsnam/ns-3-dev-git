@@ -88,10 +88,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   // inherited from Object
-  virtual void DoInitialize (void);
-  virtual void DoDispose (void);
+  virtual void DoInitialize ();
+  virtual void DoDispose ();
 
   /**
    * \brief Get the PHY SAP provider
@@ -162,7 +162,7 @@ public:
    *
    * \returns the TTI delay between MAC and channel
    */
-  uint8_t GetMacChDelay (void) const;
+  uint8_t GetMacChDelay () const;
 
   /**
    * \brief Get Downlink spectrum phy
@@ -196,7 +196,7 @@ public:
    *
    * \return a list of sub channels
    */
-  std::vector <int> GetSubChannelsForTransmission (void);
+  std::vector <int> GetSubChannelsForTransmission ();
 
   /**
    * \brief Get a list of sub channels to use in RX
@@ -209,7 +209,7 @@ public:
    *
    * \return a list of sub channels
    */
-  std::vector <int> GetSubChannelsForReception (void);
+  std::vector <int> GetSubChannelsForReception ();
 
   /**
    * \brief Create the DL CQI feedback from SINR values perceived at

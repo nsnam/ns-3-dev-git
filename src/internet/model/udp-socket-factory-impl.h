@@ -54,10 +54,10 @@ public:
    *
    * \return smart pointer to Socket
    */
-  virtual Ptr<Socket> CreateSocket (void);
+  virtual Ptr<Socket> CreateSocket ();
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 private:
   Ptr<UdpL4Protocol> m_udp; //!< the associated UDP L4 protocol
 };

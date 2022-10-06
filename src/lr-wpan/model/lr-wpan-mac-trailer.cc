@@ -29,14 +29,14 @@ NS_OBJECT_ENSURE_REGISTERED (LrWpanMacTrailer);
 
 const uint16_t LrWpanMacTrailer::LR_WPAN_MAC_FCS_LENGTH = 2;
 
-LrWpanMacTrailer::LrWpanMacTrailer (void)
+LrWpanMacTrailer::LrWpanMacTrailer ()
   : m_fcs (0),
     m_calcFcs (false)
 {
 }
 
 TypeId
-LrWpanMacTrailer::GetTypeId (void)
+LrWpanMacTrailer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanMacTrailer")
     .SetParent<Trailer> ()
@@ -47,7 +47,7 @@ LrWpanMacTrailer::GetTypeId (void)
 }
 
 TypeId
-LrWpanMacTrailer::GetInstanceTypeId (void) const
+LrWpanMacTrailer::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -59,7 +59,7 @@ LrWpanMacTrailer::Print (std::ostream &os) const
 }
 
 uint32_t
-LrWpanMacTrailer::GetSerializedSize (void) const
+LrWpanMacTrailer::GetSerializedSize () const
 {
   return LR_WPAN_MAC_FCS_LENGTH;
 }
@@ -81,7 +81,7 @@ LrWpanMacTrailer::Deserialize (Buffer::Iterator start)
 }
 
 uint16_t
-LrWpanMacTrailer::GetFcs (void) const
+LrWpanMacTrailer::GetFcs () const
 {
   return m_fcs;
 }
@@ -135,7 +135,7 @@ LrWpanMacTrailer::EnableFcs (bool enable)
 }
 
 bool
-LrWpanMacTrailer::IsFcsEnabled (void)
+LrWpanMacTrailer::IsFcsEnabled ()
 {
   return m_calcFcs;
 }

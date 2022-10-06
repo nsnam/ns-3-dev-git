@@ -59,7 +59,7 @@ CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void
-CsmaHelper::DisableFlowControl (void)
+CsmaHelper::DisableFlowControl ()
 {
   m_enableFlowControl = false;
 }

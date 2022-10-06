@@ -110,7 +110,7 @@ ReplacementTimePrinter (std::ostream &os)
 
 /** Set ReplacementTimePrinter as the time printer for log messages. */
 void
-ReplaceTimePrinter (void)
+ReplaceTimePrinter ()
 {
   std::cout << "Replacing time printer function after Simulator::Run ()" << std::endl;
   LogSetTimePrinter (&ReplacementTimePrinter);

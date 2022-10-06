@@ -115,7 +115,7 @@ LteRlcUmE2eTestCase::UlDropEvent (Ptr<const Packet> p)
 }
 
 void
-LteRlcUmE2eTestCase::DoRun (void)
+LteRlcUmE2eTestCase::DoRun ()
 {
   uint16_t numberOfNodes = 1;
 

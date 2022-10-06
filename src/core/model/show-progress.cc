@@ -63,7 +63,7 @@ ShowProgress::ShowProgress (const Time interval /* = Seconds (1.0) */,
 }
 
 
-ShowProgress::~ShowProgress (void)
+ShowProgress::~ShowProgress ()
 {
   Stop ();
 }
@@ -107,7 +107,7 @@ ShowProgress::SetStream (std::ostream & os)
 }
 
 void
-ShowProgress::ScheduleCheckProgress (void)
+ShowProgress::ScheduleCheckProgress ()
 {
   NS_LOG_FUNCTION (this);
   m_event = Simulator::Schedule (m_vtime, &ShowProgress::CheckProgress, this);
@@ -153,7 +153,7 @@ ShowProgress::GiveFeedback (uint64_t nEvents, int64x64_t ratio, int64x64_t speed
 }  // ShowProgress::GiveFeedback
 
 void
-ShowProgress::CheckProgress (void)
+ShowProgress::CheckProgress ()
 {
   // Get elapsed wall clock time
   m_elapsed += MilliSeconds (m_timer.End ());
@@ -277,7 +277,7 @@ ShowProgress::CheckProgress (void)
 }  // ShowProgress::CheckProgress
 
 void
-ShowProgress::Start (void)
+ShowProgress::Start ()
 {
   m_stamp.Stamp ();
   (*m_os) << "Start wall clock: " << m_stamp.ToString ()
@@ -285,7 +285,7 @@ ShowProgress::Start (void)
 }  // ShowProgress::Start
 
 void
-ShowProgress::Stop (void)
+ShowProgress::Stop ()
 {
   m_stamp.Stamp ();
   (*m_os) << "End wall clock:  " << m_stamp.ToString ()

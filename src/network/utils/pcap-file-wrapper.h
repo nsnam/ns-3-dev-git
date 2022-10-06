@@ -43,7 +43,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   PcapFileWrapper ();
   ~PcapFileWrapper ();
@@ -52,15 +52,15 @@ public:
   /**
    * \return true if the 'fail' bit is set in the underlying iostream, false otherwise.
    */
-  bool Fail (void) const;
+  bool Fail () const;
   /**
    * \return true if the 'eof' bit is set in the underlying iostream, false otherwise.
    */
-  bool Eof (void) const;
+  bool Eof () const;
   /**
    * Clear all state bits of the underlying iostream.
    */
-  void Clear (void);
+  void Clear ();
 
   /**
    * Create a new pcap file or open an existing pcap file.  Semantics are
@@ -80,7 +80,7 @@ public:
   /**
    * Close the underlying pcap file.
    */
-  void Close (void);
+  void Close ();
 
   /**
    * Initialize the pcap file associated with this wrapper.  This file must have
@@ -158,7 +158,7 @@ public:
    *
    * \returns magic number
    */
-  uint32_t GetMagic (void);
+  uint32_t GetMagic ();
 
   /**
    * \brief Returns the major version of the pcap file as defined by the version_major
@@ -168,7 +168,7 @@ public:
    *
    * \returns major version
    */
-  uint16_t GetVersionMajor (void);
+  uint16_t GetVersionMajor ();
 
   /**
    * \brief Returns the minor version of the pcap file as defined by the version_minor
@@ -178,7 +178,7 @@ public:
    *
    * \returns minor version
    */
-  uint16_t GetVersionMinor (void);
+  uint16_t GetVersionMinor ();
 
   /**
    * \brief Returns the time zone offset of the pcap file as defined by the thiszone
@@ -188,7 +188,7 @@ public:
    *
    * \returns time zone offset
    */
-  int32_t GetTimeZoneOffset (void);
+  int32_t GetTimeZoneOffset ();
 
   /**
    * \brief Returns the accuracy of timestamps field of the pcap file as defined
@@ -198,7 +198,7 @@ public:
    *
    * \returns accuracy of timestamps
    */
-  uint32_t GetSigFigs (void);
+  uint32_t GetSigFigs ();
 
   /**
    * \brief Returns the max length of saved packets field of the pcap file as
@@ -208,7 +208,7 @@ public:
    *
    * \returns max length of saved packets field
    */
-  uint32_t GetSnapLen (void);
+  uint32_t GetSnapLen ();
 
   /**
    * \brief Returns the data link type field of the pcap file as defined by the
@@ -218,7 +218,7 @@ public:
    *
    * \returns data link type field
    */
-  uint32_t GetDataLinkType (void);
+  uint32_t GetDataLinkType ();
 
 private:
   PcapFile m_file; //!< Pcap file

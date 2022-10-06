@@ -52,7 +52,7 @@ WaveformGenerator::~WaveformGenerator ()
 
 
 void
-WaveformGenerator::DoDispose (void)
+WaveformGenerator::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
@@ -65,7 +65,7 @@ WaveformGenerator::DoDispose (void)
 }
 
 TypeId
-WaveformGenerator::GetTypeId (void)
+WaveformGenerator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WaveformGenerator")
     .SetParent<SpectrumPhy> ()

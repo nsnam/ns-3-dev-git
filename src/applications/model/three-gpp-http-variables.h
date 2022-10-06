@@ -271,14 +271,14 @@ private:
    * \brief Upon and after object initialization, update random variable
    * Mu and Sigma based on changes to attribute values.
    */
-  void UpdateMainObjectMuAndSigma (void);
+  void UpdateMainObjectMuAndSigma ();
   /**
    * \brief Upon and after object initialization, update random variable
    * Mu and Sigma based on changes to attribute values.
    */
-  void UpdateEmbeddedObjectMuAndSigma (void);
+  void UpdateEmbeddedObjectMuAndSigma ();
 
-  void DoInitialize (void);   // overridden from base class
+  void DoInitialize ();   // overridden from base class
 
   /**
    * Random variable for determining MTU size (in bytes).

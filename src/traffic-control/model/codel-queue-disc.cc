@@ -56,7 +56,7 @@ static inline uint32_t ReciprocalDivide (uint32_t A, uint32_t R)
  * Returns the current time translated in CoDel time representation
  * \return the current time
  */
-static uint32_t CoDelGetTime (void)
+static uint32_t CoDelGetTime ()
 {
   Time time = Simulator::Now ();
   uint64_t ns = time.GetNanoSeconds ();
@@ -67,7 +67,7 @@ static uint32_t CoDelGetTime (void)
 
 NS_OBJECT_ENSURE_REGISTERED (CoDelQueueDisc);
 
-TypeId CoDelQueueDisc::GetTypeId (void)
+TypeId CoDelQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CoDelQueueDisc")
     .SetParent<QueueDisc> ()
@@ -232,7 +232,7 @@ CoDelQueueDisc::OkToDrop (Ptr<QueueDiscItem> item, uint32_t now)
 }
 
 Ptr<QueueDiscItem>
-CoDelQueueDisc::DoDequeue (void)
+CoDelQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -399,19 +399,19 @@ CoDelQueueDisc::DoDequeue (void)
 }
 
 Time
-CoDelQueueDisc::GetTarget (void)
+CoDelQueueDisc::GetTarget ()
 {
   return m_target;
 }
 
 Time
-CoDelQueueDisc::GetInterval (void)
+CoDelQueueDisc::GetInterval ()
 {
   return m_interval;
 }
 
 uint32_t
-CoDelQueueDisc::GetDropNext (void)
+CoDelQueueDisc::GetDropNext ()
 {
   return m_dropNext;
 }
@@ -447,7 +447,7 @@ CoDelQueueDisc::Time2CoDel (Time t)
 }
 
 bool
-CoDelQueueDisc::CheckConfig (void)
+CoDelQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)
@@ -479,7 +479,7 @@ CoDelQueueDisc::CheckConfig (void)
 }
 
 void
-CoDelQueueDisc::InitializeParams (void)
+CoDelQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 }

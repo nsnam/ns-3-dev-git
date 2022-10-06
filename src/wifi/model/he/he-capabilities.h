@@ -128,38 +128,38 @@ public:
    *
    * \returns the channel width set
    */
-  uint8_t GetChannelWidthSet (void) const;
+  uint8_t GetChannelWidthSet () const;
   /**
    * Indicates support for the transmission and reception of LDPC encoded packets.
    *
    * \returns indication whether the transmission and reception of LDPC encoded packets is supported
    */
-  uint8_t GetLdpcCodingInPayload (void) const;
+  uint8_t GetLdpcCodingInPayload () const;
   /**
    * Get 1xHE-LTF and 800ns GI in HE SU PPDU reception support
    *
    * \returns true if 1xHE-LTF and 800ns GI in HE SU PPDU reception is supported, false otherwise
    */
-  bool GetHeSuPpdu1xHeLtf800nsGi (void) const;
+  bool GetHeSuPpdu1xHeLtf800nsGi () const;
   /**
    * Get 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception support
    *
    * \returns true if 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception is supported,
    *          false otherwise
    */
-  bool GetHePpdu4xHeLtf800nsGi (void) const;
+  bool GetHePpdu4xHeLtf800nsGi () const;
   /**
    * Get highest MCS supported.
    *
    * \returns the highest MCS is supported
    */
-  uint8_t GetHighestMcsSupported (void) const;
+  uint8_t GetHighestMcsSupported () const;
   /**
    * Get highest NSS supported.
    *
    * \returns the highest supported NSS
    */
-  uint8_t GetHighestNssSupported (void) const;
+  uint8_t GetHighestNssSupported () const;
 
   // MAC Capabilities Info fields
   /**
@@ -203,7 +203,7 @@ public:
    *
    * \return the maximum A-MPDU length
    */
-  uint32_t GetMaxAmpduLength (void) const;
+  uint32_t GetMaxAmpduLength () const;
 
 
 private:

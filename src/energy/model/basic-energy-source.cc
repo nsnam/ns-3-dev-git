@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("BasicEnergySource");
 NS_OBJECT_ENSURE_REGISTERED (BasicEnergySource);
 
 TypeId
-BasicEnergySource::GetTypeId (void)
+BasicEnergySource::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BasicEnergySource")
     .SetParent<EnergySource> ()
@@ -110,28 +110,28 @@ BasicEnergySource::SetEnergyUpdateInterval (Time interval)
 }
 
 Time
-BasicEnergySource::GetEnergyUpdateInterval (void) const
+BasicEnergySource::GetEnergyUpdateInterval () const
 {
   NS_LOG_FUNCTION (this);
   return m_energyUpdateInterval;
 }
 
 double
-BasicEnergySource::GetSupplyVoltage (void) const
+BasicEnergySource::GetSupplyVoltage () const
 {
   NS_LOG_FUNCTION (this);
   return m_supplyVoltageV;
 }
 
 double
-BasicEnergySource::GetInitialEnergy (void) const
+BasicEnergySource::GetInitialEnergy () const
 {
   NS_LOG_FUNCTION (this);
   return m_initialEnergyJ;
 }
 
 double
-BasicEnergySource::GetRemainingEnergy (void)
+BasicEnergySource::GetRemainingEnergy ()
 {
   NS_LOG_FUNCTION (this);
   // update energy source to get the latest remaining energy.
@@ -140,7 +140,7 @@ BasicEnergySource::GetRemainingEnergy (void)
 }
 
 double
-BasicEnergySource::GetEnergyFraction (void)
+BasicEnergySource::GetEnergyFraction ()
 {
   NS_LOG_FUNCTION (this);
   // update energy source to get the latest remaining energy.
@@ -149,7 +149,7 @@ BasicEnergySource::GetEnergyFraction (void)
 }
 
 void
-BasicEnergySource::UpdateEnergySource (void)
+BasicEnergySource::UpdateEnergySource ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("BasicEnergySource:Updating remaining energy.");
@@ -187,21 +187,21 @@ BasicEnergySource::UpdateEnergySource (void)
  */
 
 void
-BasicEnergySource::DoInitialize (void)
+BasicEnergySource::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   UpdateEnergySource ();  // start periodic update
 }
 
 void
-BasicEnergySource::DoDispose (void)
+BasicEnergySource::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   BreakDeviceEnergyModelRefCycle ();  // break reference cycle
 }
 
 void
-BasicEnergySource::HandleEnergyDrainedEvent (void)
+BasicEnergySource::HandleEnergyDrainedEvent ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("BasicEnergySource:Energy depleted!");
@@ -209,7 +209,7 @@ BasicEnergySource::HandleEnergyDrainedEvent (void)
 }
 
 void
-BasicEnergySource::HandleEnergyRechargedEvent (void)
+BasicEnergySource::HandleEnergyRechargedEvent ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("BasicEnergySource:Energy recharged!");
@@ -217,7 +217,7 @@ BasicEnergySource::HandleEnergyRechargedEvent (void)
 }
 
 void
-BasicEnergySource::CalculateRemainingEnergy (void)
+BasicEnergySource::CalculateRemainingEnergy ()
 {
   NS_LOG_FUNCTION (this);
   double totalCurrentA = CalculateTotalCurrent ();

@@ -49,7 +49,7 @@ public:
   ~LteRlcAmHeader ();
 
   /// Set data PDU function
-  void SetDataPdu (void);
+  void SetDataPdu ();
   /**
    * Set control PDU function
    *
@@ -60,12 +60,12 @@ public:
    * Is data PDU function
    * \returns true if data PDU
    */
-  bool IsDataPdu (void) const;
+  bool IsDataPdu () const;
   /**
    * Is control PDU function
    * \returns true if control PDU
    */
-  bool IsControlPdu (void) const;
+  bool IsControlPdu () const;
 
   /// DataControlPdu_t enumeration
   typedef enum {
@@ -138,13 +138,13 @@ public:
    *
    * \returns the extension bit
    */
-  uint8_t PopExtensionBit (void);
+  uint8_t PopExtensionBit ();
   /**
    * Pop length indicator function
    *
    * \returns the length indicator
    */
-  uint16_t PopLengthIndicator (void);
+  uint16_t PopLengthIndicator ();
 
   /// ExtensionBit_t typedef
   typedef enum {
@@ -250,10 +250,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
@@ -289,7 +289,7 @@ public:
    *
    * \return the SN  >= 0 of the next nack; returns -1 if no NACK is left
    */
-  int PopNack (void);
+  int PopNack ();
 
 
 private:

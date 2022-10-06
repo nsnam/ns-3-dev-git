@@ -66,7 +66,7 @@ public:
    * \brief Creates a TLV from this classifier
    * \return the created TLV
    */
-  Tlv ToTlv (void) const;
+  Tlv ToTlv () const;
   /**
    * \brief add a new source ip address to the classifier
    * \param srcAddress the source ip address
@@ -121,15 +121,15 @@ public:
   /**
    * \return the cid associated with this classifier
    */
-  uint16_t GetCid (void) const;
+  uint16_t GetCid () const;
   /**
    * \return the priority of this classifier
    */
-  uint8_t GetPriority (void) const;
+  uint8_t GetPriority () const;
   /**
    * \return the index of this classifier
    */
-  uint16_t GetIndex (void) const;
+  uint16_t GetIndex () const;
   /**
    * \brief Set the cid associated to this classifier
    * \param cid the connection identifier

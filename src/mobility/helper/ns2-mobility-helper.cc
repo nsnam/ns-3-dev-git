@@ -846,7 +846,7 @@ SetSchedPosition (Ptr<ConstantVelocityMobilityModel> model, double at, std::stri
 }
 
 void
-Ns2MobilityHelper::Install (void) const
+Ns2MobilityHelper::Install () const
 {
   Install (NodeList::Begin (), NodeList::End ());
 }

@@ -90,7 +90,7 @@ public:
    *
    * \returns a pointer to the encapsulated std::ostream
    */
-  std::ostream *GetStream (void);
+  std::ostream *GetStream ();
 
 private:
   std::ostream *m_ostream; //!< The output stream

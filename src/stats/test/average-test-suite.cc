@@ -41,7 +41,7 @@ public:
   virtual ~OneIntegerAverageTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OneIntegerAverageTestCase::OneIntegerAverageTestCase ()
@@ -55,7 +55,7 @@ OneIntegerAverageTestCase::~OneIntegerAverageTestCase ()
 }
 
 void
-OneIntegerAverageTestCase::DoRun (void)
+OneIntegerAverageTestCase::DoRun ()
 {
   Average<int> calculator;
 
@@ -109,7 +109,7 @@ public:
   virtual ~FiveIntegersAverageTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 FiveIntegersAverageTestCase::FiveIntegersAverageTestCase ()
@@ -123,7 +123,7 @@ FiveIntegersAverageTestCase::~FiveIntegersAverageTestCase ()
 }
 
 void
-FiveIntegersAverageTestCase::DoRun (void)
+FiveIntegersAverageTestCase::DoRun ()
 {
   Average<int> calculator;
 
@@ -179,7 +179,7 @@ public:
   virtual ~FiveDoublesAverageTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 FiveDoublesAverageTestCase::FiveDoublesAverageTestCase ()
@@ -193,7 +193,7 @@ FiveDoublesAverageTestCase::~FiveDoublesAverageTestCase ()
 }
 
 void
-FiveDoublesAverageTestCase::DoRun (void)
+FiveDoublesAverageTestCase::DoRun ()
 {
   Average<double> calculator;
 

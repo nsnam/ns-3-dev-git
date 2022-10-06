@@ -81,8 +81,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  SubscriberStationNetDevice (void);
+  static TypeId GetTypeId ();
+  SubscriberStationNetDevice ();
   /**
    * Constructor
    *
@@ -90,12 +90,12 @@ public:
    * \param phy the wimax phy
    */
   SubscriberStationNetDevice (Ptr<Node> node, Ptr<WimaxPhy> phy);
-  ~SubscriberStationNetDevice (void);
+  ~SubscriberStationNetDevice ();
 
   /**
    * \brief initializes the net device and sets the parameters to the default values
    */
-  void InitSubscriberStationNetDevice (void);
+  void InitSubscriberStationNetDevice ();
   /**
    * \param lostDlMapInterval time since last received DL-MAP message before downlink synchronization is considered lost
    */
@@ -103,7 +103,7 @@ public:
   /**
    * \returns the time since last received DL-MAP message before downlink synchronization is considered lost
    */
-  Time GetLostDlMapInterval (void) const;
+  Time GetLostDlMapInterval () const;
   /**
    * \param lostUlMapInterval Time since last received UL-MAP before uplink synchronization is considered lost
    */
@@ -111,7 +111,7 @@ public:
   /**
    * \returns the time since last received UL-MAP before uplink synchronization is considered lost
    */
-  Time GetLostUlMapInterval (void) const;
+  Time GetLostUlMapInterval () const;
   /**
    * \param maxDcdInterval Maximum time between transmission of DCD messages
    */
@@ -119,7 +119,7 @@ public:
   /**
    * \returns the maximum time between transmission of DCD messages
    */
-  Time GetMaxDcdInterval (void) const;
+  Time GetMaxDcdInterval () const;
   /**
    * \param maxUcdInterval Maximum time between transmission of UCD messages
    */
@@ -127,7 +127,7 @@ public:
   /**
    * \returns the maximum time between transmission of UCD messages
    */
-  Time GetMaxUcdInterval (void) const;
+  Time GetMaxUcdInterval () const;
   /**
    * \param interval1 Wait for DCD timeout value
    */
@@ -135,7 +135,7 @@ public:
   /**
    * \returns the wait for DCD timeout
    */
-  Time GetIntervalT1 (void) const;
+  Time GetIntervalT1 () const;
   /**
    * \param interval2 the wait for broadcast ranging timeout, i.e., wait for initial ranging opportunity
    */
@@ -143,7 +143,7 @@ public:
   /**
    * \returns the wait for broadcast ranging timeout, i.e., wait for initial ranging opportunity
    */
-  Time GetIntervalT2 (void) const;
+  Time GetIntervalT2 () const;
   /**
    * \param interval3 the ranging Response reception timeout following the transmission of a ranging request
    */
@@ -151,7 +151,7 @@ public:
   /**
    * \returns the ranging Response reception timeout following the transmission of a ranging request
    */
-  Time GetIntervalT3 (void) const;
+  Time GetIntervalT3 () const;
   /**
    * \param interval7 the wait for DSA/DSC/DSD Response timeout
    */
@@ -159,7 +159,7 @@ public:
   /**
    * \returns the wait for DSA/DSC/DSD Response timeout
    */
-  Time GetIntervalT7 (void) const;
+  Time GetIntervalT7 () const;
   /**
    * \param interval12 the Wait for UCD descriptor timeout
    */
@@ -167,7 +167,7 @@ public:
   /**
    * \returns the wait for UCD descriptor timeout
    */
-  Time GetIntervalT12 (void) const;
+  Time GetIntervalT12 () const;
   /**
    * \param interval20 the Time the SS searches for preambles on a given channel
    */
@@ -175,7 +175,7 @@ public:
   /**
    * \returns the Time the SS searches for preambles on a given channel
    */
-  Time GetIntervalT20 (void) const;
+  Time GetIntervalT20 () const;
   /**
    * \param interval21 the time the SS searches for (decodable) DL-MAP on a given channel
    */
@@ -183,7 +183,7 @@ public:
   /**
    * \returns the time the SS searches for (decodable) DL-MAP on a given channel
    */
-  Time GetIntervalT21 (void) const;
+  Time GetIntervalT21 () const;
   /**
    * \param maxContentionRangingRetries the Number of retries on contention Ranging Requests
    */
@@ -191,7 +191,7 @@ public:
   /**
    * \returns the Number of retries on contention Ranging Requests
    */
-  uint8_t GetMaxContentionRangingRetries (void) const;
+  uint8_t GetMaxContentionRangingRetries () const;
   /**
    *  \param basicConnection the basic connection to be used
    */
@@ -199,7 +199,7 @@ public:
   /**
    * \return the basic connection currently in use
    */
-  Ptr<WimaxConnection> GetBasicConnection (void) const;
+  Ptr<WimaxConnection> GetBasicConnection () const;
   /**
    * \param primaryConnection the primary connection to be used
    */
@@ -207,15 +207,15 @@ public:
   /**
    * \returns the primary connection currently used
    */
-  Ptr<WimaxConnection> GetPrimaryConnection (void) const;
+  Ptr<WimaxConnection> GetPrimaryConnection () const;
   /**
    * \returns the basic CID
    */
-  Cid GetBasicCid (void) const;
+  Cid GetBasicCid () const;
   /**
    * \returns the primary CID
    */
-  Cid GetPrimaryCid (void) const;
+  Cid GetPrimaryCid () const;
 
   /**
    * \brief Set the most efficient modulation and coding scheme (MCS) supported by the device
@@ -225,7 +225,7 @@ public:
   /**
    * \returns the most efficient modulation and coding scheme (MCS) supported by the device
    */
-  WimaxPhy::ModulationType GetModulationType (void) const;
+  WimaxPhy::ModulationType GetModulationType () const;
   /**
    * \param areManagementConnectionsAllocated true if the management connections are allocated, false otherwise
    */
@@ -233,7 +233,7 @@ public:
   /**
    * \returns true if the management connections are allocated, false otherwise
    */
-  bool GetAreManagementConnectionsAllocated (void) const;
+  bool GetAreManagementConnectionsAllocated () const;
   /**
    * \param areServiceFlowsAllocated true if the service flows are allocated, false otherwise
    */
@@ -241,11 +241,11 @@ public:
   /**
    * \returns true if the service flows are allocated, false otherwise
    */
-  bool GetAreServiceFlowsAllocated (void) const;
+  bool GetAreServiceFlowsAllocated () const;
   /**
    * \return the scheduler installed on the device
    */
-  Ptr<SSScheduler> GetScheduler (void) const;
+  Ptr<SSScheduler> GetScheduler () const;
   /**
    * \param ssScheduler the scheduler to be installed on the device
    */
@@ -253,7 +253,7 @@ public:
   /**
    * \returns true if the device has at least one active service flow, false otherwise
    */
-  bool HasServiceFlows (void) const;
+  bool HasServiceFlows () const;
   /**
    * \brief Enqueue a packet into a connection queue
    * \param packet the packet to be enqueued
@@ -277,11 +277,11 @@ public:
   /**
    * \brief Start the device
    */
-  void Start (void);
+  void Start ();
   /**
    * \brief Stop the device
    */
-  void Stop (void);
+  void Stop ();
 
   /**
    * \brief adds a new service flow
@@ -305,7 +305,7 @@ public:
   /**
    * \returns true if the SS is registered to a BS, false otherwise
    */
-  bool IsRegistered (void) const;
+  bool IsRegistered () const;
   /**
    * \brief Get time to allocation
    * \param deferTime defer time
@@ -326,7 +326,7 @@ public:
   /**
    * \returns a pointer to the link manager currently used
    */
-  Ptr<SSLinkManager> GetLinkManager (void) const;
+  Ptr<SSLinkManager> GetLinkManager () const;
   /**
    * \brief sets the link manager to be used
    * \param linkManager link manager to use
@@ -335,7 +335,7 @@ public:
   /**
    * \returns a pointer to the service flow manager installed on the device
    */
-  Ptr<SsServiceFlowManager> GetServiceFlowManager (void) const;
+  Ptr<SsServiceFlowManager> GetServiceFlowManager () const;
   /**
    * \brief Sets the service flow manager to be installed on the device
    * \param sfm service flow manager to be used
@@ -370,7 +370,7 @@ private:
    */
   static Time GetDefaultLostDlMapInterval ();
 
-  void DoDispose (void);
+  void DoDispose ();
   /**
    * Send a packet
    * \param packet the packet to send

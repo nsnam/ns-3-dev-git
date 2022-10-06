@@ -46,7 +46,7 @@ OmnetDataOutput::~OmnetDataOutput()
 }
 /* static */
 TypeId
-OmnetDataOutput::GetTypeId (void)
+OmnetDataOutput::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OmnetDataOutput")
     .SetParent<DataOutputInterface> ()

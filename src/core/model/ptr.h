@@ -129,7 +129,7 @@ private:
   friend U * PeekPointer (const Ptr<U> &p);
 
   /** Mark this as a a reference by incrementing the reference count. */
-  inline void Acquire (void) const;
+  inline void Acquire () const;
 
 public:
   /** Create an empty smart pointer */
@@ -660,7 +660,7 @@ Ptr<T> Copy (Ptr<const T> object)
 
 template <typename T>
 void
-Ptr<T>::Acquire (void) const
+Ptr<T>::Acquire () const
 {
   if (m_ptr != 0)
     {

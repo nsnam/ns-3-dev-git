@@ -26,7 +26,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LrWpanLqiTag);
 
 TypeId
-LrWpanLqiTag::GetTypeId (void)
+LrWpanLqiTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LrWpanLqiTag")
     .SetParent<Tag> ()
@@ -41,12 +41,12 @@ LrWpanLqiTag::GetTypeId (void)
 }
 
 TypeId
-LrWpanLqiTag::GetInstanceTypeId (void) const
+LrWpanLqiTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
-LrWpanLqiTag::LrWpanLqiTag (void)
+LrWpanLqiTag::LrWpanLqiTag ()
   : m_lqi (0)
 {
 }
@@ -57,7 +57,7 @@ LrWpanLqiTag::LrWpanLqiTag (uint8_t lqi)
 }
 
 uint32_t
-LrWpanLqiTag::GetSerializedSize (void) const
+LrWpanLqiTag::GetSerializedSize () const
 {
   return sizeof (uint8_t);
 }
@@ -87,7 +87,7 @@ LrWpanLqiTag::Set (uint8_t lqi)
 }
 
 uint8_t
-LrWpanLqiTag::Get (void) const
+LrWpanLqiTag::Get () const
 {
   return m_lqi;
 }

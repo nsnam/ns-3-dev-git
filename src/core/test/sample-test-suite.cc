@@ -92,7 +92,7 @@ public:
   virtual ~SampleTestCase1 ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 /** Add some help text to this case to describe what it is intended to test. */
@@ -112,7 +112,7 @@ SampleTestCase1::~SampleTestCase1 ()
  * TestCase must implement
  */
 void
-SampleTestCase1::DoRun (void)
+SampleTestCase1::DoRun ()
 {
   // A wide variety of test macros are available in src/core/test.h
   NS_TEST_ASSERT_MSG_EQ (true, true, "true doesn't equal true for some reason");

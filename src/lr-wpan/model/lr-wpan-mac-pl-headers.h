@@ -45,9 +45,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
-  uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
@@ -70,17 +70,17 @@ public:
    * Get the superframe specification field from the beacon payload header.
    * \return The superframe specification field
    */
-  SuperframeField GetSuperframeSpecField (void) const;
+  SuperframeField GetSuperframeSpecField () const;
   /**
    * Get the Guaranteed Time Slots (GTS) fields from the beacon payload header.
    * \return The GTS fields.
    */
-  GtsFields GetGtsFields (void) const;
+  GtsFields GetGtsFields () const;
   /**
    * Get the pending address fields from the beacon payload header.
    * \return The Pending Address fields.
    */
-  PendingAddrFields GetPndAddrFields (void) const;
+  PendingAddrFields GetPndAddrFields () const;
 
 private:
   /**
@@ -136,7 +136,7 @@ public:
     ACCESS_DENIED = 0x02         //!< PAN access denied
   };
 
-  CommandPayloadHeader (void);
+  CommandPayloadHeader ();
   /**
    * Constructor
    * \param macCmd the command type of this command header
@@ -146,9 +146,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
-  uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
@@ -177,22 +177,22 @@ public:
    * Get the Short address assigned by the coordinator (Association Response Command).
    * \return The Mac16Address assigned by the coordinator
    */
-  Mac16Address GetShortAddr (void) const;
+  Mac16Address GetShortAddr () const;
   /**
    * Get the status resulting from an association request (Association Response Command).
    * \return The resulting status from an association request
    */
-  AssocStatus GetAssociationStatus (void) const;
+  AssocStatus GetAssociationStatus () const;
   /**
    * Get the command frame type ID
    * \return The command type ID from the command payload header
    */
-  MacCommand GetCommandFrameType (void) const;
+  MacCommand GetCommandFrameType () const;
   /**
    * Get the Capability Information Field from the command payload header. (Association Request Command)
    * \return The Capability Information Field
    */
-  CapabilityField GetCapabilityField (void) const;
+  CapabilityField GetCapabilityField () const;
 
 private:
 

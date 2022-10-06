@@ -111,7 +111,7 @@ public:
  *
  * @returns The Ipv4Address corresponding to the Link ID field of the record.
  */
-  Ipv4Address GetLinkId (void) const;
+  Ipv4Address GetLinkId () const;
 
 /**
  * @brief Set the Link ID field of the Global Routing Link Record.
@@ -137,7 +137,7 @@ public:
  *
  * @returns The Ipv4Address corresponding to the Link Data field of the record.
  */
-  Ipv4Address GetLinkData (void) const;
+  Ipv4Address GetLinkData () const;
 
 /**
  * @brief Set the Link Data field of the Global Routing Link Record.
@@ -161,7 +161,7 @@ public:
  * @see LinkType
  * @returns The LinkType of the current Global Routing Link Record.
  */
-  LinkType GetLinkType (void) const;
+  LinkType GetLinkType () const;
 
 /**
  * @brief Set the Link Type field of the Global Routing Link Record.
@@ -185,7 +185,7 @@ public:
  *
  * @returns The metric field of the Global Routing Link Record.
  */
-  uint16_t GetMetric (void) const;
+  uint16_t GetMetric () const;
 
 /**
  * @brief Set the Metric Data field of the Global Routing Link Record.
@@ -351,7 +351,7 @@ public:
  *
  * @returns The number of link records in the list.
  */
-  uint32_t GetNLinkRecords (void) const;
+  uint32_t GetNLinkRecords () const;
 
 /**
  * @brief Return a pointer to the specified Global Routing Link Record.
@@ -365,7 +365,7 @@ public:
  * @brief Release all of the Global Routing Link Records present in the Global
  * Routing Link State Advertisement and make the list of link records empty.
  */
-  void ClearLinkRecords (void);
+  void ClearLinkRecords ();
 
 /**
  * @brief Check to see if the list of Global Routing Link Records present in the
@@ -373,7 +373,7 @@ public:
  *
  * @returns True if the list is empty, false otherwise.
  */
-  bool IsEmpty (void) const;
+  bool IsEmpty () const;
 
 /**
  * @brief Print the contents of the Global Routing Link State Advertisement and
@@ -386,7 +386,7 @@ public:
  * @brief Return the LSType field of the LSA
  * @returns The LS Type.
  */
-  LSType GetLSType (void) const;
+  LSType GetLSType () const;
 /**
  * @brief Set the LS type field of the LSA
  * @param typ the LS Type.
@@ -401,7 +401,7 @@ public:
  * @see GlobalRouting::GetRouterId ()
  * @returns The Ipv4Address stored as the link state ID.
  */
-  Ipv4Address GetLinkStateId (void) const;
+  Ipv4Address GetLinkStateId () const;
 
 /**
  * @brief Set the Link State ID is defined by the OSPF spec.  We always set it
@@ -420,7 +420,7 @@ public:
  * @see GlobalRouting::GetRouterId ()
  * @returns The Ipv4Address stored as the advertising router.
  */
-  Ipv4Address GetAdvertisingRouter (void) const;
+  Ipv4Address GetAdvertisingRouter () const;
 
 /**
  * @brief Set the Advertising Router as defined by the OSPF spec.  We always
@@ -445,7 +445,7 @@ public:
  *
  * @returns the NetworkLSANetworkMask
  */
-  Ipv4Mask GetNetworkLSANetworkMask (void) const;
+  Ipv4Mask GetNetworkLSANetworkMask () const;
 
 /**
  * @brief Add an attached router to the list in the NetworkLSA
@@ -460,7 +460,7 @@ public:
  *
  * @returns The number of attached routers.
  */
-  uint32_t GetNAttachedRouters (void) const;
+  uint32_t GetNAttachedRouters () const;
 
 /**
  * @brief Return an Ipv4Address corresponding to the specified attached router
@@ -476,7 +476,7 @@ public:
  * @see SPFStatus
  * @returns The SPFStatus of the LSA.
  */
-  SPFStatus GetStatus (void) const;
+  SPFStatus GetStatus () const;
 
 /**
  * @brief Set the SPF status of the advertisement
@@ -489,7 +489,7 @@ public:
  * @brief Get the Node pointer of the node that originated this LSA
  * @returns Node pointer
  */
-  Ptr<Node> GetNode (void) const;
+  Ptr<Node> GetNode () const;
 
 /**
  * @brief Set the Node pointer of the node that originated this LSA
@@ -593,7 +593,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
 /**
  * @brief Create a Global Router class
@@ -614,7 +614,7 @@ public:
    * \brief Get the specific Global Routing Protocol used
    * \returns the routing protocol
    */
-  Ptr<Ipv4GlobalRouting> GetRoutingProtocol (void);
+  Ptr<Ipv4GlobalRouting> GetRoutingProtocol ();
 
 /**
  * @brief Get the Router ID associated with this Global Router.
@@ -625,7 +625,7 @@ public:
  * @see RoutingEnvironment::AllocateRouterId ()
  * @returns The Router ID associated with the Global Router.
  */
-  Ipv4Address GetRouterId (void) const;
+  Ipv4Address GetRouterId () const;
 
 /**
  * @brief Walk the connected channels, discover the adjacent routers and build
@@ -644,7 +644,7 @@ public:
  * @see GlobalRouter::GetLSA ()
  * @returns The number of Global Routing Link State Advertisements.
  */
-  uint32_t DiscoverLSAs (void);
+  uint32_t DiscoverLSAs ();
 
 /**
  * @brief Get the Number of Global Routing Link State Advertisements that this
@@ -659,7 +659,7 @@ public:
  * @see GlobalRouting::GetLSA ()
  * @returns The number of Global Routing Link State Advertisements.
  */
-  uint32_t GetNumLSAs (void) const;
+  uint32_t GetNumLSAs () const;
 
 /**
  * @brief Get a Global Routing Link State Advertisements that this router has
@@ -697,7 +697,7 @@ public:
  * to the routing table.
  * @return number of injected routes
  */
-  uint32_t GetNInjectedRoutes (void);
+  uint32_t GetNInjectedRoutes ();
 
 /**
  * @brief Return the injected route indexed by i
@@ -737,7 +737,7 @@ private:
   /**
    * \brief Clear list of LSAs
    */
-  void ClearLSAs (void);
+  void ClearLSAs ();
 
   /**
    * \brief Link through the given channel and find the net device that's on the other end.
@@ -863,7 +863,7 @@ private:
   /**
    * Clear the list of bridges visited on the link
    */
-  void ClearBridgesVisited (void) const;
+  void ClearBridgesVisited () const;
   /**
    * When recursively checking for devices on the link, check whether a
    * given device has already been visited.
@@ -881,7 +881,7 @@ private:
   void MarkBridgeAsVisited (Ptr<BridgeNetDevice> device) const;
 
   // inherited from Object
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 };
 
 } // namespace ns3

@@ -42,7 +42,7 @@ class WatchdogTestCase : public TestCase
 public:
   /** Constructor. */
   WatchdogTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Function to invoke when Watchdog expires.
    * \param arg The argument passed.
@@ -66,7 +66,7 @@ WatchdogTestCase::Expire (int arg)
 }
 
 void
-WatchdogTestCase::DoRun (void)
+WatchdogTestCase::DoRun ()
 {
   m_expired = false;
   m_expiredArgument = 0;

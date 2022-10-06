@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("V4Ping");
 NS_OBJECT_ENSURE_REGISTERED (V4Ping);
 
 TypeId
-V4Ping::GetTypeId (void)
+V4Ping::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::V4Ping")
     .SetParent<Application> ()
@@ -81,7 +81,7 @@ V4Ping::~V4Ping ()
 }
 
 void
-V4Ping::DoDispose (void)
+V4Ping::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -95,7 +95,7 @@ V4Ping::DoDispose (void)
 }
 
 uint32_t
-V4Ping::GetApplicationId (void) const
+V4Ping::GetApplicationId () const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Node> node = GetNode ();
@@ -239,7 +239,7 @@ V4Ping::Send ()
 }
 
 void
-V4Ping::StartApplication (void)
+V4Ping::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -264,7 +264,7 @@ V4Ping::StartApplication (void)
   Send ();
 }
 void
-V4Ping::StopApplication (void)
+V4Ping::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 

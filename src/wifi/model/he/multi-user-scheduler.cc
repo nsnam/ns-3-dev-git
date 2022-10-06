@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("MultiUserScheduler");
 NS_OBJECT_ENSURE_REGISTERED (MultiUserScheduler);
 
 TypeId
-MultiUserScheduler::GetTypeId (void)
+MultiUserScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MultiUserScheduler")
     .SetParent<Object> ()
@@ -82,7 +82,7 @@ MultiUserScheduler::~MultiUserScheduler ()
 }
 
 void
-MultiUserScheduler::DoDispose (void)
+MultiUserScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_apMac = 0;
@@ -113,7 +113,7 @@ MultiUserScheduler::NotifyNewAggregate ()
 }
 
 void
-MultiUserScheduler::DoInitialize (void)
+MultiUserScheduler::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -139,13 +139,13 @@ MultiUserScheduler::SetWifiMac (Ptr<ApWifiMac> mac)
 }
 
 Ptr<WifiRemoteStationManager>
-MultiUserScheduler::GetWifiRemoteStationManager (void) const
+MultiUserScheduler::GetWifiRemoteStationManager () const
 {
   return m_apMac->GetWifiRemoteStationManager ();
 }
 
 void
-MultiUserScheduler::AccessReqTimeout (void)
+MultiUserScheduler::AccessReqTimeout ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -201,13 +201,13 @@ MultiUserScheduler::NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, 
 }
 
 MultiUserScheduler::TxFormat
-MultiUserScheduler::GetLastTxFormat (void) const
+MultiUserScheduler::GetLastTxFormat () const
 {
   return m_lastTxFormat;
 }
 
 MultiUserScheduler::DlMuInfo&
-MultiUserScheduler::GetDlMuInfo (void)
+MultiUserScheduler::GetDlMuInfo ()
 {
   NS_ABORT_MSG_IF (m_lastTxFormat != DL_MU_TX, "Next transmission is not DL MU");
 
@@ -224,7 +224,7 @@ MultiUserScheduler::GetDlMuInfo (void)
 }
 
 MultiUserScheduler::UlMuInfo&
-MultiUserScheduler::GetUlMuInfo (void)
+MultiUserScheduler::GetUlMuInfo ()
 {
   NS_ABORT_MSG_IF (m_lastTxFormat != UL_MU_TX, "Next transmission is not UL MU");
 
@@ -258,7 +258,7 @@ MultiUserScheduler::GetTriggerFrame (const CtrlTriggerHeader& trigger) const
 }
 
 void
-MultiUserScheduler::CheckTriggerFrame (void)
+MultiUserScheduler::CheckTriggerFrame ()
 {
   NS_LOG_FUNCTION (this);
 

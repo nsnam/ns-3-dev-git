@@ -58,7 +58,7 @@ public:
   /**
    * \return the most recent value
    */
-  double GetValue (void) const;
+  double GetValue () const;
 
   /**
    * \param value set the traced double to a new value

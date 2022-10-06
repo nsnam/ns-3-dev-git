@@ -54,7 +54,7 @@ MacStatsCalculator::~MacStatsCalculator ()
 }
 
 TypeId
-MacStatsCalculator::GetTypeId (void)
+MacStatsCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MacStatsCalculator")
     .SetParent<LteStatsCalculator> ()
@@ -81,7 +81,7 @@ MacStatsCalculator::SetUlOutputFilename (std::string outputFilename)
 }
 
 std::string
-MacStatsCalculator::GetUlOutputFilename (void)
+MacStatsCalculator::GetUlOutputFilename ()
 {
   return LteStatsCalculator::GetUlOutputFilename ();
 }
@@ -93,7 +93,7 @@ MacStatsCalculator::SetDlOutputFilename (std::string outputFilename)
 }
 
 std::string
-MacStatsCalculator::GetDlOutputFilename (void)
+MacStatsCalculator::GetDlOutputFilename ()
 {
   return LteStatsCalculator::GetDlOutputFilename ();
 }

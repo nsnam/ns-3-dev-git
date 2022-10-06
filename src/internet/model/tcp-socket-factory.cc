@@ -26,7 +26,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketFactory);
 
 TypeId
-TcpSocketFactory::GetTypeId (void)
+TcpSocketFactory::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSocketFactory")
     .SetParent<SocketFactory> ()

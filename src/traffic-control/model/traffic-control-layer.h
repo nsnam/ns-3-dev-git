@@ -94,13 +94,13 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Get the type ID for the instance
    * \return the instance TypeId
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * \brief Constructor
@@ -144,7 +144,7 @@ public:
    * Checks whether a NetDeviceQueueInterface objects is aggregated to each of
    * the NetDevices of this node and sets the required callbacks properly.
    */
-  virtual void ScanDevices (void);
+  virtual void ScanDevices ();
 
   /**
    * \brief This method can be used to set the root queue disc installed on a device
@@ -202,9 +202,9 @@ public:
 
 protected:
 
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
-  virtual void NotifyNewAggregate (void);
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
+  virtual void NotifyNewAggregate ();
 
 private:
   /**
@@ -235,7 +235,7 @@ private:
    * \brief Required by the object map accessor
    * \return the number of devices in the m_netDevices map
    */
-  uint32_t GetNDevices (void) const;
+  uint32_t GetNDevices () const;
   /**
    * \brief Required by the object map accessor
    * \param index the index of the device in the node's device list

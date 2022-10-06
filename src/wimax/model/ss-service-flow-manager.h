@@ -57,14 +57,14 @@ public:
    * \param device the device to which the service flow manager will be attached
    */
   SsServiceFlowManager (Ptr<SubscriberStationNetDevice> device);
-  ~SsServiceFlowManager (void);
-  void DoDispose (void);
+  ~SsServiceFlowManager ();
+  void DoDispose ();
 
   /**
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief add a service flow to the list
@@ -84,21 +84,21 @@ public:
   /**
    * \return the maximum retries on DSA request message
    */
-  uint8_t GetMaxDsaReqRetries (void) const;
+  uint8_t GetMaxDsaReqRetries () const;
 
   /**
    * Get DSA response timeout event
    * \returns the DSA response timeout event
    */
-  EventId GetDsaRspTimeoutEvent (void) const;
+  EventId GetDsaRspTimeoutEvent () const;
   /**
    * Get DSA ack timeout event
    * \returns the DSA ack timeput event
    */
-  EventId GetDsaAckTimeoutEvent (void) const;
+  EventId GetDsaAckTimeoutEvent () const;
 
   /// Initiate service flows
-  void InitiateServiceFlows (void);
+  void InitiateServiceFlows ();
 
   /**
    * Create DSA request
@@ -111,7 +111,7 @@ public:
    * Create DSA ack
    * \returns the packet
    */
-  Ptr<Packet> CreateDsaAck (void);
+  Ptr<Packet> CreateDsaAck ();
 
   /**
    * Schedule DSA response

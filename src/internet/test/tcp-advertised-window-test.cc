@@ -40,7 +40,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** \brief typedef for a cb */
   typedef Callback<void, uint16_t, uint16_t> InvalidAwndCallback;
@@ -103,7 +103,7 @@ TcpSocketAdvertisedWindowProxy::SetInvalidAwndCb (InvalidAwndCallback cb)
 }
 
 TypeId
-TcpSocketAdvertisedWindowProxy::GetTypeId (void)
+TcpSocketAdvertisedWindowProxy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSocketAdvertisedWindowProxy")
     .SetParent<TcpSocketMsgBase> ()
@@ -114,7 +114,7 @@ TcpSocketAdvertisedWindowProxy::GetTypeId (void)
 }
 
 Ptr<TcpSocketBase>
-TcpSocketAdvertisedWindowProxy::Fork (void)
+TcpSocketAdvertisedWindowProxy::Fork ()
 {
   return CopyObject<TcpSocketAdvertisedWindowProxy> (this);
 }
@@ -215,7 +215,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief Constructor
    * \param dropRatio the drop ratio
@@ -231,7 +231,7 @@ protected:
                            uint32_t packetSize);
 
 private:
-  virtual void DoReset (void) { };
+  virtual void DoReset () { };
   double m_dropRatio; //!< Drop ratio
   Ptr<UniformRandomVariable> m_prng; //!< Random variable
 };
@@ -239,7 +239,7 @@ private:
 NS_OBJECT_ENSURE_REGISTERED (TcpDropRatioErrorModel);
 
 TypeId
-TcpDropRatioErrorModel::GetTypeId (void)
+TcpDropRatioErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpDropRatioErrorModel")
     .SetParent<TcpGeneralErrorModel> ()

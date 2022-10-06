@@ -51,7 +51,7 @@ public:
    * \brief Get the type ID.
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor.

@@ -23,11 +23,11 @@
 
 namespace ns3 {
 
-SendParams::SendParams (void)
+SendParams::SendParams ()
 {
 }
 
-SendParams::~SendParams (void)
+SendParams::~SendParams ()
 {
 }
 

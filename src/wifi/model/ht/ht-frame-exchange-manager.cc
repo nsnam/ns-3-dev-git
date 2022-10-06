@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("HtFrameExchangeManager");
 NS_OBJECT_ENSURE_REGISTERED (HtFrameExchangeManager);
 
 TypeId
-HtFrameExchangeManager::GetTypeId (void)
+HtFrameExchangeManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HtFrameExchangeManager")
     .SetParent<QosFrameExchangeManager> ()
@@ -63,7 +63,7 @@ HtFrameExchangeManager::~HtFrameExchangeManager ()
 }
 
 void
-HtFrameExchangeManager::DoDispose (void)
+HtFrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_agreements.clear ();
@@ -85,13 +85,13 @@ HtFrameExchangeManager::SetWifiMac (const Ptr<WifiMac> mac)
 }
 
 Ptr<MsduAggregator>
-HtFrameExchangeManager::GetMsduAggregator (void) const
+HtFrameExchangeManager::GetMsduAggregator () const
 {
   return m_msduAggregator;
 }
 
 Ptr<MpduAggregator>
-HtFrameExchangeManager::GetMpduAggregator (void) const
+HtFrameExchangeManager::GetMpduAggregator () const
 {
   return m_mpduAggregator;
 }
@@ -271,7 +271,7 @@ HtFrameExchangeManager::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
 }
 
 uint16_t
-HtFrameExchangeManager::GetSupportedBaBufferSize (void) const
+HtFrameExchangeManager::GetSupportedBaBufferSize () const
 {
   return 64;
 }
@@ -620,7 +620,7 @@ HtFrameExchangeManager::NotifyReceivedNormalAck (Ptr<WifiMpdu> mpdu)
 }
 
 void
-HtFrameExchangeManager::TransmissionSucceeded (void)
+HtFrameExchangeManager::TransmissionSucceeded ()
 {
   NS_LOG_DEBUG (this);
 
@@ -813,7 +813,7 @@ HtFrameExchangeManager::CtsTimeout (Ptr<WifiMpdu> rts, const WifiTxVector& txVec
 }
 
 void
-HtFrameExchangeManager::SendPsdu (void)
+HtFrameExchangeManager::SendPsdu ()
 {
   NS_LOG_FUNCTION (this);
 

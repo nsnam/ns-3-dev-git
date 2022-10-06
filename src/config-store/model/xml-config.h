@@ -40,9 +40,9 @@ public:
   virtual ~XmlConfigSave ();
 
   virtual void SetFilename (std::string filename);
-  virtual void Default (void);
-  virtual void Global (void);
-  virtual void Attributes (void);
+  virtual void Default ();
+  virtual void Global ();
+  virtual void Attributes ();
 private:
   xmlTextWriterPtr m_writer; ///< XML writer
 };
@@ -58,9 +58,9 @@ public:
   virtual ~XmlConfigLoad ();
 
   virtual void SetFilename (std::string filename);
-  virtual void Default (void);
-  virtual void Global (void);
-  virtual void Attributes (void);
+  virtual void Default ();
+  virtual void Global ();
+  virtual void Attributes ();
 private:
   std::string m_filename; ///< the file name
 };

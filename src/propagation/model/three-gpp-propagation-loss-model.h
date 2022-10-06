@@ -37,7 +37,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -64,7 +64,7 @@ public:
    * \brief Returns the associated channel condition model
    * \return the channel condition model
    */
-  Ptr<ChannelConditionModel> GetChannelConditionModel (void) const;
+  Ptr<ChannelConditionModel> GetChannelConditionModel () const;
 
   /**
    * \brief Set the central frequency of the model
@@ -76,7 +76,7 @@ public:
    * \brief Return the current central frequency
    * \return The current central frequency
    */
-  double GetFrequency (void) const;
+  double GetFrequency () const;
 
 private:
   /**
@@ -308,7 +308,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -413,7 +413,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -509,7 +509,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -609,7 +609,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor

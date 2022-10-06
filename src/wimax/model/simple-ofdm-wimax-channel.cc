@@ -40,19 +40,19 @@ NS_LOG_COMPONENT_DEFINE ("simpleOfdmWimaxChannel");
 // NS_OBJECT_ENSURE_REGISTERED (simpleOfdmWimaxChannel);
 
 
-SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel (void)
+SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel ()
 {
   m_loss = 0;
 }
 
-SimpleOfdmWimaxChannel::~SimpleOfdmWimaxChannel (void)
+SimpleOfdmWimaxChannel::~SimpleOfdmWimaxChannel ()
 {
   m_phyList.clear ();
 }
 
 /* static */
 TypeId
-SimpleOfdmWimaxChannel::GetTypeId (void)
+SimpleOfdmWimaxChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SimpleOfdmWimaxChannel")
     .SetParent<WimaxChannel> ()
@@ -122,7 +122,7 @@ SimpleOfdmWimaxChannel::DoAttach (Ptr<WimaxPhy> phy)
 }
 
 std::size_t
-SimpleOfdmWimaxChannel::DoGetNDevices (void) const
+SimpleOfdmWimaxChannel::DoGetNDevices () const
 {
   return m_phyList.size ();
 }

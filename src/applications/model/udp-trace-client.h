@@ -64,7 +64,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   UdpTraceClient ();
 
@@ -107,7 +107,7 @@ public:
    * \brief Return the maximum packet size
    * \return the maximum packet size
    */
-  uint16_t GetMaxPacketSize (void);
+  uint16_t GetMaxPacketSize ();
 
   /**
    * \brief Set the maximum packet size
@@ -122,7 +122,7 @@ public:
   void SetTraceLoop (bool traceLoop);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   /**
@@ -133,14 +133,14 @@ private:
   /**
    * \brief Load the default trace
    */
-  void LoadDefaultTrace (void);
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  void LoadDefaultTrace ();
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Send a packet
    */
-  void Send (void);
+  void Send ();
   /**
    * \brief Send a packet of a given size
    * \param size the packet size

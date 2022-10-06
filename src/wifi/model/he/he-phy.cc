@@ -96,7 +96,7 @@ HePhy::~HePhy ()
 }
 
 void
-HePhy::BuildModeList (void)
+HePhy::BuildModeList ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_modeList.empty ());
@@ -131,7 +131,7 @@ HePhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
 }
 
 WifiMode
-HePhy::GetSigAMode (void) const
+HePhy::GetSigAMode () const
 {
   return GetVhtMcs0 (); //same number of data tones as VHT for 20 MHz (i.e. 52)
 }
@@ -170,7 +170,7 @@ HePhy::GetSigBMode (const WifiTxVector& txVector) const
 }
 
 const PhyEntity::PpduFormats &
-HePhy::GetPpduFormats (void) const
+HePhy::GetPpduFormats () const
 {
   return m_hePpduFormats;
 }
@@ -359,7 +359,7 @@ HePhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand
 }
 
 void
-HePhy::CancelAllEvents (void)
+HePhy::CancelAllEvents ()
 {
   NS_LOG_FUNCTION (this);
   for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
@@ -491,7 +491,7 @@ HePhy::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
 }
 
 uint8_t
-HePhy::GetBssColor (void) const
+HePhy::GetBssColor () const
 {
   uint8_t bssColor = 0;
   if (m_wifiPhy->GetDevice ())
@@ -948,7 +948,7 @@ HePhy::GetNonOfdmaWidth (HeRu::RuSpec ru) const
 }
 
 uint64_t
-HePhy::GetCurrentHeTbPpduUid (void) const
+HePhy::GetCurrentHeTbPpduUid () const
 {
   return m_currentMuPpduUid;
 }
@@ -1318,7 +1318,7 @@ HePhy::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVect
 }
 
 void
-HePhy::InitializeModes (void)
+HePhy::InitializeModes ()
 {
   for (uint8_t i = 0; i < 12; ++i)
     {
@@ -1546,7 +1546,7 @@ HePhy::GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVect
 }
 
 uint32_t
-HePhy::GetMaxPsduSize (void) const
+HePhy::GetMaxPsduSize () const
 {
   return 6500631;
 }

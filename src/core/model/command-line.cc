@@ -148,7 +148,7 @@ CommandLine::Copy (const CommandLine &cmd)
   m_shortName   = cmd.m_shortName;
 }
 void
-CommandLine::Clear (void)
+CommandLine::Clear ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -405,7 +405,7 @@ CommandLine::PrintVersion (std::ostream & os) const
 }
 
 void
-CommandLine::PrintDoxygenUsage (void) const
+CommandLine::PrintDoxygenUsage () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -721,13 +721,13 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
 }
 
 bool
-CommandLine::CallbackItem::HasDefault (void) const
+CommandLine::CallbackItem::HasDefault () const
 {
   return m_default != "";
 }
 
 std::string
-CommandLine::CallbackItem::GetDefault (void) const
+CommandLine::CallbackItem::GetDefault () const
 {
   return m_default;
 }
@@ -805,7 +805,7 @@ CommandLine::GetExtraNonOption (std::size_t i) const
 }
 
 std::size_t
-CommandLine::GetNExtraNonOptions (void) const
+CommandLine::GetNExtraNonOptions () const
 {
   if (m_nonOptions.size () > m_NNonOptions)
     {
@@ -847,13 +847,13 @@ CommandLine::StringItem::Parse (const std::string value)
 }
 
 bool
-CommandLine::StringItem::HasDefault (void) const
+CommandLine::StringItem::HasDefault () const
 {
   return false;
 }
 
 std::string
-CommandLine::StringItem::GetDefault (void) const
+CommandLine::StringItem::GetDefault () const
 {
   return "";
 }

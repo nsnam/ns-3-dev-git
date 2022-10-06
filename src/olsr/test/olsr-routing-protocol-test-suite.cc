@@ -58,7 +58,7 @@ class OlsrMprTestCase : public TestCase
 public:
   OlsrMprTestCase ();
   ~OlsrMprTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 

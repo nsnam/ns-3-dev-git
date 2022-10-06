@@ -56,7 +56,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -86,7 +86,7 @@ public:
 protected:
 
   /** \copydoc ns3::Object::DoDispose */
-  void DoDispose (void) override;
+  void DoDispose () override;
 
   /**
    * Set the priority for the given container queue belonging to the given Access Category.
@@ -239,7 +239,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::WifiMacQueueSchedulerImpl ()
 
 template <class Priority, class Compare>
 TypeId
-WifiMacQueueSchedulerImpl<Priority, Compare>::GetTypeId (void)
+WifiMacQueueSchedulerImpl<Priority, Compare>::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMacQueueSchedulerImpl")
     .SetParent<WifiMacQueueScheduler> ()
@@ -250,7 +250,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetTypeId (void)
 
 template <class Priority, class Compare>
 void
-WifiMacQueueSchedulerImpl<Priority, Compare>::DoDispose (void)
+WifiMacQueueSchedulerImpl<Priority, Compare>::DoDispose ()
 {
   m_perAcInfo.clear ();
   WifiMacQueueScheduler::DoDispose ();

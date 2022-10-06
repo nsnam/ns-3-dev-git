@@ -50,7 +50,7 @@ NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager);
 NS_LOG_COMPONENT_DEFINE ("IdealWifiManager");
 
 TypeId
-IdealWifiManager::GetTypeId (void)
+IdealWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::IdealWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -112,7 +112,7 @@ IdealWifiManager::DoInitialize ()
 }
 
 void
-IdealWifiManager::BuildSnrThresholds (void)
+IdealWifiManager::BuildSnrThresholds ()
 {
   m_thresholds.clear ();
   WifiMode mode;
@@ -214,7 +214,7 @@ IdealWifiManager::AddSnrThreshold (WifiTxVector txVector, double snr)
 }
 
 WifiRemoteStation *
-IdealWifiManager::DoCreateStation (void) const
+IdealWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   IdealWifiRemoteStation *station = new IdealWifiRemoteStation ();

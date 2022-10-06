@@ -46,7 +46,7 @@ public:
   virtual ~Ns3WimaxSchedulingTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Run once function
    * \param scheduler the wimax scheduler type
@@ -175,7 +175,7 @@ public:
   virtual ~Ns3WimaxSFTypeTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Run once function
    * \param schedulingType the scheduling type

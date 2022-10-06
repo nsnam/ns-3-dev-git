@@ -106,43 +106,43 @@ SuperframeField::SetAssocPermit (bool assocPermit)
 }
 
 uint8_t
-SuperframeField::GetBeaconOrder (void) const
+SuperframeField::GetBeaconOrder () const
 {
   return m_sspecBcnOrder;
 }
 
 uint8_t
-SuperframeField::GetFrameOrder (void) const
+SuperframeField::GetFrameOrder () const
 {
   return m_sspecSprFrmOrder;
 }
 
 uint8_t
-SuperframeField::GetFinalCapSlot (void) const
+SuperframeField::GetFinalCapSlot () const
 {
   return m_sspecFnlCapSlot;
 }
 
 bool
-SuperframeField::IsBattLifeExt (void) const
+SuperframeField::IsBattLifeExt () const
 {
   return m_sspecBatLifeExt;
 }
 
 bool
-SuperframeField::IsPanCoor (void) const
+SuperframeField::IsPanCoor () const
 {
   return m_sspecPanCoor;
 }
 
 bool
-SuperframeField::IsAssocPermit (void) const
+SuperframeField::IsAssocPermit () const
 {
   return m_sspecAssocPermit;
 }
 
 uint16_t
-SuperframeField::GetSuperframe (void) const
+SuperframeField::GetSuperframe () const
 {
   uint16_t superframe;
 
@@ -158,7 +158,7 @@ SuperframeField::GetSuperframe (void) const
 }
 
 uint32_t
-SuperframeField::GetSerializedSize (void) const
+SuperframeField::GetSerializedSize () const
 {
   return 2;  // 2 Octets (superframeSpec)
 }
@@ -205,7 +205,7 @@ GtsFields::GtsFields ()
 }
 
 uint8_t
-GtsFields::GetGtsSpecField (void) const
+GtsFields::GetGtsSpecField () const
 {
   uint8_t gtsSpecField;
 
@@ -217,7 +217,7 @@ GtsFields::GetGtsSpecField (void) const
 }
 
 uint8_t
-GtsFields::GetGtsDirectionField (void) const
+GtsFields::GetGtsDirectionField () const
 {
   uint8_t gtsDirectionField;
 
@@ -242,13 +242,13 @@ GtsFields::SetGtsDirectionField (uint8_t gtsDir)
 }
 
 bool
-GtsFields::GetGtsPermit (void) const
+GtsFields::GetGtsPermit () const
 {
   return m_gtsSpecPermit;
 }
 
 uint32_t
-GtsFields::GetSerializedSize (void) const
+GtsFields::GetSerializedSize () const
 {
   uint32_t size;
 
@@ -330,20 +330,20 @@ PendingAddrFields::PendingAddrFields ()
 
 
 uint8_t
-PendingAddrFields::GetNumShortAddr (void) const
+PendingAddrFields::GetNumShortAddr () const
 {
   return m_pndAddrSpecNumShortAddr;
 }
 
 
 uint8_t
-PendingAddrFields::GetNumExtAddr (void) const
+PendingAddrFields::GetNumExtAddr () const
 {
   return m_pndAddrSpecNumExtAddr;
 }
 
 uint8_t
-PendingAddrFields::GetPndAddrSpecField (void) const
+PendingAddrFields::GetPndAddrSpecField () const
 {
   uint8_t pndAddrSpecField;
 
@@ -428,7 +428,7 @@ PendingAddrFields::SetPndAddrSpecField (uint8_t pndAddrSpecField)
 
 
 uint32_t
-PendingAddrFields::GetSerializedSize (void) const
+PendingAddrFields::GetSerializedSize () const
 {
   uint32_t size;
 
@@ -499,7 +499,7 @@ CapabilityField::CapabilityField ()
 }
 
 uint32_t
-CapabilityField::GetSerializedSize (void) const
+CapabilityField::GetSerializedSize () const
 {
   return 1;
 }
@@ -536,32 +536,32 @@ CapabilityField::Deserialize (Buffer::Iterator i)
 }
 
 bool
-CapabilityField::IsDeviceTypeFfd (void) const
+CapabilityField::IsDeviceTypeFfd () const
 {
   return m_deviceType;
 }
 
 bool
-CapabilityField::IsPowSrcAvailable (void) const
+CapabilityField::IsPowSrcAvailable () const
 {
   return m_powerSource;
 }
 
 bool
-CapabilityField::IsReceiverOnWhenIdle (void) const
+CapabilityField::IsReceiverOnWhenIdle () const
 {
   return m_receiverOnWhenIdle;
 }
 
 
 bool
-CapabilityField::IsSecurityCapability (void) const
+CapabilityField::IsSecurityCapability () const
 {
   return m_securityCap;
 }
 
 bool
-CapabilityField::IsShortAddrAllocOn (void) const
+CapabilityField::IsShortAddrAllocOn () const
 {
   return m_allocAddr;
 }

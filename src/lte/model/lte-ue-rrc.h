@@ -136,17 +136,17 @@ public:
 
   // inherited from Object
 private:
-  virtual void DoInitialize (void);
-  virtual void DoDispose (void);
+  virtual void DoInitialize ();
+  virtual void DoDispose ();
 public:
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /// Initiaize SAP
-  void InitializeSap (void);
+  void InitializeSap ();
 
   /**
    * set the CPHY SAP this RRC should use to interact with the PHY
@@ -270,7 +270,7 @@ public:
    *
    * \return imsi the unique UE identifier
    */
-  uint64_t GetImsi (void) const;
+  uint64_t GetImsi () const;
 
   /**
    *

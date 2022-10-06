@@ -55,7 +55,7 @@ private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Struct containing the parameters for each test
@@ -80,7 +80,7 @@ BuildingsChannelConditionModelTestCase::~BuildingsChannelConditionModelTestCase 
 }
 
 void
-BuildingsChannelConditionModelTestCase::DoRun (void)
+BuildingsChannelConditionModelTestCase::DoRun ()
 {
   TestVector testVector;
 

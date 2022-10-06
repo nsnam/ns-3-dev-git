@@ -96,12 +96,12 @@ public:
   virtual ~FdTbfqFfMacScheduler ();
 
   // inherited from Object
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from FfMacScheduler
   /**
@@ -281,9 +281,9 @@ private:
   double EstimateUlSinr (uint16_t rnti, uint16_t rb);
 
   /// Refresh DL CQI maps function
-  void RefreshDlCqiMaps (void);
+  void RefreshDlCqiMaps ();
   /// Refresh UL CQI maps function
-  void RefreshUlCqiMaps (void);
+  void RefreshUlCqiMaps ();
 
   /**
    * Update DL RLC buffer info function

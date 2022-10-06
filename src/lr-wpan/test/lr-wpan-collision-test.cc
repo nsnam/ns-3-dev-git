@@ -52,7 +52,7 @@ public:
    */
    void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p);
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   uint8_t m_rxPackets; //!< Rx packets counter.
 };
@@ -74,7 +74,7 @@ void LrWpanCollisionTestCase::DataIndication (McpsDataIndicationParams params, P
 
 
 void
-LrWpanCollisionTestCase::DoRun (void)
+LrWpanCollisionTestCase::DoRun ()
 {
 
   // Create 3 nodes, and a NetDevice for each one

@@ -53,7 +53,7 @@ class VendorSpecificContentManager;
 class OrganizationIdentifier
 {
 public:
-  OrganizationIdentifier (void);
+  OrganizationIdentifier ();
   /**
    * Constructor
    *
@@ -67,7 +67,7 @@ public:
    * \return reference to the new object
    */
   OrganizationIdentifier& operator= (const OrganizationIdentifier& oi);
-  virtual ~OrganizationIdentifier (void);
+  virtual ~OrganizationIdentifier ();
 
   /// OrganizationIdentifierType enumeration
   enum OrganizationIdentifierType
@@ -80,11 +80,11 @@ public:
   /**
    * \returns last 4 bits when OrganizationIdentifier is OUI36
    */
-  uint8_t GetManagementId (void) const;
+  uint8_t GetManagementId () const;
   /**
    * \returns whether current OrganizationIdentifier is initial state
    */
-  bool IsNull (void) const;
+  bool IsNull () const;
   /**
    * \param type set the type of current OrganizationIdentifier
    */
@@ -92,14 +92,14 @@ public:
   /**
    * \returns whether this OrganizationIdentifier is OUI24 or OUI36.
    */
-  enum OrganizationIdentifierType GetType (void) const;
+  enum OrganizationIdentifierType GetType () const;
 
   // below methods will be called by VendorSpecificActionHeader
   /**
    * Get serialized size
    * \returns the serialized size
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize to buffer
    * \param start the iterator
@@ -159,8 +159,8 @@ const static uint8_t CATEGORY_OF_VSA = 127;
 class VendorSpecificActionHeader : public Header
 {
 public:
-  VendorSpecificActionHeader (void);
-  virtual ~VendorSpecificActionHeader (void);
+  VendorSpecificActionHeader ();
+  virtual ~VendorSpecificActionHeader ();
 
   /**
    * \param oi the OrganizationIdentifier of current VSA header
@@ -169,7 +169,7 @@ public:
   /**
    * \returns current OrganizationIdentifier of the VSA header
    */
-  OrganizationIdentifier GetOrganizationIdentifier (void) const;
+  OrganizationIdentifier GetOrganizationIdentifier () const;
   /**
    * Get the category field
    *
@@ -177,16 +177,16 @@ public:
    *
    * \return The category field
    */
-  uint8_t GetCategory (void) const;
+  uint8_t GetCategory () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
@@ -213,8 +213,8 @@ typedef Callback<bool, Ptr<WifiMac>, const OrganizationIdentifier &, Ptr<const P
 class VendorSpecificContentManager
 {
 public:
-  VendorSpecificContentManager (void);
-  virtual ~VendorSpecificContentManager (void);
+  VendorSpecificContentManager ();
+  virtual ~VendorSpecificContentManager ();
   /**
    * \param oi the specific OrganizationIdentifier when receive management information
    * by VendorSpecificAction management frame.

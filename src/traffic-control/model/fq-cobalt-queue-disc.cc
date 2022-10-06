@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("FqCobaltQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (FqCobaltFlow);
 
-TypeId FqCobaltFlow::GetTypeId (void)
+TypeId FqCobaltFlow::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FqCobaltFlow")
     .SetParent<QueueDiscClass> ()
@@ -69,7 +69,7 @@ FqCobaltFlow::SetDeficit (uint32_t deficit)
 }
 
 int32_t
-FqCobaltFlow::GetDeficit (void) const
+FqCobaltFlow::GetDeficit () const
 {
   NS_LOG_FUNCTION (this);
   return m_deficit;
@@ -90,7 +90,7 @@ FqCobaltFlow::SetStatus (FlowStatus status)
 }
 
 FqCobaltFlow::FlowStatus
-FqCobaltFlow::GetStatus (void) const
+FqCobaltFlow::GetStatus () const
 {
   NS_LOG_FUNCTION (this);
   return m_status;
@@ -104,7 +104,7 @@ FqCobaltFlow::SetIndex (uint32_t index)
 }
 
 uint32_t
-FqCobaltFlow::GetIndex (void) const
+FqCobaltFlow::GetIndex () const
 {
   return m_index;
 }
@@ -112,7 +112,7 @@ FqCobaltFlow::GetIndex (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (FqCobaltQueueDisc);
 
-TypeId FqCobaltQueueDisc::GetTypeId (void)
+TypeId FqCobaltQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FqCobaltQueueDisc")
     .SetParent<QueueDisc> ()
@@ -218,7 +218,7 @@ FqCobaltQueueDisc::SetQuantum (uint32_t quantum)
 }
 
 uint32_t
-FqCobaltQueueDisc::GetQuantum (void) const
+FqCobaltQueueDisc::GetQuantum () const
 {
   return m_quantum;
 }
@@ -336,7 +336,7 @@ FqCobaltQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-FqCobaltQueueDisc::DoDequeue (void)
+FqCobaltQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -420,7 +420,7 @@ FqCobaltQueueDisc::DoDequeue (void)
 }
 
 bool
-FqCobaltQueueDisc::CheckConfig (void)
+FqCobaltQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)
@@ -475,7 +475,7 @@ FqCobaltQueueDisc::CheckConfig (void)
 }
 
 void
-FqCobaltQueueDisc::InitializeParams (void)
+FqCobaltQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -491,7 +491,7 @@ FqCobaltQueueDisc::InitializeParams (void)
 }
 
 uint32_t
-FqCobaltQueueDisc::FqCobaltDrop (void)
+FqCobaltQueueDisc::FqCobaltDrop ()
 {
   NS_LOG_FUNCTION (this);
 

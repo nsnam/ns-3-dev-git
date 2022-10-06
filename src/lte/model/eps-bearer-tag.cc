@@ -29,7 +29,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (EpsBearerTag);
 
 TypeId
-EpsBearerTag::GetTypeId (void)
+EpsBearerTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpsBearerTag")
     .SetParent<Tag> ()
@@ -48,7 +48,7 @@ EpsBearerTag::GetTypeId (void)
 }
 
 TypeId
-EpsBearerTag::GetInstanceTypeId (void) const
+EpsBearerTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -77,7 +77,7 @@ EpsBearerTag::SetBid (uint8_t bid)
 }
 
 uint32_t
-EpsBearerTag::GetSerializedSize (void) const
+EpsBearerTag::GetSerializedSize () const
 {
   return 3;
 }

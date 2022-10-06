@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("MqQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (MqQueueDisc);
 
-TypeId MqQueueDisc::GetTypeId (void)
+TypeId MqQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MqQueueDisc")
     .SetParent<QueueDisc> ()
@@ -50,7 +50,7 @@ MqQueueDisc::~MqQueueDisc ()
 }
 
 MqQueueDisc::WakeMode
-MqQueueDisc::GetWakeMode (void) const
+MqQueueDisc::GetWakeMode () const
 {
   return WAKE_CHILD;
 }
@@ -62,19 +62,19 @@ MqQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-MqQueueDisc::DoDequeue (void)
+MqQueueDisc::DoDequeue ()
 {
   NS_FATAL_ERROR ("MqQueueDisc: DoDequeue should never be called");
 }
 
 Ptr<const QueueDiscItem>
-MqQueueDisc::DoPeek (void)
+MqQueueDisc::DoPeek ()
 {
   NS_FATAL_ERROR ("MqQueueDisc: DoPeek should never be called");
 }
 
 bool
-MqQueueDisc::CheckConfig (void)
+MqQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -94,7 +94,7 @@ MqQueueDisc::CheckConfig (void)
 }
 
 void
-MqQueueDisc::InitializeParams (void)
+MqQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 }

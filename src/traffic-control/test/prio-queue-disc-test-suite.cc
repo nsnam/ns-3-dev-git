@@ -50,8 +50,8 @@ public:
    * \param priority the packet priority
    */
   PrioQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint8_t priority);
-  virtual void AddHeader (void);
-  virtual bool Mark (void);
+  virtual void AddHeader ();
+  virtual bool Mark ();
 };
 
 PrioQueueDiscTestItem::PrioQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint8_t priority)
@@ -63,12 +63,12 @@ PrioQueueDiscTestItem::PrioQueueDiscTestItem (Ptr<Packet> p, const Address & add
 }
 
 void
-PrioQueueDiscTestItem::AddHeader (void)
+PrioQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-PrioQueueDiscTestItem::Mark (void)
+PrioQueueDiscTestItem::Mark ()
 {
   return false;
 }
@@ -144,7 +144,7 @@ class PrioQueueDiscTestCase : public TestCase
 {
 public:
   PrioQueueDiscTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 PrioQueueDiscTestCase::PrioQueueDiscTestCase ()
@@ -153,7 +153,7 @@ PrioQueueDiscTestCase::PrioQueueDiscTestCase ()
 }
 
 void
-PrioQueueDiscTestCase::DoRun (void)
+PrioQueueDiscTestCase::DoRun ()
 {
   Ptr<PrioQueueDisc> qdisc;
   Ptr<QueueDiscItem> item;

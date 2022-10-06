@@ -64,7 +64,7 @@ class SixlowpanFragmentationTest : public TestCase
   uint8_t m_icmpCode;   //!< ICMP code.
 
 public:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   SixlowpanFragmentationTest ();
   ~SixlowpanFragmentationTest ();
 
@@ -114,7 +114,7 @@ public:
    * Send a packet to the server.
    * \returns The packet sent.
    */
-  Ptr<Packet> SendClient (void);
+  Ptr<Packet> SendClient ();
 
 };
 
@@ -242,7 +242,7 @@ SixlowpanFragmentationTest::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t 
   m_size = dataSize;
 }
 
-Ptr<Packet> SixlowpanFragmentationTest::SendClient (void)
+Ptr<Packet> SixlowpanFragmentationTest::SendClient ()
 {
   Ptr<Packet> p;
   if (m_dataSize)
@@ -259,7 +259,7 @@ Ptr<Packet> SixlowpanFragmentationTest::SendClient (void)
 }
 
 void
-SixlowpanFragmentationTest::DoRun (void)
+SixlowpanFragmentationTest::DoRun ()
 {
   // Create topology
   InternetStackHelper internet;

@@ -66,7 +66,7 @@ LtePdcpHeader::GetSequenceNumber () const
 
 
 TypeId
-LtePdcpHeader::GetTypeId (void)
+LtePdcpHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LtePdcpHeader")
     .SetParent<Header> ()
@@ -77,7 +77,7 @@ LtePdcpHeader::GetTypeId (void)
 }
 
 TypeId
-LtePdcpHeader::GetInstanceTypeId (void) const
+LtePdcpHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -88,7 +88,7 @@ void LtePdcpHeader::Print (std::ostream &os)  const
   os << " SN=" << m_sequenceNumber;
 }
 
-uint32_t LtePdcpHeader::GetSerializedSize (void) const
+uint32_t LtePdcpHeader::GetSerializedSize () const
 {
   return 2;
 }

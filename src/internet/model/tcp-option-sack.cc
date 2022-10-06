@@ -42,7 +42,7 @@ TcpOptionSack::~TcpOptionSack ()
 }
 
 TypeId
-TcpOptionSack::GetTypeId (void)
+TcpOptionSack::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionSack")
     .SetParent<TcpOption> ()
@@ -53,7 +53,7 @@ TcpOptionSack::GetTypeId (void)
 }
 
 TypeId
-TcpOptionSack::GetInstanceTypeId (void) const
+TcpOptionSack::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -69,7 +69,7 @@ TcpOptionSack::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionSack::GetSerializedSize (void) const
+TcpOptionSack::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Serialized size: " << 2 + GetNumSackBlocks () * 8);
@@ -123,7 +123,7 @@ TcpOptionSack::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionSack::GetKind (void) const
+TcpOptionSack::GetKind () const
 {
   return TcpOption::SACK;
 }
@@ -136,7 +136,7 @@ TcpOptionSack::AddSackBlock (SackBlock s)
 }
 
 uint32_t
-TcpOptionSack::GetNumSackBlocks (void) const
+TcpOptionSack::GetNumSackBlocks () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Number of SACK blocks appended: " << m_sackList.size ());
@@ -144,13 +144,13 @@ TcpOptionSack::GetNumSackBlocks (void) const
 }
 
 void
-TcpOptionSack::ClearSackList (void)
+TcpOptionSack::ClearSackList ()
 {
   m_sackList.clear ();
 }
 
 TcpOptionSack::SackList
-TcpOptionSack::GetSackList (void) const
+TcpOptionSack::GetSackList () const
 {
   NS_LOG_FUNCTION (this);
   return m_sackList;

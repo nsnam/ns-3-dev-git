@@ -41,13 +41,13 @@ class WaveNetDeviceExample
 {
 public:
   /// Send WSMP example function
-  void SendWsmpExample (void);
+  void SendWsmpExample ();
 
   /// Send IP example function
-  void SendIpExample (void);
+  void SendIpExample ();
 
   /// Send WSA example
-  void SendWsaExample (void);
+  void SendWsaExample ();
 
 private:
   /**
@@ -79,13 +79,13 @@ private:
    */
   bool ReceiveVsa (Ptr<const Packet> pkt,const Address & address, uint32_t, uint32_t);
   /// Create WAVE nodes function
-  void CreateWaveNodes (void);
+  void CreateWaveNodes ();
 
   NodeContainer nodes; ///< the nodes
   NetDeviceContainer devices; ///< the devices
 };
 void
-WaveNetDeviceExample::CreateWaveNodes (void)
+WaveNetDeviceExample::CreateWaveNodes ()
 {
   nodes = NodeContainer ();
   nodes.Create (2);

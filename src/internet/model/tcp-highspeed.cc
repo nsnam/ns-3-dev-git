@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpHighSpeed");
 NS_OBJECT_ENSURE_REGISTERED (TcpHighSpeed);
 
 TypeId
-TcpHighSpeed::GetTypeId (void)
+TcpHighSpeed::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpHighSpeed")
     .SetParent<TcpNewReno> ()
@@ -38,7 +38,7 @@ TcpHighSpeed::GetTypeId (void)
   return tid;
 }
 
-TcpHighSpeed::TcpHighSpeed (void)
+TcpHighSpeed::TcpHighSpeed ()
   : TcpNewReno (),
     m_ackCnt (0)
 {
@@ -52,13 +52,13 @@ TcpHighSpeed::TcpHighSpeed (const TcpHighSpeed& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpHighSpeed::~TcpHighSpeed (void)
+TcpHighSpeed::~TcpHighSpeed ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<TcpCongestionOps>
-TcpHighSpeed::Fork (void)
+TcpHighSpeed::Fork ()
 {
   return CopyObject<TcpHighSpeed> (this);
 }

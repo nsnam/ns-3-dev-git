@@ -75,7 +75,7 @@ class LtePathlossModelSystemTestCase : public TestCase
     void DlScheduling (DlSchedulingCallbackInfo dlInfo);
 
   private:
-    virtual void DoRun (void);
+    virtual void DoRun ();
 
     double m_snrDb; ///< the SNR in dB
     double m_distance; ///< the distance

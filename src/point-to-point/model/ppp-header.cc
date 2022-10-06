@@ -38,7 +38,7 @@ PppHeader::~PppHeader ()
 }
 
 TypeId
-PppHeader::GetTypeId (void)
+PppHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PppHeader")
     .SetParent<Header> ()
@@ -49,7 +49,7 @@ PppHeader::GetTypeId (void)
 }
 
 TypeId
-PppHeader::GetInstanceTypeId (void) const
+PppHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -74,7 +74,7 @@ PppHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-PppHeader::GetSerializedSize (void) const
+PppHeader::GetSerializedSize () const
 {
   return 2;
 }
@@ -99,7 +99,7 @@ PppHeader::SetProtocol (uint16_t protocol)
 }
 
 uint16_t
-PppHeader::GetProtocol (void)
+PppHeader::GetProtocol ()
 {
   return m_protocol;
 }

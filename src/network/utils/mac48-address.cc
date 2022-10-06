@@ -119,7 +119,7 @@ Mac48Address::operator Address () const
   return ConvertTo ();
 }
 Address
-Mac48Address::ConvertTo (void) const
+Mac48Address::ConvertTo () const
 {
   NS_LOG_FUNCTION (this);
   return Address (GetType (), m_address, 6);
@@ -134,7 +134,7 @@ Mac48Address::ConvertFrom (const Address &address)
   return retval;
 }
 Mac48Address
-Mac48Address::Allocate (void)
+Mac48Address::Allocate ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -162,7 +162,7 @@ Mac48Address::ResetAllocationIndex ()
 }
 
 uint8_t
-Mac48Address::GetType (void)
+Mac48Address::GetType ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();
@@ -170,33 +170,33 @@ Mac48Address::GetType (void)
 }
 
 bool
-Mac48Address::IsBroadcast (void) const
+Mac48Address::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return *this == GetBroadcast ();
 }
 bool
-Mac48Address::IsGroup (void) const
+Mac48Address::IsGroup () const
 {
   NS_LOG_FUNCTION (this);
   return (m_address[0] & 0x01) == 0x01;
 }
 Mac48Address
-Mac48Address::GetBroadcast (void)
+Mac48Address::GetBroadcast ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
   return broadcast;
 }
 Mac48Address
-Mac48Address::GetMulticastPrefix (void)
+Mac48Address::GetMulticastPrefix ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Mac48Address multicast = Mac48Address ("01:00:5e:00:00:00");
   return multicast;
 }
 Mac48Address
-Mac48Address::GetMulticast6Prefix (void)
+Mac48Address::GetMulticast6Prefix ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Mac48Address multicast = Mac48Address ("33:33:00:00:00:00");

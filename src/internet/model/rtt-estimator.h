@@ -46,7 +46,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   RttEstimator();
   /**
@@ -57,7 +57,7 @@ public:
 
   virtual ~RttEstimator();
 
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * \brief Add a new measurement to the estimator. Pure virtual function.
@@ -80,7 +80,7 @@ public:
    * \brief gets the RTT estimate.
    * \return The RTT estimate.
    */
-  Time GetEstimate (void) const;
+  Time GetEstimate () const;
 
   /**
    * Note that this is not a formal statistical variance; it has the
@@ -90,13 +90,13 @@ public:
    * \brief gets the RTT estimate variation.
    * \return The RTT estimate variation.
    */
-  Time GetVariation (void) const;
+  Time GetVariation () const;
 
   /**
    * \brief gets the number of samples used in the estimates
    * \return the number of samples used in the estimates
    */
-  uint32_t GetNSamples (void) const;
+  uint32_t GetNSamples () const;
 
 private:
   Time m_initialEstimatedRtt; //!< Initial RTT estimation
@@ -126,7 +126,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   RttMeanDeviation ();
 
@@ -136,7 +136,7 @@ public:
    */
   RttMeanDeviation (const RttMeanDeviation& r);
 
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * \brief Add a new measurement to the estimator.

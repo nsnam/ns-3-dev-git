@@ -56,10 +56,10 @@ public:
                       SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /** \brief Execute the test
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
 
   uint32_t m_cWnd; //!< cWnd
   uint32_t m_segmentSize; //!< segment size
@@ -145,10 +145,10 @@ public:
                           SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /** \brief Execute the test
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
 
   uint32_t m_cWnd; //!< cWnd
   uint32_t m_segmentSize; //!< segment size
@@ -183,7 +183,7 @@ TcpLedbatIncrementTest::DoRun ()
 }
 
 void
-TcpLedbatIncrementTest::ExecuteTest (void)
+TcpLedbatIncrementTest::ExecuteTest ()
 {
   m_state = CreateObject <TcpSocketState> ();
   m_state->m_cWnd = m_cWnd;
@@ -238,10 +238,10 @@ public:
                           SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /** \brief Execute the test
    */
-  void ExecuteTest (void);
+  void ExecuteTest ();
 
   uint32_t m_cWnd; //!< cWnd
   uint32_t m_segmentSize; //!< segment size

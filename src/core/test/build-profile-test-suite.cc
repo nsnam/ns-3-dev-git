@@ -51,15 +51,15 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
-BuildProfileTestCase::BuildProfileTestCase (void)
+BuildProfileTestCase::BuildProfileTestCase ()
   : TestCase ("Check build profile macros")
 {}
 
 void
-BuildProfileTestCase::DoRun (void)
+BuildProfileTestCase::DoRun ()
 {
   int i = 0;
   int j = 0;

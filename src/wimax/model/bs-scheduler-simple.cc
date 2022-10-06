@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("BSSchedulerSimple");
 
 NS_OBJECT_ENSURE_REGISTERED (BSSchedulerSimple);
 
-TypeId BSSchedulerSimple::GetTypeId (void)
+TypeId BSSchedulerSimple::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BSSchedulerSimple")
     .SetParent<BSScheduler> ()
@@ -65,7 +65,7 @@ BSSchedulerSimple::BSSchedulerSimple (Ptr<BaseStationNetDevice> bs)
   SetBs (bs);
 }
 
-BSSchedulerSimple::~BSSchedulerSimple (void)
+BSSchedulerSimple::~BSSchedulerSimple ()
 {
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *downlinkBursts = m_downlinkBursts;
   std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > pair;
@@ -81,7 +81,7 @@ BSSchedulerSimple::~BSSchedulerSimple (void)
 }
 
 std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
-BSSchedulerSimple::GetDownlinkBursts (void) const
+BSSchedulerSimple::GetDownlinkBursts () const
 {
   return m_downlinkBursts;
 }
@@ -107,7 +107,7 @@ void BSSchedulerSimple::AddDownlinkBurst (Ptr<const WimaxConnection> connection,
   m_downlinkBursts->push_back (std::make_pair (dlMapIe, burst));
 }
 
-void BSSchedulerSimple::Schedule (void)
+void BSSchedulerSimple::Schedule ()
 {
   Ptr<WimaxConnection> connection;
   WimaxPhy::ModulationType modulationType = WimaxPhy::MODULATION_TYPE_BPSK_12;

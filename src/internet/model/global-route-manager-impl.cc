@@ -181,7 +181,7 @@ SPFVertex::SetVertexType (SPFVertex::VertexType type)
 }
 
 SPFVertex::VertexType
-SPFVertex::GetVertexType (void) const
+SPFVertex::GetVertexType () const
 {
   NS_LOG_FUNCTION (this);
   return m_vertexType;
@@ -195,7 +195,7 @@ SPFVertex::SetVertexId (Ipv4Address id)
 }
 
 Ipv4Address
-SPFVertex::GetVertexId (void) const
+SPFVertex::GetVertexId () const
 {
   NS_LOG_FUNCTION (this);
   return m_vertexId;
@@ -209,7 +209,7 @@ SPFVertex::SetLSA (GlobalRoutingLSA* lsa)
 }
 
 GlobalRoutingLSA*
-SPFVertex::GetLSA (void) const
+SPFVertex::GetLSA () const
 {
   NS_LOG_FUNCTION (this);
   return m_lsa;
@@ -223,7 +223,7 @@ SPFVertex::SetDistanceFromRoot (uint32_t distance)
 }
 
 uint32_t
-SPFVertex::GetDistanceFromRoot (void) const
+SPFVertex::GetDistanceFromRoot () const
 {
   NS_LOG_FUNCTION (this);
   return m_distanceFromRoot;
@@ -355,7 +355,7 @@ SPFVertex::GetNRootExitDirections () const
 }
 
 uint32_t
-SPFVertex::GetNChildren (void) const
+SPFVertex::GetNChildren () const
 {
   NS_LOG_FUNCTION (this);
   return m_children.size ();
@@ -396,14 +396,14 @@ SPFVertex::SetVertexProcessed (bool value)
 }
 
 bool
-SPFVertex::IsVertexProcessed (void) const
+SPFVertex::IsVertexProcessed () const
 {
   NS_LOG_FUNCTION (this);
   return m_vertexProcessed;
 }
 
 void
-SPFVertex::ClearVertexProcessed (void)
+SPFVertex::ClearVertexProcessed ()
 {
   NS_LOG_FUNCTION (this);
   for (uint32_t i = 0; i < this->GetNChildren (); i++)

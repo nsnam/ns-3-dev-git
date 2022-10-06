@@ -46,12 +46,12 @@ SNRToBlockErrorRateRecord::Copy ()
 }
 
 double
-SNRToBlockErrorRateRecord::GetSNRValue (void)
+SNRToBlockErrorRateRecord::GetSNRValue ()
 {
   return m_snrValue;
 }
 
-SNRToBlockErrorRateRecord::~SNRToBlockErrorRateRecord (void)
+SNRToBlockErrorRateRecord::~SNRToBlockErrorRateRecord ()
 {
   m_snrValue = 0;
   m_bitErrorRate = 0;
@@ -62,27 +62,27 @@ SNRToBlockErrorRateRecord::~SNRToBlockErrorRateRecord (void)
 }
 
 double
-SNRToBlockErrorRateRecord::GetBitErrorRate (void)
+SNRToBlockErrorRateRecord::GetBitErrorRate ()
 {
   return m_bitErrorRate;
 }
 double
-SNRToBlockErrorRateRecord::GetBlockErrorRate (void)
+SNRToBlockErrorRateRecord::GetBlockErrorRate ()
 {
   return m_blockErrorRate;
 }
 double
-SNRToBlockErrorRateRecord::GetSigma2 (void)
+SNRToBlockErrorRateRecord::GetSigma2 ()
 {
   return m_sigma2;
 }
 double
-SNRToBlockErrorRateRecord::GetI1 (void)
+SNRToBlockErrorRateRecord::GetI1 ()
 {
   return m_i1;
 }
 double
-SNRToBlockErrorRateRecord::GetI2 (void)
+SNRToBlockErrorRateRecord::GetI2 ()
 {
   return m_i2;
 }

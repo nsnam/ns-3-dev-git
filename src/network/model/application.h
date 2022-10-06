@@ -64,7 +64,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   Application ();
   virtual ~Application ();
 
@@ -131,7 +131,7 @@ private:
    * This method should be overridden by all or most application
    * subclasses.
    */
-  virtual void StartApplication (void);
+  virtual void StartApplication ();
 
   /**
    * \brief Application specific shutdown code
@@ -140,10 +140,10 @@ private:
    * This method should be overridden by all or most application
    * subclasses.
    */
-  virtual void StopApplication (void);
+  virtual void StopApplication ();
 protected:
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
 
   Ptr<Node>       m_node;   //!< The node that this application is installed on
   Time m_startTime;         //!< The simulation time that the application will start

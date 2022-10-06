@@ -81,7 +81,7 @@ public:
 
 private:
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Builds the test name string based on provided parameter values
    * \param nUser number of users

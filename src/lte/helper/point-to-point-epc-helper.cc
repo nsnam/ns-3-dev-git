@@ -55,7 +55,7 @@ PointToPointEpcHelper::~PointToPointEpcHelper ()
 }
 
 TypeId
-PointToPointEpcHelper::GetTypeId (void)
+PointToPointEpcHelper::GetTypeId ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::PointToPointEpcHelper")

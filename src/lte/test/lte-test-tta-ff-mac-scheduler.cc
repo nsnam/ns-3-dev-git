@@ -182,7 +182,7 @@ LenaTtaFfMacSchedulerTestCase::~LenaTtaFfMacSchedulerTestCase ()
 
 
 void
-LenaTtaFfMacSchedulerTestCase::DoRun (void)
+LenaTtaFfMacSchedulerTestCase::DoRun ()
 {
 
   NS_LOG_FUNCTION (this << m_nUser << m_dist);

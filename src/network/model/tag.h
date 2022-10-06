@@ -40,7 +40,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \returns the number of bytes required to serialize the data of the tag.
@@ -48,7 +48,7 @@ public:
    * This method is typically invoked by Packet::AddPacketTag or Packet::AddByteTag
    * just prior to calling Tag::Serialize.
    */
-  virtual uint32_t GetSerializedSize (void) const = 0;
+  virtual uint32_t GetSerializedSize () const = 0;
   /**
    * \param i the buffer to write data into.
    *

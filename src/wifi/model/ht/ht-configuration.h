@@ -43,7 +43,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Enable or disable SGI support.
@@ -58,7 +58,7 @@ public:
    * \return true if SGI is supported,
    *         false otherwise.
    */
-  bool GetShortGuardIntervalSupported (void) const;
+  bool GetShortGuardIntervalSupported () const;
   /**
    * Enable or disable LDPC support.
    *
@@ -72,7 +72,7 @@ public:
    * \return true if LDPC is supported,
    *         false otherwise.
    */
-  bool GetLdpcSupported (void) const;
+  bool GetLdpcSupported () const;
   /**
    * Enable or disable 40 MHz operation support.
    *
@@ -84,7 +84,7 @@ public:
    * \return true if both 20 MHz and 40 MHz operation is supported, false if
    *         only 20 MHz operation is supported
    */
-  bool Get40MHzOperationSupported (void) const;
+  bool Get40MHzOperationSupported () const;
 
 
 private:

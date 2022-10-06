@@ -158,12 +158,12 @@ public:
    * Notify the Txop that a packet reception was just
    * completed successfully.
    */
-  void NotifyRxEndOkNow (void);
+  void NotifyRxEndOkNow ();
   /**
    * Notify the Txop that a packet reception was just
    * completed unsuccessfully.
    */
-  void NotifyRxEndErrorNow (void);
+  void NotifyRxEndErrorNow ();
   /**
    * \param duration expected duration of transmission
    *
@@ -196,19 +196,19 @@ public:
   /**
    * Notify the Txop that the device has been put in sleep mode.
    */
-  void NotifySleepNow (void);
+  void NotifySleepNow ();
   /**
    * Notify the Txop that the device has been put in off mode.
    */
-  void NotifyOffNow (void);
+  void NotifyOffNow ();
   /**
    * Notify the Txop that the device has been resumed from sleep mode.
    */
-  void NotifyWakeupNow (void);
+  void NotifyWakeupNow ();
   /**
    * Notify the Txop that the device has been resumed from off mode.
    */
-  void NotifyOnNow (void);
+  void NotifyOnNow ();
   /**
    * \param duration the value of the received NAV.
    *
@@ -230,7 +230,7 @@ public:
   /**
    * Notify that ack timer has reset.
    */
-  void NotifyAckTimeoutResetNow (void);
+  void NotifyAckTimeoutResetNow ();
   /**
    * Notify that CTS timer has started for the given duration.
    *
@@ -240,7 +240,7 @@ public:
   /**
    * Notify that CTS timer has reset.
    */
-  void NotifyCtsTimeoutResetNow (void);
+  void NotifyCtsTimeoutResetNow ();
 
   /**
    * Check if the device is busy sending or receiving,
@@ -249,11 +249,11 @@ public:
    * \return true if the device is busy,
    *         false otherwise
    */
-  bool IsBusy (void) const;
+  bool IsBusy () const;
 
 
 protected:
-  void DoDispose (void) override;
+  void DoDispose () override;
 
 
 private:
@@ -261,11 +261,11 @@ private:
    * Initialize the structures holding busy end times per channel type (primary,
    * secondary, etc.) and per 20 MHz channel.
    */
-  void InitLastBusyStructs (void);
+  void InitLastBusyStructs ();
   /**
    * Update backoff slots for all Txops.
    */
-  void UpdateBackoff (void);
+  void UpdateBackoff ();
   /**
    * Return the time when the backoff procedure
    * started for the given Txop.
@@ -293,38 +293,38 @@ private:
    * transmission, reception, CCA Busy or switching to correctly maintain the
    * information about the last idle period.
    */
-  void UpdateLastIdlePeriod (void);
+  void UpdateLastIdlePeriod ();
 
-  void DoRestartAccessTimeoutIfNeeded (void);
+  void DoRestartAccessTimeoutIfNeeded ();
 
   /**
    * Called when access timeout should occur
    * (e.g. backoff procedure expired).
    */
-  void AccessTimeout (void);
+  void AccessTimeout ();
   /**
    * Grant access to Txop using DCF/EDCF contention rules
    */
-  void DoGrantDcfAccess (void);
+  void DoGrantDcfAccess ();
 
   /**
    * Return the Short Interframe Space (SIFS) for this PHY.
    *
    * \return the SIFS duration
    */
-  virtual Time GetSifs (void) const;
+  virtual Time GetSifs () const;
   /**
    * Return the slot duration for this PHY.
    *
    * \return the slot duration
    */
-  virtual Time GetSlot (void) const;
+  virtual Time GetSlot () const;
   /**
    * Return the EIFS duration minus a DIFS.
    *
    * \return the EIFS duration minus a DIFS
    */
-  virtual Time GetEifsNoDifs (void) const;
+  virtual Time GetEifsNoDifs () const;
 
   /**
    * Structure defining start time and end time for a given state.

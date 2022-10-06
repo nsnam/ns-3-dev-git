@@ -69,7 +69,7 @@ RadiotapHeader::RadiotapHeader ()
   NS_LOG_FUNCTION (this);
 }
 
-TypeId RadiotapHeader::GetTypeId (void)
+TypeId RadiotapHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RadiotapHeader")
     .SetParent<Header> ()
@@ -81,13 +81,13 @@ TypeId RadiotapHeader::GetTypeId (void)
 }
 
 TypeId
-RadiotapHeader::GetInstanceTypeId (void) const
+RadiotapHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-RadiotapHeader::GetSerializedSize (void) const
+RadiotapHeader::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   return m_length;

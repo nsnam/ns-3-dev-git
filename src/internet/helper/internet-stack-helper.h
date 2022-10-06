@@ -96,12 +96,12 @@ public:
    * routing protocols, you need to use an adhoc ns3::Ipv4RoutingHelper,
    * such as ns3::OlsrHelper
    */
-  InternetStackHelper(void);
+  InternetStackHelper();
 
   /**
    * Destroy the InternetStackHelper
    */
-  virtual ~InternetStackHelper(void);
+  virtual ~InternetStackHelper();
 
   /**
    * \brief Copy constructor
@@ -119,7 +119,7 @@ public:
   /**
    * Return helper internal state to that of a newly constructed one
    */
-  void Reset (void);
+  void Reset ();
 
   /**
    * \param routing a new routing helper
@@ -170,7 +170,7 @@ public:
   /**
    * Aggregate IPv4, IPv6, UDP, and TCP stacks to all nodes in the simulation
    */
-  void InstallAll (void) const;
+  void InstallAll () const;
 
   /**
    * \brief set the Tcp stack which will not need any other parameter.
@@ -284,7 +284,7 @@ private:
   /**
    * \brief Initialize the helper to its default values
    */
-  void Initialize (void);
+  void Initialize ();
 
   /**
    * \brief TCP objects factory

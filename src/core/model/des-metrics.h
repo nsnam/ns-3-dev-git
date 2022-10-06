@@ -140,12 +140,12 @@ public:
   /**
    * Destructor, closes the trace file.
    */
-  ~DesMetrics (void);
+  ~DesMetrics ();
 
 private:
 
   /** Close the output file. */
-  void Close (void);
+  void Close ();
 
   /**
    * Cache the last-used output directory.

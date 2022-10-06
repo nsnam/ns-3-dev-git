@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("YansErrorRateModel");
 NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel);
 
 TypeId
-YansErrorRateModel::GetTypeId (void)
+YansErrorRateModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::YansErrorRateModel")
     .SetParent<ErrorRateModel> ()

@@ -50,46 +50,46 @@ public:
   };
 
   /// Create a cid of unknown type
-  Cid (void);
+  Cid ();
   /**
    * Constructor
    *
    * \param cid
    */
   Cid (uint16_t cid);
-  ~Cid (void);
+  ~Cid ();
   /**
    * \return the identifier of the cid
    */
-  uint16_t GetIdentifier (void) const;
+  uint16_t GetIdentifier () const;
   /**
    * \return true if the cid is a multicast cid, false otherwise
    */
-  bool IsMulticast (void) const;
+  bool IsMulticast () const;
   /**
    * \return true if the cid is a broadcast cid, false otherwise
    */
-  bool IsBroadcast (void) const;
+  bool IsBroadcast () const;
   /**
    * \return true if the cid is a padding cid, false otherwise
    */
-  bool IsPadding (void) const;
+  bool IsPadding () const;
   /**
    * \return true if the cid is an initial ranging cid, false otherwise
    */
-  bool IsInitialRanging (void) const;
+  bool IsInitialRanging () const;
   /**
    * \return the broadcast cid
    */
-  static Cid Broadcast (void);
+  static Cid Broadcast ();
   /**
    * \return the padding cid
    */
-  static Cid Padding (void);
+  static Cid Padding ();
   /**
    * \return the initial ranging cid
    */
-  static Cid InitialRanging (void);
+  static Cid InitialRanging ();
 
 private:
   /// allow CidFactory class friend access

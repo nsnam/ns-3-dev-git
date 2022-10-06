@@ -63,8 +63,8 @@ class DualStackTestCase : public TestCase
 public:
   DualStackTestCase ();
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   /**
    * \brief Setup the test.
@@ -258,7 +258,7 @@ DualStackTestCase::DualStackTestCase ()
 }
 
 void
-DualStackTestCase::DoRun (void)
+DualStackTestCase::DoRun ()
 {
   SetUpSim ();
 
@@ -323,7 +323,7 @@ DualStackTestCase::DoRun (void)
 }
 
 void
-DualStackTestCase::DoTeardown (void)
+DualStackTestCase::DoTeardown ()
 {
   Simulator::Destroy ();
 }

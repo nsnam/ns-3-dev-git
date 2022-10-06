@@ -58,7 +58,7 @@ public:
   virtual ~ItuR1411NlosOverRooftopPropagationLossModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Create a MobilityModel
@@ -95,7 +95,7 @@ ItuR1411NlosOverRooftopPropagationLossModelTestCase::~ItuR1411NlosOverRooftopPro
 
 
 void
-ItuR1411NlosOverRooftopPropagationLossModelTestCase::DoRun (void)
+ItuR1411NlosOverRooftopPropagationLossModelTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 

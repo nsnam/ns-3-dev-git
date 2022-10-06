@@ -44,7 +44,7 @@ public:
    */
   BooleanValue (bool value);
   void Set (bool value);
-  bool Get (void) const;
+  bool Get () const;
   template <typename T>
   bool GetAccessor (T &v) const;
 
@@ -54,7 +54,7 @@ public:
    */
   operator bool () const;
 
-  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual Ptr<AttributeValue> Copy () const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 

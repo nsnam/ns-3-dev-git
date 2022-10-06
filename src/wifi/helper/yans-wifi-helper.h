@@ -49,7 +49,7 @@ public:
    * at reference distance of 1m.
    * \returns YansWifiChannelHelper
    */
-  static YansWifiChannelHelper Default (void);
+  static YansWifiChannelHelper Default ();
 
   /**
    * \tparam Ts \deduced Argument types
@@ -82,7 +82,7 @@ public:
    *
    * Create a channel based on the configuration parameters set previously.
    */
-  Ptr<YansWifiChannel> Create (void) const;
+  Ptr<YansWifiChannel> Create () const;
 
   /**
   * Assign a fixed random variable stream number to the random variables

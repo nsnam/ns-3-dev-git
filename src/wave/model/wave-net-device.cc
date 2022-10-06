@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("WaveNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (WaveNetDevice);
 
 TypeId
-WaveNetDevice::GetTypeId (void)
+WaveNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WaveNetDevice")
     .SetParent<NetDevice> ()
@@ -83,19 +83,19 @@ WaveNetDevice::GetTypeId (void)
   return tid;
 }
 
-WaveNetDevice::WaveNetDevice (void)
+WaveNetDevice::WaveNetDevice ()
   : m_txProfile (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-WaveNetDevice::~WaveNetDevice (void)
+WaveNetDevice::~WaveNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-WaveNetDevice::DoDispose (void)
+WaveNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   if (m_txProfile != 0)
@@ -131,7 +131,7 @@ WaveNetDevice::DoDispose (void)
 }
 
 void
-WaveNetDevice::DoInitialize (void)
+WaveNetDevice::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   if (m_phyEntities.size () == 0)
@@ -200,7 +200,7 @@ WaveNetDevice::GetMac (uint32_t channelNumber) const
 }
 
 std::map<uint32_t, Ptr<OcbWifiMac> >
-WaveNetDevice::GetMacs (void) const
+WaveNetDevice::GetMacs () const
 {
   NS_LOG_FUNCTION (this);
   return m_macEntities;
@@ -224,7 +224,7 @@ WaveNetDevice::GetPhy (uint8_t index) const
 }
 
 const std::vector<Ptr<WifiPhy>>&
-WaveNetDevice::GetPhys (void) const
+WaveNetDevice::GetPhys () const
 {
   NS_LOG_FUNCTION (this);
   return m_phyEntities;
@@ -468,7 +468,7 @@ WaveNetDevice::SetChannelManager (Ptr<ChannelManager> channelManager)
   m_channelManager = channelManager;
 }
 Ptr<ChannelManager>
-WaveNetDevice::GetChannelManager (void) const
+WaveNetDevice::GetChannelManager () const
 {
   return m_channelManager;
 }
@@ -478,7 +478,7 @@ WaveNetDevice::SetChannelScheduler (Ptr<ChannelScheduler> channelScheduler)
   m_channelScheduler = channelScheduler;
 }
 Ptr<ChannelScheduler>
-WaveNetDevice::GetChannelScheduler (void) const
+WaveNetDevice::GetChannelScheduler () const
 {
   return m_channelScheduler;
 }
@@ -488,7 +488,7 @@ WaveNetDevice::SetChannelCoordinator (Ptr<ChannelCoordinator> channelCoordinator
   m_channelCoordinator = channelCoordinator;
 }
 Ptr<ChannelCoordinator>
-WaveNetDevice::GetChannelCoordinator (void) const
+WaveNetDevice::GetChannelCoordinator () const
 {
   return m_channelCoordinator;
 }
@@ -498,7 +498,7 @@ WaveNetDevice::SetVsaManager (Ptr<VsaManager> vsaManager)
   m_vsaManager = vsaManager;
 }
 Ptr<VsaManager>
-WaveNetDevice::GetVsaManager (void) const
+WaveNetDevice::GetVsaManager () const
 {
   return m_vsaManager;
 }
@@ -509,12 +509,12 @@ WaveNetDevice::SetIfIndex (const uint32_t index)
   m_ifIndex = index;
 }
 uint32_t
-WaveNetDevice::GetIfIndex (void) const
+WaveNetDevice::GetIfIndex () const
 {
   return m_ifIndex;
 }
 Ptr<Channel>
-WaveNetDevice::GetChannel (void) const
+WaveNetDevice::GetChannel () const
 {
   NS_ASSERT (!m_phyEntities.empty ());
   return GetPhy (0)->GetChannel ();
@@ -528,7 +528,7 @@ WaveNetDevice::SetAddress (Address address)
     }
 }
 Address
-WaveNetDevice::GetAddress (void) const
+WaveNetDevice::GetAddress () const
 {
   return (GetMac (CCH))->GetAddress ();
 }
@@ -543,12 +543,12 @@ WaveNetDevice::SetMtu (const uint16_t mtu)
   return true;
 }
 uint16_t
-WaveNetDevice::GetMtu (void) const
+WaveNetDevice::GetMtu () const
 {
   return m_mtu;
 }
 bool
-WaveNetDevice::IsLinkUp (void) const
+WaveNetDevice::IsLinkUp () const
 {
   // Different from WifiNetDevice::IsLinkUp, a WaveNetDevice device
   // is always link up so the m_linkup variable is true forever.
@@ -561,17 +561,17 @@ WaveNetDevice::AddLinkChangeCallback (Callback<void> callback)
   NS_LOG_WARN ("WaveNetDevice is linkup forever, so this callback will be never called");
 }
 bool
-WaveNetDevice::IsBroadcast (void) const
+WaveNetDevice::IsBroadcast () const
 {
   return true;
 }
 Address
-WaveNetDevice::GetBroadcast (void) const
+WaveNetDevice::GetBroadcast () const
 {
   return Mac48Address::GetBroadcast ();
 }
 bool
-WaveNetDevice::IsMulticast (void) const
+WaveNetDevice::IsMulticast () const
 {
   return true;
 }
@@ -585,12 +585,12 @@ Address WaveNetDevice::GetMulticast (Ipv6Address addr) const
   return Mac48Address::GetMulticast (addr);
 }
 bool
-WaveNetDevice::IsPointToPoint (void) const
+WaveNetDevice::IsPointToPoint () const
 {
   return false;
 }
 bool
-WaveNetDevice::IsBridge (void) const
+WaveNetDevice::IsBridge () const
 {
   return false;
 }
@@ -637,7 +637,7 @@ WaveNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocol)
 }
 
 bool
-WaveNetDevice::NeedsArp (void) const
+WaveNetDevice::NeedsArp () const
 {
   // Whether NeedsArp or not?
   // For IP-based packets , yes; For WSMP packets, no;
@@ -728,7 +728,7 @@ WaveNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-WaveNetDevice::SupportsSendFrom (void) const
+WaveNetDevice::SupportsSendFrom () const
 {
   return (GetMac (CCH))->SupportsSendFrom ();
 }

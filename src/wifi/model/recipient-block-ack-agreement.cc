@@ -72,7 +72,7 @@ RecipientBlockAckAgreement::SetMacRxMiddle (const Ptr<MacRxMiddle> rxMiddle)
 }
 
 void
-RecipientBlockAckAgreement::PassBufferedMpdusUntilFirstLost (void)
+RecipientBlockAckAgreement::PassBufferedMpdusUntilFirstLost ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -174,7 +174,7 @@ RecipientBlockAckAgreement::NotifyReceivedMpdu (Ptr<const WifiMpdu> mpdu)
 }
 
 void
-RecipientBlockAckAgreement::Flush (void)
+RecipientBlockAckAgreement::Flush ()
 {
   NS_LOG_FUNCTION (this);
   PassBufferedMpdusWithSeqNumberLessThan (m_scoreboard.GetWinStart ());

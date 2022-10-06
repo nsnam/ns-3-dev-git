@@ -85,7 +85,7 @@ public:
    *
    * \return The list of packets.
    */
-  const std::list<std::pair <Ptr<Packet>, Mac8Address > > &GetPktList (void) const;
+  const std::list<std::pair <Ptr<Packet>, Mac8Address > > &GetPktList () const;
   /**
    * Get the frame number.
    *
@@ -180,13 +180,13 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // Inherited methods
   virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual void Clear (void);
+  virtual void Clear ();
   int64_t AssignStreams (int64_t stream);
 
   /**
@@ -257,13 +257,13 @@ private:
    */
   void ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode);
   /** Associate with a gateway by sending the first GWPING. */
-  void Associate (void);
+  void Associate ();
   /** Periodically retry association. */
-  void AssociateTimeout (void);
+  void AssociateTimeout ();
   /** Send RTS packet. */
-  void SendRts (void);
+  void SendRts ();
   /** Retry RTS. */
-  void RtsTimeout (void);
+  void RtsTimeout ();
   /**
    * Create the RTS header from a Reservation.
    *
@@ -298,9 +298,9 @@ private:
    *   not to my address
    * \return True if PHY is ok.
    */
-  bool IsPhy1Ok (void);
+  bool IsPhy1Ok ();
   /** Callback to block RST. */
-  void BlockRtsing (void);
+  void BlockRtsing ();
 
   /**
    * Global count of calls to Associate, AssociateTimeout,

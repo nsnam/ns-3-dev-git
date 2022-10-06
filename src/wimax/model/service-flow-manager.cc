@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("ServiceFlowManager");
 
 NS_OBJECT_ENSURE_REGISTERED (ServiceFlowManager);
 
-TypeId ServiceFlowManager::GetTypeId (void)
+TypeId ServiceFlowManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ServiceFlowManager")
     .SetParent<Object> ()
@@ -59,12 +59,12 @@ ServiceFlowManager::ServiceFlowManager ()
   m_serviceFlows = new std::vector<ServiceFlow*>;
 }
 
-ServiceFlowManager::~ServiceFlowManager (void)
+ServiceFlowManager::~ServiceFlowManager ()
 {
 }
 
 void
-ServiceFlowManager::DoDispose (void)
+ServiceFlowManager::DoDispose ()
 {
   for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
     {
@@ -184,7 +184,7 @@ ServiceFlowManager::GetNextServiceFlowToAllocate ()
 }
 
 uint32_t
-ServiceFlowManager::GetNrServiceFlows (void) const
+ServiceFlowManager::GetNrServiceFlows () const
 {
   return m_serviceFlows->size ();
 }

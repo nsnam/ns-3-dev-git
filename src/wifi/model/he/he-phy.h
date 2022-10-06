@@ -82,9 +82,9 @@ public:
   virtual ~HePhy ();
 
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
-  WifiMode GetSigAMode (void) const override;
+  WifiMode GetSigAMode () const override;
   WifiMode GetSigBMode (const WifiTxVector& txVector) const override;
-  const PpduFormats & GetPpduFormats (void) const override;
+  const PpduFormats & GetPpduFormats () const override;
   Time GetLSigDuration (WifiPreamble preamble) const override;
   Time GetTrainingDuration (const WifiTxVector& txVector,
                             uint8_t nDataLtf,
@@ -98,7 +98,7 @@ public:
   void StartReceivePreamble (Ptr<const WifiPpdu> ppdu,
                              RxPowerWattPerChannelBand& rxPowersW,
                              Time rxDuration) override;
-  void CancelAllEvents (void) override;
+  void CancelAllEvents () override;
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
   void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
@@ -110,7 +110,7 @@ public:
   /**
    * \return the BSS color of this PHY.
    */
-  uint8_t GetBssColor (void) const;
+  uint8_t GetBssColor () const;
 
   /**
    * Compute the L-SIG length value corresponding to the given HE TB PPDU duration.
@@ -188,7 +188,7 @@ public:
   /**
    * \return the UID of the HE TB PPDU being received
    */
-  uint64_t GetCurrentHeTbPpduUid (void) const;
+  uint64_t GetCurrentHeTbPpduUid () const;
 
   /**
    * Set the TRIGVECTOR and the associated expiration time. A TRIGVECTOR shall expire
@@ -236,7 +236,7 @@ public:
   /**
    * Initialize all HE modes.
    */
-  static void InitializeModes (void);
+  static void InitializeModes ();
   /**
    * Return the HE MCS corresponding to
    * the provided index.
@@ -251,73 +251,73 @@ public:
    *
    * \return MCS 0 from HE MCS values
    */
-  static WifiMode GetHeMcs0 (void);
+  static WifiMode GetHeMcs0 ();
   /**
    * Return MCS 1 from HE MCS values.
    *
    * \return MCS 1 from HE MCS values
    */
-  static WifiMode GetHeMcs1 (void);
+  static WifiMode GetHeMcs1 ();
   /**
    * Return MCS 2 from HE MCS values.
    *
    * \return MCS 2 from HE MCS values
    */
-  static WifiMode GetHeMcs2 (void);
+  static WifiMode GetHeMcs2 ();
   /**
    * Return MCS 3 from HE MCS values.
    *
    * \return MCS 3 from HE MCS values
    */
-  static WifiMode GetHeMcs3 (void);
+  static WifiMode GetHeMcs3 ();
   /**
    * Return MCS 4 from HE MCS values.
    *
    * \return MCS 4 from HE MCS values
    */
-  static WifiMode GetHeMcs4 (void);
+  static WifiMode GetHeMcs4 ();
   /**
    * Return MCS 5 from HE MCS values.
    *
    * \return MCS 5 from HE MCS values
    */
-  static WifiMode GetHeMcs5 (void);
+  static WifiMode GetHeMcs5 ();
   /**
    * Return MCS 6 from HE MCS values.
    *
    * \return MCS 6 from HE MCS values
    */
-  static WifiMode GetHeMcs6 (void);
+  static WifiMode GetHeMcs6 ();
   /**
    * Return MCS 7 from HE MCS values.
    *
    * \return MCS 7 from HE MCS values
    */
-  static WifiMode GetHeMcs7 (void);
+  static WifiMode GetHeMcs7 ();
   /**
    * Return MCS 8 from HE MCS values.
    *
    * \return MCS 8 from HE MCS values
    */
-  static WifiMode GetHeMcs8 (void);
+  static WifiMode GetHeMcs8 ();
   /**
    * Return MCS 9 from HE MCS values.
    *
    * \return MCS 9 from HE MCS values
    */
-  static WifiMode GetHeMcs9 (void);
+  static WifiMode GetHeMcs9 ();
   /**
    * Return MCS 10 from HE MCS values.
    *
    * \return MCS 10 from HE MCS values
    */
-  static WifiMode GetHeMcs10 (void);
+  static WifiMode GetHeMcs10 ();
   /**
    * Return MCS 11 from HE MCS values.
    *
    * \return MCS 11 from HE MCS values
    */
-  static WifiMode GetHeMcs11 (void);
+  static WifiMode GetHeMcs11 ();
 
   /**
    * Return the coding rate corresponding to
@@ -422,7 +422,7 @@ protected:
   void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
   uint64_t ObtainNextUid (const WifiTxVector& txVector) override;
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) const override;
-  uint32_t GetMaxPsduSize (void) const override;
+  uint32_t GetMaxPsduSize () const override;
   WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const override;
 
   /**
@@ -490,7 +490,7 @@ protected:
   Time m_trigVectorExpirationTime;           //!< expiration time of the TRIGVECTOR
 
 private:
-  void BuildModeList (void) override;
+  void BuildModeList () override;
   uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
   Time GetSymbolDuration (const WifiTxVector& txVector) const override;
 

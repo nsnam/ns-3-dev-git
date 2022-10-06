@@ -222,7 +222,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Get the instance TypeId
@@ -239,7 +239,7 @@ public:
   /**
    * Create an unbound TCP socket
    */
-  TcpSocketBase (void);
+  TcpSocketBase ();
 
   /**
    * Clone a TCP socket, for use upon receiving a connection request in LISTEN state
@@ -247,7 +247,7 @@ public:
    * \param sock the original Tcp Socket
    */
   TcpSocketBase (const TcpSocketBase& sock);
-  virtual ~TcpSocketBase (void);
+  virtual ~TcpSocketBase ();
 
   // Set associated Node, TcpL4Protocol, RttEstimator to this socket
 
@@ -279,7 +279,7 @@ public:
    * \brief Get the Minimum RTO.
    * \return The minimum RTO.
    */
-  Time GetMinRto (void) const;
+  Time GetMinRto () const;
 
   /**
    * \brief Sets the Clock Granularity (used in RTO calcs).
@@ -291,19 +291,19 @@ public:
    * \brief Get the Clock Granularity (used in RTO calcs).
    * \return The Clock Granularity.
    */
-  Time GetClockGranularity (void) const;
+  Time GetClockGranularity () const;
 
   /**
    * \brief Get a pointer to the Tx buffer
    * \return a pointer to the tx buffer
    */
-  Ptr<TcpTxBuffer> GetTxBuffer (void) const;
+  Ptr<TcpTxBuffer> GetTxBuffer () const;
 
   /**
    * \brief Get a pointer to the Rx buffer
    * \return a pointer to the rx buffer
    */
-  Ptr<TcpRxBuffer> GetRxBuffer (void) const;
+  Ptr<TcpRxBuffer> GetRxBuffer () const;
 
   /**
    * \brief Set the retransmission threshold (dup ack threshold for a fast retransmit)
@@ -315,7 +315,7 @@ public:
    * \brief Get the retransmission threshold (dup ack threshold for a fast retransmit)
    * \return the threshold
    */
-  uint32_t GetRetxThresh (void) const { return m_retxThresh; }
+  uint32_t GetRetxThresh () const { return m_retxThresh; }
 
   /**
    * \brief Callback pointer for pacing rate trace chaining
@@ -573,23 +573,23 @@ public:
   void SetPaceInitialWindow (bool paceWindow);
 
   // Necessary implementations of null functions from ns3::Socket
-  virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
-  virtual enum SocketType GetSocketType (void) const; // returns socket type
-  virtual Ptr<Node> GetNode (void) const;            // returns m_node
-  virtual int Bind (void);    // Bind a socket by setting up endpoint in TcpL4Protocol
-  virtual int Bind6 (void);    // Bind a socket by setting up endpoint in TcpL4Protocol
+  virtual enum SocketErrno GetErrno () const;    // returns m_errno
+  virtual enum SocketType GetSocketType () const; // returns socket type
+  virtual Ptr<Node> GetNode () const;            // returns m_node
+  virtual int Bind ();    // Bind a socket by setting up endpoint in TcpL4Protocol
+  virtual int Bind6 ();    // Bind a socket by setting up endpoint in TcpL4Protocol
   virtual int Bind (const Address &address);         // ... endpoint of specific addr or port
   virtual int Connect (const Address &address);      // Setup endpoint and call ProcessAction() to connect
-  virtual int Listen (void);  // Verify the socket is in a correct state and call ProcessAction() to listen
-  virtual int Close (void);   // Close by app: Kill socket upon tx buffer emptied
-  virtual int ShutdownSend (void);    // Assert the m_shutdownSend flag to prevent send to network
-  virtual int ShutdownRecv (void);    // Assert the m_shutdownRecv flag to prevent forward to app
+  virtual int Listen ();  // Verify the socket is in a correct state and call ProcessAction() to listen
+  virtual int Close ();   // Close by app: Kill socket upon tx buffer emptied
+  virtual int ShutdownSend ();    // Assert the m_shutdownSend flag to prevent send to network
+  virtual int ShutdownRecv ();    // Assert the m_shutdownRecv flag to prevent forward to app
   virtual int Send (Ptr<Packet> p, uint32_t flags);  // Call by app to send data to network
   virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress); // Same as Send(), toAddress is insignificant
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags); // Return a packet to be forwarded to app
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress); // ... and write the remote address at fromAddress
-  virtual uint32_t GetTxAvailable (void) const; // Available Tx buffer size
-  virtual uint32_t GetRxAvailable (void) const; // Available-to-read data size, i.e. value of m_rxAvailable
+  virtual uint32_t GetTxAvailable () const; // Available Tx buffer size
+  virtual uint32_t GetRxAvailable () const; // Available-to-read data size, i.e. value of m_rxAvailable
   virtual int GetSockName (Address &address) const; // Return local addr:port in address
   virtual int GetPeerName (Address &address) const;
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice); // NetDevice with my m_endPoint
@@ -609,31 +609,31 @@ protected:
   // inherited, no need to doc
 
   virtual void     SetSndBufSize (uint32_t size);
-  virtual uint32_t GetSndBufSize (void) const;
+  virtual uint32_t GetSndBufSize () const;
   virtual void     SetRcvBufSize (uint32_t size);
-  virtual uint32_t GetRcvBufSize (void) const;
+  virtual uint32_t GetRcvBufSize () const;
   virtual void     SetSegSize (uint32_t size);
-  virtual uint32_t GetSegSize (void) const;
+  virtual uint32_t GetSegSize () const;
   virtual void     SetInitialSSThresh (uint32_t threshold);
-  virtual uint32_t GetInitialSSThresh (void) const;
+  virtual uint32_t GetInitialSSThresh () const;
   virtual void     SetInitialCwnd (uint32_t cwnd);
-  virtual uint32_t GetInitialCwnd (void) const;
+  virtual uint32_t GetInitialCwnd () const;
   virtual void     SetConnTimeout (Time timeout);
-  virtual Time     GetConnTimeout (void) const;
+  virtual Time     GetConnTimeout () const;
   virtual void     SetSynRetries (uint32_t count);
-  virtual uint32_t GetSynRetries (void) const;
+  virtual uint32_t GetSynRetries () const;
   virtual void     SetDataRetries (uint32_t retries);
-  virtual uint32_t GetDataRetries (void) const;
+  virtual uint32_t GetDataRetries () const;
   virtual void     SetDelAckTimeout (Time timeout);
-  virtual Time     GetDelAckTimeout (void) const;
+  virtual Time     GetDelAckTimeout () const;
   virtual void     SetDelAckMaxCount (uint32_t count);
-  virtual uint32_t GetDelAckMaxCount (void) const;
+  virtual uint32_t GetDelAckMaxCount () const;
   virtual void     SetTcpNoDelay (bool noDelay);
-  virtual bool     GetTcpNoDelay (void) const;
+  virtual bool     GetTcpNoDelay () const;
   virtual void     SetPersistTimeout (Time timeout);
-  virtual Time     GetPersistTimeout (void) const;
+  virtual Time     GetPersistTimeout () const;
   virtual bool     SetAllowBroadcast (bool allowBroadcast);
-  virtual bool     GetAllowBroadcast (void) const;
+  virtual bool     GetAllowBroadcast () const;
 
 
 
@@ -644,33 +644,33 @@ protected:
    *
    * \returns 0 on success, -1 on failure
    */
-  int SetupCallback (void);
+  int SetupCallback ();
 
   /**
    * \brief Perform the real connection tasks: Send SYN if allowed, RST if invalid
    *
    * \returns 0 on success
    */
-  int DoConnect (void);
+  int DoConnect ();
 
   /**
    * \brief Schedule-friendly wrapper for Socket::NotifyConnectionSucceeded()
    */
-  void ConnectionSucceeded (void);
+  void ConnectionSucceeded ();
 
   /**
    * \brief Configure the endpoint to a local address. Called by Connect() if Bind() didn't specify one.
    *
    * \returns 0 on success
    */
-  int SetupEndpoint (void);
+  int SetupEndpoint ();
 
   /**
    * \brief Configure the endpoint v6 to a local address. Called by Connect() if Bind() didn't specify one.
    *
    * \returns 0 on success
    */
-  int SetupEndpoint6 (void);
+  int SetupEndpoint6 ();
 
   /**
    * \brief Complete a connection by forking the socket
@@ -790,7 +790,7 @@ protected:
   /**
    * \brief Send reset and tear down this socket
    */
-  void SendRST (void);
+  void SendRST ();
 
   /**
    * \brief Check if a sequence number range is within the rx window
@@ -809,12 +809,12 @@ protected:
    *
    * \returns 0 on success
    */
-  int DoClose (void);
+  int DoClose ();
 
   /**
    * \brief Peacefully close the socket by notifying the upper layer and deallocate end point
    */
-  void CloseAndNotify (void);
+  void CloseAndNotify ();
 
   /**
    * \brief Kill this socket by zeroing its attributes (IPv4)
@@ -822,7 +822,7 @@ protected:
    * This is a callback function configured to m_endpoint in
    * SetupCallback(), invoked when the endpoint is destroyed.
    */
-  void Destroy (void);
+  void Destroy ();
 
   /**
    * \brief Kill this socket by zeroing its attributes (IPv6)
@@ -830,12 +830,12 @@ protected:
    * This is a callback function configured to m_endpoint in
    * SetupCallback(), invoked when the endpoint is destroyed.
    */
-  void Destroy6 (void);
+  void Destroy6 ();
 
   /**
    * \brief Deallocate m_endPoint and m_endPoint6
    */
-  void DeallocateEndPoint (void);
+  void DeallocateEndPoint ();
 
   /**
    * \brief Received a FIN from peer, notify rx buffer
@@ -848,17 +848,17 @@ protected:
   /**
    * \brief FIN is in sequence, notify app and respond with a FIN
    */
-  void DoPeerClose (void);
+  void DoPeerClose ();
 
   /**
    * \brief Cancel all timer when endpoint is deleted
    */
-  void CancelAllTimers (void);
+  void CancelAllTimers ();
 
   /**
    * \brief Move from CLOSING or FIN_WAIT_2 to TIME_WAIT state
    */
-  void TimeWait (void);
+  void TimeWait ();
 
   // State transition functions
 
@@ -935,7 +935,7 @@ protected:
    *
    * \returns count of number of unacked bytes
    */
-  virtual uint32_t UnAckDataCount (void) const;
+  virtual uint32_t UnAckDataCount () const;
 
   /**
    * \brief Return total bytes in flight
@@ -944,19 +944,19 @@ protected:
    *
    * \returns total bytes in flight
    */
-  virtual uint32_t BytesInFlight (void) const;
+  virtual uint32_t BytesInFlight () const;
 
   /**
    * \brief Return the max possible number of unacked bytes
    * \returns the max possible number of unacked bytes
    */
-  virtual uint32_t Window (void) const;
+  virtual uint32_t Window () const;
 
   /**
    * \brief Return unfilled portion of window
    * \return unfilled portion of window
    */
-  virtual uint32_t AvailableWindow (void) const;
+  virtual uint32_t AvailableWindow () const;
 
   /**
    * \brief The amount of Rx window announced to the peer
@@ -987,7 +987,7 @@ protected:
    * \brief Call CopyObject<> to clone me
    * \returns a copy of the socket
    */
-  virtual Ptr<TcpSocketBase> Fork (void);
+  virtual Ptr<TcpSocketBase> Fork ();
 
   /**
    * \brief Received an ACK packet
@@ -1062,28 +1062,28 @@ protected:
   /**
    * \brief An RTO event happened
    */
-  virtual void ReTxTimeout (void);
+  virtual void ReTxTimeout ();
 
   /**
    * \brief Action upon delay ACK timeout, i.e. send an ACK
    */
-  virtual void DelAckTimeout (void);
+  virtual void DelAckTimeout ();
 
   /**
    * \brief Timeout at LAST_ACK, close the connection
    */
-  virtual void LastAckTimeout (void);
+  virtual void LastAckTimeout ();
 
   /**
    * \brief Send 1 byte probe to get an updated window size
    */
-  virtual void PersistTimeout (void);
+  virtual void PersistTimeout ();
 
   /**
    * \brief Retransmit the first segment marked as lost, without considering
    * available window nor pacing.
    */
-  void DoRetransmit (void);
+  void DoRetransmit ();
 
   /** \brief Add options to TcpHeader
    *
@@ -1208,18 +1208,18 @@ protected:
   /**
    * \brief Notify Pacing
    */
-  void NotifyPacingPerformed (void);
+  void NotifyPacingPerformed ();
 
   /**
    * \brief Return true if packets in the current window should be paced
    * \return true if pacing is currently enabled
    */
-  bool IsPacingEnabled (void) const;
+  bool IsPacingEnabled () const;
 
   /**
    * \brief Dynamically update the pacing rate
    */
-  void UpdatePacingRate (void);
+  void UpdatePacingRate ();
 
   /**
    * \brief Add Tags for the Socket
@@ -1232,14 +1232,14 @@ protected:
    * \note This method exists to expose the value to the TcpTxBuffer
    * \return value of receiver's offered window
    */
-  uint32_t GetRWnd (void) const;
+  uint32_t GetRWnd () const;
 
   /**
    * Get the current value of the receiver's highest (in-sequence) sequence number acked.
    * \note This method exists to expose the value to the TcpTxBuffer
    * \return value of receiver's highest sequence number acked.
    */
-  SequenceNumber32 GetHighRxAck (void) const;
+  SequenceNumber32 GetHighRxAck () const;
 
 protected:
   // Counters and events

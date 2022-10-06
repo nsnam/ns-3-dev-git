@@ -44,14 +44,14 @@ Mac8Address::~Mac8Address ()
 }
 
 uint8_t
-Mac8Address::GetType (void)
+Mac8Address::GetType ()
 {
   static uint8_t type = Address::Register ();
   return type;
 }
 
 Address
-Mac8Address::ConvertTo (void) const
+Mac8Address::ConvertTo () const
 {
   return Address (GetType (), &m_address, 1);
 }

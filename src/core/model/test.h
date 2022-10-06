@@ -1013,7 +1013,7 @@ public:
   /**
    * \return The name of this test
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
 
 protected:
   /**
@@ -1055,13 +1055,13 @@ protected:
    *
    * \return \c true if any of the tests have failed, \c false otherwise.
    */
-  bool IsStatusFailure (void) const;
+  bool IsStatusFailure () const;
   /**
    * \brief Check if all tests passed.
    *
    * \return \c true if the tests have succeeded, \c false otherwise.
    */
-  bool IsStatusSuccess (void) const;
+  bool IsStatusSuccess () const;
 
   /**
    * \brief Get the parent of this TestCsse.
@@ -1094,13 +1094,13 @@ protected:
    *
    * \return \c true if we should assert on failure.
    */
-  bool MustAssertOnFailure (void) const;
+  bool MustAssertOnFailure () const;
   /**
    * \brief Check if this run should continue on failure.
    *
    * \return \c true if we should continue on failure.
    */
-  bool MustContinueOnFailure (void) const;
+  bool MustContinueOnFailure () const;
   /**
    * \brief Construct the full path to a file in the data directory.
    *
@@ -1134,14 +1134,14 @@ private:
    * Subclasses should override this method to perform any costly
    * per-test setup before DoRun is invoked.
    */
-  virtual void DoSetup (void);
+  virtual void DoSetup ();
 
   /**
    * \brief Implementation to actually run this TestCase.
    *
    * Subclasses should override this method to conduct their tests.
    */
-  virtual void DoRun (void) = 0;
+  virtual void DoRun () = 0;
 
   /**
    * \brief Implementation to do any local setup required for this
@@ -1150,7 +1150,7 @@ private:
    * Subclasses should override this method to perform any costly
    * per-test teardown
    */
-  virtual void DoTeardown (void);
+  virtual void DoTeardown ();
 
   // methods called by TestRunnerImpl
   /**
@@ -1160,7 +1160,7 @@ private:
    */
   void Run (TestRunnerImpl *runner);
   /** \copydoc IsStatusFailure() */
-  bool IsFailed (void) const;
+  bool IsFailed () const;
 
   /**
    * \ingroup testingimpl
@@ -1213,11 +1213,11 @@ public:
    *
    * \returns The Type of the suite.
    */
-  TestSuite::Type GetTestType (void);
+  TestSuite::Type GetTestType ();
 
 private:
   // Inherited
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   TestSuite::Type m_type;               //!< Type of this TestSuite
 };
@@ -1281,7 +1281,7 @@ public:
    * \brief Get the total number of test vectors.
    * \return The number of test vectors
    */
-  std::size_t GetN (void) const;
+  std::size_t GetN () const;
   /**
    * \brief Get the i'th test vector
    * \param [in] i The requested vector index
@@ -1321,7 +1321,7 @@ TestVectors<T>::Add (T vector)
 
 template <typename T>
 std::size_t
-TestVectors<T>::GetN (void) const
+TestVectors<T>::GetN () const
 {
   return m_vectors.size ();
 }

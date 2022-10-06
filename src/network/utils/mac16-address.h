@@ -84,7 +84,7 @@ public:
    * Allocate a new Mac16Address.
    * \returns newly allocated mac16Address
    */
-  static Mac16Address Allocate (void);
+  static Mac16Address Allocate ();
 
   /**
    * Reset the Mac16Address allocation index.
@@ -104,7 +104,7 @@ public:
   /**
    * \returns the broadcast address (0xFFFF)
    */
-  static Mac16Address GetBroadcast (void);
+  static Mac16Address GetBroadcast ();
 
   /**
    * Returns the multicast address associated with an IPv6 address
@@ -137,7 +137,7 @@ public:
    *
    * \returns true if the address is 0xFFFF
    */
-  bool IsBroadcast (void) const;
+  bool IsBroadcast () const;
 
   /**
    * Checks if the address is a multicast address according
@@ -145,7 +145,7 @@ public:
    *
    * \returns true if the address is in the range 0x8000 - 0x9FFF
    */
-  bool IsMulticast (void) const;
+  bool IsMulticast () const;
 
 private:
   /**
@@ -153,13 +153,13 @@ private:
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   /**
    * \brief Return the Type of address.
    * \return type of address
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
 
   /**
    * \brief Equal to operator.

@@ -36,49 +36,49 @@ UanTxMode::~UanTxMode ()
 
 
 UanTxMode::ModulationType
-UanTxMode::GetModType (void) const
+UanTxMode::GetModType () const
 {
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_type;
 }
 
 uint32_t
-UanTxMode::GetDataRateBps (void) const
+UanTxMode::GetDataRateBps () const
 {
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_dataRateBps;
 }
 
 uint32_t
-UanTxMode::GetPhyRateSps (void) const
+UanTxMode::GetPhyRateSps () const
 {
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_phyRateSps;
 }
 
 uint32_t
-UanTxMode::GetCenterFreqHz (void) const
+UanTxMode::GetCenterFreqHz () const
 {
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_cfHz;
 }
 
 uint32_t
-UanTxMode::GetBandwidthHz (void) const
+UanTxMode::GetBandwidthHz () const
 {
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_bwHz;
 }
 
 uint32_t
-UanTxMode::GetConstellationSize (void) const
+UanTxMode::GetConstellationSize () const
 {
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_constSize;
 }
 
 std::string
-UanTxMode::GetName (void) const
+UanTxMode::GetName () const
 {
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_name;
 }
 
 uint32_t
-UanTxMode::GetUid (void) const
+UanTxMode::GetUid () const
 {
   return m_uid;
 }
@@ -213,17 +213,17 @@ UanTxModeFactory::MakeModeFromItem (const UanTxModeItem &item)
 }
 
 UanTxModeFactory &
-UanTxModeFactory::GetFactory (void)
+UanTxModeFactory::GetFactory ()
 {
   static UanTxModeFactory factory;
   return factory;
 }
 
-UanModesList::UanModesList (void)
+UanModesList::UanModesList ()
 {
 }
 
-UanModesList::~UanModesList (void)
+UanModesList::~UanModesList ()
 {
   m_modes.clear ();
 }
@@ -256,7 +256,7 @@ UanModesList::operator[] (uint32_t i) const
 }
 
 uint32_t
-UanModesList::GetNModes (void) const
+UanModesList::GetNModes () const
 {
   return static_cast<uint32_t> (m_modes.size ());
 }

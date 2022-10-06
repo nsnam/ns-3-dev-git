@@ -147,14 +147,14 @@ public:
    */
   void AddTestSuite (TestSuite *testSuite);
   /** \copydoc TestCase::MustAssertOnFailure() */
-  bool MustAssertOnFailure (void) const;
+  bool MustAssertOnFailure () const;
   /** \copydoc TestCase::MustContinueOnFailure() */
-  bool MustContinueOnFailure (void) const;
+  bool MustContinueOnFailure () const;
   /**
    * Check if this run should update the reference data.
    * \return \c true if we should update the reference data.
    */
-  bool MustUpdateData (void) const;
+  bool MustUpdateData () const;
   /**
    * Get the path to the root of the source tree.
    *
@@ -163,12 +163,12 @@ public:
    *
    * \returns The path to the root.
    */
-  std::string GetTopLevelSourceDir (void) const;
+  std::string GetTopLevelSourceDir () const;
   /**
    * Get the path to temporary directory.
    * \return The temporary directory path.
    */
-  std::string GetTempDir (void) const;
+  std::string GetTempDir () const;
   /** \copydoc TestRunner::Run() */
   int Run (int argc, char *argv[]);
 
@@ -220,7 +220,7 @@ private:
                           std::list<TestCase *>::const_iterator end,
                           bool printTestType) const;
   /** Print the list of test types. */
-  void PrintTestTypeList (void) const;
+  void PrintTestTypeList () const;
   /**
    * Print the help text.
    * \param [in] programName The name of the invoking program.
@@ -337,7 +337,7 @@ TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
 }
 
 bool
-TestCase::IsFailed (void) const
+TestCase::IsFailed () const
 {
   NS_LOG_FUNCTION (this);
   return m_result->childrenFailed || !m_result->failure.empty ();
@@ -367,7 +367,7 @@ out:
   m_runner = 0;
 }
 std::string
-TestCase::GetName (void) const
+TestCase::GetName () const
 {
   NS_LOG_FUNCTION (this);
   return m_name;
@@ -396,13 +396,13 @@ TestCase::ReportTestFailure (std::string cond, std::string actual,
 
 }
 bool
-TestCase::MustAssertOnFailure (void) const
+TestCase::MustAssertOnFailure () const
 {
   NS_LOG_FUNCTION (this);
   return m_runner->MustAssertOnFailure ();
 }
 bool
-TestCase::MustContinueOnFailure (void) const
+TestCase::MustContinueOnFailure () const
 {
   NS_LOG_FUNCTION (this);
   return m_runner->MustContinueOnFailure ();
@@ -451,13 +451,13 @@ TestCase::CreateTempDirFilename (std::string filename)
     }
 }
 bool
-TestCase::IsStatusFailure (void) const
+TestCase::IsStatusFailure () const
 {
   NS_LOG_FUNCTION (this);
   return !IsStatusSuccess ();
 }
 bool
-TestCase::IsStatusSuccess (void) const
+TestCase::IsStatusSuccess () const
 {
   NS_LOG_FUNCTION (this);
   return m_result->failure.empty ();
@@ -471,12 +471,12 @@ TestCase::SetDataDir (std::string directory)
 }
 
 void
-TestCase::DoSetup (void)
+TestCase::DoSetup ()
 {
   NS_LOG_FUNCTION (this);
 }
 void
-TestCase::DoTeardown (void)
+TestCase::DoTeardown ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -491,14 +491,14 @@ TestSuite::TestSuite (std::string name, TestSuite::Type type)
 }
 
 TestSuite::Type
-TestSuite::GetTestType (void)
+TestSuite::GetTestType ()
 {
   NS_LOG_FUNCTION (this);
   return m_type;
 }
 
 void
-TestSuite::DoRun (void)
+TestSuite::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -521,26 +521,26 @@ TestRunnerImpl::AddTestSuite (TestSuite *testSuite)
 
 
 bool
-TestRunnerImpl::MustAssertOnFailure (void) const
+TestRunnerImpl::MustAssertOnFailure () const
 {
   NS_LOG_FUNCTION (this);
   return m_assertOnFailure;
 }
 bool
-TestRunnerImpl::MustContinueOnFailure (void) const
+TestRunnerImpl::MustContinueOnFailure () const
 {
   NS_LOG_FUNCTION (this);
   return m_continueOnFailure;
 }
 
 bool
-TestRunnerImpl::MustUpdateData (void) const
+TestRunnerImpl::MustUpdateData () const
 {
   NS_LOG_FUNCTION (this);
   return m_updateData;
 }
 std::string
-TestRunnerImpl::GetTempDir (void) const
+TestRunnerImpl::GetTempDir () const
 {
   NS_LOG_FUNCTION (this);
   return m_tempDir;
@@ -574,7 +574,7 @@ TestRunnerImpl::IsTopLevelSourceDir (std::string path) const
 }
 
 std::string
-TestRunnerImpl::GetTopLevelSourceDir (void) const
+TestRunnerImpl::GetTopLevelSourceDir () const
 {
   NS_LOG_FUNCTION (this);
   std::string self = SystemPath::FindSelfDirectory ();
@@ -798,7 +798,7 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
 }
 
 void
-TestRunnerImpl::PrintTestTypeList (void) const
+TestRunnerImpl::PrintTestTypeList () const
 {
   NS_LOG_FUNCTION (this);
   std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;

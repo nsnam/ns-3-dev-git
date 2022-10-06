@@ -27,7 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("ChannelCoordinator");
  *       This destructor is needed.
  ****************************************************************/
 
-ChannelCoordinationListener::~ChannelCoordinationListener (void)
+ChannelCoordinationListener::~ChannelCoordinationListener ()
 {
 }
 
@@ -36,7 +36,7 @@ ChannelCoordinationListener::~ChannelCoordinationListener (void)
 NS_OBJECT_ENSURE_REGISTERED (ChannelCoordinator);
 
 TypeId
-ChannelCoordinator::GetTypeId (void)
+ChannelCoordinator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ChannelCoordinator")
     .SetParent<Object> ()
@@ -70,14 +70,14 @@ ChannelCoordinator::~ChannelCoordinator ()
 }
 
 void
-ChannelCoordinator::DoInitialize (void)
+ChannelCoordinator::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   StartChannelCoordination ();
 }
 
 void
-ChannelCoordinator::DoDispose (void)
+ChannelCoordinator::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   StopChannelCoordination ();
@@ -85,7 +85,7 @@ ChannelCoordinator::DoDispose (void)
 }
 
 Time
-ChannelCoordinator::GetDefaultCchInterval (void)
+ChannelCoordinator::GetDefaultCchInterval ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   // refer to Annex H of IEEE 1609.4-2010
@@ -94,7 +94,7 @@ ChannelCoordinator::GetDefaultCchInterval (void)
 }
 
 Time
-ChannelCoordinator::GetDefaultSchInterval (void)
+ChannelCoordinator::GetDefaultSchInterval ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   // refer to Annex H of IEEE 1609.4-2010
@@ -103,14 +103,14 @@ ChannelCoordinator::GetDefaultSchInterval (void)
 }
 
 Time
-ChannelCoordinator::GetDefaultSyncInterval (void)
+ChannelCoordinator::GetDefaultSyncInterval ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetDefaultCchInterval  () + GetDefaultSchInterval  ();
 }
 
 Time
-ChannelCoordinator::GetDefaultGuardInterval (void)
+ChannelCoordinator::GetDefaultGuardInterval ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   // refer to Annex H of IEEE 1609.4-2010
@@ -128,7 +128,7 @@ ChannelCoordinator::SetCchInterval (Time cchInterval)
 }
 
 Time
-ChannelCoordinator::GetCchInterval (void) const
+ChannelCoordinator::GetCchInterval () const
 {
   NS_LOG_FUNCTION (this);
   return m_cchi;
@@ -142,14 +142,14 @@ ChannelCoordinator::SetSchInterval (Time schInterval)
 }
 
 Time
-ChannelCoordinator::GetSchInterval (void) const
+ChannelCoordinator::GetSchInterval () const
 {
   NS_LOG_FUNCTION (this);
   return m_schi;
 }
 
 Time
-ChannelCoordinator::GetSyncInterval (void) const
+ChannelCoordinator::GetSyncInterval () const
 {
   NS_LOG_FUNCTION (this);
   return GetCchInterval () + GetSchInterval ();
@@ -163,21 +163,21 @@ ChannelCoordinator::SetGuardInterval (Time guard)
 }
 
 Time
-ChannelCoordinator::GetGuardInterval (void) const
+ChannelCoordinator::GetGuardInterval () const
 {
   NS_LOG_FUNCTION (this);
   return m_gi;
 }
 
 Time
-ChannelCoordinator::GetSchSlot (void) const
+ChannelCoordinator::GetSchSlot () const
 {
   NS_LOG_FUNCTION (this);
   return m_schi - m_gi;
 }
 
 Time
-ChannelCoordinator::GetCchSlot (void) const
+ChannelCoordinator::GetCchSlot () const
 {
   NS_LOG_FUNCTION (this);
   return m_cchi - m_gi;
@@ -209,7 +209,7 @@ ChannelCoordinator::IsGuardInterval (Time duration) const
 }
 
 bool
-ChannelCoordinator::IsValidConfig (void) const
+ChannelCoordinator::IsValidConfig () const
 {
   NS_LOG_FUNCTION (this);
   if (GetCchInterval ().GetMilliSeconds () == 0 || GetSchInterval ().GetMilliSeconds () == 0
@@ -319,14 +319,14 @@ ChannelCoordinator::UnregisterListener (Ptr<ChannelCoordinationListener> listene
 }
 
 void
-ChannelCoordinator::UnregisterAllListeners (void)
+ChannelCoordinator::UnregisterAllListeners ()
 {
   NS_LOG_FUNCTION (this);
   m_listeners.clear ();
 }
 
 void
-ChannelCoordinator::StartChannelCoordination (void)
+ChannelCoordinator::StartChannelCoordination ()
 {
   NS_LOG_FUNCTION (this);
   Time now = Now ();
@@ -344,7 +344,7 @@ ChannelCoordinator::StartChannelCoordination (void)
 }
 
 void
-ChannelCoordinator::StopChannelCoordination (void)
+ChannelCoordinator::StopChannelCoordination ()
 {
   if (!m_coordination.IsExpired ())
     {
@@ -354,7 +354,7 @@ ChannelCoordinator::StopChannelCoordination (void)
 }
 
 void
-ChannelCoordinator::NotifySchSlot (void)
+ChannelCoordinator::NotifySchSlot ()
 {
   NS_LOG_FUNCTION (this);
   m_coordination = Simulator::Schedule (GetSchSlot (), &ChannelCoordinator::NotifyGuardSlot, this);
@@ -365,7 +365,7 @@ ChannelCoordinator::NotifySchSlot (void)
 }
 
 void
-ChannelCoordinator::NotifyCchSlot (void)
+ChannelCoordinator::NotifyCchSlot ()
 {
   NS_LOG_FUNCTION (this);
   m_coordination = Simulator::Schedule (GetCchSlot (), &ChannelCoordinator::NotifyGuardSlot, this);
@@ -376,7 +376,7 @@ ChannelCoordinator::NotifyCchSlot (void)
 }
 
 void
-ChannelCoordinator::NotifyGuardSlot (void)
+ChannelCoordinator::NotifyGuardSlot ()
 {
   NS_LOG_FUNCTION (this);
   Time guardSlot = GetGuardInterval ();

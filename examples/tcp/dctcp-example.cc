@@ -141,7 +141,7 @@ TraceS3R1Sink (std::size_t index, Ptr<const Packet> p, const Address& a)
 }
 
 void
-InitializeCounters (void)
+InitializeCounters ()
 {
   for (std::size_t i = 0; i < 10; i++)
     {

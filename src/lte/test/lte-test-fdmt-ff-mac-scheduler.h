@@ -66,7 +66,7 @@ private:
    * \returns name string
    */
   static std::string BuildNameString (uint16_t nUser, double dist);
-  virtual void DoRun (void);
+  virtual void DoRun ();
   uint16_t m_nUser; ///< number of UE nodes
   double m_dist; ///< distance between the nodes
   double m_thrRefDl; ///< DL throughput reference

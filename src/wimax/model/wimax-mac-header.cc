@@ -27,7 +27,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (MacHeaderType);
 
-MacHeaderType::MacHeaderType (void)
+MacHeaderType::MacHeaderType ()
   : m_type (0)
 {
 }
@@ -37,7 +37,7 @@ MacHeaderType::MacHeaderType (uint8_t type)
 {
 }
 
-MacHeaderType::~MacHeaderType (void)
+MacHeaderType::~MacHeaderType ()
 {
 }
 
@@ -48,19 +48,19 @@ MacHeaderType::SetType (uint8_t type)
 }
 
 uint8_t
-MacHeaderType::GetType (void) const
+MacHeaderType::GetType () const
 {
   return m_type;
 }
 
 std::string
-MacHeaderType::GetName (void) const
+MacHeaderType::GetName () const
 {
   return "MAC Header Type";
 }
 
 TypeId
-MacHeaderType::GetTypeId (void)
+MacHeaderType::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MacHeaderType")
     .SetParent<Header> ()
@@ -70,7 +70,7 @@ MacHeaderType::GetTypeId (void)
   return tid;
 }
 
-TypeId MacHeaderType::GetInstanceTypeId (void) const
+TypeId MacHeaderType::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -80,7 +80,7 @@ void MacHeaderType::Print (std::ostream &os) const
   os << " header type = " << (uint32_t) m_type;
 }
 
-uint32_t MacHeaderType::GetSerializedSize (void) const
+uint32_t MacHeaderType::GetSerializedSize () const
 {
   return 0;
 }
@@ -98,7 +98,7 @@ uint32_t MacHeaderType::Deserialize (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (GenericMacHeader);
 
-GenericMacHeader::GenericMacHeader (void)
+GenericMacHeader::GenericMacHeader ()
   : m_ht (0),
     m_ec (0),
     m_type (0),
@@ -113,7 +113,7 @@ GenericMacHeader::GenericMacHeader (void)
   c_hcs = 0;
 }
 
-GenericMacHeader::~GenericMacHeader (void)
+GenericMacHeader::~GenericMacHeader ()
 {
 }
 
@@ -157,52 +157,52 @@ void GenericMacHeader::SetHcs (uint8_t hcs)
   m_hcs = hcs;
 }
 
-uint8_t GenericMacHeader::GetHt (void) const
+uint8_t GenericMacHeader::GetHt () const
 {
   return m_ht;
 }
 
-uint8_t GenericMacHeader::GetEc (void) const
+uint8_t GenericMacHeader::GetEc () const
 {
   return m_ec;
 }
 
-uint8_t GenericMacHeader::GetType (void) const
+uint8_t GenericMacHeader::GetType () const
 {
   return m_type;
 }
 
-uint8_t GenericMacHeader::GetCi (void) const
+uint8_t GenericMacHeader::GetCi () const
 {
   return m_ci;
 }
 
-uint8_t GenericMacHeader::GetEks (void) const
+uint8_t GenericMacHeader::GetEks () const
 {
   return m_eks;
 }
 
-uint16_t GenericMacHeader::GetLen (void) const
+uint16_t GenericMacHeader::GetLen () const
 {
   return m_len;
 }
 
-Cid GenericMacHeader::GetCid (void) const
+Cid GenericMacHeader::GetCid () const
 {
   return m_cid;
 }
 
-uint8_t GenericMacHeader::GetHcs (void) const
+uint8_t GenericMacHeader::GetHcs () const
 {
   return m_hcs;
 }
 
-std::string GenericMacHeader::GetName (void) const
+std::string GenericMacHeader::GetName () const
 {
   return "Generic Mac Header";
 }
 
-TypeId GenericMacHeader::GetTypeId (void)
+TypeId GenericMacHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GenericMacHeader")
     .SetParent<Header> ()
@@ -212,7 +212,7 @@ TypeId GenericMacHeader::GetTypeId (void)
   return tid;
 }
 
-TypeId GenericMacHeader::GetInstanceTypeId (void) const
+TypeId GenericMacHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -224,7 +224,7 @@ void GenericMacHeader::Print (std::ostream &os) const
      << ", len (length) = " << m_len << ", cid = " << m_cid << ", hcs (header check sequence) = " << (uint32_t) m_hcs;
 }
 
-uint32_t GenericMacHeader::GetSerializedSize (void) const
+uint32_t GenericMacHeader::GetSerializedSize () const
 {
   return 6;
 }
@@ -297,7 +297,7 @@ uint32_t GenericMacHeader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
-bool GenericMacHeader::check_hcs (void) const
+bool GenericMacHeader::check_hcs () const
 {
   return (m_hcs == c_hcs);
 }
@@ -306,7 +306,7 @@ bool GenericMacHeader::check_hcs (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (BandwidthRequestHeader);
 
-BandwidthRequestHeader::BandwidthRequestHeader (void)
+BandwidthRequestHeader::BandwidthRequestHeader ()
   : m_ht (1),
     m_ec (0),
     m_type (0),
@@ -316,7 +316,7 @@ BandwidthRequestHeader::BandwidthRequestHeader (void)
 {
 }
 
-BandwidthRequestHeader::~BandwidthRequestHeader (void)
+BandwidthRequestHeader::~BandwidthRequestHeader ()
 {
 }
 
@@ -350,42 +350,42 @@ void BandwidthRequestHeader::SetHcs (uint8_t hcs)
   m_hcs = hcs;
 }
 
-uint8_t BandwidthRequestHeader::GetHt (void) const
+uint8_t BandwidthRequestHeader::GetHt () const
 {
   return m_ht;
 }
 
-uint8_t BandwidthRequestHeader::GetEc (void) const
+uint8_t BandwidthRequestHeader::GetEc () const
 {
   return m_ec;
 }
 
-uint8_t BandwidthRequestHeader::GetType (void) const
+uint8_t BandwidthRequestHeader::GetType () const
 {
   return m_type;
 }
 
-uint32_t BandwidthRequestHeader::GetBr (void) const
+uint32_t BandwidthRequestHeader::GetBr () const
 {
   return m_br;
 }
 
-Cid BandwidthRequestHeader::GetCid (void) const
+Cid BandwidthRequestHeader::GetCid () const
 {
   return m_cid;
 }
 
-uint8_t BandwidthRequestHeader::GetHcs (void) const
+uint8_t BandwidthRequestHeader::GetHcs () const
 {
   return m_hcs;
 }
 
-std::string BandwidthRequestHeader::GetName (void) const
+std::string BandwidthRequestHeader::GetName () const
 {
   return "Bandwidth Request Header";
 }
 
-TypeId BandwidthRequestHeader::GetTypeId (void)
+TypeId BandwidthRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BandwidthRequestHeader")
     .SetParent<Header> ()
@@ -395,7 +395,7 @@ TypeId BandwidthRequestHeader::GetTypeId (void)
   return tid;
 }
 
-TypeId BandwidthRequestHeader::GetInstanceTypeId (void) const
+TypeId BandwidthRequestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -408,7 +408,7 @@ void BandwidthRequestHeader::Print (std::ostream &os) const
   os << ", hcs (header check sequence) = " << (uint32_t) m_hcs;
 }
 
-uint32_t BandwidthRequestHeader::GetSerializedSize (void) const
+uint32_t BandwidthRequestHeader::GetSerializedSize () const
 {
   /*
    * The size of the BandwidthRequest mac header is always 6 bytes
@@ -482,7 +482,7 @@ uint32_t BandwidthRequestHeader::Deserialize (Buffer::Iterator start)
 
 }
 
-bool BandwidthRequestHeader::check_hcs (void) const
+bool BandwidthRequestHeader::check_hcs () const
 {
   return (m_hcs == c_hcs);
 }
@@ -491,14 +491,14 @@ bool BandwidthRequestHeader::check_hcs (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (GrantManagementSubheader);
 
-GrantManagementSubheader::GrantManagementSubheader (void)
+GrantManagementSubheader::GrantManagementSubheader ()
   : m_si (0),
     m_pm (0),
     m_pbr (0)
 {
 }
 
-GrantManagementSubheader::~GrantManagementSubheader (void)
+GrantManagementSubheader::~GrantManagementSubheader ()
 {
 }
 
@@ -517,27 +517,27 @@ void GrantManagementSubheader::SetPbr (uint16_t pbr)
   m_pbr = pbr;
 }
 
-uint8_t GrantManagementSubheader::GetSi (void) const
+uint8_t GrantManagementSubheader::GetSi () const
 {
   return m_si;
 }
 
-uint8_t GrantManagementSubheader::GetPm (void) const
+uint8_t GrantManagementSubheader::GetPm () const
 {
   return m_pm;
 }
 
-uint16_t GrantManagementSubheader::GetPbr (void) const
+uint16_t GrantManagementSubheader::GetPbr () const
 {
   return m_pbr;
 }
 
-std::string GrantManagementSubheader::GetName (void) const
+std::string GrantManagementSubheader::GetName () const
 {
   return "Grant Management Subheader";
 }
 
-TypeId GrantManagementSubheader::GetTypeId (void)
+TypeId GrantManagementSubheader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GrantManagementSubheader")
     .SetParent<Header> ()
@@ -547,7 +547,7 @@ TypeId GrantManagementSubheader::GetTypeId (void)
   return tid;
 }
 
-TypeId GrantManagementSubheader::GetInstanceTypeId (void) const
+TypeId GrantManagementSubheader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -558,7 +558,7 @@ void GrantManagementSubheader::Print (std::ostream &os) const
      << ", pbr (piggyback request) = " << m_pbr;
 }
 
-uint32_t GrantManagementSubheader::GetSerializedSize (void) const
+uint32_t GrantManagementSubheader::GetSerializedSize () const
 {
   return 1 + 1 + 2;
 }
@@ -585,13 +585,13 @@ uint32_t GrantManagementSubheader::Deserialize (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (FragmentationSubheader);
 
-FragmentationSubheader::FragmentationSubheader (void)
+FragmentationSubheader::FragmentationSubheader ()
   : m_fc (0),
     m_fsn (0)
 {
 }
 
-FragmentationSubheader::~FragmentationSubheader (void)
+FragmentationSubheader::~FragmentationSubheader ()
 {
 }
 
@@ -608,26 +608,26 @@ FragmentationSubheader::SetFsn (uint8_t fsn)
 }
 
 uint8_t
-FragmentationSubheader::GetFc (void) const
+FragmentationSubheader::GetFc () const
 {
   return m_fc;
 }
 
 uint8_t
-FragmentationSubheader::GetFsn (void) const
+FragmentationSubheader::GetFsn () const
 {
   return m_fsn;
 }
 
 
 std::string
-FragmentationSubheader::GetName (void) const
+FragmentationSubheader::GetName () const
 {
   return "Fragmentation Subheader";
 }
 
 TypeId
-FragmentationSubheader::GetTypeId (void)
+FragmentationSubheader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FragmentationSubheader")
     .SetParent<Header> ()
@@ -638,7 +638,7 @@ FragmentationSubheader::GetTypeId (void)
 }
 
 TypeId
-FragmentationSubheader::GetInstanceTypeId (void) const
+FragmentationSubheader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -651,7 +651,7 @@ FragmentationSubheader::Print (std::ostream &os) const
 }
 
 uint32_t
-FragmentationSubheader::GetSerializedSize (void) const
+FragmentationSubheader::GetSerializedSize () const
 {
   return 2;
 }

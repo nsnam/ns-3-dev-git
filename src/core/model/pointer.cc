@@ -52,14 +52,14 @@ PointerValue::SetObject (Ptr<Object> object)
 }
 
 Ptr<Object>
-PointerValue::GetObject (void) const
+PointerValue::GetObject () const
 {
   NS_LOG_FUNCTION (this);
   return m_value;
 }
 
 Ptr<AttributeValue>
-PointerValue::Copy (void) const
+PointerValue::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<PointerValue> (*this);

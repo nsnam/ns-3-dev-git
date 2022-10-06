@@ -80,7 +80,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   virtual ~WifiAssocManager ();
 
@@ -157,7 +157,7 @@ protected:
    * Constructor (protected as this is an abstract base class)
    */
   WifiAssocManager ();
-  void DoDispose (void) override;
+  void DoDispose () override;
 
   /// typedef for the sorted list of ApInfo objects
   using SortedList = std::set<StaWifiMac::ApInfo, ApInfoCompare>;
@@ -165,7 +165,7 @@ protected:
   /**
    * \return a const reference to the sorted list of ApInfo objects.
    */
-  const SortedList& GetSortedList (void) const;
+  const SortedList& GetSortedList () const;
 
   /**
    * Get a reference to the list of the links to setup with the given AP. This method
@@ -179,7 +179,7 @@ protected:
   /**
    * \return the scanning parameters.
    */
-  const WifiScanParams& GetScanParams (void) const;
+  const WifiScanParams& GetScanParams () const;
 
   /**
    * Check whether the given AP information match the current scanning parameters.
@@ -211,7 +211,7 @@ protected:
    * it, if any, to the STA wifi MAC along with the notification that scanning
    * is completed.
    */
-  void ScanningTimeout (void);
+  void ScanningTimeout ();
 
   /// typedef for an optional const reference to a ReducedNeighborReport object
   using OptRnrConstRef = std::optional<std::reference_wrapper<const ReducedNeighborReport>>;
@@ -236,7 +236,7 @@ private:
    * Start a scanning procedure. This method needs to schedule a call to
    * ScanningTimeout when the scanning procedure is completed.
    */
-  virtual void DoStartScanning (void) = 0;
+  virtual void DoStartScanning () = 0;
 
   WifiScanParams m_scanParams;              ///< scanning parameters
   SortedList m_apList;                      ///< sorted list of candidate APs

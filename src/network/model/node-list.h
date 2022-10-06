@@ -55,12 +55,12 @@ public:
    * \returns a C++ iterator located at the beginning of this
    *          list.
    */
-  static Iterator Begin (void);
+  static Iterator Begin ();
   /**
    * \returns a C++ iterator located at the end of this
    *          list.
    */
-  static Iterator End (void);
+  static Iterator End ();
   /**
    * \param n index of requested node.
    * \returns the Node associated to index n.
@@ -69,7 +69,7 @@ public:
   /**
    * \returns the number of nodes currently in the list.
    */
-  static uint32_t GetNNodes (void);
+  static uint32_t GetNNodes ();
 };
 
 } // namespace ns3

@@ -48,19 +48,19 @@ BlockAckWindow::Reset (uint16_t winStart)
 }
 
 uint16_t
-BlockAckWindow::GetWinStart (void) const
+BlockAckWindow::GetWinStart () const
 {
   return m_winStart;
 }
 
 uint16_t
-BlockAckWindow::GetWinEnd (void) const
+BlockAckWindow::GetWinEnd () const
 {
   return (m_winStart + m_window.size () - 1) % SEQNO_SPACE_SIZE;
 }
 
 std::size_t
-BlockAckWindow::GetWinSize (void) const
+BlockAckWindow::GetWinSize () const
 {
   return m_window.size ();
 }

@@ -43,7 +43,7 @@ public:
    * \brief The interface ID.
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor.

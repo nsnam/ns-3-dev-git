@@ -84,24 +84,24 @@ public:
    * This method is syntactic sugar for the ns3::Simulator::Cancel
    * method.
    */
-  void Cancel (void);
+  void Cancel ();
   /**
    * This method is syntactic sugar for the ns3::Simulator::Remove
    * method.
    */
-  void Remove (void);
+  void Remove ();
   /**
    * This method is syntactic sugar for the ns3::Simulator::IsExpired
    * method.
    * \returns \c true if the event has expired, \c false otherwise.
    */
-  bool IsExpired (void) const;
+  bool IsExpired () const;
   /**
    * This method is syntactic sugar for !IsExpired().
    *
    * \returns \c true if the event has not expired, \c false otherwise.
    */
-  bool IsRunning (void) const;
+  bool IsRunning () const;
 
 public:
   /**
@@ -111,13 +111,13 @@ public:
    */
   /**@{*/
   /** \return The underlying EventImpl pointer. */
-  EventImpl * PeekEventImpl (void) const;
+  EventImpl * PeekEventImpl () const;
   /** \return The virtual time stamp. */
-  uint64_t GetTs (void) const;
+  uint64_t GetTs () const;
   /** \return The event context. */
-  uint32_t GetContext (void) const;
+  uint32_t GetContext () const;
   /** \return The unique id. */
-  uint32_t GetUid (void) const;
+  uint32_t GetUid () const;
   /**@}*/
 
   /**

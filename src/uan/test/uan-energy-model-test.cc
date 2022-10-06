@@ -73,7 +73,7 @@ public:
    */
   void SendOnePacket (Ptr<Node> node);
 
-  void DoRun (void);
+  void DoRun ();
 
   double m_simTime; ///< simulation time
   uint32_t m_bytesRx; ///< bytes received
@@ -228,14 +228,14 @@ public:
   ~AcousticModemEnergyDepletionTestCase ();
 
   /// Depletion handler function
-  void DepletionHandler (void);
+  void DepletionHandler ();
   /**
    * Send one packet function
    * \param node the node to send to
    */
   void SendOnePacket (Ptr<Node> node);
 
-  void DoRun (void);
+  void DoRun ();
 
   double m_simTime; ///< Simulation time
   uint32_t m_callbackCount; ///< callback count
@@ -257,7 +257,7 @@ AcousticModemEnergyDepletionTestCase::~AcousticModemEnergyDepletionTestCase ()
 }
 
 void
-AcousticModemEnergyDepletionTestCase::DepletionHandler (void)
+AcousticModemEnergyDepletionTestCase::DepletionHandler ()
 {
   // increase callback count
   m_callbackCount++;
@@ -279,7 +279,7 @@ AcousticModemEnergyDepletionTestCase::SendOnePacket (Ptr<Node> node)
 }
 
 void
-AcousticModemEnergyDepletionTestCase::DoRun (void)
+AcousticModemEnergyDepletionTestCase::DoRun ()
 {
   // create a generic node
   m_node = CreateObject<Node> ();

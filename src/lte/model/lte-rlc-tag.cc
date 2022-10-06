@@ -41,7 +41,7 @@ RlcTag::RlcTag (Time senderTimestamp)
 }
 
 TypeId
-RlcTag::GetTypeId (void)
+RlcTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RlcTag")
     .SetParent<Tag> ()
@@ -51,13 +51,13 @@ RlcTag::GetTypeId (void)
 }
 
 TypeId
-RlcTag::GetInstanceTypeId (void) const
+RlcTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-RlcTag::GetSerializedSize (void) const
+RlcTag::GetSerializedSize () const
 {
   return sizeof(Time);
 }

@@ -55,8 +55,8 @@ public:
   PieQueueDiscTestItem (const PieQueueDiscTestItem &) = delete;
   PieQueueDiscTestItem & operator = (const PieQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark (void);
+  virtual void AddHeader ();
+  virtual bool Mark ();
 
   // ** Variables for testing m_isCapDropAdjustment
   double m_maxDropProbDiff = 0.0;   //!< Maximum difference between two consecutive drop probability values
@@ -86,12 +86,12 @@ PieQueueDiscTestItem::PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr,
 }
 
 void
-PieQueueDiscTestItem::AddHeader (void)
+PieQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-PieQueueDiscTestItem::Mark (void)
+PieQueueDiscTestItem::Mark ()
 {
   if (m_ecnCapablePacket)
     {
@@ -110,7 +110,7 @@ class PieQueueDiscTestCase : public TestCase
 {
 public:
   PieQueueDiscTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 private:
   /**
    * Enqueue function
@@ -693,7 +693,7 @@ PieQueueDiscTestCase::DequeueWithDelay (Ptr<PieQueueDisc> queue, double delay, u
 }
 
 void
-PieQueueDiscTestCase::DoRun (void)
+PieQueueDiscTestCase::DoRun ()
 {
   RunPieTest (QueueSizeUnit::PACKETS);
   RunPieTest (QueueSizeUnit::BYTES);

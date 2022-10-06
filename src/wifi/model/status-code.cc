@@ -27,25 +27,25 @@ StatusCode::StatusCode ()
 }
 
 void
-StatusCode::SetSuccess (void)
+StatusCode::SetSuccess ()
 {
   m_code = 0;
 }
 
 void
-StatusCode::SetFailure (void)
+StatusCode::SetFailure ()
 {
   m_code = 1;
 }
 
 bool
-StatusCode::IsSuccess (void) const
+StatusCode::IsSuccess () const
 {
   return (m_code == 0);
 }
 
 uint32_t
-StatusCode::GetSerializedSize (void) const
+StatusCode::GetSerializedSize () const
 {
   return 2;
 }

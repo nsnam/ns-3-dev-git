@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("AlohaNoackMacHeader");
 NS_OBJECT_ENSURE_REGISTERED (AlohaNoackMacHeader);
 
 TypeId
-AlohaNoackMacHeader::GetTypeId (void)
+AlohaNoackMacHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AlohaNoackMacHeader")
     .SetParent<Header> ()
@@ -40,7 +40,7 @@ AlohaNoackMacHeader::GetTypeId (void)
 }
 
 TypeId
-AlohaNoackMacHeader::GetInstanceTypeId (void) const
+AlohaNoackMacHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -48,7 +48,7 @@ AlohaNoackMacHeader::GetInstanceTypeId (void) const
 
 
 uint32_t
-AlohaNoackMacHeader::GetSerializedSize (void) const
+AlohaNoackMacHeader::GetSerializedSize () const
 {
   return 12;
 }

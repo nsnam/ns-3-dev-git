@@ -57,7 +57,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint16_t PROT_NUMBER; //!< ARP protocol number (0x0806)
 
   ArpL3Protocol ();
@@ -124,7 +124,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /*
    * This function will notify other components connected to the node that a new stack member is now connected
    * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.

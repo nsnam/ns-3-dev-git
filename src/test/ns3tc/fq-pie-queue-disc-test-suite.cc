@@ -59,7 +59,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Ipv4FqPieTestPacketFilter ();
   virtual ~Ipv4FqPieTestPacketFilter ();
@@ -81,7 +81,7 @@ private:
 };
 
 TypeId
-Ipv4FqPieTestPacketFilter::GetTypeId (void)
+Ipv4FqPieTestPacketFilter::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4FqPieTestPacketFilter")
     .SetParent<Ipv4PacketFilter> ()
@@ -121,7 +121,7 @@ public:
   virtual ~FqPieQueueDiscNoSuitableFilter ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 FqPieQueueDiscNoSuitableFilter::FqPieQueueDiscNoSuitableFilter ()
@@ -132,7 +132,7 @@ FqPieQueueDiscNoSuitableFilter::~FqPieQueueDiscNoSuitableFilter ()
 {}
 
 void
-FqPieQueueDiscNoSuitableFilter::DoRun (void)
+FqPieQueueDiscNoSuitableFilter::DoRun ()
 {
   // Packets that cannot be classified by the available filters should be dropped
   Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("4p"));
@@ -172,7 +172,7 @@ public:
   virtual ~FqPieQueueDiscIPFlowsSeparationAndPacketLimit ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue the queue disc
@@ -198,7 +198,7 @@ FqPieQueueDiscIPFlowsSeparationAndPacketLimit::AddPacket (Ptr<FqPieQueueDisc> qu
 }
 
 void
-FqPieQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
+FqPieQueueDiscIPFlowsSeparationAndPacketLimit::DoRun ()
 {
   Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("4p"));
 
@@ -246,7 +246,7 @@ public:
   virtual ~FqPieQueueDiscDeficit ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -272,7 +272,7 @@ FqPieQueueDiscDeficit::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
 }
 
 void
-FqPieQueueDiscDeficit::DoRun (void)
+FqPieQueueDiscDeficit::DoRun ()
 {
   Ptr<FqPieQueueDisc> queueDisc = CreateObject<FqPieQueueDisc> ();
 
@@ -393,7 +393,7 @@ public:
   virtual ~FqPieQueueDiscTCPFlowsSeparation ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -421,7 +421,7 @@ FqPieQueueDiscTCPFlowsSeparation::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Head
 }
 
 void
-FqPieQueueDiscTCPFlowsSeparation::DoRun (void)
+FqPieQueueDiscTCPFlowsSeparation::DoRun ()
 {
   Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10p"));
 
@@ -485,7 +485,7 @@ public:
   virtual ~FqPieQueueDiscUDPFlowsSeparation ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -513,7 +513,7 @@ FqPieQueueDiscUDPFlowsSeparation::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Head
 }
 
 void
-FqPieQueueDiscUDPFlowsSeparation::DoRun (void)
+FqPieQueueDiscUDPFlowsSeparation::DoRun ()
 {
   Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10p"));
 
@@ -599,7 +599,7 @@ public:
   virtual ~FqPieQueueDiscSetLinearProbing ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -625,7 +625,7 @@ FqPieQueueDiscSetLinearProbing::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header
 }
 
 void
-FqPieQueueDiscSetLinearProbing::DoRun (void)
+FqPieQueueDiscSetLinearProbing::DoRun ()
 {
   Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("EnableSetAssociativeHash", BooleanValue (true));
   queueDisc->SetQuantum (90);
@@ -713,7 +713,7 @@ public:
   virtual ~FqPieQueueDiscL4sMode ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue the given number of packets.
    * \param queue The queue disc.
@@ -791,7 +791,7 @@ FqPieQueueDiscL4sMode::DequeueWithDelay (Ptr<FqPieQueueDisc> queue, double delay
 }
 
 void
-FqPieQueueDiscL4sMode::DoRun (void)
+FqPieQueueDiscL4sMode::DoRun ()
 {
   // Test is divided into 2 sub test cases:
   // 1) Without hash collisions

@@ -82,8 +82,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   ConfigStore ();
   ~ConfigStore ();
@@ -112,11 +112,11 @@ public:
   /**
    * Configure the default values
    */
-  void ConfigureDefaults (void);
+  void ConfigureDefaults ();
   /**
    * Configure the attribute values
    */
-  void ConfigureAttributes (void);
+  void ConfigureAttributes ();
 
 private:
   enum Mode m_mode; ///< store mode

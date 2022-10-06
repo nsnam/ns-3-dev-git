@@ -58,7 +58,7 @@ public:
   virtual ~UniqueTypeIdTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   enum
   {
     HashChainFlag = 0x80000000
@@ -73,7 +73,7 @@ UniqueTypeIdTestCase::~UniqueTypeIdTestCase ()
 {}
 
 void
-UniqueTypeIdTestCase::DoRun (void)
+UniqueTypeIdTestCase::DoRun ()
 {
   std::cout << suite << std::endl;
   std::cout << suite << GetName () << std::endl;
@@ -138,7 +138,7 @@ public:
   virtual ~CollisionTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   enum
   {
     HashChainFlag = 0x80000000
@@ -153,7 +153,7 @@ CollisionTestCase::~CollisionTestCase ()
 {}
 
 void
-CollisionTestCase::DoRun (void)
+CollisionTestCase::DoRun ()
 {
   std::cout << suite << std::endl;
   std::cout << suite << GetName () << std::endl;
@@ -235,7 +235,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("DeprecatedAttribute")
       .SetParent<Object> ()
@@ -301,7 +301,7 @@ public:
   virtual ~DeprecatedAttributeTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -313,7 +313,7 @@ DeprecatedAttributeTestCase::~DeprecatedAttributeTestCase ()
 {}
 
 void
-DeprecatedAttributeTestCase::DoRun (void)
+DeprecatedAttributeTestCase::DoRun ()
 {
   std::cerr << suite << std::endl;
   std::cerr << suite << GetName () << std::endl;
@@ -364,8 +364,8 @@ public:
   virtual ~LookupTimeTestCase ();
 
 private:
-  void DoRun (void);
-  void DoSetup (void);
+  void DoRun ();
+  void DoSetup ();
   /**
    * Report the performance test results.
    * \param how How the TypeId is searched (name or hash).
@@ -387,7 +387,7 @@ LookupTimeTestCase::~LookupTimeTestCase ()
 {}
 
 void
-LookupTimeTestCase::DoRun (void)
+LookupTimeTestCase::DoRun ()
 {
   std::cout << suite << std::endl;
   std::cout << suite << GetName () << std::endl;
@@ -421,7 +421,7 @@ LookupTimeTestCase::DoRun (void)
 }
 
 void
-LookupTimeTestCase::DoSetup (void)
+LookupTimeTestCase::DoSetup ()
 {
   uint32_t nids = TypeId::GetRegisteredN ();
 

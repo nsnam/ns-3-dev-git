@@ -30,7 +30,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("NetDeviceQueueInterface");
 
 TypeId
-NetDeviceQueue::GetTypeId (void)
+NetDeviceQueue::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NetDeviceQueue")
     .SetParent<Object> ()
@@ -58,28 +58,28 @@ NetDeviceQueue::~NetDeviceQueue ()
 }
 
 bool
-NetDeviceQueue::IsStopped (void) const
+NetDeviceQueue::IsStopped () const
 {
   NS_LOG_FUNCTION (this);
   return m_stoppedByDevice || m_stoppedByQueueLimits;
 }
 
 void
-NetDeviceQueue::Start (void)
+NetDeviceQueue::Start ()
 {
   NS_LOG_FUNCTION (this);
   m_stoppedByDevice = false;
 }
 
 void
-NetDeviceQueue::Stop (void)
+NetDeviceQueue::Stop ()
 {
   NS_LOG_FUNCTION (this);
   m_stoppedByDevice = true;
 }
 
 void
-NetDeviceQueue::Wake (void)
+NetDeviceQueue::Wake ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -175,7 +175,7 @@ NetDeviceQueue::GetQueueLimits ()
 NS_OBJECT_ENSURE_REGISTERED (NetDeviceQueueInterface);
 
 TypeId
-NetDeviceQueueInterface::GetTypeId (void)
+NetDeviceQueueInterface::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NetDeviceQueueInterface")
     .SetParent<Object> ()
@@ -218,13 +218,13 @@ NetDeviceQueueInterface::GetTxQueue (std::size_t i) const
 }
 
 std::size_t
-NetDeviceQueueInterface::GetNTxQueues (void) const
+NetDeviceQueueInterface::GetNTxQueues () const
 {
   return m_txQueuesVector.size ();
 }
 
 void
-NetDeviceQueueInterface::DoDispose (void)
+NetDeviceQueueInterface::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -233,7 +233,7 @@ NetDeviceQueueInterface::DoDispose (void)
 }
 
 void
-NetDeviceQueueInterface::NotifyNewAggregate (void)
+NetDeviceQueueInterface::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -278,7 +278,7 @@ NetDeviceQueueInterface::SetSelectQueueCallback (SelectQueueCallback cb)
 }
 
 NetDeviceQueueInterface::SelectQueueCallback
-NetDeviceQueueInterface::GetSelectQueueCallback (void) const
+NetDeviceQueueInterface::GetSelectQueueCallback () const
 {
   return m_selectQueueCallback;
 }

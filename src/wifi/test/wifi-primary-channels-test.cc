@@ -145,7 +145,7 @@ public:
   /**
    * Check that all stations associated with an AP.
    */
-  void CheckAssociation (void);
+  void CheckAssociation ();
   /**
    * Check that (i) all stations belonging to the given BSSes received the SU PPDUs
    * transmitted over the given channel width; and (ii) all stations belonging to
@@ -184,8 +184,8 @@ public:
   void CheckReceivedTriggerFrames (std::set<uint8_t> txBss, uint16_t txChannelWidth);
 
 private:
-  void DoSetup (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoRun () override;
 
   uint16_t m_channelWidth;                       ///< operating channel width in MHz
   bool m_useDistinctBssColors;                   ///< true to set distinct BSS colors to BSSes
@@ -292,7 +292,7 @@ WifiPrimaryChannelsTest::ReceiveUl (uint8_t bss, Ptr<const WifiPsdu> psdu, RxSig
 }
 
 void
-WifiPrimaryChannelsTest::DoSetup (void)
+WifiPrimaryChannelsTest::DoSetup ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (40);
@@ -434,7 +434,7 @@ WifiPrimaryChannelsTest::DoSetup (void)
 }
 
 void
-WifiPrimaryChannelsTest::DoRun (void)
+WifiPrimaryChannelsTest::DoRun ()
 {
   // schedule association requests at different times. One station's SSID is
   // set to the correct value before initialization, so that such a station
@@ -808,7 +808,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu (uint8_t bss, uint16_t txChannelWidth, H
 }
 
 void
-WifiPrimaryChannelsTest::CheckAssociation (void)
+WifiPrimaryChannelsTest::CheckAssociation ()
 {
   for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
@@ -1062,7 +1062,7 @@ public:
                const std::set<uint8_t>& primary80, const std::set<uint8_t>& secondary80);
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   WifiPhyOperatingChannel m_channel;   //!< operating channel
 };

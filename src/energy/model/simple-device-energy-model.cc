@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("SimpleDeviceEnergyModel");
 NS_OBJECT_ENSURE_REGISTERED (SimpleDeviceEnergyModel);
 
 TypeId
-SimpleDeviceEnergyModel::GetTypeId (void)
+SimpleDeviceEnergyModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SimpleDeviceEnergyModel")
     .SetParent<DeviceEnergyModel> ()
@@ -82,7 +82,7 @@ SimpleDeviceEnergyModel::GetNode () const
 }
 
 double
-SimpleDeviceEnergyModel::GetTotalEnergyConsumption (void) const
+SimpleDeviceEnergyModel::GetTotalEnergyConsumption () const
 {
   NS_LOG_FUNCTION (this);
   Time duration = Simulator::Now () - m_lastUpdateTime;
@@ -117,14 +117,14 @@ SimpleDeviceEnergyModel::SetCurrentA (double current)
 }
 
 void
-SimpleDeviceEnergyModel::DoDispose (void)
+SimpleDeviceEnergyModel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_source = 0;
 }
 
 double
-SimpleDeviceEnergyModel::DoGetCurrentA (void) const
+SimpleDeviceEnergyModel::DoGetCurrentA () const
 {
   NS_LOG_FUNCTION (this);
   return m_actualCurrentA;

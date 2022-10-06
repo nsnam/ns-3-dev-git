@@ -215,7 +215,7 @@ public:
   /**
    * Internal implementation for Names::Clear()
    */
-  void Clear (void);
+  void Clear ();
 
   /**
    * Internal implementation for ns3::Names::Find(std::string)
@@ -290,7 +290,7 @@ NamesPriv::~NamesPriv ()
 }
 
 void
-NamesPriv::Clear (void)
+NamesPriv::Clear ()
 {
   NS_LOG_FUNCTION (this);
   //
@@ -828,7 +828,7 @@ Names::FindPath (Ptr<Object> object)
 }
 
 void
-Names::Clear (void)
+Names::Clear ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return NamesPriv::Get ()->Clear ();

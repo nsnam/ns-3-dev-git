@@ -38,7 +38,7 @@ NS_OBJECT_ENSURE_REGISTERED (BridgeNetDevice);
 
 
 TypeId
-BridgeNetDevice::GetTypeId (void)
+BridgeNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BridgeNetDevice")
     .SetParent<NetDevice> ()
@@ -232,7 +232,7 @@ Ptr<NetDevice> BridgeNetDevice::GetLearnedState (Mac48Address source)
 }
 
 uint32_t
-BridgeNetDevice::GetNBridgePorts (void) const
+BridgeNetDevice::GetNBridgePorts () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ports.size ();
@@ -279,14 +279,14 @@ BridgeNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-BridgeNetDevice::GetIfIndex (void) const
+BridgeNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ifIndex;
 }
 
 Ptr<Channel>
-BridgeNetDevice::GetChannel (void) const
+BridgeNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_channel;
@@ -300,7 +300,7 @@ BridgeNetDevice::SetAddress (Address address)
 }
 
 Address
-BridgeNetDevice::GetAddress (void) const
+BridgeNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_address;
@@ -315,7 +315,7 @@ BridgeNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-BridgeNetDevice::GetMtu (void) const
+BridgeNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_mtu;
@@ -323,7 +323,7 @@ BridgeNetDevice::GetMtu (void) const
 
 
 bool
-BridgeNetDevice::IsLinkUp (void) const
+BridgeNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
@@ -336,7 +336,7 @@ BridgeNetDevice::AddLinkChangeCallback (Callback<void> callback)
 
 
 bool
-BridgeNetDevice::IsBroadcast (void) const
+BridgeNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
@@ -344,14 +344,14 @@ BridgeNetDevice::IsBroadcast (void) const
 
 
 Address
-BridgeNetDevice::GetBroadcast (void) const
+BridgeNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-BridgeNetDevice::IsMulticast (void) const
+BridgeNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
@@ -367,14 +367,14 @@ BridgeNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 
 
 bool
-BridgeNetDevice::IsPointToPoint (void) const
+BridgeNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return false;
 }
 
 bool
-BridgeNetDevice::IsBridge (void) const
+BridgeNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
@@ -421,7 +421,7 @@ BridgeNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address
 
 
 Ptr<Node>
-BridgeNetDevice::GetNode (void) const
+BridgeNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_node;
@@ -437,7 +437,7 @@ BridgeNetDevice::SetNode (Ptr<Node> node)
 
 
 bool
-BridgeNetDevice::NeedsArp (void) const
+BridgeNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;

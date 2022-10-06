@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("BurstProfileManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BurstProfileManager);
 
-TypeId BurstProfileManager::GetTypeId (void)
+TypeId BurstProfileManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BurstProfileManager")
     .SetParent<Object> ()
@@ -46,19 +46,19 @@ BurstProfileManager::BurstProfileManager (Ptr<WimaxNetDevice> device)
 {
 }
 
-BurstProfileManager::~BurstProfileManager (void)
+BurstProfileManager::~BurstProfileManager ()
 {
   m_device = 0;
 }
 
 void
-BurstProfileManager::DoDispose (void)
+BurstProfileManager::DoDispose ()
 {
   m_device = 0;
 }
 
 
-uint16_t BurstProfileManager::GetNrBurstProfilesToDefine (void)
+uint16_t BurstProfileManager::GetNrBurstProfilesToDefine ()
 {
   /*
    * 7 modulation types
@@ -162,7 +162,7 @@ BurstProfileManager::GetModulationTypeForSS (const SSRecord *ssRecord, const Rng
 }
 
 uint8_t
-BurstProfileManager::GetBurstProfileToRequest (void)
+BurstProfileManager::GetBurstProfileToRequest ()
 {
   /*modulation type is currently set by user in simulation script, shall
    actually be determined based on SS's distance, power, signal etc*/

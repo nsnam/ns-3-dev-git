@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
 NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel);
 
 TypeId
-PropagationLossModel::GetTypeId (void)
+PropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PropagationLossModel")
     .SetParent<Object> ()
@@ -99,7 +99,7 @@ PropagationLossModel::AssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 
 TypeId
-RandomPropagationLossModel::GetTypeId (void)
+RandomPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RandomPropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -143,7 +143,7 @@ RandomPropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
 
 TypeId
-FriisPropagationLossModel::GetTypeId (void)
+FriisPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FriisPropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -178,7 +178,7 @@ FriisPropagationLossModel::SetSystemLoss (double systemLoss)
   m_systemLoss = systemLoss;
 }
 double
-FriisPropagationLossModel::GetSystemLoss (void) const
+FriisPropagationLossModel::GetSystemLoss () const
 {
   return m_systemLoss;
 }
@@ -188,7 +188,7 @@ FriisPropagationLossModel::SetMinLoss (double minLoss)
   m_minLoss = minLoss;
 }
 double
-FriisPropagationLossModel::GetMinLoss (void) const
+FriisPropagationLossModel::GetMinLoss () const
 {
   return m_minLoss;
 }
@@ -202,7 +202,7 @@ FriisPropagationLossModel::SetFrequency (double frequency)
 }
 
 double
-FriisPropagationLossModel::GetFrequency (void) const
+FriisPropagationLossModel::GetFrequency () const
 {
   return m_frequency;
 }
@@ -283,7 +283,7 @@ FriisPropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (TwoRayGroundPropagationLossModel);
 
 TypeId
-TwoRayGroundPropagationLossModel::GetTypeId (void)
+TwoRayGroundPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TwoRayGroundPropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -323,7 +323,7 @@ TwoRayGroundPropagationLossModel::SetSystemLoss (double systemLoss)
   m_systemLoss = systemLoss;
 }
 double
-TwoRayGroundPropagationLossModel::GetSystemLoss (void) const
+TwoRayGroundPropagationLossModel::GetSystemLoss () const
 {
   return m_systemLoss;
 }
@@ -333,7 +333,7 @@ TwoRayGroundPropagationLossModel::SetMinDistance (double minDistance)
   m_minDistance = minDistance;
 }
 double
-TwoRayGroundPropagationLossModel::GetMinDistance (void) const
+TwoRayGroundPropagationLossModel::GetMinDistance () const
 {
   return m_minDistance;
 }
@@ -352,7 +352,7 @@ TwoRayGroundPropagationLossModel::SetFrequency (double frequency)
 }
 
 double
-TwoRayGroundPropagationLossModel::GetFrequency (void) const
+TwoRayGroundPropagationLossModel::GetFrequency () const
 {
   return m_frequency;
 }
@@ -456,7 +456,7 @@ TwoRayGroundPropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel);
 
 TypeId
-LogDistancePropagationLossModel::GetTypeId (void)
+LogDistancePropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LogDistancePropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -498,7 +498,7 @@ LogDistancePropagationLossModel::SetReference (double referenceDistance, double 
   m_referenceLoss = referenceLoss;
 }
 double
-LogDistancePropagationLossModel::GetPathLossExponent (void) const
+LogDistancePropagationLossModel::GetPathLossExponent () const
 {
   return m_exponent;
 }
@@ -545,7 +545,7 @@ LogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (ThreeLogDistancePropagationLossModel);
 
 TypeId
-ThreeLogDistancePropagationLossModel::GetTypeId (void)
+ThreeLogDistancePropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeLogDistancePropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -647,7 +647,7 @@ ThreeLogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (NakagamiPropagationLossModel);
 
 TypeId
-NakagamiPropagationLossModel::GetTypeId (void)
+NakagamiPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NakagamiPropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -762,7 +762,7 @@ NakagamiPropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (FixedRssLossModel);
 
 TypeId
-FixedRssLossModel::GetTypeId (void)
+FixedRssLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FixedRssLossModel")
     .SetParent<PropagationLossModel> ()
@@ -809,7 +809,7 @@ FixedRssLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (MatrixPropagationLossModel);
 
 TypeId
-MatrixPropagationLossModel::GetTypeId (void)
+MatrixPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MatrixPropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -889,7 +889,7 @@ MatrixPropagationLossModel::DoAssignStreams (int64_t stream)
 NS_OBJECT_ENSURE_REGISTERED (RangePropagationLossModel);
 
 TypeId
-RangePropagationLossModel::GetTypeId (void)
+RangePropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RangePropagationLossModel")
     .SetParent<PropagationLossModel> ()

@@ -119,9 +119,9 @@ private:
    */
   void PacketDropped (Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
   /// Send A function
-  void SendA (void) const;
+  void SendA () const;
   /// Send B function
-  void SendB (void) const;
+  void SendB () const;
   Ptr<SpectrumWifiPhy> m_txA; ///< transmit A function
   Ptr<SpectrumWifiPhy> m_txB; ///< transmit B function
   struct Input m_input; ///< input
@@ -132,7 +132,7 @@ private:
 };
 
 void
-InterferenceExperiment::SendA (void) const
+InterferenceExperiment::SendA () const
 {
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_ACK); //so that size may not be empty while being as short as possible
@@ -148,7 +148,7 @@ InterferenceExperiment::SendA (void) const
 }
 
 void
-InterferenceExperiment::SendB (void) const
+InterferenceExperiment::SendB () const
 {
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_ACK); //so that size may not be empty while being as short as possible

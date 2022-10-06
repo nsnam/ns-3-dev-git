@@ -40,7 +40,7 @@ using namespace ns3;
  * \brief Triggers a fatal error without message, deferring termination.
  */
 void
-FatalNoMsg (void)
+FatalNoMsg ()
 {
   std::cerr << "\nEvent triggered fatal error without message, and continuing:"
 	    << std::endl;
@@ -52,7 +52,7 @@ FatalNoMsg (void)
  * \brief Triggers a fatal error with an error message, deferring termination.
  */
 void
-FatalCont (void)
+FatalCont ()
 {
   std::cerr << "\nEvent triggered fatal error, with custom message, and continuing:"
 	    << std::endl;
@@ -64,7 +64,7 @@ FatalCont (void)
  * \brief Triggers a fatal error with message, and terminating.
  */
 void
-Fatal (void)
+Fatal ()
 {
   std::cerr << "\nEvent triggered fatal error, with message, and terminating:"
 	    << std::endl;

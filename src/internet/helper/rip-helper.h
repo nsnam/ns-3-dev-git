@@ -64,7 +64,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  RipHelper* Copy (void) const;
+  RipHelper* Copy () const;
 
   /**
    * \param node the node on which the routing protocol will run

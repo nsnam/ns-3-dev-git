@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("WallClockSynchronizer");
 NS_OBJECT_ENSURE_REGISTERED (WallClockSynchronizer);
 
 TypeId
-WallClockSynchronizer::GetTypeId (void)
+WallClockSynchronizer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WallClockSynchronizer")
     .SetParent<Synchronizer> ()
@@ -88,14 +88,14 @@ WallClockSynchronizer::~WallClockSynchronizer ()
 }
 
 bool
-WallClockSynchronizer::DoRealtime (void)
+WallClockSynchronizer::DoRealtime ()
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 
 uint64_t
-WallClockSynchronizer::DoGetCurrentRealtime (void)
+WallClockSynchronizer::DoGetCurrentRealtime ()
 {
   NS_LOG_FUNCTION (this);
   return GetNormalizedRealtime ();
@@ -276,7 +276,7 @@ WallClockSynchronizer::DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay)
 }
 
 void
-WallClockSynchronizer::DoSignal (void)
+WallClockSynchronizer::DoSignal ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -298,14 +298,14 @@ WallClockSynchronizer::DoSetCondition (bool cond)
 }
 
 void
-WallClockSynchronizer::DoEventStart (void)
+WallClockSynchronizer::DoEventStart ()
 {
   NS_LOG_FUNCTION (this);
   m_nsEventStart = GetNormalizedRealtime ();
 }
 
 uint64_t
-WallClockSynchronizer::DoEventEnd (void)
+WallClockSynchronizer::DoEventEnd ()
 {
   NS_LOG_FUNCTION (this);
   return GetNormalizedRealtime () - m_nsEventStart;
@@ -378,7 +378,7 @@ WallClockSynchronizer::DriftCorrect (uint64_t nsNow, uint64_t nsDelay)
 }
 
 uint64_t
-WallClockSynchronizer::GetRealtime (void)
+WallClockSynchronizer::GetRealtime ()
 {
   NS_LOG_FUNCTION (this);
   auto now = std::chrono::system_clock::now().time_since_epoch();
@@ -386,7 +386,7 @@ WallClockSynchronizer::GetRealtime (void)
 }
 
 uint64_t
-WallClockSynchronizer::GetNormalizedRealtime (void)
+WallClockSynchronizer::GetNormalizedRealtime ()
 {
   NS_LOG_FUNCTION (this);
   return GetRealtime () - m_realtimeOriginNano;

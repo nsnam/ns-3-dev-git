@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpRxBuffer");
 NS_OBJECT_ENSURE_REGISTERED (TcpRxBuffer);
 
 TypeId
-TcpRxBuffer::GetTypeId (void)
+TcpRxBuffer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpRxBuffer")
     .SetParent<Object> ()
@@ -60,7 +60,7 @@ TcpRxBuffer::~TcpRxBuffer ()
 }
 
 SequenceNumber32
-TcpRxBuffer::NextRxSequence (void) const
+TcpRxBuffer::NextRxSequence () const
 {
   return m_nextRxSeq;
 }
@@ -72,7 +72,7 @@ TcpRxBuffer::SetNextRxSequence (const SequenceNumber32& s)
 }
 
 uint32_t
-TcpRxBuffer::MaxBufferSize (void) const
+TcpRxBuffer::MaxBufferSize () const
 {
   return m_maxBuffer;
 }
@@ -84,7 +84,7 @@ TcpRxBuffer::SetMaxBufferSize (uint32_t s)
 }
 
 uint32_t
-TcpRxBuffer::Size (void) const
+TcpRxBuffer::Size () const
 {
   return m_size;
 }
@@ -107,7 +107,7 @@ TcpRxBuffer::IncNextRxSequence ()
 
 // Return the lowest sequence number that this TcpRxBuffer cannot accept
 SequenceNumber32
-TcpRxBuffer::MaxRxSequence (void) const
+TcpRxBuffer::MaxRxSequence () const
 {
   if (m_gotFin)
     { // No data allowed beyond FIN
@@ -131,7 +131,7 @@ TcpRxBuffer::SetFinSequence (const SequenceNumber32& s)
 }
 
 bool
-TcpRxBuffer::Finished (void)
+TcpRxBuffer::Finished ()
 {
   return (m_gotFin && m_finSeq < m_nextRxSeq);
 }

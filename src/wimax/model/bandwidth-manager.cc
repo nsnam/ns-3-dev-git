@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("BandwidthManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BandwidthManager);
 
-TypeId BandwidthManager::GetTypeId (void)
+TypeId BandwidthManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BandwidthManager")
     .SetParent<Object> ()
@@ -53,12 +53,12 @@ BandwidthManager::BandwidthManager (Ptr<WimaxNetDevice> device)
 {
 }
 
-BandwidthManager::~BandwidthManager (void)
+BandwidthManager::~BandwidthManager ()
 {
 }
 
 void
-BandwidthManager::DoDispose (void)
+BandwidthManager::DoDispose ()
 {
   m_device = 0;
 }
@@ -201,7 +201,7 @@ BandwidthManager::ProcessBandwidthRequest (const BandwidthRequestHeader &bwReque
 }
 
 void
-BandwidthManager::SetSubframeRatio (void)
+BandwidthManager::SetSubframeRatio ()
 {
   // sets ratio of the DL and UL subframes
 
@@ -215,7 +215,7 @@ BandwidthManager::SetSubframeRatio (void)
 }
 
 uint32_t
-BandwidthManager::GetSymbolsPerFrameAllocated (void)
+BandwidthManager::GetSymbolsPerFrameAllocated ()
 {
   Ptr<BaseStationNetDevice> bs = m_device->GetObject<BaseStationNetDevice> ();
 

@@ -39,15 +39,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const override;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * Create an empty MuSnrTag
    */
   MuSnrTag ();
 
-  uint32_t GetSerializedSize (void) const override;
+  uint32_t GetSerializedSize () const override;
   void Serialize (TagBuffer i) const override;
   void Deserialize (TagBuffer i) override;
   void Print (std::ostream &os) const override;
@@ -55,7 +55,7 @@ public:
   /**
    * Reset the content of the tag.
    */
-  void Reset (void);
+  void Reset ();
   /**
    * Set the SNR for the given sender to the given value.
    *

@@ -78,10 +78,10 @@ public:
   /**
    * Check correctness of transmitted frames
    */
-  void CheckResults (void);
+  void CheckResults ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /// Information about transmitted frames
   struct FrameInfo
@@ -182,7 +182,7 @@ WifiUseAvailBwTest::Transmit (uint8_t bss, WifiConstPsduMap psduMap, WifiTxVecto
 }
 
 void
-WifiUseAvailBwTest::DoRun (void)
+WifiUseAvailBwTest::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (40);
@@ -315,7 +315,7 @@ WifiUseAvailBwTest::DoRun (void)
 }
 
 void
-WifiUseAvailBwTest::CheckResults (void)
+WifiUseAvailBwTest::CheckResults ()
 {
   NS_TEST_ASSERT_MSG_EQ (m_txPsdus.size (), 12, "Expected 12 transmitted frames");
 

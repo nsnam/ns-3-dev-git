@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (OcbWifiMac);
 const static Mac48Address WILDCARD_BSSID = Mac48Address::GetBroadcast ();
 
 TypeId
-OcbWifiMac::GetTypeId (void)
+OcbWifiMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OcbWifiMac")
     .SetParent<WifiMac> ()
@@ -53,14 +53,14 @@ OcbWifiMac::GetTypeId (void)
   return tid;
 }
 
-OcbWifiMac::OcbWifiMac (void)
+OcbWifiMac::OcbWifiMac ()
 {
   NS_LOG_FUNCTION (this);
   // Let the lower layers know that we are acting as an OCB node
   SetTypeOfStation (OCB);
 }
 
-OcbWifiMac::~OcbWifiMac (void)
+OcbWifiMac::~OcbWifiMac ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -113,7 +113,7 @@ OcbWifiMac::SetSsid (Ssid ssid)
 }
 
 Ssid
-OcbWifiMac::GetSsid (void) const
+OcbWifiMac::GetSsid () const
 {
   NS_LOG_WARN ("in OCB mode we should not call GetSsid");
   // we really do not want to return ssid, however we have to provide
@@ -456,7 +456,7 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
 
 
 void
-OcbWifiMac::Suspend (void)
+OcbWifiMac::Suspend ()
 {
   NS_LOG_FUNCTION (this);
   GetLink (SINGLE_LINK_OP_ID).channelAccessManager->NotifySleepNow ();
@@ -464,7 +464,7 @@ OcbWifiMac::Suspend (void)
 }
 
 void
-OcbWifiMac::Resume (void)
+OcbWifiMac::Resume ()
 {
   NS_LOG_FUNCTION (this);
   // wake-up operation is not required in m_low object
@@ -489,7 +489,7 @@ OcbWifiMac::CancleTx (enum AcIndex ac)
 }
 
 void
-OcbWifiMac::Reset (void)
+OcbWifiMac::Reset ()
 {
   NS_LOG_FUNCTION (this);
   // The switching event is used to notify MAC entity reset its operation.
@@ -512,7 +512,7 @@ OcbWifiMac::GetLinkIdByAddress (const Mac48Address& address) const
 }
 
 void
-OcbWifiMac::DoDispose (void)
+OcbWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   WifiMac::DoDispose ();

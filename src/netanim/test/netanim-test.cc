@@ -58,7 +58,7 @@ public:
   virtual
   ~AbstractAnimationInterfaceTestCase ();
   virtual void
-  DoRun (void);
+  DoRun ();
 
 protected:
 
@@ -90,7 +90,7 @@ AbstractAnimationInterfaceTestCase::~AbstractAnimationInterfaceTestCase ()
 }
 
 void
-AbstractAnimationInterfaceTestCase::DoRun (void)
+AbstractAnimationInterfaceTestCase::DoRun ()
 {
   PrepareNetwork ();
 
@@ -141,7 +141,7 @@ AnimationInterfaceTestCase::AnimationInterfaceTestCase () :
 }
 
 void
-AnimationInterfaceTestCase::PrepareNetwork (void)
+AnimationInterfaceTestCase::PrepareNetwork ()
 {
   m_nodes.Create (2);
   AnimationInterface::SetConstantPosition (m_nodes.Get (0), 0 , 10);
@@ -179,7 +179,7 @@ AnimationInterfaceTestCase::PrepareNetwork (void)
 }
 
 void
-AnimationInterfaceTestCase::CheckLogic (void)
+AnimationInterfaceTestCase::CheckLogic ()
 {
   NS_TEST_ASSERT_MSG_EQ (m_anim->GetTracePktCount (), 16, "Expected 16 packets traced");
 }
@@ -218,7 +218,7 @@ AnimationRemainingEnergyTestCase::AnimationRemainingEnergyTestCase () :
 }
 
 void
-AnimationRemainingEnergyTestCase::PrepareNetwork (void)
+AnimationRemainingEnergyTestCase::PrepareNetwork ()
 {
   m_energySource = CreateObject<BasicEnergySource>();
   m_energyModel = CreateObject<SimpleDeviceEnergyModel>();
@@ -238,7 +238,7 @@ AnimationRemainingEnergyTestCase::PrepareNetwork (void)
 }
 
 void
-AnimationRemainingEnergyTestCase::CheckLogic (void)
+AnimationRemainingEnergyTestCase::CheckLogic ()
 {
   const double remainingEnergy = m_energySource->GetRemainingEnergy ();
 

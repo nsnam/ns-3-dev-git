@@ -42,7 +42,7 @@ NS_OBJECT_ENSURE_REGISTERED (UdpServer);
 
 
 TypeId
-UdpServer::GetTypeId (void)
+UdpServer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpServer")
     .SetParent<Application> ()
@@ -96,28 +96,28 @@ UdpServer::SetPacketWindowSize (uint16_t size)
 }
 
 uint32_t
-UdpServer::GetLost (void) const
+UdpServer::GetLost () const
 {
   NS_LOG_FUNCTION (this);
   return m_lossCounter.GetLost ();
 }
 
 uint64_t
-UdpServer::GetReceived (void) const
+UdpServer::GetReceived () const
 {
   NS_LOG_FUNCTION (this);
   return m_received;
 }
 
 void
-UdpServer::DoDispose (void)
+UdpServer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-UdpServer::StartApplication (void)
+UdpServer::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 

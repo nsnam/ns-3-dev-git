@@ -27,7 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpGeneralErrorModel");
 NS_OBJECT_ENSURE_REGISTERED (TcpGeneralErrorModel);
 
 TypeId
-TcpGeneralErrorModel::GetTypeId (void)
+TcpGeneralErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpGeneralErrorModel")
     .SetParent<ErrorModel> ()
@@ -72,7 +72,7 @@ TcpGeneralErrorModel::DoCorrupt (Ptr<Packet> p)
 NS_OBJECT_ENSURE_REGISTERED (TcpSeqErrorModel);
 
 TypeId
-TcpSeqErrorModel::GetTypeId (void)
+TcpSeqErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSeqErrorModel")
     .SetParent<TcpGeneralErrorModel> ()
@@ -114,7 +114,7 @@ TcpSeqErrorModel::DoReset()
 NS_OBJECT_ENSURE_REGISTERED (TcpFlagErrorModel);
 
 TypeId
-TcpFlagErrorModel::GetTypeId (void)
+TcpFlagErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpFlagErrorModel")
     .SetParent<TcpGeneralErrorModel> ()
@@ -160,7 +160,7 @@ TcpFlagErrorModel::ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader &tcpH
 }
 
 void
-TcpFlagErrorModel::DoReset (void)
+TcpFlagErrorModel::DoReset ()
 {
   m_flagsToKill = TcpHeader::NONE;
   m_killNumber = 0;

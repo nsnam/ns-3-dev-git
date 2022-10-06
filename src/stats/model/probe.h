@@ -50,7 +50,7 @@ public:
   /**
    * \return true if Probe is currently enabled
    */
-  virtual bool IsEnabled (void) const;
+  virtual bool IsEnabled () const;
 
   /**
    * \brief connect to a trace source attribute provided by a given object

@@ -101,7 +101,7 @@ public:
    * \brief Allocate a Ipv6EndPoint.
    * \return an empty Ipv6EndPoint instance
    */
-  Ipv6EndPoint * Allocate (void);
+  Ipv6EndPoint * Allocate ();
 
   /**
    * \brief Allocate a Ipv6EndPoint.

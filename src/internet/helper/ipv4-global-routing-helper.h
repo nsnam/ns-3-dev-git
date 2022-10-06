@@ -55,7 +55,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  Ipv4GlobalRoutingHelper* Copy (void) const;
+  Ipv4GlobalRoutingHelper* Copy () const;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -74,7 +74,7 @@ public:
    * BuildGlobalRoutingDatabase () and  InitializeRoutes ().
    *
    */
-  static void PopulateRoutingTables (void);
+  static void PopulateRoutingTables ();
   /**
    * \brief Remove all routes that were previously installed in a prior call
    * to either PopulateRoutingTables() or RecomputeRoutingTables(), and
@@ -87,7 +87,7 @@ public:
    * call RecomputeRoutingTables() at any later time in the simulation.
    *
    */
-  static void RecomputeRoutingTables (void);
+  static void RecomputeRoutingTables ();
 };
 
 } // namespace ns3

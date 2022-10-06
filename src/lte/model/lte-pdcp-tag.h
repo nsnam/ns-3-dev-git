@@ -41,8 +41,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId  GetTypeId (void);
-  virtual TypeId  GetInstanceTypeId (void) const;
+  static TypeId  GetTypeId ();
+  virtual TypeId  GetInstanceTypeId () const;
 
   /**
    * Create an empty PDCP tag
@@ -63,7 +63,7 @@ public:
    * Get the instant when the PDCP delivers the PDU to the MAC SAP provider
    * @return the sender timestamp
    */
-  Time  GetSenderTimestamp (void) const;
+  Time  GetSenderTimestamp () const;
 
   /**
    * Set the sender timestamp

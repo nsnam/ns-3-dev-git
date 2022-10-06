@@ -113,7 +113,7 @@ public:
    * network IDs, and resets the interface ID to the previously used
    * base.
    */
-  void NewNetwork (void);
+  void NewNetwork ();
 
   /**
    * \brief Allocate a new Ipv6Address.
@@ -133,7 +133,7 @@ public:
    *
    * \return newly created Ipv6Address
    */
-  Ipv6Address NewAddress (void);
+  Ipv6Address NewAddress ();
 
   /**
    * \brief Allocate an Ipv6InterfaceContainer with auto-assigned addresses.

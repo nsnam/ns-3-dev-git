@@ -66,7 +66,7 @@ RadioEnvironmentMapHelper::DoDispose ()
 }
 
 TypeId
-RadioEnvironmentMapHelper::GetTypeId (void)
+RadioEnvironmentMapHelper::GetTypeId ()
 {
   NS_LOG_FUNCTION ("RadioEnvironmentMapHelper::GetTypeId");
   static TypeId tid = TypeId ("ns3::RadioEnvironmentMapHelper")

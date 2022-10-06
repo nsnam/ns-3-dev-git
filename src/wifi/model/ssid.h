@@ -64,14 +64,14 @@ public:
    * \return true if the SSID is broadcast,
    *         false otherwise
    */
-  bool IsBroadcast (void) const;
+  bool IsBroadcast () const;
 
   /**
    * Peek the SSID.
    *
    * \return a pointer to SSID string
    */
-  char* PeekString (void) const;
+  char* PeekString () const;
 
 
 private:

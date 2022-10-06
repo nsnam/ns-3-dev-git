@@ -32,7 +32,7 @@ class DropTailQueueTestCase : public TestCase
 {
 public:
   DropTailQueueTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 DropTailQueueTestCase::DropTailQueueTestCase ()
@@ -40,7 +40,7 @@ DropTailQueueTestCase::DropTailQueueTestCase ()
 {
 }
 void
-DropTailQueueTestCase::DoRun (void)
+DropTailQueueTestCase::DoRun ()
 {
   Ptr<DropTailQueue<Packet> > queue = CreateObject<DropTailQueue<Packet> > ();
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", StringValue ("3p")), true,

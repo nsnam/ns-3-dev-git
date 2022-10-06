@@ -198,7 +198,7 @@ LteUePhy::DoDispose ()
 
 
 TypeId
-LteUePhy::GetTypeId (void)
+LteUePhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteUePhy")
     .SetParent<LtePhy> ()
@@ -441,7 +441,7 @@ LteUePhy::GetUplinkPowerControl () const
 }
 
 uint8_t
-LteUePhy::GetMacChDelay (void) const
+LteUePhy::GetMacChDelay () const
 {
   return (m_macChTtiDelay);
 }
@@ -477,14 +477,14 @@ LteUePhy::SetNumQinEvalSf (uint16_t numSubframes)
 }
 
 uint16_t
-LteUePhy::GetNumQoutEvalSf (void) const
+LteUePhy::GetNumQoutEvalSf () const
 {
   NS_LOG_FUNCTION (this);
   return m_numOfQoutEvalSf;
 }
 
 uint16_t
-LteUePhy::GetNumQinEvalSf (void) const
+LteUePhy::GetNumQinEvalSf () const
 {
   NS_LOG_FUNCTION (this);
   return m_numOfQinEvalSf;

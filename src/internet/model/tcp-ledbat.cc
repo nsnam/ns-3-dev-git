@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpLedbat");
 NS_OBJECT_ENSURE_REGISTERED (TcpLedbat);
 
 TypeId
-TcpLedbat::GetTypeId (void)
+TcpLedbat::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpLedbat")
     .SetParent<TcpNewReno> ()
@@ -86,7 +86,7 @@ void TcpLedbat::SetDoSs (SlowStartType doSS)
     }
 }
 
-TcpLedbat::TcpLedbat (void)
+TcpLedbat::TcpLedbat ()
   : TcpNewReno ()
 {
   NS_LOG_FUNCTION (this);
@@ -127,13 +127,13 @@ TcpLedbat::TcpLedbat (const TcpLedbat& sock)
   m_minCwnd = sock.m_minCwnd;
 }
 
-TcpLedbat::~TcpLedbat (void)
+TcpLedbat::~TcpLedbat ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<TcpCongestionOps>
-TcpLedbat::Fork (void)
+TcpLedbat::Fork ()
 {
   return CopyObject<TcpLedbat> (this);
 }

@@ -66,7 +66,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief CoDelQueueDisc Constructor
@@ -82,21 +82,21 @@ public:
    *
    * \returns The target queue delay
    */
-  Time GetTarget (void);
+  Time GetTarget ();
 
   /**
    * \brief Get the interval
    *
    * \returns The interval
    */
-  Time GetInterval (void);
+  Time GetInterval ();
 
   /**
    * \brief Get the time for next packet drop while in the dropping state
    *
    * \returns The time for next packet drop
    */
-  uint32_t GetDropNext (void);
+  uint32_t GetDropNext ();
 
   // Reasons for dropping packets
   static constexpr const char* TARGET_EXCEEDED_DROP = "Target exceeded drop";  //!< Sojourn time above target
@@ -125,9 +125,9 @@ private:
    *
    * \returns The packet that is examined
    */
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
 
-  virtual bool CheckConfig (void);
+  virtual bool CheckConfig ();
 
   /**
    * \brief Calculate the reciprocal square root of m_count by using Newton's method
@@ -199,7 +199,7 @@ private:
    */
   uint32_t Time2CoDel (Time t);
 
-  virtual void InitializeParams (void);
+  virtual void InitializeParams ();
 
   bool m_useEcn;                          //!< True if ECN is used (packets are marked instead of being dropped)
   bool m_useL4s;                          //!< True if L4S is used (ECT1 packets are marked at CE threshold)

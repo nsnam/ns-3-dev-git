@@ -65,7 +65,7 @@ GlobalValue::GlobalValue (std::string name, std::string help,
 }
 
 void
-GlobalValue::InitializeFromEnv (void)
+GlobalValue::InitializeFromEnv ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -102,13 +102,13 @@ GlobalValue::InitializeFromEnv (void)
 }
 
 std::string
-GlobalValue::GetName (void) const
+GlobalValue::GetName () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_name;
 }
 std::string
-GlobalValue::GetHelp (void) const
+GlobalValue::GetHelp () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_help;
@@ -130,7 +130,7 @@ GlobalValue::GetValue (AttributeValue &value) const
   str->Set (m_currentValue->SerializeToString (m_checker));
 }
 Ptr<const AttributeChecker>
-GlobalValue::GetChecker (void) const
+GlobalValue::GetChecker () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -184,21 +184,21 @@ GlobalValue::BindFailSafe (std::string name, const AttributeValue &value)
   return false;
 }
 GlobalValue::Iterator
-GlobalValue::Begin (void)
+GlobalValue::Begin ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return GetVector ()->begin ();
 }
 GlobalValue::Iterator
-GlobalValue::End (void)
+GlobalValue::End ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetVector ()->end ();
 }
 
 void
-GlobalValue::ResetInitialValue (void)
+GlobalValue::ResetInitialValue ()
 {
   NS_LOG_FUNCTION (this);
   m_currentValue = m_initialValue;
@@ -230,7 +230,7 @@ GlobalValue::GetValueByName (std::string name, AttributeValue &value)
 }
 
 GlobalValue::Vector *
-GlobalValue::GetVector (void)
+GlobalValue::GetVector ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Vector vector;

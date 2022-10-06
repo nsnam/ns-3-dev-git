@@ -96,7 +96,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
@@ -190,7 +190,7 @@ public:
   void SetAntenna (Ptr<AntennaModel> a);
 
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * Change the PHY state

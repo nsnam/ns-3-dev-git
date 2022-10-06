@@ -348,7 +348,7 @@ public:
   /**
    * \return true if address is initialized (i.e., set to something), false otherwise
    */
-  bool IsInitialized (void) const;
+  bool IsInitialized () const;
 
   /**
    * \brief Get the 0 (::) Ipv6Address.
@@ -403,13 +403,13 @@ private:
    * \brief convert the IPv6Address object to an Address object.
    * \return the Address object corresponding to this object.
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   /**
    * \brief Return the Type of address.
    * \return type of address
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
 
   /**
    * \brief The address representation on 128 bits (16 bytes).

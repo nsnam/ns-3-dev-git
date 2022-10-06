@@ -42,7 +42,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   SimpleDeviceEnergyModel ();
   virtual ~SimpleDeviceEnergyModel ();
 
@@ -62,7 +62,7 @@ public:
    *
    * Implements DeviceEnergyModel::GetNode.
    */
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
 
   /**
    * \brief Sets pointer to EnergySouce installed on node.
@@ -78,7 +78,7 @@ public:
    *
    * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
    */
-  virtual double GetTotalEnergyConsumption (void) const;
+  virtual double GetTotalEnergyConsumption () const;
 
   /**
    * \param newState New state the device is in.
@@ -94,7 +94,7 @@ public:
    *
    * Not implemented
    */
-  virtual void HandleEnergyDepletion (void)
+  virtual void HandleEnergyDepletion ()
   {
   }
 
@@ -103,7 +103,7 @@ public:
    *
    * Not implemented
    */
-  virtual void HandleEnergyRecharged (void)
+  virtual void HandleEnergyRecharged ()
   {
   }
 
@@ -112,7 +112,7 @@ public:
    *
    * Not implemented
    */
-  virtual void HandleEnergyChanged (void)
+  virtual void HandleEnergyChanged ()
   {
   }
 
@@ -123,14 +123,14 @@ public:
    */
   void SetCurrentA (double current);
 private:
-  void DoDispose (void);
+  void DoDispose ();
 
   /**
    * \returns Current draw of device, at current state.
    *
    * Implements DeviceEnergyModel::GetCurrentA.
    */
-  virtual double DoGetCurrentA (void) const;
+  virtual double DoGetCurrentA () const;
 
   Time m_lastUpdateTime;        //!< Last update time
   double m_actualCurrentA;      //!< actual curred (in Ampere)

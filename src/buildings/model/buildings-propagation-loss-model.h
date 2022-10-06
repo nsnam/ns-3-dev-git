@@ -62,7 +62,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   BuildingsPropagationLossModel ();
   /**
@@ -128,7 +128,7 @@ protected:
     /**
      * \returns the receiver mobility model
      */
-    Ptr<MobilityModel> GetReceiver (void) const;
+    Ptr<MobilityModel> GetReceiver () const;
   protected:
     double m_shadowingValue; //!< Shadowing value
     Ptr<MobilityModel> m_receiver; //!< The receiver mobility model

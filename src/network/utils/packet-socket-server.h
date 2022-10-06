@@ -51,7 +51,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   PacketSocketServer ();
 
@@ -64,12 +64,12 @@ public:
   void SetLocal (PacketSocketAddress addr);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
 
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Handle a packet received by the application

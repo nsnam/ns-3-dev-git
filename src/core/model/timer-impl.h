@@ -129,7 +129,7 @@ public:
    */
   virtual EventId Schedule (const Time &delay) = 0;
   /** Invoke the expire function. */
-  virtual void Invoke (void) = 0;
+  virtual void Invoke () = 0;
 };
 
 } // namespace ns3
@@ -272,7 +272,7 @@ MakeTimerImpl (IntToType<0>, FN fn)
     {
       return Simulator::Schedule (delay, m_fn);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       m_fn ();
     }
@@ -306,7 +306,7 @@ MakeTimerImpl (IntToType<1>, FN fn)
     {
       return Simulator::Schedule (delay, m_fn, m_a1);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       m_fn (m_a1);
     }
@@ -345,7 +345,7 @@ MakeTimerImpl (IntToType<2>, FN fn)
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       m_fn (m_a1, m_a2);
     }
@@ -389,7 +389,7 @@ MakeTimerImpl (IntToType<3>, FN fn)
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       m_fn (m_a1, m_a2, m_a3);
     }
@@ -438,7 +438,7 @@ MakeTimerImpl (IntToType<4>, FN fn)
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       m_fn (m_a1, m_a2, m_a3, m_a4);
     }
@@ -492,7 +492,7 @@ MakeTimerImpl (IntToType<5>, FN fn)
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4, m_a5);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       m_fn (m_a1, m_a2, m_a3, m_a4, m_a5);
     }
@@ -551,7 +551,7 @@ MakeTimerImpl (IntToType<6>, FN fn)
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       m_fn (m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
@@ -640,7 +640,7 @@ MakeTimerImpl (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr)
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)();
     }
@@ -676,7 +676,7 @@ MakeTimerImpl (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1);
     }
@@ -717,7 +717,7 @@ MakeTimerImpl (IntToType<2>, MEM_PTR memPtr, OBJ_PTR objPtr)
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2);
     }
@@ -763,7 +763,7 @@ MakeTimerImpl (IntToType<3>, MEM_PTR memPtr, OBJ_PTR objPtr)
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3);
     }
@@ -814,7 +814,7 @@ MakeTimerImpl (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr)
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4);
     }
@@ -870,7 +870,7 @@ MakeTimerImpl (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr)
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4, m_a5);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4, m_a5);
     }
@@ -931,7 +931,7 @@ MakeTimerImpl (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr)
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
-    virtual void Invoke (void)
+    virtual void Invoke ()
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }

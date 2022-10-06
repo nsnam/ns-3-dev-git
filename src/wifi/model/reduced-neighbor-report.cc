@@ -37,13 +37,13 @@ ReducedNeighborReport::ElementId () const
 }
 
 std::size_t
-ReducedNeighborReport::GetNNbrApInfoFields (void) const
+ReducedNeighborReport::GetNNbrApInfoFields () const
 {
   return m_nbrApInfoFields.size ();
 }
 
 void
-ReducedNeighborReport::AddNbrApInfoField (void)
+ReducedNeighborReport::AddNbrApInfoField ()
 {
   m_nbrApInfoFields.push_back (NeighborApInformation ());
 }

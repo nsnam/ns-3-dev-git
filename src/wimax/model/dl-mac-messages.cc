@@ -27,14 +27,14 @@
 
 namespace ns3 {
 
-DcdChannelEncodings::DcdChannelEncodings (void)
+DcdChannelEncodings::DcdChannelEncodings ()
   : m_bsEirp (0),
     m_eirXPIrMax (0),
     m_frequency (0)
 {
 }
 
-DcdChannelEncodings::~DcdChannelEncodings (void)
+DcdChannelEncodings::~DcdChannelEncodings ()
 {
 }
 
@@ -57,25 +57,25 @@ DcdChannelEncodings::SetFrequency (uint32_t frequency)
 }
 
 uint16_t
-DcdChannelEncodings::GetBsEirp (void) const
+DcdChannelEncodings::GetBsEirp () const
 {
   return m_bsEirp;
 }
 
 uint16_t
-DcdChannelEncodings::GetEirxPIrMax (void) const
+DcdChannelEncodings::GetEirxPIrMax () const
 {
   return m_eirXPIrMax;
 }
 
 uint32_t
-DcdChannelEncodings::GetFrequency (void) const
+DcdChannelEncodings::GetFrequency () const
 {
   return m_frequency;
 }
 
 uint16_t
-DcdChannelEncodings::GetSize (void) const
+DcdChannelEncodings::GetSize () const
 {
   return 2 + 2 + 4;
 }
@@ -102,7 +102,7 @@ DcdChannelEncodings::Read (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-OfdmDcdChannelEncodings::OfdmDcdChannelEncodings (void)
+OfdmDcdChannelEncodings::OfdmDcdChannelEncodings ()
   : m_channelNr (0),
     m_ttg (0),
     m_rtg (0),
@@ -112,7 +112,7 @@ OfdmDcdChannelEncodings::OfdmDcdChannelEncodings (void)
 {
 }
 
-OfdmDcdChannelEncodings::~OfdmDcdChannelEncodings (void)
+OfdmDcdChannelEncodings::~OfdmDcdChannelEncodings ()
 {
 }
 
@@ -153,43 +153,43 @@ OfdmDcdChannelEncodings::SetFrameNumber (uint32_t frameNumber)
 }
 
 uint8_t
-OfdmDcdChannelEncodings::GetChannelNr (void) const
+OfdmDcdChannelEncodings::GetChannelNr () const
 {
   return m_channelNr;
 }
 
 uint8_t
-OfdmDcdChannelEncodings::GetTtg (void) const
+OfdmDcdChannelEncodings::GetTtg () const
 {
   return m_ttg;
 }
 
 uint8_t
-OfdmDcdChannelEncodings::GetRtg (void) const
+OfdmDcdChannelEncodings::GetRtg () const
 {
   return m_rtg;
 }
 
 Mac48Address
-OfdmDcdChannelEncodings::GetBaseStationId (void) const
+OfdmDcdChannelEncodings::GetBaseStationId () const
 {
   return m_baseStationId;
 }
 
 uint8_t
-OfdmDcdChannelEncodings::GetFrameDurationCode (void) const
+OfdmDcdChannelEncodings::GetFrameDurationCode () const
 {
   return m_frameDurationCode;
 }
 
 uint32_t
-OfdmDcdChannelEncodings::GetFrameNumber (void) const
+OfdmDcdChannelEncodings::GetFrameNumber () const
 {
   return m_frameNumber;
 }
 
 uint16_t
-OfdmDcdChannelEncodings::GetSize (void) const
+OfdmDcdChannelEncodings::GetSize () const
 {
   return DcdChannelEncodings::GetSize () + 1 + 1 + 1 + 6 + 1 + 4;
 }
@@ -222,7 +222,7 @@ OfdmDcdChannelEncodings::DoRead (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-OfdmDlBurstProfile::OfdmDlBurstProfile (void)
+OfdmDlBurstProfile::OfdmDlBurstProfile ()
   : m_type (0),
     m_length (0),
     m_diuc (0),
@@ -230,7 +230,7 @@ OfdmDlBurstProfile::OfdmDlBurstProfile (void)
 {
 }
 
-OfdmDlBurstProfile::~OfdmDlBurstProfile (void)
+OfdmDlBurstProfile::~OfdmDlBurstProfile ()
 {
 }
 
@@ -259,31 +259,31 @@ OfdmDlBurstProfile::SetFecCodeType (uint8_t fecCodeType)
 }
 
 uint8_t
-OfdmDlBurstProfile::GetType (void) const
+OfdmDlBurstProfile::GetType () const
 {
   return m_type;
 }
 
 uint8_t
-OfdmDlBurstProfile::GetLength (void) const
+OfdmDlBurstProfile::GetLength () const
 {
   return m_length;
 }
 
 uint8_t
-OfdmDlBurstProfile::GetDiuc (void) const
+OfdmDlBurstProfile::GetDiuc () const
 {
   return m_diuc;
 }
 
 uint8_t
-OfdmDlBurstProfile::GetFecCodeType (void) const
+OfdmDlBurstProfile::GetFecCodeType () const
 {
   return m_fecCodeType;
 }
 
 uint16_t
-OfdmDlBurstProfile::GetSize (void) const
+OfdmDlBurstProfile::GetSize () const
 {
   return 1 + 1 + 1 + 1;
 }
@@ -314,14 +314,14 @@ OfdmDlBurstProfile::Read (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (Dcd);
 
-Dcd::Dcd (void)
+Dcd::Dcd ()
   : m_reserved (0),
     m_configurationChangeCount (0),
     m_nrDlBurstProfiles (0)
 {
 }
 
-Dcd::~Dcd (void)
+Dcd::~Dcd ()
 {
 }
 
@@ -350,37 +350,37 @@ Dcd::AddDlBurstProfile (OfdmDlBurstProfile dlBurstProfile)
 }
 
 uint8_t
-Dcd::GetConfigurationChangeCount (void) const
+Dcd::GetConfigurationChangeCount () const
 {
   return m_configurationChangeCount;
 }
 
 OfdmDcdChannelEncodings
-Dcd::GetChannelEncodings (void) const
+Dcd::GetChannelEncodings () const
 {
   return m_channelEncodings;
 }
 
 std::vector<OfdmDlBurstProfile>
-Dcd::GetDlBurstProfiles (void) const
+Dcd::GetDlBurstProfiles () const
 {
   return m_dlBurstProfiles;
 }
 
 uint8_t
-Dcd::GetNrDlBurstProfiles (void) const
+Dcd::GetNrDlBurstProfiles () const
 {
   return m_nrDlBurstProfiles;
 }
 
 std::string
-Dcd::GetName (void) const
+Dcd::GetName () const
 {
   return "DCD";
 }
 
 TypeId
-Dcd::GetTypeId (void)
+Dcd::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Dcd")
     .SetParent<Header> ()
@@ -391,7 +391,7 @@ Dcd::GetTypeId (void)
 }
 
 TypeId
-Dcd::GetInstanceTypeId (void) const
+Dcd::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -405,7 +405,7 @@ Dcd::Print (std::ostream &os) const
 }
 
 uint32_t
-Dcd::GetSerializedSize (void) const
+Dcd::GetSerializedSize () const
 {
   uint32_t dlBurstProfilesSize = 0;
 
@@ -455,7 +455,7 @@ Dcd::Deserialize (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-OfdmDlMapIe::OfdmDlMapIe (void)
+OfdmDlMapIe::OfdmDlMapIe ()
   : m_cid (),
     m_diuc (0),
     m_preamblePresent (0),
@@ -463,7 +463,7 @@ OfdmDlMapIe::OfdmDlMapIe (void)
 {
 }
 
-OfdmDlMapIe::~OfdmDlMapIe (void)
+OfdmDlMapIe::~OfdmDlMapIe ()
 {
 }
 
@@ -492,31 +492,31 @@ OfdmDlMapIe::SetStartTime (uint16_t startTime)
 }
 
 Cid
-OfdmDlMapIe::GetCid (void) const
+OfdmDlMapIe::GetCid () const
 {
   return m_cid;
 }
 
 uint8_t
-OfdmDlMapIe::GetDiuc (void) const
+OfdmDlMapIe::GetDiuc () const
 {
   return m_diuc;
 }
 
 uint8_t
-OfdmDlMapIe::GetPreamblePresent (void) const
+OfdmDlMapIe::GetPreamblePresent () const
 {
   return m_preamblePresent;
 }
 
 uint16_t
-OfdmDlMapIe::GetStartTime (void) const
+OfdmDlMapIe::GetStartTime () const
 {
   return m_startTime;
 }
 
 uint16_t
-OfdmDlMapIe::GetSize (void) const
+OfdmDlMapIe::GetSize () const
 {
   return 2 + 1 + 1 + 2;
 }
@@ -547,13 +547,13 @@ OfdmDlMapIe::Read (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (DlMap);
 
-DlMap::DlMap (void)
+DlMap::DlMap ()
   : m_dcdCount (0),
     m_baseStationId (Mac48Address ("00:00:00:00:00:00"))
 {
 }
 
-DlMap::~DlMap (void)
+DlMap::~DlMap ()
 {
 }
 
@@ -576,31 +576,31 @@ DlMap::AddDlMapElement (OfdmDlMapIe dlMapElement)
 }
 
 uint8_t
-DlMap::GetDcdCount (void) const
+DlMap::GetDcdCount () const
 {
   return m_dcdCount;
 }
 
 Mac48Address
-DlMap::GetBaseStationId (void) const
+DlMap::GetBaseStationId () const
 {
   return m_baseStationId;
 }
 
 std::list<OfdmDlMapIe>
-DlMap::GetDlMapElements (void) const
+DlMap::GetDlMapElements () const
 {
   return m_dlMapElements;
 }
 
 std::string
-DlMap::GetName (void) const
+DlMap::GetName () const
 {
   return "DL-MAP";
 }
 
 TypeId
-DlMap::GetTypeId (void)
+DlMap::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DlMap")
     .SetParent<Header> ()
@@ -611,7 +611,7 @@ DlMap::GetTypeId (void)
 }
 
 TypeId
-DlMap::GetInstanceTypeId (void) const
+DlMap::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -625,7 +625,7 @@ DlMap::Print (std::ostream &os) const
 }
 
 uint32_t
-DlMap::GetSerializedSize (void) const
+DlMap::GetSerializedSize () const
 {
   uint32_t dlMapElementsSize = 0;
 

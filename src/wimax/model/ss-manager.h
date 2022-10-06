@@ -41,9 +41,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  SSManager (void);
-  ~SSManager (void);
+  static TypeId GetTypeId ();
+  SSManager ();
+  ~SSManager ();
   /**
    * Create SS record
    * \param macAddress the MAC address
@@ -69,7 +69,7 @@ public:
    * Get SS records
    * \returns a vector of pointers to the SS records
    */
-  std::vector<SSRecord*>* GetSSRecords (void) const;
+  std::vector<SSRecord*>* GetSSRecords () const;
   /**
    * Check if address is in record
    * \param macAddress the MAC address
@@ -97,12 +97,12 @@ public:
    * Get number of SSs
    * \returns the number of SSs
    */
-  uint32_t GetNSSs (void) const;
+  uint32_t GetNSSs () const;
   /**
    * Get number of registered SSs
    * \returns the number of registered SSs
    */
-  uint32_t GetNRegisteredSSs (void) const;
+  uint32_t GetNRegisteredSSs () const;
 private:
   std::vector<SSRecord*> *m_ssRecords; ///< the SS records
 };

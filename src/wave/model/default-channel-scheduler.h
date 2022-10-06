@@ -36,7 +36,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   DefaultChannelScheduler ();
   virtual ~DefaultChannelScheduler ();
 
@@ -67,8 +67,8 @@ public:
    */
   void NotifyGuardSlotStart (Time duration, bool cchi);
 private:
-  virtual void DoInitialize (void);
-  virtual void DoDispose (void);
+  virtual void DoInitialize ();
+  virtual void DoDispose ();
   /**
    * \param channelNumber the specific channel
    * \param immediate indicate whether channel switch to channel
@@ -98,7 +98,7 @@ private:
    * This method will assign default CCH access for CCH.
    * \return whether the channel access is assigned successfully
    */
-  virtual bool AssignDefaultCchAccess (void);
+  virtual bool AssignDefaultCchAccess ();
   /**
    * \param channelNumber indicating for which channel should release
    * the assigned channel access resource.

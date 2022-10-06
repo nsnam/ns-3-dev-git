@@ -56,7 +56,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief PieQueueDisc Constructor
@@ -83,7 +83,7 @@ public:
    *
    * \returns The current queue delay.
    */
-  Time GetQueueDelay (void);
+  Time GetQueueDelay ();
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
@@ -104,18 +104,18 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   friend class::PieQueueDiscTestCase;         // Test code
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual bool CheckConfig (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
+  virtual bool CheckConfig ();
 
   /**
    * \brief Initialize the queue parameters.
    */
-  virtual void InitializeParams (void);
+  virtual void InitializeParams ();
 
   /**
    * \brief Check if a packet needs to be dropped due to probability drop

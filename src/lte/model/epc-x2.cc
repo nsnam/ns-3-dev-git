@@ -38,7 +38,7 @@ X2IfaceInfo::X2IfaceInfo (Ipv4Address remoteIpAddr, Ptr<Socket> localCtrlPlaneSo
   m_localUserPlaneSocket = localUserPlaneSocket;
 }
 
-X2IfaceInfo::~X2IfaceInfo (void)
+X2IfaceInfo::~X2IfaceInfo ()
 {
   m_localCtrlPlaneSocket = 0;
   m_localUserPlaneSocket = 0;
@@ -62,7 +62,7 @@ X2CellInfo::X2CellInfo (std::vector<uint16_t> localCellIds, std::vector<uint16_t
 {
 }
 
-X2CellInfo::~X2CellInfo (void)
+X2CellInfo::~X2CellInfo ()
 {
 }
 
@@ -94,7 +94,7 @@ EpcX2::~EpcX2 ()
 }
 
 void
-EpcX2::DoDispose (void)
+EpcX2::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -104,7 +104,7 @@ EpcX2::DoDispose (void)
 }
 
 TypeId
-EpcX2::GetTypeId (void)
+EpcX2::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2")
     .SetParent<Object> ()

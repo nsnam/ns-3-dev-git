@@ -41,19 +41,19 @@ public:
   /**
    * Constructor
    */
-  UniformPlanarArray (void);
+  UniformPlanarArray ();
 
 
   /**
    * Destructor
    */
-  virtual ~UniformPlanarArray (void);
+  virtual ~UniformPlanarArray ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
 
   /**
@@ -87,7 +87,7 @@ public:
    * Returns the number of antenna elements
    * \return the number of antenna elements
    */
-  uint64_t GetNumberOfElements (void) const override;
+  uint64_t GetNumberOfElements () const override;
 
 private:
   /**
@@ -103,7 +103,7 @@ private:
    * Get the number of columns of the phased array
    * \return the number of columns
    */
-  uint32_t GetNumColumns (void) const;
+  uint32_t GetNumColumns () const;
 
 
   /**
@@ -119,7 +119,7 @@ private:
    * Get the number of rows of the phased array
    * \return the number of rows
    */
-  uint32_t GetNumRows (void) const;
+  uint32_t GetNumRows () const;
 
   /**
    * \brief Set the bearing angle
@@ -158,7 +158,7 @@ private:
    * Get the horizontal spacing for the antenna elements of the phased array
    * \return the horizontal spacing in multiples of wavelength
    */
-  double GetAntennaHorizontalSpacing (void) const;
+  double GetAntennaHorizontalSpacing () const;
 
 
   /**
@@ -174,7 +174,7 @@ private:
    * Get the vertical spacing for the antenna elements of the phased array
    * \return the vertical spacing in multiples of wavelength
    */
-  double GetAntennaVerticalSpacing (void) const;
+  double GetAntennaVerticalSpacing () const;
 
   uint32_t m_numColumns {1}; //!< number of columns
   uint32_t m_numRows {1}; //!< number of rows

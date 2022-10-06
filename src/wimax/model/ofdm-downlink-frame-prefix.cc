@@ -68,37 +68,37 @@ DlFramePrefixIe::SetStartTime (uint16_t startTime)
 }
 
 uint8_t
-DlFramePrefixIe::GetRateId (void) const
+DlFramePrefixIe::GetRateId () const
 {
   return m_rateId;
 }
 
 uint8_t
-DlFramePrefixIe::GetDiuc (void) const
+DlFramePrefixIe::GetDiuc () const
 {
   return m_diuc;
 }
 
 uint8_t
-DlFramePrefixIe::GetPreamblePresent (void) const
+DlFramePrefixIe::GetPreamblePresent () const
 {
   return m_preamblePresent;
 }
 
 uint16_t
-DlFramePrefixIe::GetLength (void) const
+DlFramePrefixIe::GetLength () const
 {
   return m_length;
 }
 
 uint16_t
-DlFramePrefixIe::GetStartTime (void) const
+DlFramePrefixIe::GetStartTime () const
 {
   return m_startTime;
 }
 
 uint16_t
-DlFramePrefixIe::GetSize (void) const
+DlFramePrefixIe::GetSize () const
 {
   return 1 + 1 + 1 + 2 + 2;
 }
@@ -141,7 +141,7 @@ OfdmDownlinkFramePrefix::~OfdmDownlinkFramePrefix ()
 
 /* static */
 TypeId
-OfdmDownlinkFramePrefix::GetTypeId (void)
+OfdmDownlinkFramePrefix::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OfdmDownlinkFramePrefix")
     .SetParent<Header> ()
@@ -184,37 +184,37 @@ OfdmDownlinkFramePrefix::SetHcs (uint8_t hcs)
 }
 
 Mac48Address
-OfdmDownlinkFramePrefix::GetBaseStationId (void) const
+OfdmDownlinkFramePrefix::GetBaseStationId () const
 {
   return m_baseStationId;
 }
 
 uint32_t
-OfdmDownlinkFramePrefix::GetFrameNumber (void) const
+OfdmDownlinkFramePrefix::GetFrameNumber () const
 {
   return m_frameNumber;
 }
 
 uint8_t
-OfdmDownlinkFramePrefix::GetConfigurationChangeCount (void) const
+OfdmDownlinkFramePrefix::GetConfigurationChangeCount () const
 {
   return m_configurationChangeCount;
 }
 
 std::vector<DlFramePrefixIe>
-OfdmDownlinkFramePrefix::GetDlFramePrefixElements (void) const
+OfdmDownlinkFramePrefix::GetDlFramePrefixElements () const
 {
   return m_dlFramePrefixElements;
 }
 
 uint8_t
-OfdmDownlinkFramePrefix::GetHcs (void) const
+OfdmDownlinkFramePrefix::GetHcs () const
 {
   return m_hcs;
 }
 
 std::string
-OfdmDownlinkFramePrefix::GetName (void) const
+OfdmDownlinkFramePrefix::GetName () const
 {
   return "OFDM Downlink Frame Prefix";
 }
@@ -230,7 +230,7 @@ OfdmDownlinkFramePrefix::Print (std::ostream &os) const
 }
 
 uint32_t
-OfdmDownlinkFramePrefix::GetSerializedSize (void) const
+OfdmDownlinkFramePrefix::GetSerializedSize () const
 {
   int dlFramePrefixElementsSize = 0;
 

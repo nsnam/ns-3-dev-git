@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("VendorSpecificAction");
 
 ATTRIBUTE_HELPER_CPP (OrganizationIdentifier);
 
-OrganizationIdentifier::OrganizationIdentifier (void)
+OrganizationIdentifier::OrganizationIdentifier ()
   : m_type (Unknown)
 {
   NS_LOG_FUNCTION (this);
@@ -67,13 +67,13 @@ OrganizationIdentifier::operator= (const OrganizationIdentifier& oi)
   return (*this);
 }
 
-OrganizationIdentifier::~OrganizationIdentifier (void)
+OrganizationIdentifier::~OrganizationIdentifier ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 uint8_t
-OrganizationIdentifier::GetManagementId (void) const
+OrganizationIdentifier::GetManagementId () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_type == OUI36);
@@ -81,14 +81,14 @@ OrganizationIdentifier::GetManagementId (void) const
 }
 
 bool
-OrganizationIdentifier::IsNull (void) const
+OrganizationIdentifier::IsNull () const
 {
   NS_LOG_FUNCTION (this);
   return m_type == Unknown;
 }
 
 uint32_t
-OrganizationIdentifier::GetSerializedSize (void) const
+OrganizationIdentifier::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   switch (m_type)
@@ -112,7 +112,7 @@ OrganizationIdentifier::SetType (enum OrganizationIdentifierType type)
 }
 
 enum OrganizationIdentifier::OrganizationIdentifierType
-OrganizationIdentifier::GetType (void) const
+OrganizationIdentifier::GetType () const
 {
   NS_LOG_FUNCTION (this);
   return m_type;
@@ -246,14 +246,14 @@ std::istream& operator >> (std::istream& is, const OrganizationIdentifier& oi)
 /*********** VendorSpecificActionHeader *******/
 NS_OBJECT_ENSURE_REGISTERED (VendorSpecificActionHeader);
 
-VendorSpecificActionHeader::VendorSpecificActionHeader (void)
+VendorSpecificActionHeader::VendorSpecificActionHeader ()
   : m_oi (),
     m_category (CATEGORY_OF_VSA)
 {
   NS_LOG_FUNCTION (this);
 }
 
-VendorSpecificActionHeader::~VendorSpecificActionHeader (void)
+VendorSpecificActionHeader::~VendorSpecificActionHeader ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -266,14 +266,14 @@ VendorSpecificActionHeader::SetOrganizationIdentifier (OrganizationIdentifier oi
 }
 
 OrganizationIdentifier
-VendorSpecificActionHeader::GetOrganizationIdentifier (void) const
+VendorSpecificActionHeader::GetOrganizationIdentifier () const
 {
   NS_LOG_FUNCTION (this);
   return m_oi;
 }
 
 TypeId
-VendorSpecificActionHeader::GetTypeId (void)
+VendorSpecificActionHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::VendorSpecificActionHeader")
     .SetParent<Header> ()
@@ -285,14 +285,14 @@ VendorSpecificActionHeader::GetTypeId (void)
 }
 
 uint8_t
-VendorSpecificActionHeader::GetCategory (void) const
+VendorSpecificActionHeader::GetCategory () const
 {
   NS_LOG_FUNCTION (this);
   return m_category;
 }
 
 TypeId
-VendorSpecificActionHeader::GetInstanceTypeId (void) const
+VendorSpecificActionHeader::GetInstanceTypeId () const
 {
   NS_LOG_FUNCTION (this);
   return GetTypeId ();
@@ -309,7 +309,7 @@ VendorSpecificActionHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-VendorSpecificActionHeader::GetSerializedSize (void) const
+VendorSpecificActionHeader::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   return sizeof(m_category) + m_oi.GetSerializedSize ();
@@ -338,12 +338,12 @@ VendorSpecificActionHeader::Deserialize (Buffer::Iterator start)
 }
 
 /********* VendorSpecificContentManager ***********/
-VendorSpecificContentManager::VendorSpecificContentManager (void)
+VendorSpecificContentManager::VendorSpecificContentManager ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-VendorSpecificContentManager::~VendorSpecificContentManager (void)
+VendorSpecificContentManager::~VendorSpecificContentManager ()
 {
   NS_LOG_FUNCTION (this);
 }

@@ -48,7 +48,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   EnergyHarvester ();
 
@@ -67,7 +67,7 @@ public:
    * When a subclass needs to get access to the underlying node base class to
    * print the nodeId for example, it can invoke this method.
    */
-  Ptr<Node> GetNode (void) const;
+  Ptr<Node> GetNode () const;
 
   /**
    * \param source Pointer to energy source to which this EnergyHarvester is
@@ -84,7 +84,7 @@ public:
    * When a subclass needs to get access to the connected energy source,
    * it can invoke this method.
    */
-  Ptr<EnergySource> GetEnergySource (void) const;
+  Ptr<EnergySource> GetEnergySource () const;
 
   /**
    * \returns Amount of power currently provided by the harvester.
@@ -92,14 +92,14 @@ public:
    * This method is called by the energy source connected to the harvester in order
    * to determine the amount of energy that the harvester provided since last update.
    */
-  double GetPower (void) const;
+  double GetPower () const;
 
 private:
   /**
    *
    * Defined in ns3::Object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * This method is called by the GetPower method and it needs to be implemented by the
@@ -111,7 +111,7 @@ private:
    *
    * \returns Amount of power currently provided by the harvester.
    */
-  virtual double DoGetPower (void) const;
+  virtual double DoGetPower () const;
 
 private:
   /**

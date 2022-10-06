@@ -66,7 +66,7 @@ public:
    *
    * This returns the current seed value.
    */
-  static uint32_t GetSeed (void);
+  static uint32_t GetSeed ();
 
   /**
    * \brief Set the run number of simulation.
@@ -97,13 +97,13 @@ public:
    * \returns The current run number
    * \see SetRun
    */
-  static uint64_t GetRun (void);
+  static uint64_t GetRun ();
 
   /**
    * Get the next automatically assigned stream index.
    * \returns The next stream index.
    */
-  static uint64_t GetNextStreamIndex (void);
+  static uint64_t GetNextStreamIndex ();
 
 };
 

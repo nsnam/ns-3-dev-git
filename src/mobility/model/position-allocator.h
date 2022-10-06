@@ -39,7 +39,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   PositionAllocator ();
   virtual ~PositionAllocator ();
   /**
@@ -47,7 +47,7 @@ public:
    *
    * This method _must_ be implement in subclasses.
    */
-  virtual Vector GetNext (void) const = 0;
+  virtual Vector GetNext () const = 0;
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model. Return the number of streams (possibly zero) that
@@ -75,7 +75,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   ListPositionAllocator ();
 
   /**
@@ -109,8 +109,8 @@ public:
    *
    * \return the number of positions stored
    */
-  uint32_t GetSize (void) const;
-  virtual Vector GetNext (void) const;
+  uint32_t GetSize () const;
+  virtual Vector GetNext () const;
   virtual int64_t AssignStreams (int64_t stream);
 
 private:
@@ -129,7 +129,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Determine whether positions are allocated row first or column first.
@@ -185,30 +185,30 @@ public:
   /**
    * \return the x coordinate of the first allocated position.
    */
-  double GetMinX (void) const;
+  double GetMinX () const;
   /**
    * \return the y coordinate of the first allocated position.
    */
-  double GetMinY (void) const;
+  double GetMinY () const;
   /**
    * \return the x interval between two consecutive x-positions.
    */
-  double GetDeltaX (void) const;
+  double GetDeltaX () const;
   /**
    * \return the y interval between two consecutive y-positions.
    */
-  double GetDeltaY (void) const;
+  double GetDeltaY () const;
   /**
    * \return the number of positions to allocate on each row or each column.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
   /**
    * \return the currently-selected layout type.
    */
-  enum LayoutType GetLayoutType (void) const;
+  enum LayoutType GetLayoutType () const;
 
 
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
   virtual int64_t AssignStreams (int64_t stream);
 
 private:
@@ -233,7 +233,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   RandomRectanglePositionAllocator ();
   virtual ~RandomRectanglePositionAllocator ();
 
@@ -252,7 +252,7 @@ public:
    */
   void SetZ (double z);
 
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
   virtual int64_t AssignStreams (int64_t stream);
 
 private:
@@ -272,7 +272,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   RandomBoxPositionAllocator ();
   virtual ~RandomBoxPositionAllocator ();
 
@@ -292,7 +292,7 @@ public:
    */
   void SetZ (Ptr<RandomVariableStream> z);
 
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
   virtual int64_t AssignStreams (int64_t stream);
 
 private:
@@ -321,7 +321,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   RandomDiscPositionAllocator ();
   virtual ~RandomDiscPositionAllocator ();
 
@@ -348,7 +348,7 @@ public:
    */
   void SetZ (double z);
 
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
   virtual int64_t AssignStreams (int64_t stream);
 
 private:
@@ -384,7 +384,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   UniformDiscPositionAllocator ();
   virtual ~UniformDiscPositionAllocator ();
 
@@ -408,7 +408,7 @@ public:
    */
   void SetZ (double z);
 
-  virtual Vector GetNext (void) const;
+  virtual Vector GetNext () const;
   virtual int64_t AssignStreams (int64_t stream);
 
 private:

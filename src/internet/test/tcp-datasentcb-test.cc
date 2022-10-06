@@ -40,7 +40,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   TcpSocketHalfAck () : TcpSocketMsgBase ()
   {
@@ -54,7 +54,7 @@ protected:
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketHalfAck);
 
 TypeId
-TcpSocketHalfAck::GetTypeId (void)
+TcpSocketHalfAck::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSocketHalfAck")
     .SetParent<TcpSocketMsgBase> ()
@@ -65,7 +65,7 @@ TcpSocketHalfAck::GetTypeId (void)
 }
 
 Ptr<TcpSocketBase>
-TcpSocketHalfAck::Fork (void)
+TcpSocketHalfAck::Fork ()
 {
   return CopyObject<TcpSocketHalfAck> (this);
 }

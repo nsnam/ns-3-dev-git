@@ -45,7 +45,7 @@ public:
   virtual ~Ns3WimaxSfCreationTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -59,7 +59,7 @@ Ns3WimaxSfCreationTestCase::~Ns3WimaxSfCreationTestCase ()
 }
 
 void
-Ns3WimaxSfCreationTestCase::DoRun (void)
+Ns3WimaxSfCreationTestCase::DoRun ()
 {
 
   // default values

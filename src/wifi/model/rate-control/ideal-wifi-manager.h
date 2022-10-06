@@ -50,7 +50,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   IdealWifiManager ();
   virtual ~IdealWifiManager ();
 
@@ -58,8 +58,8 @@ public:
 
 
 private:
-  void DoInitialize (void) override;
-  WifiRemoteStation* DoCreateStation (void) const override;
+  void DoInitialize () override;
+  WifiRemoteStation* DoCreateStation () const override;
   void DoReportRxOk (WifiRemoteStation *station,
                      double rxSnr, WifiMode txMode) override;
   void DoReportRtsFailed (WifiRemoteStation *station) override;
@@ -87,7 +87,7 @@ private:
    * all possible combinations (rate, channel width, nss) based on PHY capabilities.
    * This is called at initialization and if PHY capabilities changed.
    */
-  void BuildSnrThresholds (void);
+  void BuildSnrThresholds ();
 
   /**
    * Return the minimum SNR needed to successfully transmit

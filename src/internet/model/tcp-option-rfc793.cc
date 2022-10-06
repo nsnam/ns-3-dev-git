@@ -39,7 +39,7 @@ TcpOptionEnd::~TcpOptionEnd ()
 }
 
 TypeId
-TcpOptionEnd::GetTypeId (void)
+TcpOptionEnd::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionEnd")
     .SetParent<TcpOption> ()
@@ -50,7 +50,7 @@ TcpOptionEnd::GetTypeId (void)
 }
 
 TypeId
-TcpOptionEnd::GetInstanceTypeId (void) const
+TcpOptionEnd::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -62,7 +62,7 @@ TcpOptionEnd::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionEnd::GetSerializedSize (void) const
+TcpOptionEnd::GetSerializedSize () const
 {
   return 1;
 }
@@ -91,7 +91,7 @@ TcpOptionEnd::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionEnd::GetKind (void) const
+TcpOptionEnd::GetKind () const
 {
   return TcpOption::END;
 }
@@ -111,7 +111,7 @@ TcpOptionNOP::~TcpOptionNOP ()
 }
 
 TypeId
-TcpOptionNOP::GetTypeId (void)
+TcpOptionNOP::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionNOP")
     .SetParent<TcpOption> ()
@@ -122,7 +122,7 @@ TcpOptionNOP::GetTypeId (void)
 }
 
 TypeId
-TcpOptionNOP::GetInstanceTypeId (void) const
+TcpOptionNOP::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -134,7 +134,7 @@ TcpOptionNOP::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionNOP::GetSerializedSize (void) const
+TcpOptionNOP::GetSerializedSize () const
 {
   return 1;
 }
@@ -162,7 +162,7 @@ TcpOptionNOP::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionNOP::GetKind (void) const
+TcpOptionNOP::GetKind () const
 {
   return TcpOption::NOP;
 }
@@ -182,7 +182,7 @@ TcpOptionMSS::~TcpOptionMSS ()
 }
 
 TypeId
-TcpOptionMSS::GetTypeId (void)
+TcpOptionMSS::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpOptionMSS")
     .SetParent<TcpOption> ()
@@ -193,7 +193,7 @@ TcpOptionMSS::GetTypeId (void)
 }
 
 TypeId
-TcpOptionMSS::GetInstanceTypeId (void) const
+TcpOptionMSS::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -205,7 +205,7 @@ TcpOptionMSS::Print (std::ostream &os) const
 }
 
 uint32_t
-TcpOptionMSS::GetSerializedSize (void) const
+TcpOptionMSS::GetSerializedSize () const
 {
   return 4;
 }
@@ -240,13 +240,13 @@ TcpOptionMSS::Deserialize (Buffer::Iterator start)
 }
 
 uint8_t
-TcpOptionMSS::GetKind (void) const
+TcpOptionMSS::GetKind () const
 {
   return TcpOption::MSS;
 }
 
 uint16_t
-TcpOptionMSS::GetMSS (void) const
+TcpOptionMSS::GetMSS () const
 {
   return m_mss;
 }

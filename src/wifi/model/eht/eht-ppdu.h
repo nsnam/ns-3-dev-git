@@ -61,13 +61,13 @@ public:
    */
   virtual ~EhtPpdu ();
 
-  WifiPpduType GetType (void) const override;
-  Ptr<WifiPpdu> Copy (void) const override;
+  WifiPpduType GetType () const override;
+  Ptr<WifiPpdu> Copy () const override;
 
 protected:
-  bool IsDlMu (void) const override;
-  bool IsUlMu (void) const override;
-  WifiTxVector DoGetTxVector (void) const override;
+  bool IsDlMu () const override;
+  bool IsUlMu () const override;
+  WifiTxVector DoGetTxVector () const override;
 }; //class EhtPpdu
 
 } //namespace ns3

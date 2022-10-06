@@ -34,7 +34,7 @@ AodvHelper::AodvHelper() :
 }
 
 AodvHelper*
-AodvHelper::Copy (void) const
+AodvHelper::Copy () const
 {
   return new AodvHelper (*this);
 }

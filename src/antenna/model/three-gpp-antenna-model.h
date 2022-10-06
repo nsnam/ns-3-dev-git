@@ -35,8 +35,8 @@ namespace ns3 {
 class ThreeGppAntennaModel : public AntennaModel
 {
 public:
-  ThreeGppAntennaModel (void);
-  virtual ~ThreeGppAntennaModel (void) override;
+  ThreeGppAntennaModel ();
+  virtual ~ThreeGppAntennaModel () override;
 
   /**
    * \brief Get the type ID.

@@ -35,13 +35,13 @@ LteRlcSduStatusTag::SetStatus (uint8_t status)
 }
 
 uint8_t
-LteRlcSduStatusTag::GetStatus (void) const
+LteRlcSduStatusTag::GetStatus () const
 {
   return m_sduStatus;
 }
 
 TypeId
-LteRlcSduStatusTag::GetTypeId (void)
+LteRlcSduStatusTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRlcSduStatusTag")
     .SetParent<Tag> ()
@@ -51,13 +51,13 @@ LteRlcSduStatusTag::GetTypeId (void)
   return tid;
 }
 TypeId
-LteRlcSduStatusTag::GetInstanceTypeId (void) const
+LteRlcSduStatusTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-LteRlcSduStatusTag::GetSerializedSize (void) const
+LteRlcSduStatusTag::GetSerializedSize () const
 {
   return 1;
 }

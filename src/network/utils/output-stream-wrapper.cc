@@ -55,7 +55,7 @@ OutputStreamWrapper::~OutputStreamWrapper ()
 }
 
 std::ostream *
-OutputStreamWrapper::GetStream (void)
+OutputStreamWrapper::GetStream ()
 {
   NS_LOG_FUNCTION (this);
   return m_ostream;

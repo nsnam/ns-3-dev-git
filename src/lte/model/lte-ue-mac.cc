@@ -230,7 +230,7 @@ UeMemberLteUePhySapUser::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 
 
 TypeId
-LteUeMac::GetTypeId (void)
+LteUeMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteUeMac")
     .SetParent<Object> ()
@@ -292,7 +292,7 @@ LteUeMac::DoDispose ()
 
 
 LteUePhySapUser*
-LteUeMac::GetLteUePhySapUser (void)
+LteUeMac::GetLteUePhySapUser ()
 {
   return m_uePhySapUser;
 }
@@ -305,7 +305,7 @@ LteUeMac::SetLteUePhySapProvider (LteUePhySapProvider* s)
 
 
 LteMacSapProvider*
-LteUeMac::GetLteMacSapProvider (void)
+LteUeMac::GetLteMacSapProvider ()
 {
   return m_macSapProvider;
 }
@@ -317,7 +317,7 @@ LteUeMac::SetLteUeCmacSapUser (LteUeCmacSapUser* s)
 }
 
 LteUeCmacSapProvider*
-LteUeMac::GetLteUeCmacSapProvider (void)
+LteUeMac::GetLteUeCmacSapProvider ()
 {
   return m_cmacSapProvider;
 }
@@ -364,7 +364,7 @@ LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters 
 
 
 void
-LteUeMac::SendReportBufferStatus (void)
+LteUeMac::SendReportBufferStatus ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -870,7 +870,7 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 }
 
 void
-LteUeMac::RefreshHarqProcessesPacketBuffer (void)
+LteUeMac::RefreshHarqProcessesPacketBuffer ()
 {
   NS_LOG_FUNCTION (this);
 

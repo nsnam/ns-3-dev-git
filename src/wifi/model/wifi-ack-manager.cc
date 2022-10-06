@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiAckManager");
 NS_OBJECT_ENSURE_REGISTERED (WifiAckManager);
 
 TypeId
-WifiAckManager::GetTypeId (void)
+WifiAckManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiAckManager")
     .SetParent<Object> ()
@@ -52,7 +52,7 @@ WifiAckManager::~WifiAckManager ()
 }
 
 void
-WifiAckManager::DoDispose (void)
+WifiAckManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_mac = 0;
@@ -67,7 +67,7 @@ WifiAckManager::SetWifiMac (Ptr<WifiMac> mac)
 }
 
 Ptr<WifiRemoteStationManager>
-WifiAckManager::GetWifiRemoteStationManager (void) const
+WifiAckManager::GetWifiRemoteStationManager () const
 {
   return m_mac->GetWifiRemoteStationManager (m_linkId);
 }

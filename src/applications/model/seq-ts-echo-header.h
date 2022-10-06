@@ -41,7 +41,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief constructor
@@ -56,17 +56,17 @@ public:
   /**
    * \return the sequence number
    */
-  uint32_t GetSeq (void) const;
+  uint32_t GetSeq () const;
 
   /**
    * \return A time value set by the sender
    */
-  Time GetTsValue (void) const;
+  Time GetTsValue () const;
 
   /**
    * \return A time value echoing the received timestamp
    */
-  Time GetTsEchoReply (void) const;
+  Time GetTsEchoReply () const;
 
   /**
    * \brief Set the sender's time value
@@ -82,9 +82,9 @@ public:
   void SetTsEchoReply (Time ts);
 
   // Inherited
-  virtual TypeId GetInstanceTypeId (void) const override;
+  virtual TypeId GetInstanceTypeId () const override;
   virtual void Print (std::ostream &os) const override;
-  virtual uint32_t GetSerializedSize (void) const override;
+  virtual uint32_t GetSerializedSize () const override;
   virtual void Serialize (Buffer::Iterator start) const override;
   virtual uint32_t Deserialize (Buffer::Iterator start) override;
 

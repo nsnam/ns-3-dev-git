@@ -55,7 +55,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   HtFrameExchangeManager ();
   virtual ~HtFrameExchangeManager ();
 
@@ -68,13 +68,13 @@ public:
    *
    * \return the aggregator used to construct A-MSDU subframes.
    */
-  Ptr<MsduAggregator> GetMsduAggregator (void) const;
+  Ptr<MsduAggregator> GetMsduAggregator () const;
   /**
    * Returns the aggregator used to construct A-MPDU subframes.
    *
    * \return the aggregator used to construct A-MPDU subframes.
    */
-  Ptr<MpduAggregator> GetMpduAggregator (void) const;
+  Ptr<MpduAggregator> GetMpduAggregator () const;
 
   /**
    * Check if the PSDU obtained by aggregating the given MPDU to the PSDU specified
@@ -176,7 +176,7 @@ public:
    *
    * \return the maximum supported buffer size for a Block Ack agreement
    */
-  virtual uint16_t GetSupportedBaBufferSize (void) const;
+  virtual uint16_t GetSupportedBaBufferSize () const;
 
   /**
    * Return true if a Block Ack agreement has been established with the given
@@ -221,7 +221,7 @@ protected:
   void ReleaseSequenceNumber (Ptr<WifiMpdu> mpdu) const override;
   void ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
   void CtsTimeout (Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
-  void TransmissionSucceeded (void) override;
+  void TransmissionSucceeded () override;
 
   /**
    * Get a PSDU containing the given MPDU
@@ -393,7 +393,7 @@ private:
    * Send the current PSDU, which can be acknowledged by a BlockAck frame or
    * followed by a BlockAckReq frame and a BlockAck frame.
    */
-  void SendPsdu (void);
+  void SendPsdu ();
 
   Ptr<WifiPsdu> m_psdu;                               //!< the A-MPDU being transmitted
   WifiTxParameters m_txParams;                        //!< the TX parameters for the current frame

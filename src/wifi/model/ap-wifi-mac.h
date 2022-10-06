@@ -65,7 +65,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   ApWifiMac ();
   virtual ~ApWifiMac ();
@@ -74,7 +74,7 @@ public:
   bool CanForwardPacketsTo (Mac48Address to) const override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
-  bool SupportsSendFrom (void) const override;
+  bool SupportsSendFrom () const override;
   Ptr<WifiMacQueue> GetTxopQueue (AcIndex ac) const override;
   void ConfigureStandard (WifiStandard standard) override;
 
@@ -85,7 +85,7 @@ public:
   /**
    * \return the interval between two beacon transmissions.
    */
-  Time GetBeaconInterval (void) const;
+  Time GetBeaconInterval () const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -180,7 +180,7 @@ protected:
   ApLinkEntity& GetLink (uint8_t linkId) const;
 
 private:
-  std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
+  std::unique_ptr<LinkEntity> CreateLinkEntity () const override;
 
   void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)  override;
   /**
@@ -330,7 +330,7 @@ private:
    *
    * \return the MU EDCA Parameter Set that needs to be advertised (if any)
    */
-  std::optional<MuEdcaParameterSet> GetMuEdcaParameterSet (void) const;
+  std::optional<MuEdcaParameterSet> GetMuEdcaParameterSet () const;
   /**
    * Return the Reduced Neighbor Report (RNR) element that the current AP sends
    * on the given link, if one needs to be advertised.
@@ -423,8 +423,8 @@ private:
    */
   bool GetUseNonErpProtection (uint8_t linkId) const;
 
-  void DoDispose (void) override;
-  void DoInitialize (void) override;
+  void DoDispose () override;
+  void DoInitialize () override;
 
   /**
    * \param linkIds the IDs of the links for which the next Association ID is requested

@@ -94,7 +94,7 @@ LteInterferenceHardFrTestCase::~LteInterferenceHardFrTestCase ()
 }
 
 void
-LteInterferenceHardFrTestCase::DoRun (void)
+LteInterferenceHardFrTestCase::DoRun ()
 {
   NS_LOG_INFO (this << GetName ());
   NS_LOG_DEBUG ("LteInterferenceHardFrTestCase");
@@ -256,7 +256,7 @@ LteInterferenceStrictFrTestCase::~LteInterferenceStrictFrTestCase ()
 }
 
 void
-LteInterferenceStrictFrTestCase::DoRun (void)
+LteInterferenceStrictFrTestCase::DoRun ()
 {
   NS_LOG_INFO (this << GetName ());
   NS_LOG_DEBUG ("LteInterferenceStrictFrTestCase");

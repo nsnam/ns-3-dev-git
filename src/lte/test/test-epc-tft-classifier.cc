@@ -110,7 +110,7 @@ private:
                                       uint32_t tftId,
                                       bool useIpv6);
 
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 
@@ -189,7 +189,7 @@ EpcTftClassifierTestCase::BuildNameString (Ptr<EpcTftClassifier> c,
 
 
 void
-EpcTftClassifierTestCase::DoRun (void)
+EpcTftClassifierTestCase::DoRun ()
 {
   ns3::PacketMetadata::Enable ();
 

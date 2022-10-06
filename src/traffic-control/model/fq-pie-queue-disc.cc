@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("FqPieQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (FqPieFlow);
 
-TypeId FqPieFlow::GetTypeId (void)
+TypeId FqPieFlow::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FqPieFlow")
     .SetParent<QueueDiscClass> ()
@@ -69,7 +69,7 @@ FqPieFlow::SetDeficit (uint32_t deficit)
 }
 
 int32_t
-FqPieFlow::GetDeficit (void) const
+FqPieFlow::GetDeficit () const
 {
   NS_LOG_FUNCTION (this);
   return m_deficit;
@@ -90,7 +90,7 @@ FqPieFlow::SetStatus (FlowStatus status)
 }
 
 FqPieFlow::FlowStatus
-FqPieFlow::GetStatus (void) const
+FqPieFlow::GetStatus () const
 {
   NS_LOG_FUNCTION (this);
   return m_status;
@@ -104,7 +104,7 @@ FqPieFlow::SetIndex (uint32_t index)
 }
 
 uint32_t
-FqPieFlow::GetIndex (void) const
+FqPieFlow::GetIndex () const
 {
   return m_index;
 }
@@ -112,7 +112,7 @@ FqPieFlow::GetIndex (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (FqPieQueueDisc);
 
-TypeId FqPieQueueDisc::GetTypeId (void)
+TypeId FqPieQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FqPieQueueDisc")
     .SetParent<QueueDisc> ()
@@ -248,7 +248,7 @@ FqPieQueueDisc::SetQuantum (uint32_t quantum)
 }
 
 uint32_t
-FqPieQueueDisc::GetQuantum (void) const
+FqPieQueueDisc::GetQuantum () const
 {
   return m_quantum;
 }
@@ -365,7 +365,7 @@ FqPieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-FqPieQueueDisc::DoDequeue (void)
+FqPieQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -449,7 +449,7 @@ FqPieQueueDisc::DoDequeue (void)
 }
 
 bool
-FqPieQueueDisc::CheckConfig (void)
+FqPieQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)
@@ -504,7 +504,7 @@ FqPieQueueDisc::CheckConfig (void)
 }
 
 void
-FqPieQueueDisc::InitializeParams (void)
+FqPieQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -526,7 +526,7 @@ FqPieQueueDisc::InitializeParams (void)
 }
 
 uint32_t
-FqPieQueueDisc::FqPieDrop (void)
+FqPieQueueDisc::FqPieDrop ()
 {
   NS_LOG_FUNCTION (this);
 

@@ -47,7 +47,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   WifiAckManager ();
   virtual ~WifiAckManager ();
 
@@ -107,12 +107,12 @@ public:
                                                                 const WifiTxParameters& txParams) = 0;
 
 protected:
-  void DoDispose (void) override;
+  void DoDispose () override;
 
   /**
    * \return the remote station manager operating on our link
    */
-  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager () const;
 
   Ptr<WifiMac> m_mac; //!< MAC which is using this Acknowledgment Manager
   uint8_t m_linkId;   //!< ID of the link this Acknowledgment Manager is operating on

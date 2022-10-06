@@ -78,7 +78,7 @@ public:
    *
    * \returns a Ptr to the last created server application
    */
-  Ptr<UdpServer> GetServer (void);
+  Ptr<UdpServer> GetServer ();
 private:
   ObjectFactory m_factory; //!< Object factory.
   Ptr<UdpServer> m_server; //!< The last created server application

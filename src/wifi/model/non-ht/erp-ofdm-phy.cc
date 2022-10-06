@@ -62,7 +62,7 @@ static const std::array<uint64_t, 8> s_erpOfdmRatesBpsList =
  *
  * \return the ERP OFDM rates in bits per second
  */
-const std::array<uint64_t, 8>& GetErpOfdmRatesBpsList (void)
+const std::array<uint64_t, 8>& GetErpOfdmRatesBpsList ()
 {
   return s_erpOfdmRatesBpsList;
 };
@@ -113,7 +113,7 @@ ErpOfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVec
 }
 
 void
-ErpOfdmPhy::InitializeModes (void)
+ErpOfdmPhy::InitializeModes ()
 {
   for (const auto & rate : GetErpOfdmRatesBpsList ())
     {
@@ -233,7 +233,7 @@ ErpOfdmPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 }
 
 uint32_t
-ErpOfdmPhy::GetMaxPsduSize (void) const
+ErpOfdmPhy::GetMaxPsduSize () const
 {
   return 4095;
 }

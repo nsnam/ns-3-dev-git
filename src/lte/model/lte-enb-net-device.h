@@ -60,12 +60,12 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   LteEnbNetDevice ();
 
-  virtual ~LteEnbNetDevice (void);
-  virtual void DoDispose (void);
+  virtual ~LteEnbNetDevice ();
+  virtual void DoDispose ();
 
   // inherited from NetDevice
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
@@ -73,7 +73,7 @@ public:
   /**
    * \return a pointer to the MAC of the PCC.
    */
-  Ptr<LteEnbMac> GetMac (void) const;
+  Ptr<LteEnbMac> GetMac () const;
 
   /**
    * \param index CC index
@@ -84,7 +84,7 @@ public:
   /**
    * \return a pointer to the physical layer of the PCC.
    */
-  Ptr<LteEnbPhy> GetPhy (void) const;
+  Ptr<LteEnbPhy> GetPhy () const;
 
   /**
    * \param index SCC index
@@ -216,11 +216,11 @@ public:
    *
    */
 
-  std::map< uint8_t, Ptr<ComponentCarrierBaseStation> >  GetCcMap (void) const;
+  std::map< uint8_t, Ptr<ComponentCarrierBaseStation> >  GetCcMap () const;
 
 protected:
   // inherited from Object
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 
 private:

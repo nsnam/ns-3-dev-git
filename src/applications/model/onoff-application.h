@@ -99,7 +99,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   OnOffApplication ();
 
@@ -119,7 +119,7 @@ public:
    * \brief Return a pointer to associated socket.
    * \return pointer to associated socket
    */
-  Ptr<Socket> GetSocket (void) const;
+  Ptr<Socket> GetSocket () const;
 
  /**
   * \brief Assign a fixed random variable stream number to the random variables
@@ -131,11 +131,11 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 private:
   // inherited from Application base class.
-  virtual void StartApplication (void);    // Called at time specified by Start
-  virtual void StopApplication (void);     // Called at time specified by Stop
+  virtual void StartApplication ();    // Called at time specified by Start
+  virtual void StopApplication ();     // Called at time specified by Stop
 
   //helpers
   /**

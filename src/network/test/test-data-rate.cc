@@ -58,7 +58,7 @@ public:
   void CheckDataRateEqual (DataRate d1, DataRate d2, const std::string msg);
 
 protected:
-  virtual void DoRun (void) = 0;
+  virtual void DoRun () = 0;
 };
 
 DataRateTestCase::DataRateTestCase (std::string name) : TestCase (name)
@@ -105,7 +105,7 @@ public:
   void SingleTest (std::string rate, size_t nBits, Time correctTime);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 DataRateTestCase1::DataRateTestCase1 ()
@@ -194,7 +194,7 @@ public:
   void MultiplicationDoubleTest (std::string rate1, double factor, std::string rate2);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 DataRateTestCase2::DataRateTestCase2 ()

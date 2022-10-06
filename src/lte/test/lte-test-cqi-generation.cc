@@ -146,7 +146,7 @@ LteCqiGenerationTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, u
 }
 
 void
-LteCqiGenerationTestCase::DoRun (void)
+LteCqiGenerationTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteCqiGenerationTestCase");
 
@@ -281,7 +281,7 @@ LteCqiGenerationDlPowerControlTestCase::UlScheduling (uint32_t frameNo, uint32_t
 }
 
 void
-LteCqiGenerationDlPowerControlTestCase::DoRun (void)
+LteCqiGenerationDlPowerControlTestCase::DoRun ()
 {
   NS_LOG_DEBUG ("LteCqiGenerationTestCase");
 

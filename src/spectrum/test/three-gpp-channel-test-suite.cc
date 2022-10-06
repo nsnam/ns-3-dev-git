@@ -65,7 +65,7 @@ private:
   /**
    * Build the test scenario
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Compute the Frobenius norm of the channel matrix and stores it in m_normVector
@@ -115,7 +115,7 @@ ThreeGppChannelMatrixComputationTest::DoComputeNorm (Ptr<ThreeGppChannelModel> c
 }
 
 void
-ThreeGppChannelMatrixComputationTest::DoRun (void)
+ThreeGppChannelMatrixComputationTest::DoRun ()
 {
   // Build the scenario for the test
   uint8_t txAntennaElements[] {2, 2}; // tx antenna dimensions
@@ -233,7 +233,7 @@ private:
   /**
    * Build the test scenario
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * This method is used to schedule the channel matrix computation at different
@@ -279,7 +279,7 @@ ThreeGppChannelMatrixUpdateTest::DoGetChannel (Ptr<ThreeGppChannelModel> channel
 }
 
 void
-ThreeGppChannelMatrixUpdateTest::DoRun (void)
+ThreeGppChannelMatrixUpdateTest::DoRun ()
 {
   // Build the scenario for the test
 
@@ -394,7 +394,7 @@ private:
   /**
    * Build the test scenario
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Points the beam of thisDevice towards otherDevice

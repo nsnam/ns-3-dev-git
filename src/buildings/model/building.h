@@ -42,7 +42,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual void DoDispose ();
 
   /**
@@ -94,7 +94,7 @@ public:
    * \return the unique id of this Building. This unique id happens to
    * be also the index of the Building into the BuildingList.
    */
-  uint32_t GetId (void) const;
+  uint32_t GetId () const;
 
   /**
    * Set the boundaries of the building

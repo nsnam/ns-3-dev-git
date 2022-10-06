@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("NonCommunicatingNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (NonCommunicatingNetDevice);
 
 TypeId
-NonCommunicatingNetDevice::GetTypeId (void)
+NonCommunicatingNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NonCommunicatingNetDevice")
     .SetParent<NetDevice> ()
@@ -79,7 +79,7 @@ NonCommunicatingNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-NonCommunicatingNetDevice::GetIfIndex (void) const
+NonCommunicatingNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
@@ -93,7 +93,7 @@ NonCommunicatingNetDevice::SetMtu (uint16_t mtu)
 }
 
 uint16_t
-NonCommunicatingNetDevice::GetMtu (void) const
+NonCommunicatingNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return 0;
@@ -106,28 +106,28 @@ NonCommunicatingNetDevice::SetAddress (Address address)
 }
 
 Address
-NonCommunicatingNetDevice::GetAddress (void) const
+NonCommunicatingNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   return Address ();
 }
 
 bool
-NonCommunicatingNetDevice::IsBroadcast (void) const
+NonCommunicatingNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return false;
 }
 
 Address
-NonCommunicatingNetDevice::GetBroadcast (void) const
+NonCommunicatingNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return Address ();
 }
 
 bool
-NonCommunicatingNetDevice::IsMulticast (void) const
+NonCommunicatingNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -148,14 +148,14 @@ NonCommunicatingNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-NonCommunicatingNetDevice::IsPointToPoint (void) const
+NonCommunicatingNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool
-NonCommunicatingNetDevice::IsBridge (void) const
+NonCommunicatingNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -163,7 +163,7 @@ NonCommunicatingNetDevice::IsBridge (void) const
 
 
 Ptr<Node>
-NonCommunicatingNetDevice::GetNode (void) const
+NonCommunicatingNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -201,7 +201,7 @@ NonCommunicatingNetDevice::SetChannel (Ptr<Channel> c)
 }
 
 Ptr<Channel>
-NonCommunicatingNetDevice::GetChannel (void) const
+NonCommunicatingNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   return m_channel;
@@ -209,14 +209,14 @@ NonCommunicatingNetDevice::GetChannel (void) const
 
 
 bool
-NonCommunicatingNetDevice::NeedsArp (void) const
+NonCommunicatingNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool
-NonCommunicatingNetDevice::IsLinkUp (void) const
+NonCommunicatingNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return false;

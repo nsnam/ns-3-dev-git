@@ -72,7 +72,7 @@ public:
                      const std::string args = "");
 
   /** Destructor. */
-  virtual ~ExampleAsTestCase (void);
+  virtual ~ExampleAsTestCase ();
 
   /**
    * Customization point for more complicated patterns
@@ -80,7 +80,7 @@ public:
    *
    * \returns The string to be given to the `ns3 --command-template=` argument.
    */
-  virtual std::string GetCommandTemplate (void) const;
+  virtual std::string GetCommandTemplate () const;
 
   /**
    * Customization point for tests requiring post-processing of stdout.
@@ -91,10 +91,10 @@ public:
    *
    * \returns The string of post-processing commands
    */
-  virtual std::string GetPostProcessingCommand (void) const;
+  virtual std::string GetPostProcessingCommand () const;
 
   // Inherited
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 protected:
   std::string m_program;  /**< The program to run. */

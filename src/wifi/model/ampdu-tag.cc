@@ -26,7 +26,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (AmpduTag);
 
 TypeId
-AmpduTag::GetTypeId (void)
+AmpduTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AmpduTag")
     .SetParent<Tag> ()
@@ -37,7 +37,7 @@ AmpduTag::GetTypeId (void)
 }
 
 TypeId
-AmpduTag::GetInstanceTypeId (void) const
+AmpduTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -62,7 +62,7 @@ AmpduTag::SetRemainingAmpduDuration (Time duration)
 }
 
 uint32_t
-AmpduTag::GetSerializedSize (void) const
+AmpduTag::GetSerializedSize () const
 {
   return (1 + sizeof (Time));
 }

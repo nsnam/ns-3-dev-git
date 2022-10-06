@@ -295,13 +295,13 @@ PacketTagList::Peek (Tag &tag) const
 }
 
 const struct PacketTagList::TagData *
-PacketTagList::Head (void) const
+PacketTagList::Head () const
 {
   return m_next;
 }
 
 uint32_t
-PacketTagList::GetSerializedSize (void) const
+PacketTagList::GetSerializedSize () const
 {
   NS_LOG_FUNCTION_NOARGS ();
 

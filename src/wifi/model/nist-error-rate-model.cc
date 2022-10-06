@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("NistErrorRateModel");
 NS_OBJECT_ENSURE_REGISTERED (NistErrorRateModel);
 
 TypeId
-NistErrorRateModel::GetTypeId (void)
+NistErrorRateModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NistErrorRateModel")
     .SetParent<ErrorRateModel> ()

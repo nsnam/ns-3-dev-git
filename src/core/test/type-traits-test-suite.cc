@@ -46,15 +46,15 @@ public:
   {}
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
-TypeTraitsTestCase::TypeTraitsTestCase (void)
+TypeTraitsTestCase::TypeTraitsTestCase ()
   : TestCase ("Check type traits")
 {}
 
 void
-TypeTraitsTestCase::DoRun (void)
+TypeTraitsTestCase::DoRun ()
 {
   NS_TEST_ASSERT_MSG_EQ
     (TypeTraits<void (TypeTraitsTestCase::*)(void)>::IsPointerToMember, 1,

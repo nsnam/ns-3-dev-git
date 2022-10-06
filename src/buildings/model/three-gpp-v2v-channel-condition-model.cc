@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("ThreeGppV2vChannelConditionModel");
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppV2vUrbanChannelConditionModel);
 
 TypeId
-ThreeGppV2vUrbanChannelConditionModel::GetTypeId (void)
+ThreeGppV2vUrbanChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppV2vUrbanChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()
@@ -96,7 +96,7 @@ ThreeGppV2vUrbanChannelConditionModel::ComputePnlos (Ptr<const MobilityModel> a,
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppV2vHighwayChannelConditionModel);
 
 TypeId
-ThreeGppV2vHighwayChannelConditionModel::GetTypeId (void)
+ThreeGppV2vHighwayChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThreeGppV2vHighwayChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()

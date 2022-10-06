@@ -56,37 +56,37 @@ ArpHeader::SetReply (Address sourceHardwareAddress,
   m_ipv4Dest = destinationProtocolAddress;
 }
 bool
-ArpHeader::IsRequest (void) const
+ArpHeader::IsRequest () const
 {
   NS_LOG_FUNCTION (this);
   return m_type == ARP_TYPE_REQUEST;
 }
 bool
-ArpHeader::IsReply (void) const
+ArpHeader::IsReply () const
 {
   NS_LOG_FUNCTION (this);
   return m_type == ARP_TYPE_REPLY;
 }
 Address
-ArpHeader::GetSourceHardwareAddress (void) const
+ArpHeader::GetSourceHardwareAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_macSource;
 }
 Address
-ArpHeader::GetDestinationHardwareAddress (void) const
+ArpHeader::GetDestinationHardwareAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_macDest;
 }
 Ipv4Address
-ArpHeader::GetSourceIpv4Address (void) const
+ArpHeader::GetSourceIpv4Address () const
 {
   NS_LOG_FUNCTION (this);
   return m_ipv4Source;
 }
 Ipv4Address
-ArpHeader::GetDestinationIpv4Address (void) const
+ArpHeader::GetDestinationIpv4Address () const
 {
   NS_LOG_FUNCTION (this);
   return m_ipv4Dest;
@@ -94,7 +94,7 @@ ArpHeader::GetDestinationIpv4Address (void) const
 
 
 TypeId
-ArpHeader::GetTypeId (void)
+ArpHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ArpHeader")
     .SetParent<Header> ()
@@ -104,7 +104,7 @@ ArpHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-ArpHeader::GetInstanceTypeId (void) const
+ArpHeader::GetInstanceTypeId () const
 {
   NS_LOG_FUNCTION (this);
   return GetTypeId ();
@@ -133,7 +133,7 @@ ArpHeader::Print (std::ostream &os) const
     }
 }
 uint32_t
-ArpHeader::GetSerializedSize (void) const
+ArpHeader::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT ((m_macSource.GetLength () == 6) || (m_macSource.GetLength () == 8) || (m_macSource.GetLength () == 1));

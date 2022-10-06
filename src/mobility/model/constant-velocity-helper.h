@@ -59,12 +59,12 @@ public:
    * Get current position vector
    * \return Position vector
    */
-  Vector GetCurrentPosition (void) const;
+  Vector GetCurrentPosition () const;
   /**
    * Get velocity; if paused, will return a zero vector
    * \return Velocity vector
    */
-  Vector GetVelocity (void) const;
+  Vector GetVelocity () const;
   /**
    * Set new velocity vector
    * \param vel Velocity vector
@@ -73,11 +73,11 @@ public:
   /**
    * Pause mobility at current position
    */
-  void Pause (void);
+  void Pause ();
   /**
    * Resume mobility from current position at current velocity
    */
-  void Unpause (void);
+  void Unpause ();
 
   /**
    * Update position, if not paused, from last position and time of last update
@@ -92,7 +92,7 @@ public:
   /**
    * Update position, if not paused, from last position and time of last update
    */
-  void Update (void) const;
+  void Update () const;
 private:
   mutable Time m_lastUpdate; //!< time of last update
   mutable Vector m_position; //!< state variable for current position

@@ -132,14 +132,14 @@ Mac16Address::ConvertFrom (const Address &address)
   return retval;
 }
 Address
-Mac16Address::ConvertTo (void) const
+Mac16Address::ConvertTo () const
 {
   NS_LOG_FUNCTION (this);
   return Address (GetType (), m_address, 2);
 }
 
 Mac16Address
-Mac16Address::Allocate (void)
+Mac16Address::Allocate ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -163,7 +163,7 @@ Mac16Address::ResetAllocationIndex ()
 }
 
 uint8_t
-Mac16Address::GetType (void)
+Mac16Address::GetType ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -172,7 +172,7 @@ Mac16Address::GetType (void)
 }
 
 Mac16Address
-Mac16Address::GetBroadcast (void)
+Mac16Address::GetBroadcast ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -200,7 +200,7 @@ Mac16Address::GetMulticast (Ipv6Address address)
 }
 
 bool
-Mac16Address::IsBroadcast (void) const
+Mac16Address::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   if (m_address[0] == 0xff && m_address[1] == 0xff)
@@ -211,7 +211,7 @@ Mac16Address::IsBroadcast (void) const
 }
 
 bool
-Mac16Address::IsMulticast (void) const
+Mac16Address::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   uint8_t val = m_address[0];

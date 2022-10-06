@@ -61,7 +61,7 @@ WifiAssocManager::ApInfoCompare::operator() (const StaWifiMac::ApInfo& lhs,
 }
 
 TypeId
-WifiAssocManager::GetTypeId (void)
+WifiAssocManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiAssocManager")
     .SetParent<Object> ()
@@ -82,7 +82,7 @@ WifiAssocManager::~WifiAssocManager ()
 }
 
 void
-WifiAssocManager::DoDispose (void)
+WifiAssocManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_mac = nullptr;
@@ -96,13 +96,13 @@ WifiAssocManager::SetStaWifiMac (Ptr<StaWifiMac> mac)
 }
 
 const WifiAssocManager::SortedList&
-WifiAssocManager::GetSortedList (void) const
+WifiAssocManager::GetSortedList () const
 {
   return m_apList;
 }
 
 const WifiScanParams&
-WifiAssocManager::GetScanParams (void) const
+WifiAssocManager::GetScanParams () const
 {
   return m_scanParams;
 }
@@ -216,7 +216,7 @@ WifiAssocManager::NotifyApInfo (const StaWifiMac::ApInfo&& apInfo)
 }
 
 void
-WifiAssocManager::ScanningTimeout (void)
+WifiAssocManager::ScanningTimeout ()
 {
   NS_LOG_FUNCTION (this);
 

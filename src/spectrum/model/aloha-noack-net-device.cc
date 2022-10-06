@@ -62,7 +62,7 @@ std::ostream& operator<< (std::ostream& os, AlohaNoackNetDevice::State state)
 NS_OBJECT_ENSURE_REGISTERED (AlohaNoackNetDevice);
 
 TypeId
-AlohaNoackNetDevice::GetTypeId (void)
+AlohaNoackNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AlohaNoackNetDevice")
     .SetParent<NetDevice> ()
@@ -150,7 +150,7 @@ AlohaNoackNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-AlohaNoackNetDevice::GetIfIndex (void) const
+AlohaNoackNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
@@ -165,7 +165,7 @@ AlohaNoackNetDevice::SetMtu (uint16_t mtu)
 }
 
 uint16_t
-AlohaNoackNetDevice::GetMtu (void) const
+AlohaNoackNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;
@@ -188,28 +188,28 @@ AlohaNoackNetDevice::SetAddress (Address address)
 }
 
 Address
-AlohaNoackNetDevice::GetAddress (void) const
+AlohaNoackNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION (this);
   return m_address;
 }
 
 bool
-AlohaNoackNetDevice::IsBroadcast (void) const
+AlohaNoackNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 
 Address
-AlohaNoackNetDevice::GetBroadcast (void) const
+AlohaNoackNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-AlohaNoackNetDevice::IsMulticast (void) const
+AlohaNoackNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION (this);
   return true;
@@ -233,14 +233,14 @@ Address AlohaNoackNetDevice::GetMulticast (Ipv6Address addr) const
 
 
 bool
-AlohaNoackNetDevice::IsPointToPoint (void) const
+AlohaNoackNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool
-AlohaNoackNetDevice::IsBridge (void) const
+AlohaNoackNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION (this);
   return false;
@@ -248,7 +248,7 @@ AlohaNoackNetDevice::IsBridge (void) const
 
 
 Ptr<Node>
-AlohaNoackNetDevice::GetNode (void) const
+AlohaNoackNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -287,7 +287,7 @@ AlohaNoackNetDevice::SetChannel (Ptr<Channel> c)
 
 
 Ptr<Channel>
-AlohaNoackNetDevice::GetChannel (void) const
+AlohaNoackNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION (this);
   return m_channel;
@@ -295,14 +295,14 @@ AlohaNoackNetDevice::GetChannel (void) const
 
 
 bool
-AlohaNoackNetDevice::NeedsArp (void) const
+AlohaNoackNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
 
 bool
-AlohaNoackNetDevice::IsLinkUp (void) const
+AlohaNoackNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION (this);
   return m_linkUp;

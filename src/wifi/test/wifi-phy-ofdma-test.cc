@@ -135,7 +135,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Constructor
    *
@@ -144,8 +144,8 @@ public:
   OfdmaSpectrumWifiPhy (uint16_t staId);
   virtual ~OfdmaSpectrumWifiPhy ();
 
-  void DoInitialize (void) override;
-  void DoDispose (void) override;
+  void DoInitialize () override;
+  void DoDispose () override;
 
   using WifiPhy::Reset;
 
@@ -179,11 +179,11 @@ public:
   /**
    * \return the current preamble events map
    */
-  std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > & GetCurrentPreambleEvents (void);
+  std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > & GetCurrentPreambleEvents ();
   /**
    * \return the current event
    */
-  Ptr<Event> GetCurrentEvent (void);
+  Ptr<Event> GetCurrentEvent ();
 
   /**
    * Wrapper to InterferenceHelper method.
@@ -200,7 +200,7 @@ public:
   /**
    * \return a const pointer to the HE PHY instance
    */
-  Ptr<const HePhy> GetHePhy (void) const;
+  Ptr<const HePhy> GetHePhy () const;
 
 private:
   Ptr<OfdmaTestHePhy> m_ofdmTestHePhy; ///< Pointer to HE PHY instance used for OFDMA test
@@ -208,7 +208,7 @@ private:
 }; //class OfdmaSpectrumWifiPhy
 
 TypeId
-OfdmaSpectrumWifiPhy::GetTypeId (void)
+OfdmaSpectrumWifiPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OfdmaSpectrumWifiPhy")
     .SetParent<SpectrumWifiPhy> ()
@@ -233,7 +233,7 @@ OfdmaSpectrumWifiPhy::~OfdmaSpectrumWifiPhy()
 }
 
 void
-OfdmaSpectrumWifiPhy::DoInitialize (void)
+OfdmaSpectrumWifiPhy::DoInitialize ()
 {
   //Replace HE PHY instance with test instance
   m_phyEntities[WIFI_MOD_CLASS_HE] = m_ofdmTestHePhy;
@@ -241,7 +241,7 @@ OfdmaSpectrumWifiPhy::DoInitialize (void)
 }
 
 void
-OfdmaSpectrumWifiPhy::DoDispose (void)
+OfdmaSpectrumWifiPhy::DoDispose ()
 {
   m_ofdmTestHePhy = 0;
   SpectrumWifiPhy::DoDispose ();
@@ -268,13 +268,13 @@ OfdmaSpectrumWifiPhy::StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txV
 }
 
 std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > &
-OfdmaSpectrumWifiPhy::GetCurrentPreambleEvents (void)
+OfdmaSpectrumWifiPhy::GetCurrentPreambleEvents ()
 {
   return m_currentPreambleEvents;
 }
 
 Ptr<Event>
-OfdmaSpectrumWifiPhy::GetCurrentEvent (void)
+OfdmaSpectrumWifiPhy::GetCurrentEvent ()
 {
   return m_currentEvent;
 }
@@ -286,7 +286,7 @@ OfdmaSpectrumWifiPhy::GetEnergyDuration (double energyW, WifiSpectrumBand band)
 }
 
 Ptr<const HePhy>
-OfdmaSpectrumWifiPhy::GetHePhy (void) const
+OfdmaSpectrumWifiPhy::GetHePhy () const
 {
   return DynamicCast<const HePhy> (GetPhyEntity (WIFI_MOD_CLASS_HE));
 }
@@ -304,9 +304,9 @@ public:
   virtual ~TestDlOfdmaPhyTransmission ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Receive success function for STA 1
@@ -395,7 +395,7 @@ private:
   /**
    * Stop interference function
    */
-  void StopInterference (void);
+  void StopInterference ();
 
   /**
    * Run one function
@@ -454,7 +454,7 @@ TestDlOfdmaPhyTransmission::TestDlOfdmaPhyTransmission ()
 }
 
 void
-TestDlOfdmaPhyTransmission::ResetResults (void)
+TestDlOfdmaPhyTransmission::ResetResults ()
 {
   m_countRxSuccessSta1 = 0;
   m_countRxSuccessSta2 = 0;
@@ -542,7 +542,7 @@ TestDlOfdmaPhyTransmission::GenerateInterference (Ptr<SpectrumValue> interferenc
 }
 
 void
-TestDlOfdmaPhyTransmission::StopInterference (void)
+TestDlOfdmaPhyTransmission::StopInterference ()
 {
   m_phyInterferer->Stop();
 }
@@ -643,7 +643,7 @@ TestDlOfdmaPhyTransmission::DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, Wifi
 }
 
 void
-TestDlOfdmaPhyTransmission::DoSetup (void)
+TestDlOfdmaPhyTransmission::DoSetup ()
 {
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
@@ -736,7 +736,7 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
 }
 
 void
-TestDlOfdmaPhyTransmission::DoTeardown (void)
+TestDlOfdmaPhyTransmission::DoTeardown ()
 {
   m_phyAp->Dispose ();
   m_phyAp = 0;
@@ -751,7 +751,7 @@ TestDlOfdmaPhyTransmission::DoTeardown (void)
 }
 
 void
-TestDlOfdmaPhyTransmission::RunOne (void)
+TestDlOfdmaPhyTransmission::RunOne ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -934,7 +934,7 @@ TestDlOfdmaPhyTransmission::RunOne (void)
 }
 
 void
-TestDlOfdmaPhyTransmission::DoRun (void)
+TestDlOfdmaPhyTransmission::DoRun ()
 {
   m_frequency = 5180;
   m_channelWidth = 20;
@@ -971,9 +971,9 @@ public:
   TestDlOfdmaPhyPuncturing ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Receive success function for STA 1
@@ -1046,7 +1046,7 @@ private:
   /**
    * Stop interference function
    */
-  void StopInterference (void);
+  void StopInterference ();
 
   /**
    * Run one function
@@ -1105,7 +1105,7 @@ TestDlOfdmaPhyPuncturing::TestDlOfdmaPhyPuncturing ()
 }
 
 void
-TestDlOfdmaPhyPuncturing::ResetResults (void)
+TestDlOfdmaPhyPuncturing::ResetResults ()
 {
   m_countRxSuccessSta1 = 0;
   m_countRxSuccessSta2 = 0;
@@ -1189,7 +1189,7 @@ TestDlOfdmaPhyPuncturing::GenerateInterference (Ptr<SpectrumValue> interferenceP
 }
 
 void
-TestDlOfdmaPhyPuncturing::StopInterference (void)
+TestDlOfdmaPhyPuncturing::StopInterference ()
 {
   NS_LOG_FUNCTION (this);
   m_phyInterferer->Stop();
@@ -1263,7 +1263,7 @@ TestDlOfdmaPhyPuncturing::DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPh
 }
 
 void
-TestDlOfdmaPhyPuncturing::DoSetup (void)
+TestDlOfdmaPhyPuncturing::DoSetup ()
 {
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
@@ -1337,7 +1337,7 @@ TestDlOfdmaPhyPuncturing::DoSetup (void)
 }
 
 void
-TestDlOfdmaPhyPuncturing::DoTeardown (void)
+TestDlOfdmaPhyPuncturing::DoTeardown ()
 {
   m_phyAp->Dispose ();
   m_phyAp = 0;
@@ -1350,7 +1350,7 @@ TestDlOfdmaPhyPuncturing::DoTeardown (void)
 }
 
 void
-TestDlOfdmaPhyPuncturing::RunOne (void)
+TestDlOfdmaPhyPuncturing::RunOne ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -1446,7 +1446,7 @@ TestDlOfdmaPhyPuncturing::RunOne (void)
 }
 
 void
-TestDlOfdmaPhyPuncturing::DoRun (void)
+TestDlOfdmaPhyPuncturing::DoRun ()
 {
   //test all 20 MHz subchannels in the 80 MHz operation channel except the primary one which cannot be punctured
   for (auto index : {1, 2, 3})
@@ -1470,9 +1470,9 @@ public:
   virtual ~TestUlOfdmaPpduUid ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Transmitted PPDU information function for AP
@@ -1492,16 +1492,16 @@ private:
   /**
    * Reset the global PPDU UID counter in WifiPhy
    */
-  void ResetPpduUid (void);
+  void ResetPpduUid ();
 
   /**
    * Send MU-PPDU toward both STAs.
    */
-  void SendMuPpdu (void);
+  void SendMuPpdu ();
   /**
    * Send TB-PPDU from both STAs.
    */
-  void SendTbPpdu (void);
+  void SendTbPpdu ();
   /**
    * Send SU-PPDU function
    * \param txStaId the ID of the sending STA
@@ -1537,7 +1537,7 @@ TestUlOfdmaPpduUid::~TestUlOfdmaPpduUid ()
 }
 
 void
-TestUlOfdmaPpduUid::DoSetup (void)
+TestUlOfdmaPpduUid::DoSetup ()
 {
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
@@ -1614,7 +1614,7 @@ TestUlOfdmaPpduUid::DoSetup (void)
 }
 
 void
-TestUlOfdmaPpduUid::DoTeardown (void)
+TestUlOfdmaPpduUid::DoTeardown ()
 {
   m_phyAp->Dispose ();
   m_phyAp = 0;
@@ -1671,14 +1671,14 @@ TestUlOfdmaPpduUid::TxPpduSta2 (uint64_t uid)
 }
 
 void
-TestUlOfdmaPpduUid::ResetPpduUid (void)
+TestUlOfdmaPpduUid::ResetPpduUid ()
 {
   NS_LOG_FUNCTION (this);
   m_phyAp->SetPpduUid (0); //one is enough since it's a global attribute
 }
 
 void
-TestUlOfdmaPpduUid::SendMuPpdu (void)
+TestUlOfdmaPpduUid::SendMuPpdu ()
 {
   WifiConstPsduMap psdus;
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_MU, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
@@ -1719,7 +1719,7 @@ TestUlOfdmaPpduUid::SendMuPpdu (void)
 }
 
 void
-TestUlOfdmaPpduUid::SendTbPpdu (void)
+TestUlOfdmaPpduUid::SendTbPpdu ()
 {
   WifiConstPsduMap psdus1;
   WifiConstPsduMap psdus2;
@@ -1801,7 +1801,7 @@ TestUlOfdmaPpduUid::SendSuPpdu (uint16_t txStaId)
 }
 
 void
-TestUlOfdmaPpduUid::DoRun (void)
+TestUlOfdmaPpduUid::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -1853,9 +1853,9 @@ public:
   virtual ~TestMultipleHeTbPreambles ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Receive HE TB PPDU function.
@@ -1892,7 +1892,7 @@ private:
   /**
    * Reset function
    */
-  void Reset (void);
+  void Reset ();
 
   /**
    * Check the received HE TB preambles
@@ -1925,7 +1925,7 @@ TestMultipleHeTbPreambles::~TestMultipleHeTbPreambles ()
 }
 
 void
-TestMultipleHeTbPreambles::Reset (void)
+TestMultipleHeTbPreambles::Reset ()
 {
   NS_LOG_FUNCTION (this);
   m_totalBytesDropped = 0;
@@ -2037,7 +2037,7 @@ TestMultipleHeTbPreambles::DoRxHeTbPpduOfdmaPart (Ptr<WifiSpectrumSignalParamete
 }
 
 void
-TestMultipleHeTbPreambles::DoSetup (void)
+TestMultipleHeTbPreambles::DoSetup ()
 {
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
   dev->SetStandard (WIFI_STANDARD_80211ax);
@@ -2064,14 +2064,14 @@ TestMultipleHeTbPreambles::DoSetup (void)
 }
 
 void
-TestMultipleHeTbPreambles::DoTeardown (void)
+TestMultipleHeTbPreambles::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
 }
 
 void
-TestMultipleHeTbPreambles::DoRun (void)
+TestMultipleHeTbPreambles::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -2177,7 +2177,7 @@ TestMultipleHeTbPreambles::DoRun (void)
 class OfdmaTestPhyListener : public ns3::WifiPhyListener
 {
 public:
-  OfdmaTestPhyListener (void) = default;
+  OfdmaTestPhyListener () = default;
 
   void NotifyRxStart (Time duration) override
   {
@@ -2187,7 +2187,7 @@ public:
     m_lastRxSuccess = false;
   }
 
-  void NotifyRxEndOk (void) override
+  void NotifyRxEndOk () override
   {
     NS_LOG_FUNCTION (this);
     m_lastRxEnd = Simulator::Now ();
@@ -2195,7 +2195,7 @@ public:
     m_lastRxSuccess = true;
   }
 
-  void NotifyRxEndError (void) override
+  void NotifyRxEndError () override
   {
     NS_LOG_FUNCTION (this);
     m_lastRxEnd = Simulator::Now ();
@@ -2218,26 +2218,26 @@ public:
   {
   }
 
-  void NotifySleep (void) override
+  void NotifySleep () override
   {
   }
 
-  void NotifyOff (void) override
+  void NotifyOff () override
   {
   }
 
-  void NotifyWakeup (void) override
+  void NotifyWakeup () override
   {
   }
 
-  void NotifyOn (void) override
+  void NotifyOn () override
   {
   }
 
   /**
    * Reset function.
    */
-  void Reset (void)
+  void Reset ()
   {
     m_notifyRxStart = 0;
     m_notifyRxEnd = 0;
@@ -2250,7 +2250,7 @@ public:
    * Return the number of RX start notifications that has been received since the last reset.
    * \return the number of RX start notifications that has been received
    */
-  uint32_t GetNumRxStartNotifications (void) const
+  uint32_t GetNumRxStartNotifications () const
   {
     return m_notifyRxStart;
   }
@@ -2259,7 +2259,7 @@ public:
    * Return the number of RX end notifications that has been received since the last reset.
    * \return the number of RX end notifications that has been received
    */
-  uint32_t GetNumRxEndNotifications (void) const
+  uint32_t GetNumRxEndNotifications () const
   {
     return m_notifyRxEnd;
   }
@@ -2268,7 +2268,7 @@ public:
    * Return the time at which the last RX start notification has been received.
    * \return the time at which the last RX start notification has been received
    */
-  Time GetLastRxStartNotification (void) const
+  Time GetLastRxStartNotification () const
   {
     return m_lastRxStart;
   }
@@ -2277,7 +2277,7 @@ public:
    * Return the time at which the last RX end notification has been received.
    * \return the time at which the last RX end notification has been received
    */
-  Time GetLastRxEndNotification (void) const
+  Time GetLastRxEndNotification () const
   {
     return m_lastRxEnd;
   }
@@ -2286,7 +2286,7 @@ public:
    * Return whether last RX has been successfull.
    * \return true if last RX has been successfull, false otherwise
    */
-  bool IsLastRxSuccess (void) const
+  bool IsLastRxSuccess () const
   {
     return m_lastRxSuccess;
   }
@@ -2326,9 +2326,9 @@ public:
   virtual ~TestUlOfdmaPhyTransmission ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Get TXVECTOR for HE TB PPDU.
@@ -2388,7 +2388,7 @@ private:
   /**
    * Stop interference function
    */
-  void StopInterference (void);
+  void StopInterference ();
 
   /**
    * Run one function
@@ -2429,7 +2429,7 @@ private:
   /**
    * Verify all events are cleared at end of TX or RX
    */
-  void VerifyEventsCleared (void);
+  void VerifyEventsCleared ();
 
   /**
    * Check the PHY state
@@ -2752,7 +2752,7 @@ TestUlOfdmaPhyTransmission::GenerateInterference (Ptr<SpectrumValue> interferenc
 }
 
 void
-TestUlOfdmaPhyTransmission::StopInterference (void)
+TestUlOfdmaPhyTransmission::StopInterference ()
 {
   m_phyInterferer->Stop();
 }
@@ -2843,7 +2843,7 @@ TestUlOfdmaPhyTransmission::CheckOfdmaRxPower (Ptr<OfdmaSpectrumWifiPhy> phy, Wi
 }
 
 void
-TestUlOfdmaPhyTransmission::VerifyEventsCleared (void)
+TestUlOfdmaPhyTransmission::VerifyEventsCleared ()
 {
   NS_TEST_ASSERT_MSG_EQ (m_phyAp->GetCurrentEvent (), nullptr, "m_currentEvent for AP was not cleared");
   NS_TEST_ASSERT_MSG_EQ (m_phySta1->GetCurrentEvent (), nullptr, "m_currentEvent for STA 1 was not cleared");
@@ -2900,7 +2900,7 @@ TestUlOfdmaPhyTransmission::CheckApRxEnd (uint32_t expectedNotifications, Time e
 }
 
 void
-TestUlOfdmaPhyTransmission::Reset (void)
+TestUlOfdmaPhyTransmission::Reset ()
 {
   m_countRxSuccessFromSta1 = 0;
   m_countRxSuccessFromSta2 = 0;
@@ -2931,7 +2931,7 @@ TestUlOfdmaPhyTransmission::SetPsdLimit (Ptr<WifiPhy> phy, double psdLimit)
 }
 
 void
-TestUlOfdmaPhyTransmission::DoSetup (void)
+TestUlOfdmaPhyTransmission::DoSetup ()
 {
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
@@ -3058,7 +3058,7 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
 }
 
 void
-TestUlOfdmaPhyTransmission::DoTeardown (void)
+TestUlOfdmaPhyTransmission::DoTeardown ()
 {
   m_phyAp->Dispose ();
   m_phyAp = 0;
@@ -3223,7 +3223,7 @@ TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks (Time delay, double r
 }
 
 void
-TestUlOfdmaPhyTransmission::RunOne (void)
+TestUlOfdmaPhyTransmission::RunOne ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -3586,7 +3586,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
 }
 
 void
-TestUlOfdmaPhyTransmission::DoRun (void)
+TestUlOfdmaPhyTransmission::DoRun ()
 {
   m_frequency = 5180;
   m_channelWidth = 20;
@@ -3628,9 +3628,9 @@ public:
   virtual ~TestPhyPaddingExclusion ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Send HE TB PPDU function
@@ -3656,7 +3656,7 @@ private:
   /**
    * Stop interference function
    */
-  void StopInterference (void);
+  void StopInterference ();
 
   /**
    * Run one function
@@ -3682,7 +3682,7 @@ private:
   /**
    * Verify all events are cleared at end of TX or RX
    */
-  void VerifyEventsCleared (void);
+  void VerifyEventsCleared ();
 
   /**
    * Check the PHY state
@@ -3788,7 +3788,7 @@ TestPhyPaddingExclusion::GenerateInterference (Ptr<SpectrumValue> interferencePs
 }
 
 void
-TestPhyPaddingExclusion::StopInterference (void)
+TestPhyPaddingExclusion::StopInterference ()
 {
   m_phyInterferer->Stop();
 }
@@ -3844,7 +3844,7 @@ TestPhyPaddingExclusion::CheckRxFromSta2 (uint32_t expectedSuccess, uint32_t exp
 }
 
 void
-TestPhyPaddingExclusion::VerifyEventsCleared (void)
+TestPhyPaddingExclusion::VerifyEventsCleared ()
 {
   NS_TEST_ASSERT_MSG_EQ (m_phyAp->GetCurrentEvent (), nullptr, "m_currentEvent for AP was not cleared");
   NS_TEST_ASSERT_MSG_EQ (m_phySta1->GetCurrentEvent (), nullptr, "m_currentEvent for STA 1 was not cleared");
@@ -3867,7 +3867,7 @@ TestPhyPaddingExclusion::DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhy
 }
 
 void
-TestPhyPaddingExclusion::Reset (void)
+TestPhyPaddingExclusion::Reset ()
 {
   m_countRxSuccessFromSta1 = 0;
   m_countRxSuccessFromSta2 = 0;
@@ -3881,7 +3881,7 @@ TestPhyPaddingExclusion::Reset (void)
 }
 
 void
-TestPhyPaddingExclusion::DoSetup (void)
+TestPhyPaddingExclusion::DoSetup ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -3983,7 +3983,7 @@ TestPhyPaddingExclusion::DoSetup (void)
 }
 
 void
-TestPhyPaddingExclusion::DoTeardown (void)
+TestPhyPaddingExclusion::DoTeardown ()
 {
   m_phyAp->Dispose ();
   m_phyAp = 0;
@@ -4016,7 +4016,7 @@ TestPhyPaddingExclusion::SetTrigVector (Time ppduDuration)
 }
 
 void
-TestPhyPaddingExclusion::DoRun (void)
+TestPhyPaddingExclusion::DoRun ()
 {
   Time expectedPpduDuration = NanoSeconds (279200);
   Time ppduWithPaddingDuration = expectedPpduDuration + 10 * NanoSeconds (12800 + 800 /* GI */); //add 10 extra OFDM symbols
@@ -4099,9 +4099,9 @@ public:
   virtual ~TestUlOfdmaPowerControl ();
 
 private:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
-  void DoRun (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
+  void DoRun () override;
 
   /**
    * Send a MU BAR through the AP to the STAs listed in the provided vector.
@@ -4130,7 +4130,7 @@ private:
    * Replace the AP's callback on its PHY's ReceiveOkCallback
    * by the ReceiveOkCallbackAtAp method.
    */
-  void ReplaceReceiveOkCallbackOfAp (void);
+  void ReplaceReceiveOkCallbackOfAp ();
 
   /**
    * Receive OK callback function at AP.
@@ -4316,14 +4316,14 @@ TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp (Ptr<const WifiPsdu> psdu, RxSign
 }
 
 void
-TestUlOfdmaPowerControl::ReplaceReceiveOkCallbackOfAp (void)
+TestUlOfdmaPowerControl::ReplaceReceiveOkCallbackOfAp ()
 {
   //Now that BA session has been established we can plug our method
   m_phyAp->SetReceiveOkCallback (MakeCallback (&TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp, this));
 }
 
 void
-TestUlOfdmaPowerControl::DoSetup (void)
+TestUlOfdmaPowerControl::DoSetup ()
 {
   Ptr<Node> apNode = CreateObject<Node> ();
   NodeContainer staNodes;
@@ -4385,7 +4385,7 @@ TestUlOfdmaPowerControl::DoSetup (void)
 }
 
 void
-TestUlOfdmaPowerControl::DoTeardown (void)
+TestUlOfdmaPowerControl::DoTeardown ()
 {
   m_phyAp->Dispose ();
   m_phyAp = 0;
@@ -4464,7 +4464,7 @@ TestUlOfdmaPowerControl::RunOne (bool setupBa)
 }
 
 void
-TestUlOfdmaPowerControl::DoRun (void)
+TestUlOfdmaPowerControl::DoRun ()
 {
   //Power configurations
   m_txPowerAp = 20; //dBm, so as to have -30 and -36 dBm at STA 1 and STA 2 resp.,

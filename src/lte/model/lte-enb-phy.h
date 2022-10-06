@@ -70,10 +70,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   // inherited from Object
-  virtual void DoInitialize (void);
-  virtual void DoDispose (void);
+  virtual void DoInitialize ();
+  virtual void DoDispose ();
 
 
   /**
@@ -133,7 +133,7 @@ public:
   /**
    * \returns the TTI delay between MAC and channel
    */
-  uint8_t GetMacChDelay (void) const;
+  uint8_t GetMacChDelay () const;
 
   /**
    * \return a pointer to the LteSpectrumPhy instance relative to the downlink
@@ -173,7 +173,7 @@ public:
    * downlink. If there is no i such that the value of the i-th
    * element is j, it means that RB j is not used.
    */
-  std::vector<int> GetDownlinkSubChannels (void);
+  std::vector<int> GetDownlinkSubChannels ();
 
 
   /**
@@ -246,25 +246,25 @@ public:
   /**
   * \returns the list of UL-CQI to be processed
   */
-  std::list<UlDciLteControlMessage> DequeueUlDci (void);
+  std::list<UlDciLteControlMessage> DequeueUlDci ();
 
 
   /**
    * \brief Start a LTE frame
    */
-  void StartFrame (void);
+  void StartFrame ();
   /**
    * \brief Start a LTE sub frame
    */
-  void StartSubFrame (void);
+  void StartSubFrame ();
   /**
    * \brief End a LTE sub frame
    */
-  void EndSubFrame (void);
+  void EndSubFrame ();
   /**
    * \brief End a LTE frame
    */
-  void EndFrame (void);
+  void EndFrame ();
 
   /**
    * \brief PhySpectrum received a new PHY-PDU

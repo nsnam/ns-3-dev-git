@@ -42,7 +42,7 @@ DataCollector::~DataCollector() {
 
 /* static */
 TypeId
-DataCollector::GetTypeId (void)
+DataCollector::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DataCollector")
     .SetParent<Object> ()

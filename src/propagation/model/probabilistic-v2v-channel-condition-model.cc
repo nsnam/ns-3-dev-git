@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("ProbabilisticV2vChannelConditionModel");
 NS_OBJECT_ENSURE_REGISTERED (ProbabilisticV2vUrbanChannelConditionModel);
 
 TypeId
-ProbabilisticV2vUrbanChannelConditionModel::GetTypeId (void)
+ProbabilisticV2vUrbanChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ProbabilisticV2vUrbanChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()
@@ -114,7 +114,7 @@ ProbabilisticV2vUrbanChannelConditionModel::ComputePnlos (Ptr<const MobilityMode
 NS_OBJECT_ENSURE_REGISTERED (ProbabilisticV2vHighwayChannelConditionModel);
 
 TypeId
-ProbabilisticV2vHighwayChannelConditionModel::GetTypeId (void)
+ProbabilisticV2vHighwayChannelConditionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ProbabilisticV2vHighwayChannelConditionModel")
     .SetParent<ThreeGppChannelConditionModel> ()

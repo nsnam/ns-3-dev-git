@@ -177,7 +177,7 @@ ServiceFlow::ServiceFlow (Tlv tlv)
   m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
 }
 
-ServiceFlow::~ServiceFlow (void)
+ServiceFlow::~ServiceFlow ()
 {
   if (m_record != 0)
     {
@@ -194,7 +194,7 @@ ServiceFlow::SetDirection (Direction direction)
 }
 
 ServiceFlow::Direction
-ServiceFlow::GetDirection (void) const
+ServiceFlow::GetDirection () const
 {
   return m_direction;
 }
@@ -206,7 +206,7 @@ ServiceFlow::SetType (Type type)
 }
 
 ServiceFlow::Type
-ServiceFlow::GetType (void) const
+ServiceFlow::GetType () const
 {
   return m_type;
 }
@@ -219,7 +219,7 @@ ServiceFlow::SetConnection (Ptr<WimaxConnection> connection)
 }
 
 Ptr<WimaxConnection>
-ServiceFlow::GetConnection (void) const
+ServiceFlow::GetConnection () const
 {
   return m_connection;
 }
@@ -231,7 +231,7 @@ ServiceFlow::SetIsEnabled (bool isEnabled)
 }
 
 bool
-ServiceFlow::GetIsEnabled (void) const
+ServiceFlow::GetIsEnabled () const
 {
   return m_isEnabled;
 }
@@ -243,13 +243,13 @@ ServiceFlow::SetRecord (ServiceFlowRecord *record)
 }
 
 ServiceFlowRecord*
-ServiceFlow::GetRecord (void) const
+ServiceFlow::GetRecord () const
 {
   return m_record;
 }
 
 Ptr<WimaxMacQueue>
-ServiceFlow::GetQueue (void) const
+ServiceFlow::GetQueue () const
 {
   if (!m_connection)
     {
@@ -259,13 +259,13 @@ ServiceFlow::GetQueue (void) const
 }
 
 enum ServiceFlow::SchedulingType
-ServiceFlow::GetSchedulingType (void) const
+ServiceFlow::GetSchedulingType () const
 {
   return m_schedulingType;
 }
 
 bool
-ServiceFlow::HasPackets (void) const
+ServiceFlow::HasPackets () const
 {
   if (!m_connection)
     {
@@ -285,7 +285,7 @@ ServiceFlow::HasPackets (MacHeaderType::HeaderType packetType) const
 }
 
 void
-ServiceFlow::CleanUpQueue (void)
+ServiceFlow::CleanUpQueue ()
 {
   GenericMacHeader hdr;
   Time timeStamp;
@@ -310,19 +310,19 @@ ServiceFlow::CleanUpQueue (void)
 }
 
 void
-ServiceFlow::PrintQoSParameters (void) const
+ServiceFlow::PrintQoSParameters () const
 {
 }
 // ==============================================================================
 
 
 uint32_t
-ServiceFlow::GetSfid (void) const
+ServiceFlow::GetSfid () const
 {
   return m_sfid;
 }
 uint16_t
-ServiceFlow::GetCid (void) const
+ServiceFlow::GetCid () const
 {
   if (!m_connection)
     {
@@ -336,144 +336,144 @@ ServiceFlow::GetServiceClassName () const
   return m_serviceClassName;
 }
 uint8_t
-ServiceFlow::GetQosParamSetType (void) const
+ServiceFlow::GetQosParamSetType () const
 {
   return m_qosParamSetType;
 }
 uint8_t
-ServiceFlow::GetTrafficPriority (void) const
+ServiceFlow::GetTrafficPriority () const
 {
   return m_trafficPriority;
 }
 uint32_t
-ServiceFlow::GetMaxSustainedTrafficRate (void) const
+ServiceFlow::GetMaxSustainedTrafficRate () const
 {
   return m_maxSustainedTrafficRate;
 }
 uint32_t
-ServiceFlow::GetMaxTrafficBurst (void) const
+ServiceFlow::GetMaxTrafficBurst () const
 {
   return m_maxTrafficBurst;
 }
 uint32_t
-ServiceFlow::GetMinReservedTrafficRate (void) const
+ServiceFlow::GetMinReservedTrafficRate () const
 {
   return m_minReservedTrafficRate;
 }
 uint32_t
-ServiceFlow::GetMinTolerableTrafficRate (void) const
+ServiceFlow::GetMinTolerableTrafficRate () const
 {
   return m_minTolerableTrafficRate;
 }
 enum
-ServiceFlow::SchedulingType ServiceFlow::GetServiceSchedulingType (void) const
+ServiceFlow::SchedulingType ServiceFlow::GetServiceSchedulingType () const
 {
   return m_schedulingType;
 }
 uint32_t
-ServiceFlow::GetRequestTransmissionPolicy (void) const
+ServiceFlow::GetRequestTransmissionPolicy () const
 {
   return m_requestTransmissionPolicy;
 }
 uint32_t
-ServiceFlow::GetToleratedJitter (void) const
+ServiceFlow::GetToleratedJitter () const
 {
   return m_toleratedJitter;
 }
 uint32_t
-ServiceFlow::GetMaximumLatency (void) const
+ServiceFlow::GetMaximumLatency () const
 {
   return m_maximumLatency;
 }
 uint8_t
-ServiceFlow::GetFixedversusVariableSduIndicator (void) const
+ServiceFlow::GetFixedversusVariableSduIndicator () const
 {
   return m_fixedversusVariableSduIndicator;
 }
 uint8_t
-ServiceFlow::GetSduSize (void) const
+ServiceFlow::GetSduSize () const
 {
   return m_sduSize;
 }
 uint16_t
-ServiceFlow::GetTargetSAID (void) const
+ServiceFlow::GetTargetSAID () const
 {
   return m_targetSAID;
 }
 uint8_t
-ServiceFlow::GetArqEnable (void) const
+ServiceFlow::GetArqEnable () const
 {
   return m_arqEnable;
 }
 uint16_t
-ServiceFlow::GetArqWindowSize (void) const
+ServiceFlow::GetArqWindowSize () const
 {
   return m_arqWindowSize;
 }
 uint16_t
-ServiceFlow::GetArqRetryTimeoutTx (void) const
+ServiceFlow::GetArqRetryTimeoutTx () const
 {
   return m_arqRetryTimeoutTx;
 }
 uint16_t
-ServiceFlow::GetArqRetryTimeoutRx (void) const
+ServiceFlow::GetArqRetryTimeoutRx () const
 {
   return m_arqRetryTimeoutRx;
 }
 
 uint16_t
-ServiceFlow::GetArqBlockLifeTime (void) const
+ServiceFlow::GetArqBlockLifeTime () const
 {
   return m_arqBlockLifeTime;
 }
 uint16_t
-ServiceFlow::GetArqSyncLoss (void) const
+ServiceFlow::GetArqSyncLoss () const
 {
   return m_arqSyncLoss;
 }
 uint8_t
-ServiceFlow::GetArqDeliverInOrder (void) const
+ServiceFlow::GetArqDeliverInOrder () const
 {
   return m_arqDeliverInOrder;
 }
 uint16_t
-ServiceFlow::GetArqPurgeTimeout (void) const
+ServiceFlow::GetArqPurgeTimeout () const
 {
   return m_arqPurgeTimeout;
 }
 uint16_t
-ServiceFlow::GetArqBlockSize (void) const
+ServiceFlow::GetArqBlockSize () const
 {
   return m_arqBlockSize;
 }
 enum
-ServiceFlow::CsSpecification ServiceFlow::GetCsSpecification (void) const
+ServiceFlow::CsSpecification ServiceFlow::GetCsSpecification () const
 {
   return m_csSpecification;
 }
 CsParameters
-ServiceFlow::GetConvergenceSublayerParam (void) const
+ServiceFlow::GetConvergenceSublayerParam () const
 {
   return m_convergenceSublayerParam;
 }
 uint16_t
-ServiceFlow::GetUnsolicitedGrantInterval (void) const
+ServiceFlow::GetUnsolicitedGrantInterval () const
 {
   return m_unsolicitedGrantInterval;
 }
 uint16_t
-ServiceFlow::GetUnsolicitedPollingInterval (void) const
+ServiceFlow::GetUnsolicitedPollingInterval () const
 {
   return m_unsolicitedPollingInterval;
 }
 
 bool
-ServiceFlow::GetIsMulticast (void) const
+ServiceFlow::GetIsMulticast () const
 {
   return m_isMulticast;
 }
 enum WimaxPhy::ModulationType
-ServiceFlow::GetModulation (void) const
+ServiceFlow::GetModulation () const
 {
   return m_modulationType;
 }
@@ -633,7 +633,7 @@ ServiceFlow::SetModulation (enum WimaxPhy::ModulationType modulationType)
 }
 
 void
-ServiceFlow::InitValues (void)
+ServiceFlow::InitValues ()
 {
   m_sfid = 0;
   m_serviceClassName = "";
@@ -778,7 +778,7 @@ ServiceFlow::operator = (ServiceFlow const& o)
 }
 
 char*
-ServiceFlow::GetSchedulingTypeStr (void) const
+ServiceFlow::GetSchedulingTypeStr () const
 {
   switch (m_schedulingType)
     {
@@ -801,7 +801,7 @@ ServiceFlow::GetSchedulingTypeStr (void) const
 }
 
 Tlv
-ServiceFlow::ToTlv (void) const
+ServiceFlow::ToTlv () const
 {
   SfVectorTlvValue tmpSfVector;
   tmpSfVector.Add (Tlv (SfVectorTlvValue::SFID, 4, U32TlvValue (m_sfid)));

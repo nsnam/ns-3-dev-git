@@ -86,7 +86,7 @@ BuildingsShadowingTestCase::~BuildingsShadowingTestCase ()
 }
 
 void
-BuildingsShadowingTestCase::DoRun (void)
+BuildingsShadowingTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 

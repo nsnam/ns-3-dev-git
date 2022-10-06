@@ -309,7 +309,7 @@ UeManager::DoInitialize ()
 }
 
 
-UeManager::~UeManager (void)
+UeManager::~UeManager ()
 {
 }
 
@@ -327,7 +327,7 @@ UeManager::DoDispose ()
 
 }
 
-TypeId UeManager::GetTypeId (void)
+TypeId UeManager::GetTypeId ()
 {
   static TypeId  tid = TypeId ("ns3::UeManager")
     .SetParent<Object> ()
@@ -1377,13 +1377,13 @@ UeManager::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
 
 
 uint16_t
-UeManager::GetRnti (void) const
+UeManager::GetRnti () const
 {
   return m_rnti;
 }
 
 uint64_t
-UeManager::GetImsi (void) const
+UeManager::GetImsi () const
 {
   return m_imsi;
 }
@@ -1395,7 +1395,7 @@ UeManager::GetComponentCarrierId () const
 }
 
 uint16_t
-UeManager::GetSrsConfigurationIndex (void) const
+UeManager::GetSrsConfigurationIndex () const
 {
   return m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex;
 }
@@ -1423,7 +1423,7 @@ UeManager::SetSrsConfigurationIndex (uint16_t srsConfIndex)
 }
 
 UeManager::State
-UeManager::GetState (void) const
+UeManager::GetState () const
 {
   return m_state;
 }
@@ -1835,7 +1835,7 @@ LteEnbRrc::DoDispose ()
 }
 
 TypeId
-LteEnbRrc::GetTypeId (void)
+LteEnbRrc::GetTypeId ()
 {
   NS_LOG_FUNCTION ("LteEnbRrc::GetTypeId");
   static TypeId tid = TypeId ("ns3::LteEnbRrc")

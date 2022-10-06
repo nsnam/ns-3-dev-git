@@ -63,8 +63,8 @@ public:
     SIB1, // System Information Block Type 1
   };
 
-  LteControlMessage (void);
-  virtual ~LteControlMessage (void);
+  LteControlMessage ();
+  virtual ~LteControlMessage ();
 
   /**
    * \brief Set the type of the message
@@ -75,7 +75,7 @@ public:
    * \brief Get the type of the message
    * \return the type of the message
    */
-  MessageType GetMessageType (void);
+  MessageType GetMessageType ();
 
 private:
   MessageType m_type; ///< message type
@@ -92,8 +92,8 @@ private:
 class DlDciLteControlMessage : public LteControlMessage
 {
 public:
-  DlDciLteControlMessage (void);
-  virtual ~DlDciLteControlMessage (void);
+  DlDciLteControlMessage ();
+  virtual ~DlDciLteControlMessage ();
 
   /**
   * \brief add a DCI into the message
@@ -105,7 +105,7 @@ public:
   * \brief Get dic information
   * \return dci messages
   */
-  DlDciListElement_s GetDci (void);
+  DlDciListElement_s GetDci ();
 
 private:
   DlDciListElement_s m_dci; ///< DCI
@@ -122,8 +122,8 @@ private:
 class UlDciLteControlMessage : public LteControlMessage
 {
 public:
-  UlDciLteControlMessage (void);
-  virtual ~UlDciLteControlMessage (void);
+  UlDciLteControlMessage ();
+  virtual ~UlDciLteControlMessage ();
 
   /**
   * \brief add a DCI into the message
@@ -135,7 +135,7 @@ public:
   * \brief Get dic information
   * \return dci messages
   */
-  UlDciListElement_s GetDci (void);
+  UlDciListElement_s GetDci ();
 
 private:
   UlDciListElement_s m_dci; ///< DCI
@@ -152,8 +152,8 @@ private:
 class DlCqiLteControlMessage : public LteControlMessage
 {
 public:
-  DlCqiLteControlMessage (void);
-  virtual ~DlCqiLteControlMessage (void);
+  DlCqiLteControlMessage ();
+  virtual ~DlCqiLteControlMessage ();
 
   /**
   * \brief add a DL-CQI feedback record into the message.
@@ -165,7 +165,7 @@ public:
   * \brief Get DL cqi information
   * \return dlcqi messages
   */
-  CqiListElement_s GetDlCqi (void);
+  CqiListElement_s GetDlCqi ();
 
 private:
   CqiListElement_s m_dlCqi; ///< DL CQI
@@ -182,8 +182,8 @@ private:
 class BsrLteControlMessage : public LteControlMessage
 {
 public:
-  BsrLteControlMessage (void);
-  virtual ~BsrLteControlMessage (void);
+  BsrLteControlMessage ();
+  virtual ~BsrLteControlMessage ();
 
   /**
   * \brief add a BSR feedback record into the message.
@@ -195,7 +195,7 @@ public:
   * \brief Get BSR information
   * \return BSR message
   */
-  MacCeListElement_s GetBsr (void);
+  MacCeListElement_s GetBsr ();
 
 private:
   MacCeListElement_s m_bsr; ///< BSR
@@ -213,8 +213,8 @@ private:
 class DlHarqFeedbackLteControlMessage : public LteControlMessage
 {
 public:
-  DlHarqFeedbackLteControlMessage (void);
-  virtual ~DlHarqFeedbackLteControlMessage (void);
+  DlHarqFeedbackLteControlMessage ();
+  virtual ~DlHarqFeedbackLteControlMessage ();
 
   /**
   * \brief add a DL HARQ feedback record into the message.
@@ -226,7 +226,7 @@ public:
   * \brief Get DL HARQ information
   * \return DL HARQ message
   */
-  DlInfoListElement_s GetDlHarqFeedback (void);
+  DlInfoListElement_s GetDlHarqFeedback ();
 
 private:
   DlInfoListElement_s m_dlInfoListElement; ///< DL info list element
@@ -244,7 +244,7 @@ private:
 class RachPreambleLteControlMessage : public LteControlMessage
 {
 public:
-  RachPreambleLteControlMessage (void);
+  RachPreambleLteControlMessage ();
 
   /**
    * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
@@ -275,7 +275,7 @@ private:
 class RarLteControlMessage : public LteControlMessage
 {
 public:
-  RarLteControlMessage (void);
+  RarLteControlMessage ();
 
   /**
    *
@@ -344,7 +344,7 @@ public:
   /**
    * \brief Create a new instance of MIB control message.
    */
-  MibLteControlMessage (void);
+  MibLteControlMessage ();
 
   /**
    * \brief Replace the MIB content of this control message.
@@ -383,7 +383,7 @@ public:
   /**
    * \brief Create a new instance of SIB1 control message.
    */
-  Sib1LteControlMessage (void);
+  Sib1LteControlMessage ();
 
   /**
    * \brief Replace the SIB1 content of this control message.

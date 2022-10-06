@@ -40,7 +40,7 @@ public:
    * and VisitAttribute on the attributes in one TypeId. At the end of each TypeId
    * EndVisitTypeId is called.
    */
-  void Iterate (void);
+  void Iterate ();
 private:
   /**
    * \brief Begin the analysis of a TypeId
@@ -50,7 +50,7 @@ private:
   /**
    * \brief End the analysis of a TypeId
    */
-  virtual void EndVisitTypeId (void);
+  virtual void EndVisitTypeId ();
   /**
    * \brief Visit an Attribute
    * \param tid the TypeId the attribute belongs to

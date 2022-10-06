@@ -54,10 +54,10 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  LrWpanNetDevice (void);
-  virtual ~LrWpanNetDevice (void);
+  LrWpanNetDevice ();
+  virtual ~LrWpanNetDevice ();
 
   /**
    * How the pseudo-MAC address is built from
@@ -104,26 +104,26 @@ public:
    *
    * \return the MAC object
    */
-  Ptr<LrWpanMac> GetMac (void) const;
+  Ptr<LrWpanMac> GetMac () const;
 
   /**
    * Get the PHY used by this NetDevice.
    *
    * \return the PHY object
    */
-  Ptr<LrWpanPhy> GetPhy (void) const;
+  Ptr<LrWpanPhy> GetPhy () const;
 
   /**
    * Get the CSMA/CA implementation used by this NetDevice.
    *
    * \return the CSMA/CA implementation object
    */
-  Ptr<LrWpanCsmaCa> GetCsmaCa (void) const;
+  Ptr<LrWpanCsmaCa> GetCsmaCa () const;
 
   // From class NetDevice
   virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
-  virtual Ptr<Channel> GetChannel (void) const;
+  virtual uint32_t GetIfIndex () const;
+  virtual Ptr<Channel> GetChannel () const;
   /**
    * This method indirects to LrWpanMac::SetShortAddress ()
    * \param address The short address.
@@ -133,27 +133,27 @@ public:
    * This method indirects to LrWpanMac::SetShortAddress ()
    * \returns The short address.
    */
-  virtual Address GetAddress (void) const;
+  virtual Address GetAddress () const;
   virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu (void) const;
-  virtual bool IsLinkUp (void) const;
+  virtual uint16_t GetMtu () const;
+  virtual bool IsLinkUp () const;
   virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
-  virtual bool IsMulticast (void) const;
+  virtual bool IsBroadcast () const;
+  virtual Address GetBroadcast () const;
+  virtual bool IsMulticast () const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual bool IsBridge (void) const;
-  virtual bool IsPointToPoint (void) const;
+  virtual bool IsBridge () const;
+  virtual bool IsPointToPoint () const;
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
   virtual void SetNode (Ptr<Node> node);
-  virtual bool NeedsArp (void) const;
+  virtual bool NeedsArp () const;
 
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom (void) const;
+  virtual bool SupportsSendFrom () const;
 
   /**
    * The callback used by the MAC to hand over incoming packets to the
@@ -176,30 +176,30 @@ public:
 
 private:
   // Inherited from NetDevice/Object
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
 
   /**
    * Mark NetDevice link as up.
    */
-  void LinkUp (void);
+  void LinkUp ();
 
   /**
    * Mark NetDevice link as down.
    */
-  void LinkDown (void);
+  void LinkDown ();
 
   /**
    * Attribute accessor method for the "Channel" attribute.
    *
    * \return the channel to which this NetDevice is attached
    */
-  Ptr<SpectrumChannel> DoGetChannel (void) const;
+  Ptr<SpectrumChannel> DoGetChannel () const;
 
   /**
    * Configure PHY, MAC and CSMA/CA.
    */
-  void CompleteConfig (void);
+  void CompleteConfig ();
 
   /**
    * Builds a "pseudo 48-bit address" from the PanId and Short Address

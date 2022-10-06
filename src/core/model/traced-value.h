@@ -91,7 +91,7 @@ typedef void (* Uint64)(uint64_t oldValue, uint64_t newValue);
 typedef void (* Double)(double   oldValue, double   newValue);
 /**@}*/
 /** TracedValue Callback signature for void. */
-typedef void (* Void)  (void);
+typedef void (* Void)  ();
 /**@}*/
 
 }  // namespace TracedValueCallback
@@ -229,7 +229,7 @@ public:
    * Get the underlying value.
    * \returns The value.
    */
-  T Get (void) const
+  T Get () const
   {
     return m_v;
   }

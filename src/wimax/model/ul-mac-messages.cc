@@ -27,14 +27,14 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Ucd);
 
-UcdChannelEncodings::UcdChannelEncodings (void)
+UcdChannelEncodings::UcdChannelEncodings ()
   : m_bwReqOppSize (0),
     m_rangReqOppSize (0),
     m_frequency (0)
 {
 }
 
-UcdChannelEncodings::~UcdChannelEncodings (void)
+UcdChannelEncodings::~UcdChannelEncodings ()
 {
 }
 
@@ -57,25 +57,25 @@ UcdChannelEncodings::SetFrequency (uint32_t frequency)
 }
 
 uint16_t
-UcdChannelEncodings::GetBwReqOppSize (void) const
+UcdChannelEncodings::GetBwReqOppSize () const
 {
   return m_bwReqOppSize;
 }
 
 uint16_t
-UcdChannelEncodings::GetRangReqOppSize (void) const
+UcdChannelEncodings::GetRangReqOppSize () const
 {
   return m_rangReqOppSize;
 }
 
 uint32_t
-UcdChannelEncodings::GetFrequency (void) const
+UcdChannelEncodings::GetFrequency () const
 {
   return m_frequency;
 }
 
 uint16_t
-UcdChannelEncodings::GetSize (void) const
+UcdChannelEncodings::GetSize () const
 {
   return 2 + 2 + 4;
 }
@@ -102,13 +102,13 @@ UcdChannelEncodings::Read (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-OfdmUcdChannelEncodings::OfdmUcdChannelEncodings (void)
+OfdmUcdChannelEncodings::OfdmUcdChannelEncodings ()
   : m_sbchnlReqRegionFullParams (0),
     m_sbchnlFocContCodes (0)
 {
 }
 
-OfdmUcdChannelEncodings::~OfdmUcdChannelEncodings (void)
+OfdmUcdChannelEncodings::~OfdmUcdChannelEncodings ()
 {
 }
 
@@ -126,19 +126,19 @@ OfdmUcdChannelEncodings::SetSbchnlFocContCodes (uint8_t sbchnlFocContCodes)
 }
 
 uint8_t
-OfdmUcdChannelEncodings::GetSbchnlReqRegionFullParams (void) const
+OfdmUcdChannelEncodings::GetSbchnlReqRegionFullParams () const
 {
   return m_sbchnlReqRegionFullParams;
 }
 
 uint8_t
-OfdmUcdChannelEncodings::GetSbchnlFocContCodes (void) const
+OfdmUcdChannelEncodings::GetSbchnlFocContCodes () const
 {
   return m_sbchnlFocContCodes;
 }
 
 uint16_t
-OfdmUcdChannelEncodings::GetSize (void) const
+OfdmUcdChannelEncodings::GetSize () const
 {
   return UcdChannelEncodings::GetSize () + 1 + 1;
 }
@@ -163,7 +163,7 @@ OfdmUcdChannelEncodings::DoRead (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-OfdmUlBurstProfile::OfdmUlBurstProfile (void)
+OfdmUlBurstProfile::OfdmUlBurstProfile ()
   : m_type (0),
     m_length (0),
     m_uiuc (0),
@@ -171,7 +171,7 @@ OfdmUlBurstProfile::OfdmUlBurstProfile (void)
 {
 }
 
-OfdmUlBurstProfile::~OfdmUlBurstProfile (void)
+OfdmUlBurstProfile::~OfdmUlBurstProfile ()
 {
 }
 
@@ -200,31 +200,31 @@ OfdmUlBurstProfile::SetFecCodeType (uint8_t fecCodeType)
 }
 
 uint8_t
-OfdmUlBurstProfile::GetType (void) const
+OfdmUlBurstProfile::GetType () const
 {
   return m_type;
 }
 
 uint8_t
-OfdmUlBurstProfile::GetLength (void) const
+OfdmUlBurstProfile::GetLength () const
 {
   return m_length;
 }
 
 uint8_t
-OfdmUlBurstProfile::GetUiuc (void) const
+OfdmUlBurstProfile::GetUiuc () const
 {
   return m_uiuc;
 }
 
 uint8_t
-OfdmUlBurstProfile::GetFecCodeType (void) const
+OfdmUlBurstProfile::GetFecCodeType () const
 {
   return m_fecCodeType;
 }
 
 uint16_t
-OfdmUlBurstProfile::GetSize (void) const
+OfdmUlBurstProfile::GetSize () const
 {
   return 1 + 1 + 1 + 1;
 }
@@ -253,7 +253,7 @@ OfdmUlBurstProfile::Read (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-Ucd::Ucd (void)
+Ucd::Ucd ()
   : m_configurationChangeCount (0),
     m_rangingBackoffStart (0),
     m_rangingBackoffEnd (0),
@@ -264,7 +264,7 @@ Ucd::Ucd (void)
 {
 }
 
-Ucd::~Ucd (void)
+Ucd::~Ucd ()
 {
 }
 
@@ -318,61 +318,61 @@ Ucd::SetNrUlBurstProfiles (uint8_t nrUlBurstProfiles)
 }
 
 uint8_t
-Ucd::GetConfigurationChangeCount (void) const
+Ucd::GetConfigurationChangeCount () const
 {
   return m_configurationChangeCount;
 }
 
 uint8_t
-Ucd::GetRangingBackoffStart (void) const
+Ucd::GetRangingBackoffStart () const
 {
   return m_rangingBackoffStart;
 }
 
 uint8_t
-Ucd::GetRangingBackoffEnd (void) const
+Ucd::GetRangingBackoffEnd () const
 {
   return m_rangingBackoffEnd;
 }
 
 uint8_t
-Ucd::GetRequestBackoffStart (void) const
+Ucd::GetRequestBackoffStart () const
 {
   return m_requestBackoffStart;
 }
 
 uint8_t
-Ucd::GetRequestBackoffEnd (void) const
+Ucd::GetRequestBackoffEnd () const
 {
   return m_requestBackoffEnd;
 }
 
 OfdmUcdChannelEncodings
-Ucd::GetChannelEncodings (void) const
+Ucd::GetChannelEncodings () const
 {
   return m_channelEncodings;
 }
 
 std::vector<OfdmUlBurstProfile>
-Ucd::GetUlBurstProfiles (void) const
+Ucd::GetUlBurstProfiles () const
 {
   return m_ulBurstProfiles;
 }
 
 uint8_t
-Ucd::GetNrUlBurstProfiles (void) const
+Ucd::GetNrUlBurstProfiles () const
 {
   return m_nrUlBurstProfiles;
 }
 
 std::string
-Ucd::GetName (void) const
+Ucd::GetName () const
 {
   return "UCD";
 }
 
 TypeId
-Ucd::GetTypeId (void)
+Ucd::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ucd")
     .SetParent<Header> ()
@@ -383,7 +383,7 @@ Ucd::GetTypeId (void)
 }
 
 TypeId
-Ucd::GetInstanceTypeId (void) const
+Ucd::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -401,7 +401,7 @@ Ucd::Print (std::ostream &os) const
 }
 
 uint32_t
-Ucd::GetSerializedSize (void) const
+Ucd::GetSerializedSize () const
 {
   uint32_t ulBurstProfilesSize = 0;
 
@@ -457,7 +457,7 @@ Ucd::Deserialize (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-OfdmUlMapIe::OfdmUlMapIe (void)
+OfdmUlMapIe::OfdmUlMapIe ()
   : m_cid (),
     m_startTime (0),
     m_subchannelIndex (0),
@@ -467,7 +467,7 @@ OfdmUlMapIe::OfdmUlMapIe (void)
 {
 }
 
-OfdmUlMapIe::~OfdmUlMapIe (void)
+OfdmUlMapIe::~OfdmUlMapIe ()
 {
 }
 
@@ -509,43 +509,43 @@ OfdmUlMapIe::SetMidambleRepetitionInterval (
 }
 
 Cid
-OfdmUlMapIe::GetCid (void) const
+OfdmUlMapIe::GetCid () const
 {
   return m_cid;
 }
 
 uint16_t
-OfdmUlMapIe::GetStartTime (void) const
+OfdmUlMapIe::GetStartTime () const
 {
   return m_startTime;
 }
 
 uint8_t
-OfdmUlMapIe::GetSubchannelIndex (void) const
+OfdmUlMapIe::GetSubchannelIndex () const
 {
   return m_subchannelIndex;
 }
 
 uint8_t
-OfdmUlMapIe::GetUiuc (void) const
+OfdmUlMapIe::GetUiuc () const
 {
   return m_uiuc;
 }
 
 uint16_t
-OfdmUlMapIe::GetDuration (void) const
+OfdmUlMapIe::GetDuration () const
 {
   return m_duration;
 }
 
 uint8_t
-OfdmUlMapIe::GetMidambleRepetitionInterval (void) const
+OfdmUlMapIe::GetMidambleRepetitionInterval () const
 {
   return m_midambleRepetitionInterval;
 }
 
 uint16_t
-OfdmUlMapIe::GetSize (void) const
+OfdmUlMapIe::GetSize () const
 {
   return 2 + 2 + 1 + 1 + 2 + 1;
 }
@@ -580,14 +580,14 @@ OfdmUlMapIe::Read (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (UlMap);
 
-UlMap::UlMap (void)
+UlMap::UlMap ()
   : m_reserved (0),
     m_ucdCount (0),
     m_allocationStartTime (0)
 {
 }
 
-UlMap::~UlMap (void)
+UlMap::~UlMap ()
 {
 }
 
@@ -610,31 +610,31 @@ UlMap::AddUlMapElement (OfdmUlMapIe ulMapElement)
 }
 
 uint8_t
-UlMap::GetUcdCount (void) const
+UlMap::GetUcdCount () const
 {
   return m_ucdCount;
 }
 
 uint32_t
-UlMap::GetAllocationStartTime (void) const
+UlMap::GetAllocationStartTime () const
 {
   return m_allocationStartTime;
 }
 
 std::list<OfdmUlMapIe>
-UlMap::GetUlMapElements (void) const
+UlMap::GetUlMapElements () const
 {
   return m_ulMapElements;
 }
 
 std::string
-UlMap::GetName (void) const
+UlMap::GetName () const
 {
   return "UL-MAP";
 }
 
 TypeId
-UlMap::GetTypeId (void)
+UlMap::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UlMap")
     .SetParent<Header> ()
@@ -645,7 +645,7 @@ UlMap::GetTypeId (void)
 }
 
 TypeId
-UlMap::GetInstanceTypeId (void) const
+UlMap::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -659,7 +659,7 @@ UlMap::Print (std::ostream &os) const
 }
 
 uint32_t
-UlMap::GetSerializedSize (void) const
+UlMap::GetSerializedSize () const
 {
   uint32_t ulMapElementsSize = 0;
   for (std::list<OfdmUlMapIe>::const_iterator iter = m_ulMapElements.begin (); iter

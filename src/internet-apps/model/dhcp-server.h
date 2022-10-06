@@ -49,7 +49,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   DhcpServer ();
   virtual ~DhcpServer ();
@@ -64,7 +64,7 @@ public:
 
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   static const int PORT = 67;                       //!< Port number of DHCP server
@@ -94,17 +94,17 @@ private:
   /**
    * \brief Modifies the remaining lease time of addresses
    */
-  void TimerHandler (void);
+  void TimerHandler ();
 
   /**
    * \brief Starts the DHCP Server application
    */
-  virtual void StartApplication (void);
+  virtual void StartApplication ();
 
   /**
    * \brief Stops the DHCP client application
    */
-  virtual void StopApplication (void);
+  virtual void StopApplication ();
 
   Ptr<Socket> m_socket;                  //!< The socket bound to port 67
   Ipv4Address m_poolAddress;             //!< The network address available to the server

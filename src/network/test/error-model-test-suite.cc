@@ -86,7 +86,7 @@ public:
   virtual ~ErrorModelSimple ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Receive form a NetDevice
    * \param nd The NetDevice.
@@ -130,7 +130,7 @@ ErrorModelSimple::DropEvent (Ptr<const Packet> p)
 }
 
 void
-ErrorModelSimple::DoRun (void)
+ErrorModelSimple::DoRun ()
 {
   // Set some arbitrary deterministic values
   RngSeedManager::SetSeed (7);
@@ -183,7 +183,7 @@ public:
   virtual ~BurstErrorModelSimple ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Receive form a NetDevice
    * \param nd The NetDevice.
@@ -227,7 +227,7 @@ BurstErrorModelSimple::DropEvent (Ptr<const Packet> p)
 }
 
 void
-BurstErrorModelSimple::DoRun (void)
+BurstErrorModelSimple::DoRun ()
 {
   // Set some arbitrary deterministic values
   RngSeedManager::SetSeed (5);

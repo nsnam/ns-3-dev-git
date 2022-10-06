@@ -42,16 +42,16 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   Sender();
   virtual ~Sender();
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * Send a packet.
@@ -85,7 +85,7 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   Receiver();
   virtual ~Receiver();
 
@@ -102,11 +102,11 @@ public:
   void SetDelayTracker (Ptr<TimeMinMaxAvgTotalCalculator> delay);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * Receive a packet.
@@ -137,10 +137,10 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
 
@@ -153,7 +153,7 @@ public:
    * Get the timestamp.
    * \return the timestamp.
    */
-  Time GetTimestamp (void) const;
+  Time GetTimestamp () const;
 
   void Print (std::ostream &os) const;
 

@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("UdpEchoClientApplication");
 NS_OBJECT_ENSURE_REGISTERED (UdpEchoClient);
 
 TypeId
-UdpEchoClient::GetTypeId (void)
+UdpEchoClient::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpEchoClient")
     .SetParent<Application> ()
@@ -119,14 +119,14 @@ UdpEchoClient::SetRemote (Address addr)
 }
 
 void
-UdpEchoClient::DoDispose (void)
+UdpEchoClient::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-UdpEchoClient::StartApplication (void)
+UdpEchoClient::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -209,7 +209,7 @@ UdpEchoClient::SetDataSize (uint32_t dataSize)
 }
 
 uint32_t
-UdpEchoClient::GetDataSize (void) const
+UdpEchoClient::GetDataSize () const
 {
   NS_LOG_FUNCTION (this);
   return m_size;
@@ -303,7 +303,7 @@ UdpEchoClient::ScheduleTransmit (Time dt)
 }
 
 void
-UdpEchoClient::Send (void)
+UdpEchoClient::Send ()
 {
   NS_LOG_FUNCTION (this);
 

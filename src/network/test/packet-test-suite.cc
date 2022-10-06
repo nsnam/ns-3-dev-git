@@ -53,7 +53,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("ATestTagBase")
       .SetParent<Tag> ()
@@ -89,7 +89,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void) {
+  static TypeId GetTypeId () {
     std::ostringstream oss;
     oss << "anon::ATestTag<" << N << ">";
     static TypeId tid = TypeId (oss.str ())
@@ -100,10 +100,10 @@ public:
     ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId (void) const {
+  virtual TypeId GetInstanceTypeId () const {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize (void) const {
+  virtual uint32_t GetSerializedSize () const {
     return N + sizeof(m_data);
   }
   virtual void Serialize (TagBuffer buf) const {
@@ -163,7 +163,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("ALargeTestTag")
       .SetParent<Tag> ()
@@ -173,10 +173,10 @@ public:
       ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId (void) const {
+  virtual TypeId GetInstanceTypeId () const {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize (void) const {
+  virtual uint32_t GetSerializedSize () const {
     return (uint32_t) m_size;
   }
   virtual void Serialize (TagBuffer buf) const {
@@ -218,7 +218,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("ATestHeaderBase")
       .SetParent<Header> ()
@@ -247,7 +247,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void) {
+  static TypeId GetTypeId () {
     std::ostringstream oss;
     oss << "anon::ATestHeader<" << N << ">";
     static TypeId tid = TypeId (oss.str ())
@@ -258,10 +258,10 @@ public:
     ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId (void) const {
+  virtual TypeId GetInstanceTypeId () const {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize (void) const {
+  virtual uint32_t GetSerializedSize () const {
     return N;
   }
   virtual void Serialize (Buffer::Iterator iter) const {
@@ -304,7 +304,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("ATestTrailerBase")
       .SetParent<Trailer> ()
@@ -333,7 +333,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void) {
+  static TypeId GetTypeId () {
     std::ostringstream oss;
     oss << "anon::ATestTrailer<" << N << ">";
     static TypeId tid = TypeId (oss.str ())
@@ -344,10 +344,10 @@ public:
     ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId (void) const {
+  virtual TypeId GetInstanceTypeId () const {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize (void) const {
+  virtual uint32_t GetSerializedSize () const {
     return N;
   }
   virtual void Serialize (Buffer::Iterator iter) const {
@@ -437,7 +437,7 @@ class PacketTest : public TestCase
 {
 public:
   PacketTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 private:
   /**
    * Checks the packet
@@ -537,7 +537,7 @@ PacketTest::DoCheckData (Ptr<const Packet> p, uint32_t n, ...)
 }
 
 void
-PacketTest::DoRun (void)
+PacketTest::DoRun ()
 {
   Ptr<Packet> pkt1 = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
   Ptr<Packet> pkt2 = Create<Packet> (reinterpret_cast<const uint8_t*> (" world"), 6);
@@ -869,7 +869,7 @@ public:
   PacketTagListTest ();
   virtual ~PacketTagListTest ();
 private:
-  void DoRun (void);
+  void DoRun ();
   /**
    * Checks against a reference PacketTagList
    * \param ref Reference
@@ -1008,7 +1008,7 @@ PacketTagListTest::AddRemoveTime (const bool verbose /* = false */)
 }
 
 void
-PacketTagListTest::DoRun (void)
+PacketTagListTest::DoRun ()
 {
   std::cout << GetName () << "begin" << std::endl;
 

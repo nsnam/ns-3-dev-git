@@ -204,112 +204,112 @@ public:
    *
    * \return the Primary Channel field in the HT Operation information element
    */
-  uint8_t GetPrimaryChannel (void) const;
+  uint8_t GetPrimaryChannel () const;
   /**
    * Return the Information Subset 1 field in the HT Operation information element.
    *
    * \return the Information Subset 1 field in the HT Operation information element
    */
-  uint8_t GetInformationSubset1 (void) const;
+  uint8_t GetInformationSubset1 () const;
   /**
    * Return the Information Subset 2 field in the HT Operation information element.
    *
    * \return the Information Subset 2 field in the HT Operation information element
    */
-  uint16_t GetInformationSubset2 (void) const;
+  uint16_t GetInformationSubset2 () const;
   /**
    * Return the Information Subset 3 field in the HT Operation information element.
    *
    * \return the Information Subset 3 field in the HT Operation information element
    */
-  uint16_t GetInformationSubset3 (void) const;
+  uint16_t GetInformationSubset3 () const;
   /**
    * Return the first 64 bytes of the Basic MCS Set field in the HT Operation information element.
    *
    * \return the first 64 bytes of the Basic MCS Set field in the HT Operation information element
    */
-  uint64_t GetBasicMcsSet1 (void) const;
+  uint64_t GetBasicMcsSet1 () const;
   /**
    * Return the last 64 bytes of the Basic MCS Set field in the HT Operation information element.
    *
    * \return the last 64 bytes of the Basic MCS Set field in the HT Operation information element
    */
-  uint64_t GetBasicMcsSet2 (void) const;
+  uint64_t GetBasicMcsSet2 () const;
 
   /**
    * Return the secondary channel offset.
    *
    * \return the secondary channel offset
    */
-  uint8_t GetSecondaryChannelOffset (void) const;
+  uint8_t GetSecondaryChannelOffset () const;
   /**
    * Return the STA channel width.
    *
    * \return the STA channel width
    */
-  uint8_t GetStaChannelWidth (void) const;
+  uint8_t GetStaChannelWidth () const;
   /**
    * Return the RIFS mode.
    *
    * \return the RIFS mode
    */
-  uint8_t GetRifsMode (void) const;
+  uint8_t GetRifsMode () const;
 
   /**
    * Return the HT protection.
    *
    * \return the HT protection
    */
-  uint8_t GetHtProtection (void) const;
+  uint8_t GetHtProtection () const;
   /**
    * Return the non GF HT STAs present.
    *
    * \return the non GF HT STAs present
    */
-  uint8_t GetNonGfHtStasPresent (void) const;
+  uint8_t GetNonGfHtStasPresent () const;
   /**
    * Return the OBSS non HT STAs present.
    *
    * \return the OBSS non HT STAs present
    */
-  uint8_t GetObssNonHtStasPresent (void) const;
+  uint8_t GetObssNonHtStasPresent () const;
 
   /**
    * Return dual beacon.
    *
    * \return the dual beacon
    */
-  uint8_t GetDualBeacon (void) const;
+  uint8_t GetDualBeacon () const;
   /**
    * Return dual CTS protection.
    *
    * \return the dual CTS protection
    */
-  uint8_t GetDualCtsProtection (void) const;
+  uint8_t GetDualCtsProtection () const;
   /**
    * Return STBC beacon.
    *
    * \return the STBC beacon
    */
-  uint8_t GetStbcBeacon (void) const;
+  uint8_t GetStbcBeacon () const;
   /**
    * Return LSIG TXOP protection full support.
    *
    * \return the LSIG TXOP protection full support
    */
-  uint8_t GetLSigTxopProtectionFullSupport (void) const;
+  uint8_t GetLSigTxopProtectionFullSupport () const;
   /**
    * Return PCO active.
    *
    * \return the PCO active
    */
-  uint8_t GetPcoActive (void) const;
+  uint8_t GetPcoActive () const;
   /**
    * Return phase.
    *
    * \return the phase
    */
-  uint8_t GetPhase (void) const;
+  uint8_t GetPhase () const;
 
   /**
    * Return MCS is supported.
@@ -324,31 +324,31 @@ public:
    *
    * \return receive highest supported data rate
    */
-  uint16_t GetRxHighestSupportedDataRate (void) const;
+  uint16_t GetRxHighestSupportedDataRate () const;
   /**
    * Return transmit MCS set defined.
    *
    * \return the transmit MCS set defined
    */
-  uint8_t GetTxMcsSetDefined (void) const;
+  uint8_t GetTxMcsSetDefined () const;
   /**
    * Return transmit / receive MCS set unequal.
    *
    * \return transmit / receive MCS set unequal
    */
-  uint8_t GetTxRxMcsSetUnequal (void) const;
+  uint8_t GetTxRxMcsSetUnequal () const;
   /**
    * Return transmit maximum number spatial streams.
    *
    * \return transmit maximum number spatial streams
    */
-  uint8_t GetTxMaxNSpatialStreams (void) const;
+  uint8_t GetTxMaxNSpatialStreams () const;
   /**
    * Return transmit unequal modulation.
    *
    * \return transmit unequal modulation
    */
-  uint8_t GetTxUnequalModulation (void) const;
+  uint8_t GetTxUnequalModulation () const;
 
 
 private:

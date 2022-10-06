@@ -33,7 +33,7 @@ RipNgRte::RipNgRte ()
 {
 }
 
-TypeId RipNgRte::GetTypeId (void)
+TypeId RipNgRte::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RipNgRte")
     .SetParent<Header> ()
@@ -42,7 +42,7 @@ TypeId RipNgRte::GetTypeId (void)
   return tid;
 }
 
-TypeId RipNgRte::GetInstanceTypeId (void) const
+TypeId RipNgRte::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -140,7 +140,7 @@ RipNgHeader::RipNgHeader ()
 {
 }
 
-TypeId RipNgHeader::GetTypeId (void)
+TypeId RipNgHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RipNgHeader")
     .SetParent<Header> ()
@@ -149,7 +149,7 @@ TypeId RipNgHeader::GetTypeId (void)
   return tid;
 }
 
-TypeId RipNgHeader::GetInstanceTypeId (void) const
+TypeId RipNgHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -245,12 +245,12 @@ void RipNgHeader::ClearRtes ()
   m_rteList.clear ();
 }
 
-uint16_t RipNgHeader::GetRteNumber (void) const
+uint16_t RipNgHeader::GetRteNumber () const
 {
   return m_rteList.size ();
 }
 
-std::list<RipNgRte> RipNgHeader::GetRteList (void) const
+std::list<RipNgRte> RipNgHeader::GetRteList () const
 {
   return m_rteList;
 }

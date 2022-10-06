@@ -40,7 +40,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   WifiDefaultAssocManager ();
   virtual ~WifiDefaultAssocManager ();
 
@@ -48,7 +48,7 @@ public:
   bool Compare (const StaWifiMac::ApInfo& lhs, const StaWifiMac::ApInfo& rhs) const override;
 
 protected:
-  void DoDispose (void) override;
+  void DoDispose () override;
   bool CanBeInserted (const StaWifiMac::ApInfo& apInfo) const override;
   bool CanBeReturned (const StaWifiMac::ApInfo& apInfo) const override;
 
@@ -56,10 +56,10 @@ protected:
    * Perform operations to do at the end of a scanning procedure, such as
    * identifying the links to setup in case of 11be MLD devices.
    */
-  void EndScanning (void);
+  void EndScanning ();
 
 private:
-  void DoStartScanning (void) override;
+  void DoStartScanning () override;
 
   /**
    * Take action upon the expiration of the timer set when requesting channel

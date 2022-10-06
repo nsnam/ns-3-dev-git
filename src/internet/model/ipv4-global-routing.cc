@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
 NS_OBJECT_ENSURE_REGISTERED (Ipv4GlobalRouting);
 
 TypeId
-Ipv4GlobalRouting::GetTypeId (void)
+Ipv4GlobalRouting::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv4GlobalRouting")
     .SetParent<Object> ()
@@ -246,7 +246,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
 }
 
 uint32_t
-Ipv4GlobalRouting::GetNRoutes (void) const
+Ipv4GlobalRouting::GetNRoutes () const
 {
   NS_LOG_FUNCTION (this);
   uint32_t n = 0;
@@ -371,7 +371,7 @@ Ipv4GlobalRouting::AssignStreams (int64_t stream)
 }
 
 void
-Ipv4GlobalRouting::DoDispose (void)
+Ipv4GlobalRouting::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (HostRoutesI i = m_hostRoutes.begin ();

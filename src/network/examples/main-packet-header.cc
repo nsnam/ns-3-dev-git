@@ -27,18 +27,18 @@ public:
    * Get the header data.
    * \return The data.
    */
-  uint16_t GetData (void) const;
+  uint16_t GetData () const;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 private:
   uint16_t m_data;  //!< Header data
 };
@@ -53,7 +53,7 @@ MyHeader::~MyHeader ()
 }
 
 TypeId
-MyHeader::GetTypeId (void)
+MyHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MyHeader")
     .SetParent<Header> ()
@@ -62,7 +62,7 @@ MyHeader::GetTypeId (void)
   return tid;
 }
 TypeId
-MyHeader::GetInstanceTypeId (void) const
+MyHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -76,7 +76,7 @@ MyHeader::Print (std::ostream &os) const
   os << "data=" << m_data;
 }
 uint32_t
-MyHeader::GetSerializedSize (void) const
+MyHeader::GetSerializedSize () const
 {
   // we reserve 2 bytes for our header.
   return 2;
@@ -106,7 +106,7 @@ MyHeader::SetData (uint16_t data)
   m_data = data;
 }
 uint16_t
-MyHeader::GetData (void) const
+MyHeader::GetData () const
 {
   return m_data;
 }

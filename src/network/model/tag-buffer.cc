@@ -131,7 +131,7 @@ TagBuffer::Write (const uint8_t *buffer, uint32_t size)
     }
 }
 uint64_t
-TagBuffer::ReadU64 (void)
+TagBuffer::ReadU64 ()
 {
   NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
@@ -161,7 +161,7 @@ TagBuffer::ReadU64 (void)
   return data;
 }
 double
-TagBuffer::ReadDouble (void)
+TagBuffer::ReadDouble ()
 {
   NS_LOG_FUNCTION (this);
   double v;

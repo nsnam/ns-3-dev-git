@@ -51,7 +51,7 @@ NS_LOG_COMPONENT_DEFINE ("RealtimeSimulatorImpl");
 NS_OBJECT_ENSURE_REGISTERED (RealtimeSimulatorImpl);
 
 TypeId
-RealtimeSimulatorImpl::GetTypeId (void)
+RealtimeSimulatorImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RealtimeSimulatorImpl")
     .SetParent<SimulatorImpl> ()
@@ -99,7 +99,7 @@ RealtimeSimulatorImpl::~RealtimeSimulatorImpl ()
 }
 
 void
-RealtimeSimulatorImpl::DoDispose (void)
+RealtimeSimulatorImpl::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   while (!m_events->IsEmpty ())
@@ -160,7 +160,7 @@ RealtimeSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 }
 
 void
-RealtimeSimulatorImpl::ProcessOneEvent (void)
+RealtimeSimulatorImpl::ProcessOneEvent ()
 {
   //
   // The idea here is to wait until the next event comes due.  In the case of
@@ -394,7 +394,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
 }
 
 bool
-RealtimeSimulatorImpl::IsFinished (void) const
+RealtimeSimulatorImpl::IsFinished () const
 {
   bool rc;
   {
@@ -409,7 +409,7 @@ RealtimeSimulatorImpl::IsFinished (void) const
 // Peeks into event list.  Should be called with critical section locked.
 //
 uint64_t
-RealtimeSimulatorImpl::NextTs (void) const
+RealtimeSimulatorImpl::NextTs () const
 {
   NS_ASSERT_MSG (m_events->IsEmpty () == false,
                  "RealtimeSimulatorImpl::NextTs(): event queue is empty");
@@ -418,7 +418,7 @@ RealtimeSimulatorImpl::NextTs (void) const
 }
 
 void
-RealtimeSimulatorImpl::Run (void)
+RealtimeSimulatorImpl::Run ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -480,19 +480,19 @@ RealtimeSimulatorImpl::Run (void)
 }
 
 bool
-RealtimeSimulatorImpl::Running (void) const
+RealtimeSimulatorImpl::Running () const
 {
   return m_running;
 }
 
 bool
-RealtimeSimulatorImpl::Realtime (void) const
+RealtimeSimulatorImpl::Realtime () const
 {
   return m_synchronizer->Realtime ();
 }
 
 void
-RealtimeSimulatorImpl::Stop (void)
+RealtimeSimulatorImpl::Stop ()
 {
   NS_LOG_FUNCTION (this);
   m_stop = true;
@@ -581,7 +581,7 @@ RealtimeSimulatorImpl::ScheduleNow (EventImpl *impl)
 }
 
 Time
-RealtimeSimulatorImpl::Now (void) const
+RealtimeSimulatorImpl::Now () const
 {
   return TimeStep (m_currentTs);
 }
@@ -651,7 +651,7 @@ RealtimeSimulatorImpl::ScheduleRealtimeNow (EventImpl *impl)
 }
 
 Time
-RealtimeSimulatorImpl::RealtimeNow (void) const
+RealtimeSimulatorImpl::RealtimeNow () const
 {
   return TimeStep (m_synchronizer->GetCurrentRealtime ());
 }
@@ -786,26 +786,26 @@ RealtimeSimulatorImpl::IsExpired (const EventId &id) const
 }
 
 Time
-RealtimeSimulatorImpl::GetMaximumSimulationTime (void) const
+RealtimeSimulatorImpl::GetMaximumSimulationTime () const
 {
   return TimeStep (0x7fffffffffffffffLL);
 }
 
 // System ID for non-distributed simulation is always zero
 uint32_t
-RealtimeSimulatorImpl::GetSystemId (void) const
+RealtimeSimulatorImpl::GetSystemId () const
 {
   return 0;
 }
 
 uint32_t
-RealtimeSimulatorImpl::GetContext (void) const
+RealtimeSimulatorImpl::GetContext () const
 {
   return m_currentContext;
 }
 
 uint64_t
-RealtimeSimulatorImpl::GetEventCount (void) const
+RealtimeSimulatorImpl::GetEventCount () const
 {
   return m_eventCount;
 }
@@ -818,7 +818,7 @@ RealtimeSimulatorImpl::SetSynchronizationMode (enum SynchronizationMode mode)
 }
 
 RealtimeSimulatorImpl::SynchronizationMode
-RealtimeSimulatorImpl::GetSynchronizationMode (void) const
+RealtimeSimulatorImpl::GetSynchronizationMode () const
 {
   NS_LOG_FUNCTION (this);
   return m_synchronizationMode;
@@ -832,7 +832,7 @@ RealtimeSimulatorImpl::SetHardLimit (Time limit)
 }
 
 Time
-RealtimeSimulatorImpl::GetHardLimit (void) const
+RealtimeSimulatorImpl::GetHardLimit () const
 {
   NS_LOG_FUNCTION (this);
   return m_hardLimit;

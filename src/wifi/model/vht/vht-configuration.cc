@@ -42,7 +42,7 @@ VhtConfiguration::~VhtConfiguration ()
 }
 
 TypeId
-VhtConfiguration::GetTypeId (void)
+VhtConfiguration::GetTypeId ()
 {
   static ns3::TypeId tid = ns3::TypeId ("ns3::VhtConfiguration")
     .SetParent<Object> ()
@@ -78,7 +78,7 @@ VhtConfiguration::Set160MHzOperationSupported (bool enable)
 }
 
 bool
-VhtConfiguration::Get160MHzOperationSupported (void) const
+VhtConfiguration::Get160MHzOperationSupported () const
 {
   return m_160MHzSupported;
 }
@@ -93,13 +93,13 @@ VhtConfiguration::SetSecondaryCcaSensitivityThresholds (const SecondaryCcaSensit
 }
 
 VhtConfiguration::SecondaryCcaSensitivityThresholds
-VhtConfiguration::GetSecondaryCcaSensitivityThresholds (void) const
+VhtConfiguration::GetSecondaryCcaSensitivityThresholds () const
 {
   return {m_secondaryCcaSensitivityThresholds.at (20), m_secondaryCcaSensitivityThresholds.at (40), m_secondaryCcaSensitivityThresholds.at (80)};
 }
 
 const std::map<uint16_t, double>&
-VhtConfiguration::GetSecondaryCcaSensitivityThresholdsPerBw (void) const
+VhtConfiguration::GetSecondaryCcaSensitivityThresholdsPerBw () const
 {
   return m_secondaryCcaSensitivityThresholds;
 }

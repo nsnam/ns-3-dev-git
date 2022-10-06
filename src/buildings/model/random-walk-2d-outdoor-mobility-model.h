@@ -61,7 +61,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** An enum representing the different working modes of this module. */
   enum Mode
   {
@@ -90,7 +90,7 @@ private:
   /**
    * Perform initialization of the object before MobilityModel::DoInitialize ()
    */
-  void DoInitializePrivate (void);
+  void DoInitializePrivate ();
   /**
    * Check if there is a building between two positions (or if the nextPosition is inside a building).
    * The code is taken from MmWave3gppBuildingsPropagationLossModel from the NYU/UNIPD ns-3 mmWave module
@@ -110,11 +110,11 @@ private:
    */
   Vector CalculateIntersectionFromOutside (const Vector &current, const Vector &next, const Box boundaries) const;
 
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
-  virtual Vector DoGetPosition (void) const;
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
   virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper; //!< helper for this object

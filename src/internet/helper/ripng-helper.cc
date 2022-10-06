@@ -45,7 +45,7 @@ RipNgHelper::~RipNgHelper ()
 }
 
 RipNgHelper*
-RipNgHelper::Copy (void) const
+RipNgHelper::Copy () const
 {
   return new RipNgHelper (*this);
 }

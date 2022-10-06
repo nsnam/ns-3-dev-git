@@ -35,11 +35,11 @@ public:
   /**
    * Set success bit to 0 (success).
    */
-  void SetSuccess (void);
+  void SetSuccess ();
   /**
    * Set success bit to 1 (failure).
    */
-  void SetFailure (void);
+  void SetFailure ();
 
   /**
    * Return whether the status code is success.
@@ -47,7 +47,7 @@ public:
    * \return true if success,
    *         false otherwise
    */
-  bool IsSuccess (void) const;
+  bool IsSuccess () const;
 
   /**
    * \returns the expected size of the status code.
@@ -55,7 +55,7 @@ public:
    * This method should return the number of bytes which are needed to store
    * the status code data by Serialize.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * \param start an iterator which points to where the status code should be written
    *

@@ -46,7 +46,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Kun2600MhzPropagationLossModel ();
   virtual ~Kun2600MhzPropagationLossModel ();

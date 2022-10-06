@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("LteSimpleNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (LteSimpleNetDevice);
 
 
-TypeId LteSimpleNetDevice::GetTypeId (void)
+TypeId LteSimpleNetDevice::GetTypeId ()
 {
   static TypeId
     tid =
@@ -44,7 +44,7 @@ TypeId LteSimpleNetDevice::GetTypeId (void)
 }
 
 
-LteSimpleNetDevice::LteSimpleNetDevice (void)
+LteSimpleNetDevice::LteSimpleNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -56,13 +56,13 @@ LteSimpleNetDevice::LteSimpleNetDevice (Ptr<Node> node)
   SetNode (node);
 }
 
-LteSimpleNetDevice::~LteSimpleNetDevice (void)
+LteSimpleNetDevice::~LteSimpleNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-LteSimpleNetDevice::DoDispose (void)
+LteSimpleNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   SimpleNetDevice::DoDispose ();
@@ -70,7 +70,7 @@ LteSimpleNetDevice::DoDispose (void)
 
 
 void
-LteSimpleNetDevice::DoInitialize (void)
+LteSimpleNetDevice::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 }

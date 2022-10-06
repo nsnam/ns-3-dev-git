@@ -131,7 +131,7 @@ public:
    *
    * \returns an iterator which refers to the first Node in the container.
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which indicates past-the-last Node in the
@@ -152,7 +152,7 @@ public:
    *
    * \returns an iterator which indicates an ending condition for a loop.
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \brief Get the number of Ptr<Node> stored in this container.
@@ -174,7 +174,7 @@ public:
    *
    * \returns the number of Ptr<Node> stored in this container.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Get the Ptr<Node> stored in this container at a given

@@ -98,12 +98,12 @@ public:
    * Get the name.
    * \returns The name of this GlobalValue.
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * Get the help string.
    * \returns The help text of this GlobalValue.
    */
-  std::string GetHelp (void) const;
+  std::string GetHelp () const;
   /**
    * Get the value.
    * \param [out] value The AttributeValue to set to the value
@@ -114,7 +114,7 @@ public:
    * Get the AttributeChecker.
    * \returns The checker associated to this GlobalValue.
    */
-  Ptr<const AttributeChecker> GetChecker (void) const;
+  Ptr<const AttributeChecker> GetChecker () const;
   /**
    * Set the value of this GlobalValue.
    * \param [in] value the new value to set in this GlobalValue.
@@ -123,7 +123,7 @@ public:
   bool SetValue (const AttributeValue &value);
 
   /** Reset to the initial value. */
-  void ResetInitialValue (void);
+  void ResetInitialValue ();
 
   /**
    * Iterate over the set of GlobalValues until a matching name is found
@@ -151,12 +151,12 @@ public:
    * The Begin iterator.
    * \returns An iterator which represents a pointer to the first GlobalValue registered.
    */
-  static Iterator Begin (void);
+  static Iterator Begin ();
   /**
    * The End iterator.
    * \returns An iterator which represents a pointer to the last GlobalValue registered.
    */
-  static Iterator End (void);
+  static Iterator End ();
 
 
   /**
@@ -190,9 +190,9 @@ private:
    *
    * \returns The vector.
    */
-  static Vector * GetVector (void);
+  static Vector * GetVector ();
   /** Initialize from the \c NS_GLOBAL_VALUE environment variable. */
-  void InitializeFromEnv (void);
+  void InitializeFromEnv ();
 
   /** The name of this GlobalValue. */
   std::string m_name;

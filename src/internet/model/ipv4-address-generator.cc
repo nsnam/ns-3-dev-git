@@ -112,7 +112,7 @@ public:
   /**
    * \brief Reset the networks and Ipv4Address to zero
    */
-  void Reset (void);
+  void Reset ();
 
   /**
    * \brief Add the Ipv4Address to the list of IPv4 entries
@@ -146,7 +146,7 @@ public:
   /**
    * \brief Used to turn off fatal errors and assertions, for testing
    */
-  void TestMode (void);
+  void TestMode ();
 private:
   static const uint32_t N_BITS = 32;  //!< the number of bits in the address
   static const uint32_t MOST_SIGNIFICANT_BIT = 0x80000000; //!< MSB set to 1
@@ -195,7 +195,7 @@ Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl ()
 }
 
 void
-Ipv4AddressGeneratorImpl::Reset (void)
+Ipv4AddressGeneratorImpl::Reset ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -498,7 +498,7 @@ Ipv4AddressGeneratorImpl::IsNetworkAllocated (const Ipv4Address address, const I
 
 
 void
-Ipv4AddressGeneratorImpl::TestMode (void)
+Ipv4AddressGeneratorImpl::TestMode ()
 {
   NS_LOG_FUNCTION (this);
   m_test = true;
@@ -597,7 +597,7 @@ Ipv4AddressGenerator::NextAddress (const Ipv4Mask mask)
 }
 
 void
-Ipv4AddressGenerator::Reset (void)
+Ipv4AddressGenerator::Reset ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -633,7 +633,7 @@ Ipv4AddressGenerator::IsNetworkAllocated (const Ipv4Address addr, const Ipv4Mask
 }
 
 void
-Ipv4AddressGenerator::TestMode (void)
+Ipv4AddressGenerator::TestMode ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 

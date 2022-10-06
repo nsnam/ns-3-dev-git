@@ -85,19 +85,19 @@ public:
      *
      * \return the RU type
      */
-    RuType GetRuType (void) const;
+    RuType GetRuType () const;
     /**
      * Get the RU index
      *
      * \return the RU index
      */
-    std::size_t GetIndex (void) const;
+    std::size_t GetIndex () const;
     /**
      * Get the primary 80 MHz flag
      *
      * \return true if the RU is in the primary 80 MHz channel and false otherwise
      */
-    bool GetPrimary80MHz (void) const;
+    bool GetPrimary80MHz () const;
     /**
      * Set the RU PHY index
      *
@@ -110,13 +110,13 @@ public:
      *
      * \return true if the RU PHY index has been set, false otherwise
      */
-    bool IsPhyIndexSet (void) const;
+    bool IsPhyIndexSet () const;
     /**
      * Get the RU PHY index
      *
      * \return the RU PHY index
      */
-    std::size_t GetPhyIndex (void) const;
+    std::size_t GetPhyIndex () const;
 
     /**
      * Compare this RU to the given RU.

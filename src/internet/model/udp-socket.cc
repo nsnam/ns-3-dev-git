@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 NS_OBJECT_ENSURE_REGISTERED (UdpSocket);
 
 TypeId
-UdpSocket::GetTypeId (void)
+UdpSocket::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpSocket")
     .SetParent<Socket> ()

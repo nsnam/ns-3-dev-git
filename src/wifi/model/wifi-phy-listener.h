@@ -59,13 +59,13 @@ public:
    * NotifyRxStart was invoked first and, the packet has
    * been successfully received.
    */
-  virtual void NotifyRxEndOk (void) = 0;
+  virtual void NotifyRxEndOk () = 0;
   /**
    * We have received the last bit of a packet for which
    * NotifyRxStart was invoked first and, the packet has
    * _not_ been successfully received.
    */
-  virtual void NotifyRxEndError (void) = 0;
+  virtual void NotifyRxEndError () = 0;
   /**
    * \param duration the expected transmission duration.
    * \param txPowerDbm the nominal TX power in dBm
@@ -110,19 +110,19 @@ public:
   /**
    * Notify listeners that we went to sleep
    */
-  virtual void NotifySleep (void) = 0;
+  virtual void NotifySleep () = 0;
   /**
   * Notify listeners that we went to switch off
   */
-  virtual void NotifyOff (void) = 0;
+  virtual void NotifyOff () = 0;
   /**
    * Notify listeners that we woke up
    */
-  virtual void NotifyWakeup (void) = 0;
+  virtual void NotifyWakeup () = 0;
   /**
    * Notify listeners that we went to switch on
    */
-  virtual void NotifyOn (void) = 0;
+  virtual void NotifyOn () = 0;
 };
 
 } //namespace ns3

@@ -97,7 +97,7 @@ MuEdcaParameterSet::SetMuEdcaTimer (uint8_t aci, Time timer)
 }
 
 uint8_t
-MuEdcaParameterSet::GetQosInfo (void) const
+MuEdcaParameterSet::GetQosInfo () const
 {
   return m_qosInfo;
 }

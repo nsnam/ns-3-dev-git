@@ -39,9 +39,9 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  LrWpanErrorModel (void);
+  LrWpanErrorModel ();
 
   /**
    * Return chunk success rate for given SNR.

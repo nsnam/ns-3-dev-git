@@ -58,12 +58,12 @@ public:
    *
    * \return The amplitude.
    */
-  std::complex<double> GetAmp (void) const;
+  std::complex<double> GetAmp () const;
   /**
    * Get the delay time, usually from first arrival of signal.
    * \return The time delay.
    */
-  Time GetDelay (void) const;
+  Time GetDelay () const;
 
 private:
   std::complex<double> m_amplitude;  //!< The amplitude.
@@ -151,19 +151,19 @@ public:
    *
    * \return Iterator positioned at first arrival.
    */
-  Iterator GetBegin (void) const;
+  Iterator GetBegin () const;
   /**
    * Get the end of the tap list (one beyond the last entry).
    *
    * \return Iterator positioned after last arrival
    */
-  Iterator GetEnd (void) const;
+  Iterator GetEnd () const;
   /**
    * Get the number of taps.
    *
    * \return Number of taps in PDP.
    */
-  uint32_t GetNTaps (void) const;
+  uint32_t GetNTaps () const;
   /**
    * Get the Tap at the specified delay index.
    *
@@ -176,7 +176,7 @@ public:
    *
    * \return Resolution of PDP.
    */
-  Time GetResolution (void) const;
+  Time GetResolution () const;
   /**
    * Compute the non-coherent sum of tap amplitudes
    * between a start and end time.
@@ -238,13 +238,13 @@ public:
    * \see SumTapsNc
    * \returns the new PDP
    */
-  UanPdp NormalizeToSumNc (void) const;
+  UanPdp NormalizeToSumNc () const;
   /**
    * Get a unit impulse PDP at time 0.
    *
    * \return The unit impulse.
    */
-  static UanPdp CreateImpulsePdp (void);
+  static UanPdp CreateImpulsePdp ();
 
 private:
   friend std::ostream &operator<< (std::ostream &os, const UanPdp &pdp);
@@ -290,7 +290,7 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Computes pathloss between nodes a and b.
@@ -322,9 +322,9 @@ public:
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) = 0;
 
   /** Clear all pointer references. */
-  virtual void Clear (void);
+  virtual void Clear ();
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 };  // class UanPropModel
 

@@ -68,10 +68,10 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** Clear all pointer references. */
-  virtual void Clear (void);
+  virtual void Clear ();
 
   /**
    * Convert dB re 1 uPa to kilopascals.
@@ -95,7 +95,7 @@ public:
   }
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 };  // class UanPhyCalcSinr
 
@@ -125,12 +125,12 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** Clear all pointer references. */
-  virtual void Clear (void);
+  virtual void Clear ();
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 };  // class UanPhyPer
 
@@ -151,15 +151,15 @@ public:
   {
   }
   /** Called when UanPhy begins receiving packet. */
-  virtual void NotifyRxStart (void) = 0;
+  virtual void NotifyRxStart () = 0;
   /** Called when UanPhy finishes receiving packet without error. */
-  virtual void NotifyRxEndOk (void) = 0;
+  virtual void NotifyRxEndOk () = 0;
   /** Called when UanPhy finishes receiving packet in error. */
-  virtual void NotifyRxEndError (void) = 0;
+  virtual void NotifyRxEndError () = 0;
   /** Called when UanPhy begins sensing channel is busy. */
-  virtual void NotifyCcaStart (void) = 0;
+  virtual void NotifyCcaStart () = 0;
   /** Called when UanPhy stops sensing channel is busy. */
-  virtual void NotifyCcaEnd (void) = 0;
+  virtual void NotifyCcaEnd () = 0;
   /**
    * Called when transmission starts from Phy object.
    *
@@ -167,7 +167,7 @@ public:
    */
   virtual void NotifyTxStart (Time duration) = 0;
   /** Function called when Phy object finishes transmitting packet */
-  virtual void NotifyTxEnd (void) = 0;
+  virtual void NotifyTxEnd () = 0;
 };  // class UanPhyListener
 
 /**
@@ -225,11 +225,11 @@ public:
   /**
    * Handle the energy depletion event.
    */
-  virtual void EnergyDepletionHandler (void) = 0;
+  virtual void EnergyDepletionHandler () = 0;
   /**
    * Handle the energy recharge event.
    */
-  virtual void EnergyRechargeHandler (void) = 0;
+  virtual void EnergyRechargeHandler () = 0;
   /**
    * Send a packet using a specific transmission mode.
    *
@@ -299,7 +299,7 @@ public:
    *
    * \return The transmit power.
    */
-  virtual double GetTxPowerDb (void) = 0;
+  virtual double GetTxPowerDb () = 0;
 
   /**
    * Get the minimum received signal strength required
@@ -307,40 +307,40 @@ public:
    *
    * \return The minimum required signal strength, in dB.
    */
-  virtual double GetRxThresholdDb (void) = 0;
+  virtual double GetRxThresholdDb () = 0;
 
   /**
    * Get the CCA threshold signal strength required to detect channel busy.
    *
    * \return The CCA threshold signal strength in dB.
    */
-  virtual double GetCcaThresholdDb (void) = 0;
+  virtual double GetCcaThresholdDb () = 0;
   /** \return True if Phy is in SLEEP state. */
-  virtual bool IsStateSleep (void) = 0;
+  virtual bool IsStateSleep () = 0;
   /** \return True if Phy is in IDLE state. */
-  virtual bool IsStateIdle (void) = 0;
+  virtual bool IsStateIdle () = 0;
   /** \return True if Phy is neither IDLE nor SLEEP. */
-  virtual bool IsStateBusy (void) = 0;
+  virtual bool IsStateBusy () = 0;
   /** \return True if Phy is currently in receive mode. */
-  virtual bool IsStateRx (void) = 0;
+  virtual bool IsStateRx () = 0;
   /** \return True if Phy is busy transmitting. */
-  virtual bool IsStateTx (void) = 0;
+  virtual bool IsStateTx () = 0;
   /** \return True if Phy is in CCABUSY state. */
-  virtual bool IsStateCcaBusy (void) = 0;
+  virtual bool IsStateCcaBusy () = 0;
 
   /**
    * Get the attached channel.
    *
    * \return The channel.
    */
-  virtual Ptr<UanChannel> GetChannel (void) const = 0;
+  virtual Ptr<UanChannel> GetChannel () const = 0;
 
   /**
    * Get the device hosting this Phy.
    *
    * \return The net device.
    */
-  virtual Ptr<UanNetDevice> GetDevice (void) const = 0;
+  virtual Ptr<UanNetDevice> GetDevice () const = 0;
 
   /**
    * Attach to a channel.
@@ -378,7 +378,7 @@ public:
    * amount of interference this node is experiencing
    * from other transmissions.
    */
-  virtual void NotifyIntChange (void) = 0;
+  virtual void NotifyIntChange () = 0;
 
   /**
    * Attach a transducer to this Phy.
@@ -392,14 +392,14 @@ public:
    *
    * \return The transducer.
    */
-  virtual Ptr<UanTransducer> GetTransducer (void) = 0;
+  virtual Ptr<UanTransducer> GetTransducer () = 0;
 
   /**
    * Get the number of transmission modes supported by this Phy.
    *
    * \return The number modes.
    */
-  virtual uint32_t GetNModes (void) = 0;
+  virtual uint32_t GetNModes () = 0;
 
   /**
    * Get a specific transmission mode.
@@ -415,10 +415,10 @@ public:
    * \warning Returns non-valid pointer if IsStateRx == false.
    * \return The packet.
    */
-  virtual Ptr<Packet> GetPacketRx (void) const = 0;
+  virtual Ptr<Packet> GetPacketRx () const = 0;
 
   /** Clear all pointer references. */
-  virtual void Clear (void) = 0;
+  virtual void Clear () = 0;
 
   /**
    * Set the Phy SLEEP mode.
@@ -503,7 +503,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
 private:
   /**

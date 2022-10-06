@@ -113,7 +113,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };
@@ -245,7 +245,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };
@@ -389,7 +389,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };
@@ -530,7 +530,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };

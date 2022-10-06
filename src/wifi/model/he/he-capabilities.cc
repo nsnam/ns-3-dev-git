@@ -566,44 +566,44 @@ HeCapabilities::SetHighestNssSupported (uint8_t nss)
 }
 
 uint8_t
-HeCapabilities::GetChannelWidthSet (void) const
+HeCapabilities::GetChannelWidthSet () const
 {
   return m_channelWidthSet;
 }
 
 uint8_t
-HeCapabilities::GetLdpcCodingInPayload (void) const
+HeCapabilities::GetLdpcCodingInPayload () const
 {
   return m_ldpcCodingInPayload;
 }
 
 bool
-HeCapabilities::GetHeSuPpdu1xHeLtf800nsGi (void) const
+HeCapabilities::GetHeSuPpdu1xHeLtf800nsGi () const
 {
   return (m_heSuPpdu1xHeLtf800nsGi == 1);
 }
 
 bool
-HeCapabilities::GetHePpdu4xHeLtf800nsGi (void) const
+HeCapabilities::GetHePpdu4xHeLtf800nsGi () const
 {
   return (m_hePpdu4xHeLtf800nsGi == 1);
 }
 
 
 uint8_t
-HeCapabilities::GetHighestMcsSupported (void) const
+HeCapabilities::GetHighestMcsSupported () const
 {
   return m_highestMcsSupported + 7;
 }
 
 uint8_t
-HeCapabilities::GetHighestNssSupported (void) const
+HeCapabilities::GetHighestNssSupported () const
 {
   return m_highestNssSupportedM1 + 1;
 }
 
 uint32_t
-HeCapabilities::GetMaxAmpduLength (void) const
+HeCapabilities::GetMaxAmpduLength () const
 {
   return std::min<uint32_t> ((1ul << (20 + m_maxAmpduLengthExponent)) - 1, 6500631);
 }

@@ -88,7 +88,7 @@ public:
     LONGKEYSOURCE = 3
   };
 
-  LrWpanMacHeader (void);
+  LrWpanMacHeader ();
 
   /**
    * Constructor
@@ -101,154 +101,154 @@ public:
    */
   LrWpanMacHeader (enum LrWpanMacType wpanMacType, uint8_t seqNum);
 
-  ~LrWpanMacHeader (void);
+  ~LrWpanMacHeader ();
 
   /**
    * Get the header type
    * \return the header type
    */
-  enum LrWpanMacType GetType (void) const;
+  enum LrWpanMacType GetType () const;
   /**
    * Get the Frame control field
    * \return the Frame control field
    */
-  uint16_t GetFrameControl (void) const;
+  uint16_t GetFrameControl () const;
   /**
    * Check if Security Enabled bit of Frame Control is enabled
    * \return true if Security Enabled bit is enabled
    */
-  bool IsSecEnable (void) const;
+  bool IsSecEnable () const;
   /**
    * Check if Frame Pending bit of Frame Control is enabled
    * \return true if Frame Pending bit is enabled
    */
-  bool IsFrmPend (void) const;
+  bool IsFrmPend () const;
   /**
    * Check if Ack. Request bit of Frame Control is enabled
    * \return true if Ack. Request bit is enabled
    */
-  bool IsAckReq (void) const;
+  bool IsAckReq () const;
   /**
    * Check if PAN ID Compression bit of Frame Control is enabled
    * \return true if PAN ID Compression bit is enabled
    */
-  bool IsPanIdComp (void) const;
+  bool IsPanIdComp () const;
   /**
    * Get the Reserved bits of Frame control field
    * \return the Reserved bits
    */
-  uint8_t GetFrmCtrlRes (void) const;
+  uint8_t GetFrmCtrlRes () const;
   /**
    * Get the Dest. Addressing Mode of Frame control field
    * \return the Dest. Addressing Mode bits
    */
-  uint8_t GetDstAddrMode (void) const;
+  uint8_t GetDstAddrMode () const;
   /**
    * Get the Frame Version of Frame control field
    * \return the Frame Version bits
    */
-  uint8_t GetFrameVer (void) const;
+  uint8_t GetFrameVer () const;
   /**
    * Get the Source Addressing Mode of Frame control field
    * \return the Source Addressing Mode bits
    */
-  uint8_t GetSrcAddrMode (void) const;
+  uint8_t GetSrcAddrMode () const;
   /**
    * Get the frame Sequence number
    * \return the sequence number
    */
-  uint8_t GetSeqNum (void) const;
+  uint8_t GetSeqNum () const;
   /**
    * Get the Destination PAN ID
    * \return the Destination PAN ID
    */
-  uint16_t GetDstPanId (void) const;
+  uint16_t GetDstPanId () const;
   /**
    * Get the Destination Short address
    * \return the Destination Short address
    */
-  Mac16Address GetShortDstAddr (void) const;
+  Mac16Address GetShortDstAddr () const;
   /**
    * Get the Destination Extended address
    * \return the Destination Extended address
    */
-  Mac64Address GetExtDstAddr (void) const;
+  Mac64Address GetExtDstAddr () const;
   /**
    * Get the Source PAN ID
    * \return the Source PAN ID
    */
-  uint16_t GetSrcPanId (void) const;
+  uint16_t GetSrcPanId () const;
   /**
    * Get the Source Short address
    * \return the Source Short address
    */
-  Mac16Address GetShortSrcAddr (void) const;
+  Mac16Address GetShortSrcAddr () const;
   /**
    * Get the Source Extended address
    * \return the Source Extended address
    */
-  Mac64Address GetExtSrcAddr (void) const;
+  Mac64Address GetExtSrcAddr () const;
   /**
    * Get the Auxiliary Security Header - Security Control Octect
    * \return the Auxiliary Security Header - Security Control Octect
    */
-  uint8_t GetSecControl (void) const;
+  uint8_t GetSecControl () const;
   /**
    * Get the Auxiliary Security Header - Frame Counter Octects
    * \return the Auxiliary Security Header - Frame Counter Octects
    */
-  uint32_t GetFrmCounter (void) const;
+  uint32_t GetFrmCounter () const;
 
   /**
    * Get the Auxiliary Security Header - Security Control - Security Level bits
    * \return the Auxiliary Security Header - Security Control - Security Level bits
    */
-  uint8_t GetSecLevel (void) const;
+  uint8_t GetSecLevel () const;
   /**
    * Get the Auxiliary Security Header - Security Control - Key Identifier Mode bits
    * \return the Auxiliary Security Header - Security Control - Key Identifier Mode bits
    */
-  uint8_t GetKeyIdMode (void) const;
+  uint8_t GetKeyIdMode () const;
   /**
    * Get the Auxiliary Security Header - Security Control - Reserved bits
    * \return the Auxiliary Security Header - Security Control - Reserved bits
    */
-  uint8_t GetSecCtrlReserved (void) const;
+  uint8_t GetSecCtrlReserved () const;
   /**
    * Get the Auxiliary Security Header - Key Identifier - Key Source (2 Octects)
    * \return the Auxiliary Security Header - Key Identifier - Key Source  (2 Octects)
    */
-  uint32_t GetKeyIdSrc32 (void) const;
+  uint32_t GetKeyIdSrc32 () const;
   /**
    * Get the Auxiliary Security Header - Key Identifier - Key Source (4 Octects)
    * \return the Auxiliary Security Header - Key Identifier - Key Source  (4 Octects)
    */
-  uint64_t GetKeyIdSrc64 (void) const;
+  uint64_t GetKeyIdSrc64 () const;
   /**
    * Get the Auxiliary Security Header - Key Identifier - Key Index
    * \return the Auxiliary Security Header - Key Identifier - Key Index
    */
-  uint8_t GetKeyIdIndex (void) const;
+  uint8_t GetKeyIdIndex () const;
   /**
    * Returns true if the header is a beacon
    * \return true if the header is a beacon
    */
-  bool IsBeacon (void) const;
+  bool IsBeacon () const;
   /**
    * Returns true if the header is a data
    * \return true if the header is a data
    */
-  bool IsData (void) const;
+  bool IsData () const;
   /**
    * Returns true if the header is an ack
    * \return true if the header is an ack
    */
-  bool IsAcknowledgment (void) const;
+  bool IsAcknowledgment () const;
   /**
    * Returns true if the header is a command
    * \return true if the header is a command
    */
-  bool IsCommand (void) const;
+  bool IsCommand () const;
   /**
    * Set the Frame Control field "Frame Type" bits
    * \param wpanMacType the frame type
@@ -262,35 +262,35 @@ public:
   /**
    * Set the Frame Control field "Security Enabled" bit to true
    */
-  void SetSecEnable (void);
+  void SetSecEnable ();
   /**
    * Set the Frame Control field "Security Enabled" bit to false
    */
-  void SetSecDisable (void);
+  void SetSecDisable ();
   /**
    * Set the Frame Control field "Frame Pending" bit to true
    */
-  void SetFrmPend (void);
+  void SetFrmPend ();
   /**
    * Set the Frame Control field "Frame Pending" bit to false
    */
-  void SetNoFrmPend (void);
+  void SetNoFrmPend ();
   /**
    * Set the Frame Control field "Ack. Request" bit to true
    */
-  void SetAckReq (void);
+  void SetAckReq ();
   /**
    * Set the Frame Control field "Ack. Request" bit to false
    */
-  void SetNoAckReq (void);
+  void SetNoAckReq ();
   /**
    * Set the Frame Control field "PAN ID Compression" bit to true
    */
-  void SetPanIdComp (void);
+  void SetPanIdComp ();
   /**
    * Set the Frame Control field "PAN ID Compression" bit to false
    */
-  void SetNoPanIdComp (void);
+  void SetNoPanIdComp ();
   /**
    * Set the Frame Control field "Reserved" bits
    * \param res reserved bits
@@ -390,11 +390,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 

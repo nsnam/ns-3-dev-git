@@ -103,7 +103,7 @@ public:
   void RecvMeasurementReport (uint64_t imsi, uint16_t cellId, uint16_t rnti, LteRrcSap::MeasurementReport meas);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   double m_d1; ///< distance between UE and ENB node pair
   double m_d2; ///< distance between UE and other ENB node

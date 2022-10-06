@@ -31,7 +31,7 @@ NS_OBJECT_ENSURE_REGISTERED (GtpcHeader);
 static const uint8_t VERSION = 2;
 
 TypeId
-GtpcHeader::GetTypeId (void)
+GtpcHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcHeader")
     .SetParent<Header> ()
@@ -54,13 +54,13 @@ GtpcHeader::~GtpcHeader ()
 }
 
 TypeId
-GtpcHeader::GetInstanceTypeId (void) const
+GtpcHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcHeader::GetSerializedSize (void) const
+GtpcHeader::GetSerializedSize () const
 {
   return m_teidFlag ? 12 : 8;
 }
@@ -128,7 +128,7 @@ GtpcHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-GtpcHeader::GetMessageSize (void) const
+GtpcHeader::GetMessageSize () const
 {
   return 0;
 }
@@ -191,7 +191,7 @@ GtpcHeader::SetIesLength (uint16_t iesLength)
 }
 
 void
-GtpcHeader::ComputeMessageLength (void)
+GtpcHeader::ComputeMessageLength ()
 {
   SetIesLength (GetMessageSize ());
 }
@@ -479,7 +479,7 @@ GtpcIes::DeserializeBearerContextHeader (Buffer::Iterator &i, uint16_t &length)
 /////////////////////////////////////////////////////////////////////
 
 TypeId
-GtpcCreateSessionRequestMessage::GetTypeId (void)
+GtpcCreateSessionRequestMessage::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcCreateSessionRequestMessage")
     .SetParent<Header> ()
@@ -501,13 +501,13 @@ GtpcCreateSessionRequestMessage::~GtpcCreateSessionRequestMessage ()
 }
 
 TypeId
-GtpcCreateSessionRequestMessage::GetInstanceTypeId (void) const
+GtpcCreateSessionRequestMessage::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcCreateSessionRequestMessage::GetMessageSize (void) const
+GtpcCreateSessionRequestMessage::GetMessageSize () const
 {
   uint32_t serializedSize = serializedSizeImsi + serializedSizeUliEcgi + serializedSizeFteid;
   for (auto &bc : m_bearerContextsToBeCreated)
@@ -521,7 +521,7 @@ GtpcCreateSessionRequestMessage::GetMessageSize (void) const
 }
 
 uint32_t
-GtpcCreateSessionRequestMessage::GetSerializedSize (void) const
+GtpcCreateSessionRequestMessage::GetSerializedSize () const
 {
   return GtpcHeader::GetSerializedSize () + GetMessageSize ();
 }
@@ -638,7 +638,7 @@ GtpcCreateSessionRequestMessage::SetBearerContextsToBeCreated (std::list<GtpcCre
 /////////////////////////////////////////////////////////////////////
 
 TypeId
-GtpcCreateSessionResponseMessage::GetTypeId (void)
+GtpcCreateSessionResponseMessage::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcCreateSessionResponseMessage")
     .SetParent<Header> ()
@@ -659,13 +659,13 @@ GtpcCreateSessionResponseMessage::~GtpcCreateSessionResponseMessage ()
 }
 
 TypeId
-GtpcCreateSessionResponseMessage::GetInstanceTypeId (void) const
+GtpcCreateSessionResponseMessage::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcCreateSessionResponseMessage::GetMessageSize (void) const
+GtpcCreateSessionResponseMessage::GetMessageSize () const
 {
   uint32_t serializedSize = serializedSizeCause + serializedSizeFteid;
   for (auto &bc : m_bearerContextsCreated)
@@ -679,7 +679,7 @@ GtpcCreateSessionResponseMessage::GetMessageSize (void) const
 }
 
 uint32_t
-GtpcCreateSessionResponseMessage::GetSerializedSize (void) const
+GtpcCreateSessionResponseMessage::GetSerializedSize () const
 {
   return GtpcHeader::GetSerializedSize () + GetMessageSize ();
 }
@@ -782,7 +782,7 @@ GtpcCreateSessionResponseMessage::SetBearerContextsCreated (std::list<GtpcCreate
 /////////////////////////////////////////////////////////////////////
 
 TypeId
-GtpcModifyBearerRequestMessage::GetTypeId (void)
+GtpcModifyBearerRequestMessage::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcModifyBearerRequestMessage")
     .SetParent<Header> ()
@@ -804,13 +804,13 @@ GtpcModifyBearerRequestMessage::~GtpcModifyBearerRequestMessage ()
 }
 
 TypeId
-GtpcModifyBearerRequestMessage::GetInstanceTypeId (void) const
+GtpcModifyBearerRequestMessage::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcModifyBearerRequestMessage::GetMessageSize (void) const
+GtpcModifyBearerRequestMessage::GetMessageSize () const
 {
   uint32_t serializedSize = serializedSizeImsi + serializedSizeUliEcgi
                           + m_bearerContextsToBeModified.size ()
@@ -820,7 +820,7 @@ GtpcModifyBearerRequestMessage::GetMessageSize (void) const
 }
 
 uint32_t
-GtpcModifyBearerRequestMessage::GetSerializedSize (void) const
+GtpcModifyBearerRequestMessage::GetSerializedSize () const
 {
   return GtpcHeader::GetSerializedSize () + GetMessageSize ();
 }
@@ -913,7 +913,7 @@ GtpcModifyBearerRequestMessage::SetBearerContextsToBeModified (std::list<GtpcMod
 /////////////////////////////////////////////////////////////////////
 
 TypeId
-GtpcModifyBearerResponseMessage::GetTypeId (void)
+GtpcModifyBearerResponseMessage::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcModifyBearerResponseMessage")
     .SetParent<Header> ()
@@ -934,19 +934,19 @@ GtpcModifyBearerResponseMessage::~GtpcModifyBearerResponseMessage ()
 }
 
 TypeId
-GtpcModifyBearerResponseMessage::GetInstanceTypeId (void) const
+GtpcModifyBearerResponseMessage::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcModifyBearerResponseMessage::GetMessageSize (void) const
+GtpcModifyBearerResponseMessage::GetMessageSize () const
 {
   return serializedSizeCause;
 }
 
 uint32_t
-GtpcModifyBearerResponseMessage::GetSerializedSize (void) const
+GtpcModifyBearerResponseMessage::GetSerializedSize () const
 {
   return GtpcHeader::GetSerializedSize () + GetMessageSize ();
 }
@@ -992,7 +992,7 @@ GtpcModifyBearerResponseMessage::SetCause (GtpcModifyBearerResponseMessage::Caus
 /////////////////////////////////////////////////////////////////////
 
 TypeId
-GtpcDeleteBearerCommandMessage::GetTypeId (void)
+GtpcDeleteBearerCommandMessage::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcDeleteBearerCommandMessage")
     .SetParent<Header> ()
@@ -1012,13 +1012,13 @@ GtpcDeleteBearerCommandMessage::~GtpcDeleteBearerCommandMessage ()
 }
 
 TypeId
-GtpcDeleteBearerCommandMessage::GetInstanceTypeId (void) const
+GtpcDeleteBearerCommandMessage::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcDeleteBearerCommandMessage::GetMessageSize (void) const
+GtpcDeleteBearerCommandMessage::GetMessageSize () const
 {
   uint32_t serializedSize = m_bearerContexts.size ()
                             * (serializedSizeBearerContextHeader + serializedSizeEbi);
@@ -1026,7 +1026,7 @@ GtpcDeleteBearerCommandMessage::GetMessageSize (void) const
 }
 
 uint32_t
-GtpcDeleteBearerCommandMessage::GetSerializedSize (void) const
+GtpcDeleteBearerCommandMessage::GetSerializedSize () const
 {
   return GtpcHeader::GetSerializedSize () + GetMessageSize ();
 }
@@ -1090,7 +1090,7 @@ GtpcDeleteBearerCommandMessage::SetBearerContexts (std::list<GtpcDeleteBearerCom
 /////////////////////////////////////////////////////////////////////
 
 TypeId
-GtpcDeleteBearerRequestMessage::GetTypeId (void)
+GtpcDeleteBearerRequestMessage::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcDeleteBearerRequestMessage")
     .SetParent<Header> ()
@@ -1110,20 +1110,20 @@ GtpcDeleteBearerRequestMessage::~GtpcDeleteBearerRequestMessage ()
 }
 
 TypeId
-GtpcDeleteBearerRequestMessage::GetInstanceTypeId (void) const
+GtpcDeleteBearerRequestMessage::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcDeleteBearerRequestMessage::GetMessageSize (void) const
+GtpcDeleteBearerRequestMessage::GetMessageSize () const
 {
   uint32_t serializedSize = m_epsBearerIds.size () * serializedSizeEbi;
   return serializedSize;
 }
 
 uint32_t
-GtpcDeleteBearerRequestMessage::GetSerializedSize (void) const
+GtpcDeleteBearerRequestMessage::GetSerializedSize () const
 {
   return GtpcHeader::GetSerializedSize () + GetMessageSize ();
 }
@@ -1182,7 +1182,7 @@ GtpcDeleteBearerRequestMessage::SetEpsBearerIds (std::list<uint8_t> epsBearerId)
 /////////////////////////////////////////////////////////////////////
 
 TypeId
-GtpcDeleteBearerResponseMessage::GetTypeId (void)
+GtpcDeleteBearerResponseMessage::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpcDeleteBearerResponseMessage")
     .SetParent<Header> ()
@@ -1202,20 +1202,20 @@ GtpcDeleteBearerResponseMessage::~GtpcDeleteBearerResponseMessage ()
 }
 
 TypeId
-GtpcDeleteBearerResponseMessage::GetInstanceTypeId (void) const
+GtpcDeleteBearerResponseMessage::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpcDeleteBearerResponseMessage::GetMessageSize (void) const
+GtpcDeleteBearerResponseMessage::GetMessageSize () const
 {
   uint32_t serializedSize = serializedSizeCause + m_epsBearerIds.size () * serializedSizeEbi;
   return serializedSize;
 }
 
 uint32_t
-GtpcDeleteBearerResponseMessage::GetSerializedSize (void) const
+GtpcDeleteBearerResponseMessage::GetSerializedSize () const
 {
   return GtpcHeader::GetSerializedSize () + GetMessageSize ();
 }

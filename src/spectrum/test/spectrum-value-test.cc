@@ -50,7 +50,7 @@ public:
    */
   SpectrumValueTestCase (SpectrumValue a, SpectrumValue b, std::string name);
   virtual ~SpectrumValueTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /**
@@ -87,7 +87,7 @@ SpectrumValueTestCase::MoreOrLessEqual (SpectrumValue x, SpectrumValue y)
 }
 
 void
-SpectrumValueTestCase::DoRun (void)
+SpectrumValueTestCase::DoRun ()
 {
   NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL (*m_a.GetSpectrumModel (), *m_b.GetSpectrumModel (), TOLERANCE, "");
   NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL (m_a, m_b, TOLERANCE, "");

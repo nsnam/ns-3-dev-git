@@ -57,8 +57,8 @@ public:
   CobaltQueueDiscTestItem (const CobaltQueueDiscTestItem &) = delete;
   CobaltQueueDiscTestItem & operator = (const CobaltQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader (void);
-  virtual bool Mark (void);
+  virtual void AddHeader ();
+  virtual bool Mark ();
 
 private:
   bool m_ecnCapablePacket; ///< ECN capable packet?
@@ -75,12 +75,12 @@ CobaltQueueDiscTestItem::~CobaltQueueDiscTestItem ()
 }
 
 void
-CobaltQueueDiscTestItem::AddHeader (void)
+CobaltQueueDiscTestItem::AddHeader ()
 {
 }
 
 bool
-CobaltQueueDiscTestItem::Mark (void)
+CobaltQueueDiscTestItem::Mark ()
 {
   if (m_ecnCapablePacket)
     {
@@ -104,7 +104,7 @@ public:
    * \param mode the mode
    */
   CobaltQueueDiscBasicEnqueueDequeue (QueueSizeUnit mode);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Queue test size function
@@ -125,7 +125,7 @@ CobaltQueueDiscBasicEnqueueDequeue::CobaltQueueDiscBasicEnqueueDequeue (QueueSiz
 }
 
 void
-CobaltQueueDiscBasicEnqueueDequeue::DoRun (void)
+CobaltQueueDiscBasicEnqueueDequeue::DoRun ()
 {
   Ptr<CobaltQueueDisc> queue = CreateObject<CobaltQueueDisc> ();
 
@@ -225,7 +225,7 @@ class CobaltQueueDiscDropTest : public TestCase
 {
 public:
   CobaltQueueDiscDropTest ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue function
    * \param queue the queue disc
@@ -320,7 +320,7 @@ CobaltQueueDiscDropTest::Enqueue (Ptr<CobaltQueueDisc> queue, uint32_t size, uin
 }
 
 void
-CobaltQueueDiscDropTest::DoRun (void)
+CobaltQueueDiscDropTest::DoRun ()
 {
   RunDropTest (QueueSizeUnit::PACKETS);
   RunDropTest (QueueSizeUnit::BYTES);
@@ -342,7 +342,7 @@ public:
    * \param mode the mode
    */
   CobaltQueueDiscMarkTest (QueueSizeUnit mode);
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
   /**
@@ -386,7 +386,7 @@ CobaltQueueDiscMarkTest::DropNextTracer ([[maybe_unused]] int64_t oldVal, [[mayb
 }
 
 void
-CobaltQueueDiscMarkTest::DoRun (void)
+CobaltQueueDiscMarkTest::DoRun ()
 {
   // Test is divided into 3 sub test cases:
   // 1) Packets are not ECN capable.
@@ -660,7 +660,7 @@ public:
   virtual ~CobaltQueueDiscCeThresholdTest ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Enqueue function
    * \param queue the queue disc
@@ -754,7 +754,7 @@ CobaltQueueDiscCeThresholdTest::DequeueWithDelay (Ptr<CobaltQueueDisc> queue, ui
 }
 
 void
-CobaltQueueDiscCeThresholdTest::DoRun (void)
+CobaltQueueDiscCeThresholdTest::DoRun ()
 {
   Ptr<CobaltQueueDisc> queue = CreateObject<CobaltQueueDisc> ();
   uint32_t pktSize = 1000;
@@ -830,7 +830,7 @@ public:
   virtual ~CobaltQueueDiscEnhancedBlueTest ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Enqueue function
    * \param queue the queue disc
@@ -864,7 +864,7 @@ CobaltQueueDiscEnhancedBlueTest::~CobaltQueueDiscEnhancedBlueTest ()
 }
 
 void
-CobaltQueueDiscEnhancedBlueTest::DoRun (void)
+CobaltQueueDiscEnhancedBlueTest::DoRun ()
 
 {
   uint32_t pktSize = 1500;

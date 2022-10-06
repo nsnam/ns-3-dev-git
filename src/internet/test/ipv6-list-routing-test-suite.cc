@@ -80,7 +80,7 @@ class Ipv6ListRoutingNegativeTestCase : public TestCase
 {
 public:
   Ipv6ListRoutingNegativeTestCase();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Ipv6ListRoutingNegativeTestCase::Ipv6ListRoutingNegativeTestCase()
@@ -88,7 +88,7 @@ Ipv6ListRoutingNegativeTestCase::Ipv6ListRoutingNegativeTestCase()
 {
 }
 void
-Ipv6ListRoutingNegativeTestCase::DoRun (void)
+Ipv6ListRoutingNegativeTestCase::DoRun ()
 {
   Ptr<Ipv6ListRouting> lr = CreateObject<Ipv6ListRouting> ();
   Ptr<Ipv6RoutingProtocol> aRouting = CreateObject<Ipv6ARouting> ();
@@ -114,7 +114,7 @@ class Ipv6ListRoutingPositiveTestCase : public TestCase
 {
 public:
   Ipv6ListRoutingPositiveTestCase();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Ipv6ListRoutingPositiveTestCase::Ipv6ListRoutingPositiveTestCase()
@@ -122,7 +122,7 @@ Ipv6ListRoutingPositiveTestCase::Ipv6ListRoutingPositiveTestCase()
 {
 }
 void
-Ipv6ListRoutingPositiveTestCase::DoRun (void)
+Ipv6ListRoutingPositiveTestCase::DoRun ()
 {
   Ptr<Ipv6ListRouting> lr = CreateObject<Ipv6ListRouting> ();
   Ptr<Ipv6RoutingProtocol> aRouting = CreateObject<Ipv6ARouting> ();

@@ -70,7 +70,7 @@ namespace {
  *
  * \returns The address of the static pointer.
  */
-std::list<std::ostream*> ** PeekStreamList (void)
+std::list<std::ostream*> ** PeekStreamList ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static std::list<std::ostream*> *streams = 0;
@@ -83,7 +83,7 @@ std::list<std::ostream*> ** PeekStreamList (void)
  *
  * \returns The stream list.
  */
-std::list<std::ostream*> * GetStreamList (void)
+std::list<std::ostream*> * GetStreamList ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::list<std::ostream*> **pstreams = PeekStreamList ();
@@ -146,7 +146,7 @@ void sigHandler (int sig)
 }  // unnamed namespace
 
 void
-FlushStreams (void)
+FlushStreams ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::list<std::ostream*> **pl = PeekStreamList ();

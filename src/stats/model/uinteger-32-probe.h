@@ -54,7 +54,7 @@ public:
   /**
    * \return the most recent value
    */
-  uint32_t GetValue (void) const;
+  uint32_t GetValue () const;
 
   /**
    * \param value set the traced uint32_t to a new value

@@ -56,7 +56,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** Default constructor */
   UanNetDevice ();
@@ -89,21 +89,21 @@ public:
    *
    * \return The MAC.
    */
-  Ptr<UanMac> GetMac (void) const;
+  Ptr<UanMac> GetMac () const;
 
   /**
    * Get the Phy used by this device.
    *
    * \return The Phy.
    */
-  Ptr<UanPhy> GetPhy (void) const;
+  Ptr<UanPhy> GetPhy () const;
 
   /**
    * Get the transducer associated with this device.
    *
    * \return The transducer.
    */
-  Ptr<UanTransducer> GetTransducer (void) const;
+  Ptr<UanTransducer> GetTransducer () const;
   /**
    * Set the transdcuer used by this device.
    *
@@ -112,7 +112,7 @@ public:
   void SetTransducer (Ptr<UanTransducer> trans);
 
   /** Clear all pointer references. */
-  void Clear (void);
+  void Clear ();
 
   /**
    * Set the Phy SLEEP mode.
@@ -123,27 +123,27 @@ public:
 
   // Inherited methods
   virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
-  virtual Ptr<Channel> GetChannel (void) const;
-  virtual Address GetAddress (void) const;
+  virtual uint32_t GetIfIndex () const;
+  virtual Ptr<Channel> GetChannel () const;
+  virtual Address GetAddress () const;
   virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu (void) const;
-  virtual bool IsLinkUp (void) const;
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
-  virtual bool IsMulticast (void) const;
+  virtual uint16_t GetMtu () const;
+  virtual bool IsLinkUp () const;
+  virtual bool IsBroadcast () const;
+  virtual Address GetBroadcast () const;
+  virtual bool IsMulticast () const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual bool IsBridge (void) const;
-  virtual bool IsPointToPoint (void) const;
+  virtual bool IsBridge () const;
+  virtual bool IsPointToPoint () const;
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
   virtual void SetNode (Ptr<Node> node);
-  virtual bool NeedsArp (void) const;
+  virtual bool NeedsArp () const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom (void) const;
+  virtual bool SupportsSendFrom () const;
   virtual void AddLinkChangeCallback (Callback<void> callback);
   virtual void SetAddress (Address address);
 
@@ -179,7 +179,7 @@ private:
   virtual void ForwardUp (Ptr<Packet> pkt, uint16_t protocolNumber, const Mac8Address &src);
 
   /** \return The channel attached to this device. */
-  Ptr<UanChannel> DoGetChannel (void) const;
+  Ptr<UanChannel> DoGetChannel () const;
 
   Ptr<UanTransducer> m_trans;      //!< The Transducer attached to this device.
   Ptr<Node> m_node;                //!< The node hosting this device.
@@ -203,8 +203,8 @@ private:
   bool m_cleared;
 
 protected:
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
 };  // class UanNetDevice
 
 } // namespace ns3

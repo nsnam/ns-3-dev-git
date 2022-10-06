@@ -57,7 +57,7 @@ public:
   EventGarbageCollectorTestCase ();
   /** Destructor. */
   virtual ~EventGarbageCollectorTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 EventGarbageCollectorTestCase::EventGarbageCollectorTestCase ()
@@ -79,7 +79,7 @@ EventGarbageCollectorTestCase::EventGarbageCollectorCallback ()
     }
 }
 
-void EventGarbageCollectorTestCase::DoRun (void)
+void EventGarbageCollectorTestCase::DoRun ()
 {
   m_events = new EventGarbageCollector ();
 

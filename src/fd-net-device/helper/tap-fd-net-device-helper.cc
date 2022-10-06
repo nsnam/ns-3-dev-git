@@ -142,7 +142,7 @@ TapFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
 }
 
 int
-TapFdNetDeviceHelper::CreateFileDescriptor (void) const
+TapFdNetDeviceHelper::CreateFileDescriptor () const
 {
   NS_LOG_FUNCTION (this);
 

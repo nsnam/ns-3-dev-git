@@ -138,7 +138,7 @@ namespace ns3 {
  * NS_OBJECT_TEMPLATE_CLASS_DEFINE macro.
  */
 template <typename T>
-std::string DoGetTemplateClassName (void);
+std::string DoGetTemplateClassName ();
 
 /**
  * \brief Helper function to get the name (as a string) of the type
@@ -146,7 +146,7 @@ std::string DoGetTemplateClassName (void);
  * \return the name of the type of a template class as a string
  */
 template <typename T>
-std::string GetTemplateClassName (void)
+std::string GetTemplateClassName ()
 {
   return DoGetTemplateClassName<T> ();
 }
@@ -170,7 +170,7 @@ public:
    * Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Virtual destructor.
@@ -187,7 +187,7 @@ public:
    * \return The TypeId associated to the most-derived type
    *          of this instance.
    */
-  virtual TypeId GetInstanceTypeId (void) const = 0;
+  virtual TypeId GetInstanceTypeId () const = 0;
 
   /**
    *
@@ -297,7 +297,7 @@ protected:
    * of this event but if they do this, they must chain up to their
    * parent's NotifyConstructionCompleted method.
    */
-  virtual void NotifyConstructionCompleted (void);
+  virtual void NotifyConstructionCompleted ();
   /**
    * Complete construction of ObjectBase; invoked by derived classes.
    *

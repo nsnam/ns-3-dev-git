@@ -46,7 +46,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   WifiProtectionManager ();
   virtual ~WifiProtectionManager ();
 
@@ -90,12 +90,12 @@ public:
                                                             const WifiTxParameters& txParams) = 0;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \return the remote station manager operating on our link
    */
-  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager () const;
 
   Ptr<WifiMac> m_mac; //!< MAC which is using this Protection Manager
   uint8_t m_linkId;   //!< ID of the link this Protection Manager is operating on

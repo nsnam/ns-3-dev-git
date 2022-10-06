@@ -70,15 +70,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TcpWestwood (void);
+  TcpWestwood ();
   /**
    * \brief Copy constructor
    * \param sock the object to copy
    */
   TcpWestwood (const TcpWestwood& sock);
-  virtual ~TcpWestwood (void);
+  virtual ~TcpWestwood ();
 
   /**
    * \brief Protocol variant (Westwood or Westwood+)

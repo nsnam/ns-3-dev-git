@@ -72,8 +72,8 @@ public:
   virtual ~TestThresholdPreambleDetectionWithoutFrameCapture ();
 
 protected:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -98,7 +98,7 @@ protected:
   uint32_t m_countRxFailure; ///< count RX failure
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * Schedule now to check  the PHY state
@@ -202,7 +202,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::~TestThresholdPreambleDetecti
 }
 
 void
-TestThresholdPreambleDetectionWithoutFrameCapture::DoSetup (void)
+TestThresholdPreambleDetectionWithoutFrameCapture::DoSetup ()
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -221,14 +221,14 @@ TestThresholdPreambleDetectionWithoutFrameCapture::DoSetup (void)
 }
 
 void
-TestThresholdPreambleDetectionWithoutFrameCapture::DoTeardown (void)
+TestThresholdPreambleDetectionWithoutFrameCapture::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
 }
 
 void
-TestThresholdPreambleDetectionWithoutFrameCapture::DoRun (void)
+TestThresholdPreambleDetectionWithoutFrameCapture::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -440,8 +440,8 @@ public:
   virtual ~TestThresholdPreambleDetectionWithFrameCapture ();
 
 protected:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -466,7 +466,7 @@ protected:
   uint32_t m_countRxFailure; ///< count RX failure
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * Schedule now to check  the PHY state
@@ -570,7 +570,7 @@ TestThresholdPreambleDetectionWithFrameCapture::~TestThresholdPreambleDetectionW
 }
 
 void
-TestThresholdPreambleDetectionWithFrameCapture::DoSetup (void)
+TestThresholdPreambleDetectionWithFrameCapture::DoSetup ()
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -594,14 +594,14 @@ TestThresholdPreambleDetectionWithFrameCapture::DoSetup (void)
 }
 
 void
-TestThresholdPreambleDetectionWithFrameCapture::DoTeardown (void)
+TestThresholdPreambleDetectionWithFrameCapture::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
 }
 
 void
-TestThresholdPreambleDetectionWithFrameCapture::DoRun (void)
+TestThresholdPreambleDetectionWithFrameCapture::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -949,16 +949,16 @@ public:
   virtual ~TestSimpleFrameCaptureModel ();
 
 protected:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * Reset function
    */
-  void Reset (void);
+  void Reset ();
   /**
    * Send packet function
    * \param rxPowerDbm the transmit power in dBm
@@ -1113,7 +1113,7 @@ TestSimpleFrameCaptureModel::~TestSimpleFrameCaptureModel ()
 }
 
 void
-TestSimpleFrameCaptureModel::DoSetup (void)
+TestSimpleFrameCaptureModel::DoSetup ()
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -1137,14 +1137,14 @@ TestSimpleFrameCaptureModel::DoSetup (void)
 }
 
 void
-TestSimpleFrameCaptureModel::DoTeardown (void)
+TestSimpleFrameCaptureModel::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
 }
 
 void
-TestSimpleFrameCaptureModel::DoRun (void)
+TestSimpleFrameCaptureModel::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -1203,8 +1203,8 @@ public:
   virtual ~TestPhyHeadersReception ();
 
 protected:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -1213,7 +1213,7 @@ protected:
   void SendPacket (double rxPowerDbm);
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * Schedule now to check  the PHY state
@@ -1287,7 +1287,7 @@ TestPhyHeadersReception::~TestPhyHeadersReception ()
 }
 
 void
-TestPhyHeadersReception::DoSetup (void)
+TestPhyHeadersReception::DoSetup ()
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -1299,14 +1299,14 @@ TestPhyHeadersReception::DoSetup (void)
 }
 
 void
-TestPhyHeadersReception::DoTeardown (void)
+TestPhyHeadersReception::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
 }
 
 void
-TestPhyHeadersReception::DoRun (void)
+TestPhyHeadersReception::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
@@ -1453,11 +1453,11 @@ public:
   virtual ~TestAmpduReception ();
 
 protected:
-  void DoSetup (void) override;
-  void DoTeardown (void) override;
+  void DoSetup () override;
+  void DoTeardown () override;
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * RX success function
@@ -1784,7 +1784,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
 }
 
 void
-TestAmpduReception::DoSetup (void)
+TestAmpduReception::DoSetup ()
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -1809,14 +1809,14 @@ TestAmpduReception::DoSetup (void)
 }
 
 void
-TestAmpduReception::DoTeardown (void)
+TestAmpduReception::DoTeardown ()
 {
   m_phy->Dispose ();
   m_phy = 0;
 }
 
 void
-TestAmpduReception::DoRun (void)
+TestAmpduReception::DoRun ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (2);
@@ -2398,10 +2398,10 @@ public:
   /**
    * Check correctness of transmitted frames
    */
-  void CheckResults (void);
+  void CheckResults ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
   uint16_t m_dropped; ///< number of packets dropped by the AP because it was already receiving
 };
 
@@ -2428,7 +2428,7 @@ TestUnsupportedModulationReception::Dropped (std::string context, Ptr<const Pack
 }
 
 void
-TestUnsupportedModulationReception::DoRun (void)
+TestUnsupportedModulationReception::DoRun ()
 {
   uint16_t m_nStations = 2; ///< number of stations
   NetDeviceContainer m_staDevices; ///< container for stations' NetDevices
@@ -2554,7 +2554,7 @@ TestUnsupportedModulationReception::DoRun (void)
 }
 
 void
-TestUnsupportedModulationReception::CheckResults (void)
+TestUnsupportedModulationReception::CheckResults ()
 {
   NS_TEST_EXPECT_MSG_EQ (m_dropped, 0, "Dropped some packets unexpectedly");
 }

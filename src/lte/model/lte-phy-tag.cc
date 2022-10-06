@@ -29,7 +29,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LtePhyTag);
 
 TypeId
-LtePhyTag::GetTypeId (void)
+LtePhyTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LtePhyTag")
     .SetParent<Tag> ()
@@ -40,7 +40,7 @@ LtePhyTag::GetTypeId (void)
 }
 
 TypeId
-LtePhyTag::GetInstanceTypeId (void) const
+LtePhyTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -59,7 +59,7 @@ LtePhyTag::~LtePhyTag ()
 }
 
 uint32_t
-LtePhyTag::GetSerializedSize (void) const
+LtePhyTag::GetSerializedSize () const
 {
   return 2;
 }

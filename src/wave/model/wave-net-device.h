@@ -117,7 +117,7 @@ struct TxProfile
   WifiMode dataRate; ///< data rate
   WifiPreamble preamble; ///< preamble
   /// Initializer
-  TxProfile (void)
+  TxProfile ()
     : channelNumber (SCH1),
       adaptable (false),
       txPowerLevel (4),
@@ -164,9 +164,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  WaveNetDevice (void);
-  virtual ~WaveNetDevice (void);
+  static TypeId GetTypeId ();
+  WaveNetDevice ();
+  virtual ~WaveNetDevice ();
 
   /**
    * \param channelNumber the specific channel
@@ -181,7 +181,7 @@ public:
   /**
    * \return all inserted MAC entities.
    */
-  std::map<uint32_t, Ptr<OcbWifiMac> >  GetMacs (void) const;
+  std::map<uint32_t, Ptr<OcbWifiMac> >  GetMacs () const;
   /**
    * \param phy add a new available PHY entity
    */
@@ -194,7 +194,7 @@ public:
   /**
    * \return all inserted PHY entities.
    */
-  const std::vector<Ptr<WifiPhy>>& GetPhys (void) const;
+  const std::vector<Ptr<WifiPhy>>& GetPhys () const;
 
   /**
    * \param channelScheduler the channel scheduler for multiple channel operation
@@ -203,7 +203,7 @@ public:
   /**
    * \return current channel scheduler for multiple channel operation
    */
-  Ptr<ChannelScheduler> GetChannelScheduler (void) const;
+  Ptr<ChannelScheduler> GetChannelScheduler () const;
   /**
    * \param channelManager the channel manager for multiple channel operation
    */
@@ -211,7 +211,7 @@ public:
   /**
    * \return currentc channel manager for multiple channel operation
    */
-  Ptr<ChannelManager> GetChannelManager (void) const;
+  Ptr<ChannelManager> GetChannelManager () const;
   /**
    * \param channelCoordinator  the channel coordinator for multiple channel operation
    */
@@ -219,7 +219,7 @@ public:
   /**
    * \return current channel coordinator for multiple channel operation
    */
-  Ptr<ChannelCoordinator> GetChannelCoordinator (void) const;
+  Ptr<ChannelCoordinator> GetChannelCoordinator () const;
   /**
    * \param vsaManager the VSA manager for multiple channel operation
    */
@@ -227,7 +227,7 @@ public:
   /**
    * \return current VSA manager for multiple channel operation
    */
-  Ptr<VsaManager> GetVsaManager (void) const;
+  Ptr<VsaManager> GetVsaManager () const;
 
   /**
    * \param schInfo the parameters about how to start SCH service
@@ -329,26 +329,26 @@ public:
 
   // inherited from NetDevice base class.
   virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
-  virtual Ptr<Channel> GetChannel (void) const;
+  virtual uint32_t GetIfIndex () const;
+  virtual Ptr<Channel> GetChannel () const;
   virtual void SetAddress (Address address);
-  virtual Address GetAddress (void) const;
+  virtual Address GetAddress () const;
   virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu (void) const;
-  virtual bool IsLinkUp (void) const;
+  virtual uint16_t GetMtu () const;
+  virtual bool IsLinkUp () const;
   virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
-  virtual bool IsMulticast (void) const;
+  virtual bool IsBroadcast () const;
+  virtual Address GetBroadcast () const;
+  virtual bool IsMulticast () const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
-  virtual bool IsPointToPoint (void) const;
-  virtual bool IsBridge (void) const;
-  virtual bool NeedsArp (void) const;
+  virtual bool IsPointToPoint () const;
+  virtual bool IsBridge () const;
+  virtual bool NeedsArp () const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual Address GetMulticast (Ipv6Address addr) const;
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom (void) const;
+  virtual bool SupportsSendFrom () const;
 
 private:
   /// This value conforms to the 802.11 specification
@@ -359,8 +359,8 @@ private:
   /// IP v6 Protocol number
   static const uint16_t IPv6_PROT_NUMBER = 0x86DD;
 
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
   /**
    * \param channelNumber the specific channel
    * \return whether this channel is valid and available for use

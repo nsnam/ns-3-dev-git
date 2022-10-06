@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("CobaltQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (CobaltQueueDisc);
 
-TypeId CobaltQueueDisc::GetTypeId (void)
+TypeId CobaltQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CobaltQueueDisc")
     .SetParent<QueueDisc> ()
@@ -133,7 +133,7 @@ static inline uint32_t ReciprocalDivide (uint32_t A, uint32_t R)
  * Returns the current time translated in CoDel time representation
  * \return the current time
  */
-static int64_t CoDelGetTime (void)
+static int64_t CoDelGetTime ()
 {
   Time time = Simulator::Now ();
   int64_t ns = time.GetNanoSeconds ();
@@ -168,7 +168,7 @@ CobaltQueueDisc::AssignStreams (int64_t stream)
 }
 
 void
-CobaltQueueDisc::InitializeParams (void)
+CobaltQueueDisc::InitializeParams ()
 {
   // Cobalt parameters
   NS_LOG_FUNCTION (this);
@@ -200,25 +200,25 @@ CobaltQueueDisc::Time2CoDel (Time t) const
 }
 
 Time
-CobaltQueueDisc::GetTarget (void) const
+CobaltQueueDisc::GetTarget () const
 {
   return m_target;
 }
 
 Time
-CobaltQueueDisc::GetInterval (void) const
+CobaltQueueDisc::GetInterval () const
 {
   return m_interval;
 }
 
 int64_t
-CobaltQueueDisc::GetDropNext (void) const
+CobaltQueueDisc::GetDropNext () const
 {
   return m_dropNext;
 }
 
 void
-CobaltQueueDisc::NewtonStep (void)
+CobaltQueueDisc::NewtonStep ()
 {
   NS_LOG_FUNCTION (this);
   uint32_t invsqrt = ((uint32_t) m_recInvSqrt);
@@ -231,7 +231,7 @@ CobaltQueueDisc::NewtonStep (void)
 }
 
 void
-CobaltQueueDisc::CacheInit (void)
+CobaltQueueDisc::CacheInit ()
 {
   m_recInvSqrt = ~0U;
   m_recInvSqrtCache[0] = m_recInvSqrt;
@@ -247,7 +247,7 @@ CobaltQueueDisc::CacheInit (void)
 }
 
 void
-CobaltQueueDisc::InvSqrt (void)
+CobaltQueueDisc::InvSqrt ()
 {
   if (m_count < (uint32_t)REC_INV_SQRT_CACHE)
     {
@@ -267,7 +267,7 @@ CobaltQueueDisc::ControlLaw (int64_t t)
 }
 
 void
-CobaltQueueDisc::DoDispose (void)
+CobaltQueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_uv = 0;
@@ -275,7 +275,7 @@ CobaltQueueDisc::DoDispose (void)
 }
 
 Ptr<const QueueDiscItem>
-CobaltQueueDisc::DoPeek (void)
+CobaltQueueDisc::DoPeek ()
 {
   NS_LOG_FUNCTION (this);
   if (GetInternalQueue (0)->IsEmpty ())
@@ -293,7 +293,7 @@ CobaltQueueDisc::DoPeek (void)
 }
 
 bool
-CobaltQueueDisc::CheckConfig (void)
+CobaltQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)
@@ -351,7 +351,7 @@ CobaltQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-CobaltQueueDisc::DoDequeue (void)
+CobaltQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 

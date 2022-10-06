@@ -59,11 +59,11 @@ public:
      * \brief Get the type ID.
      * \return the object TypeId
      */
-    static TypeId GetTypeId (void);
+    static TypeId GetTypeId ();
 
-    TypeId GetInstanceTypeId (void) const override;
+    TypeId GetInstanceTypeId () const override;
     void Print (std::ostream &os) const override;
-    uint32_t GetSerializedSize (void) const override;
+    uint32_t GetSerializedSize () const override;
     void Serialize (Buffer::Iterator start) const override;
     uint32_t Deserialize (Buffer::Iterator start) override;
 
@@ -85,7 +85,7 @@ public:
      *
      * \return the channel width (in MHz)
      */
-    uint16_t GetChannelWidth (void) const;
+    uint16_t GetChannelWidth () const;
     /**
      * Fill the number of streams field of VHT-SIG-A1.
      *
@@ -97,7 +97,7 @@ public:
      *
      * \return the number of streams
      */
-    uint8_t GetNStreams (void) const;
+    uint8_t GetNStreams () const;
 
     /**
      * Fill the short guard interval field of VHT-SIG-A2.
@@ -110,7 +110,7 @@ public:
      *
      * \return the short GI field of VHT-SIG-A2
      */
-    bool GetShortGuardInterval (void) const;
+    bool GetShortGuardInterval () const;
     /**
      * Fill the short GI NSYM disambiguation field of VHT-SIG-A2.
      *
@@ -122,7 +122,7 @@ public:
      *
      * \return the short GI NSYM disambiguation field of VHT-SIG-A2
      */
-    bool GetShortGuardIntervalDisambiguation (void) const;
+    bool GetShortGuardIntervalDisambiguation () const;
     /**
      * Fill the SU VHT MCS field of VHT-SIG-A2.
      *
@@ -134,7 +134,7 @@ public:
      *
      * \return the SU VHT MCS field of VHT-SIG-A2
      */
-    uint8_t GetSuMcs (void) const;
+    uint8_t GetSuMcs () const;
 
   private:
     //VHT-SIG-A1 fields
@@ -167,12 +167,12 @@ public:
    */
   virtual ~VhtPpdu ();
 
-  Time GetTxDuration (void) const override;
-  Ptr<WifiPpdu> Copy (void) const override;
-  WifiPpduType GetType (void) const override;
+  Time GetTxDuration () const override;
+  Ptr<WifiPpdu> Copy () const override;
+  WifiPpduType GetType () const override;
 
 private:
-  WifiTxVector DoGetTxVector (void) const override;
+  WifiTxVector DoGetTxVector () const override;
 
   VhtSigHeader m_vhtSig;  //!< the VHT-SIG PHY header
 }; //class VhtPpdu

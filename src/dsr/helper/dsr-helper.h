@@ -74,7 +74,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  DsrHelper* Copy (void) const;
+  DsrHelper* Copy () const;
   /**
    * \param node the node on which the routing protocol will run
    * \returns a newly-created L4 protocol

@@ -60,7 +60,7 @@ Uinteger32Probe::~Uinteger32Probe ()
 }
 
 uint32_t
-Uinteger32Probe::GetValue (void) const
+Uinteger32Probe::GetValue () const
 {
   NS_LOG_FUNCTION (this);
   return m_output;

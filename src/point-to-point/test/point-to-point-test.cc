@@ -46,7 +46,7 @@ public:
   /**
    * \brief Run the test
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 private:
 
@@ -93,7 +93,7 @@ PointToPointTest::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t 
 
 
 void
-PointToPointTest::DoRun (void)
+PointToPointTest::DoRun ()
 {
   Ptr<Node> a = CreateObject<Node> ();
   Ptr<Node> b = CreateObject<Node> ();

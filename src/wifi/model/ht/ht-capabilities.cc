@@ -186,25 +186,25 @@ HtCapabilities::SetTxUnequalModulation (uint8_t txUnequalModulation)
 }
 
 uint8_t
-HtCapabilities::GetLdpc (void) const
+HtCapabilities::GetLdpc () const
 {
   return m_ldpc;
 }
 
 uint8_t
-HtCapabilities::GetSupportedChannelWidth (void) const
+HtCapabilities::GetSupportedChannelWidth () const
 {
   return m_supportedChannelWidth;
 }
 
 uint8_t
-HtCapabilities::GetShortGuardInterval20 (void) const
+HtCapabilities::GetShortGuardInterval20 () const
 {
   return m_shortGuardInterval20;
 }
 
 uint16_t
-HtCapabilities::GetMaxAmsduLength (void) const
+HtCapabilities::GetMaxAmsduLength () const
 {
   if (m_maxAmsduLength == 0)
     {
@@ -214,7 +214,7 @@ HtCapabilities::GetMaxAmsduLength (void) const
 }
 
 uint32_t
-HtCapabilities::GetMaxAmpduLength (void) const
+HtCapabilities::GetMaxAmpduLength () const
 {
   return (1ul << (13 + m_maxAmpduLengthExponent)) - 1;
 }
@@ -230,7 +230,7 @@ HtCapabilities::IsSupportedMcs (uint8_t mcs) const
 }
 
 uint8_t
-HtCapabilities::GetRxHighestSupportedAntennas (void) const
+HtCapabilities::GetRxHighestSupportedAntennas () const
 {
   for (uint8_t nRx = 2; nRx <= 4; nRx++)
     {
@@ -254,7 +254,7 @@ HtCapabilities::GetInformationFieldSize () const
 }
 
 uint16_t
-HtCapabilities::GetHtCapabilitiesInfo (void) const
+HtCapabilities::GetHtCapabilitiesInfo () const
 {
   uint16_t val = 0;
   val |= m_ldpc & 0x01;
@@ -302,7 +302,7 @@ HtCapabilities::SetAmpduParameters (uint8_t ctrl)
 }
 
 uint8_t
-HtCapabilities::GetAmpduParameters (void) const
+HtCapabilities::GetAmpduParameters () const
 {
   uint8_t val = 0;
   val |=  m_maxAmpduLengthExponent & 0x03;
@@ -336,7 +336,7 @@ HtCapabilities::SetSupportedMcsSet (uint64_t ctrl1, uint64_t ctrl2)
 }
 
 uint64_t
-HtCapabilities::GetSupportedMcsSet1 (void) const
+HtCapabilities::GetSupportedMcsSet1 () const
 {
   uint64_t val = 0;
   for (uint64_t i = 63; i > 0; i--)
@@ -348,7 +348,7 @@ HtCapabilities::GetSupportedMcsSet1 (void) const
 }
 
 uint64_t
-HtCapabilities::GetSupportedMcsSet2 (void) const
+HtCapabilities::GetSupportedMcsSet2 () const
 {
   uint64_t val = 0;
   val = val | (m_reservedMcsSet3 & 0x07ffffff);
@@ -368,7 +368,7 @@ HtCapabilities::GetSupportedMcsSet2 (void) const
 }
 
 uint16_t
-HtCapabilities::GetExtendedHtCapabilities (void) const
+HtCapabilities::GetExtendedHtCapabilities () const
 {
   uint16_t val = 0;
   val |= m_pco & 0x01;
@@ -394,7 +394,7 @@ HtCapabilities::SetExtendedHtCapabilities (uint16_t ctrl)
 }
 
 uint32_t
-HtCapabilities::GetTxBfCapabilities (void) const
+HtCapabilities::GetTxBfCapabilities () const
 {
   uint32_t val = 0;
   val |= m_implicitRxBfCapable & 0x01;
@@ -446,7 +446,7 @@ HtCapabilities::SetTxBfCapabilities (uint32_t ctrl)
 }
 
 uint8_t
-HtCapabilities::GetAntennaSelectionCapabilities (void) const
+HtCapabilities::GetAntennaSelectionCapabilities () const
 {
   uint8_t val = 0;
   val |= m_antennaSelectionCapability & 0x01;

@@ -61,7 +61,7 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const override;
   void DoDispose () override;
 

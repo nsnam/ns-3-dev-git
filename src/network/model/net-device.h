@@ -99,7 +99,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual ~NetDevice();
 
   /**
@@ -109,7 +109,7 @@ public:
   /**
    * \return index ifIndex of the device
    */
-  virtual uint32_t GetIfIndex (void) const = 0;
+  virtual uint32_t GetIfIndex () const = 0;
 
 
   /**
@@ -119,7 +119,7 @@ public:
    *         concept of a channel. i.e., callers _must_ check for zero
    *         and be ready to handle it.
    */
-  virtual Ptr<Channel> GetChannel (void) const = 0;
+  virtual Ptr<Channel> GetChannel () const = 0;
 
   /**
    * Set the address of this interface
@@ -130,7 +130,7 @@ public:
   /**
    * \return the current Address of this interface.
    */
-  virtual Address GetAddress (void) const = 0;
+  virtual Address GetAddress () const = 0;
 
   /**
    * \param mtu MTU value, in bytes, to set for the device
@@ -145,15 +145,15 @@ public:
    * This value is typically used by the IP layer to perform
    * IP fragmentation when needed.
    */
-  virtual uint16_t GetMtu (void) const = 0;
+  virtual uint16_t GetMtu () const = 0;
   /**
    * \return true if link is up; false otherwise
    */
-  virtual bool IsLinkUp (void) const = 0;
+  virtual bool IsLinkUp () const = 0;
   /**
    * TracedCallback signature for link changed event.
    */
-  typedef void (* LinkChangeTracedCallback) (void);
+  typedef void (* LinkChangeTracedCallback) ();
   /**
    * \param callback the callback to invoke
    *
@@ -167,7 +167,7 @@ public:
    * \return true if this interface supports a broadcast address,
    *         false otherwise.
    */
-  virtual bool IsBroadcast (void) const = 0;
+  virtual bool IsBroadcast () const = 0;
   /**
    * \return the broadcast address supported by
    *         this netdevice.
@@ -175,12 +175,12 @@ public:
    * Calling this method is invalid if IsBroadcast returns
    * not true.
    */
-  virtual Address GetBroadcast (void) const = 0;
+  virtual Address GetBroadcast () const = 0;
 
   /**
    * \return value of m_isMulticast flag
    */
-  virtual bool IsMulticast (void) const = 0;
+  virtual bool IsMulticast () const = 0;
 
   /**
    * \brief Make and return a MAC multicast address using the provided
@@ -225,14 +225,14 @@ public:
    *
    * \return value of m_isBridge flag
    */
-  virtual bool IsBridge (void) const = 0;
+  virtual bool IsBridge () const = 0;
 
   /**
    * \brief Return true if the net device is on a point-to-point link.
    *
    * \return value of m_isPointToPoint flag
    */
-  virtual bool IsPointToPoint (void) const = 0;
+  virtual bool IsPointToPoint () const = 0;
   /**
    * \param packet packet sent from above down to Network Device
    * \param dest mac address of the destination (already resolved)
@@ -268,7 +268,7 @@ public:
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  virtual Ptr<Node> GetNode (void) const = 0;
+  virtual Ptr<Node> GetNode () const = 0;
 
   /**
    * \param node the node associated to this netdevice.
@@ -283,7 +283,7 @@ public:
    * Called by higher-layers to check if this NetDevice requires
    * ARP to be used.
    */
-  virtual bool NeedsArp (void) const = 0;
+  virtual bool NeedsArp () const = 0;
 
 
   /**
@@ -357,7 +357,7 @@ public:
   /**
    * \return true if this interface supports a bridging mode, false otherwise.
    */
-  virtual bool SupportsSendFrom (void) const = 0;
+  virtual bool SupportsSendFrom () const = 0;
 
 };
 

@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("GtpuHeader");
 NS_OBJECT_ENSURE_REGISTERED (GtpuHeader);
 
 TypeId
-GtpuHeader::GetTypeId (void)
+GtpuHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GtpuHeader")
     .SetParent<Header> ()
@@ -62,13 +62,13 @@ GtpuHeader::~GtpuHeader ()
 }
 
 TypeId
-GtpuHeader::GetInstanceTypeId (void) const
+GtpuHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-GtpuHeader::GetSerializedSize (void) const
+GtpuHeader::GetSerializedSize () const
 {
   return 12;
 }

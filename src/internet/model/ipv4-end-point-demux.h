@@ -61,7 +61,7 @@ public:
    * \brief Get the entire list of end points registered.
    * \return list of Ipv4EndPoint
    */
-  EndPoints GetAllEndPoints (void);
+  EndPoints GetAllEndPoints ();
 
   /**
    * \brief Lookup for port local.
@@ -120,7 +120,7 @@ public:
    * \brief Allocate a Ipv4EndPoint.
    * \return an empty Ipv4EndPoint instance
    */
-  Ipv4EndPoint *Allocate (void);
+  Ipv4EndPoint *Allocate ();
 
   /**
    * \brief Allocate a Ipv4EndPoint.
@@ -171,7 +171,7 @@ private:
    * \brief Allocate an ephemeral port.
    * \returns the ephemeral port
    */
-  uint16_t AllocateEphemeralPort (void);
+  uint16_t AllocateEphemeralPort ();
 
   /**
    * \brief The ephemeral port.

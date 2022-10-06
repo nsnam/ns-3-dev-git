@@ -45,15 +45,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Constructor
    *
    * \param ss subscriber station device
    */
   SSLinkManager (Ptr<SubscriberStationNetDevice> ss);
-  ~SSLinkManager (void);
-  void DoDispose (void);
+  ~SSLinkManager ();
+  void DoDispose ();
 
   /**
    * Set BS EIRP
@@ -74,7 +74,7 @@ public:
    * Get ranging interval found
    * \returns the ranging interval found
    */
-  bool GetRangingIntervalFound (void) const;
+  bool GetRangingIntervalFound () const;
   /**
    * Ser NR ranging trans opps
    * \param nrRangingTransOpps the NR ranging trans opps
@@ -86,12 +86,12 @@ public:
    */
   void SetRangingCW (uint8_t rangingCW);
   /// Increment NR invited polls received
-  void IncrementNrInvitedPollsRecvd (void);
+  void IncrementNrInvitedPollsRecvd ();
   /**
    * Get DL map sync timeput event
    * \returns the event ID
    */
-  EventId GetDlMapSyncTimeoutEvent (void);
+  EventId GetDlMapSyncTimeoutEvent ();
 
   /**
    * Perform ranging
@@ -113,14 +113,14 @@ public:
    */
   void SendRangingRequest (uint8_t uiuc, uint16_t allocationSize);
   /// Start contention resolution
-  void StartContentionResolution (void);
+  void StartContentionResolution ();
   /// Perform backoff
-  void PerformBackoff (void);
+  void PerformBackoff ();
   /**
    * Is UL channel usable
    * \returns the UL channel usable flag
    */
-  bool IsUlChannelUsable (void);
+  bool IsUlChannelUsable ();
   /**
    * Schedule scanning request
    * \param interval the scanning request interval
@@ -147,7 +147,7 @@ private:
    */
   void EndScanning (bool status, uint64_t frequency);
   /// Start synchronizing
-  void StartSynchronizing (void);
+  void StartSynchronizing ();
   /**
    * Search for DL channel
    * \param channel the DL channel
@@ -155,30 +155,30 @@ private:
    */
   bool SearchForDlChannel (uint8_t channel);
   /// Select random backoff
-  void SelectRandomBackoff (void);
+  void SelectRandomBackoff ();
   /// Increase rnaging request CW
-  void IncreaseRangingRequestCW (void);
+  void IncreaseRangingRequestCW ();
   /// Reset ranging request CW
-  void ResetRangingRequestCW (void);
+  void ResetRangingRequestCW ();
   /// Delete uplink parameters
-  void DeleteUplinkParameters (void);
+  void DeleteUplinkParameters ();
   /**
    * Adjust ranging parameters
    * \param rngrsp the ranging response
    */
   void AdjustRangingParameters (const RngRsp &rngrsp);
   /// Negotiate basic capabilities
-  void NegotiateBasicCapabilities (void);
+  void NegotiateBasicCapabilities ();
   /**
    * Calculate maximum IR signal strength
    * \returns the maximum IR signal strength
    */
-  uint16_t CalculateMaxIRSignalStrength (void);
+  uint16_t CalculateMaxIRSignalStrength ();
   /**
    * Get minimum transmit power level
    * \returns the minimum transmit power level
    */
-  uint16_t GetMinTransmitPowerLevel (void);
+  uint16_t GetMinTransmitPowerLevel ();
 
   Ptr<SubscriberStationNetDevice> m_ss; ///< subscriber station device
 

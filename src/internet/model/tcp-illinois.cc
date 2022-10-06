@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpIllinois");
 NS_OBJECT_ENSURE_REGISTERED (TcpIllinois);
 
 TypeId
-TcpIllinois::GetTypeId (void)
+TcpIllinois::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpIllinois")
     .SetParent<TcpNewReno> ()
@@ -79,7 +79,7 @@ TcpIllinois::GetTypeId (void)
   return tid;
 }
 
-TcpIllinois::TcpIllinois (void)
+TcpIllinois::TcpIllinois ()
   : TcpNewReno (),
     m_sumRtt (Time (0)),
     m_cntRtt (0),
@@ -127,7 +127,7 @@ TcpIllinois::TcpIllinois (const TcpIllinois& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpIllinois::~TcpIllinois (void)
+TcpIllinois::~TcpIllinois ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -365,7 +365,7 @@ TcpIllinois::Reset (const SequenceNumber32 &nextTxSequence)
 }
 
 Ptr<TcpCongestionOps>
-TcpIllinois::Fork (void)
+TcpIllinois::Fork ()
 {
   NS_LOG_FUNCTION (this);
 

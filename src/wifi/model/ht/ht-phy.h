@@ -65,9 +65,9 @@ public:
 
   WifiMode GetMcs (uint8_t index) const override;
   bool IsMcsSupported (uint8_t index) const override;
-  bool HandlesMcsModes (void) const override;
+  bool HandlesMcsModes () const override;
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
-  const PpduFormats & GetPpduFormats (void) const override;
+  const PpduFormats & GetPpduFormats () const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
   Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
@@ -77,16 +77,16 @@ public:
   /**
    * \return the WifiMode used for the L-SIG (non-HT header) field
    */
-  static WifiMode GetLSigMode (void);
+  static WifiMode GetLSigMode ();
   /**
    * \return the WifiMode used for the HT-SIG field
    */
-  virtual WifiMode GetHtSigMode (void) const;
+  virtual WifiMode GetHtSigMode () const;
 
   /**
    * \return the BSS membership selector for this PHY entity
    */
-  uint8_t GetBssMembershipSelector (void) const;
+  uint8_t GetBssMembershipSelector () const;
 
   /**
    * Set the maximum supported MCS index __per spatial stream__.
@@ -94,7 +94,7 @@ public:
    *
    * \return the maximum MCS index per spatial stream supported by this entity
    */
-  uint8_t GetMaxSupportedMcsIndexPerSs (void) const;
+  uint8_t GetMaxSupportedMcsIndexPerSs () const;
   /**
    * Set the maximum supported MCS index __per spatial stream__.
    * For HT, this results in non-continuous indices for supported MCSs.
@@ -132,12 +132,12 @@ public:
   /**
    * \return the duration of the HT-SIG field
    */
-  virtual Time GetHtSigDuration (void) const;
+  virtual Time GetHtSigDuration () const;
 
   /**
    * Initialize all HT modes.
    */
-  static void InitializeModes (void);
+  static void InitializeModes ();
   /**
    * Return the HT MCS corresponding to
    * the provided index.
@@ -152,193 +152,193 @@ public:
    *
    * \return MCS 0 from HT MCS values
    */
-  static WifiMode GetHtMcs0 (void);
+  static WifiMode GetHtMcs0 ();
   /**
    * Return MCS 1 from HT MCS values.
    *
    * \return MCS 1 from HT MCS values
    */
-  static WifiMode GetHtMcs1 (void);
+  static WifiMode GetHtMcs1 ();
   /**
    * Return MCS 2 from HT MCS values.
    *
    * \return MCS 2 from HT MCS values
    */
-  static WifiMode GetHtMcs2 (void);
+  static WifiMode GetHtMcs2 ();
   /**
    * Return MCS 3 from HT MCS values.
    *
    * \return MCS 3 from HT MCS values
    */
-  static WifiMode GetHtMcs3 (void);
+  static WifiMode GetHtMcs3 ();
   /**
    * Return MCS 4 from HT MCS values.
    *
    * \return MCS 4 from HT MCS values
    */
-  static WifiMode GetHtMcs4 (void);
+  static WifiMode GetHtMcs4 ();
   /**
    * Return MCS 5 from HT MCS values.
    *
    * \return MCS 5 from HT MCS values
    */
-  static WifiMode GetHtMcs5 (void);
+  static WifiMode GetHtMcs5 ();
   /**
    * Return MCS 6 from HT MCS values.
    *
    * \return MCS 6 from HT MCS values
    */
-  static WifiMode GetHtMcs6 (void);
+  static WifiMode GetHtMcs6 ();
   /**
    * Return MCS 7 from HT MCS values.
    *
    * \return MCS 7 from HT MCS values
    */
-  static WifiMode GetHtMcs7 (void);
+  static WifiMode GetHtMcs7 ();
   /**
    * Return MCS 8 from HT MCS values.
    *
    * \return MCS 8 from HT MCS values
    */
-  static WifiMode GetHtMcs8 (void);
+  static WifiMode GetHtMcs8 ();
   /**
    * Return MCS 9 from HT MCS values.
    *
    * \return MCS 9 from HT MCS values
    */
-  static WifiMode GetHtMcs9 (void);
+  static WifiMode GetHtMcs9 ();
   /**
    * Return MCS 10 from HT MCS values.
    *
    * \return MCS 10 from HT MCS values
    */
-  static WifiMode GetHtMcs10 (void);
+  static WifiMode GetHtMcs10 ();
   /**
    * Return MCS 11 from HT MCS values.
    *
    * \return MCS 11 from HT MCS values
    */
-  static WifiMode GetHtMcs11 (void);
+  static WifiMode GetHtMcs11 ();
   /**
    * Return MCS 12 from HT MCS values.
    *
    * \return MCS 12 from HT MCS values
    */
-  static WifiMode GetHtMcs12 (void);
+  static WifiMode GetHtMcs12 ();
   /**
    * Return MCS 13 from HT MCS values.
    *
    * \return MCS 13 from HT MCS values
    */
-  static WifiMode GetHtMcs13 (void);
+  static WifiMode GetHtMcs13 ();
   /**
    * Return MCS 14 from HT MCS values.
    *
    * \return MCS 14 from HT MCS values
    */
-  static WifiMode GetHtMcs14 (void);
+  static WifiMode GetHtMcs14 ();
   /**
    * Return MCS 15 from HT MCS values.
    *
    * \return MCS 15 from HT MCS values
    */
-  static WifiMode GetHtMcs15 (void);
+  static WifiMode GetHtMcs15 ();
   /**
    * Return MCS 16 from HT MCS values.
    *
    * \return MCS 16 from HT MCS values
    */
-  static WifiMode GetHtMcs16 (void);
+  static WifiMode GetHtMcs16 ();
   /**
    * Return MCS 17 from HT MCS values.
    *
    * \return MCS 17 from HT MCS values
    */
-  static WifiMode GetHtMcs17 (void);
+  static WifiMode GetHtMcs17 ();
   /**
    * Return MCS 18 from HT MCS values.
    *
    * \return MCS 18 from HT MCS values
    */
-  static WifiMode GetHtMcs18 (void);
+  static WifiMode GetHtMcs18 ();
   /**
    * Return MCS 19 from HT MCS values.
    *
    * \return MCS 19 from HT MCS values
    */
-  static WifiMode GetHtMcs19 (void);
+  static WifiMode GetHtMcs19 ();
   /**
    * Return MCS 20 from HT MCS values.
    *
    * \return MCS 20 from HT MCS values
    */
-  static WifiMode GetHtMcs20 (void);
+  static WifiMode GetHtMcs20 ();
   /**
    * Return MCS 21 from HT MCS values.
    *
    * \return MCS 21 from HT MCS values
    */
-  static WifiMode GetHtMcs21 (void);
+  static WifiMode GetHtMcs21 ();
   /**
    * Return MCS 22 from HT MCS values.
    *
    * \return MCS 22 from HT MCS values
    */
-  static WifiMode GetHtMcs22 (void);
+  static WifiMode GetHtMcs22 ();
   /**
    * Return MCS 23 from HT MCS values.
    *
    * \return MCS 23 from HT MCS values
    */
-  static WifiMode GetHtMcs23 (void);
+  static WifiMode GetHtMcs23 ();
   /**
    * Return MCS 24 from HT MCS values.
    *
    * \return MCS 24 from HT MCS values
    */
-  static WifiMode GetHtMcs24 (void);
+  static WifiMode GetHtMcs24 ();
   /**
    * Return MCS 25 from HT MCS values.
    *
    * \return MCS 25 from HT MCS values
    */
-  static WifiMode GetHtMcs25 (void);
+  static WifiMode GetHtMcs25 ();
   /**
    * Return MCS 26 from HT MCS values.
    *
    * \return MCS 26 from HT MCS values
    */
-  static WifiMode GetHtMcs26 (void);
+  static WifiMode GetHtMcs26 ();
   /**
    * Return MCS 27 from HT MCS values.
    *
    * \return MCS 27 from HT MCS values
    */
-  static WifiMode GetHtMcs27 (void);
+  static WifiMode GetHtMcs27 ();
   /**
    * Return MCS 28 from HT MCS values.
    *
    * \return MCS 28 from HT MCS values
    */
-  static WifiMode GetHtMcs28 (void);
+  static WifiMode GetHtMcs28 ();
   /**
    * Return MCS 29 from HT MCS values.
    *
    * \return MCS 29 from HT MCS values
    */
-  static WifiMode GetHtMcs29 (void);
+  static WifiMode GetHtMcs29 ();
   /**
    * Return MCS 30 from HT MCS values.
    *
    * \return MCS 30 from HT MCS values
    */
-  static WifiMode GetHtMcs30 (void);
+  static WifiMode GetHtMcs30 ();
   /**
    * Return MCS 31 from HT MCS values.
    *
    * \return MCS 31 from HT MCS values
    */
-  static WifiMode GetHtMcs31 (void);
+  static WifiMode GetHtMcs31 ();
 
   /**
    * Return the coding rate corresponding to
@@ -450,7 +450,7 @@ protected:
   bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
   bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) const override;
-  uint32_t GetMaxPsduSize (void) const override;
+  uint32_t GetMaxPsduSize () const override;
   CcaIndication GetCcaIndication (const Ptr<const WifiPpdu> ppdu) override;
 
   /**
@@ -459,7 +459,7 @@ protected:
    * ,or any other important parameter having an impact on the MCS index
    * (e.g. number of spatial streams for HT), changes.
    */
-  virtual void BuildModeList (void);
+  virtual void BuildModeList ();
 
   /**
    * \param txVector the transmission parameters

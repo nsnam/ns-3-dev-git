@@ -88,7 +88,7 @@ public:
    * whose nodeId is matches the nodeId of the nodes in the trace
    * file.
    */
-  void Install (void) const;
+  void Install () const;
 
   /**
    * \param begin an iterator which points to the start of the input

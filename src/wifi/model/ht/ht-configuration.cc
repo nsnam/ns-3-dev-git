@@ -40,7 +40,7 @@ HtConfiguration::~HtConfiguration ()
 }
 
 TypeId
-HtConfiguration::GetTypeId (void)
+HtConfiguration::GetTypeId ()
 {
   static ns3::TypeId tid = ns3::TypeId ("ns3::HtConfiguration")
     .SetParent<Object> ()
@@ -76,7 +76,7 @@ HtConfiguration::SetShortGuardIntervalSupported (bool enable)
 }
 
 bool
-HtConfiguration::GetShortGuardIntervalSupported (void) const
+HtConfiguration::GetShortGuardIntervalSupported () const
 {
   return m_sgiSupported;
 }
@@ -89,7 +89,7 @@ HtConfiguration::SetLdpcSupported (bool enable)
 }
 
 bool
-HtConfiguration::GetLdpcSupported (void) const
+HtConfiguration::GetLdpcSupported () const
 {
   return m_ldpcSupported;
 }
@@ -102,7 +102,7 @@ HtConfiguration::Set40MHzOperationSupported (bool enable)
 }
 
 bool
-HtConfiguration::Get40MHzOperationSupported (void) const
+HtConfiguration::Get40MHzOperationSupported () const
 {
   return m_40MHzSupported;
 }

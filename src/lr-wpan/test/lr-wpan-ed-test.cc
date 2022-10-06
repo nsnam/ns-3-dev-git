@@ -48,7 +48,7 @@ public:
   LrWpanEdTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Function called when PlmeEdConfirm is hit.
@@ -77,7 +77,7 @@ LrWpanEdTestCase::PlmeEdConfirm (LrWpanPhyEnumeration status, uint8_t level)
 }
 
 void
-LrWpanEdTestCase::DoRun (void)
+LrWpanEdTestCase::DoRun ()
 {
   // Tx Power: 0 dBm
   // Receiver Sensitivity: -106.58 dBm

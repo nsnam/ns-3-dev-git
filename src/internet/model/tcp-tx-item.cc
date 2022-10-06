@@ -59,43 +59,43 @@ TcpTxItem::Print (std::ostream &os, Time::Unit unit /* = Time::S */) const
 }
 
 uint32_t
-TcpTxItem::GetSeqSize (void) const
+TcpTxItem::GetSeqSize () const
 {
   return m_packet && m_packet->GetSize () > 0 ? m_packet->GetSize () : 1;
 }
 
 bool
-TcpTxItem::IsSacked (void) const
+TcpTxItem::IsSacked () const
 {
   return m_sacked;
 }
 
 bool
-TcpTxItem::IsRetrans (void) const
+TcpTxItem::IsRetrans () const
 {
   return m_retrans;
 }
 
 Ptr<Packet>
-TcpTxItem::GetPacketCopy (void) const
+TcpTxItem::GetPacketCopy () const
 {
   return m_packet->Copy ();
 }
 
 Ptr<const Packet>
-TcpTxItem::GetPacket (void) const
+TcpTxItem::GetPacket () const
 {
   return m_packet;
 }
 
 const Time &
-TcpTxItem::GetLastSent (void) const
+TcpTxItem::GetLastSent () const
 {
   return m_lastSent;
 }
 
 TcpTxItem::RateInformation &
-TcpTxItem::GetRateInformation (void)
+TcpTxItem::GetRateInformation ()
 {
   return m_rateInfo;
 }

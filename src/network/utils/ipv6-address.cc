@@ -835,7 +835,7 @@ Ipv6Address::operator Address () const
   return ConvertTo ();
 }
 
-Address Ipv6Address::ConvertTo (void) const
+Address Ipv6Address::ConvertTo () const
 {
   NS_LOG_FUNCTION (this);
   uint8_t buf[16];
@@ -852,7 +852,7 @@ Ipv6Address Ipv6Address::ConvertFrom (const Address &address)
   return Deserialize (buf);
 }
 
-uint8_t Ipv6Address::GetType (void)
+uint8_t Ipv6Address::GetType ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();
@@ -925,7 +925,7 @@ bool Ipv6Address::IsLinkLocal () const
   return false;
 }
 
-bool Ipv6Address::IsInitialized (void) const
+bool Ipv6Address::IsInitialized () const
 {
   NS_LOG_FUNCTION (this);
   return (m_initialized);

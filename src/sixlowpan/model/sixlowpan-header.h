@@ -106,7 +106,7 @@ public:
     LOWPAN_NHCUNSUPPORTED = 0xFF
   };
 
-  SixLowPanDispatch (void);
+  SixLowPanDispatch ();
 
   /**
    * \brief Get the Dispatch type.
@@ -160,20 +160,20 @@ public:
     HC1_TCP = 0x03
   };
 
-  SixLowPanHc1 (void);
+  SixLowPanHc1 ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
 
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -181,7 +181,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -206,7 +206,7 @@ public:
    * \brief Get the "Hop limit" field (TTL).
    * \return The hop limit value.
    */
-  uint8_t GetHopLimit (void) const;
+  uint8_t GetHopLimit () const;
 
   /**
    * \brief Get Destination Compression type.
@@ -372,19 +372,19 @@ std::ostream & operator<< (std::ostream & os, SixLowPanHc1 const &header);
 class SixLowPanFrag1 : public Header
 {
 public:
-  SixLowPanFrag1 (void);
+  SixLowPanFrag1 ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -392,7 +392,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -417,7 +417,7 @@ public:
    * \brief Get the datagram size.
    * \returns The datagram size.
    */
-  uint16_t GetDatagramSize (void) const;
+  uint16_t GetDatagramSize () const;
 
   /**
    * \brief Set the datagram tag.
@@ -429,7 +429,7 @@ public:
    * \brief Get the datagram tag.
    * \returns The datagram tag.
    */
-  uint16_t GetDatagramTag (void) const;
+  uint16_t GetDatagramTag () const;
 
 private:
   uint16_t m_datagramSize; //!< Datagram size.
@@ -453,19 +453,19 @@ std::ostream & operator<< (std::ostream & os, SixLowPanFrag1 const & header);
 class SixLowPanFragN : public Header
 {
 public:
-  SixLowPanFragN (void);
+  SixLowPanFragN ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -473,7 +473,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -498,7 +498,7 @@ public:
    * \brief Get the datagram size.
    * \returns The datagram size.
    */
-  uint16_t GetDatagramSize (void) const;
+  uint16_t GetDatagramSize () const;
 
   /**
    * \brief Set the datagram tag.
@@ -510,7 +510,7 @@ public:
    * \brief Get the datagram tag.
    * \returns The datagram tag.
    */
-  uint16_t GetDatagramTag (void) const;
+  uint16_t GetDatagramTag () const;
 
   /**
    * \brief Set the datagram offset.
@@ -522,7 +522,7 @@ public:
    * \brief Get the datagram offset.
    * \returns The datagram offset.
    */
-  uint8_t GetDatagramOffset (void) const;
+  uint8_t GetDatagramOffset () const;
 
 private:
   uint16_t m_datagramSize;  //!< Datagram size.
@@ -547,19 +547,19 @@ std::ostream & operator<< (std::ostream & os, SixLowPanFragN const &header);
 class SixLowPanIpv6 : public Header
 {
 public:
-  SixLowPanIpv6 (void);
+  SixLowPanIpv6 ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -567,7 +567,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -656,7 +656,7 @@ public:
     HC_COMPR_0
   };
 
-  SixLowPanIphc (void);
+  SixLowPanIphc ();
   /**
    * \brief Constructor.
    * \param [in] dispatch Dispatch value.
@@ -667,13 +667,13 @@ public:
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -681,7 +681,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -706,7 +706,7 @@ public:
    * \brief Get the TF (Traffic Class, Flow Label) compression.
    * \return The ECN, DSCP, Flow Label compression type.
    */
-  TrafficClassFlowLabel_e GetTf (void) const;
+  TrafficClassFlowLabel_e GetTf () const;
 
   /**
    * \brief Set the NH (Next Header) compression.
@@ -718,7 +718,7 @@ public:
    * \brief Get the NH (Next Header) compression.
    * \return False (Next Header carried in-line), true (compressed NH).
    */
-  bool GetNh (void) const;
+  bool GetNh () const;
 
   /**
    * \brief Set the HLIM (Hop Limit) compression.
@@ -730,7 +730,7 @@ public:
    * \brief Get the HLIM (Hop Limit) compression.
    * \return Hop Limit compression type.
    */
-  Hlim_e GetHlim (void) const;
+  Hlim_e GetHlim () const;
 
   /**
    * \brief Set the CID (Context Identifier Extension) compression.
@@ -742,7 +742,7 @@ public:
    * \brief Get the CID (Context Identifier Extension) compression.
    * \return False (no CID present), true (CID follows).
    */
-  bool GetCid (void) const;
+  bool GetCid () const;
 
   /**
    * \brief Set the SAC (Source Address Compression) compression.
@@ -754,7 +754,7 @@ public:
    * \brief Get the SAC (Source Address Compression) compression.
    * \return False (stateless), true (stateful).
    */
-  bool GetSac (void) const;
+  bool GetSac () const;
 
   /**
    * \brief Set the SAM (Source Address Mode) compression.
@@ -766,7 +766,7 @@ public:
    * \brief Get the SAM (Source Address Mode) compression.
    * \return Depends on the SAC field.
    */
-  HeaderCompression_e GetSam (void) const;
+  HeaderCompression_e GetSam () const;
 
   /**
    * brief Set the source address inline part
@@ -779,7 +779,7 @@ public:
    * brief Get the source address inline part
    * \return The inline portion of the compressed source address (16 bytes)
    */
-  const uint8_t* GetSrcInlinePart (void) const;
+  const uint8_t* GetSrcInlinePart () const;
 
   /**
    * \brief Set the M (Multicast) compression.
@@ -791,7 +791,7 @@ public:
    * \brief Get the M (Multicast) compression.
    * \return True if destination is multicast.
    */
-  bool GetM (void) const;
+  bool GetM () const;
 
   /**
    * \brief Set the DAC (Destination Address Compression) compression.
@@ -803,7 +803,7 @@ public:
    * \brief Get the DAC (Destination Address Compression) compression.
    * \return False (stateless), true (stateful).
    */
-  bool GetDac (void) const;
+  bool GetDac () const;
 
   /**
    * \brief Set the DAM (Destination Address Mode) compression.
@@ -815,7 +815,7 @@ public:
    * \brief Get the DAM (Destination Address Mode) compression.
    * \return Depends on the DAC and M fields.
    */
-  HeaderCompression_e GetDam (void) const;
+  HeaderCompression_e GetDam () const;
 
   /**
    * brief Set the destination address inline part
@@ -828,7 +828,7 @@ public:
    * brief Get the destination address inline part
    * \return The inline portion of the compressed destination address (16 bytes)
    */
-  const uint8_t* GetDstInlinePart (void) const;
+  const uint8_t* GetDstInlinePart () const;
 
    /**
    * \brief Set the SrcContextId.
@@ -840,7 +840,7 @@ public:
    * \brief Get the SrcContextId.
    * \return The SrcContextId.
    */
-  uint8_t GetSrcContextId (void) const;
+  uint8_t GetSrcContextId () const;
 
   /**
    * \brief Set the DstContextId.
@@ -852,7 +852,7 @@ public:
    * \brief Get the DstContextId.
    * \return The DstContextId.
    */
-  uint8_t GetDstContextId (void) const;
+  uint8_t GetDstContextId () const;
 
   /**
    * \brief Set the ECN (2bits).
@@ -864,7 +864,7 @@ public:
    * \brief Get the ECN.
    * \return The ECN.
    */
-  uint8_t GetEcn (void) const;
+  uint8_t GetEcn () const;
 
   /**
    * \brief Set the DSCP (6bits).
@@ -876,7 +876,7 @@ public:
    * \brief Get the DSCP.
    * \return The DSCP.
    */
-  uint8_t GetDscp (void) const;
+  uint8_t GetDscp () const;
 
   /**
    * \brief Set the Flow Label (20bits).
@@ -888,7 +888,7 @@ public:
    * \brief Get the Flow Label.
    * \return The Flow Label.
    */
-  uint32_t GetFlowLabel (void) const;
+  uint32_t GetFlowLabel () const;
 
   /**
    * \brief Set the Next Header field.
@@ -900,7 +900,7 @@ public:
    * \brief Get the Next Header field.
    * \return The Next Header field.
    */
-  uint8_t GetNextHeader (void) const;
+  uint8_t GetNextHeader () const;
 
   /**
    * \brief Set the Hop Limit field.
@@ -912,7 +912,7 @@ public:
    * \brief Get the Hop Limit field.
    * \return The Hop Limit field.
    */
-  uint8_t GetHopLimit (void) const;
+  uint8_t GetHopLimit () const;
 
 private:
   uint16_t m_baseFormat;       //!< Dispatch + encoding fields.
@@ -972,19 +972,19 @@ public:
     EID_IPv6_H = 7
   };
 
-  SixLowPanNhcExtension (void);
+  SixLowPanNhcExtension ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -992,7 +992,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -1011,7 +1011,7 @@ public:
    * \brief Get the NhcDispatch type.
    * \return The NhcDispatch type.
    */
-  virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType (void) const;
+  virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType () const;
 
   /**
    * \brief Set the Extension Header Type.
@@ -1023,7 +1023,7 @@ public:
    * \brief Get the Extension Header Type.
    * \return The Extension Header Type.
    */
-  Eid_e GetEid (void) const;
+  Eid_e GetEid () const;
 
   /**
    * \brief Set the Next Header field values.
@@ -1035,7 +1035,7 @@ public:
    * \brief Get the Next Header field value.
    * \return The Next Header field value.
    */
-  uint8_t GetNextHeader (void) const;
+  uint8_t GetNextHeader () const;
 
   /**
    * \brief Set the NH field values.
@@ -1047,7 +1047,7 @@ public:
    * \brief Get the Next Header field value.
    * \return The NH field value.
    */
-  bool GetNh (void) const;
+  bool GetNh () const;
 
   /**
    * \brief Set the option header data blob.
@@ -1110,19 +1110,19 @@ public:
     PORTS_LAST_SRC_LAST_DST
   };
 
-  SixLowPanUdpNhcExtension (void);
+  SixLowPanUdpNhcExtension ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -1130,7 +1130,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -1149,7 +1149,7 @@ public:
    * \brief Get the NhcDispatch type.
    * \return The NhcDispatch type.
    */
-  virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType (void) const;
+  virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType () const;
 
   /**
    * \brief Set the compressed Src and Dst Ports.
@@ -1161,7 +1161,7 @@ public:
    * \brief Get the compressed Src and Dst Ports.
    * \return The Src and Dst Ports.
    */
-  Ports_e GetPorts (void) const;
+  Ports_e GetPorts () const;
 
   /**
    * \brief Set the Source Port.
@@ -1197,7 +1197,7 @@ public:
    * \brief Get the C (Checksum).
    * \return False (All checksum carried in-line), true (Checksum elided).
    */
-  bool GetC (void) const;
+  bool GetC () const;
 
   /**
    * \brief Set the Checksum field values.
@@ -1209,7 +1209,7 @@ public:
    * \brief Get the Checksum field value.
    * \return The Checksum field value.
    */
-  uint16_t GetChecksum (void) const;
+  uint16_t GetChecksum () const;
 
 private:
   uint8_t m_baseFormat; //!< Dispatch + encoding fields.
@@ -1234,19 +1234,19 @@ std::ostream & operator<< (std::ostream & os, SixLowPanUdpNhcExtension const &he
 class SixLowPanBc0 : public Header
 {
 public:
-  SixLowPanBc0 (void);
+  SixLowPanBc0 ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -1254,7 +1254,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -1279,7 +1279,7 @@ public:
    * \brief Get the "Sequence Number" field.
    * \return The sequence number value.
    */
-  uint8_t GetSequenceNumber (void) const;
+  uint8_t GetSequenceNumber () const;
 
 private:
   uint8_t m_seqNumber;          //!< Sequence number.
@@ -1301,19 +1301,19 @@ std::ostream & operator<< (std::ostream & os, SixLowPanBc0 const &header);
 class SixLowPanMesh : public Header
 {
 public:
-  SixLowPanMesh (void);
+  SixLowPanMesh ();
 
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream& os) const;
 
@@ -1321,7 +1321,7 @@ public:
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize the packet.
@@ -1346,7 +1346,7 @@ public:
    * \brief Get the "Hops Left" field.
    * \return The number of hops left.
    */
-  uint8_t GetHopsLeft (void) const;
+  uint8_t GetHopsLeft () const;
 
   /**
    * \brief Set the "Originator" address.
@@ -1358,7 +1358,7 @@ public:
    * \brief Get the "Originator" address.
    * \return The Originator address (Mac64Address or Mac16Address).
    */
-  Address GetOriginator (void) const;
+  Address GetOriginator () const;
 
   /**
    * \brief Set the "Final Destination" address.
@@ -1370,7 +1370,7 @@ public:
    * \brief Get the "Final Destination" address.
    * \return The Final Destination address (Mac64Address or Mac16Address).
    */
-  Address GetFinalDst (void) const;
+  Address GetFinalDst () const;
 
 private:
   uint8_t m_hopsLeft; //!< Hops left.

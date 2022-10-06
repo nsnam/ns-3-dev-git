@@ -80,7 +80,7 @@ public:
       p[i] = new T[y];
   }
 
-  ~Array2D (void)
+  ~Array2D ()
   {
     for (size_t i = 0; i < m_xMax; i++)
       delete[] p[i];
@@ -122,7 +122,7 @@ public:
       p[i] = new Array2D<T> (y, z);
   }
 
-  ~Array3D (void)
+  ~Array3D ()
   {
     for (size_t i = 0; i < m_xMax; i++)
       {

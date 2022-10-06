@@ -56,7 +56,7 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED ( LteEnbNetDevice);
 
-TypeId LteEnbNetDevice::GetTypeId (void)
+TypeId LteEnbNetDevice::GetTypeId ()
 {
   static TypeId
     tid =
@@ -148,7 +148,7 @@ LteEnbNetDevice::LteEnbNetDevice ()
   NS_LOG_FUNCTION (this);
 }
 
-LteEnbNetDevice::~LteEnbNetDevice (void)
+LteEnbNetDevice::~LteEnbNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -366,7 +366,7 @@ LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierBaseStation> >
 }
 
 void
-LteEnbNetDevice::DoInitialize (void)
+LteEnbNetDevice::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_isConstructed = true;
@@ -400,7 +400,7 @@ LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 
 
 void
-LteEnbNetDevice::UpdateConfig (void)
+LteEnbNetDevice::UpdateConfig ()
 {
   NS_LOG_FUNCTION (this);
 

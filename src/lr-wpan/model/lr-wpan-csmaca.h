@@ -62,12 +62,12 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Default constructor.
    */
-  LrWpanCsmaCa (void);
-  virtual ~LrWpanCsmaCa (void);
+  LrWpanCsmaCa ();
+  virtual ~LrWpanCsmaCa ();
 
   // Delete copy constructor and assignment operator to avoid misuse
   LrWpanCsmaCa (const LrWpanCsmaCa &) = delete;
@@ -84,28 +84,28 @@ public:
    *
    * \return the used MAC
    */
-  Ptr<LrWpanMac> GetMac (void) const;
+  Ptr<LrWpanMac> GetMac () const;
 
   /**
    * Configure for the use of the slotted CSMA/CA version.
    */
-  void SetSlottedCsmaCa (void);
+  void SetSlottedCsmaCa ();
   /**
    * Configure for the use of the unslotted CSMA/CA version.
    */
-  void SetUnSlottedCsmaCa (void);
+  void SetUnSlottedCsmaCa ();
   /**
    * Check if the slotted CSMA/CA version is being used.
    *
    * \return true, if slotted CSMA/CA is used, false otherwise.
    */
-  bool IsSlottedCsmaCa (void) const;
+  bool IsSlottedCsmaCa () const;
   /**
    * Check if the unslotted CSMA/CA version is being used.
    *
    * \return true, if unslotted CSMA/CA is used, false otherwise.
    */
-  bool IsUnSlottedCsmaCa (void) const;
+  bool IsUnSlottedCsmaCa () const;
   /**
    * Set the minimum backoff exponent value.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
@@ -119,7 +119,7 @@ public:
    *
    * \return the minimum backoff exponent value
    */
-  uint8_t GetMacMinBE (void) const;
+  uint8_t GetMacMinBE () const;
   /**
    * Set the maximum backoff exponent value.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
@@ -133,7 +133,7 @@ public:
    *
    * \return the maximum backoff exponent value
    */
-  uint8_t GetMacMaxBE (void) const;
+  uint8_t GetMacMaxBE () const;
   /**
    * Set the maximum number of backoffs.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
@@ -148,7 +148,7 @@ public:
    *
    * \return the maximum number of backoffs
    */
-  uint8_t GetMacMaxCSMABackoffs (void) const;
+  uint8_t GetMacMaxCSMABackoffs () const;
   /**
    * Set the number of symbols forming the basic time period used by the
    * CSMA-CA algorithm.
@@ -164,27 +164,27 @@ public:
    *
    * \return the period length in symbols
    */
-  uint64_t GetUnitBackoffPeriod (void) const;
+  uint64_t GetUnitBackoffPeriod () const;
   /**
    * Locates the time to the next backoff period boundary in the SUPERFRAME
    * and returns the amount of time left to this moment.
    *
    * \return time offset to the next slot
    */
-  Time GetTimeToNextSlot (void) const;
+  Time GetTimeToNextSlot () const;
   /**
    * Start CSMA-CA algorithm (step 1), initialize NB, BE for both slotted and unslotted
    * CSMA-CA. For slotted CSMA-CA initializes CW and starts the backoff slot count.
    */
-  void Start (void);
+  void Start ();
   /**
    * Cancel CSMA-CA algorithm.
    */
-  void Cancel (void);
+  void Cancel ();
   /**
    * In step 2 of the CSMA-CA, perform a random backoff in the range of 0 to 2^BE -1
    */
-  void RandomBackoffDelay (void);
+  void RandomBackoffDelay ();
   /**
    * In the slotted CSMA-CA, after random backoff, determine if the remaining
    * CSMA-CA operation can proceed, i.e. can the entire transactions can be
@@ -192,16 +192,16 @@ public:
    * 2 and 3. This step is NOT performed for the unslotted CSMA-CA. If it can
    * proceed function RequestCCA() is called.
    */
-  void CanProceed (void);
+  void CanProceed ();
   /**
    * Request the Phy to perform CCA (Step 3)
    */
-  void RequestCCA (void);
+  void RequestCCA ();
   /**
    * The CSMA algorithm call this function at the end of the CAP to return the MAC state
    * back to to IDLE after a transmission was deferred due to the lack of time in the CAP.
    */
-  void DeferCsmaTimeout (void);
+  void DeferCsmaTimeout ();
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.2
    *  PLME-CCA.confirm status
@@ -249,16 +249,16 @@ public:
    *
    * \returns the number of CSMA retries
    */
-  uint8_t GetNB (void);
+  uint8_t GetNB ();
   /**
    * Get the value of the Battery Life Extension
    *
    * \returns  true or false to Battery Life Extension support
    */
-  bool GetBatteryLifeExtension (void);
+  bool GetBatteryLifeExtension ();
 
 private:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    *  \brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.
    *  \return the time left in the CAP

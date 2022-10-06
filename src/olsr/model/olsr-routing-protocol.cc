@@ -153,7 +153,7 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 const uint16_t RoutingProtocol::OLSR_PORT_NUMBER = 698;
 
 TypeId
-RoutingProtocol::GetTypeId (void)
+RoutingProtocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::olsr::RoutingProtocol")
     .SetParent<Ipv4RoutingProtocol> ()
@@ -197,7 +197,7 @@ RoutingProtocol::GetTypeId (void)
 }
 
 
-RoutingProtocol::RoutingProtocol (void)
+RoutingProtocol::RoutingProtocol ()
   : m_routingTableAssociation (0),
   m_ipv4 (0),
   m_helloTimer (Timer::CANCEL_ON_DESTROY),
@@ -211,7 +211,7 @@ RoutingProtocol::RoutingProtocol (void)
   m_hnaRoutingTable = Create<Ipv4StaticRouting> ();
 }
 
-RoutingProtocol::~RoutingProtocol (void)
+RoutingProtocol::~RoutingProtocol ()
 {
 }
 
@@ -239,12 +239,12 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 }
 
 Ptr<Ipv4>
-RoutingProtocol::GetIpv4 (void) const
+RoutingProtocol::GetIpv4 () const
 {
   return m_ipv4;
 }
 
-void RoutingProtocol::DoDispose (void)
+void RoutingProtocol::DoDispose ()
 {
   m_ipv4 = 0;
   m_hnaRoutingTable = 0;
@@ -662,7 +662,7 @@ CoverTwoHopNeighbors (Ipv4Address neighborMainAddr, TwoHopNeighborSet & N2)
 }  // unnamed namespace
 
 void
-RoutingProtocol::MprComputation  (void)
+RoutingProtocol::MprComputation  ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -973,7 +973,7 @@ RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
 }
 
 void
-RoutingProtocol::RoutingTableComputation  (void)
+RoutingProtocol::RoutingTableComputation  ()
 {
   NS_LOG_DEBUG (Simulator::Now ().As (Time::S) << " : Node " << m_mainAddress
                                                << ": RoutingTableComputation begin...");
@@ -1667,7 +1667,7 @@ RoutingProtocol::SendPacket (Ptr<Packet> packet,
 }
 
 void
-RoutingProtocol::SendQueuedMessages  (void)
+RoutingProtocol::SendQueuedMessages  ()
 {
   Ptr<Packet> packet = Create<Packet> ();
   int numMessages = 0;
@@ -1703,7 +1703,7 @@ RoutingProtocol::SendQueuedMessages  (void)
 }
 
 void
-RoutingProtocol::SendHello  (void)
+RoutingProtocol::SendHello  ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1811,7 +1811,7 @@ RoutingProtocol::SendHello  (void)
 }
 
 void
-RoutingProtocol::SendTc  (void)
+RoutingProtocol::SendTc  ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1835,7 +1835,7 @@ RoutingProtocol::SendTc  (void)
 }
 
 void
-RoutingProtocol::SendMid  (void)
+RoutingProtocol::SendMid  ()
 {
   olsr::MessageHeader msg;
   olsr::MessageHeader::Mid &mid = msg.GetMid ();
@@ -1880,7 +1880,7 @@ RoutingProtocol::SendMid  (void)
 }
 
 void
-RoutingProtocol::SendHna  (void)
+RoutingProtocol::SendHna  ()
 {
 
   olsr::MessageHeader msg;
@@ -2531,7 +2531,7 @@ RoutingProtocol::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 }
 
 void
-RoutingProtocol::IncrementAnsn  (void)
+RoutingProtocol::IncrementAnsn  ()
 {
   m_ansn = (m_ansn + 1) % (OLSR_MAX_SEQ_NUM + 1);
 }
@@ -2635,14 +2635,14 @@ uint16_t RoutingProtocol::GetMessageSequenceNumber ()
 }
 
 void
-RoutingProtocol::HelloTimerExpire  (void)
+RoutingProtocol::HelloTimerExpire  ()
 {
   SendHello ();
   m_helloTimer.Schedule (m_helloInterval);
 }
 
 void
-RoutingProtocol::TcTimerExpire  (void)
+RoutingProtocol::TcTimerExpire  ()
 {
   if (m_state.GetMprSelectors ().size () > 0)
     {
@@ -2656,14 +2656,14 @@ RoutingProtocol::TcTimerExpire  (void)
 }
 
 void
-RoutingProtocol::MidTimerExpire  (void)
+RoutingProtocol::MidTimerExpire  ()
 {
   SendMid ();
   m_midTimer.Schedule (m_midInterval);
 }
 
 void
-RoutingProtocol::HnaTimerExpire  (void)
+RoutingProtocol::HnaTimerExpire  ()
 {
   if (m_state.GetAssociations ().size () > 0)
     {
@@ -2837,7 +2837,7 @@ RoutingProtocol::AssociationTupleTimerExpire (Ipv4Address gatewayAddr, Ipv4Addre
 }
 
 void
-RoutingProtocol::Clear  (void)
+RoutingProtocol::Clear  ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_table.clear ();
@@ -3135,7 +3135,7 @@ RoutingProtocol::AddEntry (Ipv4Address const &dest,
 
 
 std::vector<RoutingTableEntry>
-RoutingProtocol::GetRoutingTableEntries  (void) const
+RoutingProtocol::GetRoutingTableEntries  () const
 {
   std::vector<RoutingTableEntry> retval;
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
@@ -3147,37 +3147,37 @@ RoutingProtocol::GetRoutingTableEntries  (void) const
 }
 
 MprSet
-RoutingProtocol::GetMprSet  (void) const
+RoutingProtocol::GetMprSet  () const
 {
   return m_state.GetMprSet ();
 }
 
 const MprSelectorSet &
-RoutingProtocol::GetMprSelectors  (void) const
+RoutingProtocol::GetMprSelectors  () const
 {
   return m_state.GetMprSelectors ();
 }
 
 const NeighborSet &
-RoutingProtocol::GetNeighbors  (void) const
+RoutingProtocol::GetNeighbors  () const
 {
   return m_state.GetNeighbors ();
 }
 
 const TwoHopNeighborSet &
-RoutingProtocol::GetTwoHopNeighbors  (void) const
+RoutingProtocol::GetTwoHopNeighbors  () const
 {
   return m_state.GetTwoHopNeighbors ();
 }
 
 const TopologySet &
-RoutingProtocol::GetTopologySet  (void) const
+RoutingProtocol::GetTopologySet  () const
 {
   return m_state.GetTopologySet ();
 }
 
 const OlsrState &
-RoutingProtocol::GetOlsrState (void) const
+RoutingProtocol::GetOlsrState () const
 {
   return m_state;
 }
@@ -3206,7 +3206,7 @@ RoutingProtocol::IsMyOwnAddress (const Ipv4Address & a) const
 }
 
 void
-RoutingProtocol::Dump (void)
+RoutingProtocol::Dump ()
 {
 #ifdef NS3_LOG_ENABLE
   Time now = Simulator::Now ();
@@ -3236,7 +3236,7 @@ RoutingProtocol::Dump (void)
 }
 
 Ptr<const Ipv4StaticRouting>
-RoutingProtocol::GetRoutingTableAssociation  (void) const
+RoutingProtocol::GetRoutingTableAssociation  () const
 {
   return m_hnaRoutingTable;
 }

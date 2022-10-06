@@ -62,7 +62,7 @@ WifiPpdu::~WifiPpdu ()
 }
 
 WifiTxVector
-WifiPpdu::GetTxVector (void) const
+WifiPpdu::GetTxVector () const
 {
   WifiTxVector txVector = DoGetTxVector ();
   txVector.SetTxPowerLevel (m_txPowerLevel);
@@ -71,39 +71,39 @@ WifiPpdu::GetTxVector (void) const
 }
 
 WifiTxVector
-WifiPpdu::DoGetTxVector (void) const
+WifiPpdu::DoGetTxVector () const
 {
   NS_FATAL_ERROR ("This method should not be called for the base WifiPpdu class. Use the overloaded version in the amendment-specific PPDU subclasses instead!");
   return WifiTxVector (); //should be overloaded
 }
 
 Ptr<const WifiPsdu>
-WifiPpdu::GetPsdu (void) const
+WifiPpdu::GetPsdu () const
 {
   return m_psdus.begin ()->second;
 }
 
 bool
-WifiPpdu::IsTruncatedTx (void) const
+WifiPpdu::IsTruncatedTx () const
 {
   return m_truncatedTx;
 }
 
 void
-WifiPpdu::SetTruncatedTx (void)
+WifiPpdu::SetTruncatedTx ()
 {
   NS_LOG_FUNCTION (this);
   m_truncatedTx = true;
 }
 
 WifiModulationClass
-WifiPpdu::GetModulation (void) const
+WifiPpdu::GetModulation () const
 {
   return m_modulation;
 }
 
 uint16_t
-WifiPpdu::GetTransmissionChannelWidth (void) const
+WifiPpdu::GetTransmissionChannelWidth () const
 {
   return GetTxVector ().GetChannelWidth ();
 }
@@ -165,31 +165,31 @@ WifiPpdu::CanBeReceived (uint16_t p20MinFreq, uint16_t p20MaxFreq) const
 }
 
 uint64_t
-WifiPpdu::GetUid (void) const
+WifiPpdu::GetUid () const
 {
   return m_uid;
 }
 
 WifiPreamble
-WifiPpdu::GetPreamble (void) const
+WifiPpdu::GetPreamble () const
 {
   return m_preamble;
 }
 
 WifiPpduType
-WifiPpdu::GetType (void) const
+WifiPpdu::GetType () const
 {
   return WIFI_PPDU_TYPE_SU;
 }
 
 uint16_t
-WifiPpdu::GetStaId (void) const
+WifiPpdu::GetStaId () const
 {
   return SU_STA_ID;
 }
 
 Time
-WifiPpdu::GetTxDuration (void) const
+WifiPpdu::GetTxDuration () const
 {
   NS_FATAL_ERROR ("This method should not be called for the base WifiPpdu class. Use the overloaded version in the amendment-specific PPDU subclasses instead!");
   return MicroSeconds (0); //should be overloaded
@@ -207,7 +207,7 @@ WifiPpdu::Print (std::ostream& os) const
 }
 
 std::string
-WifiPpdu::PrintPayload (void) const
+WifiPpdu::PrintPayload () const
 {
   std::ostringstream ss;
   ss << "PSDU=" << GetPsdu () << " ";
@@ -215,7 +215,7 @@ WifiPpdu::PrintPayload (void) const
 }
 
 Ptr<WifiPpdu>
-WifiPpdu::Copy (void) const
+WifiPpdu::Copy () const
 {
   NS_FATAL_ERROR ("This method should not be called for the base WifiPpdu class. Use the overloaded version in the amendment-specific PPDU subclasses instead!");
   return Create<WifiPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq);

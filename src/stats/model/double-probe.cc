@@ -61,7 +61,7 @@ DoubleProbe::~DoubleProbe ()
 }
 
 double
-DoubleProbe::GetValue (void) const
+DoubleProbe::GetValue () const
 {
   NS_LOG_FUNCTION (this);
   return m_output;

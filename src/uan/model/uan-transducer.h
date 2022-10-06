@@ -77,7 +77,7 @@ public:
    *
    * \return Pointer to packet.
    */
-  inline Ptr<Packet> GetPacket (void) const
+  inline Ptr<Packet> GetPacket () const
   {
     return m_packet;
   }
@@ -86,7 +86,7 @@ public:
    *
    * \return Received signal strength in dB re 1uPa
    */
-  inline double GetRxPowerDb (void) const
+  inline double GetRxPowerDb () const
   {
     return m_rxPowerDb;
   }
@@ -95,7 +95,7 @@ public:
    *
    * \return UanTxMode.
    */
-  inline const UanTxMode &GetTxMode (void) const
+  inline const UanTxMode &GetTxMode () const
   {
     return m_txMode;
   }
@@ -104,7 +104,7 @@ public:
    *
    * \return Arrival time.
    */
-  inline Time GetArrivalTime (void) const
+  inline Time GetArrivalTime () const
   {
     return m_arrTime;
   }
@@ -113,7 +113,7 @@ public:
    *
    * \return PDP of arriving signal.
    */
-  inline UanPdp GetPdp (void) const
+  inline UanPdp GetPdp () const
   {
     return m_pdp;
   }
@@ -142,7 +142,7 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** Transducer state. */
   enum State {
@@ -160,7 +160,7 @@ public:
    *
    * \return State (TX or RX) of this transducer.
    */
-  virtual State GetState (void) const = 0;
+  virtual State GetState () const = 0;
 
   /**
    * Is the state receiving (or available for reception)?
@@ -168,19 +168,19 @@ public:
    * \return True if this transducer is available for receiving
    *   an incoming packet.
    */
-  virtual bool IsRx (void) const = 0;
+  virtual bool IsRx () const = 0;
   /**
    * Is the state transmitting?
    *
    * \return True if there is a packet being transmitted from this transducer.
    */
-  virtual bool IsTx (void) const = 0;
+  virtual bool IsTx () const = 0;
   /**
    * Get the list of overlapped (in time) packets at this transducer.
    *
    * \return List of all packets currently crossing this node in the water.
    */
-  virtual const ArrivalList &GetArrivalList (void) const = 0;
+  virtual const ArrivalList &GetArrivalList () const = 0;
   /**
    * Set the receiver gain.
    *
@@ -192,7 +192,7 @@ public:
    *
    * \return The gain (in dB).
    */
-  virtual double GetRxGainDb (void) = 0;
+  virtual double GetRxGainDb () = 0;
   /**
    * Apply receiver gain in dB to the received power.
    * \param rxPowerDb Signal power in dB of arriving packet.
@@ -230,7 +230,7 @@ public:
    *
    * \return The channel.
    */
-  virtual Ptr<UanChannel> GetChannel (void) const = 0;
+  virtual Ptr<UanChannel> GetChannel () const = 0;
   /**
    * Attach a physical network layer above this transducer.
    *
@@ -244,11 +244,11 @@ public:
    *
    * \return List of attached physical layers.
    */
-  virtual const UanPhyList &GetPhyList (void) const = 0;
+  virtual const UanPhyList &GetPhyList () const = 0;
   /**
    * Clears all pointer references.
    */
-  virtual void Clear (void) = 0;
+  virtual void Clear () = 0;
 
 };  // class UanTransducer
 

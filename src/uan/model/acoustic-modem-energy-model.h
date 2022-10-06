@@ -66,7 +66,7 @@ public:
    * Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /** Constructor. */
   AcousticModemEnergyModel ();
   /** Dummy destructor, see DoDispose */
@@ -84,18 +84,18 @@ public:
    *
    * \return Pointer to node.
    */
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
 
   // Inherited methods.
   virtual void SetEnergySource (Ptr<EnergySource> source);
-  virtual double GetTotalEnergyConsumption (void) const;
+  virtual double GetTotalEnergyConsumption () const;
 
   /**
    * Get the transmission power of the modem.
    *
    * \return The transmission power in Watts.
    */
-  double GetTxPowerW (void) const;
+  double GetTxPowerW () const;
 
   /**
    * Set the transmission power of the modem.
@@ -109,7 +109,7 @@ public:
    *
    * \return The receiving power in Watts
    */
-  double GetRxPowerW (void) const;
+  double GetRxPowerW () const;
 
   /**
    * Set the receiving power of the modem.
@@ -123,7 +123,7 @@ public:
    *
    * \return The idle power in Watts
    */
-  double GetIdlePowerW (void) const;
+  double GetIdlePowerW () const;
 
   /**
    * Set the idle state power of the modem.
@@ -137,7 +137,7 @@ public:
    *
    * \return Sleep power of the modem in Watts
    */
-  double GetSleepPowerW (void) const;
+  double GetSleepPowerW () const;
 
   /**
    * Set the sleep power of the modem.
@@ -151,7 +151,7 @@ public:
    *
    * \return Current state.
    */
-  int GetCurrentState (void) const;
+  int GetCurrentState () const;
 
   /**
    * \param callback Callback function.
@@ -177,28 +177,28 @@ public:
   /**
    * \brief Handles energy depletion.
    */
-  virtual void HandleEnergyDepletion (void);
+  virtual void HandleEnergyDepletion ();
 
   /**
    * \brief Handles energy recharged.
    */
-  virtual void HandleEnergyRecharged (void);
+  virtual void HandleEnergyRecharged ();
 
   /**
    * \brief Handles energy changed.
    *
    * Not implemented
    */
-  virtual void HandleEnergyChanged (void);
+  virtual void HandleEnergyChanged ();
 
 
 private:
-  void DoDispose (void);
+  void DoDispose ();
 
   /**
    * \return Current draw of device, at current state.
    */
-  virtual double DoGetCurrentA (void) const;
+  virtual double DoGetCurrentA () const;
 
   /**
    * \param destState Modem state to switch to.

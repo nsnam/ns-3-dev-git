@@ -62,7 +62,7 @@ public:
   /**
    * \return the packet included in this item.
    */
-  Ptr<Packet> GetPacket (void) const;
+  Ptr<Packet> GetPacket () const;
 
   /**
    * \brief Use this method (instead of GetPacket ()->GetSize ()) to get the packet size
@@ -72,7 +72,7 @@ public:
    *
    * \return the size of the packet included in this item.
    */
-  virtual uint32_t GetSize (void) const;
+  virtual uint32_t GetSize () const;
 
   /**
    * \enum Uint8Values
@@ -151,19 +151,19 @@ public:
    * \brief Get the MAC address included in this item
    * \return the MAC address included in this item.
    */
-  Address GetAddress (void) const;
+  Address GetAddress () const;
 
   /**
    * \brief Get the L3 protocol included in this item
    * \return the L3 protocol included in this item.
    */
-  uint16_t GetProtocol (void) const;
+  uint16_t GetProtocol () const;
 
   /**
    * \brief Get the transmission queue index included in this item
    * \return the transmission queue index included in this item.
    */
-  uint8_t GetTxQueueIndex (void) const;
+  uint8_t GetTxQueueIndex () const;
 
   /**
    * \brief Set the transmission queue index to store in this item
@@ -175,7 +175,7 @@ public:
    * \brief Get the timestamp included in this item
    * \return the timestamp included in this item.
    */
-  Time GetTimeStamp (void) const;
+  Time GetTimeStamp () const;
 
   /**
    * \brief Set the timestamp included in this item
@@ -190,7 +190,7 @@ public:
    * so this method allows to add the header to the packet before sending the packet
    * to the device.
    */
-  virtual void AddHeader (void) = 0;
+  virtual void AddHeader () = 0;
 
   /**
    * \brief Print the item contents.
@@ -203,7 +203,7 @@ public:
    *
    * \return true if the packet is marked by this method or is already marked, false otherwise
    */
-  virtual bool Mark (void) = 0;
+  virtual bool Mark () = 0;
 
   /**
    * \brief Computes the hash of various fields of the packet header

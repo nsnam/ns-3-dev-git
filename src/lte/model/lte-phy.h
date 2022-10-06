@@ -71,7 +71,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Set the device where the phy layer is attached
@@ -131,7 +131,7 @@ public:
   /**
    * \returns transmission time interval
    */
-  double GetTti (void) const;
+  double GetTti () const;
 
   /**
    *
@@ -143,7 +143,7 @@ public:
   /**
   * \returns the RB group size according to the bandwidth
   */
-  uint8_t GetRbgSize (void) const;
+  uint8_t GetRbgSize () const;
 
 
   /**
@@ -167,7 +167,7 @@ public:
   /**
   * \returns the packet burst to be sent
   */
-  Ptr<PacketBurst> GetPacketBurst (void);
+  Ptr<PacketBurst> GetPacketBurst ();
 
   /**
   * \param m the control message to be sent
@@ -177,7 +177,7 @@ public:
   /**
   * \returns the list of control messages to be sent
   */
-  std::list<Ptr<LteControlMessage> > GetControlMessages (void);
+  std::list<Ptr<LteControlMessage> > GetControlMessages ();
 
 
   /**

@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("LiIonEnergySource");
 NS_OBJECT_ENSURE_REGISTERED (LiIonEnergySource);
 
 TypeId
-LiIonEnergySource::GetTypeId (void)
+LiIonEnergySource::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LiIonEnergySource")
     .SetParent<EnergySource> ()
@@ -134,7 +134,7 @@ LiIonEnergySource::SetInitialEnergy (double initialEnergyJ)
 }
 
 double
-LiIonEnergySource::GetInitialEnergy (void) const
+LiIonEnergySource::GetInitialEnergy () const
 {
   NS_LOG_FUNCTION (this);
   return m_initialEnergyJ;
@@ -149,7 +149,7 @@ LiIonEnergySource::SetInitialSupplyVoltage (double supplyVoltageV)
 }
 
 double
-LiIonEnergySource::GetSupplyVoltage (void) const
+LiIonEnergySource::GetSupplyVoltage () const
 {
   NS_LOG_FUNCTION (this);
   return m_supplyVoltageV;
@@ -163,14 +163,14 @@ LiIonEnergySource::SetEnergyUpdateInterval (Time interval)
 }
 
 Time
-LiIonEnergySource::GetEnergyUpdateInterval (void) const
+LiIonEnergySource::GetEnergyUpdateInterval () const
 {
   NS_LOG_FUNCTION (this);
   return m_energyUpdateInterval;
 }
 
 double
-LiIonEnergySource::GetRemainingEnergy (void)
+LiIonEnergySource::GetRemainingEnergy ()
 {
   NS_LOG_FUNCTION (this);
   // update energy source to get the latest remaining energy.
@@ -179,7 +179,7 @@ LiIonEnergySource::GetRemainingEnergy (void)
 }
 
 double
-LiIonEnergySource::GetEnergyFraction (void)
+LiIonEnergySource::GetEnergyFraction ()
 {
   NS_LOG_FUNCTION (this);
   // update energy source to get the latest remaining energy.
@@ -210,7 +210,7 @@ LiIonEnergySource::IncreaseRemainingEnergy (double energyJ)
 }
 
 void
-LiIonEnergySource::UpdateEnergySource (void)
+LiIonEnergySource::UpdateEnergySource ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("LiIonEnergySource:Updating remaining energy at node #" <<
@@ -243,14 +243,14 @@ LiIonEnergySource::UpdateEnergySource (void)
  * Private functions start here.
  */
 void
-LiIonEnergySource::DoInitialize (void)
+LiIonEnergySource::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   UpdateEnergySource ();  // start periodic update
 }
 
 void
-LiIonEnergySource::DoDispose (void)
+LiIonEnergySource::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   BreakDeviceEnergyModelRefCycle ();  // break reference cycle
@@ -258,7 +258,7 @@ LiIonEnergySource::DoDispose (void)
 
 
 void
-LiIonEnergySource::HandleEnergyDrainedEvent (void)
+LiIonEnergySource::HandleEnergyDrainedEvent ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("LiIonEnergySource:Energy depleted at node #" <<
@@ -268,7 +268,7 @@ LiIonEnergySource::HandleEnergyDrainedEvent (void)
 
 
 void
-LiIonEnergySource::CalculateRemainingEnergy (void)
+LiIonEnergySource::CalculateRemainingEnergy ()
 {
   NS_LOG_FUNCTION (this);
   double totalCurrentA = CalculateTotalCurrent ();

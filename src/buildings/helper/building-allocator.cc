@@ -46,7 +46,7 @@ GridBuildingAllocator::~GridBuildingAllocator ()
 }
 
 TypeId
-GridBuildingAllocator::GetTypeId (void)
+GridBuildingAllocator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GridBuildingAllocator")
     .SetParent<Object> ()

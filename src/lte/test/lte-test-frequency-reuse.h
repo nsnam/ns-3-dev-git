@@ -86,7 +86,7 @@ public:
   void UlDataRxStart (Ptr<const SpectrumValue> spectrumValue);
 
 protected:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   uint32_t m_userNum; ///< the number of UE nodes
   uint16_t m_dlBandwidth; ///< the DL bandwidth
@@ -134,7 +134,7 @@ public:
   virtual ~LteHardFrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   std::string m_schedulerType; ///< the scheduler type
 
@@ -181,7 +181,7 @@ public:
   virtual ~LteStrictFrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   std::string m_schedulerType; ///< scheduler type
 
@@ -265,7 +265,7 @@ public:
   void SetUlExpectedValues (double expectedPower, std::vector<bool> expectedDlRb);
 
 protected:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   std::string m_schedulerType; ///< the scheduler type
 
@@ -306,7 +306,7 @@ public:
   virtual ~LteStrictFrAreaTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 /**
@@ -328,7 +328,7 @@ public:
   virtual ~LteSoftFrAreaTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -351,7 +351,7 @@ public:
   virtual ~LteSoftFfrAreaTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -374,7 +374,7 @@ public:
   virtual ~LteEnhancedFfrAreaTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -397,7 +397,7 @@ public:
   virtual ~LteDistributedFfrAreaTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 

@@ -65,7 +65,7 @@ DsrHelper::~DsrHelper ()
 }
 
 DsrHelper*
-DsrHelper::Copy (void) const
+DsrHelper::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return new DsrHelper (*this);

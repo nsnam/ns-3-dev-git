@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("BSScheduler");
 NS_OBJECT_ENSURE_REGISTERED (BSScheduler);
 
 TypeId
-BSScheduler::GetTypeId (void)
+BSScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BSScheduler")
     .SetParent<Object> ()
@@ -65,7 +65,7 @@ BSScheduler::BSScheduler (Ptr<BaseStationNetDevice> bs)
 
 }
 
-BSScheduler::~BSScheduler (void)
+BSScheduler::~BSScheduler ()
 {
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *downlinkBursts = m_downlinkBursts;
   std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > pair;
@@ -86,7 +86,7 @@ BSScheduler::SetBs (Ptr<BaseStationNetDevice> bs)
   m_bs = bs;
 }
 
-Ptr<BaseStationNetDevice> BSScheduler::GetBs (void)
+Ptr<BaseStationNetDevice> BSScheduler::GetBs ()
 {
   return m_bs;
 }

@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("HeFrameExchangeManager");
 NS_OBJECT_ENSURE_REGISTERED (HeFrameExchangeManager);
 
 TypeId
-HeFrameExchangeManager::GetTypeId (void)
+HeFrameExchangeManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HeFrameExchangeManager")
     .SetParent<VhtFrameExchangeManager> ()
@@ -63,7 +63,7 @@ HeFrameExchangeManager::~HeFrameExchangeManager ()
 }
 
 uint16_t
-HeFrameExchangeManager::GetSupportedBaBufferSize (void) const
+HeFrameExchangeManager::GetSupportedBaBufferSize () const
 {
   NS_ASSERT (m_mac->GetHeConfiguration ());
   if (m_mac->GetHeConfiguration ()->GetMpduBufferSize () > 64)
@@ -82,7 +82,7 @@ HeFrameExchangeManager::SetWifiMac (const Ptr<WifiMac> mac)
 }
 
 void
-HeFrameExchangeManager::DoDispose (void)
+HeFrameExchangeManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_apMac = 0;
@@ -274,7 +274,7 @@ HeFrameExchangeManager::CtsTimeout (Ptr<WifiMpdu> rts, const WifiTxVector& txVec
 }
 
 void
-HeFrameExchangeManager::SendPsduMap (void)
+HeFrameExchangeManager::SendPsduMap ()
 {
   NS_LOG_FUNCTION (this);
 

@@ -113,7 +113,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from SpectrumChannel
   virtual void RemoveRx (Ptr<SpectrumPhy> phy);
@@ -122,7 +122,7 @@ public:
 
 
   // inherited from Channel
-  virtual std::size_t GetNDevices (void) const;
+  virtual std::size_t GetNDevices () const;
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
 

@@ -48,7 +48,7 @@ BooleanValue::Set (bool value)
   m_value = value;
 }
 bool
-BooleanValue::Get (void) const
+BooleanValue::Get () const
 {
   NS_LOG_FUNCTION (this);
   return m_value;
@@ -72,7 +72,7 @@ std::ostream & operator << (std::ostream &os, const BooleanValue &value)
 }
 
 Ptr<AttributeValue>
-BooleanValue::Copy (void) const
+BooleanValue::Copy () const
 {
   NS_LOG_FUNCTION (this);
 

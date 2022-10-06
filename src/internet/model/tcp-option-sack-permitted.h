@@ -46,8 +46,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   TcpOptionSackPermitted ();
   virtual ~TcpOptionSackPermitted ();
@@ -56,8 +56,8 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint8_t GetKind () const;
+  virtual uint32_t GetSerializedSize () const;
 };
 
 } // namespace ns3

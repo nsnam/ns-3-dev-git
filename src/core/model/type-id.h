@@ -159,7 +159,7 @@ public:
    *
    * \returns The number of TypeId instances registered.
    */
-  static uint16_t GetRegisteredN (void);
+  static uint16_t GetRegisteredN ();
   /**
    * Get a TypeId by index.
    *
@@ -189,14 +189,14 @@ public:
    * case for the TypeId associated to the ns3::ObjectBase class
    * only.
    */
-  TypeId GetParent (void) const;
+  TypeId GetParent () const;
 
   /**
    * Check if this TypeId has a parent.
    *
    * \return \c true if this TypeId has a parent.
    */
-  bool HasParent (void) const;
+  bool HasParent () const;
 
   /**
    * Check if this TypeId is a child of another.
@@ -215,42 +215,42 @@ public:
    *
    * \returns The name of the group associated to this TypeId.
    */
-  std::string GetGroupName (void) const;
+  std::string GetGroupName () const;
 
   /**
    * Get the name.
    *
    * \returns The name of this interface.
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
 
   /**
    * Get the hash.
    *
    * \returns The hash of this interface.
    */
-  hash_t GetHash (void) const;
+  hash_t GetHash () const;
 
   /**
    * Get the size of this object.
    *
    * \returns The size of this interface.
    */
-  std::size_t GetSize (void) const;
+  std::size_t GetSize () const;
 
   /**
    * Check if this TypeId has a constructor.
    *
    * \returns \c true if this TypeId has a constructor
    */
-  bool HasConstructor (void) const;
+  bool HasConstructor () const;
 
   /**
    * Get the number of attributes.
    *
    * \returns The number of attributes associated to this TypeId
    */
-  std::size_t GetAttributeN (void) const;
+  std::size_t GetAttributeN () const;
   /**
    * Get Attribute information by index.
    *
@@ -272,14 +272,14 @@ public:
    * \returns A callback which can be used to instantiate an object
    *          of this type.
    */
-  Callback<ObjectBase *> GetConstructor (void) const;
+  Callback<ObjectBase *> GetConstructor () const;
 
   /**
    * Check if this TypeId should not be listed in documentation.
    *
    * \returns \c true if this TypeId should be hidden from the user.
    */
-  bool MustHideFromDocumentation (void) const;
+  bool MustHideFromDocumentation () const;
 
 
   /**
@@ -287,7 +287,7 @@ public:
    *
    * \returns The number of trace sources defined in this TypeId.
    */
-  std::size_t GetTraceSourceN (void) const;
+  std::size_t GetTraceSourceN () const;
   /**
    * Get the trace source by index.
    *
@@ -316,7 +316,7 @@ public:
    * of the base class of the subclass.
    */
   template <typename T>
-  TypeId SetParent (void);
+  TypeId SetParent ();
 
   /**
    * Set the group name.
@@ -354,7 +354,7 @@ public:
    * \returns This TypeId instance
    */
   template <typename T>
-  TypeId AddConstructor (void);
+  TypeId AddConstructor ();
 
   /**
    * Record in this TypeId the fact that a new attribute exists.
@@ -460,7 +460,7 @@ public:
    * Hide this TypeId from documentation.
    * \returns This TypeId instance.
    */
-  TypeId HideFromDocumentation (void);
+  TypeId HideFromDocumentation ();
 
   /**
    * Find an Attribute by name, retrieving the associated AttributeInformation.
@@ -504,7 +504,7 @@ public:
    * This is really an internal method which users are not expected
    * to use.
    */
-  uint16_t GetUid (void) const;
+  uint16_t GetUid () const;
   /**
    * Set the internal id of this TypeId.
    *
@@ -628,14 +628,14 @@ inline bool operator != (TypeId a, TypeId b)
 
 template <typename T>
 TypeId
-TypeId::SetParent (void)
+TypeId::SetParent ()
 {
   return SetParent (T::GetTypeId ());
 }
 
 template <typename T>
 TypeId
-TypeId::AddConstructor (void)
+TypeId::AddConstructor ()
 {
   struct Maker
   {

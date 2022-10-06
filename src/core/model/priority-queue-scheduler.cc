@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("PriorityQueueScheduler");
 NS_OBJECT_ENSURE_REGISTERED (PriorityQueueScheduler);
 
 TypeId
-PriorityQueueScheduler::GetTypeId (void)
+PriorityQueueScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PriorityQueueScheduler")
     .SetParent<Scheduler> ()
@@ -66,21 +66,21 @@ PriorityQueueScheduler::Insert (const Event &ev)
 }
 
 bool
-PriorityQueueScheduler::IsEmpty (void) const
+PriorityQueueScheduler::IsEmpty () const
 {
   NS_LOG_FUNCTION (this);
   return m_queue.empty ();
 }
 
 Scheduler::Event
-PriorityQueueScheduler::PeekNext (void) const
+PriorityQueueScheduler::PeekNext () const
 {
   NS_LOG_FUNCTION (this);
   return m_queue.top ();
 }
 
 Scheduler::Event
-PriorityQueueScheduler::RemoveNext (void)
+PriorityQueueScheduler::RemoveNext ()
 {
   NS_LOG_FUNCTION (this);
   Scheduler::Event ev = m_queue.top ();

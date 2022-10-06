@@ -47,7 +47,7 @@ public:
   virtual ~OutdoorRandomWalkTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Check that the position is the expected one
@@ -76,7 +76,7 @@ OutdoorRandomWalkTestCase::CheckPositionOutdoor (Ptr<RandomWalk2dOutdoorMobility
 }
 
 void
-OutdoorRandomWalkTestCase::DoRun (void)
+OutdoorRandomWalkTestCase::DoRun ()
 {
   // create a grid of buildings
   double buildingSizeX = 100; // m

@@ -36,7 +36,7 @@ NS_OBJECT_ENSURE_REGISTERED (Application);
 // Application Methods
 
 TypeId
-Application::GetTypeId (void)
+Application::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Application")
     .SetParent<Object> ()
@@ -80,7 +80,7 @@ Application::SetStopTime (Time stop)
 
 
 void
-Application::DoDispose (void)
+Application::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
@@ -90,7 +90,7 @@ Application::DoDispose (void)
 }
 
 void
-Application::DoInitialize (void)
+Application::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_startEvent = Simulator::Schedule (m_startTime, &Application::StartApplication, this);

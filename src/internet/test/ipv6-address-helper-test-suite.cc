@@ -41,8 +41,8 @@ public:
   virtual ~IpAddressHelperTestCasev6 ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 IpAddressHelperTestCasev6::IpAddressHelperTestCasev6 ()
@@ -55,7 +55,7 @@ IpAddressHelperTestCasev6::~IpAddressHelperTestCasev6 ()
 }
 
 void
-IpAddressHelperTestCasev6::DoRun (void)
+IpAddressHelperTestCasev6::DoRun ()
 {
   Ipv6AddressHelper ip1;
   Ipv6Address ipAddr1;
@@ -151,7 +151,7 @@ IpAddressHelperTestCasev6::DoRun (void)
 }
 
 void
-IpAddressHelperTestCasev6::DoTeardown (void)
+IpAddressHelperTestCasev6::DoTeardown ()
 {
   Ipv6AddressGenerator::Reset ();
   Simulator::Destroy ();

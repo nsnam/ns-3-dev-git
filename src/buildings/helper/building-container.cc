@@ -40,18 +40,18 @@ BuildingContainer::BuildingContainer (std::string buildingName)
 }
 
 BuildingContainer::Iterator
-BuildingContainer::Begin (void) const
+BuildingContainer::Begin () const
 {
   return m_buildings.begin ();
 }
 BuildingContainer::Iterator
-BuildingContainer::End (void) const
+BuildingContainer::End () const
 {
   return m_buildings.end ();
 }
 
 uint32_t
-BuildingContainer::GetN (void) const
+BuildingContainer::GetN () const
 {
   return m_buildings.size ();
 }
@@ -89,7 +89,7 @@ BuildingContainer::Add (std::string buildingName)
 }
 
 BuildingContainer
-BuildingContainer::GetGlobal (void)
+BuildingContainer::GetGlobal ()
 {
   BuildingContainer c;
   for (BuildingList::Iterator i = BuildingList::Begin (); i != BuildingList::End (); ++i)

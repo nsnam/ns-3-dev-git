@@ -67,7 +67,7 @@ public:
   virtual ~LteDownlinkDataSinrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Ptr<SpectrumValue> m_sv; ///< the spectrum value
   Ptr<const SpectrumModel> m_sm; ///< the spectrum model
@@ -101,7 +101,7 @@ class LteDownlinkCtrlSinrTestCase : public TestCase
     virtual ~LteDownlinkCtrlSinrTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   Ptr<SpectrumValue> m_sv; ///< the spectrum value
   Ptr<const SpectrumModel> m_sm; ///< the spectrum model

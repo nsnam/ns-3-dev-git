@@ -33,7 +33,7 @@ HeConfiguration::HeConfiguration ()
 }
 
 TypeId
-HeConfiguration::GetTypeId (void)
+HeConfiguration::GetTypeId ()
 {
   static ns3::TypeId tid = ns3::TypeId ("ns3::HeConfiguration")
     .SetParent<Object> ()
@@ -190,7 +190,7 @@ HeConfiguration::SetGuardInterval (Time guardInterval)
 }
 
 Time
-HeConfiguration::GetGuardInterval (void) const
+HeConfiguration::GetGuardInterval () const
 {
   return m_guardInterval;
 }
@@ -203,13 +203,13 @@ HeConfiguration::SetBssColor (uint8_t bssColor)
 }
 
 uint8_t
-HeConfiguration::GetBssColor (void) const
+HeConfiguration::GetBssColor () const
 {
   return m_bssColor;
 }
 
 Time
-HeConfiguration::GetMaxTbPpduDelay (void) const
+HeConfiguration::GetMaxTbPpduDelay () const
 {
   return m_maxTbPpduDelay;
 }
@@ -228,7 +228,7 @@ HeConfiguration::SetMpduBufferSize (uint16_t size)
 }
 
 uint16_t
-HeConfiguration::GetMpduBufferSize (void) const
+HeConfiguration::GetMpduBufferSize () const
 {
   return m_mpduBufferSize;
 }

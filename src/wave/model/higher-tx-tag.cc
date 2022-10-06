@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("HigherLayerTxVectorTag");
 NS_OBJECT_ENSURE_REGISTERED (HigherLayerTxVectorTag);
 
 TypeId
-HigherLayerTxVectorTag::GetTypeId (void)
+HigherLayerTxVectorTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HigherLayerTxVectorTag")
     .SetParent<Tag> ()
@@ -41,13 +41,13 @@ HigherLayerTxVectorTag::GetTypeId (void)
 }
 
 TypeId
-HigherLayerTxVectorTag::GetInstanceTypeId (void) const
+HigherLayerTxVectorTag::GetInstanceTypeId () const
 {
   NS_LOG_FUNCTION (this);
   return GetTypeId ();
 }
 
-HigherLayerTxVectorTag::HigherLayerTxVectorTag (void)
+HigherLayerTxVectorTag::HigherLayerTxVectorTag ()
   : m_adaptable (false)
 {
   NS_LOG_FUNCTION (this);
@@ -62,21 +62,21 @@ HigherLayerTxVectorTag::HigherLayerTxVectorTag (WifiTxVector txVector, bool adap
 }
 
 WifiTxVector
-HigherLayerTxVectorTag::GetTxVector (void) const
+HigherLayerTxVectorTag::GetTxVector () const
 {
   NS_LOG_FUNCTION (this);
   return m_txVector;
 }
 
 bool
-HigherLayerTxVectorTag::IsAdaptable (void) const
+HigherLayerTxVectorTag::IsAdaptable () const
 {
   NS_LOG_FUNCTION (this);
   return m_adaptable;
 }
 
 uint32_t
-HigherLayerTxVectorTag::GetSerializedSize (void) const
+HigherLayerTxVectorTag::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   return (sizeof (WifiTxVector) + 1);

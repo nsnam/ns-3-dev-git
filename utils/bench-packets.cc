@@ -48,16 +48,16 @@ public:
    *
    * \returns true if success, false if failed or if deserialization not tried
    */
-  bool IsOk (void) const;
+  bool IsOk () const;
 
   /**
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -65,7 +65,7 @@ private:
    * Get type name function
    * \returns the type name string
    */
-  static std::string GetTypeName (void);
+  static std::string GetTypeName ();
   bool m_ok; ///< variable to track whether deserialization succeeded
 };
 
@@ -76,14 +76,14 @@ BenchHeader<N>::BenchHeader ()
 
 template <int N>
 bool
-BenchHeader<N>::IsOk (void) const
+BenchHeader<N>::IsOk () const
 {
   return m_ok;
 }
 
 template <int N>
 std::string
-BenchHeader<N>::GetTypeName (void)
+BenchHeader<N>::GetTypeName ()
 {
   std::ostringstream oss;
   oss << "ns3::BenchHeader<" << N << ">";
@@ -92,7 +92,7 @@ BenchHeader<N>::GetTypeName (void)
 
 template <int N>
 TypeId
-BenchHeader<N>::GetTypeId (void)
+BenchHeader<N>::GetTypeId ()
 {
   static TypeId tid = TypeId (GetTypeName ())
     .SetParent<Header> ()
@@ -104,7 +104,7 @@ BenchHeader<N>::GetTypeId (void)
 }
 template <int N>
 TypeId
-BenchHeader<N>::GetInstanceTypeId (void) const
+BenchHeader<N>::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -117,7 +117,7 @@ BenchHeader<N>::Print (std::ostream &os) const
 }
 template <int N>
 uint32_t
-BenchHeader<N>::GetSerializedSize (void) const
+BenchHeader<N>::GetSerializedSize () const
 {
   return N;
 }
@@ -151,7 +151,7 @@ public:
    * Get the bench tag name.
    * \return the name.
    */
-  static std::string GetName (void) {
+  static std::string GetName () {
     std::ostringstream oss;
     oss << "anon::BenchTag<" << N << ">";
     return oss.str ();
@@ -160,7 +160,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void) {
+  static TypeId GetTypeId () {
     static TypeId tid = TypeId (GetName ())
       .SetParent<Tag> ()
       .SetGroupName ("Utils")
@@ -169,10 +169,10 @@ public:
       ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId (void) const {
+  virtual TypeId GetInstanceTypeId () const {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize (void) const {
+  virtual uint32_t GetSerializedSize () const {
     return N;
   }
   virtual void Serialize (TagBuffer buf) const {

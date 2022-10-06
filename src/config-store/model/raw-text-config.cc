@@ -58,7 +58,7 @@ RawTextConfigSave::SetFilename (std::string filename)
   m_os->open (filename.c_str (), std::ios::out);
 }
 void
-RawTextConfigSave::Default (void)
+RawTextConfigSave::Default ()
 {
   NS_LOG_FUNCTION (this);
   class RawTextDefaultIterator : public AttributeDefaultIterator
@@ -115,7 +115,7 @@ private:
   iterator.Iterate ();
 }
 void
-RawTextConfigSave::Global (void)
+RawTextConfigSave::Global ()
 {
   NS_LOG_FUNCTION (this);
   for (GlobalValue::Iterator i = GlobalValue::Begin (); i != GlobalValue::End (); ++i)
@@ -127,7 +127,7 @@ RawTextConfigSave::Global (void)
     }
 }
 void
-RawTextConfigSave::Attributes (void)
+RawTextConfigSave::Attributes ()
 {
   NS_LOG_FUNCTION (this);
   class RawTextAttributeIterator : public AttributeIterator
@@ -216,7 +216,7 @@ RawTextConfigLoad::Strip (std::string value)
 }
 
 void
-RawTextConfigLoad::Default (void)
+RawTextConfigLoad::Default ()
 {
   NS_LOG_FUNCTION (this);
   m_is->clear ();
@@ -241,7 +241,7 @@ RawTextConfigLoad::Default (void)
     }
 }
 void
-RawTextConfigLoad::Global (void)
+RawTextConfigLoad::Global ()
 {
   NS_LOG_FUNCTION (this);
   m_is->clear ();
@@ -266,7 +266,7 @@ RawTextConfigLoad::Global (void)
     }
 }
 void
-RawTextConfigLoad::Attributes (void)
+RawTextConfigLoad::Attributes ()
 {
   NS_LOG_FUNCTION (this);
   m_is->clear ();

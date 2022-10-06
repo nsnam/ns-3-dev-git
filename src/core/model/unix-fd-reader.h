@@ -66,7 +66,7 @@ public:
    * Stop the read thread and reset internal state.  This does not
    * close the file descriptor used for reading.
    */
-  void Stop (void);
+  void Stop ();
 
 protected:
 
@@ -105,7 +105,7 @@ protected:
    *
    * \return A structure representing what was read.
    */
-  virtual FdReader::Data DoRead (void) = 0;
+  virtual FdReader::Data DoRead () = 0;
 
   /**
    * \brief The file descriptor to read from.
@@ -115,9 +115,9 @@ protected:
 private:
 
   /** The asynchronous function which performs the read. */
-  void Run (void);
+  void Run ();
   /** Event handler scheduled for destroy time to halt the thread. */
-  void DestroyEvent (void);
+  void DestroyEvent ();
 
   /** The main thread callback function to invoke when we have data. */
   Callback<void, uint8_t *, ssize_t> m_readCallback;

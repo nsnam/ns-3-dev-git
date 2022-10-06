@@ -75,7 +75,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Constructor
@@ -86,7 +86,7 @@ public:
 
   virtual ~QosTxop ();
 
-  bool IsQosTxop (void) const override;
+  bool IsQosTxop () const override;
   bool HasFramesToTransmit (uint8_t linkId) override;
   void NotifyChannelAccessed (uint8_t linkId, Time txopDuration) override;
   void NotifyChannelReleased (uint8_t linkId) override;
@@ -97,21 +97,21 @@ public:
    *
    * \return the access category.
    */
-  AcIndex GetAccessCategory (void) const;
+  AcIndex GetAccessCategory () const;
 
   /**
    * Return true if an explicit BlockAckRequest is sent after a missed BlockAck
    *
    * \return true if an explicit BlockAckRequest is sent after a missed BlockAck
    */
-  bool UseExplicitBarAfterMissedBlockAck (void) const;
+  bool UseExplicitBarAfterMissedBlockAck () const;
 
   /**
    * Get the Block Ack Manager associated with this QosTxop.
    *
    * \returns the Block Ack Manager
    */
-  Ptr<BlockAckManager> GetBaManager (void);
+  Ptr<BlockAckManager> GetBaManager ();
   /**
    * \param address recipient address of the peer station
    * \param tid traffic ID.
@@ -223,7 +223,7 @@ public:
    *
    * \return the current threshold for block ack mechanism.
    */
-  uint8_t GetBlockAckThreshold (void) const;
+  uint8_t GetBlockAckThreshold () const;
 
   /**
    * Set the BlockAck inactivity timeout.
@@ -236,7 +236,7 @@ public:
    *
    * \return the BlockAck inactivity timeout.
    */
-  uint16_t GetBlockAckInactivityTimeout (void) const;
+  uint16_t GetBlockAckInactivityTimeout () const;
   /**
    * Stores an MPDU (part of an A-MPDU) in block ack agreement (i.e. the sender is waiting
    * for a BlockAck containing the sequence number of this MPDU).
@@ -255,7 +255,7 @@ public:
    *
    * \returns the timeout to wait for ADDBA response
    */
-  Time GetAddBaResponseTimeout (void) const;
+  Time GetAddBaResponseTimeout () const;
   /**
    * Set the timeout for failed BA agreement. During the timeout period,
    * all packets will be transmitted using normal MPDU.
@@ -268,7 +268,7 @@ public:
    *
    * \returns the timeout for failed BA agreement
    */
-  Time GetFailedAddBaTimeout (void) const;
+  Time GetFailedAddBaTimeout () const;
 
   /**
    * Return the next sequence number for the given header.
@@ -460,7 +460,7 @@ protected:
     Time muEdcaTimerStartTime {0};              //!< last start time of the MU EDCA Timer
   };
 
-  void DoDispose (void) override;
+  void DoDispose () override;
 
   /**
    * Get a reference to the link associated with the given ID.
@@ -474,7 +474,7 @@ private:
   /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
 
-  std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
+  std::unique_ptr<LinkEntity> CreateLinkEntity () const override;
 
   /**
    * Check if the given MPDU is to be considered old according to the current

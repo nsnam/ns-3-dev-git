@@ -38,7 +38,7 @@ ATTRIBUTE_HELPER_CPP (Vector3D);
 ATTRIBUTE_HELPER_CPP (Vector2D);
 
 // compatibility for mobility code
-Ptr<const AttributeChecker> MakeVectorChecker (void)
+Ptr<const AttributeChecker> MakeVectorChecker ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return MakeVector3DChecker ();

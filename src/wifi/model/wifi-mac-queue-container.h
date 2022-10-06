@@ -107,7 +107,7 @@ public:
   /**
    * Erase all elements from the container.
    */
-  void clear (void);
+  void clear ();
 
   /**
    * Insert the given item at the specified location in the container.
@@ -178,7 +178,7 @@ public:
    * \return the range [first, last) of iterators pointing to the MPDUs transferred
    *         to the container queue storing MPDUs with expired lifetime
    */
-  std::pair<iterator, iterator> ExtractAllExpiredMpdus (void) const;
+  std::pair<iterator, iterator> ExtractAllExpiredMpdus () const;
   /**
    * Get the range [first, last) of iterators pointing to all the MPDUs queued
    * in the container queue storing MPDUs with expired lifetime.
@@ -186,7 +186,7 @@ public:
    * \return the range [first, last) of iterators pointing to all the MPDUs queued
    *         in the container queue storing MPDUs with expired lifetime
    */
-  std::pair<iterator, iterator> GetAllExpiredMpdus (void) const;
+  std::pair<iterator, iterator> GetAllExpiredMpdus () const;
 
 private:
   /**

@@ -35,7 +35,7 @@ class OlsrEmfTestCase : public TestCase
 {
 public:
   OlsrEmfTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OlsrEmfTestCase::OlsrEmfTestCase ()
@@ -43,7 +43,7 @@ OlsrEmfTestCase::OlsrEmfTestCase ()
 {
 }
 void
-OlsrEmfTestCase::DoRun (void)
+OlsrEmfTestCase::DoRun ()
 {
   for (int time = 1; time <= 30; time++)
     {
@@ -65,7 +65,7 @@ class OlsrMidTestCase : public TestCase
 {
 public:
   OlsrMidTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OlsrMidTestCase::OlsrMidTestCase ()
@@ -73,7 +73,7 @@ OlsrMidTestCase::OlsrMidTestCase ()
 {
 }
 void
-OlsrMidTestCase::DoRun (void)
+OlsrMidTestCase::DoRun ()
 {
   Packet packet;
 
@@ -178,7 +178,7 @@ class OlsrHelloTestCase : public TestCase
 {
 public:
   OlsrHelloTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OlsrHelloTestCase::OlsrHelloTestCase ()
@@ -186,7 +186,7 @@ OlsrHelloTestCase::OlsrHelloTestCase ()
 {
 }
 void
-OlsrHelloTestCase::DoRun (void)
+OlsrHelloTestCase::DoRun ()
 {
   Packet packet;
   olsr::MessageHeader msgIn;
@@ -245,7 +245,7 @@ class OlsrTcTestCase : public TestCase
 {
 public:
   OlsrTcTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OlsrTcTestCase::OlsrTcTestCase ()
@@ -253,7 +253,7 @@ OlsrTcTestCase::OlsrTcTestCase ()
 {
 }
 void
-OlsrTcTestCase::DoRun (void)
+OlsrTcTestCase::DoRun ()
 {
   Packet packet;
   olsr::MessageHeader msgIn;
@@ -290,7 +290,7 @@ class OlsrHnaTestCase : public TestCase
 {
 public:
   OlsrHnaTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OlsrHnaTestCase::OlsrHnaTestCase ()
@@ -299,7 +299,7 @@ OlsrHnaTestCase::OlsrHnaTestCase ()
 }
 
 void
-OlsrHnaTestCase::DoRun (void)
+OlsrHnaTestCase::DoRun ()
 {
   Packet packet;
   olsr::MessageHeader msgIn;

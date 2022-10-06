@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (OkumuraHataPropagationLossModel);
 
 
 TypeId
-OkumuraHataPropagationLossModel::GetTypeId (void)
+OkumuraHataPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OkumuraHataPropagationLossModel")
     .SetParent<PropagationLossModel> ()

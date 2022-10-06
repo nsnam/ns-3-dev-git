@@ -72,7 +72,7 @@ public:
   DsrFsHeaderTest ();
   ~DsrFsHeaderTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrFsHeaderTest::DsrFsHeaderTest ()
   : TestCase ("DSR Fixed size Header")
@@ -110,7 +110,7 @@ public:
   DsrRreqHeaderTest ();
   ~DsrRreqHeaderTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrRreqHeaderTest::DsrRreqHeaderTest ()
   : TestCase ("DSR RREQ")
@@ -163,7 +163,7 @@ public:
   DsrRrepHeaderTest ();
   ~DsrRrepHeaderTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrRrepHeaderTest::DsrRrepHeaderTest ()
   : TestCase ("DSR RREP")
@@ -212,7 +212,7 @@ public:
   DsrSRHeaderTest ();
   ~DsrSRHeaderTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrSRHeaderTest::DsrSRHeaderTest ()
   : TestCase ("DSR Source Route")
@@ -266,7 +266,7 @@ public:
   DsrRerrHeaderTest ();
   ~DsrRerrHeaderTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrRerrHeaderTest::DsrRerrHeaderTest ()
   : TestCase ("DSR RERR")
@@ -311,7 +311,7 @@ public:
   DsrAckReqHeaderTest ();
   ~DsrAckReqHeaderTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrAckReqHeaderTest::DsrAckReqHeaderTest ()
   : TestCase ("DSR Ack Req")
@@ -353,7 +353,7 @@ public:
   DsrAckHeaderTest ();
   ~DsrAckHeaderTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrAckHeaderTest::DsrAckHeaderTest ()
   : TestCase ("DSR ACK")
@@ -399,7 +399,7 @@ public:
   DsrCacheEntryTest ();
   ~DsrCacheEntryTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrCacheEntryTest::DsrCacheEntryTest ()
   : TestCase ("DSR ACK")
@@ -463,7 +463,7 @@ public:
   DsrSendBuffTest ();
   ~DsrSendBuffTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
   /// Check size limit function
   void CheckSizeLimit ();
   /// Check timeout function
@@ -565,7 +565,7 @@ public:
   DsrRreqTableTest ();
   ~DsrRreqTableTest ();
   virtual void
-  DoRun (void);
+  DoRun ();
 };
 DsrRreqTableTest::DsrRreqTableTest ()
   : TestCase ("DSR RreqTable")

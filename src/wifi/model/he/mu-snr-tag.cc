@@ -25,7 +25,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (MuSnrTag);
 
 TypeId
-MuSnrTag::GetTypeId (void)
+MuSnrTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MuSnrTag")
     .SetParent<Tag> ()
@@ -36,7 +36,7 @@ MuSnrTag::GetTypeId (void)
 }
 
 TypeId
-MuSnrTag::GetInstanceTypeId (void) const
+MuSnrTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -46,7 +46,7 @@ MuSnrTag::MuSnrTag ()
 }
 
 void
-MuSnrTag::Reset (void)
+MuSnrTag::Reset ()
 {
   m_snrMap.clear ();
 }
@@ -71,7 +71,7 @@ MuSnrTag::Get (uint16_t staId) const
 }
 
 uint32_t
-MuSnrTag::GetSerializedSize (void) const
+MuSnrTag::GetSerializedSize () const
 {
   return (sizeof (uint16_t) + sizeof (double)) * m_snrMap.size () + 1;
 }

@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketSink");
 NS_OBJECT_ENSURE_REGISTERED (PacketSink);
 
 TypeId
-PacketSink::GetTypeId (void)
+PacketSink::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PacketSink")
     .SetParent<Application> ()
@@ -97,20 +97,20 @@ uint64_t PacketSink::GetTotalRx () const
 }
 
 Ptr<Socket>
-PacketSink::GetListeningSocket (void) const
+PacketSink::GetListeningSocket () const
 {
   NS_LOG_FUNCTION (this);
   return m_socket;
 }
 
 std::list<Ptr<Socket> >
-PacketSink::GetAcceptedSockets (void) const
+PacketSink::GetAcceptedSockets () const
 {
   NS_LOG_FUNCTION (this);
   return m_socketList;
 }
 
-void PacketSink::DoDispose (void)
+void PacketSink::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;

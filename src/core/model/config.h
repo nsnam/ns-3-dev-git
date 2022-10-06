@@ -53,7 +53,7 @@ namespace Config {
  * Reset the initial value of every attribute as well as the value of every
  * global to what they were before any call to SetDefault and SetGlobal.
  */
-void Reset (void);
+void Reset ();
 
 /**
  * \ingroup config
@@ -210,22 +210,22 @@ public:
    * \returns An iterator which points to the first item in the container
    * @{
    */
-  MatchContainer::Iterator Begin (void) const;
-  MatchContainer::Iterator begin (void) const { return Begin (); }
+  MatchContainer::Iterator Begin () const;
+  MatchContainer::Iterator begin () const { return Begin (); }
   /** @} */
   /**
    * \returns An iterator which points to the last item in the container
    * @{
    */
-  MatchContainer::Iterator End (void) const;
-  MatchContainer::Iterator end (void) const { return End (); }
+  MatchContainer::Iterator End () const;
+  MatchContainer::Iterator end () const { return End (); }
   /** @} */
   /**
    * \returns The number of items in the container
    * @{
    */
-  std::size_t GetN (void) const;
-  std::size_t size (void) const { return GetN (); }
+  std::size_t GetN () const;
+  std::size_t size () const { return GetN (); }
   /** @} */
   /**
    * \param [in] i Index of item to lookup ([0,n[)
@@ -243,7 +243,7 @@ public:
   /**
    * \returns The path used to perform the object matching.
    */
-  std::string GetPath (void) const;
+  std::string GetPath () const;
 
   /**
    * \param [in] name Name of attribute to set
@@ -364,7 +364,7 @@ void UnregisterRootNamespaceObject (Ptr<Object> obj);
  * \ingroup config
  * \returns The number of registered root namespace objects.
  */
-std::size_t GetRootNamespaceObjectN (void);
+std::size_t GetRootNamespaceObjectN ();
 
 /**
  * \ingroup config

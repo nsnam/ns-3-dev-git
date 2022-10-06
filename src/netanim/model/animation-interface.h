@@ -177,7 +177,7 @@ public:
    * \returns true if AnimationInterface was already initialized
    *
    */
-  static bool IsInitialized (void);
+  static bool IsInitialized ();
 
   /**
    * \brief Specify the time at which capture should start
@@ -348,7 +348,7 @@ public:
    *
    * \returns true if AnimationInterface was started
    */
-  bool IsStarted (void);
+  bool IsStarted ();
 
   /**
    * \brief Do not trace packets. This helps reduce the trace file size if AnimationInterface is solely
@@ -1481,21 +1481,21 @@ public:
    * \returns Type Id
    *
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Get Instance Type Id
    * \returns Type Id
    *
    */
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * \brief Get Serialized Size
    * \returns Serialized Size (i.e size of uint64_t)
    *
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serialize function
@@ -1530,7 +1530,7 @@ public:
    * \returns Uid in tag
    *
    */
-  uint64_t Get (void) const;
+  uint64_t Get () const;
 
 private:
   uint64_t m_AnimUid; ///< the UID

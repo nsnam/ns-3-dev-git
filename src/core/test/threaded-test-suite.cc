@@ -97,7 +97,7 @@ public:
   /**
    * End the thread execution.
    */
-  void End (void);
+  void End ();
   uint64_t m_a; //!< The value incremented when EventA is called.
   uint64_t m_b; //!< The value incremented when EventB is called.
   uint64_t m_c; //!< The value incremented when EventC is called.
@@ -111,9 +111,9 @@ public:
   std::list<std::thread> m_threadlist; //!< Thread list.
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 ThreadedSimulatorEventsTestCase::ThreadedSimulatorEventsTestCase (ObjectFactory schedulerFactory, const std::string &simulatorType, unsigned int threads)
@@ -127,7 +127,7 @@ ThreadedSimulatorEventsTestCase::ThreadedSimulatorEventsTestCase (ObjectFactory 
 {}
 
 void
-ThreadedSimulatorEventsTestCase::End (void)
+ThreadedSimulatorEventsTestCase::End ()
 {
   m_stop = true;
   for (auto& thread : m_threadlist)
@@ -225,7 +225,7 @@ ThreadedSimulatorEventsTestCase::EventD (int d)
 }
 
 void
-ThreadedSimulatorEventsTestCase::DoSetup (void)
+ThreadedSimulatorEventsTestCase::DoSetup ()
 {
   if (!m_simulatorType.empty ())
     {
@@ -240,14 +240,14 @@ ThreadedSimulatorEventsTestCase::DoSetup (void)
         m_d = 0;
 }
 void
-ThreadedSimulatorEventsTestCase::DoTeardown (void)
+ThreadedSimulatorEventsTestCase::DoTeardown ()
 {
   m_threadlist.clear ();
 
   Config::SetGlobal ("SimulatorImplementationType", StringValue ("ns3::DefaultSimulatorImpl"));
 }
 void
-ThreadedSimulatorEventsTestCase::DoRun (void)
+ThreadedSimulatorEventsTestCase::DoRun ()
 {
   m_stop = false;
   Simulator::SetScheduler (m_schedulerFactory);

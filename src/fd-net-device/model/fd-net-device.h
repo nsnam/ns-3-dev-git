@@ -63,7 +63,7 @@ public:
   void SetBufferSize (uint32_t bufferSize);
 
 private:
-  FdReader::Data DoRead (void);
+  FdReader::Data DoRead ();
 
   uint32_t m_bufferSize; //!< size of the read buffer
 };
@@ -88,7 +88,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Enumeration of the types of frames supported in the class.
@@ -131,7 +131,7 @@ public:
    *
    * \returns The link layer encapsulation mode of this device.
    */
-  FdNetDevice::EncapsulationMode GetEncapsulationMode (void) const;
+  FdNetDevice::EncapsulationMode GetEncapsulationMode () const;
 
   /**
    * Set the associated file descriptor.
@@ -155,25 +155,25 @@ public:
 
   // inherited from NetDevice base class.
   virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
-  virtual Ptr<Channel> GetChannel (void) const;
+  virtual uint32_t GetIfIndex () const;
+  virtual Ptr<Channel> GetChannel () const;
   virtual void SetAddress (Address address);
-  virtual Address GetAddress (void) const;
+  virtual Address GetAddress () const;
   virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu (void) const;
-  virtual bool IsLinkUp (void) const;
+  virtual uint16_t GetMtu () const;
+  virtual bool IsLinkUp () const;
   virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
-  virtual bool IsMulticast (void) const;
+  virtual bool IsBroadcast () const;
+  virtual Address GetBroadcast () const;
+  virtual bool IsMulticast () const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
-  virtual bool IsPointToPoint (void) const;
-  virtual bool IsBridge (void) const;
+  virtual bool IsPointToPoint () const;
+  virtual bool IsBridge () const;
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
   virtual void SetNode (Ptr<Node> node);
-  virtual bool NeedsArp (void) const;
+  virtual bool NeedsArp () const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom () const;
@@ -202,15 +202,15 @@ protected:
   /**
    * Method Initialization for start and stop attributes.
    */
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * Get the associated file descriptor.
    * \return the associated file descriptor
    */
-  int GetFileDescriptor (void) const;
+  int GetFileDescriptor () const;
 
   /**
    * Allocate packet buffer.
@@ -246,33 +246,33 @@ private:
   /**
    * Spin up the device
    */
-  void StartDevice (void);
+  void StartDevice ();
 
   /**
    * Tear down the device
    */
-  void StopDevice (void);
+  void StopDevice ();
 
   /**
    * Create the FdReader object
    * \return the created FdReader object
    */
-  virtual Ptr<FdReader> DoCreateFdReader (void);
+  virtual Ptr<FdReader> DoCreateFdReader ();
 
   /**
    * Complete additional actions, if any, to spin up down the device
    */
-  virtual void DoFinishStartingDevice (void);
+  virtual void DoFinishStartingDevice ();
 
   /**
    * Complete additional actions, if any, to tear down the device
    */
-  virtual void DoFinishStoppingDevice (void);
+  virtual void DoFinishStoppingDevice ();
 
   /**
    * Forward the frame to the appropriate callback for processing
    */
-  void ForwardUp (void);
+  void ForwardUp ();
 
   /**
    * Start Sending a Packet Down the Wire.
@@ -284,7 +284,7 @@ private:
   /**
    * Notify that the link is up and ready
    */
-  void NotifyLinkUp (void);
+  void NotifyLinkUp ();
 
   /**
    * The ns-3 node associated to the net device.

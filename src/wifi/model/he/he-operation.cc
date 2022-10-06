@@ -105,7 +105,7 @@ HeOperation::SetMaxHeMcsPerNss (uint8_t nss, uint8_t maxHeMcs)
 }
 
 uint16_t
-HeOperation::GetBasicHeMcsAndNssSet (void) const
+HeOperation::GetBasicHeMcsAndNssSet () const
 {
   return m_basicHeMcsAndNssSet;
 }
@@ -119,7 +119,7 @@ HeOperation::SetBssColor (uint8_t bssColor)
 }
 
 uint8_t
-HeOperation::GetBssColor (void) const
+HeOperation::GetBssColor () const
 {
   return m_bssColor;
 }

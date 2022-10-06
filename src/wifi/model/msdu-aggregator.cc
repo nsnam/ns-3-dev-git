@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("MsduAggregator");
 NS_OBJECT_ENSURE_REGISTERED (MsduAggregator);
 
 TypeId
-MsduAggregator::GetTypeId (void)
+MsduAggregator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MsduAggregator")
     .SetParent<Object> ()

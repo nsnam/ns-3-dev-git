@@ -84,7 +84,7 @@ public:
                      uint8_t mcs, uint16_t sizeTb);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   bool m_usePdschForCqiGeneration; ///< use PDCCH for CQI generation
   uint16_t m_dlMcs; ///< the DL MCS
@@ -134,7 +134,7 @@ public:
                      uint8_t mcs, uint16_t sizeTb);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   uint8_t m_cell0Pa; ///< cell #0 PA
   uint8_t m_cell1Pa; ///< cell #1 PA

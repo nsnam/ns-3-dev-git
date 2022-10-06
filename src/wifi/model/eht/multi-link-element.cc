@@ -30,7 +30,7 @@ namespace ns3 {
  */
 
 uint16_t
-CommonInfoBasicMle::GetPresenceBitmap (void) const
+CommonInfoBasicMle::GetPresenceBitmap () const
 {
   // see Sec. 9.4.2.312.2.1 of 802.11be D1.5
   return (m_linkIdInfo.has_value () ? 0x0001 : 0x0)
@@ -41,7 +41,7 @@ CommonInfoBasicMle::GetPresenceBitmap (void) const
 }
 
 uint8_t
-CommonInfoBasicMle::GetSize (void) const
+CommonInfoBasicMle::GetSize () const
 {
   uint8_t ret = 7;  // Common Info Length (1) + MLD MAC Address (6)
   ret += (m_linkIdInfo.has_value () ? 1 : 0);
@@ -182,7 +182,7 @@ MultiLinkElement::ElementIdExt () const
 }
 
 MultiLinkElement::Variant
-MultiLinkElement::GetVariant (void) const
+MultiLinkElement::GetVariant () const
 {
   return static_cast<Variant> (m_commonInfo.index ());
 }
@@ -210,7 +210,7 @@ MultiLinkElement::SetMldMacAddress (Mac48Address address)
 }
 
 Mac48Address
-MultiLinkElement::GetMldMacAddress (void) const
+MultiLinkElement::GetMldMacAddress () const
 {
   return std::get<BASIC_VARIANT> (m_commonInfo).m_mldMacAddress;
 }
@@ -222,13 +222,13 @@ MultiLinkElement::SetLinkIdInfo (uint8_t linkIdInfo)
 }
 
 bool
-MultiLinkElement::HasLinkIdInfo (void) const
+MultiLinkElement::HasLinkIdInfo () const
 {
   return std::get<BASIC_VARIANT> (m_commonInfo).m_linkIdInfo.has_value ();
 }
 
 uint8_t
-MultiLinkElement::GetLinkIdInfo (void) const
+MultiLinkElement::GetLinkIdInfo () const
 {
   return std::get<BASIC_VARIANT> (m_commonInfo).m_linkIdInfo.value ();
 }
@@ -240,13 +240,13 @@ MultiLinkElement::SetBssParamsChangeCount (uint8_t count)
 }
 
 bool
-MultiLinkElement::HasBssParamsChangeCount (void) const
+MultiLinkElement::HasBssParamsChangeCount () const
 {
   return std::get<BASIC_VARIANT> (m_commonInfo).m_bssParamsChangeCount.has_value ();
 }
 
 uint8_t
-MultiLinkElement::GetBssParamsChangeCount (void) const
+MultiLinkElement::GetBssParamsChangeCount () const
 {
   return std::get<BASIC_VARIANT> (m_commonInfo).m_bssParamsChangeCount.value ();
 }
@@ -264,7 +264,7 @@ MultiLinkElement::SetMediumSyncDelayTimer (Time delay)
 }
 
 Time
-MultiLinkElement::GetMediumSyncDelayTimer (void) const
+MultiLinkElement::GetMediumSyncDelayTimer () const
 {
   return MicroSeconds ((std::get<BASIC_VARIANT> (m_commonInfo).m_mediumSyncDelayInfo.value ().mediumSyncDuration) * 32);
 }
@@ -281,7 +281,7 @@ MultiLinkElement::SetMediumSyncOfdmEdThreshold (int8_t threshold)
 }
 
 int8_t
-MultiLinkElement::GetMediumSyncOfdmEdThreshold (void) const
+MultiLinkElement::GetMediumSyncOfdmEdThreshold () const
 {
   return (std::get<BASIC_VARIANT> (m_commonInfo).m_mediumSyncDelayInfo.value ().mediumSyncOfdmEdThreshold) - 72;
 }
@@ -298,13 +298,13 @@ MultiLinkElement::SetMediumSyncMaxNTxops (uint8_t nTxops)
 }
 
 uint8_t
-MultiLinkElement::GetMediumSyncMaxNTxops (void) const
+MultiLinkElement::GetMediumSyncMaxNTxops () const
 {
   return (std::get<BASIC_VARIANT> (m_commonInfo).m_mediumSyncDelayInfo.value ().mediumSyncMaxNTxops) + 1;
 }
 
 bool
-MultiLinkElement::HasMediumSyncDelayInfo (void) const
+MultiLinkElement::HasMediumSyncDelayInfo () const
 {
   return std::get<BASIC_VARIANT> (m_commonInfo).m_mediumSyncDelayInfo.has_value ();
 }
@@ -376,19 +376,19 @@ MultiLinkElement::PerStaProfileSubelement::SetLinkId (uint8_t linkId)
 }
 
 uint8_t
-MultiLinkElement::PerStaProfileSubelement::GetLinkId (void) const
+MultiLinkElement::PerStaProfileSubelement::GetLinkId () const
 {
   return static_cast<uint8_t> (m_staControl & 0x000f);
 }
 
 void
-MultiLinkElement::PerStaProfileSubelement::SetCompleteProfile (void)
+MultiLinkElement::PerStaProfileSubelement::SetCompleteProfile ()
 {
   m_staControl |= 0x0010;
 }
 
 bool
-MultiLinkElement::PerStaProfileSubelement::IsCompleteProfileSet (void) const
+MultiLinkElement::PerStaProfileSubelement::IsCompleteProfileSet () const
 {
   return (m_staControl & 0x0010) != 0;
 }
@@ -402,13 +402,13 @@ MultiLinkElement::PerStaProfileSubelement::SetStaMacAddress (Mac48Address addres
 }
 
 bool
-MultiLinkElement::PerStaProfileSubelement::HasStaMacAddress (void) const
+MultiLinkElement::PerStaProfileSubelement::HasStaMacAddress () const
 {
   return (m_staControl & 0x0020) != 0;
 }
 
 Mac48Address
-MultiLinkElement::PerStaProfileSubelement::GetStaMacAddress (void) const
+MultiLinkElement::PerStaProfileSubelement::GetStaMacAddress () const
 {
   NS_ABORT_IF (!HasStaMacAddress ());
   return m_staMacAddress;
@@ -447,19 +447,19 @@ MultiLinkElement::PerStaProfileSubelement::SetAssocRequest (std::variant<MgtAsso
 }
 
 bool
-MultiLinkElement::PerStaProfileSubelement::HasAssocRequest (void) const
+MultiLinkElement::PerStaProfileSubelement::HasAssocRequest () const
 {
   return m_staProfile && m_frameType == WIFI_MAC_MGT_ASSOCIATION_REQUEST;
 }
 
 bool
-MultiLinkElement::PerStaProfileSubelement::HasReassocRequest (void) const
+MultiLinkElement::PerStaProfileSubelement::HasReassocRequest () const
 {
   return m_staProfile && m_frameType == WIFI_MAC_MGT_REASSOCIATION_REQUEST;
 }
 
 AssocReqRefVariant
-MultiLinkElement::PerStaProfileSubelement::GetAssocRequest (void) const
+MultiLinkElement::PerStaProfileSubelement::GetAssocRequest () const
 {
   if (HasAssocRequest ())
     {
@@ -486,21 +486,21 @@ MultiLinkElement::PerStaProfileSubelement::SetAssocResponse (MgtAssocResponseHea
 }
 
 bool
-MultiLinkElement::PerStaProfileSubelement::HasAssocResponse (void) const
+MultiLinkElement::PerStaProfileSubelement::HasAssocResponse () const
 {
   return m_staProfile && (m_frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE
                           || m_frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE);
 }
 
 MgtAssocResponseHeader&
-MultiLinkElement::PerStaProfileSubelement::GetAssocResponse (void) const
+MultiLinkElement::PerStaProfileSubelement::GetAssocResponse () const
 {
   NS_ABORT_IF (!HasAssocResponse ());
   return *static_cast<MgtAssocResponseHeader*> (m_staProfile.get ());
 }
 
 uint8_t
-MultiLinkElement::PerStaProfileSubelement::GetStaInfoLength (void) const
+MultiLinkElement::PerStaProfileSubelement::GetStaInfoLength () const
 {
   uint8_t ret = 1;   // STA Info Length
 
@@ -519,7 +519,7 @@ MultiLinkElement::PerStaProfileSubelement::ElementId () const
 }
 
 uint16_t
-MultiLinkElement::PerStaProfileSubelement::GetInformationFieldSize (void) const
+MultiLinkElement::PerStaProfileSubelement::GetInformationFieldSize () const
 {
   uint16_t ret = 2;   // STA Control field
 
@@ -596,7 +596,7 @@ MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField (Buffer::
 }
 
 void
-MultiLinkElement::AddPerStaProfileSubelement (void)
+MultiLinkElement::AddPerStaProfileSubelement ()
 {
   auto variant = GetVariant ();
   NS_ABORT_IF (variant == UNSET);
@@ -605,7 +605,7 @@ MultiLinkElement::AddPerStaProfileSubelement (void)
 }
 
 std::size_t
-MultiLinkElement::GetNPerStaProfileSubelements (void) const
+MultiLinkElement::GetNPerStaProfileSubelements () const
 {
   return m_perStaProfileSubelements.size ();
 }

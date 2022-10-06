@@ -26,7 +26,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanSpectrumSignalParameters");
 
-LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters (void)
+LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -39,7 +39,7 @@ LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters (const LrWpanSpec
 }
 
 Ptr<SpectrumSignalParameters>
-LrWpanSpectrumSignalParameters::Copy (void) const
+LrWpanSpectrumSignalParameters::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<LrWpanSpectrumSignalParameters> (*this);

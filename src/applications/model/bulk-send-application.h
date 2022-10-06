@@ -79,7 +79,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   BulkSendApplication ();
 
@@ -104,14 +104,14 @@ public:
    * \brief Get the socket this application is attached to.
    * \return pointer to associated socket
    */
-  Ptr<Socket> GetSocket (void) const;
+  Ptr<Socket> GetSocket () const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 private:
   // inherited from Application base class.
-  virtual void StartApplication (void);    // Called at time specified by Start
-  virtual void StopApplication (void);     // Called at time specified by Stop
+  virtual void StartApplication ();    // Called at time specified by Start
+  virtual void StopApplication ();     // Called at time specified by Stop
 
   /**
    * \brief Send data until the L4 transmission buffer is full.

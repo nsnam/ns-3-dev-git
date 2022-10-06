@@ -49,7 +49,7 @@ OhBuildingsPropagationLossModel::~OhBuildingsPropagationLossModel ()
 }
 
 TypeId
-OhBuildingsPropagationLossModel::GetTypeId (void)
+OhBuildingsPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OhBuildingsPropagationLossModel")
 

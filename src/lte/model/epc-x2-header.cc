@@ -45,7 +45,7 @@ EpcX2Header::~EpcX2Header ()
 }
 
 TypeId
-EpcX2Header::GetTypeId (void)
+EpcX2Header::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2Header")
     .SetParent<Header> ()
@@ -56,13 +56,13 @@ EpcX2Header::GetTypeId (void)
 }
 
 TypeId
-EpcX2Header::GetInstanceTypeId (void) const
+EpcX2Header::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2Header::GetSerializedSize (void) const
+EpcX2Header::GetSerializedSize () const
 {
   return 7;
 }
@@ -170,7 +170,7 @@ EpcX2HandoverRequestHeader::~EpcX2HandoverRequestHeader ()
 }
 
 TypeId
-EpcX2HandoverRequestHeader::GetTypeId (void)
+EpcX2HandoverRequestHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2HandoverRequestHeader")
     .SetParent<Header> ()
@@ -181,13 +181,13 @@ EpcX2HandoverRequestHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2HandoverRequestHeader::GetInstanceTypeId (void) const
+EpcX2HandoverRequestHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2HandoverRequestHeader::GetSerializedSize (void) const
+EpcX2HandoverRequestHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }
@@ -455,7 +455,7 @@ EpcX2HandoverRequestAckHeader::~EpcX2HandoverRequestAckHeader ()
 }
 
 TypeId
-EpcX2HandoverRequestAckHeader::GetTypeId (void)
+EpcX2HandoverRequestAckHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2HandoverRequestAckHeader")
     .SetParent<Header> ()
@@ -466,13 +466,13 @@ EpcX2HandoverRequestAckHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2HandoverRequestAckHeader::GetInstanceTypeId (void) const
+EpcX2HandoverRequestAckHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2HandoverRequestAckHeader::GetSerializedSize (void) const
+EpcX2HandoverRequestAckHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }
@@ -681,7 +681,7 @@ EpcX2HandoverPreparationFailureHeader::~EpcX2HandoverPreparationFailureHeader ()
 }
 
 TypeId
-EpcX2HandoverPreparationFailureHeader::GetTypeId (void)
+EpcX2HandoverPreparationFailureHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2HandoverPreparationFailureHeader")
     .SetParent<Header> ()
@@ -692,13 +692,13 @@ EpcX2HandoverPreparationFailureHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2HandoverPreparationFailureHeader::GetInstanceTypeId (void) const
+EpcX2HandoverPreparationFailureHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2HandoverPreparationFailureHeader::GetSerializedSize (void) const
+EpcX2HandoverPreparationFailureHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }
@@ -807,7 +807,7 @@ EpcX2SnStatusTransferHeader::~EpcX2SnStatusTransferHeader ()
 }
 
 TypeId
-EpcX2SnStatusTransferHeader::GetTypeId (void)
+EpcX2SnStatusTransferHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2SnStatusTransferHeader")
     .SetParent<Header> ()
@@ -818,13 +818,13 @@ EpcX2SnStatusTransferHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2SnStatusTransferHeader::GetInstanceTypeId (void) const
+EpcX2SnStatusTransferHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2SnStatusTransferHeader::GetSerializedSize (void) const
+EpcX2SnStatusTransferHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }
@@ -998,7 +998,7 @@ EpcX2UeContextReleaseHeader::~EpcX2UeContextReleaseHeader ()
 }
 
 TypeId
-EpcX2UeContextReleaseHeader::GetTypeId (void)
+EpcX2UeContextReleaseHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2UeContextReleaseHeader")
     .SetParent<Header> ()
@@ -1009,13 +1009,13 @@ EpcX2UeContextReleaseHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2UeContextReleaseHeader::GetInstanceTypeId (void) const
+EpcX2UeContextReleaseHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2UeContextReleaseHeader::GetSerializedSize (void) const
+EpcX2UeContextReleaseHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }
@@ -1104,7 +1104,7 @@ EpcX2LoadInformationHeader::~EpcX2LoadInformationHeader ()
 }
 
 TypeId
-EpcX2LoadInformationHeader::GetTypeId (void)
+EpcX2LoadInformationHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2LoadInformationHeader")
     .SetParent<Header> ()
@@ -1115,13 +1115,13 @@ EpcX2LoadInformationHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2LoadInformationHeader::GetInstanceTypeId (void) const
+EpcX2LoadInformationHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2LoadInformationHeader::GetSerializedSize (void) const
+EpcX2LoadInformationHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }
@@ -1333,7 +1333,7 @@ EpcX2ResourceStatusUpdateHeader::~EpcX2ResourceStatusUpdateHeader ()
 }
 
 TypeId
-EpcX2ResourceStatusUpdateHeader::GetTypeId (void)
+EpcX2ResourceStatusUpdateHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2ResourceStatusUpdateHeader")
     .SetParent<Header> ()
@@ -1344,13 +1344,13 @@ EpcX2ResourceStatusUpdateHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2ResourceStatusUpdateHeader::GetInstanceTypeId (void) const
+EpcX2ResourceStatusUpdateHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2ResourceStatusUpdateHeader::GetSerializedSize (void) const
+EpcX2ResourceStatusUpdateHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }
@@ -1512,7 +1512,7 @@ EpcX2HandoverCancelHeader::~EpcX2HandoverCancelHeader ()
 }
 
 TypeId
-EpcX2HandoverCancelHeader::GetTypeId (void)
+EpcX2HandoverCancelHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpcX2HandoverCancelHeader")
     .SetParent<Header> ()
@@ -1523,13 +1523,13 @@ EpcX2HandoverCancelHeader::GetTypeId (void)
 }
 
 TypeId
-EpcX2HandoverCancelHeader::GetInstanceTypeId (void) const
+EpcX2HandoverCancelHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-EpcX2HandoverCancelHeader::GetSerializedSize (void) const
+EpcX2HandoverCancelHeader::GetSerializedSize () const
 {
   return m_headerLength;
 }

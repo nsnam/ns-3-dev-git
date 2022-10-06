@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpScalable");
 NS_OBJECT_ENSURE_REGISTERED (TcpScalable);
 
 TypeId
-TcpScalable::GetTypeId (void)
+TcpScalable::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpScalable")
     .SetParent<TcpNewReno> ()
@@ -56,7 +56,7 @@ TcpScalable::GetTypeId (void)
   return tid;
 }
 
-TcpScalable::TcpScalable (void)
+TcpScalable::TcpScalable ()
   : TcpNewReno (),
     m_ackCnt (0),
     m_aiFactor (50),
@@ -74,13 +74,13 @@ TcpScalable::TcpScalable (const TcpScalable& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpScalable::~TcpScalable (void)
+TcpScalable::~TcpScalable ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<TcpCongestionOps>
-TcpScalable::Fork (void)
+TcpScalable::Fork ()
 {
   return CopyObject<TcpScalable> (this);
 }

@@ -51,16 +51,16 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   YansWifiPhy ();
   virtual ~YansWifiPhy ();
 
   void SetInterferenceHelper (const Ptr<InterferenceHelper> helper) override;
   void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
-  Ptr<Channel> GetChannel (void) const override;
+  Ptr<Channel> GetChannel () const override;
   uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
-  std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;
+  std::tuple<double, double, double> GetTxMaskRejectionParams () const override;
 
   /**
    * Set the YansWifiChannel this YansWifiPhy is to be connected to.
@@ -70,7 +70,7 @@ public:
   void SetChannel (const Ptr<YansWifiChannel> channel);
 
 protected:
-  void DoDispose (void) override;
+  void DoDispose () override;
 
 
 private:

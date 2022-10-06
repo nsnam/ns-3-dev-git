@@ -75,17 +75,17 @@ CsParameters::SetPacketClassifierRule (IpcsClassifierRecord packetClassifierRule
   m_packetClassifierRule = packetClassifierRule;
 }
 enum CsParameters::Action
-CsParameters::GetClassifierDscAction (void) const
+CsParameters::GetClassifierDscAction () const
 {
   return m_classifierDscAction;
 }
 IpcsClassifierRecord
-CsParameters::GetPacketClassifierRule (void) const
+CsParameters::GetPacketClassifierRule () const
 {
   return m_packetClassifierRule;
 }
 Tlv
-CsParameters::ToTlv (void) const
+CsParameters::ToTlv () const
 {
   CsParamVectorTlvValue tmp;
   tmp.Add (Tlv (CsParamVectorTlvValue::Classifier_DSC_Action,1, U8TlvValue (m_classifierDscAction)));

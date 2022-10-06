@@ -60,7 +60,7 @@ Uinteger8Probe::~Uinteger8Probe ()
 }
 
 uint8_t
-Uinteger8Probe::GetValue (void) const
+Uinteger8Probe::GetValue () const
 {
   NS_LOG_FUNCTION (this);
   return m_output;

@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("ConstantRateWifiManager");
 NS_OBJECT_ENSURE_REGISTERED (ConstantRateWifiManager);
 
 TypeId
-ConstantRateWifiManager::GetTypeId (void)
+ConstantRateWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ConstantRateWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -63,7 +63,7 @@ ConstantRateWifiManager::~ConstantRateWifiManager ()
 }
 
 WifiRemoteStation *
-ConstantRateWifiManager::DoCreateStation (void) const
+ConstantRateWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = new WifiRemoteStation ();

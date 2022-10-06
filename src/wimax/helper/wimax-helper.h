@@ -93,8 +93,8 @@ public:
   /**
    * \brief Create a Wimax helper in an empty state.
    */
-  WimaxHelper (void);
-  ~WimaxHelper (void);
+  WimaxHelper ();
+  ~WimaxHelper ();
   /**
    *  \brief Enable ascii trace output on the indicated net device for a given connection
    *  \param oss The output stream object to use when logging ascii traces.
@@ -252,7 +252,7 @@ public:
   /**
    * Helper to enable all WimaxNetDevice log components with one statement
    */
-  static void EnableLogComponents (void);
+  static void EnableLogComponents ();
 
  /**
   * Assign a fixed random variable stream number to the random variables

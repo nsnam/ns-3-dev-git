@@ -63,7 +63,7 @@ private:
   friend class ChannelAccessManagerTest<TxopType>;
 
   /// \copydoc ns3::Txop::DoDispose
-  void DoDispose (void) override;
+  void DoDispose () override;
   /// \copydoc ns3::Txop::NotifyChannelAccessed
   void NotifyChannelAccessed (uint8_t linkId, Time txopDuration = Seconds (0)) override;
   /// \copydoc ns3::Txop::HasFramesToTransmit
@@ -139,17 +139,17 @@ public:
   }
 
 private:
-  Time GetSifs (void) const override
+  Time GetSifs () const override
   {
     return m_sifs;
   }
 
-  Time GetSlot (void) const override
+  Time GetSlot () const override
   {
     return m_slot;
   }
 
-  Time GetEifsNoDifs (void) const override
+  Time GetEifsNoDifs () const override
   {
     return m_eifsNoDifs;
   }
@@ -217,7 +217,7 @@ class ChannelAccessManagerTest : public TestCase
 {
 public:
   ChannelAccessManagerTest ();
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * Notify access granted function
@@ -237,7 +237,7 @@ public:
   /**
    * Notify channel switching function
    */
-  void NotifyChannelSwitching (void);
+  void NotifyChannelSwitching ();
 
 
 private:
@@ -256,7 +256,7 @@ private:
    */
   void AddTxop (uint32_t aifsn);
   /// End test function
-  void EndTest (void);
+  void EndTest ();
   /**
    * Expect internal collision function
    * \param time the expected time
@@ -413,7 +413,7 @@ TxopTest<TxopType>::TxopTest (ChannelAccessManagerTest<TxopType> *test, uint32_t
 
 template <typename TxopType>
 void
-TxopTest<TxopType>::DoDispose (void)
+TxopTest<TxopType>::DoDispose ()
 {
   m_test = 0;
   TxopType::DoDispose ();
@@ -515,7 +515,7 @@ ChannelAccessManagerTest<TxopType>::GenerateBackoff (uint32_t i)
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching (void)
+ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching ()
 {
   for (auto& state : m_txop)
     {
@@ -604,7 +604,7 @@ ChannelAccessManagerTest<TxopType>::AddTxop (uint32_t aifsn)
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::EndTest (void)
+ChannelAccessManagerTest<TxopType>::EndTest ()
 {
   Simulator::Run ();
 
@@ -776,7 +776,7 @@ ChannelAccessManagerTest<TxopType>::AddRxStartEvt (uint64_t at, uint64_t duratio
  */
 template <>
 void
-ChannelAccessManagerTest<Txop>::DoRun (void)
+ChannelAccessManagerTest<Txop>::DoRun ()
 {
   // DCF immediate access (no backoff)
   //  1      4       5    6      8     11      12
@@ -1118,7 +1118,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
  */
 template <>
 void
-ChannelAccessManagerTest<QosTxop>::DoRun (void)
+ChannelAccessManagerTest<QosTxop>::DoRun ()
 {
   // Check alignment at slot boundary after successful reception (backoff = 0).
   // Also, check that CCA BUSY on a secondary channel does not affect channel access:
@@ -1256,7 +1256,7 @@ public:
   virtual ~LargestIdlePrimaryChannelTest () = default;
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * Test a specific combination of operating channel width and busy channel type.

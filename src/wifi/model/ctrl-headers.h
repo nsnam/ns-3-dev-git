@@ -54,11 +54,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const override;
+  TypeId GetInstanceTypeId () const override;
   void Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize (void) const override;
+  uint32_t GetSerializedSize () const override;
   void Serialize (Buffer::Iterator start) const override;
   uint32_t Deserialize (Buffer::Iterator start) override;
 
@@ -94,25 +94,25 @@ public:
    * \return true if the current Ack Policy is immediate,
    *         false otherwise
    */
-  bool MustSendHtImmediateAck (void) const;
+  bool MustSendHtImmediateAck () const;
   /**
    * Return the BlockAckRequest type.
    *
    * \return the type of the BlockAckRequest
    */
-  BlockAckReqType GetType (void) const;
+  BlockAckReqType GetType () const;
   /**
    * Return the Traffic ID (TID).
    *
    * \return TID
    */
-  uint8_t GetTidInfo (void) const;
+  uint8_t GetTidInfo () const;
   /**
    * Return the starting sequence number.
    *
    * \return the starting sequence number
    */
-  uint16_t GetStartingSequence (void) const;
+  uint16_t GetStartingSequence () const;
   /**
    * Check if the current Ack Policy is Basic Block Ack
    * (i.e. not multi-TID nor compressed).
@@ -120,7 +120,7 @@ public:
    * \return true if the current Ack Policy is Basic Block Ack,
    *         false otherwise
    */
-  bool IsBasic (void) const;
+  bool IsBasic () const;
   /**
    * Check if the current Ack Policy is Compressed Block Ack
    * and not multi-TID.
@@ -128,28 +128,28 @@ public:
    * \return true if the current Ack Policy is Compressed Block Ack,
    *         false otherwise
    */
-  bool IsCompressed (void) const;
+  bool IsCompressed () const;
   /**
    * Check if the current Ack Policy is Extended Compressed Block Ack.
    *
    * \return true if the current Ack Policy is Extended Compressed Block Ack,
    *         false otherwise
    */
-  bool IsExtendedCompressed (void) const;
+  bool IsExtendedCompressed () const;
   /**
    * Check if the current Ack Policy has Multi-TID Block Ack.
    *
    * \return true if the current Ack Policy has Multi-TID Block Ack,
    *         false otherwise
    */
-  bool IsMultiTid (void) const;
+  bool IsMultiTid () const;
 
   /**
    * Return the starting sequence control.
    *
    * \return the starting sequence control
    */
-  uint16_t GetStartingSequenceControl (void) const;
+  uint16_t GetStartingSequenceControl () const;
 
 
 private:
@@ -165,7 +165,7 @@ private:
    *
    * \return the Block Ack control
    */
-  uint16_t GetBarControl (void) const;
+  uint16_t GetBarControl () const;
   /**
    * Set the Block Ack control.
    *
@@ -207,10 +207,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -253,13 +253,13 @@ public:
    * \return true if the current Ack Policy is immediate,
    *         false otherwise
    */
-  bool MustSendHtImmediateAck (void) const;
+  bool MustSendHtImmediateAck () const;
   /**
    * Return the block ack type ID.
    *
    * \return type
    */
-  BlockAckType GetType (void) const;
+  BlockAckType GetType () const;
   /**
    * For Block Ack variants other than Multi-STA Block Ack, get the TID_INFO subfield
    * of the BA Control field. For Multi-STA Block Acks, get the TID subfield of the
@@ -285,35 +285,35 @@ public:
    * \return true if the current BA policy is Basic Block Ack,
    *         false otherwise
    */
-  bool IsBasic (void) const;
+  bool IsBasic () const;
   /**
    * Check if the current BA policy is Compressed Block Ack.
    *
    * \return true if the current BA policy is Compressed Block Ack,
    *         false otherwise
    */
-  bool IsCompressed (void) const;
+  bool IsCompressed () const;
   /**
    * Check if the current BA policy is Extended Compressed Block Ack.
    *
    * \return true if the current BA policy is Extended Compressed Block Ack,
    *         false otherwise
    */
-  bool IsExtendedCompressed (void) const;
+  bool IsExtendedCompressed () const;
   /**
    * Check if the current BA policy is Multi-TID Block Ack.
    *
    * \return true if the current BA policy is Multi-TID Block Ack,
    *         false otherwise
    */
-  bool IsMultiTid (void) const;
+  bool IsMultiTid () const;
   /**
    * Check if the BlockAck frame variant is Multi-STA Block Ack.
    *
    * \return true if the BlockAck frame variant is Multi-STA Block Ack,
    *         false otherwise
    */
-  bool IsMultiSta (void) const;
+  bool IsMultiSta () const;
 
   /**
    * For Multi-STA Block Acks, set the AID11 subfield of the Per AID TID Info
@@ -371,7 +371,7 @@ public:
    *
    * \return the number of Per AID TID Info subfields included in this Multi-STA Block Ack
    */
-  std::size_t GetNPerAidTidInfoSubfields (void) const;
+  std::size_t GetNPerAidTidInfoSubfields () const;
   /**
    * For Multi-STA Block Acks, get the indices of the Per AID TID Info subfields
    * carrying the given AID in the AID11 subfield.
@@ -465,7 +465,7 @@ private:
    *
    * \return the Block Ack control
    */
-  uint16_t GetBaControl (void) const;
+  uint16_t GetBaControl () const;
   /**
    * Set the Block Ack control.
    *
@@ -612,7 +612,7 @@ public:
    *
    * \return the expected size of this User Info field.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize the User Info field to the given buffer.
    *
@@ -634,7 +634,7 @@ public:
    *
    * \return the type of the Trigger Frame this User Info field belongs to
    */
-  TriggerFrameType GetType (void) const;
+  TriggerFrameType GetType () const;
   /**
    * Set the AID12 subfield, which carries the 12 LSBs of the AID of the
    * station for which this User Info field is intended. The whole AID can
@@ -648,21 +648,21 @@ public:
    *
    * \return the AID12 subfield
    */
-  uint16_t GetAid12 (void) const;
+  uint16_t GetAid12 () const;
   /**
    * Check if this User Info field allocates a Random Access RU for stations
    * associated with the AP that transmitted the Trigger frame.
    *
    * \return true if a Random Access RU for associated stations is allocated
    */
-  bool HasRaRuForAssociatedSta (void) const;
+  bool HasRaRuForAssociatedSta () const;
   /**
    * Check if this User Info field allocates a Random Access RU for stations
    * not associated with the AP that transmitted the Trigger frame.
    *
    * \return true if a Random Access RU for unassociated stations is allocated
    */
-  bool HasRaRuForUnassociatedSta (void) const;
+  bool HasRaRuForUnassociatedSta () const;
   /**
    * Set the RU Allocation subfield according to the specified RU.
    *
@@ -674,7 +674,7 @@ public:
    *
    * \return the RU this User Info field is allocating
    */
-  HeRu::RuSpec GetRuAllocation (void) const;
+  HeRu::RuSpec GetRuAllocation () const;
   /**
    * Set the UL FEC Coding Type subfield, which indicates whether BCC or LDPC is used
    *
@@ -686,7 +686,7 @@ public:
    *
    * \return true if LDPC is used
    */
-  bool GetUlFecCodingType (void) const;
+  bool GetUlFecCodingType () const;
   /**
    * Set the UL MCS subfield, which indicates the MCS of the solicited HE TB PPDU
    *
@@ -698,7 +698,7 @@ public:
    *
    * \return the MCS index (a value between 0 and 11)
    */
-  uint8_t GetUlMcs (void) const;
+  uint8_t GetUlMcs () const;
   /**
    * Set the UL DCM subfield, which indicates whether or not DCM is used
    *
@@ -710,7 +710,7 @@ public:
    *
    * \return true if DCM is used
    */
-  bool GetUlDcm (void) const;
+  bool GetUlDcm () const;
   /**
    * Set the SS Allocation subfield, which is present when the AID12 subfield
    * is neither 0 nor 2045. This method must be called after setting the AID12
@@ -725,13 +725,13 @@ public:
    *
    * \return the starting spatial stream (a value between 1 and 8)
    */
-  uint8_t GetStartingSs (void) const;
+  uint8_t GetStartingSs () const;
   /**
    * Get the number of spatial streams.
    *
    * \return the number of spatial streams (a value between 1 and 8)
    */
-  uint8_t GetNss (void) const;
+  uint8_t GetNss () const;
   /**
    * Set the RA-RU Information subfield, which is present when the AID12 subfield
    * is 0 or 2045. This method must be called after setting the AID12 subfield to
@@ -747,7 +747,7 @@ public:
    *
    * \return the number of contiguous RA-RUs (a value between 1 and 32)
    */
-  uint8_t GetNRaRus (void) const;
+  uint8_t GetNRaRus () const;
   /**
    * Return true if more RA-RUs are allocated in subsequent Trigger frames
    * that are sent before the end of the current TXOP. This method can only be
@@ -755,12 +755,12 @@ public:
    *
    * \return true if more RA-RUs are allocated in subsequent Trigger frames
    */
-  bool GetMoreRaRu (void) const;
+  bool GetMoreRaRu () const;
   /**
    * Set the UL Target RSSI subfield to indicate to the station to transmit an
    * HE TB PPDU response at its maximum transmit power for the assigned MCS
    */
-  void SetUlTargetRssiMaxTxPower (void);
+  void SetUlTargetRssiMaxTxPower ();
   /**
    * Set the UL Target RSSI subfield to indicate the expected receive signal
    * power in dBm
@@ -775,14 +775,14 @@ public:
    * \return true if the UL Target RSSI subfield indicates to the station to transmit
    * an HE TB PPDU response at its maximum transmit power for the assigned MCS
    */
-  bool IsUlTargetRssiMaxTxPower (void) const;
+  bool IsUlTargetRssiMaxTxPower () const;
   /**
    * Get the expected receive signal power for the solicited HE TB PPDU. This
    * method can only be called if IsUlTargetRssiMaxTxPower returns false.
    *
    * \return the expected receive signal power in dBm
    */
-  int8_t GetUlTargetRssi (void) const;
+  int8_t GetUlTargetRssi () const;
   /**
    * Set the Trigger Dependent User Info subfield for Basic Trigger frames.
    *
@@ -797,21 +797,21 @@ public:
    *
    * \return the MPDU MU spacing factor
    */
-  uint8_t GetMpduMuSpacingFactor (void) const;
+  uint8_t GetMpduMuSpacingFactor () const;
   /**
    * Get the TID Aggregation Limit. This method can only be called if this
    * User Info field is included in a Basic Trigger frame.
    *
    * \return the TID Aggregation Limit
    */
-  uint8_t GetTidAggregationLimit (void) const;
+  uint8_t GetTidAggregationLimit () const;
   /**
    * Get the Preferred AC subfield. This method can only be called if this
    * User Info field is included in a Basic Trigger frame.
    *
    * \return the Preferred AC subfield
    */
-  AcIndex GetPreferredAc (void) const;
+  AcIndex GetPreferredAc () const;
   /**
    * Set the Trigger Dependent User Info subfield for the MU-BAR variant of
    * Trigger frames, which includes a BAR Control subfield and a BAR Information
@@ -831,7 +831,7 @@ public:
    * \return the BlockAckRequest header object including the BAR Control
    *         subfield and the BAR Information subfield
    */
-   const CtrlBAckRequestHeader& GetMuBarTriggerDepUserInfo (void) const;
+   const CtrlBAckRequestHeader& GetMuBarTriggerDepUserInfo () const;
 
 private:
   uint16_t m_aid12;   //!< Association ID of the addressed station
@@ -917,10 +917,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -935,13 +935,13 @@ public:
    *
    * \return the Trigger Frame type
    */
-  TriggerFrameType GetType (void) const;
+  TriggerFrameType GetType () const;
   /**
    * Return a string corresponding to the Trigger Frame type.
    *
    * \returns a string corresponding to the Trigger Frame type.
    */
-  const char * GetTypeString (void) const;
+  const char * GetTypeString () const;
   /**
    * Return a string corresponding to the given Trigger Frame type.
    *
@@ -955,56 +955,56 @@ public:
    * \return true if this is a Basic Trigger frame,
    *         false otherwise
    */
-  bool IsBasic (void) const;
+  bool IsBasic () const;
   /**
    * Check if this is a Beamforming Report Poll Trigger frame.
    *
    * \return true if this is a Beamforming Report Poll Trigger frame,
    *         false otherwise
    */
-  bool IsBfrp (void) const;
+  bool IsBfrp () const;
   /**
    * Check if this is a MU-BAR Trigger frame.
    *
    * \return true if this is a MU-BAR Trigger frame,
    *         false otherwise
    */
-  bool IsMuBar (void) const;
+  bool IsMuBar () const;
   /**
    * Check if this is a MU-RTS Trigger frame.
    *
    * \return true if this is a MU-RTS Trigger frame,
    *         false otherwise
    */
-  bool IsMuRts (void) const;
+  bool IsMuRts () const;
   /**
    * Check if this is a Buffer Status Report Poll Trigger frame.
    *
    * \return true if this is a Buffer Status Report Poll Trigger frame,
    *         false otherwise
    */
-  bool IsBsrp (void) const;
+  bool IsBsrp () const;
   /**
    * Check if this is a Groupcast with Retries (GCR) MU-BAR Trigger frame.
    *
    * \return true if this is a Groupcast with Retries (GCR) MU-BAR Trigger frame,
    *         false otherwise
    */
-  bool IsGcrMuBar (void) const;
+  bool IsGcrMuBar () const;
   /**
    * Check if this is a Bandwidth Query Report Poll Trigger frame.
    *
    * \return true if this is a Bandwidth Query Report Poll Trigger frame,
    *         false otherwise
    */
-  bool IsBqrp (void) const;
+  bool IsBqrp () const;
   /**
    * Check if this is a NDP Feedback Report Poll Trigger frame.
    *
    * \return true if this is a NDP Feedback Report Poll Trigger frame,
    *         false otherwise
    */
-  bool IsNfrp (void) const;
+  bool IsNfrp () const;
   /**
    * Set the UL Length subfield of the Common Info field.
    *
@@ -1016,7 +1016,7 @@ public:
    *
    * \return the UL Length subfield
    */
-  uint16_t GetUlLength (void) const;
+  uint16_t GetUlLength () const;
   /**
    * Get the TX vector that the station with the given STA-ID will use to send
    * the HE TB PPDU solicited by this Trigger Frame. Note that the TX power
@@ -1037,7 +1037,7 @@ public:
    *
    * \return the More TF subfield
    */
-  bool GetMoreTF (void) const;
+  bool GetMoreTF () const;
   /**
    * Set the CS Required subfield of the Common Info field.
    *
@@ -1049,7 +1049,7 @@ public:
    *
    * \return the CS Required subfield
    */
-  bool GetCsRequired (void) const;
+  bool GetCsRequired () const;
   /**
    * Set the bandwidth of the solicited HE TB PPDU.
    *
@@ -1061,7 +1061,7 @@ public:
    *
    * \return the bandwidth (20, 40, 80 or 160)
    */
-  uint16_t GetUlBandwidth (void) const;
+  uint16_t GetUlBandwidth () const;
   /**
    * Set the GI And LTF Type subfield of the Common Info field.
    * Allowed combinations are:
@@ -1078,13 +1078,13 @@ public:
    *
    * \return the guard interval duration (in nanoseconds) of the solicited HE TB PPDU
    */
-  uint16_t GetGuardInterval (void) const;
+  uint16_t GetGuardInterval () const;
   /**
    * Get the LTF type of the solicited HE TB PPDU.
    *
    * \return the LTF type of the solicited HE TB PPDU
    */
-  uint8_t GetLtfType (void) const;
+  uint8_t GetLtfType () const;
   /**
    * Set the AP TX Power subfield of the Common Info field.
    *
@@ -1097,7 +1097,7 @@ public:
    *
    * \return the AP TX Power (dBm) per 20 MHz
    */
-  int8_t GetApTxPower (void) const;
+  int8_t GetApTxPower () const;
   /**
    * Set the UL Spatial Reuse subfield of the Common Info field.
    *
@@ -1109,14 +1109,14 @@ public:
    *
    * \return the UL Spatial Reuse subfield
    */
-  uint16_t GetUlSpatialReuse (void) const;
+  uint16_t GetUlSpatialReuse () const;
   /**
    * Get a copy of the Common Info field of this Trigger frame.
    * Note that the User Info fields are excluded.
    *
    * \return a Trigger frame including a copy of the Common Info field of this frame.
    */
-  CtrlTriggerHeader GetCommonInfoField (void) const;
+  CtrlTriggerHeader GetCommonInfoField () const;
 
   /**
    * Append a new User Info field to this Trigger frame and return
@@ -1125,7 +1125,7 @@ public:
    *
    * \return a non-const reference to the newly added User Info field
    */
-  CtrlTriggerUserInfoField& AddUserInfoField (void);
+  CtrlTriggerUserInfoField& AddUserInfoField ();
   /**
    * Append the given User Info field to this Trigger frame and return
    * a non-const reference to it. Make sure that the type of the given
@@ -1147,31 +1147,31 @@ public:
    *
    * \return a const iterator pointing to the first User Info field in the list
    */
-  ConstIterator begin (void) const;
+  ConstIterator begin () const;
   /**
    * \brief Get a const iterator indicating past-the-last User Info field in the list.
    *
    * \return a const iterator indicating past-the-last User Info field in the list
    */
-  ConstIterator end (void) const;
+  ConstIterator end () const;
   /**
    * \brief Get an iterator pointing to the first User Info field in the list.
    *
    * \return an iterator pointing to the first User Info field in the list
    */
-  Iterator begin (void);
+  Iterator begin ();
   /**
    * \brief Get an iterator indicating past-the-last User Info field in the list.
    *
    * \return an iterator indicating past-the-last User Info field in the list
    */
-  Iterator end (void);
+  Iterator end ();
   /**
    * \brief Get the number of User Info fields in this Trigger Frame.
    *
    * \return the number of User Info fields in this Trigger Frame
    */
-  std::size_t GetNUserInfoFields (void) const;
+  std::size_t GetNUserInfoFields () const;
   /**
    * Get a const iterator pointing to the first User Info field found (starting from
    * the one pointed to by the given iterator) whose AID12 subfield is set to
@@ -1209,7 +1209,7 @@ public:
    * \return a const iterator pointing to the User Info field matching the specified
    * criterion, if any, or an iterator indicating past-the-last User Info field.
    */
-  ConstIterator FindUserInfoWithRaRuAssociated (void) const;
+  ConstIterator FindUserInfoWithRaRuAssociated () const;
   /**
    * Get a const iterator pointing to the first User Info field found (starting from
    * the one pointed to by the given iterator) which allocates a Random Access
@@ -1227,7 +1227,7 @@ public:
    * \return a const iterator pointing to the User Info field matching the specified
    * criterion, if any, or an iterator indicating past-the-last User Info field.
    */
-  ConstIterator FindUserInfoWithRaRuUnassociated (void) const;
+  ConstIterator FindUserInfoWithRaRuUnassociated () const;
   /**
    * Check the validity of this Trigger frame.
    * TODO Implement the checks listed in Section 27.5.3.2.3 of 802.11ax amendment
@@ -1238,7 +1238,7 @@ public:
    *
    * \return true if the Trigger frame is valid, false otherwise.
    */
-  bool IsValid (void) const;
+  bool IsValid () const;
 
 private:
   /**

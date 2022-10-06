@@ -49,7 +49,7 @@ public:
   /**
    * \brief Set the address to match all the outgoing NetDevice
    */
-  void SetAllDevices (void);
+  void SetAllDevices ();
 
   /**
    * \brief Set the address to match only a specified NetDevice
@@ -67,25 +67,25 @@ public:
    * \brief Get the protocol
    * \return the protocol
    */
-  uint16_t GetProtocol (void) const;
+  uint16_t GetProtocol () const;
 
   /**
    * \brief Get the device this address is bound to
    * \return the device index
    */
-  uint32_t GetSingleDevice (void) const;
+  uint32_t GetSingleDevice () const;
 
   /**
    * \brief Checks if the address is bound to a specified NetDevice
    * \return true if the address is bound to a NetDevice
    */
-  bool IsSingleDevice (void) const;
+  bool IsSingleDevice () const;
 
   /**
    * \brief Get the destination address
    * \returns The destination address
    */
-  Address GetPhysicalAddress (void) const;
+  Address GetPhysicalAddress () const;
 
   /**
    * \returns a new Address instance
@@ -113,13 +113,13 @@ private:
    * \brief Return the Type of address.
    * \return type of address
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
 
   /**
    * \brief Convert an instance of this class to a polymorphic Address instance.
    * \returns a new Address instance
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   uint16_t m_protocol;    //!< Protocol
   bool m_isSingleDevice;  //!< True if directed to a specific outgoing NetDevice

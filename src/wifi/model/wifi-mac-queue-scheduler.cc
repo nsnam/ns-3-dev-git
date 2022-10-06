@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiMacQueueScheduler");
 NS_OBJECT_ENSURE_REGISTERED (WifiMacQueueScheduler);
 
 TypeId
-WifiMacQueueScheduler::GetTypeId (void)
+WifiMacQueueScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMacQueueScheduler")
     .SetParent<Object> ()
@@ -51,7 +51,7 @@ WifiMacQueueScheduler::SetWifiMac (Ptr<WifiMac> mac)
 }
 
 Ptr<WifiMac>
-WifiMacQueueScheduler::GetMac (void) const
+WifiMacQueueScheduler::GetMac () const
 {
   return m_mac;
 }

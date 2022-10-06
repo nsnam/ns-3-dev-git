@@ -33,7 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (RandomDirection2dMobilityModel);
 
 
 TypeId
-RandomDirection2dMobilityModel::GetTypeId (void)
+RandomDirection2dMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RandomDirection2dMobilityModel")
     .SetParent<MobilityModel> ()
@@ -61,27 +61,27 @@ RandomDirection2dMobilityModel::RandomDirection2dMobilityModel ()
 }
 
 void
-RandomDirection2dMobilityModel::DoDispose (void)
+RandomDirection2dMobilityModel::DoDispose ()
 {
   // chain up.
   MobilityModel::DoDispose ();
 }
 void
-RandomDirection2dMobilityModel::DoInitialize (void)
+RandomDirection2dMobilityModel::DoInitialize ()
 {
   DoInitializePrivate ();
   MobilityModel::DoInitialize ();
 }
 
 void
-RandomDirection2dMobilityModel::DoInitializePrivate (void)
+RandomDirection2dMobilityModel::DoInitializePrivate ()
 {
   double direction = m_direction->GetValue (0, 2 * M_PI);
   SetDirectionAndSpeed (direction);
 }
 
 void
-RandomDirection2dMobilityModel::BeginPause (void)
+RandomDirection2dMobilityModel::BeginPause ()
 {
   m_helper.Update ();
   m_helper.Pause ();
@@ -111,7 +111,7 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
   NotifyCourseChange ();
 }
 void
-RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
+RandomDirection2dMobilityModel::ResetDirectionAndSpeed ()
 {
   double direction = m_direction->GetValue (0, M_PI);
 
@@ -135,7 +135,7 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
   SetDirectionAndSpeed (direction);
 }
 Vector
-RandomDirection2dMobilityModel::DoGetPosition (void) const
+RandomDirection2dMobilityModel::DoGetPosition () const
 {
   m_helper.UpdateWithBounds (m_bounds);
   return m_helper.GetCurrentPosition ();
@@ -148,7 +148,7 @@ RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::DoInitializePrivate, this);
 }
 Vector
-RandomDirection2dMobilityModel::DoGetVelocity (void) const
+RandomDirection2dMobilityModel::DoGetVelocity () const
 {
   return m_helper.GetVelocity ();
 }

@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("PieQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (PieQueueDisc);
 
-TypeId PieQueueDisc::GetTypeId (void)
+TypeId PieQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PieQueueDisc")
     .SetParent<QueueDisc> ()
@@ -151,7 +151,7 @@ PieQueueDisc::~PieQueueDisc ()
 }
 
 void
-PieQueueDisc::DoDispose (void)
+PieQueueDisc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_uv = 0;
@@ -160,7 +160,7 @@ PieQueueDisc::DoDispose (void)
 }
 
 Time
-PieQueueDisc::GetQueueDelay (void)
+PieQueueDisc::GetQueueDelay ()
 {
   return m_qDelay;
 }
@@ -253,7 +253,7 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 void
-PieQueueDisc::InitializeParams (void)
+PieQueueDisc::InitializeParams ()
 {
   // Initially queue is empty so variables are initialize to zero except m_dqCount
   m_inMeasurement = false;
@@ -565,7 +565,7 @@ PieQueueDisc::DoDequeue ()
 }
 
 bool
-PieQueueDisc::CheckConfig (void)
+PieQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)

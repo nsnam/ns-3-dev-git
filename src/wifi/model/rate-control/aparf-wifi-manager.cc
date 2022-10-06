@@ -57,7 +57,7 @@ AparfWifiRemoteStation : public WifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (AparfWifiManager);
 
 TypeId
-AparfWifiManager::GetTypeId (void)
+AparfWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AparfWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -153,7 +153,7 @@ AparfWifiManager::DoInitialize ()
 }
 
 WifiRemoteStation *
-AparfWifiManager::DoCreateStation (void) const
+AparfWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   AparfWifiRemoteStation *station = new AparfWifiRemoteStation ();

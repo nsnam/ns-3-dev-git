@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("EnergyHarvester");
 NS_OBJECT_ENSURE_REGISTERED (EnergyHarvester);
 
 TypeId
-EnergyHarvester::GetTypeId (void)
+EnergyHarvester::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EnergyHarvester")
     .SetParent<Object> ()
@@ -57,7 +57,7 @@ EnergyHarvester::SetNode (Ptr<Node> node)
 }
 
 Ptr<Node>
-EnergyHarvester::GetNode (void) const
+EnergyHarvester::GetNode () const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
@@ -72,7 +72,7 @@ EnergyHarvester::SetEnergySource (Ptr<EnergySource> source)
 }
 
 Ptr<EnergySource>
-EnergyHarvester::GetEnergySource (void) const
+EnergyHarvester::GetEnergySource () const
 {
   NS_LOG_FUNCTION (this);
   return m_energySource;
@@ -80,7 +80,7 @@ EnergyHarvester::GetEnergySource (void) const
 
 
 double
-EnergyHarvester::GetPower (void) const
+EnergyHarvester::GetPower () const
 {
   NS_LOG_FUNCTION (this);
   return DoGetPower ();
@@ -91,13 +91,13 @@ EnergyHarvester::GetPower (void) const
  */
 
 void
-EnergyHarvester::DoDispose (void)
+EnergyHarvester::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 double
-EnergyHarvester::DoGetPower (void) const
+EnergyHarvester::DoGetPower () const
 {
   NS_LOG_FUNCTION (this);
   return 0.0;

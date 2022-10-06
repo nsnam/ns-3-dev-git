@@ -59,14 +59,14 @@ public:
    */
   virtual ~EhtPhy ();
 
-  const PpduFormats& GetPpduFormats (void) const override;
+  const PpduFormats& GetPpduFormats () const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
   Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
 
   /**
    * Initialize all EHT modes.
    */
-  static void InitializeModes (void);
+  static void InitializeModes ();
 
   /**
    * Return the EHT MCS corresponding to
@@ -82,85 +82,85 @@ public:
    *
    * \return MCS 0 from EHT MCS values
    */
-  static WifiMode GetEhtMcs0 (void);
+  static WifiMode GetEhtMcs0 ();
   /**
    * Return MCS 1 from EHT MCS values.
    *
    * \return MCS 1 from EHT MCS values
    */
-  static WifiMode GetEhtMcs1 (void);
+  static WifiMode GetEhtMcs1 ();
   /**
    * Return MCS 2 from EHT MCS values.
    *
    * \return MCS 2 from EHT MCS values
    */
-  static WifiMode GetEhtMcs2 (void);
+  static WifiMode GetEhtMcs2 ();
   /**
    * Return MCS 3 from EHT MCS values.
    *
    * \return MCS 3 from EHT MCS values
    */
-  static WifiMode GetEhtMcs3 (void);
+  static WifiMode GetEhtMcs3 ();
   /**
    * Return MCS 4 from EHT MCS values.
    *
    * \return MCS 4 from EHT MCS values
    */
-  static WifiMode GetEhtMcs4 (void);
+  static WifiMode GetEhtMcs4 ();
   /**
    * Return MCS 5 from EHT MCS values.
    *
    * \return MCS 5 from EHT MCS values
    */
-  static WifiMode GetEhtMcs5 (void);
+  static WifiMode GetEhtMcs5 ();
   /**
    * Return MCS 6 from EHT MCS values.
    *
    * \return MCS 6 from EHT MCS values
    */
-  static WifiMode GetEhtMcs6 (void);
+  static WifiMode GetEhtMcs6 ();
   /**
    * Return MCS 7 from EHT MCS values.
    *
    * \return MCS 7 from EHT MCS values
    */
-  static WifiMode GetEhtMcs7 (void);
+  static WifiMode GetEhtMcs7 ();
   /**
    * Return MCS 8 from EHT MCS values.
    *
    * \return MCS 8 from EHT MCS values
    */
-  static WifiMode GetEhtMcs8 (void);
+  static WifiMode GetEhtMcs8 ();
   /**
    * Return MCS 9 from EHT MCS values.
    *
    * \return MCS 9 from EHT MCS values
    */
-  static WifiMode GetEhtMcs9 (void);
+  static WifiMode GetEhtMcs9 ();
   /**
    * Return MCS 10 from EHT MCS values.
    *
    * \return MCS 10 from EHT MCS values
    */
-  static WifiMode GetEhtMcs10 (void);
+  static WifiMode GetEhtMcs10 ();
   /**
    * Return MCS 11 from EHT MCS values.
    *
    * \return MCS 11 from EHT MCS values
    */
-  static WifiMode GetEhtMcs11 (void);
+  static WifiMode GetEhtMcs11 ();
   /**
    * Return MCS 12 from EHT MCS values.
    *
    * \return MCS 12 from EHT MCS values
    */
-  static WifiMode GetEhtMcs12 (void);
+  static WifiMode GetEhtMcs12 ();
   /**
    * Return MCS 13 from EHT MCS values.
    *
    * \return MCS 13 from EHT MCS values
    */
-  static WifiMode GetEhtMcs13 (void);
+  static WifiMode GetEhtMcs13 ();
 
   /**
    * Return the coding rate corresponding to
@@ -242,7 +242,7 @@ public:
   static uint64_t GetNonHtReferenceRate (uint8_t mcsValue);
 
 protected:
-  void BuildModeList (void) override;
+  void BuildModeList () override;
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   PhyFieldRxStatus ProcessSig (Ptr<Event> event, PhyFieldRxStatus status, WifiPpduField field) override;

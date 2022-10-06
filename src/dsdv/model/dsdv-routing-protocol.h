@@ -57,7 +57,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint32_t DSDV_PORT;
 
   /// c-tor
@@ -194,7 +194,7 @@ private:
   DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /// Look for any queued packets to send them out
   void
-  LookForQueuedPackets (void);
+  LookForQueuedPackets ();
   /**
    * Send packet from queue
    * \param dst - destination address to which we are sending the packet to

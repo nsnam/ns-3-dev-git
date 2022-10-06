@@ -28,7 +28,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (MobilityModel);
 
 TypeId
-MobilityModel::GetTypeId (void)
+MobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MobilityModel")
     .SetParent<Object> ()
@@ -61,7 +61,7 @@ MobilityModel::~MobilityModel ()
 }
 
 Vector
-MobilityModel::GetPosition (void) const
+MobilityModel::GetPosition () const
 {
   return DoGetPosition ();
 }
@@ -79,7 +79,7 @@ MobilityModel::DoGetPositionWithReference (const Vector& referencePosition) cons
 }
 
 Vector
-MobilityModel::GetVelocity (void) const
+MobilityModel::GetVelocity () const
 {
   return DoGetVelocity ();
 }
@@ -105,7 +105,7 @@ MobilityModel::GetRelativeSpeed (Ptr<const MobilityModel> other) const
 }
 
 void
-MobilityModel::NotifyCourseChange (void) const
+MobilityModel::NotifyCourseChange () const
 {
   m_courseChangeTrace (this);
 }

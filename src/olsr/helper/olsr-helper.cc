@@ -38,7 +38,7 @@ OlsrHelper::OlsrHelper (const OlsrHelper &o)
 }
 
 OlsrHelper*
-OlsrHelper::Copy (void) const
+OlsrHelper::Copy () const
 {
   return new OlsrHelper (*this);
 }

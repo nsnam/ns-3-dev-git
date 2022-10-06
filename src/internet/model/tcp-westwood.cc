@@ -44,7 +44,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (TcpWestwood);
 
 TypeId
-TcpWestwood::GetTypeId (void)
+TcpWestwood::GetTypeId ()
 {
   static TypeId tid = TypeId("ns3::TcpWestwood")
     .SetParent<TcpNewReno>()
@@ -64,7 +64,7 @@ TcpWestwood::GetTypeId (void)
   return tid;
 }
 
-TcpWestwood::TcpWestwood (void) :
+TcpWestwood::TcpWestwood () :
   TcpNewReno (),
   m_currentBW (0),
   m_lastSampleBW (0),
@@ -89,7 +89,7 @@ TcpWestwood::TcpWestwood (const TcpWestwood& sock) :
   NS_LOG_LOGIC ("Invoked the copy constructor");
 }
 
-TcpWestwood::~TcpWestwood (void)
+TcpWestwood::~TcpWestwood ()
 {
 }
 

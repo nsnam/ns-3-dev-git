@@ -37,7 +37,7 @@ int BsmApplication::wavePort = 9080;
 NS_OBJECT_ENSURE_REGISTERED (BsmApplication);
 
 TypeId
-BsmApplication::GetTypeId (void)
+BsmApplication::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BsmApplication")
     .SetParent<Application> ()
@@ -72,7 +72,7 @@ BsmApplication::~BsmApplication ()
 }
 
 void
-BsmApplication::DoDispose (void)
+BsmApplication::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 

@@ -255,7 +255,7 @@ public:
    *
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * The maximum packet size accepted by the PHY.
@@ -273,12 +273,12 @@ public:
   /**
    * Default constructor.
    */
-  LrWpanPhy (void);
-  virtual ~LrWpanPhy (void);
+  LrWpanPhy ();
+  virtual ~LrWpanPhy ();
 
   // inherited from SpectrumPhy
   void SetMobility (Ptr<MobilityModel> m);
-  Ptr<MobilityModel> GetMobility (void) const;
+  Ptr<MobilityModel> GetMobility () const;
   void SetChannel (Ptr<SpectrumChannel> c);
 
   /**
@@ -286,9 +286,9 @@ public:
    *
    * \return the channel
    */
-  Ptr<SpectrumChannel> GetChannel (void);
+  Ptr<SpectrumChannel> GetChannel ();
   void SetDevice (Ptr<NetDevice> d);
-  Ptr<NetDevice> GetDevice (void) const;
+  Ptr<NetDevice> GetDevice () const;
 
   /**
    * Set the attached antenna.
@@ -296,8 +296,8 @@ public:
    * \param a the antenna
    */
   void SetAntenna (Ptr<AntennaModel> a);
-  Ptr<Object> GetAntenna (void) const;
-  virtual Ptr<const SpectrumModel> GetRxSpectrumModel (void) const;
+  Ptr<Object> GetAntenna () const;
+  virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const;
 
   /**
    * Set the Power Spectral Density of outgoing signals in W/Hz.
@@ -319,7 +319,7 @@ public:
    *
    * @return the Noise Power Spectral Density
    */
-  Ptr<const SpectrumValue> GetNoisePowerSpectralDensity (void);
+  Ptr<const SpectrumValue> GetNoisePowerSpectralDensity ();
 
   /**
    * Set the modulation option used by this PHY.
@@ -350,19 +350,19 @@ public:
    *  PLME-CCA.request
    *  Perform a CCA per section 6.9.9
    */
-  void PlmeCcaRequest (void);
+  void PlmeCcaRequest ();
 
   /**
    *  Cancel an ongoing CCA request.
    */
-  void CcaCancel (void);
+  void CcaCancel ();
 
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.3
    *  PLME-ED.request
    *  Perform an ED per section 6.9.7
    */
-  void PlmeEdRequest (void);
+  void PlmeEdRequest ();
 
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.5
@@ -450,14 +450,14 @@ public:
    *
    * @return The current page number
    */
-  uint8_t GetCurrentPage (void) const;
+  uint8_t GetCurrentPage () const;
 
   /**
    * Get The current channel number in use in this PHY from the PIB attributes.
    *
    * @return The current channel number
    */
-  uint8_t GetCurrentChannelNum (void) const;
+  uint8_t GetCurrentChannelNum () const;
 
   /**
    * implement PLME SetAttribute confirm SAP
@@ -479,7 +479,7 @@ public:
    *
    * @return pointer to LrWpanErrorModel in use
    */
-  Ptr<LrWpanErrorModel> GetErrorModel (void) const;
+  Ptr<LrWpanErrorModel> GetErrorModel () const;
 
   /**
    * Get the duration of the SHR (preamble and SFD) in symbols, depending on
@@ -487,7 +487,7 @@ public:
    *
    * \return the SHR duration in symbols
    */
-  uint64_t GetPhySHRDuration (void) const;
+  uint64_t GetPhySHRDuration () const;
 
   /**
    * Get the number of symbols per octet, depending on the currently selected
@@ -495,7 +495,7 @@ public:
    *
    * \return the number of symbols per octet
    */
-  double GetPhySymbolsPerOctet (void) const;
+  double GetPhySymbolsPerOctet () const;
 
   /**
    * Get the current accumulated sum of signals in the transceiver including
@@ -503,7 +503,7 @@ public:
    *
    * \return the accumulated signal power spectral density value in Dbm.
    */
-  double GetCurrentSignalPsd (void);
+  double GetCurrentSignalPsd ();
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -547,8 +547,8 @@ private:
   typedef std::pair<Ptr<Packet>, bool>  PacketAndStatus;
 
   // Inherited from Object.
-  virtual void DoInitialize (void);
-  virtual void DoDispose (void);
+  virtual void DoInitialize ();
+  virtual void DoDispose ();
 
   /**
    * Change the PHY state to the given new state, firing the state change trace.
@@ -563,20 +563,20 @@ private:
    *
    * \return the PHY option
    */
-  LrWpanPhyOption GetMyPhyOption (void);
+  LrWpanPhyOption GetMyPhyOption ();
 
   /**
    * Finish the transmission of a frame. This is called at the end of a frame
    * transmission, applying possibly pending PHY state changes and fireing the
    * appropriate trace sources and confirm callbacks to the MAC.
    */
-  void EndTx (void);
+  void EndTx ();
 
   /**
    * Check if the interference destroys a frame currently received. Called
    * whenever a change in interference is detected.
    */
-  void CheckInterference (void);
+  void CheckInterference ();
 
   /**
    * Finish the reception of a frame. This is called at the end of a frame
@@ -603,19 +603,19 @@ private:
    * Called at the end of the ED procedure. The average energy detected is
    * reported to the MAC.
    */
-  void EndEd (void);
+  void EndEd ();
 
   /**
    * Called at the end of the CCA. The channel condition (busy or idle) is
    * reported to the MAC or CSMA/CA.
    */
-  void EndCca (void);
+  void EndCca ();
 
   /**
    * Called after applying a deferred transceiver state switch. The result of
    * the state switch is reported to the MAC.
    */
-  void EndSetTRXState (void);
+  void EndSetTRXState ();
 
   /**
    * Calculate the time required for sending the given packet, including
@@ -631,7 +631,7 @@ private:
    * preamble, SFD and PHR.
    * \returns The time required for sending the PPDU header.
    */
-  Time GetPpduHeaderTxTime (void);
+  Time GetPpduHeaderTxTime ();
 
   /**
    * Check if the given channel is supported by the PHY.
@@ -655,7 +655,7 @@ private:
    *
    * \return true, if the PHY is busy, false otherwise
    */
-  bool PhyIsBusy (void) const;
+  bool PhyIsBusy () const;
 
   // Trace sources
   /**

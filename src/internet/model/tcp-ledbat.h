@@ -63,12 +63,12 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Create an unbound tcp socket.
    */
-  TcpLedbat (void);
+  TcpLedbat ();
 
   /**
    * \brief Copy constructor
@@ -79,7 +79,7 @@ public:
   /**
    * \brief Destructor
    */
-  virtual ~TcpLedbat (void);
+  virtual ~TcpLedbat ();
 
   /**
    * \brief Get the name of the TCP flavour

@@ -56,13 +56,13 @@ WifiAc::WifiAc (uint8_t lowTid, uint8_t highTid)
 }
 
 uint8_t
-WifiAc::GetLowTid (void) const
+WifiAc::GetLowTid () const
 {
   return m_lowTid;
 }
 
 uint8_t
-WifiAc::GetHighTid (void) const
+WifiAc::GetHighTid () const
 {
   return m_highTid;
 }

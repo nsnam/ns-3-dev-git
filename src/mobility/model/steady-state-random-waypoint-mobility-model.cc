@@ -28,7 +28,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (SteadyStateRandomWaypointMobilityModel);
 
 TypeId
-SteadyStateRandomWaypointMobilityModel::GetTypeId (void)
+SteadyStateRandomWaypointMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SteadyStateRandomWaypointMobilityModel")
     .SetParent<MobilityModel> ()
@@ -99,14 +99,14 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateRandomWaypointMobilityModel (
 }
 
 void
-SteadyStateRandomWaypointMobilityModel::DoInitialize (void)
+SteadyStateRandomWaypointMobilityModel::DoInitialize ()
 {
   DoInitializePrivate ();
   MobilityModel::DoInitialize ();
 }
 
 void
-SteadyStateRandomWaypointMobilityModel::DoInitializePrivate (void)
+SteadyStateRandomWaypointMobilityModel::DoInitializePrivate ()
 {
   alreadyStarted = true;
   // Configure random variables based on attributes
@@ -231,7 +231,7 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateBeginWalk (const Vector &dest
 }
 
 void
-SteadyStateRandomWaypointMobilityModel::BeginWalk (void)
+SteadyStateRandomWaypointMobilityModel::BeginWalk ()
 {
   m_helper.Update ();
   Vector m_current = m_helper.GetCurrentPosition ();
@@ -253,7 +253,7 @@ SteadyStateRandomWaypointMobilityModel::BeginWalk (void)
 }
 
 void
-SteadyStateRandomWaypointMobilityModel::Start (void)
+SteadyStateRandomWaypointMobilityModel::Start ()
 {
   m_helper.Update ();
   m_helper.Pause ();
@@ -263,7 +263,7 @@ SteadyStateRandomWaypointMobilityModel::Start (void)
 }
 
 Vector
-SteadyStateRandomWaypointMobilityModel::DoGetPosition (void) const
+SteadyStateRandomWaypointMobilityModel::DoGetPosition () const
 {
   m_helper.Update ();
   return m_helper.GetCurrentPosition ();
@@ -279,7 +279,7 @@ SteadyStateRandomWaypointMobilityModel::DoSetPosition (const Vector &position)
     }
 }
 Vector
-SteadyStateRandomWaypointMobilityModel::DoGetVelocity (void) const
+SteadyStateRandomWaypointMobilityModel::DoGetVelocity () const
 {
   return m_helper.GetVelocity ();
 }

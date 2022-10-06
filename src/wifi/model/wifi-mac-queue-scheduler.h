@@ -44,7 +44,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the wifi MAC.
@@ -139,7 +139,7 @@ protected:
    *
    * \return the wifi MAC
    */
-  Ptr<WifiMac> GetMac (void) const;
+  Ptr<WifiMac> GetMac () const;
 
 private:
   Ptr<WifiMac> m_mac;                 //!< MAC layer

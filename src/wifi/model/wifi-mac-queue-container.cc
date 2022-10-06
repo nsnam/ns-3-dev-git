@@ -27,7 +27,7 @@
 namespace ns3 {
 
 void
-WifiMacQueueContainer::clear (void)
+WifiMacQueueContainer::clear ()
 {
   m_queues.clear ();
   m_expiredQueue.clear ();
@@ -148,7 +148,7 @@ WifiMacQueueContainer::DoExtractExpiredMpdus (ContainerQueue& queue) const
 }
 
 std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>
-WifiMacQueueContainer::ExtractAllExpiredMpdus (void) const
+WifiMacQueueContainer::ExtractAllExpiredMpdus () const
 {
   iterator firstExpiredIt = m_expiredQueue.end ();
 
@@ -166,7 +166,7 @@ WifiMacQueueContainer::ExtractAllExpiredMpdus (void) const
 }
 
 std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>
-WifiMacQueueContainer::GetAllExpiredMpdus (void) const
+WifiMacQueueContainer::GetAllExpiredMpdus () const
 {
   return {m_expiredQueue.begin (), m_expiredQueue.end ()};
 }

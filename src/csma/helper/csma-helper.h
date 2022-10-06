@@ -90,7 +90,7 @@ public:
    * as every packet enqueued to the traffic control layer queue disc will
    * be immediately dequeued.
    */
-  void DisableFlowControl (void);
+  void DisableFlowControl ();
 
   /**
    * This method creates an ns3::CsmaChannel with the attributes configured by

@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("TopologyReader");
 
 NS_OBJECT_ENSURE_REGISTERED (TopologyReader);
 
-TypeId TopologyReader::GetTypeId (void)
+TypeId TopologyReader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TopologyReader")
     .SetParent<Object> ()
@@ -69,25 +69,25 @@ TopologyReader::GetFileName () const
 /* Manipulating the address block */
 
 TopologyReader::ConstLinksIterator
-TopologyReader::LinksBegin (void) const
+TopologyReader::LinksBegin () const
 {
   return m_linksList.begin ();
 }
 
 TopologyReader::ConstLinksIterator
-TopologyReader::LinksEnd (void) const
+TopologyReader::LinksEnd () const
 {
   return m_linksList.end ();
 }
 
 int
-TopologyReader::LinksSize (void) const
+TopologyReader::LinksSize () const
 {
   return m_linksList.size ();
 }
 
 bool
-TopologyReader::LinksEmpty (void) const
+TopologyReader::LinksEmpty () const
 {
   return m_linksList.empty ();
 }
@@ -112,25 +112,25 @@ TopologyReader::Link::Link ()
 }
 
 
-Ptr<Node> TopologyReader::Link::GetFromNode (void) const
+Ptr<Node> TopologyReader::Link::GetFromNode () const
 {
   return m_fromPtr;
 }
 
 std::string
-TopologyReader::Link::GetFromNodeName (void) const
+TopologyReader::Link::GetFromNodeName () const
 {
   return m_fromName;
 }
 
 Ptr<Node>
-TopologyReader::Link::GetToNode (void) const
+TopologyReader::Link::GetToNode () const
 {
   return m_toPtr;
 }
 
 std::string
-TopologyReader::Link::GetToNodeName (void) const
+TopologyReader::Link::GetToNodeName () const
 {
   return m_toName;
 }
@@ -160,12 +160,12 @@ TopologyReader::Link::SetAttribute (const std::string &name, const std::string &
 }
 
 TopologyReader::Link::ConstAttributesIterator
-TopologyReader::Link::AttributesBegin (void) const
+TopologyReader::Link::AttributesBegin () const
 {
   return m_linkAttr.begin ();
 }
 TopologyReader::Link::ConstAttributesIterator
-TopologyReader::Link::AttributesEnd (void) const
+TopologyReader::Link::AttributesEnd () const
 {
   return m_linkAttr.end ();
 }

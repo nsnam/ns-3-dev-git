@@ -138,12 +138,12 @@ public:
      * \brief Checks if there is another metadata item
      * \returns true if there is another item
      */
-    bool HasNext (void) const;
+    bool HasNext () const;
     /**
      * \brief Retrieve the next metadata item
      * \returns the next metadata item
      */
-    Item Next (void);
+    Item Next ();
 private:
     const PacketMetadata *m_metadata; //!< pointer to the metadata
     Buffer m_buffer; //!< buffer the metadata refers to
@@ -155,11 +155,11 @@ private:
   /**
    * \brief Enable the packet metadata
    */
-  static void Enable (void);
+  static void Enable ();
   /**
    * \brief Enable the packet metadata checking
    */
-  static void EnableChecking (void);
+  static void EnableChecking ();
 
   /**
    * \brief Constructor
@@ -246,13 +246,13 @@ private:
    * \brief Get the packet Uid
    * \return the packet Uid
    */
-  uint64_t GetUid (void) const;
+  uint64_t GetUid () const;
 
   /**
    * \brief Get the metadata serialized size
    * \return the seralized size
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
 
   /**
    * \brief Initialize the item iterator to the buffer begin
@@ -603,7 +603,7 @@ private:
    * \brief Get the total size used by the metadata
    * \return the metadata used size
    */
-  uint32_t GetTotalSize (void) const;
+  uint32_t GetTotalSize () const;
 
   /**
    * \brief Read items
@@ -625,7 +625,7 @@ private:
    * \brief Check if the metadata state is ok
    * \returns true if the internal state is ok
    */
-  bool IsStateOk (void) const;
+  bool IsStateOk () const;
   /**
    * \brief Check if the position is valid
    * \param pointer the position to check

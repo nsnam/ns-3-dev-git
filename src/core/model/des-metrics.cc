@@ -138,13 +138,13 @@ DesMetrics::TraceWithContext (uint32_t context, const Time & now, const Time & d
   m_separator = ',';
 }
 
-DesMetrics::~DesMetrics (void)
+DesMetrics::~DesMetrics ()
 {
   Close ();
 }
 
 void
-DesMetrics::Close (void)
+DesMetrics::Close ()
 {
   m_os << std::endl;    // Finish the last event line
 

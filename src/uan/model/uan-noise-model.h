@@ -37,7 +37,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Compute the noise power at a given frequency.
@@ -48,9 +48,9 @@ public:
   virtual double GetNoiseDbHz (double fKhz) const = 0;
 
   /** Clear all pointer references. */
-  virtual void Clear (void);
+  virtual void Clear ();
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 };  // class UanNoiseModel
 

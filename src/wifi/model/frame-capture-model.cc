@@ -26,7 +26,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (FrameCaptureModel);
 
-TypeId FrameCaptureModel::GetTypeId (void)
+TypeId FrameCaptureModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FrameCaptureModel")
     .SetParent<Object> ()

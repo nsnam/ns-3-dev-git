@@ -72,7 +72,7 @@ public:
    * \brief Get the port.
    * \return the port
    */
-  uint16_t GetPort (void) const;
+  uint16_t GetPort () const;
 
   /**
    * \brief Set the port
@@ -84,7 +84,7 @@ public:
    * \brief Get the IPv6 address.
    * \return the IPv6 address
    */
-  Ipv6Address GetIpv6 (void) const;
+  Ipv6Address GetIpv6 () const;
 
   /**
    * \brief Set the IPv6 address.
@@ -103,7 +103,7 @@ public:
    * \brief Get an Address instance which represents this
    * Inet6SocketAddress instance.
    */
-  operator Address (void) const;
+  operator Address () const;
 
   /**
    * \brief Convert the address to a InetSocketAddress.
@@ -117,13 +117,13 @@ private:
    * \brief Convert to Address.
    * \return Address instance
    */
-  Address ConvertTo (void) const;
+  Address ConvertTo () const;
 
   /**
    * \brief Get the type.
    * \return the type of Inet6SocketAddress
    */
-  static uint8_t GetType (void);
+  static uint8_t GetType ();
 
   /**
    * \brief The IPv6 address.

@@ -57,15 +57,15 @@ namespace ns3 {
 class CcHelper : public Object
 {
 public:
-  CcHelper (void);
-  virtual ~CcHelper (void);
+  CcHelper ();
+  virtual ~CcHelper ();
 
   /**
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
-  virtual void DoDispose (void);
+  static TypeId GetTypeId ();
+  virtual void DoDispose ();
 
   /**
   * Create single CC.
@@ -166,7 +166,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoInitialize (void);
+  virtual void DoInitialize ();
 
 private:
   /**

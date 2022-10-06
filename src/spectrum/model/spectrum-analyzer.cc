@@ -67,7 +67,7 @@ SpectrumAnalyzer::DoDispose ()
 }
 
 TypeId
-SpectrumAnalyzer::GetTypeId (void)
+SpectrumAnalyzer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SpectrumAnalyzer")
     .SetParent<SpectrumPhy> ()

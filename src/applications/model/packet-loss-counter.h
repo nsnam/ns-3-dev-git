@@ -60,12 +60,12 @@ public:
    * \brief Get the number of lost packets.
    * \returns the number of lost packets.
    */
-  uint32_t GetLost (void) const;
+  uint32_t GetLost () const;
   /**
    * \brief Return the size of the window used to compute the packet loss.
    * \return the window size.
    */
-  uint16_t GetBitMapSize (void) const;
+  uint16_t GetBitMapSize () const;
   /**
    * \brief Set the size of the window used to compute the packet loss.
    *

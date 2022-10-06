@@ -63,15 +63,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  SimpleOfdmWimaxPhy (void);
+  static TypeId GetTypeId ();
+  SimpleOfdmWimaxPhy ();
   /**
    * Constructor
    *
    * \param tracesPath trace path
    */
   SimpleOfdmWimaxPhy (char * tracesPath);
-  ~SimpleOfdmWimaxPhy (void);
+  ~SimpleOfdmWimaxPhy ();
   /**
    * \brief if called with true it will enable the loss model
    * \param loss set to true to enable the loss model
@@ -110,7 +110,7 @@ public:
    * \brief returns the type this physical layer
    * \return always  WimaxPhy::simpleOfdmWimaxPhy;
    */
-  WimaxPhy::PhyType GetPhyType (void) const;
+  WimaxPhy::PhyType GetPhyType () const;
   /**
    * \brief start the reception of a fec block
    * \param burstSize the burst size
@@ -133,7 +133,7 @@ public:
   /**
    * \return the bandwidth
    */
-  uint32_t GetBandwidth (void) const;
+  uint32_t GetBandwidth () const;
   /**
    * \brief Set the bandwidth
    * \param BW the bandwidth
@@ -142,7 +142,7 @@ public:
   /**
    * \return the transmission power
    */
-  double GetTxPower (void) const;
+  double GetTxPower () const;
   /**
    * \brief set the transmission power
    * \param txPower the transmission power
@@ -151,7 +151,7 @@ public:
   /**
    * \return the noise figure
    */
-  double GetNoiseFigure (void) const;
+  double GetNoiseFigure () const;
   /**
    * \brief set the noise figure of the device
    * \param nf the noise figure
@@ -280,9 +280,9 @@ private:
    * \returns the number of blocks
    */
   uint16_t GetNrBlocks (uint32_t burstSize, WimaxPhy::ModulationType modulationType) const;
-  void DoDispose (void);
+  void DoDispose ();
   /// End send
-  void EndSend (void);
+  void EndSend ();
   /**
    * End send FEC block
    * \param modulationType the modulation type
@@ -323,9 +323,9 @@ private:
    */
   Time GetBlockTransmissionTime (WimaxPhy::ModulationType modulationType) const;
   /// Set data rates
-  void DoSetDataRates (void);
+  void DoSetDataRates ();
   /// Initialize simple OFDM WIMAX Phy
-  void InitSimpleOfdmWimaxPhy (void);
+  void InitSimpleOfdmWimaxPhy ();
 
   /**
    * Get moduleation FEC parameters
@@ -350,17 +350,17 @@ private:
    * Get TTG
    * \returns the TTG
    */
-  uint16_t DoGetTtg (void) const;
+  uint16_t DoGetTtg () const;
   /**
    * Get RTG
    * \returns the RTG
    */
-  uint16_t DoGetRtg (void) const;
+  uint16_t DoGetRtg () const;
   /**
    * Get frame duration code
    * \returns the frame duration code
    */
-  uint8_t DoGetFrameDurationCode (void) const;
+  uint8_t DoGetFrameDurationCode () const;
   /**
    * Get frame duration
    * \param frameDurationCode the frame duration code
@@ -368,12 +368,12 @@ private:
    */
   Time DoGetFrameDuration (uint8_t frameDurationCode) const;
   /// Set Phy parameters
-  void DoSetPhyParameters (void);
+  void DoSetPhyParameters ();
   /**
    * Get NFFT
    * \returns the NFFT
    */
-  uint16_t DoGetNfft (void) const;
+  uint16_t DoGetNfft () const;
   /**
    * Set NFFT
    * \param nfft the NFFT
@@ -383,17 +383,17 @@ private:
    * Get sampling factor
    * \returns the sampling factor
    */
-  double DoGetSamplingFactor (void) const;
+  double DoGetSamplingFactor () const;
   /**
    * Get sampling frequency
    * \returns the sampling frequency
    */
-  double DoGetSamplingFrequency (void) const;
+  double DoGetSamplingFrequency () const;
   /**
    * Get G value
    * \returns the G value
    */
-  double DoGetGValue (void) const;
+  double DoGetGValue () const;
   /**
    * Set G value
    * \param g the G value
@@ -404,7 +404,7 @@ private:
    * Get receive gain
    * \returns the receive gain
    */
-  double GetRxGain (void) const;
+  double GetRxGain () const;
   /**
    * Set receive gsain
    * \param rxgain the receive gain
@@ -415,7 +415,7 @@ private:
    * Get transmit gain
    * \returns the transmit gain
    */
-  double GetTxGain (void) const;
+  double GetTxGain () const;
   /**
    * Set transmit gain
    * \param txgain the transmit gain
@@ -426,7 +426,7 @@ private:
    * Get trace file path
    * \returns the trace file path name
    */
-  std::string GetTraceFilePath (void) const;
+  std::string GetTraceFilePath () const;
   /**
    * Set trace file path
    * \param path the trace file path

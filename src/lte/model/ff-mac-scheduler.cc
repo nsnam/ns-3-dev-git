@@ -50,7 +50,7 @@ FfMacScheduler::DoDispose ()
 }
 
 TypeId
-FfMacScheduler::GetTypeId (void)
+FfMacScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FfMacScheduler")
     .SetParent<Object> ()

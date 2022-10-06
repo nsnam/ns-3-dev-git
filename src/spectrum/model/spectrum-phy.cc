@@ -33,7 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (SpectrumPhy);
 
 
 TypeId
-SpectrumPhy::GetTypeId (void)
+SpectrumPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SpectrumPhy")
     .SetParent<Object> ()

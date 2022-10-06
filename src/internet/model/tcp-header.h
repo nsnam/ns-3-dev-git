@@ -80,7 +80,7 @@ public:
    *
    * \todo currently has no effect
    */
-  void EnableChecksums (void);
+  void EnableChecksums ();
 
 //Setters
 
@@ -191,7 +191,7 @@ public:
    * \brief Get the list of option in this header
    * \return a const reference to the option list
    */
-  const TcpOptionList& GetOptionList (void) const;
+  const TcpOptionList& GetOptionList () const;
 
   /**
    * \brief Get the total length of appended options
@@ -293,10 +293,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
@@ -304,7 +304,7 @@ public:
    * \brief Is the TCP checksum correct ?
    * \returns true if the checksum is correct, false otherwise.
    */
-  bool IsChecksumOk (void) const;
+  bool IsChecksumOk () const;
 
   /**
    * Comparison operator

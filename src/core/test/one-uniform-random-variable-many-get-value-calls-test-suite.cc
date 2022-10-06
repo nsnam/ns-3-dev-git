@@ -50,7 +50,7 @@ public:
   virtual ~OneUniformRandomVariableManyGetValueCallsTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 OneUniformRandomVariableManyGetValueCallsTestCase::OneUniformRandomVariableManyGetValueCallsTestCase ()
@@ -61,7 +61,7 @@ OneUniformRandomVariableManyGetValueCallsTestCase::~OneUniformRandomVariableMany
 {}
 
 void
-OneUniformRandomVariableManyGetValueCallsTestCase::DoRun (void)
+OneUniformRandomVariableManyGetValueCallsTestCase::DoRun ()
 {
   const double min = 0.0;
   const double max = 10.0;

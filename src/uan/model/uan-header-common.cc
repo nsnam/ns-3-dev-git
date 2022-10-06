@@ -43,7 +43,7 @@ UanHeaderCommon::UanHeaderCommon (const Mac8Address src, const Mac8Address dest,
 }
 
 TypeId
-UanHeaderCommon::GetTypeId (void)
+UanHeaderCommon::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanHeaderCommon")
     .SetParent<Header> ()
@@ -54,7 +54,7 @@ UanHeaderCommon::GetTypeId (void)
 }
 
 TypeId
-UanHeaderCommon::GetInstanceTypeId (void) const
+UanHeaderCommon::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -96,23 +96,23 @@ UanHeaderCommon::SetProtocolNumber (uint16_t protocolNumber)
 }
 
 Mac8Address
-UanHeaderCommon::GetDest (void) const
+UanHeaderCommon::GetDest () const
 {
   return m_dest;
 }
 Mac8Address
-UanHeaderCommon::GetSrc (void) const
+UanHeaderCommon::GetSrc () const
 {
   return m_src;
 }
 uint8_t
-UanHeaderCommon::GetType (void) const
+UanHeaderCommon::GetType () const
 {
   return m_uanProtocolBits.m_type;
 }
 
 uint16_t
-UanHeaderCommon::GetProtocolNumber (void) const
+UanHeaderCommon::GetProtocolNumber () const
 {
   if (m_uanProtocolBits.m_protocolNumber == 1)
     return IPV4_PROT_NUMBER;
@@ -126,7 +126,7 @@ UanHeaderCommon::GetProtocolNumber (void) const
 // Inherrited methods
 
 uint32_t
-UanHeaderCommon::GetSerializedSize (void) const
+UanHeaderCommon::GetSerializedSize () const
 {
   return 1 + 1 + 1;
 }

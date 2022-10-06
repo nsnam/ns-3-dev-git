@@ -50,7 +50,7 @@ NS_OBJECT_ENSURE_REGISTERED (UdpL4Protocol);
 const uint8_t UdpL4Protocol::PROT_NUMBER = 17;
 
 TypeId
-UdpL4Protocol::GetTypeId (void)
+UdpL4Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UdpL4Protocol")
     .SetParent<IpL4Protocol> ()
@@ -124,14 +124,14 @@ UdpL4Protocol::NotifyNewAggregate ()
 }
 
 int
-UdpL4Protocol::GetProtocolNumber (void) const
+UdpL4Protocol::GetProtocolNumber () const
 {
   return PROT_NUMBER;
 }
 
 
 void
-UdpL4Protocol::DoDispose (void)
+UdpL4Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<UdpSocketImpl> >::iterator i = m_sockets.begin (); i != m_sockets.end (); i++)
@@ -160,7 +160,7 @@ UdpL4Protocol::DoDispose (void)
 }
 
 Ptr<Socket>
-UdpL4Protocol::CreateSocket (void)
+UdpL4Protocol::CreateSocket ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<UdpSocketImpl> socket = CreateObject<UdpSocketImpl> ();
@@ -171,7 +171,7 @@ UdpL4Protocol::CreateSocket (void)
 }
 
 Ipv4EndPoint *
-UdpL4Protocol::Allocate (void)
+UdpL4Protocol::Allocate ()
 {
   NS_LOG_FUNCTION (this);
   return m_endPoints->Allocate ();
@@ -216,7 +216,7 @@ UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 }
 
 Ipv6EndPoint *
-UdpL4Protocol::Allocate6 (void)
+UdpL4Protocol::Allocate6 ()
 {
   NS_LOG_FUNCTION (this);
   return m_endPoints6->Allocate ();
@@ -512,7 +512,7 @@ UdpL4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 }
 
 IpL4Protocol::DownTargetCallback
-UdpL4Protocol::GetDownTarget (void) const
+UdpL4Protocol::GetDownTarget () const
 {
   return m_downTarget;
 }
@@ -525,7 +525,7 @@ UdpL4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
 }
 
 IpL4Protocol::DownTargetCallback6
-UdpL4Protocol::GetDownTarget6 (void) const
+UdpL4Protocol::GetDownTarget6 () const
 {
   return m_downTarget6;
 }

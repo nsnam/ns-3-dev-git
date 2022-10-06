@@ -43,7 +43,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   UdpEchoClient ();
 
@@ -84,7 +84,7 @@ public:
    *
    * \returns The number of data bytes.
    */
-  uint32_t GetDataSize (void) const;
+  uint32_t GetDataSize () const;
 
   /**
    * Set the data fill of the packet (what is sent as data to the server) to
@@ -131,12 +131,12 @@ public:
   void SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
 
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Schedule the next packet transmission
@@ -146,7 +146,7 @@ private:
   /**
    * \brief Send a packet
    */
-  void Send (void);
+  void Send ();
 
   /**
    * \brief Handle a packet reception.

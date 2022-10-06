@@ -46,14 +46,14 @@ public:
   /**
    * Constructor
    */
-  MacHeaderType (void);
+  MacHeaderType ();
   /**
    * Constructor
    *
    * \param type MAC header type
    */
   MacHeaderType (uint8_t type);
-  virtual ~MacHeaderType (void);
+  virtual ~MacHeaderType ();
   /**
    * Set type field
    * \param type the type
@@ -63,21 +63,21 @@ public:
    * Get type field
    * \returns the type
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
 
   /**
    * Get name field
    * \returns the name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
@@ -108,8 +108,8 @@ namespace ns3 {
 class GenericMacHeader : public Header
 {
 public:
-  GenericMacHeader (void);
-  ~GenericMacHeader (void);
+  GenericMacHeader ();
+  ~GenericMacHeader ();
 
   /**
    * Set EC field
@@ -156,62 +156,62 @@ public:
    * Get EC field
    * \returns the EC
    */
-  uint8_t GetEc (void) const;
+  uint8_t GetEc () const;
   /**
    * Get type field
    * \returns the type
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
   /**
    * Get CI field
    * \returns the CI
    */
-  uint8_t GetCi (void) const;
+  uint8_t GetCi () const;
   /**
    * Get EKS field
    * \returns the EKS
    */
-  uint8_t GetEks (void) const;
+  uint8_t GetEks () const;
   /**
    * Get length field
    * \returns the length
    */
-  uint16_t GetLen (void) const;
+  uint16_t GetLen () const;
   /**
    * Get CID field
    * \returns the CID
    */
-  Cid GetCid (void) const;
+  Cid GetCid () const;
   /**
    * Get HCS field
    * \returns the HCS
    */
-  uint8_t GetHcs (void) const;
+  uint8_t GetHcs () const;
   /**
    * Get HT field
    * \returns the HT
    */
-  uint8_t GetHt (void) const;
+  uint8_t GetHt () const;
   /**
    * Get name field
    * \returns the name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   /**
    * Check HCS
    * \returns true if HCS is validated
    */
-  bool check_hcs (void) const;
+  bool check_hcs () const;
 private:
   uint8_t m_ht; ///< Header type
   uint8_t m_ec; ///< Encryption Control
@@ -257,8 +257,8 @@ public:
     HEADER_TYPE_INCREMENTAL, HEADER_TYPE_AGGREGATE
   };
 
-  BandwidthRequestHeader (void);
-  ~BandwidthRequestHeader (void);
+  BandwidthRequestHeader ();
+  ~BandwidthRequestHeader ();
 
   /**
    * Set HT field
@@ -295,53 +295,53 @@ public:
    * Get HT field
    * \returns the HT
    */
-  uint8_t GetHt (void) const;
+  uint8_t GetHt () const;
   /**
    * Get EC field
    * \returns the EC
    */
-  uint8_t GetEc (void) const;
+  uint8_t GetEc () const;
   /**
    * Get type field
    * \returns the type
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
   /**
    * Get BR field
    * \returns the BR
    */
-  uint32_t GetBr (void) const;
+  uint32_t GetBr () const;
   /**
    * Get CID field
    * \returns the CID
    */
-  Cid GetCid (void) const;
+  Cid GetCid () const;
   /**
    * Get HCS field
    * \returns the HCS
    */
-  uint8_t GetHcs (void) const;
+  uint8_t GetHcs () const;
 
   /**
    * Get name field
    * \returns the name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   /**
    * Check HCS
    * \returns true if HCS is validated
    */
-  bool check_hcs (void) const;
+  bool check_hcs () const;
 private:
   uint8_t m_ht; ///< Header type
   uint8_t m_ec; ///< Encryption Control
@@ -376,8 +376,8 @@ namespace ns3 {
 class GrantManagementSubheader : public Header
 {
 public:
-  GrantManagementSubheader (void);
-  ~GrantManagementSubheader (void);
+  GrantManagementSubheader ();
+  ~GrantManagementSubheader ();
 
   /**
    * Set SI field
@@ -399,31 +399,31 @@ public:
    * Get SI field
    * \returns the SI
    */
-  uint8_t GetSi (void) const;
+  uint8_t GetSi () const;
   /**
    * Get PM field
    * \returns the PM
    */
-  uint8_t GetPm (void) const;
+  uint8_t GetPm () const;
   /**
    * Get PBR field
    * \returns the PBR
    */
-  uint16_t GetPbr (void) const;
+  uint16_t GetPbr () const;
 
   /**
    * Get name field
    * \returns the name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 
@@ -457,8 +457,8 @@ namespace ns3 {
 class FragmentationSubheader : public Header
 {
 public:
-  FragmentationSubheader (void);
-  ~FragmentationSubheader (void);
+  FragmentationSubheader ();
+  ~FragmentationSubheader ();
 
   /**
    * Set FC field
@@ -475,26 +475,26 @@ public:
    * Get FC field
    * \returns the FC
    */
-  uint8_t GetFc (void) const;
+  uint8_t GetFc () const;
   /**
    * Get FSN field
    * \returns the FSN
    */
-  uint8_t GetFsn (void) const;
+  uint8_t GetFsn () const;
 
   /**
    * Get name field
    * \returns the name
    */
-  std::string GetName (void) const;
+  std::string GetName () const;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 

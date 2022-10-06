@@ -42,8 +42,8 @@ class SimpleOfdmWimaxPhy;
 class SimpleOfdmWimaxChannel : public WimaxChannel
 {
 public:
-  SimpleOfdmWimaxChannel (void);
-  ~SimpleOfdmWimaxChannel (void);
+  SimpleOfdmWimaxChannel ();
+  ~SimpleOfdmWimaxChannel ();
 
   /// PropModel enumeration
   enum PropModel
@@ -58,7 +58,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a channel and sets the propagation model
@@ -111,7 +111,7 @@ private:
    * Get number of devices function
    * \returns the number of devices
    */
-  std::size_t DoGetNDevices (void) const;
+  std::size_t DoGetNDevices () const;
   /**
    * End send dummy block function
    * \param rxphy the Ptr<SimpleOfdmWimaxPhy>

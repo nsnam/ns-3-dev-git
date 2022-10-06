@@ -45,7 +45,7 @@ class PowerRateAdaptationTest : public TestCase
 public:
   PowerRateAdaptationTest ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 private:
   /// Test parf function
   void TestParf ();
@@ -1029,7 +1029,7 @@ PowerRateAdaptationTest::TestRrpaa ()
 }
 
 void
-PowerRateAdaptationTest::DoRun (void)
+PowerRateAdaptationTest::DoRun ()
 {
 
   TestParf ();

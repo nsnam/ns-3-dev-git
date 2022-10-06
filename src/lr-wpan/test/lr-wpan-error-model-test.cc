@@ -53,13 +53,13 @@ public:
    * \brief Get the number of received packets.
    * \returns The number of received packets.
    */
-  uint32_t GetReceived (void) const
+  uint32_t GetReceived () const
   {
     return m_received;
   }
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Function to be called when a packet is received.
@@ -83,7 +83,7 @@ public:
   virtual ~LrWpanErrorModelTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 LrWpanErrorDistanceTestCase::LrWpanErrorDistanceTestCase ()
@@ -103,7 +103,7 @@ LrWpanErrorDistanceTestCase::Callback (McpsDataIndicationParams params, Ptr<Pack
 }
 
 void
-LrWpanErrorDistanceTestCase::DoRun (void)
+LrWpanErrorDistanceTestCase::DoRun ()
 {
   // Set the random seed and run number for this test
   RngSeedManager::SetSeed (1);
@@ -175,7 +175,7 @@ LrWpanErrorModelTestCase::~LrWpanErrorModelTestCase ()
 }
 
 void
-LrWpanErrorModelTestCase::DoRun (void)
+LrWpanErrorModelTestCase::DoRun ()
 {
 
   Ptr<LrWpanErrorModel> model = CreateObject<LrWpanErrorModel> ();

@@ -55,7 +55,7 @@ struct ParfWifiRemoteStation : public WifiRemoteStation
 NS_OBJECT_ENSURE_REGISTERED (ParfWifiManager);
 
 TypeId
-ParfWifiManager::GetTypeId (void)
+ParfWifiManager::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ParfWifiManager")
     .SetParent<WifiRemoteStationManager> ()
@@ -121,7 +121,7 @@ ParfWifiManager::DoInitialize ()
 }
 
 WifiRemoteStation *
-ParfWifiManager::DoCreateStation (void) const
+ParfWifiManager::DoCreateStation () const
 {
   NS_LOG_FUNCTION (this);
   ParfWifiRemoteStation *station = new ParfWifiRemoteStation ();

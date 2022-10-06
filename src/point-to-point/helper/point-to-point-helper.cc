@@ -62,7 +62,7 @@ PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v
 }
 
 void
-PointToPointHelper::DisableFlowControl (void)
+PointToPointHelper::DisableFlowControl ()
 {
   m_enableFlowControl = false;
 }

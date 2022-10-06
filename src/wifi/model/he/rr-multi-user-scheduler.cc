@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("RrMultiUserScheduler");
 NS_OBJECT_ENSURE_REGISTERED (RrMultiUserScheduler);
 
 TypeId
-RrMultiUserScheduler::GetTypeId (void)
+RrMultiUserScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RrMultiUserScheduler")
     .SetParent<MultiUserScheduler> ()
@@ -103,7 +103,7 @@ RrMultiUserScheduler::~RrMultiUserScheduler ()
 }
 
 void
-RrMultiUserScheduler::DoInitialize (void)
+RrMultiUserScheduler::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_apMac);
@@ -119,7 +119,7 @@ RrMultiUserScheduler::DoInitialize (void)
 }
 
 void
-RrMultiUserScheduler::DoDispose (void)
+RrMultiUserScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_staListDl.clear ();
@@ -134,7 +134,7 @@ RrMultiUserScheduler::DoDispose (void)
 }
 
 MultiUserScheduler::TxFormat
-RrMultiUserScheduler::SelectTxFormat (void)
+RrMultiUserScheduler::SelectTxFormat ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -256,7 +256,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
 }
 
 MultiUserScheduler::TxFormat
-RrMultiUserScheduler::TrySendingBsrpTf (void)
+RrMultiUserScheduler::TrySendingBsrpTf ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -333,7 +333,7 @@ RrMultiUserScheduler::TrySendingBsrpTf (void)
 }
 
 MultiUserScheduler::TxFormat
-RrMultiUserScheduler::TrySendingBasicTf (void)
+RrMultiUserScheduler::TrySendingBasicTf ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -516,7 +516,7 @@ RrMultiUserScheduler::NotifyStationDeassociated (uint16_t aid, Mac48Address addr
 }
 
 MultiUserScheduler::TxFormat
-RrMultiUserScheduler::TrySendingDlMuPpdu (void)
+RrMultiUserScheduler::TrySendingDlMuPpdu ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -760,7 +760,7 @@ RrMultiUserScheduler::UpdateCredits (std::list<MasterInfo>& staList, Time txDura
 }
 
 MultiUserScheduler::DlMuInfo
-RrMultiUserScheduler::ComputeDlMuInfo (void)
+RrMultiUserScheduler::ComputeDlMuInfo ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -842,7 +842,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
 }
 
 MultiUserScheduler::UlMuInfo
-RrMultiUserScheduler::ComputeUlMuInfo (void)
+RrMultiUserScheduler::ComputeUlMuInfo ()
 {
   return UlMuInfo {m_trigger, m_triggerMacHdr, std::move (m_txParams)};
 }

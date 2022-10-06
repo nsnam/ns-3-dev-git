@@ -209,7 +209,7 @@ std::ostream& operator<< (std::ostream& os, LteSpectrumPhy::State s)
 }
 
 TypeId
-LteSpectrumPhy::GetTypeId (void)
+LteSpectrumPhy::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteSpectrumPhy")
     .SetParent<SpectrumPhy> ()

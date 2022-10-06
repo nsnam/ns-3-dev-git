@@ -99,7 +99,7 @@ LteRlc::~LteRlc ()
   NS_LOG_FUNCTION (this);
 }
 
-TypeId LteRlc::GetTypeId (void)
+TypeId LteRlc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRlc")
     .SetParent<Object> ()
@@ -188,7 +188,7 @@ LteRlcSm::~LteRlcSm ()
 }
 
 TypeId
-LteRlcSm::GetTypeId (void)
+LteRlcSm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteRlcSm")
     .SetParent<LteRlc> ()

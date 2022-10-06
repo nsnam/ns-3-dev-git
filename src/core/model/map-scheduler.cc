@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("MapScheduler");
 NS_OBJECT_ENSURE_REGISTERED (MapScheduler);
 
 TypeId
-MapScheduler::GetTypeId (void)
+MapScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MapScheduler")
     .SetParent<Scheduler> ()
@@ -67,14 +67,14 @@ MapScheduler::Insert (const Event &ev)
 }
 
 bool
-MapScheduler::IsEmpty (void) const
+MapScheduler::IsEmpty () const
 {
   NS_LOG_FUNCTION (this);
   return m_list.empty ();
 }
 
 Scheduler::Event
-MapScheduler::PeekNext (void) const
+MapScheduler::PeekNext () const
 {
   NS_LOG_FUNCTION (this);
   EventMapCI i = m_list.begin ();
@@ -87,7 +87,7 @@ MapScheduler::PeekNext (void) const
   return ev;
 }
 Scheduler::Event
-MapScheduler::RemoveNext (void)
+MapScheduler::RemoveNext ()
 {
   NS_LOG_FUNCTION (this);
   EventMapI i = m_list.begin ();

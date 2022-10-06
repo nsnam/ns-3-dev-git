@@ -32,7 +32,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SNRToBlockErrorRateManager");
 
-SNRToBlockErrorRateManager::SNRToBlockErrorRateManager (void)
+SNRToBlockErrorRateManager::SNRToBlockErrorRateManager ()
 {
 
   for (int i = 0; i < 7; i++)
@@ -43,7 +43,7 @@ SNRToBlockErrorRateManager::SNRToBlockErrorRateManager (void)
   m_traceFilePath = "DefaultTraces";
 }
 
-SNRToBlockErrorRateManager::~SNRToBlockErrorRateManager (void)
+SNRToBlockErrorRateManager::~SNRToBlockErrorRateManager ()
 {
   ClearRecords ();
   for (int i = 0; i < 7; i++)
@@ -53,7 +53,7 @@ SNRToBlockErrorRateManager::~SNRToBlockErrorRateManager (void)
 }
 
 void
-SNRToBlockErrorRateManager::ClearRecords (void)
+SNRToBlockErrorRateManager::ClearRecords ()
 {
   for (int i = 0; i < 7; i++)
     {
@@ -78,7 +78,7 @@ SNRToBlockErrorRateManager::ActivateLoss (bool loss)
 }
 
 void
-SNRToBlockErrorRateManager::LoadTraces (void)
+SNRToBlockErrorRateManager::LoadTraces ()
 {
   std::ifstream traceFile;
   ClearRecords ();
@@ -114,7 +114,7 @@ SNRToBlockErrorRateManager::LoadTraces (void)
 }
 
 void
-SNRToBlockErrorRateManager::LoadDefaultTraces (void)
+SNRToBlockErrorRateManager::LoadDefaultTraces ()
 {
   double snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2;
   ClearRecords ();
@@ -234,7 +234,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces (void)
 }
 
 void
-SNRToBlockErrorRateManager::ReLoadTraces (void)
+SNRToBlockErrorRateManager::ReLoadTraces ()
 {
   double snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2;
 
@@ -279,7 +279,7 @@ SNRToBlockErrorRateManager::SetTraceFilePath (char *traceFilePath)
 }
 
 std::string
-SNRToBlockErrorRateManager::GetTraceFilePath (void)
+SNRToBlockErrorRateManager::GetTraceFilePath ()
 {
   return m_traceFilePath;
 }

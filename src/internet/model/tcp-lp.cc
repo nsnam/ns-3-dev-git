@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpLp");
 NS_OBJECT_ENSURE_REGISTERED (TcpLp);
 
 TypeId
-TcpLp::GetTypeId (void)
+TcpLp::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpLp")
     .SetParent<TcpNewReno> ()
@@ -42,7 +42,7 @@ TcpLp::GetTypeId (void)
   return tid;
 }
 
-TcpLp::TcpLp (void)
+TcpLp::TcpLp ()
   : TcpNewReno (),
     m_flag (0),
     m_sOwd (0),
@@ -68,13 +68,13 @@ TcpLp::TcpLp (const TcpLp& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpLp::~TcpLp (void)
+TcpLp::~TcpLp ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<TcpCongestionOps>
-TcpLp::Fork (void)
+TcpLp::Fork ()
 {
   return CopyObject<TcpLp> (this);
 }

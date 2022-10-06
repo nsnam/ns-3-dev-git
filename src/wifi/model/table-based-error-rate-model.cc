@@ -41,7 +41,7 @@ NS_OBJECT_ENSURE_REGISTERED (TableBasedErrorRateModel);
 NS_LOG_COMPONENT_DEFINE ("TableBasedErrorRateModel");
 
 TypeId
-TableBasedErrorRateModel::GetTypeId (void)
+TableBasedErrorRateModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TableBasedErrorRateModel")
     .SetParent<ErrorRateModel> ()

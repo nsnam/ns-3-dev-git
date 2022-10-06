@@ -114,25 +114,25 @@ public:
   /**
    * \returns the coding rate of this transmission mode
    */
-  WifiCodeRate GetCodeRate (void) const;
+  WifiCodeRate GetCodeRate () const;
   /**
    * \returns the size of the modulation constellation.
    */
-  uint16_t GetConstellationSize (void) const;
+  uint16_t GetConstellationSize () const;
   /**
    * \returns the MCS value.
    */
-  uint8_t GetMcsValue (void) const;
+  uint8_t GetMcsValue () const;
   /**
    * \returns a human-readable representation of this WifiMode
    * instance.
    */
-  std::string GetUniqueName (void) const;
+  std::string GetUniqueName () const;
   /**
    * \returns true if this mode is a mandatory mode, false
    *          otherwise.
    */
-  bool IsMandatory (void) const;
+  bool IsMandatory () const;
   /**
    * \returns the UID associated to this wireless mode.
    *
@@ -140,7 +140,7 @@ public:
    * For example, the 802.11b 1Mbps and the 802.11b 2Mbps modes
    * should have different UIDs.
    */
-  uint32_t GetUid (void) const;
+  uint32_t GetUid () const;
   /**
    *
    * \returns the Modulation Class (Section 9.7.8 "Modulation classes"; IEEE 802.11-2012)
@@ -155,7 +155,7 @@ public:
    * use the modulation and coding rate of the HT MCS
    * and lookup in Table 9-5 of IEEE 802.11-2012.
    */
-  uint64_t GetNonHtReferenceRate (void) const;
+  uint64_t GetNonHtReferenceRate () const;
   /**
    * \param mode the WifiMode
    * \returns true if this WifiMode has a

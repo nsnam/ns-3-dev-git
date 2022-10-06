@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("PcapFileWrapper");
 NS_OBJECT_ENSURE_REGISTERED (PcapFileWrapper);
 
 TypeId
-PcapFileWrapper::GetTypeId (void)
+PcapFileWrapper::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PcapFileWrapper")
     .SetParent<Object> ()
@@ -63,27 +63,27 @@ PcapFileWrapper::~PcapFileWrapper ()
 }
 
 bool
-PcapFileWrapper::Fail (void) const
+PcapFileWrapper::Fail () const
 {
   NS_LOG_FUNCTION (this);
   return m_file.Fail ();
 }
 
 bool
-PcapFileWrapper::Eof (void) const
+PcapFileWrapper::Eof () const
 {
   NS_LOG_FUNCTION (this);
   return m_file.Eof ();
 }
 void
-PcapFileWrapper::Clear (void)
+PcapFileWrapper::Clear ()
 {
   NS_LOG_FUNCTION (this);
   m_file.Clear ();
 }
 
 void
-PcapFileWrapper::Close (void)
+PcapFileWrapper::Close ()
 {
   NS_LOG_FUNCTION (this);
   m_file.Close ();
@@ -207,49 +207,49 @@ PcapFileWrapper::Read (Time &t)
 }
 
 uint32_t
-PcapFileWrapper::GetMagic (void)
+PcapFileWrapper::GetMagic ()
 {
   NS_LOG_FUNCTION (this);
   return m_file.GetMagic ();
 }
 
 uint16_t
-PcapFileWrapper::GetVersionMajor (void)
+PcapFileWrapper::GetVersionMajor ()
 {
   NS_LOG_FUNCTION (this);
   return m_file.GetVersionMajor ();
 }
 
 uint16_t
-PcapFileWrapper::GetVersionMinor (void)
+PcapFileWrapper::GetVersionMinor ()
 {
   NS_LOG_FUNCTION (this);
   return m_file.GetVersionMinor ();
 }
 
 int32_t
-PcapFileWrapper::GetTimeZoneOffset (void)
+PcapFileWrapper::GetTimeZoneOffset ()
 {
   NS_LOG_FUNCTION (this);
   return m_file.GetTimeZoneOffset ();
 }
 
 uint32_t
-PcapFileWrapper::GetSigFigs (void)
+PcapFileWrapper::GetSigFigs ()
 {
   NS_LOG_FUNCTION (this);
   return m_file.GetSigFigs ();
 }
 
 uint32_t
-PcapFileWrapper::GetSnapLen (void)
+PcapFileWrapper::GetSnapLen ()
 {
   NS_LOG_FUNCTION (this);
   return m_file.GetSnapLen ();
 }
 
 uint32_t
-PcapFileWrapper::GetDataLinkType (void)
+PcapFileWrapper::GetDataLinkType ()
 {
   NS_LOG_FUNCTION (this);
   return m_file.GetDataLinkType ();

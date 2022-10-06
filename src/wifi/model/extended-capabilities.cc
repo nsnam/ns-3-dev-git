@@ -126,7 +126,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte1 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte1 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte1 () const
 {
   uint8_t val = 0;
   val |= m_20_40_bssCoexistenceManagementSupport & 0x01;
@@ -151,7 +151,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte2 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte2 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte2 () const
 {
   uint8_t val = 0;
   val |= m_diagnostics & 0x01;
@@ -179,7 +179,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte3 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte3 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte3 () const
 {
   uint8_t val = 0;
   val |= m_tfs & 0x01;
@@ -207,7 +207,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte4 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte4 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte4 () const
 {
   uint8_t val = 0;
   val |= m_channelUsage & 0x01;
@@ -234,7 +234,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte5 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte5 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte5 () const
 {
   uint8_t val = 0;
   val |= m_qosMap & 0x01;
@@ -259,7 +259,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte6 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte6 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte6 () const
 {
   uint8_t val = 0;
   val |= m_rejectUnadmittedFrame & 0x01;
@@ -285,7 +285,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte7 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte7 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte7 () const
 {
   uint8_t val = 0;
   val |= m_utf8Ssid & 0x01;
@@ -312,7 +312,7 @@ ExtendedCapabilities::SetExtendedCapabilitiesByte8 (uint8_t ctrl)
 }
 
 uint8_t
-ExtendedCapabilities::GetExtendedCapabilitiesByte8 (void) const
+ExtendedCapabilities::GetExtendedCapabilitiesByte8 () const
 {
   uint8_t val = 0;
   val |= m_alternateEdca & 0x01;

@@ -101,7 +101,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief Default constructor.
    */
@@ -127,7 +127,7 @@ public:
    * \return The stream number for the RngStream.
    * -1 means this stream was allocated automatically.
    */
-  int64_t GetStream (void) const;
+  int64_t GetStream () const;
 
   /**
    * \brief Specify whether antithetic values should be generated.
@@ -139,26 +139,26 @@ public:
    * \brief Check if antithetic values will be generated.
    * \return \c true if antithetic values will be generated.
    */
-  bool IsAntithetic (void) const;
+  bool IsAntithetic () const;
 
   /**
    * \brief Get the next random value as a double drawn from the distribution.
    * \return A floating point random value.
    */
-  virtual double GetValue (void) = 0;
+  virtual double GetValue () = 0;
 
   /**
    * \brief Get the next random value as an integer drawn from the distribution.
    * \return  An integer random value.
    */
-  virtual uint32_t GetInteger (void) = 0;
+  virtual uint32_t GetInteger () = 0;
 
 protected:
   /**
    * \brief Get the pointer to the underlying RngStream.
    * \return The underlying RngStream
    */
-  RngStream * Peek (void) const;
+  RngStream * Peek () const;
 
 private:
   /** Pointer to the underlying RngStream. */
@@ -221,7 +221,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a uniform distribution RNG with the default range.
@@ -232,13 +232,13 @@ public:
    * \brief Get the lower bound on randoms returned by GetValue(void).
    * \return The lower bound on values from GetValue(void).
    */
-  double GetMin (void) const;
+  double GetMin () const;
 
   /**
    * \brief Get the upper bound on values returned by GetValue(void).
    * \return The upper bound on values from GetValue(void).
    */
-  double GetMax (void) const;
+  double GetMax () const;
 
   /**
    * \brief Get the next random value, as a double in the specified range
@@ -270,13 +270,13 @@ public:
    * \return A floating point random value.
    * \note The upper limit is excluded from the output range.
   */
-  virtual double GetValue (void);
+  virtual double GetValue ();
   /**
    * \brief Get the next random value as an integer drawn from the distribution.
    * \return  An integer random value.
    * \note The upper limit is included in the output range.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The lower bound on values that can be returned by this RNG stream. */
@@ -305,7 +305,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a constant RNG with the default constant value.
@@ -316,7 +316,7 @@ public:
    * \brief Get the constant value returned by this RNG stream.
    * \return The constant value.
    */
-  double GetConstant (void) const;
+  double GetConstant () const;
 
   /**
    * \brief Get the next random value, as a double equal to the argument.
@@ -333,9 +333,9 @@ public:
 
   // Inherited from RandomVariableStream
   /* \note This RNG always returns the same value. */
-  virtual double GetValue (void);
+  virtual double GetValue ();
   /* \note This RNG always returns the same value. */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The constant value returned by this RNG stream. */
@@ -386,7 +386,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a sequential RNG with the default values
@@ -398,31 +398,31 @@ public:
    * \brief Get the first value of the sequence.
    * \return The first value of the sequence.
    */
-  double GetMin (void) const;
+  double GetMin () const;
 
   /**
    * \brief Get the limit of the sequence, which is (at least)
    * one more than the last value of the sequence.
    * \return The limit of the sequence.
    */
-  double GetMax (void) const;
+  double GetMax () const;
 
   /**
    * \brief Get the increment for the sequence.
    * \return The increment between distinct values for the sequence.
    */
-  Ptr<RandomVariableStream> GetIncrement (void) const;
+  Ptr<RandomVariableStream> GetIncrement () const;
 
   /**
    * \brief Get the number of times each distinct value of the sequence
    * is repeated before incrementing to the next value.
    * \return The number of times each value is repeated.
    */
-  uint32_t GetConsecutive (void) const;
+  uint32_t GetConsecutive () const;
 
   // Inherited from RandomVariableStream
-  virtual double GetValue (void);
-  virtual uint32_t GetInteger (void);
+  virtual double GetValue ();
+  virtual uint32_t GetInteger ();
 
 private:
   /** The first value of the sequence. */
@@ -525,7 +525,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates an exponential distribution RNG with the default
@@ -540,13 +540,13 @@ public:
    * truncated by a bound.
    * \return The configured mean value.
    */
-  double GetMean (void) const;
+  double GetMean () const;
 
   /**
    * \brief Get the configured upper bound of this RNG.
    * \return The upper bound.
    */
-  double GetBound (void) const;
+  double GetBound () const;
 
   /**
    * \brief Get the next random value, as a double from
@@ -567,8 +567,8 @@ public:
   uint32_t GetInteger (uint32_t mean, uint32_t bound);
 
   // Inherited from RandomVariableStream
-  virtual double GetValue (void);
-  virtual uint32_t GetInteger (void);
+  virtual double GetValue ();
+  virtual uint32_t GetInteger ();
 
 private:
   /** The mean value of the unbounded exponential distribution. */
@@ -627,7 +627,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a Pareto distribution RNG with the default
@@ -639,19 +639,19 @@ public:
    * \brief Returns the scale parameter for the Pareto distribution returned by this RNG stream.
    * \return The scale parameter for the Pareto distribution returned by this RNG stream.
    */
-  double GetScale (void) const;
+  double GetScale () const;
 
   /**
    * \brief Returns the shape parameter for the Pareto distribution returned by this RNG stream.
    * \return The shape parameter for the Pareto distribution returned by this RNG stream.
    */
-  double GetShape (void) const;
+  double GetShape () const;
 
   /**
    * \brief Returns the upper bound on values that can be returned by this RNG stream.
    * \return The upper bound on values that can be returned by this RNG stream.
    */
-  double GetBound (void) const;
+  double GetBound () const;
 
   /**
    * \brief Returns a random double from a Pareto distribution with the specified scale, shape, and upper bound.
@@ -741,7 +741,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a Pareto distribution with the current mean, shape, and upper bound.
@@ -766,7 +766,7 @@ public:
    *
    * which now involves the distance \f$u\f$ is from 1 in the denominator.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The scale parameter for the Pareto distribution returned by this RNG stream. */
@@ -841,7 +841,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a Weibull distribution RNG with the default
@@ -853,19 +853,19 @@ public:
    * \brief Returns the scale parameter for the Weibull distribution returned by this RNG stream.
    * \return The scale parameter for the Weibull distribution returned by this RNG stream.
    */
-  double GetScale (void) const;
+  double GetScale () const;
 
   /**
    * \brief Returns the shape parameter for the Weibull distribution returned by this RNG stream.
    * \return The shape parameter for the Weibull distribution returned by this RNG stream.
    */
-  double GetShape (void) const;
+  double GetShape () const;
 
   /**
    * \brief Returns the upper bound on values that can be returned by this RNG stream.
    * \return The upper bound on values that can be returned by this RNG stream.
    */
-  double GetBound (void) const;
+  double GetBound () const;
 
   /**
    * \brief Returns a random double from a Weibull distribution with the specified scale, shape, and upper bound.
@@ -948,7 +948,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a Weibull distribution with the current scale, shape, and upper bound.
@@ -972,7 +972,7 @@ public:
    *
    * which now involves the log of the distance \f$u\f$ is from 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The scale parameter for the Weibull distribution returned by this RNG stream. */
@@ -1030,7 +1030,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a normal distribution RNG with the default
@@ -1042,19 +1042,19 @@ public:
    * \brief Returns the mean value for the normal distribution returned by this RNG stream.
    * \return The mean value for the normal distribution returned by this RNG stream.
    */
-  double GetMean (void) const;
+  double GetMean () const;
 
   /**
    * \brief Returns the variance value for the normal distribution returned by this RNG stream.
    * \return The variance value for the normal distribution returned by this RNG stream.
    */
-  double GetVariance (void) const;
+  double GetVariance () const;
 
   /**
    * \brief Returns the bound on values that can be returned by this RNG stream.
    * \return The bound on values that can be returned by this RNG stream.
    */
-  double GetBound (void) const;
+  double GetBound () const;
 
   /**
    * \brief Returns a random double from a normal distribution with the specified mean, variance, and bound.
@@ -1170,7 +1170,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a normal distribution with the current mean, variance, and bound.
@@ -1205,7 +1205,7 @@ public:
    *
    * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The mean value for the normal distribution returned by this RNG stream. */
@@ -1278,7 +1278,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a log-normal distribution RNG with the default
@@ -1290,13 +1290,13 @@ public:
    * \brief Returns the mu value for the log-normal distribution returned by this RNG stream.
    * \return The mu value for the log-normal distribution returned by this RNG stream.
    */
-  double GetMu (void) const;
+  double GetMu () const;
 
   /**
    * \brief Returns the sigma value for the log-normal distribution returned by this RNG stream.
    * \return The sigma value for the log-normal distribution returned by this RNG stream.
    */
-  double GetSigma (void) const;
+  double GetSigma () const;
 
   /**
    * \brief Returns a random double from a log-normal distribution with the specified mu and sigma.
@@ -1404,7 +1404,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a log-normal distribution with the current mu and sigma.
@@ -1437,7 +1437,7 @@ public:
    *
    * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The mu value for the log-normal distribution returned by this RNG stream. */
@@ -1487,7 +1487,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a gamma distribution RNG with the default values
@@ -1499,13 +1499,13 @@ public:
    * \brief Returns the alpha value for the gamma distribution returned by this RNG stream.
    * \return The alpha value for the gamma distribution returned by this RNG stream.
    */
-  double GetAlpha (void) const;
+  double GetAlpha () const;
 
   /**
    * \brief Returns the beta value for the gamma distribution returned by this RNG stream.
    * \return The beta value for the gamma distribution returned by this RNG stream.
    */
-  double GetBeta (void) const;
+  double GetBeta () const;
 
   /**
    * \brief Returns a random double from a gamma distribution with the specified alpha and beta.
@@ -1553,7 +1553,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a gamma distribution with the current alpha and beta.
@@ -1566,7 +1566,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /**
@@ -1666,7 +1666,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates an Erlang distribution RNG with the default values
@@ -1678,13 +1678,13 @@ public:
    * \brief Returns the k value for the Erlang distribution returned by this RNG stream.
    * \return The k value for the Erlang distribution returned by this RNG stream.
    */
-  uint32_t GetK (void) const;
+  uint32_t GetK () const;
 
   /**
    * \brief Returns the lambda value for the Erlang distribution returned by this RNG stream.
    * \return The lambda value for the Erlang distribution returned by this RNG stream.
    */
-  double GetLambda (void) const;
+  double GetLambda () const;
 
   /**
    * \brief Returns a random double from an Erlang distribution with the specified k and lambda.
@@ -1732,7 +1732,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from an Erlang distribution with the current k and lambda.
@@ -1745,7 +1745,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /**
@@ -1818,7 +1818,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a triangular distribution RNG with the default
@@ -1830,19 +1830,19 @@ public:
    * \brief Returns the mean value for the triangular distribution returned by this RNG stream.
    * \return The mean value for the triangular distribution returned by this RNG stream.
    */
-  double GetMean (void) const;
+  double GetMean () const;
 
   /**
    * \brief Returns the lower bound for the triangular distribution returned by this RNG stream.
    * \return The lower bound for the triangular distribution returned by this RNG stream.
    */
-  double GetMin (void) const;
+  double GetMin () const;
 
   /**
    * \brief Returns the upper bound on values that can be returned by this RNG stream.
    * \return The upper bound on values that can be returned by this RNG stream.
    */
-  double GetMax (void) const;
+  double GetMax () const;
 
   /**
    * \brief Returns a random double from a triangular distribution with the specified mean, min, and max.
@@ -1964,7 +1964,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a triangular distribution with the current mean, min, and max.
@@ -2001,7 +2001,7 @@ public:
    *
    * which now involves the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The mean value for the triangular distribution returned by this RNG stream. */
@@ -2081,7 +2081,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a Zipf distribution RNG with the default values
@@ -2093,13 +2093,13 @@ public:
    * \brief Returns the n value for the Zipf distribution returned by this RNG stream.
    * \return The n value for the Zipf distribution returned by this RNG stream.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Returns the alpha value for the Zipf distribution returned by this RNG stream.
    * \return The alpha value for the Zipf distribution returned by this RNG stream.
    */
-  double GetAlpha (void) const;
+  double GetAlpha () const;
 
   /**
    * \brief Returns a random double from a Zipf distribution with the specified n and alpha.
@@ -2147,7 +2147,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a Zipf distribution with the current n and alpha.
@@ -2160,7 +2160,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The n value for the Zipf distribution returned by this RNG stream. */
@@ -2221,7 +2221,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a zeta distribution RNG with the default value for
@@ -2233,7 +2233,7 @@ public:
    * \brief Returns the alpha value for the zeta distribution returned by this RNG stream.
    * \return The alpha value for the zeta distribution returned by this RNG stream.
    */
-  double GetAlpha (void) const;
+  double GetAlpha () const;
 
   /**
    * \brief Returns a random double from a zeta distribution with the specified alpha.
@@ -2279,7 +2279,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns a random unsigned integer from a zeta distribution with the current alpha.
@@ -2292,7 +2292,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** The alpha value for the zeta distribution returned by this RNG stream. */
@@ -2341,7 +2341,7 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates a deterministic RNG that will have a predetermined
@@ -2364,13 +2364,13 @@ public:
    * \brief Returns the next value in the sequence.
    * \return The floating point next value in the sequence.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns the next value in the sequence.
    * \return The integer next value in the sequence.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
 private:
   /** Size of the array of values. */
@@ -2468,13 +2468,13 @@ public:
    * \brief Register this type.
    * \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Creates an empirical RNG that has a specified, empirical
    * distribution, and configured for interpolating mode.
    */
-  EmpiricalRandomVariable (void);
+  EmpiricalRandomVariable ();
 
   /**
    * \brief Specifies a point in the empirical distribution
@@ -2499,7 +2499,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual double GetValue (void);
+  virtual double GetValue ();
 
   /**
    * \brief Returns the next value in the empirical distribution.
@@ -2514,7 +2514,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger (void);
+  virtual uint32_t GetInteger ();
 
   /**
    * \brief Returns the next value in the empirical distribution using
@@ -2522,7 +2522,7 @@ public:
    * \return The floating point next value in the empirical distribution
    * using linear interpolation.
    */
-    virtual double Interpolate (void);
+    virtual double Interpolate ();
 
   /**
    * \brief Switch the mode between sampling the CDF and interpolating.
@@ -2538,7 +2538,7 @@ private:
   {
   public:
     /** \brief Constructor. */
-    ValueCDF (void);
+    ValueCDF ();
     /**
      * \brief Construct from values.
      *
@@ -2563,7 +2563,7 @@ private:
    *
    * It is a fatal error to fail validation.
    */
-  void Validate (void);
+  void Validate ();
    /**
    * \brief Do the initial rng draw and check against the extrema.
    *

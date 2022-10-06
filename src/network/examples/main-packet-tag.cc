@@ -36,9 +36,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
@@ -53,13 +53,13 @@ public:
    * Get the tag value
    * \return the tag value.
    */
-  uint8_t GetSimpleValue (void) const;
+  uint8_t GetSimpleValue () const;
 private:
   uint8_t m_simpleValue;  //!< tag value
 };
 
 TypeId
-MyTag::GetTypeId (void)
+MyTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MyTag")
     .SetParent<Tag> ()
@@ -73,12 +73,12 @@ MyTag::GetTypeId (void)
   return tid;
 }
 TypeId
-MyTag::GetInstanceTypeId (void) const
+MyTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 uint32_t
-MyTag::GetSerializedSize (void) const
+MyTag::GetSerializedSize () const
 {
   return 1;
 }
@@ -103,7 +103,7 @@ MyTag::SetSimpleValue (uint8_t value)
   m_simpleValue = value;
 }
 uint8_t
-MyTag::GetSimpleValue (void) const
+MyTag::GetSimpleValue () const
 {
   return m_simpleValue;
 }

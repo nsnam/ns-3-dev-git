@@ -19,7 +19,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void) {
+  static TypeId GetTypeId () {
     static TypeId tid = TypeId ("ns3::ConfigExample")
       .SetParent<Object> ()
       .AddAttribute ("TestInt16", "help text",

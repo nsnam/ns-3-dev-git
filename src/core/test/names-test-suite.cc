@@ -47,7 +47,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("TestObject")
       .SetParent<Object> ()
@@ -72,7 +72,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void)
+  static TypeId GetTypeId ()
   {
     static TypeId tid = TypeId ("AlternateTestObject")
       .SetParent<Object> ()
@@ -107,8 +107,8 @@ public:
   virtual ~BasicAddTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 BasicAddTestCase::BasicAddTestCase ()
@@ -119,13 +119,13 @@ BasicAddTestCase::~BasicAddTestCase ()
 {}
 
 void
-BasicAddTestCase::DoTeardown (void)
+BasicAddTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-BasicAddTestCase::DoRun (void)
+BasicAddTestCase::DoRun ()
 {
   std::string found;
 
@@ -172,8 +172,8 @@ public:
   virtual ~StringContextAddTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 StringContextAddTestCase::StringContextAddTestCase ()
@@ -185,13 +185,13 @@ StringContextAddTestCase::~StringContextAddTestCase ()
 {}
 
 void
-StringContextAddTestCase::DoTeardown (void)
+StringContextAddTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-StringContextAddTestCase::DoRun (void)
+StringContextAddTestCase::DoRun ()
 {
   std::string found;
 
@@ -237,8 +237,8 @@ public:
   virtual ~FullyQualifiedAddTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 FullyQualifiedAddTestCase::FullyQualifiedAddTestCase ()
@@ -250,13 +250,13 @@ FullyQualifiedAddTestCase::~FullyQualifiedAddTestCase ()
 {}
 
 void
-FullyQualifiedAddTestCase::DoTeardown (void)
+FullyQualifiedAddTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-FullyQualifiedAddTestCase::DoRun (void)
+FullyQualifiedAddTestCase::DoRun ()
 {
   std::string found;
 
@@ -306,8 +306,8 @@ public:
   virtual ~RelativeAddTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 RelativeAddTestCase::RelativeAddTestCase ()
@@ -319,13 +319,13 @@ RelativeAddTestCase::~RelativeAddTestCase ()
 {}
 
 void
-RelativeAddTestCase::DoTeardown (void)
+RelativeAddTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-RelativeAddTestCase::DoRun (void)
+RelativeAddTestCase::DoRun ()
 {
   std::string found;
 
@@ -372,8 +372,8 @@ public:
   virtual ~BasicRenameTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 BasicRenameTestCase::BasicRenameTestCase ()
@@ -384,13 +384,13 @@ BasicRenameTestCase::~BasicRenameTestCase ()
 {}
 
 void
-BasicRenameTestCase::DoTeardown (void)
+BasicRenameTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-BasicRenameTestCase::DoRun (void)
+BasicRenameTestCase::DoRun ()
 {
   std::string found;
 
@@ -434,8 +434,8 @@ public:
   virtual ~StringContextRenameTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 StringContextRenameTestCase::StringContextRenameTestCase ()
@@ -446,13 +446,13 @@ StringContextRenameTestCase::~StringContextRenameTestCase ()
 {}
 
 void
-StringContextRenameTestCase::DoTeardown (void)
+StringContextRenameTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-StringContextRenameTestCase::DoRun (void)
+StringContextRenameTestCase::DoRun ()
 {
   std::string found;
 
@@ -496,8 +496,8 @@ public:
   virtual ~FullyQualifiedRenameTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 FullyQualifiedRenameTestCase::FullyQualifiedRenameTestCase ()
@@ -508,13 +508,13 @@ FullyQualifiedRenameTestCase::~FullyQualifiedRenameTestCase ()
 {}
 
 void
-FullyQualifiedRenameTestCase::DoTeardown (void)
+FullyQualifiedRenameTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-FullyQualifiedRenameTestCase::DoRun (void)
+FullyQualifiedRenameTestCase::DoRun ()
 {
   std::string found;
 
@@ -558,8 +558,8 @@ public:
   virtual ~RelativeRenameTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 RelativeRenameTestCase::RelativeRenameTestCase ()
@@ -570,13 +570,13 @@ RelativeRenameTestCase::~RelativeRenameTestCase ()
 {}
 
 void
-RelativeRenameTestCase::DoTeardown (void)
+RelativeRenameTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-RelativeRenameTestCase::DoRun (void)
+RelativeRenameTestCase::DoRun ()
 {
   std::string found;
 
@@ -620,8 +620,8 @@ public:
   virtual ~FindPathTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 FindPathTestCase::FindPathTestCase ()
@@ -632,13 +632,13 @@ FindPathTestCase::~FindPathTestCase ()
 {}
 
 void
-FindPathTestCase::DoTeardown (void)
+FindPathTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-FindPathTestCase::DoRun (void)
+FindPathTestCase::DoRun ()
 {
   std::string found;
 
@@ -675,8 +675,8 @@ public:
   virtual ~BasicFindTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 BasicFindTestCase::BasicFindTestCase ()
@@ -687,13 +687,13 @@ BasicFindTestCase::~BasicFindTestCase ()
 {}
 
 void
-BasicFindTestCase::DoTeardown (void)
+BasicFindTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-BasicFindTestCase::DoRun (void)
+BasicFindTestCase::DoRun ()
 {
   Ptr<TestObject> found;
 
@@ -739,8 +739,8 @@ public:
   virtual ~StringContextFindTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 StringContextFindTestCase::StringContextFindTestCase ()
@@ -751,13 +751,13 @@ StringContextFindTestCase::~StringContextFindTestCase ()
 {}
 
 void
-StringContextFindTestCase::DoTeardown (void)
+StringContextFindTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-StringContextFindTestCase::DoRun (void)
+StringContextFindTestCase::DoRun ()
 {
   Ptr<TestObject> found;
 
@@ -803,8 +803,8 @@ public:
   virtual ~FullyQualifiedFindTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 FullyQualifiedFindTestCase::FullyQualifiedFindTestCase ()
@@ -815,13 +815,13 @@ FullyQualifiedFindTestCase::~FullyQualifiedFindTestCase ()
 {}
 
 void
-FullyQualifiedFindTestCase::DoTeardown (void)
+FullyQualifiedFindTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-FullyQualifiedFindTestCase::DoRun (void)
+FullyQualifiedFindTestCase::DoRun ()
 {
   Ptr<TestObject> found;
 
@@ -867,8 +867,8 @@ public:
   virtual ~RelativeFindTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 RelativeFindTestCase::RelativeFindTestCase ()
@@ -879,13 +879,13 @@ RelativeFindTestCase::~RelativeFindTestCase ()
 {}
 
 void
-RelativeFindTestCase::DoTeardown (void)
+RelativeFindTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-RelativeFindTestCase::DoRun (void)
+RelativeFindTestCase::DoRun ()
 {
   Ptr<TestObject> found;
 
@@ -928,8 +928,8 @@ public:
   virtual ~AlternateFindTestCase ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 };
 
 AlternateFindTestCase::AlternateFindTestCase ()
@@ -940,13 +940,13 @@ AlternateFindTestCase::~AlternateFindTestCase ()
 {}
 
 void
-AlternateFindTestCase::DoTeardown (void)
+AlternateFindTestCase::DoTeardown ()
 {
   Names::Clear ();
 }
 
 void
-AlternateFindTestCase::DoRun (void)
+AlternateFindTestCase::DoRun ()
 {
   Ptr<TestObject> testObject = CreateObject<TestObject> ();
   Names::Add ("Test Object", testObject);

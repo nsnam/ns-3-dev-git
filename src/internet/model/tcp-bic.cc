@@ -26,7 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpBic");
 NS_OBJECT_ENSURE_REGISTERED (TcpBic);
 
 TypeId
-TcpBic::GetTypeId (void)
+TcpBic::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpBic")
     .SetParent<TcpCongestionOps> ()
@@ -274,7 +274,7 @@ TcpBic::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 }
 
 Ptr<TcpCongestionOps>
-TcpBic::Fork (void)
+TcpBic::Fork ()
 {
   return CopyObject<TcpBic> (this);
 }

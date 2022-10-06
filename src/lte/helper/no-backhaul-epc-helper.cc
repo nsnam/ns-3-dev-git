@@ -219,7 +219,7 @@ NoBackhaulEpcHelper::~NoBackhaulEpcHelper ()
 }
 
 TypeId
-NoBackhaulEpcHelper::GetTypeId (void)
+NoBackhaulEpcHelper::GetTypeId ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::NoBackhaulEpcHelper")

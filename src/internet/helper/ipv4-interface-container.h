@@ -90,7 +90,7 @@ public:
    *
    * \returns an iterator which refers to the first pair in the container.
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which indicates past-the-last Node in the
@@ -112,7 +112,7 @@ public:
    *
    * \returns an iterator which indicates an ending condition for a loop.
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \returns the number of Ptr<Ipv4> and interface pairs stored in this
@@ -135,7 +135,7 @@ public:
    *
    * \returns the number of Ptr<Node> stored in this container.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \param i index of ipInterfacePair in container

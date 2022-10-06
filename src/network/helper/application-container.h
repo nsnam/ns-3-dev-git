@@ -87,7 +87,7 @@ public:
    *
    * \returns an iterator which refers to the first Application in the container.
    */
-  Iterator Begin (void) const;
+  Iterator Begin () const;
 
   /**
    * \brief Get an iterator which indicates past-the-last Application in the
@@ -108,7 +108,7 @@ public:
    *
    * \returns an iterator which indicates an ending condition for a loop.
    */
-  Iterator End (void) const;
+  Iterator End () const;
 
   /**
    * \brief Get the number of Ptr<Application> stored in this container.
@@ -130,7 +130,7 @@ public:
    *
    * \returns the number of Ptr<Application> stored in this container.
    */
-  uint32_t GetN (void) const;
+  uint32_t GetN () const;
 
   /**
    * \brief Get the Ptr<Application> stored in this container at a given

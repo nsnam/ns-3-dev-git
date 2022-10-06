@@ -42,7 +42,7 @@ TcpSocket::TcpStateName[TcpSocket::LAST_STATE] = { "CLOSED", "LISTEN", "SYN_SENT
                                         "CLOSING", "TIME_WAIT" };
 
 TypeId
-TcpSocket::GetTypeId (void)
+TcpSocket::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpSocket")
     .SetParent<Socket> ()

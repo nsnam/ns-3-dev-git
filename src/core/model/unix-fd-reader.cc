@@ -110,14 +110,14 @@ void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
   m_readThread = std::thread (&FdReader::Run, this);
 }
 
-void FdReader::DestroyEvent (void)
+void FdReader::DestroyEvent ()
 {
   NS_LOG_FUNCTION (this);
   Stop ();
   this->Unref ();
 }
 
-void FdReader::Stop (void)
+void FdReader::Stop ()
 {
   NS_LOG_FUNCTION (this);
   m_stop = true;
@@ -160,7 +160,7 @@ void FdReader::Stop (void)
 }
 
 // This runs in a separate thread
-void FdReader::Run (void)
+void FdReader::Run ()
 {
   NS_LOG_FUNCTION (this);
   int nfds;

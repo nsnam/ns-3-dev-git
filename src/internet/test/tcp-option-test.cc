@@ -53,8 +53,8 @@ public:
   void TestDeserialize ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   uint8_t m_scale;  //!< Window scaling.
   Buffer m_buffer;  //!< Buffer.
@@ -134,8 +134,8 @@ public:
   void TestDeserialize ();
 
 private:
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   uint32_t m_timestamp; //!< TimeStamp.
   uint32_t m_echo;      //!< Echoed TimeStamp.

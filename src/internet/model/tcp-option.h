@@ -43,9 +43,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * The option Kind, as defined in the respective RFCs.
@@ -86,7 +86,7 @@ public:
    * \brief Get the `kind' (as in \RFC{793}) of this option
    * \return the Option Kind
    */
-  virtual uint8_t GetKind (void) const = 0;
+  virtual uint8_t GetKind () const = 0;
   /**
    * \brief Returns number of bytes required for Option
    * serialization.
@@ -94,7 +94,7 @@ public:
    * \returns number of bytes required for Option
    * serialization
    */
-  virtual uint32_t GetSerializedSize (void) const = 0;
+  virtual uint32_t GetSerializedSize () const = 0;
 
   /**
    * \brief Creates an option
@@ -129,15 +129,15 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint8_t GetKind () const;
+  virtual uint32_t GetSerializedSize () const;
 
 private:
   uint8_t m_kind; //!< The unknown option kind

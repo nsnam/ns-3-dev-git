@@ -61,7 +61,7 @@ Probe::~Probe ()
 }
 
 bool
-Probe::IsEnabled (void) const
+Probe::IsEnabled () const
 {
   return (DataCollectionObject::IsEnabled ()
           && Simulator::Now () >= m_start

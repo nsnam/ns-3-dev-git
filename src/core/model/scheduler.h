@@ -159,7 +159,7 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \ingroup events
@@ -198,7 +198,7 @@ public:
    *
    * \returns \c true if the event list is empty and \c false otherwise.
    */
-  virtual bool IsEmpty (void) const = 0;
+  virtual bool IsEmpty () const = 0;
   /**
    * Get a pointer to the next event.
    *
@@ -207,7 +207,7 @@ public:
    * \returns A pointer to the next earliest event. The caller
    *      takes ownership of the returned pointer.
    */
-  virtual Event PeekNext (void) const = 0;
+  virtual Event PeekNext () const = 0;
   /**
    * Remove the earliest event from the event list.
    *
@@ -215,7 +215,7 @@ public:
    *
    * \return The Event.
    */
-  virtual Event RemoveNext (void) = 0;
+  virtual Event RemoveNext () = 0;
   /**
    * Remove a specific event from the event list.
    *

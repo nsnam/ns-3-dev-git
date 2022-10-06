@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("EnergyHarvesterContainer");
 NS_OBJECT_ENSURE_REGISTERED (EnergyHarvesterContainer);
 
 TypeId
-EnergyHarvesterContainer::GetTypeId (void)
+EnergyHarvesterContainer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EnergyHarvesterContainer")
     .SetParent<Object> ()
@@ -75,21 +75,21 @@ EnergyHarvesterContainer::EnergyHarvesterContainer (const EnergyHarvesterContain
 }
 
 EnergyHarvesterContainer::Iterator
-EnergyHarvesterContainer::Begin (void) const
+EnergyHarvesterContainer::Begin () const
 {
   NS_LOG_FUNCTION (this);
   return m_harvesters.begin ();
 }
 
 EnergyHarvesterContainer::Iterator
-EnergyHarvesterContainer::End (void) const
+EnergyHarvesterContainer::End () const
 {
   NS_LOG_FUNCTION (this);
   return m_harvesters.end ();
 }
 
 uint32_t
-EnergyHarvesterContainer::GetN (void) const
+EnergyHarvesterContainer::GetN () const
 {
   NS_LOG_FUNCTION (this);
   return m_harvesters.size ();
@@ -130,7 +130,7 @@ EnergyHarvesterContainer::Add (std::string harvesterName)
 }
 
 void
-EnergyHarvesterContainer::Clear (void)
+EnergyHarvesterContainer::Clear ()
 {
   NS_LOG_FUNCTION (this);
   m_harvesters.clear ();
@@ -142,7 +142,7 @@ EnergyHarvesterContainer::Clear (void)
  */
 
 void
-EnergyHarvesterContainer::DoDispose (void)
+EnergyHarvesterContainer::DoDispose ()
 {
   // call Object::Dispose for all EnergyHarvester objects
   for (std::vector< Ptr<EnergyHarvester> >::iterator i = m_harvesters.begin ();
@@ -154,7 +154,7 @@ EnergyHarvesterContainer::DoDispose (void)
 }
 
 void
-EnergyHarvesterContainer::DoInitialize (void)
+EnergyHarvesterContainer::DoInitialize ()
 {
   // call Object::Initialize for all EnergyHarvester objects
   for (std::vector< Ptr<EnergyHarvester> >::iterator i = m_harvesters.begin ();

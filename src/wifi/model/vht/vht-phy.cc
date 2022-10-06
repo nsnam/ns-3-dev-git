@@ -111,7 +111,7 @@ VhtPhy::~VhtPhy ()
 }
 
 void
-VhtPhy::BuildModeList (void)
+VhtPhy::BuildModeList ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_modeList.empty ());
@@ -124,7 +124,7 @@ VhtPhy::BuildModeList (void)
 }
 
 const PhyEntity::PpduFormats &
-VhtPhy::GetPpduFormats (void) const
+VhtPhy::GetPpduFormats () const
 {
   return m_vhtPpduFormats;
 }
@@ -145,7 +145,7 @@ VhtPhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
 }
 
 WifiMode
-VhtPhy::GetHtSigMode (void) const
+VhtPhy::GetHtSigMode () const
 {
   NS_ASSERT (m_bssMembershipSelector != HT_PHY);
   NS_FATAL_ERROR ("No HT-SIG");
@@ -153,7 +153,7 @@ VhtPhy::GetHtSigMode (void) const
 }
 
 WifiMode
-VhtPhy::GetSigAMode (void) const
+VhtPhy::GetSigAMode () const
 {
   return GetLSigMode (); //same number of data tones as OFDM (i.e. 48)
 }
@@ -186,7 +186,7 @@ VhtPhy::GetLSigDuration (WifiPreamble /* preamble */) const
 }
 
 Time
-VhtPhy::GetHtSigDuration (void) const
+VhtPhy::GetHtSigDuration () const
 {
   return MicroSeconds (0); //no HT-SIG
 }
@@ -323,7 +323,7 @@ VhtPhy::IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) con
 }
 
 void
-VhtPhy::InitializeModes (void)
+VhtPhy::InitializeModes ()
 {
   for (uint8_t i = 0; i < 10; ++i)
     {
@@ -525,7 +525,7 @@ VhtPhy::IsCombinationAllowed (uint8_t mcsValue, uint16_t channelWidth, uint8_t n
 }
 
 uint32_t
-VhtPhy::GetMaxPsduSize (void) const
+VhtPhy::GetMaxPsduSize () const
 {
   return 4692480;
 }

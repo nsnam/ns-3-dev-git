@@ -65,9 +65,9 @@ public:
   TcpLargeTransferLossTest (uint32_t firstLoss, uint32_t secondLoss, uint32_t lastSegment, const std::string& desc);
 
 protected:
-  void ConfigureProperties (void);
-  void ConfigureEnvironment (void);
-  void FinalChecks (void);
+  void ConfigureProperties ();
+  void ConfigureEnvironment ();
+  void FinalChecks ();
   void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
@@ -156,7 +156,7 @@ TcpLargeTransferLossTest::Rx (const Ptr<const Packet> p, const TcpHeader&h, Sock
 }
 
 void
-TcpLargeTransferLossTest::FinalChecks (void)
+TcpLargeTransferLossTest::FinalChecks ()
 {
   // The addition of 2 accounts for the two forcibly lost packets
   NS_TEST_ASSERT_MSG_EQ (m_sent, (m_received + 2), "Did not observe expected number of sent packets");

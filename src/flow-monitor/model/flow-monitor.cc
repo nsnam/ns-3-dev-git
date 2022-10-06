@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("FlowMonitor");
 NS_OBJECT_ENSURE_REGISTERED (FlowMonitor);
 
 TypeId
-FlowMonitor::GetTypeId (void)
+FlowMonitor::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FlowMonitor")
     .SetParent<Object> ()
@@ -74,7 +74,7 @@ FlowMonitor::GetTypeId (void)
 }
 
 TypeId
-FlowMonitor::GetInstanceTypeId (void) const
+FlowMonitor::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -86,7 +86,7 @@ FlowMonitor::FlowMonitor ()
 }
 
 void
-FlowMonitor::DoDispose (void)
+FlowMonitor::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Cancel (m_startEvent);

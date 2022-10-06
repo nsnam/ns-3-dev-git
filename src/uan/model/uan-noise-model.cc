@@ -24,7 +24,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (UanNoiseModel);
 
-TypeId UanNoiseModel::GetTypeId (void)
+TypeId UanNoiseModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanNoiseModel")
     .SetParent<Object> ()
@@ -34,12 +34,12 @@ TypeId UanNoiseModel::GetTypeId (void)
 }
 
 void
-UanNoiseModel::Clear (void)
+UanNoiseModel::Clear ()
 {
 }
 
 void
-UanNoiseModel::DoDispose (void)
+UanNoiseModel::DoDispose ()
 {
   Clear ();
   Object::DoDispose ();

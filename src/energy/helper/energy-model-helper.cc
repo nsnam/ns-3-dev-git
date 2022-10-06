@@ -75,7 +75,7 @@ EnergySourceHelper::Install (std::string nodeName) const
 }
 
 EnergySourceContainer
-EnergySourceHelper::InstallAll (void) const
+EnergySourceHelper::InstallAll () const
 {
   return Install (NodeContainer::GetGlobal ());
 }

@@ -96,7 +96,7 @@ Reservation::GetLength () const
 }
 
 const std::list<std::pair <Ptr<Packet>, Mac8Address > > &
-Reservation::GetPktList (void) const
+Reservation::GetPktList () const
 {
   return m_pktList;
 }
@@ -205,7 +205,7 @@ UanMacRc::DoDispose ()
 }
 
 TypeId
-UanMacRc::GetTypeId (void)
+UanMacRc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanMacRc")
     .SetParent<UanMac> ()
@@ -615,7 +615,7 @@ UanMacRc::CreateRtsHeader (const Reservation &res)
 }
 
 void
-UanMacRc::Associate (void)
+UanMacRc::Associate ()
 {
   m_cntrlSends++;
 
@@ -673,7 +673,7 @@ UanMacRc::AssociateTimeout ()
 
 
 void
-UanMacRc::SendRts (void)
+UanMacRc::SendRts ()
 {
   m_cntrlSends++;
   if (m_state == RTSSENT)
@@ -729,7 +729,7 @@ UanMacRc::IsPhy1Ok ()
 }
 
 void
-UanMacRc::RtsTimeout (void)
+UanMacRc::RtsTimeout ()
 {
   m_cntrlSends++;
 
@@ -770,7 +770,7 @@ UanMacRc::RtsTimeout (void)
 }
 
 void
-UanMacRc::BlockRtsing (void)
+UanMacRc::BlockRtsing ()
 {
   m_rtsBlocked = true;
 }

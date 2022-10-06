@@ -91,7 +91,7 @@ MeshHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
   return devices;
 }
 MeshHelper
-MeshHelper::Default (void)
+MeshHelper::Default ()
 {
   MeshHelper helper;
   helper.SetMacType ();
@@ -226,7 +226,7 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 }
 
 void
-MeshHelper::EnableLogComponents (void)
+MeshHelper::EnableLogComponents ()
 {
   WifiHelper::EnableLogComponents ();
 

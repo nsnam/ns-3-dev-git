@@ -45,7 +45,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (MpduAggregator);
 
 TypeId
-MpduAggregator::GetTypeId (void)
+MpduAggregator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MpduAggregator")
     .SetParent<Object> ()

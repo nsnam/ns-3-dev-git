@@ -67,19 +67,19 @@ public:
    *
    * \return the Barker_Preamble_Mode field in the ErpInformation information element
    */
-  uint8_t GetBarkerPreambleMode (void) const;
+  uint8_t GetBarkerPreambleMode () const;
   /**
    * Return the Use_Protection field in the ErpInformation information element.
    *
    * \return the Use_Protection field in the ErpInformation information element
    */
-  uint8_t GetUseProtection (void) const;
+  uint8_t GetUseProtection () const;
   /**
    * Return the Non_Erp_Present field in the ErpInformation information element.
    *
    * \return the Non_Erp_Present field in the ErpInformation information element
    */
-  uint8_t GetNonErpPresent (void) const;
+  uint8_t GetNonErpPresent () const;
 
 
 private:

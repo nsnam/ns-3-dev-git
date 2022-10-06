@@ -48,16 +48,16 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   /**
    * Get size of length field
    * \returns the size of length field
    */
-  uint8_t GetSizeOfLen (void) const;
+  uint8_t GetSizeOfLen () const;
   virtual void Print (std::ostream &os) const;
 private:
   uint32_t m_len; ///< length

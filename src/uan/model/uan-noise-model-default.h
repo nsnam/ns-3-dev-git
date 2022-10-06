@@ -55,7 +55,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // Inherited methods
   virtual double GetNoiseDbHz (double fKhz) const;

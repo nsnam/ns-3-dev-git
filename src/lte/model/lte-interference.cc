@@ -58,7 +58,7 @@ LteInterference::DoDispose ()
 
 
 TypeId
-LteInterference::GetTypeId (void)
+LteInterference::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteInterference")
     .SetParent<Object> ()

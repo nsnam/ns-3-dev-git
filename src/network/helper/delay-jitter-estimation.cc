@@ -39,10 +39,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
@@ -51,7 +51,7 @@ public:
    * \brief Get the Transmission time stored in the tag
    * \return the transmission time
    */
-  Time GetTxTime (void) const;
+  Time GetTxTime () const;
 private:
   Time m_creationTime; //!< The time stored in the tag
 };
@@ -62,7 +62,7 @@ DelayJitterEstimationTimestampTag::DelayJitterEstimationTimestampTag ()
 }
 
 TypeId
-DelayJitterEstimationTimestampTag::GetTypeId (void)
+DelayJitterEstimationTimestampTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("anon::DelayJitterEstimationTimestampTag")
     .SetParent<Tag> ()
@@ -77,13 +77,13 @@ DelayJitterEstimationTimestampTag::GetTypeId (void)
   return tid;
 }
 TypeId
-DelayJitterEstimationTimestampTag::GetInstanceTypeId (void) const
+DelayJitterEstimationTimestampTag::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-DelayJitterEstimationTimestampTag::GetSerializedSize (void) const
+DelayJitterEstimationTimestampTag::GetSerializedSize () const
 {
   return 8;
 }
@@ -103,7 +103,7 @@ DelayJitterEstimationTimestampTag::Print (std::ostream &os) const
   os << "CreationTime=" << m_creationTime;
 }
 Time
-DelayJitterEstimationTimestampTag::GetTxTime (void) const
+DelayJitterEstimationTimestampTag::GetTxTime () const
 {
   return m_creationTime;
 }
@@ -148,12 +148,12 @@ DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
 }
 
 Time
-DelayJitterEstimation::GetLastDelay (void) const
+DelayJitterEstimation::GetLastDelay () const
 {
   return m_transit;
 }
 uint64_t
-DelayJitterEstimation::GetLastJitter (void) const
+DelayJitterEstimation::GetLastJitter () const
 {
   // floating jitter version
   // return m_jitter.GetTimeStep ();

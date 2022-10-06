@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxChannel);
 
-TypeId WimaxChannel::GetTypeId (void)
+TypeId WimaxChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WimaxChannel")
     .SetParent<Channel> ()
@@ -37,11 +37,11 @@ TypeId WimaxChannel::GetTypeId (void)
   return tid;
 }
 
-WimaxChannel::WimaxChannel (void)
+WimaxChannel::WimaxChannel ()
 {
 }
 
-WimaxChannel::~WimaxChannel (void)
+WimaxChannel::~WimaxChannel ()
 {
 }
 
@@ -52,7 +52,7 @@ WimaxChannel::Attach (Ptr<WimaxPhy> phy)
 }
 
 std::size_t
-WimaxChannel::GetNDevices (void) const
+WimaxChannel::GetNDevices () const
 {
   return DoGetNDevices ();
 }

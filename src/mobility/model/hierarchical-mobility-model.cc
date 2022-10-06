@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("HierarchicalMobilityModel");
 NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
 
 TypeId
-HierarchicalMobilityModel::GetTypeId (void)
+HierarchicalMobilityModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HierarchicalMobilityModel")
     .SetParent<MobilityModel> ()
@@ -109,19 +109,19 @@ HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
 
 
 Ptr<MobilityModel>
-HierarchicalMobilityModel::GetChild (void) const
+HierarchicalMobilityModel::GetChild () const
 {
   return m_child;
 }
 
 Ptr<MobilityModel>
-HierarchicalMobilityModel::GetParent (void) const
+HierarchicalMobilityModel::GetParent () const
 {
   return m_parent;
 }
 
 Vector
-HierarchicalMobilityModel::DoGetPosition (void) const
+HierarchicalMobilityModel::DoGetPosition () const
 {
   if (!m_parent)
     {
@@ -157,7 +157,7 @@ HierarchicalMobilityModel::DoSetPosition (const Vector &position)
     }
 }
 Vector
-HierarchicalMobilityModel::DoGetVelocity (void) const
+HierarchicalMobilityModel::DoGetVelocity () const
 {
   if (m_parent)
     {
@@ -187,7 +187,7 @@ HierarchicalMobilityModel::ChildChanged (Ptr<const MobilityModel> model)
 }
 
 void
-HierarchicalMobilityModel::DoInitialize (void)
+HierarchicalMobilityModel::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   if (m_parent && !m_parent->IsInitialized ())

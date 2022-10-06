@@ -69,7 +69,7 @@ IeMeshId::IsEqual (IeMeshId const &o) const
   return true;
 }
 bool
-IeMeshId::IsBroadcast (void) const
+IeMeshId::IsBroadcast () const
 {
   if (m_meshId[0] == 0)
     {
@@ -78,12 +78,12 @@ IeMeshId::IsBroadcast (void) const
   return false;
 }
 char *
-IeMeshId::PeekString (void) const
+IeMeshId::PeekString () const
 {
   return (char *) m_meshId;
 }
 uint16_t
-IeMeshId::GetInformationFieldSize (void) const
+IeMeshId::GetInformationFieldSize () const
 {
   uint8_t size = 0;
   while (m_meshId[size] != 0 && size < 32)

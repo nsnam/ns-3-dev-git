@@ -49,7 +49,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint8_t PROT_NUMBER; //!< ICMP protocol number (0x1)
 
   Icmpv4L4Protocol ();
@@ -65,13 +65,13 @@ public:
    * Get the protocol number
    * \returns the protocol number
    */
-  static uint16_t GetStaticProtocolNumber (void);
+  static uint16_t GetStaticProtocolNumber ();
 
   /**
    * Get the protocol number
    * \returns the protocol number
    */
-  virtual int GetProtocolNumber (void) const;
+  virtual int GetProtocolNumber () const;
 
   /**
    * \brief Receive method.
@@ -122,8 +122,8 @@ public:
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
   virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
   // From IpL4Protocol
-  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
-  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget () const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
 protected:
   /*
    * This function will notify other components connected to the node that a new stack member is now connected
@@ -207,7 +207,7 @@ private:
                 uint32_t info, Ipv4Header ipHeader,
                 const uint8_t payload[8]);
 
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   Ptr<Node> m_node; //!< the node this protocol is associated with
   IpL4Protocol::DownTargetCallback m_downTarget; //!< callback to Ipv4::Send

@@ -31,7 +31,7 @@ NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,Packet);
 NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,QueueDiscItem);
 
 TypeId
-QueueBase::GetTypeId (void)
+QueueBase::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QueueBase")
     .SetParent<Object> ()
@@ -79,7 +79,7 @@ QueueBase::AppendItemTypeIfNotPresent (std::string& typeId, const std::string& i
 }
 
 bool
-QueueBase::IsEmpty (void) const
+QueueBase::IsEmpty () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << (m_nPackets.Get () == 0));
@@ -87,7 +87,7 @@ QueueBase::IsEmpty (void) const
 }
 
 uint32_t
-QueueBase::GetNPackets (void) const
+QueueBase::GetNPackets () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nPackets);
@@ -95,7 +95,7 @@ QueueBase::GetNPackets (void) const
 }
 
 uint32_t
-QueueBase::GetNBytes (void) const
+QueueBase::GetNBytes () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (" returns " << m_nBytes);
@@ -103,7 +103,7 @@ QueueBase::GetNBytes (void) const
 }
 
 QueueSize
-QueueBase::GetCurrentSize (void) const
+QueueBase::GetCurrentSize () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -119,7 +119,7 @@ QueueBase::GetCurrentSize (void) const
 }
 
 uint32_t
-QueueBase::GetTotalReceivedBytes (void) const
+QueueBase::GetTotalReceivedBytes () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalReceivedBytes);
@@ -127,7 +127,7 @@ QueueBase::GetTotalReceivedBytes (void) const
 }
 
 uint32_t
-QueueBase::GetTotalReceivedPackets (void) const
+QueueBase::GetTotalReceivedPackets () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalReceivedPackets);
@@ -135,7 +135,7 @@ QueueBase::GetTotalReceivedPackets (void) const
 }
 
 uint32_t
-QueueBase:: GetTotalDroppedBytes (void) const
+QueueBase:: GetTotalDroppedBytes () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedBytes);
@@ -143,7 +143,7 @@ QueueBase:: GetTotalDroppedBytes (void) const
 }
 
 uint32_t
-QueueBase:: GetTotalDroppedBytesBeforeEnqueue (void) const
+QueueBase:: GetTotalDroppedBytesBeforeEnqueue () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedBytesBeforeEnqueue);
@@ -151,7 +151,7 @@ QueueBase:: GetTotalDroppedBytesBeforeEnqueue (void) const
 }
 
 uint32_t
-QueueBase:: GetTotalDroppedBytesAfterDequeue (void) const
+QueueBase:: GetTotalDroppedBytesAfterDequeue () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedBytesAfterDequeue);
@@ -159,7 +159,7 @@ QueueBase:: GetTotalDroppedBytesAfterDequeue (void) const
 }
 
 uint32_t
-QueueBase::GetTotalDroppedPackets (void) const
+QueueBase::GetTotalDroppedPackets () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedPackets);
@@ -167,7 +167,7 @@ QueueBase::GetTotalDroppedPackets (void) const
 }
 
 uint32_t
-QueueBase::GetTotalDroppedPacketsBeforeEnqueue (void) const
+QueueBase::GetTotalDroppedPacketsBeforeEnqueue () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedPacketsBeforeEnqueue);
@@ -175,7 +175,7 @@ QueueBase::GetTotalDroppedPacketsBeforeEnqueue (void) const
 }
 
 uint32_t
-QueueBase::GetTotalDroppedPacketsAfterDequeue (void) const
+QueueBase::GetTotalDroppedPacketsAfterDequeue () const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedPacketsAfterDequeue);
@@ -183,7 +183,7 @@ QueueBase::GetTotalDroppedPacketsAfterDequeue (void) const
 }
 
 void
-QueueBase::ResetStatistics (void)
+QueueBase::ResetStatistics ()
 {
   NS_LOG_FUNCTION (this);
   m_nTotalReceivedBytes = 0;
@@ -214,7 +214,7 @@ QueueBase::SetMaxSize (QueueSize size)
 }
 
 QueueSize
-QueueBase::GetMaxSize (void) const
+QueueBase::GetMaxSize () const
 {
   NS_LOG_FUNCTION (this);
   return m_maxSize;

@@ -42,7 +42,7 @@ ATTRIBUTE_VALUE_DEFINE_WITH_NAME (double, Double);
 ATTRIBUTE_ACCESSOR_DEFINE (Double);
 
 template <typename T>
-Ptr<const AttributeChecker> MakeDoubleChecker (void);
+Ptr<const AttributeChecker> MakeDoubleChecker ();
 
 /**
  * Make a checker with a minimum value.
@@ -88,7 +88,7 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
 } // namespace internal
 
 template <typename T>
-Ptr<const AttributeChecker> MakeDoubleChecker (void)
+Ptr<const AttributeChecker> MakeDoubleChecker ()
 {
   return internal::MakeDoubleChecker (-std::numeric_limits<T>::max (),
                                       std::numeric_limits<T>::max (),

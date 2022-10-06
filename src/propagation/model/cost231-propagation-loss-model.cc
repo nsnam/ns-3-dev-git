@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("Cost231PropagationLossModel");
 NS_OBJECT_ENSURE_REGISTERED (Cost231PropagationLossModel);
 
 TypeId
-Cost231PropagationLossModel::GetTypeId (void)
+Cost231PropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Cost231PropagationLossModel")
     .SetParent<PropagationLossModel> ()
@@ -81,7 +81,7 @@ Cost231PropagationLossModel::SetLambda (double frequency, double speed)
 }
 
 double
-Cost231PropagationLossModel::GetShadowing (void)
+Cost231PropagationLossModel::GetShadowing ()
 {
   return m_shadowing;
 }
@@ -99,7 +99,7 @@ Cost231PropagationLossModel::SetLambda (double lambda)
 }
 
 double
-Cost231PropagationLossModel::GetLambda (void) const
+Cost231PropagationLossModel::GetLambda () const
 {
   return m_lambda;
 }
@@ -110,7 +110,7 @@ Cost231PropagationLossModel::SetMinDistance (double minDistance)
   m_minDistance = minDistance;
 }
 double
-Cost231PropagationLossModel::GetMinDistance (void) const
+Cost231PropagationLossModel::GetMinDistance () const
 {
   return m_minDistance;
 }
@@ -122,7 +122,7 @@ Cost231PropagationLossModel::SetBSAntennaHeight (double height)
 }
 
 double
-Cost231PropagationLossModel::GetBSAntennaHeight (void) const
+Cost231PropagationLossModel::GetBSAntennaHeight () const
 {
   return m_BSAntennaHeight;
 }
@@ -134,7 +134,7 @@ Cost231PropagationLossModel::SetSSAntennaHeight (double height)
 }
 
 double
-Cost231PropagationLossModel::GetSSAntennaHeight (void) const
+Cost231PropagationLossModel::GetSSAntennaHeight () const
 {
   return m_SSAntennaHeight;
 }

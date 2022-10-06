@@ -75,19 +75,19 @@ UanHeaderRcData::SetPropDelay (Time propDelay)
 }
 
 uint8_t
-UanHeaderRcData::GetFrameNo (void) const
+UanHeaderRcData::GetFrameNo () const
 {
   return m_frameNo;
 }
 
 Time
-UanHeaderRcData::GetPropDelay (void) const
+UanHeaderRcData::GetPropDelay () const
 {
   return m_propDelay;
 }
 
 uint32_t
-UanHeaderRcData::GetSerializedSize (void) const
+UanHeaderRcData::GetSerializedSize () const
 {
   return 1 + 2;
 }
@@ -122,7 +122,7 @@ UanHeaderRcData::Print (std::ostream &os) const
 }
 
 TypeId
-UanHeaderRcData::GetInstanceTypeId (void) const
+UanHeaderRcData::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -208,25 +208,25 @@ UanHeaderRcRts::GetLength () const
 }
 
 Time
-UanHeaderRcRts::GetTimeStamp (void) const
+UanHeaderRcRts::GetTimeStamp () const
 {
   return m_timeStamp;
 }
 
 uint8_t
-UanHeaderRcRts::GetRetryNo (void) const
+UanHeaderRcRts::GetRetryNo () const
 {
   return m_retryNo;
 }
 
 uint8_t
-UanHeaderRcRts::GetFrameNo (void) const
+UanHeaderRcRts::GetFrameNo () const
 {
   return m_frameNo;
 }
 
 uint32_t
-UanHeaderRcRts::GetSerializedSize (void) const
+UanHeaderRcRts::GetSerializedSize () const
 {
   return 1 + 1 + 1 + 4 + 2;
 }
@@ -267,7 +267,7 @@ UanHeaderRcRts::Print (std::ostream &os) const
 }
 
 TypeId
-UanHeaderRcRts::GetInstanceTypeId (void) const
+UanHeaderRcRts::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -336,30 +336,30 @@ UanHeaderRcCtsGlobal::SetTxTimeStamp (Time t)
 }
 
 Time
-UanHeaderRcCtsGlobal::GetWindowTime (void) const
+UanHeaderRcCtsGlobal::GetWindowTime () const
 {
   return m_winTime;
 }
 
 Time
-UanHeaderRcCtsGlobal::GetTxTimeStamp (void) const
+UanHeaderRcCtsGlobal::GetTxTimeStamp () const
 {
   return m_timeStampTx;
 }
 
 uint16_t
-UanHeaderRcCtsGlobal::GetRetryRate (void) const
+UanHeaderRcCtsGlobal::GetRetryRate () const
 {
   return m_retryRate;
 }
 
 uint16_t
-UanHeaderRcCtsGlobal::GetRateNum (void) const
+UanHeaderRcCtsGlobal::GetRateNum () const
 {
   return m_rateNum;
 }
 uint32_t
-UanHeaderRcCtsGlobal::GetSerializedSize (void) const
+UanHeaderRcCtsGlobal::GetSerializedSize () const
 {
   return 4 + 4 + 2 + 2;
 }
@@ -398,7 +398,7 @@ UanHeaderRcCtsGlobal::Print (std::ostream &os) const
 }
 
 TypeId
-UanHeaderRcCtsGlobal::GetInstanceTypeId (void) const
+UanHeaderRcCtsGlobal::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -479,13 +479,13 @@ UanHeaderRcCts::GetFrameNo () const
 }
 
 Time
-UanHeaderRcCts::GetRtsTimeStamp (void) const
+UanHeaderRcCts::GetRtsTimeStamp () const
 {
   return m_timeStampRts;
 }
 
 Time
-UanHeaderRcCts::GetDelayToTx (void) const
+UanHeaderRcCts::GetDelayToTx () const
 {
   return m_delay;
 }
@@ -503,7 +503,7 @@ UanHeaderRcCts::GetAddress () const
 }
 
 uint32_t
-UanHeaderRcCts::GetSerializedSize (void) const
+UanHeaderRcCts::GetSerializedSize () const
 {
   return 1 + 1 + 1 + 4 + 4;
 }
@@ -547,7 +547,7 @@ UanHeaderRcCts::Print (std::ostream &os) const
 }
 
 TypeId
-UanHeaderRcCts::GetInstanceTypeId (void) const
+UanHeaderRcCts::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -586,25 +586,25 @@ UanHeaderRcAck::AddNackedFrame (uint8_t frame)
 }
 
 const std::set<uint8_t> &
-UanHeaderRcAck::GetNackedFrames (void) const
+UanHeaderRcAck::GetNackedFrames () const
 {
   return m_nackedFrames;
 }
 
 uint8_t
-UanHeaderRcAck::GetFrameNo (void) const
+UanHeaderRcAck::GetFrameNo () const
 {
   return m_frameNo;
 }
 
 uint8_t
-UanHeaderRcAck::GetNoNacks (void) const
+UanHeaderRcAck::GetNoNacks () const
 {
   return static_cast<uint8_t> (m_nackedFrames.size ());
 }
 
 uint32_t
-UanHeaderRcAck::GetSerializedSize (void) const
+UanHeaderRcAck::GetSerializedSize () const
 {
   return 1 + 1 + GetNoNacks ();
 }
@@ -652,7 +652,7 @@ UanHeaderRcAck::Print (std::ostream &os) const
 }
 
 TypeId
-UanHeaderRcAck::GetInstanceTypeId (void) const
+UanHeaderRcAck::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }

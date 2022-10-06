@@ -129,14 +129,14 @@ Mac64Address::ConvertFrom (const Address &address)
 }
 
 Address
-Mac64Address::ConvertTo (void) const
+Mac64Address::ConvertTo () const
 {
   NS_LOG_FUNCTION (this);
   return Address (GetType (), m_address, 8);
 }
 
 Mac64Address
-Mac64Address::Allocate (void)
+Mac64Address::Allocate ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -166,7 +166,7 @@ Mac64Address::ResetAllocationIndex ()
 }
 
 uint8_t
-Mac64Address::GetType (void)
+Mac64Address::GetType ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();

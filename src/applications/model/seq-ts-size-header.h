@@ -41,7 +41,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief constructor
@@ -58,12 +58,12 @@ public:
    * \brief Get the size information that the header is carrying
    * \return the size
    */
-  uint64_t GetSize (void) const;
+  uint64_t GetSize () const;
 
   // Inherited
-  virtual TypeId GetInstanceTypeId (void) const override;
+  virtual TypeId GetInstanceTypeId () const override;
   virtual void Print (std::ostream &os) const override;
-  virtual uint32_t GetSerializedSize (void) const override;
+  virtual uint32_t GetSerializedSize () const override;
   virtual void Serialize (Buffer::Iterator start) const override;
   virtual uint32_t Deserialize (Buffer::Iterator start) override;
 

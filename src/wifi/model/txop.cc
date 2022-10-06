@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("Txop");
 NS_OBJECT_ENSURE_REGISTERED (Txop);
 
 TypeId
-Txop::GetTypeId (void)
+Txop::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Txop")
     .SetParent<ns3::Object> ()
@@ -139,7 +139,7 @@ Txop::~Txop ()
 }
 
 void
-Txop::DoDispose (void)
+Txop::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_queue = 0;
@@ -150,7 +150,7 @@ Txop::DoDispose (void)
 }
 
 std::unique_ptr<Txop::LinkEntity>
-Txop::CreateLinkEntity (void) const
+Txop::CreateLinkEntity () const
 {
   return std::make_unique<LinkEntity> ();
 }
@@ -164,7 +164,7 @@ Txop::GetLink (uint8_t linkId) const
 }
 
 uint8_t
-Txop::GetNLinks (void) const
+Txop::GetNLinks () const
 {
   return m_links.size ();
 }
@@ -383,13 +383,13 @@ Txop::SetTxopLimit (Time txopLimit, uint8_t linkId)
 }
 
 uint32_t
-Txop::GetMinCw (void) const
+Txop::GetMinCw () const
 {
   return GetMinCw (0);
 }
 
 std::vector<uint32_t>
-Txop::GetMinCws (void) const
+Txop::GetMinCws () const
 {
   std::vector<uint32_t> ret;
   for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
@@ -406,13 +406,13 @@ Txop::GetMinCw (uint8_t linkId) const
 }
 
 uint32_t
-Txop::GetMaxCw (void) const
+Txop::GetMaxCw () const
 {
   return GetMaxCw (0);
 }
 
 std::vector<uint32_t>
-Txop::GetMaxCws (void) const
+Txop::GetMaxCws () const
 {
   std::vector<uint32_t> ret;
   for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
@@ -429,13 +429,13 @@ Txop::GetMaxCw (uint8_t linkId) const
 }
 
 uint8_t
-Txop::GetAifsn (void) const
+Txop::GetAifsn () const
 {
   return GetAifsn (0);
 }
 
 std::vector<uint8_t>
-Txop::GetAifsns (void) const
+Txop::GetAifsns () const
 {
   std::vector<uint8_t> ret;
   for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
@@ -452,13 +452,13 @@ Txop::GetAifsn (uint8_t linkId) const
 }
 
 Time
-Txop::GetTxopLimit (void) const
+Txop::GetTxopLimit () const
 {
   return GetTxopLimit (0);
 }
 
 std::vector<Time>
-Txop::GetTxopLimits (void) const
+Txop::GetTxopLimits () const
 {
   std::vector<Time> ret;
   for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
@@ -600,7 +600,7 @@ Txop::NotifySleep (uint8_t linkId)
 }
 
 void
-Txop::NotifyOff (void)
+Txop::NotifyOff ()
 {
   NS_LOG_FUNCTION (this);
   m_queue->Flush ();

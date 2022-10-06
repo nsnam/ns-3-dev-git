@@ -40,7 +40,7 @@ public:
   virtual ~LrWpanPlmeAndPdInterfaceTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Receives a PdData indication
@@ -71,7 +71,7 @@ LrWpanPlmeAndPdInterfaceTestCase::ReceivePdDataIndication (uint32_t psduLength,
 }
 
 void
-LrWpanPlmeAndPdInterfaceTestCase::DoRun (void)
+LrWpanPlmeAndPdInterfaceTestCase::DoRun ()
 {
   LogComponentEnableAll (LOG_PREFIX_FUNC);
   LogComponentEnable ("LrWpanPhy", LOG_LEVEL_ALL);

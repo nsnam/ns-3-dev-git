@@ -34,8 +34,8 @@ class SpectrumValue;
 class LrWpanSpectrumValueHelper
 {
 public:
-  LrWpanSpectrumValueHelper (void);
-  virtual ~LrWpanSpectrumValueHelper (void);
+  LrWpanSpectrumValueHelper ();
+  virtual ~LrWpanSpectrumValueHelper ();
 
   /**
    * \brief create spectrum value

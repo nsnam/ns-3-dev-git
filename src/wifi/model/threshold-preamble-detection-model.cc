@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("ThresholdPreambleDetectionModel");
 NS_OBJECT_ENSURE_REGISTERED (ThresholdPreambleDetectionModel);
 
 TypeId
-ThresholdPreambleDetectionModel::GetTypeId (void)
+ThresholdPreambleDetectionModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ThresholdPreambleDetectionModel")
     .SetParent<PreambleDetectionModel> ()

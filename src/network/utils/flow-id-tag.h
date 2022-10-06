@@ -31,9 +31,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer buf) const;
   virtual void Deserialize (TagBuffer buf);
   virtual void Print (std::ostream &os) const;
@@ -54,12 +54,12 @@ public:
    *  Gets the flow id for the tag
    *  \returns current flow id for this tag
    */
-  uint32_t GetFlowId (void) const;
+  uint32_t GetFlowId () const;
   /**
    *  Uses a static variable to generate sequential flow id
    *  \returns flow id allocated
    */
-  static uint32_t AllocateFlowId (void);
+  static uint32_t AllocateFlowId ();
 private:
   uint32_t m_flowId; //!< Flow ID
 };

@@ -63,7 +63,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief CobaltQueueDisc Constructor
@@ -84,21 +84,21 @@ public:
    *
    * \returns The target queue delay
    */
-  Time GetTarget (void) const;
+  Time GetTarget () const;
 
   /**
    * \brief Get the interval
    *
    * \returns The interval
    */
-  Time GetInterval (void) const;
+  Time GetInterval () const;
 
   /**
    * \brief Get the time for next packet drop while in the dropping state
    *
    * \returns The time (in microseconds) for next packet drop
    */
-  int64_t GetDropNext (void) const;
+  int64_t GetDropNext () const;
 
   static constexpr const char* TARGET_EXCEEDED_DROP = "Target exceeded drop";  //!< Sojourn time above target
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";  //!< Overlimit dropped packet
@@ -134,25 +134,25 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual Ptr<const QueueDiscItem> DoPeek (void);
-  virtual bool CheckConfig (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
+  virtual Ptr<const QueueDiscItem> DoPeek ();
+  virtual bool CheckConfig ();
 
   /**
     * \brief Initialize the queue parameters.
     */
-  virtual void InitializeParams (void);
+  virtual void InitializeParams ();
 
   /**
    * \brief Calculate the reciprocal square root of m_count by using Newton's method
    *  http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Iterative_methods_for_reciprocal_square_roots
    * m_recInvSqrt (new) = (m_recInvSqrt (old) / 2) * (3 - m_count * m_recInvSqrt^2)
    */
-  void NewtonStep (void);
+  void NewtonStep ();
 
   /**
    * \brief Determine the time for next drop
@@ -168,7 +168,7 @@ private:
   /**
    * \brief Updates the inverse square root
    */
-  void InvSqrt (void);
+  void InvSqrt ();
 
   /**
    * There is a big difference in timing between the accurate values placed in
@@ -180,7 +180,7 @@ private:
    * The magnitude of the error when stepping up to count 2 is such as to give
    * the value that *should* have been produced at count 4.
    */
-  void CacheInit (void);
+  void CacheInit ();
 
   /**
    * Check if CoDel time a is successive to b

@@ -42,7 +42,7 @@ public:
   /** Destructor. */
   ~PtrExample ();
   /** Example class method. */
-  void Method (void);
+  void Method ();
 };
 PtrExample::PtrExample ()
 {
@@ -53,7 +53,7 @@ PtrExample::~PtrExample ()
   std::cout << "PtrExample destructor" << std::endl;
 }
 void
-PtrExample::Method (void)
+PtrExample::Method ()
 {
   std::cout << "PtrExample method" << std::endl;
 }
@@ -84,7 +84,7 @@ StorePtr (Ptr<PtrExample> p)
  *  Set \c g_ptr to NULL.
  */
 static void
-ClearPtr (void)
+ClearPtr ()
 {
   g_ptr = 0;
 }

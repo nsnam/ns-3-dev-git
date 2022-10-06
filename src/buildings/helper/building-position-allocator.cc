@@ -49,7 +49,7 @@ RandomBuildingPositionAllocator::RandomBuildingPositionAllocator ()
 }
 
 TypeId
-RandomBuildingPositionAllocator::GetTypeId (void)
+RandomBuildingPositionAllocator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RandomBuildingPositionAllocator")
     .SetParent<PositionAllocator> ()
@@ -114,7 +114,7 @@ OutdoorPositionAllocator::OutdoorPositionAllocator ()
 }
 
 TypeId
-OutdoorPositionAllocator::GetTypeId (void)
+OutdoorPositionAllocator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::OutdoorPositionAllocator")
     .SetParent<PositionAllocator> ()
@@ -231,7 +231,7 @@ RandomRoomPositionAllocator::RandomRoomPositionAllocator ()
 }
 
 TypeId
-RandomRoomPositionAllocator::GetTypeId (void)
+RandomRoomPositionAllocator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RandomRoomPositionAllocator")
     .SetParent<PositionAllocator> ()
@@ -335,7 +335,7 @@ SameRoomPositionAllocator::SameRoomPositionAllocator (NodeContainer c)
 }
 
 TypeId
-SameRoomPositionAllocator::GetTypeId (void)
+SameRoomPositionAllocator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SameRoomPositionAllocator")
     .SetParent<PositionAllocator> ()
@@ -417,7 +417,7 @@ FixedRoomPositionAllocator::FixedRoomPositionAllocator (
 }
 
 TypeId
-FixedRoomPositionAllocator::GetTypeId (void)
+FixedRoomPositionAllocator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FixedRoomPositionAllocator")
     .SetParent<PositionAllocator> ()

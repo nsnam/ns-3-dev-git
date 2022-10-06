@@ -72,7 +72,7 @@ public:
    * \return the object TypeId
    */
   static TypeId
-  GetTypeId (void);
+  GetTypeId ();
 
   EpsBearerTagUdpClient ();
   /**
@@ -93,11 +93,11 @@ public:
   void SetRemote (Ipv4Address ip, uint16_t port);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Schedule transmit function
@@ -105,7 +105,7 @@ private:
    */
   void ScheduleTransmit (Time dt);
   /// Send function
-  void Send (void);
+  void Send ();
 
   uint32_t m_count; ///< maximum number of packets to send
   Time m_interval; ///< the time between packets
@@ -125,7 +125,7 @@ private:
 
 
 TypeId
-EpsBearerTagUdpClient::GetTypeId (void)
+EpsBearerTagUdpClient::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::EpsBearerTagUdpClient")
     .SetParent<Application> ()
@@ -190,14 +190,14 @@ EpsBearerTagUdpClient::SetRemote (Ipv4Address ip, uint16_t port)
 }
 
 void
-EpsBearerTagUdpClient::DoDispose (void)
+EpsBearerTagUdpClient::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Application::DoDispose ();
 }
 
 void
-EpsBearerTagUdpClient::StartApplication (void)
+EpsBearerTagUdpClient::StartApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -221,7 +221,7 @@ EpsBearerTagUdpClient::StopApplication ()
 }
 
 void
-EpsBearerTagUdpClient::Send (void)
+EpsBearerTagUdpClient::Send ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_sendEvent.IsExpired ());
@@ -321,7 +321,7 @@ public:
   virtual ~EpcS1uUlTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   std::vector<EnbUlTestData> m_enbUlTestData; ///< ENB UL test data
 };
 

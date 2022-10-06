@@ -67,7 +67,7 @@ double RatioToDb (double ratio);
  *
  * \return the total Ack size in bytes
  */
-uint32_t GetAckSize (void);
+uint32_t GetAckSize ();
 /**
  * Return the total BlockAck size (including FCS trailer).
  *
@@ -94,13 +94,13 @@ uint32_t GetMuBarSize (std::list<BlockAckReqType> types);
  *
  * \return the total RTS size in bytes
  */
-uint32_t GetRtsSize (void);
+uint32_t GetRtsSize ();
 /**
  * Return the total CTS size (including FCS trailer).
  *
  * \return the total CTS size in bytes
  */
-uint32_t GetCtsSize (void);
+uint32_t GetCtsSize ();
 /**
  * \param seq MPDU sequence number
  * \param winstart sequence number window start

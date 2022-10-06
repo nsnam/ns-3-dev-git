@@ -46,7 +46,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   virtual ~Header ();
 
   using Chunk::Deserialize;
@@ -58,7 +58,7 @@ public:
    * should return the number of bytes which are needed to store
    * the full header data by Serialize.
    */
-  virtual uint32_t GetSerializedSize (void) const = 0;
+  virtual uint32_t GetSerializedSize () const = 0;
   /**
    * \param start an iterator which points to where the header should
    *        be written.

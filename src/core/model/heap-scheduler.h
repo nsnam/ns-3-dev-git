@@ -76,7 +76,7 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /** Constructor. */
   HeapScheduler ();
@@ -85,9 +85,9 @@ public:
 
   // Inherited
   virtual void Insert (const Scheduler::Event &ev);
-  virtual bool IsEmpty (void) const;
-  virtual Scheduler::Event PeekNext (void) const;
-  virtual Scheduler::Event RemoveNext (void);
+  virtual bool IsEmpty () const;
+  virtual Scheduler::Event PeekNext () const;
+  virtual Scheduler::Event RemoveNext ();
   virtual void Remove (const Scheduler::Event &ev);
 
 private:
@@ -127,12 +127,12 @@ private:
    *
    * \returns The root index.
    */
-  inline std::size_t Root (void) const;
+  inline std::size_t Root () const;
   /**
    * Return the index of the last element.
    * \returns The last index.
    */
-  std::size_t Last (void) const;
+  std::size_t Last () const;
   /**
    * Test if an index is the root.
    *
@@ -171,7 +171,7 @@ private:
    */
   inline void Exch (std::size_t a, std::size_t b);
   /** Percolate a newly inserted Last item to its proper position. */
-  void BottomUp (void);
+  void BottomUp ();
   /**
    * Percolate a deletion bubble down the heap.
    *

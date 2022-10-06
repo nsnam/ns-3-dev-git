@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpHtcp");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpHtcp);
 
-TypeId TcpHtcp::GetTypeId (void)
+TypeId TcpHtcp::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpHtcp")
     .SetParent<TcpNewReno> ()
@@ -64,7 +64,7 @@ std::string TcpHtcp::GetName () const
   return "TcpHtcp";
 }
 
-TcpHtcp::TcpHtcp (void)
+TcpHtcp::TcpHtcp ()
   : TcpNewReno (),
     m_alpha (0),
     m_beta (0),
@@ -97,12 +97,12 @@ TcpHtcp::TcpHtcp (const TcpHtcp& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpHtcp::~TcpHtcp (void)
+TcpHtcp::~TcpHtcp ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-Ptr<TcpCongestionOps> TcpHtcp::Fork (void)
+Ptr<TcpCongestionOps> TcpHtcp::Fork ()
 {
   NS_LOG_FUNCTION (this);
   return CopyObject<TcpHtcp> (this);
@@ -123,7 +123,7 @@ void TcpHtcp::CongestionAvoidance (Ptr<TcpSocketState> tcb,
     }
 }
 
-void TcpHtcp::UpdateAlpha (void)
+void TcpHtcp::UpdateAlpha ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -148,7 +148,7 @@ void TcpHtcp::UpdateAlpha (void)
   NS_LOG_DEBUG ("Updated m_alpha: " << m_alpha);
 }
 
-void TcpHtcp::UpdateBeta (void)
+void TcpHtcp::UpdateBeta ()
 {
   NS_LOG_FUNCTION (this);
 

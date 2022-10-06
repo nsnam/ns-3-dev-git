@@ -83,7 +83,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the destination address.
@@ -117,32 +117,32 @@ public:
    *
    * \return Mac8Address in destination field.
    */
-  Mac8Address GetDest (void) const;
+  Mac8Address GetDest () const;
   /**
    * Get the source address
    *
    * \return Mac8Address in source field.
    */
-  Mac8Address GetSrc (void) const;
+  Mac8Address GetSrc () const;
   /**
    * Get the header type value.
    *
    * \return value of type field.
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
   /**
    * Get the packet type value.
    *
    * \return value of protocolNumber field.
    */
-  uint16_t GetProtocolNumber (void) const;
+  uint16_t GetProtocolNumber () const;
 
   // Inherited methods
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 private:
   Mac8Address m_dest;  //!< The destination address.
   Mac8Address m_src;   //!< The source address.

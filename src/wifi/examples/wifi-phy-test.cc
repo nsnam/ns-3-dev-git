@@ -62,7 +62,7 @@ public:
 
 private:
   /// Send function
-  void Send (void);
+  void Send ();
   /**
    * Send receive function
    * \param psdu the PSDU
@@ -78,7 +78,7 @@ private:
 };
 
 void
-PsrExperiment::Send (void)
+PsrExperiment::Send ()
 {
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (Create<Packet> (m_input.packetSize), WifiMacHeader ());
   WifiMode mode = WifiMode (m_input.txMode);
@@ -184,9 +184,9 @@ public:
   struct CollisionExperiment::Output Run (struct CollisionExperiment::Input input);
 private:
   /// Send A function
-  void SendA (void) const;
+  void SendA () const;
   /// Send B function
-  void SendB (void) const;
+  void SendB () const;
   /**
    * Receive function
    * \param psdu the PSDU
@@ -205,7 +205,7 @@ private:
 };
 
 void
-CollisionExperiment::SendA (void) const
+CollisionExperiment::SendA () const
 {
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (Create<Packet> (m_input.packetSizeA), WifiMacHeader ());
   (*psdu->begin ())->GetPacket ()->AddByteTag (FlowIdTag (m_flowIdA));
@@ -217,7 +217,7 @@ CollisionExperiment::SendA (void) const
 }
 
 void
-CollisionExperiment::SendB (void) const
+CollisionExperiment::SendB () const
 {
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (Create<Packet> (m_input.packetSizeB), WifiMacHeader ());
   (*psdu->begin ())->GetPacket ()->AddByteTag (FlowIdTag (m_flowIdB));

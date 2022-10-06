@@ -43,7 +43,7 @@ const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 NS_OBJECT_ENSURE_REGISTERED (ArpL3Protocol);
 
 TypeId
-ArpL3Protocol::GetTypeId (void)
+ArpL3Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ArpL3Protocol")
     .SetParent<Object> ()
@@ -127,7 +127,7 @@ ArpL3Protocol::NotifyNewAggregate ()
 }
 
 void
-ArpL3Protocol::DoDispose (void)
+ArpL3Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   for (CacheList::iterator i = m_cacheList.begin (); i != m_cacheList.end (); ++i)

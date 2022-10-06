@@ -52,7 +52,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * \brief PfifoFastQueueDisc constructor
    *
@@ -73,10 +73,10 @@ private:
   static const uint32_t prio2band[16];
 
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual Ptr<const QueueDiscItem> DoPeek (void);
-  virtual bool CheckConfig (void);
-  virtual void InitializeParams (void);
+  virtual Ptr<QueueDiscItem> DoDequeue ();
+  virtual Ptr<const QueueDiscItem> DoPeek ();
+  virtual bool CheckConfig ();
+  virtual void InitializeParams ();
 };
 
 } // namespace ns3

@@ -38,8 +38,8 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * Create an empty LteRadioBearerTag
@@ -93,19 +93,19 @@ public:
    *
    * \returns RNTI
    */
-  uint16_t GetRnti (void) const;
+  uint16_t GetRnti () const;
   /**
    * Get LCID function
    *
    * \returns LCID
    */
-  uint8_t GetLcid (void) const;
+  uint8_t GetLcid () const;
   /**
    * Get layer function
    *
    * \returns layer
    */
-  uint8_t GetLayer (void) const;
+  uint8_t GetLayer () const;
 
 private:
   uint16_t m_rnti; ///< RNTI

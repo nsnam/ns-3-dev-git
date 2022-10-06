@@ -52,7 +52,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   SocketFactory ();
 
@@ -61,7 +61,7 @@ public:
    *
    * Base class method for creating socket instances.
    */
-  virtual Ptr<Socket> CreateSocket (void) = 0;
+  virtual Ptr<Socket> CreateSocket () = 0;
 };
 
 } // namespace ns3

@@ -97,7 +97,7 @@ public:
   void TunToPgw (Ptr<Packet> p);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   Ipv6InterfaceContainer m_ueIpIface; //!< IPv6 interface container for ue
   Ipv6Address m_remoteHostAddr; //!< remote host address
   std::list<uint64_t> m_pgwUidRxFrmEnb; //!< list of uids of packets received at pgw from enb
@@ -217,7 +217,7 @@ void LteIpv6RoutingTestCase::Checker ()
 }
 
 void
-LteIpv6RoutingTestCase::DoRun (void)
+LteIpv6RoutingTestCase::DoRun ()
 {
   double distance = 60.0;
 

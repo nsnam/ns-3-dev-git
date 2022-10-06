@@ -60,7 +60,7 @@ NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
 NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice);
 
 
-TypeId LteUeNetDevice::GetTypeId (void)
+TypeId LteUeNetDevice::GetTypeId ()
 {
   static TypeId
     tid =
@@ -113,19 +113,19 @@ TypeId LteUeNetDevice::GetTypeId (void)
 }
 
 
-LteUeNetDevice::LteUeNetDevice (void)
+LteUeNetDevice::LteUeNetDevice ()
   : m_isConstructed (false)
 {
   NS_LOG_FUNCTION (this);
 }
 
-LteUeNetDevice::~LteUeNetDevice (void)
+LteUeNetDevice::~LteUeNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-LteUeNetDevice::DoDispose (void)
+LteUeNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_targetEnb = 0;
@@ -144,7 +144,7 @@ LteUeNetDevice::DoDispose (void)
 }
 
 void
-LteUeNetDevice::UpdateConfig (void)
+LteUeNetDevice::UpdateConfig ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -168,7 +168,7 @@ LteUeNetDevice::UpdateConfig (void)
 
 
 Ptr<LteUeMac>
-LteUeNetDevice::GetMac (void) const
+LteUeNetDevice::GetMac () const
 {
   NS_LOG_FUNCTION (this);
   return m_ccMap.at (0)->GetMac ();
@@ -176,7 +176,7 @@ LteUeNetDevice::GetMac (void) const
 
 
 Ptr<LteUeRrc>
-LteUeNetDevice::GetRrc (void) const
+LteUeNetDevice::GetRrc () const
 {
   NS_LOG_FUNCTION (this);
   return m_rrc;
@@ -184,21 +184,21 @@ LteUeNetDevice::GetRrc (void) const
 
 
 Ptr<LteUePhy>
-LteUeNetDevice::GetPhy (void) const
+LteUeNetDevice::GetPhy () const
 {
   NS_LOG_FUNCTION (this);
   return m_ccMap.at (0)->GetPhy ();
 }
 
 Ptr<LteUeComponentCarrierManager>
-LteUeNetDevice::GetComponentCarrierManager (void) const
+LteUeNetDevice::GetComponentCarrierManager () const
 {
   NS_LOG_FUNCTION (this);
   return m_componentCarrierManager;
 }
 
 Ptr<EpcUeNas>
-LteUeNetDevice::GetNas (void) const
+LteUeNetDevice::GetNas () const
 {
   NS_LOG_FUNCTION (this);
   return m_nas;
@@ -249,7 +249,7 @@ LteUeNetDevice::SetTargetEnb (Ptr<LteEnbNetDevice> enb)
 
 
 Ptr<LteEnbNetDevice>
-LteUeNetDevice::GetTargetEnb (void)
+LteUeNetDevice::GetTargetEnb ()
 {
   NS_LOG_FUNCTION (this);
   return m_targetEnb;
@@ -268,7 +268,7 @@ LteUeNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierUe> > ccm)
 }
 
 void
-LteUeNetDevice::DoInitialize (void)
+LteUeNetDevice::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_isConstructed = true;

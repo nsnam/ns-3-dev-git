@@ -53,12 +53,12 @@ public:
    * \returns a C++ iterator located at the beginning of this
    *          list.
    */
-  static Iterator Begin (void);
+  static Iterator Begin ();
   /**
    * \returns a C++ iterator located at the end of this
    *          list.
    */
-  static Iterator End (void);
+  static Iterator End ();
   /**
    * \param n index of requested channel.
    * \returns the Channel associated to index n.
@@ -67,7 +67,7 @@ public:
   /**
    * \returns the number of channels currently in the list.
    */
-  static uint32_t GetNChannels (void);
+  static uint32_t GetNChannels ();
 };
 
 } // namespace ns3

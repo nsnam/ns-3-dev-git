@@ -58,7 +58,7 @@ EpsGtpuHeaderTestCase::~EpsGtpuHeaderTestCase ()
 }
 
 void
-EpsGtpuHeaderTestCase::DoRun (void)
+EpsGtpuHeaderTestCase::DoRun ()
 {
   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 

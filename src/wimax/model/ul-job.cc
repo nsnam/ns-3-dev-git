@@ -24,16 +24,16 @@
 
 namespace ns3 {
 
-UlJob::UlJob (void) : m_deadline (Seconds (0)), m_size (0)
+UlJob::UlJob () : m_deadline (Seconds (0)), m_size (0)
 {
 }
 
-UlJob::~UlJob (void)
+UlJob::~UlJob ()
 {
 }
 
 SSRecord*
-UlJob::GetSsRecord (void)
+UlJob::GetSsRecord ()
 {
   return m_ssRecord;
 }
@@ -44,7 +44,7 @@ UlJob::SetSsRecord (SSRecord* ssRecord)
 }
 
 enum
-ServiceFlow::SchedulingType UlJob::GetSchedulingType (void)
+ServiceFlow::SchedulingType UlJob::GetSchedulingType ()
 {
   return m_schedulingType;
 }
@@ -56,7 +56,7 @@ UlJob::SetSchedulingType (ServiceFlow::SchedulingType schedulingType)
 }
 
 ReqType
-UlJob::GetType (void)
+UlJob::GetType ()
 {
   return m_type;
 }
@@ -68,7 +68,7 @@ UlJob::SetType (ReqType type)
 }
 
 ServiceFlow *
-UlJob::GetServiceFlow (void)
+UlJob::GetServiceFlow ()
 {
   return m_serviceFlow;
 }
@@ -80,7 +80,7 @@ UlJob::SetServiceFlow (ServiceFlow *serviceFlow)
 }
 
 Time
-UlJob::GetReleaseTime (void)
+UlJob::GetReleaseTime ()
 {
   return m_releaseTime;
 }
@@ -92,7 +92,7 @@ UlJob::SetReleaseTime (Time releaseTime)
 }
 
 Time
-UlJob::GetPeriod (void)
+UlJob::GetPeriod ()
 {
   return m_period;
 }
@@ -103,7 +103,7 @@ UlJob::SetPeriod (Time period)
 }
 
 Time
-UlJob::GetDeadline (void)
+UlJob::GetDeadline ()
 {
   return m_deadline;
 }
@@ -114,7 +114,7 @@ UlJob::SetDeadline (Time deadline)
 }
 
 uint32_t
-UlJob::GetSize (void)
+UlJob::GetSize ()
 {
   return m_size;
 }
@@ -143,12 +143,12 @@ bool operator == (const UlJob &a, const UlJob &b)
   return false;
 }
 
-PriorityUlJob::PriorityUlJob (void)
+PriorityUlJob::PriorityUlJob ()
 {
 }
 
 int
-PriorityUlJob::GetPriority (void)
+PriorityUlJob::GetPriority ()
 {
   return m_priority;
 }
@@ -160,7 +160,7 @@ PriorityUlJob::SetPriority (int priority)
 }
 
 Ptr<UlJob>
-PriorityUlJob::GetUlJob (void)
+PriorityUlJob::GetUlJob ()
 {
   return m_job;
 }

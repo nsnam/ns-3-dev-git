@@ -46,37 +46,37 @@ public:
    *
    * \return 1 if the packet size is 0 or there's no packet, otherwise the size of the packet
    */
-  uint32_t GetSeqSize (void) const;
+  uint32_t GetSeqSize () const;
 
   /**
    * \brief Is the item sacked?
    * \return true if the item is sacked, false otherwise
    */
-  bool IsSacked (void) const;
+  bool IsSacked () const;
 
   /**
    * \brief Is the item retransmitted?
    * \return true if the item have been retransmitted
    */
-  bool IsRetrans (void) const;
+  bool IsRetrans () const;
 
   /**
    * \brief Get a copy of the Packet underlying this item
    * \return a copy of the Packet
    */
-  Ptr<Packet> GetPacketCopy (void) const;
+  Ptr<Packet> GetPacketCopy () const;
 
   /**
    * \brief Get the Packet underlying this item
    * \return a pointer to a const Packet
    */
-  Ptr<const Packet> GetPacket (void) const;
+  Ptr<const Packet> GetPacket () const;
 
   /**
    * \brief Get a reference to the time the packet was sent for the last time
    * \return a reference to the last sent time
    */
-  const Time & GetLastSent (void) const;
+  const Time & GetLastSent () const;
 
   /**
    * \brief Various rate-related information, can be accessed by TcpRateOps.
@@ -97,7 +97,7 @@ public:
    *
    * \return A reference to the rate information.
    */
-  RateInformation & GetRateInformation (void);
+  RateInformation & GetRateInformation ();
 
   bool m_retrans       {false};      //!< Indicates if the segment is retransmitted
 

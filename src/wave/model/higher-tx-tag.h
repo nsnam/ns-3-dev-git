@@ -51,10 +51,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
-  HigherLayerTxVectorTag (void);
+  HigherLayerTxVectorTag ();
   /**
    * Constructor
    *
@@ -65,13 +65,13 @@ public:
   /**
    * \returns the tx vector for transmission
    */
-  WifiTxVector GetTxVector (void) const;
+  WifiTxVector GetTxVector () const;
   /**
    * \returns the adaptable mode for transmission
    */
-  bool IsAdaptable (void) const;
+  bool IsAdaptable () const;
 
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;

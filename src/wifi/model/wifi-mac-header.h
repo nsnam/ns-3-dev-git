@@ -131,30 +131,30 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId (void) const override;
+  TypeId GetInstanceTypeId () const override;
   void Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize (void) const override;
+  uint32_t GetSerializedSize () const override;
   void Serialize (Buffer::Iterator start) const override;
   uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * Set the From DS bit in the Frame Control field.
    */
-  void SetDsFrom (void);
+  void SetDsFrom ();
   /**
    * Un-set the From DS bit in the Frame Control field.
    */
-  void SetDsNotFrom (void);
+  void SetDsNotFrom ();
   /**
    * Set the To DS bit in the Frame Control field.
    */
-  void SetDsTo (void);
+  void SetDsTo ();
   /**
    * Un-set the To DS bit in the Frame Control field.
    */
-  void SetDsNotTo (void);
+  void SetDsNotTo ();
   /**
    * Fill the Address 1 field with the given address.
    *
@@ -222,19 +222,19 @@ public:
   /**
    * Un-set the More Fragment bit in the Frame Control Field
    */
-  void SetNoMoreFragments (void);
+  void SetNoMoreFragments ();
   /**
    * Set the More Fragment bit in the Frame Control field
    */
-  void SetMoreFragments (void);
+  void SetMoreFragments ();
   /**
    * Set the Retry bit in the Frame Control field.
    */
-  void SetRetry (void);
+  void SetRetry ();
   /**
    * Un-set the Retry bit in the Frame Control field.
    */
-  void SetNoRetry (void);
+  void SetNoRetry ();
   /**
    * Set the TID for the QoS header.
    *
@@ -258,11 +258,11 @@ public:
   /**
    * Set that A-MSDU is present.
    */
-  void SetQosAmsdu (void);
+  void SetQosAmsdu ();
   /**
    * Set that A-MSDU is not present.
    */
-  void SetQosNoAmsdu (void);
+  void SetQosNoAmsdu ();
   /**
    * Set TXOP limit in the QoS control field.
    *
@@ -286,50 +286,50 @@ public:
   /**
    * Set order bit in the frame control field.
    */
-  void SetOrder (void);
+  void SetOrder ();
   /**
    * Unset order bit in the frame control field.
    */
-  void SetNoOrder (void);
+  void SetNoOrder ();
 
   /**
    * Return the address in the Address 1 field.
    *
    * \return the address in the Address 1 field
    */
-  Mac48Address GetAddr1 (void) const;
+  Mac48Address GetAddr1 () const;
   /**
    * Return the address in the Address 2 field.
    *
    * \return the address in the Address 2 field
    */
-  Mac48Address GetAddr2 (void) const;
+  Mac48Address GetAddr2 () const;
   /**
    * Return the address in the Address 3 field.
    *
    * \return the address in the Address 3 field
    */
-  Mac48Address GetAddr3 (void) const;
+  Mac48Address GetAddr3 () const;
   /**
    * Return the address in the Address 4 field.
    *
    * \return the address in the Address 4 field
    */
-  Mac48Address GetAddr4 (void) const;
+  Mac48Address GetAddr4 () const;
   /**
    * Return the type (enum WifiMacType)
    *
    * \return the type (enum WifiMacType)
    */
-  WifiMacType GetType (void) const;
+  WifiMacType GetType () const;
   /**
    * \return true if From DS bit is set, false otherwise
    */
-  bool IsFromDs (void) const;
+  bool IsFromDs () const;
   /**
    * \return true if To DS bit is set, false otherwise
    */
-  bool IsToDs (void) const;
+  bool IsToDs () const;
   /**
    * Return true if the Type is DATA.  The method does
    * not check the Subtype field. (e.g. the header may be
@@ -337,276 +337,276 @@ public:
    *
    * \return true if Type is DATA, false otherwise
    */
-  bool IsData (void) const;
+  bool IsData () const;
   /**
    * Return true if the Type is DATA and Subtype is one of the
    * possible values for QoS Data.
    *
    * \return true if Type is QoS DATA, false otherwise
    */
-  bool IsQosData (void) const;
+  bool IsQosData () const;
   /**
    * Return true if the header type is DATA and is not DATA_NULL.
    *
    * \return true if the header type is DATA and is not DATA_NULL,
    *         false otherwise
    */
-  bool HasData (void) const;
+  bool HasData () const;
   /**
    * Return true if the Type is Control.
    *
    * \return true if Type is Control, false otherwise
    */
-  bool IsCtl (void) const;
+  bool IsCtl () const;
   /**
    * Return true if the Type is Management.
    *
    * \return true if Type is Management, false otherwise
    */
-  bool IsMgt (void) const;
+  bool IsMgt () const;
   /**
    * Return true if the Type/Subtype is one of the possible CF-Poll headers.
    *
    * \return true if the Type/Subtype is one of the possible CF-Poll headers, false otherwise
    */
-  bool IsCfPoll (void) const;
+  bool IsCfPoll () const;
   /**
    * Return true if the header is a CF-Ack header.
    *
    * \return true if the header is a CF-Ack header, false otherwise
    */
-  bool IsCfAck (void) const;
+  bool IsCfAck () const;
   /**
    * Return true if the header is a CF-End header.
    *
    * \return true if the header is a CF-End header, false otherwise
    */
-  bool IsCfEnd (void) const;
+  bool IsCfEnd () const;
   /**
    * Return true if the header is a RTS header.
    *
    * \return true if the header is a RTS header, false otherwise
    */
-  bool IsRts (void) const;
+  bool IsRts () const;
   /**
    * Return true if the header is a CTS header.
    *
    * \return true if the header is a CTS header, false otherwise
    */
-  bool IsCts (void) const;
+  bool IsCts () const;
   /**
    * Return true if the header is an Ack header.
    *
    * \return true if the header is an Ack header, false otherwise
    */
-  bool IsAck (void) const;
+  bool IsAck () const;
   /**
    * Return true if the header is a BlockAckRequest header.
    *
    * \return true if the header is a BlockAckRequest header, false otherwise
    */
-  bool IsBlockAckReq (void) const;
+  bool IsBlockAckReq () const;
   /**
    * Return true if the header is a BlockAck header.
    *
    * \return true if the header is a BlockAck header, false otherwise
    */
-  bool IsBlockAck (void) const;
+  bool IsBlockAck () const;
   /**
    * Return true if the header is a Trigger header.
    *
    * \return true if the header is a Trigger header, false otherwise
    */
-  bool IsTrigger (void) const;
+  bool IsTrigger () const;
   /**
    * Return true if the header is an Association Request header.
    *
    * \return true if the header is an Association Request header, false otherwise
    */
-  bool IsAssocReq (void) const;
+  bool IsAssocReq () const;
   /**
    * Return true if the header is an Association Response header.
    *
    * \return true if the header is an Association Response header, false otherwise
    */
-  bool IsAssocResp (void) const;
+  bool IsAssocResp () const;
   /**
    * Return true if the header is a Reassociation Request header.
    *
    * \return true if the header is a Reassociation Request header, false otherwise
    */
-  bool IsReassocReq (void) const;
+  bool IsReassocReq () const;
   /**
    * Return true if the header is a Reassociation Response header.
    *
    * \return true if the header is a Reassociation Response header, false otherwise
    */
-  bool IsReassocResp (void) const;
+  bool IsReassocResp () const;
   /**
    * Return true if the header is a Probe Request header.
    *
    * \return true if the header is a Probe Request header, false otherwise
    */
-  bool IsProbeReq (void) const;
+  bool IsProbeReq () const;
   /**
    * Return true if the header is a Probe Response header.
    *
    * \return true if the header is a Probe Response header, false otherwise
    */
-  bool IsProbeResp (void) const;
+  bool IsProbeResp () const;
   /**
    * Return true if the header is a Beacon header.
    *
    * \return true if the header is a Beacon header, false otherwise
    */
-  bool IsBeacon (void) const;
+  bool IsBeacon () const;
   /**
    * Return true if the header is a Disassociation header.
    *
    * \return true if the header is a Disassociation header, false otherwise
    */
-  bool IsDisassociation (void) const;
+  bool IsDisassociation () const;
   /**
    * Return true if the header is an Authentication header.
    *
    * \return true if the header is an Authentication header, false otherwise
    */
-  bool IsAuthentication (void) const;
+  bool IsAuthentication () const;
   /**
    * Return true if the header is a Deauthentication header.
    *
    * \return true if the header is a Deauthentication header, false otherwise
    */
-  bool IsDeauthentication (void) const;
+  bool IsDeauthentication () const;
   /**
    * Return true if the header is an Action header.
    *
    * \return true if the header is an Action header, false otherwise
    */
-  bool IsAction (void) const;
+  bool IsAction () const;
   /**
    * Return true if the header is an Action No Ack header.
    *
    * \return true if the header is an Action No Ack header, false otherwise
    */
-  bool IsActionNoAck (void) const;
+  bool IsActionNoAck () const;
   /**
    * Check if the header is a Multihop action header.
    *
    * \return true if the header is a Multihop action header,
    *         false otherwise
    */
-  bool IsMultihopAction (void) const;
+  bool IsMultihopAction () const;
   /**
    * Return the raw duration from the Duration/ID field.
    *
    * \return the raw duration from the Duration/ID field
    */
-  uint16_t GetRawDuration (void) const;
+  uint16_t GetRawDuration () const;
   /**
    * Return the duration from the Duration/ID field (Time object).
    *
    * \return the duration from the Duration/ID field (Time object)
    */
-  Time GetDuration (void) const;
+  Time GetDuration () const;
   /**
    * Return the raw Sequence Control field.
    *
    * \return the raw Sequence Control field
    */
-  uint16_t GetSequenceControl (void) const;
+  uint16_t GetSequenceControl () const;
   /**
    * Return the sequence number of the header.
    *
    * \return the sequence number of the header
    */
-  uint16_t GetSequenceNumber (void) const;
+  uint16_t GetSequenceNumber () const;
   /**
    * Return the fragment number of the header.
    *
    * \return the fragment number of the header
    */
-  uint8_t GetFragmentNumber (void) const;
+  uint8_t GetFragmentNumber () const;
   /**
    * Return if the Retry bit is set.
    *
    * \return true if the Retry bit is set, false otherwise
    */
-  bool IsRetry (void) const;
+  bool IsRetry () const;
   /**
    * Return if the More Data bit is set.
    *
    * \return true if the More Data bit is set, false otherwise
    */
-  bool IsMoreData (void) const;
+  bool IsMoreData () const;
   /**
    * Return if the More Fragment bit is set.
    *
    * \return true if the More Fragment bit is set, false otherwise
    */
-  bool IsMoreFragments (void) const;
+  bool IsMoreFragments () const;
   /**
    * Return if the QoS Ack policy is Block Ack.
    *
    * \return true if the QoS Ack policy is Block Ack, false otherwise
    */
-  bool IsQosBlockAck (void) const;
+  bool IsQosBlockAck () const;
   /**
    * Return if the QoS Ack policy is No Ack.
    *
    * \return true if the QoS Ack policy is No Ack, false otherwise
    */
-  bool IsQosNoAck (void) const;
+  bool IsQosNoAck () const;
   /**
    * Return if the QoS Ack policy is Normal Ack.
    *
    * \return true if the QoS Ack policy is No Ack, false otherwise
    */
-  bool IsQosAck (void) const;
+  bool IsQosAck () const;
   /**
    * Return if the end of service period (EOSP) is set.
    *
    * \return true if the end of service period (EOSP) is set, false otherwise
    */
-  bool IsQosEosp (void) const;
+  bool IsQosEosp () const;
   /**
    * Check if the A-MSDU present bit is set in the QoS control field.
    *
    * \return true if the A-MSDU present bit is set,
    *         false otherwise
    */
-  bool IsQosAmsdu (void) const;
+  bool IsQosAmsdu () const;
   /**
    * Return the Traffic ID of a QoS header.
    *
    * \return the Traffic ID of a QoS header
    */
-  uint8_t GetQosTid (void) const;
+  uint8_t GetQosTid () const;
   /**
    * Return the QoS Ack policy in the QoS control field.
    *
    * \return the QoS Ack policy in the QoS control field
    */
-  QosAckPolicy GetQosAckPolicy (void) const;
+  QosAckPolicy GetQosAckPolicy () const;
   /**
    * Get the Queue Size subfield in the QoS control field.
    *
    * \return the value of the Queue Size subfield
    */
-  uint8_t GetQosQueueSize (void) const;
+  uint8_t GetQosQueueSize () const;
   /**
    * Return the size of the WifiMacHeader in octets.
    * GetSerializedSize calls this function.
    *
    * \return the size of the WifiMacHeader in octets
    */
-  uint32_t GetSize (void) const;
+  uint32_t GetSize () const;
   /**
    * Return a string corresponds to the header type.
    *
    * \returns a string corresponds to the header type.
    */
-  const char * GetTypeString (void) const;
+  const char * GetTypeString () const;
 
   /**
    * TracedCallback signature for WifiMacHeader
@@ -622,13 +622,13 @@ private:
    *
    * \return the raw Frame Control field
    */
-  uint16_t GetFrameControl (void) const;
+  uint16_t GetFrameControl () const;
   /**
    * Return the raw QoS Control field.
    *
    * \return the raw QoS Control field
    */
-  uint16_t GetQosControl (void) const;
+  uint16_t GetQosControl () const;
   /**
    * Set the Frame Control field with the given raw value.
    *

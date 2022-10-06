@@ -39,12 +39,12 @@ public:
    * Set the Extended Service Set (ESS) bit
    * in the capability information field.
    */
-  void SetEss (void);
+  void SetEss ();
   /**
    * Set the Independent BSS (IBSS) bit
    * in the capability information field.
    */
-  void SetIbss (void);
+  void SetIbss ();
   /**
    * Set the short preamble bit
    * in the capability information field.
@@ -65,7 +65,7 @@ public:
    * Set the CF-Pollable bit
    * in the capability information field.
    */
-  void SetCfPollable (void);
+  void SetCfPollable ();
 
   /**
    * Check if the Extended Service Set (ESS) bit
@@ -74,7 +74,7 @@ public:
    * \return ESS bit in the capability information
    *         field is set to 1
    */
-  bool IsEss (void) const;
+  bool IsEss () const;
   /**
    * Check if the Independent BSS (IBSS) bit
    * in the capability information field is set to 1.
@@ -82,7 +82,7 @@ public:
    * \return IBSS bit in the capability information
    *         field is set to 1
    */
-  bool IsIbss (void) const;
+  bool IsIbss () const;
   /**
    * Check if the short preamble bit
    * in the capability information field is set to 1.
@@ -90,7 +90,7 @@ public:
    * \return short preamble bit in the capability information
    *         field is set to 1
    */
-  bool IsShortPreamble (void) const;
+  bool IsShortPreamble () const;
   /**
    * Check if the short slot time
    * in the capability information field is set to 1.
@@ -98,7 +98,7 @@ public:
    * \return short slot time bit in the capability information
    *         field is set to 1
    */
-  bool IsShortSlotTime (void) const;
+  bool IsShortSlotTime () const;
   /**
    * Check if the CF-Pollable bit
    * in the capability information field is set to 1.
@@ -106,7 +106,7 @@ public:
    * \return CF-Pollable bit in the capability information
    *         field is set to 1
    */
-  bool IsCfPollable (void) const;
+  bool IsCfPollable () const;
 
   /**
    * Return the serialized size of capability
@@ -114,7 +114,7 @@ public:
    *
    * \return the serialized size
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
   /**
    * Serialize capability information to the given buffer.
    *

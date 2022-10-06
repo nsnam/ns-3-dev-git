@@ -71,14 +71,14 @@ Ipv4InterfaceAddress::SetAddress (Ipv4Address address)
 }
 
 Ipv4Address
-Ipv4InterfaceAddress::GetLocal (void) const
+Ipv4InterfaceAddress::GetLocal () const
 {
   NS_LOG_FUNCTION (this);
   return m_local;
 }
 
 Ipv4Address
-Ipv4InterfaceAddress::GetAddress (void) const
+Ipv4InterfaceAddress::GetAddress () const
 {
   return GetLocal ();
 }
@@ -91,7 +91,7 @@ Ipv4InterfaceAddress::SetMask (Ipv4Mask mask)
 }
 
 Ipv4Mask
-Ipv4InterfaceAddress::GetMask (void) const
+Ipv4InterfaceAddress::GetMask () const
 {
   NS_LOG_FUNCTION (this);
   return m_mask;
@@ -105,7 +105,7 @@ Ipv4InterfaceAddress::SetBroadcast (Ipv4Address broadcast)
 }
 
 Ipv4Address
-Ipv4InterfaceAddress::GetBroadcast (void) const
+Ipv4InterfaceAddress::GetBroadcast () const
 {
   NS_LOG_FUNCTION (this);
   return m_broadcast;
@@ -119,7 +119,7 @@ Ipv4InterfaceAddress::SetScope (Ipv4InterfaceAddress::InterfaceAddressScope_e sc
 }
 
 Ipv4InterfaceAddress::InterfaceAddressScope_e
-Ipv4InterfaceAddress::GetScope (void) const
+Ipv4InterfaceAddress::GetScope () const
 {
   NS_LOG_FUNCTION (this);
   return m_scope;
@@ -136,21 +136,21 @@ bool Ipv4InterfaceAddress::IsInSameSubnet (const Ipv4Address b) const
 }
 
 bool
-Ipv4InterfaceAddress::IsSecondary (void) const
+Ipv4InterfaceAddress::IsSecondary () const
 {
   NS_LOG_FUNCTION (this);
   return m_secondary;
 }
 
 void
-Ipv4InterfaceAddress::SetSecondary (void)
+Ipv4InterfaceAddress::SetSecondary ()
 {
   NS_LOG_FUNCTION (this);
   m_secondary = true;
 }
 
 void
-Ipv4InterfaceAddress::SetPrimary (void)
+Ipv4InterfaceAddress::SetPrimary ()
 {
   NS_LOG_FUNCTION (this);
   m_secondary = false;

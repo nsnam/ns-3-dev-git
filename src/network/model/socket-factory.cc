@@ -26,7 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("SocketFactory");
 
 NS_OBJECT_ENSURE_REGISTERED (SocketFactory);
 
-TypeId SocketFactory::GetTypeId (void)
+TypeId SocketFactory::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SocketFactory")
     .SetParent<Object> ()

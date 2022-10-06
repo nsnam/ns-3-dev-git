@@ -45,14 +45,14 @@ UplinkSchedulerMBQoS::UplinkSchedulerMBQoS (Time time)
 
 }
 
-UplinkSchedulerMBQoS::~UplinkSchedulerMBQoS (void)
+UplinkSchedulerMBQoS::~UplinkSchedulerMBQoS ()
 {
   SetBs (0);
   m_uplinkAllocations.clear ();
 }
 
 TypeId
-UplinkSchedulerMBQoS::GetTypeId (void)
+UplinkSchedulerMBQoS::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UplinkSchedulerMBQoS")
 
@@ -75,7 +75,7 @@ UplinkSchedulerMBQoS::InitOnce ()
 }
 
 std::list<OfdmUlMapIe>
-UplinkSchedulerMBQoS::GetUplinkAllocations (void) const
+UplinkSchedulerMBQoS::GetUplinkAllocations () const
 {
   return m_uplinkAllocations;
 }
@@ -140,7 +140,7 @@ UplinkSchedulerMBQoS::GetChannelDescriptorsToUpdate (bool &updateDcd,
 }
 
 uint32_t
-UplinkSchedulerMBQoS::CalculateAllocationStartTime (void)
+UplinkSchedulerMBQoS::CalculateAllocationStartTime ()
 {
   return GetBs ()->GetNrDlSymbols () * GetBs ()->GetPhy ()->GetPsPerSymbol () + GetBs ()->GetTtg ();
 }
@@ -159,7 +159,7 @@ UplinkSchedulerMBQoS::AddUplinkAllocation (OfdmUlMapIe &ulMapIe,
 }
 
 void
-UplinkSchedulerMBQoS::UplinkSchedWindowTimer (void)
+UplinkSchedulerMBQoS::UplinkSchedWindowTimer ()
 {
 
   NS_LOG (LOG_DEBUG, "Window Reset at " << (Simulator::Now ()).As (Time::S));
@@ -215,7 +215,7 @@ UplinkSchedulerMBQoS::UplinkSchedWindowTimer (void)
 }
 
 void
-UplinkSchedulerMBQoS::Schedule (void)
+UplinkSchedulerMBQoS::Schedule ()
 {
   m_uplinkAllocations.clear ();
   SetIsIrIntrvlAllocated (false);

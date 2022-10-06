@@ -51,7 +51,7 @@ public:
   /**
    * \brief Enable checksum calculation for UDP
    */
-  void EnableChecksums (void);
+  void EnableChecksums ();
   /**
    * \param port the destination port for this UdpHeader
    */
@@ -63,11 +63,11 @@ public:
   /**
    * \return The source port for this UdpHeader
    */
-  uint16_t GetSourcePort (void) const;
+  uint16_t GetSourcePort () const;
   /**
    * \return the destination port for this UdpHeader
    */
-  uint16_t GetDestinationPort (void) const;
+  uint16_t GetDestinationPort () const;
 
   /**
    * \param source the ip source to use in the underlying
@@ -118,10 +118,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
@@ -129,7 +129,7 @@ public:
    * \brief Is the UDP checksum correct ?
    * \returns true if the checksum is correct, false otherwise.
    */
-  bool IsChecksumOk (void) const;
+  bool IsChecksumOk () const;
 
   /**
    * \brief Force the UDP checksum to a given value.

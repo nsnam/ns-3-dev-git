@@ -43,7 +43,7 @@ class Ipv4L3ProtocolTestCase : public TestCase
 public:
   Ipv4L3ProtocolTestCase ();
   virtual ~Ipv4L3ProtocolTestCase ();
-  virtual void  DoRun (void);
+  virtual void  DoRun ();
 
 };
 
@@ -56,7 +56,7 @@ Ipv4L3ProtocolTestCase::~Ipv4L3ProtocolTestCase ()
 {
 }
 void
-Ipv4L3ProtocolTestCase::DoRun (void)
+Ipv4L3ProtocolTestCase::DoRun ()
 {
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();

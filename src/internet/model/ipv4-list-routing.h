@@ -48,7 +48,7 @@ public:
    * \brief Get the type ID of this class.
    * \return type ID
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   Ipv4ListRouting ();
   virtual ~Ipv4ListRouting ();
@@ -64,7 +64,7 @@ public:
   /**
    * \return number of routing protocols in the list
    */
-  virtual uint32_t GetNRoutingProtocols (void) const;
+  virtual uint32_t GetNRoutingProtocols () const;
   /**
    * Return pointer to routing protocol stored at index, with the
    * first protocol (index 0) the highest priority, the next one (index 1)
@@ -92,8 +92,8 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
 protected:
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  virtual void DoDispose ();
+  virtual void DoInitialize ();
 private:
   /**
    * \brief Container identifying an IPv4 Routing Protocol entry in the list.

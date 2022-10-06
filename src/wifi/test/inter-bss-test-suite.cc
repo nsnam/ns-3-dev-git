@@ -81,7 +81,7 @@ public:
   TestInterBssConstantObssPdAlgo ();
   ~TestInterBssConstantObssPdAlgo ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 private:
   /**
@@ -541,7 +541,7 @@ TestInterBssConstantObssPdAlgo::CheckPhyDropReasons (Ptr<WifiNetDevice> device,
 }
 
 void
-TestInterBssConstantObssPdAlgo::RunOne (void)
+TestInterBssConstantObssPdAlgo::RunOne ()
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (3);
@@ -638,7 +638,7 @@ TestInterBssConstantObssPdAlgo::RunOne (void)
 }
 
 void
-TestInterBssConstantObssPdAlgo::DoRun (void)
+TestInterBssConstantObssPdAlgo::DoRun ()
 {
   //Test case 1: CCA CS Threshold = m_obssRxPowerDbm < m_obssPdLevelDbm
   m_obssPdLevelDbm = -72;

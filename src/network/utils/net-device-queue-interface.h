@@ -60,7 +60,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   NetDeviceQueue ();
   virtual ~NetDeviceQueue();
@@ -69,20 +69,20 @@ public:
    * Called by the device to start this device transmission queue.
    * This is the analogous to the netif_tx_start_queue function of the Linux kernel.
    */
-  virtual void Start (void);
+  virtual void Start ();
 
   /**
    * Called by the device to stop this device transmission queue.
    * This is the analogous to the netif_tx_stop_queue function of the Linux kernel.
    */
-  virtual void Stop (void);
+  virtual void Stop ();
 
   /**
    * Called by the device to wake the queue disc associated with this
    * device transmission queue. This is done by invoking the wake callback.
    * This is the analogous to the netif_tx_wake_queue function of the Linux kernel.
    */
-  virtual void Wake (void);
+  virtual void Wake ();
 
   /**
    * \brief Get the status of the device transmission queue.
@@ -91,7 +91,7 @@ public:
    * Called by queue discs to enquire about the status of a given transmission queue.
    * This is the analogous to the netif_xmit_stopped function of the Linux kernel.
    */
-  virtual bool IsStopped (void) const;
+  virtual bool IsStopped () const;
 
   /**
    * \brief Notify this NetDeviceQueue that the NetDeviceQueueInterface was
@@ -234,7 +234,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor
@@ -256,7 +256,7 @@ public:
    * \brief Get the number of device transmission queues.
    * \return the number of device transmission queues.
    */
-  std::size_t GetNTxQueues (void) const;
+  std::size_t GetNTxQueues () const;
 
   /**
    * \brief Set the type of device transmission queues to create.
@@ -297,17 +297,17 @@ public:
    * Called by the traffic control layer to get the select queue callback set
    * by a multi-queue device.
    */
-  SelectQueueCallback GetSelectQueueCallback (void) const;
+  SelectQueueCallback GetSelectQueueCallback () const;
 
 protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
   /**
    * \brief Notify that an object was aggregated
    */
-  virtual void NotifyNewAggregate (void);
+  virtual void NotifyNewAggregate ();
 
 private:
   ObjectFactory m_txQueues;   //!< Device transmission queues TypeId

@@ -188,7 +188,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
  * \param [in] f The function pointer.
  * \returns The constructed EventImpl.
  */
-EventImpl * MakeEvent (void (*f)(void));
+EventImpl * MakeEvent (void (*f)());
 
 /**
  * \copybrief MakeEvent(void(*f)(void))
@@ -381,7 +381,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)();
     }
@@ -411,7 +411,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1);
     }
@@ -442,7 +442,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2);
     }
@@ -475,7 +475,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3);
     }
@@ -510,7 +510,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3, m_a4);
     }
@@ -548,7 +548,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5);
     }
@@ -588,7 +588,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
@@ -624,7 +624,7 @@ EventImpl * MakeEvent (void (*f)(U1), T1 a1)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (*m_function)(m_a1);
     }
@@ -655,7 +655,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2), T1 a1, T2 a2)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (*m_function)(m_a1, m_a2);
     }
@@ -689,7 +689,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3), T1 a1, T2 a2, T3 a3)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (*m_function)(m_a1, m_a2, m_a3);
     }
@@ -725,7 +725,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4)
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (*m_function)(m_a1, m_a2, m_a3, m_a4);
     }
@@ -763,7 +763,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5);
     }
@@ -803,7 +803,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5,U6), T1 a1, T2 a2, T3 a3, T4 a4,
     {}
 
   private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       (*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
@@ -832,7 +832,7 @@ public:
     {
     }
 private:
-    virtual void Notify (void)
+    virtual void Notify ()
     {
       m_function();
     }

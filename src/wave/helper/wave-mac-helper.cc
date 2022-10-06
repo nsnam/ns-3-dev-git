@@ -26,16 +26,16 @@
 
 namespace ns3 {
 
-NqosWaveMacHelper::NqosWaveMacHelper (void)
+NqosWaveMacHelper::NqosWaveMacHelper ()
 {
 
 }
-NqosWaveMacHelper::~NqosWaveMacHelper (void)
+NqosWaveMacHelper::~NqosWaveMacHelper ()
 {
 
 }
 NqosWaveMacHelper
-NqosWaveMacHelper::Default (void)
+NqosWaveMacHelper::Default ()
 {
   NqosWaveMacHelper helper;
   // We're making non QoS-enabled Wi-Fi MACs here, so we set the
@@ -54,7 +54,7 @@ QosWaveMacHelper::~QosWaveMacHelper ()
 {
 }
 QosWaveMacHelper
-QosWaveMacHelper::Default (void)
+QosWaveMacHelper::Default ()
 {
   QosWaveMacHelper helper;
 

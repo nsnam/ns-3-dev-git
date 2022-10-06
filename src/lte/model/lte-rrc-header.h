@@ -58,11 +58,11 @@ protected:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   // Inherited from Asn1Header
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
   uint32_t Deserialize (Buffer::Iterator bIterator) = 0;
-  virtual void PreSerialize (void) const = 0;
+  virtual void PreSerialize () const = 0;
 
 
   // Auxiliary functions
@@ -514,7 +514,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   // Inherited from RrcAsn1Header
   void PreSerialize () const;
   uint32_t Deserialize (Buffer::Iterator bIterator);

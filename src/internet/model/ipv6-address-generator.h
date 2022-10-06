@@ -132,7 +132,7 @@ public:
   /**
    * \brief Reset the networks and Ipv6Address to zero
    */
-  static void Reset (void);
+  static void Reset ();
 
   /**
    * \brief Add the Ipv6Address to the list of IPv6 entries
@@ -166,7 +166,7 @@ public:
   /**
    * \brief Used to turn off fatal errors and assertions, for testing
    */
-  static void TestMode (void);
+  static void TestMode ();
 };
 
 }; // namespace ns3

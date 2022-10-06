@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpDctcp");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpDctcp);
 
-TypeId TcpDctcp::GetTypeId (void)
+TypeId TcpDctcp::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TcpDctcp")
     .SetParent<TcpLinuxReno> ()
@@ -97,12 +97,12 @@ TcpDctcp::TcpDctcp (const TcpDctcp& sock)
   NS_LOG_FUNCTION (this);
 }
 
-TcpDctcp::~TcpDctcp (void)
+TcpDctcp::~TcpDctcp ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-Ptr<TcpCongestionOps> TcpDctcp::Fork (void)
+Ptr<TcpCongestionOps> TcpDctcp::Fork ()
 {
   NS_LOG_FUNCTION (this);
   return CopyObject<TcpDctcp> (this);

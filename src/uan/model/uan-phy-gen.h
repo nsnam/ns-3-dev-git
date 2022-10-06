@@ -53,7 +53,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   virtual double CalcPer (Ptr<Packet> pkt, double sinrDb, UanTxMode mode);
 private:
@@ -83,7 +83,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Calculate the packet error probability based on
@@ -135,7 +135,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Calculate the Packet ERror probability based on
@@ -176,7 +176,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Calculate the SINR value for a packet.
@@ -237,7 +237,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   virtual double CalcSinrDb (Ptr<Packet> pkt,
                              Time arrTime,
@@ -275,48 +275,48 @@ public:
    *
    * \return The default mode list.
    */
-  static UanModesList GetDefaultModes (void);
+  static UanModesList GetDefaultModes ();
 
   /**
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // Inherited methods
   virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback cb);
-  virtual void EnergyDepletionHandler (void);
-  virtual void EnergyRechargeHandler (void);
+  virtual void EnergyDepletionHandler ();
+  virtual void EnergyRechargeHandler ();
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
   virtual void RegisterListener (UanPhyListener *listener);
   virtual void StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
   virtual void SetReceiveOkCallback (RxOkCallback cb);
   virtual void SetReceiveErrorCallback (RxErrCallback cb);
-  virtual bool IsStateSleep (void);
-  virtual bool IsStateIdle (void);
-  virtual bool IsStateBusy (void);
-  virtual bool IsStateRx (void);
-  virtual bool IsStateTx (void);
-  virtual bool IsStateCcaBusy (void);
+  virtual bool IsStateSleep ();
+  virtual bool IsStateIdle ();
+  virtual bool IsStateBusy ();
+  virtual bool IsStateRx ();
+  virtual bool IsStateTx ();
+  virtual bool IsStateCcaBusy ();
   virtual void SetTxPowerDb (double txpwr);
   virtual void SetRxThresholdDb (double thresh);
   virtual void SetCcaThresholdDb (double thresh);
-  virtual double GetTxPowerDb (void);
-  virtual double GetRxThresholdDb (void);
-  virtual double GetCcaThresholdDb (void);
-  virtual Ptr<UanChannel> GetChannel (void) const;
-  virtual Ptr<UanNetDevice> GetDevice (void) const;
-  virtual Ptr<UanTransducer> GetTransducer (void);
+  virtual double GetTxPowerDb ();
+  virtual double GetRxThresholdDb ();
+  virtual double GetCcaThresholdDb ();
+  virtual Ptr<UanChannel> GetChannel () const;
+  virtual Ptr<UanNetDevice> GetDevice () const;
+  virtual Ptr<UanTransducer> GetTransducer ();
   virtual void SetChannel (Ptr<UanChannel> channel);
   virtual void SetDevice (Ptr<UanNetDevice> device);
   virtual void SetMac (Ptr<UanMac> mac);
   virtual void SetTransducer (Ptr<UanTransducer> trans);
   virtual void NotifyTransStartTx (Ptr<Packet> packet, double txPowerDb, UanTxMode txMode);
-  virtual void NotifyIntChange (void);
-  virtual uint32_t GetNModes (void);
+  virtual void NotifyIntChange ();
+  virtual uint32_t GetNModes ();
   virtual UanTxMode GetMode (uint32_t n);
-  virtual Ptr<Packet> GetPacketRx (void) const;
-  virtual void Clear (void);
+  virtual Ptr<Packet> GetPacketRx () const;
+  virtual void Clear ();
   virtual void SetSleepMode (bool sleep);
   int64_t AssignStreams (int64_t stream);
 
@@ -427,15 +427,15 @@ private:
 
 
   /** Call UanListener::NotifyRxStart on all listeners. */
-  void NotifyListenersRxStart (void);
+  void NotifyListenersRxStart ();
   /** Call UanListener::NotifyRxEndOk on all listeners. */
-  void NotifyListenersRxGood (void);
+  void NotifyListenersRxGood ();
   /** Call UanListener::NotifyRxEndError on all listeners. */
-  void NotifyListenersRxBad (void);
+  void NotifyListenersRxBad ();
   /** Call UanListener::NotifyCcaStart on all listeners. */
-  void NotifyListenersCcaStart (void);
+  void NotifyListenersCcaStart ();
   /** Call UanListener::NotifyCcaEnd on all listeners. */
-  void NotifyListenersCcaEnd (void);
+  void NotifyListenersCcaEnd ();
   /**
    * Call UanListener::NotifyTxStart on all listeners.
    *
@@ -445,7 +445,7 @@ private:
   /**
    * Call UanListener::NotifyTxEnd on all listeners.
    */
-  void NotifyListenersTxEnd (void);
+  void NotifyListenersTxEnd ();
 
 protected:
   virtual void DoDispose ();

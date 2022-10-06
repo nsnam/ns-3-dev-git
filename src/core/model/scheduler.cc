@@ -40,7 +40,7 @@ Scheduler::~Scheduler ()
 }
 
 TypeId
-Scheduler::GetTypeId (void)
+Scheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Scheduler")
     .SetParent<Object> ()

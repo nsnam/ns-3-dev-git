@@ -60,7 +60,7 @@ Watchdog::Ping (Time delay)
 }
 
 void
-Watchdog::Expire (void)
+Watchdog::Expire ()
 {
   NS_LOG_FUNCTION (this);
   if (m_end == Simulator::Now ())

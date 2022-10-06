@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("Breakpoint");
 #if defined (HAVE_SIGNAL_H) && defined (SIGTRAP)
 
 void
-BreakpointFallback (void)
+BreakpointFallback ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 

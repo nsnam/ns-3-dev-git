@@ -82,9 +82,9 @@ public:
   }
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   std::string m_pcapFilename;     //!< The PCAP filename.
   PcapFile m_pcapFile;            //!< The PCAP ffile.
@@ -161,7 +161,7 @@ Ns3TcpStateTestCase::Ns3TcpStateTestCase (uint32_t testCase)
 }
 
 void
-Ns3TcpStateTestCase::DoSetup (void)
+Ns3TcpStateTestCase::DoSetup ()
 {
   //
   // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
@@ -187,7 +187,7 @@ Ns3TcpStateTestCase::DoSetup (void)
 }
 
 void
-Ns3TcpStateTestCase::DoTeardown (void)
+Ns3TcpStateTestCase::DoTeardown ()
 {
   m_pcapFile.Close ();
 }
@@ -331,7 +331,7 @@ Ns3TcpStateTestCase::StartFlow (Ptr<Socket> localSocket,
 }
 
 void
-Ns3TcpStateTestCase::DoRun (void)
+Ns3TcpStateTestCase::DoRun ()
 {
   // Network topology
   //

@@ -57,7 +57,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * \brief ICMPv6 protocol number (58).
@@ -524,8 +524,8 @@ protected:
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
   virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
   // From IpL4Protocol
-  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
-  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget () const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
 
   /**
    * \brief Always do DAD ?

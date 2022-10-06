@@ -79,7 +79,7 @@ uint32_t Buffer::g_maxSize = 0;
 Buffer::FreeList *Buffer::g_freeList = 0;
 struct Buffer::LocalStaticDestructor Buffer::g_localStaticDestructor;
 
-Buffer::LocalStaticDestructor::~LocalStaticDestructor(void)
+Buffer::LocalStaticDestructor::~LocalStaticDestructor()
 {
   NS_LOG_FUNCTION (this);
   if (IS_INITIALIZED (g_freeList))
@@ -207,7 +207,7 @@ Buffer::Buffer (uint32_t dataSize, bool initialize)
 }
 
 bool
-Buffer::CheckInternalState (void) const
+Buffer::CheckInternalState () const
 {
   NS_LOG_FUNCTION (this);
 #if 0
@@ -293,13 +293,13 @@ Buffer::~Buffer ()
 }
 
 uint32_t
-Buffer::GetInternalSize (void) const
+Buffer::GetInternalSize () const
 {
   NS_LOG_FUNCTION (this);
   return m_zeroAreaStart - m_start + m_end - m_zeroAreaEnd;
 }
 uint32_t
-Buffer::GetInternalEnd (void) const
+Buffer::GetInternalEnd () const
 {
   NS_LOG_FUNCTION (this);
   return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
@@ -533,7 +533,7 @@ Buffer::CreateFragment (uint32_t start, uint32_t length) const
 }
 
 Buffer
-Buffer::CreateFullCopy (void) const
+Buffer::CreateFullCopy () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (CheckInternalState ());
@@ -558,7 +558,7 @@ Buffer::CreateFullCopy (void) const
 }
 
 uint32_t
-Buffer::GetSerializedSize (void) const
+Buffer::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this);
   uint32_t dataStart = (m_zeroAreaStart - m_start + 3) & (~0x3);
@@ -696,7 +696,7 @@ Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
 
 
 void
-Buffer::TransformIntoRealBuffer (void) const
+Buffer::TransformIntoRealBuffer () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (CheckInternalState ());
@@ -707,7 +707,7 @@ Buffer::TransformIntoRealBuffer (void) const
 
 
 uint8_t const*
-Buffer::PeekData (void) const
+Buffer::PeekData () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (CheckInternalState ());
@@ -801,13 +801,13 @@ Buffer::Iterator::GetDistanceFrom (Iterator const &o) const
 }
 
 bool
-Buffer::Iterator::IsEnd (void) const
+Buffer::Iterator::IsEnd () const
 {
   NS_LOG_FUNCTION (this);
   return m_current == m_dataEnd;
 }
 bool
-Buffer::Iterator::IsStart (void) const
+Buffer::Iterator::IsStart () const
 {
   NS_LOG_FUNCTION (this);
   return m_current == m_dataStart;
@@ -970,7 +970,7 @@ Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
 }
 
 uint32_t
-Buffer::Iterator::ReadU32 (void)
+Buffer::Iterator::ReadU32 ()
 {
   NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
@@ -987,7 +987,7 @@ Buffer::Iterator::ReadU32 (void)
   return data;
 }
 uint64_t
-Buffer::Iterator::ReadU64 (void)
+Buffer::Iterator::ReadU64 ()
 {
   NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
@@ -1017,7 +1017,7 @@ Buffer::Iterator::ReadU64 (void)
   return data;
 }
 uint16_t
-Buffer::Iterator::SlowReadNtohU16 (void)
+Buffer::Iterator::SlowReadNtohU16 ()
 {
   NS_LOG_FUNCTION (this);
   uint16_t retval = 0;
@@ -1027,7 +1027,7 @@ Buffer::Iterator::SlowReadNtohU16 (void)
   return retval;
 }
 uint32_t
-Buffer::Iterator::SlowReadNtohU32 (void)
+Buffer::Iterator::SlowReadNtohU32 ()
 {
   NS_LOG_FUNCTION (this);
   uint32_t retval = 0;
@@ -1041,7 +1041,7 @@ Buffer::Iterator::SlowReadNtohU32 (void)
   return retval;
 }
 uint64_t
-Buffer::Iterator::ReadNtohU64 (void)
+Buffer::Iterator::ReadNtohU64 ()
 {
   NS_LOG_FUNCTION (this);
   uint64_t retval = 0;
@@ -1063,7 +1063,7 @@ Buffer::Iterator::ReadNtohU64 (void)
   return retval;
 }
 uint16_t
-Buffer::Iterator::ReadLsbtohU16 (void)
+Buffer::Iterator::ReadLsbtohU16 ()
 {
   NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
@@ -1074,7 +1074,7 @@ Buffer::Iterator::ReadLsbtohU16 (void)
   return data;
 }
 uint32_t
-Buffer::Iterator::ReadLsbtohU32 (void)
+Buffer::Iterator::ReadLsbtohU32 ()
 {
   NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
@@ -1091,7 +1091,7 @@ Buffer::Iterator::ReadLsbtohU32 (void)
   return data;
 }
 uint64_t
-Buffer::Iterator::ReadLsbtohU64 (void)
+Buffer::Iterator::ReadLsbtohU64 ()
 {
   NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
@@ -1156,14 +1156,14 @@ Buffer::Iterator::CalculateIpChecksum (uint16_t size, uint32_t initialChecksum)
 }
 
 uint32_t
-Buffer::Iterator::GetSize (void) const
+Buffer::Iterator::GetSize () const
 {
   NS_LOG_FUNCTION (this);
   return m_dataEnd - m_dataStart;
 }
 
 uint32_t
-Buffer::Iterator::GetRemainingSize (void) const
+Buffer::Iterator::GetRemainingSize () const
 {
   NS_LOG_FUNCTION (this);
   return m_dataEnd - m_current;
@@ -1171,7 +1171,7 @@ Buffer::Iterator::GetRemainingSize (void) const
 
 
 std::string
-Buffer::Iterator::GetReadErrorMessage (void) const
+Buffer::Iterator::GetReadErrorMessage () const
 {
   NS_LOG_FUNCTION (this);
   std::string str = "You have attempted to read beyond the bounds of the "
@@ -1184,7 +1184,7 @@ Buffer::Iterator::GetReadErrorMessage (void) const
   return str;
 }
 std::string
-Buffer::Iterator::GetWriteErrorMessage (void) const
+Buffer::Iterator::GetWriteErrorMessage () const
 {
   NS_LOG_FUNCTION (this);
   std::string str;

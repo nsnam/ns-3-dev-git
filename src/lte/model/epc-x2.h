@@ -47,7 +47,7 @@ public:
    * \param localUserPlaneSocket user plane socket
    */
   X2IfaceInfo (Ipv4Address remoteIpAddr, Ptr<Socket> localCtrlPlaneSocket, Ptr<Socket> localUserPlaneSocket);
-  virtual ~X2IfaceInfo (void);
+  virtual ~X2IfaceInfo ();
 
   /**
    * Assignment operator
@@ -76,7 +76,7 @@ public:
    * \param remoteCellIds remote cell IDs
    */
   X2CellInfo (std::vector<uint16_t> localCellIds, std::vector<uint16_t> remoteCellIds);
-  virtual ~X2CellInfo (void);
+  virtual ~X2CellInfo ();
 
   /**
    * Assignment operator
@@ -110,14 +110,14 @@ public:
   /**
    * Destructor
    */
-  virtual ~EpcX2 (void);
+  virtual ~EpcX2 ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual void DoDispose (void);
+  static TypeId GetTypeId ();
+  virtual void DoDispose ();
 
 
   /**

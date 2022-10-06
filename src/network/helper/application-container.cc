@@ -43,18 +43,18 @@ ApplicationContainer::ApplicationContainer (std::string name)
 
 
 ApplicationContainer::Iterator
-ApplicationContainer::Begin (void) const
+ApplicationContainer::Begin () const
 {
   return m_applications.begin ();
 }
 ApplicationContainer::Iterator
-ApplicationContainer::End (void) const
+ApplicationContainer::End () const
 {
   return m_applications.end ();
 }
 
 uint32_t
-ApplicationContainer::GetN (void) const
+ApplicationContainer::GetN () const
 {
   return m_applications.size ();
 }

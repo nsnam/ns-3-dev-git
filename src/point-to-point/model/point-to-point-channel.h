@@ -55,7 +55,7 @@ public:
    *
    * \return The TypeId for this class
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Create a PointToPointChannel
@@ -84,7 +84,7 @@ public:
    * \brief Get number of devices on this channel
    * \returns number of devices on this channel
    */
-  virtual std::size_t GetNDevices (void) const;
+  virtual std::size_t GetNDevices () const;
 
   /**
    * \brief Get PointToPointNetDevice corresponding to index i on this channel
@@ -105,13 +105,13 @@ protected:
    * \brief Get the delay associated with this channel
    * \returns Time delay
    */
-  Time GetDelay (void) const;
+  Time GetDelay () const;
 
   /**
    * \brief Check to make sure the link is initialized
    * \returns true if initialized, asserts otherwise
    */
-  bool IsInitialized (void) const;
+  bool IsInitialized () const;
 
   /**
    * \brief Get the net-device source

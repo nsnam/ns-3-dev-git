@@ -762,7 +762,7 @@ Fnv1a::GetHash64  (const char * buffer, const std::size_t size)
 }
 
 void
-Fnv1a::clear (void)
+Fnv1a::clear ()
 {
   m_hash32 = FNV1_32A_INIT;
   m_hash64 = FNV1A_64_INIT;

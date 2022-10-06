@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("RocketfuelTopologyReader");
 
 NS_OBJECT_ENSURE_REGISTERED (RocketfuelTopologyReader);
 
-TypeId RocketfuelTopologyReader::GetTypeId (void)
+TypeId RocketfuelTopologyReader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::RocketfuelTopologyReader")
     .SetParent<TopologyReader> ()
@@ -324,7 +324,7 @@ RocketfuelTopologyReader::GetFileType (const std::string& line)
 
 
 NodeContainer
-RocketfuelTopologyReader::Read (void)
+RocketfuelTopologyReader::Read ()
 {
   std::ifstream topgen;
   topgen.open (GetFileName ().c_str ());

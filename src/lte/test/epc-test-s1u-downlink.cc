@@ -108,7 +108,7 @@ public:
   virtual ~EpcS1uDlTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
   std::vector<EnbDlTestData> m_enbDlTestData; ///< ENB DL test data
 };
 

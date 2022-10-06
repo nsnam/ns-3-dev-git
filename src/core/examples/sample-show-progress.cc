@@ -81,7 +81,7 @@ public:
   {}
 
   /** The Hold event. */
-  void Event (void)
+  void Event ()
   {
     double delta = m_rng->GetValue ();
     Time delay = Seconds (delta);

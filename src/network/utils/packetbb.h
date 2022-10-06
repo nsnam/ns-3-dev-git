@@ -60,48 +60,48 @@ public:
   /// PbbTlv container const iterator
   typedef std::list< Ptr<PbbTlv> >::const_iterator ConstIterator;
 
-  PbbTlvBlock (void);
-  ~PbbTlvBlock (void);
+  PbbTlvBlock ();
+  ~PbbTlvBlock ();
 
   /**
    * \return an iterator to the first TLV in this block.
    */
-  Iterator Begin (void);
+  Iterator Begin ();
 
   /**
    * \return a const iterator to the first TLV in this block.
    */
-  ConstIterator Begin (void) const;
+  ConstIterator Begin () const;
 
   /**
    * \return an iterator to the past-the-end element in this block.
    */
-  Iterator End (void);
+  Iterator End ();
 
   /**
    * \return a const iterator to the past-the-end element in this block.
    */
-  ConstIterator End (void) const;
+  ConstIterator End () const;
 
   /**
    * \return the number of TLVs in this block.
    */
-  int Size (void) const;
+  int Size () const;
 
   /**
    * \return true if there are no TLVs in this block, false otherwise.
    */
-  bool Empty (void) const;
+  bool Empty () const;
 
   /**
    * \return a smart pointer to the first TLV in this block.
    */
-  Ptr<PbbTlv> Front (void) const;
+  Ptr<PbbTlv> Front () const;
 
   /**
    * \return a smart pointer to the last TLV in this block.
    */
-  Ptr<PbbTlv> Back (void) const;
+  Ptr<PbbTlv> Back () const;
 
   /**
    * \brief Prepends a TLV to the front of this block.
@@ -112,7 +112,7 @@ public:
   /**
    * \brief Removes a TLV from the front of this block.
    */
-  void PopFront (void);
+  void PopFront ();
 
   /**
    * \brief Appends a TLV to the back of this block.
@@ -123,7 +123,7 @@ public:
   /**
    * \brief Removes a TLV from the back of this block.
    */
-  void PopBack (void);
+  void PopBack ();
 
   /**
    * \brief Inserts a TLV at the specified position in this block.
@@ -153,12 +153,12 @@ public:
   /**
    * \brief Removes all TLVs from this block.
    */
-  void Clear (void);
+  void Clear ();
 
   /**
    * \return The size (in bytes) needed to serialize this block.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serializes this block into the specified buffer.
@@ -224,48 +224,48 @@ public:
   /// PbbAddressTlv const iterator for PbbAddressTlvBlock
   typedef std::list< Ptr<PbbAddressTlv> >::const_iterator ConstIterator;
 
-  PbbAddressTlvBlock (void);
-  ~PbbAddressTlvBlock (void);
+  PbbAddressTlvBlock ();
+  ~PbbAddressTlvBlock ();
 
   /**
    * \return an iterator to the first Address TLV in this block.
    */
-  Iterator Begin (void);
+  Iterator Begin ();
 
   /**
    * \return a const iterator to the first Address TLV in this block.
    */
-  ConstIterator Begin (void) const;
+  ConstIterator Begin () const;
 
   /**
    * \return an iterator to the past-the-end element in this block.
    */
-  Iterator End (void);
+  Iterator End ();
 
   /**
    * \return a const iterator to the past-the-end element in this block.
    */
-  ConstIterator End (void) const;
+  ConstIterator End () const;
 
   /**
    * \return the number of Address TLVs in this block.
    */
-  int Size (void) const;
+  int Size () const;
 
   /**
    * \return true if there are no Address TLVs in this block, false otherwise.
    */
-  bool Empty (void) const;
+  bool Empty () const;
 
   /**
    * \return the first Address TLV in this block.
    */
-  Ptr<PbbAddressTlv> Front (void) const;
+  Ptr<PbbAddressTlv> Front () const;
 
   /**
    * \return the last AddressTLV in this block.
    */
-  Ptr<PbbAddressTlv> Back (void) const;
+  Ptr<PbbAddressTlv> Back () const;
 
   /**
    * \brief Prepends an Address TLV to the front of this block.
@@ -276,7 +276,7 @@ public:
   /**
    * \brief Removes an AddressTLV from the front of this block.
    */
-  void PopFront (void);
+  void PopFront ();
 
   /**
    * \brief Appends an Address TLV to the back of this block.
@@ -287,7 +287,7 @@ public:
   /**
    * \brief Removes an Address TLV from the back of this block.
    */
-  void PopBack (void);
+  void PopBack ();
 
   /**
    * \brief Inserts an Address TLV at the specified position in this block.
@@ -319,12 +319,12 @@ public:
   /**
    * \brief Removes all Address TLVs from this block.
    */
-  void Clear (void);
+  void Clear ();
 
   /**
    * \return The size (in bytes) needed to serialize this block.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serializes this block into the specified buffer.
@@ -398,15 +398,15 @@ public:
   /// PbbMessage Const Iterator for PbbPacket
   typedef std::list< Ptr<PbbMessage> >::const_iterator ConstMessageIterator;
 
-  PbbPacket (void);
-  ~PbbPacket (void);
+  PbbPacket ();
+  ~PbbPacket ();
 
   /**
    * \return the version of PacketBB that constructed this packet.
    *
    * This will always return 0 for packets constructed using this API.
    */
-  uint8_t GetVersion (void) const;
+  uint8_t GetVersion () const;
 
   /**
    * \brief Sets the sequence number of this packet.
@@ -420,7 +420,7 @@ public:
    * Calling this while HasSequenceNumber is False is undefined.  Make sure you
    * check it first.  This will be checked by an assert in debug builds.
    */
-  uint16_t GetSequenceNumber (void) const;
+  uint16_t GetSequenceNumber () const;
 
   /**
    * \brief Tests whether or not this packet has a sequence number.
@@ -429,60 +429,60 @@ public:
    * This should be called before calling GetSequenceNumber to make sure there
    * actually is one.
    */
-  bool HasSequenceNumber (void) const;
+  bool HasSequenceNumber () const;
 
   /* Manipulating Packet TLVs */
 
   /**
    * \return an iterator to the first Packet TLV in this packet.
    */
-  TlvIterator TlvBegin (void);
+  TlvIterator TlvBegin ();
 
   /**
    * \return a const iterator to the first Packet TLV in this packet.
    */
-  ConstTlvIterator TlvBegin (void) const;
+  ConstTlvIterator TlvBegin () const;
 
   /**
    * \return an iterator to the past-the-end element in this packet TLV block.
    */
-  TlvIterator TlvEnd (void);
+  TlvIterator TlvEnd ();
 
   /**
    * \return a const iterator to the past-the-end element in this packet TLV
    *         block.
    */
-  ConstTlvIterator TlvEnd (void) const;
+  ConstTlvIterator TlvEnd () const;
 
   /**
    * \return the number of packet TLVs in this packet.
    */
-  int TlvSize (void) const;
+  int TlvSize () const;
 
   /**
    * \return true if there are no packet TLVs in this packet, false otherwise.
    */
-  bool TlvEmpty (void) const;
+  bool TlvEmpty () const;
 
   /**
    * \return a smart pointer to the first packet TLV in this packet.
    */
-  Ptr<PbbTlv> TlvFront (void);
+  Ptr<PbbTlv> TlvFront ();
 
   /**
    * \return a const smart pointer to the first packet TLV in this packet.
    */
-  const Ptr<PbbTlv> TlvFront (void) const;
+  const Ptr<PbbTlv> TlvFront () const;
 
   /**
    * \return a smart pointer to the last packet TLV in this packet.
    */
-  Ptr<PbbTlv> TlvBack (void);
+  Ptr<PbbTlv> TlvBack ();
 
   /**
    * \return a const smart pointer to the last packet TLV in this packet.
    */
-  const Ptr<PbbTlv> TlvBack (void) const;
+  const Ptr<PbbTlv> TlvBack () const;
 
   /**
    * \brief Prepends a packet TLV to the front of this packet.
@@ -493,7 +493,7 @@ public:
   /**
    * \brief Removes a packet TLV from the front of this packet.
    */
-  void TlvPopFront (void);
+  void TlvPopFront ();
 
   /**
    * \brief Appends a packet TLV to the back of this packet.
@@ -504,7 +504,7 @@ public:
   /**
    * \brief Removes a packet TLV from the back of this block.
    */
-  void TlvPopBack (void);
+  void TlvPopBack ();
 
   /**
    * \brief Removes the packet TLV at the specified position.
@@ -527,60 +527,60 @@ public:
   /**
    * \brief Removes all packet TLVs from this packet.
    */
-  void TlvClear (void);
+  void TlvClear ();
 
   /* Manipulating Packet Messages */
 
   /**
    * \return an iterator to the first message in this packet.
    */
-  MessageIterator MessageBegin (void);
+  MessageIterator MessageBegin ();
 
   /**
    * \return a const iterator to the first message in this packet.
    */
-  ConstMessageIterator MessageBegin (void) const;
+  ConstMessageIterator MessageBegin () const;
 
   /**
    * \return an iterator to the past-the-end element in this message block.
    */
-  MessageIterator MessageEnd (void);
+  MessageIterator MessageEnd ();
 
   /**
    * \return a const iterator to the past-the-end element in this message
    *         block.
    */
-  ConstMessageIterator MessageEnd (void) const;
+  ConstMessageIterator MessageEnd () const;
 
   /**
    * \return the number of messages in this packet.
    */
-  int MessageSize (void) const;
+  int MessageSize () const;
 
   /**
    * \return true if there are no messages in this packet, false otherwise.
    */
-  bool MessageEmpty (void) const;
+  bool MessageEmpty () const;
 
   /**
    * \return a smart pointer to the first message in this packet.
    */
-  Ptr<PbbMessage> MessageFront (void);
+  Ptr<PbbMessage> MessageFront ();
 
   /**
    * \return a const smart pointer to the first message in this packet.
    */
-  const Ptr<PbbMessage> MessageFront (void) const;
+  const Ptr<PbbMessage> MessageFront () const;
 
   /**
    * \return a smart pointer to the last message in this packet.
    */
-  Ptr<PbbMessage> MessageBack (void);
+  Ptr<PbbMessage> MessageBack ();
 
   /**
    * \return a const smart pointer to the last message in this packet.
    */
-  const Ptr<PbbMessage> MessageBack (void) const;
+  const Ptr<PbbMessage> MessageBack () const;
 
   /**
    * \brief Prepends a message to the front of this packet.
@@ -591,7 +591,7 @@ public:
   /**
    * \brief Removes a message from the front of this packet.
    */
-  void MessagePopFront (void);
+  void MessagePopFront ();
 
   /**
    * \brief Appends a message to the back of this packet.
@@ -602,7 +602,7 @@ public:
   /**
    * \brief Removes a message from the back of this packet.
    */
-  void MessagePopBack (void);
+  void MessagePopBack ();
 
   /**
    * \brief Removes the message at the specified position.
@@ -623,19 +623,19 @@ public:
   /**
    * \brief Removes all messages from this packet.
    */
-  void MessageClear (void);
+  void MessageClear ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
 
   /**
    * \return The size (in bytes) needed to serialize this packet.
    */
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serializes this packet into the specified buffer.
@@ -716,7 +716,7 @@ public:
   /**
    * \return the type assigned to this packet
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
 
   /**
    * \brief Sets the address for the node that created this packet.
@@ -730,13 +730,13 @@ public:
    * Calling this while HasOriginatorAddress is False is undefined.  Make sure
    * you check it first.  This will be checked by an assert in debug builds.
    */
-  Address GetOriginatorAddress (void) const;
+  Address GetOriginatorAddress () const;
 
   /**
    * \brief Tests whether or not this message has an originator address.
    * \return true if this message has an originator address, false otherwise.
    */
-  bool HasOriginatorAddress (void) const;
+  bool HasOriginatorAddress () const;
 
   /**
    * \brief Sets the maximum number of hops this message should travel
@@ -750,7 +750,7 @@ public:
    * Calling this while HasHopLimit is False is undefined.  Make sure you check
    * it first.  This will be checked by an assert in debug builds.
    */
-  uint8_t GetHopLimit (void) const;
+  uint8_t GetHopLimit () const;
 
   /**
    * \brief Tests whether or not this message has a hop limit.
@@ -758,7 +758,7 @@ public:
    *
    * If this is set, messages should not hop further than this limit.
    */
-  bool HasHopLimit (void) const;
+  bool HasHopLimit () const;
 
   /**
    * \brief Sets the current number of hops this message has traveled.
@@ -772,13 +772,13 @@ public:
    * Calling this while HasHopCount is False is undefined.  Make sure you check
    * it first.  This will be checked by an assert in debug builds.
    */
-  uint8_t GetHopCount (void) const;
+  uint8_t GetHopCount () const;
 
   /**
    * \brief Tests whether or not this message has a hop count.
    * \return true if this message has a hop limit, false otherwise.
    */
-  bool HasHopCount (void) const;
+  bool HasHopCount () const;
 
   /**
    * \brief Sets the sequence number of this message.
@@ -792,13 +792,13 @@ public:
    * Calling this while HasSequenceNumber is False is undefined.  Make sure you
    * check it first.  This will be checked by an assert in debug builds.
    */
-  uint16_t GetSequenceNumber (void) const;
+  uint16_t GetSequenceNumber () const;
 
   /**
    * \brief Tests whether or not this message has a sequence number.
    * \return true if this message has a sequence number, false otherwise.
    */
-  bool HasSequenceNumber (void) const;
+  bool HasSequenceNumber () const;
 
   /* Manipulating PbbMessage TLVs */
 
@@ -827,32 +827,32 @@ public:
   /**
    * \return the number of message TLVs in this message.
    */
-  int TlvSize (void) const;
+  int TlvSize () const;
 
   /**
    * \return true if there are no message TLVs in this message, false otherwise.
    */
-  bool TlvEmpty (void) const;
+  bool TlvEmpty () const;
 
   /**
    * \return a smart pointer to the first message TLV in this message.
    */
-  Ptr<PbbTlv> TlvFront (void);
+  Ptr<PbbTlv> TlvFront ();
 
   /**
    * \return a const smart pointer to the first message TLV in this message.
    */
-  const Ptr<PbbTlv> TlvFront (void) const;
+  const Ptr<PbbTlv> TlvFront () const;
 
   /**
    * \return a smart pointer to the last message TLV in this message.
    */
-  Ptr<PbbTlv> TlvBack (void);
+  Ptr<PbbTlv> TlvBack ();
 
   /**
    * \return a const smart pointer to the last message TLV in this message.
    */
-  const Ptr<PbbTlv> TlvBack (void) const;
+  const Ptr<PbbTlv> TlvBack () const;
 
   /**
    * \brief Prepends a message TLV to the front of this message.
@@ -863,7 +863,7 @@ public:
   /**
    * \brief Removes a message TLV from the front of this message.
    */
-  void TlvPopFront (void);
+  void TlvPopFront ();
 
   /**
    * \brief Appends a message TLV to the back of this message.
@@ -874,7 +874,7 @@ public:
   /**
    * \brief Removes a message TLV from the back of this message.
    */
-  void TlvPopBack (void);
+  void TlvPopBack ();
 
   /**
    * \brief Removes the message TLV at the specified position.
@@ -897,7 +897,7 @@ public:
   /**
    * \brief Removes all message TLVs from this block.
    */
-  void TlvClear (void);
+  void TlvClear ();
 
   /* Manipulating Address Block and Address TLV pairs */
 
@@ -926,33 +926,33 @@ public:
   /**
    * \return the number of address blocks in this message.
    */
-  int AddressBlockSize (void) const;
+  int AddressBlockSize () const;
 
   /**
    * \return true if there are no address blocks in this message, false
    *         otherwise.
    */
-  bool AddressBlockEmpty (void) const;
+  bool AddressBlockEmpty () const;
 
   /**
    * \return a smart pointer to the first address block in this message.
    */
-  Ptr<PbbAddressBlock> AddressBlockFront (void);
+  Ptr<PbbAddressBlock> AddressBlockFront ();
 
   /**
    * \return a const smart pointer to the first address block in this message.
    */
-  const Ptr<PbbAddressBlock> AddressBlockFront (void) const;
+  const Ptr<PbbAddressBlock> AddressBlockFront () const;
 
   /**
    * \return a smart pointer to the last address block in this message.
    */
-  Ptr<PbbAddressBlock> AddressBlockBack (void);
+  Ptr<PbbAddressBlock> AddressBlockBack ();
 
   /**
    * \return a const smart pointer to the last address block in this message.
    */
-  const Ptr<PbbAddressBlock> AddressBlockBack (void) const;
+  const Ptr<PbbAddressBlock> AddressBlockBack () const;
 
   /**
    * \brief Prepends an address block to the front of this message.
@@ -963,7 +963,7 @@ public:
   /**
    * \brief Removes an address block from the front of this message.
    */
-  void AddressBlockPopFront (void);
+  void AddressBlockPopFront ();
 
   /**
    * \brief Appends an address block to the front of this message.
@@ -974,7 +974,7 @@ public:
   /**
    * \brief Removes an address block from the back of this message.
    */
-  void AddressBlockPopBack (void);
+  void AddressBlockPopBack ();
 
   /**
    * \brief Removes the address block at the specified position.
@@ -998,7 +998,7 @@ public:
   /**
    * \brief Removes all address blocks from this message.
    */
-  void AddressBlockClear (void);
+  void AddressBlockClear ();
 
   /**
    * \brief Deserializes a message, returning the correct object depending on
@@ -1014,7 +1014,7 @@ public:
   /**
    * \return The size (in bytes) needed to serialize this message.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serializes this message into the specified buffer.
@@ -1073,7 +1073,7 @@ protected:
    *
    * \returns Address length (IPV4 3 or IPV6 15)
    */
-  virtual PbbAddressLength GetAddressLength (void) const = 0;
+  virtual PbbAddressLength GetAddressLength () const = 0;
 
   /**
    * \brief Serialize the originator address
@@ -1137,7 +1137,7 @@ protected:
    *
    * \returns Address length (IPV4 3 or IPV6 15)
    */
-  virtual PbbAddressLength GetAddressLength (void) const;
+  virtual PbbAddressLength GetAddressLength () const;
 
   virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
@@ -1164,7 +1164,7 @@ protected:
    *
    * \returns Address length (IPV4 3 or IPV6 15)
    */
-  virtual PbbAddressLength GetAddressLength (void) const;
+  virtual PbbAddressLength GetAddressLength () const;
 
   virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
@@ -1205,42 +1205,42 @@ public:
   /**
    * \return an iterator to the first address in this block.
    */
-  AddressIterator AddressBegin (void);
+  AddressIterator AddressBegin ();
 
   /**
    * \return a const iterator to the first address in this block.
    */
-  ConstAddressIterator AddressBegin (void) const;
+  ConstAddressIterator AddressBegin () const;
 
   /**
    * \return an iterator to the last address in this block.
    */
-  AddressIterator AddressEnd (void);
+  AddressIterator AddressEnd ();
 
   /**
    * \return a const iterator to the last address in this block.
    */
-  ConstAddressIterator AddressEnd (void) const;
+  ConstAddressIterator AddressEnd () const;
 
   /**
    * \return the number of addresses in this block.
    */
-  int AddressSize (void) const;
+  int AddressSize () const;
 
   /**
    * \return true if there are no addresses in this block, false otherwise.
    */
-  bool AddressEmpty (void) const;
+  bool AddressEmpty () const;
 
   /**
    * \return the first address in this block.
    */
-  Address AddressFront (void) const;
+  Address AddressFront () const;
 
   /**
    * \return the last address in this block.
    */
-  Address AddressBack (void) const;
+  Address AddressBack () const;
 
   /**
    * \brief Prepends an address to the front of this block.
@@ -1251,7 +1251,7 @@ public:
   /**
    * \brief Removes an address from the front of this block.
    */
-  void AddressPopFront (void);
+  void AddressPopFront ();
 
   /**
    * \brief Appends an address to the back of this block.
@@ -1262,7 +1262,7 @@ public:
   /**
    * \brief Removes an address from the back of this block.
    */
-  void AddressPopBack (void);
+  void AddressPopBack ();
 
   /**
    * \brief Inserts an address at the specified position in this block.
@@ -1295,49 +1295,49 @@ public:
   /**
    * \brief Removes all addresses from this block.
    */
-  void AddressClear (void);
+  void AddressClear ();
 
   /* Prefix methods */
 
   /**
    * \return an iterator to the first prefix in this block.
    */
-  PrefixIterator PrefixBegin (void);
+  PrefixIterator PrefixBegin ();
 
   /**
    * \return a const iterator to the first prefix in this block.
    */
-  ConstPrefixIterator PrefixBegin (void) const;
+  ConstPrefixIterator PrefixBegin () const;
 
   /**
    * \return an iterator to the last prefix in this block.
    */
-  PrefixIterator PrefixEnd (void);
+  PrefixIterator PrefixEnd ();
 
   /**
    * \return a const iterator to the last prefix in this block.
    */
-  ConstPrefixIterator PrefixEnd (void) const;
+  ConstPrefixIterator PrefixEnd () const;
 
   /**
    * \return the number of prefixes in this block.
    */
-  int PrefixSize (void) const;
+  int PrefixSize () const;
 
   /**
    * \return true if there are no prefixes in this block, false otherwise.
    */
-  bool PrefixEmpty (void) const;
+  bool PrefixEmpty () const;
 
   /**
    * \return the first prefix in this block.
    */
-  uint8_t PrefixFront (void) const;
+  uint8_t PrefixFront () const;
 
   /**
    * \return the last prefix in this block.
    */
-  uint8_t PrefixBack (void) const;
+  uint8_t PrefixBack () const;
 
   /**
    * \brief Prepends a prefix to the front of this block.
@@ -1348,7 +1348,7 @@ public:
   /**
    * \brief Removes a prefix from the front of this block.
    */
-  void PrefixPopFront (void);
+  void PrefixPopFront ();
 
   /**
    * \brief Appends a prefix to the back of this block.
@@ -1359,7 +1359,7 @@ public:
   /**
    * \brief Removes a prefix from the back of this block.
    */
-  void PrefixPopBack (void);
+  void PrefixPopBack ();
 
   /**
    * \brief Inserts a prefix at the specified position in this block.
@@ -1391,59 +1391,59 @@ public:
   /**
    * \brief Removes all prefixes from this block.
    */
-  void PrefixClear (void);
+  void PrefixClear ();
 
   /* Manipulating the TLV block */
 
   /**
    * \return an iterator to the first address TLV in this block.
    */
-  TlvIterator TlvBegin (void);
+  TlvIterator TlvBegin ();
 
   /**
    * \return a const iterator to the first address TLV in this block.
    */
-  ConstTlvIterator TlvBegin (void) const;
+  ConstTlvIterator TlvBegin () const;
 
   /**
    * \return an iterator to the last address TLV in this block.
    */
-  TlvIterator TlvEnd (void);
+  TlvIterator TlvEnd ();
 
   /**
    * \return a const iterator to the last address TLV in this block.
    */
-  ConstTlvIterator TlvEnd (void) const;
+  ConstTlvIterator TlvEnd () const;
 
   /**
    * \return the number of address TLVs in this block.
    */
-  int TlvSize (void) const;
+  int TlvSize () const;
 
   /**
    * \return true if there are no address TLVs in this block, false otherwise.
    */
-  bool TlvEmpty (void) const;
+  bool TlvEmpty () const;
 
   /**
    * \return a smart pointer to the first address TLV in this block.
    */
-  Ptr<PbbAddressTlv> TlvFront (void);
+  Ptr<PbbAddressTlv> TlvFront ();
 
   /**
    * \return a const smart pointer to the first address TLV in this message.
    */
-  const Ptr<PbbAddressTlv> TlvFront (void) const;
+  const Ptr<PbbAddressTlv> TlvFront () const;
 
   /**
    * \return a smart pointer to the last address TLV in this message.
    */
-  Ptr<PbbAddressTlv> TlvBack (void);
+  Ptr<PbbAddressTlv> TlvBack ();
 
   /**
    * \return a const smart pointer to the last address TLV in this message.
    */
-  const Ptr<PbbAddressTlv> TlvBack (void) const;
+  const Ptr<PbbAddressTlv> TlvBack () const;
 
   /**
    * \brief Prepends an address TLV to the front of this message.
@@ -1454,7 +1454,7 @@ public:
   /**
    * \brief Removes an address TLV from the front of this message.
    */
-  void TlvPopFront (void);
+  void TlvPopFront ();
 
   /**
    * \brief Appends an address TLV to the back of this message.
@@ -1465,7 +1465,7 @@ public:
   /**
    * \brief Removes an address TLV from the back of this message.
    */
-  void TlvPopBack (void);
+  void TlvPopBack ();
 
   /**
    * \brief Inserts an address TLV at the specified position in this block.
@@ -1497,12 +1497,12 @@ public:
   /**
    * \brief Removes all address TLVs from this block.
    */
-  void TlvClear (void);
+  void TlvClear ();
 
   /**
    * \return The size (in bytes) needed to serialize this address block.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serializes this address block into the specified buffer.
@@ -1558,7 +1558,7 @@ protected:
    * \brief Returns address length
    * \returns Address length
    */
-  virtual uint8_t GetAddressLength (void) const = 0;
+  virtual uint8_t GetAddressLength () const = 0;
   /**
    * \brief Serialize one or more addresses
    * \param buffer the buffer to serialize to
@@ -1583,7 +1583,7 @@ private:
    * \brief Get the prefix flags
    * \return the prefix flags
    */
-  uint8_t GetPrefixFlags (void) const;
+  uint8_t GetPrefixFlags () const;
   /**
    * \brief Get head and tail
    * \param head the head
@@ -1623,7 +1623,7 @@ protected:
    * \brief Returns address length
    * \returns Address length
    */
-  virtual uint8_t GetAddressLength (void) const;
+  virtual uint8_t GetAddressLength () const;
   virtual void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const;
   virtual Address DeserializeAddress (uint8_t *buffer) const;
   virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
@@ -1645,7 +1645,7 @@ protected:
    * \brief Returns address length
    * \returns Address length
    */
-  virtual uint8_t GetAddressLength (void) const;
+  virtual uint8_t GetAddressLength () const;
   virtual void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const;
   virtual Address DeserializeAddress (uint8_t *buffer) const;
   virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
@@ -1657,8 +1657,8 @@ protected:
 class PbbTlv : public SimpleRefCount<PbbTlv>
 {
 public:
-  PbbTlv (void);
-  virtual ~PbbTlv (void);
+  PbbTlv ();
+  virtual ~PbbTlv ();
 
   /**
    * \brief Sets the type of this TLV.
@@ -1669,7 +1669,7 @@ public:
   /**
    * \return the type of this TLV.
    */
-  uint8_t GetType (void) const;
+  uint8_t GetType () const;
 
   /**
    * \brief Sets the type extension of this TLV.
@@ -1686,7 +1686,7 @@ public:
    * Calling this while HasTypeExt is False is undefined.  Make sure you check
    * it first.  This will be checked by an assert in debug builds.
    */
-  uint8_t GetTypeExt (void) const;
+  uint8_t GetTypeExt () const;
 
   /**
    * \brief Tests whether or not this TLV has a type extension.
@@ -1695,7 +1695,7 @@ public:
    * This should be called before calling GetTypeExt to make sure there
    * actually is one.
    */
-  bool HasTypeExt (void) const;
+  bool HasTypeExt () const;
 
   /**
    * \brief Sets the value of this message to the specified buffer.
@@ -1722,7 +1722,7 @@ public:
    * Calling this while HasValue is False is undefined.  Make sure you check it
    * first.  This will be checked by an assert in debug builds.
    */
-  Buffer GetValue (void) const;
+  Buffer GetValue () const;
 
   /**
    * \brief Tests whether or not this TLV has a value.
@@ -1731,12 +1731,12 @@ public:
    * This should be called before calling GetTypeExt to make sure there
    * actually is one.
    */
-  bool HasValue (void) const;
+  bool HasValue () const;
 
   /**
    * \return The size (in bytes) needed to serialize this TLV.
    */
-  uint32_t GetSerializedSize (void) const;
+  uint32_t GetSerializedSize () const;
 
   /**
    * \brief Serializes this TLV into the specified buffer.
@@ -1796,12 +1796,12 @@ protected:
    * \brief Get the starting point index
    * \returns the starting index
    */
-  uint8_t GetIndexStart (void) const;
+  uint8_t GetIndexStart () const;
   /**
    * \brief Checks if there is a starting index
    * \returns true if the start index has been set
    */
-  bool HasIndexStart (void) const;
+  bool HasIndexStart () const;
 
   /**
    * \brief Set an index as stop point
@@ -1812,12 +1812,12 @@ protected:
    * \brief Get the stop point index
    * \returns the stop index
    */
-  uint8_t GetIndexStop (void) const;
+  uint8_t GetIndexStop () const;
   /**
    * \brief Checks if there is a stop index
    * \returns true if the stop index has been set
    */
-  bool HasIndexStop (void) const;
+  bool HasIndexStop () const;
 
   /**
    * \brief Set the multivalue parameter
@@ -1828,7 +1828,7 @@ protected:
    * \brief Check the multivalue parameter
    * \returns the multivalue status
    */
-  bool IsMultivalue (void) const;
+  bool IsMultivalue () const;
 
 private:
   uint8_t m_type; //!< Type of this TLV.
@@ -1867,7 +1867,7 @@ public:
    * Calling this while HasIndexStart is False is undefined.  Make sure you
    * check it first.  This will be checked by an assert in debug builds.
    */
-  uint8_t GetIndexStart (void) const;
+  uint8_t GetIndexStart () const;
 
   /**
    * \brief Tests whether or not this address TLV has a start index.
@@ -1876,7 +1876,7 @@ public:
    * This should be called before calling GetIndexStart to make sure there
    * actually is one.
    */
-  bool HasIndexStart (void) const;
+  bool HasIndexStart () const;
 
   /**
    * \brief Sets the index of the last address in the associated address block
@@ -1892,7 +1892,7 @@ public:
    * Calling this while HasIndexStop is False is undefined.  Make sure you
    * check it first.  This will be checked by an assert in debug builds.
    */
-  uint8_t GetIndexStop (void) const;
+  uint8_t GetIndexStop () const;
 
   /**
    * \brief Tests whether or not this address TLV has a stop index.
@@ -1901,7 +1901,7 @@ public:
    * This should be called before calling GetIndexStop to make sure there
    * actually is one.
    */
-  bool HasIndexStop (void) const;
+  bool HasIndexStop () const;
 
   /**
    * \brief Sets whether or not this address TLV is "multivalue"
@@ -1917,7 +1917,7 @@ public:
    * \brief Tests whether or not this address TLV is "multivalue"
    * \return whether this address TLV is multivalue or not.
    */
-  bool IsMultivalue (void) const;
+  bool IsMultivalue () const;
 };
 
 } /* namespace ns3 */

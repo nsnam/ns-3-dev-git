@@ -87,7 +87,7 @@ public:
   PacketBufferingCaseA ();
   virtual ~PacketBufferingCaseA ();
 private:
-  void DoRun (void) override;
+  void DoRun () override;
   std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
 };
 
@@ -106,7 +106,7 @@ PacketBufferingCaseA::~PacketBufferingCaseA ()
 }
 
 void
-PacketBufferingCaseA::DoRun (void)
+PacketBufferingCaseA::DoRun ()
 {
   std::list<uint16_t> m_buffer;
   std::list<uint16_t>::iterator i,j;
@@ -184,7 +184,7 @@ public:
   PacketBufferingCaseB ();
   virtual ~PacketBufferingCaseB ();
 private:
-  void DoRun (void) override;
+  void DoRun () override;
   std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
 };
 
@@ -204,7 +204,7 @@ PacketBufferingCaseB::~PacketBufferingCaseB ()
 }
 
 void
-PacketBufferingCaseB::DoRun (void)
+PacketBufferingCaseB::DoRun ()
 {
   std::list<uint16_t> m_buffer;
   std::list<uint16_t>::iterator i,j;
@@ -270,7 +270,7 @@ class OriginatorBlockAckWindowTest : public TestCase
 public:
   OriginatorBlockAckWindowTest ();
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 };
 
 OriginatorBlockAckWindowTest::OriginatorBlockAckWindowTest ()
@@ -279,7 +279,7 @@ OriginatorBlockAckWindowTest::OriginatorBlockAckWindowTest ()
 }
 
 void
-OriginatorBlockAckWindowTest::DoRun (void)
+OriginatorBlockAckWindowTest::DoRun ()
 {
   uint16_t winSize = 16;
   uint16_t startingSeq = 4090;
@@ -565,7 +565,7 @@ class CtrlBAckResponseHeaderTest : public TestCase
 public:
   CtrlBAckResponseHeaderTest ();
 private:
-  void DoRun (void) override;
+  void DoRun () override;
   CtrlBAckResponseHeader m_blockAckHdr; ///< block ack header
 };
 
@@ -575,7 +575,7 @@ CtrlBAckResponseHeaderTest::CtrlBAckResponseHeaderTest ()
 }
 
 void
-CtrlBAckResponseHeaderTest::DoRun (void)
+CtrlBAckResponseHeaderTest::DoRun ()
 {
   m_blockAckHdr.SetType (BlockAckType::COMPRESSED);
 
@@ -665,7 +665,7 @@ public:
   BlockAckRecipientBufferTest (uint16_t ssn);
   virtual ~BlockAckRecipientBufferTest ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
   /**
    * Keep track of MPDUs received on the given link that are forwarded up.
@@ -697,7 +697,7 @@ BlockAckRecipientBufferTest::ForwardUp (Ptr<const WifiMpdu> mpdu, uint8_t linkId
 }
 
 void
-BlockAckRecipientBufferTest::DoRun (void)
+BlockAckRecipientBufferTest::DoRun ()
 {
   Ptr<MacRxMiddle> rxMiddle = Create<MacRxMiddle> ();
   rxMiddle->SetForwardCallback (MakeCallback (&BlockAckRecipientBufferTest::ForwardUp, this));
@@ -882,7 +882,7 @@ class MultiStaCtrlBAckResponseHeaderTest : public TestCase
 public:
   MultiStaCtrlBAckResponseHeaderTest ();
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 MultiStaCtrlBAckResponseHeaderTest::MultiStaCtrlBAckResponseHeaderTest ()
@@ -891,7 +891,7 @@ MultiStaCtrlBAckResponseHeaderTest::MultiStaCtrlBAckResponseHeaderTest ()
 }
 
 void
-MultiStaCtrlBAckResponseHeaderTest::DoRun (void)
+MultiStaCtrlBAckResponseHeaderTest::DoRun ()
 {
   // Create a Multi-STA Block Ack with 6 Per AID TID Info subfields
   BlockAckType baType (BlockAckType::MULTI_STA, {0, 4, 8, 16, 32, 8});
@@ -1369,7 +1369,7 @@ public:
   BlockAckAggregationDisabledTest (bool txop);
   virtual ~BlockAckAggregationDisabledTest ();
 
-  void DoRun (void) override;
+  void DoRun () override;
 
 
 private:
@@ -1490,7 +1490,7 @@ BlockAckAggregationDisabledTest::Receive (std::string context, Ptr<const Packet>
 }
 
 void
-BlockAckAggregationDisabledTest::DoRun (void)
+BlockAckAggregationDisabledTest::DoRun ()
 {
   NodeContainer wifiStaNode;
   wifiStaNode.Create (1);

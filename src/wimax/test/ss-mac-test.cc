@@ -43,7 +43,7 @@ public:
   virtual ~Ns3WimaxNetworkEntryTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -57,7 +57,7 @@ Ns3WimaxNetworkEntryTestCase::~Ns3WimaxNetworkEntryTestCase ()
 }
 
 void
-Ns3WimaxNetworkEntryTestCase::DoRun (void)
+Ns3WimaxNetworkEntryTestCase::DoRun ()
 {
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
   NodeContainer ssNodes;
@@ -104,7 +104,7 @@ public:
   virtual ~Ns3WimaxManagementConnectionsTestCase ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
 };
 
@@ -118,7 +118,7 @@ Ns3WimaxManagementConnectionsTestCase::~Ns3WimaxManagementConnectionsTestCase ()
 }
 
 void
-Ns3WimaxManagementConnectionsTestCase::DoRun (void)
+Ns3WimaxManagementConnectionsTestCase::DoRun ()
 {
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
   NodeContainer ssNodes;

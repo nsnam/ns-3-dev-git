@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("CsmaNetDevice");
 NS_OBJECT_ENSURE_REGISTERED (CsmaNetDevice);
 
 TypeId
-CsmaNetDevice::GetTypeId (void)
+CsmaNetDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CsmaNetDevice")
     .SetParent<NetDevice> ()
@@ -233,7 +233,7 @@ CsmaNetDevice::SetEncapsulationMode (enum EncapsulationMode mode)
 }
 
 CsmaNetDevice::EncapsulationMode
-CsmaNetDevice::GetEncapsulationMode (void)
+CsmaNetDevice::GetEncapsulationMode ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_encapMode;
@@ -252,7 +252,7 @@ CsmaNetDevice::SetMtu (uint16_t mtu)
 }
 
 uint16_t
-CsmaNetDevice::GetMtu (void) const
+CsmaNetDevice::GetMtu () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_mtu;
@@ -274,14 +274,14 @@ CsmaNetDevice::SetReceiveEnable (bool receiveEnable)
 }
 
 bool
-CsmaNetDevice::IsSendEnabled (void)
+CsmaNetDevice::IsSendEnabled ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_sendEnable;
 }
 
 bool
-CsmaNetDevice::IsReceiveEnabled (void)
+CsmaNetDevice::IsReceiveEnabled ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_receiveEnable;
@@ -437,7 +437,7 @@ CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 #endif
 
 void
-CsmaNetDevice::TransmitStart (void)
+CsmaNetDevice::TransmitStart ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -530,7 +530,7 @@ CsmaNetDevice::TransmitStart (void)
 }
 
 void
-CsmaNetDevice::TransmitAbort (void)
+CsmaNetDevice::TransmitAbort ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -575,7 +575,7 @@ CsmaNetDevice::TransmitAbort (void)
 }
 
 void
-CsmaNetDevice::TransmitCompleteEvent (void)
+CsmaNetDevice::TransmitCompleteEvent ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -607,7 +607,7 @@ CsmaNetDevice::TransmitCompleteEvent (void)
 }
 
 void
-CsmaNetDevice::TransmitReadyEvent (void)
+CsmaNetDevice::TransmitReadyEvent ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -821,14 +821,14 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
 }
 
 Ptr<Queue<Packet> >
-CsmaNetDevice::GetQueue (void) const
+CsmaNetDevice::GetQueue () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_queue;
 }
 
 void
-CsmaNetDevice::NotifyLinkUp (void)
+CsmaNetDevice::NotifyLinkUp ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_linkUp = true;
@@ -843,14 +843,14 @@ CsmaNetDevice::SetIfIndex (const uint32_t index)
 }
 
 uint32_t
-CsmaNetDevice::GetIfIndex (void) const
+CsmaNetDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ifIndex;
 }
 
 Ptr<Channel>
-CsmaNetDevice::GetChannel (void) const
+CsmaNetDevice::GetChannel () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_channel;
@@ -864,14 +864,14 @@ CsmaNetDevice::SetAddress (Address address)
 }
 
 Address
-CsmaNetDevice::GetAddress (void) const
+CsmaNetDevice::GetAddress () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_address;
 }
 
 bool
-CsmaNetDevice::IsLinkUp (void) const
+CsmaNetDevice::IsLinkUp () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_linkUp;
@@ -885,21 +885,21 @@ CsmaNetDevice::AddLinkChangeCallback (Callback<void> callback)
 }
 
 bool
-CsmaNetDevice::IsBroadcast (void) const
+CsmaNetDevice::IsBroadcast () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
 Address
-CsmaNetDevice::GetBroadcast (void) const
+CsmaNetDevice::GetBroadcast () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-CsmaNetDevice::IsMulticast (void) const
+CsmaNetDevice::IsMulticast () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
@@ -923,14 +923,14 @@ CsmaNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 }
 
 bool
-CsmaNetDevice::IsPointToPoint (void) const
+CsmaNetDevice::IsPointToPoint () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return false;
 }
 
 bool
-CsmaNetDevice::IsBridge (void) const
+CsmaNetDevice::IsBridge () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return false;
@@ -998,7 +998,7 @@ CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& 
 }
 
 Ptr<Node>
-CsmaNetDevice::GetNode (void) const
+CsmaNetDevice::GetNode () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_node;
@@ -1013,7 +1013,7 @@ CsmaNetDevice::SetNode (Ptr<Node> node)
 }
 
 bool
-CsmaNetDevice::NeedsArp (void) const
+CsmaNetDevice::NeedsArp () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;

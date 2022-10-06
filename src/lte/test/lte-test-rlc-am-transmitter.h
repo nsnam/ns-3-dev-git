@@ -78,7 +78,7 @@ class LteRlcAmTransmitterTestCase : public TestCase
     void CheckDataReceived (Time time, std::string shouldReceived, std::string assertMsg);
 
   protected:
-    virtual void DoRun (void);
+    virtual void DoRun ();
 
     Ptr<LteTestPdcp> txPdcp; ///< the transmit PDCP
     Ptr<LteRlc> txRlc; ///< the RLC
@@ -114,7 +114,7 @@ class LteRlcAmTransmitterOneSduTestCase : public LteRlcAmTransmitterTestCase
     virtual ~LteRlcAmTransmitterOneSduTestCase ();
 
   private:
-    virtual void DoRun (void);
+    virtual void DoRun ();
 
 };
 
@@ -138,7 +138,7 @@ class LteRlcAmTransmitterSegmentationTestCase : public LteRlcAmTransmitterTestCa
     virtual ~LteRlcAmTransmitterSegmentationTestCase ();
 
   private:
-    virtual void DoRun (void);
+    virtual void DoRun ();
 
 };
 
@@ -162,7 +162,7 @@ class LteRlcAmTransmitterConcatenationTestCase : public LteRlcAmTransmitterTestC
     virtual ~LteRlcAmTransmitterConcatenationTestCase ();
 
   private:
-    virtual void DoRun (void);
+    virtual void DoRun ();
 
 };
 
@@ -186,7 +186,7 @@ class LteRlcAmTransmitterReportBufferStatusTestCase : public LteRlcAmTransmitter
     virtual ~LteRlcAmTransmitterReportBufferStatusTestCase ();
 
   private:
-    virtual void DoRun (void);
+    virtual void DoRun ();
 
 };
 

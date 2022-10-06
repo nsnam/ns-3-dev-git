@@ -120,7 +120,7 @@ class Int64x64HiLoTestCase : public TestCase
 {
 public:
   Int64x64HiLoTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the high and low parts for correctness.
    * \param hi The high part of the int64x64_t.
@@ -163,7 +163,7 @@ Int64x64HiLoTestCase::Check (const int64_t hi, const uint64_t lo)
 }
 
 void
-Int64x64HiLoTestCase::DoRun (void)
+Int64x64HiLoTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Check: " << GetName ()
@@ -198,8 +198,8 @@ Int64x64HiLoTestCase::DoRun (void)
 class Int64x64IntRoundTestCase : public TestCase
 {
 public:
-  Int64x64IntRoundTestCase (void);
-  virtual void DoRun (void);
+  Int64x64IntRoundTestCase ();
+  virtual void DoRun ();
   /**
    * Check the int64x64 value for correctness.
    * \param value The int64x64_t value.
@@ -211,7 +211,7 @@ public:
               const int64_t expectRnd);
 };
 
-Int64x64IntRoundTestCase::Int64x64IntRoundTestCase (void)
+Int64x64IntRoundTestCase::Int64x64IntRoundTestCase ()
   : TestCase ("Check GetInt and Round")
 {}
 
@@ -239,7 +239,7 @@ Int64x64IntRoundTestCase::Check (const int64x64_t value,
 }
 
 void
-Int64x64IntRoundTestCase::DoRun (void)
+Int64x64IntRoundTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Check: " << GetName ()
@@ -272,7 +272,7 @@ class Int64x64InputTestCase : public TestCase
 {
 public:
   Int64x64InputTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the iont64x64 for correctness.
    * \param str String representation of a number.
@@ -319,7 +319,7 @@ Int64x64InputTestCase::Check (const std::string & str,
                              << str << "\"");
 }
 void
-Int64x64InputTestCase::DoRun (void)
+Int64x64InputTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Input: " << GetName ()
@@ -360,7 +360,7 @@ class Int64x64InputOutputTestCase : public TestCase
 {
 public:
   Int64x64InputOutputTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the iont64x64 for correctness.
    * \param str String representation of a number.
@@ -418,7 +418,7 @@ Int64x64InputOutputTestCase::Check (const std::string & str,
 }
 
 void
-Int64x64InputOutputTestCase::DoRun (void)
+Int64x64InputOutputTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " InputOutput: " << GetName ()
@@ -451,7 +451,7 @@ class Int64x64ArithmeticTestCase : public TestCase
 {
 public:
   Int64x64ArithmeticTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the int64x64 for correctness.
    * \param test The test number.
@@ -486,7 +486,7 @@ Int64x64ArithmeticTestCase::Check (const int test,
 }
 
 void
-Int64x64ArithmeticTestCase::DoRun (void)
+Int64x64ArithmeticTestCase::DoRun ()
 {
   const int64x64_t tol1 (0, 1);
   const int64x64_t zero (0, 0);
@@ -600,7 +600,7 @@ class Int64x64Bug455TestCase : public TestCase
 {
 public:
   Int64x64Bug455TestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the int64x64 for correctness.
    * \param result The actual value.
@@ -631,7 +631,7 @@ Int64x64Bug455TestCase::Check (const double result, const double expect,
 }
 
 void
-Int64x64Bug455TestCase::DoRun (void)
+Int64x64Bug455TestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Bug 455: " << GetName ()
@@ -671,7 +671,7 @@ class Int64x64Bug863TestCase : public TestCase
 {
 public:
   Int64x64Bug863TestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the int64x64 for correctness.
    * \param result The actual value.
@@ -702,7 +702,7 @@ Int64x64Bug863TestCase::Check (const double result, const double expect,
 }
 
 void
-Int64x64Bug863TestCase::DoRun (void)
+Int64x64Bug863TestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Bug 863: " << GetName ()
@@ -743,7 +743,7 @@ class Int64x64Bug1786TestCase : public TestCase
 {
 public:
   Int64x64Bug1786TestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the int64x64 for correctness.
    * \param low The actual low value.
@@ -797,7 +797,7 @@ Int64x64Bug1786TestCase::Check (const uint64_t low,
     }
 }
 void
-Int64x64Bug1786TestCase::DoRun (void)
+Int64x64Bug1786TestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " But 1786: " << GetName ()
@@ -891,7 +891,7 @@ class Int64x64CompareTestCase : public TestCase
 {
 public:
   Int64x64CompareTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Check the int64x64 for correctness.
@@ -920,7 +920,7 @@ Int64x64CompareTestCase::Check (const bool result, const bool expect,
 }
 
 void
-Int64x64CompareTestCase::DoRun (void)
+Int64x64CompareTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Compare: " << GetName ()
@@ -1009,7 +1009,7 @@ class Int64x64InvertTestCase : public TestCase
 {
 public:
   Int64x64InvertTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * Check the int64x64 for correctness.
    * \param factor The factor used to invert the number.
@@ -1094,7 +1094,7 @@ Int64x64InvertTestCase::Check (const int64_t factor)
 }
 
 void
-Int64x64InvertTestCase::DoRun (void)
+Int64x64InvertTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Invert: " << GetName ()
@@ -1134,7 +1134,7 @@ class Int64x64DoubleTestCase : public TestCase
 {
 public:
   Int64x64DoubleTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * Check the int64x64 for correctness.
@@ -1506,7 +1506,7 @@ Int64x64DoubleTestCase::Check (const int64_t intPart)
 }
 
 void
-Int64x64DoubleTestCase::DoRun (void)
+Int64x64DoubleTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Double: " << GetName ()
@@ -1550,7 +1550,7 @@ class Int64x64ImplTestCase : public TestCase
 {
 public:
   Int64x64ImplTestCase ();
-  virtual void DoRun (void);
+  virtual void DoRun ();
 };
 
 Int64x64ImplTestCase::Int64x64ImplTestCase ()
@@ -1558,7 +1558,7 @@ Int64x64ImplTestCase::Int64x64ImplTestCase ()
 {}
 
 void
-Int64x64ImplTestCase::DoRun (void)
+Int64x64ImplTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " Impl: " << GetName ()

@@ -58,7 +58,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the frame number of the reservation being transmitted.
@@ -78,14 +78,14 @@ public:
    *
    * \return The data frame number.
    */
-  uint8_t GetFrameNo (void) const;
+  uint8_t GetFrameNo () const;
   /**
    * Get the propagation delay found in handshaking.
    *
    * \return The measured propagation delay.
    * \note Prop. delay is transmitted with 16 bits and ms accuracy
    */
-  Time GetPropDelay (void) const;
+  Time GetPropDelay () const;
   /**
    * Specialized Print with Time::Unit declared.
    *
@@ -95,11 +95,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
 private:
   uint8_t m_frameNo;  //!< Data frame number.
@@ -137,7 +137,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the frame number.
@@ -178,32 +178,32 @@ public:
    *
    * \return The frame number.
    */
-  uint8_t GetFrameNo (void) const;
+  uint8_t GetFrameNo () const;
   /**
    * Get the number of data frames in the reservation.
    *
    * \return The number of data frames.
    */
-  uint8_t GetNoFrames (void) const;
+  uint8_t GetNoFrames () const;
   /**
    * Get the transmit timestamp of this RTS packet.
    *
    * \return The TX time.
    * \note Timestamp is serialized with 32 bits in ms precision.
    */
-  Time GetTimeStamp (void) const;
+  Time GetTimeStamp () const;
   /**
    * Get the total number of bytes in the reservation, including headers.
    *
    * \return Total number of bytes in data packets for reservation.
    */
-  uint16_t GetLength (void) const;
+  uint16_t GetLength () const;
   /**
    * Get the retry number of this RTS packet.
    *
    * \return The retry number.
    */
-  uint8_t GetRetryNo (void) const;
+  uint8_t GetRetryNo () const;
    /**
    * Specialized Print with Time::Unit declared.
    *
@@ -213,11 +213,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
 private:
   uint8_t m_frameNo;   //!< Reservation frame number.
@@ -256,7 +256,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the rate number corresponding to data rate of current cycle.
@@ -288,26 +288,26 @@ public:
    *
    * \return The rate number.
    */
-  uint16_t GetRateNum (void) const;
+  uint16_t GetRateNum () const;
   /**
    * Get the retry rate number.
    *
    * \return The retry rate number.
    */
-  uint16_t GetRetryRate (void) const;
+  uint16_t GetRetryRate () const;
   /**
    * Get the window time (time duration following blocking time
    * to allow RTS transmissions).
    *
    * \return The window time.
    */
-  Time GetWindowTime (void) const;
+  Time GetWindowTime () const;
   /**
    * Get the CTS transmit timestamp.
    *
    * \return The timestamp.
    */
-  Time GetTxTimeStamp (void) const;
+  Time GetTxTimeStamp () const;
   /**
    * Specialized Print with Time::Unit declared.
    *
@@ -317,11 +317,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
 private:
   Time m_timeStampTx;    //!< Timestamp.
@@ -362,7 +362,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the RTS frame number being cleared.
@@ -400,32 +400,32 @@ public:
    *
    * \return The frame number.
    */
-  uint8_t GetFrameNo (void) const;
+  uint8_t GetFrameNo () const;
   /**
    * Get the receive time of the RTS being cleared.
    *
    * \return The RX time.
    */
-  Time GetRtsTimeStamp (void) const;
+  Time GetRtsTimeStamp () const;
   /**
    * Get the time delay from TX time of CTS packet until
    * arrival of first data frame.
    *
    * \return The delay time.
    */
-  Time GetDelayToTx (void) const;
+  Time GetDelayToTx () const;
   /**
    * Get the retry number of the RTS packet being cleared.
    *
    * \return The retry number
    */
-  uint8_t GetRetryNo (void) const;
+  uint8_t GetRetryNo () const;
   /**
    * Get the destination address, for scheduling info.
    *
    * \return The destination address.
    */
-  Mac8Address GetAddress (void) const;
+  Mac8Address GetAddress () const;
   /**
    * Specialized Print with Time::Unit declared.
    *
@@ -435,11 +435,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
 private:
   uint8_t m_frameNo;     //!< Reservation frame number being cleared.
@@ -467,7 +467,7 @@ public:
    * Register this type.
    * \return The TypeId.
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Set the frame number of the reservation being acknowledged.
@@ -487,26 +487,26 @@ public:
    *
    * \return The set of NACK'ed frames.
    */
-  const std::set<uint8_t> &GetNackedFrames (void) const;
+  const std::set<uint8_t> &GetNackedFrames () const;
   /**
    * Get the reservation frame number being ACKed.
    *
    * \return The frame number.
    */
-  uint8_t GetFrameNo (void) const;
+  uint8_t GetFrameNo () const;
   /**
    * Get the number of data frames being NACKed.
    *
    * \return The number of NACKed frames.
    */
-  uint8_t GetNoNacks (void) const;
+  uint8_t GetNoNacks () const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize (void) const;
+  virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId (void) const;
+  virtual TypeId GetInstanceTypeId () const;
 
 private:
   uint8_t m_frameNo;                 //!< Next frame number.

@@ -45,32 +45,32 @@ public:
    */
   SNRToBlockErrorRateRecord (double snrValue, double bitErrorRate,
                              double BlockErrorRate, double sigma2, double I1, double I2);
-  ~SNRToBlockErrorRateRecord (void);
+  ~SNRToBlockErrorRateRecord ();
 
   /**
    * \return the SNR value
    */
-  double GetSNRValue (void);
+  double GetSNRValue ();
   /**
    * \return the BER value
    */
-  double GetBitErrorRate (void);
+  double GetBitErrorRate ();
   /**
    * \return the BlcER value
    */
-  double GetBlockErrorRate (void);
+  double GetBlockErrorRate ();
   /**
    * \return the standard deviation
    */
-  double GetSigma2 (void);
+  double GetSigma2 ();
   /**
    * \return the lower boundary of the confidence interval
    */
-  double GetI1 (void);
+  double GetI1 ();
   /**
    * \return the upper boundary of the confidence interval
    */
-  double GetI2 (void);
+  double GetI2 ();
   /**
    * \brief copy a record
    * \return a copy of this record

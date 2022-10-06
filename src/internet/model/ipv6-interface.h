@@ -238,7 +238,7 @@ public:
    * \brief Get number of addresses on this IPv6 interface.
    * \return number of address
    */
-  uint32_t GetNAddresses (void) const;
+  uint32_t GetNAddresses () const;
 
   /**
    * \brief Remove an address from interface.

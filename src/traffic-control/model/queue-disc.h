@@ -52,7 +52,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QueueDiscClass ();
   virtual ~QueueDiscClass ();
@@ -61,7 +61,7 @@ public:
    * \brief Get the queue disc attached to this class
    * \return the queue disc attached to this class.
    */
-  Ptr<QueueDisc> GetQueueDisc (void) const;
+  Ptr<QueueDisc> GetQueueDisc () const;
 
   /**
    * \brief Set the queue disc attached to this class
@@ -73,7 +73,7 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   Ptr<QueueDisc> m_queueDisc;        //!< Queue disc attached to this class
@@ -271,7 +271,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Constructor
@@ -298,7 +298,7 @@ public:
    *
    * The requeued packet, if any, is counted.
    */
-  uint32_t GetNPackets (void) const;
+  uint32_t GetNPackets () const;
 
   /**
    * \brief Get the amount of bytes stored by the queue disc
@@ -306,14 +306,14 @@ public:
    *
    * The requeued packet, if any, is counted.
    */
-  uint32_t GetNBytes (void) const;
+  uint32_t GetNBytes () const;
 
   /**
    * \brief Get the maximum size of the queue disc.
    *
    * \returns the maximum size of the queue disc.
    */
-  QueueSize GetMaxSize (void) const;
+  QueueSize GetMaxSize () const;
 
   /**
    * \brief Set the maximum size of the queue disc.
@@ -333,13 +333,13 @@ public:
    *
    * \returns The queue disc size in bytes or packets.
    */
-  QueueSize GetCurrentSize (void);
+  QueueSize GetCurrentSize ();
 
   /**
    * \brief Retrieve all the collected statistics.
    * \return the collected statistics.
    */
-  const Stats& GetStats (void);
+  const Stats& GetStats ();
 
   /**
    * \param ndqi the NetDeviceQueueInterface aggregated to the receiving object.
@@ -355,7 +355,7 @@ public:
    * Get the pointer to the NetDeviceQueueInterface object aggregated to the
    * object receiving the packets dequeued from this queue disc.
    */
-  Ptr<NetDeviceQueueInterface> GetNetDeviceQueueInterface (void) const;
+  Ptr<NetDeviceQueueInterface> GetNetDeviceQueueInterface () const;
 
   /// Callback invoked to send a packet to the receiving object when Run is called
   typedef std::function<void (Ptr<QueueDiscItem>)> SendCallback;
@@ -374,7 +374,7 @@ public:
    * Get the callback used by the Transmit method (called eventually by the Run
    * method) to send a packet to the receiving object.
    */
-  SendCallback GetSendCallback (void) const;
+  SendCallback GetSendCallback () const;
 
   /**
    * \brief Set the maximum number of dequeue operations following a packet enqueue
@@ -386,7 +386,7 @@ public:
    * \brief Get the maximum number of dequeue operations following a packet enqueue
    * \return the maximum number of dequeue operations following a packet enqueue.
    */
-  virtual uint32_t GetQuota (void) const;
+  virtual uint32_t GetQuota () const;
 
   /**
    * Pass a packet to store to the queue discipline. This function only updates
@@ -404,7 +404,7 @@ public:
    *
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<QueueDiscItem> Dequeue (void);
+  Ptr<QueueDiscItem> Dequeue ();
 
   /**
    * Get a copy of the next packet the queue discipline will extract. This
@@ -413,14 +413,14 @@ public:
    * retains it into the queue disc.
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<const QueueDiscItem> Peek (void);
+  Ptr<const QueueDiscItem> Peek ();
 
   /**
    * Modelled after the Linux function __qdisc_run (net/sched/sch_generic.c)
    * Dequeues multiple packets, until a quota is exceeded or sending a packet
    * to the device failed.
    */
-  void Run (void);
+  void Run ();
 
   /// Internal queues store QueueDiscItem objects
   typedef Queue<QueueDiscItem> InternalQueue;
@@ -442,7 +442,7 @@ public:
    * \brief Get the number of internal queues
    * \return the number of internal queues.
    */
-  std::size_t GetNInternalQueues (void) const;
+  std::size_t GetNInternalQueues () const;
 
   /**
    * \brief Add a packet filter to the tail of the list of filters used to classify packets.
@@ -461,7 +461,7 @@ public:
    * \brief Get the number of packet filters
    * \return the number of packet filters.
    */
-  std::size_t GetNPacketFilters (void) const;
+  std::size_t GetNPacketFilters () const;
 
   /**
    * \brief Add a queue disc class to the tail of the list of classes.
@@ -480,7 +480,7 @@ public:
    * \brief Get the number of queue disc classes
    * \return the number of queue disc classes.
    */
-  std::size_t GetNQueueDiscClasses (void) const;
+  std::size_t GetNQueueDiscClasses () const;
 
   /**
    * Classify a packet by calling the packet filters, one at a time, until either
@@ -514,7 +514,7 @@ public:
    *
    * \return the wake mode adopted by this queue disc.
    */
-  virtual WakeMode GetWakeMode (void) const;
+  virtual WakeMode GetWakeMode () const;
 
   // Reasons for dropping packets
   static constexpr const char* INTERNAL_QUEUE_DROP = "Dropped by internal queue";    //!< Packet dropped by an internal queue
@@ -525,7 +525,7 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Check whether the configuration is correct and initialize parameters
@@ -536,7 +536,7 @@ protected:
    * \sa QueueDisc::InitializeParams
    * \sa QueueDisc::CheckConfig
    */
-  void DoInitialize (void);
+  void DoInitialize ();
 
   /**
    *  \brief Perform the actions required when the queue disc is notified of
@@ -579,7 +579,7 @@ private:
    * This function actually extracts a packet from the queue disc.
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  virtual Ptr<QueueDiscItem> DoDequeue (void) = 0;
+  virtual Ptr<QueueDiscItem> DoDequeue () = 0;
 
   /**
    * \brief Return a copy of the next packet the queue disc will extract.
@@ -600,7 +600,7 @@ private:
    *
    * \return 0 if the operation was not successful; the packet otherwise.
    */
-  virtual Ptr<const QueueDiscItem> DoPeek (void);
+  virtual Ptr<const QueueDiscItem> DoPeek ();
 
   /**
    * Check whether the current configuration is correct. Default objects (such
@@ -613,7 +613,7 @@ private:
    * \sa QueueDisc::InitializeParams
    * \return true if the configuration is correct, false otherwise
    */
-  virtual bool CheckConfig (void) = 0;
+  virtual bool CheckConfig () = 0;
 
   /**
    * Initialize parameters (if any) before the first packet is enqueued.
@@ -621,32 +621,32 @@ private:
    * after the CheckConfig() method has been called.
    * \sa QueueDisc::CheckConfig
    */
-  virtual void InitializeParams (void) = 0;
+  virtual void InitializeParams () = 0;
 
   /**
    * Modelled after the Linux function qdisc_run_begin (include/net/sch_generic.h).
    * \return false if the qdisc is already running; otherwise, set the qdisc as running and return true.
    */
-  bool RunBegin (void);
+  bool RunBegin ();
 
   /**
    * Modelled after the Linux function qdisc_run_end (include/net/sch_generic.h).
    * Set the qdisc as not running.
    */
-  void RunEnd (void);
+  void RunEnd ();
 
   /**
    * Modelled after the Linux function qdisc_restart (net/sched/sch_generic.c)
    * Dequeue a packet (by calling DequeuePacket) and send it to the device (by calling Transmit).
    * \return true if a packet is successfully sent to the device.
    */
-  bool Restart (void);
+  bool Restart ();
 
   /**
    * Modelled after the Linux function dequeue_skb (net/sched/sch_generic.c)
    * \return the requeued packet, if any, or the packet dequeued by the queue disc, otherwise.
    */
-  Ptr<QueueDiscItem> DequeuePacket (void);
+  Ptr<QueueDiscItem> DequeuePacket ();
 
   /**
    * Modelled after the Linux function dev_requeue_skb (net/sched/sch_generic.c)

@@ -44,7 +44,7 @@ SllHeader::~SllHeader ()
 
 
 TypeId
-SllHeader::GetTypeId (void)
+SllHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SllHeader")
     .SetParent<Header> ()
@@ -55,7 +55,7 @@ SllHeader::GetTypeId (void)
 }
 
 TypeId
-SllHeader::GetInstanceTypeId (void) const
+SllHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -74,7 +74,7 @@ SllHeader::SetArpType (uint16_t arphdType)
 }
 
 SllHeader::PacketType
-SllHeader::GetPacketType (void) const
+SllHeader::GetPacketType () const
 {
   return m_packetType;
 }
@@ -93,7 +93,7 @@ SllHeader::Print (std::ostream &os)  const
 }
 
 uint32_t
-SllHeader::GetSerializedSize (void)  const
+SllHeader::GetSerializedSize ()  const
 {
   return 2 + 2 + 2 + 8 + 2;
 }

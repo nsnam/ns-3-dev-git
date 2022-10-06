@@ -31,17 +31,17 @@ NS_LOG_COMPONENT_DEFINE ("Packet");
 uint32_t Packet::m_globalUid = 0;
 
 TypeId
-ByteTagIterator::Item::GetTypeId (void) const
+ByteTagIterator::Item::GetTypeId () const
 {
   return m_tid;
 }
 uint32_t
-ByteTagIterator::Item::GetStart (void) const
+ByteTagIterator::Item::GetStart () const
 {
   return m_start;
 }
 uint32_t
-ByteTagIterator::Item::GetEnd (void) const
+ByteTagIterator::Item::GetEnd () const
 {
   return m_end;
 }
@@ -62,12 +62,12 @@ ByteTagIterator::Item::Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer
 {
 }
 bool
-ByteTagIterator::HasNext (void) const
+ByteTagIterator::HasNext () const
 {
   return m_current.HasNext ();
 }
 ByteTagIterator::Item
-ByteTagIterator::Next (void)
+ByteTagIterator::Next ()
 {
   ByteTagList::Iterator::Item i = m_current.Next ();
   return ByteTagIterator::Item (i.tid,
@@ -86,12 +86,12 @@ PacketTagIterator::PacketTagIterator (const struct PacketTagList::TagData *head)
 {
 }
 bool
-PacketTagIterator::HasNext (void) const
+PacketTagIterator::HasNext () const
 {
   return m_current != 0;
 }
 PacketTagIterator::Item
-PacketTagIterator::Next (void)
+PacketTagIterator::Next ()
 {
   NS_ASSERT (HasNext ());
   const struct PacketTagList::TagData *prev = m_current;
@@ -104,7 +104,7 @@ PacketTagIterator::Item::Item (const struct PacketTagList::TagData *data)
 {
 }
 TypeId
-PacketTagIterator::Item::GetTypeId (void) const
+PacketTagIterator::Item::GetTypeId () const
 {
   return m_data->tid;
 }
@@ -118,7 +118,7 @@ PacketTagIterator::Item::GetTag (Tag &tag) const
 
 
 Ptr<Packet>
-Packet::Copy (void) const
+Packet::Copy () const
 {
   // we need to invoke the copy constructor directly
   // rather than calling Create because the copy constructor
@@ -247,7 +247,7 @@ Packet::SetNixVector (Ptr<NixVector> nixVector) const
 }
 
 Ptr<NixVector>
-Packet::GetNixVector (void) const
+Packet::GetNixVector () const
 {
   return m_nixVector;
 }
@@ -368,7 +368,7 @@ Packet::RemoveAtStart (uint32_t size)
 }
 
 void
-Packet::RemoveAllByteTags (void)
+Packet::RemoveAllByteTags ()
 {
   NS_LOG_FUNCTION (this);
   m_byteTagList.RemoveAll ();
@@ -387,7 +387,7 @@ Packet::CopyData (std::ostream *os, uint32_t size) const
 }
 
 uint64_t
-Packet::GetUid (void) const
+Packet::GetUid () const
 {
   return m_metadata.GetUid ();
 }
@@ -563,26 +563,26 @@ Packet::Print (std::ostream &os) const
 }
 
 PacketMetadata::ItemIterator
-Packet::BeginItem (void) const
+Packet::BeginItem () const
 {
   return m_metadata.BeginItem (m_buffer);
 }
 
 void
-Packet::EnablePrinting (void)
+Packet::EnablePrinting ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   PacketMetadata::Enable ();
 }
 
 void
-Packet::EnableChecking (void)
+Packet::EnableChecking ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   PacketMetadata::EnableChecking ();
 }
 
-uint32_t Packet::GetSerializedSize (void) const
+uint32_t Packet::GetSerializedSize () const
 {
   uint32_t size = 0;
 
@@ -930,7 +930,7 @@ Packet::AddByteTag (const Tag &tag, uint32_t start, uint32_t end) const
   tag.Serialize (buffer);
 }
 ByteTagIterator
-Packet::GetByteTagIterator (void) const
+Packet::GetByteTagIterator () const
 {
   return ByteTagIterator (m_byteTagList.Begin (0, GetSize ()));
 }
@@ -981,7 +981,7 @@ Packet::PeekPacketTag (Tag &tag) const
   return found;
 }
 void
-Packet::RemoveAllPacketTags (void)
+Packet::RemoveAllPacketTags ()
 {
   NS_LOG_FUNCTION (this);
   m_packetTagList.RemoveAll ();
@@ -1011,7 +1011,7 @@ Packet::PrintPacketTags (std::ostream &os) const
 }
 
 PacketTagIterator
-Packet::GetPacketTagIterator (void) const
+Packet::GetPacketTagIterator () const
 {
   return PacketTagIterator (m_packetTagList.Head ());
 }

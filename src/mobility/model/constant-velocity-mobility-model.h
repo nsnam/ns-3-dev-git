@@ -39,7 +39,7 @@ public:
    * Register this type with the TypeId system.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   /**
    * Create position located at coordinates (0,0,0) with
    * speed (0,0,0).
@@ -55,9 +55,9 @@ public:
    */
   void SetVelocity (const Vector &speed);
 private:
-  virtual Vector DoGetPosition (void) const;
+  virtual Vector DoGetPosition () const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity (void) const;
+  virtual Vector DoGetVelocity () const;
   ConstantVelocityHelper m_helper;  //!< helper object for this model
 };
 

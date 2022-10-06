@@ -48,22 +48,22 @@ private:
   /**
    * \brief setup function for TimeSimpleTestCase.
    */
-  virtual void DoSetup (void);
+  virtual void DoSetup ();
 
   /**
    * \brief Runs the Simple Time test case.
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief Tests the Time Operations.
    */
-  virtual void DoTimeOperations (void);
+  virtual void DoTimeOperations ();
 
   /**
    * \brief Does the tear down for TimeSimpleTestCase.
    */
-  virtual void DoTeardown (void);
+  virtual void DoTeardown ();
 
   /**
    * Helper function to handle boilerplate code for multiplication tests
@@ -117,10 +117,10 @@ TimeSimpleTestCase::TimeSimpleTestCase ()
 {}
 
 void
-TimeSimpleTestCase::DoSetup (void)
+TimeSimpleTestCase::DoSetup ()
 {}
 
-void TimeSimpleTestCase::DoTimeOperations (void)
+void TimeSimpleTestCase::DoTimeOperations ()
 {
   // Test Multiplication
   constexpr long long oneSec =  1000000000;  // conversion to default nanoseconds
@@ -155,7 +155,7 @@ void TimeSimpleTestCase::DoTimeOperations (void)
 }
 
 void
-TimeSimpleTestCase::DoRun (void)
+TimeSimpleTestCase::DoRun ()
 {
   NS_TEST_ASSERT_MSG_EQ_TOL (Years (1.0).GetYears (), 1.0, Years (1).GetYears (),
                              "is 1 really 1 ?");
@@ -204,7 +204,7 @@ TimeSimpleTestCase::DoRun (void)
 }
 
 void
-TimeSimpleTestCase::DoTeardown (void)
+TimeSimpleTestCase::DoTeardown ()
 {}
 
 template<typename T>
@@ -345,17 +345,17 @@ private:
   /**
    * \brief DoSetup for TimeWithSignTestCase.
    */
-  virtual void DoSetup (void);
+  virtual void DoSetup ();
 
   /**
    * \brief DoRun for TimeWithSignTestCase.
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
 
   /**
    * \brief DoTeardown for TimeWithSignTestCase.
    */
-  virtual void DoTeardown (void);
+  virtual void DoTeardown ();
 };
 
 TimeWithSignTestCase::TimeWithSignTestCase ()
@@ -363,11 +363,11 @@ TimeWithSignTestCase::TimeWithSignTestCase ()
 {}
 
 void
-TimeWithSignTestCase::DoSetup (void)
+TimeWithSignTestCase::DoSetup ()
 {}
 
 void
-TimeWithSignTestCase::DoRun (void)
+TimeWithSignTestCase::DoRun ()
 {
   Time timePositive          ("+1000.0");
   Time timePositiveWithUnits ("+1000.0ms");
@@ -398,7 +398,7 @@ TimeWithSignTestCase::DoRun (void)
 
 
 void
-TimeWithSignTestCase::DoTeardown (void)
+TimeWithSignTestCase::DoTeardown ()
 {}
 
 /**
@@ -417,7 +417,7 @@ private:
   /**
    * \brief DoRun for TimeInputOutputTestCase.
    */
-  virtual void DoRun (void);
+  virtual void DoRun ();
   /**
    * \brief Check roundtrip from/to string.
    * \param str Time input check.
@@ -478,7 +478,7 @@ TimeInputOutputTestCase::CheckAs (const Time t, const std::string expect)
 }
 
 void
-TimeInputOutputTestCase::DoRun (void)
+TimeInputOutputTestCase::DoRun ()
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " InputOutput: " << GetName ()

@@ -62,7 +62,7 @@ Inet6SocketAddress::Inet6SocketAddress (uint16_t port)
   NS_LOG_FUNCTION (this << port);
 }
 
-uint16_t Inet6SocketAddress::GetPort (void) const
+uint16_t Inet6SocketAddress::GetPort () const
 {
   NS_LOG_FUNCTION (this);
   return m_port;
@@ -74,7 +74,7 @@ void Inet6SocketAddress::SetPort (uint16_t port)
   m_port=port;
 }
 
-Ipv6Address Inet6SocketAddress::GetIpv6 (void) const
+Ipv6Address Inet6SocketAddress::GetIpv6 () const
 {
   NS_LOG_FUNCTION (this);
   return m_ipv6;
@@ -92,12 +92,12 @@ bool Inet6SocketAddress::IsMatchingType (const Address &addr)
   return addr.CheckCompatible (GetType (), 18); /* 16 (address) + 2  (port) */
 }
 
-Inet6SocketAddress::operator Address (void) const
+Inet6SocketAddress::operator Address () const
 {
   return ConvertTo ();
 }
 
-Address Inet6SocketAddress::ConvertTo (void) const
+Address Inet6SocketAddress::ConvertTo () const
 {
   NS_LOG_FUNCTION (this);
   uint8_t buf[18];
@@ -118,7 +118,7 @@ Inet6SocketAddress Inet6SocketAddress::ConvertFrom (const Address &addr)
   return Inet6SocketAddress (ipv6, port);
 }
 
-uint8_t Inet6SocketAddress::GetType (void)
+uint8_t Inet6SocketAddress::GetType ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type=Address::Register ();

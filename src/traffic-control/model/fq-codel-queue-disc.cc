@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("FqCoDelQueueDisc");
 
 NS_OBJECT_ENSURE_REGISTERED (FqCoDelFlow);
 
-TypeId FqCoDelFlow::GetTypeId (void)
+TypeId FqCoDelFlow::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FqCoDelFlow")
     .SetParent<QueueDiscClass> ()
@@ -63,7 +63,7 @@ FqCoDelFlow::SetDeficit (uint32_t deficit)
 }
 
 int32_t
-FqCoDelFlow::GetDeficit (void) const
+FqCoDelFlow::GetDeficit () const
 {
   NS_LOG_FUNCTION (this);
   return m_deficit;
@@ -84,7 +84,7 @@ FqCoDelFlow::SetStatus (FlowStatus status)
 }
 
 FqCoDelFlow::FlowStatus
-FqCoDelFlow::GetStatus (void) const
+FqCoDelFlow::GetStatus () const
 {
   NS_LOG_FUNCTION (this);
   return m_status;
@@ -98,7 +98,7 @@ FqCoDelFlow::SetIndex (uint32_t index)
 }
 
 uint32_t
-FqCoDelFlow::GetIndex (void) const
+FqCoDelFlow::GetIndex () const
 {
   return m_index;
 }
@@ -106,7 +106,7 @@ FqCoDelFlow::GetIndex (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (FqCoDelQueueDisc);
 
-TypeId FqCoDelQueueDisc::GetTypeId (void)
+TypeId FqCoDelQueueDisc::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FqCoDelQueueDisc")
     .SetParent<QueueDisc> ()
@@ -192,7 +192,7 @@ FqCoDelQueueDisc::SetQuantum (uint32_t quantum)
 }
 
 uint32_t
-FqCoDelQueueDisc::GetQuantum (void) const
+FqCoDelQueueDisc::GetQuantum () const
 {
   return m_quantum;
 }
@@ -309,7 +309,7 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-FqCoDelQueueDisc::DoDequeue (void)
+FqCoDelQueueDisc::DoDequeue ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -390,7 +390,7 @@ FqCoDelQueueDisc::DoDequeue (void)
 }
 
 bool
-FqCoDelQueueDisc::CheckConfig (void)
+FqCoDelQueueDisc::CheckConfig ()
 {
   NS_LOG_FUNCTION (this);
   if (GetNQueueDiscClasses () > 0)
@@ -445,7 +445,7 @@ FqCoDelQueueDisc::CheckConfig (void)
 }
 
 void
-FqCoDelQueueDisc::InitializeParams (void)
+FqCoDelQueueDisc::InitializeParams ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -458,7 +458,7 @@ FqCoDelQueueDisc::InitializeParams (void)
 }
 
 uint32_t
-FqCoDelQueueDisc::FqCoDelDrop (void)
+FqCoDelQueueDisc::FqCoDelDrop ()
 {
   NS_LOG_FUNCTION (this);
 

@@ -59,7 +59,7 @@ public:
   virtual ~WifiErrorRateModelsTestCaseDsss ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 };
 
 WifiErrorRateModelsTestCaseDsss::WifiErrorRateModelsTestCaseDsss ()
@@ -72,7 +72,7 @@ WifiErrorRateModelsTestCaseDsss::~WifiErrorRateModelsTestCaseDsss ()
 }
 
 void
-WifiErrorRateModelsTestCaseDsss::DoRun (void)
+WifiErrorRateModelsTestCaseDsss::DoRun ()
 {
   // 1024 bytes plus headers
   uint64_t size = (1024 + 40 + 14) * 8;
@@ -168,7 +168,7 @@ public:
   virtual ~WifiErrorRateModelsTestCaseNist ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 };
 
 WifiErrorRateModelsTestCaseNist::WifiErrorRateModelsTestCaseNist ()
@@ -181,7 +181,7 @@ WifiErrorRateModelsTestCaseNist::~WifiErrorRateModelsTestCaseNist ()
 }
 
 void
-WifiErrorRateModelsTestCaseNist::DoRun (void)
+WifiErrorRateModelsTestCaseNist::DoRun ()
 {
   uint32_t frameSize = 2000;
   WifiTxVector txVector;
@@ -318,7 +318,7 @@ public:
   virtual ~WifiErrorRateModelsTestCaseMimo ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 };
 
 WifiErrorRateModelsTestCaseMimo::WifiErrorRateModelsTestCaseMimo ()
@@ -331,7 +331,7 @@ WifiErrorRateModelsTestCaseMimo::~WifiErrorRateModelsTestCaseMimo ()
 }
 
 void
-WifiErrorRateModelsTestCaseMimo::DoRun (void)
+WifiErrorRateModelsTestCaseMimo::DoRun ()
 {
   TestInterferenceHelper interference;
   interference.SetNoiseFigure (0);
@@ -1463,7 +1463,7 @@ public:
   virtual ~TableBasedErrorRateTestCase ();
 
 private:
-  void DoRun (void) override;
+  void DoRun () override;
 
   std::string m_testName; ///< The name of the test to run
   WifiMode m_mode;        ///< The WifiMode to test
@@ -1483,7 +1483,7 @@ TableBasedErrorRateTestCase::~TableBasedErrorRateTestCase ()
 }
 
 void
-TableBasedErrorRateTestCase::DoRun (void)
+TableBasedErrorRateTestCase::DoRun ()
 {
   //LogComponentEnable ("WifiErrorRateModelsTest", LOG_LEVEL_ALL);
   //LogComponentEnable ("TableBasedErrorRateModel", LOG_LEVEL_ALL);
