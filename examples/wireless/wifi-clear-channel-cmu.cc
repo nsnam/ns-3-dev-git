@@ -211,12 +211,13 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 int main (int argc, char *argv[])
 {
   std::ofstream outfile ("clear-channel.plt");
-  std::vector <std::string> modes;
 
-  modes.push_back ("DsssRate1Mbps");
-  modes.push_back ("DsssRate2Mbps");
-  modes.push_back ("DsssRate5_5Mbps");
-  modes.push_back ("DsssRate11Mbps");
+  const std::vector <std::string> modes {
+    "DsssRate1Mbps",
+    "DsssRate2Mbps",
+    "DsssRate5_5Mbps",
+    "DsssRate11Mbps",
+  };
 
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);

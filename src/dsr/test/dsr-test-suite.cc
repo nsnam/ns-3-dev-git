@@ -123,10 +123,12 @@ void
 DsrRreqHeaderTest::DoRun ()
 {
   dsr::DsrOptionRreqHeader h;
-  std::vector<Ipv4Address> nodeList;
-  nodeList.push_back (Ipv4Address ("1.1.1.0"));
-  nodeList.push_back (Ipv4Address ("1.1.1.1"));
-  nodeList.push_back (Ipv4Address ("1.1.1.2"));
+
+  const std::vector<Ipv4Address> nodeList {
+    Ipv4Address ("1.1.1.0"),
+    Ipv4Address ("1.1.1.1"),
+    Ipv4Address ("1.1.1.2"),
+  };
 
   h.SetTarget (Ipv4Address ("1.1.1.3"));
   NS_TEST_EXPECT_MSG_EQ (h.GetTarget (), Ipv4Address ("1.1.1.3"), "trivial");
@@ -175,10 +177,12 @@ DsrRrepHeaderTest::DoRun ()
 {
   dsr::DsrOptionRrepHeader h;
 
-  std::vector<Ipv4Address> nodeList;
-  nodeList.push_back (Ipv4Address ("1.1.1.0"));
-  nodeList.push_back (Ipv4Address ("1.1.1.1"));
-  nodeList.push_back (Ipv4Address ("1.1.1.2"));
+  const std::vector<Ipv4Address> nodeList {
+    Ipv4Address ("1.1.1.0"),
+    Ipv4Address ("1.1.1.1"),
+    Ipv4Address ("1.1.1.2"),
+  };
+
   h.SetNodesAddress (nodeList);
   NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (0), Ipv4Address ("1.1.1.0"), "trivial");
   NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (1), Ipv4Address ("1.1.1.1"), "trivial");
@@ -221,10 +225,13 @@ void
 DsrSRHeaderTest::DoRun ()
 {
   dsr::DsrOptionSRHeader h;
-  std::vector<Ipv4Address> nodeList;
-  nodeList.push_back (Ipv4Address ("1.1.1.0"));
-  nodeList.push_back (Ipv4Address ("1.1.1.1"));
-  nodeList.push_back (Ipv4Address ("1.1.1.2"));
+
+  const std::vector<Ipv4Address> nodeList {
+    Ipv4Address ("1.1.1.0"),
+    Ipv4Address ("1.1.1.1"),
+    Ipv4Address ("1.1.1.2"),
+  };
+
   h.SetNodesAddress (nodeList);
   NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (0), Ipv4Address ("1.1.1.0"), "trivial");
   NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (1), Ipv4Address ("1.1.1.1"), "trivial");
@@ -405,9 +412,12 @@ void
 DsrCacheEntryTest::DoRun ()
 {
   Ptr<dsr::DsrRouteCache> rcache = CreateObject<dsr::DsrRouteCache> ();
-  std::vector<Ipv4Address> ip;
-  ip.push_back (Ipv4Address ("0.0.0.0"));
-  ip.push_back (Ipv4Address ("0.0.0.1"));
+
+  std::vector<Ipv4Address> ip {
+    Ipv4Address ("0.0.0.0"),
+    Ipv4Address ("0.0.0.1"),
+  };
+
   Ipv4Address dst = Ipv4Address ("0.0.0.1");
   dsr::DsrRouteCacheEntry entry (ip, dst, Seconds (1));
   NS_TEST_EXPECT_MSG_EQ (entry.GetVector ().size (), 2, "trivial");
@@ -424,9 +434,11 @@ DsrCacheEntryTest::DoRun ()
 
   NS_TEST_EXPECT_MSG_EQ (rcache->AddRoute (entry), true, "trivial");
 
-  std::vector<Ipv4Address> ip2;
-  ip2.push_back (Ipv4Address ("1.1.1.0"));
-  ip2.push_back (Ipv4Address ("1.1.1.1"));
+  std::vector<Ipv4Address> ip2 {
+    Ipv4Address ("1.1.1.0"),
+    Ipv4Address ("1.1.1.1"),
+  };
+
   Ipv4Address dst2 = Ipv4Address ("1.1.1.1");
   dsr::DsrRouteCacheEntry entry2 (ip2, dst2, Seconds (2));
   dsr::DsrRouteCacheEntry newEntry;

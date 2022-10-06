@@ -706,22 +706,25 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
   Time checkInterval = Seconds (1);
 
   std::string cel1name ("ho: 0 -> 1");
-  std::list<CheckPointEvent> cel1;
-  cel1.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval, 0, 0));
-  cel1.push_back (CheckPointEvent (Seconds (11), Seconds (17), checkInterval, 0, 1));
+  const std::list<CheckPointEvent> cel1 {
+    CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval, 0, 0),
+    CheckPointEvent (Seconds (11), Seconds (17), checkInterval, 0, 1),
+  };
 
   std::string cel2name ("ho: 0 -> 1 -> 2");
-  std::list<CheckPointEvent> cel2;
-  cel2.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval, 0, 0));
-  cel2.push_back (CheckPointEvent (Seconds (11), Seconds (17.1), checkInterval, 0, 1));
-  cel2.push_back (CheckPointEvent (Seconds (18), Seconds (24), checkInterval, 0, 2));
+  const std::list<CheckPointEvent> cel2 {
+    CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval, 0, 0),
+    CheckPointEvent (Seconds (11), Seconds (17.1), checkInterval, 0, 1),
+    CheckPointEvent (Seconds (18), Seconds (24), checkInterval, 0, 2),
+  };
 
   std::string cel3name ("ho: 0 -> 1 -> 2 -> 3");
-  std::list<CheckPointEvent> cel3;
-  cel3.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval,  0, 0));
-  cel3.push_back (CheckPointEvent (Seconds (11), Seconds (17.1), checkInterval, 0, 1));
-  cel3.push_back (CheckPointEvent (Seconds (18), Seconds (24.1), checkInterval, 0, 2));
-  cel3.push_back (CheckPointEvent (Seconds (25), Seconds (37), checkInterval, 0, 3));
+  const std::list<CheckPointEvent> cel3 {
+    CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval,  0, 0),
+    CheckPointEvent (Seconds (11), Seconds (17.1), checkInterval, 0, 1),
+    CheckPointEvent (Seconds (18), Seconds (24.1), checkInterval, 0, 2),
+    CheckPointEvent (Seconds (25), Seconds (37), checkInterval, 0, 3),
+  };
 
 
   int32_t useIdealRrc;

@@ -667,44 +667,53 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   std::list<HandoverEvent> hel0;
 
   std::string hel1name ("1 fwd");
-  std::list<HandoverEvent> hel1;
-  hel1.push_back (ue1fwd);
+  const std::list<HandoverEvent> hel1 {
+    ue1fwd,
+  };
 
   std::string hel2name ("1 fwd & bwd");
-  std::list<HandoverEvent> hel2;
-  hel2.push_back (ue1fwd);
-  hel2.push_back (ue1bwd);
+  const std::list<HandoverEvent> hel2 {
+    ue1fwd,
+    ue1bwd,
+  };
 
   std::string hel3name ("1 fwd & bwd & fwd");
-  std::list<HandoverEvent> hel3;
-  hel3.push_back (ue1fwd);
-  hel3.push_back (ue1bwd);
-  hel3.push_back (ue1fwdagain);
+  const std::list<HandoverEvent> hel3 {
+    ue1fwd,
+    ue1bwd,
+    ue1fwdagain,
+  };
 
   std::string hel4name ("1+2 fwd");
-  std::list<HandoverEvent> hel4;
-  hel4.push_back (ue1fwd);
-  hel4.push_back (ue2fwd);
+  const std::list<HandoverEvent> hel4 {
+    ue1fwd,
+    ue2fwd,
+  };
 
   std::string hel5name ("1+2 fwd & bwd");
-  std::list<HandoverEvent> hel5;
-  hel5.push_back (ue1fwd);
-  hel5.push_back (ue1bwd);
-  hel5.push_back (ue2fwd);
-  hel5.push_back (ue2bwd);
+  const std::list<HandoverEvent> hel5 {
+    ue1fwd,
+    ue1bwd,
+    ue2fwd,
+    ue2bwd,
+  };
 
   std::string hel6name ("2 fwd");
-  std::list<HandoverEvent> hel6;
-  hel6.push_back (ue2fwd);
+  const std::list<HandoverEvent> hel6 {
+    ue2fwd,
+  };
 
   std::string hel7name ("2 fwd & bwd");
-  std::list<HandoverEvent> hel7;
-  hel7.push_back (ue2fwd);
-  hel7.push_back (ue2bwd);
+  const std::list<HandoverEvent> hel7 {
+    ue2fwd,
+    ue2bwd,
+  };
 
-  std::vector<std::string> schedulers;
-  schedulers.push_back ("ns3::RrFfMacScheduler");
-  schedulers.push_back ("ns3::PfFfMacScheduler");
+  std::vector<std::string> schedulers {
+    "ns3::RrFfMacScheduler",
+    "ns3::PfFfMacScheduler",
+  };
+
   for (std::vector<std::string>::iterator schedIt = schedulers.begin (); schedIt != schedulers.end (); ++schedIt)
     {
       for (int32_t useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)

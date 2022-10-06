@@ -71,21 +71,15 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
 
   // REAL RRC PROTOCOL
 
-  w.clear ();
-  //                                                x     y    csgMember
-  //                                                checkPoint     cell1, cell2
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.55, false,
-                                                    MilliSeconds (283), 1, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.45, false,
-                                                    MilliSeconds (283), 1, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.45, false,
-                                                    MilliSeconds (363), 1, 3));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.0,  true,
-                                                    MilliSeconds (283), 2, 4));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.55, true,
-                                                    MilliSeconds (283), 3, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true,
-                                                    MilliSeconds (283), 4, 0));
+  w = {
+    // x, y, csgMember, checkPoint, cell1, cell2
+    LteCellSelectionTestCase::UeSetup_t (0.0, 0.55, false, MilliSeconds (283), 1, 0),
+    LteCellSelectionTestCase::UeSetup_t (0.0, 0.45, false, MilliSeconds (283), 1, 0),
+    LteCellSelectionTestCase::UeSetup_t (0.5, 0.45, false, MilliSeconds (363), 1, 3),
+    LteCellSelectionTestCase::UeSetup_t (0.5, 0.0, true, MilliSeconds (283), 2, 4),
+    LteCellSelectionTestCase::UeSetup_t (1.0, 0.55, true, MilliSeconds (283), 3, 0),
+    LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true, MilliSeconds (283), 4, 0),
+  };
 
   AddTestCase (new LteCellSelectionTestCase ("EPC, real RRC",
                                              true, false, 60.0 /* isd */, w),
@@ -93,21 +87,15 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
 
   // IDEAL RRC PROTOCOL
 
-  w.clear ();
-  //                                                x     y    csgMember
-  //                                                checkPoint     cell1, cell2
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.55, false,
-                                                    MilliSeconds (266), 1, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.45, false,
-                                                    MilliSeconds (266), 1, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.45, false,
-                                                    MilliSeconds (346), 1, 3));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.0,  true,
-                                                    MilliSeconds (266), 2, 4));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.55, true,
-                                                    MilliSeconds (266), 3, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true,
-                                                    MilliSeconds (266), 4, 0));
+  w = {
+    // x, y, csgMember, checkPoint, cell1, cell2
+    LteCellSelectionTestCase::UeSetup_t (0.0, 0.55, false, MilliSeconds (266), 1, 0),
+    LteCellSelectionTestCase::UeSetup_t (0.0, 0.45, false, MilliSeconds (266), 1, 0),
+    LteCellSelectionTestCase::UeSetup_t (0.5, 0.45, false, MilliSeconds (346), 1, 3),
+    LteCellSelectionTestCase::UeSetup_t (0.5, 0.0, true, MilliSeconds (266), 2, 4),
+    LteCellSelectionTestCase::UeSetup_t (1.0, 0.55, true, MilliSeconds (266), 3, 0),
+    LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true, MilliSeconds (266), 4, 0),
+  };
 
   AddTestCase (new LteCellSelectionTestCase ("EPC, ideal RRC",
                                              true, true, 60.0 /* isd */, w),

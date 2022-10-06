@@ -199,9 +199,10 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
   uint32_t stop2 = start2 + 26 - 1;
 
   //Build transmit spectrum mask
-  std::vector <WifiSpectrumBand> subBands;
-  subBands.push_back (std::make_pair (start1, stop1));
-  subBands.push_back (std::make_pair (start2, stop2));
+  std::vector <WifiSpectrumBand> subBands {
+    std::make_pair (start1, stop1),
+    std::make_pair (start2, stop2),
+  };
   WifiSpectrumBand maskBand (0, nAllocatedBands + nGuardBands);
   CreateSpectrumMaskForOfdm (c, subBands, maskBand,
                              txPowerPerBandW, nGuardBands,
