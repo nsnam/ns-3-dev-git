@@ -211,13 +211,22 @@ Here is an example making use of both:
 
 6. Use the present tense ("Add feature", not "Added feature") and the imperative mood ("Move cursor to ...", not "Moves cursor to...").
 
-No extraneous white space
-=========================
+Code formatting
+===============
 
-Do not make whitespace changes to unrelated parts of the code (unrelated
-to your merge request).  This can often happen if the `check-style.py`
-program is used on existing files.  Use the automated style correction
-program `check-style.py` only on your *new* source code files.
+|ns3| uses a utility called ``clang-format`` to check and fix formatting
+issues with code.  Please see the chapter on coding
+style to learn more about how to use this tool.  When submitting
+code to the project, it is a good idea to check the formatting on your
+new files and modifications before submission.
+
+Avoid unrelated changes
+=======================
+
+Do not make changes to unrelated parts of the code (unrelated
+to your merge request).  If in the course of your work on a given
+topic, you discover improvements to other things (like documentation
+improvements), please open a separate merge request for separate topics.
 
 Squashing your history
 ======================
