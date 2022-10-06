@@ -593,7 +593,7 @@ LteEnbPhy::StartFrame ()
   m_mib.systemFrameNumber = m_nrSubFrames;
   Ptr<MibLteControlMessage> mibMsg = Create<MibLteControlMessage> ();
   mibMsg->SetMib (m_mib);
-  m_controlMessagesQueue.at (0).push_back (mibMsg);
+  m_controlMessagesQueue.at (0).emplace_back(mibMsg);
 
   StartSubFrame ();
 }
@@ -617,7 +617,7 @@ LteEnbPhy::StartSubFrame ()
     {
       Ptr<Sib1LteControlMessage> msg = Create<Sib1LteControlMessage> ();
       msg->SetSib1 (m_sib1);
-      m_controlMessagesQueue.at (0).push_back (msg);
+      m_controlMessagesQueue.at (0).emplace_back(msg);
     }
 
   if (m_srsPeriodicity > 0)

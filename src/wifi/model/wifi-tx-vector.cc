@@ -606,7 +606,7 @@ WifiTxVector::GetContentChannelAllocation () const
 
    if (m_channelWidth > 20)
    {
-     channelAlloc.push_back ({});
+     channelAlloc.emplace_back();
    }
 
   for (const auto& [staId, userInfo] : m_muUserInfos)

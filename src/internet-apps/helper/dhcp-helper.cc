@@ -182,7 +182,7 @@ ApplicationContainer DhcpHelper::InstallDhcpServer (Ptr<NetDevice> netDevice, Ip
           NS_ABORT_MSG ("DhcpHelper: Fixed address can not conflict with a pool: " << *iter << " is in [" << minAddr << ",  " << maxAddr << "]");
         }
     }
-  m_addressPools.push_back (std::make_pair (minAddr, maxAddr));
+  m_addressPools.emplace_back (minAddr, maxAddr);
 
   Ptr<Application> app = m_serverFactory.Create<DhcpServer> ();
   node->AddApplication (app);

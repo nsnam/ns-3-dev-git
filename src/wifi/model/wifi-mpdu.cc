@@ -157,7 +157,7 @@ WifiMpdu::DoAggregate (Ptr<const WifiMpdu> msdu)
                                                         : msdu->GetHeader ().GetAddr4 ()));
   hdr.SetLength (static_cast<uint16_t> (msdu->GetPacket ()->GetSize ()));
 
-  m_msduList.push_back ({msdu->GetPacket (), hdr});
+  m_msduList.emplace_back(msdu->GetPacket (), hdr);
 
   // build the A-MSDU
   NS_ASSERT (m_packet);

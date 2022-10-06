@@ -280,7 +280,7 @@ SPFVertex::SetRootExitDirection (Ipv4Address nextHop, int32_t id)
 
   // always maintain only one root's exit
   m_ecmpRootExits.clear ();
-  m_ecmpRootExits.push_back (NodeExit_t (nextHop, id));
+  m_ecmpRootExits.emplace_back(nextHop, id);
   // update the following in order to be backward compatitable with
   // GetNextHop and GetOutgoingInterface methods
   m_nextHop = nextHop;

@@ -233,7 +233,7 @@ HwmpRtable::GetPrecursors (Mac48Address destination)
         {
           if (i->whenExpire > Simulator::Now ())
             {
-              retval.push_back (std::make_pair (i->interface, i->address));
+              retval.emplace_back (i->interface, i->address);
             }
         }
     }

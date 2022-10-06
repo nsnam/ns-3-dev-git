@@ -914,7 +914,7 @@ UeManager::SendData (uint8_t bid, Ptr<Packet> p)
       {
         // Buffer data until RRC Connection Reconfiguration Complete message is received
         NS_LOG_LOGIC ("buffering data");
-        m_packetBuffer.push_back (std::make_pair (bid, p));
+        m_packetBuffer.emplace_back (bid, p);
       }
       break;
 

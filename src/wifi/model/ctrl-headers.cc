@@ -408,7 +408,7 @@ CtrlBAckResponseHeader::Deserialize (Buffer::Iterator start)
           std::size_t index = 0;
           while (i.GetRemainingSize () > 0)
             {
-              m_baInfo.push_back (BaInfoInstance ());
+              m_baInfo.emplace_back();
               m_baType.m_bitmapLen.push_back (0);  // updated by next call to SetStartingSequenceControl
 
               m_baInfo.back ().m_aidTidInfo = i.ReadLsbtohU16 ();

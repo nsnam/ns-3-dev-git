@@ -355,8 +355,8 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
       stop1 = start1 + 121 - 1;
       start2 = stop1 + 4;
       stop2 = start2 + 121 - 1;
-      subBands.push_back (std::make_pair (start1, stop1));
-      subBands.push_back (std::make_pair (start2, stop2));
+      subBands.emplace_back (start1, stop1);
+      subBands.emplace_back (start2, stop2);
       break;
     case 40:
       // 484 subcarriers (468 data + 16 pilot)
@@ -368,8 +368,8 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
       stop1 = start1 + 242 - 1;
       start2 = stop1 + 6;
       stop2 = start2 + 242 - 1;
-      subBands.push_back (std::make_pair (start1, stop1));
-      subBands.push_back (std::make_pair (start2, stop2));
+      subBands.emplace_back (start1, stop1);
+      subBands.emplace_back (start2, stop2);
       break;
     case 80:
       // 996 subcarriers (980 data + 16 pilot)
@@ -381,8 +381,8 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
       stop1 = start1 + 498 - 1;
       start2 = stop1 + 6;
       stop2 = start2 + 498 - 1;
-      subBands.push_back (std::make_pair (start1, stop1));
-      subBands.push_back (std::make_pair (start2, stop2));
+      subBands.emplace_back (start1, stop1);
+      subBands.emplace_back (start2, stop2);
       break;
     case 160:
       // 2 x 996 subcarriers (2 x 80 MHZ bands)
@@ -395,10 +395,10 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
       stop3 = start3 + 498 - 1;
       start4 = stop3 + 6;
       stop4 = start4 + 498 - 1;
-      subBands.push_back (std::make_pair (start1, stop1));
-      subBands.push_back (std::make_pair (start2, stop2));
-      subBands.push_back (std::make_pair (start3, stop3));
-      subBands.push_back (std::make_pair (start4, stop4));
+      subBands.emplace_back (start1, stop1);
+      subBands.emplace_back (start2, stop2);
+      subBands.emplace_back (start3, stop3);
+      subBands.emplace_back (start4, stop4);
       break;
     default:
       NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
@@ -415,7 +415,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
   {
     if (puncturedSubchannel)
       {
-        puncturedBands.push_back (std::make_pair (start, stop));
+        puncturedBands.emplace_back (start, stop);
       }
     start = stop + 1;
     stop = start + subcarriersPerSuband - 1;

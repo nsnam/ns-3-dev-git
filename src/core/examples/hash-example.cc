@@ -166,11 +166,11 @@ public:
         // alphabetize
         if ( m_dict[h] < phrase)
           {
-            m_coll.push_back (std::make_pair (h, phrase));
+            m_coll.emplace_back (h, phrase);
           }
         else
           {
-            m_coll.push_back (std::make_pair (h, m_dict[h]));
+            m_coll.emplace_back (h, m_dict[h]);
             m_dict[h] = phrase;
           }
       }

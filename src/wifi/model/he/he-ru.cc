@@ -515,7 +515,7 @@ HeRu::GetRusOfType (uint16_t bw, HeRu::RuType ruType)
     {
       for (std::size_t ruIndex = 1; ruIndex <= HeRu::m_heRuSubcarrierGroups.at ({bw, ruType}).size (); ruIndex++)
         {
-          ret.push_back ({ruType, ruIndex, primary80MHz});
+          ret.emplace_back(ruType, ruIndex, primary80MHz);
         }
     }
   return ret;
@@ -561,7 +561,7 @@ HeRu::GetCentral26TonesRus (uint16_t bw, HeRu::RuType ruType)
     {
       for (const auto& index : indices)
         {
-          ret.push_back ({HeRu::RU_26_TONE, index, primary80MHz});
+          ret.emplace_back(HeRu::RU_26_TONE, index, primary80MHz);
         }
     }
   return ret;

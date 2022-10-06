@@ -239,7 +239,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
                                 {HeRu::RuSpec (), // assigned later by FinalizeTxVector
                                 suTxVector.GetMode (),
                                 suTxVector.GetNss ()});
-      m_candidates.push_back ({staIt, nullptr});
+      m_candidates.emplace_back(staIt, nullptr);
 
       // move to the next station in the list
       staIt++;
@@ -633,7 +633,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu ()
                       // the frame meets the constraints
                       NS_LOG_DEBUG ("Adding candidate STA (MAC=" << staIt->address << ", AID="
                                     << staIt->aid << ") TID=" << +tid);
-                      m_candidates.push_back ({staIt, mpdu});
+                      m_candidates.emplace_back(staIt, mpdu);
                       break;    // terminate the for loop
                     }
                 }

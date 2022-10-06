@@ -228,7 +228,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain (Ptr<SpectrumValue> tx
                                        + (sin (zod [cIndex] * M_PI / 180) * cos (aod [cIndex] * M_PI / 180) * sSpeed.x
                                        + sin (zod [cIndex] * M_PI / 180) * sin (aod [cIndex] * M_PI / 180) * sSpeed.y
                                        + cos (zod [cIndex] * M_PI / 180) * sSpeed.z) + 2 * alpha * D);
-      doppler.push_back (std::complex<double> (cos (tempDoppler), sin (tempDoppler)));
+      doppler.emplace_back(cos (tempDoppler), sin (tempDoppler));
     }
 
   NS_ASSERT (numCluster <= doppler.size());

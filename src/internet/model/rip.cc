@@ -667,7 +667,7 @@ void Rip::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, Ipv4Ad
   route->SetRouteStatus (RipRoutingTableEntry::RIP_VALID);
   route->SetRouteChanged (true);
 
-  m_routes.push_back (std::make_pair (route, EventId ()));
+  m_routes.emplace_back (route, EventId ());
 }
 
 void Rip::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, uint32_t interface)
@@ -679,7 +679,7 @@ void Rip::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, uint32
   route->SetRouteStatus (RipRoutingTableEntry::RIP_VALID);
   route->SetRouteChanged (true);
 
-  m_routes.push_back (std::make_pair (route, EventId ()));
+  m_routes.emplace_back (route, EventId ());
 }
 
 void Rip::InvalidateRoute (RipRoutingTableEntry *route)
@@ -1074,7 +1074,7 @@ void Rip::HandleResponses (RipHeader hdr, Ipv4Address senderAddress, uint32_t in
           route->SetRouteMetric (rteMetric);
           route->SetRouteStatus (RipRoutingTableEntry::RIP_VALID);
           route->SetRouteChanged (true);
-          m_routes.push_front (std::make_pair (route, EventId ()));
+          m_routes.emplace_front (route, EventId ());
           EventId invalidateEvent = Simulator::Schedule (m_timeoutDelay, &Rip::InvalidateRoute, this, route);
           (m_routes.begin ())->second = invalidateEvent;
           changed = true;

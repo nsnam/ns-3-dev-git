@@ -81,7 +81,7 @@ LteRlcTm::DoTransmitPdcpPdu (Ptr<Packet> p)
   if (m_txBufferSize + p->GetSize () <= m_maxTxBufferSize)
     {
       NS_LOG_LOGIC ("Tx Buffer: New packet added");
-      m_txBuffer.push_back (TxPdu (p, Simulator::Now ()));
+      m_txBuffer.emplace_back(p, Simulator::Now ());
       m_txBufferSize += p->GetSize ();
       NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
       NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);

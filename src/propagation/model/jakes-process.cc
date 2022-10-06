@@ -109,7 +109,7 @@ JakesProcess::ConstructOscillators ()
       double psi = m_jakes->GetUniformRandomVariable ()->GetValue ();
       std::complex<double> amplitude = std::complex<double> (std::cos (psi), std::sin (psi)) * 2.0 / std::sqrt (m_nOscillators);
       /// 3. Construct oscillator:
-      m_oscillators.push_back (Oscillator (amplitude, phi, omega));
+      m_oscillators.emplace_back(amplitude, phi, omega);
     }
 }
 

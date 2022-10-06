@@ -210,7 +210,7 @@ void
 IdealWifiManager::AddSnrThreshold (WifiTxVector txVector, double snr)
 {
   NS_LOG_FUNCTION (this << txVector.GetMode ().GetUniqueName () << txVector.GetChannelWidth () << snr);
-  m_thresholds.push_back (std::make_pair (snr, txVector));
+  m_thresholds.emplace_back (snr, txVector);
 }
 
 WifiRemoteStation *

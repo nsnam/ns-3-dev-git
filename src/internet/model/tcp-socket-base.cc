@@ -3174,7 +3174,7 @@ TcpSocketBase::UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
   // update the history of sequence numbers used to calculate the RTT
   if (isRetransmission == false)
     { // This is the next expected one, just log at end
-      m_history.push_back (RttHistory (seq, sz, Simulator::Now ()));
+      m_history.emplace_back(seq, sz, Simulator::Now ());
     }
   else
     { // This is a retransmit, find in list and mark as re-tx

@@ -170,7 +170,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
       p->AddPacketTag (tag);
 
       NS_LOG_LOGIC ("Txon Buffer: New packet added");
-      m_txonBuffer.push_back (TxPdu (p, Simulator::Now ()));
+      m_txonBuffer.emplace_back(p, Simulator::Now ());
       m_txonBufferSize += p->GetSize ();
       NS_LOG_LOGIC ("NumOfBuffers = " << m_txonBuffer.size() );
       NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);

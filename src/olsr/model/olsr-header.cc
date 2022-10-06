@@ -375,7 +375,7 @@ MessageHeader::Mid::Deserialize (Buffer::Iterator start, uint32_t messageSize)
                                   this->interfaceAddresses.end ());
   for (int n = 0; n < numAddresses; ++n)
     {
-      this->interfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+      this->interfaceAddresses.emplace_back(i.ReadNtohU32 ());
     }
   return GetSerializedSize ();
 }
@@ -485,7 +485,7 @@ MessageHeader::Hello::Deserialize (Buffer::Iterator start, uint32_t messageSize)
       NS_ASSERT ((lmSize - 4) % IPV4_ADDRESS_SIZE == 0);
       for (int n = (lmSize - 4) / IPV4_ADDRESS_SIZE; n; --n)
         {
-          lm.neighborInterfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+          lm.neighborInterfaceAddresses.emplace_back(i.ReadNtohU32 ());
         }
       helloSizeLeft -= lmSize;
       this->linkMessages.push_back (lm);
@@ -556,7 +556,7 @@ MessageHeader::Tc::Deserialize (Buffer::Iterator start, uint32_t messageSize)
   this->neighborAddresses.clear ();
   for (int n = 0; n < numAddresses; ++n)
     {
-      this->neighborAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+      this->neighborAddresses.emplace_back(i.ReadNtohU32 ());
     }
 
   return messageSize;

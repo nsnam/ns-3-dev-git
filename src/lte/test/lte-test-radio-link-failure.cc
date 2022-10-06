@@ -54,8 +54,8 @@ LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite ()
   std::vector<Time> checkConnectedList;
   Vector ueJumpAwayPosition;
 
-  uePositionList.push_back (Vector (10, 0, 0));
-  enbPositionList.push_back (Vector (0, 0, 0));
+  uePositionList.emplace_back(10, 0, 0);
+  enbPositionList.emplace_back(0, 0, 0);
   ueJumpAwayPosition = Vector (7000.0, 0.0, 0.0);
   // check before jumping
   checkConnectedList.push_back (Seconds (0.3));
@@ -82,7 +82,7 @@ LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite ()
   // Two eNBs: Ideal RRC PROTOCOL
 
   // We place the second eNB close to the position where the UE will jump
-  enbPositionList.push_back (Vector (7020, 0, 0));
+  enbPositionList.emplace_back(7020, 0, 0);
 
   AddTestCase (new LteRadioLinkFailureTestCase (2, 1, Seconds (2), true,
                                                 uePositionList, enbPositionList,

@@ -517,7 +517,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
                 {
                   m_txOkCallback (*queueIt);
                 }
-              acked.push_back (*queueIt);
+              acked.emplace_back(*queueIt);
               queueIt = HandleInFlightMpdu (queueIt, ACKNOWLEDGED, it, now);
             }
           else

@@ -428,7 +428,7 @@ DsrCacheEntryTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (entry.GetExpireTime (), Seconds (3), "trivial");
   entry.SetDestination (Ipv4Address ("1.1.1.1"));
   NS_TEST_EXPECT_MSG_EQ (entry.GetDestination (), Ipv4Address ("1.1.1.1"), "trivial");
-  ip.push_back (Ipv4Address ("0.0.0.2"));
+  ip.emplace_back("0.0.0.2");
   entry.SetVector (ip);
   NS_TEST_EXPECT_MSG_EQ (entry.GetVector ().size (), 3, "trivial");
 

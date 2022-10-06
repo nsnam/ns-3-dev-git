@@ -1037,7 +1037,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Address address = InetSocketAddress (header.GetSource (), port);
-      m_deliveryQueue.push (std::make_pair (packet, address));
+      m_deliveryQueue.emplace (packet, address);
       m_rxAvailable += packet->GetSize ();
       NotifyDataRecv ();
     }
@@ -1097,7 +1097,7 @@ UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Address address = Inet6SocketAddress (header.GetSource (), port);
-      m_deliveryQueue.push (std::make_pair (packet, address));
+      m_deliveryQueue.emplace (packet, address);
       m_rxAvailable += packet->GetSize ();
       NotifyDataRecv ();
     }

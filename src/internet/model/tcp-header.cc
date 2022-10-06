@@ -404,7 +404,7 @@ TcpHeader::Deserialize (Buffer::Iterator start)
         {
           optionLen -= optionSize;
           i.Next (optionSize);
-          m_options.push_back (op);
+          m_options.emplace_back(op);
           m_optionsLen += optionSize;
         }
       else

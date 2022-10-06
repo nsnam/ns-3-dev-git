@@ -1696,7 +1696,7 @@ EmpiricalRandomVariable::CDF (double v, double c)
   // Add a new empirical datapoint to the empirical cdf
   // NOTE.   These MUST be inserted in non-decreasing order
   NS_LOG_FUNCTION (this << v << c);
-  m_emp.push_back (ValueCDF (v, c));
+  m_emp.emplace_back(v, c);
 }
 
 void

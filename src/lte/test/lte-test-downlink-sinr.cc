@@ -341,7 +341,7 @@ LteDownlinkCtrlSinrTestCase::DoRun ()
         Ptr<DlDciLteControlMessage> msg = Create<DlDciLteControlMessage> ();
         DlDciListElement_s dci;
         msg->SetDci (dci);
-        ctrlMsgList[pb].push_back (msg);
+        ctrlMsgList[pb].emplace_back(msg);
       }
   }
 

@@ -245,7 +245,7 @@ WifiMacQueue::DequeueIfQueued (const std::list<Ptr<const WifiMpdu>>& mpdus)
           auto it = GetIt (mpdu);
           NS_ASSERT (it->ac == m_ac);
           NS_ASSERT (it->mpdu == mpdu);
-          iterators.push_back (it);
+          iterators.emplace_back(it);
         }
     }
 

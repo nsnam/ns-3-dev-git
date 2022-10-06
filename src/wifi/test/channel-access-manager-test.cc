@@ -401,7 +401,7 @@ template <typename TxopType>
 void
 TxopTest<TxopType>::QueueTx (uint64_t txTime, uint64_t expectedGrantTime)
 {
-  m_expectedGrants.push_back (std::make_pair (txTime, expectedGrantTime));
+  m_expectedGrants.emplace_back (txTime, expectedGrantTime);
 }
 
 template <typename TxopType>

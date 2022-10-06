@@ -133,7 +133,7 @@ WifiDefaultAssocManager::EndScanning ()
   auto& setupLinks = GetSetupLinks (bestAp);
 
   setupLinks.clear ();
-  setupLinks.push_back ({bestAp.m_linkId, mle->get ().GetLinkIdInfo ()});
+  setupLinks.emplace_back(bestAp.m_linkId, mle->get ().GetLinkIdInfo ());
 
   // sort local PHY objects so that radios with constrained PHY band comes first,
   // then radios with no constraint
@@ -201,7 +201,7 @@ WifiDefaultAssocManager::EndScanning ()
           // store AP MLD MAC address in the WifiRemoteStationManager associated with
           // the link requested to setup
           m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->get ().GetMldMacAddress ());
-          setupLinks.push_back ({linkId, rnr->get ().GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId)});
+          setupLinks.emplace_back(linkId, rnr->get ().GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId));
 
           if (needChannelSwitch)
             {

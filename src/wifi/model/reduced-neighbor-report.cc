@@ -45,7 +45,7 @@ ReducedNeighborReport::GetNNbrApInfoFields () const
 void
 ReducedNeighborReport::AddNbrApInfoField ()
 {
-  m_nbrApInfoFields.push_back (NeighborApInformation ());
+  m_nbrApInfoFields.emplace_back();
 }
 
 void
@@ -349,7 +349,7 @@ void
 ReducedNeighborReport::AddTbttInformationField (std::size_t nbrApInfoId)
 {
   NS_ASSERT (nbrApInfoId < m_nbrApInfoFields.size ());
-  m_nbrApInfoFields.at (nbrApInfoId).tbttInformationSet.push_back (TbttInformation ());
+  m_nbrApInfoFields.at (nbrApInfoId).tbttInformationSet.emplace_back();
 }
 
 void

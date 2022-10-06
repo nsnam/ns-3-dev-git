@@ -342,7 +342,7 @@ UanPdp::NormalizeToSumNc () const
 
   for (uint32_t i = 0; i < GetNTaps (); i++)
     {
-      newTaps.push_back ( Tap (m_taps[i].GetDelay (), (m_taps[i].GetAmp () / sumNc)));
+      newTaps.emplace_back(m_taps[i].GetDelay (), (m_taps[i].GetAmp () / sumNc));
     }
 
   return UanPdp (newTaps, m_resolution);

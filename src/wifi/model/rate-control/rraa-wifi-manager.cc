@@ -181,7 +181,7 @@ void
 RraaWifiManager::AddCalcTxTime (WifiMode mode, Time t)
 {
   NS_LOG_FUNCTION (this << mode << t);
-  m_calcTxTime.push_back (std::make_pair (t, mode));
+  m_calcTxTime.emplace_back (t, mode);
 }
 
 WifiRraaThresholds
@@ -267,7 +267,7 @@ RraaWifiManager::InitThresholds (RraaWifiRemoteStation *station)
       th.m_ewnd = static_cast<uint32_t> (ceil (m_tau / totalTxTime.GetSeconds ()));
       th.m_ori = ori;
       th.m_mtl = mtl;
-      station->m_thresholds.push_back (std::make_pair (th, mode));
+      station->m_thresholds.emplace_back (th, mode);
       mtl = nextMtl;
       NS_LOG_DEBUG (mode << " " << th.m_ewnd << " " << th.m_mtl << " " << th.m_ori);
     }

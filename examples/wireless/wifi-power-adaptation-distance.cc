@@ -258,7 +258,7 @@ NodeStatistics::SetupPhy (Ptr<WifiPhy> phy)
       DataRate dataRate = DataRate (mode.GetDataRate (phy->GetChannelWidth ()));
       Time time = phy->CalculateTxDuration (packetSize, txVector, phy->GetPhyBand ());
       NS_LOG_DEBUG (mode.GetUniqueName () << " " << time.GetSeconds () << " " << dataRate);
-      m_timeTable.push_back (std::make_pair (time, dataRate));
+      m_timeTable.emplace_back (time, dataRate);
     }
 }
 

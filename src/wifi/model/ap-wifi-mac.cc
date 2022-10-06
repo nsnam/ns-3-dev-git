@@ -1018,7 +1018,7 @@ ApWifiMac::SetAid (MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_
           if (perStaProfile.HasAssocResponse ()
               && perStaProfile.GetAssocResponse ().GetStatusCode ().IsSuccess ())
             {
-              assocResponses.push_back (perStaProfile.GetAssocResponse ());
+              assocResponses.emplace_back(perStaProfile.GetAssocResponse ());
               uint8_t otherLinkId = perStaProfile.GetLinkId ();
               auto staAddress = GetWifiRemoteStationManager (otherLinkId)->GetAffiliatedStaAddress (*staMldAddress);
               NS_ABORT_MSG_IF (!staAddress.has_value (),

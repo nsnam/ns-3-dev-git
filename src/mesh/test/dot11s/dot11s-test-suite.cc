@@ -140,9 +140,9 @@ HwmpRtableTest::HwmpRtableTest () :
   seqnum (1),
   expire (Seconds (10))
 {
-  precursors.push_back (Mac48Address ("00:10:20:30:40:50"));
-  precursors.push_back (Mac48Address ("00:11:22:33:44:55"));
-  precursors.push_back (Mac48Address ("00:01:02:03:04:05"));
+  precursors.emplace_back("00:10:20:30:40:50");
+  precursors.emplace_back("00:11:22:33:44:55");
+  precursors.emplace_back("00:01:02:03:04:05");
 }
 
 void

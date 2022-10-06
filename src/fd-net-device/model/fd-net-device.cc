@@ -321,7 +321,7 @@ FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
       }
     else
       {
-        m_pendingQueue.push (std::make_pair (buf, len));
+        m_pendingQueue.emplace (buf, len);
       }
   }
 

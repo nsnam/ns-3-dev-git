@@ -218,7 +218,7 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues (IndexPowerVect &vect,
       double val = start.second + slope * (i - start.first);
       double multiplier = std::round (std::pow (10.0, static_cast<double> (m_precision)));
       val = std::floor (val * multiplier + 0.5) / multiplier;
-      vect.push_back (std::make_pair (i, val));
+      vect.emplace_back (i, val);
       NS_LOG_LOGIC ("Append (" << i << ", " << val << ")");
     }
 

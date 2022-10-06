@@ -208,7 +208,7 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
         }
 
       Ipv6Address solicited = Ipv6Address::MakeSolicitedAddress (iface.GetAddress ());
-      m_addresses.push_back (std::make_pair (iface, solicited));
+      m_addresses.emplace_back (iface, solicited);
       if (!m_addAddressCallback.IsNull ())
         {
           m_addAddressCallback(this, addr);

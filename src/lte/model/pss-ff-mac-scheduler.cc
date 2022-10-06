@@ -1002,7 +1002,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                 }
               if (cqiSum != 0)
                 {
-                  ueSet1.push_back(std::pair<double, uint16_t> (metric, (*it).first));
+                  ueSet1.emplace_back(metric, (*it).first);
                 }
             }
           else
@@ -1042,7 +1042,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
                       metric = achievableRate / (*it).second.lastAveragedThroughput;
                    }
-                  ueSet2.push_back(std::pair<double, uint16_t> (metric, (*it).first));
+                  ueSet2.emplace_back(metric, (*it).first);
                 } // end of wbCqi
             }
         }// end of ueSet

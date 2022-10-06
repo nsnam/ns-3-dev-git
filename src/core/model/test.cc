@@ -384,8 +384,8 @@ TestCase::ReportTestFailure (std::string cond, std::string actual,
                              std::string file, int32_t line)
 {
   NS_LOG_FUNCTION (this << cond << actual << limit << message << file << line);
-  m_result->failure.push_back (TestCaseFailure (cond, actual, limit,
-                                                message, file, line));
+  m_result->failure.emplace_back(cond, actual, limit,
+                                                message, file, line);
   // set childrenFailed flag on parents.
   TestCase *current = m_parent;
   while (current != nullptr)

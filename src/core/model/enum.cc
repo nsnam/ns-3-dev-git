@@ -90,13 +90,13 @@ void
 EnumChecker::AddDefault (int value, std::string name)
 {
   NS_LOG_FUNCTION (this << value << name);
-  m_valueSet.push_front (std::make_pair (value, name));
+  m_valueSet.emplace_front (value, name);
 }
 void
 EnumChecker::Add (int value, std::string name)
 {
   NS_LOG_FUNCTION (this << value << name);
-  m_valueSet.push_back (std::make_pair (value, name));
+  m_valueSet.emplace_back (value, name);
 }
 std::string
 EnumChecker::GetName (int value) const

@@ -289,7 +289,7 @@ UanMacRc::Enqueue (Ptr<Packet> packet, uint16_t protocolNumber, const Address &d
       return false;
     }
 
-  m_pktQueue.push_back (std::make_pair (packet, Mac8Address::ConvertFrom (dest)));
+  m_pktQueue.emplace_back (packet, Mac8Address::ConvertFrom (dest));
 
   switch (m_state)
     {

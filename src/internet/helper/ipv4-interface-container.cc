@@ -73,7 +73,7 @@ Ipv4InterfaceContainer::SetMetric (uint32_t i, uint16_t metric)
 void
 Ipv4InterfaceContainer::Add (Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  m_interfaces.push_back (std::make_pair (ipv4, interface));
+  m_interfaces.emplace_back (ipv4, interface);
 }
 void Ipv4InterfaceContainer::Add (std::pair<Ptr<Ipv4>, uint32_t> a)
 {
@@ -83,7 +83,7 @@ void
 Ipv4InterfaceContainer::Add (std::string ipv4Name, uint32_t interface)
 {
   Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);
-  m_interfaces.push_back (std::make_pair (ipv4, interface));
+  m_interfaces.emplace_back (ipv4, interface);
 }
 
 std::pair<Ptr<Ipv4>, uint32_t>

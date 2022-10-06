@@ -601,7 +601,7 @@ MultiLinkElement::AddPerStaProfileSubelement ()
   auto variant = GetVariant ();
   NS_ABORT_IF (variant == UNSET);
   NS_ABORT_IF (m_frameType == WIFI_MAC_DATA);
-  m_perStaProfileSubelements.push_back (PerStaProfileSubelement (variant, m_frameType));
+  m_perStaProfileSubelements.emplace_back(variant, m_frameType);
 }
 
 std::size_t

@@ -313,7 +313,7 @@ StaticInformation::RecordAggregationInfo (std::string a, std::string b)
       return;
     }
 
-  m_aggregates.push_back (std::make_pair (aTid, bTid));
+  m_aggregates.emplace_back (aTid, bTid);
 }
 
 
@@ -345,7 +345,7 @@ void
 StaticInformation::RecordOutput (TypeId tid)
 {
   NS_LOG_FUNCTION (this << tid);
-  m_output.push_back (std::make_pair (tid, GetCurrentPath ()));
+  m_output.emplace_back (tid, GetCurrentPath ());
 }
 
 

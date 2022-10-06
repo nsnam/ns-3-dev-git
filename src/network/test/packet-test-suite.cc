@@ -471,7 +471,7 @@ PacketTest::DoCheck (Ptr<const Packet> p, uint32_t n, ...)
       uint32_t N = va_arg (ap, uint32_t);
       uint32_t start = va_arg (ap, uint32_t);
       uint32_t end = va_arg (ap, uint32_t);
-      expected.push_back (Expected (N, start, end));
+      expected.emplace_back(N, start, end);
     }
   va_end (ap);
 
@@ -509,7 +509,7 @@ PacketTest::DoCheckData (Ptr<const Packet> p, uint32_t n, ...)
       uint32_t start = va_arg (ap, uint32_t);
       uint32_t end = va_arg (ap, uint32_t);
       int data = va_arg (ap, int);
-      expected.push_back (Expected (N, start, end, data));
+      expected.emplace_back(N, start, end, data);
     }
   va_end (ap);
 

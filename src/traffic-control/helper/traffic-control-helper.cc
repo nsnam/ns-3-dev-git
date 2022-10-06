@@ -131,7 +131,7 @@ TrafficControlHelper::DoSetRootQueueDisc (ObjectFactory factory)
 {
   NS_ABORT_MSG_UNLESS (m_queueDiscFactory.empty (), "A root queue disc has been already added to this factory");
 
-  m_queueDiscFactory.push_back (QueueDiscFactory (factory));
+  m_queueDiscFactory.emplace_back(factory);
   return 0;
 }
 
@@ -180,7 +180,7 @@ TrafficControlHelper::DoAddChildQueueDisc (uint16_t handle, uint16_t classId, Ob
                    << handle << " does not exist");
 
   uint16_t childHandle = static_cast<uint16_t>(m_queueDiscFactory.size ());
-  m_queueDiscFactory.push_back (QueueDiscFactory (factory));
+  m_queueDiscFactory.emplace_back(factory);
   m_queueDiscFactory[handle].SetChildQueueDisc (classId, childHandle);
 
   return childHandle;

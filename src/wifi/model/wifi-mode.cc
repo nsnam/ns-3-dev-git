@@ -382,7 +382,7 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
       j++;
     }
   uint32_t uid = static_cast<uint32_t> (m_itemList.size ());
-  m_itemList.push_back (WifiModeItem ());
+  m_itemList.emplace_back();
   return uid;
 }
 

@@ -257,9 +257,8 @@ ThreadedSimulatorEventsTestCase::DoRun ()
 
   for (unsigned int i = 0; i < m_threads; ++i)
     {
-      m_threadlist.push_back (
-        std::thread (&ThreadedSimulatorEventsTestCase::SchedulingThread,
-                     std::pair<ThreadedSimulatorEventsTestCase *, unsigned int> (this,i) ));
+      m_threadlist.emplace_back(&ThreadedSimulatorEventsTestCase::SchedulingThread,
+                     std::pair<ThreadedSimulatorEventsTestCase *, unsigned int> (this,i) );
     }
 
   Simulator::Run ();

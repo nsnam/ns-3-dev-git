@@ -76,7 +76,7 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
   if (!LookupRoute (route, metric))
     {
       Ipv4RoutingTableEntry *routePtr = new Ipv4RoutingTableEntry (route);
-      m_networkRoutes.push_back (make_pair (routePtr, metric));
+      m_networkRoutes.emplace_back (routePtr, metric);
     }
 }
 
@@ -95,7 +95,7 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
     {
       Ipv4RoutingTableEntry *routePtr = new Ipv4RoutingTableEntry (route);
 
-      m_networkRoutes.push_back (make_pair (routePtr, metric));
+      m_networkRoutes.emplace_back (routePtr, metric);
     }
 }
 
@@ -153,7 +153,7 @@ Ipv4StaticRouting::SetDefaultMulticastRoute (uint32_t outputInterface)
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
                                                         networkMask,
                                                         outputInterface);
-  m_networkRoutes.push_back (make_pair (route,0));
+  m_networkRoutes.emplace_back (route,0);
 }
 
 uint32_t

@@ -649,7 +649,7 @@ void RipNg::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ip
   route->SetRouteStatus (RipNgRoutingTableEntry::RIPNG_VALID);
   route->SetRouteChanged (true);
 
-  m_routes.push_back (std::make_pair (route, EventId ()));
+  m_routes.emplace_back (route, EventId ());
 }
 
 void RipNg::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface)
@@ -661,7 +661,7 @@ void RipNg::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, ui
   route->SetRouteStatus (RipNgRoutingTableEntry::RIPNG_VALID);
   route->SetRouteChanged (true);
 
-  m_routes.push_back (std::make_pair (route, EventId ()));
+  m_routes.emplace_back (route, EventId ());
 }
 
 void RipNg::InvalidateRoute (RipNgRoutingTableEntry *route)
@@ -1064,7 +1064,7 @@ void RipNg::HandleResponses (RipNgHeader hdr, Ipv6Address senderAddress, uint32_
           route->SetRouteMetric (rteMetric);
           route->SetRouteStatus (RipNgRoutingTableEntry::RIPNG_VALID);
           route->SetRouteChanged (true);
-          m_routes.push_front (std::make_pair (route, EventId ()));
+          m_routes.emplace_front (route, EventId ());
           EventId invalidateEvent = Simulator::Schedule (m_timeoutDelay, &RipNg::InvalidateRoute, this, route);
           (m_routes.begin ())->second = invalidateEvent;
           changed = true;

@@ -1004,7 +1004,7 @@ LteUePhy::DoSendRachPreamble (uint32_t raPreambleId, uint32_t raRnti)
   msg->SetRapId (raPreambleId);
   m_raPreambleId = raPreambleId;
   m_raRnti = raRnti;
-  m_controlMessagesQueue.at (0).push_back (msg);
+  m_controlMessagesQueue.at (0).emplace_back(msg);
 }
 
 void

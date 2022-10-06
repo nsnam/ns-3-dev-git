@@ -88,8 +88,8 @@ OlsrMidTestCase::DoRun ()
     {
       std::vector<Ipv4Address> &addresses = mid1.interfaceAddresses;
       addresses.clear ();
-      addresses.push_back (Ipv4Address ("1.2.3.4"));
-      addresses.push_back (Ipv4Address ("1.2.3.5"));
+      addresses.emplace_back("1.2.3.4");
+      addresses.emplace_back("1.2.3.5");
     }
 
     msg1.SetTimeToLive (255);
@@ -101,8 +101,8 @@ OlsrMidTestCase::DoRun ()
     {
       std::vector<Ipv4Address> &addresses = mid2.interfaceAddresses;
       addresses.clear ();
-      addresses.push_back (Ipv4Address ("2.2.3.4"));
-      addresses.push_back (Ipv4Address ("2.2.3.5"));
+      addresses.emplace_back("2.2.3.4");
+      addresses.emplace_back("2.2.3.5");
     }
 
     msg2.SetTimeToLive (254);
@@ -198,14 +198,14 @@ OlsrHelloTestCase::DoRun ()
   {
     olsr::MessageHeader::Hello::LinkMessage lm1;
     lm1.linkCode = 2;
-    lm1.neighborInterfaceAddresses.push_back (Ipv4Address ("1.2.3.4"));
-    lm1.neighborInterfaceAddresses.push_back (Ipv4Address ("1.2.3.5"));
+    lm1.neighborInterfaceAddresses.emplace_back("1.2.3.4");
+    lm1.neighborInterfaceAddresses.emplace_back("1.2.3.5");
     helloIn.linkMessages.push_back (lm1);
 
     olsr::MessageHeader::Hello::LinkMessage lm2;
     lm2.linkCode = 3;
-    lm2.neighborInterfaceAddresses.push_back (Ipv4Address ("2.2.3.4"));
-    lm2.neighborInterfaceAddresses.push_back (Ipv4Address ("2.2.3.5"));
+    lm2.neighborInterfaceAddresses.emplace_back("2.2.3.4");
+    lm2.neighborInterfaceAddresses.emplace_back("2.2.3.5");
     helloIn.linkMessages.push_back (lm2);
   }
 
@@ -260,8 +260,8 @@ OlsrTcTestCase::DoRun ()
   olsr::MessageHeader::Tc &tcIn = msgIn.GetTc ();
 
   tcIn.ansn = 0x1234;
-  tcIn.neighborAddresses.push_back (Ipv4Address ("1.2.3.4"));
-  tcIn.neighborAddresses.push_back (Ipv4Address ("1.2.3.5"));
+  tcIn.neighborAddresses.emplace_back("1.2.3.4");
+  tcIn.neighborAddresses.emplace_back("1.2.3.5");
   packet.AddHeader (msgIn);
 
   olsr::MessageHeader msgOut;

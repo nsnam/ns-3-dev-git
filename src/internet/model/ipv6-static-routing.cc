@@ -162,7 +162,7 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
   if (!LookupRoute (route, metric))
     {
       Ipv6RoutingTableEntry* routePtr = new Ipv6RoutingTableEntry (route);
-      m_networkRoutes.push_back (std::make_pair (routePtr, metric));
+      m_networkRoutes.emplace_back (routePtr, metric);
     }
 }
 
@@ -178,7 +178,7 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
   if (!LookupRoute (route, metric))
     {
       Ipv6RoutingTableEntry* routePtr = new Ipv6RoutingTableEntry (route);
-      m_networkRoutes.push_back (std::make_pair (routePtr, metric));
+      m_networkRoutes.emplace_back (routePtr, metric);
     }
 }
 
@@ -190,7 +190,7 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
   if (!LookupRoute (route, metric))
     {
       Ipv6RoutingTableEntry* routePtr = new Ipv6RoutingTableEntry (route);
-      m_networkRoutes.push_back (std::make_pair (routePtr, metric));
+      m_networkRoutes.emplace_back (routePtr, metric);
     }
 }
 
@@ -215,7 +215,7 @@ void Ipv6StaticRouting::SetDefaultMulticastRoute (uint32_t outputInterface)
   Ipv6Address network = Ipv6Address ("ff00::"); /* RFC 3513 */
   Ipv6Prefix networkMask = Ipv6Prefix (8);
   *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkMask, outputInterface);
-  m_networkRoutes.push_back (std::make_pair (route, 0));
+  m_networkRoutes.emplace_back (route, 0);
 }
 
 uint32_t Ipv6StaticRouting::GetNMulticastRoutes () const

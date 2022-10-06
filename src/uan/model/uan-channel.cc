@@ -140,7 +140,7 @@ void
 UanChannel::AddDevice (Ptr<UanNetDevice> dev, Ptr<UanTransducer> trans)
 {
   NS_LOG_DEBUG ("Adding dev/trans pair number " << m_devList.size ());
-  m_devList.push_back (std::make_pair (dev, trans));
+  m_devList.emplace_back (dev, trans);
 }
 
 void

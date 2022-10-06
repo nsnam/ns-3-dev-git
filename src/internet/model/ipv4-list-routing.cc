@@ -253,7 +253,7 @@ void
 Ipv4ListRouting::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, int16_t priority)
 {
   NS_LOG_FUNCTION (this << routingProtocol->GetInstanceTypeId () << priority);
-  m_routingProtocols.push_back (std::make_pair (priority, routingProtocol));
+  m_routingProtocols.emplace_back (priority, routingProtocol);
   m_routingProtocols.sort ( Compare );
   if (m_ipv4)
     {
