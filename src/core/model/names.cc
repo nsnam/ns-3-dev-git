@@ -338,7 +338,7 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
       // This must be a name that has the "/Names" namespace prefix omitted.
       // Do some reasonableness checking on the rest of the name.
       //
-      offset = name.find ("/");
+      offset = name.find ('/');
       if (offset == 0)
         {
           NS_ASSERT_MSG (false, "NamesPriv::Add(): Name begins with '/' but not \"/Names\"");
@@ -355,7 +355,7 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
   // separates the path from the final segment had better be there since
   // we just made sure that at least the namespace name was there.
   //
-  std::string::size_type i = name.rfind ("/");
+  std::string::size_type i = name.rfind ('/');
   NS_ASSERT_MSG (i != std::string::npos, "NamesPriv::Add(): Internal error.  Can't find '/' in name");
 
   //
@@ -448,7 +448,7 @@ NamesPriv::Rename (std::string oldpath, std::string newname)
       // This must be a name that has the "/Names" namespace prefix omitted.
       // Do some reasonableness checking on the rest of the name.
       //
-      offset = oldpath.find ("/");
+      offset = oldpath.find ('/');
       if (offset == 0)
         {
           NS_ASSERT_MSG (false, "NamesPriv::Add(): Name begins with '/' but not \"/Names\"");
@@ -465,7 +465,7 @@ NamesPriv::Rename (std::string oldpath, std::string newname)
   // separates the path from the final segment (name) had better be there since
   // we just made sure that at least the namespace name was there.
   //
-  std::string::size_type i = oldpath.rfind ("/");
+  std::string::size_type i = oldpath.rfind ('/');
   NS_ASSERT_MSG (i != std::string::npos, "NamesPriv::Add(): Internal error.  Can't find '/' in name");
 
   //
@@ -633,7 +633,7 @@ NamesPriv::Find (std::string path)
   for (;;)
     {
       NS_LOG_LOGIC ("Looking for the object of name " << remaining);
-      offset = remaining.find ("/");
+      offset = remaining.find ('/');
       if (offset == std::string::npos)
         {
           //
@@ -658,7 +658,7 @@ NamesPriv::Find (std::string path)
           // There are more slashes so this is an intermediate segment of the
           // specified name.  We need to "recurse" when we find this segment.
           //
-          offset = remaining.find ("/");
+          offset = remaining.find ('/');
           std::string segment = remaining.substr (0, offset);
 
           std::map<std::string, NameNode *>::iterator i = node->m_nameMap.find (segment);

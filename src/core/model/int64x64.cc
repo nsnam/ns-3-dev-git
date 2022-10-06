@@ -227,10 +227,10 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
   bool negative;
   // skip heading spaces
   std::string::size_type cur;
-  cur = str.find_first_not_of (" ");
+  cur = str.find_first_not_of (' ');
   std::string::size_type next;
   // first, remove the sign.
-  next = str.find ("-", cur);
+  next = str.find ('-', cur);
   if (next != std::string::npos)
     {
       negative = true;
@@ -238,7 +238,7 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
     }
   else
     {
-      next = str.find ("+", cur);
+      next = str.find ('+', cur);
       if (next != std::string::npos)
         {
           next++;
@@ -252,7 +252,7 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
   cur = next;
   int64_t hi;
   uint64_t lo;
-  next = str.find (".", cur);
+  next = str.find ('.', cur);
   if (next != std::string::npos)
     {
       hi = ReadHiDigits (str.substr (cur, next - cur));

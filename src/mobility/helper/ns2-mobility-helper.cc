@@ -629,8 +629,8 @@ HasNodeIdNumber (std::string str)
 {
 
   // find brackets
-  std::string::size_type startNodeId = str.find_first_of ("("); // index of left bracket
-  std::string::size_type endNodeId   = str.find_first_of (")"); // index of right bracket
+  std::string::size_type startNodeId = str.find_first_of ('('); // index of left bracket
+  std::string::size_type endNodeId   = str.find_first_of (')'); // index of right bracket
 
   // Get de nodeId in a string and in a int value
   std::string nodeId;     // node id
@@ -644,7 +644,7 @@ HasNodeIdNumber (std::string str)
   nodeId = str.substr (startNodeId + 1, endNodeId - (startNodeId + 1)); // set node id
 
   //   is number              is integer                                       is not negative
-  if (IsNumber (nodeId) && (nodeId.find_first_of (".") == std::string::npos) && (nodeId[0] != '-'))
+  if (IsNumber (nodeId) && (nodeId.find_first_of ('.') == std::string::npos) && (nodeId[0] != '-'))
     {
       return true;
     }
@@ -661,8 +661,8 @@ GetNodeIdFromToken (std::string str)
   if (HasNodeIdNumber (str))
     {
       // find brackets
-      std::string::size_type startNodeId = str.find_first_of ("(");     // index of left bracket
-      std::string::size_type endNodeId   = str.find_first_of (")");     // index of right bracket
+      std::string::size_type startNodeId = str.find_first_of ('(');     // index of left bracket
+      std::string::size_type endNodeId   = str.find_first_of (')');     // index of right bracket
 
       return str.substr (startNodeId + 1, endNodeId - (startNodeId + 1)); // set node id
     }

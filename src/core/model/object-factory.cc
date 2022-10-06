@@ -123,8 +123,8 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
   is >> v;
   std::string::size_type lbracket;
   std::string::size_type rbracket;
-  lbracket = v.find ("[");
-  rbracket = v.find ("]");
+  lbracket = v.find ('[');
+  rbracket = v.find (']');
   if (lbracket == std::string::npos && rbracket == std::string::npos)
     {
       factory.SetTypeId (v);
@@ -143,7 +143,7 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
   cur = 0;
   while (cur != parameters.size ())
     {
-      std::string::size_type equal = parameters.find ("=", cur);
+      std::string::size_type equal = parameters.find ('=', cur);
       if (equal == std::string::npos)
         {
           is.setstate (std::ios_base::failbit);
@@ -160,7 +160,7 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
             }
           else
             {
-              std::string::size_type next = parameters.find ("|", cur);
+              std::string::size_type next = parameters.find ('|', cur);
               std::string value;
               if (next == std::string::npos)
                 {

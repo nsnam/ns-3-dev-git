@@ -230,7 +230,7 @@ ArrayMatcher::Matches (std::size_t i) const
       return true;
     }
   std::string::size_type tmp;
-  tmp = m_element.find ("|");
+  tmp = m_element.find ('|');
   if (tmp != std::string::npos)
     {
       std::string left = m_element.substr (0, tmp - 0);
@@ -250,9 +250,9 @@ ArrayMatcher::Matches (std::size_t i) const
       NS_LOG_DEBUG ("Array " << i << " does not match " << m_element);
       return false;
     }
-  std::string::size_type leftBracket = m_element.find ("[");
-  std::string::size_type rightBracket = m_element.find ("]");
-  std::string::size_type dash = m_element.find ("-");
+  std::string::size_type leftBracket = m_element.find ('[');
+  std::string::size_type rightBracket = m_element.find (']');
+  std::string::size_type dash = m_element.find ('-');
   if (leftBracket == 0 && rightBracket == m_element.size () - 1
       && dash > leftBracket && dash < rightBracket)
     {
@@ -380,13 +380,13 @@ Resolver::Canonicalize ()
   NS_LOG_FUNCTION (this);
 
   // ensure that we start and end with a '/'
-  std::string::size_type tmp = m_path.find ("/");
+  std::string::size_type tmp = m_path.find ('/');
   if (tmp != 0)
     {
       // no slash at start
       m_path = "/" + m_path;
     }
-  tmp = m_path.find_last_of ("/");
+  tmp = m_path.find_last_of ('/');
   if (tmp != (m_path.size () - 1))
     {
       // no slash at end
@@ -428,8 +428,8 @@ void
 Resolver::DoResolve (std::string path, Ptr<Object> root)
 {
   NS_LOG_FUNCTION (this << path << root);
-  NS_ASSERT ((path.find ("/")) == 0);
-  std::string::size_type next = path.find ("/", 1);
+  NS_ASSERT ((path.find ('/')) == 0);
+  std::string::size_type next = path.find ('/', 1);
 
   if (next == std::string::npos)
     {
@@ -496,7 +496,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
     {
       return;
     }
-  std::string::size_type dollarPos = item.find ("$");
+  std::string::size_type dollarPos = item.find ('$');
   if (dollarPos == 0)
     {
       // This is a call to GetObject
@@ -586,8 +586,8 @@ Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &conta
 {
   NS_LOG_FUNCTION (this << path << &container);
   NS_ASSERT (path != "");
-  NS_ASSERT ((path.find ("/")) == 0);
-  std::string::size_type next = path.find ("/", 1);
+  NS_ASSERT ((path.find ('/')) == 0);
+  std::string::size_type next = path.find ('/', 1);
   if (next == std::string::npos)
     {
       return;
@@ -667,7 +667,7 @@ ConfigImpl::ParsePath (std::string path, std::string *root, std::string *leaf) c
 {
   NS_LOG_FUNCTION (this << path << root << leaf);
 
-  std::string::size_type slash = path.find_last_of ("/");
+  std::string::size_type slash = path.find_last_of ('/');
   NS_ASSERT (slash != std::string::npos);
   *root = path.substr (0, slash);
   *leaf = path.substr (slash + 1, path.size () - (slash + 1));
@@ -716,7 +716,7 @@ ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
   MatchContainer container = LookupMatches (root);
   if (container.GetN () == 0)
     {
-      std::size_t lastFwdSlash = root.rfind ("/");
+      std::size_t lastFwdSlash = root.rfind ('/');
       NS_LOG_WARN ("Failed to disconnect " << leaf
                                            << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
                                            << " does not exits on path " << root.substr (0, lastFwdSlash));
@@ -745,7 +745,7 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
   MatchContainer container = LookupMatches (root);
   if (container.GetN () == 0)
     {
-      std::size_t lastFwdSlash = root.rfind ("/");
+      std::size_t lastFwdSlash = root.rfind ('/');
       NS_LOG_WARN ("Failed to disconnect " << leaf
                                            << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
                                            << " does not exits on path " << root.substr (0, lastFwdSlash));

@@ -91,7 +91,7 @@ PrintList::PrintList ()
   std::string::size_type next = 0;
   while (next != std::string::npos)
     {
-      next = env.find_first_of (":", cur);
+      next = env.find_first_of (':', cur);
       std::string tmp = std::string (env, cur, next - cur);
       if (tmp == "print-list")
         {
@@ -155,9 +155,9 @@ LogComponent::EnvVarCheck ()
   std::string::size_type next = 0;
   while (next != std::string::npos)
     {
-      next = env.find_first_of (":", cur);
+      next = env.find_first_of (':', cur);
       std::string tmp = std::string (env, cur, next - cur);
-      std::string::size_type equal = tmp.find ("=");
+      std::string::size_type equal = tmp.find ('=');
       std::string component;
       if (equal == std::string::npos)
         {
@@ -181,7 +181,7 @@ LogComponent::EnvVarCheck ()
               do
                 {
                   cur_lev = next_lev + 1;
-                  next_lev = tmp.find ("|", cur_lev);
+                  next_lev = tmp.find ('|', cur_lev);
                   std::string lev = tmp.substr (cur_lev, next_lev - cur_lev);
                   if (lev == "error")
                     {
@@ -539,9 +539,9 @@ static void CheckEnvironmentVariables ()
 
   while (next != std::string::npos)
     {
-      next = env.find_first_of (":", cur);
+      next = env.find_first_of (':', cur);
       std::string tmp = std::string (env, cur, next - cur);
-      std::string::size_type equal = tmp.find ("=");
+      std::string::size_type equal = tmp.find ('=');
       std::string component;
       if (equal == std::string::npos)
         {
@@ -568,7 +568,7 @@ static void CheckEnvironmentVariables ()
               do
                 {
                   cur_lev = next_lev + 1;
-                  next_lev = tmp.find ("|", cur_lev);
+                  next_lev = tmp.find ('|', cur_lev);
                   std::string lev = tmp.substr (cur_lev, next_lev - cur_lev);
                   if (lev == "error"
                       || lev == "warn"

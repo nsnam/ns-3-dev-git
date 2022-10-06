@@ -208,8 +208,8 @@ std::string
 RawTextConfigLoad::Strip (std::string value)
 {
   NS_LOG_FUNCTION (this << value);
-  std::string::size_type start = value.find ("\"");
-  std::string::size_type end = value.find ("\"", 1);
+  std::string::size_type start = value.find ('\"');
+  std::string::size_type end = value.find ('\"', 1);
   NS_ABORT_MSG_IF (start != 0, "Ill-formed attribute value: " << value);
   NS_ABORT_MSG_IF (end != value.size () - 1, "Ill-formed attribute value: " << value);
   return value.substr (start+1, end-start-1);

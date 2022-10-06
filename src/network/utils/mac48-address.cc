@@ -289,7 +289,7 @@ std::istream& operator>> (std::istream& is, Mac48Address & address)
     {
       std::string tmp;
       std::string::size_type next;
-      next = v.find (":", col);
+      next = v.find (':', col);
       if (next == std::string::npos)
         {
           tmp = v.substr (col, v.size ()-col);

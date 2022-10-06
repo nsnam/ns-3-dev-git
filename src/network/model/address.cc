@@ -254,8 +254,8 @@ std::istream& operator>> (std::istream& is, Address & address)
   is >> v;
   std::string::size_type firstDash;
   std::string::size_type secondDash;
-  firstDash = v.find ("-");
-  secondDash = v.find ("-", firstDash+1);
+  firstDash = v.find ('-');
+  secondDash = v.find ('-', firstDash+1);
   std::string type = v.substr (0, firstDash-0);
   std::string len = v.substr (firstDash+1, secondDash-(firstDash+1));
 
@@ -268,7 +268,7 @@ std::istream& operator>> (std::istream& is, Address & address)
     {
       std::string tmp;
       std::string::size_type next;
-      next = v.find (":", col);
+      next = v.find (':', col);
       if (next == std::string::npos)
         {
           tmp = v.substr (col, v.size ()-col);

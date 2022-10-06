@@ -64,9 +64,9 @@ EnvDictionary (std::string key)
           std::string::size_type next = 0;
           while (next != std::string::npos)
             {
-              next = env.find (";", cur);
+              next = env.find (';', cur);
               std::string tmp = std::string (env, cur, next - cur);
-              std::string::size_type equal = tmp.find ("=");
+              std::string::size_type equal = tmp.find ('=');
               if (equal != std::string::npos)
                 {
                   std::string name = tmp.substr (0, equal);

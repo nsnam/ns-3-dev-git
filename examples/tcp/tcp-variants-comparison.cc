@@ -78,8 +78,8 @@ static std::map<uint32_t, uint32_t> ssThreshValue;  //!< SlowStart threshold val
 static uint32_t
 GetNodeIdFromContext (std::string context)
 {
-  std::size_t const n1 = context.find_first_of ("/", 1);
-  std::size_t const n2 = context.find_first_of ("/", n1 + 1);
+  std::size_t const n1 = context.find_first_of ('/', 1);
+  std::size_t const n2 = context.find_first_of ('/', n1 + 1);
   return std::stoul (context.substr (n1 + 1, n2 - n1 - 1));
 }
 

@@ -234,7 +234,7 @@ CommandLine::HandleOption (const std::string & param) const
     }
   else
     {
-      cur = arg.find ("-");
+      cur = arg.find ('-');
       if (cur == 0)
         {
           arg = arg.substr (1, arg.size () - 1);
@@ -246,7 +246,7 @@ CommandLine::HandleOption (const std::string & param) const
         }
     }
   // find any value following '='
-  cur = arg.find ("=");
+  cur = arg.find ('=');
   std::string name;
   std::string value;
   if (cur == std::string::npos)

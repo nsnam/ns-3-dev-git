@@ -163,7 +163,7 @@ RadioBearerStatsConnector::StoreUeManagerPath (std::string context, uint16_t cel
 {
   NS_LOG_FUNCTION (this << context << cellId << rnti);
   std::string ueManagerPath;
-  ueManagerPath = context.substr (0, context.rfind ("/")) + "/UeMap/" + std::to_string (rnti);
+  ueManagerPath = context.substr (0, context.rfind ('/')) + "/UeMap/" + std::to_string (rnti);
   NS_LOG_DEBUG ("ueManagerPath = " << ueManagerPath);
   CellIdRnti key;
   key.cellId = cellId;
@@ -213,7 +213,7 @@ void
 RadioBearerStatsConnector::ConnectTracesSrb0 (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti);
-  std::string ueRrcPath = context.substr (0, context.rfind ("/"));
+  std::string ueRrcPath = context.substr (0, context.rfind ('/'));
   NS_LOG_LOGIC ("ueRrcPath = " << ueRrcPath);
   CellIdRnti key;
   key.cellId = cellId;
@@ -243,7 +243,7 @@ void
 RadioBearerStatsConnector::ConnectTracesSrb1 (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti);
-  std::string ueRrcPath = context.substr (0, context.rfind ("/"));
+  std::string ueRrcPath = context.substr (0, context.rfind ('/'));
   NS_LOG_LOGIC ("ueRrcPath = " << ueRrcPath);
   CellIdRnti key;
   key.cellId = cellId;
@@ -290,7 +290,7 @@ RadioBearerStatsConnector::ConnectTracesDrbEnb (std::string context, uint64_t im
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti << (uint16_t)lcid);
   NS_LOG_LOGIC ("expected context should match /NodeList/*/DeviceList/*/LteEnbRrc/");
   std::string basePath;
-  basePath = context.substr (0, context.rfind ("/")) + "/DataRadioBearerMap/" + std::to_string (lcid - 2);
+  basePath = context.substr (0, context.rfind ('/')) + "/DataRadioBearerMap/" + std::to_string (lcid - 2);
   NS_LOG_LOGIC ("basePath = " << basePath);
   if (m_rlcStats)
     {
@@ -326,7 +326,7 @@ RadioBearerStatsConnector::ConnectTracesDrbUe (std::string context, uint64_t ims
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti << (uint16_t)lcid);
   NS_LOG_LOGIC ("expected context should match /NodeList/*/DeviceList/*/LteUeRrc/");
   std::string basePath;
-  basePath = context.substr (0, context.rfind ("/")) + "/DataRadioBearerMap/" + std::to_string (lcid);
+  basePath = context.substr (0, context.rfind ('/')) + "/DataRadioBearerMap/" + std::to_string (lcid);
   NS_LOG_LOGIC ("basePath = " << basePath);
   if (m_rlcStats)
     {

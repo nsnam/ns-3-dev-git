@@ -49,7 +49,7 @@ GetWildcardMatches (const std::string &configPath,
     {
       // Find the non-wildcard token.
       tokenStart = asterisk + 1;
-      asterisk = configPath.find ("*", tokenStart);
+      asterisk = configPath.find ('*', tokenStart);
 
       // If a wildcard character was found, increment this counter.
       if (asterisk != std::string::npos)

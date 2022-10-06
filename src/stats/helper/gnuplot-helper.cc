@@ -126,11 +126,11 @@ GnuplotHelper::PlotProbe (const std::string &typeId,
   std::string lastToken;
 
   // See if the path has any wildcards.
-  bool pathHasNoWildcards = path.find ("*") == std::string::npos;
+  bool pathHasNoWildcards = path.find ('*') == std::string::npos;
 
   // Remove the last token from the path; this should correspond to the
   // trace source attribute.
-  size_t lastSlash = path.find_last_of ("/");
+  size_t lastSlash = path.find_last_of ('/');
   if (lastSlash == std::string::npos)
     {
       pathWithoutLastToken = path;

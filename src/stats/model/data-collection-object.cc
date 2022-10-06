@@ -72,7 +72,7 @@ void
 DataCollectionObject::SetName (std::string name)
 {
   NS_LOG_FUNCTION (this << name);
-  for (size_t pos = name.find (" "); pos != std::string::npos; pos = name.find (" ", pos + 1, 1))
+  for (size_t pos = name.find (' '); pos != std::string::npos; pos = name.find (" ", pos + 1, 1))
     {
       name[pos] = '_';
     }
