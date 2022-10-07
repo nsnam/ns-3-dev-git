@@ -598,7 +598,7 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, uint16_t 
         v.SetPreambleType(
             GetPreambleForTransmission(mode.GetModulationClass(), GetShortPreambleEnabled()));
         v.SetTxPowerLevel(m_defaultTxPowerLevel);
-        v.SetChannelWidth(GetChannelWidthForTransmission(mode, allowedWidth));
+        v.SetChannelWidth(m_wifiPhy->GetTxBandwidth(mode, allowedWidth));
         v.SetGuardInterval(ConvertGuardIntervalToNanoSeconds(mode, m_wifiPhy->GetDevice()));
         v.SetNTx(GetNumberOfAntennas());
         v.SetNss(1);
@@ -632,7 +632,7 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, uint16_t 
             }
         }
 
-        txVector.SetChannelWidth(GetChannelWidthForTransmission(mgtMode, channelWidth));
+        txVector.SetChannelWidth(m_wifiPhy->GetTxBandwidth(mgtMode, channelWidth));
         txVector.SetGuardInterval(
             ConvertGuardIntervalToNanoSeconds(mgtMode, m_wifiPhy->GetDevice()));
     }
@@ -691,7 +691,7 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
                         GetNumberOfAntennas(),
                         1,
                         0,
-                        GetChannelWidthForTransmission(defaultMode, m_wifiPhy->GetChannelWidth()),
+                        m_wifiPhy->GetTxBandwidth(defaultMode),
                         false);
 }
 
@@ -707,7 +707,7 @@ WifiRemoteStationManager::GetRtsTxVector(Mac48Address address)
         v.SetPreambleType(
             GetPreambleForTransmission(mode.GetModulationClass(), GetShortPreambleEnabled()));
         v.SetTxPowerLevel(m_defaultTxPowerLevel);
-        v.SetChannelWidth(GetChannelWidthForTransmission(mode, m_wifiPhy->GetChannelWidth()));
+        v.SetChannelWidth(m_wifiPhy->GetTxBandwidth(mode));
         v.SetGuardInterval(ConvertGuardIntervalToNanoSeconds(mode, m_wifiPhy->GetDevice()));
         v.SetNTx(GetNumberOfAntennas());
         v.SetNss(1);
@@ -727,7 +727,7 @@ WifiRemoteStationManager::GetCtsTxVector(Mac48Address to, WifiMode rtsTxMode) co
     v.SetPreambleType(
         GetPreambleForTransmission(ctsMode.GetModulationClass(), GetShortPreambleEnabled()));
     v.SetTxPowerLevel(GetDefaultTxPowerLevel());
-    v.SetChannelWidth(GetChannelWidthForTransmission(ctsMode, m_wifiPhy->GetChannelWidth()));
+    v.SetChannelWidth(m_wifiPhy->GetTxBandwidth(ctsMode));
     uint16_t ctsTxGuardInterval =
         ConvertGuardIntervalToNanoSeconds(ctsMode, m_wifiPhy->GetDevice());
     v.SetGuardInterval(ctsTxGuardInterval);
@@ -745,7 +745,7 @@ WifiRemoteStationManager::GetAckTxVector(Mac48Address to, const WifiTxVector& da
     v.SetPreambleType(
         GetPreambleForTransmission(ackMode.GetModulationClass(), GetShortPreambleEnabled()));
     v.SetTxPowerLevel(GetDefaultTxPowerLevel());
-    v.SetChannelWidth(GetChannelWidthForTransmission(ackMode, m_wifiPhy->GetChannelWidth()));
+    v.SetChannelWidth(m_wifiPhy->GetTxBandwidth(ackMode));
     uint16_t ackTxGuardInterval =
         ConvertGuardIntervalToNanoSeconds(ackMode, m_wifiPhy->GetDevice());
     v.SetGuardInterval(ackTxGuardInterval);
@@ -764,7 +764,7 @@ WifiRemoteStationManager::GetBlockAckTxVector(Mac48Address to,
     v.SetPreambleType(
         GetPreambleForTransmission(blockAckMode.GetModulationClass(), GetShortPreambleEnabled()));
     v.SetTxPowerLevel(GetDefaultTxPowerLevel());
-    v.SetChannelWidth(GetChannelWidthForTransmission(blockAckMode, m_wifiPhy->GetChannelWidth()));
+    v.SetChannelWidth(m_wifiPhy->GetTxBandwidth(blockAckMode));
     uint16_t blockAckTxGuardInterval =
         ConvertGuardIntervalToNanoSeconds(blockAckMode, m_wifiPhy->GetDevice());
     v.SetGuardInterval(blockAckTxGuardInterval);

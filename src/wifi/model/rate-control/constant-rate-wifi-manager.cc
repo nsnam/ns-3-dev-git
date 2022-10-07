@@ -25,7 +25,7 @@
 #include "ns3/wifi-tx-vector.h"
 #include "ns3/wifi-utils.h"
 
-#define Min(a, b) ((a < b) ? a : b)
+#include <algorithm>
 
 namespace ns3
 {
@@ -127,7 +127,7 @@ WifiTxVector
 ConstantRateWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
-    uint8_t nss = Min(GetMaxNumberOfTransmitStreams(), GetNumberOfSupportedStreams(st));
+    uint8_t nss = std::min(GetMaxNumberOfTransmitStreams(), GetNumberOfSupportedStreams(st));
     if (m_dataMode.GetModulationClass() == WIFI_MOD_CLASS_HT)
     {
         nss = 1 + (m_dataMode.GetMcsValue() / 8);
@@ -142,7 +142,7 @@ ConstantRateWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allow
         GetNumberOfAntennas(),
         nss,
         0,
-        GetChannelWidthForTransmission(m_dataMode, allowedWidth, GetChannelWidth(st)),
+        GetPhy()->GetTxBandwidth(m_dataMode, std::min(allowedWidth, GetChannelWidth(st))),
         GetAggregation(st));
 }
 
@@ -160,7 +160,7 @@ ConstantRateWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
         1,
         1,
         0,
-        GetChannelWidthForTransmission(m_ctlMode, GetPhy()->GetChannelWidth(), GetChannelWidth(st)),
+        GetPhy()->GetTxBandwidth(m_ctlMode, GetChannelWidth(st)),
         GetAggregation(st));
 }
 

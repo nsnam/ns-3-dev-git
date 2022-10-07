@@ -571,7 +571,7 @@ IdealWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth
         GetNumberOfAntennas(),
         selectedNss,
         0,
-        GetChannelWidthForTransmission(maxMode, channelWidth),
+        GetPhy()->GetTxBandwidth(maxMode, channelWidth),
         GetAggregation(station)};
     uint64_t maxDataRate = maxMode.GetDataRate(bestTxVector);
     if (m_currentRate != maxDataRate)

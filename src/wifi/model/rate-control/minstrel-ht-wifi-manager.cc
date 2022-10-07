@@ -1091,7 +1091,7 @@ MinstrelHtWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowed
             GetNumberOfAntennas(),
             group.streams,
             GetNess(station),
-            GetChannelWidthForTransmission(mode, group.chWidth),
+            GetPhy()->GetTxBandwidth(mode, group.chWidth),
             GetAggregation(station) && !station->m_isSampling};
         uint64_t dataRate = mode.GetDataRate(txVector);
         if (m_currentRate != dataRate && !station->m_isSampling)
@@ -1181,9 +1181,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
             1,
             1,
             0,
-            GetChannelWidthForTransmission(rtsRate,
-                                           GetPhy()->GetChannelWidth(),
-                                           GetChannelWidth(station)),
+            GetPhy()->GetTxBandwidth(rtsRate, GetChannelWidth(station)),
             GetAggregation(station));
     }
 }
