@@ -20,6 +20,22 @@ Currently there are three models:
 
 An helper ``ns3::TopologyReaderHelper`` is provided to assist on trivial tasks.
 
+In some cases it might not be simple to identify which |ns3| node corresponds to a given node in the
+topology file. To simplify this task, each node created by ``ns3::TopologyReaderHelper`` has a name.
+The name format is "<TopologyReader>/NodeName/<label>" where "<TopologyReader>" is either
+"InetTopology", "OrbisTopology", or "RocketFuelTopology", and "<label>" is the identifier of the
+node in the topology file (can be either a number or a string, depending on the file type).
+Assuming that there are 10 nodes, labeled with number starting from 0, the code could be::
+
+    for (uint32_t nodeNumber = 0; nodeNumber < 10; nodeNumber++)
+    {
+        Ptr<Node> node = Names::Find<Node>("InetTopology/NodeName/" + std::to_string(nodeNumber));
+        if (node)
+        {
+            // Do something
+        }
+    }
+
 A good source for topology data is also Archipelago_.
 
 The current Archipelago Measurements_, monthly updated, are stored in the CAIDA website using

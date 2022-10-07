@@ -21,6 +21,7 @@
 #include "inet-topology-reader.h"
 
 #include "ns3/log.h"
+#include "ns3/names.h"
 #include "ns3/node-container.h"
 
 #include <cstdlib>
@@ -35,7 +36,6 @@
 
 namespace ns3
 {
-
 NS_LOG_COMPONENT_DEFINE("InetTopologyReader");
 
 NS_OBJECT_ENSURE_REGISTERED(InetTopologyReader);
@@ -117,6 +117,8 @@ InetTopologyReader::Read()
             {
                 NS_LOG_INFO("Node " << nodesNumber << " name: " << from);
                 Ptr<Node> tmpNode = CreateObject<Node>();
+                std::string nodeName = "InetTopology/NodeName/" + from;
+                Names::Add(from, tmpNode);
                 nodeMap[from] = tmpNode;
                 nodes.Add(tmpNode);
                 nodesNumber++;
@@ -126,6 +128,8 @@ InetTopologyReader::Read()
             {
                 NS_LOG_INFO("Node " << nodesNumber << " name: " << to);
                 Ptr<Node> tmpNode = CreateObject<Node>();
+                std::string nodename = "InetTopology/NodeName/" + to;
+                Names::Add(nodename, tmpNode);
                 nodeMap[to] = tmpNode;
                 nodes.Add(tmpNode);
                 nodesNumber++;

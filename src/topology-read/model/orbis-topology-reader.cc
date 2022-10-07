@@ -21,6 +21,7 @@
 #include "orbis-topology-reader.h"
 
 #include "ns3/log.h"
+#include "ns3/names.h"
 #include "ns3/node-container.h"
 
 #include <cstdlib>
@@ -99,6 +100,8 @@ OrbisTopologyReader::Read()
             if (!nodeMap[from])
             {
                 Ptr<Node> tmpNode = CreateObject<Node>();
+                std::string nodename = "OrbisTopology/NodeName/" + from;
+                Names::Add(nodename, tmpNode);
                 nodeMap[from] = tmpNode;
                 nodes.Add(tmpNode);
                 nodesNumber++;
@@ -107,6 +110,8 @@ OrbisTopologyReader::Read()
             if (!nodeMap[to])
             {
                 Ptr<Node> tmpNode = CreateObject<Node>();
+                std::string nodename = "OrbisTopology/NodeName/" + to;
+                Names::Add(nodename, tmpNode);
                 nodeMap[to] = tmpNode;
                 nodes.Add(tmpNode);
                 nodesNumber++;
