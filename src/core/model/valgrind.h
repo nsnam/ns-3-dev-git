@@ -1,5 +1,3 @@
-// clang-format off
-
 /* -*- c -*-
    ----------------------------------------------------------------
 
@@ -57,7 +55,6 @@
    ----------------------------------------------------------------
 */
 
-
 /* This file is for inclusion into client (your!) code.
 
    You can use these macros to manipulate and query Valgrind's
@@ -71,6 +68,8 @@
    millions of times per second.  Nevertheless, if that is still a
    problem, you can compile with the NVALGRIND symbol defined (gcc
    -DNVALGRIND) so that client requests are not even compiled in.  */
+
+// clang-format off
 
 #ifndef __VALGRIND_H
 #define __VALGRIND_H
