@@ -1000,6 +1000,18 @@ WifiPhy::HasFixedPhyBand() const
     return m_fixedPhyBand;
 }
 
+uint16_t
+WifiPhy::GetTxBandwidth(WifiMode mode, uint16_t maxAllowedWidth)
+{
+    auto modulation = mode.GetModulationClass();
+    if (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS)
+    {
+        return 22;
+    }
+
+    return std::min({GetChannelWidth(), GetMaximumChannelWidth(modulation), maxAllowedWidth});
+}
+
 void
 WifiPhy::SetOperatingChannel(const ChannelTuple& channelTuple)
 {

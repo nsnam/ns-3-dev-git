@@ -28,6 +28,8 @@
 
 #include "ns3/error-model.h"
 
+#include <limits>
+
 namespace ns3
 {
 
@@ -896,6 +898,17 @@ class WifiPhy : public Object
      * \return the index of the primary 20 MHz channel
      */
     uint8_t GetPrimary20Index() const;
+    /**
+     * Get the bandwidth for a transmission occurring on the current operating channel and
+     * using the given WifiMode, subject to the constraint that the TX bandwidth cannot exceed
+     * the given maximum allowed value.
+     *
+     * \param mode the given WifiMode
+     * \param maxAllowedBandWidth the maximum allowed TX bandwidth
+     * \return the bandwidth for the transmission
+     */
+    uint16_t GetTxBandwidth(WifiMode mode,
+                            uint16_t maxAllowedBandWidth = std::numeric_limits<uint16_t>::max());
     /**
      * \param antennas the number of antennas on this node.
      */
