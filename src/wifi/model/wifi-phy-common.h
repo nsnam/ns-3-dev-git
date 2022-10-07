@@ -556,6 +556,14 @@ bool IsUlMu(WifiPreamble preamble);
  */
 WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
 
+/**
+ * Get the maximum channel width in MHz allowed for the given modulation class.
+ *
+ * \param modulation the modulation class
+ * \return the maximum channel width in MHz allowed for the given modulation class
+ */
+uint16_t GetMaximumChannelWidth(WifiModulationClass modulation);
+
 } // namespace ns3
 
 #endif /* WIFI_PHY_COMMON_H */

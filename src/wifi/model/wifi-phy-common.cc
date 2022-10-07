@@ -252,4 +252,28 @@ GetModulationClassForStandard(WifiStandard standard)
     return modulationClass;
 }
 
+uint16_t
+GetMaximumChannelWidth(WifiModulationClass modulation)
+{
+    switch (modulation)
+    {
+    case WIFI_MOD_CLASS_DSSS:
+    case WIFI_MOD_CLASS_HR_DSSS:
+        return 22;
+    case WIFI_MOD_CLASS_OFDM:
+    case WIFI_MOD_CLASS_ERP_OFDM:
+        return 20;
+    case WIFI_MOD_CLASS_HT:
+        return 40;
+    case WIFI_MOD_CLASS_VHT:
+    case WIFI_MOD_CLASS_HE:
+        return 160;
+    case WIFI_MOD_CLASS_EHT:
+        return 160; // TODO update when 320 MHz channels are supported
+    default:
+        NS_ABORT_MSG("Unknown modulation class: " << modulation);
+        return 0;
+    }
+}
+
 } // namespace ns3

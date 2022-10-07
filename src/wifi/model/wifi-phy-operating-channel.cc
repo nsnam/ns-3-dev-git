@@ -20,6 +20,8 @@
 
 #include "wifi-phy-operating-channel.h"
 
+#include "wifi-phy-common.h"
+
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
@@ -381,7 +383,7 @@ WifiPhyOperatingChannel::FindFirst(uint8_t number,
         standardIt != wifiStandards.cend() &&
         (std::find(standardIt->second.cbegin(), standardIt->second.cend(), band) ==
              standardIt->second.cend() ||
-         width > GetMaximumChannelWidth(standard)))
+         width > GetMaximumChannelWidth(GetModulationClassForStandard(standard))))
     {
         return m_frequencyChannels.cend();
     }

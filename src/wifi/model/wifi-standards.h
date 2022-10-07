@@ -129,38 +129,6 @@ GetFrequencyChannelType(WifiStandard standard)
 }
 
 /**
- * Get the maximum channel width in MHz allowed for the given standard.
- *
- * \param standard the standard
- * \return the maximum channel width in MHz allowed for the given standard
- */
-inline uint16_t
-GetMaximumChannelWidth(WifiStandard standard)
-{
-    switch (standard)
-    {
-    case WIFI_STANDARD_80211b:
-        return 22;
-    case WIFI_STANDARD_80211p:
-        return 10;
-    case WIFI_STANDARD_80211a:
-    case WIFI_STANDARD_80211g:
-        return 20;
-    case WIFI_STANDARD_80211n:
-        return 40;
-    case WIFI_STANDARD_80211ac:
-    case WIFI_STANDARD_80211ax:
-    case WIFI_STANDARD_80211be:
-        return 160;
-    case WIFI_STANDARD_80211ad:
-        return 2160;
-    default:
-        NS_ABORT_MSG("Unknown standard: " << standard);
-        return 0;
-    }
-}
-
-/**
  * Get the default channel width for the given PHY standard and band.
  *
  * \param standard the given standard
