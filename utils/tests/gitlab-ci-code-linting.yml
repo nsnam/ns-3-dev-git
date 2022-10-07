@@ -23,4 +23,4 @@ clang-tidy:
       clang-tidy-14
   script:
     - ./ns3 configure --enable-examples --enable-tests --enable-clang-tidy
-    - run-clang-tidy-14 -p cmake-cache/ -quiet | grep -A 5 "error:"
+    - run-clang-tidy-14 -p cmake-cache/ -quiet
