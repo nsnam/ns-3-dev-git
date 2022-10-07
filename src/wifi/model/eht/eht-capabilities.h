@@ -23,7 +23,8 @@
 
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup wifi
@@ -32,18 +33,18 @@ namespace ns3 {
  */
 class EhtCapabilities : public WifiInformationElement
 {
-public:
-  EhtCapabilities ();
-  // Implementations of pure virtual methods, or overridden from base class.
-  WifiInformationElementId ElementId () const override;
-  WifiInformationElementId ElementIdExt () const override;
+  public:
+    EhtCapabilities();
+    // Implementations of pure virtual methods, or overridden from base class.
+    WifiInformationElementId ElementId() const override;
+    WifiInformationElementId ElementIdExt() const override;
 
-private:
-  uint16_t GetInformationFieldSize () const override;
-  void SerializeInformationField (Buffer::Iterator start) const override;
-  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+  private:
+    uint16_t GetInformationFieldSize() const override;
+    void SerializeInformationField(Buffer::Iterator start) const override;
+    uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
 
-  //TODO: add fields
+    // TODO: add fields
 };
 
 /**
@@ -52,8 +53,8 @@ private:
  * \param ehtCapabilities the EHT capabilities
  * \returns the output stream
  */
-std::ostream &operator << (std::ostream &os, const EhtCapabilities &ehtCapabilities);
+std::ostream& operator<<(std::ostream& os, const EhtCapabilities& ehtCapabilities);
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* HE_CAPABILITY_H */

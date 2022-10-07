@@ -22,8 +22,9 @@
 #define MAP_SCHEDULER_H
 
 #include "scheduler.h"
-#include <stdint.h>
+
 #include <map>
+#include <stdint.h>
 #include <utility>
 
 /**
@@ -32,7 +33,8 @@
  * ns3::MapScheduler declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup scheduler
@@ -61,35 +63,35 @@ namespace ns3 {
  */
 class MapScheduler : public Scheduler
 {
-public:
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /** Constructor. */
-  MapScheduler ();
-  /** Destructor. */
-  ~MapScheduler () override;
+    /** Constructor. */
+    MapScheduler();
+    /** Destructor. */
+    ~MapScheduler() override;
 
-  // Inherited
-  void Insert (const Scheduler::Event &ev) override;
-  bool IsEmpty () const override;
-  Scheduler::Event PeekNext () const override;
-  Scheduler::Event RemoveNext () override;
-  void Remove (const Scheduler::Event &ev) override;
+    // Inherited
+    void Insert(const Scheduler::Event& ev) override;
+    bool IsEmpty() const override;
+    Scheduler::Event PeekNext() const override;
+    Scheduler::Event RemoveNext() override;
+    void Remove(const Scheduler::Event& ev) override;
 
-private:
-  /** Event list type: a Map from EventKey to EventImpl. */
-  typedef std::map<Scheduler::EventKey, EventImpl*> EventMap;
-  /** EventMap iterator. */
-  typedef std::map<Scheduler::EventKey, EventImpl*>::iterator EventMapI;
-  /** EventMap const iterator. */
-  typedef std::map<Scheduler::EventKey, EventImpl*>::const_iterator EventMapCI;
+  private:
+    /** Event list type: a Map from EventKey to EventImpl. */
+    typedef std::map<Scheduler::EventKey, EventImpl*> EventMap;
+    /** EventMap iterator. */
+    typedef std::map<Scheduler::EventKey, EventImpl*>::iterator EventMapI;
+    /** EventMap const iterator. */
+    typedef std::map<Scheduler::EventKey, EventImpl*>::const_iterator EventMapCI;
 
-  /** The event list. */
-  EventMap m_list;
+    /** The event list. */
+    EventMap m_list;
 };
 
 } // namespace ns3

@@ -21,11 +21,11 @@
 #ifndef COSINE_ANTENNA_MODEL_H
 #define COSINE_ANTENNA_MODEL_H
 
-
-#include <ns3/object.h>
 #include <ns3/antenna-model.h>
+#include <ns3/object.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup antenna
@@ -49,77 +49,73 @@ namespace ns3 {
  */
 class CosineAntennaModel : public AntennaModel
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  // inherited from AntennaModel
-  double GetGainDb (Angles a) override;
+    // inherited from AntennaModel
+    double GetGainDb(Angles a) override;
 
-  /**
-   * Get the vertical 3 dB beamwidth of the cosine antenna model.
-   * \return the vertical beamwidth in degrees
-   */
-  double GetVerticalBeamwidth () const;
+    /**
+     * Get the vertical 3 dB beamwidth of the cosine antenna model.
+     * \return the vertical beamwidth in degrees
+     */
+    double GetVerticalBeamwidth() const;
 
-  /**
-   * Get the horizontal 3 dB beamwidth of the cosine antenna model.
-   * \return the horizontal beamwidth in degrees
-   */
-  double GetHorizontalBeamwidth () const;
+    /**
+     * Get the horizontal 3 dB beamwidth of the cosine antenna model.
+     * \return the horizontal beamwidth in degrees
+     */
+    double GetHorizontalBeamwidth() const;
 
-  /**
-   * Get the horizontal orientation of the antenna element.
-   * \return the horizontal orientation in degrees
-   */
-  double GetOrientation () const;
+    /**
+     * Get the horizontal orientation of the antenna element.
+     * \return the horizontal orientation in degrees
+     */
+    double GetOrientation() const;
 
-private:
+  private:
+    /**
+     * Set the vertical 3 dB beamwidth (bilateral) of the cosine antenna model.
+     * \param verticalBeamwidthDegrees the vertical beamwidth in degrees
+     */
+    void SetVerticalBeamwidth(double verticalBeamwidthDegrees);
 
-  /**
-   * Set the vertical 3 dB beamwidth (bilateral) of the cosine antenna model.
-   * \param verticalBeamwidthDegrees the vertical beamwidth in degrees
-   */
-  void SetVerticalBeamwidth (double verticalBeamwidthDegrees);
+    /**
+     * Set the horizontal 3 dB beamwidth (bilateral) of the cosine antenna model.
+     * \param horizontalBeamwidthDegrees the horizontal beamwidth in degrees
+     */
+    void SetHorizontalBeamwidth(double horizontalBeamwidthDegrees);
 
-  /**
-   * Set the horizontal 3 dB beamwidth (bilateral) of the cosine antenna model.
-   * \param horizontalBeamwidthDegrees the horizontal beamwidth in degrees
-   */
-  void SetHorizontalBeamwidth (double horizontalBeamwidthDegrees);
+    /**
+     * Set the horizontal orientation of the antenna element.
+     * \param orientationDegrees the horizontal orientation in degrees
+     */
+    void SetOrientation(double orientationDegrees);
 
-  /**
-   * Set the horizontal orientation of the antenna element.
-   * \param orientationDegrees the horizontal orientation in degrees
-   */
-  void SetOrientation (double orientationDegrees);
+    /**
+     * Compute the exponent of the cosine antenna model from the beamwidth
+     * \param beamwidthDegrees the beamwidth in degrees
+     * \return the exponent
+     */
+    static double GetExponentFromBeamwidth(double beamwidthDegrees);
 
-  /**
-   * Compute the exponent of the cosine antenna model from the beamwidth
-   * \param beamwidthDegrees the beamwidth in degrees
-   * \return the exponent
-   */
-  static double GetExponentFromBeamwidth (double beamwidthDegrees);
+    /**
+     * Compute the beamwidth of the cosine antenna model from the exponent
+     * \param exponent the exponent
+     * \return beamwidth in degrees
+     */
+    static double GetBeamwidthFromExponent(double exponent);
 
-  /**
-   * Compute the beamwidth of the cosine antenna model from the exponent
-   * \param exponent the exponent
-   * \return beamwidth in degrees
-   */
-  static double GetBeamwidthFromExponent (double exponent);
-
-  double m_verticalExponent;            //!< exponent of the vertical direction
-  double m_horizontalExponent;          //!< exponent of the horizontal direction
-  double m_orientationRadians;          //!< orientation in radians in the horizontal direction (bearing)
-  double m_maxGain;                     //!< antenna gain in dB towards the main orientation
+    double m_verticalExponent;   //!< exponent of the vertical direction
+    double m_horizontalExponent; //!< exponent of the horizontal direction
+    double m_orientationRadians; //!< orientation in radians in the horizontal direction (bearing)
+    double m_maxGain;            //!< antenna gain in dB towards the main orientation
 };
 
-
-
 } // namespace ns3
-
 
 #endif // COSINE_ANTENNA_MODEL_H

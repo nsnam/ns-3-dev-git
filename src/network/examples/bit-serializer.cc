@@ -18,9 +18,11 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 
-#include <iostream>
 #include "ns3/bit-serializer.h"
+
 #include "ns3/bit-deserializer.h"
+
+#include <iostream>
 
 using namespace ns3;
 
@@ -45,84 +47,85 @@ using namespace ns3;
 //
 // This example shows the basic operations.
 
-int main ()
+int
+main()
 {
+    BitSerializer testBitSerializer1;
 
-  BitSerializer testBitSerializer1;
+    // add 7 bits - 0x55 (101 0101)
+    testBitSerializer1.PushBits(0x55, 7);
+    // add 3 bits - 0x7 (111)
+    testBitSerializer1.PushBits(0x7, 3);
+    // add 2 bits - 0x0 (00)
+    testBitSerializer1.PushBits(0x0, 2);
+    // The results is 1010 1011 1100.
+    // Adding 4 bits of padding at the end the result is 0xabc0.
 
-  // add 7 bits - 0x55 (101 0101)
-  testBitSerializer1.PushBits (0x55, 7);
-  // add 3 bits - 0x7 (111)
-  testBitSerializer1.PushBits (0x7, 3);
-  // add 2 bits - 0x0 (00)
-  testBitSerializer1.PushBits (0x0, 2);
-  // The results is 1010 1011 1100.
-  // Adding 4 bits of padding at the end the result is 0xabc0.
+    std::vector<uint8_t> result = testBitSerializer1.GetBytes();
 
-  std::vector<uint8_t> result = testBitSerializer1.GetBytes ();
-
-  std::cout << "Result:    ";
-  for (std::size_t i = 0; i < result.size (); i++)
+    std::cout << "Result:    ";
+    for (std::size_t i = 0; i < result.size(); i++)
     {
-      std::cout << std::hex << int(result[i]) << " ";
+        std::cout << std::hex << int(result[i]) << " ";
     }
-  std::cout << std::endl;
-  std::cout << "Expecting: ab c0" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Expecting: ab c0" << std::endl;
 
-  // Here, instead of printing bits, you typically serialize them using
-  // Buffer::Iterator:Write (uint8_t const *buffer, uint32_t size).
-  //
-  // In this case the number of bits pushed is not a multiple of a byte
-  // so the class adds a padding at the end of the buffer.
-  // This is the default behaviour.
+    // Here, instead of printing bits, you typically serialize them using
+    // Buffer::Iterator:Write (uint8_t const *buffer, uint32_t size).
+    //
+    // In this case the number of bits pushed is not a multiple of a byte
+    // so the class adds a padding at the end of the buffer.
+    // This is the default behaviour.
 
-  BitSerializer testBitSerializer2;
+    BitSerializer testBitSerializer2;
 
-  // add 7 bits - 0x55 (101 0101)
-  testBitSerializer2.PushBits (0x55, 7);
-  // add 3 bits - 0x7 (111)
-  testBitSerializer2.PushBits (0x7, 3);
-  // add 2 bits - 0x0 (00)
-  testBitSerializer2.PushBits (0x0, 2);
+    // add 7 bits - 0x55 (101 0101)
+    testBitSerializer2.PushBits(0x55, 7);
+    // add 3 bits - 0x7 (111)
+    testBitSerializer2.PushBits(0x7, 3);
+    // add 2 bits - 0x0 (00)
+    testBitSerializer2.PushBits(0x0, 2);
 
-  // Change the class behaviour so to use a padding at the start of the buffer.
-  testBitSerializer2.InsertPaddingAtEnd (false);
-  // The results is 1010 1011 1100.
-  // Adding 4 bits of padding at the start the result is 0xabc.
+    // Change the class behaviour so to use a padding at the start of the buffer.
+    testBitSerializer2.InsertPaddingAtEnd(false);
+    // The results is 1010 1011 1100.
+    // Adding 4 bits of padding at the start the result is 0xabc.
 
-  result = testBitSerializer2.GetBytes ();
+    result = testBitSerializer2.GetBytes();
 
-  std::cout << "Result:    ";
-  for (std::size_t i = 0; i < result.size (); i++)
+    std::cout << "Result:    ";
+    for (std::size_t i = 0; i < result.size(); i++)
     {
-      std::cout << std::hex << int(result[i]) << " ";
+        std::cout << std::hex << int(result[i]) << " ";
     }
-  std::cout << std::endl;
-  std::cout << "Expecting: a bc" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Expecting: a bc" << std::endl;
 
-  // Here, instead of printing bits, you typically serialize them using
-  // Buffer::Iterator:Write (uint8_t const *buffer, uint32_t size).
-  //
-  // In this case the number of bits pushed is not a multiple of a byte
-  // so the class adds a padding at the start of the buffer.
+    // Here, instead of printing bits, you typically serialize them using
+    // Buffer::Iterator:Write (uint8_t const *buffer, uint32_t size).
+    //
+    // In this case the number of bits pushed is not a multiple of a byte
+    // so the class adds a padding at the start of the buffer.
 
-  BitDeserializer testBitDeserializer;
-  uint8_t test[2];
-  test[0] = 0xab;
-  test[1] = 0xc0;
+    BitDeserializer testBitDeserializer;
+    uint8_t test[2];
+    test[0] = 0xab;
+    test[1] = 0xc0;
 
-  // Typically a BitDeserializer will be initialized by an array obtained by
-  // Buffer::Iterator:Read (uint8_t *buffer, uint32_t size).
+    // Typically a BitDeserializer will be initialized by an array obtained by
+    // Buffer::Iterator:Read (uint8_t *buffer, uint32_t size).
 
-  testBitDeserializer.PushBytes (test, 2);
-  uint16_t nibble1 = testBitDeserializer.GetBits (7);
-  uint8_t nibble2 = testBitDeserializer.GetBits (3);
-  uint8_t nibble3 = testBitDeserializer.GetBits (2);
-//  if you deserialize too many bits you'll get an assert.
-//  uint8_t errorNibble = testBitDeserializer.GetBits (6);
+    testBitDeserializer.PushBytes(test, 2);
+    uint16_t nibble1 = testBitDeserializer.GetBits(7);
+    uint8_t nibble2 = testBitDeserializer.GetBits(3);
+    uint8_t nibble3 = testBitDeserializer.GetBits(2);
+    //  if you deserialize too many bits you'll get an assert.
+    //  uint8_t errorNibble = testBitDeserializer.GetBits (6);
 
-  std::cout << "Result:    " << std::hex << nibble1 << " " << +nibble2 << " " << +nibble3 << " " << std::endl;
-  std::cout << "Expecting: 55 7 0" << std::endl;
+    std::cout << "Result:    " << std::hex << nibble1 << " " << +nibble2 << " " << +nibble3 << " "
+              << std::endl;
+    std::cout << "Expecting: 55 7 0" << std::endl;
 
-  return 0;
+    return 0;
 }

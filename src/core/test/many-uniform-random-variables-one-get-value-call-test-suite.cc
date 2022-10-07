@@ -18,12 +18,12 @@
  * Author: Mitch Watrous (watrous@u.washington.edu)
  */
 
-#include "ns3/test.h"
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/random-variable-stream.h"
-#include <vector>
+#include "ns3/test.h"
 
+#include <vector>
 
 /**
  * \file
@@ -33,10 +33,11 @@
  * Test for many uniform random variable streams.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace tests {
-
+namespace tests
+{
 
 /**
  * \ingroup randomvariable-tests
@@ -44,43 +45,47 @@ namespace tests {
  */
 class ManyUniformRandomVariablesOneGetValueCallTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  ManyUniformRandomVariablesOneGetValueCallTestCase ();
-  /** Destructor. */
-  ~ManyUniformRandomVariablesOneGetValueCallTestCase () override;
+  public:
+    /** Constructor. */
+    ManyUniformRandomVariablesOneGetValueCallTestCase();
+    /** Destructor. */
+    ~ManyUniformRandomVariablesOneGetValueCallTestCase() override;
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 };
 
-ManyUniformRandomVariablesOneGetValueCallTestCase::ManyUniformRandomVariablesOneGetValueCallTestCase ()
-  : TestCase ("Many Uniform Random Variables with One GetValue() Call")
-{}
+ManyUniformRandomVariablesOneGetValueCallTestCase::
+    ManyUniformRandomVariablesOneGetValueCallTestCase()
+    : TestCase("Many Uniform Random Variables with One GetValue() Call")
+{
+}
 
-ManyUniformRandomVariablesOneGetValueCallTestCase::~ManyUniformRandomVariablesOneGetValueCallTestCase ()
-{}
+ManyUniformRandomVariablesOneGetValueCallTestCase::
+    ~ManyUniformRandomVariablesOneGetValueCallTestCase()
+{
+}
 
 void
-ManyUniformRandomVariablesOneGetValueCallTestCase::DoRun ()
+ManyUniformRandomVariablesOneGetValueCallTestCase::DoRun()
 {
-  const double min = 0.0;
-  const double max = 10.0;
+    const double min = 0.0;
+    const double max = 10.0;
 
-  Config::SetDefault ("ns3::UniformRandomVariable::Min", DoubleValue (min));
-  Config::SetDefault ("ns3::UniformRandomVariable::Max", DoubleValue (max));
+    Config::SetDefault("ns3::UniformRandomVariable::Min", DoubleValue(min));
+    Config::SetDefault("ns3::UniformRandomVariable::Max", DoubleValue(max));
 
-  // Get 1 value from many uniform random number generators.
-  double value;
-  const int count = 1000000;
-  std::vector< Ptr<UniformRandomVariable> > uniformStreamVector (count);
-  for (int i = 0; i < count; i++)
+    // Get 1 value from many uniform random number generators.
+    double value;
+    const int count = 1000000;
+    std::vector<Ptr<UniformRandomVariable>> uniformStreamVector(count);
+    for (int i = 0; i < count; i++)
     {
-      uniformStreamVector.push_back (CreateObject<UniformRandomVariable> ());
-      value = uniformStreamVector.back ()->GetValue ();
+        uniformStreamVector.push_back(CreateObject<UniformRandomVariable>());
+        value = uniformStreamVector.back()->GetValue();
 
-      NS_TEST_ASSERT_MSG_GT (value, min, "Value less than minimum.");
-      NS_TEST_ASSERT_MSG_LT (value, max, "Value greater than maximum.");
+        NS_TEST_ASSERT_MSG_GT(value, min, "Value less than minimum.");
+        NS_TEST_ASSERT_MSG_LT(value, max, "Value greater than maximum.");
     }
 }
 
@@ -90,24 +95,25 @@ ManyUniformRandomVariablesOneGetValueCallTestCase::DoRun ()
  */
 class ManyUniformRandomVariablesOneGetValueCallTestSuite : public TestSuite
 {
-public:
-  /** Constructor. */
-  ManyUniformRandomVariablesOneGetValueCallTestSuite ();
+  public:
+    /** Constructor. */
+    ManyUniformRandomVariablesOneGetValueCallTestSuite();
 };
 
-ManyUniformRandomVariablesOneGetValueCallTestSuite::ManyUniformRandomVariablesOneGetValueCallTestSuite ()
-  : TestSuite ("many-uniform-random-variables-one-get-value-call", PERFORMANCE)
+ManyUniformRandomVariablesOneGetValueCallTestSuite::
+    ManyUniformRandomVariablesOneGetValueCallTestSuite()
+    : TestSuite("many-uniform-random-variables-one-get-value-call", PERFORMANCE)
 {
-  AddTestCase (new ManyUniformRandomVariablesOneGetValueCallTestCase);
+    AddTestCase(new ManyUniformRandomVariablesOneGetValueCallTestCase);
 }
 
 /**
  * \ingroup randomvariable-tests
  * ManuUniformRandomVariablesOneGetValueCallTestSuite instance variable.
  */
-static ManyUniformRandomVariablesOneGetValueCallTestSuite g_manyUniformRandomVariablesOneGetValueCallTestSuite;
+static ManyUniformRandomVariablesOneGetValueCallTestSuite
+    g_manyUniformRandomVariablesOneGetValueCallTestSuite;
 
+} // namespace tests
 
-}    // namespace tests
-
-}  // namespace ns3
+} // namespace ns3

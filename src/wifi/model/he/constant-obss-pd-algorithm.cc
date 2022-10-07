@@ -18,92 +18,96 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/log.h"
-#include "ns3/node.h"
+#include "constant-obss-pd-algorithm.h"
+
+#include "he-configuration.h"
+#include "he-phy.h"
+
 #include "ns3/config.h"
 #include "ns3/double.h"
-#include "constant-obss-pd-algorithm.h"
+#include "ns3/log.h"
+#include "ns3/node.h"
 #include "ns3/sta-wifi-mac.h"
-#include "ns3/wifi-utils.h"
-#include "ns3/wifi-phy.h"
-#include "he-phy.h"
 #include "ns3/wifi-net-device.h"
-#include "he-configuration.h"
+#include "ns3/wifi-phy.h"
+#include "ns3/wifi-utils.h"
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("ConstantObssPdAlgorithm");
-NS_OBJECT_ENSURE_REGISTERED (ConstantObssPdAlgorithm);
-
-ConstantObssPdAlgorithm::ConstantObssPdAlgorithm ()
-  : ObssPdAlgorithm ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("ConstantObssPdAlgorithm");
+NS_OBJECT_ENSURE_REGISTERED(ConstantObssPdAlgorithm);
+
+ConstantObssPdAlgorithm::ConstantObssPdAlgorithm()
+    : ObssPdAlgorithm()
+{
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-ConstantObssPdAlgorithm::GetTypeId ()
+ConstantObssPdAlgorithm::GetTypeId()
 {
-  static ns3::TypeId tid = ns3::TypeId ("ns3::ConstantObssPdAlgorithm")
-    .SetParent<ObssPdAlgorithm> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<ConstantObssPdAlgorithm> ()
-  ;
-  return tid;
+    static ns3::TypeId tid = ns3::TypeId("ns3::ConstantObssPdAlgorithm")
+                                 .SetParent<ObssPdAlgorithm>()
+                                 .SetGroupName("Wifi")
+                                 .AddConstructor<ConstantObssPdAlgorithm>();
+    return tid;
 }
 
 void
-ConstantObssPdAlgorithm::ConnectWifiNetDevice (const Ptr<WifiNetDevice> device)
+ConstantObssPdAlgorithm::ConnectWifiNetDevice(const Ptr<WifiNetDevice> device)
 {
-  Ptr<WifiPhy> phy = device->GetPhy ();
-  auto hePhy = DynamicCast<HePhy> (phy->GetPhyEntity (WIFI_MOD_CLASS_HE));
-  NS_ASSERT (hePhy);
-  hePhy->SetEndOfHeSigACallback (MakeCallback (&ConstantObssPdAlgorithm::ReceiveHeSigA, this));
-  ObssPdAlgorithm::ConnectWifiNetDevice (device);
+    Ptr<WifiPhy> phy = device->GetPhy();
+    auto hePhy = DynamicCast<HePhy>(phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    NS_ASSERT(hePhy);
+    hePhy->SetEndOfHeSigACallback(MakeCallback(&ConstantObssPdAlgorithm::ReceiveHeSigA, this));
+    ObssPdAlgorithm::ConnectWifiNetDevice(device);
 }
 
 void
-ConstantObssPdAlgorithm::ReceiveHeSigA (HeSigAParameters params)
+ConstantObssPdAlgorithm::ReceiveHeSigA(HeSigAParameters params)
 {
-  NS_LOG_FUNCTION (this << +params.bssColor << WToDbm (params.rssiW));
+    NS_LOG_FUNCTION(this << +params.bssColor << WToDbm(params.rssiW));
 
-  Ptr<StaWifiMac> mac = m_device->GetMac ()->GetObject<StaWifiMac>();
-  if (mac && !mac->IsAssociated ())
+    Ptr<StaWifiMac> mac = m_device->GetMac()->GetObject<StaWifiMac>();
+    if (mac && !mac->IsAssociated())
     {
-      NS_LOG_DEBUG ("This is not an associated STA: skip OBSS PD algorithm");
-      return;
+        NS_LOG_DEBUG("This is not an associated STA: skip OBSS PD algorithm");
+        return;
     }
 
-  Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration ();
-  NS_ASSERT (heConfiguration);
-  uint8_t bssColor = heConfiguration->GetBssColor ();
+    Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration();
+    NS_ASSERT(heConfiguration);
+    uint8_t bssColor = heConfiguration->GetBssColor();
 
-  if (bssColor == 0)
+    if (bssColor == 0)
     {
-      NS_LOG_DEBUG ("BSS color is 0");
-      return;
+        NS_LOG_DEBUG("BSS color is 0");
+        return;
     }
-  if (params.bssColor == 0)
+    if (params.bssColor == 0)
     {
-      NS_LOG_DEBUG ("Received BSS color is 0");
-      return;
+        NS_LOG_DEBUG("Received BSS color is 0");
+        return;
     }
-  //TODO: SRP_AND_NON-SRG_OBSS-PD_PROHIBITED=1 => OBSS_PD SR is not allowed
+    // TODO: SRP_AND_NON-SRG_OBSS-PD_PROHIBITED=1 => OBSS_PD SR is not allowed
 
-  bool isObss = (bssColor != params.bssColor);
-  if (isObss)
+    bool isObss = (bssColor != params.bssColor);
+    if (isObss)
     {
-      const double obssPdLevel = GetObssPdLevel ();
-      if (WToDbm (params.rssiW) < obssPdLevel)
+        const double obssPdLevel = GetObssPdLevel();
+        if (WToDbm(params.rssiW) < obssPdLevel)
         {
-          NS_LOG_DEBUG ("Frame is OBSS and RSSI " << WToDbm(params.rssiW) << " is below OBSS-PD level of " << obssPdLevel << "; reset PHY to IDLE");
-          ResetPhy (params);
+            NS_LOG_DEBUG("Frame is OBSS and RSSI " << WToDbm(params.rssiW)
+                                                   << " is below OBSS-PD level of " << obssPdLevel
+                                                   << "; reset PHY to IDLE");
+            ResetPhy(params);
         }
-      else
+        else
         {
-          NS_LOG_DEBUG ("Frame is OBSS and RSSI is above OBSS-PD level");
+            NS_LOG_DEBUG("Frame is OBSS and RSSI is above OBSS-PD level");
         }
     }
 }
 
-} //namespace ns3
+} // namespace ns3

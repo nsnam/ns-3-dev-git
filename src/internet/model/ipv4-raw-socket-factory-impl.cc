@@ -19,21 +19,24 @@
  */
 
 #include "ipv4-raw-socket-factory-impl.h"
+
 #include "ipv4-l3-protocol.h"
-#include "ns3/socket.h"
+
 #include "ns3/log.h"
+#include "ns3/socket.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketFactoryImpl");
+NS_LOG_COMPONENT_DEFINE("Ipv4RawSocketFactoryImpl");
 
 Ptr<Socket>
-Ipv4RawSocketFactoryImpl::CreateSocket ()
+Ipv4RawSocketFactoryImpl::CreateSocket()
 {
-  NS_LOG_FUNCTION (this);
-  Ptr<Ipv4> ipv4 = GetObject<Ipv4> ();
-  Ptr<Socket> socket = ipv4->CreateRawSocket ();
-  return socket;
+    NS_LOG_FUNCTION(this);
+    Ptr<Ipv4> ipv4 = GetObject<Ipv4>();
+    Ptr<Socket> socket = ipv4->CreateRawSocket();
+    return socket;
 }
 
 } // namespace ns3

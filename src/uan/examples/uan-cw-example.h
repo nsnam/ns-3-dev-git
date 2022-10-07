@@ -37,59 +37,59 @@ using namespace ns3;
  */
 class Experiment
 {
-public:
-  /**
-   * Run an experiment across a range of congestion window values.
-   *
-   * \param uan The Uan stack helper to configure nodes in the model.
-   * \return The data set of CW values and measured throughput
-   */
-  Gnuplot2dDataset Run (UanHelper &uan);
-  /**
-   * Receive all available packets from a socket.
-   *
-   * \param socket The receive socket.
-   */
-  void ReceivePacket (Ptr<Socket> socket);
-  /**
-   * Assign new random positions to a set of nodes.  New positions
-   * are randomly assigned within the bounding box.
-   *
-   * \param nodes The nodes to reposition.
-   */
-  void UpdatePositions (NodeContainer &nodes);
-  /** Save the throughput from a single run. */
-  void ResetData ();
-  /**
-   * Compute average throughput for a set of runs, then increment CW.
-   *
-   * \param cw CW value for completed runs.
-   */
-  void IncrementCw (uint32_t cw);
+  public:
+    /**
+     * Run an experiment across a range of congestion window values.
+     *
+     * \param uan The Uan stack helper to configure nodes in the model.
+     * \return The data set of CW values and measured throughput
+     */
+    Gnuplot2dDataset Run(UanHelper& uan);
+    /**
+     * Receive all available packets from a socket.
+     *
+     * \param socket The receive socket.
+     */
+    void ReceivePacket(Ptr<Socket> socket);
+    /**
+     * Assign new random positions to a set of nodes.  New positions
+     * are randomly assigned within the bounding box.
+     *
+     * \param nodes The nodes to reposition.
+     */
+    void UpdatePositions(NodeContainer& nodes);
+    /** Save the throughput from a single run. */
+    void ResetData();
+    /**
+     * Compute average throughput for a set of runs, then increment CW.
+     *
+     * \param cw CW value for completed runs.
+     */
+    void IncrementCw(uint32_t cw);
 
-  uint32_t m_numNodes;                //!< Number of transmitting nodes.
-  uint32_t m_dataRate;                //!< DataRate in bps.
-  double m_depth;                     //!< Depth of transmitting and sink nodes.
-  double m_boundary;                  //!< Size of boundary in meters.
-  uint32_t m_packetSize;              //!< Generated packet size in bytes.
-  uint32_t m_bytesTotal;              //!< Total bytes received.
-  uint32_t m_cwMin;                   //!< Min CW to simulate.
-  uint32_t m_cwMax;                   //!< Max CW to simulate.
-  uint32_t m_cwStep;                  //!< CW step size, default 10.
-  uint32_t m_avgs;                    //!< Number of topologies to test for each cw point.
+    uint32_t m_numNodes;   //!< Number of transmitting nodes.
+    uint32_t m_dataRate;   //!< DataRate in bps.
+    double m_depth;        //!< Depth of transmitting and sink nodes.
+    double m_boundary;     //!< Size of boundary in meters.
+    uint32_t m_packetSize; //!< Generated packet size in bytes.
+    uint32_t m_bytesTotal; //!< Total bytes received.
+    uint32_t m_cwMin;      //!< Min CW to simulate.
+    uint32_t m_cwMax;      //!< Max CW to simulate.
+    uint32_t m_cwStep;     //!< CW step size, default 10.
+    uint32_t m_avgs;       //!< Number of topologies to test for each cw point.
 
-  Time m_slotTime;                    //!< Slot time duration.
-  Time m_simTime;                     //!< Simulation run time, default 1000 s.
+    Time m_slotTime; //!< Slot time duration.
+    Time m_simTime;  //!< Simulation run time, default 1000 s.
 
-  std::string m_gnudatfile;           //!< Name for GNU Plot output, default uan-cw-example.gpl.
-  std::string m_asciitracefile;       //!< Name for ascii trace file, default uan-cw-example.asc.
-  std::string m_bhCfgFile;            //!< (Unused)
+    std::string m_gnudatfile;     //!< Name for GNU Plot output, default uan-cw-example.gpl.
+    std::string m_asciitracefile; //!< Name for ascii trace file, default uan-cw-example.asc.
+    std::string m_bhCfgFile;      //!< (Unused)
 
-  Gnuplot2dDataset m_data;            //!< Container for the simulation data.
-  std::vector<double> m_throughputs;  //!< Throughput for each run.
+    Gnuplot2dDataset m_data;           //!< Container for the simulation data.
+    std::vector<double> m_throughputs; //!< Throughput for each run.
 
-  /** Default constructor. */
-  Experiment ();
+    /** Default constructor. */
+    Experiment();
 };
 
 #endif /* UAN_CW_EXAMPLE_H */

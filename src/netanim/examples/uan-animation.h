@@ -33,47 +33,47 @@ using namespace ns3;
  */
 class NetAnimExperiment
 {
-public:
-  /**
-   * Run function
-   * \param uan the UAN helper
-   */
-  void Run (UanHelper &uan);
-  /**
-   * Receive packet function
-   * \param socket the socket to receive from
-   */
-  void ReceivePacket (Ptr<Socket> socket);
-  /**
-   * Update positions function
-   * \param nodes the collection of nodes
-   */
-  void UpdatePositions (NodeContainer &nodes);
-  /// Reset data function
-  void ResetData ();
-  /**
-   * Increment CW function
-   * \param cw the CW
-   */
-  void IncrementCw (uint32_t cw);
-  uint32_t m_numNodes; ///< number of nodes
-  uint32_t m_dataRate; ///< data rate
-  double m_depth; ///< depth
-  double m_boundary; ///< boundary
-  uint32_t m_packetSize; ///< packet size
-  uint32_t m_bytesTotal; ///< bytes total
-  uint32_t m_cwMin; ///< CW minimum
-  uint32_t m_cwMax; ///< CW maximum
-  uint32_t m_cwStep; ///< CW step
-  uint32_t m_avgs; ///< averages
+  public:
+    /**
+     * Run function
+     * \param uan the UAN helper
+     */
+    void Run(UanHelper& uan);
+    /**
+     * Receive packet function
+     * \param socket the socket to receive from
+     */
+    void ReceivePacket(Ptr<Socket> socket);
+    /**
+     * Update positions function
+     * \param nodes the collection of nodes
+     */
+    void UpdatePositions(NodeContainer& nodes);
+    /// Reset data function
+    void ResetData();
+    /**
+     * Increment CW function
+     * \param cw the CW
+     */
+    void IncrementCw(uint32_t cw);
+    uint32_t m_numNodes;   ///< number of nodes
+    uint32_t m_dataRate;   ///< data rate
+    double m_depth;        ///< depth
+    double m_boundary;     ///< boundary
+    uint32_t m_packetSize; ///< packet size
+    uint32_t m_bytesTotal; ///< bytes total
+    uint32_t m_cwMin;      ///< CW minimum
+    uint32_t m_cwMax;      ///< CW maximum
+    uint32_t m_cwStep;     ///< CW step
+    uint32_t m_avgs;       ///< averages
 
-  Time m_slotTime; ///< slot time
-  Time m_simTime; ///< simulation time
+    Time m_slotTime; ///< slot time
+    Time m_simTime;  ///< simulation time
 
-  std::vector<double> m_throughputs; ///< throughputs
+    std::vector<double> m_throughputs; ///< throughputs
 
-  /// the experiment
-  NetAnimExperiment ();
+    /// the experiment
+    NetAnimExperiment();
 };
 
 #endif /* UAN_CW_EXAMPLE_H */

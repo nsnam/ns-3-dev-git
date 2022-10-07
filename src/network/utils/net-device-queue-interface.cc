@@ -18,269 +18,272 @@
  * Author: Stefano Avallone <stefano.avallone@.unina.it>
  */
 
-#include "ns3/abort.h"
-#include "ns3/queue-limits.h"
 #include "ns3/net-device-queue-interface.h"
+
+#include "ns3/abort.h"
+#include "ns3/queue-item.h"
+#include "ns3/queue-limits.h"
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
-#include "ns3/queue-item.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("NetDeviceQueueInterface");
+NS_LOG_COMPONENT_DEFINE("NetDeviceQueueInterface");
 
 TypeId
-NetDeviceQueue::GetTypeId ()
+NetDeviceQueue::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::NetDeviceQueue")
-    .SetParent<Object> ()
-    .SetGroupName("Network")
-    .AddConstructor<NetDeviceQueue> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::NetDeviceQueue")
+                            .SetParent<Object>()
+                            .SetGroupName("Network")
+                            .AddConstructor<NetDeviceQueue>();
+    return tid;
 }
 
-NetDeviceQueue::NetDeviceQueue ()
-  : m_stoppedByDevice (false),
-    m_stoppedByQueueLimits (false),
-    NS_LOG_TEMPLATE_DEFINE ("NetDeviceQueueInterface")
+NetDeviceQueue::NetDeviceQueue()
+    : m_stoppedByDevice(false),
+      m_stoppedByQueueLimits(false),
+      NS_LOG_TEMPLATE_DEFINE("NetDeviceQueueInterface")
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-NetDeviceQueue::~NetDeviceQueue ()
+NetDeviceQueue::~NetDeviceQueue()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_queueLimits = nullptr;
-  m_wakeCallback.Nullify ();
-  m_device = nullptr;
+    m_queueLimits = nullptr;
+    m_wakeCallback.Nullify();
+    m_device = nullptr;
 }
 
 bool
-NetDeviceQueue::IsStopped () const
+NetDeviceQueue::IsStopped() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_stoppedByDevice || m_stoppedByQueueLimits;
+    NS_LOG_FUNCTION(this);
+    return m_stoppedByDevice || m_stoppedByQueueLimits;
 }
 
 void
-NetDeviceQueue::Start ()
+NetDeviceQueue::Start()
 {
-  NS_LOG_FUNCTION (this);
-  m_stoppedByDevice = false;
+    NS_LOG_FUNCTION(this);
+    m_stoppedByDevice = false;
 }
 
 void
-NetDeviceQueue::Stop ()
+NetDeviceQueue::Stop()
 {
-  NS_LOG_FUNCTION (this);
-  m_stoppedByDevice = true;
+    NS_LOG_FUNCTION(this);
+    m_stoppedByDevice = true;
 }
 
 void
-NetDeviceQueue::Wake ()
+NetDeviceQueue::Wake()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  bool wasStoppedByDevice = m_stoppedByDevice;
-  m_stoppedByDevice = false;
+    bool wasStoppedByDevice = m_stoppedByDevice;
+    m_stoppedByDevice = false;
 
-  // Request the queue disc to dequeue a packet
-  if (wasStoppedByDevice && !m_wakeCallback.IsNull ())
+    // Request the queue disc to dequeue a packet
+    if (wasStoppedByDevice && !m_wakeCallback.IsNull())
     {
-      Simulator::ScheduleNow (&NetDeviceQueue::m_wakeCallback, this);
+        Simulator::ScheduleNow(&NetDeviceQueue::m_wakeCallback, this);
     }
 }
 
 void
-NetDeviceQueue::NotifyAggregatedObject (Ptr<NetDeviceQueueInterface> ndqi)
+NetDeviceQueue::NotifyAggregatedObject(Ptr<NetDeviceQueueInterface> ndqi)
 {
-  NS_LOG_FUNCTION (this << ndqi);
+    NS_LOG_FUNCTION(this << ndqi);
 
-  m_device = ndqi->GetObject<NetDevice> ();
-  NS_ABORT_MSG_IF (!m_device, "No NetDevice object was aggregated to the NetDeviceQueueInterface");
+    m_device = ndqi->GetObject<NetDevice>();
+    NS_ABORT_MSG_IF(!m_device, "No NetDevice object was aggregated to the NetDeviceQueueInterface");
 }
 
 void
-NetDeviceQueue::SetWakeCallback (WakeCallback cb)
+NetDeviceQueue::SetWakeCallback(WakeCallback cb)
 {
-  m_wakeCallback = cb;
+    m_wakeCallback = cb;
 }
 
 void
-NetDeviceQueue::NotifyQueuedBytes (uint32_t bytes)
+NetDeviceQueue::NotifyQueuedBytes(uint32_t bytes)
 {
-  NS_LOG_FUNCTION (this << bytes);
-  if (!m_queueLimits)
+    NS_LOG_FUNCTION(this << bytes);
+    if (!m_queueLimits)
     {
-      return;
+        return;
     }
-  m_queueLimits->Queued (bytes);
-  if (m_queueLimits->Available () >= 0)
+    m_queueLimits->Queued(bytes);
+    if (m_queueLimits->Available() >= 0)
     {
-      return;
+        return;
     }
-  m_stoppedByQueueLimits = true;
+    m_stoppedByQueueLimits = true;
 }
 
 void
-NetDeviceQueue::NotifyTransmittedBytes (uint32_t bytes)
+NetDeviceQueue::NotifyTransmittedBytes(uint32_t bytes)
 {
-  NS_LOG_FUNCTION (this << bytes);
-  if ((!m_queueLimits) || (!bytes))
+    NS_LOG_FUNCTION(this << bytes);
+    if ((!m_queueLimits) || (!bytes))
     {
-      return;
+        return;
     }
-  m_queueLimits->Completed (bytes);
-  if (m_queueLimits->Available () < 0)
+    m_queueLimits->Completed(bytes);
+    if (m_queueLimits->Available() < 0)
     {
-      return;
+        return;
     }
-  bool wasStoppedByQueueLimits = m_stoppedByQueueLimits;
-  m_stoppedByQueueLimits = false;
-  // Request the queue disc to dequeue a packet
-  if (wasStoppedByQueueLimits && !m_wakeCallback.IsNull ())
+    bool wasStoppedByQueueLimits = m_stoppedByQueueLimits;
+    m_stoppedByQueueLimits = false;
+    // Request the queue disc to dequeue a packet
+    if (wasStoppedByQueueLimits && !m_wakeCallback.IsNull())
     {
-      Simulator::ScheduleNow (&NetDeviceQueue::m_wakeCallback, this);
+        Simulator::ScheduleNow(&NetDeviceQueue::m_wakeCallback, this);
     }
 }
 
 void
-NetDeviceQueue::ResetQueueLimits ()
+NetDeviceQueue::ResetQueueLimits()
 {
-  NS_LOG_FUNCTION (this);
-  if (!m_queueLimits)
+    NS_LOG_FUNCTION(this);
+    if (!m_queueLimits)
     {
-      return;
+        return;
     }
-  m_queueLimits->Reset ();
+    m_queueLimits->Reset();
 }
 
 void
-NetDeviceQueue::SetQueueLimits (Ptr<QueueLimits> ql)
+NetDeviceQueue::SetQueueLimits(Ptr<QueueLimits> ql)
 {
-  NS_LOG_FUNCTION (this << ql);
-  m_queueLimits = ql;
+    NS_LOG_FUNCTION(this << ql);
+    m_queueLimits = ql;
 }
 
 Ptr<QueueLimits>
-NetDeviceQueue::GetQueueLimits ()
+NetDeviceQueue::GetQueueLimits()
 {
-  NS_LOG_FUNCTION (this);
-  return m_queueLimits;
+    NS_LOG_FUNCTION(this);
+    return m_queueLimits;
 }
 
-
-NS_OBJECT_ENSURE_REGISTERED (NetDeviceQueueInterface);
+NS_OBJECT_ENSURE_REGISTERED(NetDeviceQueueInterface);
 
 TypeId
-NetDeviceQueueInterface::GetTypeId ()
+NetDeviceQueueInterface::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::NetDeviceQueueInterface")
-    .SetParent<Object> ()
-    .SetGroupName("Network")
-    .AddConstructor<NetDeviceQueueInterface> ()
-    .AddAttribute ("TxQueuesType",
-                   "The type of transmission queues to be used",
-                   TypeId::ATTR_CONSTRUCT,
-                   TypeIdValue (NetDeviceQueue::GetTypeId ()),
-                   MakeTypeIdAccessor (&NetDeviceQueueInterface::SetTxQueuesType),
-                   MakeTypeIdChecker ())
-    .AddAttribute ("NTxQueues", "The number of device transmission queues",
-                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&NetDeviceQueueInterface::SetNTxQueues,
-                                         &NetDeviceQueueInterface::GetNTxQueues),
-                   MakeUintegerChecker<uint16_t> (1, 65535))
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::NetDeviceQueueInterface")
+            .SetParent<Object>()
+            .SetGroupName("Network")
+            .AddConstructor<NetDeviceQueueInterface>()
+            .AddAttribute("TxQueuesType",
+                          "The type of transmission queues to be used",
+                          TypeId::ATTR_CONSTRUCT,
+                          TypeIdValue(NetDeviceQueue::GetTypeId()),
+                          MakeTypeIdAccessor(&NetDeviceQueueInterface::SetTxQueuesType),
+                          MakeTypeIdChecker())
+            .AddAttribute("NTxQueues",
+                          "The number of device transmission queues",
+                          TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                          UintegerValue(1),
+                          MakeUintegerAccessor(&NetDeviceQueueInterface::SetNTxQueues,
+                                               &NetDeviceQueueInterface::GetNTxQueues),
+                          MakeUintegerChecker<uint16_t>(1, 65535));
+    return tid;
 }
 
-NetDeviceQueueInterface::NetDeviceQueueInterface ()
+NetDeviceQueueInterface::NetDeviceQueueInterface()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  // the default select queue callback returns 0
-  m_selectQueueCallback = [] (Ptr<QueueItem> item) { return 0; };
+    // the default select queue callback returns 0
+    m_selectQueueCallback = [](Ptr<QueueItem> item) { return 0; };
 }
 
-NetDeviceQueueInterface::~NetDeviceQueueInterface ()
+NetDeviceQueueInterface::~NetDeviceQueueInterface()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 Ptr<NetDeviceQueue>
-NetDeviceQueueInterface::GetTxQueue (std::size_t i) const
+NetDeviceQueueInterface::GetTxQueue(std::size_t i) const
 {
-  NS_ASSERT (i < m_txQueuesVector.size ());
-  return m_txQueuesVector[i];
+    NS_ASSERT(i < m_txQueuesVector.size());
+    return m_txQueuesVector[i];
 }
 
 std::size_t
-NetDeviceQueueInterface::GetNTxQueues () const
+NetDeviceQueueInterface::GetNTxQueues() const
 {
-  return m_txQueuesVector.size ();
+    return m_txQueuesVector.size();
 }
 
 void
-NetDeviceQueueInterface::DoDispose ()
+NetDeviceQueueInterface::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_txQueuesVector.clear ();
-  Object::DoDispose ();
+    m_txQueuesVector.clear();
+    Object::DoDispose();
 }
 
 void
-NetDeviceQueueInterface::NotifyNewAggregate ()
+NetDeviceQueueInterface::NotifyNewAggregate()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  // Notify the NetDeviceQueue objects that an object was aggregated
-  for (auto& tx : m_txQueuesVector)
+    // Notify the NetDeviceQueue objects that an object was aggregated
+    for (auto& tx : m_txQueuesVector)
     {
-      tx->NotifyAggregatedObject (this);
+        tx->NotifyAggregatedObject(this);
     }
-  Object::NotifyNewAggregate ();
+    Object::NotifyNewAggregate();
 }
 
 void
-NetDeviceQueueInterface::SetTxQueuesType (TypeId type)
+NetDeviceQueueInterface::SetTxQueuesType(TypeId type)
 {
-  NS_LOG_FUNCTION (this << type);
+    NS_LOG_FUNCTION(this << type);
 
-  NS_ABORT_MSG_IF (!m_txQueuesVector.empty (), "Cannot call SetTxQueuesType after creating device queues");
+    NS_ABORT_MSG_IF(!m_txQueuesVector.empty(),
+                    "Cannot call SetTxQueuesType after creating device queues");
 
-  m_txQueues = ObjectFactory ();
-  m_txQueues.SetTypeId (type);
+    m_txQueues = ObjectFactory();
+    m_txQueues.SetTypeId(type);
 }
 
 void
-NetDeviceQueueInterface::SetNTxQueues (std::size_t numTxQueues)
+NetDeviceQueueInterface::SetNTxQueues(std::size_t numTxQueues)
 {
-  NS_LOG_FUNCTION (this << numTxQueues);
-  NS_ASSERT (numTxQueues > 0);
+    NS_LOG_FUNCTION(this << numTxQueues);
+    NS_ASSERT(numTxQueues > 0);
 
-  NS_ABORT_MSG_IF (!m_txQueuesVector.empty (), "Cannot call SetNTxQueues after creating device queues");
+    NS_ABORT_MSG_IF(!m_txQueuesVector.empty(),
+                    "Cannot call SetNTxQueues after creating device queues");
 
-  // create the netdevice queues
-  for (std::size_t i = 0; i < numTxQueues; i++)
+    // create the netdevice queues
+    for (std::size_t i = 0; i < numTxQueues; i++)
     {
-      m_txQueuesVector.push_back (m_txQueues.Create ()->GetObject<NetDeviceQueue> ());
+        m_txQueuesVector.push_back(m_txQueues.Create()->GetObject<NetDeviceQueue>());
     }
 }
 
 void
-NetDeviceQueueInterface::SetSelectQueueCallback (SelectQueueCallback cb)
+NetDeviceQueueInterface::SetSelectQueueCallback(SelectQueueCallback cb)
 {
-  m_selectQueueCallback = cb;
+    m_selectQueueCallback = cb;
 }
 
 NetDeviceQueueInterface::SelectQueueCallback
-NetDeviceQueueInterface::GetSelectQueueCallback () const
+NetDeviceQueueInterface::GetSelectQueueCallback() const
 {
-  return m_selectQueueCallback;
+    return m_selectQueueCallback;
 }
 
 } // namespace ns3

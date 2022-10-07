@@ -21,49 +21,53 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  * Author: Junling Bu <linlinjavaer@gmail.com>
  */
-#include "ns3/boolean.h"
 #include "wave-mac-helper.h"
 
-namespace ns3 {
+#include "ns3/boolean.h"
 
-NqosWaveMacHelper::NqosWaveMacHelper ()
+namespace ns3
 {
 
-}
-NqosWaveMacHelper::~NqosWaveMacHelper ()
+NqosWaveMacHelper::NqosWaveMacHelper()
 {
-
 }
+
+NqosWaveMacHelper::~NqosWaveMacHelper()
+{
+}
+
 NqosWaveMacHelper
-NqosWaveMacHelper::Default ()
+NqosWaveMacHelper::Default()
 {
-  NqosWaveMacHelper helper;
-  // We're making non QoS-enabled Wi-Fi MACs here, so we set the
-  // necessary attribute. I've carefully positioned this here so that
-  // someone who knows what they're doing can override with explicit
-  // attributes.
-  helper.SetType ("ns3::OcbWifiMac", "QosSupported", BooleanValue (false));
-  return helper;
+    NqosWaveMacHelper helper;
+    // We're making non QoS-enabled Wi-Fi MACs here, so we set the
+    // necessary attribute. I've carefully positioned this here so that
+    // someone who knows what they're doing can override with explicit
+    // attributes.
+    helper.SetType("ns3::OcbWifiMac", "QosSupported", BooleanValue(false));
+    return helper;
 }
 
 /**********  QosWifi80211pMacHelper *********/
-QosWaveMacHelper::QosWaveMacHelper ()
+QosWaveMacHelper::QosWaveMacHelper()
 {
 }
-QosWaveMacHelper::~QosWaveMacHelper ()
+
+QosWaveMacHelper::~QosWaveMacHelper()
 {
 }
+
 QosWaveMacHelper
-QosWaveMacHelper::Default ()
+QosWaveMacHelper::Default()
 {
-  QosWaveMacHelper helper;
+    QosWaveMacHelper helper;
 
-  // We're making QoS-enabled Wi-Fi MACs here, so we set the necessary
-  // attribute. I've carefully positioned this here so that someone
-  // who knows what they're doing can override with explicit
-  // attributes.
-  helper.SetType ("ns3::OcbWifiMac", "QosSupported", BooleanValue (true));
+    // We're making QoS-enabled Wi-Fi MACs here, so we set the necessary
+    // attribute. I've carefully positioned this here so that someone
+    // who knows what they're doing can override with explicit
+    // attributes.
+    helper.SetType("ns3::OcbWifiMac", "QosSupported", BooleanValue(true));
 
-  return helper;
+    return helper;
 }
 } // namespace ns3

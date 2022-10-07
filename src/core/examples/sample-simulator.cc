@@ -18,12 +18,13 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <iostream>
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
 #include "ns3/command-line.h"
 #include "ns3/double.h"
+#include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/simulator.h"
+
+#include <iostream>
 
 /**
  * \file
@@ -34,37 +35,36 @@
 
 using namespace ns3;
 
-namespace {
+namespace
+{
 
 /** Simple model object to illustrate event handling. */
 class MyModel
 {
-public:
-  /** Start model execution by scheduling a HandleEvent. */
-  void Start ();
+  public:
+    /** Start model execution by scheduling a HandleEvent. */
+    void Start();
 
-private:
-  /**
-   *  Simple event handler.
-   *
-   * \param [in] eventValue Event argument.
-   */
-  void HandleEvent (double eventValue);
+  private:
+    /**
+     *  Simple event handler.
+     *
+     * \param [in] eventValue Event argument.
+     */
+    void HandleEvent(double eventValue);
 };
 
 void
-MyModel::Start ()
+MyModel::Start()
 {
-  Simulator::Schedule (Seconds (10.0),
-                       &MyModel::HandleEvent,
-                       this, Simulator::Now ().GetSeconds ());
+    Simulator::Schedule(Seconds(10.0), &MyModel::HandleEvent, this, Simulator::Now().GetSeconds());
 }
+
 void
-MyModel::HandleEvent (double value)
+MyModel::HandleEvent(double value)
 {
-  std::cout << "Member method received event at "
-            << Simulator::Now ().GetSeconds ()
-            << "s started at " << value << "s" << std::endl;
+    std::cout << "Member method received event at " << Simulator::Now().GetSeconds()
+              << "s started at " << value << "s" << std::endl;
 }
 
 /**
@@ -73,59 +73,56 @@ MyModel::HandleEvent (double value)
  * \param [in] model The MyModel object to start.
  */
 void
-ExampleFunction (MyModel *model)
+ExampleFunction(MyModel* model)
 {
-  std::cout << "ExampleFunction received event at "
-            << Simulator::Now ().GetSeconds () << "s" << std::endl;
-  model->Start ();
+    std::cout << "ExampleFunction received event at " << Simulator::Now().GetSeconds() << "s"
+              << std::endl;
+    model->Start();
 }
 
 /**
  * Simple function event handler; this function is called randomly.
  */
 void
-RandomFunction ()
+RandomFunction()
 {
-  std::cout << "RandomFunction received event at "
-            << Simulator::Now ().GetSeconds () << "s" << std::endl;
+    std::cout << "RandomFunction received event at " << Simulator::Now().GetSeconds() << "s"
+              << std::endl;
 }
 
 /** Simple function event handler; the corresponding event is cancelled. */
 void
-CancelledEvent ()
+CancelledEvent()
 {
-  std::cout << "I should never be called... " << std::endl;
+    std::cout << "I should never be called... " << std::endl;
 }
 
-}  // unnamed namespace
+} // unnamed namespace
 
-
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  CommandLine cmd (__FILE__);
-  cmd.Parse (argc, argv);
+    CommandLine cmd(__FILE__);
+    cmd.Parse(argc, argv);
 
-  MyModel model;
-  Ptr<UniformRandomVariable> v = CreateObject<UniformRandomVariable> ();
-  v->SetAttribute ("Min", DoubleValue (10));
-  v->SetAttribute ("Max", DoubleValue (20));
+    MyModel model;
+    Ptr<UniformRandomVariable> v = CreateObject<UniformRandomVariable>();
+    v->SetAttribute("Min", DoubleValue(10));
+    v->SetAttribute("Max", DoubleValue(20));
 
-  Simulator::Schedule (Seconds (10.0), &ExampleFunction, &model);
+    Simulator::Schedule(Seconds(10.0), &ExampleFunction, &model);
 
-  Simulator::Schedule (Seconds (v->GetValue ()), &RandomFunction);
+    Simulator::Schedule(Seconds(v->GetValue()), &RandomFunction);
 
-  EventId id = Simulator::Schedule (Seconds (30.0), &CancelledEvent);
-  Simulator::Cancel (id);
+    EventId id = Simulator::Schedule(Seconds(30.0), &CancelledEvent);
+    Simulator::Cancel(id);
 
-  Simulator::Schedule (Seconds (25.0),
-    [] ()
-    {
-      std::cout << "Code within a lambda expression at time "
-                << Simulator::Now ().As (Time::S)
-                << std::endl;
+    Simulator::Schedule(Seconds(25.0), []() {
+        std::cout << "Code within a lambda expression at time " << Simulator::Now().As(Time::S)
+                  << std::endl;
     });
 
-  Simulator::Run ();
+    Simulator::Run();
 
-  Simulator::Destroy ();
+    Simulator::Destroy();
 }

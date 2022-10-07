@@ -35,15 +35,15 @@
 // The stopTime defaults to 100 seconds but can be changed by an argument.
 //
 
-#include <string>
-
 #include "ns3/core-module.h"
-#include "ns3/time-probe.h"
 #include "ns3/gnuplot-helper.h"
+#include "ns3/time-probe.h"
+
+#include <string>
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("TimeProbeExample");
+NS_LOG_COMPONENT_DEFINE("TimeProbeExample");
 
 /**
  * This is our test object, an object that emits values according to
@@ -52,202 +52,205 @@ NS_LOG_COMPONENT_DEFINE ("TimeProbeExample");
  */
 class Emitter : public Object
 {
-public:
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId ();
-  Emitter ();
-private:
-  void DoInitialize () override;
-  /// Generate data.
-  void Emit ();
+  public:
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
+    Emitter();
 
-  TracedValue<Time> m_interval;  //!< Interarrival time between events.
-  Time m_last;                   //!< Current interarrival time.
-  Ptr<ExponentialRandomVariable> m_var; //!< Random number generator.
+  private:
+    void DoInitialize() override;
+    /// Generate data.
+    void Emit();
+
+    TracedValue<Time> m_interval;         //!< Interarrival time between events.
+    Time m_last;                          //!< Current interarrival time.
+    Ptr<ExponentialRandomVariable> m_var; //!< Random number generator.
 };
 
-NS_OBJECT_ENSURE_REGISTERED (Emitter);
+NS_OBJECT_ENSURE_REGISTERED(Emitter);
 
 TypeId
-Emitter::GetTypeId ()
+Emitter::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Emitter")
-    .SetParent<Object> ()
-    .SetGroupName ("Stats")
-    .AddConstructor<Emitter> ()
-    .AddTraceSource ("Interval",
-                     "Trace source",
-                     MakeTraceSourceAccessor (&Emitter::m_interval),
-                     "ns3::TracedValueCallback::Time")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::Emitter")
+                            .SetParent<Object>()
+                            .SetGroupName("Stats")
+                            .AddConstructor<Emitter>()
+                            .AddTraceSource("Interval",
+                                            "Trace source",
+                                            MakeTraceSourceAccessor(&Emitter::m_interval),
+                                            "ns3::TracedValueCallback::Time");
+    return tid;
 }
 
-Emitter::Emitter ()
-  : m_interval (Seconds (0)),
-    m_last (Seconds (0))
+Emitter::Emitter()
+    : m_interval(Seconds(0)),
+      m_last(Seconds(0))
 {
-  m_var = CreateObject<ExponentialRandomVariable> ();
-}
-
-void
-Emitter::DoInitialize ()
-{
-  Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Emit, this);
+    m_var = CreateObject<ExponentialRandomVariable>();
 }
 
 void
-Emitter::Emit ()
+Emitter::DoInitialize()
 {
-  NS_LOG_DEBUG ("Emitting at " << Simulator::Now ().As (Time::S));
-  m_interval = Simulator::Now () - m_last;
-  m_last = Simulator::Now ();
-  TimeProbe::SetValueByPath ("/Names/probe3", m_interval);
-  Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Emit, this);
+    Simulator::Schedule(Seconds(m_var->GetValue()), &Emitter::Emit, this);
+}
+
+void
+Emitter::Emit()
+{
+    NS_LOG_DEBUG("Emitting at " << Simulator::Now().As(Time::S));
+    m_interval = Simulator::Now() - m_last;
+    m_last = Simulator::Now();
+    TimeProbe::SetValueByPath("/Names/probe3", m_interval);
+    Simulator::Schedule(Seconds(m_var->GetValue()), &Emitter::Emit, this);
 }
 
 // This is a function to test hooking a raw function to the trace source
 void
-NotifyViaTraceSource (std::string context, Time oldVal, Time newVal)
+NotifyViaTraceSource(std::string context, Time oldVal, Time newVal)
 {
-  BooleanValue verbose;
-  GlobalValue::GetValueByName ("verbose", verbose);
-  if (verbose.Get ())
+    BooleanValue verbose;
+    GlobalValue::GetValueByName("verbose", verbose);
+    if (verbose.Get())
     {
-      std::cout << "context: " << context << " old " << oldVal.As (Time::S) << " new " << newVal.As (Time::S) << std::endl;
+        std::cout << "context: " << context << " old " << oldVal.As(Time::S) << " new "
+                  << newVal.As(Time::S) << std::endl;
     }
 }
 
 // This is a function to test hooking it to the probe output
 void
-NotifyViaProbe (std::string context, double oldVal, double newVal)
+NotifyViaProbe(std::string context, double oldVal, double newVal)
 {
-  BooleanValue verbose;
-  GlobalValue::GetValueByName ("verbose", verbose);
-  if (verbose.Get ())
+    BooleanValue verbose;
+    GlobalValue::GetValueByName("verbose", verbose);
+    if (verbose.Get())
     {
-      std::cout << "context: " << context << " old " << oldVal << " new " << newVal << std::endl;
+        std::cout << "context: " << context << " old " << oldVal << " new " << newVal << std::endl;
     }
 }
 
-static ns3::GlobalValue g_verbose ("verbose",
-                                   "Whether to enable verbose output",
-                                   ns3::BooleanValue (false),
-                                   ns3::MakeBooleanChecker ());
+static ns3::GlobalValue g_verbose("verbose",
+                                  "Whether to enable verbose output",
+                                  ns3::BooleanValue(false),
+                                  ns3::MakeBooleanChecker());
 
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  double stopTime = 100.0;
-  bool verbose = false;
+    double stopTime = 100.0;
+    bool verbose = false;
 
-  CommandLine cmd (__FILE__);
-  cmd.AddValue ("stopTime", "Time (seconds) to terminate simulation", stopTime);
-  cmd.AddValue ("verbose", "Whether to enable verbose output", verbose);
-  cmd.Parse (argc, argv);
-  bool connected;
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("stopTime", "Time (seconds) to terminate simulation", stopTime);
+    cmd.AddValue("verbose", "Whether to enable verbose output", verbose);
+    cmd.Parse(argc, argv);
+    bool connected;
 
-  // Set a global value, so that the callbacks can access it
-  if (verbose)
+    // Set a global value, so that the callbacks can access it
+    if (verbose)
     {
-      GlobalValue::Bind ("verbose", BooleanValue (true));
-      LogComponentEnable ("TimeProbeExample", LOG_LEVEL_ALL);
+        GlobalValue::Bind("verbose", BooleanValue(true));
+        LogComponentEnable("TimeProbeExample", LOG_LEVEL_ALL);
     }
 
-  Ptr<Emitter> emitter = CreateObject<Emitter> ();
-  Names::Add ("/Names/Emitter", emitter);
+    Ptr<Emitter> emitter = CreateObject<Emitter>();
+    Names::Add("/Names/Emitter", emitter);
 
-  //
-  // The below shows typical functionality without a probe
-  // (connect a sink function to a trace source)
-  //
-  connected = emitter->TraceConnect ("Interval", "raw trace source", MakeCallback (&NotifyViaTraceSource));
-  NS_ASSERT_MSG (connected, "Trace source not connected");
+    //
+    // The below shows typical functionality without a probe
+    // (connect a sink function to a trace source)
+    //
+    connected =
+        emitter->TraceConnect("Interval", "raw trace source", MakeCallback(&NotifyViaTraceSource));
+    NS_ASSERT_MSG(connected, "Trace source not connected");
 
-  //
-  // Next, we'll show several use cases of using a Probe to access and
-  // filter the values of the underlying trace source
-  //
+    //
+    // Next, we'll show several use cases of using a Probe to access and
+    // filter the values of the underlying trace source
+    //
 
-  //
-  // Probe1 will be hooked directly to the Emitter trace source object
-  //
+    //
+    // Probe1 will be hooked directly to the Emitter trace source object
+    //
 
-  // probe1 will be hooked to the Emitter trace source
-  Ptr<TimeProbe> probe1 = CreateObject<TimeProbe> ();
-  // the probe's name can serve as its context in the tracing
-  probe1->SetName ("probe1");
+    // probe1 will be hooked to the Emitter trace source
+    Ptr<TimeProbe> probe1 = CreateObject<TimeProbe>();
+    // the probe's name can serve as its context in the tracing
+    probe1->SetName("probe1");
 
-  // Connect the probe to the emitter's Interval
-  connected = probe1->ConnectByObject ("Interval", emitter);
-  NS_ASSERT_MSG (connected, "Trace source not connected to probe1");
+    // Connect the probe to the emitter's Interval
+    connected = probe1->ConnectByObject("Interval", emitter);
+    NS_ASSERT_MSG(connected, "Trace source not connected to probe1");
 
-  // The probe itself should generate output.  The context that we provide
-  // to this probe (in this case, the probe name) will help to disambiguate
-  // the source of the trace
-  connected = probe1->TraceConnect ("Output", probe1->GetName (), MakeCallback (&NotifyViaProbe));
-  NS_ASSERT_MSG (connected, "Trace source not connected to probe1 Output");
+    // The probe itself should generate output.  The context that we provide
+    // to this probe (in this case, the probe name) will help to disambiguate
+    // the source of the trace
+    connected = probe1->TraceConnect("Output", probe1->GetName(), MakeCallback(&NotifyViaProbe));
+    NS_ASSERT_MSG(connected, "Trace source not connected to probe1 Output");
 
-  //
-  // Probe2 will be hooked to the Emitter trace source object by
-  // accessing it by path name in the Config database
-  //
+    //
+    // Probe2 will be hooked to the Emitter trace source object by
+    // accessing it by path name in the Config database
+    //
 
-  // Create another similar probe; this will hook up via a Config path
-  Ptr<TimeProbe> probe2 = CreateObject<TimeProbe> ();
-  probe2->SetName ("probe2");
+    // Create another similar probe; this will hook up via a Config path
+    Ptr<TimeProbe> probe2 = CreateObject<TimeProbe>();
+    probe2->SetName("probe2");
 
-  // Note, no return value is checked here
-  probe2->ConnectByPath ("/Names/Emitter/Interval");
+    // Note, no return value is checked here
+    probe2->ConnectByPath("/Names/Emitter/Interval");
 
-  // The probe itself should generate output.  The context that we provide
-  // to this probe (in this case, the probe name) will help to disambiguate
-  // the source of the trace
-  connected = probe2->TraceConnect ("Output", "probe2", MakeCallback (&NotifyViaProbe));
-  NS_ASSERT_MSG (connected, "Trace source not connected to probe2 Output");
+    // The probe itself should generate output.  The context that we provide
+    // to this probe (in this case, the probe name) will help to disambiguate
+    // the source of the trace
+    connected = probe2->TraceConnect("Output", "probe2", MakeCallback(&NotifyViaProbe));
+    NS_ASSERT_MSG(connected, "Trace source not connected to probe2 Output");
 
-  //
-  // Probe3 will be called by the emitter directly through the
-  // static method SetValueByPath().
-  //
-  Ptr<TimeProbe> probe3 = CreateObject<TimeProbe> ();
-  probe3->SetName ("probe3");
+    //
+    // Probe3 will be called by the emitter directly through the
+    // static method SetValueByPath().
+    //
+    Ptr<TimeProbe> probe3 = CreateObject<TimeProbe>();
+    probe3->SetName("probe3");
 
-  // By adding to the config database, we can access it later
-  Names::Add ("/Names/probe3", probe3);
+    // By adding to the config database, we can access it later
+    Names::Add("/Names/probe3", probe3);
 
-  // The probe itself should generate output.  The context that we provide
-  // to this probe (in this case, the probe name) will help to disambiguate
-  // the source of the trace
-  connected = probe3->TraceConnect ("Output", "probe3", MakeCallback (&NotifyViaProbe));
-  NS_ASSERT_MSG (connected, "Trace source not connected to probe3 Output");
+    // The probe itself should generate output.  The context that we provide
+    // to this probe (in this case, the probe name) will help to disambiguate
+    // the source of the trace
+    connected = probe3->TraceConnect("Output", "probe3", MakeCallback(&NotifyViaProbe));
+    NS_ASSERT_MSG(connected, "Trace source not connected to probe3 Output");
 
-  // Plot the interval values
-  GnuplotHelper plotHelper;
-  plotHelper.ConfigurePlot ("time-probe-example",
-                            "Emitter interarrivals vs. Time",
-                            "Simulation time (Seconds)",
-                            "Interarrival time (Seconds)",
-                            "png");
+    // Plot the interval values
+    GnuplotHelper plotHelper;
+    plotHelper.ConfigurePlot("time-probe-example",
+                             "Emitter interarrivals vs. Time",
+                             "Simulation time (Seconds)",
+                             "Interarrival time (Seconds)",
+                             "png");
 
-  // Helper creates a TimeProbe and hooks it to the /Names/Emitter/Interval
-  // source.  Helper also takes the Output of the TimeProbe and plots it
-  // as a dataset labeled 'Emitter Interarrival Time'
-  plotHelper.PlotProbe ("ns3::TimeProbe",
-                        "/Names/Emitter/Interval",
-                        "Output",
-                        "Emitter Interarrival Time",
-                        GnuplotAggregator::KEY_INSIDE);
+    // Helper creates a TimeProbe and hooks it to the /Names/Emitter/Interval
+    // source.  Helper also takes the Output of the TimeProbe and plots it
+    // as a dataset labeled 'Emitter Interarrival Time'
+    plotHelper.PlotProbe("ns3::TimeProbe",
+                         "/Names/Emitter/Interval",
+                         "Output",
+                         "Emitter Interarrival Time",
+                         GnuplotAggregator::KEY_INSIDE);
 
-  // The Emitter object is not associated with an ns-3 node, so
-  // it won't get started automatically, so we need to do this ourselves
-  Simulator::Schedule (Seconds (0.0), &Emitter::Initialize, emitter);
+    // The Emitter object is not associated with an ns-3 node, so
+    // it won't get started automatically, so we need to do this ourselves
+    Simulator::Schedule(Seconds(0.0), &Emitter::Initialize, emitter);
 
-  Simulator::Stop (Seconds (stopTime));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Stop(Seconds(stopTime));
+    Simulator::Run();
+    Simulator::Destroy();
 
-  return 0;
+    return 0;
 }

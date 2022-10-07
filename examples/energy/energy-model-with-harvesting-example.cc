@@ -47,22 +47,23 @@
  *
  */
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/mobility-module.h"
 #include "ns3/config-store-module.h"
+#include "ns3/core-module.h"
 #include "ns3/energy-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/yans-wifi-helper.h"
+#include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
 #include "ns3/wifi-radio-energy-model-helper.h"
+#include "ns3/yans-wifi-helper.h"
+
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("EnergyWithHarvestingExample");
+NS_LOG_COMPONENT_DEFINE("EnergyWithHarvestingExample");
 
 /**
  * Print a received packet
@@ -71,17 +72,15 @@ NS_LOG_COMPONENT_DEFINE ("EnergyWithHarvestingExample");
  * \return a sting with the details of the packet: dst {IP, port}, time.
  */
 static inline std::string
-PrintReceivedPacket (Address& from)
+PrintReceivedPacket(Address& from)
 {
-  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (from);
+    InetSocketAddress iaddr = InetSocketAddress::ConvertFrom(from);
 
-  std::ostringstream oss;
-  oss << "--\nReceived one packet! Socket: " << iaddr.GetIpv4 ()
-      << " port: " << iaddr.GetPort ()
-      << " at time = " << Simulator::Now ().GetSeconds ()
-      << "\n--";
+    std::ostringstream oss;
+    oss << "--\nReceived one packet! Socket: " << iaddr.GetIpv4() << " port: " << iaddr.GetPort()
+        << " at time = " << Simulator::Now().GetSeconds() << "\n--";
 
-  return oss.str ();
+    return oss.str();
 }
 
 /**
@@ -90,15 +89,15 @@ PrintReceivedPacket (Address& from)
  * Packet receiving sink.
  */
 void
-ReceivePacket (Ptr<Socket> socket)
+ReceivePacket(Ptr<Socket> socket)
 {
-  Ptr<Packet> packet;
-  Address from;
-  while ((packet = socket->RecvFrom (from)))
+    Ptr<Packet> packet;
+    Address from;
+    while ((packet = socket->RecvFrom(from)))
     {
-      if (packet->GetSize () > 0)
+        if (packet->GetSize() > 0)
         {
-          NS_LOG_UNCOND (PrintReceivedPacket (from));
+            NS_LOG_UNCOND(PrintReceivedPacket(from));
         }
     }
 }
@@ -113,18 +112,26 @@ ReceivePacket (Ptr<Socket> socket)
  * Traffic generator.
  */
 static void
-GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, Ptr<Node> n,
-                 uint32_t pktCount, Time pktInterval)
+GenerateTraffic(Ptr<Socket> socket,
+                uint32_t pktSize,
+                Ptr<Node> n,
+                uint32_t pktCount,
+                Time pktInterval)
 {
-  if (pktCount > 0)
+    if (pktCount > 0)
     {
-      socket->Send (Create<Packet> (pktSize));
-      Simulator::Schedule (pktInterval, &GenerateTraffic, socket, pktSize, n,
-                           pktCount - 1, pktInterval);
+        socket->Send(Create<Packet>(pktSize));
+        Simulator::Schedule(pktInterval,
+                            &GenerateTraffic,
+                            socket,
+                            pktSize,
+                            n,
+                            pktCount - 1,
+                            pktInterval);
     }
-  else
+    else
     {
-      socket->Close ();
+        socket->Close();
     }
 }
 
@@ -135,10 +142,10 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, Ptr<Node> n,
  * \param remainingEnergy New value
  */
 void
-RemainingEnergy (double oldValue, double remainingEnergy)
+RemainingEnergy(double oldValue, double remainingEnergy)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
-                 << "s Current remaining energy = " << remainingEnergy << "J");
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds()
+                  << "s Current remaining energy = " << remainingEnergy << "J");
 }
 
 /**
@@ -146,11 +153,12 @@ RemainingEnergy (double oldValue, double remainingEnergy)
  *
  * \param oldValue Old value
  * \param totalEnergy New value
- */void
-TotalEnergy (double oldValue, double totalEnergy)
+ */
+void
+TotalEnergy(double oldValue, double totalEnergy)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
-                 << "s Total energy consumed by radio = " << totalEnergy << "J");
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds()
+                  << "s Total energy consumed by radio = " << totalEnergy << "J");
 }
 
 /**
@@ -160,10 +168,10 @@ TotalEnergy (double oldValue, double totalEnergy)
  * \param harvestedPower New value
  */
 void
-HarvestedPower (double oldValue, double harvestedPower)
+HarvestedPower(double oldValue, double harvestedPower)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
-                 << "s Current harvested power = " << harvestedPower << " W");
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds()
+                  << "s Current harvested power = " << harvestedPower << " W");
 }
 
 /**
@@ -173,181 +181,192 @@ HarvestedPower (double oldValue, double harvestedPower)
  * \param totalEnergyHarvested New value
  */
 void
-TotalEnergyHarvested (double oldValue, double totalEnergyHarvested)
+TotalEnergyHarvested(double oldValue, double totalEnergyHarvested)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
-                 << "s Total energy harvested by harvester = "
-                 << totalEnergyHarvested << " J");
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds()
+                  << "s Total energy harvested by harvester = " << totalEnergyHarvested << " J");
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {
-  std::string phyMode ("DsssRate1Mbps");
-  double Prss = -80;            // dBm
-  uint32_t PacketSize = 200;   // bytes
-  bool verbose = false;
+    std::string phyMode("DsssRate1Mbps");
+    double Prss = -80;         // dBm
+    uint32_t PacketSize = 200; // bytes
+    bool verbose = false;
 
-  // simulation parameters
-  uint32_t numPackets = 10000;  // number of packets to send
-  double interval = 1;          // seconds
-  double startTime = 0.0;       // seconds
-  double distanceToRx = 100.0;  // meters
+    // simulation parameters
+    uint32_t numPackets = 10000; // number of packets to send
+    double interval = 1;         // seconds
+    double startTime = 0.0;      // seconds
+    double distanceToRx = 100.0; // meters
 
-  // Energy Harvester variables
-  double harvestingUpdateInterval = 1;  // seconds
+    // Energy Harvester variables
+    double harvestingUpdateInterval = 1; // seconds
 
-  CommandLine cmd (__FILE__);
-  cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
-  cmd.AddValue ("Prss", "Intended primary RSS (dBm)", Prss);
-  cmd.AddValue ("PacketSize", "size of application packet sent", PacketSize);
-  cmd.AddValue ("numPackets", "Total number of packets to send", numPackets);
-  cmd.AddValue ("startTime", "Simulation start time", startTime);
-  cmd.AddValue ("distanceToRx", "X-Axis distance between nodes", distanceToRx);
-  cmd.AddValue ("verbose", "Turn on all device log components", verbose);
-  cmd.Parse (argc, argv);
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
+    cmd.AddValue("Prss", "Intended primary RSS (dBm)", Prss);
+    cmd.AddValue("PacketSize", "size of application packet sent", PacketSize);
+    cmd.AddValue("numPackets", "Total number of packets to send", numPackets);
+    cmd.AddValue("startTime", "Simulation start time", startTime);
+    cmd.AddValue("distanceToRx", "X-Axis distance between nodes", distanceToRx);
+    cmd.AddValue("verbose", "Turn on all device log components", verbose);
+    cmd.Parse(argc, argv);
 
-  // Convert to time object
-  Time interPacketInterval = Seconds (interval);
+    // Convert to time object
+    Time interPacketInterval = Seconds(interval);
 
-  // disable fragmentation for frames below 2200 bytes
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold",
-                      StringValue ("2200"));
-  // turn off RTS/CTS for frames below 2200 bytes
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold",
-                      StringValue ("2200"));
-  // Fix non-unicast data rate to be the same as that of unicast
-  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
-                      StringValue (phyMode));
+    // disable fragmentation for frames below 2200 bytes
+    Config::SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold",
+                       StringValue("2200"));
+    // turn off RTS/CTS for frames below 2200 bytes
+    Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue("2200"));
+    // Fix non-unicast data rate to be the same as that of unicast
+    Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue(phyMode));
 
-  NodeContainer c;
-  c.Create (2);     // create 2 nodes
-  NodeContainer networkNodes;
-  networkNodes.Add (c.Get (0));
-  networkNodes.Add (c.Get (1));
+    NodeContainer c;
+    c.Create(2); // create 2 nodes
+    NodeContainer networkNodes;
+    networkNodes.Add(c.Get(0));
+    networkNodes.Add(c.Get(1));
 
-  // The below set of helpers will help us to put together the wifi NICs we want
-  WifiHelper wifi;
-  if (verbose)
+    // The below set of helpers will help us to put together the wifi NICs we want
+    WifiHelper wifi;
+    if (verbose)
     {
-      wifi.EnableLogComponents ();
+        wifi.EnableLogComponents();
     }
-  wifi.SetStandard (WIFI_STANDARD_80211b);
+    wifi.SetStandard(WIFI_STANDARD_80211b);
 
-  /** Wifi PHY **/
-  /***************************************************************************/
-  YansWifiPhyHelper wifiPhy;
+    /** Wifi PHY **/
+    /***************************************************************************/
+    YansWifiPhyHelper wifiPhy;
 
-  /** wifi channel **/
-  YansWifiChannelHelper wifiChannel;
-  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
+    /** wifi channel **/
+    YansWifiChannelHelper wifiChannel;
+    wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
+    wifiChannel.AddPropagationLoss("ns3::FriisPropagationLossModel");
 
-  // create wifi channel
-  Ptr<YansWifiChannel> wifiChannelPtr = wifiChannel.Create ();
-  wifiPhy.SetChannel (wifiChannelPtr);
+    // create wifi channel
+    Ptr<YansWifiChannel> wifiChannelPtr = wifiChannel.Create();
+    wifiPhy.SetChannel(wifiChannelPtr);
 
-  /** MAC layer **/
-  // Add a MAC and disable rate control
-  WifiMacHelper wifiMac;
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",
-                                StringValue (phyMode), "ControlMode",
-                                StringValue (phyMode));
-  // Set it to ad-hoc mode
-  wifiMac.SetType ("ns3::AdhocWifiMac");
+    /** MAC layer **/
+    // Add a MAC and disable rate control
+    WifiMacHelper wifiMac;
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                 "DataMode",
+                                 StringValue(phyMode),
+                                 "ControlMode",
+                                 StringValue(phyMode));
+    // Set it to ad-hoc mode
+    wifiMac.SetType("ns3::AdhocWifiMac");
 
-  /** install PHY + MAC **/
-  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, networkNodes);
+    /** install PHY + MAC **/
+    NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, networkNodes);
 
-  /** mobility **/
-  MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-  positionAlloc->Add (Vector (2 * distanceToRx, 0.0, 0.0));
-  mobility.SetPositionAllocator (positionAlloc);
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (c);
+    /** mobility **/
+    MobilityHelper mobility;
+    Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
+    positionAlloc->Add(Vector(0.0, 0.0, 0.0));
+    positionAlloc->Add(Vector(2 * distanceToRx, 0.0, 0.0));
+    mobility.SetPositionAllocator(positionAlloc);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(c);
 
-  /** Energy Model **/
-  /***************************************************************************/
-  /* energy source */
-  BasicEnergySourceHelper basicSourceHelper;
-  // configure energy source
-  basicSourceHelper.Set ("BasicEnergySourceInitialEnergyJ", DoubleValue (1.0));
-  // install source
-  EnergySourceContainer sources = basicSourceHelper.Install (c);
-  /* device energy model */
-  WifiRadioEnergyModelHelper radioEnergyHelper;
-  // configure radio energy model
-  radioEnergyHelper.Set ("TxCurrentA", DoubleValue (0.0174));
-  radioEnergyHelper.Set ("RxCurrentA", DoubleValue (0.0197));
-  // install device model
-  DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install (devices, sources);
+    /** Energy Model **/
+    /***************************************************************************/
+    /* energy source */
+    BasicEnergySourceHelper basicSourceHelper;
+    // configure energy source
+    basicSourceHelper.Set("BasicEnergySourceInitialEnergyJ", DoubleValue(1.0));
+    // install source
+    EnergySourceContainer sources = basicSourceHelper.Install(c);
+    /* device energy model */
+    WifiRadioEnergyModelHelper radioEnergyHelper;
+    // configure radio energy model
+    radioEnergyHelper.Set("TxCurrentA", DoubleValue(0.0174));
+    radioEnergyHelper.Set("RxCurrentA", DoubleValue(0.0197));
+    // install device model
+    DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install(devices, sources);
 
-  /* energy harvester */
-  BasicEnergyHarvesterHelper basicHarvesterHelper;
-  // configure energy harvester
-  basicHarvesterHelper.Set ("PeriodicHarvestedPowerUpdateInterval", TimeValue (Seconds (harvestingUpdateInterval)));
-  basicHarvesterHelper.Set ("HarvestablePower", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=0.1]"));
-  // install harvester on all energy sources
-  EnergyHarvesterContainer harvesters = basicHarvesterHelper.Install (sources);
-  /***************************************************************************/
+    /* energy harvester */
+    BasicEnergyHarvesterHelper basicHarvesterHelper;
+    // configure energy harvester
+    basicHarvesterHelper.Set("PeriodicHarvestedPowerUpdateInterval",
+                             TimeValue(Seconds(harvestingUpdateInterval)));
+    basicHarvesterHelper.Set("HarvestablePower",
+                             StringValue("ns3::UniformRandomVariable[Min=0.0|Max=0.1]"));
+    // install harvester on all energy sources
+    EnergyHarvesterContainer harvesters = basicHarvesterHelper.Install(sources);
+    /***************************************************************************/
 
-  /** Internet stack **/
-  InternetStackHelper internet;
-  internet.Install (networkNodes);
+    /** Internet stack **/
+    InternetStackHelper internet;
+    internet.Install(networkNodes);
 
-  Ipv4AddressHelper ipv4;
-  NS_LOG_INFO ("Assign IP Addresses.");
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i = ipv4.Assign (devices);
+    Ipv4AddressHelper ipv4;
+    NS_LOG_INFO("Assign IP Addresses.");
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer i = ipv4.Assign(devices);
 
-  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-  Ptr<Socket> recvSink = Socket::CreateSocket (networkNodes.Get (1), tid);  // node 1, Destination
-  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
-  recvSink->Bind (local);
-  recvSink->SetRecvCallback (MakeCallback (&ReceivePacket));
+    TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
+    Ptr<Socket> recvSink = Socket::CreateSocket(networkNodes.Get(1), tid); // node 1, Destination
+    InetSocketAddress local = InetSocketAddress(Ipv4Address::GetAny(), 80);
+    recvSink->Bind(local);
+    recvSink->SetRecvCallback(MakeCallback(&ReceivePacket));
 
-  Ptr<Socket> source = Socket::CreateSocket (networkNodes.Get (0), tid);    // node 0, Source
-  InetSocketAddress remote = InetSocketAddress (Ipv4Address::GetBroadcast (), 80);
-  source->SetAllowBroadcast (true);
-  source->Connect (remote);
+    Ptr<Socket> source = Socket::CreateSocket(networkNodes.Get(0), tid); // node 0, Source
+    InetSocketAddress remote = InetSocketAddress(Ipv4Address::GetBroadcast(), 80);
+    source->SetAllowBroadcast(true);
+    source->Connect(remote);
 
-  /** connect trace sources **/
-  /***************************************************************************/
-  // all traces are connected to node 1 (Destination)
-  // energy source
-  Ptr<BasicEnergySource> basicSourcePtr = DynamicCast<BasicEnergySource> (sources.Get (1));
-  basicSourcePtr->TraceConnectWithoutContext ("RemainingEnergy", MakeCallback (&RemainingEnergy));
-  // device energy model
-  Ptr<DeviceEnergyModel> basicRadioModelPtr =
-    basicSourcePtr->FindDeviceEnergyModels ("ns3::WifiRadioEnergyModel").Get (0);
-  NS_ASSERT (basicRadioModelPtr);
-  basicRadioModelPtr->TraceConnectWithoutContext ("TotalEnergyConsumption", MakeCallback (&TotalEnergy));
-  // energy harvester
-  Ptr<BasicEnergyHarvester> basicHarvesterPtr = DynamicCast<BasicEnergyHarvester> (harvesters.Get (1));
-  basicHarvesterPtr->TraceConnectWithoutContext ("HarvestedPower", MakeCallback (&HarvestedPower));
-  basicHarvesterPtr->TraceConnectWithoutContext ("TotalEnergyHarvested", MakeCallback (&TotalEnergyHarvested));
-  /***************************************************************************/
+    /** connect trace sources **/
+    /***************************************************************************/
+    // all traces are connected to node 1 (Destination)
+    // energy source
+    Ptr<BasicEnergySource> basicSourcePtr = DynamicCast<BasicEnergySource>(sources.Get(1));
+    basicSourcePtr->TraceConnectWithoutContext("RemainingEnergy", MakeCallback(&RemainingEnergy));
+    // device energy model
+    Ptr<DeviceEnergyModel> basicRadioModelPtr =
+        basicSourcePtr->FindDeviceEnergyModels("ns3::WifiRadioEnergyModel").Get(0);
+    NS_ASSERT(basicRadioModelPtr);
+    basicRadioModelPtr->TraceConnectWithoutContext("TotalEnergyConsumption",
+                                                   MakeCallback(&TotalEnergy));
+    // energy harvester
+    Ptr<BasicEnergyHarvester> basicHarvesterPtr =
+        DynamicCast<BasicEnergyHarvester>(harvesters.Get(1));
+    basicHarvesterPtr->TraceConnectWithoutContext("HarvestedPower", MakeCallback(&HarvestedPower));
+    basicHarvesterPtr->TraceConnectWithoutContext("TotalEnergyHarvested",
+                                                  MakeCallback(&TotalEnergyHarvested));
+    /***************************************************************************/
 
+    /** simulation setup **/
+    // start traffic
+    Simulator::Schedule(Seconds(startTime),
+                        &GenerateTraffic,
+                        source,
+                        PacketSize,
+                        networkNodes.Get(0),
+                        numPackets,
+                        interPacketInterval);
 
-  /** simulation setup **/
-  // start traffic
-  Simulator::Schedule (Seconds (startTime), &GenerateTraffic, source, PacketSize,
-                       networkNodes.Get (0), numPackets, interPacketInterval);
+    Simulator::Stop(Seconds(10.0));
+    Simulator::Run();
 
-  Simulator::Stop (Seconds (10.0));
-  Simulator::Run ();
-
-  for (DeviceEnergyModelContainer::Iterator iter = deviceModels.Begin (); iter != deviceModels.End (); iter ++)
+    for (DeviceEnergyModelContainer::Iterator iter = deviceModels.Begin();
+         iter != deviceModels.End();
+         iter++)
     {
-      double energyConsumed = (*iter)->GetTotalEnergyConsumption ();
-      NS_LOG_UNCOND ("End of simulation (" << Simulator::Now ().GetSeconds ()
-                     << "s) Total energy consumed by radio = " << energyConsumed << "J");
-      NS_ASSERT (energyConsumed <= 1.0);
+        double energyConsumed = (*iter)->GetTotalEnergyConsumption();
+        NS_LOG_UNCOND("End of simulation ("
+                      << Simulator::Now().GetSeconds()
+                      << "s) Total energy consumed by radio = " << energyConsumed << "J");
+        NS_ASSERT(energyConsumed <= 1.0);
     }
 
-  Simulator::Destroy ();
+    Simulator::Destroy();
 
-  return 0;
+    return 0;
 }

@@ -28,17 +28,18 @@
 #ifndef NS3_PARALLEL_COMMUNICATION_INTERFACE_H
 #define NS3_PARALLEL_COMMUNICATION_INTERFACE_H
 
-#include <stdint.h>
-#include <list>
-
-#include <ns3/object.h>
-#include <ns3/nstime.h>
-#include <ns3/buffer.h>
-#include <ns3/packet.h>
-
 #include "mpi.h"
 
-namespace ns3 {
+#include <ns3/buffer.h>
+#include <ns3/nstime.h>
+#include <ns3/object.h>
+#include <ns3/packet.h>
+
+#include <list>
+#include <stdint.h>
+
+namespace ns3
+{
 
 /**
  * \ingroup mpi
@@ -58,48 +59,52 @@ namespace ns3 {
  */
 class ParallelCommunicationInterface
 {
-public:
-  /**
-    * Destructor
-    */
-  virtual ~ParallelCommunicationInterface() {}
-  /**
-   * \copydoc MpiInterface::Destroy
-   */
-  virtual void Destroy () = 0;
-  /**
-   * \copydoc MpiInterface::GetSystemId
-   */
-  virtual uint32_t GetSystemId () = 0;
-  /**
-   * \copydoc MpiInterface::GetSize
-   */
-  virtual uint32_t GetSize () = 0;
-  /**
-   * \copydoc MpiInterface::IsEnabled
-   */
-  virtual bool IsEnabled () = 0;
-  /**
-   * \copydoc MpiInterface::Enable(int* pargc,char*** pargv)
-   */
-  virtual void Enable (int* pargc, char*** pargv) = 0;
-  /**
-   * \copydoc MpiInterface::Enable(MPI_Comm communicator)
-   */
-  virtual void Enable (MPI_Comm communicator) = 0;
-  /**
-   * \copydoc MpiInterface::Disable
-   */
-  virtual void Disable () = 0;
-  /**
-   * \copydoc MpiInterface::SendPacket
-   */
-  virtual void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev) = 0;
-  /**
-   * \copydoc MpiInterface::GetCommunicator
-   */
-  virtual MPI_Comm GetCommunicator () = 0;
-private:
+  public:
+    /**
+     * Destructor
+     */
+    virtual ~ParallelCommunicationInterface()
+    {
+    }
+
+    /**
+     * \copydoc MpiInterface::Destroy
+     */
+    virtual void Destroy() = 0;
+    /**
+     * \copydoc MpiInterface::GetSystemId
+     */
+    virtual uint32_t GetSystemId() = 0;
+    /**
+     * \copydoc MpiInterface::GetSize
+     */
+    virtual uint32_t GetSize() = 0;
+    /**
+     * \copydoc MpiInterface::IsEnabled
+     */
+    virtual bool IsEnabled() = 0;
+    /**
+     * \copydoc MpiInterface::Enable(int* pargc,char*** pargv)
+     */
+    virtual void Enable(int* pargc, char*** pargv) = 0;
+    /**
+     * \copydoc MpiInterface::Enable(MPI_Comm communicator)
+     */
+    virtual void Enable(MPI_Comm communicator) = 0;
+    /**
+     * \copydoc MpiInterface::Disable
+     */
+    virtual void Disable() = 0;
+    /**
+     * \copydoc MpiInterface::SendPacket
+     */
+    virtual void SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev) = 0;
+    /**
+     * \copydoc MpiInterface::GetCommunicator
+     */
+    virtual MPI_Comm GetCommunicator() = 0;
+
+  private:
 };
 
 } // namespace ns3

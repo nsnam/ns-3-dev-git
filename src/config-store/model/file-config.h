@@ -23,7 +23,8 @@
 
 #include <string>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup configstore
@@ -32,33 +33,33 @@ namespace ns3 {
  */
 class FileConfig
 {
-public:
-  virtual ~FileConfig ();
-  /**
-   * Set the file name
-   * \param filename the filename
-   */
-  virtual void SetFilename (std::string filename) = 0;
-  /**
-   * Set if to save deprecated attributes
-   * \param saveDeprecated the deprecated attributes save policy
-   */
-  void SetSaveDeprecated (bool saveDeprecated);
-  /**
-   * Load or save the default values
-   */
-  virtual void Default () = 0;
-  /**
-   * Load or save the global values
-   */
-  virtual void Global () = 0;
-  /**
-   * Load or save the attributes values
-   */
-  virtual void Attributes () = 0;
+  public:
+    virtual ~FileConfig();
+    /**
+     * Set the file name
+     * \param filename the filename
+     */
+    virtual void SetFilename(std::string filename) = 0;
+    /**
+     * Set if to save deprecated attributes
+     * \param saveDeprecated the deprecated attributes save policy
+     */
+    void SetSaveDeprecated(bool saveDeprecated);
+    /**
+     * Load or save the default values
+     */
+    virtual void Default() = 0;
+    /**
+     * Load or save the global values
+     */
+    virtual void Global() = 0;
+    /**
+     * Load or save the attributes values
+     */
+    virtual void Attributes() = 0;
 
-protected:
-  bool m_saveDeprecated; ///< save deprecated attributes
+  protected:
+    bool m_saveDeprecated; ///< save deprecated attributes
 };
 
 /**
@@ -67,13 +68,13 @@ protected:
  */
 class NoneFileConfig : public FileConfig
 {
-public:
-  NoneFileConfig ();
-  ~NoneFileConfig () override;
-  void SetFilename (std::string filename) override;
-  void Default () override;
-  void Global () override;
-  void Attributes () override;
+  public:
+    NoneFileConfig();
+    ~NoneFileConfig() override;
+    void SetFilename(std::string filename) override;
+    void Default() override;
+    void Global() override;
+    void Attributes() override;
 };
 
 } // namespace ns3

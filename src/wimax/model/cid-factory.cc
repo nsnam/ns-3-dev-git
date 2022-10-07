@@ -20,108 +20,109 @@
  *                               <amine.ismail@UDcast.com>
  */
 
-
-#include <stdint.h>
 #include "cid-factory.h"
+
 #include "ns3/uinteger.h"
 
-namespace ns3 {
+#include <stdint.h>
 
-CidFactory::CidFactory ()
-  : m_m (0x5500),
-    // this is an arbitrary default
-    m_basicIdentifier (1),
-    m_primaryIdentifier (m_m + 1),
-    m_transportOrSecondaryIdentifier (2 * m_m + 1),
-    m_multicastPollingIdentifier (0xff00)
+namespace ns3
+{
+
+CidFactory::CidFactory()
+    : m_m(0x5500),
+      // this is an arbitrary default
+      m_basicIdentifier(1),
+      m_primaryIdentifier(m_m + 1),
+      m_transportOrSecondaryIdentifier(2 * m_m + 1),
+      m_multicastPollingIdentifier(0xff00)
 {
 }
 
 Cid
-CidFactory::AllocateBasic ()
+CidFactory::AllocateBasic()
 {
-  NS_ASSERT (m_basicIdentifier < m_m);
-  m_basicIdentifier++;
-  return Cid (m_basicIdentifier);
+    NS_ASSERT(m_basicIdentifier < m_m);
+    m_basicIdentifier++;
+    return Cid(m_basicIdentifier);
 }
 
 Cid
-CidFactory::AllocatePrimary ()
+CidFactory::AllocatePrimary()
 {
-  NS_ASSERT (m_primaryIdentifier < 2 * m_m);
-  m_primaryIdentifier++;
-  return Cid (m_primaryIdentifier);
+    NS_ASSERT(m_primaryIdentifier < 2 * m_m);
+    m_primaryIdentifier++;
+    return Cid(m_primaryIdentifier);
 }
 
 Cid
-CidFactory::AllocateTransportOrSecondary ()
+CidFactory::AllocateTransportOrSecondary()
 {
-  NS_ASSERT (m_transportOrSecondaryIdentifier < 0xfefe);
-  m_transportOrSecondaryIdentifier++;
-  return Cid (m_transportOrSecondaryIdentifier);
+    NS_ASSERT(m_transportOrSecondaryIdentifier < 0xfefe);
+    m_transportOrSecondaryIdentifier++;
+    return Cid(m_transportOrSecondaryIdentifier);
 }
 
 Cid
-CidFactory::AllocateMulticast ()
+CidFactory::AllocateMulticast()
 {
-  NS_ASSERT (m_multicastPollingIdentifier < 0xfffd);
-  m_multicastPollingIdentifier++;
-  return Cid (m_multicastPollingIdentifier);
+    NS_ASSERT(m_multicastPollingIdentifier < 0xfffd);
+    m_multicastPollingIdentifier++;
+    return Cid(m_multicastPollingIdentifier);
 }
 
-
 Cid
-CidFactory::Allocate (enum Cid::Type type)
+CidFactory::Allocate(enum Cid::Type type)
 {
-  switch (type)
+    switch (type)
     {
     case Cid::BROADCAST:
-      return Cid::Broadcast ();
+        return Cid::Broadcast();
     case Cid::INITIAL_RANGING:
-      return Cid::InitialRanging ();
+        return Cid::InitialRanging();
     case Cid::BASIC:
-      return AllocateBasic ();
+        return AllocateBasic();
     case Cid::PRIMARY:
-      return AllocatePrimary ();
+        return AllocatePrimary();
     case Cid::TRANSPORT:
-      return AllocateTransportOrSecondary ();
+        return AllocateTransportOrSecondary();
     case Cid::MULTICAST:
-      return AllocateMulticast ();
+        return AllocateMulticast();
     case Cid::PADDING:
-      return Cid::Padding ();
+        return Cid::Padding();
     default:
-      NS_FATAL_ERROR ("Cannot be reached");
-      return 0; // quiet compiler
+        NS_FATAL_ERROR("Cannot be reached");
+        return 0; // quiet compiler
     }
 }
 
 bool
-CidFactory::IsTransport (Cid cid) const
+CidFactory::IsTransport(Cid cid) const
 {
-  int id = cid.m_identifier;
-  return (id - 2 * m_m > 0) && (id <= 0xfefe);
-}
-bool
-CidFactory::IsPrimary (Cid cid) const
-{
-  int id = cid.m_identifier;
-  return (id - m_m > 0) && (id <= 2 * m_m);
-}
-bool
-CidFactory::IsBasic (Cid cid) const
-{
-  uint16_t id = cid.m_identifier;
-  return id >= 1 && id <= m_m;
+    int id = cid.m_identifier;
+    return (id - 2 * m_m > 0) && (id <= 0xfefe);
 }
 
+bool
+CidFactory::IsPrimary(Cid cid) const
+{
+    int id = cid.m_identifier;
+    return (id - m_m > 0) && (id <= 2 * m_m);
+}
+
+bool
+CidFactory::IsBasic(Cid cid) const
+{
+    uint16_t id = cid.m_identifier;
+    return id >= 1 && id <= m_m;
+}
 
 void
-CidFactory::FreeCid (Cid cid)
+CidFactory::FreeCid(Cid cid)
 {
-  /// \todo We need to update the cid bitmap properly here.
-  NS_FATAL_ERROR ("TODO: Update the cid bitmap properly here-- please implement and contribute a patch");
+    /// \todo We need to update the cid bitmap properly here.
+    NS_FATAL_ERROR(
+        "TODO: Update the cid bitmap properly here-- please implement and contribute a patch");
 }
 
 } // namespace ns3
-
-

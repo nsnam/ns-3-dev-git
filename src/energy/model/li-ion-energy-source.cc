@@ -19,305 +19,303 @@
  */
 
 #include "li-ion-energy-source.h"
-#include "ns3/log.h"
+
 #include "ns3/assert.h"
 #include "ns3/double.h"
-#include "ns3/trace-source-accessor.h"
+#include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/trace-source-accessor.h"
 
 #include <cmath>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("LiIonEnergySource");
+NS_LOG_COMPONENT_DEFINE("LiIonEnergySource");
 
-NS_OBJECT_ENSURE_REGISTERED (LiIonEnergySource);
+NS_OBJECT_ENSURE_REGISTERED(LiIonEnergySource);
 
 TypeId
-LiIonEnergySource::GetTypeId ()
+LiIonEnergySource::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::LiIonEnergySource")
-    .SetParent<EnergySource> ()
-    .SetGroupName ("Energy")
-    .AddConstructor<LiIonEnergySource> ()
-    .AddAttribute ("LiIonEnergySourceInitialEnergyJ",
-                   "Initial energy stored in basic energy source.",
-                   DoubleValue (31752.0),  // in Joules
-                   MakeDoubleAccessor (&LiIonEnergySource::SetInitialEnergy,
-                                       &LiIonEnergySource::GetInitialEnergy),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("LiIonEnergyLowBatteryThreshold",
-                   "Low battery threshold for LiIon energy source.",
-                   DoubleValue (0.10), // as a fraction of the initial energy
-                   MakeDoubleAccessor (&LiIonEnergySource::m_lowBatteryTh),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("InitialCellVoltage",
-                   "Initial (maximum) voltage of the cell (fully charged).",
-                   DoubleValue (4.05), // in Volts
-                   MakeDoubleAccessor (&LiIonEnergySource::SetInitialSupplyVoltage,
-                                       &LiIonEnergySource::GetSupplyVoltage),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("NominalCellVoltage",
-                   "Nominal voltage of the cell.",
-                   DoubleValue (3.6),  // in Volts
-                   MakeDoubleAccessor (&LiIonEnergySource::m_eNom),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("ExpCellVoltage",
-                   "Cell voltage at the end of the exponential zone.",
-                   DoubleValue (3.6),  // in Volts
-                   MakeDoubleAccessor (&LiIonEnergySource::m_eExp),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("RatedCapacity",
-                   "Rated capacity of the cell.",
-                   DoubleValue (2.45),   // in Ah
-                   MakeDoubleAccessor (&LiIonEnergySource::m_qRated),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("NomCapacity",
-                   "Cell capacity at the end of the nominal zone.",
-                   DoubleValue (1.1),  // in Ah
-                   MakeDoubleAccessor (&LiIonEnergySource::m_qNom),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("ExpCapacity",
-                   "Cell Capacity at the end of the exponential zone.",
-                   DoubleValue (1.2),  // in Ah
-                   MakeDoubleAccessor (&LiIonEnergySource::m_qExp),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("InternalResistance",
-                   "Internal resistance of the cell",
-                   DoubleValue (0.083),  // in Ohms
-                   MakeDoubleAccessor (&LiIonEnergySource::m_internalResistance),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("TypCurrent",
-                   "Typical discharge current used to fit the curves",
-                   DoubleValue (2.33), // in A
-                   MakeDoubleAccessor (&LiIonEnergySource::m_typCurrent),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("ThresholdVoltage",
-                   "Minimum threshold voltage to consider the battery depleted.",
-                   DoubleValue (3.3), // in Volts
-                   MakeDoubleAccessor (&LiIonEnergySource::m_minVoltTh),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("PeriodicEnergyUpdateInterval",
-                   "Time between two consecutive periodic energy updates.",
-                   TimeValue (Seconds (1.0)),
-                   MakeTimeAccessor (&LiIonEnergySource::SetEnergyUpdateInterval,
-                                     &LiIonEnergySource::GetEnergyUpdateInterval),
-                   MakeTimeChecker ())
-    .AddTraceSource ("RemainingEnergy",
-                     "Remaining energy at BasicEnergySource.",
-                     MakeTraceSourceAccessor (&LiIonEnergySource::m_remainingEnergyJ),
-                     "ns3::TracedValueCallback::Double")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::LiIonEnergySource")
+            .SetParent<EnergySource>()
+            .SetGroupName("Energy")
+            .AddConstructor<LiIonEnergySource>()
+            .AddAttribute("LiIonEnergySourceInitialEnergyJ",
+                          "Initial energy stored in basic energy source.",
+                          DoubleValue(31752.0), // in Joules
+                          MakeDoubleAccessor(&LiIonEnergySource::SetInitialEnergy,
+                                             &LiIonEnergySource::GetInitialEnergy),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("LiIonEnergyLowBatteryThreshold",
+                          "Low battery threshold for LiIon energy source.",
+                          DoubleValue(0.10), // as a fraction of the initial energy
+                          MakeDoubleAccessor(&LiIonEnergySource::m_lowBatteryTh),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("InitialCellVoltage",
+                          "Initial (maximum) voltage of the cell (fully charged).",
+                          DoubleValue(4.05), // in Volts
+                          MakeDoubleAccessor(&LiIonEnergySource::SetInitialSupplyVoltage,
+                                             &LiIonEnergySource::GetSupplyVoltage),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("NominalCellVoltage",
+                          "Nominal voltage of the cell.",
+                          DoubleValue(3.6), // in Volts
+                          MakeDoubleAccessor(&LiIonEnergySource::m_eNom),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("ExpCellVoltage",
+                          "Cell voltage at the end of the exponential zone.",
+                          DoubleValue(3.6), // in Volts
+                          MakeDoubleAccessor(&LiIonEnergySource::m_eExp),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("RatedCapacity",
+                          "Rated capacity of the cell.",
+                          DoubleValue(2.45), // in Ah
+                          MakeDoubleAccessor(&LiIonEnergySource::m_qRated),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("NomCapacity",
+                          "Cell capacity at the end of the nominal zone.",
+                          DoubleValue(1.1), // in Ah
+                          MakeDoubleAccessor(&LiIonEnergySource::m_qNom),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("ExpCapacity",
+                          "Cell Capacity at the end of the exponential zone.",
+                          DoubleValue(1.2), // in Ah
+                          MakeDoubleAccessor(&LiIonEnergySource::m_qExp),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("InternalResistance",
+                          "Internal resistance of the cell",
+                          DoubleValue(0.083), // in Ohms
+                          MakeDoubleAccessor(&LiIonEnergySource::m_internalResistance),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("TypCurrent",
+                          "Typical discharge current used to fit the curves",
+                          DoubleValue(2.33), // in A
+                          MakeDoubleAccessor(&LiIonEnergySource::m_typCurrent),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("ThresholdVoltage",
+                          "Minimum threshold voltage to consider the battery depleted.",
+                          DoubleValue(3.3), // in Volts
+                          MakeDoubleAccessor(&LiIonEnergySource::m_minVoltTh),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("PeriodicEnergyUpdateInterval",
+                          "Time between two consecutive periodic energy updates.",
+                          TimeValue(Seconds(1.0)),
+                          MakeTimeAccessor(&LiIonEnergySource::SetEnergyUpdateInterval,
+                                           &LiIonEnergySource::GetEnergyUpdateInterval),
+                          MakeTimeChecker())
+            .AddTraceSource("RemainingEnergy",
+                            "Remaining energy at BasicEnergySource.",
+                            MakeTraceSourceAccessor(&LiIonEnergySource::m_remainingEnergyJ),
+                            "ns3::TracedValueCallback::Double");
+    return tid;
 }
 
-LiIonEnergySource::LiIonEnergySource ()
-  : m_drainedCapacity (0.0),
-    m_lastUpdateTime (Seconds (0.0))
+LiIonEnergySource::LiIonEnergySource()
+    : m_drainedCapacity(0.0),
+      m_lastUpdateTime(Seconds(0.0))
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LiIonEnergySource::~LiIonEnergySource ()
+LiIonEnergySource::~LiIonEnergySource()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-LiIonEnergySource::SetInitialEnergy (double initialEnergyJ)
+LiIonEnergySource::SetInitialEnergy(double initialEnergyJ)
 {
-  NS_LOG_FUNCTION (this << initialEnergyJ);
-  NS_ASSERT (initialEnergyJ >= 0);
-  m_initialEnergyJ = initialEnergyJ;
-  // set remaining energy to be initial energy
-  m_remainingEnergyJ = m_initialEnergyJ;
+    NS_LOG_FUNCTION(this << initialEnergyJ);
+    NS_ASSERT(initialEnergyJ >= 0);
+    m_initialEnergyJ = initialEnergyJ;
+    // set remaining energy to be initial energy
+    m_remainingEnergyJ = m_initialEnergyJ;
 }
 
 double
-LiIonEnergySource::GetInitialEnergy () const
+LiIonEnergySource::GetInitialEnergy() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_initialEnergyJ;
+    NS_LOG_FUNCTION(this);
+    return m_initialEnergyJ;
 }
 
 void
-LiIonEnergySource::SetInitialSupplyVoltage (double supplyVoltageV)
+LiIonEnergySource::SetInitialSupplyVoltage(double supplyVoltageV)
 {
-  NS_LOG_FUNCTION (this << supplyVoltageV);
-  m_eFull = supplyVoltageV;
-  m_supplyVoltageV = supplyVoltageV;
+    NS_LOG_FUNCTION(this << supplyVoltageV);
+    m_eFull = supplyVoltageV;
+    m_supplyVoltageV = supplyVoltageV;
 }
 
 double
-LiIonEnergySource::GetSupplyVoltage () const
+LiIonEnergySource::GetSupplyVoltage() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_supplyVoltageV;
+    NS_LOG_FUNCTION(this);
+    return m_supplyVoltageV;
 }
 
 void
-LiIonEnergySource::SetEnergyUpdateInterval (Time interval)
+LiIonEnergySource::SetEnergyUpdateInterval(Time interval)
 {
-  NS_LOG_FUNCTION (this << interval);
-  m_energyUpdateInterval = interval;
+    NS_LOG_FUNCTION(this << interval);
+    m_energyUpdateInterval = interval;
 }
 
 Time
-LiIonEnergySource::GetEnergyUpdateInterval () const
+LiIonEnergySource::GetEnergyUpdateInterval() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_energyUpdateInterval;
+    NS_LOG_FUNCTION(this);
+    return m_energyUpdateInterval;
 }
 
 double
-LiIonEnergySource::GetRemainingEnergy ()
+LiIonEnergySource::GetRemainingEnergy()
 {
-  NS_LOG_FUNCTION (this);
-  // update energy source to get the latest remaining energy.
-  UpdateEnergySource ();
-  return m_remainingEnergyJ;
+    NS_LOG_FUNCTION(this);
+    // update energy source to get the latest remaining energy.
+    UpdateEnergySource();
+    return m_remainingEnergyJ;
 }
 
 double
-LiIonEnergySource::GetEnergyFraction ()
+LiIonEnergySource::GetEnergyFraction()
 {
-  NS_LOG_FUNCTION (this);
-  // update energy source to get the latest remaining energy.
-  UpdateEnergySource ();
-  return m_remainingEnergyJ / m_initialEnergyJ;
+    NS_LOG_FUNCTION(this);
+    // update energy source to get the latest remaining energy.
+    UpdateEnergySource();
+    return m_remainingEnergyJ / m_initialEnergyJ;
 }
 
 void
-LiIonEnergySource::DecreaseRemainingEnergy (double energyJ)
+LiIonEnergySource::DecreaseRemainingEnergy(double energyJ)
 {
-  NS_LOG_FUNCTION (this << energyJ);
-  NS_ASSERT (energyJ >= 0);
-  m_remainingEnergyJ -= energyJ;
+    NS_LOG_FUNCTION(this << energyJ);
+    NS_ASSERT(energyJ >= 0);
+    m_remainingEnergyJ -= energyJ;
 
-  // check if remaining energy is 0
-  if (m_supplyVoltageV <= m_minVoltTh)
+    // check if remaining energy is 0
+    if (m_supplyVoltageV <= m_minVoltTh)
     {
-      HandleEnergyDrainedEvent ();
+        HandleEnergyDrainedEvent();
     }
 }
 
 void
-LiIonEnergySource::IncreaseRemainingEnergy (double energyJ)
+LiIonEnergySource::IncreaseRemainingEnergy(double energyJ)
 {
-  NS_LOG_FUNCTION (this << energyJ);
-  NS_ASSERT (energyJ >= 0);
-  m_remainingEnergyJ += energyJ;
+    NS_LOG_FUNCTION(this << energyJ);
+    NS_ASSERT(energyJ >= 0);
+    m_remainingEnergyJ += energyJ;
 }
 
 void
-LiIonEnergySource::UpdateEnergySource ()
+LiIonEnergySource::UpdateEnergySource()
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("LiIonEnergySource:Updating remaining energy at node #" <<
-                GetNode ()->GetId ());
+    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG("LiIonEnergySource:Updating remaining energy at node #" << GetNode()->GetId());
 
-  // do not update if simulation has finished
-  if (Simulator::IsFinished ())
+    // do not update if simulation has finished
+    if (Simulator::IsFinished())
     {
-      return;
+        return;
     }
 
-  m_energyUpdateEvent.Cancel ();
+    m_energyUpdateEvent.Cancel();
 
-  CalculateRemainingEnergy ();
+    CalculateRemainingEnergy();
 
-  m_lastUpdateTime = Simulator::Now ();
+    m_lastUpdateTime = Simulator::Now();
 
-  if (m_remainingEnergyJ <= m_lowBatteryTh * m_initialEnergyJ)
+    if (m_remainingEnergyJ <= m_lowBatteryTh * m_initialEnergyJ)
     {
-      HandleEnergyDrainedEvent ();
-      return; // stop periodic update
+        HandleEnergyDrainedEvent();
+        return; // stop periodic update
     }
 
-  m_energyUpdateEvent = Simulator::Schedule (m_energyUpdateInterval,
-                                             &LiIonEnergySource::UpdateEnergySource,
-                                             this);
+    m_energyUpdateEvent =
+        Simulator::Schedule(m_energyUpdateInterval, &LiIonEnergySource::UpdateEnergySource, this);
 }
 
 /*
  * Private functions start here.
  */
 void
-LiIonEnergySource::DoInitialize ()
+LiIonEnergySource::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
-  UpdateEnergySource ();  // start periodic update
+    NS_LOG_FUNCTION(this);
+    UpdateEnergySource(); // start periodic update
 }
 
 void
-LiIonEnergySource::DoDispose ()
+LiIonEnergySource::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  BreakDeviceEnergyModelRefCycle ();  // break reference cycle
+    NS_LOG_FUNCTION(this);
+    BreakDeviceEnergyModelRefCycle(); // break reference cycle
 }
 
-
 void
-LiIonEnergySource::HandleEnergyDrainedEvent ()
+LiIonEnergySource::HandleEnergyDrainedEvent()
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("LiIonEnergySource:Energy depleted at node #" <<
-                GetNode ()->GetId ());
-  NotifyEnergyDrained (); // notify DeviceEnergyModel objects
+    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG("LiIonEnergySource:Energy depleted at node #" << GetNode()->GetId());
+    NotifyEnergyDrained(); // notify DeviceEnergyModel objects
 }
 
-
 void
-LiIonEnergySource::CalculateRemainingEnergy ()
+LiIonEnergySource::CalculateRemainingEnergy()
 {
-  NS_LOG_FUNCTION (this);
-  double totalCurrentA = CalculateTotalCurrent ();
-  Time duration = Simulator::Now () - m_lastUpdateTime;
-  NS_ASSERT (duration.GetSeconds () >= 0);
-  // energy = current * voltage * time
-  double energyToDecreaseJ = totalCurrentA * m_supplyVoltageV * duration.GetSeconds ();
+    NS_LOG_FUNCTION(this);
+    double totalCurrentA = CalculateTotalCurrent();
+    Time duration = Simulator::Now() - m_lastUpdateTime;
+    NS_ASSERT(duration.GetSeconds() >= 0);
+    // energy = current * voltage * time
+    double energyToDecreaseJ = totalCurrentA * m_supplyVoltageV * duration.GetSeconds();
 
-  if (m_remainingEnergyJ < energyToDecreaseJ)
+    if (m_remainingEnergyJ < energyToDecreaseJ)
     {
-      m_remainingEnergyJ = 0; // energy never goes below 0
+        m_remainingEnergyJ = 0; // energy never goes below 0
     }
-  else
+    else
     {
-      m_remainingEnergyJ -= energyToDecreaseJ;
+        m_remainingEnergyJ -= energyToDecreaseJ;
     }
 
-  m_drainedCapacity += (totalCurrentA * duration).GetHours ();
-  // update the supply voltage
-  m_supplyVoltageV = GetVoltage (totalCurrentA);
-  NS_LOG_DEBUG ("LiIonEnergySource:Remaining energy = " << m_remainingEnergyJ);
+    m_drainedCapacity += (totalCurrentA * duration).GetHours();
+    // update the supply voltage
+    m_supplyVoltageV = GetVoltage(totalCurrentA);
+    NS_LOG_DEBUG("LiIonEnergySource:Remaining energy = " << m_remainingEnergyJ);
 }
 
 double
-LiIonEnergySource::GetVoltage (double i) const
+LiIonEnergySource::GetVoltage(double i) const
 {
-  NS_LOG_FUNCTION (this << i);
+    NS_LOG_FUNCTION(this << i);
 
-  // integral of i in dt, drained capacity in Ah
-  double it = m_drainedCapacity;
+    // integral of i in dt, drained capacity in Ah
+    double it = m_drainedCapacity;
 
-  // empirical factors
-  double A = m_eFull - m_eExp;
-  double B = 3 / m_qExp;
+    // empirical factors
+    double A = m_eFull - m_eExp;
+    double B = 3 / m_qExp;
 
-  // slope of the polarization curve
-  double K = std::abs ( (m_eFull - m_eNom + A * (std::exp (-B * m_qNom) - 1)) * (m_qRated - m_qNom) / m_qNom);
+    // slope of the polarization curve
+    double K = std::abs((m_eFull - m_eNom + A * (std::exp(-B * m_qNom) - 1)) * (m_qRated - m_qNom) /
+                        m_qNom);
 
-  // constant voltage
-  double E0 = m_eFull + K + m_internalResistance * m_typCurrent - A;
+    // constant voltage
+    double E0 = m_eFull + K + m_internalResistance * m_typCurrent - A;
 
-  double E = E0 - K * m_qRated / (m_qRated - it) + A * std::exp (-B * it);
+    double E = E0 - K * m_qRated / (m_qRated - it) + A * std::exp(-B * it);
 
-  // cell voltage
-  double V = E - m_internalResistance * i;
+    // cell voltage
+    double V = E - m_internalResistance * i;
 
-  NS_LOG_DEBUG ("Voltage: " << V << " with E: " << E);
+    NS_LOG_DEBUG("Voltage: " << V << " with E: " << E);
 
-  return V;
+    return V;
 }
 
 } // namespace ns3

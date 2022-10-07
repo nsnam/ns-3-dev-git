@@ -23,7 +23,8 @@
 
 #include <string>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \param configPath Config path to access the probe.
@@ -36,9 +37,9 @@ namespace ns3 {
  * the wildcards in the Config path, separated by the wild card
  * separator.
  */
-std::string GetWildcardMatches (const std::string &configPath,
-                                const std::string &matchedPath,
-                                const std::string &wildcardSeparator = " ");
+std::string GetWildcardMatches(const std::string& configPath,
+                               const std::string& matchedPath,
+                               const std::string& wildcardSeparator = " ");
 
 } // namespace ns3
 

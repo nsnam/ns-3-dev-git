@@ -27,11 +27,14 @@
 #define DYNAMIC_QUEUE_LIMITS_H
 
 #include "queue-limits.h"
+
 #include "ns3/nstime.h"
 #include "ns3/traced-value.h"
+
 #include <limits.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup network
@@ -60,52 +63,53 @@ namespace ns3 {
  *
  */
 
-class DynamicQueueLimits : public QueueLimits {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+class DynamicQueueLimits : public QueueLimits
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  DynamicQueueLimits ();
-  ~DynamicQueueLimits () override;
+    DynamicQueueLimits();
+    ~DynamicQueueLimits() override;
 
-  void Reset () override;
-  void Completed (uint32_t count) override;
-  int32_t Available () const override;
-  void Queued (uint32_t count) override;
+    void Reset() override;
+    void Completed(uint32_t count) override;
+    int32_t Available() const override;
+    void Queued(uint32_t count) override;
 
-private:
-  /**
-   * Calculates the difference between the two operators and
-   * returns the number if positive, zero otherwise.
-   * \param a First operator.
-   * \param b Second operator.
-   * \returns the difference between a and b if positive, zero otherwise.
-   */
-  int32_t Posdiff (int32_t a, int32_t b);
+  private:
+    /**
+     * Calculates the difference between the two operators and
+     * returns the number if positive, zero otherwise.
+     * \param a First operator.
+     * \param b Second operator.
+     * \returns the difference between a and b if positive, zero otherwise.
+     */
+    int32_t Posdiff(int32_t a, int32_t b);
 
-  // Fields accessed in enqueue path
-  uint32_t m_numQueued {0};                 //!< Total ever queued
-  uint32_t m_adjLimit {0};                  //!< limit + num_completed
-  uint32_t m_lastObjCnt {0};                //!< Count at last queuing
+    // Fields accessed in enqueue path
+    uint32_t m_numQueued{0};  //!< Total ever queued
+    uint32_t m_adjLimit{0};   //!< limit + num_completed
+    uint32_t m_lastObjCnt{0}; //!< Count at last queuing
 
-  // Fields accessed only by completion path
-  TracedValue<uint32_t> m_limit;            //!< Current limit
-  uint32_t m_numCompleted {0};              //!< Total ever completed
+    // Fields accessed only by completion path
+    TracedValue<uint32_t> m_limit; //!< Current limit
+    uint32_t m_numCompleted{0};    //!< Total ever completed
 
-  uint32_t m_prevOvlimit {0};               //!< Previous over limit
-  uint32_t m_prevNumQueued {0};             //!< Previous queue total
-  uint32_t m_prevLastObjCnt {0};            //!< Previous queuing cnt
+    uint32_t m_prevOvlimit{0};    //!< Previous over limit
+    uint32_t m_prevNumQueued{0};  //!< Previous queue total
+    uint32_t m_prevLastObjCnt{0}; //!< Previous queuing cnt
 
-  uint32_t m_lowestSlack {std::numeric_limits<uint32_t>::max ()};  //!< Lowest slack found
-  Time m_slackStartTime {Seconds (0)};      //!< Time slacks seen
+    uint32_t m_lowestSlack{std::numeric_limits<uint32_t>::max()}; //!< Lowest slack found
+    Time m_slackStartTime{Seconds(0)};                            //!< Time slacks seen
 
-  // Configuration
-  uint32_t m_maxLimit;                      //!< Max limit
-  uint32_t m_minLimit;                      //!< Minimum limit
-  Time m_slackHoldTime;                     //!< Time to measure slack
+    // Configuration
+    uint32_t m_maxLimit;  //!< Max limit
+    uint32_t m_minLimit;  //!< Minimum limit
+    Time m_slackHoldTime; //!< Time to measure slack
 };
 
 } // namespace ns3

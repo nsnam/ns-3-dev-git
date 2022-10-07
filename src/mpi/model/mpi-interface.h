@@ -27,12 +27,13 @@
 #ifndef NS3_MPI_INTERFACE_H
 #define NS3_MPI_INTERFACE_H
 
+#include "mpi.h"
+
 #include <ns3/nstime.h>
 #include <ns3/packet.h>
 
-#include "mpi.h"
-
-namespace ns3 {
+namespace ns3
+{
 /**
  * \defgroup mpi MPI Distributed Simulation
  */
@@ -61,111 +62,110 @@ class ParallelCommunicationInterface;
  */
 class MpiInterface
 {
-public:
-  /**
-   * \brief Deletes storage used by the parallel environment.
-   */
-  static void Destroy ();
-  /**
-   * \brief Get the id number of this rank.
-   *
-   * When running a sequential simulation this will return a systemID of 0.
-   *
-   * \return system identification
-   */
-  static uint32_t GetSystemId ();
-  /**
-   * \brief Get the number of ranks used by ns-3.
-   *
-   * Returns the size (number of MPI ranks) of the communicator used by
-   * ns-3.  When running a sequential simulation this will return a
-   * size of 1.
-   *
-   * \return number of parallel tasks
-   */
-  static uint32_t GetSize ();
-  /**
-   * \brief Returns enabled state of parallel environment.
-   *
-   * \return true if parallel communication is enabled
-   */
-  static bool IsEnabled ();
-  /**
-   * \brief Setup the parallel communication interface.
-   *
-   * There are two ways to setup the communications interface.  This
-   * Enable method is the easiest method and should be used in most
-   * situations.
-   *
-   * Disable() must be invoked at end of an ns-3 application to
-   * properly cleanup the parallel communication interface.
-   *
-   * This method will call MPI_Init and configure ns-3 to use the
-   * MPI_COMM_WORLD communicator.
-   *
-   * For more complex situations, such as embedding ns-3 with other
-   * MPI simulators or libraries, the Enable(MPI_Comm communcicator)
-   * may be used if MPI is initialized externally or if ns-3 needs to
-   * be run unique communicator.  For example if there are two
-   * parallel simulators and the goal is to run each simulator on a
-   * different set of ranks.
-   *
-   * \note The `SimulatorImplementationType attribute in
-   * ns3::GlobalValues must be set before calling Enable()
-   *
-   * \param pargc number of command line arguments
-   * \param pargv command line arguments
-   */
-  static void Enable (int* pargc, char*** pargv);
-  /**
-   * \brief Setup the parallel communication interface using the specified communicator.
-   *
-   * See @ref Enable (int* pargc, char*** pargv) for additional information.
-   *
-   * \param communicator MPI Communicator that should be used by ns-3
-   */
-  static void Enable (MPI_Comm communicator);
-  /**
-   * \brief Clean up the ns-3 parallel communications interface.
-   *
-   * MPI_Finalize will be called only if Enable (int* pargc, char***
-   * pargv) was called.
-   */
-  static void Disable ();
-  /**
-   * \brief Send a packet to a remote node.
-   *
-   * \param p packet to send
-   * \param rxTime received time at destination node
-   * \param node destination node
-   * \param dev destination device
-   *
-   * Serialize and send a packet to the specified node and net device
-   */
-  static void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev);
+  public:
+    /**
+     * \brief Deletes storage used by the parallel environment.
+     */
+    static void Destroy();
+    /**
+     * \brief Get the id number of this rank.
+     *
+     * When running a sequential simulation this will return a systemID of 0.
+     *
+     * \return system identification
+     */
+    static uint32_t GetSystemId();
+    /**
+     * \brief Get the number of ranks used by ns-3.
+     *
+     * Returns the size (number of MPI ranks) of the communicator used by
+     * ns-3.  When running a sequential simulation this will return a
+     * size of 1.
+     *
+     * \return number of parallel tasks
+     */
+    static uint32_t GetSize();
+    /**
+     * \brief Returns enabled state of parallel environment.
+     *
+     * \return true if parallel communication is enabled
+     */
+    static bool IsEnabled();
+    /**
+     * \brief Setup the parallel communication interface.
+     *
+     * There are two ways to setup the communications interface.  This
+     * Enable method is the easiest method and should be used in most
+     * situations.
+     *
+     * Disable() must be invoked at end of an ns-3 application to
+     * properly cleanup the parallel communication interface.
+     *
+     * This method will call MPI_Init and configure ns-3 to use the
+     * MPI_COMM_WORLD communicator.
+     *
+     * For more complex situations, such as embedding ns-3 with other
+     * MPI simulators or libraries, the Enable(MPI_Comm communcicator)
+     * may be used if MPI is initialized externally or if ns-3 needs to
+     * be run unique communicator.  For example if there are two
+     * parallel simulators and the goal is to run each simulator on a
+     * different set of ranks.
+     *
+     * \note The `SimulatorImplementationType attribute in
+     * ns3::GlobalValues must be set before calling Enable()
+     *
+     * \param pargc number of command line arguments
+     * \param pargv command line arguments
+     */
+    static void Enable(int* pargc, char*** pargv);
+    /**
+     * \brief Setup the parallel communication interface using the specified communicator.
+     *
+     * See @ref Enable (int* pargc, char*** pargv) for additional information.
+     *
+     * \param communicator MPI Communicator that should be used by ns-3
+     */
+    static void Enable(MPI_Comm communicator);
+    /**
+     * \brief Clean up the ns-3 parallel communications interface.
+     *
+     * MPI_Finalize will be called only if Enable (int* pargc, char***
+     * pargv) was called.
+     */
+    static void Disable();
+    /**
+     * \brief Send a packet to a remote node.
+     *
+     * \param p packet to send
+     * \param rxTime received time at destination node
+     * \param node destination node
+     * \param dev destination device
+     *
+     * Serialize and send a packet to the specified node and net device
+     */
+    static void SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev);
 
-  /**
-   * \brief Return the communicator used to run ns-3.
-   *
-   * The communicator returned will be MPI_COMM_WORLD if Enable (int*
-   * pargc, char*** pargv) is used to enable or the user specified
-   * communicator if Enable (MPI_Comm communicator) is used.
-   *
-   * \return The MPI Communicator.
-   */
-  static MPI_Comm GetCommunicator();
+    /**
+     * \brief Return the communicator used to run ns-3.
+     *
+     * The communicator returned will be MPI_COMM_WORLD if Enable (int*
+     * pargc, char*** pargv) is used to enable or the user specified
+     * communicator if Enable (MPI_Comm communicator) is used.
+     *
+     * \return The MPI Communicator.
+     */
+    static MPI_Comm GetCommunicator();
 
-private:
+  private:
+    /**
+     * Common enable logic.
+     */
+    static void SetParallelSimulatorImpl(void);
 
-  /**
-   * Common enable logic.
-   */
-  static void SetParallelSimulatorImpl (void);
-
-  /**
-   * Static instance of the instantiated parallel controller.
-   */
-  static ParallelCommunicationInterface* g_parallelCommunicationInterface;
+    /**
+     * Static instance of the instantiated parallel controller.
+     */
+    static ParallelCommunicationInterface* g_parallelCommunicationInterface;
 };
 
 } // namespace ns3

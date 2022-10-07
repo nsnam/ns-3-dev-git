@@ -21,8 +21,8 @@
 #ifndef NS3_LENGTH_H_
 #define NS3_LENGTH_H_
 
-#include "attribute.h"
 #include "attribute-helper.h"
+#include "attribute.h"
 
 #ifdef HAVE_BOOST
 #include <boost/units/quantity.hpp>
@@ -44,7 +44,8 @@
 /**
  * ns3 namespace
  */
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup core
@@ -242,384 +243,385 @@ namespace ns3 {
  */
 class Length
 {
-public:
-  /**
-   * Units of length in various measurement systems that are supported by the
-   * Length class
-   */
-  enum Unit : uint16_t
-  {
-    //Metric Units
-    Nanometer = 1,  //!< 1e<sup>-9</sup> meters
-    Micrometer,     //!< 1e<sup>-6</sup> meters
-    Millimeter,     //!< 1e<sup>-3</sup> meters
-    Centimeter,     //!< 1e<sup>-2</sup> meters
-    Meter,          //!< Base length unit in metric system
-    Kilometer,      //!< 1e<sup>3</sup> meters
-    NauticalMile,   //!< 1,852 meters
-
-    //US Customary Units
-    Inch,           //!< 1/12 of a foot
-    Foot,           //!< Base length unit in US customary system
-    Yard,           //!< 3 feet
-    Mile            //!< 5,280 feet
-  };
-
-  /**
-   * An immutable class which represents a value in a specific length unit
-   */
-  class Quantity
-  {
-public:
+  public:
     /**
-     * Constructor
+     * Units of length in various measurement systems that are supported by the
+     * Length class
+     */
+    enum Unit : uint16_t
+    {
+        // Metric Units
+        Nanometer = 1, //!< 1e<sup>-9</sup> meters
+        Micrometer,    //!< 1e<sup>-6</sup> meters
+        Millimeter,    //!< 1e<sup>-3</sup> meters
+        Centimeter,    //!< 1e<sup>-2</sup> meters
+        Meter,         //!< Base length unit in metric system
+        Kilometer,     //!< 1e<sup>3</sup> meters
+        NauticalMile,  //!< 1,852 meters
+
+        // US Customary Units
+        Inch, //!< 1/12 of a foot
+        Foot, //!< Base length unit in US customary system
+        Yard, //!< 3 feet
+        Mile  //!< 5,280 feet
+    };
+
+    /**
+     * An immutable class which represents a value in a specific length unit
+     */
+    class Quantity
+    {
+      public:
+        /**
+         * Constructor
+         *
+         * \param value Length value
+         * \param unit Length unit of the value
+         */
+        Quantity(double value, Length::Unit unit)
+            : m_value(value),
+              m_unit(unit)
+        {
+        }
+
+        /**
+         * Copy Constructor
+         */
+        Quantity(const Quantity&) = default;
+
+        /**
+         * Move Constructor
+         */
+        Quantity(Quantity&&) = default;
+
+        /**
+         * Destructor
+         */
+        ~Quantity() = default;
+
+        /**
+         * Copy Assignment Operator
+         * \param [in] other The source to copy from.
+         * \returns this.
+         */
+        Quantity& operator=(const Quantity& other) = default;
+
+        /**
+         * Move Assignment Operator
+         * \param [in] other The source to move from.
+         * \returns this.
+         */
+        Quantity& operator=(Quantity&& other) = default;
+
+        /**
+         * The value of the quantity
+         *
+         * \return The value of this quantity
+         */
+        double Value() const
+        {
+            return m_value;
+        }
+
+        /**
+         * The unit of the quantity
+         *
+         * \return The unit of this quantity
+         */
+        Length::Unit Unit() const
+        {
+            return m_unit;
+        }
+
+      private:
+        double m_value;      //!< Value of the length
+        Length::Unit m_unit; //!< unit of length of the value
+    };
+
+    /**
+     * Default tolerance value used for the member comparison functions (IsEqual,
+     * IsLess, etc.)
      *
-     * \param value Length value
+     * The default tolerance is set to epsilon which is defined as the difference
+     * between 1.0 and the next value that can be represented by a double.
+     */
+    static constexpr double DEFAULT_TOLERANCE = std::numeric_limits<double>::epsilon();
+
+    /**
+     * Attempt to construct a Length object from a value and a unit string
+     *
+     * \p unit can either be the full name of the unit (meter, kilometer, mile, etc.)
+     * or the symbol of the unit (m, km, mi, etc.)
+     *
+     * This function will return false if \p unit does not map to a known type.
+     *
+     * \param value Numeric value of the new length
+     * \param unit Unit that the value represents
+     *
+     * \return A std::optional object containing the Length object constructed from
+     * the given value and unit, if the attempt to construct the Length object was
+     * successful.
+     */
+    static std::optional<Length> TryParse(double value, const std::string& unit);
+
+    /**
+     * Default Constructor
+     *
+     * Initialize with a value of 0 meters.
+     */
+    Length();
+
+    /**
+     * String Constructor
+     *
+     * Parses \p text and initializes the value with the parsed result.
+     *
+     * The expected format of \p text is \<number\> \<unit\> or \<number\>\<unit\>
+     *
+     * \param text Serialized length value
+     */
+    Length(const std::string& text);
+
+    /**
+     * Construct a Length object from a value and a unit string
+     *
+     * \p unit can either be the full name of the unit (meter, kilometer, mile, etc.)
+     * or the symbol of the unit (m, km, mi, etc.)
+     *
+     * \warning NS_FATAL_ERROR is called if \p unit is not a valid unit string.
+     * \warning Use Length::TryParse to parse potentially bad values without terminating.
+     *
+     * \param value Numeric value of the new length
+     * \param unit Unit that the value represents
+     */
+    Length(double value, const std::string& unit);
+
+    /**
+     * Construct a Length object from a value and a unit
+     *
+     * \warning NS_FATAL_ERROR is called if \p unit is not valid.
+     * \warning Use Length::TryParse to parse potentially bad values without terminating.
+     *
+     * \param value Numeric value of the new length
      * \param unit Length unit of the value
      */
-    Quantity (double value, Length::Unit unit)
-      : m_value (value),
-        m_unit (unit)
-    { }
+    Length(double value, Length::Unit unit);
+
+    /**
+     * Construct a Length object from a Quantity
+     *
+     * \param quantity Quantity representing a length value and unit
+     */
+    Length(Quantity quantity);
+
+#ifdef HAVE_BOOST_UNITS
+    /**
+     * Construct a Length object from a boost::units::quantity
+     *
+     * \note The boost::units:quantity must contain a unit that derives from
+     * the length dimension.  Passing a quantity with a Unit that is not a length
+     * unit will result in a compile time error
+     *
+     * \tparam U A boost::units length unit
+     * \tparam T Numeric data type of the quantity value
+     *
+     * \param quantity A boost::units length quantity
+     */
+    template <class U, class T>
+    explicit Length(boost::units::quantity<U, T> quantity);
+#endif
 
     /**
      * Copy Constructor
+     *
+     * Initialize an object with the value from \p other.
+     *
+     * \param other Length object to copy
      */
-    Quantity (const Quantity&) = default;
+    Length(const Length& other) = default;
 
     /**
      * Move Constructor
+     *
+     * Initialize an object with the value from \p other.
+     *
+     * After the move completes, \p other is left in an undefined but
+     * useable state.
+     *
+     * \param other Length object to move
      */
-    Quantity (Quantity&&) = default;
+    Length(Length&& other) = default;
 
     /**
      * Destructor
      */
-    ~Quantity () = default;
+    ~Length() = default;
 
     /**
-     * Copy Assignment Operator
-     * \param [in] other The source to copy from.
-     * \returns this.
-     */
-    Quantity& operator= (const Quantity& other) = default;
-
-    /**
-     * Move Assignment Operator
-     * \param [in] other The source to move from.
-     * \returns this.
-     */
-    Quantity& operator= (Quantity&& other) = default;
-
-    /**
-     * The value of the quantity
+     * Copy Assignment operator
      *
-     * \return The value of this quantity
+     * Replace the current value with the value from \p other
+     *
+     * \param other Length object to copy
+     *
+     * \return Reference to the updated object
      */
-    double Value () const
-    {
-      return m_value;
-    }
+    Length& operator=(const Length& other) = default;
 
     /**
-     * The unit of the quantity
+     * Move Assignment operator
      *
-     * \return The unit of this quantity
+     * Replace the current value with the value from \p other
+     * After the move, \p other is left in an undefined but valid state
+     *
+     * \param other Length object to move
+     *
+     * \return Reference to the updated object
      */
-    Length::Unit Unit () const
-    {
-      return m_unit;
-    }
+    Length& operator=(Length&& other) = default;
 
-private:
-    double m_value;         //!< Value of the length
-    Length::Unit m_unit;    //!< unit of length of the value
-  };
+    /**
+     * Assignment operator
+     *
+     * Replace the current value with the value from \p q
+     *
+     * \param q Quantity holding the value to assign
+     *
+     * \return Reference to the updated object
+     */
+    Length& operator=(const Length::Quantity& q);
 
-  /**
-   * Default tolerance value used for the member comparison functions (IsEqual,
-   * IsLess, etc.)
-   *
-   * The default tolerance is set to epsilon which is defined as the difference
-   * between 1.0 and the next value that can be represented by a double.
-   */
-  static constexpr double DEFAULT_TOLERANCE = std::numeric_limits<double>::epsilon ();
+    /**
+     * Check if \p other is equal in value to this instance.
+     *
+     * \param other Value to compare against
+     * \param tolerance Smallest difference allowed between the two
+     * values to still be considered equal
+     *
+     * \return true if the absolute difference between lengths
+     * is less than or equal to \p tolerance
+     */
+    bool IsEqual(const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
 
-  /**
-   * Attempt to construct a Length object from a value and a unit string
-   *
-   * \p unit can either be the full name of the unit (meter, kilometer, mile, etc.)
-   * or the symbol of the unit (m, km, mi, etc.)
-   *
-   * This function will return false if \p unit does not map to a known type.
-   *
-   * \param value Numeric value of the new length
-   * \param unit Unit that the value represents
-   *
-   * \return A std::optional object containing the Length object constructed from
-   * the given value and unit, if the attempt to construct the Length object was
-   * successful.
-   */
-  static std::optional<Length> TryParse (double value, const std::string& unit);
+    /**
+     * Check if \p other is not equal in value to this instance.
+     *
+     * \param other Value to compare against
+     * \param tolerance Smallest difference allowed between the two
+     * values to still be considered equal
+     *
+     * \return true if the absolute difference between lengths
+     * is greater than \p tolerance
+     */
+    bool IsNotEqual(const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
 
-  /**
-   * Default Constructor
-   *
-   * Initialize with a value of 0 meters.
-   */
-  Length ();
+    /**
+     * Check if \p other is greater in value than this instance.
+     *
+     * \param other Value to compare against
+     * \param tolerance Smallest difference allowed between the two
+     * values to still be considered equal
+     *
+     * \return true if the values are not equal and \p other is
+     * greater in value
+     */
+    bool IsLess(const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
 
-  /**
-   * String Constructor
-   *
-   * Parses \p text and initializes the value with the parsed result.
-   *
-   * The expected format of \p text is \<number\> \<unit\> or \<number\>\<unit\>
-   *
-   * \param text Serialized length value
-   */
-  Length (const std::string& text);
+    /**
+     * Check if \p other is greater or equal in value than this instance.
+     *
+     * \param other Value to compare against
+     * \param tolerance Smallest difference allowed between the two
+     * values to still be considered equal
+     *
+     * Equivalent to:
+     * \code
+     *   IsEqual(other, tolerance) || IsLess(other, tolerance)
+     * \endcode
+     *
+     * \return true if the values are equal or \p other is
+     * greater in value
+     */
+    bool IsLessOrEqual(const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
 
-  /**
-   * Construct a Length object from a value and a unit string
-   *
-   * \p unit can either be the full name of the unit (meter, kilometer, mile, etc.)
-   * or the symbol of the unit (m, km, mi, etc.)
-   *
-   * \warning NS_FATAL_ERROR is called if \p unit is not a valid unit string.
-   * \warning Use Length::TryParse to parse potentially bad values without terminating.
-   *
-   * \param value Numeric value of the new length
-   * \param unit Unit that the value represents
-   */
-  Length (double value, const std::string& unit);
+    /**
+     * Check if \p other is less in value than this instance.
+     *
+     * \param other Value to compare against
+     * \param tolerance Smallest difference allowed between the two
+     * values to still be considered equal
+     *
+     * Equivalent to:
+     * \code
+     *   !(IsLessOrEqual(other, tolerance))
+     * \endcode
+     *
+     * \return true if the values are not equal and \p other is
+     * less in value
+     */
+    bool IsGreater(const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
 
-  /**
-   * Construct a Length object from a value and a unit
-   *
-   * \warning NS_FATAL_ERROR is called if \p unit is not valid.
-   * \warning Use Length::TryParse to parse potentially bad values without terminating.
-   *
-   * \param value Numeric value of the new length
-   * \param unit Length unit of the value
-   */
-  Length (double value, Length::Unit unit);
+    /**
+     * Check if \p other is equal or less in value than this instance.
+     *
+     * \param other Value to compare against
+     * \param tolerance Smallest difference allowed between the two
+     * values to still be considered equal
+     *
+     * Equivalent to:
+     * \code
+     *   !IsLess(other, tolerance)
+     * \endcode
+     *
+     * \return true if the values are equal or \p other is
+     * less in value
+     */
+    bool IsGreaterOrEqual(const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
 
-  /**
-   * Construct a Length object from a Quantity
-   *
-   * \param quantity Quantity representing a length value and unit
-   */
-  Length (Quantity quantity);
+    /**
+     * Swap values with another object
+     *
+     * Swap the current value with the value in \p other.
+     *
+     * Equivalent to:
+     * \code
+     *   Length temp(*this);
+     *   *this = other;
+     *   other = temp;
+     * \endcode
+     *
+     * \param other Length object to swap
+     */
+    void swap(Length& other);
 
-#ifdef HAVE_BOOST_UNITS
-  /**
-   * Construct a Length object from a boost::units::quantity
-   *
-   * \note The boost::units:quantity must contain a unit that derives from
-   * the length dimension.  Passing a quantity with a Unit that is not a length
-   * unit will result in a compile time error
-   *
-   * \tparam U A boost::units length unit
-   * \tparam T Numeric data type of the quantity value
-   *
-   * \param quantity A boost::units length quantity
-   */
-  template <class U, class T>
-  explicit Length (boost::units::quantity<U, T> quantity);
-#endif
+    /**
+     * Current length value
+     *
+     * Equivalent to:
+     * \code
+     *   As (Length::Unit::Meter).Value ()
+     * \endcode
+     * \return The current value, in meters
+     */
+    double GetDouble() const;
 
-  /**
-   * Copy Constructor
-   *
-   * Initialize an object with the value from \p other.
-   *
-   * \param other Length object to copy
-   */
-  Length (const Length& other) = default;
+    /**
+     * Create a Quantity in a specific unit from a Length
+     *
+     * Converts the current length value to the equivalent value specified by
+     * \p unit and returns a Quantity object with the converted value and unit
+     *
+     * \param unit The desired unit of the returned Quantity
+     *
+     * \return A quantity representing the length in the requested unit
+     */
+    Quantity As(Unit unit) const;
 
-  /**
-   * Move Constructor
-   *
-   * Initialize an object with the value from \p other.
-   *
-   * After the move completes, \p other is left in an undefined but
-   * useable state.
-   *
-   * \param other Length object to move
-   */
-  Length (Length&& other) = default;
+  private:
+    double m_value; //!< Length in meters
+};                  // class Length
 
-  /**
-   * Destructor
-   */
-  ~Length () = default;
-
-  /**
-   * Copy Assignment operator
-   *
-   * Replace the current value with the value from \p other
-   *
-   * \param other Length object to copy
-   *
-   * \return Reference to the updated object
-   */
-  Length& operator= (const Length& other) = default;
-
-  /**
-   * Move Assignment operator
-   *
-   * Replace the current value with the value from \p other
-   * After the move, \p other is left in an undefined but valid state
-   *
-   * \param other Length object to move
-   *
-   * \return Reference to the updated object
-   */
-  Length& operator= (Length&& other) = default;
-
-  /**
-   * Assignment operator
-   *
-   * Replace the current value with the value from \p q
-   *
-   * \param q Quantity holding the value to assign
-   *
-   * \return Reference to the updated object
-   */
-  Length& operator= (const Length::Quantity& q);
-
-  /**
-   * Check if \p other is equal in value to this instance.
-   *
-   * \param other Value to compare against
-   * \param tolerance Smallest difference allowed between the two
-   * values to still be considered equal
-   *
-   * \return true if the absolute difference between lengths
-   * is less than or equal to \p tolerance
-   */
-  bool IsEqual (const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
-
-  /**
-   * Check if \p other is not equal in value to this instance.
-   *
-   * \param other Value to compare against
-   * \param tolerance Smallest difference allowed between the two
-   * values to still be considered equal
-   *
-   * \return true if the absolute difference between lengths
-   * is greater than \p tolerance
-   */
-  bool IsNotEqual (const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
-
-  /**
-   * Check if \p other is greater in value than this instance.
-   *
-   * \param other Value to compare against
-   * \param tolerance Smallest difference allowed between the two
-   * values to still be considered equal
-   *
-   * \return true if the values are not equal and \p other is
-   * greater in value
-   */
-  bool IsLess (const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
-
-  /**
-   * Check if \p other is greater or equal in value than this instance.
-   *
-   * \param other Value to compare against
-   * \param tolerance Smallest difference allowed between the two
-   * values to still be considered equal
-   *
-   * Equivalent to:
-   * \code
-   *   IsEqual(other, tolerance) || IsLess(other, tolerance)
-   * \endcode
-   *
-   * \return true if the values are equal or \p other is
-   * greater in value
-   */
-  bool IsLessOrEqual (const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
-
-  /**
-   * Check if \p other is less in value than this instance.
-   *
-   * \param other Value to compare against
-   * \param tolerance Smallest difference allowed between the two
-   * values to still be considered equal
-   *
-   * Equivalent to:
-   * \code
-   *   !(IsLessOrEqual(other, tolerance))
-   * \endcode
-   *
-   * \return true if the values are not equal and \p other is
-   * less in value
-   */
-  bool IsGreater (const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
-
-  /**
-   * Check if \p other is equal or less in value than this instance.
-   *
-   * \param other Value to compare against
-   * \param tolerance Smallest difference allowed between the two
-   * values to still be considered equal
-   *
-   * Equivalent to:
-   * \code
-   *   !IsLess(other, tolerance)
-   * \endcode
-   *
-   * \return true if the values are equal or \p other is
-   * less in value
-   */
-  bool IsGreaterOrEqual (const Length& other, double tolerance = DEFAULT_TOLERANCE) const;
-
-  /**
-   * Swap values with another object
-   *
-   * Swap the current value with the value in \p other.
-   *
-   * Equivalent to:
-   * \code
-   *   Length temp(*this);
-   *   *this = other;
-   *   other = temp;
-   * \endcode
-   *
-   * \param other Length object to swap
-   */
-  void swap (Length& other);
-
-  /**
-   * Current length value
-   *
-   * Equivalent to:
-   * \code
-   *   As (Length::Unit::Meter).Value ()
-   * \endcode
-   * \return The current value, in meters
-   */
-  double GetDouble () const;
-
-  /**
-   * Create a Quantity in a specific unit from a Length
-   *
-   * Converts the current length value to the equivalent value specified by
-   * \p unit and returns a Quantity object with the converted value and unit
-   *
-   * \param unit The desired unit of the returned Quantity
-   *
-   * \return A quantity representing the length in the requested unit
-   */
-  Quantity As (Unit unit) const;
-
-private:
-  double m_value;      //!< Length in meters
-};  // class Length
-
-ATTRIBUTE_HELPER_HEADER (Length);
+ATTRIBUTE_HELPER_HEADER(Length);
 
 /**
  * \ingroup length
@@ -632,7 +634,7 @@ ATTRIBUTE_HELPER_HEADER (Length);
  *
  * \return String containing the symbol of \p unit
  */
-std::string ToSymbol (Length::Unit unit);
+std::string ToSymbol(Length::Unit unit);
 
 /**
  * \ingroup length
@@ -650,7 +652,7 @@ std::string ToSymbol (Length::Unit unit);
  *
  * \return String containing the full name of \p unit
  */
-std::string ToName (Length::Unit unit, bool plural = false);
+std::string ToName(Length::Unit unit, bool plural = false);
 
 /**
  * \ingroup length
@@ -669,7 +671,7 @@ std::string ToName (Length::Unit unit, bool plural = false);
  * \return A std::optional object containing a Length::Unit if a match for the
  * string could be found
  */
-std::optional<Length::Unit> FromString (std::string unitString);
+std::optional<Length::Unit> FromString(std::string unitString);
 
 /**
  * \ingroup length
@@ -687,7 +689,7 @@ std::optional<Length::Unit> FromString (std::string unitString);
  *
  * \return Reference to the output stream
  */
-std::ostream& operator<< (std::ostream& stream, const Length& l);
+std::ostream& operator<<(std::ostream& stream, const Length& l);
 
 /**
  * \ingroup length
@@ -705,7 +707,7 @@ std::ostream& operator<< (std::ostream& stream, const Length& l);
  *
  * \return Reference to the output stream
  */
-std::ostream& operator<< (std::ostream& stream, const Length::Quantity& q);
+std::ostream& operator<<(std::ostream& stream, const Length::Quantity& q);
 
 /**
  * \ingroup length
@@ -723,7 +725,7 @@ std::ostream& operator<< (std::ostream& stream, const Length::Quantity& q);
  *
  * \return Reference to the output stream
  */
-std::ostream& operator<< (std::ostream& stream, Length::Unit unit);
+std::ostream& operator<<(std::ostream& stream, Length::Unit unit);
 
 /**
  * \ingroup length
@@ -739,7 +741,7 @@ std::ostream& operator<< (std::ostream& stream, Length::Unit unit);
  *
  * \return Reference to the input stream
  */
-std::istream& operator>> (std::istream& stream, Length& l);
+std::istream& operator>>(std::istream& stream, Length& l);
 
 /**
  * \ingroup length
@@ -755,7 +757,7 @@ std::istream& operator>> (std::istream& stream, Length& l);
  *
  * \return true if \p left and \p right have the same value
  */
-bool operator== (const Length& left, const Length& right);
+bool operator==(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -771,7 +773,7 @@ bool operator== (const Length& left, const Length& right);
  *
  * \return true if \p left and \p right do not have the same value
  */
-bool operator!= (const Length& left, const Length& right);
+bool operator!=(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -787,7 +789,7 @@ bool operator!= (const Length& left, const Length& right);
  *
  * \return true if \p left is less than \p right
  */
-bool operator< (const Length& left, const Length& right);
+bool operator<(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -803,7 +805,7 @@ bool operator< (const Length& left, const Length& right);
  *
  * \return true if \p left is less than or equal to \p right
  */
-bool operator<= (const Length& left, const Length& right);
+bool operator<=(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -819,7 +821,7 @@ bool operator<= (const Length& left, const Length& right);
  *
  * \return true if \p left is greater than \p right
  */
-bool operator> (const Length& left, const Length& right);
+bool operator>(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -835,7 +837,7 @@ bool operator> (const Length& left, const Length& right);
  *
  * \return true if \p left is greater than or equal to \p right
  */
-bool operator>= (const Length& left, const Length& right);
+bool operator>=(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -850,7 +852,7 @@ bool operator>= (const Length& left, const Length& right);
  * \return A newly constructed Length object containing the
  * result of `left + right`.
  */
-Length operator+ (const Length& left, const Length& right);
+Length operator+(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -865,7 +867,7 @@ Length operator+ (const Length& left, const Length& right);
  * \return A newly constructed Length object containing the
  * result of `left - right`.
  */
-Length operator- (const Length& left, const Length& right);
+Length operator-(const Length& left, const Length& right);
 
 /**
  * \ingroup length
@@ -880,7 +882,7 @@ Length operator- (const Length& left, const Length& right);
  * \return A newly constructed Length object containing the result
  * of `l * scalar`.
  */
-Length operator* (double scalar, const Length& l);
+Length operator*(double scalar, const Length& l);
 /**
  * \ingroup length
  * \brief Multiply a length value by a scalar
@@ -894,7 +896,7 @@ Length operator* (double scalar, const Length& l);
  * \return A newly constructed Length object containing the result
  * of `l * scalar`.
  */
-Length operator* (const Length& l, double scalar);
+Length operator*(const Length& l, double scalar);
 
 /**
  * \ingroup length
@@ -912,7 +914,7 @@ Length operator* (const Length& l, double scalar);
  * \return A newly constructed Length object containing the result
  * of `left / scalar`.
  */
-Length operator/ (const Length& left, double scalar);
+Length operator/(const Length& left, double scalar);
 
 /**
  * \ingroup length
@@ -929,7 +931,7 @@ Length operator/ (const Length& left, double scalar);
  * \return A scalar value that is the result of `numerator / denominator` or
  * NaN if \p denominator is 0.
  */
-double operator/ (const Length& numerator, const Length& denominator);
+double operator/(const Length& numerator, const Length& denominator);
 
 /**
  * \ingroup length
@@ -951,7 +953,7 @@ double operator/ (const Length& numerator, const Length& denominator);
  * \return The number of times \p numerator can be split into \p denominator
  * sized pieces, rounded down to the nearest whole number
  */
-int64_t Div (const Length& numerator, const Length& denominator, Length* remainder = nullptr);
+int64_t Div(const Length& numerator, const Length& denominator, Length* remainder = nullptr);
 
 /**
  * \ingroup length
@@ -968,7 +970,7 @@ int64_t Div (const Length& numerator, const Length& denominator, Length* remaind
  * \return The amount remaining after splitting \p numerator into \p denominator
  * sized pieces.
  */
-Length Mod (const Length& numerator, const Length& denominator);
+Length Mod(const Length& numerator, const Length& denominator);
 
 /**
  * Construct a length from a value in the indicated unit.
@@ -977,33 +979,32 @@ Length Mod (const Length& numerator, const Length& denominator);
  * \param value The numerical value.
  * \returns Length object.
  */
-Length NanoMeters (double value);
-Length MicroMeters (double value);
-Length MilliMeters (double value);
-Length CentiMeters (double value);
-Length Meters (double value);
-Length KiloMeters (double value);
-Length NauticalMiles (double value);
-Length Inches (double value);
-Length Feet (double value);
-Length Yards (double value);
-Length Miles (double value);
+Length NanoMeters(double value);
+Length MicroMeters(double value);
+Length MilliMeters(double value);
+Length CentiMeters(double value);
+Length Meters(double value);
+Length KiloMeters(double value);
+Length NauticalMiles(double value);
+Length Inches(double value);
+Length Feet(double value);
+Length Yards(double value);
+Length Miles(double value);
 /**@}*/
 
 #ifdef HAVE_BOOST_UNITS
 template <class U, class T>
-Length::Length (boost::units::quantity<U, T> quantity)
-  :   m_value (0)
+Length::Length(boost::units::quantity<U, T> quantity)
+    : m_value(0)
 {
-  namespace bu = boost::units;
-  using BoostMeters = bu::quantity<bu::si::length, double>;
+    namespace bu = boost::units;
+    using BoostMeters = bu::quantity<bu::si::length, double>;
 
-  //convert value to meters
-  m_value = static_cast<BoostMeters> (quantity).value ();
+    // convert value to meters
+    m_value = static_cast<BoostMeters>(quantity).value();
 }
 #endif
 
-}  // namespace ns3
+} // namespace ns3
 
-#endif  /* NS3_LENGTH_H_ */
-
+#endif /* NS3_LENGTH_H_ */

@@ -25,14 +25,16 @@
 #ifndef LTE_TEST_UE_MEASUREMENTS_H
 #define LTE_TEST_UE_MEASUREMENTS_H
 
-#include <ns3/test.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/nstime.h>
+#include <ns3/test.h>
+
 #include <list>
 #include <set>
 #include <vector>
 
-namespace ns3 {
+namespace ns3
+{
 
 class MobilityModel;
 
@@ -40,9 +42,7 @@ class MobilityModel;
 
 using namespace ns3;
 
-
 // ===== LTE-UE-MEASUREMENTS TEST SUITE ==================================== //
-
 
 /**
  * \ingroup lte-test
@@ -53,10 +53,9 @@ using namespace ns3;
  */
 class LteUeMeasurementsTestSuite : public TestSuite
 {
-public:
-  LteUeMeasurementsTestSuite ();
+  public:
+    LteUeMeasurementsTestSuite();
 };
-
 
 /**
  * \ingroup lte-test
@@ -68,56 +67,65 @@ public:
  */
 class LteUeMeasurementsTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param name the reference name
-   * \param d1 distance between UE and ENB node pair
-   * \param d2 distance between UE and other ENB node
-   * \param rsrpDbmUe1 RSRP in dBm UE 1
-   * \param rsrpDbmUe2 RSRP in dBm UE 2
-   * \param rsrqDbUe1 RSRQ in dBm UE 1
-   * \param rsrqDbUe2 RSRQ in dBm UE 2
-   */
-  LteUeMeasurementsTestCase (std::string name, double d1, double d2, double rsrpDbmUe1, double rsrpDbmUe2, double rsrqDbUe1, double rsrqDbUe2);
-  ~LteUeMeasurementsTestCase () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     * \param d1 distance between UE and ENB node pair
+     * \param d2 distance between UE and other ENB node
+     * \param rsrpDbmUe1 RSRP in dBm UE 1
+     * \param rsrpDbmUe2 RSRP in dBm UE 2
+     * \param rsrqDbUe1 RSRQ in dBm UE 1
+     * \param rsrqDbUe2 RSRQ in dBm UE 2
+     */
+    LteUeMeasurementsTestCase(std::string name,
+                              double d1,
+                              double d2,
+                              double rsrpDbmUe1,
+                              double rsrpDbmUe2,
+                              double rsrqDbUe1,
+                              double rsrqDbUe2);
+    ~LteUeMeasurementsTestCase() override;
 
-  /**
-   * Report UE measurements function
-   * \param rnti the RNTI
-   * \param cellId the cell ID
-   * \param rsrp the RSRP
-   * \param rsrq the RSRQ
-   * \param servingCell the serving cell
-   */
-  void ReportUeMeasurements (uint16_t rnti, uint16_t cellId, double rsrp, double rsrq, bool servingCell);
+    /**
+     * Report UE measurements function
+     * \param rnti the RNTI
+     * \param cellId the cell ID
+     * \param rsrp the RSRP
+     * \param rsrq the RSRQ
+     * \param servingCell the serving cell
+     */
+    void ReportUeMeasurements(uint16_t rnti,
+                              uint16_t cellId,
+                              double rsrp,
+                              double rsrq,
+                              bool servingCell);
 
-  /**
-   * Reeive measurement report function
-   * \param imsi the IMSI
-   * \param cellId the cell ID
-   * \param rnti the RNTI
-   * \param meas LteRrcSap::MeasurementReport
-   */
-  void RecvMeasurementReport (uint64_t imsi, uint16_t cellId, uint16_t rnti, LteRrcSap::MeasurementReport meas);
+    /**
+     * Reeive measurement report function
+     * \param imsi the IMSI
+     * \param cellId the cell ID
+     * \param rnti the RNTI
+     * \param meas LteRrcSap::MeasurementReport
+     */
+    void RecvMeasurementReport(uint64_t imsi,
+                               uint16_t cellId,
+                               uint16_t rnti,
+                               LteRrcSap::MeasurementReport meas);
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 
-  double m_d1; ///< distance between UE and ENB node pair
-  double m_d2; ///< distance between UE and other ENB node
-  double m_rsrpDbmUeServingCell; ///< RSRP in dBm UE 1
-  double m_rsrpDbmUeNeighborCell; ///< RSRP in dBm UE 2
-  double m_rsrqDbUeServingCell; ///< RSRQ in dBm UE 1
-  double m_rsrqDbUeNeighborCell; ///< RSRQ in dBm UE 2
-
+    double m_d1;                    ///< distance between UE and ENB node pair
+    double m_d2;                    ///< distance between UE and other ENB node
+    double m_rsrpDbmUeServingCell;  ///< RSRP in dBm UE 1
+    double m_rsrpDbmUeNeighborCell; ///< RSRP in dBm UE 2
+    double m_rsrqDbUeServingCell;   ///< RSRQ in dBm UE 1
+    double m_rsrqDbUeNeighborCell;  ///< RSRQ in dBm UE 2
 };
 
-
-
 // ===== LTE-UE-MEASUREMENTS-PIECEWISE-1 TEST SUITE ======================== //
-
 
 /**
  * \ingroup lte-test
@@ -128,10 +136,9 @@ private:
  */
 class LteUeMeasurementsPiecewiseTestSuite1 : public TestSuite
 {
-public:
-  LteUeMeasurementsPiecewiseTestSuite1 ();
+  public:
+    LteUeMeasurementsPiecewiseTestSuite1();
 };
-
 
 /**
  * \ingroup lte-test
@@ -153,110 +160,109 @@ public:
  */
 class LteUeMeasurementsPiecewiseTestCase1 : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param name the reference name
-   * \param config LteRrcSap::ReportConfigEutra
-   * \param expectedTime the expected time
-   * \param expectedRsrp the expected RSRP
-   */
-  LteUeMeasurementsPiecewiseTestCase1 (std::string name,
-                                       LteRrcSap::ReportConfigEutra config,
-                                       std::vector<Time> expectedTime,
-                                       std::vector<uint8_t> expectedRsrp);
+  public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     * \param config LteRrcSap::ReportConfigEutra
+     * \param expectedTime the expected time
+     * \param expectedRsrp the expected RSRP
+     */
+    LteUeMeasurementsPiecewiseTestCase1(std::string name,
+                                        LteRrcSap::ReportConfigEutra config,
+                                        std::vector<Time> expectedTime,
+                                        std::vector<uint8_t> expectedRsrp);
 
-  ~LteUeMeasurementsPiecewiseTestCase1 () override;
+    ~LteUeMeasurementsPiecewiseTestCase1() override;
 
-  /**
-   * \brief Triggers when eNodeB receives measurement report from UE, then
-   *        perform verification on it.
-   *
-   * The trigger is set up beforehand by connecting to the
-   * `LteUeRrc::RecvMeasurementReport` trace source.
-   *
-   * Verification consists of checking whether the report carries the right
-   * value of RSRP or not, and whether it occurs at the expected time or not.
-   *
-   * \param context the context
-   * \param imsi the IMSI
-   * \param cellId the cell ID
-   * \param rnti  the RNTI
-   * \param report LteRrcSap::MeasurementReport
-   */
-  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
-                                      uint16_t cellId, uint16_t rnti,
-                                      LteRrcSap::MeasurementReport report);
+    /**
+     * \brief Triggers when eNodeB receives measurement report from UE, then
+     *        perform verification on it.
+     *
+     * The trigger is set up beforehand by connecting to the
+     * `LteUeRrc::RecvMeasurementReport` trace source.
+     *
+     * Verification consists of checking whether the report carries the right
+     * value of RSRP or not, and whether it occurs at the expected time or not.
+     *
+     * \param context the context
+     * \param imsi the IMSI
+     * \param cellId the cell ID
+     * \param rnti  the RNTI
+     * \param report LteRrcSap::MeasurementReport
+     */
+    void RecvMeasurementReportCallback(std::string context,
+                                       uint64_t imsi,
+                                       uint16_t cellId,
+                                       uint16_t rnti,
+                                       LteRrcSap::MeasurementReport report);
 
-private:
-  /**
-   * \brief Setup the simulation with the intended UE measurement reporting
-   *        configuration, run it, and connect the
-   *        `RecvMeasurementReportCallback` function to the
-   *        `LteUeRrc::RecvMeasurementReport` trace source.
-   */
-  void DoRun () override;
+  private:
+    /**
+     * \brief Setup the simulation with the intended UE measurement reporting
+     *        configuration, run it, and connect the
+     *        `RecvMeasurementReportCallback` function to the
+     *        `LteUeRrc::RecvMeasurementReport` trace source.
+     */
+    void DoRun() override;
 
-  /**
-   * \brief Runs at the end of the simulation, verifying that all expected
-   *        measurement reports have been examined.
-   */
-  void DoTeardown () override;
+    /**
+     * \brief Runs at the end of the simulation, verifying that all expected
+     *        measurement reports have been examined.
+     */
+    void DoTeardown() override;
 
-  /// Teleport very near function
-  void TeleportVeryNear ();
-  /// Teleport near function
-  void TeleportNear ();
-  /// Teleport far function
-  void TeleportFar ();
-  /// Teleport far function
-  void TeleportVeryFar ();
+    /// Teleport very near function
+    void TeleportVeryNear();
+    /// Teleport near function
+    void TeleportNear();
+    /// Teleport far function
+    void TeleportFar();
+    /// Teleport far function
+    void TeleportVeryFar();
 
-  /**
-   * \brief The active report triggering configuration.
-   */
-  LteRrcSap::ReportConfigEutra m_config;
+    /**
+     * \brief The active report triggering configuration.
+     */
+    LteRrcSap::ReportConfigEutra m_config;
 
-  /**
-   * \brief The list of expected time when measurement reports are received by
-   *        eNodeB.
-   */
-  std::vector<Time> m_expectedTime;
+    /**
+     * \brief The list of expected time when measurement reports are received by
+     *        eNodeB.
+     */
+    std::vector<Time> m_expectedTime;
 
-  /**
-   * \brief The list of expected values of RSRP (in 3GPP range unit) from the
-   *        measurement reports received.
-   */
-  std::vector<uint8_t> m_expectedRsrp;
+    /**
+     * \brief The list of expected values of RSRP (in 3GPP range unit) from the
+     *        measurement reports received.
+     */
+    std::vector<uint8_t> m_expectedRsrp;
 
-  /**
-   * \brief Pointer to the element of `m_expectedTime` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<Time>::iterator m_itExpectedTime;
+    /**
+     * \brief Pointer to the element of `m_expectedTime` which is expected to
+     *        occur next in the simulation.
+     */
+    std::vector<Time>::iterator m_itExpectedTime;
 
-  /**
-   * \brief Pointer to the element of `m_expectedRsrp` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<uint8_t>::iterator m_itExpectedRsrp;
+    /**
+     * \brief Pointer to the element of `m_expectedRsrp` which is expected to
+     *        occur next in the simulation.
+     */
+    std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
-  /**
-   * \brief The measurement identity being tested. Measurement reports with
-   *        different measurement identity (e.g. from handover algorithm) will
-   *        be ignored.
-   */
-  uint8_t m_expectedMeasId;
+    /**
+     * \brief The measurement identity being tested. Measurement reports with
+     *        different measurement identity (e.g. from handover algorithm) will
+     *        be ignored.
+     */
+    uint8_t m_expectedMeasId;
 
-  Ptr<MobilityModel> m_ueMobility; ///< the mobility model
+    Ptr<MobilityModel> m_ueMobility; ///< the mobility model
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase1
 
-
-
 // ===== LTE-UE-MEASUREMENTS-PIECEWISE-2 TEST SUITE ======================== //
-
 
 /**
  * \ingroup lte-test
@@ -267,10 +273,9 @@ private:
  */
 class LteUeMeasurementsPiecewiseTestSuite2 : public TestSuite
 {
-public:
-  LteUeMeasurementsPiecewiseTestSuite2 ();
+  public:
+    LteUeMeasurementsPiecewiseTestSuite2();
 };
-
 
 /**
  * \ingroup lte-test
@@ -292,108 +297,109 @@ public:
  */
 class LteUeMeasurementsPiecewiseTestCase2 : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param name the reference name
-   * \param config LteRrcSap::ReportConfigEutra
-   * \param expectedTime the expected time
-   * \param expectedRsrp the expected RSRP
-   */
-  LteUeMeasurementsPiecewiseTestCase2 (std::string name,
-                                       LteRrcSap::ReportConfigEutra config,
-                                       std::vector<Time> expectedTime,
-                                       std::vector<uint8_t> expectedRsrp);
+  public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     * \param config LteRrcSap::ReportConfigEutra
+     * \param expectedTime the expected time
+     * \param expectedRsrp the expected RSRP
+     */
+    LteUeMeasurementsPiecewiseTestCase2(std::string name,
+                                        LteRrcSap::ReportConfigEutra config,
+                                        std::vector<Time> expectedTime,
+                                        std::vector<uint8_t> expectedRsrp);
 
-  ~LteUeMeasurementsPiecewiseTestCase2 () override;
+    ~LteUeMeasurementsPiecewiseTestCase2() override;
 
-  /**
-   * \brief Triggers when eNodeB receives measurement report from UE, then
-   *        perform verification on it.
-   *
-   * The trigger is set up beforehand by connecting to the
-   * `LteUeRrc::RecvMeasurementReport` trace source.
-   *
-   * Verification consists of checking whether the report carries the right
-   * value of RSRP or not, and whether it occurs at the expected time or not.
-   *
-   * \param context the context
-   * \param imsi the IMSI
-   * \param cellId the cell ID
-   * \param rnti  the RNTI
-   * \param report LteRrcSap::MeasurementReport
-   */
-  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
-                                      uint16_t cellId, uint16_t rnti,
-                                      LteRrcSap::MeasurementReport report);
+    /**
+     * \brief Triggers when eNodeB receives measurement report from UE, then
+     *        perform verification on it.
+     *
+     * The trigger is set up beforehand by connecting to the
+     * `LteUeRrc::RecvMeasurementReport` trace source.
+     *
+     * Verification consists of checking whether the report carries the right
+     * value of RSRP or not, and whether it occurs at the expected time or not.
+     *
+     * \param context the context
+     * \param imsi the IMSI
+     * \param cellId the cell ID
+     * \param rnti  the RNTI
+     * \param report LteRrcSap::MeasurementReport
+     */
+    void RecvMeasurementReportCallback(std::string context,
+                                       uint64_t imsi,
+                                       uint16_t cellId,
+                                       uint16_t rnti,
+                                       LteRrcSap::MeasurementReport report);
 
-private:
-  /**
-   * \brief Setup the simulation with the intended UE measurement reporting
-   *        configuration, run it, and connect the
-   *        `RecvMeasurementReportCallback` function to the
-   *        `LteUeRrc::RecvMeasurementReport` trace source.
-   */
-  void DoRun () override;
+  private:
+    /**
+     * \brief Setup the simulation with the intended UE measurement reporting
+     *        configuration, run it, and connect the
+     *        `RecvMeasurementReportCallback` function to the
+     *        `LteUeRrc::RecvMeasurementReport` trace source.
+     */
+    void DoRun() override;
 
-  /**
-   * \brief Runs at the end of the simulation, verifying that all expected
-   *        measurement reports have been examined.
-   */
-  void DoTeardown () override;
+    /**
+     * \brief Runs at the end of the simulation, verifying that all expected
+     *        measurement reports have been examined.
+     */
+    void DoTeardown() override;
 
-  /// Teleport very near function
-  void TeleportVeryNear ();
-  /// Teleport near function
-  void TeleportNear ();
-  /// Teleport far function
-  void TeleportFar ();
-  /// Teleport very far function
-  void TeleportVeryFar ();
+    /// Teleport very near function
+    void TeleportVeryNear();
+    /// Teleport near function
+    void TeleportNear();
+    /// Teleport far function
+    void TeleportFar();
+    /// Teleport very far function
+    void TeleportVeryFar();
 
-  /**
-   * \brief The active report triggering configuration.
-   */
-  LteRrcSap::ReportConfigEutra m_config;
+    /**
+     * \brief The active report triggering configuration.
+     */
+    LteRrcSap::ReportConfigEutra m_config;
 
-  /**
-   * \brief The list of expected time when measurement reports are received by
-   *        eNodeB.
-   */
-  std::vector<Time> m_expectedTime;
+    /**
+     * \brief The list of expected time when measurement reports are received by
+     *        eNodeB.
+     */
+    std::vector<Time> m_expectedTime;
 
-  /**
-   * \brief The list of expected values of RSRP (in 3GPP range unit) from the
-   *        measurement reports received.
-   */
-  std::vector<uint8_t> m_expectedRsrp;
+    /**
+     * \brief The list of expected values of RSRP (in 3GPP range unit) from the
+     *        measurement reports received.
+     */
+    std::vector<uint8_t> m_expectedRsrp;
 
-  /**
-   * \brief Pointer to the element of `m_expectedTime` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<Time>::iterator m_itExpectedTime;
+    /**
+     * \brief Pointer to the element of `m_expectedTime` which is expected to
+     *        occur next in the simulation.
+     */
+    std::vector<Time>::iterator m_itExpectedTime;
 
-  /**
-   * \brief Pointer to the element of `m_expectedRsrp` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<uint8_t>::iterator m_itExpectedRsrp;
+    /**
+     * \brief Pointer to the element of `m_expectedRsrp` which is expected to
+     *        occur next in the simulation.
+     */
+    std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
-  /**
-   * \brief The measurement identity being tested. Measurement reports with
-   *        different measurement identity (e.g. from handover algorithm) will
-   *        be ignored.
-   */
-  uint8_t m_expectedMeasId;
+    /**
+     * \brief The measurement identity being tested. Measurement reports with
+     *        different measurement identity (e.g. from handover algorithm) will
+     *        be ignored.
+     */
+    uint8_t m_expectedMeasId;
 
-  Ptr<MobilityModel> m_ueMobility; ///< the mobility model
+    Ptr<MobilityModel> m_ueMobility; ///< the mobility model
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase2
 
 // ===== LTE-UE-MEASUREMENTS-PIECEWISE-3 TEST SUITE ======================== //
-
 
 /**
  * \ingroup lte-test
@@ -404,10 +410,9 @@ private:
  */
 class LteUeMeasurementsPiecewiseTestSuite3 : public TestSuite
 {
-public:
-  LteUeMeasurementsPiecewiseTestSuite3 ();
+  public:
+    LteUeMeasurementsPiecewiseTestSuite3();
 };
-
 
 /**
  * \ingroup lte-test
@@ -447,92 +452,89 @@ public:
  */
 class LteUeMeasurementsPiecewiseTestCase3 : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param name the reference name
-   * \param config LteRrcSap::ReportConfigEutra
-   * \param expectedTime the expected time
-   */
-  LteUeMeasurementsPiecewiseTestCase3 (std::string name,
-                                       LteRrcSap::ReportConfigEutra config,
-                                       std::vector<Time> expectedTime);
+  public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     * \param config LteRrcSap::ReportConfigEutra
+     * \param expectedTime the expected time
+     */
+    LteUeMeasurementsPiecewiseTestCase3(std::string name,
+                                        LteRrcSap::ReportConfigEutra config,
+                                        std::vector<Time> expectedTime);
 
-  ~LteUeMeasurementsPiecewiseTestCase3 () override;
+    ~LteUeMeasurementsPiecewiseTestCase3() override;
 
-  /**
-   * \brief Triggers when eNodeB receives measurement report from UE, then
-   *        perform verification on it.
-   *
-   * The trigger is set up beforehand by connecting to the
-   * `LteUeRrc::RecvMeasurementReport` trace source.
-   *
-   * Verification consists of checking whether the report carries the right
-   * value of RSRP or not, and whether it occurs at the expected time or not.
-   *
-   * \param context the context
-   * \param imsi the IMSI
-   * \param cellId the cell ID
-   * \param rnti  the RNTI
-   * \param report LteRrcSap::MeasurementReport
-   */
-  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
-                                      uint16_t cellId, uint16_t rnti,
-                                      LteRrcSap::MeasurementReport report);
+    /**
+     * \brief Triggers when eNodeB receives measurement report from UE, then
+     *        perform verification on it.
+     *
+     * The trigger is set up beforehand by connecting to the
+     * `LteUeRrc::RecvMeasurementReport` trace source.
+     *
+     * Verification consists of checking whether the report carries the right
+     * value of RSRP or not, and whether it occurs at the expected time or not.
+     *
+     * \param context the context
+     * \param imsi the IMSI
+     * \param cellId the cell ID
+     * \param rnti  the RNTI
+     * \param report LteRrcSap::MeasurementReport
+     */
+    void RecvMeasurementReportCallback(std::string context,
+                                       uint64_t imsi,
+                                       uint16_t cellId,
+                                       uint16_t rnti,
+                                       LteRrcSap::MeasurementReport report);
 
-private:
-  /**
-   * \brief Setup the simulation with the intended UE measurement reporting
-   *        configuration, run it, and connect the
-   *        `RecvMeasurementReportCallback` function to the
-   *        `LteUeRrc::RecvMeasurementReport` trace source.
-   */
-  void DoRun () override;
+  private:
+    /**
+     * \brief Setup the simulation with the intended UE measurement reporting
+     *        configuration, run it, and connect the
+     *        `RecvMeasurementReportCallback` function to the
+     *        `LteUeRrc::RecvMeasurementReport` trace source.
+     */
+    void DoRun() override;
 
-  /**
-   * \brief Runs at the end of the simulation, verifying that all expected
-   *        measurement reports have been examined.
-   */
-  void DoTeardown () override;
+    /**
+     * \brief Runs at the end of the simulation, verifying that all expected
+     *        measurement reports have been examined.
+     */
+    void DoTeardown() override;
 
+    /// Teleport the eNb near function
+    void TeleportEnbNear();
 
-  /// Teleport the eNb near function
-  void TeleportEnbNear ();
+    /**
+     * \brief The active report triggering configuration.
+     */
+    LteRrcSap::ReportConfigEutra m_config;
 
-  /**
-   * \brief The active report triggering configuration.
-   */
-  LteRrcSap::ReportConfigEutra m_config;
+    /**
+     * \brief The list of expected time when measurement reports are received by
+     *        eNodeB.
+     */
+    std::vector<Time> m_expectedTime;
 
-  /**
-   * \brief The list of expected time when measurement reports are received by
-   *        eNodeB.
-   */
-  std::vector<Time> m_expectedTime;
+    /**
+     * \brief Pointer to the element of `m_expectedTime` which is expected to
+     *        occur next in the simulation.
+     */
+    std::vector<Time>::iterator m_itExpectedTime;
 
-  /**
-   * \brief Pointer to the element of `m_expectedTime` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<Time>::iterator m_itExpectedTime;
+    /**
+     * \brief The measurement identity being tested. Measurement reports with
+     *        different measurement identity (e.g. from handover algorithm) will
+     *        be ignored.
+     */
+    uint8_t m_expectedMeasId;
 
-  /**
-   * \brief The measurement identity being tested. Measurement reports with
-   *        different measurement identity (e.g. from handover algorithm) will
-   *        be ignored.
-   */
-  uint8_t m_expectedMeasId;
-
-  Ptr<MobilityModel> m_enbMobility; ///< the mobility model
+    Ptr<MobilityModel> m_enbMobility; ///< the mobility model
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase3
 
-
-
-
 // ===== LTE-UE-MEASUREMENTS-HANDOVER TEST SUITE =========================== //
-
 
 /**
  * \ingroup lte-test
@@ -543,10 +545,9 @@ private:
  */
 class LteUeMeasurementsHandoverTestSuite : public TestSuite
 {
-public:
-  LteUeMeasurementsHandoverTestSuite ();
+  public:
+    LteUeMeasurementsHandoverTestSuite();
 };
-
 
 /**
  * \ingroup lte-test
@@ -568,115 +569,117 @@ public:
  */
 class LteUeMeasurementsHandoverTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param name the reference name
-   * \param sourceConfigList std::list<LteRrcSap::ReportConfigEutra>
-   * \param targetConfigList std::list<LteRrcSap::ReportConfigEutra>
-   * \param expectedTime the expected time
-   * \param expectedRsrp the expected RSRP
-   * \param duration the duration
-   */
-  LteUeMeasurementsHandoverTestCase (std::string name,
-                                     std::list<LteRrcSap::ReportConfigEutra> sourceConfigList,
-                                     std::list<LteRrcSap::ReportConfigEutra> targetConfigList,
-                                     std::vector<Time> expectedTime,
-                                     std::vector<uint8_t> expectedRsrp,
-                                     Time duration);
+  public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     * \param sourceConfigList std::list<LteRrcSap::ReportConfigEutra>
+     * \param targetConfigList std::list<LteRrcSap::ReportConfigEutra>
+     * \param expectedTime the expected time
+     * \param expectedRsrp the expected RSRP
+     * \param duration the duration
+     */
+    LteUeMeasurementsHandoverTestCase(std::string name,
+                                      std::list<LteRrcSap::ReportConfigEutra> sourceConfigList,
+                                      std::list<LteRrcSap::ReportConfigEutra> targetConfigList,
+                                      std::vector<Time> expectedTime,
+                                      std::vector<uint8_t> expectedRsrp,
+                                      Time duration);
 
-  ~LteUeMeasurementsHandoverTestCase () override;
+    ~LteUeMeasurementsHandoverTestCase() override;
 
-  /**
-   * \brief Triggers when either one of the eNodeBs receives measurement report
-   *        from UE, then perform verification on it.
-   *
-   * The trigger is set up beforehand by connecting to the
-   * `LteUeRrc::RecvMeasurementReport` trace source.
-   *
-   * Verification consists of checking whether the report carries the right
-   * value of RSRP or not, and whether it occurs at the expected time or not.
-   *
-   * \param context the context
-   * \param imsi the IMSI
-   * \param cellId the cell ID
-   * \param rnti  the RNTI
-   * \param report LteRrcSap::MeasurementReport
-   */
-  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
-                                      uint16_t cellId, uint16_t rnti,
-                                      LteRrcSap::MeasurementReport report);
+    /**
+     * \brief Triggers when either one of the eNodeBs receives measurement report
+     *        from UE, then perform verification on it.
+     *
+     * The trigger is set up beforehand by connecting to the
+     * `LteUeRrc::RecvMeasurementReport` trace source.
+     *
+     * Verification consists of checking whether the report carries the right
+     * value of RSRP or not, and whether it occurs at the expected time or not.
+     *
+     * \param context the context
+     * \param imsi the IMSI
+     * \param cellId the cell ID
+     * \param rnti  the RNTI
+     * \param report LteRrcSap::MeasurementReport
+     */
+    void RecvMeasurementReportCallback(std::string context,
+                                       uint64_t imsi,
+                                       uint16_t cellId,
+                                       uint16_t rnti,
+                                       LteRrcSap::MeasurementReport report);
 
-private:
-  /**
-   * \brief Setup the simulation with the intended UE measurement reporting
-   *        configuration, run it, and connect the
-   *        `RecvMeasurementReportCallback` function to the
-   *        `LteUeRrc::RecvMeasurementReport` trace source.
-   */
-  void DoRun () override;
+  private:
+    /**
+     * \brief Setup the simulation with the intended UE measurement reporting
+     *        configuration, run it, and connect the
+     *        `RecvMeasurementReportCallback` function to the
+     *        `LteUeRrc::RecvMeasurementReport` trace source.
+     */
+    void DoRun() override;
 
-  /**
-   * \brief Runs at the end of the simulation, verifying that all expected
-   *        measurement reports have been examined.
-   */
-  void DoTeardown () override;
+    /**
+     * \brief Runs at the end of the simulation, verifying that all expected
+     *        measurement reports have been examined.
+     */
+    void DoTeardown() override;
 
-  /**
-   * \brief The list of active report triggering configuration for the source
-   *        eNodeB.
-   */
-  std::list<LteRrcSap::ReportConfigEutra> m_sourceConfigList;
+    /**
+     * \brief The list of active report triggering configuration for the source
+     *        eNodeB.
+     */
+    std::list<LteRrcSap::ReportConfigEutra> m_sourceConfigList;
 
-  /**
-   * \brief The list of active report triggering configuration for the target
-   *        eNodeB.
-   */
-  std::list<LteRrcSap::ReportConfigEutra> m_targetConfigList;
+    /**
+     * \brief The list of active report triggering configuration for the target
+     *        eNodeB.
+     */
+    std::list<LteRrcSap::ReportConfigEutra> m_targetConfigList;
 
-  /**
-   * \brief The list of expected time when measurement reports are received by
-   *        eNodeB.
-   */
-  std::vector<Time> m_expectedTime;
+    /**
+     * \brief The list of expected time when measurement reports are received by
+     *        eNodeB.
+     */
+    std::vector<Time> m_expectedTime;
 
-  /**
-   * \brief The list of expected values of RSRP (in 3GPP range unit) from the
-   *        measurement reports received.
-   */
-  std::vector<uint8_t> m_expectedRsrp;
+    /**
+     * \brief The list of expected values of RSRP (in 3GPP range unit) from the
+     *        measurement reports received.
+     */
+    std::vector<uint8_t> m_expectedRsrp;
 
-  /**
-   * \brief Pointer to the element of `m_expectedTime` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<Time>::iterator m_itExpectedTime;
+    /**
+     * \brief Pointer to the element of `m_expectedTime` which is expected to
+     *        occur next in the simulation.
+     */
+    std::vector<Time>::iterator m_itExpectedTime;
 
-  /**
-   * \brief Pointer to the element of `m_expectedRsrp` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<uint8_t>::iterator m_itExpectedRsrp;
+    /**
+     * \brief Pointer to the element of `m_expectedRsrp` which is expected to
+     *        occur next in the simulation.
+     */
+    std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
-  /**
-   * \brief Duration of simulation.
-   */
-  Time m_duration;
+    /**
+     * \brief Duration of simulation.
+     */
+    Time m_duration;
 
-  /**
-   * \brief The list of measurement identities being tested in the source cell.
-   *        Measurement reports with different measurement identity (e.g. from
-   *        handover algorithm and ANR) will be ignored.
-   */
-  std::set<uint8_t> m_expectedSourceCellMeasId;
+    /**
+     * \brief The list of measurement identities being tested in the source cell.
+     *        Measurement reports with different measurement identity (e.g. from
+     *        handover algorithm and ANR) will be ignored.
+     */
+    std::set<uint8_t> m_expectedSourceCellMeasId;
 
-  /**
-   * \brief The list of measurement identities being tested in the target cell.
-   *        Measurement reports with different measurement identity (e.g. from
-   *        handover algorithm and ANR) will be ignored.
-   */
-  std::set<uint8_t> m_expectedTargetCellMeasId;
+    /**
+     * \brief The list of measurement identities being tested in the target cell.
+     *        Measurement reports with different measurement identity (e.g. from
+     *        handover algorithm and ANR) will be ignored.
+     */
+    std::set<uint8_t> m_expectedTargetCellMeasId;
 
 }; // end of class LteUeMeasurementsHandoverTestCase
 

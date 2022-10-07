@@ -1,22 +1,22 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
-* Copyright (c) 2010 Network Security Lab, University of Washington, Seattle.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 as
-* published by the Free Software Foundation;
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-* Author: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
-*/
+ * Copyright (c) 2010 Network Security Lab, University of Washington, Seattle.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
+ */
 
 #ifndef WIFI_RADIO_ENERGY_MODEL_HELPER_H
 #define WIFI_RADIO_ENERGY_MODEL_HELPER_H
@@ -24,7 +24,8 @@
 #include "ns3/energy-model-helper.h"
 #include "ns3/wifi-radio-energy-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup energy
@@ -35,80 +36,79 @@ namespace ns3 {
  */
 class WifiRadioEnergyModelHelper : public DeviceEnergyModelHelper
 {
-public:
-  /**
-   * Construct a helper which is used to add a radio energy model to a node
-   */
-  WifiRadioEnergyModelHelper ();
+  public:
+    /**
+     * Construct a helper which is used to add a radio energy model to a node
+     */
+    WifiRadioEnergyModelHelper();
 
-  /**
-   * Destroy a RadioEnergy Helper
-   */
-  ~WifiRadioEnergyModelHelper () override;
+    /**
+     * Destroy a RadioEnergy Helper
+     */
+    ~WifiRadioEnergyModelHelper() override;
 
-  /**
-   * \param name the name of the attribute to set
-   * \param v the value of the attribute
-   *
-   * Sets an attribute of the underlying PHY object.
-   */
-  void Set (std::string name, const AttributeValue &v) override;
+    /**
+     * \param name the name of the attribute to set
+     * \param v the value of the attribute
+     *
+     * Sets an attribute of the underlying PHY object.
+     */
+    void Set(std::string name, const AttributeValue& v) override;
 
-  /**
-   * \param callback Callback function for energy depletion handling.
-   *
-   * Sets the callback to be invoked when energy is depleted.
-   */
-  void SetDepletionCallback (WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback callback);
+    /**
+     * \param callback Callback function for energy depletion handling.
+     *
+     * Sets the callback to be invoked when energy is depleted.
+     */
+    void SetDepletionCallback(WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback callback);
 
-  /**
-   * \param callback Callback function for energy recharged handling.
-   *
-   * Sets the callback to be invoked when energy is recharged.
-   */
-  void SetRechargedCallback (WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback callback);
+    /**
+     * \param callback Callback function for energy recharged handling.
+     *
+     * Sets the callback to be invoked when energy is recharged.
+     */
+    void SetRechargedCallback(WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback callback);
 
-  /**
-   * \tparam Ts \deduced Argument types
-   * \param name the name of the model to set
-   * \param [in] args Name and AttributeValue pairs to set.
-   *
-   * Configure a Transmission Current model for this EnergySource.
-   */
-  template <typename... Ts>
-  void SetTxCurrentModel (std::string name, Ts&&... args);
+    /**
+     * \tparam Ts \deduced Argument types
+     * \param name the name of the model to set
+     * \param [in] args Name and AttributeValue pairs to set.
+     *
+     * Configure a Transmission Current model for this EnergySource.
+     */
+    template <typename... Ts>
+    void SetTxCurrentModel(std::string name, Ts&&... args);
 
-private:
-  /**
-   * \param device Pointer to the NetDevice to install DeviceEnergyModel.
-   * \param source Pointer to EnergySource to install.
-   * \returns Ptr<DeviceEnergyModel>
-   *
-   * Implements DeviceEnergyModel::Install.
-   */
-  Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
-                                            Ptr<EnergySource> source) const override;
+  private:
+    /**
+     * \param device Pointer to the NetDevice to install DeviceEnergyModel.
+     * \param source Pointer to EnergySource to install.
+     * \returns Ptr<DeviceEnergyModel>
+     *
+     * Implements DeviceEnergyModel::Install.
+     */
+    Ptr<DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
+                                     Ptr<EnergySource> source) const override;
 
-private:
-  ObjectFactory m_radioEnergy; ///< radio energy
-  WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback m_depletionCallback; ///< radio energy depletion callback
-  WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback m_rechargedCallback; ///< radio energy recharged callback
-  ObjectFactory m_txCurrentModel; ///< transmit current model
-
+  private:
+    ObjectFactory m_radioEnergy; ///< radio energy
+    WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback
+        m_depletionCallback; ///< radio energy depletion callback
+    WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback
+        m_rechargedCallback;        ///< radio energy recharged callback
+    ObjectFactory m_txCurrentModel; ///< transmit current model
 };
-
 
 /***************************************************************
  *  Implementation of the templates declared above.
  ***************************************************************/
 
 template <typename... Ts>
-void WifiRadioEnergyModelHelper::SetTxCurrentModel (std::string name, Ts&&... args)
+void
+WifiRadioEnergyModelHelper::SetTxCurrentModel(std::string name, Ts&&... args)
 {
-  m_txCurrentModel = ObjectFactory (name, std::forward<Ts> (args)...);
+    m_txCurrentModel = ObjectFactory(name, std::forward<Ts>(args)...);
 }
-
-
 
 } // namespace ns3
 

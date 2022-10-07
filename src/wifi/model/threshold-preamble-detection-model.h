@@ -23,44 +23,46 @@
 
 #include "preamble-detection-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 /**
  * \ingroup wifi
  *
  * A threshold-based model for detecting PHY preamble.
- * This model assumes that a preamble is successfully detected if SNR is at or above a given threshold (set to 4 dB by default).
- * However, if RSSI is below a minimum RSSI (set to -82 dBm by default), the PHY preamble is not detected.
+ * This model assumes that a preamble is successfully detected if SNR is at or above a given
+ * threshold (set to 4 dB by default). However, if RSSI is below a minimum RSSI (set to -82 dBm by
+ * default), the PHY preamble is not detected.
  */
 class ThresholdPreambleDetectionModel : public PreambleDetectionModel
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  ThresholdPreambleDetectionModel ();
-  ~ThresholdPreambleDetectionModel () override;
+    ThresholdPreambleDetectionModel();
+    ~ThresholdPreambleDetectionModel() override;
 
-  /**
-   * This method returns whether the preamble detection was successful.
-   *
-   * \param rssi the RSSI of the received signal (in Watts).
-   * \param snr the SNR ratio (linear scale) of the received signal.
-   * \param channelWidth the channel width of the received signal in MHz.
-   *
-   * \return true if the preamble has been detected,
-   *         false otherwise
-   */
-  bool IsPreambleDetected (double rssi, double snr, double channelWidth) const override;
+    /**
+     * This method returns whether the preamble detection was successful.
+     *
+     * \param rssi the RSSI of the received signal (in Watts).
+     * \param snr the SNR ratio (linear scale) of the received signal.
+     * \param channelWidth the channel width of the received signal in MHz.
+     *
+     * \return true if the preamble has been detected,
+     *         false otherwise
+     */
+    bool IsPreambleDetected(double rssi, double snr, double channelWidth) const override;
 
-
-private:
-  double m_threshold; ///< SNR threshold in dB used to decide whether a preamble is successfully received
-  double m_rssiMin;   ///< Minimum RSSI in dBm that shall be received to start the decision
+  private:
+    double m_threshold; ///< SNR threshold in dB used to decide whether a preamble is successfully
+                        ///< received
+    double m_rssiMin;   ///< Minimum RSSI in dBm that shall be received to start the decision
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* THRESHOLD_PREAMBLE_DETECTION_MODEL_H */

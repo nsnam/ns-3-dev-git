@@ -47,27 +47,27 @@
  * and congestion window values are also traced.
  */
 
-#include <iostream>
-#include <fstream>
-#include <string>
-
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/config-store-module.h"
-#include "ns3/error-model.h"
-#include "ns3/tcp-header.h"
-#include "ns3/udp-header.h"
+#include "ns3/core-module.h"
 #include "ns3/enum.h"
+#include "ns3/error-model.h"
 #include "ns3/event-id.h"
+#include "ns3/internet-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/network-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/tcp-header.h"
 #include "ns3/traffic-control-module.h"
+#include "ns3/udp-header.h"
+
+#include <fstream>
+#include <iostream>
+#include <string>
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("CoDelPfifoFastAsymmetricTest");
+NS_LOG_COMPONENT_DEFINE("CoDelPfifoFastAsymmetricTest");
 
 /**
  * TCP Congestion window tracker.
@@ -77,9 +77,9 @@ NS_LOG_COMPONENT_DEFINE ("CoDelPfifoFastAsymmetricTest");
  * \param newval New value.
  */
 static void
-CwndTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
+CwndTracer(Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
 {
-  *stream->GetStream () << oldval << " " << newval << std::endl;
+    *stream->GetStream() << oldval << " " << newval << std::endl;
 }
 
 /**
@@ -88,18 +88,20 @@ CwndTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
  * \param cwndTrFileName Congestion window output file name.
  */
 static void
-TraceCwnd (std::string cwndTrFileName)
+TraceCwnd(std::string cwndTrFileName)
 {
-  AsciiTraceHelper ascii;
-  if (cwndTrFileName == "")
+    AsciiTraceHelper ascii;
+    if (cwndTrFileName == "")
     {
-      NS_LOG_DEBUG ("No trace file for cwnd provided");
-      return;
+        NS_LOG_DEBUG("No trace file for cwnd provided");
+        return;
     }
-  else
+    else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (cwndTrFileName);
-      Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",MakeBoundCallback (&CwndTracer, stream));
+        Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream(cwndTrFileName);
+        Config::ConnectWithoutContext(
+            "/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+            MakeBoundCallback(&CwndTracer, stream));
     }
 }
 
@@ -110,9 +112,9 @@ TraceCwnd (std::string cwndTrFileName)
  * \param newval New value.
  */
 static void
-SojournTracer (Ptr<OutputStreamWrapper> stream, Time newval)
+SojournTracer(Ptr<OutputStreamWrapper> stream, Time newval)
 {
-  *stream->GetStream () << newval << std::endl;
+    *stream->GetStream() << newval << std::endl;
 }
 
 /**
@@ -121,18 +123,20 @@ SojournTracer (Ptr<OutputStreamWrapper> stream, Time newval)
  * \param sojournTrFileName Sojourn time output file name.
  */
 static void
-TraceSojourn (std::string sojournTrFileName)
+TraceSojourn(std::string sojournTrFileName)
 {
-  AsciiTraceHelper ascii;
-  if (sojournTrFileName == "")
+    AsciiTraceHelper ascii;
+    if (sojournTrFileName == "")
     {
-      NS_LOG_DEBUG ("No trace file for sojourn provided");
-      return;
+        NS_LOG_DEBUG("No trace file for sojourn provided");
+        return;
     }
-  else
+    else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (sojournTrFileName);
-      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/SojournTime", MakeBoundCallback (&SojournTracer, stream));
+        Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream(sojournTrFileName);
+        Config::ConnectWithoutContext("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/"
+                                      "$ns3::CoDelQueueDisc/SojournTime",
+                                      MakeBoundCallback(&SojournTracer, stream));
     }
 }
 
@@ -144,9 +148,9 @@ TraceSojourn (std::string sojournTrFileName)
  * \param newval New value.
  */
 static void
-QueueLengthTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
+QueueLengthTracer(Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
 {
-  *stream->GetStream () << oldval << " " << newval << std::endl;
+    *stream->GetStream() << oldval << " " << newval << std::endl;
 }
 
 /**
@@ -155,18 +159,20 @@ QueueLengthTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t ne
  * \param queueLengthTrFileName Queue length output file name.
  */
 static void
-TraceQueueLength (std::string queueLengthTrFileName)
+TraceQueueLength(std::string queueLengthTrFileName)
 {
-  AsciiTraceHelper ascii;
-  if (queueLengthTrFileName == "")
+    AsciiTraceHelper ascii;
+    if (queueLengthTrFileName == "")
     {
-      NS_LOG_DEBUG ("No trace file for queue length provided");
-      return;
+        NS_LOG_DEBUG("No trace file for queue length provided");
+        return;
     }
-  else
+    else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (queueLengthTrFileName);
-      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/BytesInQueue", MakeBoundCallback (&QueueLengthTracer, stream));
+        Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream(queueLengthTrFileName);
+        Config::ConnectWithoutContext(
+            "/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/BytesInQueue",
+            MakeBoundCallback(&QueueLengthTracer, stream));
     }
 }
 
@@ -177,9 +183,9 @@ TraceQueueLength (std::string queueLengthTrFileName)
  * \param item The dropped item.
  */
 static void
-EveryDropTracer (Ptr<OutputStreamWrapper> stream, Ptr<const QueueDiscItem> item)
+EveryDropTracer(Ptr<OutputStreamWrapper> stream, Ptr<const QueueDiscItem> item)
 {
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << item << std::endl;
+    *stream->GetStream() << Simulator::Now().GetSeconds() << " " << item << std::endl;
 }
 
 /**
@@ -188,18 +194,20 @@ EveryDropTracer (Ptr<OutputStreamWrapper> stream, Ptr<const QueueDiscItem> item)
  * \param everyDropTrFileName TC drop output file name.
  */
 static void
-TraceEveryDrop (std::string everyDropTrFileName)
+TraceEveryDrop(std::string everyDropTrFileName)
 {
-  AsciiTraceHelper ascii;
-  if (everyDropTrFileName == "")
+    AsciiTraceHelper ascii;
+    if (everyDropTrFileName == "")
     {
-      NS_LOG_DEBUG ("No trace file for every drop event provided");
-      return;
+        NS_LOG_DEBUG("No trace file for every drop event provided");
+        return;
     }
-  else
+    else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (everyDropTrFileName);
-      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/Drop", MakeBoundCallback (&EveryDropTracer, stream));
+        Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream(everyDropTrFileName);
+        Config::ConnectWithoutContext(
+            "/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/Drop",
+            MakeBoundCallback(&EveryDropTracer, stream));
     }
 }
 
@@ -211,17 +219,17 @@ TraceEveryDrop (std::string everyDropTrFileName)
  * \param newVal New value.
  */
 static void
-DroppingStateTracer (Ptr<OutputStreamWrapper> stream, bool oldVal, bool newVal)
+DroppingStateTracer(Ptr<OutputStreamWrapper> stream, bool oldVal, bool newVal)
 {
-  if (oldVal == false && newVal == true)
+    if (oldVal == false && newVal == true)
     {
-      NS_LOG_INFO ("Entering the dropping state");
-      *stream->GetStream () << Simulator::Now ().GetSeconds () << " ";
+        NS_LOG_INFO("Entering the dropping state");
+        *stream->GetStream() << Simulator::Now().GetSeconds() << " ";
     }
-  else if (oldVal == true && newVal == false)
+    else if (oldVal == true && newVal == false)
     {
-      NS_LOG_INFO ("Leaving the dropping state");
-      *stream->GetStream () << Simulator::Now ().GetSeconds ()  << std::endl;
+        NS_LOG_INFO("Leaving the dropping state");
+        *stream->GetStream() << Simulator::Now().GetSeconds() << std::endl;
     }
 }
 
@@ -231,18 +239,20 @@ DroppingStateTracer (Ptr<OutputStreamWrapper> stream, bool oldVal, bool newVal)
  * \param dropStateTrFileName TC drop state output file name.
  */
 static void
-TraceDroppingState (std::string dropStateTrFileName)
+TraceDroppingState(std::string dropStateTrFileName)
 {
-  AsciiTraceHelper ascii;
-  if (dropStateTrFileName == "")
+    AsciiTraceHelper ascii;
+    if (dropStateTrFileName == "")
     {
-      NS_LOG_DEBUG ("No trace file for dropping state provided");
-      return;
+        NS_LOG_DEBUG("No trace file for dropping state provided");
+        return;
     }
-  else
+    else
     {
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dropStateTrFileName);
-      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
+        Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream(dropStateTrFileName);
+        Config::ConnectWithoutContext("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/"
+                                      "$ns3::CoDelQueueDisc/DropState",
+                                      MakeBoundCallback(&DroppingStateTracer, stream));
     }
 }
 
@@ -255,15 +265,15 @@ TraceDroppingState (std::string dropStateTrFileName)
  * \param stopTime Stop time.
  */
 void
-CreateBulkFlow (AddressValue remoteAddress, Ptr<Node> sender, uint32_t pktSize, float stopTime)
+CreateBulkFlow(AddressValue remoteAddress, Ptr<Node> sender, uint32_t pktSize, float stopTime)
 {
-  BulkSendHelper sourceHelper ("ns3::TcpSocketFactory", Address ());
-  sourceHelper.SetAttribute ("Remote", remoteAddress);
-  sourceHelper.SetAttribute ("SendSize", UintegerValue (pktSize));
-  sourceHelper.SetAttribute ("MaxBytes", UintegerValue (0));
-  ApplicationContainer sourceApp = sourceHelper.Install (sender);
-  sourceApp.Start (Seconds (0));
-  sourceApp.Stop (Seconds (stopTime - 3));
+    BulkSendHelper sourceHelper("ns3::TcpSocketFactory", Address());
+    sourceHelper.SetAttribute("Remote", remoteAddress);
+    sourceHelper.SetAttribute("SendSize", UintegerValue(pktSize));
+    sourceHelper.SetAttribute("MaxBytes", UintegerValue(0));
+    ApplicationContainer sourceApp = sourceHelper.Install(sender);
+    sourceApp.Start(Seconds(0));
+    sourceApp.Stop(Seconds(stopTime - 3));
 }
 
 /**
@@ -274,247 +284,266 @@ CreateBulkFlow (AddressValue remoteAddress, Ptr<Node> sender, uint32_t pktSize, 
  * \param stopTime Stop time.
  */
 void
-CreateOnOffFlow (AddressValue remoteAddress, Ptr<Node> sender, float stopTime)
+CreateOnOffFlow(AddressValue remoteAddress, Ptr<Node> sender, float stopTime)
 {
-  OnOffHelper sourceHelper ("ns3::UdpSocketFactory", Address ());
-  sourceHelper.SetAttribute ("PacketSize", UintegerValue (280));
-  sourceHelper.SetAttribute ("Remote", remoteAddress);
-  ApplicationContainer sourceApp = sourceHelper.Install (sender);
-  sourceApp.Start (Seconds (0));
-  sourceApp.Stop (Seconds (stopTime - 3));
+    OnOffHelper sourceHelper("ns3::UdpSocketFactory", Address());
+    sourceHelper.SetAttribute("PacketSize", UintegerValue(280));
+    sourceHelper.SetAttribute("Remote", remoteAddress);
+    ApplicationContainer sourceApp = sourceHelper.Install(sender);
+    sourceApp.Start(Seconds(0));
+    sourceApp.Stop(Seconds(stopTime - 3));
 }
 
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  std::string serverCmtsDelay = "15ms";
-  std::string cmtsRouterDelay = "6ms";
-  std::string routerHostDelay = "0.1ms";
-  std::string serverLanDataRate = "10Gbps";
-  std::string cmtsLanDataRate = "10Gbps";
-  std::string cmtsWanDataRate = "22Mbps";
-  std::string routerWanDataRate = "5Mbps";
-  std::string routerLanDataRate = "10Gbps";
-  std::string hostLanDataRate = "10Gbps";
+    std::string serverCmtsDelay = "15ms";
+    std::string cmtsRouterDelay = "6ms";
+    std::string routerHostDelay = "0.1ms";
+    std::string serverLanDataRate = "10Gbps";
+    std::string cmtsLanDataRate = "10Gbps";
+    std::string cmtsWanDataRate = "22Mbps";
+    std::string routerWanDataRate = "5Mbps";
+    std::string routerLanDataRate = "10Gbps";
+    std::string hostLanDataRate = "10Gbps";
 
-  std::string routerWanQueueDiscType = "CoDel";           // outbound cable router queue
-  uint32_t pktSize = 1458;                // in bytes. 1458 to prevent fragments
-  uint32_t queueSize = 1000;              // in packets
-  uint32_t numOfUpLoadBulkFlows = 1;      // # of upload bulk transfer flows
-  uint32_t numOfDownLoadBulkFlows = 1;    // # of download bulk transfer flows
-  uint32_t numOfUpLoadOnOffFlows = 1;     // # of upload onoff flows
-  uint32_t numOfDownLoadOnOffFlows = 1;   // # of download onoff flows
-  bool isPcapEnabled = true;
+    std::string routerWanQueueDiscType = "CoDel"; // outbound cable router queue
+    uint32_t pktSize = 1458;                      // in bytes. 1458 to prevent fragments
+    uint32_t queueSize = 1000;                    // in packets
+    uint32_t numOfUpLoadBulkFlows = 1;            // # of upload bulk transfer flows
+    uint32_t numOfDownLoadBulkFlows = 1;          // # of download bulk transfer flows
+    uint32_t numOfUpLoadOnOffFlows = 1;           // # of upload onoff flows
+    uint32_t numOfDownLoadOnOffFlows = 1;         // # of download onoff flows
+    bool isPcapEnabled = true;
 
-  float startTime = 0.1F;
-  float simDuration = 60;        //in seconds
+    float startTime = 0.1F;
+    float simDuration = 60; // in seconds
 
-  std::string fileNamePrefix = "codel-vs-pfifo-fast-asymmetric";
-  bool logging = true;
+    std::string fileNamePrefix = "codel-vs-pfifo-fast-asymmetric";
+    bool logging = true;
 
-  CommandLine cmd (__FILE__);
-  cmd.AddValue ("serverCmtsDelay", "Link delay between server and CMTS", serverCmtsDelay);
-  cmd.AddValue ("cmtsRouterDelay", "Link delay between CMTS and rounter", cmtsRouterDelay);
-  cmd.AddValue ("routerHostDelay", "Link delay between router and host", routerHostDelay);
-  cmd.AddValue ("serverLanDataRate", "Server LAN net device data rate", serverLanDataRate);
-  cmd.AddValue ("cmtsLanDataRate", "CMTS LAN net device data rate", cmtsLanDataRate);
-  cmd.AddValue ("cmtsWanDataRate", "CMTS WAN net device data rate", cmtsWanDataRate);
-  cmd.AddValue ("routerWanDataRate", "Router WAN net device data rate", routerWanDataRate);
-  cmd.AddValue ("routerLanDataRate", "Router LAN net device data rate", routerLanDataRate);
-  cmd.AddValue ("hostLanDataRate", "Host LAN net device data rate", hostLanDataRate);
-  cmd.AddValue ("routerWanQueueDiscType", "Router WAN queue disc type: "
-                "PfifoFast, CoDel", routerWanQueueDiscType);
-  cmd.AddValue ("queueSize", "Queue size in packets", queueSize);
-  cmd.AddValue ("pktSize", "Packet size in bytes", pktSize);
-  cmd.AddValue ("numOfUpLoadBulkFlows", "Number of upload bulk transfer flows", numOfUpLoadBulkFlows);
-  cmd.AddValue ("numOfDownLoadBulkFlows", "Number of download bulk transfer flows", numOfDownLoadBulkFlows);
-  cmd.AddValue ("numOfUpLoadOnOffFlows", "Number of upload OnOff flows", numOfUpLoadOnOffFlows);
-  cmd.AddValue ("numOfDownLoadOnOffFlows", "Number of download OnOff flows", numOfDownLoadOnOffFlows);
-  cmd.AddValue ("startTime", "Simulation start time", startTime);
-  cmd.AddValue ("simDuration", "Simulation duration in seconds", simDuration);
-  cmd.AddValue ("isPcapEnabled", "Flag to enable/disable pcap", isPcapEnabled);
-  cmd.AddValue ("logging", "Flag to enable/disable logging", logging);
-  cmd.Parse (argc, argv);
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("serverCmtsDelay", "Link delay between server and CMTS", serverCmtsDelay);
+    cmd.AddValue("cmtsRouterDelay", "Link delay between CMTS and rounter", cmtsRouterDelay);
+    cmd.AddValue("routerHostDelay", "Link delay between router and host", routerHostDelay);
+    cmd.AddValue("serverLanDataRate", "Server LAN net device data rate", serverLanDataRate);
+    cmd.AddValue("cmtsLanDataRate", "CMTS LAN net device data rate", cmtsLanDataRate);
+    cmd.AddValue("cmtsWanDataRate", "CMTS WAN net device data rate", cmtsWanDataRate);
+    cmd.AddValue("routerWanDataRate", "Router WAN net device data rate", routerWanDataRate);
+    cmd.AddValue("routerLanDataRate", "Router LAN net device data rate", routerLanDataRate);
+    cmd.AddValue("hostLanDataRate", "Host LAN net device data rate", hostLanDataRate);
+    cmd.AddValue("routerWanQueueDiscType",
+                 "Router WAN queue disc type: "
+                 "PfifoFast, CoDel",
+                 routerWanQueueDiscType);
+    cmd.AddValue("queueSize", "Queue size in packets", queueSize);
+    cmd.AddValue("pktSize", "Packet size in bytes", pktSize);
+    cmd.AddValue("numOfUpLoadBulkFlows",
+                 "Number of upload bulk transfer flows",
+                 numOfUpLoadBulkFlows);
+    cmd.AddValue("numOfDownLoadBulkFlows",
+                 "Number of download bulk transfer flows",
+                 numOfDownLoadBulkFlows);
+    cmd.AddValue("numOfUpLoadOnOffFlows", "Number of upload OnOff flows", numOfUpLoadOnOffFlows);
+    cmd.AddValue("numOfDownLoadOnOffFlows",
+                 "Number of download OnOff flows",
+                 numOfDownLoadOnOffFlows);
+    cmd.AddValue("startTime", "Simulation start time", startTime);
+    cmd.AddValue("simDuration", "Simulation duration in seconds", simDuration);
+    cmd.AddValue("isPcapEnabled", "Flag to enable/disable pcap", isPcapEnabled);
+    cmd.AddValue("logging", "Flag to enable/disable logging", logging);
+    cmd.Parse(argc, argv);
 
-  float stopTime = startTime + simDuration;
+    float stopTime = startTime + simDuration;
 
-  std::string pcapFileName = fileNamePrefix + "-" + routerWanQueueDiscType;
-  std::string cwndTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-cwnd" + ".tr";
-  std::string attributeFileName = fileNamePrefix + "-" + routerWanQueueDiscType + ".attr";
-  std::string sojournTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-sojourn" + ".tr";
-  std::string queueLengthTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-length" + ".tr";
-  std::string everyDropTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-drop" + ".tr";
-  std::string dropStateTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-drop-state" + ".tr";
-  if (logging)
+    std::string pcapFileName = fileNamePrefix + "-" + routerWanQueueDiscType;
+    std::string cwndTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-cwnd" + ".tr";
+    std::string attributeFileName = fileNamePrefix + "-" + routerWanQueueDiscType + ".attr";
+    std::string sojournTrFileName =
+        fileNamePrefix + "-" + routerWanQueueDiscType + "-sojourn" + ".tr";
+    std::string queueLengthTrFileName =
+        fileNamePrefix + "-" + routerWanQueueDiscType + "-length" + ".tr";
+    std::string everyDropTrFileName =
+        fileNamePrefix + "-" + routerWanQueueDiscType + "-drop" + ".tr";
+    std::string dropStateTrFileName =
+        fileNamePrefix + "-" + routerWanQueueDiscType + "-drop-state" + ".tr";
+    if (logging)
     {
-      //LogComponentEnable ("CoDelPfifoFastAsymmetricTest", LOG_LEVEL_ALL);
-      //LogComponentEnable ("BulkSendApplication", LOG_LEVEL_INFO);
-      //LogComponentEnable ("PfifoFastQueue", LOG_LEVEL_ALL);
-      LogComponentEnable ("CoDelQueueDisc", LOG_LEVEL_FUNCTION);
+        // LogComponentEnable ("CoDelPfifoFastAsymmetricTest", LOG_LEVEL_ALL);
+        // LogComponentEnable ("BulkSendApplication", LOG_LEVEL_INFO);
+        // LogComponentEnable ("PfifoFastQueue", LOG_LEVEL_ALL);
+        LogComponentEnable("CoDelQueueDisc", LOG_LEVEL_FUNCTION);
     }
 
-  // Queue defaults
-  Config::SetDefault ("ns3::PfifoFastQueueDisc::MaxSize",
-                      QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueSize)));
-  Config::SetDefault ("ns3::CoDelQueueDisc::MaxSize",
-                      QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueSize)));
+    // Queue defaults
+    Config::SetDefault("ns3::PfifoFastQueueDisc::MaxSize",
+                       QueueSizeValue(QueueSize(QueueSizeUnit::PACKETS, queueSize)));
+    Config::SetDefault("ns3::CoDelQueueDisc::MaxSize",
+                       QueueSizeValue(QueueSize(QueueSizeUnit::PACKETS, queueSize)));
 
-  // Create the nodes
-  NS_LOG_INFO ("Create nodes");
-  NodeContainer nodes;
-  nodes.Create (4);
-  // Descriptive names
-  Names::Add ("server", nodes.Get (0));
-  Names::Add ("cmts", nodes.Get (1));
-  Names::Add ("router", nodes.Get (2));
-  Names::Add ("host", nodes.Get (3));
-  NodeContainer serverCmts;
-  serverCmts = NodeContainer (nodes.Get (0), nodes.Get (1));
-  NodeContainer cmtsRouter;
-  cmtsRouter = NodeContainer (nodes.Get (1), nodes.Get (2));
-  NodeContainer routerHost;
-  routerHost = NodeContainer (nodes.Get (2), nodes.Get (3));
+    // Create the nodes
+    NS_LOG_INFO("Create nodes");
+    NodeContainer nodes;
+    nodes.Create(4);
+    // Descriptive names
+    Names::Add("server", nodes.Get(0));
+    Names::Add("cmts", nodes.Get(1));
+    Names::Add("router", nodes.Get(2));
+    Names::Add("host", nodes.Get(3));
+    NodeContainer serverCmts;
+    serverCmts = NodeContainer(nodes.Get(0), nodes.Get(1));
+    NodeContainer cmtsRouter;
+    cmtsRouter = NodeContainer(nodes.Get(1), nodes.Get(2));
+    NodeContainer routerHost;
+    routerHost = NodeContainer(nodes.Get(2), nodes.Get(3));
 
-  // Enable checksum
-  if (isPcapEnabled)
+    // Enable checksum
+    if (isPcapEnabled)
     {
-      GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+        GlobalValue::Bind("ChecksumEnabled", BooleanValue(true));
     }
 
-  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (pktSize));
+    Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(pktSize));
 
-  NS_LOG_INFO ("Create channels and install net devices on nodes");
-  PointToPointHelper p2p;
+    NS_LOG_INFO("Create channels and install net devices on nodes");
+    PointToPointHelper p2p;
 
-  p2p.SetChannelAttribute ("Delay", StringValue (serverCmtsDelay));
-  NetDeviceContainer serverCmtsDev = p2p.Install (serverCmts);
-  Names::Add ("server/lan", serverCmtsDev.Get (0));
-  Names::Add ("cmts/lan", serverCmtsDev.Get (1));
-  Ptr<PointToPointNetDevice> serverLanDev = DynamicCast<PointToPointNetDevice> (serverCmtsDev.Get (0));
-  serverLanDev->SetAttribute ("DataRate", StringValue (serverLanDataRate));
-  Ptr<PointToPointNetDevice> cmtsLanDev = DynamicCast<PointToPointNetDevice> (serverCmtsDev.Get (1));
-  cmtsLanDev->SetAttribute ("DataRate", StringValue (cmtsLanDataRate));
+    p2p.SetChannelAttribute("Delay", StringValue(serverCmtsDelay));
+    NetDeviceContainer serverCmtsDev = p2p.Install(serverCmts);
+    Names::Add("server/lan", serverCmtsDev.Get(0));
+    Names::Add("cmts/lan", serverCmtsDev.Get(1));
+    Ptr<PointToPointNetDevice> serverLanDev =
+        DynamicCast<PointToPointNetDevice>(serverCmtsDev.Get(0));
+    serverLanDev->SetAttribute("DataRate", StringValue(serverLanDataRate));
+    Ptr<PointToPointNetDevice> cmtsLanDev =
+        DynamicCast<PointToPointNetDevice>(serverCmtsDev.Get(1));
+    cmtsLanDev->SetAttribute("DataRate", StringValue(cmtsLanDataRate));
 
-  p2p.SetChannelAttribute ("Delay", StringValue (cmtsRouterDelay));
-  NetDeviceContainer cmtsRouterDev = p2p.Install (cmtsRouter);
-  Names::Add ("cmts/wan", cmtsRouterDev.Get (0));
-  Names::Add ("router/wan", cmtsRouterDev.Get (1));
-  Ptr<PointToPointNetDevice> cmtsWanDev = DynamicCast<PointToPointNetDevice> (cmtsRouterDev.Get (0));
-  cmtsWanDev->SetAttribute ("DataRate", StringValue (cmtsWanDataRate));
-  Ptr<PointToPointNetDevice> routerWanDev = DynamicCast<PointToPointNetDevice> (cmtsRouterDev.Get (1));
-  routerWanDev->SetAttribute ("DataRate", StringValue (routerWanDataRate));
+    p2p.SetChannelAttribute("Delay", StringValue(cmtsRouterDelay));
+    NetDeviceContainer cmtsRouterDev = p2p.Install(cmtsRouter);
+    Names::Add("cmts/wan", cmtsRouterDev.Get(0));
+    Names::Add("router/wan", cmtsRouterDev.Get(1));
+    Ptr<PointToPointNetDevice> cmtsWanDev =
+        DynamicCast<PointToPointNetDevice>(cmtsRouterDev.Get(0));
+    cmtsWanDev->SetAttribute("DataRate", StringValue(cmtsWanDataRate));
+    Ptr<PointToPointNetDevice> routerWanDev =
+        DynamicCast<PointToPointNetDevice>(cmtsRouterDev.Get(1));
+    routerWanDev->SetAttribute("DataRate", StringValue(routerWanDataRate));
 
-  p2p.SetChannelAttribute ("Delay", StringValue (routerHostDelay));
-  NetDeviceContainer routerHostDev = p2p.Install (routerHost);
-  Names::Add ("router/lan", routerHostDev.Get (0));
-  Names::Add ("host/lan", routerHostDev.Get (1));
-  Ptr<PointToPointNetDevice> routerLanDev = DynamicCast<PointToPointNetDevice> (routerHostDev.Get (0));
-  routerLanDev->SetAttribute ("DataRate", StringValue (routerLanDataRate));
-  Ptr<PointToPointNetDevice> hostLanDev = DynamicCast<PointToPointNetDevice> (routerHostDev.Get (1));
-  hostLanDev->SetAttribute ("DataRate", StringValue (hostLanDataRate));
+    p2p.SetChannelAttribute("Delay", StringValue(routerHostDelay));
+    NetDeviceContainer routerHostDev = p2p.Install(routerHost);
+    Names::Add("router/lan", routerHostDev.Get(0));
+    Names::Add("host/lan", routerHostDev.Get(1));
+    Ptr<PointToPointNetDevice> routerLanDev =
+        DynamicCast<PointToPointNetDevice>(routerHostDev.Get(0));
+    routerLanDev->SetAttribute("DataRate", StringValue(routerLanDataRate));
+    Ptr<PointToPointNetDevice> hostLanDev =
+        DynamicCast<PointToPointNetDevice>(routerHostDev.Get(1));
+    hostLanDev->SetAttribute("DataRate", StringValue(hostLanDataRate));
 
-  NS_LOG_INFO ("Install Internet stack on all nodes");
-  InternetStackHelper stack;
-  stack.InstallAll ();
+    NS_LOG_INFO("Install Internet stack on all nodes");
+    InternetStackHelper stack;
+    stack.InstallAll();
 
-  TrafficControlHelper tchPfifo;
-  tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
+    TrafficControlHelper tchPfifo;
+    tchPfifo.SetRootQueueDisc("ns3::PfifoFastQueueDisc");
 
-  TrafficControlHelper tchCoDel;
-  tchCoDel.SetRootQueueDisc ("ns3::CoDelQueueDisc");
+    TrafficControlHelper tchCoDel;
+    tchCoDel.SetRootQueueDisc("ns3::CoDelQueueDisc");
 
-  tchPfifo.Install (serverCmtsDev);
-  tchPfifo.Install (cmtsWanDev);
-  if (routerWanQueueDiscType == "PfifoFast")
+    tchPfifo.Install(serverCmtsDev);
+    tchPfifo.Install(cmtsWanDev);
+    if (routerWanQueueDiscType == "PfifoFast")
     {
-      tchPfifo.Install (routerWanDev);
+        tchPfifo.Install(routerWanDev);
     }
-  else if (routerWanQueueDiscType == "CoDel")
+    else if (routerWanQueueDiscType == "CoDel")
     {
-      tchCoDel.Install (routerWanDev);
+        tchCoDel.Install(routerWanDev);
     }
-  else
+    else
     {
-      NS_LOG_DEBUG ("Invalid router WAN queue disc type");
-      exit (1);
+        NS_LOG_DEBUG("Invalid router WAN queue disc type");
+        exit(1);
     }
-  tchPfifo.Install (routerHostDev);
+    tchPfifo.Install(routerHostDev);
 
-  NS_LOG_INFO ("Assign IP Addresses");
-  Ipv4AddressHelper ipv4;
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer serverCmtsInterface = ipv4.Assign (serverCmtsDev);
-  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
-  Ipv4InterfaceContainer cmtsRouterInterface = ipv4.Assign (cmtsRouterDev);
-  ipv4.SetBase ("10.1.3.0", "255.255.255.0");
-  Ipv4InterfaceContainer routerHostInterface = ipv4.Assign (routerHostDev);
+    NS_LOG_INFO("Assign IP Addresses");
+    Ipv4AddressHelper ipv4;
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer serverCmtsInterface = ipv4.Assign(serverCmtsDev);
+    ipv4.SetBase("10.1.2.0", "255.255.255.0");
+    Ipv4InterfaceContainer cmtsRouterInterface = ipv4.Assign(cmtsRouterDev);
+    ipv4.SetBase("10.1.3.0", "255.255.255.0");
+    Ipv4InterfaceContainer routerHostInterface = ipv4.Assign(routerHostDev);
 
-  NS_LOG_INFO ("Initialize Global Routing");
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+    NS_LOG_INFO("Initialize Global Routing");
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-  NS_LOG_INFO ("Configure downstream");
-  uint16_t port1 = 50000;
-  Address sinkLocalAddress1 (InetSocketAddress (Ipv4Address::GetAny (), port1));
-  PacketSinkHelper sinkHelper1 ("ns3::TcpSocketFactory", sinkLocalAddress1);
-  ApplicationContainer sinkApp1 = sinkHelper1.Install (routerHost.Get (1));
-  sinkApp1.Start (Seconds (0));
-  sinkApp1.Stop (Seconds (stopTime));
-  AddressValue remoteAddress1 (InetSocketAddress (routerHostInterface.GetAddress (1), port1));
-  while (numOfDownLoadBulkFlows)
+    NS_LOG_INFO("Configure downstream");
+    uint16_t port1 = 50000;
+    Address sinkLocalAddress1(InetSocketAddress(Ipv4Address::GetAny(), port1));
+    PacketSinkHelper sinkHelper1("ns3::TcpSocketFactory", sinkLocalAddress1);
+    ApplicationContainer sinkApp1 = sinkHelper1.Install(routerHost.Get(1));
+    sinkApp1.Start(Seconds(0));
+    sinkApp1.Stop(Seconds(stopTime));
+    AddressValue remoteAddress1(InetSocketAddress(routerHostInterface.GetAddress(1), port1));
+    while (numOfDownLoadBulkFlows)
     {
-      CreateBulkFlow (remoteAddress1, serverCmts.Get (0), pktSize, stopTime);
-      numOfDownLoadBulkFlows--;
-    }
-
-  while (numOfDownLoadOnOffFlows)
-    {
-      CreateOnOffFlow (remoteAddress1, serverCmts.Get (0), stopTime);
-      numOfDownLoadOnOffFlows--;
-    }
-
-  NS_LOG_INFO ("Configure upstream");
-  uint16_t port2 = 50001;
-  Address sinkLocalAddress2 (InetSocketAddress (Ipv4Address::GetAny (), port2));
-  PacketSinkHelper sinkHelper2 ("ns3::TcpSocketFactory", sinkLocalAddress2);
-  ApplicationContainer sinkApp2 = sinkHelper2.Install (serverCmts.Get (0));
-  sinkApp2.Start (Seconds (0));
-  sinkApp2.Stop (Seconds (stopTime));
-  AddressValue remoteAddress2 (InetSocketAddress (serverCmtsInterface.GetAddress (0), port2));
-  while (numOfUpLoadBulkFlows)
-    {
-      CreateBulkFlow (remoteAddress2, routerHost.Get (1), pktSize, stopTime);
-      numOfUpLoadBulkFlows--;
+        CreateBulkFlow(remoteAddress1, serverCmts.Get(0), pktSize, stopTime);
+        numOfDownLoadBulkFlows--;
     }
 
-  while (numOfUpLoadOnOffFlows)
+    while (numOfDownLoadOnOffFlows)
     {
-      CreateOnOffFlow (remoteAddress2, routerHost.Get (1), stopTime);
-      numOfUpLoadOnOffFlows--;
+        CreateOnOffFlow(remoteAddress1, serverCmts.Get(0), stopTime);
+        numOfDownLoadOnOffFlows--;
     }
 
-  Simulator::Schedule (Seconds (0.00001), &TraceCwnd, cwndTrFileName);
-  TraceEveryDrop (everyDropTrFileName);
-  if (routerWanQueueDiscType == "CoDel")
+    NS_LOG_INFO("Configure upstream");
+    uint16_t port2 = 50001;
+    Address sinkLocalAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
+    PacketSinkHelper sinkHelper2("ns3::TcpSocketFactory", sinkLocalAddress2);
+    ApplicationContainer sinkApp2 = sinkHelper2.Install(serverCmts.Get(0));
+    sinkApp2.Start(Seconds(0));
+    sinkApp2.Stop(Seconds(stopTime));
+    AddressValue remoteAddress2(InetSocketAddress(serverCmtsInterface.GetAddress(0), port2));
+    while (numOfUpLoadBulkFlows)
     {
-      TraceSojourn (sojournTrFileName);
-      TraceQueueLength (queueLengthTrFileName);
-      TraceDroppingState (dropStateTrFileName);
+        CreateBulkFlow(remoteAddress2, routerHost.Get(1), pktSize, stopTime);
+        numOfUpLoadBulkFlows--;
     }
-  if (isPcapEnabled)
+
+    while (numOfUpLoadOnOffFlows)
     {
-      p2p.EnablePcapAll (pcapFileName);
+        CreateOnOffFlow(remoteAddress2, routerHost.Get(1), stopTime);
+        numOfUpLoadOnOffFlows--;
     }
 
-  // Output config store to txt format
-  Config::SetDefault ("ns3::ConfigStore::Filename", StringValue (attributeFileName));
-  Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("RawText"));
-  Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
-  ConfigStore outputConfig;
-  outputConfig.ConfigureDefaults ();
-  outputConfig.ConfigureAttributes ();
+    Simulator::Schedule(Seconds(0.00001), &TraceCwnd, cwndTrFileName);
+    TraceEveryDrop(everyDropTrFileName);
+    if (routerWanQueueDiscType == "CoDel")
+    {
+        TraceSojourn(sojournTrFileName);
+        TraceQueueLength(queueLengthTrFileName);
+        TraceDroppingState(dropStateTrFileName);
+    }
+    if (isPcapEnabled)
+    {
+        p2p.EnablePcapAll(pcapFileName);
+    }
 
-  Simulator::Stop (Seconds (stopTime));
-  Simulator::Run ();
+    // Output config store to txt format
+    Config::SetDefault("ns3::ConfigStore::Filename", StringValue(attributeFileName));
+    Config::SetDefault("ns3::ConfigStore::FileFormat", StringValue("RawText"));
+    Config::SetDefault("ns3::ConfigStore::Mode", StringValue("Save"));
+    ConfigStore outputConfig;
+    outputConfig.ConfigureDefaults();
+    outputConfig.ConfigureAttributes();
 
-  Simulator::Destroy ();
-  return 0;
+    Simulator::Stop(Seconds(stopTime));
+    Simulator::Run();
+
+    Simulator::Destroy();
+    return 0;
 }

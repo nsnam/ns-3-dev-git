@@ -20,13 +20,16 @@
  */
 
 #include "breakpoint.h"
-#include "ns3/core-config.h"
+
 #include "log.h"
+
+#include "ns3/core-config.h"
 #ifdef HAVE_SIGNAL_H
-# include <signal.h>
+#include <signal.h>
 #endif
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \file
@@ -34,34 +37,34 @@ namespace ns3 {
  * ns3::BreakpointFallback function implementation.
  */
 
-NS_LOG_COMPONENT_DEFINE ("Breakpoint");
+NS_LOG_COMPONENT_DEFINE("Breakpoint");
 
-#if defined (HAVE_SIGNAL_H) && defined (SIGTRAP)
+#if defined(HAVE_SIGNAL_H) && defined(SIGTRAP)
 
 void
-BreakpointFallback ()
+BreakpointFallback()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  raise (SIGTRAP);
+    raise(SIGTRAP);
 }
 
 #else
 
 void
-BreakpointFallback (void)
+BreakpointFallback(void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  int *a = 0;
-  /**
-   * we test here to allow a debugger to change the value of
-   * the variable 'a' to allow the debugger to avoid the
-   * subsequent segfault.
-   */
-  if (a == 0)
+    int* a = 0;
+    /**
+     * we test here to allow a debugger to change the value of
+     * the variable 'a' to allow the debugger to avoid the
+     * subsequent segfault.
+     */
+    if (a == 0)
     {
-      *a = 0;
+        *a = 0;
     }
 }
 

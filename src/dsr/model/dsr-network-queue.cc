@@ -30,181 +30,190 @@
  */
 
 #include "dsr-network-queue.h"
+
+#include "ns3/ipv4-route.h"
+#include "ns3/log.h"
+#include "ns3/socket.h"
 #include "ns3/test.h"
-#include <map>
+
 #include <algorithm>
 #include <functional>
-#include "ns3/log.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/socket.h"
+#include <map>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("DsrNetworkQueue");
+NS_LOG_COMPONENT_DEFINE("DsrNetworkQueue");
 
-namespace dsr {
+namespace dsr
+{
 
-NS_OBJECT_ENSURE_REGISTERED (DsrNetworkQueue);
+NS_OBJECT_ENSURE_REGISTERED(DsrNetworkQueue);
 
 TypeId
-DsrNetworkQueue::GetTypeId ()
+DsrNetworkQueue::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::dsr::DsrNetworkQueue")
-    .SetParent<Object> ()
-    .SetGroupName ("Dsr")
-    .AddConstructor<DsrNetworkQueue>  ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::dsr::DsrNetworkQueue")
+                            .SetParent<Object>()
+                            .SetGroupName("Dsr")
+                            .AddConstructor<DsrNetworkQueue>();
+    return tid;
 }
 
-DsrNetworkQueue::DsrNetworkQueue (uint32_t maxLen, Time maxDelay)
-  : m_size (0),
-    m_maxSize (maxLen),
-    m_maxDelay (maxDelay)
+DsrNetworkQueue::DsrNetworkQueue(uint32_t maxLen, Time maxDelay)
+    : m_size(0),
+      m_maxSize(maxLen),
+      m_maxDelay(maxDelay)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-DsrNetworkQueue::DsrNetworkQueue () : m_size (0)
+DsrNetworkQueue::DsrNetworkQueue()
+    : m_size(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-DsrNetworkQueue::~DsrNetworkQueue ()
+DsrNetworkQueue::~DsrNetworkQueue()
 {
-  NS_LOG_FUNCTION (this);
-  Flush ();
-}
-
-void
-DsrNetworkQueue::SetMaxNetworkSize (uint32_t maxSize)
-{
-  m_maxSize = maxSize;
+    NS_LOG_FUNCTION(this);
+    Flush();
 }
 
 void
-DsrNetworkQueue::SetMaxNetworkDelay (Time delay)
+DsrNetworkQueue::SetMaxNetworkSize(uint32_t maxSize)
 {
-  m_maxDelay = delay;
+    m_maxSize = maxSize;
+}
+
+void
+DsrNetworkQueue::SetMaxNetworkDelay(Time delay)
+{
+    m_maxDelay = delay;
 }
 
 uint32_t
-DsrNetworkQueue::GetMaxNetworkSize () const
+DsrNetworkQueue::GetMaxNetworkSize() const
 {
-  return m_maxSize;
+    return m_maxSize;
 }
 
 Time
-DsrNetworkQueue::GetMaxNetworkDelay () const
+DsrNetworkQueue::GetMaxNetworkDelay() const
 {
-  return m_maxDelay;
+    return m_maxDelay;
 }
 
 bool
-DsrNetworkQueue::FindPacketWithNexthop (Ipv4Address nextHop, DsrNetworkQueueEntry & entry)
+DsrNetworkQueue::FindPacketWithNexthop(Ipv4Address nextHop, DsrNetworkQueueEntry& entry)
 {
-  Cleanup ();
-  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); ++i)
+    Cleanup();
+    for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
+         i != m_dsrNetworkQueue.end();
+         ++i)
     {
-      if (i->GetNextHopAddress () == nextHop)
+        if (i->GetNextHopAddress() == nextHop)
         {
-          entry = *i;
-          i = m_dsrNetworkQueue.erase (i);
-          return true;
+            entry = *i;
+            i = m_dsrNetworkQueue.erase(i);
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-DsrNetworkQueue::Find (Ipv4Address nextHop)
+DsrNetworkQueue::Find(Ipv4Address nextHop)
 {
-  Cleanup ();
-  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); ++i)
+    Cleanup();
+    for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
+         i != m_dsrNetworkQueue.end();
+         ++i)
     {
-      if (i->GetNextHopAddress () == nextHop)
+        if (i->GetNextHopAddress() == nextHop)
         {
-          return true;
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-DsrNetworkQueue::Enqueue (DsrNetworkQueueEntry & entry)
+DsrNetworkQueue::Enqueue(DsrNetworkQueueEntry& entry)
 {
-  NS_LOG_FUNCTION (this << m_size << m_maxSize);
-  if (m_size >= m_maxSize)
+    NS_LOG_FUNCTION(this << m_size << m_maxSize);
+    if (m_size >= m_maxSize)
     {
-      return false;
+        return false;
     }
-  Time now = Simulator::Now ();
-  entry.SetInsertedTimeStamp (now);
-  m_dsrNetworkQueue.push_back (entry);
-  m_size++;
-  NS_LOG_LOGIC ("The network queue size is " << m_size);
-  return true;
+    Time now = Simulator::Now();
+    entry.SetInsertedTimeStamp(now);
+    m_dsrNetworkQueue.push_back(entry);
+    m_size++;
+    NS_LOG_LOGIC("The network queue size is " << m_size);
+    return true;
 }
 
 bool
-DsrNetworkQueue::Dequeue (DsrNetworkQueueEntry & entry)
+DsrNetworkQueue::Dequeue(DsrNetworkQueueEntry& entry)
 {
-  NS_LOG_FUNCTION (this);
-  Cleanup ();
-  std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin ();
-  if (i == m_dsrNetworkQueue.end ())
+    NS_LOG_FUNCTION(this);
+    Cleanup();
+    std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
+    if (i == m_dsrNetworkQueue.end())
     {
-      // no elements in array
-      NS_LOG_LOGIC ("No queued packet in the network queue");
-      return false;
+        // no elements in array
+        NS_LOG_LOGIC("No queued packet in the network queue");
+        return false;
     }
-  entry = *i;
-  m_dsrNetworkQueue.erase (i);
-  m_size--;
-  return true;
+    entry = *i;
+    m_dsrNetworkQueue.erase(i);
+    m_size--;
+    return true;
 }
 
 void
-DsrNetworkQueue::Cleanup ()
+DsrNetworkQueue::Cleanup()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_dsrNetworkQueue.empty ())
+    NS_LOG_FUNCTION(this);
+    if (m_dsrNetworkQueue.empty())
     {
-      return;
+        return;
     }
 
-  Time now = Simulator::Now ();
-  uint32_t n = 0;
-  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); )
+    Time now = Simulator::Now();
+    uint32_t n = 0;
+    for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
+         i != m_dsrNetworkQueue.end();)
     {
-      if (i->GetInsertedTimeStamp () + m_maxDelay > now)
+        if (i->GetInsertedTimeStamp() + m_maxDelay > now)
         {
-          i++;
+            i++;
         }
-      else
+        else
         {
-          NS_LOG_LOGIC ("Outdated packet");
-          i = m_dsrNetworkQueue.erase (i);
-          n++;
+            NS_LOG_LOGIC("Outdated packet");
+            i = m_dsrNetworkQueue.erase(i);
+            n++;
         }
     }
-  m_size -= n;
+    m_size -= n;
 }
 
 uint32_t
-DsrNetworkQueue::GetSize ()
+DsrNetworkQueue::GetSize()
 {
-  NS_LOG_FUNCTION (this);
-  return m_size;
+    NS_LOG_FUNCTION(this);
+    return m_size;
 }
 
 void
-DsrNetworkQueue::Flush ()
+DsrNetworkQueue::Flush()
 {
-  NS_LOG_FUNCTION (this);
-  m_dsrNetworkQueue.erase (m_dsrNetworkQueue.begin (), m_dsrNetworkQueue.end ());
-  m_size = 0;
+    NS_LOG_FUNCTION(this);
+    m_dsrNetworkQueue.erase(m_dsrNetworkQueue.begin(), m_dsrNetworkQueue.end());
+    m_size = 0;
 }
 
-}  // namespace dsr
-}  // namespace ns3
+} // namespace dsr
+} // namespace ns3

@@ -27,10 +27,11 @@
 #ifndef TCPYEAH_H
 #define TCPYEAH_H
 
-#include "ns3/tcp-scalable.h"
 #include "ns3/tcp-recovery-ops.h"
+#include "ns3/tcp-scalable.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup congestionOps
@@ -71,117 +72,117 @@ namespace ns3 {
 
 class TcpYeah : public TcpNewReno
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Create an unbound tcp socket.
-   */
-  TcpYeah ();
+    /**
+     * Create an unbound tcp socket.
+     */
+    TcpYeah();
 
-  /**
-   * \brief Copy constructor
-   * \param sock the object to copy
-   */
-  TcpYeah (const TcpYeah& sock);
-  ~TcpYeah () override;
+    /**
+     * \brief Copy constructor
+     * \param sock the object to copy
+     */
+    TcpYeah(const TcpYeah& sock);
+    ~TcpYeah() override;
 
-  std::string GetName () const override;
+    std::string GetName() const override;
 
-  /**
-   * \brief Compute RTTs needed to execute YeAH algorithm
-   *
-   * The function filters RTT samples from the last RTT to find
-   * the current smallest propagation delay + queueing delay (minRtt).
-   * We take the minimum to avoid the effects of delayed ACKs.
-   *
-   * The function also min-filters all RTT measurements seen to find the
-   * propagation delay (baseRtt).
-   *
-   * \param tcb internal congestion state
-   * \param segmentsAcked count of segments ACKed
-   * \param rtt last RTT
-   *
-   */
-  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time& rtt) override;
+    /**
+     * \brief Compute RTTs needed to execute YeAH algorithm
+     *
+     * The function filters RTT samples from the last RTT to find
+     * the current smallest propagation delay + queueing delay (minRtt).
+     * We take the minimum to avoid the effects of delayed ACKs.
+     *
+     * The function also min-filters all RTT measurements seen to find the
+     * propagation delay (baseRtt).
+     *
+     * \param tcb internal congestion state
+     * \param segmentsAcked count of segments ACKed
+     * \param rtt last RTT
+     *
+     */
+    void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt) override;
 
-  /**
-   * \brief Enable/disable YeAH algorithm depending on the congestion state
-   *
-   * We only start a YeAH cycle when we are in normal congestion state (CA_OPEN state).
-   *
-   * \param tcb internal congestion state
-   * \param newState new congestion state to which the TCP is going to switch
-   */
-  void CongestionStateSet (Ptr<TcpSocketState> tcb,
-                                   const TcpSocketState::TcpCongState_t newState) override;
+    /**
+     * \brief Enable/disable YeAH algorithm depending on the congestion state
+     *
+     * We only start a YeAH cycle when we are in normal congestion state (CA_OPEN state).
+     *
+     * \param tcb internal congestion state
+     * \param newState new congestion state to which the TCP is going to switch
+     */
+    void CongestionStateSet(Ptr<TcpSocketState> tcb,
+                            const TcpSocketState::TcpCongState_t newState) override;
 
-  /**
-   * \brief Adjust cwnd following YeAH dual-mode algorithm
-   *
-   * \param tcb internal congestion state
-   * \param segmentsAcked count of segments ACKed
-   */
-  void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+    /**
+     * \brief Adjust cwnd following YeAH dual-mode algorithm
+     *
+     * \param tcb internal congestion state
+     * \param segmentsAcked count of segments ACKed
+     */
+    void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
-  /**
-   * \brief Get slow start threshold upon the receipt of 3 dupACKs
-   *
-   * \param tcb internal congestion state
-   * \param bytesInFlight number of outstanding bytes
-   *
-   * \return the slow start threshold value
-   */
-  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight) override;
+    /**
+     * \brief Get slow start threshold upon the receipt of 3 dupACKs
+     *
+     * \param tcb internal congestion state
+     * \param bytesInFlight number of outstanding bytes
+     *
+     * \return the slow start threshold value
+     */
+    uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
 
-  Ptr<TcpCongestionOps> Fork () override;
+    Ptr<TcpCongestionOps> Fork() override;
 
-protected:
-private:
-  /**
-   * \brief Enable YeAH algorithm to start taking YeAH samples
-   *
-   * YeAH algorithm is enabled in the following situations:
-   * 1. at the establishment of a connection
-   * 2. after an RTO
-   * 3. after fast recovery
-   * 4. when an idle connection is restarted
-   *
-   * \param nextTxSequence Sequence to transmit next
-   */
-  void EnableYeah (const SequenceNumber32 &nextTxSequence);
+  protected:
+  private:
+    /**
+     * \brief Enable YeAH algorithm to start taking YeAH samples
+     *
+     * YeAH algorithm is enabled in the following situations:
+     * 1. at the establishment of a connection
+     * 2. after an RTO
+     * 3. after fast recovery
+     * 4. when an idle connection is restarted
+     *
+     * \param nextTxSequence Sequence to transmit next
+     */
+    void EnableYeah(const SequenceNumber32& nextTxSequence);
 
-  /**
-   * \brief Stop taking YeAH samples
-   */
-  void DisableYeah ();
+    /**
+     * \brief Stop taking YeAH samples
+     */
+    void DisableYeah();
 
-private:
-  uint32_t m_alpha;   //!< Maximum backlog allowed at the bottleneck queue; Q_max in the paper
-  uint32_t m_gamma;   //!< Fraction of queue to be removed per RTT when precautionary decongestion executed
-  uint32_t m_delta;   //!< Log minimum fraction of cwnd to be removed on loss
-  uint32_t m_epsilon; //!< Log maximum fraction to be removed on early decongestion
-  uint32_t m_phy;     //!< Maximum delta from base
-  uint32_t m_rho;     //!< Minimum number of consecutive RTT to consider competition with Reno flows on loss
-  uint32_t m_zeta;    //!< Minimum number of state switches to reset m_renoCount
+  private:
+    uint32_t m_alpha;   //!< Maximum backlog allowed at the bottleneck queue; Q_max in the paper
+    uint32_t m_gamma;   //!< Fraction of queue to be removed per RTT when precautionary decongestion
+                        //!< executed
+    uint32_t m_delta;   //!< Log minimum fraction of cwnd to be removed on loss
+    uint32_t m_epsilon; //!< Log maximum fraction to be removed on early decongestion
+    uint32_t m_phy;     //!< Maximum delta from base
+    uint32_t m_rho;  //!< Minimum number of consecutive RTT to consider competition with Reno flows
+                     //!< on loss
+    uint32_t m_zeta; //!< Minimum number of state switches to reset m_renoCount
 
-  uint32_t m_stcpAiFactor;  //!< STCP additive increase parameter
-  Ptr<TcpScalable> m_stcp;  //!< TcpScalable object
-  Time m_baseRtt;           //!< Minimum of all YeAH RTT measurements seen during connection
-  Time m_minRtt;            //!< Minimum of all RTTs measured within last RTT
-  uint32_t m_cntRtt;        //!< Number of RTT measurements during last RTT
-  bool m_doingYeahNow;          //!< If true, do YeAH for this RTT
-  SequenceNumber32 m_begSndNxt; //!< Right edge during last RTT
-  uint32_t m_lastQ;             //!< Last number of packets in the bottleneck queue
-  uint32_t m_doingRenoNow;      //!< Number of RTTs in "Slow" mode
-  uint32_t m_renoCount;         //!< Estimated cwnd of competing Reno flow
-  uint32_t m_fastCount;         //!< Number of RTTs in "Fast" mode
+    uint32_t m_stcpAiFactor;      //!< STCP additive increase parameter
+    Ptr<TcpScalable> m_stcp;      //!< TcpScalable object
+    Time m_baseRtt;               //!< Minimum of all YeAH RTT measurements seen during connection
+    Time m_minRtt;                //!< Minimum of all RTTs measured within last RTT
+    uint32_t m_cntRtt;            //!< Number of RTT measurements during last RTT
+    bool m_doingYeahNow;          //!< If true, do YeAH for this RTT
+    SequenceNumber32 m_begSndNxt; //!< Right edge during last RTT
+    uint32_t m_lastQ;             //!< Last number of packets in the bottleneck queue
+    uint32_t m_doingRenoNow;      //!< Number of RTTs in "Slow" mode
+    uint32_t m_renoCount;         //!< Estimated cwnd of competing Reno flow
+    uint32_t m_fastCount;         //!< Number of RTTs in "Fast" mode
 };
 
 } // namespace ns3

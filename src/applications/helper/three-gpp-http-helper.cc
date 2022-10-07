@@ -24,110 +24,107 @@
  *
  */
 
-#include <ns3/names.h>
 #include "three-gpp-http-helper.h"
 
-namespace ns3 {
+#include <ns3/names.h>
 
+namespace ns3
+{
 
 // 3GPP HTTP CLIENT HELPER /////////////////////////////////////////////////////////
 
-ThreeGppHttpClientHelper::ThreeGppHttpClientHelper (const Address &address)
+ThreeGppHttpClientHelper::ThreeGppHttpClientHelper(const Address& address)
 {
-  m_factory.SetTypeId ("ns3::ThreeGppHttpClient");
-  m_factory.Set ("RemoteServerAddress", AddressValue (address));
+    m_factory.SetTypeId("ns3::ThreeGppHttpClient");
+    m_factory.Set("RemoteServerAddress", AddressValue(address));
 }
 
 void
-ThreeGppHttpClientHelper::SetAttribute (const std::string &name,
-                                        const AttributeValue &value)
+ThreeGppHttpClientHelper::SetAttribute(const std::string& name, const AttributeValue& value)
 {
-  m_factory.Set (name, value);
+    m_factory.Set(name, value);
 }
 
 ApplicationContainer
-ThreeGppHttpClientHelper::Install (Ptr<Node> node) const
+ThreeGppHttpClientHelper::Install(Ptr<Node> node) const
 {
-  return ApplicationContainer (InstallPriv (node));
+    return ApplicationContainer(InstallPriv(node));
 }
 
 ApplicationContainer
-ThreeGppHttpClientHelper::Install (const std::string &nodeName) const
+ThreeGppHttpClientHelper::Install(const std::string& nodeName) const
 {
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  return ApplicationContainer (InstallPriv (node));
+    Ptr<Node> node = Names::Find<Node>(nodeName);
+    return ApplicationContainer(InstallPriv(node));
 }
 
 ApplicationContainer
-ThreeGppHttpClientHelper::Install (NodeContainer c) const
+ThreeGppHttpClientHelper::Install(NodeContainer c) const
 {
-  ApplicationContainer apps;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    ApplicationContainer apps;
+    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-      apps.Add (InstallPriv (*i));
+        apps.Add(InstallPriv(*i));
     }
 
-  return apps;
+    return apps;
 }
 
 Ptr<Application>
-ThreeGppHttpClientHelper::InstallPriv (Ptr<Node> node) const
+ThreeGppHttpClientHelper::InstallPriv(Ptr<Node> node) const
 {
-  Ptr<Application> app = m_factory.Create<Application> ();
-  node->AddApplication (app);
+    Ptr<Application> app = m_factory.Create<Application>();
+    node->AddApplication(app);
 
-  return app;
+    return app;
 }
-
 
 // HTTP SERVER HELPER /////////////////////////////////////////////////////////
 
-ThreeGppHttpServerHelper::ThreeGppHttpServerHelper (const Address &address)
+ThreeGppHttpServerHelper::ThreeGppHttpServerHelper(const Address& address)
 {
-  m_factory.SetTypeId ("ns3::ThreeGppHttpServer");
-  m_factory.Set ("LocalAddress", AddressValue (address));
+    m_factory.SetTypeId("ns3::ThreeGppHttpServer");
+    m_factory.Set("LocalAddress", AddressValue(address));
 }
 
 void
-ThreeGppHttpServerHelper::SetAttribute (const std::string &name,
-                                        const AttributeValue &value)
+ThreeGppHttpServerHelper::SetAttribute(const std::string& name, const AttributeValue& value)
 {
-  m_factory.Set (name, value);
+    m_factory.Set(name, value);
 }
 
 ApplicationContainer
-ThreeGppHttpServerHelper::Install (Ptr<Node> node) const
+ThreeGppHttpServerHelper::Install(Ptr<Node> node) const
 {
-  return ApplicationContainer (InstallPriv (node));
+    return ApplicationContainer(InstallPriv(node));
 }
 
 ApplicationContainer
-ThreeGppHttpServerHelper::Install (const std::string &nodeName) const
+ThreeGppHttpServerHelper::Install(const std::string& nodeName) const
 {
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  return ApplicationContainer (InstallPriv (node));
+    Ptr<Node> node = Names::Find<Node>(nodeName);
+    return ApplicationContainer(InstallPriv(node));
 }
 
 ApplicationContainer
-ThreeGppHttpServerHelper::Install (NodeContainer c) const
+ThreeGppHttpServerHelper::Install(NodeContainer c) const
 {
-  ApplicationContainer apps;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    ApplicationContainer apps;
+    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-      apps.Add (InstallPriv (*i));
+        apps.Add(InstallPriv(*i));
     }
 
-  return apps;
+    return apps;
 }
 
 Ptr<Application>
-ThreeGppHttpServerHelper::InstallPriv (Ptr<Node> node) const
+ThreeGppHttpServerHelper::InstallPriv(Ptr<Node> node) const
 {
-  Ptr<Application> app = m_factory.Create<Application> ();
-  node->AddApplication (app);
+    Ptr<Application> app = m_factory.Create<Application>();
+    node->AddApplication(app);
 
-  return app;
+    return app;
 }
 
-
-} // end of `namespace ns3`
+} // namespace ns3

@@ -25,7 +25,8 @@
 
 #include "ns3/no-backhaul-epc-helper.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lte
@@ -40,61 +41,62 @@ namespace ns3 {
  */
 class EmuEpcHelper : public NoBackhaulEpcHelper
 {
-public:
-  /**
-   * Constructor
-   */
-  EmuEpcHelper ();
+  public:
+    /**
+     * Constructor
+     */
+    EmuEpcHelper();
 
-  /**
-   * Destructor
-   */
-  ~EmuEpcHelper () override;
+    /**
+     * Destructor
+     */
+    ~EmuEpcHelper() override;
 
-  // inherited from Object
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const override;
-  void DoDispose () override;
+    // inherited from Object
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+    void DoDispose() override;
 
-  // inherited from EpcHelper
-  void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds) override;
-  void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2) override;
+    // inherited from EpcHelper
+    void AddEnb(Ptr<Node> enbNode,
+                Ptr<NetDevice> lteEnbNetDevice,
+                std::vector<uint16_t> cellIds) override;
+    void AddX2Interface(Ptr<Node> enbNode1, Ptr<Node> enbNode2) override;
 
-private:
+  private:
+    /**
+     * helper to assign addresses to S1-U NetDevices
+     */
+    Ipv4AddressHelper m_epcIpv4AddressHelper;
 
-  /**
-   * helper to assign addresses to S1-U NetDevices
-   */
-  Ipv4AddressHelper m_epcIpv4AddressHelper;
+    /**
+     * Container for Ipv4Interfaces of the SGW
+     */
+    Ipv4InterfaceContainer m_sgwIpIfaces;
 
-  /**
-   * Container for Ipv4Interfaces of the SGW
-   */
-  Ipv4InterfaceContainer m_sgwIpIfaces;
+    /**
+     * The name of the device used for the S1-U interface of the SGW
+     */
+    std::string m_sgwDeviceName;
 
-  /**
-   * The name of the device used for the S1-U interface of the SGW
-   */
-  std::string m_sgwDeviceName;
+    /**
+     * The name of the device used for the S1-U interface of the eNB
+     */
+    std::string m_enbDeviceName;
 
-  /**
-   * The name of the device used for the S1-U interface of the eNB
-   */
-  std::string m_enbDeviceName;
+    /**
+     * MAC address used for the SGW
+     */
+    std::string m_sgwMacAddress;
 
-  /**
-   * MAC address used for the SGW
-   */
-  std::string m_sgwMacAddress;
-
-  /**
-   * First 5 bytes of the Enb MAC address base
-   */
-  std::string m_enbMacAddressBase;
+    /**
+     * First 5 bytes of the Enb MAC address base
+     */
+    std::string m_enbMacAddressBase;
 };
 
 } // namespace ns3

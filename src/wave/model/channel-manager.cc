@@ -16,169 +16,170 @@
  * Author: Junling Bu <linlinjavaer@gmail.com>
  */
 #include "channel-manager.h"
-#include "ns3/log.h"
+
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("ChannelManager");
+NS_LOG_COMPONENT_DEFINE("ChannelManager");
 
-NS_OBJECT_ENSURE_REGISTERED (ChannelManager);
+NS_OBJECT_ENSURE_REGISTERED(ChannelManager);
 
 TypeId
-ChannelManager::GetTypeId ()
+ChannelManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ChannelManager")
-    .SetParent<Object> ()
-    .SetGroupName ("Wave")
-    .AddConstructor<ChannelManager> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::ChannelManager")
+                            .SetParent<Object>()
+                            .SetGroupName("Wave")
+                            .AddConstructor<ChannelManager>();
+    return tid;
 }
 
-ChannelManager::ChannelManager ()
+ChannelManager::ChannelManager()
 {
-  NS_LOG_FUNCTION (this);
-  m_channels.insert (std::make_pair (CCH, new WaveChannel (CCH)));
-  m_channels.insert (std::make_pair (SCH1, new WaveChannel (SCH1)));
-  m_channels.insert (std::make_pair (SCH2, new WaveChannel (SCH2)));
-  m_channels.insert (std::make_pair (SCH3, new WaveChannel (SCH3)));
-  m_channels.insert (std::make_pair (SCH4, new WaveChannel (SCH4)));
-  m_channels.insert (std::make_pair (SCH5, new WaveChannel (SCH5)));
-  m_channels.insert (std::make_pair (SCH6, new WaveChannel (SCH6)));
+    NS_LOG_FUNCTION(this);
+    m_channels.insert(std::make_pair(CCH, new WaveChannel(CCH)));
+    m_channels.insert(std::make_pair(SCH1, new WaveChannel(SCH1)));
+    m_channels.insert(std::make_pair(SCH2, new WaveChannel(SCH2)));
+    m_channels.insert(std::make_pair(SCH3, new WaveChannel(SCH3)));
+    m_channels.insert(std::make_pair(SCH4, new WaveChannel(SCH4)));
+    m_channels.insert(std::make_pair(SCH5, new WaveChannel(SCH5)));
+    m_channels.insert(std::make_pair(SCH6, new WaveChannel(SCH6)));
 }
 
-ChannelManager::~ChannelManager ()
+ChannelManager::~ChannelManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 uint32_t
-ChannelManager::GetCch ()
+ChannelManager::GetCch()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  return CCH;
+    NS_LOG_FUNCTION_NOARGS();
+    return CCH;
 }
 
 std::vector<uint32_t>
-ChannelManager::GetSchs ()
+ChannelManager::GetSchs()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  std::vector<uint32_t> schs;
-  schs.push_back (SCH1);
-  schs.push_back (SCH2);
-  schs.push_back (SCH3);
-  schs.push_back (SCH4);
-  schs.push_back (SCH5);
-  schs.push_back (SCH6);
-  return schs;
+    NS_LOG_FUNCTION_NOARGS();
+    std::vector<uint32_t> schs;
+    schs.push_back(SCH1);
+    schs.push_back(SCH2);
+    schs.push_back(SCH3);
+    schs.push_back(SCH4);
+    schs.push_back(SCH5);
+    schs.push_back(SCH6);
+    return schs;
 }
 
 std::vector<uint32_t>
-ChannelManager::GetWaveChannels ()
+ChannelManager::GetWaveChannels()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  std::vector<uint32_t> channels;
-  channels.push_back (CCH);
-  channels.push_back (SCH1);
-  channels.push_back (SCH2);
-  channels.push_back (SCH3);
-  channels.push_back (SCH4);
-  channels.push_back (SCH5);
-  channels.push_back (SCH6);
-  return channels;
+    NS_LOG_FUNCTION_NOARGS();
+    std::vector<uint32_t> channels;
+    channels.push_back(CCH);
+    channels.push_back(SCH1);
+    channels.push_back(SCH2);
+    channels.push_back(SCH3);
+    channels.push_back(SCH4);
+    channels.push_back(SCH5);
+    channels.push_back(SCH6);
+    return channels;
 }
 
 uint32_t
-ChannelManager::GetNumberOfWaveChannels ()
+ChannelManager::GetNumberOfWaveChannels()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static  uint32_t NumberOfWaveChannels  = GetWaveChannels ().size ();
-  return NumberOfWaveChannels;
+    NS_LOG_FUNCTION_NOARGS();
+    static uint32_t NumberOfWaveChannels = GetWaveChannels().size();
+    return NumberOfWaveChannels;
 }
 
 bool
-ChannelManager::IsCch (uint32_t channelNumber)
+ChannelManager::IsCch(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  return channelNumber == CCH;
+    NS_LOG_FUNCTION_NOARGS();
+    return channelNumber == CCH;
 }
 
 bool
-ChannelManager::IsSch (uint32_t channelNumber)
+ChannelManager::IsSch(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  if (channelNumber < SCH1 || channelNumber > SCH6)
+    NS_LOG_FUNCTION_NOARGS();
+    if (channelNumber < SCH1 || channelNumber > SCH6)
     {
-      return false;
+        return false;
     }
-  if (channelNumber % 2 == 1)
+    if (channelNumber % 2 == 1)
     {
-      return false;
+        return false;
     }
-  return (channelNumber != CCH);
+    return (channelNumber != CCH);
 }
 
 bool
-ChannelManager::IsWaveChannel (uint32_t channelNumber)
+ChannelManager::IsWaveChannel(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  if (channelNumber < SCH1 || channelNumber > SCH6)
+    NS_LOG_FUNCTION_NOARGS();
+    if (channelNumber < SCH1 || channelNumber > SCH6)
     {
-      return false;
+        return false;
     }
-  if (channelNumber % 2 == 1)
+    if (channelNumber % 2 == 1)
     {
-      return false;
+        return false;
     }
-  return true;
+    return true;
 }
 
 uint32_t
-ChannelManager::GetOperatingClass (uint32_t channelNumber)
+ChannelManager::GetOperatingClass(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION (this << channelNumber);
-  return m_channels[channelNumber]->operatingClass;
+    NS_LOG_FUNCTION(this << channelNumber);
+    return m_channels[channelNumber]->operatingClass;
 }
 
 bool
-ChannelManager::GetManagementAdaptable (uint32_t channelNumber)
+ChannelManager::GetManagementAdaptable(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION (this << channelNumber);
-  return m_channels[channelNumber]->adaptable;
+    NS_LOG_FUNCTION(this << channelNumber);
+    return m_channels[channelNumber]->adaptable;
 }
 
 WifiMode
-ChannelManager::GetManagementDataRate (uint32_t channelNumber)
+ChannelManager::GetManagementDataRate(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION (this << channelNumber);
-  return m_channels[channelNumber]->dataRate;
+    NS_LOG_FUNCTION(this << channelNumber);
+    return m_channels[channelNumber]->dataRate;
 }
 
 WifiPreamble
-ChannelManager::GetManagementPreamble (uint32_t channelNumber)
+ChannelManager::GetManagementPreamble(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION (this << channelNumber);
-  return m_channels[channelNumber]->preamble;
+    NS_LOG_FUNCTION(this << channelNumber);
+    return m_channels[channelNumber]->preamble;
 }
 
 uint32_t
-ChannelManager::GetManagementPowerLevel (uint32_t channelNumber)
+ChannelManager::GetManagementPowerLevel(uint32_t channelNumber)
 {
-  NS_LOG_FUNCTION (this << channelNumber);
-  return m_channels[channelNumber]->txPowerLevel;
+    NS_LOG_FUNCTION(this << channelNumber);
+    return m_channels[channelNumber]->txPowerLevel;
 }
 
 void
-ChannelManager::DoDispose ()
+ChannelManager::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  std::map<uint32_t, WaveChannel *> ::iterator i;
-  for (i = m_channels.begin (); i != m_channels.end (); ++i)
+    NS_LOG_FUNCTION(this);
+    std::map<uint32_t, WaveChannel*>::iterator i;
+    for (i = m_channels.begin(); i != m_channels.end(); ++i)
     {
-      delete (i->second);
+        delete (i->second);
     }
-  m_channels.clear ();
+    m_channels.clear();
 }
 
 } // namespace ns3

@@ -18,49 +18,50 @@
  */
 
 #include "tcp-highspeed.h"
+
 #include "tcp-socket-state.h"
 
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("TcpHighSpeed");
-NS_OBJECT_ENSURE_REGISTERED (TcpHighSpeed);
+NS_LOG_COMPONENT_DEFINE("TcpHighSpeed");
+NS_OBJECT_ENSURE_REGISTERED(TcpHighSpeed);
 
 TypeId
-TcpHighSpeed::GetTypeId ()
+TcpHighSpeed::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpHighSpeed")
-    .SetParent<TcpNewReno> ()
-    .AddConstructor<TcpHighSpeed> ()
-    .SetGroupName ("Internet")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpHighSpeed")
+                            .SetParent<TcpNewReno>()
+                            .AddConstructor<TcpHighSpeed>()
+                            .SetGroupName("Internet");
+    return tid;
 }
 
-TcpHighSpeed::TcpHighSpeed ()
-  : TcpNewReno (),
-    m_ackCnt (0)
+TcpHighSpeed::TcpHighSpeed()
+    : TcpNewReno(),
+      m_ackCnt(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpHighSpeed::TcpHighSpeed (const TcpHighSpeed& sock)
-  : TcpNewReno (sock),
-    m_ackCnt (sock.m_ackCnt)
+TcpHighSpeed::TcpHighSpeed(const TcpHighSpeed& sock)
+    : TcpNewReno(sock),
+      m_ackCnt(sock.m_ackCnt)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpHighSpeed::~TcpHighSpeed ()
+TcpHighSpeed::~TcpHighSpeed()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 Ptr<TcpCongestionOps>
-TcpHighSpeed::Fork ()
+TcpHighSpeed::Fork()
 {
-  return CopyObject<TcpHighSpeed> (this);
+    return CopyObject<TcpHighSpeed>(this);
 }
 
 /**
@@ -96,37 +97,37 @@ TcpHighSpeed::Fork ()
  * \param segmentsAcked count of segments acked
  */
 void
-TcpHighSpeed::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
+TcpHighSpeed::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
-  NS_LOG_FUNCTION (this << tcb << segmentsAcked);
+    NS_LOG_FUNCTION(this << tcb << segmentsAcked);
 
-  uint32_t segCwnd = tcb->GetCwndInSegments ();
-  uint32_t oldCwnd = segCwnd;
+    uint32_t segCwnd = tcb->GetCwndInSegments();
+    uint32_t oldCwnd = segCwnd;
 
-  if (segmentsAcked > 0)
+    if (segmentsAcked > 0)
     {
-      uint32_t coeffA = TableLookupA (segCwnd);
-      m_ackCnt += segmentsAcked * coeffA;
+        uint32_t coeffA = TableLookupA(segCwnd);
+        m_ackCnt += segmentsAcked * coeffA;
     }
 
-  while (m_ackCnt >= segCwnd)
+    while (m_ackCnt >= segCwnd)
     {
-      m_ackCnt -= segCwnd;
-      segCwnd += 1;
+        m_ackCnt -= segCwnd;
+        segCwnd += 1;
     }
 
-  if (segCwnd != oldCwnd)
+    if (segCwnd != oldCwnd)
     {
-      tcb->m_cWnd = segCwnd * tcb->m_segmentSize;
-      NS_LOG_INFO ("In CongAvoid, updated to cwnd " << tcb->m_cWnd <<
-                   " ssthresh " << tcb->m_ssThresh);
+        tcb->m_cWnd = segCwnd * tcb->m_segmentSize;
+        NS_LOG_INFO("In CongAvoid, updated to cwnd " << tcb->m_cWnd << " ssthresh "
+                                                     << tcb->m_ssThresh);
     }
 }
 
 std::string
-TcpHighSpeed::GetName () const
+TcpHighSpeed::GetName() const
 {
-  return "TcpHighSpeed";
+    return "TcpHighSpeed";
 }
 
 /**
@@ -138,621 +139,619 @@ TcpHighSpeed::GetName () const
  * \return the slow start threshold value
  */
 uint32_t
-TcpHighSpeed::GetSsThresh (Ptr<const TcpSocketState> tcb,
-                           uint32_t bytesInFlight)
+TcpHighSpeed::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 {
-  NS_LOG_FUNCTION (this << tcb << bytesInFlight);
+    NS_LOG_FUNCTION(this << tcb << bytesInFlight);
 
-  uint32_t segCwnd = bytesInFlight / tcb->m_segmentSize;
+    uint32_t segCwnd = bytesInFlight / tcb->m_segmentSize;
 
-  double b = 1.0 - TableLookupB (segCwnd);
-  uint32_t ssThresh = static_cast<uint32_t> (std::max (2.0, segCwnd * b));
+    double b = 1.0 - TableLookupB(segCwnd);
+    uint32_t ssThresh = static_cast<uint32_t>(std::max(2.0, segCwnd * b));
 
-  NS_LOG_DEBUG ("Calculated b(w) = " << b <<
-                " resulting (in segment) ssThresh=" << ssThresh);
+    NS_LOG_DEBUG("Calculated b(w) = " << b << " resulting (in segment) ssThresh=" << ssThresh);
 
-  return ssThresh * tcb->m_segmentSize;
+    return ssThresh * tcb->m_segmentSize;
 }
 
 uint32_t
-TcpHighSpeed::TableLookupA (uint32_t w)
+TcpHighSpeed::TableLookupA(uint32_t w)
 {
-  if (w <= 38)
+    if (w <= 38)
     {
-      return 1;
+        return 1;
     }
-  else if (w <= 118)
+    else if (w <= 118)
     {
-      return 2;
+        return 2;
     }
-  else if (w <= 221)
+    else if (w <= 221)
     {
-      return 3;
+        return 3;
     }
-  else if (w <= 347)
+    else if (w <= 347)
     {
-      return 4;
+        return 4;
     }
-  else if (w <= 495)
+    else if (w <= 495)
     {
-      return 5;
+        return 5;
     }
-  else if (w <= 663)
+    else if (w <= 663)
     {
-      return 6;
+        return 6;
     }
-  else if (w <= 851)
+    else if (w <= 851)
     {
-      return 7;
+        return 7;
     }
-  else if (w <= 1058)
+    else if (w <= 1058)
     {
-      return 8;
+        return 8;
     }
-  else if (w <= 1284)
+    else if (w <= 1284)
     {
-      return 9;
+        return 9;
     }
-  else if (w <= 1529)
+    else if (w <= 1529)
     {
-      return 10;
+        return 10;
     }
-  else if (w <= 1793)
+    else if (w <= 1793)
     {
-      return 11;
+        return 11;
     }
-  else if (w <= 2076)
+    else if (w <= 2076)
     {
-      return 12;
+        return 12;
     }
-  else if (w <= 2378)
+    else if (w <= 2378)
     {
-      return 13;
+        return 13;
     }
-  else if (w <= 2699)
+    else if (w <= 2699)
     {
-      return 14;
+        return 14;
     }
-  else if (w <= 3039)
+    else if (w <= 3039)
     {
-      return 15;
+        return 15;
     }
-  else if (w <= 3399)
+    else if (w <= 3399)
     {
-      return 16;
+        return 16;
     }
-  else if (w <= 3778)
+    else if (w <= 3778)
     {
-      return 17;
+        return 17;
     }
-  else if (w <= 4177)
+    else if (w <= 4177)
     {
-      return 18;
+        return 18;
     }
-  else if (w <= 4596)
+    else if (w <= 4596)
     {
-      return 19;
+        return 19;
     }
-  else if (w <= 5036)
+    else if (w <= 5036)
     {
-      return 20;
+        return 20;
     }
-  else if (w <= 5497)
+    else if (w <= 5497)
     {
-      return 21;
+        return 21;
     }
-  else if (w <= 5979)
+    else if (w <= 5979)
     {
-      return 22;
+        return 22;
     }
-  else if (w <= 6483)
+    else if (w <= 6483)
     {
-      return 23;
+        return 23;
     }
-  else if (w <= 7009)
+    else if (w <= 7009)
     {
-      return 24;
+        return 24;
     }
-  else if (w <= 7558)
+    else if (w <= 7558)
     {
-      return 25;
+        return 25;
     }
-  else if (w <= 8130)
+    else if (w <= 8130)
     {
-      return 26;
+        return 26;
     }
-  else if (w <= 8726)
+    else if (w <= 8726)
     {
-      return 27;
+        return 27;
     }
-  else if (w <= 9346)
+    else if (w <= 9346)
     {
-      return 28;
+        return 28;
     }
-  else if (w <= 9991)
+    else if (w <= 9991)
     {
-      return 29;
+        return 29;
     }
-  else if (w <= 10661)
+    else if (w <= 10661)
     {
-      return 30;
+        return 30;
     }
-  else if (w <= 11358)
+    else if (w <= 11358)
     {
-      return 31;
+        return 31;
     }
-  else if (w <= 12082)
+    else if (w <= 12082)
     {
-      return 32;
+        return 32;
     }
-  else if (w <= 12834)
+    else if (w <= 12834)
     {
-      return 33;
+        return 33;
     }
-  else if (w <= 13614)
+    else if (w <= 13614)
     {
-      return 34;
+        return 34;
     }
-  else if (w <= 14424)
+    else if (w <= 14424)
     {
-      return 35;
+        return 35;
     }
-  else if (w <= 15265)
+    else if (w <= 15265)
     {
-      return 36;
+        return 36;
     }
-  else if (w <= 16137)
+    else if (w <= 16137)
     {
-      return 37;
+        return 37;
     }
-  else if (w <= 17042)
+    else if (w <= 17042)
     {
-      return 38;
+        return 38;
     }
-  else if (w <= 17981)
+    else if (w <= 17981)
     {
-      return 39;
+        return 39;
     }
-  else if (w <= 18955)
+    else if (w <= 18955)
     {
-      return 40;
+        return 40;
     }
-  else if (w <= 19965)
+    else if (w <= 19965)
     {
-      return 41;
+        return 41;
     }
-  else if (w <= 21013)
+    else if (w <= 21013)
     {
-      return 42;
+        return 42;
     }
-  else if (w <= 22101)
+    else if (w <= 22101)
     {
-      return 43;
+        return 43;
     }
-  else if (w <= 23230)
+    else if (w <= 23230)
     {
-      return 44;
+        return 44;
     }
-  else if (w <= 24402)
+    else if (w <= 24402)
     {
-      return 45;
+        return 45;
     }
-  else if (w <= 25618)
+    else if (w <= 25618)
     {
-      return 46;
+        return 46;
     }
-  else if (w <= 26881)
+    else if (w <= 26881)
     {
-      return 47;
+        return 47;
     }
-  else if (w <= 28193)
+    else if (w <= 28193)
     {
-      return 48;
+        return 48;
     }
-  else if (w <= 29557)
+    else if (w <= 29557)
     {
-      return 49;
+        return 49;
     }
-  else if (w <= 30975)
+    else if (w <= 30975)
     {
-      return 50;
+        return 50;
     }
-  else if (w <= 32450)
+    else if (w <= 32450)
     {
-      return 51;
+        return 51;
     }
-  else if (w <= 33986)
+    else if (w <= 33986)
     {
-      return 52;
+        return 52;
     }
-  else if (w <= 35586)
+    else if (w <= 35586)
     {
-      return 53;
+        return 53;
     }
-  else if (w <= 37253)
+    else if (w <= 37253)
     {
-      return 54;
+        return 54;
     }
-  else if (w <= 38992)
+    else if (w <= 38992)
     {
-      return 55;
+        return 55;
     }
-  else if (w <= 40808)
+    else if (w <= 40808)
     {
-      return 56;
+        return 56;
     }
-  else if (w <= 42707)
+    else if (w <= 42707)
     {
-      return 57;
+        return 57;
     }
-  else if (w <= 44694)
+    else if (w <= 44694)
     {
-      return 58;
+        return 58;
     }
-  else if (w <= 46776)
+    else if (w <= 46776)
     {
-      return 59;
+        return 59;
     }
-  else if (w <= 48961)
+    else if (w <= 48961)
     {
-      return 60;
+        return 60;
     }
-  else if (w <= 51258)
+    else if (w <= 51258)
     {
-      return 61;
+        return 61;
     }
-  else if (w <= 53667)
+    else if (w <= 53667)
     {
-      return 62;
+        return 62;
     }
-  else if (w <= 56230)
+    else if (w <= 56230)
     {
-      return 63;
+        return 63;
     }
-  else if (w <= 58932)
+    else if (w <= 58932)
     {
-      return 64;
+        return 64;
     }
-  else if (w <= 61799)
+    else if (w <= 61799)
     {
-      return 65;
+        return 65;
     }
-  else if (w <= 64851)
+    else if (w <= 64851)
     {
-      return 66;
+        return 66;
     }
-  else if (w <= 68113)
+    else if (w <= 68113)
     {
-      return 67;
+        return 67;
     }
-  else if (w <= 71617)
+    else if (w <= 71617)
     {
-      return 68;
+        return 68;
     }
-  else if (w <= 75401)
+    else if (w <= 75401)
     {
-      return 69;
+        return 69;
     }
-  else if (w <= 79517)
+    else if (w <= 79517)
     {
-      return 70;
+        return 70;
     }
-  else if (w <= 84035)
+    else if (w <= 84035)
     {
-      return 71;
+        return 71;
     }
-  else if (w <= 89053)
+    else if (w <= 89053)
     {
-      return 72;
+        return 72;
     }
-  else if (w <= 94717)
+    else if (w <= 94717)
     {
-      return 73;
+        return 73;
     }
-  else
+    else
     {
-      return 73;
+        return 73;
     }
 }
 
 double
-TcpHighSpeed::TableLookupB (uint32_t w)
+TcpHighSpeed::TableLookupB(uint32_t w)
 {
-  if (w <= 38)
+    if (w <= 38)
     {
-      return 0.50;
+        return 0.50;
     }
-  else if (w <= 118)
+    else if (w <= 118)
     {
-      return 0.44;
+        return 0.44;
     }
-  else if (w <= 221)
+    else if (w <= 221)
     {
-      return 0.41;
+        return 0.41;
     }
-  else if (w <= 347)
+    else if (w <= 347)
     {
-      return 0.38;
+        return 0.38;
     }
-  else if (w <= 495)
+    else if (w <= 495)
     {
-      return 0.37;
+        return 0.37;
     }
-  else if (w <= 663)
+    else if (w <= 663)
     {
-      return 0.35;
+        return 0.35;
     }
-  else if (w <= 851)
+    else if (w <= 851)
     {
-      return 0.34;
+        return 0.34;
     }
-  else if (w <= 1058)
+    else if (w <= 1058)
     {
-      return 0.33;
+        return 0.33;
     }
-  else if (w <= 1284)
+    else if (w <= 1284)
     {
-      return 0.32;
+        return 0.32;
     }
-  else if (w <= 1529)
+    else if (w <= 1529)
     {
-      return 0.31;
+        return 0.31;
     }
-  else if (w <= 1793)
+    else if (w <= 1793)
     {
-      return 0.30;
+        return 0.30;
     }
-  else if (w <= 2076)
+    else if (w <= 2076)
     {
-      return 0.29;
+        return 0.29;
     }
-  else if (w <= 2378)
+    else if (w <= 2378)
     {
-      return 0.28;
+        return 0.28;
     }
-  else if (w <= 2699)
+    else if (w <= 2699)
     {
-      return 0.28;
+        return 0.28;
     }
-  else if (w <= 3039)
+    else if (w <= 3039)
     {
-      return 0.27;
+        return 0.27;
     }
-  else if (w <= 3399)
+    else if (w <= 3399)
     {
-      return 0.27;
+        return 0.27;
     }
-  else if (w <= 3778)
+    else if (w <= 3778)
     {
-      return 0.26;
+        return 0.26;
     }
-  else if (w <= 4177)
+    else if (w <= 4177)
     {
-      return 0.26;
+        return 0.26;
     }
-  else if (w <= 4596)
+    else if (w <= 4596)
     {
-      return 0.25;
+        return 0.25;
     }
-  else if (w <= 5036)
+    else if (w <= 5036)
     {
-      return 0.25;
+        return 0.25;
     }
-  else if (w <= 5497)
+    else if (w <= 5497)
     {
-      return 0.24;
+        return 0.24;
     }
-  else if (w <= 5979)
+    else if (w <= 5979)
     {
-      return 0.24;
+        return 0.24;
     }
-  else if (w <= 6483)
+    else if (w <= 6483)
     {
-      return 0.23;
+        return 0.23;
     }
-  else if (w <= 7009)
+    else if (w <= 7009)
     {
-      return 0.23;
+        return 0.23;
     }
-  else if (w <= 7558)
+    else if (w <= 7558)
     {
-      return 0.22;
+        return 0.22;
     }
-  else if (w <= 8130)
+    else if (w <= 8130)
     {
-      return 0.22;
+        return 0.22;
     }
-  else if (w <= 8726)
+    else if (w <= 8726)
     {
-      return 0.22;
+        return 0.22;
     }
-  else if (w <= 9346)
+    else if (w <= 9346)
     {
-      return 0.21;
+        return 0.21;
     }
-  else if (w <= 9991)
+    else if (w <= 9991)
     {
-      return 0.21;
+        return 0.21;
     }
-  else if (w <= 10661)
+    else if (w <= 10661)
     {
-      return 0.21;
+        return 0.21;
     }
-  else if (w <= 11358)
+    else if (w <= 11358)
     {
-      return 0.20;
+        return 0.20;
     }
-  else if (w <= 12082)
+    else if (w <= 12082)
     {
-      return 0.20;
+        return 0.20;
     }
-  else if (w <= 12834)
+    else if (w <= 12834)
     {
-      return 0.20;
+        return 0.20;
     }
-  else if (w <= 13614)
+    else if (w <= 13614)
     {
-      return 0.19;
+        return 0.19;
     }
-  else if (w <= 14424)
+    else if (w <= 14424)
     {
-      return 0.19;
+        return 0.19;
     }
-  else if (w <= 15265)
+    else if (w <= 15265)
     {
-      return 0.19;
+        return 0.19;
     }
-  else if (w <= 16137)
+    else if (w <= 16137)
     {
-      return 0.19;
+        return 0.19;
     }
-  else if (w <= 17042)
+    else if (w <= 17042)
     {
-      return 0.18;
+        return 0.18;
     }
-  else if (w <= 17981)
+    else if (w <= 17981)
     {
-      return 0.18;
+        return 0.18;
     }
-  else if (w <= 18955)
+    else if (w <= 18955)
     {
-      return 0.18;
+        return 0.18;
     }
-  else if (w <= 19965)
+    else if (w <= 19965)
     {
-      return 0.17;
+        return 0.17;
     }
-  else if (w <= 21013)
+    else if (w <= 21013)
     {
-      return 0.17;
+        return 0.17;
     }
-  else if (w <= 22101)
+    else if (w <= 22101)
     {
-      return 0.17;
+        return 0.17;
     }
-  else if (w <= 23230)
+    else if (w <= 23230)
     {
-      return 0.17;
+        return 0.17;
     }
-  else if (w <= 24402)
+    else if (w <= 24402)
     {
-      return 0.16;
+        return 0.16;
     }
-  else if (w <= 25618)
+    else if (w <= 25618)
     {
-      return 0.16;
+        return 0.16;
     }
-  else if (w <= 26881)
+    else if (w <= 26881)
     {
-      return 0.16;
+        return 0.16;
     }
-  else if (w <= 28193)
+    else if (w <= 28193)
     {
-      return 0.16;
+        return 0.16;
     }
-  else if (w <= 29557)
+    else if (w <= 29557)
     {
-      return 0.15;
+        return 0.15;
     }
-  else if (w <= 30975)
+    else if (w <= 30975)
     {
-      return 0.15;
+        return 0.15;
     }
-  else if (w <= 32450)
+    else if (w <= 32450)
     {
-      return 0.15;
+        return 0.15;
     }
-  else if (w <= 33986)
+    else if (w <= 33986)
     {
-      return 0.15;
+        return 0.15;
     }
-  else if (w <= 35586)
+    else if (w <= 35586)
     {
-      return 0.14;
+        return 0.14;
     }
-  else if (w <= 37253)
+    else if (w <= 37253)
     {
-      return 0.14;
+        return 0.14;
     }
-  else if (w <= 38992)
+    else if (w <= 38992)
     {
-      return 0.14;
+        return 0.14;
     }
-  else if (w <= 40808)
+    else if (w <= 40808)
     {
-      return 0.14;
+        return 0.14;
     }
-  else if (w <= 42707)
+    else if (w <= 42707)
     {
-      return 0.13;
+        return 0.13;
     }
-  else if (w <= 44694)
+    else if (w <= 44694)
     {
-      return 0.13;
+        return 0.13;
     }
-  else if (w <= 46776)
+    else if (w <= 46776)
     {
-      return 0.13;
+        return 0.13;
     }
-  else if (w <= 48961)
+    else if (w <= 48961)
     {
-      return 0.13;
+        return 0.13;
     }
-  else if (w <= 51258)
+    else if (w <= 51258)
     {
-      return 0.13;
+        return 0.13;
     }
-  else if (w <= 53667)
+    else if (w <= 53667)
     {
-      return 0.12;
+        return 0.12;
     }
-  else if (w <= 56230)
+    else if (w <= 56230)
     {
-      return 0.12;
+        return 0.12;
     }
-  else if (w <= 58932)
+    else if (w <= 58932)
     {
-      return 0.12;
+        return 0.12;
     }
-  else if (w <= 61799)
+    else if (w <= 61799)
     {
-      return 0.12;
+        return 0.12;
     }
-  else if (w <= 64851)
+    else if (w <= 64851)
     {
-      return 0.11;
+        return 0.11;
     }
-  else if (w <= 68113)
+    else if (w <= 68113)
     {
-      return 0.11;
+        return 0.11;
     }
-  else if (w <= 71617)
+    else if (w <= 71617)
     {
-      return 0.11;
+        return 0.11;
     }
-  else if (w <= 75401)
+    else if (w <= 75401)
     {
-      return 0.10;
+        return 0.10;
     }
-  else if (w <= 79517)
+    else if (w <= 79517)
     {
-      return 0.10;
+        return 0.10;
     }
-  else if (w <= 84035)
+    else if (w <= 84035)
     {
-      return 0.10;
+        return 0.10;
     }
-  else if (w <= 89053)
+    else if (w <= 89053)
     {
-      return 0.10;
+        return 0.10;
     }
-  else if (w <= 94717)
+    else if (w <= 94717)
     {
-      return 0.09;
+        return 0.09;
     }
-  else
+    else
     {
-      return 0.09;
+        return 0.09;
     }
 }
 

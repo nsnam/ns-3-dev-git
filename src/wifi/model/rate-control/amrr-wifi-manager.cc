@@ -18,16 +18,18 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include "amrr-wifi-manager.h"
+
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "amrr-wifi-manager.h"
 #include "ns3/wifi-tx-vector.h"
 
-#define Min(a,b) ((a < b) ? a : b)
+#define Min(a, b) ((a < b) ? a : b)
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("AmrrWifiManager");
+NS_LOG_COMPONENT_DEFINE("AmrrWifiManager");
 
 /**
  * \brief hold per-remote-station state for AMRR Wifi manager.
@@ -37,368 +39,397 @@ NS_LOG_COMPONENT_DEFINE ("AmrrWifiManager");
  */
 struct AmrrWifiRemoteStation : public WifiRemoteStation
 {
-  Time m_nextModeUpdate; ///< next mode update time
-  uint32_t m_tx_ok;      ///< transmit OK
-  uint32_t m_tx_err;     ///< transmit error
-  uint32_t m_tx_retr;    ///< transmit retry
-  uint32_t m_retry;      ///< retry
-  uint8_t m_txrate;      ///< transmit rate
-  uint32_t m_successThreshold; ///< success threshold
-  uint32_t m_success;    ///< success
-  bool m_recovery;       ///< recovery
+    Time m_nextModeUpdate;       ///< next mode update time
+    uint32_t m_tx_ok;            ///< transmit OK
+    uint32_t m_tx_err;           ///< transmit error
+    uint32_t m_tx_retr;          ///< transmit retry
+    uint32_t m_retry;            ///< retry
+    uint8_t m_txrate;            ///< transmit rate
+    uint32_t m_successThreshold; ///< success threshold
+    uint32_t m_success;          ///< success
+    bool m_recovery;             ///< recovery
 };
 
-
-NS_OBJECT_ENSURE_REGISTERED (AmrrWifiManager);
+NS_OBJECT_ENSURE_REGISTERED(AmrrWifiManager);
 
 TypeId
-AmrrWifiManager::GetTypeId ()
+AmrrWifiManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::AmrrWifiManager")
-    .SetParent<WifiRemoteStationManager> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<AmrrWifiManager> ()
-    .AddAttribute ("UpdatePeriod",
-                   "The interval between decisions about rate control changes",
-                   TimeValue (Seconds (1.0)),
-                   MakeTimeAccessor (&AmrrWifiManager::m_updatePeriod),
-                   MakeTimeChecker ())
-    .AddAttribute ("FailureRatio",
-                   "Ratio of minimum erroneous transmissions needed to switch to a lower rate",
-                   DoubleValue (1.0 / 3.0),
-                   MakeDoubleAccessor (&AmrrWifiManager::m_failureRatio),
-                   MakeDoubleChecker<double> (0.0, 1.0))
-    .AddAttribute ("SuccessRatio",
-                   "Ratio of maximum erroneous transmissions needed to switch to a higher rate",
-                   DoubleValue (1.0 / 10.0),
-                   MakeDoubleAccessor (&AmrrWifiManager::m_successRatio),
-                   MakeDoubleChecker<double> (0.0, 1.0))
-    .AddAttribute ("MaxSuccessThreshold",
-                   "Maximum number of consecutive success periods needed to switch to a higher rate",
-                   UintegerValue (10),
-                   MakeUintegerAccessor (&AmrrWifiManager::m_maxSuccessThreshold),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MinSuccessThreshold",
-                   "Minimum number of consecutive success periods needed to switch to a higher rate",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&AmrrWifiManager::m_minSuccessThreshold),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddTraceSource ("Rate",
-                     "Traced value for rate changes (b/s)",
-                     MakeTraceSourceAccessor (&AmrrWifiManager::m_currentRate),
-                     "ns3::TracedValueCallback::Uint64")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::AmrrWifiManager")
+            .SetParent<WifiRemoteStationManager>()
+            .SetGroupName("Wifi")
+            .AddConstructor<AmrrWifiManager>()
+            .AddAttribute("UpdatePeriod",
+                          "The interval between decisions about rate control changes",
+                          TimeValue(Seconds(1.0)),
+                          MakeTimeAccessor(&AmrrWifiManager::m_updatePeriod),
+                          MakeTimeChecker())
+            .AddAttribute(
+                "FailureRatio",
+                "Ratio of minimum erroneous transmissions needed to switch to a lower rate",
+                DoubleValue(1.0 / 3.0),
+                MakeDoubleAccessor(&AmrrWifiManager::m_failureRatio),
+                MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute(
+                "SuccessRatio",
+                "Ratio of maximum erroneous transmissions needed to switch to a higher rate",
+                DoubleValue(1.0 / 10.0),
+                MakeDoubleAccessor(&AmrrWifiManager::m_successRatio),
+                MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute(
+                "MaxSuccessThreshold",
+                "Maximum number of consecutive success periods needed to switch to a higher rate",
+                UintegerValue(10),
+                MakeUintegerAccessor(&AmrrWifiManager::m_maxSuccessThreshold),
+                MakeUintegerChecker<uint32_t>())
+            .AddAttribute(
+                "MinSuccessThreshold",
+                "Minimum number of consecutive success periods needed to switch to a higher rate",
+                UintegerValue(1),
+                MakeUintegerAccessor(&AmrrWifiManager::m_minSuccessThreshold),
+                MakeUintegerChecker<uint32_t>())
+            .AddTraceSource("Rate",
+                            "Traced value for rate changes (b/s)",
+                            MakeTraceSourceAccessor(&AmrrWifiManager::m_currentRate),
+                            "ns3::TracedValueCallback::Uint64");
+    return tid;
 }
 
-AmrrWifiManager::AmrrWifiManager ()
-  : WifiRemoteStationManager (),
-    m_currentRate (0)
+AmrrWifiManager::AmrrWifiManager()
+    : WifiRemoteStationManager(),
+      m_currentRate(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-AmrrWifiManager::~AmrrWifiManager ()
+AmrrWifiManager::~AmrrWifiManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-AmrrWifiManager::DoInitialize ()
+AmrrWifiManager::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
-  if (GetHtSupported ())
+    NS_LOG_FUNCTION(this);
+    if (GetHtSupported())
     {
-      NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support HT rates");
+        NS_FATAL_ERROR("WifiRemoteStationManager selected does not support HT rates");
     }
-  if (GetVhtSupported ())
+    if (GetVhtSupported())
     {
-      NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support VHT rates");
+        NS_FATAL_ERROR("WifiRemoteStationManager selected does not support VHT rates");
     }
-  if (GetHeSupported ())
+    if (GetHeSupported())
     {
-      NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support HE rates");
+        NS_FATAL_ERROR("WifiRemoteStationManager selected does not support HE rates");
     }
 }
 
-WifiRemoteStation *
-AmrrWifiManager::DoCreateStation () const
+WifiRemoteStation*
+AmrrWifiManager::DoCreateStation() const
 {
-  NS_LOG_FUNCTION (this);
-  AmrrWifiRemoteStation *station = new AmrrWifiRemoteStation ();
-  station->m_nextModeUpdate = Simulator::Now () + m_updatePeriod;
-  station->m_tx_ok = 0;
-  station->m_tx_err = 0;
-  station->m_tx_retr = 0;
-  station->m_retry = 0;
-  station->m_txrate = 0;
-  station->m_successThreshold = m_minSuccessThreshold;
-  station->m_success = 0;
-  station->m_recovery = false;
-  return station;
+    NS_LOG_FUNCTION(this);
+    AmrrWifiRemoteStation* station = new AmrrWifiRemoteStation();
+    station->m_nextModeUpdate = Simulator::Now() + m_updatePeriod;
+    station->m_tx_ok = 0;
+    station->m_tx_err = 0;
+    station->m_tx_retr = 0;
+    station->m_retry = 0;
+    station->m_txrate = 0;
+    station->m_successThreshold = m_minSuccessThreshold;
+    station->m_success = 0;
+    station->m_recovery = false;
+    return station;
 }
 
 void
-AmrrWifiManager::DoReportRxOk (WifiRemoteStation *station,
-                               double rxSnr, WifiMode txMode)
+AmrrWifiManager::DoReportRxOk(WifiRemoteStation* station, double rxSnr, WifiMode txMode)
 {
-  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
+    NS_LOG_FUNCTION(this << station << rxSnr << txMode);
 }
 
 void
-AmrrWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
+AmrrWifiManager::DoReportRtsFailed(WifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
+    NS_LOG_FUNCTION(this << station);
 }
 
 void
-AmrrWifiManager::DoReportDataFailed (WifiRemoteStation *st)
+AmrrWifiManager::DoReportDataFailed(WifiRemoteStation* st)
 {
-  NS_LOG_FUNCTION (this << st);
-  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
-  station->m_retry++;
-  station->m_tx_retr++;
+    NS_LOG_FUNCTION(this << st);
+    AmrrWifiRemoteStation* station = static_cast<AmrrWifiRemoteStation*>(st);
+    station->m_retry++;
+    station->m_tx_retr++;
 }
 
 void
-AmrrWifiManager::DoReportRtsOk (WifiRemoteStation *st,
-                                double ctsSnr, WifiMode ctsMode, double rtsSnr)
+AmrrWifiManager::DoReportRtsOk(WifiRemoteStation* st,
+                               double ctsSnr,
+                               WifiMode ctsMode,
+                               double rtsSnr)
 {
-  NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
+    NS_LOG_FUNCTION(this << st << ctsSnr << ctsMode << rtsSnr);
 }
 
 void
-AmrrWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
-                                 double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
+AmrrWifiManager::DoReportDataOk(WifiRemoteStation* st,
+                                double ackSnr,
+                                WifiMode ackMode,
+                                double dataSnr,
+                                uint16_t dataChannelWidth,
+                                uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
-  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
-  station->m_retry = 0;
-  station->m_tx_ok++;
+    NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
+    AmrrWifiRemoteStation* station = static_cast<AmrrWifiRemoteStation*>(st);
+    station->m_retry = 0;
+    station->m_tx_ok++;
 }
 
 void
-AmrrWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
+AmrrWifiManager::DoReportFinalRtsFailed(WifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
+    NS_LOG_FUNCTION(this << station);
 }
 
 void
-AmrrWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
+AmrrWifiManager::DoReportFinalDataFailed(WifiRemoteStation* st)
 {
-  NS_LOG_FUNCTION (this << st);
-  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
-  station->m_retry = 0;
-  station->m_tx_err++;
+    NS_LOG_FUNCTION(this << st);
+    AmrrWifiRemoteStation* station = static_cast<AmrrWifiRemoteStation*>(st);
+    station->m_retry = 0;
+    station->m_tx_err++;
 }
 
 bool
-AmrrWifiManager::IsMinRate (AmrrWifiRemoteStation *station) const
+AmrrWifiManager::IsMinRate(AmrrWifiRemoteStation* station) const
 {
-  NS_LOG_FUNCTION (this << station);
-  return (station->m_txrate == 0);
+    NS_LOG_FUNCTION(this << station);
+    return (station->m_txrate == 0);
 }
 
 bool
-AmrrWifiManager::IsMaxRate (AmrrWifiRemoteStation *station) const
+AmrrWifiManager::IsMaxRate(AmrrWifiRemoteStation* station) const
 {
-  NS_LOG_FUNCTION (this << station);
-  NS_ASSERT (station->m_txrate + 1 <= GetNSupported (station));
-  return (station->m_txrate + 1 == GetNSupported (station));
+    NS_LOG_FUNCTION(this << station);
+    NS_ASSERT(station->m_txrate + 1 <= GetNSupported(station));
+    return (station->m_txrate + 1 == GetNSupported(station));
 }
 
 bool
-AmrrWifiManager::IsSuccess (AmrrWifiRemoteStation *station) const
+AmrrWifiManager::IsSuccess(AmrrWifiRemoteStation* station) const
 {
-  NS_LOG_FUNCTION (this << station);
-  return (station->m_tx_retr + station->m_tx_err) < station->m_tx_ok * m_successRatio;
+    NS_LOG_FUNCTION(this << station);
+    return (station->m_tx_retr + station->m_tx_err) < station->m_tx_ok * m_successRatio;
 }
 
 bool
-AmrrWifiManager::IsFailure (AmrrWifiRemoteStation *station) const
+AmrrWifiManager::IsFailure(AmrrWifiRemoteStation* station) const
 {
-  NS_LOG_FUNCTION (this << station);
-  return (station->m_tx_retr + station->m_tx_err) > station->m_tx_ok * m_failureRatio;
+    NS_LOG_FUNCTION(this << station);
+    return (station->m_tx_retr + station->m_tx_err) > station->m_tx_ok * m_failureRatio;
 }
 
 bool
-AmrrWifiManager::IsEnough (AmrrWifiRemoteStation *station) const
+AmrrWifiManager::IsEnough(AmrrWifiRemoteStation* station) const
 {
-  NS_LOG_FUNCTION (this << station);
-  return (station->m_tx_retr + station->m_tx_err + station->m_tx_ok) > 10;
+    NS_LOG_FUNCTION(this << station);
+    return (station->m_tx_retr + station->m_tx_err + station->m_tx_ok) > 10;
 }
 
 void
-AmrrWifiManager::ResetCnt (AmrrWifiRemoteStation *station)
+AmrrWifiManager::ResetCnt(AmrrWifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
-  station->m_tx_ok = 0;
-  station->m_tx_err = 0;
-  station->m_tx_retr = 0;
+    NS_LOG_FUNCTION(this << station);
+    station->m_tx_ok = 0;
+    station->m_tx_err = 0;
+    station->m_tx_retr = 0;
 }
 
 void
-AmrrWifiManager::IncreaseRate (AmrrWifiRemoteStation *station)
+AmrrWifiManager::IncreaseRate(AmrrWifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
-  station->m_txrate++;
-  NS_ASSERT (station->m_txrate < GetNSupported (station));
+    NS_LOG_FUNCTION(this << station);
+    station->m_txrate++;
+    NS_ASSERT(station->m_txrate < GetNSupported(station));
 }
 
 void
-AmrrWifiManager::DecreaseRate (AmrrWifiRemoteStation *station)
+AmrrWifiManager::DecreaseRate(AmrrWifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
-  station->m_txrate--;
+    NS_LOG_FUNCTION(this << station);
+    station->m_txrate--;
 }
 
 void
-AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
+AmrrWifiManager::UpdateMode(AmrrWifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
-  if (Simulator::Now () < station->m_nextModeUpdate)
+    NS_LOG_FUNCTION(this << station);
+    if (Simulator::Now() < station->m_nextModeUpdate)
     {
-      return;
+        return;
     }
-  station->m_nextModeUpdate = Simulator::Now () + m_updatePeriod;
-  NS_LOG_DEBUG ("Update");
+    station->m_nextModeUpdate = Simulator::Now() + m_updatePeriod;
+    NS_LOG_DEBUG("Update");
 
-  bool needChange = false;
+    bool needChange = false;
 
-  if (IsSuccess (station) && IsEnough (station))
+    if (IsSuccess(station) && IsEnough(station))
     {
-      station->m_success++;
-      NS_LOG_DEBUG ("++ success=" << station->m_success << " successThreshold=" << station->m_successThreshold <<
-                    " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err << " tx_retr=" << station->m_tx_retr <<
-                    " rate=" << +station->m_txrate << " n-supported-rates=" << +GetNSupported (station));
-      if (station->m_success >= station->m_successThreshold
-          && !IsMaxRate (station))
+        station->m_success++;
+        NS_LOG_DEBUG("++ success="
+                     << station->m_success << " successThreshold=" << station->m_successThreshold
+                     << " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err
+                     << " tx_retr=" << station->m_tx_retr << " rate=" << +station->m_txrate
+                     << " n-supported-rates=" << +GetNSupported(station));
+        if (station->m_success >= station->m_successThreshold && !IsMaxRate(station))
         {
-          station->m_recovery = true;
-          station->m_success = 0;
-          IncreaseRate (station);
-          needChange = true;
+            station->m_recovery = true;
+            station->m_success = 0;
+            IncreaseRate(station);
+            needChange = true;
         }
-      else
+        else
         {
-          station->m_recovery = false;
+            station->m_recovery = false;
         }
     }
-  else if (IsFailure (station))
+    else if (IsFailure(station))
     {
-      station->m_success = 0;
-      NS_LOG_DEBUG ("-- success=" << station->m_success << " successThreshold=" << station->m_successThreshold <<
-                    " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err << " tx_retr=" << station->m_tx_retr <<
-                    " rate=" << +station->m_txrate << " n-supported-rates=" << +GetNSupported (station));
-      if (!IsMinRate (station))
+        station->m_success = 0;
+        NS_LOG_DEBUG("-- success="
+                     << station->m_success << " successThreshold=" << station->m_successThreshold
+                     << " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err
+                     << " tx_retr=" << station->m_tx_retr << " rate=" << +station->m_txrate
+                     << " n-supported-rates=" << +GetNSupported(station));
+        if (!IsMinRate(station))
         {
-          if (station->m_recovery)
+            if (station->m_recovery)
             {
-              station->m_successThreshold *= 2;
-              station->m_successThreshold = std::min (station->m_successThreshold,
-                                                      m_maxSuccessThreshold);
+                station->m_successThreshold *= 2;
+                station->m_successThreshold =
+                    std::min(station->m_successThreshold, m_maxSuccessThreshold);
             }
-          else
+            else
             {
-              station->m_successThreshold = m_minSuccessThreshold;
+                station->m_successThreshold = m_minSuccessThreshold;
             }
-          station->m_recovery = false;
-          DecreaseRate (station);
-          needChange = true;
+            station->m_recovery = false;
+            DecreaseRate(station);
+            needChange = true;
         }
-      else
+        else
         {
-          station->m_recovery = false;
+            station->m_recovery = false;
         }
     }
-  if (IsEnough (station) || needChange)
+    if (IsEnough(station) || needChange)
     {
-      NS_LOG_DEBUG ("Reset");
-      ResetCnt (station);
+        NS_LOG_DEBUG("Reset");
+        ResetCnt(station);
     }
 }
 
 WifiTxVector
-AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint16_t allowedWidth)
+AmrrWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << st << allowedWidth);
-  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
-  UpdateMode (station);
-  NS_ASSERT (station->m_txrate < GetNSupported (station));
-  uint8_t rateIndex;
-  if (station->m_retry < 1)
+    NS_LOG_FUNCTION(this << st << allowedWidth);
+    AmrrWifiRemoteStation* station = static_cast<AmrrWifiRemoteStation*>(st);
+    UpdateMode(station);
+    NS_ASSERT(station->m_txrate < GetNSupported(station));
+    uint8_t rateIndex;
+    if (station->m_retry < 1)
     {
-      rateIndex = station->m_txrate;
+        rateIndex = station->m_txrate;
     }
-  else if (station->m_retry < 2)
+    else if (station->m_retry < 2)
     {
-      if (station->m_txrate > 0)
+        if (station->m_txrate > 0)
         {
-          rateIndex = station->m_txrate - 1;
+            rateIndex = station->m_txrate - 1;
         }
-      else
+        else
         {
-          rateIndex = station->m_txrate;
-        }
-    }
-  else if (station->m_retry < 3)
-    {
-      if (station->m_txrate > 1)
-        {
-          rateIndex = station->m_txrate - 2;
-        }
-      else
-        {
-          rateIndex = station->m_txrate;
+            rateIndex = station->m_txrate;
         }
     }
-  else
+    else if (station->m_retry < 3)
     {
-      if (station->m_txrate > 2)
+        if (station->m_txrate > 1)
         {
-          rateIndex = station->m_txrate - 3;
+            rateIndex = station->m_txrate - 2;
         }
-      else
+        else
         {
-          rateIndex = station->m_txrate;
+            rateIndex = station->m_txrate;
         }
     }
-  uint16_t channelWidth = GetChannelWidth (station);
-  if (channelWidth > 20 && channelWidth != 22)
+    else
     {
-      channelWidth = 20;
+        if (station->m_txrate > 2)
+        {
+            rateIndex = station->m_txrate - 3;
+        }
+        else
+        {
+            rateIndex = station->m_txrate;
+        }
     }
-  WifiMode mode = GetSupported (station, rateIndex);
-  uint64_t rate = mode.GetDataRate (channelWidth);
-  if (m_currentRate != rate)
+    uint16_t channelWidth = GetChannelWidth(station);
+    if (channelWidth > 20 && channelWidth != 22)
     {
-      NS_LOG_DEBUG ("New datarate: " << rate);
-      m_currentRate = rate;
+        channelWidth = 20;
     }
-  return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
+    WifiMode mode = GetSupported(station, rateIndex);
+    uint64_t rate = mode.GetDataRate(channelWidth);
+    if (m_currentRate != rate)
+    {
+        NS_LOG_DEBUG("New datarate: " << rate);
+        m_currentRate = rate;
+    }
+    return WifiTxVector(
+        mode,
+        GetDefaultTxPowerLevel(),
+        GetPreambleForTransmission(mode.GetModulationClass(), GetShortPreambleEnabled()),
+        800,
+        1,
+        1,
+        0,
+        channelWidth,
+        GetAggregation(station));
 }
 
 WifiTxVector
-AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
+AmrrWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 {
-  NS_LOG_FUNCTION (this << st);
-  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
-  uint16_t channelWidth = GetChannelWidth (station);
-  if (channelWidth > 20 && channelWidth != 22)
+    NS_LOG_FUNCTION(this << st);
+    AmrrWifiRemoteStation* station = static_cast<AmrrWifiRemoteStation*>(st);
+    uint16_t channelWidth = GetChannelWidth(station);
+    if (channelWidth > 20 && channelWidth != 22)
     {
-      channelWidth = 20;
+        channelWidth = 20;
     }
-  UpdateMode (station);
-  WifiMode mode;
-  if (GetUseNonErpProtection () == false)
+    UpdateMode(station);
+    WifiMode mode;
+    if (GetUseNonErpProtection() == false)
     {
-      mode = GetSupported (station, 0);
+        mode = GetSupported(station, 0);
     }
-  else
+    else
     {
-      mode = GetNonErpSupported (station, 0);
+        mode = GetNonErpSupported(station, 0);
     }
-  return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
+    return WifiTxVector(
+        mode,
+        GetDefaultTxPowerLevel(),
+        GetPreambleForTransmission(mode.GetModulationClass(), GetShortPreambleEnabled()),
+        800,
+        1,
+        1,
+        0,
+        channelWidth,
+        GetAggregation(station));
 }
 
-} //namespace ns3
+} // namespace ns3

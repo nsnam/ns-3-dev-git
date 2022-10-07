@@ -18,8 +18,9 @@
 #ifndef BRIDGE_CHANNEL_H
 #define BRIDGE_CHANNEL_H
 
-#include "ns3/net-device.h"
 #include "ns3/channel.h"
+#include "ns3/net-device.h"
+
 #include <vector>
 
 /**
@@ -28,7 +29,8 @@
  * ns3::BridgeChannel declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup bridge
@@ -41,31 +43,31 @@ namespace ns3 {
  */
 class BridgeChannel : public Channel
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  BridgeChannel ();
-  ~BridgeChannel () override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    BridgeChannel();
+    ~BridgeChannel() override;
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  BridgeChannel (const BridgeChannel &) = delete;
-  BridgeChannel & operator = (const BridgeChannel &) = delete;
+    // Delete copy constructor and assignment operator to avoid misuse
+    BridgeChannel(const BridgeChannel&) = delete;
+    BridgeChannel& operator=(const BridgeChannel&) = delete;
 
-  /**
-   * Adds a channel to the bridged pool
-   * \param bridgedChannel  the channel to add to the pool
-   */
-  void AddChannel (Ptr<Channel> bridgedChannel);
+    /**
+     * Adds a channel to the bridged pool
+     * \param bridgedChannel  the channel to add to the pool
+     */
+    void AddChannel(Ptr<Channel> bridgedChannel);
 
-  // virtual methods implementation, from Channel
-  std::size_t GetNDevices () const override;
-  Ptr<NetDevice> GetDevice (std::size_t i) const override;
+    // virtual methods implementation, from Channel
+    std::size_t GetNDevices() const override;
+    Ptr<NetDevice> GetDevice(std::size_t i) const override;
 
-private:
-  std::vector< Ptr<Channel> > m_bridgedChannels; //!< pool of bridged channels
+  private:
+    std::vector<Ptr<Channel>> m_bridgedChannels; //!< pool of bridged channels
 };
 
 } // namespace ns3

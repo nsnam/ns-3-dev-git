@@ -22,11 +22,12 @@
 #define PRIORITY_QUEUE_SCHEDULER_H
 
 #include "scheduler.h"
-#include <functional>
+
 #include <algorithm>
+#include <functional>
+#include <queue>
 #include <stdint.h>
 #include <utility>
-#include <queue>
 
 /**
  * \file
@@ -34,7 +35,8 @@
  * Declaration of ns3::PriorityQueueScheduler class.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup scheduler
@@ -63,50 +65,47 @@ namespace ns3 {
  */
 class PriorityQueueScheduler : public Scheduler
 {
-public:
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
-
-  /** Constructor. */
-  PriorityQueueScheduler ();
-  /** Destructor. */
-  ~PriorityQueueScheduler () override;
-
-  // Inherited
-  void Insert (const Scheduler::Event &ev) override;
-  bool IsEmpty () const override;
-  Scheduler::Event PeekNext () const override;
-  Scheduler::Event RemoveNext () override;
-  void Remove (const Scheduler::Event &ev) override;
-
-private:
-
-  /**
-   * Custom priority_queue which supports remove,
-   * and returns entries in _increasing_ time order.
-   */
-  class EventPriorityQueue :
-    public std::priority_queue<Scheduler::Event,
-                               std::vector <Scheduler::Event>,
-                               std::greater<Scheduler::Event> >
-  {
   public:
-
     /**
-     * \copydoc PriorityQueueScheduler::Remove()
-     * \returns \c true if the event was found, false otherwise.
+     *  Register this type.
+     *  \return The object TypeId.
      */
-    bool remove(const Scheduler::Event &ev);
+    static TypeId GetTypeId();
 
-  };  // class EventPriorityQueue
+    /** Constructor. */
+    PriorityQueueScheduler();
+    /** Destructor. */
+    ~PriorityQueueScheduler() override;
 
-  /** The event queue. */
-  EventPriorityQueue m_queue;
+    // Inherited
+    void Insert(const Scheduler::Event& ev) override;
+    bool IsEmpty() const override;
+    Scheduler::Event PeekNext() const override;
+    Scheduler::Event RemoveNext() override;
+    void Remove(const Scheduler::Event& ev) override;
 
-};  // class PriorityQueueScheduler
+  private:
+    /**
+     * Custom priority_queue which supports remove,
+     * and returns entries in _increasing_ time order.
+     */
+    class EventPriorityQueue : public std::priority_queue<Scheduler::Event,
+                                                          std::vector<Scheduler::Event>,
+                                                          std::greater<Scheduler::Event>>
+    {
+      public:
+        /**
+         * \copydoc PriorityQueueScheduler::Remove()
+         * \returns \c true if the event was found, false otherwise.
+         */
+        bool remove(const Scheduler::Event& ev);
+
+    }; // class EventPriorityQueue
+
+    /** The event queue. */
+    EventPriorityQueue m_queue;
+
+}; // class PriorityQueueScheduler
 
 } // namespace ns3
 

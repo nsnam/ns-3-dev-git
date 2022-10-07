@@ -20,9 +20,10 @@
 
 #include "epc-s11-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-EpcS11Sap::~EpcS11Sap ()
+EpcS11Sap::~EpcS11Sap()
 {
 }
 

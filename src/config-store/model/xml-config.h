@@ -21,12 +21,14 @@
 #ifndef XML_CONFIG_STORE_H
 #define XML_CONFIG_STORE_H
 
-#include <string>
-#include <libxml/xmlwriter.h>
-#include <libxml/xmlreader.h>
 #include "file-config.h"
 
-namespace ns3 {
+#include <libxml/xmlreader.h>
+#include <libxml/xmlwriter.h>
+#include <string>
+
+namespace ns3
+{
 
 /**
  * \ingroup configstore
@@ -35,16 +37,17 @@ namespace ns3 {
  */
 class XmlConfigSave : public FileConfig
 {
-public:
-  XmlConfigSave ();
-  ~XmlConfigSave () override;
+  public:
+    XmlConfigSave();
+    ~XmlConfigSave() override;
 
-  void SetFilename (std::string filename) override;
-  void Default () override;
-  void Global () override;
-  void Attributes () override;
-private:
-  xmlTextWriterPtr m_writer; ///< XML writer
+    void SetFilename(std::string filename) override;
+    void Default() override;
+    void Global() override;
+    void Attributes() override;
+
+  private:
+    xmlTextWriterPtr m_writer; ///< XML writer
 };
 
 /**
@@ -53,16 +56,17 @@ private:
  */
 class XmlConfigLoad : public FileConfig
 {
-public:
-  XmlConfigLoad ();
-  ~XmlConfigLoad () override;
+  public:
+    XmlConfigLoad();
+    ~XmlConfigLoad() override;
 
-  void SetFilename (std::string filename) override;
-  void Default () override;
-  void Global () override;
-  void Attributes () override;
-private:
-  std::string m_filename; ///< the file name
+    void SetFilename(std::string filename) override;
+    void Default() override;
+    void Global() override;
+    void Attributes() override;
+
+  private:
+    std::string m_filename; ///< the file name
 };
 
 } // namespace ns3

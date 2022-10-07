@@ -25,8 +25,8 @@
 
 #include "ns3/propagation-loss-model.h"
 
-namespace ns3 {
-
+namespace ns3
+{
 
 /**
  * \ingroup propagation
@@ -41,52 +41,48 @@ namespace ns3 {
  */
 class ItuR1411LosPropagationLossModel : public PropagationLossModel
 {
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-public:
+    ItuR1411LosPropagationLossModel();
+    ~ItuR1411LosPropagationLossModel() override;
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    // Delete copy constructor and assignment operator to avoid misuse
+    ItuR1411LosPropagationLossModel(const ItuR1411LosPropagationLossModel&) = delete;
+    ItuR1411LosPropagationLossModel& operator=(const ItuR1411LosPropagationLossModel&) = delete;
 
-  ItuR1411LosPropagationLossModel ();
-  ~ItuR1411LosPropagationLossModel () override;
+    /**
+     * Set the operating frequency
+     *
+     * \param freq the frequency in Hz
+     */
+    void SetFrequency(double freq);
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  ItuR1411LosPropagationLossModel (const ItuR1411LosPropagationLossModel &) = delete;
-  ItuR1411LosPropagationLossModel & operator = (const ItuR1411LosPropagationLossModel &) = delete;
+    /**
+     *
+     *
+     * \param a the first mobility model
+     * \param b the second mobility model
+     *
+     * \return the loss in dBm for the propagation between
+     * the two given mobility models
+     */
+    double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
-  /**
-   * Set the operating frequency
-   *
-   * \param freq the frequency in Hz
-   */
-  void SetFrequency (double freq);
+  private:
+    double DoCalcRxPower(double txPowerDbm,
+                         Ptr<MobilityModel> a,
+                         Ptr<MobilityModel> b) const override;
 
-  /**
-   *
-   *
-   * \param a the first mobility model
-   * \param b the second mobility model
-   *
-   * \return the loss in dBm for the propagation between
-   * the two given mobility models
-   */
-  double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+    int64_t DoAssignStreams(int64_t stream) override;
 
-private:
-  double DoCalcRxPower (double txPowerDbm,
-                        Ptr<MobilityModel> a,
-                        Ptr<MobilityModel> b) const override;
-
-  int64_t DoAssignStreams (int64_t stream) override;
-
-  double m_lambda; //!< wavelength
+    double m_lambda; //!< wavelength
 };
 
 } // namespace ns3
 
-
 #endif // ITU_R_1411_LOS_PROPAGATION_LOSS_MODEL_H
-

@@ -24,124 +24,123 @@
  */
 
 #include "energy-source.h"
+
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("EnergySource");
+NS_LOG_COMPONENT_DEFINE("EnergySource");
 
-NS_OBJECT_ENSURE_REGISTERED (EnergySource);
+NS_OBJECT_ENSURE_REGISTERED(EnergySource);
 
 TypeId
-EnergySource::GetTypeId ()
+EnergySource::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::EnergySource")
-    .SetParent<Object> ()
-    .SetGroupName ("Energy")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::EnergySource").SetParent<Object>().SetGroupName("Energy");
+    return tid;
 }
 
-EnergySource::EnergySource ()
+EnergySource::EnergySource()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-EnergySource::~EnergySource ()
+EnergySource::~EnergySource()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-EnergySource::SetNode (Ptr<Node> node)
+EnergySource::SetNode(Ptr<Node> node)
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (node);
-  m_node = node;
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(node);
+    m_node = node;
 }
 
 Ptr<Node>
-EnergySource::GetNode () const
+EnergySource::GetNode() const
 {
-  return m_node;
+    return m_node;
 }
 
 void
-EnergySource::AppendDeviceEnergyModel (Ptr<DeviceEnergyModel> deviceEnergyModelPtr)
+EnergySource::AppendDeviceEnergyModel(Ptr<DeviceEnergyModel> deviceEnergyModelPtr)
 {
-  NS_LOG_FUNCTION (this << deviceEnergyModelPtr);
-  NS_ASSERT (deviceEnergyModelPtr); // model must exist
-  m_models.Add (deviceEnergyModelPtr);
+    NS_LOG_FUNCTION(this << deviceEnergyModelPtr);
+    NS_ASSERT(deviceEnergyModelPtr); // model must exist
+    m_models.Add(deviceEnergyModelPtr);
 }
 
 DeviceEnergyModelContainer
-EnergySource::FindDeviceEnergyModels (TypeId tid)
+EnergySource::FindDeviceEnergyModels(TypeId tid)
 {
-  NS_LOG_FUNCTION (this << tid);
-  DeviceEnergyModelContainer container;
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
+    NS_LOG_FUNCTION(this << tid);
+    DeviceEnergyModelContainer container;
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
     {
-      if ((*i)->GetInstanceTypeId () == tid)
+        if ((*i)->GetInstanceTypeId() == tid)
         {
-          container.Add (*i);
+            container.Add(*i);
         }
     }
-  return container;
+    return container;
 }
 
 DeviceEnergyModelContainer
-EnergySource::FindDeviceEnergyModels (std::string name)
+EnergySource::FindDeviceEnergyModels(std::string name)
 {
-  NS_LOG_FUNCTION (this << name);
-  DeviceEnergyModelContainer container;
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
+    NS_LOG_FUNCTION(this << name);
+    DeviceEnergyModelContainer container;
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
     {
-      if ((*i)->GetInstanceTypeId ().GetName () == name)
+        if ((*i)->GetInstanceTypeId().GetName() == name)
         {
-          container.Add (*i);
+            container.Add(*i);
         }
     }
-  return container;
+    return container;
 }
 
 void
-EnergySource::InitializeDeviceModels ()
+EnergySource::InitializeDeviceModels()
 {
-  NS_LOG_FUNCTION (this);
-  /*
-   * Device models are not aggregated to the node, hence we have to manually
-   * call dispose method here.
-   */
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
+    NS_LOG_FUNCTION(this);
+    /*
+     * Device models are not aggregated to the node, hence we have to manually
+     * call dispose method here.
+     */
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
     {
-      (*i)->Initialize ();
+        (*i)->Initialize();
     }
 }
 
 void
-EnergySource::DisposeDeviceModels ()
+EnergySource::DisposeDeviceModels()
 {
-  NS_LOG_FUNCTION (this);
-  /*
-   * Device models are not aggregated to the node, hence we have to manually
-   * call dispose method here.
-   */
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
+    NS_LOG_FUNCTION(this);
+    /*
+     * Device models are not aggregated to the node, hence we have to manually
+     * call dispose method here.
+     */
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
     {
-      (*i)->Dispose ();
+        (*i)->Dispose();
     }
 }
 
 void
-EnergySource::ConnectEnergyHarvester (Ptr<EnergyHarvester> energyHarvesterPtr)
+EnergySource::ConnectEnergyHarvester(Ptr<EnergyHarvester> energyHarvesterPtr)
 {
-  NS_LOG_FUNCTION (this << energyHarvesterPtr);
-  NS_ASSERT (energyHarvesterPtr); // energy harvester must exist
-  m_harvesters.push_back (energyHarvesterPtr);
+    NS_LOG_FUNCTION(this << energyHarvesterPtr);
+    NS_ASSERT(energyHarvesterPtr); // energy harvester must exist
+    m_harvesters.push_back(energyHarvesterPtr);
 }
 
 /*
@@ -149,10 +148,10 @@ EnergySource::ConnectEnergyHarvester (Ptr<EnergyHarvester> energyHarvesterPtr)
  */
 
 void
-EnergySource::DoDispose ()
+EnergySource::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  BreakDeviceEnergyModelRefCycle ();
+    NS_LOG_FUNCTION(this);
+    BreakDeviceEnergyModelRefCycle();
 }
 
 /*
@@ -160,77 +159,79 @@ EnergySource::DoDispose ()
  */
 
 double
-EnergySource::CalculateTotalCurrent ()
+EnergySource::CalculateTotalCurrent()
 {
-  NS_LOG_FUNCTION (this);
-  double totalCurrentA = 0.0;
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
+    NS_LOG_FUNCTION(this);
+    double totalCurrentA = 0.0;
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
     {
-      totalCurrentA += (*i)->GetCurrentA ();
+        totalCurrentA += (*i)->GetCurrentA();
     }
 
-  double totalHarvestedPower = 0.0;
+    double totalHarvestedPower = 0.0;
 
-  std::vector< Ptr<EnergyHarvester> >::const_iterator harvester;
-  for (harvester = m_harvesters.begin (); harvester != m_harvesters.end (); harvester++)
-  {
-    totalHarvestedPower += (*harvester)->GetPower ();
-  }
+    std::vector<Ptr<EnergyHarvester>>::const_iterator harvester;
+    for (harvester = m_harvesters.begin(); harvester != m_harvesters.end(); harvester++)
+    {
+        totalHarvestedPower += (*harvester)->GetPower();
+    }
 
-  NS_LOG_DEBUG ("EnergySource("<< GetNode ()->GetId () << "): Total harvested power = " << totalHarvestedPower);
+    NS_LOG_DEBUG("EnergySource(" << GetNode()->GetId()
+                                 << "): Total harvested power = " << totalHarvestedPower);
 
-  double currentHarvestersA = totalHarvestedPower / GetSupplyVoltage ();
-  NS_LOG_DEBUG ("EnergySource("<< GetNode ()->GetId () << "): Current from harvesters = " << currentHarvestersA);
+    double currentHarvestersA = totalHarvestedPower / GetSupplyVoltage();
+    NS_LOG_DEBUG("EnergySource(" << GetNode()->GetId()
+                                 << "): Current from harvesters = " << currentHarvestersA);
 
-  totalCurrentA -= currentHarvestersA;
+    totalCurrentA -= currentHarvestersA;
 
-  return totalCurrentA;
+    return totalCurrentA;
 }
 
 void
-EnergySource::NotifyEnergyDrained ()
+EnergySource::NotifyEnergyDrained()
 {
-  NS_LOG_FUNCTION (this);
-  // notify all device energy models installed on node
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
+    NS_LOG_FUNCTION(this);
+    // notify all device energy models installed on node
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
     {
-      (*i)->HandleEnergyDepletion ();
-    }
-}
-
-void
-EnergySource::NotifyEnergyRecharged ()
-{
-  NS_LOG_FUNCTION (this);
-  // notify all device energy models installed on node
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
-    {
-      (*i)->HandleEnergyRecharged ();
+        (*i)->HandleEnergyDepletion();
     }
 }
 
 void
-EnergySource::NotifyEnergyChanged ()
+EnergySource::NotifyEnergyRecharged()
 {
-  NS_LOG_FUNCTION (this);
-  // notify all device energy models installed on node
-  DeviceEnergyModelContainer::Iterator i;
-  for (i = m_models.Begin (); i != m_models.End (); i++)
+    NS_LOG_FUNCTION(this);
+    // notify all device energy models installed on node
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
     {
-      (*i)->HandleEnergyChanged ();
+        (*i)->HandleEnergyRecharged();
     }
 }
 
 void
-EnergySource::BreakDeviceEnergyModelRefCycle ()
+EnergySource::NotifyEnergyChanged()
 {
-  NS_LOG_FUNCTION (this);
-  m_models.Clear ();
-  m_harvesters.clear ();
-  m_node = nullptr;
+    NS_LOG_FUNCTION(this);
+    // notify all device energy models installed on node
+    DeviceEnergyModelContainer::Iterator i;
+    for (i = m_models.Begin(); i != m_models.End(); i++)
+    {
+        (*i)->HandleEnergyChanged();
+    }
+}
+
+void
+EnergySource::BreakDeviceEnergyModelRefCycle()
+{
+    NS_LOG_FUNCTION(this);
+    m_models.Clear();
+    m_harvesters.clear();
+    m_node = nullptr;
 }
 
 } // namespace ns3

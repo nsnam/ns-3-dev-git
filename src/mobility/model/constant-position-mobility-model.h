@@ -22,33 +22,35 @@
 
 #include "mobility-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup mobility
  *
- * \brief Mobility model for which the current position does not change once it has been set and until it is set again explicitly to a new value.
+ * \brief Mobility model for which the current position does not change once it has been set and
+ * until it is set again explicitly to a new value.
  */
 class ConstantPositionMobilityModel : public MobilityModel
 {
-public:
-  /**
-   * Register this type with the TypeId system.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  /**
-   * Create a position located at coordinates (0,0,0)
-   */
-  ConstantPositionMobilityModel ();
-  ~ConstantPositionMobilityModel () override;
+  public:
+    /**
+     * Register this type with the TypeId system.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    /**
+     * Create a position located at coordinates (0,0,0)
+     */
+    ConstantPositionMobilityModel();
+    ~ConstantPositionMobilityModel() override;
 
-private:
-  Vector DoGetPosition () const override;
-  void DoSetPosition (const Vector &position) override;
-  Vector DoGetVelocity () const override;
+  private:
+    Vector DoGetPosition() const override;
+    void DoSetPosition(const Vector& position) override;
+    Vector DoGetVelocity() const override;
 
-  Vector m_position; //!< the constant position
+    Vector m_position; //!< the constant position
 };
 
 } // namespace ns3

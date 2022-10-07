@@ -25,14 +25,14 @@
  * ns3::GnuplotHelper.
  */
 
-#include <string>
-
 #include "ns3/core-module.h"
 #include "ns3/stats-module.h"
 
+#include <string>
+
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("GnuplotHelperExample");
+NS_LOG_COMPONENT_DEFINE("GnuplotHelperExample");
 
 /**
  * This is our test object, an object that increments a counter according
@@ -41,107 +41,108 @@ NS_LOG_COMPONENT_DEFINE ("GnuplotHelperExample");
  */
 class Emitter : public Object
 {
-public:
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId ();
-  Emitter ();
-private:
-  void DoInitialize () override;
-  /// Counts how many time this function is called.
-  void Count ();
+  public:
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
+    Emitter();
 
-  TracedValue<uint32_t> m_counter; //!< Simple counter
-  Ptr<ExponentialRandomVariable> m_var; //!< Random number generator.
+  private:
+    void DoInitialize() override;
+    /// Counts how many time this function is called.
+    void Count();
+
+    TracedValue<uint32_t> m_counter;      //!< Simple counter
+    Ptr<ExponentialRandomVariable> m_var; //!< Random number generator.
 };
 
-NS_OBJECT_ENSURE_REGISTERED (Emitter);
+NS_OBJECT_ENSURE_REGISTERED(Emitter);
 
 TypeId
-Emitter::GetTypeId ()
+Emitter::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Emitter")
-    .SetParent<Object> ()
-    .SetGroupName ("Stats")
-    .AddConstructor<Emitter> ()
-    .AddTraceSource ("Counter",
-                     "sample counter",
-                     MakeTraceSourceAccessor (&Emitter::m_counter),
-                     "ns3::TracedValueCallback::Double")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::Emitter")
+                            .SetParent<Object>()
+                            .SetGroupName("Stats")
+                            .AddConstructor<Emitter>()
+                            .AddTraceSource("Counter",
+                                            "sample counter",
+                                            MakeTraceSourceAccessor(&Emitter::m_counter),
+                                            "ns3::TracedValueCallback::Double");
+    return tid;
 }
 
-Emitter::Emitter ()
+Emitter::Emitter()
 {
-  NS_LOG_FUNCTION (this);
-  m_counter = 0;
-  m_var = CreateObject<ExponentialRandomVariable> ();
-}
-
-void
-Emitter::DoInitialize ()
-{
-  NS_LOG_FUNCTION (this);
-  Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
+    NS_LOG_FUNCTION(this);
+    m_counter = 0;
+    m_var = CreateObject<ExponentialRandomVariable>();
 }
 
 void
-Emitter::Count ()
+Emitter::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("Counting at " << Simulator::Now ().As (Time::S));
-  m_counter += 1.0;
-  Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
+    NS_LOG_FUNCTION(this);
+    Simulator::Schedule(Seconds(m_var->GetValue()), &Emitter::Count, this);
 }
 
-int main (int argc, char *argv[])
+void
+Emitter::Count()
 {
-  CommandLine cmd (__FILE__);
-  cmd.Parse (argc, argv);
+    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG("Counting at " << Simulator::Now().As(Time::S));
+    m_counter += 1.0;
+    Simulator::Schedule(Seconds(m_var->GetValue()), &Emitter::Count, this);
+}
 
-  //
-  // This Emitter has a trace source object that will emit values at
-  // random times.
-  //
+int
+main(int argc, char* argv[])
+{
+    CommandLine cmd(__FILE__);
+    cmd.Parse(argc, argv);
 
-  Ptr<Emitter> emitter = CreateObject<Emitter> ();
-  Names::Add ("/Names/Emitter", emitter);
+    //
+    // This Emitter has a trace source object that will emit values at
+    // random times.
+    //
 
-  //
-  // This gnuplot helper will be used to produce output used to make
-  // gnuplot plots.
-  //
+    Ptr<Emitter> emitter = CreateObject<Emitter>();
+    Names::Add("/Names/Emitter", emitter);
 
-  // Create the gnuplot helper.
-  GnuplotHelper plotHelper;
+    //
+    // This gnuplot helper will be used to produce output used to make
+    // gnuplot plots.
+    //
 
-  // Configure the plot.  Arguments include file prefix, plot title,
-  // x-label, y-label, and output file type
-  plotHelper.ConfigurePlot ("gnuplot-helper-example",
-                            "Emitter Count vs. Time",
-                            "Time (Seconds)",
-                            "Emitter Count",
-                            "png");
+    // Create the gnuplot helper.
+    GnuplotHelper plotHelper;
 
-  // Create a probe.  Because the trace source we are interested in is
-  // of type uint32_t, we specify the type of probe to use by the first
-  // argument specifying its ns3 TypeId.
-  plotHelper.PlotProbe ("ns3::Uinteger32Probe",
-                        "/Names/Emitter/Counter",
-                        "Output",
-                        "Emitter Count",
-                        GnuplotAggregator::KEY_INSIDE);
+    // Configure the plot.  Arguments include file prefix, plot title,
+    // x-label, y-label, and output file type
+    plotHelper.ConfigurePlot("gnuplot-helper-example",
+                             "Emitter Count vs. Time",
+                             "Time (Seconds)",
+                             "Emitter Count",
+                             "png");
 
-  // The Emitter object is not associated with an ns-3 node, so
-  // it won't get started automatically, so we need to do this ourselves
-  Simulator::Schedule (Seconds (0.0), &Emitter::Initialize, emitter);
+    // Create a probe.  Because the trace source we are interested in is
+    // of type uint32_t, we specify the type of probe to use by the first
+    // argument specifying its ns3 TypeId.
+    plotHelper.PlotProbe("ns3::Uinteger32Probe",
+                         "/Names/Emitter/Counter",
+                         "Output",
+                         "Emitter Count",
+                         GnuplotAggregator::KEY_INSIDE);
 
-  Simulator::Stop (Seconds (100.0));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    // The Emitter object is not associated with an ns-3 node, so
+    // it won't get started automatically, so we need to do this ourselves
+    Simulator::Schedule(Seconds(0.0), &Emitter::Initialize, emitter);
 
-  return 0;
+    Simulator::Stop(Seconds(100.0));
+    Simulator::Run();
+    Simulator::Destroy();
+
+    return 0;
 }

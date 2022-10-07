@@ -31,8 +31,9 @@
  * Code changes for ns-3 from upstream are marked with `//PDB'
  */
 
-#include <climits>
 #include "cairo-wideint-private.h"
+
+#include <climits>
 
 /**
  * \file

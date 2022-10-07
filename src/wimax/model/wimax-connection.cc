@@ -20,182 +20,187 @@
  */
 
 #include "wimax-connection.h"
-#include "ns3/pointer.h"
-#include "ns3/enum.h"
-#include "ns3/uinteger.h"
+
 #include "service-flow.h"
 
-namespace ns3 {
+#include "ns3/enum.h"
+#include "ns3/pointer.h"
+#include "ns3/uinteger.h"
 
-NS_OBJECT_ENSURE_REGISTERED (WimaxConnection);
-
-TypeId WimaxConnection::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::WimaxConnection")
 
-    .SetParent<Object> ()
+NS_OBJECT_ENSURE_REGISTERED(WimaxConnection);
 
-    .SetGroupName("Wimax")
+TypeId
+WimaxConnection::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::WimaxConnection")
 
-    .AddAttribute ("Type",
-                   "Connection type",
-                   EnumValue (Cid::INITIAL_RANGING),
-                   MakeEnumAccessor (&WimaxConnection::GetType),
-                   MakeEnumChecker (Cid::BROADCAST,
-                                    "Broadcast",
-                                    Cid::INITIAL_RANGING,
-                                    "InitialRanging",
-                                    Cid::BASIC,
-                                    "Basic",
-                                    Cid::PRIMARY,
-                                    "Primary",
-                                    Cid::TRANSPORT,
-                                    "Transport",
-                                    Cid::MULTICAST,
-                                    "Multicast",
-                                    Cid::PADDING,
-                                    "Padding"))
+                            .SetParent<Object>()
 
-    .AddAttribute ("TxQueue",
-                   "Transmit queue",
-                   PointerValue (),
-                   MakePointerAccessor (&WimaxConnection::GetQueue),
-                   MakePointerChecker<WimaxMacQueue> ());
-  return tid;
+                            .SetGroupName("Wimax")
+
+                            .AddAttribute("Type",
+                                          "Connection type",
+                                          EnumValue(Cid::INITIAL_RANGING),
+                                          MakeEnumAccessor(&WimaxConnection::GetType),
+                                          MakeEnumChecker(Cid::BROADCAST,
+                                                          "Broadcast",
+                                                          Cid::INITIAL_RANGING,
+                                                          "InitialRanging",
+                                                          Cid::BASIC,
+                                                          "Basic",
+                                                          Cid::PRIMARY,
+                                                          "Primary",
+                                                          Cid::TRANSPORT,
+                                                          "Transport",
+                                                          Cid::MULTICAST,
+                                                          "Multicast",
+                                                          Cid::PADDING,
+                                                          "Padding"))
+
+                            .AddAttribute("TxQueue",
+                                          "Transmit queue",
+                                          PointerValue(),
+                                          MakePointerAccessor(&WimaxConnection::GetQueue),
+                                          MakePointerChecker<WimaxMacQueue>());
+    return tid;
 }
 
-WimaxConnection::WimaxConnection (Cid cid, enum Cid::Type type)
-  : m_cid (cid),
-    m_cidType (type),
-    m_queue (CreateObject<WimaxMacQueue> (1024)),
-    m_serviceFlow (nullptr)
+WimaxConnection::WimaxConnection(Cid cid, enum Cid::Type type)
+    : m_cid(cid),
+      m_cidType(type),
+      m_queue(CreateObject<WimaxMacQueue>(1024)),
+      m_serviceFlow(nullptr)
 {
 }
 
-WimaxConnection::~WimaxConnection ()
+WimaxConnection::~WimaxConnection()
 {
 }
 
 void
-WimaxConnection::DoDispose ()
+WimaxConnection::DoDispose()
 {
-  m_queue = nullptr;
-  // m_serviceFlow = 0;
+    m_queue = nullptr;
+    // m_serviceFlow = 0;
 }
 
 Cid
-WimaxConnection::GetCid () const
+WimaxConnection::GetCid() const
 {
-  return m_cid;
+    return m_cid;
 }
 
 enum Cid::Type
-WimaxConnection::GetType () const
+WimaxConnection::GetType() const
 {
-  return m_cidType;
+    return m_cidType;
 }
 
 Ptr<WimaxMacQueue>
-WimaxConnection::GetQueue () const
+WimaxConnection::GetQueue() const
 {
-  return m_queue;
+    return m_queue;
 }
 
 void
-WimaxConnection::SetServiceFlow (ServiceFlow *serviceFlow)
+WimaxConnection::SetServiceFlow(ServiceFlow* serviceFlow)
 {
-  m_serviceFlow = serviceFlow;
+    m_serviceFlow = serviceFlow;
 }
 
 ServiceFlow*
-WimaxConnection::GetServiceFlow () const
+WimaxConnection::GetServiceFlow() const
 {
-  return m_serviceFlow;
+    return m_serviceFlow;
 }
 
 uint8_t
-WimaxConnection::GetSchedulingType () const
+WimaxConnection::GetSchedulingType() const
 {
-  return m_serviceFlow->GetSchedulingType ();
+    return m_serviceFlow->GetSchedulingType();
 }
 
 bool
-WimaxConnection::Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType, const GenericMacHeader &hdr)
+WimaxConnection::Enqueue(Ptr<Packet> packet,
+                         const MacHeaderType& hdrType,
+                         const GenericMacHeader& hdr)
 {
-
-  return m_queue->Enqueue (packet, hdrType, hdr);
+    return m_queue->Enqueue(packet, hdrType, hdr);
 }
 
 Ptr<Packet>
-WimaxConnection::Dequeue (MacHeaderType::HeaderType packetType)
+WimaxConnection::Dequeue(MacHeaderType::HeaderType packetType)
 {
-  return m_queue->Dequeue (packetType);
+    return m_queue->Dequeue(packetType);
 }
 
 Ptr<Packet>
-WimaxConnection::Dequeue (MacHeaderType::HeaderType packetType, uint32_t availableByte)
+WimaxConnection::Dequeue(MacHeaderType::HeaderType packetType, uint32_t availableByte)
 {
-  return m_queue->Dequeue (packetType, availableByte);
+    return m_queue->Dequeue(packetType, availableByte);
 }
 
 bool
-WimaxConnection::HasPackets () const
+WimaxConnection::HasPackets() const
 {
-  return !m_queue->IsEmpty ();
+    return !m_queue->IsEmpty();
 }
 
 bool
-WimaxConnection::HasPackets (MacHeaderType::HeaderType packetType) const
+WimaxConnection::HasPackets(MacHeaderType::HeaderType packetType) const
 {
-  return !m_queue->IsEmpty (packetType);
+    return !m_queue->IsEmpty(packetType);
 }
 
 std::string
-WimaxConnection::GetTypeStr () const
+WimaxConnection::GetTypeStr() const
 {
-  switch (m_cidType)
+    switch (m_cidType)
     {
     case Cid::BROADCAST:
-      return "Broadcast";
-      break;
+        return "Broadcast";
+        break;
     case Cid::INITIAL_RANGING:
-      return "Initial Ranging";
-      break;
+        return "Initial Ranging";
+        break;
     case Cid::BASIC:
-      return "Basic";
-      break;
+        return "Basic";
+        break;
     case Cid::PRIMARY:
-      return "Primary";
-      break;
+        return "Primary";
+        break;
     case Cid::TRANSPORT:
-      return "Transport";
-      break;
+        return "Transport";
+        break;
     case Cid::MULTICAST:
-      return "Multicast";
-      break;
+        return "Multicast";
+        break;
     default:
-      NS_FATAL_ERROR ("Invalid connection type");
+        NS_FATAL_ERROR("Invalid connection type");
     }
 
-  return "";
+    return "";
 }
 
 // Defragmentation Function
-const
-WimaxConnection::FragmentsQueue WimaxConnection::GetFragmentsQueue () const
+const WimaxConnection::FragmentsQueue
+WimaxConnection::GetFragmentsQueue() const
 {
-  return m_fragmentsQueue;
+    return m_fragmentsQueue;
 }
 
 void
-WimaxConnection::FragmentEnqueue (Ptr<const Packet>  fragment)
+WimaxConnection::FragmentEnqueue(Ptr<const Packet> fragment)
 {
-  m_fragmentsQueue.push_back (fragment);
+    m_fragmentsQueue.push_back(fragment);
 }
 
 void
-WimaxConnection::ClearFragmentsQueue ()
+WimaxConnection::ClearFragmentsQueue()
 {
-  m_fragmentsQueue.clear ();
+    m_fragmentsQueue.clear();
 }
 } // namespace ns3

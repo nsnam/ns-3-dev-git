@@ -18,48 +18,51 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/simulator.h"
 #include "wifi-remote-station-info.h"
 
-namespace ns3 {
+#include "ns3/simulator.h"
 
-WifiRemoteStationInfo::WifiRemoteStationInfo ()
-  : m_memoryTime (Seconds (1.0)),
-    m_lastUpdate (Seconds (0.0)),
-    m_failAvg (0.0)
+namespace ns3
+{
+
+WifiRemoteStationInfo::WifiRemoteStationInfo()
+    : m_memoryTime(Seconds(1.0)),
+      m_lastUpdate(Seconds(0.0)),
+      m_failAvg(0.0)
 {
 }
 
-WifiRemoteStationInfo::~WifiRemoteStationInfo ()
+WifiRemoteStationInfo::~WifiRemoteStationInfo()
 {
 }
 
 double
-WifiRemoteStationInfo::CalculateAveragingCoefficient ()
+WifiRemoteStationInfo::CalculateAveragingCoefficient()
 {
-  double retval = std::exp ( ((m_lastUpdate - Now ()) / m_memoryTime).GetDouble () );
-  m_lastUpdate = Simulator::Now ();
-  return retval;
+    double retval = std::exp(((m_lastUpdate - Now()) / m_memoryTime).GetDouble());
+    m_lastUpdate = Simulator::Now();
+    return retval;
 }
 
 void
-WifiRemoteStationInfo::NotifyTxSuccess (uint32_t retryCounter)
+WifiRemoteStationInfo::NotifyTxSuccess(uint32_t retryCounter)
 {
-  double coefficient = CalculateAveragingCoefficient ();
-  m_failAvg = static_cast<double> (retryCounter) / (1 + retryCounter) * (1 - coefficient) + coefficient * m_failAvg;
+    double coefficient = CalculateAveragingCoefficient();
+    m_failAvg = static_cast<double>(retryCounter) / (1 + retryCounter) * (1 - coefficient) +
+                coefficient * m_failAvg;
 }
 
 void
-WifiRemoteStationInfo::NotifyTxFailed ()
+WifiRemoteStationInfo::NotifyTxFailed()
 {
-  double coefficient = CalculateAveragingCoefficient ();
-  m_failAvg = (1 - coefficient) + coefficient * m_failAvg;
+    double coefficient = CalculateAveragingCoefficient();
+    m_failAvg = (1 - coefficient) + coefficient * m_failAvg;
 }
 
 double
-WifiRemoteStationInfo::GetFrameErrorRate () const
+WifiRemoteStationInfo::GetFrameErrorRate() const
 {
-  return m_failAvg;
+    return m_failAvg;
 }
 
-} //namespace ns3
+} // namespace ns3

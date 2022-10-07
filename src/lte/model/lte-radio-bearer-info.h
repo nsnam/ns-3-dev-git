@@ -21,13 +21,14 @@
 #ifndef LTE_RADIO_BEARER_INFO_H
 #define LTE_RADIO_BEARER_INFO_H
 
+#include <ns3/eps-bearer.h>
+#include <ns3/ipv4-address.h>
+#include <ns3/lte-rrc-sap.h>
 #include <ns3/object.h>
 #include <ns3/pointer.h>
-#include <ns3/eps-bearer.h>
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/ipv4-address.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 class LteRlc;
 class LtePdcp;
@@ -38,20 +39,18 @@ class LtePdcp;
  */
 class LteRadioBearerInfo : public Object
 {
+  public:
+    LteRadioBearerInfo();
+    ~LteRadioBearerInfo() override;
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-public:
-  LteRadioBearerInfo ();
-  ~LteRadioBearerInfo () override;
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-
-  Ptr<LteRlc> m_rlc; ///< RLC
-  Ptr<LtePdcp> m_pdcp; ///< PDCP
+    Ptr<LteRlc> m_rlc;   ///< RLC
+    Ptr<LtePdcp> m_pdcp; ///< PDCP
 };
-
 
 /**
  * store information on active signaling radio bearer instance
@@ -59,18 +58,16 @@ public:
  */
 class LteSignalingRadioBearerInfo : public LteRadioBearerInfo
 {
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-
-  uint8_t m_srbIdentity; ///< SRB indentity
-  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config
+    uint8_t m_srbIdentity;                                  ///< SRB indentity
+    LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config
 };
-
 
 /**
  * store information on active data radio bearer instance
@@ -78,29 +75,23 @@ public:
  */
 class LteDataRadioBearerInfo : public LteRadioBearerInfo
 {
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-
-  EpsBearer m_epsBearer; ///< EPS bearer
-  uint8_t m_epsBearerIdentity; ///< EPS bearer identity
-  uint8_t m_drbIdentity; ///< DRB identity
-  LteRrcSap::RlcConfig m_rlcConfig; ///< RLC config
-  uint8_t m_logicalChannelIdentity; ///< logical channel identity
-  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config
-  uint32_t m_gtpTeid; /**< S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1 */
-  Ipv4Address m_transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
+    EpsBearer m_epsBearer;                                  ///< EPS bearer
+    uint8_t m_epsBearerIdentity;                            ///< EPS bearer identity
+    uint8_t m_drbIdentity;                                  ///< DRB identity
+    LteRrcSap::RlcConfig m_rlcConfig;                       ///< RLC config
+    uint8_t m_logicalChannelIdentity;                       ///< logical channel identity
+    LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config
+    uint32_t m_gtpTeid; /**< S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1 */
+    Ipv4Address m_transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
 };
 
-
-
-
-
 } // namespace ns3
-
 
 #endif // LTE_RADIO_BEARER_INFO_H

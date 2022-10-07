@@ -34,8 +34,9 @@
  * Other conversions to std::size_t are marked.
  */
 
-#include "log.h"
 #include "hash-murmur3.h"
+
+#include "log.h"
 
 #include <iomanip>
 
@@ -45,23 +46,26 @@
  * \brief ns3::Hash::Function::Murmur3 implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
+NS_LOG_COMPONENT_DEFINE("Hash-Murmur3");
 
-namespace Hash {
+namespace Hash
+{
 
-namespace Function {
+namespace Function
+{
 
 /** Murmur3 hash implementation details. */
-namespace Murmur3Implementation {
+namespace Murmur3Implementation
+{
 
 /**
  * \ingroup hash
  * \defgroup hash_murmur3 Murmur3 Hash Implementation
  */
 /**@{*/
-
 
 // Changes from Murmur3 distribution are marked with `//PDB'
 //
@@ -511,75 +515,69 @@ void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
 
 #undef BIG_CONSTANT
 
-
 //-----------------------------------------------------------------------------
 
+/**@}*/ // \defgroup hash_murmur3
 
-/**@}*/  // \defgroup hash_murmur3
+} // namespace Murmur3Implementation
 
-}  // namespace Murmur3Implementation
-
-
-Murmur3::Murmur3 ()
+Murmur3::Murmur3()
 {
-  clear ();
+    clear();
 }
 
 uint32_t
-Murmur3::GetHash32  (const char * buffer, const std::size_t size)
+Murmur3::GetHash32(const char* buffer, const std::size_t size)
 {
-  using namespace Murmur3Implementation;
+    using namespace Murmur3Implementation;
 
-  MurmurHash3_x86_32_incr (buffer, size,
-                           m_hash32, (void *) &m_hash32);
-  m_size32 += static_cast<uint32_t> (size);
-  uint32_t hash;
-  MurmurHash3_x86_32_fin  (m_size32, m_hash32, (void *) &hash);
+    MurmurHash3_x86_32_incr(buffer, size, m_hash32, (void*)&m_hash32);
+    m_size32 += static_cast<uint32_t>(size);
+    uint32_t hash;
+    MurmurHash3_x86_32_fin(m_size32, m_hash32, (void*)&hash);
 
-  return hash;
+    return hash;
 }
 
 uint64_t
-Murmur3::GetHash64  (const char * buffer, const std::size_t size)
+Murmur3::GetHash64(const char* buffer, const std::size_t size)
 {
-  using namespace Murmur3Implementation;
+    using namespace Murmur3Implementation;
 
-  MurmurHash3_x86_128_incr (buffer, static_cast<int> (size),
-                            (uint32_t *)(void *)m_hash64, m_hash64);
-  m_size64 += size;
+    MurmurHash3_x86_128_incr(buffer, static_cast<int>(size), (uint32_t*)(void*)m_hash64, m_hash64);
+    m_size64 += size;
 
-  // Simpler would be:
-  //
-  //   uint64_t hash[2];
-  //   MurmurHash3_x86_128_fin (m_size64, m_hash64, hash);
-  //   return hash[0];
-  //
-  // but this triggers an aliasing bug in gcc-4.4 (perhaps related to
-  // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=39390).
-  // In ns-3, this bug produces incorrect results in static optimized
-  // builds only.
-  //
-  // Using uint32_t here avoids the bug, and continues to works with newer gcc.
-  uint32_t hash[4];
+    // Simpler would be:
+    //
+    //   uint64_t hash[2];
+    //   MurmurHash3_x86_128_fin (m_size64, m_hash64, hash);
+    //   return hash[0];
+    //
+    // but this triggers an aliasing bug in gcc-4.4 (perhaps related to
+    // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=39390).
+    // In ns-3, this bug produces incorrect results in static optimized
+    // builds only.
+    //
+    // Using uint32_t here avoids the bug, and continues to works with newer gcc.
+    uint32_t hash[4];
 
-  MurmurHash3_x86_128_fin (static_cast<int> (m_size64),
-                           (uint32_t *)(void *)m_hash64, hash);
-  uint64_t result = hash[1];
-  result = (result << 32) | hash[0];
-  return result;
+    MurmurHash3_x86_128_fin(static_cast<int>(m_size64), (uint32_t*)(void*)m_hash64, hash);
+    uint64_t result = hash[1];
+    result = (result << 32) | hash[0];
+    return result;
 }
 
 void
-Murmur3::clear ()
+Murmur3::clear()
 {
-  m_hash32 = (uint32_t)SEED;
-  m_size32 = 0;
-  m_hash64[0] = m_hash64[1] = ((uint64_t)SEED << 32) | (uint32_t)SEED;
-  m_size64 = 0;
+    m_hash32 = (uint32_t)SEED;
+    m_size32 = 0;
+    m_hash64[0] = m_hash64[1] = ((uint64_t)SEED << 32) | (uint32_t)SEED;
+    m_size64 = 0;
 }
 
-}  // namespace Function
+} // namespace Function
 
-}  // namespace Hash
+} // namespace Hash
 
-}  // namespace ns3
+} // namespace ns3

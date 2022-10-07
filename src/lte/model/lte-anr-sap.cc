@@ -21,18 +21,15 @@
 
 #include "lte-anr-sap.h"
 
+namespace ns3
+{
 
-namespace ns3 {
-
-
-LteAnrSapProvider::~LteAnrSapProvider ()
+LteAnrSapProvider::~LteAnrSapProvider()
 {
 }
 
-
-LteAnrSapUser::~LteAnrSapUser ()
+LteAnrSapUser::~LteAnrSapUser()
 {
 }
-
 
 } // end of namespace ns3

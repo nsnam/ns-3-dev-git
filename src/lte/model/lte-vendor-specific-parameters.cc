@@ -18,28 +18,27 @@
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  */
 
-#include <ns3/lte-vendor-specific-parameters.h>
 #include <ns3/log.h>
+#include <ns3/lte-vendor-specific-parameters.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("LteVendorSpecificParameters");
-
-SrsCqiRntiVsp::SrsCqiRntiVsp (uint16_t rnti)
-:  m_rnti (rnti)
+namespace ns3
 {
 
+NS_LOG_COMPONENT_DEFINE("LteVendorSpecificParameters");
+
+SrsCqiRntiVsp::SrsCqiRntiVsp(uint16_t rnti)
+    : m_rnti(rnti)
+{
 }
 
-SrsCqiRntiVsp::~SrsCqiRntiVsp ()
+SrsCqiRntiVsp::~SrsCqiRntiVsp()
 {
-
 }
 
 uint16_t
-SrsCqiRntiVsp::GetRnti ()
+SrsCqiRntiVsp::GetRnti()
 {
-  return (m_rnti);
+    return (m_rnti);
 }
 
 } // namespace ns3

@@ -23,9 +23,8 @@
 #ifndef PROPAGATION_ENVIRONMENT_H
 #define PROPAGATION_ENVIRONMENT_H
 
-
-namespace ns3 {
-
+namespace ns3
+{
 
 /**
  * \ingroup propagation
@@ -34,10 +33,11 @@ namespace ns3 {
  *
  */
 enum EnvironmentType
-  {
-    UrbanEnvironment, SubUrbanEnvironment, OpenAreasEnvironment
-  };
-
+{
+    UrbanEnvironment,
+    SubUrbanEnvironment,
+    OpenAreasEnvironment
+};
 
 /**
  * \ingroup propagation
@@ -46,13 +46,12 @@ enum EnvironmentType
  *
  */
 enum CitySize
-  {
-    SmallCity, MediumCity, LargeCity
-  };
-
+{
+    SmallCity,
+    MediumCity,
+    LargeCity
+};
 
 } // namespace ns3
 
-
 #endif // PROPAGATION_ENVIRONMENT_H
-

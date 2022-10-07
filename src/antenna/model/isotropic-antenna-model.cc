@@ -18,49 +18,45 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-
-#include <ns3/log.h>
-#include <ns3/double.h>
-
-#include "antenna-model.h"
 #include "isotropic-antenna-model.h"
 
+#include "antenna-model.h"
 
+#include <ns3/double.h>
+#include <ns3/log.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("IsotropicAntennaModel");
+NS_LOG_COMPONENT_DEFINE("IsotropicAntennaModel");
 
-NS_OBJECT_ENSURE_REGISTERED (IsotropicAntennaModel);
-
+NS_OBJECT_ENSURE_REGISTERED(IsotropicAntennaModel);
 
 TypeId
-IsotropicAntennaModel::GetTypeId ()
+IsotropicAntennaModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::IsotropicAntennaModel")
-    .SetParent<AntennaModel> ()
-    .SetGroupName("Antenna")
-    .AddConstructor<IsotropicAntennaModel> ()
-    .AddAttribute ("Gain",
-                   "The gain of the antenna in dB",
-                   DoubleValue (0),
-                   MakeDoubleAccessor (&IsotropicAntennaModel::m_gainDb),
-                   MakeDoubleChecker<double> ())
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::IsotropicAntennaModel")
+                            .SetParent<AntennaModel>()
+                            .SetGroupName("Antenna")
+                            .AddConstructor<IsotropicAntennaModel>()
+                            .AddAttribute("Gain",
+                                          "The gain of the antenna in dB",
+                                          DoubleValue(0),
+                                          MakeDoubleAccessor(&IsotropicAntennaModel::m_gainDb),
+                                          MakeDoubleChecker<double>());
+    return tid;
 }
 
-IsotropicAntennaModel::IsotropicAntennaModel ()
+IsotropicAntennaModel::IsotropicAntennaModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 double
-IsotropicAntennaModel::GetGainDb (Angles a)
+IsotropicAntennaModel::GetGainDb(Angles a)
 {
-  NS_LOG_FUNCTION (this << a);
-  return m_gainDb;
+    NS_LOG_FUNCTION(this << a);
+    return m_gainDb;
 }
 
-}
-
+} // namespace ns3

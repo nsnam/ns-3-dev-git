@@ -28,13 +28,14 @@
 #ifndef LTE_ANR_H
 #define LTE_ANR_H
 
-#include <ns3/object.h>
-#include <ns3/lte-rrc-sap.h>
 #include <ns3/lte-anr-sap.h>
+#include <ns3/lte-rrc-sap.h>
+#include <ns3/object.h>
+
 #include <map>
 
-namespace ns3 {
-
+namespace ns3
+{
 
 class LteAnrSapProvider;
 class LteAnrSapUser;
@@ -79,164 +80,161 @@ class LteNeighbourRelation;
  */
 class LteAnr : public Object
 {
-public:
-  /**
-   * \brief Creates an ANR instance.
-   * \param servingCellId the cell ID of the eNodeB instance whom this ANR
-   *                      instance is to be associated with
-   */
-  LteAnr (uint16_t servingCellId);
-  ~LteAnr () override;
+  public:
+    /**
+     * \brief Creates an ANR instance.
+     * \param servingCellId the cell ID of the eNodeB instance whom this ANR
+     *                      instance is to be associated with
+     */
+    LteAnr(uint16_t servingCellId);
+    ~LteAnr() override;
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Provide an advance information about a related neighbouring cell
-   *        and add it as a new Neighbour Relation entry.
-   * \param cellId the cell ID of the new neighbour
-   *
-   * This function simulates the Neighbour Relation addition operation by
-   * network operations and maintenance, as depicted in Section 22.3.2a of
-   * 3GPP TS 36.300.
-   *
-   * An entry added by this function will have the NoRemove flag set to TRUE and
-   * the NoHo flag set to TRUE. Hence, the cell may not act as the target cell
-   * of a handover, unless a measurement report of the cell is received, which
-   * will update the NoHo flag to FALSE.
-   */
-  void AddNeighbourRelation (uint16_t cellId);
+    /**
+     * \brief Provide an advance information about a related neighbouring cell
+     *        and add it as a new Neighbour Relation entry.
+     * \param cellId the cell ID of the new neighbour
+     *
+     * This function simulates the Neighbour Relation addition operation by
+     * network operations and maintenance, as depicted in Section 22.3.2a of
+     * 3GPP TS 36.300.
+     *
+     * An entry added by this function will have the NoRemove flag set to TRUE and
+     * the NoHo flag set to TRUE. Hence, the cell may not act as the target cell
+     * of a handover, unless a measurement report of the cell is received, which
+     * will update the NoHo flag to FALSE.
+     */
+    void AddNeighbourRelation(uint16_t cellId);
 
-  /**
-   * \brief Remove an existing Neighbour Relation entry.
-   * \param cellId the cell ID to be removed from the NRT
-   *
-   * This function simulates the Neighbour Relation removal operation by
-   * network operations and maintenance, as depicted in Section 22.3.2a of
-   * 3GPP TS 36.300.
-   */
-  void RemoveNeighbourRelation (uint16_t cellId);
+    /**
+     * \brief Remove an existing Neighbour Relation entry.
+     * \param cellId the cell ID to be removed from the NRT
+     *
+     * This function simulates the Neighbour Relation removal operation by
+     * network operations and maintenance, as depicted in Section 22.3.2a of
+     * 3GPP TS 36.300.
+     */
+    void RemoveNeighbourRelation(uint16_t cellId);
 
-  /**
-   * \brief Set the "user" part of the ANR SAP interface that this ANR instance
-   *        will interact with.
-   * \param s a reference to the "user" part of the interface, typically a
-   *          member of an LteEnbRrc instance
-   */
-  virtual void SetLteAnrSapUser (LteAnrSapUser* s);
+    /**
+     * \brief Set the "user" part of the ANR SAP interface that this ANR instance
+     *        will interact with.
+     * \param s a reference to the "user" part of the interface, typically a
+     *          member of an LteEnbRrc instance
+     */
+    virtual void SetLteAnrSapUser(LteAnrSapUser* s);
 
-  /**
-   * \brief Export the "provider" part of the ANR SAP interface.
-   * \return the reference to the "provider" part of the interface, typically to
-   *         be kept by an LteEnbRrc instance
-   */
-  virtual LteAnrSapProvider* GetLteAnrSapProvider ();
+    /**
+     * \brief Export the "provider" part of the ANR SAP interface.
+     * \return the reference to the "provider" part of the interface, typically to
+     *         be kept by an LteEnbRrc instance
+     */
+    virtual LteAnrSapProvider* GetLteAnrSapProvider();
 
-  /// let the forwarder class access the protected and private members
-  friend class MemberLteAnrSapProvider<LteAnr>;
+    /// let the forwarder class access the protected and private members
+    friend class MemberLteAnrSapProvider<LteAnr>;
 
-protected:
-  // inherited from Object
-  void DoInitialize () override;
-  void DoDispose () override;
+  protected:
+    // inherited from Object
+    void DoInitialize() override;
+    void DoDispose() override;
 
-private:
+  private:
+    // ANR SAP PROVIDER IMPLEMENTATION
 
-  // ANR SAP PROVIDER IMPLEMENTATION
+    /**
+     * \brief Implementation of LteAnrSapProvider::ReportUeMeas.
+     * \param measResults a single report of one measurement identity
+     */
+    void DoReportUeMeas(LteRrcSap::MeasResults measResults);
 
-  /**
-   * \brief Implementation of LteAnrSapProvider::ReportUeMeas.
-   * \param measResults a single report of one measurement identity
-   */
-  void DoReportUeMeas (LteRrcSap::MeasResults measResults);
+    /**
+     * \brief Implementation of LteAnrSapProvider::AddNeighbourRelation.
+     * \param cellId the Physical Cell ID of the new neighbouring cell
+     */
+    void DoAddNeighbourRelation(uint16_t cellId);
 
-  /**
-   * \brief Implementation of LteAnrSapProvider::AddNeighbourRelation.
-   * \param cellId the Physical Cell ID of the new neighbouring cell
-   */
-  void DoAddNeighbourRelation (uint16_t cellId);
+    /**
+     * \brief Implementation of LteAnrSapProvider::GetNoRemove.
+     * \param cellId the Physical Cell ID of the neighbouring cell of interest
+     * \return if true, the Neighbour Relation shall *not* be removed from the NRT
+     */
+    bool DoGetNoRemove(uint16_t cellId) const;
 
-  /**
-   * \brief Implementation of LteAnrSapProvider::GetNoRemove.
-   * \param cellId the Physical Cell ID of the neighbouring cell of interest
-   * \return if true, the Neighbour Relation shall *not* be removed from the NRT
-   */
-  bool DoGetNoRemove (uint16_t cellId) const;
+    /**
+     * \brief Implementation of LteAnrSapProvider::GetNoHo.
+     * \param cellId the Physical Cell ID of the neighbouring cell of interest
+     * \return if true, the Neighbour Relation shall *not* be used by the eNodeB
+     *         for handover reasons
+     */
+    bool DoGetNoHo(uint16_t cellId) const;
 
-  /**
-   * \brief Implementation of LteAnrSapProvider::GetNoHo.
-   * \param cellId the Physical Cell ID of the neighbouring cell of interest
-   * \return if true, the Neighbour Relation shall *not* be used by the eNodeB
-   *         for handover reasons
-   */
-  bool DoGetNoHo (uint16_t cellId) const;
+    /**
+     * \brief Implementation of LteAnrSapProvider::GetNoX2.
+     * \param cellId the Physical Cell ID of the neighbouring cell of interest
+     * \return if true, the Neighbour Relation shall *not* use an X2 interface in
+     *         order to initiate procedures towards the eNodeB parenting the
+     *         target cell
+     */
+    bool DoGetNoX2(uint16_t cellId) const;
 
-  /**
-   * \brief Implementation of LteAnrSapProvider::GetNoX2.
-   * \param cellId the Physical Cell ID of the neighbouring cell of interest
-   * \return if true, the Neighbour Relation shall *not* use an X2 interface in
-   *         order to initiate procedures towards the eNodeB parenting the
-   *         target cell
-   */
-  bool DoGetNoX2 (uint16_t cellId) const;
+    // ANR SAP
 
-  // ANR SAP
+    /**
+     * \brief Reference to the "provider" part of the ANR SAP interface, which is
+     *        automatically created when this class instantiates.
+     */
+    LteAnrSapProvider* m_anrSapProvider;
 
-  /**
-   * \brief Reference to the "provider" part of the ANR SAP interface, which is
-   *        automatically created when this class instantiates.
-   */
-  LteAnrSapProvider* m_anrSapProvider;
+    /**
+     * \brief Reference to the "user" part of the ANR SAP interface, which is
+     *        provided by the eNodeB RRC instance.
+     */
+    LteAnrSapUser* m_anrSapUser;
 
-  /**
-   * \brief Reference to the "user" part of the ANR SAP interface, which is
-   *        provided by the eNodeB RRC instance.
-   */
-  LteAnrSapUser* m_anrSapUser;
+    // ATTRIBUTE
 
-  // ATTRIBUTE
+    /// The attribute Threshold.
+    uint8_t m_threshold;
 
-  /// The attribute Threshold.
-  uint8_t m_threshold;
+    /**
+     * \brief Neighbour Relation between two eNodeBs (serving eNodeB and neighbour
+     *        eNodeB).
+     */
+    struct NeighbourRelation_t
+    {
+        bool noRemove;            ///< no remove
+        bool noHo;                ///< no HO
+        bool noX2;                ///< no X2
+        bool detectedAsNeighbour; ///< detected as neighbor
+    };
 
-  /**
-   * \brief Neighbour Relation between two eNodeBs (serving eNodeB and neighbour
-   *        eNodeB).
-   */
-  struct NeighbourRelation_t
-  {
-    bool noRemove; ///< no remove
-    bool noHo; ///< no HO
-    bool noX2; ///< no X2
-    bool detectedAsNeighbour; ///< detected as neighbor
-  };
+    /// cellId
+    typedef std::map<uint16_t, NeighbourRelation_t> NeighbourRelationTable_t;
 
-  /// cellId
-  typedef std::map<uint16_t, NeighbourRelation_t> NeighbourRelationTable_t;
+    /// neighbor relation table
+    NeighbourRelationTable_t m_neighbourRelationTable;
 
-  /// neighbor relation table
-  NeighbourRelationTable_t m_neighbourRelationTable;
+    /**
+     * \internal methods
+     * \param cellId
+     * \returns the neighbor relation
+     */
+    const NeighbourRelation_t* Find(uint16_t cellId) const;
 
-  /**
-   * \internal methods
-   * \param cellId
-   * \returns the neighbor relation
-   */
-  const NeighbourRelation_t* Find (uint16_t cellId) const;
+    /// The expected measurement identity
+    uint8_t m_measId;
 
-  /// The expected measurement identity
-  uint8_t m_measId;
-
-  /// Serving cell ID
-  uint16_t m_servingCellId;
+    /// Serving cell ID
+    uint16_t m_servingCellId;
 
 }; // end of class LteAnr
 
-
 } // end of namespace ns3
-
 
 #endif /* LTE_ANR_H */

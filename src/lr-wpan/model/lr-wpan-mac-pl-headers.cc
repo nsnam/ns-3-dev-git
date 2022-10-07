@@ -19,371 +19,368 @@
  */
 
 #include "lr-wpan-mac-pl-headers.h"
-#include <ns3/simulator.h>
-#include <ns3/address-utils.h>
 
-namespace ns3 {
+#include <ns3/address-utils.h>
+#include <ns3/simulator.h>
+
+namespace ns3
+{
 
 /***********************************************************
  *                Beacon MAC Payload
  ***********************************************************/
 
-BeaconPayloadHeader::BeaconPayloadHeader ()
-{}
+BeaconPayloadHeader::BeaconPayloadHeader()
+{
+}
 
-NS_OBJECT_ENSURE_REGISTERED (BeaconPayloadHeader);
+NS_OBJECT_ENSURE_REGISTERED(BeaconPayloadHeader);
 
 TypeId
-BeaconPayloadHeader::GetTypeId ()
+BeaconPayloadHeader::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::BeaconPayloadHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("LrWpan")
-    .AddConstructor<BeaconPayloadHeader> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::BeaconPayloadHeader")
+                            .SetParent<Header>()
+                            .SetGroupName("LrWpan")
+                            .AddConstructor<BeaconPayloadHeader>();
+    return tid;
 }
 
 TypeId
-BeaconPayloadHeader::GetInstanceTypeId () const
+BeaconPayloadHeader::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
 uint32_t
-BeaconPayloadHeader::GetSerializedSize () const
+BeaconPayloadHeader::GetSerializedSize() const
 {
-  uint32_t size = 0;
-  size += m_superframeField.GetSerializedSize ();
-  size += m_gtsFields.GetSerializedSize ();
-  size += m_pndAddrFields.GetSerializedSize ();
+    uint32_t size = 0;
+    size += m_superframeField.GetSerializedSize();
+    size += m_gtsFields.GetSerializedSize();
+    size += m_pndAddrFields.GetSerializedSize();
 
-  return size;
+    return size;
 }
 
 void
-BeaconPayloadHeader::Serialize (Buffer::Iterator start) const
+BeaconPayloadHeader::Serialize(Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
-  i = m_superframeField.Serialize (i);
-  i = m_gtsFields.Serialize (i);
-  i = m_pndAddrFields.Serialize (i);
+    Buffer::Iterator i = start;
+    i = m_superframeField.Serialize(i);
+    i = m_gtsFields.Serialize(i);
+    i = m_pndAddrFields.Serialize(i);
 }
 
 uint32_t
-BeaconPayloadHeader::Deserialize (Buffer::Iterator start)
+BeaconPayloadHeader::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  i = m_superframeField.Deserialize (i);
-  i = m_gtsFields.Deserialize (i);
-  i = m_pndAddrFields.Deserialize (i);
+    Buffer::Iterator i = start;
+    i = m_superframeField.Deserialize(i);
+    i = m_gtsFields.Deserialize(i);
+    i = m_pndAddrFields.Deserialize(i);
 
-  return i.GetDistanceFrom (start);
-}
-
-
-void
-BeaconPayloadHeader::Print (std::ostream &os) const
-{
-  os << "| Superframe Spec Field | = " << m_superframeField
-     << "| GTS Spec Field | = " << m_gtsFields.GetGtsSpecField ()
-     << "| Pending Spec Field| =" << m_pndAddrFields.GetPndAddrSpecField ();
-}
-
-
-void
-BeaconPayloadHeader::SetSuperframeSpecField (SuperframeField sf)
-{
-  m_superframeField = sf;
+    return i.GetDistanceFrom(start);
 }
 
 void
-BeaconPayloadHeader::SetGtsFields (GtsFields gtsFields)
+BeaconPayloadHeader::Print(std::ostream& os) const
 {
-  m_gtsFields = gtsFields;
+    os << "| Superframe Spec Field | = " << m_superframeField
+       << "| GTS Spec Field | = " << m_gtsFields.GetGtsSpecField()
+       << "| Pending Spec Field| =" << m_pndAddrFields.GetPndAddrSpecField();
 }
 
 void
-BeaconPayloadHeader::SetPndAddrFields (PendingAddrFields pndAddrFields)
+BeaconPayloadHeader::SetSuperframeSpecField(SuperframeField sf)
 {
-  m_pndAddrFields = pndAddrFields;
+    m_superframeField = sf;
+}
+
+void
+BeaconPayloadHeader::SetGtsFields(GtsFields gtsFields)
+{
+    m_gtsFields = gtsFields;
+}
+
+void
+BeaconPayloadHeader::SetPndAddrFields(PendingAddrFields pndAddrFields)
+{
+    m_pndAddrFields = pndAddrFields;
 }
 
 SuperframeField
-BeaconPayloadHeader::GetSuperframeSpecField () const
+BeaconPayloadHeader::GetSuperframeSpecField() const
 {
-  return m_superframeField;
+    return m_superframeField;
 }
 
 GtsFields
-BeaconPayloadHeader::GetGtsFields () const
+BeaconPayloadHeader::GetGtsFields() const
 {
-  return m_gtsFields;
+    return m_gtsFields;
 }
 
 PendingAddrFields
-BeaconPayloadHeader::GetPndAddrFields () const
+BeaconPayloadHeader::GetPndAddrFields() const
 {
-  return m_pndAddrFields;
+    return m_pndAddrFields;
 }
-
 
 /***********************************************************
  *                Command MAC Payload
  ***********************************************************/
 
-CommandPayloadHeader::CommandPayloadHeader ()
+CommandPayloadHeader::CommandPayloadHeader()
 {
-  SetCommandFrameType (CMD_RESERVED);
+    SetCommandFrameType(CMD_RESERVED);
 }
 
-CommandPayloadHeader::CommandPayloadHeader (enum MacCommand macCmd)
+CommandPayloadHeader::CommandPayloadHeader(enum MacCommand macCmd)
 {
-  SetCommandFrameType (macCmd);
+    SetCommandFrameType(macCmd);
 }
 
-NS_OBJECT_ENSURE_REGISTERED (CommandPayloadHeader);
+NS_OBJECT_ENSURE_REGISTERED(CommandPayloadHeader);
 
 TypeId
-CommandPayloadHeader::GetTypeId ()
+CommandPayloadHeader::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::CommandPayloadHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("LrWpan")
-    .AddConstructor<CommandPayloadHeader> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::CommandPayloadHeader")
+                            .SetParent<Header>()
+                            .SetGroupName("LrWpan")
+                            .AddConstructor<CommandPayloadHeader>();
+    return tid;
 }
 
 TypeId
-CommandPayloadHeader::GetInstanceTypeId () const
+CommandPayloadHeader::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
 uint32_t
-CommandPayloadHeader::GetSerializedSize () const
+CommandPayloadHeader::GetSerializedSize() const
 {
-  uint32_t size = 1;
-  // TODO: add missing serialize commands size when other commands are added.
-  switch (m_cmdFrameId)
+    uint32_t size = 1;
+    // TODO: add missing serialize commands size when other commands are added.
+    switch (m_cmdFrameId)
     {
-      case ASSOCIATION_REQ:
-        size += m_capabilityInfo.GetSerializedSize ();
+    case ASSOCIATION_REQ:
+        size += m_capabilityInfo.GetSerializedSize();
         break;
-      case ASSOCIATION_RESP:
+    case ASSOCIATION_RESP:
         size += 3; // (short address + Association Status)
         break;
-      case DISASSOCIATION_NOTIF:
+    case DISASSOCIATION_NOTIF:
         break;
-      case DATA_REQ:
+    case DATA_REQ:
         break;
-      case PANID_CONFLICT:
+    case PANID_CONFLICT:
         break;
-      case ORPHAN_NOTIF:
+    case ORPHAN_NOTIF:
         break;
-      case BEACON_REQ:
+    case BEACON_REQ:
         break;
-      case COOR_REALIGN:
+    case COOR_REALIGN:
         break;
-      case GTS_REQ:
+    case GTS_REQ:
         break;
-      case CMD_RESERVED:
+    case CMD_RESERVED:
         break;
     }
-  return size;
+    return size;
 }
 
 void
-CommandPayloadHeader::Serialize (Buffer::Iterator start) const
+CommandPayloadHeader::Serialize(Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
-  i.WriteU8 (m_cmdFrameId);
-  // TODO: add missing serialize commands when other commands are added.
-  switch (m_cmdFrameId)
+    Buffer::Iterator i = start;
+    i.WriteU8(m_cmdFrameId);
+    // TODO: add missing serialize commands when other commands are added.
+    switch (m_cmdFrameId)
     {
-      case ASSOCIATION_REQ:
-        i = m_capabilityInfo.Serialize (i);
+    case ASSOCIATION_REQ:
+        i = m_capabilityInfo.Serialize(i);
         break;
-      case ASSOCIATION_RESP:
-        WriteTo (i,m_shortAddr);
-        i.WriteU8 (m_assocStatus);
+    case ASSOCIATION_RESP:
+        WriteTo(i, m_shortAddr);
+        i.WriteU8(m_assocStatus);
         break;
-      case DISASSOCIATION_NOTIF:
+    case DISASSOCIATION_NOTIF:
         break;
-      case DATA_REQ:
+    case DATA_REQ:
         break;
-      case PANID_CONFLICT:
+    case PANID_CONFLICT:
         break;
-      case ORPHAN_NOTIF:
+    case ORPHAN_NOTIF:
         break;
-      case BEACON_REQ:
+    case BEACON_REQ:
         break;
-      case COOR_REALIGN:
+    case COOR_REALIGN:
         break;
-      case GTS_REQ:
+    case GTS_REQ:
         break;
-      case CMD_RESERVED:
+    case CMD_RESERVED:
         break;
     }
 }
 
 uint32_t
-CommandPayloadHeader::Deserialize (Buffer::Iterator start)
+CommandPayloadHeader::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  m_cmdFrameId = static_cast <MacCommand> (i.ReadU8 ());
-  // TODO: add missing deserialize commands when other commands are added.
-  switch (m_cmdFrameId)
+    Buffer::Iterator i = start;
+    m_cmdFrameId = static_cast<MacCommand>(i.ReadU8());
+    // TODO: add missing deserialize commands when other commands are added.
+    switch (m_cmdFrameId)
     {
-      case ASSOCIATION_REQ:
-        i = m_capabilityInfo.Deserialize (i);
+    case ASSOCIATION_REQ:
+        i = m_capabilityInfo.Deserialize(i);
         break;
-      case ASSOCIATION_RESP:
-        ReadFrom (i, m_shortAddr);
-        m_assocStatus = static_cast <AssocStatus> (i.ReadU8 ());
+    case ASSOCIATION_RESP:
+        ReadFrom(i, m_shortAddr);
+        m_assocStatus = static_cast<AssocStatus>(i.ReadU8());
         break;
-      case DISASSOCIATION_NOTIF:
+    case DISASSOCIATION_NOTIF:
         break;
-      case DATA_REQ:
+    case DATA_REQ:
         break;
-      case PANID_CONFLICT:
+    case PANID_CONFLICT:
         break;
-      case ORPHAN_NOTIF:
+    case ORPHAN_NOTIF:
         break;
-      case BEACON_REQ:
+    case BEACON_REQ:
         break;
-      case COOR_REALIGN:
+    case COOR_REALIGN:
         break;
-      case GTS_REQ:
+    case GTS_REQ:
         break;
-      case CMD_RESERVED:
+    case CMD_RESERVED:
         break;
     }
 
-  return i.GetDistanceFrom (start);
+    return i.GetDistanceFrom(start);
 }
 
 void
-CommandPayloadHeader::Print (std::ostream &os) const
+CommandPayloadHeader::Print(std::ostream& os) const
 {
-  os << "| MAC Command Frame ID | = " << (uint32_t) m_cmdFrameId;
-  switch (m_cmdFrameId)
+    os << "| MAC Command Frame ID | = " << (uint32_t)m_cmdFrameId;
+    switch (m_cmdFrameId)
     {
-      case ASSOCIATION_REQ:
-        os << "| Device Type FFD | = " << m_capabilityInfo.IsDeviceTypeFfd ()
-           << "| Alternative Power Source available | = " << m_capabilityInfo.IsPowSrcAvailable ()
-           << "| Receiver on when Idle | = " << m_capabilityInfo.IsReceiverOnWhenIdle ()
-           << "| Security capable | = " << m_capabilityInfo.IsSecurityCapability ()
-           << "| Allocate address on | = " << m_capabilityInfo.IsShortAddrAllocOn ();
+    case ASSOCIATION_REQ:
+        os << "| Device Type FFD | = " << m_capabilityInfo.IsDeviceTypeFfd()
+           << "| Alternative Power Source available | = " << m_capabilityInfo.IsPowSrcAvailable()
+           << "| Receiver on when Idle | = " << m_capabilityInfo.IsReceiverOnWhenIdle()
+           << "| Security capable | = " << m_capabilityInfo.IsSecurityCapability()
+           << "| Allocate address on | = " << m_capabilityInfo.IsShortAddrAllocOn();
         break;
-      case ASSOCIATION_RESP:
+    case ASSOCIATION_RESP:
         os << "| Assigned Short Address | = " << m_shortAddr
            << "| Status Response | = " << m_assocStatus;
         break;
-      case DISASSOCIATION_NOTIF:
+    case DISASSOCIATION_NOTIF:
         break;
-      case DATA_REQ:
+    case DATA_REQ:
         break;
-      case PANID_CONFLICT:
+    case PANID_CONFLICT:
         break;
-      case ORPHAN_NOTIF:
+    case ORPHAN_NOTIF:
         break;
-      case BEACON_REQ:
+    case BEACON_REQ:
         break;
-      case COOR_REALIGN:
+    case COOR_REALIGN:
         break;
-      case GTS_REQ:
+    case GTS_REQ:
         break;
-      case CMD_RESERVED:
+    case CMD_RESERVED:
         break;
     }
 }
 
 void
-CommandPayloadHeader::SetCommandFrameType (MacCommand macCommand)
+CommandPayloadHeader::SetCommandFrameType(MacCommand macCommand)
 {
-  m_cmdFrameId = macCommand;
+    m_cmdFrameId = macCommand;
 }
 
 void
-CommandPayloadHeader::SetCapabilityField (CapabilityField  cap)
+CommandPayloadHeader::SetCapabilityField(CapabilityField cap)
 {
-  NS_ASSERT (m_cmdFrameId == ASSOCIATION_REQ);
-  m_capabilityInfo = cap;
+    NS_ASSERT(m_cmdFrameId == ASSOCIATION_REQ);
+    m_capabilityInfo = cap;
 }
 
 CommandPayloadHeader::MacCommand
-CommandPayloadHeader::GetCommandFrameType () const
+CommandPayloadHeader::GetCommandFrameType() const
 {
-  switch (m_cmdFrameId)
+    switch (m_cmdFrameId)
     {
-      case 0x01:
+    case 0x01:
         return ASSOCIATION_REQ;
         break;
-      case 0x02:
+    case 0x02:
         return ASSOCIATION_RESP;
         break;
-      case 0x03:
+    case 0x03:
         return DISASSOCIATION_NOTIF;
         break;
-      case 0x04:
+    case 0x04:
         return DATA_REQ;
         break;
-      case 0x05:
+    case 0x05:
         return PANID_CONFLICT;
         break;
-      case 0x06:
+    case 0x06:
         return ORPHAN_NOTIF;
         break;
-      case 0x07:
+    case 0x07:
         return BEACON_REQ;
         break;
-      case 0x08:
+    case 0x08:
         return COOR_REALIGN;
         break;
-      case 0x09:
+    case 0x09:
         return GTS_REQ;
         break;
-      default:
+    default:
         return CMD_RESERVED;
     }
 }
 
 void
-CommandPayloadHeader::SetShortAddr (Mac16Address shortAddr)
+CommandPayloadHeader::SetShortAddr(Mac16Address shortAddr)
 {
-  NS_ASSERT (m_cmdFrameId == ASSOCIATION_RESP);
-  m_shortAddr = shortAddr;
+    NS_ASSERT(m_cmdFrameId == ASSOCIATION_RESP);
+    m_shortAddr = shortAddr;
 }
 
 void
-CommandPayloadHeader::SetAssociationStatus (AssocStatus  status)
+CommandPayloadHeader::SetAssociationStatus(AssocStatus status)
 {
-  NS_ASSERT (m_cmdFrameId == ASSOCIATION_RESP);
-  m_assocStatus = status;
+    NS_ASSERT(m_cmdFrameId == ASSOCIATION_RESP);
+    m_assocStatus = status;
 }
 
 Mac16Address
-CommandPayloadHeader::GetShortAddr () const
+CommandPayloadHeader::GetShortAddr() const
 {
-  NS_ASSERT (m_cmdFrameId == ASSOCIATION_RESP);
-  return m_shortAddr;
+    NS_ASSERT(m_cmdFrameId == ASSOCIATION_RESP);
+    return m_shortAddr;
 }
 
 CommandPayloadHeader::AssocStatus
-CommandPayloadHeader::GetAssociationStatus () const
+CommandPayloadHeader::GetAssociationStatus() const
 {
-  NS_ASSERT (m_cmdFrameId == ASSOCIATION_RESP);
-  return m_assocStatus;
+    NS_ASSERT(m_cmdFrameId == ASSOCIATION_RESP);
+    return m_assocStatus;
 }
 
 CapabilityField
-CommandPayloadHeader::GetCapabilityField () const
+CommandPayloadHeader::GetCapabilityField() const
 {
-  NS_ASSERT (m_cmdFrameId == ASSOCIATION_REQ);
-  return m_capabilityInfo;
+    NS_ASSERT(m_cmdFrameId == ASSOCIATION_REQ);
+    return m_capabilityInfo;
 }
 
-
-} // ns3 namespace
+} // namespace ns3

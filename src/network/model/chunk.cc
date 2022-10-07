@@ -20,26 +20,24 @@
 
 #include "chunk.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (Chunk);
+NS_OBJECT_ENSURE_REGISTERED(Chunk);
 
 TypeId
-Chunk::GetTypeId ()
+Chunk::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Chunk")
-    .SetParent<ObjectBase> ()
-    .SetGroupName("Network")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::Chunk").SetParent<ObjectBase>().SetGroupName("Network");
+    return tid;
 }
 
 // This default implementation is provided for backward compatibility
 // reasons.  Subclasses should implement this method themselves.
 uint32_t
-Chunk::Deserialize (Buffer::Iterator start, Buffer::Iterator end)
+Chunk::Deserialize(Buffer::Iterator start, Buffer::Iterator end)
 {
-  return Deserialize (start);
+    return Deserialize(start);
 }
 
 } // namespace ns3

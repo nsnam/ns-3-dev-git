@@ -19,51 +19,52 @@
  */
 
 #include "ns3/mesh-wifi-beacon.h"
+
 #include "ns3/nstime.h"
 #include "ns3/wifi-mac-header.h"
 
-namespace ns3 {
-
-MeshWifiBeacon::MeshWifiBeacon (Ssid ssid, SupportedRates rates, uint64_t us)
+namespace ns3
 {
-  m_header.SetSsid (ssid);
-  m_header.SetSupportedRates (rates);
-  m_header.SetBeaconIntervalUs (us);
+
+MeshWifiBeacon::MeshWifiBeacon(Ssid ssid, SupportedRates rates, uint64_t us)
+{
+    m_header.SetSsid(ssid);
+    m_header.SetSupportedRates(rates);
+    m_header.SetBeaconIntervalUs(us);
 }
 
 void
-MeshWifiBeacon::AddInformationElement (Ptr<WifiInformationElement> ie)
+MeshWifiBeacon::AddInformationElement(Ptr<WifiInformationElement> ie)
 {
-  m_elements.AddInformationElement (ie);
+    m_elements.AddInformationElement(ie);
 }
 
 Time
-MeshWifiBeacon::GetBeaconInterval () const
+MeshWifiBeacon::GetBeaconInterval() const
 {
-  return MicroSeconds (m_header.GetBeaconIntervalUs ());
+    return MicroSeconds(m_header.GetBeaconIntervalUs());
 }
 
 Ptr<Packet>
-MeshWifiBeacon::CreatePacket ()
+MeshWifiBeacon::CreatePacket()
 {
-  Ptr<Packet> packet = Create <Packet> ();
-  packet->AddHeader (m_elements);
-  packet->AddHeader (BeaconHeader ());
-  return packet;
+    Ptr<Packet> packet = Create<Packet>();
+    packet->AddHeader(m_elements);
+    packet->AddHeader(BeaconHeader());
+    return packet;
 }
 
 WifiMacHeader
-MeshWifiBeacon::CreateHeader (Mac48Address address, Mac48Address mpAddress)
+MeshWifiBeacon::CreateHeader(Mac48Address address, Mac48Address mpAddress)
 {
-  WifiMacHeader hdr;
-  hdr.SetType (WIFI_MAC_MGT_BEACON);
-  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
-  hdr.SetAddr2 (address);
-  hdr.SetAddr3 (mpAddress);
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-  return hdr;
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_MGT_BEACON);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    hdr.SetAddr2(address);
+    hdr.SetAddr3(mpAddress);
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+    return hdr;
 }
 
 } // namespace ns3
-

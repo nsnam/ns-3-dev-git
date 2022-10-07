@@ -21,18 +21,20 @@
 #ifndef ENERGY_MODEL_HELPER_H
 #define ENERGY_MODEL_HELPER_H
 
-#include "ns3/attribute.h"
-#include "ns3/object-factory.h"
-#include "ns3/node-container.h"
-#include "ns3/ptr.h"
-#include "ns3/net-device.h"
-#include "ns3/net-device-container.h"
-#include "ns3/energy-source.h"
-#include "ns3/device-energy-model.h"
-#include "ns3/device-energy-model-container.h"
 #include "energy-source-container.h"
 
-namespace ns3 {
+#include "ns3/attribute.h"
+#include "ns3/device-energy-model-container.h"
+#include "ns3/device-energy-model.h"
+#include "ns3/energy-source.h"
+#include "ns3/net-device-container.h"
+#include "ns3/net-device.h"
+#include "ns3/node-container.h"
+#include "ns3/object-factory.h"
+#include "ns3/ptr.h"
+
+namespace ns3
+{
 
 /**
  * \ingroup energy
@@ -44,63 +46,60 @@ namespace ns3 {
  */
 class EnergySourceHelper
 {
-public:
-  virtual ~EnergySourceHelper ();
+  public:
+    virtual ~EnergySourceHelper();
 
-  /**
-   * \param name Name of attribute to set.
-   * \param v Value of the attribute.
-   *
-   * Sets one of the attributes of underlying EnergySource.
-   */
-  virtual void Set (std::string name, const AttributeValue &v) = 0;
+    /**
+     * \param name Name of attribute to set.
+     * \param v Value of the attribute.
+     *
+     * Sets one of the attributes of underlying EnergySource.
+     */
+    virtual void Set(std::string name, const AttributeValue& v) = 0;
 
-  /**
-   * \param node Pointer to the node where EnergySource will be installed.
-   * \returns An EnergySourceContainer which contains all the EnergySources.
-   *
-   * This function installs an EnergySource onto a node.
-   */
-  EnergySourceContainer Install (Ptr<Node> node) const;
+    /**
+     * \param node Pointer to the node where EnergySource will be installed.
+     * \returns An EnergySourceContainer which contains all the EnergySources.
+     *
+     * This function installs an EnergySource onto a node.
+     */
+    EnergySourceContainer Install(Ptr<Node> node) const;
 
-  /**
-   * \param c List of nodes where EnergySource will be installed.
-   * \returns An EnergySourceContainer which contains all the EnergySources.
-   *
-   * This function installs an EnergySource onto a list of nodes.
-   */
-  EnergySourceContainer Install (NodeContainer c) const;
+    /**
+     * \param c List of nodes where EnergySource will be installed.
+     * \returns An EnergySourceContainer which contains all the EnergySources.
+     *
+     * This function installs an EnergySource onto a list of nodes.
+     */
+    EnergySourceContainer Install(NodeContainer c) const;
 
-  /**
-   * \param nodeName Name of node where EnergySource will be installed.
-   * \returns An EnergySourceContainer which contains all the EnergySources.
-   *
-   * This function installs an EnergySource onto a node.
-   */
-  EnergySourceContainer Install (std::string nodeName) const;
+    /**
+     * \param nodeName Name of node where EnergySource will be installed.
+     * \returns An EnergySourceContainer which contains all the EnergySources.
+     *
+     * This function installs an EnergySource onto a node.
+     */
+    EnergySourceContainer Install(std::string nodeName) const;
 
-  /**
-   * \brief This function installs an EnergySource on all nodes in simulation.
-   *
-   * \returns An EnergySourceContainer which contains all the EnergySources.
-   */
-  EnergySourceContainer InstallAll () const;
+    /**
+     * \brief This function installs an EnergySource on all nodes in simulation.
+     *
+     * \returns An EnergySourceContainer which contains all the EnergySources.
+     */
+    EnergySourceContainer InstallAll() const;
 
-
-private:
-  /**
-   * \param node Pointer to node where the energy source is to be installed.
-   * \returns Pointer to the created EnergySource.
-   *
-   * Child classes of EnergySourceHelper only have to implement this function,
-   * to create and aggregate an EnergySource object onto a single node. Rest of
-   * the installation process (eg. installing EnergySource on set of nodes) is
-   * implemented in the EnergySourceHelper base class.
-   */
-  virtual Ptr<EnergySource> DoInstall (Ptr<Node> node) const = 0;
-
+  private:
+    /**
+     * \param node Pointer to node where the energy source is to be installed.
+     * \returns Pointer to the created EnergySource.
+     *
+     * Child classes of EnergySourceHelper only have to implement this function,
+     * to create and aggregate an EnergySource object onto a single node. Rest of
+     * the installation process (eg. installing EnergySource on set of nodes) is
+     * implemented in the EnergySourceHelper base class.
+     */
+    virtual Ptr<EnergySource> DoInstall(Ptr<Node> node) const = 0;
 };
-
 
 /**
  * \ingroup energy
@@ -115,58 +114,55 @@ private:
  */
 class DeviceEnergyModelHelper
 {
-public:
-  virtual ~DeviceEnergyModelHelper ();
+  public:
+    virtual ~DeviceEnergyModelHelper();
 
-  /**
-   * \param name Name of attribute to set.
-   * \param v Value of the attribute.
-   *
-   * Sets one of the attributes of underlying DeviceEnergyModel.
-   */
-  virtual void Set (std::string name, const AttributeValue &v) = 0;
+    /**
+     * \param name Name of attribute to set.
+     * \param v Value of the attribute.
+     *
+     * Sets one of the attributes of underlying DeviceEnergyModel.
+     */
+    virtual void Set(std::string name, const AttributeValue& v) = 0;
 
-  /**
-   * \param device Pointer to the NetDevice to install DeviceEnergyModel.
-   * \param source The EnergySource the DeviceEnergyModel will be using.
-   * \returns An DeviceEnergyModelContainer contains all the DeviceEnergyModels.
-   *
-   * Installs an DeviceEnergyModel with a specified EnergySource onto a
-   * xNetDevice.
-   */
-  DeviceEnergyModelContainer Install (Ptr<NetDevice> device,
-                                      Ptr<EnergySource> source) const;
+    /**
+     * \param device Pointer to the NetDevice to install DeviceEnergyModel.
+     * \param source The EnergySource the DeviceEnergyModel will be using.
+     * \returns An DeviceEnergyModelContainer contains all the DeviceEnergyModels.
+     *
+     * Installs an DeviceEnergyModel with a specified EnergySource onto a
+     * xNetDevice.
+     */
+    DeviceEnergyModelContainer Install(Ptr<NetDevice> device, Ptr<EnergySource> source) const;
 
-  /**
-   * \param deviceContainer List of NetDevices to be install DeviceEnergyModel
-   * objects.
-   * \param sourceContainer List of EnergySource the DeviceEnergyModel will be
-   * using.
-   * \returns An DeviceEnergyModelContainer contains all the DeviceEnergyModels.
-   *
-   * Installs DeviceEnergyModels with specified EnergySources onto a list of
-   * NetDevices.
-   */
-  DeviceEnergyModelContainer Install (NetDeviceContainer deviceContainer,
-                                      EnergySourceContainer sourceContainer) const;
+    /**
+     * \param deviceContainer List of NetDevices to be install DeviceEnergyModel
+     * objects.
+     * \param sourceContainer List of EnergySource the DeviceEnergyModel will be
+     * using.
+     * \returns An DeviceEnergyModelContainer contains all the DeviceEnergyModels.
+     *
+     * Installs DeviceEnergyModels with specified EnergySources onto a list of
+     * NetDevices.
+     */
+    DeviceEnergyModelContainer Install(NetDeviceContainer deviceContainer,
+                                       EnergySourceContainer sourceContainer) const;
 
-
-private:
-  /**
-   * \param device The net device corresponding to DeviceEnergyModel object.
-   * \param source The EnergySource the DeviceEnergyModel will be using.
-   * \returns Pointer to the created DeviceEnergyModel.
-   *
-   * Child classes of DeviceEnergyModelHelper only have to implement this
-   * function, to create and aggregate an DeviceEnergyModel object onto a single
-   * node. The rest of the installation process (eg. installing EnergySource on
-   * set of nodes) is implemented in the DeviceEnergyModelHelper base class.
-   */
-  virtual Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
-                                            Ptr<EnergySource> source) const = 0;
-
+  private:
+    /**
+     * \param device The net device corresponding to DeviceEnergyModel object.
+     * \param source The EnergySource the DeviceEnergyModel will be using.
+     * \returns Pointer to the created DeviceEnergyModel.
+     *
+     * Child classes of DeviceEnergyModelHelper only have to implement this
+     * function, to create and aggregate an DeviceEnergyModel object onto a single
+     * node. The rest of the installation process (eg. installing EnergySource on
+     * set of nodes) is implemented in the DeviceEnergyModelHelper base class.
+     */
+    virtual Ptr<DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
+                                             Ptr<EnergySource> source) const = 0;
 };
 
 } // namespace ns3
 
-#endif  /* ENERGY_MODEL_HELPER_H */
+#endif /* ENERGY_MODEL_HELPER_H */

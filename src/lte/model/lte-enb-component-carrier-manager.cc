@@ -20,114 +20,117 @@
  */
 
 #include "lte-enb-component-carrier-manager.h"
+
 #include <ns3/log.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("LteEnbComponentCarrierManager");
-NS_OBJECT_ENSURE_REGISTERED (LteEnbComponentCarrierManager);
-
-
-LteEnbComponentCarrierManager::LteEnbComponentCarrierManager ()
+namespace ns3
 {
 
+NS_LOG_COMPONENT_DEFINE("LteEnbComponentCarrierManager");
+NS_OBJECT_ENSURE_REGISTERED(LteEnbComponentCarrierManager);
+
+LteEnbComponentCarrierManager::LteEnbComponentCarrierManager()
+{
 }
 
-LteEnbComponentCarrierManager::~LteEnbComponentCarrierManager ()
+LteEnbComponentCarrierManager::~LteEnbComponentCarrierManager()
 {
 }
 
 TypeId
-LteEnbComponentCarrierManager::GetTypeId ()
+LteEnbComponentCarrierManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::LteEnbComponentCarrierManager")
-    .SetParent<Object> ()
-    .SetGroupName("Lte")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::LteEnbComponentCarrierManager").SetParent<Object>().SetGroupName("Lte");
+    return tid;
 }
 
 void
-LteEnbComponentCarrierManager::DoDispose ()
+LteEnbComponentCarrierManager::DoDispose()
 {
 }
 
 void
-LteEnbComponentCarrierManager::SetLteCcmRrcSapUser (LteCcmRrcSapUser* s)
+LteEnbComponentCarrierManager::SetLteCcmRrcSapUser(LteCcmRrcSapUser* s)
 {
-  NS_LOG_FUNCTION (this << s);
-  m_ccmRrcSapUser = s;
+    NS_LOG_FUNCTION(this << s);
+    m_ccmRrcSapUser = s;
 }
 
 LteCcmRrcSapProvider*
-LteEnbComponentCarrierManager::GetLteCcmRrcSapProvider ()
+LteEnbComponentCarrierManager::GetLteCcmRrcSapProvider()
 {
-  NS_LOG_FUNCTION (this);
-  return m_ccmRrcSapProvider;
+    NS_LOG_FUNCTION(this);
+    return m_ccmRrcSapProvider;
 }
 
 LteMacSapProvider*
-LteEnbComponentCarrierManager::GetLteMacSapProvider ()
+LteEnbComponentCarrierManager::GetLteMacSapProvider()
 {
-  NS_LOG_FUNCTION (this);
-  return m_macSapProvider;
+    NS_LOG_FUNCTION(this);
+    return m_macSapProvider;
 }
 
 LteCcmMacSapUser*
-LteEnbComponentCarrierManager::GetLteCcmMacSapUser ()
+LteEnbComponentCarrierManager::GetLteCcmMacSapUser()
 {
-  NS_LOG_FUNCTION (this);
-  return m_ccmMacSapUser;
+    NS_LOG_FUNCTION(this);
+    return m_ccmMacSapUser;
 }
 
 bool
-LteEnbComponentCarrierManager::SetMacSapProvider (uint8_t componentCarrierId, LteMacSapProvider* sap)
+LteEnbComponentCarrierManager::SetMacSapProvider(uint8_t componentCarrierId, LteMacSapProvider* sap)
 {
-  NS_LOG_FUNCTION (this);
-  bool res = false;
-  std::map <uint8_t, LteMacSapProvider*>::iterator it = m_macSapProvidersMap.find (componentCarrierId);
-  if ((uint16_t) componentCarrierId > m_noOfComponentCarriers)
+    NS_LOG_FUNCTION(this);
+    bool res = false;
+    std::map<uint8_t, LteMacSapProvider*>::iterator it =
+        m_macSapProvidersMap.find(componentCarrierId);
+    if ((uint16_t)componentCarrierId > m_noOfComponentCarriers)
     {
-      NS_FATAL_ERROR ("Inconsistent componentCarrierId or you didn't call SetNumberOfComponentCarriers before calling this method");
+        NS_FATAL_ERROR("Inconsistent componentCarrierId or you didn't call "
+                       "SetNumberOfComponentCarriers before calling this method");
     }
-  if (it != m_macSapProvidersMap.end ())
+    if (it != m_macSapProvidersMap.end())
     {
-      NS_FATAL_ERROR ("Tried to allocated an existing componentCarrierId");
+        NS_FATAL_ERROR("Tried to allocated an existing componentCarrierId");
     }
-  else
+    else
     {
-      m_macSapProvidersMap.insert (std::pair<uint8_t, LteMacSapProvider*>(componentCarrierId, sap));
-      res = true;
+        m_macSapProvidersMap.insert(
+            std::pair<uint8_t, LteMacSapProvider*>(componentCarrierId, sap));
+        res = true;
     }
-  return res;
-
+    return res;
 }
 
 bool
-LteEnbComponentCarrierManager::SetCcmMacSapProviders (uint8_t componentCarrierId, LteCcmMacSapProvider* sap)
+LteEnbComponentCarrierManager::SetCcmMacSapProviders(uint8_t componentCarrierId,
+                                                     LteCcmMacSapProvider* sap)
 {
-  NS_LOG_FUNCTION (this);
-  bool res = false;
-  std::map< uint8_t,LteCcmMacSapProvider*>::iterator it =  m_ccmMacSapProviderMap.find (componentCarrierId);
+    NS_LOG_FUNCTION(this);
+    bool res = false;
+    std::map<uint8_t, LteCcmMacSapProvider*>::iterator it =
+        m_ccmMacSapProviderMap.find(componentCarrierId);
 
-  if (it == m_ccmMacSapProviderMap.end ())
+    if (it == m_ccmMacSapProviderMap.end())
     {
-      m_ccmMacSapProviderMap.insert (std::pair <uint8_t,LteCcmMacSapProvider*> (componentCarrierId, sap));
+        m_ccmMacSapProviderMap.insert(
+            std::pair<uint8_t, LteCcmMacSapProvider*>(componentCarrierId, sap));
     }
 
-  res = true;
-  return res;
-
+    res = true;
+    return res;
 }
 
 void
-LteEnbComponentCarrierManager::SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers)
+LteEnbComponentCarrierManager::SetNumberOfComponentCarriers(uint16_t noOfComponentCarriers)
 {
-  NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_IF (noOfComponentCarriers < MIN_NO_CC || noOfComponentCarriers > MAX_NO_CC, "Number of component carriers should be greater than 0 and less than 6");
-  m_noOfComponentCarriers = noOfComponentCarriers;
-  //Set the number of component carriers in eNB RRC
-  m_ccmRrcSapUser->SetNumberOfComponentCarriers (noOfComponentCarriers);
+    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(noOfComponentCarriers < MIN_NO_CC || noOfComponentCarriers > MAX_NO_CC,
+                    "Number of component carriers should be greater than 0 and less than 6");
+    m_noOfComponentCarriers = noOfComponentCarriers;
+    // Set the number of component carriers in eNB RRC
+    m_ccmRrcSapUser->SetNumberOfComponentCarriers(noOfComponentCarriers);
 }
 
 } // end of namespace ns3

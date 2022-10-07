@@ -27,48 +27,48 @@
 
 #include "ns3/tag.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class Tag;
 
 class SnrTag : public Tag
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Create a SnrTag with the default SNR 0
-   */
-  SnrTag ();
+    /**
+     * Create a SnrTag with the default SNR 0
+     */
+    SnrTag();
 
-  TypeId GetInstanceTypeId () const override;
-  uint32_t GetSerializedSize () const override;
-  void Serialize (TagBuffer i) const override;
-  void Deserialize (TagBuffer i) override;
-  void Print (std::ostream &os) const override;
+    TypeId GetInstanceTypeId() const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(TagBuffer i) const override;
+    void Deserialize(TagBuffer i) override;
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Set the SNR to the given value.
-   *
-   * \param snr the value of the SNR to set in linear scale
-   */
-  void Set (double snr);
-  /**
-   * Return the SNR value.
-   *
-   * \return the SNR value in linear scale
-   */
-  double Get () const;
+    /**
+     * Set the SNR to the given value.
+     *
+     * \param snr the value of the SNR to set in linear scale
+     */
+    void Set(double snr);
+    /**
+     * Return the SNR value.
+     *
+     * \return the SNR value in linear scale
+     */
+    double Get() const;
 
-
-private:
-  double m_snr;  //!< SNR value in linear scale
+  private:
+    double m_snr; //!< SNR value in linear scale
 };
 
-}
+} // namespace ns3
 
 #endif /* SNR_TAG_H */

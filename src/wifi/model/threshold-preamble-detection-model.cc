@@ -18,70 +18,75 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/log.h"
-#include "ns3/double.h"
 #include "threshold-preamble-detection-model.h"
+
 #include "wifi-utils.h"
 
-namespace ns3 {
+#include "ns3/double.h"
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("ThresholdPreambleDetectionModel");
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (ThresholdPreambleDetectionModel);
+NS_LOG_COMPONENT_DEFINE("ThresholdPreambleDetectionModel");
+
+NS_OBJECT_ENSURE_REGISTERED(ThresholdPreambleDetectionModel);
 
 TypeId
-ThresholdPreambleDetectionModel::GetTypeId ()
+ThresholdPreambleDetectionModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ThresholdPreambleDetectionModel")
-    .SetParent<PreambleDetectionModel> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<ThresholdPreambleDetectionModel> ()
-    .AddAttribute ("Threshold",
-                   "Preamble is successfully detection if the SNR is at or above this value (expressed in dB).",
-                   DoubleValue (4),
-                   MakeDoubleAccessor (&ThresholdPreambleDetectionModel::m_threshold),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("MinimumRssi",
-                   "Preamble is dropped if the RSSI is below this value (expressed in dBm).",
-                   DoubleValue (-82),
-                   MakeDoubleAccessor (&ThresholdPreambleDetectionModel::m_rssiMin),
-                   MakeDoubleChecker<double> ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::ThresholdPreambleDetectionModel")
+            .SetParent<PreambleDetectionModel>()
+            .SetGroupName("Wifi")
+            .AddConstructor<ThresholdPreambleDetectionModel>()
+            .AddAttribute("Threshold",
+                          "Preamble is successfully detection if the SNR is at or above this value "
+                          "(expressed in dB).",
+                          DoubleValue(4),
+                          MakeDoubleAccessor(&ThresholdPreambleDetectionModel::m_threshold),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("MinimumRssi",
+                          "Preamble is dropped if the RSSI is below this value (expressed in dBm).",
+                          DoubleValue(-82),
+                          MakeDoubleAccessor(&ThresholdPreambleDetectionModel::m_rssiMin),
+                          MakeDoubleChecker<double>());
+    return tid;
 }
 
-ThresholdPreambleDetectionModel::ThresholdPreambleDetectionModel ()
+ThresholdPreambleDetectionModel::ThresholdPreambleDetectionModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-ThresholdPreambleDetectionModel::~ThresholdPreambleDetectionModel ()
+ThresholdPreambleDetectionModel::~ThresholdPreambleDetectionModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 bool
-ThresholdPreambleDetectionModel::IsPreambleDetected (double rssi, double snr, double channelWidth) const
+ThresholdPreambleDetectionModel::IsPreambleDetected(double rssi,
+                                                    double snr,
+                                                    double channelWidth) const
 {
-  NS_LOG_FUNCTION (this << WToDbm (rssi) << RatioToDb (snr) << channelWidth);
-  if (WToDbm (rssi) >= m_rssiMin)
+    NS_LOG_FUNCTION(this << WToDbm(rssi) << RatioToDb(snr) << channelWidth);
+    if (WToDbm(rssi) >= m_rssiMin)
     {
-      if (RatioToDb (snr) >= m_threshold)
+        if (RatioToDb(snr) >= m_threshold)
         {
-          return true;
+            return true;
         }
-      else
+        else
         {
-          NS_LOG_DEBUG ("Received RSSI is above the target RSSI but SNR is too low");
-          return false;
+            NS_LOG_DEBUG("Received RSSI is above the target RSSI but SNR is too low");
+            return false;
         }
     }
-  else
+    else
     {
-      NS_LOG_DEBUG ("Received RSSI is below the target RSSI");
-      return false;
+        NS_LOG_DEBUG("Received RSSI is below the target RSSI");
+        return false;
     }
-
 }
 
-} //namespace ns3
+} // namespace ns3

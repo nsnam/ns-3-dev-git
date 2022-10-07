@@ -21,97 +21,98 @@
  */
 
 #include "energy-source-container.h"
+
 #include "ns3/names.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (EnergySourceContainer);
+NS_OBJECT_ENSURE_REGISTERED(EnergySourceContainer);
 
 TypeId
-EnergySourceContainer::GetTypeId ()
+EnergySourceContainer::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::EnergySourceContainer")
-    .SetParent<Object> ()
-    .SetGroupName ("Energy")
-    .AddConstructor<EnergySourceContainer> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::EnergySourceContainer")
+                            .SetParent<Object>()
+                            .SetGroupName("Energy")
+                            .AddConstructor<EnergySourceContainer>();
+    return tid;
 }
 
-EnergySourceContainer::EnergySourceContainer ()
-{
-}
-
-EnergySourceContainer::~EnergySourceContainer ()
+EnergySourceContainer::EnergySourceContainer()
 {
 }
 
-EnergySourceContainer::EnergySourceContainer (Ptr<EnergySource> source)
+EnergySourceContainer::~EnergySourceContainer()
 {
-  NS_ASSERT (source);
-  m_sources.push_back (source);
 }
 
-EnergySourceContainer::EnergySourceContainer (std::string sourceName)
+EnergySourceContainer::EnergySourceContainer(Ptr<EnergySource> source)
 {
-  Ptr<EnergySource> source = Names::Find<EnergySource> (sourceName);
-  NS_ASSERT (source);
-  m_sources.push_back (source);
+    NS_ASSERT(source);
+    m_sources.push_back(source);
 }
 
-EnergySourceContainer::EnergySourceContainer (const EnergySourceContainer &a,
-                                              const EnergySourceContainer &b)
+EnergySourceContainer::EnergySourceContainer(std::string sourceName)
 {
-  *this = a;
-  Add (b);
+    Ptr<EnergySource> source = Names::Find<EnergySource>(sourceName);
+    NS_ASSERT(source);
+    m_sources.push_back(source);
 }
 
-EnergySourceContainer::Iterator
-EnergySourceContainer::Begin () const
+EnergySourceContainer::EnergySourceContainer(const EnergySourceContainer& a,
+                                             const EnergySourceContainer& b)
 {
-  return m_sources.begin ();
+    *this = a;
+    Add(b);
 }
 
 EnergySourceContainer::Iterator
-EnergySourceContainer::End () const
+EnergySourceContainer::Begin() const
 {
-  return m_sources.end ();
+    return m_sources.begin();
+}
+
+EnergySourceContainer::Iterator
+EnergySourceContainer::End() const
+{
+    return m_sources.end();
 }
 
 uint32_t
-EnergySourceContainer::GetN () const
+EnergySourceContainer::GetN() const
 {
-  return m_sources.size ();
+    return m_sources.size();
 }
 
 Ptr<EnergySource>
-EnergySourceContainer::Get (uint32_t i) const
+EnergySourceContainer::Get(uint32_t i) const
 {
-  return m_sources[i];
+    return m_sources[i];
 }
 
 void
-EnergySourceContainer::Add (EnergySourceContainer container)
+EnergySourceContainer::Add(EnergySourceContainer container)
 {
-  for (Iterator i = container.Begin (); i != container.End (); i++)
+    for (Iterator i = container.Begin(); i != container.End(); i++)
     {
-      m_sources.push_back (*i);
+        m_sources.push_back(*i);
     }
 }
 
 void
-EnergySourceContainer::Add (Ptr<EnergySource> source)
+EnergySourceContainer::Add(Ptr<EnergySource> source)
 {
-  NS_ASSERT (source);
-  m_sources.push_back (source);
+    NS_ASSERT(source);
+    m_sources.push_back(source);
 }
 
 void
-EnergySourceContainer::Add (std::string sourceName)
+EnergySourceContainer::Add(std::string sourceName)
 {
-  Ptr<EnergySource> source = Names::Find<EnergySource> (sourceName);
-  NS_ASSERT (source);
-  m_sources.push_back (source);
+    Ptr<EnergySource> source = Names::Find<EnergySource>(sourceName);
+    NS_ASSERT(source);
+    m_sources.push_back(source);
 }
 
 /*
@@ -119,27 +120,25 @@ EnergySourceContainer::Add (std::string sourceName)
  */
 
 void
-EnergySourceContainer::DoDispose ()
+EnergySourceContainer::DoDispose()
 {
-  // call Object::Dispose for all EnergySource objects
-  for (std::vector< Ptr<EnergySource> >::iterator i = m_sources.begin ();
-       i != m_sources.end (); i++)
+    // call Object::Dispose for all EnergySource objects
+    for (std::vector<Ptr<EnergySource>>::iterator i = m_sources.begin(); i != m_sources.end(); i++)
     {
-      (*i)->DisposeDeviceModels ();
-      (*i)->Dispose ();
+        (*i)->DisposeDeviceModels();
+        (*i)->Dispose();
     }
-  m_sources.clear ();
+    m_sources.clear();
 }
 
 void
-EnergySourceContainer::DoInitialize ()
+EnergySourceContainer::DoInitialize()
 {
-  // call Object::Start for all EnergySource objects
-  for (std::vector< Ptr<EnergySource> >::iterator i = m_sources.begin ();
-       i != m_sources.end (); i++)
+    // call Object::Start for all EnergySource objects
+    for (std::vector<Ptr<EnergySource>>::iterator i = m_sources.begin(); i != m_sources.end(); i++)
     {
-      (*i)->Initialize ();
-      (*i)->InitializeDeviceModels ();
+        (*i)->Initialize();
+        (*i)->InitializeDeviceModels();
     }
 }
 

@@ -23,8 +23,8 @@
 #ifndef DSSS_PPDU_H
 #define DSSS_PPDU_H
 
-#include "ns3/wifi-ppdu.h"
 #include "ns3/header.h"
+#include "ns3/wifi-ppdu.h"
 
 /**
  * \file
@@ -32,7 +32,8 @@
  * Declaration of ns3::DsssPpdu class.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class WifiPsdu;
 
@@ -44,85 +45,87 @@ class WifiPsdu;
  */
 class DsssPpdu : public WifiPpdu
 {
-public:
-
-  /**
-   * DSSS SIG PHY header.
-   * See section 16.2.2 in IEEE 802.11-2016.
-   */
-  class DsssSigHeader : public Header
-  {
   public:
-    DsssSigHeader ();
-    ~DsssSigHeader () override;
+    /**
+     * DSSS SIG PHY header.
+     * See section 16.2.2 in IEEE 802.11-2016.
+     */
+    class DsssSigHeader : public Header
+    {
+      public:
+        DsssSigHeader();
+        ~DsssSigHeader() override;
+
+        /**
+         * \brief Get the type ID.
+         * \return the object TypeId
+         */
+        static TypeId GetTypeId();
+
+        TypeId GetInstanceTypeId() const override;
+        void Print(std::ostream& os) const override;
+        uint32_t GetSerializedSize() const override;
+        void Serialize(Buffer::Iterator start) const override;
+        uint32_t Deserialize(Buffer::Iterator start) override;
+
+        /**
+         * Fill the RATE field of L-SIG (in bit/s).
+         *
+         * \param rate the RATE field of L-SIG expressed in bit/s
+         */
+        void SetRate(uint64_t rate);
+        /**
+         * Return the RATE field of L-SIG (in bit/s).
+         *
+         * \return the RATE field of L-SIG expressed in bit/s
+         */
+        uint64_t GetRate() const;
+        /**
+         * Fill the LENGTH field of L-SIG (in bytes).
+         *
+         * \param length the LENGTH field of L-SIG expressed in bytes
+         */
+        void SetLength(uint16_t length);
+        /**
+         * Return the LENGTH field of L-SIG (in bytes).
+         *
+         * \return the LENGTH field of L-SIG expressed in bytes
+         */
+        uint16_t GetLength() const;
+
+      private:
+        uint8_t m_rate;    ///< RATE field
+        uint16_t m_length; ///< LENGTH field
+    };                     // class DsssSigHeader
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * Create a DSSS (HR/DSSS) PPDU.
+     *
+     * \param psdu the PHY payload (PSDU)
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     * \param uid the unique ID of this PPDU
      */
-    static TypeId GetTypeId ();
+    DsssPpdu(Ptr<const WifiPsdu> psdu,
+             const WifiTxVector& txVector,
+             uint16_t txCenterFreq,
+             Time ppduDuration,
+             uint64_t uid);
+    /**
+     * Destructor for DsssPpdu.
+     */
+    ~DsssPpdu() override;
 
-    TypeId GetInstanceTypeId () const override;
-    void Print (std::ostream &os) const override;
-    uint32_t GetSerializedSize () const override;
-    void Serialize (Buffer::Iterator start) const override;
-    uint32_t Deserialize (Buffer::Iterator start) override;
-
-    /**
-     * Fill the RATE field of L-SIG (in bit/s).
-     *
-     * \param rate the RATE field of L-SIG expressed in bit/s
-     */
-    void SetRate (uint64_t rate);
-    /**
-     * Return the RATE field of L-SIG (in bit/s).
-     *
-     * \return the RATE field of L-SIG expressed in bit/s
-     */
-    uint64_t GetRate () const;
-    /**
-     * Fill the LENGTH field of L-SIG (in bytes).
-     *
-     * \param length the LENGTH field of L-SIG expressed in bytes
-     */
-    void SetLength (uint16_t length);
-    /**
-     * Return the LENGTH field of L-SIG (in bytes).
-     *
-     * \return the LENGTH field of L-SIG expressed in bytes
-     */
-    uint16_t GetLength () const;
+    Time GetTxDuration() const override;
+    Ptr<WifiPpdu> Copy() const override;
 
   private:
-    uint8_t m_rate;    ///< RATE field
-    uint16_t m_length; ///< LENGTH field
-  }; //class DsssSigHeader
+    WifiTxVector DoGetTxVector() const override;
 
-  /**
-   * Create a DSSS (HR/DSSS) PPDU.
-   *
-   * \param psdu the PHY payload (PSDU)
-   * \param txVector the TXVECTOR that was used for this PPDU
-   * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
-   * \param ppduDuration the transmission duration of this PPDU
-   * \param uid the unique ID of this PPDU
-   */
-  DsssPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector,
-            uint16_t txCenterFreq, Time ppduDuration, uint64_t uid);
-  /**
-   * Destructor for DsssPpdu.
-   */
-  ~DsssPpdu () override;
+    DsssSigHeader m_dsssSig; //!< the DSSS SIG PHY header
+};                           // class DsssPpdu
 
-  Time GetTxDuration () const override;
-  Ptr<WifiPpdu> Copy () const override;
-
-private:
-  WifiTxVector DoGetTxVector () const override;
-
-  DsssSigHeader m_dsssSig;  //!< the DSSS SIG PHY header
-}; //class DsssPpdu
-
-} //namespace ns3
+} // namespace ns3
 
 #endif /* DSSS_PPDU_H */

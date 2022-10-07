@@ -26,7 +26,8 @@
 
 #include <list>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lte
@@ -38,106 +39,106 @@ namespace ns3 {
  */
 class LteRlcHeader : public Header
 {
-public:
+  public:
+    /**
+     * \brief Constructor
+     *
+     * Creates a null header
+     */
+    LteRlcHeader();
+    ~LteRlcHeader() override;
 
-  /**
-   * \brief Constructor
-   *
-   * Creates a null header
-   */
-  LteRlcHeader ();
-  ~LteRlcHeader () override;
+    /**
+     * Set framing info
+     *
+     * \param framingInfo framing info
+     */
+    void SetFramingInfo(uint8_t framingInfo);
+    /**
+     * Set sequence number
+     *
+     * \param sequenceNumber sequence number
+     */
+    void SetSequenceNumber(SequenceNumber10 sequenceNumber);
 
-  /**
-   * Set framing info
-   *
-   * \param framingInfo framing info
-   */
-  void SetFramingInfo (uint8_t framingInfo);
-  /**
-   * Set sequence number
-   *
-   * \param sequenceNumber sequence number
-   */
-  void SetSequenceNumber (SequenceNumber10 sequenceNumber);
+    /**
+     * Get framing info
+     *
+     * \returns framing info
+     */
+    uint8_t GetFramingInfo() const;
+    /**
+     * Get sequence number
+     *
+     * \returns sequence number
+     */
+    SequenceNumber10 GetSequenceNumber() const;
 
-  /**
-   * Get framing info
-   *
-   * \returns framing info
-   */
-  uint8_t GetFramingInfo () const;
-  /**
-   * Get sequence number
-   *
-   * \returns sequence number
-   */
-  SequenceNumber10 GetSequenceNumber () const;
+    /**
+     * Push extension bit
+     *
+     * \param extensionBit the extension bit
+     */
+    void PushExtensionBit(uint8_t extensionBit);
+    /**
+     * Push length indicator
+     *
+     * \param lengthIndicator the length indicator
+     */
+    void PushLengthIndicator(uint16_t lengthIndicator);
 
-  /**
-   * Push extension bit
-   *
-   * \param extensionBit the extension bit
-   */
-  void PushExtensionBit (uint8_t extensionBit);
-  /**
-   * Push length indicator
-   *
-   * \param lengthIndicator the length indicator
-   */
-  void PushLengthIndicator (uint16_t lengthIndicator);
+    /**
+     * Pop extension bit
+     *
+     * \returns the extension bit
+     */
+    uint8_t PopExtensionBit();
+    /**
+     * Pop length indicator
+     *
+     * \returns the length indicator
+     */
+    uint16_t PopLengthIndicator();
 
-  /**
-   * Pop extension bit
-   *
-   * \returns the extension bit
-   */
-  uint8_t PopExtensionBit ();
-  /**
-   * Pop length indicator
-   *
-   * \returns the length indicator
-   */
-  uint16_t PopLengthIndicator ();
+    /// ExtensionBit_t typedef
+    typedef enum
+    {
+        DATA_FIELD_FOLLOWS = 0,
+        E_LI_FIELDS_FOLLOWS = 1
+    } ExtensionBit_t; ///< ExtensionBit_t enumeration
 
-  /// ExtensionBit_t typedef
-  typedef enum {
-    DATA_FIELD_FOLLOWS  = 0,
-    E_LI_FIELDS_FOLLOWS = 1
-  } ExtensionBit_t; ///< ExtensionBit_t enumeration
+    /// FramingInfoFirstByte_t typedef
+    typedef enum
+    {
+        FIRST_BYTE = 0x00,
+        NO_FIRST_BYTE = 0x02
+    } FramingInfoFirstByte_t; ///< FramingInfoFirstByte_t enumeration
 
-  /// FramingInfoFirstByte_t typedef
-  typedef enum {
-    FIRST_BYTE    = 0x00,
-    NO_FIRST_BYTE = 0x02
-  } FramingInfoFirstByte_t; ///< FramingInfoFirstByte_t enumeration
+    /// FramingInfoLastByte_t tyedef
+    typedef enum
+    {
+        LAST_BYTE = 0x00,
+        NO_LAST_BYTE = 0x01
+    } FramingInfoLastByte_t; ///< FramingInfoLastByte_t enumeration
 
-  /// FramingInfoLastByte_t tyedef
-  typedef enum {
-    LAST_BYTE    = 0x00,
-    NO_LAST_BYTE = 0x01
-  } FramingInfoLastByte_t; ///< FramingInfoLastByte_t enumeration
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+    void Print(std::ostream& os) const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
+  private:
+    uint16_t m_headerLength;           ///< header length
+    uint8_t m_framingInfo;             ///<  2 bits
+    SequenceNumber10 m_sequenceNumber; ///< sequence number
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const override;
-  void Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize () const override;
-  void Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
-
-private:
-  uint16_t m_headerLength; ///< header length
-  uint8_t  m_framingInfo;      ///<  2 bits
-  SequenceNumber10 m_sequenceNumber; ///< sequence number
-
-  std::list <uint8_t> m_extensionBits; ///< Includes extensionBit of the fixed part
-  std::list <uint16_t> m_lengthIndicators; ///< length indicators
-
+    std::list<uint8_t> m_extensionBits;     ///< Includes extensionBit of the fixed part
+    std::list<uint16_t> m_lengthIndicators; ///< length indicators
 };
 
 }; // namespace ns3

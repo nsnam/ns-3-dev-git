@@ -21,85 +21,89 @@
 
 #include "basic-energy-harvester.h"
 
-#include "ns3/log.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/simulator.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("BasicEnergyHarvester");
+NS_LOG_COMPONENT_DEFINE("BasicEnergyHarvester");
 
-NS_OBJECT_ENSURE_REGISTERED (BasicEnergyHarvester);
+NS_OBJECT_ENSURE_REGISTERED(BasicEnergyHarvester);
 
 TypeId
-BasicEnergyHarvester::GetTypeId ()
+BasicEnergyHarvester::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::BasicEnergyHarvester")
-  .SetParent<EnergyHarvester> ()
-  .SetGroupName ("Energy")
-  .AddConstructor<BasicEnergyHarvester> ()
-  .AddAttribute ("PeriodicHarvestedPowerUpdateInterval",
-                 "Time between two consecutive periodic updates of the harvested power. By default, the value is updated every 1 s",
-                 TimeValue (Seconds (1.0)),
-                 MakeTimeAccessor (&BasicEnergyHarvester::SetHarvestedPowerUpdateInterval,
-                                   &BasicEnergyHarvester::GetHarvestedPowerUpdateInterval),
-                 MakeTimeChecker ())
-  .AddAttribute ("HarvestablePower",
-                 "The harvestable power [Watts] that the energy harvester is allowed to harvest. By default, the model will allow to harvest an amount of power defined by a uniformly distributed random variable in 0 and 2.0 Watts",
-                 StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=2.0]"),
-                 MakePointerAccessor (&BasicEnergyHarvester::m_harvestablePower),
-                 MakePointerChecker<RandomVariableStream> ())
-  .AddTraceSource ("HarvestedPower",
-                   "Harvested power by the BasicEnergyHarvester.",
-                   MakeTraceSourceAccessor (&BasicEnergyHarvester::m_harvestedPower),
-                   "ns3::TracedValueCallback::Double")
-  .AddTraceSource ("TotalEnergyHarvested",
-                   "Total energy harvested by the harvester.",
-                   MakeTraceSourceAccessor (&BasicEnergyHarvester::m_totalEnergyHarvestedJ),
-                   "ns3::TracedValueCallback::Double")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::BasicEnergyHarvester")
+            .SetParent<EnergyHarvester>()
+            .SetGroupName("Energy")
+            .AddConstructor<BasicEnergyHarvester>()
+            .AddAttribute("PeriodicHarvestedPowerUpdateInterval",
+                          "Time between two consecutive periodic updates of the harvested power. "
+                          "By default, the value is updated every 1 s",
+                          TimeValue(Seconds(1.0)),
+                          MakeTimeAccessor(&BasicEnergyHarvester::SetHarvestedPowerUpdateInterval,
+                                           &BasicEnergyHarvester::GetHarvestedPowerUpdateInterval),
+                          MakeTimeChecker())
+            .AddAttribute("HarvestablePower",
+                          "The harvestable power [Watts] that the energy harvester is allowed to "
+                          "harvest. By default, the model will allow to harvest an amount of power "
+                          "defined by a uniformly distributed random variable in 0 and 2.0 Watts",
+                          StringValue("ns3::UniformRandomVariable[Min=0.0|Max=2.0]"),
+                          MakePointerAccessor(&BasicEnergyHarvester::m_harvestablePower),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddTraceSource("HarvestedPower",
+                            "Harvested power by the BasicEnergyHarvester.",
+                            MakeTraceSourceAccessor(&BasicEnergyHarvester::m_harvestedPower),
+                            "ns3::TracedValueCallback::Double")
+            .AddTraceSource("TotalEnergyHarvested",
+                            "Total energy harvested by the harvester.",
+                            MakeTraceSourceAccessor(&BasicEnergyHarvester::m_totalEnergyHarvestedJ),
+                            "ns3::TracedValueCallback::Double");
+    return tid;
 }
 
-BasicEnergyHarvester::BasicEnergyHarvester ()
+BasicEnergyHarvester::BasicEnergyHarvester()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-BasicEnergyHarvester::BasicEnergyHarvester (Time updateInterval)
+BasicEnergyHarvester::BasicEnergyHarvester(Time updateInterval)
 {
-  NS_LOG_FUNCTION (this << updateInterval);
-  m_harvestedPowerUpdateInterval = updateInterval;
+    NS_LOG_FUNCTION(this << updateInterval);
+    m_harvestedPowerUpdateInterval = updateInterval;
 }
 
-BasicEnergyHarvester::~BasicEnergyHarvester ()
+BasicEnergyHarvester::~BasicEnergyHarvester()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 int64_t
-BasicEnergyHarvester::AssignStreams (int64_t stream)
+BasicEnergyHarvester::AssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
-  m_harvestablePower->SetStream (stream);
-  return 1;
+    NS_LOG_FUNCTION(this << stream);
+    m_harvestablePower->SetStream(stream);
+    return 1;
 }
 
 void
-BasicEnergyHarvester::SetHarvestedPowerUpdateInterval (Time updateInterval)
+BasicEnergyHarvester::SetHarvestedPowerUpdateInterval(Time updateInterval)
 {
-  NS_LOG_FUNCTION (this << updateInterval);
-  m_harvestedPowerUpdateInterval = updateInterval;
+    NS_LOG_FUNCTION(this << updateInterval);
+    m_harvestedPowerUpdateInterval = updateInterval;
 }
 
 Time
-BasicEnergyHarvester::GetHarvestedPowerUpdateInterval () const
+BasicEnergyHarvester::GetHarvestedPowerUpdateInterval() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_harvestedPowerUpdateInterval;
+    NS_LOG_FUNCTION(this);
+    return m_harvestedPowerUpdateInterval;
 }
 
 /*
@@ -107,77 +111,77 @@ BasicEnergyHarvester::GetHarvestedPowerUpdateInterval () const
  */
 
 void
-BasicEnergyHarvester::UpdateHarvestedPower ()
+BasicEnergyHarvester::UpdateHarvestedPower()
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
-                << " BasicEnergyHarvester(" << GetNode ()->GetId () << "): Updating harvesting power.");
+    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG(Simulator::Now().As(Time::S) << " BasicEnergyHarvester(" << GetNode()->GetId()
+                                              << "): Updating harvesting power.");
 
-  Time duration = Simulator::Now () - m_lastHarvestingUpdateTime;
+    Time duration = Simulator::Now() - m_lastHarvestingUpdateTime;
 
-  NS_ASSERT (duration.GetNanoSeconds () >= 0); // check if duration is valid
+    NS_ASSERT(duration.GetNanoSeconds() >= 0); // check if duration is valid
 
-  double energyHarvested = 0.0;
+    double energyHarvested = 0.0;
 
-  // do not update if simulation has finished
-  if (Simulator::IsFinished ())
-  {
-    NS_LOG_DEBUG ("BasicEnergyHarvester: Simulation Finished.");
-    return;
-  }
+    // do not update if simulation has finished
+    if (Simulator::IsFinished())
+    {
+        NS_LOG_DEBUG("BasicEnergyHarvester: Simulation Finished.");
+        return;
+    }
 
-  m_energyHarvestingUpdateEvent.Cancel ();
+    m_energyHarvestingUpdateEvent.Cancel();
 
-  CalculateHarvestedPower ();
+    CalculateHarvestedPower();
 
-  energyHarvested = duration.GetSeconds () * m_harvestedPower;
+    energyHarvested = duration.GetSeconds() * m_harvestedPower;
 
-  // update total energy harvested
-  m_totalEnergyHarvestedJ += energyHarvested;
+    // update total energy harvested
+    m_totalEnergyHarvestedJ += energyHarvested;
 
-  // notify energy source
-  GetEnergySource ()->UpdateEnergySource ();
+    // notify energy source
+    GetEnergySource()->UpdateEnergySource();
 
-  // update last harvesting time stamp
-  m_lastHarvestingUpdateTime = Simulator::Now ();
+    // update last harvesting time stamp
+    m_lastHarvestingUpdateTime = Simulator::Now();
 
-  m_energyHarvestingUpdateEvent = Simulator::Schedule (m_harvestedPowerUpdateInterval,
-                                                       &BasicEnergyHarvester::UpdateHarvestedPower,
-                                                       this);
+    m_energyHarvestingUpdateEvent = Simulator::Schedule(m_harvestedPowerUpdateInterval,
+                                                        &BasicEnergyHarvester::UpdateHarvestedPower,
+                                                        this);
 }
 
 void
-BasicEnergyHarvester::DoInitialize ()
+BasicEnergyHarvester::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_lastHarvestingUpdateTime = Simulator::Now ();
+    m_lastHarvestingUpdateTime = Simulator::Now();
 
-  UpdateHarvestedPower ();  // start periodic harvesting update
+    UpdateHarvestedPower(); // start periodic harvesting update
 }
 
 void
-BasicEnergyHarvester::DoDispose ()
+BasicEnergyHarvester::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-BasicEnergyHarvester::CalculateHarvestedPower ()
+BasicEnergyHarvester::CalculateHarvestedPower()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_harvestedPower = m_harvestablePower->GetValue ();
+    m_harvestedPower = m_harvestablePower->GetValue();
 
-  NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
-                << " BasicEnergyHarvester:Harvested energy = " << m_harvestedPower);
+    NS_LOG_DEBUG(Simulator::Now().As(Time::S)
+                 << " BasicEnergyHarvester:Harvested energy = " << m_harvestedPower);
 }
 
 double
-BasicEnergyHarvester::DoGetPower () const
+BasicEnergyHarvester::DoGetPower() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_harvestedPower;
+    NS_LOG_FUNCTION(this);
+    return m_harvestedPower;
 }
 
 } // namespace ns3

@@ -21,7 +21,8 @@
 #define CRC32_H
 #include <stdint.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * Calculates the CRC-32 for a given input
@@ -31,7 +32,7 @@ namespace ns3 {
  * \returns the computed crc-32.
  *
  */
-uint32_t CRC32Calculate (const uint8_t *data, int length);
+uint32_t CRC32Calculate(const uint8_t* data, int length);
 
 } // namespace ns3
 

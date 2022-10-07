@@ -20,19 +20,23 @@
 #ifndef WAVE_NET_DEVICE_H
 #define WAVE_NET_DEVICE_H
 
-#include <map>
-#include <vector>
-#include "ns3/packet.h"
-#include "ns3/traced-callback.h"
-#include "ns3/mac48-address.h"
-#include "ns3/wifi-net-device.h"
-#include "ocb-wifi-mac.h"
-#include "vendor-specific-action.h"
 #include "channel-coordinator.h"
 #include "channel-manager.h"
 #include "channel-scheduler.h"
+#include "ocb-wifi-mac.h"
+#include "vendor-specific-action.h"
 #include "vsa-manager.h"
-namespace ns3 {
+
+#include "ns3/mac48-address.h"
+#include "ns3/packet.h"
+#include "ns3/traced-callback.h"
+#include "ns3/wifi-net-device.h"
+
+#include <map>
+#include <vector>
+
+namespace ns3
+{
 struct SchInfo;
 struct VsaInfo;
 class NetDevice;
@@ -43,7 +47,6 @@ class OcbWifiMac;
 /**
  * \defgroup wave WAVE module
  */
-
 
 /**
  * \ingroup wave
@@ -62,37 +65,41 @@ class OcbWifiMac;
  */
 struct TxInfo
 {
-  uint32_t channelNumber; ///< channel number
-  uint32_t priority; ///< priority
-  WifiMode dataRate; ///< data rate
-  WifiPreamble preamble; ///< preamble
-  uint32_t txPowerLevel; ///< transmit power level
-  // Time expiryTime;   // unsupported
-  /// Initializer
-  TxInfo ()
-    : channelNumber (CCH),
-      priority (7),
-      txPowerLevel (8)
-  {
+    uint32_t channelNumber; ///< channel number
+    uint32_t priority;      ///< priority
+    WifiMode dataRate;      ///< data rate
+    WifiPreamble preamble;  ///< preamble
+    uint32_t txPowerLevel;  ///< transmit power level
 
-  }
-  /**
-   * Initializer
-   * \param channel the channel
-   * \param prio the priority
-   * \param rate the wifi mode
-   * \param preamble the preamble
-   * \param powerLevel the power level
-   */
-  TxInfo (uint32_t channel, uint32_t prio = 7, WifiMode rate = WifiMode (), WifiPreamble preamble = WIFI_PREAMBLE_LONG, uint32_t powerLevel = 8)
-    : channelNumber (channel),
-      priority (prio),
-      dataRate (rate),
-      preamble (preamble),
-      txPowerLevel (powerLevel)
-  {
+    // Time expiryTime;   // unsupported
+    /// Initializer
+    TxInfo()
+        : channelNumber(CCH),
+          priority(7),
+          txPowerLevel(8)
+    {
+    }
 
-  }
+    /**
+     * Initializer
+     * \param channel the channel
+     * \param prio the priority
+     * \param rate the wifi mode
+     * \param preamble the preamble
+     * \param powerLevel the power level
+     */
+    TxInfo(uint32_t channel,
+           uint32_t prio = 7,
+           WifiMode rate = WifiMode(),
+           WifiPreamble preamble = WIFI_PREAMBLE_LONG,
+           uint32_t powerLevel = 8)
+        : channelNumber(channel),
+          priority(prio),
+          dataRate(rate),
+          preamble(preamble),
+          txPowerLevel(powerLevel)
+    {
+    }
 };
 
 /**
@@ -111,34 +118,36 @@ struct TxInfo
  */
 struct TxProfile
 {
-  uint32_t channelNumber; ///< channel number
-  bool adaptable; ///< adaptable
-  uint32_t txPowerLevel; ///< transmit power level
-  WifiMode dataRate; ///< data rate
-  WifiPreamble preamble; ///< preamble
-  /// Initializer
-  TxProfile ()
-    : channelNumber (SCH1),
-      adaptable (false),
-      txPowerLevel (4),
-      preamble (WIFI_PREAMBLE_LONG)
-  {
-      dataRate = WifiMode ("OfdmRate6MbpsBW10MHz");
-  }
-  /**
-   * Initializer
-   * \param channel the channel number
-   * \param adapt true to adapt
-   * \param powerLevel the power level
-   */
-  TxProfile (uint32_t channel, bool adapt = true, uint32_t powerLevel = 4)
-    : channelNumber (channel),
-      adaptable (adapt),
-      txPowerLevel (powerLevel)
-  {
-      dataRate = WifiMode ("OfdmRate6MbpsBW10MHz");
-      preamble = WIFI_PREAMBLE_LONG;
-  }
+    uint32_t channelNumber; ///< channel number
+    bool adaptable;         ///< adaptable
+    uint32_t txPowerLevel;  ///< transmit power level
+    WifiMode dataRate;      ///< data rate
+    WifiPreamble preamble;  ///< preamble
+
+    /// Initializer
+    TxProfile()
+        : channelNumber(SCH1),
+          adaptable(false),
+          txPowerLevel(4),
+          preamble(WIFI_PREAMBLE_LONG)
+    {
+        dataRate = WifiMode("OfdmRate6MbpsBW10MHz");
+    }
+
+    /**
+     * Initializer
+     * \param channel the channel number
+     * \param adapt true to adapt
+     * \param powerLevel the power level
+     */
+    TxProfile(uint32_t channel, bool adapt = true, uint32_t powerLevel = 4)
+        : channelNumber(channel),
+          adaptable(adapt),
+          txPowerLevel(powerLevel)
+    {
+        dataRate = WifiMode("OfdmRate6MbpsBW10MHz");
+        preamble = WIFI_PREAMBLE_LONG;
+    }
 };
 
 /**
@@ -159,250 +168,253 @@ struct TxProfile
  */
 class WaveNetDevice : public WifiNetDevice
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  WaveNetDevice ();
-  ~WaveNetDevice () override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    WaveNetDevice();
+    ~WaveNetDevice() override;
 
-  /**
-   * \param channelNumber the specific channel
-   * \param mac add a new available MAC entity for specific channel
-   */
-  void AddMac (uint32_t channelNumber, Ptr<OcbWifiMac> mac);
-  /**
-   * \param channelNumber the specific channel number
-   * \return corresponding MAC entity
-   */
-  Ptr<OcbWifiMac> GetMac (uint32_t channelNumber) const;
-  /**
-   * \return all inserted MAC entities.
-   */
-  std::map<uint32_t, Ptr<OcbWifiMac> >  GetMacs () const;
-  /**
-   * \param phy add a new available PHY entity
-   */
-  void AddPhy (Ptr<WifiPhy> phy);
-  /**
-   * \param index the index of PHY entity
-   * \return corresponding PHY entity
-   */
-  Ptr<WifiPhy> GetPhy (uint8_t index) const override;
-  /**
-   * \return all inserted PHY entities.
-   */
-  const std::vector<Ptr<WifiPhy>>& GetPhys () const override;
+    /**
+     * \param channelNumber the specific channel
+     * \param mac add a new available MAC entity for specific channel
+     */
+    void AddMac(uint32_t channelNumber, Ptr<OcbWifiMac> mac);
+    /**
+     * \param channelNumber the specific channel number
+     * \return corresponding MAC entity
+     */
+    Ptr<OcbWifiMac> GetMac(uint32_t channelNumber) const;
+    /**
+     * \return all inserted MAC entities.
+     */
+    std::map<uint32_t, Ptr<OcbWifiMac>> GetMacs() const;
+    /**
+     * \param phy add a new available PHY entity
+     */
+    void AddPhy(Ptr<WifiPhy> phy);
+    /**
+     * \param index the index of PHY entity
+     * \return corresponding PHY entity
+     */
+    Ptr<WifiPhy> GetPhy(uint8_t index) const override;
+    /**
+     * \return all inserted PHY entities.
+     */
+    const std::vector<Ptr<WifiPhy>>& GetPhys() const override;
 
-  /**
-   * \param channelScheduler the channel scheduler for multiple channel operation
-   */
-  void SetChannelScheduler (Ptr<ChannelScheduler> channelScheduler);
-  /**
-   * \return current channel scheduler for multiple channel operation
-   */
-  Ptr<ChannelScheduler> GetChannelScheduler () const;
-  /**
-   * \param channelManager the channel manager for multiple channel operation
-   */
-  void SetChannelManager (Ptr<ChannelManager> channelManager);
-  /**
-   * \return currentc channel manager for multiple channel operation
-   */
-  Ptr<ChannelManager> GetChannelManager () const;
-  /**
-   * \param channelCoordinator  the channel coordinator for multiple channel operation
-   */
-  void SetChannelCoordinator (Ptr<ChannelCoordinator> channelCoordinator);
-  /**
-   * \return current channel coordinator for multiple channel operation
-   */
-  Ptr<ChannelCoordinator> GetChannelCoordinator () const;
-  /**
-   * \param vsaManager the VSA manager for multiple channel operation
-   */
-  void SetVsaManager (Ptr<VsaManager> vsaManager);
-  /**
-   * \return current VSA manager for multiple channel operation
-   */
-  Ptr<VsaManager> GetVsaManager () const;
+    /**
+     * \param channelScheduler the channel scheduler for multiple channel operation
+     */
+    void SetChannelScheduler(Ptr<ChannelScheduler> channelScheduler);
+    /**
+     * \return current channel scheduler for multiple channel operation
+     */
+    Ptr<ChannelScheduler> GetChannelScheduler() const;
+    /**
+     * \param channelManager the channel manager for multiple channel operation
+     */
+    void SetChannelManager(Ptr<ChannelManager> channelManager);
+    /**
+     * \return currentc channel manager for multiple channel operation
+     */
+    Ptr<ChannelManager> GetChannelManager() const;
+    /**
+     * \param channelCoordinator  the channel coordinator for multiple channel operation
+     */
+    void SetChannelCoordinator(Ptr<ChannelCoordinator> channelCoordinator);
+    /**
+     * \return current channel coordinator for multiple channel operation
+     */
+    Ptr<ChannelCoordinator> GetChannelCoordinator() const;
+    /**
+     * \param vsaManager the VSA manager for multiple channel operation
+     */
+    void SetVsaManager(Ptr<VsaManager> vsaManager);
+    /**
+     * \return current VSA manager for multiple channel operation
+     */
+    Ptr<VsaManager> GetVsaManager() const;
 
-  /**
-   * \param schInfo the parameters about how to start SCH service
-   * \return whether channel access is assigned successfully
-   */
-  bool StartSch (const SchInfo & schInfo);
-  /**
-   *  \param channelNumber the channel which access resource will be released.
-   *  \return whether channel access is released successfully
-   */
-  bool StopSch (uint32_t channelNumber);
+    /**
+     * \param schInfo the parameters about how to start SCH service
+     * \return whether channel access is assigned successfully
+     */
+    bool StartSch(const SchInfo& schInfo);
+    /**
+     *  \param channelNumber the channel which access resource will be released.
+     *  \return whether channel access is released successfully
+     */
+    bool StopSch(uint32_t channelNumber);
 
-  /**
-   * \param vsaInfo the parameters about how to send VSA frame
-   * \return whether the request for VSA transmission is completed
-   */
-  bool StartVsa (const VsaInfo & vsaInfo);
-  /**
-   * \param channelNumber the channel on which VSA transmit event will be canceled.
-   * \return whether the request for stopping VSA transmission is completed
-   */
-  bool StopVsa (uint32_t channelNumber);
-  /**
-   * \param packet the packet is Vendor Specific Action frame.
-   * \param address the address of the MAC from which the management frame
-   *  was received.
-   * \param managementID identify the originator of the data.
-   *  Values are specified in IEEE P1609.0 with range 0-15.
-   * \param channelNumber the channel on which the frame was received.
-   * \returns true if the callback could handle the packet successfully, false
-   *          otherwise.
-   */
-  typedef Callback<bool, Ptr<const Packet>,const Address &, uint32_t, uint32_t> WaveVsaCallback;
-  /**
-   * \param vsaCallback the VSA receive callback for 1609 management information
-   */
-  void SetWaveVsaCallback (WaveVsaCallback vsaCallback);
+    /**
+     * \param vsaInfo the parameters about how to send VSA frame
+     * \return whether the request for VSA transmission is completed
+     */
+    bool StartVsa(const VsaInfo& vsaInfo);
+    /**
+     * \param channelNumber the channel on which VSA transmit event will be canceled.
+     * \return whether the request for stopping VSA transmission is completed
+     */
+    bool StopVsa(uint32_t channelNumber);
+    /**
+     * \param packet the packet is Vendor Specific Action frame.
+     * \param address the address of the MAC from which the management frame
+     *  was received.
+     * \param managementID identify the originator of the data.
+     *  Values are specified in IEEE P1609.0 with range 0-15.
+     * \param channelNumber the channel on which the frame was received.
+     * \returns true if the callback could handle the packet successfully, false
+     *          otherwise.
+     */
+    typedef Callback<bool, Ptr<const Packet>, const Address&, uint32_t, uint32_t> WaveVsaCallback;
+    /**
+     * \param vsaCallback the VSA receive callback for 1609 management information
+     */
+    void SetWaveVsaCallback(WaveVsaCallback vsaCallback);
 
-  /**
-   * \param txprofile transmit profile for IP-based data
-   * register a transmitter profile in the MLME before
-   * the associated IP-based data transfer starts.
-   * \return whether the tx profile is registered successfully
-   *
-   * note: This method should be called before WaveNetDevice::Send method
-   */
-  bool RegisterTxProfile (const TxProfile &txprofile);
-  /**
-   * \param channelNumber the specific channel number
-   * delete a registered transmitter profile in the MLME
-   * after the associated IP-based data transfer is complete
-   * \return whether the tx profile is unregistered successfully
-   */
-  bool DeleteTxProfile (uint32_t channelNumber);
+    /**
+     * \param txprofile transmit profile for IP-based data
+     * register a transmitter profile in the MLME before
+     * the associated IP-based data transfer starts.
+     * \return whether the tx profile is registered successfully
+     *
+     * note: This method should be called before WaveNetDevice::Send method
+     */
+    bool RegisterTxProfile(const TxProfile& txprofile);
+    /**
+     * \param channelNumber the specific channel number
+     * delete a registered transmitter profile in the MLME
+     * after the associated IP-based data transfer is complete
+     * \return whether the tx profile is unregistered successfully
+     */
+    bool DeleteTxProfile(uint32_t channelNumber);
 
-  /**
-   * \param packet packet sent from above down to Network Device
-   * \param dest mac address of the destination (already resolved)
-   * \param protocol identifies the type of payload contained in the packet.
-   *  Used to call the right L3Protocol when the packet is received.
-   * \param txInfo WSMP or other packets parameters for sending
-   * \return whether the SendX operation succeeded
-   *
-   * Normally this method is called by 1609.3 standard to
-   * send WSMP packets, however high layers can also send packets
-   * in other types except IP-based packets in CCH.
-   */
-  bool SendX (Ptr<Packet> packet, const Address& dest, uint32_t protocol, const TxInfo & txInfo);
-  /**
-   * \param newAddress  an immediate MAC-layer address change is required
-   *
-   * This method is similar with SetAddress method, but
-   * SetAddress is suggested for initializing a device, while this method
-   * is preferred for changing address and a addressChange TracedCallback
-   * will be called.
-   */
-  void ChangeAddress (Address newAddress);
-  /**
-   * \param channelNumber the specific channel number
-   * \param ac the specific access category
-   *
-   * Cancel all transmissions with the particular category and channel number.
-   */
-  void CancelTx (uint32_t channelNumber, enum AcIndex ac);
+    /**
+     * \param packet packet sent from above down to Network Device
+     * \param dest mac address of the destination (already resolved)
+     * \param protocol identifies the type of payload contained in the packet.
+     *  Used to call the right L3Protocol when the packet is received.
+     * \param txInfo WSMP or other packets parameters for sending
+     * \return whether the SendX operation succeeded
+     *
+     * Normally this method is called by 1609.3 standard to
+     * send WSMP packets, however high layers can also send packets
+     * in other types except IP-based packets in CCH.
+     */
+    bool SendX(Ptr<Packet> packet, const Address& dest, uint32_t protocol, const TxInfo& txInfo);
+    /**
+     * \param newAddress  an immediate MAC-layer address change is required
+     *
+     * This method is similar with SetAddress method, but
+     * SetAddress is suggested for initializing a device, while this method
+     * is preferred for changing address and a addressChange TracedCallback
+     * will be called.
+     */
+    void ChangeAddress(Address newAddress);
+    /**
+     * \param channelNumber the specific channel number
+     * \param ac the specific access category
+     *
+     * Cancel all transmissions with the particular category and channel number.
+     */
+    void CancelTx(uint32_t channelNumber, enum AcIndex ac);
 
-  /**
-   * \param packet packet sent from above down to Network Device
-   * \param dest mac address of the destination (already resolved)
-   * \param protocolNumber identifies the type of payload contained in
-   *        this packet. Used to call the right L3Protocol when the packet
-   *        is received.
-   * \return whether the Send operation succeeded
-   *
-   * Normally this method is called by 1609.3 standard to
-   * send IP-based packets, however high layers can also send packets
-   * in other types except IP-based packets in CCH.
-   */
-  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
+    /**
+     * \param packet packet sent from above down to Network Device
+     * \param dest mac address of the destination (already resolved)
+     * \param protocolNumber identifies the type of payload contained in
+     *        this packet. Used to call the right L3Protocol when the packet
+     *        is received.
+     * \return whether the Send operation succeeded
+     *
+     * Normally this method is called by 1609.3 standard to
+     * send IP-based packets, however high layers can also send packets
+     * in other types except IP-based packets in CCH.
+     */
+    bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
-  // inherited from NetDevice base class.
-  void SetIfIndex (const uint32_t index) override;
-  uint32_t GetIfIndex () const override;
-  Ptr<Channel> GetChannel () const override;
-  void SetAddress (Address address) override;
-  Address GetAddress () const override;
-  bool SetMtu (const uint16_t mtu) override;
-  uint16_t GetMtu () const override;
-  bool IsLinkUp () const override;
-  void AddLinkChangeCallback (Callback<void> callback) override;
-  bool IsBroadcast () const override;
-  Address GetBroadcast () const override;
-  bool IsMulticast () const override;
-  Address GetMulticast (Ipv4Address multicastGroup) const override;
-  bool IsPointToPoint () const override;
-  bool IsBridge () const override;
-  bool NeedsArp () const override;
-  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
-  Address GetMulticast (Ipv6Address addr) const override;
-  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) override;
-  void SetPromiscReceiveCallback (PromiscReceiveCallback cb) override;
-  bool SupportsSendFrom () const override;
+    // inherited from NetDevice base class.
+    void SetIfIndex(const uint32_t index) override;
+    uint32_t GetIfIndex() const override;
+    Ptr<Channel> GetChannel() const override;
+    void SetAddress(Address address) override;
+    Address GetAddress() const override;
+    bool SetMtu(const uint16_t mtu) override;
+    uint16_t GetMtu() const override;
+    bool IsLinkUp() const override;
+    void AddLinkChangeCallback(Callback<void> callback) override;
+    bool IsBroadcast() const override;
+    Address GetBroadcast() const override;
+    bool IsMulticast() const override;
+    Address GetMulticast(Ipv4Address multicastGroup) const override;
+    bool IsPointToPoint() const override;
+    bool IsBridge() const override;
+    bool NeedsArp() const override;
+    void SetReceiveCallback(NetDevice::ReceiveCallback cb) override;
+    Address GetMulticast(Ipv6Address addr) const override;
+    bool SendFrom(Ptr<Packet> packet,
+                  const Address& source,
+                  const Address& dest,
+                  uint16_t protocolNumber) override;
+    void SetPromiscReceiveCallback(PromiscReceiveCallback cb) override;
+    bool SupportsSendFrom() const override;
 
-private:
-  /// This value conforms to the 802.11 specification
-  static const uint16_t MAX_MSDU_SIZE = 2304;
+  private:
+    /// This value conforms to the 802.11 specification
+    static const uint16_t MAX_MSDU_SIZE = 2304;
 
-  /// IP v4 Protocol number
-  static const uint16_t IPv4_PROT_NUMBER = 0x0800;
-  /// IP v6 Protocol number
-  static const uint16_t IPv6_PROT_NUMBER = 0x86DD;
+    /// IP v4 Protocol number
+    static const uint16_t IPv4_PROT_NUMBER = 0x0800;
+    /// IP v6 Protocol number
+    static const uint16_t IPv6_PROT_NUMBER = 0x86DD;
 
-  void DoDispose () override;
-  void DoInitialize () override;
-  /**
-   * \param channelNumber the specific channel
-   * \return whether this channel is valid and available for use
-   */
-  bool IsAvailableChannel (uint32_t channelNumber) const;
-  /**
-   * Receive a packet from the lower layer and pass the
-   * packet up the stack.
-   *
-   * \param packet
-   * \param from
-   * \param to
-   */
-  void ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
+    void DoDispose() override;
+    void DoInitialize() override;
+    /**
+     * \param channelNumber the specific channel
+     * \return whether this channel is valid and available for use
+     */
+    bool IsAvailableChannel(uint32_t channelNumber) const;
+    /**
+     * Receive a packet from the lower layer and pass the
+     * packet up the stack.
+     *
+     * \param packet
+     * \param from
+     * \param to
+     */
+    void ForwardUp(Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
 
-  /// MacEntities typedef
-  typedef std::map<uint32_t, Ptr<OcbWifiMac> > MacEntities;
-  /// MacEntities iterator typedef
-  typedef std::map<uint32_t, Ptr<OcbWifiMac> >::const_iterator MacEntitiesI;
-  MacEntities m_macEntities; ///< MAC entities
-  /// PhyEntities typedef
-  typedef std::vector<Ptr<WifiPhy> > PhyEntities;
-  /// PhyEntities iterator typedef
-  typedef std::vector<Ptr<WifiPhy> >::const_iterator PhyEntitiesI;
-  PhyEntities m_phyEntities; ///< Phy entities
+    /// MacEntities typedef
+    typedef std::map<uint32_t, Ptr<OcbWifiMac>> MacEntities;
+    /// MacEntities iterator typedef
+    typedef std::map<uint32_t, Ptr<OcbWifiMac>>::const_iterator MacEntitiesI;
+    MacEntities m_macEntities; ///< MAC entities
+    /// PhyEntities typedef
+    typedef std::vector<Ptr<WifiPhy>> PhyEntities;
+    /// PhyEntities iterator typedef
+    typedef std::vector<Ptr<WifiPhy>>::const_iterator PhyEntitiesI;
+    PhyEntities m_phyEntities; ///< Phy entities
 
-  Ptr<ChannelManager> m_channelManager; ///< the channel manager
-  Ptr<ChannelScheduler> m_channelScheduler; ///< the channel scheduler
-  Ptr<ChannelCoordinator> m_channelCoordinator; ///< the channel coordinator
-  Ptr<VsaManager> m_vsaManager; ///< the VSA manager
-  TxProfile *m_txProfile; ///< transmit profile
-  /**
-   * \todo The Address arguments should be passed
-   * by const reference, since they are large.
-   */
-  TracedCallback<Address, Address> m_addressChange;
+    Ptr<ChannelManager> m_channelManager;         ///< the channel manager
+    Ptr<ChannelScheduler> m_channelScheduler;     ///< the channel scheduler
+    Ptr<ChannelCoordinator> m_channelCoordinator; ///< the channel coordinator
+    Ptr<VsaManager> m_vsaManager;                 ///< the VSA manager
+    TxProfile* m_txProfile;                       ///< transmit profile
+    /**
+     * \todo The Address arguments should be passed
+     * by const reference, since they are large.
+     */
+    TracedCallback<Address, Address> m_addressChange;
 
-  // copy from WifiNetDevice
-  NetDevice::ReceiveCallback m_forwardUp; ///< forward up receive callback
-  NetDevice::PromiscReceiveCallback m_promiscRx; ///< promiscious receive callback
-  uint32_t m_ifIndex; ///< IF index
-  mutable uint16_t m_mtu; ///< MTU
+    // copy from WifiNetDevice
+    NetDevice::ReceiveCallback m_forwardUp;        ///< forward up receive callback
+    NetDevice::PromiscReceiveCallback m_promiscRx; ///< promiscious receive callback
+    uint32_t m_ifIndex;                            ///< IF index
+    mutable uint16_t m_mtu;                        ///< MTU
 };
 
 } // namespace ns3

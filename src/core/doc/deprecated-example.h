@@ -30,10 +30,10 @@
  * \deprecated This method will go away in future versions of ns-3.
  * See instead TheNewWay()
  */
-NS_DEPRECATED_3_XX ("see TheNewWay")
-void SomethingUseful ();
+NS_DEPRECATED_3_XX("see TheNewWay")
+void SomethingUseful();
 /*
  * Do something more useful.
  */
-void TheNewWay ();
+void TheNewWay();
 // [doxygen snippet]

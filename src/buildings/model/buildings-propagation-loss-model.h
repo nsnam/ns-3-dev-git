@@ -29,9 +29,8 @@
 #include <ns3/building.h>
 #include <ns3/mobility-building-info.h>
 
-
-
-namespace ns3 {
+namespace ns3
+{
 
 class ShadowingLossModel;
 class JakesFadingLossModel;
@@ -56,105 +55,111 @@ class JakesFadingLossModel;
 
 class BuildingsPropagationLossModel : public PropagationLossModel
 {
-
-public:
-  /**
-   * \brief Get the type ID.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
-
-  BuildingsPropagationLossModel ();
-  /**
-   * \param a the mobility model of the source
-   * \param b the mobility model of the destination
-   * \returns the propagation loss (in dBm)
-   */
-  virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
-
-  // inherited from PropagationLossModel
-  double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-
-protected:
-  /**
-   * Calculate the external wall loss
-   * \param a Building data
-   * \returns the propagation loss (in dBm)
-   */
-  double ExternalWallLoss (Ptr<MobilityBuildingInfo> a) const;
-  /**
-   * Calculate the height loss
-   * \param n Building data
-   * \returns the propagation loss (in dBm)
-   */
-  double HeightLoss (Ptr<MobilityBuildingInfo> n) const;
-  /**
-   * Calculate the internal wall loss
-   * \param a Room A data
-   * \param b Room B data
-   * \returns the propagation loss (in dBm)
-   */
-  double InternalWallsLoss (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
-
-  /**
-   * Calculate the shadowing loss
-   * \param a Room A data
-   * \param b Room B data
-   * \returns the propagation loss (in dBm)
-   */
-  double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-
-  double m_lossInternalWall; //!< loss from internal walls (in dBm)
-
-  /**
-   * \ingroup propagation
-   *
-   * This model allows the computation of shadowing loss
-   */
-  class ShadowingLoss
-  {
   public:
-    ShadowingLoss ();
     /**
-     * Constructor
-     * \param shadowingValue Value for shadowing
-     * \param receiver Receiver position
+     * \brief Get the type ID.
+     * \return The object TypeId.
      */
-    ShadowingLoss (double shadowingValue, Ptr<MobilityModel> receiver);
+    static TypeId GetTypeId();
+
+    BuildingsPropagationLossModel();
     /**
-     * \returns the loss (in dBm)
+     * \param a the mobility model of the source
+     * \param b the mobility model of the destination
+     * \returns the propagation loss (in dBm)
      */
-    double GetLoss () const;
-    /**
-     * \returns the receiver mobility model
-     */
-    Ptr<MobilityModel> GetReceiver () const;
+    virtual double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
+
+    // inherited from PropagationLossModel
+    double DoCalcRxPower(double txPowerDbm,
+                         Ptr<MobilityModel> a,
+                         Ptr<MobilityModel> b) const override;
+
   protected:
-    double m_shadowingValue; //!< Shadowing value
-    Ptr<MobilityModel> m_receiver; //!< The receiver mobility model
-  };
+    /**
+     * Calculate the external wall loss
+     * \param a Building data
+     * \returns the propagation loss (in dBm)
+     */
+    double ExternalWallLoss(Ptr<MobilityBuildingInfo> a) const;
+    /**
+     * Calculate the height loss
+     * \param n Building data
+     * \returns the propagation loss (in dBm)
+     */
+    double HeightLoss(Ptr<MobilityBuildingInfo> n) const;
+    /**
+     * Calculate the internal wall loss
+     * \param a Room A data
+     * \param b Room B data
+     * \returns the propagation loss (in dBm)
+     */
+    double InternalWallsLoss(Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
 
-  /// Map of the shadowng loss
-  mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
-  /**
-   * Calculate the Standard deviation of the normal distribution used to calculate the shadowing
-   * \param a Room A data
-   * \param b Room B data
-   * \return the Standard deviation of the normal distribution
-   */
-  double EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
+    /**
+     * Calculate the shadowing loss
+     * \param a Room A data
+     * \param b Room B data
+     * \returns the propagation loss (in dBm)
+     */
+    double GetShadowing(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
-  /// Standard deviation of the normal distribution used to calculate the shadowing due to ext walls
-  double m_shadowingSigmaExtWalls;
-  /// Standard deviation of the normal distribution used to calculate the shadowing for outdoor nodes
-  double m_shadowingSigmaOutdoor;
-  /// Standard deviation of the normal distribution used to calculate the shadowing for indoor nodes
-  double m_shadowingSigmaIndoor;
-  Ptr<NormalRandomVariable> m_randVariable; //!< Random variable
+    double m_lossInternalWall; //!< loss from internal walls (in dBm)
 
-  int64_t DoAssignStreams (int64_t stream) override;
+    /**
+     * \ingroup propagation
+     *
+     * This model allows the computation of shadowing loss
+     */
+    class ShadowingLoss
+    {
+      public:
+        ShadowingLoss();
+        /**
+         * Constructor
+         * \param shadowingValue Value for shadowing
+         * \param receiver Receiver position
+         */
+        ShadowingLoss(double shadowingValue, Ptr<MobilityModel> receiver);
+        /**
+         * \returns the loss (in dBm)
+         */
+        double GetLoss() const;
+        /**
+         * \returns the receiver mobility model
+         */
+        Ptr<MobilityModel> GetReceiver() const;
+
+      protected:
+        double m_shadowingValue;       //!< Shadowing value
+        Ptr<MobilityModel> m_receiver; //!< The receiver mobility model
+    };
+
+    /// Map of the shadowng loss
+    mutable std::map<Ptr<MobilityModel>, std::map<Ptr<MobilityModel>, ShadowingLoss>>
+        m_shadowingLossMap;
+    /**
+     * Calculate the Standard deviation of the normal distribution used to calculate the shadowing
+     * \param a Room A data
+     * \param b Room B data
+     * \return the Standard deviation of the normal distribution
+     */
+    double EvaluateSigma(Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
+
+    /// Standard deviation of the normal distribution used to calculate the shadowing due to ext
+    /// walls
+    double m_shadowingSigmaExtWalls;
+    /// Standard deviation of the normal distribution used to calculate the shadowing for outdoor
+    /// nodes
+    double m_shadowingSigmaOutdoor;
+    /// Standard deviation of the normal distribution used to calculate the shadowing for indoor
+    /// nodes
+    double m_shadowingSigmaIndoor;
+    Ptr<NormalRandomVariable> m_randVariable; //!< Random variable
+
+    int64_t DoAssignStreams(int64_t stream) override;
 };
 
-}
+} // namespace ns3
 
 #endif /* BUILDINGS_PROPAGATION_LOSS_MODEL_H_ */

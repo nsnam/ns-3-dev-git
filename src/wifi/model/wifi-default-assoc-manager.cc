@@ -19,287 +19,302 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include "wifi-default-assoc-manager.h"
+
+#include "sta-wifi-mac.h"
+#include "wifi-phy.h"
+
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "sta-wifi-mac.h"
-#include "wifi-default-assoc-manager.h"
-#include "wifi-phy.h"
+
 #include <algorithm>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("WifiDefaultAssocManager");
+NS_LOG_COMPONENT_DEFINE("WifiDefaultAssocManager");
 
-NS_OBJECT_ENSURE_REGISTERED (WifiDefaultAssocManager);
+NS_OBJECT_ENSURE_REGISTERED(WifiDefaultAssocManager);
 
 TypeId
-WifiDefaultAssocManager::GetTypeId ()
+WifiDefaultAssocManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiDefaultAssocManager")
-    .SetParent<WifiAssocManager> ()
-    .AddConstructor<WifiDefaultAssocManager> ()
-    .SetGroupName ("Wifi")
-    .AddAttribute ("ChannelSwitchTimeout",
-                   "After requesting a channel switch on a link to setup that link, "
-                   "wait at most this amount of time. If a channel switch is not "
-                   "notified within this amount of time, we give up setting up that link.",
-                   TimeValue (MilliSeconds (5)),
-                   MakeTimeAccessor (&WifiDefaultAssocManager::m_channelSwitchTimeout),
-                   MakeTimeChecker (Seconds (0)))
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::WifiDefaultAssocManager")
+            .SetParent<WifiAssocManager>()
+            .AddConstructor<WifiDefaultAssocManager>()
+            .SetGroupName("Wifi")
+            .AddAttribute("ChannelSwitchTimeout",
+                          "After requesting a channel switch on a link to setup that link, "
+                          "wait at most this amount of time. If a channel switch is not "
+                          "notified within this amount of time, we give up setting up that link.",
+                          TimeValue(MilliSeconds(5)),
+                          MakeTimeAccessor(&WifiDefaultAssocManager::m_channelSwitchTimeout),
+                          MakeTimeChecker(Seconds(0)));
+    return tid;
 }
 
-WifiDefaultAssocManager::WifiDefaultAssocManager ()
+WifiDefaultAssocManager::WifiDefaultAssocManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-WifiDefaultAssocManager::~WifiDefaultAssocManager ()
+WifiDefaultAssocManager::~WifiDefaultAssocManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-WifiDefaultAssocManager::DoDispose ()
+WifiDefaultAssocManager::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_probeRequestEvent.Cancel ();
-  m_waitBeaconEvent.Cancel ();
-  WifiAssocManager::DoDispose();
+    NS_LOG_FUNCTION(this);
+    m_probeRequestEvent.Cancel();
+    m_waitBeaconEvent.Cancel();
+    WifiAssocManager::DoDispose();
 }
 
 bool
-WifiDefaultAssocManager::Compare (const StaWifiMac::ApInfo& lhs,
-                                  const StaWifiMac::ApInfo& rhs) const
+WifiDefaultAssocManager::Compare(const StaWifiMac::ApInfo& lhs, const StaWifiMac::ApInfo& rhs) const
 {
-  return lhs.m_snr > rhs.m_snr;
+    return lhs.m_snr > rhs.m_snr;
 }
 
 void
-WifiDefaultAssocManager::DoStartScanning ()
+WifiDefaultAssocManager::DoStartScanning()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  // if there are entries in the sorted list of AP information, reuse them and
-  // do not perform scanning
-  if (!GetSortedList ().empty ())
+    // if there are entries in the sorted list of AP information, reuse them and
+    // do not perform scanning
+    if (!GetSortedList().empty())
     {
-      Simulator::ScheduleNow (&WifiDefaultAssocManager::EndScanning, this);
-      return;
+        Simulator::ScheduleNow(&WifiDefaultAssocManager::EndScanning, this);
+        return;
     }
 
-  m_probeRequestEvent.Cancel ();
-  m_waitBeaconEvent.Cancel ();
+    m_probeRequestEvent.Cancel();
+    m_waitBeaconEvent.Cancel();
 
-  if (GetScanParams ().type == WifiScanParams::ACTIVE)
+    if (GetScanParams().type == WifiScanParams::ACTIVE)
     {
-      Simulator::Schedule (GetScanParams ().probeDelay, &StaWifiMac::SendProbeRequest, m_mac);
-      m_probeRequestEvent = Simulator::Schedule (GetScanParams ().probeDelay
-                                                 + GetScanParams().maxChannelTime,
-                                                 &WifiDefaultAssocManager::EndScanning,
-                                                 this);
+        Simulator::Schedule(GetScanParams().probeDelay, &StaWifiMac::SendProbeRequest, m_mac);
+        m_probeRequestEvent =
+            Simulator::Schedule(GetScanParams().probeDelay + GetScanParams().maxChannelTime,
+                                &WifiDefaultAssocManager::EndScanning,
+                                this);
     }
-  else
+    else
     {
-      m_waitBeaconEvent = Simulator::Schedule (GetScanParams ().maxChannelTime,
-                                               &WifiDefaultAssocManager::EndScanning,
-                                               this);
+        m_waitBeaconEvent = Simulator::Schedule(GetScanParams().maxChannelTime,
+                                                &WifiDefaultAssocManager::EndScanning,
+                                                this);
     }
 }
 
 void
-WifiDefaultAssocManager::EndScanning ()
+WifiDefaultAssocManager::EndScanning()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  OptMleConstRef mle;
-  OptRnrConstRef rnr;
-  std::list<WifiAssocManager::RnrLinkInfo> apList;
+    OptMleConstRef mle;
+    OptRnrConstRef rnr;
+    std::list<WifiAssocManager::RnrLinkInfo> apList;
 
-  // If multi-link setup is not possible, just call ScanningTimeout() and return
-  if (!CanSetupMultiLink (mle, rnr) || (apList = GetAllAffiliatedAps (*rnr)).empty ())
+    // If multi-link setup is not possible, just call ScanningTimeout() and return
+    if (!CanSetupMultiLink(mle, rnr) || (apList = GetAllAffiliatedAps(*rnr)).empty())
     {
-      ScanningTimeout ();
-      return;
+        ScanningTimeout();
+        return;
     }
 
-  auto& bestAp = *GetSortedList ().begin ();
+    auto& bestAp = *GetSortedList().begin();
 
-  // store AP MLD MAC address in the WifiRemoteStationManager associated with
-  // the link on which the Beacon/Probe Response was received
-  m_mac->GetWifiRemoteStationManager (bestAp.m_linkId)->SetMldAddress (bestAp.m_apAddr,
-                                                                       mle->get ().GetMldMacAddress ());
-  auto& setupLinks = GetSetupLinks (bestAp);
+    // store AP MLD MAC address in the WifiRemoteStationManager associated with
+    // the link on which the Beacon/Probe Response was received
+    m_mac->GetWifiRemoteStationManager(bestAp.m_linkId)
+        ->SetMldAddress(bestAp.m_apAddr, mle->get().GetMldMacAddress());
+    auto& setupLinks = GetSetupLinks(bestAp);
 
-  setupLinks.clear ();
-  setupLinks.emplace_back(bestAp.m_linkId, mle->get ().GetLinkIdInfo ());
+    setupLinks.clear();
+    setupLinks.emplace_back(bestAp.m_linkId, mle->get().GetLinkIdInfo());
 
-  // sort local PHY objects so that radios with constrained PHY band comes first,
-  // then radios with no constraint
-  std::list<uint8_t> localLinkIds;
+    // sort local PHY objects so that radios with constrained PHY band comes first,
+    // then radios with no constraint
+    std::list<uint8_t> localLinkIds;
 
-  for (uint8_t linkId = 0; linkId < m_mac->GetNLinks (); linkId++)
+    for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
     {
-      if (linkId == bestAp.m_linkId)
+        if (linkId == bestAp.m_linkId)
         {
-          // this link has been already added (it is the link on which the Beacon/Probe
-          // Response was received)
-          continue;
+            // this link has been already added (it is the link on which the Beacon/Probe
+            // Response was received)
+            continue;
         }
 
-      if (m_mac->GetWifiPhy (linkId)->HasFixedPhyBand ())
+        if (m_mac->GetWifiPhy(linkId)->HasFixedPhyBand())
         {
-          localLinkIds.push_front (linkId);
+            localLinkIds.push_front(linkId);
         }
-      else
+        else
         {
-          localLinkIds.push_back (linkId);
+            localLinkIds.push_back(linkId);
         }
     }
 
-  // iterate over all the local links and find if we can setup a link for each of them
-  for (const auto& linkId : localLinkIds)
+    // iterate over all the local links and find if we can setup a link for each of them
+    for (const auto& linkId : localLinkIds)
     {
-      auto phy = m_mac->GetWifiPhy (linkId);
-      auto apIt = apList.begin ();
+        auto phy = m_mac->GetWifiPhy(linkId);
+        auto apIt = apList.begin();
 
-      while (apIt != apList.end ())
+        while (apIt != apList.end())
         {
-          auto apChannel = rnr->get ().GetOperatingChannel (apIt->m_nbrApInfoId);
+            auto apChannel = rnr->get().GetOperatingChannel(apIt->m_nbrApInfoId);
 
-          // we cannot setup a link with this affiliated AP if this PHY object is
-          // constrained to operate in the current PHY band and this affiliated AP
-          // is operating in a different PHY band than this PHY object
-          if (phy->HasFixedPhyBand () && phy->GetPhyBand () != apChannel.GetPhyBand ())
+            // we cannot setup a link with this affiliated AP if this PHY object is
+            // constrained to operate in the current PHY band and this affiliated AP
+            // is operating in a different PHY band than this PHY object
+            if (phy->HasFixedPhyBand() && phy->GetPhyBand() != apChannel.GetPhyBand())
             {
-              apIt++;
-              continue;
+                apIt++;
+                continue;
             }
 
-          bool needChannelSwitch = false;
-          if (const auto& channel = phy->GetOperatingChannel ();
-              channel.GetNumber () != apChannel.GetNumber ()
-              || channel.GetWidth () != apChannel.GetWidth ()
-              || channel.GetPhyBand () != apChannel.GetPhyBand ())
+            bool needChannelSwitch = false;
+            if (const auto& channel = phy->GetOperatingChannel();
+                channel.GetNumber() != apChannel.GetNumber() ||
+                channel.GetWidth() != apChannel.GetWidth() ||
+                channel.GetPhyBand() != apChannel.GetPhyBand())
             {
-              needChannelSwitch = true;
+                needChannelSwitch = true;
             }
 
-          if (needChannelSwitch && phy->IsStateSwitching ())
+            if (needChannelSwitch && phy->IsStateSwitching())
             {
-              // skip this affiliated AP, which is operating on a different channel
-              // than ours, because we are already switching channel and cannot
-              // schedule another channel switch to match the affiliated AP channel
-              apIt++;
-              continue;
+                // skip this affiliated AP, which is operating on a different channel
+                // than ours, because we are already switching channel and cannot
+                // schedule another channel switch to match the affiliated AP channel
+                apIt++;
+                continue;
             }
 
-          // if we get here, it means we can setup a link with this affiliated AP
-          // set the BSSID for this link
-          Mac48Address bssid = rnr->get ().GetBssid (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId);
-          // store AP MLD MAC address in the WifiRemoteStationManager associated with
-          // the link requested to setup
-          m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->get ().GetMldMacAddress ());
-          setupLinks.emplace_back(linkId, rnr->get ().GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId));
+            // if we get here, it means we can setup a link with this affiliated AP
+            // set the BSSID for this link
+            Mac48Address bssid = rnr->get().GetBssid(apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId);
+            // store AP MLD MAC address in the WifiRemoteStationManager associated with
+            // the link requested to setup
+            m_mac->GetWifiRemoteStationManager(linkId)->SetMldAddress(
+                bssid,
+                mle->get().GetMldMacAddress());
+            setupLinks.emplace_back(
+                linkId,
+                rnr->get().GetLinkId(apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId));
 
-          if (needChannelSwitch)
+            if (needChannelSwitch)
             {
-              if (phy->IsStateSleep ())
+                if (phy->IsStateSleep())
                 {
-                  // switching channel while a PHY is in sleep state fails
-                  phy->ResumeFromSleep ();
+                    // switching channel while a PHY is in sleep state fails
+                    phy->ResumeFromSleep();
                 }
-              // switch this link to using the channel used by a reported AP
-              // TODO check if the STA only supports a narrower channel width
-              NS_LOG_DEBUG ("Switch link " << +linkId
-                            << " to using channel " << +apChannel.GetNumber ()
-                            << " in band " << apChannel.GetPhyBand ()
-                            << " frequency " << apChannel.GetFrequency ()
-                            << "MHz width " << apChannel.GetWidth () << "MHz");
-              WifiPhy::ChannelTuple chTuple {apChannel.GetNumber (), apChannel.GetWidth (),
-                                              apChannel.GetPhyBand (),
-                                              apChannel.GetPrimaryChannelIndex (20)};
-              phy->SetOperatingChannel (chTuple);
-              // actual channel switching may be delayed, thus setup a channel switch timer
-              m_channelSwitchInfo.resize (m_mac->GetNLinks ());
-              m_channelSwitchInfo[linkId].timer.Cancel ();
-              m_channelSwitchInfo[linkId].timer = Simulator::Schedule (m_channelSwitchTimeout,
-                                                                       &WifiDefaultAssocManager::ChannelSwitchTimeout,
-                                                                       this, linkId);
-              m_channelSwitchInfo[linkId].apLinkAddress = bssid;
-              m_channelSwitchInfo[linkId].apMldAddress = mle->get ().GetMldMacAddress ();
+                // switch this link to using the channel used by a reported AP
+                // TODO check if the STA only supports a narrower channel width
+                NS_LOG_DEBUG("Switch link "
+                             << +linkId << " to using channel " << +apChannel.GetNumber()
+                             << " in band " << apChannel.GetPhyBand() << " frequency "
+                             << apChannel.GetFrequency() << "MHz width " << apChannel.GetWidth()
+                             << "MHz");
+                WifiPhy::ChannelTuple chTuple{apChannel.GetNumber(),
+                                              apChannel.GetWidth(),
+                                              apChannel.GetPhyBand(),
+                                              apChannel.GetPrimaryChannelIndex(20)};
+                phy->SetOperatingChannel(chTuple);
+                // actual channel switching may be delayed, thus setup a channel switch timer
+                m_channelSwitchInfo.resize(m_mac->GetNLinks());
+                m_channelSwitchInfo[linkId].timer.Cancel();
+                m_channelSwitchInfo[linkId].timer =
+                    Simulator::Schedule(m_channelSwitchTimeout,
+                                        &WifiDefaultAssocManager::ChannelSwitchTimeout,
+                                        this,
+                                        linkId);
+                m_channelSwitchInfo[linkId].apLinkAddress = bssid;
+                m_channelSwitchInfo[linkId].apMldAddress = mle->get().GetMldMacAddress();
             }
 
-          // remove the affiliated AP with which we are going to setup a link and move
-          // to the next local linkId
-          apList.erase (apIt);
-          break;
+            // remove the affiliated AP with which we are going to setup a link and move
+            // to the next local linkId
+            apList.erase(apIt);
+            break;
         }
     }
 
-  if (std::none_of (m_channelSwitchInfo.begin (), m_channelSwitchInfo.end (),
-                    [](auto &&info){ return info.timer.IsRunning (); }))
+    if (std::none_of(m_channelSwitchInfo.begin(), m_channelSwitchInfo.end(), [](auto&& info) {
+            return info.timer.IsRunning();
+        }))
     {
-      // we are done
-      ScanningTimeout ();
+        // we are done
+        ScanningTimeout();
     }
 }
 
 void
-WifiDefaultAssocManager::NotifyChannelSwitched (uint8_t linkId)
+WifiDefaultAssocManager::NotifyChannelSwitched(uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << +linkId);
-  if (m_channelSwitchInfo.size () > linkId  && m_channelSwitchInfo[linkId].timer.IsRunning ())
+    NS_LOG_FUNCTION(this << +linkId);
+    if (m_channelSwitchInfo.size() > linkId && m_channelSwitchInfo[linkId].timer.IsRunning())
     {
-      // we were waiting for this notification
-      m_channelSwitchInfo[linkId].timer.Cancel ();
+        // we were waiting for this notification
+        m_channelSwitchInfo[linkId].timer.Cancel();
 
-      // the remote station manager has been reset after switching, hence store
-      // information about AP link address and AP MLD address
-      m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (m_channelSwitchInfo[linkId].apLinkAddress,
-                                                                  m_channelSwitchInfo[linkId].apMldAddress);
+        // the remote station manager has been reset after switching, hence store
+        // information about AP link address and AP MLD address
+        m_mac->GetWifiRemoteStationManager(linkId)->SetMldAddress(
+            m_channelSwitchInfo[linkId].apLinkAddress,
+            m_channelSwitchInfo[linkId].apMldAddress);
 
-      if (std::none_of (m_channelSwitchInfo.begin (), m_channelSwitchInfo.end (),
-                        [](auto &&info){ return info.timer.IsRunning (); }))
+        if (std::none_of(m_channelSwitchInfo.begin(), m_channelSwitchInfo.end(), [](auto&& info) {
+                return info.timer.IsRunning();
+            }))
         {
-          // we are done
-          ScanningTimeout ();
+            // we are done
+            ScanningTimeout();
         }
     }
 }
 
 void
-WifiDefaultAssocManager::ChannelSwitchTimeout (uint8_t linkId)
+WifiDefaultAssocManager::ChannelSwitchTimeout(uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << +linkId);
+    NS_LOG_FUNCTION(this << +linkId);
 
-  // we give up setting up this link
-  auto& bestAp = *GetSortedList ().begin ();
-  auto& setupLinks = GetSetupLinks (bestAp);
-  auto it = std::find_if (setupLinks.begin (), setupLinks.end (),
-                          [&linkId](auto&& linkIds){ return linkIds.first == linkId; });
-  NS_ASSERT (it != setupLinks.end ());
-  setupLinks.erase (it);
+    // we give up setting up this link
+    auto& bestAp = *GetSortedList().begin();
+    auto& setupLinks = GetSetupLinks(bestAp);
+    auto it = std::find_if(setupLinks.begin(), setupLinks.end(), [&linkId](auto&& linkIds) {
+        return linkIds.first == linkId;
+    });
+    NS_ASSERT(it != setupLinks.end());
+    setupLinks.erase(it);
 
-  if (std::none_of (m_channelSwitchInfo.begin (), m_channelSwitchInfo.end (),
-                    [](auto &&info){ return info.timer.IsRunning (); }))
+    if (std::none_of(m_channelSwitchInfo.begin(), m_channelSwitchInfo.end(), [](auto&& info) {
+            return info.timer.IsRunning();
+        }))
     {
-      // we are done
-      ScanningTimeout ();
+        // we are done
+        ScanningTimeout();
     }
 }
 
 bool
-WifiDefaultAssocManager::CanBeInserted (const StaWifiMac::ApInfo& apInfo) const
+WifiDefaultAssocManager::CanBeInserted(const StaWifiMac::ApInfo& apInfo) const
 {
-  return (m_waitBeaconEvent.IsRunning () || m_probeRequestEvent.IsRunning ());
+    return (m_waitBeaconEvent.IsRunning() || m_probeRequestEvent.IsRunning());
 }
 
 bool
-WifiDefaultAssocManager::CanBeReturned (const StaWifiMac::ApInfo& apInfo) const
+WifiDefaultAssocManager::CanBeReturned(const StaWifiMac::ApInfo& apInfo) const
 {
-  return true;
+    return true;
 }
 
-} //namespace ns3
+} // namespace ns3

@@ -21,8 +21,8 @@
 #ifndef TRICKLE_TIMER_H
 #define TRICKLE_TIMER_H
 
-#include "nstime.h"
 #include "event-id.h"
+#include "nstime.h"
 #include "random-variable-stream.h"
 
 /**
@@ -31,7 +31,8 @@
  * ns3::TrickleTimer timer class declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class TimerImpl;
 
@@ -72,187 +73,184 @@ class TimerImpl;
  */
 class TrickleTimer
 {
-public:
-  /** Constructor. */
-  TrickleTimer ();
+  public:
+    /** Constructor. */
+    TrickleTimer();
 
-  /**
-   * Constructor.
-   *
-   * The maximum interval is set to std::exp2 (doublings) * minInterval.
-   *
-   * \param minInterval Minimum interval.
-   * \param doublings Number of doublings to reach the maximum interval.
-   * \param redundancy Redundancy constant.
-   *
-   * A zero value in the redundancy constant means that the suppression
-   * algorithm is disabled.
-   *
-   */
-  TrickleTimer (Time minInterval, uint8_t doublings, uint16_t redundancy);
+    /**
+     * Constructor.
+     *
+     * The maximum interval is set to std::exp2 (doublings) * minInterval.
+     *
+     * \param minInterval Minimum interval.
+     * \param doublings Number of doublings to reach the maximum interval.
+     * \param redundancy Redundancy constant.
+     *
+     * A zero value in the redundancy constant means that the suppression
+     * algorithm is disabled.
+     *
+     */
+    TrickleTimer(Time minInterval, uint8_t doublings, uint16_t redundancy);
 
-  /** Destructor. */
-  ~TrickleTimer ();
+    /** Destructor. */
+    ~TrickleTimer();
 
-  /**
-   * Assigns the stream number for the uniform random number generator to use
-   *
-   * \param streamNum first stream index to use
-   * \return the number of stream indices assigned by this helper
-   */
-  int64_t AssignStreams (int64_t streamNum);
+    /**
+     * Assigns the stream number for the uniform random number generator to use
+     *
+     * \param streamNum first stream index to use
+     * \return the number of stream indices assigned by this helper
+     */
+    int64_t AssignStreams(int64_t streamNum);
 
-  /**
-   * \brief Set the timer parameters.
-   *
-   * The maximum interval is set to std::exp2 (doublings) * minInterval.
-   *
-   * \param minInterval Minimum interval.
-   * \param doublings Number of doublings to reach the maximum interval.
-   * \param redundancy Redundancy constant.
-   *
-   * A zero value in the redundancy constant means that the suppression
-   * algorithm is disabled.
-   *
-   */
-  void SetParameters (Time minInterval, uint8_t doublings, uint16_t redundancy);
+    /**
+     * \brief Set the timer parameters.
+     *
+     * The maximum interval is set to std::exp2 (doublings) * minInterval.
+     *
+     * \param minInterval Minimum interval.
+     * \param doublings Number of doublings to reach the maximum interval.
+     * \param redundancy Redundancy constant.
+     *
+     * A zero value in the redundancy constant means that the suppression
+     * algorithm is disabled.
+     *
+     */
+    void SetParameters(Time minInterval, uint8_t doublings, uint16_t redundancy);
 
-  /**
-   * \brief Get the MinInterval of the timer.
-   * \return The MinInterval
-   */
-  Time GetMinInterval () const;
+    /**
+     * \brief Get the MinInterval of the timer.
+     * \return The MinInterval
+     */
+    Time GetMinInterval() const;
 
-  /**
-   * \brief Get the MaxInterval of the timer.
-   *
-   * The timer MaxInterval is always std::exp2 (doublings) * minInterval
-   * \return The MaxInterval
-   */
-  Time GetMaxInterval () const;
+    /**
+     * \brief Get the MaxInterval of the timer.
+     *
+     * The timer MaxInterval is always std::exp2 (doublings) * minInterval
+     * \return The MaxInterval
+     */
+    Time GetMaxInterval() const;
 
-  /**
-   * \brief Get the doublings of the timer.
-   * \return The doublings
-   */
-  uint8_t GetDoublings () const;
+    /**
+     * \brief Get the doublings of the timer.
+     * \return The doublings
+     */
+    uint8_t GetDoublings() const;
 
-  /**
-   * \brief Get the Redundancy constant of the timer.
-   * \return The Redundancy
-   */
-  uint16_t GetRedundancy () const;
+    /**
+     * \brief Get the Redundancy constant of the timer.
+     * \return The Redundancy
+     */
+    uint16_t GetRedundancy() const;
 
-  /**
-   * \returns The amount of time left until this timer expires.
-   *
-   * This method returns zero if the timer has never been started.
-   */
-  Time GetDelayLeft () const;
+    /**
+     * \returns The amount of time left until this timer expires.
+     *
+     * This method returns zero if the timer has never been started.
+     */
+    Time GetDelayLeft() const;
 
-  /**
-   * \returns The amount of time left until this timer interval expires.
-   *
-   * This method returns zero if the timer has never been started.
-   */
-  Time GetIntervalLeft () const;
+    /**
+     * \returns The amount of time left until this timer interval expires.
+     *
+     * This method returns zero if the timer has never been started.
+     */
+    Time GetIntervalLeft() const;
 
-  /**
-   * \brief Enable the timer.
-   */
-  void Enable ();
+    /**
+     * \brief Enable the timer.
+     */
+    void Enable();
 
-  /**
-   * \brief Records a consistent event.
-   */
-  void ConsistentEvent ();
+    /**
+     * \brief Records a consistent event.
+     */
+    void ConsistentEvent();
 
-  /**
-   * \brief Records an inconsistent event.
-   */
-  void InconsistentEvent ();
+    /**
+     * \brief Records an inconsistent event.
+     */
+    void InconsistentEvent();
 
-  /**
-   * \brief Reset the timer.
-   */
-  void Reset ();
+    /**
+     * \brief Reset the timer.
+     */
+    void Reset();
 
-  /**
-   * \brief Stop the timer.
-   *
-   * This will reset the timer and cancel all the pending events.
-   */
-  void Stop ();
+    /**
+     * \brief Stop the timer.
+     *
+     * This will reset the timer and cancel all the pending events.
+     */
+    void Stop();
 
-  /**
-   * Set the function to execute when the timer expires.
-   *
-   * \tparam FN \deduced The type of the function.
-   * \param [in] fn The function
-   *
-   * Store this function in this Timer for later use by Timer::Schedule.
-   */
-  template <typename FN>
-  void SetFunction (FN fn);
+    /**
+     * Set the function to execute when the timer expires.
+     *
+     * \tparam FN \deduced The type of the function.
+     * \param [in] fn The function
+     *
+     * Store this function in this Timer for later use by Timer::Schedule.
+     */
+    template <typename FN>
+    void SetFunction(FN fn);
 
-  /**
-   * Set the function to execute when the timer expires.
-   *
-   * \tparam MEM_PTR \deduced Class method function type.
-   * \tparam OBJ_PTR \deduced Class type containing the function.
-   * \param [in] memPtr The member function pointer
-   * \param [in] objPtr The pointer to object
-   *
-   * Store this function and object in this Timer for later use by Timer::Schedule.
-   */
-  template <typename MEM_PTR, typename OBJ_PTR>
-  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr);
+    /**
+     * Set the function to execute when the timer expires.
+     *
+     * \tparam MEM_PTR \deduced Class method function type.
+     * \tparam OBJ_PTR \deduced Class type containing the function.
+     * \param [in] memPtr The member function pointer
+     * \param [in] objPtr The pointer to object
+     *
+     * Store this function and object in this Timer for later use by Timer::Schedule.
+     */
+    template <typename MEM_PTR, typename OBJ_PTR>
+    void SetFunction(MEM_PTR memPtr, OBJ_PTR objPtr);
 
+    /**
+     * Set the arguments to be used when invoking the expire function.
+     */
+    /**@{*/
+    /**
+     * \tparam Ts \deduced Argument types.
+     * \param [in] args arguments
+     */
+    template <typename... Ts>
+    void SetArguments(Ts&&... args);
+    /**@}*/
 
-  /**
-   * Set the arguments to be used when invoking the expire function.
-   */
-  /**@{*/
-  /**
-   * \tparam Ts \deduced Argument types.
-   * \param [in] args arguments
-   */
-  template <typename... Ts>
-  void SetArguments (Ts&&... args);
-  /**@}*/
+  private:
+    /** Internal callback invoked when the timer expires. */
+    void TimerExpire();
+    /** Internal callback invoked when the interval expires. */
+    void IntervalExpire();
 
-private:
-  /** Internal callback invoked when the timer expires. */
-  void TimerExpire ();
-  /** Internal callback invoked when the interval expires. */
-  void IntervalExpire ();
+    /**
+     * The timer implementation, which contains the bound callback
+     * function and arguments.
+     */
+    TimerImpl* m_impl;
 
-  /**
-   * The timer implementation, which contains the bound callback
-   * function and arguments.
-   */
-  TimerImpl *m_impl;
+    /** The future event scheduled to expire the timer. */
+    EventId m_timerExpiration;
 
-  /** The future event scheduled to expire the timer. */
-  EventId m_timerExpiration;
+    /** The future event scheduled to expire the interval. */
+    EventId m_intervalExpiration;
 
-  /** The future event scheduled to expire the interval. */
-  EventId m_intervalExpiration;
+    Time m_minInterval;    //!< Minimum interval
+    Time m_maxInterval;    //!< Maximum interval
+    uint16_t m_redundancy; //!< Redundancy constant.
 
+    uint64_t m_ticks;       //!< Interval span (i.e., exp2(doublings)).
+    Time m_currentInterval; //!< Current interval.
+    uint16_t m_counter;     //!< Event counter.
 
-  Time m_minInterval;    //!< Minimum interval
-  Time m_maxInterval;    //!< Maximum interval
-  uint16_t m_redundancy; //!< Redundancy constant.
-
-  uint64_t m_ticks;       //!< Interval span (i.e., exp2(doublings)).
-  Time m_currentInterval; //!< Current interval.
-  uint16_t m_counter;     //!< Event counter.
-
-  Ptr<UniformRandomVariable> m_uniRand; //!< Object to generate uniform random numbers
+    Ptr<UniformRandomVariable> m_uniRand; //!< Object to generate uniform random numbers
 };
 
 } // namespace ns3
-
 
 /********************************************************************
  *  Implementation of the templates declared above.
@@ -260,37 +258,38 @@ private:
 
 #include "timer-impl.h"
 
-namespace ns3 {
-
+namespace ns3
+{
 
 template <typename FN>
 void
-TrickleTimer::SetFunction (FN fn)
+TrickleTimer::SetFunction(FN fn)
 {
-  delete m_impl;
-  m_impl = MakeTimerImpl (fn);
+    delete m_impl;
+    m_impl = MakeTimerImpl(fn);
 }
+
 template <typename MEM_PTR, typename OBJ_PTR>
 void
-TrickleTimer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
+TrickleTimer::SetFunction(MEM_PTR memPtr, OBJ_PTR objPtr)
 {
-  delete m_impl;
-  m_impl = MakeTimerImpl (memPtr, objPtr);
+    delete m_impl;
+    m_impl = MakeTimerImpl(memPtr, objPtr);
 }
 
 template <typename... Ts>
 void
-TrickleTimer::SetArguments (Ts&&... args)
+TrickleTimer::SetArguments(Ts&&... args)
 {
-  if (m_impl == nullptr)
+    if (m_impl == nullptr)
     {
-      NS_FATAL_ERROR ("You cannot set the arguments of a TrickleTimer before setting its function.");
-      return;
+        NS_FATAL_ERROR(
+            "You cannot set the arguments of a TrickleTimer before setting its function.");
+        return;
     }
-  m_impl->SetArgs (std::forward<Ts>(args)...);
+    m_impl->SetArgs(std::forward<Ts>(args)...);
 }
 
 } // namespace ns3
-
 
 #endif /* TRICKLE_TIMER_H */

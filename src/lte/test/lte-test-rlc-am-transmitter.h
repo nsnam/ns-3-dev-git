@@ -25,15 +25,15 @@
 #include "ns3/ptr.h"
 #include "ns3/test.h"
 
-
-namespace ns3 {
+namespace ns3
+{
 
 class LteTestRrc;
 class LteTestMac;
 class LteTestPdcp;
 class LteRlc;
 
-}
+} // namespace ns3
 
 using namespace ns3;
 
@@ -46,7 +46,7 @@ using namespace ns3;
 class LteRlcAmTransmitterTestSuite : public TestSuite
 {
   public:
-    LteRlcAmTransmitterTestSuite ();
+    LteRlcAmTransmitterTestSuite();
 };
 
 /**
@@ -65,9 +65,9 @@ class LteRlcAmTransmitterTestCase : public TestCase
      *
      * \param name the reference name
      */
-    LteRlcAmTransmitterTestCase (std::string name);
-    LteRlcAmTransmitterTestCase ();
-    ~LteRlcAmTransmitterTestCase () override;
+    LteRlcAmTransmitterTestCase(std::string name);
+    LteRlcAmTransmitterTestCase();
+    ~LteRlcAmTransmitterTestCase() override;
 
     /**
      * Check data received function
@@ -75,14 +75,14 @@ class LteRlcAmTransmitterTestCase : public TestCase
      * \param shouldReceived shoul dhave received indicator
      * \param assertMsg the assert message
      */
-    void CheckDataReceived (Time time, std::string shouldReceived, std::string assertMsg);
+    void CheckDataReceived(Time time, std::string shouldReceived, std::string assertMsg);
 
   protected:
-    void DoRun () override;
+    void DoRun() override;
 
     Ptr<LteTestPdcp> txPdcp; ///< the transmit PDCP
-    Ptr<LteRlc> txRlc; ///< the RLC
-    Ptr<LteTestMac> txMac; ///< the MAC
+    Ptr<LteRlc> txRlc;       ///< the RLC
+    Ptr<LteTestMac> txMac;   ///< the MAC
 
   private:
     /**
@@ -90,8 +90,7 @@ class LteRlcAmTransmitterTestCase : public TestCase
      * \param shouldReceived shoul dhave received indicator
      * \param assertMsg the assert message
      */
-    void DoCheckDataReceived (std::string shouldReceived, std::string assertMsg);
-
+    void DoCheckDataReceived(std::string shouldReceived, std::string assertMsg);
 };
 
 /**
@@ -109,13 +108,12 @@ class LteRlcAmTransmitterOneSduTestCase : public LteRlcAmTransmitterTestCase
      *
      * \param name the reference name
      */
-    LteRlcAmTransmitterOneSduTestCase (std::string name);
-    LteRlcAmTransmitterOneSduTestCase ();
-    ~LteRlcAmTransmitterOneSduTestCase () override;
+    LteRlcAmTransmitterOneSduTestCase(std::string name);
+    LteRlcAmTransmitterOneSduTestCase();
+    ~LteRlcAmTransmitterOneSduTestCase() override;
 
   private:
-    void DoRun () override;
-
+    void DoRun() override;
 };
 
 /**
@@ -133,13 +131,12 @@ class LteRlcAmTransmitterSegmentationTestCase : public LteRlcAmTransmitterTestCa
      *
      * \param name the reference name
      */
-    LteRlcAmTransmitterSegmentationTestCase (std::string name);
-    LteRlcAmTransmitterSegmentationTestCase ();
-    ~LteRlcAmTransmitterSegmentationTestCase () override;
+    LteRlcAmTransmitterSegmentationTestCase(std::string name);
+    LteRlcAmTransmitterSegmentationTestCase();
+    ~LteRlcAmTransmitterSegmentationTestCase() override;
 
   private:
-    void DoRun () override;
-
+    void DoRun() override;
 };
 
 /**
@@ -157,13 +154,12 @@ class LteRlcAmTransmitterConcatenationTestCase : public LteRlcAmTransmitterTestC
      *
      * \param name the reference name
      */
-    LteRlcAmTransmitterConcatenationTestCase (std::string name);
-    LteRlcAmTransmitterConcatenationTestCase ();
-    ~LteRlcAmTransmitterConcatenationTestCase () override;
+    LteRlcAmTransmitterConcatenationTestCase(std::string name);
+    LteRlcAmTransmitterConcatenationTestCase();
+    ~LteRlcAmTransmitterConcatenationTestCase() override;
 
   private:
-    void DoRun () override;
-
+    void DoRun() override;
 };
 
 /**
@@ -181,13 +177,12 @@ class LteRlcAmTransmitterReportBufferStatusTestCase : public LteRlcAmTransmitter
      *
      * \param name the reference name
      */
-    LteRlcAmTransmitterReportBufferStatusTestCase (std::string name);
-    LteRlcAmTransmitterReportBufferStatusTestCase ();
-    ~LteRlcAmTransmitterReportBufferStatusTestCase () override;
+    LteRlcAmTransmitterReportBufferStatusTestCase(std::string name);
+    LteRlcAmTransmitterReportBufferStatusTestCase();
+    ~LteRlcAmTransmitterReportBufferStatusTestCase() override;
 
   private:
-    void DoRun () override;
-
+    void DoRun() override;
 };
 
 #endif // LTE_TEST_RLC_AM_TRANSMITTER_H

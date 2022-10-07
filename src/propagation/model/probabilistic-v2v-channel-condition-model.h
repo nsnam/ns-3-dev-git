@@ -22,7 +22,8 @@
 
 #include "ns3/channel-condition-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class MobilityModel;
 
@@ -38,44 +39,47 @@ class MobilityModel;
  */
 class ProbabilisticV2vUrbanChannelConditionModel : public ThreeGppChannelConditionModel
 {
-public:
-  /**
-   * Get the type ID.
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * Get the type ID.
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Constructor for the ProbabilisticV2vUrbanChannelConditionModel class
-   */
-  ProbabilisticV2vUrbanChannelConditionModel ();
+    /**
+     * Constructor for the ProbabilisticV2vUrbanChannelConditionModel class
+     */
+    ProbabilisticV2vUrbanChannelConditionModel();
 
-  /**
-   * Destructor for the ProbabilisticV2vUrbanChannelConditionModel class
-   */
-  ~ProbabilisticV2vUrbanChannelConditionModel () override;
+    /**
+     * Destructor for the ProbabilisticV2vUrbanChannelConditionModel class
+     */
+    ~ProbabilisticV2vUrbanChannelConditionModel() override;
 
-private:
-  /**
-   * Compute the LOS probability
-   *
-   * \param a tx mobility model
-   * \param b rx mobility model
-   * \return the LOS probability
-   */
-  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  private:
+    /**
+     * Compute the LOS probability
+     *
+     * \param a tx mobility model
+     * \param b rx mobility model
+     * \return the LOS probability
+     */
+    double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
-  /**
-   * Compute the NLOS probability
-   *
-   * \param a tx mobility model
-   * \param b rx mobility model
-   * \return the NLOS probability
-   */
-  double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+    /**
+     * Compute the NLOS probability
+     *
+     * \param a tx mobility model
+     * \param b rx mobility model
+     * \return the NLOS probability
+     */
+    double ComputePnlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
-  enum VehicleDensity m_densityUrban {VehicleDensity::INVALID}; //!< vehicle density
+    enum VehicleDensity m_densityUrban
+    {
+        VehicleDensity::INVALID
+    }; //!< vehicle density
 };
 
 /**
@@ -90,46 +94,49 @@ private:
  */
 class ProbabilisticV2vHighwayChannelConditionModel : public ThreeGppChannelConditionModel
 {
-public:
-  /**
-   * Get the type ID.
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * Get the type ID.
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Constructor for the ProbabilisticV2vHighwayChannelConditionModel class
-   */
-  ProbabilisticV2vHighwayChannelConditionModel ();
+    /**
+     * Constructor for the ProbabilisticV2vHighwayChannelConditionModel class
+     */
+    ProbabilisticV2vHighwayChannelConditionModel();
 
-  /**
-   * Destructor for the ProbabilisticV2vHighwayChannelConditionModel class
-   */
-  ~ProbabilisticV2vHighwayChannelConditionModel () override;
+    /**
+     * Destructor for the ProbabilisticV2vHighwayChannelConditionModel class
+     */
+    ~ProbabilisticV2vHighwayChannelConditionModel() override;
 
-private:
-  /**
-   * Compute the LOS probability
-   *
-   * \param a tx mobility model
-   * \param b rx mobility model
-   * \return the LOS probability
-   */
-  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  private:
+    /**
+     * Compute the LOS probability
+     *
+     * \param a tx mobility model
+     * \param b rx mobility model
+     * \return the LOS probability
+     */
+    double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
-  /**
-   * Compute the NLOS probability
-   *
-   * \param a tx mobility model
-   * \param b rx mobility model
-   * \return the NLOS probability
-   */
-  double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+    /**
+     * Compute the NLOS probability
+     *
+     * \param a tx mobility model
+     * \param b rx mobility model
+     * \return the NLOS probability
+     */
+    double ComputePnlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
-  enum VehicleDensity m_densityHighway {VehicleDensity::INVALID}; //!< vehicle density
+    enum VehicleDensity m_densityHighway
+    {
+        VehicleDensity::INVALID
+    }; //!< vehicle density
 };
 
-} // end ns3 namespace
+} // namespace ns3
 
 #endif /* PROBABILISTIC_V2V_CHANNEL_CONDITION_MODEL_H */

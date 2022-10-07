@@ -18,15 +18,14 @@
  * Author: Quincy Tse <quincy.tse@nicta.com.au>
  */
 #include "fatal-impl.h"
+
 #include "log.h"
 
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <list>
-
-#include <cstdlib>
-#include <cstdio>
-
-#include <csignal>
 
 /**
  * \file
@@ -50,18 +49,21 @@
  * This is why we go through all the painful hoops below.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("FatalImpl");
+NS_LOG_COMPONENT_DEFINE("FatalImpl");
 
-namespace FatalImpl {
+namespace FatalImpl
+{
 
 /**
  * \ingroup fatalimpl
  * Unnamed namespace for fatal streams memory implementation
  * and signal handler.
  */
-namespace {
+namespace
+{
 
 /**
  * \ingroup fatalimpl
@@ -70,11 +72,12 @@ namespace {
  *
  * \returns The address of the static pointer.
  */
-std::list<std::ostream*> ** PeekStreamList ()
+std::list<std::ostream*>**
+PeekStreamList()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static std::list<std::ostream*> *streams = nullptr;
-  return &streams;
+    NS_LOG_FUNCTION_NOARGS();
+    static std::list<std::ostream*>* streams = nullptr;
+    return &streams;
 }
 
 /**
@@ -83,40 +86,41 @@ std::list<std::ostream*> ** PeekStreamList ()
  *
  * \returns The stream list.
  */
-std::list<std::ostream*> * GetStreamList ()
+std::list<std::ostream*>*
+GetStreamList()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  std::list<std::ostream*> **pstreams = PeekStreamList ();
-  if (*pstreams == nullptr)
+    NS_LOG_FUNCTION_NOARGS();
+    std::list<std::ostream*>** pstreams = PeekStreamList();
+    if (*pstreams == nullptr)
     {
-      *pstreams = new std::list<std::ostream*> ();
+        *pstreams = new std::list<std::ostream*>();
     }
-  return *pstreams;
+    return *pstreams;
 }
 
-}  // unnamed namespace
+} // unnamed namespace
 
 void
-RegisterStream (std::ostream* stream)
+RegisterStream(std::ostream* stream)
 {
-  NS_LOG_FUNCTION (stream);
-  GetStreamList ()->push_back (stream);
+    NS_LOG_FUNCTION(stream);
+    GetStreamList()->push_back(stream);
 }
 
 void
-UnregisterStream (std::ostream* stream)
+UnregisterStream(std::ostream* stream)
 {
-  NS_LOG_FUNCTION (stream);
-  std::list<std::ostream*> **pl = PeekStreamList ();
-  if (*pl == nullptr)
+    NS_LOG_FUNCTION(stream);
+    std::list<std::ostream*>** pl = PeekStreamList();
+    if (*pl == nullptr)
     {
-      return;
+        return;
     }
-  (*pl)->remove (stream);
-  if ((*pl)->empty ())
+    (*pl)->remove(stream);
+    if ((*pl)->empty())
     {
-      delete *pl;
-      *pl = nullptr;
+        delete *pl;
+        *pl = nullptr;
     }
 }
 
@@ -126,7 +130,8 @@ UnregisterStream (std::ostream* stream)
  *
  * This is private to the fatal implementation.
  */
-namespace {
+namespace
+{
 
 /**
  * \ingroup fatalimpl
@@ -137,57 +142,57 @@ namespace {
  *
  * \param [in] sig The signal condition.
  */
-void sigHandler (int sig)
+void
+sigHandler(int sig)
 {
-  NS_LOG_FUNCTION (sig);
-  FlushStreams ();
-  std::abort ();
+    NS_LOG_FUNCTION(sig);
+    FlushStreams();
+    std::abort();
 }
-}  // unnamed namespace
+} // unnamed namespace
 
 void
-FlushStreams ()
+FlushStreams()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  std::list<std::ostream*> **pl = PeekStreamList ();
-  if (*pl == nullptr)
+    NS_LOG_FUNCTION_NOARGS();
+    std::list<std::ostream*>** pl = PeekStreamList();
+    if (*pl == nullptr)
     {
-      return;
+        return;
     }
 
+    /* Override default SIGSEGV handler - will flush subsequent
+     * streams even if one of the stream pointers is bad.
+     * The SIGSEGV override should only be active for the
+     * duration of this function. */
+    struct sigaction hdl;
+    hdl.sa_handler = sigHandler;
+    sigaction(SIGSEGV, &hdl, nullptr);
 
-  /* Override default SIGSEGV handler - will flush subsequent
-   * streams even if one of the stream pointers is bad.
-   * The SIGSEGV override should only be active for the
-   * duration of this function. */
-  struct sigaction hdl;
-  hdl.sa_handler = sigHandler;
-  sigaction (SIGSEGV, &hdl, nullptr);
+    std::list<std::ostream*>* l = *pl;
 
-  std::list<std::ostream*> *l = *pl;
-
-  /* Need to do it this way in case any of the ostream* causes SIGSEGV */
-  while (!l->empty ())
+    /* Need to do it this way in case any of the ostream* causes SIGSEGV */
+    while (!l->empty())
     {
-      std::ostream* s (l->front ());
-      l->pop_front ();
-      s->flush ();
+        std::ostream* s(l->front());
+        l->pop_front();
+        s->flush();
     }
 
-  /* Restore default SIGSEGV handler (Not that it matters anyway) */
-  hdl.sa_handler = SIG_DFL;
-  sigaction (SIGSEGV, &hdl, nullptr);
+    /* Restore default SIGSEGV handler (Not that it matters anyway) */
+    hdl.sa_handler = SIG_DFL;
+    sigaction(SIGSEGV, &hdl, nullptr);
 
-  /* Flush all opened FILE* */
-  std::fflush (nullptr);
+    /* Flush all opened FILE* */
+    std::fflush(nullptr);
 
-  /* Flush stdandard streams - shouldn't be required (except for clog) */
-  std::cout.flush ();
-  std::cerr.flush ();
-  std::clog.flush ();
+    /* Flush stdandard streams - shouldn't be required (except for clog) */
+    std::cout.flush();
+    std::cerr.flush();
+    std::clog.flush();
 
-  delete l;
-  *pl = nullptr;
+    delete l;
+    *pl = nullptr;
 }
 
 } // namespace FatalImpl

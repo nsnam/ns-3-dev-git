@@ -23,7 +23,8 @@
 
 #include "ns3/queue-disc.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup traffic-control
@@ -31,31 +32,33 @@ namespace ns3 {
  * Simple queue disc implementing the FIFO (First-In First-Out) policy.
  *
  */
-class FifoQueueDisc : public QueueDisc {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  /**
-   * \brief FifoQueueDisc constructor
-   *
-   * Creates a queue with a depth of 1000 packets by default
-   */
-  FifoQueueDisc ();
+class FifoQueueDisc : public QueueDisc
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    /**
+     * \brief FifoQueueDisc constructor
+     *
+     * Creates a queue with a depth of 1000 packets by default
+     */
+    FifoQueueDisc();
 
-  ~FifoQueueDisc() override;
+    ~FifoQueueDisc() override;
 
-  // Reasons for dropping packets
-  static constexpr const char* LIMIT_EXCEEDED_DROP = "Queue disc limit exceeded";  //!< Packet dropped due to queue disc limit exceeded
+    // Reasons for dropping packets
+    static constexpr const char* LIMIT_EXCEEDED_DROP =
+        "Queue disc limit exceeded"; //!< Packet dropped due to queue disc limit exceeded
 
-private:
-  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
-  Ptr<QueueDiscItem> DoDequeue () override;
-  Ptr<const QueueDiscItem> DoPeek () override;
-  bool CheckConfig () override;
-  void InitializeParams () override;
+  private:
+    bool DoEnqueue(Ptr<QueueDiscItem> item) override;
+    Ptr<QueueDiscItem> DoDequeue() override;
+    Ptr<const QueueDiscItem> DoPeek() override;
+    bool CheckConfig() override;
+    void InitializeParams() override;
 };
 
 } // namespace ns3

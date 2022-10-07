@@ -23,7 +23,8 @@
 
 #include "frame-capture-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 /**
  * \ingroup wifi
  *
@@ -36,47 +37,45 @@ namespace ns3 {
  */
 class SimpleFrameCaptureModel : public FrameCaptureModel
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  SimpleFrameCaptureModel ();
-  ~SimpleFrameCaptureModel () override;
+    SimpleFrameCaptureModel();
+    ~SimpleFrameCaptureModel() override;
 
-  /**
-   * Sets the frame capture margin (dB).
-   *
-   * \param margin the frame capture margin in dB
-   */
-  void SetMargin (double margin);
-  /**
-   * Return the frame capture margin (dB).
-   *
-   * \return the frame capture margin in dB
-   */
-  double GetMargin () const;
+    /**
+     * Sets the frame capture margin (dB).
+     *
+     * \param margin the frame capture margin in dB
+     */
+    void SetMargin(double margin);
+    /**
+     * Return the frame capture margin (dB).
+     *
+     * \return the frame capture margin in dB
+     */
+    double GetMargin() const;
 
-  /**
-   * This method returns whether the reception should be switched to a
-   * new incoming frame.
-   *
-   * \param currentEvent the event of the current frame
-   * \param newEvent the event of the new incoming frame
-   *
-   * \return true if the reception should be switched to a new incoming frame,
-   *         false otherwise
-   */
-  bool CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const override;
+    /**
+     * This method returns whether the reception should be switched to a
+     * new incoming frame.
+     *
+     * \param currentEvent the event of the current frame
+     * \param newEvent the event of the new incoming frame
+     *
+     * \return true if the reception should be switched to a new incoming frame,
+     *         false otherwise
+     */
+    bool CaptureNewFrame(Ptr<Event> currentEvent, Ptr<Event> newEvent) const override;
 
-
-private:
-  double m_margin; ///< margin for determining if a new frame (dB)
+  private:
+    double m_margin; ///< margin for determining if a new frame (dB)
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* SIMPLE_FRAME_CAPTURE_MODEL_H */
-

@@ -21,11 +21,13 @@
 #ifndef WIFI_MAC_QUEUE_ELEM_H
 #define WIFI_MAC_QUEUE_ELEM_H
 
-#include "ns3/callback.h"
-#include "ns3/nstime.h"
 #include "qos-utils.h"
 
-namespace ns3 {
+#include "ns3/callback.h"
+#include "ns3/nstime.h"
+
+namespace ns3
+{
 
 class WifiMpdu;
 
@@ -38,22 +40,22 @@ class WifiMpdu;
  */
 struct WifiMacQueueElem
 {
-  Ptr<WifiMpdu> mpdu;                    ///< MPDU stored by this element
-  Time expiryTime;                               ///< expiry time of the MPDU (set by WifiMacQueue)
-  AcIndex ac;                                    ///< the Access Category associated with the queue
-                                                 ///< storing this element (set by WifiMacQueue)
-  bool expired;                                  ///< whether this MPDU has been marked as expired
-  Callback<void, Ptr<WifiMpdu>> deleter; ///< reset the iterator stored by the MPDU
+    Ptr<WifiMpdu> mpdu;                    ///< MPDU stored by this element
+    Time expiryTime;                       ///< expiry time of the MPDU (set by WifiMacQueue)
+    AcIndex ac;                            ///< the Access Category associated with the queue
+                                           ///< storing this element (set by WifiMacQueue)
+    bool expired;                          ///< whether this MPDU has been marked as expired
+    Callback<void, Ptr<WifiMpdu>> deleter; ///< reset the iterator stored by the MPDU
 
-  /**
-   * Constructor.
-   * \param item the MPDU stored by this queue element
-   */
-  WifiMacQueueElem (Ptr<WifiMpdu> item);
+    /**
+     * Constructor.
+     * \param item the MPDU stored by this queue element
+     */
+    WifiMacQueueElem(Ptr<WifiMpdu> item);
 
-  ~WifiMacQueueElem ();
+    ~WifiMacQueueElem();
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* WIFI_MAC_QUEUE_ELEM_H */

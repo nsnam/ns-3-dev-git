@@ -22,7 +22,8 @@
 
 #include "three-gpp-propagation-loss-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup propagation
@@ -32,109 +33,114 @@ namespace ns3 {
  */
 class ThreeGppV2vUrbanPropagationLossModel : public ThreeGppPropagationLossModel
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Constructor
-   */
-  ThreeGppV2vUrbanPropagationLossModel ();
+    /**
+     * Constructor
+     */
+    ThreeGppV2vUrbanPropagationLossModel();
 
-  /**
-   * Destructor
-   */
-  ~ThreeGppV2vUrbanPropagationLossModel () override;
+    /**
+     * Destructor
+     */
+    ~ThreeGppV2vUrbanPropagationLossModel() override;
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  ThreeGppV2vUrbanPropagationLossModel (const ThreeGppV2vUrbanPropagationLossModel &) = delete;
-  ThreeGppV2vUrbanPropagationLossModel &operator= (const ThreeGppV2vUrbanPropagationLossModel &) = delete;
+    // Delete copy constructor and assignment operator to avoid misuse
+    ThreeGppV2vUrbanPropagationLossModel(const ThreeGppV2vUrbanPropagationLossModel&) = delete;
+    ThreeGppV2vUrbanPropagationLossModel& operator=(const ThreeGppV2vUrbanPropagationLossModel&) =
+        delete;
 
-private:
-  /**
-   * \brief Computes the pathloss between a and b considering that the line of
-   *        sight is not obstructed
-   * \param distance2D the 2D distance between tx and rx in meters
-   * \param distance3D the 3D distance between tx and rx in meters
-   * \param hUt the height of the UT in meters
-   * \param hBs the height of the BS in meters
-   * \return pathloss value in dB
-   */
-  double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
+  private:
+    /**
+     * \brief Computes the pathloss between a and b considering that the line of
+     *        sight is not obstructed
+     * \param distance2D the 2D distance between tx and rx in meters
+     * \param distance3D the 3D distance between tx and rx in meters
+     * \param hUt the height of the UT in meters
+     * \param hBs the height of the BS in meters
+     * \return pathloss value in dB
+     */
+    double GetLossLos(double distance2D, double distance3D, double hUt, double hBs) const override;
 
-  /**
-   * \brief Returns the minimum of the two independently generated distances
-   *        according to the uniform distribution between the minimum and the maximum
-   *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
-   *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and 10 m
-   *        for RMa.
-   *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
-   *        generated. 2D−in distance is used for the O2I penetration losses
-   *        calculation according to 3GPP TR 38.901 7.4.3.
-   *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
-   *
-   *        TODO O2I car penetration loss (TR 38.901 7.4.3.2) not considered
-   *
-   * \return Returns 02i 2D distance (in meters) used to calculate low/high losses.
-   */
-  double GetO2iDistance2dIn () const override;
+    /**
+     * \brief Returns the minimum of the two independently generated distances
+     *        according to the uniform distribution between the minimum and the maximum
+     *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+     *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and 10 m
+     *        for RMa.
+     *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+     *        generated. 2D−in distance is used for the O2I penetration losses
+     *        calculation according to 3GPP TR 38.901 7.4.3.
+     *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+     *
+     *        TODO O2I car penetration loss (TR 38.901 7.4.3.2) not considered
+     *
+     * \return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     */
+    double GetO2iDistance2dIn() const override;
 
+    /**
+     * \brief Computes the pathloss between a and b considering that the line of
+     *        sight is obstructed by a vehicle
+     * \param distance2D the 2D distance between tx and rx in meters
+     * \param distance3D the 3D distance between tx and rx in meters
+     * \param hUt the height of the UT in meters
+     * \param hBs the height of the BS in meters
+     * \return pathloss value in dB
+     */
+    double GetLossNlosv(double distance2D,
+                        double distance3D,
+                        double hUt,
+                        double hBs) const override;
 
-  /**
-   * \brief Computes the pathloss between a and b considering that the line of
-   *        sight is obstructed by a vehicle
-   * \param distance2D the 2D distance between tx and rx in meters
-   * \param distance3D the 3D distance between tx and rx in meters
-   * \param hUt the height of the UT in meters
-   * \param hBs the height of the BS in meters
-   * \return pathloss value in dB
-   */
-  double GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const override;
+    /**
+     * \brief Computes the pathloss between a and b considering that the line of
+     *        sight is obstructed by a building
+     * \param distance2D the 2D distance between tx and rx in meters
+     * \param distance3D the 3D distance between tx and rx in meters
+     * \param hUt the height of the UT in meters
+     * \param hBs the height of the BS in meters
+     * \return pathloss value in dB
+     */
+    double GetLossNlos(double distance2D, double distance3D, double hUt, double hBs) const override;
 
-  /**
-   * \brief Computes the pathloss between a and b considering that the line of
-   *        sight is obstructed by a building
-   * \param distance2D the 2D distance between tx and rx in meters
-   * \param distance3D the 3D distance between tx and rx in meters
-   * \param hUt the height of the UT in meters
-   * \param hBs the height of the BS in meters
-   * \return pathloss value in dB
-   */
-  double GetLossNlos (double distance2D, double distance3D, double hUt, double hBs) const override;
+    /**
+     * \brief Computes the additional loss due to an obstruction caused by a vehicle
+     * \param distance3D the 3D distance between tx and rx in meters
+     * \param hUt the height of the UT in meters
+     * \param hBs the height of the BS in meters
+     * \return pathloss value in dB
+     */
+    double GetAdditionalNlosvLoss(double distance3D, double hUt, double hBs) const;
 
-  /**
-   * \brief Computes the additional loss due to an obstruction caused by a vehicle
-   * \param distance3D the 3D distance between tx and rx in meters
-   * \param hUt the height of the UT in meters
-   * \param hBs the height of the BS in meters
-   * \return pathloss value in dB
-   */
-  double GetAdditionalNlosvLoss (double distance3D, double hUt, double hBs) const;
+    /**
+     * \brief Returns the shadow fading standard deviation
+     * \param a tx mobility model
+     * \param b rx mobility model
+     * \param cond the LOS/NLOS channel condition
+     * \return shadowing std in dB
+     */
+    double GetShadowingStd(Ptr<MobilityModel> a,
+                           Ptr<MobilityModel> b,
+                           ChannelCondition::LosConditionValue cond) const override;
 
-  /**
-   * \brief Returns the shadow fading standard deviation
-   * \param a tx mobility model
-   * \param b rx mobility model
-   * \param cond the LOS/NLOS channel condition
-   * \return shadowing std in dB
-   */
-  double GetShadowingStd (Ptr<MobilityModel> a, Ptr<MobilityModel> b, ChannelCondition::LosConditionValue cond) const override;
+    /**
+     * \brief Returns the shadow fading correlation distance
+     * \param cond the LOS/NLOS channel condition
+     * \return shadowing correlation distance in meters
+     */
+    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
 
-  /**
-   * \brief Returns the shadow fading correlation distance
-   * \param cond the LOS/NLOS channel condition
-   * \return shadowing correlation distance in meters
-   */
-  double GetShadowingCorrelationDistance (ChannelCondition::LosConditionValue cond) const override;
+    int64_t DoAssignStreams(int64_t stream) override;
 
-  int64_t DoAssignStreams (int64_t stream) override;
-
-  double m_percType3Vehicles; //!< percentage of Type 3 vehicles in the scenario (i.e., trucks)
-  Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
-  Ptr<LogNormalRandomVariable> m_logNorVar; //!< log normal random variable
+    double m_percType3Vehicles; //!< percentage of Type 3 vehicles in the scenario (i.e., trucks)
+    Ptr<UniformRandomVariable> m_uniformVar;  //!< uniform random variable
+    Ptr<LogNormalRandomVariable> m_logNorVar; //!< log normal random variable
 };
 
 /**
@@ -145,34 +151,34 @@ private:
  */
 class ThreeGppV2vHighwayPropagationLossModel : public ThreeGppV2vUrbanPropagationLossModel
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Constructor
-   */
-  ThreeGppV2vHighwayPropagationLossModel ();
+    /**
+     * Constructor
+     */
+    ThreeGppV2vHighwayPropagationLossModel();
 
-  /**
-   * Destructor
-   */
-  ~ThreeGppV2vHighwayPropagationLossModel () override;
+    /**
+     * Destructor
+     */
+    ~ThreeGppV2vHighwayPropagationLossModel() override;
 
-private:
-  /**
-   * \brief Computes the pathloss between a and b considering that the line of
-   *        sight is not obstructed
-   * \param distance2D the 2D distance between tx and rx in meters
-   * \param distance3D the 3D distance between tx and rx in meters
-   * \param hUt the height of the UT in meters
-   * \param hBs the height of the BS in meters
-   * \return pathloss value in dB
-   */
-  double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
+  private:
+    /**
+     * \brief Computes the pathloss between a and b considering that the line of
+     *        sight is not obstructed
+     * \param distance2D the 2D distance between tx and rx in meters
+     * \param distance3D the 3D distance between tx and rx in meters
+     * \param hUt the height of the UT in meters
+     * \param hBs the height of the BS in meters
+     * \return pathloss value in dB
+     */
+    double GetLossLos(double distance2D, double distance3D, double hUt, double hBs) const override;
 };
 
 } // namespace ns3

@@ -19,84 +19,86 @@
  *          Stefano Avallone <stavallo@unina.it>
  */
 
-#include "ns3/log.h"
 #include "mq-queue-disc.h"
 
-namespace ns3 {
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("MqQueueDisc");
-
-NS_OBJECT_ENSURE_REGISTERED (MqQueueDisc);
-
-TypeId MqQueueDisc::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::MqQueueDisc")
-    .SetParent<QueueDisc> ()
-    .SetGroupName ("TrafficControl")
-    .AddConstructor<MqQueueDisc> ()
-  ;
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("MqQueueDisc");
+
+NS_OBJECT_ENSURE_REGISTERED(MqQueueDisc);
+
+TypeId
+MqQueueDisc::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::MqQueueDisc")
+                            .SetParent<QueueDisc>()
+                            .SetGroupName("TrafficControl")
+                            .AddConstructor<MqQueueDisc>();
+    return tid;
 }
 
-MqQueueDisc::MqQueueDisc ()
-  : QueueDisc (QueueDiscSizePolicy::NO_LIMITS)
+MqQueueDisc::MqQueueDisc()
+    : QueueDisc(QueueDiscSizePolicy::NO_LIMITS)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-MqQueueDisc::~MqQueueDisc ()
+MqQueueDisc::~MqQueueDisc()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 MqQueueDisc::WakeMode
-MqQueueDisc::GetWakeMode () const
+MqQueueDisc::GetWakeMode() const
 {
-  return WAKE_CHILD;
+    return WAKE_CHILD;
 }
 
 bool
-MqQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
+MqQueueDisc::DoEnqueue(Ptr<QueueDiscItem> item)
 {
-  NS_FATAL_ERROR ("MqQueueDisc: DoEnqueue should never be called");
+    NS_FATAL_ERROR("MqQueueDisc: DoEnqueue should never be called");
 }
 
 Ptr<QueueDiscItem>
-MqQueueDisc::DoDequeue ()
+MqQueueDisc::DoDequeue()
 {
-  NS_FATAL_ERROR ("MqQueueDisc: DoDequeue should never be called");
+    NS_FATAL_ERROR("MqQueueDisc: DoDequeue should never be called");
 }
 
 Ptr<const QueueDiscItem>
-MqQueueDisc::DoPeek ()
+MqQueueDisc::DoPeek()
 {
-  NS_FATAL_ERROR ("MqQueueDisc: DoPeek should never be called");
+    NS_FATAL_ERROR("MqQueueDisc: DoPeek should never be called");
 }
 
 bool
-MqQueueDisc::CheckConfig ()
+MqQueueDisc::CheckConfig()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (GetNPacketFilters () > 0)
+    if (GetNPacketFilters() > 0)
     {
-      NS_LOG_ERROR ("MqQueueDisc cannot have packet filters");
-      return false;
+        NS_LOG_ERROR("MqQueueDisc cannot have packet filters");
+        return false;
     }
 
-  if (GetNInternalQueues () > 0)
+    if (GetNInternalQueues() > 0)
     {
-      NS_LOG_ERROR ("MqQueueDisc cannot have internal queues");
-      return false;
+        NS_LOG_ERROR("MqQueueDisc cannot have internal queues");
+        return false;
     }
 
-  return true;
+    return true;
 }
 
 void
-MqQueueDisc::InitializeParams ()
+MqQueueDisc::InitializeParams()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 } // namespace ns3

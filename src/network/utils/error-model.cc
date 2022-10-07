@@ -60,541 +60,541 @@
  *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  */
 
-#include <cmath>
-
 #include "error-model.h"
 
-#include "ns3/packet.h"
 #include "ns3/assert.h"
-#include "ns3/log.h"
 #include "ns3/boolean.h"
-#include "ns3/enum.h"
 #include "ns3/double.h"
-#include "ns3/string.h"
+#include "ns3/enum.h"
+#include "ns3/log.h"
+#include "ns3/packet.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
 
-namespace ns3 {
+#include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("ErrorModel");
-
-NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
-
-TypeId ErrorModel::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::ErrorModel")
-    .SetParent<Object> ()
-    .SetGroupName("Network")
-    .AddAttribute ("IsEnabled", "Whether this ErrorModel is enabled or not.",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&ErrorModel::m_enable),
-                   MakeBooleanChecker ())
-  ;
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("ErrorModel");
+
+NS_OBJECT_ENSURE_REGISTERED(ErrorModel);
+
+TypeId
+ErrorModel::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::ErrorModel")
+                            .SetParent<Object>()
+                            .SetGroupName("Network")
+                            .AddAttribute("IsEnabled",
+                                          "Whether this ErrorModel is enabled or not.",
+                                          BooleanValue(true),
+                                          MakeBooleanAccessor(&ErrorModel::m_enable),
+                                          MakeBooleanChecker());
+    return tid;
 }
 
-ErrorModel::ErrorModel () :
-  m_enable (true)
+ErrorModel::ErrorModel()
+    : m_enable(true)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-ErrorModel::~ErrorModel ()
+ErrorModel::~ErrorModel()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-bool
-ErrorModel::IsCorrupt (Ptr<Packet> p)
-{
-  NS_LOG_FUNCTION (this << p);
-  bool result;
-  // Insert any pre-conditions here
-  result = DoCorrupt (p);
-  // Insert any post-conditions here
-  return result;
-}
-
-void
-ErrorModel::Reset ()
-{
-  NS_LOG_FUNCTION (this);
-  DoReset ();
-}
-
-void
-ErrorModel::Enable ()
-{
-  NS_LOG_FUNCTION (this);
-  m_enable = true;
-}
-
-void
-ErrorModel::Disable ()
-{
-  NS_LOG_FUNCTION (this);
-  m_enable = false;
+    NS_LOG_FUNCTION(this);
 }
 
 bool
-ErrorModel::IsEnabled () const
+ErrorModel::IsCorrupt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
-  return m_enable;
+    NS_LOG_FUNCTION(this << p);
+    bool result;
+    // Insert any pre-conditions here
+    result = DoCorrupt(p);
+    // Insert any post-conditions here
+    return result;
+}
+
+void
+ErrorModel::Reset()
+{
+    NS_LOG_FUNCTION(this);
+    DoReset();
+}
+
+void
+ErrorModel::Enable()
+{
+    NS_LOG_FUNCTION(this);
+    m_enable = true;
+}
+
+void
+ErrorModel::Disable()
+{
+    NS_LOG_FUNCTION(this);
+    m_enable = false;
+}
+
+bool
+ErrorModel::IsEnabled() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_enable;
 }
 
 //
 // RateErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(RateErrorModel);
 
-TypeId RateErrorModel::GetTypeId ()
+TypeId
+RateErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::RateErrorModel")
-    .SetParent<ErrorModel> ()
-    .SetGroupName("Network")
-    .AddConstructor<RateErrorModel> ()
-    .AddAttribute ("ErrorUnit", "The error unit",
-                   EnumValue (ERROR_UNIT_BYTE),
-                   MakeEnumAccessor (&RateErrorModel::m_unit),
-                   MakeEnumChecker (ERROR_UNIT_BIT, "ERROR_UNIT_BIT",
-                                    ERROR_UNIT_BYTE, "ERROR_UNIT_BYTE",
-                                    ERROR_UNIT_PACKET, "ERROR_UNIT_PACKET"))
-    .AddAttribute ("ErrorRate", "The error rate.",
-                   DoubleValue (0.0),
-                   MakeDoubleAccessor (&RateErrorModel::m_rate),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("RanVar", "The decision variable attached to this error model.",
-                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
-                   MakePointerAccessor (&RateErrorModel::m_ranvar),
-                   MakePointerChecker<RandomVariableStream> ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::RateErrorModel")
+            .SetParent<ErrorModel>()
+            .SetGroupName("Network")
+            .AddConstructor<RateErrorModel>()
+            .AddAttribute("ErrorUnit",
+                          "The error unit",
+                          EnumValue(ERROR_UNIT_BYTE),
+                          MakeEnumAccessor(&RateErrorModel::m_unit),
+                          MakeEnumChecker(ERROR_UNIT_BIT,
+                                          "ERROR_UNIT_BIT",
+                                          ERROR_UNIT_BYTE,
+                                          "ERROR_UNIT_BYTE",
+                                          ERROR_UNIT_PACKET,
+                                          "ERROR_UNIT_PACKET"))
+            .AddAttribute("ErrorRate",
+                          "The error rate.",
+                          DoubleValue(0.0),
+                          MakeDoubleAccessor(&RateErrorModel::m_rate),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("RanVar",
+                          "The decision variable attached to this error model.",
+                          StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                          MakePointerAccessor(&RateErrorModel::m_ranvar),
+                          MakePointerChecker<RandomVariableStream>());
+    return tid;
 }
 
-
-RateErrorModel::RateErrorModel ()
+RateErrorModel::RateErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-RateErrorModel::~RateErrorModel ()
+RateErrorModel::~RateErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 RateErrorModel::ErrorUnit
-RateErrorModel::GetUnit () const
+RateErrorModel::GetUnit() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_unit;
+    NS_LOG_FUNCTION(this);
+    return m_unit;
 }
 
 void
-RateErrorModel::SetUnit (enum ErrorUnit error_unit)
+RateErrorModel::SetUnit(enum ErrorUnit error_unit)
 {
-  NS_LOG_FUNCTION (this << error_unit);
-  m_unit = error_unit;
+    NS_LOG_FUNCTION(this << error_unit);
+    m_unit = error_unit;
 }
 
 double
-RateErrorModel::GetRate () const
+RateErrorModel::GetRate() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_rate;
+    NS_LOG_FUNCTION(this);
+    return m_rate;
 }
 
 void
-RateErrorModel::SetRate (double rate)
+RateErrorModel::SetRate(double rate)
 {
-  NS_LOG_FUNCTION (this << rate);
-  m_rate = rate;
+    NS_LOG_FUNCTION(this << rate);
+    m_rate = rate;
 }
 
 void
-RateErrorModel::SetRandomVariable (Ptr<RandomVariableStream> ranvar)
+RateErrorModel::SetRandomVariable(Ptr<RandomVariableStream> ranvar)
 {
-  NS_LOG_FUNCTION (this << ranvar);
-  m_ranvar = ranvar;
+    NS_LOG_FUNCTION(this << ranvar);
+    m_ranvar = ranvar;
 }
 
 int64_t
-RateErrorModel::AssignStreams (int64_t stream)
+RateErrorModel::AssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
-  m_ranvar->SetStream (stream);
-  return 1;
+    NS_LOG_FUNCTION(this << stream);
+    m_ranvar->SetStream(stream);
+    return 1;
 }
 
 bool
-RateErrorModel::DoCorrupt (Ptr<Packet> p)
+RateErrorModel::DoCorrupt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-  if (!IsEnabled ())
+    NS_LOG_FUNCTION(this << p);
+    if (!IsEnabled())
     {
-      return false;
+        return false;
     }
-  switch (m_unit)
+    switch (m_unit)
     {
     case ERROR_UNIT_PACKET:
-      return DoCorruptPkt (p);
+        return DoCorruptPkt(p);
     case ERROR_UNIT_BYTE:
-      return DoCorruptByte (p);
+        return DoCorruptByte(p);
     case ERROR_UNIT_BIT:
-      return DoCorruptBit (p);
+        return DoCorruptBit(p);
     default:
-      NS_ASSERT_MSG (false, "m_unit not supported yet");
-      break;
+        NS_ASSERT_MSG(false, "m_unit not supported yet");
+        break;
     }
-  return false;
+    return false;
 }
 
 bool
-RateErrorModel::DoCorruptPkt (Ptr<Packet> p)
+RateErrorModel::DoCorruptPkt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-  return (m_ranvar->GetValue () < m_rate);
+    NS_LOG_FUNCTION(this << p);
+    return (m_ranvar->GetValue() < m_rate);
 }
 
 bool
-RateErrorModel::DoCorruptByte (Ptr<Packet> p)
+RateErrorModel::DoCorruptByte(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-  // compute pkt error rate, assume uniformly distributed byte error
-  double per = 1 - std::pow (1.0 - m_rate, static_cast<double> (p->GetSize ()));
-  return (m_ranvar->GetValue () < per);
+    NS_LOG_FUNCTION(this << p);
+    // compute pkt error rate, assume uniformly distributed byte error
+    double per = 1 - std::pow(1.0 - m_rate, static_cast<double>(p->GetSize()));
+    return (m_ranvar->GetValue() < per);
 }
 
 bool
-RateErrorModel::DoCorruptBit (Ptr<Packet> p)
+RateErrorModel::DoCorruptBit(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-  // compute pkt error rate, assume uniformly distributed bit error
-  double per = 1 - std::pow (1.0 - m_rate, static_cast<double> (8 * p->GetSize ()) );
-  return (m_ranvar->GetValue () < per);
+    NS_LOG_FUNCTION(this << p);
+    // compute pkt error rate, assume uniformly distributed bit error
+    double per = 1 - std::pow(1.0 - m_rate, static_cast<double>(8 * p->GetSize()));
+    return (m_ranvar->GetValue() < per);
 }
 
 void
-RateErrorModel::DoReset ()
+RateErrorModel::DoReset()
 {
-  NS_LOG_FUNCTION (this);
-  /* re-initialize any state; no-op for now */
+    NS_LOG_FUNCTION(this);
+    /* re-initialize any state; no-op for now */
 }
-
 
 //
 // BurstErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (BurstErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(BurstErrorModel);
 
-TypeId BurstErrorModel::GetTypeId ()
+TypeId
+BurstErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::BurstErrorModel")
-    .SetParent<ErrorModel> ()
-    .SetGroupName("Network")
-    .AddConstructor<BurstErrorModel> ()
-    .AddAttribute ("ErrorRate", "The burst error event.",
-                   DoubleValue (0.0),
-                   MakeDoubleAccessor (&BurstErrorModel::m_burstRate),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("BurstStart", "The decision variable attached to this error model.",
-                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
-                   MakePointerAccessor (&BurstErrorModel::m_burstStart),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("BurstSize", "The number of packets being corrupted at one drop.",
-                   StringValue ("ns3::UniformRandomVariable[Min=1|Max=4]"),
-                   MakePointerAccessor (&BurstErrorModel::m_burstSize),
-                   MakePointerChecker<RandomVariableStream> ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::BurstErrorModel")
+            .SetParent<ErrorModel>()
+            .SetGroupName("Network")
+            .AddConstructor<BurstErrorModel>()
+            .AddAttribute("ErrorRate",
+                          "The burst error event.",
+                          DoubleValue(0.0),
+                          MakeDoubleAccessor(&BurstErrorModel::m_burstRate),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("BurstStart",
+                          "The decision variable attached to this error model.",
+                          StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                          MakePointerAccessor(&BurstErrorModel::m_burstStart),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("BurstSize",
+                          "The number of packets being corrupted at one drop.",
+                          StringValue("ns3::UniformRandomVariable[Min=1|Max=4]"),
+                          MakePointerAccessor(&BurstErrorModel::m_burstSize),
+                          MakePointerChecker<RandomVariableStream>());
+    return tid;
 }
 
-
-BurstErrorModel::BurstErrorModel () : m_counter (0), m_currentBurstSz (0)
+BurstErrorModel::BurstErrorModel()
+    : m_counter(0),
+      m_currentBurstSz(0)
 {
-
 }
 
-BurstErrorModel::~BurstErrorModel ()
+BurstErrorModel::~BurstErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 double
-BurstErrorModel::GetBurstRate () const
+BurstErrorModel::GetBurstRate() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_burstRate;
+    NS_LOG_FUNCTION(this);
+    return m_burstRate;
 }
 
 void
-BurstErrorModel::SetBurstRate (double rate)
+BurstErrorModel::SetBurstRate(double rate)
 {
-  NS_LOG_FUNCTION (this << rate);
-  m_burstRate = rate;
+    NS_LOG_FUNCTION(this << rate);
+    m_burstRate = rate;
 }
 
 void
-BurstErrorModel::SetRandomVariable (Ptr<RandomVariableStream> ranVar)
+BurstErrorModel::SetRandomVariable(Ptr<RandomVariableStream> ranVar)
 {
-  NS_LOG_FUNCTION (this << ranVar);
-  m_burstStart = ranVar;
+    NS_LOG_FUNCTION(this << ranVar);
+    m_burstStart = ranVar;
 }
 
 void
 BurstErrorModel::SetRandomBurstSize(Ptr<RandomVariableStream> burstSz)
 {
-  NS_LOG_FUNCTION (this << burstSz);
-  m_burstSize = burstSz;
+    NS_LOG_FUNCTION(this << burstSz);
+    m_burstSize = burstSz;
 }
 
 int64_t
-BurstErrorModel::AssignStreams (int64_t stream)
+BurstErrorModel::AssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
-  m_burstStart->SetStream (stream);
-  m_burstSize->SetStream(stream);
-  return 2;
+    NS_LOG_FUNCTION(this << stream);
+    m_burstStart->SetStream(stream);
+    m_burstSize->SetStream(stream);
+    return 2;
 }
 
 bool
-BurstErrorModel::DoCorrupt (Ptr<Packet> p)
+BurstErrorModel::DoCorrupt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
-  if (!IsEnabled ())
+    NS_LOG_FUNCTION(this);
+    if (!IsEnabled())
     {
-      return false;
+        return false;
     }
-  double ranVar = m_burstStart ->GetValue();
+    double ranVar = m_burstStart->GetValue();
 
-  if (ranVar < m_burstRate)
+    if (ranVar < m_burstRate)
     {
-      // get a new burst size for the new error event
-      m_currentBurstSz = m_burstSize->GetInteger();
-      NS_LOG_DEBUG ("new burst size selected: " << m_currentBurstSz);
-      if (m_currentBurstSz == 0)
+        // get a new burst size for the new error event
+        m_currentBurstSz = m_burstSize->GetInteger();
+        NS_LOG_DEBUG("new burst size selected: " << m_currentBurstSz);
+        if (m_currentBurstSz == 0)
         {
-          NS_LOG_WARN ("Burst size == 0; shouldn't happen");
-          return false;
+            NS_LOG_WARN("Burst size == 0; shouldn't happen");
+            return false;
         }
-      m_counter = 1;  // start counting dropped packets
-      return true;    // drop this packet
+        m_counter = 1; // start counting dropped packets
+        return true;   // drop this packet
     }
-  else
+    else
     {
-      // not a burst error event
-      if (m_counter < m_currentBurstSz)
+        // not a burst error event
+        if (m_counter < m_currentBurstSz)
         {
-         // check to see if all the packets (determined by the last
-         // generated m_currentBurstSz) have been dropped.
-         // If not, drop 1 more packet
-          m_counter++;
-          return true;
+            // check to see if all the packets (determined by the last
+            // generated m_currentBurstSz) have been dropped.
+            // If not, drop 1 more packet
+            m_counter++;
+            return true;
         }
-      else
+        else
         {
-          // all packets in the last error event have been dropped
-          // and there is no new error event, so do not drop the packet
-          return false;  // no error event
+            // all packets in the last error event have been dropped
+            // and there is no new error event, so do not drop the packet
+            return false; // no error event
         }
     }
 }
 
 void
-BurstErrorModel::DoReset ()
+BurstErrorModel::DoReset()
 {
-  NS_LOG_FUNCTION (this);
-  m_counter = 0;
-  m_currentBurstSz = 0;
-
+    NS_LOG_FUNCTION(this);
+    m_counter = 0;
+    m_currentBurstSz = 0;
 }
-
 
 //
 // ListErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(ListErrorModel);
 
-TypeId ListErrorModel::GetTypeId ()
+TypeId
+ListErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ListErrorModel")
-    .SetParent<ErrorModel> ()
-    .SetGroupName("Network")
-    .AddConstructor<ListErrorModel> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::ListErrorModel")
+                            .SetParent<ErrorModel>()
+                            .SetGroupName("Network")
+                            .AddConstructor<ListErrorModel>();
+    return tid;
 }
 
-ListErrorModel::ListErrorModel ()
+ListErrorModel::ListErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-ListErrorModel::~ListErrorModel ()
+ListErrorModel::~ListErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 std::list<uint32_t>
-ListErrorModel::GetList () const
+ListErrorModel::GetList() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_packetList;
+    NS_LOG_FUNCTION(this);
+    return m_packetList;
 }
 
 void
-ListErrorModel::SetList (const std::list<uint32_t> &packetlist)
+ListErrorModel::SetList(const std::list<uint32_t>& packetlist)
 {
-  NS_LOG_FUNCTION (this << &packetlist);
-  m_packetList = packetlist;
+    NS_LOG_FUNCTION(this << &packetlist);
+    m_packetList = packetlist;
 }
 
 // When performance becomes a concern, the list provided could be
 // converted to a dynamically-sized array of uint32_t to avoid
 // list iteration below.
 bool
-ListErrorModel::DoCorrupt (Ptr<Packet> p)
+ListErrorModel::DoCorrupt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-  if (!IsEnabled ())
+    NS_LOG_FUNCTION(this << p);
+    if (!IsEnabled())
     {
-      return false;
+        return false;
     }
-  uint32_t uid = p->GetUid ();
-  for (PacketListCI i = m_packetList.begin ();
-       i != m_packetList.end (); i++)
+    uint32_t uid = p->GetUid();
+    for (PacketListCI i = m_packetList.begin(); i != m_packetList.end(); i++)
     {
-      if (uid == *i)
+        if (uid == *i)
         {
-          return true;
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 void
-ListErrorModel::DoReset ()
+ListErrorModel::DoReset()
 {
-  NS_LOG_FUNCTION (this);
-  m_packetList.clear ();
+    NS_LOG_FUNCTION(this);
+    m_packetList.clear();
 }
 
 //
 // ReceiveListErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (ReceiveListErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(ReceiveListErrorModel);
 
-TypeId ReceiveListErrorModel::GetTypeId ()
+TypeId
+ReceiveListErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ReceiveListErrorModel")
-    .SetParent<ErrorModel> ()
-    .SetGroupName("Network")
-    .AddConstructor<ReceiveListErrorModel> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::ReceiveListErrorModel")
+                            .SetParent<ErrorModel>()
+                            .SetGroupName("Network")
+                            .AddConstructor<ReceiveListErrorModel>();
+    return tid;
 }
 
-
-ReceiveListErrorModel::ReceiveListErrorModel () :
-  m_timesInvoked (0)
+ReceiveListErrorModel::ReceiveListErrorModel()
+    : m_timesInvoked(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-ReceiveListErrorModel::~ReceiveListErrorModel ()
+ReceiveListErrorModel::~ReceiveListErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 std::list<uint32_t>
-ReceiveListErrorModel::GetList () const
+ReceiveListErrorModel::GetList() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_packetList;
+    NS_LOG_FUNCTION(this);
+    return m_packetList;
 }
 
 void
-ReceiveListErrorModel::SetList (const std::list<uint32_t> &packetlist)
+ReceiveListErrorModel::SetList(const std::list<uint32_t>& packetlist)
 {
-  NS_LOG_FUNCTION (this << &packetlist);
-  m_packetList = packetlist;
+    NS_LOG_FUNCTION(this << &packetlist);
+    m_packetList = packetlist;
 }
 
 bool
-ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p)
+ReceiveListErrorModel::DoCorrupt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-  if (!IsEnabled ())
+    NS_LOG_FUNCTION(this << p);
+    if (!IsEnabled())
     {
-      return false;
+        return false;
     }
-  m_timesInvoked += 1;
-  for (PacketListCI i = m_packetList.begin ();
-       i != m_packetList.end (); i++)
+    m_timesInvoked += 1;
+    for (PacketListCI i = m_packetList.begin(); i != m_packetList.end(); i++)
     {
-      if (m_timesInvoked - 1 == *i)
+        if (m_timesInvoked - 1 == *i)
         {
-          return true;
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 void
-ReceiveListErrorModel::DoReset ()
+ReceiveListErrorModel::DoReset()
 {
-  NS_LOG_FUNCTION (this);
-  m_packetList.clear ();
+    NS_LOG_FUNCTION(this);
+    m_packetList.clear();
 }
 
+NS_OBJECT_ENSURE_REGISTERED(BinaryErrorModel);
 
-NS_OBJECT_ENSURE_REGISTERED (BinaryErrorModel);
-
-TypeId BinaryErrorModel::GetTypeId ()
+TypeId
+BinaryErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::BinaryErrorModel")
-    .SetParent<ErrorModel> ()
-    .AddConstructor<BinaryErrorModel> ()
-    ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::BinaryErrorModel").SetParent<ErrorModel>().AddConstructor<BinaryErrorModel>();
+    return tid;
 }
 
-BinaryErrorModel::BinaryErrorModel ()
+BinaryErrorModel::BinaryErrorModel()
 {
-  NS_LOG_FUNCTION (this);
-  m_counter = 0;
+    NS_LOG_FUNCTION(this);
+    m_counter = 0;
 }
 
-BinaryErrorModel::~BinaryErrorModel ()
+BinaryErrorModel::~BinaryErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 bool
-BinaryErrorModel::DoCorrupt (Ptr<Packet> p)
+BinaryErrorModel::DoCorrupt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
-  if (!IsEnabled ())
+    NS_LOG_FUNCTION(this);
+    if (!IsEnabled())
     {
-      return false;
+        return false;
     }
-  bool ret = m_counter%2;
-  m_counter++;
-  return ret;
+    bool ret = m_counter % 2;
+    m_counter++;
+    return ret;
 }
 
 void
-BinaryErrorModel::DoReset ()
+BinaryErrorModel::DoReset()
 {
-  NS_LOG_FUNCTION (this);
-  m_counter = 0;
+    NS_LOG_FUNCTION(this);
+    m_counter = 0;
 }
 
-
-
-
 } // namespace ns3
-

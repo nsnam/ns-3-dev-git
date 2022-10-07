@@ -27,15 +27,16 @@
 #ifndef NS3_NULLMESSAGE_MPI_INTERFACE_H
 #define NS3_NULLMESSAGE_MPI_INTERFACE_H
 
+#include "mpi.h"
 #include "parallel-communication-interface.h"
 
-#include <ns3/nstime.h>
 #include <ns3/buffer.h>
+#include <ns3/nstime.h>
 
-#include "mpi.h"
 #include <list>
 
-namespace ns3 {
+namespace ns3
+{
 
 class NullMessageSimulatorImpl;
 class NullMessageSentBuffer;
@@ -50,123 +51,122 @@ class Packet;
  */
 class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
 {
-public:
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId(void);
 
-  NullMessageMpiInterface ();
-  ~NullMessageMpiInterface ();
+    NullMessageMpiInterface();
+    ~NullMessageMpiInterface();
 
-  // Inherited
-  virtual void Destroy ();
-  virtual uint32_t GetSystemId ();
-  virtual uint32_t GetSize ();
-  virtual bool IsEnabled ();
-  virtual void Enable (int* pargc, char*** pargv);
-  virtual void Enable (MPI_Comm communicator);
-  virtual void Disable ();
-  virtual void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev);
-  virtual MPI_Comm GetCommunicator();
+    // Inherited
+    virtual void Destroy();
+    virtual uint32_t GetSystemId();
+    virtual uint32_t GetSize();
+    virtual bool IsEnabled();
+    virtual void Enable(int* pargc, char*** pargv);
+    virtual void Enable(MPI_Comm communicator);
+    virtual void Disable();
+    virtual void SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev);
+    virtual MPI_Comm GetCommunicator();
 
-private:
+  private:
+    /**
+     * The null message implementation is a collaboration of several
+     * classes.  Methods that should be invoked only by the
+     * collaborators are private to restrict use.
+     * It is not intended for state to be shared.
+     */
+    friend ns3::RemoteChannelBundle;
+    friend ns3::NullMessageSimulatorImpl;
 
-  /**
-   * The null message implementation is a collaboration of several
-   * classes.  Methods that should be invoked only by the
-   * collaborators are private to restrict use.
-   * It is not intended for state to be shared.
-   */
-  friend ns3::RemoteChannelBundle;
-  friend ns3::NullMessageSimulatorImpl;
+    /**
+     * \brief Send a Null Message to across the specified bundle.
+     *
+     * Null Messages are sent when a packet has not been sent across
+     * this bundle in order to allow time advancement on the remote
+     * MPI task.
+     *
+     * \param [in] guaranteeUpdate Lower bound time on the next
+     * possible event from this MPI task to the remote MPI task across
+     * the bundle.  Remote task may execute events up to this time.
+     *
+     * \param [in] bundle The bundle of links between two ranks.
+     *
+     * \internal The Null Message MPI buffer format uses the same packet
+     * metadata format as sending a normal packet with the time,
+     * destination node, and destination device set to zero.  Using the
+     * same packet metadata simplifies receive logic.
+     */
+    static void SendNullMessage(const Time& guaranteeUpdate, Ptr<RemoteChannelBundle> bundle);
+    /**
+     * Non-blocking check for received messages complete.  Will
+     * receive all messages that are queued up locally.
+     */
+    static void ReceiveMessagesNonBlocking();
+    /**
+     * Blocking message receive.  Will block until at least one message
+     * has been received.
+     */
+    static void ReceiveMessagesBlocking();
+    /**
+     * Check for completed sends
+     */
+    static void TestSendComplete();
 
-  /**
-   * \brief Send a Null Message to across the specified bundle.
-   *
-   * Null Messages are sent when a packet has not been sent across
-   * this bundle in order to allow time advancement on the remote
-   * MPI task.
-   *
-   * \param [in] guaranteeUpdate Lower bound time on the next
-   * possible event from this MPI task to the remote MPI task across
-   * the bundle.  Remote task may execute events up to this time.
-   *
-   * \param [in] bundle The bundle of links between two ranks.
-   *
-   * \internal The Null Message MPI buffer format uses the same packet
-   * metadata format as sending a normal packet with the time,
-   * destination node, and destination device set to zero.  Using the
-   * same packet metadata simplifies receive logic.
-   */
-  static void SendNullMessage (const Time& guaranteeUpdate, Ptr<RemoteChannelBundle> bundle);
-  /**
-   * Non-blocking check for received messages complete.  Will
-   * receive all messages that are queued up locally.
-   */
-  static void ReceiveMessagesNonBlocking ();
-  /**
-   * Blocking message receive.  Will block until at least one message
-   * has been received.
-   */
-  static void ReceiveMessagesBlocking ();
-  /**
-   * Check for completed sends
-   */
-  static void TestSendComplete ();
+    /**
+     * \brief Initialize send and receive buffers.
+     *
+     * This method should be called after all links have been added to the RemoteChannelBundle
+     * manager to setup any required send and receive buffers.
+     */
+    static void InitializeSendReceiveBuffers(void);
 
-  /**
-   * \brief Initialize send and receive buffers.
-   *
-   * This method should be called after all links have been added to the RemoteChannelBundle
-   * manager to setup any required send and receive buffers.
-   */
-  static void InitializeSendReceiveBuffers (void);
+    /**
+     * Check for received messages complete.  Will block until message
+     * has been received if blocking flag is true.  When blocking will
+     * return after the first message is received.   Non-blocking mode will
+     * only check for received messages complete, and return
+     * all messages that are queued up locally.
+     *
+     * \param [in] blocking Whether this call should block.
+     */
+    static void ReceiveMessages(bool blocking = false);
 
-  /**
-   * Check for received messages complete.  Will block until message
-   * has been received if blocking flag is true.  When blocking will
-   * return after the first message is received.   Non-blocking mode will
-   * only check for received messages complete, and return
-   * all messages that are queued up locally.
-   *
-   * \param [in] blocking Whether this call should block.
-   */
-  static void ReceiveMessages (bool blocking = false);
+    /** System ID (rank) for this task. */
+    static uint32_t g_sid;
 
-  /** System ID (rank) for this task. */
-  static uint32_t g_sid;
+    /** Size of the MPI COM_WORLD group. */
+    static uint32_t g_size;
 
-  /** Size of the MPI COM_WORLD group. */
-  static uint32_t g_size;
+    /** Number of neighbor tasks, tasks that this task shares a link with. */
+    static uint32_t g_numNeighbors;
 
-  /** Number of neighbor tasks, tasks that this task shares a link with. */
-  static uint32_t g_numNeighbors;
+    /** Has this interface been enabled. */
+    static bool g_enabled;
 
-  /** Has this interface been enabled. */
-  static bool     g_enabled;
+    /**
+     * Has MPI Init been called by this interface.
+     * Alternatively user supplies a communicator.
+     */
+    static bool g_mpiInitCalled;
 
-  /**
-   * Has MPI Init been called by this interface.
-   * Alternatively user supplies a communicator.
-   */
-  static bool     g_mpiInitCalled;
+    /** Pending non-blocking receives. */
+    static MPI_Request* g_requests;
 
-  /** Pending non-blocking receives. */
-  static MPI_Request* g_requests;
+    /** Data buffers for non-blocking receives. */
+    static char** g_pRxBuffers;
 
-  /** Data buffers for non-blocking receives. */
-  static char**   g_pRxBuffers;
+    /** List of pending non-blocking sends. */
+    static std::list<NullMessageSentBuffer> g_pendingTx;
 
-  /** List of pending non-blocking sends. */
-  static std::list<NullMessageSentBuffer> g_pendingTx;
+    /** MPI communicator being used for ns-3 tasks. */
+    static MPI_Comm g_communicator;
 
-  /** MPI communicator being used for ns-3 tasks. */
-  static MPI_Comm g_communicator;
-
-  /** Did we create the communicator?  Have to free it. */
-  static bool g_freeCommunicator;
+    /** Did we create the communicator?  Have to free it. */
+    static bool g_freeCommunicator;
 };
 
 } // namespace ns3

@@ -19,18 +19,20 @@
  */
 #include "waypoint.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-ATTRIBUTE_HELPER_CPP (Waypoint);
+ATTRIBUTE_HELPER_CPP(Waypoint);
 
-Waypoint::Waypoint (const Time &waypointTime, const Vector &waypointPosition)
-  : time (waypointTime),
-    position (waypointPosition)
+Waypoint::Waypoint(const Time& waypointTime, const Vector& waypointPosition)
+    : time(waypointTime),
+      position(waypointPosition)
 {
 }
-Waypoint::Waypoint ()
-  : time (Seconds (0.0)),
-    position (0,0,0)
+
+Waypoint::Waypoint()
+    : time(Seconds(0.0)),
+      position(0, 0, 0)
 {
 }
 
@@ -41,10 +43,11 @@ Waypoint::Waypoint ()
  * \param waypoint the waypoint
  * \returns a reference to the stream
  */
-std::ostream &operator << (std::ostream &os, const Waypoint &waypoint)
+std::ostream&
+operator<<(std::ostream& os, const Waypoint& waypoint)
 {
-  os << waypoint.time.GetSeconds () << "$" << waypoint.position;
-  return os;
+    os << waypoint.time.GetSeconds() << "$" << waypoint.position;
+    return os;
 }
 
 /**
@@ -54,16 +57,16 @@ std::ostream &operator << (std::ostream &os, const Waypoint &waypoint)
  * \param waypoint the waypoint
  * \returns a reference to the stream
  */
-std::istream &operator >> (std::istream &is, Waypoint &waypoint)
+std::istream&
+operator>>(std::istream& is, Waypoint& waypoint)
 {
-  char separator;
-  is >> waypoint.time >> separator >> waypoint.position;
-  if (separator != '$')
+    char separator;
+    is >> waypoint.time >> separator >> waypoint.position;
+    if (separator != '$')
     {
-      is.setstate (std::ios_base::failbit);
+        is.setstate(std::ios_base::failbit);
     }
-  return is;
+    return is;
 }
 
 } // namespace ns3
-

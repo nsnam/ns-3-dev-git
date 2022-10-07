@@ -18,38 +18,42 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "udp-socket-factory-impl.h"
+
 #include "udp-l4-protocol.h"
-#include "ns3/socket.h"
+
 #include "ns3/assert.h"
+#include "ns3/socket.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-UdpSocketFactoryImpl::UdpSocketFactoryImpl ()
-  : m_udp (nullptr)
+UdpSocketFactoryImpl::UdpSocketFactoryImpl()
+    : m_udp(nullptr)
 {
 }
-UdpSocketFactoryImpl::~UdpSocketFactoryImpl ()
+
+UdpSocketFactoryImpl::~UdpSocketFactoryImpl()
 {
-  NS_ASSERT (!m_udp);
+    NS_ASSERT(!m_udp);
 }
 
 void
-UdpSocketFactoryImpl::SetUdp (Ptr<UdpL4Protocol> udp)
+UdpSocketFactoryImpl::SetUdp(Ptr<UdpL4Protocol> udp)
 {
-  m_udp = udp;
+    m_udp = udp;
 }
 
 Ptr<Socket>
-UdpSocketFactoryImpl::CreateSocket ()
+UdpSocketFactoryImpl::CreateSocket()
 {
-  return m_udp->CreateSocket ();
+    return m_udp->CreateSocket();
 }
 
 void
-UdpSocketFactoryImpl::DoDispose ()
+UdpSocketFactoryImpl::DoDispose()
 {
-  m_udp = nullptr;
-  UdpSocketFactory::DoDispose ();
+    m_udp = nullptr;
+    UdpSocketFactory::DoDispose();
 }
 
 } // namespace ns3

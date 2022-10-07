@@ -20,10 +20,11 @@
 #ifndef INTEGER_H
 #define INTEGER_H
 
-#include "attribute.h"
 #include "attribute-helper.h"
-#include <stdint.h>
+#include "attribute.h"
+
 #include <limits>
+#include <stdint.h>
 
 /**
  * \file
@@ -31,7 +32,8 @@
  * ns3::IntegerValue attribute value declarations and template implementations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 //  Additional docs for class IntegerValue:
 /**
@@ -41,11 +43,11 @@ namespace ns3 {
  * type such as int8_t, int16_t, int32_t, int64_t, or,
  * int, etc.
  */
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME (int64_t, Integer);
-ATTRIBUTE_ACCESSOR_DEFINE (Integer);
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(int64_t, Integer);
+ATTRIBUTE_ACCESSOR_DEFINE(Integer);
 
 template <typename T>
-Ptr<const AttributeChecker> MakeIntegerChecker ();
+Ptr<const AttributeChecker> MakeIntegerChecker();
 
 /**
  * Make a checker with a minimum value.
@@ -57,7 +59,7 @@ Ptr<const AttributeChecker> MakeIntegerChecker ();
  * \see AttributeChecker
  */
 template <typename T>
-Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min);
+Ptr<const AttributeChecker> MakeIntegerChecker(int64_t min);
 
 /**
  * Make a checker with a minimum and a maximum value.
@@ -70,10 +72,9 @@ Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min);
  * \see AttributeChecker
  */
 template <typename T>
-Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min, int64_t max);
+Ptr<const AttributeChecker> MakeIntegerChecker(int64_t min, int64_t max);
 
 } // namespace ns3
-
 
 /***************************************************************
  *  Implementation of the templates declared above.
@@ -81,38 +82,37 @@ Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min, int64_t max);
 
 #include "type-name.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace internal {
+namespace internal
+{
 
-Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min, int64_t max, std::string name);
+Ptr<const AttributeChecker> MakeIntegerChecker(int64_t min, int64_t max, std::string name);
 
-} // internal
+} // namespace internal
 
 template <typename T>
 Ptr<const AttributeChecker>
-MakeIntegerChecker (int64_t min, int64_t max)
+MakeIntegerChecker(int64_t min, int64_t max)
 {
-  return internal::MakeIntegerChecker (min,
-                                       max, TypeNameGet<T> ());
+    return internal::MakeIntegerChecker(min, max, TypeNameGet<T>());
 }
 
 template <typename T>
 Ptr<const AttributeChecker>
-MakeIntegerChecker (int64_t min)
+MakeIntegerChecker(int64_t min)
 {
-  return internal::MakeIntegerChecker (min,
-                                       std::numeric_limits<T>::max (),
-                                       TypeNameGet<T> ());
+    return internal::MakeIntegerChecker(min, std::numeric_limits<T>::max(), TypeNameGet<T>());
 }
 
 template <typename T>
 Ptr<const AttributeChecker>
-MakeIntegerChecker ()
+MakeIntegerChecker()
 {
-  return internal::MakeIntegerChecker (std::numeric_limits<T>::min (),
-                                       std::numeric_limits<T>::max (),
-                                       TypeNameGet<T> ());
+    return internal::MakeIntegerChecker(std::numeric_limits<T>::min(),
+                                        std::numeric_limits<T>::max(),
+                                        TypeNameGet<T>());
 }
 
 } // namespace ns3

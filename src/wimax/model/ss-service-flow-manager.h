@@ -21,14 +21,17 @@
 #ifndef SS_SERVICE_FLOW_MANAGER_H
 #define SS_SERVICE_FLOW_MANAGER_H
 
-#include <stdint.h>
-#include "ns3/event-id.h"
 #include "mac-messages.h"
-#include "ns3/buffer.h"
 #include "service-flow-manager.h"
 #include "ss-net-device.h"
 
-namespace ns3 {
+#include "ns3/buffer.h"
+#include "ns3/event-id.h"
+
+#include <stdint.h>
+
+namespace ns3
+{
 
 class Packet;
 class ServiceFlow;
@@ -42,109 +45,107 @@ class SubscriberStationNetDevice;
  */
 class SsServiceFlowManager : public ServiceFlowManager
 {
-public:
-  /// Confirmation code enumeration
-  enum ConfirmationCode // as per Table 384 (not all codes implemented)
-  {
-    CONFIRMATION_CODE_SUCCESS,
-    CONFIRMATION_CODE_REJECT
-  };
-  /**
-   * Constructor
-   *
-   * Creates a service flow manager and attaches it to a device
-   *
-   * \param device the device to which the service flow manager will be attached
-   */
-  SsServiceFlowManager (Ptr<SubscriberStationNetDevice> device);
-  ~SsServiceFlowManager () override;
-  void DoDispose () override;
+  public:
+    /// Confirmation code enumeration
+    enum ConfirmationCode // as per Table 384 (not all codes implemented)
+    {
+        CONFIRMATION_CODE_SUCCESS,
+        CONFIRMATION_CODE_REJECT
+    };
 
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId ();
+    /**
+     * Constructor
+     *
+     * Creates a service flow manager and attaches it to a device
+     *
+     * \param device the device to which the service flow manager will be attached
+     */
+    SsServiceFlowManager(Ptr<SubscriberStationNetDevice> device);
+    ~SsServiceFlowManager() override;
+    void DoDispose() override;
 
-  /**
-   * \brief add a service flow to the list
-   * \param serviceFlow the service flow to add
-   */
-  void AddServiceFlow (ServiceFlow *serviceFlow);
-  /**
-   * \brief add a service flow to the list
-   * \param serviceFlow the service flow to add
-   */
-  void AddServiceFlow (ServiceFlow serviceFlow);
-  /**
-   * \brief sets the maximum retries on DSA request message
-   * \param maxDsaReqRetries the maximum retries on DSA request message
-   */
-  void SetMaxDsaReqRetries (uint8_t maxDsaReqRetries);
-  /**
-   * \return the maximum retries on DSA request message
-   */
-  uint8_t GetMaxDsaReqRetries () const;
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get DSA response timeout event
-   * \returns the DSA response timeout event
-   */
-  EventId GetDsaRspTimeoutEvent () const;
-  /**
-   * Get DSA ack timeout event
-   * \returns the DSA ack timeput event
-   */
-  EventId GetDsaAckTimeoutEvent () const;
+    /**
+     * \brief add a service flow to the list
+     * \param serviceFlow the service flow to add
+     */
+    void AddServiceFlow(ServiceFlow* serviceFlow);
+    /**
+     * \brief add a service flow to the list
+     * \param serviceFlow the service flow to add
+     */
+    void AddServiceFlow(ServiceFlow serviceFlow);
+    /**
+     * \brief sets the maximum retries on DSA request message
+     * \param maxDsaReqRetries the maximum retries on DSA request message
+     */
+    void SetMaxDsaReqRetries(uint8_t maxDsaReqRetries);
+    /**
+     * \return the maximum retries on DSA request message
+     */
+    uint8_t GetMaxDsaReqRetries() const;
 
-  /// Initiate service flows
-  void InitiateServiceFlows ();
+    /**
+     * Get DSA response timeout event
+     * \returns the DSA response timeout event
+     */
+    EventId GetDsaRspTimeoutEvent() const;
+    /**
+     * Get DSA ack timeout event
+     * \returns the DSA ack timeput event
+     */
+    EventId GetDsaAckTimeoutEvent() const;
 
-  /**
-   * Create DSA request
-   * \param serviceFlow the service flow
-   * \returns the DSA request
-   */
-  DsaReq CreateDsaReq (const ServiceFlow *serviceFlow);
+    /// Initiate service flows
+    void InitiateServiceFlows();
 
-  /**
-   * Create DSA ack
-   * \returns the packet
-   */
-  Ptr<Packet> CreateDsaAck ();
+    /**
+     * Create DSA request
+     * \param serviceFlow the service flow
+     * \returns the DSA request
+     */
+    DsaReq CreateDsaReq(const ServiceFlow* serviceFlow);
 
-  /**
-   * Schedule DSA response
-   * \param serviceFlow the service flow
-   */
-  void ScheduleDsaReq (const ServiceFlow *serviceFlow);
+    /**
+     * Create DSA ack
+     * \returns the packet
+     */
+    Ptr<Packet> CreateDsaAck();
 
-  /**
-   * Process DSA response
-   * \param dsaRsp the DSA response
-   */
-  void ProcessDsaRsp (const DsaRsp &dsaRsp);
+    /**
+     * Schedule DSA response
+     * \param serviceFlow the service flow
+     */
+    void ScheduleDsaReq(const ServiceFlow* serviceFlow);
 
+    /**
+     * Process DSA response
+     * \param dsaRsp the DSA response
+     */
+    void ProcessDsaRsp(const DsaRsp& dsaRsp);
 
-private:
-  Ptr<SubscriberStationNetDevice> m_device; ///< the device
+  private:
+    Ptr<SubscriberStationNetDevice> m_device; ///< the device
 
-  uint8_t m_maxDsaReqRetries; ///< maximum DSA request retries
+    uint8_t m_maxDsaReqRetries; ///< maximum DSA request retries
 
-  EventId m_dsaRspTimeoutEvent; ///< DSA response timeout event
-  EventId m_dsaAckTimeoutEvent; ///< DSA ack timeout event
+    EventId m_dsaRspTimeoutEvent; ///< DSA response timeout event
+    EventId m_dsaAckTimeoutEvent; ///< DSA ack timeout event
 
-  DsaReq m_dsaReq; ///< DSA request
-  DsaAck m_dsaAck; ///< DSA ack
+    DsaReq m_dsaReq; ///< DSA request
+    DsaAck m_dsaAck; ///< DSA ack
 
-  uint16_t m_currentTransactionId; ///< current transaction ID
-  uint16_t m_transactionIdIndex; ///< transaction ID index
-  uint8_t m_dsaReqRetries; ///< DSA request retries
+    uint16_t m_currentTransactionId; ///< current transaction ID
+    uint16_t m_transactionIdIndex;   ///< transaction ID index
+    uint8_t m_dsaReqRetries;         ///< DSA request retries
 
-  // pointer to the service flow currently being configured
-  ServiceFlow *m_pendingServiceFlow; ///< pending service flow
-
-
+    // pointer to the service flow currently being configured
+    ServiceFlow* m_pendingServiceFlow; ///< pending service flow
 };
 
 } // namespace ns3

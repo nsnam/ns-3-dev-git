@@ -18,82 +18,92 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/log.h"
-#include "ns3/wifi-psdu.h"
-#include "eht-phy.h"
 #include "eht-ppdu.h"
 
-namespace ns3 {
+#include "eht-phy.h"
 
-NS_LOG_COMPONENT_DEFINE ("EhtPpdu");
+#include "ns3/log.h"
+#include "ns3/wifi-psdu.h"
 
-EhtPpdu::EhtPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint16_t txCenterFreq,
-                  Time ppduDuration, WifiPhyBand band, uint64_t uid, TxPsdFlag flag, uint8_t p20Index)
-  : HePpdu (psdus, txVector, txCenterFreq, ppduDuration, band, uid, flag, p20Index)
+namespace ns3
 {
-  NS_LOG_FUNCTION (this << psdus << txVector << txCenterFreq << ppduDuration << band << uid << flag << p20Index);
+
+NS_LOG_COMPONENT_DEFINE("EhtPpdu");
+
+EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
+                 const WifiTxVector& txVector,
+                 uint16_t txCenterFreq,
+                 Time ppduDuration,
+                 WifiPhyBand band,
+                 uint64_t uid,
+                 TxPsdFlag flag,
+                 uint8_t p20Index)
+    : HePpdu(psdus, txVector, txCenterFreq, ppduDuration, band, uid, flag, p20Index)
+{
+    NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << ppduDuration << band << uid << flag
+                         << p20Index);
 }
 
-EhtPpdu::~EhtPpdu ()
+EhtPpdu::~EhtPpdu()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 WifiPpduType
-EhtPpdu::GetType () const
+EhtPpdu::GetType() const
 {
-  if (m_muUserInfos.empty ())
+    if (m_muUserInfos.empty())
     {
-      return WIFI_PPDU_TYPE_SU;
+        return WIFI_PPDU_TYPE_SU;
     }
-  switch (m_preamble)
+    switch (m_preamble)
     {
-      case WIFI_PREAMBLE_EHT_MU:
+    case WIFI_PREAMBLE_EHT_MU:
         return WIFI_PPDU_TYPE_DL_MU;
-      case WIFI_PREAMBLE_EHT_TB:
+    case WIFI_PREAMBLE_EHT_TB:
         return WIFI_PPDU_TYPE_UL_MU;
-      default:
-        NS_ASSERT_MSG (false, "invalid preamble " << m_preamble);
+    default:
+        NS_ASSERT_MSG(false, "invalid preamble " << m_preamble);
         return WIFI_PPDU_TYPE_SU;
     }
 }
 
 bool
-EhtPpdu::IsDlMu () const
+EhtPpdu::IsDlMu() const
 {
-  return (m_preamble == WIFI_PREAMBLE_EHT_MU) && !m_muUserInfos.empty ();
+    return (m_preamble == WIFI_PREAMBLE_EHT_MU) && !m_muUserInfos.empty();
 }
 
 bool
-EhtPpdu::IsUlMu () const
+EhtPpdu::IsUlMu() const
 {
-  return (m_preamble == WIFI_PREAMBLE_EHT_TB) && !m_muUserInfos.empty ();
+    return (m_preamble == WIFI_PREAMBLE_EHT_TB) && !m_muUserInfos.empty();
 }
 
 WifiTxVector
-EhtPpdu::DoGetTxVector () const
+EhtPpdu::DoGetTxVector() const
 {
-  // FIXME: define EHT PHY headers
-  WifiTxVector txVector;
-  txVector.SetPreambleType (m_preamble);
-  txVector.SetMode (EhtPhy::GetEhtMcs (m_heSig.GetMcs ()));
-  txVector.SetChannelWidth (m_heSig.GetChannelWidth ());
-  txVector.SetNss (m_heSig.GetNStreams ());
-  txVector.SetGuardInterval (m_heSig.GetGuardInterval ());
-  txVector.SetBssColor (m_heSig.GetBssColor ());
-  txVector.SetLength (m_lSig.GetLength ());
-  txVector.SetAggregation (m_psdus.size () > 1 || m_psdus.begin ()->second->IsAggregate ());
-  for (auto const& muUserInfo : m_muUserInfos)
+    // FIXME: define EHT PHY headers
+    WifiTxVector txVector;
+    txVector.SetPreambleType(m_preamble);
+    txVector.SetMode(EhtPhy::GetEhtMcs(m_heSig.GetMcs()));
+    txVector.SetChannelWidth(m_heSig.GetChannelWidth());
+    txVector.SetNss(m_heSig.GetNStreams());
+    txVector.SetGuardInterval(m_heSig.GetGuardInterval());
+    txVector.SetBssColor(m_heSig.GetBssColor());
+    txVector.SetLength(m_lSig.GetLength());
+    txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
+    for (const auto& muUserInfo : m_muUserInfos)
     {
-      txVector.SetHeMuUserInfo (muUserInfo.first, muUserInfo.second);
+        txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
     }
-  return txVector;
+    return txVector;
 }
 
 Ptr<WifiPpdu>
-EhtPpdu::Copy () const
+EhtPpdu::Copy() const
 {
-  return ns3::Copy (Ptr (this));
+    return ns3::Copy(Ptr(this));
 }
 
-} //namespace ns3
+} // namespace ns3

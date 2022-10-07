@@ -26,78 +26,75 @@
  * ns3::EventGarbageCollector implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-
-EventGarbageCollector::EventGarbageCollector ()
-  : m_nextCleanupSize (CHUNK_INIT_SIZE),
-    m_events ()
-{}
+EventGarbageCollector::EventGarbageCollector()
+    : m_nextCleanupSize(CHUNK_INIT_SIZE),
+      m_events()
+{
+}
 
 void
-EventGarbageCollector::Track (EventId event)
+EventGarbageCollector::Track(EventId event)
 {
-  m_events.insert (event);
-  if (m_events.size () >= m_nextCleanupSize)
+    m_events.insert(event);
+    if (m_events.size() >= m_nextCleanupSize)
     {
-      Cleanup ();
+        Cleanup();
     }
 }
 
 void
-EventGarbageCollector::Grow ()
+EventGarbageCollector::Grow()
 {
-  m_nextCleanupSize += (m_nextCleanupSize < CHUNK_MAX_SIZE ?
-                        m_nextCleanupSize : CHUNK_MAX_SIZE);
+    m_nextCleanupSize += (m_nextCleanupSize < CHUNK_MAX_SIZE ? m_nextCleanupSize : CHUNK_MAX_SIZE);
 }
 
 void
-EventGarbageCollector::Shrink ()
+EventGarbageCollector::Shrink()
 {
-  while (m_nextCleanupSize > m_events.size ())
+    while (m_nextCleanupSize > m_events.size())
     {
-      m_nextCleanupSize >>= 1;
+        m_nextCleanupSize >>= 1;
     }
-  Grow ();
+    Grow();
 }
 
 // Called when a new event was added and
 // the cleanup limit was exceeded in consequence.
 void
-EventGarbageCollector::Cleanup ()
+EventGarbageCollector::Cleanup()
 {
-  for (EventList::iterator iter = m_events.begin (); iter != m_events.end ();)
+    for (EventList::iterator iter = m_events.begin(); iter != m_events.end();)
     {
-      if ((*iter).IsExpired ())
+        if ((*iter).IsExpired())
         {
-          m_events.erase (iter++);
+            m_events.erase(iter++);
         }
-      else
+        else
         {
-          break; // EventIds are sorted by timestamp => further events are not expired for sure
+            break; // EventIds are sorted by timestamp => further events are not expired for sure
         }
     }
 
-  // If after cleanup we are still over the limit, increase the limit.
-  if (m_events.size () >= m_nextCleanupSize)
+    // If after cleanup we are still over the limit, increase the limit.
+    if (m_events.size() >= m_nextCleanupSize)
     {
-      Grow ();
+        Grow();
     }
-  else
+    else
     {
-      Shrink ();
+        Shrink();
     }
 }
 
-
-EventGarbageCollector::~EventGarbageCollector ()
+EventGarbageCollector::~EventGarbageCollector()
 {
-  for (const auto& event : m_events)
+    for (const auto& event : m_events)
     {
-      Simulator::Cancel (event);
+        Simulator::Cancel(event);
     }
 }
 
 } // namespace ns3
-
-

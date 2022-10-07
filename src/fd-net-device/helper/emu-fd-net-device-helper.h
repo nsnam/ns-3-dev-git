@@ -20,16 +20,17 @@
 #ifndef EMU_FD_NET_DEVICE_HELPER_H
 #define EMU_FD_NET_DEVICE_HELPER_H
 
-#include <string>
-
 #include "ns3/attribute.h"
-#include "ns3/fd-net-device.h"
 #include "ns3/fd-net-device-helper.h"
-#include "ns3/object-factory.h"
+#include "ns3/fd-net-device.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
+#include "ns3/object-factory.h"
 
-namespace ns3 {
+#include <string>
+
+namespace ns3
+{
 
 /**
  * \ingroup fd-net-device
@@ -39,63 +40,64 @@ namespace ns3 {
  */
 class EmuFdNetDeviceHelper : public FdNetDeviceHelper
 {
-public:
-  /**
-   * Construct a EmuFdNetDeviceHelper.
-   */
-  EmuFdNetDeviceHelper ();
-  ~EmuFdNetDeviceHelper () override
-  {}
+  public:
+    /**
+     * Construct a EmuFdNetDeviceHelper.
+     */
+    EmuFdNetDeviceHelper();
 
-  /**
-   * Get the device name of this device.
-   *
-   * \returns The device name of this device.
-   */
-  std::string GetDeviceName ();
+    ~EmuFdNetDeviceHelper() override
+    {
+    }
 
-  /**
-   * Set the device name of this device.
-   *
-   * \param deviceName The device name of this device.
-   */
-  void SetDeviceName (std::string deviceName);
+    /**
+     * Get the device name of this device.
+     *
+     * \returns The device name of this device.
+     */
+    std::string GetDeviceName();
 
-  /**
-   * \brief Request host qdisc bypass
-   * \param hostQdiscBypass to enable host qdisc bypass
-   */
-  void HostQdiscBypass (bool hostQdiscBypass);
+    /**
+     * Set the device name of this device.
+     *
+     * \param deviceName The device name of this device.
+     */
+    void SetDeviceName(std::string deviceName);
 
-protected:
+    /**
+     * \brief Request host qdisc bypass
+     * \param hostQdiscBypass to enable host qdisc bypass
+     */
+    void HostQdiscBypass(bool hostQdiscBypass);
 
-  /**
-   * This method creates an ns3::FdNetDevice attached to a physical network
-   * interface
-   *
-   * \param node The node to install the device in
-   * \returns A container holding the added net device.
-   */
-  Ptr<NetDevice> InstallPriv (Ptr<Node> node) const override;
+  protected:
+    /**
+     * This method creates an ns3::FdNetDevice attached to a physical network
+     * interface
+     *
+     * \param node The node to install the device in
+     * \returns A container holding the added net device.
+     */
+    Ptr<NetDevice> InstallPriv(Ptr<Node> node) const override;
 
-  /**
-   * Sets a file descriptor on the FileDescriptorNetDevice.
-   * \param device the device to install the file descriptor in
-   */
-  virtual void SetFileDescriptor (Ptr<FdNetDevice> device) const;
+    /**
+     * Sets a file descriptor on the FileDescriptorNetDevice.
+     * \param device the device to install the file descriptor in
+     */
+    virtual void SetFileDescriptor(Ptr<FdNetDevice> device) const;
 
-  /**
-   * Call out to a separate process running as suid root in order to get a raw
-   * socket.  We do this to avoid having the entire simulation running as root.
-   * \return the rawSocket number
-   */
-  virtual int CreateFileDescriptor () const;
+    /**
+     * Call out to a separate process running as suid root in order to get a raw
+     * socket.  We do this to avoid having the entire simulation running as root.
+     * \return the rawSocket number
+     */
+    virtual int CreateFileDescriptor() const;
 
-  /**
-   * The Unix/Linux name of the underlying device (e.g., eth0)
-   */
-  std::string m_deviceName;
-  bool m_hostQdiscBypass; //!< True if request host qdisc bypass
+    /**
+     * The Unix/Linux name of the underlying device (e.g., eth0)
+     */
+    std::string m_deviceName;
+    bool m_hostQdiscBypass; //!< True if request host qdisc bypass
 };
 
 } // namespace ns3

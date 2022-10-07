@@ -22,13 +22,14 @@
 #ifndef EPC_PGW_APPLICATION_H
 #define EPC_PGW_APPLICATION_H
 
-#include "ns3/virtual-net-device.h"
-#include "ns3/socket.h"
 #include "ns3/application.h"
-#include "ns3/epc-tft-classifier.h"
 #include "ns3/epc-gtpc-header.h"
+#include "ns3/epc-tft-classifier.h"
+#include "ns3/socket.h"
+#include "ns3/virtual-net-device.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lte
@@ -50,292 +51,292 @@ namespace ns3 {
  */
 class EpcPgwApplication : public Application
 {
-public:
-
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  void DoDispose () override;
-
-  /**
-   * Constructor that binds the tap device to the callback methods.
-   *
-   * \param tunDevice TUN VirtualNetDevice used to tunnel IP packets from
-   * the SGi interface of the PGW in the internet
-   * over GTP-U/UDP/IP on the S5 interface
-   * \param s5Addr IP address of the PGW S5 interface
-   * \param s5uSocket socket used to send GTP-U packets to the peer SGW
-   * \param s5cSocket socket used to send GTP-C packets to the peer SGW
-   */
-  EpcPgwApplication (const Ptr<VirtualNetDevice> tunDevice, Ipv4Address s5Addr,
-                     const Ptr<Socket> s5uSocket, const Ptr<Socket> s5cSocket);
-
-  /** Destructor */
-  ~EpcPgwApplication () override;
-
-  /**
-   * Method to be assigned to the callback of the SGi TUN VirtualNetDevice.
-   * It is called when the PGW receives a data packet from the
-   * internet (including IP headers) that is to be sent to the UE via
-   * its associated SGW and eNB, tunneling IP over GTP-U/UDP/IP.
-   *
-   * \param packet
-   * \param source
-   * \param dest
-   * \param protocolNumber
-   * \return true always
-   */
-  bool RecvFromTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-
-  /**
-   * Method to be assigned to the receiver callback of the S5-U socket.
-   * It is called when the PGW receives a data packet from the SGW
-   * that is to be forwarded to the internet.
-   *
-   * \param socket pointer to the S5-U socket
-   */
-  void RecvFromS5uSocket (Ptr<Socket> socket);
-
-  /**
-   * Method to be assigned to the receiver callback of the S5-C socket.
-   * It is called when the PGW receives a control packet from the SGW.
-   *
-   * \param socket pointer to the S5-C socket
-   */
-  void RecvFromS5cSocket (Ptr<Socket> socket);
-
-  /**
-   * Send a data packet to the internet via the SGi interface of the PGW
-   *
-   * \param packet packet to be sent
-   * \param teid the Tunnel Enpoint Identifier
-   */
-  void SendToTunDevice (Ptr<Packet> packet, uint32_t teid);
-
-  /**
-   * Send a data packet to the SGW via the S5-U interface
-   *
-   * \param packet packet to be sent
-   * \param sgwS5uAddress the address of the SGW
-   * \param teid the Tunnel Enpoint IDentifier
-   */
-  void SendToS5uSocket (Ptr<Packet> packet, Ipv4Address sgwS5uAddress, uint32_t teid);
-
-
-  /**
-   * Let the PGW be aware of a new SGW
-   *
-   * \param sgwS5Addr the address of the SGW S5 interface
-   */
-  void AddSgw (Ipv4Address sgwS5Addr);
-
-  /**
-   * Let the PGW be aware of a new UE
-   *
-   * \param imsi the unique identifier of the UE
-   */
-  void AddUe (uint64_t imsi);
-
-  /**
-   * Set the address of a previously added UE
-   *
-   * \param imsi the unique identifier of the UE
-   * \param ueAddr the IPv4 address of the UE
-   */
-  void SetUeAddress (uint64_t imsi, Ipv4Address ueAddr);
-
-  /**
-   * set the address of a previously added UE
-   *
-   * \param imsi the unique identifier of the UE
-   * \param ueAddr the IPv6 address of the UE
-   */
-  void SetUeAddress6 (uint64_t imsi, Ipv6Address ueAddr);
-
-  /**
-   * TracedCallback signature for data Packet reception event.
-   *
-   * \param [in] packet The data packet sent from the internet.
-   */
-  typedef void (* RxTracedCallback)
-    (Ptr<Packet> packet);
-
-private:
-
-  /**
-   * Process Create Session Request message
-   * \param packet GTPv2-C Create Session Request message
-   */
-  void DoRecvCreateSessionRequest (Ptr<Packet> packet);
-
-  /**
-   * Process Modify Bearer Request message
-   * \param packet GTPv2-C Modify Bearer Request message
-   */
-  void DoRecvModifyBearerRequest (Ptr<Packet> packet);
-
-  /**
-   * Process Delete Bearer Command message
-   * \param packet GTPv2-C Delete Bearer Command message
-   */
-  void DoRecvDeleteBearerCommand (Ptr<Packet> packet);
-
-  /**
-   * Process Delete Bearer Response message
-   * \param packet GTPv2-C Delete Bearer Response message
-   */
-  void DoRecvDeleteBearerResponse (Ptr<Packet> packet);
-
-
-  /**
-   * store info for each UE connected to this PGW
-   */
-  class UeInfo : public SimpleRefCount<UeInfo>
-  {
   public:
-    UeInfo ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    void DoDispose() override;
 
     /**
-     * Add a bearer for this UE on PGW side
+     * Constructor that binds the tap device to the callback methods.
      *
-     * \param bearerId the ID of the EPS Bearer to be activated
-     * \param teid  the TEID of the new bearer
-     * \param tft the Traffic Flow Template of the new bearer to be added
+     * \param tunDevice TUN VirtualNetDevice used to tunnel IP packets from
+     * the SGi interface of the PGW in the internet
+     * over GTP-U/UDP/IP on the S5 interface
+     * \param s5Addr IP address of the PGW S5 interface
+     * \param s5uSocket socket used to send GTP-U packets to the peer SGW
+     * \param s5cSocket socket used to send GTP-C packets to the peer SGW
      */
-    void AddBearer (uint8_t bearerId, uint32_t teid, Ptr<EpcTft> tft);
+    EpcPgwApplication(const Ptr<VirtualNetDevice> tunDevice,
+                      Ipv4Address s5Addr,
+                      const Ptr<Socket> s5uSocket,
+                      const Ptr<Socket> s5cSocket);
+
+    /** Destructor */
+    ~EpcPgwApplication() override;
 
     /**
-     * Delete context of bearer for this UE on PGW side
+     * Method to be assigned to the callback of the SGi TUN VirtualNetDevice.
+     * It is called when the PGW receives a data packet from the
+     * internet (including IP headers) that is to be sent to the UE via
+     * its associated SGW and eNB, tunneling IP over GTP-U/UDP/IP.
      *
-     * \param bearerId the ID of the EPS Bearer whose contexts is to be removed
+     * \param packet
+     * \param source
+     * \param dest
+     * \param protocolNumber
+     * \return true always
      */
-    void RemoveBearer (uint8_t bearerId);
+    bool RecvFromTunDevice(Ptr<Packet> packet,
+                           const Address& source,
+                           const Address& dest,
+                           uint16_t protocolNumber);
 
     /**
-     * Classify the packet according to TFTs of this UE
+     * Method to be assigned to the receiver callback of the S5-U socket.
+     * It is called when the PGW receives a data packet from the SGW
+     * that is to be forwarded to the internet.
      *
-     * \param p the IPv4 or IPv6 packet from the internet to be classified
-     * \param protocolNumber identifies the type of packet.
-     *        Only IPv4 and IPv6 packets are allowed.
-     *
-     * \return the corresponding bearer ID > 0 identifying the bearer
-     * among all the bearers of this UE;  returns 0 if no bearers
-     * matches with the previously declared TFTs
+     * \param socket pointer to the S5-U socket
      */
-    uint32_t Classify (Ptr<Packet> p, uint16_t protocolNumber);
+    void RecvFromS5uSocket(Ptr<Socket> socket);
 
     /**
-     * Get the address of the SGW to which the UE is connected
+     * Method to be assigned to the receiver callback of the S5-C socket.
+     * It is called when the PGW receives a control packet from the SGW.
      *
-     * \return the address of the SGW
+     * \param socket pointer to the S5-C socket
      */
-    Ipv4Address GetSgwAddr ();
+    void RecvFromS5cSocket(Ptr<Socket> socket);
 
     /**
-     * Set the address of the eNB to which the UE is connected
+     * Send a data packet to the internet via the SGi interface of the PGW
      *
-     * \param addr the address of the SGW
+     * \param packet packet to be sent
+     * \param teid the Tunnel Enpoint Identifier
      */
-    void SetSgwAddr (Ipv4Address addr);
+    void SendToTunDevice(Ptr<Packet> packet, uint32_t teid);
 
     /**
-     * Get the IPv4 address of the UE
+     * Send a data packet to the SGW via the S5-U interface
      *
-     * \return the IPv4 address of the UE
+     * \param packet packet to be sent
+     * \param sgwS5uAddress the address of the SGW
+     * \param teid the Tunnel Enpoint IDentifier
      */
-    Ipv4Address GetUeAddr ();
+    void SendToS5uSocket(Ptr<Packet> packet, Ipv4Address sgwS5uAddress, uint32_t teid);
 
     /**
-     * Set the IPv4 address of the UE
+     * Let the PGW be aware of a new SGW
      *
-     * \param addr the IPv4 address of the UE
+     * \param sgwS5Addr the address of the SGW S5 interface
      */
-    void SetUeAddr (Ipv4Address addr);
+    void AddSgw(Ipv4Address sgwS5Addr);
 
     /**
-     * Get the IPv6 address of the UE
+     * Let the PGW be aware of a new UE
      *
-     * \return the IPv6 address of the UE
+     * \param imsi the unique identifier of the UE
      */
-    Ipv6Address GetUeAddr6 ();
+    void AddUe(uint64_t imsi);
 
     /**
-     * Set the IPv6 address of the UE
+     * Set the address of a previously added UE
      *
-     * \param addr the IPv6 address of the UE
+     * \param imsi the unique identifier of the UE
+     * \param ueAddr the IPv4 address of the UE
      */
-    void SetUeAddr6 (Ipv6Address addr);
+    void SetUeAddress(uint64_t imsi, Ipv4Address ueAddr);
+
+    /**
+     * set the address of a previously added UE
+     *
+     * \param imsi the unique identifier of the UE
+     * \param ueAddr the IPv6 address of the UE
+     */
+    void SetUeAddress6(uint64_t imsi, Ipv6Address ueAddr);
+
+    /**
+     * TracedCallback signature for data Packet reception event.
+     *
+     * \param [in] packet The data packet sent from the internet.
+     */
+    typedef void (*RxTracedCallback)(Ptr<Packet> packet);
 
   private:
-    Ipv4Address m_ueAddr; ///< UE IPv4 address
-    Ipv6Address m_ueAddr6; ///< UE IPv6 address
-    Ipv4Address m_sgwAddr; ///< SGW IPv4 address
-    EpcTftClassifier m_tftClassifier; ///< TFT classifier
-    std::map<uint8_t, uint32_t> m_teidByBearerIdMap; ///< TEID By bearer ID Map
-  };
+    /**
+     * Process Create Session Request message
+     * \param packet GTPv2-C Create Session Request message
+     */
+    void DoRecvCreateSessionRequest(Ptr<Packet> packet);
 
-  /**
-   * PGW address of the S5 interface
-   */
-  Ipv4Address m_pgwS5Addr;
+    /**
+     * Process Modify Bearer Request message
+     * \param packet GTPv2-C Modify Bearer Request message
+     */
+    void DoRecvModifyBearerRequest(Ptr<Packet> packet);
 
-  /**
-   * UDP socket to send/receive GTP-U packets to/from the S5 interface
-   */
-  Ptr<Socket> m_s5uSocket;
+    /**
+     * Process Delete Bearer Command message
+     * \param packet GTPv2-C Delete Bearer Command message
+     */
+    void DoRecvDeleteBearerCommand(Ptr<Packet> packet);
 
-  /**
-   * UDP socket to send/receive GTPv2-C packets to/from the S5 interface
-   */
-  Ptr<Socket> m_s5cSocket;
+    /**
+     * Process Delete Bearer Response message
+     * \param packet GTPv2-C Delete Bearer Response message
+     */
+    void DoRecvDeleteBearerResponse(Ptr<Packet> packet);
 
-  /**
-   * TUN VirtualNetDevice used for tunneling/detunneling IP packets
-   * from/to the internet over GTP-U/UDP/IP on the S5 interface
-   */
-  Ptr<VirtualNetDevice> m_tunDevice;
+    /**
+     * store info for each UE connected to this PGW
+     */
+    class UeInfo : public SimpleRefCount<UeInfo>
+    {
+      public:
+        UeInfo();
 
-  /**
-   * UeInfo stored by UE IPv4 address
-   */
-  std::map<Ipv4Address, Ptr<UeInfo> > m_ueInfoByAddrMap;
+        /**
+         * Add a bearer for this UE on PGW side
+         *
+         * \param bearerId the ID of the EPS Bearer to be activated
+         * \param teid  the TEID of the new bearer
+         * \param tft the Traffic Flow Template of the new bearer to be added
+         */
+        void AddBearer(uint8_t bearerId, uint32_t teid, Ptr<EpcTft> tft);
 
-  /**
-   * UeInfo stored by UE IPv6 address
-   */
-  std::map<Ipv6Address, Ptr<UeInfo> > m_ueInfoByAddrMap6;
+        /**
+         * Delete context of bearer for this UE on PGW side
+         *
+         * \param bearerId the ID of the EPS Bearer whose contexts is to be removed
+         */
+        void RemoveBearer(uint8_t bearerId);
 
-  /**
-   * UeInfo stored by IMSI
-   */
-  std::map<uint64_t, Ptr<UeInfo> > m_ueInfoByImsiMap;
+        /**
+         * Classify the packet according to TFTs of this UE
+         *
+         * \param p the IPv4 or IPv6 packet from the internet to be classified
+         * \param protocolNumber identifies the type of packet.
+         *        Only IPv4 and IPv6 packets are allowed.
+         *
+         * \return the corresponding bearer ID > 0 identifying the bearer
+         * among all the bearers of this UE;  returns 0 if no bearers
+         * matches with the previously declared TFTs
+         */
+        uint32_t Classify(Ptr<Packet> p, uint16_t protocolNumber);
 
-  /**
-   * UDP port to be used for GTP-U
-   */
-  uint16_t m_gtpuUdpPort;
+        /**
+         * Get the address of the SGW to which the UE is connected
+         *
+         * \return the address of the SGW
+         */
+        Ipv4Address GetSgwAddr();
 
-  /**
-   * UDP port to be used for GTPv2-C
-   */
-  uint16_t m_gtpcUdpPort;
+        /**
+         * Set the address of the eNB to which the UE is connected
+         *
+         * \param addr the address of the SGW
+         */
+        void SetSgwAddr(Ipv4Address addr);
 
-  /**
-   * SGW address of the S5 interface
-   */
-  Ipv4Address m_sgwS5Addr;
+        /**
+         * Get the IPv4 address of the UE
+         *
+         * \return the IPv4 address of the UE
+         */
+        Ipv4Address GetUeAddr();
 
-  /**
-   * \brief Callback to trace received data packets at Tun NetDevice from internet.
-   */
-  TracedCallback<Ptr<Packet> > m_rxTunPktTrace;
+        /**
+         * Set the IPv4 address of the UE
+         *
+         * \param addr the IPv4 address of the UE
+         */
+        void SetUeAddr(Ipv4Address addr);
 
-  /**
-   * \brief Callback to trace received data packets from S5 socket.
-   */
-  TracedCallback<Ptr<Packet> > m_rxS5PktTrace;
+        /**
+         * Get the IPv6 address of the UE
+         *
+         * \return the IPv6 address of the UE
+         */
+        Ipv6Address GetUeAddr6();
+
+        /**
+         * Set the IPv6 address of the UE
+         *
+         * \param addr the IPv6 address of the UE
+         */
+        void SetUeAddr6(Ipv6Address addr);
+
+      private:
+        Ipv4Address m_ueAddr;                            ///< UE IPv4 address
+        Ipv6Address m_ueAddr6;                           ///< UE IPv6 address
+        Ipv4Address m_sgwAddr;                           ///< SGW IPv4 address
+        EpcTftClassifier m_tftClassifier;                ///< TFT classifier
+        std::map<uint8_t, uint32_t> m_teidByBearerIdMap; ///< TEID By bearer ID Map
+    };
+
+    /**
+     * PGW address of the S5 interface
+     */
+    Ipv4Address m_pgwS5Addr;
+
+    /**
+     * UDP socket to send/receive GTP-U packets to/from the S5 interface
+     */
+    Ptr<Socket> m_s5uSocket;
+
+    /**
+     * UDP socket to send/receive GTPv2-C packets to/from the S5 interface
+     */
+    Ptr<Socket> m_s5cSocket;
+
+    /**
+     * TUN VirtualNetDevice used for tunneling/detunneling IP packets
+     * from/to the internet over GTP-U/UDP/IP on the S5 interface
+     */
+    Ptr<VirtualNetDevice> m_tunDevice;
+
+    /**
+     * UeInfo stored by UE IPv4 address
+     */
+    std::map<Ipv4Address, Ptr<UeInfo>> m_ueInfoByAddrMap;
+
+    /**
+     * UeInfo stored by UE IPv6 address
+     */
+    std::map<Ipv6Address, Ptr<UeInfo>> m_ueInfoByAddrMap6;
+
+    /**
+     * UeInfo stored by IMSI
+     */
+    std::map<uint64_t, Ptr<UeInfo>> m_ueInfoByImsiMap;
+
+    /**
+     * UDP port to be used for GTP-U
+     */
+    uint16_t m_gtpuUdpPort;
+
+    /**
+     * UDP port to be used for GTPv2-C
+     */
+    uint16_t m_gtpcUdpPort;
+
+    /**
+     * SGW address of the S5 interface
+     */
+    Ipv4Address m_sgwS5Addr;
+
+    /**
+     * \brief Callback to trace received data packets at Tun NetDevice from internet.
+     */
+    TracedCallback<Ptr<Packet>> m_rxTunPktTrace;
+
+    /**
+     * \brief Callback to trace received data packets from S5 socket.
+     */
+    TracedCallback<Ptr<Packet>> m_rxS5PktTrace;
 };
 
 } // namespace ns3

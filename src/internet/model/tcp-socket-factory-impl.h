@@ -20,10 +20,11 @@
 #ifndef TCP_SOCKET_FACTORY_IMPL_H
 #define TCP_SOCKET_FACTORY_IMPL_H
 
-#include "ns3/tcp-socket-factory.h"
 #include "ns3/ptr.h"
+#include "ns3/tcp-socket-factory.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class TcpL4Protocol;
 
@@ -38,22 +39,23 @@ class TcpL4Protocol;
  */
 class TcpSocketFactoryImpl : public TcpSocketFactory
 {
-public:
-  TcpSocketFactoryImpl ();
-  ~TcpSocketFactoryImpl () override;
+  public:
+    TcpSocketFactoryImpl();
+    ~TcpSocketFactoryImpl() override;
 
-  /**
-   * \brief Set the associated TCP L4 protocol.
-   * \param tcp the TCP L4 protocol
-   */
-  void SetTcp (Ptr<TcpL4Protocol> tcp);
+    /**
+     * \brief Set the associated TCP L4 protocol.
+     * \param tcp the TCP L4 protocol
+     */
+    void SetTcp(Ptr<TcpL4Protocol> tcp);
 
-  Ptr<Socket> CreateSocket () override;
+    Ptr<Socket> CreateSocket() override;
 
-protected:
-  void DoDispose () override;
-private:
-  Ptr<TcpL4Protocol> m_tcp; //!< the associated TCP L4 protocol
+  protected:
+    void DoDispose() override;
+
+  private:
+    Ptr<TcpL4Protocol> m_tcp; //!< the associated TCP L4 protocol
 };
 
 } // namespace ns3

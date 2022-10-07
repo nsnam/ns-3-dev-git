@@ -36,7 +36,8 @@
  * ns3::CsvReader declaration
  *
  */
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup core
@@ -231,196 +232,196 @@ namespace ns3 {
  */
 class CsvReader
 {
-public:
-  /**
-   * Constructor
-   *
-   * Opens the file specified in the filepath argument and
-   * reads data from it.
-   *
-   * \param filepath Path to a file containing CSV data.
-   * \param delimiter Character used to separate fields in the data file.
-   */
-  CsvReader (const std::string& filepath, char delimiter = ',');
+  public:
+    /**
+     * Constructor
+     *
+     * Opens the file specified in the filepath argument and
+     * reads data from it.
+     *
+     * \param filepath Path to a file containing CSV data.
+     * \param delimiter Character used to separate fields in the data file.
+     */
+    CsvReader(const std::string& filepath, char delimiter = ',');
 
-  /**
-   * Constructor
-   *
-   * Reads csv data from the supplied input stream.
-   *
-   * \param stream Input stream containing csv data.
-   * \param delimiter Character used to separate fields in the data stream.
-   */
-  CsvReader (std::istream& stream, char delimiter = ',');
+    /**
+     * Constructor
+     *
+     * Reads csv data from the supplied input stream.
+     *
+     * \param stream Input stream containing csv data.
+     * \param delimiter Character used to separate fields in the data stream.
+     */
+    CsvReader(std::istream& stream, char delimiter = ',');
 
-  /**
-   * Destructor
-   */
-  virtual ~CsvReader ();
+    /**
+     * Destructor
+     */
+    virtual ~CsvReader();
 
-  /**
-   * Returns the number of columns in the csv data.
-   *
-   * \return Number of columns
-   */
-  std::size_t ColumnCount () const;
+    /**
+     * Returns the number of columns in the csv data.
+     *
+     * \return Number of columns
+     */
+    std::size_t ColumnCount() const;
 
-  /**
-   * The number of lines that have been read.
-   *
-   * \return The number of lines that have been read.
-   */
-  std::size_t RowNumber () const;
+    /**
+     * The number of lines that have been read.
+     *
+     * \return The number of lines that have been read.
+     */
+    std::size_t RowNumber() const;
 
-  /**
-   * Returns the delimiter character specified during object construction.
-   *
-   * \return Character used as the column separator.
-   */
-  char Delimiter () const;
+    /**
+     * Returns the delimiter character specified during object construction.
+     *
+     * \return Character used as the column separator.
+     */
+    char Delimiter() const;
 
-  /**
-   * Reads one line from the input until a new line is encountered.
-   * The read data is stored in a cache which is accessed by the
-   * GetValue functions to extract fields from the data.
-   *
-   * \return \c true if a line was read successfully or \c false if the
-   * read failed or reached the end of the file.
-   */
-  bool FetchNextRow ();
+    /**
+     * Reads one line from the input until a new line is encountered.
+     * The read data is stored in a cache which is accessed by the
+     * GetValue functions to extract fields from the data.
+     *
+     * \return \c true if a line was read successfully or \c false if the
+     * read failed or reached the end of the file.
+     */
+    bool FetchNextRow();
 
-  /**
-   * Attempt to convert from the string data in the specified column
-   * to the specified data type.
-   *
-   * \tparam T The data type of the output variable.
-   *
-   * \param [in] columnIndex Index of the column to fetch.
-   * \param [out] value Location where the converted data will be stored.
-   *
-   * \return \c true if the specified column has data and the data
-   * was converted to the specified data type.
-   */
-  template<class T>
-  bool GetValue (std::size_t columnIndex, T& value) const;
+    /**
+     * Attempt to convert from the string data in the specified column
+     * to the specified data type.
+     *
+     * \tparam T The data type of the output variable.
+     *
+     * \param [in] columnIndex Index of the column to fetch.
+     * \param [out] value Location where the converted data will be stored.
+     *
+     * \return \c true if the specified column has data and the data
+     * was converted to the specified data type.
+     */
+    template <class T>
+    bool GetValue(std::size_t columnIndex, T& value) const;
 
-  /**
-   * Check if the current row is blank.
-   * A blank row can consist of any combination of
-   *
-   * - Whitespace
-   * - Comment
-   * - Quoted empty string `""`
-   *
-   * \returns \c true if the input row is a blank line.
-   */
-  bool IsBlankRow () const;
+    /**
+     * Check if the current row is blank.
+     * A blank row can consist of any combination of
+     *
+     * - Whitespace
+     * - Comment
+     * - Quoted empty string `""`
+     *
+     * \returns \c true if the input row is a blank line.
+     */
+    bool IsBlankRow() const;
 
-private:
-  /**
-   * Attempt to convert from the string data stored at the specified column
-   * index into the specified type.
-   *
-   * \param input [in] String value to be converted.
-   * \param value [out] Location where the converted value will be stored.
-   *
-   * \return \c true if the column exists and the conversion succeeded,
-   * \c false otherwise.
-   */
-  /** @{ */
-  bool GetValueAs (std::string input, double& value) const;
+  private:
+    /**
+     * Attempt to convert from the string data stored at the specified column
+     * index into the specified type.
+     *
+     * \param input [in] String value to be converted.
+     * \param value [out] Location where the converted value will be stored.
+     *
+     * \return \c true if the column exists and the conversion succeeded,
+     * \c false otherwise.
+     */
+    /** @{ */
+    bool GetValueAs(std::string input, double& value) const;
 
-  bool GetValueAs (std::string input, float& value) const;
+    bool GetValueAs(std::string input, float& value) const;
 
-  bool GetValueAs (std::string input, signed char& value) const;
+    bool GetValueAs(std::string input, signed char& value) const;
 
-  bool GetValueAs (std::string input, short& value) const;
+    bool GetValueAs(std::string input, short& value) const;
 
-  bool GetValueAs (std::string input, int& value) const;
+    bool GetValueAs(std::string input, int& value) const;
 
-  bool GetValueAs (std::string input, long& value) const;
+    bool GetValueAs(std::string input, long& value) const;
 
-  bool GetValueAs (std::string input, long long& value) const;
+    bool GetValueAs(std::string input, long long& value) const;
 
-  bool GetValueAs (std::string input, std::string& value) const;
+    bool GetValueAs(std::string input, std::string& value) const;
 
-  bool GetValueAs (std::string input, unsigned char& value) const;
+    bool GetValueAs(std::string input, unsigned char& value) const;
 
-  bool GetValueAs (std::string input, unsigned short& value) const;
+    bool GetValueAs(std::string input, unsigned short& value) const;
 
-  bool GetValueAs (std::string input, unsigned int& value) const;
+    bool GetValueAs(std::string input, unsigned int& value) const;
 
-  bool GetValueAs (std::string input, unsigned long& value) const;
+    bool GetValueAs(std::string input, unsigned long& value) const;
 
-  bool GetValueAs (std::string input, unsigned long long& value) const;
-  /** @} */
+    bool GetValueAs(std::string input, unsigned long long& value) const;
+    /** @} */
 
-  /**
-   * Returns \c true if the supplied character matches the delimiter.
-   *
-   * \param c Character to check.
-   * \return \c true if \pname{c} is the delimiter character,
-   * \c false otherwise.
-   */
-  bool IsDelimiter (char c) const;
+    /**
+     * Returns \c true if the supplied character matches the delimiter.
+     *
+     * \param c Character to check.
+     * \return \c true if \pname{c} is the delimiter character,
+     * \c false otherwise.
+     */
+    bool IsDelimiter(char c) const;
 
-  /**
-   * Scans the string and splits it into individual columns based on the delimiter.
-   *
-   * \param [in] line String containing delimiter separated data.
-   */
-  void ParseLine (const std::string& line);
+    /**
+     * Scans the string and splits it into individual columns based on the delimiter.
+     *
+     * \param [in] line String containing delimiter separated data.
+     */
+    void ParseLine(const std::string& line);
 
-  /**
-   * Extracts the data for one column in a csv row.
-   *
-   * \param begin Iterator to the first character in the row.
-   * \param end Iterator to the last character in the row.
-   * \return A tuple containing the content of the column and an iterator
-   * pointing to the position in the row where the column ended.
-   */
-  std::tuple<std::string, std::string::const_iterator>
-  ParseColumn (std::string::const_iterator begin, std::string::const_iterator end);
+    /**
+     * Extracts the data for one column in a csv row.
+     *
+     * \param begin Iterator to the first character in the row.
+     * \param end Iterator to the last character in the row.
+     * \return A tuple containing the content of the column and an iterator
+     * pointing to the position in the row where the column ended.
+     */
+    std::tuple<std::string, std::string::const_iterator> ParseColumn(
+        std::string::const_iterator begin,
+        std::string::const_iterator end);
 
-  /**
-   * Container of CSV data.  Each entry represents one field in a row
-   * of data.  The fields are stored in the same order that they are
-   * encountered in the CSV data.
-   */
-  typedef std::vector<std::string> Columns;
+    /**
+     * Container of CSV data.  Each entry represents one field in a row
+     * of data.  The fields are stored in the same order that they are
+     * encountered in the CSV data.
+     */
+    typedef std::vector<std::string> Columns;
 
-  char m_delimiter;              //!< Character used to separate fields.
-  std::size_t m_rowsRead;        //!< Number of lines processed.
-  Columns m_columns;             //!< Fields extracted from the current line.
-  bool m_blankRow;               //!< Line contains no data (blank line or comment only).
-  std::ifstream m_fileStream;    //!< File stream containing the data.
+    char m_delimiter;           //!< Character used to separate fields.
+    std::size_t m_rowsRead;     //!< Number of lines processed.
+    Columns m_columns;          //!< Fields extracted from the current line.
+    bool m_blankRow;            //!< Line contains no data (blank line or comment only).
+    std::ifstream m_fileStream; //!< File stream containing the data.
 
-  /**
-   * Pointer to the input stream containing the data.
-   */
-  std::istream* m_stream;
+    /**
+     * Pointer to the input stream containing the data.
+     */
+    std::istream* m_stream;
 
-};  // class CsvReader
-
+}; // class CsvReader
 
 /****************************************************
  *      Template implementations.
  ***************************************************/
 
-template<class T>
+template <class T>
 bool
-CsvReader::GetValue (std::size_t columnIndex, T& value) const
+CsvReader::GetValue(std::size_t columnIndex, T& value) const
 {
-  if ( columnIndex >= ColumnCount () )
+    if (columnIndex >= ColumnCount())
     {
-      return false;
+        return false;
     }
 
-  std::string cell = m_columns[columnIndex];
+    std::string cell = m_columns[columnIndex];
 
-  return GetValueAs (std::move (cell), value);
+    return GetValueAs(std::move(cell), value);
 }
 
-}   //  namespace ns3
+} //  namespace ns3
 
-#endif  //  NS3_CSV_READER_H_
+#endif //  NS3_CSV_READER_H_

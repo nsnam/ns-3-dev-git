@@ -19,32 +19,34 @@
  */
 
 #include "packet-socket-helper.h"
-#include "ns3/packet-socket-factory.h"
-#include "ns3/names.h"
 
-namespace ns3 {
+#include "ns3/names.h"
+#include "ns3/packet-socket-factory.h"
+
+namespace ns3
+{
 
 void
-PacketSocketHelper::Install (NodeContainer c) const
+PacketSocketHelper::Install(NodeContainer c) const
 {
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-      Install (*i);
+        Install(*i);
     }
 }
 
 void
-PacketSocketHelper::Install (Ptr<Node> node) const
+PacketSocketHelper::Install(Ptr<Node> node) const
 {
-  Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
-  node->AggregateObject (factory);
+    Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory>();
+    node->AggregateObject(factory);
 }
 
 void
-PacketSocketHelper::Install (std::string nodeName) const
+PacketSocketHelper::Install(std::string nodeName) const
 {
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  Install (node);
+    Ptr<Node> node = Names::Find<Node>(nodeName);
+    Install(node);
 }
 
 } // namespace ns3

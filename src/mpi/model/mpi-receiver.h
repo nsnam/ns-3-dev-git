@@ -29,7 +29,8 @@
 #include "ns3/object.h"
 #include "ns3/packet.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup mpi
@@ -46,29 +47,30 @@ namespace ns3 {
  */
 class MpiReceiver : public Object
 {
-public:
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId (void);
-  virtual ~MpiReceiver ();
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId(void);
+    virtual ~MpiReceiver();
 
-  /**
-   * \brief Direct an incoming packet to the device Receive() method
-   * \param p Packet to receive
-   */
-  void Receive (Ptr<Packet> p);
-  /**
-   * \brief Set the receive callback to get packets to net devices
-   * \param callback the callback itself
-   */
-  void SetReceiveCallback (Callback<void, Ptr<Packet> > callback);
-private:
-  virtual void DoDispose (void);
+    /**
+     * \brief Direct an incoming packet to the device Receive() method
+     * \param p Packet to receive
+     */
+    void Receive(Ptr<Packet> p);
+    /**
+     * \brief Set the receive callback to get packets to net devices
+     * \param callback the callback itself
+     */
+    void SetReceiveCallback(Callback<void, Ptr<Packet>> callback);
 
-  /** Callback to send received packets to. */
-  Callback<void, Ptr<Packet> > m_rxCallback;
+  private:
+    virtual void DoDispose(void);
+
+    /** Callback to send received packets to. */
+    Callback<void, Ptr<Packet>> m_rxCallback;
 };
 
 } // namespace ns3

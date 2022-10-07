@@ -21,45 +21,40 @@
  */
 
 #include <ns3/epc-helper.h>
-#include <ns3/log.h>
-#include <ns3/node.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/ipv6-address.h>
+#include <ns3/log.h>
+#include <ns3/node.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("EpcHelper");
-
-NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
-
-
-EpcHelper::EpcHelper ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("EpcHelper");
+
+NS_OBJECT_ENSURE_REGISTERED(EpcHelper);
+
+EpcHelper::EpcHelper()
+{
+    NS_LOG_FUNCTION(this);
 }
 
-EpcHelper::~EpcHelper ()
+EpcHelper::~EpcHelper()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-EpcHelper::GetTypeId ()
+EpcHelper::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::EpcHelper")
-    .SetParent<Object> ()
-    .SetGroupName("Lte")
-    ;
-  return tid;
+    static TypeId tid = TypeId("ns3::EpcHelper").SetParent<Object>().SetGroupName("Lte");
+    return tid;
 }
 
 void
-EpcHelper::DoDispose ()
+EpcHelper::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  Object::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    Object::DoDispose();
 }
-
-
 
 } // namespace ns3

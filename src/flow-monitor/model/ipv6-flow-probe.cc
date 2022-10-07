@@ -20,18 +20,20 @@
 //
 
 #include "ns3/ipv6-flow-probe.h"
-#include "ns3/ipv6-flow-classifier.h"
-#include "ns3/node.h"
-#include "ns3/packet.h"
-#include "ns3/flow-monitor.h"
-#include "ns3/log.h"
-#include "ns3/pointer.h"
+
 #include "ns3/config.h"
 #include "ns3/flow-id-tag.h"
+#include "ns3/flow-monitor.h"
+#include "ns3/ipv6-flow-classifier.h"
+#include "ns3/log.h"
+#include "ns3/node.h"
+#include "ns3/packet.h"
+#include "ns3/pointer.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6FlowProbe");
+NS_LOG_COMPONENT_DEFINE("Ipv6FlowProbe");
 
 //////////////////////////////////////
 // Ipv6FlowProbeTag class implementation //
@@ -48,270 +50,301 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6FlowProbe");
  */
 class Ipv6FlowProbeTag : public Tag
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const override;
-  uint32_t GetSerializedSize () const override;
-  void Serialize (TagBuffer buf) const override;
-  void Deserialize (TagBuffer buf) override;
-  void Print (std::ostream &os) const override;
-  Ipv6FlowProbeTag ();
-  /**
-   * \brief Consructor
-   * \param flowId the flow identifier
-   * \param packetId the packet identifier
-   * \param packetSize the packet size
-   */
-  Ipv6FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize);
-  /**
-   * \brief Set the flow identifier
-   * \param flowId the flow identifier
-   */
-  void SetFlowId (uint32_t flowId);
-  /**
-   * \brief Set the packet identifier
-   * \param packetId the packet identifier
-   */
-  void SetPacketId (uint32_t packetId);
-  /**
-   * \brief Set the packet size
-   * \param packetSize the packet size
-   */
-  void SetPacketSize (uint32_t packetSize);
-  /**
-   * \brief Set the flow identifier
-   * \returns the flow identifier
-   */
-  uint32_t GetFlowId () const;
-  /**
-   * \brief Set the packet identifier
-   * \returns the packet identifier
-   */
-  uint32_t GetPacketId () const;
-  /**
-   * \brief Get the packet size
-   * \returns the packet size
-   */
-  uint32_t GetPacketSize () const;
-private:
-  uint32_t m_flowId;      //!< flow identifier
-  uint32_t m_packetId;    //!< packet identifier
-  uint32_t m_packetSize;  //!< packet size
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(TagBuffer buf) const override;
+    void Deserialize(TagBuffer buf) override;
+    void Print(std::ostream& os) const override;
+    Ipv6FlowProbeTag();
+    /**
+     * \brief Consructor
+     * \param flowId the flow identifier
+     * \param packetId the packet identifier
+     * \param packetSize the packet size
+     */
+    Ipv6FlowProbeTag(uint32_t flowId, uint32_t packetId, uint32_t packetSize);
+    /**
+     * \brief Set the flow identifier
+     * \param flowId the flow identifier
+     */
+    void SetFlowId(uint32_t flowId);
+    /**
+     * \brief Set the packet identifier
+     * \param packetId the packet identifier
+     */
+    void SetPacketId(uint32_t packetId);
+    /**
+     * \brief Set the packet size
+     * \param packetSize the packet size
+     */
+    void SetPacketSize(uint32_t packetSize);
+    /**
+     * \brief Set the flow identifier
+     * \returns the flow identifier
+     */
+    uint32_t GetFlowId() const;
+    /**
+     * \brief Set the packet identifier
+     * \returns the packet identifier
+     */
+    uint32_t GetPacketId() const;
+    /**
+     * \brief Get the packet size
+     * \returns the packet size
+     */
+    uint32_t GetPacketSize() const;
 
+  private:
+    uint32_t m_flowId;     //!< flow identifier
+    uint32_t m_packetId;   //!< packet identifier
+    uint32_t m_packetSize; //!< packet size
 };
 
 TypeId
-Ipv6FlowProbeTag::GetTypeId ()
+Ipv6FlowProbeTag::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Ipv6FlowProbeTag")
-    .SetParent<Tag> ()
-    .SetGroupName ("FlowMonitor")
-    .AddConstructor<Ipv6FlowProbeTag> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::Ipv6FlowProbeTag")
+                            .SetParent<Tag>()
+                            .SetGroupName("FlowMonitor")
+                            .AddConstructor<Ipv6FlowProbeTag>();
+    return tid;
 }
+
 TypeId
-Ipv6FlowProbeTag::GetInstanceTypeId () const
+Ipv6FlowProbeTag::GetInstanceTypeId() const
 {
-  return GetTypeId ();
-}
-uint32_t
-Ipv6FlowProbeTag::GetSerializedSize () const
-{
-  return 4 + 4 + 4;
-}
-void
-Ipv6FlowProbeTag::Serialize (TagBuffer buf) const
-{
-  buf.WriteU32 (m_flowId);
-  buf.WriteU32 (m_packetId);
-  buf.WriteU32 (m_packetSize);
-}
-void
-Ipv6FlowProbeTag::Deserialize (TagBuffer buf)
-{
-  m_flowId = buf.ReadU32 ();
-  m_packetId = buf.ReadU32 ();
-  m_packetSize = buf.ReadU32 ();
-}
-void
-Ipv6FlowProbeTag::Print (std::ostream &os) const
-{
-  os << "FlowId=" << m_flowId;
-  os << "PacketId=" << m_packetId;
-  os << "PacketSize=" << m_packetSize;
-}
-Ipv6FlowProbeTag::Ipv6FlowProbeTag ()
-  : Tag ()
-{
+    return GetTypeId();
 }
 
-Ipv6FlowProbeTag::Ipv6FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize)
-  : Tag (), m_flowId (flowId), m_packetId (packetId), m_packetSize (packetSize)
+uint32_t
+Ipv6FlowProbeTag::GetSerializedSize() const
 {
+    return 4 + 4 + 4;
 }
 
 void
-Ipv6FlowProbeTag::SetFlowId (uint32_t id)
+Ipv6FlowProbeTag::Serialize(TagBuffer buf) const
 {
-  m_flowId = id;
+    buf.WriteU32(m_flowId);
+    buf.WriteU32(m_packetId);
+    buf.WriteU32(m_packetSize);
 }
+
 void
-Ipv6FlowProbeTag::SetPacketId (uint32_t id)
+Ipv6FlowProbeTag::Deserialize(TagBuffer buf)
 {
-  m_packetId = id;
+    m_flowId = buf.ReadU32();
+    m_packetId = buf.ReadU32();
+    m_packetSize = buf.ReadU32();
 }
+
 void
-Ipv6FlowProbeTag::SetPacketSize (uint32_t size)
+Ipv6FlowProbeTag::Print(std::ostream& os) const
 {
-  m_packetSize = size;
+    os << "FlowId=" << m_flowId;
+    os << "PacketId=" << m_packetId;
+    os << "PacketSize=" << m_packetSize;
 }
-uint32_t
-Ipv6FlowProbeTag::GetFlowId () const
+
+Ipv6FlowProbeTag::Ipv6FlowProbeTag()
+    : Tag()
 {
-  return m_flowId;
 }
-uint32_t
-Ipv6FlowProbeTag::GetPacketId () const
+
+Ipv6FlowProbeTag::Ipv6FlowProbeTag(uint32_t flowId, uint32_t packetId, uint32_t packetSize)
+    : Tag(),
+      m_flowId(flowId),
+      m_packetId(packetId),
+      m_packetSize(packetSize)
 {
-  return m_packetId;
 }
-uint32_t
-Ipv6FlowProbeTag::GetPacketSize () const
+
+void
+Ipv6FlowProbeTag::SetFlowId(uint32_t id)
 {
-  return m_packetSize;
+    m_flowId = id;
+}
+
+void
+Ipv6FlowProbeTag::SetPacketId(uint32_t id)
+{
+    m_packetId = id;
+}
+
+void
+Ipv6FlowProbeTag::SetPacketSize(uint32_t size)
+{
+    m_packetSize = size;
+}
+
+uint32_t
+Ipv6FlowProbeTag::GetFlowId() const
+{
+    return m_flowId;
+}
+
+uint32_t
+Ipv6FlowProbeTag::GetPacketId() const
+{
+    return m_packetId;
+}
+
+uint32_t
+Ipv6FlowProbeTag::GetPacketSize() const
+{
+    return m_packetSize;
 }
 
 ////////////////////////////////////////
 // Ipv6FlowProbe class implementation //
 ////////////////////////////////////////
 
-Ipv6FlowProbe::Ipv6FlowProbe (Ptr<FlowMonitor> monitor,
-                              Ptr<Ipv6FlowClassifier> classifier,
-                              Ptr<Node> node)
-  : FlowProbe (monitor),
-    m_classifier (classifier)
+Ipv6FlowProbe::Ipv6FlowProbe(Ptr<FlowMonitor> monitor,
+                             Ptr<Ipv6FlowClassifier> classifier,
+                             Ptr<Node> node)
+    : FlowProbe(monitor),
+      m_classifier(classifier)
 {
-  NS_LOG_FUNCTION (this << node->GetId ());
+    NS_LOG_FUNCTION(this << node->GetId());
 
-  Ptr<Ipv6L3Protocol> ipv6 = node->GetObject<Ipv6L3Protocol> ();
+    Ptr<Ipv6L3Protocol> ipv6 = node->GetObject<Ipv6L3Protocol>();
 
-  if (!ipv6->TraceConnectWithoutContext ("SendOutgoing",
-                                         MakeCallback (&Ipv6FlowProbe::SendOutgoingLogger, Ptr<Ipv6FlowProbe> (this))))
+    if (!ipv6->TraceConnectWithoutContext(
+            "SendOutgoing",
+            MakeCallback(&Ipv6FlowProbe::SendOutgoingLogger, Ptr<Ipv6FlowProbe>(this))))
     {
-      NS_FATAL_ERROR ("trace fail");
+        NS_FATAL_ERROR("trace fail");
     }
-  if (!ipv6->TraceConnectWithoutContext ("UnicastForward",
-                                         MakeCallback (&Ipv6FlowProbe::ForwardLogger, Ptr<Ipv6FlowProbe> (this))))
+    if (!ipv6->TraceConnectWithoutContext(
+            "UnicastForward",
+            MakeCallback(&Ipv6FlowProbe::ForwardLogger, Ptr<Ipv6FlowProbe>(this))))
     {
-      NS_FATAL_ERROR ("trace fail");
+        NS_FATAL_ERROR("trace fail");
     }
-  if (!ipv6->TraceConnectWithoutContext ("LocalDeliver",
-                                         MakeCallback (&Ipv6FlowProbe::ForwardUpLogger, Ptr<Ipv6FlowProbe> (this))))
+    if (!ipv6->TraceConnectWithoutContext(
+            "LocalDeliver",
+            MakeCallback(&Ipv6FlowProbe::ForwardUpLogger, Ptr<Ipv6FlowProbe>(this))))
     {
-      NS_FATAL_ERROR ("trace fail");
-    }
-
-  if (!ipv6->TraceConnectWithoutContext ("Drop",
-                                         MakeCallback (&Ipv6FlowProbe::DropLogger, Ptr<Ipv6FlowProbe> (this))))
-    {
-      NS_FATAL_ERROR ("trace fail");
+        NS_FATAL_ERROR("trace fail");
     }
 
-  std::ostringstream qd;
-  qd << "/NodeList/" << node->GetId () << "/$ns3::TrafficControlLayer/RootQueueDiscList/*/Drop";
-  Config::ConnectWithoutContextFailSafe (qd.str (), MakeCallback (&Ipv6FlowProbe::QueueDiscDropLogger, Ptr<Ipv6FlowProbe> (this)));
+    if (!ipv6->TraceConnectWithoutContext(
+            "Drop",
+            MakeCallback(&Ipv6FlowProbe::DropLogger, Ptr<Ipv6FlowProbe>(this))))
+    {
+        NS_FATAL_ERROR("trace fail");
+    }
 
-  // code copied from point-to-point-helper.cc
-  std::ostringstream oss;
-  oss << "/NodeList/" << node->GetId () << "/DeviceList/*/TxQueue/Drop";
-  Config::ConnectWithoutContextFailSafe (oss.str (), MakeCallback (&Ipv6FlowProbe::QueueDropLogger, Ptr<Ipv6FlowProbe> (this)));
+    std::ostringstream qd;
+    qd << "/NodeList/" << node->GetId() << "/$ns3::TrafficControlLayer/RootQueueDiscList/*/Drop";
+    Config::ConnectWithoutContextFailSafe(
+        qd.str(),
+        MakeCallback(&Ipv6FlowProbe::QueueDiscDropLogger, Ptr<Ipv6FlowProbe>(this)));
+
+    // code copied from point-to-point-helper.cc
+    std::ostringstream oss;
+    oss << "/NodeList/" << node->GetId() << "/DeviceList/*/TxQueue/Drop";
+    Config::ConnectWithoutContextFailSafe(
+        oss.str(),
+        MakeCallback(&Ipv6FlowProbe::QueueDropLogger, Ptr<Ipv6FlowProbe>(this)));
 }
 
 /* static */
 TypeId
-Ipv6FlowProbe::GetTypeId ()
+Ipv6FlowProbe::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Ipv6FlowProbe")
-    .SetParent<FlowProbe> ()
-    .SetGroupName ("FlowMonitor")
-    // No AddConstructor because this class has no default constructor.
-    ;
+    static TypeId tid =
+        TypeId("ns3::Ipv6FlowProbe").SetParent<FlowProbe>().SetGroupName("FlowMonitor")
+        // No AddConstructor because this class has no default constructor.
+        ;
 
-  return tid;
+    return tid;
 }
 
-Ipv6FlowProbe::~Ipv6FlowProbe ()
+Ipv6FlowProbe::~Ipv6FlowProbe()
 {
-}
-
-void
-Ipv6FlowProbe::DoDispose ()
-{
-  FlowProbe::DoDispose ();
 }
 
 void
-Ipv6FlowProbe::SendOutgoingLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
+Ipv6FlowProbe::DoDispose()
 {
-  FlowId flowId;
-  FlowPacketId packetId;
+    FlowProbe::DoDispose();
+}
 
-  if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
+void
+Ipv6FlowProbe::SendOutgoingLogger(const Ipv6Header& ipHeader,
+                                  Ptr<const Packet> ipPayload,
+                                  uint32_t interface)
+{
+    FlowId flowId;
+    FlowPacketId packetId;
+
+    if (m_classifier->Classify(ipHeader, ipPayload, &flowId, &packetId))
     {
-      uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
-      NS_LOG_DEBUG ("ReportFirstTx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<"); "
-                                     << ipHeader << *ipPayload);
-      m_flowMonitor->ReportFirstTx (this, flowId, packetId, size);
+        uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
+        NS_LOG_DEBUG("ReportFirstTx (" << this << ", " << flowId << ", " << packetId << ", " << size
+                                       << "); " << ipHeader << *ipPayload);
+        m_flowMonitor->ReportFirstTx(this, flowId, packetId, size);
 
-      // tag the packet with the flow id and packet id, so that the packet can be identified even
-      // when Ipv6Header is not accessible at some non-IPv6 protocol layer
-      Ipv6FlowProbeTag fTag (flowId, packetId, size);
-      ipPayload->AddByteTag (fTag);
+        // tag the packet with the flow id and packet id, so that the packet can be identified even
+        // when Ipv6Header is not accessible at some non-IPv6 protocol layer
+        Ipv6FlowProbeTag fTag(flowId, packetId, size);
+        ipPayload->AddByteTag(fTag);
     }
 }
 
 void
-Ipv6FlowProbe::ForwardLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
+Ipv6FlowProbe::ForwardLogger(const Ipv6Header& ipHeader,
+                             Ptr<const Packet> ipPayload,
+                             uint32_t interface)
 {
-  Ipv6FlowProbeTag fTag;
-  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
+    Ipv6FlowProbeTag fTag;
+    bool found = ipPayload->FindFirstMatchingByteTag(fTag);
 
-  if (found)
+    if (found)
     {
-      FlowId flowId = fTag.GetFlowId ();
-      FlowPacketId packetId = fTag.GetPacketId ();
+        FlowId flowId = fTag.GetFlowId();
+        FlowPacketId packetId = fTag.GetPacketId();
 
-      uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
-      NS_LOG_DEBUG ("ReportForwarding ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<");");
-      m_flowMonitor->ReportForwarding (this, flowId, packetId, size);
+        uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
+        NS_LOG_DEBUG("ReportForwarding (" << this << ", " << flowId << ", " << packetId << ", "
+                                          << size << ");");
+        m_flowMonitor->ReportForwarding(this, flowId, packetId, size);
     }
 }
 
 void
-Ipv6FlowProbe::ForwardUpLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
+Ipv6FlowProbe::ForwardUpLogger(const Ipv6Header& ipHeader,
+                               Ptr<const Packet> ipPayload,
+                               uint32_t interface)
 {
-  Ipv6FlowProbeTag fTag;
-  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
+    Ipv6FlowProbeTag fTag;
+    bool found = ipPayload->FindFirstMatchingByteTag(fTag);
 
-  if (found)
+    if (found)
     {
-      FlowId flowId = fTag.GetFlowId ();
-      FlowPacketId packetId = fTag.GetPacketId ();
+        FlowId flowId = fTag.GetFlowId();
+        FlowPacketId packetId = fTag.GetPacketId();
 
-      uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
-      NS_LOG_DEBUG ("ReportLastRx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<");");
-      m_flowMonitor->ReportLastRx (this, flowId, packetId, size);
+        uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
+        NS_LOG_DEBUG("ReportLastRx (" << this << ", " << flowId << ", " << packetId << ", " << size
+                                      << ");");
+        m_flowMonitor->ReportLastRx(this, flowId, packetId, size);
     }
 }
 
 void
-Ipv6FlowProbe::DropLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPayload,
-                           Ipv6L3Protocol::DropReason reason, Ptr<Ipv6> ipv6, uint32_t ifIndex)
+Ipv6FlowProbe::DropLogger(const Ipv6Header& ipHeader,
+                          Ptr<const Packet> ipPayload,
+                          Ipv6L3Protocol::DropReason reason,
+                          Ptr<Ipv6> ipv6,
+                          uint32_t ifIndex)
 {
 #if 0
   switch (reason)
@@ -331,107 +364,104 @@ Ipv6FlowProbe::DropLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPaylo
     }
 #endif
 
-  Ipv6FlowProbeTag fTag;
-  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
+    Ipv6FlowProbeTag fTag;
+    bool found = ipPayload->FindFirstMatchingByteTag(fTag);
 
-  if (found)
+    if (found)
     {
-      FlowId flowId = fTag.GetFlowId ();
-      FlowPacketId packetId = fTag.GetPacketId ();
+        FlowId flowId = fTag.GetFlowId();
+        FlowPacketId packetId = fTag.GetPacketId();
 
-      uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
-      NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << reason
-                            << ", destIp=" << ipHeader.GetDestination () << "); "
-                            << "HDR: " << ipHeader << " PKT: " << *ipPayload);
+        uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
+        NS_LOG_DEBUG("Drop (" << this << ", " << flowId << ", " << packetId << ", " << size << ", "
+                              << reason << ", destIp=" << ipHeader.GetDestination() << "); "
+                              << "HDR: " << ipHeader << " PKT: " << *ipPayload);
 
-      DropReason myReason;
+        DropReason myReason;
 
-
-      switch (reason)
+        switch (reason)
         {
         case Ipv6L3Protocol::DROP_TTL_EXPIRED:
-          myReason = DROP_TTL_EXPIRE;
-          NS_LOG_DEBUG ("DROP_TTL_EXPIRE");
-          break;
+            myReason = DROP_TTL_EXPIRE;
+            NS_LOG_DEBUG("DROP_TTL_EXPIRE");
+            break;
         case Ipv6L3Protocol::DROP_NO_ROUTE:
-          myReason = DROP_NO_ROUTE;
-          NS_LOG_DEBUG ("DROP_NO_ROUTE");
-          break;
+            myReason = DROP_NO_ROUTE;
+            NS_LOG_DEBUG("DROP_NO_ROUTE");
+            break;
         case Ipv6L3Protocol::DROP_INTERFACE_DOWN:
-          myReason = DROP_INTERFACE_DOWN;
-          NS_LOG_DEBUG ("DROP_INTERFACE_DOWN");
-          break;
+            myReason = DROP_INTERFACE_DOWN;
+            NS_LOG_DEBUG("DROP_INTERFACE_DOWN");
+            break;
         case Ipv6L3Protocol::DROP_ROUTE_ERROR:
-           myReason = DROP_ROUTE_ERROR;
-           NS_LOG_DEBUG ("DROP_ROUTE_ERROR");
-           break;
+            myReason = DROP_ROUTE_ERROR;
+            NS_LOG_DEBUG("DROP_ROUTE_ERROR");
+            break;
         case Ipv6L3Protocol::DROP_UNKNOWN_PROTOCOL:
-           myReason = DROP_UNKNOWN_PROTOCOL;
-           NS_LOG_DEBUG ("DROP_UNKNOWN_PROTOCOL");
-           break;
+            myReason = DROP_UNKNOWN_PROTOCOL;
+            NS_LOG_DEBUG("DROP_UNKNOWN_PROTOCOL");
+            break;
         case Ipv6L3Protocol::DROP_UNKNOWN_OPTION:
-           myReason = DROP_UNKNOWN_OPTION;
-           NS_LOG_DEBUG ("DROP_UNKNOWN_OPTION");
-           break;
+            myReason = DROP_UNKNOWN_OPTION;
+            NS_LOG_DEBUG("DROP_UNKNOWN_OPTION");
+            break;
         case Ipv6L3Protocol::DROP_MALFORMED_HEADER:
-           myReason = DROP_MALFORMED_HEADER;
-           NS_LOG_DEBUG ("DROP_MALFORMED_HEADER");
-           break;
+            myReason = DROP_MALFORMED_HEADER;
+            NS_LOG_DEBUG("DROP_MALFORMED_HEADER");
+            break;
         case Ipv6L3Protocol::DROP_FRAGMENT_TIMEOUT:
-          myReason = DROP_FRAGMENT_TIMEOUT;
-          NS_LOG_DEBUG ("DROP_FRAGMENT_TIMEOUT");
-          break;
+            myReason = DROP_FRAGMENT_TIMEOUT;
+            NS_LOG_DEBUG("DROP_FRAGMENT_TIMEOUT");
+            break;
         default:
-          myReason = DROP_INVALID_REASON;
-          NS_FATAL_ERROR ("Unexpected drop reason code " << reason);
+            myReason = DROP_INVALID_REASON;
+            NS_FATAL_ERROR("Unexpected drop reason code " << reason);
         }
 
-      m_flowMonitor->ReportDrop (this, flowId, packetId, size, myReason);
+        m_flowMonitor->ReportDrop(this, flowId, packetId, size, myReason);
     }
 }
 
 void
-Ipv6FlowProbe::QueueDropLogger (Ptr<const Packet> ipPayload)
+Ipv6FlowProbe::QueueDropLogger(Ptr<const Packet> ipPayload)
 {
-  Ipv6FlowProbeTag fTag;
-  bool tagFound = ipPayload->FindFirstMatchingByteTag (fTag);
+    Ipv6FlowProbeTag fTag;
+    bool tagFound = ipPayload->FindFirstMatchingByteTag(fTag);
 
-  if (!tagFound)
+    if (!tagFound)
     {
-      return;
+        return;
     }
 
-  FlowId flowId = fTag.GetFlowId ();
-  FlowPacketId packetId = fTag.GetPacketId ();
-  uint32_t size = fTag.GetPacketSize ();
+    FlowId flowId = fTag.GetFlowId();
+    FlowPacketId packetId = fTag.GetPacketId();
+    uint32_t size = fTag.GetPacketSize();
 
-  NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << DROP_QUEUE
-                        << "); ");
+    NS_LOG_DEBUG("Drop (" << this << ", " << flowId << ", " << packetId << ", " << size << ", "
+                          << DROP_QUEUE << "); ");
 
-  m_flowMonitor->ReportDrop (this, flowId, packetId, size, DROP_QUEUE);
+    m_flowMonitor->ReportDrop(this, flowId, packetId, size, DROP_QUEUE);
 }
 
 void
-Ipv6FlowProbe::QueueDiscDropLogger (Ptr<const QueueDiscItem> item)
+Ipv6FlowProbe::QueueDiscDropLogger(Ptr<const QueueDiscItem> item)
 {
-  Ipv6FlowProbeTag fTag;
-  bool tagFound = item->GetPacket ()->FindFirstMatchingByteTag (fTag);
+    Ipv6FlowProbeTag fTag;
+    bool tagFound = item->GetPacket()->FindFirstMatchingByteTag(fTag);
 
-  if (!tagFound)
+    if (!tagFound)
     {
-      return;
+        return;
     }
 
-  FlowId flowId = fTag.GetFlowId ();
-  FlowPacketId packetId = fTag.GetPacketId ();
-  uint32_t size = fTag.GetPacketSize ();
+    FlowId flowId = fTag.GetFlowId();
+    FlowPacketId packetId = fTag.GetPacketId();
+    uint32_t size = fTag.GetPacketSize();
 
-  NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << DROP_QUEUE_DISC
-                        << "); ");
+    NS_LOG_DEBUG("Drop (" << this << ", " << flowId << ", " << packetId << ", " << size << ", "
+                          << DROP_QUEUE_DISC << "); ");
 
-  m_flowMonitor->ReportDrop (this, flowId, packetId, size, DROP_QUEUE_DISC);
+    m_flowMonitor->ReportDrop(this, flowId, packetId, size, DROP_QUEUE_DISC);
 }
 
 } // namespace ns3
-
-

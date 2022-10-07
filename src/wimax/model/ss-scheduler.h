@@ -23,13 +23,16 @@
 #ifndef SS_SCHEDULER_H
 #define SS_SCHEDULER_H
 
-#include <stdint.h>
-#include "ns3/packet.h"
-#include "ns3/packet-burst.h"
-#include "wimax-phy.h"
 #include "wimax-mac-header.h"
+#include "wimax-phy.h"
 
-namespace ns3 {
+#include "ns3/packet-burst.h"
+#include "ns3/packet.h"
+
+#include <stdint.h>
+
+namespace ns3
+{
 
 class SubscriberStationNetDevice;
 class WimaxConnection;
@@ -40,57 +43,56 @@ class WimaxConnection;
  */
 class SSScheduler : public Object
 {
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    /**
+     * Constructor
+     *
+     * \param ss subscriber station device
+     */
+    SSScheduler(Ptr<SubscriberStationNetDevice> ss);
+    ~SSScheduler() override;
 
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  /**
-   * Constructor
-   *
-   * \param ss subscriber station device
-   */
-  SSScheduler (Ptr<SubscriberStationNetDevice> ss);
-  ~SSScheduler () override;
+    // Delete copy constructor and assignment operator to avoid misuse
+    SSScheduler(const SSScheduler&) = delete;
+    SSScheduler& operator=(const SSScheduler&) = delete;
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  SSScheduler (const SSScheduler &) = delete;
-  SSScheduler &operator= (const SSScheduler &) = delete;
+    /**
+     * Set poll me value
+     * \param pollMe the poll me flag
+     */
+    void SetPollMe(bool pollMe);
+    /**
+     * Get the poll me value
+     * \returns the poll me flag
+     */
+    bool GetPollMe() const;
+    /**
+     * \return a list of packet to be sent in the next opportunity
+     * \param availableSymbols the available resources in symbols
+     * \param modulationType the used modulation
+     * \param packetType the type of packets to select from
+     * \param connection the connection from which packets will be selected
+     */
+    Ptr<PacketBurst> Schedule(uint16_t availableSymbols,
+                              WimaxPhy::ModulationType modulationType,
+                              MacHeaderType::HeaderType packetType,
+                              Ptr<WimaxConnection>& connection);
 
-  /**
-   * Set poll me value
-   * \param pollMe the poll me flag
-   */
-  void SetPollMe (bool pollMe);
-  /**
-   * Get the poll me value
-   * \returns the poll me flag
-   */
-  bool GetPollMe () const;
-  /**
-   * \return a list of packet to be sent in the next opportunity
-   * \param availableSymbols the available resources in symbols
-   * \param modulationType the used modulation
-   * \param packetType the type of packets to select from
-   * \param connection the connection from which packets will be selected
-   */
-  Ptr<PacketBurst> Schedule (uint16_t availableSymbols,
-                             WimaxPhy::ModulationType modulationType,
-                             MacHeaderType::HeaderType packetType, Ptr<WimaxConnection> &connection);
+    void DoDispose() override;
 
-
-  void DoDispose () override;
-private:
-  /**
-   * Select connection
-   * \returns pointer to the wimax connection
-   */
-  Ptr<WimaxConnection> SelectConnection ();
-  Ptr<SubscriberStationNetDevice> m_ss; ///< the subscriber station
-  bool m_pollMe; ///< poll me flag
-
+  private:
+    /**
+     * Select connection
+     * \returns pointer to the wimax connection
+     */
+    Ptr<WimaxConnection> SelectConnection();
+    Ptr<SubscriberStationNetDevice> m_ss; ///< the subscriber station
+    bool m_pollMe;                        ///< poll me flag
 };
 
 } // namespace ns3

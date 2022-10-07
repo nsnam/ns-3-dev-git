@@ -18,120 +18,151 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/string.h"
-#include "ns3/log.h"
 #include "constant-rate-wifi-manager.h"
+
+#include "ns3/log.h"
+#include "ns3/string.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-tx-vector.h"
 #include "ns3/wifi-utils.h"
 
-#define Min(a,b) ((a < b) ? a : b)
+#define Min(a, b) ((a < b) ? a : b)
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("ConstantRateWifiManager");
+NS_LOG_COMPONENT_DEFINE("ConstantRateWifiManager");
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantRateWifiManager);
+NS_OBJECT_ENSURE_REGISTERED(ConstantRateWifiManager);
 
 TypeId
-ConstantRateWifiManager::GetTypeId ()
+ConstantRateWifiManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ConstantRateWifiManager")
-    .SetParent<WifiRemoteStationManager> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<ConstantRateWifiManager> ()
-    .AddAttribute ("DataMode", "The transmission mode to use for every data packet transmission",
-                   StringValue ("OfdmRate6Mbps"),
-                   MakeWifiModeAccessor (&ConstantRateWifiManager::m_dataMode),
-                   MakeWifiModeChecker ())
-    .AddAttribute ("ControlMode", "The transmission mode to use for every RTS packet transmission.",
-                   StringValue ("OfdmRate6Mbps"),
-                   MakeWifiModeAccessor (&ConstantRateWifiManager::m_ctlMode),
-                   MakeWifiModeChecker ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::ConstantRateWifiManager")
+            .SetParent<WifiRemoteStationManager>()
+            .SetGroupName("Wifi")
+            .AddConstructor<ConstantRateWifiManager>()
+            .AddAttribute("DataMode",
+                          "The transmission mode to use for every data packet transmission",
+                          StringValue("OfdmRate6Mbps"),
+                          MakeWifiModeAccessor(&ConstantRateWifiManager::m_dataMode),
+                          MakeWifiModeChecker())
+            .AddAttribute("ControlMode",
+                          "The transmission mode to use for every RTS packet transmission.",
+                          StringValue("OfdmRate6Mbps"),
+                          MakeWifiModeAccessor(&ConstantRateWifiManager::m_ctlMode),
+                          MakeWifiModeChecker());
+    return tid;
 }
 
-ConstantRateWifiManager::ConstantRateWifiManager ()
+ConstantRateWifiManager::ConstantRateWifiManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-ConstantRateWifiManager::~ConstantRateWifiManager ()
+ConstantRateWifiManager::~ConstantRateWifiManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-WifiRemoteStation *
-ConstantRateWifiManager::DoCreateStation () const
+WifiRemoteStation*
+ConstantRateWifiManager::DoCreateStation() const
 {
-  NS_LOG_FUNCTION (this);
-  WifiRemoteStation *station = new WifiRemoteStation ();
-  return station;
-}
-
-void
-ConstantRateWifiManager::DoReportRxOk (WifiRemoteStation *station,
-                                       double rxSnr, WifiMode txMode)
-{
-  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
+    NS_LOG_FUNCTION(this);
+    WifiRemoteStation* station = new WifiRemoteStation();
+    return station;
 }
 
 void
-ConstantRateWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
+ConstantRateWifiManager::DoReportRxOk(WifiRemoteStation* station, double rxSnr, WifiMode txMode)
 {
-  NS_LOG_FUNCTION (this << station);
+    NS_LOG_FUNCTION(this << station << rxSnr << txMode);
 }
 
 void
-ConstantRateWifiManager::DoReportDataFailed (WifiRemoteStation *station)
+ConstantRateWifiManager::DoReportRtsFailed(WifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
+    NS_LOG_FUNCTION(this << station);
 }
 
 void
-ConstantRateWifiManager::DoReportRtsOk (WifiRemoteStation *st,
-                                        double ctsSnr, WifiMode ctsMode, double rtsSnr)
+ConstantRateWifiManager::DoReportDataFailed(WifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
+    NS_LOG_FUNCTION(this << station);
 }
 
 void
-ConstantRateWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
-                                         double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
+ConstantRateWifiManager::DoReportRtsOk(WifiRemoteStation* st,
+                                       double ctsSnr,
+                                       WifiMode ctsMode,
+                                       double rtsSnr)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
+    NS_LOG_FUNCTION(this << st << ctsSnr << ctsMode << rtsSnr);
 }
 
 void
-ConstantRateWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
+ConstantRateWifiManager::DoReportDataOk(WifiRemoteStation* st,
+                                        double ackSnr,
+                                        WifiMode ackMode,
+                                        double dataSnr,
+                                        uint16_t dataChannelWidth,
+                                        uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << station);
+    NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
 }
 
 void
-ConstantRateWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
+ConstantRateWifiManager::DoReportFinalRtsFailed(WifiRemoteStation* station)
 {
-  NS_LOG_FUNCTION (this << station);
+    NS_LOG_FUNCTION(this << station);
+}
+
+void
+ConstantRateWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
+{
+    NS_LOG_FUNCTION(this << station);
 }
 
 WifiTxVector
-ConstantRateWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint16_t allowedWidth)
+ConstantRateWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << st << allowedWidth);
-  uint8_t nss = Min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st));
-  if (m_dataMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+    NS_LOG_FUNCTION(this << st << allowedWidth);
+    uint8_t nss = Min(GetMaxNumberOfTransmitStreams(), GetNumberOfSupportedStreams(st));
+    if (m_dataMode.GetModulationClass() == WIFI_MOD_CLASS_HT)
     {
-      nss = 1 + (m_dataMode.GetMcsValue () / 8);
+        nss = 1 + (m_dataMode.GetMcsValue() / 8);
     }
-  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode.GetModulationClass (), GetShortPreambleEnabled ()), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), nss, 0, GetChannelWidthForTransmission (m_dataMode, allowedWidth, GetChannelWidth (st)), GetAggregation (st));
+    return WifiTxVector(
+        m_dataMode,
+        GetDefaultTxPowerLevel(),
+        GetPreambleForTransmission(m_dataMode.GetModulationClass(), GetShortPreambleEnabled()),
+        ConvertGuardIntervalToNanoSeconds(m_dataMode,
+                                          GetShortGuardIntervalSupported(st),
+                                          NanoSeconds(GetGuardInterval(st))),
+        GetNumberOfAntennas(),
+        nss,
+        0,
+        GetChannelWidthForTransmission(m_dataMode, allowedWidth, GetChannelWidth(st)),
+        GetAggregation(st));
 }
 
 WifiTxVector
-ConstantRateWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
+ConstantRateWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 {
-  NS_LOG_FUNCTION (this << st);
-  return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_ctlMode.GetModulationClass (), GetShortPreambleEnabled ()), ConvertGuardIntervalToNanoSeconds (m_ctlMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), 1, 1, 0, GetChannelWidthForTransmission (m_ctlMode, GetPhy ()->GetChannelWidth (), GetChannelWidth (st)), GetAggregation (st));
+    NS_LOG_FUNCTION(this << st);
+    return WifiTxVector(
+        m_ctlMode,
+        GetDefaultTxPowerLevel(),
+        GetPreambleForTransmission(m_ctlMode.GetModulationClass(), GetShortPreambleEnabled()),
+        ConvertGuardIntervalToNanoSeconds(m_ctlMode,
+                                          GetShortGuardIntervalSupported(st),
+                                          NanoSeconds(GetGuardInterval(st))),
+        1,
+        1,
+        0,
+        GetChannelWidthForTransmission(m_ctlMode, GetPhy()->GetChannelWidth(), GetChannelWidth(st)),
+        GetAggregation(st));
 }
 
-} //namespace ns3
+} // namespace ns3

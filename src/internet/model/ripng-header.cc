@@ -19,249 +19,279 @@
  */
 
 #include "ripng-header.h"
+
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /*
  * RipNgRte
  */
-NS_OBJECT_ENSURE_REGISTERED (RipNgRte);
+NS_OBJECT_ENSURE_REGISTERED(RipNgRte);
 
-RipNgRte::RipNgRte ()
-  : m_prefix ("::"), m_tag (0), m_prefixLen (0), m_metric (16)
+RipNgRte::RipNgRte()
+    : m_prefix("::"),
+      m_tag(0),
+      m_prefixLen(0),
+      m_metric(16)
 {
 }
 
-TypeId RipNgRte::GetTypeId ()
+TypeId
+RipNgRte::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::RipNgRte")
-    .SetParent<Header> ()
-    .SetGroupName ("Internet")
-    .AddConstructor<RipNgRte> ();
-  return tid;
+    static TypeId tid = TypeId("ns3::RipNgRte")
+                            .SetParent<Header>()
+                            .SetGroupName("Internet")
+                            .AddConstructor<RipNgRte>();
+    return tid;
 }
 
-TypeId RipNgRte::GetInstanceTypeId () const
+TypeId
+RipNgRte::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
-void RipNgRte::Print (std::ostream & os) const
+void
+RipNgRte::Print(std::ostream& os) const
 {
-  os << "prefix " << m_prefix << "/" << int(m_prefixLen) << " Metric " << int(m_metric) << " Tag " << int(m_tag);
+    os << "prefix " << m_prefix << "/" << int(m_prefixLen) << " Metric " << int(m_metric) << " Tag "
+       << int(m_tag);
 }
 
-uint32_t RipNgRte::GetSerializedSize () const
+uint32_t
+RipNgRte::GetSerializedSize() const
 {
-  return 20;
+    return 20;
 }
 
-void RipNgRte::Serialize (Buffer::Iterator i) const
+void
+RipNgRte::Serialize(Buffer::Iterator i) const
 {
-  uint8_t tmp[16];
+    uint8_t tmp[16];
 
-  m_prefix.Serialize (tmp);
-  i.Write (tmp, 16);
+    m_prefix.Serialize(tmp);
+    i.Write(tmp, 16);
 
-  i.WriteHtonU16 (m_tag);
-  i.WriteU8 (m_prefixLen);
-  i.WriteU8 (m_metric);
+    i.WriteHtonU16(m_tag);
+    i.WriteU8(m_prefixLen);
+    i.WriteU8(m_metric);
 }
 
-uint32_t RipNgRte::Deserialize (Buffer::Iterator i)
+uint32_t
+RipNgRte::Deserialize(Buffer::Iterator i)
 {
-  uint8_t tmp[16];
+    uint8_t tmp[16];
 
-  i.Read (tmp, 16);
-  m_prefix.Set (tmp);
-  m_tag = i.ReadNtohU16 ();
-  m_prefixLen = i.ReadU8 ();
-  m_metric = i.ReadU8 ();
+    i.Read(tmp, 16);
+    m_prefix.Set(tmp);
+    m_tag = i.ReadNtohU16();
+    m_prefixLen = i.ReadU8();
+    m_metric = i.ReadU8();
 
-  return GetSerializedSize ();
+    return GetSerializedSize();
 }
 
-void RipNgRte::SetPrefix (Ipv6Address prefix)
+void
+RipNgRte::SetPrefix(Ipv6Address prefix)
 {
-  m_prefix = prefix;
+    m_prefix = prefix;
 }
 
-Ipv6Address RipNgRte::GetPrefix () const
+Ipv6Address
+RipNgRte::GetPrefix() const
 {
-  return m_prefix;
+    return m_prefix;
 }
 
-void RipNgRte::SetPrefixLen (uint8_t prefixLen)
+void
+RipNgRte::SetPrefixLen(uint8_t prefixLen)
 {
-  m_prefixLen = prefixLen;
+    m_prefixLen = prefixLen;
 }
 
-uint8_t RipNgRte::GetPrefixLen () const
+uint8_t
+RipNgRte::GetPrefixLen() const
 {
-  return m_prefixLen;
+    return m_prefixLen;
 }
 
-void RipNgRte::SetRouteTag (uint16_t routeTag)
+void
+RipNgRte::SetRouteTag(uint16_t routeTag)
 {
-  m_tag = routeTag;
+    m_tag = routeTag;
 }
 
-uint16_t RipNgRte::GetRouteTag () const
+uint16_t
+RipNgRte::GetRouteTag() const
 {
-  return m_tag;
+    return m_tag;
 }
 
-void RipNgRte::SetRouteMetric (uint8_t routeMetric)
+void
+RipNgRte::SetRouteMetric(uint8_t routeMetric)
 {
-  m_metric = routeMetric;
+    m_metric = routeMetric;
 }
 
-uint8_t RipNgRte::GetRouteMetric () const
+uint8_t
+RipNgRte::GetRouteMetric() const
 {
-  return m_metric;
+    return m_metric;
 }
 
-
-std::ostream & operator << (std::ostream & os, const RipNgRte & h)
+std::ostream&
+operator<<(std::ostream& os, const RipNgRte& h)
 {
-  h.Print (os);
-  return os;
+    h.Print(os);
+    return os;
 }
 
 /*
  * RipNgHeader
  */
-NS_LOG_COMPONENT_DEFINE ("RipNgHeader");
-NS_OBJECT_ENSURE_REGISTERED (RipNgHeader);
+NS_LOG_COMPONENT_DEFINE("RipNgHeader");
+NS_OBJECT_ENSURE_REGISTERED(RipNgHeader);
 
-RipNgHeader::RipNgHeader ()
-  : m_command (0)
+RipNgHeader::RipNgHeader()
+    : m_command(0)
 {
 }
 
-TypeId RipNgHeader::GetTypeId ()
+TypeId
+RipNgHeader::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::RipNgHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("Internet")
-    .AddConstructor<RipNgHeader> ();
-  return tid;
+    static TypeId tid = TypeId("ns3::RipNgHeader")
+                            .SetParent<Header>()
+                            .SetGroupName("Internet")
+                            .AddConstructor<RipNgHeader>();
+    return tid;
 }
 
-TypeId RipNgHeader::GetInstanceTypeId () const
+TypeId
+RipNgHeader::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
-void RipNgHeader::Print (std::ostream & os) const
+void
+RipNgHeader::Print(std::ostream& os) const
 {
-  os << "command " << int(m_command);
-  for (std::list<RipNgRte>::const_iterator iter = m_rteList.begin ();
-      iter != m_rteList.end (); iter ++)
+    os << "command " << int(m_command);
+    for (std::list<RipNgRte>::const_iterator iter = m_rteList.begin(); iter != m_rteList.end();
+         iter++)
     {
-      os << " | ";
-      iter->Print (os);
+        os << " | ";
+        iter->Print(os);
     }
 }
 
-uint32_t RipNgHeader::GetSerializedSize () const
+uint32_t
+RipNgHeader::GetSerializedSize() const
 {
-  RipNgRte rte;
-  return 4 + m_rteList.size () * rte.GetSerializedSize ();
+    RipNgRte rte;
+    return 4 + m_rteList.size() * rte.GetSerializedSize();
 }
 
-void RipNgHeader::Serialize (Buffer::Iterator start) const
+void
+RipNgHeader::Serialize(Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
+    Buffer::Iterator i = start;
 
-  i.WriteU8 (uint8_t (m_command));
-  i.WriteU8 (1);
-  i.WriteU16 (0);
+    i.WriteU8(uint8_t(m_command));
+    i.WriteU8(1);
+    i.WriteU16(0);
 
-  for (std::list<RipNgRte>::const_iterator iter = m_rteList.begin ();
-      iter != m_rteList.end (); iter ++)
+    for (std::list<RipNgRte>::const_iterator iter = m_rteList.begin(); iter != m_rteList.end();
+         iter++)
     {
-      iter->Serialize (i);
-      i.Next(iter->GetSerializedSize ());
+        iter->Serialize(i);
+        i.Next(iter->GetSerializedSize());
     }
 }
 
-uint32_t RipNgHeader::Deserialize (Buffer::Iterator start)
+uint32_t
+RipNgHeader::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
+    Buffer::Iterator i = start;
 
-  uint8_t temp;
-  temp = i.ReadU8 ();
-  if ((temp == REQUEST) || (temp == RESPONSE))
+    uint8_t temp;
+    temp = i.ReadU8();
+    if ((temp == REQUEST) || (temp == RESPONSE))
     {
-      m_command = temp;
+        m_command = temp;
     }
-  else
+    else
     {
-      return 0;
-    }
-
-  if (i.ReadU8 () != 1)
-    {
-      NS_LOG_LOGIC ("RIP received a message with mismatch version, ignoring.");
-      return 0;
+        return 0;
     }
 
-  if (i.ReadU16 () != 0)
+    if (i.ReadU8() != 1)
     {
-      NS_LOG_LOGIC ("RIP received a message with invalid filled flags, ignoring.");
-      return 0;
+        NS_LOG_LOGIC("RIP received a message with mismatch version, ignoring.");
+        return 0;
     }
 
-  uint8_t rteNumber = i.GetRemainingSize ()/20;
-  for (uint8_t n=0; n<rteNumber; n++)
+    if (i.ReadU16() != 0)
     {
-      RipNgRte rte;
-      i.Next (rte.Deserialize (i));
-      m_rteList.push_back (rte);
+        NS_LOG_LOGIC("RIP received a message with invalid filled flags, ignoring.");
+        return 0;
     }
 
-  return GetSerializedSize ();
+    uint8_t rteNumber = i.GetRemainingSize() / 20;
+    for (uint8_t n = 0; n < rteNumber; n++)
+    {
+        RipNgRte rte;
+        i.Next(rte.Deserialize(i));
+        m_rteList.push_back(rte);
+    }
+
+    return GetSerializedSize();
 }
 
-void RipNgHeader::SetCommand (RipNgHeader::Command_e command)
+void
+RipNgHeader::SetCommand(RipNgHeader::Command_e command)
 {
-  m_command = command;
+    m_command = command;
 }
 
-RipNgHeader::Command_e RipNgHeader::GetCommand () const
+RipNgHeader::Command_e
+RipNgHeader::GetCommand() const
 {
-  return RipNgHeader::Command_e (m_command);
+    return RipNgHeader::Command_e(m_command);
 }
 
-void RipNgHeader::AddRte (RipNgRte rte)
+void
+RipNgHeader::AddRte(RipNgRte rte)
 {
-  m_rteList.push_back (rte);
+    m_rteList.push_back(rte);
 }
 
-void RipNgHeader::ClearRtes ()
+void
+RipNgHeader::ClearRtes()
 {
-  m_rteList.clear ();
+    m_rteList.clear();
 }
 
-uint16_t RipNgHeader::GetRteNumber () const
+uint16_t
+RipNgHeader::GetRteNumber() const
 {
-  return m_rteList.size ();
+    return m_rteList.size();
 }
 
-std::list<RipNgRte> RipNgHeader::GetRteList () const
+std::list<RipNgRte>
+RipNgHeader::GetRteList() const
 {
-  return m_rteList;
+    return m_rteList;
 }
 
-
-std::ostream & operator << (std::ostream & os, const RipNgHeader & h)
+std::ostream&
+operator<<(std::ostream& os, const RipNgHeader& h)
 {
-  h.Print (os);
-  return os;
+    h.Print(os);
+    return os;
 }
 
-
-}
-
+} // namespace ns3

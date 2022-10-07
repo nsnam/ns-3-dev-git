@@ -1,15 +1,16 @@
 #ifndef OSTREAM_OPERATOR_NULLPTR_H
 #define OSTREAM_OPERATOR_NULLPTR_H
 
-#include <iostream>
 #include <cstddef>
+#include <iostream>
 
 namespace std
 {
-inline std::ostream &operator<< (std::ostream &os, std::nullptr_t ptr)
+inline std::ostream&
+operator<<(std::ostream& os, std::nullptr_t ptr)
 {
-  return os << "nullptr";   //whatever you want nullptr to show up as in the console
+    return os << "nullptr"; // whatever you want nullptr to show up as in the console
 }
-}
+} // namespace std
 
-#endif //OSTREAM_OPERATOR_NULLPTR_H
+#endif // OSTREAM_OPERATOR_NULLPTR_H

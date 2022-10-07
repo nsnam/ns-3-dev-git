@@ -20,8 +20,8 @@
 #ifndef WATCHDOG_H
 #define WATCHDOG_H
 
-#include "nstime.h"
 #include "event-id.h"
+#include "nstime.h"
 
 /**
  * \file
@@ -29,7 +29,8 @@
  * ns3::Watchdog timer class declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class TimerImpl;
 
@@ -55,76 +56,74 @@ class TimerImpl;
  */
 class Watchdog
 {
-public:
-  /** Constructor. */
-  Watchdog ();
-  /** Destructor. */
-  ~Watchdog ();
+  public:
+    /** Constructor. */
+    Watchdog();
+    /** Destructor. */
+    ~Watchdog();
 
-  /**
-   * Delay the timer.
-   *
-   * \param [in] delay The watchdog delay
-   *
-   * After a call to this method, the watchdog will not be triggered
-   * until the delay specified has been expired. This operation is
-   * sometimes named "re-arming" a watchdog in some operating systems.
-   */
-  void Ping (Time delay);
+    /**
+     * Delay the timer.
+     *
+     * \param [in] delay The watchdog delay
+     *
+     * After a call to this method, the watchdog will not be triggered
+     * until the delay specified has been expired. This operation is
+     * sometimes named "re-arming" a watchdog in some operating systems.
+     */
+    void Ping(Time delay);
 
-  /**
-   * Set the function to execute when the timer expires.
-   *
-   * \tparam FN \deduced The type of the function.
-   * \param [in] fn The function
-   *
-   * Store this function in this Timer for later use by Timer::Schedule.
-   */
-  template <typename FN>
-  void SetFunction (FN fn);
+    /**
+     * Set the function to execute when the timer expires.
+     *
+     * \tparam FN \deduced The type of the function.
+     * \param [in] fn The function
+     *
+     * Store this function in this Timer for later use by Timer::Schedule.
+     */
+    template <typename FN>
+    void SetFunction(FN fn);
 
-  /**
-   * Set the function to execute when the timer expires.
-   *
-   * \tparam MEM_PTR \deduced Class method function type.
-   * \tparam OBJ_PTR \deduced Class type containing the function.
-   * \param [in] memPtr The member function pointer
-   * \param [in] objPtr The pointer to object
-   *
-   * Store this function and object in this Timer for later use by Timer::Schedule.
-   */
-  template <typename MEM_PTR, typename OBJ_PTR>
-  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr);
+    /**
+     * Set the function to execute when the timer expires.
+     *
+     * \tparam MEM_PTR \deduced Class method function type.
+     * \tparam OBJ_PTR \deduced Class type containing the function.
+     * \param [in] memPtr The member function pointer
+     * \param [in] objPtr The pointer to object
+     *
+     * Store this function and object in this Timer for later use by Timer::Schedule.
+     */
+    template <typename MEM_PTR, typename OBJ_PTR>
+    void SetFunction(MEM_PTR memPtr, OBJ_PTR objPtr);
 
+    /**
+     * Set the arguments to be used when invoking the expire function.
+     */
+    /**@{*/
+    /**
+     * \tparam Ts \deduced Argument types.
+     * \param [in] args arguments
+     */
+    template <typename... Ts>
+    void SetArguments(Ts&&... args);
+    /**@}*/
 
-  /**
-   * Set the arguments to be used when invoking the expire function.
-   */
-  /**@{*/
-  /**
-   * \tparam Ts \deduced Argument types.
-   * \param [in] args arguments
-   */
-  template <typename... Ts>
-  void SetArguments (Ts&&... args);
-  /**@}*/
-
-private:
-  /** Internal callback invoked when the timer expires. */
-  void Expire ();
-  /**
-   * The timer implementation, which contains the bound callback
-   * function and arguments.
-   */
-  TimerImpl *m_impl;
-  /** The future event scheduled to expire the timer. */
-  EventId m_event;
-  /** The absolute time when the timer will expire. */
-  Time m_end;
+  private:
+    /** Internal callback invoked when the timer expires. */
+    void Expire();
+    /**
+     * The timer implementation, which contains the bound callback
+     * function and arguments.
+     */
+    TimerImpl* m_impl;
+    /** The future event scheduled to expire the timer. */
+    EventId m_event;
+    /** The absolute time when the timer will expire. */
+    Time m_end;
 };
 
 } // namespace ns3
-
 
 /********************************************************************
  *  Implementation of the templates declared above.
@@ -132,37 +131,37 @@ private:
 
 #include "timer-impl.h"
 
-namespace ns3 {
-
+namespace ns3
+{
 
 template <typename FN>
 void
-Watchdog::SetFunction (FN fn)
+Watchdog::SetFunction(FN fn)
 {
-  delete m_impl;
-  m_impl = MakeTimerImpl (fn);
+    delete m_impl;
+    m_impl = MakeTimerImpl(fn);
 }
+
 template <typename MEM_PTR, typename OBJ_PTR>
 void
-Watchdog::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
+Watchdog::SetFunction(MEM_PTR memPtr, OBJ_PTR objPtr)
 {
-  delete m_impl;
-  m_impl = MakeTimerImpl (memPtr, objPtr);
+    delete m_impl;
+    m_impl = MakeTimerImpl(memPtr, objPtr);
 }
 
 template <typename... Ts>
 void
-Watchdog::SetArguments (Ts&&... args)
+Watchdog::SetArguments(Ts&&... args)
 {
-  if (m_impl == nullptr)
+    if (m_impl == nullptr)
     {
-      NS_FATAL_ERROR ("You cannot set the arguments of a Watchdog before setting its function.");
-      return;
+        NS_FATAL_ERROR("You cannot set the arguments of a Watchdog before setting its function.");
+        return;
     }
-  m_impl->SetArgs (std::forward<Ts>(args)...);
+    m_impl->SetArgs(std::forward<Ts>(args)...);
 }
 
 } // namespace ns3
-
 
 #endif /* WATCHDOG_H */

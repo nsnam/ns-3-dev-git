@@ -20,13 +20,14 @@
 
 #include <string>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * Get a message from the subdir.
  *
  * \return The message from the subdir
  */
-std::string ScratchSubdirGetMessage ();
+std::string ScratchSubdirGetMessage();
 
 } // namespace ns3

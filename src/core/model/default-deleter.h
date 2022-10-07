@@ -27,7 +27,8 @@
  * for reference-counted smart pointers.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup ptr
@@ -42,18 +43,18 @@ namespace ns3 {
 template <typename T>
 struct DefaultDeleter
 {
-  /**
-   * The default deleter implementation, which just does a normal
-   * \code
-   *   delete object;
-   * \endcode
-   * \tparam T \deduced The object type being deleted.
-   * \param [in] object The object to delete.
-   */
-  inline static void Delete (T *object)
-  {
-    delete object;
-  }
+    /**
+     * The default deleter implementation, which just does a normal
+     * \code
+     *   delete object;
+     * \endcode
+     * \tparam T \deduced The object type being deleted.
+     * \param [in] object The object to delete.
+     */
+    inline static void Delete(T* object)
+    {
+        delete object;
+    }
 };
 
 } // namespace ns3

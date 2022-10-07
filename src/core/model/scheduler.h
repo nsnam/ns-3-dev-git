@@ -21,8 +21,9 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include <stdint.h>
 #include "object.h"
+
+#include <stdint.h>
 
 /**
  * \file
@@ -32,7 +33,8 @@
  * ns3::Scheduler::EventKey declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class EventImpl;
 
@@ -154,76 +156,77 @@ class EventImpl;
  */
 class Scheduler : public Object
 {
-public:
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \ingroup events
-   * Structure for sorting and comparing Events.
-   */
-  struct EventKey
-  {
-    uint64_t m_ts;         /**< Event time stamp. */
-    uint32_t m_uid;        /**< Event unique id. */
-    uint32_t m_context;    /**< Event context. */
-  };
-  /**
-   * \ingroup events
-   * Scheduler event.
-   *
-   * An Event consists of an EventKey, used for maintaining the schedule,
-   * and an EventImpl which is the actual implementation.
-   */
-  struct Event
-  {
-    EventImpl *impl;       /**< Pointer to the event implementation. */
-    EventKey key;          /**< Key for sorting and ordering Events. */
-  };
+    /**
+     * \ingroup events
+     * Structure for sorting and comparing Events.
+     */
+    struct EventKey
+    {
+        uint64_t m_ts;      /**< Event time stamp. */
+        uint32_t m_uid;     /**< Event unique id. */
+        uint32_t m_context; /**< Event context. */
+    };
 
-  /** Destructor. */
-  ~Scheduler () override = 0;
+    /**
+     * \ingroup events
+     * Scheduler event.
+     *
+     * An Event consists of an EventKey, used for maintaining the schedule,
+     * and an EventImpl which is the actual implementation.
+     */
+    struct Event
+    {
+        EventImpl* impl; /**< Pointer to the event implementation. */
+        EventKey key;    /**< Key for sorting and ordering Events. */
+    };
 
-  /**
-   * Insert a new Event in the schedule.
-   *
-   * \param [in] ev Event to store in the event list
-   */
-  virtual void Insert (const Event &ev) = 0;
-  /**
-   * Test if the schedule is empty.
-   *
-   * \returns \c true if the event list is empty and \c false otherwise.
-   */
-  virtual bool IsEmpty () const = 0;
-  /**
-   * Get a pointer to the next event.
-   *
-   * This method cannot be invoked if the list is empty.
-   *
-   * \returns A pointer to the next earliest event. The caller
-   *      takes ownership of the returned pointer.
-   */
-  virtual Event PeekNext () const = 0;
-  /**
-   * Remove the earliest event from the event list.
-   *
-   * This method cannot be invoked if the list is empty.
-   *
-   * \return The Event.
-   */
-  virtual Event RemoveNext () = 0;
-  /**
-   * Remove a specific event from the event list.
-   *
-   * This method cannot be invoked if the list is empty.
-   *
-   * \param [in] ev The event to remove
-   */
-  virtual void Remove (const Event &ev) = 0;
+    /** Destructor. */
+    ~Scheduler() override = 0;
+
+    /**
+     * Insert a new Event in the schedule.
+     *
+     * \param [in] ev Event to store in the event list
+     */
+    virtual void Insert(const Event& ev) = 0;
+    /**
+     * Test if the schedule is empty.
+     *
+     * \returns \c true if the event list is empty and \c false otherwise.
+     */
+    virtual bool IsEmpty() const = 0;
+    /**
+     * Get a pointer to the next event.
+     *
+     * This method cannot be invoked if the list is empty.
+     *
+     * \returns A pointer to the next earliest event. The caller
+     *      takes ownership of the returned pointer.
+     */
+    virtual Event PeekNext() const = 0;
+    /**
+     * Remove the earliest event from the event list.
+     *
+     * This method cannot be invoked if the list is empty.
+     *
+     * \return The Event.
+     */
+    virtual Event RemoveNext() = 0;
+    /**
+     * Remove a specific event from the event list.
+     *
+     * This method cannot be invoked if the list is empty.
+     *
+     * \param [in] ev The event to remove
+     */
+    virtual void Remove(const Event& ev) = 0;
 };
 
 /**
@@ -234,10 +237,10 @@ public:
  * \param [in] b The second event.
  * \returns \c true if \c a != \c b
  */
-inline bool operator == (const Scheduler::EventKey &a,
-                         const Scheduler::EventKey &b)
+inline bool
+operator==(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 {
-  return a.m_uid == b.m_uid;
+    return a.m_uid == b.m_uid;
 }
 
 /**
@@ -248,10 +251,10 @@ inline bool operator == (const Scheduler::EventKey &a,
  * \param [in] b The second event.
  * \returns \c true if \c a != \c b
  */
-inline bool operator != (const Scheduler::EventKey &a,
-                         const Scheduler::EventKey &b)
+inline bool
+operator!=(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 {
-  return a.m_uid != b.m_uid;
+    return a.m_uid != b.m_uid;
 }
 
 /**
@@ -267,21 +270,20 @@ inline bool operator != (const Scheduler::EventKey &a,
  * \param [in] b The second event.
  * \returns \c true if \c a < \c b
  */
-inline bool operator < (const Scheduler::EventKey &a,
-                        const Scheduler::EventKey &b)
+inline bool
+operator<(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 {
-  if (a.m_ts < b.m_ts)
+    if (a.m_ts < b.m_ts)
     {
-      return true;
+        return true;
     }
-  else if (a.m_ts == b.m_ts
-           && a.m_uid < b.m_uid)
+    else if (a.m_ts == b.m_ts && a.m_uid < b.m_uid)
     {
-      return true;
+        return true;
     }
-  else
+    else
     {
-      return false;
+        return false;
     }
 }
 
@@ -292,21 +294,20 @@ inline bool operator < (const Scheduler::EventKey &a,
  * \param [in] b The second event.
  * \returns \c true if \c a > \c b
  */
-inline bool operator > (const Scheduler::EventKey &a,
-                        const Scheduler::EventKey &b)
+inline bool
+operator>(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 {
-  if (a.m_ts > b.m_ts)
+    if (a.m_ts > b.m_ts)
     {
-      return true;
+        return true;
     }
-  else if (a.m_ts == b.m_ts
-           && a.m_uid > b.m_uid)
+    else if (a.m_ts == b.m_ts && a.m_uid > b.m_uid)
     {
-      return true;
+        return true;
     }
-  else
+    else
     {
-      return false;
+        return false;
     }
 }
 
@@ -317,10 +318,10 @@ inline bool operator > (const Scheduler::EventKey &a,
  * \param [in] b The second event.
  * \returns \c true if \c a == \c b
  */
-inline bool operator == (const Scheduler::Event &a,
-                         const Scheduler::Event &b)
+inline bool
+operator==(const Scheduler::Event& a, const Scheduler::Event& b)
 {
-  return a.key == b.key;
+    return a.key == b.key;
 }
 
 /**
@@ -330,10 +331,10 @@ inline bool operator == (const Scheduler::Event &a,
  * \param [in] b The second event.
  * \returns \c true if \c a != \c b
  */
-inline bool operator != (const Scheduler::Event &a,
-                         const Scheduler::Event &b)
+inline bool
+operator!=(const Scheduler::Event& a, const Scheduler::Event& b)
 {
-  return a.key != b.key;
+    return a.key != b.key;
 }
 
 /**
@@ -343,10 +344,10 @@ inline bool operator != (const Scheduler::Event &a,
  * \param [in] b The second event.
  * \returns \c true if \c a < \c b
  */
-inline bool operator < (const Scheduler::Event &a,
-                        const Scheduler::Event &b)
+inline bool
+operator<(const Scheduler::Event& a, const Scheduler::Event& b)
 {
-  return a.key < b.key;
+    return a.key < b.key;
 }
 
 /**
@@ -356,14 +357,12 @@ inline bool operator < (const Scheduler::Event &a,
  * \param [in] b The second event.
  * \returns \c true if \c a > \c b
  */
-inline bool operator > (const Scheduler::Event &a,
-                        const Scheduler::Event &b)
+inline bool
+operator>(const Scheduler::Event& a, const Scheduler::Event& b)
 {
-  return a.key > b.key;
+    return a.key > b.key;
 }
 
-
 } // namespace ns3
-
 
 #endif /* SCHEDULER_H */

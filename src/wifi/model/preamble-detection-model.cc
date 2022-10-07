@@ -20,17 +20,17 @@
 
 #include "preamble-detection-model.h"
 
-namespace ns3 {
-
-NS_OBJECT_ENSURE_REGISTERED (PreambleDetectionModel);
-
-TypeId PreambleDetectionModel::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::PreambleDetectionModel")
-    .SetParent<Object> ()
-    .SetGroupName ("Wifi")
-  ;
-  return tid;
+
+NS_OBJECT_ENSURE_REGISTERED(PreambleDetectionModel);
+
+TypeId
+PreambleDetectionModel::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::PreambleDetectionModel").SetParent<Object>().SetGroupName("Wifi");
+    return tid;
 }
 
-} //namespace ns3
+} // namespace ns3

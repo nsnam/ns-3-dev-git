@@ -18,21 +18,17 @@
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
-
 #include "lte-ue-phy-sap.h"
 
+namespace ns3
+{
 
-namespace ns3 {
-
-
-LteUePhySapProvider::~LteUePhySapProvider ()
+LteUePhySapProvider::~LteUePhySapProvider()
 {
 }
 
-
-LteUePhySapUser::~LteUePhySapUser ()
+LteUePhySapUser::~LteUePhySapUser()
 {
 }
-
 
 } // namespace ns3

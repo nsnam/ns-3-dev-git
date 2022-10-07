@@ -19,16 +19,17 @@
  */
 #include "log.h"
 
-#include <list>
-#include <utility>
-#include <iostream>
 #include "assert.h"
-#include <stdexcept>
-#include "ns3/core-config.h"
 #include "fatal-error.h"
 
-#include <cstdlib>    // getenv
-#include <cstring>    // strlen
+#include "ns3/core-config.h"
+
+#include <cstdlib> // getenv
+#include <cstring> // strlen
+#include <iostream>
+#include <list>
+#include <stdexcept>
+#include <utility>
 
 /**
  * \file
@@ -36,8 +37,8 @@
  * ns3::LogComponent and related implementations.
  */
 
-
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup logging
@@ -59,8 +60,8 @@ static NodePrinter g_logNodePrinter = nullptr;
  */
 class PrintList
 {
-public:
-  PrintList ();  //<! Constructor, prints the list and exits.
+  public:
+    PrintList(); //<! Constructor, prints the list and exits.
 };
 
 /**
@@ -69,427 +70,422 @@ public:
  */
 static PrintList g_printList;
 
-
 /* static */
-LogComponent::ComponentList *
-LogComponent::GetComponentList ()
+LogComponent::ComponentList*
+LogComponent::GetComponentList()
 {
-  static LogComponent::ComponentList components;
-  return &components;
+    static LogComponent::ComponentList components;
+    return &components;
 }
 
-
-PrintList::PrintList ()
+PrintList::PrintList()
 {
-  const char *envVar = std::getenv ("NS_LOG");
-  if (envVar == nullptr || std::strlen (envVar) == 0)
+    const char* envVar = std::getenv("NS_LOG");
+    if (envVar == nullptr || std::strlen(envVar) == 0)
     {
-      return;
+        return;
     }
-  std::string env = envVar;
-  std::string::size_type cur = 0;
-  std::string::size_type next = 0;
-  while (next != std::string::npos)
+    std::string env = envVar;
+    std::string::size_type cur = 0;
+    std::string::size_type next = 0;
+    while (next != std::string::npos)
     {
-      next = env.find_first_of (':', cur);
-      std::string tmp = std::string (env, cur, next - cur);
-      if (tmp == "print-list")
+        next = env.find_first_of(':', cur);
+        std::string tmp = std::string(env, cur, next - cur);
+        if (tmp == "print-list")
         {
-          LogComponentPrintList ();
-          exit (0);
-          break;
+            LogComponentPrintList();
+            exit(0);
+            break;
         }
-      cur = next + 1;
+        cur = next + 1;
     }
 }
 
-
-LogComponent::LogComponent (const std::string & name,
-                            const std::string & file,
-                            const enum LogLevel mask /* = 0 */)
-  : m_levels (0), m_mask (mask), m_name (name), m_file (file)
+LogComponent::LogComponent(const std::string& name,
+                           const std::string& file,
+                           const enum LogLevel mask /* = 0 */)
+    : m_levels(0),
+      m_mask(mask),
+      m_name(name),
+      m_file(file)
 {
-  EnvVarCheck ();
+    EnvVarCheck();
 
-  LogComponent::ComponentList *components = GetComponentList ();
-  for (LogComponent::ComponentList::const_iterator i = components->begin ();
-       i != components->end ();
-       i++)
+    LogComponent::ComponentList* components = GetComponentList();
+    for (LogComponent::ComponentList::const_iterator i = components->begin();
+         i != components->end();
+         i++)
     {
-      if (i->first == name)
+        if (i->first == name)
         {
-          NS_FATAL_ERROR ("Log component \"" << name << "\" has already been registered once.");
+            NS_FATAL_ERROR("Log component \"" << name << "\" has already been registered once.");
         }
     }
-  components->insert (std::make_pair (name, this));
+    components->insert(std::make_pair(name, this));
 }
 
-LogComponent &
-GetLogComponent (const std::string name)
+LogComponent&
+GetLogComponent(const std::string name)
 {
-  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
-  LogComponent* ret;
+    LogComponent::ComponentList* components = LogComponent::GetComponentList();
+    LogComponent* ret;
 
-  try
+    try
     {
-      ret = components->at (name);
+        ret = components->at(name);
     }
-  catch (std::out_of_range&)
+    catch (std::out_of_range&)
     {
-      NS_FATAL_ERROR ("Log component \"" << name << "\" does not exist.");
+        NS_FATAL_ERROR("Log component \"" << name << "\" does not exist.");
     }
-  return *ret;
+    return *ret;
 }
 
 void
-LogComponent::EnvVarCheck ()
+LogComponent::EnvVarCheck()
 {
-  const char *envVar = std::getenv ("NS_LOG");
-  if (envVar == nullptr || std::strlen (envVar) == 0)
+    const char* envVar = std::getenv("NS_LOG");
+    if (envVar == nullptr || std::strlen(envVar) == 0)
     {
-      return;
+        return;
     }
-  std::string env = envVar;
+    std::string env = envVar;
 
-  std::string::size_type cur = 0;
-  std::string::size_type next = 0;
-  while (next != std::string::npos)
+    std::string::size_type cur = 0;
+    std::string::size_type next = 0;
+    while (next != std::string::npos)
     {
-      next = env.find_first_of (':', cur);
-      std::string tmp = std::string (env, cur, next - cur);
-      std::string::size_type equal = tmp.find ('=');
-      std::string component;
-      if (equal == std::string::npos)
+        next = env.find_first_of(':', cur);
+        std::string tmp = std::string(env, cur, next - cur);
+        std::string::size_type equal = tmp.find('=');
+        std::string component;
+        if (equal == std::string::npos)
         {
-          component = tmp;
-          if (component == m_name || component == "*" || component == "***")
+            component = tmp;
+            if (component == m_name || component == "*" || component == "***")
             {
-              int level = LOG_LEVEL_ALL | LOG_PREFIX_ALL;
-              Enable ((enum LogLevel)level);
-              return;
+                int level = LOG_LEVEL_ALL | LOG_PREFIX_ALL;
+                Enable((enum LogLevel)level);
+                return;
             }
         }
-      else
+        else
         {
-          component = tmp.substr (0, equal);
-          if (component == m_name || component == "*")
+            component = tmp.substr(0, equal);
+            if (component == m_name || component == "*")
             {
-              int level = 0;
-              std::string::size_type cur_lev;
-              std::string::size_type next_lev = equal;
-              bool pre_pipe = true;  // before the first '|', enables positional 'all', '*'
-              do
+                int level = 0;
+                std::string::size_type cur_lev;
+                std::string::size_type next_lev = equal;
+                bool pre_pipe = true; // before the first '|', enables positional 'all', '*'
+                do
                 {
-                  cur_lev = next_lev + 1;
-                  next_lev = tmp.find ('|', cur_lev);
-                  std::string lev = tmp.substr (cur_lev, next_lev - cur_lev);
-                  if (lev == "error")
+                    cur_lev = next_lev + 1;
+                    next_lev = tmp.find('|', cur_lev);
+                    std::string lev = tmp.substr(cur_lev, next_lev - cur_lev);
+                    if (lev == "error")
                     {
-                      level |= LOG_ERROR;
+                        level |= LOG_ERROR;
                     }
-                  else if (lev == "warn")
+                    else if (lev == "warn")
                     {
-                      level |= LOG_WARN;
+                        level |= LOG_WARN;
                     }
-                  else if (lev == "debug")
+                    else if (lev == "debug")
                     {
-                      level |= LOG_DEBUG;
+                        level |= LOG_DEBUG;
                     }
-                  else if (lev == "info")
+                    else if (lev == "info")
                     {
-                      level |= LOG_INFO;
+                        level |= LOG_INFO;
                     }
-                  else if (lev == "function")
+                    else if (lev == "function")
                     {
-                      level |= LOG_FUNCTION;
+                        level |= LOG_FUNCTION;
                     }
-                  else if (lev == "logic")
+                    else if (lev == "logic")
                     {
-                      level |= LOG_LOGIC;
+                        level |= LOG_LOGIC;
                     }
-                  else if ( pre_pipe && ( (lev == "all") || (lev == "*") ) )
+                    else if (pre_pipe && ((lev == "all") || (lev == "*")))
                     {
-                      level |= LOG_LEVEL_ALL;
+                        level |= LOG_LEVEL_ALL;
                     }
-                  else if ( (lev == "prefix_func") || (lev == "func") )
+                    else if ((lev == "prefix_func") || (lev == "func"))
                     {
-                      level |= LOG_PREFIX_FUNC;
+                        level |= LOG_PREFIX_FUNC;
                     }
-                  else if ( (lev == "prefix_time") || (lev == "time") )
+                    else if ((lev == "prefix_time") || (lev == "time"))
                     {
-                      level |= LOG_PREFIX_TIME;
+                        level |= LOG_PREFIX_TIME;
                     }
-                  else if ( (lev == "prefix_node") || (lev == "node") )
+                    else if ((lev == "prefix_node") || (lev == "node"))
                     {
-                      level |= LOG_PREFIX_NODE;
+                        level |= LOG_PREFIX_NODE;
                     }
-                  else if ( (lev == "prefix_level") || (lev == "level") )
+                    else if ((lev == "prefix_level") || (lev == "level"))
                     {
-                      level |= LOG_PREFIX_LEVEL;
+                        level |= LOG_PREFIX_LEVEL;
                     }
-                  else if ( (lev == "prefix_all")
-                            || (!pre_pipe && ( (lev == "all") || (lev == "*") ) )
-                            )
+                    else if ((lev == "prefix_all") ||
+                             (!pre_pipe && ((lev == "all") || (lev == "*"))))
                     {
-                      level |= LOG_PREFIX_ALL;
+                        level |= LOG_PREFIX_ALL;
                     }
-                  else if (lev == "level_error")
+                    else if (lev == "level_error")
                     {
-                      level |= LOG_LEVEL_ERROR;
+                        level |= LOG_LEVEL_ERROR;
                     }
-                  else if (lev == "level_warn")
+                    else if (lev == "level_warn")
                     {
-                      level |= LOG_LEVEL_WARN;
+                        level |= LOG_LEVEL_WARN;
                     }
-                  else if (lev == "level_debug")
+                    else if (lev == "level_debug")
                     {
-                      level |= LOG_LEVEL_DEBUG;
+                        level |= LOG_LEVEL_DEBUG;
                     }
-                  else if (lev == "level_info")
+                    else if (lev == "level_info")
                     {
-                      level |= LOG_LEVEL_INFO;
+                        level |= LOG_LEVEL_INFO;
                     }
-                  else if (lev == "level_function")
+                    else if (lev == "level_function")
                     {
-                      level |= LOG_LEVEL_FUNCTION;
+                        level |= LOG_LEVEL_FUNCTION;
                     }
-                  else if (lev == "level_logic")
+                    else if (lev == "level_logic")
                     {
-                      level |= LOG_LEVEL_LOGIC;
+                        level |= LOG_LEVEL_LOGIC;
                     }
-                  else if (lev == "level_all")
+                    else if (lev == "level_all")
                     {
-                      level |= LOG_LEVEL_ALL;
+                        level |= LOG_LEVEL_ALL;
                     }
-                  else if (lev == "**")
+                    else if (lev == "**")
                     {
-                      level |= LOG_LEVEL_ALL | LOG_PREFIX_ALL;
+                        level |= LOG_LEVEL_ALL | LOG_PREFIX_ALL;
                     }
 
-                  pre_pipe = false;
-                }
-              while (next_lev != std::string::npos);
+                    pre_pipe = false;
+                } while (next_lev != std::string::npos);
 
-              Enable ((enum LogLevel)level);
+                Enable((enum LogLevel)level);
             }
         }
-      cur = next + 1;
+        cur = next + 1;
     }
 }
 
+bool
+LogComponent::IsEnabled(const enum LogLevel level) const
+{
+    //  LogComponentEnableEnvVar ();
+    return (level & m_levels) ? 1 : 0;
+}
 
 bool
-LogComponent::IsEnabled (const enum LogLevel level) const
+LogComponent::IsNoneEnabled() const
 {
-  //  LogComponentEnableEnvVar ();
-  return (level & m_levels) ? 1 : 0;
-}
-
-bool
-LogComponent::IsNoneEnabled () const
-{
-  return m_levels == 0;
+    return m_levels == 0;
 }
 
 void
-LogComponent::SetMask (const enum LogLevel level)
+LogComponent::SetMask(const enum LogLevel level)
 {
-  m_mask |= level;
+    m_mask |= level;
 }
 
 void
-LogComponent::Enable (const enum LogLevel level)
+LogComponent::Enable(const enum LogLevel level)
 {
-  m_levels |= (level & ~m_mask);
+    m_levels |= (level & ~m_mask);
 }
 
 void
-LogComponent::Disable (const enum LogLevel level)
+LogComponent::Disable(const enum LogLevel level)
 {
-  m_levels &= ~level;
+    m_levels &= ~level;
 }
 
-char const *
-LogComponent::Name () const
+const char*
+LogComponent::Name() const
 {
-  return m_name.c_str ();
+    return m_name.c_str();
 }
 
 std::string
-LogComponent::File () const
+LogComponent::File() const
 {
-  return m_file;
+    return m_file;
 }
 
 /* static */
 std::string
-LogComponent::GetLevelLabel (const enum LogLevel level)
+LogComponent::GetLevelLabel(const enum LogLevel level)
 {
-  if (level == LOG_ERROR)
+    if (level == LOG_ERROR)
     {
-      return "ERROR";
+        return "ERROR";
     }
-  else if (level == LOG_WARN)
+    else if (level == LOG_WARN)
     {
-      // whitespace left at the end for alignment
-      return "WARN ";
+        // whitespace left at the end for alignment
+        return "WARN ";
     }
-  else if (level == LOG_DEBUG)
+    else if (level == LOG_DEBUG)
     {
-      return "DEBUG";
+        return "DEBUG";
     }
-  else if (level == LOG_INFO)
+    else if (level == LOG_INFO)
     {
-      // whitespace left at the end for alignment
-      return "INFO ";
+        // whitespace left at the end for alignment
+        return "INFO ";
     }
-  else if (level == LOG_FUNCTION)
+    else if (level == LOG_FUNCTION)
     {
-      return "FUNCT";
+        return "FUNCT";
     }
-  else if (level == LOG_LOGIC)
+    else if (level == LOG_LOGIC)
     {
-      return "LOGIC";
+        return "LOGIC";
     }
-  else
+    else
     {
-      return "unknown";
+        return "unknown";
     }
 }
 
 void
-LogComponentEnable (char const *name, enum LogLevel level)
+LogComponentEnable(const char* name, enum LogLevel level)
 {
-  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
-  LogComponent::ComponentList::const_iterator i;
-  for (i = components->begin ();
-       i != components->end ();
-       i++)
+    LogComponent::ComponentList* components = LogComponent::GetComponentList();
+    LogComponent::ComponentList::const_iterator i;
+    for (i = components->begin(); i != components->end(); i++)
     {
-      if (i->first == name)
+        if (i->first == name)
         {
-          i->second->Enable (level);
-          return;
+            i->second->Enable(level);
+            return;
         }
     }
-  if (i == components->end ())
+    if (i == components->end())
     {
-      // nothing matched
-      LogComponentPrintList ();
-      NS_FATAL_ERROR ("Logging component \"" << name <<
-                      "\" not found. See above for a list of available log components");
+        // nothing matched
+        LogComponentPrintList();
+        NS_FATAL_ERROR("Logging component \""
+                       << name << "\" not found. See above for a list of available log components");
     }
 }
 
 void
-LogComponentEnableAll (enum LogLevel level)
+LogComponentEnableAll(enum LogLevel level)
 {
-  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
-  for (LogComponent::ComponentList::const_iterator i = components->begin ();
-       i != components->end ();
-       i++)
+    LogComponent::ComponentList* components = LogComponent::GetComponentList();
+    for (LogComponent::ComponentList::const_iterator i = components->begin();
+         i != components->end();
+         i++)
     {
-      i->second->Enable (level);
+        i->second->Enable(level);
     }
 }
 
 void
-LogComponentDisable (char const *name, enum LogLevel level)
+LogComponentDisable(const char* name, enum LogLevel level)
 {
-  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
-  for (LogComponent::ComponentList::const_iterator i = components->begin ();
-       i != components->end ();
-       i++)
+    LogComponent::ComponentList* components = LogComponent::GetComponentList();
+    for (LogComponent::ComponentList::const_iterator i = components->begin();
+         i != components->end();
+         i++)
     {
-      if (i->first == name)
+        if (i->first == name)
         {
-          i->second->Disable (level);
-          break;
+            i->second->Disable(level);
+            break;
         }
     }
 }
 
 void
-LogComponentDisableAll (enum LogLevel level)
+LogComponentDisableAll(enum LogLevel level)
 {
-  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
-  for (LogComponent::ComponentList::const_iterator i = components->begin ();
-       i != components->end ();
-       i++)
+    LogComponent::ComponentList* components = LogComponent::GetComponentList();
+    for (LogComponent::ComponentList::const_iterator i = components->begin();
+         i != components->end();
+         i++)
     {
-      i->second->Disable (level);
+        i->second->Disable(level);
     }
 }
 
 void
-LogComponentPrintList ()
+LogComponentPrintList()
 {
-  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
-  for (LogComponent::ComponentList::const_iterator i = components->begin ();
-       i != components->end ();
-       i++)
+    LogComponent::ComponentList* components = LogComponent::GetComponentList();
+    for (LogComponent::ComponentList::const_iterator i = components->begin();
+         i != components->end();
+         i++)
     {
-      std::cout << i->first << "=";
-      if (i->second->IsNoneEnabled ())
+        std::cout << i->first << "=";
+        if (i->second->IsNoneEnabled())
         {
-          std::cout << "0" << std::endl;
-          continue;
+            std::cout << "0" << std::endl;
+            continue;
         }
-      if (i->second->IsEnabled (LOG_LEVEL_ALL))
+        if (i->second->IsEnabled(LOG_LEVEL_ALL))
         {
-          std::cout << "all";
+            std::cout << "all";
         }
-      else
+        else
         {
-          if (i->second->IsEnabled (LOG_ERROR))
+            if (i->second->IsEnabled(LOG_ERROR))
             {
-              std::cout << "error";
+                std::cout << "error";
             }
-          if (i->second->IsEnabled (LOG_WARN))
+            if (i->second->IsEnabled(LOG_WARN))
             {
-              std::cout << "|warn";
+                std::cout << "|warn";
             }
-          if (i->second->IsEnabled (LOG_DEBUG))
+            if (i->second->IsEnabled(LOG_DEBUG))
             {
-              std::cout << "|debug";
+                std::cout << "|debug";
             }
-          if (i->second->IsEnabled (LOG_INFO))
+            if (i->second->IsEnabled(LOG_INFO))
             {
-              std::cout << "|info";
+                std::cout << "|info";
             }
-          if (i->second->IsEnabled (LOG_FUNCTION))
+            if (i->second->IsEnabled(LOG_FUNCTION))
             {
-              std::cout << "|function";
+                std::cout << "|function";
             }
-          if (i->second->IsEnabled (LOG_LOGIC))
+            if (i->second->IsEnabled(LOG_LOGIC))
             {
-              std::cout << "|logic";
-            }
-        }
-      if (i->second->IsEnabled (LOG_PREFIX_ALL))
-        {
-          std::cout << "|prefix_all";
-        }
-      else
-        {
-          if (i->second->IsEnabled (LOG_PREFIX_FUNC))
-            {
-              std::cout << "|func";
-            }
-          if (i->second->IsEnabled (LOG_PREFIX_TIME))
-            {
-              std::cout << "|time";
-            }
-          if (i->second->IsEnabled (LOG_PREFIX_NODE))
-            {
-              std::cout << "|node";
-            }
-          if (i->second->IsEnabled (LOG_PREFIX_LEVEL))
-            {
-              std::cout << "|level";
+                std::cout << "|logic";
             }
         }
-      std::cout << std::endl;
+        if (i->second->IsEnabled(LOG_PREFIX_ALL))
+        {
+            std::cout << "|prefix_all";
+        }
+        else
+        {
+            if (i->second->IsEnabled(LOG_PREFIX_FUNC))
+            {
+                std::cout << "|func";
+            }
+            if (i->second->IsEnabled(LOG_PREFIX_TIME))
+            {
+                std::cout << "|time";
+            }
+            if (i->second->IsEnabled(LOG_PREFIX_NODE))
+            {
+                std::cout << "|node";
+            }
+            if (i->second->IsEnabled(LOG_PREFIX_LEVEL))
+            {
+                std::cout << "|level";
+            }
+        }
+        std::cout << std::endl;
     }
 }
 
@@ -501,23 +497,22 @@ LogComponentPrintList ()
  * \param [in] componentName The putative log component name.
  * \returns \c true if \c componentName exists.
  */
-static bool ComponentExists (std::string componentName)
+static bool
+ComponentExists(std::string componentName)
 {
-  char const*name = componentName.c_str ();
-  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
-  LogComponent::ComponentList::const_iterator i;
-  for (i = components->begin ();
-       i != components->end ();
-       i++)
+    const char* name = componentName.c_str();
+    LogComponent::ComponentList* components = LogComponent::GetComponentList();
+    LogComponent::ComponentList::const_iterator i;
+    for (i = components->begin(); i != components->end(); i++)
     {
-      if (i->first == name)
+        if (i->first == name)
         {
-          return true;
+            return true;
         }
     }
-  NS_ASSERT (i == components->end ());
-  // nothing matched
-  return false;
+    NS_ASSERT(i == components->end());
+    // nothing matched
+    return false;
 }
 
 /**
@@ -525,170 +520,163 @@ static bool ComponentExists (std::string componentName)
  * Parse the \c NS_LOG environment variable.
  * This is private to the logging implementation.
  */
-static void CheckEnvironmentVariables ()
+static void
+CheckEnvironmentVariables()
 {
-  const char *envVar = std::getenv ("NS_LOG");
-  if (envVar == nullptr || std::strlen (envVar) == 0)
+    const char* envVar = std::getenv("NS_LOG");
+    if (envVar == nullptr || std::strlen(envVar) == 0)
     {
-      return;
+        return;
     }
 
-  std::string env = envVar;
-  std::string::size_type cur = 0;
-  std::string::size_type next = 0;
+    std::string env = envVar;
+    std::string::size_type cur = 0;
+    std::string::size_type next = 0;
 
-  while (next != std::string::npos)
+    while (next != std::string::npos)
     {
-      next = env.find_first_of (':', cur);
-      std::string tmp = std::string (env, cur, next - cur);
-      std::string::size_type equal = tmp.find ('=');
-      std::string component;
-      if (equal == std::string::npos)
+        next = env.find_first_of(':', cur);
+        std::string tmp = std::string(env, cur, next - cur);
+        std::string::size_type equal = tmp.find('=');
+        std::string component;
+        if (equal == std::string::npos)
         {
-          // ie no '=' characters found
-          component = tmp;
-          if (ComponentExists (component) || component == "*" || component == "***")
+            // ie no '=' characters found
+            component = tmp;
+            if (ComponentExists(component) || component == "*" || component == "***")
             {
-              return;
+                return;
             }
-          else
+            else
             {
-              LogComponentPrintList ();
-              NS_FATAL_ERROR ("Invalid or unregistered component name \"" << component <<
-                              "\" in env variable NS_LOG, see above for a list of valid components");
+                LogComponentPrintList();
+                NS_FATAL_ERROR(
+                    "Invalid or unregistered component name \""
+                    << component
+                    << "\" in env variable NS_LOG, see above for a list of valid components");
             }
         }
-      else
+        else
         {
-          component = tmp.substr (0, equal);
-          if (ComponentExists (component) || component == "*")
+            component = tmp.substr(0, equal);
+            if (ComponentExists(component) || component == "*")
             {
-              std::string::size_type cur_lev;
-              std::string::size_type next_lev = equal;
-              do
+                std::string::size_type cur_lev;
+                std::string::size_type next_lev = equal;
+                do
                 {
-                  cur_lev = next_lev + 1;
-                  next_lev = tmp.find ('|', cur_lev);
-                  std::string lev = tmp.substr (cur_lev, next_lev - cur_lev);
-                  if (lev == "error"
-                      || lev == "warn"
-                      || lev == "debug"
-                      || lev == "info"
-                      || lev == "function"
-                      || lev == "logic"
-                      || lev == "all"
-                      || lev == "prefix_func"
-                      || lev == "func"
-                      || lev == "prefix_time"
-                      || lev == "time"
-                      || lev == "prefix_node"
-                      || lev == "node"
-                      || lev == "prefix_level"
-                      || lev == "level"
-                      || lev == "prefix_all"
-                      || lev == "level_error"
-                      || lev == "level_warn"
-                      || lev == "level_debug"
-                      || lev == "level_info"
-                      || lev == "level_function"
-                      || lev == "level_logic"
-                      || lev == "level_all"
-                      || lev == "*"
-                      || lev == "**"
-                      )
+                    cur_lev = next_lev + 1;
+                    next_lev = tmp.find('|', cur_lev);
+                    std::string lev = tmp.substr(cur_lev, next_lev - cur_lev);
+                    if (lev == "error" || lev == "warn" || lev == "debug" || lev == "info" ||
+                        lev == "function" || lev == "logic" || lev == "all" ||
+                        lev == "prefix_func" || lev == "func" || lev == "prefix_time" ||
+                        lev == "time" || lev == "prefix_node" || lev == "node" ||
+                        lev == "prefix_level" || lev == "level" || lev == "prefix_all" ||
+                        lev == "level_error" || lev == "level_warn" || lev == "level_debug" ||
+                        lev == "level_info" || lev == "level_function" || lev == "level_logic" ||
+                        lev == "level_all" || lev == "*" || lev == "**")
                     {
-                      continue;
+                        continue;
                     }
-                  else
+                    else
                     {
-                      NS_FATAL_ERROR ("Invalid log level \"" << lev <<
-                                      "\" in env variable NS_LOG for component name " << component);
+                        NS_FATAL_ERROR("Invalid log level \""
+                                       << lev << "\" in env variable NS_LOG for component name "
+                                       << component);
                     }
-                }
-              while (next_lev != std::string::npos);
+                } while (next_lev != std::string::npos);
             }
-          else
+            else
             {
-              LogComponentPrintList ();
-              NS_FATAL_ERROR ("Invalid or unregistered component name \"" << component <<
-                              "\" in env variable NS_LOG, see above for a list of valid components");
+                LogComponentPrintList();
+                NS_FATAL_ERROR(
+                    "Invalid or unregistered component name \""
+                    << component
+                    << "\" in env variable NS_LOG, see above for a list of valid components");
             }
         }
-      cur = next + 1;   // parse next component
+        cur = next + 1; // parse next component
     }
 }
-void LogSetTimePrinter (TimePrinter printer)
+
+void
+LogSetTimePrinter(TimePrinter printer)
 {
-  g_logTimePrinter = printer;
-  /** \internal
-   *  This is the only place where we are more or less sure that all log variables
-   * are registered. See \bugid{1082} for details.
-   */
-  CheckEnvironmentVariables ();
-}
-TimePrinter LogGetTimePrinter ()
-{
-  return g_logTimePrinter;
+    g_logTimePrinter = printer;
+    /** \internal
+     *  This is the only place where we are more or less sure that all log variables
+     * are registered. See \bugid{1082} for details.
+     */
+    CheckEnvironmentVariables();
 }
 
-void LogSetNodePrinter (NodePrinter printer)
+TimePrinter
+LogGetTimePrinter()
 {
-  g_logNodePrinter = printer;
-}
-NodePrinter LogGetNodePrinter ()
-{
-  return g_logNodePrinter;
+    return g_logTimePrinter;
 }
 
+void
+LogSetNodePrinter(NodePrinter printer)
+{
+    g_logNodePrinter = printer;
+}
 
-ParameterLogger::ParameterLogger (std::ostream &os)
-  : m_os (os)
-{}
+NodePrinter
+LogGetNodePrinter()
+{
+    return g_logNodePrinter;
+}
 
+ParameterLogger::ParameterLogger(std::ostream& os)
+    : m_os(os)
+{
+}
 
 void
 ParameterLogger::CommaRest()
 {
-  if (m_first)
+    if (m_first)
     {
-      m_first = false;
+        m_first = false;
     }
-  else
+    else
     {
-      m_os << ", ";
+        m_os << ", ";
     }
 }
 
-template<>
-ParameterLogger &
-ParameterLogger::operator<< <std::string> (const std::string& param)
+template <>
+ParameterLogger&
+ParameterLogger::operator<< <std::string>(const std::string& param)
 {
-  CommaRest();
-  m_os << "\"" << param << "\"";
-  return *this;
+    CommaRest();
+    m_os << "\"" << param << "\"";
+    return *this;
 }
 
-ParameterLogger &
-ParameterLogger::operator<< (const char * param)
+ParameterLogger&
+ParameterLogger::operator<<(const char* param)
 {
-  (*this) << std::string (param);
-  return *this;
+    (*this) << std::string(param);
+    return *this;
 }
 
-template<>
-ParameterLogger &
-ParameterLogger::operator<< <int8_t> (const int8_t param)
+template <>
+ParameterLogger&
+ParameterLogger::operator<< <int8_t>(const int8_t param)
 {
-  (*this) << static_cast<int16_t> (param);
-  return *this;
+    (*this) << static_cast<int16_t>(param);
+    return *this;
 }
 
-template<>
-ParameterLogger &
-ParameterLogger::operator<< <uint8_t> (const uint8_t param)
+template <>
+ParameterLogger&
+ParameterLogger::operator<< <uint8_t>(const uint8_t param)
 {
-  (*this) << static_cast<uint16_t> (param);
-  return *this;
+    (*this) << static_cast<uint16_t>(param);
+    return *this;
 }
 
 } // namespace ns3

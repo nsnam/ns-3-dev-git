@@ -21,11 +21,11 @@
 #ifndef PARABOLIC_ANTENNA_MODEL_H
 #define PARABOLIC_ANTENNA_MODEL_H
 
-
-#include <ns3/object.h>
 #include <ns3/antenna-model.h>
+#include <ns3/object.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup antenna
@@ -45,50 +45,44 @@ namespace ns3 {
  */
 class ParabolicAntennaModel : public AntennaModel
 {
-public:
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Get the type ID.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+    // inherited from AntennaModel
+    double GetGainDb(Angles a) override;
 
-  // inherited from AntennaModel
-  double GetGainDb (Angles a) override;
+    // attribute getters/setters
+    /**
+     * Set the Beam width
+     * \param beamwidthDegrees Beam width in degrees
+     */
+    void SetBeamwidth(double beamwidthDegrees);
+    /**
+     * Get the Beam width
+     * \return beam width in degrees
+     */
+    double GetBeamwidth() const;
+    /**
+     * Set the antenna orientation
+     * \param orientationDegrees antenna orientation in degrees
+     */
+    void SetOrientation(double orientationDegrees);
+    /**
+     * Get the antenna orientation
+     * \return antenna orientation in degrees
+     */
+    double GetOrientation() const;
 
-
-  // attribute getters/setters
-  /**
-   * Set the Beam width
-   * \param beamwidthDegrees Beam width in degrees
-   */
-  void SetBeamwidth (double beamwidthDegrees);
-  /**
-   * Get the Beam width
-   * \return beam width in degrees
-   */
-  double GetBeamwidth () const;
-  /**
-   * Set the antenna orientation
-   * \param orientationDegrees antenna orientation in degrees
-   */
-  void SetOrientation (double orientationDegrees);
-  /**
-   * Get the antenna orientation
-   * \return antenna orientation in degrees
-   */
-  double GetOrientation () const;
-
-private:
-
-  double m_beamwidthRadians; //!< Beam width in radians
-  double m_orientationRadians; //!< Antenna orientation in radians
-  double m_maxAttenuation; //!< Max attenuation
+  private:
+    double m_beamwidthRadians;   //!< Beam width in radians
+    double m_orientationRadians; //!< Antenna orientation in radians
+    double m_maxAttenuation;     //!< Max attenuation
 };
 
-
-
 } // namespace ns3
-
 
 #endif // PARABOLIC_ANTENNA_MODEL_H

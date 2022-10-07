@@ -23,10 +23,11 @@
  */
 #ifndef WIFI_802_11P_HELPER_H
 #define WIFI_802_11P_HELPER_H
-#include "ns3/wifi-helper.h"
 #include "ns3/deprecated.h"
+#include "ns3/wifi-helper.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup wave
@@ -39,41 +40,43 @@ namespace ns3 {
  */
 class Wifi80211pHelper : public WifiHelper
 {
-public:
-  Wifi80211pHelper ();
-  ~Wifi80211pHelper () override;
+  public:
+    Wifi80211pHelper();
+    ~Wifi80211pHelper() override;
 
-  /**
-   * \returns a new Wifi80211pHelper in a default state
-   *
-   * The default state is defined as being an OcbWifiMac MAC
-   * layer with constant rate OfdmRate6MbpsBW10MHz
-   * and both objects using their default attribute values.
-   */
-  static Wifi80211pHelper Default ();
+    /**
+     * \returns a new Wifi80211pHelper in a default state
+     *
+     * The default state is defined as being an OcbWifiMac MAC
+     * layer with constant rate OfdmRate6MbpsBW10MHz
+     * and both objects using their default attribute values.
+     */
+    static Wifi80211pHelper Default();
 
-  /**
-   * \param standard the phy standard to configure during installation
-   *
-   * Users can only configure 802.11p with 10MHz or 5 MHz channel bandwidth.
-   * The default 802.11p standard uses 10MHz.
-   */
-  void SetStandard (enum WifiStandard standard) override;
+    /**
+     * \param standard the phy standard to configure during installation
+     *
+     * Users can only configure 802.11p with 10MHz or 5 MHz channel bandwidth.
+     * The default 802.11p standard uses 10MHz.
+     */
+    void SetStandard(enum WifiStandard standard) override;
 
-  /**
-   * \param phy the PHY helper to create PHY objects
-   * \param macHelper the MAC helper to create MAC objects
-   * \param c the set of nodes on which a wifi device must be created
-   * \returns a device container which contains all the devices created by this method.
-   */
-  NetDeviceContainer Install (const WifiPhyHelper &phy, const WifiMacHelper &macHelper,NodeContainer c) const override;
+    /**
+     * \param phy the PHY helper to create PHY objects
+     * \param macHelper the MAC helper to create MAC objects
+     * \param c the set of nodes on which a wifi device must be created
+     * \returns a device container which contains all the devices created by this method.
+     */
+    NetDeviceContainer Install(const WifiPhyHelper& phy,
+                               const WifiMacHelper& macHelper,
+                               NodeContainer c) const override;
 
-  /**
-   * Helper to enable all WifiNetDevice log components with one statement
-   */
-  static void EnableLogComponents ();
+    /**
+     * Helper to enable all WifiNetDevice log components with one statement
+     */
+    static void EnableLogComponents();
 };
 
-}
+} // namespace ns3
 
 #endif /* WIFI_802_11P_HELPER_H */

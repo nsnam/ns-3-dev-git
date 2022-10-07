@@ -18,165 +18,166 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
-#include "ns3/log.h"
 #include "wifi-default-protection-manager.h"
+
 #include "wifi-mac.h"
 #include "wifi-mpdu.h"
 #include "wifi-tx-parameters.h"
 
+#include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("WifiDefaultProtectionManager");
+NS_LOG_COMPONENT_DEFINE("WifiDefaultProtectionManager");
 
-NS_OBJECT_ENSURE_REGISTERED (WifiDefaultProtectionManager);
+NS_OBJECT_ENSURE_REGISTERED(WifiDefaultProtectionManager);
 
 TypeId
-WifiDefaultProtectionManager::GetTypeId ()
+WifiDefaultProtectionManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiDefaultProtectionManager")
-    .SetParent<WifiProtectionManager> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<WifiDefaultProtectionManager> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::WifiDefaultProtectionManager")
+                            .SetParent<WifiProtectionManager>()
+                            .SetGroupName("Wifi")
+                            .AddConstructor<WifiDefaultProtectionManager>();
+    return tid;
 }
 
-WifiDefaultProtectionManager::WifiDefaultProtectionManager ()
+WifiDefaultProtectionManager::WifiDefaultProtectionManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-WifiDefaultProtectionManager::~WifiDefaultProtectionManager ()
+WifiDefaultProtectionManager::~WifiDefaultProtectionManager()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 }
 
 std::unique_ptr<WifiProtection>
-WifiDefaultProtectionManager::TryAddMpdu (Ptr<const WifiMpdu> mpdu,
-                                          const WifiTxParameters& txParams)
+WifiDefaultProtectionManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParameters& txParams)
 {
-  NS_LOG_FUNCTION (this << *mpdu << &txParams);
+    NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
-  // TB PPDUs need no protection (the soliciting Trigger Frame can be protected
-  // by an MU-RTS). Until MU-RTS is implemented, we disable protection also for:
-  // - Trigger Frames
-  // - DL MU PPDUs containing more than one PSDU
-  if (txParams.m_txVector.IsUlMu ()
-      || mpdu->GetHeader ().IsTrigger ()
-      || (txParams.m_txVector.IsDlMu () && txParams.GetPsduInfoMap ().size () > 1))
+    // TB PPDUs need no protection (the soliciting Trigger Frame can be protected
+    // by an MU-RTS). Until MU-RTS is implemented, we disable protection also for:
+    // - Trigger Frames
+    // - DL MU PPDUs containing more than one PSDU
+    if (txParams.m_txVector.IsUlMu() || mpdu->GetHeader().IsTrigger() ||
+        (txParams.m_txVector.IsDlMu() && txParams.GetPsduInfoMap().size() > 1))
     {
-      if (txParams.m_protection)
+        if (txParams.m_protection)
         {
-          NS_ASSERT (txParams.m_protection->method == WifiProtection::NONE);
-          return nullptr;
+            NS_ASSERT(txParams.m_protection->method == WifiProtection::NONE);
+            return nullptr;
         }
-      return std::unique_ptr<WifiProtection> (new WifiNoProtection);
+        return std::unique_ptr<WifiProtection>(new WifiNoProtection);
     }
 
-  // If we are adding a second PSDU to a DL MU PPDU, switch to no protection
-  // (until MU-RTS is implemented)
-  if (txParams.m_txVector.IsDlMu () && txParams.GetPsduInfoMap ().size () == 1
-      && !txParams.GetPsduInfo (mpdu->GetHeader ().GetAddr1 ()))
+    // If we are adding a second PSDU to a DL MU PPDU, switch to no protection
+    // (until MU-RTS is implemented)
+    if (txParams.m_txVector.IsDlMu() && txParams.GetPsduInfoMap().size() == 1 &&
+        !txParams.GetPsduInfo(mpdu->GetHeader().GetAddr1()))
     {
-      return std::unique_ptr<WifiProtection> (new WifiNoProtection);
+        return std::unique_ptr<WifiProtection>(new WifiNoProtection);
     }
 
-  // if the current protection method (if any) is already RTS/CTS or CTS-to-Self,
-  // it will not change by adding an MPDU
-  if (txParams.m_protection
-      && (txParams.m_protection->method == WifiProtection::RTS_CTS
-          || txParams.m_protection->method == WifiProtection::CTS_TO_SELF))
+    // if the current protection method (if any) is already RTS/CTS or CTS-to-Self,
+    // it will not change by adding an MPDU
+    if (txParams.m_protection && (txParams.m_protection->method == WifiProtection::RTS_CTS ||
+                                  txParams.m_protection->method == WifiProtection::CTS_TO_SELF))
     {
-      return nullptr;
+        return nullptr;
     }
 
-  // if a protection method is set, it must be NONE
-  NS_ASSERT (!txParams.m_protection || txParams.m_protection->method == WifiProtection::NONE);
+    // if a protection method is set, it must be NONE
+    NS_ASSERT(!txParams.m_protection || txParams.m_protection->method == WifiProtection::NONE);
 
-  std::unique_ptr<WifiProtection> protection;
-  protection = GetPsduProtection (mpdu->GetHeader (), txParams.GetSizeIfAddMpdu (mpdu),
-                                  txParams.m_txVector);
+    std::unique_ptr<WifiProtection> protection;
+    protection =
+        GetPsduProtection(mpdu->GetHeader(), txParams.GetSizeIfAddMpdu(mpdu), txParams.m_txVector);
 
-  // return the newly computed method if none was set or it is not NONE
-  if (!txParams.m_protection || protection->method != WifiProtection::NONE)
+    // return the newly computed method if none was set or it is not NONE
+    if (!txParams.m_protection || protection->method != WifiProtection::NONE)
     {
-      return protection;
+        return protection;
     }
-  // the protection method has not changed
-  return nullptr;
+    // the protection method has not changed
+    return nullptr;
 }
 
 std::unique_ptr<WifiProtection>
-WifiDefaultProtectionManager::TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
-                                                const WifiTxParameters& txParams)
+WifiDefaultProtectionManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
+                                               const WifiTxParameters& txParams)
 {
-  NS_LOG_FUNCTION (this << *msdu << &txParams);
+    NS_LOG_FUNCTION(this << *msdu << &txParams);
 
-  // if the current protection method is already RTS/CTS or CTS-to-Self,
-  // it will not change by aggregating an MSDU
-  NS_ASSERT (txParams.m_protection);
-  if (txParams.m_protection->method == WifiProtection::RTS_CTS
-      || txParams.m_protection->method == WifiProtection::CTS_TO_SELF)
+    // if the current protection method is already RTS/CTS or CTS-to-Self,
+    // it will not change by aggregating an MSDU
+    NS_ASSERT(txParams.m_protection);
+    if (txParams.m_protection->method == WifiProtection::RTS_CTS ||
+        txParams.m_protection->method == WifiProtection::CTS_TO_SELF)
     {
-      return nullptr;
+        return nullptr;
     }
 
-  NS_ASSERT (txParams.m_protection->method == WifiProtection::NONE);
+    NS_ASSERT(txParams.m_protection->method == WifiProtection::NONE);
 
-  // No protection for TB PPDUs and DL MU PPDUs containing more than one PSDU
-  if (txParams.m_txVector.IsUlMu ()
-      || (txParams.m_txVector.IsDlMu () && txParams.GetPsduInfoMap ().size () > 1))
+    // No protection for TB PPDUs and DL MU PPDUs containing more than one PSDU
+    if (txParams.m_txVector.IsUlMu() ||
+        (txParams.m_txVector.IsDlMu() && txParams.GetPsduInfoMap().size() > 1))
     {
-      return nullptr;
+        return nullptr;
     }
 
-  std::unique_ptr<WifiProtection> protection;
-  protection = GetPsduProtection (msdu->GetHeader (), txParams.GetSizeIfAggregateMsdu (msdu).second,
-                                  txParams.m_txVector);
+    std::unique_ptr<WifiProtection> protection;
+    protection = GetPsduProtection(msdu->GetHeader(),
+                                   txParams.GetSizeIfAggregateMsdu(msdu).second,
+                                   txParams.m_txVector);
 
-  // the protection method may still be none
-  if (protection->method == WifiProtection::NONE)
+    // the protection method may still be none
+    if (protection->method == WifiProtection::NONE)
     {
-      return nullptr;
+        return nullptr;
     }
 
-  // the protection method has changed
-  return protection;
+    // the protection method has changed
+    return protection;
 }
 
 std::unique_ptr<WifiProtection>
-WifiDefaultProtectionManager::GetPsduProtection (const WifiMacHeader& hdr, uint32_t size,
-                                                 const WifiTxVector& txVector) const
+WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
+                                                uint32_t size,
+                                                const WifiTxVector& txVector) const
 {
-  NS_LOG_FUNCTION (this << hdr << size << txVector);
+    NS_LOG_FUNCTION(this << hdr << size << txVector);
 
-  // a non-initial fragment does not need to be protected, unless it is being retransmitted
-  if (hdr.GetFragmentNumber () > 0 && !hdr.IsRetry ())
+    // a non-initial fragment does not need to be protected, unless it is being retransmitted
+    if (hdr.GetFragmentNumber() > 0 && !hdr.IsRetry())
     {
-      return std::unique_ptr<WifiProtection> (new WifiNoProtection ());
+        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
     }
 
-  // check if RTS/CTS is needed
-  if (GetWifiRemoteStationManager ()->NeedRts (hdr, size))
+    // check if RTS/CTS is needed
+    if (GetWifiRemoteStationManager()->NeedRts(hdr, size))
     {
-      WifiRtsCtsProtection* protection = new WifiRtsCtsProtection;
-      protection->rtsTxVector = GetWifiRemoteStationManager ()->GetRtsTxVector (hdr.GetAddr1 ());
-      protection->ctsTxVector = GetWifiRemoteStationManager ()->GetCtsTxVector (hdr.GetAddr1 (),
-                                                                                       protection->rtsTxVector.GetMode ());
-      return std::unique_ptr<WifiProtection> (protection);
+        WifiRtsCtsProtection* protection = new WifiRtsCtsProtection;
+        protection->rtsTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(hdr.GetAddr1());
+        protection->ctsTxVector =
+            GetWifiRemoteStationManager()->GetCtsTxVector(hdr.GetAddr1(),
+                                                          protection->rtsTxVector.GetMode());
+        return std::unique_ptr<WifiProtection>(protection);
     }
 
-  // check if CTS-to-Self is needed
-  if (GetWifiRemoteStationManager ()->GetUseNonErpProtection ()
-      && GetWifiRemoteStationManager ()->NeedCtsToSelf (txVector))
+    // check if CTS-to-Self is needed
+    if (GetWifiRemoteStationManager()->GetUseNonErpProtection() &&
+        GetWifiRemoteStationManager()->NeedCtsToSelf(txVector))
     {
-      WifiCtsToSelfProtection* protection = new WifiCtsToSelfProtection;
-      protection->ctsTxVector = GetWifiRemoteStationManager ()->GetCtsToSelfTxVector ();
-      return std::unique_ptr<WifiProtection> (protection);
+        WifiCtsToSelfProtection* protection = new WifiCtsToSelfProtection;
+        protection->ctsTxVector = GetWifiRemoteStationManager()->GetCtsToSelfTxVector();
+        return std::unique_ptr<WifiProtection>(protection);
     }
 
-  return std::unique_ptr<WifiProtection> (new WifiNoProtection ());
+    return std::unique_ptr<WifiProtection>(new WifiNoProtection());
 }
 
-} //namespace ns3
+} // namespace ns3

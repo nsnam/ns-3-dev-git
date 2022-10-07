@@ -21,19 +21,19 @@
 #ifndef REM_SPECTRUM_PHY_H
 #define REM_SPECTRUM_PHY_H
 
-
-#include <ns3/spectrum-value.h>
 #include <ns3/mobility-model.h>
-#include <ns3/packet.h>
-#include <ns3/nstime.h>
 #include <ns3/net-device.h>
-#include <ns3/spectrum-phy.h>
+#include <ns3/nstime.h>
+#include <ns3/packet.h>
 #include <ns3/spectrum-channel.h>
-#include <string>
+#include <ns3/spectrum-phy.h>
+#include <ns3/spectrum-value.h>
+
 #include <fstream>
+#include <string>
 
-namespace ns3 {
-
+namespace ns3
+{
 
 /**
  *
@@ -50,98 +50,87 @@ namespace ns3 {
  */
 class RemSpectrumPhy : public SpectrumPhy
 {
+  public:
+    RemSpectrumPhy();
+    ~RemSpectrumPhy() override;
 
-public:
-  RemSpectrumPhy ();
-  ~RemSpectrumPhy () override;
+    // inherited from Object
+    void DoDispose() override;
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  // inherited from Object
-  void DoDispose () override;
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    // inherited from SpectrumPhy
+    void SetChannel(Ptr<SpectrumChannel> c) override;
+    void SetMobility(Ptr<MobilityModel> m) override;
+    void SetDevice(Ptr<NetDevice> d) override;
+    Ptr<MobilityModel> GetMobility() const override;
+    Ptr<NetDevice> GetDevice() const override;
+    Ptr<const SpectrumModel> GetRxSpectrumModel() const override;
+    Ptr<Object> GetAntenna() const override;
+    void StartRx(Ptr<SpectrumSignalParameters> params) override;
 
-  // inherited from SpectrumPhy
-  void SetChannel (Ptr<SpectrumChannel> c) override;
-  void SetMobility (Ptr<MobilityModel> m) override;
-  void SetDevice (Ptr<NetDevice> d) override;
-  Ptr<MobilityModel> GetMobility () const override;
-  Ptr<NetDevice> GetDevice () const override;
-  Ptr<const SpectrumModel> GetRxSpectrumModel () const override;
-  Ptr<Object> GetAntenna () const override;
-  void StartRx (Ptr<SpectrumSignalParameters> params) override;
+    /**
+     * set the RX spectrum model to be used
+     *
+     * \param m
+     */
+    void SetRxSpectrumModel(Ptr<const SpectrumModel> m);
 
-  /**
-   * set the RX spectrum model to be used
-   *
-   * \param m
-   */
-  void SetRxSpectrumModel (Ptr<const SpectrumModel> m);
+    /**
+     *
+     * \param noisePower the noise power
+     * \return the Signal to Noise Ratio calculated
+     */
+    double GetSinr(double noisePower);
 
-  /**
-   *
-   * \param noisePower the noise power
-   * \return the Signal to Noise Ratio calculated
-   */
-  double GetSinr (double noisePower);
+    /**
+     * make StartRx a no-op from now on, and mark instance as inactive
+     *
+     */
+    void Deactivate();
 
-  /**
-   * make StartRx a no-op from now on, and mark instance as inactive
-   *
-   */
-  void Deactivate ();
+    /**
+     *
+     * \return true if active
+     */
+    bool IsActive();
 
-  /**
-   *
-   * \return true if active
-   */
-  bool IsActive ();
+    /**
+     * Reset the SINR calculator
+     *
+     */
+    void Reset();
 
-  /**
-   * Reset the SINR calculator
-   *
-   */
-  void Reset ();
+    /**
+     * set usage of DataChannel
+     *
+     * \param value if true, data channel signal will be processed, control signal otherwise
+     */
+    void SetUseDataChannel(bool value);
 
-  /**
-   * set usage of DataChannel
-   *
-   * \param value if true, data channel signal will be processed, control signal otherwise
-   */
-  void SetUseDataChannel (bool value);
+    /**
+     * set RB Id
+     *
+     * \param rbId Resource Block Id which will be processed
+     */
+    void SetRbId(int32_t rbId);
 
-  /**
-   * set RB Id
-   *
-   * \param rbId Resource Block Id which will be processed
-   */
-  void SetRbId (int32_t rbId);
+  private:
+    Ptr<MobilityModel> m_mobility;              ///< the mobility model
+    Ptr<const SpectrumModel> m_rxSpectrumModel; ///< receive spectrum model
 
-private:
-  Ptr<MobilityModel> m_mobility; ///< the mobility model
-  Ptr<const SpectrumModel> m_rxSpectrumModel; ///< receive spectrum model
+    double m_referenceSignalPower; ///< reference signal power
+    double m_sumPower;             ///< sum power
 
-  double m_referenceSignalPower; ///< reference signal power
-  double m_sumPower; ///< sum power
+    bool m_active; ///< is active?
 
-  bool m_active; ///< is active?
-
-  bool m_useDataChannel; ///< use data channel
-  int32_t m_rbId; ///< RBID
-
+    bool m_useDataChannel; ///< use data channel
+    int32_t m_rbId;        ///< RBID
 };
 
-
-
-
-
-
-}
-
-
-
-
+} // namespace ns3
 
 #endif /* REM_SPECTRUM_PHY_H */

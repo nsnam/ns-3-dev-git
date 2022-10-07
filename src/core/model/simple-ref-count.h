@@ -22,10 +22,11 @@
 #ifndef SIMPLE_REF_COUNT_H
 #define SIMPLE_REF_COUNT_H
 
-#include "default-deleter.h"
 #include "assert.h"
-#include <stdint.h>
+#include "default-deleter.h"
+
 #include <limits>
+#include <stdint.h>
 
 /**
  * \file
@@ -33,7 +34,8 @@
  * ns3::SimpleRefCount declaration and template implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup ptr
@@ -42,7 +44,6 @@ namespace ns3 {
 class empty
 {
 };
-
 
 /**
  * \ingroup ptr
@@ -76,77 +77,82 @@ class empty
  *
  * Interesting users of this class include ns3::Object as well as ns3::Packet.
  */
-template <typename T, typename PARENT = empty, typename DELETER = DefaultDeleter<T> >
+template <typename T, typename PARENT = empty, typename DELETER = DefaultDeleter<T>>
 class SimpleRefCount : public PARENT
 {
-public:
-  /** Default constructor.  */
-  SimpleRefCount ()
-    : m_count (1)
-  {}
-  /**
-   * Copy constructor
-   * \param [in] o The object to copy into this one.
-   */
-  SimpleRefCount (const SimpleRefCount & o [[maybe_unused]])
-    : m_count (1)
-  {
-  }
-  /**
-   * Assignment operator
-   * \param [in] o The object to copy
-   * \returns The copy of \pname{o}
-   */
-  SimpleRefCount &operator = ([[maybe_unused]] const SimpleRefCount &o)
-  {
-    return *this;
-  }
-  /**
-   * Increment the reference count. This method should not be called
-   * by user code. SimpleRefCount instances are expected to be used in
-   * conjunction with the Ptr template which would make calling Ref
-   * unnecessary and dangerous.
-   */
-  inline void Ref () const
-  {
-    NS_ASSERT (m_count < std::numeric_limits<uint32_t>::max ());
-    m_count++;
-  }
-  /**
-   * Decrement the reference count. This method should not be called
-   * by user code. SimpleRefCount instances are expected to be used in
-   * conjunction with the Ptr template which would make calling Ref
-   * unnecessary and dangerous.
-   */
-  inline void Unref () const
-  {
-    m_count--;
-    if (m_count == 0)
-      {
-        DELETER::Delete (static_cast<T*> (const_cast<SimpleRefCount *> (this)));
-      }
-  }
+  public:
+    /** Default constructor.  */
+    SimpleRefCount()
+        : m_count(1)
+    {
+    }
 
-  /**
-   * Get the reference count of the object.
-   * Normally not needed; for language bindings.
-   *
-   * \return The reference count.
-   */
-  inline uint32_t GetReferenceCount () const
-  {
-    return m_count;
-  }
+    /**
+     * Copy constructor
+     * \param [in] o The object to copy into this one.
+     */
+    SimpleRefCount(const SimpleRefCount& o [[maybe_unused]])
+        : m_count(1)
+    {
+    }
 
-private:
-  /**
-   * The reference count.
-   *
-   * \internal
-   * Note we make this mutable so that the const methods can still
-   * change it.
-   */
-  mutable uint32_t m_count;
+    /**
+     * Assignment operator
+     * \param [in] o The object to copy
+     * \returns The copy of \pname{o}
+     */
+    SimpleRefCount& operator=([[maybe_unused]] const SimpleRefCount& o)
+    {
+        return *this;
+    }
+
+    /**
+     * Increment the reference count. This method should not be called
+     * by user code. SimpleRefCount instances are expected to be used in
+     * conjunction with the Ptr template which would make calling Ref
+     * unnecessary and dangerous.
+     */
+    inline void Ref() const
+    {
+        NS_ASSERT(m_count < std::numeric_limits<uint32_t>::max());
+        m_count++;
+    }
+
+    /**
+     * Decrement the reference count. This method should not be called
+     * by user code. SimpleRefCount instances are expected to be used in
+     * conjunction with the Ptr template which would make calling Ref
+     * unnecessary and dangerous.
+     */
+    inline void Unref() const
+    {
+        m_count--;
+        if (m_count == 0)
+        {
+            DELETER::Delete(static_cast<T*>(const_cast<SimpleRefCount*>(this)));
+        }
+    }
+
+    /**
+     * Get the reference count of the object.
+     * Normally not needed; for language bindings.
+     *
+     * \return The reference count.
+     */
+    inline uint32_t GetReferenceCount() const
+    {
+        return m_count;
+    }
+
+  private:
+    /**
+     * The reference count.
+     *
+     * \internal
+     * Note we make this mutable so that the const methods can still
+     * change it.
+     */
+    mutable uint32_t m_count;
 };
 
 } // namespace ns3

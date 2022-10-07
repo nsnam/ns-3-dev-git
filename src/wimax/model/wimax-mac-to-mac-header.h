@@ -21,10 +21,12 @@
 #ifndef WIMAX_MAC_TO_MAC_HEADER_H
 #define WIMAX_MAC_TO_MAC_HEADER_H
 
-#include <stdint.h>
 #include "ns3/header.h"
 
-namespace ns3 {
+#include <stdint.h>
+
+namespace ns3
+{
 
 /**
  * \ingroup wimax
@@ -34,34 +36,34 @@ namespace ns3 {
  */
 class WimaxMacToMacHeader : public Header
 {
-public:
-  WimaxMacToMacHeader ();
-  ~WimaxMacToMacHeader () override;
-  /**
-   * Constructor
-   *
-   * \param len length
-   */
-  WimaxMacToMacHeader (uint32_t len);
+  public:
+    WimaxMacToMacHeader();
+    ~WimaxMacToMacHeader() override;
+    /**
+     * Constructor
+     *
+     * \param len length
+     */
+    WimaxMacToMacHeader(uint32_t len);
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const override;
-  uint32_t GetSerializedSize () const override;
-  void Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
-  /**
-   * Get size of length field
-   * \returns the size of length field
-   */
-  uint8_t GetSizeOfLen () const;
-  void Print (std::ostream &os) const override;
-private:
-  uint32_t m_len; ///< length
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
+    /**
+     * Get size of length field
+     * \returns the size of length field
+     */
+    uint8_t GetSizeOfLen() const;
+    void Print(std::ostream& os) const override;
+
+  private:
+    uint32_t m_len; ///< length
 };
-};
+}; // namespace ns3
 #endif
-

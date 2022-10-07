@@ -28,7 +28,8 @@
  * function declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /* Hacker macro to place breakpoints for selected machines.
  * Actual use is strongly discouraged of course ;)
@@ -57,17 +58,27 @@ namespace ns3 {
  * ns3::BreakpointFallback() for architectures where breakpoint assembly
  * instructions are not supported.
  */
-#if (defined (__i386__) || defined (__amd64__) || defined (__x86_64__)) && defined (__GNUC__) && __GNUC__ >= 2
-#  define NS_BREAKPOINT() \
-  do { __asm__ __volatile__ ("int $03"); } while(false)
-#elif defined (_MSC_VER) && defined (_M_IX86)
-#  define NS_BREAKPOINT() \
-  do { __asm int 3h } while(false)
-#elif defined (__alpha__) && !defined(__osf__) && defined (__GNUC__) && __GNUC__ >= 2
-#  define NS_BREAKPOINT() \
-  do { __asm__ __volatile__ ("bpt"); } while(false)
-#else   /* !__i386__ && !__alpha__ */
-#  define NS_BREAKPOINT()    ns3::BreakpointFallback ()
+#if (defined(__i386__) || defined(__amd64__) || defined(__x86_64__)) && defined(__GNUC__) &&       \
+    __GNUC__ >= 2
+#define NS_BREAKPOINT()                                                                            \
+    do                                                                                             \
+    {                                                                                              \
+        __asm__ __volatile__("int $03");                                                           \
+    } while (false)
+#elif defined(_MSC_VER) && defined(_M_IX86)
+#define NS_BREAKPOINT()                                                                            \
+    do                                                                                             \
+    {                                                                                              \
+        __asm int 3h                                                                               \
+    } while (false)
+#elif defined(__alpha__) && !defined(__osf__) && defined(__GNUC__) && __GNUC__ >= 2
+#define NS_BREAKPOINT()                                                                            \
+    do                                                                                             \
+    {                                                                                              \
+        __asm__ __volatile__("bpt");                                                               \
+    } while (false)
+#else /* !__i386__ && !__alpha__ */
+#define NS_BREAKPOINT() ns3::BreakpointFallback()
 #endif
 
 /**
@@ -82,10 +93,8 @@ namespace ns3 {
  *
  * Normally you should not call this function directly.
  */
-void BreakpointFallback ();
-
+void BreakpointFallback();
 
 } // namespace ns3
-
 
 #endif /* BREAKPOINT_H */

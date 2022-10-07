@@ -28,7 +28,6 @@
  * This file provides some doxygen documentation for the core module.
  */
 
-
 /**
  * \defgroup core Core
  * \brief The "core" module contains:

@@ -21,10 +21,12 @@
 #ifndef FCFS_WIFI_QUEUE_SCHEDULER_H
 #define FCFS_WIFI_QUEUE_SCHEDULER_H
 
-#include "ns3/nstime.h"
 #include "wifi-mac-queue-scheduler-impl.h"
 
-namespace ns3 {
+#include "ns3/nstime.h"
+
+namespace ns3
+{
 
 class WifiMpdu;
 
@@ -37,32 +39,32 @@ class WifiMpdu;
  */
 class FcfsWifiQueueScheduler : public WifiMacQueueSchedulerImpl<Time>
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  FcfsWifiQueueScheduler ();
+    FcfsWifiQueueScheduler();
 
-  /// drop policy
-  enum DropPolicy
-  {
-    DROP_NEWEST,
-    DROP_OLDEST
-  };
+    /// drop policy
+    enum DropPolicy
+    {
+        DROP_NEWEST,
+        DROP_OLDEST
+    };
 
-private:
-  Ptr<WifiMpdu> HasToDropBeforeEnqueuePriv (AcIndex ac, Ptr<WifiMpdu> mpdu) override;
-  void DoNotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu) override;
-  void DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) override;
-  void DoNotifyRemove (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) override;
+  private:
+    Ptr<WifiMpdu> HasToDropBeforeEnqueuePriv(AcIndex ac, Ptr<WifiMpdu> mpdu) override;
+    void DoNotifyEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) override;
+    void DoNotifyDequeue(AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) override;
+    void DoNotifyRemove(AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) override;
 
-  DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
-  NS_LOG_TEMPLATE_DECLARE;                  //!< redefinition of the log component
+    DropPolicy m_dropPolicy; //!< Drop behavior of queue
+    NS_LOG_TEMPLATE_DECLARE; //!< redefinition of the log component
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* FCFS_WIFI_QUEUE_SCHEDULER_H */

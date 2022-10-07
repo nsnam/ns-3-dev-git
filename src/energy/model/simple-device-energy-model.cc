@@ -18,116 +18,118 @@
  * Author: Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
+#include "simple-device-energy-model.h"
+
+#include "ns3/energy-source.h"
+#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/energy-source.h"
-#include "simple-device-energy-model.h"
-#include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("SimpleDeviceEnergyModel");
+NS_LOG_COMPONENT_DEFINE("SimpleDeviceEnergyModel");
 
-NS_OBJECT_ENSURE_REGISTERED (SimpleDeviceEnergyModel);
+NS_OBJECT_ENSURE_REGISTERED(SimpleDeviceEnergyModel);
 
 TypeId
-SimpleDeviceEnergyModel::GetTypeId ()
+SimpleDeviceEnergyModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::SimpleDeviceEnergyModel")
-    .SetParent<DeviceEnergyModel> ()
-    .SetGroupName ("Energy")
-    .AddConstructor<SimpleDeviceEnergyModel> ()
-    .AddTraceSource ("TotalEnergyConsumption",
-                     "Total energy consumption of the radio device.",
-                     MakeTraceSourceAccessor (&SimpleDeviceEnergyModel::m_totalEnergyConsumption),
-                     "ns3::TracedValueCallback::Double")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::SimpleDeviceEnergyModel")
+                            .SetParent<DeviceEnergyModel>()
+                            .SetGroupName("Energy")
+                            .AddConstructor<SimpleDeviceEnergyModel>()
+                            .AddTraceSource("TotalEnergyConsumption",
+                                            "Total energy consumption of the radio device.",
+                                            MakeTraceSourceAccessor(
+                                                &SimpleDeviceEnergyModel::m_totalEnergyConsumption),
+                                            "ns3::TracedValueCallback::Double");
+    return tid;
 }
 
-SimpleDeviceEnergyModel::SimpleDeviceEnergyModel ()
+SimpleDeviceEnergyModel::SimpleDeviceEnergyModel()
 {
-  NS_LOG_FUNCTION (this);
-  m_lastUpdateTime = Seconds (0.0);
-  m_actualCurrentA = 0.0;
-  m_source = nullptr;
+    NS_LOG_FUNCTION(this);
+    m_lastUpdateTime = Seconds(0.0);
+    m_actualCurrentA = 0.0;
+    m_source = nullptr;
 }
 
-SimpleDeviceEnergyModel::~SimpleDeviceEnergyModel ()
+SimpleDeviceEnergyModel::~SimpleDeviceEnergyModel()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-void
-SimpleDeviceEnergyModel::SetEnergySource (Ptr<EnergySource> source)
-{
-  NS_LOG_FUNCTION (this << source);
-  NS_ASSERT (source);
-  m_source = source;
+    NS_LOG_FUNCTION(this);
 }
 
 void
-SimpleDeviceEnergyModel::SetNode (Ptr<Node> node)
+SimpleDeviceEnergyModel::SetEnergySource(Ptr<EnergySource> source)
 {
-  NS_LOG_FUNCTION (this << node);
-  NS_ASSERT (node);
-  m_node = node;
+    NS_LOG_FUNCTION(this << source);
+    NS_ASSERT(source);
+    m_source = source;
+}
+
+void
+SimpleDeviceEnergyModel::SetNode(Ptr<Node> node)
+{
+    NS_LOG_FUNCTION(this << node);
+    NS_ASSERT(node);
+    m_node = node;
 }
 
 Ptr<Node>
-SimpleDeviceEnergyModel::GetNode () const
+SimpleDeviceEnergyModel::GetNode() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_node;
+    NS_LOG_FUNCTION(this);
+    return m_node;
 }
 
 double
-SimpleDeviceEnergyModel::GetTotalEnergyConsumption () const
+SimpleDeviceEnergyModel::GetTotalEnergyConsumption() const
 {
-  NS_LOG_FUNCTION (this);
-  Time duration = Simulator::Now () - m_lastUpdateTime;
+    NS_LOG_FUNCTION(this);
+    Time duration = Simulator::Now() - m_lastUpdateTime;
 
-  double energyToDecrease = 0.0;
-  double supplyVoltage = m_source->GetSupplyVoltage ();
-  energyToDecrease = duration.GetSeconds () * m_actualCurrentA * supplyVoltage;
+    double energyToDecrease = 0.0;
+    double supplyVoltage = m_source->GetSupplyVoltage();
+    energyToDecrease = duration.GetSeconds() * m_actualCurrentA * supplyVoltage;
 
-  m_source->UpdateEnergySource ();
+    m_source->UpdateEnergySource();
 
-  return m_totalEnergyConsumption + energyToDecrease;
+    return m_totalEnergyConsumption + energyToDecrease;
 }
 
 void
-SimpleDeviceEnergyModel::SetCurrentA (double current)
+SimpleDeviceEnergyModel::SetCurrentA(double current)
 {
-  NS_LOG_FUNCTION (this << current);
-  Time duration = Simulator::Now () - m_lastUpdateTime;
+    NS_LOG_FUNCTION(this << current);
+    Time duration = Simulator::Now() - m_lastUpdateTime;
 
-  double energyToDecrease = 0.0;
-  double supplyVoltage = m_source->GetSupplyVoltage ();
-  energyToDecrease = duration.GetSeconds () * m_actualCurrentA * supplyVoltage;
+    double energyToDecrease = 0.0;
+    double supplyVoltage = m_source->GetSupplyVoltage();
+    energyToDecrease = duration.GetSeconds() * m_actualCurrentA * supplyVoltage;
 
-  // update total energy consumption
-  m_totalEnergyConsumption += energyToDecrease;
-  // update last update time stamp
-  m_lastUpdateTime = Simulator::Now ();
-  // update the current drain
-  m_actualCurrentA = current;
-  // notify energy source
-  m_source->UpdateEnergySource ();
+    // update total energy consumption
+    m_totalEnergyConsumption += energyToDecrease;
+    // update last update time stamp
+    m_lastUpdateTime = Simulator::Now();
+    // update the current drain
+    m_actualCurrentA = current;
+    // notify energy source
+    m_source->UpdateEnergySource();
 }
 
 void
-SimpleDeviceEnergyModel::DoDispose ()
+SimpleDeviceEnergyModel::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_source = nullptr;
+    NS_LOG_FUNCTION(this);
+    m_source = nullptr;
 }
 
 double
-SimpleDeviceEnergyModel::DoGetCurrentA () const
+SimpleDeviceEnergyModel::DoGetCurrentA() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_actualCurrentA;
+    NS_LOG_FUNCTION(this);
+    return m_actualCurrentA;
 }
 
 } // namespace ns3

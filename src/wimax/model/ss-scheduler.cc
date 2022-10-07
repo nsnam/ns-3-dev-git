@@ -18,235 +18,235 @@
  * Author: Jahanzeb Farooq <jahanzeb.farooq@sophia.inria.fr>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/node.h"
-#include "ns3/log.h"
 #include "ss-scheduler.h"
-#include "ss-net-device.h"
-#include "wimax-phy.h"
-#include "wimax-mac-queue.h"
-#include "wimax-connection.h"
+
 #include "connection-manager.h"
-#include "service-flow.h"
-#include "service-flow-record.h"
 #include "service-flow-manager.h"
+#include "service-flow-record.h"
+#include "service-flow.h"
+#include "ss-net-device.h"
+#include "wimax-connection.h"
+#include "wimax-mac-queue.h"
+#include "wimax-phy.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/node.h"
+#include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("SSScheduler");
-
-NS_OBJECT_ENSURE_REGISTERED (SSScheduler);
-
-TypeId SSScheduler::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::SSScheduler")
-    .SetParent<Object> ()
-    .SetGroupName("Wimax");
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("SSScheduler");
+
+NS_OBJECT_ENSURE_REGISTERED(SSScheduler);
+
+TypeId
+SSScheduler::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::SSScheduler").SetParent<Object>().SetGroupName("Wimax");
+    return tid;
 }
 
-SSScheduler::SSScheduler (Ptr<SubscriberStationNetDevice> ss)
-  : m_ss (ss),
-    m_pollMe (false)
+SSScheduler::SSScheduler(Ptr<SubscriberStationNetDevice> ss)
+    : m_ss(ss),
+      m_pollMe(false)
 {
 }
 
-SSScheduler::~SSScheduler ()
+SSScheduler::~SSScheduler()
 {
 }
 
 void
-SSScheduler::DoDispose ()
+SSScheduler::DoDispose()
 {
-  m_ss = nullptr;
+    m_ss = nullptr;
 }
 
 void
-SSScheduler::SetPollMe (bool pollMe)
+SSScheduler::SetPollMe(bool pollMe)
 {
-  m_pollMe = pollMe;
+    m_pollMe = pollMe;
 }
 
 bool
-SSScheduler::GetPollMe () const
+SSScheduler::GetPollMe() const
 {
-  return m_pollMe;
+    return m_pollMe;
 }
 
 Ptr<PacketBurst>
-SSScheduler::Schedule (uint16_t availableSymbols,
-                       WimaxPhy::ModulationType modulationType,
-                       MacHeaderType::HeaderType packetType,
-                       Ptr<WimaxConnection> &connection)
+SSScheduler::Schedule(uint16_t availableSymbols,
+                      WimaxPhy::ModulationType modulationType,
+                      MacHeaderType::HeaderType packetType,
+                      Ptr<WimaxConnection>& connection)
 {
-  Time timeStamp;
-  Ptr<PacketBurst> burst = Create<PacketBurst> ();
-  uint16_t nrSymbolsRequired = 0;
+    Time timeStamp;
+    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    uint16_t nrSymbolsRequired = 0;
 
-  if (!connection)
+    if (!connection)
     {
-      connection = SelectConnection ();
+        connection = SelectConnection();
     }
-  else
+    else
     {
-      NS_ASSERT_MSG (connection->HasPackets (),
-                     "SS: Error while scheduling packets: The selected connection has no packets");
+        NS_ASSERT_MSG(connection->HasPackets(),
+                      "SS: Error while scheduling packets: The selected connection has no packets");
     }
 
-  Ptr<Packet> packet;
+    Ptr<Packet> packet;
 
-  while (connection && connection->HasPackets (packetType))
+    while (connection && connection->HasPackets(packetType))
     {
-      NS_LOG_INFO ("FRAG_DEBUG: SS Scheduler" << std::endl);
+        NS_LOG_INFO("FRAG_DEBUG: SS Scheduler" << std::endl);
 
-      uint32_t availableByte = m_ss->GetPhy ()->
-        GetNrBytes (availableSymbols, modulationType);
+        uint32_t availableByte = m_ss->GetPhy()->GetNrBytes(availableSymbols, modulationType);
 
-      uint32_t requiredByte = connection->GetQueue ()->GetFirstPacketRequiredByte (packetType);
+        uint32_t requiredByte = connection->GetQueue()->GetFirstPacketRequiredByte(packetType);
 
-      NS_LOG_INFO ("\t availableByte = " << availableByte <<
-                   ", requiredByte = " << requiredByte);
+        NS_LOG_INFO("\t availableByte = " << availableByte << ", requiredByte = " << requiredByte);
 
-      if (availableByte >= requiredByte)
+        if (availableByte >= requiredByte)
         {
-          // The SS could sent a packet without a other fragmentation
-          NS_LOG_INFO ("\t availableByte >= requiredByte"
-                       "\n\t Send packet without other fragmentation" << std::endl);
+            // The SS could sent a packet without a other fragmentation
+            NS_LOG_INFO("\t availableByte >= requiredByte"
+                        "\n\t Send packet without other fragmentation"
+                        << std::endl);
 
-          packet = connection->Dequeue (packetType);
-          burst->AddPacket (packet);
+            packet = connection->Dequeue(packetType);
+            burst->AddPacket(packet);
 
-          nrSymbolsRequired = m_ss->GetPhy ()->
-            GetNrSymbols (packet->GetSize (), modulationType);
-          availableSymbols -= nrSymbolsRequired;
+            nrSymbolsRequired = m_ss->GetPhy()->GetNrSymbols(packet->GetSize(), modulationType);
+            availableSymbols -= nrSymbolsRequired;
         }
-      else
+        else
         {
-          if (connection->GetType () == Cid::TRANSPORT)
+            if (connection->GetType() == Cid::TRANSPORT)
             {
-              NS_LOG_INFO ("\t availableByte < requiredByte"
-                           "\n\t Check if the fragmentation is possible");
+                NS_LOG_INFO("\t availableByte < requiredByte"
+                            "\n\t Check if the fragmentation is possible");
 
-              uint32_t headerSize = connection->GetQueue ()->GetFirstPacketHdrSize (packetType);
-              if (!connection->GetQueue ()->CheckForFragmentation (packetType))
+                uint32_t headerSize = connection->GetQueue()->GetFirstPacketHdrSize(packetType);
+                if (!connection->GetQueue()->CheckForFragmentation(packetType))
                 {
-                  NS_LOG_INFO ("\t Add fragmentSubhdrSize = 2");
-                  headerSize += 2;
+                    NS_LOG_INFO("\t Add fragmentSubhdrSize = 2");
+                    headerSize += 2;
                 }
-              NS_LOG_INFO ("\t availableByte = " << availableByte <<
-                           " headerSize = " << headerSize);
+                NS_LOG_INFO("\t availableByte = " << availableByte
+                                                  << " headerSize = " << headerSize);
 
-              if (availableByte > headerSize)
+                if (availableByte > headerSize)
                 {
-                  NS_LOG_INFO ("\t Fragmentation IS possible");
-                  packet = connection->Dequeue (packetType, availableByte);
-                  burst->AddPacket (packet);
+                    NS_LOG_INFO("\t Fragmentation IS possible");
+                    packet = connection->Dequeue(packetType, availableByte);
+                    burst->AddPacket(packet);
 
-                  nrSymbolsRequired = m_ss->GetPhy ()->
-                    GetNrSymbols (packet->GetSize (), modulationType);
-                  availableSymbols -= nrSymbolsRequired;
+                    nrSymbolsRequired =
+                        m_ss->GetPhy()->GetNrSymbols(packet->GetSize(), modulationType);
+                    availableSymbols -= nrSymbolsRequired;
                 }
-              else
+                else
                 {
-                  NS_LOG_INFO ("\t Fragmentation IS NOT possible" << std::endl);
-                  break;
+                    NS_LOG_INFO("\t Fragmentation IS NOT possible" << std::endl);
+                    break;
                 }
             }
-          else
+            else
             {
-              NS_LOG_INFO ("\t no Transport Connection "
-                           "\n\t Fragmentation IS NOT possible, " << std::endl);
-              break;
+                NS_LOG_INFO("\t no Transport Connection "
+                            "\n\t Fragmentation IS NOT possible, "
+                            << std::endl);
+                break;
             }
         }
     }
-  return burst;
+    return burst;
 }
 
 Ptr<WimaxConnection>
-SSScheduler::SelectConnection ()
+SSScheduler::SelectConnection()
 {
-  Time currentTime = Simulator::Now ();
-  std::vector<ServiceFlow*>::const_iterator iter;
-  std::vector<ServiceFlow*> serviceFlows;
+    Time currentTime = Simulator::Now();
+    std::vector<ServiceFlow*>::const_iterator iter;
+    std::vector<ServiceFlow*> serviceFlows;
 
-  NS_LOG_INFO ("SS Scheduler: Selecting connection...");
-  if (m_ss->GetInitialRangingConnection ()->HasPackets ())
+    NS_LOG_INFO("SS Scheduler: Selecting connection...");
+    if (m_ss->GetInitialRangingConnection()->HasPackets())
     {
-      NS_LOG_INFO ("Return GetInitialRangingConnection");
-      return m_ss->GetInitialRangingConnection ();
+        NS_LOG_INFO("Return GetInitialRangingConnection");
+        return m_ss->GetInitialRangingConnection();
     }
-  if (m_ss->GetBasicConnection ()->HasPackets ())
+    if (m_ss->GetBasicConnection()->HasPackets())
     {
-      NS_LOG_INFO ("Return GetBasicConnection");
-      return m_ss->GetBasicConnection ();
+        NS_LOG_INFO("Return GetBasicConnection");
+        return m_ss->GetBasicConnection();
     }
-  if (m_ss->GetPrimaryConnection ()->HasPackets ())
+    if (m_ss->GetPrimaryConnection()->HasPackets())
     {
-      NS_LOG_INFO ("Return GetPrimaryConnection");
-      return m_ss->GetPrimaryConnection ();
+        NS_LOG_INFO("Return GetPrimaryConnection");
+        return m_ss->GetPrimaryConnection();
     }
 
-  serviceFlows = m_ss->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_UGS);
-  for (iter = serviceFlows.begin (); iter != serviceFlows.end (); ++iter)
+    serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_UGS);
+    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
-      // making sure that this grant was actually intended for this UGS
+        // making sure that this grant was actually intended for this UGS
 
-      if ((*iter)->HasPackets () && (currentTime
-                                     + m_ss->GetPhy ()->GetFrameDuration () > MilliSeconds (
-                                       (*iter)->GetUnsolicitedGrantInterval ())))
+        if ((*iter)->HasPackets() && (currentTime + m_ss->GetPhy()->GetFrameDuration() >
+                                      MilliSeconds((*iter)->GetUnsolicitedGrantInterval())))
         {
-          NS_LOG_INFO ("Return UGS SF: CID = " << (*iter)->GetCid () << "SFID = "
-                                               << (*iter)->GetSfid ());
-          return (*iter)->GetConnection ();
+            NS_LOG_INFO("Return UGS SF: CID = " << (*iter)->GetCid()
+                                                << "SFID = " << (*iter)->GetSfid());
+            return (*iter)->GetConnection();
         }
     }
 
-  /* In the following cases (rtPS, nrtPS and BE flows) connection is seletected only for data packets, for bandwidth
-   request packets connection will itself be passed to Schedule () and hence this function will never be called. */
+    /* In the following cases (rtPS, nrtPS and BE flows) connection is seletected only for data
+     packets, for bandwidth request packets connection will itself be passed to Schedule () and
+     hence this function will never be called. */
 
-  serviceFlows = m_ss->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_RTPS);
-  for (iter = serviceFlows.begin (); iter != serviceFlows.end (); ++iter)
+    serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_RTPS);
+    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
-      if ((*iter)->HasPackets (MacHeaderType::HEADER_TYPE_GENERIC)
-          && (currentTime + m_ss->GetPhy ()->GetFrameDuration ()
-              > MilliSeconds (
-                (*iter)->GetUnsolicitedPollingInterval ())))
+        if ((*iter)->HasPackets(MacHeaderType::HEADER_TYPE_GENERIC) &&
+            (currentTime + m_ss->GetPhy()->GetFrameDuration() >
+             MilliSeconds((*iter)->GetUnsolicitedPollingInterval())))
         {
-          NS_LOG_INFO ("Return RTPS SF: CID = " << (*iter)->GetCid () << "SFID = "
-                                                << (*iter)->GetSfid ());
-          return (*iter)->GetConnection ();
+            NS_LOG_INFO("Return RTPS SF: CID = " << (*iter)->GetCid()
+                                                 << "SFID = " << (*iter)->GetSfid());
+            return (*iter)->GetConnection();
         }
     }
 
-  serviceFlows = m_ss->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_NRTPS);
-  for (iter = serviceFlows.begin (); iter != serviceFlows.end (); ++iter)
+    serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_NRTPS);
+    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
-      if ((*iter)->HasPackets (MacHeaderType::HEADER_TYPE_GENERIC))
+        if ((*iter)->HasPackets(MacHeaderType::HEADER_TYPE_GENERIC))
         {
-          NS_LOG_INFO ("Return NRTPS SF: CID = " << (*iter)->GetCid () << "SFID = "
-                                                 << (*iter)->GetSfid ());
-          return (*iter)->GetConnection ();
+            NS_LOG_INFO("Return NRTPS SF: CID = " << (*iter)->GetCid()
+                                                  << "SFID = " << (*iter)->GetSfid());
+            return (*iter)->GetConnection();
         }
     }
 
-  serviceFlows = m_ss->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_BE);
-  for (iter = serviceFlows.begin (); iter != serviceFlows.end (); ++iter)
+    serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_BE);
+    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
-      if ((*iter)->HasPackets (MacHeaderType::HEADER_TYPE_GENERIC))
+        if ((*iter)->HasPackets(MacHeaderType::HEADER_TYPE_GENERIC))
         {
-          NS_LOG_INFO ("Return BE SF: CID = " << (*iter)->GetCid () << "SFID = "
-                                              << (*iter)->GetSfid ());
-          return (*iter)->GetConnection ();
+            NS_LOG_INFO("Return BE SF: CID = " << (*iter)->GetCid()
+                                               << "SFID = " << (*iter)->GetSfid());
+            return (*iter)->GetConnection();
         }
     }
 
-  if (m_ss->GetBroadcastConnection ()->HasPackets ())
+    if (m_ss->GetBroadcastConnection()->HasPackets())
     {
-      return m_ss->GetBroadcastConnection ();
+        return m_ss->GetBroadcastConnection();
     }
-  NS_LOG_INFO ("NO connection is selected!");
-  return nullptr;
+    NS_LOG_INFO("NO connection is selected!");
+    return nullptr;
 }
 
 } // namespace ns3

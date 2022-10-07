@@ -20,83 +20,92 @@
  *         Nicola Baldo (wrote building-container.cc based on node-container.cc)
  */
 #include "building-container.h"
+
 #include "ns3/building-list.h"
 #include "ns3/names.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-BuildingContainer::BuildingContainer ()
+BuildingContainer::BuildingContainer()
 {
 }
 
-BuildingContainer::BuildingContainer (Ptr<Building> building)
+BuildingContainer::BuildingContainer(Ptr<Building> building)
 {
-  m_buildings.push_back (building);
+    m_buildings.push_back(building);
 }
-BuildingContainer::BuildingContainer (std::string buildingName)
+
+BuildingContainer::BuildingContainer(std::string buildingName)
 {
-  Ptr<Building> building = Names::Find<Building> (buildingName);
-  m_buildings.push_back (building);
+    Ptr<Building> building = Names::Find<Building>(buildingName);
+    m_buildings.push_back(building);
 }
 
 BuildingContainer::Iterator
-BuildingContainer::Begin () const
+BuildingContainer::Begin() const
 {
-  return m_buildings.begin ();
+    return m_buildings.begin();
 }
+
 BuildingContainer::Iterator
-BuildingContainer::End () const
+BuildingContainer::End() const
 {
-  return m_buildings.end ();
+    return m_buildings.end();
 }
 
 uint32_t
-BuildingContainer::GetN () const
+BuildingContainer::GetN() const
 {
-  return m_buildings.size ();
+    return m_buildings.size();
 }
+
 Ptr<Building>
-BuildingContainer::Get (uint32_t i) const
+BuildingContainer::Get(uint32_t i) const
 {
-  return m_buildings[i];
+    return m_buildings[i];
 }
+
 void
-BuildingContainer::Create (uint32_t n)
+BuildingContainer::Create(uint32_t n)
 {
-  for (uint32_t i = 0; i < n; i++)
+    for (uint32_t i = 0; i < n; i++)
     {
-      m_buildings.push_back (CreateObject<Building> ());
+        m_buildings.push_back(CreateObject<Building>());
     }
 }
+
 void
-BuildingContainer::Add (BuildingContainer other)
+BuildingContainer::Add(BuildingContainer other)
 {
-  for (Iterator i = other.Begin (); i != other.End (); i++)
+    for (Iterator i = other.Begin(); i != other.End(); i++)
     {
-      m_buildings.push_back (*i);
+        m_buildings.push_back(*i);
     }
 }
+
 void
-BuildingContainer::Add (Ptr<Building> building)
+BuildingContainer::Add(Ptr<Building> building)
 {
-  m_buildings.push_back (building);
+    m_buildings.push_back(building);
 }
+
 void
-BuildingContainer::Add (std::string buildingName)
+BuildingContainer::Add(std::string buildingName)
 {
-  Ptr<Building> building = Names::Find<Building> (buildingName);
-  m_buildings.push_back (building);
+    Ptr<Building> building = Names::Find<Building>(buildingName);
+    m_buildings.push_back(building);
 }
 
 BuildingContainer
-BuildingContainer::GetGlobal ()
+BuildingContainer::GetGlobal()
 {
-  BuildingContainer c;
-  for (BuildingList::Iterator i = BuildingList::Begin (); i != BuildingList::End (); ++i)
+    BuildingContainer c;
+    for (BuildingList::Iterator i = BuildingList::Begin(); i != BuildingList::End(); ++i)
     {
-      c.Add (*i);
+        c.Add(*i);
     }
-  return c;
+    return c;
 }
 
 } // namespace ns3

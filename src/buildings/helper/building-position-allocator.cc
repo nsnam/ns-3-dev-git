@@ -19,448 +19,450 @@
  *         Michele Polese <michele.polese@gmail.com> for the OutdoorPositionAllocator class
  */
 #include "building-position-allocator.h"
-#include <ns3/mobility-building-info.h>
-#include "ns3/mobility-model.h"
-#include "ns3/buildings-helper.h"
-#include "ns3/random-variable-stream.h"
-#include "ns3/double.h"
-#include "ns3/uinteger.h"
-#include "ns3/enum.h"
+
 #include "ns3/boolean.h"
-#include "ns3/log.h"
 #include "ns3/box.h"
+#include "ns3/building-list.h"
 #include "ns3/building.h"
-#include "ns3/string.h"
+#include "ns3/buildings-helper.h"
+#include "ns3/double.h"
+#include "ns3/enum.h"
+#include "ns3/log.h"
+#include "ns3/mobility-model.h"
 #include "ns3/pointer.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/string.h"
+#include "ns3/uinteger.h"
+#include <ns3/mobility-building-info.h>
+
 #include <cmath>
 
-#include "ns3/building-list.h"
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocator");
-
-NS_OBJECT_ENSURE_REGISTERED (RandomBuildingPositionAllocator);
-
-
-RandomBuildingPositionAllocator::RandomBuildingPositionAllocator ()
+namespace ns3
 {
-  m_rand = CreateObject<UniformRandomVariable> ();
+
+NS_LOG_COMPONENT_DEFINE("BuildingPositionAllocator");
+
+NS_OBJECT_ENSURE_REGISTERED(RandomBuildingPositionAllocator);
+
+RandomBuildingPositionAllocator::RandomBuildingPositionAllocator()
+{
+    m_rand = CreateObject<UniformRandomVariable>();
 }
 
 TypeId
-RandomBuildingPositionAllocator::GetTypeId ()
+RandomBuildingPositionAllocator::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::RandomBuildingPositionAllocator")
-    .SetParent<PositionAllocator> ()
-    .SetGroupName ("Buildings")
-    .AddConstructor<RandomBuildingPositionAllocator> ()
-    .AddAttribute ("WithReplacement",
-                   "If true, the building will be randomly selected with replacement. "
-                   "If false, no replacement will occur, until the list of buildings "
-                   "to select becomes empty, at which point it will be filled again "
-                   "with the list of all buildings.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&RandomBuildingPositionAllocator::m_withReplacement),
-                   MakeBooleanChecker ());
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::RandomBuildingPositionAllocator")
+            .SetParent<PositionAllocator>()
+            .SetGroupName("Buildings")
+            .AddConstructor<RandomBuildingPositionAllocator>()
+            .AddAttribute("WithReplacement",
+                          "If true, the building will be randomly selected with replacement. "
+                          "If false, no replacement will occur, until the list of buildings "
+                          "to select becomes empty, at which point it will be filled again "
+                          "with the list of all buildings.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&RandomBuildingPositionAllocator::m_withReplacement),
+                          MakeBooleanChecker());
+    return tid;
 }
 
 Vector
-RandomBuildingPositionAllocator::GetNext () const
+RandomBuildingPositionAllocator::GetNext() const
 {
-  NS_ASSERT_MSG (BuildingList::GetNBuildings () > 0, "no building found");
-  Ptr<Building> b;
-  if (m_withReplacement)
+    NS_ASSERT_MSG(BuildingList::GetNBuildings() > 0, "no building found");
+    Ptr<Building> b;
+    if (m_withReplacement)
     {
-      uint32_t n = m_rand->GetInteger (0, BuildingList::GetNBuildings () - 1);
-      b = BuildingList::GetBuilding (n);
+        uint32_t n = m_rand->GetInteger(0, BuildingList::GetNBuildings() - 1);
+        b = BuildingList::GetBuilding(n);
     }
-  else
+    else
     {
-      if (m_buildingListWithoutReplacement.empty ())
+        if (m_buildingListWithoutReplacement.empty())
         {
-          for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
+            for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End();
+                 ++bit)
             {
-              m_buildingListWithoutReplacement.push_back (*bit);
+                m_buildingListWithoutReplacement.push_back(*bit);
             }
         }
-      uint32_t n = m_rand->GetInteger (0, m_buildingListWithoutReplacement.size () - 1);
-      b = m_buildingListWithoutReplacement.at (n);
-      m_buildingListWithoutReplacement.erase (m_buildingListWithoutReplacement.begin () + n);
+        uint32_t n = m_rand->GetInteger(0, m_buildingListWithoutReplacement.size() - 1);
+        b = m_buildingListWithoutReplacement.at(n);
+        m_buildingListWithoutReplacement.erase(m_buildingListWithoutReplacement.begin() + n);
     }
 
-  Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator> ();
-  BoxValue bv;
-  b->GetAttribute ("Boundaries", bv);
-  double x = m_rand->GetValue (bv.Get ().xMin, bv.Get ().xMax);
-  double y = m_rand->GetValue (bv.Get ().yMin, bv.Get ().yMax);
-  double z = m_rand->GetValue (bv.Get ().zMin, bv.Get ().zMax);
-  return Vector (x, y, z);
+    Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator>();
+    BoxValue bv;
+    b->GetAttribute("Boundaries", bv);
+    double x = m_rand->GetValue(bv.Get().xMin, bv.Get().xMax);
+    double y = m_rand->GetValue(bv.Get().yMin, bv.Get().yMax);
+    double z = m_rand->GetValue(bv.Get().zMin, bv.Get().zMax);
+    return Vector(x, y, z);
 }
 
 int64_t
-RandomBuildingPositionAllocator::AssignStreams (int64_t stream)
+RandomBuildingPositionAllocator::AssignStreams(int64_t stream)
 {
-  m_rand->SetStream (stream);
-  return 1;
+    m_rand->SetStream(stream);
+    return 1;
 }
 
+NS_OBJECT_ENSURE_REGISTERED(OutdoorPositionAllocator);
 
-NS_OBJECT_ENSURE_REGISTERED (OutdoorPositionAllocator);
-
-OutdoorPositionAllocator::OutdoorPositionAllocator ()
+OutdoorPositionAllocator::OutdoorPositionAllocator()
 {
 }
 
 TypeId
-OutdoorPositionAllocator::GetTypeId ()
+OutdoorPositionAllocator::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::OutdoorPositionAllocator")
-    .SetParent<PositionAllocator> ()
-    .SetGroupName ("Buildings")
-    .AddConstructor<OutdoorPositionAllocator> ()
-    .AddAttribute ("X",
-                   "A random variable which represents the x coordinate of a position in a random box.",
-                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
-                   MakePointerAccessor (&OutdoorPositionAllocator::m_x),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("Y",
-                   "A random variable which represents the y coordinate of a position in a random box.",
-                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
-                   MakePointerAccessor (&OutdoorPositionAllocator::m_y),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("Z",
-                   "A random variable which represents the z coordinate of a position in a random box.",
-                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
-                   MakePointerAccessor (&OutdoorPositionAllocator::m_z),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("MaxAttempts",
-                   "Maximum number of attempts for the rejection sampling before giving up.",
-                   UintegerValue (1000),
-                   MakeUintegerAccessor (&OutdoorPositionAllocator::m_maxAttempts),
-                   MakeUintegerChecker<uint32_t> ())
-  ;
+    static TypeId tid =
+        TypeId("ns3::OutdoorPositionAllocator")
+            .SetParent<PositionAllocator>()
+            .SetGroupName("Buildings")
+            .AddConstructor<OutdoorPositionAllocator>()
+            .AddAttribute("X",
+                          "A random variable which represents the x coordinate of a position in a "
+                          "random box.",
+                          StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                          MakePointerAccessor(&OutdoorPositionAllocator::m_x),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("Y",
+                          "A random variable which represents the y coordinate of a position in a "
+                          "random box.",
+                          StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                          MakePointerAccessor(&OutdoorPositionAllocator::m_y),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("Z",
+                          "A random variable which represents the z coordinate of a position in a "
+                          "random box.",
+                          StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                          MakePointerAccessor(&OutdoorPositionAllocator::m_z),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("MaxAttempts",
+                          "Maximum number of attempts for the rejection sampling before giving up.",
+                          UintegerValue(1000),
+                          MakeUintegerAccessor(&OutdoorPositionAllocator::m_maxAttempts),
+                          MakeUintegerChecker<uint32_t>());
 
-  return tid;
+    return tid;
 }
 
 void
-OutdoorPositionAllocator::SetX (Ptr<RandomVariableStream> x)
+OutdoorPositionAllocator::SetX(Ptr<RandomVariableStream> x)
 {
-  m_x = x;
+    m_x = x;
 }
+
 void
-OutdoorPositionAllocator::SetY (Ptr<RandomVariableStream> y)
+OutdoorPositionAllocator::SetY(Ptr<RandomVariableStream> y)
 {
-  m_y = y;
+    m_y = y;
 }
+
 void
-OutdoorPositionAllocator::SetZ (Ptr<RandomVariableStream> z)
+OutdoorPositionAllocator::SetZ(Ptr<RandomVariableStream> z)
 {
-  m_z = z;
+    m_z = z;
 }
 
 Vector
-OutdoorPositionAllocator::GetNext () const
+OutdoorPositionAllocator::GetNext() const
 {
-  NS_ABORT_MSG_IF (BuildingList::GetNBuildings () == 0, "no building found");
+    NS_ABORT_MSG_IF(BuildingList::GetNBuildings() == 0, "no building found");
 
-  bool outdoor = false;
-  uint32_t attempts = 0;
-  Vector position = Vector (0,0,0);
+    bool outdoor = false;
+    uint32_t attempts = 0;
+    Vector position = Vector(0, 0, 0);
 
-  while (!outdoor && attempts < m_maxAttempts)
+    while (!outdoor && attempts < m_maxAttempts)
     {
-      // get a random position
-      double x = m_x->GetValue ();
-      double y = m_y->GetValue ();
-      double z = m_z->GetValue ();
+        // get a random position
+        double x = m_x->GetValue();
+        double y = m_y->GetValue();
+        double z = m_z->GetValue();
 
-      position = Vector (x, y, z);
+        position = Vector(x, y, z);
 
-      NS_LOG_INFO ("Position " << position);
+        NS_LOG_INFO("Position " << position);
 
-      bool inside = false;
-      for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
+        bool inside = false;
+        for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
         {
-          if ((*bit)->IsInside (position))
+            if ((*bit)->IsInside(position))
             {
-              NS_LOG_INFO ("Position " << position << " is inside the building with boundaries "
-                                       << (*bit)->GetBoundaries ().xMin << " " << (*bit)->GetBoundaries ().xMax << " "
-                                       << (*bit)->GetBoundaries ().yMin << " " << (*bit)->GetBoundaries ().yMax << " "
-                                       << (*bit)->GetBoundaries ().zMin << " " << (*bit)->GetBoundaries ().zMax);
-              inside = true;
-              break;
+                NS_LOG_INFO("Position "
+                            << position << " is inside the building with boundaries "
+                            << (*bit)->GetBoundaries().xMin << " " << (*bit)->GetBoundaries().xMax
+                            << " " << (*bit)->GetBoundaries().yMin << " "
+                            << (*bit)->GetBoundaries().yMax << " " << (*bit)->GetBoundaries().zMin
+                            << " " << (*bit)->GetBoundaries().zMax);
+                inside = true;
+                break;
             }
         }
 
-      if (inside)
+        if (inside)
         {
-          NS_LOG_INFO ("Inside a building, attempt " << attempts << " out of " << m_maxAttempts);
-          attempts++;
+            NS_LOG_INFO("Inside a building, attempt " << attempts << " out of " << m_maxAttempts);
+            attempts++;
         }
-      else
+        else
         {
-          NS_LOG_INFO ("Outdoor position found " << position);
-          outdoor = true;
+            NS_LOG_INFO("Outdoor position found " << position);
+            outdoor = true;
         }
     }
 
-  NS_ABORT_MSG_IF (attempts >= m_maxAttempts, "Too many attempts, give up");
-  NS_ABORT_MSG_IF (!outdoor, "Still indoor, give up");
-  return position;
+    NS_ABORT_MSG_IF(attempts >= m_maxAttempts, "Too many attempts, give up");
+    NS_ABORT_MSG_IF(!outdoor, "Still indoor, give up");
+    return position;
 }
 
 int64_t
-OutdoorPositionAllocator::AssignStreams (int64_t stream)
+OutdoorPositionAllocator::AssignStreams(int64_t stream)
 {
-  m_x->SetStream (stream);
-  m_y->SetStream (stream + 1);
-  m_z->SetStream (stream + 2);
-  return 3;
+    m_x->SetStream(stream);
+    m_y->SetStream(stream + 1);
+    m_z->SetStream(stream + 2);
+    return 3;
 }
 
+NS_OBJECT_ENSURE_REGISTERED(RandomRoomPositionAllocator);
 
-NS_OBJECT_ENSURE_REGISTERED (RandomRoomPositionAllocator);
-
-
-RandomRoomPositionAllocator::RandomRoomPositionAllocator ()
+RandomRoomPositionAllocator::RandomRoomPositionAllocator()
 {
-  m_rand = CreateObject<UniformRandomVariable> ();
+    m_rand = CreateObject<UniformRandomVariable>();
 }
 
 TypeId
-RandomRoomPositionAllocator::GetTypeId ()
+RandomRoomPositionAllocator::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::RandomRoomPositionAllocator")
-    .SetParent<PositionAllocator> ()
-    .SetGroupName ("Buildings")
-    .AddConstructor<RandomRoomPositionAllocator> ();
-  return tid;
+    static TypeId tid = TypeId("ns3::RandomRoomPositionAllocator")
+                            .SetParent<PositionAllocator>()
+                            .SetGroupName("Buildings")
+                            .AddConstructor<RandomRoomPositionAllocator>();
+    return tid;
 }
 
 Vector
-RandomRoomPositionAllocator::GetNext () const
+RandomRoomPositionAllocator::GetNext() const
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT_MSG (BuildingList::GetNBuildings () > 0, "no building found");
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(BuildingList::GetNBuildings() > 0, "no building found");
 
-  if (m_roomListWithoutReplacement.empty ())
+    if (m_roomListWithoutReplacement.empty())
     {
-      for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
+        for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
         {
-          NS_LOG_LOGIC ("building " << (*bit)->GetId ());
-          for (uint32_t rx = 1; rx <= (*bit)->GetNRoomsX (); ++rx)
+            NS_LOG_LOGIC("building " << (*bit)->GetId());
+            for (uint32_t rx = 1; rx <= (*bit)->GetNRoomsX(); ++rx)
             {
-              for (uint32_t ry = 1; ry <= (*bit)->GetNRoomsY (); ++ry)
+                for (uint32_t ry = 1; ry <= (*bit)->GetNRoomsY(); ++ry)
                 {
-                  for (uint32_t f = 1; f <= (*bit)->GetNFloors (); ++f)
+                    for (uint32_t f = 1; f <= (*bit)->GetNFloors(); ++f)
                     {
-                      RoomInfo i;
-                      i.roomx = rx;
-                      i.roomy = ry;
-                      i.floor = f;
-                      i.b = *bit;
-                      NS_LOG_LOGIC ("adding room (" << rx << ", " << ry << ", " << f << ")");
-                      m_roomListWithoutReplacement.push_back (i);
+                        RoomInfo i;
+                        i.roomx = rx;
+                        i.roomy = ry;
+                        i.floor = f;
+                        i.b = *bit;
+                        NS_LOG_LOGIC("adding room (" << rx << ", " << ry << ", " << f << ")");
+                        m_roomListWithoutReplacement.push_back(i);
                     }
                 }
             }
         }
     }
-  uint32_t n = m_rand->GetInteger (0,m_roomListWithoutReplacement.size () - 1);
-  RoomInfo r = m_roomListWithoutReplacement.at (n);
-  m_roomListWithoutReplacement.erase (m_roomListWithoutReplacement.begin () + n);
-  NS_LOG_LOGIC ("considering building " << r.b->GetId () << " room (" << r.roomx << ", " << r.roomy << ", " << r.floor << ")");
+    uint32_t n = m_rand->GetInteger(0, m_roomListWithoutReplacement.size() - 1);
+    RoomInfo r = m_roomListWithoutReplacement.at(n);
+    m_roomListWithoutReplacement.erase(m_roomListWithoutReplacement.begin() + n);
+    NS_LOG_LOGIC("considering building " << r.b->GetId() << " room (" << r.roomx << ", " << r.roomy
+                                         << ", " << r.floor << ")");
 
-  Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator> ();
-  BoxValue bv;
-  r.b->GetAttribute ("Boundaries", bv);
-  Box box = bv.Get ();
-  double rdx =  (box.xMax - box.xMin) / r.b->GetNRoomsX ();
-  double rdy =  (box.yMax - box.yMin) / r.b->GetNRoomsY ();
-  double rdz =  (box.zMax - box.zMin) / r.b->GetNFloors ();
-  double x1 = box.xMin + rdx * (r.roomx - 1);
-  double x2 = box.xMin + rdx * r.roomx;
-  double y1 = box.yMin + rdy * (r.roomy -1);
-  double y2 = box.yMin + rdy * r.roomy;
-  double z1 = box.zMin + rdz * (r.floor - 1);
-  double z2 = box.zMin + rdz * r.floor;
-  NS_LOG_LOGIC ("randomly allocating position in "
-                << " (" << x1 << "," << x2 << ") "
-                << "x (" << y1 << "," << y2 << ") "
-                << "x (" << z1 << "," << z2 << ") ");
+    Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator>();
+    BoxValue bv;
+    r.b->GetAttribute("Boundaries", bv);
+    Box box = bv.Get();
+    double rdx = (box.xMax - box.xMin) / r.b->GetNRoomsX();
+    double rdy = (box.yMax - box.yMin) / r.b->GetNRoomsY();
+    double rdz = (box.zMax - box.zMin) / r.b->GetNFloors();
+    double x1 = box.xMin + rdx * (r.roomx - 1);
+    double x2 = box.xMin + rdx * r.roomx;
+    double y1 = box.yMin + rdy * (r.roomy - 1);
+    double y2 = box.yMin + rdy * r.roomy;
+    double z1 = box.zMin + rdz * (r.floor - 1);
+    double z2 = box.zMin + rdz * r.floor;
+    NS_LOG_LOGIC("randomly allocating position in "
+                 << " (" << x1 << "," << x2 << ") "
+                 << "x (" << y1 << "," << y2 << ") "
+                 << "x (" << z1 << "," << z2 << ") ");
 
-  double x = m_rand->GetValue (x1, x2);
-  double y = m_rand->GetValue (y1, y2);
-  double z = m_rand->GetValue (z1, z2);
+    double x = m_rand->GetValue(x1, x2);
+    double y = m_rand->GetValue(y1, y2);
+    double z = m_rand->GetValue(z1, z2);
 
-  return Vector (x, y, z);
+    return Vector(x, y, z);
 }
 
 int64_t
-RandomRoomPositionAllocator::AssignStreams (int64_t stream)
+RandomRoomPositionAllocator::AssignStreams(int64_t stream)
 {
-  m_rand->SetStream (stream);
-  return 1;
+    m_rand->SetStream(stream);
+    return 1;
 }
 
+NS_OBJECT_ENSURE_REGISTERED(SameRoomPositionAllocator);
 
-
-
-
-NS_OBJECT_ENSURE_REGISTERED (SameRoomPositionAllocator);
-
-SameRoomPositionAllocator::SameRoomPositionAllocator ()
+SameRoomPositionAllocator::SameRoomPositionAllocator()
 {
-  NS_FATAL_ERROR (" Constructor \"SameRoomPositionAllocator ()\" should not be used");
+    NS_FATAL_ERROR(" Constructor \"SameRoomPositionAllocator ()\" should not be used");
 }
 
-
-SameRoomPositionAllocator::SameRoomPositionAllocator (NodeContainer c)
-  : m_nodes (c)
+SameRoomPositionAllocator::SameRoomPositionAllocator(NodeContainer c)
+    : m_nodes(c)
 {
-  m_rand = CreateObject<UniformRandomVariable> ();
-  m_nodeIt = m_nodes.Begin ();
-  // this is needed to make sure the building models associated with c have been initialized
-  for (NodeContainer::Iterator it = m_nodes.Begin (); it != m_nodes.End (); ++it)
+    m_rand = CreateObject<UniformRandomVariable>();
+    m_nodeIt = m_nodes.Begin();
+    // this is needed to make sure the building models associated with c have been initialized
+    for (NodeContainer::Iterator it = m_nodes.Begin(); it != m_nodes.End(); ++it)
     {
-      Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel> ();
-      NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
-      Ptr<MobilityBuildingInfo> bmm = mm->GetObject <MobilityBuildingInfo> ();
-      NS_ASSERT_MSG (bmm, "MobilityBuildingInfo has not been aggregated to this node mobility model");
-      bmm->MakeConsistent (mm);
+        Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel>();
+        NS_ASSERT_MSG(mm, "no mobility model aggregated to this node");
+        Ptr<MobilityBuildingInfo> bmm = mm->GetObject<MobilityBuildingInfo>();
+        NS_ASSERT_MSG(bmm,
+                      "MobilityBuildingInfo has not been aggregated to this node mobility model");
+        bmm->MakeConsistent(mm);
     }
 }
 
 TypeId
-SameRoomPositionAllocator::GetTypeId ()
+SameRoomPositionAllocator::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::SameRoomPositionAllocator")
-    .SetParent<PositionAllocator> ()
-    .SetGroupName ("Buildings")
-    .AddConstructor<SameRoomPositionAllocator> ();
-  return tid;
+    static TypeId tid = TypeId("ns3::SameRoomPositionAllocator")
+                            .SetParent<PositionAllocator>()
+                            .SetGroupName("Buildings")
+                            .AddConstructor<SameRoomPositionAllocator>();
+    return tid;
 }
 
 Vector
-SameRoomPositionAllocator::GetNext () const
+SameRoomPositionAllocator::GetNext() const
 {
-  NS_LOG_FUNCTION (this);
-  if (m_nodeIt == m_nodes.End ())
+    NS_LOG_FUNCTION(this);
+    if (m_nodeIt == m_nodes.End())
     {
-      m_nodeIt  = m_nodes.Begin ();
+        m_nodeIt = m_nodes.Begin();
     }
 
-  NS_ASSERT_MSG (m_nodeIt != m_nodes.End (), "no node in container");
+    NS_ASSERT_MSG(m_nodeIt != m_nodes.End(), "no node in container");
 
-  NS_LOG_LOGIC ("considering node " << (*m_nodeIt)->GetId ());
-  Ptr<MobilityModel> mm = (*m_nodeIt)->GetObject<MobilityModel> ();
-  NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
-  Ptr<MobilityBuildingInfo> bmm = mm->GetObject<MobilityBuildingInfo> ();
-  NS_ASSERT_MSG (bmm, "MobilityBuildingInfo has not been aggregated to this node mobility model");
+    NS_LOG_LOGIC("considering node " << (*m_nodeIt)->GetId());
+    Ptr<MobilityModel> mm = (*m_nodeIt)->GetObject<MobilityModel>();
+    NS_ASSERT_MSG(mm, "no mobility model aggregated to this node");
+    Ptr<MobilityBuildingInfo> bmm = mm->GetObject<MobilityBuildingInfo>();
+    NS_ASSERT_MSG(bmm, "MobilityBuildingInfo has not been aggregated to this node mobility model");
 
-  ++m_nodeIt;
-  uint32_t roomx = bmm->GetRoomNumberX ();
-  uint32_t roomy = bmm->GetRoomNumberY ();
-  uint32_t floor = bmm->GetFloorNumber ();
-  NS_LOG_LOGIC ("considering building " << bmm->GetBuilding ()->GetId () << " room (" << roomx << ", " << roomy << ", " << floor << ")");
+    ++m_nodeIt;
+    uint32_t roomx = bmm->GetRoomNumberX();
+    uint32_t roomy = bmm->GetRoomNumberY();
+    uint32_t floor = bmm->GetFloorNumber();
+    NS_LOG_LOGIC("considering building " << bmm->GetBuilding()->GetId() << " room (" << roomx
+                                         << ", " << roomy << ", " << floor << ")");
 
-  Ptr<Building> b = bmm->GetBuilding ();
-  Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator> ();
-  BoxValue bv;
-  b->GetAttribute ("Boundaries", bv);
-  Box box = bv.Get ();
-  double rdx =  (box.xMax - box.xMin) / b->GetNRoomsX ();
-  double rdy =  (box.yMax - box.yMin) / b->GetNRoomsY ();
-  double rdz =  (box.zMax - box.zMin) / b->GetNFloors ();
-  double x1 = box.xMin + rdx * (roomx - 1);
-  double x2 = box.xMin + rdx * roomx;
-  double y1 = box.yMin + rdy * (roomy -1);
-  double y2 = box.yMin + rdy * roomy;
-  double z1 = box.zMin + rdz * (floor - 1);
-  double z2 = box.zMin + rdz * floor;
-  NS_LOG_LOGIC ("randomly allocating position in "
-                << " (" << x1 << "," << x2 << ") "
-                << "x (" << y1 << "," << y2 << ") "
-                << "x (" << z1 << "," << z2 << ") ");
+    Ptr<Building> b = bmm->GetBuilding();
+    Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator>();
+    BoxValue bv;
+    b->GetAttribute("Boundaries", bv);
+    Box box = bv.Get();
+    double rdx = (box.xMax - box.xMin) / b->GetNRoomsX();
+    double rdy = (box.yMax - box.yMin) / b->GetNRoomsY();
+    double rdz = (box.zMax - box.zMin) / b->GetNFloors();
+    double x1 = box.xMin + rdx * (roomx - 1);
+    double x2 = box.xMin + rdx * roomx;
+    double y1 = box.yMin + rdy * (roomy - 1);
+    double y2 = box.yMin + rdy * roomy;
+    double z1 = box.zMin + rdz * (floor - 1);
+    double z2 = box.zMin + rdz * floor;
+    NS_LOG_LOGIC("randomly allocating position in "
+                 << " (" << x1 << "," << x2 << ") "
+                 << "x (" << y1 << "," << y2 << ") "
+                 << "x (" << z1 << "," << z2 << ") ");
 
-  double x = m_rand->GetValue (x1, x2);
-  double y = m_rand->GetValue (y1, y2);
-  double z = m_rand->GetValue (z1, z2);
+    double x = m_rand->GetValue(x1, x2);
+    double y = m_rand->GetValue(y1, y2);
+    double z = m_rand->GetValue(z1, z2);
 
-  return Vector (x, y, z);
+    return Vector(x, y, z);
 }
 
 int64_t
-SameRoomPositionAllocator::AssignStreams (int64_t stream)
+SameRoomPositionAllocator::AssignStreams(int64_t stream)
 {
-  m_rand->SetStream (stream);
-  return 1;
+    m_rand->SetStream(stream);
+    return 1;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (FixedRoomPositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED(FixedRoomPositionAllocator);
 
-
-FixedRoomPositionAllocator::FixedRoomPositionAllocator (
-  uint32_t x,
-  uint32_t y,
-  uint32_t z,
-  Ptr<Building> pbtr)
+FixedRoomPositionAllocator::FixedRoomPositionAllocator(uint32_t x,
+                                                       uint32_t y,
+                                                       uint32_t z,
+                                                       Ptr<Building> pbtr)
 {
-  m_rand = CreateObject<UniformRandomVariable> ();
-  roomx = x;
-  roomy = y;
-  floor = z;
-  bptr = pbtr;
+    m_rand = CreateObject<UniformRandomVariable>();
+    roomx = x;
+    roomy = y;
+    floor = z;
+    bptr = pbtr;
 }
 
 TypeId
-FixedRoomPositionAllocator::GetTypeId ()
+FixedRoomPositionAllocator::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::FixedRoomPositionAllocator")
-    .SetParent<PositionAllocator> ()
-    .SetGroupName ("Buildings")
-    .AddConstructor<SameRoomPositionAllocator> ();
-  return tid;
+    static TypeId tid = TypeId("ns3::FixedRoomPositionAllocator")
+                            .SetParent<PositionAllocator>()
+                            .SetGroupName("Buildings")
+                            .AddConstructor<SameRoomPositionAllocator>();
+    return tid;
 }
 
 Vector
-FixedRoomPositionAllocator::GetNext () const
+FixedRoomPositionAllocator::GetNext() const
 {
+    NS_LOG_LOGIC("considering building " << bptr->GetId() << " room (" << roomx << ", " << roomy
+                                         << ", " << floor << ")");
 
-  NS_LOG_LOGIC ("considering building " << bptr->GetId () << " room (" << roomx << ", " << roomy << ", " << floor << ")");
+    Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator>();
 
-  Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator> ();
+    Box box = bptr->GetBoundaries();
+    double rdx = (box.xMax - box.xMin) / bptr->GetNRoomsX();
+    double rdy = (box.yMax - box.yMin) / bptr->GetNRoomsY();
+    double rdz = (box.zMax - box.zMin) / bptr->GetNFloors();
+    double x1 = box.xMin + rdx * (roomx - 1);
+    double x2 = box.xMin + rdx * roomx;
+    double y1 = box.yMin + rdy * (roomy - 1);
+    double y2 = box.yMin + rdy * roomy;
+    double z1 = box.zMin + rdz * (floor - 1);
+    double z2 = box.zMin + rdz * floor;
+    NS_LOG_LOGIC("randomly allocating position in "
+                 << " (" << x1 << "," << x2 << ") "
+                 << "x (" << y1 << "," << y2 << ") "
+                 << "x (" << z1 << "," << z2 << ") ");
 
-  Box box = bptr->GetBoundaries ();
-  double rdx =  (box.xMax - box.xMin) / bptr->GetNRoomsX ();
-  double rdy =  (box.yMax - box.yMin) / bptr->GetNRoomsY ();
-  double rdz =  (box.zMax - box.zMin) / bptr->GetNFloors ();
-  double x1 = box.xMin + rdx * (roomx - 1);
-  double x2 = box.xMin + rdx * roomx;
-  double y1 = box.yMin + rdy * (roomy -1);
-  double y2 = box.yMin + rdy * roomy;
-  double z1 = box.zMin + rdz * (floor - 1);
-  double z2 = box.zMin + rdz * floor;
-  NS_LOG_LOGIC ("randomly allocating position in "
-                << " (" << x1 << "," << x2 << ") "
-                << "x (" << y1 << "," << y2 << ") "
-                << "x (" << z1 << "," << z2 << ") ");
-
-  double x = m_rand->GetValue (x1, x2);
-  double y = m_rand->GetValue (y1, y2);
-  double z = m_rand->GetValue (z1, z2);
-  return Vector (x, y, z);
+    double x = m_rand->GetValue(x1, x2);
+    double y = m_rand->GetValue(y1, y2);
+    double z = m_rand->GetValue(z1, z2);
+    return Vector(x, y, z);
 }
-
 
 int64_t
-FixedRoomPositionAllocator::AssignStreams (int64_t stream)
+FixedRoomPositionAllocator::AssignStreams(int64_t stream)
 {
-  m_rand->SetStream (stream);
-  return 1;
+    m_rand->SetStream(stream);
+    return 1;
 }
 
-}  // namespace ns3
+} // namespace ns3

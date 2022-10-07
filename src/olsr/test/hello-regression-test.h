@@ -21,14 +21,16 @@
 #ifndef HELLO_REGRESSION_TEST_H
 #define HELLO_REGRESSION_TEST_H
 
-#include "ns3/test.h"
-#include "ns3/nstime.h"
-#include "ns3/socket.h"
 #include "ns3/ipv4-raw-socket-impl.h"
 #include "ns3/node-container.h"
+#include "ns3/nstime.h"
+#include "ns3/socket.h"
+#include "ns3/test.h"
 
-namespace ns3 {
-namespace olsr {
+namespace ns3
+{
+namespace olsr
+{
 /**
  * \ingroup olsr-test
  * \ingroup tests
@@ -51,37 +53,38 @@ namespace olsr {
  */
 class HelloRegressionTest : public TestCase
 {
-public:
-  HelloRegressionTest ();
-  ~HelloRegressionTest () override;
-private:
-  /// Total simulation time
-  const Time m_time;
-  /// Create & configure test network
-  void CreateNodes ();
-  void DoRun () override;
+  public:
+    HelloRegressionTest();
+    ~HelloRegressionTest() override;
 
-  /**
-   * Receive raw data on node A
-   * \param socket receiving socket
-   */
-  void ReceivePktProbeA (Ptr<Socket> socket);
-  /// Packet counter on node A
-  uint8_t m_countA;
-  /// Receiving socket on node A
-  Ptr<Ipv4RawSocketImpl> m_rxSocketA;
-  /**
-   * Receive raw data on node B
-   * \param socket receiving socket
-   */
-  void ReceivePktProbeB (Ptr<Socket> socket);
-  /// Packet counter on node B
-  uint8_t m_countB;
-  /// Receiving socket on node B
-  Ptr<Ipv4RawSocketImpl> m_rxSocketB;
+  private:
+    /// Total simulation time
+    const Time m_time;
+    /// Create & configure test network
+    void CreateNodes();
+    void DoRun() override;
+
+    /**
+     * Receive raw data on node A
+     * \param socket receiving socket
+     */
+    void ReceivePktProbeA(Ptr<Socket> socket);
+    /// Packet counter on node A
+    uint8_t m_countA;
+    /// Receiving socket on node A
+    Ptr<Ipv4RawSocketImpl> m_rxSocketA;
+    /**
+     * Receive raw data on node B
+     * \param socket receiving socket
+     */
+    void ReceivePktProbeB(Ptr<Socket> socket);
+    /// Packet counter on node B
+    uint8_t m_countB;
+    /// Receiving socket on node B
+    Ptr<Ipv4RawSocketImpl> m_rxSocketB;
 };
 
-}
-}
+} // namespace olsr
+} // namespace ns3
 
 #endif /* HELLO_REGRESSION_TEST_H */

@@ -18,24 +18,23 @@
 
 /* taken from src/node/ipv4-routing-protocol.cc and adapted to IPv6 */
 
-#include "ns3/assert.h"
+#include "ipv6-routing-protocol.h"
 
 #include "ipv6-route.h"
-#include "ipv6-routing-protocol.h"
+
+#include "ns3/assert.h"
 
 namespace ns3
 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6RoutingProtocol);
+NS_OBJECT_ENSURE_REGISTERED(Ipv6RoutingProtocol);
 
-TypeId Ipv6RoutingProtocol::GetTypeId ()
+TypeId
+Ipv6RoutingProtocol::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Ipv6RoutingProtocol")
-    .SetParent<Object> ()
-    .SetGroupName ("Internet")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::Ipv6RoutingProtocol").SetParent<Object>().SetGroupName("Internet");
+    return tid;
 }
 
 } /* namespace ns3 */
-

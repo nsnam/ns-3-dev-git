@@ -24,29 +24,30 @@
 #define LI_ION_ENERGY_SOURCE_HELPER_H_
 
 #include "energy-model-helper.h"
+
 #include "ns3/node.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup energy
  * \brief Creates a LiIonEnergySource  object.
  *
  */
-class LiIonEnergySourceHelper: public EnergySourceHelper
+class LiIonEnergySourceHelper : public EnergySourceHelper
 {
-public:
-  LiIonEnergySourceHelper ();
-  ~LiIonEnergySourceHelper () override;
+  public:
+    LiIonEnergySourceHelper();
+    ~LiIonEnergySourceHelper() override;
 
-  void Set (std::string name, const AttributeValue &v) override;
+    void Set(std::string name, const AttributeValue& v) override;
 
-private:
-  Ptr<EnergySource> DoInstall (Ptr<Node> node) const override;
+  private:
+    Ptr<EnergySource> DoInstall(Ptr<Node> node) const override;
 
-private:
-  ObjectFactory m_liIonEnergySource; //!< LiIon Battery factory
-
+  private:
+    ObjectFactory m_liIonEnergySource; //!< LiIon Battery factory
 };
 
 } // namespace ns3

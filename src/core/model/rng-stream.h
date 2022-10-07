@@ -19,8 +19,8 @@
 
 #ifndef RNGSTREAM_H
 #define RNGSTREAM_H
-#include <string>
 #include <stdint.h>
+#include <string>
 
 /**
  * \file
@@ -28,7 +28,8 @@
  * ns3::RngStream declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup randomvariable
@@ -48,45 +49,43 @@ namespace ns3 {
  */
 class RngStream
 {
-public:
-  /**
-   * Construct from explicit seed, stream and substream values.
-   *
-   * \param [in] seed The starting seed.
-   * \param [in] stream The stream number.
-   * \param [in] substream The sub-stream number.
-   */
-  RngStream (uint32_t seed, uint64_t stream, uint64_t substream);
-  /**
-   * Copy constructor.
-   *
-   * \param [in] r The RngStream to copy.
-   */
-  RngStream (const RngStream & r);
-  /**
-   * Generate the next random number for this stream.
-   * Uniformly distributed between 0 and 1.
-   *
-   * \returns The next random.
-   */
-  double RandU01 ();
+  public:
+    /**
+     * Construct from explicit seed, stream and substream values.
+     *
+     * \param [in] seed The starting seed.
+     * \param [in] stream The stream number.
+     * \param [in] substream The sub-stream number.
+     */
+    RngStream(uint32_t seed, uint64_t stream, uint64_t substream);
+    /**
+     * Copy constructor.
+     *
+     * \param [in] r The RngStream to copy.
+     */
+    RngStream(const RngStream& r);
+    /**
+     * Generate the next random number for this stream.
+     * Uniformly distributed between 0 and 1.
+     *
+     * \returns The next random.
+     */
+    double RandU01();
 
-private:
-  /**
-   * Advance \pname{state} of the RNG by leaps and bounds.
-   *
-   * \param [in] nth The stream or substream index.
-   * \param [in] by The log2 base of \pname{nth}.
-   * \param [in] state The state vector to advance.
-   */
-  void AdvanceNthBy (uint64_t nth, int by, double state[6]);
+  private:
+    /**
+     * Advance \pname{state} of the RNG by leaps and bounds.
+     *
+     * \param [in] nth The stream or substream index.
+     * \param [in] by The log2 base of \pname{nth}.
+     * \param [in] state The state vector to advance.
+     */
+    void AdvanceNthBy(uint64_t nth, int by, double state[6]);
 
-  /** The RNG state vector. */
-  double m_currentState[6];
+    /** The RNG state vector. */
+    double m_currentState[6];
 };
 
 } // namespace ns3
 
 #endif
-
-

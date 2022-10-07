@@ -27,92 +27,95 @@
 
 #include "remote-channel-bundle-manager.h"
 
-#include "remote-channel-bundle.h"
 #include "null-message-simulator-impl.h"
+#include "remote-channel-bundle.h"
 
 #include "ns3/simulator.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 bool ns3::RemoteChannelBundleManager::g_initialized = false;
-ns3::RemoteChannelBundleManager::RemoteChannelMap ns3::RemoteChannelBundleManager::g_remoteChannelBundles;
+ns3::RemoteChannelBundleManager::RemoteChannelMap
+    ns3::RemoteChannelBundleManager::g_remoteChannelBundles;
 
 Ptr<RemoteChannelBundle>
-RemoteChannelBundleManager::Find (uint32_t systemId)
+RemoteChannelBundleManager::Find(uint32_t systemId)
 {
-  ns3::RemoteChannelBundleManager::RemoteChannelMap::iterator kv = g_remoteChannelBundles.find (systemId);
+    ns3::RemoteChannelBundleManager::RemoteChannelMap::iterator kv =
+        g_remoteChannelBundles.find(systemId);
 
-  if ( kv == g_remoteChannelBundles.end ())
+    if (kv == g_remoteChannelBundles.end())
     {
-      return 0;
+        return 0;
     }
-  else
+    else
     {
-      return kv->second;
+        return kv->second;
     }
 }
 
 Ptr<RemoteChannelBundle>
-RemoteChannelBundleManager::Add (uint32_t systemId)
+RemoteChannelBundleManager::Add(uint32_t systemId)
 {
-  NS_ASSERT (!g_initialized);
-  NS_ASSERT (g_remoteChannelBundles.find (systemId) == g_remoteChannelBundles.end ());
+    NS_ASSERT(!g_initialized);
+    NS_ASSERT(g_remoteChannelBundles.find(systemId) == g_remoteChannelBundles.end());
 
-  Ptr<RemoteChannelBundle> remoteChannelBundle = Create<RemoteChannelBundle> (systemId);
+    Ptr<RemoteChannelBundle> remoteChannelBundle = Create<RemoteChannelBundle>(systemId);
 
-  g_remoteChannelBundles[systemId] = remoteChannelBundle;
+    g_remoteChannelBundles[systemId] = remoteChannelBundle;
 
-  return remoteChannelBundle;
+    return remoteChannelBundle;
 }
 
 std::size_t
-RemoteChannelBundleManager::Size (void)
+RemoteChannelBundleManager::Size(void)
 {
-  return g_remoteChannelBundles.size();
+    return g_remoteChannelBundles.size();
 }
 
 void
-RemoteChannelBundleManager::InitializeNullMessageEvents (void)
+RemoteChannelBundleManager::InitializeNullMessageEvents(void)
 {
-  NS_ASSERT (!g_initialized);
+    NS_ASSERT(!g_initialized);
 
-  for ( RemoteChannelMap::const_iterator iter = g_remoteChannelBundles.begin ();
-        iter != g_remoteChannelBundles.end ();
-        ++iter )
+    for (RemoteChannelMap::const_iterator iter = g_remoteChannelBundles.begin();
+         iter != g_remoteChannelBundles.end();
+         ++iter)
     {
-      Ptr<RemoteChannelBundle> bundle = iter->second;
-      bundle->Send (bundle->GetDelay ());
+        Ptr<RemoteChannelBundle> bundle = iter->second;
+        bundle->Send(bundle->GetDelay());
 
-      NullMessageSimulatorImpl::GetInstance ()->ScheduleNullMessageEvent (bundle);
+        NullMessageSimulatorImpl::GetInstance()->ScheduleNullMessageEvent(bundle);
     }
 
-  g_initialized = true;
+    g_initialized = true;
 }
 
 Time
-RemoteChannelBundleManager::GetSafeTime (void)
+RemoteChannelBundleManager::GetSafeTime(void)
 {
-  NS_ASSERT (g_initialized);
+    NS_ASSERT(g_initialized);
 
-  Time safeTime = Simulator::GetMaximumSimulationTime ();
+    Time safeTime = Simulator::GetMaximumSimulationTime();
 
-  for (RemoteChannelMap::const_iterator kv = g_remoteChannelBundles.begin ();
-       kv != g_remoteChannelBundles.end ();
-       ++kv)
+    for (RemoteChannelMap::const_iterator kv = g_remoteChannelBundles.begin();
+         kv != g_remoteChannelBundles.end();
+         ++kv)
     {
-      safeTime = Min (safeTime, kv->second->GetGuaranteeTime ());
+        safeTime = Min(safeTime, kv->second->GetGuaranteeTime());
     }
 
-  return safeTime;
+    return safeTime;
 }
 
 void
-RemoteChannelBundleManager::Destroy (void)
+RemoteChannelBundleManager::Destroy(void)
 {
-  NS_ASSERT (g_initialized);
+    NS_ASSERT(g_initialized);
 
-  g_remoteChannelBundles.clear();
-  g_initialized = false;
+    g_remoteChannelBundles.clear();
+    g_initialized = false;
 }
 
 } // namespace ns3

@@ -18,44 +18,41 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-
-#include <ns3/spectrum-signal-parameters.h>
-#include <ns3/spectrum-phy.h>
-#include <ns3/spectrum-value.h>
-#include <ns3/log.h>
 #include <ns3/antenna-model.h>
+#include <ns3/log.h>
+#include <ns3/spectrum-phy.h>
+#include <ns3/spectrum-signal-parameters.h>
+#include <ns3/spectrum-value.h>
 
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("SpectrumSignalParameters");
-
-SpectrumSignalParameters::SpectrumSignalParameters ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("SpectrumSignalParameters");
+
+SpectrumSignalParameters::SpectrumSignalParameters()
+{
+    NS_LOG_FUNCTION(this);
 }
 
-SpectrumSignalParameters::~SpectrumSignalParameters ()
+SpectrumSignalParameters::~SpectrumSignalParameters()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-SpectrumSignalParameters::SpectrumSignalParameters (const SpectrumSignalParameters& p)
+SpectrumSignalParameters::SpectrumSignalParameters(const SpectrumSignalParameters& p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  psd = p.psd->Copy ();
-  duration = p.duration;
-  txPhy = p.txPhy;
-  txAntenna = p.txAntenna;
+    NS_LOG_FUNCTION(this << &p);
+    psd = p.psd->Copy();
+    duration = p.duration;
+    txPhy = p.txPhy;
+    txAntenna = p.txAntenna;
 }
 
 Ptr<SpectrumSignalParameters>
-SpectrumSignalParameters::Copy () const
+SpectrumSignalParameters::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<SpectrumSignalParameters> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<SpectrumSignalParameters>(*this);
 }
-
-
 
 } // namespace ns3

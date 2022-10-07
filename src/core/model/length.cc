@@ -46,7 +46,8 @@
  * \ingroup length
  * Unnamed namespace
  */
-namespace {
+namespace
+{
 /**
  * Helper function to scale an input value by a given ratio
  *
@@ -56,10 +57,11 @@ namespace {
  *
  * \return The result of value * R::num / R::den
  */
-template<class R>
-double ScaleValue (double value)
+template <class R>
+double
+ScaleValue(double value)
 {
-  return (value * R::num) / static_cast<double> (R::den);
+    return (value * R::num) / static_cast<double>(R::den);
 }
 
 /**
@@ -69,9 +71,10 @@ double ScaleValue (double value)
  *
  * \return Equivalent value in meters
  */
-double FootToMeter (double value)
+double
+FootToMeter(double value)
 {
-  return value * 0.3048;
+    return value * 0.3048;
 }
 
 /**
@@ -81,9 +84,10 @@ double FootToMeter (double value)
  *
  * \return Equivalent value in feet
  */
-double MeterToFoot (double value)
+double
+MeterToFoot(double value)
 {
-  return value * 3.28084;
+    return value * 3.28084;
 }
 
 /**
@@ -97,10 +101,11 @@ double MeterToFoot (double value)
  *
  * \return Equivalent value in meters
  */
-template<class R>
-double USToMeter (double value)
+template <class R>
+double
+USToMeter(double value)
 {
-  return FootToMeter ( ScaleValue<R> (value) );
+    return FootToMeter(ScaleValue<R>(value));
 }
 
 /**
@@ -114,10 +119,11 @@ double USToMeter (double value)
  *
  * \return Equivalent value in a US customary unit
  */
-template<class R>
-double MeterToUS (double value)
+template <class R>
+double
+MeterToUS(double value)
 {
-  return ScaleValue<R> ( MeterToFoot (value) );
+    return ScaleValue<R>(MeterToFoot(value));
 }
 
 /**
@@ -129,65 +135,63 @@ double MeterToUS (double value)
  *
  * \return Result of converting value from \p fromUnit to \p toUnit
  */
-double Convert (double value, ns3::Length::Unit fromUnit, ns3::Length::Unit toUnit)
+double
+Convert(double value, ns3::Length::Unit fromUnit, ns3::Length::Unit toUnit)
 {
-  using Unit = ns3::Length::Unit;
-  using Key = std::pair<Unit, Unit>;
-  using Conversion = std::function<double (double)>;
+    using Unit = ns3::Length::Unit;
+    using Key = std::pair<Unit, Unit>;
+    using Conversion = std::function<double(double)>;
 
-  /**
-   * Helper to generate hash values from pairs of Length::Units
-   */
-  struct KeyHash
-  {
-    std::size_t operator () (const Key& key) const noexcept
+    /**
+     * Helper to generate hash values from pairs of Length::Units
+     */
+    struct KeyHash
     {
-      static_assert (sizeof(Unit) < sizeof(std::size_t),
-                     "sizeof(Length::Unit) changed, it must be less than "
-                     "sizeof(std::size_t)");
+        std::size_t operator()(const Key& key) const noexcept
+        {
+            static_assert(sizeof(Unit) < sizeof(std::size_t),
+                          "sizeof(Length::Unit) changed, it must be less than "
+                          "sizeof(std::size_t)");
 
-      int shift = sizeof(Unit) * 8;
-      return static_cast<std::size_t> (key.first) << shift |
-             static_cast<std::size_t> (key.second);
+            int shift = sizeof(Unit) * 8;
+            return static_cast<std::size_t>(key.first) << shift |
+                   static_cast<std::size_t>(key.second);
+        }
+    };
+
+    using ConversionTable = std::unordered_map<Key, Conversion, KeyHash>;
+
+    static ConversionTable CONVERSIONS{
+        {{Unit::Nanometer, Unit::Meter}, ScaleValue<std::nano>},
+        {{Unit::Meter, Unit::Nanometer}, ScaleValue<std::giga>},
+        {{Unit::Micrometer, Unit::Meter}, ScaleValue<std::micro>},
+        {{Unit::Meter, Unit::Micrometer}, ScaleValue<std::mega>},
+        {{Unit::Millimeter, Unit::Meter}, ScaleValue<std::milli>},
+        {{Unit::Meter, Unit::Millimeter}, ScaleValue<std::kilo>},
+        {{Unit::Centimeter, Unit::Meter}, ScaleValue<std::centi>},
+        {{Unit::Meter, Unit::Centimeter}, ScaleValue<std::hecto>},
+        {{Unit::Meter, Unit::Meter}, ScaleValue<std::ratio<1, 1>>},
+        {{Unit::Kilometer, Unit::Meter}, ScaleValue<std::kilo>},
+        {{Unit::Meter, Unit::Kilometer}, ScaleValue<std::milli>},
+        {{Unit::NauticalMile, Unit::Meter}, ScaleValue<std::ratio<1852, 1>>},
+        {{Unit::Meter, Unit::NauticalMile}, ScaleValue<std::ratio<1, 1852>>},
+        {{Unit::Inch, Unit::Meter}, USToMeter<std::ratio<1, 12>>},
+        {{Unit::Meter, Unit::Inch}, MeterToUS<std::ratio<12, 1>>},
+        {{Unit::Foot, Unit::Meter}, FootToMeter},
+        {{Unit::Meter, Unit::Foot}, MeterToFoot},
+        {{Unit::Yard, Unit::Meter}, USToMeter<std::ratio<3, 1>>},
+        {{Unit::Meter, Unit::Yard}, MeterToUS<std::ratio<1, 3>>},
+        {{Unit::Mile, Unit::Meter}, USToMeter<std::ratio<5280, 1>>},
+        {{Unit::Meter, Unit::Mile}, MeterToUS<std::ratio<1, 5280>>}};
+
+    auto iter = CONVERSIONS.find(Key{fromUnit, toUnit});
+
+    if (iter == CONVERSIONS.end())
+    {
+        NS_FATAL_ERROR("No conversion defined for " << fromUnit << " -> " << toUnit);
     }
 
-  };
-
-  using ConversionTable = std::unordered_map<Key, Conversion, KeyHash>;
-
-  static ConversionTable CONVERSIONS {
-    { {Unit::Nanometer, Unit::Meter}, ScaleValue<std::nano> },
-    { {Unit::Meter, Unit::Nanometer}, ScaleValue<std::giga> },
-    { {Unit::Micrometer, Unit::Meter}, ScaleValue<std::micro> },
-    { {Unit::Meter, Unit::Micrometer}, ScaleValue<std::mega> },
-    { {Unit::Millimeter, Unit::Meter}, ScaleValue<std::milli> },
-    { {Unit::Meter, Unit::Millimeter}, ScaleValue<std::kilo> },
-    { {Unit::Centimeter, Unit::Meter}, ScaleValue<std::centi> },
-    { {Unit::Meter, Unit::Centimeter}, ScaleValue<std::hecto> },
-    { {Unit::Meter, Unit::Meter}, ScaleValue<std::ratio<1,1> > },
-    { {Unit::Kilometer, Unit::Meter}, ScaleValue<std::kilo> },
-    { {Unit::Meter, Unit::Kilometer}, ScaleValue<std::milli> },
-    { {Unit::NauticalMile, Unit::Meter}, ScaleValue<std::ratio<1852, 1> > },
-    { {Unit::Meter, Unit::NauticalMile}, ScaleValue<std::ratio<1, 1852> > },
-    { {Unit::Inch, Unit::Meter}, USToMeter<std::ratio<1, 12> > },
-    { {Unit::Meter, Unit::Inch}, MeterToUS<std::ratio<12, 1> > },
-    { {Unit::Foot, Unit::Meter}, FootToMeter },
-    { {Unit::Meter, Unit::Foot}, MeterToFoot },
-    { {Unit::Yard, Unit::Meter}, USToMeter<std::ratio<3, 1> > },
-    { {Unit::Meter, Unit::Yard}, MeterToUS<std::ratio<1, 3> > },
-    { {Unit::Mile, Unit::Meter}, USToMeter<std::ratio<5280, 1> > },
-    { {Unit::Meter, Unit::Mile}, MeterToUS<std::ratio<1, 5280> > }
-  };
-
-  auto iter = CONVERSIONS.find ( Key {fromUnit, toUnit} );
-
-  if (iter == CONVERSIONS.end ())
-    {
-      NS_FATAL_ERROR ("No conversion defined for " << fromUnit
-                                                   << " -> " << toUnit);
-    }
-
-  return iter->second (value);
+    return iter->second(value);
 }
 
 /**
@@ -198,9 +202,10 @@ double Convert (double value, ns3::Length::Unit fromUnit, ns3::Length::Unit toUn
  *
  * \return Result of converting the quantity value to the requested units
  */
-double Convert (const ns3::Length::Quantity& from, ns3::Length::Unit toUnit)
+double
+Convert(const ns3::Length::Quantity& from, ns3::Length::Unit toUnit)
 {
-  return Convert (from.Value (), from.Unit (), toUnit);
+    return Convert(from.Value(), from.Unit(), toUnit);
 }
 
 /**
@@ -211,470 +216,467 @@ double Convert (const ns3::Length::Quantity& from, ns3::Length::Unit toUnit)
  */
 class EnumHash
 {
-public:
-  /**
-   * Produce a hash value for a Length::Unit
-   *
-   * \param u Length::Unit to hash
-   *
-   * \return Hash value for the Length::Unit
-   */
-  std::size_t operator () (ns3::Length::Unit u) const noexcept
-  {
-    return static_cast<std::size_t> (u);
-  }
+  public:
+    /**
+     * Produce a hash value for a Length::Unit
+     *
+     * \param u Length::Unit to hash
+     *
+     * \return Hash value for the Length::Unit
+     */
+    std::size_t operator()(ns3::Length::Unit u) const noexcept
+    {
+        return static_cast<std::size_t>(u);
+    }
 };
 
-}   // unnamed namespace
+} // unnamed namespace
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("Length");
+NS_LOG_COMPONENT_DEFINE("Length");
 
 // Implement the attribute helper
-ATTRIBUTE_HELPER_CPP (Length);
+ATTRIBUTE_HELPER_CPP(Length);
 
 std::optional<Length>
-Length::TryParse (double value, const std::string& unitString)
+Length::TryParse(double value, const std::string& unitString)
 {
-  NS_LOG_FUNCTION (value << unitString);
+    NS_LOG_FUNCTION(value << unitString);
 
-  auto unit = FromString (unitString);
+    auto unit = FromString(unitString);
 
-  if (unit.has_value ())
+    if (unit.has_value())
     {
-      return Length (value, *unit);
+        return Length(value, *unit);
     }
 
-  return std::nullopt;
+    return std::nullopt;
 }
 
-Length::Length ()
-  :   m_value (0)
+Length::Length()
+    : m_value(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-Length::Length (const std::string& input)
-  :   m_value (0)
+Length::Length(const std::string& input)
+    : m_value(0)
 {
-  NS_LOG_FUNCTION (this << input);
+    NS_LOG_FUNCTION(this << input);
 
-  std::istringstream stream (input);
+    std::istringstream stream(input);
 
-  stream >> *this;
+    stream >> *this;
 }
 
-Length::Length (double value, const std::string& unitString)
-  :   m_value (0)
+Length::Length(double value, const std::string& unitString)
+    : m_value(0)
 {
-  NS_LOG_FUNCTION (this << value << unitString);
+    NS_LOG_FUNCTION(this << value << unitString);
 
-  auto unit = FromString (unitString);
+    auto unit = FromString(unitString);
 
-  if (!unit.has_value ())
+    if (!unit.has_value())
     {
-      NS_FATAL_ERROR ("A Length object could not be constructed from the unit "
-                      "string '" << unitString << "', because the string is not associated "
-                      "with a Length::Unit entry");
+        NS_FATAL_ERROR("A Length object could not be constructed from the unit "
+                       "string '"
+                       << unitString
+                       << "', because the string is not associated "
+                          "with a Length::Unit entry");
     }
 
-  m_value = Convert (value, *unit, Length::Unit::Meter);
+    m_value = Convert(value, *unit, Length::Unit::Meter);
 }
 
-Length::Length (double value, Length::Unit unit)
-  :   m_value (0)
+Length::Length(double value, Length::Unit unit)
+    : m_value(0)
 {
-  NS_LOG_FUNCTION (this << value << unit);
+    NS_LOG_FUNCTION(this << value << unit);
 
-  m_value = Convert (value, unit, Length::Unit::Meter);
+    m_value = Convert(value, unit, Length::Unit::Meter);
 }
 
-Length::Length (Quantity quantity)
-  : Length (quantity.Value (), quantity.Unit ())
+Length::Length(Quantity quantity)
+    : Length(quantity.Value(), quantity.Unit())
 {
-  NS_LOG_FUNCTION (this << quantity);
+    NS_LOG_FUNCTION(this << quantity);
 }
 
 Length&
-Length::operator= (const Length::Quantity& q)
+Length::operator=(const Length::Quantity& q)
 {
-  NS_LOG_FUNCTION (this << q);
+    NS_LOG_FUNCTION(this << q);
 
-  m_value = Convert (q, Length::Unit::Meter);
+    m_value = Convert(q, Length::Unit::Meter);
 
-  return *this;
+    return *this;
 }
 
 bool
-Length::IsEqual (const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
+Length::IsEqual(const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
 {
-  NS_LOG_FUNCTION (this << m_value << other.m_value << tolerance);
+    NS_LOG_FUNCTION(this << m_value << other.m_value << tolerance);
 
-  if ( m_value == other.m_value )
+    if (m_value == other.m_value)
     {
-      return true;
+        return true;
     }
 
-  auto diff = std::abs (m_value - other.m_value);
+    auto diff = std::abs(m_value - other.m_value);
 
-  return diff <= tolerance;
+    return diff <= tolerance;
 }
 
 bool
-Length::IsNotEqual (const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
+Length::IsNotEqual(const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
 {
-  NS_LOG_FUNCTION (this << m_value << other.m_value << tolerance);
+    NS_LOG_FUNCTION(this << m_value << other.m_value << tolerance);
 
-  return !IsEqual (other, tolerance);
+    return !IsEqual(other, tolerance);
 }
 
 bool
-Length::IsLess (const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
+Length::IsLess(const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
 {
-  NS_LOG_FUNCTION (this << m_value << other.m_value << tolerance);
+    NS_LOG_FUNCTION(this << m_value << other.m_value << tolerance);
 
-  return m_value < other.m_value && IsNotEqual (other, tolerance);
+    return m_value < other.m_value && IsNotEqual(other, tolerance);
 }
 
 bool
-Length::IsLessOrEqual (const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
+Length::IsLessOrEqual(const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
 {
-  NS_LOG_FUNCTION (this << m_value << other.m_value << tolerance);
+    NS_LOG_FUNCTION(this << m_value << other.m_value << tolerance);
 
-  return m_value < other.m_value || IsEqual (other, tolerance);
+    return m_value < other.m_value || IsEqual(other, tolerance);
 }
 
 bool
-Length::IsGreater (const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
+Length::IsGreater(const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
 {
-  NS_LOG_FUNCTION (this << m_value << other.m_value << tolerance);
+    NS_LOG_FUNCTION(this << m_value << other.m_value << tolerance);
 
-  return !IsLessOrEqual (other, tolerance);
+    return !IsLessOrEqual(other, tolerance);
 }
 
 bool
-Length::IsGreaterOrEqual (const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
+Length::IsGreaterOrEqual(const Length& other, double tolerance /*=DEFAULT_TOLERANCE*/) const
 {
-  NS_LOG_FUNCTION (this << m_value << other.m_value << tolerance);
+    NS_LOG_FUNCTION(this << m_value << other.m_value << tolerance);
 
-  return !IsLess (other, tolerance);
+    return !IsLess(other, tolerance);
 }
 
 void
-Length::swap (Length& other)
+Length::swap(Length& other)
 {
-  using std::swap;
+    using std::swap;
 
-  swap (m_value, other.m_value);
+    swap(m_value, other.m_value);
 }
 
 double
-Length::GetDouble () const
+Length::GetDouble() const
 {
-  return m_value;
+    return m_value;
 }
 
 Length::Quantity
-Length::As (Length::Unit unit) const
+Length::As(Length::Unit unit) const
 {
-  NS_LOG_FUNCTION (this << unit);
+    NS_LOG_FUNCTION(this << unit);
 
-  double value = Convert (m_value, Length::Unit::Meter, unit);
+    double value = Convert(m_value, Length::Unit::Meter, unit);
 
-  return Quantity (value, unit);
+    return Quantity(value, unit);
 }
 
 bool
-operator== (const Length& left, const Length& right)
+operator==(const Length& left, const Length& right)
 {
-  return left.GetDouble () == right.GetDouble ();
+    return left.GetDouble() == right.GetDouble();
 }
 
 bool
-operator!= (const Length& left, const Length& right)
+operator!=(const Length& left, const Length& right)
 {
-  return left.GetDouble () != right.GetDouble ();
+    return left.GetDouble() != right.GetDouble();
 }
 
 bool
-operator< (const Length& left, const Length& right)
+operator<(const Length& left, const Length& right)
 {
-  return left.GetDouble () < right.GetDouble ();
+    return left.GetDouble() < right.GetDouble();
 }
 
 bool
-operator<= (const Length& left, const Length& right)
+operator<=(const Length& left, const Length& right)
 {
-  return left.GetDouble () <= right.GetDouble ();
+    return left.GetDouble() <= right.GetDouble();
 }
 
 bool
-operator> (const Length& left, const Length& right)
+operator>(const Length& left, const Length& right)
 {
-  return left.GetDouble () > right.GetDouble ();
+    return left.GetDouble() > right.GetDouble();
 }
 
 bool
-operator>= (const Length& left, const Length& right)
+operator>=(const Length& left, const Length& right)
 {
-  return left.GetDouble () >= right.GetDouble ();
+    return left.GetDouble() >= right.GetDouble();
 }
 
 Length
-operator+ (const Length& left, const Length& right)
+operator+(const Length& left, const Length& right)
 {
-  double value = left.GetDouble () + right.GetDouble ();
-  return Length ( value, Length::Unit::Meter );
+    double value = left.GetDouble() + right.GetDouble();
+    return Length(value, Length::Unit::Meter);
 }
 
 Length
-operator- (const Length& left, const Length& right)
+operator-(const Length& left, const Length& right)
 {
-  double value = left.GetDouble () - right.GetDouble ();
-  return Length ( value, Length::Unit::Meter );
+    double value = left.GetDouble() - right.GetDouble();
+    return Length(value, Length::Unit::Meter);
 }
 
 Length
-operator* (const Length& left, double scalar)
+operator*(const Length& left, double scalar)
 {
-  double value = left.GetDouble () * scalar;
-  return Length ( value, Length::Unit::Meter );
+    double value = left.GetDouble() * scalar;
+    return Length(value, Length::Unit::Meter);
 }
 
 Length
-operator* (double scalar, const Length & right)
+operator*(double scalar, const Length& right)
 {
-  return right * scalar;
+    return right * scalar;
 }
 
 Length
-operator/ (const Length & left, double scalar)
+operator/(const Length& left, double scalar)
 {
-  if (scalar == 0)
+    if (scalar == 0)
     {
-      NS_FATAL_ERROR ("Attempted to divide Length by 0");
+        NS_FATAL_ERROR("Attempted to divide Length by 0");
     }
 
-  return left * (1.0 / scalar);
+    return left * (1.0 / scalar);
 }
 
 double
-operator/ (const Length & numerator, const Length& denominator)
+operator/(const Length& numerator, const Length& denominator)
 {
-  if (denominator.GetDouble () == 0)
+    if (denominator.GetDouble() == 0)
     {
-      return std::numeric_limits<double>::quiet_NaN ();
+        return std::numeric_limits<double>::quiet_NaN();
     }
 
-  return numerator.GetDouble () / denominator.GetDouble ();
+    return numerator.GetDouble() / denominator.GetDouble();
 }
 
 int64_t
-Div (const Length& numerator, const Length& denominator, Length* remainder)
+Div(const Length& numerator, const Length& denominator, Length* remainder)
 {
-  double value = numerator / denominator;
+    double value = numerator / denominator;
 
-  if (std::isnan (value))
+    if (std::isnan(value))
     {
-      NS_FATAL_ERROR ("numerator / denominator return NaN");
+        NS_FATAL_ERROR("numerator / denominator return NaN");
     }
 
-  if ( remainder )
+    if (remainder)
     {
-      double rem = std::fmod (numerator.GetDouble (), denominator.GetDouble ());
-      *remainder = Length (rem, Length::Unit::Meter);
+        double rem = std::fmod(numerator.GetDouble(), denominator.GetDouble());
+        *remainder = Length(rem, Length::Unit::Meter);
     }
 
-  return static_cast<int64_t> (std::trunc (value));
+    return static_cast<int64_t>(std::trunc(value));
 }
 
 Length
-Mod (const Length& numerator, const Length& denominator)
+Mod(const Length& numerator, const Length& denominator)
 {
-  double rem = std::fmod (numerator.GetDouble (), denominator.GetDouble ());
+    double rem = std::fmod(numerator.GetDouble(), denominator.GetDouble());
 
-  if (std::isnan (rem))
+    if (std::isnan(rem))
     {
-      NS_FATAL_ERROR ("numerator / denominator return NaN");
+        NS_FATAL_ERROR("numerator / denominator return NaN");
     }
 
-  return Length (rem, Length::Unit::Meter);
+    return Length(rem, Length::Unit::Meter);
 }
 
 std::string
-ToSymbol (Length::Unit unit)
+ToSymbol(Length::Unit unit)
 {
-  using StringTable = std::unordered_map<Length::Unit, std::string, EnumHash>;
+    using StringTable = std::unordered_map<Length::Unit, std::string, EnumHash>;
 
-  static const StringTable STRINGS {
-    {Length::Unit::Nanometer, "nm"},
-    {Length::Unit::Micrometer, "um"},
-    {Length::Unit::Millimeter, "mm"},
-    {Length::Unit::Centimeter, "cm"},
-    {Length::Unit::Meter, "m"},
-    {Length::Unit::Kilometer, "km"},
-    {Length::Unit::NauticalMile, "nmi"},
-    {Length::Unit::Inch, "in"},
-    {Length::Unit::Foot, "ft"},
-    {Length::Unit::Yard, "yd"},
-    {Length::Unit::Mile, "mi"}
-  };
+    static const StringTable STRINGS{{Length::Unit::Nanometer, "nm"},
+                                     {Length::Unit::Micrometer, "um"},
+                                     {Length::Unit::Millimeter, "mm"},
+                                     {Length::Unit::Centimeter, "cm"},
+                                     {Length::Unit::Meter, "m"},
+                                     {Length::Unit::Kilometer, "km"},
+                                     {Length::Unit::NauticalMile, "nmi"},
+                                     {Length::Unit::Inch, "in"},
+                                     {Length::Unit::Foot, "ft"},
+                                     {Length::Unit::Yard, "yd"},
+                                     {Length::Unit::Mile, "mi"}};
 
-  auto iter = STRINGS.find (unit);
+    auto iter = STRINGS.find(unit);
 
-  if (iter == STRINGS.end ())
+    if (iter == STRINGS.end())
     {
-      NS_FATAL_ERROR ("A symbol could not be found for Length::Unit with value "
-                      << EnumHash ()(unit));
+        NS_FATAL_ERROR("A symbol could not be found for Length::Unit with value "
+                       << EnumHash()(unit));
     }
 
-  return iter->second;
+    return iter->second;
 }
 
 std::string
-ToName (Length::Unit unit, bool plural /*=false*/)
+ToName(Length::Unit unit, bool plural /*=false*/)
 {
-  using Entry = std::tuple<std::string, std::string>;
-  using StringTable = std::unordered_map<Length::Unit, Entry, EnumHash>;
+    using Entry = std::tuple<std::string, std::string>;
+    using StringTable = std::unordered_map<Length::Unit, Entry, EnumHash>;
 
-  static const StringTable STRINGS {
-    {Length::Unit::Nanometer,    Entry{"nanometer", "nanometers"}},
-    {Length::Unit::Micrometer,   Entry{"micrometer", "micrometer"}},
-    {Length::Unit::Millimeter,   Entry{"millimeter", "millimeters"}},
-    {Length::Unit::Centimeter,   Entry{"centimeter", "centimeters"}},
-    {Length::Unit::Meter,        Entry{"meter", "meters"}},
-    {Length::Unit::Kilometer,    Entry{"kilometer", "kilometers"}},
-    {Length::Unit::NauticalMile, Entry{"nautical mile", "nautical miles"}},
-    {Length::Unit::Inch,         Entry{"inch", "inches"}},
-    {Length::Unit::Foot,         Entry{"foot", "feet"}},
-    {Length::Unit::Yard,         Entry{"yard", "yards"}},
-    {Length::Unit::Mile,         Entry{"mile", "miles"}}
-  };
+    static const StringTable STRINGS{
+        {Length::Unit::Nanometer, Entry{"nanometer", "nanometers"}},
+        {Length::Unit::Micrometer, Entry{"micrometer", "micrometer"}},
+        {Length::Unit::Millimeter, Entry{"millimeter", "millimeters"}},
+        {Length::Unit::Centimeter, Entry{"centimeter", "centimeters"}},
+        {Length::Unit::Meter, Entry{"meter", "meters"}},
+        {Length::Unit::Kilometer, Entry{"kilometer", "kilometers"}},
+        {Length::Unit::NauticalMile, Entry{"nautical mile", "nautical miles"}},
+        {Length::Unit::Inch, Entry{"inch", "inches"}},
+        {Length::Unit::Foot, Entry{"foot", "feet"}},
+        {Length::Unit::Yard, Entry{"yard", "yards"}},
+        {Length::Unit::Mile, Entry{"mile", "miles"}}};
 
-  auto iter = STRINGS.find (unit);
+    auto iter = STRINGS.find(unit);
 
-  if (iter == STRINGS.end ())
+    if (iter == STRINGS.end())
     {
-      NS_FATAL_ERROR ("A symbol could not be found for Length::Unit with value "
-                      << EnumHash ()(unit));
+        NS_FATAL_ERROR("A symbol could not be found for Length::Unit with value "
+                       << EnumHash()(unit));
     }
 
-  if (plural)
+    if (plural)
     {
-      return std::get<1> (iter->second);
+        return std::get<1>(iter->second);
     }
 
-  return std::get<0> (iter->second);
+    return std::get<0>(iter->second);
 }
 
 std::optional<Length::Unit>
-FromString (std::string unitString)
+FromString(std::string unitString)
 {
-  using UnitTable = std::unordered_map<std::string, Length::Unit>;
+    using UnitTable = std::unordered_map<std::string, Length::Unit>;
 
-  static const UnitTable UNITS {
-    { "nm", Length::Unit::Nanometer },
-    { "nanometer", Length::Unit::Nanometer },
-    { "nanometers", Length::Unit::Nanometer },
-    { "nanometre", Length::Unit::Nanometer },
-    { "nanometres", Length::Unit::Nanometer },
-    { "um", Length::Unit::Micrometer },
-    { "micrometer", Length::Unit::Micrometer },
-    { "micrometers", Length::Unit::Micrometer },
-    { "micrometre", Length::Unit::Micrometer },
-    { "micrometres", Length::Unit::Micrometer },
-    { "mm", Length::Unit::Millimeter },
-    { "millimeter", Length::Unit::Millimeter },
-    { "millimeters", Length::Unit::Millimeter },
-    { "millimetre", Length::Unit::Millimeter },
-    { "millimetres", Length::Unit::Millimeter },
-    { "cm", Length::Unit::Centimeter },
-    { "centimeter", Length::Unit::Centimeter },
-    { "centimeters", Length::Unit::Centimeter },
-    { "centimetre", Length::Unit::Centimeter },
-    { "centimetres", Length::Unit::Centimeter },
-    { "m", Length::Unit::Meter },
-    { "meter", Length::Unit::Meter },
-    { "metre", Length::Unit::Meter },
-    { "meters", Length::Unit::Meter },
-    { "metres", Length::Unit::Meter },
-    { "km", Length::Unit::Kilometer },
-    { "kilometer", Length::Unit::Kilometer },
-    { "kilometers", Length::Unit::Kilometer },
-    { "kilometre", Length::Unit::Kilometer },
-    { "kilometres", Length::Unit::Kilometer },
-    { "nmi", Length::Unit::NauticalMile },
-    { "nauticalmile", Length::Unit::NauticalMile },
-    { "nauticalmiles", Length::Unit::NauticalMile },
-    { "in", Length::Unit::Inch },
-    { "inch", Length::Unit::Inch },
-    { "inches", Length::Unit::Inch },
-    { "ft", Length::Unit::Foot },
-    { "foot", Length::Unit::Foot },
-    { "feet", Length::Unit::Foot },
-    { "yd", Length::Unit::Yard },
-    { "yard", Length::Unit::Yard },
-    { "yards", Length::Unit::Yard },
-    { "mi", Length::Unit::Mile },
-    { "mile", Length::Unit::Mile },
-    { "miles", Length::Unit::Mile }
-  };
+    static const UnitTable UNITS{{"nm", Length::Unit::Nanometer},
+                                 {"nanometer", Length::Unit::Nanometer},
+                                 {"nanometers", Length::Unit::Nanometer},
+                                 {"nanometre", Length::Unit::Nanometer},
+                                 {"nanometres", Length::Unit::Nanometer},
+                                 {"um", Length::Unit::Micrometer},
+                                 {"micrometer", Length::Unit::Micrometer},
+                                 {"micrometers", Length::Unit::Micrometer},
+                                 {"micrometre", Length::Unit::Micrometer},
+                                 {"micrometres", Length::Unit::Micrometer},
+                                 {"mm", Length::Unit::Millimeter},
+                                 {"millimeter", Length::Unit::Millimeter},
+                                 {"millimeters", Length::Unit::Millimeter},
+                                 {"millimetre", Length::Unit::Millimeter},
+                                 {"millimetres", Length::Unit::Millimeter},
+                                 {"cm", Length::Unit::Centimeter},
+                                 {"centimeter", Length::Unit::Centimeter},
+                                 {"centimeters", Length::Unit::Centimeter},
+                                 {"centimetre", Length::Unit::Centimeter},
+                                 {"centimetres", Length::Unit::Centimeter},
+                                 {"m", Length::Unit::Meter},
+                                 {"meter", Length::Unit::Meter},
+                                 {"metre", Length::Unit::Meter},
+                                 {"meters", Length::Unit::Meter},
+                                 {"metres", Length::Unit::Meter},
+                                 {"km", Length::Unit::Kilometer},
+                                 {"kilometer", Length::Unit::Kilometer},
+                                 {"kilometers", Length::Unit::Kilometer},
+                                 {"kilometre", Length::Unit::Kilometer},
+                                 {"kilometres", Length::Unit::Kilometer},
+                                 {"nmi", Length::Unit::NauticalMile},
+                                 {"nauticalmile", Length::Unit::NauticalMile},
+                                 {"nauticalmiles", Length::Unit::NauticalMile},
+                                 {"in", Length::Unit::Inch},
+                                 {"inch", Length::Unit::Inch},
+                                 {"inches", Length::Unit::Inch},
+                                 {"ft", Length::Unit::Foot},
+                                 {"foot", Length::Unit::Foot},
+                                 {"feet", Length::Unit::Foot},
+                                 {"yd", Length::Unit::Yard},
+                                 {"yard", Length::Unit::Yard},
+                                 {"yards", Length::Unit::Yard},
+                                 {"mi", Length::Unit::Mile},
+                                 {"mile", Length::Unit::Mile},
+                                 {"miles", Length::Unit::Mile}};
 
-  //function to trim whitespace and convert to lowercase in one pass
-  static auto Normalize = [] (const std::string& str)
-    {
-      std::string output;
-      output.reserve (str.size ());
+    // function to trim whitespace and convert to lowercase in one pass
+    static auto Normalize = [](const std::string& str) {
+        std::string output;
+        output.reserve(str.size());
 
-      for (unsigned char c : str)
+        for (unsigned char c : str)
         {
-          //this strips all spaces not just beg/end but is fine for our purposes
-          if (std::isspace (c) )
+            // this strips all spaces not just beg/end but is fine for our purposes
+            if (std::isspace(c))
             {
-              continue;
+                continue;
             }
 
-          output.push_back (std::tolower (c));
+            output.push_back(std::tolower(c));
         }
 
-      return output;
+        return output;
     };
 
-  unitString = Normalize (unitString);
+    unitString = Normalize(unitString);
 
-  auto iter = UNITS.find (unitString);
+    auto iter = UNITS.find(unitString);
 
-  if (iter != UNITS.end ())
+    if (iter != UNITS.end())
     {
-      return iter->second;
+        return iter->second;
     }
 
-  return std::nullopt;
+    return std::nullopt;
 }
 
 std::ostream&
-operator<< (std::ostream& stream, const Length& l)
+operator<<(std::ostream& stream, const Length& l)
 {
-  stream << l.As (Length::Unit::Meter);
+    stream << l.As(Length::Unit::Meter);
 
-  return stream;
+    return stream;
 }
 
 std::ostream&
-operator<< (std::ostream& stream, const Length::Quantity& q)
+operator<<(std::ostream& stream, const Length::Quantity& q)
 {
-  stream << q.Value () << ' ' << ToSymbol (q.Unit ());
+    stream << q.Value() << ' ' << ToSymbol(q.Unit());
 
-  return stream;
+    return stream;
 }
 
 std::ostream&
-operator<< (std::ostream& stream, Length::Unit unit)
+operator<<(std::ostream& stream, Length::Unit unit)
 {
-  stream << ToName (unit);
+    stream << ToName(unit);
 
-  return stream;
+    return stream;
 }
 
 /**
@@ -694,9 +696,9 @@ operator<< (std::ostream& stream, Length::Unit unit)
  * the third element will contain an empty string.
  */
 std::tuple<bool, double, std::string>
-ParseLengthString (const std::string& input)
+ParseLengthString(const std::string& input)
 {
-    NS_LOG_FUNCTION (input);
+    NS_LOG_FUNCTION(input);
 
     double value = 0;
     std::size_t pos = 0;
@@ -708,22 +710,22 @@ ParseLengthString (const std::string& input)
     }
     catch (const std::exception& e)
     {
-        NS_LOG_ERROR ("Caught exception while parsing double: " << e.what());
+        NS_LOG_ERROR("Caught exception while parsing double: " << e.what());
 
         return std::make_tuple(false, 0, "");
     }
 
-    //skip any whitespace between value and symbol
-    while (pos < input.size () && std::isspace (input[pos]))
+    // skip any whitespace between value and symbol
+    while (pos < input.size() && std::isspace(input[pos]))
     {
         ++pos;
     }
 
-    if (pos < input.size ())
+    if (pos < input.size())
     {
-        NS_LOG_LOGIC ("String has value and symbol, extracting symbol");
+        NS_LOG_LOGIC("String has value and symbol, extracting symbol");
 
-        //input has a double followed by a string
+        // input has a double followed by a string
         symbol = input.substr(pos);
     }
 
@@ -731,117 +733,117 @@ ParseLengthString (const std::string& input)
 }
 
 std::istream&
-operator>> (std::istream& stream, Length& l)
+operator>>(std::istream& stream, Length& l)
 {
-  bool success = false;
-  double value = 0;
-  std::string symbol;
-  std::string temp;
+    bool success = false;
+    double value = 0;
+    std::string symbol;
+    std::string temp;
 
-  //configure stream to skip whitespace in case it was disabled
-  auto origFlags = stream.flags ();
-  std::skipws (stream);
+    // configure stream to skip whitespace in case it was disabled
+    auto origFlags = stream.flags();
+    std::skipws(stream);
 
-  //Read the contents into a temporary string and parse it manually
-  stream >> temp;
+    // Read the contents into a temporary string and parse it manually
+    stream >> temp;
 
-  std::tie(success, value, symbol) = ParseLengthString (temp);
+    std::tie(success, value, symbol) = ParseLengthString(temp);
 
-  if (success && symbol.empty ())
-  {
-      NS_LOG_LOGIC ("Temp string only contained value, extracting unit symbol from stream");
-
-      //temp only contained the double
-      //still need to read the symbol from the stream
-      stream >> symbol;
-  }
-
-  //special handling for nautical mile which is two words
-  if (symbol == "nautical")
+    if (success && symbol.empty())
     {
-      stream >> temp;
+        NS_LOG_LOGIC("Temp string only contained value, extracting unit symbol from stream");
 
-      if (!temp.empty ())
+        // temp only contained the double
+        // still need to read the symbol from the stream
+        stream >> symbol;
+    }
+
+    // special handling for nautical mile which is two words
+    if (symbol == "nautical")
+    {
+        stream >> temp;
+
+        if (!temp.empty())
         {
-          symbol.push_back (' ');
-          symbol.append (temp);
+            symbol.push_back(' ');
+            symbol.append(temp);
         }
     }
 
-  Length (value, symbol).swap (l);
+    Length(value, symbol).swap(l);
 
-  //restore original flags
-  stream.flags (origFlags);
+    // restore original flags
+    stream.flags(origFlags);
 
-  return stream;
+    return stream;
 }
 
 Length
-NanoMeters (double value)
+NanoMeters(double value)
 {
-  return Length (value, Length::Unit::Nanometer);
+    return Length(value, Length::Unit::Nanometer);
 }
 
 Length
-MicroMeters (double value)
+MicroMeters(double value)
 {
-  return Length (value, Length::Unit::Micrometer);
+    return Length(value, Length::Unit::Micrometer);
 }
 
 Length
-MilliMeters (double value)
+MilliMeters(double value)
 {
-  return Length (value, Length::Unit::Millimeter);
+    return Length(value, Length::Unit::Millimeter);
 }
 
 Length
-CentiMeters (double value)
+CentiMeters(double value)
 {
-  return Length (value, Length::Unit::Centimeter);
+    return Length(value, Length::Unit::Centimeter);
 }
 
 Length
-Meters (double value)
+Meters(double value)
 {
-  return Length (value, Length::Unit::Meter);
+    return Length(value, Length::Unit::Meter);
 }
 
 Length
-KiloMeters (double value)
+KiloMeters(double value)
 {
-  return Length (value, Length::Unit::Kilometer);
+    return Length(value, Length::Unit::Kilometer);
 }
 
 Length
-NauticalMiles (double value)
+NauticalMiles(double value)
 {
-  return Length (value, Length::Unit::NauticalMile);
+    return Length(value, Length::Unit::NauticalMile);
 }
 
 Length
-Inches (double value)
+Inches(double value)
 {
-  return Length (value, Length::Unit::Inch);
+    return Length(value, Length::Unit::Inch);
 }
 
 Length
-Feet (double value)
+Feet(double value)
 {
-  return Length (value, Length::Unit::Foot);
+    return Length(value, Length::Unit::Foot);
 }
 
 Length
-Yards (double value)
+Yards(double value)
 {
-  return Length (value, Length::Unit::Yard);
+    return Length(value, Length::Unit::Yard);
 }
 
 Length
-Miles (double value)
+Miles(double value)
 {
-  return Length (value, Length::Unit::Mile);
+    return Length(value, Length::Unit::Mile);
 }
 
 /**@}*/
 
-}   // namespace ns3
+} // namespace ns3

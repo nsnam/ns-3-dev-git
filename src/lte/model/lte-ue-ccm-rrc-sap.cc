@@ -21,17 +21,15 @@
 
 #include "lte-ue-ccm-rrc-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-
-LteUeCcmRrcSapProvider::~LteUeCcmRrcSapProvider ()
+LteUeCcmRrcSapProvider::~LteUeCcmRrcSapProvider()
 {
 }
 
-
-LteUeCcmRrcSapUser::~LteUeCcmRrcSapUser ()
+LteUeCcmRrcSapUser::~LteUeCcmRrcSapUser()
 {
 }
-
 
 } // end of namespace ns3

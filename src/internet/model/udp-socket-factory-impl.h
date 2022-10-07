@@ -20,10 +20,11 @@
 #ifndef UDP_SOCKET_FACTORY_IMPL_H
 #define UDP_SOCKET_FACTORY_IMPL_H
 
-#include "ns3/udp-socket-factory.h"
 #include "ns3/ptr.h"
+#include "ns3/udp-socket-factory.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class UdpL4Protocol;
 
@@ -38,28 +39,29 @@ class UdpL4Protocol;
  */
 class UdpSocketFactoryImpl : public UdpSocketFactory
 {
-public:
-  UdpSocketFactoryImpl ();
-  ~UdpSocketFactoryImpl () override;
+  public:
+    UdpSocketFactoryImpl();
+    ~UdpSocketFactoryImpl() override;
 
-  /**
-   * \brief Set the associated UDP L4 protocol.
-   * \param udp the UDP L4 protocol
-   */
-  void SetUdp (Ptr<UdpL4Protocol> udp);
+    /**
+     * \brief Set the associated UDP L4 protocol.
+     * \param udp the UDP L4 protocol
+     */
+    void SetUdp(Ptr<UdpL4Protocol> udp);
 
-  /**
-   * \brief Implements a method to create a Udp-based socket and return
-   * a base class smart pointer to the socket.
-   *
-   * \return smart pointer to Socket
-   */
-  Ptr<Socket> CreateSocket () override;
+    /**
+     * \brief Implements a method to create a Udp-based socket and return
+     * a base class smart pointer to the socket.
+     *
+     * \return smart pointer to Socket
+     */
+    Ptr<Socket> CreateSocket() override;
 
-protected:
-  void DoDispose () override;
-private:
-  Ptr<UdpL4Protocol> m_udp; //!< the associated UDP L4 protocol
+  protected:
+    void DoDispose() override;
+
+  private:
+    Ptr<UdpL4Protocol> m_udp; //!< the associated UDP L4 protocol
 };
 
 } // namespace ns3

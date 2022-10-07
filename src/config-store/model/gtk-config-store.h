@@ -20,7 +20,8 @@
 #ifndef GTK_CONFIG_STORE_H
 #define GTK_CONFIG_STORE_H
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup configstore
@@ -29,19 +30,18 @@ namespace ns3 {
  */
 class GtkConfigStore
 {
-public:
-  GtkConfigStore ();
+  public:
+    GtkConfigStore();
 
-  /**
-   * Process default values
-   */
-  void ConfigureDefaults (void);
-  /**
-   * Process attribute values
-   */
-  void ConfigureAttributes (void);
+    /**
+     * Process default values
+     */
+    void ConfigureDefaults(void);
+    /**
+     * Process attribute values
+     */
+    void ConfigureAttributes(void);
 };
-
 
 } // namespace ns3
 

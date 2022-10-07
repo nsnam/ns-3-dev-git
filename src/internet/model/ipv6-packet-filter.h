@@ -27,7 +27,8 @@
 #include "ns3/object.h"
 #include "ns3/packet-filter.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup ipv6
@@ -35,20 +36,21 @@ namespace ns3 {
  *
  * Ipv6PacketFilter is the abstract base class for filters defined for IPv6 packets.
  */
-class Ipv6PacketFilter: public PacketFilter {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+class Ipv6PacketFilter : public PacketFilter
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  Ipv6PacketFilter ();
-  ~Ipv6PacketFilter () override;
+    Ipv6PacketFilter();
+    ~Ipv6PacketFilter() override;
 
-private:
-  bool CheckProtocol (Ptr<QueueDiscItem> item) const override;
-  int32_t DoClassify (Ptr<QueueDiscItem> item) const override = 0;
+  private:
+    bool CheckProtocol(Ptr<QueueDiscItem> item) const override;
+    int32_t DoClassify(Ptr<QueueDiscItem> item) const override = 0;
 };
 
 } // namespace ns3

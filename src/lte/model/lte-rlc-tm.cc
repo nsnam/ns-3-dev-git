@@ -19,198 +19,195 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/log.h"
-
 #include "ns3/lte-rlc-tm.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcTm");
-
-NS_OBJECT_ENSURE_REGISTERED (LteRlcTm);
-
-LteRlcTm::LteRlcTm ()
-  : m_maxTxBufferSize (0),
-    m_txBufferSize (0)
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("LteRlcTm");
+
+NS_OBJECT_ENSURE_REGISTERED(LteRlcTm);
+
+LteRlcTm::LteRlcTm()
+    : m_maxTxBufferSize(0),
+      m_txBufferSize(0)
+{
+    NS_LOG_FUNCTION(this);
 }
 
-LteRlcTm::~LteRlcTm ()
+LteRlcTm::~LteRlcTm()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-LteRlcTm::GetTypeId ()
+LteRlcTm::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::LteRlcTm")
-    .SetParent<LteRlc> ()
-    .SetGroupName("Lte")
-    .AddConstructor<LteRlcTm> ()
-    .AddAttribute ("MaxTxBufferSize",
-                   "Maximum Size of the Transmission Buffer (in Bytes)",
-                   UintegerValue (2 * 1024 * 1024),
-                   MakeUintegerAccessor (&LteRlcTm::m_maxTxBufferSize),
-                   MakeUintegerChecker<uint32_t> ())
-    ;
-  return tid;
+    static TypeId tid = TypeId("ns3::LteRlcTm")
+                            .SetParent<LteRlc>()
+                            .SetGroupName("Lte")
+                            .AddConstructor<LteRlcTm>()
+                            .AddAttribute("MaxTxBufferSize",
+                                          "Maximum Size of the Transmission Buffer (in Bytes)",
+                                          UintegerValue(2 * 1024 * 1024),
+                                          MakeUintegerAccessor(&LteRlcTm::m_maxTxBufferSize),
+                                          MakeUintegerChecker<uint32_t>());
+    return tid;
 }
 
 void
-LteRlcTm::DoDispose ()
+LteRlcTm::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_rbsTimer.Cancel ();
-  m_txBuffer.clear ();
+    NS_LOG_FUNCTION(this);
+    m_rbsTimer.Cancel();
+    m_txBuffer.clear();
 
-  LteRlc::DoDispose ();
+    LteRlc::DoDispose();
 }
-
 
 /**
  * RLC SAP
  */
 
 void
-LteRlcTm::DoTransmitPdcpPdu (Ptr<Packet> p)
+LteRlcTm::DoTransmitPdcpPdu(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
+    NS_LOG_FUNCTION(this << m_rnti << (uint32_t)m_lcid << p->GetSize());
 
-  if (m_txBufferSize + p->GetSize () <= m_maxTxBufferSize)
+    if (m_txBufferSize + p->GetSize() <= m_maxTxBufferSize)
     {
-      NS_LOG_LOGIC ("Tx Buffer: New packet added");
-      m_txBuffer.emplace_back(p, Simulator::Now ());
-      m_txBufferSize += p->GetSize ();
-      NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
-      NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
+        NS_LOG_LOGIC("Tx Buffer: New packet added");
+        m_txBuffer.emplace_back(p, Simulator::Now());
+        m_txBufferSize += p->GetSize();
+        NS_LOG_LOGIC("NumOfBuffers = " << m_txBuffer.size());
+        NS_LOG_LOGIC("txBufferSize = " << m_txBufferSize);
     }
-  else
+    else
     {
-      // Discard full RLC SDU
-      NS_LOG_LOGIC ("TxBuffer is full. RLC SDU discarded");
-      NS_LOG_LOGIC ("MaxTxBufferSize = " << m_maxTxBufferSize);
-      NS_LOG_LOGIC ("txBufferSize    = " << m_txBufferSize);
-      NS_LOG_LOGIC ("packet size     = " << p->GetSize ());
+        // Discard full RLC SDU
+        NS_LOG_LOGIC("TxBuffer is full. RLC SDU discarded");
+        NS_LOG_LOGIC("MaxTxBufferSize = " << m_maxTxBufferSize);
+        NS_LOG_LOGIC("txBufferSize    = " << m_txBufferSize);
+        NS_LOG_LOGIC("packet size     = " << p->GetSize());
     }
 
-  /** Report Buffer Status */
-  DoReportBufferStatus ();
-  m_rbsTimer.Cancel ();
+    /** Report Buffer Status */
+    DoReportBufferStatus();
+    m_rbsTimer.Cancel();
 }
-
 
 /**
  * MAC SAP
  */
 
 void
-LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams)
+LteRlcTm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParams)
 {
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << txOpParams.bytes  << (uint32_t) txOpParams.layer << (uint32_t) txOpParams.harqId);
+    NS_LOG_FUNCTION(this << m_rnti << (uint32_t)m_lcid << txOpParams.bytes
+                         << (uint32_t)txOpParams.layer << (uint32_t)txOpParams.harqId);
 
-  // 5.1.1.1 Transmit operations
-  // 5.1.1.1.1 General
-  // When submitting a new TMD PDU to lower layer, the transmitting TM RLC entity shall:
-  // - submit a RLC SDU without any modification to lower layer.
+    // 5.1.1.1 Transmit operations
+    // 5.1.1.1.1 General
+    // When submitting a new TMD PDU to lower layer, the transmitting TM RLC entity shall:
+    // - submit a RLC SDU without any modification to lower layer.
 
-
-  if ( m_txBuffer.size () == 0 )
+    if (m_txBuffer.size() == 0)
     {
-      NS_LOG_LOGIC ("No data pending");
-      return;
+        NS_LOG_LOGIC("No data pending");
+        return;
     }
 
-  Ptr<Packet> packet = m_txBuffer.begin ()->m_pdu->Copy ();
+    Ptr<Packet> packet = m_txBuffer.begin()->m_pdu->Copy();
 
-  if (txOpParams.bytes < packet->GetSize ())
+    if (txOpParams.bytes < packet->GetSize())
     {
-      NS_LOG_WARN ("TX opportunity too small = " << txOpParams.bytes <<
-                   " (PDU size: " << packet->GetSize () << ")");
-      return;
+        NS_LOG_WARN("TX opportunity too small = " << txOpParams.bytes
+                                                  << " (PDU size: " << packet->GetSize() << ")");
+        return;
     }
 
-  m_txBufferSize -= packet->GetSize ();
-  m_txBuffer.erase (m_txBuffer.begin ());
+    m_txBufferSize -= packet->GetSize();
+    m_txBuffer.erase(m_txBuffer.begin());
 
-  m_txPdu (m_rnti, m_lcid, packet->GetSize ());
+    m_txPdu(m_rnti, m_lcid, packet->GetSize());
 
-  // Send RLC PDU to MAC layer
-  LteMacSapProvider::TransmitPduParameters params;
-  params.pdu = packet;
-  params.rnti = m_rnti;
-  params.lcid = m_lcid;
-  params.layer = txOpParams.layer;
-  params.harqProcessId = txOpParams.harqId;
-  params.componentCarrierId = txOpParams.componentCarrierId;
+    // Send RLC PDU to MAC layer
+    LteMacSapProvider::TransmitPduParameters params;
+    params.pdu = packet;
+    params.rnti = m_rnti;
+    params.lcid = m_lcid;
+    params.layer = txOpParams.layer;
+    params.harqProcessId = txOpParams.harqId;
+    params.componentCarrierId = txOpParams.componentCarrierId;
 
-  m_macSapProvider->TransmitPdu (params);
+    m_macSapProvider->TransmitPdu(params);
 
-  if (! m_txBuffer.empty ())
+    if (!m_txBuffer.empty())
     {
-      m_rbsTimer.Cancel ();
-      m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcTm::ExpireRbsTimer, this);
+        m_rbsTimer.Cancel();
+        m_rbsTimer = Simulator::Schedule(MilliSeconds(10), &LteRlcTm::ExpireRbsTimer, this);
     }
 }
 
 void
-LteRlcTm::DoNotifyHarqDeliveryFailure ()
+LteRlcTm::DoNotifyHarqDeliveryFailure()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-LteRlcTm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
+LteRlcTm::DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams)
 {
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << rxPduParams.p->GetSize ());
+    NS_LOG_FUNCTION(this << m_rnti << (uint32_t)m_lcid << rxPduParams.p->GetSize());
 
-  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), 0);
+    m_rxPdu(m_rnti, m_lcid, rxPduParams.p->GetSize(), 0);
 
-  // 5.1.1.2 Receive operations
-  // 5.1.1.2.1  General
-  // When receiving a new TMD PDU from lower layer, the receiving TM RLC entity shall:
-  // - deliver the TMD PDU without any modification to upper layer.
+    // 5.1.1.2 Receive operations
+    // 5.1.1.2.1  General
+    // When receiving a new TMD PDU from lower layer, the receiving TM RLC entity shall:
+    // - deliver the TMD PDU without any modification to upper layer.
 
-   m_rlcSapUser->ReceivePdcpPdu (rxPduParams.p);
+    m_rlcSapUser->ReceivePdcpPdu(rxPduParams.p);
 }
 
-
 void
-LteRlcTm::DoReportBufferStatus ()
+LteRlcTm::DoReportBufferStatus()
 {
-  Time holDelay (0);
-  uint32_t queueSize = 0;
+    Time holDelay(0);
+    uint32_t queueSize = 0;
 
-  if (! m_txBuffer.empty ())
+    if (!m_txBuffer.empty())
     {
-      holDelay = Simulator::Now () - m_txBuffer.front ().m_waitingSince;
+        holDelay = Simulator::Now() - m_txBuffer.front().m_waitingSince;
 
-      queueSize = m_txBufferSize; // just data in tx queue (no header overhead for RLC TM)
+        queueSize = m_txBufferSize; // just data in tx queue (no header overhead for RLC TM)
     }
 
-  LteMacSapProvider::ReportBufferStatusParameters r;
-  r.rnti = m_rnti;
-  r.lcid = m_lcid;
-  r.txQueueSize = queueSize;
-  r.txQueueHolDelay = holDelay.GetMilliSeconds () ;
-  r.retxQueueSize = 0;
-  r.retxQueueHolDelay = 0;
-  r.statusPduSize = 0;
+    LteMacSapProvider::ReportBufferStatusParameters r;
+    r.rnti = m_rnti;
+    r.lcid = m_lcid;
+    r.txQueueSize = queueSize;
+    r.txQueueHolDelay = holDelay.GetMilliSeconds();
+    r.retxQueueSize = 0;
+    r.retxQueueHolDelay = 0;
+    r.statusPduSize = 0;
 
-  NS_LOG_LOGIC ("Send ReportBufferStatus = " << r.txQueueSize << ", " << r.txQueueHolDelay );
-  m_macSapProvider->ReportBufferStatus (r);
+    NS_LOG_LOGIC("Send ReportBufferStatus = " << r.txQueueSize << ", " << r.txQueueHolDelay);
+    m_macSapProvider->ReportBufferStatus(r);
 }
 
 void
-LteRlcTm::ExpireRbsTimer ()
+LteRlcTm::ExpireRbsTimer()
 {
-  NS_LOG_LOGIC ("RBS Timer expires");
+    NS_LOG_LOGIC("RBS Timer expires");
 
-  if (! m_txBuffer.empty ())
+    if (!m_txBuffer.empty())
     {
-      DoReportBufferStatus ();
-      m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcTm::ExpireRbsTimer, this);
+        DoReportBufferStatus();
+        m_rbsTimer = Simulator::Schedule(MilliSeconds(10), &LteRlcTm::ExpireRbsTimer, this);
     }
 }
 

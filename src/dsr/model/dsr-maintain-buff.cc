@@ -30,211 +30,242 @@
  */
 
 #include "dsr-maintain-buff.h"
+
+#include "ns3/ipv4-route.h"
+#include "ns3/log.h"
+#include "ns3/socket.h"
+
 #include <algorithm>
 #include <functional>
-#include "ns3/ipv4-route.h"
-#include "ns3/socket.h"
-#include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("DsrMaintainBuffer");
+NS_LOG_COMPONENT_DEFINE("DsrMaintainBuffer");
 
-namespace dsr {
+namespace dsr
+{
 
 uint32_t
-DsrMaintainBuffer::GetSize ()
+DsrMaintainBuffer::GetSize()
 {
-  Purge ();
-  return m_maintainBuffer.size ();
+    Purge();
+    return m_maintainBuffer.size();
 }
 
 bool
-DsrMaintainBuffer::Enqueue (DsrMaintainBuffEntry & entry)
+DsrMaintainBuffer::Enqueue(DsrMaintainBuffEntry& entry)
 {
-  Purge ();
-  for (std::vector<DsrMaintainBuffEntry>::const_iterator i = m_maintainBuffer.begin (); i
-       != m_maintainBuffer.end (); ++i)
+    Purge();
+    for (std::vector<DsrMaintainBuffEntry>::const_iterator i = m_maintainBuffer.begin();
+         i != m_maintainBuffer.end();
+         ++i)
     {
-//      NS_LOG_INFO ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our add " << i->GetOurAdd () << " " << entry.GetOurAdd ()
-//                              << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-//                              << " ackId " << i->GetAckId () << " " << entry.GetAckId () << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " << (uint32_t)entry.GetSegsLeft ()
-//                   );
+        //      NS_LOG_INFO ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our
+        //      add " << i->GetOurAdd () << " " << entry.GetOurAdd ()
+        //                              << " src " << i->GetSrc () << " " << entry.GetSrc () << "
+        //                              dst " << i->GetDst () << " " << entry.GetDst ()
+        //                              << " ackId " << i->GetAckId () << " " << entry.GetAckId ()
+        //                              << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " <<
+        //                              (uint32_t)entry.GetSegsLeft ()
+        //                   );
 
-      if ((i->GetNextHop () == entry.GetNextHop ()) && (i->GetOurAdd () == entry.GetOurAdd ()) && (i->GetSrc () == entry.GetSrc ())
-          && (i->GetDst () == entry.GetDst ()) && (i->GetAckId () == entry.GetAckId ()) && (i->GetSegsLeft () == entry.GetSegsLeft ()))
+        if ((i->GetNextHop() == entry.GetNextHop()) && (i->GetOurAdd() == entry.GetOurAdd()) &&
+            (i->GetSrc() == entry.GetSrc()) && (i->GetDst() == entry.GetDst()) &&
+            (i->GetAckId() == entry.GetAckId()) && (i->GetSegsLeft() == entry.GetSegsLeft()))
         {
-          NS_LOG_DEBUG ("Same maintenance entry found");
-          return false;
+            NS_LOG_DEBUG("Same maintenance entry found");
+            return false;
         }
     }
 
-  entry.SetExpireTime (m_maintainBufferTimeout);
-  if (m_maintainBuffer.size () >= m_maxLen)
+    entry.SetExpireTime(m_maintainBufferTimeout);
+    if (m_maintainBuffer.size() >= m_maxLen)
     {
-      NS_LOG_DEBUG ("Drop the most aged packet");
-      m_maintainBuffer.erase (m_maintainBuffer.begin ());        // Drop the most aged packet
+        NS_LOG_DEBUG("Drop the most aged packet");
+        m_maintainBuffer.erase(m_maintainBuffer.begin()); // Drop the most aged packet
     }
-  m_maintainBuffer.push_back (entry);
-  return true;
+    m_maintainBuffer.push_back(entry);
+    return true;
 }
 
 void
-DsrMaintainBuffer::DropPacketWithNextHop (Ipv4Address nextHop)
+DsrMaintainBuffer::DropPacketWithNextHop(Ipv4Address nextHop)
 {
-  NS_LOG_FUNCTION (this << nextHop);
-  Purge ();
-  NS_LOG_INFO ("Drop Packet With next hop " << nextHop);
+    NS_LOG_FUNCTION(this << nextHop);
+    Purge();
+    NS_LOG_INFO("Drop Packet With next hop " << nextHop);
 
-  auto new_end = std::remove_if (m_maintainBuffer.begin (), m_maintainBuffer.end (), [&](const DsrMaintainBuffEntry& en)
-                                 { return en.GetNextHop () == nextHop; });
-  m_maintainBuffer.erase (new_end, m_maintainBuffer.end ());
+    auto new_end =
+        std::remove_if(m_maintainBuffer.begin(),
+                       m_maintainBuffer.end(),
+                       [&](const DsrMaintainBuffEntry& en) { return en.GetNextHop() == nextHop; });
+    m_maintainBuffer.erase(new_end, m_maintainBuffer.end());
 }
 
 bool
-DsrMaintainBuffer::Dequeue (Ipv4Address nextHop, DsrMaintainBuffEntry & entry)
+DsrMaintainBuffer::Dequeue(Ipv4Address nextHop, DsrMaintainBuffEntry& entry)
 {
-  Purge ();
-  for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin (); i != m_maintainBuffer.end (); ++i)
+    Purge();
+    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
+         i != m_maintainBuffer.end();
+         ++i)
     {
-      if (i->GetNextHop () == nextHop)
+        if (i->GetNextHop() == nextHop)
         {
-          entry = *i;
-          i = m_maintainBuffer.erase (i);
-          NS_LOG_DEBUG ("Packet size while dequeuing " << entry.GetPacket ()->GetSize ());
-          return true;
+            entry = *i;
+            i = m_maintainBuffer.erase(i);
+            NS_LOG_DEBUG("Packet size while dequeuing " << entry.GetPacket()->GetSize());
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-DsrMaintainBuffer::Find (Ipv4Address nextHop)
+DsrMaintainBuffer::Find(Ipv4Address nextHop)
 {
-  for (std::vector<DsrMaintainBuffEntry>::const_iterator i = m_maintainBuffer.begin (); i
-       != m_maintainBuffer.end (); ++i)
+    for (std::vector<DsrMaintainBuffEntry>::const_iterator i = m_maintainBuffer.begin();
+         i != m_maintainBuffer.end();
+         ++i)
     {
-      if (i->GetNextHop () == nextHop)
+        if (i->GetNextHop() == nextHop)
         {
-          NS_LOG_DEBUG ("Found the packet in maintenance buffer");
-          return true;
+            NS_LOG_DEBUG("Found the packet in maintenance buffer");
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-DsrMaintainBuffer::AllEqual (DsrMaintainBuffEntry & entry)
+DsrMaintainBuffer::AllEqual(DsrMaintainBuffEntry& entry)
 {
-  for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin (); i
-       != m_maintainBuffer.end (); ++i)
+    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
+         i != m_maintainBuffer.end();
+         ++i)
     {
-//      NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
-//                               << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-//                               << " ackId " << i->GetAckId () << " " << entry.GetAckId ());
+        //      NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our
+        //      address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
+        //                               << " src " << i->GetSrc () << " " << entry.GetSrc () << "
+        //                               dst " << i->GetDst () << " " << entry.GetDst ()
+        //                               << " ackId " << i->GetAckId () << " " << entry.GetAckId
+        //                               ());
 
-      if ((i->GetOurAdd () == entry.GetOurAdd ()) && (i->GetNextHop () == entry.GetNextHop ())
-          && (i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
-          && (i->GetAckId () == entry.GetAckId ()) && (i->GetSegsLeft () == entry.GetSegsLeft ()))
+        if ((i->GetOurAdd() == entry.GetOurAdd()) && (i->GetNextHop() == entry.GetNextHop()) &&
+            (i->GetSrc() == entry.GetSrc()) && (i->GetDst() == entry.GetDst()) &&
+            (i->GetAckId() == entry.GetAckId()) && (i->GetSegsLeft() == entry.GetSegsLeft()))
         {
-          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
-          return true;
+            i = m_maintainBuffer.erase(
+                i); // Erase the same maintain buffer entry for the received packet
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-DsrMaintainBuffer::NetworkEqual (DsrMaintainBuffEntry & entry)
+DsrMaintainBuffer::NetworkEqual(DsrMaintainBuffEntry& entry)
 {
-  for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin (); i
-       != m_maintainBuffer.end (); ++i)
+    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
+         i != m_maintainBuffer.end();
+         ++i)
     {
-//      NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
-//                               << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-//                               << " ackId " << i->GetAckId () << " " << entry.GetAckId ());
+        //      NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our
+        //      address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
+        //                               << " src " << i->GetSrc () << " " << entry.GetSrc () << "
+        //                               dst " << i->GetDst () << " " << entry.GetDst ()
+        //                               << " ackId " << i->GetAckId () << " " << entry.GetAckId
+        //                               ());
 
-      if ((i->GetOurAdd () == entry.GetOurAdd ()) && (i->GetNextHop () == entry.GetNextHop ())
-          && (i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
-          && (i->GetAckId () == entry.GetAckId ()))
+        if ((i->GetOurAdd() == entry.GetOurAdd()) && (i->GetNextHop() == entry.GetNextHop()) &&
+            (i->GetSrc() == entry.GetSrc()) && (i->GetDst() == entry.GetDst()) &&
+            (i->GetAckId() == entry.GetAckId()))
         {
-          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
-          return true;
+            i = m_maintainBuffer.erase(
+                i); // Erase the same maintain buffer entry for the received packet
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-DsrMaintainBuffer::PromiscEqual (DsrMaintainBuffEntry & entry)
+DsrMaintainBuffer::PromiscEqual(DsrMaintainBuffEntry& entry)
 {
-  NS_LOG_DEBUG ("The maintenance buffer size " << m_maintainBuffer.size ());
-  for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin (); i
-       != m_maintainBuffer.end (); ++i)
+    NS_LOG_DEBUG("The maintenance buffer size " << m_maintainBuffer.size());
+    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
+         i != m_maintainBuffer.end();
+         ++i)
     {
-//      NS_LOG_DEBUG ("src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-//                           << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " << (uint32_t)entry.GetSegsLeft () << " ackId " << (uint32_t)i->GetAckId () << " "
-//                           << (uint32_t)entry.GetAckId ()
-//                    );
+        //      NS_LOG_DEBUG ("src " << i->GetSrc () << " " << entry.GetSrc () << " dst " <<
+        //      i->GetDst () << " " << entry.GetDst ()
+        //                           << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " <<
+        //                           (uint32_t)entry.GetSegsLeft () << " ackId " <<
+        //                           (uint32_t)i->GetAckId () << " "
+        //                           << (uint32_t)entry.GetAckId ()
+        //                    );
 
-      if ((i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
-          && (i->GetSegsLeft () == entry.GetSegsLeft ()) && (i->GetAckId () == entry.GetAckId ())
-          )
+        if ((i->GetSrc() == entry.GetSrc()) && (i->GetDst() == entry.GetDst()) &&
+            (i->GetSegsLeft() == entry.GetSegsLeft()) && (i->GetAckId() == entry.GetAckId()))
         {
-          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the promisc received packet
-          return true;
+            i = m_maintainBuffer.erase(
+                i); // Erase the same maintain buffer entry for the promisc received packet
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-DsrMaintainBuffer::LinkEqual (DsrMaintainBuffEntry & entry)
+DsrMaintainBuffer::LinkEqual(DsrMaintainBuffEntry& entry)
 {
-  NS_LOG_DEBUG ("The maintenance buffer size " << m_maintainBuffer.size ());
-  for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin (); i
-       != m_maintainBuffer.end (); ++i)
+    NS_LOG_DEBUG("The maintenance buffer size " << m_maintainBuffer.size());
+    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
+         i != m_maintainBuffer.end();
+         ++i)
     {
-//      NS_LOG_DEBUG ("src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-//                           << " OurAddress " << i->GetOurAdd () << " " << entry.GetOurAdd () << " next hop " << i->GetNextHop () << " "
-//                           << entry.GetNextHop ()
-//                    );
+        //      NS_LOG_DEBUG ("src " << i->GetSrc () << " " << entry.GetSrc () << " dst " <<
+        //      i->GetDst () << " " << entry.GetDst ()
+        //                           << " OurAddress " << i->GetOurAdd () << " " << entry.GetOurAdd
+        //                           () << " next hop " << i->GetNextHop () << " "
+        //                           << entry.GetNextHop ()
+        //                    );
 
-      if ((i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ()) && (i->GetOurAdd () == entry.GetOurAdd ())
-          && (i->GetNextHop () == entry.GetNextHop ())
-          )
+        if ((i->GetSrc() == entry.GetSrc()) && (i->GetDst() == entry.GetDst()) &&
+            (i->GetOurAdd() == entry.GetOurAdd()) && (i->GetNextHop() == entry.GetNextHop()))
         {
-          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the promisc received packet
-          return true;
+            i = m_maintainBuffer.erase(
+                i); // Erase the same maintain buffer entry for the promisc received packet
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 /// IsExpired structure
 struct IsExpired
 {
-  /**
-   * \brief comparison operator
-   * \param e maintain buffer entry
-   * \return true if the entry is expired
-   */
-  bool
-  operator() (DsrMaintainBuffEntry const & e) const
-  {
-    // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
-    return (e.GetExpireTime () < Seconds (0));
-  }
+    /**
+     * \brief comparison operator
+     * \param e maintain buffer entry
+     * \return true if the entry is expired
+     */
+    bool operator()(const DsrMaintainBuffEntry& e) const
+    {
+        // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
+        return (e.GetExpireTime() < Seconds(0));
+    }
 };
 
 void
-DsrMaintainBuffer::Purge ()
+DsrMaintainBuffer::Purge()
 {
-  NS_LOG_DEBUG ("Purging Maintenance Buffer");
-  IsExpired pred;
-  m_maintainBuffer.erase (std::remove_if (m_maintainBuffer.begin (), m_maintainBuffer.end (), pred),
-                          m_maintainBuffer.end ());
+    NS_LOG_DEBUG("Purging Maintenance Buffer");
+    IsExpired pred;
+    m_maintainBuffer.erase(std::remove_if(m_maintainBuffer.begin(), m_maintainBuffer.end(), pred),
+                           m_maintainBuffer.end());
 }
 
-}  // namespace dsr
-}  // namespace ns3
+} // namespace dsr
+} // namespace ns3

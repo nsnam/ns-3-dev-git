@@ -20,136 +20,146 @@
  *                               <amine.ismail@UDcast.com>
  */
 
-#include <stdint.h>
 #include "ss-manager.h"
-#include "ns3/log.h"
+
 #include "service-flow.h"
 
-namespace ns3 {
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SSManager");
+#include <stdint.h>
 
-NS_OBJECT_ENSURE_REGISTERED (SSManager);
-
-TypeId SSManager::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::SSManager")
-    .SetParent<Object> ()
-    .SetGroupName("Wimax");
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("SSManager");
+
+NS_OBJECT_ENSURE_REGISTERED(SSManager);
+
+TypeId
+SSManager::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::SSManager").SetParent<Object>().SetGroupName("Wimax");
+    return tid;
 }
 
-SSManager::SSManager ()
+SSManager::SSManager()
 {
-  m_ssRecords = new std::vector<SSRecord*> ();
+    m_ssRecords = new std::vector<SSRecord*>();
 }
 
-SSManager::~SSManager ()
+SSManager::~SSManager()
 {
-  for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin (); iter != m_ssRecords->end (); ++iter)
+    for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin(); iter != m_ssRecords->end();
+         ++iter)
     {
-      delete *iter;
+        delete *iter;
     }
-  delete m_ssRecords;
-  m_ssRecords = nullptr;
+    delete m_ssRecords;
+    m_ssRecords = nullptr;
 }
 
 SSRecord*
-SSManager::CreateSSRecord (const Mac48Address &macAddress)
+SSManager::CreateSSRecord(const Mac48Address& macAddress)
 {
-  SSRecord *ssRecord = new SSRecord (macAddress);
-  m_ssRecords->push_back (ssRecord);
-  return ssRecord;
+    SSRecord* ssRecord = new SSRecord(macAddress);
+    m_ssRecords->push_back(ssRecord);
+    return ssRecord;
 }
 
 SSRecord*
-SSManager::GetSSRecord (const Mac48Address &macAddress) const
+SSManager::GetSSRecord(const Mac48Address& macAddress) const
 {
-  for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin (); iter != m_ssRecords->end (); ++iter)
+    for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin(); iter != m_ssRecords->end();
+         ++iter)
     {
-      if ((*iter)->GetMacAddress () == macAddress)
+        if ((*iter)->GetMacAddress() == macAddress)
         {
-          return *iter;
+            return *iter;
         }
     }
 
-  NS_LOG_DEBUG ("GetSSRecord: SSRecord not found!");
-  return nullptr;
+    NS_LOG_DEBUG("GetSSRecord: SSRecord not found!");
+    return nullptr;
 }
 
 SSRecord*
-SSManager::GetSSRecord (Cid cid) const
+SSManager::GetSSRecord(Cid cid) const
 {
-  for (std::vector<SSRecord*>::iterator iter1 = m_ssRecords->begin (); iter1 != m_ssRecords->end (); ++iter1)
+    for (std::vector<SSRecord*>::iterator iter1 = m_ssRecords->begin(); iter1 != m_ssRecords->end();
+         ++iter1)
     {
-      SSRecord *ssRecord = *iter1;
-      if (ssRecord->GetBasicCid () == cid || ssRecord->GetPrimaryCid () == cid)
+        SSRecord* ssRecord = *iter1;
+        if (ssRecord->GetBasicCid() == cid || ssRecord->GetPrimaryCid() == cid)
         {
-          return ssRecord;
+            return ssRecord;
         }
-      else
+        else
         {
-          std::vector<ServiceFlow*> sf = ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_ALL);
-          for (std::vector<ServiceFlow*>::iterator iter2 = sf.begin (); iter2 != sf.end (); ++iter2)
+            std::vector<ServiceFlow*> sf = ssRecord->GetServiceFlows(ServiceFlow::SF_TYPE_ALL);
+            for (std::vector<ServiceFlow*>::iterator iter2 = sf.begin(); iter2 != sf.end(); ++iter2)
             {
-              if ((*iter2)->GetConnection ()->GetCid () == cid)
+                if ((*iter2)->GetConnection()->GetCid() == cid)
                 {
-                  return ssRecord;
+                    return ssRecord;
                 }
             }
         }
     }
 
-  NS_LOG_DEBUG ("GetSSRecord: SSRecord not found!");
-  return nullptr;
+    NS_LOG_DEBUG("GetSSRecord: SSRecord not found!");
+    return nullptr;
 }
 
 std::vector<SSRecord*>*
-SSManager::GetSSRecords () const
+SSManager::GetSSRecords() const
 {
-  return m_ssRecords;
+    return m_ssRecords;
 }
 
 bool
-SSManager::IsInRecord (const Mac48Address &macAddress) const
+SSManager::IsInRecord(const Mac48Address& macAddress) const
 {
-  for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin (); iter != m_ssRecords->end (); ++iter)
+    for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin(); iter != m_ssRecords->end();
+         ++iter)
     {
-      if ((*iter)->GetMacAddress () == macAddress)
+        if ((*iter)->GetMacAddress() == macAddress)
         {
-          return true;
+            return true;
         }
     }
-  return false;
+    return false;
 }
 
 bool
-SSManager::IsRegistered (const Mac48Address &macAddress) const
+SSManager::IsRegistered(const Mac48Address& macAddress) const
 {
-  SSRecord *ssRecord = GetSSRecord (macAddress);
-  return ssRecord != nullptr && ssRecord->GetRangingStatus () == WimaxNetDevice::RANGING_STATUS_SUCCESS;
+    SSRecord* ssRecord = GetSSRecord(macAddress);
+    return ssRecord != nullptr &&
+           ssRecord->GetRangingStatus() == WimaxNetDevice::RANGING_STATUS_SUCCESS;
 }
 
 void
-SSManager::DeleteSSRecord (Cid cid)
+SSManager::DeleteSSRecord(Cid cid)
 {
-  for (std::vector<SSRecord*>::iterator iter1 = m_ssRecords->begin (); iter1 != m_ssRecords->end (); ++iter1)
+    for (std::vector<SSRecord*>::iterator iter1 = m_ssRecords->begin(); iter1 != m_ssRecords->end();
+         ++iter1)
     {
-      SSRecord *ssRecord = *iter1;
-      if (ssRecord->GetBasicCid () == cid || ssRecord->GetPrimaryCid () == cid)
+        SSRecord* ssRecord = *iter1;
+        if (ssRecord->GetBasicCid() == cid || ssRecord->GetPrimaryCid() == cid)
         {
-          m_ssRecords->erase (iter1);
-          return;
+            m_ssRecords->erase(iter1);
+            return;
         }
-      else
+        else
         {
-          std::vector<ServiceFlow*> sf = ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_ALL);
-          for (std::vector<ServiceFlow*>::const_iterator iter2 = sf.begin (); iter2 != sf.end (); ++iter2)
+            std::vector<ServiceFlow*> sf = ssRecord->GetServiceFlows(ServiceFlow::SF_TYPE_ALL);
+            for (std::vector<ServiceFlow*>::const_iterator iter2 = sf.begin(); iter2 != sf.end();
+                 ++iter2)
             {
-              if ((*iter2)->GetConnection ()->GetCid () == cid)
+                if ((*iter2)->GetConnection()->GetCid() == cid)
                 {
-                  m_ssRecords->erase (iter1);
-                  return;
+                    m_ssRecords->erase(iter1);
+                    return;
                 }
             }
         }
@@ -157,31 +167,30 @@ SSManager::DeleteSSRecord (Cid cid)
 }
 
 Mac48Address
-SSManager::GetMacAddress (Cid cid) const
+SSManager::GetMacAddress(Cid cid) const
 {
-  return GetSSRecord (cid)->GetMacAddress ();
+    return GetSSRecord(cid)->GetMacAddress();
 }
 
 uint32_t
-SSManager::GetNSSs () const
+SSManager::GetNSSs() const
 {
-  return m_ssRecords->size ();
+    return m_ssRecords->size();
 }
 
 uint32_t
-SSManager::GetNRegisteredSSs () const
+SSManager::GetNRegisteredSSs() const
 {
-  uint32_t nrSS = 0;
-  for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin (); iter != m_ssRecords->end (); ++iter)
+    uint32_t nrSS = 0;
+    for (std::vector<SSRecord*>::iterator iter = m_ssRecords->begin(); iter != m_ssRecords->end();
+         ++iter)
     {
-      if ((*iter)->GetRangingStatus () == WimaxNetDevice::RANGING_STATUS_SUCCESS)
+        if ((*iter)->GetRangingStatus() == WimaxNetDevice::RANGING_STATUS_SUCCESS)
         {
-          nrSS++;
+            nrSS++;
         }
     }
-  return nrSS;
+    return nrSS;
 }
 
 } // namespace ns3
-
-

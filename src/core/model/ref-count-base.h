@@ -32,7 +32,8 @@
  * \deprecated See \ref ns3::SimpleRefCount
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \brief A deprecated way to get reference-counting powers
@@ -44,11 +45,11 @@ namespace ns3 {
  */
 class RefCountBase : public SimpleRefCount<RefCountBase>
 {
-public:
-  /**
-   * This only thing this class does it declare a virtual destructor
-   */
-  virtual ~RefCountBase ();
+  public:
+    /**
+     * This only thing this class does it declare a virtual destructor
+     */
+    virtual ~RefCountBase();
 };
 
 } // namespace ns3

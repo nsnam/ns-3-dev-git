@@ -19,7 +19,6 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-
 #ifndef SHOW_PROGRESS_H
 #define SHOW_PROGRESS_H
 
@@ -29,16 +28,16 @@
  * ns3::ShowProgress declaration.
  */
 
-#include <iostream>
-
 #include "event-id.h"
 #include "nstime.h"
 #include "system-wall-clock-ms.h"
 #include "system-wall-clock-timestamp.h"
 #include "time-printer.h"
 
-namespace ns3 {
+#include <iostream>
 
+namespace ns3
+{
 
 /**
  * \ingroup core
@@ -94,111 +93,109 @@ namespace ns3 {
  */
 class ShowProgress
 {
-public:
-  /**
-   * Constructor.
-   * \param [in] interval The target wallclock interval to show progress.
-   * \param [in] os The stream to print on.
-   */
-  ShowProgress (const Time interval = Seconds (1.0),
-                std::ostream & os = std::cout);
+  public:
+    /**
+     * Constructor.
+     * \param [in] interval The target wallclock interval to show progress.
+     * \param [in] os The stream to print on.
+     */
+    ShowProgress(const Time interval = Seconds(1.0), std::ostream& os = std::cout);
 
-  /** Destructor. */
-  ~ShowProgress ();
+    /** Destructor. */
+    ~ShowProgress();
 
-  /**
-   * Set the target update interval, in wallclock time.
-   * \param [in] interval The target wallclock interval to show progress.
-   */
-  void SetInterval (const Time interval);
+    /**
+     * Set the target update interval, in wallclock time.
+     * \param [in] interval The target wallclock interval to show progress.
+     */
+    void SetInterval(const Time interval);
 
-  /**
-   * Set the TimePrinter function to be used
-   * to prepend progress messages with the simulation time.
-   *
-   * The default is DefaultTimePrinter().
-   *
-   * \param [in] lp The TimePrinter function.
-   */
-  void SetTimePrinter (TimePrinter lp);
+    /**
+     * Set the TimePrinter function to be used
+     * to prepend progress messages with the simulation time.
+     *
+     * The default is DefaultTimePrinter().
+     *
+     * \param [in] lp The TimePrinter function.
+     */
+    void SetTimePrinter(TimePrinter lp);
 
-  /**
-   * Set the output stream to show progress on.
-   * \param [in] os The output stream; defaults to std::cerr.
-   */
-  void SetStream (std::ostream & os);
+    /**
+     * Set the output stream to show progress on.
+     * \param [in] os The output stream; defaults to std::cerr.
+     */
+    void SetStream(std::ostream& os);
 
-  /**
-   * Set verbose mode to print real and virtual time intervals.
-   *
-   * \param [in] verbose \c true to turn on verbose mode
-   */
-  void SetVerbose (bool verbose);
+    /**
+     * Set verbose mode to print real and virtual time intervals.
+     *
+     * \param [in] verbose \c true to turn on verbose mode
+     */
+    void SetVerbose(bool verbose);
 
-private:
+  private:
+    /**
+     * Start the elapsed wallclock timestamp and print the start time.
+     * This is triggered by the constructor.
+     */
+    void Start();
 
-  /**
-   * Start the elapsed wallclock timestamp and print the start time.
-   * This is triggered by the constructor.
-   */
-  void Start ();
+    /**
+     * Stop the elapsed wallclock timestamp and print the total elapsed time.
+     * This is triggered by the destructor.
+     */
+    void Stop();
 
-  /**
-   * Stop the elapsed wallclock timestamp and print the total elapsed time.
-   * This is triggered by the destructor.
-   */
-  void Stop ();
+    /**
+     * Schedule the next CheckProgress.
+     */
+    void ScheduleCheckProgress();
 
-  /**
-   * Schedule the next CheckProgress.
-   */
-  void ScheduleCheckProgress ();
+    /**
+     * Check on execution progress.
+     * This function is executed periodically, updates the internal
+     * state on rate of progress, and decides if it's time to generate
+     * output.
+     */
+    void CheckProgress();
 
-  /**
-   * Check on execution progress.
-   * This function is executed periodically, updates the internal
-   * state on rate of progress, and decides if it's time to generate
-   * output.
-   */
-  void CheckProgress ();
+    /**
+     * Show execution progress.
+     * This function actually generates output, when directed by CheckProgress().
+     * \param [in] nEvents The actual number of events processed since the last
+     *             progress output.
+     * \param [in] ratio The current ratio of elapsed wall clock time to the
+     *             target update interval.
+     * \param [in] speed The execution speed relative to wall clock time.
+     */
+    void GiveFeedback(uint64_t nEvents, int64x64_t ratio, int64x64_t speed);
 
-  /**
-   * Show execution progress.
-   * This function actually generates output, when directed by CheckProgress().
-   * \param [in] nEvents The actual number of events processed since the last
-   *             progress output.
-   * \param [in] ratio The current ratio of elapsed wall clock time to the
-   *             target update interval.
-   * \param [in] speed The execution speed relative to wall clock time.
-   */
-  void GiveFeedback (uint64_t nEvents, int64x64_t ratio, int64x64_t speed);
+    /**
+     * Hysteresis factor.
+     * \see Feedback()
+     */
+    static const int64x64_t HYSTERESIS;
+    /**
+     * Maximum growth factor.
+     * \see Feedback()
+     */
+    static const int64x64_t MAXGAIN;
 
-  /**
-   * Hysteresis factor.
-   * \see Feedback()
-   */
-  static const int64x64_t HYSTERESIS;
-  /**
-   * Maximum growth factor.
-   * \see Feedback()
-   */
-  static const int64x64_t MAXGAIN;
+    SystemWallClockMs m_timer;        //!< Wallclock timer
+    SystemWallClockTimestamp m_stamp; //!< Elapsed wallclock time.
+    Time m_elapsed;                   //!< Total elapsed wallclock time since last update.
+    Time m_interval;                  //!< The target update interval, in wallclock time
+    Time m_vtime;                     //!< The virtual time interval.
+    EventId m_event;                  //!< The next progress event.
+    uint64_t m_eventCount;            //!< Simulator event count
 
-  SystemWallClockMs m_timer;  //!< Wallclock timer
-  SystemWallClockTimestamp m_stamp;  //!< Elapsed wallclock time.
-  Time m_elapsed;             //!< Total elapsed wallclock time since last update.
-  Time m_interval;            //!< The target update interval, in wallclock time
-  Time m_vtime;               //!< The virtual time interval.
-  EventId m_event;            //!< The next progress event.
-  uint64_t m_eventCount;      //!< Simulator event count
+    TimePrinter m_printer; //!< The TimePrinter to use
+    std::ostream* m_os;    //!< The output stream to use.
+    bool m_verbose;        //!< Verbose mode flag
+    uint64_t m_repCount;   //!< Number of CheckProgress events
 
-  TimePrinter m_printer;      //!< The TimePrinter to use
-  std::ostream *m_os;         //!< The output stream to use.
-  bool m_verbose;             //!< Verbose mode flag
-  uint64_t m_repCount;        //!< Number of CheckProgress events
+}; // class ShowProgress
 
-};  // class ShowProgress
+} // namespace ns3
 
-}  // namespace ns3
-
-#endif  /* SHOW_PROGRESS_H */
+#endif /* SHOW_PROGRESS_H */

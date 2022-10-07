@@ -23,212 +23,213 @@
  * Author: Tom Herbert <therbert@google.com>
  */
 
-#include "ns3/log.h"
-#include "ns3/uinteger.h"
-#include "ns3/simulator.h"
-#include "ns3/string.h"
 #include "dynamic-queue-limits.h"
 
+#include "ns3/log.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/uinteger.h"
+
 // Set some static maximums
-static const uint32_t UINTMAX = std::numeric_limits<uint32_t>::max ();
+static const uint32_t UINTMAX = std::numeric_limits<uint32_t>::max();
 static const uint32_t DQL_MAX_OBJECT = UINTMAX / 16;
 static const uint32_t DQL_MAX_LIMIT = (UINTMAX / 2) - DQL_MAX_OBJECT;
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("DynamicQueueLimits");
+NS_LOG_COMPONENT_DEFINE("DynamicQueueLimits");
 
-NS_OBJECT_ENSURE_REGISTERED (DynamicQueueLimits);
+NS_OBJECT_ENSURE_REGISTERED(DynamicQueueLimits);
 
 TypeId
-DynamicQueueLimits::GetTypeId ()
+DynamicQueueLimits::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::DynamicQueueLimits")
-    .SetParent<Object> ()
-    .SetParent<QueueLimits> ()
-    .SetGroupName ("Network")
-    .AddConstructor<DynamicQueueLimits> ()
-    .AddAttribute ("HoldTime",
-                   "The DQL algorithm hold time",
-                   StringValue ("1s"),
-                   MakeTimeAccessor (&DynamicQueueLimits::m_slackHoldTime),
-                   MakeTimeChecker ())
-    .AddAttribute ("MaxLimit",
-                   "Maximum limit",
-                   UintegerValue (DQL_MAX_LIMIT),
-                   MakeUintegerAccessor (&DynamicQueueLimits::m_maxLimit),
-                   MakeUintegerChecker<uint32_t> (0, DQL_MAX_LIMIT))
-    .AddAttribute ("MinLimit",
-                   "Minimum limit",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&DynamicQueueLimits::m_minLimit),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddTraceSource ("Limit",
-                     "Limit value calculated by DQL",
-                     MakeTraceSourceAccessor (&DynamicQueueLimits::m_limit),
-                     "ns3::TracedValueCallback::Uint32")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::DynamicQueueLimits")
+                            .SetParent<Object>()
+                            .SetParent<QueueLimits>()
+                            .SetGroupName("Network")
+                            .AddConstructor<DynamicQueueLimits>()
+                            .AddAttribute("HoldTime",
+                                          "The DQL algorithm hold time",
+                                          StringValue("1s"),
+                                          MakeTimeAccessor(&DynamicQueueLimits::m_slackHoldTime),
+                                          MakeTimeChecker())
+                            .AddAttribute("MaxLimit",
+                                          "Maximum limit",
+                                          UintegerValue(DQL_MAX_LIMIT),
+                                          MakeUintegerAccessor(&DynamicQueueLimits::m_maxLimit),
+                                          MakeUintegerChecker<uint32_t>(0, DQL_MAX_LIMIT))
+                            .AddAttribute("MinLimit",
+                                          "Minimum limit",
+                                          UintegerValue(0),
+                                          MakeUintegerAccessor(&DynamicQueueLimits::m_minLimit),
+                                          MakeUintegerChecker<uint32_t>())
+                            .AddTraceSource("Limit",
+                                            "Limit value calculated by DQL",
+                                            MakeTraceSourceAccessor(&DynamicQueueLimits::m_limit),
+                                            "ns3::TracedValueCallback::Uint32");
+    return tid;
 }
 
-DynamicQueueLimits::DynamicQueueLimits ()
+DynamicQueueLimits::DynamicQueueLimits()
 {
-  NS_LOG_FUNCTION (this);
-  Reset ();
+    NS_LOG_FUNCTION(this);
+    Reset();
 }
 
-DynamicQueueLimits::~DynamicQueueLimits ()
+DynamicQueueLimits::~DynamicQueueLimits()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-void
-DynamicQueueLimits::Reset ()
-{
-  NS_LOG_FUNCTION (this);
-  // Reset all dynamic values
-  m_limit = 0;
-  m_numQueued = 0;
-  m_numCompleted = 0;
-  m_lastObjCnt = 0;
-  m_prevNumQueued = 0;
-  m_prevLastObjCnt = 0;
-  m_prevOvlimit = 0;
-  m_lowestSlack = UINTMAX;
-  m_slackStartTime = Simulator::Now ();
+    NS_LOG_FUNCTION(this);
 }
 
 void
-DynamicQueueLimits::Completed (uint32_t count)
+DynamicQueueLimits::Reset()
 {
-  NS_LOG_FUNCTION (this << count);
-  uint32_t inprogress;
-  uint32_t prevInprogress;
-  uint32_t limit;
-  uint32_t ovlimit;
-  uint32_t completed;
-  uint32_t numQueued;
-  bool allPrevCompleted;
+    NS_LOG_FUNCTION(this);
+    // Reset all dynamic values
+    m_limit = 0;
+    m_numQueued = 0;
+    m_numCompleted = 0;
+    m_lastObjCnt = 0;
+    m_prevNumQueued = 0;
+    m_prevLastObjCnt = 0;
+    m_prevOvlimit = 0;
+    m_lowestSlack = UINTMAX;
+    m_slackStartTime = Simulator::Now();
+}
 
-  numQueued = m_numQueued;
+void
+DynamicQueueLimits::Completed(uint32_t count)
+{
+    NS_LOG_FUNCTION(this << count);
+    uint32_t inprogress;
+    uint32_t prevInprogress;
+    uint32_t limit;
+    uint32_t ovlimit;
+    uint32_t completed;
+    uint32_t numQueued;
+    bool allPrevCompleted;
 
-  // Can't complete more than what's in queue
-  NS_ASSERT (count <= numQueued - m_numCompleted);
+    numQueued = m_numQueued;
 
-  completed = m_numCompleted + count;
-  limit = m_limit;
-  ovlimit = Posdiff (numQueued - m_numCompleted, limit);
-  inprogress = numQueued - completed;
-  prevInprogress = m_prevNumQueued - m_numCompleted;
-  allPrevCompleted = ((int32_t)(completed - m_prevNumQueued)) >= 0;
+    // Can't complete more than what's in queue
+    NS_ASSERT(count <= numQueued - m_numCompleted);
 
-  if ((ovlimit && !inprogress) || (m_prevOvlimit && allPrevCompleted))
+    completed = m_numCompleted + count;
+    limit = m_limit;
+    ovlimit = Posdiff(numQueued - m_numCompleted, limit);
+    inprogress = numQueued - completed;
+    prevInprogress = m_prevNumQueued - m_numCompleted;
+    allPrevCompleted = ((int32_t)(completed - m_prevNumQueued)) >= 0;
+
+    if ((ovlimit && !inprogress) || (m_prevOvlimit && allPrevCompleted))
     {
-      NS_LOG_DEBUG ("Queue starved, increase limit");
-     /*
-      * Queue considered starved if:
-      *   - The queue was over-limit in the last interval,
-      *     and there is no more data in the queue.
-      *  OR
-      *   - The queue was over-limit in the previous interval and
-      *     when enqueuing it was possible that all queued data
-      *     had been consumed.  This covers the case when queue
-      *     may have becomes starved between completion processing
-      *     running and next time enqueue was scheduled.
-      *
-      *     When queue is starved increase the limit by the amount
-      *     of bytes both sent and completed in the last interval,
-      *     plus any previous over-limit.
-      */
-      limit += Posdiff (completed, m_prevNumQueued) + m_prevOvlimit;
-      m_slackStartTime = Simulator::Now ();
-      m_lowestSlack = UINTMAX;
+        NS_LOG_DEBUG("Queue starved, increase limit");
+        /*
+         * Queue considered starved if:
+         *   - The queue was over-limit in the last interval,
+         *     and there is no more data in the queue.
+         *  OR
+         *   - The queue was over-limit in the previous interval and
+         *     when enqueuing it was possible that all queued data
+         *     had been consumed.  This covers the case when queue
+         *     may have becomes starved between completion processing
+         *     running and next time enqueue was scheduled.
+         *
+         *     When queue is starved increase the limit by the amount
+         *     of bytes both sent and completed in the last interval,
+         *     plus any previous over-limit.
+         */
+        limit += Posdiff(completed, m_prevNumQueued) + m_prevOvlimit;
+        m_slackStartTime = Simulator::Now();
+        m_lowestSlack = UINTMAX;
     }
-  else if (inprogress && prevInprogress && !allPrevCompleted)
+    else if (inprogress && prevInprogress && !allPrevCompleted)
     {
-      NS_LOG_DEBUG ("Queue not starved, check decrease limit");
-     /*
-      * Queue was not starved, check if the limit can be decreased.
-      * A decrease is only considered if the queue has been busy in
-      * the whole interval (the check above).
-      *
-      * If there is slack, the amount of execess data queued above
-      * the the amount needed to prevent starvation, the queue limit
-      * can be decreased.  To avoid hysteresis we consider the
-      * minimum amount of slack found over several iterations of the
-      * completion routine.
-      */
-      uint32_t slack;
-      uint32_t slackLastObjs;
+        NS_LOG_DEBUG("Queue not starved, check decrease limit");
+        /*
+         * Queue was not starved, check if the limit can be decreased.
+         * A decrease is only considered if the queue has been busy in
+         * the whole interval (the check above).
+         *
+         * If there is slack, the amount of execess data queued above
+         * the the amount needed to prevent starvation, the queue limit
+         * can be decreased.  To avoid hysteresis we consider the
+         * minimum amount of slack found over several iterations of the
+         * completion routine.
+         */
+        uint32_t slack;
+        uint32_t slackLastObjs;
 
-     /*
-      * Slack is the maximum of
-      *   - The queue limit plus previous over-limit minus twice
-      *     the number of objects completed.  Note that two times
-      *     number of completed bytes is a basis for an upper bound
-      *     of the limit.
-      *   - Portion of objects in the last queuing operation that
-      *     was not part of non-zero previous over-limit.  That is
-      *     "round down" by non-overlimit portion of the last
-      *     queueing operation.
-      */
-      slack = Posdiff (limit + m_prevOvlimit, 2 * (completed - m_numCompleted));
-      slackLastObjs = m_prevOvlimit ? Posdiff (m_prevLastObjCnt, m_prevOvlimit) : 0;
+        /*
+         * Slack is the maximum of
+         *   - The queue limit plus previous over-limit minus twice
+         *     the number of objects completed.  Note that two times
+         *     number of completed bytes is a basis for an upper bound
+         *     of the limit.
+         *   - Portion of objects in the last queuing operation that
+         *     was not part of non-zero previous over-limit.  That is
+         *     "round down" by non-overlimit portion of the last
+         *     queueing operation.
+         */
+        slack = Posdiff(limit + m_prevOvlimit, 2 * (completed - m_numCompleted));
+        slackLastObjs = m_prevOvlimit ? Posdiff(m_prevLastObjCnt, m_prevOvlimit) : 0;
 
-      slack = std::max (slack, slackLastObjs);
+        slack = std::max(slack, slackLastObjs);
 
-      if (slack < m_lowestSlack)
+        if (slack < m_lowestSlack)
         {
-          m_lowestSlack = slack;
+            m_lowestSlack = slack;
         }
 
-      if (Simulator::Now () > (m_slackStartTime + m_slackHoldTime))
+        if (Simulator::Now() > (m_slackStartTime + m_slackHoldTime))
         {
-          limit = Posdiff (limit, m_lowestSlack);
-          m_slackStartTime = Simulator::Now ();
-          m_lowestSlack = UINTMAX;
+            limit = Posdiff(limit, m_lowestSlack);
+            m_slackStartTime = Simulator::Now();
+            m_lowestSlack = UINTMAX;
         }
     }
 
-  // Enforce bounds on limit
-  limit = std::min ((uint32_t)std::max (limit, m_minLimit), m_maxLimit);
+    // Enforce bounds on limit
+    limit = std::min((uint32_t)std::max(limit, m_minLimit), m_maxLimit);
 
-  if (limit != m_limit)
+    if (limit != m_limit)
     {
-      NS_LOG_DEBUG ("Update limit");
-      m_limit = limit;
-      ovlimit = 0;
+        NS_LOG_DEBUG("Update limit");
+        m_limit = limit;
+        ovlimit = 0;
     }
 
-  m_adjLimit = limit + completed;
-  m_prevOvlimit = ovlimit;
-  m_prevLastObjCnt = m_lastObjCnt;
-  m_numCompleted = completed;
-  m_prevNumQueued = numQueued;
+    m_adjLimit = limit + completed;
+    m_prevOvlimit = ovlimit;
+    m_prevLastObjCnt = m_lastObjCnt;
+    m_numCompleted = completed;
+    m_prevNumQueued = numQueued;
 }
 
 int32_t
-DynamicQueueLimits::Available () const
+DynamicQueueLimits::Available() const
 {
-  NS_LOG_FUNCTION (this);
-  return (m_adjLimit - m_numQueued);
+    NS_LOG_FUNCTION(this);
+    return (m_adjLimit - m_numQueued);
 }
 
 void
-DynamicQueueLimits::Queued (uint32_t count)
+DynamicQueueLimits::Queued(uint32_t count)
 {
-  NS_LOG_FUNCTION (this << count);
-  NS_ASSERT (count <= DQL_MAX_OBJECT);
+    NS_LOG_FUNCTION(this << count);
+    NS_ASSERT(count <= DQL_MAX_OBJECT);
 
-  m_lastObjCnt = count;
-  m_numQueued += count;
+    m_lastObjCnt = count;
+    m_numQueued += count;
 }
 
 int32_t
-DynamicQueueLimits::Posdiff (int32_t a, int32_t b)
+DynamicQueueLimits::Posdiff(int32_t a, int32_t b)
 {
-  NS_LOG_FUNCTION (this << a << b);
-  return std::max ((a - b), 0);
+    NS_LOG_FUNCTION(this << a << b);
+    return std::max((a - b), 0);
 }
 
 } // namespace ns3

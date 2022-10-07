@@ -21,14 +21,13 @@
 #ifndef HASH_H
 #define HASH_H
 
-#include <string>
-
 #include "assert.h"
-#include "ptr.h"
-
+#include "hash-fnv.h"
 #include "hash-function.h"
 #include "hash-murmur3.h"
-#include "hash-fnv.h"
+#include "ptr.h"
+
+#include <string>
 
 /**
  * \file
@@ -36,7 +35,8 @@
  * \brief ns3::Hasher, ns3::Hash32() and ns3::Hash64() function declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup core
@@ -86,96 +86,95 @@ namespace ns3 {
  */
 class Hasher
 {
-public:
-  /**
-   * Constructor using the default implementation.
-   */
-  Hasher ();
-  /**
-   * Constructor using the supplied implementation.
-   *
-   * \param [in] hp Ptr<Hash::Implementation> to the desired implementation.
-   */
-  Hasher (Ptr<Hash::Implementation> hp);
-  /**
-   * Compute 32-bit hash of a byte buffer.
-   *
-   * Call clear () between calls to GetHash32() to reset the
-   * internal state and hash each buffer separately.
-   *
-   * If you don't call clear() between calls to GetHash32,
-   * you can hash successive buffers.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] buffer Pointer to the beginning of the buffer.
-   * \param [in] size Length of the buffer, in bytes.
-   * \return 32-bit hash of the buffer..
-   */
-  uint32_t  GetHash32  (const char * buffer, const std::size_t size);
-  /**
-   * Compute 64-bit hash of a byte buffer.
-   *
-   * Call clear () between calls to GetHash64() to reset the
-   * internal state and hash each buffer separately.
-   *
-   * If you don't call clear() between calls to GetHash64,
-   * you can hash successive buffers.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] buffer Pointer to the beginning of the buffer.
-   * \param [in] size Length of the buffer, in bytes.
-   * \return 64-bit hash of the buffer.
-   */
-  uint64_t  GetHash64  (const char * buffer, const std::size_t size);
+  public:
+    /**
+     * Constructor using the default implementation.
+     */
+    Hasher();
+    /**
+     * Constructor using the supplied implementation.
+     *
+     * \param [in] hp Ptr<Hash::Implementation> to the desired implementation.
+     */
+    Hasher(Ptr<Hash::Implementation> hp);
+    /**
+     * Compute 32-bit hash of a byte buffer.
+     *
+     * Call clear () between calls to GetHash32() to reset the
+     * internal state and hash each buffer separately.
+     *
+     * If you don't call clear() between calls to GetHash32,
+     * you can hash successive buffers.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] buffer Pointer to the beginning of the buffer.
+     * \param [in] size Length of the buffer, in bytes.
+     * \return 32-bit hash of the buffer..
+     */
+    uint32_t GetHash32(const char* buffer, const std::size_t size);
+    /**
+     * Compute 64-bit hash of a byte buffer.
+     *
+     * Call clear () between calls to GetHash64() to reset the
+     * internal state and hash each buffer separately.
+     *
+     * If you don't call clear() between calls to GetHash64,
+     * you can hash successive buffers.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] buffer Pointer to the beginning of the buffer.
+     * \param [in] size Length of the buffer, in bytes.
+     * \return 64-bit hash of the buffer.
+     */
+    uint64_t GetHash64(const char* buffer, const std::size_t size);
 
-  /**
-   * Compute 32-bit hash of a string.
-   *
-   * Call clear () between calls to GetHash32() to reset the
-   * internal state and hash each string separately.
-   *
-   * If you don't call clear() between calls to GetHash32,
-   * you can hash successive strings.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] s String to hash.
-   * \return 32-bit hash of the string.
-   */
-  uint32_t  GetHash32  (const std::string s);
-  /**
-   * Compute 64-bit hash of a string.
-   *
-   * Call clear () between calls to GetHash64() to reset the
-   * internal state and hash each string separately.
-   *
-   * If you don't call clear() between calls to GetHash64,
-   * you can hash successive strings.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] s String to hash.
-   * \return 64-bit hash of the string.
-   */
-  uint64_t  GetHash64  (const std::string s);
-  /**
-   * Restore initial state.
-   *
-   * Returning this Hasher allows code like this:
-   *
-   * \code
-   *   Hasher h;
-   *   h.GetHash32 (...);
-   *   ...
-   *   h.clear ().GetHash64 (...);
-   * \endcode
-   *
-   * \return This hasher.
-   */
-  Hasher & clear ();
+    /**
+     * Compute 32-bit hash of a string.
+     *
+     * Call clear () between calls to GetHash32() to reset the
+     * internal state and hash each string separately.
+     *
+     * If you don't call clear() between calls to GetHash32,
+     * you can hash successive strings.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] s String to hash.
+     * \return 32-bit hash of the string.
+     */
+    uint32_t GetHash32(const std::string s);
+    /**
+     * Compute 64-bit hash of a string.
+     *
+     * Call clear () between calls to GetHash64() to reset the
+     * internal state and hash each string separately.
+     *
+     * If you don't call clear() between calls to GetHash64,
+     * you can hash successive strings.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] s String to hash.
+     * \return 64-bit hash of the string.
+     */
+    uint64_t GetHash64(const std::string s);
+    /**
+     * Restore initial state.
+     *
+     * Returning this Hasher allows code like this:
+     *
+     * \code
+     *   Hasher h;
+     *   h.GetHash32 (...);
+     *   ...
+     *   h.clear ().GetHash64 (...);
+     * \endcode
+     *
+     * \return This hasher.
+     */
+    Hasher& clear();
 
-private:
-  Ptr<Hash::Implementation> m_impl;  /**< Hash implementation. */
-};  // Hasher
-
+  private:
+    Ptr<Hash::Implementation> m_impl; /**< Hash implementation. */
+};                                    // Hasher
 
 /*************************************************
  **  Global functions declarations
@@ -190,7 +189,7 @@ private:
  * \param [in] size Length of the buffer, in bytes.
  * \return 32-bit hash of the buffer.
  */
-uint32_t Hash32 (const char * buffer, const std::size_t size);
+uint32_t Hash32(const char* buffer, const std::size_t size);
 /**
  * \ingroup hash
  *
@@ -200,7 +199,7 @@ uint32_t Hash32 (const char * buffer, const std::size_t size);
  * \param [in] size Length of the buffer, in bytes.
  * \return 64-bit hash of the buffer.
  */
-uint64_t Hash64 (const char * buffer, const std::size_t size);
+uint64_t Hash64(const char* buffer, const std::size_t size);
 
 /**
  * \ingroup hash
@@ -210,7 +209,7 @@ uint64_t Hash64 (const char * buffer, const std::size_t size);
  * \param [in] s String to hash.
  * \return 32-bit hash of the string.
  */
-uint32_t Hash32 (const std::string s);
+uint32_t Hash32(const std::string s);
 /**
  * \ingroup hash
  *
@@ -219,93 +218,83 @@ uint32_t Hash32 (const std::string s);
  * \param [in] s String to hash.
  * \return 64-bit hash of the string.
  */
-uint64_t Hash64 (const std::string s);
+uint64_t Hash64(const std::string s);
 
-}  // namespace ns3
-
+} // namespace ns3
 
 /*************************************************
  **  Inline implementations for rvo
  ************************************************/
 
-namespace ns3 {
+namespace ns3
+{
 
 /*************************************************
  class Hasher implementation, inlined for rvo
 */
 
-inline
-uint32_t
-Hasher::GetHash32  (const char * buffer, const std::size_t size)
+inline uint32_t
+Hasher::GetHash32(const char* buffer, const std::size_t size)
 {
-  NS_ASSERT (m_impl);
-  return m_impl->GetHash32  (buffer, size);
+    NS_ASSERT(m_impl);
+    return m_impl->GetHash32(buffer, size);
 }
 
-inline
-uint64_t
-Hasher::GetHash64  (const char * buffer, const std::size_t size)
+inline uint64_t
+Hasher::GetHash64(const char* buffer, const std::size_t size)
 {
-  NS_ASSERT (m_impl);
-  return m_impl->GetHash64  (buffer, size);
+    NS_ASSERT(m_impl);
+    return m_impl->GetHash64(buffer, size);
 }
 
-inline
-uint32_t
-Hasher::GetHash32  (const std::string s)
+inline uint32_t
+Hasher::GetHash32(const std::string s)
 {
-  NS_ASSERT (m_impl);
-  return m_impl->GetHash32  (s.c_str (), s.size ());
+    NS_ASSERT(m_impl);
+    return m_impl->GetHash32(s.c_str(), s.size());
 }
 
-inline
-uint64_t
-Hasher::GetHash64  (const std::string s)
+inline uint64_t
+Hasher::GetHash64(const std::string s)
 {
-  NS_ASSERT (m_impl);
-  return m_impl->GetHash64  (s.c_str (), s.size ());
+    NS_ASSERT(m_impl);
+    return m_impl->GetHash64(s.c_str(), s.size());
 }
-
 
 /*************************************************
   Global hash functions, inlined for rvo
 */
 
 /**
-  * \brief Get a reference to the static global hasher at g_hasher
-  * \return Reference to the static Hasher instance.
-  */
-Hasher& GetStaticHash ();
+ * \brief Get a reference to the static global hasher at g_hasher
+ * \return Reference to the static Hasher instance.
+ */
+Hasher& GetStaticHash();
 
-inline
-uint32_t
-Hash32 (const char * buffer, const std::size_t size)
+inline uint32_t
+Hash32(const char* buffer, const std::size_t size)
 {
-  return GetStaticHash ().GetHash32 (buffer, size);
+    return GetStaticHash().GetHash32(buffer, size);
 }
 
-inline
-uint64_t
-Hash64 (const char * buffer, const std::size_t size)
+inline uint64_t
+Hash64(const char* buffer, const std::size_t size)
 {
-  return GetStaticHash ().GetHash64 (buffer, size);
+    return GetStaticHash().GetHash64(buffer, size);
 }
 
-inline
-uint32_t
-Hash32 (const std::string s)
+inline uint32_t
+Hash32(const std::string s)
 {
-  return GetStaticHash ().GetHash32 (s);
+    return GetStaticHash().GetHash32(s);
 }
 
-inline
-uint64_t
-Hash64 (const std::string s)
+inline uint64_t
+Hash64(const std::string s)
 {
-  return GetStaticHash ().GetHash64 (s);
+    return GetStaticHash().GetHash64(s);
 }
 
-
-}  // namespace ns3
+} // namespace ns3
 
 #endif /* HASH_H */

@@ -18,11 +18,12 @@
  */
 
 #include "rng-seed-manager.h"
-#include "global-value.h"
+
 #include "attribute-helper.h"
-#include "uinteger.h"
 #include "config.h"
+#include "global-value.h"
 #include "log.h"
+#include "uinteger.h"
 
 /**
  * \file
@@ -30,9 +31,10 @@
  * ns3::RngSeedManager implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
+NS_LOG_COMPONENT_DEFINE("RngSeedManager");
 
 /**
  * \relates RngSeedManager
@@ -50,10 +52,10 @@ static uint64_t g_nextStreamIndex = 0;
  *
  * This is accessible as "--RngSeed" from CommandLine.
  */
-static ns3::GlobalValue g_rngSeed ("RngSeed",
-                                   "The global seed of all rng streams",
-                                   ns3::UintegerValue (1),
-                                   ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue g_rngSeed("RngSeed",
+                                  "The global seed of all rng streams",
+                                  ns3::UintegerValue(1),
+                                  ns3::MakeUintegerChecker<uint32_t>());
 /**
  * \relates RngSeedManager
  * \anchor GlobalValueRngRun
@@ -64,47 +66,51 @@ static ns3::GlobalValue g_rngSeed ("RngSeed",
  *
  * This is accessible as "--RngRun" from CommandLine.
  */
-static ns3::GlobalValue g_rngRun ("RngRun",
-                                  "The substream index used for all streams",
-                                  ns3::UintegerValue (1),
-                                  ns3::MakeUintegerChecker<uint64_t> ());
+static ns3::GlobalValue g_rngRun("RngRun",
+                                 "The substream index used for all streams",
+                                 ns3::UintegerValue(1),
+                                 ns3::MakeUintegerChecker<uint64_t>());
 
-
-uint32_t RngSeedManager::GetSeed ()
+uint32_t
+RngSeedManager::GetSeed()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  UintegerValue seedValue;
-  g_rngSeed.GetValue (seedValue);
-  return static_cast<uint32_t> (seedValue.Get ());
+    NS_LOG_FUNCTION_NOARGS();
+    UintegerValue seedValue;
+    g_rngSeed.GetValue(seedValue);
+    return static_cast<uint32_t>(seedValue.Get());
 }
+
 void
-RngSeedManager::SetSeed (uint32_t seed)
+RngSeedManager::SetSeed(uint32_t seed)
 {
-  NS_LOG_FUNCTION (seed);
-  Config::SetGlobal ("RngSeed", UintegerValue (seed));
+    NS_LOG_FUNCTION(seed);
+    Config::SetGlobal("RngSeed", UintegerValue(seed));
 }
 
-void RngSeedManager::SetRun (uint64_t run)
+void
+RngSeedManager::SetRun(uint64_t run)
 {
-  NS_LOG_FUNCTION (run);
-  Config::SetGlobal ("RngRun", UintegerValue (run));
+    NS_LOG_FUNCTION(run);
+    Config::SetGlobal("RngRun", UintegerValue(run));
 }
 
-uint64_t RngSeedManager::GetRun ()
+uint64_t
+RngSeedManager::GetRun()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  UintegerValue value;
-  g_rngRun.GetValue (value);
-  uint64_t run = value.Get ();
-  return run;
+    NS_LOG_FUNCTION_NOARGS();
+    UintegerValue value;
+    g_rngRun.GetValue(value);
+    uint64_t run = value.Get();
+    return run;
 }
 
-uint64_t RngSeedManager::GetNextStreamIndex ()
+uint64_t
+RngSeedManager::GetNextStreamIndex()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  uint64_t next = g_nextStreamIndex;
-  g_nextStreamIndex++;
-  return next;
+    NS_LOG_FUNCTION_NOARGS();
+    uint64_t next = g_nextStreamIndex;
+    g_nextStreamIndex++;
+    return next;
 }
 
 } // namespace ns3

@@ -18,8 +18,9 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "log.h"
 #include "hash.h"
+
+#include "log.h"
 
 /**
  * \file
@@ -27,35 +28,36 @@
  * \brief ns3::Hasher implementation.
  */
 
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("Hash");
-
-Hasher& GetStaticHash ()
+namespace ns3
 {
-  static Hasher g_hasher = Hasher ();
-  g_hasher.clear();
-  return g_hasher;
+
+NS_LOG_COMPONENT_DEFINE("Hash");
+
+Hasher&
+GetStaticHash()
+{
+    static Hasher g_hasher = Hasher();
+    g_hasher.clear();
+    return g_hasher;
 }
 
-Hasher::Hasher ()
+Hasher::Hasher()
 {
-  m_impl = Create <Hash::Function::Murmur3> ();
-  NS_ASSERT (m_impl);
+    m_impl = Create<Hash::Function::Murmur3>();
+    NS_ASSERT(m_impl);
 }
 
-Hasher::Hasher (Ptr<Hash::Implementation> hp)
-  : m_impl (hp)
+Hasher::Hasher(Ptr<Hash::Implementation> hp)
+    : m_impl(hp)
 {
-  NS_ASSERT (m_impl);
+    NS_ASSERT(m_impl);
 }
 
-Hasher &
-Hasher::clear ()
+Hasher&
+Hasher::clear()
 {
-  m_impl->clear ();
-  return *this;
+    m_impl->clear();
+    return *this;
 }
 
-}  // namespace ns3
+} // namespace ns3

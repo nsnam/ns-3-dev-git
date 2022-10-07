@@ -21,8 +21,9 @@
 #ifndef HASHFUNCTION_H
 #define HASHFUNCTION_H
 
-#include <cstring>  // memcpy
 #include "simple-ref-count.h"
+
+#include <cstring> // memcpy
 
 /**
  * \file
@@ -31,13 +32,15 @@
  * ns3::Hash::Function::Hash64 declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup hash
  * Hash function implementations
  */
-namespace Hash {
+namespace Hash
+{
 
 /**
  *  \ingroup hash
@@ -46,55 +49,58 @@ namespace Hash {
  */
 class Implementation : public SimpleRefCount<Implementation>
 {
-public:
-  /**
-   * Compute 32-bit hash of a byte buffer
-   *
-   * Call clear() between calls to GetHash32() to reset the
-   * internal state and hash each buffer separately.
-   *
-   * If you don't call clear() between calls to GetHash32,
-   * you can hash successive buffers.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] buffer Pointer to the beginning of the buffer.
-   * \param [in] size Length of the buffer, in bytes.
-   * \return 32-bit hash of the buffer.
-   */
-  virtual uint32_t  GetHash32  (const char * buffer, const std::size_t size) = 0;
-  /**
-   * Compute 64-bit hash of a byte buffer.
-   *
-   * Default implementation returns 32-bit hash, with a warning.
-   *
-   * Call clear() between calls to GetHash64() to reset the
-   * internal state and hash each buffer separately.
-   *
-   * If you don't call clear() between calls to GetHash64,
-   * you can hash successive buffers.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] buffer Pointer to the beginning of the buffer.
-   * \param [in] size Length of the buffer, in bytes.
-   * \return 64-bit hash of the buffer.
-   */
-  virtual uint64_t  GetHash64  (const char * buffer, const std::size_t size);
-  /**
-   * Restore initial state.
-   */
-  virtual void clear () = 0;
-  /**
-   * Constructor.
-   */
-  Implementation ()
-  { }
-  /**
-   * Destructor.
-   */
-  virtual ~Implementation ()
-  { }
-};  // Hashfunction
+  public:
+    /**
+     * Compute 32-bit hash of a byte buffer
+     *
+     * Call clear() between calls to GetHash32() to reset the
+     * internal state and hash each buffer separately.
+     *
+     * If you don't call clear() between calls to GetHash32,
+     * you can hash successive buffers.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] buffer Pointer to the beginning of the buffer.
+     * \param [in] size Length of the buffer, in bytes.
+     * \return 32-bit hash of the buffer.
+     */
+    virtual uint32_t GetHash32(const char* buffer, const std::size_t size) = 0;
+    /**
+     * Compute 64-bit hash of a byte buffer.
+     *
+     * Default implementation returns 32-bit hash, with a warning.
+     *
+     * Call clear() between calls to GetHash64() to reset the
+     * internal state and hash each buffer separately.
+     *
+     * If you don't call clear() between calls to GetHash64,
+     * you can hash successive buffers.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] buffer Pointer to the beginning of the buffer.
+     * \param [in] size Length of the buffer, in bytes.
+     * \return 64-bit hash of the buffer.
+     */
+    virtual uint64_t GetHash64(const char* buffer, const std::size_t size);
+    /**
+     * Restore initial state.
+     */
+    virtual void clear() = 0;
 
+    /**
+     * Constructor.
+     */
+    Implementation()
+    {
+    }
+
+    /**
+     * Destructor.
+     */
+    virtual ~Implementation()
+    {
+    }
+}; // Hashfunction
 
 /*--------------------------------------
  *  Hash function implementation
@@ -110,15 +116,17 @@ public:
  * See Hash::Function::Hash32 or Hash::Function::Hash64
  * @{
  */
-typedef uint32_t (*Hash32Function_ptr) (const char *, const std::size_t);
-typedef uint64_t (*Hash64Function_ptr) (const char *, const std::size_t);
+typedef uint32_t (*Hash32Function_ptr)(const char*, const std::size_t);
+typedef uint64_t (*Hash64Function_ptr)(const char*, const std::size_t);
+
 /**@}*/
 
 /**
  * \ingroup hash
  * Hash functions.
  */
-namespace Function {
+namespace Function
+{
 
 /**
  * \ingroup hash
@@ -128,24 +136,29 @@ namespace Function {
  */
 class Hash32 : public Implementation
 {
-public:
-  /**
-   * Constructor from a 32-bit hash function pointer.
-   *
-   * \param [in] hp Function pointer to a 32-bit hash function.
-   */
-  Hash32 (Hash32Function_ptr hp) : m_fp (hp)
-  { }
-  uint32_t GetHash32 (const char * buffer, const std::size_t size) override
-  {
-    return (*m_fp)(buffer, size);
-  }
-  void clear () override
-  { }
+  public:
+    /**
+     * Constructor from a 32-bit hash function pointer.
+     *
+     * \param [in] hp Function pointer to a 32-bit hash function.
+     */
+    Hash32(Hash32Function_ptr hp)
+        : m_fp(hp)
+    {
+    }
 
-private:
-  Hash32Function_ptr m_fp;  /**< The hash function. */
-};  // Hash32
+    uint32_t GetHash32(const char* buffer, const std::size_t size) override
+    {
+        return (*m_fp)(buffer, size);
+    }
+
+    void clear() override
+    {
+    }
+
+  private:
+    Hash32Function_ptr m_fp; /**< The hash function. */
+};                           // Hash32
 
 /**
  * \ingroup hash
@@ -155,39 +168,43 @@ private:
  */
 class Hash64 : public Implementation
 {
-public:
-  /**
-   * Constructor from a 64-bit hash function pointer.
-   *
-   * \param [in] hp Function pointer to a 64-bit hash function.
-   */
-  Hash64 (Hash64Function_ptr hp) : m_fp (hp)
-  { }
-  uint64_t GetHash64 (const char * buffer, const std::size_t size) override
-  {
-    return (*m_fp)(buffer, size);
-  }
-  uint32_t GetHash32 (const char * buffer, const std::size_t size) override
-  {
-    uint32_t hash32;
-    uint64_t hash64 = GetHash64 (buffer, size);
+  public:
+    /**
+     * Constructor from a 64-bit hash function pointer.
+     *
+     * \param [in] hp Function pointer to a 64-bit hash function.
+     */
+    Hash64(Hash64Function_ptr hp)
+        : m_fp(hp)
+    {
+    }
 
-    memcpy (&hash32, &hash64, sizeof (hash32));
-    return hash32;
-  }
-  void clear () override
-  { }
+    uint64_t GetHash64(const char* buffer, const std::size_t size) override
+    {
+        return (*m_fp)(buffer, size);
+    }
 
-private:
-  Hash64Function_ptr m_fp;  /**< The hash function. */
-};  // Hash64<Hash64Function_ptr>
+    uint32_t GetHash32(const char* buffer, const std::size_t size) override
+    {
+        uint32_t hash32;
+        uint64_t hash64 = GetHash64(buffer, size);
 
+        memcpy(&hash32, &hash64, sizeof(hash32));
+        return hash32;
+    }
 
-}  // namespace Function
+    void clear() override
+    {
+    }
 
-}  // namespace Hash
+  private:
+    Hash64Function_ptr m_fp; /**< The hash function. */
+};                           // Hash64<Hash64Function_ptr>
 
-}  // namespace ns3
+} // namespace Function
+
+} // namespace Hash
+
+} // namespace ns3
 
 #endif /* HASHFUNCTION_H */
-

@@ -22,9 +22,11 @@
 #define RR_MULTI_USER_SCHEDULER_H
 
 #include "multi-user-scheduler.h"
+
 #include <list>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup wifi
@@ -41,132 +43,135 @@ namespace ns3 {
  */
 class RrMultiUserScheduler : public MultiUserScheduler
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  RrMultiUserScheduler ();
-  ~RrMultiUserScheduler () override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    RrMultiUserScheduler();
+    ~RrMultiUserScheduler() override;
 
-protected:
-  void DoDispose () override;
-  void DoInitialize () override;
+  protected:
+    void DoDispose() override;
+    void DoInitialize() override;
 
-private:
-  TxFormat SelectTxFormat () override;
-  DlMuInfo ComputeDlMuInfo () override;
-  UlMuInfo ComputeUlMuInfo () override;
+  private:
+    TxFormat SelectTxFormat() override;
+    DlMuInfo ComputeDlMuInfo() override;
+    UlMuInfo ComputeUlMuInfo() override;
 
-  /**
-   * Check if it is possible to send a BSRP Trigger Frame given the current
-   * time limits.
-   *
-   * \return UL_MU_TX if it is possible to send a BSRP TF, NO_TX otherwise
-   */
-  virtual TxFormat TrySendingBsrpTf ();
+    /**
+     * Check if it is possible to send a BSRP Trigger Frame given the current
+     * time limits.
+     *
+     * \return UL_MU_TX if it is possible to send a BSRP TF, NO_TX otherwise
+     */
+    virtual TxFormat TrySendingBsrpTf();
 
-  /**
-   * Check if it is possible to send a Basic Trigger Frame given the current
-   * time limits.
-   *
-   * \return UL_MU_TX if it is possible to send a Basic TF, DL_MU_TX if we can try
-   *         to send a DL MU PPDU and NO_TX if the remaining time is too short
-   */
-  virtual TxFormat TrySendingBasicTf ();
+    /**
+     * Check if it is possible to send a Basic Trigger Frame given the current
+     * time limits.
+     *
+     * \return UL_MU_TX if it is possible to send a Basic TF, DL_MU_TX if we can try
+     *         to send a DL MU PPDU and NO_TX if the remaining time is too short
+     */
+    virtual TxFormat TrySendingBasicTf();
 
-  /**
-   * Check if it is possible to send a DL MU PPDU given the current
-   * time limits.
-   *
-   * \return DL_MU_TX if it is possible to send a DL MU PPDU, SU_TX if a SU PPDU
-   *         can be transmitted (e.g., there are no HE stations associated or sending
-   *         a DL MU PPDU is not possible and m_forceDlOfdma is false) or NO_TX otherwise
-   */
-  virtual TxFormat TrySendingDlMuPpdu ();
+    /**
+     * Check if it is possible to send a DL MU PPDU given the current
+     * time limits.
+     *
+     * \return DL_MU_TX if it is possible to send a DL MU PPDU, SU_TX if a SU PPDU
+     *         can be transmitted (e.g., there are no HE stations associated or sending
+     *         a DL MU PPDU is not possible and m_forceDlOfdma is false) or NO_TX otherwise
+     */
+    virtual TxFormat TrySendingDlMuPpdu();
 
-  /**
-   * Compute a TXVECTOR that can be used to construct a Trigger Frame to solicit
-   * transmissions from suitable stations, i.e., stations that have established a
-   * BlockAck agreement with the AP and for which the given predicate returns true.
-   *
-   * \tparam Func \deduced the type of the given predicate
-   * \param canBeSolicited a predicate returning false for stations that shall not be solicited
-   * \return a TXVECTOR that can be used to construct a Trigger Frame to solicit
-   *         transmissions from suitable stations
-   */
-  template <class Func>
-  WifiTxVector GetTxVectorForUlMu (Func canBeSolicited);
+    /**
+     * Compute a TXVECTOR that can be used to construct a Trigger Frame to solicit
+     * transmissions from suitable stations, i.e., stations that have established a
+     * BlockAck agreement with the AP and for which the given predicate returns true.
+     *
+     * \tparam Func \deduced the type of the given predicate
+     * \param canBeSolicited a predicate returning false for stations that shall not be solicited
+     * \return a TXVECTOR that can be used to construct a Trigger Frame to solicit
+     *         transmissions from suitable stations
+     */
+    template <class Func>
+    WifiTxVector GetTxVectorForUlMu(Func canBeSolicited);
 
-  /**
-   * Notify the scheduler that a station associated with the AP
-   *
-   * \param aid the AID of the station
-   * \param address the MAC address of the station
-   */
-  void NotifyStationAssociated (uint16_t aid, Mac48Address address);
-  /**
-   * Notify the scheduler that a station deassociated with the AP
-   *
-   * \param aid the AID of the station
-   * \param address the MAC address of the station
-   */
-  void NotifyStationDeassociated (uint16_t aid, Mac48Address address);
+    /**
+     * Notify the scheduler that a station associated with the AP
+     *
+     * \param aid the AID of the station
+     * \param address the MAC address of the station
+     */
+    void NotifyStationAssociated(uint16_t aid, Mac48Address address);
+    /**
+     * Notify the scheduler that a station deassociated with the AP
+     *
+     * \param aid the AID of the station
+     * \param address the MAC address of the station
+     */
+    void NotifyStationDeassociated(uint16_t aid, Mac48Address address);
 
-  /**
-   * Information used to sort stations
-   */
-  struct MasterInfo
-  {
-    uint16_t aid;                 //!< station's AID
-    Mac48Address address;         //!< station's MAC Address
-    double credits;               //!< credits accumulated by the station
-  };
+    /**
+     * Information used to sort stations
+     */
+    struct MasterInfo
+    {
+        uint16_t aid;         //!< station's AID
+        Mac48Address address; //!< station's MAC Address
+        double credits;       //!< credits accumulated by the station
+    };
 
-  /**
-   * Finalize the given TXVECTOR by only including the largest subset of the
-   * current set of candidate stations that can be allocated equal-sized RUs
-   * (with the possible exception of using central 26-tone RUs) without
-   * leaving RUs unallocated. The given TXVECTOR must be a MU TXVECTOR and must
-   * contain an HeMuUserInfo entry for each candidate station. The finalized
-   * TXVECTOR contains a subset of such HeMuUserInfo entries. The set of candidate
-   * stations is also updated by removing stations that are not allocated an RU.
-   *
-   * \param txVector the given TXVECTOR
-   */
-  void FinalizeTxVector (WifiTxVector& txVector);
-  /**
-   * Update credits of the stations in the given list considering that a PPDU having
-   * the given duration is being transmitted or solicited by using the given TXVECTOR.
-   *
-   * \param staList the list of stations
-   * \param txDuration the TX duration of the PPDU being transmitted or solicited
-   * \param txVector the TXVECTOR for the PPDU being transmitted or solicited
-   */
-  void UpdateCredits (std::list<MasterInfo>& staList, Time txDuration, const WifiTxVector& txVector);
+    /**
+     * Finalize the given TXVECTOR by only including the largest subset of the
+     * current set of candidate stations that can be allocated equal-sized RUs
+     * (with the possible exception of using central 26-tone RUs) without
+     * leaving RUs unallocated. The given TXVECTOR must be a MU TXVECTOR and must
+     * contain an HeMuUserInfo entry for each candidate station. The finalized
+     * TXVECTOR contains a subset of such HeMuUserInfo entries. The set of candidate
+     * stations is also updated by removing stations that are not allocated an RU.
+     *
+     * \param txVector the given TXVECTOR
+     */
+    void FinalizeTxVector(WifiTxVector& txVector);
+    /**
+     * Update credits of the stations in the given list considering that a PPDU having
+     * the given duration is being transmitted or solicited by using the given TXVECTOR.
+     *
+     * \param staList the list of stations
+     * \param txDuration the TX duration of the PPDU being transmitted or solicited
+     * \param txVector the TXVECTOR for the PPDU being transmitted or solicited
+     */
+    void UpdateCredits(std::list<MasterInfo>& staList,
+                       Time txDuration,
+                       const WifiTxVector& txVector);
 
-  /**
-   * Information stored for candidate stations
-   */
-  typedef std::pair<std::list<MasterInfo>::iterator, Ptr<WifiMpdu>> CandidateInfo;
+    /**
+     * Information stored for candidate stations
+     */
+    typedef std::pair<std::list<MasterInfo>::iterator, Ptr<WifiMpdu>> CandidateInfo;
 
-  uint8_t m_nStations;                                  //!< Number of stations/slots to fill
-  bool m_enableTxopSharing;                             //!< allow A-MPDUs of different TIDs in a DL MU PPDU
-  bool m_forceDlOfdma;                                  //!< return DL_OFDMA even if no DL MU PPDU was built
-  bool m_enableUlOfdma;                                 //!< enable the scheduler to also return UL_OFDMA
-  bool m_enableBsrp;                                    //!< send a BSRP before an UL MU transmission
-  bool m_useCentral26TonesRus;                          //!< whether to allocate central 26-tone RUs
-  uint32_t m_ulPsduSize;                                //!< the size in byte of the solicited PSDU
-  std::map<AcIndex, std::list<MasterInfo>> m_staListDl; //!< Per-AC list of stations (next to serve for DL first)
-  std::list<MasterInfo> m_staListUl;                    //!< List of stations to serve for UL
-  std::list<CandidateInfo> m_candidates;                //!< Candidate stations for MU TX
-  Time m_maxCredits;                                    //!< Max amount of credits a station can have
-  CtrlTriggerHeader m_trigger;                          //!< Trigger Frame to send
-  WifiMacHeader m_triggerMacHdr;                        //!< MAC header for Trigger Frame
-  WifiTxParameters m_txParams;                          //!< TX parameters
+    uint8_t m_nStations;         //!< Number of stations/slots to fill
+    bool m_enableTxopSharing;    //!< allow A-MPDUs of different TIDs in a DL MU PPDU
+    bool m_forceDlOfdma;         //!< return DL_OFDMA even if no DL MU PPDU was built
+    bool m_enableUlOfdma;        //!< enable the scheduler to also return UL_OFDMA
+    bool m_enableBsrp;           //!< send a BSRP before an UL MU transmission
+    bool m_useCentral26TonesRus; //!< whether to allocate central 26-tone RUs
+    uint32_t m_ulPsduSize;       //!< the size in byte of the solicited PSDU
+    std::map<AcIndex, std::list<MasterInfo>>
+        m_staListDl;                       //!< Per-AC list of stations (next to serve for DL first)
+    std::list<MasterInfo> m_staListUl;     //!< List of stations to serve for UL
+    std::list<CandidateInfo> m_candidates; //!< Candidate stations for MU TX
+    Time m_maxCredits;                     //!< Max amount of credits a station can have
+    CtrlTriggerHeader m_trigger;           //!< Trigger Frame to send
+    WifiMacHeader m_triggerMacHdr;         //!< MAC header for Trigger Frame
+    WifiTxParameters m_txParams;           //!< TX parameters
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* RR_MULTI_USER_SCHEDULER_H */

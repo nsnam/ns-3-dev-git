@@ -17,16 +17,16 @@
  * Author: Hossam Khader <hossamkhader@gmail.com>
  */
 
+#include "ns3/acoustic-modem-energy-model-helper.h"
+#include "ns3/basic-energy-source-helper.h"
 #include "ns3/core-module.h"
+#include "ns3/energy-source-container.h"
 #include "ns3/internet-module.h"
-#include "ns3/node-container.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/basic-energy-source-helper.h"
-#include "ns3/energy-source-container.h"
-#include "ns3/uan-helper.h"
+#include "ns3/node-container.h"
 #include "ns3/uan-channel.h"
-#include "ns3/acoustic-modem-energy-model-helper.h"
+#include "ns3/uan-helper.h"
 
 using namespace ns3;
 
@@ -39,224 +39,228 @@ using namespace ns3;
  *
  */
 
-NS_LOG_COMPONENT_DEFINE ("UanIpv4Example");
-
+NS_LOG_COMPONENT_DEFINE("UanIpv4Example");
 
 class UanExperiment
 {
-public:
-  UanExperiment ();
+  public:
+    UanExperiment();
 
-  /**
-   * Set the UAN nodes position
-   */
-  void SetupPositions ();
+    /**
+     * Set the UAN nodes position
+     */
+    void SetupPositions();
 
-  /**
-   * Set the UAN nodes energy
-   */
-  void SetupEnergy ();
+    /**
+     * Set the UAN nodes energy
+     */
+    void SetupEnergy();
 
-  /**
-   * Set the UAN nodes communication channels
-   */
-  void SetupCommunications ();
+    /**
+     * Set the UAN nodes communication channels
+     */
+    void SetupCommunications();
 
-  /**
-   * Set the UAN nodes communication channels
-   */
-  void SetupApplications ();
+    /**
+     * Set the UAN nodes communication channels
+     */
+    void SetupApplications();
 
-  /**
-   * Send a packet from all the nodes
-   */
-  void SendPackets ();
+    /**
+     * Send a packet from all the nodes
+     */
+    void SendPackets();
 
-  /**
-   * Send a packet from one of the nodes
-   * \param node The sending node
-   * \param pkt The packet
-   * \param dst the destination
-   */
-  void SendSinglePacket (Ptr<Node> node, Ptr<Packet> pkt, Ipv4Address dst);
+    /**
+     * Send a packet from one of the nodes
+     * \param node The sending node
+     * \param pkt The packet
+     * \param dst the destination
+     */
+    void SendSinglePacket(Ptr<Node> node, Ptr<Packet> pkt, Ipv4Address dst);
 
-  /**
-   * Print the received packet
-   * \param socket The receiving socket
-   */
-  void PrintReceivedPacket (Ptr<Socket> socket);
+    /**
+     * Print the received packet
+     * \param socket The receiving socket
+     */
+    void PrintReceivedPacket(Ptr<Socket> socket);
 
-  /**
-   * Prepare the experiment
-   */
-  void Prepare ();
+    /**
+     * Prepare the experiment
+     */
+    void Prepare();
 
-  /**
-   * Teardown the experiment
-   */
-  void Teardown ();
+    /**
+     * Teardown the experiment
+     */
+    void Teardown();
 
-private:
-  NodeContainer m_nodes; //!< UAN nodes
-  std::map<Ptr<Node>, Ptr<Socket> > m_sockets; //!< send and receive sockets
+  private:
+    NodeContainer m_nodes;                      //!< UAN nodes
+    std::map<Ptr<Node>, Ptr<Socket>> m_sockets; //!< send and receive sockets
 };
 
-
-UanExperiment::UanExperiment ()
+UanExperiment::UanExperiment()
 {
 }
 
 void
-UanExperiment::SetupPositions ()
+UanExperiment::SetupPositions()
 {
-  MobilityHelper mobilityHelper;
-  mobilityHelper.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobilityHelper.Install (m_nodes);
-  m_nodes.Get (0)->GetObject<MobilityModel> ()->SetPosition (Vector (0, 0, 0));
-  m_nodes.Get (1)->GetObject<MobilityModel> ()->SetPosition (Vector (100, 0, 0));
-  m_nodes.Get (2)->GetObject<MobilityModel> ()->SetPosition (Vector (-100, 0, 0));
+    MobilityHelper mobilityHelper;
+    mobilityHelper.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobilityHelper.Install(m_nodes);
+    m_nodes.Get(0)->GetObject<MobilityModel>()->SetPosition(Vector(0, 0, 0));
+    m_nodes.Get(1)->GetObject<MobilityModel>()->SetPosition(Vector(100, 0, 0));
+    m_nodes.Get(2)->GetObject<MobilityModel>()->SetPosition(Vector(-100, 0, 0));
 }
 
 void
-UanExperiment::SetupEnergy ()
+UanExperiment::SetupEnergy()
 {
-  BasicEnergySourceHelper energySourceHelper;
-  energySourceHelper.Set ("BasicEnergySourceInitialEnergyJ", DoubleValue (900000));
-  energySourceHelper.Install (m_nodes);
+    BasicEnergySourceHelper energySourceHelper;
+    energySourceHelper.Set("BasicEnergySourceInitialEnergyJ", DoubleValue(900000));
+    energySourceHelper.Install(m_nodes);
 }
 
 void
-UanExperiment::SetupCommunications ()
+UanExperiment::SetupCommunications()
 {
-  Ptr<UanChannel> channel = CreateObject<UanChannel> ();
-  UanHelper uanHelper;
-  NetDeviceContainer netDeviceContainer = uanHelper.Install (m_nodes, channel);
-  EnergySourceContainer energySourceContainer;
-  NodeContainer::Iterator node = m_nodes.Begin ();
-  while (node != m_nodes.End ())
+    Ptr<UanChannel> channel = CreateObject<UanChannel>();
+    UanHelper uanHelper;
+    NetDeviceContainer netDeviceContainer = uanHelper.Install(m_nodes, channel);
+    EnergySourceContainer energySourceContainer;
+    NodeContainer::Iterator node = m_nodes.Begin();
+    while (node != m_nodes.End())
     {
-      energySourceContainer.Add ((*node)->GetObject<EnergySourceContainer> ()->Get (0));
-      node++;
+        energySourceContainer.Add((*node)->GetObject<EnergySourceContainer>()->Get(0));
+        node++;
     }
-  AcousticModemEnergyModelHelper acousticModemEnergyModelHelper;
-  acousticModemEnergyModelHelper.Install (netDeviceContainer, energySourceContainer);
+    AcousticModemEnergyModelHelper acousticModemEnergyModelHelper;
+    acousticModemEnergyModelHelper.Install(netDeviceContainer, energySourceContainer);
 
-  InternetStackHelper internetStackHelper;
-  internetStackHelper.Install (m_nodes);
+    InternetStackHelper internetStackHelper;
+    internetStackHelper.Install(m_nodes);
 
-  Ipv4AddressHelper ipv4AddressHelper;
-  ipv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.0");
-  ipv4AddressHelper.Assign (netDeviceContainer);
-  node = m_nodes.Begin ();
-  while (node != m_nodes.End ())
+    Ipv4AddressHelper ipv4AddressHelper;
+    ipv4AddressHelper.SetBase("10.0.0.0", "255.255.255.0");
+    ipv4AddressHelper.Assign(netDeviceContainer);
+    node = m_nodes.Begin();
+    while (node != m_nodes.End())
     {
-      (*node)->GetObject<Ipv4L3Protocol> ()->GetInterface (1)->GetArpCache ()->SetWaitReplyTimeout (Seconds (10));
-      node++;
+        (*node)->GetObject<Ipv4L3Protocol>()->GetInterface(1)->GetArpCache()->SetWaitReplyTimeout(
+            Seconds(10));
+        node++;
     }
 }
 
 void
-UanExperiment::PrintReceivedPacket (Ptr<Socket> socket)
+UanExperiment::PrintReceivedPacket(Ptr<Socket> socket)
 {
-  Address srcAddress;
-  while (socket->GetRxAvailable () > 0)
+    Address srcAddress;
+    while (socket->GetRxAvailable() > 0)
     {
-      Ptr<Packet> packet = socket->RecvFrom (srcAddress);
-      uint8_t energyReading;
-      packet->CopyData (&energyReading, 1);
+        Ptr<Packet> packet = socket->RecvFrom(srcAddress);
+        uint8_t energyReading;
+        packet->CopyData(&energyReading, 1);
 
-      if(InetSocketAddress::IsMatchingType (srcAddress))
+        if (InetSocketAddress::IsMatchingType(srcAddress))
         {
-          NS_LOG_UNCOND ( "Time: " << Simulator::Now ().GetHours () << "h" << " | Node: " <<
-                          InetSocketAddress::ConvertFrom (srcAddress).GetIpv4 () << " | Energy: " <<
-                          +energyReading << "%");
+            NS_LOG_UNCOND("Time: " << Simulator::Now().GetHours() << "h"
+                                   << " | Node: "
+                                   << InetSocketAddress::ConvertFrom(srcAddress).GetIpv4()
+                                   << " | Energy: " << +energyReading << "%");
         }
     }
 }
 
 void
-UanExperiment::SetupApplications ()
+UanExperiment::SetupApplications()
 {
-  NodeContainer::Iterator node = m_nodes.Begin ();
-  while (node != m_nodes.End ())
+    NodeContainer::Iterator node = m_nodes.Begin();
+    while (node != m_nodes.End())
     {
-      m_sockets[*node] = Socket::CreateSocket (*node, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-      if((*node)->GetObject<Ipv4> ())
+        m_sockets[*node] =
+            Socket::CreateSocket(*node, TypeId::LookupByName("ns3::UdpSocketFactory"));
+        if ((*node)->GetObject<Ipv4>())
         {
-          InetSocketAddress ipv4_local = InetSocketAddress (Ipv4Address::GetAny (), 9);
-          m_sockets[*node]->Bind (ipv4_local);
+            InetSocketAddress ipv4_local = InetSocketAddress(Ipv4Address::GetAny(), 9);
+            m_sockets[*node]->Bind(ipv4_local);
         }
 
-      m_sockets[*node]->SetRecvCallback (MakeCallback (&UanExperiment::PrintReceivedPacket, this));
-      node++;
+        m_sockets[*node]->SetRecvCallback(MakeCallback(&UanExperiment::PrintReceivedPacket, this));
+        node++;
     }
 }
 
 void
-UanExperiment::SendPackets ()
+UanExperiment::SendPackets()
 {
-  Ptr<UniformRandomVariable> uniformRandomVariable = CreateObject<UniformRandomVariable> ();
+    Ptr<UniformRandomVariable> uniformRandomVariable = CreateObject<UniformRandomVariable>();
 
-  NodeContainer::Iterator node = m_nodes.Begin ();
-  Ipv4Address dst = (*node)->GetObject<Ipv4L3Protocol> ()->GetInterface (1)->GetAddress (0).GetLocal ();
-  node++;
-  while (node != m_nodes.End ())
+    NodeContainer::Iterator node = m_nodes.Begin();
+    Ipv4Address dst =
+        (*node)->GetObject<Ipv4L3Protocol>()->GetInterface(1)->GetAddress(0).GetLocal();
+    node++;
+    while (node != m_nodes.End())
     {
-      uint8_t energy = ((*node)->GetObject<EnergySourceContainer> ()->Get (0)->GetEnergyFraction ()) * 100;
+        uint8_t energy =
+            ((*node)->GetObject<EnergySourceContainer>()->Get(0)->GetEnergyFraction()) * 100;
 
-      Ptr<Packet> pkt = Create<Packet> (&energy, 1);
+        Ptr<Packet> pkt = Create<Packet>(&energy, 1);
 
-      double time = uniformRandomVariable->GetValue (0, 60);
-      Simulator::Schedule (Seconds (time), &UanExperiment::SendSinglePacket, this, *node, pkt, dst);
-      node++;
+        double time = uniformRandomVariable->GetValue(0, 60);
+        Simulator::Schedule(Seconds(time), &UanExperiment::SendSinglePacket, this, *node, pkt, dst);
+        node++;
     }
-  Simulator::Schedule (Hours (2), &UanExperiment::SendPackets, this);
+    Simulator::Schedule(Hours(2), &UanExperiment::SendPackets, this);
 }
 
 void
-UanExperiment::SendSinglePacket (Ptr<Node> node, Ptr<Packet> pkt, Ipv4Address dst)
+UanExperiment::SendSinglePacket(Ptr<Node> node, Ptr<Packet> pkt, Ipv4Address dst)
 {
-  NS_LOG_UNCOND ( Simulator::Now ().GetHours () << "h" << " packet sent to " << dst );
-  InetSocketAddress ipv4_destination = InetSocketAddress (dst, 9);
-  m_sockets[node]->SendTo (pkt, 0, ipv4_destination);
+    NS_LOG_UNCOND(Simulator::Now().GetHours() << "h"
+                                              << " packet sent to " << dst);
+    InetSocketAddress ipv4_destination = InetSocketAddress(dst, 9);
+    m_sockets[node]->SendTo(pkt, 0, ipv4_destination);
 }
 
 void
-UanExperiment::Prepare ()
+UanExperiment::Prepare()
 {
-  m_nodes.Create (3);
-  SetupPositions ();
-  SetupEnergy ();
-  SetupCommunications ();
-  SetupApplications ();
-  SendPackets ();
+    m_nodes.Create(3);
+    SetupPositions();
+    SetupEnergy();
+    SetupCommunications();
+    SetupApplications();
+    SendPackets();
 }
 
 void
-UanExperiment::Teardown ()
+UanExperiment::Teardown()
 {
-  std::map<Ptr<Node>, Ptr<Socket> >::iterator socket;
+    std::map<Ptr<Node>, Ptr<Socket>>::iterator socket;
 
-  for (socket = m_sockets.begin (); socket != m_sockets.end (); socket++)
+    for (socket = m_sockets.begin(); socket != m_sockets.end(); socket++)
     {
-      socket->second->Close ();
+        socket->second->Close();
     }
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {
-  CommandLine cmd (__FILE__);
-  cmd.Parse (argc, argv);
+    CommandLine cmd(__FILE__);
+    cmd.Parse(argc, argv);
 
-  UanExperiment experiment;
-  experiment.Prepare ();
+    UanExperiment experiment;
+    experiment.Prepare();
 
-  Simulator::Stop (Days (50));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Stop(Days(50));
+    Simulator::Run();
+    Simulator::Destroy();
 
-  experiment.Teardown ();
+    experiment.Teardown();
 
-  return 0;
+    return 0;
 }

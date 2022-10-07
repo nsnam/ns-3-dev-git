@@ -34,10 +34,11 @@
  * \defgroup build-profile-tests NS_BUILD_PROFILE macros test suite
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace tests {
-
+namespace tests
+{
 
 /**
  * \ingroup build-profile-tests
@@ -45,50 +46,51 @@ namespace tests {
  */
 class BuildProfileTestCase : public TestCase
 {
-public:
-  BuildProfileTestCase ();
-  ~BuildProfileTestCase () override
-  {}
+  public:
+    BuildProfileTestCase();
 
-private:
-  void DoRun () override;
+    ~BuildProfileTestCase() override
+    {
+    }
+
+  private:
+    void DoRun() override;
 };
 
-BuildProfileTestCase::BuildProfileTestCase ()
-  : TestCase ("Check build profile macros")
-{}
+BuildProfileTestCase::BuildProfileTestCase()
+    : TestCase("Check build profile macros")
+{
+}
 
 void
-BuildProfileTestCase::DoRun ()
+BuildProfileTestCase::DoRun()
 {
-  int i = 0;
-  int j = 0;
+    int i = 0;
+    int j = 0;
 
 #ifdef NS3_BUILD_PROFILE_DEBUG
-  std::cout << GetName () << ": running in build profile debug" << std::endl;
-  NS_BUILD_DEBUG (++i; ++j);
+    std::cout << GetName() << ": running in build profile debug" << std::endl;
+    NS_BUILD_DEBUG(++i; ++j);
 #elif NS3_BUILD_PROFILE_RELEASE
-  std::cout << GetName () << ": running in build profile release" << std::endl;
-  NS_BUILD_RELEASE (++i; ++j);
+    std::cout << GetName() << ": running in build profile release" << std::endl;
+    NS_BUILD_RELEASE(++i; ++j);
 #elif NS3_BUILD_PROFILE_OPTIMIZED
-  std::cout << GetName () << ": running in build profile optimized" << std::endl;
-  NS_BUILD_OPTIMIZED (++i; ++j);
+    std::cout << GetName() << ": running in build profile optimized" << std::endl;
+    NS_BUILD_OPTIMIZED(++i; ++j);
 #else
-  NS_TEST_ASSERT_MSG_EQ (0, 1, ": no build profile case executed");
+    NS_TEST_ASSERT_MSG_EQ(0, 1, ": no build profile case executed");
 #endif
 
-  if (i == 1)
+    if (i == 1)
     {
-      std::cout << "build profile executed first statement." << std::endl;
+        std::cout << "build profile executed first statement." << std::endl;
     }
-  NS_TEST_ASSERT_MSG_EQ (i, 1,
-                         "build profile failed to execute first statement");
-  if (j == 1)
+    NS_TEST_ASSERT_MSG_EQ(i, 1, "build profile failed to execute first statement");
+    if (j == 1)
     {
-      std::cout << "build profile executed second statement." << std::endl;
+        std::cout << "build profile executed second statement." << std::endl;
     }
-  NS_TEST_ASSERT_MSG_EQ (j, 1,
-                         "build profile failed to execute second statement");
+    NS_TEST_ASSERT_MSG_EQ(j, 1, "build profile failed to execute second statement");
 }
 
 /**
@@ -97,14 +99,14 @@ BuildProfileTestCase::DoRun ()
  */
 class BuildProfileTestSuite : public TestSuite
 {
-public:
-  BuildProfileTestSuite ();
+  public:
+    BuildProfileTestSuite();
 };
 
-BuildProfileTestSuite::BuildProfileTestSuite ()
-  : TestSuite ("build-profile")
+BuildProfileTestSuite::BuildProfileTestSuite()
+    : TestSuite("build-profile")
 {
-  AddTestCase (new BuildProfileTestCase);
+    AddTestCase(new BuildProfileTestCase);
 }
 
 /**
@@ -113,7 +115,6 @@ BuildProfileTestSuite::BuildProfileTestSuite ()
  */
 static BuildProfileTestSuite g_BuildProfileTestSuite;
 
+} // namespace tests
 
-}    // namespace tests
-
-}  // namespace ns3
+} // namespace ns3

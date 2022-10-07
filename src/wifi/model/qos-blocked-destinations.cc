@@ -19,35 +19,37 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#include "ns3/mac48-address.h"
 #include "qos-blocked-destinations.h"
 
-namespace ns3 {
+#include "ns3/mac48-address.h"
 
-QosBlockedDestinations::QosBlockedDestinations ()
+namespace ns3
+{
+
+QosBlockedDestinations::QosBlockedDestinations()
 {
 }
 
-QosBlockedDestinations::~QosBlockedDestinations ()
+QosBlockedDestinations::~QosBlockedDestinations()
 {
 }
 
 bool
-QosBlockedDestinations::IsBlocked (Mac48Address dest, uint8_t tid) const
+QosBlockedDestinations::IsBlocked(Mac48Address dest, uint8_t tid) const
 {
-  return m_blockedQosPackets.find ({dest, tid}) != m_blockedQosPackets.end ();
+    return m_blockedQosPackets.find({dest, tid}) != m_blockedQosPackets.end();
 }
 
 void
-QosBlockedDestinations::Block (Mac48Address dest, uint8_t tid)
+QosBlockedDestinations::Block(Mac48Address dest, uint8_t tid)
 {
-  m_blockedQosPackets.insert ({dest, tid});
+    m_blockedQosPackets.insert({dest, tid});
 }
 
 void
-QosBlockedDestinations::Unblock (Mac48Address dest, uint8_t tid)
+QosBlockedDestinations::Unblock(Mac48Address dest, uint8_t tid)
 {
-  m_blockedQosPackets.erase ({dest, tid});
+    m_blockedQosPackets.erase({dest, tid});
 }
 
-} //namespace ns3
+} // namespace ns3

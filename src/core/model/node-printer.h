@@ -29,7 +29,8 @@
  * and ns3::DefaultNodePrinter function.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * Function signature for prepending the node id
@@ -37,7 +38,7 @@ namespace ns3 {
  *
  * \param [in,out] os The output stream to print on.
  */
-typedef void (*NodePrinter)(std::ostream &os);
+typedef void (*NodePrinter)(std::ostream& os);
 
 /**
  * \ingroup logging
@@ -45,7 +46,7 @@ typedef void (*NodePrinter)(std::ostream &os);
  *
  * \param [in,out] os The output stream to print the node id on.
  */
-void DefaultNodePrinter (std::ostream &os);
+void DefaultNodePrinter(std::ostream& os);
 
 } // namespace ns3
 

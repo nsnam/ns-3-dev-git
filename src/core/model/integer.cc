@@ -18,8 +18,10 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "integer.h"
+
 #include "fatal-error.h"
 #include "log.h"
+
 #include <sstream>
 
 /**
@@ -28,13 +30,15 @@
  * ns3::MakeIntegerChecker implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("Integer");
+NS_LOG_COMPONENT_DEFINE("Integer");
 
-ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (int64_t, Integer);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(int64_t, Integer);
 
-namespace internal {
+namespace internal
+{
 
 /**
  * \ingroup attribute_Integer
@@ -46,65 +50,75 @@ namespace internal {
  * \returns The AttributeChecker.
  */
 Ptr<const AttributeChecker>
-MakeIntegerChecker (int64_t min, int64_t max, std::string name)
+MakeIntegerChecker(int64_t min, int64_t max, std::string name)
 {
-  NS_LOG_FUNCTION (min << max << name);
-  struct IntegerChecker : public AttributeChecker
-  {
-    IntegerChecker (int64_t minValue, int64_t maxValue, std::string name)
-      : m_minValue (minValue),
-        m_maxValue (maxValue),
-        m_name (name)
-    {}
-    bool Check (const AttributeValue &value) const override
+    NS_LOG_FUNCTION(min << max << name);
+
+    struct IntegerChecker : public AttributeChecker
     {
-      NS_LOG_FUNCTION (&value);
-      const IntegerValue *v = dynamic_cast<const IntegerValue *> (&value);
-      if (v == nullptr)
+        IntegerChecker(int64_t minValue, int64_t maxValue, std::string name)
+            : m_minValue(minValue),
+              m_maxValue(maxValue),
+              m_name(name)
         {
-          return false;
         }
-      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
-    }
-    std::string GetValueTypeName () const override
-    {
-      NS_LOG_FUNCTION_NOARGS ();
-      return "ns3::IntegerValue";
-    }
-    bool HasUnderlyingTypeInformation () const override
-    {
-      NS_LOG_FUNCTION_NOARGS ();
-      return true;
-    }
-    std::string GetUnderlyingTypeInformation () const override
-    {
-      NS_LOG_FUNCTION_NOARGS ();
-      std::ostringstream oss;
-      oss << m_name << " " << m_minValue << ":" << m_maxValue;
-      return oss.str ();
-    }
-    Ptr<AttributeValue> Create () const override
-    {
-      NS_LOG_FUNCTION_NOARGS ();
-      return ns3::Create<IntegerValue> ();
-    }
-    bool Copy (const AttributeValue &src, AttributeValue &dst) const override
-    {
-      NS_LOG_FUNCTION (&src << &dst);
-      const IntegerValue *source = dynamic_cast<const IntegerValue *> (&src);
-      IntegerValue *destination = dynamic_cast<IntegerValue *> (&dst);
-      if (source == nullptr || destination == nullptr)
+
+        bool Check(const AttributeValue& value) const override
         {
-          return false;
+            NS_LOG_FUNCTION(&value);
+            const IntegerValue* v = dynamic_cast<const IntegerValue*>(&value);
+            if (v == nullptr)
+            {
+                return false;
+            }
+            return v->Get() >= m_minValue && v->Get() <= m_maxValue;
         }
-      *destination = *source;
-      return true;
-    }
-    int64_t m_minValue;
-    int64_t m_maxValue;
-    std::string m_name;
-  } *checker = new IntegerChecker (min, max, name);
-  return Ptr<AttributeChecker> (checker, false);
+
+        std::string GetValueTypeName() const override
+        {
+            NS_LOG_FUNCTION_NOARGS();
+            return "ns3::IntegerValue";
+        }
+
+        bool HasUnderlyingTypeInformation() const override
+        {
+            NS_LOG_FUNCTION_NOARGS();
+            return true;
+        }
+
+        std::string GetUnderlyingTypeInformation() const override
+        {
+            NS_LOG_FUNCTION_NOARGS();
+            std::ostringstream oss;
+            oss << m_name << " " << m_minValue << ":" << m_maxValue;
+            return oss.str();
+        }
+
+        Ptr<AttributeValue> Create() const override
+        {
+            NS_LOG_FUNCTION_NOARGS();
+            return ns3::Create<IntegerValue>();
+        }
+
+        bool Copy(const AttributeValue& src, AttributeValue& dst) const override
+        {
+            NS_LOG_FUNCTION(&src << &dst);
+            const IntegerValue* source = dynamic_cast<const IntegerValue*>(&src);
+            IntegerValue* destination = dynamic_cast<IntegerValue*>(&dst);
+            if (source == nullptr || destination == nullptr)
+            {
+                return false;
+            }
+            *destination = *source;
+            return true;
+        }
+
+        int64_t m_minValue;
+        int64_t m_maxValue;
+        std::string m_name;
+    }* checker = new IntegerChecker(min, max, name);
+
+    return Ptr<AttributeChecker>(checker, false);
 }
 
 } // namespace internal

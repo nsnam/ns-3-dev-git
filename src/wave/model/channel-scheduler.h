@@ -18,11 +18,14 @@
 #ifndef CHANNEL_SCHEDULER_H
 #define CHANNEL_SCHEDULER_H
 
-#include <map>
 #include "wave-net-device.h"
+
 #include "ns3/qos-utils.h"
 
-namespace ns3 {
+#include <map>
+
+namespace ns3
+{
 class WaveNetDevice;
 
 /**
@@ -31,25 +34,26 @@ class WaveNetDevice;
  */
 struct EdcaParameter
 {
-  uint32_t cwmin; ///< minimum
-  uint32_t cwmax; ///< maximum
-  uint32_t aifsn; ///< AIFSN
+    uint32_t cwmin; ///< minimum
+    uint32_t cwmax; ///< maximum
+    uint32_t aifsn; ///< AIFSN
 };
 
 /**
  * \ingroup wave
  * EDCA parameters typedef
  */
-typedef std::map<AcIndex,EdcaParameter> EdcaParameters;
+typedef std::map<AcIndex, EdcaParameter> EdcaParameters;
 
 /**
  * \ingroup wave
  * EDCA parameters iterator typedef
  */
-typedef std::map<AcIndex,EdcaParameter>::const_iterator EdcaParametersI;
+typedef std::map<AcIndex, EdcaParameter>::const_iterator EdcaParametersI;
 
 #define EXTENDED_ALTERNATING 0x00
 #define EXTENDED_CONTINUOUS 0xff
+
 /**
  * \ingroup wave
  *
@@ -66,57 +70,57 @@ typedef std::map<AcIndex,EdcaParameter>::const_iterator EdcaParametersI;
  */
 struct SchInfo
 {
-  uint32_t channelNumber; ///< channel number
-  //OperationalRateSet  operationalRateSet;  // not supported
-  bool immediateAccess; ///< immediate access
-  uint8_t extendedAccess; ///< extended access
-  EdcaParameters edcaParameters; ///< EDCA parameters
-  /// Initializer
-  SchInfo ()
-    : channelNumber (SCH1),
-      immediateAccess (false),
-      extendedAccess (EXTENDED_ALTERNATING)
-  {
+    uint32_t channelNumber; ///< channel number
+    // OperationalRateSet  operationalRateSet;  // not supported
+    bool immediateAccess;          ///< immediate access
+    uint8_t extendedAccess;        ///< extended access
+    EdcaParameters edcaParameters; ///< EDCA parameters
 
-  }
-  /**
-   * Initializer
-   * \param channel the channel number
-   * \param immediate true if immediate access
-   * \param channelAccess
-   */
-  SchInfo (uint32_t channel, bool immediate, uint32_t channelAccess)
-    : channelNumber (channel),
-      immediateAccess (immediate),
-      extendedAccess (channelAccess)
-  {
+    /// Initializer
+    SchInfo()
+        : channelNumber(SCH1),
+          immediateAccess(false),
+          extendedAccess(EXTENDED_ALTERNATING)
+    {
+    }
 
-  }
-  /**
-   * Initializer
-   * \param channel the channel number
-   * \param immediate true if immediate access
-   * \param channelAccess
-   * \param edca the EDCA parameters
-   */
-  SchInfo (uint32_t channel, bool immediate, uint32_t channelAccess, EdcaParameters edca)
-    : channelNumber (channel),
-      immediateAccess (immediate),
-      extendedAccess (channelAccess),
-      edcaParameters (edca)
-  {
+    /**
+     * Initializer
+     * \param channel the channel number
+     * \param immediate true if immediate access
+     * \param channelAccess
+     */
+    SchInfo(uint32_t channel, bool immediate, uint32_t channelAccess)
+        : channelNumber(channel),
+          immediateAccess(immediate),
+          extendedAccess(channelAccess)
+    {
+    }
 
-  }
+    /**
+     * Initializer
+     * \param channel the channel number
+     * \param immediate true if immediate access
+     * \param channelAccess
+     * \param edca the EDCA parameters
+     */
+    SchInfo(uint32_t channel, bool immediate, uint32_t channelAccess, EdcaParameters edca)
+        : channelNumber(channel),
+          immediateAccess(immediate),
+          extendedAccess(channelAccess),
+          edcaParameters(edca)
+    {
+    }
 };
 
 /// ChannelAccess enumeration
 enum ChannelAccess
 {
-  ContinuousAccess,      // continuous access for SCHs
-  AlternatingAccess,       //alternating CCH and SCH access
-  ExtendedAccess,         // extended access in SCHs
-  DefaultCchAccess,     // default continuous CCH access
-  NoAccess,                    // no channel access assigned
+    ContinuousAccess,  // continuous access for SCHs
+    AlternatingAccess, // alternating CCH and SCH access
+    ExtendedAccess,    // extended access in SCHs
+    DefaultCchAccess,  // default continuous CCH access
+    NoAccess,          // no channel access assigned
 };
 
 /**
@@ -130,114 +134,114 @@ enum ChannelAccess
  */
 class ChannelScheduler : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  ChannelScheduler ();
-  ~ChannelScheduler () override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    ChannelScheduler();
+    ~ChannelScheduler() override;
 
-  /**
-   * \param device enable channel scheduler associated with WaveNetDevice
-   */
-  virtual void SetWaveNetDevice (Ptr<WaveNetDevice> device);
-  /**
-   * \return whether CCH channel access is assigned.
-   */
-  bool IsCchAccessAssigned () const;
-  /**
-   * \return whether SCH channel access is assigned.
-   */
-  bool IsSchAccessAssigned () const;
-  /**
-   * \param channelNumber the specified channel number
-   * \return  whether channel access is assigned for the channel.
-   */
-  bool IsChannelAccessAssigned (uint32_t channelNumber) const;
-  /**
-   * \param channelNumber the specified channel number
-   * \return whether the continuous access is assigned for the specific channel.
-   */
-  bool IsContinuousAccessAssigned (uint32_t channelNumber) const;
-  /**
-   * \param channelNumber the specified channel number
-   * \return whether the continuous access is assigned for the specific channel.
-   */
-  bool IsAlternatingAccessAssigned (uint32_t channelNumber) const;
-  /**
-   * \param channelNumber the specified channel number
-   * \return whether the continuous access is assigned for the specific channel.
-   */
-  bool IsExtendedAccessAssigned (uint32_t channelNumber) const;
-  /**
-   * \return whether the continuous access is assigned for CCHl.
-   */
-  bool IsDefaultCchAccessAssigned () const;
-  /**
-   * \param channelNumber the specified channel number
-   * \return  the type of current assigned channel access for the specific channel.
-   */
-  virtual enum ChannelAccess GetAssignedAccessType (uint32_t channelNumber) const = 0;
+    /**
+     * \param device enable channel scheduler associated with WaveNetDevice
+     */
+    virtual void SetWaveNetDevice(Ptr<WaveNetDevice> device);
+    /**
+     * \return whether CCH channel access is assigned.
+     */
+    bool IsCchAccessAssigned() const;
+    /**
+     * \return whether SCH channel access is assigned.
+     */
+    bool IsSchAccessAssigned() const;
+    /**
+     * \param channelNumber the specified channel number
+     * \return  whether channel access is assigned for the channel.
+     */
+    bool IsChannelAccessAssigned(uint32_t channelNumber) const;
+    /**
+     * \param channelNumber the specified channel number
+     * \return whether the continuous access is assigned for the specific channel.
+     */
+    bool IsContinuousAccessAssigned(uint32_t channelNumber) const;
+    /**
+     * \param channelNumber the specified channel number
+     * \return whether the continuous access is assigned for the specific channel.
+     */
+    bool IsAlternatingAccessAssigned(uint32_t channelNumber) const;
+    /**
+     * \param channelNumber the specified channel number
+     * \return whether the continuous access is assigned for the specific channel.
+     */
+    bool IsExtendedAccessAssigned(uint32_t channelNumber) const;
+    /**
+     * \return whether the continuous access is assigned for CCHl.
+     */
+    bool IsDefaultCchAccessAssigned() const;
+    /**
+     * \param channelNumber the specified channel number
+     * \return  the type of current assigned channel access for the specific channel.
+     */
+    virtual enum ChannelAccess GetAssignedAccessType(uint32_t channelNumber) const = 0;
 
-  /**
-   * \param schInfo the request information for assigning SCH access.
-   * \return whether the channel access is assigned successfully.
-   *
-   * This method is called to assign channel access for sending packets.
-   */
-  bool StartSch (const SchInfo & schInfo);
-  /**
-   * \param channelNumber indicating which channel should release
-   * the assigned channel access resource.
-   * \return true if successful.
-   */
-  bool StopSch (uint32_t channelNumber);
+    /**
+     * \param schInfo the request information for assigning SCH access.
+     * \return whether the channel access is assigned successfully.
+     *
+     * This method is called to assign channel access for sending packets.
+     */
+    bool StartSch(const SchInfo& schInfo);
+    /**
+     * \param channelNumber indicating which channel should release
+     * the assigned channel access resource.
+     * \return true if successful.
+     */
+    bool StopSch(uint32_t channelNumber);
 
-protected:
-  void DoInitialize () override;
-  void DoDispose () override;
+  protected:
+    void DoInitialize() override;
+    void DoDispose() override;
 
-  /**
+    /**
      * \param channelNumber the specific channel
      * \param immediate indicate whether channel switch to channel
      * \return whether the channel access is assigned successfully
      *
      * This method will assign alternating access for SCHs and CCH.
      */
-  virtual bool AssignAlternatingAccess (uint32_t channelNumber, bool immediate) = 0;
-  /**
-   * \param channelNumber the specific channel
-   * \param immediate indicate whether channel switch to channel
-   * \return whether the channel access is assigned successfully
-   *
-   * This method will assign continuous access CCH.
-   */
-  virtual bool AssignContinuousAccess (uint32_t channelNumber, bool immediate) = 0;
-  /**
-   * \param channelNumber the specific channel
-   * \param extends extension duration
-   * \param immediate indicate whether channel switch to channel
-   * \return whether the channel access is assigned successfully
-   *
-   * This method will assign extended access for SCHs.
-   */
-  virtual bool AssignExtendedAccess (uint32_t channelNumber, uint32_t extends, bool immediate) = 0;
-  /**
-   * This method will assign default CCH access for CCH.
-   * \return whether the channel access is assigned successfully
-   */
-  virtual bool AssignDefaultCchAccess () = 0;
-  /**
-   * \param channelNumber indicating for which channel should release
-   * the assigned channel access resource.
-   * \return whether the channel access is released successfully
-   */
-  virtual bool ReleaseAccess (uint32_t channelNumber) = 0;
+    virtual bool AssignAlternatingAccess(uint32_t channelNumber, bool immediate) = 0;
+    /**
+     * \param channelNumber the specific channel
+     * \param immediate indicate whether channel switch to channel
+     * \return whether the channel access is assigned successfully
+     *
+     * This method will assign continuous access CCH.
+     */
+    virtual bool AssignContinuousAccess(uint32_t channelNumber, bool immediate) = 0;
+    /**
+     * \param channelNumber the specific channel
+     * \param extends extension duration
+     * \param immediate indicate whether channel switch to channel
+     * \return whether the channel access is assigned successfully
+     *
+     * This method will assign extended access for SCHs.
+     */
+    virtual bool AssignExtendedAccess(uint32_t channelNumber, uint32_t extends, bool immediate) = 0;
+    /**
+     * This method will assign default CCH access for CCH.
+     * \return whether the channel access is assigned successfully
+     */
+    virtual bool AssignDefaultCchAccess() = 0;
+    /**
+     * \param channelNumber indicating for which channel should release
+     * the assigned channel access resource.
+     * \return whether the channel access is released successfully
+     */
+    virtual bool ReleaseAccess(uint32_t channelNumber) = 0;
 
-  Ptr<WaveNetDevice> m_device; ///< the device
+    Ptr<WaveNetDevice> m_device; ///< the device
 };
 
-}
+} // namespace ns3
 #endif /* CHANNEL_SCHEDULER_H */

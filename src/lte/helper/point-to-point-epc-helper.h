@@ -26,7 +26,8 @@
 
 #include "ns3/no-backhaul-epc-helper.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lte
@@ -37,72 +38,73 @@ namespace ns3 {
  */
 class PointToPointEpcHelper : public NoBackhaulEpcHelper
 {
-public:
-  /**
-   * Constructor
-   */
-  PointToPointEpcHelper ();
+  public:
+    /**
+     * Constructor
+     */
+    PointToPointEpcHelper();
 
-  /**
-   * Destructor
-   */
-  ~PointToPointEpcHelper () override;
+    /**
+     * Destructor
+     */
+    ~PointToPointEpcHelper() override;
 
-  // inherited from Object
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const override;
-  void DoDispose () override;
+    // inherited from Object
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+    void DoDispose() override;
 
-  // inherited from EpcHelper
-  void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds) override;
+    // inherited from EpcHelper
+    void AddEnb(Ptr<Node> enbNode,
+                Ptr<NetDevice> lteEnbNetDevice,
+                std::vector<uint16_t> cellIds) override;
 
-private:
+  private:
+    /**
+     * S1-U interfaces
+     */
 
-  /**
-   * S1-U interfaces
-   */
+    /**
+     * Helper to assign addresses to S1-U NetDevices
+     */
+    Ipv4AddressHelper m_s1uIpv4AddressHelper;
 
-  /**
-   * Helper to assign addresses to S1-U NetDevices
-   */
-  Ipv4AddressHelper m_s1uIpv4AddressHelper;
+    /**
+     * The data rate to be used for the next S1-U link to be created
+     */
+    DataRate m_s1uLinkDataRate;
 
-  /**
-   * The data rate to be used for the next S1-U link to be created
-   */
-  DataRate m_s1uLinkDataRate;
+    /**
+     * The delay to be used for the next S1-U link to be created
+     */
+    Time m_s1uLinkDelay;
 
-  /**
-   * The delay to be used for the next S1-U link to be created
-   */
-  Time     m_s1uLinkDelay;
+    /**
+     * The MTU of the next S1-U link to be created. Note that,
+     * because of the additional GTP/UDP/IP tunneling overhead,
+     * you need a MTU larger than the end-to-end MTU that you
+     * want to support.
+     */
+    uint16_t m_s1uLinkMtu;
 
-  /**
-   * The MTU of the next S1-U link to be created. Note that,
-   * because of the additional GTP/UDP/IP tunneling overhead,
-   * you need a MTU larger than the end-to-end MTU that you
-   * want to support.
-   */
-  uint16_t m_s1uLinkMtu;
+    /**
+     * Helper to assign addresses to S1-MME NetDevices
+     */
+    Ipv4AddressHelper m_s1apIpv4AddressHelper;
 
-  /**
-   * Helper to assign addresses to S1-MME NetDevices
-   */
-  Ipv4AddressHelper m_s1apIpv4AddressHelper;
+    /**
+     * Enable PCAP generation for S1 link
+     */
+    bool m_s1uLinkEnablePcap;
 
-  /**
-   * Enable PCAP generation for S1 link
-   */
-  bool        m_s1uLinkEnablePcap;
-
-  /**
-   * Prefix for the PCAP file for the S1 link
-   */
-  std::string m_s1uLinkPcapPrefix;
+    /**
+     * Prefix for the PCAP file for the S1 link
+     */
+    std::string m_s1uLinkPcapPrefix;
 };
 
 } // namespace ns3

@@ -20,7 +20,8 @@
 
 #include "lte-rlc-sequence-number.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * Ostream output function
@@ -28,12 +29,11 @@ namespace ns3 {
  * \param val the sequence number
  * \returns the os
  */
-std::ostream &
-operator<< (std::ostream& os, const SequenceNumber10 &val)
+std::ostream&
+operator<<(std::ostream& os, const SequenceNumber10& val)
 {
-  os << val.m_value;
-  return os;
+    os << val.m_value;
+    return os;
 }
-
 
 } // namespace ns3

@@ -24,7 +24,8 @@
 
 #include "ns3/channel-condition-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class MobilityModel;
 
@@ -38,57 +39,57 @@ class MobilityModel;
  */
 class BuildingsChannelConditionModel : public ChannelConditionModel
 {
-public:
-  /**
-   * Get the type ID.
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * Get the type ID.
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
+    /**
+     * Constructor for the BuildingsChannelConditionModel class
+     */
+    BuildingsChannelConditionModel();
 
-  /**
-   * Constructor for the BuildingsChannelConditionModel class
-   */
-  BuildingsChannelConditionModel ();
+    /**
+     * Destructor for the BuildingsChannelConditionModel class
+     */
+    ~BuildingsChannelConditionModel() override;
 
-  /**
-   * Destructor for the BuildingsChannelConditionModel class
-   */
-  ~BuildingsChannelConditionModel () override;
+    /**
+     * Computes the condition of the channel between a and b.
+     *
+     * \param a mobility model
+     * \param b mobility model
+     * \return the condition of the channel between a and b
+     */
+    Ptr<ChannelCondition> GetChannelCondition(Ptr<const MobilityModel> a,
+                                              Ptr<const MobilityModel> b) const override;
 
-  /**
-   * Computes the condition of the channel between a and b.
-   *
-   * \param a mobility model
-   * \param b mobility model
-   * \return the condition of the channel between a and b
-   */
-  Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+    /**
+     * If this model uses objects of type RandomVariableStream,
+     * set the stream numbers to the integers starting with the offset
+     * 'stream'. Return the number of streams (possibly zero) that
+     * have been assigned.
+     *
+     * \param stream
+     * \return the number of stream indices assigned by this model
+     */
+    int64_t AssignStreams(int64_t stream) override;
 
-  /**
-   * If this model uses objects of type RandomVariableStream,
-   * set the stream numbers to the integers starting with the offset
-   * 'stream'. Return the number of streams (possibly zero) that
-   * have been assigned.
-   *
-   * \param stream
-   * \return the number of stream indices assigned by this model
-   */
-  int64_t AssignStreams (int64_t stream) override;
-
-private:
-  /**
-   * \brief Checks if the line of sight between position l1 and position l2 is
-   *        blocked by a building.
-   *
-   * \param l1 position
-   * \param l2 position
-   * \return true if the line of sight is blocked, false otherwise
-   */
-  bool IsLineOfSightBlocked (const Vector &l1, const Vector &l2) const;
+  private:
+    /**
+     * \brief Checks if the line of sight between position l1 and position l2 is
+     *        blocked by a building.
+     *
+     * \param l1 position
+     * \param l2 position
+     * \return true if the line of sight is blocked, false otherwise
+     */
+    bool IsLineOfSightBlocked(const Vector& l1, const Vector& l2) const;
 };
 
-} // end ns3 namespace
+} // namespace ns3
 
 #endif /* BUILDINGS_CHANNEL_CONDITION_MODEL_H */

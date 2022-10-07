@@ -21,13 +21,15 @@
 
 #ifndef AVERAGE_H
 #define AVERAGE_H
-#include <cmath>
-#include <ostream>
-#include <limits>
-#include <stdint.h>
 #include "ns3/basic-data-calculators.h"
 
-namespace ns3 {
+#include <cmath>
+#include <limits>
+#include <ostream>
+#include <stdint.h>
+
+namespace ns3
+{
 
 /**
  * \ingroup stats
@@ -39,118 +41,160 @@ namespace ns3 {
 template <typename T = double>
 class Average
 {
-public:
-  Average ()
-    : m_size (0), m_min (std::numeric_limits<T>::max ()), m_max (0)
-  {
-  }
+  public:
+    Average()
+        : m_size(0),
+          m_min(std::numeric_limits<T>::max()),
+          m_max(0)
+    {
+    }
 
-  /**
-   * Add new sample
-   * \param x The sample
-   */
-  void Update (const T& x)
-  {
-    // Give the variance calculator the next value.
-    m_varianceCalculator.Update (x);
+    /**
+     * Add new sample
+     * \param x The sample
+     */
+    void Update(const T& x)
+    {
+        // Give the variance calculator the next value.
+        m_varianceCalculator.Update(x);
 
-    m_min = std::min (x, m_min);
-    m_max = std::max (x, m_max);
-    m_size++;
-  }
-  /// Reset statistics
-  void Reset ()
-  {
-    m_varianceCalculator.Reset ();
+        m_min = std::min(x, m_min);
+        m_max = std::max(x, m_max);
+        m_size++;
+    }
 
-    m_size = 0;
-    m_min = std::numeric_limits<T>::max ();
-    m_max = 0;
-  }
+    /// Reset statistics
+    void Reset()
+    {
+        m_varianceCalculator.Reset();
 
-  // Sample statistics
-  /**
-   * Sample size
-   * \return the sample size
-   */
-  uint32_t Count   () const { return m_size; }
-  /**
-   * Sample minimum
-   * \return the minimum of the sample
-   */
-  T        Min     () const { return m_min; }
-  /**
-   * Sample maximum
-   * \return the maximum of the sample
-   */
-  T        Max     () const { return m_max; }
-  /**
-   * Sample average
-   * \return the average of the sample
-   */
-  double   Avg     () const { return m_varianceCalculator.getMean ();}
-  /**
-   * Sample estimate of mean, alias to Avg
-   * \return the average of the sample
-   */
-  double   Mean    () const { return Avg (); }
-  /**
-   * Sample unbiased nbiased estimate of variance
-   * \return the unbiased nbiased estimate of variance
-   */
-  double   Var     () const { return m_varianceCalculator.getVariance ();}
-  /**
-   * Sample standard deviation
-   * \return the standard deviation
-   */
-  double   Stddev  () const { return std::sqrt (Var ()); }
+        m_size = 0;
+        m_min = std::numeric_limits<T>::max();
+        m_max = 0;
+    }
 
-  /**
-   * \name Error of the mean estimates
-   *
-   * @{
-   */
-  /**
-   * \brief Margin of error of the mean for 90% confidence level
-   *
-   * Note that estimates are valid for
-   *   - uncorrelated measurements,
-   *   - normal distribution and
-   *   - large enough sample size.
-   *
-   * \returns Margin of error of the mean for 90% confidence level
-   */
-  double   Error90 () const { return 1.645 * std::sqrt (Var () / Count ()); }
-  /**
-   * \brief Margin of error of the mean for 95% confidence level
-   *
-   * Note that estimates are valid for
-   *   - uncorrelated measurements,
-   *   - normal distribution and
-   *   - large enough sample size.
-   *
-   * \returns Margin of error of the mean for 95% confidence level
-   */
-  double   Error95 () const { return 1.960 * std::sqrt (Var () / Count ()); }
-  /**
-   * \brief Margin of error of the mean for 99% confidence level
-   *
-   * Note that estimates are valid for
-   *   - uncorrelated measurements,
-   *   - normal distribution and
-   *   - large enough sample size.
-   *
-   * \returns Margin of error of the mean for 99% confidence level
-   *
-   */
-  double   Error99 () const { return 2.576 * std::sqrt (Var () / Count ()); }
-  /**@}*/
+    // Sample statistics
+    /**
+     * Sample size
+     * \return the sample size
+     */
+    uint32_t Count() const
+    {
+        return m_size;
+    }
 
-private:
-  uint32_t m_size; //!< Number of sampled data.
-  T m_min; //!< Minimum value observed.
-  T m_max; //!< Maximum value observed.
-  MinMaxAvgTotalCalculator<double> m_varianceCalculator; //!< Variance calculator.
+    /**
+     * Sample minimum
+     * \return the minimum of the sample
+     */
+    T Min() const
+    {
+        return m_min;
+    }
+
+    /**
+     * Sample maximum
+     * \return the maximum of the sample
+     */
+    T Max() const
+    {
+        return m_max;
+    }
+
+    /**
+     * Sample average
+     * \return the average of the sample
+     */
+    double Avg() const
+    {
+        return m_varianceCalculator.getMean();
+    }
+
+    /**
+     * Sample estimate of mean, alias to Avg
+     * \return the average of the sample
+     */
+    double Mean() const
+    {
+        return Avg();
+    }
+
+    /**
+     * Sample unbiased nbiased estimate of variance
+     * \return the unbiased nbiased estimate of variance
+     */
+    double Var() const
+    {
+        return m_varianceCalculator.getVariance();
+    }
+
+    /**
+     * Sample standard deviation
+     * \return the standard deviation
+     */
+    double Stddev() const
+    {
+        return std::sqrt(Var());
+    }
+
+    /**
+     * \name Error of the mean estimates
+     *
+     * @{
+     */
+    /**
+     * \brief Margin of error of the mean for 90% confidence level
+     *
+     * Note that estimates are valid for
+     *   - uncorrelated measurements,
+     *   - normal distribution and
+     *   - large enough sample size.
+     *
+     * \returns Margin of error of the mean for 90% confidence level
+     */
+    double Error90() const
+    {
+        return 1.645 * std::sqrt(Var() / Count());
+    }
+
+    /**
+     * \brief Margin of error of the mean for 95% confidence level
+     *
+     * Note that estimates are valid for
+     *   - uncorrelated measurements,
+     *   - normal distribution and
+     *   - large enough sample size.
+     *
+     * \returns Margin of error of the mean for 95% confidence level
+     */
+    double Error95() const
+    {
+        return 1.960 * std::sqrt(Var() / Count());
+    }
+
+    /**
+     * \brief Margin of error of the mean for 99% confidence level
+     *
+     * Note that estimates are valid for
+     *   - uncorrelated measurements,
+     *   - normal distribution and
+     *   - large enough sample size.
+     *
+     * \returns Margin of error of the mean for 99% confidence level
+     *
+     */
+    double Error99() const
+    {
+        return 2.576 * std::sqrt(Var() / Count());
+    }
+
+    /**@}*/
+
+  private:
+    uint32_t m_size;                                       //!< Number of sampled data.
+    T m_min;                                               //!< Minimum value observed.
+    T m_max;                                               //!< Maximum value observed.
+    MinMaxAvgTotalCalculator<double> m_varianceCalculator; //!< Variance calculator.
 };
 
 /**
@@ -161,17 +205,17 @@ private:
  */
 template <typename T>
 std::ostream&
-operator<< (std::ostream& os, const Average<T>& x)
+operator<<(std::ostream& os, const Average<T>& x)
 {
-  if (x.Count () != 0)
+    if (x.Count() != 0)
     {
-      os << x.Avg () << " (" << x.Stddev () << ") [" << x.Min () << ", " << x.Max () << "]";
+        os << x.Avg() << " (" << x.Stddev() << ") [" << x.Min() << ", " << x.Max() << "]";
     }
-  else
+    else
     {
-      os << "NA"; // not available
+        os << "NA"; // not available
     }
-  return os;
+    return os;
 }
-}
+} // namespace ns3
 #endif /* AVERAGE_H */

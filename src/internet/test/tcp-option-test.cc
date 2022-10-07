@@ -17,11 +17,11 @@
  *
  */
 
-#include "ns3/test.h"
 #include "ns3/core-module.h"
-#include "ns3/tcp-option.h"
-#include "ns3/tcp-option-winscale.h"
 #include "ns3/tcp-option-ts.h"
+#include "ns3/tcp-option-winscale.h"
+#include "ns3/tcp-option.h"
+#include "ns3/test.h"
 
 #include <string.h>
 
@@ -35,78 +35,76 @@ using namespace ns3;
  */
 class TcpOptionWSTestCase : public TestCase
 {
-public:
-  /**
-   * \brief Constructor.
-   * \param name Test description.
-   * \param scale Window scaling.
-   */
-  TcpOptionWSTestCase (std::string name, uint8_t scale);
+  public:
+    /**
+     * \brief Constructor.
+     * \param name Test description.
+     * \param scale Window scaling.
+     */
+    TcpOptionWSTestCase(std::string name, uint8_t scale);
 
-  /**
-   * \brief Serialization test.
-   */
-  void TestSerialize ();
-  /**
-   * \brief Deserialization test.
-   */
-  void TestDeserialize ();
+    /**
+     * \brief Serialization test.
+     */
+    void TestSerialize();
+    /**
+     * \brief Deserialization test.
+     */
+    void TestDeserialize();
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 
-  uint8_t m_scale;  //!< Window scaling.
-  Buffer m_buffer;  //!< Buffer.
+    uint8_t m_scale; //!< Window scaling.
+    Buffer m_buffer; //!< Buffer.
 };
 
-
-TcpOptionWSTestCase::TcpOptionWSTestCase (std::string name, uint8_t scale)
-  : TestCase (name)
+TcpOptionWSTestCase::TcpOptionWSTestCase(std::string name, uint8_t scale)
+    : TestCase(name)
 {
-  m_scale = scale;
+    m_scale = scale;
 }
 
 void
-TcpOptionWSTestCase::DoRun ()
+TcpOptionWSTestCase::DoRun()
 {
-  TestSerialize ();
-  TestDeserialize ();
+    TestSerialize();
+    TestDeserialize();
 }
 
 void
-TcpOptionWSTestCase::TestSerialize ()
+TcpOptionWSTestCase::TestSerialize()
 {
-  TcpOptionWinScale opt;
+    TcpOptionWinScale opt;
 
-  opt.SetScale (m_scale);
-  NS_TEST_EXPECT_MSG_EQ (m_scale, opt.GetScale (), "Scale isn't saved correctly");
+    opt.SetScale(m_scale);
+    NS_TEST_EXPECT_MSG_EQ(m_scale, opt.GetScale(), "Scale isn't saved correctly");
 
-  m_buffer.AddAtStart (opt.GetSerializedSize ());
+    m_buffer.AddAtStart(opt.GetSerializedSize());
 
-  opt.Serialize (m_buffer.Begin ());
+    opt.Serialize(m_buffer.Begin());
 }
 
 void
-TcpOptionWSTestCase::TestDeserialize ()
+TcpOptionWSTestCase::TestDeserialize()
 {
-  TcpOptionWinScale opt;
+    TcpOptionWinScale opt;
 
-  Buffer::Iterator start = m_buffer.Begin ();
-  uint8_t kind = start.PeekU8 ();
+    Buffer::Iterator start = m_buffer.Begin();
+    uint8_t kind = start.PeekU8();
 
-  NS_TEST_EXPECT_MSG_EQ (kind, TcpOption::WINSCALE, "Different kind found");
+    NS_TEST_EXPECT_MSG_EQ(kind, TcpOption::WINSCALE, "Different kind found");
 
-  opt.Deserialize (start);
+    opt.Deserialize(start);
 
-  NS_TEST_EXPECT_MSG_EQ (m_scale, opt.GetScale (), "Different scale found");
+    NS_TEST_EXPECT_MSG_EQ(m_scale, opt.GetScale(), "Different scale found");
 }
 
 void
-TcpOptionWSTestCase::DoTeardown ()
+TcpOptionWSTestCase::DoTeardown()
 {
 }
-
 
 /**
  * \ingroup internet-test
@@ -116,88 +114,86 @@ TcpOptionWSTestCase::DoTeardown ()
  */
 class TcpOptionTSTestCase : public TestCase
 {
-public:
+  public:
+    /**
+     * \brief Constructor.
+     * \param name Test description.
+     */
+    TcpOptionTSTestCase(std::string name);
 
-  /**
-   * \brief Constructor.
-   * \param name Test description.
-   */
-  TcpOptionTSTestCase (std::string name);
+    /**
+     * \brief Serialization test.
+     */
+    void TestSerialize();
+    /**
+     * \brief Deserialization test.
+     */
+    void TestDeserialize();
 
-  /**
-   * \brief Serialization test.
-   */
-  void TestSerialize ();
-  /**
-   * \brief Deserialization test.
-   */
-  void TestDeserialize ();
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
-
-  uint32_t m_timestamp; //!< TimeStamp.
-  uint32_t m_echo;      //!< Echoed TimeStamp.
-  Buffer m_buffer;      //!< Buffer.
+    uint32_t m_timestamp; //!< TimeStamp.
+    uint32_t m_echo;      //!< Echoed TimeStamp.
+    Buffer m_buffer;      //!< Buffer.
 };
 
-
-TcpOptionTSTestCase::TcpOptionTSTestCase (std::string name)
-  : TestCase (name)
+TcpOptionTSTestCase::TcpOptionTSTestCase(std::string name)
+    : TestCase(name)
 {
-  m_timestamp = 0;
-  m_echo = 0;
+    m_timestamp = 0;
+    m_echo = 0;
 }
 
 void
-TcpOptionTSTestCase::DoRun ()
+TcpOptionTSTestCase::DoRun()
 {
-  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+    Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable>();
 
-  for (uint32_t i = 0; i < 1000; ++i)
+    for (uint32_t i = 0; i < 1000; ++i)
     {
-      m_timestamp = x->GetInteger ();
-      m_echo = x->GetInteger ();
-      TestSerialize ();
-      TestDeserialize ();
+        m_timestamp = x->GetInteger();
+        m_echo = x->GetInteger();
+        TestSerialize();
+        TestDeserialize();
     }
 }
 
 void
-TcpOptionTSTestCase::TestSerialize ()
+TcpOptionTSTestCase::TestSerialize()
 {
-  TcpOptionTS opt;
+    TcpOptionTS opt;
 
-  opt.SetTimestamp (m_timestamp);
-  opt.SetEcho (m_echo);
+    opt.SetTimestamp(m_timestamp);
+    opt.SetEcho(m_echo);
 
-  NS_TEST_EXPECT_MSG_EQ (m_timestamp, opt.GetTimestamp (), "TS isn't saved correctly");
-  NS_TEST_EXPECT_MSG_EQ (m_echo, opt.GetEcho (), "echo isn't saved correctly");
+    NS_TEST_EXPECT_MSG_EQ(m_timestamp, opt.GetTimestamp(), "TS isn't saved correctly");
+    NS_TEST_EXPECT_MSG_EQ(m_echo, opt.GetEcho(), "echo isn't saved correctly");
 
-  m_buffer.AddAtStart (opt.GetSerializedSize ());
+    m_buffer.AddAtStart(opt.GetSerializedSize());
 
-  opt.Serialize (m_buffer.Begin ());
+    opt.Serialize(m_buffer.Begin());
 }
 
 void
-TcpOptionTSTestCase::TestDeserialize ()
+TcpOptionTSTestCase::TestDeserialize()
 {
-  TcpOptionTS opt;
+    TcpOptionTS opt;
 
-  Buffer::Iterator start = m_buffer.Begin ();
-  uint8_t kind = start.PeekU8 ();
+    Buffer::Iterator start = m_buffer.Begin();
+    uint8_t kind = start.PeekU8();
 
-  NS_TEST_EXPECT_MSG_EQ (kind, TcpOption::TS, "Different kind found");
+    NS_TEST_EXPECT_MSG_EQ(kind, TcpOption::TS, "Different kind found");
 
-  opt.Deserialize (start);
+    opt.Deserialize(start);
 
-  NS_TEST_EXPECT_MSG_EQ (m_timestamp, opt.GetTimestamp (), "Different TS found");
-  NS_TEST_EXPECT_MSG_EQ (m_echo, opt.GetEcho (), "Different echo found");
+    NS_TEST_EXPECT_MSG_EQ(m_timestamp, opt.GetTimestamp(), "Different TS found");
+    NS_TEST_EXPECT_MSG_EQ(m_echo, opt.GetEcho(), "Different echo found");
 }
 
 void
-TcpOptionTSTestCase::DoTeardown ()
+TcpOptionTSTestCase::DoTeardown()
 {
 }
 
@@ -209,17 +205,17 @@ TcpOptionTSTestCase::DoTeardown ()
  */
 class TcpOptionTestSuite : public TestSuite
 {
-public:
-  TcpOptionTestSuite ()
-    : TestSuite ("tcp-option", UNIT)
-  {
-    for (uint8_t i = 0; i < 15; ++i)
-      {
-        AddTestCase (new TcpOptionWSTestCase ("Testing window scale value", i), TestCase::QUICK);
-      }
-    AddTestCase (new TcpOptionTSTestCase ("Testing serialization of random values for timestamp"), TestCase::QUICK);
-  }
-
+  public:
+    TcpOptionTestSuite()
+        : TestSuite("tcp-option", UNIT)
+    {
+        for (uint8_t i = 0; i < 15; ++i)
+        {
+            AddTestCase(new TcpOptionWSTestCase("Testing window scale value", i), TestCase::QUICK);
+        }
+        AddTestCase(new TcpOptionTSTestCase("Testing serialization of random values for timestamp"),
+                    TestCase::QUICK);
+    }
 };
 
 static TcpOptionTestSuite g_TcpOptionTestSuite; //!< Static variable for test initialization

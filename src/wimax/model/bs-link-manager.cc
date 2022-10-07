@@ -21,349 +21,358 @@
  */
 
 #include "bs-link-manager.h"
-#include <stdint.h>
+
+#include "bs-uplink-scheduler.h"
+#include "burst-profile-manager.h"
+#include "connection-manager.h"
+#include "ss-manager.h"
+#include "ss-record.h"
+
+#include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/log.h"
-#include "burst-profile-manager.h"
-#include "ss-record.h"
-#include "ss-manager.h"
-#include "bs-uplink-scheduler.h"
-#include "connection-manager.h"
 
-namespace ns3 {
+#include <stdint.h>
 
-NS_LOG_COMPONENT_DEFINE ("BSLinkManager");
-
-NS_OBJECT_ENSURE_REGISTERED (BSLinkManager);
-
-TypeId BSLinkManager::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::BSLinkManager")
-    .SetParent<Object> ()
-    .SetGroupName("Wimax");
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("BSLinkManager");
+
+NS_OBJECT_ENSURE_REGISTERED(BSLinkManager);
+
+TypeId
+BSLinkManager::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::BSLinkManager").SetParent<Object>().SetGroupName("Wimax");
+    return tid;
 }
 
-BSLinkManager::BSLinkManager (Ptr<BaseStationNetDevice> bs)
-  : m_bs (bs),
-    m_signalQuality (10),
-    m_signalQualityThreshold (10)                                  // arbitrary value
+BSLinkManager::BSLinkManager(Ptr<BaseStationNetDevice> bs)
+    : m_bs(bs),
+      m_signalQuality(10),
+      m_signalQualityThreshold(10) // arbitrary value
 {
-  tries = 0;
+    tries = 0;
 }
 
-BSLinkManager::~BSLinkManager ()
+BSLinkManager::~BSLinkManager()
 {
-  m_bs = nullptr;
+    m_bs = nullptr;
 }
 
 uint8_t
-BSLinkManager::CalculateRangingOppsToAllocate ()
+BSLinkManager::CalculateRangingOppsToAllocate()
 {
-  // randomly selecting TOs up to 10, shall actually be decided by scheduler
-  return rand () % 8 + 2;
+    // randomly selecting TOs up to 10, shall actually be decided by scheduler
+    return rand() % 8 + 2;
 }
 
 /*
  * Function mainly to avoid duplicate code in DoReceive ()
  */
 void
-BSLinkManager::ProcessRangingRequest (Cid cid, RngReq rngreq)
+BSLinkManager::ProcessRangingRequest(Cid cid, RngReq rngreq)
 {
-  NS_ASSERT_MSG (m_bs->GetState () == BaseStationNetDevice::BS_STATE_UL_SUB_FRAME,
-                 "Base station: Error while processing ranging request: !BS_STATE_UL_SUB_FRAME");
+    NS_ASSERT_MSG(m_bs->GetState() == BaseStationNetDevice::BS_STATE_UL_SUB_FRAME,
+                  "Base station: Error while processing ranging request: !BS_STATE_UL_SUB_FRAME");
 
-  Time irIntervalBoundary = Seconds (0);
+    Time irIntervalBoundary = Seconds(0);
 
-  if (m_bs->GetUplinkScheduler ()->GetIsInvIrIntrvlAllocated ())
+    if (m_bs->GetUplinkScheduler()->GetIsInvIrIntrvlAllocated())
     {
-      if (m_bs->GetUplinkScheduler ()->GetIsIrIntrvlAllocated ())
+        if (m_bs->GetUplinkScheduler()->GetIsIrIntrvlAllocated())
         {
-          irIntervalBoundary = m_bs->GetUlSubframeStartTime ()
-            + Seconds ((m_bs->GetUplinkScheduler ()->GetNrIrOppsAllocated () + 1) * m_bs->GetRangReqOppSize ()
-                       * m_bs->GetSymbolDuration ().GetSeconds ());
+            irIntervalBoundary =
+                m_bs->GetUlSubframeStartTime() +
+                Seconds((m_bs->GetUplinkScheduler()->GetNrIrOppsAllocated() + 1) *
+                        m_bs->GetRangReqOppSize() * m_bs->GetSymbolDuration().GetSeconds());
         }
-      else
+        else
         {
-          irIntervalBoundary = m_bs->GetUlSubframeStartTime () + Seconds (m_bs->GetRangReqOppSize ()
-                                                                          * m_bs->GetSymbolDuration ().GetSeconds ());
+            irIntervalBoundary =
+                m_bs->GetUlSubframeStartTime() +
+                Seconds(m_bs->GetRangReqOppSize() * m_bs->GetSymbolDuration().GetSeconds());
         }
     }
-  else
+    else
     {
-      NS_ASSERT_MSG (m_bs->GetUplinkScheduler ()->GetIsIrIntrvlAllocated (),
-                     "Base station: Error while processing ranging request: IR interval not allocated");
+        NS_ASSERT_MSG(
+            m_bs->GetUplinkScheduler()->GetIsIrIntrvlAllocated(),
+            "Base station: Error while processing ranging request: IR interval not allocated");
 
-      irIntervalBoundary = m_bs->GetUlSubframeStartTime ()
-        + Seconds (m_bs->GetUplinkScheduler ()->GetNrIrOppsAllocated () * m_bs->GetRangReqOppSize ()
-                   * m_bs->GetSymbolDuration ().GetSeconds ());
+        irIntervalBoundary =
+            m_bs->GetUlSubframeStartTime() +
+            Seconds(m_bs->GetUplinkScheduler()->GetNrIrOppsAllocated() * m_bs->GetRangReqOppSize() *
+                    m_bs->GetSymbolDuration().GetSeconds());
     }
 
-  tries++;
+    tries++;
 
-  if (Simulator::Now () >= m_bs->GetUlSubframeStartTime () && Simulator::Now () < irIntervalBoundary)
+    if (Simulator::Now() >= m_bs->GetUlSubframeStartTime() && Simulator::Now() < irIntervalBoundary)
     {
-      PerformRanging (cid, rngreq);
+        PerformRanging(cid, rngreq);
     }
 }
 
 void
-BSLinkManager::PerformRanging (Cid cid, RngReq rngreq)
+BSLinkManager::PerformRanging(Cid cid, RngReq rngreq)
 {
-  RngRsp rngrsp;
-  bool decodable = false;
+    RngRsp rngrsp;
+    bool decodable = false;
 
-  // assuming low power, packet lost or undecodable first 2 times
-  if (tries < 2)
+    // assuming low power, packet lost or undecodable first 2 times
+    if (tries < 2)
     {
-      return;
+        return;
     }
-  if (tries >= 3)
+    if (tries >= 3)
     {
-      decodable = true;
+        decodable = true;
     }
 
-  NS_LOG_DEBUG ("RNG-REQ:");
-  rngreq.PrintDebug ();
+    NS_LOG_DEBUG("RNG-REQ:");
+    rngreq.PrintDebug();
 
-  if (!decodable)
+    if (!decodable)
     {
-      rngrsp.SetFrameNumber (m_bs->GetNrFrames ());
-      rngrsp.SetInitRangOppNumber (m_bs->GetRangingOppNumber ());
+        rngrsp.SetFrameNumber(m_bs->GetNrFrames());
+        rngrsp.SetInitRangOppNumber(m_bs->GetRangingOppNumber());
 
-      SetParametersToAdjust (&rngrsp);
-      rngrsp.SetRangStatus (WimaxNetDevice::RANGING_STATUS_CONTINUE); // see Figure 64
-      ScheduleRngRspMessage (cid, &rngrsp);
+        SetParametersToAdjust(&rngrsp);
+        rngrsp.SetRangStatus(WimaxNetDevice::RANGING_STATUS_CONTINUE); // see Figure 64
+        ScheduleRngRspMessage(cid, &rngrsp);
     }
-  else
+    else
     {
-      if (cid.IsInitialRanging ())
+        if (cid.IsInitialRanging())
         {
-          PerformInitialRanging (cid, &rngreq, &rngrsp);
+            PerformInitialRanging(cid, &rngreq, &rngrsp);
         }
-      else
+        else
         {
-          // invited initial ranging or periodic ranging
-          PerformInvitedRanging (cid, &rngrsp);
-        }
-    }
-}
-
-void
-BSLinkManager::PerformInitialRanging (Cid cid, RngReq *rngreq, RngRsp *rngrsp)
-{
-
-  SSRecord *ssRecord = nullptr;
-  bool isOldSS = m_bs->GetSSManager ()->IsInRecord (rngreq->GetMacAddress ());
-  if (isOldSS)
-    {
-      ssRecord = m_bs->GetSSManager ()->GetSSRecord (rngreq->GetMacAddress ());
-      // if this fails it would mean the RNG-RSP with success status was not received by the SS
-    }
-  else
-    {
-      ssRecord = m_bs->GetSSManager ()->CreateSSRecord (rngreq->GetMacAddress ());
-    }
-
-  if (ChangeDlChannel ())
-    {
-      rngrsp->SetDlFreqOverride (GetNewDlChannel ());
-      AbortRanging (cid, rngrsp, ssRecord, isOldSS);
-      return;
-    }
-
-  if (isOldSS)
-    {
-      // CIDs already assigned, e.g., RNG-REQ was lost and resent after timeout. reusing old CIDs
-      ssRecord->ResetRangingCorrectionRetries ();
-      ssRecord->ResetInvitedRangingRetries ();
-    }
-  else
-    {
-      m_bs->GetConnectionManager ()->AllocateManagementConnections (ssRecord, rngrsp);
-
-      WimaxPhy::ModulationType modulationType;
-      uint8_t diuc = m_bs->GetBurstProfileManager ()->GetBurstProfileForSS (ssRecord, rngreq, modulationType);
-      ssRecord->SetModulationType (modulationType);
-
-      // specify in RNG-RSP only if different than what SS requested
-      if (rngreq->GetReqDlBurstProfile () != diuc)
-        {
-          rngrsp->SetDlOperBurstProfile (diuc);
-        }
-
-      // add SS (Basic CID) to poll list for invited ranging intervals, see Table 115
-      ssRecord->EnablePollForRanging ();
-    }
-
-  rngrsp->SetMacAddress (rngreq->GetMacAddress ());
-
-  if (isOldSS) // CIDs had already been allocated
-    {
-      cid = ssRecord->GetBasicCid ();
-    }
-
-  if (IsRangingAcceptable ())
-    {
-      AcceptRanging (cid, rngrsp, ssRecord);
-    }
-  else
-    {
-      ContinueRanging (cid, rngrsp, ssRecord);
-    }
-}
-
-void
-BSLinkManager::PerformInvitedRanging (Cid cid, RngRsp *rngrsp)
-{
-  SSRecord *ssRecord = m_bs->GetSSManager ()->GetSSRecord (cid);
-  ssRecord->IncrementRangingCorrectionRetries ();
-  ssRecord->ResetInvitedRangingRetries ();
-
-  if (IsRangingAcceptable ())
-    {
-      AcceptRanging (cid, rngrsp, ssRecord);
-    }
-  else
-    {
-      if (ssRecord->GetRangingCorrectionRetries () == m_bs->GetMaxRangingCorrectionRetries ())
-        {
-          AbortRanging (cid, rngrsp, ssRecord, true);
-        }
-      else
-        {
-          ContinueRanging (cid, rngrsp, ssRecord);
+            // invited initial ranging or periodic ranging
+            PerformInvitedRanging(cid, &rngrsp);
         }
     }
 }
 
 void
-BSLinkManager::VerifyInvitedRanging (Cid cid, uint8_t uiuc)
+BSLinkManager::PerformInitialRanging(Cid cid, RngReq* rngreq, RngRsp* rngrsp)
 {
-  if (uiuc == OfdmUlBurstProfile::UIUC_INITIAL_RANGING)
+    SSRecord* ssRecord = nullptr;
+    bool isOldSS = m_bs->GetSSManager()->IsInRecord(rngreq->GetMacAddress());
+    if (isOldSS)
     {
-      SSRecord *ssRecord = m_bs->GetSSManager ()->GetSSRecord (cid);
-      if (ssRecord->GetInvitedRangRetries () > 0)
-        {
-          ssRecord->IncrementInvitedRangingRetries ();
+        ssRecord = m_bs->GetSSManager()->GetSSRecord(rngreq->GetMacAddress());
+        // if this fails it would mean the RNG-RSP with success status was not received by the SS
+    }
+    else
+    {
+        ssRecord = m_bs->GetSSManager()->CreateSSRecord(rngreq->GetMacAddress());
+    }
 
-          if (ssRecord->GetInvitedRangRetries () == m_bs->GetMaxInvitedRangRetries ())
+    if (ChangeDlChannel())
+    {
+        rngrsp->SetDlFreqOverride(GetNewDlChannel());
+        AbortRanging(cid, rngrsp, ssRecord, isOldSS);
+        return;
+    }
+
+    if (isOldSS)
+    {
+        // CIDs already assigned, e.g., RNG-REQ was lost and resent after timeout. reusing old CIDs
+        ssRecord->ResetRangingCorrectionRetries();
+        ssRecord->ResetInvitedRangingRetries();
+    }
+    else
+    {
+        m_bs->GetConnectionManager()->AllocateManagementConnections(ssRecord, rngrsp);
+
+        WimaxPhy::ModulationType modulationType;
+        uint8_t diuc =
+            m_bs->GetBurstProfileManager()->GetBurstProfileForSS(ssRecord, rngreq, modulationType);
+        ssRecord->SetModulationType(modulationType);
+
+        // specify in RNG-RSP only if different than what SS requested
+        if (rngreq->GetReqDlBurstProfile() != diuc)
+        {
+            rngrsp->SetDlOperBurstProfile(diuc);
+        }
+
+        // add SS (Basic CID) to poll list for invited ranging intervals, see Table 115
+        ssRecord->EnablePollForRanging();
+    }
+
+    rngrsp->SetMacAddress(rngreq->GetMacAddress());
+
+    if (isOldSS) // CIDs had already been allocated
+    {
+        cid = ssRecord->GetBasicCid();
+    }
+
+    if (IsRangingAcceptable())
+    {
+        AcceptRanging(cid, rngrsp, ssRecord);
+    }
+    else
+    {
+        ContinueRanging(cid, rngrsp, ssRecord);
+    }
+}
+
+void
+BSLinkManager::PerformInvitedRanging(Cid cid, RngRsp* rngrsp)
+{
+    SSRecord* ssRecord = m_bs->GetSSManager()->GetSSRecord(cid);
+    ssRecord->IncrementRangingCorrectionRetries();
+    ssRecord->ResetInvitedRangingRetries();
+
+    if (IsRangingAcceptable())
+    {
+        AcceptRanging(cid, rngrsp, ssRecord);
+    }
+    else
+    {
+        if (ssRecord->GetRangingCorrectionRetries() == m_bs->GetMaxRangingCorrectionRetries())
+        {
+            AbortRanging(cid, rngrsp, ssRecord, true);
+        }
+        else
+        {
+            ContinueRanging(cid, rngrsp, ssRecord);
+        }
+    }
+}
+
+void
+BSLinkManager::VerifyInvitedRanging(Cid cid, uint8_t uiuc)
+{
+    if (uiuc == OfdmUlBurstProfile::UIUC_INITIAL_RANGING)
+    {
+        SSRecord* ssRecord = m_bs->GetSSManager()->GetSSRecord(cid);
+        if (ssRecord->GetInvitedRangRetries() > 0)
+        {
+            ssRecord->IncrementInvitedRangingRetries();
+
+            if (ssRecord->GetInvitedRangRetries() == m_bs->GetMaxInvitedRangRetries())
             {
-              RngRsp *rngrsp = new RngRsp ();
-              AbortRanging (ssRecord->GetBasicCid (), rngrsp, ssRecord, true);
+                RngRsp* rngrsp = new RngRsp();
+                AbortRanging(ssRecord->GetBasicCid(), rngrsp, ssRecord, true);
             } // else keep polling
         }
     }
 }
 
 void
-BSLinkManager::SetParametersToAdjust (RngRsp *rngrsp)
+BSLinkManager::SetParametersToAdjust(RngRsp* rngrsp)
 {
-  // code to calculate parameter adjustment values goes here
-  rngrsp->SetTimingAdjust (40);
-  rngrsp->SetPowerLevelAdjust (8);
-  rngrsp->SetOffsetFreqAdjust (30);
+    // code to calculate parameter adjustment values goes here
+    rngrsp->SetTimingAdjust(40);
+    rngrsp->SetPowerLevelAdjust(8);
+    rngrsp->SetOffsetFreqAdjust(30);
 }
 
 void
-BSLinkManager::AbortRanging (Cid cid, RngRsp *rngrsp, SSRecord *ssRecord, bool isOldSS)
+BSLinkManager::AbortRanging(Cid cid, RngRsp* rngrsp, SSRecord* ssRecord, bool isOldSS)
 {
-  rngrsp->SetRangStatus (WimaxNetDevice::RANGING_STATUS_ABORT);
-  ScheduleRngRspMessage (cid, rngrsp);
+    rngrsp->SetRangStatus(WimaxNetDevice::RANGING_STATUS_ABORT);
+    ScheduleRngRspMessage(cid, rngrsp);
 
-  if (isOldSS)
+    if (isOldSS)
     {
-      ssRecord->SetRangingStatus (WimaxNetDevice::RANGING_STATUS_ABORT);
+        ssRecord->SetRangingStatus(WimaxNetDevice::RANGING_STATUS_ABORT);
     }
 
-  ssRecord->DisablePollForRanging ();
-  DeallocateCids (cid);
+    ssRecord->DisablePollForRanging();
+    DeallocateCids(cid);
 }
 
 void
-BSLinkManager::AcceptRanging (Cid cid, RngRsp *rngrsp, SSRecord *ssRecord)
+BSLinkManager::AcceptRanging(Cid cid, RngRsp* rngrsp, SSRecord* ssRecord)
 {
-  rngrsp->SetRangStatus (WimaxNetDevice::RANGING_STATUS_SUCCESS);
-  ScheduleRngRspMessage (cid, rngrsp);
+    rngrsp->SetRangStatus(WimaxNetDevice::RANGING_STATUS_SUCCESS);
+    ScheduleRngRspMessage(cid, rngrsp);
 
-  /*Shall not be set until the SS receives the RNG-RSP, as it may be lost etc. may be state field
-   is also added to SSRecord which then set to SS_STATE_REGISTERED once confirmed that SS has received
-   this RNG-RSP, but how to determine that, may be as a data packet is received by the SS*/
-  ssRecord->SetRangingStatus (WimaxNetDevice::RANGING_STATUS_SUCCESS);
+    /*Shall not be set until the SS receives the RNG-RSP, as it may be lost etc. may be state field
+     is also added to SSRecord which then set to SS_STATE_REGISTERED once confirmed that SS has
+     received this RNG-RSP, but how to determine that, may be as a data packet is received by the
+     SS*/
+    ssRecord->SetRangingStatus(WimaxNetDevice::RANGING_STATUS_SUCCESS);
 
-  ssRecord->DisablePollForRanging ();
+    ssRecord->DisablePollForRanging();
 }
 
 void
-BSLinkManager::ContinueRanging (Cid cid, RngRsp *rngrsp, SSRecord *ssRecord)
+BSLinkManager::ContinueRanging(Cid cid, RngRsp* rngrsp, SSRecord* ssRecord)
 {
-  rngrsp->SetRangStatus (WimaxNetDevice::RANGING_STATUS_CONTINUE);
-  ScheduleRngRspMessage (cid, rngrsp);
-  ssRecord->SetRangingStatus (WimaxNetDevice::RANGING_STATUS_CONTINUE);
+    rngrsp->SetRangStatus(WimaxNetDevice::RANGING_STATUS_CONTINUE);
+    ScheduleRngRspMessage(cid, rngrsp);
+    ssRecord->SetRangingStatus(WimaxNetDevice::RANGING_STATUS_CONTINUE);
 }
 
 void
-BSLinkManager::ScheduleRngRspMessage (Cid cid, RngRsp *rngrsp)
+BSLinkManager::ScheduleRngRspMessage(Cid cid, RngRsp* rngrsp)
 {
-  if (rngrsp->GetRangStatus () == WimaxNetDevice::RANGING_STATUS_SUCCESS || rngrsp->GetRangStatus ()
-      == WimaxNetDevice::RANGING_STATUS_CONTINUE)
+    if (rngrsp->GetRangStatus() == WimaxNetDevice::RANGING_STATUS_SUCCESS ||
+        rngrsp->GetRangStatus() == WimaxNetDevice::RANGING_STATUS_CONTINUE)
     {
-      SetParametersToAdjust (rngrsp);
+        SetParametersToAdjust(rngrsp);
     }
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (*rngrsp);
-  p->AddHeader (ManagementMessageType (ManagementMessageType::MESSAGE_TYPE_RNG_RSP));
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(*rngrsp);
+    p->AddHeader(ManagementMessageType(ManagementMessageType::MESSAGE_TYPE_RNG_RSP));
 
-  m_bs->Enqueue (p, MacHeaderType (), m_bs->GetConnection (cid));
+    m_bs->Enqueue(p, MacHeaderType(), m_bs->GetConnection(cid));
 }
 
 void
-BSLinkManager::DeallocateCids (Cid cid)
+BSLinkManager::DeallocateCids(Cid cid)
 {
-  // if necessary, delete entire connections or simply set CIDs to 0
+    // if necessary, delete entire connections or simply set CIDs to 0
 }
 
 uint64_t
-BSLinkManager::SelectDlChannel ()
+BSLinkManager::SelectDlChannel()
 {
-  // Values according to WirelessMAN-OFDM RF profile for 10 MHz channelization
-  // Section 12.3.3.1 from IEEE 802.16-2004 standard
-  // profR10_3 :
-  // channels: 5000 + n â‹… 5 MHz, âˆ€n âˆˆ { 147, 149, 151, 153, 155, 157, 159, 161, 163, 165, 167 }
-  // temporarily set to 1 for quick scanning. To be standard compliant, use a value in the list above
-  return m_bs->GetChannel (1);
+    // Values according to WirelessMAN-OFDM RF profile for 10 MHz channelization
+    // Section 12.3.3.1 from IEEE 802.16-2004 standard
+    // profR10_3 :
+    // channels: 5000 + n â‹… 5 MHz, âˆ€n âˆˆ { 147, 149, 151, 153, 155, 157, 159, 161, 163, 165,
+    // 167 } temporarily set to 1 for quick scanning. To be standard compliant, use a value in the
+    // list above
+    return m_bs->GetChannel(1);
 }
 
 bool
-BSLinkManager::ChangeDlChannel ()
+BSLinkManager::ChangeDlChannel()
 {
-  // code to decide if SS shall move to a new channel/frequency goes here
-  return false;
+    // code to decide if SS shall move to a new channel/frequency goes here
+    return false;
 }
 
 uint32_t
-BSLinkManager::GetNewDlChannel ()
+BSLinkManager::GetNewDlChannel()
 {
-  // code to determine suggested new frequency goes here
-  return 100;
+    // code to determine suggested new frequency goes here
+    return 100;
 }
 
 uint8_t
-BSLinkManager::GetSignalQuality ()
+BSLinkManager::GetSignalQuality()
 {
-  // code to measure signal quality goes here
-  uint8_t signalQuality = m_signalQuality;
-  m_signalQuality++;
-  return signalQuality;
+    // code to measure signal quality goes here
+    uint8_t signalQuality = m_signalQuality;
+    m_signalQuality++;
+    return signalQuality;
 }
 
 bool
-BSLinkManager::IsRangingAcceptable ()
+BSLinkManager::IsRangingAcceptable()
 {
-  return GetSignalQuality () > m_signalQualityThreshold;
+    return GetSignalQuality() > m_signalQualityThreshold;
 }
 
 } // namespace ns3

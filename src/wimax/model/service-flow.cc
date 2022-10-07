@@ -21,826 +21,881 @@
  */
 
 #include "service-flow.h"
+
 #include "service-flow-record.h"
-#include "ns3/simulator.h"
 #include "wimax-tlv.h"
 
-namespace ns3 {
+#include "ns3/simulator.h"
 
-ServiceFlow::ServiceFlow (Direction direction)
+namespace ns3
 {
-  InitValues ();
-  m_direction = direction;
-  m_type = SF_TYPE_PROVISIONED;
-  m_record = new ServiceFlowRecord ();
-  m_sfid = 0;
-  m_connection = nullptr;
-  m_isEnabled = false;
-  m_isMulticast = false;
-  m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
+
+ServiceFlow::ServiceFlow(Direction direction)
+{
+    InitValues();
+    m_direction = direction;
+    m_type = SF_TYPE_PROVISIONED;
+    m_record = new ServiceFlowRecord();
+    m_sfid = 0;
+    m_connection = nullptr;
+    m_isEnabled = false;
+    m_isMulticast = false;
+    m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
 }
 
-ServiceFlow::ServiceFlow ()
-  : m_sfid (0),
-    m_direction (SF_DIRECTION_DOWN),
-    m_type (SF_TYPE_PROVISIONED),
-    m_connection (nullptr),
-    m_isEnabled (false),
-    m_record (new ServiceFlowRecord ())
+ServiceFlow::ServiceFlow()
+    : m_sfid(0),
+      m_direction(SF_DIRECTION_DOWN),
+      m_type(SF_TYPE_PROVISIONED),
+      m_connection(nullptr),
+      m_isEnabled(false),
+      m_record(new ServiceFlowRecord())
 {
-  InitValues ();
-  m_isMulticast = false;
-  m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
-
+    InitValues();
+    m_isMulticast = false;
+    m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
 }
 
-ServiceFlow::ServiceFlow (uint32_t sfid, Direction direction, Ptr<WimaxConnection> connection)
+ServiceFlow::ServiceFlow(uint32_t sfid, Direction direction, Ptr<WimaxConnection> connection)
 {
-  InitValues ();
-  m_record = new ServiceFlowRecord ();
-  m_isEnabled = false;
-  m_connection = connection;
-  m_connection->SetServiceFlow (this);
-  m_type = SF_TYPE_PROVISIONED;
-  m_direction = direction;
-  m_sfid = sfid;
-  m_isMulticast = false;
-  m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
+    InitValues();
+    m_record = new ServiceFlowRecord();
+    m_isEnabled = false;
+    m_connection = connection;
+    m_connection->SetServiceFlow(this);
+    m_type = SF_TYPE_PROVISIONED;
+    m_direction = direction;
+    m_sfid = sfid;
+    m_isMulticast = false;
+    m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
 }
 
-ServiceFlow::ServiceFlow (Tlv tlv)
+ServiceFlow::ServiceFlow(Tlv tlv)
 {
-  InitValues ();
-  m_connection = nullptr;
-  m_isEnabled = 0;
-  m_record = new ServiceFlowRecord ();
-  NS_ASSERT_MSG (tlv.GetType () == Tlv::UPLINK_SERVICE_FLOW || tlv.GetType () == Tlv::DOWNLINK_SERVICE_FLOW,
-                 "Invalid TLV");
+    InitValues();
+    m_connection = nullptr;
+    m_isEnabled = 0;
+    m_record = new ServiceFlowRecord();
+    NS_ASSERT_MSG(tlv.GetType() == Tlv::UPLINK_SERVICE_FLOW ||
+                      tlv.GetType() == Tlv::DOWNLINK_SERVICE_FLOW,
+                  "Invalid TLV");
 
-  SfVectorTlvValue * param;
-  param = (SfVectorTlvValue*)(tlv.PeekValue ());
+    SfVectorTlvValue* param;
+    param = (SfVectorTlvValue*)(tlv.PeekValue());
 
-  if (tlv.GetType () == Tlv::UPLINK_SERVICE_FLOW)
+    if (tlv.GetType() == Tlv::UPLINK_SERVICE_FLOW)
     {
-      m_direction = SF_DIRECTION_UP;
+        m_direction = SF_DIRECTION_UP;
     }
-  else
+    else
     {
-      m_direction = SF_DIRECTION_DOWN;
+        m_direction = SF_DIRECTION_DOWN;
     }
 
-  for (std::vector<Tlv*>::const_iterator iter = param->Begin (); iter != param->End (); ++iter)
+    for (std::vector<Tlv*>::const_iterator iter = param->Begin(); iter != param->End(); ++iter)
     {
-      switch ((*iter)->GetType ())
+        switch ((*iter)->GetType())
         {
-        case SfVectorTlvValue::SFID:
-          {
-            m_sfid = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        case SfVectorTlvValue::SFID: {
+            m_sfid = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::CID:
-          {
-            uint16_t cid = ((U16TlvValue*)((*iter)->PeekValue ()))->GetValue ();
-            m_connection = CreateObject<WimaxConnection> (cid, Cid::TRANSPORT);
+        }
+        case SfVectorTlvValue::CID: {
+            uint16_t cid = ((U16TlvValue*)((*iter)->PeekValue()))->GetValue();
+            m_connection = CreateObject<WimaxConnection>(cid, Cid::TRANSPORT);
             break;
-          }
-        case SfVectorTlvValue::QoS_Parameter_Set_Type:
-          {
-            m_qosParamSetType = ((U8TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::QoS_Parameter_Set_Type: {
+            m_qosParamSetType = ((U8TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Traffic_Priority:
-          {
-            m_trafficPriority = ((U8TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Traffic_Priority: {
+            m_trafficPriority = ((U8TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Maximum_Sustained_Traffic_Rate:
-          {
-            m_maxSustainedTrafficRate = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Maximum_Sustained_Traffic_Rate: {
+            m_maxSustainedTrafficRate = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Maximum_Traffic_Burst:
-          {
-            m_maxTrafficBurst = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Maximum_Traffic_Burst: {
+            m_maxTrafficBurst = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Minimum_Reserved_Traffic_Rate:
-          {
-            m_minReservedTrafficRate = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Minimum_Reserved_Traffic_Rate: {
+            m_minReservedTrafficRate = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Minimum_Tolerable_Traffic_Rate:
-          {
-            m_minTolerableTrafficRate = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Minimum_Tolerable_Traffic_Rate: {
+            m_minTolerableTrafficRate = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Service_Flow_Scheduling_Type:
-          {
-            m_schedulingType = (ServiceFlow::SchedulingType)((U8TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Service_Flow_Scheduling_Type: {
+            m_schedulingType =
+                (ServiceFlow::SchedulingType)((U8TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Request_Transmission_Policy:
-          {
-            m_requestTransmissionPolicy = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Request_Transmission_Policy: {
+            m_requestTransmissionPolicy = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Tolerated_Jitter:
-          {
-            m_toleratedJitter = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Tolerated_Jitter: {
+            m_toleratedJitter = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Maximum_Latency:
-          {
-            m_maximumLatency = ((U32TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Maximum_Latency: {
+            m_maximumLatency = ((U32TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::Fixed_length_versus_Variable_length_SDU_Indicator:
-          {
-            m_fixedversusVariableSduIndicator = ((U8TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+        }
+        case SfVectorTlvValue::Fixed_length_versus_Variable_length_SDU_Indicator: {
+            m_fixedversusVariableSduIndicator = ((U8TlvValue*)((*iter)->PeekValue()))->GetValue();
             break;
-          }
-        case SfVectorTlvValue::CS_Specification:
-          {
-            m_csSpecification = (enum CsSpecification)(((U8TlvValue*)((*iter)->PeekValue ()))->GetValue ());
+        }
+        case SfVectorTlvValue::CS_Specification: {
+            m_csSpecification =
+                (enum CsSpecification)(((U8TlvValue*)((*iter)->PeekValue()))->GetValue());
             break;
-          }
+        }
 
-        case SfVectorTlvValue::IPV4_CS_Parameters:
-          {
-            m_convergenceSublayerParam = CsParameters (*(*iter));
+        case SfVectorTlvValue::IPV4_CS_Parameters: {
+            m_convergenceSublayerParam = CsParameters(*(*iter));
             break;
-          }
-
+        }
         }
     }
-  m_isMulticast = false;
-  m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
+    m_isMulticast = false;
+    m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
 }
 
-ServiceFlow::~ServiceFlow ()
+ServiceFlow::~ServiceFlow()
 {
-  if (m_record != nullptr)
+    if (m_record != nullptr)
     {
-      delete m_record;
-      m_record = nullptr;
+        delete m_record;
+        m_record = nullptr;
     }
-  m_connection = nullptr;
+    m_connection = nullptr;
 }
 
 void
-ServiceFlow::SetDirection (Direction direction)
+ServiceFlow::SetDirection(Direction direction)
 {
-  m_direction = direction;
+    m_direction = direction;
 }
 
 ServiceFlow::Direction
-ServiceFlow::GetDirection () const
+ServiceFlow::GetDirection() const
 {
-  return m_direction;
+    return m_direction;
 }
 
 void
-ServiceFlow::SetType (Type type)
+ServiceFlow::SetType(Type type)
 {
-  m_type = type;
+    m_type = type;
 }
 
 ServiceFlow::Type
-ServiceFlow::GetType () const
+ServiceFlow::GetType() const
 {
-  return m_type;
+    return m_type;
 }
 
 void
-ServiceFlow::SetConnection (Ptr<WimaxConnection> connection)
+ServiceFlow::SetConnection(Ptr<WimaxConnection> connection)
 {
-  m_connection = connection;
-  m_connection->SetServiceFlow (this);
+    m_connection = connection;
+    m_connection->SetServiceFlow(this);
 }
 
 Ptr<WimaxConnection>
-ServiceFlow::GetConnection () const
+ServiceFlow::GetConnection() const
 {
-  return m_connection;
+    return m_connection;
 }
 
 void
-ServiceFlow::SetIsEnabled (bool isEnabled)
+ServiceFlow::SetIsEnabled(bool isEnabled)
 {
-  m_isEnabled = isEnabled;
+    m_isEnabled = isEnabled;
 }
 
 bool
-ServiceFlow::GetIsEnabled () const
+ServiceFlow::GetIsEnabled() const
 {
-  return m_isEnabled;
+    return m_isEnabled;
 }
 
 void
-ServiceFlow::SetRecord (ServiceFlowRecord *record)
+ServiceFlow::SetRecord(ServiceFlowRecord* record)
 {
-  m_record = record;
+    m_record = record;
 }
 
 ServiceFlowRecord*
-ServiceFlow::GetRecord () const
+ServiceFlow::GetRecord() const
 {
-  return m_record;
+    return m_record;
 }
 
 Ptr<WimaxMacQueue>
-ServiceFlow::GetQueue () const
+ServiceFlow::GetQueue() const
 {
-  if (!m_connection)
+    if (!m_connection)
     {
-      return nullptr;
+        return nullptr;
     }
-  return m_connection->GetQueue ();
+    return m_connection->GetQueue();
 }
 
 enum ServiceFlow::SchedulingType
-ServiceFlow::GetSchedulingType () const
+ServiceFlow::GetSchedulingType() const
 {
-  return m_schedulingType;
+    return m_schedulingType;
 }
 
 bool
-ServiceFlow::HasPackets () const
+ServiceFlow::HasPackets() const
 {
-  if (!m_connection)
+    if (!m_connection)
     {
-      return false;
+        return false;
     }
-  return m_connection->HasPackets ();
+    return m_connection->HasPackets();
 }
 
 bool
-ServiceFlow::HasPackets (MacHeaderType::HeaderType packetType) const
+ServiceFlow::HasPackets(MacHeaderType::HeaderType packetType) const
 {
-  if (!m_connection)
+    if (!m_connection)
     {
-      return false;
+        return false;
     }
-  return m_connection->HasPackets (packetType);
+    return m_connection->HasPackets(packetType);
 }
 
 void
-ServiceFlow::CleanUpQueue ()
+ServiceFlow::CleanUpQueue()
 {
-  GenericMacHeader hdr;
-  Time timeStamp;
-  Ptr<Packet> packet;
-  Time currentTime = Simulator::Now ();
-  if (m_connection)
+    GenericMacHeader hdr;
+    Time timeStamp;
+    Ptr<Packet> packet;
+    Time currentTime = Simulator::Now();
+    if (m_connection)
     {
-      while (m_connection->HasPackets ())
+        while (m_connection->HasPackets())
         {
-          packet = m_connection->GetQueue ()->Peek (hdr, timeStamp);
+            packet = m_connection->GetQueue()->Peek(hdr, timeStamp);
 
-          if (currentTime - timeStamp > MilliSeconds (GetMaximumLatency ()))
+            if (currentTime - timeStamp > MilliSeconds(GetMaximumLatency()))
             {
-              m_connection->Dequeue ();
+                m_connection->Dequeue();
             }
-          else
+            else
             {
-              break;
+                break;
             }
         }
     }
 }
 
 void
-ServiceFlow::PrintQoSParameters () const
+ServiceFlow::PrintQoSParameters() const
 {
 }
+
 // ==============================================================================
 
-
 uint32_t
-ServiceFlow::GetSfid () const
+ServiceFlow::GetSfid() const
 {
-  return m_sfid;
+    return m_sfid;
 }
+
 uint16_t
-ServiceFlow::GetCid () const
+ServiceFlow::GetCid() const
 {
-  if (!m_connection)
+    if (!m_connection)
     {
-      return 0;
+        return 0;
     }
-  return m_connection->GetCid ().GetIdentifier ();
+    return m_connection->GetCid().GetIdentifier();
 }
+
 std::string
-ServiceFlow::GetServiceClassName () const
+ServiceFlow::GetServiceClassName() const
 {
-  return m_serviceClassName;
+    return m_serviceClassName;
 }
+
 uint8_t
-ServiceFlow::GetQosParamSetType () const
+ServiceFlow::GetQosParamSetType() const
 {
-  return m_qosParamSetType;
+    return m_qosParamSetType;
 }
+
 uint8_t
-ServiceFlow::GetTrafficPriority () const
+ServiceFlow::GetTrafficPriority() const
 {
-  return m_trafficPriority;
+    return m_trafficPriority;
 }
+
 uint32_t
-ServiceFlow::GetMaxSustainedTrafficRate () const
+ServiceFlow::GetMaxSustainedTrafficRate() const
 {
-  return m_maxSustainedTrafficRate;
+    return m_maxSustainedTrafficRate;
 }
+
 uint32_t
-ServiceFlow::GetMaxTrafficBurst () const
+ServiceFlow::GetMaxTrafficBurst() const
 {
-  return m_maxTrafficBurst;
+    return m_maxTrafficBurst;
 }
+
 uint32_t
-ServiceFlow::GetMinReservedTrafficRate () const
+ServiceFlow::GetMinReservedTrafficRate() const
 {
-  return m_minReservedTrafficRate;
+    return m_minReservedTrafficRate;
 }
+
 uint32_t
-ServiceFlow::GetMinTolerableTrafficRate () const
+ServiceFlow::GetMinTolerableTrafficRate() const
 {
-  return m_minTolerableTrafficRate;
+    return m_minTolerableTrafficRate;
 }
-enum
-ServiceFlow::SchedulingType ServiceFlow::GetServiceSchedulingType () const
+
+enum ServiceFlow::SchedulingType
+ServiceFlow::GetServiceSchedulingType() const
 {
-  return m_schedulingType;
+    return m_schedulingType;
 }
+
 uint32_t
-ServiceFlow::GetRequestTransmissionPolicy () const
+ServiceFlow::GetRequestTransmissionPolicy() const
 {
-  return m_requestTransmissionPolicy;
+    return m_requestTransmissionPolicy;
 }
+
 uint32_t
-ServiceFlow::GetToleratedJitter () const
+ServiceFlow::GetToleratedJitter() const
 {
-  return m_toleratedJitter;
+    return m_toleratedJitter;
 }
+
 uint32_t
-ServiceFlow::GetMaximumLatency () const
+ServiceFlow::GetMaximumLatency() const
 {
-  return m_maximumLatency;
+    return m_maximumLatency;
 }
+
 uint8_t
-ServiceFlow::GetFixedversusVariableSduIndicator () const
+ServiceFlow::GetFixedversusVariableSduIndicator() const
 {
-  return m_fixedversusVariableSduIndicator;
+    return m_fixedversusVariableSduIndicator;
 }
+
 uint8_t
-ServiceFlow::GetSduSize () const
+ServiceFlow::GetSduSize() const
 {
-  return m_sduSize;
-}
-uint16_t
-ServiceFlow::GetTargetSAID () const
-{
-  return m_targetSAID;
-}
-uint8_t
-ServiceFlow::GetArqEnable () const
-{
-  return m_arqEnable;
-}
-uint16_t
-ServiceFlow::GetArqWindowSize () const
-{
-  return m_arqWindowSize;
-}
-uint16_t
-ServiceFlow::GetArqRetryTimeoutTx () const
-{
-  return m_arqRetryTimeoutTx;
-}
-uint16_t
-ServiceFlow::GetArqRetryTimeoutRx () const
-{
-  return m_arqRetryTimeoutRx;
+    return m_sduSize;
 }
 
 uint16_t
-ServiceFlow::GetArqBlockLifeTime () const
+ServiceFlow::GetTargetSAID() const
 {
-  return m_arqBlockLifeTime;
+    return m_targetSAID;
 }
-uint16_t
-ServiceFlow::GetArqSyncLoss () const
-{
-  return m_arqSyncLoss;
-}
+
 uint8_t
-ServiceFlow::GetArqDeliverInOrder () const
+ServiceFlow::GetArqEnable() const
 {
-  return m_arqDeliverInOrder;
+    return m_arqEnable;
 }
+
 uint16_t
-ServiceFlow::GetArqPurgeTimeout () const
+ServiceFlow::GetArqWindowSize() const
 {
-  return m_arqPurgeTimeout;
+    return m_arqWindowSize;
 }
+
 uint16_t
-ServiceFlow::GetArqBlockSize () const
+ServiceFlow::GetArqRetryTimeoutTx() const
 {
-  return m_arqBlockSize;
+    return m_arqRetryTimeoutTx;
 }
-enum
-ServiceFlow::CsSpecification ServiceFlow::GetCsSpecification () const
+
+uint16_t
+ServiceFlow::GetArqRetryTimeoutRx() const
 {
-  return m_csSpecification;
+    return m_arqRetryTimeoutRx;
 }
+
+uint16_t
+ServiceFlow::GetArqBlockLifeTime() const
+{
+    return m_arqBlockLifeTime;
+}
+
+uint16_t
+ServiceFlow::GetArqSyncLoss() const
+{
+    return m_arqSyncLoss;
+}
+
+uint8_t
+ServiceFlow::GetArqDeliverInOrder() const
+{
+    return m_arqDeliverInOrder;
+}
+
+uint16_t
+ServiceFlow::GetArqPurgeTimeout() const
+{
+    return m_arqPurgeTimeout;
+}
+
+uint16_t
+ServiceFlow::GetArqBlockSize() const
+{
+    return m_arqBlockSize;
+}
+
+enum ServiceFlow::CsSpecification
+ServiceFlow::GetCsSpecification() const
+{
+    return m_csSpecification;
+}
+
 CsParameters
-ServiceFlow::GetConvergenceSublayerParam () const
+ServiceFlow::GetConvergenceSublayerParam() const
 {
-  return m_convergenceSublayerParam;
+    return m_convergenceSublayerParam;
 }
+
 uint16_t
-ServiceFlow::GetUnsolicitedGrantInterval () const
+ServiceFlow::GetUnsolicitedGrantInterval() const
 {
-  return m_unsolicitedGrantInterval;
+    return m_unsolicitedGrantInterval;
 }
+
 uint16_t
-ServiceFlow::GetUnsolicitedPollingInterval () const
+ServiceFlow::GetUnsolicitedPollingInterval() const
 {
-  return m_unsolicitedPollingInterval;
+    return m_unsolicitedPollingInterval;
 }
 
 bool
-ServiceFlow::GetIsMulticast () const
+ServiceFlow::GetIsMulticast() const
 {
-  return m_isMulticast;
-}
-enum WimaxPhy::ModulationType
-ServiceFlow::GetModulation () const
-{
-  return m_modulationType;
+    return m_isMulticast;
 }
 
+enum WimaxPhy::ModulationType
+ServiceFlow::GetModulation() const
+{
+    return m_modulationType;
+}
 
 // ==============================================================================
 
 void
-ServiceFlow::SetSfid (uint32_t sfid)
+ServiceFlow::SetSfid(uint32_t sfid)
 {
-  m_sfid = sfid;
-}
-void
-ServiceFlow::SetServiceClassName (std::string name)
-{
-  m_serviceClassName = name;
-}
-void
-ServiceFlow::SetQosParamSetType (uint8_t type)
-{
-  m_qosParamSetType = type;
-}
-void
-ServiceFlow::SetTrafficPriority (uint8_t priority)
-{
-  m_trafficPriority = priority;
-}
-void
-ServiceFlow::SetMaxSustainedTrafficRate (uint32_t maxSustainedRate)
-{
-  m_maxSustainedTrafficRate = maxSustainedRate;
-}
-void
-ServiceFlow::SetMaxTrafficBurst (uint32_t maxTrafficBurst)
-{
-  m_maxTrafficBurst = maxTrafficBurst;
-}
-void
-ServiceFlow::SetMinReservedTrafficRate (uint32_t minResvRate)
-{
-  m_minReservedTrafficRate = minResvRate;
-}
-void
-ServiceFlow::SetMinTolerableTrafficRate (uint32_t minJitter)
-{
-  m_minTolerableTrafficRate = minJitter;
-}
-void
-ServiceFlow::SetServiceSchedulingType (enum ServiceFlow::SchedulingType schedType)
-{
-  m_schedulingType = schedType;
-}
-void
-ServiceFlow::SetRequestTransmissionPolicy (uint32_t policy)
-{
-  m_requestTransmissionPolicy = policy;
-}
-void
-ServiceFlow::SetToleratedJitter (uint32_t jitter)
-{
-  m_toleratedJitter = jitter;
-}
-void
-ServiceFlow::SetMaximumLatency (uint32_t MaximumLatency)
-{
-  m_maximumLatency = MaximumLatency;
-}
-void
-ServiceFlow::SetFixedversusVariableSduIndicator (uint8_t sduIndicator)
-{
-  m_fixedversusVariableSduIndicator = sduIndicator;
-}
-void
-ServiceFlow::SetSduSize (uint8_t sduSize)
-{
-  m_sduSize = sduSize;
-}
-void
-ServiceFlow::SetTargetSAID (uint16_t targetSaid)
-{
-  m_targetSAID = targetSaid;
-}
-void
-ServiceFlow::SetArqEnable (uint8_t arqEnable)
-{
-  m_arqEnable = arqEnable;
-}
-void
-ServiceFlow::SetArqWindowSize (uint16_t arqWindowSize)
-{
-  m_arqWindowSize = arqWindowSize;
-}
-void
-ServiceFlow::SetArqRetryTimeoutTx (uint16_t timeout)
-{
-  m_arqRetryTimeoutTx = timeout;
-}
-void
-ServiceFlow::SetArqRetryTimeoutRx (uint16_t timeout)
-{
-  m_arqRetryTimeoutRx = timeout;
-}
-void
-ServiceFlow::SetArqBlockLifeTime (uint16_t lifeTime)
-{
-  m_arqBlockLifeTime = lifeTime;
-}
-void
-ServiceFlow::SetArqSyncLoss (uint16_t syncLoss)
-{
-  m_arqSyncLoss = syncLoss;
-}
-void
-ServiceFlow::SetArqDeliverInOrder (uint8_t inOrder)
-{
-  m_arqDeliverInOrder = inOrder;
-}
-void
-ServiceFlow::SetArqPurgeTimeout (uint16_t timeout)
-{
-  m_arqPurgeTimeout = timeout;
-}
-void
-ServiceFlow::SetArqBlockSize (uint16_t size)
-{
-  m_arqBlockSize = size;
-}
-void
-ServiceFlow::SetCsSpecification (enum ServiceFlow::CsSpecification spec)
-{
-  m_csSpecification = spec;
-}
-void
-ServiceFlow::SetConvergenceSublayerParam (CsParameters csparam)
-{
-  m_convergenceSublayerParam = csparam;
-}
-void
-ServiceFlow::SetUnsolicitedGrantInterval (uint16_t unsolicitedGrantInterval)
-{
-  m_unsolicitedGrantInterval = unsolicitedGrantInterval;
-}
-void
-ServiceFlow::SetUnsolicitedPollingInterval (uint16_t unsolicitedPollingInterval)
-{
-  m_unsolicitedPollingInterval = unsolicitedPollingInterval;
-}
-void
-ServiceFlow::SetIsMulticast (bool isMulticast)
-{
-  m_isMulticast = isMulticast;
-}
-void
-ServiceFlow::SetModulation (enum WimaxPhy::ModulationType modulationType)
-{
-  m_modulationType = modulationType;
+    m_sfid = sfid;
 }
 
 void
-ServiceFlow::InitValues ()
+ServiceFlow::SetServiceClassName(std::string name)
 {
-  m_sfid = 0;
-  m_serviceClassName = "";
-  m_qosParamSetType = 0;
-  m_trafficPriority = 0;
-  m_maxSustainedTrafficRate = 0;
-  m_maxTrafficBurst = 0;
-  m_minReservedTrafficRate = 0;
-  m_minTolerableTrafficRate = 0;
-  m_schedulingType = ServiceFlow::SF_TYPE_NONE;
-  m_requestTransmissionPolicy = 0;
-  m_toleratedJitter = 0;
-  m_maximumLatency = 0;
-  m_fixedversusVariableSduIndicator = 0;
-  m_sduSize = 0;
-  m_targetSAID = 0;
-  m_arqEnable = 0;
-  m_arqWindowSize = 0;
-  m_arqRetryTimeoutTx = 0;
-  m_arqRetryTimeoutRx = 0;
-  m_csSpecification = ServiceFlow::IPV4;
-  m_unsolicitedGrantInterval = 0;
-  m_unsolicitedPollingInterval = 0;
-  m_arqBlockLifeTime = 0;
-  m_arqSyncLoss = 0;
-  m_arqDeliverInOrder = 0;
-  m_arqPurgeTimeout = 0;
-  m_arqBlockSize = 0;
-  m_direction = ServiceFlow::SF_DIRECTION_DOWN;
-  m_type = ServiceFlow::SF_TYPE_ACTIVE;
-  m_isMulticast = false;
-  m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
+    m_serviceClassName = name;
 }
 
 void
-ServiceFlow::CopyParametersFrom (ServiceFlow sf)
+ServiceFlow::SetQosParamSetType(uint8_t type)
 {
-  m_serviceClassName = sf.GetServiceClassName ();
-  m_qosParamSetType = sf.GetQosParamSetType ();
-  m_trafficPriority = sf.GetTrafficPriority ();
-  m_maxSustainedTrafficRate = sf.GetMaxSustainedTrafficRate ();
-  m_maxTrafficBurst = sf.GetMaxTrafficBurst ();
-  m_minReservedTrafficRate = sf.GetMinReservedTrafficRate ();
-  m_minTolerableTrafficRate = sf.GetMinTolerableTrafficRate ();
-  m_schedulingType = sf.GetServiceSchedulingType ();
-  m_requestTransmissionPolicy = sf.GetRequestTransmissionPolicy ();
-  m_toleratedJitter = sf.GetToleratedJitter ();
-  m_maximumLatency = sf.GetMaximumLatency ();
-  m_fixedversusVariableSduIndicator = sf.GetFixedversusVariableSduIndicator ();
-  m_sduSize = sf.GetSduSize ();
-  m_targetSAID = sf.GetTargetSAID ();
-  m_arqEnable = sf.GetArqEnable ();
-  m_arqWindowSize = sf.GetArqWindowSize ();
-  m_arqRetryTimeoutTx = sf.GetArqRetryTimeoutTx ();
-  m_arqRetryTimeoutRx = sf.GetArqRetryTimeoutRx ();
-  m_csSpecification = sf.GetCsSpecification ();
-  m_convergenceSublayerParam = sf.GetConvergenceSublayerParam ();
-  m_unsolicitedGrantInterval = sf.GetUnsolicitedGrantInterval ();
-  m_unsolicitedPollingInterval = sf.GetUnsolicitedPollingInterval ();
-  m_direction = sf.GetDirection ();
-  m_isMulticast = sf.GetIsMulticast ();
-  m_modulationType = sf.GetModulation ();
+    m_qosParamSetType = type;
 }
 
-ServiceFlow::ServiceFlow (const ServiceFlow & sf)
+void
+ServiceFlow::SetTrafficPriority(uint8_t priority)
 {
-  m_sfid = sf.GetSfid ();
-  m_serviceClassName = sf.GetServiceClassName ();
-  m_qosParamSetType = sf.GetQosParamSetType ();
-  m_trafficPriority = sf.GetTrafficPriority ();
-  m_maxSustainedTrafficRate = sf.GetMaxSustainedTrafficRate ();
-  m_maxTrafficBurst = sf.GetMaxTrafficBurst ();
-  m_minReservedTrafficRate = sf.GetMinReservedTrafficRate ();
-  m_minTolerableTrafficRate = sf.GetMinTolerableTrafficRate ();
-  m_schedulingType = sf.GetServiceSchedulingType ();
-  m_requestTransmissionPolicy = sf.GetRequestTransmissionPolicy ();
-  m_toleratedJitter = sf.GetToleratedJitter ();
-  m_maximumLatency = sf.GetMaximumLatency ();
-  m_fixedversusVariableSduIndicator = sf.GetFixedversusVariableSduIndicator ();
-  m_sduSize = sf.GetSduSize ();
-  m_targetSAID = sf.GetTargetSAID ();
-  m_arqEnable = sf.GetArqEnable ();
-  m_arqWindowSize = sf.GetArqWindowSize ();
-  m_arqRetryTimeoutTx = sf.GetArqRetryTimeoutTx ();
-  m_arqRetryTimeoutRx = sf.GetArqRetryTimeoutRx ();
-  m_csSpecification = sf.GetCsSpecification ();
-  m_convergenceSublayerParam = sf.GetConvergenceSublayerParam ();
-  m_unsolicitedGrantInterval = sf.GetUnsolicitedGrantInterval ();
-  m_unsolicitedPollingInterval = sf.GetUnsolicitedPollingInterval ();
-  m_direction = sf.GetDirection ();
-  m_type = sf.GetType ();
-  m_connection = sf.GetConnection ();
-  m_isEnabled = sf.GetIsEnabled ();
-  m_record = new ServiceFlowRecord ();
-  (*m_record) = (*sf.GetRecord ());
-  m_isMulticast = sf.GetIsMulticast ();
-  m_modulationType = sf.GetModulation ();
+    m_trafficPriority = priority;
 }
 
-ServiceFlow &
-ServiceFlow::operator = (ServiceFlow const& o)
+void
+ServiceFlow::SetMaxSustainedTrafficRate(uint32_t maxSustainedRate)
 {
+    m_maxSustainedTrafficRate = maxSustainedRate;
+}
 
-  m_sfid = o.GetSfid ();
-  m_serviceClassName = o.GetServiceClassName ();
-  m_qosParamSetType = o.GetQosParamSetType ();
-  m_trafficPriority = o.GetTrafficPriority ();
-  m_maxSustainedTrafficRate = o.GetMaxSustainedTrafficRate ();
-  m_maxTrafficBurst = o.GetMaxTrafficBurst ();
-  m_minReservedTrafficRate = o.GetMinReservedTrafficRate ();
-  m_minTolerableTrafficRate = o.GetMinTolerableTrafficRate ();
-  m_schedulingType = o.GetServiceSchedulingType ();
-  m_requestTransmissionPolicy = o.GetRequestTransmissionPolicy ();
-  m_toleratedJitter = o.GetToleratedJitter ();
-  m_maximumLatency = o.GetMaximumLatency ();
-  m_fixedversusVariableSduIndicator = o.GetFixedversusVariableSduIndicator ();
-  m_sduSize = o.GetSduSize ();
-  m_targetSAID = o.GetTargetSAID ();
-  m_arqEnable = o.GetArqEnable ();
-  m_arqWindowSize = o.GetArqWindowSize ();
-  m_arqRetryTimeoutTx = o.GetArqRetryTimeoutTx ();
-  m_arqRetryTimeoutRx = o.GetArqRetryTimeoutRx ();
-  m_csSpecification = o.GetCsSpecification ();
-  m_convergenceSublayerParam = o.GetConvergenceSublayerParam ();
-  m_unsolicitedGrantInterval = o.GetUnsolicitedGrantInterval ();
-  m_unsolicitedPollingInterval = o.GetUnsolicitedPollingInterval ();
-  m_direction = o.GetDirection ();
-  m_type = o.GetType ();
-  m_connection = o.GetConnection ();
-  m_isEnabled = o.GetIsEnabled ();
-  m_isMulticast = o.GetIsMulticast ();
-  m_modulationType = o.GetModulation ();
-  if (m_record != nullptr)
+void
+ServiceFlow::SetMaxTrafficBurst(uint32_t maxTrafficBurst)
+{
+    m_maxTrafficBurst = maxTrafficBurst;
+}
+
+void
+ServiceFlow::SetMinReservedTrafficRate(uint32_t minResvRate)
+{
+    m_minReservedTrafficRate = minResvRate;
+}
+
+void
+ServiceFlow::SetMinTolerableTrafficRate(uint32_t minJitter)
+{
+    m_minTolerableTrafficRate = minJitter;
+}
+
+void
+ServiceFlow::SetServiceSchedulingType(enum ServiceFlow::SchedulingType schedType)
+{
+    m_schedulingType = schedType;
+}
+
+void
+ServiceFlow::SetRequestTransmissionPolicy(uint32_t policy)
+{
+    m_requestTransmissionPolicy = policy;
+}
+
+void
+ServiceFlow::SetToleratedJitter(uint32_t jitter)
+{
+    m_toleratedJitter = jitter;
+}
+
+void
+ServiceFlow::SetMaximumLatency(uint32_t MaximumLatency)
+{
+    m_maximumLatency = MaximumLatency;
+}
+
+void
+ServiceFlow::SetFixedversusVariableSduIndicator(uint8_t sduIndicator)
+{
+    m_fixedversusVariableSduIndicator = sduIndicator;
+}
+
+void
+ServiceFlow::SetSduSize(uint8_t sduSize)
+{
+    m_sduSize = sduSize;
+}
+
+void
+ServiceFlow::SetTargetSAID(uint16_t targetSaid)
+{
+    m_targetSAID = targetSaid;
+}
+
+void
+ServiceFlow::SetArqEnable(uint8_t arqEnable)
+{
+    m_arqEnable = arqEnable;
+}
+
+void
+ServiceFlow::SetArqWindowSize(uint16_t arqWindowSize)
+{
+    m_arqWindowSize = arqWindowSize;
+}
+
+void
+ServiceFlow::SetArqRetryTimeoutTx(uint16_t timeout)
+{
+    m_arqRetryTimeoutTx = timeout;
+}
+
+void
+ServiceFlow::SetArqRetryTimeoutRx(uint16_t timeout)
+{
+    m_arqRetryTimeoutRx = timeout;
+}
+
+void
+ServiceFlow::SetArqBlockLifeTime(uint16_t lifeTime)
+{
+    m_arqBlockLifeTime = lifeTime;
+}
+
+void
+ServiceFlow::SetArqSyncLoss(uint16_t syncLoss)
+{
+    m_arqSyncLoss = syncLoss;
+}
+
+void
+ServiceFlow::SetArqDeliverInOrder(uint8_t inOrder)
+{
+    m_arqDeliverInOrder = inOrder;
+}
+
+void
+ServiceFlow::SetArqPurgeTimeout(uint16_t timeout)
+{
+    m_arqPurgeTimeout = timeout;
+}
+
+void
+ServiceFlow::SetArqBlockSize(uint16_t size)
+{
+    m_arqBlockSize = size;
+}
+
+void
+ServiceFlow::SetCsSpecification(enum ServiceFlow::CsSpecification spec)
+{
+    m_csSpecification = spec;
+}
+
+void
+ServiceFlow::SetConvergenceSublayerParam(CsParameters csparam)
+{
+    m_convergenceSublayerParam = csparam;
+}
+
+void
+ServiceFlow::SetUnsolicitedGrantInterval(uint16_t unsolicitedGrantInterval)
+{
+    m_unsolicitedGrantInterval = unsolicitedGrantInterval;
+}
+
+void
+ServiceFlow::SetUnsolicitedPollingInterval(uint16_t unsolicitedPollingInterval)
+{
+    m_unsolicitedPollingInterval = unsolicitedPollingInterval;
+}
+
+void
+ServiceFlow::SetIsMulticast(bool isMulticast)
+{
+    m_isMulticast = isMulticast;
+}
+
+void
+ServiceFlow::SetModulation(enum WimaxPhy::ModulationType modulationType)
+{
+    m_modulationType = modulationType;
+}
+
+void
+ServiceFlow::InitValues()
+{
+    m_sfid = 0;
+    m_serviceClassName = "";
+    m_qosParamSetType = 0;
+    m_trafficPriority = 0;
+    m_maxSustainedTrafficRate = 0;
+    m_maxTrafficBurst = 0;
+    m_minReservedTrafficRate = 0;
+    m_minTolerableTrafficRate = 0;
+    m_schedulingType = ServiceFlow::SF_TYPE_NONE;
+    m_requestTransmissionPolicy = 0;
+    m_toleratedJitter = 0;
+    m_maximumLatency = 0;
+    m_fixedversusVariableSduIndicator = 0;
+    m_sduSize = 0;
+    m_targetSAID = 0;
+    m_arqEnable = 0;
+    m_arqWindowSize = 0;
+    m_arqRetryTimeoutTx = 0;
+    m_arqRetryTimeoutRx = 0;
+    m_csSpecification = ServiceFlow::IPV4;
+    m_unsolicitedGrantInterval = 0;
+    m_unsolicitedPollingInterval = 0;
+    m_arqBlockLifeTime = 0;
+    m_arqSyncLoss = 0;
+    m_arqDeliverInOrder = 0;
+    m_arqPurgeTimeout = 0;
+    m_arqBlockSize = 0;
+    m_direction = ServiceFlow::SF_DIRECTION_DOWN;
+    m_type = ServiceFlow::SF_TYPE_ACTIVE;
+    m_isMulticast = false;
+    m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
+}
+
+void
+ServiceFlow::CopyParametersFrom(ServiceFlow sf)
+{
+    m_serviceClassName = sf.GetServiceClassName();
+    m_qosParamSetType = sf.GetQosParamSetType();
+    m_trafficPriority = sf.GetTrafficPriority();
+    m_maxSustainedTrafficRate = sf.GetMaxSustainedTrafficRate();
+    m_maxTrafficBurst = sf.GetMaxTrafficBurst();
+    m_minReservedTrafficRate = sf.GetMinReservedTrafficRate();
+    m_minTolerableTrafficRate = sf.GetMinTolerableTrafficRate();
+    m_schedulingType = sf.GetServiceSchedulingType();
+    m_requestTransmissionPolicy = sf.GetRequestTransmissionPolicy();
+    m_toleratedJitter = sf.GetToleratedJitter();
+    m_maximumLatency = sf.GetMaximumLatency();
+    m_fixedversusVariableSduIndicator = sf.GetFixedversusVariableSduIndicator();
+    m_sduSize = sf.GetSduSize();
+    m_targetSAID = sf.GetTargetSAID();
+    m_arqEnable = sf.GetArqEnable();
+    m_arqWindowSize = sf.GetArqWindowSize();
+    m_arqRetryTimeoutTx = sf.GetArqRetryTimeoutTx();
+    m_arqRetryTimeoutRx = sf.GetArqRetryTimeoutRx();
+    m_csSpecification = sf.GetCsSpecification();
+    m_convergenceSublayerParam = sf.GetConvergenceSublayerParam();
+    m_unsolicitedGrantInterval = sf.GetUnsolicitedGrantInterval();
+    m_unsolicitedPollingInterval = sf.GetUnsolicitedPollingInterval();
+    m_direction = sf.GetDirection();
+    m_isMulticast = sf.GetIsMulticast();
+    m_modulationType = sf.GetModulation();
+}
+
+ServiceFlow::ServiceFlow(const ServiceFlow& sf)
+{
+    m_sfid = sf.GetSfid();
+    m_serviceClassName = sf.GetServiceClassName();
+    m_qosParamSetType = sf.GetQosParamSetType();
+    m_trafficPriority = sf.GetTrafficPriority();
+    m_maxSustainedTrafficRate = sf.GetMaxSustainedTrafficRate();
+    m_maxTrafficBurst = sf.GetMaxTrafficBurst();
+    m_minReservedTrafficRate = sf.GetMinReservedTrafficRate();
+    m_minTolerableTrafficRate = sf.GetMinTolerableTrafficRate();
+    m_schedulingType = sf.GetServiceSchedulingType();
+    m_requestTransmissionPolicy = sf.GetRequestTransmissionPolicy();
+    m_toleratedJitter = sf.GetToleratedJitter();
+    m_maximumLatency = sf.GetMaximumLatency();
+    m_fixedversusVariableSduIndicator = sf.GetFixedversusVariableSduIndicator();
+    m_sduSize = sf.GetSduSize();
+    m_targetSAID = sf.GetTargetSAID();
+    m_arqEnable = sf.GetArqEnable();
+    m_arqWindowSize = sf.GetArqWindowSize();
+    m_arqRetryTimeoutTx = sf.GetArqRetryTimeoutTx();
+    m_arqRetryTimeoutRx = sf.GetArqRetryTimeoutRx();
+    m_csSpecification = sf.GetCsSpecification();
+    m_convergenceSublayerParam = sf.GetConvergenceSublayerParam();
+    m_unsolicitedGrantInterval = sf.GetUnsolicitedGrantInterval();
+    m_unsolicitedPollingInterval = sf.GetUnsolicitedPollingInterval();
+    m_direction = sf.GetDirection();
+    m_type = sf.GetType();
+    m_connection = sf.GetConnection();
+    m_isEnabled = sf.GetIsEnabled();
+    m_record = new ServiceFlowRecord();
+    (*m_record) = (*sf.GetRecord());
+    m_isMulticast = sf.GetIsMulticast();
+    m_modulationType = sf.GetModulation();
+}
+
+ServiceFlow&
+ServiceFlow::operator=(const ServiceFlow& o)
+{
+    m_sfid = o.GetSfid();
+    m_serviceClassName = o.GetServiceClassName();
+    m_qosParamSetType = o.GetQosParamSetType();
+    m_trafficPriority = o.GetTrafficPriority();
+    m_maxSustainedTrafficRate = o.GetMaxSustainedTrafficRate();
+    m_maxTrafficBurst = o.GetMaxTrafficBurst();
+    m_minReservedTrafficRate = o.GetMinReservedTrafficRate();
+    m_minTolerableTrafficRate = o.GetMinTolerableTrafficRate();
+    m_schedulingType = o.GetServiceSchedulingType();
+    m_requestTransmissionPolicy = o.GetRequestTransmissionPolicy();
+    m_toleratedJitter = o.GetToleratedJitter();
+    m_maximumLatency = o.GetMaximumLatency();
+    m_fixedversusVariableSduIndicator = o.GetFixedversusVariableSduIndicator();
+    m_sduSize = o.GetSduSize();
+    m_targetSAID = o.GetTargetSAID();
+    m_arqEnable = o.GetArqEnable();
+    m_arqWindowSize = o.GetArqWindowSize();
+    m_arqRetryTimeoutTx = o.GetArqRetryTimeoutTx();
+    m_arqRetryTimeoutRx = o.GetArqRetryTimeoutRx();
+    m_csSpecification = o.GetCsSpecification();
+    m_convergenceSublayerParam = o.GetConvergenceSublayerParam();
+    m_unsolicitedGrantInterval = o.GetUnsolicitedGrantInterval();
+    m_unsolicitedPollingInterval = o.GetUnsolicitedPollingInterval();
+    m_direction = o.GetDirection();
+    m_type = o.GetType();
+    m_connection = o.GetConnection();
+    m_isEnabled = o.GetIsEnabled();
+    m_isMulticast = o.GetIsMulticast();
+    m_modulationType = o.GetModulation();
+    if (m_record != nullptr)
     {
-      delete m_record;
+        delete m_record;
     }
 
-  m_record = new ServiceFlowRecord ();
+    m_record = new ServiceFlowRecord();
 
-  (*m_record) = (*o.GetRecord ());
-  return *this;
+    (*m_record) = (*o.GetRecord());
+    return *this;
 }
 
 char*
-ServiceFlow::GetSchedulingTypeStr () const
+ServiceFlow::GetSchedulingTypeStr() const
 {
-  switch (m_schedulingType)
+    switch (m_schedulingType)
     {
     case SF_TYPE_UGS:
-      return (char*) "UGS";
-      break;
+        return (char*)"UGS";
+        break;
     case SF_TYPE_RTPS:
-      return (char*) "rtPS";
-      break;
+        return (char*)"rtPS";
+        break;
     case SF_TYPE_NRTPS:
-      return (char*) "nrtPS";
-      break;
+        return (char*)"nrtPS";
+        break;
     case SF_TYPE_BE:
-      return (char*) "BE";
-      break;
+        return (char*)"BE";
+        break;
     default:
-      NS_FATAL_ERROR ("Invalid scheduling type");
+        NS_FATAL_ERROR("Invalid scheduling type");
     }
-  return nullptr;
+    return nullptr;
 }
 
 Tlv
-ServiceFlow::ToTlv () const
+ServiceFlow::ToTlv() const
 {
-  SfVectorTlvValue tmpSfVector;
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::SFID, 4, U32TlvValue (m_sfid)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::CID, 2, U16TlvValue (GetCid ())));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::QoS_Parameter_Set_Type, 1, U8TlvValue (m_qosParamSetType)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Traffic_Priority, 1, U8TlvValue (m_trafficPriority)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Maximum_Sustained_Traffic_Rate, 4, U32TlvValue (m_maxSustainedTrafficRate)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Maximum_Traffic_Burst, 4, U32TlvValue (m_maxTrafficBurst)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Minimum_Reserved_Traffic_Rate, 4, U32TlvValue (m_minReservedTrafficRate)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Minimum_Tolerable_Traffic_Rate, 4, U32TlvValue (m_minTolerableTrafficRate)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Service_Flow_Scheduling_Type, 1, U8TlvValue (m_schedulingType)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Request_Transmission_Policy, 4, U32TlvValue (m_requestTransmissionPolicy)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Tolerated_Jitter, 4, U32TlvValue (m_toleratedJitter)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Maximum_Latency, 4, U32TlvValue (m_maximumLatency)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Fixed_length_versus_Variable_length_SDU_Indicator,
+    SfVectorTlvValue tmpSfVector;
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::SFID, 4, U32TlvValue(m_sfid)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::CID, 2, U16TlvValue(GetCid())));
+    tmpSfVector.Add(
+        Tlv(SfVectorTlvValue::QoS_Parameter_Set_Type, 1, U8TlvValue(m_qosParamSetType)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Traffic_Priority, 1, U8TlvValue(m_trafficPriority)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Maximum_Sustained_Traffic_Rate,
+                        4,
+                        U32TlvValue(m_maxSustainedTrafficRate)));
+    tmpSfVector.Add(
+        Tlv(SfVectorTlvValue::Maximum_Traffic_Burst, 4, U32TlvValue(m_maxTrafficBurst)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Minimum_Reserved_Traffic_Rate,
+                        4,
+                        U32TlvValue(m_minReservedTrafficRate)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Minimum_Tolerable_Traffic_Rate,
+                        4,
+                        U32TlvValue(m_minTolerableTrafficRate)));
+    tmpSfVector.Add(
+        Tlv(SfVectorTlvValue::Service_Flow_Scheduling_Type, 1, U8TlvValue(m_schedulingType)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Request_Transmission_Policy,
+                        4,
+                        U32TlvValue(m_requestTransmissionPolicy)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Tolerated_Jitter, 4, U32TlvValue(m_toleratedJitter)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Maximum_Latency, 4, U32TlvValue(m_maximumLatency)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Fixed_length_versus_Variable_length_SDU_Indicator,
                         1,
-                        U8TlvValue (m_fixedversusVariableSduIndicator)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::SDU_Size, 1, U8TlvValue (m_sduSize)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::Target_SAID, 2, U16TlvValue (m_targetSAID)));
-  tmpSfVector.Add (Tlv (SfVectorTlvValue::CS_Specification, 1, U8TlvValue (m_csSpecification)));
-  tmpSfVector.Add (m_convergenceSublayerParam.ToTlv ());
-  if (m_direction == SF_DIRECTION_UP)
+                        U8TlvValue(m_fixedversusVariableSduIndicator)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::SDU_Size, 1, U8TlvValue(m_sduSize)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::Target_SAID, 2, U16TlvValue(m_targetSAID)));
+    tmpSfVector.Add(Tlv(SfVectorTlvValue::CS_Specification, 1, U8TlvValue(m_csSpecification)));
+    tmpSfVector.Add(m_convergenceSublayerParam.ToTlv());
+    if (m_direction == SF_DIRECTION_UP)
     {
-      return Tlv (Tlv::UPLINK_SERVICE_FLOW, tmpSfVector.GetSerializedSize (), tmpSfVector);
+        return Tlv(Tlv::UPLINK_SERVICE_FLOW, tmpSfVector.GetSerializedSize(), tmpSfVector);
     }
-  else
+    else
     {
-      return Tlv (Tlv::DOWNLINK_SERVICE_FLOW, tmpSfVector.GetSerializedSize (), tmpSfVector);
+        return Tlv(Tlv::DOWNLINK_SERVICE_FLOW, tmpSfVector.GetSerializedSize(), tmpSfVector);
     }
 }
 
 bool
-ServiceFlow::CheckClassifierMatch (Ipv4Address srcAddress,
-                                   Ipv4Address dstAddress,
-                                   uint16_t srcPort,
-                                   uint16_t dstPort,
-                                   uint8_t proto) const
+ServiceFlow::CheckClassifierMatch(Ipv4Address srcAddress,
+                                  Ipv4Address dstAddress,
+                                  uint16_t srcPort,
+                                  uint16_t dstPort,
+                                  uint8_t proto) const
 {
-  return m_convergenceSublayerParam.GetPacketClassifierRule ().CheckMatch (srcAddress,
+    return m_convergenceSublayerParam.GetPacketClassifierRule().CheckMatch(srcAddress,
                                                                            dstAddress,
                                                                            srcPort,
                                                                            dstPort,

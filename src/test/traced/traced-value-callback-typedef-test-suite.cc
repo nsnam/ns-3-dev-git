@@ -39,7 +39,8 @@ using namespace ns3;
  * Time, and SequenceNumber32.
  */
 
-namespace {
+namespace
+{
 
 /**
  * \ingroup system-tests-traced
@@ -68,22 +69,20 @@ std::string g_Result = "";
  * \param [in] newValue The new value
  */
 template <typename T>
-void TracedValueCbSink (T oldValue, T newValue)
+void
+TracedValueCbSink(T oldValue, T newValue)
 {
-  std::cout << ": "
-            << static_cast<int64_t> (oldValue)
-            << " -> "
-            << static_cast<int64_t> (newValue)
-            << std::endl;
+    std::cout << ": " << static_cast<int64_t>(oldValue) << " -> " << static_cast<int64_t>(newValue)
+              << std::endl;
 
-  if (oldValue != 0)
+    if (oldValue != 0)
     {
-      g_Result = "oldValue should be 0";
+        g_Result = "oldValue should be 0";
     }
 
-  if (newValue != 1)
+    if (newValue != 1)
     {
-      g_Result += std::string (g_Result == "" ? "" : " | ") + "newValue should be 1";
+        g_Result += std::string(g_Result == "" ? "" : " | ") + "newValue should be 1";
     }
 } // TracedValueCbSink<>()
 
@@ -95,10 +94,10 @@ void TracedValueCbSink (T oldValue, T newValue)
  * \param newValue The new value
  */
 template <>
-void TracedValueCbSink<Time> (Time oldValue, Time newValue)
+void
+TracedValueCbSink<Time>(Time oldValue, Time newValue)
 {
-  TracedValueCbSink<int64_t> (oldValue.GetInteger (),
-                              newValue.GetInteger ());
+    TracedValueCbSink<int64_t>(oldValue.GetInteger(), newValue.GetInteger());
 }
 
 /**
@@ -109,15 +108,13 @@ void TracedValueCbSink<Time> (Time oldValue, Time newValue)
  * \param newValue The new value
  */
 template <>
-void TracedValueCbSink<SequenceNumber32> (SequenceNumber32 oldValue,
-                                          SequenceNumber32 newValue)
+void
+TracedValueCbSink<SequenceNumber32>(SequenceNumber32 oldValue, SequenceNumber32 newValue)
 {
-  TracedValueCbSink<int64_t> (oldValue.GetValue (),
-                              newValue.GetValue ());
+    TracedValueCbSink<int64_t>(oldValue.GetValue(), newValue.GetValue());
 }
 
-}  // unnamed namespace
-
+} // unnamed namespace
 
 /**
  * \ingroup system-tests-traced
@@ -126,128 +123,129 @@ void TracedValueCbSink<SequenceNumber32> (SequenceNumber32 oldValue,
  */
 class TracedValueCallbackTestCase : public TestCase
 {
-public:
-  TracedValueCallbackTestCase ();
-  ~TracedValueCallbackTestCase () override {}
-
-private:
-
-  /**
-   * A class to check that the callback function typedef will
-   * actually connect to the TracedValue.
-   */
-  template <typename T>
-  class CheckTvCb : public Object
-  {
-    /// Traced value.
-    TracedValue<T> m_value;
-
   public:
-    /** Constructor. */
-    CheckTvCb ()  : m_value (0)  { }
+    TracedValueCallbackTestCase();
 
-    /**
-     * \brief Register this type.
-     * \return The object TypeId.
-     */
-    static TypeId GetTypeId ()
+    ~TracedValueCallbackTestCase() override
     {
-      static TypeId tid =
-        TypeId ("CheckTvCb<" + TypeNameGet<T> () + ">")
-        .SetParent <Object> ()
-        .AddTraceSource ("value",
-                         "A value being traced.",
-                         MakeTraceSourceAccessor (&CheckTvCb<T>::m_value),
-                         ("ns3::TracedValueCallback::" + TypeNameGet<T> ()))
-        ;
-      return tid;
-    }  // GetTypeId ()
+    }
 
+  private:
     /**
-     * Check the sink function against the actual TracedValue invocation.
-     *
-     * We connect the TracedValue to the sink.  If the types
-     * aren't compatible, the connection will fail.
-     *
-     * Just to make sure, we increment the TracedValue,
-     * which calls the sink.
-     *
-     * \param cb Callback.
+     * A class to check that the callback function typedef will
+     * actually connect to the TracedValue.
      */
-    template <typename U>
-    void Invoke (U cb)
+    template <typename T>
+    class CheckTvCb : public Object
     {
-      bool ok = TraceConnectWithoutContext ("value", MakeCallback (cb));
-      std::cout << GetTypeId () << ": "
-                << (ok ? "connected " : "failed to connect ")
-                << GetTypeId ().GetTraceSource (0).callback
-        ;
-      // The endl is in the sink function.
+        /// Traced value.
+        TracedValue<T> m_value;
 
-      if (!ok)
+      public:
+        /** Constructor. */
+        CheckTvCb()
+            : m_value(0)
         {
-          // finish the line started above
-          std::cout << std::endl;
-
-          // and log the error
-          g_Result = "failed to connect callback";
-
-          return;
         }
 
-      // Odd form here is to accommodate the uneven operator support
-      // of Time and SequenceNumber32.
-      m_value = m_value + static_cast<T> (1);
+        /**
+         * \brief Register this type.
+         * \return The object TypeId.
+         */
+        static TypeId GetTypeId()
+        {
+            static TypeId tid =
+                TypeId("CheckTvCb<" + TypeNameGet<T>() + ">")
+                    .SetParent<Object>()
+                    .AddTraceSource("value",
+                                    "A value being traced.",
+                                    MakeTraceSourceAccessor(&CheckTvCb<T>::m_value),
+                                    ("ns3::TracedValueCallback::" + TypeNameGet<T>()));
+            return tid;
+        } // GetTypeId ()
 
-    }  // Invoke()
+        /**
+         * Check the sink function against the actual TracedValue invocation.
+         *
+         * We connect the TracedValue to the sink.  If the types
+         * aren't compatible, the connection will fail.
+         *
+         * Just to make sure, we increment the TracedValue,
+         * which calls the sink.
+         *
+         * \param cb Callback.
+         */
+        template <typename U>
+        void Invoke(U cb)
+        {
+            bool ok = TraceConnectWithoutContext("value", MakeCallback(cb));
+            std::cout << GetTypeId() << ": " << (ok ? "connected " : "failed to connect ")
+                      << GetTypeId().GetTraceSource(0).callback;
+            // The endl is in the sink function.
 
-  };  // class CheckTvCb<T>
+            if (!ok)
+            {
+                // finish the line started above
+                std::cout << std::endl;
 
-  /**
-   * Check the TracedValue typedef against TracedValueCbSink<T>.
-   *
-   * We instantiate a sink function of type \c U, initialized to
-   * TracedValueCbSink<T>.  If this compiles, we've proved the
-   * sink function and the typedef agree.
-   *
-   * \tparam T \explicit The base type.
-   * \tparam U \explicit The TracedValueCallback sink typedef type.
-   */
-  template <typename T, typename U>
-  void CheckType ()
-  {
-    U sink = TracedValueCbSink<T>;
-    CreateObject<CheckTvCb<T> > ()->Invoke (sink);
+                // and log the error
+                g_Result = "failed to connect callback";
 
-    NS_TEST_ASSERT_MSG_EQ (g_Result, "", g_Result);
-    g_Result = "";
+                return;
+            }
 
-  }  // CheckType<>()
+            // Odd form here is to accommodate the uneven operator support
+            // of Time and SequenceNumber32.
+            m_value = m_value + static_cast<T>(1);
 
-  void DoRun () override;
+        } // Invoke()
 
+    }; // class CheckTvCb<T>
+
+    /**
+     * Check the TracedValue typedef against TracedValueCbSink<T>.
+     *
+     * We instantiate a sink function of type \c U, initialized to
+     * TracedValueCbSink<T>.  If this compiles, we've proved the
+     * sink function and the typedef agree.
+     *
+     * \tparam T \explicit The base type.
+     * \tparam U \explicit The TracedValueCallback sink typedef type.
+     */
+    template <typename T, typename U>
+    void CheckType()
+    {
+        U sink = TracedValueCbSink<T>;
+        CreateObject<CheckTvCb<T>>()->Invoke(sink);
+
+        NS_TEST_ASSERT_MSG_EQ(g_Result, "", g_Result);
+        g_Result = "";
+
+    } // CheckType<>()
+
+    void DoRun() override;
 };
 
-TracedValueCallbackTestCase::TracedValueCallbackTestCase ()
-  : TestCase ("Check basic TracedValue callback operation")
+TracedValueCallbackTestCase::TracedValueCallbackTestCase()
+    : TestCase("Check basic TracedValue callback operation")
 {
 }
 
 void
-TracedValueCallbackTestCase::DoRun ()
+TracedValueCallbackTestCase::DoRun()
 {
-  CheckType< bool,     TracedValueCallback::Bool   > ();
-  CheckType< int8_t,   TracedValueCallback::Int8   > ();
-  CheckType< int16_t,  TracedValueCallback::Int16  > ();
-  CheckType< int32_t,  TracedValueCallback::Int32  > ();
-  CheckType< int64_t,  TracedValueCallback::Int64  > ();
-  CheckType< uint8_t,  TracedValueCallback::Uint8  > ();
-  CheckType< uint16_t, TracedValueCallback::Uint16 > ();
-  CheckType< uint32_t, TracedValueCallback::Uint32 > ();
-  CheckType< uint64_t, TracedValueCallback::Uint64 > ();
-  CheckType< double,   TracedValueCallback::Double > ();
-  CheckType< Time,     TracedValueCallback::Time   > ();
-  CheckType< SequenceNumber32, TracedValueCallback::SequenceNumber32 > ();
+    CheckType<bool, TracedValueCallback::Bool>();
+    CheckType<int8_t, TracedValueCallback::Int8>();
+    CheckType<int16_t, TracedValueCallback::Int16>();
+    CheckType<int32_t, TracedValueCallback::Int32>();
+    CheckType<int64_t, TracedValueCallback::Int64>();
+    CheckType<uint8_t, TracedValueCallback::Uint8>();
+    CheckType<uint16_t, TracedValueCallback::Uint16>();
+    CheckType<uint32_t, TracedValueCallback::Uint32>();
+    CheckType<uint64_t, TracedValueCallback::Uint64>();
+    CheckType<double, TracedValueCallback::Double>();
+    CheckType<Time, TracedValueCallback::Time>();
+    CheckType<SequenceNumber32, TracedValueCallback::SequenceNumber32>();
 }
 
 /**
@@ -257,14 +255,14 @@ TracedValueCallbackTestCase::DoRun ()
  */
 class TracedValueCallbackTestSuite : public TestSuite
 {
-public:
-  TracedValueCallbackTestSuite ();
+  public:
+    TracedValueCallbackTestSuite();
 };
 
-TracedValueCallbackTestSuite::TracedValueCallbackTestSuite ()
-  : TestSuite ("traced-value-callback", UNIT)
+TracedValueCallbackTestSuite::TracedValueCallbackTestSuite()
+    : TestSuite("traced-value-callback", UNIT)
 {
-  AddTestCase (new TracedValueCallbackTestCase, TestCase::QUICK);
+    AddTestCase(new TracedValueCallbackTestCase, TestCase::QUICK);
 }
 
 /// Static variable for test initialization

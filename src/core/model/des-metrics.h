@@ -30,13 +30,14 @@
 #include "nstime.h"
 #include "singleton.h"
 
-#include <stdint.h>    // uint32_t
 #include <fstream>
 #include <mutex>
+#include <stdint.h> // uint32_t
 #include <string>
 #include <vector>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * @ingroup simulator
@@ -70,8 +71,9 @@ namespace ns3 {
  "simulator_name" : "ns-3",
  "model_name" : "ipv4-raw",
  "capture_date" : "Fri May 27 00:34:27 2016",
- "command_line_arguments" : "ipv4-raw [ns3-dev-test-runner-debug] --test-name=ipv4-raw --stop-on-failure --fullness=QUICK --xml --tempdir=testpy-output/2016-05-27-04-33-35-CUT --out=testpy-output/2016-05-27-04-33-35-CUT/ipv4-raw.xml",
- "events" : [
+ "command_line_arguments" : "ipv4-raw [ns3-dev-test-runner-debug] --test-name=ipv4-raw
+--stop-on-failure --fullness=QUICK --xml --tempdir=testpy-output/2016-05-27-04-33-35-CUT
+--out=testpy-output/2016-05-27-04-33-35-CUT/ipv4-raw.xml", "events" : [
   ["0",0,"0",0],
   ["1",0,"0",0],
   ["0",0,"0",0],
@@ -107,63 +109,60 @@ namespace ns3 {
  */
 class DesMetrics : public Singleton<DesMetrics>
 {
-public:
+  public:
+    /**
+     * Open the DesMetrics trace file and print the header.
+     *
+     * The trace file will have the same base name as the main program,
+     * '.json' as the extension.
+     *
+     * \param args [in] Command line arguments.
+     * \param outDir [in] Directory where the trace file should be written.
+     */
+    void Initialize(std::vector<std::string> args, std::string outDir = "");
 
-  /**
-   * Open the DesMetrics trace file and print the header.
-   *
-   * The trace file will have the same base name as the main program,
-   * '.json' as the extension.
-   *
-   * \param args [in] Command line arguments.
-   * \param outDir [in] Directory where the trace file should be written.
-   */
-  void Initialize (std::vector<std::string> args, std::string outDir = "");
+    /**
+     * Trace an event to self at the time it is scheduled.
+     *
+     * \param now [in] The local simulation time.
+     * \param delay [in] The delay to the event.
+     */
+    void Trace(const Time& now, const Time& delay);
 
-  /**
-   * Trace an event to self at the time it is scheduled.
-   *
-   * \param now [in] The local simulation time.
-   * \param delay [in] The delay to the event.
-   */
-  void Trace (const Time & now, const Time & delay);
+    /**
+     * Trace an event (with context) at the time it is scheduled.
+     *
+     * \param context [in] The context (NodeId) which will receive the event.
+     * \param now [in] The local simulation time.
+     * \param delay [in] The delay to the event.
+     */
+    void TraceWithContext(uint32_t context, const Time& now, const Time& delay);
 
-  /**
-   * Trace an event (with context) at the time it is scheduled.
-   *
-   * \param context [in] The context (NodeId) which will receive the event.
-   * \param now [in] The local simulation time.
-   * \param delay [in] The delay to the event.
-   */
-  void TraceWithContext (uint32_t context,  const Time & now, const Time & delay);
+    /**
+     * Destructor, closes the trace file.
+     */
+    ~DesMetrics() override;
 
-  /**
-   * Destructor, closes the trace file.
-   */
-  ~DesMetrics () override;
+  private:
+    /** Close the output file. */
+    void Close();
 
-private:
+    /**
+     * Cache the last-used output directory.
+     *
+     * This is enables repeated/re-entrant use of CommandLine, for example
+     * in \c command-line-test-suite.cc
+     */
+    static std::string m_outputDir;
 
-  /** Close the output file. */
-  void Close ();
+    bool m_initialized; //!< Have we been initialized.
+    std::ofstream m_os; //!< The output JSON trace file stream.
+    char m_separator;   //!< The separator between event records.
 
-  /**
-   * Cache the last-used output directory.
-   *
-   * This is enables repeated/re-entrant use of CommandLine, for example
-   * in \c command-line-test-suite.cc
-   */
-  static std::string m_outputDir;
+    /** Mutex to control access to the output file. */
+    std::mutex m_mutex;
 
-  bool m_initialized;    //!< Have we been initialized.
-  std::ofstream m_os;    //!< The output JSON trace file stream.
-  char m_separator;      //!< The separator between event records.
-
-  /** Mutex to control access to the output file. */
-  std::mutex m_mutex;
-
-};  // class DesMetrics
-
+}; // class DesMetrics
 
 } // namespace ns3
 

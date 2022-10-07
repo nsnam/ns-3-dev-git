@@ -18,17 +18,16 @@
  * Author: Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
-#include "ns3/log.h"
-#include "ns3/test.h"
-#include "ns3/simple-device-energy-model.h"
 #include "ns3/li-ion-energy-source.h"
+#include "ns3/log.h"
 #include "ns3/node.h"
+#include "ns3/simple-device-energy-model.h"
 #include "ns3/simulator.h"
+#include "ns3/test.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("LiIonEnergySourceTestSuite");
-
+NS_LOG_COMPONENT_DEFINE("LiIonEnergySourceTestSuite");
 
 /**
  * \ingroup energy-tests
@@ -37,50 +36,49 @@ NS_LOG_COMPONENT_DEFINE ("LiIonEnergySourceTestSuite");
  */
 class LiIonEnergyTestCase : public TestCase
 {
-public:
-  LiIonEnergyTestCase ();
-  ~LiIonEnergyTestCase () override;
+  public:
+    LiIonEnergyTestCase();
+    ~LiIonEnergyTestCase() override;
 
-  void DoRun () override;
+    void DoRun() override;
 
-  Ptr<Node> m_node; //!< Node to aggreagte the source to.
+    Ptr<Node> m_node; //!< Node to aggreagte the source to.
 };
 
-LiIonEnergyTestCase::LiIonEnergyTestCase ()
-  : TestCase ("Li-Ion energy source test case")
+LiIonEnergyTestCase::LiIonEnergyTestCase()
+    : TestCase("Li-Ion energy source test case")
 {
 }
 
-LiIonEnergyTestCase::~LiIonEnergyTestCase ()
+LiIonEnergyTestCase::~LiIonEnergyTestCase()
 {
-  m_node = nullptr;
+    m_node = nullptr;
 }
 
 void
-LiIonEnergyTestCase::DoRun ()
+LiIonEnergyTestCase::DoRun()
 {
-  m_node = CreateObject<Node> ();
+    m_node = CreateObject<Node>();
 
-  Ptr<SimpleDeviceEnergyModel> sem = CreateObject<SimpleDeviceEnergyModel> ();
-  Ptr<LiIonEnergySource> es = CreateObject<LiIonEnergySource> ();
+    Ptr<SimpleDeviceEnergyModel> sem = CreateObject<SimpleDeviceEnergyModel>();
+    Ptr<LiIonEnergySource> es = CreateObject<LiIonEnergySource>();
 
-  es->SetNode (m_node);
-  sem->SetEnergySource (es);
-  es->AppendDeviceEnergyModel (sem);
-  m_node->AggregateObject (es);
+    es->SetNode(m_node);
+    sem->SetEnergySource(es);
+    es->AppendDeviceEnergyModel(sem);
+    m_node->AggregateObject(es);
 
-  Time now = Simulator::Now ();
+    Time now = Simulator::Now();
 
-  // discharge at 2.33 A for 1700 seconds
-  sem->SetCurrentA (2.33);
-  now += Seconds (1701);
+    // discharge at 2.33 A for 1700 seconds
+    sem->SetCurrentA(2.33);
+    now += Seconds(1701);
 
-  Simulator::Stop (now);
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Stop(now);
+    Simulator::Run();
+    Simulator::Destroy();
 
-  NS_TEST_ASSERT_MSG_EQ_TOL (es->GetSupplyVoltage (), 3.6, 1.0e-3,
-                             "Incorrect consumed energy!");
+    NS_TEST_ASSERT_MSG_EQ_TOL(es->GetSupplyVoltage(), 3.6, 1.0e-3, "Incorrect consumed energy!");
 }
 
 /**
@@ -90,14 +88,14 @@ LiIonEnergyTestCase::DoRun ()
  */
 class LiIonEnergySourceTestSuite : public TestSuite
 {
-public:
-  LiIonEnergySourceTestSuite ();
+  public:
+    LiIonEnergySourceTestSuite();
 };
 
-LiIonEnergySourceTestSuite::LiIonEnergySourceTestSuite ()
-  : TestSuite ("li-ion-energy-source", UNIT)
+LiIonEnergySourceTestSuite::LiIonEnergySourceTestSuite()
+    : TestSuite("li-ion-energy-source", UNIT)
 {
-  AddTestCase (new LiIonEnergyTestCase, TestCase::QUICK);
+    AddTestCase(new LiIonEnergyTestCase, TestCase::QUICK);
 }
 
 /// create an instance of the test suite

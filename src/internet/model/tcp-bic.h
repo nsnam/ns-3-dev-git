@@ -26,7 +26,8 @@
 class TcpBicIncrementTest;
 class TcpBicDecrementTest;
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup congestionOps
@@ -80,65 +81,63 @@ namespace ns3 {
 
 class TcpBic : public TcpCongestionOps
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Constructor
-   */
-  TcpBic ();
+    /**
+     * \brief Constructor
+     */
+    TcpBic();
 
-  /**
-   * Copy constructor.
-   * \param sock The socket to copy from.
-   */
-  TcpBic (const TcpBic &sock);
+    /**
+     * Copy constructor.
+     * \param sock The socket to copy from.
+     */
+    TcpBic(const TcpBic& sock);
 
-  std::string GetName () const override;
-  void IncreaseWindow (Ptr<TcpSocketState> tcb,
-                               uint32_t segmentsAcked) override;
-  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight) override;
+    std::string GetName() const override;
+    void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+    uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
 
-  Ptr<TcpCongestionOps> Fork () override;
+    Ptr<TcpCongestionOps> Fork() override;
 
-protected:
-  /**
-   * \brief Bic window update after a new ack received
-   * \param tcb the socket state.
-   * \returns The number of segments acked since the last cwnd increment.
-   */
-  virtual uint32_t Update (Ptr<TcpSocketState> tcb);
+  protected:
+    /**
+     * \brief Bic window update after a new ack received
+     * \param tcb the socket state.
+     * \returns The number of segments acked since the last cwnd increment.
+     */
+    virtual uint32_t Update(Ptr<TcpSocketState> tcb);
 
-private:
-  /**
-   * \brief TcpBicIncrementTest friend class (for tests).
-   * \relates TcpBicIncrementTest
-   */
-  friend class ::TcpBicIncrementTest;
-  /**
-   * \brief TcpBicDecrementTest friend class (for tests).
-   * \relates TcpBicDecrementTest
-   */
-  friend class ::TcpBicDecrementTest;
+  private:
+    /**
+     * \brief TcpBicIncrementTest friend class (for tests).
+     * \relates TcpBicIncrementTest
+     */
+    friend class ::TcpBicIncrementTest;
+    /**
+     * \brief TcpBicDecrementTest friend class (for tests).
+     * \relates TcpBicDecrementTest
+     */
+    friend class ::TcpBicDecrementTest;
 
-  // User parameters
-  bool     m_fastConvergence;  //!< Enable or disable fast convergence algorithm
-  double   m_beta;             //!< Beta for cubic multiplicative increase
-  uint32_t m_maxIncr;          //!< Maximum window increment
-  uint32_t m_lowWnd;           //!< Lower bound on congestion window
-  uint32_t m_smoothPart;       //!< Number of RTT needed to reach Wmax from Wmax-B
+    // User parameters
+    bool m_fastConvergence; //!< Enable or disable fast convergence algorithm
+    double m_beta;          //!< Beta for cubic multiplicative increase
+    uint32_t m_maxIncr;     //!< Maximum window increment
+    uint32_t m_lowWnd;      //!< Lower bound on congestion window
+    uint32_t m_smoothPart;  //!< Number of RTT needed to reach Wmax from Wmax-B
 
-  // Bic parameters
-  uint32_t     m_cWndCnt;         //!<  cWnd integer-to-float counter
-  uint32_t     m_lastMaxCwnd;     //!<  Last maximum cWnd
-  uint32_t     m_lastCwnd;        //!<  Last cWnd
-  Time         m_epochStart;      //!<  Beginning of an epoch
-  uint8_t      m_b;               //!< Binary search coefficient
+    // Bic parameters
+    uint32_t m_cWndCnt;     //!<  cWnd integer-to-float counter
+    uint32_t m_lastMaxCwnd; //!<  Last maximum cWnd
+    uint32_t m_lastCwnd;    //!<  Last cWnd
+    Time m_epochStart;      //!<  Beginning of an epoch
+    uint8_t m_b;            //!< Binary search coefficient
 };
 
 } // namespace ns3

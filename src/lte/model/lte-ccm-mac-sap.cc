@@ -21,17 +21,15 @@
 
 #include "lte-ccm-mac-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-
-LteCcmMacSapProvider::~LteCcmMacSapProvider ()
+LteCcmMacSapProvider::~LteCcmMacSapProvider()
 {
 }
 
-
-LteCcmMacSapUser::~LteCcmMacSapUser ()
+LteCcmMacSapUser::~LteCcmMacSapUser()
 {
 }
-
 
 } // end of namespace ns3

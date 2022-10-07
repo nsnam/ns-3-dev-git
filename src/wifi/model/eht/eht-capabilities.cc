@@ -20,48 +20,49 @@
 
 #include "eht-capabilities.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-EhtCapabilities::EhtCapabilities ()
+EhtCapabilities::EhtCapabilities()
 {
 }
 
 WifiInformationElementId
-EhtCapabilities::ElementId () const
+EhtCapabilities::ElementId() const
 {
-  return IE_EXTENSION;
+    return IE_EXTENSION;
 }
 
 WifiInformationElementId
-EhtCapabilities::ElementIdExt () const
+EhtCapabilities::ElementIdExt() const
 {
-  return IE_EXT_EHT_CAPABILITIES;
+    return IE_EXT_EHT_CAPABILITIES;
 }
 
 uint16_t
-EhtCapabilities::GetInformationFieldSize () const
+EhtCapabilities::GetInformationFieldSize() const
 {
-  return 1; //FIXME
+    return 1; // FIXME
 }
 
 void
-EhtCapabilities::SerializeInformationField (Buffer::Iterator start) const
+EhtCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
-  //TODO
+    // TODO
 }
 
 uint16_t
-EhtCapabilities::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
+EhtCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
-  //TODO
-  return length;
+    // TODO
+    return length;
 }
 
-std::ostream &
-operator << (std::ostream &os, const EhtCapabilities &ehtCapabilities)
+std::ostream&
+operator<<(std::ostream& os, const EhtCapabilities& ehtCapabilities)
 {
-  //TODO
-  return os;
+    // TODO
+    return os;
 }
 
-} //namespace ns3
+} // namespace ns3

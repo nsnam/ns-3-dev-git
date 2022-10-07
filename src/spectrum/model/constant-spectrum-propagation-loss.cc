@@ -18,88 +18,86 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include <cmath>
+#include "ns3/constant-spectrum-propagation-loss.h"
 
+#include "spectrum-signal-parameters.h"
+
+#include "ns3/double.h"
 #include "ns3/log.h"
 
-#include "ns3/constant-spectrum-propagation-loss.h"
-#include "spectrum-signal-parameters.h"
-#include "ns3/double.h"
+#include <cmath>
 
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("ConstantSpectrumPropagationLossModel");
-
-NS_OBJECT_ENSURE_REGISTERED (ConstantSpectrumPropagationLossModel);
-
-ConstantSpectrumPropagationLossModel::ConstantSpectrumPropagationLossModel ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("ConstantSpectrumPropagationLossModel");
+
+NS_OBJECT_ENSURE_REGISTERED(ConstantSpectrumPropagationLossModel);
+
+ConstantSpectrumPropagationLossModel::ConstantSpectrumPropagationLossModel()
+{
+    NS_LOG_FUNCTION(this);
 }
 
-ConstantSpectrumPropagationLossModel::~ConstantSpectrumPropagationLossModel ()
+ConstantSpectrumPropagationLossModel::~ConstantSpectrumPropagationLossModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-ConstantSpectrumPropagationLossModel::GetTypeId ()
+ConstantSpectrumPropagationLossModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ConstantSpectrumPropagationLossModel")
-    .SetParent<SpectrumPropagationLossModel> ()
-    .SetGroupName ("Spectrum")
-    .AddConstructor<ConstantSpectrumPropagationLossModel> ()
-    .AddAttribute ("Loss",
-                   "Path loss (dB) between transmitter and receiver",
-                   DoubleValue (1.0),
-                   MakeDoubleAccessor (&ConstantSpectrumPropagationLossModel::SetLossDb,
-                                       &ConstantSpectrumPropagationLossModel::GetLossDb),
-                   MakeDoubleChecker<double> ())
-    ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::ConstantSpectrumPropagationLossModel")
+            .SetParent<SpectrumPropagationLossModel>()
+            .SetGroupName("Spectrum")
+            .AddConstructor<ConstantSpectrumPropagationLossModel>()
+            .AddAttribute("Loss",
+                          "Path loss (dB) between transmitter and receiver",
+                          DoubleValue(1.0),
+                          MakeDoubleAccessor(&ConstantSpectrumPropagationLossModel::SetLossDb,
+                                             &ConstantSpectrumPropagationLossModel::GetLossDb),
+                          MakeDoubleChecker<double>());
+    return tid;
 }
-
 
 void
-ConstantSpectrumPropagationLossModel::SetLossDb (double lossDb)
+ConstantSpectrumPropagationLossModel::SetLossDb(double lossDb)
 {
-  NS_LOG_FUNCTION (this);
-  m_lossDb = lossDb;
-  m_lossLinear = std::pow (10, m_lossDb / 10);
+    NS_LOG_FUNCTION(this);
+    m_lossDb = lossDb;
+    m_lossLinear = std::pow(10, m_lossDb / 10);
 }
-
 
 double
-ConstantSpectrumPropagationLossModel::GetLossDb () const
+ConstantSpectrumPropagationLossModel::GetLossDb() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_lossDb;
+    NS_LOG_FUNCTION(this);
+    return m_lossDb;
 }
-
 
 Ptr<SpectrumValue>
-ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
-                                                                    Ptr<const MobilityModel> a,
-                                                                    Ptr<const MobilityModel> b) const
+ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
+    Ptr<const SpectrumSignalParameters> params,
+    Ptr<const MobilityModel> a,
+    Ptr<const MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (params->psd);
-  Values::iterator vit = rxPsd->ValuesBegin ();
-  Bands::const_iterator fit = rxPsd->ConstBandsBegin ();
+    Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue>(params->psd);
+    Values::iterator vit = rxPsd->ValuesBegin();
+    Bands::const_iterator fit = rxPsd->ConstBandsBegin();
 
-  while (vit != rxPsd->ValuesEnd ())
+    while (vit != rxPsd->ValuesEnd())
     {
-      NS_ASSERT (fit != rxPsd->ConstBandsEnd ());
-      NS_LOG_LOGIC ("Ptx = " << *vit);
-      *vit /= m_lossLinear; // Prx = Ptx / loss
-      NS_LOG_LOGIC ("Prx = " << *vit);
-      ++vit;
-      ++fit;
+        NS_ASSERT(fit != rxPsd->ConstBandsEnd());
+        NS_LOG_LOGIC("Ptx = " << *vit);
+        *vit /= m_lossLinear; // Prx = Ptx / loss
+        NS_LOG_LOGIC("Prx = " << *vit);
+        ++vit;
+        ++fit;
     }
-  return rxPsd;
+    return rxPsd;
 }
 
-
-}  // namespace ns3
+} // namespace ns3

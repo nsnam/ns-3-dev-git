@@ -20,54 +20,52 @@
 
 #include "uan-mac.h"
 
-namespace ns3 {
-
-NS_OBJECT_ENSURE_REGISTERED (UanMac);
-
-UanMac::UanMac ()
-  : m_txModeIndex (0)
+namespace ns3
 {
 
+NS_OBJECT_ENSURE_REGISTERED(UanMac);
+
+UanMac::UanMac()
+    : m_txModeIndex(0)
+{
 }
 
-TypeId UanMac::GetTypeId ()
+TypeId
+UanMac::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanMac")
-    .SetParent<Object> ()
-    .SetGroupName ("Uan")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::UanMac").SetParent<Object>().SetGroupName("Uan");
+    return tid;
 }
 
 void
-UanMac::SetTxModeIndex (uint32_t txModeIndex)
+UanMac::SetTxModeIndex(uint32_t txModeIndex)
 {
-  m_txModeIndex = txModeIndex;
+    m_txModeIndex = txModeIndex;
 }
 
 uint32_t
-UanMac::GetTxModeIndex ()
+UanMac::GetTxModeIndex()
 {
-  return m_txModeIndex;
+    return m_txModeIndex;
 }
 
 Address
-UanMac::GetAddress ()
+UanMac::GetAddress()
 {
-  return m_address;
+    return m_address;
 }
 
 void
-UanMac::SetAddress (Mac8Address addr)
+UanMac::SetAddress(Mac8Address addr)
 {
-  m_address=addr;
+    m_address = addr;
 }
 
 Address
-UanMac::GetBroadcast () const
+UanMac::GetBroadcast() const
 {
-  Mac8Address broadcast = Mac8Address (255);
-  return broadcast;
+    Mac8Address broadcast = Mac8Address(255);
+    return broadcast;
 }
 
 } // namespace ns3

@@ -25,7 +25,8 @@
 
 #include "wifi-mac.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup wifi
@@ -34,24 +35,24 @@ namespace ns3 {
  */
 class AdhocWifiMac : public WifiMac
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  AdhocWifiMac ();
-  ~AdhocWifiMac () override;
+    AdhocWifiMac();
+    ~AdhocWifiMac() override;
 
-  void SetLinkUpCallback (Callback<void> linkUp) override;
-  void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
-  bool CanForwardPacketsTo (Mac48Address to) const override;
+    void SetLinkUpCallback(Callback<void> linkUp) override;
+    void Enqueue(Ptr<Packet> packet, Mac48Address to) override;
+    bool CanForwardPacketsTo(Mac48Address to) const override;
 
-private:
-  void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+  private:
+    void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* ADHOC_WIFI_MAC_H */

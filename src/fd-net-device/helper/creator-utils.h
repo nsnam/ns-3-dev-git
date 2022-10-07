@@ -19,39 +19,40 @@
 #ifndef CREATOR_UTILS_H
 #define CREATOR_UTILS_H
 
-#include <unistd.h>
 #include <cstring>
-#include <string>
-#include <iostream>
+#include <errno.h>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <stdlib.h>
-#include <errno.h>
-
+#include <string>
 #include <sys/socket.h>
+#include <unistd.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 extern int gVerbose;
 
-#define LOG(msg) \
-  if (gVerbose) \
-    { \
-      std::cout << __FUNCTION__ << "(): " << msg << std::endl;   \
+#define LOG(msg)                                                                                   \
+    if (gVerbose)                                                                                  \
+    {                                                                                              \
+        std::cout << __FUNCTION__ << "(): " << msg << std::endl;                                   \
     }
 
-#define ABORT(msg, printErrno) \
-  std::cout << __FILE__ << ": fatal error at line " << __LINE__ << ": " << __FUNCTION__ << "(): " << msg << std::endl; \
-  if (printErrno) \
-    { \
-      std::cout << "    errno = " << errno << " (" << strerror (errno) << ")" << std::endl; \
-    } \
-  exit (-1);
+#define ABORT(msg, printErrno)                                                                     \
+    std::cout << __FILE__ << ": fatal error at line " << __LINE__ << ": " << __FUNCTION__          \
+              << "(): " << msg << std::endl;                                                       \
+    if (printErrno)                                                                                \
+    {                                                                                              \
+        std::cout << "    errno = " << errno << " (" << strerror(errno) << ")" << std::endl;       \
+    }                                                                                              \
+    exit(-1);
 
-#define ABORT_IF(cond, msg, printErrno) \
-  if (cond) \
-    { \
-      ABORT (msg, printErrno); \
+#define ABORT_IF(cond, msg, printErrno)                                                            \
+    if (cond)                                                                                      \
+    {                                                                                              \
+        ABORT(msg, printErrno);                                                                    \
     }
 
 /**
@@ -64,9 +65,8 @@ extern int gVerbose;
  * \param magic_number A verification number to verify the caller is talking to the
  * right process.
  */
-void SendSocket (const char *path, int fd, const int magic_number);
+void SendSocket(const char* path, int fd, const int magic_number);
 
 } // namespace ns3
 
 #endif /* CREATOR_UTILS_DEVICE_H */
-

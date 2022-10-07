@@ -22,51 +22,50 @@
 #define EPC_S11_SAP_H
 
 #include <ns3/address.h>
-#include <ns3/ptr.h>
-#include <ns3/object.h>
-#include <ns3/eps-bearer.h>
 #include <ns3/epc-tft.h>
+#include <ns3/eps-bearer.h>
+#include <ns3/object.h>
+#include <ns3/ptr.h>
+
 #include <list>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * EpcS11Sap
  */
 class EpcS11Sap
 {
-public:
+  public:
+    virtual ~EpcS11Sap();
 
-  virtual ~EpcS11Sap ();
+    /**
+     * GTPC message
+     */
+    struct GtpcMessage
+    {
+        uint32_t teid; ///< TEID
+    };
 
-  /**
-   * GTPC message
-   */
-  struct GtpcMessage
-  {
-    uint32_t teid; ///< TEID
-  };
+    /**
+     * Fully-qualified TEID, see 3GPP TS 29.274 section 8.22
+     *
+     */
+    struct Fteid
+    {
+        uint32_t teid;       ///< TEID
+        Ipv4Address address; ///< IP address
+    };
 
-  /**
-   * Fully-qualified TEID, see 3GPP TS 29.274 section 8.22
-   *
-   */
-  struct Fteid
-  {
-    uint32_t teid; ///< TEID
-    Ipv4Address address; ///< IP address
-  };
-
-  /**
-   * TS 29.274 8.21  User Location Information (ULI)
-   *
-   */
-  struct Uli
-  {
-    uint16_t gci; ///< GCI
-  };
-
-
+    /**
+     * TS 29.274 8.21  User Location Information (ULI)
+     *
+     */
+    struct Uli
+    {
+        uint16_t gci; ///< GCI
+    };
 };
 
 /**
@@ -77,84 +76,77 @@ public:
  */
 class EpcS11SapMme : public EpcS11Sap
 {
-public:
+  public:
+    /**
+     * 3GPP TS 29.274 version 8.3.1 Release 8 section 8.28
+     *
+     */
+    struct BearerContextCreated
+    {
+        EpcS11Sap::Fteid sgwFteid; ///< EPC FTEID
+        uint8_t epsBearerId;       ///< EPS bearer ID
+        EpsBearer bearerLevelQos;  ///< EPS bearer
+        Ptr<EpcTft> tft;           ///< traffic flow template
+    };
 
- /**
-   * 3GPP TS 29.274 version 8.3.1 Release 8 section 8.28
-   *
-   */
-  struct BearerContextCreated
-  {
+    /**
+     * Create Session Response message, see 3GPP TS 29.274 7.2.2
+     */
+    struct CreateSessionResponseMessage : public GtpcMessage
+    {
+        std::list<BearerContextCreated> bearerContextsCreated; ///< bearer contexts created
+    };
 
-    EpcS11Sap::Fteid sgwFteid; ///< EPC FTEID
-    uint8_t epsBearerId; ///< EPS bearer ID
-    EpsBearer bearerLevelQos; ///< EPS bearer
-    Ptr<EpcTft> tft; ///< traffic flow template
-  };
+    /**
+     * send a Create Session Response message
+     *
+     * \param msg the message
+     */
+    virtual void CreateSessionResponse(CreateSessionResponseMessage msg) = 0;
 
+    /**
+     * Bearer Context Removed structure
+     */
+    struct BearerContextRemoved
+    {
+        uint8_t epsBearerId; ///< EPS bearer ID
+    };
 
-  /**
-   * Create Session Response message, see 3GPP TS 29.274 7.2.2
-   */
-  struct CreateSessionResponseMessage : public GtpcMessage
-  {
-    std::list<BearerContextCreated> bearerContextsCreated; ///< bearer contexts created
-  };
+    /**
+     * Delete Bearer Request message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.9.2
+     */
+    struct DeleteBearerRequestMessage : public GtpcMessage
+    {
+        std::list<BearerContextRemoved> bearerContextsRemoved; ///< list of bearer context removed
+    };
 
+    /**
+     * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Request message shall be sent
+     * on the S11 interface by PGW to SGW and from SGW to MME \param msg the message
+     */
+    virtual void DeleteBearerRequest(DeleteBearerRequestMessage msg) = 0;
 
-  /**
-   * send a Create Session Response message
-   *
-   * \param msg the message
-   */
-  virtual void CreateSessionResponse (CreateSessionResponseMessage msg) = 0;
+    /**
+     * Modify Bearer Response message, see 3GPP TS 29.274 7.2.7
+     */
+    struct ModifyBearerResponseMessage : public GtpcMessage
+    {
+        /// Cause enumeration
+        enum Cause
+        {
+            REQUEST_ACCEPTED = 0,
+            REQUEST_ACCEPTED_PARTIALLY,
+            REQUEST_REJECTED,
+            CONTEXT_NOT_FOUND
+        } cause; ///< the cause
+    };
 
-  /**
-   * Bearer Context Removed structure
-   */
-  struct BearerContextRemoved
-  {
-    uint8_t epsBearerId; ///< EPS bearer ID
-  };
-
-  /**
-   * Delete Bearer Request message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.9.2
-   */
-  struct DeleteBearerRequestMessage : public GtpcMessage
-  {
-    std::list<BearerContextRemoved> bearerContextsRemoved; ///< list of bearer context removed
-  };
-
-  /**
-    * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Request message shall be sent on the S11 interface by PGW to SGW and from SGW to MME
-    * \param msg the message
-    */
-  virtual void DeleteBearerRequest (DeleteBearerRequestMessage msg) = 0;
-
-
-
-
-  /**
-   * Modify Bearer Response message, see 3GPP TS 29.274 7.2.7
-   */
-  struct ModifyBearerResponseMessage : public GtpcMessage
-  {
-    /// Cause enumeration
-    enum Cause {
-      REQUEST_ACCEPTED = 0,
-      REQUEST_ACCEPTED_PARTIALLY,
-      REQUEST_REJECTED,
-      CONTEXT_NOT_FOUND
-    } cause; ///< the cause
-  };
-
-  /**
-   * send a Modify Bearer Response message
-   *
-   * \param msg the message
-   */
-  virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg) = 0;
-
+    /**
+     * send a Modify Bearer Response message
+     *
+     * \param msg the message
+     */
+    virtual void ModifyBearerResponse(ModifyBearerResponseMessage msg) = 0;
 };
 
 /**
@@ -165,97 +157,91 @@ public:
  */
 class EpcS11SapSgw : public EpcS11Sap
 {
-public:
+  public:
+    /// BearerContextToBeCreated structure
+    struct BearerContextToBeCreated
+    {
+        EpcS11Sap::Fteid sgwFteid; ///< FTEID
+        uint8_t epsBearerId;       ///< EPS bearer ID
+        EpsBearer bearerLevelQos;  ///< bearer QOS level
+        Ptr<EpcTft> tft;           ///< traffic flow template
+    };
 
-  /// BearerContextToBeCreated structure
-  struct BearerContextToBeCreated
-  {
-    EpcS11Sap::Fteid sgwFteid; ///< FTEID
-    uint8_t epsBearerId; ///< EPS bearer ID
-    EpsBearer bearerLevelQos; ///< bearer QOS level
-    Ptr<EpcTft> tft; ///< traffic flow template
-  };
+    /**
+     * Create Session Request message, see 3GPP TS 29.274 7.2.1
+     */
+    struct CreateSessionRequestMessage : public GtpcMessage
+    {
+        uint64_t imsi; ///< IMSI
+        Uli uli;       ///< ULI
+        std::list<BearerContextToBeCreated>
+            bearerContextsToBeCreated; ///< list of bearer contexts to be created
+    };
 
+    /**
+     * send a Create Session Request message
+     *
+     * \param msg the message
+     */
+    virtual void CreateSessionRequest(CreateSessionRequestMessage msg) = 0;
 
-  /**
-   * Create Session Request message, see 3GPP TS 29.274 7.2.1
-   */
-  struct CreateSessionRequestMessage : public GtpcMessage
-  {
-    uint64_t imsi; ///< IMSI
-    Uli uli; ///< ULI
-    std::list<BearerContextToBeCreated> bearerContextsToBeCreated; ///< list of bearer contexts to be created
-  };
+    /// BearerContextToBeCreated structure
+    struct BearerContextToBeRemoved
+    {
+        uint8_t epsBearerId; ///< EPS bearer ID
+    };
 
-  /**
-   * send a Create Session Request message
-   *
-   * \param msg the message
-   */
-  virtual void CreateSessionRequest (CreateSessionRequestMessage msg) = 0;
+    /**
+     * Delete Bearer Command message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.17.1
+     */
+    struct DeleteBearerCommandMessage : public GtpcMessage
+    {
+        std::list<BearerContextToBeRemoved>
+            bearerContextsToBeRemoved; ///< list of bearer contexts to be removed
+    };
 
-  /// BearerContextToBeCreated structure
-  struct BearerContextToBeRemoved
-  {
-    uint8_t epsBearerId; ///< EPS bearer ID
-  };
+    /**
+     * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Command message shall be sent
+     * on the S11 interface by the MME to the SGW \param msg the DeleteBearerCommandMessage
+     */
+    virtual void DeleteBearerCommand(DeleteBearerCommandMessage msg) = 0;
 
-  /**
-   * Delete Bearer Command message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.17.1
-   */
-  struct DeleteBearerCommandMessage : public GtpcMessage
-  {
-    std::list<BearerContextToBeRemoved> bearerContextsToBeRemoved;  ///< list of bearer contexts to be removed
-  };
+    /// BearerContextRemovedSgwPgw structure
+    struct BearerContextRemovedSgwPgw
+    {
+        uint8_t epsBearerId; ///< EPS bearer ID
+    };
 
-  /**
-    * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Command message shall be sent on the S11 interface by the MME to the SGW
-    * \param msg the DeleteBearerCommandMessage
-    */
-  virtual void DeleteBearerCommand (DeleteBearerCommandMessage msg) = 0;
+    /**
+     * Delete Bearer Response message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.10.2
+     */
+    struct DeleteBearerResponseMessage : public GtpcMessage
+    {
+        std::list<BearerContextRemovedSgwPgw>
+            bearerContextsRemoved; ///< list of bearer contexts removed
+    };
 
-  /// BearerContextRemovedSgwPgw structure
-  struct BearerContextRemovedSgwPgw
-  {
-    uint8_t epsBearerId; ///< EPS bearer ID
-  };
+    /**
+     * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Command message shall be sent
+     * on the S11 interface by the MME to the SGW \param msg the message
+     */
+    virtual void DeleteBearerResponse(DeleteBearerResponseMessage msg) = 0;
 
-  /**
-   * Delete Bearer Response message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.10.2
-   */
-  struct DeleteBearerResponseMessage : public GtpcMessage
-  {
-    std::list<BearerContextRemovedSgwPgw> bearerContextsRemoved;   ///< list of bearer contexts removed
-  };
+    /**
+     * Modify Bearer Request message, see 3GPP TS 29.274 7.2.7
+     */
+    struct ModifyBearerRequestMessage : public GtpcMessage
+    {
+        Uli uli; ///< ULI
+    };
 
-  /**
-    * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Command message shall be sent on the S11 interface by the MME to the SGW
-    * \param msg the message
-    */
-  virtual void DeleteBearerResponse (DeleteBearerResponseMessage msg) = 0;
-
-  /**
-   * Modify Bearer Request message, see 3GPP TS 29.274 7.2.7
-   */
-  struct ModifyBearerRequestMessage : public GtpcMessage
-  {
-    Uli uli; ///< ULI
-  };
-
-  /**
-   * send a Modify Bearer Request message
-   *
-   * \param msg the message
-   */
-  virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg) = 0;
-
+    /**
+     * send a Modify Bearer Request message
+     *
+     * \param msg the message
+     */
+    virtual void ModifyBearerRequest(ModifyBearerRequestMessage msg) = 0;
 };
-
-
-
-
-
-
 
 /**
  * Template for the implementation of the EpcS11SapMme as a member
@@ -265,22 +251,22 @@ public:
 template <class C>
 class MemberEpcS11SapMme : public EpcS11SapMme
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param owner the owner class
-   */
-  MemberEpcS11SapMme (C* owner);
+  public:
+    /**
+     * Constructor
+     *
+     * \param owner the owner class
+     */
+    MemberEpcS11SapMme(C* owner);
 
-  // inherited from EpcS11SapMme
-  void CreateSessionResponse (CreateSessionResponseMessage msg) override;
-  void ModifyBearerResponse (ModifyBearerResponseMessage msg) override;
-  void DeleteBearerRequest (DeleteBearerRequestMessage msg) override;
+    // inherited from EpcS11SapMme
+    void CreateSessionResponse(CreateSessionResponseMessage msg) override;
+    void ModifyBearerResponse(ModifyBearerResponseMessage msg) override;
+    void DeleteBearerRequest(DeleteBearerRequestMessage msg) override;
 
-private:
-  MemberEpcS11SapMme ();
-  C* m_owner; ///< owner class
+  private:
+    MemberEpcS11SapMme();
+    C* m_owner; ///< owner class
 };
 
 /**
@@ -289,37 +275,36 @@ private:
  * \param owner the owner class
  */
 template <class C>
-MemberEpcS11SapMme<C>::MemberEpcS11SapMme (C* owner)
-  : m_owner (owner)
+MemberEpcS11SapMme<C>::MemberEpcS11SapMme(C* owner)
+    : m_owner(owner)
 {
 }
 
 template <class C>
-MemberEpcS11SapMme<C>::MemberEpcS11SapMme ()
+MemberEpcS11SapMme<C>::MemberEpcS11SapMme()
 {
 }
 
 template <class C>
-void MemberEpcS11SapMme<C>::CreateSessionResponse (CreateSessionResponseMessage msg)
+void
+MemberEpcS11SapMme<C>::CreateSessionResponse(CreateSessionResponseMessage msg)
 {
-  m_owner->DoCreateSessionResponse (msg);
+    m_owner->DoCreateSessionResponse(msg);
 }
 
 template <class C>
-void MemberEpcS11SapMme<C>::DeleteBearerRequest (DeleteBearerRequestMessage msg)
+void
+MemberEpcS11SapMme<C>::DeleteBearerRequest(DeleteBearerRequestMessage msg)
 {
-  m_owner->DoDeleteBearerRequest (msg);
+    m_owner->DoDeleteBearerRequest(msg);
 }
 
 template <class C>
-void MemberEpcS11SapMme<C>::ModifyBearerResponse (ModifyBearerResponseMessage msg)
+void
+MemberEpcS11SapMme<C>::ModifyBearerResponse(ModifyBearerResponseMessage msg)
 {
-  m_owner->DoModifyBearerResponse (msg);
+    m_owner->DoModifyBearerResponse(msg);
 }
-
-
-
-
 
 /**
  * Template for the implementation of the EpcS11SapSgw as a member
@@ -329,23 +314,23 @@ void MemberEpcS11SapMme<C>::ModifyBearerResponse (ModifyBearerResponseMessage ms
 template <class C>
 class MemberEpcS11SapSgw : public EpcS11SapSgw
 {
-public:
-/**
- * Constructor
- *
- * \param owner the owner class
- */
-  MemberEpcS11SapSgw (C* owner);
+  public:
+    /**
+     * Constructor
+     *
+     * \param owner the owner class
+     */
+    MemberEpcS11SapSgw(C* owner);
 
-  // inherited from EpcS11SapSgw
-  void CreateSessionRequest (CreateSessionRequestMessage msg) override;
-  void ModifyBearerRequest (ModifyBearerRequestMessage msg) override;
-  void DeleteBearerCommand (DeleteBearerCommandMessage msg) override;
-  void DeleteBearerResponse (DeleteBearerResponseMessage msg) override;
+    // inherited from EpcS11SapSgw
+    void CreateSessionRequest(CreateSessionRequestMessage msg) override;
+    void ModifyBearerRequest(ModifyBearerRequestMessage msg) override;
+    void DeleteBearerCommand(DeleteBearerCommandMessage msg) override;
+    void DeleteBearerResponse(DeleteBearerResponseMessage msg) override;
 
-private:
-  MemberEpcS11SapSgw ();
-  C* m_owner; ///< owner class
+  private:
+    MemberEpcS11SapSgw();
+    C* m_owner; ///< owner class
 };
 
 /**
@@ -354,44 +339,44 @@ private:
  * \param owner the owner class
  */
 template <class C>
-MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw (C* owner)
-  : m_owner (owner)
+MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw(C* owner)
+    : m_owner(owner)
 {
 }
 
 template <class C>
-MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw ()
+MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw()
 {
 }
 
 template <class C>
-void MemberEpcS11SapSgw<C>::CreateSessionRequest (CreateSessionRequestMessage msg)
+void
+MemberEpcS11SapSgw<C>::CreateSessionRequest(CreateSessionRequestMessage msg)
 {
-  m_owner->DoCreateSessionRequest (msg);
+    m_owner->DoCreateSessionRequest(msg);
 }
 
 template <class C>
-void MemberEpcS11SapSgw<C>::ModifyBearerRequest (ModifyBearerRequestMessage msg)
+void
+MemberEpcS11SapSgw<C>::ModifyBearerRequest(ModifyBearerRequestMessage msg)
 {
-  m_owner->DoModifyBearerRequest (msg);
+    m_owner->DoModifyBearerRequest(msg);
 }
 
 template <class C>
-void MemberEpcS11SapSgw<C>::DeleteBearerCommand (DeleteBearerCommandMessage msg)
+void
+MemberEpcS11SapSgw<C>::DeleteBearerCommand(DeleteBearerCommandMessage msg)
 {
-  m_owner->DoDeleteBearerCommand (msg);
+    m_owner->DoDeleteBearerCommand(msg);
 }
 
 template <class C>
-void MemberEpcS11SapSgw<C>::DeleteBearerResponse (DeleteBearerResponseMessage msg)
+void
+MemberEpcS11SapSgw<C>::DeleteBearerResponse(DeleteBearerResponseMessage msg)
 {
-  m_owner->DoDeleteBearerResponse (msg);
+    m_owner->DoDeleteBearerResponse(msg);
 }
 
-
-
-
-} //namespace ns3
+} // namespace ns3
 
 #endif /* EPC_S11_SAP_H */
-

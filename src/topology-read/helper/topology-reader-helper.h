@@ -23,6 +23,7 @@
 #define TOPOLOGY_READER_HELPER_H
 
 #include "ns3/topology-reader.h"
+
 #include <string>
 
 /**
@@ -31,7 +32,8 @@
  * ns3::TopologyHelper declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup topology
@@ -40,34 +42,33 @@ namespace ns3 {
  */
 class TopologyReaderHelper
 {
-public:
-  TopologyReaderHelper ();
+  public:
+    TopologyReaderHelper();
 
-  /**
-   * \brief Sets the input file name.
-   * \param [in] fileName The input file name.
-   */
-  void SetFileName (const std::string fileName);
+    /**
+     * \brief Sets the input file name.
+     * \param [in] fileName The input file name.
+     */
+    void SetFileName(const std::string fileName);
 
-  /**
-   * \brief Sets the input file type. Supported file types are "Orbis", "Inet", "Rocketfuel".
-   * \param [in] fileType The input file type.
-   */
-  void SetFileType (const std::string fileType);
+    /**
+     * \brief Sets the input file type. Supported file types are "Orbis", "Inet", "Rocketfuel".
+     * \param [in] fileType The input file type.
+     */
+    void SetFileType(const std::string fileType);
 
-  /**
-   * \brief Gets a Ptr<TopologyReader> to the actual TopologyReader.
-   * \return The created Topology Reader (or null if there was an error).
-   */
-  Ptr<TopologyReader> GetTopologyReader ();
+    /**
+     * \brief Gets a Ptr<TopologyReader> to the actual TopologyReader.
+     * \return The created Topology Reader (or null if there was an error).
+     */
+    Ptr<TopologyReader> GetTopologyReader();
 
-private:
-  Ptr<TopologyReader> m_inputModel;  //!< Smart pointer to the actual topology model.
-  std::string m_fileName;  //!< Name of the input file.
-  std::string m_fileType;  //!< Type of the input file (e.g., "Inet", "Orbis", etc.).
+  private:
+    Ptr<TopologyReader> m_inputModel; //!< Smart pointer to the actual topology model.
+    std::string m_fileName;           //!< Name of the input file.
+    std::string m_fileType;           //!< Type of the input file (e.g., "Inet", "Orbis", etc.).
 };
 
 } // namespace ns3
-
 
 #endif /* TOPOLOGY_READER_HELPER_H */

@@ -18,582 +18,576 @@
  *  Author: Alberto Gallegos Ramonet <ramonet@fc.ritsumei.ac.jp>
  */
 
-
-
 #include "lr-wpan-fields.h"
-#include <ns3/log.h>
+
 #include <ns3/address-utils.h>
+#include <ns3/log.h>
 
-namespace ns3 {
-
-SuperframeField::SuperframeField ()
+namespace ns3
 {
-  SetBeaconOrder (15);
-  SetSuperframeOrder (15);
-  SetFinalCapSlot (0);
-  SetBattLifeExt (false);
-  SetPanCoor (false);
-  SetAssocPermit (false);
+
+SuperframeField::SuperframeField()
+{
+    SetBeaconOrder(15);
+    SetSuperframeOrder(15);
+    SetFinalCapSlot(0);
+    SetBattLifeExt(false);
+    SetPanCoor(false);
+    SetAssocPermit(false);
 }
 
 void
-SuperframeField::SetSuperframe (uint16_t superFrmSpec)
+SuperframeField::SetSuperframe(uint16_t superFrmSpec)
 {
-  m_sspecBcnOrder = (superFrmSpec) & (0x0F);          //Bits 0-3
-  m_sspecSprFrmOrder = (superFrmSpec >> 4) & (0x0F);  //Bits 4-7
-  m_sspecFnlCapSlot = (superFrmSpec >> 8) & (0x0F);   //Bits 8-11
-  m_sspecBatLifeExt = (superFrmSpec >> 12) & (0x01);  //Bit 12
-                                                      //Bit 13 (Reserved)
-  m_sspecPanCoor = (superFrmSpec >> 14) & (0x01);     //Bit 14
-  m_sspecAssocPermit = (superFrmSpec >> 15) & (0x01); //Bit 15
+    m_sspecBcnOrder = (superFrmSpec) & (0x0F);          // Bits 0-3
+    m_sspecSprFrmOrder = (superFrmSpec >> 4) & (0x0F);  // Bits 4-7
+    m_sspecFnlCapSlot = (superFrmSpec >> 8) & (0x0F);   // Bits 8-11
+    m_sspecBatLifeExt = (superFrmSpec >> 12) & (0x01);  // Bit 12
+                                                        // Bit 13 (Reserved)
+    m_sspecPanCoor = (superFrmSpec >> 14) & (0x01);     // Bit 14
+    m_sspecAssocPermit = (superFrmSpec >> 15) & (0x01); // Bit 15
 }
 
 void
-SuperframeField::SetBeaconOrder (uint8_t bcnOrder)
+SuperframeField::SetBeaconOrder(uint8_t bcnOrder)
 {
-  if (bcnOrder > 15)
+    if (bcnOrder > 15)
     {
-      std::cout << "SuperframeField Beacon Order value must be 15 or less\n";
+        std::cout << "SuperframeField Beacon Order value must be 15 or less\n";
     }
-  else
+    else
     {
-      m_sspecBcnOrder = bcnOrder;
-    }
-}
-
-void
-SuperframeField::SetSuperframeOrder (uint8_t frmOrder)
-{
-  if (frmOrder > 15)
-    {
-      std::cout << "SuperframeField Frame Order value must be 15 or less\n";
-    }
-  else
-    {
-      m_sspecSprFrmOrder = frmOrder;
+        m_sspecBcnOrder = bcnOrder;
     }
 }
 
 void
-SuperframeField::SetFinalCapSlot (uint8_t capSlot)
+SuperframeField::SetSuperframeOrder(uint8_t frmOrder)
 {
-  if (capSlot > 15)
+    if (frmOrder > 15)
     {
-      std::cout << "The final slot cannot greater than the slots in a CAP (15)\n";
+        std::cout << "SuperframeField Frame Order value must be 15 or less\n";
     }
-  else
+    else
     {
-      m_sspecFnlCapSlot = capSlot;
+        m_sspecSprFrmOrder = frmOrder;
     }
 }
 
 void
-SuperframeField::SetBattLifeExt (bool battLifeExt)
+SuperframeField::SetFinalCapSlot(uint8_t capSlot)
 {
-  m_sspecBatLifeExt = battLifeExt;
+    if (capSlot > 15)
+    {
+        std::cout << "The final slot cannot greater than the slots in a CAP (15)\n";
+    }
+    else
+    {
+        m_sspecFnlCapSlot = capSlot;
+    }
 }
 
 void
-SuperframeField::SetPanCoor (bool panCoor)
+SuperframeField::SetBattLifeExt(bool battLifeExt)
 {
-  m_sspecPanCoor = panCoor;
+    m_sspecBatLifeExt = battLifeExt;
 }
 
 void
-SuperframeField::SetAssocPermit (bool assocPermit)
+SuperframeField::SetPanCoor(bool panCoor)
 {
-  m_sspecAssocPermit = assocPermit;
+    m_sspecPanCoor = panCoor;
+}
+
+void
+SuperframeField::SetAssocPermit(bool assocPermit)
+{
+    m_sspecAssocPermit = assocPermit;
 }
 
 uint8_t
-SuperframeField::GetBeaconOrder () const
+SuperframeField::GetBeaconOrder() const
 {
-  return m_sspecBcnOrder;
+    return m_sspecBcnOrder;
 }
 
 uint8_t
-SuperframeField::GetFrameOrder () const
+SuperframeField::GetFrameOrder() const
 {
-  return m_sspecSprFrmOrder;
+    return m_sspecSprFrmOrder;
 }
 
 uint8_t
-SuperframeField::GetFinalCapSlot () const
+SuperframeField::GetFinalCapSlot() const
 {
-  return m_sspecFnlCapSlot;
+    return m_sspecFnlCapSlot;
 }
 
 bool
-SuperframeField::IsBattLifeExt () const
+SuperframeField::IsBattLifeExt() const
 {
-  return m_sspecBatLifeExt;
+    return m_sspecBatLifeExt;
 }
 
 bool
-SuperframeField::IsPanCoor () const
+SuperframeField::IsPanCoor() const
 {
-  return m_sspecPanCoor;
+    return m_sspecPanCoor;
 }
 
 bool
-SuperframeField::IsAssocPermit () const
+SuperframeField::IsAssocPermit() const
 {
-  return m_sspecAssocPermit;
+    return m_sspecAssocPermit;
 }
 
 uint16_t
-SuperframeField::GetSuperframe () const
+SuperframeField::GetSuperframe() const
 {
-  uint16_t superframe;
+    uint16_t superframe;
 
-  superframe = m_sspecBcnOrder & (0x0F);                       // Bits 0-3
-  superframe     |= (m_sspecSprFrmOrder << 4) & (0x0F << 4);   // Bits 4-7
-  superframe     |= (m_sspecFnlCapSlot << 8) & (0x0F << 8);    // Bits 8-11
-  superframe     |= (m_sspecBatLifeExt << 12) & (0x01 << 12);  // Bit 12
-                                                               // Bit 13 (Reserved)
-  superframe     |= (m_sspecPanCoor << 14) & (0x01 << 14);     // Bit 14
-  superframe     |= (m_sspecAssocPermit << 15) & (0x01 << 15); // Bit 15
+    superframe = m_sspecBcnOrder & (0x0F);                   // Bits 0-3
+    superframe |= (m_sspecSprFrmOrder << 4) & (0x0F << 4);   // Bits 4-7
+    superframe |= (m_sspecFnlCapSlot << 8) & (0x0F << 8);    // Bits 8-11
+    superframe |= (m_sspecBatLifeExt << 12) & (0x01 << 12);  // Bit 12
+                                                             // Bit 13 (Reserved)
+    superframe |= (m_sspecPanCoor << 14) & (0x01 << 14);     // Bit 14
+    superframe |= (m_sspecAssocPermit << 15) & (0x01 << 15); // Bit 15
 
-  return superframe;
+    return superframe;
 }
 
 uint32_t
-SuperframeField::GetSerializedSize () const
+SuperframeField::GetSerializedSize() const
 {
-  return 2;  // 2 Octets (superframeSpec)
+    return 2; // 2 Octets (superframeSpec)
 }
 
 Buffer::Iterator
-SuperframeField::Serialize (Buffer::Iterator i) const
+SuperframeField::Serialize(Buffer::Iterator i) const
 {
-  i.WriteHtolsbU16 (GetSuperframe ());
-  return i;
+    i.WriteHtolsbU16(GetSuperframe());
+    return i;
 }
 
 Buffer::Iterator
-SuperframeField::Deserialize (Buffer::Iterator i)
+SuperframeField::Deserialize(Buffer::Iterator i)
 {
-  uint16_t superframe = i.ReadLsbtohU16 ();
-  SetSuperframe (superframe);
+    uint16_t superframe = i.ReadLsbtohU16();
+    SetSuperframe(superframe);
 
-  return i;
+    return i;
 }
 
-std::ostream &
-operator << (std::ostream &os, const SuperframeField &superframeField)
+std::ostream&
+operator<<(std::ostream& os, const SuperframeField& superframeField)
 {
-  os << " Beacon Order = "      << uint32_t  (superframeField.GetBeaconOrder ())
-     << ", Frame Order = "       << uint32_t  (superframeField.GetFrameOrder ())
-     << ", Final CAP slot = "    << uint32_t (superframeField.GetFinalCapSlot ())
-     << ", Battery Life Ext = "  << bool (superframeField.IsBattLifeExt ())
-     << ", PAN Coordinator = "   << bool (superframeField.IsPanCoor ())
-     << ", Association Permit = " << bool (superframeField.IsAssocPermit ());
-  return os;
+    os << " Beacon Order = " << uint32_t(superframeField.GetBeaconOrder())
+       << ", Frame Order = " << uint32_t(superframeField.GetFrameOrder())
+       << ", Final CAP slot = " << uint32_t(superframeField.GetFinalCapSlot())
+       << ", Battery Life Ext = " << bool(superframeField.IsBattLifeExt())
+       << ", PAN Coordinator = " << bool(superframeField.IsPanCoor())
+       << ", Association Permit = " << bool(superframeField.IsAssocPermit());
+    return os;
 }
 
 /***********************************************************
  *         Guaranteed Time Slots (GTS) Fields
  ***********************************************************/
 
-GtsFields::GtsFields ()
+GtsFields::GtsFields()
 {
-  // GTS Specification Field
-  m_gtsSpecDescCount = 0;
-  m_gtsSpecPermit = 0;
-  // GTS Direction Field
-  m_gtsDirMask = 0;
+    // GTS Specification Field
+    m_gtsSpecDescCount = 0;
+    m_gtsSpecPermit = 0;
+    // GTS Direction Field
+    m_gtsDirMask = 0;
 }
 
 uint8_t
-GtsFields::GetGtsSpecField () const
+GtsFields::GetGtsSpecField() const
 {
-  uint8_t gtsSpecField;
+    uint8_t gtsSpecField;
 
-  gtsSpecField  = m_gtsSpecDescCount & (0x07);            // Bits 0-2
+    gtsSpecField = m_gtsSpecDescCount & (0x07);           // Bits 0-2
                                                           // Bits 3-6 (Reserved)
-  gtsSpecField |= (m_gtsSpecPermit << 7) & (0x01 << 7);   // Bit 7
+    gtsSpecField |= (m_gtsSpecPermit << 7) & (0x01 << 7); // Bit 7
 
-  return gtsSpecField;
+    return gtsSpecField;
 }
 
 uint8_t
-GtsFields::GetGtsDirectionField () const
+GtsFields::GetGtsDirectionField() const
 {
-  uint8_t gtsDirectionField;
+    uint8_t gtsDirectionField;
 
-  gtsDirectionField = m_gtsDirMask & (0x7F);              // Bit 0-6
-                                                          // Bit 7 (Reserved)
-  return gtsDirectionField;
+    gtsDirectionField = m_gtsDirMask & (0x7F); // Bit 0-6
+                                               // Bit 7 (Reserved)
+    return gtsDirectionField;
 }
 
 void
-GtsFields::SetGtsSpecField (uint8_t gtsSpec)
+GtsFields::SetGtsSpecField(uint8_t gtsSpec)
 {
-  m_gtsSpecDescCount = (gtsSpec) & (0x07);      // Bits 0-2
-                                                // Bits 3-6 (Reserved)
-  m_gtsSpecPermit = (gtsSpec >> 7) & (0x01);    // Bit 7
+    m_gtsSpecDescCount = (gtsSpec) & (0x07);   // Bits 0-2
+                                               // Bits 3-6 (Reserved)
+    m_gtsSpecPermit = (gtsSpec >> 7) & (0x01); // Bit 7
 }
 
 void
-GtsFields::SetGtsDirectionField (uint8_t gtsDir)
+GtsFields::SetGtsDirectionField(uint8_t gtsDir)
 {
-  m_gtsDirMask = (gtsDir) & (0x7F);           // Bits 0-6
-                                              // Bit 7 (Reserved)
+    m_gtsDirMask = (gtsDir) & (0x7F); // Bits 0-6
+                                      // Bit 7 (Reserved)
 }
 
 bool
-GtsFields::GetGtsPermit () const
+GtsFields::GetGtsPermit() const
 {
-  return m_gtsSpecPermit;
+    return m_gtsSpecPermit;
 }
 
 uint32_t
-GtsFields::GetSerializedSize () const
+GtsFields::GetSerializedSize() const
 {
-  uint32_t size;
+    uint32_t size;
 
-  size = 1;                             // 1 octet  GTS Specification Field
-  if (m_gtsSpecDescCount > 0)
+    size = 1; // 1 octet  GTS Specification Field
+    if (m_gtsSpecDescCount > 0)
     {
-      size += 1;                            // 1 octet GTS Direction Field
-      size += (m_gtsSpecDescCount * 3);     // 3 octets per GTS descriptor
+        size += 1;                        // 1 octet GTS Direction Field
+        size += (m_gtsSpecDescCount * 3); // 3 octets per GTS descriptor
     }
 
-  return size;
+    return size;
 }
 
 Buffer::Iterator
-GtsFields::Serialize (Buffer::Iterator i) const
+GtsFields::Serialize(Buffer::Iterator i) const
 {
-  i.WriteU8 (GetGtsSpecField ());
+    i.WriteU8(GetGtsSpecField());
 
-  if (m_gtsSpecDescCount > 0)
+    if (m_gtsSpecDescCount > 0)
     {
-      uint8_t gtsDescStartAndLenght;
-      i.WriteU8 (GetGtsDirectionField ());
+        uint8_t gtsDescStartAndLenght;
+        i.WriteU8(GetGtsDirectionField());
 
-      for (int j = 0; j < m_gtsSpecDescCount; j++)
+        for (int j = 0; j < m_gtsSpecDescCount; j++)
         {
-          WriteTo (i, m_gtsList[j].m_gtsDescDevShortAddr);
+            WriteTo(i, m_gtsList[j].m_gtsDescDevShortAddr);
 
-          gtsDescStartAndLenght = (m_gtsList[j].m_gtsDescStartSlot & 0x0F) | // GTS descriptor bits 16-19
-                                  (m_gtsList[j].m_gtsDescLength & 0xF0);     // GTS descriptor bits 20-23
+            gtsDescStartAndLenght =
+                (m_gtsList[j].m_gtsDescStartSlot & 0x0F) | // GTS descriptor bits 16-19
+                (m_gtsList[j].m_gtsDescLength & 0xF0);     // GTS descriptor bits 20-23
 
-          i.WriteU8 (gtsDescStartAndLenght);
+            i.WriteU8(gtsDescStartAndLenght);
         }
     }
-  return i;
+    return i;
 }
 
 Buffer::Iterator
-GtsFields::Deserialize (Buffer::Iterator i)
+GtsFields::Deserialize(Buffer::Iterator i)
 {
+    uint8_t gtsSpecField = i.ReadU8();
+    SetGtsSpecField(gtsSpecField);
 
-  uint8_t gtsSpecField = i.ReadU8 ();
-  SetGtsSpecField (gtsSpecField);
-
-  if (m_gtsSpecDescCount > 0)
+    if (m_gtsSpecDescCount > 0)
     {
-      uint8_t gtsDirectionField = i.ReadU8 ();
-      SetGtsDirectionField (gtsDirectionField);
+        uint8_t gtsDirectionField = i.ReadU8();
+        SetGtsDirectionField(gtsDirectionField);
 
-      uint8_t gtsDescStartAndLenght;
-      for (int j = 0; j < m_gtsSpecDescCount; j++)
+        uint8_t gtsDescStartAndLenght;
+        for (int j = 0; j < m_gtsSpecDescCount; j++)
         {
-          ReadFrom (i, m_gtsList[j].m_gtsDescDevShortAddr);
+            ReadFrom(i, m_gtsList[j].m_gtsDescDevShortAddr);
 
-          gtsDescStartAndLenght = i.ReadU8 ();
-          m_gtsList[j].m_gtsDescStartSlot = (gtsDescStartAndLenght) & (0x0F);
-          m_gtsList[j].m_gtsDescLength  = (gtsDescStartAndLenght >> 4) & (0x0F);
+            gtsDescStartAndLenght = i.ReadU8();
+            m_gtsList[j].m_gtsDescStartSlot = (gtsDescStartAndLenght) & (0x0F);
+            m_gtsList[j].m_gtsDescLength = (gtsDescStartAndLenght >> 4) & (0x0F);
         }
     }
-  return i;
+    return i;
 }
 
-std::ostream &
-operator << (std::ostream &os, const GtsFields &gtsFields)
+std::ostream&
+operator<<(std::ostream& os, const GtsFields& gtsFields)
 {
-  os << " GTS specification = "  << uint32_t (gtsFields.GetGtsSpecField ())
-     << ", GTS direction = "     << uint32_t (gtsFields.GetGtsDirectionField ());
-  return os;
+    os << " GTS specification = " << uint32_t(gtsFields.GetGtsSpecField())
+       << ", GTS direction = " << uint32_t(gtsFields.GetGtsDirectionField());
+    return os;
 }
 
 /***********************************************************
  *              Pending Address Fields
  ***********************************************************/
 
-PendingAddrFields::PendingAddrFields ()
+PendingAddrFields::PendingAddrFields()
 {
-  m_pndAddrSpecNumShortAddr = 0;
-  m_pndAddrSpecNumExtAddr = 0;
-}
-
-
-uint8_t
-PendingAddrFields::GetNumShortAddr () const
-{
-  return m_pndAddrSpecNumShortAddr;
-}
-
-
-uint8_t
-PendingAddrFields::GetNumExtAddr () const
-{
-  return m_pndAddrSpecNumExtAddr;
+    m_pndAddrSpecNumShortAddr = 0;
+    m_pndAddrSpecNumExtAddr = 0;
 }
 
 uint8_t
-PendingAddrFields::GetPndAddrSpecField () const
+PendingAddrFields::GetNumShortAddr() const
 {
-  uint8_t pndAddrSpecField;
+    return m_pndAddrSpecNumShortAddr;
+}
 
-  pndAddrSpecField    = m_pndAddrSpecNumShortAddr & (0x07);            // Bits 0-2
-                                                                       // Bit  3 (Reserved)
-  pndAddrSpecField   |= (m_pndAddrSpecNumExtAddr << 4) & (0x07 << 4);  // Bits 4-6
-                                                                       // Bit  7 (Reserved)
+uint8_t
+PendingAddrFields::GetNumExtAddr() const
+{
+    return m_pndAddrSpecNumExtAddr;
+}
 
-  return pndAddrSpecField;
+uint8_t
+PendingAddrFields::GetPndAddrSpecField() const
+{
+    uint8_t pndAddrSpecField;
+
+    pndAddrSpecField = m_pndAddrSpecNumShortAddr & (0x07);            // Bits 0-2
+                                                                      // Bit  3 (Reserved)
+    pndAddrSpecField |= (m_pndAddrSpecNumExtAddr << 4) & (0x07 << 4); // Bits 4-6
+                                                                      // Bit  7 (Reserved)
+
+    return pndAddrSpecField;
 }
 
 void
-PendingAddrFields::AddAddress (Mac16Address shortAddr)
+PendingAddrFields::AddAddress(Mac16Address shortAddr)
 {
-  uint8_t totalPendAddr = m_pndAddrSpecNumShortAddr + m_pndAddrSpecNumExtAddr;
+    uint8_t totalPendAddr = m_pndAddrSpecNumShortAddr + m_pndAddrSpecNumExtAddr;
 
-  if (totalPendAddr == 7)
+    if (totalPendAddr == 7)
     {
-      return;
+        return;
     }
-  else
+    else
     {
-      m_shortAddrList[m_pndAddrSpecNumShortAddr] = shortAddr;
-      m_pndAddrSpecNumShortAddr++;
+        m_shortAddrList[m_pndAddrSpecNumShortAddr] = shortAddr;
+        m_pndAddrSpecNumShortAddr++;
     }
 }
 
 void
-PendingAddrFields::AddAddress (Mac64Address extAddr)
+PendingAddrFields::AddAddress(Mac64Address extAddr)
 {
-  uint8_t totalPendAddr = m_pndAddrSpecNumShortAddr + m_pndAddrSpecNumExtAddr;
+    uint8_t totalPendAddr = m_pndAddrSpecNumShortAddr + m_pndAddrSpecNumExtAddr;
 
-  if (totalPendAddr == 7)
+    if (totalPendAddr == 7)
     {
-      return;
+        return;
     }
-  else
+    else
     {
-      m_extAddrList[m_pndAddrSpecNumExtAddr] = extAddr;
-      m_pndAddrSpecNumExtAddr++;
+        m_extAddrList[m_pndAddrSpecNumExtAddr] = extAddr;
+        m_pndAddrSpecNumExtAddr++;
     }
 }
 
 bool
-PendingAddrFields::SearchAddress (Mac16Address shortAddr)
+PendingAddrFields::SearchAddress(Mac16Address shortAddr)
 {
-  for (int j = 0; j <= m_pndAddrSpecNumShortAddr; j++)
+    for (int j = 0; j <= m_pndAddrSpecNumShortAddr; j++)
     {
-      if (shortAddr == m_shortAddrList[j])
+        if (shortAddr == m_shortAddrList[j])
         {
-          return true;
+            return true;
         }
     }
 
-  return false;
+    return false;
 }
-
 
 bool
-PendingAddrFields::SearchAddress (Mac64Address extAddr)
+PendingAddrFields::SearchAddress(Mac64Address extAddr)
 {
-  for (int j = 0; j <= m_pndAddrSpecNumExtAddr; j++)
+    for (int j = 0; j <= m_pndAddrSpecNumExtAddr; j++)
     {
-      if (extAddr == m_extAddrList[j])
+        if (extAddr == m_extAddrList[j])
         {
-          return true;
+            return true;
         }
     }
 
-  return false;
+    return false;
 }
 
-
 void
-PendingAddrFields::SetPndAddrSpecField (uint8_t pndAddrSpecField)
+PendingAddrFields::SetPndAddrSpecField(uint8_t pndAddrSpecField)
 {
-  m_pndAddrSpecNumShortAddr = (pndAddrSpecField) & (0x07);      // Bit 0-2
+    m_pndAddrSpecNumShortAddr = (pndAddrSpecField) & (0x07);    // Bit 0-2
                                                                 // Bit 3
-  m_pndAddrSpecNumExtAddr   = (pndAddrSpecField >> 4) & (0x07); // Bit 4-6
+    m_pndAddrSpecNumExtAddr = (pndAddrSpecField >> 4) & (0x07); // Bit 4-6
                                                                 // Bit 7
 }
 
-
 uint32_t
-PendingAddrFields::GetSerializedSize () const
+PendingAddrFields::GetSerializedSize() const
 {
-  uint32_t size;
+    uint32_t size;
 
-  size = 1;                                      // 1 octet  (Pending Address Specification Field)
-  size = size + (m_pndAddrSpecNumShortAddr * 2); // X octets (Short Pending Address List)
-  size = size + (m_pndAddrSpecNumExtAddr * 8);   // X octets (Extended Pending Address List)
+    size = 1;                                      // 1 octet  (Pending Address Specification Field)
+    size = size + (m_pndAddrSpecNumShortAddr * 2); // X octets (Short Pending Address List)
+    size = size + (m_pndAddrSpecNumExtAddr * 8);   // X octets (Extended Pending Address List)
 
-  return size;
+    return size;
 }
 
 Buffer::Iterator
-PendingAddrFields::Serialize (Buffer::Iterator i) const
+PendingAddrFields::Serialize(Buffer::Iterator i) const
 {
-  i.WriteU8 (GetPndAddrSpecField ());
+    i.WriteU8(GetPndAddrSpecField());
 
-  for (int j = 0; j < m_pndAddrSpecNumShortAddr; j++)
+    for (int j = 0; j < m_pndAddrSpecNumShortAddr; j++)
     {
-      WriteTo (i,m_shortAddrList[j]);
+        WriteTo(i, m_shortAddrList[j]);
     }
 
-  for (int k = 0; k < m_pndAddrSpecNumExtAddr; k++ )
+    for (int k = 0; k < m_pndAddrSpecNumExtAddr; k++)
     {
-      WriteTo (i,m_extAddrList[k]);
+        WriteTo(i, m_extAddrList[k]);
     }
 
-  return i;
+    return i;
 }
 
 Buffer::Iterator
-PendingAddrFields::Deserialize (Buffer::Iterator i)
+PendingAddrFields::Deserialize(Buffer::Iterator i)
 {
-  uint8_t pndAddrSpecField = i.ReadU8 ();
+    uint8_t pndAddrSpecField = i.ReadU8();
 
-  SetPndAddrSpecField (pndAddrSpecField);
+    SetPndAddrSpecField(pndAddrSpecField);
 
-  for (int j = 0; j < m_pndAddrSpecNumShortAddr; j++)
+    for (int j = 0; j < m_pndAddrSpecNumShortAddr; j++)
     {
-      ReadFrom (i, m_shortAddrList[j]);
+        ReadFrom(i, m_shortAddrList[j]);
     }
 
-  for (int k = 0; k < m_pndAddrSpecNumExtAddr; k++)
+    for (int k = 0; k < m_pndAddrSpecNumExtAddr; k++)
     {
-      ReadFrom (i, m_extAddrList[k]);
+        ReadFrom(i, m_extAddrList[k]);
     }
 
-  return i;
+    return i;
 }
 
-std::ostream &
-operator << (std::ostream &os, const PendingAddrFields &pendingAddrFields)
+std::ostream&
+operator<<(std::ostream& os, const PendingAddrFields& pendingAddrFields)
 {
-  os << " Num. Short Addr = "  << uint32_t  (pendingAddrFields.GetNumShortAddr ())
-     << ", Num. Ext   Addr = "  << uint32_t  (pendingAddrFields.GetNumExtAddr ());
-  return os;
+    os << " Num. Short Addr = " << uint32_t(pendingAddrFields.GetNumShortAddr())
+       << ", Num. Ext   Addr = " << uint32_t(pendingAddrFields.GetNumExtAddr());
+    return os;
 }
 
 /***********************************************************
  *              Capability Information Field
  ***********************************************************/
 
-CapabilityField::CapabilityField ()
+CapabilityField::CapabilityField()
 {
-  m_deviceType = true;
-  m_powerSource = false;
-  m_receiverOnWhenIdle = true;
-  m_securityCap = false;
-  m_allocAddr = true;
+    m_deviceType = true;
+    m_powerSource = false;
+    m_receiverOnWhenIdle = true;
+    m_securityCap = false;
+    m_allocAddr = true;
 }
 
 uint32_t
-CapabilityField::GetSerializedSize () const
+CapabilityField::GetSerializedSize() const
 {
-  return 1;
+    return 1;
 }
 
 Buffer::Iterator
-CapabilityField::Serialize (Buffer::Iterator i) const
+CapabilityField::Serialize(Buffer::Iterator i) const
 {
-  uint8_t capability;
+    uint8_t capability;
 
-  capability = 0;                                            //!< Bit 0 (reserved)
-  capability = (m_deviceType << 1) & (0x01 << 1);            //!< Bit 1
-  capability |= (m_powerSource << 2) & (0x01 << 2);          //!< Bit 2
-  capability |= (m_receiverOnWhenIdle << 3) & (0x01 << 3);   //!< Bit 3
+    capability = 0;                                          //!< Bit 0 (reserved)
+    capability = (m_deviceType << 1) & (0x01 << 1);          //!< Bit 1
+    capability |= (m_powerSource << 2) & (0x01 << 2);        //!< Bit 2
+    capability |= (m_receiverOnWhenIdle << 3) & (0x01 << 3); //!< Bit 3
                                                              //!< Bit 4-5 (reserved)
-  capability |= (m_securityCap << 6) & (0x01 << 6);          //!< Bit 6
-  capability |= (m_allocAddr << 7) & (0x01 << 7);            //!< Bit 7
-  i.WriteU8 (capability);
-  return i;
+    capability |= (m_securityCap << 6) & (0x01 << 6);        //!< Bit 6
+    capability |= (m_allocAddr << 7) & (0x01 << 7);          //!< Bit 7
+    i.WriteU8(capability);
+    return i;
 }
 
 Buffer::Iterator
-CapabilityField::Deserialize (Buffer::Iterator i)
+CapabilityField::Deserialize(Buffer::Iterator i)
 {
-  uint8_t capability = i.ReadU8 ();
-  //!< Bit 0 (reserved)
-  m_deviceType = (capability >> 1) & (0x01);          //!< Bit 1
-  m_powerSource = (capability >> 2) & (0x01);         //!< Bit 2
-  m_receiverOnWhenIdle = (capability >> 3) & (0x01);  //!< Bit 3
-                                                      //!< Bit 4-5 (reserved)
-  m_securityCap = (capability >> 6) & (0x01);         //!< Bit 6
-  m_allocAddr = (capability >> 7) & (0x01);           //!< Bit 7
+    uint8_t capability = i.ReadU8();
+    //!< Bit 0 (reserved)
+    m_deviceType = (capability >> 1) & (0x01);         //!< Bit 1
+    m_powerSource = (capability >> 2) & (0x01);        //!< Bit 2
+    m_receiverOnWhenIdle = (capability >> 3) & (0x01); //!< Bit 3
+                                                       //!< Bit 4-5 (reserved)
+    m_securityCap = (capability >> 6) & (0x01);        //!< Bit 6
+    m_allocAddr = (capability >> 7) & (0x01);          //!< Bit 7
 
-  return i;
+    return i;
 }
 
 bool
-CapabilityField::IsDeviceTypeFfd () const
+CapabilityField::IsDeviceTypeFfd() const
 {
-  return m_deviceType;
+    return m_deviceType;
 }
 
 bool
-CapabilityField::IsPowSrcAvailable () const
+CapabilityField::IsPowSrcAvailable() const
 {
-  return m_powerSource;
+    return m_powerSource;
 }
 
 bool
-CapabilityField::IsReceiverOnWhenIdle () const
+CapabilityField::IsReceiverOnWhenIdle() const
 {
-  return m_receiverOnWhenIdle;
-}
-
-
-bool
-CapabilityField::IsSecurityCapability () const
-{
-  return m_securityCap;
+    return m_receiverOnWhenIdle;
 }
 
 bool
-CapabilityField::IsShortAddrAllocOn () const
+CapabilityField::IsSecurityCapability() const
 {
-  return m_allocAddr;
+    return m_securityCap;
+}
+
+bool
+CapabilityField::IsShortAddrAllocOn() const
+{
+    return m_allocAddr;
 }
 
 void
-CapabilityField::SetFfdDevice (bool devType)
+CapabilityField::SetFfdDevice(bool devType)
 {
-  m_deviceType = devType;
+    m_deviceType = devType;
 }
 
 void
-CapabilityField::SetPowSrcAvailable (bool pow)
+CapabilityField::SetPowSrcAvailable(bool pow)
 {
-  m_powerSource = pow;
+    m_powerSource = pow;
 }
 
 void
-CapabilityField::SetRxOnWhenIdle (bool rxIdle)
+CapabilityField::SetRxOnWhenIdle(bool rxIdle)
 {
-  m_receiverOnWhenIdle = rxIdle;
+    m_receiverOnWhenIdle = rxIdle;
 }
 
 void
-CapabilityField::SetSecurityCap (bool sec)
+CapabilityField::SetSecurityCap(bool sec)
 {
-  m_securityCap = sec;
+    m_securityCap = sec;
 }
 
 void
-CapabilityField::SetShortAddrAllocOn (bool addrAlloc)
+CapabilityField::SetShortAddrAllocOn(bool addrAlloc)
 {
-  m_allocAddr = addrAlloc;
+    m_allocAddr = addrAlloc;
 }
 
 /**
@@ -604,15 +598,15 @@ CapabilityField::SetShortAddrAllocOn (bool addrAlloc)
  *
  * \returns output stream
  */
-std::ostream &
-operator << (std::ostream &os, const CapabilityField &capabilityField)
+std::ostream&
+operator<<(std::ostream& os, const CapabilityField& capabilityField)
 {
-  os << " FFD device capable = "  << bool  (capabilityField.IsDeviceTypeFfd ())
-     << ", Alternate Power Current Available  = "  << bool  (capabilityField.IsPowSrcAvailable ())
-     << ", Receiver On When Idle  = "  << bool  (capabilityField.IsReceiverOnWhenIdle ())
-     << ", Security Capable  = "  << bool  (capabilityField.IsSecurityCapability ())
-     << ", Coordinator Allocate Short Address  = "  << bool  (capabilityField.IsShortAddrAllocOn ());
-  return os;
+    os << " FFD device capable = " << bool(capabilityField.IsDeviceTypeFfd())
+       << ", Alternate Power Current Available  = " << bool(capabilityField.IsPowSrcAvailable())
+       << ", Receiver On When Idle  = " << bool(capabilityField.IsReceiverOnWhenIdle())
+       << ", Security Capable  = " << bool(capabilityField.IsSecurityCapability())
+       << ", Coordinator Allocate Short Address  = " << bool(capabilityField.IsShortAddrAllocOn());
+    return os;
 }
 
-} // ns-3 namespace
+} // namespace ns3

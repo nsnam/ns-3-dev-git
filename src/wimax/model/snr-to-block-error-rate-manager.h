@@ -19,15 +19,16 @@
  *                              <amine.ismail@udcast.com>
  */
 
-
 #ifndef SNR_TO_BLOCK_ERROR_RATE_MANAGER_H
 #define SNR_TO_BLOCK_ERROR_RATE_MANAGER_H
 
-#include "ns3/snr-to-block-error-rate-record.h"
-#include <vector>
 #include "ns3/ptr.h"
+#include "ns3/snr-to-block-error-rate-record.h"
 
-namespace ns3 {
+#include <vector>
+
+namespace ns3
+{
 
 /**
  * \ingroup wimax
@@ -54,61 +55,61 @@ namespace ns3 {
  */
 class SNRToBlockErrorRateManager
 {
-public:
-  SNRToBlockErrorRateManager ();
-  ~SNRToBlockErrorRateManager ();
-  /**
-   * \brief Set the path of the repository containing the traces
-   * \param traceFilePath the path to the repository.
-   */
-  void SetTraceFilePath (char *traceFilePath);
-  /**
-   * \return the path to the repository containing the traces.
-   */
-  std::string GetTraceFilePath ();
-  /**
-   * \brief returns the Block Error Rate for a given modulation and SNR value
-   * \param SNR the SNR value
-   * \param modulation one of the seven MCS
-   * \return the Block Error Rate
-   */
-  double GetBlockErrorRate (double SNR, uint8_t modulation);
-  SNRToBlockErrorRateRecord *
-  /**
-   * \brief returns a record of type SNRToBlockErrorRateRecord corresponding to a given modulation and SNR value
-   * \param SNR the SNR value
-   * \param modulation one of the seven MCS
-   * \return the Block Error Rate
-   */
-  GetSNRToBlockErrorRateRecord (double SNR, uint8_t modulation);
-  /**
-   * \brief Loads the traces form the repository specified in the constructor or set by SetTraceFilePath function. If
-   * no repository is provided, default traces will be loaded from default-traces.h file
-   */
+  public:
+    SNRToBlockErrorRateManager();
+    ~SNRToBlockErrorRateManager();
+    /**
+     * \brief Set the path of the repository containing the traces
+     * \param traceFilePath the path to the repository.
+     */
+    void SetTraceFilePath(char* traceFilePath);
+    /**
+     * \return the path to the repository containing the traces.
+     */
+    std::string GetTraceFilePath();
+    /**
+     * \brief returns the Block Error Rate for a given modulation and SNR value
+     * \param SNR the SNR value
+     * \param modulation one of the seven MCS
+     * \return the Block Error Rate
+     */
+    double GetBlockErrorRate(double SNR, uint8_t modulation);
+    SNRToBlockErrorRateRecord*
+    /**
+     * \brief returns a record of type SNRToBlockErrorRateRecord corresponding to a given modulation
+     * and SNR value \param SNR the SNR value \param modulation one of the seven MCS \return the
+     * Block Error Rate
+     */
+    GetSNRToBlockErrorRateRecord(double SNR, uint8_t modulation);
+    /**
+     * \brief Loads the traces form the repository specified in the constructor or set by
+     * SetTraceFilePath function. If no repository is provided, default traces will be loaded from
+     * default-traces.h file
+     */
 
-  void LoadTraces ();
-  /**
-   * \brief Loads the default traces from default-traces.h file
-   */
-  void LoadDefaultTraces ();
-  /**
-   * \brief Reloads the trace
-   */
-  void ReLoadTraces ();
-  /**
-   * \brief If activate loss is called with false, all the returned BlcER will be 0 (no losses)
-   * \param loss true to activates losses
-   */
-  void ActivateLoss (bool loss);
-private:
-  /// Clear records function
-  void ClearRecords ();
-  uint8_t m_activateLoss; ///< activate loss
-  std::string m_traceFilePath; ///< trace file path
+    void LoadTraces();
+    /**
+     * \brief Loads the default traces from default-traces.h file
+     */
+    void LoadDefaultTraces();
+    /**
+     * \brief Reloads the trace
+     */
+    void ReLoadTraces();
+    /**
+     * \brief If activate loss is called with false, all the returned BlcER will be 0 (no losses)
+     * \param loss true to activates losses
+     */
+    void ActivateLoss(bool loss);
 
-  std::vector<SNRToBlockErrorRateRecord *> * m_recordModulation[7]; ///< record modulation
+  private:
+    /// Clear records function
+    void ClearRecords();
+    uint8_t m_activateLoss;      ///< activate loss
+    std::string m_traceFilePath; ///< trace file path
 
+    std::vector<SNRToBlockErrorRateRecord*>* m_recordModulation[7]; ///< record modulation
 };
-}
+} // namespace ns3
 
 #endif /* SNR_TO_BLOCK_ERROR_RATE_MANAGER_H */

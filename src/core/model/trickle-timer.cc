@@ -19,252 +19,255 @@
  */
 
 #include "trickle-timer.h"
+
 #include "log.h"
+
 #include <limits>
 
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("TrickleTimer");
-
-TrickleTimer::TrickleTimer ()
-  : m_impl (nullptr),
-    m_timerExpiration (),
-    m_intervalExpiration (),
-    m_currentInterval (Time(0)),
-    m_counter (0),
-    m_uniRand (CreateObject<UniformRandomVariable> ())
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
 
-  m_minInterval = Time (0);
-  m_ticks = 0;
-  m_maxInterval = Time (0);
-  m_redundancy = 0;
+NS_LOG_COMPONENT_DEFINE("TrickleTimer");
+
+TrickleTimer::TrickleTimer()
+    : m_impl(nullptr),
+      m_timerExpiration(),
+      m_intervalExpiration(),
+      m_currentInterval(Time(0)),
+      m_counter(0),
+      m_uniRand(CreateObject<UniformRandomVariable>())
+{
+    NS_LOG_FUNCTION(this);
+
+    m_minInterval = Time(0);
+    m_ticks = 0;
+    m_maxInterval = Time(0);
+    m_redundancy = 0;
 }
 
-TrickleTimer::TrickleTimer (Time minInterval, uint8_t doublings, uint16_t redundancy)
-  : m_impl (nullptr),
-    m_timerExpiration (),
-    m_intervalExpiration (),
-    m_currentInterval (Time(0)),
-    m_counter (0),
-    m_uniRand (CreateObject<UniformRandomVariable> ())
+TrickleTimer::TrickleTimer(Time minInterval, uint8_t doublings, uint16_t redundancy)
+    : m_impl(nullptr),
+      m_timerExpiration(),
+      m_intervalExpiration(),
+      m_currentInterval(Time(0)),
+      m_counter(0),
+      m_uniRand(CreateObject<UniformRandomVariable>())
 {
-  NS_LOG_FUNCTION (this << minInterval << doublings << redundancy);
-  NS_ASSERT_MSG (doublings < std::numeric_limits<decltype(m_ticks)>::digits, "Doublings value is too large");
+    NS_LOG_FUNCTION(this << minInterval << doublings << redundancy);
+    NS_ASSERT_MSG(doublings < std::numeric_limits<decltype(m_ticks)>::digits,
+                  "Doublings value is too large");
 
-  m_minInterval = minInterval;
-  m_ticks = 1;
-  m_ticks <<= doublings;
-  m_maxInterval = m_ticks * minInterval;
-  m_redundancy = redundancy;
+    m_minInterval = minInterval;
+    m_ticks = 1;
+    m_ticks <<= doublings;
+    m_maxInterval = m_ticks * minInterval;
+    m_redundancy = redundancy;
 }
 
-TrickleTimer::~TrickleTimer ()
+TrickleTimer::~TrickleTimer()
 {
-  NS_LOG_FUNCTION (this);
-  m_timerExpiration.Cancel ();
-  m_intervalExpiration.Cancel ();
-  delete m_impl;
+    NS_LOG_FUNCTION(this);
+    m_timerExpiration.Cancel();
+    m_intervalExpiration.Cancel();
+    delete m_impl;
 }
 
 int64_t
-TrickleTimer::AssignStreams (int64_t streamNum)
+TrickleTimer::AssignStreams(int64_t streamNum)
 {
-  m_uniRand->SetStream (streamNum);
-  return 1;
+    m_uniRand->SetStream(streamNum);
+    return 1;
 }
 
 void
-TrickleTimer::SetParameters (Time minInterval, uint8_t doublings, uint16_t redundancy)
+TrickleTimer::SetParameters(Time minInterval, uint8_t doublings, uint16_t redundancy)
 {
-  NS_LOG_FUNCTION (this << minInterval << doublings << redundancy);
-  NS_ASSERT_MSG (doublings < std::numeric_limits<decltype(m_ticks)>::digits, "Doublings value is too large");
+    NS_LOG_FUNCTION(this << minInterval << doublings << redundancy);
+    NS_ASSERT_MSG(doublings < std::numeric_limits<decltype(m_ticks)>::digits,
+                  "Doublings value is too large");
 
-  m_minInterval = minInterval;
-  m_ticks = 1;
-  m_ticks <<= doublings;
-  m_maxInterval = m_ticks * minInterval;
-  m_redundancy = redundancy;
+    m_minInterval = minInterval;
+    m_ticks = 1;
+    m_ticks <<= doublings;
+    m_maxInterval = m_ticks * minInterval;
+    m_redundancy = redundancy;
 }
 
 Time
-TrickleTimer::GetMinInterval () const
+TrickleTimer::GetMinInterval() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_minInterval;
+    NS_LOG_FUNCTION(this);
+    return m_minInterval;
 }
 
 Time
-TrickleTimer::GetMaxInterval () const
+TrickleTimer::GetMaxInterval() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_maxInterval;
+    NS_LOG_FUNCTION(this);
+    return m_maxInterval;
 }
 
 uint8_t
-TrickleTimer::GetDoublings () const
+TrickleTimer::GetDoublings() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_ticks == 0)
+    if (m_ticks == 0)
     {
-      return 0;
+        return 0;
     }
 
-  // Here we assume that m_ticks is a power of 2.
-  // This could have been way more elegant by using
-  // std::countl_zero() defined in the <bit> header
-  // which is c++20 - so not yet widely available.
+    // Here we assume that m_ticks is a power of 2.
+    // This could have been way more elegant by using
+    // std::countl_zero() defined in the <bit> header
+    // which is c++20 - so not yet widely available.
 
-  uint64_t ticks = m_ticks;
-  uint8_t doublings = 0;
-  while (ticks != 1)
+    uint64_t ticks = m_ticks;
+    uint8_t doublings = 0;
+    while (ticks != 1)
     {
-      ticks >>= 1;
-      doublings ++;
+        ticks >>= 1;
+        doublings++;
     }
 
-  return doublings;
+    return doublings;
 }
 
 uint16_t
-TrickleTimer::GetRedundancy () const
+TrickleTimer::GetRedundancy() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_redundancy;
+    NS_LOG_FUNCTION(this);
+    return m_redundancy;
 }
 
 Time
-TrickleTimer::GetDelayLeft () const
+TrickleTimer::GetDelayLeft() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_timerExpiration.IsRunning ())
+    if (m_timerExpiration.IsRunning())
     {
-      return Simulator::GetDelayLeft (m_timerExpiration);
+        return Simulator::GetDelayLeft(m_timerExpiration);
     }
 
-  return TimeStep (0);
+    return TimeStep(0);
 }
 
 Time
-TrickleTimer::GetIntervalLeft () const
+TrickleTimer::GetIntervalLeft() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_intervalExpiration.IsRunning ())
+    if (m_intervalExpiration.IsRunning())
     {
-      return Simulator::GetDelayLeft (m_intervalExpiration);
+        return Simulator::GetDelayLeft(m_intervalExpiration);
     }
 
-  return TimeStep (0);
+    return TimeStep(0);
 }
 
-
 void
-TrickleTimer::Enable ()
+TrickleTimer::Enable()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  uint64_t randomInt;
-  double random;
+    uint64_t randomInt;
+    double random;
 
-  NS_ASSERT_MSG (m_minInterval != Time (0), "Timer not initialized");
+    NS_ASSERT_MSG(m_minInterval != Time(0), "Timer not initialized");
 
-  randomInt = m_uniRand->GetInteger (1, m_ticks);
-  random = randomInt;
-  if (randomInt < m_ticks)
+    randomInt = m_uniRand->GetInteger(1, m_ticks);
+    random = randomInt;
+    if (randomInt < m_ticks)
     {
-      random += m_uniRand->GetValue (0, 1);
+        random += m_uniRand->GetValue(0, 1);
     }
 
-  m_currentInterval = m_minInterval * random;
-  m_intervalExpiration = Simulator::Schedule (m_currentInterval, &TrickleTimer::IntervalExpire, this);
+    m_currentInterval = m_minInterval * random;
+    m_intervalExpiration =
+        Simulator::Schedule(m_currentInterval, &TrickleTimer::IntervalExpire, this);
 
-  m_counter = 0;
+    m_counter = 0;
 
-  Time timerExpitation = m_uniRand->GetValue (0.5, 1) * m_currentInterval;
-  m_timerExpiration = Simulator::Schedule (timerExpitation, &TrickleTimer::TimerExpire, this);
+    Time timerExpitation = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
+    m_timerExpiration = Simulator::Schedule(timerExpitation, &TrickleTimer::TimerExpire, this);
 }
 
 void
-TrickleTimer::ConsistentEvent ()
+TrickleTimer::ConsistentEvent()
 {
-  NS_LOG_FUNCTION (this);
-  m_counter ++;
+    NS_LOG_FUNCTION(this);
+    m_counter++;
 }
 
 void
-TrickleTimer::InconsistentEvent ()
+TrickleTimer::InconsistentEvent()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_currentInterval > m_minInterval)
+    NS_LOG_FUNCTION(this);
+    if (m_currentInterval > m_minInterval)
     {
-      Reset ();
+        Reset();
     }
 }
 
 void
-TrickleTimer::Reset ()
+TrickleTimer::Reset()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_currentInterval = m_minInterval;
-  m_intervalExpiration.Cancel ();
-  m_timerExpiration.Cancel ();
+    m_currentInterval = m_minInterval;
+    m_intervalExpiration.Cancel();
+    m_timerExpiration.Cancel();
 
-  m_intervalExpiration = Simulator::Schedule (m_currentInterval, &TrickleTimer::IntervalExpire, this);
+    m_intervalExpiration =
+        Simulator::Schedule(m_currentInterval, &TrickleTimer::IntervalExpire, this);
 
-  m_counter = 0;
+    m_counter = 0;
 
-  Time timerExpitation = m_uniRand->GetValue (0.5, 1) * m_currentInterval;
-  m_timerExpiration = Simulator::Schedule (timerExpitation, &TrickleTimer::TimerExpire, this);
+    Time timerExpitation = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
+    m_timerExpiration = Simulator::Schedule(timerExpitation, &TrickleTimer::TimerExpire, this);
 }
 
 void
-TrickleTimer::Stop ()
+TrickleTimer::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_currentInterval = m_minInterval;
-  m_intervalExpiration.Cancel ();
-  m_timerExpiration.Cancel ();
-  m_counter = 0;
+    m_currentInterval = m_minInterval;
+    m_intervalExpiration.Cancel();
+    m_timerExpiration.Cancel();
+    m_counter = 0;
 }
 
 void
 TrickleTimer::TimerExpire()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_counter < m_redundancy || m_redundancy == 0)
+    if (m_counter < m_redundancy || m_redundancy == 0)
     {
-      m_impl->Invoke ();
+        m_impl->Invoke();
     }
 }
 
 void
 TrickleTimer::IntervalExpire()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_currentInterval = m_currentInterval * 2;
-  if (m_currentInterval > m_maxInterval)
+    m_currentInterval = m_currentInterval * 2;
+    if (m_currentInterval > m_maxInterval)
     {
-      m_currentInterval = m_maxInterval;
+        m_currentInterval = m_maxInterval;
     }
 
-  m_intervalExpiration = Simulator::Schedule (m_currentInterval, &TrickleTimer::IntervalExpire, this);
+    m_intervalExpiration =
+        Simulator::Schedule(m_currentInterval, &TrickleTimer::IntervalExpire, this);
 
-  m_counter = 0;
+    m_counter = 0;
 
-  Time timerExpitation = m_uniRand->GetValue (0.5, 1) * m_currentInterval;
-  m_timerExpiration = Simulator::Schedule (timerExpitation, &TrickleTimer::TimerExpire, this);
+    Time timerExpitation = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
+    m_timerExpiration = Simulator::Schedule(timerExpitation, &TrickleTimer::TimerExpire, this);
 }
 
-
-
 } // namespace ns3
-

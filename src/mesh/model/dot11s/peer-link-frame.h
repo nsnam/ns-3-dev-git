@@ -20,12 +20,14 @@
 
 #ifndef PEER_LINK_FRAME_START_H
 #define PEER_LINK_FRAME_START_H
-#include "ns3/header.h"
-#include "ns3/supported-rates.h"
 #include "dot11s-mac-header.h"
 #include "ie-dot11s-configuration.h"
-#include "ie-dot11s-peering-protocol.h"
 #include "ie-dot11s-id.h"
+#include "ie-dot11s-peering-protocol.h"
+
+#include "ns3/header.h"
+#include "ns3/supported-rates.h"
+
 namespace ns3
 {
 namespace dot11s
@@ -43,62 +45,63 @@ namespace dot11s
  */
 class PeerLinkOpenStart : public Header
 {
-public:
-  PeerLinkOpenStart ();
+  public:
+    PeerLinkOpenStart();
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  PeerLinkOpenStart (const PeerLinkOpenStart &) = delete;
-  PeerLinkOpenStart &operator= (const PeerLinkOpenStart &) = delete;
+    // Delete copy constructor and assignment operator to avoid misuse
+    PeerLinkOpenStart(const PeerLinkOpenStart&) = delete;
+    PeerLinkOpenStart& operator=(const PeerLinkOpenStart&) = delete;
 
-  ///\brief fields:
-  struct PlinkOpenStartFields
-  {
-    IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
-    uint16_t capability;        ///< open and confirm
-    SupportedRates rates;       ///< open and confirm
-    IeMeshId meshId;            ///< open and close
-    IeConfiguration config;     ///< open and confirm
-  };
-  /**
-   * Set peer link open start fields
-   * \param fields PlinkOpenStartFields to set
-   */
-  void SetPlinkOpenStart (PlinkOpenStartFields fields);
-  /**
-   * Get peer link open start fields
-   * \return PlinkOpenStartFields
-   */
-  PlinkOpenStartFields GetFields () const;
+    ///\brief fields:
+    struct PlinkOpenStartFields
+    {
+        IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
+        uint16_t capability;        ///< open and confirm
+        SupportedRates rates;       ///< open and confirm
+        IeMeshId meshId;            ///< open and close
+        IeConfiguration config;     ///< open and confirm
+    };
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static  TypeId   GetTypeId ();
-  // Inherited from header:
-  TypeId   GetInstanceTypeId () const override;
-  void     Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize () const override;
-  void     Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
+    /**
+     * Set peer link open start fields
+     * \param fields PlinkOpenStartFields to set
+     */
+    void SetPlinkOpenStart(PlinkOpenStartFields fields);
+    /**
+     * Get peer link open start fields
+     * \return PlinkOpenStartFields
+     */
+    PlinkOpenStartFields GetFields() const;
 
-private:
-  uint16_t m_capability; ///< capability
-  SupportedRates m_rates; ///< rates
-  IeMeshId m_meshId; ///< mesh ID
-  IeConfiguration m_config; ///< config
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    // Inherited from header:
+    TypeId GetInstanceTypeId() const override;
+    void Print(std::ostream& os) const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * equality operator
-   *
-   * \param a lhs
-   * \param b rhs
-   * \returns true if equal
-   */
-  friend bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
+  private:
+    uint16_t m_capability;    ///< capability
+    SupportedRates m_rates;   ///< rates
+    IeMeshId m_meshId;        ///< mesh ID
+    IeConfiguration m_config; ///< config
+
+    /**
+     * equality operator
+     *
+     * \param a lhs
+     * \param b rhs
+     * \returns true if equal
+     */
+    friend bool operator==(const PeerLinkOpenStart& a, const PeerLinkOpenStart& b);
 };
 
-bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
+bool operator==(const PeerLinkOpenStart& a, const PeerLinkOpenStart& b);
 
 /**
  * \ingroup dot11s
@@ -110,55 +113,57 @@ bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
  */
 class PeerLinkCloseStart : public Header
 {
-public:
-  PeerLinkCloseStart ();
+  public:
+    PeerLinkCloseStart();
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  PeerLinkCloseStart (const PeerLinkCloseStart &) = delete;
-  PeerLinkCloseStart &operator= (const PeerLinkCloseStart &) = delete;
+    // Delete copy constructor and assignment operator to avoid misuse
+    PeerLinkCloseStart(const PeerLinkCloseStart&) = delete;
+    PeerLinkCloseStart& operator=(const PeerLinkCloseStart&) = delete;
 
-  ///\brief fields:
-  struct PlinkCloseStartFields
-  {
-    IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
-    IeMeshId meshId;            ///< open and close
-  };
-  /**
-   * Set peer link close start fields
-   * \param fields PlinkCloseStartFields to set
-   */
-  void SetPlinkCloseStart (PlinkCloseStartFields fields);
-  /**
-   * Get peer link close start fields
-   * \return PlinkOpenStartFields
-   */
-  PlinkCloseStartFields GetFields () const;
+    ///\brief fields:
+    struct PlinkCloseStartFields
+    {
+        IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
+        IeMeshId meshId;            ///< open and close
+    };
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static  TypeId   GetTypeId ();
-  // Inherited from header:
-  TypeId   GetInstanceTypeId () const override;
-  void     Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize () const override;
-  void     Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
+    /**
+     * Set peer link close start fields
+     * \param fields PlinkCloseStartFields to set
+     */
+    void SetPlinkCloseStart(PlinkCloseStartFields fields);
+    /**
+     * Get peer link close start fields
+     * \return PlinkOpenStartFields
+     */
+    PlinkCloseStartFields GetFields() const;
 
-private:
-  IeMeshId m_meshId; ///< mesh ID
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    // Inherited from header:
+    TypeId GetInstanceTypeId() const override;
+    void Print(std::ostream& os) const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * equality operator
-   *
-   * \param a lhs
-   * \param b rhs
-   * \returns true if equal
-   */
-  friend bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
+  private:
+    IeMeshId m_meshId; ///< mesh ID
+
+    /**
+     * equality operator
+     *
+     * \param a lhs
+     * \param b rhs
+     * \returns true if equal
+     */
+    friend bool operator==(const PeerLinkCloseStart& a, const PeerLinkCloseStart& b);
 };
-bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
+
+bool operator==(const PeerLinkCloseStart& a, const PeerLinkCloseStart& b);
 
 /**
  * \ingroup dot11s
@@ -172,61 +177,63 @@ bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
  */
 class PeerLinkConfirmStart : public Header
 {
-public:
-  PeerLinkConfirmStart ();
+  public:
+    PeerLinkConfirmStart();
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  PeerLinkConfirmStart (const PeerLinkConfirmStart &) = delete;
-  PeerLinkConfirmStart &operator= (const PeerLinkConfirmStart &) = delete;
+    // Delete copy constructor and assignment operator to avoid misuse
+    PeerLinkConfirmStart(const PeerLinkConfirmStart&) = delete;
+    PeerLinkConfirmStart& operator=(const PeerLinkConfirmStart&) = delete;
 
-  ///\brief fields:
-  struct PlinkConfirmStartFields
-  {
-    IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
-    uint16_t capability;        ///< open and confirm
-    uint16_t aid;               ///< confirm only
-    SupportedRates rates;       ///< open and confirm
-    IeConfiguration config;     ///< open and confirm
-  };
-  /**
-   * Set peer link confirm start fields
-   * \param fields PlinkCloseStartFields to set
-   */
-  void SetPlinkConfirmStart (PlinkConfirmStartFields fields);
-  /**
-   * Get peer link confirm start fields
-   * \return PlinkOpenStartFields
-   */
-  PlinkConfirmStartFields GetFields () const;
+    ///\brief fields:
+    struct PlinkConfirmStartFields
+    {
+        IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
+        uint16_t capability;        ///< open and confirm
+        uint16_t aid;               ///< confirm only
+        SupportedRates rates;       ///< open and confirm
+        IeConfiguration config;     ///< open and confirm
+    };
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static  TypeId   GetTypeId ();
-  // Inherited from header:
-  TypeId   GetInstanceTypeId () const override;
-  void     Print (std::ostream &os) const override;
-  uint32_t GetSerializedSize () const override;
-  void     Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
+    /**
+     * Set peer link confirm start fields
+     * \param fields PlinkCloseStartFields to set
+     */
+    void SetPlinkConfirmStart(PlinkConfirmStartFields fields);
+    /**
+     * Get peer link confirm start fields
+     * \return PlinkOpenStartFields
+     */
+    PlinkConfirmStartFields GetFields() const;
 
-private:
-  uint16_t m_capability; ///< capability
-  uint16_t m_aid; ///< aid
-  SupportedRates m_rates; ///< rates
-  IeConfiguration m_config; ///< config
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    // Inherited from header:
+    TypeId GetInstanceTypeId() const override;
+    void Print(std::ostream& os) const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * equality operator
-   *
-   * \param a lhs
-   * \param b rhs
-   * \returns true if equal
-   */
-  friend bool operator== (const PeerLinkConfirmStart & a, const PeerLinkConfirmStart & b);
+  private:
+    uint16_t m_capability;    ///< capability
+    uint16_t m_aid;           ///< aid
+    SupportedRates m_rates;   ///< rates
+    IeConfiguration m_config; ///< config
+
+    /**
+     * equality operator
+     *
+     * \param a lhs
+     * \param b rhs
+     * \returns true if equal
+     */
+    friend bool operator==(const PeerLinkConfirmStart& a, const PeerLinkConfirmStart& b);
 };
-bool operator== (const PeerLinkConfirmStart & a, const PeerLinkConfirmStart & b);
+
+bool operator==(const PeerLinkConfirmStart& a, const PeerLinkConfirmStart& b);
 } // namespace dot11s
 } // namespace ns3
 #endif

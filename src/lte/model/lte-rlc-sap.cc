@@ -20,13 +20,14 @@
 
 #include "ns3/lte-rlc-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-LteRlcSapProvider::~LteRlcSapProvider ()
+LteRlcSapProvider::~LteRlcSapProvider()
 {
 }
 
-LteRlcSapUser::~LteRlcSapUser ()
+LteRlcSapUser::~LteRlcSapUser()
 {
 }
 

@@ -16,24 +16,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/assert.h"
-#include "ipv4-route.h"
 #include "ipv4-routing-protocol.h"
+
+#include "ipv4-route.h"
+
+#include "ns3/assert.h"
 #include "ns3/log.h"
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("Ipv4RoutingProtocol");
-
-NS_OBJECT_ENSURE_REGISTERED (Ipv4RoutingProtocol);
-
-TypeId Ipv4RoutingProtocol::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::Ipv4RoutingProtocol")
-    .SetParent<Object> ()
-    .SetGroupName ("Internet")
-  ;
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("Ipv4RoutingProtocol");
+
+NS_OBJECT_ENSURE_REGISTERED(Ipv4RoutingProtocol);
+
+TypeId
+Ipv4RoutingProtocol::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::Ipv4RoutingProtocol").SetParent<Object>().SetGroupName("Internet");
+    return tid;
 }
 
 } // namespace ns3

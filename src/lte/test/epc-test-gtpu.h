@@ -22,18 +22,14 @@
 #define EPC_TEST_GTPU_H
 
 #include "ns3/epc-gtpu-header.h"
-
 #include "ns3/test.h"
 
-
 using namespace ns3;
-
 
 /**
  * \ingroup lte
  * \defgroup lte-test lte module tests
  */
-
 
 /**
  * \ingroup lte-test
@@ -43,8 +39,8 @@ using namespace ns3;
  */
 class EpsGtpuTestSuite : public TestSuite
 {
-public:
-  EpsGtpuTestSuite ();
+  public:
+    EpsGtpuTestSuite();
 };
 
 /**
@@ -52,13 +48,12 @@ public:
  */
 class EpsGtpuHeaderTestCase : public TestCase
 {
-public:
-  EpsGtpuHeaderTestCase ();
-  ~EpsGtpuHeaderTestCase () override;
+  public:
+    EpsGtpuHeaderTestCase();
+    ~EpsGtpuHeaderTestCase() override;
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 };
-
 
 #endif /* EPC_TEST_GTPU_H */

@@ -20,8 +20,8 @@
 #ifndef SYSTEM_PATH_H
 #define SYSTEM_PATH_H
 
-#include <string>
 #include <list>
+#include <string>
 
 /**
  * \file
@@ -29,7 +29,8 @@
  * ns3::SystemPath declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup system
@@ -45,7 +46,8 @@ namespace ns3 {
  * \ingroup systempath
  * \brief Namespace for various file and directory path functions.
  */
-namespace SystemPath {
+namespace SystemPath
+{
 
 /**
  * \ingroup systempath
@@ -56,7 +58,7 @@ namespace SystemPath {
  *
  * \return The directory in which the currently-executing binary is located
  */
-std::string FindSelfDirectory ();
+std::string FindSelfDirectory();
 
 /**
  * \ingroup systempath
@@ -66,7 +68,7 @@ std::string FindSelfDirectory ();
  * \param [in] right A path element
  * \return A concatenation of the two input paths
  */
-std::string Append (std::string left, std::string right);
+std::string Append(std::string left, std::string right);
 
 /**
  * \ingroup systempath
@@ -80,7 +82,7 @@ std::string Append (std::string left, std::string right);
  *         the Join function.
  * \sa ns3::SystemPath::Join
  */
-std::list<std::string> Split (std::string path);
+std::list<std::string> Split(std::string path);
 
 /**
  * Join a list of file system path directories into a single
@@ -93,8 +95,8 @@ std::list<std::string> Split (std::string path);
  * \param [in] end Iterator to one past the last element to join
  * \return A path that is a concatenation of all the input elements.
  */
-std::string Join (std::list<std::string>::const_iterator begin,
-                  std::list<std::string>::const_iterator end);
+std::string Join(std::list<std::string>::const_iterator begin,
+                 std::list<std::string>::const_iterator end);
 
 /**
  * \ingroup systempath
@@ -103,7 +105,7 @@ std::string Join (std::list<std::string>::const_iterator begin,
  * \param [in] path A path which identifies a directory
  * \return A list of the filenames which are located in the input directory
  */
-std::list<std::string> ReadFiles (std::string path);
+std::list<std::string> ReadFiles(std::string path);
 
 /**
  * \ingroup systempath
@@ -131,7 +133,7 @@ std::list<std::string> ReadFiles (std::string path);
  *
  * \return A path which identifies a temporary directory.
  */
-std::string MakeTemporaryDirectoryName ();
+std::string MakeTemporaryDirectoryName();
 
 /**
  * \ingroup systempath
@@ -139,7 +141,7 @@ std::string MakeTemporaryDirectoryName ();
  *
  * \param [in] path A path to a directory
  */
-void MakeDirectories (std::string path);
+void MakeDirectories(std::string path);
 
 /**
  * \ingroup systempath
@@ -148,7 +150,7 @@ void MakeDirectories (std::string path);
  * \param [in] path The path to check.
  * \returns \c true if the \pname{path} exists.
  */
-bool Exists (const std::string path);
+bool Exists(const std::string path);
 
 /**
  * \ingroup systempath
@@ -158,12 +160,10 @@ bool Exists (const std::string path);
  * \param [in] path The path to check.
  * \returns A compatible path.
  */
-std::string CreateValidSystemPath (const std::string path);
+std::string CreateValidSystemPath(const std::string path);
 
 } // namespace SystemPath
 
-
 } // namespace ns3
-
 
 #endif /* SYSTEM_PATH_H */

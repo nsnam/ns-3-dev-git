@@ -23,8 +23,8 @@
 
 #include <ns3/spectrum-value.h>
 
-
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup spectrum
@@ -41,58 +41,53 @@ namespace ns3 {
  */
 class SpectrumConverter : public SimpleRefCount<SpectrumConverter>
 {
-public:
-  /**
-   * Create a SpectrumConverter class that will be able to convert ValueVsFreq
-   * instances defined over one SpectrumModel to corresponding ValueVsFreq
-   * instances defined over a diffent SpectrumModel
-   *
-   * @param fromSpectrumModel the SpectrumModel to convert from
-   * @param toSpectrumModel the SpectrumModel to convert to
-   */
-  SpectrumConverter (Ptr<const SpectrumModel> fromSpectrumModel, Ptr<const SpectrumModel> toSpectrumModel);
+  public:
+    /**
+     * Create a SpectrumConverter class that will be able to convert ValueVsFreq
+     * instances defined over one SpectrumModel to corresponding ValueVsFreq
+     * instances defined over a diffent SpectrumModel
+     *
+     * @param fromSpectrumModel the SpectrumModel to convert from
+     * @param toSpectrumModel the SpectrumModel to convert to
+     */
+    SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
+                      Ptr<const SpectrumModel> toSpectrumModel);
 
-  SpectrumConverter ();
+    SpectrumConverter();
 
+    /**
+     * Convert a particular ValueVsFreq instance to
+     *
+     * @param vvf the ValueVsFreq instance to be converted
+     *
+     * @return the converted version of the provided ValueVsFreq
+     */
+    Ptr<SpectrumValue> Convert(Ptr<const SpectrumValue> vvf) const;
 
+  private:
+    /**
+     * Calculate the coefficient for value conversion between elements
+     *
+     * @param from BandInfo to convert from
+     * @param to  BandInfo to convert to
+     *
+     * @return the fraction of the value of the "from" BandInfos that is
+     * mapped to the "to" BandInfo
+     */
+    double GetCoefficient(const BandInfo& from, const BandInfo& to) const;
 
-  /**
-   * Convert a particular ValueVsFreq instance to
-   *
-   * @param vvf the ValueVsFreq instance to be converted
-   *
-   * @return the converted version of the provided ValueVsFreq
-   */
-  Ptr<SpectrumValue> Convert (Ptr<const SpectrumValue> vvf) const;
+    std::vector<double> m_conversionMatrix; //!< matrix of conversion coefficients stored in
+                                            //!< Compressed Row Storage format
+    std::vector<size_t> m_conversionRowPtr; //!< offset of rows in m_conversionMatrix
+    std::vector<size_t>
+        m_conversionColInd; //!< column of each non-zero element in m_conversionMatrix
 
-
-private:
-  /**
-   * Calculate the coefficient for value conversion between elements
-   *
-   * @param from BandInfo to convert from
-   * @param to  BandInfo to convert to
-   *
-   * @return the fraction of the value of the "from" BandInfos that is
-   * mapped to the "to" BandInfo
-   */
-  double GetCoefficient (const BandInfo& from, const BandInfo& to) const;
-
-  std::vector<double> m_conversionMatrix; //!< matrix of conversion coefficients stored in Compressed Row Storage format
-  std::vector<size_t> m_conversionRowPtr; //!< offset of rows in m_conversionMatrix
-  std::vector<size_t> m_conversionColInd; //!< column of each non-zero element in m_conversionMatrix
-
-  Ptr<const SpectrumModel> m_fromSpectrumModel;  //!<  the SpectrumModel this SpectrumConverter instance can convert from
-  Ptr<const SpectrumModel> m_toSpectrumModel;    //!<  the SpectrumModel this SpectrumConverter instance can convert to
-
+    Ptr<const SpectrumModel> m_fromSpectrumModel; //!<  the SpectrumModel this SpectrumConverter
+                                                  //!<  instance can convert from
+    Ptr<const SpectrumModel>
+        m_toSpectrumModel; //!<  the SpectrumModel this SpectrumConverter instance can convert to
 };
-
-
 
 } // namespace ns3
 
-
-
 #endif /*  SPECTRUM_CONVERTER_H */
-
-

@@ -16,113 +16,116 @@
  *
  * Author: Junling Bu <linlinjavaer@gmail.com>
  */
-#include <iomanip>
-#include <iostream>
-#include <cstring>
-#include "ns3/log.h"
-#include "ns3/assert.h"
 #include "vendor-specific-action.h"
 
-namespace ns3 {
+#include "ns3/assert.h"
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("VendorSpecificAction");
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+
+namespace ns3
+{
+
+NS_LOG_COMPONENT_DEFINE("VendorSpecificAction");
 
 /*********** OrganizationIdentifier *******/
 
-ATTRIBUTE_HELPER_CPP (OrganizationIdentifier);
+ATTRIBUTE_HELPER_CPP(OrganizationIdentifier);
 
-OrganizationIdentifier::OrganizationIdentifier ()
-  : m_type (Unknown)
+OrganizationIdentifier::OrganizationIdentifier()
+    : m_type(Unknown)
 {
-  NS_LOG_FUNCTION (this);
-  m_type = Unknown;
-  std::memset (m_oi, 0, 5);
+    NS_LOG_FUNCTION(this);
+    m_type = Unknown;
+    std::memset(m_oi, 0, 5);
 }
 
-OrganizationIdentifier::OrganizationIdentifier (const uint8_t *str, uint32_t length)
+OrganizationIdentifier::OrganizationIdentifier(const uint8_t* str, uint32_t length)
 {
-  NS_LOG_FUNCTION (this << str << length);
-  if (length == 3)
+    NS_LOG_FUNCTION(this << str << length);
+    if (length == 3)
     {
-      m_type = OUI24;
-      std::memcpy (m_oi, str, length);
+        m_type = OUI24;
+        std::memcpy(m_oi, str, length);
     }
-  else if (length == 5)
+    else if (length == 5)
     {
-      m_type = OUI36;
-      std::memcpy (m_oi, str, length);
+        m_type = OUI36;
+        std::memcpy(m_oi, str, length);
     }
-  else
+    else
     {
-      m_type = Unknown;
-      NS_FATAL_ERROR ("cannot support organization identifier with length=" << length);
+        m_type = Unknown;
+        NS_FATAL_ERROR("cannot support organization identifier with length=" << length);
     }
 }
 
 OrganizationIdentifier&
-OrganizationIdentifier::operator= (const OrganizationIdentifier& oi)
+OrganizationIdentifier::operator=(const OrganizationIdentifier& oi)
 {
-  this->m_type = oi.m_type;
-  std::memcpy (this->m_oi, oi.m_oi, 5);
-  return (*this);
+    this->m_type = oi.m_type;
+    std::memcpy(this->m_oi, oi.m_oi, 5);
+    return (*this);
 }
 
-OrganizationIdentifier::~OrganizationIdentifier ()
+OrganizationIdentifier::~OrganizationIdentifier()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 uint8_t
-OrganizationIdentifier::GetManagementId () const
+OrganizationIdentifier::GetManagementId() const
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_type == OUI36);
-  return (m_oi[4] & 0x0f);
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(m_type == OUI36);
+    return (m_oi[4] & 0x0f);
 }
 
 bool
-OrganizationIdentifier::IsNull () const
+OrganizationIdentifier::IsNull() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_type == Unknown;
+    NS_LOG_FUNCTION(this);
+    return m_type == Unknown;
 }
 
 uint32_t
-OrganizationIdentifier::GetSerializedSize () const
+OrganizationIdentifier::GetSerializedSize() const
 {
-  NS_LOG_FUNCTION (this);
-  switch (m_type)
+    NS_LOG_FUNCTION(this);
+    switch (m_type)
     {
     case OUI24:
-      return 3;
+        return 3;
     case OUI36:
-      return 5;
+        return 5;
     case Unknown:
     default:
-      NS_FATAL_ERROR_NO_MSG ();
-      return 0;
+        NS_FATAL_ERROR_NO_MSG();
+        return 0;
     }
 }
 
 void
-OrganizationIdentifier::SetType (enum OrganizationIdentifierType type)
+OrganizationIdentifier::SetType(enum OrganizationIdentifierType type)
 {
-  NS_LOG_FUNCTION (this);
-  m_type = type;
+    NS_LOG_FUNCTION(this);
+    m_type = type;
 }
 
 enum OrganizationIdentifier::OrganizationIdentifierType
-OrganizationIdentifier::GetType () const
+OrganizationIdentifier::GetType() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_type;
+    NS_LOG_FUNCTION(this);
+    return m_type;
 }
 
 void
-OrganizationIdentifier::Serialize (Buffer::Iterator start) const
+OrganizationIdentifier::Serialize(Buffer::Iterator start) const
 {
-  NS_LOG_FUNCTION (this << &start);
-  start.Write (m_oi, GetSerializedSize ());
+    NS_LOG_FUNCTION(this << &start);
+    start.Write(m_oi, GetSerializedSize());
 }
 
 /*  because OrganizationIdentifier field is not standard
@@ -130,41 +133,43 @@ OrganizationIdentifier::Serialize (Buffer::Iterator start) const
  *  so data parse here is troublesome
  */
 uint32_t
-OrganizationIdentifier::Deserialize (Buffer::Iterator start)
+OrganizationIdentifier::Deserialize(Buffer::Iterator start)
 {
-  NS_LOG_FUNCTION (this << &start);
-  // first try to parse OUI24 with 3 bytes
-  start.Read (m_oi,  3);
-  for (std::vector<OrganizationIdentifier>::iterator  i = OrganizationIdentifiers.begin (); i != OrganizationIdentifiers.end (); ++i)
+    NS_LOG_FUNCTION(this << &start);
+    // first try to parse OUI24 with 3 bytes
+    start.Read(m_oi, 3);
+    for (std::vector<OrganizationIdentifier>::iterator i = OrganizationIdentifiers.begin();
+         i != OrganizationIdentifiers.end();
+         ++i)
     {
-      if ((i->m_type == OUI24)
-          && (std::memcmp (i->m_oi, m_oi, 3) == 0 ))
+        if ((i->m_type == OUI24) && (std::memcmp(i->m_oi, m_oi, 3) == 0))
         {
-          m_type = OUI24;
-          return 3;
+            m_type = OUI24;
+            return 3;
         }
     }
 
-  // then try to parse OUI36 with 5 bytes
-  start.Read (m_oi + 3,  2);
-  for (std::vector<OrganizationIdentifier>::iterator  i = OrganizationIdentifiers.begin (); i != OrganizationIdentifiers.end (); ++i)
+    // then try to parse OUI36 with 5 bytes
+    start.Read(m_oi + 3, 2);
+    for (std::vector<OrganizationIdentifier>::iterator i = OrganizationIdentifiers.begin();
+         i != OrganizationIdentifiers.end();
+         ++i)
     {
-      if ((i->m_type == OUI36)
-          && (std::memcmp (i->m_oi, m_oi, 4) == 0 ))
+        if ((i->m_type == OUI36) && (std::memcmp(i->m_oi, m_oi, 4) == 0))
         {
-          // OUI36 first check 4 bytes, then check half of the 5th byte
-          if ((i->m_oi[4] & 0xf0) == (m_oi[4] & 0xf0))
+            // OUI36 first check 4 bytes, then check half of the 5th byte
+            if ((i->m_oi[4] & 0xf0) == (m_oi[4] & 0xf0))
             {
-              m_type = OUI36;
-              return 5;
+                m_type = OUI36;
+                return 5;
             }
         }
     }
 
-  // if we cannot deserialize the organization identifier field,
-  // we will fail
-  NS_FATAL_ERROR ("cannot deserialize the organization identifier field successfully");
-  return 0;
+    // if we cannot deserialize the organization identifier field,
+    // we will fail
+    NS_FATAL_ERROR("cannot deserialize the organization identifier field successfully");
+    return 0;
 }
 
 /**
@@ -173,25 +178,25 @@ OrganizationIdentifier::Deserialize (Buffer::Iterator start)
  * \param b right side object
  * \returns true if equal
  */
-bool operator == (const OrganizationIdentifier& a, const OrganizationIdentifier& b)
+bool
+operator==(const OrganizationIdentifier& a, const OrganizationIdentifier& b)
 {
-  if (a.m_type != b.m_type)
+    if (a.m_type != b.m_type)
     {
-      return false;
+        return false;
     }
 
-  if (a.m_type == OrganizationIdentifier::OUI24)
+    if (a.m_type == OrganizationIdentifier::OUI24)
     {
-      return memcmp (a.m_oi, b.m_oi, 3) == 0;
+        return memcmp(a.m_oi, b.m_oi, 3) == 0;
     }
 
-  if (a.m_type == OrganizationIdentifier::OUI36)
+    if (a.m_type == OrganizationIdentifier::OUI36)
     {
-      return (memcmp (a.m_oi, b.m_oi, 4) == 0)
-             && ((a.m_oi[4] & 0xf0) == (b.m_oi[4] & 0xf0));
+        return (memcmp(a.m_oi, b.m_oi, 4) == 0) && ((a.m_oi[4] & 0xf0) == (b.m_oi[4] & 0xf0));
     }
 
-  return false;
+    return false;
 }
 
 /**
@@ -200,9 +205,10 @@ bool operator == (const OrganizationIdentifier& a, const OrganizationIdentifier&
  * \param b right side object
  * \returns true if not equal
  */
-bool operator != (const OrganizationIdentifier& a, const OrganizationIdentifier& b)
+bool
+operator!=(const OrganizationIdentifier& a, const OrganizationIdentifier& b)
 {
-  return !(a == b);
+    return !(a == b);
 }
 
 /**
@@ -211,9 +217,10 @@ bool operator != (const OrganizationIdentifier& a, const OrganizationIdentifier&
  * \param b right side object
  * \returns true if a < b
  */
-bool operator < (const OrganizationIdentifier& a, const OrganizationIdentifier& b)
+bool
+operator<(const OrganizationIdentifier& a, const OrganizationIdentifier& b)
 {
-  return memcmp (a.m_oi, b.m_oi, std::min (a.m_type, b.m_type)) < 0;
+    return memcmp(a.m_oi, b.m_oi, std::min(a.m_type, b.m_type)) < 0;
 }
 
 /**
@@ -222,14 +229,15 @@ bool operator < (const OrganizationIdentifier& a, const OrganizationIdentifier& 
  * \param oi organization identifier
  * \returns output stream
  */
-std::ostream& operator << (std::ostream& os, const OrganizationIdentifier& oi)
+std::ostream&
+operator<<(std::ostream& os, const OrganizationIdentifier& oi)
 {
-  for (int i = 0; i < oi.m_type; i++)
+    for (int i = 0; i < oi.m_type; i++)
     {
-      os << "0x" << std::hex << static_cast<int> (oi.m_oi[i]) << " ";
+        os << "0x" << std::hex << static_cast<int>(oi.m_oi[i]) << " ";
     }
-  os << std::endl;
-  return os;
+    os << std::endl;
+    return os;
 }
 
 /**
@@ -238,156 +246,159 @@ std::ostream& operator << (std::ostream& os, const OrganizationIdentifier& oi)
  * \param oi organization identifier
  * \returns input stream
  */
-std::istream& operator >> (std::istream& is, const OrganizationIdentifier& oi)
+std::istream&
+operator>>(std::istream& is, const OrganizationIdentifier& oi)
 {
-  return is;
+    return is;
 }
 
 /*********** VendorSpecificActionHeader *******/
-NS_OBJECT_ENSURE_REGISTERED (VendorSpecificActionHeader);
+NS_OBJECT_ENSURE_REGISTERED(VendorSpecificActionHeader);
 
-VendorSpecificActionHeader::VendorSpecificActionHeader ()
-  : m_oi (),
-    m_category (CATEGORY_OF_VSA)
+VendorSpecificActionHeader::VendorSpecificActionHeader()
+    : m_oi(),
+      m_category(CATEGORY_OF_VSA)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-VendorSpecificActionHeader::~VendorSpecificActionHeader ()
+VendorSpecificActionHeader::~VendorSpecificActionHeader()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-VendorSpecificActionHeader::SetOrganizationIdentifier (OrganizationIdentifier oi)
+VendorSpecificActionHeader::SetOrganizationIdentifier(OrganizationIdentifier oi)
 {
-  NS_LOG_FUNCTION (this << oi);
-  m_oi = oi;
+    NS_LOG_FUNCTION(this << oi);
+    m_oi = oi;
 }
 
 OrganizationIdentifier
-VendorSpecificActionHeader::GetOrganizationIdentifier () const
+VendorSpecificActionHeader::GetOrganizationIdentifier() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_oi;
+    NS_LOG_FUNCTION(this);
+    return m_oi;
 }
 
 TypeId
-VendorSpecificActionHeader::GetTypeId ()
+VendorSpecificActionHeader::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::VendorSpecificActionHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("Wave")
-    .AddConstructor<VendorSpecificActionHeader> ()
-  ;
+    static TypeId tid = TypeId("ns3::VendorSpecificActionHeader")
+                            .SetParent<Header>()
+                            .SetGroupName("Wave")
+                            .AddConstructor<VendorSpecificActionHeader>();
 
-  return tid;
+    return tid;
 }
 
 uint8_t
-VendorSpecificActionHeader::GetCategory () const
+VendorSpecificActionHeader::GetCategory() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_category;
+    NS_LOG_FUNCTION(this);
+    return m_category;
 }
 
 TypeId
-VendorSpecificActionHeader::GetInstanceTypeId () const
+VendorSpecificActionHeader::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
-  return GetTypeId ();
+    NS_LOG_FUNCTION(this);
+    return GetTypeId();
 }
 
 void
-VendorSpecificActionHeader::Print (std::ostream &os) const
+VendorSpecificActionHeader::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this << &os);
-  os << "VendorSpecificActionHeader[ "
-     << "category = 0x" << std::hex << (int)m_category
-     << "organization identifier = " << m_oi
-     << std::dec;
+    NS_LOG_FUNCTION(this << &os);
+    os << "VendorSpecificActionHeader[ "
+       << "category = 0x" << std::hex << (int)m_category << "organization identifier = " << m_oi
+       << std::dec;
 }
 
 uint32_t
-VendorSpecificActionHeader::GetSerializedSize () const
+VendorSpecificActionHeader::GetSerializedSize() const
 {
-  NS_LOG_FUNCTION (this);
-  return sizeof(m_category) + m_oi.GetSerializedSize ();
+    NS_LOG_FUNCTION(this);
+    return sizeof(m_category) + m_oi.GetSerializedSize();
 }
 
 void
-VendorSpecificActionHeader::Serialize (Buffer::Iterator start) const
+VendorSpecificActionHeader::Serialize(Buffer::Iterator start) const
 {
-  NS_LOG_FUNCTION (this << &start);
-  start.WriteU8 (m_category);
-  m_oi.Serialize (start);
+    NS_LOG_FUNCTION(this << &start);
+    start.WriteU8(m_category);
+    m_oi.Serialize(start);
 }
 
 uint32_t
-VendorSpecificActionHeader::Deserialize (Buffer::Iterator start)
+VendorSpecificActionHeader::Deserialize(Buffer::Iterator start)
 {
-  NS_LOG_FUNCTION (this << &start);
-  m_category = start.ReadU8 ();
-  if (m_category != CATEGORY_OF_VSA)
+    NS_LOG_FUNCTION(this << &start);
+    m_category = start.ReadU8();
+    if (m_category != CATEGORY_OF_VSA)
     {
-      return 0;
+        return 0;
     }
-  m_oi.Deserialize (start);
+    m_oi.Deserialize(start);
 
-  return GetSerializedSize ();
+    return GetSerializedSize();
 }
 
 /********* VendorSpecificContentManager ***********/
-VendorSpecificContentManager::VendorSpecificContentManager ()
+VendorSpecificContentManager::VendorSpecificContentManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-VendorSpecificContentManager::~VendorSpecificContentManager ()
+VendorSpecificContentManager::~VendorSpecificContentManager()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-VendorSpecificContentManager::RegisterVscCallback (OrganizationIdentifier oi, VscCallback cb)
+VendorSpecificContentManager::RegisterVscCallback(OrganizationIdentifier oi, VscCallback cb)
 {
-  NS_LOG_FUNCTION (this << oi << &cb);
-  if (IsVscCallbackRegistered (oi))
+    NS_LOG_FUNCTION(this << oi << &cb);
+    if (IsVscCallbackRegistered(oi))
     {
-      NS_LOG_WARN ("there is already a VsaCallback registered for OrganizationIdentifier " << oi);
+        NS_LOG_WARN("there is already a VsaCallback registered for OrganizationIdentifier " << oi);
     }
-  m_callbacks.insert (std::make_pair (oi, cb));
+    m_callbacks.insert(std::make_pair(oi, cb));
 }
 
 void
-VendorSpecificContentManager::DeregisterVscCallback (OrganizationIdentifier &oi)
+VendorSpecificContentManager::DeregisterVscCallback(OrganizationIdentifier& oi)
 {
-  NS_LOG_FUNCTION (this << oi);
-  m_callbacks.erase (oi);
+    NS_LOG_FUNCTION(this << oi);
+    m_callbacks.erase(oi);
 }
 
 bool
-VendorSpecificContentManager::IsVscCallbackRegistered (OrganizationIdentifier &oi)
+VendorSpecificContentManager::IsVscCallbackRegistered(OrganizationIdentifier& oi)
 {
-  NS_LOG_FUNCTION (this << oi);
-  if (m_callbacks.find (oi) == m_callbacks.end ())
+    NS_LOG_FUNCTION(this << oi);
+    if (m_callbacks.find(oi) == m_callbacks.end())
     {
-      OrganizationIdentifiers.push_back (oi);
-      return false;
+        OrganizationIdentifiers.push_back(oi);
+        return false;
     }
-  return true;
+    return true;
 }
 
-///VSC callback function
-static VscCallback null_callback = MakeNullCallback<bool, Ptr<WifiMac>, const OrganizationIdentifier &,Ptr<const Packet>,const Address &> ();
+/// VSC callback function
+static VscCallback null_callback = MakeNullCallback<bool,
+                                                    Ptr<WifiMac>,
+                                                    const OrganizationIdentifier&,
+                                                    Ptr<const Packet>,
+                                                    const Address&>();
 
 VscCallback
-VendorSpecificContentManager::FindVscCallback (OrganizationIdentifier &oi)
+VendorSpecificContentManager::FindVscCallback(OrganizationIdentifier& oi)
 {
-  NS_LOG_FUNCTION (this << oi);
-  VscCallbacksI i;
-  i = m_callbacks.find (oi);
-  return (i == m_callbacks.end ()) ? null_callback : i->second;
+    NS_LOG_FUNCTION(this << oi);
+    VscCallbacksI i;
+    i = m_callbacks.find(oi);
+    return (i == m_callbacks.end()) ? null_callback : i->second;
 }
 
 } // namespace ns3

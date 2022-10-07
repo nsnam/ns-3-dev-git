@@ -20,15 +20,17 @@
 #ifndef DOPPLER_PROCESS_H
 #define DOPPLER_PROCESS_H
 
-#include "ns3/object.h"
 #include "ns3/nstime.h"
+#include "ns3/object.h"
 #include "ns3/random-variable-stream.h"
+
 #include <complex>
 
 namespace ns3
 {
 class PropagationLossModel;
 class JakesPropagationLossModel;
+
 /**
  * \ingroup fading
  *
@@ -45,7 +47,8 @@ class JakesPropagationLossModel;
  * with
  * \f[ \alpha_n = \frac{2\pi n - \pi + \theta}{4M},  n=1,2, \ldots,M\f]
  * where
- *\f$\theta\f$, \f$\phi\f$, and \f$\psi_n\f$ are statically independent and uniformly distributed over \f$[-\pi, \pi)\f$ for all \f$n\f$.
+ *\f$\theta\f$, \f$\phi\f$, and \f$\psi_n\f$ are statically independent and uniformly distributed
+ *over \f$[-\pi, \pi)\f$ for all \f$n\f$.
  *
  *
  * [1] Y. R. Zheng and C. Xiao, "Simulation Models With Correct
@@ -54,83 +57,85 @@ class JakesPropagationLossModel;
  */
 class JakesProcess : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  JakesProcess ();
-  ~JakesProcess() override;
-
-  /**
-   * Get the channel complex gain
-   * \return the channel complex gain
-   */
-  std::complex<double> GetComplexGain () const;
-  /**
-   * Get the channel gain in dB
-   * \return the channel gain [dB]
-   */
-  double GetChannelGainDb () const;
-
-  /**
-   * Set the propagation model using this class
-   * \param model the propagation model using this class
-   */
-  void SetPropagationLossModel (Ptr<const PropagationLossModel> model);
-
-protected:
-  void DoDispose () override;
-
-private:
-  /**
-   * This class Represents a single oscillator
-   */
-  struct Oscillator
-  {
+  public:
     /**
-     * Initiate oscillator with complex amplitude, initial phase and rotation speed
-     * \param amplitude initial complex amplitude
-     * \param initialPhase initial phase
-     * \param omega rotation speed
+     * \brief Get the type ID.
+     * \return the object TypeId
      */
-    Oscillator (std::complex<double> amplitude, double initialPhase, double omega);
+    static TypeId GetTypeId();
+    JakesProcess();
+    ~JakesProcess() override;
+
     /**
-     * Get the complex amplitude at a given moment
-     * \param t time instant
-     * \returns the complex amplitude
+     * Get the channel complex gain
+     * \return the channel complex gain
      */
-    std::complex<double> GetValueAt (Time t) const;
+    std::complex<double> GetComplexGain() const;
+    /**
+     * Get the channel gain in dB
+     * \return the channel gain [dB]
+     */
+    double GetChannelGainDb() const;
 
-    std::complex<double> m_amplitude; //!< Complex number \f$Re=\cos(\psi_n), Im = i\sin(\psi_n)]\f$
-    double m_phase; //!< Phase \f$\phi_n\f$ of the oscillator
-    double m_omega; //!< Rotation speed of the oscillator \f$\omega_d \cos(\alpha_n)\f$
-  };
-private:
+    /**
+     * Set the propagation model using this class
+     * \param model the propagation model using this class
+     */
+    void SetPropagationLossModel(Ptr<const PropagationLossModel> model);
 
-  /**
-   * Set the number of Oscillators to use
-   * @param nOscillators the number of oscillators
-   */
-  void SetNOscillators (unsigned int nOscillators);
+  protected:
+    void DoDispose() override;
 
-  /**
-   * Set the Doppler frequency
-   * @param dopplerFrequencyHz the Doppler frequency [Hz]
-   */
-  void SetDopplerFrequencyHz (double dopplerFrequencyHz);
+  private:
+    /**
+     * This class Represents a single oscillator
+     */
+    struct Oscillator
+    {
+        /**
+         * Initiate oscillator with complex amplitude, initial phase and rotation speed
+         * \param amplitude initial complex amplitude
+         * \param initialPhase initial phase
+         * \param omega rotation speed
+         */
+        Oscillator(std::complex<double> amplitude, double initialPhase, double omega);
+        /**
+         * Get the complex amplitude at a given moment
+         * \param t time instant
+         * \returns the complex amplitude
+         */
+        std::complex<double> GetValueAt(Time t) const;
 
-  /**
-   * Builds the object Oscillators
-   */
-  void ConstructOscillators ();
-private:
-  std::vector<Oscillator> m_oscillators; //!< Vector of oscillators
-  double m_omegaDopplerMax; //!< max rotation speed Doppler frequency
-  unsigned int m_nOscillators;  //!< number of oscillators
-  Ptr<UniformRandomVariable> m_uniformVariable; //!< random stream
-  Ptr<const JakesPropagationLossModel> m_jakes; //!< pointer to the propagation loss model
+        std::complex<double>
+            m_amplitude; //!< Complex number \f$Re=\cos(\psi_n), Im = i\sin(\psi_n)]\f$
+        double m_phase;  //!< Phase \f$\phi_n\f$ of the oscillator
+        double m_omega;  //!< Rotation speed of the oscillator \f$\omega_d \cos(\alpha_n)\f$
+    };
+
+  private:
+    /**
+     * Set the number of Oscillators to use
+     * @param nOscillators the number of oscillators
+     */
+    void SetNOscillators(unsigned int nOscillators);
+
+    /**
+     * Set the Doppler frequency
+     * @param dopplerFrequencyHz the Doppler frequency [Hz]
+     */
+    void SetDopplerFrequencyHz(double dopplerFrequencyHz);
+
+    /**
+     * Builds the object Oscillators
+     */
+    void ConstructOscillators();
+
+  private:
+    std::vector<Oscillator> m_oscillators;        //!< Vector of oscillators
+    double m_omegaDopplerMax;                     //!< max rotation speed Doppler frequency
+    unsigned int m_nOscillators;                  //!< number of oscillators
+    Ptr<UniformRandomVariable> m_uniformVariable; //!< random stream
+    Ptr<const JakesPropagationLossModel> m_jakes; //!< pointer to the propagation loss model
 };
 } // namespace ns3
 #endif // DOPPLER_PROCESS_H

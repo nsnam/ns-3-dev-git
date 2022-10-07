@@ -20,308 +20,307 @@
  */
 
 #include "lte-ffr-simple.h"
-#include <ns3/log.h>
+
 #include "ns3/lte-rrc-sap.h"
+#include <ns3/log.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("LteFfrSimple");
-
-NS_OBJECT_ENSURE_REGISTERED (LteFfrSimple);
-
-
-LteFfrSimple::LteFfrSimple ()
-  : m_ffrSapUser (nullptr),
-    m_ffrRrcSapUser (nullptr),
-    m_dlOffset (0),
-    m_dlSubBand (0),
-    m_ulOffset (0),
-    m_ulSubBand (0),
-    m_measId (0),
-    m_changePdschConfigDedicated (false),
-    m_tpc (1),
-    m_tpcNum (0),
-    m_accumulatedMode (false)
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
-  m_ffrSapProvider = new MemberLteFfrSapProvider<LteFfrSimple> (this);
-  m_ffrRrcSapProvider = new MemberLteFfrRrcSapProvider<LteFfrSimple> (this);
+
+NS_LOG_COMPONENT_DEFINE("LteFfrSimple");
+
+NS_OBJECT_ENSURE_REGISTERED(LteFfrSimple);
+
+LteFfrSimple::LteFfrSimple()
+    : m_ffrSapUser(nullptr),
+      m_ffrRrcSapUser(nullptr),
+      m_dlOffset(0),
+      m_dlSubBand(0),
+      m_ulOffset(0),
+      m_ulSubBand(0),
+      m_measId(0),
+      m_changePdschConfigDedicated(false),
+      m_tpc(1),
+      m_tpcNum(0),
+      m_accumulatedMode(false)
+{
+    NS_LOG_FUNCTION(this);
+    m_ffrSapProvider = new MemberLteFfrSapProvider<LteFfrSimple>(this);
+    m_ffrRrcSapProvider = new MemberLteFfrRrcSapProvider<LteFfrSimple>(this);
 }
 
-
-LteFfrSimple::~LteFfrSimple ()
+LteFfrSimple::~LteFfrSimple()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
-
 
 void
-LteFfrSimple::DoDispose ()
+LteFfrSimple::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  delete m_ffrSapProvider;
-  delete m_ffrRrcSapProvider;
+    NS_LOG_FUNCTION(this);
+    delete m_ffrSapProvider;
+    delete m_ffrRrcSapProvider;
 }
-
 
 TypeId
-LteFfrSimple::GetTypeId ()
+LteFfrSimple::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::LteFfrSimple")
-    .SetParent<LteFfrAlgorithm> ()
-    .AddConstructor<LteFfrSimple> ()
-    .AddAttribute ("UlSubBandOffset",
-                   "Uplink Offset in number of Resource Block Groups",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&LteFfrSimple::m_ulOffset),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("UlSubBandwidth",
-                   "Uplink Transmission SubBandwidth Configuration in number of Resource Block Groups",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&LteFfrSimple::m_ulSubBand),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("DlSubBandOffset",
-                   "Downlink Offset in number of Resource Block Groups",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&LteFfrSimple::m_dlOffset),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("DlSubBandwidth",
-                   "Downlink Transmission SubBandwidth Configuration in number of Resource Block Groups",
-                   UintegerValue (12),
-                   MakeUintegerAccessor (&LteFfrSimple::m_dlSubBand),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddTraceSource ("ChangePdschConfigDedicated",
-                     "trace fired upon change of PdschConfigDedicated",
-                     MakeTraceSourceAccessor (&LteFfrSimple::m_changePdschConfigDedicatedTrace),
-                     "ns3::LteFfrSimple::PdschTracedCallback")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::LteFfrSimple")
+            .SetParent<LteFfrAlgorithm>()
+            .AddConstructor<LteFfrSimple>()
+            .AddAttribute("UlSubBandOffset",
+                          "Uplink Offset in number of Resource Block Groups",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&LteFfrSimple::m_ulOffset),
+                          MakeUintegerChecker<uint8_t>())
+            .AddAttribute(
+                "UlSubBandwidth",
+                "Uplink Transmission SubBandwidth Configuration in number of Resource Block Groups",
+                UintegerValue(25),
+                MakeUintegerAccessor(&LteFfrSimple::m_ulSubBand),
+                MakeUintegerChecker<uint8_t>())
+            .AddAttribute("DlSubBandOffset",
+                          "Downlink Offset in number of Resource Block Groups",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&LteFfrSimple::m_dlOffset),
+                          MakeUintegerChecker<uint8_t>())
+            .AddAttribute("DlSubBandwidth",
+                          "Downlink Transmission SubBandwidth Configuration in number of Resource "
+                          "Block Groups",
+                          UintegerValue(12),
+                          MakeUintegerAccessor(&LteFfrSimple::m_dlSubBand),
+                          MakeUintegerChecker<uint8_t>())
+            .AddTraceSource(
+                "ChangePdschConfigDedicated",
+                "trace fired upon change of PdschConfigDedicated",
+                MakeTraceSourceAccessor(&LteFfrSimple::m_changePdschConfigDedicatedTrace),
+                "ns3::LteFfrSimple::PdschTracedCallback");
+    return tid;
 }
-
 
 void
-LteFfrSimple::SetLteFfrSapUser (LteFfrSapUser* s)
+LteFfrSimple::SetLteFfrSapUser(LteFfrSapUser* s)
 {
-  NS_LOG_FUNCTION (this << s);
-  m_ffrSapUser = s;
+    NS_LOG_FUNCTION(this << s);
+    m_ffrSapUser = s;
 }
-
 
 LteFfrSapProvider*
-LteFfrSimple::GetLteFfrSapProvider ()
+LteFfrSimple::GetLteFfrSapProvider()
 {
-  NS_LOG_FUNCTION (this);
-  return m_ffrSapProvider;
+    NS_LOG_FUNCTION(this);
+    return m_ffrSapProvider;
 }
 
 void
-LteFfrSimple::SetLteFfrRrcSapUser (LteFfrRrcSapUser* s)
+LteFfrSimple::SetLteFfrRrcSapUser(LteFfrRrcSapUser* s)
 {
-  NS_LOG_FUNCTION (this << s);
-  m_ffrRrcSapUser = s;
+    NS_LOG_FUNCTION(this << s);
+    m_ffrRrcSapUser = s;
 }
-
 
 LteFfrRrcSapProvider*
-LteFfrSimple::GetLteFfrRrcSapProvider ()
+LteFfrSimple::GetLteFfrRrcSapProvider()
 {
-  NS_LOG_FUNCTION (this);
-  return m_ffrRrcSapProvider;
-}
-
-
-void
-LteFfrSimple::DoInitialize ()
-{
-  NS_LOG_FUNCTION (this);
-  LteFfrAlgorithm::DoInitialize ();
-
-  NS_LOG_LOGIC (this << " requesting Event A4 measurements"
-                     << " (threshold = 0" << ")");
-  LteRrcSap::ReportConfigEutra reportConfig;
-  reportConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
-  reportConfig.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
-  reportConfig.threshold1.range = 0;
-  reportConfig.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
-  reportConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS120;
-  m_measId = m_ffrRrcSapUser->AddUeMeasReportConfigForFfr (reportConfig);
-
-  m_pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
+    NS_LOG_FUNCTION(this);
+    return m_ffrRrcSapProvider;
 }
 
 void
-LteFfrSimple::Reconfigure ()
+LteFfrSimple::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
+    LteFfrAlgorithm::DoInitialize();
+
+    NS_LOG_LOGIC(this << " requesting Event A4 measurements"
+                      << " (threshold = 0"
+                      << ")");
+    LteRrcSap::ReportConfigEutra reportConfig;
+    reportConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+    reportConfig.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
+    reportConfig.threshold1.range = 0;
+    reportConfig.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+    reportConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS120;
+    m_measId = m_ffrRrcSapUser->AddUeMeasReportConfigForFfr(reportConfig);
+
+    m_pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
 }
 
 void
-LteFfrSimple::ChangePdschConfigDedicated (bool change)
+LteFfrSimple::Reconfigure()
 {
-  m_changePdschConfigDedicated = change;
+    NS_LOG_FUNCTION(this);
 }
 
 void
-LteFfrSimple::SetPdschConfigDedicated (LteRrcSap::PdschConfigDedicated pdschConfigDedicated)
+LteFfrSimple::ChangePdschConfigDedicated(bool change)
 {
-  m_pdschConfigDedicated = pdschConfigDedicated;
+    m_changePdschConfigDedicated = change;
 }
 
 void
-LteFfrSimple::SetTpc (uint32_t tpc, uint32_t num, bool acculumatedMode)
+LteFfrSimple::SetPdschConfigDedicated(LteRrcSap::PdschConfigDedicated pdschConfigDedicated)
 {
-  m_tpc = tpc;
-  m_tpcNum = num;
-  m_accumulatedMode = acculumatedMode;
+    m_pdschConfigDedicated = pdschConfigDedicated;
 }
 
-std::vector <bool>
-LteFfrSimple::DoGetAvailableDlRbg ()
+void
+LteFfrSimple::SetTpc(uint32_t tpc, uint32_t num, bool acculumatedMode)
 {
-  NS_LOG_FUNCTION (this);
+    m_tpc = tpc;
+    m_tpcNum = num;
+    m_accumulatedMode = acculumatedMode;
+}
 
-  if (m_dlRbgMap.empty ())
+std::vector<bool>
+LteFfrSimple::DoGetAvailableDlRbg()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (m_dlRbgMap.empty())
     {
-      int rbgSize = GetRbgSize (m_dlBandwidth);
-      m_dlRbgMap.resize (m_dlBandwidth / rbgSize, true);
+        int rbgSize = GetRbgSize(m_dlBandwidth);
+        m_dlRbgMap.resize(m_dlBandwidth / rbgSize, true);
 
-      for (uint8_t i = m_dlOffset; i < (m_dlOffset + m_dlSubBand); i++)
+        for (uint8_t i = m_dlOffset; i < (m_dlOffset + m_dlSubBand); i++)
         {
-          m_dlRbgMap[i] = false;
-
+            m_dlRbgMap[i] = false;
         }
     }
 
-  return m_dlRbgMap;
+    return m_dlRbgMap;
 }
 
 bool
-LteFfrSimple::DoIsDlRbgAvailableForUe (int i, uint16_t rnti)
+LteFfrSimple::DoIsDlRbgAvailableForUe(int i, uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this);
-  return true;
+    NS_LOG_FUNCTION(this);
+    return true;
 }
 
-std::vector <bool>
-LteFfrSimple::DoGetAvailableUlRbg ()
+std::vector<bool>
+LteFfrSimple::DoGetAvailableUlRbg()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_ulRbgMap.empty ())
+    if (m_ulRbgMap.empty())
     {
-      m_ulRbgMap.resize (m_ulBandwidth, true);
+        m_ulRbgMap.resize(m_ulBandwidth, true);
 
-      for (uint8_t i = m_ulOffset; i < (m_ulOffset + m_ulSubBand); i++)
+        for (uint8_t i = m_ulOffset; i < (m_ulOffset + m_ulSubBand); i++)
         {
-          m_ulRbgMap[i] = false;
+            m_ulRbgMap[i] = false;
         }
     }
 
-  return m_ulRbgMap;
+    return m_ulRbgMap;
 }
 
 bool
-LteFfrSimple::DoIsUlRbgAvailableForUe (int i, uint16_t rnti)
+LteFfrSimple::DoIsUlRbgAvailableForUe(int i, uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this);
-  return true;
+    NS_LOG_FUNCTION(this);
+    return true;
 }
 
 void
-LteFfrSimple::DoReportDlCqiInfo (const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
+LteFfrSimple::DoReportDlCqiInfo(
+    const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-LteFfrSimple::DoReportUlCqiInfo (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
+LteFfrSimple::DoReportUlCqiInfo(
+    const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-LteFfrSimple::DoReportUlCqiInfo (std::map <uint16_t, std::vector <double> > ulCqiMap)
+LteFfrSimple::DoReportUlCqiInfo(std::map<uint16_t, std::vector<double>> ulCqiMap)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 uint8_t
-LteFfrSimple::DoGetTpc (uint16_t rnti)
+LteFfrSimple::DoGetTpc(uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_accumulatedMode)
+    if (m_accumulatedMode)
     {
-      if (m_tpcNum > 0)
+        if (m_tpcNum > 0)
         {
-          m_tpcNum--;
-          return m_tpc;
+            m_tpcNum--;
+            return m_tpc;
         }
-      else
+        else
         {
-          return 1;
+            return 1;
         }
     }
-  else
+    else
     {
-      return m_tpc;
+        return m_tpc;
     }
 
-  return 1; // 1 is mapped to 0 for Accumulated mode, and to -1 in Absolute mode TS36.213 Table 5.1.1.1-2
+    return 1; // 1 is mapped to 0 for Accumulated mode, and to -1 in Absolute mode TS36.213
+              // Table 5.1.1.1-2
 }
 
 uint16_t
-LteFfrSimple::DoGetMinContinuousUlBandwidth ()
+LteFfrSimple::DoGetMinContinuousUlBandwidth()
 {
-  NS_LOG_FUNCTION (this);
-  return m_ulBandwidth;
+    NS_LOG_FUNCTION(this);
+    return m_ulBandwidth;
 }
 
 void
-LteFfrSimple::DoReportUeMeas (uint16_t rnti,
-                              LteRrcSap::MeasResults measResults)
+LteFfrSimple::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults)
 {
-  NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
+    NS_LOG_FUNCTION(this << rnti << (uint16_t)measResults.measId);
 
-  std::map<uint16_t, LteRrcSap::PdschConfigDedicated>::iterator it;
+    std::map<uint16_t, LteRrcSap::PdschConfigDedicated>::iterator it;
 
-  it = m_ues.find (rnti);
+    it = m_ues.find(rnti);
 
-  if (it == m_ues.end ())
+    if (it == m_ues.end())
     {
-      LteRrcSap::PdschConfigDedicated pdschConfigDedicated;
-      pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
-      m_ues.insert (std::pair<uint16_t, LteRrcSap::PdschConfigDedicated> (rnti,
-                                                                          pdschConfigDedicated));
+        LteRrcSap::PdschConfigDedicated pdschConfigDedicated;
+        pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
+        m_ues.insert(
+            std::pair<uint16_t, LteRrcSap::PdschConfigDedicated>(rnti, pdschConfigDedicated));
     }
 
-  if (m_changePdschConfigDedicated)
+    if (m_changePdschConfigDedicated)
     {
-      UpdatePdschConfigDedicated ();
+        UpdatePdschConfigDedicated();
     }
 }
 
 void
-LteFfrSimple::UpdatePdschConfigDedicated ()
+LteFfrSimple::UpdatePdschConfigDedicated()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  std::map<uint16_t, LteRrcSap::PdschConfigDedicated>::iterator it;
-  for (it = m_ues.begin (); it != m_ues.end (); it++)
+    std::map<uint16_t, LteRrcSap::PdschConfigDedicated>::iterator it;
+    for (it = m_ues.begin(); it != m_ues.end(); it++)
     {
-      if (it->second.pa != m_pdschConfigDedicated.pa)
+        if (it->second.pa != m_pdschConfigDedicated.pa)
         {
-          m_changePdschConfigDedicatedTrace (it->first, m_pdschConfigDedicated.pa);
-          LteRrcSap::PdschConfigDedicated pdschConfigDedicated = m_pdschConfigDedicated;
-          m_ffrRrcSapUser->SetPdschConfigDedicated (it->first, pdschConfigDedicated );
+            m_changePdschConfigDedicatedTrace(it->first, m_pdschConfigDedicated.pa);
+            LteRrcSap::PdschConfigDedicated pdschConfigDedicated = m_pdschConfigDedicated;
+            m_ffrRrcSapUser->SetPdschConfigDedicated(it->first, pdschConfigDedicated);
         }
     }
 }
 
 void
-LteFfrSimple::DoRecvLoadInformation (EpcX2Sap::LoadInformationParams params)
+LteFfrSimple::DoRecvLoadInformation(EpcX2Sap::LoadInformationParams params)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 } // end of namespace ns3

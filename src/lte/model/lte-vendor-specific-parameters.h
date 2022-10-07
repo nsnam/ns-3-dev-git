@@ -23,40 +23,36 @@
 
 #include <ns3/ff-mac-common.h>
 
-
 #define SRS_CQI_RNTI_VSP 1
 
-
-namespace ns3 {
+namespace ns3
+{
 
 /**
-* \brief Define the RNTI that has generated the
-*/
+ * \brief Define the RNTI that has generated the
+ */
 class SrsCqiRntiVsp : public VendorSpecificValue
 {
   public:
-  /**
-   * \brief SRS CQI RNTI VSP
-   *
-   * \param rnti the RNTI
-   */
-  SrsCqiRntiVsp (uint16_t rnti);
-  ~SrsCqiRntiVsp () override;
+    /**
+     * \brief SRS CQI RNTI VSP
+     *
+     * \param rnti the RNTI
+     */
+    SrsCqiRntiVsp(uint16_t rnti);
+    ~SrsCqiRntiVsp() override;
 
-  /**
-   * \brief Get RNTI function
-   *
-   * \returns the RNTI
-   */
-  uint16_t GetRnti ();
+    /**
+     * \brief Get RNTI function
+     *
+     * \returns the RNTI
+     */
+    uint16_t GetRnti();
 
   private:
-  uint16_t m_rnti; ///< the rnti
+    uint16_t m_rnti; ///< the rnti
 };
-
-
 
 }; // namespace ns3
 
 #endif /* LTE_VENDOR_SPECIFIC_PARAMETERS */
-

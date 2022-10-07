@@ -19,81 +19,82 @@
  *
  */
 
-#include "ns3/log.h"
 #include "seq-ts-size-header.h"
 
-namespace ns3 {
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SeqTsSizeHeader");
-
-NS_OBJECT_ENSURE_REGISTERED (SeqTsSizeHeader);
-
-SeqTsSizeHeader::SeqTsSizeHeader ()
-  : SeqTsHeader ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("SeqTsSizeHeader");
+
+NS_OBJECT_ENSURE_REGISTERED(SeqTsSizeHeader);
+
+SeqTsSizeHeader::SeqTsSizeHeader()
+    : SeqTsHeader()
+{
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-SeqTsSizeHeader::GetTypeId ()
+SeqTsSizeHeader::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::SeqTsSizeHeader")
-    .SetParent<SeqTsHeader> ()
-    .SetGroupName ("Applications")
-    .AddConstructor<SeqTsSizeHeader> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::SeqTsSizeHeader")
+                            .SetParent<SeqTsHeader>()
+                            .SetGroupName("Applications")
+                            .AddConstructor<SeqTsSizeHeader>();
+    return tid;
 }
 
 TypeId
-SeqTsSizeHeader::GetInstanceTypeId () const
+SeqTsSizeHeader::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
 void
-SeqTsSizeHeader::SetSize (uint64_t size)
+SeqTsSizeHeader::SetSize(uint64_t size)
 {
-  m_size = size;
+    m_size = size;
 }
 
 uint64_t
-SeqTsSizeHeader::GetSize () const
+SeqTsSizeHeader::GetSize() const
 {
-  return m_size;
+    return m_size;
 }
 
 void
-SeqTsSizeHeader::Print (std::ostream &os) const
+SeqTsSizeHeader::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this << &os);
-  os << "(size=" << m_size << ") AND ";
-  SeqTsHeader::Print (os);
+    NS_LOG_FUNCTION(this << &os);
+    os << "(size=" << m_size << ") AND ";
+    SeqTsHeader::Print(os);
 }
 
 uint32_t
-SeqTsSizeHeader::GetSerializedSize () const
+SeqTsSizeHeader::GetSerializedSize() const
 {
-  return SeqTsHeader::GetSerializedSize () + 8;
+    return SeqTsHeader::GetSerializedSize() + 8;
 }
 
 void
-SeqTsSizeHeader::Serialize (Buffer::Iterator start) const
+SeqTsSizeHeader::Serialize(Buffer::Iterator start) const
 {
-  NS_LOG_FUNCTION (this << &start);
-  Buffer::Iterator i = start;
-  i.WriteHtonU64 (m_size);
-  SeqTsHeader::Serialize (i);
+    NS_LOG_FUNCTION(this << &start);
+    Buffer::Iterator i = start;
+    i.WriteHtonU64(m_size);
+    SeqTsHeader::Serialize(i);
 }
 
 uint32_t
-SeqTsSizeHeader::Deserialize (Buffer::Iterator start)
+SeqTsSizeHeader::Deserialize(Buffer::Iterator start)
 {
-  NS_LOG_FUNCTION (this << &start);
-  Buffer::Iterator i = start;
-  m_size = i.ReadNtohU64 ();
-  SeqTsHeader::Deserialize (i);
-  return GetSerializedSize ();
+    NS_LOG_FUNCTION(this << &start);
+    Buffer::Iterator i = start;
+    m_size = i.ReadNtohU64();
+    SeqTsHeader::Deserialize(i);
+    return GetSerializedSize();
 }
 
 } // namespace ns3

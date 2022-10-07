@@ -23,63 +23,63 @@
 
 using namespace ns3;
 
-namespace {
+namespace
+{
 
 /**
  * This function creates a 2-Dimensional plot.
  */
-void Create2dPlot ()
+void
+Create2dPlot()
 {
-  std::string fileNameWithoutExtension = "gnuplot-aggregator";
-  std::string plotTitle                = "Gnuplot Aggregator Plot";
-  std::string plotXAxisHeading         = "Time (seconds)";
-  std::string plotYAxisHeading         = "Double Values";
-  std::string plotDatasetLabel         = "Data Values";
-  std::string datasetContext           = "Dataset/Context/String";
+    std::string fileNameWithoutExtension = "gnuplot-aggregator";
+    std::string plotTitle = "Gnuplot Aggregator Plot";
+    std::string plotXAxisHeading = "Time (seconds)";
+    std::string plotYAxisHeading = "Double Values";
+    std::string plotDatasetLabel = "Data Values";
+    std::string datasetContext = "Dataset/Context/String";
 
-  // Create an aggregator.
-  Ptr<GnuplotAggregator> aggregator =
-    CreateObject<GnuplotAggregator> (fileNameWithoutExtension);
+    // Create an aggregator.
+    Ptr<GnuplotAggregator> aggregator = CreateObject<GnuplotAggregator>(fileNameWithoutExtension);
 
-  // Set the aggregator's properties.
-  aggregator->SetTerminal ("png");
-  aggregator->SetTitle (plotTitle);
-  aggregator->SetLegend (plotXAxisHeading, plotYAxisHeading);
+    // Set the aggregator's properties.
+    aggregator->SetTerminal("png");
+    aggregator->SetTitle(plotTitle);
+    aggregator->SetLegend(plotXAxisHeading, plotYAxisHeading);
 
-  // Add a data set to the aggregator.
-  aggregator->Add2dDataset (datasetContext, plotDatasetLabel);
+    // Add a data set to the aggregator.
+    aggregator->Add2dDataset(datasetContext, plotDatasetLabel);
 
-  // aggregator must be turned on
-  aggregator->Enable ();
+    // aggregator must be turned on
+    aggregator->Enable();
 
-  double time;
-  double value;
+    double time;
+    double value;
 
-  // Create the 2-D dataset.
-  for (time = -5.0; time <= +5.0; time += 1.0)
+    // Create the 2-D dataset.
+    for (time = -5.0; time <= +5.0; time += 1.0)
     {
-      // Calculate the 2-D curve
-      //
-      //                   2
-      //     value  =  time   .
-      //
-      value = time * time;
+        // Calculate the 2-D curve
+        //
+        //                   2
+        //     value  =  time   .
+        //
+        value = time * time;
 
-      // Add this point to the plot.
-      aggregator->Write2d (datasetContext, time, value);
+        // Add this point to the plot.
+        aggregator->Write2d(datasetContext, time, value);
     }
 
-  // Disable logging of data for the aggregator.
-  aggregator->Disable ();
+    // Disable logging of data for the aggregator.
+    aggregator->Disable();
 }
 
+} // unnamed namespace
 
-}  // unnamed namespace
-
-
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  Create2dPlot ();
+    Create2dPlot();
 
-  return 0;
+    return 0;
 }

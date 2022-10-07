@@ -30,11 +30,12 @@
  * In addition comment blocks have been converted to Doxygen format.
  */
 
-#include <sys/types.h>
-#include <stdlib.h>
+#include "hash-fnv.h"
 
 #include "log.h"
-#include "hash-fnv.h"
+
+#include <stdlib.h>
+#include <sys/types.h>
 
 /**
  * \file
@@ -42,17 +43,20 @@
  * \brief ns3::Hash::Function::Fnv1a implementation.
  */
 
+namespace ns3
+{
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("Hash-Fnv");
 
-NS_LOG_COMPONENT_DEFINE ("Hash-Fnv");
+namespace Hash
+{
 
-namespace Hash {
-
-namespace Function {
+namespace Function
+{
 
 /** FNV hash implementation details. */
-namespace Fnv1aImplementation {
+namespace Fnv1aImplementation
+{
 
 /*************************************************
  **  class FnvHashImplementation
@@ -64,13 +68,13 @@ namespace Fnv1aImplementation {
  */
 /**@{*/
 
-extern "C" {
+extern "C"
+{
+    // Changes from FNV distribution are marked with `//PDB'
+    //
 
-// Changes from FNV distribution are marked with `//PDB'
-//
-
-// NOLINTBEGIN
-// clang-format off
+    // NOLINTBEGIN
+    // clang-format off
 
 /*
  * fnv - Fowler/Noll/Vo- hash code
@@ -728,48 +732,45 @@ fnv_64a_str(char *str, Fnv64_t hval)
     return hval;
 }
 
-// clang-format on
-// NOLINTEND
+    // clang-format on
+    // NOLINTEND
 
 } /* extern "C" */
 
 //-----------------------------------------------------------------------------
 
-/**@}*/  // \defgroup hash_fnv
+/**@}*/ // \defgroup hash_fnv
 
-}  // namespace Fnv1aImplementation
+} // namespace Fnv1aImplementation
 
-
-Fnv1a::Fnv1a ()
+Fnv1a::Fnv1a()
 {
-  clear ();
+    clear();
 }
 
 uint32_t
-Fnv1a::GetHash32  (const char * buffer, const std::size_t size)
+Fnv1a::GetHash32(const char* buffer, const std::size_t size)
 {
-  m_hash32 =
-    Fnv1aImplementation::fnv_32a_buf ((void *)buffer, size, m_hash32);
-  return m_hash32;
+    m_hash32 = Fnv1aImplementation::fnv_32a_buf((void*)buffer, size, m_hash32);
+    return m_hash32;
 }
 
 uint64_t
-Fnv1a::GetHash64  (const char * buffer, const std::size_t size)
+Fnv1a::GetHash64(const char* buffer, const std::size_t size)
 {
-  m_hash64 =
-    Fnv1aImplementation::fnv_64a_buf ((void *)buffer, size, m_hash64);
-  return m_hash64;
+    m_hash64 = Fnv1aImplementation::fnv_64a_buf((void*)buffer, size, m_hash64);
+    return m_hash64;
 }
 
 void
-Fnv1a::clear ()
+Fnv1a::clear()
 {
-  m_hash32 = FNV1_32A_INIT;
-  m_hash64 = FNV1A_64_INIT;
+    m_hash32 = FNV1_32A_INIT;
+    m_hash64 = FNV1A_64_INIT;
 }
 
-}  // namespace Function
+} // namespace Function
 
-}  // namespace Hash
+} // namespace Hash
 
-}  // namespace ns3
+} // namespace ns3

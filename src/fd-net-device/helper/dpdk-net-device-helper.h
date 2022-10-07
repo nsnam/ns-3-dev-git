@@ -24,7 +24,8 @@
 
 #include "ns3/emu-fd-net-device-helper.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup dpdk-net-device
@@ -34,64 +35,64 @@ namespace ns3 {
  */
 class DpdkNetDeviceHelper : public EmuFdNetDeviceHelper
 {
-public:
-  /**
-   * Construct a DpdkNetDeviceHelper and initialize DPDK EAL
-   *
-   * \param argc Dpdk EAL args count.
-   * \param argv Dpdk EAL args list.
-   */
-  DpdkNetDeviceHelper ();
+  public:
+    /**
+     * Construct a DpdkNetDeviceHelper and initialize DPDK EAL
+     *
+     * \param argc Dpdk EAL args count.
+     * \param argv Dpdk EAL args list.
+     */
+    DpdkNetDeviceHelper();
 
-  virtual ~DpdkNetDeviceHelper ()
-  {}
+    virtual ~DpdkNetDeviceHelper()
+    {
+    }
 
-  /**
-   * \brief Sets list of logical cores to use
-   *
-   * \param lCoreList Comma separated logical core list (e.g., "0,1")
-   */
-  void SetLCoreList (std::string lCoreList);
+    /**
+     * \brief Sets list of logical cores to use
+     *
+     * \param lCoreList Comma separated logical core list (e.g., "0,1")
+     */
+    void SetLCoreList(std::string lCoreList);
 
-  /**
-   * \brief Sets PMD Library to be used for the NIC
-   *
-   * \param pmdLibrary The PMD Library
-   */
-  void SetPmdLibrary (std::string pmdLibrary);
+    /**
+     * \brief Sets PMD Library to be used for the NIC
+     *
+     * \param pmdLibrary The PMD Library
+     */
+    void SetPmdLibrary(std::string pmdLibrary);
 
-  /**
-   * \brief Sets DPDK Driver to bind NIC to
-   *
-   * \param dpdkDriver The DPDK Driver
-   */
-  void SetDpdkDriver (std::string dpdkDriver);
+    /**
+     * \brief Sets DPDK Driver to bind NIC to
+     *
+     * \param dpdkDriver The DPDK Driver
+     */
+    void SetDpdkDriver(std::string dpdkDriver);
 
-protected:
-  /**
-   * \brief This method creates an ns3::FdNetDevice attached to a physical network
-   * interface
-   *
-   * \param node The node to install the device in
-   * \returns A container holding the added net device.
-   */
-  Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
+  protected:
+    /**
+     * \brief This method creates an ns3::FdNetDevice attached to a physical network
+     * interface
+     *
+     * \param node The node to install the device in
+     * \returns A container holding the added net device.
+     */
+    Ptr<NetDevice> InstallPriv(Ptr<Node> node) const;
 
-  /**
-   * Logical cores to use
-   */
-  std::string m_lCoreList;
+    /**
+     * Logical cores to use
+     */
+    std::string m_lCoreList;
 
-  /**
-   * PMD Library to be used for NIC
-   */
-  std::string m_pmdLibrary;
+    /**
+     * PMD Library to be used for NIC
+     */
+    std::string m_pmdLibrary;
 
-  /**
-   * DPDK Driver to bind NIC to
-   */
-  std::string m_dpdkDriver;
-
+    /**
+     * DPDK Driver to bind NIC to
+     */
+    std::string m_dpdkDriver;
 };
 
 } // namespace ns3

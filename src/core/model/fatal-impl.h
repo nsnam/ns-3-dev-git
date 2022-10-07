@@ -35,13 +35,15 @@
  * \defgroup fatalimpl Fatal Implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup fatalimpl
  * \brief Implementation namespace for fatal error handlers.
  */
-namespace FatalImpl {
+namespace FatalImpl
+{
 
 /**
  * \ingroup fatalimpl
@@ -56,7 +58,7 @@ namespace FatalImpl {
  *
  * \param [in] stream The stream to be flushed on abnormal exit.
  */
-void RegisterStream (std::ostream* stream);
+void RegisterStream(std::ostream* stream);
 
 /**
  * \ingroup fatalimpl
@@ -71,7 +73,7 @@ void RegisterStream (std::ostream* stream);
  *
  * \param [in] stream The stream to be unregistered.
  */
-void UnregisterStream (std::ostream* stream);
+void UnregisterStream(std::ostream* stream);
 
 /**
  * \ingroup fatalimpl
@@ -91,9 +93,9 @@ void UnregisterStream (std::ostream* stream);
  *
  * DO NOT call this function until the program is ready to crash.
  */
-void FlushStreams ();
+void FlushStreams();
 
-} //FatalImpl
-} //ns3
+} // namespace FatalImpl
+} // namespace ns3
 
 #endif

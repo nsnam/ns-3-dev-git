@@ -23,72 +23,73 @@
 
 #include "ns3/dpdk-net-device.h"
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("DpdkNetDeviceHelper");
-
-DpdkNetDeviceHelper::DpdkNetDeviceHelper ()
-  : m_lCoreList ("0,1"),
-    m_pmdLibrary ("librte_pmd_e1000.so"),
-    m_dpdkDriver ("uio_pci_generic")
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
-  SetTypeId ("ns3::DpdkNetDevice");
+
+NS_LOG_COMPONENT_DEFINE("DpdkNetDeviceHelper");
+
+DpdkNetDeviceHelper::DpdkNetDeviceHelper()
+    : m_lCoreList("0,1"),
+      m_pmdLibrary("librte_pmd_e1000.so"),
+      m_dpdkDriver("uio_pci_generic")
+{
+    NS_LOG_FUNCTION(this);
+    SetTypeId("ns3::DpdkNetDevice");
 }
 
 void
-DpdkNetDeviceHelper::SetLCoreList (std::string lCoreList)
+DpdkNetDeviceHelper::SetLCoreList(std::string lCoreList)
 {
-  m_lCoreList = lCoreList;
+    m_lCoreList = lCoreList;
 }
 
 void
-DpdkNetDeviceHelper::SetPmdLibrary (std::string pmdLibrary)
+DpdkNetDeviceHelper::SetPmdLibrary(std::string pmdLibrary)
 {
-  m_pmdLibrary = pmdLibrary;
+    m_pmdLibrary = pmdLibrary;
 }
 
 void
-DpdkNetDeviceHelper::SetDpdkDriver (std::string dpdkDriver)
+DpdkNetDeviceHelper::SetDpdkDriver(std::string dpdkDriver)
 {
-  m_dpdkDriver = dpdkDriver;
+    m_dpdkDriver = dpdkDriver;
 }
 
 Ptr<NetDevice>
-DpdkNetDeviceHelper::InstallPriv (Ptr<Node> node) const
+DpdkNetDeviceHelper::InstallPriv(Ptr<Node> node) const
 {
-  NS_LOG_FUNCTION (this);
-  Ptr<NetDevice> device = FdNetDeviceHelper::InstallPriv (node);
-  Ptr<DpdkNetDevice> dpdkDevice = DynamicCast<DpdkNetDevice> (device);
-  dpdkDevice->SetDeviceName (m_deviceName);
+    NS_LOG_FUNCTION(this);
+    Ptr<NetDevice> device = FdNetDeviceHelper::InstallPriv(node);
+    Ptr<DpdkNetDevice> dpdkDevice = DynamicCast<DpdkNetDevice>(device);
+    dpdkDevice->SetDeviceName(m_deviceName);
 
-  // Set EAL arguments
-  char **ealArgv = new char*[20];
+    // Set EAL arguments
+    char** ealArgv = new char*[20];
 
-  // arg[0] is program name (optional)
-  ealArgv[0] = new char[20];
-  strcpy (ealArgv[0], "");
+    // arg[0] is program name (optional)
+    ealArgv[0] = new char[20];
+    strcpy(ealArgv[0], "");
 
-  // Logical core usage
-  ealArgv[1] = new char[20];
-  strcpy (ealArgv[1], "-l");
-  ealArgv[2] = new char[20];
-  strcpy (ealArgv[2], m_lCoreList.c_str ());
+    // Logical core usage
+    ealArgv[1] = new char[20];
+    strcpy(ealArgv[1], "-l");
+    ealArgv[2] = new char[20];
+    strcpy(ealArgv[2], m_lCoreList.c_str());
 
-  // Load library
-  ealArgv[3] = new char[20];
-  strcpy (ealArgv[3], "-d");
-  ealArgv[4] = new char[50];
-  strcpy (ealArgv[4], m_pmdLibrary.c_str ());
+    // Load library
+    ealArgv[3] = new char[20];
+    strcpy(ealArgv[3], "-d");
+    ealArgv[4] = new char[50];
+    strcpy(ealArgv[4], m_pmdLibrary.c_str());
 
-  // Use mempool ring library
-  ealArgv[5] = new char[20];
-  strcpy (ealArgv[5], "-d");
-  ealArgv[6] = new char[50];
-  strcpy (ealArgv[6], "librte_mempool_ring.so");
+    // Use mempool ring library
+    ealArgv[5] = new char[20];
+    strcpy(ealArgv[5], "-d");
+    ealArgv[6] = new char[50];
+    strcpy(ealArgv[6], "librte_mempool_ring.so");
 
-  dpdkDevice->InitDpdk (7, ealArgv, m_dpdkDriver);
-  return dpdkDevice;
+    dpdkDevice->InitDpdk(7, ealArgv, m_dpdkDriver);
+    return dpdkDevice;
 }
 
 } // namespace ns3

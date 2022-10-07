@@ -18,69 +18,64 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/pointer.h"
-#include "ns3/log.h"
-#include "ns3/queue.h"
 #include "lte-simple-net-device.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/pointer.h"
+#include "ns3/queue.h"
+#include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteSimpleNetDevice");
-
-NS_OBJECT_ENSURE_REGISTERED (LteSimpleNetDevice);
-
-
-TypeId LteSimpleNetDevice::GetTypeId ()
+namespace ns3
 {
-  static TypeId
-    tid =
-    TypeId ("ns3::LteSimpleNetDevice")
-    .SetParent<SimpleNetDevice> ()
-    .AddConstructor<LteSimpleNetDevice> ()
-  ;
 
-  return tid;
+NS_LOG_COMPONENT_DEFINE("LteSimpleNetDevice");
+
+NS_OBJECT_ENSURE_REGISTERED(LteSimpleNetDevice);
+
+TypeId
+LteSimpleNetDevice::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::LteSimpleNetDevice")
+                            .SetParent<SimpleNetDevice>()
+                            .AddConstructor<LteSimpleNetDevice>();
+
+    return tid;
 }
 
-
-LteSimpleNetDevice::LteSimpleNetDevice ()
+LteSimpleNetDevice::LteSimpleNetDevice()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-
-LteSimpleNetDevice::LteSimpleNetDevice (Ptr<Node> node)
+LteSimpleNetDevice::LteSimpleNetDevice(Ptr<Node> node)
 {
-  NS_LOG_FUNCTION (this);
-  SetNode (node);
+    NS_LOG_FUNCTION(this);
+    SetNode(node);
 }
 
-LteSimpleNetDevice::~LteSimpleNetDevice ()
+LteSimpleNetDevice::~LteSimpleNetDevice()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-LteSimpleNetDevice::DoDispose ()
+LteSimpleNetDevice::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  SimpleNetDevice::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    SimpleNetDevice::DoDispose();
 }
 
-
 void
-LteSimpleNetDevice::DoInitialize ()
+LteSimpleNetDevice::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 bool
-LteSimpleNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+LteSimpleNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this << dest << protocolNumber);
-  return SimpleNetDevice::Send (packet, dest, protocolNumber);
+    NS_LOG_FUNCTION(this << dest << protocolNumber);
+    return SimpleNetDevice::Send(packet, dest, protocolNumber);
 }
-
 
 } // namespace ns3

@@ -20,5 +20,6 @@
  *
  * Authors: Ameya Deshpande <ameyanrd@outlook.com>
  */
-#pragma GCC warning "NS_DEPRECATED_3_35 - Deprecated header, please use nix-vector-routing.h instead"
+#pragma GCC warning                                                                                \
+    "NS_DEPRECATED_3_35 - Deprecated header, please use nix-vector-routing.h instead"
 #include "nix-vector-routing.h"

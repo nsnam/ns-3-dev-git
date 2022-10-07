@@ -18,17 +18,15 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-
 #ifndef SPECTRUM_SIGNAL_PARAMETERS_H
 #define SPECTRUM_SIGNAL_PARAMETERS_H
 
-
-#include <ns3/simple-ref-count.h>
-#include <ns3/ptr.h>
 #include <ns3/nstime.h>
+#include <ns3/ptr.h>
+#include <ns3/simple-ref-count.h>
 
-
-namespace ns3 {
+namespace ns3
+{
 
 class SpectrumPhy;
 class SpectrumValue;
@@ -50,73 +48,72 @@ class AntennaModel;
  * directly from this struct, each PHY can test (by using a dynamic
  * cast) if a signal being received belongs to a given technology or not.
  *
- * \note when inheriting from this class, make sure that the assignment operator and the copy constructor work properly, making deep copies if needed.
+ * \note when inheriting from this class, make sure that the assignment operator and the copy
+ * constructor work properly, making deep copies if needed.
  */
 struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters>
 {
-  /**
-   * default constructor
-   */
-  SpectrumSignalParameters ();
+    /**
+     * default constructor
+     */
+    SpectrumSignalParameters();
 
-  /**
-   * destructor
-   */
-  virtual ~SpectrumSignalParameters ();
+    /**
+     * destructor
+     */
+    virtual ~SpectrumSignalParameters();
 
-  /**
-   * copy constructor
-   * \param p object to copy
-   */
-  SpectrumSignalParameters (const SpectrumSignalParameters& p);
+    /**
+     * copy constructor
+     * \param p object to copy
+     */
+    SpectrumSignalParameters(const SpectrumSignalParameters& p);
 
-  /**
-   * make a "virtual" copy of this class, where "virtual" refers to
-   * the fact that if the actual object is a derived class of
-   * SpectrumSignalParameters, then the copy is also a derived class
-   * of the same type.
-   * Each class inheriting from
-   * SpectrumSignalParameters should override this method and use it
-   * to call the copy constructor of the derived class.
-   *
-   * \return a copy of the (possibly derived) class
-   */
-  virtual Ptr<SpectrumSignalParameters> Copy () const;
+    /**
+     * make a "virtual" copy of this class, where "virtual" refers to
+     * the fact that if the actual object is a derived class of
+     * SpectrumSignalParameters, then the copy is also a derived class
+     * of the same type.
+     * Each class inheriting from
+     * SpectrumSignalParameters should override this method and use it
+     * to call the copy constructor of the derived class.
+     *
+     * \return a copy of the (possibly derived) class
+     */
+    virtual Ptr<SpectrumSignalParameters> Copy() const;
 
-  /**
-   * The Power Spectral Density of the
-   * waveform, in linear units. The exact unit will depend on the
-   * type of transmission medium involved: W for radio communications, Pa for
-   * underwater acoustic communications. Other transmission media to
-   * be defined.
-   *
-   * \note when SpectrumSignalParameters is copied, only the pointer to the PSD will be copied. This is because SpectrumChannel objects normally overwrite the psd anyway, so there is no point in making a copy.
-   */
-  Ptr <SpectrumValue> psd;
+    /**
+     * The Power Spectral Density of the
+     * waveform, in linear units. The exact unit will depend on the
+     * type of transmission medium involved: W for radio communications, Pa for
+     * underwater acoustic communications. Other transmission media to
+     * be defined.
+     *
+     * \note when SpectrumSignalParameters is copied, only the pointer to the PSD will be copied.
+     * This is because SpectrumChannel objects normally overwrite the psd anyway, so there is no
+     * point in making a copy.
+     */
+    Ptr<SpectrumValue> psd;
 
-  /**
-   * The duration of the packet transmission. It is
-   * assumed that the Power Spectral Density remains constant for the
-   * whole duration of the transmission. In other words, all waveform
-   * have a rect shape with respect to time.
-   */
-  Time duration;
+    /**
+     * The duration of the packet transmission. It is
+     * assumed that the Power Spectral Density remains constant for the
+     * whole duration of the transmission. In other words, all waveform
+     * have a rect shape with respect to time.
+     */
+    Time duration;
 
-  /**
-   * The SpectrumPhy instance that is making the transmission
-   */
-  Ptr<SpectrumPhy> txPhy;
+    /**
+     * The SpectrumPhy instance that is making the transmission
+     */
+    Ptr<SpectrumPhy> txPhy;
 
-  /**
-   * The AntennaModel instance that was used to transmit this signal.
-   */
-  Ptr<AntennaModel> txAntenna;
+    /**
+     * The AntennaModel instance that was used to transmit this signal.
+     */
+    Ptr<AntennaModel> txAntenna;
 };
 
-
-}
-
-
-
+} // namespace ns3
 
 #endif /* SPECTRUM_SIGNAL_PARAMETERS_H */

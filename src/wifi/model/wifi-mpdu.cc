@@ -21,266 +21,268 @@
  *          Stefano Avallone <stavallo@unina.it>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/packet.h"
-#include "ns3/log.h"
-#include "wifi-mac-trailer.h"
 #include "wifi-mpdu.h"
-#include "wifi-utils.h"
+
 #include "msdu-aggregator.h"
+#include "wifi-mac-trailer.h"
+#include "wifi-utils.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiMpdu");
-
-WifiMpdu::WifiMpdu (Ptr<const Packet> p, const WifiMacHeader & header)
-  : m_packet (p),
-    m_header (header)
+namespace ns3
 {
-  if (header.IsQosData () && header.IsQosAmsdu ())
+
+NS_LOG_COMPONENT_DEFINE("WifiMpdu");
+
+WifiMpdu::WifiMpdu(Ptr<const Packet> p, const WifiMacHeader& header)
+    : m_packet(p),
+      m_header(header)
+{
+    if (header.IsQosData() && header.IsQosAmsdu())
     {
-      m_msduList = MsduAggregator::Deaggregate (p->Copy ());
+        m_msduList = MsduAggregator::Deaggregate(p->Copy());
     }
-  m_inFlight = false;
+    m_inFlight = false;
 }
 
-WifiMpdu::~WifiMpdu ()
+WifiMpdu::~WifiMpdu()
 {
 }
 
 Ptr<const Packet>
-WifiMpdu::GetPacket () const
+WifiMpdu::GetPacket() const
 {
-  return m_packet;
+    return m_packet;
 }
 
 const WifiMacHeader&
-WifiMpdu::GetHeader () const
+WifiMpdu::GetHeader() const
 {
-  return m_header;
+    return m_header;
 }
 
 WifiMacHeader&
-WifiMpdu::GetHeader ()
+WifiMpdu::GetHeader()
 {
-  return m_header;
+    return m_header;
 }
 
 Mac48Address
-WifiMpdu::GetDestinationAddress () const
+WifiMpdu::GetDestinationAddress() const
 {
-  return m_header.GetAddr1 ();
+    return m_header.GetAddr1();
 }
 
 uint32_t
-WifiMpdu::GetPacketSize () const
+WifiMpdu::GetPacketSize() const
 {
-  return m_packet->GetSize ();
+    return m_packet->GetSize();
 }
 
 uint32_t
-WifiMpdu::GetSize () const
+WifiMpdu::GetSize() const
 {
-  return GetPacketSize () + m_header.GetSerializedSize () + WIFI_MAC_FCS_LENGTH;
+    return GetPacketSize() + m_header.GetSerializedSize() + WIFI_MAC_FCS_LENGTH;
 }
 
 bool
-WifiMpdu::IsFragment () const
+WifiMpdu::IsFragment() const
 {
-  return m_header.IsMoreFragments () || m_header.GetFragmentNumber () > 0;
+    return m_header.IsMoreFragments() || m_header.GetFragmentNumber() > 0;
 }
 
 Ptr<Packet>
-WifiMpdu::GetProtocolDataUnit () const
+WifiMpdu::GetProtocolDataUnit() const
 {
-  Ptr<Packet> mpdu = m_packet->Copy ();
-  mpdu->AddHeader (m_header);
-  AddWifiMacTrailer (mpdu);
-  return mpdu;
+    Ptr<Packet> mpdu = m_packet->Copy();
+    mpdu->AddHeader(m_header);
+    AddWifiMacTrailer(mpdu);
+    return mpdu;
 }
 
 void
-WifiMpdu::Aggregate (Ptr<const WifiMpdu> msdu)
+WifiMpdu::Aggregate(Ptr<const WifiMpdu> msdu)
 {
-  NS_ASSERT (msdu);
-  NS_LOG_FUNCTION (this << *msdu);
-  NS_ABORT_MSG_IF (!msdu->GetHeader ().IsQosData () || msdu->GetHeader ().IsQosAmsdu (),
-                   "Only QoS data frames that do not contain an A-MSDU can be aggregated");
+    NS_ASSERT(msdu);
+    NS_LOG_FUNCTION(this << *msdu);
+    NS_ABORT_MSG_IF(!msdu->GetHeader().IsQosData() || msdu->GetHeader().IsQosAmsdu(),
+                    "Only QoS data frames that do not contain an A-MSDU can be aggregated");
 
-  if (m_msduList.empty ())
+    if (m_msduList.empty())
     {
-      // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
-      Ptr<const WifiMpdu> firstMsdu = Create<const WifiMpdu> (*this);
-      m_packet = Create<Packet> ();
-      DoAggregate (firstMsdu);
+        // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
+        Ptr<const WifiMpdu> firstMsdu = Create<const WifiMpdu>(*this);
+        m_packet = Create<Packet>();
+        DoAggregate(firstMsdu);
 
-      m_header.SetQosAmsdu ();
-      // Set Address3 according to Table 9-26 of 802.11-2016
-      if (m_header.IsToDs () && !m_header.IsFromDs ())
+        m_header.SetQosAmsdu();
+        // Set Address3 according to Table 9-26 of 802.11-2016
+        if (m_header.IsToDs() && !m_header.IsFromDs())
         {
-          // from STA to AP: BSSID is in Address1
-          m_header.SetAddr3 (m_header.GetAddr1 ());
+            // from STA to AP: BSSID is in Address1
+            m_header.SetAddr3(m_header.GetAddr1());
         }
-      else if (!m_header.IsToDs () && m_header.IsFromDs ())
+        else if (!m_header.IsToDs() && m_header.IsFromDs())
         {
-          // from AP to STA: BSSID is in Address2
-          m_header.SetAddr3 (m_header.GetAddr2 ());
+            // from AP to STA: BSSID is in Address2
+            m_header.SetAddr3(m_header.GetAddr2());
         }
-      // in the WDS case (ToDS = FromDS = 1), both Address 3 and Address 4 need
-      // to be set to the BSSID, but neither Address 1 nor Address 2 contain the
-      // BSSID. Hence, it is left up to the caller to set these Address fields.
+        // in the WDS case (ToDS = FromDS = 1), both Address 3 and Address 4 need
+        // to be set to the BSSID, but neither Address 1 nor Address 2 contain the
+        // BSSID. Hence, it is left up to the caller to set these Address fields.
     }
-  DoAggregate (msdu);
+    DoAggregate(msdu);
 }
 
 void
-WifiMpdu::DoAggregate (Ptr<const WifiMpdu> msdu)
+WifiMpdu::DoAggregate(Ptr<const WifiMpdu> msdu)
 {
-  NS_LOG_FUNCTION (this << *msdu);
+    NS_LOG_FUNCTION(this << *msdu);
 
-  // build the A-MSDU Subframe header
-  AmsduSubframeHeader hdr;
-  /*
-   * (See Table 9-26 of 802.11-2016)
-   *
-   * ToDS | FromDS |  DA   |  SA
-   *   0  |   0    | Addr1 | Addr2
-   *   0  |   1    | Addr1 | Addr3
-   *   1  |   0    | Addr3 | Addr2
-   *   1  |   1    | Addr3 | Addr4
-   */
-  hdr.SetDestinationAddr (msdu->GetHeader ().IsToDs () ? msdu->GetHeader ().GetAddr3 ()
-                                                       : msdu->GetHeader ().GetAddr1 ());
-  hdr.SetSourceAddr (!msdu->GetHeader ().IsFromDs () ? msdu->GetHeader ().GetAddr2 ()
-                                                     : (!msdu->GetHeader ().IsToDs ()
-                                                        ? msdu->GetHeader ().GetAddr3 ()
-                                                        : msdu->GetHeader ().GetAddr4 ()));
-  hdr.SetLength (static_cast<uint16_t> (msdu->GetPacket ()->GetSize ()));
+    // build the A-MSDU Subframe header
+    AmsduSubframeHeader hdr;
+    /*
+     * (See Table 9-26 of 802.11-2016)
+     *
+     * ToDS | FromDS |  DA   |  SA
+     *   0  |   0    | Addr1 | Addr2
+     *   0  |   1    | Addr1 | Addr3
+     *   1  |   0    | Addr3 | Addr2
+     *   1  |   1    | Addr3 | Addr4
+     */
+    hdr.SetDestinationAddr(msdu->GetHeader().IsToDs() ? msdu->GetHeader().GetAddr3()
+                                                      : msdu->GetHeader().GetAddr1());
+    hdr.SetSourceAddr(!msdu->GetHeader().IsFromDs()
+                          ? msdu->GetHeader().GetAddr2()
+                          : (!msdu->GetHeader().IsToDs() ? msdu->GetHeader().GetAddr3()
+                                                         : msdu->GetHeader().GetAddr4()));
+    hdr.SetLength(static_cast<uint16_t>(msdu->GetPacket()->GetSize()));
 
-  m_msduList.emplace_back(msdu->GetPacket (), hdr);
+    m_msduList.emplace_back(msdu->GetPacket(), hdr);
 
-  // build the A-MSDU
-  NS_ASSERT (m_packet);
-  Ptr<Packet> amsdu = m_packet->Copy ();
+    // build the A-MSDU
+    NS_ASSERT(m_packet);
+    Ptr<Packet> amsdu = m_packet->Copy();
 
-  // pad the previous A-MSDU subframe if the A-MSDU is not empty
-  if (m_packet->GetSize () > 0)
+    // pad the previous A-MSDU subframe if the A-MSDU is not empty
+    if (m_packet->GetSize() > 0)
     {
-      uint8_t padding = MsduAggregator::CalculatePadding (m_packet->GetSize ());
+        uint8_t padding = MsduAggregator::CalculatePadding(m_packet->GetSize());
 
-      if (padding)
+        if (padding)
         {
-          amsdu->AddAtEnd (Create<Packet> (padding));
+            amsdu->AddAtEnd(Create<Packet>(padding));
         }
     }
 
-  // add A-MSDU subframe header and MSDU
-  Ptr<Packet> amsduSubframe = msdu->GetPacket ()->Copy ();
-  amsduSubframe->AddHeader (hdr);
-  amsdu->AddAtEnd (amsduSubframe);
-  m_packet = amsdu;
+    // add A-MSDU subframe header and MSDU
+    Ptr<Packet> amsduSubframe = msdu->GetPacket()->Copy();
+    amsduSubframe->AddHeader(hdr);
+    amsdu->AddAtEnd(amsduSubframe);
+    m_packet = amsdu;
 }
 
 bool
-WifiMpdu::IsQueued () const
+WifiMpdu::IsQueued() const
 {
-  return m_queueIt.has_value ();
+    return m_queueIt.has_value();
 }
 
 void
-WifiMpdu::SetQueueIt (std::optional<Iterator> queueIt, WmqIteratorTag tag)
+WifiMpdu::SetQueueIt(std::optional<Iterator> queueIt, WmqIteratorTag tag)
 {
-  m_queueIt = queueIt;
+    m_queueIt = queueIt;
 }
 
 WifiMpdu::Iterator
-WifiMpdu::GetQueueIt (WmqIteratorTag tag) const
+WifiMpdu::GetQueueIt(WmqIteratorTag tag) const
 {
-  NS_ASSERT (IsQueued ());
-  return m_queueIt.value ();
+    NS_ASSERT(IsQueued());
+    return m_queueIt.value();
 }
 
 AcIndex
-WifiMpdu::GetQueueAc () const
+WifiMpdu::GetQueueAc() const
 {
-  NS_ASSERT (IsQueued ());
-  return (*m_queueIt)->ac;
+    NS_ASSERT(IsQueued());
+    return (*m_queueIt)->ac;
 }
 
 Time
-WifiMpdu::GetExpiryTime () const
+WifiMpdu::GetExpiryTime() const
 {
-  NS_ASSERT (IsQueued ());
-  return (*m_queueIt)->expiryTime;
+    NS_ASSERT(IsQueued());
+    return (*m_queueIt)->expiryTime;
 }
 
 void
-WifiMpdu::SetInFlight ()
+WifiMpdu::SetInFlight()
 {
-  m_inFlight = true;
+    m_inFlight = true;
 }
 
 void
-WifiMpdu::ResetInFlight ()
+WifiMpdu::ResetInFlight()
 {
-  m_inFlight = false;
+    m_inFlight = false;
 }
 
 bool
-WifiMpdu::IsInFlight () const
+WifiMpdu::IsInFlight() const
 {
-  return m_inFlight;
+    return m_inFlight;
 }
 
 WifiMpdu::DeaggregatedMsdusCI
-WifiMpdu::begin () const
+WifiMpdu::begin() const
 {
-  return m_msduList.cbegin ();
+    return m_msduList.cbegin();
 }
 
 WifiMpdu::DeaggregatedMsdusCI
-WifiMpdu::end () const
+WifiMpdu::end() const
 {
-  return m_msduList.cend ();
+    return m_msduList.cend();
 }
 
 void
-WifiMpdu::Print (std::ostream& os) const
+WifiMpdu::Print(std::ostream& os) const
 {
-  os << m_header.GetTypeString ()
-     << ", payloadSize=" << GetPacketSize ()
-     << ", to=" << m_header.GetAddr1 ()
-     << ", seqN=" << m_header.GetSequenceNumber ()
-     << ", duration/ID=" << m_header.GetDuration ();
-  if (m_header.IsQosData ())
+    os << m_header.GetTypeString() << ", payloadSize=" << GetPacketSize()
+       << ", to=" << m_header.GetAddr1() << ", seqN=" << m_header.GetSequenceNumber()
+       << ", duration/ID=" << m_header.GetDuration();
+    if (m_header.IsQosData())
     {
-      os << ", tid=" << +m_header.GetQosTid ();
-      if (m_header.IsQosNoAck ())
+        os << ", tid=" << +m_header.GetQosTid();
+        if (m_header.IsQosNoAck())
         {
-          os << ", ack=NoAck";
+            os << ", ack=NoAck";
         }
-      else if (m_header.IsQosAck ())
+        else if (m_header.IsQosAck())
         {
-          os << ", ack=NormalAck";
+            os << ", ack=NormalAck";
         }
-      else if (m_header.IsQosBlockAck ())
+        else if (m_header.IsQosBlockAck())
         {
-          os << ", ack=BlockAck";
+            os << ", ack=BlockAck";
         }
     }
-  os << ", queued=" << IsQueued ();
-  if (IsQueued ())
+    os << ", queued=" << IsQueued();
+    if (IsQueued())
     {
-      os << ", residualLifetime=" << (GetExpiryTime () - Simulator::Now ()).As (Time::US)
-         << ", inflight=" << IsInFlight ();
+        os << ", residualLifetime=" << (GetExpiryTime() - Simulator::Now()).As(Time::US)
+           << ", inflight=" << IsInFlight();
     }
-  os << ", packet=" << m_packet;
+    os << ", packet=" << m_packet;
 }
 
-std::ostream & operator << (std::ostream &os, const WifiMpdu &item)
+std::ostream&
+operator<<(std::ostream& os, const WifiMpdu& item)
 {
-  item.Print (os);
-  return os;
+    item.Print(os);
+    return os;
 }
 
-} //namespace ns3
+} // namespace ns3

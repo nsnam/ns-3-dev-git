@@ -18,110 +18,117 @@
  */
 
 #include "attribute-default-iterator.h"
+
 #include "ns3/attribute.h"
-#include "ns3/pointer.h"
 #include "ns3/callback.h"
 #include "ns3/global-value.h"
-#include "ns3/string.h"
 #include "ns3/object-ptr-container.h"
+#include "ns3/pointer.h"
+#include "ns3/string.h"
 
 namespace ns3
 {
 
-AttributeDefaultIterator::~AttributeDefaultIterator ()
+AttributeDefaultIterator::~AttributeDefaultIterator()
 {
 }
+
 void
-AttributeDefaultIterator::Iterate ()
+AttributeDefaultIterator::Iterate()
 {
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
+    for (uint32_t i = 0; i < TypeId::GetRegisteredN(); i++)
     {
-      TypeId tid = TypeId::GetRegistered (i);
-      if (tid.MustHideFromDocumentation ())
+        TypeId tid = TypeId::GetRegistered(i);
+        if (tid.MustHideFromDocumentation())
         {
-          continue;
+            continue;
         }
-      bool calledStart = false;
-      for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
+        bool calledStart = false;
+        for (uint32_t j = 0; j < tid.GetAttributeN(); j++)
         {
-          struct TypeId::AttributeInformation info = tid.GetAttribute (j);
-          if (!(info.flags & TypeId::ATTR_CONSTRUCT))
+            struct TypeId::AttributeInformation info = tid.GetAttribute(j);
+            if (!(info.flags & TypeId::ATTR_CONSTRUCT))
             {
-              // we can't construct the attribute, so, there is no
-              // initial value for the attribute
-              continue;
+                // we can't construct the attribute, so, there is no
+                // initial value for the attribute
+                continue;
             }
-          //No accessor, go to next attribute
-          if (!info.accessor)
+            // No accessor, go to next attribute
+            if (!info.accessor)
             {
-              continue;
+                continue;
             }
-          if (!info.accessor->HasSetter ())
+            if (!info.accessor->HasSetter())
             {
-              //skip this attribute it doesn't have an setter
-              continue;
+                // skip this attribute it doesn't have an setter
+                continue;
             }
-          if (!info.checker)
+            if (!info.checker)
             {
-              //skip, it doesn't have a checker
-              continue;
+                // skip, it doesn't have a checker
+                continue;
             }
-          if (!info.initialValue)
+            if (!info.initialValue)
             {
-              //No value, check next attribute
-              continue;
+                // No value, check next attribute
+                continue;
             }
-          Ptr<const ObjectPtrContainerValue> vector = DynamicCast<const ObjectPtrContainerValue> (info.initialValue);
-          if (vector)
+            Ptr<const ObjectPtrContainerValue> vector =
+                DynamicCast<const ObjectPtrContainerValue>(info.initialValue);
+            if (vector)
             {
-              //a vector value, won't take it
-              continue;
+                // a vector value, won't take it
+                continue;
             }
-          Ptr<const PointerValue> pointer = DynamicCast<const PointerValue> (info.initialValue);
-          if (pointer)
+            Ptr<const PointerValue> pointer = DynamicCast<const PointerValue>(info.initialValue);
+            if (pointer)
             {
-              //pointer value, won't take it
-              continue;
+                // pointer value, won't take it
+                continue;
             }
-          Ptr<const CallbackValue> callback = DynamicCast<const CallbackValue> (info.initialValue);
-          if (callback)
+            Ptr<const CallbackValue> callback = DynamicCast<const CallbackValue>(info.initialValue);
+            if (callback)
             {
-              //callback value, won't take it
-              continue;
+                // callback value, won't take it
+                continue;
             }
-          //We take only values, no pointers or vectors or callbacks
-          if (!calledStart)
+            // We take only values, no pointers or vectors or callbacks
+            if (!calledStart)
             {
-              StartVisitTypeId (tid.GetName ());
+                StartVisitTypeId(tid.GetName());
             }
-          VisitAttribute (tid, info.name, info.initialValue->SerializeToString (info.checker), j);
-          calledStart = true;
+            VisitAttribute(tid, info.name, info.initialValue->SerializeToString(info.checker), j);
+            calledStart = true;
         }
-      if (calledStart)
+        if (calledStart)
         {
-          EndVisitTypeId ();
+            EndVisitTypeId();
         }
     }
 }
 
 void
-AttributeDefaultIterator::StartVisitTypeId (std::string name)
-{
-}
-void
-AttributeDefaultIterator::EndVisitTypeId ()
+AttributeDefaultIterator::StartVisitTypeId(std::string name)
 {
 }
 
 void
-AttributeDefaultIterator::DoVisitAttribute (std::string name, std::string defaultValue)
+AttributeDefaultIterator::EndVisitTypeId()
 {
 }
 
 void
-AttributeDefaultIterator::VisitAttribute (TypeId tid, std::string name, std::string defaultValue, uint32_t index)
+AttributeDefaultIterator::DoVisitAttribute(std::string name, std::string defaultValue)
 {
-  DoVisitAttribute (name, defaultValue);
+}
+
+void
+AttributeDefaultIterator::VisitAttribute(TypeId tid,
+                                         std::string name,
+                                         std::string defaultValue,
+                                         uint32_t index)
+{
+    DoVisitAttribute(name, defaultValue);
 }
 
 } // namespace ns3

@@ -18,19 +18,17 @@
  * Author: Nicola Baldo  <nbaldo@cttc.es>
  */
 
-
 #ifndef EPC_TFT_CLASSIFIER_H
 #define EPC_TFT_CLASSIFIER_H
 
-
+#include "ns3/epc-tft.h"
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
-#include "ns3/epc-tft.h"
 
 #include <map>
 
-
-namespace ns3 {
+namespace ns3
+{
 
 class EpcTft;
 class Packet;
@@ -53,54 +51,49 @@ class Packet;
  */
 class EpcTftClassifier : public SimpleRefCount<EpcTftClassifier>
 {
-public:
+  public:
+    EpcTftClassifier();
 
-  EpcTftClassifier ();
+    /**
+     * add a TFT to the Classifier
+     *
+     * \param tft the TFT to be added
+     * \param id the ID of the bearer which will be classified by specified TFT classifier
+     *
+     */
+    void Add(Ptr<EpcTft> tft, uint32_t id);
 
-  /**
-   * add a TFT to the Classifier
-   *
-   * \param tft the TFT to be added
-   * \param id the ID of the bearer which will be classified by specified TFT classifier
-   *
-   */
-  void Add (Ptr<EpcTft> tft, uint32_t id);
+    /**
+     * delete an existing TFT from the classifier
+     *
+     * \param id the identifier of the TFT to be deleted
+     */
+    void Delete(uint32_t id);
 
-  /**
-   * delete an existing TFT from the classifier
-   *
-   * \param id the identifier of the TFT to be deleted
-   */
-  void Delete (uint32_t id);
+    /**
+     * classify an IP packet
+     *
+     * \param p the IP packet. The outmost header can only be an IPv4 or an IPv6 header.
+     * \param direction the EPC TFT direction (can be downlink, uplink or bi-directional)
+     * \param protocolNumber the protocol of the packet. Only IPv4 and IPv6 are supported.
+     *
+     * \return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT
+     * matched.
+     */
+    uint32_t Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t protocolNumber);
 
+  protected:
+    std::map<uint32_t, Ptr<EpcTft>> m_tftMap; ///< TFT map
 
-  /**
-   * classify an IP packet
-   *
-   * \param p the IP packet. The outmost header can only be an IPv4 or an IPv6 header.
-   * \param direction the EPC TFT direction (can be downlink, uplink or bi-directional)
-   * \param protocolNumber the protocol of the packet. Only IPv4 and IPv6 are supported.
-   *
-   * \return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT matched.
-   */
-  uint32_t Classify (Ptr<Packet> p, EpcTft::Direction direction, uint16_t protocolNumber);
-
-protected:
-
-  std::map <uint32_t, Ptr<EpcTft> > m_tftMap; ///< TFT map
-
-  std::map < std::tuple<uint32_t, uint32_t, uint8_t, uint16_t>,
-             std::pair<uint32_t, uint32_t> >
-      m_classifiedIpv4Fragments; ///< Map with already classified IPv4 Fragments
-                                 ///< An entry is added when the port info is available, i.e.
-                                 ///<   first fragment, UDP/TCP protocols and enough payload data
-                                 ///< An entry is used if port info is not available, i.e.
-                                 ///<   not first fragment or not enough payload data for TCP/UDP
-                                 ///< An entry is removed when the last fragment is classified
-                                 ///<   Note: If last fragment is lost, entry is not removed
+    std::map<std::tuple<uint32_t, uint32_t, uint8_t, uint16_t>, std::pair<uint32_t, uint32_t>>
+        m_classifiedIpv4Fragments; ///< Map with already classified IPv4 Fragments
+                                   ///< An entry is added when the port info is available, i.e.
+                                   ///<   first fragment, UDP/TCP protocols and enough payload data
+                                   ///< An entry is used if port info is not available, i.e.
+                                   ///<   not first fragment or not enough payload data for TCP/UDP
+                                   ///< An entry is removed when the last fragment is classified
+                                   ///<   Note: If last fragment is lost, entry is not removed
 };
-
-
 
 } // namespace ns3
 

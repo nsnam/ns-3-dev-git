@@ -13,10 +13,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
 #include "ns3/command-line.h"
+#include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/simulator.h"
+
 #include <iostream>
 
 /**
@@ -57,15 +58,15 @@ using namespace ns3;
  * random number generator
  */
 
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  CommandLine cmd (__FILE__);
-  cmd.Parse (argc, argv);
+    CommandLine cmd(__FILE__);
+    cmd.Parse(argc, argv);
 
-  // SeedManager::SetRun (3);
+    // SeedManager::SetRun (3);
 
-  Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
+    Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
 
-  std::cout << uv->GetValue () << std::endl;
-
+    std::cout << uv->GetValue() << std::endl;
 }

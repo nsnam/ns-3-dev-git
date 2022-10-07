@@ -21,7 +21,8 @@
 
 #include "ns3/queue.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup queue
@@ -31,36 +32,35 @@ namespace ns3 {
 template <typename Item>
 class DropTailQueue : public Queue<Item>
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  /**
-   * \brief DropTailQueue Constructor
-   *
-   * Creates a droptail queue with a maximum size of 100 packets by default
-   */
-  DropTailQueue ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    /**
+     * \brief DropTailQueue Constructor
+     *
+     * Creates a droptail queue with a maximum size of 100 packets by default
+     */
+    DropTailQueue();
 
-  ~DropTailQueue () override;
+    ~DropTailQueue() override;
 
-  bool Enqueue (Ptr<Item> item) override;
-  Ptr<Item> Dequeue () override;
-  Ptr<Item> Remove () override;
-  Ptr<const Item> Peek () const override;
+    bool Enqueue(Ptr<Item> item) override;
+    Ptr<Item> Dequeue() override;
+    Ptr<Item> Remove() override;
+    Ptr<const Item> Peek() const override;
 
-private:
-  using Queue<Item>::GetContainer;
-  using Queue<Item>::DoEnqueue;
-  using Queue<Item>::DoDequeue;
-  using Queue<Item>::DoRemove;
-  using Queue<Item>::DoPeek;
+  private:
+    using Queue<Item>::GetContainer;
+    using Queue<Item>::DoEnqueue;
+    using Queue<Item>::DoDequeue;
+    using Queue<Item>::DoRemove;
+    using Queue<Item>::DoPeek;
 
-  NS_LOG_TEMPLATE_DECLARE;     //!< redefinition of the log component
+    NS_LOG_TEMPLATE_DECLARE; //!< redefinition of the log component
 };
-
 
 /**
  * Implementation of the templates declared above.
@@ -68,78 +68,77 @@ private:
 
 template <typename Item>
 TypeId
-DropTailQueue<Item>::GetTypeId ()
+DropTailQueue<Item>::GetTypeId()
 {
-  static TypeId tid = TypeId (GetTemplateClassName<DropTailQueue<Item>> ())
-    .SetParent<Queue<Item> > ()
-    .SetGroupName ("Network")
-    .template AddConstructor<DropTailQueue<Item> > ()
-    .AddAttribute ("MaxSize",
-                   "The max queue size",
-                   QueueSizeValue (QueueSize ("100p")),
-                   MakeQueueSizeAccessor (&QueueBase::SetMaxSize,
-                                          &QueueBase::GetMaxSize),
-                   MakeQueueSizeChecker ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId(GetTemplateClassName<DropTailQueue<Item>>())
+            .SetParent<Queue<Item>>()
+            .SetGroupName("Network")
+            .template AddConstructor<DropTailQueue<Item>>()
+            .AddAttribute("MaxSize",
+                          "The max queue size",
+                          QueueSizeValue(QueueSize("100p")),
+                          MakeQueueSizeAccessor(&QueueBase::SetMaxSize, &QueueBase::GetMaxSize),
+                          MakeQueueSizeChecker());
+    return tid;
 }
 
 template <typename Item>
-DropTailQueue<Item>::DropTailQueue () :
-  Queue<Item> (),
-  NS_LOG_TEMPLATE_DEFINE ("DropTailQueue")
+DropTailQueue<Item>::DropTailQueue()
+    : Queue<Item>(),
+      NS_LOG_TEMPLATE_DEFINE("DropTailQueue")
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 template <typename Item>
-DropTailQueue<Item>::~DropTailQueue ()
+DropTailQueue<Item>::~DropTailQueue()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 template <typename Item>
 bool
-DropTailQueue<Item>::Enqueue (Ptr<Item> item)
+DropTailQueue<Item>::Enqueue(Ptr<Item> item)
 {
-  NS_LOG_FUNCTION (this << item);
+    NS_LOG_FUNCTION(this << item);
 
-  return DoEnqueue (GetContainer ().end (), item);
+    return DoEnqueue(GetContainer().end(), item);
 }
 
 template <typename Item>
 Ptr<Item>
-DropTailQueue<Item>::Dequeue ()
+DropTailQueue<Item>::Dequeue()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<Item> item = DoDequeue (GetContainer ().begin ());
+    Ptr<Item> item = DoDequeue(GetContainer().begin());
 
-  NS_LOG_LOGIC ("Popped " << item);
+    NS_LOG_LOGIC("Popped " << item);
 
-  return item;
+    return item;
 }
 
 template <typename Item>
 Ptr<Item>
-DropTailQueue<Item>::Remove ()
+DropTailQueue<Item>::Remove()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<Item> item = DoRemove (GetContainer ().begin ());
+    Ptr<Item> item = DoRemove(GetContainer().begin());
 
-  NS_LOG_LOGIC ("Removed " << item);
+    NS_LOG_LOGIC("Removed " << item);
 
-  return item;
+    return item;
 }
 
 template <typename Item>
 Ptr<const Item>
-DropTailQueue<Item>::Peek () const
+DropTailQueue<Item>::Peek() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return DoPeek (GetContainer ().begin ());
+    return DoPeek(GetContainer().begin());
 }
 
 // The following explicit template instantiation declarations prevent all the

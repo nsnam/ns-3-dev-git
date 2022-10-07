@@ -21,113 +21,117 @@
  */
 
 #include "ns3/group-mobility-helper.h"
-#include "ns3/mobility-model.h"
-#include "ns3/position-allocator.h"
+
+#include "ns3/config.h"
 #include "ns3/hierarchical-mobility-model.h"
 #include "ns3/log.h"
-#include "ns3/pointer.h"
-#include "ns3/config.h"
-#include "ns3/simulator.h"
+#include "ns3/mobility-model.h"
 #include "ns3/names.h"
+#include "ns3/pointer.h"
+#include "ns3/position-allocator.h"
+#include "ns3/simulator.h"
 #include "ns3/string.h"
+
 #include <iostream>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("GroupMobilityHelper");
+NS_LOG_COMPONENT_DEFINE("GroupMobilityHelper");
 
-GroupMobilityHelper::GroupMobilityHelper ()
-  : NS_LOG_TEMPLATE_DEFINE ("GroupMobilityHelper")
+GroupMobilityHelper::GroupMobilityHelper()
+    : NS_LOG_TEMPLATE_DEFINE("GroupMobilityHelper")
 {
 }
 
-GroupMobilityHelper::~GroupMobilityHelper ()
+GroupMobilityHelper::~GroupMobilityHelper()
 {
-}
-
-void
-GroupMobilityHelper::SetReferencePositionAllocator (Ptr<PositionAllocator> allocator)
-{
-  m_referencePosition = allocator;
 }
 
 void
-GroupMobilityHelper::SetMemberPositionAllocator (Ptr<PositionAllocator> allocator)
+GroupMobilityHelper::SetReferencePositionAllocator(Ptr<PositionAllocator> allocator)
 {
-  m_memberPosition = allocator;
+    m_referencePosition = allocator;
 }
 
 void
-GroupMobilityHelper::SetReferenceMobilityModel (Ptr<MobilityModel> mobility)
+GroupMobilityHelper::SetMemberPositionAllocator(Ptr<PositionAllocator> allocator)
 {
-  m_referenceMobility = mobility;
+    m_memberPosition = allocator;
 }
 
 void
-GroupMobilityHelper::Install (Ptr<Node> node)
+GroupMobilityHelper::SetReferenceMobilityModel(Ptr<MobilityModel> mobility)
 {
-  NS_ABORT_MSG_IF (node->GetObject<MobilityModel> (), "Mobility model already installed");
-  NS_ABORT_MSG_IF (!m_referenceMobility, "Reference mobility model is empty");
-  NS_ABORT_MSG_UNLESS (m_memberMobilityFactory.IsTypeIdSet (), "Member mobility factory is unset");
-  if (m_referencePosition && !m_referencePositionSet)
+    m_referenceMobility = mobility;
+}
+
+void
+GroupMobilityHelper::Install(Ptr<Node> node)
+{
+    NS_ABORT_MSG_IF(node->GetObject<MobilityModel>(), "Mobility model already installed");
+    NS_ABORT_MSG_IF(!m_referenceMobility, "Reference mobility model is empty");
+    NS_ABORT_MSG_UNLESS(m_memberMobilityFactory.IsTypeIdSet(), "Member mobility factory is unset");
+    if (m_referencePosition && !m_referencePositionSet)
     {
-      Vector referencePosition = m_referencePosition->GetNext ();
-      m_referenceMobility->SetPosition (referencePosition);
-      m_referencePositionSet = true;
+        Vector referencePosition = m_referencePosition->GetNext();
+        m_referenceMobility->SetPosition(referencePosition);
+        m_referencePositionSet = true;
     }
-  Ptr<HierarchicalMobilityModel> hierarchical = CreateObject<HierarchicalMobilityModel> ();
-  hierarchical->SetParent (m_referenceMobility);
-  Ptr<MobilityModel> child = m_memberMobilityFactory.Create ()->GetObject<MobilityModel> ();
-  NS_ABORT_MSG_IF (!child, "Member mobility factory did not produce a MobilityModel");
-  if (m_memberPosition)
+    Ptr<HierarchicalMobilityModel> hierarchical = CreateObject<HierarchicalMobilityModel>();
+    hierarchical->SetParent(m_referenceMobility);
+    Ptr<MobilityModel> child = m_memberMobilityFactory.Create()->GetObject<MobilityModel>();
+    NS_ABORT_MSG_IF(!child, "Member mobility factory did not produce a MobilityModel");
+    if (m_memberPosition)
     {
-      Vector position = m_memberPosition->GetNext ();
-      child->SetPosition (position);
+        Vector position = m_memberPosition->GetNext();
+        child->SetPosition(position);
     }
-  hierarchical->SetChild (child);
-  NS_LOG_DEBUG ("node="<<node<<", mob="<<hierarchical);
-  node->AggregateObject (hierarchical);
+    hierarchical->SetChild(child);
+    NS_LOG_DEBUG("node=" << node << ", mob=" << hierarchical);
+    node->AggregateObject(hierarchical);
 }
 
 void
-GroupMobilityHelper::Install (std::string nodeName)
+GroupMobilityHelper::Install(std::string nodeName)
 {
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  Install (node);
+    Ptr<Node> node = Names::Find<Node>(nodeName);
+    Install(node);
 }
 
 void
-GroupMobilityHelper::Install (NodeContainer c)
+GroupMobilityHelper::Install(NodeContainer c)
 {
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-      Install (*i);
+        Install(*i);
     }
 }
+
 int64_t
-GroupMobilityHelper::AssignStreams (NodeContainer c, int64_t stream)
+GroupMobilityHelper::AssignStreams(NodeContainer c, int64_t stream)
 {
-  int64_t currentStream = stream;
-  Ptr<Node> node;
-  bool firstNode = true;
-  Ptr<HierarchicalMobilityModel> mobility;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    int64_t currentStream = stream;
+    Ptr<Node> node;
+    bool firstNode = true;
+    Ptr<HierarchicalMobilityModel> mobility;
+    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-      node = (*i);
-      mobility = node->GetObject<HierarchicalMobilityModel> ();
-      if (!mobility)
+        node = (*i);
+        mobility = node->GetObject<HierarchicalMobilityModel>();
+        if (!mobility)
         {
-          NS_FATAL_ERROR ("Did not find a HierarchicalMobilityModel");
+            NS_FATAL_ERROR("Did not find a HierarchicalMobilityModel");
         }
-      if (firstNode)
+        if (firstNode)
         {
-          // Assign streams only once for the reference node
-          currentStream += mobility->GetParent ()->AssignStreams (currentStream);
-          firstNode = false;
+            // Assign streams only once for the reference node
+            currentStream += mobility->GetParent()->AssignStreams(currentStream);
+            firstNode = false;
         }
-      currentStream += mobility->GetChild ()->AssignStreams (currentStream);
+        currentStream += mobility->GetChild()->AssignStreams(currentStream);
     }
-  return (currentStream - stream);
+    return (currentStream - stream);
 }
 
 } // namespace ns3

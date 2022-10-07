@@ -21,11 +21,11 @@
 #ifndef UNIX_FD_READER_H
 #define UNIX_FD_READER_H
 
-#include <stdint.h>
-#include <thread>
-
 #include "callback.h"
 #include "event-id.h"
+
+#include <stdint.h>
+#include <thread>
 
 /**
  * \file
@@ -33,7 +33,8 @@
  * ns3::FdReader declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup system
@@ -46,95 +47,101 @@ namespace ns3 {
  */
 class FdReader : public SimpleRefCount<FdReader>
 {
-public:
-  /** Constructor. */
-  FdReader ();
-  /** Destructor. */
-  virtual ~FdReader ();
+  public:
+    /** Constructor. */
+    FdReader();
+    /** Destructor. */
+    virtual ~FdReader();
 
-  /**
-   * Start a new read thread.
-   *
-   * \param [in] fd A valid file descriptor open for reading.
-   *
-   * \param [in] readCallback A callback to invoke when new data is
-   * available.
-   */
-  void Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback);
-
-  /**
-   * Stop the read thread and reset internal state.  This does not
-   * close the file descriptor used for reading.
-   */
-  void Stop ();
-
-protected:
-
-  /**
-   * \brief A structure representing data read.
-   */
-  struct Data
-  {
-    /** Default constructor, with null buffer and zero length. */
-    Data () : m_buf (nullptr), m_len (0)
-    {}
     /**
-     * Construct from a buffer of a given length.
+     * Start a new read thread.
      *
-     * \param [in] buf The buffer.
-     * \param [in] len The size of the buffer, in bytes.
+     * \param [in] fd A valid file descriptor open for reading.
+     *
+     * \param [in] readCallback A callback to invoke when new data is
+     * available.
      */
-    Data (uint8_t *buf, ssize_t len) : m_buf (buf), m_len (len)
-    {}
-    /** The read data buffer. */
-    uint8_t *m_buf;
-    /** The size of the read data buffer, in bytes. */
-    ssize_t m_len;
-  };
+    void Start(int fd, Callback<void, uint8_t*, ssize_t> readCallback);
 
-  /**
-   * \brief The read implementation.
-   *
-   * The value of \pname{m_len} returned controls further processing.  The
-   * callback function is only invoked when \pname{m_len} is positive; any
-   * data read is not processed when \pname{m_len} is negative; reading
-   * stops when \pname{m_len} is zero.
-   *
-   * The management of memory associated with \pname{m_buf} must be
-   * compatible with the read callback.
-   *
-   * \return A structure representing what was read.
-   */
-  virtual FdReader::Data DoRead () = 0;
+    /**
+     * Stop the read thread and reset internal state.  This does not
+     * close the file descriptor used for reading.
+     */
+    void Stop();
 
-  /**
-   * \brief The file descriptor to read from.
-   */
-  int m_fd;
+  protected:
+    /**
+     * \brief A structure representing data read.
+     */
+    struct Data
+    {
+        /** Default constructor, with null buffer and zero length. */
+        Data()
+            : m_buf(nullptr),
+              m_len(0)
+        {
+        }
 
-private:
+        /**
+         * Construct from a buffer of a given length.
+         *
+         * \param [in] buf The buffer.
+         * \param [in] len The size of the buffer, in bytes.
+         */
+        Data(uint8_t* buf, ssize_t len)
+            : m_buf(buf),
+              m_len(len)
+        {
+        }
 
-  /** The asynchronous function which performs the read. */
-  void Run ();
-  /** Event handler scheduled for destroy time to halt the thread. */
-  void DestroyEvent ();
+        /** The read data buffer. */
+        uint8_t* m_buf;
+        /** The size of the read data buffer, in bytes. */
+        ssize_t m_len;
+    };
 
-  /** The main thread callback function to invoke when we have data. */
-  Callback<void, uint8_t *, ssize_t> m_readCallback;
+    /**
+     * \brief The read implementation.
+     *
+     * The value of \pname{m_len} returned controls further processing.  The
+     * callback function is only invoked when \pname{m_len} is positive; any
+     * data read is not processed when \pname{m_len} is negative; reading
+     * stops when \pname{m_len} is zero.
+     *
+     * The management of memory associated with \pname{m_buf} must be
+     * compatible with the read callback.
+     *
+     * \return A structure representing what was read.
+     */
+    virtual FdReader::Data DoRead() = 0;
 
-  /** The thread doing the read, created and launched by Start(). */
-  std::thread m_readThread;
+    /**
+     * \brief The file descriptor to read from.
+     */
+    int m_fd;
 
-  /** Pipe used to signal events between threads. */
-  int m_evpipe[2];
-  /** Signal the read thread to stop. */
-  bool m_stop;
+  private:
+    /** The asynchronous function which performs the read. */
+    void Run();
+    /** Event handler scheduled for destroy time to halt the thread. */
+    void DestroyEvent();
 
-  /**
-   * The event scheduled for destroy time which will invoke DestroyEvent
-   * and halt the thread.
-   */
-  EventId m_destroyEvent;
+    /** The main thread callback function to invoke when we have data. */
+    Callback<void, uint8_t*, ssize_t> m_readCallback;
+
+    /** The thread doing the read, created and launched by Start(). */
+    std::thread m_readThread;
+
+    /** Pipe used to signal events between threads. */
+    int m_evpipe[2];
+    /** Signal the read thread to stop. */
+    bool m_stop;
+
+    /**
+     * The event scheduled for destroy time which will invoke DestroyEvent
+     * and halt the thread.
+     */
+    EventId m_destroyEvent;
 };
 
 } // namespace ns3

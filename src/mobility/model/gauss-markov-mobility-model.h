@@ -25,14 +25,16 @@
 #include "constant-velocity-helper.h"
 #include "mobility-model.h"
 #include "position-allocator.h"
-#include "ns3/ptr.h"
-#include "ns3/object.h"
-#include "ns3/nstime.h"
-#include "ns3/event-id.h"
+
 #include "ns3/box.h"
+#include "ns3/event-id.h"
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup mobility
@@ -79,45 +81,46 @@ namespace ns3 {
  */
 class GaussMarkovMobilityModel : public MobilityModel
 {
-public:
-  /**
-   * Register this type with the TypeId system.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  GaussMarkovMobilityModel ();
-private:
-  /**
-   * Initialize the model and calculate new velocity, direction, and pitch
-   */
-  void Start ();
-  /**
-   * Perform a walk operation
-   * \param timeLeft time until Start method is called again
-   */
-  void DoWalk (Time timeLeft);
-  void DoDispose () override;
-  Vector DoGetPosition () const override;
-  void DoSetPosition (const Vector &position) override;
-  Vector DoGetVelocity () const override;
-  int64_t DoAssignStreams (int64_t) override;
-  ConstantVelocityHelper m_helper; //!< constant velocity helper
-  Time m_timeStep; //!< duraiton after which direction and speed should change
-  double m_alpha; //!< tunable constant in the model
-  double m_meanVelocity; //!< current mean velocity
-  double m_meanDirection; //!< current mean direction
-  double m_meanPitch; //!< current mean pitch
-  double m_Velocity; //!< current velocity
-  double m_Direction; //!< current direction
-  double m_Pitch;  //!< current pitch
-  Ptr<RandomVariableStream> m_rndMeanVelocity; //!< rv used to assign avg velocity
-  Ptr<NormalRandomVariable> m_normalVelocity; //!< Gaussian rv used to for next velocity
-  Ptr<RandomVariableStream> m_rndMeanDirection; //!< rv used to assign avg direction
-  Ptr<NormalRandomVariable> m_normalDirection; //!< Gaussian rv for next direction value
-  Ptr<RandomVariableStream> m_rndMeanPitch; //!< rv used to assign avg. pitch
-  Ptr<NormalRandomVariable> m_normalPitch; //!< Gaussian rv for next pitch
-  EventId m_event; //!< event id of scheduled start
-  Box m_bounds; //!< bounding box
+  public:
+    /**
+     * Register this type with the TypeId system.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    GaussMarkovMobilityModel();
+
+  private:
+    /**
+     * Initialize the model and calculate new velocity, direction, and pitch
+     */
+    void Start();
+    /**
+     * Perform a walk operation
+     * \param timeLeft time until Start method is called again
+     */
+    void DoWalk(Time timeLeft);
+    void DoDispose() override;
+    Vector DoGetPosition() const override;
+    void DoSetPosition(const Vector& position) override;
+    Vector DoGetVelocity() const override;
+    int64_t DoAssignStreams(int64_t) override;
+    ConstantVelocityHelper m_helper; //!< constant velocity helper
+    Time m_timeStep;                 //!< duraiton after which direction and speed should change
+    double m_alpha;                  //!< tunable constant in the model
+    double m_meanVelocity;           //!< current mean velocity
+    double m_meanDirection;          //!< current mean direction
+    double m_meanPitch;              //!< current mean pitch
+    double m_Velocity;               //!< current velocity
+    double m_Direction;              //!< current direction
+    double m_Pitch;                  //!< current pitch
+    Ptr<RandomVariableStream> m_rndMeanVelocity;  //!< rv used to assign avg velocity
+    Ptr<NormalRandomVariable> m_normalVelocity;   //!< Gaussian rv used to for next velocity
+    Ptr<RandomVariableStream> m_rndMeanDirection; //!< rv used to assign avg direction
+    Ptr<NormalRandomVariable> m_normalDirection;  //!< Gaussian rv for next direction value
+    Ptr<RandomVariableStream> m_rndMeanPitch;     //!< rv used to assign avg. pitch
+    Ptr<NormalRandomVariable> m_normalPitch;      //!< Gaussian rv for next pitch
+    EventId m_event;                              //!< event id of scheduled start
+    Box m_bounds;                                 //!< bounding box
 };
 
 } // namespace ns3

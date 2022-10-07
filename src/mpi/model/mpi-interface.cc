@@ -26,130 +26,129 @@
 
 #include "mpi-interface.h"
 
-#include <ns3/global-value.h>
-#include <ns3/string.h>
-#include <ns3/log.h>
-
-#include "null-message-mpi-interface.h"
 #include "granted-time-window-mpi-interface.h"
+#include "null-message-mpi-interface.h"
 
-namespace ns3 {
+#include <ns3/global-value.h>
+#include <ns3/log.h>
+#include <ns3/string.h>
 
-NS_LOG_COMPONENT_DEFINE ("MpiInterface");
+namespace ns3
+{
+
+NS_LOG_COMPONENT_DEFINE("MpiInterface");
 
 ParallelCommunicationInterface* MpiInterface::g_parallelCommunicationInterface = 0;
 
 void
-MpiInterface::Destroy ()
+MpiInterface::Destroy()
 {
-  NS_ASSERT (g_parallelCommunicationInterface);
-  g_parallelCommunicationInterface->Destroy ();
+    NS_ASSERT(g_parallelCommunicationInterface);
+    g_parallelCommunicationInterface->Destroy();
 }
 
 uint32_t
-MpiInterface::GetSystemId ()
+MpiInterface::GetSystemId()
 {
-  if ( g_parallelCommunicationInterface )
-    return g_parallelCommunicationInterface->GetSystemId ();
-  else
-    return 0;
+    if (g_parallelCommunicationInterface)
+        return g_parallelCommunicationInterface->GetSystemId();
+    else
+        return 0;
 }
 
 uint32_t
-MpiInterface::GetSize ()
+MpiInterface::GetSize()
 {
-  if ( g_parallelCommunicationInterface )
-    return g_parallelCommunicationInterface->GetSize ();
-  else
-    return 1;
+    if (g_parallelCommunicationInterface)
+        return g_parallelCommunicationInterface->GetSize();
+    else
+        return 1;
 }
 
 bool
-MpiInterface::IsEnabled ()
+MpiInterface::IsEnabled()
 {
-  if (g_parallelCommunicationInterface)
+    if (g_parallelCommunicationInterface)
     {
-      return g_parallelCommunicationInterface->IsEnabled ();
+        return g_parallelCommunicationInterface->IsEnabled();
     }
-  else
+    else
     {
-      return false;
+        return false;
     }
 }
 
 void
-MpiInterface::SetParallelSimulatorImpl (void)
+MpiInterface::SetParallelSimulatorImpl(void)
 {
-  StringValue simulationTypeValue;
-  bool useDefault = true;
+    StringValue simulationTypeValue;
+    bool useDefault = true;
 
-  if (GlobalValue::GetValueByNameFailSafe ("SimulatorImplementationType", simulationTypeValue))
+    if (GlobalValue::GetValueByNameFailSafe("SimulatorImplementationType", simulationTypeValue))
     {
-      std::string simulationType = simulationTypeValue.Get ();
+        std::string simulationType = simulationTypeValue.Get();
 
-      // Set communication interface based on the simulation type being used.
-      // Defaults to synchronous.
-      if (simulationType.compare ("ns3::NullMessageSimulatorImpl") == 0)
+        // Set communication interface based on the simulation type being used.
+        // Defaults to synchronous.
+        if (simulationType.compare("ns3::NullMessageSimulatorImpl") == 0)
         {
-          g_parallelCommunicationInterface = new NullMessageMpiInterface ();
-          useDefault = false;
+            g_parallelCommunicationInterface = new NullMessageMpiInterface();
+            useDefault = false;
         }
-      else if (simulationType.compare ("ns3::DistributedSimulatorImpl") == 0)
+        else if (simulationType.compare("ns3::DistributedSimulatorImpl") == 0)
         {
-          g_parallelCommunicationInterface = new GrantedTimeWindowMpiInterface ();
-          useDefault = false;
+            g_parallelCommunicationInterface = new GrantedTimeWindowMpiInterface();
+            useDefault = false;
         }
     }
 
-  // User did not specify a valid parallel simulator; use the default.
-  if (useDefault)
+    // User did not specify a valid parallel simulator; use the default.
+    if (useDefault)
     {
-      g_parallelCommunicationInterface = new GrantedTimeWindowMpiInterface ();
-      GlobalValue::Bind ("SimulatorImplementationType",
-                         StringValue ("ns3::DistributedSimulatorImpl"));
-      NS_LOG_WARN ("SimulatorImplementationType was set to non-parallel simulator; setting type to ns3::DistributedSimulatorImp");
+        g_parallelCommunicationInterface = new GrantedTimeWindowMpiInterface();
+        GlobalValue::Bind("SimulatorImplementationType",
+                          StringValue("ns3::DistributedSimulatorImpl"));
+        NS_LOG_WARN("SimulatorImplementationType was set to non-parallel simulator; setting type "
+                    "to ns3::DistributedSimulatorImp");
     }
 }
 
 void
-MpiInterface::Enable (int* pargc, char*** pargv)
+MpiInterface::Enable(int* pargc, char*** pargv)
 {
+    SetParallelSimulatorImpl();
 
-  SetParallelSimulatorImpl ();
-
-  g_parallelCommunicationInterface->Enable (pargc, pargv);
+    g_parallelCommunicationInterface->Enable(pargc, pargv);
 }
 
 void
-MpiInterface::Enable (MPI_Comm communicator)
+MpiInterface::Enable(MPI_Comm communicator)
 {
-  SetParallelSimulatorImpl ();
-  g_parallelCommunicationInterface->Enable (communicator);
+    SetParallelSimulatorImpl();
+    g_parallelCommunicationInterface->Enable(communicator);
 }
 
 void
-MpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev)
+MpiInterface::SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev)
 {
-  NS_ASSERT (g_parallelCommunicationInterface);
-  g_parallelCommunicationInterface->SendPacket (p, rxTime, node, dev);
+    NS_ASSERT(g_parallelCommunicationInterface);
+    g_parallelCommunicationInterface->SendPacket(p, rxTime, node, dev);
 }
 
 MPI_Comm
 MpiInterface::GetCommunicator()
 {
-  NS_ASSERT (g_parallelCommunicationInterface);
-  return g_parallelCommunicationInterface->GetCommunicator ();
+    NS_ASSERT(g_parallelCommunicationInterface);
+    return g_parallelCommunicationInterface->GetCommunicator();
 }
-
 
 void
-MpiInterface::Disable ()
+MpiInterface::Disable()
 {
-  NS_ASSERT (g_parallelCommunicationInterface);
-  g_parallelCommunicationInterface->Disable ();
-  delete g_parallelCommunicationInterface;
-  g_parallelCommunicationInterface = 0;
+    NS_ASSERT(g_parallelCommunicationInterface);
+    g_parallelCommunicationInterface->Disable();
+    delete g_parallelCommunicationInterface;
+    g_parallelCommunicationInterface = 0;
 }
-
 
 } // namespace ns3

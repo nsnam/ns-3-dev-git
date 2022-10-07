@@ -22,9 +22,11 @@
 #define PRIO_QUEUE_DISC_H
 
 #include "ns3/queue-disc.h"
+
 #include <array>
 
-namespace ns3 {
+namespace ns3
+{
 
 /// Priority map
 typedef std::array<uint16_t, 16> Priomap;
@@ -47,44 +49,45 @@ typedef std::array<uint16_t, 16> Priomap;
  * packet is assigned the priority band specified by the first element of the
  * priomap array.
  */
-class PrioQueueDisc : public QueueDisc {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  /**
-   * \brief PrioQueueDisc constructor
-   */
-  PrioQueueDisc ();
+class PrioQueueDisc : public QueueDisc
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    /**
+     * \brief PrioQueueDisc constructor
+     */
+    PrioQueueDisc();
 
-  ~PrioQueueDisc() override;
+    ~PrioQueueDisc() override;
 
-  /**
-   * Set the band (class) assigned to packets with specified priority.
-   *
-   * \param prio the priority of packets (a value between 0 and 15).
-   * \param band the band assigned to packets.
-   */
-  void SetBandForPriority (uint8_t prio, uint16_t band);
+    /**
+     * Set the band (class) assigned to packets with specified priority.
+     *
+     * \param prio the priority of packets (a value between 0 and 15).
+     * \param band the band assigned to packets.
+     */
+    void SetBandForPriority(uint8_t prio, uint16_t band);
 
-  /**
-   * Get the band (class) assigned to packets with specified priority.
-   *
-   * \param prio the priority of packets (a value between 0 and 15).
-   * \returns the band assigned to packets.
-   */
-  uint16_t GetBandForPriority (uint8_t prio) const;
+    /**
+     * Get the band (class) assigned to packets with specified priority.
+     *
+     * \param prio the priority of packets (a value between 0 and 15).
+     * \returns the band assigned to packets.
+     */
+    uint16_t GetBandForPriority(uint8_t prio) const;
 
-private:
-  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
-  Ptr<QueueDiscItem> DoDequeue () override;
-  Ptr<const QueueDiscItem> DoPeek () override;
-  bool CheckConfig () override;
-  void InitializeParams () override;
+  private:
+    bool DoEnqueue(Ptr<QueueDiscItem> item) override;
+    Ptr<QueueDiscItem> DoDequeue() override;
+    Ptr<const QueueDiscItem> DoPeek() override;
+    bool CheckConfig() override;
+    void InitializeParams() override;
 
-  Priomap m_prio2band;    //!< Priority to band mapping
+    Priomap m_prio2band; //!< Priority to band mapping
 };
 
 /**
@@ -95,7 +98,7 @@ private:
  *
  * \return std::ostream
  */
-std::ostream &operator << (std::ostream &os, const Priomap &priomap);
+std::ostream& operator<<(std::ostream& os, const Priomap& priomap);
 
 /**
  * Serialize from the given istream to this priomap.
@@ -105,10 +108,9 @@ std::ostream &operator << (std::ostream &os, const Priomap &priomap);
  *
  * \return std::istream
  */
-std::istream &operator >> (std::istream &is, Priomap &priomap);
+std::istream& operator>>(std::istream& is, Priomap& priomap);
 
-
-ATTRIBUTE_HELPER_HEADER (Priomap);
+ATTRIBUTE_HELPER_HEADER(Priomap);
 
 } // namespace ns3
 

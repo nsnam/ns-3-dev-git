@@ -23,12 +23,12 @@
 #define LTE_FR_NO_OP_ALGORITHM_H
 
 #include <ns3/lte-ffr-algorithm.h>
-#include <ns3/lte-ffr-sap.h>
 #include <ns3/lte-ffr-rrc-sap.h>
+#include <ns3/lte-ffr-sap.h>
 #include <ns3/lte-rrc-sap.h>
 
-namespace ns3 {
-
+namespace ns3
+{
 
 /**
  * \brief FR algorithm implementation which simply does nothing.
@@ -41,67 +41,67 @@ namespace ns3 {
  */
 class LteFrNoOpAlgorithm : public LteFfrAlgorithm
 {
-public:
-  /**
-   * \brief Creates a NoOP FR algorithm instance.
-   */
-  LteFrNoOpAlgorithm ();
+  public:
+    /**
+     * \brief Creates a NoOP FR algorithm instance.
+     */
+    LteFrNoOpAlgorithm();
 
-  ~LteFrNoOpAlgorithm () override;
+    ~LteFrNoOpAlgorithm() override;
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  // inherited from LteFfrAlgorithm
-  void SetLteFfrSapUser (LteFfrSapUser* s) override;
-  LteFfrSapProvider* GetLteFfrSapProvider () override;
+    // inherited from LteFfrAlgorithm
+    void SetLteFfrSapUser(LteFfrSapUser* s) override;
+    LteFfrSapProvider* GetLteFfrSapProvider() override;
 
-  void SetLteFfrRrcSapUser (LteFfrRrcSapUser* s) override;
-  LteFfrRrcSapProvider* GetLteFfrRrcSapProvider () override;
+    void SetLteFfrRrcSapUser(LteFfrRrcSapUser* s) override;
+    LteFfrRrcSapProvider* GetLteFfrRrcSapProvider() override;
 
-  /// let the forwarder class access the protected and private members
-  friend class MemberLteFfrSapProvider<LteFrNoOpAlgorithm>;
-  /// let the forwarder class access the protected and private members
-  friend class MemberLteFfrRrcSapProvider<LteFrNoOpAlgorithm>;
+    /// let the forwarder class access the protected and private members
+    friend class MemberLteFfrSapProvider<LteFrNoOpAlgorithm>;
+    /// let the forwarder class access the protected and private members
+    friend class MemberLteFfrRrcSapProvider<LteFrNoOpAlgorithm>;
 
-protected:
-  // inherited from Object
-  void DoInitialize () override;
-  void DoDispose () override;
+  protected:
+    // inherited from Object
+    void DoInitialize() override;
+    void DoDispose() override;
 
-  void Reconfigure () override;
+    void Reconfigure() override;
 
-  // FFR SAP PROVIDER IMPLEMENTATION
-  std::vector <bool> DoGetAvailableDlRbg () override;
-  bool DoIsDlRbgAvailableForUe (int i, uint16_t rnti) override;
-  std::vector <bool> DoGetAvailableUlRbg () override;
-  bool DoIsUlRbgAvailableForUe (int i, uint16_t rnti) override;
-  void DoReportDlCqiInfo (const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) override;
-  void DoReportUlCqiInfo (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) override;
-  void DoReportUlCqiInfo ( std::map <uint16_t, std::vector <double> > ulCqiMap ) override;
-  uint8_t DoGetTpc (uint16_t rnti) override;
-  uint16_t DoGetMinContinuousUlBandwidth () override;
+    // FFR SAP PROVIDER IMPLEMENTATION
+    std::vector<bool> DoGetAvailableDlRbg() override;
+    bool DoIsDlRbgAvailableForUe(int i, uint16_t rnti) override;
+    std::vector<bool> DoGetAvailableUlRbg() override;
+    bool DoIsUlRbgAvailableForUe(int i, uint16_t rnti) override;
+    void DoReportDlCqiInfo(
+        const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) override;
+    void DoReportUlCqiInfo(
+        const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) override;
+    void DoReportUlCqiInfo(std::map<uint16_t, std::vector<double>> ulCqiMap) override;
+    uint8_t DoGetTpc(uint16_t rnti) override;
+    uint16_t DoGetMinContinuousUlBandwidth() override;
 
-  // FFR SAP RRC PROVIDER IMPLEMENTATION
-  void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults) override;
-  void DoRecvLoadInformation (EpcX2Sap::LoadInformationParams params) override;
+    // FFR SAP RRC PROVIDER IMPLEMENTATION
+    void DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults) override;
+    void DoRecvLoadInformation(EpcX2Sap::LoadInformationParams params) override;
 
-private:
-  // FFR SAP
-  LteFfrSapUser* m_ffrSapUser; ///< FFR SAP user
-  LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
+  private:
+    // FFR SAP
+    LteFfrSapUser* m_ffrSapUser;         ///< FFR SAP user
+    LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
 
-  // FFR RRF SAP
-  LteFfrRrcSapUser* m_ffrRrcSapUser; ///< FFR RRC SAP user
-  LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP provider
+    // FFR RRF SAP
+    LteFfrRrcSapUser* m_ffrRrcSapUser;         ///< FFR RRC SAP user
+    LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP provider
 
 }; // end of class LteFrNoOpAlgorithm
 
-
 } // end of namespace ns3
-
 
 #endif /* LTE_FFR_NO_OP_ALGORITHM_H */

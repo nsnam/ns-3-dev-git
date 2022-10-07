@@ -34,10 +34,11 @@
  * \defgroup global-value-tests GlobalValue test suite
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace tests {
-
+namespace tests
+{
 
 /**
  * \ingroup global-value-tests
@@ -45,49 +46,51 @@ namespace tests {
  */
 class GlobalValueTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  GlobalValueTestCase ();
-  /** Destructor. */
-  ~GlobalValueTestCase () override
-  {}
+  public:
+    /** Constructor. */
+    GlobalValueTestCase();
 
-private:
-  void DoRun () override;
+    /** Destructor. */
+    ~GlobalValueTestCase() override
+    {
+    }
+
+  private:
+    void DoRun() override;
 };
 
-GlobalValueTestCase::GlobalValueTestCase ()
-  : TestCase ("Check GlobalValue mechanism")
-{}
+GlobalValueTestCase::GlobalValueTestCase()
+    : TestCase("Check GlobalValue mechanism")
+{
+}
 
 void
-GlobalValueTestCase::DoRun ()
+GlobalValueTestCase::DoRun()
 {
-  //
-  // Typically these are static globals but we can make one on the stack to
-  // keep it hidden from the documentation.
-  //
-  GlobalValue uint = GlobalValue ("TestUint", "help text",
-                                  UintegerValue (10),
-                                  MakeUintegerChecker<uint32_t> ());
+    //
+    // Typically these are static globals but we can make one on the stack to
+    // keep it hidden from the documentation.
+    //
+    GlobalValue uint =
+        GlobalValue("TestUint", "help text", UintegerValue(10), MakeUintegerChecker<uint32_t>());
 
-  //
-  // Make sure we can get at the value and that it was initialized correctly.
-  //
-  UintegerValue uv;
-  uint.GetValue (uv);
-  NS_TEST_ASSERT_MSG_EQ (uv.Get (), 10, "GlobalValue \"TestUint\" not initialized as expected");
+    //
+    // Make sure we can get at the value and that it was initialized correctly.
+    //
+    UintegerValue uv;
+    uint.GetValue(uv);
+    NS_TEST_ASSERT_MSG_EQ(uv.Get(), 10, "GlobalValue \"TestUint\" not initialized as expected");
 
-  //
-  // Remove the global value for a valgrind clean run
-  //
-  GlobalValue::Vector *vector = GlobalValue::GetVector ();
-  for (GlobalValue::Vector::iterator i = vector->begin (); i != vector->end (); ++i)
+    //
+    // Remove the global value for a valgrind clean run
+    //
+    GlobalValue::Vector* vector = GlobalValue::GetVector();
+    for (GlobalValue::Vector::iterator i = vector->begin(); i != vector->end(); ++i)
     {
-      if ((*i) == &uint)
+        if ((*i) == &uint)
         {
-          vector->erase (i);
-          break;
+            vector->erase(i);
+            break;
         }
     }
 }
@@ -98,15 +101,15 @@ GlobalValueTestCase::DoRun ()
  */
 class GlobalValueTestSuite : public TestSuite
 {
-public:
-  /** Constructor. */
-  GlobalValueTestSuite ();
+  public:
+    /** Constructor. */
+    GlobalValueTestSuite();
 };
 
-GlobalValueTestSuite::GlobalValueTestSuite ()
-  : TestSuite ("global-value")
+GlobalValueTestSuite::GlobalValueTestSuite()
+    : TestSuite("global-value")
 {
-  AddTestCase (new GlobalValueTestCase);
+    AddTestCase(new GlobalValueTestCase);
 }
 
 /**
@@ -115,8 +118,6 @@ GlobalValueTestSuite::GlobalValueTestSuite ()
  */
 static GlobalValueTestSuite g_globalValueTestSuite;
 
+} // namespace tests
 
-}    // namespace tests
-
-}  // namespace ns3
-
+} // namespace ns3

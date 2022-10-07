@@ -23,7 +23,8 @@
 
 #include "uan-prop-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class UanTxMode;
 
@@ -34,40 +35,40 @@ class UanTxMode;
  */
 class UanPropModelThorp : public UanPropModel
 {
-public:
-  /** Default constructor. */
-  UanPropModelThorp ();
-  /** Destructor */
-  ~UanPropModelThorp () override;
+  public:
+    /** Default constructor. */
+    UanPropModelThorp();
+    /** Destructor */
+    ~UanPropModelThorp() override;
 
-  /**
-   * Register this type.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+    /**
+     * Register this type.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  // Inherited methods
-  double GetPathLossDb (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) override;
-  UanPdp GetPdp (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) override;
-  Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) override;
+    // Inherited methods
+    double GetPathLossDb(Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) override;
+    UanPdp GetPdp(Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) override;
+    Time GetDelay(Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) override;
 
-private:
-  /**
-   * Get the attenuation in dB / 1000 yards.
-   * \param freqKhz The channel center frequency, in kHz.
-   * \return The attenuation, in dB / 1000 yards.
-   */
-  double GetAttenDbKyd (double freqKhz);
-  /**
-   * Get the attenuation in dB / km.
-   * \param freqKhz The channel center frequency, in kHz.
-   * \return The attenuation, in dB/km.
-   */
-  double GetAttenDbKm (double freqKhz);
+  private:
+    /**
+     * Get the attenuation in dB / 1000 yards.
+     * \param freqKhz The channel center frequency, in kHz.
+     * \return The attenuation, in dB / 1000 yards.
+     */
+    double GetAttenDbKyd(double freqKhz);
+    /**
+     * Get the attenuation in dB / km.
+     * \param freqKhz The channel center frequency, in kHz.
+     * \return The attenuation, in dB/km.
+     */
+    double GetAttenDbKm(double freqKhz);
 
-  double m_SpreadCoef;  //!< Spreading coefficient used in calculation of Thorp's approximation.
+    double m_SpreadCoef; //!< Spreading coefficient used in calculation of Thorp's approximation.
 
-};  // class UanPropModelThorp
+}; // class UanPropModelThorp
 
 } // namespace ns3
 

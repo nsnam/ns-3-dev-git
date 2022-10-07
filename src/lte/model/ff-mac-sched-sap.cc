@@ -20,14 +20,14 @@
 
 #include "ff-mac-sched-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-
-FfMacSchedSapProvider::~FfMacSchedSapProvider ()
+FfMacSchedSapProvider::~FfMacSchedSapProvider()
 {
 }
 
-FfMacSchedSapUser::~FfMacSchedSapUser ()
+FfMacSchedSapUser::~FfMacSchedSapUser()
 {
 }
 

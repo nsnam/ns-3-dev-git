@@ -21,18 +21,22 @@
  */
 
 #include "ofdm-phy.h"
+
 #include "ofdm-ppdu.h"
-#include "ns3/wifi-psdu.h"
-#include "ns3/wifi-phy.h"
-#include "ns3/wifi-utils.h"
+
 #include "ns3/interference-helper.h"
-#include "ns3/simulator.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
+#include "ns3/wifi-phy.h"
+#include "ns3/wifi-psdu.h"
+#include "ns3/wifi-utils.h"
+
 #include <array>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("OfdmPhy");
+NS_LOG_COMPONENT_DEFINE("OfdmPhy");
 
 /*******************************************************
  *       OFDM PHY (IEEE 802.11-2016, clause 17)
@@ -93,567 +97,596 @@ const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
  *
  * \return the OFDM rates in bits per second
  */
-const std::map<uint16_t, std::array<uint64_t, 8> >& GetOfdmRatesBpsList ()
+const std::map<uint16_t, std::array<uint64_t, 8>>&
+GetOfdmRatesBpsList()
 {
-  return s_ofdmRatesBpsList;
+    return s_ofdmRatesBpsList;
 };
 
-
-OfdmPhy::OfdmPhy (OfdmPhyVariant variant /* = OFDM_PHY_DEFAULT */, bool buildModeList /* = true */)
+OfdmPhy::OfdmPhy(OfdmPhyVariant variant /* = OFDM_PHY_DEFAULT */, bool buildModeList /* = true */)
 {
-  NS_LOG_FUNCTION (this << variant << buildModeList);
+    NS_LOG_FUNCTION(this << variant << buildModeList);
 
-  if (buildModeList)
+    if (buildModeList)
     {
-      auto bwRatesMap = GetOfdmRatesBpsList ();
+        auto bwRatesMap = GetOfdmRatesBpsList();
 
-      switch (variant)
+        switch (variant)
         {
-          case OFDM_PHY_DEFAULT:
-            for (const auto & rate : bwRatesMap.at (20))
-              {
-                WifiMode mode = GetOfdmRate (rate, 20);
-                NS_LOG_LOGIC ("Add " << mode << " to list");
-                m_modeList.emplace_back (mode);
-              }
+        case OFDM_PHY_DEFAULT:
+            for (const auto& rate : bwRatesMap.at(20))
+            {
+                WifiMode mode = GetOfdmRate(rate, 20);
+                NS_LOG_LOGIC("Add " << mode << " to list");
+                m_modeList.emplace_back(mode);
+            }
             break;
-          case OFDM_PHY_10_MHZ:
-            for (const auto & rate : bwRatesMap.at (10))
-              {
-                WifiMode mode = GetOfdmRate (rate, 10);
-                NS_LOG_LOGIC ("Add " << mode << " to list");
-                m_modeList.emplace_back (mode);
-              }
+        case OFDM_PHY_10_MHZ:
+            for (const auto& rate : bwRatesMap.at(10))
+            {
+                WifiMode mode = GetOfdmRate(rate, 10);
+                NS_LOG_LOGIC("Add " << mode << " to list");
+                m_modeList.emplace_back(mode);
+            }
             break;
-          case OFDM_PHY_5_MHZ:
-            for (const auto & rate : bwRatesMap.at (5))
-              {
-                WifiMode mode = GetOfdmRate (rate, 5);
-                NS_LOG_LOGIC ("Add " << mode << " to list");
-                m_modeList.emplace_back (mode);
-              }
+        case OFDM_PHY_5_MHZ:
+            for (const auto& rate : bwRatesMap.at(5))
+            {
+                WifiMode mode = GetOfdmRate(rate, 5);
+                NS_LOG_LOGIC("Add " << mode << " to list");
+                m_modeList.emplace_back(mode);
+            }
             break;
-          default:
-            NS_ABORT_MSG ("Unsupported 11a OFDM variant");
+        default:
+            NS_ABORT_MSG("Unsupported 11a OFDM variant");
         }
     }
 }
 
-OfdmPhy::~OfdmPhy ()
+OfdmPhy::~OfdmPhy()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 WifiMode
-OfdmPhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
+OfdmPhy::GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const
 {
-  switch (field)
+    switch (field)
     {
-      case WIFI_PPDU_FIELD_PREAMBLE: //consider header mode for preamble (useful for InterferenceHelper)
-      case WIFI_PPDU_FIELD_NON_HT_HEADER:
-        return GetHeaderMode (txVector);
-      default:
-        return PhyEntity::GetSigMode (field, txVector);
+    case WIFI_PPDU_FIELD_PREAMBLE: // consider header mode for preamble (useful for
+                                   // InterferenceHelper)
+    case WIFI_PPDU_FIELD_NON_HT_HEADER:
+        return GetHeaderMode(txVector);
+    default:
+        return PhyEntity::GetSigMode(field, txVector);
     }
 }
 
 WifiMode
-OfdmPhy::GetHeaderMode (const WifiTxVector& txVector) const
+OfdmPhy::GetHeaderMode(const WifiTxVector& txVector) const
 {
-  switch (txVector.GetChannelWidth ())
+    switch (txVector.GetChannelWidth())
     {
-      case 5:
-        return GetOfdmRate1_5MbpsBW5MHz ();
-      case 10:
-        return GetOfdmRate3MbpsBW10MHz ();
-      case 20:
-      default:
-        //Section 17.3.2 "PPDU frame format"; IEEE Std 802.11-2016.
-        //Actually this is only the first part of the PhyHeader,
-        //because the last 16 bits of the PhyHeader are using the
-        //same mode of the payload
-        return GetOfdmRate6Mbps ();
+    case 5:
+        return GetOfdmRate1_5MbpsBW5MHz();
+    case 10:
+        return GetOfdmRate3MbpsBW10MHz();
+    case 20:
+    default:
+        // Section 17.3.2 "PPDU frame format"; IEEE Std 802.11-2016.
+        // Actually this is only the first part of the PhyHeader,
+        // because the last 16 bits of the PhyHeader are using the
+        // same mode of the payload
+        return GetOfdmRate6Mbps();
     }
 }
 
-const PhyEntity::PpduFormats &
-OfdmPhy::GetPpduFormats () const
+const PhyEntity::PpduFormats&
+OfdmPhy::GetPpduFormats() const
 {
-  return m_ofdmPpduFormats;
+    return m_ofdmPpduFormats;
 }
 
 Time
-OfdmPhy::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
+OfdmPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
 {
-  switch (field)
+    switch (field)
     {
-      case WIFI_PPDU_FIELD_PREAMBLE:
-        return GetPreambleDuration (txVector); //L-STF + L-LTF
-      case WIFI_PPDU_FIELD_NON_HT_HEADER:
-        return GetHeaderDuration (txVector); //L-SIG
-      default:
-        return PhyEntity::GetDuration (field, txVector);
-    }
-}
-
-Time
-OfdmPhy::GetPreambleDuration (const WifiTxVector& txVector) const
-{
-  switch (txVector.GetChannelWidth ())
-    {
-      case 20:
-      default:
-        //Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
-        //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016
-        return MicroSeconds (16);
-      case 10:
-        //Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
-        //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016
-        return MicroSeconds (32);
-      case 5:
-        //Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
-        //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016
-        return MicroSeconds (64);
+    case WIFI_PPDU_FIELD_PREAMBLE:
+        return GetPreambleDuration(txVector); // L-STF + L-LTF
+    case WIFI_PPDU_FIELD_NON_HT_HEADER:
+        return GetHeaderDuration(txVector); // L-SIG
+    default:
+        return PhyEntity::GetDuration(field, txVector);
     }
 }
 
 Time
-OfdmPhy::GetHeaderDuration (const WifiTxVector& txVector) const
+OfdmPhy::GetPreambleDuration(const WifiTxVector& txVector) const
 {
-  switch (txVector.GetChannelWidth ())
+    switch (txVector.GetChannelWidth())
     {
-      case 20:
-      default:
-        //Section 17.3.3 "PHY preamble (SYNC)" and Figure 17-4 "OFDM training structure"; IEEE Std 802.11-2016
-        //also Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
-        //We return the duration of the SIGNAL field only, since the
-        //SERVICE field (which strictly speaking belongs to the PHY
-        //header, see Section 17.3.2 and Figure 17-1) is sent using the
-        //payload mode.
-        return MicroSeconds (4);
-      case 10:
-        //Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
-        return MicroSeconds (8);
-      case 5:
-        //Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
-        return MicroSeconds (16);
+    case 20:
+    default:
+        // Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
+        // also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent
+        // parameters"; IEEE Std 802.11-2016
+        return MicroSeconds(16);
+    case 10:
+        // Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
+        // also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent
+        // parameters"; IEEE Std 802.11-2016
+        return MicroSeconds(32);
+    case 5:
+        // Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
+        // also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent
+        // parameters"; IEEE Std 802.11-2016
+        return MicroSeconds(64);
     }
 }
 
 Time
-OfdmPhy::GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType /* mpdutype */,
-                             bool /* incFlag */, uint32_t & /* totalAmpduSize */, double & /* totalAmpduNumSymbols */,
-                             uint16_t /* staId */) const
+OfdmPhy::GetHeaderDuration(const WifiTxVector& txVector) const
 {
-  //(Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
-  //corresponds to T_{SYM} in the table)
-  Time symbolDuration = MicroSeconds (4);
+    switch (txVector.GetChannelWidth())
+    {
+    case 20:
+    default:
+        // Section 17.3.3 "PHY preamble (SYNC)" and Figure 17-4 "OFDM training structure"; IEEE Std
+        // 802.11-2016 also Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related
+        // parameters"; IEEE Std 802.11-2016 We return the duration of the SIGNAL field only, since
+        // the SERVICE field (which strictly speaking belongs to the PHY header, see Section 17.3.2
+        // and Figure 17-1) is sent using the payload mode.
+        return MicroSeconds(4);
+    case 10:
+        // Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE
+        // Std 802.11-2016
+        return MicroSeconds(8);
+    case 5:
+        // Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE
+        // Std 802.11-2016
+        return MicroSeconds(16);
+    }
+}
 
-  double numDataBitsPerSymbol = txVector.GetMode ().GetDataRate (txVector) * symbolDuration.GetNanoSeconds () / 1e9;
+Time
+OfdmPhy::GetPayloadDuration(uint32_t size,
+                            const WifiTxVector& txVector,
+                            WifiPhyBand band,
+                            MpduType /* mpdutype */,
+                            bool /* incFlag */,
+                            uint32_t& /* totalAmpduSize */,
+                            double& /* totalAmpduNumSymbols */,
+                            uint16_t /* staId */) const
+{
+    //(Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std
+    // 802.11-2016 corresponds to T_{SYM} in the table)
+    Time symbolDuration = MicroSeconds(4);
 
-  //The number of OFDM symbols in the data field when BCC encoding
-  //is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
-  double numSymbols = lrint (ceil ((GetNumberServiceBits () + size * 8.0 + 6.0) / (numDataBitsPerSymbol)));
+    double numDataBitsPerSymbol =
+        txVector.GetMode().GetDataRate(txVector) * symbolDuration.GetNanoSeconds() / 1e9;
 
-  Time payloadDuration = FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ()));
-  payloadDuration += GetSignalExtension (band);
-  return payloadDuration;
+    // The number of OFDM symbols in the data field when BCC encoding
+    // is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
+    double numSymbols =
+        lrint(ceil((GetNumberServiceBits() + size * 8.0 + 6.0) / (numDataBitsPerSymbol)));
+
+    Time payloadDuration =
+        FemtoSeconds(static_cast<uint64_t>(numSymbols * symbolDuration.GetFemtoSeconds()));
+    payloadDuration += GetSignalExtension(band);
+    return payloadDuration;
 }
 
 uint8_t
-OfdmPhy::GetNumberServiceBits () const
+OfdmPhy::GetNumberServiceBits() const
 {
-  return 16;
+    return 16;
 }
 
 Time
-OfdmPhy::GetSignalExtension (WifiPhyBand band) const
+OfdmPhy::GetSignalExtension(WifiPhyBand band) const
 {
-  return (band == WIFI_PHY_BAND_2_4GHZ) ? MicroSeconds (6) : MicroSeconds (0);
+    return (band == WIFI_PHY_BAND_2_4GHZ) ? MicroSeconds(6) : MicroSeconds(0);
 }
 
 Ptr<WifiPpdu>
-OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time /* ppduDuration */)
+OfdmPhy::BuildPpdu(const WifiConstPsduMap& psdus,
+                   const WifiTxVector& txVector,
+                   Time /* ppduDuration */)
 {
-  NS_LOG_FUNCTION (this << psdus << txVector);
-  return Create<OfdmPpdu> (psdus.begin ()->second, txVector,
-                           m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ()),
-                           m_wifiPhy->GetPhyBand (), ObtainNextUid (txVector));
+    NS_LOG_FUNCTION(this << psdus << txVector);
+    return Create<OfdmPpdu>(psdus.begin()->second,
+                            txVector,
+                            m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
+                                txVector.GetChannelWidth()),
+                            m_wifiPhy->GetPhyBand(),
+                            ObtainNextUid(txVector));
 }
 
 PhyEntity::PhyFieldRxStatus
-OfdmPhy::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
+OfdmPhy::DoEndReceiveField(WifiPpduField field, Ptr<Event> event)
 {
-  NS_LOG_FUNCTION (this << field << *event);
-  if (field == WIFI_PPDU_FIELD_NON_HT_HEADER)
+    NS_LOG_FUNCTION(this << field << *event);
+    if (field == WIFI_PPDU_FIELD_NON_HT_HEADER)
     {
-      return EndReceiveHeader (event); //L-SIG
+        return EndReceiveHeader(event); // L-SIG
     }
-  return PhyEntity::DoEndReceiveField (field, event);
+    return PhyEntity::DoEndReceiveField(field, event);
 }
 
 PhyEntity::PhyFieldRxStatus
-OfdmPhy::EndReceiveHeader (Ptr<Event> event)
+OfdmPhy::EndReceiveHeader(Ptr<Event> event)
 {
-  NS_LOG_FUNCTION (this << *event);
-  SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_NON_HT_HEADER, event);
-  NS_LOG_DEBUG ("L-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
-  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
-  if (status.isSuccess)
+    NS_LOG_FUNCTION(this << *event);
+    SnrPer snrPer = GetPhyHeaderSnrPer(WIFI_PPDU_FIELD_NON_HT_HEADER, event);
+    NS_LOG_DEBUG("L-SIG: SNR(dB)=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per);
+    PhyFieldRxStatus status(GetRandomValue() > snrPer.per);
+    if (status.isSuccess)
     {
-      NS_LOG_DEBUG ("Received non-HT PHY header");
-      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_NON_HT_HEADER, event->GetPpdu ()))
+        NS_LOG_DEBUG("Received non-HT PHY header");
+        if (!IsAllConfigSupported(WIFI_PPDU_FIELD_NON_HT_HEADER, event->GetPpdu()))
         {
-          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
+            status = PhyFieldRxStatus(false, UNSUPPORTED_SETTINGS, DROP);
         }
     }
-  else
+    else
     {
-      NS_LOG_DEBUG ("Abort reception because non-HT PHY header reception failed");
-      status.reason = L_SIG_FAILURE;
-      status.actionIfFailure = ABORT;
+        NS_LOG_DEBUG("Abort reception because non-HT PHY header reception failed");
+        status.reason = L_SIG_FAILURE;
+        status.actionIfFailure = ABORT;
     }
-  return status;
+    return status;
 }
 
 bool
-OfdmPhy::IsChannelWidthSupported (Ptr<const WifiPpdu> ppdu) const
+OfdmPhy::IsChannelWidthSupported(Ptr<const WifiPpdu> ppdu) const
 {
-  uint16_t channelWidth = ppdu->GetTxVector ().GetChannelWidth ();
-  if ((channelWidth >= 40) && (channelWidth > m_wifiPhy->GetChannelWidth ()))
+    uint16_t channelWidth = ppdu->GetTxVector().GetChannelWidth();
+    if ((channelWidth >= 40) && (channelWidth > m_wifiPhy->GetChannelWidth()))
     {
-      NS_LOG_DEBUG ("Packet reception could not be started because not enough channel width (" << channelWidth << " vs " << m_wifiPhy->GetChannelWidth () << ")");
-      return false;
+        NS_LOG_DEBUG("Packet reception could not be started because not enough channel width ("
+                     << channelWidth << " vs " << m_wifiPhy->GetChannelWidth() << ")");
+        return false;
     }
-  return true;
+    return true;
 }
 
 bool
-OfdmPhy::IsAllConfigSupported (WifiPpduField /* field */, Ptr<const WifiPpdu> ppdu) const
+OfdmPhy::IsAllConfigSupported(WifiPpduField /* field */, Ptr<const WifiPpdu> ppdu) const
 {
-  if (!IsChannelWidthSupported (ppdu))
+    if (!IsChannelWidthSupported(ppdu))
     {
-      return false;
+        return false;
     }
-  return IsConfigSupported (ppdu);
+    return IsConfigSupported(ppdu);
 }
 
 Ptr<SpectrumValue>
-OfdmPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> /* ppdu */, const WifiTxVector& txVector) const
+OfdmPhy::GetTxPowerSpectralDensity(double txPowerW,
+                                   Ptr<const WifiPpdu> /* ppdu */,
+                                   const WifiTxVector& txVector) const
 {
-  uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
-  uint16_t channelWidth = txVector.GetChannelWidth ();
-  NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);
-  const auto & txMaskRejectionParams = GetTxMaskRejectionParams ();
-  Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
-                                                                                    std::get<0> (txMaskRejectionParams), std::get<1> (txMaskRejectionParams), std::get<2> (txMaskRejectionParams));
-  return v;
+    uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
+    uint16_t channelWidth = txVector.GetChannelWidth();
+    NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW);
+    const auto& txMaskRejectionParams = GetTxMaskRejectionParams();
+    Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(
+        centerFrequency,
+        channelWidth,
+        txPowerW,
+        GetGuardBandwidth(channelWidth),
+        std::get<0>(txMaskRejectionParams),
+        std::get<1>(txMaskRejectionParams),
+        std::get<2>(txMaskRejectionParams));
+    return v;
 }
 
 void
-OfdmPhy::InitializeModes ()
+OfdmPhy::InitializeModes()
 {
-  for (const auto & ratesPerBw : GetOfdmRatesBpsList ())
+    for (const auto& ratesPerBw : GetOfdmRatesBpsList())
     {
-      for (const auto & rate : ratesPerBw.second)
+        for (const auto& rate : ratesPerBw.second)
         {
-          GetOfdmRate (rate, ratesPerBw.first);
+            GetOfdmRate(rate, ratesPerBw.first);
         }
     }
 }
 
 WifiMode
-OfdmPhy::GetOfdmRate (uint64_t rate, uint16_t bw)
+OfdmPhy::GetOfdmRate(uint64_t rate, uint16_t bw)
 {
-  switch (bw)
+    switch (bw)
     {
-      case 20:
+    case 20:
         switch (rate)
-          {
-            case 6000000:
-              return GetOfdmRate6Mbps ();
-            case 9000000:
-              return GetOfdmRate9Mbps ();
-            case 12000000:
-              return GetOfdmRate12Mbps ();
-            case 18000000:
-              return GetOfdmRate18Mbps ();
-            case 24000000:
-              return GetOfdmRate24Mbps ();
-            case 36000000:
-              return GetOfdmRate36Mbps ();
-            case 48000000:
-              return GetOfdmRate48Mbps ();
-            case 54000000:
-              return GetOfdmRate54Mbps ();
-            default:
-              NS_ABORT_MSG ("Inexistent rate (" << rate << " bps) requested for 11a OFDM (default)");
-              return WifiMode ();
-          }
+        {
+        case 6000000:
+            return GetOfdmRate6Mbps();
+        case 9000000:
+            return GetOfdmRate9Mbps();
+        case 12000000:
+            return GetOfdmRate12Mbps();
+        case 18000000:
+            return GetOfdmRate18Mbps();
+        case 24000000:
+            return GetOfdmRate24Mbps();
+        case 36000000:
+            return GetOfdmRate36Mbps();
+        case 48000000:
+            return GetOfdmRate48Mbps();
+        case 54000000:
+            return GetOfdmRate54Mbps();
+        default:
+            NS_ABORT_MSG("Inexistent rate (" << rate << " bps) requested for 11a OFDM (default)");
+            return WifiMode();
+        }
         break;
-      case 10:
+    case 10:
         switch (rate)
-          {
-            case 3000000:
-              return GetOfdmRate3MbpsBW10MHz ();
-            case 4500000:
-              return GetOfdmRate4_5MbpsBW10MHz ();
-            case 6000000:
-              return GetOfdmRate6MbpsBW10MHz ();
-            case 9000000:
-              return GetOfdmRate9MbpsBW10MHz ();
-            case 12000000:
-              return GetOfdmRate12MbpsBW10MHz ();
-            case 18000000:
-              return GetOfdmRate18MbpsBW10MHz ();
-            case 24000000:
-              return GetOfdmRate24MbpsBW10MHz ();
-            case 27000000:
-              return GetOfdmRate27MbpsBW10MHz ();
-            default:
-              NS_ABORT_MSG ("Inexistent rate (" << rate << " bps) requested for 11a OFDM (10 MHz)");
-              return WifiMode ();
-          }
+        {
+        case 3000000:
+            return GetOfdmRate3MbpsBW10MHz();
+        case 4500000:
+            return GetOfdmRate4_5MbpsBW10MHz();
+        case 6000000:
+            return GetOfdmRate6MbpsBW10MHz();
+        case 9000000:
+            return GetOfdmRate9MbpsBW10MHz();
+        case 12000000:
+            return GetOfdmRate12MbpsBW10MHz();
+        case 18000000:
+            return GetOfdmRate18MbpsBW10MHz();
+        case 24000000:
+            return GetOfdmRate24MbpsBW10MHz();
+        case 27000000:
+            return GetOfdmRate27MbpsBW10MHz();
+        default:
+            NS_ABORT_MSG("Inexistent rate (" << rate << " bps) requested for 11a OFDM (10 MHz)");
+            return WifiMode();
+        }
         break;
-      case 5:
+    case 5:
         switch (rate)
-          {
-            case 1500000:
-              return GetOfdmRate1_5MbpsBW5MHz ();
-            case 2250000:
-              return GetOfdmRate2_25MbpsBW5MHz ();
-            case 3000000:
-              return GetOfdmRate3MbpsBW5MHz ();
-            case 4500000:
-              return GetOfdmRate4_5MbpsBW5MHz ();
-            case 6000000:
-              return GetOfdmRate6MbpsBW5MHz ();
-            case 9000000:
-              return GetOfdmRate9MbpsBW5MHz ();
-            case 12000000:
-              return GetOfdmRate12MbpsBW5MHz ();
-            case 13500000:
-              return GetOfdmRate13_5MbpsBW5MHz ();
-            default:
-              NS_ABORT_MSG ("Inexistent rate (" << rate << " bps) requested for 11a OFDM (5 MHz)");
-              return WifiMode ();
-          }
+        {
+        case 1500000:
+            return GetOfdmRate1_5MbpsBW5MHz();
+        case 2250000:
+            return GetOfdmRate2_25MbpsBW5MHz();
+        case 3000000:
+            return GetOfdmRate3MbpsBW5MHz();
+        case 4500000:
+            return GetOfdmRate4_5MbpsBW5MHz();
+        case 6000000:
+            return GetOfdmRate6MbpsBW5MHz();
+        case 9000000:
+            return GetOfdmRate9MbpsBW5MHz();
+        case 12000000:
+            return GetOfdmRate12MbpsBW5MHz();
+        case 13500000:
+            return GetOfdmRate13_5MbpsBW5MHz();
+        default:
+            NS_ABORT_MSG("Inexistent rate (" << rate << " bps) requested for 11a OFDM (5 MHz)");
+            return WifiMode();
+        }
         break;
-      default:
-        NS_ABORT_MSG ("Inexistent bandwidth (" << +bw << " MHz) requested for 11a OFDM");
-        return WifiMode ();
+    default:
+        NS_ABORT_MSG("Inexistent bandwidth (" << +bw << " MHz) requested for 11a OFDM");
+        return WifiMode();
     }
 }
 
-#define GET_OFDM_MODE(x, f) \
-WifiMode \
-OfdmPhy::Get ## x (void) \
-{ \
-  static WifiMode mode = CreateOfdmMode (#x, f); \
-  return mode; \
-}; \
+#define GET_OFDM_MODE(x, f)                                                                        \
+    WifiMode OfdmPhy::Get##x(void)                                                                 \
+    {                                                                                              \
+        static WifiMode mode = CreateOfdmMode(#x, f);                                              \
+        return mode;                                                                               \
+    };
 
 // 20 MHz channel rates (default)
-GET_OFDM_MODE (OfdmRate6Mbps,  true)
-GET_OFDM_MODE (OfdmRate9Mbps,  false)
-GET_OFDM_MODE (OfdmRate12Mbps, true)
-GET_OFDM_MODE (OfdmRate18Mbps, false)
-GET_OFDM_MODE (OfdmRate24Mbps, true)
-GET_OFDM_MODE (OfdmRate36Mbps, false)
-GET_OFDM_MODE (OfdmRate48Mbps, false)
-GET_OFDM_MODE (OfdmRate54Mbps, false)
+GET_OFDM_MODE(OfdmRate6Mbps, true)
+GET_OFDM_MODE(OfdmRate9Mbps, false)
+GET_OFDM_MODE(OfdmRate12Mbps, true)
+GET_OFDM_MODE(OfdmRate18Mbps, false)
+GET_OFDM_MODE(OfdmRate24Mbps, true)
+GET_OFDM_MODE(OfdmRate36Mbps, false)
+GET_OFDM_MODE(OfdmRate48Mbps, false)
+GET_OFDM_MODE(OfdmRate54Mbps, false)
 // 10 MHz channel rates
-GET_OFDM_MODE (OfdmRate3MbpsBW10MHz,   true)
-GET_OFDM_MODE (OfdmRate4_5MbpsBW10MHz, false)
-GET_OFDM_MODE (OfdmRate6MbpsBW10MHz,   true)
-GET_OFDM_MODE (OfdmRate9MbpsBW10MHz,   false)
-GET_OFDM_MODE (OfdmRate12MbpsBW10MHz,  true)
-GET_OFDM_MODE (OfdmRate18MbpsBW10MHz,  false)
-GET_OFDM_MODE (OfdmRate24MbpsBW10MHz,  false)
-GET_OFDM_MODE (OfdmRate27MbpsBW10MHz,  false)
+GET_OFDM_MODE(OfdmRate3MbpsBW10MHz, true)
+GET_OFDM_MODE(OfdmRate4_5MbpsBW10MHz, false)
+GET_OFDM_MODE(OfdmRate6MbpsBW10MHz, true)
+GET_OFDM_MODE(OfdmRate9MbpsBW10MHz, false)
+GET_OFDM_MODE(OfdmRate12MbpsBW10MHz, true)
+GET_OFDM_MODE(OfdmRate18MbpsBW10MHz, false)
+GET_OFDM_MODE(OfdmRate24MbpsBW10MHz, false)
+GET_OFDM_MODE(OfdmRate27MbpsBW10MHz, false)
 // 5 MHz channel rates
-GET_OFDM_MODE (OfdmRate1_5MbpsBW5MHz,  true)
-GET_OFDM_MODE (OfdmRate2_25MbpsBW5MHz, false)
-GET_OFDM_MODE (OfdmRate3MbpsBW5MHz,    true)
-GET_OFDM_MODE (OfdmRate4_5MbpsBW5MHz,  false)
-GET_OFDM_MODE (OfdmRate6MbpsBW5MHz,    true)
-GET_OFDM_MODE (OfdmRate9MbpsBW5MHz,    false)
-GET_OFDM_MODE (OfdmRate12MbpsBW5MHz,   false)
-GET_OFDM_MODE (OfdmRate13_5MbpsBW5MHz, false)
+GET_OFDM_MODE(OfdmRate1_5MbpsBW5MHz, true)
+GET_OFDM_MODE(OfdmRate2_25MbpsBW5MHz, false)
+GET_OFDM_MODE(OfdmRate3MbpsBW5MHz, true)
+GET_OFDM_MODE(OfdmRate4_5MbpsBW5MHz, false)
+GET_OFDM_MODE(OfdmRate6MbpsBW5MHz, true)
+GET_OFDM_MODE(OfdmRate9MbpsBW5MHz, false)
+GET_OFDM_MODE(OfdmRate12MbpsBW5MHz, false)
+GET_OFDM_MODE(OfdmRate13_5MbpsBW5MHz, false)
 #undef GET_OFDM_MODE
 
 WifiMode
-OfdmPhy::CreateOfdmMode (std::string uniqueName, bool isMandatory)
+OfdmPhy::CreateOfdmMode(std::string uniqueName, bool isMandatory)
 {
-  // Check whether uniqueName is in lookup table
-  const auto it = m_ofdmModulationLookupTable.find (uniqueName);
-  NS_ASSERT_MSG (it != m_ofdmModulationLookupTable.end (), "OFDM mode cannot be created because it is not in the lookup table!");
+    // Check whether uniqueName is in lookup table
+    const auto it = m_ofdmModulationLookupTable.find(uniqueName);
+    NS_ASSERT_MSG(it != m_ofdmModulationLookupTable.end(),
+                  "OFDM mode cannot be created because it is not in the lookup table!");
 
-  return WifiModeFactory::CreateWifiMode (uniqueName,
-                                          WIFI_MOD_CLASS_OFDM,
-                                          isMandatory,
-                                          MakeBoundCallback (&GetCodeRate, uniqueName),
-                                          MakeBoundCallback (&GetConstellationSize, uniqueName),
-                                          MakeCallback (&GetPhyRateFromTxVector),
-                                          MakeCallback (&GetDataRateFromTxVector),
-                                          MakeCallback (&IsAllowed));
+    return WifiModeFactory::CreateWifiMode(uniqueName,
+                                           WIFI_MOD_CLASS_OFDM,
+                                           isMandatory,
+                                           MakeBoundCallback(&GetCodeRate, uniqueName),
+                                           MakeBoundCallback(&GetConstellationSize, uniqueName),
+                                           MakeCallback(&GetPhyRateFromTxVector),
+                                           MakeCallback(&GetDataRateFromTxVector),
+                                           MakeCallback(&IsAllowed));
 }
 
 WifiCodeRate
-OfdmPhy::GetCodeRate (const std::string& name)
+OfdmPhy::GetCodeRate(const std::string& name)
 {
-  return m_ofdmModulationLookupTable.at (name).first;
+    return m_ofdmModulationLookupTable.at(name).first;
 }
 
 uint16_t
-OfdmPhy::GetConstellationSize (const std::string& name)
+OfdmPhy::GetConstellationSize(const std::string& name)
 {
-  return m_ofdmModulationLookupTable.at (name).second;
+    return m_ofdmModulationLookupTable.at(name).second;
 }
 
 uint64_t
-OfdmPhy::GetPhyRate (const std::string& name, uint16_t channelWidth)
+OfdmPhy::GetPhyRate(const std::string& name, uint16_t channelWidth)
 {
-  WifiCodeRate codeRate = GetCodeRate (name);
-  uint64_t dataRate = GetDataRate (name, channelWidth);
-  return CalculatePhyRate (codeRate, dataRate);
+    WifiCodeRate codeRate = GetCodeRate(name);
+    uint64_t dataRate = GetDataRate(name, channelWidth);
+    return CalculatePhyRate(codeRate, dataRate);
 }
 
 uint64_t
-OfdmPhy::CalculatePhyRate (WifiCodeRate codeRate, uint64_t dataRate)
+OfdmPhy::CalculatePhyRate(WifiCodeRate codeRate, uint64_t dataRate)
 {
-  return (dataRate / GetCodeRatio (codeRate));
+    return (dataRate / GetCodeRatio(codeRate));
 }
 
 uint64_t
-OfdmPhy::GetPhyRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
+OfdmPhy::GetPhyRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId */)
 {
-  return GetPhyRate (txVector.GetMode ().GetUniqueName (),
-                     txVector.GetChannelWidth ());
+    return GetPhyRate(txVector.GetMode().GetUniqueName(), txVector.GetChannelWidth());
 }
 
 double
-OfdmPhy::GetCodeRatio (WifiCodeRate codeRate)
+OfdmPhy::GetCodeRatio(WifiCodeRate codeRate)
 {
-  switch (codeRate)
+    switch (codeRate)
     {
-      case WIFI_CODE_RATE_3_4:
+    case WIFI_CODE_RATE_3_4:
         return (3.0 / 4.0);
-      case WIFI_CODE_RATE_2_3:
+    case WIFI_CODE_RATE_2_3:
         return (2.0 / 3.0);
-      case WIFI_CODE_RATE_1_2:
+    case WIFI_CODE_RATE_1_2:
         return (1.0 / 2.0);
-      case WIFI_CODE_RATE_UNDEFINED:
-      default:
-        NS_FATAL_ERROR ("trying to get code ratio for undefined coding rate");
+    case WIFI_CODE_RATE_UNDEFINED:
+    default:
+        NS_FATAL_ERROR("trying to get code ratio for undefined coding rate");
         return 0;
     }
 }
 
 uint64_t
-OfdmPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
+OfdmPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId */)
 {
-  return GetDataRate (txVector.GetMode ().GetUniqueName (),
-                      txVector.GetChannelWidth ());
+    return GetDataRate(txVector.GetMode().GetUniqueName(), txVector.GetChannelWidth());
 }
 
 uint64_t
-OfdmPhy::GetDataRate (const std::string& name, uint16_t channelWidth)
+OfdmPhy::GetDataRate(const std::string& name, uint16_t channelWidth)
 {
-  WifiCodeRate codeRate = GetCodeRate (name);
-  uint16_t constellationSize = GetConstellationSize (name);
-  return CalculateDataRate (codeRate, constellationSize, channelWidth);
+    WifiCodeRate codeRate = GetCodeRate(name);
+    uint16_t constellationSize = GetConstellationSize(name);
+    return CalculateDataRate(codeRate, constellationSize, channelWidth);
 }
 
 uint64_t
-OfdmPhy::CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth)
+OfdmPhy::CalculateDataRate(WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth)
 {
-  return CalculateDataRate (GetSymbolDuration (channelWidth),
-                            GetUsableSubcarriers (),
-                            static_cast<uint16_t> (log2 (constellationSize)),
-                            GetCodeRatio (codeRate));
+    return CalculateDataRate(GetSymbolDuration(channelWidth),
+                             GetUsableSubcarriers(),
+                             static_cast<uint16_t>(log2(constellationSize)),
+                             GetCodeRatio(codeRate));
 }
 
 uint64_t
-OfdmPhy::CalculateDataRate (Time symbolDuration, uint16_t usableSubCarriers,
-                            uint16_t numberOfBitsPerSubcarrier, double codingRate)
+OfdmPhy::CalculateDataRate(Time symbolDuration,
+                           uint16_t usableSubCarriers,
+                           uint16_t numberOfBitsPerSubcarrier,
+                           double codingRate)
 {
-  double symbolRate = (1e9 / static_cast<double> (symbolDuration.GetNanoSeconds ()));
-  return lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
+    double symbolRate = (1e9 / static_cast<double>(symbolDuration.GetNanoSeconds()));
+    return lrint(ceil(symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
 }
 
 uint16_t
-OfdmPhy::GetUsableSubcarriers ()
+OfdmPhy::GetUsableSubcarriers()
 {
-  return 48;
+    return 48;
 }
 
 Time
-OfdmPhy::GetSymbolDuration (uint16_t channelWidth)
+OfdmPhy::GetSymbolDuration(uint16_t channelWidth)
 {
-  Time symbolDuration = MicroSeconds (4);
-  uint8_t bwFactor = 1;
-  if (channelWidth == 10)
+    Time symbolDuration = MicroSeconds(4);
+    uint8_t bwFactor = 1;
+    if (channelWidth == 10)
     {
-      bwFactor = 2;
+        bwFactor = 2;
     }
-  else if (channelWidth == 5)
+    else if (channelWidth == 5)
     {
-      bwFactor = 4;
+        bwFactor = 4;
     }
-  return bwFactor * symbolDuration;
+    return bwFactor * symbolDuration;
 }
 
 bool
-OfdmPhy::IsAllowed (const WifiTxVector& /*txVector*/)
+OfdmPhy::IsAllowed(const WifiTxVector& /*txVector*/)
 {
-  return true;
+    return true;
 }
 
 uint32_t
-OfdmPhy::GetMaxPsduSize () const
+OfdmPhy::GetMaxPsduSize() const
 {
-  return 4095;
+    return 4095;
 }
 
 uint16_t
-OfdmPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
+OfdmPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 {
-  if (!ppdu)
+    if (!ppdu)
     {
-      return 20;
+        return 20;
     }
-  return GetRxChannelWidth (ppdu->GetTxVector ());
+    return GetRxChannelWidth(ppdu->GetTxVector());
 }
 
 double
-OfdmPhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
+OfdmPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
-  if (ppdu && ppdu->GetTxVector ().GetChannelWidth () < 20)
+    if (ppdu && ppdu->GetTxVector().GetChannelWidth() < 20)
     {
-      //scale CCA sensitivity threshold for BW of 5 and 10 MHz
-      uint16_t bw = GetRxChannelWidth (ppdu->GetTxVector ());
-      double thresholdW = DbmToW (m_wifiPhy->GetCcaSensitivityThreshold ()) * (bw / 20.0);
-      return WToDbm (thresholdW);
+        // scale CCA sensitivity threshold for BW of 5 and 10 MHz
+        uint16_t bw = GetRxChannelWidth(ppdu->GetTxVector());
+        double thresholdW = DbmToW(m_wifiPhy->GetCcaSensitivityThreshold()) * (bw / 20.0);
+        return WToDbm(thresholdW);
     }
-  return PhyEntity::GetCcaThreshold (ppdu, channelType);
+    return PhyEntity::GetCcaThreshold(ppdu, channelType);
 }
 
-} //namespace ns3
+} // namespace ns3
 
-namespace {
+namespace
+{
 
 /**
  * Constructor class for OFDM modes
  */
 class ConstructorOfdm
 {
-public:
-  ConstructorOfdm ()
-  {
-    ns3::OfdmPhy::InitializeModes ();
-    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_OFDM, ns3::Create<ns3::OfdmPhy> ()); //default variant will do
-  }
+  public:
+    ConstructorOfdm()
+    {
+        ns3::OfdmPhy::InitializeModes();
+        ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_OFDM,
+                                         ns3::Create<ns3::OfdmPhy>()); // default variant will do
+    }
 } g_constructor_ofdm; ///< the constructor for OFDM modes
 
-}
+} // namespace

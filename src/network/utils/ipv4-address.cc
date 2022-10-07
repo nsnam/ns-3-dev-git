@@ -18,14 +18,17 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cstdlib>
-#include "ns3/log.h"
 #include "ipv4-address.h"
+
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
-namespace ns3 {
+#include <cstdlib>
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4Address");
+namespace ns3
+{
+
+NS_LOG_COMPONENT_DEFINE("Ipv4Address");
 
 #define ASCII_DOT (0x2e)
 #define ASCII_ZERO (0x30)
@@ -37,153 +40,161 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Address");
  * \returns the address
  */
 static uint32_t
-AsciiToIpv4Host (char const *address)
+AsciiToIpv4Host(const char* address)
 {
-  NS_LOG_FUNCTION (&address);
-  uint32_t host = 0;
-  uint8_t numberOfDots = 0;
-  char const *ptr = address;
+    NS_LOG_FUNCTION(&address);
+    uint32_t host = 0;
+    uint8_t numberOfDots = 0;
+    const char* ptr = address;
 
-  NS_ASSERT_MSG (*ptr != ASCII_DOT, "Error, can not build an IPv4 address from an invalid string: " << address);
-  while (true)
+    NS_ASSERT_MSG(*ptr != ASCII_DOT,
+                  "Error, can not build an IPv4 address from an invalid string: " << address);
+    while (true)
     {
-      uint8_t byte = 0;
-      while (*ptr != ASCII_DOT && *ptr != 0)
+        uint8_t byte = 0;
+        while (*ptr != ASCII_DOT && *ptr != 0)
         {
-          byte *= 10;
-          byte += *ptr - ASCII_ZERO;
-          ptr++;
+            byte *= 10;
+            byte += *ptr - ASCII_ZERO;
+            ptr++;
         }
-      host <<= 8;
-      host |= byte;
-      if (*ptr == 0)
+        host <<= 8;
+        host |= byte;
+        if (*ptr == 0)
         {
-          break;
+            break;
         }
-      ptr++;
-      NS_ASSERT_MSG (*ptr != ASCII_DOT, "Error, can not build an IPv4 address from an invalid string: " << address);
-      numberOfDots ++;
+        ptr++;
+        NS_ASSERT_MSG(*ptr != ASCII_DOT,
+                      "Error, can not build an IPv4 address from an invalid string: " << address);
+        numberOfDots++;
     }
-  NS_ASSERT_MSG (*(ptr-1) != ASCII_DOT, "Error, can not build an IPv4 address from an invalid string: " << address);
-  NS_ASSERT_MSG (numberOfDots == 3, "Error, can not build an IPv4 address from an invalid string: " << address);
+    NS_ASSERT_MSG(*(ptr - 1) != ASCII_DOT,
+                  "Error, can not build an IPv4 address from an invalid string: " << address);
+    NS_ASSERT_MSG(numberOfDots == 3,
+                  "Error, can not build an IPv4 address from an invalid string: " << address);
 
-  return host;
+    return host;
 }
 
 } // namespace ns3
 
-namespace ns3 {
-
-
-Ipv4Mask::Ipv4Mask ()
-  : m_mask (0x66666666)
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+Ipv4Mask::Ipv4Mask()
+    : m_mask(0x66666666)
+{
+    NS_LOG_FUNCTION(this);
 }
 
-Ipv4Mask::Ipv4Mask (uint32_t mask)
-  : m_mask (mask)
+Ipv4Mask::Ipv4Mask(uint32_t mask)
+    : m_mask(mask)
 {
-  NS_LOG_FUNCTION (this << mask);
+    NS_LOG_FUNCTION(this << mask);
 }
 
-Ipv4Mask::Ipv4Mask (char const *mask)
+Ipv4Mask::Ipv4Mask(const char* mask)
 {
-  NS_LOG_FUNCTION (this << mask);
-  if (*mask == ASCII_SLASH)
+    NS_LOG_FUNCTION(this << mask);
+    if (*mask == ASCII_SLASH)
     {
-      uint32_t plen = static_cast<uint32_t> (std::atoi (++mask));
-      NS_ASSERT (plen <= 32);
-      if (plen > 0)
+        uint32_t plen = static_cast<uint32_t>(std::atoi(++mask));
+        NS_ASSERT(plen <= 32);
+        if (plen > 0)
         {
-          m_mask = 0xffffffff << (32 - plen);
+            m_mask = 0xffffffff << (32 - plen);
         }
-      else
+        else
         {
-          m_mask = 0;
+            m_mask = 0;
         }
     }
-  else
+    else
     {
-      m_mask = AsciiToIpv4Host (mask);
+        m_mask = AsciiToIpv4Host(mask);
     }
 }
 
 bool
-Ipv4Mask::IsMatch (Ipv4Address a, Ipv4Address b) const
+Ipv4Mask::IsMatch(Ipv4Address a, Ipv4Address b) const
 {
-  NS_LOG_FUNCTION (this << a << b);
-  if ((a.Get () & m_mask) == (b.Get () & m_mask)) {
-      return true;
-    } else {
-      return false;
+    NS_LOG_FUNCTION(this << a << b);
+    if ((a.Get() & m_mask) == (b.Get() & m_mask))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
 uint32_t
-Ipv4Mask::Get () const
+Ipv4Mask::Get() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_mask;
+    NS_LOG_FUNCTION(this);
+    return m_mask;
 }
+
 void
-Ipv4Mask::Set (uint32_t mask)
+Ipv4Mask::Set(uint32_t mask)
 {
-  NS_LOG_FUNCTION (this << mask);
-  m_mask = mask;
+    NS_LOG_FUNCTION(this << mask);
+    m_mask = mask;
 }
+
 uint32_t
-Ipv4Mask::GetInverse () const
+Ipv4Mask::GetInverse() const
 {
-  NS_LOG_FUNCTION (this);
-  return ~m_mask;
+    NS_LOG_FUNCTION(this);
+    return ~m_mask;
 }
 
 void
-Ipv4Mask::Print (std::ostream &os) const
+Ipv4Mask::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this << &os);
-  os << ((m_mask >> 24) & 0xff) << "."
-     << ((m_mask >> 16) & 0xff) << "."
-     << ((m_mask >> 8) & 0xff) << "."
-     << ((m_mask >> 0) & 0xff);
+    NS_LOG_FUNCTION(this << &os);
+    os << ((m_mask >> 24) & 0xff) << "." << ((m_mask >> 16) & 0xff) << "." << ((m_mask >> 8) & 0xff)
+       << "." << ((m_mask >> 0) & 0xff);
 }
 
+Ipv4Mask
+Ipv4Mask::GetLoopback()
+{
+    NS_LOG_FUNCTION_NOARGS();
+    static Ipv4Mask loopback = Ipv4Mask("255.0.0.0");
+    return loopback;
+}
 
 Ipv4Mask
-Ipv4Mask::GetLoopback ()
+Ipv4Mask::GetZero()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static Ipv4Mask loopback = Ipv4Mask ("255.0.0.0");
-  return loopback;
+    NS_LOG_FUNCTION_NOARGS();
+    static Ipv4Mask zero = Ipv4Mask("0.0.0.0");
+    return zero;
 }
+
 Ipv4Mask
-Ipv4Mask::GetZero ()
+Ipv4Mask::GetOnes()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static Ipv4Mask zero = Ipv4Mask ("0.0.0.0");
-  return zero;
-}
-Ipv4Mask
-Ipv4Mask::GetOnes ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  static Ipv4Mask ones = Ipv4Mask ("255.255.255.255");
-  return ones;
+    NS_LOG_FUNCTION_NOARGS();
+    static Ipv4Mask ones = Ipv4Mask("255.255.255.255");
+    return ones;
 }
 
 uint16_t
-Ipv4Mask::GetPrefixLength () const
+Ipv4Mask::GetPrefixLength() const
 {
-  NS_LOG_FUNCTION (this);
-  uint16_t tmp = 0;
-  uint32_t mask = m_mask;
-  while (mask != 0 )
+    NS_LOG_FUNCTION(this);
+    uint16_t tmp = 0;
+    uint32_t mask = m_mask;
+    while (mask != 0)
     {
-      mask = mask << 1;
-      tmp++;
+        mask = mask << 1;
+        tmp++;
     }
-  return tmp;
+    return tmp;
 }
 
 /**
@@ -192,258 +203,275 @@ Ipv4Mask::GetPrefixLength () const
  */
 static constexpr uint32_t UNINITIALIZED = 0x66666666U;
 
-Ipv4Address::Ipv4Address ()
-  : m_address (UNINITIALIZED), m_initialized (false)
+Ipv4Address::Ipv4Address()
+    : m_address(UNINITIALIZED),
+      m_initialized(false)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
-Ipv4Address::Ipv4Address (uint32_t address)
+
+Ipv4Address::Ipv4Address(uint32_t address)
 {
-  NS_LOG_FUNCTION (this << address);
-  m_address = address;
-  m_initialized = true;
+    NS_LOG_FUNCTION(this << address);
+    m_address = address;
+    m_initialized = true;
 }
-Ipv4Address::Ipv4Address (char const *address)
+
+Ipv4Address::Ipv4Address(const char* address)
 {
-  NS_LOG_FUNCTION (this << address);
-  m_address = AsciiToIpv4Host (address);
-  m_initialized = true;
+    NS_LOG_FUNCTION(this << address);
+    m_address = AsciiToIpv4Host(address);
+    m_initialized = true;
 }
 
 uint32_t
-Ipv4Address::Get () const
+Ipv4Address::Get() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_address;
+    NS_LOG_FUNCTION(this);
+    return m_address;
 }
+
 void
-Ipv4Address::Set (uint32_t address)
+Ipv4Address::Set(uint32_t address)
 {
-  NS_LOG_FUNCTION (this << address);
-  m_address = address;
-  m_initialized = true;
+    NS_LOG_FUNCTION(this << address);
+    m_address = address;
+    m_initialized = true;
 }
+
 void
-Ipv4Address::Set (char const *address)
+Ipv4Address::Set(const char* address)
 {
-  NS_LOG_FUNCTION (this << address);
-  m_address = AsciiToIpv4Host (address);
-  m_initialized = true;
+    NS_LOG_FUNCTION(this << address);
+    m_address = AsciiToIpv4Host(address);
+    m_initialized = true;
 }
 
 Ipv4Address
-Ipv4Address::CombineMask (Ipv4Mask const &mask) const
+Ipv4Address::CombineMask(const Ipv4Mask& mask) const
 {
-  NS_LOG_FUNCTION (this << mask);
-  return Ipv4Address (Get () & mask.Get ());
+    NS_LOG_FUNCTION(this << mask);
+    return Ipv4Address(Get() & mask.Get());
 }
 
 Ipv4Address
-Ipv4Address::GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const
+Ipv4Address::GetSubnetDirectedBroadcast(const Ipv4Mask& mask) const
 {
-  NS_LOG_FUNCTION (this << mask);
-  if (mask == Ipv4Mask::GetOnes ())
+    NS_LOG_FUNCTION(this << mask);
+    if (mask == Ipv4Mask::GetOnes())
     {
-      NS_ASSERT_MSG (false, "Trying to get subnet-directed broadcast address with an all-ones netmask");
+        NS_ASSERT_MSG(false,
+                      "Trying to get subnet-directed broadcast address with an all-ones netmask");
     }
-  return Ipv4Address (Get () | mask.GetInverse ());
+    return Ipv4Address(Get() | mask.GetInverse());
 }
 
 bool
-Ipv4Address::IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const
+Ipv4Address::IsSubnetDirectedBroadcast(const Ipv4Mask& mask) const
 {
-  NS_LOG_FUNCTION (this << mask);
-  if (mask == Ipv4Mask::GetOnes ())
+    NS_LOG_FUNCTION(this << mask);
+    if (mask == Ipv4Mask::GetOnes())
     {
-      // If the mask is 255.255.255.255, there is no subnet directed
-      // broadcast for this address.
-      return false;
+        // If the mask is 255.255.255.255, there is no subnet directed
+        // broadcast for this address.
+        return false;
     }
-  return ( (Get () | mask.GetInverse ()) == Get () );
+    return ((Get() | mask.GetInverse()) == Get());
 }
 
 bool
-Ipv4Address::IsInitialized () const
+Ipv4Address::IsInitialized() const
 {
-  NS_LOG_FUNCTION (this);
-  return (m_initialized);
+    NS_LOG_FUNCTION(this);
+    return (m_initialized);
 }
 
 bool
-Ipv4Address::IsAny () const
+Ipv4Address::IsAny() const
 {
-  NS_LOG_FUNCTION (this);
-  return (m_address == 0x00000000U);
+    NS_LOG_FUNCTION(this);
+    return (m_address == 0x00000000U);
 }
 
 bool
-Ipv4Address::IsLocalhost () const
+Ipv4Address::IsLocalhost() const
 {
-  NS_LOG_FUNCTION (this);
-  return (m_address == 0x7f000001U);
+    NS_LOG_FUNCTION(this);
+    return (m_address == 0x7f000001U);
 }
 
 bool
-Ipv4Address::IsBroadcast () const
+Ipv4Address::IsBroadcast() const
 {
-  NS_LOG_FUNCTION (this);
-  return (m_address == 0xffffffffU);
+    NS_LOG_FUNCTION(this);
+    return (m_address == 0xffffffffU);
 }
 
 bool
-Ipv4Address::IsMulticast () const
+Ipv4Address::IsMulticast() const
 {
-//
-// Multicast addresses are defined as ranging from 224.0.0.0 through
-// 239.255.255.255 (which is E0000000 through EFFFFFFF in hex).
-//
-  NS_LOG_FUNCTION (this);
-  return (m_address >= 0xe0000000 && m_address <= 0xefffffff);
+    //
+    // Multicast addresses are defined as ranging from 224.0.0.0 through
+    // 239.255.255.255 (which is E0000000 through EFFFFFFF in hex).
+    //
+    NS_LOG_FUNCTION(this);
+    return (m_address >= 0xe0000000 && m_address <= 0xefffffff);
 }
 
 bool
-Ipv4Address::IsLocalMulticast () const
+Ipv4Address::IsLocalMulticast() const
 {
-  NS_LOG_FUNCTION (this);
-  // Link-Local multicast address is 224.0.0.0/24
-  return (m_address & 0xffffff00) == 0xe0000000;
+    NS_LOG_FUNCTION(this);
+    // Link-Local multicast address is 224.0.0.0/24
+    return (m_address & 0xffffff00) == 0xe0000000;
 }
 
 void
-Ipv4Address::Serialize (uint8_t buf[4]) const
+Ipv4Address::Serialize(uint8_t buf[4]) const
 {
-  NS_LOG_FUNCTION (this << &buf);
-  buf[0] = (m_address >> 24) & 0xff;
-  buf[1] = (m_address >> 16) & 0xff;
-  buf[2] = (m_address >> 8) & 0xff;
-  buf[3] = (m_address >> 0) & 0xff;
+    NS_LOG_FUNCTION(this << &buf);
+    buf[0] = (m_address >> 24) & 0xff;
+    buf[1] = (m_address >> 16) & 0xff;
+    buf[2] = (m_address >> 8) & 0xff;
+    buf[3] = (m_address >> 0) & 0xff;
 }
+
 Ipv4Address
-Ipv4Address::Deserialize (const uint8_t buf[4])
+Ipv4Address::Deserialize(const uint8_t buf[4])
 {
-  NS_LOG_FUNCTION (&buf);
-  Ipv4Address ipv4;
-  ipv4.m_address = 0;
-  ipv4.m_address |= buf[0];
-  ipv4.m_address <<= 8;
-  ipv4.m_address |= buf[1];
-  ipv4.m_address <<= 8;
-  ipv4.m_address |= buf[2];
-  ipv4.m_address <<= 8;
-  ipv4.m_address |= buf[3];
-  ipv4.m_initialized = true;
+    NS_LOG_FUNCTION(&buf);
+    Ipv4Address ipv4;
+    ipv4.m_address = 0;
+    ipv4.m_address |= buf[0];
+    ipv4.m_address <<= 8;
+    ipv4.m_address |= buf[1];
+    ipv4.m_address <<= 8;
+    ipv4.m_address |= buf[2];
+    ipv4.m_address <<= 8;
+    ipv4.m_address |= buf[3];
+    ipv4.m_initialized = true;
 
-  return ipv4;
+    return ipv4;
 }
 
 void
-Ipv4Address::Print (std::ostream &os) const
+Ipv4Address::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this);
-  os << ((m_address >> 24) & 0xff) << "."
-     << ((m_address >> 16) & 0xff) << "."
-     << ((m_address >> 8) & 0xff) << "."
-     << ((m_address >> 0) & 0xff);
+    NS_LOG_FUNCTION(this);
+    os << ((m_address >> 24) & 0xff) << "." << ((m_address >> 16) & 0xff) << "."
+       << ((m_address >> 8) & 0xff) << "." << ((m_address >> 0) & 0xff);
 }
 
 bool
-Ipv4Address::IsMatchingType (const Address &address)
+Ipv4Address::IsMatchingType(const Address& address)
 {
-  NS_LOG_FUNCTION (&address);
-  return address.CheckCompatible (GetType (), 4);
+    NS_LOG_FUNCTION(&address);
+    return address.CheckCompatible(GetType(), 4);
 }
-Ipv4Address::operator Address () const
+
+Ipv4Address::operator Address() const
 {
-  return ConvertTo ();
+    return ConvertTo();
 }
 
 Address
-Ipv4Address::ConvertTo () const
+Ipv4Address::ConvertTo() const
 {
-  NS_LOG_FUNCTION (this);
-  uint8_t buf[4];
-  Serialize (buf);
-  return Address (GetType (), buf, 4);
+    NS_LOG_FUNCTION(this);
+    uint8_t buf[4];
+    Serialize(buf);
+    return Address(GetType(), buf, 4);
 }
 
 Ipv4Address
-Ipv4Address::ConvertFrom (const Address &address)
+Ipv4Address::ConvertFrom(const Address& address)
 {
-  NS_LOG_FUNCTION (&address);
-  NS_ASSERT (address.CheckCompatible (GetType (), 4));
-  uint8_t buf[4];
-  address.CopyTo (buf);
-  return Deserialize (buf);
+    NS_LOG_FUNCTION(&address);
+    NS_ASSERT(address.CheckCompatible(GetType(), 4));
+    uint8_t buf[4];
+    address.CopyTo(buf);
+    return Deserialize(buf);
 }
 
 uint8_t
-Ipv4Address::GetType ()
+Ipv4Address::GetType()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static uint8_t type = Address::Register ();
-  return type;
+    NS_LOG_FUNCTION_NOARGS();
+    static uint8_t type = Address::Register();
+    return type;
 }
 
 Ipv4Address
-Ipv4Address::GetZero ()
+Ipv4Address::GetZero()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static Ipv4Address zero ("0.0.0.0");
-  return zero;
-}
-Ipv4Address
-Ipv4Address::GetAny ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  static Ipv4Address any ("0.0.0.0");
-  return any;
-}
-Ipv4Address
-Ipv4Address::GetBroadcast ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  static Ipv4Address broadcast ("255.255.255.255");
-  return broadcast;
-}
-Ipv4Address
-Ipv4Address::GetLoopback ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Ipv4Address loopback ("127.0.0.1");
-  return loopback;
+    NS_LOG_FUNCTION_NOARGS();
+    static Ipv4Address zero("0.0.0.0");
+    return zero;
 }
 
-size_t Ipv4AddressHash::operator() (Ipv4Address const &x) const
+Ipv4Address
+Ipv4Address::GetAny()
 {
-  return std::hash<uint32_t>()(x.Get ());
+    NS_LOG_FUNCTION_NOARGS();
+    static Ipv4Address any("0.0.0.0");
+    return any;
 }
 
-std::ostream& operator<< (std::ostream& os, Ipv4Address const& address)
+Ipv4Address
+Ipv4Address::GetBroadcast()
 {
-  address.Print (os);
-  return os;
-}
-std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask)
-{
-  mask.Print (os);
-  return os;
-}
-std::istream & operator >> (std::istream &is, Ipv4Address &address)
-{
-  std::string str;
-  is >> str;
-  address = Ipv4Address (str.c_str ());
-  return is;
-}
-std::istream & operator >> (std::istream &is, Ipv4Mask &mask)
-{
-  std::string str;
-  is >> str;
-  mask = Ipv4Mask (str.c_str ());
-  return is;
+    NS_LOG_FUNCTION_NOARGS();
+    static Ipv4Address broadcast("255.255.255.255");
+    return broadcast;
 }
 
-ATTRIBUTE_HELPER_CPP (Ipv4Address);
-ATTRIBUTE_HELPER_CPP (Ipv4Mask);
+Ipv4Address
+Ipv4Address::GetLoopback()
+{
+    NS_LOG_FUNCTION_NOARGS();
+    Ipv4Address loopback("127.0.0.1");
+    return loopback;
+}
+
+size_t
+Ipv4AddressHash::operator()(const Ipv4Address& x) const
+{
+    return std::hash<uint32_t>()(x.Get());
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Ipv4Address& address)
+{
+    address.Print(os);
+    return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Ipv4Mask& mask)
+{
+    mask.Print(os);
+    return os;
+}
+
+std::istream&
+operator>>(std::istream& is, Ipv4Address& address)
+{
+    std::string str;
+    is >> str;
+    address = Ipv4Address(str.c_str());
+    return is;
+}
+
+std::istream&
+operator>>(std::istream& is, Ipv4Mask& mask)
+{
+    std::string str;
+    is >> str;
+    mask = Ipv4Mask(str.c_str());
+    return is;
+}
+
+ATTRIBUTE_HELPER_CPP(Ipv4Address);
+ATTRIBUTE_HELPER_CPP(Ipv4Mask);
 
 } // namespace ns3

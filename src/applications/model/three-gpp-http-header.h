@@ -25,8 +25,8 @@
 #include <ns3/header.h>
 #include <ns3/nstime.h>
 
-
-namespace ns3 {
+namespace ns3
+{
 
 class Packet;
 
@@ -54,88 +54,86 @@ class Packet;
  */
 class ThreeGppHttpHeader : public Header
 {
-public:
-  /// Creates an empty instance.
-  ThreeGppHttpHeader ();
+  public:
+    /// Creates an empty instance.
+    ThreeGppHttpHeader();
 
-  /**
-   * Returns the object TypeId.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+    /**
+     * Returns the object TypeId.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  // Inherited from ObjectBase base class.
-  TypeId GetInstanceTypeId () const override;
+    // Inherited from ObjectBase base class.
+    TypeId GetInstanceTypeId() const override;
 
-  // Inherited from Header base class.
-  uint32_t GetSerializedSize () const override;
-  void Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
-  void Print (std::ostream &os) const override;
+    // Inherited from Header base class.
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
+    void Print(std::ostream& os) const override;
 
-  /**
-   * \return The string representation of the header.
-   */
-  std::string ToString () const;
+    /**
+     * \return The string representation of the header.
+     */
+    std::string ToString() const;
 
-  /// The possible types of content (default = NOT_SET).
-  enum ContentType_t
-  {
-    NOT_SET,         ///< Integer equivalent = 0.
-    MAIN_OBJECT,     ///< Integer equivalent = 1.
-    EMBEDDED_OBJECT  ///< Integer equivalent = 2.
-  };
+    /// The possible types of content (default = NOT_SET).
+    enum ContentType_t
+    {
+        NOT_SET,        ///< Integer equivalent = 0.
+        MAIN_OBJECT,    ///< Integer equivalent = 1.
+        EMBEDDED_OBJECT ///< Integer equivalent = 2.
+    };
 
-  /**
-   * \param contentType The content type.
-   */
-  void SetContentType (ContentType_t contentType);
+    /**
+     * \param contentType The content type.
+     */
+    void SetContentType(ContentType_t contentType);
 
-  /**
-   * \return The content type.
-   */
-  ContentType_t GetContentType () const;
+    /**
+     * \return The content type.
+     */
+    ContentType_t GetContentType() const;
 
-  /**
-   * \param contentLength The content length (in bytes).
-   */
-  void SetContentLength (uint32_t contentLength);
+    /**
+     * \param contentLength The content length (in bytes).
+     */
+    void SetContentLength(uint32_t contentLength);
 
-  /**
-   * \return The content length (in bytes).
-   */
-  uint32_t GetContentLength () const;
+    /**
+     * \return The content length (in bytes).
+     */
+    uint32_t GetContentLength() const;
 
-  /**
-   * \param clientTs The client time stamp.
-   */
-  void SetClientTs (Time clientTs);
+    /**
+     * \param clientTs The client time stamp.
+     */
+    void SetClientTs(Time clientTs);
 
-  /**
-   * \return The client time stamp.
-   */
-  Time GetClientTs () const;
+    /**
+     * \return The client time stamp.
+     */
+    Time GetClientTs() const;
 
-  /**
-   * \param serverTs The server time stamp.
-   */
-  void SetServerTs (Time serverTs);
+    /**
+     * \param serverTs The server time stamp.
+     */
+    void SetServerTs(Time serverTs);
 
-  /**
-   * \return The server time stamp.
-   */
-  Time GetServerTs () const;
+    /**
+     * \return The server time stamp.
+     */
+    Time GetServerTs() const;
 
-private:
-  uint16_t m_contentType;   //!<" Content type field in integer format.
-  uint32_t m_contentLength; //!<" Content length field (in bytes unit).
-  uint64_t m_clientTs;      //!<" Client time stamp field (in time step unit).
-  uint64_t m_serverTs;      //!<" Server time stamp field (in time step unit).
+  private:
+    uint16_t m_contentType;   //!<" Content type field in integer format.
+    uint32_t m_contentLength; //!<" Content length field (in bytes unit).
+    uint64_t m_clientTs;      //!<" Client time stamp field (in time step unit).
+    uint64_t m_serverTs;      //!<" Server time stamp field (in time step unit).
 
 }; // end of `class ThreeGppHttpHeader`
 
-
-} // end of `namespace ns3`
-
+} // namespace ns3
 
 #endif /* THREE_GPP_HTTP_HEADER_H */

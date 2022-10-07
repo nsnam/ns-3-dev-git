@@ -22,17 +22,15 @@
 
 namespace ns3
 {
-NS_OBJECT_ENSURE_REGISTERED (MeshStack);
+NS_OBJECT_ENSURE_REGISTERED(MeshStack);
 
 TypeId
-MeshStack::GetTypeId ()
+MeshStack::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::MeshStack")
-    .SetParent<Object> ()
-    .SetGroupName ("Mesh")
-    // No AddConstructor because this is an abstract class.
-    ;
-  return tid;
+    static TypeId tid = TypeId("ns3::MeshStack").SetParent<Object>().SetGroupName("Mesh")
+        // No AddConstructor because this is an abstract class.
+        ;
+    return tid;
 }
 
 } // namespace ns3

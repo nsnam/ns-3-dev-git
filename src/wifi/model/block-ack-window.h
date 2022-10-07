@@ -24,7 +24,8 @@
 #include <cstdint>
 #include <vector>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup wifi
@@ -56,76 +57,76 @@ namespace ns3 {
  */
 class BlockAckWindow
 {
-public:
-  /**
-   * Constructor
-   */
-  BlockAckWindow ();
-  /**
-   * Initialize the window with the given starting sequence number and size
-   *
-   * \param winStart the window start
-   * \param winSize the window size
-   */
-  void Init (uint16_t winStart, uint16_t winSize);
-  /**
-   * Reset the window by clearing all the elements and setting winStart to the
-   * given value.
-   *
-   * \param winStart the window start
-   */
-  void Reset (uint16_t winStart);
-  /**
-   * Get the current winStart value.
-   *
-   * \return the current winStart value
-   */
-  uint16_t GetWinStart () const;
-  /**
-   * Get the current winEnd value.
-   *
-   * \return the current winEnd value
-   */
-  uint16_t GetWinEnd () const;
-  /**
-   * Get the window size.
-   *
-   * \return the window size
-   */
-  std::size_t GetWinSize () const;
-  /**
-   * Get a reference to the element in the window having the given distance from
-   * the current winStart. Note that the given distance must be less than the
-   * window size.
-   *
-   * \param distance the given distance
-   * \return a reference to the element in the window having the given distance
-   *         from the current winStart
-   */
-  std::vector<bool>::reference At (std::size_t distance);
-  /**
-   * Get a const reference to the element in the window having the given distance from
-   * the current winStart. Note that the given distance must be less than the
-   * window size.
-   *
-   * \param distance the given distance
-   * \return a const reference to the element in the window having the given distance
-   *         from the current winStart
-   */
-  std::vector<bool>::const_reference At (std::size_t distance) const;
-  /**
-   * Advance the current winStart by the given number of positions.
-   *
-   * \param count the number of positions the current winStart must be advanced by
-   */
-  void Advance (std::size_t count);
+  public:
+    /**
+     * Constructor
+     */
+    BlockAckWindow();
+    /**
+     * Initialize the window with the given starting sequence number and size
+     *
+     * \param winStart the window start
+     * \param winSize the window size
+     */
+    void Init(uint16_t winStart, uint16_t winSize);
+    /**
+     * Reset the window by clearing all the elements and setting winStart to the
+     * given value.
+     *
+     * \param winStart the window start
+     */
+    void Reset(uint16_t winStart);
+    /**
+     * Get the current winStart value.
+     *
+     * \return the current winStart value
+     */
+    uint16_t GetWinStart() const;
+    /**
+     * Get the current winEnd value.
+     *
+     * \return the current winEnd value
+     */
+    uint16_t GetWinEnd() const;
+    /**
+     * Get the window size.
+     *
+     * \return the window size
+     */
+    std::size_t GetWinSize() const;
+    /**
+     * Get a reference to the element in the window having the given distance from
+     * the current winStart. Note that the given distance must be less than the
+     * window size.
+     *
+     * \param distance the given distance
+     * \return a reference to the element in the window having the given distance
+     *         from the current winStart
+     */
+    std::vector<bool>::reference At(std::size_t distance);
+    /**
+     * Get a const reference to the element in the window having the given distance from
+     * the current winStart. Note that the given distance must be less than the
+     * window size.
+     *
+     * \param distance the given distance
+     * \return a const reference to the element in the window having the given distance
+     *         from the current winStart
+     */
+    std::vector<bool>::const_reference At(std::size_t distance) const;
+    /**
+     * Advance the current winStart by the given number of positions.
+     *
+     * \param count the number of positions the current winStart must be advanced by
+     */
+    void Advance(std::size_t count);
 
-private:
-  uint16_t m_winStart;         ///< window start (sequence number)
-  std::vector<bool> m_window;  ///< window
-  std::size_t m_head;          ///< index of winStart in the vector
+  private:
+    uint16_t m_winStart;        ///< window start (sequence number)
+    std::vector<bool> m_window; ///< window
+    std::size_t m_head;         ///< index of winStart in the vector
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* BLOCK_ACK_WINDOW_H */

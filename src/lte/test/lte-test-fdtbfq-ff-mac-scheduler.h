@@ -26,9 +26,7 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 
-
 using namespace ns3;
-
 
 /**
  * \ingroup lte-test
@@ -44,40 +42,45 @@ using namespace ns3;
  */
 class LenaFdTbfqFfMacSchedulerTestCase1 : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param nUser number of UE nodes
-   * \param dist distance between nodes
-   * \param thrRefDl DL throughput reference
-   * \param thrRefUl UL throughput reference
-   * \param packetSize packet size
-   * \param interval time interval
-   * \param errorModelEnabled error model enabled?
-   */
-  LenaFdTbfqFfMacSchedulerTestCase1 (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval, bool  errorModelEnabled);
-  ~LenaFdTbfqFfMacSchedulerTestCase1 () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param nUser number of UE nodes
+     * \param dist distance between nodes
+     * \param thrRefDl DL throughput reference
+     * \param thrRefUl UL throughput reference
+     * \param packetSize packet size
+     * \param interval time interval
+     * \param errorModelEnabled error model enabled?
+     */
+    LenaFdTbfqFfMacSchedulerTestCase1(uint16_t nUser,
+                                      double dist,
+                                      double thrRefDl,
+                                      double thrRefUl,
+                                      uint16_t packetSize,
+                                      uint16_t interval,
+                                      bool errorModelEnabled);
+    ~LenaFdTbfqFfMacSchedulerTestCase1() override;
 
-private:
-  /**
-   *  Builds the test name string based on provided parameter values
-   *
-   * \param nUser number of UE nodes
-   * \param dist distance between nodes
-   * \returns name string
-   */
-  static std::string BuildNameString (uint16_t nUser, double dist);
-  void DoRun () override;
-  uint16_t m_nUser; ///< number of UE nodes
-  double m_dist; ///< distance between the nodes
-  uint16_t m_packetSize;  ///< packet size in bytes
-  uint16_t m_interval;    ///< interval time in ms
-  double m_thrRefDl; ///< DL throughput reference
-  double m_thrRefUl; ///< UL throughput reference
-  bool m_errorModelEnabled; ///< whether the error model is enabled
+  private:
+    /**
+     *  Builds the test name string based on provided parameter values
+     *
+     * \param nUser number of UE nodes
+     * \param dist distance between nodes
+     * \returns name string
+     */
+    static std::string BuildNameString(uint16_t nUser, double dist);
+    void DoRun() override;
+    uint16_t m_nUser;         ///< number of UE nodes
+    double m_dist;            ///< distance between the nodes
+    uint16_t m_packetSize;    ///< packet size in bytes
+    uint16_t m_interval;      ///< interval time in ms
+    double m_thrRefDl;        ///< DL throughput reference
+    double m_thrRefUl;        ///< UL throughput reference
+    bool m_errorModelEnabled; ///< whether the error model is enabled
 };
-
 
 /**
  * \ingroup lte-test
@@ -89,37 +92,40 @@ private:
  */
 class LenaFdTbfqFfMacSchedulerTestCase2 : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param dist distance between nodes
-   * \param estThrFdTbfqDl estimated DL throughput
-   * \param packetSize packet size
-   * \param interval time interval
-   * \param errorModelEnabled indicates whether the error model is enabled
-   */
-  LenaFdTbfqFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> estThrFdTbfqDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled);
-  ~LenaFdTbfqFfMacSchedulerTestCase2 () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param dist distance between nodes
+     * \param estThrFdTbfqDl estimated DL throughput
+     * \param packetSize packet size
+     * \param interval time interval
+     * \param errorModelEnabled indicates whether the error model is enabled
+     */
+    LenaFdTbfqFfMacSchedulerTestCase2(std::vector<double> dist,
+                                      std::vector<uint32_t> estThrFdTbfqDl,
+                                      std::vector<uint16_t> packetSize,
+                                      uint16_t interval,
+                                      bool errorModelEnabled);
+    ~LenaFdTbfqFfMacSchedulerTestCase2() override;
 
-private:
-  /**
-   *  Builds the test name string based on provided parameter values
-   *
-   * \param nUser number of UE nodes
-   * \param dist distance between nodes
-   * \returns name string
-   */
-  static std::string BuildNameString (uint16_t nUser, std::vector<double> dist);
-  void DoRun () override;
-  uint16_t m_nUser; ///< number of UE nodes
-  std::vector<double> m_dist; ///< distance between the nodes
-  std::vector<uint16_t> m_packetSize;  ///< packet size in bytes
-  uint16_t m_interval;    ///< interval time in ms
-  std::vector<uint32_t> m_estThrFdTbfqDl; ///< estimated thrpughput FDTBFQ DL
-  bool m_errorModelEnabled; ///< error model enabled?
+  private:
+    /**
+     *  Builds the test name string based on provided parameter values
+     *
+     * \param nUser number of UE nodes
+     * \param dist distance between nodes
+     * \returns name string
+     */
+    static std::string BuildNameString(uint16_t nUser, std::vector<double> dist);
+    void DoRun() override;
+    uint16_t m_nUser;                       ///< number of UE nodes
+    std::vector<double> m_dist;             ///< distance between the nodes
+    std::vector<uint16_t> m_packetSize;     ///< packet size in bytes
+    uint16_t m_interval;                    ///< interval time in ms
+    std::vector<uint32_t> m_estThrFdTbfqDl; ///< estimated thrpughput FDTBFQ DL
+    bool m_errorModelEnabled;               ///< error model enabled?
 };
-
 
 /**
  * \ingroup lte-test
@@ -129,10 +135,8 @@ private:
  */
 class LenaTestFdTbfqFfMacSchedulerSuite : public TestSuite
 {
-public:
-  LenaTestFdTbfqFfMacSchedulerSuite ();
+  public:
+    LenaTestFdTbfqFfMacSchedulerSuite();
 };
-
-
 
 #endif /* LENA_TEST_FDTBFQ_FF_MAC_SCHEDULER_H */

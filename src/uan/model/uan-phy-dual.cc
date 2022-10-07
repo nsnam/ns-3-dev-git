@@ -19,623 +19,669 @@
  *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
-#include "uan-phy.h"
 #include "uan-phy-dual.h"
-#include "uan-phy-gen.h"
-#include "uan-tx-mode.h"
-#include "uan-net-device.h"
+
 #include "uan-channel.h"
-#include "ns3/double.h"
-#include "ns3/string.h"
-#include "ns3/log.h"
-#include "ns3/ptr.h"
-#include "ns3/traced-callback.h"
-#include "ns3/trace-source-accessor.h"
-#include "ns3/simulator.h"
 #include "uan-header-common.h"
 #include "uan-mac-rc.h"
+#include "uan-net-device.h"
+#include "uan-phy-gen.h"
+#include "uan-phy.h"
+#include "uan-tx-mode.h"
+
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/ptr.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/traced-callback.h"
 
 #include <cmath>
 
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("UanPhyDual");
-
-NS_OBJECT_ENSURE_REGISTERED (UanPhyDual);
-NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinrDual);
-
-UanPhyCalcSinrDual::UanPhyCalcSinrDual ()
+namespace ns3
 {
 
+NS_LOG_COMPONENT_DEFINE("UanPhyDual");
+
+NS_OBJECT_ENSURE_REGISTERED(UanPhyDual);
+NS_OBJECT_ENSURE_REGISTERED(UanPhyCalcSinrDual);
+
+UanPhyCalcSinrDual::UanPhyCalcSinrDual()
+{
 }
-UanPhyCalcSinrDual::~UanPhyCalcSinrDual ()
-{
 
+UanPhyCalcSinrDual::~UanPhyCalcSinrDual()
+{
 }
 
 TypeId
-UanPhyCalcSinrDual::GetTypeId ()
+UanPhyCalcSinrDual::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanPhyCalcSinrDual")
-    .SetParent<UanPhyCalcSinr> ()
-    .SetGroupName ("Uan")
-    .AddConstructor<UanPhyCalcSinrDual> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::UanPhyCalcSinrDual")
+                            .SetParent<UanPhyCalcSinr>()
+                            .SetGroupName("Uan")
+                            .AddConstructor<UanPhyCalcSinrDual>();
+    return tid;
 }
 
 double
-UanPhyCalcSinrDual::CalcSinrDb (Ptr<Packet> pkt,
-                                Time arrTime,
-                                double rxPowerDb,
-                                double ambNoiseDb,
-                                UanTxMode mode,
-                                UanPdp pdp,
-                                const UanTransducer::ArrivalList &arrivalList) const
+UanPhyCalcSinrDual::CalcSinrDb(Ptr<Packet> pkt,
+                               Time arrTime,
+                               double rxPowerDb,
+                               double ambNoiseDb,
+                               UanTxMode mode,
+                               UanPdp pdp,
+                               const UanTransducer::ArrivalList& arrivalList) const
 {
-
-  if (mode.GetModType () != UanTxMode::OTHER)
+    if (mode.GetModType() != UanTxMode::OTHER)
     {
-      NS_LOG_WARN ("Calculating SINR for unsupported modulation type");
+        NS_LOG_WARN("Calculating SINR for unsupported modulation type");
     }
 
-  double intKp = -DbToKp (rxPowerDb); // This packet is in the arrivalList
-  UanTransducer::ArrivalList::const_iterator it = arrivalList.begin ();
-  for (; it != arrivalList.end (); it++)
+    double intKp = -DbToKp(rxPowerDb); // This packet is in the arrivalList
+    UanTransducer::ArrivalList::const_iterator it = arrivalList.begin();
+    for (; it != arrivalList.end(); it++)
     {
-      // Only count interference if there is overlap in incoming frequency
-      if (std::abs ( (double) it->GetTxMode ().GetCenterFreqHz () - (double) mode.GetCenterFreqHz ())
-          < (double)(it->GetTxMode ().GetBandwidthHz () / 2 + mode.GetBandwidthHz () / 2) - 0.5)
+        // Only count interference if there is overlap in incoming frequency
+        if (std::abs((double)it->GetTxMode().GetCenterFreqHz() - (double)mode.GetCenterFreqHz()) <
+            (double)(it->GetTxMode().GetBandwidthHz() / 2 + mode.GetBandwidthHz() / 2) - 0.5)
         {
-          UanHeaderCommon ch;
-          UanHeaderCommon ch2;
-          if (pkt)
+            UanHeaderCommon ch;
+            UanHeaderCommon ch2;
+            if (pkt)
             {
-              pkt->PeekHeader (ch);
+                pkt->PeekHeader(ch);
             }
-          it->GetPacket ()->PeekHeader (ch2);
+            it->GetPacket()->PeekHeader(ch2);
 
-          if (pkt)
+            if (pkt)
             {
-              if (ch.GetType () == UanMacRc::TYPE_DATA)
+                if (ch.GetType() == UanMacRc::TYPE_DATA)
                 {
-                  NS_LOG_DEBUG ("Adding interferer from " << ch2.GetSrc () << " against " << ch.GetSrc () << ": PktRxMode: "
-                                                          << mode.GetName () << " Int mode: " << it->GetTxMode ().GetName () << " Separation: "
-                                                          << std::abs ( (double) it->GetTxMode ().GetCenterFreqHz () - (double) mode.GetCenterFreqHz ())
-                                                          << " Combined bandwidths: " << (double)(it->GetTxMode ().GetBandwidthHz () / 2 + mode.GetBandwidthHz () / 2) - 0.5);
+                    NS_LOG_DEBUG("Adding interferer from "
+                                 << ch2.GetSrc() << " against " << ch.GetSrc()
+                                 << ": PktRxMode: " << mode.GetName()
+                                 << " Int mode: " << it->GetTxMode().GetName() << " Separation: "
+                                 << std::abs((double)it->GetTxMode().GetCenterFreqHz() -
+                                             (double)mode.GetCenterFreqHz())
+                                 << " Combined bandwidths: "
+                                 << (double)(it->GetTxMode().GetBandwidthHz() / 2 +
+                                             mode.GetBandwidthHz() / 2) -
+                                        0.5);
                 }
             }
-          intKp += DbToKp (it->GetRxPowerDb ());
+            intKp += DbToKp(it->GetRxPowerDb());
         }
     }
 
-  double totalIntDb = KpToDb (intKp + DbToKp (ambNoiseDb));
+    double totalIntDb = KpToDb(intKp + DbToKp(ambNoiseDb));
 
-  NS_LOG_DEBUG (Now ().As (Time::S) << " Calculating SINR:  RxPower = " << rxPowerDb << " dB.  Number of interferers = " << arrivalList.size () << "  Interference + noise power = " << totalIntDb << " dB.  SINR = " << rxPowerDb - totalIntDb << " dB.");
-  return rxPowerDb - totalIntDb;
+    NS_LOG_DEBUG(Now().As(Time::S) << " Calculating SINR:  RxPower = " << rxPowerDb
+                                   << " dB.  Number of interferers = " << arrivalList.size()
+                                   << "  Interference + noise power = " << totalIntDb
+                                   << " dB.  SINR = " << rxPowerDb - totalIntDb << " dB.");
+    return rxPowerDb - totalIntDb;
 }
 
-UanPhyDual::UanPhyDual ()
-  :  UanPhy ()
+UanPhyDual::UanPhyDual()
+    : UanPhy()
 {
+    m_phy1 = CreateObject<UanPhyGen>();
+    m_phy2 = CreateObject<UanPhyGen>();
 
-  m_phy1 = CreateObject<UanPhyGen> ();
-  m_phy2 = CreateObject<UanPhyGen> ();
+    m_phy1->SetReceiveOkCallback(m_recOkCb);
+    m_phy2->SetReceiveOkCallback(m_recOkCb);
 
-  m_phy1->SetReceiveOkCallback (m_recOkCb);
-  m_phy2->SetReceiveOkCallback (m_recOkCb);
-
-  m_phy1->SetReceiveErrorCallback (m_recErrCb);
-  m_phy2->SetReceiveErrorCallback (m_recErrCb);
-
+    m_phy1->SetReceiveErrorCallback(m_recErrCb);
+    m_phy2->SetReceiveErrorCallback(m_recErrCb);
 }
 
-UanPhyDual::~UanPhyDual ()
+UanPhyDual::~UanPhyDual()
 {
 }
 
 void
-UanPhyDual::Clear ()
+UanPhyDual::Clear()
 {
-  if (m_phy1)
+    if (m_phy1)
     {
-      m_phy1->Clear ();
-      m_phy1 = nullptr;
+        m_phy1->Clear();
+        m_phy1 = nullptr;
     }
-  if (m_phy2)
+    if (m_phy2)
     {
-      m_phy2->Clear ();
-      m_phy2 = nullptr;
+        m_phy2->Clear();
+        m_phy2 = nullptr;
     }
 }
+
 void
-UanPhyDual::DoDispose ()
+UanPhyDual::DoDispose()
 {
-  Clear ();
-  UanPhy::DoDispose ();
+    Clear();
+    UanPhy::DoDispose();
 }
 
 TypeId
-UanPhyDual::GetTypeId ()
+UanPhyDual::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanPhyDual")
-    .SetParent<UanPhy> ()
-    .SetGroupName ("Uan")
-    .AddConstructor<UanPhyDual> ()
-    .AddAttribute  ("CcaThresholdPhy1",
-                    "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy1.",
-                    DoubleValue (10),
-                    MakeDoubleAccessor (&UanPhyDual::GetCcaThresholdPhy1, &UanPhyDual::SetCcaThresholdPhy1),
-                    MakeDoubleChecker<double> ())
-    .AddAttribute ("CcaThresholdPhy2",
-                   "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy2.",
-                   DoubleValue (10),
-                   MakeDoubleAccessor (&UanPhyDual::GetCcaThresholdPhy2, &UanPhyDual::SetCcaThresholdPhy2),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("TxPowerPhy1",
-                   "Transmission output power in dB of Phy1.",
-                   DoubleValue (190),
-                   MakeDoubleAccessor (&UanPhyDual::GetTxPowerDbPhy1, &UanPhyDual::SetTxPowerDbPhy1),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("TxPowerPhy2",
-                   "Transmission output power in dB of Phy2.",
-                   DoubleValue (190),
-                   MakeDoubleAccessor (&UanPhyDual::GetTxPowerDbPhy2, &UanPhyDual::SetTxPowerDbPhy2),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("SupportedModesPhy1",
-                   "List of modes supported by Phy1.",
-                   UanModesListValue (UanPhyGen::GetDefaultModes ()),
-                   MakeUanModesListAccessor (&UanPhyDual::GetModesPhy1, &UanPhyDual::SetModesPhy1),
-                   MakeUanModesListChecker () )
-    .AddAttribute ("SupportedModesPhy2",
-                   "List of modes supported by Phy2.",
-                   UanModesListValue (UanPhyGen::GetDefaultModes ()),
-                   MakeUanModesListAccessor (&UanPhyDual::GetModesPhy2, &UanPhyDual::SetModesPhy2),
-                   MakeUanModesListChecker () )
-    .AddAttribute ("PerModelPhy1",
-                   "Functor to calculate PER based on SINR and TxMode for Phy1.",
-                   StringValue ("ns3::UanPhyPerGenDefault"),
-                   MakePointerAccessor (&UanPhyDual::GetPerModelPhy1, &UanPhyDual::SetPerModelPhy1),
-                   MakePointerChecker<UanPhyPer> ())
-    .AddAttribute ("PerModelPhy2",
-                   "Functor to calculate PER based on SINR and TxMode for Phy2.",
-                   StringValue ("ns3::UanPhyPerGenDefault"),
-                   MakePointerAccessor (&UanPhyDual::GetPerModelPhy2, &UanPhyDual::SetPerModelPhy2),
-                   MakePointerChecker<UanPhyPer> ())
-    .AddAttribute ("SinrModelPhy1",
-                   "Functor to calculate SINR based on pkt arrivals and modes for Phy1.",
-                   StringValue ("ns3::UanPhyCalcSinrDual"),
-                   MakePointerAccessor (&UanPhyDual::GetSinrModelPhy1, &UanPhyDual::SetSinrModelPhy1),
-                   MakePointerChecker<UanPhyCalcSinr> ())
-    .AddAttribute ("SinrModelPhy2",
-                   "Functor to calculate SINR based on pkt arrivals and modes for Phy2.",
-                   StringValue ("ns3::UanPhyCalcSinrDual"),
-                   MakePointerAccessor (&UanPhyDual::GetSinrModelPhy2, &UanPhyDual::SetSinrModelPhy2),
-                   MakePointerChecker<UanPhyCalcSinr> ())
-    .AddTraceSource ("RxOk",
-                     "A packet was received successfully.",
-                     MakeTraceSourceAccessor (&UanPhyDual::m_rxOkLogger),
-                     "ns3::UanPhy::TracedCallback")
-    .AddTraceSource ("RxError",
-                     "A packet was received unsuccessfully.",
-                     MakeTraceSourceAccessor (&UanPhyDual::m_rxErrLogger),
-                     "ns3::UanPhy::TracedCallback")
-    .AddTraceSource ("Tx",
-                     "Packet transmission beginning.",
-                     MakeTraceSourceAccessor (&UanPhyDual::m_txLogger),
-                     "ns3::UanPhy::TracedCallback")
+    static TypeId tid =
+        TypeId("ns3::UanPhyDual")
+            .SetParent<UanPhy>()
+            .SetGroupName("Uan")
+            .AddConstructor<UanPhyDual>()
+            .AddAttribute(
+                "CcaThresholdPhy1",
+                "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy1.",
+                DoubleValue(10),
+                MakeDoubleAccessor(&UanPhyDual::GetCcaThresholdPhy1,
+                                   &UanPhyDual::SetCcaThresholdPhy1),
+                MakeDoubleChecker<double>())
+            .AddAttribute(
+                "CcaThresholdPhy2",
+                "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy2.",
+                DoubleValue(10),
+                MakeDoubleAccessor(&UanPhyDual::GetCcaThresholdPhy2,
+                                   &UanPhyDual::SetCcaThresholdPhy2),
+                MakeDoubleChecker<double>())
+            .AddAttribute(
+                "TxPowerPhy1",
+                "Transmission output power in dB of Phy1.",
+                DoubleValue(190),
+                MakeDoubleAccessor(&UanPhyDual::GetTxPowerDbPhy1, &UanPhyDual::SetTxPowerDbPhy1),
+                MakeDoubleChecker<double>())
+            .AddAttribute(
+                "TxPowerPhy2",
+                "Transmission output power in dB of Phy2.",
+                DoubleValue(190),
+                MakeDoubleAccessor(&UanPhyDual::GetTxPowerDbPhy2, &UanPhyDual::SetTxPowerDbPhy2),
+                MakeDoubleChecker<double>())
+            .AddAttribute(
+                "SupportedModesPhy1",
+                "List of modes supported by Phy1.",
+                UanModesListValue(UanPhyGen::GetDefaultModes()),
+                MakeUanModesListAccessor(&UanPhyDual::GetModesPhy1, &UanPhyDual::SetModesPhy1),
+                MakeUanModesListChecker())
+            .AddAttribute(
+                "SupportedModesPhy2",
+                "List of modes supported by Phy2.",
+                UanModesListValue(UanPhyGen::GetDefaultModes()),
+                MakeUanModesListAccessor(&UanPhyDual::GetModesPhy2, &UanPhyDual::SetModesPhy2),
+                MakeUanModesListChecker())
+            .AddAttribute(
+                "PerModelPhy1",
+                "Functor to calculate PER based on SINR and TxMode for Phy1.",
+                StringValue("ns3::UanPhyPerGenDefault"),
+                MakePointerAccessor(&UanPhyDual::GetPerModelPhy1, &UanPhyDual::SetPerModelPhy1),
+                MakePointerChecker<UanPhyPer>())
+            .AddAttribute(
+                "PerModelPhy2",
+                "Functor to calculate PER based on SINR and TxMode for Phy2.",
+                StringValue("ns3::UanPhyPerGenDefault"),
+                MakePointerAccessor(&UanPhyDual::GetPerModelPhy2, &UanPhyDual::SetPerModelPhy2),
+                MakePointerChecker<UanPhyPer>())
+            .AddAttribute(
+                "SinrModelPhy1",
+                "Functor to calculate SINR based on pkt arrivals and modes for Phy1.",
+                StringValue("ns3::UanPhyCalcSinrDual"),
+                MakePointerAccessor(&UanPhyDual::GetSinrModelPhy1, &UanPhyDual::SetSinrModelPhy1),
+                MakePointerChecker<UanPhyCalcSinr>())
+            .AddAttribute(
+                "SinrModelPhy2",
+                "Functor to calculate SINR based on pkt arrivals and modes for Phy2.",
+                StringValue("ns3::UanPhyCalcSinrDual"),
+                MakePointerAccessor(&UanPhyDual::GetSinrModelPhy2, &UanPhyDual::SetSinrModelPhy2),
+                MakePointerChecker<UanPhyCalcSinr>())
+            .AddTraceSource("RxOk",
+                            "A packet was received successfully.",
+                            MakeTraceSourceAccessor(&UanPhyDual::m_rxOkLogger),
+                            "ns3::UanPhy::TracedCallback")
+            .AddTraceSource("RxError",
+                            "A packet was received unsuccessfully.",
+                            MakeTraceSourceAccessor(&UanPhyDual::m_rxErrLogger),
+                            "ns3::UanPhy::TracedCallback")
+            .AddTraceSource("Tx",
+                            "Packet transmission beginning.",
+                            MakeTraceSourceAccessor(&UanPhyDual::m_txLogger),
+                            "ns3::UanPhy::TracedCallback")
 
-  ;
+        ;
 
-  return tid;
+    return tid;
 }
 
 void
-UanPhyDual::SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback)
+UanPhyDual::SetEnergyModelCallback(DeviceEnergyModel::ChangeStateCallback callback)
 {
-  NS_LOG_DEBUG ("Not Implemented");
+    NS_LOG_DEBUG("Not Implemented");
 }
 
 void
-UanPhyDual::EnergyDepletionHandler ()
+UanPhyDual::EnergyDepletionHandler()
 {
-  NS_LOG_DEBUG ("Not Implemented");
+    NS_LOG_DEBUG("Not Implemented");
 }
 
 void
-UanPhyDual::EnergyRechargeHandler ()
+UanPhyDual::EnergyRechargeHandler()
 {
-  NS_LOG_DEBUG ("Not Implemented");
+    NS_LOG_DEBUG("Not Implemented");
 }
 
 void
-UanPhyDual::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
+UanPhyDual::SendPacket(Ptr<Packet> pkt, uint32_t modeNum)
 {
-  if (modeNum <= m_phy1->GetNModes () - 1)
+    if (modeNum <= m_phy1->GetNModes() - 1)
     {
-      NS_LOG_DEBUG (Now ().As (Time::S) << " Sending packet on Phy1 with mode number " << modeNum);
-      m_txLogger (pkt, m_phy1->GetTxPowerDb (), m_phy1->GetMode (modeNum));
-      m_phy1->SendPacket (pkt, modeNum);
-
+        NS_LOG_DEBUG(Now().As(Time::S) << " Sending packet on Phy1 with mode number " << modeNum);
+        m_txLogger(pkt, m_phy1->GetTxPowerDb(), m_phy1->GetMode(modeNum));
+        m_phy1->SendPacket(pkt, modeNum);
     }
-  else
+    else
     {
-      NS_LOG_DEBUG (Now ().As (Time::S) << " Sending packet on Phy2 with mode number " << modeNum - m_phy1->GetNModes ());
-      m_txLogger (pkt, m_phy2->GetTxPowerDb (), m_phy2->GetMode (modeNum - m_phy1->GetNModes ()));
-      m_phy2->SendPacket (pkt, modeNum - m_phy1->GetNModes ());
+        NS_LOG_DEBUG(Now().As(Time::S) << " Sending packet on Phy2 with mode number "
+                                       << modeNum - m_phy1->GetNModes());
+        m_txLogger(pkt, m_phy2->GetTxPowerDb(), m_phy2->GetMode(modeNum - m_phy1->GetNModes()));
+        m_phy2->SendPacket(pkt, modeNum - m_phy1->GetNModes());
     }
 }
+
 void
-UanPhyDual::RegisterListener (UanPhyListener *listener)
+UanPhyDual::RegisterListener(UanPhyListener* listener)
 {
-  m_phy1->RegisterListener (listener);
-  m_phy2->RegisterListener (listener);
+    m_phy1->RegisterListener(listener);
+    m_phy2->RegisterListener(listener);
 }
 
 void
-UanPhyDual::StartRxPacket (Ptr<Packet> pkt, [[maybe_unused]] double rxPowerDb, UanTxMode txMode, UanPdp pdp)
+UanPhyDual::StartRxPacket(Ptr<Packet> pkt,
+                          [[maybe_unused]] double rxPowerDb,
+                          UanTxMode txMode,
+                          UanPdp pdp)
 {
-  // Not called.  StartRxPacket in m_phy1 and m_phy2 are called directly from Transducer.
+    // Not called.  StartRxPacket in m_phy1 and m_phy2 are called directly from Transducer.
 }
 
 void
-UanPhyDual::SetReceiveOkCallback (RxOkCallback cb)
+UanPhyDual::SetReceiveOkCallback(RxOkCallback cb)
 {
-  m_phy1->SetReceiveOkCallback (cb);
-  m_phy2->SetReceiveOkCallback (cb);
+    m_phy1->SetReceiveOkCallback(cb);
+    m_phy2->SetReceiveOkCallback(cb);
 }
 
 void
-UanPhyDual::SetReceiveErrorCallback (RxErrCallback cb)
+UanPhyDual::SetReceiveErrorCallback(RxErrCallback cb)
 {
-  m_phy1->SetReceiveErrorCallback (cb);
-  m_phy2->SetReceiveErrorCallback (cb);
-}
-
-
-void
-UanPhyDual::SetTxPowerDb (double txpwr)
-{
-  m_phy1->SetTxPowerDb (txpwr);
-  m_phy2->SetTxPowerDb (txpwr);
+    m_phy1->SetReceiveErrorCallback(cb);
+    m_phy2->SetReceiveErrorCallback(cb);
 }
 
 void
-UanPhyDual::SetTxPowerDbPhy1 (double txpwr)
+UanPhyDual::SetTxPowerDb(double txpwr)
 {
-  m_phy1->SetTxPowerDb (txpwr);
-}
-void
-UanPhyDual::SetTxPowerDbPhy2 (double txpwr)
-{
-  m_phy2->SetTxPowerDb (txpwr);
+    m_phy1->SetTxPowerDb(txpwr);
+    m_phy2->SetTxPowerDb(txpwr);
 }
 
 void
-UanPhyDual::SetRxThresholdDb (double thresh)
+UanPhyDual::SetTxPowerDbPhy1(double txpwr)
 {
-  m_phy1->SetRxThresholdDb (thresh);
-  m_phy2->SetRxThresholdDb (thresh);
-}
-void
-UanPhyDual::SetCcaThresholdDb (double thresh)
-{
-  m_phy1->SetCcaThresholdDb (thresh);
-  m_phy2->SetCcaThresholdDb (thresh);
+    m_phy1->SetTxPowerDb(txpwr);
 }
 
 void
-UanPhyDual::SetCcaThresholdPhy1 (double thresh)
+UanPhyDual::SetTxPowerDbPhy2(double txpwr)
 {
-  m_phy1->SetCcaThresholdDb (thresh);
+    m_phy2->SetTxPowerDb(txpwr);
 }
+
 void
-UanPhyDual::SetCcaThresholdPhy2 (double thresh)
+UanPhyDual::SetRxThresholdDb(double thresh)
 {
-  m_phy2->SetCcaThresholdDb (thresh);
+    m_phy1->SetRxThresholdDb(thresh);
+    m_phy2->SetRxThresholdDb(thresh);
 }
 
-
-double
-UanPhyDual::GetTxPowerDb ()
+void
+UanPhyDual::SetCcaThresholdDb(double thresh)
 {
-  NS_LOG_WARN ("Warning: Dual Phy only returns TxPowerDb of Phy 1");
-  return m_phy1->GetTxPowerDb ();
+    m_phy1->SetCcaThresholdDb(thresh);
+    m_phy2->SetCcaThresholdDb(thresh);
+}
+
+void
+UanPhyDual::SetCcaThresholdPhy1(double thresh)
+{
+    m_phy1->SetCcaThresholdDb(thresh);
+}
+
+void
+UanPhyDual::SetCcaThresholdPhy2(double thresh)
+{
+    m_phy2->SetCcaThresholdDb(thresh);
 }
 
 double
-UanPhyDual::GetTxPowerDbPhy1 () const
+UanPhyDual::GetTxPowerDb()
 {
-  return m_phy1->GetTxPowerDb ();
+    NS_LOG_WARN("Warning: Dual Phy only returns TxPowerDb of Phy 1");
+    return m_phy1->GetTxPowerDb();
 }
 
 double
-UanPhyDual::GetTxPowerDbPhy2 () const
+UanPhyDual::GetTxPowerDbPhy1() const
 {
-  return m_phy2->GetTxPowerDb ();
+    return m_phy1->GetTxPowerDb();
 }
 
 double
-UanPhyDual::GetRxThresholdDb ()
+UanPhyDual::GetTxPowerDbPhy2() const
 {
-  return m_phy1->GetRxThresholdDb ();
+    return m_phy2->GetTxPowerDb();
 }
 
 double
-UanPhyDual::GetCcaThresholdDb ()
+UanPhyDual::GetRxThresholdDb()
 {
-  NS_LOG_WARN ("Dual Phy only returns CCAThreshold of Phy 1");
-  return m_phy1->GetCcaThresholdDb ();
+    return m_phy1->GetRxThresholdDb();
 }
+
 double
-UanPhyDual::GetCcaThresholdPhy1 () const
+UanPhyDual::GetCcaThresholdDb()
 {
-  return m_phy1->GetCcaThresholdDb ();
+    NS_LOG_WARN("Dual Phy only returns CCAThreshold of Phy 1");
+    return m_phy1->GetCcaThresholdDb();
 }
+
 double
-UanPhyDual::GetCcaThresholdPhy2 () const
+UanPhyDual::GetCcaThresholdPhy1() const
 {
-  return m_phy2->GetCcaThresholdDb ();
+    return m_phy1->GetCcaThresholdDb();
+}
+
+double
+UanPhyDual::GetCcaThresholdPhy2() const
+{
+    return m_phy2->GetCcaThresholdDb();
 }
 
 bool
-UanPhyDual::IsPhy1Idle ()
+UanPhyDual::IsPhy1Idle()
 {
-  return m_phy1->IsStateIdle ();
-}
-bool
-UanPhyDual::IsPhy2Idle ()
-{
-  return m_phy2->IsStateIdle ();
+    return m_phy1->IsStateIdle();
 }
 
 bool
-UanPhyDual::IsPhy1Rx ()
+UanPhyDual::IsPhy2Idle()
 {
-  return m_phy1->IsStateRx ();
+    return m_phy2->IsStateIdle();
 }
 
 bool
-UanPhyDual::IsPhy2Rx ()
+UanPhyDual::IsPhy1Rx()
 {
-  return m_phy2->IsStateRx ();
+    return m_phy1->IsStateRx();
 }
 
 bool
-UanPhyDual::IsPhy1Tx ()
+UanPhyDual::IsPhy2Rx()
 {
-  return m_phy1->IsStateTx ();
+    return m_phy2->IsStateRx();
+}
+
+bool
+UanPhyDual::IsPhy1Tx()
+{
+    return m_phy1->IsStateTx();
 }
 
 Ptr<Packet>
-UanPhyDual::GetPhy1PacketRx () const
+UanPhyDual::GetPhy1PacketRx() const
 {
-  return m_phy1->GetPacketRx ();
+    return m_phy1->GetPacketRx();
 }
 
 Ptr<Packet>
-UanPhyDual::GetPhy2PacketRx () const
+UanPhyDual::GetPhy2PacketRx() const
 {
-  return m_phy2->GetPacketRx ();
+    return m_phy2->GetPacketRx();
 }
 
 bool
-UanPhyDual::IsPhy2Tx ()
+UanPhyDual::IsPhy2Tx()
 {
-  return m_phy2->IsStateTx ();
+    return m_phy2->IsStateTx();
 }
+
 bool
-UanPhyDual::IsStateSleep ()
+UanPhyDual::IsStateSleep()
 {
-  return m_phy1->IsStateSleep () && m_phy2->IsStateSleep ();
+    return m_phy1->IsStateSleep() && m_phy2->IsStateSleep();
 }
+
 bool
-UanPhyDual::IsStateIdle ()
+UanPhyDual::IsStateIdle()
 {
-  return m_phy1->IsStateIdle () && m_phy2->IsStateIdle ();
+    return m_phy1->IsStateIdle() && m_phy2->IsStateIdle();
 }
+
 bool
-UanPhyDual::IsStateBusy ()
+UanPhyDual::IsStateBusy()
 {
-  return !IsStateIdle () || !IsStateSleep ();
+    return !IsStateIdle() || !IsStateSleep();
 }
+
 bool
-UanPhyDual::IsStateRx ()
+UanPhyDual::IsStateRx()
 {
-  return m_phy1->IsStateRx () || m_phy2->IsStateRx ();
+    return m_phy1->IsStateRx() || m_phy2->IsStateRx();
 }
+
 bool
-UanPhyDual::IsStateTx ()
+UanPhyDual::IsStateTx()
 {
-  return m_phy1->IsStateTx () || m_phy2->IsStateTx ();
+    return m_phy1->IsStateTx() || m_phy2->IsStateTx();
 }
+
 bool
-UanPhyDual::IsStateCcaBusy ()
+UanPhyDual::IsStateCcaBusy()
 {
-  return m_phy1->IsStateCcaBusy () || m_phy2->IsStateCcaBusy ();
+    return m_phy1->IsStateCcaBusy() || m_phy2->IsStateCcaBusy();
 }
+
 Ptr<UanChannel>
-UanPhyDual::GetChannel () const
+UanPhyDual::GetChannel() const
 {
-  return m_phy1->GetChannel ();
+    return m_phy1->GetChannel();
 }
+
 Ptr<UanNetDevice>
-UanPhyDual::GetDevice () const
+UanPhyDual::GetDevice() const
 {
-  return m_phy1->GetDevice ();
+    return m_phy1->GetDevice();
 }
-void
-UanPhyDual::SetChannel (Ptr<UanChannel> channel)
-{
-  m_phy1->SetChannel (channel);
-  m_phy2->SetChannel (channel);
-}
-void
-UanPhyDual::SetDevice (Ptr<UanNetDevice> device)
-{
-  m_phy1->SetDevice (device);
-  m_phy2->SetDevice (device);
-}
-void
-UanPhyDual::SetMac (Ptr<UanMac> mac)
-{
-  m_phy1->SetMac (mac);
-  m_phy2->SetMac (mac);
-}
-void
-UanPhyDual::NotifyTransStartTx (Ptr<Packet> packet, [[maybe_unused]] double txPowerDb, UanTxMode txMode)
-{
-}
-void
-UanPhyDual::NotifyIntChange ()
-{
-  m_phy1->NotifyIntChange ();
-  m_phy2->NotifyIntChange ();
 
-}
 void
-UanPhyDual::SetTransducer (Ptr<UanTransducer> trans)
+UanPhyDual::SetChannel(Ptr<UanChannel> channel)
 {
-  m_phy1->SetTransducer (trans);
-  m_phy2->SetTransducer (trans);
+    m_phy1->SetChannel(channel);
+    m_phy2->SetChannel(channel);
 }
+
+void
+UanPhyDual::SetDevice(Ptr<UanNetDevice> device)
+{
+    m_phy1->SetDevice(device);
+    m_phy2->SetDevice(device);
+}
+
+void
+UanPhyDual::SetMac(Ptr<UanMac> mac)
+{
+    m_phy1->SetMac(mac);
+    m_phy2->SetMac(mac);
+}
+
+void
+UanPhyDual::NotifyTransStartTx(Ptr<Packet> packet,
+                               [[maybe_unused]] double txPowerDb,
+                               UanTxMode txMode)
+{
+}
+
+void
+UanPhyDual::NotifyIntChange()
+{
+    m_phy1->NotifyIntChange();
+    m_phy2->NotifyIntChange();
+}
+
+void
+UanPhyDual::SetTransducer(Ptr<UanTransducer> trans)
+{
+    m_phy1->SetTransducer(trans);
+    m_phy2->SetTransducer(trans);
+}
+
 Ptr<UanTransducer>
-UanPhyDual::GetTransducer ()
+UanPhyDual::GetTransducer()
 {
-  NS_LOG_WARN ("DualPhy Returning transducer of Phy1");
-  return m_phy1->GetTransducer ();
+    NS_LOG_WARN("DualPhy Returning transducer of Phy1");
+    return m_phy1->GetTransducer();
 }
+
 uint32_t
-UanPhyDual::GetNModes ()
+UanPhyDual::GetNModes()
 {
-  return m_phy1->GetNModes () + m_phy2->GetNModes ();
+    return m_phy1->GetNModes() + m_phy2->GetNModes();
 }
+
 UanTxMode
-UanPhyDual::GetMode (uint32_t n)
+UanPhyDual::GetMode(uint32_t n)
 {
-  if (n < m_phy1->GetNModes ())
+    if (n < m_phy1->GetNModes())
     {
-      return m_phy1->GetMode (n);
+        return m_phy1->GetMode(n);
     }
-  else
+    else
     {
-      return m_phy2->GetMode (n - m_phy1->GetNModes ());
+        return m_phy2->GetMode(n - m_phy1->GetNModes());
     }
 }
 
 UanModesList
-UanPhyDual::GetModesPhy1 () const
+UanPhyDual::GetModesPhy1() const
 {
-
-  UanModesListValue modeValue;
-  m_phy1->GetAttribute ("SupportedModes", modeValue);
-  return modeValue.Get ();
+    UanModesListValue modeValue;
+    m_phy1->GetAttribute("SupportedModes", modeValue);
+    return modeValue.Get();
 }
 
 UanModesList
-UanPhyDual::GetModesPhy2 () const
+UanPhyDual::GetModesPhy2() const
 {
-  UanModesListValue modeValue;
-  m_phy2->GetAttribute ("SupportedModes", modeValue);
-  return modeValue.Get ();
+    UanModesListValue modeValue;
+    m_phy2->GetAttribute("SupportedModes", modeValue);
+    return modeValue.Get();
 }
 
 void
-UanPhyDual::SetModesPhy1 (UanModesList modes)
+UanPhyDual::SetModesPhy1(UanModesList modes)
 {
-  m_phy1->SetAttribute ("SupportedModes", UanModesListValue (modes));
+    m_phy1->SetAttribute("SupportedModes", UanModesListValue(modes));
 }
 
 void
-UanPhyDual::SetModesPhy2 (UanModesList modes)
+UanPhyDual::SetModesPhy2(UanModesList modes)
 {
-  m_phy2->SetAttribute ("SupportedModes", UanModesListValue (modes));
+    m_phy2->SetAttribute("SupportedModes", UanModesListValue(modes));
 }
 
 Ptr<UanPhyPer>
-UanPhyDual::GetPerModelPhy1 () const
+UanPhyDual::GetPerModelPhy1() const
 {
-  PointerValue perValue;
-  m_phy1->GetAttribute ("PerModel", perValue);
-  return perValue;
+    PointerValue perValue;
+    m_phy1->GetAttribute("PerModel", perValue);
+    return perValue;
 }
 
 Ptr<UanPhyPer>
-UanPhyDual::GetPerModelPhy2 () const
+UanPhyDual::GetPerModelPhy2() const
 {
-  PointerValue perValue;
-  m_phy2->GetAttribute ("PerModel", perValue);
-  return perValue;
+    PointerValue perValue;
+    m_phy2->GetAttribute("PerModel", perValue);
+    return perValue;
 }
 
 void
-UanPhyDual::SetPerModelPhy1 (Ptr<UanPhyPer> per)
+UanPhyDual::SetPerModelPhy1(Ptr<UanPhyPer> per)
 {
-  m_phy1->SetAttribute ("PerModel", PointerValue (per));
+    m_phy1->SetAttribute("PerModel", PointerValue(per));
 }
 
 void
-UanPhyDual::SetPerModelPhy2 (Ptr<UanPhyPer> per)
+UanPhyDual::SetPerModelPhy2(Ptr<UanPhyPer> per)
 {
-  m_phy2->SetAttribute ("PerModel", PointerValue (per));
+    m_phy2->SetAttribute("PerModel", PointerValue(per));
 }
 
 Ptr<UanPhyCalcSinr>
-UanPhyDual::GetSinrModelPhy1 () const
+UanPhyDual::GetSinrModelPhy1() const
 {
-  PointerValue sinrValue;
-  m_phy1->GetAttribute ("SinrModel", sinrValue);
-  return sinrValue;
+    PointerValue sinrValue;
+    m_phy1->GetAttribute("SinrModel", sinrValue);
+    return sinrValue;
 }
 
 Ptr<UanPhyCalcSinr>
-UanPhyDual::GetSinrModelPhy2 () const
+UanPhyDual::GetSinrModelPhy2() const
 {
-  PointerValue sinrValue;
-  m_phy2->GetAttribute ("SinrModel", sinrValue);
-  return sinrValue;
+    PointerValue sinrValue;
+    m_phy2->GetAttribute("SinrModel", sinrValue);
+    return sinrValue;
 }
 
 void
-UanPhyDual::SetSinrModelPhy1 (Ptr<UanPhyCalcSinr> sinr)
+UanPhyDual::SetSinrModelPhy1(Ptr<UanPhyCalcSinr> sinr)
 {
-  m_phy1->SetAttribute ("SinrModel", PointerValue (sinr));
+    m_phy1->SetAttribute("SinrModel", PointerValue(sinr));
 }
 
 void
-UanPhyDual::SetSinrModelPhy2 (Ptr<UanPhyCalcSinr> sinr)
+UanPhyDual::SetSinrModelPhy2(Ptr<UanPhyCalcSinr> sinr)
 {
-  m_phy2->SetAttribute ("SinrModel", PointerValue (sinr));
+    m_phy2->SetAttribute("SinrModel", PointerValue(sinr));
 }
 
 void
-UanPhyDual::RxOkFromSubPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
+UanPhyDual::RxOkFromSubPhy(Ptr<Packet> pkt, double sinr, UanTxMode mode)
 {
-  NS_LOG_DEBUG (Now ().As (Time::S) << " Received packet");
-  m_recOkCb (pkt, sinr, mode);
-  m_rxOkLogger (pkt, sinr, mode);
+    NS_LOG_DEBUG(Now().As(Time::S) << " Received packet");
+    m_recOkCb(pkt, sinr, mode);
+    m_rxOkLogger(pkt, sinr, mode);
 }
 
 void
-UanPhyDual::RxErrFromSubPhy (Ptr<Packet> pkt, double sinr)
+UanPhyDual::RxErrFromSubPhy(Ptr<Packet> pkt, double sinr)
 {
-  m_recErrCb (pkt, sinr);
-  m_rxErrLogger (pkt, sinr, m_phy1->GetMode (0));
+    m_recErrCb(pkt, sinr);
+    m_rxErrLogger(pkt, sinr, m_phy1->GetMode(0));
 }
 
 Ptr<Packet>
-UanPhyDual::GetPacketRx () const
+UanPhyDual::GetPacketRx() const
 {
-  NS_FATAL_ERROR ("GetPacketRx not valid for UanPhyDual.  Must specify GetPhy1PacketRx or GetPhy2PacketRx");
-  return Create<Packet> ();
+    NS_FATAL_ERROR(
+        "GetPacketRx not valid for UanPhyDual.  Must specify GetPhy1PacketRx or GetPhy2PacketRx");
+    return Create<Packet>();
 }
 
 int64_t
-UanPhyDual::AssignStreams (int64_t stream)
+UanPhyDual::AssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
-  return 0;
+    NS_LOG_FUNCTION(this << stream);
+    return 0;
 }
 
-}
+} // namespace ns3

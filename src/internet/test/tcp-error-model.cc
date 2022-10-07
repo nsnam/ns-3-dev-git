@@ -17,154 +17,153 @@
  *
  */
 #include "tcp-error-model.h"
+
 #include "ns3/ipv4-header.h"
-#include "ns3/packet.h"
 #include "ns3/log.h"
-namespace ns3 {
+#include "ns3/packet.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpGeneralErrorModel");
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (TcpGeneralErrorModel);
+NS_LOG_COMPONENT_DEFINE("TcpGeneralErrorModel");
+
+NS_OBJECT_ENSURE_REGISTERED(TcpGeneralErrorModel);
 
 TypeId
-TcpGeneralErrorModel::GetTypeId ()
+TcpGeneralErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpGeneralErrorModel")
-    .SetParent<ErrorModel> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpGeneralErrorModel").SetParent<ErrorModel>();
+    return tid;
 }
 
-TcpGeneralErrorModel::TcpGeneralErrorModel ()
+TcpGeneralErrorModel::TcpGeneralErrorModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 bool
-TcpGeneralErrorModel::DoCorrupt (Ptr<Packet> p)
+TcpGeneralErrorModel::DoCorrupt(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
+    NS_LOG_FUNCTION(this << p);
 
-  if (!IsEnabled ())
+    if (!IsEnabled())
     {
-      return false;
+        return false;
     }
 
-  Ipv4Header ipHeader;
-  TcpHeader tcpHeader;
+    Ipv4Header ipHeader;
+    TcpHeader tcpHeader;
 
-  p->RemoveHeader (ipHeader);
-  p->RemoveHeader (tcpHeader);
+    p->RemoveHeader(ipHeader);
+    p->RemoveHeader(tcpHeader);
 
-  bool toDrop = ShouldDrop (ipHeader, tcpHeader, p->GetSize ());
+    bool toDrop = ShouldDrop(ipHeader, tcpHeader, p->GetSize());
 
-  if (toDrop && ! m_dropCallback.IsNull ())
+    if (toDrop && !m_dropCallback.IsNull())
     {
-      m_dropCallback (ipHeader, tcpHeader, p);
+        m_dropCallback(ipHeader, tcpHeader, p);
     }
 
-  p->AddHeader (tcpHeader);
-  p->AddHeader (ipHeader);
+    p->AddHeader(tcpHeader);
+    p->AddHeader(ipHeader);
 
-  return toDrop;
+    return toDrop;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (TcpSeqErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(TcpSeqErrorModel);
 
 TypeId
-TcpSeqErrorModel::GetTypeId ()
+TcpSeqErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpSeqErrorModel")
-    .SetParent<TcpGeneralErrorModel> ()
-    .AddConstructor<TcpSeqErrorModel> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpSeqErrorModel")
+                            .SetParent<TcpGeneralErrorModel>()
+                            .AddConstructor<TcpSeqErrorModel>();
+    return tid;
 }
 
 bool
-TcpSeqErrorModel::ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader &tcpHeader,
-                              uint32_t packetSize)
+TcpSeqErrorModel::ShouldDrop(const Ipv4Header& ipHeader,
+                             const TcpHeader& tcpHeader,
+                             uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (this << ipHeader << tcpHeader);
+    NS_LOG_FUNCTION(this << ipHeader << tcpHeader);
 
-  bool toDrop = false;
+    bool toDrop = false;
 
-  if (m_seqToKill.begin() != m_seqToKill.end() && packetSize != 0)
+    if (m_seqToKill.begin() != m_seqToKill.end() && packetSize != 0)
     {
-      SequenceNumber32 toKill = m_seqToKill.front();
-      NS_LOG_INFO ("Analyzing seq=" << tcpHeader.GetSequenceNumber () <<
-                   " killing=" << toKill);
-      if (tcpHeader.GetSequenceNumber() == toKill)
+        SequenceNumber32 toKill = m_seqToKill.front();
+        NS_LOG_INFO("Analyzing seq=" << tcpHeader.GetSequenceNumber() << " killing=" << toKill);
+        if (tcpHeader.GetSequenceNumber() == toKill)
         {
-          NS_LOG_INFO ("segment " << toKill << " dropped");
-          toDrop = true;
-          m_seqToKill.pop_front();
+            NS_LOG_INFO("segment " << toKill << " dropped");
+            toDrop = true;
+            m_seqToKill.pop_front();
         }
     }
 
-  return toDrop;
+    return toDrop;
 }
 
 void
 TcpSeqErrorModel::DoReset()
 {
-  m_seqToKill.erase (m_seqToKill.begin(), m_seqToKill.end());
+    m_seqToKill.erase(m_seqToKill.begin(), m_seqToKill.end());
 }
 
-NS_OBJECT_ENSURE_REGISTERED (TcpFlagErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(TcpFlagErrorModel);
 
 TypeId
-TcpFlagErrorModel::GetTypeId ()
+TcpFlagErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpFlagErrorModel")
-    .SetParent<TcpGeneralErrorModel> ()
-    .AddConstructor<TcpFlagErrorModel> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpFlagErrorModel")
+                            .SetParent<TcpGeneralErrorModel>()
+                            .AddConstructor<TcpFlagErrorModel>();
+    return tid;
 }
 
-TcpFlagErrorModel::TcpFlagErrorModel ()
-  : TcpGeneralErrorModel (),
-  m_flagsToKill (TcpHeader::NONE),
-  m_killNumber (0)
+TcpFlagErrorModel::TcpFlagErrorModel()
+    : TcpGeneralErrorModel(),
+      m_flagsToKill(TcpHeader::NONE),
+      m_killNumber(0)
 {
 }
 
 bool
-TcpFlagErrorModel::ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader &tcpHeader,
-                               uint32_t packetSize)
+TcpFlagErrorModel::ShouldDrop(const Ipv4Header& ipHeader,
+                              const TcpHeader& tcpHeader,
+                              uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (this << ipHeader << tcpHeader);
+    NS_LOG_FUNCTION(this << ipHeader << tcpHeader);
 
-  (void) packetSize;
+    (void)packetSize;
 
-  bool toDrop = false;
+    bool toDrop = false;
 
-  if ((tcpHeader.GetFlags () & m_flagsToKill) == m_flagsToKill)
+    if ((tcpHeader.GetFlags() & m_flagsToKill) == m_flagsToKill)
     {
-      if (m_killNumber > 0)
+        if (m_killNumber > 0)
         {
-          m_killNumber--;
-          if (m_killNumber > 0)
+            m_killNumber--;
+            if (m_killNumber > 0)
             {
-              toDrop = true;
+                toDrop = true;
             }
         }
-      else if (m_killNumber < 0)
+        else if (m_killNumber < 0)
         {
-          toDrop = true;
+            toDrop = true;
         }
     }
 
-  return toDrop;
+    return toDrop;
 }
 
 void
-TcpFlagErrorModel::DoReset ()
+TcpFlagErrorModel::DoReset()
 {
-  m_flagsToKill = TcpHeader::NONE;
-  m_killNumber = 0;
+    m_flagsToKill = TcpHeader::NONE;
+    m_killNumber = 0;
 }
 
-} //namespace ns3
-
+} // namespace ns3

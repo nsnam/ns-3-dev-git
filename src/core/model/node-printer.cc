@@ -18,9 +18,10 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "log.h"
 #include "node-printer.h"
-#include "simulator.h"  // GetContext()
+
+#include "log.h"
+#include "simulator.h" // GetContext()
 
 #include <iomanip>
 
@@ -30,23 +31,22 @@
  * ns3::DefaultNodePrinter implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("NodePrinter");
+NS_LOG_COMPONENT_DEFINE("NodePrinter");
 
 void
-DefaultNodePrinter (std::ostream &os)
+DefaultNodePrinter(std::ostream& os)
 {
-  if (Simulator::GetContext () == Simulator::NO_CONTEXT)
+    if (Simulator::GetContext() == Simulator::NO_CONTEXT)
     {
-      os << "-1";
+        os << "-1";
     }
-  else
+    else
     {
-      os << Simulator::GetContext ();
+        os << Simulator::GetContext();
     }
 }
 
-
 } // namespace ns3
-

@@ -23,8 +23,9 @@
 #define CALENDAR_SCHEDULER_H
 
 #include "scheduler.h"
-#include <stdint.h>
+
 #include <list>
+#include <stdint.h>
 
 /**
  * \file
@@ -32,7 +33,8 @@
  * ns3::CalendarScheduler class declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class EventImpl;
 
@@ -91,133 +93,131 @@ class EventImpl;
  */
 class CalendarScheduler : public Scheduler
 {
-public:
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /** Constructor. */
-  CalendarScheduler ();
-  /** Destructor. */
-  ~CalendarScheduler () override;
+    /** Constructor. */
+    CalendarScheduler();
+    /** Destructor. */
+    ~CalendarScheduler() override;
 
-  // Inherited
-  void Insert (const Scheduler::Event &ev) override;
-  bool IsEmpty () const override;
-  Scheduler::Event PeekNext () const override;
-  Scheduler::Event RemoveNext () override;
-  void Remove (const Scheduler::Event &ev) override;
+    // Inherited
+    void Insert(const Scheduler::Event& ev) override;
+    bool IsEmpty() const override;
+    Scheduler::Event PeekNext() const override;
+    Scheduler::Event RemoveNext() override;
+    void Remove(const Scheduler::Event& ev) override;
 
-private:
-  /** Double the number of buckets if necessary. */
-  void ResizeUp ();
-  /** Halve the number of buckets if necessary. */
-  void ResizeDown ();
-  /**
-   * Resize to a new number of buckets, with automatically computed width.
-   *
-   * \param [in] newSize The new number of buckets.
-   */
-  void Resize (uint32_t newSize);
-  /**
-   * Compute the new bucket size, based on up to the first 25 entries.
-   *
-   * \returns The new width.
-   */
-  uint64_t CalculateNewWidth ();
-  /**
-   * Initialize the calendar queue.
-   *
-   * \param [in] nBuckets The number of buckets.
-   * \param [in] width The bucket size, in dimensionless time units.
-   * \param [in] startPrio The starting time.
-   */
-  void Init (uint32_t nBuckets,
-             uint64_t width,
-             uint64_t startPrio);
-  /**
-   * Hash the dimensionless time to a bucket.
-   *
-   * \param [in] key The dimensionless time.
-   * \returns The bucket index.
-   */
-  inline uint32_t Hash (uint64_t key) const;
-  /** Print the configuration and bucket size distribution. */
-  void PrintInfo ();
-  /**
-   * Resize the number of buckets and width.
-   *
-   * \param [in] newSize The number of buckets.
-   * \param [in] newWidth The size of the new buckets.
-   */
-  void DoResize (uint32_t newSize, uint64_t newWidth);
-  /**
-   * Remove the earliest event.
-   *
-   * \returns The earliest event.
-   */
-  Scheduler::Event DoRemoveNext ();
-  /**
-   * Insert a new event in to the correct bucket.
-   *
-   * \param [in] ev The new Event.
-   */
-  void DoInsert (const Scheduler::Event &ev);
+  private:
+    /** Double the number of buckets if necessary. */
+    void ResizeUp();
+    /** Halve the number of buckets if necessary. */
+    void ResizeDown();
+    /**
+     * Resize to a new number of buckets, with automatically computed width.
+     *
+     * \param [in] newSize The new number of buckets.
+     */
+    void Resize(uint32_t newSize);
+    /**
+     * Compute the new bucket size, based on up to the first 25 entries.
+     *
+     * \returns The new width.
+     */
+    uint64_t CalculateNewWidth();
+    /**
+     * Initialize the calendar queue.
+     *
+     * \param [in] nBuckets The number of buckets.
+     * \param [in] width The bucket size, in dimensionless time units.
+     * \param [in] startPrio The starting time.
+     */
+    void Init(uint32_t nBuckets, uint64_t width, uint64_t startPrio);
+    /**
+     * Hash the dimensionless time to a bucket.
+     *
+     * \param [in] key The dimensionless time.
+     * \returns The bucket index.
+     */
+    inline uint32_t Hash(uint64_t key) const;
+    /** Print the configuration and bucket size distribution. */
+    void PrintInfo();
+    /**
+     * Resize the number of buckets and width.
+     *
+     * \param [in] newSize The number of buckets.
+     * \param [in] newWidth The size of the new buckets.
+     */
+    void DoResize(uint32_t newSize, uint64_t newWidth);
+    /**
+     * Remove the earliest event.
+     *
+     * \returns The earliest event.
+     */
+    Scheduler::Event DoRemoveNext();
+    /**
+     * Insert a new event in to the correct bucket.
+     *
+     * \param [in] ev The new Event.
+     */
+    void DoInsert(const Scheduler::Event& ev);
 
-  /** Calendar bucket type: a list of Events. */
-  typedef std::list<Scheduler::Event> Bucket;
+    /** Calendar bucket type: a list of Events. */
+    typedef std::list<Scheduler::Event> Bucket;
 
-  /** Array of buckets. */
-  Bucket *m_buckets;
-  /** Number of buckets in the array. */
-  uint32_t m_nBuckets;
-  /** Duration of a bucket, in dimensionless time units. */
-  uint64_t m_width;
-  /** Bucket index from which the last event was dequeued. */
-  uint32_t m_lastBucket;
-  /** Priority at the top of the bucket from which last event was dequeued. */
-  uint64_t m_bucketTop;
-  /** The priority of the last event removed. */
-  uint64_t m_lastPrio;
-  /** Number of events in queue. */
-  uint32_t m_qSize;
+    /** Array of buckets. */
+    Bucket* m_buckets;
+    /** Number of buckets in the array. */
+    uint32_t m_nBuckets;
+    /** Duration of a bucket, in dimensionless time units. */
+    uint64_t m_width;
+    /** Bucket index from which the last event was dequeued. */
+    uint32_t m_lastBucket;
+    /** Priority at the top of the bucket from which last event was dequeued. */
+    uint64_t m_bucketTop;
+    /** The priority of the last event removed. */
+    uint64_t m_lastPrio;
+    /** Number of events in queue. */
+    uint32_t m_qSize;
 
-  /**
-   * Set the insertion order.
-   *
-   * This can only be used at construction, as invoked by the
-   * Attribute Reverse.
-   *
-   * \param [in] reverse If \c true, store events in *decreasing*
-   * time stamp order.
-   */
-  void SetReverse (bool reverse);
-  /**
-   * Get the next event from the bucket, according to \c m_reverse.
-   * \param [in] bucket The bucket to draw from.
-   * \return The next event from the \c bucket.
-   */
-  Scheduler::Event & (*NextEvent) (Bucket & bucket);
-  /**
-   * Ordering function to identify the insertion point, according to \c m_reverse.
-   * \param [in] newEvent The new event being inserted.
-   * \param [in] it The current position in the bucket being examined.
-   * \return \c true if the \c newEvent belongs before \c it.
-   */
-  bool (*Order) (const EventKey & newEvent, const EventKey & it);
-  /**
-   * Pop the next event from the bucket, according to \c m_reverse.
-   * \param [in] bucket The bucket to pop from.
-   */
-  void (*Pop) (Bucket &);
-  /**
-   * Bucket ordering.
-   * If \c false (default), store events in increasing time stamp order.
-   * If \c true, store events in *decreasing* time stamp order.
-   */
-  bool m_reverse = false;
+    /**
+     * Set the insertion order.
+     *
+     * This can only be used at construction, as invoked by the
+     * Attribute Reverse.
+     *
+     * \param [in] reverse If \c true, store events in *decreasing*
+     * time stamp order.
+     */
+    void SetReverse(bool reverse);
+    /**
+     * Get the next event from the bucket, according to \c m_reverse.
+     * \param [in] bucket The bucket to draw from.
+     * \return The next event from the \c bucket.
+     */
+    Scheduler::Event& (*NextEvent)(Bucket& bucket);
+    /**
+     * Ordering function to identify the insertion point, according to \c m_reverse.
+     * \param [in] newEvent The new event being inserted.
+     * \param [in] it The current position in the bucket being examined.
+     * \return \c true if the \c newEvent belongs before \c it.
+     */
+    bool (*Order)(const EventKey& newEvent, const EventKey& it);
+    /**
+     * Pop the next event from the bucket, according to \c m_reverse.
+     * \param [in] bucket The bucket to pop from.
+     */
+    void (*Pop)(Bucket&);
+    /**
+     * Bucket ordering.
+     * If \c false (default), store events in increasing time stamp order.
+     * If \c true, store events in *decreasing* time stamp order.
+     */
+    bool m_reverse = false;
 };
 
 } // namespace ns3

@@ -14,9 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/test.h"
 #include "ns3/names.h"
-
+#include "ns3/test.h"
 
 /**
  * \file
@@ -31,10 +30,11 @@
  * \defgroup names-tests Object Names test suite
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace tests {
-
+namespace tests
+{
 
 /**
  * \ingroup names-tests
@@ -42,23 +42,25 @@ namespace tests {
  */
 class TestObject : public Object
 {
-public:
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId ()
-  {
-    static TypeId tid = TypeId ("TestObject")
-      .SetParent<Object> ()
-      .SetGroupName ("Core")
-      .HideFromDocumentation ()
-      .AddConstructor<TestObject> ();
-    return tid;
-  }
-  /** Constructor. */
-  TestObject ()
-  {}
+  public:
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId()
+    {
+        static TypeId tid = TypeId("TestObject")
+                                .SetParent<Object>()
+                                .SetGroupName("Core")
+                                .HideFromDocumentation()
+                                .AddConstructor<TestObject>();
+        return tid;
+    }
+
+    /** Constructor. */
+    TestObject()
+    {
+    }
 };
 
 /**
@@ -67,23 +69,25 @@ public:
  */
 class AlternateTestObject : public Object
 {
-public:
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId ()
-  {
-    static TypeId tid = TypeId ("AlternateTestObject")
-      .SetParent<Object> ()
-      .SetGroupName ("Core")
-      .HideFromDocumentation ()
-      .AddConstructor<AlternateTestObject> ();
-    return tid;
-  }
-  /** Constructor. */
-  AlternateTestObject ()
-  {}
+  public:
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId()
+    {
+        static TypeId tid = TypeId("AlternateTestObject")
+                                .SetParent<Object>()
+                                .SetGroupName("Core")
+                                .HideFromDocumentation()
+                                .AddConstructor<AlternateTestObject>();
+        return tid;
+    }
+
+    /** Constructor. */
+    AlternateTestObject()
+    {
+    }
 };
 
 /**
@@ -100,58 +104,66 @@ public:
  */
 class BasicAddTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  BasicAddTestCase ();
-  /** Destructor. */
-  ~BasicAddTestCase () override;
+  public:
+    /** Constructor. */
+    BasicAddTestCase();
+    /** Destructor. */
+    ~BasicAddTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-BasicAddTestCase::BasicAddTestCase ()
-  : TestCase ("Check low level Names::Add and Names::FindName functionality")
-{}
-
-BasicAddTestCase::~BasicAddTestCase ()
-{}
-
-void
-BasicAddTestCase::DoTeardown ()
+BasicAddTestCase::BasicAddTestCase()
+    : TestCase("Check low level Names::Add and Names::FindName functionality")
 {
-  Names::Clear ();
+}
+
+BasicAddTestCase::~BasicAddTestCase()
+{
 }
 
 void
-BasicAddTestCase::DoRun ()
+BasicAddTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add (Ptr<Object> (nullptr, false), "Name One", objectOne);
+void
+BasicAddTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add (Ptr<Object> (nullptr, false), "Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add(Ptr<Object>(nullptr, false), "Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add (objectOne, "Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add(Ptr<Object>(nullptr, false), "Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add (objectTwo, "Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add(objectOne, "Child", childOfObjectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name One", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add(objectTwo, "Child", childOfObjectTwo);
 
-  found = Names::FindName (objectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name Two", "Could not Names::Add and Names::FindName a second Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name One", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Name Two",
+                          "Could not Names::Add and Names::FindName a second Object");
 
-  found = Names::FindName (childOfObjectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
+
+    found = Names::FindName(childOfObjectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 }
 
 /**
@@ -165,59 +177,67 @@ BasicAddTestCase::DoRun ()
  */
 class StringContextAddTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  StringContextAddTestCase ();
-  /** Destructor. */
-  ~StringContextAddTestCase () override;
+  public:
+    /** Constructor. */
+    StringContextAddTestCase();
+    /** Destructor. */
+    ~StringContextAddTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-StringContextAddTestCase::StringContextAddTestCase ()
-  : TestCase ("Check string context Names::Add and Names::FindName functionality")
+StringContextAddTestCase::StringContextAddTestCase()
+    : TestCase("Check string context Names::Add and Names::FindName functionality")
 
-{}
-
-StringContextAddTestCase::~StringContextAddTestCase ()
-{}
-
-void
-StringContextAddTestCase::DoTeardown ()
 {
-  Names::Clear ();
+}
+
+StringContextAddTestCase::~StringContextAddTestCase()
+{
 }
 
 void
-StringContextAddTestCase::DoRun ()
+StringContextAddTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names", "Name One", objectOne);
+void
+StringContextAddTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add ("/Names", "Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("/Names", "Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name One", "Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add("/Names", "Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name Two", "Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name One", "Child", childOfObjectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name One", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add("/Names/Name Two", "Child", childOfObjectTwo);
 
-  found = Names::FindName (objectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name Two", "Could not Names::Add and Names::FindName a second Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name One", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Name Two",
+                          "Could not Names::Add and Names::FindName a second Object");
 
-  found = Names::FindName (childOfObjectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
+
+    found = Names::FindName(childOfObjectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 }
 
 /**
@@ -230,59 +250,67 @@ StringContextAddTestCase::DoRun ()
  */
 class FullyQualifiedAddTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  FullyQualifiedAddTestCase ();
-  /** Destructor. */
-  ~FullyQualifiedAddTestCase () override;
+  public:
+    /** Constructor. */
+    FullyQualifiedAddTestCase();
+    /** Destructor. */
+    ~FullyQualifiedAddTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-FullyQualifiedAddTestCase::FullyQualifiedAddTestCase ()
-  : TestCase ("Check fully qualified path Names::Add and Names::FindName functionality")
+FullyQualifiedAddTestCase::FullyQualifiedAddTestCase()
+    : TestCase("Check fully qualified path Names::Add and Names::FindName functionality")
 
-{}
-
-FullyQualifiedAddTestCase::~FullyQualifiedAddTestCase ()
-{}
-
-void
-FullyQualifiedAddTestCase::DoTeardown ()
 {
-  Names::Clear ();
+}
+
+FullyQualifiedAddTestCase::~FullyQualifiedAddTestCase()
+{
 }
 
 void
-FullyQualifiedAddTestCase::DoRun ()
+FullyQualifiedAddTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name One", objectOne);
+void
+FullyQualifiedAddTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name One/Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add("/Names/Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name Two/Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name One/Child", childOfObjectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name One", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add("/Names/Name Two/Child", childOfObjectTwo);
 
-  found = Names::FindName (objectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name Two", "Could not Names::Add and Names::FindName a second Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name One", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Name Two",
+                          "Could not Names::Add and Names::FindName a second Object");
 
-  found = Names::FindName (childOfObjectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
+
+    found = Names::FindName(childOfObjectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 }
 
 /**
@@ -299,59 +327,67 @@ FullyQualifiedAddTestCase::DoRun ()
  */
 class RelativeAddTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  RelativeAddTestCase ();
-  /** Destructor. */
-  ~RelativeAddTestCase () override;
+  public:
+    /** Constructor. */
+    RelativeAddTestCase();
+    /** Destructor. */
+    ~RelativeAddTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-RelativeAddTestCase::RelativeAddTestCase ()
-  : TestCase ("Check relative path Names::Add and Names::FindName functionality")
+RelativeAddTestCase::RelativeAddTestCase()
+    : TestCase("Check relative path Names::Add and Names::FindName functionality")
 
-{}
-
-RelativeAddTestCase::~RelativeAddTestCase ()
-{}
-
-void
-RelativeAddTestCase::DoTeardown ()
 {
-  Names::Clear ();
+}
+
+RelativeAddTestCase::~RelativeAddTestCase()
+{
 }
 
 void
-RelativeAddTestCase::DoRun ()
+RelativeAddTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One", objectOne);
+void
+RelativeAddTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One/Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two/Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("Name One/Child", childOfObjectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name One", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two/Child", childOfObjectTwo);
 
-  found = Names::FindName (objectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name Two", "Could not Names::Add and Names::FindName a second Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name One", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Name Two",
+                          "Could not Names::Add and Names::FindName a second Object");
 
-  found = Names::FindName (childOfObjectTwo);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
+
+    found = Names::FindName(childOfObjectTwo);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 }
 
 /**
@@ -365,56 +401,60 @@ RelativeAddTestCase::DoRun ()
  */
 class BasicRenameTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  BasicRenameTestCase ();
-  /** Destructor. */
-  ~BasicRenameTestCase () override;
+  public:
+    /** Constructor. */
+    BasicRenameTestCase();
+    /** Destructor. */
+    ~BasicRenameTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-BasicRenameTestCase::BasicRenameTestCase ()
-  : TestCase ("Check low level Names::Rename functionality")
-{}
-
-BasicRenameTestCase::~BasicRenameTestCase ()
-{}
-
-void
-BasicRenameTestCase::DoTeardown ()
+BasicRenameTestCase::BasicRenameTestCase()
+    : TestCase("Check low level Names::Rename functionality")
 {
-  Names::Clear ();
+}
+
+BasicRenameTestCase::~BasicRenameTestCase()
+{
 }
 
 void
-BasicRenameTestCase::DoRun ()
+BasicRenameTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add (Ptr<Object> (nullptr, false), "Name", objectOne);
+void
+BasicRenameTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add (objectOne, "Child", childOfObjectOne);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add(Ptr<Object>(nullptr, false), "Name", objectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add(objectOne, "Child", childOfObjectOne);
 
-  Names::Rename (Ptr<Object> (nullptr, false), "Name", "New Name");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Name", "Could not Names::Rename an Object");
+    Names::Rename(Ptr<Object>(nullptr, false), "Name", "New Name");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Name", "Could not Names::Rename an Object");
 
-  Names::Rename (objectOne, "Child", "New Child");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
+    Names::Rename(objectOne, "Child", "New Child");
+
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Child", "Could not Names::Rename a child Object");
 }
 
 /**
@@ -427,56 +467,60 @@ BasicRenameTestCase::DoRun ()
  */
 class StringContextRenameTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  StringContextRenameTestCase ();
-  /** Destructor. */
-  ~StringContextRenameTestCase () override;
+  public:
+    /** Constructor. */
+    StringContextRenameTestCase();
+    /** Destructor. */
+    ~StringContextRenameTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-StringContextRenameTestCase::StringContextRenameTestCase ()
-  : TestCase ("Check string context-based Names::Rename functionality")
-{}
-
-StringContextRenameTestCase::~StringContextRenameTestCase ()
-{}
-
-void
-StringContextRenameTestCase::DoTeardown ()
+StringContextRenameTestCase::StringContextRenameTestCase()
+    : TestCase("Check string context-based Names::Rename functionality")
 {
-  Names::Clear ();
+}
+
+StringContextRenameTestCase::~StringContextRenameTestCase()
+{
 }
 
 void
-StringContextRenameTestCase::DoRun ()
+StringContextRenameTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names", "Name", objectOne);
+void
+StringContextRenameTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name", "Child", childOfObjectOne);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("/Names", "Name", objectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name", "Child", childOfObjectOne);
 
-  Names::Rename ("/Names", "Name", "New Name");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Name", "Could not Names::Rename an Object");
+    Names::Rename("/Names", "Name", "New Name");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Name", "Could not Names::Rename an Object");
 
-  Names::Rename ("/Names/New Name", "Child", "New Child");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
+    Names::Rename("/Names/New Name", "Child", "New Child");
+
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Child", "Could not Names::Rename a child Object");
 }
 
 /**
@@ -489,56 +533,60 @@ StringContextRenameTestCase::DoRun ()
  */
 class FullyQualifiedRenameTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  FullyQualifiedRenameTestCase ();
-  /** Destructor. */
-  ~FullyQualifiedRenameTestCase () override;
+  public:
+    /** Constructor. */
+    FullyQualifiedRenameTestCase();
+    /** Destructor. */
+    ~FullyQualifiedRenameTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-FullyQualifiedRenameTestCase::FullyQualifiedRenameTestCase ()
-  : TestCase ("Check fully qualified path Names::Rename functionality")
-{}
-
-FullyQualifiedRenameTestCase::~FullyQualifiedRenameTestCase ()
-{}
-
-void
-FullyQualifiedRenameTestCase::DoTeardown ()
+FullyQualifiedRenameTestCase::FullyQualifiedRenameTestCase()
+    : TestCase("Check fully qualified path Names::Rename functionality")
 {
-  Names::Clear ();
+}
+
+FullyQualifiedRenameTestCase::~FullyQualifiedRenameTestCase()
+{
 }
 
 void
-FullyQualifiedRenameTestCase::DoRun ()
+FullyQualifiedRenameTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name", objectOne);
+void
+FullyQualifiedRenameTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name/Child", childOfObjectOne);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name", objectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name/Child", childOfObjectOne);
 
-  Names::Rename ("/Names/Name", "New Name");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Name", "Could not Names::Rename an Object");
+    Names::Rename("/Names/Name", "New Name");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Name", "Could not Names::Rename an Object");
 
-  Names::Rename ("/Names/New Name/Child", "New Child");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
+    Names::Rename("/Names/New Name/Child", "New Child");
+
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Child", "Could not Names::Rename a child Object");
 }
 
 /**
@@ -551,56 +599,60 @@ FullyQualifiedRenameTestCase::DoRun ()
  */
 class RelativeRenameTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  RelativeRenameTestCase ();
-  /** Destructor. */
-  ~RelativeRenameTestCase () override;
+  public:
+    /** Constructor. */
+    RelativeRenameTestCase();
+    /** Destructor. */
+    ~RelativeRenameTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-RelativeRenameTestCase::RelativeRenameTestCase ()
-  : TestCase ("Check relative path Names::Rename functionality")
-{}
-
-RelativeRenameTestCase::~RelativeRenameTestCase ()
-{}
-
-void
-RelativeRenameTestCase::DoTeardown ()
+RelativeRenameTestCase::RelativeRenameTestCase()
+    : TestCase("Check relative path Names::Rename functionality")
 {
-  Names::Clear ();
+}
+
+RelativeRenameTestCase::~RelativeRenameTestCase()
+{
 }
 
 void
-RelativeRenameTestCase::DoRun ()
+RelativeRenameTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("Name", objectOne);
+void
+RelativeRenameTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("Name/Child", childOfObjectOne);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("Name", objectOne);
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Name", "Could not Names::Add and Names::FindName an Object");
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("Name/Child", childOfObjectOne);
 
-  Names::Rename ("Name", "New Name");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "Name", "Could not Names::Add and Names::FindName an Object");
 
-  found = Names::FindName (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Name", "Could not Names::Rename an Object");
+    Names::Rename("Name", "New Name");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
+    found = Names::FindName(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Name", "Could not Names::Rename an Object");
 
-  Names::Rename ("New Name/Child", "New Child");
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "Child",
+                          "Could not Names::Add and Names::FindName a child Object");
 
-  found = Names::FindName (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
+    Names::Rename("New Name/Child", "New Child");
+
+    found = Names::FindName(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found, "New Child", "Could not Names::Rename a child Object");
 }
 
 /**
@@ -613,50 +665,56 @@ RelativeRenameTestCase::DoRun ()
  */
 class FindPathTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  FindPathTestCase ();
-  /** Destructor. */
-  ~FindPathTestCase () override;
+  public:
+    /** Constructor. */
+    FindPathTestCase();
+    /** Destructor. */
+    ~FindPathTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-FindPathTestCase::FindPathTestCase ()
-  : TestCase ("Check Names::FindPath functionality")
-{}
-
-FindPathTestCase::~FindPathTestCase ()
-{}
-
-void
-FindPathTestCase::DoTeardown ()
+FindPathTestCase::FindPathTestCase()
+    : TestCase("Check Names::FindPath functionality")
 {
-  Names::Clear ();
+}
+
+FindPathTestCase::~FindPathTestCase()
+{
 }
 
 void
-FindPathTestCase::DoRun ()
+FindPathTestCase::DoTeardown()
 {
-  std::string found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("Name", objectOne);
+void
+FindPathTestCase::DoRun()
+{
+    std::string found;
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name/Child", childOfObjectOne);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("Name", objectOne);
 
-  found = Names::FindPath (objectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "/Names/Name", "Could not Names::Add and Names::FindPath an Object");
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name/Child", childOfObjectOne);
 
-  found = Names::FindPath (childOfObjectOne);
-  NS_TEST_ASSERT_MSG_EQ (found, "/Names/Name/Child", "Could not Names::Add and Names::FindPath a child Object");
+    found = Names::FindPath(objectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "/Names/Name",
+                          "Could not Names::Add and Names::FindPath an Object");
 
-  Ptr<TestObject> objectNotThere = CreateObject<TestObject> ();
-  found = Names::FindPath (objectNotThere);
-  NS_TEST_ASSERT_MSG_EQ (found, "", "Unexpectedly found a non-existent Object");
+    found = Names::FindPath(childOfObjectOne);
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          "/Names/Name/Child",
+                          "Could not Names::Add and Names::FindPath a child Object");
+
+    Ptr<TestObject> objectNotThere = CreateObject<TestObject>();
+    found = Names::FindPath(objectNotThere);
+    NS_TEST_ASSERT_MSG_EQ(found, "", "Unexpectedly found a non-existent Object");
 }
 
 /**
@@ -668,58 +726,68 @@ FindPathTestCase::DoRun ()
  */
 class BasicFindTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  BasicFindTestCase ();
-  /** Destructor. */
-  ~BasicFindTestCase () override;
+  public:
+    /** Constructor. */
+    BasicFindTestCase();
+    /** Destructor. */
+    ~BasicFindTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-BasicFindTestCase::BasicFindTestCase ()
-  : TestCase ("Check low level Names::Find functionality")
-{}
-
-BasicFindTestCase::~BasicFindTestCase ()
-{}
-
-void
-BasicFindTestCase::DoTeardown ()
+BasicFindTestCase::BasicFindTestCase()
+    : TestCase("Check low level Names::Find functionality")
 {
-  Names::Clear ();
+}
+
+BasicFindTestCase::~BasicFindTestCase()
+{
 }
 
 void
-BasicFindTestCase::DoRun ()
+BasicFindTestCase::DoTeardown()
 {
-  Ptr<TestObject> found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One", objectOne);
+void
+BasicFindTestCase::DoRun()
+{
+    Ptr<TestObject> found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One/Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two/Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("Name One/Child", childOfObjectOne);
 
-  found = Names::Find<TestObject> (Ptr<Object> (nullptr, false), "Name One");
-  NS_TEST_ASSERT_MSG_EQ (found, objectOne, "Could not find a previously named Object via object context");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two/Child", childOfObjectTwo);
 
-  found = Names::Find<TestObject> (Ptr<Object> (nullptr, false), "Name Two");
-  NS_TEST_ASSERT_MSG_EQ (found, objectTwo, "Could not find a previously named Object via object context");
+    found = Names::Find<TestObject>(Ptr<Object>(nullptr, false), "Name One");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectOne,
+                          "Could not find a previously named Object via object context");
 
-  found = Names::Find<TestObject> (objectOne, "Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectOne, "Could not find a previously named child Object via object context");
+    found = Names::Find<TestObject>(Ptr<Object>(nullptr, false), "Name Two");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectTwo,
+                          "Could not find a previously named Object via object context");
 
-  found = Names::Find<TestObject> (objectTwo, "Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via object context");
+    found = Names::Find<TestObject>(objectOne, "Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectOne,
+                          "Could not find a previously named child Object via object context");
+
+    found = Names::Find<TestObject>(objectTwo, "Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectTwo,
+                          "Could not find a previously named child Object via object context");
 }
 
 /**
@@ -732,58 +800,68 @@ BasicFindTestCase::DoRun ()
  */
 class StringContextFindTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  StringContextFindTestCase ();
-  /** Destructor. */
-  ~StringContextFindTestCase () override;
+  public:
+    /** Constructor. */
+    StringContextFindTestCase();
+    /** Destructor. */
+    ~StringContextFindTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-StringContextFindTestCase::StringContextFindTestCase ()
-  : TestCase ("Check string context-based Names::Find functionality")
-{}
-
-StringContextFindTestCase::~StringContextFindTestCase ()
-{}
-
-void
-StringContextFindTestCase::DoTeardown ()
+StringContextFindTestCase::StringContextFindTestCase()
+    : TestCase("Check string context-based Names::Find functionality")
 {
-  Names::Clear ();
+}
+
+StringContextFindTestCase::~StringContextFindTestCase()
+{
 }
 
 void
-StringContextFindTestCase::DoRun ()
+StringContextFindTestCase::DoTeardown()
 {
-  Ptr<TestObject> found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One", objectOne);
+void
+StringContextFindTestCase::DoRun()
+{
+    Ptr<TestObject> found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One/Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two/Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("Name One/Child", childOfObjectOne);
 
-  found = Names::Find<TestObject> ("/Names", "Name One");
-  NS_TEST_ASSERT_MSG_EQ (found, objectOne, "Could not find a previously named Object via string context");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two/Child", childOfObjectTwo);
 
-  found = Names::Find<TestObject> ("/Names", "Name Two");
-  NS_TEST_ASSERT_MSG_EQ (found, objectTwo, "Could not find a previously named Object via stribng context");
+    found = Names::Find<TestObject>("/Names", "Name One");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectOne,
+                          "Could not find a previously named Object via string context");
 
-  found = Names::Find<TestObject> ("/Names/Name One", "Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectOne, "Could not find a previously named child Object via string context");
+    found = Names::Find<TestObject>("/Names", "Name Two");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectTwo,
+                          "Could not find a previously named Object via stribng context");
 
-  found = Names::Find<TestObject> ("/Names/Name Two", "Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via string context");
+    found = Names::Find<TestObject>("/Names/Name One", "Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectOne,
+                          "Could not find a previously named child Object via string context");
+
+    found = Names::Find<TestObject>("/Names/Name Two", "Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectTwo,
+                          "Could not find a previously named child Object via string context");
 }
 
 /**
@@ -796,58 +874,68 @@ StringContextFindTestCase::DoRun ()
  */
 class FullyQualifiedFindTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  FullyQualifiedFindTestCase ();
-  /** Destructor. */
-  ~FullyQualifiedFindTestCase () override;
+  public:
+    /** Constructor. */
+    FullyQualifiedFindTestCase();
+    /** Destructor. */
+    ~FullyQualifiedFindTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-FullyQualifiedFindTestCase::FullyQualifiedFindTestCase ()
-  : TestCase ("Check fully qualified path Names::Find functionality")
-{}
-
-FullyQualifiedFindTestCase::~FullyQualifiedFindTestCase ()
-{}
-
-void
-FullyQualifiedFindTestCase::DoTeardown ()
+FullyQualifiedFindTestCase::FullyQualifiedFindTestCase()
+    : TestCase("Check fully qualified path Names::Find functionality")
 {
-  Names::Clear ();
+}
+
+FullyQualifiedFindTestCase::~FullyQualifiedFindTestCase()
+{
 }
 
 void
-FullyQualifiedFindTestCase::DoRun ()
+FullyQualifiedFindTestCase::DoTeardown()
 {
-  Ptr<TestObject> found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name One", objectOne);
+void
+FullyQualifiedFindTestCase::DoRun()
+{
+    Ptr<TestObject> found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name One/Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add("/Names/Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add ("/Names/Name Two/Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("/Names/Name One/Child", childOfObjectOne);
 
-  found = Names::Find<TestObject> ("/Names/Name One");
-  NS_TEST_ASSERT_MSG_EQ (found, objectOne, "Could not find a previously named Object via string context");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add("/Names/Name Two/Child", childOfObjectTwo);
 
-  found = Names::Find<TestObject> ("/Names/Name Two");
-  NS_TEST_ASSERT_MSG_EQ (found, objectTwo, "Could not find a previously named Object via stribng context");
+    found = Names::Find<TestObject>("/Names/Name One");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectOne,
+                          "Could not find a previously named Object via string context");
 
-  found = Names::Find<TestObject> ("/Names/Name One/Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectOne, "Could not find a previously named child Object via string context");
+    found = Names::Find<TestObject>("/Names/Name Two");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectTwo,
+                          "Could not find a previously named Object via stribng context");
 
-  found = Names::Find<TestObject> ("/Names/Name Two/Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via string context");
+    found = Names::Find<TestObject>("/Names/Name One/Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectOne,
+                          "Could not find a previously named child Object via string context");
+
+    found = Names::Find<TestObject>("/Names/Name Two/Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectTwo,
+                          "Could not find a previously named child Object via string context");
 }
 
 /**
@@ -860,58 +948,68 @@ FullyQualifiedFindTestCase::DoRun ()
  */
 class RelativeFindTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  RelativeFindTestCase ();
-  /** Destructor. */
-  ~RelativeFindTestCase () override;
+  public:
+    /** Constructor. */
+    RelativeFindTestCase();
+    /** Destructor. */
+    ~RelativeFindTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-RelativeFindTestCase::RelativeFindTestCase ()
-  : TestCase ("Check relative path Names::Find functionality")
-{}
-
-RelativeFindTestCase::~RelativeFindTestCase ()
-{}
-
-void
-RelativeFindTestCase::DoTeardown ()
+RelativeFindTestCase::RelativeFindTestCase()
+    : TestCase("Check relative path Names::Find functionality")
 {
-  Names::Clear ();
+}
+
+RelativeFindTestCase::~RelativeFindTestCase()
+{
 }
 
 void
-RelativeFindTestCase::DoRun ()
+RelativeFindTestCase::DoTeardown()
 {
-  Ptr<TestObject> found;
+    Names::Clear();
+}
 
-  Ptr<TestObject> objectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One", objectOne);
+void
+RelativeFindTestCase::DoRun()
+{
+    Ptr<TestObject> found;
 
-  Ptr<TestObject> objectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two", objectTwo);
+    Ptr<TestObject> objectOne = CreateObject<TestObject>();
+    Names::Add("Name One", objectOne);
 
-  Ptr<TestObject> childOfObjectOne = CreateObject<TestObject> ();
-  Names::Add ("Name One/Child", childOfObjectOne);
+    Ptr<TestObject> objectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two", objectTwo);
 
-  Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject> ();
-  Names::Add ("Name Two/Child", childOfObjectTwo);
+    Ptr<TestObject> childOfObjectOne = CreateObject<TestObject>();
+    Names::Add("Name One/Child", childOfObjectOne);
 
-  found = Names::Find<TestObject> ("Name One");
-  NS_TEST_ASSERT_MSG_EQ (found, objectOne, "Could not find a previously named Object via string context");
+    Ptr<TestObject> childOfObjectTwo = CreateObject<TestObject>();
+    Names::Add("Name Two/Child", childOfObjectTwo);
 
-  found = Names::Find<TestObject> ("Name Two");
-  NS_TEST_ASSERT_MSG_EQ (found, objectTwo, "Could not find a previously named Object via stribng context");
+    found = Names::Find<TestObject>("Name One");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectOne,
+                          "Could not find a previously named Object via string context");
 
-  found = Names::Find<TestObject> ("Name One/Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectOne, "Could not find a previously named child Object via string context");
+    found = Names::Find<TestObject>("Name Two");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          objectTwo,
+                          "Could not find a previously named Object via stribng context");
 
-  found = Names::Find<TestObject> ("Name Two/Child");
-  NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via string context");
+    found = Names::Find<TestObject>("Name One/Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectOne,
+                          "Could not find a previously named child Object via string context");
+
+    found = Names::Find<TestObject>("Name Two/Child");
+    NS_TEST_ASSERT_MSG_EQ(found,
+                          childOfObjectTwo,
+                          "Could not find a previously named child Object via string context");
 }
 
 /**
@@ -921,58 +1019,63 @@ RelativeFindTestCase::DoRun ()
  */
 class AlternateFindTestCase : public TestCase
 {
-public:
-  /** Constructor. */
-  AlternateFindTestCase ();
-  /** Destructor. */
-  ~AlternateFindTestCase () override;
+  public:
+    /** Constructor. */
+    AlternateFindTestCase();
+    /** Destructor. */
+    ~AlternateFindTestCase() override;
 
-private:
-  void DoRun () override;
-  void DoTeardown () override;
+  private:
+    void DoRun() override;
+    void DoTeardown() override;
 };
 
-AlternateFindTestCase::AlternateFindTestCase ()
-  : TestCase ("Check GetObject operation in Names::Find")
-{}
-
-AlternateFindTestCase::~AlternateFindTestCase ()
-{}
-
-void
-AlternateFindTestCase::DoTeardown ()
+AlternateFindTestCase::AlternateFindTestCase()
+    : TestCase("Check GetObject operation in Names::Find")
 {
-  Names::Clear ();
+}
+
+AlternateFindTestCase::~AlternateFindTestCase()
+{
 }
 
 void
-AlternateFindTestCase::DoRun ()
+AlternateFindTestCase::DoTeardown()
 {
-  Ptr<TestObject> testObject = CreateObject<TestObject> ();
-  Names::Add ("Test Object", testObject);
+    Names::Clear();
+}
 
-  Ptr<AlternateTestObject> alternateTestObject = CreateObject<AlternateTestObject> ();
-  Names::Add ("Alternate Test Object", alternateTestObject);
+void
+AlternateFindTestCase::DoRun()
+{
+    Ptr<TestObject> testObject = CreateObject<TestObject>();
+    Names::Add("Test Object", testObject);
 
-  Ptr<TestObject> foundTestObject;
-  Ptr<AlternateTestObject> foundAlternateTestObject;
+    Ptr<AlternateTestObject> alternateTestObject = CreateObject<AlternateTestObject>();
+    Names::Add("Alternate Test Object", alternateTestObject);
 
-  foundTestObject = Names::Find<TestObject> ("Test Object");
-  NS_TEST_ASSERT_MSG_EQ (foundTestObject, testObject,
-                         "Could not find a previously named TestObject via GetObject");
+    Ptr<TestObject> foundTestObject;
+    Ptr<AlternateTestObject> foundAlternateTestObject;
 
-  foundAlternateTestObject = Names::Find<AlternateTestObject> ("Alternate Test Object");
-  NS_TEST_ASSERT_MSG_EQ (foundAlternateTestObject, alternateTestObject,
-                         "Could not find a previously named AlternateTestObject via GetObject");
+    foundTestObject = Names::Find<TestObject>("Test Object");
+    NS_TEST_ASSERT_MSG_EQ(foundTestObject,
+                          testObject,
+                          "Could not find a previously named TestObject via GetObject");
 
+    foundAlternateTestObject = Names::Find<AlternateTestObject>("Alternate Test Object");
+    NS_TEST_ASSERT_MSG_EQ(foundAlternateTestObject,
+                          alternateTestObject,
+                          "Could not find a previously named AlternateTestObject via GetObject");
 
-  foundAlternateTestObject = Names::Find<AlternateTestObject> ("Test Object");
-  NS_TEST_ASSERT_MSG_EQ (foundAlternateTestObject, nullptr,
-                         "Unexpectedly able to GetObject<AlternateTestObject> on a TestObject");
+    foundAlternateTestObject = Names::Find<AlternateTestObject>("Test Object");
+    NS_TEST_ASSERT_MSG_EQ(foundAlternateTestObject,
+                          nullptr,
+                          "Unexpectedly able to GetObject<AlternateTestObject> on a TestObject");
 
-  foundTestObject = Names::Find<TestObject> ("Alternate Test Object");
-  NS_TEST_ASSERT_MSG_EQ (foundTestObject, nullptr,
-                         "Unexpectedly able to GetObject<TestObject> on an AlternateTestObject");
+    foundTestObject = Names::Find<TestObject>("Alternate Test Object");
+    NS_TEST_ASSERT_MSG_EQ(foundTestObject,
+                          nullptr,
+                          "Unexpectedly able to GetObject<TestObject> on an AlternateTestObject");
 }
 
 /**
@@ -981,28 +1084,28 @@ AlternateFindTestCase::DoRun ()
  */
 class NamesTestSuite : public TestSuite
 {
-public:
-  /** Constructor. */
-  NamesTestSuite ();
+  public:
+    /** Constructor. */
+    NamesTestSuite();
 };
 
-NamesTestSuite::NamesTestSuite ()
-  : TestSuite ("object-name-service")
+NamesTestSuite::NamesTestSuite()
+    : TestSuite("object-name-service")
 {
-  AddTestCase (new BasicAddTestCase);
-  AddTestCase (new StringContextAddTestCase);
-  AddTestCase (new FullyQualifiedAddTestCase);
-  AddTestCase (new RelativeAddTestCase);
-  AddTestCase (new BasicRenameTestCase);
-  AddTestCase (new StringContextRenameTestCase);
-  AddTestCase (new FullyQualifiedRenameTestCase);
-  AddTestCase (new RelativeRenameTestCase);
-  AddTestCase (new FindPathTestCase);
-  AddTestCase (new BasicFindTestCase);
-  AddTestCase (new StringContextFindTestCase);
-  AddTestCase (new FullyQualifiedFindTestCase);
-  AddTestCase (new RelativeFindTestCase);
-  AddTestCase (new AlternateFindTestCase);
+    AddTestCase(new BasicAddTestCase);
+    AddTestCase(new StringContextAddTestCase);
+    AddTestCase(new FullyQualifiedAddTestCase);
+    AddTestCase(new RelativeAddTestCase);
+    AddTestCase(new BasicRenameTestCase);
+    AddTestCase(new StringContextRenameTestCase);
+    AddTestCase(new FullyQualifiedRenameTestCase);
+    AddTestCase(new RelativeRenameTestCase);
+    AddTestCase(new FindPathTestCase);
+    AddTestCase(new BasicFindTestCase);
+    AddTestCase(new StringContextFindTestCase);
+    AddTestCase(new FullyQualifiedFindTestCase);
+    AddTestCase(new RelativeFindTestCase);
+    AddTestCase(new AlternateFindTestCase);
 }
 
 /**
@@ -1011,7 +1114,6 @@ NamesTestSuite::NamesTestSuite ()
  */
 static NamesTestSuite g_namesTestSuite;
 
+} // namespace tests
 
-}    // namespace tests
-
-}  // namespace ns3
+} // namespace ns3

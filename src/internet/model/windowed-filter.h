@@ -64,7 +64,8 @@
 #ifndef WINDOWED_FILTER_H_
 #define WINDOWED_FILTER_H_
 
-namespace ns3 {
+namespace ns3
+{
 /**
  * \brief Compares two values
  * \param T  type of the measurement that is being filtered.
@@ -72,23 +73,24 @@ namespace ns3 {
 template <class T>
 struct MinFilter
 {
-public:
-  /**
-   * \brief Compares two values
-   *
-   * \param lhs left hand value
-   * \param rhs right hand value
-   * \return returns true if the first is less than or equal to the second.
-   */
-  bool operator() (const T& lhs, const T& rhs) const
-  {
-    if (rhs == 0 || lhs == 0)
-      {
-        return false;
-      }
-    return lhs <= rhs;
-  }
+  public:
+    /**
+     * \brief Compares two values
+     *
+     * \param lhs left hand value
+     * \param rhs right hand value
+     * \return returns true if the first is less than or equal to the second.
+     */
+    bool operator()(const T& lhs, const T& rhs) const
+    {
+        if (rhs == 0 || lhs == 0)
+        {
+            return false;
+        }
+        return lhs <= rhs;
+    }
 };
+
 /**
  * \brief Compares two values
  * \param T  type of the measurement that is being filtered.
@@ -96,23 +98,24 @@ public:
 template <class T>
 struct MaxFilter
 {
-public:
-  /**
-   * \brief Compares two values
-   *
-   * \param lhs left hand value
-   * \param rhs right hand value
-   * \return returns true if the first is greater than or equal to the second.
-   */
-  bool operator() (const T& lhs, const T& rhs) const
-  {
-    if (rhs == 0 || lhs == 0)
-      {
-        return false;
-      }
-    return lhs >= rhs;
-  }
+  public:
+    /**
+     * \brief Compares two values
+     *
+     * \param lhs left hand value
+     * \param rhs right hand value
+     * \return returns true if the first is greater than or equal to the second.
+     */
+    bool operator()(const T& lhs, const T& rhs) const
+    {
+        if (rhs == 0 || lhs == 0)
+        {
+            return false;
+        }
+        return lhs >= rhs;
+    }
 };
+
 /**
  * \brief Construct a windowed filter
  *
@@ -132,168 +135,169 @@ public:
 template <class T, class Compare, typename TimeT, typename TimeDeltaT>
 class WindowedFilter
 {
-public:
-  /**
-   * \brief contructor
-   */
-  WindowedFilter ()
-  {
-  }
+  public:
+    /**
+     * \brief contructor
+     */
+    WindowedFilter()
+    {
+    }
 
-  /**
-   * \brief contructor
-   * \param windowLength is the period after which a best estimate expires.
-   * \param zeroValue is used as the uninitialized value for objects of T. Importantly,
-   * zeroValue should be an invalid value for a true sample.
-   * \param zeroTime is the time of instance record time.
-   */
-  WindowedFilter (TimeDeltaT windowLength, T zeroValue, TimeT zeroTime)
-    : m_windowLength (windowLength),
-      m_zeroValue (zeroValue),
-      m_samples
-  {
-    Sample (m_zeroValue, zeroTime),
-    Sample (m_zeroValue, zeroTime),
-    Sample (m_zeroValue, zeroTime)
-  } {}
-  /**
-   * \brief Changes the window length.  Does not update any current samples.
-   * \param windowLength is the period after which a best estimate expires.
-   */
-  void SetWindowLength (TimeDeltaT windowLength)
-  {
-    m_windowLength = windowLength;
-  }
-  /**
-   * \brief Updates best estimates with |sample|, and expires and updates best
-   * estimates as necessary.
-   *
-   * \param new_sample update new sample.
-   * \param new_time record time of the new sample.
-   */
-  void Update (T new_sample, TimeT new_time)
-  {
-    // Reset all estimates if they have not yet been initialized, if new sample
-    // is a new best, or if the newest recorded estimate is too old.
-    if (m_samples[0].sample == m_zeroValue
-        || Compare () (new_sample, m_samples[0].sample)
-        || new_time - m_samples[2].time > m_windowLength)
-      {
-        Reset (new_sample, new_time);
-        return;
-      }
-    if (Compare () (new_sample, m_samples[1].sample))
-      {
-        m_samples[1] = Sample (new_sample, new_time);
-        m_samples[2] = m_samples[1];
-      }
-    else if (Compare () (new_sample, m_samples[2].sample))
-      {
-        m_samples[2] = Sample (new_sample, new_time);
-      }
-    // Expire and update estimates as necessary.
-    if (new_time - m_samples[0].time > m_windowLength)
-      {
-        // The best estimate hasn't been updated for an entire window, so promote
-        // second and third best estimates.
-        m_samples[0] = m_samples[1];
-        m_samples[1] = m_samples[2];
-        m_samples[2] = Sample (new_sample, new_time);
-        // Need to iterate one more time. Check if the new best estimate is
-        // outside the window as well, since it may also have been recorded a
-        // long time ago. Don't need to iterate once more since we cover that
-        // case at the beginning of the method.
+    /**
+     * \brief contructor
+     * \param windowLength is the period after which a best estimate expires.
+     * \param zeroValue is used as the uninitialized value for objects of T. Importantly,
+     * zeroValue should be an invalid value for a true sample.
+     * \param zeroTime is the time of instance record time.
+     */
+    WindowedFilter(TimeDeltaT windowLength, T zeroValue, TimeT zeroTime)
+        : m_windowLength(windowLength),
+          m_zeroValue(zeroValue),
+          m_samples{Sample(m_zeroValue, zeroTime),
+                    Sample(m_zeroValue, zeroTime),
+                    Sample(m_zeroValue, zeroTime)}
+    {
+    }
+
+    /**
+     * \brief Changes the window length.  Does not update any current samples.
+     * \param windowLength is the period after which a best estimate expires.
+     */
+    void SetWindowLength(TimeDeltaT windowLength)
+    {
+        m_windowLength = windowLength;
+    }
+
+    /**
+     * \brief Updates best estimates with |sample|, and expires and updates best
+     * estimates as necessary.
+     *
+     * \param new_sample update new sample.
+     * \param new_time record time of the new sample.
+     */
+    void Update(T new_sample, TimeT new_time)
+    {
+        // Reset all estimates if they have not yet been initialized, if new sample
+        // is a new best, or if the newest recorded estimate is too old.
+        if (m_samples[0].sample == m_zeroValue || Compare()(new_sample, m_samples[0].sample) ||
+            new_time - m_samples[2].time > m_windowLength)
+        {
+            Reset(new_sample, new_time);
+            return;
+        }
+        if (Compare()(new_sample, m_samples[1].sample))
+        {
+            m_samples[1] = Sample(new_sample, new_time);
+            m_samples[2] = m_samples[1];
+        }
+        else if (Compare()(new_sample, m_samples[2].sample))
+        {
+            m_samples[2] = Sample(new_sample, new_time);
+        }
+        // Expire and update estimates as necessary.
         if (new_time - m_samples[0].time > m_windowLength)
-          {
+        {
+            // The best estimate hasn't been updated for an entire window, so promote
+            // second and third best estimates.
             m_samples[0] = m_samples[1];
             m_samples[1] = m_samples[2];
-          }
-        return;
-      }
-    if (m_samples[1].sample == m_samples[0].sample
-        && new_time - m_samples[1].time > m_windowLength >> 2)
-      {
-        // A quarter of the window has passed without a better sample, so the
-        // second-best estimate is taken from the second quarter of the window.
-        m_samples[2] = m_samples[1] = Sample (new_sample, new_time);
-        return;
-      }
-    if (m_samples[2].sample == m_samples[1].sample
-        && new_time - m_samples[2].time > m_windowLength >> 1)
-      {
-        // We've passed a half of the window without a better estimate, so take
-        // a third-best estimate from the second half of the window.
-        m_samples[2] = Sample (new_sample, new_time);
-      }
-  }
-
-  /**
-   * \brief Resets all estimates to new sample.
-   * \param new_sample update new sample.
-   * \param new_time record time of the new sample.
-   */
-  void Reset (T new_sample, TimeT new_time)
-  {
-    m_samples[0] = m_samples[1] = m_samples[2] = Sample (new_sample, new_time);
-  }
-
-  /**
-   * \brief Returns Max/Min value so far among the windowed samples.
-   * \return returns Best (max/min) value so far among the windowed samples.
-   */
-  T GetBest () const
-  {
-    return m_samples[0].sample;
-  }
-
-  /**
-   * \brief Returns second Max/Min value so far among the windowed samples.
-   * \return returns second Best (max/min) value so far among the windowed samples.
-   */
-  T GetSecondBest () const
-  {
-    return m_samples[1].sample;
-  }
-
-  /**
-   * \brief Returns third Max/Min value so far among the windowed samples.
-   * \return returns third Best (max/min) value so far among the windowed samples.
-   */
-  T GetThirdBest () const
-  {
-    return m_samples[2].sample;
-  }
-
-  /**
-   * \brief sample.
-   */
-  struct Sample
-  {
-    T sample; //!< recorded sample.
-    TimeT time; //!< time when the sample was recorded.
-    /**
-     * \brief constructor
-     */
-    Sample ()
-    {
+            m_samples[2] = Sample(new_sample, new_time);
+            // Need to iterate one more time. Check if the new best estimate is
+            // outside the window as well, since it may also have been recorded a
+            // long time ago. Don't need to iterate once more since we cover that
+            // case at the beginning of the method.
+            if (new_time - m_samples[0].time > m_windowLength)
+            {
+                m_samples[0] = m_samples[1];
+                m_samples[1] = m_samples[2];
+            }
+            return;
+        }
+        if (m_samples[1].sample == m_samples[0].sample &&
+            new_time - m_samples[1].time > m_windowLength >> 2)
+        {
+            // A quarter of the window has passed without a better sample, so the
+            // second-best estimate is taken from the second quarter of the window.
+            m_samples[2] = m_samples[1] = Sample(new_sample, new_time);
+            return;
+        }
+        if (m_samples[2].sample == m_samples[1].sample &&
+            new_time - m_samples[2].time > m_windowLength >> 1)
+        {
+            // We've passed a half of the window without a better estimate, so take
+            // a third-best estimate from the second half of the window.
+            m_samples[2] = Sample(new_sample, new_time);
+        }
     }
 
     /**
-     * \brief constructor
-     * \param init_sample value of sample.
-     * \param init_time time when the sample was recorded..
+     * \brief Resets all estimates to new sample.
+     * \param new_sample update new sample.
+     * \param new_time record time of the new sample.
      */
-    Sample (T init_sample, TimeT init_time)
-      : sample (init_sample),
-        time (init_time)
+    void Reset(T new_sample, TimeT new_time)
     {
+        m_samples[0] = m_samples[1] = m_samples[2] = Sample(new_sample, new_time);
     }
-  };
 
-  TimeDeltaT m_windowLength;    //!< Time length of window.
-  T          m_zeroValue;       //!< Uninitialized value of T.
-  Sample     m_samples[3];      //!< Best estimate is element 0.
+    /**
+     * \brief Returns Max/Min value so far among the windowed samples.
+     * \return returns Best (max/min) value so far among the windowed samples.
+     */
+    T GetBest() const
+    {
+        return m_samples[0].sample;
+    }
+
+    /**
+     * \brief Returns second Max/Min value so far among the windowed samples.
+     * \return returns second Best (max/min) value so far among the windowed samples.
+     */
+    T GetSecondBest() const
+    {
+        return m_samples[1].sample;
+    }
+
+    /**
+     * \brief Returns third Max/Min value so far among the windowed samples.
+     * \return returns third Best (max/min) value so far among the windowed samples.
+     */
+    T GetThirdBest() const
+    {
+        return m_samples[2].sample;
+    }
+
+    /**
+     * \brief sample.
+     */
+    struct Sample
+    {
+        T sample;   //!< recorded sample.
+        TimeT time; //!< time when the sample was recorded.
+
+        /**
+         * \brief constructor
+         */
+        Sample()
+        {
+        }
+
+        /**
+         * \brief constructor
+         * \param init_sample value of sample.
+         * \param init_time time when the sample was recorded..
+         */
+        Sample(T init_sample, TimeT init_time)
+            : sample(init_sample),
+              time(init_time)
+        {
+        }
+    };
+
+    TimeDeltaT m_windowLength; //!< Time length of window.
+    T m_zeroValue;             //!< Uninitialized value of T.
+    Sample m_samples[3];       //!< Best estimate is element 0.
 };
 
-}  // namespace ns3
-#endif  // WINDOWED_FILTER_H_
+} // namespace ns3
+#endif // WINDOWED_FILTER_H_

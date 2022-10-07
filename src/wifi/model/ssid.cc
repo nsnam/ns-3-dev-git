@@ -20,117 +20,115 @@
 
 #include "ssid.h"
 
-namespace ns3 {
-
-Ssid::Ssid ()
+namespace ns3
 {
-  m_length = 0;
-  for (uint8_t i = 0; i < 33; i++)
+
+Ssid::Ssid()
+{
+    m_length = 0;
+    for (uint8_t i = 0; i < 33; i++)
     {
-      m_ssid[i] = 0;
+        m_ssid[i] = 0;
     }
 }
 
-Ssid::Ssid (std::string s)
+Ssid::Ssid(std::string s)
 {
-  NS_ASSERT (s.size () < 32);
-  const char *ssid = s.c_str ();
-  uint8_t len = 0;
-  while (*ssid != 0 && len < 32)
+    NS_ASSERT(s.size() < 32);
+    const char* ssid = s.c_str();
+    uint8_t len = 0;
+    while (*ssid != 0 && len < 32)
     {
-      m_ssid[len] = *ssid;
-      ssid++;
-      len++;
+        m_ssid[len] = *ssid;
+        ssid++;
+        len++;
     }
-  NS_ASSERT (len <= 32);
-  m_length = len;
-  while (len < 33)
+    NS_ASSERT(len <= 32);
+    m_length = len;
+    while (len < 33)
     {
-      m_ssid[len] = 0;
-      len++;
+        m_ssid[len] = 0;
+        len++;
     }
-}
-
-bool
-Ssid::IsEqual (const Ssid& o) const
-{
-  uint8_t i = 0;
-  while (i < 32
-         && m_ssid[i] == o.m_ssid[i]
-         && m_ssid[i] != 0)
-    {
-      i++;
-    }
-  if (m_ssid[i] != o.m_ssid[i])
-    {
-      return false;
-    }
-  return true;
 }
 
 bool
-Ssid::IsBroadcast () const
+Ssid::IsEqual(const Ssid& o) const
 {
-  if (m_ssid[0] == 0)
+    uint8_t i = 0;
+    while (i < 32 && m_ssid[i] == o.m_ssid[i] && m_ssid[i] != 0)
     {
-      return true;
+        i++;
     }
-  return false;
+    if (m_ssid[i] != o.m_ssid[i])
+    {
+        return false;
+    }
+    return true;
 }
 
-char *
-Ssid::PeekString () const
+bool
+Ssid::IsBroadcast() const
 {
-  //It is safe to return a pointer to the buffer because it is
-  //guaranteed to be zero-terminated.
-  return (char *)m_ssid;
+    if (m_ssid[0] == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+char*
+Ssid::PeekString() const
+{
+    // It is safe to return a pointer to the buffer because it is
+    // guaranteed to be zero-terminated.
+    return (char*)m_ssid;
 }
 
 WifiInformationElementId
-Ssid::ElementId () const
+Ssid::ElementId() const
 {
-  return IE_SSID;
+    return IE_SSID;
 }
 
 uint16_t
-Ssid::GetInformationFieldSize () const
+Ssid::GetInformationFieldSize() const
 {
-  return m_length;
+    return m_length;
 }
 
 void
-Ssid::SerializeInformationField (Buffer::Iterator start) const
+Ssid::SerializeInformationField(Buffer::Iterator start) const
 {
-  NS_ASSERT (m_length <= 32);
-  start.Write (m_ssid, m_length);
+    NS_ASSERT(m_length <= 32);
+    start.Write(m_ssid, m_length);
 }
 
 uint16_t
-Ssid::DeserializeInformationField (Buffer::Iterator start,
-                                   uint16_t length)
+Ssid::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
-  m_length = length;
-  NS_ASSERT (m_length <= 32);
-  start.Read (m_ssid, m_length);
-  return length;
+    m_length = length;
+    NS_ASSERT(m_length <= 32);
+    start.Read(m_ssid, m_length);
+    return length;
 }
 
-ATTRIBUTE_HELPER_CPP (Ssid);
+ATTRIBUTE_HELPER_CPP(Ssid);
 
-std::ostream &
-operator << (std::ostream &os, const Ssid &ssid)
+std::ostream&
+operator<<(std::ostream& os, const Ssid& ssid)
 {
-  os << ssid.PeekString ();
-  return os;
+    os << ssid.PeekString();
+    return os;
 }
 
-std::istream &
-operator >> (std::istream &is, Ssid &ssid)
+std::istream&
+operator>>(std::istream& is, Ssid& ssid)
 {
-  std::string str;
-  is >> str;
-  ssid = Ssid (str);
-  return is;
+    std::string str;
+    is >> str;
+    ssid = Ssid(str);
+    return is;
 }
 
-} //namespace ns3
+} // namespace ns3

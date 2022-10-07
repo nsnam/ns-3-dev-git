@@ -18,14 +18,13 @@
  * Author: Jahanzeb Farooq <jahanzeb.farooq@sophia.inria.fr>
  */
 
-
-
 #ifndef SEND_PARAMS_H
 #define SEND_PARAMS_H
 
 #include <stdint.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 class WimaxPhy;
 
@@ -42,11 +41,11 @@ class WimaxPhy;
  */
 class SendParams
 {
-public:
-  SendParams ();
-  virtual ~SendParams ();
+  public:
+    SendParams();
+    virtual ~SendParams();
 
-private:
+  private:
 };
 
 } // namespace ns3
@@ -56,54 +55,57 @@ private:
 #ifndef OFDM_SEND_PARAMS_H
 #define OFDM_SEND_PARAMS_H
 
-#include <stdint.h>
 #include "ns3/packet-burst.h"
 
-namespace ns3 {
+#include <stdint.h>
+
+namespace ns3
+{
 
 /**
  * OfdmSendParams class
  */
 class OfdmSendParams : public SendParams
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param burst packet burst object
-   * \param modulationType modulation type
-   * \param direction the direction
-   */
-  OfdmSendParams (Ptr<PacketBurst> burst, uint8_t modulationType, uint8_t direction);
-  ~OfdmSendParams () override;
-  /**
-   * \return the packet burst
-   */
-  Ptr<PacketBurst> GetBurst () const
-  {
-    return m_burst;
-  }
+  public:
+    /**
+     * Constructor
+     *
+     * \param burst packet burst object
+     * \param modulationType modulation type
+     * \param direction the direction
+     */
+    OfdmSendParams(Ptr<PacketBurst> burst, uint8_t modulationType, uint8_t direction);
+    ~OfdmSendParams() override;
 
-  /**
-   * \return the modulation type
-   */
-  uint8_t GetModulationType () const
-  {
-    return m_modulationType;
-  }
+    /**
+     * \return the packet burst
+     */
+    Ptr<PacketBurst> GetBurst() const
+    {
+        return m_burst;
+    }
 
-  /**
-   * \return the direction
-   */
-  uint8_t GetDirection () const
-  {
-    return m_direction;
-  }
+    /**
+     * \return the modulation type
+     */
+    uint8_t GetModulationType() const
+    {
+        return m_modulationType;
+    }
 
-private:
-  Ptr<PacketBurst> m_burst; ///< packet burst
-  uint8_t m_modulationType; ///< modulation type
-  uint8_t m_direction; ///< direction
+    /**
+     * \return the direction
+     */
+    uint8_t GetDirection() const
+    {
+        return m_direction;
+    }
+
+  private:
+    Ptr<PacketBurst> m_burst; ///< packet burst
+    uint8_t m_modulationType; ///< modulation type
+    uint8_t m_direction;      ///< direction
 };
 
 } // namespace ns3

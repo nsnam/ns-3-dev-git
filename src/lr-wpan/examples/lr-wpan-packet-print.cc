@@ -24,29 +24,29 @@
 
 using namespace ns3;
 
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  Packet::EnablePrinting ();
-  Packet::EnableChecking ();
-  LrWpanMacHeader macHdr (LrWpanMacHeader::LRWPAN_MAC_BEACON, 0);        //sequence number set to 0
-  macHdr.SetSrcAddrMode (2);                                             // short addr
-  macHdr.SetDstAddrMode (0);                                             // no addr
-  // ... other setters
+    Packet::EnablePrinting();
+    Packet::EnableChecking();
+    LrWpanMacHeader macHdr(LrWpanMacHeader::LRWPAN_MAC_BEACON, 0); // sequence number set to 0
+    macHdr.SetSrcAddrMode(2);                                      // short addr
+    macHdr.SetDstAddrMode(0);                                      // no addr
+    // ... other setters
 
-  uint16_t srcPanId = 100;
-  Mac16Address srcWpanAddr ("00:11");
+    uint16_t srcPanId = 100;
+    Mac16Address srcWpanAddr("00:11");
 
-  macHdr.SetSrcAddrFields (srcPanId,srcWpanAddr );
+    macHdr.SetSrcAddrFields(srcPanId, srcWpanAddr);
 
-  LrWpanMacTrailer macTrailer;
+    LrWpanMacTrailer macTrailer;
 
-  Ptr<Packet> p = Create<Packet> (20);  // 20 bytes of dummy data
+    Ptr<Packet> p = Create<Packet>(20); // 20 bytes of dummy data
 
-  p->AddHeader (macHdr);
-  p->AddTrailer (macTrailer);
+    p->AddHeader(macHdr);
+    p->AddTrailer(macTrailer);
 
-  p->Print (std::cout);
-  std::cout << std::endl;
-  return 0;
-
+    p->Print(std::cout);
+    std::cout << std::endl;
+    return 0;
 }

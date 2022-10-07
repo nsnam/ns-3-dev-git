@@ -23,9 +23,11 @@
 
 #include "ns3/wifi-remote-station-manager.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 struct ParfWifiRemoteStation;
+
 /**
  * \ingroup wifi
  * PARF Rate control algorithm
@@ -42,65 +44,71 @@ struct ParfWifiRemoteStation;
  */
 class ParfWifiManager : public WifiRemoteStationManager
 {
-public:
-  /**
-   * Register this type.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
-  ParfWifiManager ();
-  ~ParfWifiManager () override;
+  public:
+    /**
+     * Register this type.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+    ParfWifiManager();
+    ~ParfWifiManager() override;
 
-  void SetupPhy (const Ptr<WifiPhy> phy) override;
+    void SetupPhy(const Ptr<WifiPhy> phy) override;
 
+  private:
+    void DoInitialize() override;
+    WifiRemoteStation* DoCreateStation() const override;
+    void DoReportRxOk(WifiRemoteStation* station, double rxSnr, WifiMode txMode) override;
+    void DoReportRtsFailed(WifiRemoteStation* station) override;
+    void DoReportDataFailed(WifiRemoteStation* station) override;
+    void DoReportRtsOk(WifiRemoteStation* station,
+                       double ctsSnr,
+                       WifiMode ctsMode,
+                       double rtsSnr) override;
+    void DoReportDataOk(WifiRemoteStation* station,
+                        double ackSnr,
+                        WifiMode ackMode,
+                        double dataSnr,
+                        uint16_t dataChannelWidth,
+                        uint8_t dataNss) override;
+    void DoReportFinalRtsFailed(WifiRemoteStation* station) override;
+    void DoReportFinalDataFailed(WifiRemoteStation* station) override;
+    WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, uint16_t allowedWidth) override;
+    WifiTxVector DoGetRtsTxVector(WifiRemoteStation* station) override;
 
-private:
-  void DoInitialize () override;
-  WifiRemoteStation * DoCreateStation () const override;
-  void DoReportRxOk (WifiRemoteStation *station,
-                     double rxSnr, WifiMode txMode) override;
-  void DoReportRtsFailed (WifiRemoteStation *station) override;
-  void DoReportDataFailed (WifiRemoteStation *station) override;
-  void DoReportRtsOk (WifiRemoteStation *station,
-                      double ctsSnr, WifiMode ctsMode, double rtsSnr) override;
-  void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
-                       double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) override;
-  void DoReportFinalRtsFailed (WifiRemoteStation *station) override;
-  void DoReportFinalDataFailed (WifiRemoteStation *station) override;
-  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint16_t allowedWidth) override;
-  WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) override;
+    /** Check for initializations.
+     *
+     * \param station The remote station.
+     */
+    void CheckInit(ParfWifiRemoteStation* station);
 
-  /** Check for initializations.
-   *
-   * \param station The remote station.
-   */
-  void CheckInit (ParfWifiRemoteStation *station);
+    uint32_t m_attemptThreshold; //!< The minimum number of transmission attempts to try a new power
+                                 //!< or rate. The 'timer' threshold in the ARF algorithm.
+    uint32_t m_successThreshold; //!< The minimum number of successful transmissions to try a new
+                                 //!< power or rate.
 
-  uint32_t m_attemptThreshold; //!< The minimum number of transmission attempts to try a new power or rate. The 'timer' threshold in the ARF algorithm.
-  uint32_t m_successThreshold; //!< The minimum number of successful transmissions to try a new power or rate.
+    /**
+     * Minimal power level.
+     * In contrast to rate, power levels do not depend on the remote station.
+     * The levels depend only on the physical layer of the device.
+     */
+    uint8_t m_minPower;
 
-  /**
-   * Minimal power level.
-   * In contrast to rate, power levels do not depend on the remote station.
-   * The levels depend only on the physical layer of the device.
-   */
-  uint8_t m_minPower;
+    /**
+     * Maximal power level.
+     */
+    uint8_t m_maxPower;
 
-  /**
-   * Maximal power level.
-   */
-  uint8_t m_maxPower;
-
-  /**
-   * The trace source fired when the transmission power changes.
-   */
-  TracedCallback<double, double, Mac48Address> m_powerChange;
-  /**
-   * The trace source fired when the transmission rate changes.
-   */
-  TracedCallback<DataRate, DataRate, Mac48Address> m_rateChange;
+    /**
+     * The trace source fired when the transmission power changes.
+     */
+    TracedCallback<double, double, Mac48Address> m_powerChange;
+    /**
+     * The trace source fired when the transmission rate changes.
+     */
+    TracedCallback<DataRate, DataRate, Mac48Address> m_rateChange;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* PARF_WIFI_MANAGER_H */

@@ -20,9 +20,11 @@
  */
 
 #include "map-scheduler.h"
-#include "event-impl.h"
+
 #include "assert.h"
+#include "event-impl.h"
 #include "log.h"
+
 #include <string>
 
 /**
@@ -31,82 +33,84 @@
  * ns3::MapScheduler implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("MapScheduler");
+NS_LOG_COMPONENT_DEFINE("MapScheduler");
 
-NS_OBJECT_ENSURE_REGISTERED (MapScheduler);
+NS_OBJECT_ENSURE_REGISTERED(MapScheduler);
 
 TypeId
-MapScheduler::GetTypeId ()
+MapScheduler::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::MapScheduler")
-    .SetParent<Scheduler> ()
-    .SetGroupName ("Core")
-    .AddConstructor<MapScheduler> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::MapScheduler")
+                            .SetParent<Scheduler>()
+                            .SetGroupName("Core")
+                            .AddConstructor<MapScheduler>();
+    return tid;
 }
 
-MapScheduler::MapScheduler ()
+MapScheduler::MapScheduler()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
-MapScheduler::~MapScheduler ()
+
+MapScheduler::~MapScheduler()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-MapScheduler::Insert (const Event &ev)
+MapScheduler::Insert(const Event& ev)
 {
-  NS_LOG_FUNCTION (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
-  std::pair<EventMapI,bool> result;
-  result = m_list.insert (std::make_pair (ev.key, ev.impl));
-  NS_ASSERT (result.second);
+    NS_LOG_FUNCTION(this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+    std::pair<EventMapI, bool> result;
+    result = m_list.insert(std::make_pair(ev.key, ev.impl));
+    NS_ASSERT(result.second);
 }
 
 bool
-MapScheduler::IsEmpty () const
+MapScheduler::IsEmpty() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_list.empty ();
+    NS_LOG_FUNCTION(this);
+    return m_list.empty();
 }
 
 Scheduler::Event
-MapScheduler::PeekNext () const
+MapScheduler::PeekNext() const
 {
-  NS_LOG_FUNCTION (this);
-  EventMapCI i = m_list.begin ();
-  NS_ASSERT (i != m_list.end ());
+    NS_LOG_FUNCTION(this);
+    EventMapCI i = m_list.begin();
+    NS_ASSERT(i != m_list.end());
 
-  Event ev;
-  ev.impl = i->second;
-  ev.key = i->first;
-  NS_LOG_DEBUG (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
-  return ev;
+    Event ev;
+    ev.impl = i->second;
+    ev.key = i->first;
+    NS_LOG_DEBUG(this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+    return ev;
 }
+
 Scheduler::Event
-MapScheduler::RemoveNext ()
+MapScheduler::RemoveNext()
 {
-  NS_LOG_FUNCTION (this);
-  EventMapI i = m_list.begin ();
-  NS_ASSERT (i != m_list.end ());
-  Event ev;
-  ev.impl = i->second;
-  ev.key = i->first;
-  m_list.erase (i);
-  NS_LOG_DEBUG (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
-  return ev;
+    NS_LOG_FUNCTION(this);
+    EventMapI i = m_list.begin();
+    NS_ASSERT(i != m_list.end());
+    Event ev;
+    ev.impl = i->second;
+    ev.key = i->first;
+    m_list.erase(i);
+    NS_LOG_DEBUG(this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+    return ev;
 }
 
 void
-MapScheduler::Remove (const Event &ev)
+MapScheduler::Remove(const Event& ev)
 {
-  NS_LOG_FUNCTION (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
-  EventMapI i = m_list.find (ev.key);
-  NS_ASSERT (i->second == ev.impl);
-  m_list.erase (i);
+    NS_LOG_FUNCTION(this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+    EventMapI i = m_list.find(ev.key);
+    NS_ASSERT(i->second == ev.impl);
+    m_list.erase(i);
 }
 
 } // namespace ns3

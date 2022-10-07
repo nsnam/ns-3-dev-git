@@ -18,416 +18,424 @@
  * Author: Jahanzeb Farooq <jahanzeb.farooq@sophia.inria.fr>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/packet.h"
-#include "ns3/node.h"
-#include "wimax-net-device.h"
 #include "wimax-phy.h"
+
 #include "wimax-channel.h"
-#include "ns3/packet-burst.h"
-#include "ns3/trace-source-accessor.h"
-#include "ns3/pointer.h"
-#include "ns3/uinteger.h"
+#include "wimax-net-device.h"
+
 #include "ns3/double.h"
+#include "ns3/node.h"
+#include "ns3/packet-burst.h"
+#include "ns3/packet.h"
+#include "ns3/pointer.h"
+#include "ns3/simulator.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/uinteger.h"
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("WimaxPhy");
-
-NS_OBJECT_ENSURE_REGISTERED (WimaxPhy);
-
-TypeId WimaxPhy::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::WimaxPhy")
-    .SetParent<Object> ()
-    .SetGroupName("Wimax")
 
-    // No AddConstructor because this is an abstract class.
+NS_LOG_COMPONENT_DEFINE("WimaxPhy");
 
-    .AddAttribute ("Channel",
-                   "Wimax channel",
-                   PointerValue (),
-                   MakePointerAccessor (&WimaxPhy::GetChannel, &WimaxPhy::Attach),
-                   MakePointerChecker<WimaxChannel> ())
+NS_OBJECT_ENSURE_REGISTERED(WimaxPhy);
 
-    .AddAttribute ("FrameDuration",
-                   "The frame duration in seconds.",
-                   TimeValue (Seconds (0.01)),
-                   MakeTimeAccessor (&WimaxPhy::SetFrameDuration, &WimaxPhy::GetFrameDurationSec),
-                   MakeTimeChecker ())
+TypeId
+WimaxPhy::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::WimaxPhy")
+            .SetParent<Object>()
+            .SetGroupName("Wimax")
 
-    .AddAttribute ("Frequency",
-                   "The central frequency in KHz.",
-                   UintegerValue (5000000),
-                   MakeUintegerAccessor (&WimaxPhy::SetFrequency, &WimaxPhy::GetFrequency),
-                   MakeUintegerChecker<uint32_t> (1000000, 11000000))
+            // No AddConstructor because this is an abstract class.
 
-    .AddAttribute ("Bandwidth",
-                   "The channel bandwidth in Hz.",
-                   UintegerValue (10000000),
-                   MakeUintegerAccessor (&WimaxPhy::SetChannelBandwidth, &WimaxPhy::GetChannelBandwidth),
-                   MakeUintegerChecker<uint32_t> (5000000, 30000000))
+            .AddAttribute("Channel",
+                          "Wimax channel",
+                          PointerValue(),
+                          MakePointerAccessor(&WimaxPhy::GetChannel, &WimaxPhy::Attach),
+                          MakePointerChecker<WimaxChannel>())
 
-  ;
-  return tid;
+            .AddAttribute(
+                "FrameDuration",
+                "The frame duration in seconds.",
+                TimeValue(Seconds(0.01)),
+                MakeTimeAccessor(&WimaxPhy::SetFrameDuration, &WimaxPhy::GetFrameDurationSec),
+                MakeTimeChecker())
+
+            .AddAttribute("Frequency",
+                          "The central frequency in KHz.",
+                          UintegerValue(5000000),
+                          MakeUintegerAccessor(&WimaxPhy::SetFrequency, &WimaxPhy::GetFrequency),
+                          MakeUintegerChecker<uint32_t>(1000000, 11000000))
+
+            .AddAttribute("Bandwidth",
+                          "The channel bandwidth in Hz.",
+                          UintegerValue(10000000),
+                          MakeUintegerAccessor(&WimaxPhy::SetChannelBandwidth,
+                                               &WimaxPhy::GetChannelBandwidth),
+                          MakeUintegerChecker<uint32_t>(5000000, 30000000))
+
+        ;
+    return tid;
 }
 
-WimaxPhy::WimaxPhy ()
-  : m_state (PHY_STATE_IDLE),
-    m_nrCarriers (0),
-    m_frameDuration (Seconds (0.01)),
-    m_frequency (5000000),
-    m_channelBandwidth (10000000),
-    m_psDuration (Seconds (0)),
-    m_symbolDuration (Seconds (0)),
-    m_psPerSymbol (0),
-    m_psPerFrame (0),
-    m_symbolsPerFrame (0)
+WimaxPhy::WimaxPhy()
+    : m_state(PHY_STATE_IDLE),
+      m_nrCarriers(0),
+      m_frameDuration(Seconds(0.01)),
+      m_frequency(5000000),
+      m_channelBandwidth(10000000),
+      m_psDuration(Seconds(0)),
+      m_symbolDuration(Seconds(0)),
+      m_psPerSymbol(0),
+      m_psPerFrame(0),
+      m_symbolsPerFrame(0)
 {
-  m_mobility = nullptr;
-  m_duplex = 0;
-  m_txFrequency = 0;
-  m_rxFrequency = 0;
-
+    m_mobility = nullptr;
+    m_duplex = 0;
+    m_txFrequency = 0;
+    m_rxFrequency = 0;
 }
 
-WimaxPhy::~WimaxPhy ()
+WimaxPhy::~WimaxPhy()
 {
 }
 
 void
-WimaxPhy::DoDispose ()
+WimaxPhy::DoDispose()
 {
-  m_device = nullptr;
-  m_channel = nullptr;
+    m_device = nullptr;
+    m_channel = nullptr;
 }
 
 void
-WimaxPhy::Attach (Ptr<WimaxChannel> channel)
+WimaxPhy::Attach(Ptr<WimaxChannel> channel)
 {
-  m_channel = channel;
-  DoAttach (channel);
+    m_channel = channel;
+    DoAttach(channel);
 }
 
 Ptr<WimaxChannel>
-WimaxPhy::GetChannel () const
+WimaxPhy::GetChannel() const
 {
-  return m_channel;
+    return m_channel;
 }
 
 void
-WimaxPhy::SetDevice (Ptr<WimaxNetDevice> device)
+WimaxPhy::SetDevice(Ptr<WimaxNetDevice> device)
 {
-  m_device = device;
+    m_device = device;
 }
 
 Ptr<NetDevice>
-WimaxPhy::GetDevice () const
+WimaxPhy::GetDevice() const
 {
-  return m_device;
+    return m_device;
 }
 
 void
-WimaxPhy::StartScanning (uint64_t frequency, Time timeout, Callback<void, bool, uint64_t> callback)
+WimaxPhy::StartScanning(uint64_t frequency, Time timeout, Callback<void, bool, uint64_t> callback)
 {
-  NS_ASSERT_MSG (m_state == PHY_STATE_IDLE || m_state == PHY_STATE_SCANNING,
-                 "Error while scanning: The PHY state should be PHY_STATE_SCANNING or PHY_STATE_IDLE");
+    NS_ASSERT_MSG(
+        m_state == PHY_STATE_IDLE || m_state == PHY_STATE_SCANNING,
+        "Error while scanning: The PHY state should be PHY_STATE_SCANNING or PHY_STATE_IDLE");
 
-  m_state = PHY_STATE_SCANNING;
-  m_scanningFrequency = frequency;
-  m_dlChnlSrchTimeoutEvent = Simulator::Schedule (timeout, &WimaxPhy::EndScanning, this);
-  m_scanningCallback = callback;
+    m_state = PHY_STATE_SCANNING;
+    m_scanningFrequency = frequency;
+    m_dlChnlSrchTimeoutEvent = Simulator::Schedule(timeout, &WimaxPhy::EndScanning, this);
+    m_scanningCallback = callback;
 }
 
 void
-WimaxPhy::EndScanning ()
+WimaxPhy::EndScanning()
 {
-  m_scanningCallback (false, m_scanningFrequency);
+    m_scanningCallback(false, m_scanningFrequency);
 }
 
 void
-WimaxPhy::SetReceiveCallback (Callback<void, Ptr<const PacketBurst> > callback)
+WimaxPhy::SetReceiveCallback(Callback<void, Ptr<const PacketBurst>> callback)
 {
-  m_rxCallback = callback;
+    m_rxCallback = callback;
 }
 
-Callback<void, Ptr<const PacketBurst> >
-WimaxPhy::GetReceiveCallback () const
+Callback<void, Ptr<const PacketBurst>>
+WimaxPhy::GetReceiveCallback() const
 {
-  return m_rxCallback;
-}
-
-void
-WimaxPhy::SetDuplex (uint64_t rxFrequency, uint64_t txFrequency)
-{
-  m_txFrequency = txFrequency;
-  m_rxFrequency = rxFrequency;
+    return m_rxCallback;
 }
 
 void
-WimaxPhy::SetSimplex (uint64_t frequency)
+WimaxPhy::SetDuplex(uint64_t rxFrequency, uint64_t txFrequency)
 {
-  m_txFrequency = frequency;
-  m_rxFrequency = frequency;
+    m_txFrequency = txFrequency;
+    m_rxFrequency = rxFrequency;
+}
+
+void
+WimaxPhy::SetSimplex(uint64_t frequency)
+{
+    m_txFrequency = frequency;
+    m_rxFrequency = frequency;
 }
 
 uint64_t
-WimaxPhy::GetRxFrequency () const
+WimaxPhy::GetRxFrequency() const
 {
-  return m_rxFrequency;
+    return m_rxFrequency;
 }
 
 uint64_t
-WimaxPhy::GetTxFrequency () const
+WimaxPhy::GetTxFrequency() const
 {
-  return m_txFrequency;
+    return m_txFrequency;
 }
 
 uint64_t
-WimaxPhy::GetScanningFrequency () const
+WimaxPhy::GetScanningFrequency() const
 {
-  return m_scanningFrequency;
+    return m_scanningFrequency;
 }
 
 void
-WimaxPhy::SetState (PhyState state)
+WimaxPhy::SetState(PhyState state)
 {
-  m_state = state;
+    m_state = state;
 }
 
-WimaxPhy::PhyState WimaxPhy::GetState () const
+WimaxPhy::PhyState
+WimaxPhy::GetState() const
 {
-  return m_state;
+    return m_state;
 }
 
 bool
-WimaxPhy::IsDuplex () const
+WimaxPhy::IsDuplex() const
 {
-  return m_duplex;
+    return m_duplex;
 }
 
 EventId
-WimaxPhy::GetChnlSrchTimeoutEvent () const
+WimaxPhy::GetChnlSrchTimeoutEvent() const
 {
-  return m_dlChnlSrchTimeoutEvent;
+    return m_dlChnlSrchTimeoutEvent;
 }
 
 void
-WimaxPhy::SetScanningCallback () const
+WimaxPhy::SetScanningCallback() const
 {
-  m_scanningCallback (true, GetScanningFrequency ());
+    m_scanningCallback(true, GetScanningFrequency());
 }
 
 void
-WimaxPhy::SetDataRates ()
+WimaxPhy::SetDataRates()
 {
-  DoSetDataRates ();
+    DoSetDataRates();
 }
 
 uint32_t
-WimaxPhy::GetDataRate (WimaxPhy::ModulationType modulationType) const
+WimaxPhy::GetDataRate(WimaxPhy::ModulationType modulationType) const
 {
-  return DoGetDataRate (modulationType);
+    return DoGetDataRate(modulationType);
 }
 
 Time
-WimaxPhy::GetTransmissionTime (uint32_t size, WimaxPhy::ModulationType modulationType) const
+WimaxPhy::GetTransmissionTime(uint32_t size, WimaxPhy::ModulationType modulationType) const
 {
-  return DoGetTransmissionTime (size, modulationType);
+    return DoGetTransmissionTime(size, modulationType);
 }
 
 uint64_t
-WimaxPhy::GetNrSymbols (uint32_t size, WimaxPhy::ModulationType modulationType) const
+WimaxPhy::GetNrSymbols(uint32_t size, WimaxPhy::ModulationType modulationType) const
 {
-  return DoGetNrSymbols (size, modulationType);
+    return DoGetNrSymbols(size, modulationType);
 }
 
 uint64_t
-WimaxPhy::GetNrBytes (uint32_t symbols, WimaxPhy::ModulationType modulationType) const
+WimaxPhy::GetNrBytes(uint32_t symbols, WimaxPhy::ModulationType modulationType) const
 {
-  return DoGetNrBytes (symbols, modulationType);
+    return DoGetNrBytes(symbols, modulationType);
 }
 
 uint16_t
-WimaxPhy::GetTtg () const
+WimaxPhy::GetTtg() const
 {
-  return DoGetTtg ();
+    return DoGetTtg();
 }
 
 uint16_t
-WimaxPhy::GetRtg () const
+WimaxPhy::GetRtg() const
 {
-  return DoGetRtg ();
+    return DoGetRtg();
 }
 
 uint8_t
-WimaxPhy::GetFrameDurationCode () const
+WimaxPhy::GetFrameDurationCode() const
 {
-  return DoGetFrameDurationCode ();
+    return DoGetFrameDurationCode();
 }
 
 Time
-WimaxPhy::GetFrameDuration (uint8_t frameDurationCode) const
+WimaxPhy::GetFrameDuration(uint8_t frameDurationCode) const
 {
-  return DoGetFrameDuration (frameDurationCode);
+    return DoGetFrameDuration(frameDurationCode);
 }
 
 /*---------------------PHY parameters functions-----------------------*/
 
 void
-WimaxPhy::SetPhyParameters ()
+WimaxPhy::SetPhyParameters()
 {
-  DoSetPhyParameters ();
+    DoSetPhyParameters();
 }
 
 void
-WimaxPhy::SetNrCarriers (uint8_t nrCarriers)
+WimaxPhy::SetNrCarriers(uint8_t nrCarriers)
 {
-  m_nrCarriers = nrCarriers;
+    m_nrCarriers = nrCarriers;
 }
 
 uint8_t
-WimaxPhy::GetNrCarriers () const
+WimaxPhy::GetNrCarriers() const
 {
-  return m_nrCarriers;
+    return m_nrCarriers;
 }
 
 void
-WimaxPhy::SetFrameDuration (Time frameDuration)
+WimaxPhy::SetFrameDuration(Time frameDuration)
 {
-  m_frameDuration = frameDuration;
+    m_frameDuration = frameDuration;
 }
 
 Time
-WimaxPhy::GetFrameDuration () const
+WimaxPhy::GetFrameDuration() const
 {
-  return GetFrameDurationSec ();
+    return GetFrameDurationSec();
 }
 
 Time
-WimaxPhy::GetFrameDurationSec () const
+WimaxPhy::GetFrameDurationSec() const
 {
-  return m_frameDuration;
+    return m_frameDuration;
 }
 
 void
-WimaxPhy::SetFrequency (uint32_t frequency)
+WimaxPhy::SetFrequency(uint32_t frequency)
 {
-  m_frequency = frequency;
+    m_frequency = frequency;
 }
 
 uint32_t
-WimaxPhy::GetFrequency () const
+WimaxPhy::GetFrequency() const
 {
-  return m_frequency;
+    return m_frequency;
 }
 
 void
-WimaxPhy::SetChannelBandwidth (uint32_t channelBandwidth)
+WimaxPhy::SetChannelBandwidth(uint32_t channelBandwidth)
 {
-  m_channelBandwidth = channelBandwidth;
+    m_channelBandwidth = channelBandwidth;
 }
 
 uint32_t
-WimaxPhy::GetChannelBandwidth () const
+WimaxPhy::GetChannelBandwidth() const
 {
-  return m_channelBandwidth;
+    return m_channelBandwidth;
 }
 
 uint16_t
-WimaxPhy::GetNfft () const
+WimaxPhy::GetNfft() const
 {
-  return DoGetNfft ();
+    return DoGetNfft();
 }
 
 double
-WimaxPhy::GetSamplingFactor () const
+WimaxPhy::GetSamplingFactor() const
 {
-  return DoGetSamplingFactor ();
+    return DoGetSamplingFactor();
 }
 
 double
-WimaxPhy::GetSamplingFrequency () const
+WimaxPhy::GetSamplingFrequency() const
 {
-  return DoGetSamplingFrequency ();
+    return DoGetSamplingFrequency();
 }
 
 void
-WimaxPhy::SetPsDuration (Time psDuration)
+WimaxPhy::SetPsDuration(Time psDuration)
 {
-  m_psDuration = psDuration;
+    m_psDuration = psDuration;
 }
 
 Time
-WimaxPhy::GetPsDuration () const
+WimaxPhy::GetPsDuration() const
 {
-  return m_psDuration;
+    return m_psDuration;
 }
 
 void
-WimaxPhy::SetSymbolDuration (Time symbolDuration)
+WimaxPhy::SetSymbolDuration(Time symbolDuration)
 {
-  m_symbolDuration = symbolDuration;
+    m_symbolDuration = symbolDuration;
 }
 
 Time
-WimaxPhy::GetSymbolDuration () const
+WimaxPhy::GetSymbolDuration() const
 {
-  return m_symbolDuration;
+    return m_symbolDuration;
 }
 
 double
-WimaxPhy::GetGValue () const
+WimaxPhy::GetGValue() const
 {
-  return DoGetGValue ();
+    return DoGetGValue();
 }
 
 void
-WimaxPhy::SetPsPerSymbol (uint16_t psPerSymbol)
+WimaxPhy::SetPsPerSymbol(uint16_t psPerSymbol)
 {
-  m_psPerSymbol = psPerSymbol;
+    m_psPerSymbol = psPerSymbol;
 }
 
 uint16_t
-WimaxPhy::GetPsPerSymbol () const
+WimaxPhy::GetPsPerSymbol() const
 {
-  return m_psPerSymbol;
+    return m_psPerSymbol;
 }
 
 void
-WimaxPhy::SetPsPerFrame (uint16_t psPerFrame)
+WimaxPhy::SetPsPerFrame(uint16_t psPerFrame)
 {
-  m_psPerFrame = psPerFrame;
+    m_psPerFrame = psPerFrame;
 }
 
 uint16_t
-WimaxPhy::GetPsPerFrame () const
+WimaxPhy::GetPsPerFrame() const
 {
-  return m_psPerFrame;
+    return m_psPerFrame;
 }
 
 void
-WimaxPhy::SetSymbolsPerFrame (uint32_t symbolsPerFrame)
+WimaxPhy::SetSymbolsPerFrame(uint32_t symbolsPerFrame)
 {
-  m_symbolsPerFrame = symbolsPerFrame;
+    m_symbolsPerFrame = symbolsPerFrame;
 }
 
 uint32_t
-WimaxPhy::GetSymbolsPerFrame () const
+WimaxPhy::GetSymbolsPerFrame() const
 {
-  return m_symbolsPerFrame;
+    return m_symbolsPerFrame;
 }
+
 Ptr<Object>
-WimaxPhy::GetMobility ()
+WimaxPhy::GetMobility()
 {
-  return m_mobility;
+    return m_mobility;
 }
 
 void
-WimaxPhy::SetMobility (Ptr<Object> mobility)
+WimaxPhy::SetMobility(Ptr<Object> mobility)
 {
-  m_mobility = mobility;
-
+    m_mobility = mobility;
 }
 
 } // namespace ns3

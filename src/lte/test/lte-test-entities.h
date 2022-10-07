@@ -21,17 +21,16 @@
 #ifndef LTE_TEST_ENTITIES_H
 #define LTE_TEST_ENTITIES_H
 
+#include "ns3/lte-mac-sap.h"
+#include "ns3/lte-pdcp-sap.h"
+#include "ns3/lte-rlc-sap.h"
+#include "ns3/net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
-
-#include "ns3/lte-mac-sap.h"
-#include "ns3/lte-rlc-sap.h"
-#include "ns3/lte-pdcp-sap.h"
-
-#include "ns3/net-device.h"
 #include <ns3/epc-enb-s1-sap.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lte-test
@@ -43,122 +42,121 @@ class LteTestRrc : public Object
 {
     /// allow LtePdcpSpecificLtePdcpSapUser<LteTestRrc> class friend access
     friend class LtePdcpSpecificLtePdcpSapUser<LteTestRrc>;
-//   friend class EnbMacMemberLteEnbCmacSapProvider;
-//   friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
-//   friend class EnbMacMemberFfMacSchedSapUser;
-//   friend class EnbMacMemberFfMacCschedSapUser;
-//   friend class EnbMacMemberLteEnbPhySapUser;
+    //   friend class EnbMacMemberLteEnbCmacSapProvider;
+    //   friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
+    //   friend class EnbMacMemberFfMacSchedSapUser;
+    //   friend class EnbMacMemberFfMacCschedSapUser;
+    //   friend class EnbMacMemberLteEnbPhySapUser;
 
   public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-    static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-    LteTestRrc ();
-    ~LteTestRrc () override;
-    void DoDispose () override;
-
+    LteTestRrc();
+    ~LteTestRrc() override;
+    void DoDispose() override;
 
     /**
-    * \brief Set the PDCP SAP provider
-    * \param s a pointer to the PDCP SAP provider
-    */
-    void SetLtePdcpSapProvider (LtePdcpSapProvider* s);
+     * \brief Set the PDCP SAP provider
+     * \param s a pointer to the PDCP SAP provider
+     */
+    void SetLtePdcpSapProvider(LtePdcpSapProvider* s);
     /**
-    * \brief Get the PDCP SAP user
-    * \return a pointer to the SAP user of the RLC
-    */
-    LtePdcpSapUser* GetLtePdcpSapUser ();
+     * \brief Get the PDCP SAP user
+     * \return a pointer to the SAP user of the RLC
+     */
+    LtePdcpSapUser* GetLtePdcpSapUser();
 
     /// Start function
-    void Start ();
+    void Start();
     /// Stop function
-    void Stop ();
+    void Stop();
 
     /**
-    * \brief Send data function
-    * \param at the time to send
-    * \param dataToSend the data to send
-    */
-    void SendData (Time at, std::string dataToSend);
+     * \brief Send data function
+     * \param at the time to send
+     * \param dataToSend the data to send
+     */
+    void SendData(Time at, std::string dataToSend);
     /**
-    * \brief Get data received function
-    * \returns the received data string
-    */
-    std::string GetDataReceived ();
+     * \brief Get data received function
+     * \returns the received data string
+     */
+    std::string GetDataReceived();
 
     // Stats
     /**
-    * \brief Get the transmit PDUs
-    * \return the number of transmit PDUS
-    */
-    uint32_t GetTxPdus ();
+     * \brief Get the transmit PDUs
+     * \return the number of transmit PDUS
+     */
+    uint32_t GetTxPdus();
     /**
-    * \brief Get the transmit bytes
-    * \return the number of bytes transmitted
-    */
-    uint32_t GetTxBytes ();
+     * \brief Get the transmit bytes
+     * \return the number of bytes transmitted
+     */
+    uint32_t GetTxBytes();
     /**
-    * \brief Get the receive PDUs
-    * \return the number of receive PDUS
-    */
-    uint32_t GetRxPdus ();
+     * \brief Get the receive PDUs
+     * \return the number of receive PDUS
+     */
+    uint32_t GetRxPdus();
     /**
-    * \brief Get the receive bytes
-    * \return the number of bytes received
-    */
-    uint32_t GetRxBytes ();
+     * \brief Get the receive bytes
+     * \return the number of bytes received
+     */
+    uint32_t GetRxBytes();
 
     /**
-    * \brief Get the last transmit time
-    * \return the time of the last transmit
-    */
-    Time GetTxLastTime ();
+     * \brief Get the last transmit time
+     * \return the time of the last transmit
+     */
+    Time GetTxLastTime();
     /**
-    * \brief Get the last receive time
-    * \return the time of the last receive
-    */
-    Time GetRxLastTime ();
+     * \brief Get the last receive time
+     * \return the time of the last receive
+     */
+    Time GetRxLastTime();
 
     /**
-    * \brief Set the arrival time
-    * \param arrivalTime the arrival time
-    */
-    void SetArrivalTime (Time arrivalTime);
+     * \brief Set the arrival time
+     * \param arrivalTime the arrival time
+     */
+    void SetArrivalTime(Time arrivalTime);
     /**
-    * \brief Set the PDU size
-    * \param pduSize the PDU size
-    */
-    void SetPduSize (uint32_t pduSize);
+     * \brief Set the PDU size
+     * \param pduSize the PDU size
+     */
+    void SetPduSize(uint32_t pduSize);
 
     /**
-    * \brief Set the device
-    * \param device the device
-    */
-    void SetDevice (Ptr<NetDevice> device);
+     * \brief Set the device
+     * \param device the device
+     */
+    void SetDevice(Ptr<NetDevice> device);
 
   private:
     /**
      * Interface forwarded by LtePdcpSapUser
      * \param params the LtePdcpSapUser::ReceivePdcpSduParameters
      */
-    virtual void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
+    virtual void DoReceivePdcpSdu(LtePdcpSapUser::ReceivePdcpSduParameters params);
 
-    LtePdcpSapUser* m_pdcpSapUser; ///< PDCP SAP user
+    LtePdcpSapUser* m_pdcpSapUser;         ///< PDCP SAP user
     LtePdcpSapProvider* m_pdcpSapProvider; ///< PDCP SAP provider
 
     std::string m_receivedData; ///< the received data
 
-    uint32_t m_txPdus; ///< number of transmit PDUs
+    uint32_t m_txPdus;  ///< number of transmit PDUs
     uint32_t m_txBytes; ///< number of transmit bytes
-    uint32_t m_rxPdus; ///< number of receive PDUs
+    uint32_t m_rxPdus;  ///< number of receive PDUs
     uint32_t m_rxBytes; ///< number of receive bytes
-    Time     m_txLastTime; ///< last transmit time
-    Time     m_rxLastTime; ///< last reeive time
+    Time m_txLastTime;  ///< last transmit time
+    Time m_rxLastTime;  ///< last reeive time
 
-    EventId m_nextPdu; ///< next PDU event
+    EventId m_nextPdu;  ///< next PDU event
     Time m_arrivalTime; ///< next arrival time
     uint32_t m_pduSize; ///< PDU size
 
@@ -175,55 +173,54 @@ class LteTestRrc : public Object
  */
 class LteTestPdcp : public Object
 {
-  /// allow LteRlcSpecificLteRlcSapUser<LteTestPdcp> class friend access
-  friend class LteRlcSpecificLteRlcSapUser<LteTestPdcp>;
+    /// allow LteRlcSpecificLteRlcSapUser<LteTestPdcp> class friend access
+    friend class LteRlcSpecificLteRlcSapUser<LteTestPdcp>;
 
   public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-    static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-    LteTestPdcp ();
-    ~LteTestPdcp () override;
-    void DoDispose () override;
-
+    LteTestPdcp();
+    ~LteTestPdcp() override;
+    void DoDispose() override;
 
     /**
-    * \brief Set the RLC SAP provider
-    * \param s a pointer to the RLC SAP provider
-    */
-    void SetLteRlcSapProvider (LteRlcSapProvider* s);
+     * \brief Set the RLC SAP provider
+     * \param s a pointer to the RLC SAP provider
+     */
+    void SetLteRlcSapProvider(LteRlcSapProvider* s);
     /**
-    * \brief Get the RLC SAP user
-    * \return a pointer to the SAP user of the RLC
-    */
-    LteRlcSapUser* GetLteRlcSapUser ();
+     * \brief Get the RLC SAP user
+     * \return a pointer to the SAP user of the RLC
+     */
+    LteRlcSapUser* GetLteRlcSapUser();
 
     /// Start function
-    void Start ();
+    void Start();
 
     /**
-    * \brief Send data function
-    * \param time the time to send
-    * \param dataToSend the data to send
-    */
-    void SendData (Time time, std::string dataToSend);
+     * \brief Send data function
+     * \param time the time to send
+     * \param dataToSend the data to send
+     */
+    void SendData(Time time, std::string dataToSend);
     /**
-    * \brief Get data received function
-    * \returns the received data string
-    */
-    std::string GetDataReceived ();
+     * \brief Get data received function
+     * \returns the received data string
+     */
+    std::string GetDataReceived();
 
   private:
     /**
      * Interface forwarded by LteRlcSapUser
      * \param p the PDCP PDU packet received
      */
-    virtual void DoReceivePdcpPdu (Ptr<Packet> p);
+    virtual void DoReceivePdcpPdu(Ptr<Packet> p);
 
-    LteRlcSapUser* m_rlcSapUser; ///< RLC SAP user
+    LteRlcSapUser* m_rlcSapUser;         ///< RLC SAP user
     LteRlcSapProvider* m_rlcSapProvider; ///< RLC SAP provider
 
     std::string m_receivedData; ///< the received data
@@ -239,132 +236,134 @@ class LteTestPdcp : public Object
  */
 class LteTestMac : public Object
 {
-//   friend class EnbMacMemberLteEnbCmacSapProvider;
+    //   friend class EnbMacMemberLteEnbCmacSapProvider;
     /// allow EnbMacMemberLteMacSapProvider<LteTestMac> class friend access
     friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
-//   friend class EnbMacMemberFfMacSchedSapUser;
-//   friend class EnbMacMemberFfMacCschedSapUser;
-//   friend class EnbMacMemberLteEnbPhySapUser;
+    //   friend class EnbMacMemberFfMacSchedSapUser;
+    //   friend class EnbMacMemberFfMacCschedSapUser;
+    //   friend class EnbMacMemberLteEnbPhySapUser;
 
   public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-    static TypeId GetTypeId ();
-
-    LteTestMac ();
-    ~LteTestMac () override;
-    void DoDispose () override;
-
     /**
-    * \brief Set the device function
-    * \param device the device
-    */
-    void SetDevice (Ptr<NetDevice> device);
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+
+    LteTestMac();
+    ~LteTestMac() override;
+    void DoDispose() override;
 
     /**
-    * \brief Send transmit opportunity function
-    * \param time the time
-    * \param bytes the number of bytes
-    */
-    void SendTxOpportunity (Time time, uint32_t bytes);
-    /**
-    * \brief Get data received function
-    * \returns the received data string
-    */
-    std::string GetDataReceived ();
+     * \brief Set the device function
+     * \param device the device
+     */
+    void SetDevice(Ptr<NetDevice> device);
 
     /**
-    * \brief the Receive function
-    * \param nd the device
-    * \param p the packet
-    * \param protocol the protocol
-    * \param addr the address
-    * \returns true if successful
-    */
-    bool Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
+     * \brief Send transmit opportunity function
+     * \param time the time
+     * \param bytes the number of bytes
+     */
+    void SendTxOpportunity(Time time, uint32_t bytes);
+    /**
+     * \brief Get data received function
+     * \returns the received data string
+     */
+    std::string GetDataReceived();
+
+    /**
+     * \brief the Receive function
+     * \param nd the device
+     * \param p the packet
+     * \param protocol the protocol
+     * \param addr the address
+     * \returns true if successful
+     */
+    bool Receive(Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
 
     /**
      * \brief Set the MAC SAP user
      * \param s a pointer to the MAC SAP user
      */
-    void SetLteMacSapUser (LteMacSapUser* s);
+    void SetLteMacSapUser(LteMacSapUser* s);
     /**
      * \brief Get the MAC SAP provider
      * \return a pointer to the SAP provider of the MAC
      */
-    LteMacSapProvider* GetLteMacSapProvider ();
+    LteMacSapProvider* GetLteMacSapProvider();
 
     /**
      * \brief Set the other side of the MAC Loopback
      * \param s a pointer to the other side of the MAC loopback
      */
-    void SetLteMacLoopback (Ptr<LteTestMac> s);
+    void SetLteMacLoopback(Ptr<LteTestMac> s);
 
     /**
      * \brief Set PDCP header present function
      * \param present true iif PDCP header present
      */
-    void SetPdcpHeaderPresent (bool present);
+    void SetPdcpHeaderPresent(bool present);
 
     /**
      * \brief Set RLC header type
      * \param rlcHeaderType the RLC header type
      */
-    void SetRlcHeaderType (uint8_t rlcHeaderType);
+    void SetRlcHeaderType(uint8_t rlcHeaderType);
 
     /// RCL Header Type enumeration
-    typedef enum {
-      UM_RLC_HEADER = 0,
-      AM_RLC_HEADER = 1,
+    typedef enum
+    {
+        UM_RLC_HEADER = 0,
+        AM_RLC_HEADER = 1,
     } RlcHeaderType_t; ///< the RLC header type
 
     /**
      * Set transmit opportunity mode
      * \param mode the transmit opportunity mode
      */
-    void SetTxOpportunityMode (uint8_t mode);
+    void SetTxOpportunityMode(uint8_t mode);
 
     /// Transmit opportunity mode enumeration
-    typedef enum {
-      MANUAL_MODE     = 0,
-      AUTOMATIC_MODE  = 1,
-      RANDOM_MODE     = 2
+    typedef enum
+    {
+        MANUAL_MODE = 0,
+        AUTOMATIC_MODE = 1,
+        RANDOM_MODE = 2
     } TxOpportunityMode_t; ///< transmit opportunity mode
 
     /**
      * Set transmit opportunity time
      * \param txOppTime the transmit opportunity time
      */
-    void SetTxOppTime (Time txOppTime);
+    void SetTxOppTime(Time txOppTime);
     /**
      * Set transmit opportunity time
      * \param txOppSize the transmit opportunity size
      */
-    void SetTxOppSize (uint32_t txOppSize);
+    void SetTxOppSize(uint32_t txOppSize);
 
     // Stats
     /**
-    * \brief Get the transmit PDUs
-    * \return the number of transmit PDUS
-    */
-    uint32_t GetTxPdus ();
+     * \brief Get the transmit PDUs
+     * \return the number of transmit PDUS
+     */
+    uint32_t GetTxPdus();
     /**
-    * \brief Get the transmit bytes
-    * \return the number of bytes transmitted
-    */
-    uint32_t GetTxBytes ();
+     * \brief Get the transmit bytes
+     * \return the number of bytes transmitted
+     */
+    uint32_t GetTxBytes();
     /**
-    * \brief Get the receive PDUs
-    * \return the number of receive PDUS
-    */
-    uint32_t GetRxPdus ();
+     * \brief Get the receive PDUs
+     * \return the number of receive PDUS
+     */
+    uint32_t GetRxPdus();
     /**
-    * \brief Get the receive bytes
-    * \return the number of bytes received
-    */
-    uint32_t GetRxBytes ();
+     * \brief Get the receive bytes
+     * \return the number of bytes received
+     */
+    uint32_t GetRxBytes();
 
   private:
     // forwarded from LteMacSapProvider
@@ -372,40 +371,37 @@ class LteTestMac : public Object
      * Transmit PDU
      * \param params LteMacSapProvider::TransmitPduParameters
      */
-    void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params);
+    void DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params);
     /**
      * Report buffer status function
      * \param params LteMacSapProvider::ReportBufferStatusParameters
      */
-    void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
+    void DoReportBufferStatus(LteMacSapProvider::ReportBufferStatusParameters params);
 
     LteMacSapProvider* m_macSapProvider; ///< MAC SAP provider
-    LteMacSapUser* m_macSapUser; ///< MAC SAP user
-    Ptr<LteTestMac> m_macLoopback; ///< MAC loopback
+    LteMacSapUser* m_macSapUser;         ///< MAC SAP user
+    Ptr<LteTestMac> m_macLoopback;       ///< MAC loopback
 
     std::string m_receivedData; ///< the received data string
 
-    uint8_t m_rlcHeaderType; ///< RLC header type
-    bool m_pdcpHeaderPresent; ///< PDCP header present?
+    uint8_t m_rlcHeaderType;     ///< RLC header type
+    bool m_pdcpHeaderPresent;    ///< PDCP header present?
     uint8_t m_txOpportunityMode; ///< transmit opportunity mode
 
     Ptr<NetDevice> m_device; ///< the device
 
     // TxOpportunity configuration
-    EventId m_nextTxOpp; ///< next transmit opportunity event
-    Time m_txOppTime; ///< transmit opportunity time
-    uint32_t m_txOppSize; ///< transmit opportunity size
+    EventId m_nextTxOpp;                ///< next transmit opportunity event
+    Time m_txOppTime;                   ///< transmit opportunity time
+    uint32_t m_txOppSize;               ///< transmit opportunity size
     std::list<EventId> m_nextTxOppList; ///< next transmit opportunity list
 
     // Stats
-    uint32_t m_txPdus; ///< the number of transmit PDUs
+    uint32_t m_txPdus;  ///< the number of transmit PDUs
     uint32_t m_txBytes; ///< the number of transmit bytes
-    uint32_t m_rxPdus; ///< the number of receive PDUs
+    uint32_t m_rxPdus;  ///< the number of receive PDUs
     uint32_t m_rxBytes; ///< the number of receive bytes
-
 };
-
-
 
 /**
  * \ingroup lte-test
@@ -415,59 +411,57 @@ class LteTestMac : public Object
  */
 class EpcTestRrc : public Object
 {
-  /// allow MemberEpcEnbS1SapUser<EpcTestRrc> class friend access
-  friend class MemberEpcEnbS1SapUser<EpcTestRrc>;
+    /// allow MemberEpcEnbS1SapUser<EpcTestRrc> class friend access
+    friend class MemberEpcEnbS1SapUser<EpcTestRrc>;
 
-public:
-  EpcTestRrc ();
-  ~EpcTestRrc () override;
+  public:
+    EpcTestRrc();
+    ~EpcTestRrc() override;
 
-  // inherited from Object
-  void DoDispose () override;
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    // inherited from Object
+    void DoDispose() override;
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Set the S1 SAP Provider
-   *
-   * \param s the S1 SAP Provider
-   */
-  void SetS1SapProvider (EpcEnbS1SapProvider* s);
+    /**
+     * Set the S1 SAP Provider
+     *
+     * \param s the S1 SAP Provider
+     */
+    void SetS1SapProvider(EpcEnbS1SapProvider* s);
 
-  /**
-   *
-   * \return the S1 SAP user
-   */
-  EpcEnbS1SapUser* GetS1SapUser ();
+    /**
+     *
+     * \return the S1 SAP user
+     */
+    EpcEnbS1SapUser* GetS1SapUser();
 
-private:
+  private:
+    // S1 SAP methods
+    /**
+     * Initial context setup request
+     * \param params EpcEnbS1SapUser::InitialContextSetupRequestParameters
+     */
+    void DoInitialContextSetupRequest(EpcEnbS1SapUser::InitialContextSetupRequestParameters params);
+    /**
+     * Data radio bearer setup request
+     * \param params EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters
+     */
+    void DoDataRadioBearerSetupRequest(
+        EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
+    /**
+     * Path switch request acknowledge function
+     * \param params EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters
+     */
+    void DoPathSwitchRequestAcknowledge(
+        EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);
 
-  // S1 SAP methods
-  /**
-   * Initial context setup request
-   * \param params EpcEnbS1SapUser::InitialContextSetupRequestParameters
-   */
-  void DoInitialContextSetupRequest (EpcEnbS1SapUser::InitialContextSetupRequestParameters params);
-  /**
-   * Data radio bearer setup request
-   * \param params EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters
-   */
-  void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
-  /**
-   * Path switch request acknowledge function
-   * \param params EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters
-   */
-  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);
-
-  EpcEnbS1SapProvider* m_s1SapProvider; ///< S1 SAP provider
-  EpcEnbS1SapUser* m_s1SapUser; ///< S1 SAP user
-
-
+    EpcEnbS1SapProvider* m_s1SapProvider; ///< S1 SAP provider
+    EpcEnbS1SapUser* m_s1SapUser;         ///< S1 SAP user
 };
-
 
 } // namespace ns3
 

@@ -26,7 +26,8 @@
  * ns3::SimulationSingleton declaration and template implementation.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup core
@@ -42,41 +43,39 @@ namespace ns3 {
 template <typename T>
 class SimulationSingleton
 {
-public:
-  // Delete default constructor, copy constructor and assignment operator to avoid misuse
-  SimulationSingleton<T> () = delete;
-  SimulationSingleton<T> (const SimulationSingleton<T> &) = delete;
-  SimulationSingleton<T> & operator = (const SimulationSingleton<T> &) = delete;
+  public:
+    // Delete default constructor, copy constructor and assignment operator to avoid misuse
+    SimulationSingleton<T>() = delete;
+    SimulationSingleton<T>(const SimulationSingleton<T>&) = delete;
+    SimulationSingleton<T>& operator=(const SimulationSingleton<T>&) = delete;
 
-  /**
-   * Get a pointer to the singleton instance.
-   *
-   * This instance will be automatically deleted when the
-   * simulation is destroyed by a call to Simulator::Destroy.
-   *
-   * \returns A pointer to the singleton instance.
-   */
-  static T * Get ();
+    /**
+     * Get a pointer to the singleton instance.
+     *
+     * This instance will be automatically deleted when the
+     * simulation is destroyed by a call to Simulator::Destroy.
+     *
+     * \returns A pointer to the singleton instance.
+     */
+    static T* Get();
 
-private:
+  private:
+    /**
+     * Get the singleton object, creating a new one if it doesn't exist yet.
+     *
+     * \internal
+     * When a new object is created, this method schedules it's own
+     * destruction using Simulator::ScheduleDestroy().
+     *
+     * \returns The address of the pointer holding the static instance.
+     */
+    static T** GetObject();
 
-  /**
-   * Get the singleton object, creating a new one if it doesn't exist yet.
-   *
-   * \internal
-   * When a new object is created, this method schedules it's own
-   * destruction using Simulator::ScheduleDestroy().
-   *
-   * \returns The address of the pointer holding the static instance.
-   */
-  static T ** GetObject ();
-
-  /** Delete the static instance. */
-  static void DeleteObject ();
+    /** Delete the static instance. */
+    static void DeleteObject();
 };
 
 } // namespace ns3
-
 
 /********************************************************************
  *  Implementation of the templates declared above.
@@ -84,39 +83,39 @@ private:
 
 #include "simulator.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 template <typename T>
-T *
-SimulationSingleton<T>::Get ()
+T*
+SimulationSingleton<T>::Get()
 {
-  T ** ppobject = GetObject ();
-  return *ppobject;
+    T** ppobject = GetObject();
+    return *ppobject;
 }
 
 template <typename T>
-T **
-SimulationSingleton<T>::GetObject ()
+T**
+SimulationSingleton<T>::GetObject()
 {
-  static T *pobject = nullptr;
-  if (pobject == nullptr)
+    static T* pobject = nullptr;
+    if (pobject == nullptr)
     {
-      pobject = new T ();
-      Simulator::ScheduleDestroy (&SimulationSingleton<T>::DeleteObject);
+        pobject = new T();
+        Simulator::ScheduleDestroy(&SimulationSingleton<T>::DeleteObject);
     }
-  return &pobject;
+    return &pobject;
 }
 
 template <typename T>
 void
-SimulationSingleton<T>::DeleteObject ()
+SimulationSingleton<T>::DeleteObject()
 {
-  T **ppobject = GetObject ();
-  delete (*ppobject);
-  *ppobject = nullptr;
+    T** ppobject = GetObject();
+    delete (*ppobject);
+    *ppobject = nullptr;
 }
 
 } // namespace ns3
-
 
 #endif /* SIMULATION_SINGLETON_H */

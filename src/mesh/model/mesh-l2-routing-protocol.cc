@@ -19,41 +19,41 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "ns3/log.h"
 #include "ns3/mesh-l2-routing-protocol.h"
+
+#include "ns3/log.h"
 #include "ns3/mesh-point-device.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("MeshL2RoutingProtocol");
+NS_LOG_COMPONENT_DEFINE("MeshL2RoutingProtocol");
 
-NS_OBJECT_ENSURE_REGISTERED (MeshL2RoutingProtocol);
+NS_OBJECT_ENSURE_REGISTERED(MeshL2RoutingProtocol);
 
 TypeId
-MeshL2RoutingProtocol::GetTypeId ()
+MeshL2RoutingProtocol::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::MeshL2RoutingProtocol")
-    .SetParent<Object> ()
-    .SetGroupName ("Mesh")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::MeshL2RoutingProtocol").SetParent<Object>().SetGroupName("Mesh");
+    return tid;
 }
 
-MeshL2RoutingProtocol::~MeshL2RoutingProtocol ()
+MeshL2RoutingProtocol::~MeshL2RoutingProtocol()
 {
-  m_mp = nullptr;
+    m_mp = nullptr;
 }
 
 void
-MeshL2RoutingProtocol::SetMeshPoint (Ptr<MeshPointDevice> mp)
+MeshL2RoutingProtocol::SetMeshPoint(Ptr<MeshPointDevice> mp)
 {
-  m_mp = mp;
+    m_mp = mp;
 }
 
 Ptr<MeshPointDevice>
-MeshL2RoutingProtocol::GetMeshPoint () const
+MeshL2RoutingProtocol::GetMeshPoint() const
 {
-  return m_mp;
+    return m_mp;
 }
 
 } // namespace ns3

@@ -26,9 +26,7 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 
-
 using namespace ns3;
-
 
 /**
  * \ingroup lte-test
@@ -44,36 +42,39 @@ using namespace ns3;
  */
 class LenaFdBetFfMacSchedulerTestCase1 : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param nUser number of UE nodes
-   * \param dist distance between nodes
-   * \param thrRefDl DL throughput reference
-   * \param thrRefUl UL throughput reference
-   * \param errorModelEnabled error model enabled?
-   */
-  LenaFdBetFfMacSchedulerTestCase1 (uint16_t nUser, double dist, double thrRefDl, double thrRefUl,bool errorModelEnabled);
-  ~LenaFdBetFfMacSchedulerTestCase1 () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param nUser number of UE nodes
+     * \param dist distance between nodes
+     * \param thrRefDl DL throughput reference
+     * \param thrRefUl UL throughput reference
+     * \param errorModelEnabled error model enabled?
+     */
+    LenaFdBetFfMacSchedulerTestCase1(uint16_t nUser,
+                                     double dist,
+                                     double thrRefDl,
+                                     double thrRefUl,
+                                     bool errorModelEnabled);
+    ~LenaFdBetFfMacSchedulerTestCase1() override;
 
-private:
-  /**
-   *  Builds the test name string based on provided parameter values
-   *
-   * \param nUser number of UE nodes
-   * \param dist distance between nodes
-   * \returns name string
-   */
-  static std::string BuildNameString (uint16_t nUser, double dist);
-  void DoRun () override;
-  uint16_t m_nUser; ///< number of UE nodes
-  double m_dist; ///< distance between the nodes
-  double m_thrRefDl; ///< DL throughput reference
-  double m_thrRefUl; ///< UL throughput reference
-  bool m_errorModelEnabled; ///< error model enabled?
+  private:
+    /**
+     *  Builds the test name string based on provided parameter values
+     *
+     * \param nUser number of UE nodes
+     * \param dist distance between nodes
+     * \returns name string
+     */
+    static std::string BuildNameString(uint16_t nUser, double dist);
+    void DoRun() override;
+    uint16_t m_nUser;         ///< number of UE nodes
+    double m_dist;            ///< distance between the nodes
+    double m_thrRefDl;        ///< DL throughput reference
+    double m_thrRefUl;        ///< UL throughput reference
+    bool m_errorModelEnabled; ///< error model enabled?
 };
-
 
 /**
  * \ingroup lte-test
@@ -85,36 +86,37 @@ private:
  */
 class LenaFdBetFfMacSchedulerTestCase2 : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param dist distance between nodes
-   * \param achievableRateDl DL achievable rate
-   * \param estThrFdBetUl UL estimated throughput bet UL
-   * \param errorModelEnabled error model enabled?
-   */
-  LenaFdBetFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> achievableRateDl, std::vector<uint32_t> estThrFdBetUl, bool errorModelEnabled);
-  ~LenaFdBetFfMacSchedulerTestCase2 () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param dist distance between nodes
+     * \param achievableRateDl DL achievable rate
+     * \param estThrFdBetUl UL estimated throughput bet UL
+     * \param errorModelEnabled error model enabled?
+     */
+    LenaFdBetFfMacSchedulerTestCase2(std::vector<double> dist,
+                                     std::vector<uint32_t> achievableRateDl,
+                                     std::vector<uint32_t> estThrFdBetUl,
+                                     bool errorModelEnabled);
+    ~LenaFdBetFfMacSchedulerTestCase2() override;
 
-private:
-  /**
-   *  Builds the test name string based on provided parameter values
-   *
-   * \param nUser number of UE nodes
-   * \param dist distance between nodes
-   * \returns name string
-   */
-  static std::string BuildNameString (uint16_t nUser, std::vector<double> dist);
-  void DoRun () override;
-  uint16_t m_nUser; ///< number of UE nodes
-  std::vector<double> m_dist; ///< distance between the nodes
-  std::vector<uint32_t> m_achievableRateDl; ///< DL achievable rate
-  std::vector<uint32_t> m_estThrFdBetUl; ///< estimated throughput FDBET UL
-  bool m_errorModelEnabled; ///< specifies whether the error model is enabled
+  private:
+    /**
+     *  Builds the test name string based on provided parameter values
+     *
+     * \param nUser number of UE nodes
+     * \param dist distance between nodes
+     * \returns name string
+     */
+    static std::string BuildNameString(uint16_t nUser, std::vector<double> dist);
+    void DoRun() override;
+    uint16_t m_nUser;                         ///< number of UE nodes
+    std::vector<double> m_dist;               ///< distance between the nodes
+    std::vector<uint32_t> m_achievableRateDl; ///< DL achievable rate
+    std::vector<uint32_t> m_estThrFdBetUl;    ///< estimated throughput FDBET UL
+    bool m_errorModelEnabled;                 ///< specifies whether the error model is enabled
 };
-
-
 
 /**
  * \ingroup lte-test
@@ -125,8 +127,8 @@ private:
 
 class LenaTestFdBetFfMacSchedulerSuite : public TestSuite
 {
-public:
-  LenaTestFdBetFfMacSchedulerSuite ();
+  public:
+    LenaTestFdBetFfMacSchedulerSuite();
 };
 
 #endif /* LENA_TEST_FDBET_FF_MAC_SCHEDULER_H */

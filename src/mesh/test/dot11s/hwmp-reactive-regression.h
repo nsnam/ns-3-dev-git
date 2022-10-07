@@ -17,11 +17,11 @@
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
-#include "ns3/test.h"
+#include "ns3/ipv4-interface-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
-#include "ns3/ipv4-interface-container.h"
 #include "ns3/pcap-file.h"
+#include "ns3/test.h"
 
 using namespace ns3;
 
@@ -72,59 +72,59 @@ using namespace ns3;
 
 class HwmpReactiveRegressionTest : public TestCase
 {
-public:
-  HwmpReactiveRegressionTest ();
-  ~HwmpReactiveRegressionTest() override;
+  public:
+    HwmpReactiveRegressionTest();
+    ~HwmpReactiveRegressionTest() override;
 
-  void DoRun () override;
-  /// Check results function
-  void CheckResults ();
-private:
-  /// \internal It is important to have pointers here
-  NodeContainer * m_nodes;
-  /// Simulation time
-  Time m_time;
-  Ipv4InterfaceContainer m_interfaces; ///< interfaces
+    void DoRun() override;
+    /// Check results function
+    void CheckResults();
 
-  /// Create nodes function
-  void CreateNodes ();
-  /// Create devices function
-  void CreateDevices ();
-  /// Install application function
-  void InstallApplications ();
-  /// Reset position function
-  void ResetPosition ();
+  private:
+    /// \internal It is important to have pointers here
+    NodeContainer* m_nodes;
+    /// Simulation time
+    Time m_time;
+    Ipv4InterfaceContainer m_interfaces; ///< interfaces
 
-  /// Server-side socket
-  Ptr<Socket> m_serverSocket;
-  /// Client-side socket
-  Ptr<Socket> m_clientSocket;
+    /// Create nodes function
+    void CreateNodes();
+    /// Create devices function
+    void CreateDevices();
+    /// Install application function
+    void InstallApplications();
+    /// Reset position function
+    void ResetPosition();
 
-  /// sent packets counter
-  uint32_t m_sentPktsCounter;
+    /// Server-side socket
+    Ptr<Socket> m_serverSocket;
+    /// Client-side socket
+    Ptr<Socket> m_clientSocket;
 
-  /**
-   * Send data
-   * \param socket the sending socket
-   */
-  void SendData (Ptr<Socket> socket);
+    /// sent packets counter
+    uint32_t m_sentPktsCounter;
 
-  /**
-   * \brief Handle a packet reception.
-   *
-   * This function is called by lower layers.
-   *
-   * \param socket the socket the packet was received to.
-   */
-  void HandleReadServer (Ptr<Socket> socket);
+    /**
+     * Send data
+     * \param socket the sending socket
+     */
+    void SendData(Ptr<Socket> socket);
 
-  /**
-   * \brief Handle a packet reception.
-   *
-   * This function is called by lower layers.
-   *
-   * \param socket the socket the packet was received to.
-   */
-  void HandleReadClient (Ptr<Socket> socket);
+    /**
+     * \brief Handle a packet reception.
+     *
+     * This function is called by lower layers.
+     *
+     * \param socket the socket the packet was received to.
+     */
+    void HandleReadServer(Ptr<Socket> socket);
+
+    /**
+     * \brief Handle a packet reception.
+     *
+     * This function is called by lower layers.
+     *
+     * \param socket the socket the packet was received to.
+     */
+    void HandleReadClient(Ptr<Socket> socket);
 };
-

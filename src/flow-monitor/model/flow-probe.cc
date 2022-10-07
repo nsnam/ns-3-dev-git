@@ -19,109 +19,103 @@
 //
 
 #include "ns3/flow-probe.h"
+
 #include "ns3/flow-monitor.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /* static */
-TypeId FlowProbe::GetTypeId ()
+TypeId
+FlowProbe::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::FlowProbe")
-    .SetParent<Object> ()
-    .SetGroupName ("FlowMonitor")
-    // No AddConstructor because this class has no default constructor.
-    ;
+    static TypeId tid = TypeId("ns3::FlowProbe").SetParent<Object>().SetGroupName("FlowMonitor")
+        // No AddConstructor because this class has no default constructor.
+        ;
 
-  return tid;
+    return tid;
 }
 
-FlowProbe::~FlowProbe ()
+FlowProbe::~FlowProbe()
 {
 }
 
-
-FlowProbe::FlowProbe (Ptr<FlowMonitor> flowMonitor)
-  : m_flowMonitor (flowMonitor)
+FlowProbe::FlowProbe(Ptr<FlowMonitor> flowMonitor)
+    : m_flowMonitor(flowMonitor)
 {
-  m_flowMonitor->AddProbe (this);
-}
-
-void
-FlowProbe::DoDispose ()
-{
-  m_flowMonitor = nullptr;
-  Object::DoDispose ();
+    m_flowMonitor->AddProbe(this);
 }
 
 void
-FlowProbe::AddPacketStats (FlowId flowId, uint32_t packetSize, Time delayFromFirstProbe)
+FlowProbe::DoDispose()
 {
-  FlowStats &flow = m_stats[flowId];
-  flow.delayFromFirstProbeSum += delayFromFirstProbe;
-  flow.bytes += packetSize;
-  ++flow.packets;
+    m_flowMonitor = nullptr;
+    Object::DoDispose();
 }
 
 void
-FlowProbe::AddPacketDropStats (FlowId flowId, uint32_t packetSize, uint32_t reasonCode)
+FlowProbe::AddPacketStats(FlowId flowId, uint32_t packetSize, Time delayFromFirstProbe)
 {
-  FlowStats &flow = m_stats[flowId];
+    FlowStats& flow = m_stats[flowId];
+    flow.delayFromFirstProbeSum += delayFromFirstProbe;
+    flow.bytes += packetSize;
+    ++flow.packets;
+}
 
-  if (flow.packetsDropped.size () < reasonCode + 1)
+void
+FlowProbe::AddPacketDropStats(FlowId flowId, uint32_t packetSize, uint32_t reasonCode)
+{
+    FlowStats& flow = m_stats[flowId];
+
+    if (flow.packetsDropped.size() < reasonCode + 1)
     {
-      flow.packetsDropped.resize (reasonCode + 1, 0);
-      flow.bytesDropped.resize (reasonCode + 1, 0);
+        flow.packetsDropped.resize(reasonCode + 1, 0);
+        flow.bytesDropped.resize(reasonCode + 1, 0);
     }
-  ++flow.packetsDropped[reasonCode];
-  flow.bytesDropped[reasonCode] += packetSize;
+    ++flow.packetsDropped[reasonCode];
+    flow.bytesDropped[reasonCode] += packetSize;
 }
 
 FlowProbe::Stats
-FlowProbe::GetStats () const
+FlowProbe::GetStats() const
 {
-  return m_stats;
+    return m_stats;
 }
 
 void
-FlowProbe::SerializeToXmlStream (std::ostream &os, uint16_t indent, uint32_t index) const
+FlowProbe::SerializeToXmlStream(std::ostream& os, uint16_t indent, uint32_t index) const
 {
-  os << std::string ( indent, ' ' ) << "<FlowProbe index=\"" << index << "\">\n";
+    os << std::string(indent, ' ') << "<FlowProbe index=\"" << index << "\">\n";
 
-  indent += 2;
+    indent += 2;
 
-  for (Stats::const_iterator iter = m_stats.begin (); iter != m_stats.end (); iter++)
+    for (Stats::const_iterator iter = m_stats.begin(); iter != m_stats.end(); iter++)
     {
-      os << std::string ( indent, ' ' );
-      os << "<FlowStats "
-         << " flowId=\"" << iter->first << "\""
-         << " packets=\"" << iter->second.packets << "\""
-         << " bytes=\"" << iter->second.bytes << "\""
-         << " delayFromFirstProbeSum=\"" << iter->second.delayFromFirstProbeSum << "\""
-         << " >\n";
-      indent += 2;
-      for (uint32_t reasonCode = 0; reasonCode < iter->second.packetsDropped.size (); reasonCode++)
+        os << std::string(indent, ' ');
+        os << "<FlowStats "
+           << " flowId=\"" << iter->first << "\""
+           << " packets=\"" << iter->second.packets << "\""
+           << " bytes=\"" << iter->second.bytes << "\""
+           << " delayFromFirstProbeSum=\"" << iter->second.delayFromFirstProbeSum << "\""
+           << " >\n";
+        indent += 2;
+        for (uint32_t reasonCode = 0; reasonCode < iter->second.packetsDropped.size(); reasonCode++)
         {
-          os << std::string ( indent, ' ' );
-          os << "<packetsDropped reasonCode=\"" << reasonCode << "\""
-             << " number=\"" << iter->second.packetsDropped[reasonCode]
-             << "\" />\n";
+            os << std::string(indent, ' ');
+            os << "<packetsDropped reasonCode=\"" << reasonCode << "\""
+               << " number=\"" << iter->second.packetsDropped[reasonCode] << "\" />\n";
         }
-      for (uint32_t reasonCode = 0; reasonCode < iter->second.bytesDropped.size (); reasonCode++)
+        for (uint32_t reasonCode = 0; reasonCode < iter->second.bytesDropped.size(); reasonCode++)
         {
-          os << std::string ( indent, ' ' );
-          os << "<bytesDropped reasonCode=\"" << reasonCode << "\""
-             << " bytes=\"" << iter->second.bytesDropped[reasonCode]
-             << "\" />\n";
+            os << std::string(indent, ' ');
+            os << "<bytesDropped reasonCode=\"" << reasonCode << "\""
+               << " bytes=\"" << iter->second.bytesDropped[reasonCode] << "\" />\n";
         }
-      indent -= 2;
-      os << std::string ( indent, ' ' ) << "</FlowStats>\n";
+        indent -= 2;
+        os << std::string(indent, ' ') << "</FlowStats>\n";
     }
-  indent -= 2;
-  os << std::string ( indent, ' ' ) << "</FlowProbe>\n";
+    indent -= 2;
+    os << std::string(indent, ' ') << "</FlowProbe>\n";
 }
 
-
-
 } // namespace ns3
-
-

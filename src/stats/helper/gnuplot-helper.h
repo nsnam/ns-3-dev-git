@@ -21,16 +21,18 @@
 #ifndef GNUPLOT_HELPER_H
 #define GNUPLOT_HELPER_H
 
-#include <map>
-#include <utility>
-#include <string>
-#include "ns3/object-factory.h"
-#include "ns3/ptr.h"
-#include "ns3/probe.h"
 #include "ns3/gnuplot-aggregator.h"
+#include "ns3/object-factory.h"
+#include "ns3/probe.h"
+#include "ns3/ptr.h"
 #include "ns3/time-series-adaptor.h"
 
-namespace ns3 {
+#include <map>
+#include <string>
+#include <utility>
+
+namespace ns3
+{
 
 /**
  * \ingroup gnuplot
@@ -38,182 +40,178 @@ namespace ns3 {
  **/
 class GnuplotHelper
 {
-public:
-  /**
-   * Constructs a gnuplot helper that will create a space separated
-   * gnuplot data file named "gnuplot-helper.dat", a gnuplot control
-   * file named "gnuplot-helper.plt", and a shell script to generate
-   * the gnuplot named "gnuplot-helper.sh" unless it is later
-   * configured otherwise.
-   */
-  GnuplotHelper ();
+  public:
+    /**
+     * Constructs a gnuplot helper that will create a space separated
+     * gnuplot data file named "gnuplot-helper.dat", a gnuplot control
+     * file named "gnuplot-helper.plt", and a shell script to generate
+     * the gnuplot named "gnuplot-helper.sh" unless it is later
+     * configured otherwise.
+     */
+    GnuplotHelper();
 
-  /**
-   * \param outputFileNameWithoutExtension name of gnuplot related files to
-   * write with no extension
-   * \param title plot title string to use for this plot.
-   * \param xLegend the legend for the x horizontal axis.
-   * \param yLegend the legend for the y vertical axis.
-   * \param terminalType terminal type setting string for output. The
-   * default terminal type is "png"
-   *
-   * Constructs a gnuplot helper that will create a space separated
-   * gnuplot data file named outputFileNameWithoutExtension + ".dat",
-   * a gnuplot control file named outputFileNameWithoutExtension +
-   * ".plt", and a shell script to generate the gnuplot named
-   * outputFileNameWithoutExtension + ".sh".
-   */
-  GnuplotHelper (const std::string &outputFileNameWithoutExtension,
-                 const std::string &title,
-                 const std::string &xLegend,
-                 const std::string &yLegend,
-                 const std::string &terminalType = "png");
+    /**
+     * \param outputFileNameWithoutExtension name of gnuplot related files to
+     * write with no extension
+     * \param title plot title string to use for this plot.
+     * \param xLegend the legend for the x horizontal axis.
+     * \param yLegend the legend for the y vertical axis.
+     * \param terminalType terminal type setting string for output. The
+     * default terminal type is "png"
+     *
+     * Constructs a gnuplot helper that will create a space separated
+     * gnuplot data file named outputFileNameWithoutExtension + ".dat",
+     * a gnuplot control file named outputFileNameWithoutExtension +
+     * ".plt", and a shell script to generate the gnuplot named
+     * outputFileNameWithoutExtension + ".sh".
+     */
+    GnuplotHelper(const std::string& outputFileNameWithoutExtension,
+                  const std::string& title,
+                  const std::string& xLegend,
+                  const std::string& yLegend,
+                  const std::string& terminalType = "png");
 
-  virtual ~GnuplotHelper ();
+    virtual ~GnuplotHelper();
 
-  /**
-   * \param outputFileNameWithoutExtension name of gnuplot related files to
-   * write with no extension
-   * \param title plot title string to use for this plot.
-   * \param xLegend the legend for the x horizontal axis.
-   * \param yLegend the legend for the y vertical axis.
-   * \param terminalType terminal type setting string for output. The
-   * default terminal type is "png"
-   *
-   * Configures plot related parameters for this gnuplot helper so
-   * that it will create a space separated gnuplot data file named
-   * outputFileNameWithoutExtension + ".dat", a gnuplot control file
-   * named outputFileNameWithoutExtension + ".plt", and a shell script
-   * to generate the gnuplot named outputFileNameWithoutExtension +
-   * ".sh".
-   */
-  void ConfigurePlot (const std::string &outputFileNameWithoutExtension,
-                      const std::string &title,
-                      const std::string &xLegend,
-                      const std::string &yLegend,
-                      const std::string &terminalType = "png");
+    /**
+     * \param outputFileNameWithoutExtension name of gnuplot related files to
+     * write with no extension
+     * \param title plot title string to use for this plot.
+     * \param xLegend the legend for the x horizontal axis.
+     * \param yLegend the legend for the y vertical axis.
+     * \param terminalType terminal type setting string for output. The
+     * default terminal type is "png"
+     *
+     * Configures plot related parameters for this gnuplot helper so
+     * that it will create a space separated gnuplot data file named
+     * outputFileNameWithoutExtension + ".dat", a gnuplot control file
+     * named outputFileNameWithoutExtension + ".plt", and a shell script
+     * to generate the gnuplot named outputFileNameWithoutExtension +
+     * ".sh".
+     */
+    void ConfigurePlot(const std::string& outputFileNameWithoutExtension,
+                       const std::string& title,
+                       const std::string& xLegend,
+                       const std::string& yLegend,
+                       const std::string& terminalType = "png");
 
-  /**
-   * \param typeId the type ID for the probe used when it is created.
-   * \param path Config path for underlying trace source to be probed
-   * \param probeTraceSource the probe trace source to access.
-   * \param title the title to be associated to this dataset
-   * \param keyLocation the location of the key in the plot.
-   *
-   * Plots a dataset generated by hooking the ns-3 trace source with a
-   * probe, and then plot the values from the probeTraceSource. The dataset
-   * will have the provided title, and will consist of the 'newValue'
-   * at each timestamp.
-   *
-   * This method will create one or more probes according to the TypeId
-   * provided, connect the probe(s) to the trace source specified by
-   * the config path, and hook the probeTraceSource(s) to the downstream
-   * aggregator.
-   *
-   * If the config path has more than one match in the system
-   * (e.g. there is a wildcard), then one dataset for each match will
-   * be plotted.  The dataset titles will be suffixed with the matched
-   * characters for each of the wildcards in the config path,
-   * separated by spaces.  For example, if the proposed dataset title
-   * is the string "bytes", and there are two wildcards in the path,
-   * then dataset titles like "bytes-0 0" or "bytes-12 9" will be
-   * possible as labels for the datasets that are plotted.
-   */
-  void PlotProbe (const std::string &typeId,
-                  const std::string &path,
-                  const std::string &probeTraceSource,
-                  const std::string &title,
-                  enum GnuplotAggregator::KeyLocation keyLocation = GnuplotAggregator::KEY_INSIDE);
+    /**
+     * \param typeId the type ID for the probe used when it is created.
+     * \param path Config path for underlying trace source to be probed
+     * \param probeTraceSource the probe trace source to access.
+     * \param title the title to be associated to this dataset
+     * \param keyLocation the location of the key in the plot.
+     *
+     * Plots a dataset generated by hooking the ns-3 trace source with a
+     * probe, and then plot the values from the probeTraceSource. The dataset
+     * will have the provided title, and will consist of the 'newValue'
+     * at each timestamp.
+     *
+     * This method will create one or more probes according to the TypeId
+     * provided, connect the probe(s) to the trace source specified by
+     * the config path, and hook the probeTraceSource(s) to the downstream
+     * aggregator.
+     *
+     * If the config path has more than one match in the system
+     * (e.g. there is a wildcard), then one dataset for each match will
+     * be plotted.  The dataset titles will be suffixed with the matched
+     * characters for each of the wildcards in the config path,
+     * separated by spaces.  For example, if the proposed dataset title
+     * is the string "bytes", and there are two wildcards in the path,
+     * then dataset titles like "bytes-0 0" or "bytes-12 9" will be
+     * possible as labels for the datasets that are plotted.
+     */
+    void PlotProbe(const std::string& typeId,
+                   const std::string& path,
+                   const std::string& probeTraceSource,
+                   const std::string& title,
+                   enum GnuplotAggregator::KeyLocation keyLocation = GnuplotAggregator::KEY_INSIDE);
 
-  /**
-   * \param adaptorName the timeSeriesAdaptor's name.
-   *
-   * \brief Adds a time series adaptor to be used to make the plot.
-   */
-  void AddTimeSeriesAdaptor (const std::string &adaptorName);
+    /**
+     * \param adaptorName the timeSeriesAdaptor's name.
+     *
+     * \brief Adds a time series adaptor to be used to make the plot.
+     */
+    void AddTimeSeriesAdaptor(const std::string& adaptorName);
 
-  /**
-   * \param probeName the probe's name.
-   * \return Ptr to probe
-   * \brief Gets the specified probe.
-   */
-  Ptr<Probe> GetProbe (std::string probeName) const;
+    /**
+     * \param probeName the probe's name.
+     * \return Ptr to probe
+     * \brief Gets the specified probe.
+     */
+    Ptr<Probe> GetProbe(std::string probeName) const;
 
-  /**
-   * \return Ptr to GnuplotAggregator object
-   * \brief Gets the aggregator.
-   *
-   * This function is non-const because an aggregator may be lazily
-   * created by this method.
-   */
-  Ptr<GnuplotAggregator> GetAggregator ();
+    /**
+     * \return Ptr to GnuplotAggregator object
+     * \brief Gets the aggregator.
+     *
+     * This function is non-const because an aggregator may be lazily
+     * created by this method.
+     */
+    Ptr<GnuplotAggregator> GetAggregator();
 
-private:
+  private:
+    /**
+     * \param typeId the type ID for the probe used when it is created.
+     * \param probeName the probe's name.
+     * \param path Config path to access the probe.
+     *
+     * \brief Adds a probe to be used to make the plot.
+     */
+    void AddProbe(const std::string& typeId, const std::string& probeName, const std::string& path);
 
-  /**
-   * \param typeId the type ID for the probe used when it is created.
-   * \param probeName the probe's name.
-   * \param path Config path to access the probe.
-   *
-   * \brief Adds a probe to be used to make the plot.
-   */
-  void AddProbe (const std::string &typeId,
-                 const std::string &probeName,
-                 const std::string &path);
+    /**
+     * \brief Constructs the aggregator.
+     */
+    void ConstructAggregator();
 
-  /**
-   * \brief Constructs the aggregator.
-   */
-  void ConstructAggregator ();
+    /**
+     * \param typeId the type ID for the probe used when it is created.
+     * \param matchIdentifier this string is used to make the probe's
+     * context be unique.
+     * \param path Config path to access the probe.
+     * \param probeTraceSource the probe trace source to access.
+     * \param title the title to be associated to this dataset.
+     *
+     * \brief Connects the probe to the aggregator.
+     */
+    void ConnectProbeToAggregator(const std::string& typeId,
+                                  const std::string& matchIdentifier,
+                                  const std::string& path,
+                                  const std::string& probeTraceSource,
+                                  const std::string& title);
 
-  /**
-   * \param typeId the type ID for the probe used when it is created.
-   * \param matchIdentifier this string is used to make the probe's
-   * context be unique.
-   * \param path Config path to access the probe.
-   * \param probeTraceSource the probe trace source to access.
-   * \param title the title to be associated to this dataset.
-   *
-   * \brief Connects the probe to the aggregator.
-   */
-  void ConnectProbeToAggregator (const std::string &typeId,
-                                 const std::string &matchIdentifier,
-                                 const std::string &path,
-                                 const std::string &probeTraceSource,
-                                 const std::string &title);
+    /// Used to create the probes and collectors as they are added.
+    ObjectFactory m_factory;
 
-  /// Used to create the probes and collectors as they are added.
-  ObjectFactory m_factory;
+    /// The aggregator used to make the plots.
+    Ptr<GnuplotAggregator> m_aggregator;
 
-  /// The aggregator used to make the plots.
-  Ptr<GnuplotAggregator> m_aggregator;
+    /// Maps probe names to probes.
+    std::map<std::string, std::pair<Ptr<Probe>, std::string>> m_probeMap;
 
-  /// Maps probe names to probes.
-  std::map<std::string, std::pair <Ptr<Probe>, std::string> > m_probeMap;
+    /// Maps time series adaptor names to time series adaptors.
+    std::map<std::string, Ptr<TimeSeriesAdaptor>> m_timeSeriesAdaptorMap;
 
-  /// Maps time series adaptor names to time series adaptors.
-  std::map<std::string, Ptr<TimeSeriesAdaptor> > m_timeSeriesAdaptorMap;
+    /// Number of plot probes that have been created.
+    uint32_t m_plotProbeCount;
 
-  /// Number of plot probes that have been created.
-  uint32_t m_plotProbeCount;
+    /// The name of the output file to created without its extension.
+    std::string m_outputFileNameWithoutExtension;
 
-  /// The name of the output file to created without its extension.
-  std::string m_outputFileNameWithoutExtension;
+    /// Title string to use for this plot.
+    std::string m_title;
 
-  /// Title string to use for this plot.
-  std::string m_title;
+    /// Legend for the x axis.
+    std::string m_xLegend;
 
-  /// Legend for the x axis.
-  std::string m_xLegend;
+    /// Legend for the y axis.
+    std::string m_yLegend;
 
-  /// Legend for the y axis.
-  std::string m_yLegend;
-
-  /// Terminal type for the plot.
-  std::string m_terminalType;
+    /// Terminal type for the plot.
+    std::string m_terminalType;
 
 }; // class GnuplotHelper
-
 
 } // namespace ns3
 

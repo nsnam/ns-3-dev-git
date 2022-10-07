@@ -27,7 +27,8 @@
 
 #include "point-to-point-channel.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup point-to-point
@@ -40,38 +41,35 @@ namespace ns3 {
  */
 class PointToPointRemoteChannel : public PointToPointChannel
 {
-public:
-  /**
-   * \brief Get the TypeId
-   *
-   * \return The TypeId for this class
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Get the TypeId
+     *
+     * \return The TypeId for this class
+     */
+    static TypeId GetTypeId(void);
 
-  /**
-   * \brief Constructor
-   */
-  PointToPointRemoteChannel ();
+    /**
+     * \brief Constructor
+     */
+    PointToPointRemoteChannel();
 
-  /**
-   * \brief Deconstructor
-   */
-  ~PointToPointRemoteChannel ();
+    /**
+     * \brief Deconstructor
+     */
+    ~PointToPointRemoteChannel();
 
-  /**
-   * \brief Transmit the packet
-   *
-   * \param p Packet to transmit
-   * \param src Source PointToPointNetDevice
-   * \param txTime Transmit time to apply
-   * \returns true if successful (currently always true)
-   */
-  virtual bool TransmitStart (Ptr<const Packet> p, Ptr<PointToPointNetDevice> src,
-                              Time txTime);
+    /**
+     * \brief Transmit the packet
+     *
+     * \param p Packet to transmit
+     * \param src Source PointToPointNetDevice
+     * \param txTime Transmit time to apply
+     * \returns true if successful (currently always true)
+     */
+    virtual bool TransmitStart(Ptr<const Packet> p, Ptr<PointToPointNetDevice> src, Time txTime);
 };
 
 } // namespace ns3
 
 #endif
-
-

@@ -18,99 +18,98 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
-#include "ns3/log.h"
 #include "wifi-ack-manager.h"
-#include "wifi-psdu.h"
+
 #include "wifi-mac.h"
+#include "wifi-psdu.h"
 
+#include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("WifiAckManager");
+NS_LOG_COMPONENT_DEFINE("WifiAckManager");
 
-NS_OBJECT_ENSURE_REGISTERED (WifiAckManager);
+NS_OBJECT_ENSURE_REGISTERED(WifiAckManager);
 
 TypeId
-WifiAckManager::GetTypeId ()
+WifiAckManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiAckManager")
-    .SetParent<Object> ()
-    .SetGroupName ("Wifi")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::WifiAckManager").SetParent<Object>().SetGroupName("Wifi");
+    return tid;
 }
 
-WifiAckManager::WifiAckManager ()
-  : m_linkId (0)
+WifiAckManager::WifiAckManager()
+    : m_linkId(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-WifiAckManager::~WifiAckManager ()
+WifiAckManager::~WifiAckManager()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 }
 
 void
-WifiAckManager::DoDispose ()
+WifiAckManager::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_mac = nullptr;
-  Object::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    m_mac = nullptr;
+    Object::DoDispose();
 }
 
 void
-WifiAckManager::SetWifiMac (Ptr<WifiMac> mac)
+WifiAckManager::SetWifiMac(Ptr<WifiMac> mac)
 {
-  NS_LOG_FUNCTION (this << mac);
-  m_mac = mac;
+    NS_LOG_FUNCTION(this << mac);
+    m_mac = mac;
 }
 
 Ptr<WifiRemoteStationManager>
-WifiAckManager::GetWifiRemoteStationManager () const
+WifiAckManager::GetWifiRemoteStationManager() const
 {
-  return m_mac->GetWifiRemoteStationManager (m_linkId);
+    return m_mac->GetWifiRemoteStationManager(m_linkId);
 }
 
 void
-WifiAckManager::SetLinkId (uint8_t linkId)
+WifiAckManager::SetLinkId(uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << +linkId);
-  m_linkId = linkId;
+    NS_LOG_FUNCTION(this << +linkId);
+    m_linkId = linkId;
 }
 
 void
-WifiAckManager::SetQosAckPolicy (Ptr<WifiMpdu> item, const WifiAcknowledgment* acknowledgment)
+WifiAckManager::SetQosAckPolicy(Ptr<WifiMpdu> item, const WifiAcknowledgment* acknowledgment)
 {
-  NS_LOG_FUNCTION (*item << acknowledgment);
+    NS_LOG_FUNCTION(*item << acknowledgment);
 
-  WifiMacHeader& hdr = item->GetHeader ();
-  if (!hdr.IsQosData ())
+    WifiMacHeader& hdr = item->GetHeader();
+    if (!hdr.IsQosData())
     {
-      return;
+        return;
     }
-  NS_ASSERT (acknowledgment);
+    NS_ASSERT(acknowledgment);
 
-  hdr.SetQosAckPolicy (acknowledgment->GetQosAckPolicy (hdr.GetAddr1 (), hdr.GetQosTid ()));
+    hdr.SetQosAckPolicy(acknowledgment->GetQosAckPolicy(hdr.GetAddr1(), hdr.GetQosTid()));
 }
 
 void
-WifiAckManager::SetQosAckPolicy (Ptr<WifiPsdu> psdu, const WifiAcknowledgment* acknowledgment)
+WifiAckManager::SetQosAckPolicy(Ptr<WifiPsdu> psdu, const WifiAcknowledgment* acknowledgment)
 {
-  NS_LOG_FUNCTION (*psdu << acknowledgment);
+    NS_LOG_FUNCTION(*psdu << acknowledgment);
 
-  if (psdu->GetNMpdus () == 1)
+    if (psdu->GetNMpdus() == 1)
     {
-      SetQosAckPolicy (*psdu->begin (), acknowledgment);
-      return;
+        SetQosAckPolicy(*psdu->begin(), acknowledgment);
+        return;
     }
 
-  NS_ASSERT (acknowledgment);
+    NS_ASSERT(acknowledgment);
 
-  for (const auto& tid : psdu->GetTids ())
+    for (const auto& tid : psdu->GetTids())
     {
-      psdu->SetAckPolicyForTid (tid, acknowledgment->GetQosAckPolicy (psdu->GetAddr1 (), tid));
+        psdu->SetAckPolicyForTid(tid, acknowledgment->GetQosAckPolicy(psdu->GetAddr1(), tid));
     }
 }
 
-} //namespace ns3
+} // namespace ns3

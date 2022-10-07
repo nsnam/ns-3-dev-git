@@ -18,34 +18,35 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/log.h"
 #include "eht-configuration.h"
 
-namespace ns3 {
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("EhtConfiguration");
-
-NS_OBJECT_ENSURE_REGISTERED (EhtConfiguration);
-
-EhtConfiguration::EhtConfiguration ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("EhtConfiguration");
+
+NS_OBJECT_ENSURE_REGISTERED(EhtConfiguration);
+
+EhtConfiguration::EhtConfiguration()
+{
+    NS_LOG_FUNCTION(this);
 }
 
-EhtConfiguration::~EhtConfiguration ()
+EhtConfiguration::~EhtConfiguration()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-EhtConfiguration::GetTypeId ()
+EhtConfiguration::GetTypeId()
 {
-  static ns3::TypeId tid = ns3::TypeId ("ns3::EhtConfiguration")
-    .SetParent<Object> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<EhtConfiguration> ()
-    ;
+    static ns3::TypeId tid = ns3::TypeId("ns3::EhtConfiguration")
+                                 .SetParent<Object>()
+                                 .SetGroupName("Wifi")
+                                 .AddConstructor<EhtConfiguration>();
     return tid;
 }
 
-} //namespace ns3
+} // namespace ns3

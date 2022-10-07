@@ -20,61 +20,65 @@
 
 #include "ns3/lte-rlc-sdu-status-tag.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlcSduStatusTag);
+NS_OBJECT_ENSURE_REGISTERED(LteRlcSduStatusTag);
 
-LteRlcSduStatusTag::LteRlcSduStatusTag ()
+LteRlcSduStatusTag::LteRlcSduStatusTag()
 {
 }
 
 void
-LteRlcSduStatusTag::SetStatus (uint8_t status)
+LteRlcSduStatusTag::SetStatus(uint8_t status)
 {
-  m_sduStatus = status;
+    m_sduStatus = status;
 }
 
 uint8_t
-LteRlcSduStatusTag::GetStatus () const
+LteRlcSduStatusTag::GetStatus() const
 {
-  return m_sduStatus;
+    return m_sduStatus;
 }
 
 TypeId
-LteRlcSduStatusTag::GetTypeId ()
+LteRlcSduStatusTag::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::LteRlcSduStatusTag")
-    .SetParent<Tag> ()
-    .SetGroupName("Lte")
-    .AddConstructor<LteRlcSduStatusTag> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::LteRlcSduStatusTag")
+                            .SetParent<Tag>()
+                            .SetGroupName("Lte")
+                            .AddConstructor<LteRlcSduStatusTag>();
+    return tid;
 }
+
 TypeId
-LteRlcSduStatusTag::GetInstanceTypeId () const
+LteRlcSduStatusTag::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
 uint32_t
-LteRlcSduStatusTag::GetSerializedSize () const
+LteRlcSduStatusTag::GetSerializedSize() const
 {
-  return 1;
+    return 1;
 }
+
 void
-LteRlcSduStatusTag::Serialize (TagBuffer i) const
+LteRlcSduStatusTag::Serialize(TagBuffer i) const
 {
-  i.WriteU8 (m_sduStatus);
+    i.WriteU8(m_sduStatus);
 }
+
 void
-LteRlcSduStatusTag::Deserialize (TagBuffer i)
+LteRlcSduStatusTag::Deserialize(TagBuffer i)
 {
-  m_sduStatus = i.ReadU8 ();
+    m_sduStatus = i.ReadU8();
 }
+
 void
-LteRlcSduStatusTag::Print (std::ostream &os) const
+LteRlcSduStatusTag::Print(std::ostream& os) const
 {
-  os << "SDU Status=" << (uint32_t) m_sduStatus;
+    os << "SDU Status=" << (uint32_t)m_sduStatus;
 }
 
 }; // namespace ns3

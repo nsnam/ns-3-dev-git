@@ -20,10 +20,11 @@
 #ifndef TRACE_SOURCE_ACCESSOR_H
 #define TRACE_SOURCE_ACCESSOR_H
 
-#include <stdint.h>
 #include "callback.h"
 #include "ptr.h"
 #include "simple-ref-count.h"
+
+#include <stdint.h>
 
 /**
  * \file
@@ -31,7 +32,8 @@
  * ns3::TraceSourceAccessor and ns3::MakeTraceSourceAccessor declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class ObjectBase;
 
@@ -45,56 +47,56 @@ class ObjectBase;
  */
 class TraceSourceAccessor : public SimpleRefCount<TraceSourceAccessor>
 {
-public:
-  /** Constructor. */
-  TraceSourceAccessor ();
-  /** Destructor. */
-  virtual ~TraceSourceAccessor ();
+  public:
+    /** Constructor. */
+    TraceSourceAccessor();
+    /** Destructor. */
+    virtual ~TraceSourceAccessor();
 
-  /**
-   * Connect a Callback to a TraceSource (without context.)
-   *
-   * \param [in] obj The object instance which contains the target trace source.
-   * \param [in] cb The callback to connect to the target trace source.
-   * \return \c true unless the connection could not be made, typically because
-   *         the \c obj couldn't be cast to the correct type.
-   */
-  virtual bool ConnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const = 0;
-  /**
-   * Connect a Callback to a TraceSource with a context string.
-   *
-   * The context string will be provided as the first argument to the
-   * Callback function.
-   *
-   * \param [in] obj The object instance which contains the target trace source.
-   * \param [in] context The context to bind to the user callback.
-   * \param [in] cb The callback to connect to the target trace source.
-   * \return \c true unless the connection could not be made, typically because
-   *         the \c obj couldn't be cast to the correct type.
-   */
-  virtual bool Connect (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
-  /**
-   * Disconnect a Callback from a TraceSource (without context).
-   *
-   * \param [in] obj The object instance which contains the target trace source.
-   * \param [in] cb The callback to disconnect from the target trace source.
-   * \return \c true unless the connection could not be made, typically because
-   *         the \c obj couldn't be cast to the correct type.
-   */
-  virtual bool DisconnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const = 0;
-  /**
-   * Disconnect a Callback from a TraceSource with a context string.
-   *
-   * The context string will be provided as the first argument to the
-   * Callback function.
-   *
-   * \param [in] obj the object instance which contains the target trace source.
-   * \param [in] context the context which was bound to the user callback.
-   * \param [in] cb the callback to disconnect from the target trace source.
-   * \return \c true unless the connection could not be made, typically because
-   *         the \c obj couldn't be cast to the correct type.
-   */
-  virtual bool Disconnect (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
+    /**
+     * Connect a Callback to a TraceSource (without context.)
+     *
+     * \param [in] obj The object instance which contains the target trace source.
+     * \param [in] cb The callback to connect to the target trace source.
+     * \return \c true unless the connection could not be made, typically because
+     *         the \c obj couldn't be cast to the correct type.
+     */
+    virtual bool ConnectWithoutContext(ObjectBase* obj, const CallbackBase& cb) const = 0;
+    /**
+     * Connect a Callback to a TraceSource with a context string.
+     *
+     * The context string will be provided as the first argument to the
+     * Callback function.
+     *
+     * \param [in] obj The object instance which contains the target trace source.
+     * \param [in] context The context to bind to the user callback.
+     * \param [in] cb The callback to connect to the target trace source.
+     * \return \c true unless the connection could not be made, typically because
+     *         the \c obj couldn't be cast to the correct type.
+     */
+    virtual bool Connect(ObjectBase* obj, std::string context, const CallbackBase& cb) const = 0;
+    /**
+     * Disconnect a Callback from a TraceSource (without context).
+     *
+     * \param [in] obj The object instance which contains the target trace source.
+     * \param [in] cb The callback to disconnect from the target trace source.
+     * \return \c true unless the connection could not be made, typically because
+     *         the \c obj couldn't be cast to the correct type.
+     */
+    virtual bool DisconnectWithoutContext(ObjectBase* obj, const CallbackBase& cb) const = 0;
+    /**
+     * Disconnect a Callback from a TraceSource with a context string.
+     *
+     * The context string will be provided as the first argument to the
+     * Callback function.
+     *
+     * \param [in] obj the object instance which contains the target trace source.
+     * \param [in] context the context which was bound to the user callback.
+     * \param [in] cb the callback to disconnect from the target trace source.
+     * \return \c true unless the connection could not be made, typically because
+     *         the \c obj couldn't be cast to the correct type.
+     */
+    virtual bool Disconnect(ObjectBase* obj, std::string context, const CallbackBase& cb) const = 0;
 };
 
 /**
@@ -113,7 +115,7 @@ public:
  * \returns The TraceSourceAccessor
  */
 template <typename T>
-Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor (T a);
+Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor(T a);
 
 /**
  * \ingroup tracing
@@ -122,20 +124,20 @@ Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor (T a);
  *
  * \returns The empty TraceSourceAccessor (runtime exception if used)
  */
-static inline
-Ptr<const TraceSourceAccessor> MakeEmptyTraceSourceAccessor ()
+static inline Ptr<const TraceSourceAccessor>
+MakeEmptyTraceSourceAccessor()
 {
-  return Ptr<const TraceSourceAccessor> (nullptr);
+    return Ptr<const TraceSourceAccessor>(nullptr);
 }
 
 } // namespace ns3
-
 
 /********************************************************************
  *  Implementation of the templates declared above.
  ********************************************************************/
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup tracing
@@ -148,63 +150,68 @@ namespace ns3 {
  */
 template <typename T, typename SOURCE>
 Ptr<const TraceSourceAccessor>
-DoMakeTraceSourceAccessor (SOURCE T::*a)
+DoMakeTraceSourceAccessor(SOURCE T::*a)
 {
-  struct Accessor : public TraceSourceAccessor
-  {
-    bool ConnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const override
+    struct Accessor : public TraceSourceAccessor
     {
-      T *p = dynamic_cast<T*> (obj);
-      if (p == nullptr)
+        bool ConnectWithoutContext(ObjectBase* obj, const CallbackBase& cb) const override
         {
-          return false;
+            T* p = dynamic_cast<T*>(obj);
+            if (p == nullptr)
+            {
+                return false;
+            }
+            (p->*m_source).ConnectWithoutContext(cb);
+            return true;
         }
-      (p->*m_source).ConnectWithoutContext (cb);
-      return true;
-    }
-    bool Connect (ObjectBase *obj, std::string context, const CallbackBase &cb) const override
-    {
-      T *p = dynamic_cast<T*> (obj);
-      if (p == nullptr)
+
+        bool Connect(ObjectBase* obj, std::string context, const CallbackBase& cb) const override
         {
-          return false;
+            T* p = dynamic_cast<T*>(obj);
+            if (p == nullptr)
+            {
+                return false;
+            }
+            (p->*m_source).Connect(cb, context);
+            return true;
         }
-      (p->*m_source).Connect (cb, context);
-      return true;
-    }
-    bool DisconnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const override
-    {
-      T *p = dynamic_cast<T*> (obj);
-      if (p == nullptr)
+
+        bool DisconnectWithoutContext(ObjectBase* obj, const CallbackBase& cb) const override
         {
-          return false;
+            T* p = dynamic_cast<T*>(obj);
+            if (p == nullptr)
+            {
+                return false;
+            }
+            (p->*m_source).DisconnectWithoutContext(cb);
+            return true;
         }
-      (p->*m_source).DisconnectWithoutContext (cb);
-      return true;
-    }
-    bool Disconnect (ObjectBase *obj, std::string context, const CallbackBase &cb) const override
-    {
-      T *p = dynamic_cast<T*> (obj);
-      if (p == nullptr)
+
+        bool Disconnect(ObjectBase* obj, std::string context, const CallbackBase& cb) const override
         {
-          return false;
+            T* p = dynamic_cast<T*>(obj);
+            if (p == nullptr)
+            {
+                return false;
+            }
+            (p->*m_source).Disconnect(cb, context);
+            return true;
         }
-      (p->*m_source).Disconnect (cb, context);
-      return true;
-    }
-    SOURCE T::*m_source;
-  } *accessor = new Accessor ();
-  accessor->m_source = a;
-  return Ptr<const TraceSourceAccessor> (accessor, false);
+
+        SOURCE T::*m_source;
+    }* accessor = new Accessor();
+
+    accessor->m_source = a;
+    return Ptr<const TraceSourceAccessor>(accessor, false);
 }
 
 template <typename T>
-Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor (T a)
+Ptr<const TraceSourceAccessor>
+MakeTraceSourceAccessor(T a)
 {
-  return DoMakeTraceSourceAccessor (a);
+    return DoMakeTraceSourceAccessor(a);
 }
 
 } // namespace ns3
-
 
 #endif /* TRACE_SOURCE_ACCESSOR_H */

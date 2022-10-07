@@ -24,7 +24,6 @@
 #define LTE_TEST_DOWNLINK_SINR_H
 
 #include "ns3/spectrum-value.h"
-
 #include "ns3/test.h"
 
 using namespace ns3;
@@ -37,10 +36,9 @@ using namespace ns3;
  */
 class LteDownlinkSinrTestSuite : public TestSuite
 {
-public:
-  LteDownlinkSinrTestSuite ();
+  public:
+    LteDownlinkSinrTestSuite();
 };
-
 
 /**
  * \ingroup lte-test
@@ -55,25 +53,24 @@ public:
  */
 class LteDownlinkDataSinrTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param sv the spectrum value
-   * \param sinr the SINR
-   * \param name the name of the test
-   */
-  LteDownlinkDataSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-  ~LteDownlinkDataSinrTestCase () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param sv the spectrum value
+     * \param sinr the SINR
+     * \param name the name of the test
+     */
+    LteDownlinkDataSinrTestCase(Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
+    ~LteDownlinkDataSinrTestCase() override;
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 
-  Ptr<SpectrumValue> m_sv; ///< the spectrum value
-  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
-  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
+    Ptr<SpectrumValue> m_sv;           ///< the spectrum value
+    Ptr<const SpectrumModel> m_sm;     ///< the spectrum model
+    Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
 };
-
 
 /**
  * \ingroup lte-test
@@ -90,22 +87,22 @@ private:
 class LteDownlinkCtrlSinrTestCase : public TestCase
 {
   public:
-  /**
-   * Constructor
-   *
-   * \param sv the spectrum value
-   * \param sinr the SINR
-   * \param name the name of the test
-   */
-    LteDownlinkCtrlSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-    ~LteDownlinkCtrlSinrTestCase () override;
+    /**
+     * Constructor
+     *
+     * \param sv the spectrum value
+     * \param sinr the SINR
+     * \param name the name of the test
+     */
+    LteDownlinkCtrlSinrTestCase(Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
+    ~LteDownlinkCtrlSinrTestCase() override;
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 
-  Ptr<SpectrumValue> m_sv; ///< the spectrum value
-  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
-  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
+    Ptr<SpectrumValue> m_sv;           ///< the spectrum value
+    Ptr<const SpectrumModel> m_sm;     ///< the spectrum model
+    Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
 };
 
 #endif /* LTE_TEST_DOWNLINK_SINR_H */

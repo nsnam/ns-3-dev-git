@@ -23,8 +23,8 @@
 
 #include "wifi-protection-manager.h"
 
-
-namespace ns3 {
+namespace ns3
+{
 
 class WifiTxParameters;
 class WifiMpdu;
@@ -38,34 +38,35 @@ class WifiMacHeader;
  */
 class WifiDefaultProtectionManager : public WifiProtectionManager
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  WifiDefaultProtectionManager ();
-  ~WifiDefaultProtectionManager () override;
+    WifiDefaultProtectionManager();
+    ~WifiDefaultProtectionManager() override;
 
-  std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
-                                                      const WifiTxParameters& txParams) override;
-  std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
-                                                            const WifiTxParameters& txParams) override;
+    std::unique_ptr<WifiProtection> TryAddMpdu(Ptr<const WifiMpdu> mpdu,
+                                               const WifiTxParameters& txParams) override;
+    std::unique_ptr<WifiProtection> TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
+                                                     const WifiTxParameters& txParams) override;
 
-protected:
-  /**
-   * Select the protection method for a single PSDU.
-   *
-   * \param hdr the MAC header of the PSDU
-   * \param size the size in bytes of the PSDU
-   * \param txVector the TxVector used to transmit the PSDU
-   * \return the selected protection method
-   */
-  virtual std::unique_ptr<WifiProtection> GetPsduProtection (const WifiMacHeader& hdr, uint32_t size,
-                                                             const WifiTxVector& txVector) const;
+  protected:
+    /**
+     * Select the protection method for a single PSDU.
+     *
+     * \param hdr the MAC header of the PSDU
+     * \param size the size in bytes of the PSDU
+     * \param txVector the TxVector used to transmit the PSDU
+     * \return the selected protection method
+     */
+    virtual std::unique_ptr<WifiProtection> GetPsduProtection(const WifiMacHeader& hdr,
+                                                              uint32_t size,
+                                                              const WifiTxVector& txVector) const;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* WIFI_DEFAULT_PROTECTION_MANAGER_H */

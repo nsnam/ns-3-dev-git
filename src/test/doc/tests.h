@@ -20,7 +20,6 @@
  * This file provides some doxygen documentation for the tests module.
  */
 
-
 /**
  * \ingroup tests
  * \defgroup system-tests System Tests

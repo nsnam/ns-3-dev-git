@@ -18,161 +18,160 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include <ns3/log.h>
-#include <ns3/double.h>
-#include <ns3/pointer.h>
-
 #include "spectrum-channel.h"
 
+#include <ns3/double.h>
+#include <ns3/log.h>
+#include <ns3/pointer.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("SpectrumChannel");
-
-NS_OBJECT_ENSURE_REGISTERED (SpectrumChannel);
-
-SpectrumChannel::SpectrumChannel ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("SpectrumChannel");
+
+NS_OBJECT_ENSURE_REGISTERED(SpectrumChannel);
+
+SpectrumChannel::SpectrumChannel()
+{
+    NS_LOG_FUNCTION(this);
 }
 
-SpectrumChannel::~SpectrumChannel ()
+SpectrumChannel::~SpectrumChannel()
 {
 }
 
 void
-SpectrumChannel::DoDispose ()
+SpectrumChannel::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_propagationLoss = nullptr;
-  m_propagationDelay = nullptr;
-  m_spectrumPropagationLoss = nullptr;
+    NS_LOG_FUNCTION(this);
+    m_propagationLoss = nullptr;
+    m_propagationDelay = nullptr;
+    m_spectrumPropagationLoss = nullptr;
 }
 
 TypeId
-SpectrumChannel::GetTypeId ()
+SpectrumChannel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::SpectrumChannel")
-    .SetParent<Channel> ()
-    .SetGroupName ("Spectrum")
-    .AddAttribute ("MaxLossDb",
-                   "If a single-frequency PropagationLossModel is used, "
-                   "this value represents the maximum loss in dB for which "
-                   "transmissions will be passed to the receiving PHY. "
-                   "Signals for which the PropagationLossModel returns "
-                   "a loss bigger than this value will not be propagated "
-                   "to the receiver. This parameter is to be used to reduce "
-                   "the computational load by not propagating signals "
-                   "that are far beyond the interference range. Note that "
-                   "the default value corresponds to considering all signals "
-                   "for reception. Tune this value with care.",
-                   DoubleValue (1.0e9),
-                   MakeDoubleAccessor (&SpectrumChannel::m_maxLossDb),
-                   MakeDoubleChecker<double> ())
+    static TypeId tid =
+        TypeId("ns3::SpectrumChannel")
+            .SetParent<Channel>()
+            .SetGroupName("Spectrum")
+            .AddAttribute("MaxLossDb",
+                          "If a single-frequency PropagationLossModel is used, "
+                          "this value represents the maximum loss in dB for which "
+                          "transmissions will be passed to the receiving PHY. "
+                          "Signals for which the PropagationLossModel returns "
+                          "a loss bigger than this value will not be propagated "
+                          "to the receiver. This parameter is to be used to reduce "
+                          "the computational load by not propagating signals "
+                          "that are far beyond the interference range. Note that "
+                          "the default value corresponds to considering all signals "
+                          "for reception. Tune this value with care.",
+                          DoubleValue(1.0e9),
+                          MakeDoubleAccessor(&SpectrumChannel::m_maxLossDb),
+                          MakeDoubleChecker<double>())
 
-    .AddAttribute ("PropagationLossModel",
-                   "A pointer to the propagation loss model attached to this channel.",
-                   PointerValue (nullptr),
-                   MakePointerAccessor (&SpectrumChannel::m_propagationLoss),
-                   MakePointerChecker<PropagationLossModel> ())
+            .AddAttribute("PropagationLossModel",
+                          "A pointer to the propagation loss model attached to this channel.",
+                          PointerValue(nullptr),
+                          MakePointerAccessor(&SpectrumChannel::m_propagationLoss),
+                          MakePointerChecker<PropagationLossModel>())
 
-    .AddTraceSource ("Gain",
-                     "This trace is fired whenever a new path loss value "
-                     "is calculated. The parameters to this trace are : "
-                     "Pointer to the mobility model of the transmitter, "
-                     "Pointer to the mobility model of the receiver, "
-                     "Tx antenna gain, "
-                     "Rx antenna gain, "
-                     "Propagation gain, "
-                     "Pathloss",
-                     MakeTraceSourceAccessor (&SpectrumChannel::m_gainTrace),
-                     "ns3::SpectrumChannel::GainTracedCallback")
+            .AddTraceSource("Gain",
+                            "This trace is fired whenever a new path loss value "
+                            "is calculated. The parameters to this trace are : "
+                            "Pointer to the mobility model of the transmitter, "
+                            "Pointer to the mobility model of the receiver, "
+                            "Tx antenna gain, "
+                            "Rx antenna gain, "
+                            "Propagation gain, "
+                            "Pathloss",
+                            MakeTraceSourceAccessor(&SpectrumChannel::m_gainTrace),
+                            "ns3::SpectrumChannel::GainTracedCallback")
 
-    .AddTraceSource ("PathLoss",
-                     "This trace is fired whenever a new path loss value "
-                     "is calculated. The first and second parameters "
-                     "to the trace are pointers respectively to the TX and "
-                     "RX SpectrumPhy instances, whereas the third parameters "
-                     "is the loss value in dB. Note that the loss value "
-                     "reported by this trace is the single-frequency loss "
-                     "value obtained by evaluating only the TX and RX "
-                     "AntennaModels and the PropagationLossModel. "
-                     "In particular, note that SpectrumPropagationLossModel "
-                     "(even if present) is never used to evaluate the "
-                     "loss value reported in this trace.",
-                     MakeTraceSourceAccessor (&SpectrumChannel::m_pathLossTrace),
-                     "ns3::SpectrumChannel::LossTracedCallback")
+            .AddTraceSource("PathLoss",
+                            "This trace is fired whenever a new path loss value "
+                            "is calculated. The first and second parameters "
+                            "to the trace are pointers respectively to the TX and "
+                            "RX SpectrumPhy instances, whereas the third parameters "
+                            "is the loss value in dB. Note that the loss value "
+                            "reported by this trace is the single-frequency loss "
+                            "value obtained by evaluating only the TX and RX "
+                            "AntennaModels and the PropagationLossModel. "
+                            "In particular, note that SpectrumPropagationLossModel "
+                            "(even if present) is never used to evaluate the "
+                            "loss value reported in this trace.",
+                            MakeTraceSourceAccessor(&SpectrumChannel::m_pathLossTrace),
+                            "ns3::SpectrumChannel::LossTracedCallback")
 
-    .AddTraceSource ("TxSigParams",
-                     "This trace is fired whenever a signal is transmitted. "
-                     "The sole parameter is a pointer to a copy of the "
-                     "SpectrumSignalParameters provided by the transmitter.",
-                     MakeTraceSourceAccessor (&SpectrumChannel::m_txSigParamsTrace),
-                     "ns3::SpectrumChannel::SignalParametersTracedCallback")
-  ;
-  return tid;
+            .AddTraceSource("TxSigParams",
+                            "This trace is fired whenever a signal is transmitted. "
+                            "The sole parameter is a pointer to a copy of the "
+                            "SpectrumSignalParameters provided by the transmitter.",
+                            MakeTraceSourceAccessor(&SpectrumChannel::m_txSigParamsTrace),
+                            "ns3::SpectrumChannel::SignalParametersTracedCallback");
+    return tid;
 }
 
 void
-SpectrumChannel::AddPropagationLossModel (Ptr<PropagationLossModel> loss)
+SpectrumChannel::AddPropagationLossModel(Ptr<PropagationLossModel> loss)
 {
-  NS_LOG_FUNCTION (this << loss);
-  if (m_propagationLoss)
+    NS_LOG_FUNCTION(this << loss);
+    if (m_propagationLoss)
     {
-      loss->SetNext (m_propagationLoss);
+        loss->SetNext(m_propagationLoss);
     }
-  m_propagationLoss = loss;
+    m_propagationLoss = loss;
 }
 
 void
-SpectrumChannel::AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss)
+SpectrumChannel::AddSpectrumPropagationLossModel(Ptr<SpectrumPropagationLossModel> loss)
 {
-  NS_LOG_FUNCTION (this << loss);
-  if (m_spectrumPropagationLoss)
+    NS_LOG_FUNCTION(this << loss);
+    if (m_spectrumPropagationLoss)
     {
-      loss->SetNext (m_spectrumPropagationLoss);
+        loss->SetNext(m_spectrumPropagationLoss);
     }
-  m_spectrumPropagationLoss = loss;
+    m_spectrumPropagationLoss = loss;
 }
 
 void
-SpectrumChannel::AddPhasedArraySpectrumPropagationLossModel (Ptr<PhasedArraySpectrumPropagationLossModel> loss)
+SpectrumChannel::AddPhasedArraySpectrumPropagationLossModel(
+    Ptr<PhasedArraySpectrumPropagationLossModel> loss)
 {
-  NS_LOG_FUNCTION (this << loss);
-  if (m_phasedArraySpectrumPropagationLoss)
+    NS_LOG_FUNCTION(this << loss);
+    if (m_phasedArraySpectrumPropagationLoss)
     {
-      loss->SetNext (m_phasedArraySpectrumPropagationLoss);
+        loss->SetNext(m_phasedArraySpectrumPropagationLoss);
     }
-  m_phasedArraySpectrumPropagationLoss = loss;
+    m_phasedArraySpectrumPropagationLoss = loss;
 }
 
-
 void
-SpectrumChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
+SpectrumChannel::SetPropagationDelayModel(Ptr<PropagationDelayModel> delay)
 {
-  NS_ASSERT (!m_propagationDelay);
-  m_propagationDelay = delay;
+    NS_ASSERT(!m_propagationDelay);
+    m_propagationDelay = delay;
 }
 
 Ptr<SpectrumPropagationLossModel>
-SpectrumChannel::GetSpectrumPropagationLossModel ()
+SpectrumChannel::GetSpectrumPropagationLossModel()
 {
-  NS_LOG_FUNCTION (this);
-  return m_spectrumPropagationLoss;
+    NS_LOG_FUNCTION(this);
+    return m_spectrumPropagationLoss;
 }
 
 Ptr<PhasedArraySpectrumPropagationLossModel>
-SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel ()
+SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel()
 {
-  NS_LOG_FUNCTION (this);
-  return m_phasedArraySpectrumPropagationLoss;
+    NS_LOG_FUNCTION(this);
+    return m_phasedArraySpectrumPropagationLoss;
 }
 
 Ptr<PropagationLossModel>
-SpectrumChannel::GetPropagationLossModel ()
+SpectrumChannel::GetPropagationLossModel()
 {
-  return m_propagationLoss;
+    return m_propagationLoss;
 }
 
-
-} // namespace
+} // namespace ns3

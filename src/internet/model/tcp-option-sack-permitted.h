@@ -28,7 +28,8 @@
 
 #include "ns3/tcp-option.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \brief Defines the TCP option of kind 4 (selective acknowledgment permitted
@@ -41,23 +42,23 @@ namespace ns3 {
 
 class TcpOptionSackPermitted : public TcpOption
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
 
-  TcpOptionSackPermitted ();
-  ~TcpOptionSackPermitted () override;
+    TcpOptionSackPermitted();
+    ~TcpOptionSackPermitted() override;
 
-  void Print (std::ostream &os) const override;
-  void Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
+    void Print(std::ostream& os) const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  uint8_t GetKind () const override;
-  uint32_t GetSerializedSize () const override;
+    uint8_t GetKind() const override;
+    uint32_t GetSerializedSize() const override;
 };
 
 } // namespace ns3

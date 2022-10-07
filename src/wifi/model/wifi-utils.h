@@ -21,11 +21,14 @@
 #ifndef WIFI_UTILS_H
 #define WIFI_UTILS_H
 
-#include <list>
-#include "ns3/ptr.h"
 #include "block-ack-type.h"
 
-namespace ns3 {
+#include "ns3/ptr.h"
+
+#include <list>
+
+namespace ns3
+{
 
 class WifiMacHeader;
 class Packet;
@@ -37,7 +40,7 @@ class Packet;
  *
  * \return the equivalent Watts for the given dBm
  */
-double DbmToW (double dbm);
+double DbmToW(double dbm);
 /**
  * Convert from dB to ratio.
  *
@@ -45,7 +48,7 @@ double DbmToW (double dbm);
  *
  * \return ratio in linear scale
  */
-double DbToRatio (double db);
+double DbToRatio(double db);
 /**
  * Convert from Watts to dBm.
  *
@@ -53,7 +56,7 @@ double DbToRatio (double db);
  *
  * \return the equivalent dBm for the given Watts
  */
-double WToDbm (double w);
+double WToDbm(double w);
 /**
  * Convert from ratio to dB.
  *
@@ -61,46 +64,46 @@ double WToDbm (double w);
  *
  * \return the value in dB
  */
-double RatioToDb (double ratio);
+double RatioToDb(double ratio);
 /**
  * Return the total Ack size (including FCS trailer).
  *
  * \return the total Ack size in bytes
  */
-uint32_t GetAckSize ();
+uint32_t GetAckSize();
 /**
  * Return the total BlockAck size (including FCS trailer).
  *
  * \param type the BlockAck type
  * \return the total BlockAck size in bytes
  */
-uint32_t GetBlockAckSize (BlockAckType type);
+uint32_t GetBlockAckSize(BlockAckType type);
 /**
  * Return the total BlockAckRequest size (including FCS trailer).
  *
  * \param type the BlockAckRequest type
  * \return the total BlockAckRequest size in bytes
  */
-uint32_t GetBlockAckRequestSize (BlockAckReqType type);
+uint32_t GetBlockAckRequestSize(BlockAckReqType type);
 /**
  * Return the total MU-BAR size (including FCS trailer).
  *
  * \param types the list of Block Ack Request types of the individual BARs
  * \return the total MU-BAR size in bytes
  */
-uint32_t GetMuBarSize (std::list<BlockAckReqType> types);
+uint32_t GetMuBarSize(std::list<BlockAckReqType> types);
 /**
  * Return the total RTS size (including FCS trailer).
  *
  * \return the total RTS size in bytes
  */
-uint32_t GetRtsSize ();
+uint32_t GetRtsSize();
 /**
  * Return the total CTS size (including FCS trailer).
  *
  * \return the total CTS size in bytes
  */
-uint32_t GetCtsSize ();
+uint32_t GetCtsSize();
 /**
  * \param seq MPDU sequence number
  * \param winstart sequence number window start
@@ -109,13 +112,13 @@ uint32_t GetCtsSize ();
  *
  * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
  */
-bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize);
+bool IsInWindow(uint16_t seq, uint16_t winstart, uint16_t winsize);
 /**
  * Add FCS trailer to a packet.
  *
  * \param packet the packet to add a trailer to
  */
-void AddWifiMacTrailer (Ptr<Packet> packet);
+void AddWifiMacTrailer(Ptr<Packet> packet);
 /**
  * Return the total size of the packet after WifiMacHeader and FCS trailer
  * have been added.
@@ -125,7 +128,7 @@ void AddWifiMacTrailer (Ptr<Packet> packet);
  * \param isAmpdu whether packet is part of an A-MPDU
  * \return the total packet size
  */
-uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu);
+uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpdu);
 
 /// Size of the space of sequence numbers
 static constexpr uint16_t SEQNO_SPACE_SIZE = 4096;

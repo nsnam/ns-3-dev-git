@@ -18,64 +18,64 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
-#include "ns3/log.h"
 #include "wifi-protection-manager.h"
+
 #include "wifi-mac.h"
 
+#include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("WifiProtectionManager");
+NS_LOG_COMPONENT_DEFINE("WifiProtectionManager");
 
-NS_OBJECT_ENSURE_REGISTERED (WifiProtectionManager);
+NS_OBJECT_ENSURE_REGISTERED(WifiProtectionManager);
 
 TypeId
-WifiProtectionManager::GetTypeId ()
+WifiProtectionManager::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiProtectionManager")
-    .SetParent<Object> ()
-    .SetGroupName ("Wifi")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::WifiProtectionManager").SetParent<Object>().SetGroupName("Wifi");
+    return tid;
 }
 
-WifiProtectionManager::WifiProtectionManager ()
-  : m_linkId (0)
+WifiProtectionManager::WifiProtectionManager()
+    : m_linkId(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-WifiProtectionManager::~WifiProtectionManager ()
+WifiProtectionManager::~WifiProtectionManager()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-}
-
-void
-WifiProtectionManager::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  m_mac = nullptr;
-  Object::DoDispose ();
+    NS_LOG_FUNCTION_NOARGS();
 }
 
 void
-WifiProtectionManager::SetWifiMac (Ptr<WifiMac> mac)
+WifiProtectionManager::DoDispose()
 {
-  NS_LOG_FUNCTION (this << mac);
-  m_mac = mac;
+    NS_LOG_FUNCTION(this);
+    m_mac = nullptr;
+    Object::DoDispose();
+}
+
+void
+WifiProtectionManager::SetWifiMac(Ptr<WifiMac> mac)
+{
+    NS_LOG_FUNCTION(this << mac);
+    m_mac = mac;
 }
 
 Ptr<WifiRemoteStationManager>
-WifiProtectionManager::GetWifiRemoteStationManager () const
+WifiProtectionManager::GetWifiRemoteStationManager() const
 {
-  return m_mac->GetWifiRemoteStationManager (m_linkId);
+    return m_mac->GetWifiRemoteStationManager(m_linkId);
 }
 
 void
-WifiProtectionManager::SetLinkId (uint8_t linkId)
+WifiProtectionManager::SetLinkId(uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << +linkId);
-  m_linkId = linkId;
+    NS_LOG_FUNCTION(this << +linkId);
+    m_linkId = linkId;
 }
 
-} //namespace ns3
+} // namespace ns3

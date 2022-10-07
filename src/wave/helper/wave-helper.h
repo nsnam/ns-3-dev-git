@@ -19,15 +19,17 @@
 #ifndef WAVE_HELPER_H
 #define WAVE_HELPER_H
 
-#include <string>
 #include "ns3/attribute.h"
-#include "ns3/object-factory.h"
-#include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
+#include "ns3/node-container.h"
+#include "ns3/object-factory.h"
 #include "ns3/trace-helper.h"
 #include "ns3/yans-wifi-helper.h"
 
-namespace ns3 {
+#include <string>
+
+namespace ns3
+{
 
 class WaveNetDevice;
 class Node;
@@ -39,46 +41,46 @@ class Node;
  */
 class YansWavePhyHelper : public YansWifiPhyHelper
 {
-public:
-  /**
-   * Create a phy helper in a default working state.
-   * \return A phy helper
-   */
-  static YansWavePhyHelper Default ();
+  public:
+    /**
+     * Create a phy helper in a default working state.
+     * \return A phy helper
+     */
+    static YansWavePhyHelper Default();
 
-private:
-  /**
-   * @brief Enable pcap output the indicated net device.
-   *
-   * NetDevice-specific implementation mechanism for hooking the trace and
-   * writing to the trace file.
-   *
-   * @param prefix Filename prefix to use for pcap files.
-   * @param nd Net device for which you want to enable tracing.
-   * @param promiscuous If true capture all possible packets available at the device.
-   * @param explicitFilename Treat the prefix as an explicit filename if true
-   */
-  void EnablePcapInternal (std::string prefix,
-                                   Ptr<NetDevice> nd,
-                                   bool promiscuous,
-                                   bool explicitFilename) override;
+  private:
+    /**
+     * @brief Enable pcap output the indicated net device.
+     *
+     * NetDevice-specific implementation mechanism for hooking the trace and
+     * writing to the trace file.
+     *
+     * @param prefix Filename prefix to use for pcap files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param promiscuous If true capture all possible packets available at the device.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
+     */
+    void EnablePcapInternal(std::string prefix,
+                            Ptr<NetDevice> nd,
+                            bool promiscuous,
+                            bool explicitFilename) override;
 
-  /**
-   * \brief Enable ascii trace output on the indicated net device.
-   * \internal
-   *
-   * NetDevice-specific implementation mechanism for hooking the trace and
-   * writing to the trace file.
-   *
-   * \param stream The output stream object to use when logging ascii traces.
-   * \param prefix Filename prefix to use for ascii trace files.
-   * \param nd Net device for which you want to enable tracing.
-   * \param explicitFilename Treat the prefix as an explicit filename if true
-   */
-  void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
-                                    std::string prefix,
-                                    Ptr<NetDevice> nd,
-                                    bool explicitFilename) override;
+    /**
+     * \brief Enable ascii trace output on the indicated net device.
+     * \internal
+     *
+     * NetDevice-specific implementation mechanism for hooking the trace and
+     * writing to the trace file.
+     *
+     * \param stream The output stream object to use when logging ascii traces.
+     * \param prefix Filename prefix to use for ascii trace files.
+     * \param nd Net device for which you want to enable tracing.
+     * \param explicitFilename Treat the prefix as an explicit filename if true
+     */
+    void EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
+                             std::string prefix,
+                             Ptr<NetDevice> nd,
+                             bool explicitFilename) override;
 };
 
 /**
@@ -108,124 +110,129 @@ private:
  * helper.helper.CreateMacForChannel (ChannelManager::GetWaveChannels ());
  * helper.CreatePhys (2);        // or other number which should be less than 7
  * helper.SetChannelScheduler ("ns3::AnotherScheduler");
- * helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager");  // or other  rate control algorithms
+ * helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager");  // or other  rate control
+ * algorithms
  */
 class WaveHelper
 {
-public:
-  WaveHelper ();
-  virtual ~WaveHelper ();
+  public:
+    WaveHelper();
+    virtual ~WaveHelper();
 
-  /**
-   * \returns a new WaveHelper in a default state
-   *
-   * The default state is defined as being seven OcbWifiMac MAC entities
-   * with an ConstantRate rate control algorithm, one WifiPhy entity and
-   * a default multiple-channel scheduler DefaultChannelScheduler for
-   * assigning channel access with these created entities.
-   */
-  static WaveHelper Default ();
+    /**
+     * \returns a new WaveHelper in a default state
+     *
+     * The default state is defined as being seven OcbWifiMac MAC entities
+     * with an ConstantRate rate control algorithm, one WifiPhy entity and
+     * a default multiple-channel scheduler DefaultChannelScheduler for
+     * assigning channel access with these created entities.
+     */
+    static WaveHelper Default();
 
-  /**
-   * \param channelNumbers the MAC entities will be created to support these channels for multiple channel operation.
-   */
-  void CreateMacForChannel (std::vector<uint32_t>  channelNumbers);
-  /**
-   * \param phys the number of PHY entity which will be created for multiple channel operation.
-   */
-  void CreatePhys (uint32_t phys);
+    /**
+     * \param channelNumbers the MAC entities will be created to support these channels for multiple
+     * channel operation.
+     */
+    void CreateMacForChannel(std::vector<uint32_t> channelNumbers);
+    /**
+     * \param phys the number of PHY entity which will be created for multiple channel operation.
+     */
+    void CreatePhys(uint32_t phys);
 
-  /**
-   * \tparam Ts \deduced Argument types
-   * \param type the type of ns3::WifiRemoteStationManager to create.
-   * \param [in] args Name and AttributeValue pairs to set.
-   *
-   * All the attributes specified in this method should exist
-   * in the requested station manager.
-   */
-  template <typename... Ts>
-  void SetRemoteStationManager (std::string type, Ts&&... args);
-  /**
-   * \tparam Ts \deduced Argument types
-   * \param type the type of ns3::ChannelScheduler to create.
-   * \param [in] args Name and AttributeValue pairs to set.
-   *
-   * All the attributes specified in this method should exist
-   * in the requested channel scheduler.
-   */
-  template <typename... Ts>
-  void SetChannelScheduler (std::string type, Ts&&... args);
+    /**
+     * \tparam Ts \deduced Argument types
+     * \param type the type of ns3::WifiRemoteStationManager to create.
+     * \param [in] args Name and AttributeValue pairs to set.
+     *
+     * All the attributes specified in this method should exist
+     * in the requested station manager.
+     */
+    template <typename... Ts>
+    void SetRemoteStationManager(std::string type, Ts&&... args);
+    /**
+     * \tparam Ts \deduced Argument types
+     * \param type the type of ns3::ChannelScheduler to create.
+     * \param [in] args Name and AttributeValue pairs to set.
+     *
+     * All the attributes specified in this method should exist
+     * in the requested channel scheduler.
+     */
+    template <typename... Ts>
+    void SetChannelScheduler(std::string type, Ts&&... args);
 
-  /**
-   * \param phy the PHY helper to create PHY objects
-   * \param mac the MAC helper to create MAC objects
-   * \param c the set of nodes on which a wifi device must be created
-   * \returns a device container which contains all the devices created by this method.
-   */
-  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
-                                      const WifiMacHelper &mac, NodeContainer c) const;
-  /**
-   * \param phy the PHY helper to create PHY objects
-   * \param mac the MAC helper to create MAC objects
-   * \param node the node on which a wifi device must be created
-   * \returns a device container which contains all the devices created by this method.
-   */
-  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
-                                      const WifiMacHelper &mac,   Ptr<Node> node) const;
-  /**
-   * \param phy the PHY helper to create PHY objects
-   * \param mac the MAC helper to create MAC objects
-   * \param nodeName the name of node on which a wifi device must be created
-   * \returns a device container which contains all the devices created by this method.
-   */
-  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
-                                      const WifiMacHelper &mac, std::string nodeName) const;
+    /**
+     * \param phy the PHY helper to create PHY objects
+     * \param mac the MAC helper to create MAC objects
+     * \param c the set of nodes on which a wifi device must be created
+     * \returns a device container which contains all the devices created by this method.
+     */
+    virtual NetDeviceContainer Install(const WifiPhyHelper& phy,
+                                       const WifiMacHelper& mac,
+                                       NodeContainer c) const;
+    /**
+     * \param phy the PHY helper to create PHY objects
+     * \param mac the MAC helper to create MAC objects
+     * \param node the node on which a wifi device must be created
+     * \returns a device container which contains all the devices created by this method.
+     */
+    virtual NetDeviceContainer Install(const WifiPhyHelper& phy,
+                                       const WifiMacHelper& mac,
+                                       Ptr<Node> node) const;
+    /**
+     * \param phy the PHY helper to create PHY objects
+     * \param mac the MAC helper to create MAC objects
+     * \param nodeName the name of node on which a wifi device must be created
+     * \returns a device container which contains all the devices created by this method.
+     */
+    virtual NetDeviceContainer Install(const WifiPhyHelper& phy,
+                                       const WifiMacHelper& mac,
+                                       std::string nodeName) const;
 
-  /**
-   * Helper to enable all WaveNetDevice log components with one statement
-   */
-  static void EnableLogComponents ();
+    /**
+     * Helper to enable all WaveNetDevice log components with one statement
+     */
+    static void EnableLogComponents();
 
-  /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by the Phy and Mac aspects of the WAVE models.  Each device in
-  * container c has fixed stream numbers assigned to its random variables.
-  * The Wifi channel (e.g. propagation loss model) is excluded.
-  * Return the number of streams (possibly zero) that
-  * have been assigned. The Install() method should have previously been
-  * called by the user.
-  *
-  * \param c NetDeviceContainer of the set of net devices for which the
-  *          WaveNetDevice should be modified to use fixed streams
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this helper
-  */
-  int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
+    /**
+     * Assign a fixed random variable stream number to the random variables
+     * used by the Phy and Mac aspects of the WAVE models.  Each device in
+     * container c has fixed stream numbers assigned to its random variables.
+     * The Wifi channel (e.g. propagation loss model) is excluded.
+     * Return the number of streams (possibly zero) that
+     * have been assigned. The Install() method should have previously been
+     * called by the user.
+     *
+     * \param c NetDeviceContainer of the set of net devices for which the
+     *          WaveNetDevice should be modified to use fixed streams
+     * \param stream first stream index to use
+     * \return the number of stream indices assigned by this helper
+     */
+    int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
-protected:
-  ObjectFactory m_stationManager; ///< station manager
-  ObjectFactory m_channelScheduler; ///< channel scheduler
-  std::vector<uint32_t> m_macsForChannelNumber; ///< MACs for channel number
-  uint32_t m_physNumber; ///< Phy number
+  protected:
+    ObjectFactory m_stationManager;               ///< station manager
+    ObjectFactory m_channelScheduler;             ///< channel scheduler
+    std::vector<uint32_t> m_macsForChannelNumber; ///< MACs for channel number
+    uint32_t m_physNumber;                        ///< Phy number
 };
-
 
 /***************************************************************
  *  Implementation of the templates declared above.
  ***************************************************************/
 
 template <typename... Ts>
-void WaveHelper::SetRemoteStationManager (std::string type, Ts&&... args)
+void
+WaveHelper::SetRemoteStationManager(std::string type, Ts&&... args)
 {
-  m_stationManager = ObjectFactory (type, std::forward<Ts> (args)...);
+    m_stationManager = ObjectFactory(type, std::forward<Ts>(args)...);
 }
 
 template <typename... Ts>
-void WaveHelper::SetChannelScheduler (std::string type, Ts&&... args)
+void
+WaveHelper::SetChannelScheduler(std::string type, Ts&&... args)
 {
-  m_channelScheduler = ObjectFactory (type, std::forward<Ts> (args)...);
+    m_channelScheduler = ObjectFactory(type, std::forward<Ts>(args)...);
 }
 
-
-}
+} // namespace ns3
 #endif /* WAVE_HELPER_H */

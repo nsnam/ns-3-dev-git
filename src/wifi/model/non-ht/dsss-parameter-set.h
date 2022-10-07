@@ -23,7 +23,8 @@
 
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \brief The DSSS Parameter Set
@@ -33,28 +34,27 @@ namespace ns3 {
  */
 class DsssParameterSet : public WifiInformationElement
 {
-public:
-  DsssParameterSet ();
+  public:
+    DsssParameterSet();
 
-  // Implementations of pure virtual methods of WifiInformationElement
-  WifiInformationElementId ElementId () const override;
+    // Implementations of pure virtual methods of WifiInformationElement
+    WifiInformationElementId ElementId() const override;
 
-  /**
-   * Set the Current Channel field in the DsssParameterSet information element.
-   *
-   * \param currentChannel the CurrentChannel field in the DsssParameterSet information element
-   */
-  void SetCurrentChannel (uint8_t currentChannel);
+    /**
+     * Set the Current Channel field in the DsssParameterSet information element.
+     *
+     * \param currentChannel the CurrentChannel field in the DsssParameterSet information element
+     */
+    void SetCurrentChannel(uint8_t currentChannel);
 
+  private:
+    uint16_t GetInformationFieldSize() const override;
+    void SerializeInformationField(Buffer::Iterator start) const override;
+    uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
 
-private:
-  uint16_t GetInformationFieldSize () const override;
-  void SerializeInformationField (Buffer::Iterator start) const override;
-  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
-
-  uint8_t m_currentChannel; ///< current channel number
+    uint8_t m_currentChannel; ///< current channel number
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* DSSS_PARAMETER_SET_H */

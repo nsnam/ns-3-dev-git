@@ -19,174 +19,191 @@
  *          Mohamed Amine Ismail <amine.ismail@sophia.inria.fr>
  */
 
-#include <stdint.h>
-#include "ns3/node.h"
-#include "ns3/simulator.h"
-#include "ns3/packet.h"
-#include "service-flow.h"
 #include "service-flow-manager.h"
-#include "ns3/log.h"
-#include "wimax-net-device.h"
+
 #include "bs-net-device.h"
+#include "bs-uplink-scheduler.h"
+#include "connection-manager.h"
+#include "service-flow-record.h"
+#include "service-flow.h"
+#include "ss-manager.h"
 #include "ss-net-device.h"
 #include "ss-record.h"
-#include "ns3/pointer.h"
-#include "ns3/enum.h"
-#include "wimax-connection.h"
-#include "ss-manager.h"
-#include "connection-manager.h"
-#include "bs-uplink-scheduler.h"
 #include "ss-scheduler.h"
+#include "wimax-connection.h"
+#include "wimax-net-device.h"
+
 #include "ns3/buffer.h"
-#include "service-flow-record.h"
+#include "ns3/enum.h"
+#include "ns3/log.h"
+#include "ns3/node.h"
+#include "ns3/packet.h"
+#include "ns3/pointer.h"
+#include "ns3/simulator.h"
 
-namespace ns3 {
+#include <stdint.h>
 
-NS_LOG_COMPONENT_DEFINE ("ServiceFlowManager");
-
-NS_OBJECT_ENSURE_REGISTERED (ServiceFlowManager);
-
-TypeId ServiceFlowManager::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::ServiceFlowManager")
-    .SetParent<Object> ()
-    .SetGroupName("Wimax");
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("ServiceFlowManager");
+
+NS_OBJECT_ENSURE_REGISTERED(ServiceFlowManager);
+
+TypeId
+ServiceFlowManager::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::ServiceFlowManager").SetParent<Object>().SetGroupName("Wimax");
+    return tid;
 }
 
-ServiceFlowManager::ServiceFlowManager ()
+ServiceFlowManager::ServiceFlowManager()
 {
-  m_serviceFlows = new std::vector<ServiceFlow*>;
+    m_serviceFlows = new std::vector<ServiceFlow*>;
 }
 
-ServiceFlowManager::~ServiceFlowManager ()
+ServiceFlowManager::~ServiceFlowManager()
 {
 }
 
 void
-ServiceFlowManager::DoDispose ()
+ServiceFlowManager::DoDispose()
 {
-  for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
+    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
+         iter != m_serviceFlows->end();
+         ++iter)
     {
-      delete (*iter);
+        delete (*iter);
     }
-  m_serviceFlows->clear ();
-  delete m_serviceFlows;
+    m_serviceFlows->clear();
+    delete m_serviceFlows;
 }
 
 void
-ServiceFlowManager::AddServiceFlow (ServiceFlow *serviceFlow)
+ServiceFlowManager::AddServiceFlow(ServiceFlow* serviceFlow)
 {
-  m_serviceFlows->push_back (serviceFlow);
+    m_serviceFlows->push_back(serviceFlow);
 }
 
-ServiceFlow* ServiceFlowManager::DoClassify (Ipv4Address srcAddress,
-                                             Ipv4Address dstAddress,
-                                             uint16_t srcPort,
-                                             uint16_t dstPort,
-                                             uint8_t proto,
-                                             ServiceFlow::Direction dir) const
+ServiceFlow*
+ServiceFlowManager::DoClassify(Ipv4Address srcAddress,
+                               Ipv4Address dstAddress,
+                               uint16_t srcPort,
+                               uint16_t dstPort,
+                               uint8_t proto,
+                               ServiceFlow::Direction dir) const
 {
-  for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
+    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
+         iter != m_serviceFlows->end();
+         ++iter)
     {
-      if ((*iter)->GetDirection () == dir)
+        if ((*iter)->GetDirection() == dir)
         {
-          if ((*iter)->CheckClassifierMatch (srcAddress, dstAddress, srcPort, dstPort, proto))
+            if ((*iter)->CheckClassifierMatch(srcAddress, dstAddress, srcPort, dstPort, proto))
             {
-              return (*iter);
+                return (*iter);
             }
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 ServiceFlow*
-ServiceFlowManager::GetServiceFlow (uint32_t sfid) const
+ServiceFlowManager::GetServiceFlow(uint32_t sfid) const
 {
-  for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
+    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
+         iter != m_serviceFlows->end();
+         ++iter)
     {
-      if ((*iter)->GetSfid () == sfid)
+        if ((*iter)->GetSfid() == sfid)
         {
-          return (*iter);
+            return (*iter);
         }
     }
 
-  NS_LOG_DEBUG ("GetServiceFlow: service flow not found!");
-  return nullptr;
+    NS_LOG_DEBUG("GetServiceFlow: service flow not found!");
+    return nullptr;
 }
 
 ServiceFlow*
-ServiceFlowManager::GetServiceFlow (Cid cid) const
+ServiceFlowManager::GetServiceFlow(Cid cid) const
 {
-  for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
+    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
+         iter != m_serviceFlows->end();
+         ++iter)
     {
-      if ((*iter)->GetCid () == cid.GetIdentifier ())
+        if ((*iter)->GetCid() == cid.GetIdentifier())
         {
-          return (*iter);
+            return (*iter);
         }
     }
 
-  NS_LOG_DEBUG ("GetServiceFlow: service flow not found!");
-  return nullptr;
+    NS_LOG_DEBUG("GetServiceFlow: service flow not found!");
+    return nullptr;
 }
 
 std::vector<ServiceFlow*>
-ServiceFlowManager::GetServiceFlows (enum ServiceFlow::SchedulingType schedulingType) const
+ServiceFlowManager::GetServiceFlows(enum ServiceFlow::SchedulingType schedulingType) const
 {
-  std::vector<ServiceFlow*> tmpServiceFlows;
-  for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
+    std::vector<ServiceFlow*> tmpServiceFlows;
+    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
+         iter != m_serviceFlows->end();
+         ++iter)
     {
-      if (((*iter)->GetSchedulingType () == schedulingType) || (schedulingType == ServiceFlow::SF_TYPE_ALL))
+        if (((*iter)->GetSchedulingType() == schedulingType) ||
+            (schedulingType == ServiceFlow::SF_TYPE_ALL))
         {
-          tmpServiceFlows.push_back ((*iter));
+            tmpServiceFlows.push_back((*iter));
         }
     }
-  return tmpServiceFlows;
+    return tmpServiceFlows;
 }
 
 bool
-ServiceFlowManager::AreServiceFlowsAllocated ()
+ServiceFlowManager::AreServiceFlowsAllocated()
 {
-  return AreServiceFlowsAllocated (m_serviceFlows);
+    return AreServiceFlowsAllocated(m_serviceFlows);
 }
 
 bool
-ServiceFlowManager::AreServiceFlowsAllocated (std::vector<ServiceFlow*>* serviceFlowVector)
+ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ServiceFlow*>* serviceFlowVector)
 {
-  return AreServiceFlowsAllocated (*serviceFlowVector);
+    return AreServiceFlowsAllocated(*serviceFlowVector);
 }
 
 bool
-ServiceFlowManager::AreServiceFlowsAllocated (std::vector<ServiceFlow*> serviceFlowVector)
+ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ServiceFlow*> serviceFlowVector)
 {
-  for (std::vector<ServiceFlow*>::const_iterator iter = serviceFlowVector.begin (); iter != serviceFlowVector.end (); ++iter)
+    for (std::vector<ServiceFlow*>::const_iterator iter = serviceFlowVector.begin();
+         iter != serviceFlowVector.end();
+         ++iter)
     {
-      if (!(*iter)->GetIsEnabled ())
+        if (!(*iter)->GetIsEnabled())
         {
-          return false;
+            return false;
         }
     }
-  return true;
+    return true;
 }
 
 ServiceFlow*
-ServiceFlowManager::GetNextServiceFlowToAllocate ()
+ServiceFlowManager::GetNextServiceFlowToAllocate()
 {
-  std::vector<ServiceFlow*>::iterator iter;
-  for (iter = m_serviceFlows->begin (); iter != m_serviceFlows->end (); ++iter)
+    std::vector<ServiceFlow*>::iterator iter;
+    for (iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
-      if (!(*iter)->GetIsEnabled ())
+        if (!(*iter)->GetIsEnabled())
         {
-          return (*iter);
+            return (*iter);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 uint32_t
-ServiceFlowManager::GetNrServiceFlows () const
+ServiceFlowManager::GetNrServiceFlows() const
 {
-  return m_serviceFlows->size ();
+    return m_serviceFlows->size();
 }
 
 } // namespace ns3

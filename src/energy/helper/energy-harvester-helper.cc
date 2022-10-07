@@ -20,60 +20,63 @@
  */
 
 #include "energy-harvester-helper.h"
+
 #include "ns3/config.h"
 #include "ns3/names.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /*
  * EnergyHarvesterHelper
  */
-EnergyHarvesterHelper::~EnergyHarvesterHelper ()
+EnergyHarvesterHelper::~EnergyHarvesterHelper()
 {
 }
 
 EnergyHarvesterContainer
-EnergyHarvesterHelper::Install (Ptr<EnergySource> source) const
+EnergyHarvesterHelper::Install(Ptr<EnergySource> source) const
 {
-  return Install (EnergySourceContainer (source));
+    return Install(EnergySourceContainer(source));
 }
 
 EnergyHarvesterContainer
-EnergyHarvesterHelper::Install (EnergySourceContainer sourceContainer) const
+EnergyHarvesterHelper::Install(EnergySourceContainer sourceContainer) const
 {
-  EnergyHarvesterContainer container;
-  for (EnergySourceContainer::Iterator i = sourceContainer.Begin (); i != sourceContainer.End (); ++i)
-  {
-    Ptr<EnergyHarvester> harvester = DoInstall (*i);
-    container.Add (harvester);
-    Ptr<Node> node = (*i)->GetNode ();
-    /*
-     * Check if EnergyHarvesterContainer is already aggregated to target node. If
-     * not, create a new EnergyHarvesterContainer and aggregate it to the node.
-     */
-    Ptr<EnergyHarvesterContainer> EnergyHarvesterContainerOnNode =
-    node->GetObject<EnergyHarvesterContainer> ();
-    if (!EnergyHarvesterContainerOnNode)
+    EnergyHarvesterContainer container;
+    for (EnergySourceContainer::Iterator i = sourceContainer.Begin(); i != sourceContainer.End();
+         ++i)
     {
-      ObjectFactory fac;
-      fac.SetTypeId ("ns3::EnergyHarvesterContainer");
-      EnergyHarvesterContainerOnNode = fac.Create<EnergyHarvesterContainer> ();
-      EnergyHarvesterContainerOnNode->Add (harvester);
-      node->AggregateObject (EnergyHarvesterContainerOnNode);
+        Ptr<EnergyHarvester> harvester = DoInstall(*i);
+        container.Add(harvester);
+        Ptr<Node> node = (*i)->GetNode();
+        /*
+         * Check if EnergyHarvesterContainer is already aggregated to target node. If
+         * not, create a new EnergyHarvesterContainer and aggregate it to the node.
+         */
+        Ptr<EnergyHarvesterContainer> EnergyHarvesterContainerOnNode =
+            node->GetObject<EnergyHarvesterContainer>();
+        if (!EnergyHarvesterContainerOnNode)
+        {
+            ObjectFactory fac;
+            fac.SetTypeId("ns3::EnergyHarvesterContainer");
+            EnergyHarvesterContainerOnNode = fac.Create<EnergyHarvesterContainer>();
+            EnergyHarvesterContainerOnNode->Add(harvester);
+            node->AggregateObject(EnergyHarvesterContainerOnNode);
+        }
+        else
+        {
+            EnergyHarvesterContainerOnNode->Add(harvester); // append new EnergyHarvester
+        }
     }
-    else
-    {
-      EnergyHarvesterContainerOnNode->Add (harvester);  // append new EnergyHarvester
-    }
-  }
-  return container;
+    return container;
 }
 
 EnergyHarvesterContainer
-EnergyHarvesterHelper::Install (std::string sourceName) const
+EnergyHarvesterHelper::Install(std::string sourceName) const
 {
-  Ptr<EnergySource> source  = Names::Find<EnergySource> (sourceName);
-  return Install (source);
+    Ptr<EnergySource> source = Names::Find<EnergySource>(sourceName);
+    return Install(source);
 }
 
 } // namespace ns3

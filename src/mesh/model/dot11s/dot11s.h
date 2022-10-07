@@ -45,18 +45,20 @@
  * ns3::MeshWifiInterfaceMacPlugin
  * \subsection PMP Peer management protocol
  * Peer management protocol consists of three main parts:
- *      - Protocol itself ns3::dot11s::PeerManagementProtocol, which keeps all active peer links on interfaces,
- *      handles all changes of their states and notifies a routing protocol about link failures.
- *      - MAC plug-in ns3::dot11s::PeerManagementProtocolMac which drops packet, if there is no peer link,
- *      and peek all needed information from management frames and information elements from beacons.
+ *      - Protocol itself ns3::dot11s::PeerManagementProtocol, which keeps all active peer links on
+ * interfaces, handles all changes of their states and notifies a routing protocol about link
+ * failures.
+ *      - MAC plug-in ns3::dot11s::PeerManagementProtocolMac which drops packet, if there is no peer
+ * link, and peek all needed information from management frames and information elements from
+ * beacons.
  *      - Peer link ns3::dot11s::PeerLink which keeps finite state machine of each peer link, keeps
  *      beacon loss counter and counter of successive transmission failures.
  *
- * Procedure of closing peer link is not described detailed in 802.11s draft standard, so in our model
- * the link may be closed by:
+ * Procedure of closing peer link is not described detailed in 802.11s draft standard, so in our
+ * model the link may be closed by:
  *      - beacon loss (see an appropriate attribute of ns3::dot11s::PeerLink class)
- *      - transmission failure -- when a predefined number of successive packets have failed to transmit,
- *      the link will be closed.
+ *      - transmission failure -- when a predefined number of successive packets have failed to
+ * transmit, the link will be closed.
  *
  * Also Peer management protocol is responsible for beacon collision avoidance, because it keeps
  * beacon timing elements from all neighbours.
@@ -67,5 +69,6 @@
  * \subsection HWMP Hybrid Wireless Mesh Protocol
  * HWMP is implemented in both modes -- reactive and proactive. Also we have implemented an ability
  * to transmit broadcast data and management frames as unicasts (see appropriate attributes).
- * This feature turns off at a station when the number of neighbours of the station is more than a threshold.
+ * This feature turns off at a station when the number of neighbours of the station is more than a
+ * threshold.
  */

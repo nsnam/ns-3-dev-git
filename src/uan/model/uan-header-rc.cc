@@ -18,643 +18,638 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-
 #include "uan-header-rc.h"
+
 #include "ns3/mac8-address.h"
 
 #include <set>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcData);
-NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcRts);
-NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcCtsGlobal);
-NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcCts);
-NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcAck);
+NS_OBJECT_ENSURE_REGISTERED(UanHeaderRcData);
+NS_OBJECT_ENSURE_REGISTERED(UanHeaderRcRts);
+NS_OBJECT_ENSURE_REGISTERED(UanHeaderRcCtsGlobal);
+NS_OBJECT_ENSURE_REGISTERED(UanHeaderRcCts);
+NS_OBJECT_ENSURE_REGISTERED(UanHeaderRcAck);
 
-UanHeaderRcData::UanHeaderRcData ()
-  : Header (),
-    m_frameNo (0),
-    m_propDelay (Seconds (0))
+UanHeaderRcData::UanHeaderRcData()
+    : Header(),
+      m_frameNo(0),
+      m_propDelay(Seconds(0))
 {
 }
 
-UanHeaderRcData::UanHeaderRcData (uint8_t frameNo, Time propDelay)
-  : Header (),
-    m_frameNo (frameNo),
-    m_propDelay (propDelay)
+UanHeaderRcData::UanHeaderRcData(uint8_t frameNo, Time propDelay)
+    : Header(),
+      m_frameNo(frameNo),
+      m_propDelay(propDelay)
 {
-
 }
 
-UanHeaderRcData::~UanHeaderRcData ()
+UanHeaderRcData::~UanHeaderRcData()
 {
 }
 
 TypeId
-UanHeaderRcData::GetTypeId ()
+UanHeaderRcData::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanHeaderRcData")
-    .SetParent<Header> ()
-    .SetGroupName ("Uan")
-    .AddConstructor<UanHeaderRcData> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::UanHeaderRcData")
+                            .SetParent<Header>()
+                            .SetGroupName("Uan")
+                            .AddConstructor<UanHeaderRcData>();
+    return tid;
 }
 
 void
-UanHeaderRcData::SetFrameNo (uint8_t no)
+UanHeaderRcData::SetFrameNo(uint8_t no)
 {
-  m_frameNo = no;
+    m_frameNo = no;
 }
 
 void
-UanHeaderRcData::SetPropDelay (Time propDelay)
+UanHeaderRcData::SetPropDelay(Time propDelay)
 {
-  m_propDelay = propDelay;
+    m_propDelay = propDelay;
 }
 
 uint8_t
-UanHeaderRcData::GetFrameNo () const
+UanHeaderRcData::GetFrameNo() const
 {
-  return m_frameNo;
+    return m_frameNo;
 }
 
 Time
-UanHeaderRcData::GetPropDelay () const
+UanHeaderRcData::GetPropDelay() const
 {
-  return m_propDelay;
+    return m_propDelay;
 }
 
 uint32_t
-UanHeaderRcData::GetSerializedSize () const
+UanHeaderRcData::GetSerializedSize() const
 {
-  return 1 + 2;
+    return 1 + 2;
 }
 
 void
-UanHeaderRcData::Serialize (Buffer::Iterator start) const
+UanHeaderRcData::Serialize(Buffer::Iterator start) const
 {
-  start.WriteU8 (m_frameNo);
-  start.WriteU16 ( (uint16_t) m_propDelay.RoundTo (Time::MS).GetMilliSeconds ());
+    start.WriteU8(m_frameNo);
+    start.WriteU16((uint16_t)m_propDelay.RoundTo(Time::MS).GetMilliSeconds());
 }
+
 uint32_t
-UanHeaderRcData::Deserialize (Buffer::Iterator start)
+UanHeaderRcData::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator rbuf = start;
+    Buffer::Iterator rbuf = start;
 
-  m_frameNo = start.ReadU8 ();
-  m_propDelay = Seconds ( ((double) start.ReadU16 ()) / 1000.0 );
+    m_frameNo = start.ReadU8();
+    m_propDelay = Seconds(((double)start.ReadU16()) / 1000.0);
 
-  return rbuf.GetDistanceFrom (start);
+    return rbuf.GetDistanceFrom(start);
 }
 
 void
-UanHeaderRcData::Print (std::ostream &os, Time::Unit unit) const
+UanHeaderRcData::Print(std::ostream& os, Time::Unit unit) const
 {
-  os << "Frame No=" << (uint32_t) m_frameNo << " Prop Delay=" << m_propDelay.As (unit);
+    os << "Frame No=" << (uint32_t)m_frameNo << " Prop Delay=" << m_propDelay.As(unit);
 }
 
 void
-UanHeaderRcData::Print (std::ostream &os) const
+UanHeaderRcData::Print(std::ostream& os) const
 {
-  Print (os, Time::S);
+    Print(os, Time::S);
 }
 
 TypeId
-UanHeaderRcData::GetInstanceTypeId () const
+UanHeaderRcData::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
-
-UanHeaderRcRts::UanHeaderRcRts ()
-  : Header (),
-    m_frameNo (0),
-    m_noFrames (0),
-    m_length (0),
-    m_timeStamp (Seconds (0)),
-    m_retryNo (0)
+UanHeaderRcRts::UanHeaderRcRts()
+    : Header(),
+      m_frameNo(0),
+      m_noFrames(0),
+      m_length(0),
+      m_timeStamp(Seconds(0)),
+      m_retryNo(0)
 {
-
 }
 
-UanHeaderRcRts::UanHeaderRcRts (uint8_t frameNo, uint8_t retryNo, uint8_t noFrames, uint16_t length, Time timeStamp)
-  : Header (),
-    m_frameNo (frameNo),
-    m_noFrames (noFrames),
-    m_length (length),
-    m_timeStamp (timeStamp),
-    m_retryNo (retryNo)
+UanHeaderRcRts::UanHeaderRcRts(uint8_t frameNo,
+                               uint8_t retryNo,
+                               uint8_t noFrames,
+                               uint16_t length,
+                               Time timeStamp)
+    : Header(),
+      m_frameNo(frameNo),
+      m_noFrames(noFrames),
+      m_length(length),
+      m_timeStamp(timeStamp),
+      m_retryNo(retryNo)
 {
-
 }
 
-UanHeaderRcRts::~UanHeaderRcRts ()
+UanHeaderRcRts::~UanHeaderRcRts()
 {
-
 }
 
 TypeId
-UanHeaderRcRts::GetTypeId ()
+UanHeaderRcRts::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanHeaderRcRts")
-    .SetParent<Header> ()
-    .SetGroupName ("Uan")
-    .AddConstructor<UanHeaderRcRts> ()
-  ;
-  return tid;
-
+    static TypeId tid = TypeId("ns3::UanHeaderRcRts")
+                            .SetParent<Header>()
+                            .SetGroupName("Uan")
+                            .AddConstructor<UanHeaderRcRts>();
+    return tid;
 }
 
 void
-UanHeaderRcRts::SetFrameNo (uint8_t no)
+UanHeaderRcRts::SetFrameNo(uint8_t no)
 {
-  m_frameNo = no;
+    m_frameNo = no;
 }
 
 void
-UanHeaderRcRts::SetNoFrames (uint8_t no)
+UanHeaderRcRts::SetNoFrames(uint8_t no)
 {
-  m_noFrames = no;
+    m_noFrames = no;
 }
 
 void
-UanHeaderRcRts::SetLength (uint16_t length)
+UanHeaderRcRts::SetLength(uint16_t length)
 {
-  m_length = length;
-}
-void
-UanHeaderRcRts::SetTimeStamp (Time timeStamp)
-{
-  m_timeStamp = timeStamp;
+    m_length = length;
 }
 
 void
-UanHeaderRcRts::SetRetryNo (uint8_t no)
+UanHeaderRcRts::SetTimeStamp(Time timeStamp)
 {
-  m_retryNo = no;
+    m_timeStamp = timeStamp;
 }
+
+void
+UanHeaderRcRts::SetRetryNo(uint8_t no)
+{
+    m_retryNo = no;
+}
+
 uint8_t
-UanHeaderRcRts::GetNoFrames () const
+UanHeaderRcRts::GetNoFrames() const
 {
-  return m_noFrames;
+    return m_noFrames;
 }
 
 uint16_t
-UanHeaderRcRts::GetLength () const
+UanHeaderRcRts::GetLength() const
 {
-  return m_length;
+    return m_length;
 }
 
 Time
-UanHeaderRcRts::GetTimeStamp () const
+UanHeaderRcRts::GetTimeStamp() const
 {
-  return m_timeStamp;
+    return m_timeStamp;
 }
 
 uint8_t
-UanHeaderRcRts::GetRetryNo () const
+UanHeaderRcRts::GetRetryNo() const
 {
-  return m_retryNo;
+    return m_retryNo;
 }
 
 uint8_t
-UanHeaderRcRts::GetFrameNo () const
+UanHeaderRcRts::GetFrameNo() const
 {
-  return m_frameNo;
+    return m_frameNo;
 }
 
 uint32_t
-UanHeaderRcRts::GetSerializedSize () const
+UanHeaderRcRts::GetSerializedSize() const
 {
-  return 1 + 1 + 1 + 4 + 2;
+    return 1 + 1 + 1 + 4 + 2;
 }
 
 void
-UanHeaderRcRts::Serialize (Buffer::Iterator start) const
+UanHeaderRcRts::Serialize(Buffer::Iterator start) const
 {
-  start.WriteU8 (m_frameNo);
-  start.WriteU8 (m_retryNo);
-  start.WriteU8 (m_noFrames);
-  start.WriteU16 (m_length);
-  start.WriteU32 ((uint32_t) (m_timeStamp.RoundTo (Time::MS).GetMilliSeconds ()));
+    start.WriteU8(m_frameNo);
+    start.WriteU8(m_retryNo);
+    start.WriteU8(m_noFrames);
+    start.WriteU16(m_length);
+    start.WriteU32((uint32_t)(m_timeStamp.RoundTo(Time::MS).GetMilliSeconds()));
 }
 
 uint32_t
-UanHeaderRcRts::Deserialize (Buffer::Iterator start)
+UanHeaderRcRts::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator rbuf = start;
-  m_frameNo = rbuf.ReadU8 ();
-  m_retryNo = rbuf.ReadU8 ();
-  m_noFrames = rbuf.ReadU8 ();
-  m_length = rbuf.ReadU16 ();
-  m_timeStamp = Seconds ( ((double) rbuf.ReadU32 ()) / 1000.0 );
-  // m_timeStamp = Seconds ( rbuf.ReadU16 ()/1000 );
-  return rbuf.GetDistanceFrom (start);
+    Buffer::Iterator rbuf = start;
+    m_frameNo = rbuf.ReadU8();
+    m_retryNo = rbuf.ReadU8();
+    m_noFrames = rbuf.ReadU8();
+    m_length = rbuf.ReadU16();
+    m_timeStamp = Seconds(((double)rbuf.ReadU32()) / 1000.0);
+    // m_timeStamp = Seconds ( rbuf.ReadU16 ()/1000 );
+    return rbuf.GetDistanceFrom(start);
 }
 
 void
-UanHeaderRcRts::Print (std::ostream &os, Time::Unit unit) const
+UanHeaderRcRts::Print(std::ostream& os, Time::Unit unit) const
 {
-  os << "Frame #=" << (uint32_t) m_frameNo << " Retry #=" << (uint32_t) m_retryNo << " Num Frames=" << (uint32_t) m_noFrames << "Length=" << m_length << " Time Stamp=" << m_timeStamp.As (unit);
+    os << "Frame #=" << (uint32_t)m_frameNo << " Retry #=" << (uint32_t)m_retryNo
+       << " Num Frames=" << (uint32_t)m_noFrames << "Length=" << m_length
+       << " Time Stamp=" << m_timeStamp.As(unit);
 }
 
 void
-UanHeaderRcRts::Print (std::ostream &os) const
+UanHeaderRcRts::Print(std::ostream& os) const
 {
-  Print(os, Time::S);
+    Print(os, Time::S);
 }
 
 TypeId
-UanHeaderRcRts::GetInstanceTypeId () const
+UanHeaderRcRts::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
-
-
-
-UanHeaderRcCtsGlobal::UanHeaderRcCtsGlobal ()
-  : Header (),
-    m_retryRate (0),
-    m_rateNum (0)
+UanHeaderRcCtsGlobal::UanHeaderRcCtsGlobal()
+    : Header(),
+      m_retryRate(0),
+      m_rateNum(0)
 {
-
 }
 
-UanHeaderRcCtsGlobal::UanHeaderRcCtsGlobal (Time wt, Time ts, uint16_t rate, uint16_t retryRate)
-  : Header (),
-    m_timeStampTx (ts),
-    m_winTime (wt),
-    m_retryRate (retryRate),
-    m_rateNum (rate)
+UanHeaderRcCtsGlobal::UanHeaderRcCtsGlobal(Time wt, Time ts, uint16_t rate, uint16_t retryRate)
+    : Header(),
+      m_timeStampTx(ts),
+      m_winTime(wt),
+      m_retryRate(retryRate),
+      m_rateNum(rate)
 {
-
 }
 
-UanHeaderRcCtsGlobal::~UanHeaderRcCtsGlobal ()
+UanHeaderRcCtsGlobal::~UanHeaderRcCtsGlobal()
 {
-
 }
 
 TypeId
-UanHeaderRcCtsGlobal::GetTypeId ()
+UanHeaderRcCtsGlobal::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanHeaderRcCtsGlobal")
-    .SetParent<Header> ()
-    .SetGroupName ("Uan")
-    .AddConstructor<UanHeaderRcCtsGlobal> ()
-  ;
-  return tid;
-
-}
-
-
-void
-UanHeaderRcCtsGlobal::SetRateNum (uint16_t rate)
-{
-  m_rateNum = rate;
+    static TypeId tid = TypeId("ns3::UanHeaderRcCtsGlobal")
+                            .SetParent<Header>()
+                            .SetGroupName("Uan")
+                            .AddConstructor<UanHeaderRcCtsGlobal>();
+    return tid;
 }
 
 void
-UanHeaderRcCtsGlobal::SetRetryRate (uint16_t rate)
+UanHeaderRcCtsGlobal::SetRateNum(uint16_t rate)
 {
-  m_retryRate = rate;
+    m_rateNum = rate;
 }
 
 void
-UanHeaderRcCtsGlobal::SetWindowTime (Time t)
+UanHeaderRcCtsGlobal::SetRetryRate(uint16_t rate)
 {
-  m_winTime = t;
+    m_retryRate = rate;
 }
 
 void
-UanHeaderRcCtsGlobal::SetTxTimeStamp (Time t)
+UanHeaderRcCtsGlobal::SetWindowTime(Time t)
 {
-  m_timeStampTx = t;
+    m_winTime = t;
+}
+
+void
+UanHeaderRcCtsGlobal::SetTxTimeStamp(Time t)
+{
+    m_timeStampTx = t;
 }
 
 Time
-UanHeaderRcCtsGlobal::GetWindowTime () const
+UanHeaderRcCtsGlobal::GetWindowTime() const
 {
-  return m_winTime;
+    return m_winTime;
 }
 
 Time
-UanHeaderRcCtsGlobal::GetTxTimeStamp () const
+UanHeaderRcCtsGlobal::GetTxTimeStamp() const
 {
-  return m_timeStampTx;
+    return m_timeStampTx;
 }
 
 uint16_t
-UanHeaderRcCtsGlobal::GetRetryRate () const
+UanHeaderRcCtsGlobal::GetRetryRate() const
 {
-  return m_retryRate;
+    return m_retryRate;
 }
 
 uint16_t
-UanHeaderRcCtsGlobal::GetRateNum () const
+UanHeaderRcCtsGlobal::GetRateNum() const
 {
-  return m_rateNum;
-}
-uint32_t
-UanHeaderRcCtsGlobal::GetSerializedSize () const
-{
-  return 4 + 4 + 2 + 2;
-}
-
-void
-UanHeaderRcCtsGlobal::Serialize (Buffer::Iterator start) const
-{
-  start.WriteU16 (m_rateNum);
-  start.WriteU16 (m_retryRate);
-  start.WriteU32 ( (uint32_t) (m_timeStampTx.RoundTo (Time::MS).GetMilliSeconds ()));
-  start.WriteU32 ( (uint32_t) (m_winTime.RoundTo (Time::MS).GetMilliSeconds ()));
+    return m_rateNum;
 }
 
 uint32_t
-UanHeaderRcCtsGlobal::Deserialize (Buffer::Iterator start)
+UanHeaderRcCtsGlobal::GetSerializedSize() const
 {
-  Buffer::Iterator rbuf = start;
-  m_rateNum = rbuf.ReadU16 ();
-  m_retryRate = rbuf.ReadU16 ();
-  m_timeStampTx = Seconds ( ( (double) rbuf.ReadU32 ()) / 1000.0 );
-  m_winTime = Seconds ( ( (double) rbuf.ReadU32 ()) / 1000.0 );
-  return rbuf.GetDistanceFrom (start);
-
+    return 4 + 4 + 2 + 2;
 }
 
 void
-UanHeaderRcCtsGlobal::Print (std::ostream &os, Time::Unit unit) const
+UanHeaderRcCtsGlobal::Serialize(Buffer::Iterator start) const
 {
-  os << "CTS Global (Rate #=" << m_rateNum << ", Retry Rate=" << m_retryRate << ", TX Time=" << m_timeStampTx.As (Time::S) << ", Win Time=" << m_winTime.As (Time::S) << ")";
+    start.WriteU16(m_rateNum);
+    start.WriteU16(m_retryRate);
+    start.WriteU32((uint32_t)(m_timeStampTx.RoundTo(Time::MS).GetMilliSeconds()));
+    start.WriteU32((uint32_t)(m_winTime.RoundTo(Time::MS).GetMilliSeconds()));
+}
+
+uint32_t
+UanHeaderRcCtsGlobal::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator rbuf = start;
+    m_rateNum = rbuf.ReadU16();
+    m_retryRate = rbuf.ReadU16();
+    m_timeStampTx = Seconds(((double)rbuf.ReadU32()) / 1000.0);
+    m_winTime = Seconds(((double)rbuf.ReadU32()) / 1000.0);
+    return rbuf.GetDistanceFrom(start);
 }
 
 void
-UanHeaderRcCtsGlobal::Print (std::ostream &os) const
+UanHeaderRcCtsGlobal::Print(std::ostream& os, Time::Unit unit) const
 {
-  Print(os, Time::S);
+    os << "CTS Global (Rate #=" << m_rateNum << ", Retry Rate=" << m_retryRate
+       << ", TX Time=" << m_timeStampTx.As(Time::S) << ", Win Time=" << m_winTime.As(Time::S)
+       << ")";
+}
+
+void
+UanHeaderRcCtsGlobal::Print(std::ostream& os) const
+{
+    Print(os, Time::S);
 }
 
 TypeId
-UanHeaderRcCtsGlobal::GetInstanceTypeId () const
+UanHeaderRcCtsGlobal::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
-UanHeaderRcCts::UanHeaderRcCts ()
-  : Header (),
-    m_frameNo (0),
-    m_timeStampRts (Seconds (0)),
-    m_retryNo (0),
-    m_delay (Seconds (0)),
-    m_address (Mac8Address::GetBroadcast ())
+UanHeaderRcCts::UanHeaderRcCts()
+    : Header(),
+      m_frameNo(0),
+      m_timeStampRts(Seconds(0)),
+      m_retryNo(0),
+      m_delay(Seconds(0)),
+      m_address(Mac8Address::GetBroadcast())
 {
-
 }
 
-UanHeaderRcCts::UanHeaderRcCts (uint8_t frameNo, uint8_t retryNo, Time ts, Time delay, Mac8Address addr)
-  : Header (),
-    m_frameNo (frameNo),
-    m_timeStampRts (ts),
-    m_retryNo (retryNo),
-    m_delay (delay),
-    m_address (addr)
+UanHeaderRcCts::UanHeaderRcCts(uint8_t frameNo,
+                               uint8_t retryNo,
+                               Time ts,
+                               Time delay,
+                               Mac8Address addr)
+    : Header(),
+      m_frameNo(frameNo),
+      m_timeStampRts(ts),
+      m_retryNo(retryNo),
+      m_delay(delay),
+      m_address(addr)
 {
-
 }
 
-UanHeaderRcCts::~UanHeaderRcCts ()
+UanHeaderRcCts::~UanHeaderRcCts()
 {
-
 }
 
 TypeId
-UanHeaderRcCts::GetTypeId ()
+UanHeaderRcCts::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanHeaderRcCts")
-    .SetParent<Header> ()
-    .SetGroupName ("Uan")
-    .AddConstructor<UanHeaderRcCts> ()
-  ;
-  return tid;
-
+    static TypeId tid = TypeId("ns3::UanHeaderRcCts")
+                            .SetParent<Header>()
+                            .SetGroupName("Uan")
+                            .AddConstructor<UanHeaderRcCts>();
+    return tid;
 }
 
 void
-UanHeaderRcCts::SetFrameNo (uint8_t frameNo)
+UanHeaderRcCts::SetFrameNo(uint8_t frameNo)
 {
-  m_frameNo = frameNo;
+    m_frameNo = frameNo;
 }
 
 void
-UanHeaderRcCts::SetRtsTimeStamp (Time timeStamp)
+UanHeaderRcCts::SetRtsTimeStamp(Time timeStamp)
 {
-  m_timeStampRts = timeStamp;
-}
-
-
-void
-UanHeaderRcCts::SetDelayToTx (Time delay)
-{
-  m_delay = delay;
+    m_timeStampRts = timeStamp;
 }
 
 void
-UanHeaderRcCts::SetRetryNo (uint8_t no)
+UanHeaderRcCts::SetDelayToTx(Time delay)
 {
-  m_retryNo = no;
+    m_delay = delay;
 }
 
 void
-UanHeaderRcCts::SetAddress (Mac8Address addr)
+UanHeaderRcCts::SetRetryNo(uint8_t no)
 {
-  m_address = addr;
-}
-uint8_t
-UanHeaderRcCts::GetFrameNo () const
-{
-  return m_frameNo;
+    m_retryNo = no;
 }
 
-Time
-UanHeaderRcCts::GetRtsTimeStamp () const
+void
+UanHeaderRcCts::SetAddress(Mac8Address addr)
 {
-  return m_timeStampRts;
-}
-
-Time
-UanHeaderRcCts::GetDelayToTx () const
-{
-  return m_delay;
+    m_address = addr;
 }
 
 uint8_t
-UanHeaderRcCts::GetRetryNo () const
+UanHeaderRcCts::GetFrameNo() const
 {
-  return m_retryNo;
+    return m_frameNo;
+}
+
+Time
+UanHeaderRcCts::GetRtsTimeStamp() const
+{
+    return m_timeStampRts;
+}
+
+Time
+UanHeaderRcCts::GetDelayToTx() const
+{
+    return m_delay;
+}
+
+uint8_t
+UanHeaderRcCts::GetRetryNo() const
+{
+    return m_retryNo;
 }
 
 Mac8Address
-UanHeaderRcCts::GetAddress () const
+UanHeaderRcCts::GetAddress() const
 {
-  return m_address;
+    return m_address;
 }
 
 uint32_t
-UanHeaderRcCts::GetSerializedSize () const
+UanHeaderRcCts::GetSerializedSize() const
 {
-  return 1 + 1 + 1 + 4 + 4;
+    return 1 + 1 + 1 + 4 + 4;
 }
 
-
 void
-UanHeaderRcCts::Serialize (Buffer::Iterator start) const
+UanHeaderRcCts::Serialize(Buffer::Iterator start) const
 {
-  uint8_t address = 0;
-  m_address.CopyTo (&address);
-  start.WriteU8 (address);
-  start.WriteU8 (m_frameNo);
-  start.WriteU8 (m_retryNo);
-  start.WriteU32 ((uint32_t) (m_timeStampRts.RoundTo (Time::MS).GetMilliSeconds ()));
-  start.WriteU32 ((uint32_t) (m_delay.RoundTo (Time::MS).GetMilliSeconds ()));
+    uint8_t address = 0;
+    m_address.CopyTo(&address);
+    start.WriteU8(address);
+    start.WriteU8(m_frameNo);
+    start.WriteU8(m_retryNo);
+    start.WriteU32((uint32_t)(m_timeStampRts.RoundTo(Time::MS).GetMilliSeconds()));
+    start.WriteU32((uint32_t)(m_delay.RoundTo(Time::MS).GetMilliSeconds()));
 }
 
 uint32_t
-UanHeaderRcCts::Deserialize (Buffer::Iterator start)
+UanHeaderRcCts::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator rbuf = start;
-  m_address = Mac8Address (rbuf.ReadU8 ());
-  m_frameNo = rbuf.ReadU8 ();
-  m_retryNo = rbuf.ReadU8 ();
-  m_timeStampRts = Seconds ( ( (double) rbuf.ReadU32 ()) / 1000.0 );
-  m_delay = Seconds ( ( (double) rbuf.ReadU32 ()) / 1000.0 );
+    Buffer::Iterator rbuf = start;
+    m_address = Mac8Address(rbuf.ReadU8());
+    m_frameNo = rbuf.ReadU8();
+    m_retryNo = rbuf.ReadU8();
+    m_timeStampRts = Seconds(((double)rbuf.ReadU32()) / 1000.0);
+    m_delay = Seconds(((double)rbuf.ReadU32()) / 1000.0);
 
-  return rbuf.GetDistanceFrom (start);
+    return rbuf.GetDistanceFrom(start);
 }
 
 void
-UanHeaderRcCts::Print (std::ostream &os, Time::Unit unit) const
+UanHeaderRcCts::Print(std::ostream& os, Time::Unit unit) const
 {
-  os << "CTS (Addr=" << m_address << " Frame #=" << (uint32_t) m_frameNo << " Retry #=" << (uint32_t) m_retryNo << " RTS Rx Timestamp=" << m_timeStampRts.As (unit) << " Delay until TX=" << m_delay.As (unit) << ")";
+    os << "CTS (Addr=" << m_address << " Frame #=" << (uint32_t)m_frameNo
+       << " Retry #=" << (uint32_t)m_retryNo << " RTS Rx Timestamp=" << m_timeStampRts.As(unit)
+       << " Delay until TX=" << m_delay.As(unit) << ")";
 }
 
 void
-UanHeaderRcCts::Print (std::ostream &os) const
+UanHeaderRcCts::Print(std::ostream& os) const
 {
-  Print (os, Time::S);
+    Print(os, Time::S);
 }
 
 TypeId
-UanHeaderRcCts::GetInstanceTypeId () const
+UanHeaderRcCts::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
-UanHeaderRcAck::UanHeaderRcAck ()
-  : m_frameNo (0)
+UanHeaderRcAck::UanHeaderRcAck()
+    : m_frameNo(0)
 {
 }
 
-UanHeaderRcAck::~UanHeaderRcAck ()
+UanHeaderRcAck::~UanHeaderRcAck()
 {
-  m_nackedFrames.clear ();
+    m_nackedFrames.clear();
 }
 
 TypeId
-UanHeaderRcAck::GetTypeId ()
+UanHeaderRcAck::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UanHeaderRcAck")
-    .SetParent<Header> ()
-    .SetGroupName ("Uan")
-    .AddConstructor<UanHeaderRcAck> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::UanHeaderRcAck")
+                            .SetParent<Header>()
+                            .SetGroupName("Uan")
+                            .AddConstructor<UanHeaderRcAck>();
+    return tid;
 }
 
 void
-UanHeaderRcAck::SetFrameNo (uint8_t noFrames)
+UanHeaderRcAck::SetFrameNo(uint8_t noFrames)
 {
-  m_frameNo = noFrames;
+    m_frameNo = noFrames;
 }
 
 void
-UanHeaderRcAck::AddNackedFrame (uint8_t frame)
+UanHeaderRcAck::AddNackedFrame(uint8_t frame)
 {
-  m_nackedFrames.insert (frame);
+    m_nackedFrames.insert(frame);
 }
 
-const std::set<uint8_t> &
-UanHeaderRcAck::GetNackedFrames () const
+const std::set<uint8_t>&
+UanHeaderRcAck::GetNackedFrames() const
 {
-  return m_nackedFrames;
-}
-
-uint8_t
-UanHeaderRcAck::GetFrameNo () const
-{
-  return m_frameNo;
+    return m_nackedFrames;
 }
 
 uint8_t
-UanHeaderRcAck::GetNoNacks () const
+UanHeaderRcAck::GetFrameNo() const
 {
-  return static_cast<uint8_t> (m_nackedFrames.size ());
+    return m_frameNo;
+}
+
+uint8_t
+UanHeaderRcAck::GetNoNacks() const
+{
+    return static_cast<uint8_t>(m_nackedFrames.size());
 }
 
 uint32_t
-UanHeaderRcAck::GetSerializedSize () const
+UanHeaderRcAck::GetSerializedSize() const
 {
-  return 1 + 1 + GetNoNacks ();
+    return 1 + 1 + GetNoNacks();
 }
 
 void
-UanHeaderRcAck::Serialize (Buffer::Iterator start) const
+UanHeaderRcAck::Serialize(Buffer::Iterator start) const
 {
-  start.WriteU8 (m_frameNo);
-  start.WriteU8 (GetNoNacks ());
-  std::set<uint8_t>::iterator it = m_nackedFrames.begin ();
-  for (; it != m_nackedFrames.end (); it++)
+    start.WriteU8(m_frameNo);
+    start.WriteU8(GetNoNacks());
+    std::set<uint8_t>::iterator it = m_nackedFrames.begin();
+    for (; it != m_nackedFrames.end(); it++)
     {
-      start.WriteU8 (*it);
+        start.WriteU8(*it);
     }
 }
 
 uint32_t
-UanHeaderRcAck::Deserialize (Buffer::Iterator start)
+UanHeaderRcAck::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator rbuf = start;
-  m_frameNo = rbuf.ReadU8 ();
-  uint8_t noAcks = rbuf.ReadU8 ();
-  m_nackedFrames.clear ();
-  for (uint32_t i = 0; i < noAcks; i++)
+    Buffer::Iterator rbuf = start;
+    m_frameNo = rbuf.ReadU8();
+    uint8_t noAcks = rbuf.ReadU8();
+    m_nackedFrames.clear();
+    for (uint32_t i = 0; i < noAcks; i++)
     {
-      m_nackedFrames.insert (rbuf.ReadU8 ());
+        m_nackedFrames.insert(rbuf.ReadU8());
     }
-  return rbuf.GetDistanceFrom (start);
+    return rbuf.GetDistanceFrom(start);
 }
 
 void
-UanHeaderRcAck::Print (std::ostream &os) const
+UanHeaderRcAck::Print(std::ostream& os) const
 {
-  os << "# Frames=" << (uint32_t) m_frameNo << " # nacked=" << (uint32_t) GetNoNacks () << " Nacked: ";
-  if (GetNoNacks () > 0)
+    os << "# Frames=" << (uint32_t)m_frameNo << " # nacked=" << (uint32_t)GetNoNacks()
+       << " Nacked: ";
+    if (GetNoNacks() > 0)
     {
-      std::set<uint8_t>::iterator it = m_nackedFrames.begin ();
-      os << (uint32_t) *it;
-      it++;
-      for (; it != m_nackedFrames.end (); it++)
+        std::set<uint8_t>::iterator it = m_nackedFrames.begin();
+        os << (uint32_t)*it;
+        it++;
+        for (; it != m_nackedFrames.end(); it++)
         {
-          os << ", " << (uint32_t) *it;
+            os << ", " << (uint32_t)*it;
         }
     }
 }
 
 TypeId
-UanHeaderRcAck::GetInstanceTypeId () const
+UanHeaderRcAck::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
 } // namespace ns3

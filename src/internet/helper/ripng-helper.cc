@@ -18,165 +18,168 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 
-#include "ns3/node.h"
-#include "ns3/node-list.h"
-#include "ns3/ipv6-list-routing.h"
-#include "ns3/ripng.h"
 #include "ripng-helper.h"
 
-namespace ns3 {
+#include "ns3/ipv6-list-routing.h"
+#include "ns3/node-list.h"
+#include "ns3/node.h"
+#include "ns3/ripng.h"
 
-RipNgHelper::RipNgHelper ()
+namespace ns3
 {
-  m_factory.SetTypeId ("ns3::RipNg");
+
+RipNgHelper::RipNgHelper()
+{
+    m_factory.SetTypeId("ns3::RipNg");
 }
 
-RipNgHelper::RipNgHelper (const RipNgHelper &o)
-  : m_factory (o.m_factory)
+RipNgHelper::RipNgHelper(const RipNgHelper& o)
+    : m_factory(o.m_factory)
 {
-  m_interfaceExclusions = o.m_interfaceExclusions;
-  m_interfaceMetrics = o.m_interfaceMetrics;
+    m_interfaceExclusions = o.m_interfaceExclusions;
+    m_interfaceMetrics = o.m_interfaceMetrics;
 }
 
-RipNgHelper::~RipNgHelper ()
+RipNgHelper::~RipNgHelper()
 {
-  m_interfaceExclusions.clear ();
-  m_interfaceMetrics.clear ();
+    m_interfaceExclusions.clear();
+    m_interfaceMetrics.clear();
 }
 
 RipNgHelper*
-RipNgHelper::Copy () const
+RipNgHelper::Copy() const
 {
-  return new RipNgHelper (*this);
+    return new RipNgHelper(*this);
 }
 
 Ptr<Ipv6RoutingProtocol>
-RipNgHelper::Create (Ptr<Node> node) const
+RipNgHelper::Create(Ptr<Node> node) const
 {
-  Ptr<RipNg> ripng = m_factory.Create<RipNg> ();
+    Ptr<RipNg> ripng = m_factory.Create<RipNg>();
 
-  std::map<Ptr<Node>, std::set<uint32_t> >::const_iterator it = m_interfaceExclusions.find (node);
+    std::map<Ptr<Node>, std::set<uint32_t>>::const_iterator it = m_interfaceExclusions.find(node);
 
-  if(it != m_interfaceExclusions.end ())
+    if (it != m_interfaceExclusions.end())
     {
-      ripng->SetInterfaceExclusions (it->second);
+        ripng->SetInterfaceExclusions(it->second);
     }
 
-  std::map< Ptr<Node>, std::map<uint32_t, uint8_t> >::const_iterator iter = m_interfaceMetrics.find (node);
+    std::map<Ptr<Node>, std::map<uint32_t, uint8_t>>::const_iterator iter =
+        m_interfaceMetrics.find(node);
 
-  if(iter != m_interfaceMetrics.end ())
+    if (iter != m_interfaceMetrics.end())
     {
-      std::map<uint32_t, uint8_t>::const_iterator subiter;
-      for (subiter = iter->second.begin (); subiter != iter->second.end (); subiter++)
+        std::map<uint32_t, uint8_t>::const_iterator subiter;
+        for (subiter = iter->second.begin(); subiter != iter->second.end(); subiter++)
         {
-          ripng->SetInterfaceMetric (subiter->first, subiter->second);
+            ripng->SetInterfaceMetric(subiter->first, subiter->second);
         }
     }
 
-  node->AggregateObject (ripng);
-  return ripng;
+    node->AggregateObject(ripng);
+    return ripng;
 }
 
 void
-RipNgHelper::Set (std::string name, const AttributeValue &value)
+RipNgHelper::Set(std::string name, const AttributeValue& value)
 {
-  m_factory.Set (name, value);
+    m_factory.Set(name, value);
 }
 
-
 int64_t
-RipNgHelper::AssignStreams (NodeContainer c, int64_t stream)
+RipNgHelper::AssignStreams(NodeContainer c, int64_t stream)
 {
-  int64_t currentStream = stream;
-  Ptr<Node> node;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    int64_t currentStream = stream;
+    Ptr<Node> node;
+    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-      node = (*i);
-      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-      NS_ASSERT_MSG (ipv6, "Ipv6 not installed on node");
-      Ptr<Ipv6RoutingProtocol> proto = ipv6->GetRoutingProtocol ();
-      NS_ASSERT_MSG (proto, "Ipv6 routing not installed on node");
-      Ptr<RipNg> ripng = DynamicCast<RipNg> (proto);
-      if (ripng)
+        node = (*i);
+        Ptr<Ipv6> ipv6 = node->GetObject<Ipv6>();
+        NS_ASSERT_MSG(ipv6, "Ipv6 not installed on node");
+        Ptr<Ipv6RoutingProtocol> proto = ipv6->GetRoutingProtocol();
+        NS_ASSERT_MSG(proto, "Ipv6 routing not installed on node");
+        Ptr<RipNg> ripng = DynamicCast<RipNg>(proto);
+        if (ripng)
         {
-          currentStream += ripng->AssignStreams (currentStream);
-          continue;
+            currentStream += ripng->AssignStreams(currentStream);
+            continue;
         }
-      // RIPng may also be in a list
-      Ptr<Ipv6ListRouting> list = DynamicCast<Ipv6ListRouting> (proto);
-      if (list)
+        // RIPng may also be in a list
+        Ptr<Ipv6ListRouting> list = DynamicCast<Ipv6ListRouting>(proto);
+        if (list)
         {
-          int16_t priority;
-          Ptr<Ipv6RoutingProtocol> listProto;
-          Ptr<RipNg> listRipng;
-          for (uint32_t i = 0; i < list->GetNRoutingProtocols (); i++)
+            int16_t priority;
+            Ptr<Ipv6RoutingProtocol> listProto;
+            Ptr<RipNg> listRipng;
+            for (uint32_t i = 0; i < list->GetNRoutingProtocols(); i++)
             {
-              listProto = list->GetRoutingProtocol (i, priority);
-              listRipng = DynamicCast<RipNg> (listProto);
-              if (listRipng)
+                listProto = list->GetRoutingProtocol(i, priority);
+                listRipng = DynamicCast<RipNg>(listProto);
+                if (listRipng)
                 {
-                  currentStream += listRipng->AssignStreams (currentStream);
-                  break;
+                    currentStream += listRipng->AssignStreams(currentStream);
+                    break;
                 }
             }
         }
     }
-  return (currentStream - stream);
+    return (currentStream - stream);
 }
 
-void RipNgHelper::SetDefaultRouter (Ptr<Node> node, Ipv6Address nextHop, uint32_t interface)
+void
+RipNgHelper::SetDefaultRouter(Ptr<Node> node, Ipv6Address nextHop, uint32_t interface)
 {
-  Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-  NS_ASSERT_MSG (ipv6, "Ipv6 not installed on node");
-  Ptr<Ipv6RoutingProtocol> proto = ipv6->GetRoutingProtocol ();
-  NS_ASSERT_MSG (proto, "Ipv6 routing not installed on node");
-  Ptr<RipNg> ripng = DynamicCast<RipNg> (proto);
-  if (ripng)
+    Ptr<Ipv6> ipv6 = node->GetObject<Ipv6>();
+    NS_ASSERT_MSG(ipv6, "Ipv6 not installed on node");
+    Ptr<Ipv6RoutingProtocol> proto = ipv6->GetRoutingProtocol();
+    NS_ASSERT_MSG(proto, "Ipv6 routing not installed on node");
+    Ptr<RipNg> ripng = DynamicCast<RipNg>(proto);
+    if (ripng)
     {
-      ripng->AddDefaultRouteTo (nextHop, interface);
+        ripng->AddDefaultRouteTo(nextHop, interface);
     }
-  // RIPng may also be in a list
-  Ptr<Ipv6ListRouting> list = DynamicCast<Ipv6ListRouting> (proto);
-  if (list)
+    // RIPng may also be in a list
+    Ptr<Ipv6ListRouting> list = DynamicCast<Ipv6ListRouting>(proto);
+    if (list)
     {
-      int16_t priority;
-      Ptr<Ipv6RoutingProtocol> listProto;
-      Ptr<RipNg> listRipng;
-      for (uint32_t i = 0; i < list->GetNRoutingProtocols (); i++)
+        int16_t priority;
+        Ptr<Ipv6RoutingProtocol> listProto;
+        Ptr<RipNg> listRipng;
+        for (uint32_t i = 0; i < list->GetNRoutingProtocols(); i++)
         {
-          listProto = list->GetRoutingProtocol (i, priority);
-          listRipng = DynamicCast<RipNg> (listProto);
-          if (listRipng)
+            listProto = list->GetRoutingProtocol(i, priority);
+            listRipng = DynamicCast<RipNg>(listProto);
+            if (listRipng)
             {
-              listRipng->AddDefaultRouteTo (nextHop, interface);
-              break;
+                listRipng->AddDefaultRouteTo(nextHop, interface);
+                break;
             }
         }
     }
 }
 
 void
-RipNgHelper::ExcludeInterface (Ptr<Node> node, uint32_t interface)
+RipNgHelper::ExcludeInterface(Ptr<Node> node, uint32_t interface)
 {
-  std::map< Ptr<Node>, std::set<uint32_t> >::iterator it = m_interfaceExclusions.find (node);
+    std::map<Ptr<Node>, std::set<uint32_t>>::iterator it = m_interfaceExclusions.find(node);
 
-  if (it == m_interfaceExclusions.end ())
+    if (it == m_interfaceExclusions.end())
     {
-      std::set<uint32_t> interfaces;
-      interfaces.insert (interface);
+        std::set<uint32_t> interfaces;
+        interfaces.insert(interface);
 
-      m_interfaceExclusions.insert (std::make_pair (node, interfaces));
+        m_interfaceExclusions.insert(std::make_pair(node, interfaces));
     }
-  else
+    else
     {
-      it->second.insert (interface);
+        it->second.insert(interface);
     }
 }
 
-void RipNgHelper::SetInterfaceMetric (Ptr<Node> node, uint32_t interface, uint8_t metric)
+void
+RipNgHelper::SetInterfaceMetric(Ptr<Node> node, uint32_t interface, uint8_t metric)
 {
-  m_interfaceMetrics[node][interface] = metric;
+    m_interfaceMetrics[node][interface] = metric;
 }
 
-}
-
+} // namespace ns3

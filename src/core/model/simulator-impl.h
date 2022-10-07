@@ -21,11 +21,11 @@
 #ifndef SIMULATOR_IMPL_H
 #define SIMULATOR_IMPL_H
 
-#include "event-impl.h"
 #include "event-id.h"
+#include "event-impl.h"
 #include "nstime.h"
-#include "object.h"
 #include "object-factory.h"
+#include "object.h"
 #include "ptr.h"
 
 /**
@@ -34,7 +34,8 @@
  * ns3::SimulatorImpl declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class Scheduler;
 
@@ -47,68 +48,66 @@ class Scheduler;
  */
 class SimulatorImpl : public Object
 {
-public:
+  public:
+    /**
+     * Get the registered TypeId for this class.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the registered TypeId for this class.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+    /**  \copydoc Simulator::Destroy   */
+    virtual void Destroy() = 0;
+    /** \copydoc Simulator::IsFinished */
+    virtual bool IsFinished() const = 0;
+    /** \copydoc Simulator::Stop(void) */
+    virtual void Stop() = 0;
+    /** \copydoc Simulator::Stop(const Time&) */
+    virtual void Stop(const Time& delay) = 0;
+    /** \copydoc Simulator::Schedule(const Time&,const Ptr<EventImpl>&) */
+    virtual EventId Schedule(const Time& delay, EventImpl* event) = 0;
+    /** \copydoc Simulator::ScheduleWithContext(uint32_t,const Time&,EventImpl*) */
+    virtual void ScheduleWithContext(uint32_t context, const Time& delay, EventImpl* event) = 0;
+    /** \copydoc Simulator::ScheduleNow(const Ptr<EventImpl>&) */
+    virtual EventId ScheduleNow(EventImpl* event) = 0;
+    /** \copydoc Simulator::ScheduleDestroy(const Ptr<EventImpl>&) */
+    virtual EventId ScheduleDestroy(EventImpl* event) = 0;
+    /** \copydoc Simulator::Remove */
+    virtual void Remove(const EventId& id) = 0;
+    /** \copydoc Simulator::Cancel */
+    virtual void Cancel(const EventId& id) = 0;
+    /** \copydoc Simulator::IsExpired */
+    virtual bool IsExpired(const EventId& id) const = 0;
+    /** \copydoc Simulator::Run */
+    virtual void Run() = 0;
+    /** \copydoc Simulator::Now */
+    virtual Time Now() const = 0;
+    /** \copydoc Simulator::GetDelayLeft */
+    virtual Time GetDelayLeft(const EventId& id) const = 0;
+    /** \copydoc Simulator::GetMaximumSimulationTime */
+    virtual Time GetMaximumSimulationTime() const = 0;
+    /**
+     * Set the Scheduler to be used to manage the event list.
+     *
+     * \param [in] schedulerFactory A new event scheduler factory.
+     *
+     * The event scheduler can be set at any time: the events scheduled
+     * in the previous scheduler will be transferred to the new scheduler
+     * before we start to use it.
+     */
+    virtual void SetScheduler(ObjectFactory schedulerFactory) = 0;
+    /** \copydoc Simulator::GetSystemId */
+    virtual uint32_t GetSystemId() const = 0;
+    /** \copydoc Simulator::GetContext */
+    virtual uint32_t GetContext() const = 0;
+    /** \copydoc Simulator::GetEventCount */
+    virtual uint64_t GetEventCount() const = 0;
 
-  /**  \copydoc Simulator::Destroy   */
-  virtual void Destroy () = 0;
-  /** \copydoc Simulator::IsFinished */
-  virtual bool IsFinished () const = 0;
-  /** \copydoc Simulator::Stop(void) */
-  virtual void Stop () = 0;
-  /** \copydoc Simulator::Stop(const Time&) */
-  virtual void Stop (const Time &delay) = 0;
-  /** \copydoc Simulator::Schedule(const Time&,const Ptr<EventImpl>&) */
-  virtual EventId Schedule (const Time &delay, EventImpl *event) = 0;
-  /** \copydoc Simulator::ScheduleWithContext(uint32_t,const Time&,EventImpl*) */
-  virtual void ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *event) = 0;
-  /** \copydoc Simulator::ScheduleNow(const Ptr<EventImpl>&) */
-  virtual EventId ScheduleNow (EventImpl *event) = 0;
-  /** \copydoc Simulator::ScheduleDestroy(const Ptr<EventImpl>&) */
-  virtual EventId ScheduleDestroy (EventImpl *event) = 0;
-  /** \copydoc Simulator::Remove */
-  virtual void Remove (const EventId &id) = 0;
-  /** \copydoc Simulator::Cancel */
-  virtual void Cancel (const EventId &id) = 0;
-  /** \copydoc Simulator::IsExpired */
-  virtual bool IsExpired (const EventId &id) const = 0;
-  /** \copydoc Simulator::Run */
-  virtual void Run () = 0;
-  /** \copydoc Simulator::Now */
-  virtual Time Now () const = 0;
-  /** \copydoc Simulator::GetDelayLeft */
-  virtual Time GetDelayLeft (const EventId &id) const = 0;
-  /** \copydoc Simulator::GetMaximumSimulationTime */
-  virtual Time GetMaximumSimulationTime () const = 0;
-  /**
-   * Set the Scheduler to be used to manage the event list.
-   *
-   * \param [in] schedulerFactory A new event scheduler factory.
-   *
-   * The event scheduler can be set at any time: the events scheduled
-   * in the previous scheduler will be transferred to the new scheduler
-   * before we start to use it.
-   */
-  virtual void SetScheduler (ObjectFactory schedulerFactory) = 0;
-  /** \copydoc Simulator::GetSystemId */
-  virtual uint32_t GetSystemId () const = 0;
-  /** \copydoc Simulator::GetContext */
-  virtual uint32_t GetContext () const = 0;
-  /** \copydoc Simulator::GetEventCount */
-  virtual uint64_t GetEventCount () const = 0;
-
-  /**
-   * Hook called before processing each event.
-   *
-   * \param [in] id The event about to be processed.
-   */
-  virtual void PreEventHook (const EventId & id) {};
-
+    /**
+     * Hook called before processing each event.
+     *
+     * \param [in] id The event about to be processed.
+     */
+    virtual void PreEventHook(const EventId& id){};
 };
 
 } // namespace ns3

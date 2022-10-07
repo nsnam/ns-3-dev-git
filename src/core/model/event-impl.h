@@ -20,8 +20,9 @@
 #ifndef EVENT_IMPL_H
 #define EVENT_IMPL_H
 
-#include <stdint.h>
 #include "simple-ref-count.h"
+
+#include <stdint.h>
 
 /**
  * \file
@@ -29,7 +30,8 @@
  * ns3::EventImpl declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup events
@@ -43,40 +45,40 @@ namespace ns3 {
  */
 class EventImpl : public SimpleRefCount<EventImpl>
 {
-public:
-  /** Default constructor. */
-  EventImpl ();
-  /** Destructor. */
-  virtual ~EventImpl () = 0;
-  /**
-   * Called by the simulation engine to notify the event that it is time
-   * to execute.
-   */
-  void Invoke ();
-  /**
-   * Marks the event as 'canceled'. The event is not removed from
-   * the event list but the simulation engine will check its canceled status
-   * before calling Invoke().
-   */
-  void Cancel ();
-  /**
-   * \returns true if the event has been canceled.
-   *
-   * Checked by the simulation engine before calling Invoke().
-   */
-  bool IsCancelled ();
+  public:
+    /** Default constructor. */
+    EventImpl();
+    /** Destructor. */
+    virtual ~EventImpl() = 0;
+    /**
+     * Called by the simulation engine to notify the event that it is time
+     * to execute.
+     */
+    void Invoke();
+    /**
+     * Marks the event as 'canceled'. The event is not removed from
+     * the event list but the simulation engine will check its canceled status
+     * before calling Invoke().
+     */
+    void Cancel();
+    /**
+     * \returns true if the event has been canceled.
+     *
+     * Checked by the simulation engine before calling Invoke().
+     */
+    bool IsCancelled();
 
-protected:
-  /**
-   * Implementation for Invoke().
-   *
-   * This typically calls a method or function pointer with the
-   * arguments bound by a call to one of the MakeEvent() functions.
-   */
-  virtual void Notify () = 0;
+  protected:
+    /**
+     * Implementation for Invoke().
+     *
+     * This typically calls a method or function pointer with the
+     * arguments bound by a call to one of the MakeEvent() functions.
+     */
+    virtual void Notify() = 0;
 
-private:
-  bool m_cancel;  /**< Has this event been cancelled. */
+  private:
+    bool m_cancel; /**< Has this event been cancelled. */
 };
 
 } // namespace ns3

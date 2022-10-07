@@ -20,8 +20,9 @@
 #ifndef ENUM_VALUE_H
 #define ENUM_VALUE_H
 
-#include "attribute.h"
 #include "attribute-accessor-helper.h"
+#include "attribute.h"
+
 #include <list>
 
 /**
@@ -30,7 +31,8 @@
  * ns3::EnumValue attribute value declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 //  Additional docs for class EnumValue:
 /**
@@ -53,89 +55,89 @@ namespace ns3 {
  */
 class EnumValue : public AttributeValue
 {
-public:
-  EnumValue ();
-  /**
-   * Construct from an explicit value.
-   *
-   * \param [in] value The value to begin with.
-   */
-  EnumValue (int value);
-  void Set (int  value);
-  int Get () const;
-  template <typename T>
-  bool GetAccessor (T & value) const;
+  public:
+    EnumValue();
+    /**
+     * Construct from an explicit value.
+     *
+     * \param [in] value The value to begin with.
+     */
+    EnumValue(int value);
+    void Set(int value);
+    int Get() const;
+    template <typename T>
+    bool GetAccessor(T& value) const;
 
-  Ptr<AttributeValue> Copy () const override;
-  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
-  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
+    Ptr<AttributeValue> Copy() const override;
+    std::string SerializeToString(Ptr<const AttributeChecker> checker) const override;
+    bool DeserializeFromString(std::string value, Ptr<const AttributeChecker> checker) override;
 
-private:
-  int m_value;  //!< The stored integer value.
+  private:
+    int m_value; //!< The stored integer value.
 };
 
 template <typename T>
 bool
-EnumValue::GetAccessor (T &value) const
+EnumValue::GetAccessor(T& value) const
 {
-  value = T (m_value);
-  return true;
+    value = T(m_value);
+    return true;
 }
 
 class EnumChecker : public AttributeChecker
 {
-public:
-  EnumChecker ();
+  public:
+    EnumChecker();
 
-  /**
-   * Add a default value.
-   * \param [in] value The value.
-   * \param [in] name Then enum symbol name.
-   */
-  void AddDefault (int value, std::string name);
-  /**
-   * Add a new value.
-   * \param [in] value The value.
-   * \param [in] name The enum symbol name.
-   */
-  void Add (int value, std::string name);
+    /**
+     * Add a default value.
+     * \param [in] value The value.
+     * \param [in] name Then enum symbol name.
+     */
+    void AddDefault(int value, std::string name);
+    /**
+     * Add a new value.
+     * \param [in] value The value.
+     * \param [in] name The enum symbol name.
+     */
+    void Add(int value, std::string name);
 
-  /**
-   * Get the enum symbol name by value.
-   * \param [in] value The value.
-   * \return The enum symbol name.
-   */
-  std::string GetName (int value) const;
+    /**
+     * Get the enum symbol name by value.
+     * \param [in] value The value.
+     * \return The enum symbol name.
+     */
+    std::string GetName(int value) const;
 
-  /**
-   * Get the enum value by name.
-   * \param [in] name Then enum symbol name.
-   * \returns The enum value.
-   */
-  int GetValue (const std::string name) const;
+    /**
+     * Get the enum value by name.
+     * \param [in] name Then enum symbol name.
+     * \returns The enum value.
+     */
+    int GetValue(const std::string name) const;
 
-  // Inherited
-  bool Check (const AttributeValue &value) const override;
-  std::string GetValueTypeName () const override;
-  bool HasUnderlyingTypeInformation () const override;
-  std::string GetUnderlyingTypeInformation () const override;
-  Ptr<AttributeValue> Create () const override;
-  bool Copy (const AttributeValue &src, AttributeValue &dst) const override;
+    // Inherited
+    bool Check(const AttributeValue& value) const override;
+    std::string GetValueTypeName() const override;
+    bool HasUnderlyingTypeInformation() const override;
+    std::string GetUnderlyingTypeInformation() const override;
+    Ptr<AttributeValue> Create() const override;
+    bool Copy(const AttributeValue& src, AttributeValue& dst) const override;
 
-private:
-  /** Type for the pair value, name */
-  typedef std::pair<int,std::string> Value;
-  /** Type of container for storing Enum values and symbol names. */
-  typedef std::list<Value> ValueSet;
-  /** The stored Enum values and symbol names. */
-  ValueSet m_valueSet;
+  private:
+    /** Type for the pair value, name */
+    typedef std::pair<int, std::string> Value;
+    /** Type of container for storing Enum values and symbol names. */
+    typedef std::list<Value> ValueSet;
+    /** The stored Enum values and symbol names. */
+    ValueSet m_valueSet;
 };
 
 template <typename T1>
-Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1);
+Ptr<const AttributeAccessor> MakeEnumAccessor(T1 a1);
 
 template <typename T1, typename T2>
-Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2);
+Ptr<const AttributeAccessor> MakeEnumAccessor(T1 a1, T2 a2);
 
 /**
  * Make an EnumChecker pre-configured with a set of allowed
@@ -159,11 +161,11 @@ Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2);
  */
 template <typename... Ts>
 Ptr<const AttributeChecker>
-MakeEnumChecker (int v, std::string n, Ts... args)
+MakeEnumChecker(int v, std::string n, Ts... args)
 {
-  Ptr<EnumChecker> checker = Create<EnumChecker> ();
-  checker->AddDefault (v, n);
-  return MakeEnumChecker (checker, args...);
+    Ptr<EnumChecker> checker = Create<EnumChecker>();
+    checker->AddDefault(v, n);
+    return MakeEnumChecker(checker, args...);
 }
 
 /**
@@ -180,10 +182,10 @@ MakeEnumChecker (int v, std::string n, Ts... args)
 
 template <typename... Ts>
 Ptr<const AttributeChecker>
-MakeEnumChecker (Ptr<EnumChecker> checker, int v, std::string n, Ts... args)
+MakeEnumChecker(Ptr<EnumChecker> checker, int v, std::string n, Ts... args)
 {
-  checker->Add (v, n);
-  return MakeEnumChecker (checker, args...);
+    checker->Add(v, n);
+    return MakeEnumChecker(checker, args...);
 }
 
 /**
@@ -193,24 +195,24 @@ MakeEnumChecker (Ptr<EnumChecker> checker, int v, std::string n, Ts... args)
  * \param [in] checker The AttributeChecker.
  */
 // inline to allow tail call optimization
-inline
-Ptr<const AttributeChecker>
-MakeEnumChecker (Ptr<EnumChecker> checker)
+inline Ptr<const AttributeChecker>
+MakeEnumChecker(Ptr<EnumChecker> checker)
 {
-  return checker;
+    return checker;
 }
 
-
 template <typename T1>
-Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1)
+Ptr<const AttributeAccessor>
+MakeEnumAccessor(T1 a1)
 {
-  return MakeAccessorHelper<EnumValue> (a1);
+    return MakeAccessorHelper<EnumValue>(a1);
 }
 
 template <typename T1, typename T2>
-Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2)
+Ptr<const AttributeAccessor>
+MakeEnumAccessor(T1 a1, T2 a2)
 {
-  return MakeAccessorHelper<EnumValue> (a1, a2);
+    return MakeAccessorHelper<EnumValue>(a1, a2);
 }
 
 } // namespace ns3

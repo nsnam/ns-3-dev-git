@@ -18,55 +18,50 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-
 #include "ff-mac-scheduler.h"
-#include <ns3/log.h>
+
 #include <ns3/enum.h>
+#include <ns3/log.h>
 
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("FfMacScheduler");
-
-NS_OBJECT_ENSURE_REGISTERED (FfMacScheduler);
-
-
-FfMacScheduler::FfMacScheduler ()
-: m_ulCqiFilter (SRS_UL_CQI)
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("FfMacScheduler");
+
+NS_OBJECT_ENSURE_REGISTERED(FfMacScheduler);
+
+FfMacScheduler::FfMacScheduler()
+    : m_ulCqiFilter(SRS_UL_CQI)
+{
+    NS_LOG_FUNCTION(this);
 }
 
-
-FfMacScheduler::~FfMacScheduler ()
+FfMacScheduler::~FfMacScheduler()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-FfMacScheduler::DoDispose ()
+FfMacScheduler::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-FfMacScheduler::GetTypeId ()
+FfMacScheduler::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::FfMacScheduler")
-    .SetParent<Object> ()
-    .SetGroupName("Lte")
-    .AddAttribute ("UlCqiFilter",
-                   "The filter to apply on UL CQIs received",
-                   EnumValue (FfMacScheduler::SRS_UL_CQI),
-                   MakeEnumAccessor (&FfMacScheduler::m_ulCqiFilter),
-                   MakeEnumChecker (FfMacScheduler::SRS_UL_CQI, "SRS_UL_CQI",
-                                    FfMacScheduler::PUSCH_UL_CQI, "PUSCH_UL_CQI"))
-    ;
-  return tid;
+    static TypeId tid = TypeId("ns3::FfMacScheduler")
+                            .SetParent<Object>()
+                            .SetGroupName("Lte")
+                            .AddAttribute("UlCqiFilter",
+                                          "The filter to apply on UL CQIs received",
+                                          EnumValue(FfMacScheduler::SRS_UL_CQI),
+                                          MakeEnumAccessor(&FfMacScheduler::m_ulCqiFilter),
+                                          MakeEnumChecker(FfMacScheduler::SRS_UL_CQI,
+                                                          "SRS_UL_CQI",
+                                                          FfMacScheduler::PUSCH_UL_CQI,
+                                                          "PUSCH_UL_CQI"));
+    return tid;
 }
 
-
 } // namespace ns3
-
-
-

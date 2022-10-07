@@ -22,9 +22,11 @@
 #define RV_BATTERY_MODEL_HELPER_H
 
 #include "energy-model-helper.h"
+
 #include "ns3/node.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup energy
@@ -33,20 +35,19 @@ namespace ns3 {
  */
 class RvBatteryModelHelper : public EnergySourceHelper
 {
-public:
-  RvBatteryModelHelper ();
-  ~RvBatteryModelHelper () override;
+  public:
+    RvBatteryModelHelper();
+    ~RvBatteryModelHelper() override;
 
-  void Set (std::string name, const AttributeValue &v) override;
+    void Set(std::string name, const AttributeValue& v) override;
 
-private:
-  Ptr<EnergySource> DoInstall (Ptr<Node> node) const override;
+  private:
+    Ptr<EnergySource> DoInstall(Ptr<Node> node) const override;
 
-private:
-  ObjectFactory m_rvBatteryModel; //!< RV Battery factory
-
+  private:
+    ObjectFactory m_rvBatteryModel; //!< RV Battery factory
 };
 
 } // namespace ns3
 
-#endif  /* RV_BATTERY_MODEL_HELPER_H */
+#endif /* RV_BATTERY_MODEL_HELPER_H */

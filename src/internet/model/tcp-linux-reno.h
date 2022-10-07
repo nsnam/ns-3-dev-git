@@ -26,7 +26,8 @@
 #include "ns3/tcp-congestion-ops.h"
 #include "ns3/tcp-socket-state.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup congestionOps
@@ -38,47 +39,46 @@ namespace ns3 {
  */
 class TcpLinuxReno : public TcpCongestionOps
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  TcpLinuxReno ();
+    TcpLinuxReno();
 
-  /**
-   * \brief Copy constructor.
-   * \param sock object to copy.
-   */
-  TcpLinuxReno (const TcpLinuxReno& sock);
+    /**
+     * \brief Copy constructor.
+     * \param sock object to copy.
+     */
+    TcpLinuxReno(const TcpLinuxReno& sock);
 
-  ~TcpLinuxReno () override;
+    ~TcpLinuxReno() override;
 
-  std::string GetName () const override;
+    std::string GetName() const override;
 
-  void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
-  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight) override;
-  Ptr<TcpCongestionOps> Fork () override;
+    void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+    uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
+    Ptr<TcpCongestionOps> Fork() override;
 
-protected:
-  /**
-   * Slow start phase handler
-   * \param tcb Transmission Control Block of the connection
-   * \param segmentsAcked count of segments acked
-   * \return Number of segments acked minus the difference between the receiver and sender Cwnd
-   */
-  virtual uint32_t SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
-  /**
-   * Congestion avoidance phase handler
-   * \param tcb Transmission Control Block of the connection
-   * \param segmentsAcked count of segments acked
-   */
-  virtual void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+  protected:
+    /**
+     * Slow start phase handler
+     * \param tcb Transmission Control Block of the connection
+     * \param segmentsAcked count of segments acked
+     * \return Number of segments acked minus the difference between the receiver and sender Cwnd
+     */
+    virtual uint32_t SlowStart(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+    /**
+     * Congestion avoidance phase handler
+     * \param tcb Transmission Control Block of the connection
+     * \param segmentsAcked count of segments acked
+     */
+    virtual void CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
 
-private:
-  uint32_t m_cWndCnt {0}; //!< Linear increase counter
+  private:
+    uint32_t m_cWndCnt{0}; //!< Linear increase counter
 };
 
 } // namespace ns3

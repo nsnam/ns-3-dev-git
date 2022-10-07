@@ -18,70 +18,74 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/log.h"
-#include "ns3/double.h"
 #include "simple-frame-capture-model.h"
-#include "wifi-utils.h"
+
 #include "interference-helper.h"
+#include "wifi-utils.h"
 
-namespace ns3 {
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("SimpleFrameCaptureModel");
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (SimpleFrameCaptureModel);
+NS_LOG_COMPONENT_DEFINE("SimpleFrameCaptureModel");
+
+NS_OBJECT_ENSURE_REGISTERED(SimpleFrameCaptureModel);
 
 TypeId
-SimpleFrameCaptureModel::GetTypeId ()
+SimpleFrameCaptureModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::SimpleFrameCaptureModel")
-    .SetParent<FrameCaptureModel> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<SimpleFrameCaptureModel> ()
-    .AddAttribute ("Margin",
-                   "Reception is switched if the newly arrived frame has a power higher than "
-                   "this value above the frame currently being received (expressed in dB).",
-                   DoubleValue (5),
-                   MakeDoubleAccessor (&SimpleFrameCaptureModel::GetMargin,
-                                       &SimpleFrameCaptureModel::SetMargin),
-                   MakeDoubleChecker<double> ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::SimpleFrameCaptureModel")
+            .SetParent<FrameCaptureModel>()
+            .SetGroupName("Wifi")
+            .AddConstructor<SimpleFrameCaptureModel>()
+            .AddAttribute(
+                "Margin",
+                "Reception is switched if the newly arrived frame has a power higher than "
+                "this value above the frame currently being received (expressed in dB).",
+                DoubleValue(5),
+                MakeDoubleAccessor(&SimpleFrameCaptureModel::GetMargin,
+                                   &SimpleFrameCaptureModel::SetMargin),
+                MakeDoubleChecker<double>());
+    return tid;
 }
 
-SimpleFrameCaptureModel::SimpleFrameCaptureModel ()
+SimpleFrameCaptureModel::SimpleFrameCaptureModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-SimpleFrameCaptureModel::~SimpleFrameCaptureModel ()
+SimpleFrameCaptureModel::~SimpleFrameCaptureModel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-SimpleFrameCaptureModel::SetMargin (double margin)
+SimpleFrameCaptureModel::SetMargin(double margin)
 {
-  NS_LOG_FUNCTION (this << margin);
-  m_margin = margin;
+    NS_LOG_FUNCTION(this << margin);
+    m_margin = margin;
 }
 
 double
-SimpleFrameCaptureModel::GetMargin () const
+SimpleFrameCaptureModel::GetMargin() const
 {
-  return m_margin;
+    return m_margin;
 }
 
 bool
-SimpleFrameCaptureModel::CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const
+SimpleFrameCaptureModel::CaptureNewFrame(Ptr<Event> currentEvent, Ptr<Event> newEvent) const
 {
-  NS_LOG_FUNCTION (this);
-  if ((WToDbm (currentEvent->GetRxPowerW ()) + GetMargin ()) < WToDbm (newEvent->GetRxPowerW ())
-      && (IsInCaptureWindow (currentEvent->GetStartTime ())))
+    NS_LOG_FUNCTION(this);
+    if ((WToDbm(currentEvent->GetRxPowerW()) + GetMargin()) < WToDbm(newEvent->GetRxPowerW()) &&
+        (IsInCaptureWindow(currentEvent->GetStartTime())))
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
-} //namespace ns3
+} // namespace ns3

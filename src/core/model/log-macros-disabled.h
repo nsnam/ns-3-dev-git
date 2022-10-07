@@ -24,7 +24,6 @@
  * Definition of empty logging macros and the NS_LOG_NOOP_INTERNAL macro.
  */
 
-
 #ifndef NS3_LOG_MACROS_DISABLED_H
 #define NS3_LOG_MACROS_DISABLED_H
 
@@ -58,19 +57,19 @@
 
 */
 
-
 /**
  * \ingroup logging
  * Empty logging macro implementation, used when logging is disabled.
  */
-#define NS_LOG_NOOP_INTERNAL(msg)                \
-  do if (false)                                  \
-    {                                            \
-      std::clog << msg;                          \
-    }  while (false)
+#define NS_LOG_NOOP_INTERNAL(msg)                                                                  \
+    do                                                                                             \
+        if (false)                                                                                 \
+        {                                                                                          \
+            std::clog << msg;                                                                      \
+        }                                                                                          \
+    while (false)
 
-#define NS_LOG(level, msg) \
-  NS_LOG_NOOP_INTERNAL (msg)
+#define NS_LOG(level, msg) NS_LOG_NOOP_INTERNAL(msg)
 
 #define NS_LOG_FUNCTION_NOARGS()
 
@@ -78,18 +77,17 @@
  * \ingroup logging
  * Empty logging macro implementation, used when logging is disabled.
  */
-#define NS_LOG_NOOP_FUNC_INTERNAL(msg)           \
-  do if (false)                                  \
-    {                                            \
-      ns3::ParameterLogger (std::clog) << msg;   \
-    } while (false)
+#define NS_LOG_NOOP_FUNC_INTERNAL(msg)                                                             \
+    do                                                                                             \
+        if (false)                                                                                 \
+        {                                                                                          \
+            ns3::ParameterLogger(std::clog) << msg;                                                \
+        }                                                                                          \
+    while (false)
 
-#define NS_LOG_FUNCTION(parameters) \
-  NS_LOG_NOOP_FUNC_INTERNAL (parameters)
+#define NS_LOG_FUNCTION(parameters) NS_LOG_NOOP_FUNC_INTERNAL(parameters)
 
-#define NS_LOG_UNCOND(msg) \
-  NS_LOG_NOOP_INTERNAL (msg)
-
+#define NS_LOG_UNCOND(msg) NS_LOG_NOOP_INTERNAL(msg)
 
 #endif /* !NS3_LOG_ENABLE */
 

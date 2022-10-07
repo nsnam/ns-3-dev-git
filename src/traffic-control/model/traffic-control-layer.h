@@ -19,16 +19,18 @@
 #ifndef TRAFFICCONTROLLAYER_H
 #define TRAFFICCONTROLLAYER_H
 
-#include "ns3/object.h"
 #include "ns3/address.h"
 #include "ns3/net-device.h"
-#include "ns3/traced-callback.h"
 #include "ns3/node.h"
+#include "ns3/object.h"
 #include "ns3/queue-item.h"
+#include "ns3/traced-callback.h"
+
 #include <map>
 #include <vector>
 
-namespace ns3 {
+namespace ns3
+{
 
 class Packet;
 class QueueDisc;
@@ -72,9 +74,8 @@ class NetDeviceQueueInterface;
 
   tc->RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, this),
                                Ipv4L3Protocol::PROT_NUMBER, device);
-  tc->RegisterProtocolHandler (MakeCallback (&ArpL3Protocol::Receive, PeekPointer (GetObject<ArpL3Protocol> ())),
-                               ArpL3Protocol::PROT_NUMBER, device);
-  \endverbatim
+  tc->RegisterProtocolHandler (MakeCallback (&ArpL3Protocol::Receive, PeekPointer
+ (GetObject<ArpL3Protocol> ())), ArpL3Protocol::PROT_NUMBER, device); \endverbatim
  * On the node, for IPv4 and ARP packet, is registered the
  * TrafficControlLayer::Receive callback. At the same time, on the TrafficControlLayer
  * object, is registered the callbacks associated to the upper layers (IPv4 or ARP).
@@ -89,172 +90,175 @@ class NetDeviceQueueInterface;
  */
 class TrafficControlLayer : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Get the type ID for the instance
-   * \return the instance TypeId
-   */
-  TypeId GetInstanceTypeId () const override;
+    /**
+     * \brief Get the type ID for the instance
+     * \return the instance TypeId
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * \brief Constructor
-   */
-  TrafficControlLayer ();
+    /**
+     * \brief Constructor
+     */
+    TrafficControlLayer();
 
-  ~TrafficControlLayer () override;
+    ~TrafficControlLayer() override;
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  TrafficControlLayer (TrafficControlLayer const &) = delete;
-  TrafficControlLayer & operator = (TrafficControlLayer const &) = delete;
+    // Delete copy constructor and assignment operator to avoid misuse
+    TrafficControlLayer(const TrafficControlLayer&) = delete;
+    TrafficControlLayer& operator=(const TrafficControlLayer&) = delete;
 
-  /**
-   * \brief Register an IN handler
-   *
-   * The handler will be invoked when a packet is received to pass it to
-   * upper  layers.
-   *
-   * \param handler the handler to register
-   * \param protocolType the type of protocol this handler is
-   *        interested in. This protocol type is a so-called
-   *        EtherType, as registered here:
-   *        http://standards.ieee.org/regauth/ethertype/eth.txt
-   *        the value zero is interpreted as matching all
-   *        protocols.
-   * \param device the device attached to this handler. If the
-   *        value is zero, the handler is attached to all
-   *        devices.
-   */
-  void RegisterProtocolHandler (Node::ProtocolHandler handler,
-                                uint16_t protocolType,
-                                Ptr<NetDevice> device);
+    /**
+     * \brief Register an IN handler
+     *
+     * The handler will be invoked when a packet is received to pass it to
+     * upper  layers.
+     *
+     * \param handler the handler to register
+     * \param protocolType the type of protocol this handler is
+     *        interested in. This protocol type is a so-called
+     *        EtherType, as registered here:
+     *        http://standards.ieee.org/regauth/ethertype/eth.txt
+     *        the value zero is interpreted as matching all
+     *        protocols.
+     * \param device the device attached to this handler. If the
+     *        value is zero, the handler is attached to all
+     *        devices.
+     */
+    void RegisterProtocolHandler(Node::ProtocolHandler handler,
+                                 uint16_t protocolType,
+                                 Ptr<NetDevice> device);
 
-  /// Typedef for queue disc vector
-  typedef std::vector<Ptr<QueueDisc> > QueueDiscVector;
+    /// Typedef for queue disc vector
+    typedef std::vector<Ptr<QueueDisc>> QueueDiscVector;
 
-  /**
-   * \brief Collect information needed to determine how to handle packets
-   *        destined to each of the NetDevices of this node
-   *
-   * Checks whether a NetDeviceQueueInterface objects is aggregated to each of
-   * the NetDevices of this node and sets the required callbacks properly.
-   */
-  virtual void ScanDevices ();
+    /**
+     * \brief Collect information needed to determine how to handle packets
+     *        destined to each of the NetDevices of this node
+     *
+     * Checks whether a NetDeviceQueueInterface objects is aggregated to each of
+     * the NetDevices of this node and sets the required callbacks properly.
+     */
+    virtual void ScanDevices();
 
-  /**
-   * \brief This method can be used to set the root queue disc installed on a device
-   *
-   * \param device the device on which the provided queue disc will be installed
-   * \param qDisc the queue disc to be installed as root queue disc on device
-   */
-  virtual void SetRootQueueDiscOnDevice (Ptr<NetDevice> device, Ptr<QueueDisc> qDisc);
+    /**
+     * \brief This method can be used to set the root queue disc installed on a device
+     *
+     * \param device the device on which the provided queue disc will be installed
+     * \param qDisc the queue disc to be installed as root queue disc on device
+     */
+    virtual void SetRootQueueDiscOnDevice(Ptr<NetDevice> device, Ptr<QueueDisc> qDisc);
 
-  /**
-   * \brief This method can be used to get the root queue disc installed on a device
-   *
-   * \param device the device on which the requested root queue disc is installed
-   * \return the root queue disc installed on the given device
-   */
-  virtual Ptr<QueueDisc> GetRootQueueDiscOnDevice (Ptr<NetDevice> device) const;
+    /**
+     * \brief This method can be used to get the root queue disc installed on a device
+     *
+     * \param device the device on which the requested root queue disc is installed
+     * \return the root queue disc installed on the given device
+     */
+    virtual Ptr<QueueDisc> GetRootQueueDiscOnDevice(Ptr<NetDevice> device) const;
 
-  /**
-   * \brief This method can be used to remove the root queue disc (and associated
-   *        filters, classes and queues) installed on a device
-   *
-   * \param device the device on which the installed queue disc will be deleted
-   */
-  virtual void DeleteRootQueueDiscOnDevice (Ptr<NetDevice> device);
+    /**
+     * \brief This method can be used to remove the root queue disc (and associated
+     *        filters, classes and queues) installed on a device
+     *
+     * \param device the device on which the installed queue disc will be deleted
+     */
+    virtual void DeleteRootQueueDiscOnDevice(Ptr<NetDevice> device);
 
-  /**
-   * \brief Set node associated with this stack.
-   * \param node node to set
-   */
-  void SetNode (Ptr<Node> node);
+    /**
+     * \brief Set node associated with this stack.
+     * \param node node to set
+     */
+    void SetNode(Ptr<Node> node);
 
-  /**
-   * \brief Called by NetDevices, incoming packet
-   *
-   * After analyses and scheduling, this method will call the right handler
-   * to pass the packet up in the stack.
-   *
-   * \param device network device
-   * \param p the packet
-   * \param protocol next header value
-   * \param from address of the correspondent
-   * \param to address of the destination
-   * \param packetType type of the packet
-   */
-  virtual void Receive (Ptr<NetDevice> device, Ptr<const Packet> p,
-                        uint16_t protocol, const Address &from,
-                        const Address &to, NetDevice::PacketType packetType);
-  /**
-   * \brief Called from upper layer to queue a packet for the transmission.
-   *
-   * \param device the device the packet must be sent to
-   * \param item a queue item including a packet and additional information
-   */
-  virtual void Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item);
+    /**
+     * \brief Called by NetDevices, incoming packet
+     *
+     * After analyses and scheduling, this method will call the right handler
+     * to pass the packet up in the stack.
+     *
+     * \param device network device
+     * \param p the packet
+     * \param protocol next header value
+     * \param from address of the correspondent
+     * \param to address of the destination
+     * \param packetType type of the packet
+     */
+    virtual void Receive(Ptr<NetDevice> device,
+                         Ptr<const Packet> p,
+                         uint16_t protocol,
+                         const Address& from,
+                         const Address& to,
+                         NetDevice::PacketType packetType);
+    /**
+     * \brief Called from upper layer to queue a packet for the transmission.
+     *
+     * \param device the device the packet must be sent to
+     * \param item a queue item including a packet and additional information
+     */
+    virtual void Send(Ptr<NetDevice> device, Ptr<QueueDiscItem> item);
 
-protected:
+  protected:
+    void DoDispose() override;
+    void DoInitialize() override;
+    void NotifyNewAggregate() override;
 
-  void DoDispose () override;
-  void DoInitialize () override;
-  void NotifyNewAggregate () override;
+  private:
+    /**
+     * \brief Protocol handler entry.
+     * This structure is used to demultiplex all the protocols.
+     */
+    struct ProtocolHandlerEntry
+    {
+        Node::ProtocolHandler handler; //!< the protocol handler
+        Ptr<NetDevice> device;         //!< the NetDevice
+        uint16_t protocol;             //!< the protocol number
+        bool promiscuous;              //!< true if it is a promiscuous handler
+    };
 
-private:
-  /**
-   * \brief Protocol handler entry.
-   * This structure is used to demultiplex all the protocols.
-   */
-  struct ProtocolHandlerEntry {
-    Node::ProtocolHandler handler; //!< the protocol handler
-    Ptr<NetDevice> device;         //!< the NetDevice
-    uint16_t protocol;             //!< the protocol number
-    bool promiscuous;              //!< true if it is a promiscuous handler
-  };
+    /**
+     * \brief Information to store for each device
+     */
+    struct NetDeviceInfo
+    {
+        Ptr<QueueDisc> m_rootQueueDisc;      //!< the root queue disc on the device
+        Ptr<NetDeviceQueueInterface> m_ndqi; //!< the netdevice queue interface
+        QueueDiscVector m_queueDiscsToWake;  //!< the vector of queue discs to wake
+    };
 
-  /**
-   * \brief Information to store for each device
-   */
-  struct NetDeviceInfo
-  {
-    Ptr<QueueDisc> m_rootQueueDisc;       //!< the root queue disc on the device
-    Ptr<NetDeviceQueueInterface> m_ndqi;  //!< the netdevice queue interface
-    QueueDiscVector m_queueDiscsToWake;   //!< the vector of queue discs to wake
-  };
+    /// Typedef for protocol handlers container
+    typedef std::vector<struct ProtocolHandlerEntry> ProtocolHandlerList;
 
-  /// Typedef for protocol handlers container
-  typedef std::vector<struct ProtocolHandlerEntry> ProtocolHandlerList;
+    /**
+     * \brief Required by the object map accessor
+     * \return the number of devices in the m_netDevices map
+     */
+    uint32_t GetNDevices() const;
+    /**
+     * \brief Required by the object map accessor
+     * \param index the index of the device in the node's device list
+     * \return the root queue disc installed on the specified device
+     */
+    Ptr<QueueDisc> GetRootQueueDiscOnDeviceByIndex(uint32_t index) const;
 
-  /**
-   * \brief Required by the object map accessor
-   * \return the number of devices in the m_netDevices map
-   */
-  uint32_t GetNDevices () const;
-  /**
-   * \brief Required by the object map accessor
-   * \param index the index of the device in the node's device list
-   * \return the root queue disc installed on the specified device
-   */
-  Ptr<QueueDisc> GetRootQueueDiscOnDeviceByIndex (uint32_t index) const;
+    /// The node this TrafficControlLayer object is aggregated to
+    Ptr<Node> m_node;
+    /// Map storing the required information for each device with a queue disc installed
+    std::map<Ptr<NetDevice>, NetDeviceInfo> m_netDevices;
+    ProtocolHandlerList m_handlers; //!< List of upper-layer handlers
 
-  /// The node this TrafficControlLayer object is aggregated to
-  Ptr<Node> m_node;
-  /// Map storing the required information for each device with a queue disc installed
-  std::map<Ptr<NetDevice>, NetDeviceInfo> m_netDevices;
-  ProtocolHandlerList m_handlers;  //!< List of upper-layer handlers
-
-  /**
-   * The trace source fired when the Traffic Control layer drops a packet because
-   * no queue disc is installed on the device, the device supports flow control and
-   * the device queue is stopped
-   */
-  TracedCallback<Ptr<const Packet>> m_dropped;
+    /**
+     * The trace source fired when the Traffic Control layer drops a packet because
+     * no queue disc is installed on the device, the device supports flow control and
+     * the device queue is stopped
+     */
+    TracedCallback<Ptr<const Packet>> m_dropped;
 };
 
 } // namespace ns3

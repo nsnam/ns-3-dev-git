@@ -19,22 +19,20 @@
  *         Marco Miozzo <mmiozzo@cttc.es>
  */
 
-
 #ifndef TRACE_FADING_LOSS_MODEL_H
 #define TRACE_FADING_LOSS_MODEL_H
 
-
-#include <ns3/object.h>
-#include <ns3/spectrum-propagation-loss-model.h>
-#include <map>
 #include "ns3/random-variable-stream.h"
 #include <ns3/nstime.h>
+#include <ns3/object.h>
+#include <ns3/spectrum-propagation-loss-model.h>
 
-namespace ns3 {
+#include <map>
 
+namespace ns3
+{
 
 class MobilityModel;
-
 
 /**
  * \ingroup spectrum
@@ -43,104 +41,96 @@ class MobilityModel;
  */
 class TraceFadingLossModel : public SpectrumPropagationLossModel
 {
-public:
-  TraceFadingLossModel ();
-  ~TraceFadingLossModel () override;
+  public:
+    TraceFadingLossModel();
+    ~TraceFadingLossModel() override;
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  void DoInitialize () override;
+    void DoInitialize() override;
 
-  /**
-   * \brief The couple of mobility node that form a fading channel realization
-   */
-  typedef std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel> > ChannelRealizationId_t;
+    /**
+     * \brief The couple of mobility node that form a fading channel realization
+     */
+    typedef std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel>> ChannelRealizationId_t;
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
-  int64_t AssignStreams (int64_t stream);
+    /**
+     * Assign a fixed random variable stream number to the random variables
+     * used by this model.  Return the number of streams (possibly zero) that
+     * have been assigned.
+     *
+     * \param stream first stream index to use
+     * \return the number of stream indices assigned by this model
+     */
+    int64_t AssignStreams(int64_t stream);
 
+  private:
+    /**
+     * @param params the spectrum signal parameters.
+     * \param a sender mobility
+     * \param b receiver mobility
+     * \return set of values vs frequency representing the received
+     *         power in the same units used for the txPsd parameter.
+     */
+    Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity(Ptr<const SpectrumSignalParameters> params,
+                                                    Ptr<const MobilityModel> a,
+                                                    Ptr<const MobilityModel> b) const override;
 
-private:
-  /**
-   * @param params the spectrum signal parameters.
-   * \param a sender mobility
-   * \param b receiver mobility
-   * \return set of values vs frequency representing the received
-   *         power in the same units used for the txPsd parameter.
-   */
-  Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
-                                                   Ptr<const MobilityModel> a,
-                                                   Ptr<const MobilityModel> b) const override;
+    /**
+     * \brief Get the value for a particular sub channel and a given speed
+     * \param subChannel the sub channel for which a value is requested
+     * \param speed the relative speed of the two devices
+     * \return the loss for a particular sub channel
+     */
+    double GetValue(int subChannel, double speed);
 
-  /**
-  * \brief Get the value for a particular sub channel and a given speed
-  * \param subChannel the sub channel for which a value is requested
-  * \param speed the relative speed of the two devices
-  * \return the loss for a particular sub channel
-  */
-  double GetValue (int subChannel, double speed);
+    /**
+     * \brief Set the trace file name
+     * \param fileName the trace file
+     */
+    void SetTraceFileName(std::string fileName);
+    /**
+     * \brief Set the trace time
+     * \param t the trace time
+     */
+    void SetTraceLength(Time t);
 
-  /**
-  * \brief Set the trace file name
-  * \param fileName the trace file
-  */
-  void SetTraceFileName (std::string fileName);
-  /**
-  * \brief Set the trace time
-  * \param t the trace time
-  */
-  void SetTraceLength (Time t);
+    /// Load trace function
+    void LoadTrace();
 
-  /// Load trace function
-  void LoadTrace ();
+    mutable std::map<ChannelRealizationId_t, int> m_windowOffsetsMap; ///< windows offsets map
 
+    mutable std::map<ChannelRealizationId_t, Ptr<UniformRandomVariable>>
+        m_startVariableMap; ///< start variable map
 
+    /**
+     * Vector with fading samples in time domain (for a fixed RB)
+     */
+    typedef std::vector<double> FadingTraceSample;
+    /**
+     * Vector collecting the time fading traces in the frequency domain (per RB)
+     */
+    typedef std::vector<FadingTraceSample> FadingTrace;
 
-  mutable std::map <ChannelRealizationId_t, int > m_windowOffsetsMap; ///< windows offsets map
+    std::string m_traceFile; ///< the trace file name
 
-  mutable std::map <ChannelRealizationId_t, Ptr<UniformRandomVariable> > m_startVariableMap; ///< start variable map
+    FadingTrace m_fadingTrace; ///< fading trace
 
-  /**
-   * Vector with fading samples in time domain (for a fixed RB)
-   */
-  typedef std::vector<double> FadingTraceSample;
-  /**
-   * Vector collecting the time fading traces in the frequency domain (per RB)
-   */
-  typedef std::vector<FadingTraceSample> FadingTrace;
-
-
-
-  std::string m_traceFile; ///< the trace file name
-
-  FadingTrace m_fadingTrace; ///< fading trace
-
-
-  Time m_traceLength; ///< the trace time
-  uint32_t m_samplesNum; ///< number of samples
-  Time m_windowSize; ///< window size
-  uint8_t m_rbNum; ///< RB number
-  mutable Time m_lastWindowUpdate; ///< time of last window update
-  uint8_t m_timeGranularity; ///< time granularity
-  mutable uint64_t m_currentStream; ///< the current stream
-  mutable uint64_t m_lastStream; ///< the last stream
-  uint64_t m_streamSetSize; ///< stream set size
-  mutable bool m_streamsAssigned; ///< is streams assigned?
-
+    Time m_traceLength;               ///< the trace time
+    uint32_t m_samplesNum;            ///< number of samples
+    Time m_windowSize;                ///< window size
+    uint8_t m_rbNum;                  ///< RB number
+    mutable Time m_lastWindowUpdate;  ///< time of last window update
+    uint8_t m_timeGranularity;        ///< time granularity
+    mutable uint64_t m_currentStream; ///< the current stream
+    mutable uint64_t m_lastStream;    ///< the last stream
+    uint64_t m_streamSetSize;         ///< stream set size
+    mutable bool m_streamsAssigned;   ///< is streams assigned?
 };
-
-
 
 } // namespace ns3
 

@@ -20,14 +20,15 @@
  *                               <amine.ismail@UDcast.com>
  */
 
-
 #ifndef CONNECTION_IDENTIFIER_FACTORY_H
 #define CONNECTION_IDENTIFIER_FACTORY_H
 
-#include <stdint.h>
 #include "cid.h"
 
-namespace ns3 {
+#include <stdint.h>
+
+namespace ns3
+{
 
 /**
  * \ingroup wimax
@@ -44,71 +45,71 @@ namespace ns3 {
  */
 class CidFactory
 {
-public:
-  /**
-   * Create a cid factory with a default value for m of 0x5500.
-   */
-  CidFactory ();
-  /**
-   * \brief This function returns the next basic CID.
-   * \returns the next basic CID.
-   */
-  Cid AllocateBasic ();
-  /**
-   * \brief This function returns the next primary basic CID.
-   * \returns the next primary CID.
-   */
-  Cid AllocatePrimary ();
-  /**
-   * \brief This function returns the next Transport (or Secondary) CID.
-   * \returns the next Transport (or Secondary) CID.
-   */
-  Cid AllocateTransportOrSecondary ();
-  /**
-   * \brief This function returns the next Multicast CID.
-   * \returns the next Multicast CID.
-   */
-  Cid AllocateMulticast ();
-  /**
-   * \brief This function returns the next CID for the specified type.
-   * \param type CID type
-   * \returns the next CID.
-   */
-  Cid Allocate (enum Cid::Type type);
+  public:
+    /**
+     * Create a cid factory with a default value for m of 0x5500.
+     */
+    CidFactory();
+    /**
+     * \brief This function returns the next basic CID.
+     * \returns the next basic CID.
+     */
+    Cid AllocateBasic();
+    /**
+     * \brief This function returns the next primary basic CID.
+     * \returns the next primary CID.
+     */
+    Cid AllocatePrimary();
+    /**
+     * \brief This function returns the next Transport (or Secondary) CID.
+     * \returns the next Transport (or Secondary) CID.
+     */
+    Cid AllocateTransportOrSecondary();
+    /**
+     * \brief This function returns the next Multicast CID.
+     * \returns the next Multicast CID.
+     */
+    Cid AllocateMulticast();
+    /**
+     * \brief This function returns the next CID for the specified type.
+     * \param type CID type
+     * \returns the next CID.
+     */
+    Cid Allocate(enum Cid::Type type);
 
-  /**
-   * \brief This function determines if the CID is a transport.
-   * \param cid CID type
-   * \returns true if the CID is a transport.
-   */
-  bool IsTransport (Cid cid) const;
-  /**
-   * \brief This function determines if the CID is primary.
-   * \param cid CID type
-   * \returns true if the CID is primary.
-   */
-  bool IsPrimary (Cid cid) const;
-  /**
-   * \brief This function determines if the CID is basic.
-   * \param cid CID type
-   * \returns true if the CID is basic.
-   */
-  bool IsBasic (Cid cid) const;
+    /**
+     * \brief This function determines if the CID is a transport.
+     * \param cid CID type
+     * \returns true if the CID is a transport.
+     */
+    bool IsTransport(Cid cid) const;
+    /**
+     * \brief This function determines if the CID is primary.
+     * \param cid CID type
+     * \returns true if the CID is primary.
+     */
+    bool IsPrimary(Cid cid) const;
+    /**
+     * \brief This function determines if the CID is basic.
+     * \param cid CID type
+     * \returns true if the CID is basic.
+     */
+    bool IsBasic(Cid cid) const;
 
-  /**
-   * Notify the factory that the connection associated to this
-   * cid has been killed and that this cid can be reused.
-   * \param cid CID type
-   */
-  void FreeCid (Cid cid);
+    /**
+     * Notify the factory that the connection associated to this
+     * cid has been killed and that this cid can be reused.
+     * \param cid CID type
+     */
+    void FreeCid(Cid cid);
 
-private:
-  uint16_t m_m; ///< m
+  private:
+    uint16_t m_m; ///< m
 
-  uint16_t m_basicIdentifier; ///< basic identifier
-  uint16_t m_primaryIdentifier; ///< primary identifier
-  uint16_t m_transportOrSecondaryIdentifier; ///< transport or secondary identifier
-  uint16_t m_multicastPollingIdentifier; ///< multicast polling identifier
+    uint16_t m_basicIdentifier;                ///< basic identifier
+    uint16_t m_primaryIdentifier;              ///< primary identifier
+    uint16_t m_transportOrSecondaryIdentifier; ///< transport or secondary identifier
+    uint16_t m_multicastPollingIdentifier;     ///< multicast polling identifier
 };
 
 } // namespace ns3

@@ -25,52 +25,58 @@
  *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  */
 
-#include "ns3/test.h"
-#include "ns3/simple-net-device.h"
-#include "ns3/simple-channel.h"
 #include "ns3/address.h"
-#include "ns3/mac48-address.h"
-#include "ns3/packet.h"
 #include "ns3/callback.h"
-#include "ns3/node.h"
-#include "ns3/simulator.h"
-#include "ns3/error-model.h"
-#include "ns3/pointer.h"
 #include "ns3/double.h"
-#include "ns3/string.h"
-#include "ns3/rng-seed-manager.h"
+#include "ns3/error-model.h"
+#include "ns3/mac48-address.h"
+#include "ns3/node.h"
+#include "ns3/packet.h"
+#include "ns3/pointer.h"
 #include "ns3/queue.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/simple-channel.h"
+#include "ns3/simple-net-device.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/test.h"
 
 using namespace ns3;
 
-static void SendPacket (int num, Ptr<NetDevice> device, Address& addr)
+static void
+SendPacket(int num, Ptr<NetDevice> device, Address& addr)
 {
-  for (int i = 0; i < num; i++)
+    for (int i = 0; i < num; i++)
     {
-      Ptr<Packet> pkt = Create<Packet> (1000);  // 1000 dummy bytes of data
-      device->Send (pkt, addr, 0);
+        Ptr<Packet> pkt = Create<Packet>(1000); // 1000 dummy bytes of data
+        device->Send(pkt, addr, 0);
     }
 }
 
 // Two nodes, two devices, one channel
-static void BuildSimpleTopology (Ptr<Node> a, Ptr<Node> b, Ptr<SimpleNetDevice> input, Ptr<SimpleNetDevice> output, Ptr<SimpleChannel> channel)
+static void
+BuildSimpleTopology(Ptr<Node> a,
+                    Ptr<Node> b,
+                    Ptr<SimpleNetDevice> input,
+                    Ptr<SimpleNetDevice> output,
+                    Ptr<SimpleChannel> channel)
 {
-  ObjectFactory queueFactory;
-  queueFactory.SetTypeId("ns3::DropTailQueue<Packet>");
-  queueFactory.Set("MaxSize", StringValue("100000p")); // Much larger than we need
-  Ptr<Queue<Packet> > queueA = queueFactory.Create<Queue<Packet> > ();
-  Ptr<Queue<Packet> > queueB = queueFactory.Create<Queue<Packet> > ();
+    ObjectFactory queueFactory;
+    queueFactory.SetTypeId("ns3::DropTailQueue<Packet>");
+    queueFactory.Set("MaxSize", StringValue("100000p")); // Much larger than we need
+    Ptr<Queue<Packet>> queueA = queueFactory.Create<Queue<Packet>>();
+    Ptr<Queue<Packet>> queueB = queueFactory.Create<Queue<Packet>>();
 
-  input->SetQueue(queueA);
-  output->SetQueue(queueB);
-  a->AddDevice (input);
-  b->AddDevice (output);
-  input->SetAddress (Mac48Address::Allocate ());
-  input->SetChannel (channel);
-  input->SetNode (a);
-  output->SetChannel (channel);
-  output->SetNode (b);
-  output->SetAddress (Mac48Address::Allocate ());
+    input->SetQueue(queueA);
+    output->SetQueue(queueB);
+    a->AddDevice(input);
+    b->AddDevice(output);
+    input->SetAddress(Mac48Address::Allocate());
+    input->SetChannel(channel);
+    input->SetNode(a);
+    output->SetChannel(channel);
+    output->SetNode(b);
+    output->SetAddress(Mac48Address::Allocate());
 }
 
 /**
@@ -81,93 +87,99 @@ static void BuildSimpleTopology (Ptr<Node> a, Ptr<Node> b, Ptr<SimpleNetDevice> 
  */
 class ErrorModelSimple : public TestCase
 {
-public:
-  ErrorModelSimple ();
-  ~ErrorModelSimple () override;
+  public:
+    ErrorModelSimple();
+    ~ErrorModelSimple() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Receive form a NetDevice
-   * \param nd The NetDevice.
-   * \param p The received packet.
-   * \param protocol The protocol received.
-   * \param addr The sender address.
-   * \return True on success.
-   */
-  bool Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
-  /**
-   * Register a Drop
-   * \param p The dropped packet
-   */
-  void DropEvent (Ptr<const Packet> p);
+  private:
+    void DoRun() override;
+    /**
+     * Receive form a NetDevice
+     * \param nd The NetDevice.
+     * \param p The received packet.
+     * \param protocol The protocol received.
+     * \param addr The sender address.
+     * \return True on success.
+     */
+    bool Receive(Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
+    /**
+     * Register a Drop
+     * \param p The dropped packet
+     */
+    void DropEvent(Ptr<const Packet> p);
 
-  uint32_t m_count; //!< The received packets counter.
-  uint32_t m_drops; //!< The dropped packets counter.
+    uint32_t m_count; //!< The received packets counter.
+    uint32_t m_drops; //!< The dropped packets counter.
 };
 
 // Add some help text to this case to describe what it is intended to test
-ErrorModelSimple::ErrorModelSimple ()
-  : TestCase ("ErrorModel and PhyRxDrop trace for SimpleNetDevice"), m_count (0), m_drops (0)
+ErrorModelSimple::ErrorModelSimple()
+    : TestCase("ErrorModel and PhyRxDrop trace for SimpleNetDevice"),
+      m_count(0),
+      m_drops(0)
 {
 }
 
-ErrorModelSimple::~ErrorModelSimple ()
+ErrorModelSimple::~ErrorModelSimple()
 {
 }
 
 bool
-ErrorModelSimple::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr)
+ErrorModelSimple::Receive(Ptr<NetDevice> nd,
+                          Ptr<const Packet> p,
+                          uint16_t protocol,
+                          const Address& addr)
 {
-  m_count++;
-  return true;
+    m_count++;
+    return true;
 }
 
 void
-ErrorModelSimple::DropEvent (Ptr<const Packet> p)
+ErrorModelSimple::DropEvent(Ptr<const Packet> p)
 {
-  m_drops++;
+    m_drops++;
 }
 
 void
-ErrorModelSimple::DoRun ()
+ErrorModelSimple::DoRun()
 {
-  // Set some arbitrary deterministic values
-  RngSeedManager::SetSeed (7);
-  RngSeedManager::SetRun (2);
+    // Set some arbitrary deterministic values
+    RngSeedManager::SetSeed(7);
+    RngSeedManager::SetRun(2);
 
-  Ptr<Node> a = CreateObject<Node> ();
-  Ptr<Node> b = CreateObject<Node> ();
+    Ptr<Node> a = CreateObject<Node>();
+    Ptr<Node> b = CreateObject<Node>();
 
-  Ptr<SimpleNetDevice> input = CreateObject<SimpleNetDevice> ();
-  Ptr<SimpleNetDevice> output = CreateObject<SimpleNetDevice> ();
-  Ptr<SimpleChannel> channel = CreateObject<SimpleChannel> ();
-  BuildSimpleTopology (a, b, input, output, channel);
+    Ptr<SimpleNetDevice> input = CreateObject<SimpleNetDevice>();
+    Ptr<SimpleNetDevice> output = CreateObject<SimpleNetDevice>();
+    Ptr<SimpleChannel> channel = CreateObject<SimpleChannel>();
+    BuildSimpleTopology(a, b, input, output, channel);
 
-  output->SetReceiveCallback (MakeCallback (&ErrorModelSimple::Receive, this));
-  Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
-  // Set this variable to a specific stream
-  uv->SetStream (50);
+    output->SetReceiveCallback(MakeCallback(&ErrorModelSimple::Receive, this));
+    Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
+    // Set this variable to a specific stream
+    uv->SetStream(50);
 
-  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-  em->SetRandomVariable (uv);
-  em->SetAttribute ("ErrorRate", DoubleValue (0.001));
-  em->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
+    Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
+    em->SetRandomVariable(uv);
+    em->SetAttribute("ErrorRate", DoubleValue(0.001));
+    em->SetAttribute("ErrorUnit", StringValue("ERROR_UNIT_PACKET"));
 
-  // The below hooks will cause drops and receptions to be counted
-  output->SetAttribute ("ReceiveErrorModel", PointerValue (em));
-  output->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&ErrorModelSimple::DropEvent, this));
+    // The below hooks will cause drops and receptions to be counted
+    output->SetAttribute("ReceiveErrorModel", PointerValue(em));
+    output->TraceConnectWithoutContext("PhyRxDrop",
+                                       MakeCallback(&ErrorModelSimple::DropEvent, this));
 
-  // Send 10000 packets
-  Simulator::Schedule (Seconds (0), &SendPacket, 10000, input, output->GetAddress ());
+    // Send 10000 packets
+    Simulator::Schedule(Seconds(0), &SendPacket, 10000, input, output->GetAddress());
 
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Run();
+    Simulator::Destroy();
 
-  // For this combination of values, we expect about 1 packet in 1000 to be
-  // dropped.  For this specific RNG stream, we see 9991 receptions and 9 drops
-  NS_TEST_ASSERT_MSG_EQ (m_count, 9991, "Wrong number of receptions.");
-  NS_TEST_ASSERT_MSG_EQ (m_drops, 9, "Wrong number of drops.");
+    // For this combination of values, we expect about 1 packet in 1000 to be
+    // dropped.  For this specific RNG stream, we see 9991 receptions and 9 drops
+    NS_TEST_ASSERT_MSG_EQ(m_count, 9991, "Wrong number of receptions.");
+    NS_TEST_ASSERT_MSG_EQ(m_drops, 9, "Wrong number of drops.");
 }
 
 /**
@@ -178,97 +190,103 @@ ErrorModelSimple::DoRun ()
  */
 class BurstErrorModelSimple : public TestCase
 {
-public:
-  BurstErrorModelSimple ();
-  ~BurstErrorModelSimple () override;
+  public:
+    BurstErrorModelSimple();
+    ~BurstErrorModelSimple() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Receive form a NetDevice
-   * \param nd The NetDevice.
-   * \param p The received packet.
-   * \param protocol The protocol received.
-   * \param addr The sender address.
-   * \return True on success.
-   */
-  bool Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
-  /**
-   * Register a Drop
-   * \param p The dropped packet
-   */
-  void DropEvent (Ptr<const Packet> p);
+  private:
+    void DoRun() override;
+    /**
+     * Receive form a NetDevice
+     * \param nd The NetDevice.
+     * \param p The received packet.
+     * \param protocol The protocol received.
+     * \param addr The sender address.
+     * \return True on success.
+     */
+    bool Receive(Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
+    /**
+     * Register a Drop
+     * \param p The dropped packet
+     */
+    void DropEvent(Ptr<const Packet> p);
 
-  uint32_t m_count; //!< The received packets counter.
-  uint32_t m_drops; //!< The dropped packets counter.
+    uint32_t m_count; //!< The received packets counter.
+    uint32_t m_drops; //!< The dropped packets counter.
 };
 
 // Add some help text to this case to describe what it is intended to test
-BurstErrorModelSimple::BurstErrorModelSimple ()
-  : TestCase ("ErrorModel and PhyRxDrop trace for SimpleNetDevice"), m_count (0), m_drops (0)
+BurstErrorModelSimple::BurstErrorModelSimple()
+    : TestCase("ErrorModel and PhyRxDrop trace for SimpleNetDevice"),
+      m_count(0),
+      m_drops(0)
 {
 }
 
-BurstErrorModelSimple::~BurstErrorModelSimple ()
+BurstErrorModelSimple::~BurstErrorModelSimple()
 {
 }
 
 bool
-BurstErrorModelSimple::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr)
+BurstErrorModelSimple::Receive(Ptr<NetDevice> nd,
+                               Ptr<const Packet> p,
+                               uint16_t protocol,
+                               const Address& addr)
 {
-  m_count++;
-  return true;
+    m_count++;
+    return true;
 }
 
 void
-BurstErrorModelSimple::DropEvent (Ptr<const Packet> p)
+BurstErrorModelSimple::DropEvent(Ptr<const Packet> p)
 {
-  m_drops++;
+    m_drops++;
 }
 
 void
-BurstErrorModelSimple::DoRun ()
+BurstErrorModelSimple::DoRun()
 {
-  // Set some arbitrary deterministic values
-  RngSeedManager::SetSeed (5);
-  RngSeedManager::SetRun (8);
+    // Set some arbitrary deterministic values
+    RngSeedManager::SetSeed(5);
+    RngSeedManager::SetRun(8);
 
-  Ptr<Node> a = CreateObject<Node> ();
-  Ptr<Node> b = CreateObject<Node> ();
+    Ptr<Node> a = CreateObject<Node>();
+    Ptr<Node> b = CreateObject<Node>();
 
-  Ptr<SimpleNetDevice> input = CreateObject<SimpleNetDevice> ();
-  Ptr<SimpleNetDevice> output = CreateObject<SimpleNetDevice> ();
-  Ptr<SimpleChannel> channel = CreateObject<SimpleChannel> ();
-  BuildSimpleTopology (a, b, input, output, channel);
+    Ptr<SimpleNetDevice> input = CreateObject<SimpleNetDevice>();
+    Ptr<SimpleNetDevice> output = CreateObject<SimpleNetDevice>();
+    Ptr<SimpleChannel> channel = CreateObject<SimpleChannel>();
+    BuildSimpleTopology(a, b, input, output, channel);
 
-  output->SetReceiveCallback (MakeCallback (&BurstErrorModelSimple::Receive, this));
-  Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
-  // Set this variable to a specific stream
-  uv->SetStream (50);
+    output->SetReceiveCallback(MakeCallback(&BurstErrorModelSimple::Receive, this));
+    Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
+    // Set this variable to a specific stream
+    uv->SetStream(50);
 
-  Ptr<BurstErrorModel> em = CreateObject<BurstErrorModel> ();
-  em->SetRandomVariable (uv);
-  em->SetAttribute ("ErrorRate", DoubleValue (0.01));
+    Ptr<BurstErrorModel> em = CreateObject<BurstErrorModel>();
+    em->SetRandomVariable(uv);
+    em->SetAttribute("ErrorRate", DoubleValue(0.01));
 
-  // Assign the underlying error model random variables to specific streams
-  em->AssignStreams (51);
+    // Assign the underlying error model random variables to specific streams
+    em->AssignStreams(51);
 
-  // The below hooks will cause drops and receptions to be counted
-  output->SetAttribute ("ReceiveErrorModel", PointerValue (em));
-  output->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&BurstErrorModelSimple::DropEvent, this));
+    // The below hooks will cause drops and receptions to be counted
+    output->SetAttribute("ReceiveErrorModel", PointerValue(em));
+    output->TraceConnectWithoutContext("PhyRxDrop",
+                                       MakeCallback(&BurstErrorModelSimple::DropEvent, this));
 
-  // Send 10000 packets
-  Simulator::Schedule (Seconds (0), &SendPacket, 10000, input, output->GetAddress ());
+    // Send 10000 packets
+    Simulator::Schedule(Seconds(0), &SendPacket, 10000, input, output->GetAddress());
 
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Run();
+    Simulator::Destroy();
 
-  // With the burst error rate to be 0.01 and the burst size to be from 1 to 4,
-  // we expect about 2.5 packets being dropped every 1000 packets.
-  // That means for 10000 packets, we expect a total of about 250 packet drops.
-  // For this specific RNG seed, we see 9740 receptions and 260 drops.
-  NS_TEST_ASSERT_MSG_EQ (m_count, 9740, "Wrong number of receptions.");
-  NS_TEST_ASSERT_MSG_EQ (m_drops, 260 , "Wrong number of drops.");
+    // With the burst error rate to be 0.01 and the burst size to be from 1 to 4,
+    // we expect about 2.5 packets being dropped every 1000 packets.
+    // That means for 10000 packets, we expect a total of about 250 packet drops.
+    // For this specific RNG seed, we see 9740 receptions and 260 drops.
+    NS_TEST_ASSERT_MSG_EQ(m_count, 9740, "Wrong number of receptions.");
+    NS_TEST_ASSERT_MSG_EQ(m_drops, 260, "Wrong number of drops.");
 }
 
 /**
@@ -283,15 +301,15 @@ BurstErrorModelSimple::DoRun ()
  */
 class ErrorModelTestSuite : public TestSuite
 {
-public:
-  ErrorModelTestSuite ();
+  public:
+    ErrorModelTestSuite();
 };
 
-ErrorModelTestSuite::ErrorModelTestSuite ()
-  : TestSuite ("error-model", UNIT)
+ErrorModelTestSuite::ErrorModelTestSuite()
+    : TestSuite("error-model", UNIT)
 {
-  AddTestCase (new ErrorModelSimple, TestCase::QUICK);
-  AddTestCase (new BurstErrorModelSimple, TestCase::QUICK);
+    AddTestCase(new ErrorModelSimple, TestCase::QUICK);
+    AddTestCase(new BurstErrorModelSimple, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

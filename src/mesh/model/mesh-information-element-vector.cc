@@ -19,9 +19,11 @@
  */
 
 #include "mesh-information-element-vector.h"
-#include "ns3/packet.h"
-#include <algorithm>
+
 #include "ns3/hwmp-protocol.h"
+#include "ns3/packet.h"
+
+#include <algorithm>
 // All information elements:
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/ie-dot11s-configuration.h"
@@ -34,86 +36,85 @@
 #include "ns3/ie-dot11s-preq.h"
 #include "ns3/ie-dot11s-rann.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (MeshInformationElementVector);
+NS_OBJECT_ENSURE_REGISTERED(MeshInformationElementVector);
 
-MeshInformationElementVector::MeshInformationElementVector ()
+MeshInformationElementVector::MeshInformationElementVector()
 {
 }
 
-MeshInformationElementVector::~MeshInformationElementVector ()
+MeshInformationElementVector::~MeshInformationElementVector()
 {
-}
-
-
-TypeId
-MeshInformationElementVector::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::MeshInformationElementVector")
-    .SetParent<WifiInformationElementVector> ()
-    .SetGroupName ("Mesh")
-    .AddConstructor<MeshInformationElementVector> ();
-  return tid;
 }
 
 TypeId
-MeshInformationElementVector::GetInstanceTypeId () const
+MeshInformationElementVector::GetTypeId()
 {
-  return GetTypeId ();
+    static TypeId tid = TypeId("ns3::MeshInformationElementVector")
+                            .SetParent<WifiInformationElementVector>()
+                            .SetGroupName("Mesh")
+                            .AddConstructor<MeshInformationElementVector>();
+    return tid;
+}
+
+TypeId
+MeshInformationElementVector::GetInstanceTypeId() const
+{
+    return GetTypeId();
 }
 
 uint32_t
-MeshInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
+MeshInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  uint8_t id = i.ReadU8 ();
-  uint8_t length = i.ReadU8 ();
-  i.Prev (2);
-  Ptr<WifiInformationElement> newElement;
-  switch (id)
+    Buffer::Iterator i = start;
+    uint8_t id = i.ReadU8();
+    uint8_t length = i.ReadU8();
+    i.Prev(2);
+    Ptr<WifiInformationElement> newElement;
+    switch (id)
     {
     case IE_MESH_CONFIGURATION:
-      newElement = Create<dot11s::IeConfiguration> ();
-      break;
+        newElement = Create<dot11s::IeConfiguration>();
+        break;
     case IE_MESH_ID:
-      newElement = Create<dot11s::IeMeshId> ();
-      break;
+        newElement = Create<dot11s::IeMeshId>();
+        break;
     case IE_MESH_LINK_METRIC_REPORT:
-      newElement = Create<dot11s::IeLinkMetricReport> ();
-      break;
+        newElement = Create<dot11s::IeLinkMetricReport>();
+        break;
     case IE_MESH_PEERING_MANAGEMENT:
-      newElement = Create<dot11s::IePeerManagement> ();
-      break;
+        newElement = Create<dot11s::IePeerManagement>();
+        break;
     case IE_BEACON_TIMING:
-      newElement = Create<dot11s::IeBeaconTiming> ();
-      break;
+        newElement = Create<dot11s::IeBeaconTiming>();
+        break;
     case IE_RANN:
-      newElement = Create<dot11s::IeRann> ();
-      break;
+        newElement = Create<dot11s::IeRann>();
+        break;
     case IE_PREQ:
-      newElement = Create<dot11s::IePreq> ();
-      break;
+        newElement = Create<dot11s::IePreq>();
+        break;
     case IE_PREP:
-      newElement = Create<dot11s::IePrep> ();
-      break;
+        newElement = Create<dot11s::IePrep>();
+        break;
     case IE_PERR:
-      newElement = Create<dot11s::IePerr> ();
-      break;
+        newElement = Create<dot11s::IePerr>();
+        break;
     case IE11S_MESH_PEERING_PROTOCOL_VERSION:
-      newElement = Create<dot11s::IePeeringProtocol> ();
-      break;
+        newElement = Create<dot11s::IePeeringProtocol>();
+        break;
     default:
-      return WifiInformationElementVector::DeserializeSingleIe (i);
+        return WifiInformationElementVector::DeserializeSingleIe(i);
     }
-  if (GetSize () + length > m_maxSize)
+    if (GetSize() + length > m_maxSize)
     {
-      NS_FATAL_ERROR ("Check max size for information element!");
+        NS_FATAL_ERROR("Check max size for information element!");
     }
-  i = newElement->Deserialize (i);
-  m_elements.push_back (newElement);
-  return i.GetDistanceFrom (start);
+    i = newElement->Deserialize(i);
+    m_elements.push_back(newElement);
+    return i.GetDistanceFrom(start);
 }
-
 
 } // namespace ns3

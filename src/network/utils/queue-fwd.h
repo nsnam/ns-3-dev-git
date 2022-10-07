@@ -19,8 +19,9 @@
 #ifndef QUEUE_FWD_H
 #define QUEUE_FWD_H
 
-#include <list>
 #include "ns3/ptr.h"
+
+#include <list>
 
 /**
  * \file
@@ -28,7 +29,8 @@
  * Forward declaration of template class Queue.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 // Forward declaration of template class Queue specifying
 // the default value for the template template parameter Container

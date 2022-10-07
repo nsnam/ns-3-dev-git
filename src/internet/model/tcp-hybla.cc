@@ -18,162 +18,161 @@
  */
 
 #include "tcp-hybla.h"
+
 #include "tcp-socket-state.h"
 
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("TcpHybla");
-NS_OBJECT_ENSURE_REGISTERED (TcpHybla);
+NS_LOG_COMPONENT_DEFINE("TcpHybla");
+NS_OBJECT_ENSURE_REGISTERED(TcpHybla);
 
 TypeId
-TcpHybla::GetTypeId ()
+TcpHybla::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpHybla")
-    .SetParent<TcpNewReno> ()
-    .AddConstructor<TcpHybla> ()
-    .SetGroupName ("Internet")
-    .AddAttribute ("RRTT", "Reference RTT",
-                   TimeValue (MilliSeconds (50)),
-                   MakeTimeAccessor (&TcpHybla::m_rRtt),
-                   MakeTimeChecker ())
-    .AddTraceSource ("Rho",
-                     "Rho parameter of Hybla",
-                     MakeTraceSourceAccessor (&TcpHybla::m_rho),
-                     "ns3::TracedValueCallback::Double")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpHybla")
+                            .SetParent<TcpNewReno>()
+                            .AddConstructor<TcpHybla>()
+                            .SetGroupName("Internet")
+                            .AddAttribute("RRTT",
+                                          "Reference RTT",
+                                          TimeValue(MilliSeconds(50)),
+                                          MakeTimeAccessor(&TcpHybla::m_rRtt),
+                                          MakeTimeChecker())
+                            .AddTraceSource("Rho",
+                                            "Rho parameter of Hybla",
+                                            MakeTraceSourceAccessor(&TcpHybla::m_rho),
+                                            "ns3::TracedValueCallback::Double");
+    return tid;
 }
 
-TcpHybla::TcpHybla ()
-  : TcpNewReno (),
-  m_rho (1.0),
-  m_cWndCnt (0)
+TcpHybla::TcpHybla()
+    : TcpNewReno(),
+      m_rho(1.0),
+      m_cWndCnt(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpHybla::TcpHybla (const TcpHybla &sock)
-  : TcpNewReno (sock),
-  m_rho (sock.m_rho),
-  m_cWndCnt (sock.m_cWndCnt)
+TcpHybla::TcpHybla(const TcpHybla& sock)
+    : TcpNewReno(sock),
+      m_rho(sock.m_rho),
+      m_cWndCnt(sock.m_cWndCnt)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpHybla::~TcpHybla ()
+TcpHybla::~TcpHybla()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-void
-TcpHybla::RecalcParam (const Ptr<TcpSocketState> &tcb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rho = std::max ((double) tcb->m_minRtt.GetMilliSeconds () / m_rRtt.GetMilliSeconds (), 1.0);
-
-  NS_ASSERT (m_rho > 0.0);
-  NS_LOG_DEBUG ("Calculated rho=" << m_rho);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-TcpHybla::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                     const Time &rtt)
+TcpHybla::RecalcParam(const Ptr<TcpSocketState>& tcb)
 {
-  NS_LOG_FUNCTION (this << tcb << segmentsAcked << rtt);
+    NS_LOG_FUNCTION(this);
 
-  if (rtt == tcb->m_minRtt)
+    m_rho = std::max((double)tcb->m_minRtt.GetMilliSeconds() / m_rRtt.GetMilliSeconds(), 1.0);
+
+    NS_ASSERT(m_rho > 0.0);
+    NS_LOG_DEBUG("Calculated rho=" << m_rho);
+}
+
+void
+TcpHybla::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt)
+{
+    NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
+
+    if (rtt == tcb->m_minRtt)
     {
-      RecalcParam (tcb);
-      NS_LOG_DEBUG ("min rtt seen: " << rtt);
+        RecalcParam(tcb);
+        NS_LOG_DEBUG("min rtt seen: " << rtt);
     }
 }
 
 uint32_t
-TcpHybla::SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
+TcpHybla::SlowStart(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
-  NS_LOG_FUNCTION (this << tcb << segmentsAcked);
+    NS_LOG_FUNCTION(this << tcb << segmentsAcked);
 
-  NS_ASSERT (tcb->m_cWnd <= tcb->m_ssThresh);
+    NS_ASSERT(tcb->m_cWnd <= tcb->m_ssThresh);
 
-  if (segmentsAcked >= 1)
+    if (segmentsAcked >= 1)
     {
-      /*
-       * slow start
-       * INC = 2^RHO - 1
-       */
+        /*
+         * slow start
+         * INC = 2^RHO - 1
+         */
 
-      double increment = std::pow (2, m_rho) - 1.0;
-      uint32_t incr = static_cast<uint32_t> (increment * tcb->m_segmentSize);
-      NS_LOG_INFO ("Slow start: inc=" << increment);
+        double increment = std::pow(2, m_rho) - 1.0;
+        uint32_t incr = static_cast<uint32_t>(increment * tcb->m_segmentSize);
+        NS_LOG_INFO("Slow start: inc=" << increment);
 
-      tcb->m_cWnd = std::min (tcb->m_cWnd + incr, tcb->m_ssThresh);
+        tcb->m_cWnd = std::min(tcb->m_cWnd + incr, tcb->m_ssThresh);
 
-      NS_LOG_INFO ("In SlowStart, updated to cwnd " << tcb->m_cWnd <<
-                   " ssthresh " << tcb->m_ssThresh <<
-                   " with an increment of " << increment * tcb->m_segmentSize);
+        NS_LOG_INFO("In SlowStart, updated to cwnd " << tcb->m_cWnd << " ssthresh "
+                                                     << tcb->m_ssThresh << " with an increment of "
+                                                     << increment * tcb->m_segmentSize);
 
-      return segmentsAcked - 1;
+        return segmentsAcked - 1;
     }
 
-  return 0;
+    return 0;
 }
 
 void
-TcpHybla::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
+TcpHybla::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
-  NS_LOG_FUNCTION (this << tcb << segmentsAcked);
+    NS_LOG_FUNCTION(this << tcb << segmentsAcked);
 
-  uint32_t segCwnd;
-  double increment;
+    uint32_t segCwnd;
+    double increment;
 
-  while (segmentsAcked > 0)
+    while (segmentsAcked > 0)
     {
-      /*
-       * congestion avoidance
-       * INC = RHO^2 / W
-       */
-      segCwnd = tcb->GetCwndInSegments ();
-      increment = std::pow (m_rho, 2) / static_cast<double> (segCwnd);
+        /*
+         * congestion avoidance
+         * INC = RHO^2 / W
+         */
+        segCwnd = tcb->GetCwndInSegments();
+        increment = std::pow(m_rho, 2) / static_cast<double>(segCwnd);
 
-      m_cWndCnt += increment;
-      segmentsAcked -= 1;
+        m_cWndCnt += increment;
+        segmentsAcked -= 1;
     }
 
-  if (m_cWndCnt >= 1.0)
+    if (m_cWndCnt >= 1.0)
     {
-      // double to int truncates every time.
-      uint32_t inc = static_cast<uint32_t> (m_cWndCnt);
-      m_cWndCnt -= inc;
+        // double to int truncates every time.
+        uint32_t inc = static_cast<uint32_t>(m_cWndCnt);
+        m_cWndCnt -= inc;
 
-      NS_ASSERT (m_cWndCnt >= 0.0);
+        NS_ASSERT(m_cWndCnt >= 0.0);
 
-      /* This leaves space for a tcp pacing implementation; it would be easy
-         to setup a limit on the maximum increment of the cWnd per ACK received.
-         The remaining increment is leaved for the next ACK. */
+        /* This leaves space for a tcp pacing implementation; it would be easy
+           to setup a limit on the maximum increment of the cWnd per ACK received.
+           The remaining increment is leaved for the next ACK. */
 
-      tcb->m_cWnd += inc * tcb->m_segmentSize;
+        tcb->m_cWnd += inc * tcb->m_segmentSize;
 
-
-      NS_LOG_INFO ("In CongAvoid, updated to cwnd " << tcb->m_cWnd <<
-                   " ssthresh " << tcb->m_ssThresh <<
-                   " with an increment of " << inc * tcb->m_segmentSize);
+        NS_LOG_INFO("In CongAvoid, updated to cwnd " << tcb->m_cWnd << " ssthresh "
+                                                     << tcb->m_ssThresh << " with an increment of "
+                                                     << inc * tcb->m_segmentSize);
     }
 }
 
 Ptr<TcpCongestionOps>
-TcpHybla::Fork ()
+TcpHybla::Fork()
 {
-  return CopyObject<TcpHybla> (this);
+    return CopyObject<TcpHybla>(this);
 }
 
 std::string
-TcpHybla::GetName () const
+TcpHybla::GetName() const
 {
-  return "TcpHybla";
+    return "TcpHybla";
 }
-
 
 } // namespace ns3

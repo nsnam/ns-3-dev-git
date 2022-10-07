@@ -19,156 +19,155 @@
  */
 
 #include "bs-uplink-scheduler.h"
-#include "bs-net-device.h"
-#include "ns3/simulator.h"
-#include "cid.h"
-#include "burst-profile-manager.h"
-#include "ss-manager.h"
-#include "ns3/log.h"
-#include "ns3/uinteger.h"
-#include "ss-record.h"
-#include "service-flow.h"
-#include "service-flow-record.h"
-#include "bs-link-manager.h"
+
 #include "bandwidth-manager.h"
+#include "bs-link-manager.h"
+#include "bs-net-device.h"
+#include "burst-profile-manager.h"
+#include "cid.h"
+#include "service-flow-record.h"
+#include "service-flow.h"
+#include "ss-manager.h"
+#include "ss-record.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/simulator.h"
+#include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("UplinkScheduler");
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (UplinkScheduler);
+NS_LOG_COMPONENT_DEFINE("UplinkScheduler");
 
-UplinkScheduler::UplinkScheduler ()
-  : m_bs (nullptr),
-    m_timeStampIrInterval (Seconds (0)),
-    m_nrIrOppsAllocated (0),
-    m_isIrIntrvlAllocated (false),
-    m_isInvIrIntrvlAllocated (false),
-    m_dcdTimeStamp (Simulator::Now ()),
-    m_ucdTimeStamp (Simulator::Now ())
+NS_OBJECT_ENSURE_REGISTERED(UplinkScheduler);
+
+UplinkScheduler::UplinkScheduler()
+    : m_bs(nullptr),
+      m_timeStampIrInterval(Seconds(0)),
+      m_nrIrOppsAllocated(0),
+      m_isIrIntrvlAllocated(false),
+      m_isInvIrIntrvlAllocated(false),
+      m_dcdTimeStamp(Simulator::Now()),
+      m_ucdTimeStamp(Simulator::Now())
 {
 }
 
-UplinkScheduler::UplinkScheduler (Ptr<BaseStationNetDevice> bs)
-  : m_bs (bs),
-    m_timeStampIrInterval (Seconds (0)),
-    m_nrIrOppsAllocated (0),
-    m_isIrIntrvlAllocated (false),
-    m_isInvIrIntrvlAllocated (false),
-    m_dcdTimeStamp (Simulator::Now ()),
-    m_ucdTimeStamp (Simulator::Now ())
+UplinkScheduler::UplinkScheduler(Ptr<BaseStationNetDevice> bs)
+    : m_bs(bs),
+      m_timeStampIrInterval(Seconds(0)),
+      m_nrIrOppsAllocated(0),
+      m_isIrIntrvlAllocated(false),
+      m_isInvIrIntrvlAllocated(false),
+      m_dcdTimeStamp(Simulator::Now()),
+      m_ucdTimeStamp(Simulator::Now())
 {
 }
 
-UplinkScheduler::~UplinkScheduler ()
+UplinkScheduler::~UplinkScheduler()
 {
-  m_bs = nullptr;
-  m_uplinkAllocations.clear ();
+    m_bs = nullptr;
+    m_uplinkAllocations.clear();
 }
+
 void
-UplinkScheduler::InitOnce ()
+UplinkScheduler::InitOnce()
 {
-
 }
 
 TypeId
-UplinkScheduler::GetTypeId ()
+UplinkScheduler::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::UplinkScheduler")
-    .SetParent<Object> ()
-    .SetGroupName("Wimax")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::UplinkScheduler").SetParent<Object>().SetGroupName("Wimax");
+    return tid;
 }
 
 uint8_t
-UplinkScheduler::GetNrIrOppsAllocated () const
+UplinkScheduler::GetNrIrOppsAllocated() const
 {
-  return m_nrIrOppsAllocated;
+    return m_nrIrOppsAllocated;
 }
 
 void
-UplinkScheduler::SetNrIrOppsAllocated (uint8_t nrIrOppsAllocated)
+UplinkScheduler::SetNrIrOppsAllocated(uint8_t nrIrOppsAllocated)
 {
-  m_nrIrOppsAllocated = nrIrOppsAllocated;
+    m_nrIrOppsAllocated = nrIrOppsAllocated;
 }
 
 bool
-UplinkScheduler::GetIsIrIntrvlAllocated () const
+UplinkScheduler::GetIsIrIntrvlAllocated() const
 {
-  return m_isIrIntrvlAllocated;
+    return m_isIrIntrvlAllocated;
 }
 
 void
-UplinkScheduler::SetIsIrIntrvlAllocated (bool isIrIntrvlAllocated)
+UplinkScheduler::SetIsIrIntrvlAllocated(bool isIrIntrvlAllocated)
 {
-
-  m_isIrIntrvlAllocated = isIrIntrvlAllocated;
+    m_isIrIntrvlAllocated = isIrIntrvlAllocated;
 }
 
 bool
-UplinkScheduler::GetIsInvIrIntrvlAllocated () const
+UplinkScheduler::GetIsInvIrIntrvlAllocated() const
 {
-
-  return m_isInvIrIntrvlAllocated;
+    return m_isInvIrIntrvlAllocated;
 }
 
 void
-UplinkScheduler::SetIsInvIrIntrvlAllocated (bool isInvIrIntrvlAllocated)
+UplinkScheduler::SetIsInvIrIntrvlAllocated(bool isInvIrIntrvlAllocated)
 {
-  m_isInvIrIntrvlAllocated = isInvIrIntrvlAllocated;
+    m_isInvIrIntrvlAllocated = isInvIrIntrvlAllocated;
 }
 
 Time
-UplinkScheduler::GetDcdTimeStamp () const
+UplinkScheduler::GetDcdTimeStamp() const
 {
-  return m_dcdTimeStamp;
+    return m_dcdTimeStamp;
 }
 
 void
-UplinkScheduler::SetDcdTimeStamp (Time dcdTimeStamp)
+UplinkScheduler::SetDcdTimeStamp(Time dcdTimeStamp)
 {
-  m_dcdTimeStamp = dcdTimeStamp;
+    m_dcdTimeStamp = dcdTimeStamp;
 }
 
 Time
-UplinkScheduler::GetUcdTimeStamp () const
+UplinkScheduler::GetUcdTimeStamp() const
 {
-  return m_ucdTimeStamp;
+    return m_ucdTimeStamp;
 }
 
 void
-UplinkScheduler::SetUcdTimeStamp (Time ucdTimeStamp)
+UplinkScheduler::SetUcdTimeStamp(Time ucdTimeStamp)
 {
-  m_ucdTimeStamp = ucdTimeStamp;
+    m_ucdTimeStamp = ucdTimeStamp;
 }
 
 std::list<OfdmUlMapIe>
-UplinkScheduler::GetUplinkAllocations () const
+UplinkScheduler::GetUplinkAllocations() const
 {
-  return m_uplinkAllocations;
+    return m_uplinkAllocations;
 }
 
 Time
-UplinkScheduler::GetTimeStampIrInterval ()
+UplinkScheduler::GetTimeStampIrInterval()
 {
-  return m_timeStampIrInterval;
+    return m_timeStampIrInterval;
 }
 
 void
-UplinkScheduler::SetTimeStampIrInterval (Time timeStampIrInterval)
+UplinkScheduler::SetTimeStampIrInterval(Time timeStampIrInterval)
 {
-  m_timeStampIrInterval = timeStampIrInterval;
+    m_timeStampIrInterval = timeStampIrInterval;
 }
 
 Ptr<BaseStationNetDevice>
-UplinkScheduler::GetBs ()
+UplinkScheduler::GetBs()
 {
-  return m_bs;
+    return m_bs;
 }
+
 void
-UplinkScheduler::SetBs (Ptr<BaseStationNetDevice> bs)
+UplinkScheduler::SetBs(Ptr<BaseStationNetDevice> bs)
 {
-  m_bs = bs;
+    m_bs = bs;
 }
 } // namespace ns3

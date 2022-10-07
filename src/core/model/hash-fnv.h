@@ -29,11 +29,14 @@
  * \brief ns3::Hash::Function::Fnv1a declaration.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace Hash {
+namespace Hash
+{
 
-namespace Function {
+namespace Function
+{
 
 /**
  *  \ingroup hash
@@ -52,66 +55,67 @@ namespace Function {
  */
 class Fnv1a : public Implementation
 {
-public:
-  /**
-   * Constructor
-   */
-  Fnv1a ();
-  /**
-   * Compute 32-bit hash of a byte buffer
-   *
-   * Call clear () between calls to GetHash32() to reset the
-   * internal state and hash each buffer separately.
-   *
-   * If you don't call clear() between calls to GetHash32,
-   * you can hash successive buffers.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] buffer pointer to the beginning of the buffer
-   * \param [in] size length of the buffer, in bytes
-   * \return 32-bit hash of the buffer
-   */
-  uint32_t  GetHash32  (const char * buffer, const size_t size) override;
-  /**
-   * Compute 64-bit hash of a byte buffer.
-   *
-   * Call clear () between calls to GetHash64() to reset the
-   * internal state and hash each buffer separately.
-   *
-   * If you don't call clear() between calls to GetHash64,
-   * you can hash successive buffers.  The final return value
-   * will be the cumulative hash across all calls.
-   *
-   * \param [in] buffer pointer to the beginning of the buffer
-   * \param [in] size length of the buffer, in bytes
-   * \return 64-bit hash of the buffer
-   */
-  uint64_t  GetHash64  (const char * buffer, const size_t size) override;
-  /**
-   * Restore initial state
-   */
-  void clear () override;
+  public:
+    /**
+     * Constructor
+     */
+    Fnv1a();
+    /**
+     * Compute 32-bit hash of a byte buffer
+     *
+     * Call clear () between calls to GetHash32() to reset the
+     * internal state and hash each buffer separately.
+     *
+     * If you don't call clear() between calls to GetHash32,
+     * you can hash successive buffers.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] buffer pointer to the beginning of the buffer
+     * \param [in] size length of the buffer, in bytes
+     * \return 32-bit hash of the buffer
+     */
+    uint32_t GetHash32(const char* buffer, const size_t size) override;
+    /**
+     * Compute 64-bit hash of a byte buffer.
+     *
+     * Call clear () between calls to GetHash64() to reset the
+     * internal state and hash each buffer separately.
+     *
+     * If you don't call clear() between calls to GetHash64,
+     * you can hash successive buffers.  The final return value
+     * will be the cumulative hash across all calls.
+     *
+     * \param [in] buffer pointer to the beginning of the buffer
+     * \param [in] size length of the buffer, in bytes
+     * \return 64-bit hash of the buffer
+     */
+    uint64_t GetHash64(const char* buffer, const size_t size) override;
+    /**
+     * Restore initial state
+     */
+    void clear() override;
 
-private:
-  /**
-   * Seed value
-   */
-  enum seed
-  {
-    SEED = 0x8BADF00D  /**< Ate bad food */
-  };
-  /** Cache last hash value, for incremental hashing. */
-  /**@{*/
-  uint32_t m_hash32;
-  uint64_t m_hash64;
-  /**@}*/
+  private:
+    /**
+     * Seed value
+     */
+    enum seed
+    {
+        SEED = 0x8BADF00D /**< Ate bad food */
+    };
 
-};  // class Fnv1a
+    /** Cache last hash value, for incremental hashing. */
+    /**@{*/
+    uint32_t m_hash32;
+    uint64_t m_hash64;
+    /**@}*/
 
-}  // namespace Function
+}; // class Fnv1a
 
-}  // namespace Hash
+} // namespace Function
 
-}  // namespace ns3
+} // namespace Hash
 
-#endif  /* HASH_FNV_H */
+} // namespace ns3
+
+#endif /* HASH_FNV_H */

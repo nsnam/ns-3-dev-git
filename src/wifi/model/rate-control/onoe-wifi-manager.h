@@ -24,7 +24,8 @@
 #include "ns3/traced-value.h"
 #include "ns3/wifi-remote-station-manager.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 struct OnoeWifiRemoteStation;
 
@@ -45,52 +46,56 @@ struct OnoeWifiRemoteStation;
  */
 class OnoeWifiManager : public WifiRemoteStationManager
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  OnoeWifiManager ();
-  ~OnoeWifiManager () override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    OnoeWifiManager();
+    ~OnoeWifiManager() override;
 
+  private:
+    void DoInitialize() override;
+    WifiRemoteStation* DoCreateStation() const override;
+    void DoReportRxOk(WifiRemoteStation* station, double rxSnr, WifiMode txMode) override;
+    void DoReportRtsFailed(WifiRemoteStation* station) override;
+    void DoReportDataFailed(WifiRemoteStation* station) override;
+    void DoReportRtsOk(WifiRemoteStation* station,
+                       double ctsSnr,
+                       WifiMode ctsMode,
+                       double rtsSnr) override;
+    void DoReportDataOk(WifiRemoteStation* station,
+                        double ackSnr,
+                        WifiMode ackMode,
+                        double dataSnr,
+                        uint16_t dataChannelWidth,
+                        uint8_t dataNss) override;
+    void DoReportFinalRtsFailed(WifiRemoteStation* station) override;
+    void DoReportFinalDataFailed(WifiRemoteStation* station) override;
+    WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, uint16_t allowedWidth) override;
+    WifiTxVector DoGetRtsTxVector(WifiRemoteStation* station) override;
 
-private:
-  void DoInitialize () override;
-  WifiRemoteStation * DoCreateStation () const override;
-  void DoReportRxOk (WifiRemoteStation *station,
-                     double rxSnr, WifiMode txMode) override;
-  void DoReportRtsFailed (WifiRemoteStation *station) override;
-  void DoReportDataFailed (WifiRemoteStation *station) override;
-  void DoReportRtsOk (WifiRemoteStation *station,
-                      double ctsSnr, WifiMode ctsMode, double rtsSnr) override;
-  void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
-                       double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) override;
-  void DoReportFinalRtsFailed (WifiRemoteStation *station) override;
-  void DoReportFinalDataFailed (WifiRemoteStation *station) override;
-  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint16_t allowedWidth) override;
-  WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) override;
+    /**
+     * Update the number of retry (both short and long).
+     *
+     * \param station the ONOE wifi remote station
+     */
+    void UpdateRetry(OnoeWifiRemoteStation* station);
+    /**
+     * Update the mode.
+     *
+     * \param station the ONOE wifi remote station
+     */
+    void UpdateMode(OnoeWifiRemoteStation* station);
 
-  /**
-   * Update the number of retry (both short and long).
-   *
-   * \param station the ONOE wifi remote station
-   */
-  void UpdateRetry (OnoeWifiRemoteStation *station);
-  /**
-   * Update the mode.
-   *
-   * \param station the ONOE wifi remote station
-   */
-  void UpdateMode (OnoeWifiRemoteStation *station);
+    Time m_updatePeriod;           ///< update period
+    uint32_t m_addCreditThreshold; ///< add credit threshold
+    uint32_t m_raiseThreshold;     ///< raise threshold
 
-  Time m_updatePeriod; ///< update period
-  uint32_t m_addCreditThreshold; ///< add credit threshold
-  uint32_t m_raiseThreshold; ///< raise threshold
-
-  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
+    TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* ONOE_WIFI_MANAGER_H */

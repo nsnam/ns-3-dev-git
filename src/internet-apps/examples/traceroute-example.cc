@@ -25,14 +25,15 @@
 
 #include "ns3/aodv-module.h"
 #include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
 #include "ns3/point-to-point-module.h"
-#include "ns3/wifi-module.h"
 #include "ns3/v4traceroute-helper.h"
-#include <iostream>
+#include "ns3/wifi-module.h"
+
 #include <cmath>
+#include <iostream>
 
 using namespace ns3;
 
@@ -53,196 +54,205 @@ using namespace ns3;
  */
 class TracerouteExample
 {
-public:
-  TracerouteExample ();
-  /**
-   * \brief Configure script parameters
-   * \param argc is the command line argument count
-   * \param argv is the command line arguments
-   * \return true on successful configuration
-  */
-  bool Configure (int argc, char **argv);
-  /// Run simulation
-  void Run ();
-  /**
-   * Report results
-   * \param os the output stream
-   */
-  void Report (std::ostream & os);
+  public:
+    TracerouteExample();
+    /**
+     * \brief Configure script parameters
+     * \param argc is the command line argument count
+     * \param argv is the command line arguments
+     * \return true on successful configuration
+     */
+    bool Configure(int argc, char** argv);
+    /// Run simulation
+    void Run();
+    /**
+     * Report results
+     * \param os the output stream
+     */
+    void Report(std::ostream& os);
 
-private:
-  // parameters
-  /// Number of nodes
-  uint32_t size;
-  /// Distance between nodes, meters
-  double step;
-  /// Simulation time, seconds
-  double totalTime;
-  /// Write per-device PCAP traces if true
-  bool pcap;
-  /// Print aodv routes if true
-  bool printRoutes;
-  /// nodes used in the example
-  NodeContainer nodes;
-  /// devices used in the example
-  NetDeviceContainer devices;
-  /// interfaces used in the example
-  Ipv4InterfaceContainer interfaces;
+  private:
+    // parameters
+    /// Number of nodes
+    uint32_t size;
+    /// Distance between nodes, meters
+    double step;
+    /// Simulation time, seconds
+    double totalTime;
+    /// Write per-device PCAP traces if true
+    bool pcap;
+    /// Print aodv routes if true
+    bool printRoutes;
+    /// nodes used in the example
+    NodeContainer nodes;
+    /// devices used in the example
+    NetDeviceContainer devices;
+    /// interfaces used in the example
+    Ipv4InterfaceContainer interfaces;
 
-private:
-  /// Create the nodes
-  void CreateNodes ();
-  /// Create the devices
-  void CreateDevices ();
-  /// Create the network
-  void InstallInternetStack ();
-  /// Create the simulation applications
+  private:
+    /// Create the nodes
+    void CreateNodes();
+    /// Create the devices
+    void CreateDevices();
+    /// Create the network
+    void InstallInternetStack();
+    /// Create the simulation applications
 
-  void InstallApplications ();
+    void InstallApplications();
 };
 
-int main (int argc, char **argv)
+int
+main(int argc, char** argv)
 {
-  TracerouteExample test;
-  if (!test.Configure (argc, argv))
+    TracerouteExample test;
+    if (!test.Configure(argc, argv))
     {
-      NS_FATAL_ERROR ("Configuration failed. Aborted.");
+        NS_FATAL_ERROR("Configuration failed. Aborted.");
     }
 
-  test.Run ();
-  test.Report (std::cout);
-  return 0;
+    test.Run();
+    test.Report(std::cout);
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
-TracerouteExample::TracerouteExample ()
-  : size (10),
-    step (50),
-    totalTime (100),
-    pcap (false),
-    printRoutes (false)
+TracerouteExample::TracerouteExample()
+    : size(10),
+      step(50),
+      totalTime(100),
+      pcap(false),
+      printRoutes(false)
 {
 }
 
 bool
-TracerouteExample::Configure (int argc, char **argv)
+TracerouteExample::Configure(int argc, char** argv)
 {
-  // Enable AODV logs by default. Comment this if too noisy
-  // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
+    // Enable AODV logs by default. Comment this if too noisy
+    // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
 
-  SeedManager::SetSeed (12345);
-  CommandLine cmd (__FILE__);
+    SeedManager::SetSeed(12345);
+    CommandLine cmd(__FILE__);
 
-  cmd.AddValue ("pcap", "Write PCAP traces.", pcap);
-  cmd.AddValue ("printRoutes", "Print routing table dumps.", printRoutes);
-  cmd.AddValue ("size", "Number of nodes.", size);
-  cmd.AddValue ("time", "Simulation time, s.", totalTime);
-  cmd.AddValue ("step", "Grid step, m", step);
+    cmd.AddValue("pcap", "Write PCAP traces.", pcap);
+    cmd.AddValue("printRoutes", "Print routing table dumps.", printRoutes);
+    cmd.AddValue("size", "Number of nodes.", size);
+    cmd.AddValue("time", "Simulation time, s.", totalTime);
+    cmd.AddValue("step", "Grid step, m", step);
 
-  cmd.Parse (argc, argv);
-  return true;
+    cmd.Parse(argc, argv);
+    return true;
 }
 
 void
-TracerouteExample::Run ()
+TracerouteExample::Run()
 {
-  CreateNodes ();
+    CreateNodes();
 
-  CreateDevices ();
+    CreateDevices();
 
-  InstallInternetStack ();
+    InstallInternetStack();
 
-  InstallApplications ();
+    InstallApplications();
 
-  std::cout << "Starting simulation for " << totalTime << " s ...\n";
+    std::cout << "Starting simulation for " << totalTime << " s ...\n";
 
-  Simulator::Stop (Seconds (totalTime));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Stop(Seconds(totalTime));
+    Simulator::Run();
+    Simulator::Destroy();
 }
 
 void
-TracerouteExample::Report (std::ostream &)
+TracerouteExample::Report(std::ostream&)
 {
 }
 
 void
-TracerouteExample::CreateNodes ()
+TracerouteExample::CreateNodes()
 {
-  std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
-  nodes.Create (size);
-  // Name nodes
-  for (uint32_t i = 0; i < size; ++i)
+    std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
+    nodes.Create(size);
+    // Name nodes
+    for (uint32_t i = 0; i < size; ++i)
     {
-      std::ostringstream os;
-      os << "node-" << i;
-      Names::Add (os.str (), nodes.Get (i));
+        std::ostringstream os;
+        os << "node-" << i;
+        Names::Add(os.str(), nodes.Get(i));
     }
-  // Create static grid
-  MobilityHelper mobility;
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (step),
-                                 "DeltaY", DoubleValue (0),
-                                 "GridWidth", UintegerValue (size),
-                                 "LayoutType", StringValue ("RowFirst"));
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (nodes);
+    // Create static grid
+    MobilityHelper mobility;
+    mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                  "MinX",
+                                  DoubleValue(0.0),
+                                  "MinY",
+                                  DoubleValue(0.0),
+                                  "DeltaX",
+                                  DoubleValue(step),
+                                  "DeltaY",
+                                  DoubleValue(0),
+                                  "GridWidth",
+                                  UintegerValue(size),
+                                  "LayoutType",
+                                  StringValue("RowFirst"));
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(nodes);
 }
 
 void
-TracerouteExample::CreateDevices ()
+TracerouteExample::CreateDevices()
 {
-  WifiMacHelper wifiMac;
-  wifiMac.SetType ("ns3::AdhocWifiMac");
-  YansWifiPhyHelper wifiPhy;
-  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
-  WifiHelper wifi;
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
-  devices = wifi.Install (wifiPhy, wifiMac, nodes);
+    WifiMacHelper wifiMac;
+    wifiMac.SetType("ns3::AdhocWifiMac");
+    YansWifiPhyHelper wifiPhy;
+    YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
+    wifiPhy.SetChannel(wifiChannel.Create());
+    WifiHelper wifi;
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                 "DataMode",
+                                 StringValue("OfdmRate6Mbps"),
+                                 "RtsCtsThreshold",
+                                 UintegerValue(0));
+    devices = wifi.Install(wifiPhy, wifiMac, nodes);
 
-  if (pcap)
+    if (pcap)
     {
-      wifiPhy.EnablePcapAll (std::string ("aodv"));
-    }
-}
-
-void
-TracerouteExample::InstallInternetStack ()
-{
-  AodvHelper aodv;
-  // you can configure AODV attributes here using aodv.Set(name, value)
-  InternetStackHelper stack;
-  stack.SetRoutingHelper (aodv); // has effect on the next Install ()
-  stack.Install (nodes);
-  Ipv4AddressHelper address;
-  address.SetBase ("10.0.0.0", "255.0.0.0");
-  interfaces = address.Assign (devices);
-
-  if (printRoutes)
-    {
-      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("aodv.routes", std::ios::out);
-      aodv.PrintRoutingTableAllAt (Seconds (8), routingStream);
-
+        wifiPhy.EnablePcapAll(std::string("aodv"));
     }
 }
 
 void
-TracerouteExample::InstallApplications ()
+TracerouteExample::InstallInternetStack()
 {
-  V4TraceRouteHelper traceroute (Ipv4Address ("10.0.0.10")); //size - 1
-  traceroute.SetAttribute ("Verbose", BooleanValue (true));
-  ApplicationContainer p = traceroute.Install (nodes.Get (0));
+    AodvHelper aodv;
+    // you can configure AODV attributes here using aodv.Set(name, value)
+    InternetStackHelper stack;
+    stack.SetRoutingHelper(aodv); // has effect on the next Install ()
+    stack.Install(nodes);
+    Ipv4AddressHelper address;
+    address.SetBase("10.0.0.0", "255.0.0.0");
+    interfaces = address.Assign(devices);
 
-  // Used when we wish to dump the traceroute results into a file
-
-  //Ptr<OutputStreamWrapper> printstrm = Create<OutputStreamWrapper> ("mytrace", std::ios::out);
-  //traceroute.PrintTraceRouteAt(nodes.Get(0),printstrm);
-
-  p.Start (Seconds (0));
-  p.Stop (Seconds (totalTime) - Seconds (0.001));
-
+    if (printRoutes)
+    {
+        Ptr<OutputStreamWrapper> routingStream =
+            Create<OutputStreamWrapper>("aodv.routes", std::ios::out);
+        aodv.PrintRoutingTableAllAt(Seconds(8), routingStream);
+    }
 }
 
+void
+TracerouteExample::InstallApplications()
+{
+    V4TraceRouteHelper traceroute(Ipv4Address("10.0.0.10")); // size - 1
+    traceroute.SetAttribute("Verbose", BooleanValue(true));
+    ApplicationContainer p = traceroute.Install(nodes.Get(0));
+
+    // Used when we wish to dump the traceroute results into a file
+
+    // Ptr<OutputStreamWrapper> printstrm = Create<OutputStreamWrapper> ("mytrace", std::ios::out);
+    // traceroute.PrintTraceRouteAt(nodes.Get(0),printstrm);
+
+    p.Start(Seconds(0));
+    p.Stop(Seconds(totalTime) - Seconds(0.001));
+}

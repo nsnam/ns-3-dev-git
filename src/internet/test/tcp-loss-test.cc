@@ -16,14 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <list>
-#include "ns3/log.h"
-#include "ns3/error-model.h"
 #include "tcp-general-test.h"
+
+#include "ns3/error-model.h"
+#include "ns3/log.h"
+
+#include <list>
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("TcpLossTestSuite");
+NS_LOG_COMPONENT_DEFINE("TcpLossTestSuite");
 
 /**
  * \ingroup internet-test
@@ -53,113 +55,124 @@ NS_LOG_COMPONENT_DEFINE ("TcpLossTestSuite");
  */
 class TcpLargeTransferLossTest : public TcpGeneralTest
 {
-public:
-  /**
-   * \brief Constructor
-   *
-   * \param firstLoss First packet number to force loss
-   * \param secondLoss Second packet number to force loss
-   * \param lastSegment Last packet number to transmit
-   * \param desc Description about the test
-   */
-  TcpLargeTransferLossTest (uint32_t firstLoss, uint32_t secondLoss, uint32_t lastSegment, const std::string& desc);
+  public:
+    /**
+     * \brief Constructor
+     *
+     * \param firstLoss First packet number to force loss
+     * \param secondLoss Second packet number to force loss
+     * \param lastSegment Last packet number to transmit
+     * \param desc Description about the test
+     */
+    TcpLargeTransferLossTest(uint32_t firstLoss,
+                             uint32_t secondLoss,
+                             uint32_t lastSegment,
+                             const std::string& desc);
 
-protected:
-  void ConfigureProperties () override;
-  void ConfigureEnvironment () override;
-  void FinalChecks () override;
-  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
-  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
-  void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
-                       const TcpSocketState::TcpCongState_t newValue) override;
-  Ptr<ErrorModel> CreateReceiverErrorModel () override;
-private:
-  uint32_t m_firstLoss;             //!< First segment loss
-  uint32_t m_secondLoss;            //!< Second segment loss
-  uint32_t m_sent {0};              //!< Number of segments sent
-  uint32_t m_received {0};          //!< Number of segments received
-  uint32_t m_lastSegment {0};       //!< Last received segment
-  std::list<int> m_expectedStates;  //!< Expected TCP states
+  protected:
+    void ConfigureProperties() override;
+    void ConfigureEnvironment() override;
+    void FinalChecks() override;
+    void Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who) override;
+    void Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who) override;
+    void CongStateTrace(const TcpSocketState::TcpCongState_t oldValue,
+                        const TcpSocketState::TcpCongState_t newValue) override;
+    Ptr<ErrorModel> CreateReceiverErrorModel() override;
+
+  private:
+    uint32_t m_firstLoss;            //!< First segment loss
+    uint32_t m_secondLoss;           //!< Second segment loss
+    uint32_t m_sent{0};              //!< Number of segments sent
+    uint32_t m_received{0};          //!< Number of segments received
+    uint32_t m_lastSegment{0};       //!< Last received segment
+    std::list<int> m_expectedStates; //!< Expected TCP states
 };
 
-TcpLargeTransferLossTest::TcpLargeTransferLossTest (uint32_t firstLoss, uint32_t secondLoss, uint32_t lastSegment, const std::string &desc)
-  : TcpGeneralTest (desc),
-    m_firstLoss (firstLoss),
-    m_secondLoss (secondLoss),
-    m_lastSegment (lastSegment)
+TcpLargeTransferLossTest::TcpLargeTransferLossTest(uint32_t firstLoss,
+                                                   uint32_t secondLoss,
+                                                   uint32_t lastSegment,
+                                                   const std::string& desc)
+    : TcpGeneralTest(desc),
+      m_firstLoss(firstLoss),
+      m_secondLoss(secondLoss),
+      m_lastSegment(lastSegment)
 {
-  NS_TEST_ASSERT_MSG_NE (m_lastSegment, 0, "Last segment should be > 0");
-  NS_TEST_ASSERT_MSG_GT (m_secondLoss, m_firstLoss, "Second segment number should be greater than first");
-  m_expectedStates.push_back (TcpSocketState::CA_OPEN);
-  m_expectedStates.push_back (TcpSocketState::CA_DISORDER);
-  m_expectedStates.push_back (TcpSocketState::CA_RECOVERY);
-  m_expectedStates.push_back (TcpSocketState::CA_OPEN);
-  m_expectedStates.push_back (TcpSocketState::CA_DISORDER);
-  m_expectedStates.push_back (TcpSocketState::CA_RECOVERY);
-  m_expectedStates.push_back (TcpSocketState::CA_OPEN);
+    NS_TEST_ASSERT_MSG_NE(m_lastSegment, 0, "Last segment should be > 0");
+    NS_TEST_ASSERT_MSG_GT(m_secondLoss,
+                          m_firstLoss,
+                          "Second segment number should be greater than first");
+    m_expectedStates.push_back(TcpSocketState::CA_OPEN);
+    m_expectedStates.push_back(TcpSocketState::CA_DISORDER);
+    m_expectedStates.push_back(TcpSocketState::CA_RECOVERY);
+    m_expectedStates.push_back(TcpSocketState::CA_OPEN);
+    m_expectedStates.push_back(TcpSocketState::CA_DISORDER);
+    m_expectedStates.push_back(TcpSocketState::CA_RECOVERY);
+    m_expectedStates.push_back(TcpSocketState::CA_OPEN);
 }
 
 void
-TcpLargeTransferLossTest::CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
-                                          const TcpSocketState::TcpCongState_t newValue)
+TcpLargeTransferLossTest::CongStateTrace(const TcpSocketState::TcpCongState_t oldValue,
+                                         const TcpSocketState::TcpCongState_t newValue)
 {
-  int expectedOldState = m_expectedStates.front ();
-  m_expectedStates.pop_front ();
-  NS_TEST_ASSERT_MSG_EQ (oldValue, expectedOldState, "State transition wrong");
-  NS_TEST_ASSERT_MSG_EQ (newValue, m_expectedStates.front (), "State transition wrong");
+    int expectedOldState = m_expectedStates.front();
+    m_expectedStates.pop_front();
+    NS_TEST_ASSERT_MSG_EQ(oldValue, expectedOldState, "State transition wrong");
+    NS_TEST_ASSERT_MSG_EQ(newValue, m_expectedStates.front(), "State transition wrong");
 }
 
 void
-TcpLargeTransferLossTest::ConfigureEnvironment ()
+TcpLargeTransferLossTest::ConfigureEnvironment()
 {
-  NS_LOG_FUNCTION (this);
-  TcpGeneralTest::ConfigureEnvironment ();
-  SetPropagationDelay (MicroSeconds (1));  // Keep low to avoid window limit
-  SetTransmitStart (Seconds (1));
-  SetAppPktSize (1000);
-  // Note:  4294967295 is the maximum TCP sequence number, so rollover will be
-  // on the 4294967th packet with a packet (segment) size of 1000 bytes
-  SetAppPktCount (m_lastSegment);
-  SetAppPktInterval (MicroSeconds (8)); // 1 Gb/s
+    NS_LOG_FUNCTION(this);
+    TcpGeneralTest::ConfigureEnvironment();
+    SetPropagationDelay(MicroSeconds(1)); // Keep low to avoid window limit
+    SetTransmitStart(Seconds(1));
+    SetAppPktSize(1000);
+    // Note:  4294967295 is the maximum TCP sequence number, so rollover will be
+    // on the 4294967th packet with a packet (segment) size of 1000 bytes
+    SetAppPktCount(m_lastSegment);
+    SetAppPktInterval(MicroSeconds(8)); // 1 Gb/s
 }
 
 void
-TcpLargeTransferLossTest::ConfigureProperties ()
+TcpLargeTransferLossTest::ConfigureProperties()
 {
-  NS_LOG_FUNCTION (this);
-  TcpGeneralTest::ConfigureProperties ();
-  SetSegmentSize (SENDER, 1000);
-  SetSegmentSize (RECEIVER, 1000);
+    NS_LOG_FUNCTION(this);
+    TcpGeneralTest::ConfigureProperties();
+    SetSegmentSize(SENDER, 1000);
+    SetSegmentSize(RECEIVER, 1000);
 }
 
 Ptr<ErrorModel>
-TcpLargeTransferLossTest::CreateReceiverErrorModel ()
+TcpLargeTransferLossTest::CreateReceiverErrorModel()
 {
-  Ptr<ReceiveListErrorModel> rem = CreateObject<ReceiveListErrorModel> ();
-  std::list<uint32_t> errorList;
-  errorList.push_back (m_firstLoss);
-  errorList.push_back (m_secondLoss);
-  rem->SetList (errorList);
-  return rem;
+    Ptr<ReceiveListErrorModel> rem = CreateObject<ReceiveListErrorModel>();
+    std::list<uint32_t> errorList;
+    errorList.push_back(m_firstLoss);
+    errorList.push_back(m_secondLoss);
+    rem->SetList(errorList);
+    return rem;
 }
 
 void
-TcpLargeTransferLossTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
+TcpLargeTransferLossTest::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
 {
-  m_sent++;
+    m_sent++;
 }
 
 void
-TcpLargeTransferLossTest::Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
+TcpLargeTransferLossTest::Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
 {
-  m_received++;
+    m_received++;
 }
 
 void
-TcpLargeTransferLossTest::FinalChecks ()
+TcpLargeTransferLossTest::FinalChecks()
 {
-  // The addition of 2 accounts for the two forcibly lost packets
-  NS_TEST_ASSERT_MSG_EQ (m_sent, (m_received + 2), "Did not observe expected number of sent packets");
+    // The addition of 2 accounts for the two forcibly lost packets
+    NS_TEST_ASSERT_MSG_EQ(m_sent,
+                          (m_received + 2),
+                          "Did not observe expected number of sent packets");
 }
 
 /**
@@ -170,21 +183,26 @@ TcpLargeTransferLossTest::FinalChecks ()
  */
 class TcpLossTestSuite : public TestSuite
 {
-public:
-  TcpLossTestSuite () : TestSuite ("tcp-loss-test", UNIT)
-  {
-    // For large transfer tests, the three sequence numbers passed in
-    // are the segment (i.e. not byte) number that should be dropped first,
-    // then the second drop, and then the last segment number to send
-    //
-    // If we force a loss at packet 1000 and then shortly after at 2000,
-    // the TCP logic should correctly pass this case (no sequence wrapping).
-    AddTestCase (new TcpLargeTransferLossTest (1000, 2000, 2500, "large-transfer-loss-without-wrap"), TestCase::EXTENSIVE);
-    // If we force a loss at packet 1000 and then much later at 3294967, the
-    // second sequence number will evaluate to less than 1000 considering
-    // the sequence space wrap, so check this case also.
-    AddTestCase (new TcpLargeTransferLossTest (1000, 3294967, 3295100, "large-transfer-loss-with-wrap"), TestCase::EXTENSIVE);
-  }
+  public:
+    TcpLossTestSuite()
+        : TestSuite("tcp-loss-test", UNIT)
+    {
+        // For large transfer tests, the three sequence numbers passed in
+        // are the segment (i.e. not byte) number that should be dropped first,
+        // then the second drop, and then the last segment number to send
+        //
+        // If we force a loss at packet 1000 and then shortly after at 2000,
+        // the TCP logic should correctly pass this case (no sequence wrapping).
+        AddTestCase(
+            new TcpLargeTransferLossTest(1000, 2000, 2500, "large-transfer-loss-without-wrap"),
+            TestCase::EXTENSIVE);
+        // If we force a loss at packet 1000 and then much later at 3294967, the
+        // second sequence number will evaluate to less than 1000 considering
+        // the sequence space wrap, so check this case also.
+        AddTestCase(
+            new TcpLargeTransferLossTest(1000, 3294967, 3295100, "large-transfer-loss-with-wrap"),
+            TestCase::EXTENSIVE);
+    }
 };
 
 static TcpLossTestSuite g_tcpLossTest; //!< static var for test initialization

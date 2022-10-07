@@ -18,17 +18,16 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
 #include "ns3/command-line.h"
-#include "ns3/random-variable-stream.h"
 #include "ns3/histogram.h"
+#include "ns3/nstime.h"
 #include "ns3/ptr.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/simulator.h"
 
 #include <iomanip>
 #include <iostream>
 #include <map>
-
 
 /**
  * \file
@@ -49,7 +48,6 @@
  * random number generator
  */
 
-
 using namespace ns3;
 
 /**
@@ -60,22 +58,22 @@ using namespace ns3;
  * \param erv The empirical random variable.
  */
 void
-RunSingleSample (std::string mode, Ptr<EmpiricalRandomVariable> erv)
+RunSingleSample(std::string mode, Ptr<EmpiricalRandomVariable> erv)
 {
-  std::cout << "------------------------------" << std::endl;
-  std::cout << "Sampling " << mode << std::endl;
+    std::cout << "------------------------------" << std::endl;
+    std::cout << "Sampling " << mode << std::endl;
 
-  std::cout << std::endl;
-  std::cout << "Binned sample" << std::endl;
-  double value = erv->GetValue ();
-  std::cout << "Binned sample: " << value << std::endl;
-  std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "Binned sample" << std::endl;
+    double value = erv->GetValue();
+    std::cout << "Binned sample: " << value << std::endl;
+    std::cout << std::endl;
 
-  std::cout << "Interpolated sample" << std::endl;
-  erv->SetInterpolate (true);
-  value = erv->GetValue ();
-  std::cout << "Interpolated sample:" << value << std::endl;
-  erv->SetInterpolate (false);
+    std::cout << "Interpolated sample" << std::endl;
+    erv->SetInterpolate(true);
+    value = erv->GetValue();
+    std::cout << "Interpolated sample:" << value << std::endl;
+    erv->SetInterpolate(false);
 }
 
 /**
@@ -87,14 +85,11 @@ RunSingleSample (std::string mode, Ptr<EmpiricalRandomVariable> erv)
  * \param n The total number of random values sampled.
  */
 void
-PrintStatsLine (const double value, const long count, const long n)
+PrintStatsLine(const double value, const long count, const long n)
 {
-  std::cout << std::fixed << std::setprecision (3)
-            << std::setw (10) << std::right << value
-            << std::setw (10) << std::right << count
-            << std::setw (10) << std::right
-            << count / static_cast<double> (n) * 100.0
-            << std::endl;
+    std::cout << std::fixed << std::setprecision(3) << std::setw(10) << std::right << value
+              << std::setw(10) << std::right << count << std::setw(10) << std::right
+              << count / static_cast<double>(n) * 100.0 << std::endl;
 }
 
 /**
@@ -107,24 +102,17 @@ PrintStatsLine (const double value, const long count, const long n)
  * \param expected The expected average of the sample.
  */
 void
-PrintSummary (long sum, long n, double weighted, double expected)
+PrintSummary(long sum, long n, double weighted, double expected)
 {
-  std::cout << std::endl;
-  std::cout << "                      --------" << std::endl;
-  std::cout << "              Total "
-            << std::setprecision (3) << std::fixed
-            << std::setw (10) << std::right
-            << sum / static_cast<double> (n) * 100.0
-            << std::endl;
-  std::cout << "            Average "
-            << std::setprecision (3) << std::fixed
-            << std::setw (6) << std::right << weighted / n
-            << std::endl;
-  std::cout << "           Expected "
-            << std::setprecision (3) << std::fixed
-            << std::setw (6) << std::right << expected
-            << std::endl
-            << std::endl;
+    std::cout << std::endl;
+    std::cout << "                      --------" << std::endl;
+    std::cout << "              Total " << std::setprecision(3) << std::fixed << std::setw(10)
+              << std::right << sum / static_cast<double>(n) * 100.0 << std::endl;
+    std::cout << "            Average " << std::setprecision(3) << std::fixed << std::setw(6)
+              << std::right << weighted / n << std::endl;
+    std::cout << "           Expected " << std::setprecision(3) << std::fixed << std::setw(6)
+              << std::right << expected << std::endl
+              << std::endl;
 }
 
 /**
@@ -136,115 +124,115 @@ PrintSummary (long sum, long n, double weighted, double expected)
  * \param n Number of samples to draw.
  */
 void
-RunBothModes (std::string mode, Ptr<EmpiricalRandomVariable> erv, long n)
+RunBothModes(std::string mode, Ptr<EmpiricalRandomVariable> erv, long n)
 {
-  std::cout << std::endl;
-  std::cout << "Sampling " << mode << std::endl;
-  std::map <double, int> counts;
-  counts[0] = 0;
-  for (long i = 0; i < n; ++i)
+    std::cout << std::endl;
+    std::cout << "Sampling " << mode << std::endl;
+    std::map<double, int> counts;
+    counts[0] = 0;
+    for (long i = 0; i < n; ++i)
     {
-      ++counts[erv->GetValue ()];
+        ++counts[erv->GetValue()];
     }
-  long sum = 0;
-  double weighted = 0;
-  std::cout << std::endl;
-  std::cout << "     Value    Counts         %" << std::endl;
-  std::cout << "----------  --------  --------" << std::endl;
-  for (auto c : counts)
+    long sum = 0;
+    double weighted = 0;
+    std::cout << std::endl;
+    std::cout << "     Value    Counts         %" << std::endl;
+    std::cout << "----------  --------  --------" << std::endl;
+    for (auto c : counts)
     {
-      long count = c.second;
-      double value = c.first;
-      sum += count;
-      weighted +=  value * count;
-      PrintStatsLine (value, count, n);
+        long count = c.second;
+        double value = c.first;
+        sum += count;
+        weighted += value * count;
+        PrintStatsLine(value, count, n);
     }
-  PrintSummary (sum, n, weighted, 8.75);
+    PrintSummary(sum, n, weighted, 8.75);
 
-  std::cout << "Interpolating " << mode << std::endl;
-  erv->SetInterpolate (true);
-  Histogram h (0.5);
-  for (long i = 0; i < n; ++i)
+    std::cout << "Interpolating " << mode << std::endl;
+    erv->SetInterpolate(true);
+    Histogram h(0.5);
+    for (long i = 0; i < n; ++i)
     {
-      h.AddValue (erv->GetValue ());
-      // This could also be expressed as
-      //   h.AddValue (erv->Interpolate ());
+        h.AddValue(erv->GetValue());
+        // This could also be expressed as
+        //   h.AddValue (erv->Interpolate ());
     }
-  erv->SetInterpolate (false);
-  sum = 0;
-  weighted = 0;
-  std::cout << std::endl;
-  std::cout << " Bin Start    Counts         %" << std::endl;
-  std::cout << "----------  --------  --------" << std::endl;
-  for (uint32_t i = 0; i < h.GetNBins (); ++i)
+    erv->SetInterpolate(false);
+    sum = 0;
+    weighted = 0;
+    std::cout << std::endl;
+    std::cout << " Bin Start    Counts         %" << std::endl;
+    std::cout << "----------  --------  --------" << std::endl;
+    for (uint32_t i = 0; i < h.GetNBins(); ++i)
     {
-      long count = h.GetBinCount (i);
-      double start  = h.GetBinStart (i);
-      double value  = start + h.GetBinWidth (i) / 2.;
-      sum += count;
-      weighted += count * value;
-      PrintStatsLine (start, count, n);
+        long count = h.GetBinCount(i);
+        double start = h.GetBinStart(i);
+        double value = start + h.GetBinWidth(i) / 2.;
+        sum += count;
+        weighted += count * value;
+        PrintStatsLine(start, count, n);
     }
-  PrintSummary (sum, n, weighted, 6.25);
+    PrintSummary(sum, n, weighted, 6.25);
 }
 
-
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  long n = 1000000;
-  bool disableAnti = false;
-  bool single = false;
-  CommandLine cmd;
-  cmd.AddValue ("count", "how many draws to make from the rng", n);
-  cmd.AddValue ("antithetic", "disable antithetic sampling", disableAnti);
-  cmd.AddValue ("single", "sample a single time", single);
-  cmd.Parse (argc, argv);
-  std::cout << std::endl;
-  std::cout << cmd.GetName () << std::endl;
-  if (!single)
+    long n = 1000000;
+    bool disableAnti = false;
+    bool single = false;
+    CommandLine cmd;
+    cmd.AddValue("count", "how many draws to make from the rng", n);
+    cmd.AddValue("antithetic", "disable antithetic sampling", disableAnti);
+    cmd.AddValue("single", "sample a single time", single);
+    cmd.Parse(argc, argv);
+    std::cout << std::endl;
+    std::cout << cmd.GetName() << std::endl;
+    if (!single)
     {
-      std::cout << "Sample count: " << n << std::endl;
+        std::cout << "Sample count: " << n << std::endl;
     }
-  else
+    else
     {
-      std::cout << "Sampling a single time" << std::endl;
+        std::cout << "Sampling a single time" << std::endl;
     }
-  if (disableAnti)
+    if (disableAnti)
     {
-      std::cout << "Antithetic sampling disabled" << std::endl;
+        std::cout << "Antithetic sampling disabled" << std::endl;
     }
 
-  // Create the ERV in sampling mode
-  Ptr<EmpiricalRandomVariable> erv = CreateObject<EmpiricalRandomVariable> ();
-  erv->SetInterpolate (false);
-  erv->CDF ( 0.0,  0.0);
-  erv->CDF ( 5.0,  0.25);
-  erv->CDF (10.0,  1.0);
+    // Create the ERV in sampling mode
+    Ptr<EmpiricalRandomVariable> erv = CreateObject<EmpiricalRandomVariable>();
+    erv->SetInterpolate(false);
+    erv->CDF(0.0, 0.0);
+    erv->CDF(5.0, 0.25);
+    erv->CDF(10.0, 1.0);
 
-  if (single)
+    if (single)
     {
-      RunSingleSample ("normal", erv);
-      if (!disableAnti)
+        RunSingleSample("normal", erv);
+        if (!disableAnti)
         {
-          std::cout << std::endl;
-          std::cout << "Antithetic" << std::endl;
-          erv->SetAntithetic (true);
-          RunSingleSample ("antithetic", erv);
-          erv->SetAntithetic (false);
+            std::cout << std::endl;
+            std::cout << "Antithetic" << std::endl;
+            erv->SetAntithetic(true);
+            RunSingleSample("antithetic", erv);
+            erv->SetAntithetic(false);
         }
 
-      std::cout << std::endl;
-      return 0;
+        std::cout << std::endl;
+        return 0;
     }
 
-  RunBothModes ("normal", erv, n);
+    RunBothModes("normal", erv, n);
 
-  if (!disableAnti)
+    if (!disableAnti)
     {
-      erv->SetAntithetic (true);
-      RunBothModes ("antithetic", erv, n);
-      erv->SetAntithetic (false);
+        erv->SetAntithetic(true);
+        RunBothModes("antithetic", erv, n);
+        erv->SetAntithetic(false);
     }
 
-  return 0;
+    return 0;
 }

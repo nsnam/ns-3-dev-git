@@ -18,11 +18,11 @@
  * Author: Benjamin Cizdziel <ben.cizdziel@gmail.com>
  */
 
-#include <ns3/test.h>
 #include <ns3/log.h>
+#include <ns3/test.h>
 #include <ns3/tv-spectrum-transmitter-helper.h>
 
-NS_LOG_COMPONENT_DEFINE ("TvHelperDistributionTest");
+NS_LOG_COMPONENT_DEFINE("TvHelperDistributionTest");
 
 using namespace ns3;
 
@@ -48,88 +48,90 @@ using namespace ns3;
  */
 class TvHelperDistributionTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param maxNumTransmitters maximum number of transmitters.
-   */
-  TvHelperDistributionTestCase (uint32_t maxNumTransmitters);
-  ~TvHelperDistributionTestCase () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param maxNumTransmitters maximum number of transmitters.
+     */
+    TvHelperDistributionTestCase(uint32_t maxNumTransmitters);
+    ~TvHelperDistributionTestCase() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Build the test name
-   * \param maxNumTransmitters maximum number of transmitters.
-   * \return The test name
-   */
-  static std::string Name (uint32_t maxNumTransmitters);
-  uint32_t m_maxNumTransmitters;  //!< Maximum number of transmitters.
+  private:
+    void DoRun() override;
+    /**
+     * Build the test name
+     * \param maxNumTransmitters maximum number of transmitters.
+     * \return The test name
+     */
+    static std::string Name(uint32_t maxNumTransmitters);
+    uint32_t m_maxNumTransmitters; //!< Maximum number of transmitters.
 };
 
 std::string
-TvHelperDistributionTestCase::Name (uint32_t maxNumTransmitters)
+TvHelperDistributionTestCase::Name(uint32_t maxNumTransmitters)
 {
-  std::ostringstream oss;
-  oss << "Max Number of Transmitters = " << maxNumTransmitters;
-  return oss.str();
+    std::ostringstream oss;
+    oss << "Max Number of Transmitters = " << maxNumTransmitters;
+    return oss.str();
 }
 
-TvHelperDistributionTestCase::TvHelperDistributionTestCase (uint32_t maxNumTransmitters)
-  : TestCase (Name (maxNumTransmitters)),
-    m_maxNumTransmitters (maxNumTransmitters)
+TvHelperDistributionTestCase::TvHelperDistributionTestCase(uint32_t maxNumTransmitters)
+    : TestCase(Name(maxNumTransmitters)),
+      m_maxNumTransmitters(maxNumTransmitters)
 {
 }
 
-TvHelperDistributionTestCase::~TvHelperDistributionTestCase ()
+TvHelperDistributionTestCase::~TvHelperDistributionTestCase()
 {
 }
 
 void
-TvHelperDistributionTestCase::DoRun ()
+TvHelperDistributionTestCase::DoRun()
 {
-  NS_LOG_FUNCTION (m_maxNumTransmitters);
-  TvSpectrumTransmitterHelper tvTransHelper;
-  uint32_t rand;
-  uint32_t maxLow = 0;
-  uint32_t minMid = m_maxNumTransmitters;
-  uint32_t maxMid = 0;
-  uint32_t minHigh = m_maxNumTransmitters;
-  for (int i = 0; i < 30; i ++)
+    NS_LOG_FUNCTION(m_maxNumTransmitters);
+    TvSpectrumTransmitterHelper tvTransHelper;
+    uint32_t rand;
+    uint32_t maxLow = 0;
+    uint32_t minMid = m_maxNumTransmitters;
+    uint32_t maxMid = 0;
+    uint32_t minHigh = m_maxNumTransmitters;
+    for (int i = 0; i < 30; i++)
     {
-      rand = tvTransHelper.GetRandomNumTransmitters (TvSpectrumTransmitterHelper::DENSITY_LOW, m_maxNumTransmitters);
-      NS_TEST_ASSERT_MSG_GT (rand, 0, "lower bound exceeded");
-      if (rand > maxLow)
+        rand = tvTransHelper.GetRandomNumTransmitters(TvSpectrumTransmitterHelper::DENSITY_LOW,
+                                                      m_maxNumTransmitters);
+        NS_TEST_ASSERT_MSG_GT(rand, 0, "lower bound exceeded");
+        if (rand > maxLow)
         {
-          maxLow = rand;
+            maxLow = rand;
         }
     }
-  for (int i = 0; i < 30; i ++)
+    for (int i = 0; i < 30; i++)
     {
-      rand = tvTransHelper.GetRandomNumTransmitters (TvSpectrumTransmitterHelper::DENSITY_MEDIUM, m_maxNumTransmitters);
-      if (rand < minMid)
+        rand = tvTransHelper.GetRandomNumTransmitters(TvSpectrumTransmitterHelper::DENSITY_MEDIUM,
+                                                      m_maxNumTransmitters);
+        if (rand < minMid)
         {
-          minMid = rand;
+            minMid = rand;
         }
-      if (rand > maxMid)
+        if (rand > maxMid)
         {
-          maxMid = rand;
+            maxMid = rand;
         }
     }
-  for (int i = 0; i < 30; i ++)
+    for (int i = 0; i < 30; i++)
     {
-      rand = tvTransHelper.GetRandomNumTransmitters (TvSpectrumTransmitterHelper::DENSITY_HIGH, m_maxNumTransmitters);
-      NS_TEST_ASSERT_MSG_LT (rand, m_maxNumTransmitters + 1, "upper bound exceeded");
-      if (rand < minHigh)
+        rand = tvTransHelper.GetRandomNumTransmitters(TvSpectrumTransmitterHelper::DENSITY_HIGH,
+                                                      m_maxNumTransmitters);
+        NS_TEST_ASSERT_MSG_LT(rand, m_maxNumTransmitters + 1, "upper bound exceeded");
+        if (rand < minHigh)
         {
-          minHigh = rand;
+            minHigh = rand;
         }
     }
-  NS_TEST_ASSERT_MSG_LT (maxLow, minMid, "low density overlaps with medium density");
-  NS_TEST_ASSERT_MSG_LT (maxMid, minHigh, "medium density overlaps with high density");
+    NS_TEST_ASSERT_MSG_LT(maxLow, minMid, "low density overlaps with medium density");
+    NS_TEST_ASSERT_MSG_LT(maxMid, minHigh, "medium density overlaps with high density");
 }
-
 
 /**
  * \ingroup spectrum-tests
@@ -138,18 +140,17 @@ TvHelperDistributionTestCase::DoRun ()
  */
 class TvHelperDistributionTestSuite : public TestSuite
 {
-public:
-  TvHelperDistributionTestSuite ();
+  public:
+    TvHelperDistributionTestSuite();
 };
 
-TvHelperDistributionTestSuite::TvHelperDistributionTestSuite ()
-  : TestSuite ("tv-helper-distribution", UNIT)
+TvHelperDistributionTestSuite::TvHelperDistributionTestSuite()
+    : TestSuite("tv-helper-distribution", UNIT)
 {
-  NS_LOG_INFO ("creating TvHelperDistributionTestSuite");
-  for (uint32_t maxNumTransmitters = 3; maxNumTransmitters <= 203; maxNumTransmitters+= 10)
+    NS_LOG_INFO("creating TvHelperDistributionTestSuite");
+    for (uint32_t maxNumTransmitters = 3; maxNumTransmitters <= 203; maxNumTransmitters += 10)
     {
-      AddTestCase (new TvHelperDistributionTestCase (maxNumTransmitters),
-                   TestCase::QUICK);
+        AddTestCase(new TvHelperDistributionTestCase(maxNumTransmitters), TestCase::QUICK);
     }
 }
 

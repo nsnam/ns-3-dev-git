@@ -29,7 +29,8 @@
  * Declaration of ns3::EhtPpdu class.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \brief EHT PPDU (11be)
@@ -39,37 +40,43 @@ namespace ns3 {
  */
 class EhtPpdu : public HePpdu
 {
-public:
-  /**
-   * Create an EHT PPDU, storing a map of PSDUs.
-   *
-   * This PPDU can either be UL or DL.
-   *
-   * \param psdus the PHY payloads (PSDUs)
-   * \param txVector the TXVECTOR that was used for this PPDU
-   * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
-   * \param ppduDuration the transmission duration of this PPDU
-   * \param band the WifiPhyBand used for the transmission of this PPDU
-   * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an EHT TB PPDU
-   * \param flag the flag indicating the type of Tx PSD to build
-   * \param p20Index the index of the primary 20 MHz channel
-   */
-  EhtPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint16_t txCenterFreq,
-           Time ppduDuration, WifiPhyBand band, uint64_t uid, TxPsdFlag flag, uint8_t p20Index);
-  /**
-   * Destructor for EhtPpdu.
-   */
-  ~EhtPpdu () override;
+  public:
+    /**
+     * Create an EHT PPDU, storing a map of PSDUs.
+     *
+     * This PPDU can either be UL or DL.
+     *
+     * \param psdus the PHY payloads (PSDUs)
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     * \param band the WifiPhyBand used for the transmission of this PPDU
+     * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an EHT TB PPDU
+     * \param flag the flag indicating the type of Tx PSD to build
+     * \param p20Index the index of the primary 20 MHz channel
+     */
+    EhtPpdu(const WifiConstPsduMap& psdus,
+            const WifiTxVector& txVector,
+            uint16_t txCenterFreq,
+            Time ppduDuration,
+            WifiPhyBand band,
+            uint64_t uid,
+            TxPsdFlag flag,
+            uint8_t p20Index);
+    /**
+     * Destructor for EhtPpdu.
+     */
+    ~EhtPpdu() override;
 
-  WifiPpduType GetType () const override;
-  Ptr<WifiPpdu> Copy () const override;
+    WifiPpduType GetType() const override;
+    Ptr<WifiPpdu> Copy() const override;
 
-protected:
-  bool IsDlMu () const override;
-  bool IsUlMu () const override;
-  WifiTxVector DoGetTxVector () const override;
-}; //class EhtPpdu
+  protected:
+    bool IsDlMu() const override;
+    bool IsUlMu() const override;
+    WifiTxVector DoGetTxVector() const override;
+}; // class EhtPpdu
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* EHT_PPDU_H */

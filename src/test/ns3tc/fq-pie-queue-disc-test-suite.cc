@@ -26,21 +26,21 @@
  *
  */
 
-#include "ns3/test.h"
-#include "ns3/simulator.h"
 #include "ns3/fq-pie-queue-disc.h"
-#include "ns3/pie-queue-disc.h"
+#include "ns3/ipv4-address.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-packet-filter.h"
 #include "ns3/ipv4-queue-disc-item.h"
-#include "ns3/ipv4-address.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-packet-filter.h"
 #include "ns3/ipv6-queue-disc-item.h"
-#include "ns3/tcp-header.h"
-#include "ns3/udp-header.h"
-#include "ns3/string.h"
+#include "ns3/pie-queue-disc.h"
 #include "ns3/pointer.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/tcp-header.h"
+#include "ns3/test.h"
+#include "ns3/udp-header.h"
 
 using namespace ns3;
 
@@ -54,59 +54,60 @@ static int32_t g_hash;
  */
 class Ipv4FqPieTestPacketFilter : public Ipv4PacketFilter
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  Ipv4FqPieTestPacketFilter ();
-  ~Ipv4FqPieTestPacketFilter () override;
+    Ipv4FqPieTestPacketFilter();
+    ~Ipv4FqPieTestPacketFilter() override;
 
-private:
-  /**
-   * Classify a QueueDiscItem
-   * \param item The item to classify (unused).
-   * \return a pre-set hash value.
-   */
-  int32_t DoClassify (Ptr<QueueDiscItem> item) const override;
+  private:
+    /**
+     * Classify a QueueDiscItem
+     * \param item The item to classify (unused).
+     * \return a pre-set hash value.
+     */
+    int32_t DoClassify(Ptr<QueueDiscItem> item) const override;
 
-  /**
-   * Check the protocol.
-   * \param item The item to check (unused).
-   * \return true.
-   */
-  bool CheckProtocol (Ptr<QueueDiscItem> item) const override;
+    /**
+     * Check the protocol.
+     * \param item The item to check (unused).
+     * \return true.
+     */
+    bool CheckProtocol(Ptr<QueueDiscItem> item) const override;
 };
 
 TypeId
-Ipv4FqPieTestPacketFilter::GetTypeId ()
+Ipv4FqPieTestPacketFilter::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Ipv4FqPieTestPacketFilter")
-    .SetParent<Ipv4PacketFilter> ()
-    .SetGroupName ("Internet")
-    .AddConstructor<Ipv4FqPieTestPacketFilter> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::Ipv4FqPieTestPacketFilter")
+                            .SetParent<Ipv4PacketFilter>()
+                            .SetGroupName("Internet")
+                            .AddConstructor<Ipv4FqPieTestPacketFilter>();
+    return tid;
 }
 
-Ipv4FqPieTestPacketFilter::Ipv4FqPieTestPacketFilter ()
-{}
+Ipv4FqPieTestPacketFilter::Ipv4FqPieTestPacketFilter()
+{
+}
 
-Ipv4FqPieTestPacketFilter::~Ipv4FqPieTestPacketFilter ()
-{}
+Ipv4FqPieTestPacketFilter::~Ipv4FqPieTestPacketFilter()
+{
+}
 
 int32_t
-Ipv4FqPieTestPacketFilter::DoClassify (Ptr<QueueDiscItem> item) const
+Ipv4FqPieTestPacketFilter::DoClassify(Ptr<QueueDiscItem> item) const
 {
-  return g_hash;
+    return g_hash;
 }
 
 bool
-Ipv4FqPieTestPacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
+Ipv4FqPieTestPacketFilter::CheckProtocol(Ptr<QueueDiscItem> item) const
 {
-  return true;
+    return true;
 }
 
 /**
@@ -116,48 +117,55 @@ Ipv4FqPieTestPacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
  */
 class FqPieQueueDiscNoSuitableFilter : public TestCase
 {
-public:
-  FqPieQueueDiscNoSuitableFilter ();
-  ~FqPieQueueDiscNoSuitableFilter () override;
+  public:
+    FqPieQueueDiscNoSuitableFilter();
+    ~FqPieQueueDiscNoSuitableFilter() override;
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 };
 
-FqPieQueueDiscNoSuitableFilter::FqPieQueueDiscNoSuitableFilter ()
-  : TestCase ("Test packets that are not classified by any filter")
-{}
+FqPieQueueDiscNoSuitableFilter::FqPieQueueDiscNoSuitableFilter()
+    : TestCase("Test packets that are not classified by any filter")
+{
+}
 
-FqPieQueueDiscNoSuitableFilter::~FqPieQueueDiscNoSuitableFilter ()
-{}
+FqPieQueueDiscNoSuitableFilter::~FqPieQueueDiscNoSuitableFilter()
+{
+}
 
 void
-FqPieQueueDiscNoSuitableFilter::DoRun ()
+FqPieQueueDiscNoSuitableFilter::DoRun()
 {
-  // Packets that cannot be classified by the available filters should be dropped
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("4p"));
-  Ptr<Ipv4FqPieTestPacketFilter> filter = CreateObject<Ipv4FqPieTestPacketFilter> ();
-  queueDisc->AddPacketFilter (filter);
+    // Packets that cannot be classified by the available filters should be dropped
+    Ptr<FqPieQueueDisc> queueDisc =
+        CreateObjectWithAttributes<FqPieQueueDisc>("MaxSize", StringValue("4p"));
+    Ptr<Ipv4FqPieTestPacketFilter> filter = CreateObject<Ipv4FqPieTestPacketFilter>();
+    queueDisc->AddPacketFilter(filter);
 
-  g_hash = -1;
-  queueDisc->SetQuantum (1500);
-  queueDisc->Initialize ();
+    g_hash = -1;
+    queueDisc->SetQuantum(1500);
+    queueDisc->Initialize();
 
-  Ptr<Packet> p;
-  p = Create<Packet> ();
-  Ptr<Ipv6QueueDiscItem> item;
-  Ipv6Header ipv6Header;
-  Address dest;
-  item = Create<Ipv6QueueDiscItem> (p, dest, 0, ipv6Header);
-  queueDisc->Enqueue (item);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetNQueueDiscClasses (), 0, "no flow queue should have been created");
+    Ptr<Packet> p;
+    p = Create<Packet>();
+    Ptr<Ipv6QueueDiscItem> item;
+    Ipv6Header ipv6Header;
+    Address dest;
+    item = Create<Ipv6QueueDiscItem>(p, dest, 0, ipv6Header);
+    queueDisc->Enqueue(item);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetNQueueDiscClasses(),
+                          0,
+                          "no flow queue should have been created");
 
-  p = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello, world"), 12);
-  item = Create<Ipv6QueueDiscItem> (p, dest, 0, ipv6Header);
-  queueDisc->Enqueue (item);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetNQueueDiscClasses (), 0, "no flow queue should have been created");
+    p = Create<Packet>(reinterpret_cast<const uint8_t*>("hello, world"), 12);
+    item = Create<Ipv6QueueDiscItem>(p, dest, 0, ipv6Header);
+    queueDisc->Enqueue(item);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetNQueueDiscClasses(),
+                          0,
+                          "no flow queue should have been created");
 
-  Simulator::Destroy ();
+    Simulator::Destroy();
 }
 
 /**
@@ -167,71 +175,91 @@ FqPieQueueDiscNoSuitableFilter::DoRun ()
  */
 class FqPieQueueDiscIPFlowsSeparationAndPacketLimit : public TestCase
 {
-public:
-  FqPieQueueDiscIPFlowsSeparationAndPacketLimit ();
-  ~FqPieQueueDiscIPFlowsSeparationAndPacketLimit () override;
+  public:
+    FqPieQueueDiscIPFlowsSeparationAndPacketLimit();
+    ~FqPieQueueDiscIPFlowsSeparationAndPacketLimit() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Enqueue a packet.
-   * \param queue the queue disc
-   * \param hdr the IPv4 header
-   */
-  void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr);
+  private:
+    void DoRun() override;
+    /**
+     * Enqueue a packet.
+     * \param queue the queue disc
+     * \param hdr the IPv4 header
+     */
+    void AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr);
 };
 
-FqPieQueueDiscIPFlowsSeparationAndPacketLimit::FqPieQueueDiscIPFlowsSeparationAndPacketLimit ()
-  : TestCase ("Test IP flows separation and packet limit")
-{}
-
-FqPieQueueDiscIPFlowsSeparationAndPacketLimit::~FqPieQueueDiscIPFlowsSeparationAndPacketLimit ()
-{}
-
-void
-FqPieQueueDiscIPFlowsSeparationAndPacketLimit::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
+FqPieQueueDiscIPFlowsSeparationAndPacketLimit::FqPieQueueDiscIPFlowsSeparationAndPacketLimit()
+    : TestCase("Test IP flows separation and packet limit")
 {
-  Ptr<Packet> p = Create<Packet> (100);
-  Address dest;
-  Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem> (p, dest, 0, hdr);
-  queue->Enqueue (item);
+}
+
+FqPieQueueDiscIPFlowsSeparationAndPacketLimit::~FqPieQueueDiscIPFlowsSeparationAndPacketLimit()
+{
 }
 
 void
-FqPieQueueDiscIPFlowsSeparationAndPacketLimit::DoRun ()
+FqPieQueueDiscIPFlowsSeparationAndPacketLimit::AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
 {
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("4p"));
+    Ptr<Packet> p = Create<Packet>(100);
+    Address dest;
+    Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem>(p, dest, 0, hdr);
+    queue->Enqueue(item);
+}
 
-  queueDisc->SetQuantum (1500);
-  queueDisc->Initialize ();
+void
+FqPieQueueDiscIPFlowsSeparationAndPacketLimit::DoRun()
+{
+    Ptr<FqPieQueueDisc> queueDisc =
+        CreateObjectWithAttributes<FqPieQueueDisc>("MaxSize", StringValue("4p"));
 
-  Ipv4Header hdr;
-  hdr.SetPayloadSize (100);
-  hdr.SetSource (Ipv4Address ("10.10.1.1"));
-  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
-  hdr.SetProtocol (7);
+    queueDisc->SetQuantum(1500);
+    queueDisc->Initialize();
 
-  // Add three packets from the first flow
-  AddPacket (queueDisc, hdr);
-  AddPacket (queueDisc, hdr);
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 3, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the flow queue");
+    Ipv4Header hdr;
+    hdr.SetPayloadSize(100);
+    hdr.SetSource(Ipv4Address("10.10.1.1"));
+    hdr.SetDestination(Ipv4Address("10.10.1.2"));
+    hdr.SetProtocol(7);
 
-  // Add two packets from the second flow
-  hdr.SetDestination (Ipv4Address ("10.10.1.7"));
-  // Add the first packet
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 4, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the flow queue");
-  // Add the second packet that causes two packets to be dropped from the fat flow (max backlog = 300, threshold = 150)
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 3, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the flow queue");
+    // Add three packets from the first flow
+    AddPacket(queueDisc, hdr);
+    AddPacket(queueDisc, hdr);
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          3,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the flow queue");
 
-  Simulator::Destroy ();
+    // Add two packets from the second flow
+    hdr.SetDestination(Ipv4Address("10.10.1.7"));
+    // Add the first packet
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          4,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the flow queue");
+    // Add the second packet that causes two packets to be dropped from the fat flow (max backlog =
+    // 300, threshold = 150)
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          3,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the flow queue");
+
+    Simulator::Destroy();
 }
 
 /**
@@ -241,144 +269,223 @@ FqPieQueueDiscIPFlowsSeparationAndPacketLimit::DoRun ()
  */
 class FqPieQueueDiscDeficit : public TestCase
 {
-public:
-  FqPieQueueDiscDeficit ();
-  ~FqPieQueueDiscDeficit () override;
+  public:
+    FqPieQueueDiscDeficit();
+    ~FqPieQueueDiscDeficit() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Enqueue a packet.
-   * \param queue The queue disc.
-   * \param hdr The IPv4 header.
-   */
-  void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr);
+  private:
+    void DoRun() override;
+    /**
+     * Enqueue a packet.
+     * \param queue The queue disc.
+     * \param hdr The IPv4 header.
+     */
+    void AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr);
 };
 
-FqPieQueueDiscDeficit::FqPieQueueDiscDeficit ()
-  : TestCase ("Test credits and flows status")
-{}
-
-FqPieQueueDiscDeficit::~FqPieQueueDiscDeficit ()
-{}
-
-void
-FqPieQueueDiscDeficit::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
+FqPieQueueDiscDeficit::FqPieQueueDiscDeficit()
+    : TestCase("Test credits and flows status")
 {
-  Ptr<Packet> p = Create<Packet> (100);
-  Address dest;
-  Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem> (p, dest, 0, hdr);
-  queue->Enqueue (item);
+}
+
+FqPieQueueDiscDeficit::~FqPieQueueDiscDeficit()
+{
 }
 
 void
-FqPieQueueDiscDeficit::DoRun ()
+FqPieQueueDiscDeficit::AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
 {
-  Ptr<FqPieQueueDisc> queueDisc = CreateObject<FqPieQueueDisc> ();
+    Ptr<Packet> p = Create<Packet>(100);
+    Address dest;
+    Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem>(p, dest, 0, hdr);
+    queue->Enqueue(item);
+}
 
-  queueDisc->SetQuantum (90);
-  queueDisc->Initialize ();
+void
+FqPieQueueDiscDeficit::DoRun()
+{
+    Ptr<FqPieQueueDisc> queueDisc = CreateObject<FqPieQueueDisc>();
 
-  Ipv4Header hdr;
-  hdr.SetPayloadSize (100);
-  hdr.SetSource (Ipv4Address ("10.10.1.1"));
-  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
-  hdr.SetProtocol (7);
+    queueDisc->SetQuantum(90);
+    queueDisc->Initialize();
 
-  // Add a packet from the first flow
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 1, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the first flow queue");
-  Ptr<FqPieFlow> flow1 = StaticCast<FqPieFlow> (queueDisc->GetQueueDiscClass (0));
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetDeficit (), static_cast<int32_t> (queueDisc->GetQuantum ()), "the deficit of the first flow must equal the quantum");
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqPieFlow::NEW_FLOW, "the first flow must be in the list of new queues");
-  // Dequeue a packet
-  queueDisc->Dequeue ();
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 0, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 0, "unexpected number of packets in the first flow queue");
-  // the deficit for the first flow becomes 90 - (100+20) = -30
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetDeficit (), -30, "unexpected deficit for the first flow");
+    Ipv4Header hdr;
+    hdr.SetPayloadSize(100);
+    hdr.SetSource(Ipv4Address("10.10.1.1"));
+    hdr.SetDestination(Ipv4Address("10.10.1.2"));
+    hdr.SetProtocol(7);
 
-  // Add two packets from the first flow
-  AddPacket (queueDisc, hdr);
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 2, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqPieFlow::NEW_FLOW, "the first flow must still be in the list of new queues");
+    // Add a packet from the first flow
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          1,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the first flow queue");
+    Ptr<FqPieFlow> flow1 = StaticCast<FqPieFlow>(queueDisc->GetQueueDiscClass(0));
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetDeficit(),
+                          static_cast<int32_t>(queueDisc->GetQuantum()),
+                          "the deficit of the first flow must equal the quantum");
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetStatus(),
+                          FqPieFlow::NEW_FLOW,
+                          "the first flow must be in the list of new queues");
+    // Dequeue a packet
+    queueDisc->Dequeue();
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          0,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          0,
+                          "unexpected number of packets in the first flow queue");
+    // the deficit for the first flow becomes 90 - (100+20) = -30
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetDeficit(), -30, "unexpected deficit for the first flow");
 
-  // Add two packets from the second flow
-  hdr.SetDestination (Ipv4Address ("10.10.1.10"));
-  AddPacket (queueDisc, hdr);
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 4, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the second flow queue");
-  Ptr<FqPieFlow> flow2 = StaticCast<FqPieFlow> (queueDisc->GetQueueDiscClass (1));
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetDeficit (), static_cast<int32_t> (queueDisc->GetQuantum ()), "the deficit of the second flow must equal the quantum");
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetStatus (), FqPieFlow::NEW_FLOW, "the second flow must be in the list of new queues");
+    // Add two packets from the first flow
+    AddPacket(queueDisc, hdr);
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          2,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetStatus(),
+                          FqPieFlow::NEW_FLOW,
+                          "the first flow must still be in the list of new queues");
 
-  // Dequeue a packet (from the second flow, as the first flow has a negative deficit)
-  queueDisc->Dequeue ();
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 3, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
-  // the first flow got a quantum of deficit (-30+90=60) and has been moved to the end of the list of old queues
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetDeficit (), 60, "unexpected deficit for the first flow");
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqPieFlow::OLD_FLOW, "the first flow must be in the list of old queues");
-  // the second flow has a negative deficit (-30) and is still in the list of new queues
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetDeficit (), -30, "unexpected deficit for the second flow");
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetStatus (), FqPieFlow::NEW_FLOW, "the second flow must be in the list of new queues");
+    // Add two packets from the second flow
+    hdr.SetDestination(Ipv4Address("10.10.1.10"));
+    AddPacket(queueDisc, hdr);
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          4,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the second flow queue");
+    Ptr<FqPieFlow> flow2 = StaticCast<FqPieFlow>(queueDisc->GetQueueDiscClass(1));
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetDeficit(),
+                          static_cast<int32_t>(queueDisc->GetQuantum()),
+                          "the deficit of the second flow must equal the quantum");
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetStatus(),
+                          FqPieFlow::NEW_FLOW,
+                          "the second flow must be in the list of new queues");
 
-  // Dequeue a packet (from the first flow, as the second flow has a negative deficit)
-  queueDisc->Dequeue ();
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 2, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
-  // the first flow has a negative deficit (60-(100+20)= -60) and stays in the list of old queues
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetDeficit (), -60, "unexpected deficit for the first flow");
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqPieFlow::OLD_FLOW, "the first flow must be in the list of old queues");
-  // the second flow got a quantum of deficit (-30+90=60) and has been moved to the end of the list of old queues
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetDeficit (), 60, "unexpected deficit for the second flow");
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetStatus (), FqPieFlow::OLD_FLOW, "the second flow must be in the list of new queues");
+    // Dequeue a packet (from the second flow, as the first flow has a negative deficit)
+    queueDisc->Dequeue();
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          3,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
+    // the first flow got a quantum of deficit (-30+90=60) and has been moved to the end of the list
+    // of old queues
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetDeficit(), 60, "unexpected deficit for the first flow");
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetStatus(),
+                          FqPieFlow::OLD_FLOW,
+                          "the first flow must be in the list of old queues");
+    // the second flow has a negative deficit (-30) and is still in the list of new queues
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetDeficit(), -30, "unexpected deficit for the second flow");
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetStatus(),
+                          FqPieFlow::NEW_FLOW,
+                          "the second flow must be in the list of new queues");
 
-  // Dequeue a packet (from the second flow, as the first flow has a negative deficit)
-  queueDisc->Dequeue ();
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 1, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 0, "unexpected number of packets in the second flow queue");
-  // the first flow got a quantum of deficit (-60+90=30) and has been moved to the end of the list of old queues
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetDeficit (), 30, "unexpected deficit for the first flow");
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqPieFlow::OLD_FLOW, "the first flow must be in the list of old queues");
-  // the second flow has a negative deficit (60-(100+20)= -60)
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetDeficit (), -60, "unexpected deficit for the second flow");
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetStatus (), FqPieFlow::OLD_FLOW, "the second flow must be in the list of new queues");
+    // Dequeue a packet (from the first flow, as the second flow has a negative deficit)
+    queueDisc->Dequeue();
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          2,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
+    // the first flow has a negative deficit (60-(100+20)= -60) and stays in the list of old queues
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetDeficit(), -60, "unexpected deficit for the first flow");
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetStatus(),
+                          FqPieFlow::OLD_FLOW,
+                          "the first flow must be in the list of old queues");
+    // the second flow got a quantum of deficit (-30+90=60) and has been moved to the end of the
+    // list of old queues
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetDeficit(), 60, "unexpected deficit for the second flow");
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetStatus(),
+                          FqPieFlow::OLD_FLOW,
+                          "the second flow must be in the list of new queues");
 
-  // Dequeue a packet (from the first flow, as the second flow has a negative deficit)
-  queueDisc->Dequeue ();
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 0, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 0, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 0, "unexpected number of packets in the second flow queue");
-  // the first flow has a negative deficit (30-(100+20)= -90)
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetDeficit (), -90, "unexpected deficit for the first flow");
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqPieFlow::OLD_FLOW, "the first flow must be in the list of old queues");
-  // the second flow got a quantum of deficit (-60+90=30) and has been moved to the end of the list of old queues
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetDeficit (), 30, "unexpected deficit for the second flow");
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetStatus (), FqPieFlow::OLD_FLOW, "the second flow must be in the list of new queues");
+    // Dequeue a packet (from the second flow, as the first flow has a negative deficit)
+    queueDisc->Dequeue();
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          1,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          0,
+                          "unexpected number of packets in the second flow queue");
+    // the first flow got a quantum of deficit (-60+90=30) and has been moved to the end of the list
+    // of old queues
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetDeficit(), 30, "unexpected deficit for the first flow");
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetStatus(),
+                          FqPieFlow::OLD_FLOW,
+                          "the first flow must be in the list of old queues");
+    // the second flow has a negative deficit (60-(100+20)= -60)
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetDeficit(), -60, "unexpected deficit for the second flow");
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetStatus(),
+                          FqPieFlow::OLD_FLOW,
+                          "the second flow must be in the list of new queues");
 
-  // Dequeue a packet
-  queueDisc->Dequeue ();
-  // the first flow is at the head of the list of old queues but has a negative deficit, thus it gets a quantun
-  // of deficit (-90+90=0) and is moved to the end of the list of old queues. Then, the second flow (which has a
-  // positive deficit) is selected, but the second flow is empty and thus it is set to inactive. The first flow is
-  // reconsidered, but it has a null deficit, hence it gets another quantum of deficit (0+90=90). Then, the first
-  // flow is reconsidered again, now it has a positive deficit and hence it is selected. But, it is empty and
-  // therefore is set to inactive, too.
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetDeficit (), 90, "unexpected deficit for the first flow");
-  NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqPieFlow::INACTIVE, "the first flow must be inactive");
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetDeficit (), 30, "unexpected deficit for the second flow");
-  NS_TEST_ASSERT_MSG_EQ (flow2->GetStatus (), FqPieFlow::INACTIVE, "the second flow must be inactive");
+    // Dequeue a packet (from the first flow, as the second flow has a negative deficit)
+    queueDisc->Dequeue();
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          0,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          0,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          0,
+                          "unexpected number of packets in the second flow queue");
+    // the first flow has a negative deficit (30-(100+20)= -90)
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetDeficit(), -90, "unexpected deficit for the first flow");
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetStatus(),
+                          FqPieFlow::OLD_FLOW,
+                          "the first flow must be in the list of old queues");
+    // the second flow got a quantum of deficit (-60+90=30) and has been moved to the end of the
+    // list of old queues
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetDeficit(), 30, "unexpected deficit for the second flow");
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetStatus(),
+                          FqPieFlow::OLD_FLOW,
+                          "the second flow must be in the list of new queues");
 
-  Simulator::Destroy ();
+    // Dequeue a packet
+    queueDisc->Dequeue();
+    // the first flow is at the head of the list of old queues but has a negative deficit, thus it
+    // gets a quantun of deficit (-90+90=0) and is moved to the end of the list of old queues. Then,
+    // the second flow (which has a positive deficit) is selected, but the second flow is empty and
+    // thus it is set to inactive. The first flow is reconsidered, but it has a null deficit, hence
+    // it gets another quantum of deficit (0+90=90). Then, the first flow is reconsidered again, now
+    // it has a positive deficit and hence it is selected. But, it is empty and therefore is set to
+    // inactive, too.
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetDeficit(), 90, "unexpected deficit for the first flow");
+    NS_TEST_ASSERT_MSG_EQ(flow1->GetStatus(),
+                          FqPieFlow::INACTIVE,
+                          "the first flow must be inactive");
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetDeficit(), 30, "unexpected deficit for the second flow");
+    NS_TEST_ASSERT_MSG_EQ(flow2->GetStatus(),
+                          FqPieFlow::INACTIVE,
+                          "the second flow must be inactive");
+
+    Simulator::Destroy();
 }
 
 /**
@@ -388,89 +495,122 @@ FqPieQueueDiscDeficit::DoRun ()
  */
 class FqPieQueueDiscTCPFlowsSeparation : public TestCase
 {
-public:
-  FqPieQueueDiscTCPFlowsSeparation ();
-  ~FqPieQueueDiscTCPFlowsSeparation () override;
+  public:
+    FqPieQueueDiscTCPFlowsSeparation();
+    ~FqPieQueueDiscTCPFlowsSeparation() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Enqueue a packet.
-   * \param queue The queue disc.
-   * \param ipHdr The IPv4 header.
-   * \param tcpHdr The TCP header.
-   */
-  void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, TcpHeader tcpHdr);
+  private:
+    void DoRun() override;
+    /**
+     * Enqueue a packet.
+     * \param queue The queue disc.
+     * \param ipHdr The IPv4 header.
+     * \param tcpHdr The TCP header.
+     */
+    void AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, TcpHeader tcpHdr);
 };
 
-FqPieQueueDiscTCPFlowsSeparation::FqPieQueueDiscTCPFlowsSeparation ()
-  : TestCase ("Test TCP flows separation")
-{}
-
-FqPieQueueDiscTCPFlowsSeparation::~FqPieQueueDiscTCPFlowsSeparation ()
-{}
-
-void
-FqPieQueueDiscTCPFlowsSeparation::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, TcpHeader tcpHdr)
+FqPieQueueDiscTCPFlowsSeparation::FqPieQueueDiscTCPFlowsSeparation()
+    : TestCase("Test TCP flows separation")
 {
-  Ptr<Packet> p = Create<Packet> (100);
-  p->AddHeader (tcpHdr);
-  Address dest;
-  Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem> (p, dest, 0, ipHdr);
-  queue->Enqueue (item);
+}
+
+FqPieQueueDiscTCPFlowsSeparation::~FqPieQueueDiscTCPFlowsSeparation()
+{
 }
 
 void
-FqPieQueueDiscTCPFlowsSeparation::DoRun ()
+FqPieQueueDiscTCPFlowsSeparation::AddPacket(Ptr<FqPieQueueDisc> queue,
+                                            Ipv4Header ipHdr,
+                                            TcpHeader tcpHdr)
 {
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10p"));
+    Ptr<Packet> p = Create<Packet>(100);
+    p->AddHeader(tcpHdr);
+    Address dest;
+    Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem>(p, dest, 0, ipHdr);
+    queue->Enqueue(item);
+}
 
-  queueDisc->SetQuantum (1500);
-  queueDisc->Initialize ();
+void
+FqPieQueueDiscTCPFlowsSeparation::DoRun()
+{
+    Ptr<FqPieQueueDisc> queueDisc =
+        CreateObjectWithAttributes<FqPieQueueDisc>("MaxSize", StringValue("10p"));
 
-  Ipv4Header hdr;
-  hdr.SetPayloadSize (100);
-  hdr.SetSource (Ipv4Address ("10.10.1.1"));
-  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
-  hdr.SetProtocol (6);
+    queueDisc->SetQuantum(1500);
+    queueDisc->Initialize();
 
-  TcpHeader tcpHdr;
-  tcpHdr.SetSourcePort (7);
-  tcpHdr.SetDestinationPort (27);
+    Ipv4Header hdr;
+    hdr.SetPayloadSize(100);
+    hdr.SetSource(Ipv4Address("10.10.1.1"));
+    hdr.SetDestination(Ipv4Address("10.10.1.2"));
+    hdr.SetProtocol(6);
 
-  // Add three packets from the first flow
-  AddPacket (queueDisc, hdr, tcpHdr);
-  AddPacket (queueDisc, hdr, tcpHdr);
-  AddPacket (queueDisc, hdr, tcpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 3, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
+    TcpHeader tcpHdr;
+    tcpHdr.SetSourcePort(7);
+    tcpHdr.SetDestinationPort(27);
 
-  // Add a packet from the second flow
-  tcpHdr.SetSourcePort (8);
-  AddPacket (queueDisc, hdr, tcpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 4, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
+    // Add three packets from the first flow
+    AddPacket(queueDisc, hdr, tcpHdr);
+    AddPacket(queueDisc, hdr, tcpHdr);
+    AddPacket(queueDisc, hdr, tcpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          3,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
 
-  // Add a packet from the third flow
-  tcpHdr.SetDestinationPort (28);
-  AddPacket (queueDisc, hdr, tcpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 5, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the third flow queue");
+    // Add a packet from the second flow
+    tcpHdr.SetSourcePort(8);
+    AddPacket(queueDisc, hdr, tcpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          4,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
 
-  // Add two packets from the fourth flow
-  tcpHdr.SetSourcePort (7);
-  AddPacket (queueDisc, hdr, tcpHdr);
-  AddPacket (queueDisc, hdr, tcpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 7, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the third flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (3)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the third flow queue");
+    // Add a packet from the third flow
+    tcpHdr.SetDestinationPort(28);
+    AddPacket(queueDisc, hdr, tcpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          5,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(2)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the third flow queue");
 
-  Simulator::Destroy ();
+    // Add two packets from the fourth flow
+    tcpHdr.SetSourcePort(7);
+    AddPacket(queueDisc, hdr, tcpHdr);
+    AddPacket(queueDisc, hdr, tcpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          7,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(2)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the third flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(3)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the third flow queue");
+
+    Simulator::Destroy();
 }
 
 /**
@@ -480,91 +620,123 @@ FqPieQueueDiscTCPFlowsSeparation::DoRun ()
  */
 class FqPieQueueDiscUDPFlowsSeparation : public TestCase
 {
-public:
-  FqPieQueueDiscUDPFlowsSeparation ();
-  ~FqPieQueueDiscUDPFlowsSeparation () override;
+  public:
+    FqPieQueueDiscUDPFlowsSeparation();
+    ~FqPieQueueDiscUDPFlowsSeparation() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Enqueue a packet.
-   * \param queue The queue disc.
-   * \param ipHdr The IPv4 header.
-   * \param udpHdr The UDP header.
-   */
-  void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, UdpHeader udpHdr);
+  private:
+    void DoRun() override;
+    /**
+     * Enqueue a packet.
+     * \param queue The queue disc.
+     * \param ipHdr The IPv4 header.
+     * \param udpHdr The UDP header.
+     */
+    void AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, UdpHeader udpHdr);
 };
 
-FqPieQueueDiscUDPFlowsSeparation::FqPieQueueDiscUDPFlowsSeparation ()
-  : TestCase ("Test UDP flows separation")
-{}
-
-FqPieQueueDiscUDPFlowsSeparation::~FqPieQueueDiscUDPFlowsSeparation ()
-{}
-
-void
-FqPieQueueDiscUDPFlowsSeparation::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, UdpHeader udpHdr)
+FqPieQueueDiscUDPFlowsSeparation::FqPieQueueDiscUDPFlowsSeparation()
+    : TestCase("Test UDP flows separation")
 {
-  Ptr<Packet> p = Create<Packet> (100);
-  p->AddHeader (udpHdr);
-  Address dest;
-  Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem> (p, dest, 0, ipHdr);
-  queue->Enqueue (item);
+}
+
+FqPieQueueDiscUDPFlowsSeparation::~FqPieQueueDiscUDPFlowsSeparation()
+{
 }
 
 void
-FqPieQueueDiscUDPFlowsSeparation::DoRun ()
+FqPieQueueDiscUDPFlowsSeparation::AddPacket(Ptr<FqPieQueueDisc> queue,
+                                            Ipv4Header ipHdr,
+                                            UdpHeader udpHdr)
 {
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10p"));
-
-  queueDisc->SetQuantum (1500);
-  queueDisc->Initialize ();
-
-  Ipv4Header hdr;
-  hdr.SetPayloadSize (100);
-  hdr.SetSource (Ipv4Address ("10.10.1.1"));
-  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
-  hdr.SetProtocol (17);
-
-  UdpHeader udpHdr;
-  udpHdr.SetSourcePort (7);
-  udpHdr.SetDestinationPort (27);
-
-  // Add three packets from the first flow
-  AddPacket (queueDisc, hdr, udpHdr);
-  AddPacket (queueDisc, hdr, udpHdr);
-  AddPacket (queueDisc, hdr, udpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 3, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
-
-  // Add a packet from the second flow
-  udpHdr.SetSourcePort (8);
-  AddPacket (queueDisc, hdr, udpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 4, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
-
-  // Add a packet from the third flow
-  udpHdr.SetDestinationPort (28);
-  AddPacket (queueDisc, hdr, udpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 5, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the third flow queue");
-
-  // Add two packets from the fourth flow
-  udpHdr.SetSourcePort (7);
-  AddPacket (queueDisc, hdr, udpHdr);
-  AddPacket (queueDisc, hdr, udpHdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 7, "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3, "unexpected number of packets in the first flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the third flow queue");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (3)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the third flow queue");
-
-  Simulator::Destroy ();
+    Ptr<Packet> p = Create<Packet>(100);
+    p->AddHeader(udpHdr);
+    Address dest;
+    Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem>(p, dest, 0, ipHdr);
+    queue->Enqueue(item);
 }
 
+void
+FqPieQueueDiscUDPFlowsSeparation::DoRun()
+{
+    Ptr<FqPieQueueDisc> queueDisc =
+        CreateObjectWithAttributes<FqPieQueueDisc>("MaxSize", StringValue("10p"));
+
+    queueDisc->SetQuantum(1500);
+    queueDisc->Initialize();
+
+    Ipv4Header hdr;
+    hdr.SetPayloadSize(100);
+    hdr.SetSource(Ipv4Address("10.10.1.1"));
+    hdr.SetDestination(Ipv4Address("10.10.1.2"));
+    hdr.SetProtocol(17);
+
+    UdpHeader udpHdr;
+    udpHdr.SetSourcePort(7);
+    udpHdr.SetDestinationPort(27);
+
+    // Add three packets from the first flow
+    AddPacket(queueDisc, hdr, udpHdr);
+    AddPacket(queueDisc, hdr, udpHdr);
+    AddPacket(queueDisc, hdr, udpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          3,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
+
+    // Add a packet from the second flow
+    udpHdr.SetSourcePort(8);
+    AddPacket(queueDisc, hdr, udpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          4,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
+
+    // Add a packet from the third flow
+    udpHdr.SetDestinationPort(28);
+    AddPacket(queueDisc, hdr, udpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          5,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(2)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the third flow queue");
+
+    // Add two packets from the fourth flow
+    udpHdr.SetSourcePort(7);
+    AddPacket(queueDisc, hdr, udpHdr);
+    AddPacket(queueDisc, hdr, udpHdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          7,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the second flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(2)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the third flow queue");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(3)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the third flow queue");
+
+    Simulator::Destroy();
+}
 
 /**
  * \ingroup system-tests-tc
@@ -591,105 +763,118 @@ FqPieQueueDiscUDPFlowsSeparation::DoRun ()
  * the hash. When a flow hash of 20 arrives, the value of outerhash
  * is 16. Since m_flowIndices[16] wasn't previously allotted, a new flow
  * is created, and the tag corresponding to this queue is set to 20.
-*/
+ */
 class FqPieQueueDiscSetLinearProbing : public TestCase
 {
-public:
-  FqPieQueueDiscSetLinearProbing ();
-  ~FqPieQueueDiscSetLinearProbing () override;
+  public:
+    FqPieQueueDiscSetLinearProbing();
+    ~FqPieQueueDiscSetLinearProbing() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Enqueue a packet.
-   * \param queue The queue disc.
-   * \param hdr The IPv4 header.
-   */
-   void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr);
+  private:
+    void DoRun() override;
+    /**
+     * Enqueue a packet.
+     * \param queue The queue disc.
+     * \param hdr The IPv4 header.
+     */
+    void AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr);
 };
 
-FqPieQueueDiscSetLinearProbing::FqPieQueueDiscSetLinearProbing ()
-  : TestCase ("Test credits and flows status")
-{}
-
-FqPieQueueDiscSetLinearProbing::~FqPieQueueDiscSetLinearProbing ()
-{}
-
-void
-FqPieQueueDiscSetLinearProbing::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
+FqPieQueueDiscSetLinearProbing::FqPieQueueDiscSetLinearProbing()
+    : TestCase("Test credits and flows status")
 {
-  Ptr<Packet> p = Create<Packet> (100);
-  Address dest;
-  Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem> (p, dest, 0, hdr);
-  queue->Enqueue (item);
+}
+
+FqPieQueueDiscSetLinearProbing::~FqPieQueueDiscSetLinearProbing()
+{
 }
 
 void
-FqPieQueueDiscSetLinearProbing::DoRun ()
+FqPieQueueDiscSetLinearProbing::AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
 {
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("EnableSetAssociativeHash", BooleanValue (true));
-  queueDisc->SetQuantum (90);
-  queueDisc->Initialize ();
-
-  Ptr<Ipv4FqPieTestPacketFilter> filter = CreateObject<Ipv4FqPieTestPacketFilter> ();
-  queueDisc->AddPacketFilter (filter);
-
-  Ipv4Header hdr;
-  hdr.SetPayloadSize (100);
-  hdr.SetSource (Ipv4Address ("10.10.1.1"));
-  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
-  hdr.SetProtocol (7);
-
-  g_hash = 0;
-  AddPacket (queueDisc, hdr);
-  g_hash = 1;
-  AddPacket (queueDisc, hdr);
-  AddPacket (queueDisc, hdr);
-  g_hash = 2;
-  AddPacket (queueDisc, hdr);
-  g_hash = 3;
-  AddPacket (queueDisc, hdr);
-  g_hash = 4;
-  AddPacket (queueDisc, hdr);
-  AddPacket (queueDisc, hdr);
-  g_hash = 5;
-  AddPacket (queueDisc, hdr);
-  g_hash = 6;
-  AddPacket (queueDisc, hdr);
-  g_hash = 7;
-  AddPacket (queueDisc, hdr);
-  g_hash = 1024;
-  AddPacket (queueDisc, hdr);
-
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 11,
-                         "unexpected number of packets in the queue disc");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 2,
-                         "unexpected number of packets in the first flow queue of set one");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 2,
-                         "unexpected number of packets in the second flow queue of set one");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetNPackets (), 1,
-                         "unexpected number of packets in the third flow queue of set one");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (3)->GetQueueDisc ()->GetNPackets (), 1,
-                         "unexpected number of packets in the fourth flow queue of set one");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (4)->GetQueueDisc ()->GetNPackets (), 2,
-                         "unexpected number of packets in the fifth flow queue of set one");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (5)->GetQueueDisc ()->GetNPackets (), 1,
-                         "unexpected number of packets in the sixth flow queue of set one");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (6)->GetQueueDisc ()->GetNPackets (), 1,
-                         "unexpected number of packets in the seventh flow queue of set one");
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (7)->GetQueueDisc ()->GetNPackets (), 1,
-                         "unexpected number of packets in the eighth flow queue of set one");
-  g_hash = 1025;
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3,
-                         "unexpected number of packets in the first flow of set one");
-  g_hash = 10;
-  AddPacket (queueDisc, hdr);
-  NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (8)->GetQueueDisc ()->GetNPackets (), 1,
-                         "unexpected number of packets in the first flow of set two");
-  Simulator::Destroy ();
+    Ptr<Packet> p = Create<Packet>(100);
+    Address dest;
+    Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem>(p, dest, 0, hdr);
+    queue->Enqueue(item);
 }
 
+void
+FqPieQueueDiscSetLinearProbing::DoRun()
+{
+    Ptr<FqPieQueueDisc> queueDisc =
+        CreateObjectWithAttributes<FqPieQueueDisc>("EnableSetAssociativeHash", BooleanValue(true));
+    queueDisc->SetQuantum(90);
+    queueDisc->Initialize();
+
+    Ptr<Ipv4FqPieTestPacketFilter> filter = CreateObject<Ipv4FqPieTestPacketFilter>();
+    queueDisc->AddPacketFilter(filter);
+
+    Ipv4Header hdr;
+    hdr.SetPayloadSize(100);
+    hdr.SetSource(Ipv4Address("10.10.1.1"));
+    hdr.SetDestination(Ipv4Address("10.10.1.2"));
+    hdr.SetProtocol(7);
+
+    g_hash = 0;
+    AddPacket(queueDisc, hdr);
+    g_hash = 1;
+    AddPacket(queueDisc, hdr);
+    AddPacket(queueDisc, hdr);
+    g_hash = 2;
+    AddPacket(queueDisc, hdr);
+    g_hash = 3;
+    AddPacket(queueDisc, hdr);
+    g_hash = 4;
+    AddPacket(queueDisc, hdr);
+    AddPacket(queueDisc, hdr);
+    g_hash = 5;
+    AddPacket(queueDisc, hdr);
+    g_hash = 6;
+    AddPacket(queueDisc, hdr);
+    g_hash = 7;
+    AddPacket(queueDisc, hdr);
+    g_hash = 1024;
+    AddPacket(queueDisc, hdr);
+
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->QueueDisc::GetNPackets(),
+                          11,
+                          "unexpected number of packets in the queue disc");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the first flow queue of set one");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the second flow queue of set one");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(2)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the third flow queue of set one");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(3)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the fourth flow queue of set one");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(4)->GetQueueDisc()->GetNPackets(),
+                          2,
+                          "unexpected number of packets in the fifth flow queue of set one");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(5)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the sixth flow queue of set one");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(6)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the seventh flow queue of set one");
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(7)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the eighth flow queue of set one");
+    g_hash = 1025;
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetNPackets(),
+                          3,
+                          "unexpected number of packets in the first flow of set one");
+    g_hash = 10;
+    AddPacket(queueDisc, hdr);
+    NS_TEST_ASSERT_MSG_EQ(queueDisc->GetQueueDiscClass(8)->GetQueueDisc()->GetNPackets(),
+                          1,
+                          "unexpected number of packets in the first flow of set two");
+    Simulator::Destroy();
+}
 
 /**
  * \ingroup system-tests-tc
@@ -699,190 +884,270 @@ FqPieQueueDiscSetLinearProbing::DoRun ()
  * This test is divided to sub test one without hash collisions and so ECT0 and ECT1 flows are
  * classified into different flows.
  * Sub Test 1
- * 70 packets are enqueued into both the flows with the delay of 0.5ms between two enqueues, and dequeued with the delay of
- * 1ms between two dequeues.
- * Sub Test 2
- * 140(70 ECT0 + 70 ECT1) packets are enqueued such that ECT1 packets are enqueued at 0.5ms, 1.5ms, 2.5ms and so on, and ECT0 packets are
- * enqueued are enqueued at 1ms, 2ms, 3ms and so on
- * Any future classifier options (e.g. SetAssociativehash) should be disabled to prevent a hash collision on this test case.
+ * 70 packets are enqueued into both the flows with the delay of 0.5ms between two enqueues, and
+ * dequeued with the delay of 1ms between two dequeues. Sub Test 2 140(70 ECT0 + 70 ECT1) packets
+ * are enqueued such that ECT1 packets are enqueued at 0.5ms, 1.5ms, 2.5ms and so on, and ECT0
+ * packets are enqueued are enqueued at 1ms, 2ms, 3ms and so on Any future classifier options (e.g.
+ * SetAssociativehash) should be disabled to prevent a hash collision on this test case.
  */
 class FqPieQueueDiscL4sMode : public TestCase
 {
-public:
-  FqPieQueueDiscL4sMode ();
-  ~FqPieQueueDiscL4sMode () override;
+  public:
+    FqPieQueueDiscL4sMode();
+    ~FqPieQueueDiscL4sMode() override;
 
-private:
-  void DoRun () override;
-  /**
-   * Enqueue the given number of packets.
-   * \param queue The queue disc.
-   * \param hdr The IPv4 header.
-   * \param nPkt The number of packets.
-   */
-  void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt);
-  /**
-   * Enqueue the given number of packets at different times.
-   * \param queue The queue disc.
-   * \param hdr The IPv4 header.
-   * \param delay The time between two consecutive enqueue operations.
-   * \param nPkt The number of packets.
-   */
-  void AddPacketWithDelay (Ptr<FqPieQueueDisc> queue,Ipv4Header hdr, double delay, uint32_t nPkt);
-  /**
-   * Dequeue the given number of packets.
-   * \param queue The queue disc.
-   * \param nPkt The number of packets.
-   */
-  void Dequeue (Ptr<FqPieQueueDisc> queue, uint32_t nPkt);
-  /**
-   * Dequeue the given number of packets at different times.
-   * \param queue The queue disc.
-   * \param delay The time between two consecutive dequeue operations.
-   * \param nPkt The number of packets.
-   */
-  void DequeueWithDelay (Ptr<FqPieQueueDisc> queue, double delay, uint32_t nPkt);
+  private:
+    void DoRun() override;
+    /**
+     * Enqueue the given number of packets.
+     * \param queue The queue disc.
+     * \param hdr The IPv4 header.
+     * \param nPkt The number of packets.
+     */
+    void AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt);
+    /**
+     * Enqueue the given number of packets at different times.
+     * \param queue The queue disc.
+     * \param hdr The IPv4 header.
+     * \param delay The time between two consecutive enqueue operations.
+     * \param nPkt The number of packets.
+     */
+    void AddPacketWithDelay(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, double delay, uint32_t nPkt);
+    /**
+     * Dequeue the given number of packets.
+     * \param queue The queue disc.
+     * \param nPkt The number of packets.
+     */
+    void Dequeue(Ptr<FqPieQueueDisc> queue, uint32_t nPkt);
+    /**
+     * Dequeue the given number of packets at different times.
+     * \param queue The queue disc.
+     * \param delay The time between two consecutive dequeue operations.
+     * \param nPkt The number of packets.
+     */
+    void DequeueWithDelay(Ptr<FqPieQueueDisc> queue, double delay, uint32_t nPkt);
 };
 
-FqPieQueueDiscL4sMode::FqPieQueueDiscL4sMode ()
-  : TestCase ("Test L4S mode")
-{}
+FqPieQueueDiscL4sMode::FqPieQueueDiscL4sMode()
+    : TestCase("Test L4S mode")
+{
+}
 
-FqPieQueueDiscL4sMode::~FqPieQueueDiscL4sMode ()
-{}
+FqPieQueueDiscL4sMode::~FqPieQueueDiscL4sMode()
+{
+}
 
 void
-FqPieQueueDiscL4sMode::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt)
+FqPieQueueDiscL4sMode::AddPacket(Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt)
 {
-  Address dest;
-  Ptr<Packet> p = Create<Packet> (100);
-  for (uint32_t i = 0; i < nPkt; i++)
+    Address dest;
+    Ptr<Packet> p = Create<Packet>(100);
+    for (uint32_t i = 0; i < nPkt; i++)
     {
-      Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem> (p, dest, 0, hdr);
-      queue->Enqueue (item);
+        Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem>(p, dest, 0, hdr);
+        queue->Enqueue(item);
     }
 }
 
 void
-FqPieQueueDiscL4sMode::AddPacketWithDelay (Ptr<FqPieQueueDisc> queue,Ipv4Header hdr, double delay, uint32_t nPkt)
+FqPieQueueDiscL4sMode::AddPacketWithDelay(Ptr<FqPieQueueDisc> queue,
+                                          Ipv4Header hdr,
+                                          double delay,
+                                          uint32_t nPkt)
 {
-  for (uint32_t i = 0; i < nPkt; i++)
+    for (uint32_t i = 0; i < nPkt; i++)
     {
-      Simulator::Schedule (Time (Seconds ((i + 1) * delay)), &FqPieQueueDiscL4sMode::AddPacket, this, queue, hdr, 1);
+        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+                            &FqPieQueueDiscL4sMode::AddPacket,
+                            this,
+                            queue,
+                            hdr,
+                            1);
     }
 }
 
 void
-FqPieQueueDiscL4sMode::Dequeue (Ptr<FqPieQueueDisc> queue, uint32_t nPkt)
+FqPieQueueDiscL4sMode::Dequeue(Ptr<FqPieQueueDisc> queue, uint32_t nPkt)
 {
-  for (uint32_t i = 0; i < nPkt; i++)
+    for (uint32_t i = 0; i < nPkt; i++)
     {
-      Ptr<QueueDiscItem> item = queue->Dequeue ();
+        Ptr<QueueDiscItem> item = queue->Dequeue();
     }
 }
 
 void
-FqPieQueueDiscL4sMode::DequeueWithDelay (Ptr<FqPieQueueDisc> queue, double delay, uint32_t nPkt)
+FqPieQueueDiscL4sMode::DequeueWithDelay(Ptr<FqPieQueueDisc> queue, double delay, uint32_t nPkt)
 {
-  for (uint32_t i = 0; i < nPkt; i++)
+    for (uint32_t i = 0; i < nPkt; i++)
     {
-      Simulator::Schedule (Time (Seconds ((i + 1) * delay)), &FqPieQueueDiscL4sMode::Dequeue, this, queue, 1);
+        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+                            &FqPieQueueDiscL4sMode::Dequeue,
+                            this,
+                            queue,
+                            1);
     }
 }
 
 void
-FqPieQueueDiscL4sMode::DoRun ()
+FqPieQueueDiscL4sMode::DoRun()
 {
-  // Test is divided into 2 sub test cases:
-  // 1) Without hash collisions
-  // 2) With hash collisions
+    // Test is divided into 2 sub test cases:
+    // 1) Without hash collisions
+    // 2) With hash collisions
 
-  // Test case 1, Without hash collisions
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"),
-    "UseEcn", BooleanValue (true), "Perturbation", UintegerValue (0),
-    "UseL4s", BooleanValue (true), "CeThreshold", TimeValue (MilliSeconds (2)));
+    // Test case 1, Without hash collisions
+    Ptr<FqPieQueueDisc> queueDisc =
+        CreateObjectWithAttributes<FqPieQueueDisc>("MaxSize",
+                                                   StringValue("10240p"),
+                                                   "UseEcn",
+                                                   BooleanValue(true),
+                                                   "Perturbation",
+                                                   UintegerValue(0),
+                                                   "UseL4s",
+                                                   BooleanValue(true),
+                                                   "CeThreshold",
+                                                   TimeValue(MilliSeconds(2)));
 
-  queueDisc->SetQuantum (1514);
-  queueDisc->Initialize ();
-  Ipv4Header hdr;
-  hdr.SetPayloadSize (100);
-  hdr.SetSource (Ipv4Address ("10.10.1.1"));
-  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
-  hdr.SetProtocol (7);
-  hdr.SetEcn (Ipv4Header::ECN_ECT1);
+    queueDisc->SetQuantum(1514);
+    queueDisc->Initialize();
+    Ipv4Header hdr;
+    hdr.SetPayloadSize(100);
+    hdr.SetSource(Ipv4Address("10.10.1.1"));
+    hdr.SetDestination(Ipv4Address("10.10.1.2"));
+    hdr.SetProtocol(7);
+    hdr.SetEcn(Ipv4Header::ECN_ECT1);
 
-  // Add 70 ECT1 (ECN capable) packets from the first flow
-  // Set delay = 0.5ms
-  double delay = 0.0005;
-  Simulator::Schedule (Time (Seconds (0)), &FqPieQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 70);
+    // Add 70 ECT1 (ECN capable) packets from the first flow
+    // Set delay = 0.5ms
+    double delay = 0.0005;
+    Simulator::Schedule(Time(Seconds(0)),
+                        &FqPieQueueDiscL4sMode::AddPacketWithDelay,
+                        this,
+                        queueDisc,
+                        hdr,
+                        delay,
+                        70);
 
-  // Add 70 ECT0 (ECN capable) packets from second flow
-  hdr.SetEcn (Ipv4Header::ECN_ECT0);
-  hdr.SetDestination (Ipv4Address ("10.10.1.10"));
-  Simulator::Schedule (Time (Seconds (0)), &FqPieQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 70);
+    // Add 70 ECT0 (ECN capable) packets from second flow
+    hdr.SetEcn(Ipv4Header::ECN_ECT0);
+    hdr.SetDestination(Ipv4Address("10.10.1.10"));
+    Simulator::Schedule(Time(Seconds(0)),
+                        &FqPieQueueDiscL4sMode::AddPacketWithDelay,
+                        this,
+                        queueDisc,
+                        hdr,
+                        delay,
+                        70);
 
-  //Dequeue 140 packets with delay 1ms
-  delay = 0.001;
-  DequeueWithDelay (queueDisc, delay, 140);
-  Simulator::Stop (Seconds (10.0));
-  Simulator::Run ();
+    // Dequeue 140 packets with delay 1ms
+    delay = 0.001;
+    DequeueWithDelay(queueDisc, delay, 140);
+    Simulator::Stop(Seconds(10.0));
+    Simulator::Run();
 
-  Ptr<PieQueueDisc> q0 = queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetObject <PieQueueDisc> ();
-  Ptr<PieQueueDisc> q1 = queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetObject <PieQueueDisc> ();
+    Ptr<PieQueueDisc> q0 =
+        queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<PieQueueDisc>();
+    Ptr<PieQueueDisc> q1 =
+        queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetObject<PieQueueDisc>();
 
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::CE_THRESHOLD_EXCEEDED_MARK), 66, "There should be 66 marked packets"
-                         "4th packet is enqueued at 2ms and dequeued at 4ms hence the delay of 2ms which not greater than CE threshold"
-                         "5th packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
-                         "greater than CE threshold so all the packets after 4th packet are marked");
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "Queue delay is less than max burst allowance so"
-                         "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should not be any marked packets");
-  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should not be marked packets.");
-  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "There should not be any dropped packets");
+    NS_TEST_EXPECT_MSG_EQ(
+        q0->GetStats().GetNMarkedPackets(PieQueueDisc::CE_THRESHOLD_EXCEEDED_MARK),
+        66,
+        "There should be 66 marked packets"
+        "4th packet is enqueued at 2ms and dequeued at 4ms hence the delay of 2ms which not "
+        "greater than CE threshold"
+        "5th packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and "
+        "subsequent packet also do have delay"
+        "greater than CE threshold so all the packets after 4th packet are marked");
+    NS_TEST_EXPECT_MSG_EQ(q0->GetStats().GetNDroppedPackets(PieQueueDisc::UNFORCED_DROP),
+                          0,
+                          "Queue delay is less than max burst allowance so"
+                          "There should not be any dropped packets");
+    NS_TEST_EXPECT_MSG_EQ(q0->GetStats().GetNMarkedPackets(PieQueueDisc::UNFORCED_MARK),
+                          0,
+                          "There should not be any marked packets");
+    NS_TEST_EXPECT_MSG_EQ(q1->GetStats().GetNMarkedPackets(PieQueueDisc::UNFORCED_MARK),
+                          0,
+                          "There should not be marked packets.");
+    NS_TEST_EXPECT_MSG_EQ(q1->GetStats().GetNDroppedPackets(PieQueueDisc::UNFORCED_DROP),
+                          0,
+                          "There should not be any dropped packets");
 
-  Simulator::Destroy ();
+    Simulator::Destroy();
 
-  // Test case 2, With hash collisions
-  queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"),
-    "UseEcn", BooleanValue (true), "Perturbation", UintegerValue (0),
-    "UseL4s", BooleanValue (true), "CeThreshold", TimeValue (MilliSeconds (2)));
+    // Test case 2, With hash collisions
+    queueDisc = CreateObjectWithAttributes<FqPieQueueDisc>("MaxSize",
+                                                           StringValue("10240p"),
+                                                           "UseEcn",
+                                                           BooleanValue(true),
+                                                           "Perturbation",
+                                                           UintegerValue(0),
+                                                           "UseL4s",
+                                                           BooleanValue(true),
+                                                           "CeThreshold",
+                                                           TimeValue(MilliSeconds(2)));
 
-  queueDisc->SetQuantum (1514);
-  queueDisc->Initialize ();
-  hdr.SetPayloadSize (100);
-  hdr.SetSource (Ipv4Address ("10.10.1.1"));
-  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
-  hdr.SetProtocol (7);
-  hdr.SetEcn (Ipv4Header::ECN_ECT1);
+    queueDisc->SetQuantum(1514);
+    queueDisc->Initialize();
+    hdr.SetPayloadSize(100);
+    hdr.SetSource(Ipv4Address("10.10.1.1"));
+    hdr.SetDestination(Ipv4Address("10.10.1.2"));
+    hdr.SetProtocol(7);
+    hdr.SetEcn(Ipv4Header::ECN_ECT1);
 
-  // Add 70 ECT1 (ECN capable) packets from the first flow
-  // Set delay = 1ms
-  delay = 0.001;
-  Simulator::Schedule (Time (Seconds (0.0005)), &FqPieQueueDiscL4sMode::AddPacket, this, queueDisc, hdr, 1);
-  Simulator::Schedule (Time (Seconds (0.0005)), &FqPieQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 69);
+    // Add 70 ECT1 (ECN capable) packets from the first flow
+    // Set delay = 1ms
+    delay = 0.001;
+    Simulator::Schedule(Time(Seconds(0.0005)),
+                        &FqPieQueueDiscL4sMode::AddPacket,
+                        this,
+                        queueDisc,
+                        hdr,
+                        1);
+    Simulator::Schedule(Time(Seconds(0.0005)),
+                        &FqPieQueueDiscL4sMode::AddPacketWithDelay,
+                        this,
+                        queueDisc,
+                        hdr,
+                        delay,
+                        69);
 
-  // Add 70 ECT0 (ECN capable) packets from first flow
-  hdr.SetEcn (Ipv4Header::ECN_ECT0);
-  Simulator::Schedule (Time (Seconds (0)), &FqPieQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 70);
+    // Add 70 ECT0 (ECN capable) packets from first flow
+    hdr.SetEcn(Ipv4Header::ECN_ECT0);
+    Simulator::Schedule(Time(Seconds(0)),
+                        &FqPieQueueDiscL4sMode::AddPacketWithDelay,
+                        this,
+                        queueDisc,
+                        hdr,
+                        delay,
+                        70);
 
-  //Dequeue 140 packets with delay 1ms
-  DequeueWithDelay (queueDisc, delay, 140);
-  Simulator::Stop (Seconds (1.0));
-  Simulator::Run ();
-  q0 = queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetObject <PieQueueDisc> ();
-  q0 = queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetObject <PieQueueDisc> ();
+    // Dequeue 140 packets with delay 1ms
+    DequeueWithDelay(queueDisc, delay, 140);
+    Simulator::Stop(Seconds(1.0));
+    Simulator::Run();
+    q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<PieQueueDisc>();
+    q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<PieQueueDisc>();
 
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::CE_THRESHOLD_EXCEEDED_MARK), 68, "There should be 68 marked packets"
-                         "2nd ECT1 packet is enqueued at 1.5ms and dequeued at 3ms hence the delay of 1.5ms which not greater than CE threshold"
-                         "3rd packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
-                         "greater than CE threshold so all the packets after 2nd packet are marked");
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "Queue delay is less than max burst allowance so"
-                         "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should not be any marked packets");
+    NS_TEST_EXPECT_MSG_EQ(
+        q0->GetStats().GetNMarkedPackets(PieQueueDisc::CE_THRESHOLD_EXCEEDED_MARK),
+        68,
+        "There should be 68 marked packets"
+        "2nd ECT1 packet is enqueued at 1.5ms and dequeued at 3ms hence the delay of 1.5ms which "
+        "not greater than CE threshold"
+        "3rd packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and "
+        "subsequent packet also do have delay"
+        "greater than CE threshold so all the packets after 2nd packet are marked");
+    NS_TEST_EXPECT_MSG_EQ(q0->GetStats().GetNDroppedPackets(PieQueueDisc::UNFORCED_DROP),
+                          0,
+                          "Queue delay is less than max burst allowance so"
+                          "There should not be any dropped packets");
+    NS_TEST_EXPECT_MSG_EQ(q0->GetStats().GetNMarkedPackets(PieQueueDisc::UNFORCED_MARK),
+                          0,
+                          "There should not be any marked packets");
 
-  Simulator::Destroy ();
+    Simulator::Destroy();
 }
-
 
 /**
  * \ingroup system-tests-tc
@@ -891,20 +1156,20 @@ FqPieQueueDiscL4sMode::DoRun ()
  */
 class FqPieQueueDiscTestSuite : public TestSuite
 {
-public:
-  FqPieQueueDiscTestSuite ();
+  public:
+    FqPieQueueDiscTestSuite();
 };
 
-FqPieQueueDiscTestSuite::FqPieQueueDiscTestSuite ()
-  : TestSuite ("fq-pie-queue-disc", UNIT)
+FqPieQueueDiscTestSuite::FqPieQueueDiscTestSuite()
+    : TestSuite("fq-pie-queue-disc", UNIT)
 {
-  AddTestCase (new FqPieQueueDiscNoSuitableFilter, TestCase::QUICK);
-  AddTestCase (new FqPieQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::QUICK);
-  AddTestCase (new FqPieQueueDiscDeficit, TestCase::QUICK);
-  AddTestCase (new FqPieQueueDiscTCPFlowsSeparation, TestCase::QUICK);
-  AddTestCase (new FqPieQueueDiscUDPFlowsSeparation, TestCase::QUICK);
-  AddTestCase (new FqPieQueueDiscSetLinearProbing, TestCase::QUICK);
-  AddTestCase (new FqPieQueueDiscL4sMode, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscNoSuitableFilter, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscDeficit, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscTCPFlowsSeparation, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscUDPFlowsSeparation, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscSetLinearProbing, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscL4sMode, TestCase::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.

@@ -30,7 +30,8 @@
  * ns3::TypeNameGet() function declarations.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup attributeimpl
@@ -43,10 +44,11 @@ namespace ns3 {
  * \returns The type name as a string.
  */
 template <typename T>
-std::string TypeNameGet ()
+std::string
+TypeNameGet()
 {
-  NS_FATAL_ERROR ("Type name not defined.");
-  return "unknown";
+    NS_FATAL_ERROR("Type name not defined.");
+    return "unknown";
 }
 
 /**
@@ -56,12 +58,12 @@ std::string TypeNameGet ()
  *
  * \param T The type.
  */
-#define TYPENAMEGET_DEFINE(T)              \
-  template <>                              \
-  inline std::string TypeNameGet<T> (void) \
-  {                                        \
-    return #T;                             \
-  }
+#define TYPENAMEGET_DEFINE(T)                                                                      \
+    template <>                                                                                    \
+    inline std::string TypeNameGet<T>(void)                                                        \
+    {                                                                                              \
+        return #T;                                                                                 \
+    }
 
 /**
  * \ingroup attributeimpl
@@ -69,18 +71,18 @@ std::string TypeNameGet ()
  * \returns The numeric type name as a string.
  * @{
  */
-TYPENAMEGET_DEFINE (bool);
-TYPENAMEGET_DEFINE (int8_t);
-TYPENAMEGET_DEFINE (int16_t);
-TYPENAMEGET_DEFINE (int32_t);
-TYPENAMEGET_DEFINE (int64_t);
-TYPENAMEGET_DEFINE (uint8_t);
-TYPENAMEGET_DEFINE (uint16_t);
-TYPENAMEGET_DEFINE (uint32_t);
-TYPENAMEGET_DEFINE (uint64_t);
-TYPENAMEGET_DEFINE (float);
-TYPENAMEGET_DEFINE (double);
-TYPENAMEGET_DEFINE (long double);
+TYPENAMEGET_DEFINE(bool);
+TYPENAMEGET_DEFINE(int8_t);
+TYPENAMEGET_DEFINE(int16_t);
+TYPENAMEGET_DEFINE(int32_t);
+TYPENAMEGET_DEFINE(int64_t);
+TYPENAMEGET_DEFINE(uint8_t);
+TYPENAMEGET_DEFINE(uint16_t);
+TYPENAMEGET_DEFINE(uint32_t);
+TYPENAMEGET_DEFINE(uint64_t);
+TYPENAMEGET_DEFINE(float);
+TYPENAMEGET_DEFINE(double);
+TYPENAMEGET_DEFINE(long double);
 /** @} */
 
 } // namespace ns3

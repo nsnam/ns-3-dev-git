@@ -25,7 +25,8 @@
 
 #include "wifi-phy.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class YansWifiChannel;
 
@@ -46,37 +47,36 @@ class YansWifiChannel;
  */
 class YansWifiPhy : public WifiPhy
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  YansWifiPhy ();
-  ~YansWifiPhy () override;
+    YansWifiPhy();
+    ~YansWifiPhy() override;
 
-  void SetInterferenceHelper (const Ptr<InterferenceHelper> helper) override;
-  void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
-  Ptr<Channel> GetChannel () const override;
-  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
-  std::tuple<double, double, double> GetTxMaskRejectionParams () const override;
+    void SetInterferenceHelper(const Ptr<InterferenceHelper> helper) override;
+    void StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
+    Ptr<Channel> GetChannel() const override;
+    uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
+    std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
 
-  /**
-   * Set the YansWifiChannel this YansWifiPhy is to be connected to.
-   *
-   * \param channel the YansWifiChannel this YansWifiPhy is to be connected to
-   */
-  void SetChannel (const Ptr<YansWifiChannel> channel);
+    /**
+     * Set the YansWifiChannel this YansWifiPhy is to be connected to.
+     *
+     * \param channel the YansWifiChannel this YansWifiPhy is to be connected to
+     */
+    void SetChannel(const Ptr<YansWifiChannel> channel);
 
-protected:
-  void DoDispose () override;
+  protected:
+    void DoDispose() override;
 
-
-private:
-  Ptr<YansWifiChannel> m_channel; //!< YansWifiChannel that this YansWifiPhy is connected to
+  private:
+    Ptr<YansWifiChannel> m_channel; //!< YansWifiChannel that this YansWifiPhy is connected to
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* YANS_WIFI_PHY_H */

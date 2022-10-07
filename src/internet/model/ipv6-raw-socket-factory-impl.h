@@ -34,15 +34,14 @@ namespace ns3
  */
 class Ipv6RawSocketFactoryImpl : public Ipv6RawSocketFactory
 {
-public:
-  /**
-   * \brief Create a raw IPv6 socket.
-   * \returns A new RAW IPv6 socket.
-   */
-  Ptr<Socket> CreateSocket () override;
+  public:
+    /**
+     * \brief Create a raw IPv6 socket.
+     * \returns A new RAW IPv6 socket.
+     */
+    Ptr<Socket> CreateSocket() override;
 };
 
 } /* namespace ns3 */
 
 #endif /* IPV6_RAW_SOCKET_FACTORY_IMPL_H */
-

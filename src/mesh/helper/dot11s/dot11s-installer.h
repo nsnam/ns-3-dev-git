@@ -23,7 +23,8 @@
 
 #include "ns3/mesh-stack-installer.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup dot11s
@@ -31,55 +32,54 @@ namespace ns3 {
  */
 class Dot11sStack : public MeshStack
 {
-public:
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    /**
+     * Create a Dot11sStack() installer helper.
+     */
+    Dot11sStack();
 
-  /**
-   * Create a Dot11sStack() installer helper.
-   */
-  Dot11sStack ();
+    /**
+     * Destroy a Dot11sStack() installer helper.
+     */
+    ~Dot11sStack() override;
 
-  /**
-   * Destroy a Dot11sStack() installer helper.
-   */
-  ~Dot11sStack () override;
+    /**
+     * Break any reference cycles in the installer helper.  Required for ns-3
+     * Object support.
+     */
+    void DoDispose() override;
 
-  /**
-   * Break any reference cycles in the installer helper.  Required for ns-3
-   * Object support.
-   */
-  void DoDispose () override;
+    /**
+     * \brief Install an 802.11s stack.
+     * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+     * \return true if successful
+     */
+    bool InstallStack(Ptr<MeshPointDevice> mp) override;
 
-  /**
-   * \brief Install an 802.11s stack.
-   * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
-   * \return true if successful
-   */
-  bool InstallStack (Ptr<MeshPointDevice> mp) override;
+    /**
+     * \brief Iterate through the referenced devices and protocols and print
+     * their statistics
+     * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+     * \param os The output stream
+     */
+    void Report(const Ptr<MeshPointDevice> mp, std::ostream&) override;
 
-  /**
-   * \brief Iterate through the referenced devices and protocols and print
-   * their statistics
-   * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
-   * \param os The output stream
-   */
-  void Report (const Ptr<MeshPointDevice> mp, std::ostream&) override;
+    /**
+     * \brief Reset the statistics on the referenced devices and protocols.
+     * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+     */
+    void ResetStats(const Ptr<MeshPointDevice> mp) override;
 
-  /**
-   * \brief Reset the statistics on the referenced devices and protocols.
-   * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
-   */
-  void ResetStats (const Ptr<MeshPointDevice> mp) override;
-private:
-  Mac48Address m_root; ///< root
+  private:
+    Mac48Address m_root; ///< root
 };
 
 } // namespace ns3
 
 #endif
-

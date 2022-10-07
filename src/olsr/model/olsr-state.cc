@@ -28,548 +28,531 @@
 
 #include "olsr-state.h"
 
-
-namespace ns3 {
-namespace olsr {
+namespace ns3
+{
+namespace olsr
+{
 
 /********** MPR Selector Set Manipulation **********/
 
 MprSelectorTuple*
-OlsrState::FindMprSelectorTuple (Ipv4Address const &mainAddr)
+OlsrState::FindMprSelectorTuple(const Ipv4Address& mainAddr)
 {
-  for (MprSelectorSet::iterator it = m_mprSelectorSet.begin ();
-       it != m_mprSelectorSet.end (); it++)
+    for (MprSelectorSet::iterator it = m_mprSelectorSet.begin(); it != m_mprSelectorSet.end(); it++)
     {
-      if (it->mainAddr == mainAddr)
+        if (it->mainAddr == mainAddr)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseMprSelectorTuple (const MprSelectorTuple &tuple)
+OlsrState::EraseMprSelectorTuple(const MprSelectorTuple& tuple)
 {
-  for (MprSelectorSet::iterator it = m_mprSelectorSet.begin ();
-       it != m_mprSelectorSet.end (); it++)
+    for (MprSelectorSet::iterator it = m_mprSelectorSet.begin(); it != m_mprSelectorSet.end(); it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_mprSelectorSet.erase (it);
-          break;
+            m_mprSelectorSet.erase(it);
+            break;
         }
     }
 }
 
 void
-OlsrState::EraseMprSelectorTuples (const Ipv4Address &mainAddr)
+OlsrState::EraseMprSelectorTuples(const Ipv4Address& mainAddr)
 {
-  for (MprSelectorSet::iterator it = m_mprSelectorSet.begin ();
-       it != m_mprSelectorSet.end (); )
+    for (MprSelectorSet::iterator it = m_mprSelectorSet.begin(); it != m_mprSelectorSet.end();)
     {
-      if (it->mainAddr == mainAddr)
+        if (it->mainAddr == mainAddr)
         {
-          it = m_mprSelectorSet.erase (it);
+            it = m_mprSelectorSet.erase(it);
         }
-      else
+        else
         {
-          it++;
+            it++;
         }
     }
 }
 
 void
-OlsrState::InsertMprSelectorTuple (MprSelectorTuple const &tuple)
+OlsrState::InsertMprSelectorTuple(const MprSelectorTuple& tuple)
 {
-  m_mprSelectorSet.push_back (tuple);
+    m_mprSelectorSet.push_back(tuple);
 }
 
 std::string
-OlsrState::PrintMprSelectorSet () const
+OlsrState::PrintMprSelectorSet() const
 {
-  std::ostringstream os;
-  os << "[";
-  for (MprSelectorSet::const_iterator iter = m_mprSelectorSet.begin ();
-       iter != m_mprSelectorSet.end (); iter++)
+    std::ostringstream os;
+    os << "[";
+    for (MprSelectorSet::const_iterator iter = m_mprSelectorSet.begin();
+         iter != m_mprSelectorSet.end();
+         iter++)
     {
-      MprSelectorSet::const_iterator next = iter;
-      next++;
-      os << iter->mainAddr;
-      if (next != m_mprSelectorSet.end ())
+        MprSelectorSet::const_iterator next = iter;
+        next++;
+        os << iter->mainAddr;
+        if (next != m_mprSelectorSet.end())
         {
-          os << ", ";
+            os << ", ";
         }
     }
-  os << "]";
-  return os.str ();
+    os << "]";
+    return os.str();
 }
-
 
 /********** Neighbor Set Manipulation **********/
 
 NeighborTuple*
-OlsrState::FindNeighborTuple (Ipv4Address const &mainAddr)
+OlsrState::FindNeighborTuple(const Ipv4Address& mainAddr)
 {
-  for (NeighborSet::iterator it = m_neighborSet.begin ();
-       it != m_neighborSet.end (); it++)
+    for (NeighborSet::iterator it = m_neighborSet.begin(); it != m_neighborSet.end(); it++)
     {
-      if (it->neighborMainAddr == mainAddr)
+        if (it->neighborMainAddr == mainAddr)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 const NeighborTuple*
-OlsrState::FindSymNeighborTuple (Ipv4Address const &mainAddr) const
+OlsrState::FindSymNeighborTuple(const Ipv4Address& mainAddr) const
 {
-  for (NeighborSet::const_iterator it = m_neighborSet.begin ();
-       it != m_neighborSet.end (); it++)
+    for (NeighborSet::const_iterator it = m_neighborSet.begin(); it != m_neighborSet.end(); it++)
     {
-      if (it->neighborMainAddr == mainAddr && it->status == NeighborTuple::STATUS_SYM)
+        if (it->neighborMainAddr == mainAddr && it->status == NeighborTuple::STATUS_SYM)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 NeighborTuple*
-OlsrState::FindNeighborTuple (Ipv4Address const &mainAddr, uint8_t willingness)
+OlsrState::FindNeighborTuple(const Ipv4Address& mainAddr, uint8_t willingness)
 {
-  for (NeighborSet::iterator it = m_neighborSet.begin ();
-       it != m_neighborSet.end (); it++)
+    for (NeighborSet::iterator it = m_neighborSet.begin(); it != m_neighborSet.end(); it++)
     {
-      if (it->neighborMainAddr == mainAddr && it->willingness == willingness)
+        if (it->neighborMainAddr == mainAddr && it->willingness == willingness)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseNeighborTuple (const NeighborTuple &tuple)
+OlsrState::EraseNeighborTuple(const NeighborTuple& tuple)
 {
-  for (NeighborSet::iterator it = m_neighborSet.begin ();
-       it != m_neighborSet.end (); it++)
+    for (NeighborSet::iterator it = m_neighborSet.begin(); it != m_neighborSet.end(); it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_neighborSet.erase (it);
-          break;
-        }
-    }
-}
-
-void
-OlsrState::EraseNeighborTuple (const Ipv4Address &mainAddr)
-{
-  for (NeighborSet::iterator it = m_neighborSet.begin ();
-       it != m_neighborSet.end (); it++)
-    {
-      if (it->neighborMainAddr == mainAddr)
-        {
-          it = m_neighborSet.erase (it);
-          break;
+            m_neighborSet.erase(it);
+            break;
         }
     }
 }
 
 void
-OlsrState::InsertNeighborTuple (NeighborTuple const &tuple)
+OlsrState::EraseNeighborTuple(const Ipv4Address& mainAddr)
 {
-  for (NeighborSet::iterator it = m_neighborSet.begin ();
-       it != m_neighborSet.end (); it++)
+    for (NeighborSet::iterator it = m_neighborSet.begin(); it != m_neighborSet.end(); it++)
     {
-      if (it->neighborMainAddr == tuple.neighborMainAddr)
+        if (it->neighborMainAddr == mainAddr)
         {
-          // Update it
-          *it = tuple;
-          return;
+            it = m_neighborSet.erase(it);
+            break;
         }
     }
-  m_neighborSet.push_back (tuple);
+}
+
+void
+OlsrState::InsertNeighborTuple(const NeighborTuple& tuple)
+{
+    for (NeighborSet::iterator it = m_neighborSet.begin(); it != m_neighborSet.end(); it++)
+    {
+        if (it->neighborMainAddr == tuple.neighborMainAddr)
+        {
+            // Update it
+            *it = tuple;
+            return;
+        }
+    }
+    m_neighborSet.push_back(tuple);
 }
 
 /********** Neighbor 2 Hop Set Manipulation **********/
 
 TwoHopNeighborTuple*
-OlsrState::FindTwoHopNeighborTuple (Ipv4Address const &neighborMainAddr,
-                                    Ipv4Address const &twoHopNeighborAddr)
+OlsrState::FindTwoHopNeighborTuple(const Ipv4Address& neighborMainAddr,
+                                   const Ipv4Address& twoHopNeighborAddr)
 {
-  for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end (); it++)
+    for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin();
+         it != m_twoHopNeighborSet.end();
+         it++)
     {
-      if (it->neighborMainAddr == neighborMainAddr
-          && it->twoHopNeighborAddr == twoHopNeighborAddr)
+        if (it->neighborMainAddr == neighborMainAddr &&
+            it->twoHopNeighborAddr == twoHopNeighborAddr)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
+OlsrState::EraseTwoHopNeighborTuple(const TwoHopNeighborTuple& tuple)
 {
-  for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end (); it++)
+    for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin();
+         it != m_twoHopNeighborSet.end();
+         it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_twoHopNeighborSet.erase (it);
-          break;
-        }
-    }
-}
-
-void
-OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr,
-                                      const Ipv4Address &twoHopNeighborAddr)
-{
-  for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end (); )
-    {
-      if (it->neighborMainAddr == neighborMainAddr
-          && it->twoHopNeighborAddr == twoHopNeighborAddr)
-        {
-          it = m_twoHopNeighborSet.erase (it);
-        }
-      else
-        {
-          it++;
+            m_twoHopNeighborSet.erase(it);
+            break;
         }
     }
 }
 
 void
-OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr)
+OlsrState::EraseTwoHopNeighborTuples(const Ipv4Address& neighborMainAddr,
+                                     const Ipv4Address& twoHopNeighborAddr)
 {
-  for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end (); )
+    for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin();
+         it != m_twoHopNeighborSet.end();)
     {
-      if (it->neighborMainAddr == neighborMainAddr)
+        if (it->neighborMainAddr == neighborMainAddr &&
+            it->twoHopNeighborAddr == twoHopNeighborAddr)
         {
-          it = m_twoHopNeighborSet.erase (it);
+            it = m_twoHopNeighborSet.erase(it);
         }
-      else
+        else
         {
-          it++;
+            it++;
         }
     }
 }
 
 void
-OlsrState::InsertTwoHopNeighborTuple (TwoHopNeighborTuple const &tuple)
+OlsrState::EraseTwoHopNeighborTuples(const Ipv4Address& neighborMainAddr)
 {
-  m_twoHopNeighborSet.push_back (tuple);
+    for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin();
+         it != m_twoHopNeighborSet.end();)
+    {
+        if (it->neighborMainAddr == neighborMainAddr)
+        {
+            it = m_twoHopNeighborSet.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+}
+
+void
+OlsrState::InsertTwoHopNeighborTuple(const TwoHopNeighborTuple& tuple)
+{
+    m_twoHopNeighborSet.push_back(tuple);
 }
 
 /********** MPR Set Manipulation **********/
 
 bool
-OlsrState::FindMprAddress (Ipv4Address const &addr)
+OlsrState::FindMprAddress(const Ipv4Address& addr)
 {
-  MprSet::iterator it = m_mprSet.find (addr);
-  return (it != m_mprSet.end ());
+    MprSet::iterator it = m_mprSet.find(addr);
+    return (it != m_mprSet.end());
 }
 
 void
-OlsrState::SetMprSet (MprSet mprSet)
+OlsrState::SetMprSet(MprSet mprSet)
 {
-  m_mprSet = mprSet;
+    m_mprSet = mprSet;
 }
+
 MprSet
-OlsrState::GetMprSet () const
+OlsrState::GetMprSet() const
 {
-  return m_mprSet;
+    return m_mprSet;
 }
 
 /********** Duplicate Set Manipulation **********/
 
 DuplicateTuple*
-OlsrState::FindDuplicateTuple (Ipv4Address const &addr, uint16_t sequenceNumber)
+OlsrState::FindDuplicateTuple(const Ipv4Address& addr, uint16_t sequenceNumber)
 {
-  for (DuplicateSet::iterator it = m_duplicateSet.begin ();
-       it != m_duplicateSet.end (); it++)
+    for (DuplicateSet::iterator it = m_duplicateSet.begin(); it != m_duplicateSet.end(); it++)
     {
-      if (it->address == addr && it->sequenceNumber == sequenceNumber)
+        if (it->address == addr && it->sequenceNumber == sequenceNumber)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseDuplicateTuple (const DuplicateTuple &tuple)
+OlsrState::EraseDuplicateTuple(const DuplicateTuple& tuple)
 {
-  for (DuplicateSet::iterator it = m_duplicateSet.begin ();
-       it != m_duplicateSet.end (); it++)
+    for (DuplicateSet::iterator it = m_duplicateSet.begin(); it != m_duplicateSet.end(); it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_duplicateSet.erase (it);
-          break;
+            m_duplicateSet.erase(it);
+            break;
         }
     }
 }
 
 void
-OlsrState::InsertDuplicateTuple (DuplicateTuple const &tuple)
+OlsrState::InsertDuplicateTuple(const DuplicateTuple& tuple)
 {
-  m_duplicateSet.push_back (tuple);
+    m_duplicateSet.push_back(tuple);
 }
 
 /********** Link Set Manipulation **********/
 
 LinkTuple*
-OlsrState::FindLinkTuple (Ipv4Address const & ifaceAddr)
+OlsrState::FindLinkTuple(const Ipv4Address& ifaceAddr)
 {
-  for (LinkSet::iterator it = m_linkSet.begin ();
-       it != m_linkSet.end (); it++)
+    for (LinkSet::iterator it = m_linkSet.begin(); it != m_linkSet.end(); it++)
     {
-      if (it->neighborIfaceAddr == ifaceAddr)
+        if (it->neighborIfaceAddr == ifaceAddr)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 LinkTuple*
-OlsrState::FindSymLinkTuple (Ipv4Address const &ifaceAddr, Time now)
+OlsrState::FindSymLinkTuple(const Ipv4Address& ifaceAddr, Time now)
 {
-  for (LinkSet::iterator it = m_linkSet.begin ();
-       it != m_linkSet.end (); it++)
+    for (LinkSet::iterator it = m_linkSet.begin(); it != m_linkSet.end(); it++)
     {
-      if (it->neighborIfaceAddr == ifaceAddr)
+        if (it->neighborIfaceAddr == ifaceAddr)
         {
-          if (it->symTime > now)
+            if (it->symTime > now)
             {
-              return &(*it);
+                return &(*it);
             }
-          else
+            else
             {
-              break;
+                break;
             }
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseLinkTuple (const LinkTuple &tuple)
+OlsrState::EraseLinkTuple(const LinkTuple& tuple)
 {
-  for (LinkSet::iterator it = m_linkSet.begin ();
-       it != m_linkSet.end (); it++)
+    for (LinkSet::iterator it = m_linkSet.begin(); it != m_linkSet.end(); it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_linkSet.erase (it);
-          break;
+            m_linkSet.erase(it);
+            break;
         }
     }
 }
 
 LinkTuple&
-OlsrState::InsertLinkTuple (LinkTuple const &tuple)
+OlsrState::InsertLinkTuple(const LinkTuple& tuple)
 {
-  m_linkSet.push_back (tuple);
-  return m_linkSet.back ();
+    m_linkSet.push_back(tuple);
+    return m_linkSet.back();
 }
 
 /********** Topology Set Manipulation **********/
 
 TopologyTuple*
-OlsrState::FindTopologyTuple (Ipv4Address const &destAddr,
-                              Ipv4Address const &lastAddr)
+OlsrState::FindTopologyTuple(const Ipv4Address& destAddr, const Ipv4Address& lastAddr)
 {
-  for (TopologySet::iterator it = m_topologySet.begin ();
-       it != m_topologySet.end (); it++)
+    for (TopologySet::iterator it = m_topologySet.begin(); it != m_topologySet.end(); it++)
     {
-      if (it->destAddr == destAddr && it->lastAddr == lastAddr)
+        if (it->destAddr == destAddr && it->lastAddr == lastAddr)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 TopologyTuple*
-OlsrState::FindNewerTopologyTuple (Ipv4Address const & lastAddr, uint16_t ansn)
+OlsrState::FindNewerTopologyTuple(const Ipv4Address& lastAddr, uint16_t ansn)
 {
-  for (TopologySet::iterator it = m_topologySet.begin ();
-       it != m_topologySet.end (); it++)
+    for (TopologySet::iterator it = m_topologySet.begin(); it != m_topologySet.end(); it++)
     {
-      if (it->lastAddr == lastAddr && it->sequenceNumber > ansn)
+        if (it->lastAddr == lastAddr && it->sequenceNumber > ansn)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseTopologyTuple (const TopologyTuple &tuple)
+OlsrState::EraseTopologyTuple(const TopologyTuple& tuple)
 {
-  for (TopologySet::iterator it = m_topologySet.begin ();
-       it != m_topologySet.end (); it++)
+    for (TopologySet::iterator it = m_topologySet.begin(); it != m_topologySet.end(); it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_topologySet.erase (it);
-          break;
+            m_topologySet.erase(it);
+            break;
         }
     }
 }
 
 void
-OlsrState::EraseOlderTopologyTuples (const Ipv4Address &lastAddr, uint16_t ansn)
+OlsrState::EraseOlderTopologyTuples(const Ipv4Address& lastAddr, uint16_t ansn)
 {
-  for (TopologySet::iterator it = m_topologySet.begin ();
-       it != m_topologySet.end (); )
+    for (TopologySet::iterator it = m_topologySet.begin(); it != m_topologySet.end();)
     {
-      if (it->lastAddr == lastAddr && it->sequenceNumber < ansn)
+        if (it->lastAddr == lastAddr && it->sequenceNumber < ansn)
         {
-          it = m_topologySet.erase (it);
+            it = m_topologySet.erase(it);
         }
-      else
+        else
         {
-          it++;
+            it++;
         }
     }
 }
 
 void
-OlsrState::InsertTopologyTuple (TopologyTuple const &tuple)
+OlsrState::InsertTopologyTuple(const TopologyTuple& tuple)
 {
-  m_topologySet.push_back (tuple);
+    m_topologySet.push_back(tuple);
 }
 
 /********** Interface Association Set Manipulation **********/
 
 IfaceAssocTuple*
-OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr)
+OlsrState::FindIfaceAssocTuple(const Ipv4Address& ifaceAddr)
 {
-  for (IfaceAssocSet::iterator it = m_ifaceAssocSet.begin ();
-       it != m_ifaceAssocSet.end (); it++)
+    for (IfaceAssocSet::iterator it = m_ifaceAssocSet.begin(); it != m_ifaceAssocSet.end(); it++)
     {
-      if (it->ifaceAddr == ifaceAddr)
+        if (it->ifaceAddr == ifaceAddr)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 const IfaceAssocTuple*
-OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr) const
+OlsrState::FindIfaceAssocTuple(const Ipv4Address& ifaceAddr) const
 {
-  for (IfaceAssocSet::const_iterator it = m_ifaceAssocSet.begin ();
-       it != m_ifaceAssocSet.end (); it++)
+    for (IfaceAssocSet::const_iterator it = m_ifaceAssocSet.begin(); it != m_ifaceAssocSet.end();
+         it++)
     {
-      if (it->ifaceAddr == ifaceAddr)
+        if (it->ifaceAddr == ifaceAddr)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseIfaceAssocTuple (const IfaceAssocTuple &tuple)
+OlsrState::EraseIfaceAssocTuple(const IfaceAssocTuple& tuple)
 {
-  for (IfaceAssocSet::iterator it = m_ifaceAssocSet.begin ();
-       it != m_ifaceAssocSet.end (); it++)
+    for (IfaceAssocSet::iterator it = m_ifaceAssocSet.begin(); it != m_ifaceAssocSet.end(); it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_ifaceAssocSet.erase (it);
-          break;
+            m_ifaceAssocSet.erase(it);
+            break;
         }
     }
 }
 
 void
-OlsrState::InsertIfaceAssocTuple (const IfaceAssocTuple &tuple)
+OlsrState::InsertIfaceAssocTuple(const IfaceAssocTuple& tuple)
 {
-  m_ifaceAssocSet.push_back (tuple);
+    m_ifaceAssocSet.push_back(tuple);
 }
 
 std::vector<Ipv4Address>
-OlsrState::FindNeighborInterfaces (const Ipv4Address &neighborMainAddr) const
+OlsrState::FindNeighborInterfaces(const Ipv4Address& neighborMainAddr) const
 {
-  std::vector<Ipv4Address> retval;
-  for (IfaceAssocSet::const_iterator it = m_ifaceAssocSet.begin ();
-       it != m_ifaceAssocSet.end (); it++)
+    std::vector<Ipv4Address> retval;
+    for (IfaceAssocSet::const_iterator it = m_ifaceAssocSet.begin(); it != m_ifaceAssocSet.end();
+         it++)
     {
-      if (it->mainAddr == neighborMainAddr)
+        if (it->mainAddr == neighborMainAddr)
         {
-          retval.push_back (it->ifaceAddr);
+            retval.push_back(it->ifaceAddr);
         }
     }
-  return retval;
+    return retval;
 }
 
 /********** Host-Network Association Set Manipulation **********/
 
 AssociationTuple*
-OlsrState::FindAssociationTuple (const Ipv4Address &gatewayAddr, const Ipv4Address &networkAddr, const Ipv4Mask &netmask)
+OlsrState::FindAssociationTuple(const Ipv4Address& gatewayAddr,
+                                const Ipv4Address& networkAddr,
+                                const Ipv4Mask& netmask)
 {
-  for (AssociationSet::iterator it = m_associationSet.begin ();
-       it != m_associationSet.end (); it++)
+    for (AssociationSet::iterator it = m_associationSet.begin(); it != m_associationSet.end(); it++)
     {
-      if (it->gatewayAddr == gatewayAddr and it->networkAddr == networkAddr and it->netmask == netmask)
+        if (it->gatewayAddr == gatewayAddr and it->networkAddr == networkAddr and
+            it->netmask == netmask)
         {
-          return &(*it);
+            return &(*it);
         }
     }
-  return nullptr;
+    return nullptr;
 }
 
 void
-OlsrState::EraseAssociationTuple (const AssociationTuple &tuple)
+OlsrState::EraseAssociationTuple(const AssociationTuple& tuple)
 {
-  for (AssociationSet::iterator it = m_associationSet.begin ();
-       it != m_associationSet.end (); it++)
+    for (AssociationSet::iterator it = m_associationSet.begin(); it != m_associationSet.end(); it++)
     {
-      if (*it == tuple)
+        if (*it == tuple)
         {
-          m_associationSet.erase (it);
-          break;
-        }
-    }
-}
-
-void
-OlsrState::InsertAssociationTuple (const AssociationTuple &tuple)
-{
-  m_associationSet.push_back (tuple);
-}
-
-void
-OlsrState::EraseAssociation (const Association &tuple)
-{
-  for (Associations::iterator it = m_associations.begin ();
-       it != m_associations.end (); it++)
-    {
-      if (*it == tuple)
-        {
-          m_associations.erase (it);
-          break;
+            m_associationSet.erase(it);
+            break;
         }
     }
 }
 
 void
-OlsrState::InsertAssociation (const Association &tuple)
+OlsrState::InsertAssociationTuple(const AssociationTuple& tuple)
 {
-  m_associations.push_back (tuple);
+    m_associationSet.push_back(tuple);
 }
 
+void
+OlsrState::EraseAssociation(const Association& tuple)
+{
+    for (Associations::iterator it = m_associations.begin(); it != m_associations.end(); it++)
+    {
+        if (*it == tuple)
+        {
+            m_associations.erase(it);
+            break;
+        }
+    }
 }
-}  // namespace olsr, ns3
+
+void
+OlsrState::InsertAssociation(const Association& tuple)
+{
+    m_associations.push_back(tuple);
+}
+
+} // namespace olsr
+} // namespace ns3

@@ -19,92 +19,95 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  *
  */
-#include "ns3/log.h"
-#include "ns3/double.h"
-#include "ns3/enum.h"
-#include "ns3/mobility-model.h"
-#include <cmath>
-
 #include "itu-r-1411-los-propagation-loss-model.h"
 
-namespace ns3 {
+#include "ns3/double.h"
+#include "ns3/enum.h"
+#include "ns3/log.h"
+#include "ns3/mobility-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("ItuR1411LosPropagationLossModel");
+#include <cmath>
 
-NS_OBJECT_ENSURE_REGISTERED (ItuR1411LosPropagationLossModel);
+namespace ns3
+{
+
+NS_LOG_COMPONENT_DEFINE("ItuR1411LosPropagationLossModel");
+
+NS_OBJECT_ENSURE_REGISTERED(ItuR1411LosPropagationLossModel);
 
 TypeId
-ItuR1411LosPropagationLossModel::GetTypeId ()
+ItuR1411LosPropagationLossModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ItuR1411LosPropagationLossModel")
-    .SetParent<PropagationLossModel> ()
-    .SetGroupName ("Propagation")
-    .AddConstructor<ItuR1411LosPropagationLossModel> ()
-    .AddAttribute ("Frequency",
-                   "The propagation frequency in Hz",
-                   DoubleValue (2160e6),
-                   MakeDoubleAccessor (&ItuR1411LosPropagationLossModel::SetFrequency),
-                   MakeDoubleChecker<double> ());
+    static TypeId tid =
+        TypeId("ns3::ItuR1411LosPropagationLossModel")
+            .SetParent<PropagationLossModel>()
+            .SetGroupName("Propagation")
+            .AddConstructor<ItuR1411LosPropagationLossModel>()
+            .AddAttribute("Frequency",
+                          "The propagation frequency in Hz",
+                          DoubleValue(2160e6),
+                          MakeDoubleAccessor(&ItuR1411LosPropagationLossModel::SetFrequency),
+                          MakeDoubleChecker<double>());
 
-  return tid;
+    return tid;
 }
 
-ItuR1411LosPropagationLossModel::ItuR1411LosPropagationLossModel ()
-  : PropagationLossModel ()
+ItuR1411LosPropagationLossModel::ItuR1411LosPropagationLossModel()
+    : PropagationLossModel()
 {
 }
 
-ItuR1411LosPropagationLossModel::~ItuR1411LosPropagationLossModel ()
+ItuR1411LosPropagationLossModel::~ItuR1411LosPropagationLossModel()
 {
 }
 
 double
-ItuR1411LosPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+ItuR1411LosPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  double dist = a->GetDistanceFrom (b);
-  double lossLow = 0.0;
-  double lossUp = 0.0;
-  NS_ASSERT_MSG (a->GetPosition ().z > 0 && b->GetPosition ().z > 0, "nodes' height must be greater than 0");
-  double Lbp = std::fabs (20 * std::log10 ((m_lambda * m_lambda) / (8 * M_PI * a->GetPosition ().z * b->GetPosition ().z)));
-  double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
-  NS_LOG_LOGIC (this << " Lbp " << Lbp << " Rbp " << Rbp << " lambda " << m_lambda);
-  if (dist <= Rbp)
+    NS_LOG_FUNCTION(this);
+    double dist = a->GetDistanceFrom(b);
+    double lossLow = 0.0;
+    double lossUp = 0.0;
+    NS_ASSERT_MSG(a->GetPosition().z > 0 && b->GetPosition().z > 0,
+                  "nodes' height must be greater than 0");
+    double Lbp = std::fabs(20 * std::log10((m_lambda * m_lambda) /
+                                           (8 * M_PI * a->GetPosition().z * b->GetPosition().z)));
+    double Rbp = (4 * a->GetPosition().z * b->GetPosition().z) / m_lambda;
+    NS_LOG_LOGIC(this << " Lbp " << Lbp << " Rbp " << Rbp << " lambda " << m_lambda);
+    if (dist <= Rbp)
     {
-      lossLow = Lbp + 20 * std::log10 (dist / Rbp);
-      lossUp = Lbp + 20 + 25 * std::log10 (dist / Rbp);
+        lossLow = Lbp + 20 * std::log10(dist / Rbp);
+        lossUp = Lbp + 20 + 25 * std::log10(dist / Rbp);
     }
-  else
+    else
     {
-      lossLow = Lbp + 40 * std::log10 (dist / Rbp);
-      lossUp = Lbp + 20 + 40 * std::log10 (dist / Rbp);
+        lossLow = Lbp + 40 * std::log10(dist / Rbp);
+        lossUp = Lbp + 20 + 40 * std::log10(dist / Rbp);
     }
 
-  double loss = (lossUp + lossLow) / 2;
+    double loss = (lossUp + lossLow) / 2;
 
-  return loss;
+    return loss;
 }
-
 
 void
-ItuR1411LosPropagationLossModel::SetFrequency (double freq)
+ItuR1411LosPropagationLossModel::SetFrequency(double freq)
 {
-  NS_ASSERT (freq > 0.0);
-  m_lambda = 299792458.0 / freq;
+    NS_ASSERT(freq > 0.0);
+    m_lambda = 299792458.0 / freq;
 }
 
-
 double
-ItuR1411LosPropagationLossModel::DoCalcRxPower (double txPowerDbm,
-						Ptr<MobilityModel> a,
-						Ptr<MobilityModel> b) const
+ItuR1411LosPropagationLossModel::DoCalcRxPower(double txPowerDbm,
+                                               Ptr<MobilityModel> a,
+                                               Ptr<MobilityModel> b) const
 {
-  return (txPowerDbm - GetLoss (a, b));
+    return (txPowerDbm - GetLoss(a, b));
 }
 
 int64_t
-ItuR1411LosPropagationLossModel::DoAssignStreams (int64_t stream)
+ItuR1411LosPropagationLossModel::DoAssignStreams(int64_t stream)
 {
-  return 0;
+    return 0;
 }
 } // namespace ns3

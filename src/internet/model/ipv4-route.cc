@@ -18,154 +18,158 @@
  */
 
 #include "ipv4-route.h"
-#include "ns3/net-device.h"
+
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/net-device.h"
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("Ipv4Route");
-
-Ipv4Route::Ipv4Route ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("Ipv4Route");
+
+Ipv4Route::Ipv4Route()
+{
+    NS_LOG_FUNCTION(this);
 }
 
 void
-Ipv4Route::SetDestination (Ipv4Address dest)
+Ipv4Route::SetDestination(Ipv4Address dest)
 {
-  NS_LOG_FUNCTION (this << dest);
-  m_dest = dest;
+    NS_LOG_FUNCTION(this << dest);
+    m_dest = dest;
 }
 
 Ipv4Address
-Ipv4Route::GetDestination () const
+Ipv4Route::GetDestination() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_dest;
+    NS_LOG_FUNCTION(this);
+    return m_dest;
 }
 
 void
-Ipv4Route::SetSource (Ipv4Address src)
+Ipv4Route::SetSource(Ipv4Address src)
 {
-  NS_LOG_FUNCTION (this << src);
-  m_source = src;
+    NS_LOG_FUNCTION(this << src);
+    m_source = src;
 }
 
 Ipv4Address
-Ipv4Route::GetSource () const
+Ipv4Route::GetSource() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_source;
+    NS_LOG_FUNCTION(this);
+    return m_source;
 }
 
 void
-Ipv4Route::SetGateway (Ipv4Address gw)
+Ipv4Route::SetGateway(Ipv4Address gw)
 {
-  NS_LOG_FUNCTION (this << gw);
-  m_gateway = gw;
+    NS_LOG_FUNCTION(this << gw);
+    m_gateway = gw;
 }
 
 Ipv4Address
-Ipv4Route::GetGateway () const
+Ipv4Route::GetGateway() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_gateway;
+    NS_LOG_FUNCTION(this);
+    return m_gateway;
 }
 
 void
-Ipv4Route::SetOutputDevice (Ptr<NetDevice> outputDevice)
+Ipv4Route::SetOutputDevice(Ptr<NetDevice> outputDevice)
 {
-  NS_LOG_FUNCTION (this << outputDevice);
-  m_outputDevice = outputDevice;
+    NS_LOG_FUNCTION(this << outputDevice);
+    m_outputDevice = outputDevice;
 }
 
 Ptr<NetDevice>
-Ipv4Route::GetOutputDevice () const
+Ipv4Route::GetOutputDevice() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_outputDevice;
+    NS_LOG_FUNCTION(this);
+    return m_outputDevice;
 }
 
-std::ostream& operator<< (std::ostream& os, Ipv4Route const& route)
+std::ostream&
+operator<<(std::ostream& os, const Ipv4Route& route)
 {
-  os << "source=" << route.GetSource () << " dest="<< route.GetDestination () <<" gw=" << route.GetGateway ();
-  return os;
+    os << "source=" << route.GetSource() << " dest=" << route.GetDestination()
+       << " gw=" << route.GetGateway();
+    return os;
 }
 
-Ipv4MulticastRoute::Ipv4MulticastRoute ()
+Ipv4MulticastRoute::Ipv4MulticastRoute()
 {
-  NS_LOG_FUNCTION (this);
-  m_ttls.clear ();
+    NS_LOG_FUNCTION(this);
+    m_ttls.clear();
 }
 
 void
-Ipv4MulticastRoute::SetGroup (const Ipv4Address group)
+Ipv4MulticastRoute::SetGroup(const Ipv4Address group)
 {
-  NS_LOG_FUNCTION (this << group);
-  m_group = group;
+    NS_LOG_FUNCTION(this << group);
+    m_group = group;
 }
 
 Ipv4Address
-Ipv4MulticastRoute::GetGroup () const
+Ipv4MulticastRoute::GetGroup() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_group;
+    NS_LOG_FUNCTION(this);
+    return m_group;
 }
 
 void
-Ipv4MulticastRoute::SetOrigin (const Ipv4Address origin)
+Ipv4MulticastRoute::SetOrigin(const Ipv4Address origin)
 {
-  NS_LOG_FUNCTION (this << origin);
-  m_origin = origin;
+    NS_LOG_FUNCTION(this << origin);
+    m_origin = origin;
 }
 
 Ipv4Address
-Ipv4MulticastRoute::GetOrigin () const
+Ipv4MulticastRoute::GetOrigin() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_origin;
+    NS_LOG_FUNCTION(this);
+    return m_origin;
 }
 
 void
-Ipv4MulticastRoute::SetParent (uint32_t parent)
+Ipv4MulticastRoute::SetParent(uint32_t parent)
 {
-  NS_LOG_FUNCTION (this << parent);
-  m_parent = parent;
+    NS_LOG_FUNCTION(this << parent);
+    m_parent = parent;
 }
 
 uint32_t
-Ipv4MulticastRoute::GetParent () const
+Ipv4MulticastRoute::GetParent() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_parent;
+    NS_LOG_FUNCTION(this);
+    return m_parent;
 }
 
 void
-Ipv4MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
+Ipv4MulticastRoute::SetOutputTtl(uint32_t oif, uint32_t ttl)
 {
-  NS_LOG_FUNCTION (this << oif << ttl);
-  if (ttl >= MAX_TTL)
+    NS_LOG_FUNCTION(this << oif << ttl);
+    if (ttl >= MAX_TTL)
     {
-      // This TTL value effectively disables the interface
-      std::map<uint32_t, uint32_t>::iterator iter;
-      iter = m_ttls.find (oif);
-      if (iter != m_ttls.end ())
+        // This TTL value effectively disables the interface
+        std::map<uint32_t, uint32_t>::iterator iter;
+        iter = m_ttls.find(oif);
+        if (iter != m_ttls.end())
         {
-          m_ttls.erase (iter);
+            m_ttls.erase(iter);
         }
     }
-  else
+    else
     {
-      m_ttls[oif] = ttl;
+        m_ttls[oif] = ttl;
     }
 }
 
 std::map<uint32_t, uint32_t>
-Ipv4MulticastRoute::GetOutputTtlMap () const
+Ipv4MulticastRoute::GetOutputTtlMap() const
 {
-  NS_LOG_FUNCTION (this);
-  return(m_ttls);
+    NS_LOG_FUNCTION(this);
+    return (m_ttls);
 }
 
 } // namespace ns3

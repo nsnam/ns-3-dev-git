@@ -18,38 +18,32 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-
-#include <ns3/log.h>
-#include <cmath>
 #include "antenna-model.h"
 
+#include <ns3/log.h>
 
-namespace ns3 {
+#include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("AntennaModel");
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (AntennaModel);
+NS_LOG_COMPONENT_DEFINE("AntennaModel");
 
+NS_OBJECT_ENSURE_REGISTERED(AntennaModel);
 
-AntennaModel::AntennaModel ()
+AntennaModel::AntennaModel()
 {
 }
 
-AntennaModel::~AntennaModel ()
+AntennaModel::~AntennaModel()
 {
 }
 
 TypeId
-AntennaModel::GetTypeId ()
+AntennaModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::AntennaModel")
-    .SetParent<Object> ()
-    .SetGroupName("Antenna")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::AntennaModel").SetParent<Object>().SetGroupName("Antenna");
+    return tid;
 }
 
-
-
-}
-
+} // namespace ns3

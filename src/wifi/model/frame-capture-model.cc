@@ -18,32 +18,34 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/nstime.h"
-#include "ns3/simulator.h"
 #include "frame-capture-model.h"
 
-namespace ns3 {
+#include "ns3/nstime.h"
+#include "ns3/simulator.h"
 
-NS_OBJECT_ENSURE_REGISTERED (FrameCaptureModel);
-
-TypeId FrameCaptureModel::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::FrameCaptureModel")
-    .SetParent<Object> ()
-    .SetGroupName ("Wifi")
-    .AddAttribute ("CaptureWindow",
-                   "The duration of the capture window.",
-                   TimeValue (MicroSeconds (16)),
-                   MakeTimeAccessor (&FrameCaptureModel::m_captureWindow),
-                   MakeTimeChecker ())
-  ;
-  return tid;
+
+NS_OBJECT_ENSURE_REGISTERED(FrameCaptureModel);
+
+TypeId
+FrameCaptureModel::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::FrameCaptureModel")
+                            .SetParent<Object>()
+                            .SetGroupName("Wifi")
+                            .AddAttribute("CaptureWindow",
+                                          "The duration of the capture window.",
+                                          TimeValue(MicroSeconds(16)),
+                                          MakeTimeAccessor(&FrameCaptureModel::m_captureWindow),
+                                          MakeTimeChecker());
+    return tid;
 }
 
 bool
-FrameCaptureModel::IsInCaptureWindow (Time timePreambleDetected) const
+FrameCaptureModel::IsInCaptureWindow(Time timePreambleDetected) const
 {
-  return (timePreambleDetected + m_captureWindow >= Simulator::Now ());
+    return (timePreambleDetected + m_captureWindow >= Simulator::Now());
 }
 
-} //namespace ns3
+} // namespace ns3

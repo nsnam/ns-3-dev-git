@@ -23,17 +23,20 @@
 #ifndef UPLINK_SCHEDULER_MBQOS_H
 #define UPLINK_SCHEDULER_MBQOS_H
 
-#include <stdint.h>
-#include "ul-mac-messages.h"
-#include "ns3/nstime.h"
-#include "wimax-phy.h"
-#include "ul-job.h"
-#include "service-flow-record.h"
-#include "ns3/object.h"
 #include "bs-uplink-scheduler.h"
+#include "service-flow-record.h"
 #include "service-flow.h"
+#include "ul-job.h"
+#include "ul-mac-messages.h"
+#include "wimax-phy.h"
 
-namespace ns3 {
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+
+#include <stdint.h>
+
+namespace ns3
+{
 
 class BaseStationNetDevice;
 class SSRecord;
@@ -62,252 +65,259 @@ class UlJob;
  * requirement of both rtPS and nrtPS connections is guaranteed
  * over a window of duration T .
  * Implementation of uplink scheduler:
- * Freitag, J.; da Fonseca, N.L.S., "Uplink Scheduling with Quality of Service in IEEE 802.16 Networks,"
- * Global Telecommunications Conference, 2007. GLOBECOM '07. IEEE , vol., no., pp.2503-2508, 26-30 Nov. 2007
- * URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4411386&isnumber=4410910
+ * Freitag, J.; da Fonseca, N.L.S., "Uplink Scheduling with Quality of Service in IEEE 802.16
+ * Networks," Global Telecommunications Conference, 2007. GLOBECOM '07. IEEE , vol., no.,
+ * pp.2503-2508, 26-30 Nov. 2007 URL:
+ * http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4411386&isnumber=4410910
  */
 class UplinkSchedulerMBQoS : public UplinkScheduler
 {
-public:
-  UplinkSchedulerMBQoS ();
-  /**
-   * Constructor
-   *
-   * \param time the time
-   */
-  UplinkSchedulerMBQoS (Time time);
-  ~UplinkSchedulerMBQoS () override;
+  public:
+    UplinkSchedulerMBQoS();
+    /**
+     * Constructor
+     *
+     * \param time the time
+     */
+    UplinkSchedulerMBQoS(Time time);
+    ~UplinkSchedulerMBQoS() override;
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get uplink allocations
-   * \returns std::list<OfdmUlMapIe>
-   */
-  std::list<OfdmUlMapIe> GetUplinkAllocations () const override;
+    /**
+     * Get uplink allocations
+     * \returns std::list<OfdmUlMapIe>
+     */
+    std::list<OfdmUlMapIe> GetUplinkAllocations() const override;
 
-  /**
-   * Determines if channel descriptors sent in the current frame are
-   * required to be updated
-   * \param updateDcd update DCD if true
-   * \param updateUcd update UCD if true
-   * \param sendDcd send DCD if true
-   * \param sendUcd send UCD if true
-   */
-  void GetChannelDescriptorsToUpdate (bool &updateDcd, bool &updateUcd, bool &sendDcd, bool &sendUcd) override;
-  /**
-   * Calculate allocation start time
-   * \returns the allocation start time
-   */
-  uint32_t CalculateAllocationStartTime () override;
-  /**
-   * Add uplink allocation
-   * \param ulMapIe the UL map IE
-   * \param allocationSize the allocation size
-   * \param symbolsToAllocation the symbols to allocation
-   * \param availableSymbols the available symbols
-   */
-  void AddUplinkAllocation (OfdmUlMapIe &ulMapIe,
-                            const uint32_t &allocationSize,
-                            uint32_t &symbolsToAllocation,
-                            uint32_t &availableSymbols) override;
+    /**
+     * Determines if channel descriptors sent in the current frame are
+     * required to be updated
+     * \param updateDcd update DCD if true
+     * \param updateUcd update UCD if true
+     * \param sendDcd send DCD if true
+     * \param sendUcd send UCD if true
+     */
+    void GetChannelDescriptorsToUpdate(bool& updateDcd,
+                                       bool& updateUcd,
+                                       bool& sendDcd,
+                                       bool& sendUcd) override;
+    /**
+     * Calculate allocation start time
+     * \returns the allocation start time
+     */
+    uint32_t CalculateAllocationStartTime() override;
+    /**
+     * Add uplink allocation
+     * \param ulMapIe the UL map IE
+     * \param allocationSize the allocation size
+     * \param symbolsToAllocation the symbols to allocation
+     * \param availableSymbols the available symbols
+     */
+    void AddUplinkAllocation(OfdmUlMapIe& ulMapIe,
+                             const uint32_t& allocationSize,
+                             uint32_t& symbolsToAllocation,
+                             uint32_t& availableSymbols) override;
 
-  /**
-   * Schedule function
-   */
-  void Schedule () override;
-  /**
-   * Service unsolicited grants
-   * \param ssRecord the SS record
-   * \param schedulingType the scheduling type
-   * \param ulMapIe the UL map IE
-   * \param modulationType the modulation type
-   * \param symbolsToAllocation the symbols to allocation
-   * \param availableSymbols the available symbols
-   */
-  void ServiceUnsolicitedGrants (const SSRecord *ssRecord,
-                                 enum ServiceFlow::SchedulingType schedulingType,
-                                 OfdmUlMapIe &ulMapIe,
-                                 const WimaxPhy::ModulationType modulationType,
-                                 uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols) override;
-  /**
-   * Service bandwidth requests
-   * \param ssRecord the SS record
-   * \param schedulingType the scheduling type
-   * \param ulMapIe the UL map IE
-   * \param modulationType the modulation type
-   * \param symbolsToAllocation the symbols to allocation
-   * \param availableSymbols the available symbols
-   */
-  void ServiceBandwidthRequests (const SSRecord *ssRecord,
-                                 enum ServiceFlow::SchedulingType schedulingType,
-                                 OfdmUlMapIe &ulMapIe,
-                                 const WimaxPhy::ModulationType modulationType,
-                                 uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols) override;
-  /**
-   * Service bandwidth requests
-   * \param serviceFlow the service flow
-   * \param schedulingType the scheduling type
-   * \param ulMapIe the UL map IE
-   * \param modulationType the modulation type
-   * \param symbolsToAllocation the symbols to allocation
-   * \param availableSymbols the available symbols
-   * \returns true if successful
-   */
-  bool ServiceBandwidthRequests (ServiceFlow *serviceFlow,
-                                 enum ServiceFlow::SchedulingType schedulingType,
-                                 OfdmUlMapIe &ulMapIe,
-                                 const WimaxPhy::ModulationType modulationType,
-                                 uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols) override;
-  /**
-   * Allocate initial ranging interval
-   * \param symbolsToAllocation the symbols to allocation
-   * \param availableSymbols the available symbols
-   */
-  void AllocateInitialRangingInterval (uint32_t &symbolsToAllocation, uint32_t &availableSymbols) override;
-  /**
-   * Setup service flow
-   * \param ssRecord the SS record
-   * \param serviceFlow the service flow
-   */
-  void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow) override;
+    /**
+     * Schedule function
+     */
+    void Schedule() override;
+    /**
+     * Service unsolicited grants
+     * \param ssRecord the SS record
+     * \param schedulingType the scheduling type
+     * \param ulMapIe the UL map IE
+     * \param modulationType the modulation type
+     * \param symbolsToAllocation the symbols to allocation
+     * \param availableSymbols the available symbols
+     */
+    void ServiceUnsolicitedGrants(const SSRecord* ssRecord,
+                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  OfdmUlMapIe& ulMapIe,
+                                  const WimaxPhy::ModulationType modulationType,
+                                  uint32_t& symbolsToAllocation,
+                                  uint32_t& availableSymbols) override;
+    /**
+     * Service bandwidth requests
+     * \param ssRecord the SS record
+     * \param schedulingType the scheduling type
+     * \param ulMapIe the UL map IE
+     * \param modulationType the modulation type
+     * \param symbolsToAllocation the symbols to allocation
+     * \param availableSymbols the available symbols
+     */
+    void ServiceBandwidthRequests(const SSRecord* ssRecord,
+                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  OfdmUlMapIe& ulMapIe,
+                                  const WimaxPhy::ModulationType modulationType,
+                                  uint32_t& symbolsToAllocation,
+                                  uint32_t& availableSymbols) override;
+    /**
+     * Service bandwidth requests
+     * \param serviceFlow the service flow
+     * \param schedulingType the scheduling type
+     * \param ulMapIe the UL map IE
+     * \param modulationType the modulation type
+     * \param symbolsToAllocation the symbols to allocation
+     * \param availableSymbols the available symbols
+     * \returns true if successful
+     */
+    bool ServiceBandwidthRequests(ServiceFlow* serviceFlow,
+                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  OfdmUlMapIe& ulMapIe,
+                                  const WimaxPhy::ModulationType modulationType,
+                                  uint32_t& symbolsToAllocation,
+                                  uint32_t& availableSymbols) override;
+    /**
+     * Allocate initial ranging interval
+     * \param symbolsToAllocation the symbols to allocation
+     * \param availableSymbols the available symbols
+     */
+    void AllocateInitialRangingInterval(uint32_t& symbolsToAllocation,
+                                        uint32_t& availableSymbols) override;
+    /**
+     * Setup service flow
+     * \param ssRecord the SS record
+     * \param serviceFlow the service flow
+     */
+    void SetupServiceFlow(SSRecord* ssRecord, ServiceFlow* serviceFlow) override;
 
-  /**
-   * \param availableSymbols available symbols in the uplink frame
-   * \brief Check deadline from jobs. Migrate requests if necessary.
-   *
-   * This method verifies for each rtPS request whether it should be
-   * migrated to the high priority queue or not. The conditions for
-   * migration are: request deadline expires in the frame following
-   * the next one, and the amount of bandwidth requested is less than
-   * or equal to the amount of available bytes in the next uplink frame.
-   */
-  void CheckDeadline (uint32_t &availableSymbols);
+    /**
+     * \param availableSymbols available symbols in the uplink frame
+     * \brief Check deadline from jobs. Migrate requests if necessary.
+     *
+     * This method verifies for each rtPS request whether it should be
+     * migrated to the high priority queue or not. The conditions for
+     * migration are: request deadline expires in the frame following
+     * the next one, and the amount of bandwidth requested is less than
+     * or equal to the amount of available bytes in the next uplink frame.
+     */
+    void CheckDeadline(uint32_t& availableSymbols);
 
-  /**
-   * \param availableSymbols available symbols in the uplink frame.
-   * \brief Check if Minimum bandwidth is guarantee. Migrate requests if necessary.
-   *
-   * This method first calculate a priority value for each request
-   * in the intermediate queue. Then, sorts the intermediate queue
-   * according to the priority values. Finally, while there is available
-   * bandwidth, the scheduler migrate the requests to the high priority queue.
-   */
-  void CheckMinimumBandwidth (uint32_t &availableSymbols);
+    /**
+     * \param availableSymbols available symbols in the uplink frame.
+     * \brief Check if Minimum bandwidth is guarantee. Migrate requests if necessary.
+     *
+     * This method first calculate a priority value for each request
+     * in the intermediate queue. Then, sorts the intermediate queue
+     * according to the priority values. Finally, while there is available
+     * bandwidth, the scheduler migrate the requests to the high priority queue.
+     */
+    void CheckMinimumBandwidth(uint32_t& availableSymbols);
 
-  /**
-   * \brief Reset the current window.
-   * According to a configured time, reset the window.
-   */
-  void UplinkSchedWindowTimer ();
+    /**
+     * \brief Reset the current window.
+     * According to a configured time, reset the window.
+     */
+    void UplinkSchedWindowTimer();
 
-  /**
-   * \param priority Priority of queue
-   * \param job job information
-   *
-   * \brief Enqueue a job in a priority queue.
-   */
-  void EnqueueJob (UlJob::JobPriority priority, Ptr<UlJob> job);
+    /**
+     * \param priority Priority of queue
+     * \param job job information
+     *
+     * \brief Enqueue a job in a priority queue.
+     */
+    void EnqueueJob(UlJob::JobPriority priority, Ptr<UlJob> job);
 
-  /**
-   * \param priority Priority of queue
-   * \return Ptr<UlJob>
-   *
-   * \brief Dequeue a job from a priority queue.
-   */
-  Ptr<UlJob> DequeueJob (UlJob::JobPriority priority);
+    /**
+     * \param priority Priority of queue
+     * \return Ptr<UlJob>
+     *
+     * \brief Dequeue a job from a priority queue.
+     */
+    Ptr<UlJob> DequeueJob(UlJob::JobPriority priority);
 
-  void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr) override;
+    void ProcessBandwidthRequest(const BandwidthRequestHeader& bwRequestHdr) override;
 
-  /**
-   * \param serviceFlow Service flow of connection
-   * \return Time
-   *
-   * \brief Calculates deadline of a request.
-   */
-  Time DetermineDeadline (ServiceFlow *serviceFlow);
+    /**
+     * \param serviceFlow Service flow of connection
+     * \return Time
+     *
+     * \brief Calculates deadline of a request.
+     */
+    Time DetermineDeadline(ServiceFlow* serviceFlow);
 
-  /**
-   * This method is called once to initialize window.
-   */
-  void InitOnce () override;
+    /**
+     * This method is called once to initialize window.
+     */
+    void InitOnce() override;
 
-  /**
-   * \param jobs List of jobs
-   * \returns the symbols count
-   *
-   * Sum the amount of symbols of each job of a queue
-   */
-  uint32_t CountSymbolsQueue (std::list<Ptr<UlJob> > jobs);
+    /**
+     * \param jobs List of jobs
+     * \returns the symbols count
+     *
+     * Sum the amount of symbols of each job of a queue
+     */
+    uint32_t CountSymbolsQueue(std::list<Ptr<UlJob>> jobs);
 
-  /**
-   * \param job job
-   * \returns the symbols count
-   *
-   * Count the amount of symbols of a job.
-   */
-  uint32_t CountSymbolsJobs (Ptr<UlJob> job);
+    /**
+     * \param job job
+     * \returns the symbols count
+     *
+     * Count the amount of symbols of a job.
+     */
+    uint32_t CountSymbolsJobs(Ptr<UlJob> job);
 
-  /**
-   * Set requested bandwidth
-   * \param sfr the service flow record
-   */
-  void OnSetRequestedBandwidth (ServiceFlowRecord *sfr) override;
+    /**
+     * Set requested bandwidth
+     * \param sfr the service flow record
+     */
+    void OnSetRequestedBandwidth(ServiceFlowRecord* sfr) override;
 
-  /**
-   * \param ssRecord Subscriber station record
-   * \param schedType Service flow type
-   * \param reqType Type of packet
-   * \return Ptr<UlJob>
-   *
-   * Create and fill information of a job.
-   */
-  Ptr<UlJob>
-  CreateUlJob (SSRecord *ssRecord, enum ServiceFlow::SchedulingType schedType, ReqType reqType);
+    /**
+     * \param ssRecord Subscriber station record
+     * \param schedType Service flow type
+     * \param reqType Type of packet
+     * \return Ptr<UlJob>
+     *
+     * Create and fill information of a job.
+     */
+    Ptr<UlJob> CreateUlJob(SSRecord* ssRecord,
+                           enum ServiceFlow::SchedulingType schedType,
+                           ReqType reqType);
 
-  /**
-   * \param serviceFlow ServiceFlow
-   * \return Ptr<UlJob>
-   *
-   * Get pending size.
-   */
-  uint32_t
-  GetPendingSize (ServiceFlow* serviceFlow);
+    /**
+     * \param serviceFlow ServiceFlow
+     * \return Ptr<UlJob>
+     *
+     * Get pending size.
+     */
+    uint32_t GetPendingSize(ServiceFlow* serviceFlow);
 
-  /**
-   * Service bandwidth requests bytes.
-   * \param serviceFlow the service flow
-   * \param schedulingType the scheduling type
-   * \param ulMapIe the UL map IE
-   * \param modulationType the modulation type
-   * \param symbolsToAllocation the symbols to allocation
-   * \param availableSymbols the available symbols
-   * \param allocationSizeBytes the allocation size in bytes
-   * \returns true if successful
-   */
-  bool
-  ServiceBandwidthRequestsBytes (ServiceFlow *serviceFlow,
-                                 enum ServiceFlow::SchedulingType schedulingType, OfdmUlMapIe &ulMapIe,
-                                 const WimaxPhy::ModulationType modulationType,
-                                 uint32_t &symbolsToAllocation, uint32_t &availableSymbols, uint32_t allocationSizeBytes);
+    /**
+     * Service bandwidth requests bytes.
+     * \param serviceFlow the service flow
+     * \param schedulingType the scheduling type
+     * \param ulMapIe the UL map IE
+     * \param modulationType the modulation type
+     * \param symbolsToAllocation the symbols to allocation
+     * \param availableSymbols the available symbols
+     * \param allocationSizeBytes the allocation size in bytes
+     * \returns true if successful
+     */
+    bool ServiceBandwidthRequestsBytes(ServiceFlow* serviceFlow,
+                                       enum ServiceFlow::SchedulingType schedulingType,
+                                       OfdmUlMapIe& ulMapIe,
+                                       const WimaxPhy::ModulationType modulationType,
+                                       uint32_t& symbolsToAllocation,
+                                       uint32_t& availableSymbols,
+                                       uint32_t allocationSizeBytes);
 
-private:
-  std::list<OfdmUlMapIe> m_uplinkAllocations; ///< uplink allocations
+  private:
+    std::list<OfdmUlMapIe> m_uplinkAllocations; ///< uplink allocations
 
-  // queues for scheduler
-  std::list<Ptr<UlJob> > m_uplinkJobs_high; ///< uplink jobs high priority
-  std::list<Ptr<UlJob> > m_uplinkJobs_inter; ///< uplink jobs intermedite priority
-  std::list<Ptr<UlJob> > m_uplinkJobs_low; ///< uplink jobs low priority
+    // queues for scheduler
+    std::list<Ptr<UlJob>> m_uplinkJobs_high;  ///< uplink jobs high priority
+    std::list<Ptr<UlJob>> m_uplinkJobs_inter; ///< uplink jobs intermedite priority
+    std::list<Ptr<UlJob>> m_uplinkJobs_low;   ///< uplink jobs low priority
 
-  // interval to reset window
-  Time m_windowInterval; ///< windows interval
+    // interval to reset window
+    Time m_windowInterval; ///< windows interval
 };
 
 } // namespace ns3

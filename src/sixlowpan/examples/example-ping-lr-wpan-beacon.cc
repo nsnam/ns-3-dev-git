@@ -18,142 +18,142 @@
  * Author: Alberto Gallegos Ramonet <ramonet@fc.ritsumei.ac.jp>
  */
 
-
-#include <fstream>
 #include "ns3/core-module.h"
-#include "ns3/internet-module.h"
 #include "ns3/internet-apps-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/lr-wpan-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/spectrum-module.h"
 #include "ns3/propagation-module.h"
 #include "ns3/sixlowpan-module.h"
-#include "ns3/lr-wpan-module.h"
+#include "ns3/spectrum-module.h"
+
+#include <fstream>
 
 using namespace ns3;
 
-
-static void dataSentMacConfirm (McpsDataConfirmParams params)
+static void
+dataSentMacConfirm(McpsDataConfirmParams params)
 {
-  // In the case of transmissions with the Ack flag activated, the transaction is only
-  // successful if the Ack was received.
-  if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
+    // In the case of transmissions with the Ack flag activated, the transaction is only
+    // successful if the Ack was received.
+    if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
     {
-      NS_LOG_UNCOND ("**********" << Simulator::Now ().As (Time::S) << " | Transmission successfully sent");
+        NS_LOG_UNCOND("**********" << Simulator::Now().As(Time::S)
+                                   << " | Transmission successfully sent");
     }
 }
 
-
-int main (int argc, char** argv)
+int
+main(int argc, char** argv)
 {
+    bool verbose = false;
 
-  bool verbose = false;
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("verbose", "turn on log components", verbose);
+    cmd.Parse(argc, argv);
 
-  CommandLine cmd (__FILE__);
-  cmd.AddValue ("verbose", "turn on log components", verbose);
-  cmd.Parse (argc, argv);
-
-  if (verbose)
+    if (verbose)
     {
-      LogComponentEnableAll (LOG_PREFIX_TIME);
-      LogComponentEnableAll (LOG_PREFIX_FUNC);
-      LogComponentEnable ("LrWpanMac", LOG_LEVEL_INFO);
-      LogComponentEnable ("LrWpanCsmaCa", LOG_LEVEL_INFO);
-      LogComponentEnable ("LrWpanHelper", LOG_LEVEL_ALL);
-      LogComponentEnable ("Ping6Application", LOG_LEVEL_INFO);
+        LogComponentEnableAll(LOG_PREFIX_TIME);
+        LogComponentEnableAll(LOG_PREFIX_FUNC);
+        LogComponentEnable("LrWpanMac", LOG_LEVEL_INFO);
+        LogComponentEnable("LrWpanCsmaCa", LOG_LEVEL_INFO);
+        LogComponentEnable("LrWpanHelper", LOG_LEVEL_ALL);
+        LogComponentEnable("Ping6Application", LOG_LEVEL_INFO);
     }
 
+    NodeContainer nodes;
+    nodes.Create(2);
 
-  NodeContainer nodes;
-  nodes.Create (2);
+    MobilityHelper mobility;
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                  "MinX",
+                                  DoubleValue(0.0),
+                                  "MinY",
+                                  DoubleValue(0.0),
+                                  "DeltaX",
+                                  DoubleValue(20),
+                                  "DeltaY",
+                                  DoubleValue(20),
+                                  "GridWidth",
+                                  UintegerValue(3),
+                                  "LayoutType",
+                                  StringValue("RowFirst"));
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(nodes);
 
-  MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (20),
-                                 "DeltaY", DoubleValue (20),
-                                 "GridWidth", UintegerValue (3),
-                                 "LayoutType", StringValue ("RowFirst"));
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (nodes);
+    LrWpanHelper lrWpanHelper;
+    // Add and install the LrWpanNetDevice for each node
+    NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
 
-  LrWpanHelper lrWpanHelper;
-  // Add and install the LrWpanNetDevice for each node
-  NetDeviceContainer lrwpanDevices = lrWpanHelper.Install (nodes);
+    Ptr<LrWpanNetDevice> dev1 = lrwpanDevices.Get(0)->GetObject<LrWpanNetDevice>();
+    Ptr<LrWpanNetDevice> dev2 = lrwpanDevices.Get(1)->GetObject<LrWpanNetDevice>();
 
-  Ptr<LrWpanNetDevice> dev1 = lrwpanDevices.Get (0)->GetObject<LrWpanNetDevice> ();
-  Ptr<LrWpanNetDevice> dev2 = lrwpanDevices.Get (1)->GetObject<LrWpanNetDevice> ();
+    McpsDataConfirmCallback cb1;
+    cb1 = MakeCallback(&dataSentMacConfirm);
+    dev1->GetMac()->SetMcpsDataConfirmCallback(cb1);
+    dev2->GetMac()->SetMcpsDataConfirmCallback(cb1);
 
-  McpsDataConfirmCallback cb1;
-  cb1 = MakeCallback (&dataSentMacConfirm);
-  dev1->GetMac ()->SetMcpsDataConfirmCallback (cb1);
-  dev2->GetMac ()->SetMcpsDataConfirmCallback (cb1);
+    // Fake PAN association, coordinator assignment, short address assignment and initialization
+    // of beacon-enabled mode in 802.15.4-2011.
+    // This is needed because the lr-wpan module does not provide (yet)
+    // a full PAN association procedure.
 
+    // AssociateToBeaconPan (devices, PAN ID, Coordinator Address, Beacon Order, Superframe Order)
 
-  // Fake PAN association, coordinator assignment, short address assignment and initialization
-  // of beacon-enabled mode in 802.15.4-2011.
-  // This is needed because the lr-wpan module does not provide (yet)
-  // a full PAN association procedure.
+    // Must be careful not setting the beacon order (BO) and the superframe order (SO) too far apart
+    // or the ping reply (ICMPV6 echo reply) can time out during the inactive period of the
+    // superframe. A full time table of the BO/SO time equivalence can be found at the end of this
+    // document. The current configuration is BO = 14, SO = 13 :
 
-  // AssociateToBeaconPan (devices, PAN ID, Coordinator Address, Beacon Order, Superframe Order)
+    //           Contention Access Period (CAP)                           Inactive
+    //              (125.82912 secs)                                     (125.82088)
+    //   |---------------------------------------------|-------------------------------------------|
+    // Beacon Beacon
+    //                            Beacon Interval = 251.65 secs
+    //   |-----------------------------------------------------------------------------------------|
 
-  // Must be careful not setting the beacon order (BO) and the superframe order (SO) too far apart
-  // or the ping reply (ICMPV6 echo reply) can time out during the inactive period of the superframe.
-  // A full time table of the BO/SO time equivalence can be found at the end of this document.
-  // The current configuration is BO = 14, SO = 13 :
+    lrWpanHelper.AssociateToBeaconPan(lrwpanDevices, 0, Mac16Address("00:01"), 14, 13);
 
-  //           Contention Access Period (CAP)                           Inactive
-  //              (125.82912 secs)                                     (125.82088)
-  //   |---------------------------------------------|-------------------------------------------|
-  // Beacon                                                                                   Beacon
-  //                            Beacon Interval = 251.65 secs
-  //   |-----------------------------------------------------------------------------------------|
+    InternetStackHelper internetv6;
+    internetv6.Install(nodes);
 
-  lrWpanHelper.AssociateToBeaconPan (lrwpanDevices, 0, Mac16Address ("00:01"), 14,13);
+    SixLowPanHelper sixlowpan;
+    NetDeviceContainer devices = sixlowpan.Install(lrwpanDevices);
 
+    Ipv6AddressHelper ipv6;
+    ipv6.SetBase(Ipv6Address("2001:2::"), Ipv6Prefix(64));
+    Ipv6InterfaceContainer deviceInterfaces;
+    deviceInterfaces = ipv6.Assign(devices);
 
-  InternetStackHelper internetv6;
-  internetv6.Install (nodes);
+    // Send ping packets after the 2nd second of the simulation during the
+    // first 8 seconds of the CAP in the incoming superframe
 
-  SixLowPanHelper sixlowpan;
-  NetDeviceContainer devices = sixlowpan.Install (lrwpanDevices);
+    uint32_t packetSize = 10;
+    uint32_t maxPacketCount = 5;
+    Time interPacketInterval = Seconds(1);
+    Ping6Helper ping6;
 
-  Ipv6AddressHelper ipv6;
-  ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer deviceInterfaces;
-  deviceInterfaces = ipv6.Assign (devices);
+    ping6.SetLocal(deviceInterfaces.GetAddress(0, 1));
+    ping6.SetRemote(deviceInterfaces.GetAddress(1, 1));
 
+    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
+    ApplicationContainer apps = ping6.Install(nodes.Get(0));
 
-  // Send ping packets after the 2nd second of the simulation during the
-  // first 8 seconds of the CAP in the incoming superframe
+    apps.Start(Seconds(2.0));
+    apps.Stop(Seconds(10.0));
 
-  uint32_t packetSize = 10;
-  uint32_t maxPacketCount = 5;
-  Time interPacketInterval = Seconds (1);
-  Ping6Helper ping6;
+    AsciiTraceHelper ascii;
+    lrWpanHelper.EnableAsciiAll(ascii.CreateFileStream("Ping-6LoW-lr-wpan-beacon.tr"));
+    lrWpanHelper.EnablePcapAll(std::string("Ping-6LoW-lr-wpan-beacon"), true);
 
-  ping6.SetLocal (deviceInterfaces.GetAddress (0, 1));
-  ping6.SetRemote (deviceInterfaces.GetAddress (1, 1));
+    Simulator::Stop(Seconds(600));
 
-  ping6.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-  ping6.SetAttribute ("Interval", TimeValue (interPacketInterval));
-  ping6.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  ApplicationContainer apps = ping6.Install (nodes.Get (0));
-
-  apps.Start (Seconds (2.0));
-  apps.Stop (Seconds (10.0));
-
-  AsciiTraceHelper ascii;
-  lrWpanHelper.EnableAsciiAll (ascii.CreateFileStream ("Ping-6LoW-lr-wpan-beacon.tr"));
-  lrWpanHelper.EnablePcapAll (std::string ("Ping-6LoW-lr-wpan-beacon"), true);
-
-
-  Simulator::Stop (Seconds (600));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
+    Simulator::Run();
+    Simulator::Destroy();
 }
 
 // BO/SO values to time equivalence

@@ -18,57 +18,58 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include <ns3/object-factory.h>
-#include <ns3/log.h>
-#include <cmath>
-#include <ns3/simulator.h>
-#include <ns3/trace-source-accessor.h>
-#include <ns3/packet-burst.h>
-#include <ns3/callback.h>
-#include <ns3/antenna-model.h>
-
 #include "half-duplex-ideal-phy.h"
+
 #include "half-duplex-ideal-phy-signal-parameters.h"
 #include "spectrum-error-model.h"
 
+#include <ns3/antenna-model.h>
+#include <ns3/callback.h>
+#include <ns3/log.h>
+#include <ns3/object-factory.h>
+#include <ns3/packet-burst.h>
+#include <ns3/simulator.h>
+#include <ns3/trace-source-accessor.h>
 
-namespace ns3 {
+#include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhy");
-
-NS_OBJECT_ENSURE_REGISTERED (HalfDuplexIdealPhy);
-
-HalfDuplexIdealPhy::HalfDuplexIdealPhy ()
-  : m_mobility (nullptr),
-    m_netDevice (nullptr),
-    m_channel (nullptr),
-    m_txPsd (nullptr),
-    m_state (IDLE)
+namespace ns3
 {
-  m_interference.SetErrorModel (CreateObject<ShannonSpectrumErrorModel> ());
+
+NS_LOG_COMPONENT_DEFINE("HalfDuplexIdealPhy");
+
+NS_OBJECT_ENSURE_REGISTERED(HalfDuplexIdealPhy);
+
+HalfDuplexIdealPhy::HalfDuplexIdealPhy()
+    : m_mobility(nullptr),
+      m_netDevice(nullptr),
+      m_channel(nullptr),
+      m_txPsd(nullptr),
+      m_state(IDLE)
+{
+    m_interference.SetErrorModel(CreateObject<ShannonSpectrumErrorModel>());
 }
 
-
-HalfDuplexIdealPhy::~HalfDuplexIdealPhy ()
+HalfDuplexIdealPhy::~HalfDuplexIdealPhy()
 {
 }
 
 void
-HalfDuplexIdealPhy::DoDispose ()
+HalfDuplexIdealPhy::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_mobility = nullptr;
-  m_netDevice = nullptr;
-  m_channel = nullptr;
-  m_txPsd = nullptr;
-  m_rxPsd = nullptr;
-  m_txPacket = nullptr;
-  m_rxPacket = nullptr;
-  m_phyMacTxEndCallback      = MakeNullCallback< void, Ptr<const Packet> > ();
-  m_phyMacRxStartCallback    = MakeNullCallback< void > ();
-  m_phyMacRxEndErrorCallback = MakeNullCallback< void > ();
-  m_phyMacRxEndOkCallback    = MakeNullCallback< void, Ptr<Packet> >  ();
-  SpectrumPhy::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    m_mobility = nullptr;
+    m_netDevice = nullptr;
+    m_channel = nullptr;
+    m_txPsd = nullptr;
+    m_rxPsd = nullptr;
+    m_txPacket = nullptr;
+    m_rxPacket = nullptr;
+    m_phyMacTxEndCallback = MakeNullCallback<void, Ptr<const Packet>>();
+    m_phyMacRxStartCallback = MakeNullCallback<void>();
+    m_phyMacRxEndErrorCallback = MakeNullCallback<void>();
+    m_phyMacRxEndOkCallback = MakeNullCallback<void, Ptr<Packet>>();
+    SpectrumPhy::DoDispose();
 }
 
 /**
@@ -77,388 +78,377 @@ HalfDuplexIdealPhy::DoDispose ()
  * \param s the state to print
  * \return an output stream
  */
-std::ostream& operator<< (std::ostream& os, HalfDuplexIdealPhy::State s)
+std::ostream&
+operator<<(std::ostream& os, HalfDuplexIdealPhy::State s)
 {
-  switch (s)
+    switch (s)
     {
     case HalfDuplexIdealPhy::IDLE:
-      os << "IDLE";
-      break;
+        os << "IDLE";
+        break;
     case HalfDuplexIdealPhy::RX:
-      os << "RX";
-      break;
+        os << "RX";
+        break;
     case HalfDuplexIdealPhy::TX:
-      os << "TX";
-      break;
+        os << "TX";
+        break;
     default:
-      os << "UNKNOWN";
-      break;
+        os << "UNKNOWN";
+        break;
     }
-  return os;
+    return os;
 }
-
 
 TypeId
-HalfDuplexIdealPhy::GetTypeId ()
+HalfDuplexIdealPhy::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::HalfDuplexIdealPhy")
-    .SetParent<SpectrumPhy> ()
-    .SetGroupName ("Spectrum")
-    .AddConstructor<HalfDuplexIdealPhy> ()
-    .AddAttribute ("Rate",
-                   "The PHY rate used by this device",
-                   DataRateValue (DataRate ("1Mbps")),
-                   MakeDataRateAccessor (&HalfDuplexIdealPhy::SetRate,
-                                         &HalfDuplexIdealPhy::GetRate),
-                   MakeDataRateChecker ())
-    .AddTraceSource ("TxStart",
-                     "Trace fired when a new transmission is started",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxStartTrace),
-                     "ns3::Packet::TracedCallback")
-    .AddTraceSource ("TxEnd",
-                     "Trace fired when a previously started transmission is finished",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxEndTrace),
-                     "ns3::Packet::TracedCallback")
-    .AddTraceSource ("RxStart",
-                     "Trace fired when the start of a signal is detected",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxStartTrace),
-                     "ns3::Packet::TracedCallback")
-    .AddTraceSource ("RxAbort",
-                     "Trace fired when a previously started RX is aborted before time",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxAbortTrace),
-                     "ns3::Packet::TracedCallback")
-    .AddTraceSource ("RxEndOk",
-                     "Trace fired when a previously started RX terminates successfully",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndOkTrace),
-                     "ns3::Packet::TracedCallback")
-    .AddTraceSource ("RxEndError",
-                     "Trace fired when a previously started RX terminates with an error (packet is corrupted)",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndErrorTrace),
-                     "ns3::Packet::TracedCallback")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::HalfDuplexIdealPhy")
+            .SetParent<SpectrumPhy>()
+            .SetGroupName("Spectrum")
+            .AddConstructor<HalfDuplexIdealPhy>()
+            .AddAttribute(
+                "Rate",
+                "The PHY rate used by this device",
+                DataRateValue(DataRate("1Mbps")),
+                MakeDataRateAccessor(&HalfDuplexIdealPhy::SetRate, &HalfDuplexIdealPhy::GetRate),
+                MakeDataRateChecker())
+            .AddTraceSource("TxStart",
+                            "Trace fired when a new transmission is started",
+                            MakeTraceSourceAccessor(&HalfDuplexIdealPhy::m_phyTxStartTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("TxEnd",
+                            "Trace fired when a previously started transmission is finished",
+                            MakeTraceSourceAccessor(&HalfDuplexIdealPhy::m_phyTxEndTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("RxStart",
+                            "Trace fired when the start of a signal is detected",
+                            MakeTraceSourceAccessor(&HalfDuplexIdealPhy::m_phyRxStartTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("RxAbort",
+                            "Trace fired when a previously started RX is aborted before time",
+                            MakeTraceSourceAccessor(&HalfDuplexIdealPhy::m_phyRxAbortTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("RxEndOk",
+                            "Trace fired when a previously started RX terminates successfully",
+                            MakeTraceSourceAccessor(&HalfDuplexIdealPhy::m_phyRxEndOkTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("RxEndError",
+                            "Trace fired when a previously started RX terminates with an error "
+                            "(packet is corrupted)",
+                            MakeTraceSourceAccessor(&HalfDuplexIdealPhy::m_phyRxEndErrorTrace),
+                            "ns3::Packet::TracedCallback");
+    return tid;
 }
-
-
 
 Ptr<NetDevice>
-HalfDuplexIdealPhy::GetDevice () const
+HalfDuplexIdealPhy::GetDevice() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_netDevice;
+    NS_LOG_FUNCTION(this);
+    return m_netDevice;
 }
-
 
 Ptr<MobilityModel>
-HalfDuplexIdealPhy::GetMobility () const
+HalfDuplexIdealPhy::GetMobility() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_mobility;
+    NS_LOG_FUNCTION(this);
+    return m_mobility;
 }
 
-
 void
-HalfDuplexIdealPhy::SetDevice (Ptr<NetDevice> d)
+HalfDuplexIdealPhy::SetDevice(Ptr<NetDevice> d)
 {
-  NS_LOG_FUNCTION (this << d);
-  m_netDevice = d;
+    NS_LOG_FUNCTION(this << d);
+    m_netDevice = d;
 }
 
-
 void
-HalfDuplexIdealPhy::SetMobility (Ptr<MobilityModel> m)
+HalfDuplexIdealPhy::SetMobility(Ptr<MobilityModel> m)
 {
-  NS_LOG_FUNCTION (this << m);
-  m_mobility = m;
+    NS_LOG_FUNCTION(this << m);
+    m_mobility = m;
 }
 
-
 void
-HalfDuplexIdealPhy::SetChannel (Ptr<SpectrumChannel> c)
+HalfDuplexIdealPhy::SetChannel(Ptr<SpectrumChannel> c)
 {
-  NS_LOG_FUNCTION (this << c);
-  m_channel = c;
+    NS_LOG_FUNCTION(this << c);
+    m_channel = c;
 }
 
 Ptr<const SpectrumModel>
-HalfDuplexIdealPhy::GetRxSpectrumModel () const
+HalfDuplexIdealPhy::GetRxSpectrumModel() const
 {
-  if (m_txPsd)
+    if (m_txPsd)
     {
-      return m_txPsd->GetSpectrumModel ();
+        return m_txPsd->GetSpectrumModel();
     }
-  else
+    else
     {
-      return nullptr;
+        return nullptr;
     }
 }
 
 void
-HalfDuplexIdealPhy::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
+HalfDuplexIdealPhy::SetTxPowerSpectralDensity(Ptr<SpectrumValue> txPsd)
 {
-  NS_LOG_FUNCTION (this << txPsd);
-  NS_ASSERT (txPsd);
-  m_txPsd = txPsd;
-  NS_LOG_INFO ( *txPsd << *m_txPsd);
+    NS_LOG_FUNCTION(this << txPsd);
+    NS_ASSERT(txPsd);
+    m_txPsd = txPsd;
+    NS_LOG_INFO(*txPsd << *m_txPsd);
 }
 
 void
-HalfDuplexIdealPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
+HalfDuplexIdealPhy::SetNoisePowerSpectralDensity(Ptr<const SpectrumValue> noisePsd)
 {
-  NS_LOG_FUNCTION (this << noisePsd);
-  NS_ASSERT (noisePsd);
-  m_interference.SetNoisePowerSpectralDensity (noisePsd);
+    NS_LOG_FUNCTION(this << noisePsd);
+    NS_ASSERT(noisePsd);
+    m_interference.SetNoisePowerSpectralDensity(noisePsd);
 }
 
 void
-HalfDuplexIdealPhy::SetRate (DataRate rate)
+HalfDuplexIdealPhy::SetRate(DataRate rate)
 {
-  NS_LOG_FUNCTION (this << rate);
-  m_rate = rate;
+    NS_LOG_FUNCTION(this << rate);
+    m_rate = rate;
 }
 
 DataRate
-HalfDuplexIdealPhy::GetRate () const
+HalfDuplexIdealPhy::GetRate() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_rate;
-}
-
-
-void
-HalfDuplexIdealPhy::SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c)
-{
-  NS_LOG_FUNCTION (this);
-  m_phyMacTxEndCallback = c;
+    NS_LOG_FUNCTION(this);
+    return m_rate;
 }
 
 void
-HalfDuplexIdealPhy::SetGenericPhyRxStartCallback (GenericPhyRxStartCallback c)
+HalfDuplexIdealPhy::SetGenericPhyTxEndCallback(GenericPhyTxEndCallback c)
 {
-  NS_LOG_FUNCTION (this);
-  m_phyMacRxStartCallback = c;
+    NS_LOG_FUNCTION(this);
+    m_phyMacTxEndCallback = c;
 }
 
-
 void
-HalfDuplexIdealPhy::SetGenericPhyRxEndErrorCallback (GenericPhyRxEndErrorCallback c)
+HalfDuplexIdealPhy::SetGenericPhyRxStartCallback(GenericPhyRxStartCallback c)
 {
-  NS_LOG_FUNCTION (this);
-  m_phyMacRxEndErrorCallback = c;
+    NS_LOG_FUNCTION(this);
+    m_phyMacRxStartCallback = c;
 }
 
+void
+HalfDuplexIdealPhy::SetGenericPhyRxEndErrorCallback(GenericPhyRxEndErrorCallback c)
+{
+    NS_LOG_FUNCTION(this);
+    m_phyMacRxEndErrorCallback = c;
+}
 
 void
-HalfDuplexIdealPhy::SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c)
+HalfDuplexIdealPhy::SetGenericPhyRxEndOkCallback(GenericPhyRxEndOkCallback c)
 {
-  NS_LOG_FUNCTION (this);
-  m_phyMacRxEndOkCallback = c;
+    NS_LOG_FUNCTION(this);
+    m_phyMacRxEndOkCallback = c;
 }
 
 Ptr<Object>
-HalfDuplexIdealPhy::GetAntenna () const
+HalfDuplexIdealPhy::GetAntenna() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_antenna;
+    NS_LOG_FUNCTION(this);
+    return m_antenna;
 }
 
 void
-HalfDuplexIdealPhy::SetAntenna (Ptr<AntennaModel> a)
+HalfDuplexIdealPhy::SetAntenna(Ptr<AntennaModel> a)
 {
-  NS_LOG_FUNCTION (this << a);
-  m_antenna = a;
+    NS_LOG_FUNCTION(this << a);
+    m_antenna = a;
 }
 
 void
-HalfDuplexIdealPhy::ChangeState (State newState)
+HalfDuplexIdealPhy::ChangeState(State newState)
 {
-  NS_LOG_LOGIC (this << " state: " << m_state << " -> " << newState);
-  m_state = newState;
+    NS_LOG_LOGIC(this << " state: " << m_state << " -> " << newState);
+    m_state = newState;
 }
 
 bool
-HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
+HalfDuplexIdealPhy::StartTx(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+    NS_LOG_FUNCTION(this << p);
+    NS_LOG_LOGIC(this << "state: " << m_state);
 
-  m_phyTxStartTrace (p);
+    m_phyTxStartTrace(p);
 
-  switch (m_state)
+    switch (m_state)
     {
     case RX:
-      AbortRx ();
-    // fall through
+        AbortRx();
+        // fall through
 
-    case IDLE:
-      {
+    case IDLE: {
         m_txPacket = p;
-        ChangeState (TX);
-        Ptr<HalfDuplexIdealPhySignalParameters> txParams = Create<HalfDuplexIdealPhySignalParameters> ();
-        Time txTimeSeconds = m_rate.CalculateBytesTxTime (p->GetSize ());
+        ChangeState(TX);
+        Ptr<HalfDuplexIdealPhySignalParameters> txParams =
+            Create<HalfDuplexIdealPhySignalParameters>();
+        Time txTimeSeconds = m_rate.CalculateBytesTxTime(p->GetSize());
         txParams->duration = txTimeSeconds;
-        txParams->txPhy = GetObject<SpectrumPhy> ();
+        txParams->txPhy = GetObject<SpectrumPhy>();
         txParams->txAntenna = m_antenna;
         txParams->psd = m_txPsd;
         txParams->data = m_txPacket;
 
-        NS_LOG_LOGIC (this << " tx power: " << 10 * std::log10 (Integral (*(txParams->psd))) + 30 << " dBm");
-        m_channel->StartTx (txParams);
-        Simulator::Schedule (txTimeSeconds, &HalfDuplexIdealPhy::EndTx, this);
-      }
-      break;
+        NS_LOG_LOGIC(this << " tx power: " << 10 * std::log10(Integral(*(txParams->psd))) + 30
+                          << " dBm");
+        m_channel->StartTx(txParams);
+        Simulator::Schedule(txTimeSeconds, &HalfDuplexIdealPhy::EndTx, this);
+    }
+    break;
 
     case TX:
 
-      return true;
-      break;
+        return true;
+        break;
     }
-  return false;
+    return false;
 }
 
-
 void
-HalfDuplexIdealPhy::EndTx ()
+HalfDuplexIdealPhy::EndTx()
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << " state: " << m_state);
+    NS_LOG_FUNCTION(this);
+    NS_LOG_LOGIC(this << " state: " << m_state);
 
-  NS_ASSERT (m_state == TX);
+    NS_ASSERT(m_state == TX);
 
-  m_phyTxEndTrace (m_txPacket);
+    m_phyTxEndTrace(m_txPacket);
 
-  if (!m_phyMacTxEndCallback.IsNull ())
+    if (!m_phyMacTxEndCallback.IsNull())
     {
-      m_phyMacTxEndCallback (m_txPacket);
+        m_phyMacTxEndCallback(m_txPacket);
     }
 
-  m_txPacket = nullptr;
-  ChangeState (IDLE);
+    m_txPacket = nullptr;
+    ChangeState(IDLE);
 }
 
-
 void
-HalfDuplexIdealPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumParams)
+HalfDuplexIdealPhy::StartRx(Ptr<SpectrumSignalParameters> spectrumParams)
 {
-  NS_LOG_FUNCTION (this << spectrumParams);
-  NS_LOG_LOGIC (this << " state: " << m_state);
-  NS_LOG_LOGIC (this << " rx power: " << 10 * std::log10 (Integral (*(spectrumParams->psd))) + 30 << " dBm");
+    NS_LOG_FUNCTION(this << spectrumParams);
+    NS_LOG_LOGIC(this << " state: " << m_state);
+    NS_LOG_LOGIC(this << " rx power: " << 10 * std::log10(Integral(*(spectrumParams->psd))) + 30
+                      << " dBm");
 
-  // interference will happen regardless of the state of the receiver
-  m_interference.AddSignal (spectrumParams->psd, spectrumParams->duration);
+    // interference will happen regardless of the state of the receiver
+    m_interference.AddSignal(spectrumParams->psd, spectrumParams->duration);
 
-  // the device might start RX only if the signal is of a type understood by this device
-  // this corresponds in real devices to preamble detection
-  Ptr<HalfDuplexIdealPhySignalParameters> rxParams = DynamicCast<HalfDuplexIdealPhySignalParameters> (spectrumParams);
-  if (rxParams)
+    // the device might start RX only if the signal is of a type understood by this device
+    // this corresponds in real devices to preamble detection
+    Ptr<HalfDuplexIdealPhySignalParameters> rxParams =
+        DynamicCast<HalfDuplexIdealPhySignalParameters>(spectrumParams);
+    if (rxParams)
     {
-      // signal is of known type
-      switch (m_state)
+        // signal is of known type
+        switch (m_state)
         {
         case TX:
-          // the PHY will not notice this incoming signal
-          break;
+            // the PHY will not notice this incoming signal
+            break;
 
         case RX:
-          // we should check if we should re-sync on a new incoming signal and discard the old one
-          // (somebody calls this the "capture" effect)
-          // criteria considered to do might include the following:
-          //  1) signal strength (e.g., as returned by rxPsd.Norm ())
-          //  2) how much time has passed since previous RX attempt started
-          // if re-sync (capture) is done, then we should call AbortRx ()
-          break;
+            // we should check if we should re-sync on a new incoming signal and discard the old one
+            // (somebody calls this the "capture" effect)
+            // criteria considered to do might include the following:
+            //  1) signal strength (e.g., as returned by rxPsd.Norm ())
+            //  2) how much time has passed since previous RX attempt started
+            // if re-sync (capture) is done, then we should call AbortRx ()
+            break;
 
         case IDLE:
-          // preamble detection and synchronization is supposed to be always successful.
+            // preamble detection and synchronization is supposed to be always successful.
 
-          Ptr<Packet> p = rxParams->data;
-          m_phyRxStartTrace (p);
-          m_rxPacket = p;
-          m_rxPsd = rxParams->psd;
-          ChangeState (RX);
-          if (!m_phyMacRxStartCallback.IsNull ())
+            Ptr<Packet> p = rxParams->data;
+            m_phyRxStartTrace(p);
+            m_rxPacket = p;
+            m_rxPsd = rxParams->psd;
+            ChangeState(RX);
+            if (!m_phyMacRxStartCallback.IsNull())
             {
-              NS_LOG_LOGIC (this << " calling m_phyMacRxStartCallback");
-              m_phyMacRxStartCallback ();
+                NS_LOG_LOGIC(this << " calling m_phyMacRxStartCallback");
+                m_phyMacRxStartCallback();
             }
-          else
+            else
             {
-              NS_LOG_LOGIC (this << " m_phyMacRxStartCallback is NULL");
+                NS_LOG_LOGIC(this << " m_phyMacRxStartCallback is NULL");
             }
-          m_interference.StartRx (p, rxParams->psd);
-          NS_LOG_LOGIC (this << " scheduling EndRx with delay " << rxParams->duration);
-          m_endRxEventId = Simulator::Schedule (rxParams->duration, &HalfDuplexIdealPhy::EndRx, this);
+            m_interference.StartRx(p, rxParams->psd);
+            NS_LOG_LOGIC(this << " scheduling EndRx with delay " << rxParams->duration);
+            m_endRxEventId =
+                Simulator::Schedule(rxParams->duration, &HalfDuplexIdealPhy::EndRx, this);
 
-          break;
-
+            break;
         }
     }
-  else // rxParams == 0
+    else // rxParams == 0
     {
-      NS_LOG_LOGIC (this << " signal of unknown type");
+        NS_LOG_LOGIC(this << " signal of unknown type");
     }
 
-  NS_LOG_LOGIC (this << " state: " << m_state);
+    NS_LOG_LOGIC(this << " state: " << m_state);
 }
-
 
 void
-HalfDuplexIdealPhy::AbortRx ()
+HalfDuplexIdealPhy::AbortRx()
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+    NS_LOG_FUNCTION(this);
+    NS_LOG_LOGIC(this << "state: " << m_state);
 
-  NS_ASSERT (m_state == RX);
-  m_interference.AbortRx ();
-  m_phyRxAbortTrace (m_rxPacket);
-  m_endRxEventId.Cancel ();
-  m_rxPacket = nullptr;
-  ChangeState (IDLE);
+    NS_ASSERT(m_state == RX);
+    m_interference.AbortRx();
+    m_phyRxAbortTrace(m_rxPacket);
+    m_endRxEventId.Cancel();
+    m_rxPacket = nullptr;
+    ChangeState(IDLE);
 }
-
 
 void
-HalfDuplexIdealPhy::EndRx ()
+HalfDuplexIdealPhy::EndRx()
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << " state: " << m_state);
+    NS_LOG_FUNCTION(this);
+    NS_LOG_LOGIC(this << " state: " << m_state);
 
-  NS_ASSERT (m_state == RX);
+    NS_ASSERT(m_state == RX);
 
-  bool rxOk = m_interference.EndRx ();
+    bool rxOk = m_interference.EndRx();
 
-  if (rxOk)
+    if (rxOk)
     {
-      m_phyRxEndOkTrace (m_rxPacket);
-      if (!m_phyMacRxEndOkCallback.IsNull ())
+        m_phyRxEndOkTrace(m_rxPacket);
+        if (!m_phyMacRxEndOkCallback.IsNull())
         {
-          NS_LOG_LOGIC (this << " calling m_phyMacRxEndOkCallback");
-          m_phyMacRxEndOkCallback (m_rxPacket);
+            NS_LOG_LOGIC(this << " calling m_phyMacRxEndOkCallback");
+            m_phyMacRxEndOkCallback(m_rxPacket);
         }
-      else
+        else
         {
-          NS_LOG_LOGIC (this << " m_phyMacRxEndOkCallback is NULL");
+            NS_LOG_LOGIC(this << " m_phyMacRxEndOkCallback is NULL");
         }
     }
-  else
+    else
     {
-      m_phyRxEndErrorTrace (m_rxPacket);
-      if (!m_phyMacRxEndErrorCallback.IsNull ())
+        m_phyRxEndErrorTrace(m_rxPacket);
+        if (!m_phyMacRxEndErrorCallback.IsNull())
         {
-          NS_LOG_LOGIC (this << " calling m_phyMacRxEndErrorCallback");
-          m_phyMacRxEndErrorCallback ();
+            NS_LOG_LOGIC(this << " calling m_phyMacRxEndErrorCallback");
+            m_phyMacRxEndErrorCallback();
         }
-      else
+        else
         {
-          NS_LOG_LOGIC (this << " m_phyMacRxEndErrorCallback is NULL");
+            NS_LOG_LOGIC(this << " m_phyMacRxEndErrorCallback is NULL");
         }
     }
 
-  ChangeState (IDLE);
-  m_rxPacket = nullptr;
-  m_rxPsd = nullptr;
+    ChangeState(IDLE);
+    m_rxPacket = nullptr;
+    m_rxPsd = nullptr;
 }
-
-
 
 } // namespace ns3

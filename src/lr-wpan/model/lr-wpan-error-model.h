@@ -22,7 +22,8 @@
 
 #include <ns3/object.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lr-wpan
@@ -33,33 +34,31 @@ namespace ns3 {
  */
 class LrWpanErrorModel : public Object
 {
-public:
-  /**
-   * Get the type ID.
-   *
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  LrWpanErrorModel ();
+    LrWpanErrorModel();
 
-  /**
-   * Return chunk success rate for given SNR.
-   *
-   * \return success rate (i.e. 1 - chunk error rate)
-   * \param snr SNR expressed as a power ratio (i.e. not in dB)
-   * \param nbits number of bits in the chunk
-   */
-  double GetChunkSuccessRate (double snr, uint32_t nbits) const;
+    /**
+     * Return chunk success rate for given SNR.
+     *
+     * \return success rate (i.e. 1 - chunk error rate)
+     * \param snr SNR expressed as a power ratio (i.e. not in dB)
+     * \param nbits number of bits in the chunk
+     */
+    double GetChunkSuccessRate(double snr, uint32_t nbits) const;
 
-private:
-  /**
-   * Array of precalculated binomial coefficients.
-   */
-  double m_binomialCoefficients[17];
-
+  private:
+    /**
+     * Array of precalculated binomial coefficients.
+     */
+    double m_binomialCoefficients[17];
 };
-
 
 } // namespace ns3
 

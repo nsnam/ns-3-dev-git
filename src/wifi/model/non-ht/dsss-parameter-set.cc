@@ -20,43 +20,44 @@
 
 #include "dsss-parameter-set.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-DsssParameterSet::DsssParameterSet ()
-  : m_currentChannel (0)
+DsssParameterSet::DsssParameterSet()
+    : m_currentChannel(0)
 {
 }
 
 WifiInformationElementId
-DsssParameterSet::ElementId () const
+DsssParameterSet::ElementId() const
 {
-  return IE_DSSS_PARAMETER_SET;
+    return IE_DSSS_PARAMETER_SET;
 }
 
 void
-DsssParameterSet::SetCurrentChannel (uint8_t currentChannel)
+DsssParameterSet::SetCurrentChannel(uint8_t currentChannel)
 {
-  m_currentChannel = currentChannel;
+    m_currentChannel = currentChannel;
 }
 
 uint16_t
-DsssParameterSet::GetInformationFieldSize () const
+DsssParameterSet::GetInformationFieldSize() const
 {
-  return 1;
+    return 1;
 }
 
 void
-DsssParameterSet::SerializeInformationField (Buffer::Iterator start) const
+DsssParameterSet::SerializeInformationField(Buffer::Iterator start) const
 {
-  start.WriteU8 (m_currentChannel);
+    start.WriteU8(m_currentChannel);
 }
 
 uint16_t
-DsssParameterSet::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
+DsssParameterSet::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
-  Buffer::Iterator i = start;
-  m_currentChannel = i.ReadU8 ();
-  return length;
+    Buffer::Iterator i = start;
+    m_currentChannel = i.ReadU8();
+    return length;
 }
 
-} //namespace ns3
+} // namespace ns3

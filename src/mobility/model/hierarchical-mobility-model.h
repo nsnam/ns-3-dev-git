@@ -22,7 +22,8 @@
 
 #include "mobility-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup mobility
@@ -56,71 +57,70 @@ namespace ns3 {
  */
 class HierarchicalMobilityModel : public MobilityModel
 {
-public:
-  /**
-   * Register this type with the TypeId system.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * Register this type with the TypeId system.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  HierarchicalMobilityModel ();
+    HierarchicalMobilityModel();
 
-  /**
-   * \return the child mobility model.
-   *
-   * Calling GetPosition() on the model returned by this method allows
-   * one to access the position of the child relative to its parent.
-   */
-  Ptr<MobilityModel> GetChild () const;
-  /**
-   * \return the parent mobility model.
-   *
-   * Calling GetPosition() on the model returned by this method allows
-   * one to access the position of the parent alone, which is used
-   * as the reference position to which the child position is added.
-   */
-  Ptr<MobilityModel> GetParent () const;
-  /**
-   * Sets the child mobility model to a new one, possibly replacing
-   * an existing one.  If the child model is being replaced,
-   * then the new child mobility model's current position is also set to
-   * the previous position to ensure that the composite
-   * position is preserved by this operation.
-   * \param model new mobility model child
-   */
-  void SetChild (Ptr<MobilityModel> model);
-  /**
-   * Sets the parent mobility model to a new one, possibly replacing
-   * an existing one.  If the parent model is being replaced,
-   * then the new position is set to the position that was set before
-   * replacement, to ensure that the composite position is preserved
-   * across changes to the parent model.
-   * \param model new mobility model parent
-   */
-  void SetParent (Ptr<MobilityModel> model);
+    /**
+     * \return the child mobility model.
+     *
+     * Calling GetPosition() on the model returned by this method allows
+     * one to access the position of the child relative to its parent.
+     */
+    Ptr<MobilityModel> GetChild() const;
+    /**
+     * \return the parent mobility model.
+     *
+     * Calling GetPosition() on the model returned by this method allows
+     * one to access the position of the parent alone, which is used
+     * as the reference position to which the child position is added.
+     */
+    Ptr<MobilityModel> GetParent() const;
+    /**
+     * Sets the child mobility model to a new one, possibly replacing
+     * an existing one.  If the child model is being replaced,
+     * then the new child mobility model's current position is also set to
+     * the previous position to ensure that the composite
+     * position is preserved by this operation.
+     * \param model new mobility model child
+     */
+    void SetChild(Ptr<MobilityModel> model);
+    /**
+     * Sets the parent mobility model to a new one, possibly replacing
+     * an existing one.  If the parent model is being replaced,
+     * then the new position is set to the position that was set before
+     * replacement, to ensure that the composite position is preserved
+     * across changes to the parent model.
+     * \param model new mobility model parent
+     */
+    void SetParent(Ptr<MobilityModel> model);
 
-private:
-  Vector DoGetPosition () const override;
-  void DoSetPosition (const Vector &position) override;
-  Vector DoGetVelocity () const override;
-  void DoInitialize () override;
-  int64_t DoAssignStreams (int64_t) override;
+  private:
+    Vector DoGetPosition() const override;
+    void DoSetPosition(const Vector& position) override;
+    Vector DoGetVelocity() const override;
+    void DoInitialize() override;
+    int64_t DoAssignStreams(int64_t) override;
 
-  /**
-   * Callback for when parent mobility model course change occurs
-   * \param model mobility mode (unused)
-   */
-  void ParentChanged (Ptr<const MobilityModel> model);
-  /**
-   * Callback for when child mobility model course change occurs
-   * \param model mobility mode (unused)
-   */
-  void ChildChanged (Ptr<const MobilityModel> model);
+    /**
+     * Callback for when parent mobility model course change occurs
+     * \param model mobility mode (unused)
+     */
+    void ParentChanged(Ptr<const MobilityModel> model);
+    /**
+     * Callback for when child mobility model course change occurs
+     * \param model mobility mode (unused)
+     */
+    void ChildChanged(Ptr<const MobilityModel> model);
 
-  Ptr<MobilityModel> m_child; //!< pointer to child mobility model
-  Ptr<MobilityModel> m_parent; //!< pointer to parent mobility model
+    Ptr<MobilityModel> m_child;  //!< pointer to child mobility model
+    Ptr<MobilityModel> m_parent; //!< pointer to parent mobility model
 };
-
 
 } // namespace ns3
 

@@ -7,4 +7,4 @@
 #cmakedefine HAVE_PYEXT
 #cmakedefine HAVE_PYTHON_H
 
-#endif //NS3_CONFIG_STORE_CONFIG_H
+#endif // NS3_CONFIG_STORE_CONFIG_H

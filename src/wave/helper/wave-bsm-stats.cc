@@ -19,184 +19,186 @@
  *
  */
 
-
 #include "ns3/wave-bsm-stats.h"
+
 #include "ns3/integer.h"
 #include "ns3/log.h"
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("WaveBsmStats");
-
-WaveBsmStats::WaveBsmStats ()
-  : m_wavePktSendCount (0),
-    m_waveByteSendCount (0),
-    m_wavePktReceiveCount (0),
-    m_log (0)
+namespace ns3
 {
-  m_wavePktExpectedReceiveCounts.resize (10, 0);
-  m_wavePktInCoverageReceiveCounts.resize (10, 0);
-  m_waveTotalPktExpectedReceiveCounts.resize (10, 0);
-  m_waveTotalPktInCoverageReceiveCounts.resize (10, 0);
+
+NS_LOG_COMPONENT_DEFINE("WaveBsmStats");
+
+WaveBsmStats::WaveBsmStats()
+    : m_wavePktSendCount(0),
+      m_waveByteSendCount(0),
+      m_wavePktReceiveCount(0),
+      m_log(0)
+{
+    m_wavePktExpectedReceiveCounts.resize(10, 0);
+    m_wavePktInCoverageReceiveCounts.resize(10, 0);
+    m_waveTotalPktExpectedReceiveCounts.resize(10, 0);
+    m_waveTotalPktInCoverageReceiveCounts.resize(10, 0);
 }
 
 /* static */
 TypeId
-WaveBsmStats::GetTypeId ()
+WaveBsmStats::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WaveBsmStats")
-    .SetParent<Object> ()
-    .SetGroupName ("Stats")
-    .AddConstructor<WaveBsmStats> ()
-    ;
-  return tid;
+    static TypeId tid = TypeId("ns3::WaveBsmStats")
+                            .SetParent<Object>()
+                            .SetGroupName("Stats")
+                            .AddConstructor<WaveBsmStats>();
+    return tid;
 }
 
 void
-WaveBsmStats::IncTxPktCount ()
+WaveBsmStats::IncTxPktCount()
 {
-  m_wavePktSendCount++;
+    m_wavePktSendCount++;
 }
 
 int
-WaveBsmStats::GetTxPktCount ()
+WaveBsmStats::GetTxPktCount()
 {
-  return m_wavePktSendCount;
+    return m_wavePktSendCount;
 }
 
 void
-WaveBsmStats::IncExpectedRxPktCount (int index)
+WaveBsmStats::IncExpectedRxPktCount(int index)
 {
-  m_wavePktExpectedReceiveCounts[index - 1]++;
-  m_waveTotalPktExpectedReceiveCounts[index - 1]++;
+    m_wavePktExpectedReceiveCounts[index - 1]++;
+    m_waveTotalPktExpectedReceiveCounts[index - 1]++;
 }
 
 void
-WaveBsmStats::IncRxPktCount ()
+WaveBsmStats::IncRxPktCount()
 {
-  m_wavePktReceiveCount++;
+    m_wavePktReceiveCount++;
 }
 
 void
-WaveBsmStats::IncRxPktInRangeCount (int index)
+WaveBsmStats::IncRxPktInRangeCount(int index)
 {
-  m_wavePktInCoverageReceiveCounts[index - 1]++;
-  m_waveTotalPktInCoverageReceiveCounts[index - 1]++;
+    m_wavePktInCoverageReceiveCounts[index - 1]++;
+    m_waveTotalPktInCoverageReceiveCounts[index - 1]++;
 }
 
 int
-WaveBsmStats::GetRxPktCount ()
+WaveBsmStats::GetRxPktCount()
 {
-  return m_wavePktReceiveCount;
+    return m_wavePktReceiveCount;
 }
 
 int
-WaveBsmStats::GetExpectedRxPktCount (int index)
+WaveBsmStats::GetExpectedRxPktCount(int index)
 {
-  return m_wavePktExpectedReceiveCounts[index - 1];
+    return m_wavePktExpectedReceiveCounts[index - 1];
 }
 
 int
-WaveBsmStats::GetRxPktInRangeCount (int index)
+WaveBsmStats::GetRxPktInRangeCount(int index)
 {
-  return m_wavePktInCoverageReceiveCounts[index - 1];
+    return m_wavePktInCoverageReceiveCounts[index - 1];
 }
 
 void
-WaveBsmStats::SetTxPktCount (int count)
+WaveBsmStats::SetTxPktCount(int count)
 {
-  m_wavePktSendCount = count;
+    m_wavePktSendCount = count;
 }
 
 void
-WaveBsmStats::SetRxPktCount (int count)
+WaveBsmStats::SetRxPktCount(int count)
 {
-  m_wavePktReceiveCount = count;
+    m_wavePktReceiveCount = count;
 }
 
 void
-WaveBsmStats::IncTxByteCount (int bytes)
+WaveBsmStats::IncTxByteCount(int bytes)
 {
-  m_waveByteSendCount += bytes;
+    m_waveByteSendCount += bytes;
 }
 
 int
-WaveBsmStats::GetTxByteCount ()
+WaveBsmStats::GetTxByteCount()
 {
-  return m_waveByteSendCount;
+    return m_waveByteSendCount;
 }
 
 double
-WaveBsmStats::GetBsmPdr (int index)
+WaveBsmStats::GetBsmPdr(int index)
 {
-  double pdr = 0.0;
+    double pdr = 0.0;
 
-  if (m_wavePktExpectedReceiveCounts[index - 1] > 0)
+    if (m_wavePktExpectedReceiveCounts[index - 1] > 0)
     {
-      pdr = (double) m_wavePktInCoverageReceiveCounts[index - 1] / (double) m_wavePktExpectedReceiveCounts[index - 1];
-      // due to node movement, it is
-      // possible to receive a packet that is not slightly "within range" that was
-      // transmitted at the time when the nodes were slightly "out of range"
-      // thus, prevent overflow of PDR > 100%
-      if (pdr > 1.0)
+        pdr = (double)m_wavePktInCoverageReceiveCounts[index - 1] /
+              (double)m_wavePktExpectedReceiveCounts[index - 1];
+        // due to node movement, it is
+        // possible to receive a packet that is not slightly "within range" that was
+        // transmitted at the time when the nodes were slightly "out of range"
+        // thus, prevent overflow of PDR > 100%
+        if (pdr > 1.0)
         {
-          pdr = 1.0;
+            pdr = 1.0;
         }
     }
 
-  return pdr;
+    return pdr;
 }
 
 double
-WaveBsmStats::GetCumulativeBsmPdr (int index)
+WaveBsmStats::GetCumulativeBsmPdr(int index)
 {
-  double pdr = 0.0;
+    double pdr = 0.0;
 
-  if (m_waveTotalPktExpectedReceiveCounts[index - 1] > 0)
+    if (m_waveTotalPktExpectedReceiveCounts[index - 1] > 0)
     {
-      pdr = (double) m_waveTotalPktInCoverageReceiveCounts[index - 1] / (double) m_waveTotalPktExpectedReceiveCounts[index - 1];
-      // due to node movement, it is
-      // possible to receive a packet that is not slightly "within range" that was
-      // transmitted at the time when the nodes were slightly "out of range"
-      // thus, prevent overflow of PDR > 100%
-      if (pdr > 1.0)
+        pdr = (double)m_waveTotalPktInCoverageReceiveCounts[index - 1] /
+              (double)m_waveTotalPktExpectedReceiveCounts[index - 1];
+        // due to node movement, it is
+        // possible to receive a packet that is not slightly "within range" that was
+        // transmitted at the time when the nodes were slightly "out of range"
+        // thus, prevent overflow of PDR > 100%
+        if (pdr > 1.0)
         {
-          pdr = 1.0;
+            pdr = 1.0;
         }
     }
 
-  return pdr;
+    return pdr;
 }
 
 void
-WaveBsmStats::SetLogging (int log)
+WaveBsmStats::SetLogging(int log)
 {
-  m_log = log;
+    m_log = log;
 }
 
 int
-WaveBsmStats::GetLogging ()
+WaveBsmStats::GetLogging()
 {
-  return m_log;
+    return m_log;
 }
 
 void
-WaveBsmStats::SetExpectedRxPktCount (int index, int count)
+WaveBsmStats::SetExpectedRxPktCount(int index, int count)
 {
-  m_wavePktExpectedReceiveCounts[index - 1] = count;
+    m_wavePktExpectedReceiveCounts[index - 1] = count;
 }
 
 void
-WaveBsmStats::SetRxPktInRangeCount (int index, int count)
+WaveBsmStats::SetRxPktInRangeCount(int index, int count)
 {
-  m_wavePktInCoverageReceiveCounts[index - 1] = count;
+    m_wavePktInCoverageReceiveCounts[index - 1] = count;
 }
 
 void
-WaveBsmStats::ResetTotalRxPktCounts (int index)
+WaveBsmStats::ResetTotalRxPktCounts(int index)
 {
-  m_waveTotalPktInCoverageReceiveCounts[index - 1] = 0;
-  m_waveTotalPktExpectedReceiveCounts[index - 1] = 0;
+    m_waveTotalPktInCoverageReceiveCounts[index - 1] = 0;
+    m_waveTotalPktExpectedReceiveCounts[index - 1] = 0;
 }
 
 } // namespace ns3

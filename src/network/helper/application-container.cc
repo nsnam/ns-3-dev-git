@@ -18,100 +18,107 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/names.h"
-#include "ns3/log.h"
 #include "application-container.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/names.h"
 
-NS_LOG_COMPONENT_DEFINE ("ApplicationContainer");
+namespace ns3
+{
 
-ApplicationContainer::ApplicationContainer ()
+NS_LOG_COMPONENT_DEFINE("ApplicationContainer");
+
+ApplicationContainer::ApplicationContainer()
 {
 }
 
-ApplicationContainer::ApplicationContainer (Ptr<Application> app)
+ApplicationContainer::ApplicationContainer(Ptr<Application> app)
 {
-  m_applications.push_back (app);
+    m_applications.push_back(app);
 }
 
-ApplicationContainer::ApplicationContainer (std::string name)
+ApplicationContainer::ApplicationContainer(std::string name)
 {
-  Ptr<Application> app = Names::Find<Application> (name);
-  m_applications.push_back (app);
+    Ptr<Application> app = Names::Find<Application>(name);
+    m_applications.push_back(app);
 }
-
 
 ApplicationContainer::Iterator
-ApplicationContainer::Begin () const
+ApplicationContainer::Begin() const
 {
-  return m_applications.begin ();
+    return m_applications.begin();
 }
+
 ApplicationContainer::Iterator
-ApplicationContainer::End () const
+ApplicationContainer::End() const
 {
-  return m_applications.end ();
+    return m_applications.end();
 }
 
 uint32_t
-ApplicationContainer::GetN () const
+ApplicationContainer::GetN() const
 {
-  return m_applications.size ();
+    return m_applications.size();
 }
+
 Ptr<Application>
-ApplicationContainer::Get (uint32_t i) const
+ApplicationContainer::Get(uint32_t i) const
 {
-  return m_applications[i];
-}
-void
-ApplicationContainer::Add (ApplicationContainer other)
-{
-  for (Iterator i = other.Begin (); i != other.End (); i++)
-    {
-      m_applications.push_back (*i);
-    }
-}
-void
-ApplicationContainer::Add (Ptr<Application> application)
-{
-  m_applications.push_back (application);
-}
-void
-ApplicationContainer::Add (std::string name)
-{
-  Ptr<Application> application = Names::Find<Application> (name);
-  m_applications.push_back (application);
+    return m_applications[i];
 }
 
 void
-ApplicationContainer::Start (Time start)
+ApplicationContainer::Add(ApplicationContainer other)
 {
-  for (Iterator i = Begin (); i != End (); ++i)
+    for (Iterator i = other.Begin(); i != other.End(); i++)
     {
-      Ptr<Application> app = *i;
-      app->SetStartTime (start);
-    }
-}
-void
-ApplicationContainer::StartWithJitter (Time start, Ptr<RandomVariableStream> rv)
-{
-  for (Iterator i = Begin (); i != End (); ++i)
-    {
-      Ptr<Application> app = *i;
-      double value = rv->GetValue ();
-      NS_LOG_DEBUG ("Start application at time " << start.GetSeconds () + value << "s");
-      app->SetStartTime (start + Seconds (value));
-    }
-}
-void
-ApplicationContainer::Stop (Time stop)
-{
-  for (Iterator i = Begin (); i != End (); ++i)
-    {
-      Ptr<Application> app = *i;
-      app->SetStopTime (stop);
+        m_applications.push_back(*i);
     }
 }
 
+void
+ApplicationContainer::Add(Ptr<Application> application)
+{
+    m_applications.push_back(application);
+}
+
+void
+ApplicationContainer::Add(std::string name)
+{
+    Ptr<Application> application = Names::Find<Application>(name);
+    m_applications.push_back(application);
+}
+
+void
+ApplicationContainer::Start(Time start)
+{
+    for (Iterator i = Begin(); i != End(); ++i)
+    {
+        Ptr<Application> app = *i;
+        app->SetStartTime(start);
+    }
+}
+
+void
+ApplicationContainer::StartWithJitter(Time start, Ptr<RandomVariableStream> rv)
+{
+    for (Iterator i = Begin(); i != End(); ++i)
+    {
+        Ptr<Application> app = *i;
+        double value = rv->GetValue();
+        NS_LOG_DEBUG("Start application at time " << start.GetSeconds() + value << "s");
+        app->SetStartTime(start + Seconds(value));
+    }
+}
+
+void
+ApplicationContainer::Stop(Time stop)
+{
+    for (Iterator i = Begin(); i != End(); ++i)
+    {
+        Ptr<Application> app = *i;
+        app->SetStopTime(stop);
+    }
+}
 
 } // namespace ns3

@@ -63,1408 +63,1355 @@ using Unit = Length::Unit;
  */
 class LengthTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   */
-  LengthTestCase ()
-    :   TestCase ("length-tests")
-  {}
+  public:
+    /**
+     * Constructor
+     */
+    LengthTestCase()
+        : TestCase("length-tests")
+    {
+    }
 
-  /**
-   * Destructor
-   */
-  ~LengthTestCase () override = default;
+    /**
+     * Destructor
+     */
+    ~LengthTestCase() override = default;
 
-protected:
-  /**
-   * Helper function to compare results with false
-   *
-   * \param condition The boolean condition to test
-   * \param msg The message to print if the test fails
-   */
-  void AssertFalse (bool condition, std::string msg)
-  {
-    NS_TEST_ASSERT_MSG_EQ (condition, false, msg);
-  }
+  protected:
+    /**
+     * Helper function to compare results with false
+     *
+     * \param condition The boolean condition to test
+     * \param msg The message to print if the test fails
+     */
+    void AssertFalse(bool condition, std::string msg)
+    {
+        NS_TEST_ASSERT_MSG_EQ(condition, false, msg);
+    }
 
-  /**
-   * Helper function to compare results with true
-   *
-   * \param condition The boolean condition to test
-   * \param msg The message to print if the test fails
-   */
-  void AssertTrue (bool condition, std::string msg)
-  {
-    NS_TEST_ASSERT_MSG_EQ (condition, true, msg);
-  }
+    /**
+     * Helper function to compare results with true
+     *
+     * \param condition The boolean condition to test
+     * \param msg The message to print if the test fails
+     */
+    void AssertTrue(bool condition, std::string msg)
+    {
+        NS_TEST_ASSERT_MSG_EQ(condition, true, msg);
+    }
 
-private:
-  /**
-   * Test that a default constructed Length object has a value of 0
-   */
-  void TestDefaultLengthIsZero ();
+  private:
+    /**
+     * Test that a default constructed Length object has a value of 0
+     */
+    void TestDefaultLengthIsZero();
 
-  /**
-   * Test that a Length object can be constructed from a Quantity object
-   */
-  void TestConstructLengthFromQuantity ();
+    /**
+     * Test that a Length object can be constructed from a Quantity object
+     */
+    void TestConstructLengthFromQuantity();
 
-  /**
-   * Test that a Length object constructed from various SI units has the
-   * correct value in meters
-   */
-  void TestConstructLengthFromSIUnits ();
+    /**
+     * Test that a Length object constructed from various SI units has the
+     * correct value in meters
+     */
+    void TestConstructLengthFromSIUnits();
 
-  /**
-   * Test that a Length object constructed from various US units has the
-   * correct value in meters
-   */
-  void TestConstructLengthFromUSUnits ();
+    /**
+     * Test that a Length object constructed from various US units has the
+     * correct value in meters
+     */
+    void TestConstructLengthFromUSUnits();
 
-  /**
-   * Test that the value from one length is copied to another
-   * using the copy constructor.
-   */
-  void TestLengthCopyConstructor ();
+    /**
+     * Test that the value from one length is copied to another
+     * using the copy constructor.
+     */
+    void TestLengthCopyConstructor();
 
-  /**
-   * Test that the value from one length is copied to another
-   * using the move constructor.
-   */
-  void TestLengthMoveConstructor ();
+    /**
+     * Test that the value from one length is copied to another
+     * using the move constructor.
+     */
+    void TestLengthMoveConstructor();
 
-  /**
-   * Test that a length object can be constructed from a string
-   * \param unitValue  //!< Value to test.
-   * \param meterValue //!< Reference value [m].
-   * \param tolerance  //!< Tolerance.
-   * \param symbols    //!< Unit symbols.
-   */
-  void TestConstructLengthFromString (double unitValue,
-                                      double meterValue,
-                                      double tolerance,
-                                      const std::initializer_list<std::string>& symbols);
+    /**
+     * Test that a length object can be constructed from a string
+     * \param unitValue  //!< Value to test.
+     * \param meterValue //!< Reference value [m].
+     * \param tolerance  //!< Tolerance.
+     * \param symbols    //!< Unit symbols.
+     */
+    void TestConstructLengthFromString(double unitValue,
+                                       double meterValue,
+                                       double tolerance,
+                                       const std::initializer_list<std::string>& symbols);
 
-  /**
-   * Test that a length object can be constructed from a string
-   * @{
-   */
-  void TestConstructLengthFromMeterString ();
-  void TestConstructLengthFromNanoMeterString ();
-  void TestConstructLengthFromMicroMeterString ();
-  void TestConstructLengthFromMilliMeterString ();
-  void TestConstructLengthFromCentiMeterString ();
-  void TestConstructLengthFromKiloMeterString ();
-  void TestConstructLengthFromNauticalMileString ();
-  void TestConstructLengthFromInchString ();
-  void TestConstructLengthFromFootString ();
-  void TestConstructLengthFromYardString ();
-  void TestConstructLengthFromMileString ();
-  /** @} */
+    /**
+     * Test that a length object can be constructed from a string
+     * @{
+     */
+    void TestConstructLengthFromMeterString();
+    void TestConstructLengthFromNanoMeterString();
+    void TestConstructLengthFromMicroMeterString();
+    void TestConstructLengthFromMilliMeterString();
+    void TestConstructLengthFromCentiMeterString();
+    void TestConstructLengthFromKiloMeterString();
+    void TestConstructLengthFromNauticalMileString();
+    void TestConstructLengthFromInchString();
+    void TestConstructLengthFromFootString();
+    void TestConstructLengthFromYardString();
+    void TestConstructLengthFromMileString();
+    /** @} */
 
 #ifdef HAVE_BOOST_UNITS
-  /**
-   * Test construction from boost::units
-   * @{
-   */
-  void TestConstructLengthFromBoostUnits ();
-  void TestConstructLengthFromBoostUnitsMeters ();
-  void TestConstructLengthFromBoostUnitsKiloMeters ();
-  void TestConstructLengthFromBoostUnitsFeet ();
-  /** @} */
+    /**
+     * Test construction from boost::units
+     * @{
+     */
+    void TestConstructLengthFromBoostUnits();
+    void TestConstructLengthFromBoostUnitsMeters();
+    void TestConstructLengthFromBoostUnitsKiloMeters();
+    void TestConstructLengthFromBoostUnitsFeet();
+    /** @} */
 #endif
 
-  /**
-   * Test constructing length objects using the builder free functions
-   * @{
-   */
-  void TestBuilderFreeFunctions ();
-  /** @} */
+    /**
+     * Test constructing length objects using the builder free functions
+     * @{
+     */
+    void TestBuilderFreeFunctions();
+    /** @} */
 
-  /**
-   * Test the TryParse function returns false on bad input
-   */
-  void TestTryParseReturnsFalse ();
+    /**
+     * Test the TryParse function returns false on bad input
+     */
+    void TestTryParseReturnsFalse();
 
-  /**
-   * Test the TryParse function returns true on success
-   */
-  void TestTryParseReturnsTrue ();
+    /**
+     * Test the TryParse function returns true on success
+     */
+    void TestTryParseReturnsTrue();
 
+    /**
+     * Test that a length object can be updated by assignment from another
+     * length object
+     */
+    void TestCopyAssignment();
 
-  /**
-   * Test that a length object can be updated by assignment from another
-   * length object
-   */
-  void TestCopyAssignment ();
+    /**
+     * Test that a length object can be updated by assignment from a moved
+     * length object
+     */
+    void TestMoveAssignment();
 
-  /**
-   * Test that a length object can be updated by assignment from a moved
-   * length object
-   */
-  void TestMoveAssignment ();
+    /**
+     * Test that a length object can be updated by assignment from a quantity
+     */
+    void TestQuantityAssignment();
 
-  /**
-   * Test that a length object can be updated by assignment from a quantity
-   */
-  void TestQuantityAssignment ();
+    /**
+     * Test member comparison operators
+     * @{
+     */
+    void TestIsEqualReturnsTrue();
+    void TestIsEqualReturnsFalse();
+    void TestIsEqualWithToleranceReturnsTrue();
+    void TestIsEqualWithToleranceReturnsFalse();
+    void TestIsNotEqualReturnsTrue();
+    void TestIsNotEqualReturnsFalse();
+    void TestIsNotEqualWithToleranceReturnsTrue();
+    void TestIsNotEqualWithToleranceReturnsFalse();
+    void TestIsLessReturnsTrue();
+    void TestIsLessReturnsFalse();
+    void TestIsLessWithToleranceReturnsFalse();
+    void TestIsGreaterReturnsTrue();
+    void TestIsGreaterReturnsFalse();
+    void TestIsGreaterWithToleranceReturnsFalse();
+    /** @} */
 
-  /**
-   * Test member comparison operators
-   * @{
-   */
-  void TestIsEqualReturnsTrue ();
-  void TestIsEqualReturnsFalse ();
-  void TestIsEqualWithToleranceReturnsTrue ();
-  void TestIsEqualWithToleranceReturnsFalse ();
-  void TestIsNotEqualReturnsTrue ();
-  void TestIsNotEqualReturnsFalse ();
-  void TestIsNotEqualWithToleranceReturnsTrue ();
-  void TestIsNotEqualWithToleranceReturnsFalse ();
-  void TestIsLessReturnsTrue ();
-  void TestIsLessReturnsFalse ();
-  void TestIsLessWithToleranceReturnsFalse ();
-  void TestIsGreaterReturnsTrue ();
-  void TestIsGreaterReturnsFalse ();
-  void TestIsGreaterWithToleranceReturnsFalse ();
-  /** @} */
+    /**
+     * Test writing length object to a stream produces the expected output
+     */
+    void TestOutputStreamOperator();
 
-  /**
-   * Test writing length object to a stream produces the expected output
-   */
-  void TestOutputStreamOperator ();
+    /**
+     * Test reading length object from a stream produces the expected length
+     * value
+     */
+    void TestInputStreamOperator();
 
-  /**
-   * Test reading length object from a stream produces the expected length
-   * value
-   */
-  void TestInputStreamOperator ();
+    /**
+     * Generic function for testing serialization of a Length object in
+     * various units
+     *
+     * \tparam T Type of the length unit that should be output during serialization
+     *
+     * \param l Length object to serialize
+     * \param unit Unit that the length value will be converted to before serialization
+     * \param expectedOutput Expected result of the serialization
+     * \param context Included in the error message if the test fails
+     */
+    template <class T>
+    void TestLengthSerialization(const Length& l,
+                                 const T& unit,
+                                 const std::string& expectedOutput,
+                                 const std::string& context);
 
-  /**
-   * Generic function for testing serialization of a Length object in
-   * various units
-   *
-   * \tparam T Type of the length unit that should be output during serialization
-   *
-   * \param l Length object to serialize
-   * \param unit Unit that the length value will be converted to before serialization
-   * \param expectedOutput Expected result of the serialization
-   * \param context Included in the error message if the test fails
-   */
-  template<class T>
-  void TestLengthSerialization (const Length& l,
-                                const T& unit,
-                                const std::string& expectedOutput,
-                                const std::string& context);
+    /**
+     * Test serializing a length object to all of the supported unit types
+     */
+    void TestSerializeLengthWithUnit();
 
-  /**
-   * Test serializing a length object to all of the supported unit types
-   */
-  void TestSerializeLengthWithUnit ();
+    /**
+     * Test free function comparison operators
+     * @{
+     */
+    void TestOperatorEqualsReturnsTrue();
+    void TestOperatorEqualsReturnsFalse();
+    void TestOperatorNotEqualsReturnsTrue();
+    void TestOperatorNotEqualsReturnsFalse();
+    void TestOperatorLessThanReturnsTrue();
+    void TestOperatorLessThanReturnsFalse();
+    void TestOperatorLessOrEqualReturnsTrue();
+    void TestOperatorLessOrEqualReturnsFalse();
+    void TestOperatorGreaterThanReturnsTrue();
+    void TestOperatorGreaterThanReturnsFalse();
+    void TestOperatorGreaterOrEqualReturnsTrue();
+    void TestOperatorGreaterOrEqualReturnsFalse();
+    /** @} */
 
-  /**
-   * Test free function comparison operators
-   * @{
-   */
-  void TestOperatorEqualsReturnsTrue ();
-  void TestOperatorEqualsReturnsFalse ();
-  void TestOperatorNotEqualsReturnsTrue ();
-  void TestOperatorNotEqualsReturnsFalse ();
-  void TestOperatorLessThanReturnsTrue ();
-  void TestOperatorLessThanReturnsFalse ();
-  void TestOperatorLessOrEqualReturnsTrue ();
-  void TestOperatorLessOrEqualReturnsFalse ();
-  void TestOperatorGreaterThanReturnsTrue ();
-  void TestOperatorGreaterThanReturnsFalse ();
-  void TestOperatorGreaterOrEqualReturnsTrue ();
-  void TestOperatorGreaterOrEqualReturnsFalse ();
-  /** @} */
+    /**
+     * Test arithmetic operations
+     * @{
+     */
+    void TestAddingTwoLengths();
+    void TestAddingLengthAndQuantity();
+    void TestAddingQuantityAndLength();
+    void TestSubtractingTwoLengths();
+    void TestSubtractingLengthAndQuantity();
+    void TestSubtractingQuantityAndLength();
+    void TestMultiplyLengthByScalar();
+    void TestMultiplyScalarByLength();
+    void TestDivideLengthByScalar();
+    void TestDivideLengthByLength();
+    void TestDivideLengthByLengthReturnsNaN();
+    /** @} */
 
-  /**
-   * Test arithmetic operations
-   * @{
-   */
-  void TestAddingTwoLengths ();
-  void TestAddingLengthAndQuantity ();
-  void TestAddingQuantityAndLength ();
-  void TestSubtractingTwoLengths ();
-  void TestSubtractingLengthAndQuantity ();
-  void TestSubtractingQuantityAndLength ();
-  void TestMultiplyLengthByScalar ();
-  void TestMultiplyScalarByLength ();
-  void TestDivideLengthByScalar ();
-  void TestDivideLengthByLength ();
-  void TestDivideLengthByLengthReturnsNaN ();
-  /** @} */
+    /**
+     * Test Div function
+     * @{
+     */
+    void TestDivReturnsCorrectResult();
+    void TestDivReturnsZeroRemainder();
+    void TestDivReturnsCorrectRemainder();
+    /** @} */
 
-  /**
-   * Test Div function
-   * @{
-   */
-  void TestDivReturnsCorrectResult ();
-  void TestDivReturnsZeroRemainder ();
-  void TestDivReturnsCorrectRemainder ();
-  /** @} */
+    /**
+     * Test Mod function
+     * @{
+     */
+    void TestModReturnsZero();
+    void TestModReturnsNonZero();
+    /** @} */
 
-  /**
-   * Test Mod function
-   * @{
-   */
-  void TestModReturnsZero ();
-  void TestModReturnsNonZero ();
-  /** @} */
-
-  void DoRun () override;
+    void DoRun() override;
 };
 
 void
-LengthTestCase::TestDefaultLengthIsZero ()
+LengthTestCase::TestDefaultLengthIsZero()
 {
-  Length l;
+    Length l;
 
-  NS_TEST_ASSERT_MSG_EQ (l.GetDouble (), 0, "Default value of Length is not 0");
+    NS_TEST_ASSERT_MSG_EQ(l.GetDouble(), 0, "Default value of Length is not 0");
 }
 
 void
-LengthTestCase::TestConstructLengthFromQuantity ()
+LengthTestCase::TestConstructLengthFromQuantity()
 {
-  const Length::Quantity VALUE (5.0, Unit::Meter);
+    const Length::Quantity VALUE(5.0, Unit::Meter);
 
-  Length l (VALUE);
+    Length l(VALUE);
 
-  NS_TEST_ASSERT_MSG_EQ (l.GetDouble (), VALUE.Value (),
-                         "length constructed from meters has wrong value");
+    NS_TEST_ASSERT_MSG_EQ(l.GetDouble(),
+                          VALUE.Value(),
+                          "length constructed from meters has wrong value");
 }
 
 void
-LengthTestCase::TestConstructLengthFromSIUnits ()
+LengthTestCase::TestConstructLengthFromSIUnits()
 {
-  using TestEntry = std::tuple<Length, std::string>;
+    using TestEntry = std::tuple<Length, std::string>;
 
-  const double expectedMeters = 1;
-  const std::initializer_list<TestEntry> inputs {
-    std::make_tuple (Length (1e9, Unit::Nanometer), "nanometer"),
-    std::make_tuple (Length (1e6, Unit::Micrometer), "micrometer"),
-    std::make_tuple (Length (1e3, Unit::Millimeter), "millimeter"),
-    std::make_tuple (Length (1e2, Unit::Centimeter), "centimeter"),
-    std::make_tuple (Length (1e-3, Unit::Kilometer), "kilometer"),
-    std::make_tuple (Length ( (1 / 1852.0), Unit::NauticalMile), "nautical_mile")
-  };
+    const double expectedMeters = 1;
+    const std::initializer_list<TestEntry> inputs{
+        std::make_tuple(Length(1e9, Unit::Nanometer), "nanometer"),
+        std::make_tuple(Length(1e6, Unit::Micrometer), "micrometer"),
+        std::make_tuple(Length(1e3, Unit::Millimeter), "millimeter"),
+        std::make_tuple(Length(1e2, Unit::Centimeter), "centimeter"),
+        std::make_tuple(Length(1e-3, Unit::Kilometer), "kilometer"),
+        std::make_tuple(Length((1 / 1852.0), Unit::NauticalMile), "nautical_mile")};
 
-  for (const TestEntry& entry : inputs )
+    for (const TestEntry& entry : inputs)
     {
-      const Length& l = std::get<0> (entry);
-      const std::string& context = std::get<1> (entry);
+        const Length& l = std::get<0>(entry);
+        const std::string& context = std::get<1>(entry);
 
-      NS_TEST_ASSERT_MSG_EQ (l.GetDouble (), expectedMeters,
-                             context << ": constructed length from SI unit has wrong value");
+        NS_TEST_ASSERT_MSG_EQ(l.GetDouble(),
+                              expectedMeters,
+                              context << ": constructed length from SI unit has wrong value");
     }
 }
 
 void
-LengthTestCase::TestConstructLengthFromUSUnits ()
+LengthTestCase::TestConstructLengthFromUSUnits()
 {
-  using TestEntry = std::tuple<Length, std::string>;
+    using TestEntry = std::tuple<Length, std::string>;
 
-  const double expectedMeters = 0.3048;
-  const double tolerance = 0.0001;
+    const double expectedMeters = 0.3048;
+    const double tolerance = 0.0001;
 
-  const std::initializer_list<TestEntry> inputs {
-    std::make_tuple (Length (12.0, Unit::Inch), "inch"),
-    std::make_tuple (Length (1.0, Unit::Foot), "foot"),
-    std::make_tuple (Length ((1 / 3.0), Unit::Yard), "yard"),
-    std::make_tuple (Length ((1 / 5280.0), Unit::Mile), "mile"),
-  };
+    const std::initializer_list<TestEntry> inputs{
+        std::make_tuple(Length(12.0, Unit::Inch), "inch"),
+        std::make_tuple(Length(1.0, Unit::Foot), "foot"),
+        std::make_tuple(Length((1 / 3.0), Unit::Yard), "yard"),
+        std::make_tuple(Length((1 / 5280.0), Unit::Mile), "mile"),
+    };
 
-  for (const TestEntry& entry : inputs )
+    for (const TestEntry& entry : inputs)
     {
-      const Length& l = std::get<0> (entry);
-      const std::string& context = std::get<1> (entry);
+        const Length& l = std::get<0>(entry);
+        const std::string& context = std::get<1>(entry);
 
-      NS_TEST_ASSERT_MSG_EQ_TOL (l.GetDouble (), expectedMeters, tolerance,
-                                 "constructed length from US unit (" << context << ") has wrong value");
+        NS_TEST_ASSERT_MSG_EQ_TOL(l.GetDouble(),
+                                  expectedMeters,
+                                  tolerance,
+                                  "constructed length from US unit (" << context
+                                                                      << ") has wrong value");
     }
 }
 
 void
-LengthTestCase::TestLengthCopyConstructor ()
+LengthTestCase::TestLengthCopyConstructor()
 {
-  const double value = 5;
-  Length original (value, Unit::Meter);
+    const double value = 5;
+    Length original(value, Unit::Meter);
 
-  Length copy (original);
+    Length copy(original);
 
-  NS_TEST_ASSERT_MSG_EQ (copy.GetDouble (), original.GetDouble (),
-                         "copy constructed length has wrong value");
+    NS_TEST_ASSERT_MSG_EQ(copy.GetDouble(),
+                          original.GetDouble(),
+                          "copy constructed length has wrong value");
 }
 
 void
-LengthTestCase::TestLengthMoveConstructor ()
+LengthTestCase::TestLengthMoveConstructor()
 {
-  const double value = 5;
-  Length original (value, Unit::Meter);
+    const double value = 5;
+    Length original(value, Unit::Meter);
 
-  Length copy (std::move (original));
+    Length copy(std::move(original));
 
-  NS_TEST_ASSERT_MSG_EQ (copy.GetDouble (), value,
-                         "move constructed length has wrong value");
+    NS_TEST_ASSERT_MSG_EQ(copy.GetDouble(), value, "move constructed length has wrong value");
 }
 
 void
-LengthTestCase::TestConstructLengthFromString (double unitValue,
-                                               double meterValue,
-                                               double tolerance,
-                                               const std::initializer_list<std::string>& symbols)
+LengthTestCase::TestConstructLengthFromString(double unitValue,
+                                              double meterValue,
+                                              double tolerance,
+                                              const std::initializer_list<std::string>& symbols)
 {
-  const std::array<std::string, 2> SEPARATORS {{"", " "}};
+    const std::array<std::string, 2> SEPARATORS{{"", " "}};
 
-  for (const std::string& symbol : symbols)
+    for (const std::string& symbol : symbols)
     {
-      for ( const std::string& separator : SEPARATORS )
+        for (const std::string& separator : SEPARATORS)
         {
-          std::ostringstream stream;
+            std::ostringstream stream;
 
-          stream << unitValue << separator << symbol;
+            stream << unitValue << separator << symbol;
 
-          Length l (stream.str ());
+            Length l(stream.str());
 
-          std::ostringstream msg;
-          msg << "string constructed length has wrong value: '" << stream.str () << "'";
+            std::ostringstream msg;
+            msg << "string constructed length has wrong value: '" << stream.str() << "'";
 
-          NS_TEST_ASSERT_MSG_EQ_TOL (l.GetDouble (), meterValue, tolerance, msg.str ());
+            NS_TEST_ASSERT_MSG_EQ_TOL(l.GetDouble(), meterValue, tolerance, msg.str());
         }
     }
 }
 
 void
-LengthTestCase::TestConstructLengthFromMeterString ()
+LengthTestCase::TestConstructLengthFromMeterString()
 {
-  const double value = 5;
+    const double value = 5;
 
-  TestConstructLengthFromString (value, value, 0,
-                                 {"m", "meter", "meters", "metre", "metres"});
+    TestConstructLengthFromString(value, value, 0, {"m", "meter", "meters", "metre", "metres"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromNanoMeterString ()
+LengthTestCase::TestConstructLengthFromNanoMeterString()
 {
-  const double value = 5;
-  const double expectedValue = 5e-9;
+    const double value = 5;
+    const double expectedValue = 5e-9;
 
-  TestConstructLengthFromString (value, expectedValue, 0,
-                                 {"nm", "nanometer", "nanometers",
-                                  "nanometre", "nanometres"});
+    TestConstructLengthFromString(value,
+                                  expectedValue,
+                                  0,
+                                  {"nm", "nanometer", "nanometers", "nanometre", "nanometres"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromMicroMeterString ()
+LengthTestCase::TestConstructLengthFromMicroMeterString()
 {
-  const double value = 5;
-  const double expectedValue = 5e-6;
-  const double tolerance = 1e-7;
+    const double value = 5;
+    const double expectedValue = 5e-6;
+    const double tolerance = 1e-7;
 
-  TestConstructLengthFromString (value, expectedValue, tolerance,
-                                 {"um", "micrometer", "micrometers",
-                                  "micrometre", "micrometres"});
+    TestConstructLengthFromString(value,
+                                  expectedValue,
+                                  tolerance,
+                                  {"um", "micrometer", "micrometers", "micrometre", "micrometres"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromMilliMeterString ()
+LengthTestCase::TestConstructLengthFromMilliMeterString()
 {
-  const double value = 5;
-  const double expectedValue = 5e-3;
-  const double tolerance = 1e-4;
+    const double value = 5;
+    const double expectedValue = 5e-3;
+    const double tolerance = 1e-4;
 
-  TestConstructLengthFromString (value, expectedValue, tolerance,
-                                 {"mm", "millimeter", "millimeters",
-                                  "millimetre", "millimetres"});
+    TestConstructLengthFromString(value,
+                                  expectedValue,
+                                  tolerance,
+                                  {"mm", "millimeter", "millimeters", "millimetre", "millimetres"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromCentiMeterString ()
+LengthTestCase::TestConstructLengthFromCentiMeterString()
 {
-  const double value = 5;
-  const double expectedValue = 5e-2;
-  const double tolerance = 1e-3;
+    const double value = 5;
+    const double expectedValue = 5e-2;
+    const double tolerance = 1e-3;
 
-  TestConstructLengthFromString (value, expectedValue, tolerance,
-                                 {"cm", "centimeter", "centimeters",
-                                  "centimetre", "centimetres"});
+    TestConstructLengthFromString(value,
+                                  expectedValue,
+                                  tolerance,
+                                  {"cm", "centimeter", "centimeters", "centimetre", "centimetres"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromKiloMeterString ()
+LengthTestCase::TestConstructLengthFromKiloMeterString()
 {
-  const double value = 5;
-  const double expectedValue = 5e3;
+    const double value = 5;
+    const double expectedValue = 5e3;
 
-  TestConstructLengthFromString (value, expectedValue, 0,
-                                 {"km", "kilometer", "kilometers",
-                                  "kilometre", "kilometres"});
+    TestConstructLengthFromString(value,
+                                  expectedValue,
+                                  0,
+                                  {"km", "kilometer", "kilometers", "kilometre", "kilometres"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromNauticalMileString ()
+LengthTestCase::TestConstructLengthFromNauticalMileString()
 {
-  const double value = 5;
-  const double expectedValue = 9260;
+    const double value = 5;
+    const double expectedValue = 9260;
 
-  TestConstructLengthFromString (value, expectedValue, 0,
-                                 {"nmi", "nautical mile", "nautical miles"});
-}
-void
-LengthTestCase::TestConstructLengthFromInchString ()
-{
-  const double value = 5;
-  const double expectedValue = 0.127;
-  const double tolerance = 1e-4;
-
-  TestConstructLengthFromString (value, expectedValue, tolerance,
-                                 {"in", "inch", "inches"});
+    TestConstructLengthFromString(value,
+                                  expectedValue,
+                                  0,
+                                  {"nmi", "nautical mile", "nautical miles"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromFootString ()
+LengthTestCase::TestConstructLengthFromInchString()
 {
-  const double value = 5;
-  const double expectedValue = 1.524;
-  const double tolerance = 1e-4;
+    const double value = 5;
+    const double expectedValue = 0.127;
+    const double tolerance = 1e-4;
 
-  TestConstructLengthFromString (value, expectedValue, tolerance,
-                                 {"ft", "foot", "feet"});
+    TestConstructLengthFromString(value, expectedValue, tolerance, {"in", "inch", "inches"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromYardString ()
+LengthTestCase::TestConstructLengthFromFootString()
 {
-  const double value = 5;
-  const double expectedValue = 4.572;
-  const double tolerance = 1e-4;
+    const double value = 5;
+    const double expectedValue = 1.524;
+    const double tolerance = 1e-4;
 
-  TestConstructLengthFromString (value, expectedValue, tolerance,
-                                 {"yd", "yard", "yards"});
+    TestConstructLengthFromString(value, expectedValue, tolerance, {"ft", "foot", "feet"});
 }
 
 void
-LengthTestCase::TestConstructLengthFromMileString ()
+LengthTestCase::TestConstructLengthFromYardString()
 {
-  const double value = 5;
-  const double expectedValue = 8046.72;
-  const double tolerance = 1e-3;
+    const double value = 5;
+    const double expectedValue = 4.572;
+    const double tolerance = 1e-4;
 
-  TestConstructLengthFromString (value, expectedValue, tolerance,
-                                 {"mi", "mile", "miles"});
+    TestConstructLengthFromString(value, expectedValue, tolerance, {"yd", "yard", "yards"});
+}
+
+void
+LengthTestCase::TestConstructLengthFromMileString()
+{
+    const double value = 5;
+    const double expectedValue = 8046.72;
+    const double tolerance = 1e-3;
+
+    TestConstructLengthFromString(value, expectedValue, tolerance, {"mi", "mile", "miles"});
 }
 
 #ifdef HAVE_BOOST_UNITS
 void
-LengthTestCase::TestConstructLengthFromBoostUnits ()
+LengthTestCase::TestConstructLengthFromBoostUnits()
 {
-  TestConstructLengthFromBoostUnitsMeters ();
-  TestConstructLengthFromBoostUnitsKiloMeters ();
-  TestConstructLengthFromBoostUnitsFeet ();
+    TestConstructLengthFromBoostUnitsMeters();
+    TestConstructLengthFromBoostUnitsKiloMeters();
+    TestConstructLengthFromBoostUnitsFeet();
 }
 
 void
-LengthTestCase::TestConstructLengthFromBoostUnitsMeters ()
+LengthTestCase::TestConstructLengthFromBoostUnitsMeters()
 {
-  namespace bu = boost::units;
+    namespace bu = boost::units;
 
-  auto meters = 5 * bu::si::meter;
+    auto meters = 5 * bu::si::meter;
 
-  Length l (meters);
+    Length l(meters);
 
-  NS_TEST_ASSERT_MSG_EQ (l.GetDouble (), meters.value (),
-                         "Construction from boost::units meters produced "
-                         "incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(l.GetDouble(),
+                          meters.value(),
+                          "Construction from boost::units meters produced "
+                          "incorrect value");
 }
 
 void
-LengthTestCase::TestConstructLengthFromBoostUnitsKiloMeters ()
+LengthTestCase::TestConstructLengthFromBoostUnitsKiloMeters()
 {
-  namespace bu = boost::units;
-  auto kilometer = bu::si::kilo * bu::si::meter;
+    namespace bu = boost::units;
+    auto kilometer = bu::si::kilo * bu::si::meter;
 
-  const double expectedValue = 5000;
-  auto quantity = 5 * kilometer;
+    const double expectedValue = 5000;
+    auto quantity = 5 * kilometer;
 
-  Length l (quantity);
+    Length l(quantity);
 
-  NS_TEST_ASSERT_MSG_EQ (l.GetDouble (), expectedValue,
-                         "Construction from boost::units kilometers produced "
-                         "incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(l.GetDouble(),
+                          expectedValue,
+                          "Construction from boost::units kilometers produced "
+                          "incorrect value");
 }
 
 void
-LengthTestCase::TestConstructLengthFromBoostUnitsFeet ()
+LengthTestCase::TestConstructLengthFromBoostUnitsFeet()
 {
-  namespace bu = boost::units;
+    namespace bu = boost::units;
 
-  bu::us::foot_base_unit::unit_type Foot;
+    bu::us::foot_base_unit::unit_type Foot;
 
-  const double expectedValue = 3.048;
-  auto feet = 10 * Foot;
+    const double expectedValue = 3.048;
+    auto feet = 10 * Foot;
 
-  Length l (feet);
+    Length l(feet);
 
-  NS_TEST_ASSERT_MSG_EQ_TOL (l.GetDouble (), expectedValue, 0.001,
-                             "Construction from boost::units foot produced "
-                             "incorrect value");
+    NS_TEST_ASSERT_MSG_EQ_TOL(l.GetDouble(),
+                              expectedValue,
+                              0.001,
+                              "Construction from boost::units foot produced "
+                              "incorrect value");
 }
 #endif
 
 void
-LengthTestCase::TestBuilderFreeFunctions ()
+LengthTestCase::TestBuilderFreeFunctions()
 {
-  using Builder = std::function<Length (double)>;
+    using Builder = std::function<Length(double)>;
 
-  double inputValue = 10;
+    double inputValue = 10;
 
-  std::map<Unit, Builder> TESTDATA{
-    {Unit::Nanometer, NanoMeters},
-    {Unit::Micrometer, MicroMeters},
-    {Unit::Millimeter, MilliMeters},
-    {Unit::Centimeter, CentiMeters},
-    {Unit::Meter, Meters},
-    {Unit::Kilometer, KiloMeters},
-    {Unit::NauticalMile, NauticalMiles},
-    {Unit::Inch, Inches},
-    {Unit::Foot, Feet},
-    {Unit::Yard, Yards},
-    {Unit::Mile, Miles}
-  };
+    std::map<Unit, Builder> TESTDATA{{Unit::Nanometer, NanoMeters},
+                                     {Unit::Micrometer, MicroMeters},
+                                     {Unit::Millimeter, MilliMeters},
+                                     {Unit::Centimeter, CentiMeters},
+                                     {Unit::Meter, Meters},
+                                     {Unit::Kilometer, KiloMeters},
+                                     {Unit::NauticalMile, NauticalMiles},
+                                     {Unit::Inch, Inches},
+                                     {Unit::Foot, Feet},
+                                     {Unit::Yard, Yards},
+                                     {Unit::Mile, Miles}};
 
-  for (auto& entry : TESTDATA)
+    for (auto& entry : TESTDATA)
     {
-      Length expected (inputValue, entry.first);
+        Length expected(inputValue, entry.first);
 
-      Length output = entry.second (inputValue);
+        Length output = entry.second(inputValue);
 
-      NS_TEST_ASSERT_MSG_EQ (output, expected,
-                             "The builder free function for " << entry.first <<
-                             " did not create a Length with the correct value");
+        NS_TEST_ASSERT_MSG_EQ(output,
+                              expected,
+                              "The builder free function for "
+                                  << entry.first
+                                  << " did not create a Length with the correct value");
     }
 }
 
 void
-LengthTestCase::TestTryParseReturnsFalse ()
+LengthTestCase::TestTryParseReturnsFalse()
 {
-  auto l = Length::TryParse (1, "");
+    auto l = Length::TryParse(1, "");
 
-  AssertFalse (l.has_value (), "TryParse returned true on bad input");
+    AssertFalse(l.has_value(), "TryParse returned true on bad input");
 }
 
 void
-LengthTestCase::TestTryParseReturnsTrue ()
+LengthTestCase::TestTryParseReturnsTrue()
 {
-  using TestInput = std::pair<double, std::string>;
-  using TestArgs = std::pair<double, double>;
-  std::map<TestInput, TestArgs> tests{
-    {{5, "m"}, {5, 0}},
-    {{5, " m"}, {5, 0}},
-    {{5, "kilometer"}, {5e3, 0}},
-    {{5, " kilometer"}, {5e3, 0}}
-  };
+    using TestInput = std::pair<double, std::string>;
+    using TestArgs = std::pair<double, double>;
+    std::map<TestInput, TestArgs> tests{{{5, "m"}, {5, 0}},
+                                        {{5, " m"}, {5, 0}},
+                                        {{5, "kilometer"}, {5e3, 0}},
+                                        {{5, " kilometer"}, {5e3, 0}}};
 
-  for (auto& entry : tests)
+    for (auto& entry : tests)
     {
-      TestInput input = entry.first;
-      TestArgs args = entry.second;
+        TestInput input = entry.first;
+        TestArgs args = entry.second;
 
-      auto l = Length::TryParse (input.first, input.second);
+        auto l = Length::TryParse(input.first, input.second);
 
-      AssertTrue (l.has_value (), "TryParse returned false when expecting true");
+        AssertTrue(l.has_value(), "TryParse returned false when expecting true");
 
-      std::stringstream stream;
-      stream << "Parsing input (" << input.first << ", " << input.second
-             << ") returned the wrong value";
+        std::stringstream stream;
+        stream << "Parsing input (" << input.first << ", " << input.second
+               << ") returned the wrong value";
 
-      NS_TEST_ASSERT_MSG_EQ_TOL (l->GetDouble (), args.first, args.second, stream.str ());
+        NS_TEST_ASSERT_MSG_EQ_TOL(l->GetDouble(), args.first, args.second, stream.str());
     }
-
 }
 
 void
-LengthTestCase::TestCopyAssignment ()
+LengthTestCase::TestCopyAssignment()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length original (value, Unit::Meter);
+    Length original(value, Unit::Meter);
 
-  Length copy;
-  copy = original;
+    Length copy;
+    copy = original;
 
-  NS_TEST_ASSERT_MSG_EQ (copy.GetDouble (), original.GetDouble (),
-                         "copy assignment failed");
+    NS_TEST_ASSERT_MSG_EQ(copy.GetDouble(), original.GetDouble(), "copy assignment failed");
 }
 
 void
-LengthTestCase::TestMoveAssignment ()
+LengthTestCase::TestMoveAssignment()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length original (value, Unit::Meter);
+    Length original(value, Unit::Meter);
 
-  Length copy;
-  copy = std::move (original);
+    Length copy;
+    copy = std::move(original);
 
-  NS_TEST_ASSERT_MSG_EQ (copy.GetDouble (), value,
-                         "move assignment failed");
+    NS_TEST_ASSERT_MSG_EQ(copy.GetDouble(), value, "move assignment failed");
 }
 
 void
-LengthTestCase::TestQuantityAssignment ()
+LengthTestCase::TestQuantityAssignment()
 {
-  Length::Quantity input (5, Unit::Kilometer);
+    Length::Quantity input(5, Unit::Kilometer);
 
-  Length l;
-  Length expected (input);
+    Length l;
+    Length expected(input);
 
-  l = input;
+    l = input;
 
-  NS_TEST_ASSERT_MSG_EQ (l, expected,
-                         "quantity assignment failed");
+    NS_TEST_ASSERT_MSG_EQ(l, expected, "quantity assignment failed");
 }
 
 void
-LengthTestCase::TestIsEqualReturnsTrue ()
+LengthTestCase::TestIsEqualReturnsTrue()
 {
-  const double value = 5;
-  Length one (value, Unit::Meter);
-  Length two (one);
+    const double value = 5;
+    Length one(value, Unit::Meter);
+    Length two(one);
 
-  AssertTrue (one.IsEqual (two), "IsEqual returned false for equal lengths");
+    AssertTrue(one.IsEqual(two), "IsEqual returned false for equal lengths");
 }
 
 void
-LengthTestCase::TestIsEqualReturnsFalse ()
+LengthTestCase::TestIsEqualReturnsFalse()
 {
-  const double value = 5;
-  Length one (value, Unit::Meter);
-  Length two ( value, Unit::Foot );
+    const double value = 5;
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Foot);
 
-  AssertFalse (one.IsEqual (two), "IsEqual returned true for unequal lengths");
+    AssertFalse(one.IsEqual(two), "IsEqual returned true for unequal lengths");
 }
 
 void
-LengthTestCase::TestIsEqualWithToleranceReturnsTrue ()
+LengthTestCase::TestIsEqualWithToleranceReturnsTrue()
 {
-  const double value = 5;
-  const double tolerance = 0.1;
+    const double value = 5;
+    const double tolerance = 0.1;
 
-  Length one (value, Unit::Meter);
-  Length two ( (value + 0.1), Unit::Meter);
+    Length one(value, Unit::Meter);
+    Length two((value + 0.1), Unit::Meter);
 
-  AssertTrue (one.IsEqual (two, tolerance),
-              "IsEqual returned false for almost equal lengths");
+    AssertTrue(one.IsEqual(two, tolerance), "IsEqual returned false for almost equal lengths");
 }
 
 void
-LengthTestCase::TestIsEqualWithToleranceReturnsFalse ()
+LengthTestCase::TestIsEqualWithToleranceReturnsFalse()
 {
-  const double value = 5;
-  const double tolerance = 0.01;
+    const double value = 5;
+    const double tolerance = 0.01;
 
-  Length one (value, Unit::Meter);
-  Length two ( (value + 0.1), Unit::Meter);
+    Length one(value, Unit::Meter);
+    Length two((value + 0.1), Unit::Meter);
 
-  AssertFalse (one.IsEqual (two, tolerance),
-               "IsEqual returned true for almost equal lengths");
+    AssertFalse(one.IsEqual(two, tolerance), "IsEqual returned true for almost equal lengths");
 }
 
 void
-LengthTestCase::TestIsNotEqualReturnsTrue ()
+LengthTestCase::TestIsNotEqualReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one (value, Unit::Meter);
-  Length two ( (value + 0.1), Unit::Meter);
+    Length one(value, Unit::Meter);
+    Length two((value + 0.1), Unit::Meter);
 
-  AssertTrue (one.IsNotEqual (two),
-              "IsNotEqual returned false for not equal lengths");
+    AssertTrue(one.IsNotEqual(two), "IsNotEqual returned false for not equal lengths");
 }
 
 void
-LengthTestCase::TestIsNotEqualReturnsFalse ()
+LengthTestCase::TestIsNotEqualReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one (value, Unit::Meter);
-  Length two ( one );
+    Length one(value, Unit::Meter);
+    Length two(one);
 
-  AssertFalse (one.IsNotEqual (two),
-               "IsNotEqual returned true for equal lengths");
+    AssertFalse(one.IsNotEqual(two), "IsNotEqual returned true for equal lengths");
 }
 
 void
-LengthTestCase::TestIsNotEqualWithToleranceReturnsTrue ()
+LengthTestCase::TestIsNotEqualWithToleranceReturnsTrue()
 {
-  const double tolerance = 0.001;
+    const double tolerance = 0.001;
 
-  Length one ( 5.01, Unit::Meter);
-  Length two ( 5.02, Unit::Meter);
+    Length one(5.01, Unit::Meter);
+    Length two(5.02, Unit::Meter);
 
-  AssertTrue (one.IsNotEqual (two, tolerance),
-              "IsNotEqual with tolerance returned false for not equal lengths");
+    AssertTrue(one.IsNotEqual(two, tolerance),
+               "IsNotEqual with tolerance returned false for not equal lengths");
 }
 
 void
-LengthTestCase::TestIsNotEqualWithToleranceReturnsFalse ()
+LengthTestCase::TestIsNotEqualWithToleranceReturnsFalse()
 {
-  const double tolerance = 0.01;
+    const double tolerance = 0.01;
 
-  Length one ( 5.01, Unit::Meter);
-  Length two ( 5.02, Unit::Meter);
+    Length one(5.01, Unit::Meter);
+    Length two(5.02, Unit::Meter);
 
-  AssertFalse (one.IsNotEqual (two, tolerance),
-               "IsNotEqual with tolerance returned true for not equal lengths");
+    AssertFalse(one.IsNotEqual(two, tolerance),
+                "IsNotEqual with tolerance returned true for not equal lengths");
 }
 
 void
-LengthTestCase::TestIsLessReturnsTrue ()
+LengthTestCase::TestIsLessReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one (value, Unit::Meter);
-  Length two ( (value + 0.1), Unit::Meter);
+    Length one(value, Unit::Meter);
+    Length two((value + 0.1), Unit::Meter);
 
-  AssertTrue (one.IsLess (two),
-              "IsLess returned false for non equal lengths");
+    AssertTrue(one.IsLess(two), "IsLess returned false for non equal lengths");
 }
 
 void
-LengthTestCase::TestIsLessReturnsFalse ()
+LengthTestCase::TestIsLessReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one (value, Unit::Meter);
-  Length two ( one );
+    Length one(value, Unit::Meter);
+    Length two(one);
 
-  AssertFalse (one.IsLess (two),
-               "IsLess returned true for equal lengths");
+    AssertFalse(one.IsLess(two), "IsLess returned true for equal lengths");
 }
 
 void
-LengthTestCase::TestIsLessWithToleranceReturnsFalse ()
+LengthTestCase::TestIsLessWithToleranceReturnsFalse()
 {
-  const double tolerance = 0.01;
+    const double tolerance = 0.01;
 
-  Length one ( 5.1234, Unit::Meter );
-  Length two ( 5.1278, Unit::Meter );
+    Length one(5.1234, Unit::Meter);
+    Length two(5.1278, Unit::Meter);
 
-  AssertFalse (one.IsLess (two, tolerance),
-               "IsLess with tolerance returned true");
+    AssertFalse(one.IsLess(two, tolerance), "IsLess with tolerance returned true");
 }
 
 void
-LengthTestCase::TestIsGreaterReturnsTrue ()
+LengthTestCase::TestIsGreaterReturnsTrue()
 {
-  Length one (2.0, Unit::Meter);
-  Length two (1.0, Unit::Meter);
+    Length one(2.0, Unit::Meter);
+    Length two(1.0, Unit::Meter);
 
-  AssertTrue (one.IsGreater (two),
-              "IsGreater returned false");
+    AssertTrue(one.IsGreater(two), "IsGreater returned false");
 }
 
 void
-LengthTestCase::TestIsGreaterReturnsFalse ()
+LengthTestCase::TestIsGreaterReturnsFalse()
 {
-  Length one (2.0, Unit::Meter);
-  Length two (1.0, Unit::Meter);
+    Length one(2.0, Unit::Meter);
+    Length two(1.0, Unit::Meter);
 
-  AssertFalse (two.IsGreater (one),
-               "IsGreater returned true");
+    AssertFalse(two.IsGreater(one), "IsGreater returned true");
 }
 
 void
-LengthTestCase::TestIsGreaterWithToleranceReturnsFalse ()
+LengthTestCase::TestIsGreaterWithToleranceReturnsFalse()
 {
-  const double tolerance = 0.01;
+    const double tolerance = 0.01;
 
-  Length one (5.1234, Unit::Meter);
-  Length two (5.1278, Unit::Meter);
+    Length one(5.1234, Unit::Meter);
+    Length two(5.1278, Unit::Meter);
 
-  AssertFalse (two.IsGreater (one, tolerance),
-               "IsGreater returned true");
+    AssertFalse(two.IsGreater(one, tolerance), "IsGreater returned true");
 }
 
 void
-LengthTestCase::TestOutputStreamOperator ()
+LengthTestCase::TestOutputStreamOperator()
 {
-  Length l (1.0, Unit::Meter);
+    Length l(1.0, Unit::Meter);
 
-  std::stringstream stream;
+    std::stringstream stream;
 
-  stream << l;
+    stream << l;
 
-  NS_TEST_ASSERT_MSG_EQ (stream.str (), "1 m",
-                         "unexpected output from operator<<");
+    NS_TEST_ASSERT_MSG_EQ(stream.str(), "1 m", "unexpected output from operator<<");
 }
 
 void
-LengthTestCase::TestInputStreamOperator ()
+LengthTestCase::TestInputStreamOperator()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length l;
+    Length l;
 
-  std::stringstream stream;
+    std::stringstream stream;
 
-  stream << value << "m";
+    stream << value << "m";
 
-  stream >> l;
+    stream >> l;
 
-  NS_TEST_ASSERT_MSG_EQ (l.GetDouble (), value,
-                         "unexpected length from operator>>");
+    NS_TEST_ASSERT_MSG_EQ(l.GetDouble(), value, "unexpected length from operator>>");
 }
 
-template<class T>
+template <class T>
 void
-LengthTestCase::TestLengthSerialization (const Length& l,
-                                         const T& unit,
-                                         const std::string& expectedOutput,
-                                         const std::string& context)
+LengthTestCase::TestLengthSerialization(const Length& l,
+                                        const T& unit,
+                                        const std::string& expectedOutput,
+                                        const std::string& context)
 {
-  const std::string msg = context + ": unexpected output when serializing length";
+    const std::string msg = context + ": unexpected output when serializing length";
 
-  std::ostringstream stream;
+    std::ostringstream stream;
 
-  stream << std::fixed
-         << std::setprecision (5)
-         << l.As (unit);
+    stream << std::fixed << std::setprecision(5) << l.As(unit);
 
-  NS_TEST_ASSERT_MSG_EQ (stream.str (), expectedOutput, msg);
+    NS_TEST_ASSERT_MSG_EQ(stream.str(), expectedOutput, msg);
 }
 
 void
-LengthTestCase::TestSerializeLengthWithUnit ()
+LengthTestCase::TestSerializeLengthWithUnit()
 {
-  Length l (1.0, Unit::Meter);
+    Length l(1.0, Unit::Meter);
 
-  TestLengthSerialization (l, Unit::Nanometer, "1000000000.00000 nm", "nanometers");
-  TestLengthSerialization (l, Unit::Micrometer, "1000000.00000 um", "micrometers");
-  TestLengthSerialization (l, Unit::Millimeter, "1000.00000 mm", "millimeters");
-  TestLengthSerialization (l, Unit::Centimeter, "100.00000 cm", "centimeters");
-  TestLengthSerialization (l, Unit::Meter, "1.00000 m", "meters");
-  TestLengthSerialization (l, Unit::Kilometer, "0.00100 km", "kilometers");
-  TestLengthSerialization (l, Unit::NauticalMile, "0.00054 nmi", "nautical_mile");
-  TestLengthSerialization (l, Unit::Inch, "39.37008 in", "inches");
-  TestLengthSerialization (l, Unit::Foot, "3.28084 ft", "feet");
-  TestLengthSerialization (l, Unit::Yard, "1.09361 yd", "yards");
-  TestLengthSerialization (l, Unit::Mile, "0.00062 mi", "miles");
+    TestLengthSerialization(l, Unit::Nanometer, "1000000000.00000 nm", "nanometers");
+    TestLengthSerialization(l, Unit::Micrometer, "1000000.00000 um", "micrometers");
+    TestLengthSerialization(l, Unit::Millimeter, "1000.00000 mm", "millimeters");
+    TestLengthSerialization(l, Unit::Centimeter, "100.00000 cm", "centimeters");
+    TestLengthSerialization(l, Unit::Meter, "1.00000 m", "meters");
+    TestLengthSerialization(l, Unit::Kilometer, "0.00100 km", "kilometers");
+    TestLengthSerialization(l, Unit::NauticalMile, "0.00054 nmi", "nautical_mile");
+    TestLengthSerialization(l, Unit::Inch, "39.37008 in", "inches");
+    TestLengthSerialization(l, Unit::Foot, "3.28084 ft", "feet");
+    TestLengthSerialization(l, Unit::Yard, "1.09361 yd", "yards");
+    TestLengthSerialization(l, Unit::Mile, "0.00062 mi", "miles");
 }
 
 void
-LengthTestCase::TestOperatorEqualsReturnsTrue ()
+LengthTestCase::TestOperatorEqualsReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Meter);
 
-  AssertTrue ( one == two,
-               "operator== returned false for equal lengths");
+    AssertTrue(one == two, "operator== returned false for equal lengths");
 }
 
 void
-LengthTestCase::TestOperatorEqualsReturnsFalse ()
+LengthTestCase::TestOperatorEqualsReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer );
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertFalse ( one == two,
-                "operator== returned true for non equal lengths");
+    AssertFalse(one == two, "operator== returned true for non equal lengths");
 }
 
 void
-LengthTestCase::TestOperatorNotEqualsReturnsTrue ()
+LengthTestCase::TestOperatorNotEqualsReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertTrue ( one != two,
-               "operator!= returned false for non equal lengths");
-
+    AssertTrue(one != two, "operator!= returned false for non equal lengths");
 }
 
 void
-LengthTestCase::TestOperatorNotEqualsReturnsFalse ()
+LengthTestCase::TestOperatorNotEqualsReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Meter);
 
-  AssertFalse ( one != two,
-                "operator!= returned true for equal lengths");
-
+    AssertFalse(one != two, "operator!= returned true for equal lengths");
 }
 
 void
-LengthTestCase::TestOperatorLessThanReturnsTrue ()
+LengthTestCase::TestOperatorLessThanReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertTrue ( one < two,
-               "operator< returned false for smaller length");
+    AssertTrue(one < two, "operator< returned false for smaller length");
 }
 
 void
-LengthTestCase::TestOperatorLessThanReturnsFalse ()
+LengthTestCase::TestOperatorLessThanReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertFalse ( two < one,
-                "operator< returned true for larger length");
+    AssertFalse(two < one, "operator< returned true for larger length");
 }
 
 void
-LengthTestCase::TestOperatorLessOrEqualReturnsTrue ()
+LengthTestCase::TestOperatorLessOrEqualReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
-  Length three ( one );
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
+    Length three(one);
 
-  AssertTrue ( one <= two,
-               "operator<= returned false for smaller length");
+    AssertTrue(one <= two, "operator<= returned false for smaller length");
 
-  AssertTrue ( one <= three,
-               "operator<= returned false for equal lengths");
+    AssertTrue(one <= three, "operator<= returned false for equal lengths");
 }
 
 void
-LengthTestCase::TestOperatorLessOrEqualReturnsFalse ()
+LengthTestCase::TestOperatorLessOrEqualReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertFalse ( two <= one,
-                "operator<= returned true for larger length");
+    AssertFalse(two <= one, "operator<= returned true for larger length");
 }
 
 void
-LengthTestCase::TestOperatorGreaterThanReturnsTrue ()
+LengthTestCase::TestOperatorGreaterThanReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertTrue ( two > one,
-               "operator> returned false for larger length");
+    AssertTrue(two > one, "operator> returned false for larger length");
 }
 
 void
-LengthTestCase::TestOperatorGreaterThanReturnsFalse ()
+LengthTestCase::TestOperatorGreaterThanReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertFalse ( one > two,
-                "operator> returned true for smaller length");
+    AssertFalse(one > two, "operator> returned true for smaller length");
 }
 
 void
-LengthTestCase::TestOperatorGreaterOrEqualReturnsTrue ()
+LengthTestCase::TestOperatorGreaterOrEqualReturnsTrue()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
-  Length three ( one );
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
+    Length three(one);
 
-  AssertTrue ( two >= one,
-               "operator>= returned false for larger length");
+    AssertTrue(two >= one, "operator>= returned false for larger length");
 
-  AssertTrue ( one >= three,
-               "operator>= returned false for equal lengths");
+    AssertTrue(one >= three, "operator>= returned false for equal lengths");
 }
 
 void
-LengthTestCase::TestOperatorGreaterOrEqualReturnsFalse ()
+LengthTestCase::TestOperatorGreaterOrEqualReturnsFalse()
 {
-  const double value = 5;
+    const double value = 5;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Kilometer);
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Kilometer);
 
-  AssertFalse ( one >= two,
-                "operator>= returned true for smaller length");
+    AssertFalse(one >= two, "operator>= returned true for smaller length");
 }
 
 void
-LengthTestCase::TestAddingTwoLengths ()
+LengthTestCase::TestAddingTwoLengths()
 {
-  const double value = 1;
-  const double expectedOutput = 2;
+    const double value = 1;
+    const double expectedOutput = 2;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Meter);
 
-  Length result = one + two;
+    Length result = one + two;
 
-  NS_TEST_ASSERT_MSG_EQ ( one.GetDouble (), value,
-                          "operator+ modified first operand");
-  NS_TEST_ASSERT_MSG_EQ ( two.GetDouble (), value,
-                          "operator+ modified second operand");
-  NS_TEST_ASSERT_MSG_EQ ( result.GetDouble (), expectedOutput,
-                          "operator+ returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator+ modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(two.GetDouble(), value, "operator+ modified second operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator+ returned incorrect value");
 }
 
 void
-LengthTestCase::TestAddingLengthAndQuantity ()
+LengthTestCase::TestAddingLengthAndQuantity()
 {
-  const double value = 1;
-  const double expectedOutput = 2;
+    const double value = 1;
+    const double expectedOutput = 2;
 
-  Length one ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
 
-  Length result = one + Length::Quantity (value, Unit::Meter);
+    Length result = one + Length::Quantity(value, Unit::Meter);
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator+ modified first operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator+ returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator+ modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator+ returned incorrect value");
 }
 
 void
-LengthTestCase::TestAddingQuantityAndLength ()
+LengthTestCase::TestAddingQuantityAndLength()
 {
-  const double value = 1;
-  const double expectedOutput = 2;
+    const double value = 1;
+    const double expectedOutput = 2;
 
-  Length one ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
 
-  Length result = Length::Quantity (value, Unit::Meter) + one;
+    Length result = Length::Quantity(value, Unit::Meter) + one;
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator+ modified first operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator+ returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator+ modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator+ returned incorrect value");
 }
 
 void
-LengthTestCase::TestSubtractingTwoLengths ()
+LengthTestCase::TestSubtractingTwoLengths()
 {
-  const double value = 1;
-  const double expectedOutput = 0;
+    const double value = 1;
+    const double expectedOutput = 0;
 
-  Length one ( value, Unit::Meter );
-  Length two ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
+    Length two(value, Unit::Meter);
 
-  Length result = one - two;
+    Length result = one - two;
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator- modified first operand");
-  NS_TEST_ASSERT_MSG_EQ (two.GetDouble (), value,
-                         "operator- modified second operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator- returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator- modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(two.GetDouble(), value, "operator- modified second operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator- returned incorrect value");
 }
 
 void
-LengthTestCase::TestSubtractingLengthAndQuantity ()
+LengthTestCase::TestSubtractingLengthAndQuantity()
 {
-  const double value = 1;
-  const double expectedOutput = 0;
+    const double value = 1;
+    const double expectedOutput = 0;
 
-  Length one ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
 
-  Length result = one - Length::Quantity ( value, Unit::Meter);
+    Length result = one - Length::Quantity(value, Unit::Meter);
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator- modified first operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator- returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator- modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator- returned incorrect value");
 }
 
 void
-LengthTestCase::TestSubtractingQuantityAndLength ()
+LengthTestCase::TestSubtractingQuantityAndLength()
 {
-  const double value = 1;
-  const double expectedOutput = 0;
+    const double value = 1;
+    const double expectedOutput = 0;
 
-  Length one ( value, Unit::Meter );
+    Length one(value, Unit::Meter);
 
-  Length result = Length::Quantity (value, Unit::Meter) - one;
+    Length result = Length::Quantity(value, Unit::Meter) - one;
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator- modified second operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator- returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator- modified second operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator- returned incorrect value");
 }
 
 void
-LengthTestCase::TestMultiplyLengthByScalar ()
+LengthTestCase::TestMultiplyLengthByScalar()
 {
-  const double value = 1;
-  const double scalar = 5;
-  const double expectedOutput = value * scalar;
+    const double value = 1;
+    const double scalar = 5;
+    const double expectedOutput = value * scalar;
 
-  Length one ( value, Unit::Meter );
-  Length result = one * scalar;
+    Length one(value, Unit::Meter);
+    Length result = one * scalar;
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator* modified first operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator* returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator* modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator* returned incorrect value");
 }
 
 void
-LengthTestCase::TestMultiplyScalarByLength ()
+LengthTestCase::TestMultiplyScalarByLength()
 {
-  const double value = 1;
-  const double scalar = 5;
-  const double expectedOutput = value * scalar;
+    const double value = 1;
+    const double scalar = 5;
+    const double expectedOutput = value * scalar;
 
-  Length one ( value, Unit::Meter );
-  Length result = scalar * one;
+    Length one(value, Unit::Meter);
+    Length result = scalar * one;
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator* modified second operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator* returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator* modified second operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator* returned incorrect value");
 }
 
 void
-LengthTestCase::TestDivideLengthByScalar ()
+LengthTestCase::TestDivideLengthByScalar()
 {
-  const double value = 10;
-  const double scalar = 5;
-  const double expectedOutput = value / scalar;
+    const double value = 10;
+    const double scalar = 5;
+    const double expectedOutput = value / scalar;
 
-  Length one ( value, Unit::Meter );
-  Length result = one / scalar;
+    Length one(value, Unit::Meter);
+    Length result = one / scalar;
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), value,
-                         "operator/ modified first operand");
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedOutput,
-                         "operator/ returned incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), value, "operator/ modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedOutput, "operator/ returned incorrect value");
 }
 
 void
-LengthTestCase::TestDivideLengthByLength ()
+LengthTestCase::TestDivideLengthByLength()
 {
-  const double valueOne = 100;
-  const double valueTwo = 2;
-  const double expectedOutput = valueOne / valueTwo;
+    const double valueOne = 100;
+    const double valueTwo = 2;
+    const double expectedOutput = valueOne / valueTwo;
 
-  Length one ( valueOne, Unit::Meter );
-  Length two ( valueTwo, Unit::Meter );
+    Length one(valueOne, Unit::Meter);
+    Length two(valueTwo, Unit::Meter);
 
-  double result = one / two;
+    double result = one / two;
 
-  NS_TEST_ASSERT_MSG_EQ (one.GetDouble (), valueOne,
-                         "operator/ modified first operand");
-  NS_TEST_ASSERT_MSG_EQ (two.GetDouble (), valueTwo,
-                         "operator/ modified second operand");
-  NS_TEST_ASSERT_MSG_EQ (result, expectedOutput,
-                         "operator/ returned incorrect value");
-
+    NS_TEST_ASSERT_MSG_EQ(one.GetDouble(), valueOne, "operator/ modified first operand");
+    NS_TEST_ASSERT_MSG_EQ(two.GetDouble(), valueTwo, "operator/ modified second operand");
+    NS_TEST_ASSERT_MSG_EQ(result, expectedOutput, "operator/ returned incorrect value");
 }
 
 void
-LengthTestCase::TestDivideLengthByLengthReturnsNaN ()
+LengthTestCase::TestDivideLengthByLengthReturnsNaN()
 {
-  const double value = 1;
+    const double value = 1;
 
-  Length one ( value, Unit::Meter );
-  Length two;
+    Length one(value, Unit::Meter);
+    Length two;
 
-  double result = one / two;
+    double result = one / two;
 
-  AssertTrue ( std::isnan (result),
-               "operator/ did not return NaN when dividing by zero");
+    AssertTrue(std::isnan(result), "operator/ did not return NaN when dividing by zero");
 }
 
 void
-LengthTestCase::TestDivReturnsCorrectResult ()
+LengthTestCase::TestDivReturnsCorrectResult()
 {
-  const double topValue = 100;
-  const double bottomValue = 20;
-  const int64_t expectedOutput = 5;
+    const double topValue = 100;
+    const double bottomValue = 20;
+    const int64_t expectedOutput = 5;
 
-  Length numerator (topValue, Unit::Meter);
-  Length denominator (bottomValue, Unit::Meter);
+    Length numerator(topValue, Unit::Meter);
+    Length denominator(bottomValue, Unit::Meter);
 
-  auto result = Div (numerator, denominator);
+    auto result = Div(numerator, denominator);
 
-  NS_TEST_ASSERT_MSG_EQ (result, expectedOutput,
-                         "Div() returned an incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(result, expectedOutput, "Div() returned an incorrect value");
 }
 
 void
-LengthTestCase::TestDivReturnsZeroRemainder ()
+LengthTestCase::TestDivReturnsZeroRemainder()
 {
-  const double topValue = 100;
-  const double bottomValue = 20;
-  const int64_t expectedOutput = 5;
-  const int64_t expectedRemainder = 0;
+    const double topValue = 100;
+    const double bottomValue = 20;
+    const int64_t expectedOutput = 5;
+    const int64_t expectedRemainder = 0;
 
-  Length numerator (topValue, Unit::Meter);
-  Length denominator (bottomValue, Unit::Meter);
-  Length remainder;
+    Length numerator(topValue, Unit::Meter);
+    Length denominator(bottomValue, Unit::Meter);
+    Length remainder;
 
-  auto result = Div (numerator, denominator, &remainder);
+    auto result = Div(numerator, denominator, &remainder);
 
-  NS_TEST_ASSERT_MSG_EQ (result, expectedOutput,
-                         "Div() returned an incorrect value");
-  NS_TEST_ASSERT_MSG_EQ (remainder.GetDouble (), expectedRemainder,
-                         "Div() returned an incorrect remainder");
+    NS_TEST_ASSERT_MSG_EQ(result, expectedOutput, "Div() returned an incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(remainder.GetDouble(),
+                          expectedRemainder,
+                          "Div() returned an incorrect remainder");
 }
 
 void
-LengthTestCase::TestDivReturnsCorrectRemainder ()
+LengthTestCase::TestDivReturnsCorrectRemainder()
 {
-  const double topValue = 110;
-  const double bottomValue = 20;
-  const int64_t expectedOutput = 5;
-  const int64_t expectedRemainder = 10;
+    const double topValue = 110;
+    const double bottomValue = 20;
+    const int64_t expectedOutput = 5;
+    const int64_t expectedRemainder = 10;
 
-  Length numerator (topValue, Unit::Meter);
-  Length denominator (bottomValue, Unit::Meter);
-  Length remainder;
+    Length numerator(topValue, Unit::Meter);
+    Length denominator(bottomValue, Unit::Meter);
+    Length remainder;
 
-  auto result = Div (numerator, denominator, &remainder);
+    auto result = Div(numerator, denominator, &remainder);
 
-  NS_TEST_ASSERT_MSG_EQ (result, expectedOutput,
-                         "Div() returned an incorrect value");
-  NS_TEST_ASSERT_MSG_EQ (remainder.GetDouble (), expectedRemainder,
-                         "Div() returned an incorrect remainder");
+    NS_TEST_ASSERT_MSG_EQ(result, expectedOutput, "Div() returned an incorrect value");
+    NS_TEST_ASSERT_MSG_EQ(remainder.GetDouble(),
+                          expectedRemainder,
+                          "Div() returned an incorrect remainder");
 }
 
 void
-LengthTestCase::TestModReturnsZero ()
+LengthTestCase::TestModReturnsZero()
 {
-  Length numerator (10, Unit::Meter);
-  Length denominator (2, Unit::Meter);
+    Length numerator(10, Unit::Meter);
+    Length denominator(2, Unit::Meter);
 
-  auto result = Mod (numerator, denominator);
+    auto result = Mod(numerator, denominator);
 
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), 0,
-                         "Mod() returned a non zero value");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), 0, "Mod() returned a non zero value");
 }
 
 void
-LengthTestCase::TestModReturnsNonZero ()
+LengthTestCase::TestModReturnsNonZero()
 {
-  Length numerator (14, Unit::Meter);
-  Length denominator (3, Unit::Meter);
-  const double expectedValue = 2;
+    Length numerator(14, Unit::Meter);
+    Length denominator(3, Unit::Meter);
+    const double expectedValue = 2;
 
-  auto result = Mod (numerator, denominator);
+    auto result = Mod(numerator, denominator);
 
-  NS_TEST_ASSERT_MSG_EQ (result.GetDouble (), expectedValue,
-                         "Mod() returned the wrong value");
+    NS_TEST_ASSERT_MSG_EQ(result.GetDouble(), expectedValue, "Mod() returned the wrong value");
 }
 
 void
-LengthTestCase::DoRun ()
+LengthTestCase::DoRun()
 {
-  TestDefaultLengthIsZero ();
+    TestDefaultLengthIsZero();
 
-  TestConstructLengthFromQuantity ();
+    TestConstructLengthFromQuantity();
 
-  TestConstructLengthFromSIUnits ();
+    TestConstructLengthFromSIUnits();
 
-  TestConstructLengthFromUSUnits ();
+    TestConstructLengthFromUSUnits();
 
-  TestLengthCopyConstructor ();
+    TestLengthCopyConstructor();
 
-  TestLengthMoveConstructor ();
+    TestLengthMoveConstructor();
 
-  TestConstructLengthFromMeterString ();
-  TestConstructLengthFromNanoMeterString ();
-  TestConstructLengthFromMicroMeterString ();
-  TestConstructLengthFromMilliMeterString ();
-  TestConstructLengthFromCentiMeterString ();
-  TestConstructLengthFromKiloMeterString ();
-  TestConstructLengthFromNauticalMileString ();
-  TestConstructLengthFromInchString ();
-  TestConstructLengthFromFootString ();
-  TestConstructLengthFromYardString ();
-  TestConstructLengthFromMileString ();
+    TestConstructLengthFromMeterString();
+    TestConstructLengthFromNanoMeterString();
+    TestConstructLengthFromMicroMeterString();
+    TestConstructLengthFromMilliMeterString();
+    TestConstructLengthFromCentiMeterString();
+    TestConstructLengthFromKiloMeterString();
+    TestConstructLengthFromNauticalMileString();
+    TestConstructLengthFromInchString();
+    TestConstructLengthFromFootString();
+    TestConstructLengthFromYardString();
+    TestConstructLengthFromMileString();
 
 #ifdef HAVE_BOOST_UNITS
-  TestConstructLengthFromBoostUnits ();
+    TestConstructLengthFromBoostUnits();
 #endif
 
-  TestBuilderFreeFunctions ();
+    TestBuilderFreeFunctions();
 
-  TestTryParseReturnsFalse ();
-  TestTryParseReturnsTrue ();
+    TestTryParseReturnsFalse();
+    TestTryParseReturnsTrue();
 
-  TestCopyAssignment ();
-  TestMoveAssignment ();
-  TestQuantityAssignment ();
+    TestCopyAssignment();
+    TestMoveAssignment();
+    TestQuantityAssignment();
 
-  TestIsEqualReturnsTrue ();
-  TestIsEqualReturnsFalse ();
-  TestIsEqualWithToleranceReturnsTrue ();
-  TestIsEqualWithToleranceReturnsFalse ();
-  TestIsNotEqualReturnsTrue ();
-  TestIsNotEqualReturnsFalse ();
-  TestIsNotEqualWithToleranceReturnsTrue ();
-  TestIsNotEqualWithToleranceReturnsFalse ();
-  TestIsLessReturnsTrue ();
-  TestIsLessReturnsFalse ();
-  TestIsLessWithToleranceReturnsFalse ();
-  TestIsGreaterReturnsTrue ();
-  TestIsGreaterReturnsFalse ();
-  TestIsGreaterWithToleranceReturnsFalse ();
+    TestIsEqualReturnsTrue();
+    TestIsEqualReturnsFalse();
+    TestIsEqualWithToleranceReturnsTrue();
+    TestIsEqualWithToleranceReturnsFalse();
+    TestIsNotEqualReturnsTrue();
+    TestIsNotEqualReturnsFalse();
+    TestIsNotEqualWithToleranceReturnsTrue();
+    TestIsNotEqualWithToleranceReturnsFalse();
+    TestIsLessReturnsTrue();
+    TestIsLessReturnsFalse();
+    TestIsLessWithToleranceReturnsFalse();
+    TestIsGreaterReturnsTrue();
+    TestIsGreaterReturnsFalse();
+    TestIsGreaterWithToleranceReturnsFalse();
 
-  TestOutputStreamOperator ();
+    TestOutputStreamOperator();
 
-  TestSerializeLengthWithUnit ();
+    TestSerializeLengthWithUnit();
 
-  TestOperatorEqualsReturnsTrue ();
-  TestOperatorEqualsReturnsFalse ();
-  TestOperatorNotEqualsReturnsTrue ();
-  TestOperatorNotEqualsReturnsFalse ();
-  TestOperatorLessThanReturnsTrue ();
-  TestOperatorLessThanReturnsFalse ();
-  TestOperatorLessOrEqualReturnsTrue ();
-  TestOperatorLessOrEqualReturnsFalse ();
-  TestOperatorGreaterThanReturnsTrue ();
-  TestOperatorGreaterThanReturnsFalse ();
-  TestOperatorGreaterOrEqualReturnsTrue ();
-  TestOperatorGreaterOrEqualReturnsFalse ();
+    TestOperatorEqualsReturnsTrue();
+    TestOperatorEqualsReturnsFalse();
+    TestOperatorNotEqualsReturnsTrue();
+    TestOperatorNotEqualsReturnsFalse();
+    TestOperatorLessThanReturnsTrue();
+    TestOperatorLessThanReturnsFalse();
+    TestOperatorLessOrEqualReturnsTrue();
+    TestOperatorLessOrEqualReturnsFalse();
+    TestOperatorGreaterThanReturnsTrue();
+    TestOperatorGreaterThanReturnsFalse();
+    TestOperatorGreaterOrEqualReturnsTrue();
+    TestOperatorGreaterOrEqualReturnsFalse();
 
-  TestAddingTwoLengths ();
-  TestAddingLengthAndQuantity ();
-  TestAddingQuantityAndLength ();
-  TestSubtractingTwoLengths ();
-  TestSubtractingLengthAndQuantity ();
-  TestSubtractingQuantityAndLength ();
-  TestMultiplyLengthByScalar ();
-  TestMultiplyScalarByLength ();
-  TestDivideLengthByScalar ();
-  TestDivideLengthByLength ();
-  TestDivideLengthByLengthReturnsNaN ();
+    TestAddingTwoLengths();
+    TestAddingLengthAndQuantity();
+    TestAddingQuantityAndLength();
+    TestSubtractingTwoLengths();
+    TestSubtractingLengthAndQuantity();
+    TestSubtractingQuantityAndLength();
+    TestMultiplyLengthByScalar();
+    TestMultiplyScalarByLength();
+    TestDivideLengthByScalar();
+    TestDivideLengthByLength();
+    TestDivideLengthByLengthReturnsNaN();
 
-  TestDivReturnsCorrectResult ();
-  TestDivReturnsZeroRemainder ();
-  TestDivReturnsCorrectRemainder ();
+    TestDivReturnsCorrectResult();
+    TestDivReturnsZeroRemainder();
+    TestDivReturnsCorrectRemainder();
 
-  TestModReturnsZero ();
-  TestModReturnsNonZero ();
+    TestModReturnsZero();
+    TestModReturnsNonZero();
 }
 
 /**
@@ -1474,171 +1421,169 @@ LengthTestCase::DoRun ()
  */
 class LengthValueTestCase : public TestCase
 {
-public:
-  /**
-   * Default Constructor
-   */
-  LengthValueTestCase ()
-    :   TestCase ("length-value-tests")
-  {}
+  public:
+    /**
+     * Default Constructor
+     */
+    LengthValueTestCase()
+        : TestCase("length-value-tests")
+    {
+    }
 
-  /**
-   * Destructor
-   */
-  ~LengthValueTestCase () override
-  {}
+    /**
+     * Destructor
+     */
+    ~LengthValueTestCase() override
+    {
+    }
 
-private:
+  private:
     /// Class with Length attribute
     class TestObject : public Object
     {
-    public:
+      public:
         /**
          * \brief Get the type ID.
          * \return The object TypeId.
          */
-        static TypeId GetTypeId ();
+        static TypeId GetTypeId();
 
-        TestObject ()
-            :   m_length ()
-        {}
+        TestObject()
+            : m_length()
+        {
+        }
 
-        ~TestObject () override
-        {}
+        ~TestObject() override
+        {
+        }
 
-    private:
+      private:
         Length m_length; //!< Length object
     };
 
-private:
+  private:
     /**
      * Test that a LengthValue can be constructed from a Length instance
      */
-    void TestAttributeConstructor ();
+    void TestAttributeConstructor();
 
     /**
      * Test that a LengthValue can be serialized to a string
      */
-    void TestAttributeSerialization ();
+    void TestAttributeSerialization();
 
     /**
      * Test that a LengthValue can be deserialized from a string
      */
-    void TestAttributeDeserialization ();
+    void TestAttributeDeserialization();
 
     /**
      * Test that a LengthValue works as an attribute
      */
-    void TestObjectAttribute ();
+    void TestObjectAttribute();
 
     /**
      * Test that a StringValue is converted to LengthValue
      */
-    void TestSetAttributeUsingStringValue ();
+    void TestSetAttributeUsingStringValue();
 
     // Inherited function
-    void DoRun () override;
+    void DoRun() override;
 };
 
 TypeId
-LengthValueTestCase::TestObject::GetTypeId ()
+LengthValueTestCase::TestObject::GetTypeId()
 {
-    static TypeId tid = TypeId ("LengthValueTestCase::TestObject")
-        .SetParent<Object> ()
-        .SetGroupName ("Test")
-        .AddConstructor<TestObject> ()
-        .AddAttribute ("Length",
-                        "Length value",
-                        LengthValue (),
-                        MakeLengthAccessor (&TestObject::m_length),
-                        MakeLengthChecker ())
-        ;
+    static TypeId tid = TypeId("LengthValueTestCase::TestObject")
+                            .SetParent<Object>()
+                            .SetGroupName("Test")
+                            .AddConstructor<TestObject>()
+                            .AddAttribute("Length",
+                                          "Length value",
+                                          LengthValue(),
+                                          MakeLengthAccessor(&TestObject::m_length),
+                                          MakeLengthChecker());
 
     return tid;
 }
 
 void
-LengthValueTestCase::TestAttributeConstructor ()
+LengthValueTestCase::TestAttributeConstructor()
 {
-  Length l = KiloMeters (2);
-  LengthValue value (l);
+    Length l = KiloMeters(2);
+    LengthValue value(l);
 
-  NS_TEST_ASSERT_MSG_EQ (value.Get (), l, "Length attribute has wrong value");
+    NS_TEST_ASSERT_MSG_EQ(value.Get(), l, "Length attribute has wrong value");
 }
 
 void
-LengthValueTestCase::TestAttributeSerialization ()
+LengthValueTestCase::TestAttributeSerialization()
 {
-  Ptr<const AttributeChecker> checker = MakeLengthChecker ();
+    Ptr<const AttributeChecker> checker = MakeLengthChecker();
 
-  Length l = KiloMeters (2);
-  LengthValue value (l);
+    Length l = KiloMeters(2);
+    LengthValue value(l);
 
-  std::string output = value.SerializeToString (checker);
+    std::string output = value.SerializeToString(checker);
 
-  NS_TEST_ASSERT_MSG_EQ (output, "2000 m",
-                         "Length attribute serialization has wrong output");
+    NS_TEST_ASSERT_MSG_EQ(output, "2000 m", "Length attribute serialization has wrong output");
 }
 
 void
-LengthValueTestCase::TestAttributeDeserialization ()
+LengthValueTestCase::TestAttributeDeserialization()
 {
-  Ptr<const AttributeChecker> checker = MakeLengthChecker ();
+    Ptr<const AttributeChecker> checker = MakeLengthChecker();
 
-  Length l = KiloMeters (2);
-  std::ostringstream stream;
-  stream << l;
+    Length l = KiloMeters(2);
+    std::ostringstream stream;
+    stream << l;
 
-  LengthValue value;
-  bool result = value.DeserializeFromString (stream.str (), checker);
+    LengthValue value;
+    bool result = value.DeserializeFromString(stream.str(), checker);
 
-  NS_TEST_ASSERT_MSG_EQ (result, true,
-                         "Length attribute deserialization failed");
-  NS_TEST_ASSERT_MSG_EQ (value.Get (), l,
-                         "Length attribute has wrong value after deserialization");
+    NS_TEST_ASSERT_MSG_EQ(result, true, "Length attribute deserialization failed");
+    NS_TEST_ASSERT_MSG_EQ(value.Get(), l, "Length attribute has wrong value after deserialization");
 }
 
 void
-LengthValueTestCase::TestObjectAttribute ()
+LengthValueTestCase::TestObjectAttribute()
 {
-    Length expected (5, Unit::Kilometer);
-    Ptr<TestObject> obj = CreateObject<TestObject> ();
+    Length expected(5, Unit::Kilometer);
+    Ptr<TestObject> obj = CreateObject<TestObject>();
 
-    obj->SetAttribute ("Length", LengthValue (expected));
+    obj->SetAttribute("Length", LengthValue(expected));
 
     LengthValue val;
-    obj->GetAttribute ("Length", val);
+    obj->GetAttribute("Length", val);
 
-    NS_TEST_ASSERT_MSG_EQ (val.Get (), expected,
-                            "Length attribute does not have expected value");
+    NS_TEST_ASSERT_MSG_EQ(val.Get(), expected, "Length attribute does not have expected value");
 }
 
 void
-LengthValueTestCase::TestSetAttributeUsingStringValue ()
+LengthValueTestCase::TestSetAttributeUsingStringValue()
 {
-    Length expected (5, Unit::Kilometer);
-    Ptr<TestObject> obj = CreateObject<TestObject> ();
+    Length expected(5, Unit::Kilometer);
+    Ptr<TestObject> obj = CreateObject<TestObject>();
 
     std::stringstream stream;
-    stream << expected.As (Unit::Kilometer);
+    stream << expected.As(Unit::Kilometer);
 
-    obj->SetAttribute ("Length", StringValue (stream.str()));
+    obj->SetAttribute("Length", StringValue(stream.str()));
 
     LengthValue val;
-    obj->GetAttribute ("Length", val);
+    obj->GetAttribute("Length", val);
 
-    NS_TEST_ASSERT_MSG_EQ (val.Get (), expected,
-                            "Length attribute does not have expected value");
+    NS_TEST_ASSERT_MSG_EQ(val.Get(), expected, "Length attribute does not have expected value");
 }
 
 void
-LengthValueTestCase::DoRun ()
+LengthValueTestCase::DoRun()
 {
-    TestAttributeConstructor ();
-    TestAttributeSerialization ();
-    TestAttributeDeserialization ();
-    TestObjectAttribute ();
-    TestSetAttributeUsingStringValue ();
+    TestAttributeConstructor();
+    TestAttributeSerialization();
+    TestAttributeDeserialization();
+    TestObjectAttribute();
+    TestSetAttributeUsingStringValue();
 }
 
 /**
@@ -1647,22 +1592,21 @@ LengthValueTestCase::DoRun ()
  */
 class LengthTestSuite : public TestSuite
 {
-public:
-  /**
-   * Default Constructor
-   */
-  LengthTestSuite ();
+  public:
+    /**
+     * Default Constructor
+     */
+    LengthTestSuite();
 };
 
-LengthTestSuite::LengthTestSuite ()
-  : TestSuite ("length")
+LengthTestSuite::LengthTestSuite()
+    : TestSuite("length")
 {
-  AddTestCase ( new LengthTestCase (), TestCase::QUICK );
-  AddTestCase ( new LengthValueTestCase (), TestCase::QUICK );
+    AddTestCase(new LengthTestCase(), TestCase::QUICK);
+    AddTestCase(new LengthValueTestCase(), TestCase::QUICK);
 }
 
 /**
  * LengthTestSuite instance
  */
 static LengthTestSuite gLengthTestSuite;
-

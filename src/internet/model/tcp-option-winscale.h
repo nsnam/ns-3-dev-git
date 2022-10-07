@@ -24,7 +24,8 @@
 
 #include "ns3/tcp-option.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup tcp
@@ -49,41 +50,41 @@ namespace ns3 {
  */
 class TcpOptionWinScale : public TcpOption
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
 
-  TcpOptionWinScale ();
-  ~TcpOptionWinScale () override;
+    TcpOptionWinScale();
+    ~TcpOptionWinScale() override;
 
-  void Print (std::ostream &os) const override;
-  void Serialize (Buffer::Iterator start) const override;
-  uint32_t Deserialize (Buffer::Iterator start) override;
+    void Print(std::ostream& os) const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  uint8_t GetKind () const override;
-  uint32_t GetSerializedSize () const override;
+    uint8_t GetKind() const override;
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * \brief Get the scale value (uint8_t)
-   * \return The scale value
-   */
-  uint8_t GetScale () const;
+    /**
+     * \brief Get the scale value (uint8_t)
+     * \return The scale value
+     */
+    uint8_t GetScale() const;
 
-  /**
-   * \brief Set the scale option
-   *
-   * The scale option SHOULD be <= 14 (as \RFC{1323}).
-   *
-   * \param scale Scale factor
-   */
-  void SetScale (uint8_t scale);
+    /**
+     * \brief Set the scale option
+     *
+     * The scale option SHOULD be <= 14 (as \RFC{1323}).
+     *
+     * \param scale Scale factor
+     */
+    void SetScale(uint8_t scale);
 
-protected:
-  uint8_t m_scale; //!< Window scaling in number of bit shift
+  protected:
+    uint8_t m_scale; //!< Window scaling in number of bit shift
 };
 
 } // namespace ns3

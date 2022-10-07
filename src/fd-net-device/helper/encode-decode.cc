@@ -16,13 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <string>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <stdint.h>
+#include <string>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \brief Convert a byte buffer to a string containing a hex representation
@@ -34,24 +35,24 @@ namespace ns3 {
  * \returns A string containing a hex representation of the data in buffer.
  */
 std::string
-BufferToString (uint8_t *buffer, uint32_t len)
+BufferToString(uint8_t* buffer, uint32_t len)
 {
-  std::ostringstream oss;
-  //
-  // Tell the stream to make hex characters, zero-filled
-  //
-  oss.setf (std::ios::hex, std::ios::basefield);
-  oss.fill ('0');
+    std::ostringstream oss;
+    //
+    // Tell the stream to make hex characters, zero-filled
+    //
+    oss.setf(std::ios::hex, std::ios::basefield);
+    oss.fill('0');
 
-  //
-  // Loop through the buffer, separating the two-digit-wide hex bytes
-  // with a colon.
-  //
-  for (uint32_t i = 0; i < len; i++)
+    //
+    // Loop through the buffer, separating the two-digit-wide hex bytes
+    // with a colon.
+    //
+    for (uint32_t i = 0; i < len; i++)
     {
-      oss << ":" << std::setw (2) << (uint32_t)buffer[i];
+        oss << ":" << std::setw(2) << (uint32_t)buffer[i];
     }
-  return oss.str ();
+    return oss.str();
 }
 
 /**
@@ -64,48 +65,48 @@ BufferToString (uint8_t *buffer, uint32_t len)
  * \returns True indicates a successful conversion.
  */
 bool
-StringToBuffer (std::string s, uint8_t *buffer, uint32_t *len)
+StringToBuffer(std::string s, uint8_t* buffer, uint32_t* len)
 {
-  //
-  // If the string was made by our inverse function, the string length must
-  // be a multiple of three characters in length.  Use this fact to do a
-  // quick reasonableness test.
-  //
-  if ((s.length () % 3) != 0)
+    //
+    // If the string was made by our inverse function, the string length must
+    // be a multiple of three characters in length.  Use this fact to do a
+    // quick reasonableness test.
+    //
+    if ((s.length() % 3) != 0)
     {
-      return false;
+        return false;
     }
 
-  std::istringstream iss;
-  iss.str (s);
+    std::istringstream iss;
+    iss.str(s);
 
-  uint8_t n = 0;
+    uint8_t n = 0;
 
-  while (iss.good ())
+    while (iss.good())
     {
-      //
-      // The first character in the "triplet" we're working on is always the
-      // the ':' separator.  Read that into a char and make sure we're skipping
-      // what we think we're skipping.
-      //
-      char c;
-      iss.read (&c, 1);
-      if (c != ':')
+        //
+        // The first character in the "triplet" we're working on is always the
+        // the ':' separator.  Read that into a char and make sure we're skipping
+        // what we think we're skipping.
+        //
+        char c;
+        iss.read(&c, 1);
+        if (c != ':')
         {
-          return false;
+            return false;
         }
 
-      //
-      // And then read in the real bits and convert them.
-      //
-      uint32_t tmp;
-      iss >> std::hex >> tmp;
-      buffer[n] = tmp;
-      n++;
+        //
+        // And then read in the real bits and convert them.
+        //
+        uint32_t tmp;
+        iss >> std::hex >> tmp;
+        buffer[n] = tmp;
+        n++;
     }
 
-  *len = n;
-  return true;
+    *len = n;
+    return true;
 }
 
 } // namespace ns3

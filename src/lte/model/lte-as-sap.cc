@@ -20,13 +20,14 @@
 
 #include "ns3/lte-as-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-LteAsSapProvider::~LteAsSapProvider ()
+LteAsSapProvider::~LteAsSapProvider()
 {
 }
 
-LteAsSapUser::~LteAsSapUser ()
+LteAsSapUser::~LteAsSapUser()
 {
 }
 

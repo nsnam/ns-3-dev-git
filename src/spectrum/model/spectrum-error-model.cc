@@ -20,91 +20,87 @@
 
 #include "spectrum-error-model.h"
 
-#include <ns3/nstime.h>
 #include <ns3/log.h>
+#include <ns3/nstime.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("ShannonSpectrumErrorModel");
+NS_LOG_COMPONENT_DEFINE("ShannonSpectrumErrorModel");
 
-NS_OBJECT_ENSURE_REGISTERED (SpectrumErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(SpectrumErrorModel);
 
 TypeId
-SpectrumErrorModel::GetTypeId ()
+SpectrumErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::SpectrumErrorModel")
-    .SetParent<Object> ()
-    .SetGroupName ("Spectrum")
-    // No AddConstructor because this is an abstract class.
-    ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::SpectrumErrorModel").SetParent<Object>().SetGroupName("Spectrum")
+        // No AddConstructor because this is an abstract class.
+        ;
+    return tid;
 }
 
-SpectrumErrorModel::~SpectrumErrorModel ()
+SpectrumErrorModel::~SpectrumErrorModel()
 {
 }
 
-
-NS_OBJECT_ENSURE_REGISTERED (ShannonSpectrumErrorModel);
+NS_OBJECT_ENSURE_REGISTERED(ShannonSpectrumErrorModel);
 
 /* static */
 TypeId
-ShannonSpectrumErrorModel::GetTypeId ()
+ShannonSpectrumErrorModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ShannonSpectrumErrorModel")
-    .SetParent<SpectrumErrorModel> ()
-    .SetGroupName ("Spectrum")
-    .AddConstructor<ShannonSpectrumErrorModel> ()
-    ;
-  return tid;
+    static TypeId tid = TypeId("ns3::ShannonSpectrumErrorModel")
+                            .SetParent<SpectrumErrorModel>()
+                            .SetGroupName("Spectrum")
+                            .AddConstructor<ShannonSpectrumErrorModel>();
+    return tid;
 }
 
 void
-ShannonSpectrumErrorModel::DoDispose ()
+ShannonSpectrumErrorModel::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  SpectrumErrorModel::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    SpectrumErrorModel::DoDispose();
 }
 
 void
-ShannonSpectrumErrorModel::StartRx (Ptr<const Packet> p)
+ShannonSpectrumErrorModel::StartRx(Ptr<const Packet> p)
 {
-  NS_LOG_FUNCTION (this);
-  m_bytes = p->GetSize ();
-  NS_LOG_LOGIC ("bytes to deliver: " << m_bytes);
-  m_deliverableBytes = 0;
+    NS_LOG_FUNCTION(this);
+    m_bytes = p->GetSize();
+    NS_LOG_LOGIC("bytes to deliver: " << m_bytes);
+    m_deliverableBytes = 0;
 }
 
 void
-ShannonSpectrumErrorModel::EvaluateChunk (const SpectrumValue& sinr, Time duration)
+ShannonSpectrumErrorModel::EvaluateChunk(const SpectrumValue& sinr, Time duration)
 {
-  NS_LOG_FUNCTION (this << sinr << duration);
-  SpectrumValue CapacityPerHertz = Log2 (1 + sinr);
-  double capacity = 0;
+    NS_LOG_FUNCTION(this << sinr << duration);
+    SpectrumValue CapacityPerHertz = Log2(1 + sinr);
+    double capacity = 0;
 
-  Bands::const_iterator bi = CapacityPerHertz.ConstBandsBegin ();
-  Values::const_iterator vi = CapacityPerHertz.ConstValuesBegin ();
+    Bands::const_iterator bi = CapacityPerHertz.ConstBandsBegin();
+    Values::const_iterator vi = CapacityPerHertz.ConstValuesBegin();
 
-  while (bi != CapacityPerHertz.ConstBandsEnd ())
+    while (bi != CapacityPerHertz.ConstBandsEnd())
     {
-      NS_ASSERT (vi != CapacityPerHertz.ConstValuesEnd ());
-      capacity += (bi->fh - bi->fl) * (*vi);
-      ++bi;
-      ++vi;
+        NS_ASSERT(vi != CapacityPerHertz.ConstValuesEnd());
+        capacity += (bi->fh - bi->fl) * (*vi);
+        ++bi;
+        ++vi;
     }
-  NS_ASSERT (vi == CapacityPerHertz.ConstValuesEnd ());
-  NS_LOG_LOGIC ("ChunkCapacity = " << capacity);
-  m_deliverableBytes += static_cast<uint32_t> (capacity * duration.GetSeconds () / 8);
-  NS_LOG_LOGIC ("DeliverableBytes = " << m_deliverableBytes);
+    NS_ASSERT(vi == CapacityPerHertz.ConstValuesEnd());
+    NS_LOG_LOGIC("ChunkCapacity = " << capacity);
+    m_deliverableBytes += static_cast<uint32_t>(capacity * duration.GetSeconds() / 8);
+    NS_LOG_LOGIC("DeliverableBytes = " << m_deliverableBytes);
 }
-
 
 bool
-ShannonSpectrumErrorModel::IsRxCorrect ()
+ShannonSpectrumErrorModel::IsRxCorrect()
 {
-  NS_LOG_FUNCTION (this);
-  return (m_deliverableBytes > m_bytes);
+    NS_LOG_FUNCTION(this);
+    return (m_deliverableBytes > m_bytes);
 }
-
 
 } // namespace ns3

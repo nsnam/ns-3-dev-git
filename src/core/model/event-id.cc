@@ -18,9 +18,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "event-id.h"
-#include "simulator.h"
+
 #include "event-impl.h"
 #include "log.h"
+#include "simulator.h"
 
 /**
  * \file
@@ -28,75 +29,83 @@
  * ns3::EventId implementation.
  */
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("EventId");
-
-EventId::EventId ()
-  : m_eventImpl (nullptr),
-    m_ts (0),
-    m_context (0),
-    m_uid (0)
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("EventId");
+
+EventId::EventId()
+    : m_eventImpl(nullptr),
+      m_ts(0),
+      m_context(0),
+      m_uid(0)
+{
+    NS_LOG_FUNCTION(this);
 }
 
-EventId::EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t context, uint32_t uid)
-  : m_eventImpl (impl),
-    m_ts (ts),
-    m_context (context),
-    m_uid (uid)
+EventId::EventId(const Ptr<EventImpl>& impl, uint64_t ts, uint32_t context, uint32_t uid)
+    : m_eventImpl(impl),
+      m_ts(ts),
+      m_context(context),
+      m_uid(uid)
 {
-  NS_LOG_FUNCTION (this << impl << ts << context << uid);
+    NS_LOG_FUNCTION(this << impl << ts << context << uid);
 }
+
 void
-EventId::Cancel ()
+EventId::Cancel()
 {
-  NS_LOG_FUNCTION (this);
-  Simulator::Cancel (*this);
+    NS_LOG_FUNCTION(this);
+    Simulator::Cancel(*this);
 }
+
 void
-EventId::Remove ()
+EventId::Remove()
 {
-  NS_LOG_FUNCTION (this);
-  Simulator::Remove (*this);
+    NS_LOG_FUNCTION(this);
+    Simulator::Remove(*this);
 }
+
 bool
-EventId::IsExpired () const
+EventId::IsExpired() const
 {
-  NS_LOG_FUNCTION (this);
-  return Simulator::IsExpired (*this);
+    NS_LOG_FUNCTION(this);
+    return Simulator::IsExpired(*this);
 }
+
 bool
-EventId::IsRunning () const
+EventId::IsRunning() const
 {
-  NS_LOG_FUNCTION (this);
-  return !IsExpired ();
+    NS_LOG_FUNCTION(this);
+    return !IsExpired();
 }
-EventImpl *
-EventId::PeekEventImpl () const
+
+EventImpl*
+EventId::PeekEventImpl() const
 {
-  NS_LOG_FUNCTION (this);
-  return PeekPointer (m_eventImpl);
+    NS_LOG_FUNCTION(this);
+    return PeekPointer(m_eventImpl);
 }
+
 uint64_t
-EventId::GetTs () const
+EventId::GetTs() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_ts;
-}
-uint32_t
-EventId::GetContext () const
-{
-  NS_LOG_FUNCTION (this);
-  return m_context;
-}
-uint32_t
-EventId::GetUid () const
-{
-  NS_LOG_FUNCTION (this);
-  return m_uid;
+    NS_LOG_FUNCTION(this);
+    return m_ts;
 }
 
+uint32_t
+EventId::GetContext() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_context;
+}
+
+uint32_t
+EventId::GetUid() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_uid;
+}
 
 } // namespace ns3

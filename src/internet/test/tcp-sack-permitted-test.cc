@@ -18,14 +18,15 @@
  */
 
 #include "tcp-general-test.h"
-#include "ns3/node.h"
+
 #include "ns3/log.h"
-#include "ns3/tcp-option-sack-permitted.h"
+#include "ns3/node.h"
 #include "ns3/tcp-header.h"
+#include "ns3/tcp-option-sack-permitted.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("SackPermittedTestSuite");
+NS_LOG_COMPONENT_DEFINE("SackPermittedTestSuite");
 
 /**
  * \ingroup internet-test
@@ -36,159 +37,168 @@ NS_LOG_COMPONENT_DEFINE ("SackPermittedTestSuite");
  */
 class SackPermittedTestCase : public TcpGeneralTest
 {
-public:
-  /** \brief Configuration of the test */
-  enum Configuration
-  {
-    DISABLED,
-    ENABLED_RECEIVER,
-    ENABLED_SENDER,
-    ENABLED
-  };
+  public:
+    /** \brief Configuration of the test */
+    enum Configuration
+    {
+        DISABLED,
+        ENABLED_RECEIVER,
+        ENABLED_SENDER,
+        ENABLED
+    };
 
-  /**
-   * \brief Constructor
-   * \param conf Test configuration.
-   * */
-  SackPermittedTestCase (SackPermittedTestCase::Configuration conf);
-protected:
-  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
-  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+    /**
+     * \brief Constructor
+     * \param conf Test configuration.
+     * */
+    SackPermittedTestCase(SackPermittedTestCase::Configuration conf);
 
-  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  protected:
+    Ptr<TcpSocketMsgBase> CreateReceiverSocket(Ptr<Node> node) override;
+    Ptr<TcpSocketMsgBase> CreateSenderSocket(Ptr<Node> node) override;
 
-  Configuration m_configuration; //!< The configuration
+    void Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who) override;
+
+    Configuration m_configuration; //!< The configuration
 };
 
-SackPermittedTestCase::SackPermittedTestCase (SackPermittedTestCase::Configuration conf)
-  : TcpGeneralTest ("Testing the TCP Sack Permitted option")
+SackPermittedTestCase::SackPermittedTestCase(SackPermittedTestCase::Configuration conf)
+    : TcpGeneralTest("Testing the TCP Sack Permitted option")
 {
-  m_configuration = conf;
+    m_configuration = conf;
 }
 
 Ptr<TcpSocketMsgBase>
-SackPermittedTestCase::CreateReceiverSocket (Ptr<Node> node)
+SackPermittedTestCase::CreateReceiverSocket(Ptr<Node> node)
 {
-  Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateReceiverSocket (node);
+    Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateReceiverSocket(node);
 
-  switch (m_configuration)
+    switch (m_configuration)
     {
     case DISABLED:
-      socket->SetAttribute ("Sack", BooleanValue (false));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(false));
+        break;
 
     case ENABLED_RECEIVER:
-      socket->SetAttribute ("Sack", BooleanValue (true));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(true));
+        break;
 
     case ENABLED_SENDER:
-      socket->SetAttribute ("Sack", BooleanValue (false));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(false));
+        break;
 
     case ENABLED:
-      socket->SetAttribute ("Sack", BooleanValue (true));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(true));
+        break;
     }
 
-  return socket;
+    return socket;
 }
 
 Ptr<TcpSocketMsgBase>
-SackPermittedTestCase::CreateSenderSocket (Ptr<Node> node)
+SackPermittedTestCase::CreateSenderSocket(Ptr<Node> node)
 {
-  Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateSenderSocket (node);
+    Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateSenderSocket(node);
 
-  switch (m_configuration)
+    switch (m_configuration)
     {
     case DISABLED:
-      socket->SetAttribute ("Sack", BooleanValue (false));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(false));
+        break;
 
     case ENABLED_RECEIVER:
-      socket->SetAttribute ("Sack", BooleanValue (false));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(false));
+        break;
 
     case ENABLED_SENDER:
-      socket->SetAttribute ("Sack", BooleanValue (true));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(true));
+        break;
 
     case ENABLED:
-      socket->SetAttribute ("Sack", BooleanValue (true));
-      break;
+        socket->SetAttribute("Sack", BooleanValue(true));
+        break;
     }
 
-  return socket;
+    return socket;
 }
 
 void
-SackPermittedTestCase::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
+SackPermittedTestCase::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
 {
-
-  if (!(h.GetFlags () & TcpHeader::SYN))
+    if (!(h.GetFlags() & TcpHeader::SYN))
     {
-      NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), false,
-                             "SackPermitted in non-SYN segment");
-      return;
+        NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                              false,
+                              "SackPermitted in non-SYN segment");
+        return;
     }
 
-  if (m_configuration == DISABLED)
+    if (m_configuration == DISABLED)
     {
-      NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), false,
-                             "SackPermitted disabled but option enabled");
+        NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                              false,
+                              "SackPermitted disabled but option enabled");
     }
-  else if (m_configuration == ENABLED)
+    else if (m_configuration == ENABLED)
     {
-      NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), true,
-                             "SackPermitted enabled but option disabled");
+        NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                              true,
+                              "SackPermitted enabled but option disabled");
     }
 
-  NS_LOG_INFO (h);
-  if (who == SENDER)
+    NS_LOG_INFO(h);
+    if (who == SENDER)
     {
-      if (h.GetFlags () & TcpHeader::SYN)
+        if (h.GetFlags() & TcpHeader::SYN)
         {
-          if (m_configuration == ENABLED_RECEIVER)
+            if (m_configuration == ENABLED_RECEIVER)
             {
-              NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), false,
-                                     "SackPermitted disabled but option enabled");
+                NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                                      false,
+                                      "SackPermitted disabled but option enabled");
             }
-          else if (m_configuration == ENABLED_SENDER)
+            else if (m_configuration == ENABLED_SENDER)
             {
-              NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), true,
-                                     "SackPermitted enabled but option disabled");
+                NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                                      true,
+                                      "SackPermitted enabled but option disabled");
             }
         }
-      else
+        else
         {
-          if (m_configuration != ENABLED)
+            if (m_configuration != ENABLED)
             {
-              NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), false,
-                                     "SackPermitted disabled but option enabled");
+                NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                                      false,
+                                      "SackPermitted disabled but option enabled");
             }
         }
     }
-  else if (who == RECEIVER)
+    else if (who == RECEIVER)
     {
-      if (h.GetFlags () & TcpHeader::SYN)
+        if (h.GetFlags() & TcpHeader::SYN)
         {
-          // Sender has not sent SackPermitted, so implementation should disable ts
-          if (m_configuration == ENABLED_RECEIVER)
+            // Sender has not sent SackPermitted, so implementation should disable ts
+            if (m_configuration == ENABLED_RECEIVER)
             {
-              NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), false,
-                                     "sender has not ts, but receiver sent anyway");
+                NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                                      false,
+                                      "sender has not ts, but receiver sent anyway");
             }
-          else if (m_configuration == ENABLED_SENDER)
+            else if (m_configuration == ENABLED_SENDER)
             {
-              NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), false,
-                                     "receiver has not ts enabled but sent anyway");
+                NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                                      false,
+                                      "receiver has not ts enabled but sent anyway");
             }
         }
-      else
+        else
         {
-          if (m_configuration != ENABLED)
+            if (m_configuration != ENABLED)
             {
-              NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::SACKPERMITTED), false,
-                                     "SackPermitted disabled but option enabled");
+                NS_TEST_ASSERT_MSG_EQ(h.HasOption(TcpOption::SACKPERMITTED),
+                                      false,
+                                      "SackPermitted disabled but option enabled");
             }
         }
     }
@@ -202,17 +212,19 @@ SackPermittedTestCase::Tx (const Ptr<const Packet> p, const TcpHeader &h, Socket
  */
 class TcpSackPermittedTestSuite : public TestSuite
 {
-public:
-  /** \brief Constructor */
-  TcpSackPermittedTestSuite ()
-    : TestSuite ("tcp-sack-permitted", UNIT)
-  {
-    AddTestCase (new SackPermittedTestCase (SackPermittedTestCase::DISABLED), TestCase::QUICK);
-    AddTestCase (new SackPermittedTestCase (SackPermittedTestCase::ENABLED_RECEIVER), TestCase::QUICK);
-    AddTestCase (new SackPermittedTestCase (SackPermittedTestCase::ENABLED_SENDER), TestCase::QUICK);
-    AddTestCase (new SackPermittedTestCase (SackPermittedTestCase::ENABLED), TestCase::QUICK);
-  }
-
+  public:
+    /** \brief Constructor */
+    TcpSackPermittedTestSuite()
+        : TestSuite("tcp-sack-permitted", UNIT)
+    {
+        AddTestCase(new SackPermittedTestCase(SackPermittedTestCase::DISABLED), TestCase::QUICK);
+        AddTestCase(new SackPermittedTestCase(SackPermittedTestCase::ENABLED_RECEIVER),
+                    TestCase::QUICK);
+        AddTestCase(new SackPermittedTestCase(SackPermittedTestCase::ENABLED_SENDER),
+                    TestCase::QUICK);
+        AddTestCase(new SackPermittedTestCase(SackPermittedTestCase::ENABLED), TestCase::QUICK);
+    }
 };
 
-static TcpSackPermittedTestSuite g_tcpSackPermittedTestSuite; //!< Static variable for test initialization
+static TcpSackPermittedTestSuite
+    g_tcpSackPermittedTestSuite; //!< Static variable for test initialization

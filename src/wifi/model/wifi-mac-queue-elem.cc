@@ -19,21 +19,23 @@
  */
 
 #include "wifi-mac-queue-elem.h"
+
 #include "wifi-mpdu.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-WifiMacQueueElem::WifiMacQueueElem (Ptr<WifiMpdu> item)
-  : mpdu (item),
-    expiryTime (0),
-    ac (AC_UNDEF),
-    expired (false)
+WifiMacQueueElem::WifiMacQueueElem(Ptr<WifiMpdu> item)
+    : mpdu(item),
+      expiryTime(0),
+      ac(AC_UNDEF),
+      expired(false)
 {
 }
 
-WifiMacQueueElem::~WifiMacQueueElem ()
+WifiMacQueueElem::~WifiMacQueueElem()
 {
-  deleter (mpdu);
+    deleter(mpdu);
 }
 
-} //namespace ns3
+} // namespace ns3

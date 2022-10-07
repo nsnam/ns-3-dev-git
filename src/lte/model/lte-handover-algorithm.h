@@ -22,15 +22,14 @@
 #ifndef LTE_HANDOVER_ALGORITHM_H
 #define LTE_HANDOVER_ALGORITHM_H
 
-#include <ns3/object.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/object.h>
 
-namespace ns3 {
-
+namespace ns3
+{
 
 class LteHandoverManagementSapUser;
 class LteHandoverManagementSapProvider;
-
 
 /**
  * \brief The abstract base class of a handover algorithm that operates using
@@ -65,50 +64,47 @@ class LteHandoverManagementSapProvider;
  */
 class LteHandoverAlgorithm : public Object
 {
-public:
-  LteHandoverAlgorithm ();
-  ~LteHandoverAlgorithm () override;
+  public:
+    LteHandoverAlgorithm();
+    ~LteHandoverAlgorithm() override;
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Set the "user" part of the Handover Management SAP interface that
-   *        this handover algorithm instance will interact with.
-   * \param s a reference to the "user" part of the interface, typically a
-   *          member of an LteEnbRrc instance
-   */
-  virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s) = 0;
+    /**
+     * \brief Set the "user" part of the Handover Management SAP interface that
+     *        this handover algorithm instance will interact with.
+     * \param s a reference to the "user" part of the interface, typically a
+     *          member of an LteEnbRrc instance
+     */
+    virtual void SetLteHandoverManagementSapUser(LteHandoverManagementSapUser* s) = 0;
 
-  /**
-   * \brief Export the "provider" part of the Handover Management SAP interface.
-   * \return the reference to the "provider" part of the interface, typically to
-   *         be kept by an LteEnbRrc instance
-   */
-  virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider () = 0;
+    /**
+     * \brief Export the "provider" part of the Handover Management SAP interface.
+     * \return the reference to the "provider" part of the interface, typically to
+     *         be kept by an LteEnbRrc instance
+     */
+    virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider() = 0;
 
-protected:
+  protected:
+    // inherited from Object
+    void DoDispose() override;
 
-  // inherited from Object
-  void DoDispose () override;
+    // HANDOVER MANAGEMENT SAP PROVIDER IMPLEMENTATION
 
-  // HANDOVER MANAGEMENT SAP PROVIDER IMPLEMENTATION
-
-  /**
-   * \brief Implementation of LteHandoverManagementSapProvider::ReportUeMeas.
-   * \param rnti Radio Network Temporary Identity, an integer identifying the UE
-   *             where the report originates from
-   * \param measResults a single report of one measurement identity
-   */
-  virtual void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults) = 0;
+    /**
+     * \brief Implementation of LteHandoverManagementSapProvider::ReportUeMeas.
+     * \param rnti Radio Network Temporary Identity, an integer identifying the UE
+     *             where the report originates from
+     * \param measResults a single report of one measurement identity
+     */
+    virtual void DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults) = 0;
 
 }; // end of class LteHandoverAlgorithm
 
-
 } // end of namespace ns3
-
 
 #endif /* LTE_HANDOVER_ALGORITHM_H */

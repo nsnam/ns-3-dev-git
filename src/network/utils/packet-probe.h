@@ -24,16 +24,17 @@
 #ifndef PACKET_PROBE_H
 #define PACKET_PROBE_H
 
-#include "ns3/object.h"
-#include "ns3/callback.h"
 #include "ns3/boolean.h"
+#include "ns3/callback.h"
 #include "ns3/nstime.h"
+#include "ns3/object.h"
 #include "ns3/packet.h"
-#include "ns3/traced-value.h"
-#include "ns3/simulator.h"
 #include "ns3/probe.h"
+#include "ns3/simulator.h"
+#include "ns3/traced-value.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * This class is designed to probe an underlying ns3 TraceSource
@@ -46,70 +47,69 @@ namespace ns3 {
  */
 class PacketProbe : public Probe
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  PacketProbe ();
-  ~PacketProbe () override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    PacketProbe();
+    ~PacketProbe() override;
 
-  /**
-   * \brief Set a probe value
-   *
-   * \param packet set the traced packet equal to this
-   */
-  void SetValue (Ptr<const Packet> packet);
+    /**
+     * \brief Set a probe value
+     *
+     * \param packet set the traced packet equal to this
+     */
+    void SetValue(Ptr<const Packet> packet);
 
-  /**
-   * \brief Set a probe value by its name in the Config system
-   *
-   * \param path config path to access the probe
-   * \param packet set the traced packet equal to this
-   */
-  static void SetValueByPath (std::string path, Ptr<const Packet> packet);
+    /**
+     * \brief Set a probe value by its name in the Config system
+     *
+     * \param path config path to access the probe
+     * \param packet set the traced packet equal to this
+     */
+    static void SetValueByPath(std::string path, Ptr<const Packet> packet);
 
-  /**
-   * \brief connect to a trace source attribute provided by a given object
-   *
-   * \param traceSource the name of the attribute TraceSource to connect to
-   * \param obj ns3::Object to connect to
-   * \return true if the trace source was successfully connected
-   */
-  bool ConnectByObject (std::string traceSource, Ptr<Object> obj) override;
+    /**
+     * \brief connect to a trace source attribute provided by a given object
+     *
+     * \param traceSource the name of the attribute TraceSource to connect to
+     * \param obj ns3::Object to connect to
+     * \return true if the trace source was successfully connected
+     */
+    bool ConnectByObject(std::string traceSource, Ptr<Object> obj) override;
 
-  /**
-   * \brief connect to a trace source provided by a config path
-   *
-   * \param path Config path to bind to
-   *
-   * Note, if an invalid path is provided, the probe will not be connected
-   * to anything.
-   */
-  void ConnectByPath (std::string path) override;
+    /**
+     * \brief connect to a trace source provided by a config path
+     *
+     * \param path Config path to bind to
+     *
+     * Note, if an invalid path is provided, the probe will not be connected
+     * to anything.
+     */
+    void ConnectByPath(std::string path) override;
 
-private:
-  /**
-   * \brief Method to connect to an underlying ns3::TraceSource with
-   * arguments of type Ptr<const Packet>
-   *
-   * \param packet the traced packet
-   */
-  void TraceSink (Ptr<const Packet> packet);
+  private:
+    /**
+     * \brief Method to connect to an underlying ns3::TraceSource with
+     * arguments of type Ptr<const Packet>
+     *
+     * \param packet the traced packet
+     */
+    void TraceSink(Ptr<const Packet> packet);
 
-  /// Traced callback: packet received
-  TracedCallback<Ptr<const Packet> > m_output;
-  /// Traced callback: size of previous packet receive, size of actual packet received
-  TracedCallback<uint32_t, uint32_t> m_outputBytes;
+    /// Traced callback: packet received
+    TracedCallback<Ptr<const Packet>> m_output;
+    /// Traced callback: size of previous packet receive, size of actual packet received
+    TracedCallback<uint32_t, uint32_t> m_outputBytes;
 
-  /// The traced packet.
-  Ptr<const Packet> m_packet;
+    /// The traced packet.
+    Ptr<const Packet> m_packet;
 
-  /// The size of the traced packet.
-  uint32_t m_packetSizeOld;
+    /// The size of the traced packet.
+    uint32_t m_packetSizeOld;
 };
-
 
 } // namespace ns3
 

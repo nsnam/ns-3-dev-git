@@ -18,59 +18,60 @@
  * Author: George Riley <riley@ece.gatech.edu>
  */
 
-#include <iostream>
-
 #include "point-to-point-remote-channel.h"
+
 #include "point-to-point-net-device.h"
-#include "ns3/packet.h"
-#include "ns3/simulator.h"
+
 #include "ns3/log.h"
 #include "ns3/mpi-interface.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
 
-namespace ns3 {
+#include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointRemoteChannel");
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (PointToPointRemoteChannel);
+NS_LOG_COMPONENT_DEFINE("PointToPointRemoteChannel");
+
+NS_OBJECT_ENSURE_REGISTERED(PointToPointRemoteChannel);
 
 TypeId
-PointToPointRemoteChannel::GetTypeId (void)
+PointToPointRemoteChannel::GetTypeId(void)
 {
-  static TypeId tid = TypeId ("ns3::PointToPointRemoteChannel")
-    .SetParent<PointToPointChannel> ()
-    .SetGroupName ("PointToPoint")
-    .AddConstructor<PointToPointRemoteChannel> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::PointToPointRemoteChannel")
+                            .SetParent<PointToPointChannel>()
+                            .SetGroupName("PointToPoint")
+                            .AddConstructor<PointToPointRemoteChannel>();
+    return tid;
 }
 
-PointToPointRemoteChannel::PointToPointRemoteChannel ()
-  : PointToPointChannel ()
+PointToPointRemoteChannel::PointToPointRemoteChannel()
+    : PointToPointChannel()
 {
 }
 
-PointToPointRemoteChannel::~PointToPointRemoteChannel ()
+PointToPointRemoteChannel::~PointToPointRemoteChannel()
 {
 }
 
 bool
-PointToPointRemoteChannel::TransmitStart (
-  Ptr<const Packet> p,
-  Ptr<PointToPointNetDevice> src,
-  Time txTime)
+PointToPointRemoteChannel::TransmitStart(Ptr<const Packet> p,
+                                         Ptr<PointToPointNetDevice> src,
+                                         Time txTime)
 {
-  NS_LOG_FUNCTION (this << p << src);
-  NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
+    NS_LOG_FUNCTION(this << p << src);
+    NS_LOG_LOGIC("UID is " << p->GetUid() << ")");
 
-  IsInitialized ();
+    IsInitialized();
 
-  uint32_t wire = src == GetSource (0) ? 0 : 1;
-  Ptr<PointToPointNetDevice> dst = GetDestination (wire);
+    uint32_t wire = src == GetSource(0) ? 0 : 1;
+    Ptr<PointToPointNetDevice> dst = GetDestination(wire);
 
-  // Calculate the rxTime (absolute)
-  Time rxTime = Simulator::Now () + txTime + GetDelay ();
-  MpiInterface::SendPacket (p->Copy (), rxTime, dst->GetNode ()->GetId (), dst->GetIfIndex ());
-  return true;
+    // Calculate the rxTime (absolute)
+    Time rxTime = Simulator::Now() + txTime + GetDelay();
+    MpiInterface::SendPacket(p->Copy(), rxTime, dst->GetNode()->GetId(), dst->GetIfIndex());
+    return true;
 }
 
 } // namespace ns3

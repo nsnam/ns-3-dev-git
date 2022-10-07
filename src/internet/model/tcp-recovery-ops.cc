@@ -21,118 +21,119 @@
  *
  */
 #include "tcp-recovery-ops.h"
+
 #include "tcp-socket-state.h"
 
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("TcpRecoveryOps");
+NS_LOG_COMPONENT_DEFINE("TcpRecoveryOps");
 
-NS_OBJECT_ENSURE_REGISTERED (TcpRecoveryOps);
+NS_OBJECT_ENSURE_REGISTERED(TcpRecoveryOps);
 
 TypeId
-TcpRecoveryOps::GetTypeId ()
+TcpRecoveryOps::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpRecoveryOps")
-    .SetParent<Object> ()
-    .SetGroupName ("Internet")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpRecoveryOps").SetParent<Object>().SetGroupName("Internet");
+    return tid;
 }
 
-TcpRecoveryOps::TcpRecoveryOps () : Object ()
+TcpRecoveryOps::TcpRecoveryOps()
+    : Object()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpRecoveryOps::TcpRecoveryOps (const TcpRecoveryOps &other) : Object (other)
+TcpRecoveryOps::TcpRecoveryOps(const TcpRecoveryOps& other)
+    : Object(other)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpRecoveryOps::~TcpRecoveryOps ()
+TcpRecoveryOps::~TcpRecoveryOps()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-TcpRecoveryOps::UpdateBytesSent (uint32_t bytesSent)
+TcpRecoveryOps::UpdateBytesSent(uint32_t bytesSent)
 {
-  NS_LOG_FUNCTION (this << bytesSent);
+    NS_LOG_FUNCTION(this << bytesSent);
 }
 
 // Classic recovery
 
-NS_OBJECT_ENSURE_REGISTERED (TcpClassicRecovery);
+NS_OBJECT_ENSURE_REGISTERED(TcpClassicRecovery);
 
 TypeId
-TcpClassicRecovery::GetTypeId ()
+TcpClassicRecovery::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpClassicRecovery")
-    .SetParent<TcpRecoveryOps> ()
-    .SetGroupName ("Internet")
-    .AddConstructor<TcpClassicRecovery> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpClassicRecovery")
+                            .SetParent<TcpRecoveryOps>()
+                            .SetGroupName("Internet")
+                            .AddConstructor<TcpClassicRecovery>();
+    return tid;
 }
 
-TcpClassicRecovery::TcpClassicRecovery () : TcpRecoveryOps ()
+TcpClassicRecovery::TcpClassicRecovery()
+    : TcpRecoveryOps()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpClassicRecovery::TcpClassicRecovery (const TcpClassicRecovery& sock)
-  : TcpRecoveryOps (sock)
+TcpClassicRecovery::TcpClassicRecovery(const TcpClassicRecovery& sock)
+    : TcpRecoveryOps(sock)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpClassicRecovery::~TcpClassicRecovery ()
+TcpClassicRecovery::~TcpClassicRecovery()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-void
-TcpClassicRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
-                                   [[maybe_unused]] uint32_t unAckDataCount,
-                                   [[maybe_unused]] uint32_t deliveredBytes)
-{
-  NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount);
-  tcb->m_cWnd = tcb->m_ssThresh;
-  tcb->m_cWndInfl = tcb->m_ssThresh + (dupAckCount * tcb->m_segmentSize);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-TcpClassicRecovery::DoRecovery (Ptr<TcpSocketState> tcb, [[maybe_unused]] uint32_t deliveredBytes)
+TcpClassicRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
+                                  uint32_t dupAckCount,
+                                  [[maybe_unused]] uint32_t unAckDataCount,
+                                  [[maybe_unused]] uint32_t deliveredBytes)
 {
-  NS_LOG_FUNCTION (this << tcb << deliveredBytes);
-  tcb->m_cWndInfl += tcb->m_segmentSize;
+    NS_LOG_FUNCTION(this << tcb << dupAckCount << unAckDataCount);
+    tcb->m_cWnd = tcb->m_ssThresh;
+    tcb->m_cWndInfl = tcb->m_ssThresh + (dupAckCount * tcb->m_segmentSize);
 }
 
 void
-TcpClassicRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
+TcpClassicRecovery::DoRecovery(Ptr<TcpSocketState> tcb, [[maybe_unused]] uint32_t deliveredBytes)
 {
-  NS_LOG_FUNCTION (this << tcb);
-  // Follow NewReno procedures to exit FR if SACK is disabled
-  // (RFC2582 sec.3 bullet #5 paragraph 2, option 2)
-  // In this implementation, actual m_cWnd value is reset to ssThresh
-  // immediately before calling ExitRecovery(), so we just need to
-  // reset the inflated cWnd trace variable
-  tcb->m_cWndInfl = tcb->m_ssThresh.Get ();
+    NS_LOG_FUNCTION(this << tcb << deliveredBytes);
+    tcb->m_cWndInfl += tcb->m_segmentSize;
+}
+
+void
+TcpClassicRecovery::ExitRecovery(Ptr<TcpSocketState> tcb)
+{
+    NS_LOG_FUNCTION(this << tcb);
+    // Follow NewReno procedures to exit FR if SACK is disabled
+    // (RFC2582 sec.3 bullet #5 paragraph 2, option 2)
+    // In this implementation, actual m_cWnd value is reset to ssThresh
+    // immediately before calling ExitRecovery(), so we just need to
+    // reset the inflated cWnd trace variable
+    tcb->m_cWndInfl = tcb->m_ssThresh.Get();
 }
 
 std::string
-TcpClassicRecovery::GetName () const
+TcpClassicRecovery::GetName() const
 {
-  return "TcpClassicRecovery";
+    return "TcpClassicRecovery";
 }
 
 Ptr<TcpRecoveryOps>
-TcpClassicRecovery::Fork ()
+TcpClassicRecovery::Fork()
 {
-  return CopyObject<TcpClassicRecovery> (this);
+    return CopyObject<TcpClassicRecovery>(this);
 }
 
 } // namespace ns3
-

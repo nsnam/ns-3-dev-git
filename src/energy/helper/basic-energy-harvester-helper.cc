@@ -20,40 +20,42 @@
  */
 
 #include "basic-energy-harvester-helper.h"
+
 #include "ns3/energy-harvester.h"
 
-namespace ns3 {
-
-BasicEnergyHarvesterHelper::BasicEnergyHarvesterHelper ()
+namespace ns3
 {
-  m_basicEnergyHarvester.SetTypeId ("ns3::BasicEnergyHarvester");
+
+BasicEnergyHarvesterHelper::BasicEnergyHarvesterHelper()
+{
+    m_basicEnergyHarvester.SetTypeId("ns3::BasicEnergyHarvester");
 }
 
-BasicEnergyHarvesterHelper::~BasicEnergyHarvesterHelper ()
+BasicEnergyHarvesterHelper::~BasicEnergyHarvesterHelper()
 {
 }
 
 void
-BasicEnergyHarvesterHelper::Set (std::string name, const AttributeValue &v)
+BasicEnergyHarvesterHelper::Set(std::string name, const AttributeValue& v)
 {
-  m_basicEnergyHarvester.Set (name, v);
+    m_basicEnergyHarvester.Set(name, v);
 }
 
 Ptr<EnergyHarvester>
-BasicEnergyHarvesterHelper::DoInstall (Ptr<EnergySource> source) const
+BasicEnergyHarvesterHelper::DoInstall(Ptr<EnergySource> source) const
 {
-  NS_ASSERT (source);
-  Ptr<Node> node = source->GetNode ();
+    NS_ASSERT(source);
+    Ptr<Node> node = source->GetNode();
 
-  // Create a new Basic Energy Harvester
-  Ptr<EnergyHarvester> harvester = m_basicEnergyHarvester.Create<EnergyHarvester> ();
-  NS_ASSERT (harvester);
+    // Create a new Basic Energy Harvester
+    Ptr<EnergyHarvester> harvester = m_basicEnergyHarvester.Create<EnergyHarvester>();
+    NS_ASSERT(harvester);
 
-  // Connect the Basic Energy Harvester to the Energy Source
-  source->ConnectEnergyHarvester (harvester);
-  harvester->SetNode (node);
-  harvester->SetEnergySource (source);
-  return harvester;
+    // Connect the Basic Energy Harvester to the Energy Source
+    source->ConnectEnergyHarvester(harvester);
+    harvester->SetNode(node);
+    harvester->SetEnergySource(source);
+    return harvester;
 }
 
 } // namespace ns3

@@ -19,7 +19,9 @@
  */
 
 #include "version.h"
+
 #include "ns3/version-defines.h"
+
 #include <sstream>
 
 /**
@@ -28,136 +30,135 @@
  * ns3::Version implementation
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 std::string
-Version::VersionTag (void)
+Version::VersionTag(void)
 {
-  return NS3_VERSION_TAG;
-}
-
-std::string
-Version::ClosestAncestorTag (void)
-{
-  return NS3_VERSION_CLOSEST_TAG;
-}
-
-uint32_t
-Version::Major (void)
-{
-  return NS3_VERSION_MAJOR;
-}
-
-uint32_t
-Version::Minor (void)
-{
-  return NS3_VERSION_MINOR;
-}
-
-uint32_t
-Version::Patch (void)
-{
-  return NS3_VERSION_PATCH;
+    return NS3_VERSION_TAG;
 }
 
 std::string
-Version::ReleaseCandidate (void)
+Version::ClosestAncestorTag(void)
 {
-  return std::string{NS3_VERSION_RELEASE_CANDIDATE};
+    return NS3_VERSION_CLOSEST_TAG;
 }
 
 uint32_t
-Version::TagDistance (void)
+Version::Major(void)
 {
-  return NS3_VERSION_TAG_DISTANCE;
+    return NS3_VERSION_MAJOR;
+}
+
+uint32_t
+Version::Minor(void)
+{
+    return NS3_VERSION_MINOR;
+}
+
+uint32_t
+Version::Patch(void)
+{
+    return NS3_VERSION_PATCH;
+}
+
+std::string
+Version::ReleaseCandidate(void)
+{
+    return std::string{NS3_VERSION_RELEASE_CANDIDATE};
+}
+
+uint32_t
+Version::TagDistance(void)
+{
+    return NS3_VERSION_TAG_DISTANCE;
 }
 
 bool
-Version::DirtyWorkingTree (void)
+Version::DirtyWorkingTree(void)
 {
-  return static_cast<bool> (NS3_VERSION_DIRTY_FLAG);
+    return static_cast<bool>(NS3_VERSION_DIRTY_FLAG);
 }
 
 std::string
-Version::CommitHash (void)
+Version::CommitHash(void)
 {
-  return std::string{NS3_VERSION_COMMIT_HASH};
+    return std::string{NS3_VERSION_COMMIT_HASH};
 }
 
 std::string
-Version::BuildProfile (void)
+Version::BuildProfile(void)
 {
-  return std::string{NS3_VERSION_BUILD_PROFILE};
+    return std::string{NS3_VERSION_BUILD_PROFILE};
 }
 
 std::string
-Version::ShortVersion (void)
+Version::ShortVersion(void)
 {
-  std::ostringstream ostream;
-  ostream << VersionTag ();
+    std::ostringstream ostream;
+    ostream << VersionTag();
 
-  auto ancestorTag = ClosestAncestorTag ();
-  if ( ( !ancestorTag.empty () && (ancestorTag != VersionTag ()) )
-       || TagDistance () > 0)
+    auto ancestorTag = ClosestAncestorTag();
+    if ((!ancestorTag.empty() && (ancestorTag != VersionTag())) || TagDistance() > 0)
     {
-      ostream << "+";
+        ostream << "+";
     }
-  if (DirtyWorkingTree ())
+    if (DirtyWorkingTree())
     {
-      ostream << "*";
+        ostream << "*";
     }
 
-  return ostream.str ();
+    return ostream.str();
 }
 
 std::string
-Version::BuildSummary (void)
+Version::BuildSummary(void)
 {
-  std::ostringstream ostream;
-  ostream << ClosestAncestorTag ();
+    std::ostringstream ostream;
+    ostream << ClosestAncestorTag();
 
-  if (TagDistance () > 0)
+    if (TagDistance() > 0)
     {
-      ostream << "+";
+        ostream << "+";
     }
-  if (DirtyWorkingTree ())
+    if (DirtyWorkingTree())
     {
-      ostream << "*";
+        ostream << "*";
     }
 
-  return ostream.str ();
+    return ostream.str();
 }
 
 std::string
-Version::LongVersion (void)
+Version::LongVersion(void)
 {
-  std::ostringstream ostream;
-  ostream << VersionTag ();
+    std::ostringstream ostream;
+    ostream << VersionTag();
 
-  auto ancestorTag = ClosestAncestorTag ();
-  if ( !ancestorTag.empty () && (ancestorTag != VersionTag ()) )
+    auto ancestorTag = ClosestAncestorTag();
+    if (!ancestorTag.empty() && (ancestorTag != VersionTag()))
     {
-      ostream << '+' << ancestorTag;
+        ostream << '+' << ancestorTag;
     }
 
-  auto tagDistance = TagDistance ();
+    auto tagDistance = TagDistance();
 
-  if ( tagDistance > 0 )
+    if (tagDistance > 0)
     {
-      ostream << '+' << tagDistance;
+        ostream << '+' << tagDistance;
     }
 
-  ostream << '@' << CommitHash ();
+    ostream << '@' << CommitHash();
 
-  if ( DirtyWorkingTree () )
+    if (DirtyWorkingTree())
     {
-      ostream << "-dirty";
+        ostream << "-dirty";
     }
 
-  ostream << '-' << BuildProfile ();
+    ostream << '-' << BuildProfile();
 
-  return ostream.str ();
+    return ostream.str();
 }
 
-}   // namespace ns3
-
+} // namespace ns3

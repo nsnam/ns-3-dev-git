@@ -36,8 +36,8 @@ using namespace ns3;
 
 class LteCqiGenerationTestSuite : public TestSuite
 {
-public:
-  LteCqiGenerationTestSuite ();
+  public:
+    LteCqiGenerationTestSuite();
 };
 
 /**
@@ -53,43 +53,47 @@ public:
 
 class LteCqiGenerationTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param name reference name
-   * \param usePdcchForCqiGeneration use PDCCH for CQI generation
-   * \param dlMcs DL MCS
-   * \param ulMcs UL MCS
-   */
-  LteCqiGenerationTestCase (std::string name, bool usePdcchForCqiGeneration,
-                            uint16_t dlMcs, uint16_t ulMcs);
-  ~LteCqiGenerationTestCase () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param name reference name
+     * \param usePdcchForCqiGeneration use PDCCH for CQI generation
+     * \param dlMcs DL MCS
+     * \param ulMcs UL MCS
+     */
+    LteCqiGenerationTestCase(std::string name,
+                             bool usePdcchForCqiGeneration,
+                             uint16_t dlMcs,
+                             uint16_t ulMcs);
+    ~LteCqiGenerationTestCase() override;
 
-  /**
-   * \brief DL Scheduling function
-   * \param dlInfo DL info
-   */
-  void DlScheduling (DlSchedulingCallbackInfo dlInfo);
+    /**
+     * \brief DL Scheduling function
+     * \param dlInfo DL info
+     */
+    void DlScheduling(DlSchedulingCallbackInfo dlInfo);
 
-  /**
-   * \brief UL Scheduling function
-   * \param frameNo frame number
-   * \param subframeNo subframe number
-   * \param rnti the RNTI
-   * \param mcs the MCS
-   * \param sizeTb size
-   */
-  void UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                     uint8_t mcs, uint16_t sizeTb);
+    /**
+     * \brief UL Scheduling function
+     * \param frameNo frame number
+     * \param subframeNo subframe number
+     * \param rnti the RNTI
+     * \param mcs the MCS
+     * \param sizeTb size
+     */
+    void UlScheduling(uint32_t frameNo,
+                      uint32_t subframeNo,
+                      uint16_t rnti,
+                      uint8_t mcs,
+                      uint16_t sizeTb);
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 
-  bool m_usePdschForCqiGeneration; ///< use PDCCH for CQI generation
-  uint16_t m_dlMcs; ///< the DL MCS
-  uint16_t m_ulMcs; ///< the UL MCS
-
+    bool m_usePdschForCqiGeneration; ///< use PDCCH for CQI generation
+    uint16_t m_dlMcs;                ///< the DL MCS
+    uint16_t m_ulMcs;                ///< the UL MCS
 };
 
 /**
@@ -102,46 +106,51 @@ private:
 
 class LteCqiGenerationDlPowerControlTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param name reference name
-   * \param cell0Pa cell # 0 PA
-   * \param cell1Pa cell # 1 PA
-   * \param dlMcs DL MCS
-   * \param ulMcs UL MCS
-   */
-  LteCqiGenerationDlPowerControlTestCase (std::string name, uint8_t cell0Pa, uint8_t cell1Pa,
-                                          uint16_t dlMcs, uint16_t ulMcs);
-  ~LteCqiGenerationDlPowerControlTestCase () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param name reference name
+     * \param cell0Pa cell # 0 PA
+     * \param cell1Pa cell # 1 PA
+     * \param dlMcs DL MCS
+     * \param ulMcs UL MCS
+     */
+    LteCqiGenerationDlPowerControlTestCase(std::string name,
+                                           uint8_t cell0Pa,
+                                           uint8_t cell1Pa,
+                                           uint16_t dlMcs,
+                                           uint16_t ulMcs);
+    ~LteCqiGenerationDlPowerControlTestCase() override;
 
-  /**
-   * \brief DL Scheduling function
-   * \param dlInfo DL info
-   */
-  void DlScheduling (DlSchedulingCallbackInfo dlInfo);
+    /**
+     * \brief DL Scheduling function
+     * \param dlInfo DL info
+     */
+    void DlScheduling(DlSchedulingCallbackInfo dlInfo);
 
-  /**
-   * \brief UL Scheduling function
-   * \param frameNo frame number
-   * \param subframeNo subframe number
-   * \param rnti the RNTI
-   * \param mcs the MCS
-   * \param sizeTb size
-   */
-  void UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                     uint8_t mcs, uint16_t sizeTb);
+    /**
+     * \brief UL Scheduling function
+     * \param frameNo frame number
+     * \param subframeNo subframe number
+     * \param rnti the RNTI
+     * \param mcs the MCS
+     * \param sizeTb size
+     */
+    void UlScheduling(uint32_t frameNo,
+                      uint32_t subframeNo,
+                      uint16_t rnti,
+                      uint8_t mcs,
+                      uint16_t sizeTb);
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 
-  uint8_t m_cell0Pa; ///< cell #0 PA
-  uint8_t m_cell1Pa; ///< cell #1 PA
+    uint8_t m_cell0Pa; ///< cell #0 PA
+    uint8_t m_cell1Pa; ///< cell #1 PA
 
-  uint16_t m_dlMcs; ///< the DL MCS
-  uint16_t m_ulMcs; ///< the UL MCS
-
+    uint16_t m_dlMcs; ///< the DL MCS
+    uint16_t m_ulMcs; ///< the UL MCS
 };
 
 #endif /* LTE_TEST_CQI_GENERATION_H */

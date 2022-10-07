@@ -21,12 +21,10 @@
 #ifndef MICROWAVE_OVEN_SPECTRUM_VALUE_HELPER_H
 #define MICROWAVE_OVEN_SPECTRUM_VALUE_HELPER_H
 
-
 #include <ns3/spectrum-value.h>
 
-namespace ns3 {
-
-
+namespace ns3
+{
 
 /**
  * \ingroup spectrum
@@ -40,29 +38,22 @@ namespace ns3 {
  */
 class MicrowaveOvenSpectrumValueHelper
 {
-public:
-  /**
-   *
-   * @return the Power Spectral Density of Micro Wave Oven #1 in the
-   * cited paper
-   */
-  static Ptr<SpectrumValue> CreatePowerSpectralDensityMwo1 ();
+  public:
+    /**
+     *
+     * @return the Power Spectral Density of Micro Wave Oven #1 in the
+     * cited paper
+     */
+    static Ptr<SpectrumValue> CreatePowerSpectralDensityMwo1();
 
-  /**
-   *
-   * @return the Power Spectral Density of Micro Wave Oven #2 in the
-   * cited paper
-   */
-  static Ptr<SpectrumValue> CreatePowerSpectralDensityMwo2 ();
-
+    /**
+     *
+     * @return the Power Spectral Density of Micro Wave Oven #2 in the
+     * cited paper
+     */
+    static Ptr<SpectrumValue> CreatePowerSpectralDensityMwo2();
 };
 
-
-
-
-
 } // namespace ns3
-
-
 
 #endif /*  MICROWAVE_OVEN_SPECTRUM_VALUE_HELPER_H */

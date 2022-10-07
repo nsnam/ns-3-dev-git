@@ -20,13 +20,14 @@
 
 #include "ns3/lte-ue-cphy-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-LteUeCphySapProvider::~LteUeCphySapProvider ()
+LteUeCphySapProvider::~LteUeCphySapProvider()
 {
 }
 
-LteUeCphySapUser::~LteUeCphySapUser ()
+LteUeCphySapUser::~LteUeCphySapUser()
 {
 }
 

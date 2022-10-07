@@ -19,102 +19,108 @@
  */
 
 #include "component-carrier.h"
-#include <ns3/uinteger.h>
+
+#include <ns3/abort.h>
 #include <ns3/boolean.h>
 #include <ns3/log.h>
-#include <ns3/abort.h>
+#include <ns3/uinteger.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("ComponentCarrier");
-
-NS_OBJECT_ENSURE_REGISTERED ( ComponentCarrier);
-
-TypeId ComponentCarrier::GetTypeId ()
+namespace ns3
 {
-  static TypeId
-    tid =
-    TypeId ("ns3::ComponentCarrier")
-    .SetParent<Object> ()
-    .AddConstructor<ComponentCarrier> ()
-    .AddAttribute ("UlBandwidth",
-                   "Uplink Transmission Bandwidth Configuration in number of Resource Blocks",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&ComponentCarrier::SetUlBandwidth,
-                                         &ComponentCarrier::GetUlBandwidth),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("DlBandwidth",
-                   "Downlink Transmission Bandwidth Configuration in number of Resource Blocks",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&ComponentCarrier::SetDlBandwidth,
-                                         &ComponentCarrier::GetDlBandwidth),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("DlEarfcn",
-                   "Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
-                   "as per 3GPP 36.101 Section 5.7.3.",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&ComponentCarrier::SetDlEarfcn,
-                                         &ComponentCarrier::GetDlEarfcn),
-                   MakeUintegerChecker<uint32_t> (0, 262143))
-    .AddAttribute ("UlEarfcn",
-                   "Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
-                   "as per 3GPP 36.101 Section 5.7.3.",
-                   UintegerValue (18100),
-                   MakeUintegerAccessor (&ComponentCarrier::SetUlEarfcn,
-                                         &ComponentCarrier::GetUlEarfcn),
-                   MakeUintegerChecker<uint32_t> (18000, 262143))
-    .AddAttribute ("CsgId",
-                   "The Closed Subscriber Group (CSG) identity that this eNodeB belongs to",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&ComponentCarrier::SetCsgId,
-                                         &ComponentCarrier::GetCsgId),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("CsgIndication",
-                   "If true, only UEs which are members of the CSG (i.e. same CSG ID) "
-                   "can gain access to the eNodeB, therefore enforcing closed access mode. "
-                   "Otherwise, the eNodeB operates as a non-CSG cell and implements open access mode.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&ComponentCarrier::SetCsgIndication,
-                                        &ComponentCarrier::GetCsgIndication),
-                   MakeBooleanChecker ())
-    .AddAttribute ("PrimaryCarrier",
-                   "If true, this Carrier Component will be the Primary Carrier Component (PCC) "
-                   "Only one PCC per eNodeB is (currently) allowed",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&ComponentCarrier::SetAsPrimary,
-                                        &ComponentCarrier::IsPrimary),
-                   MakeBooleanChecker ())
-  ;
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("ComponentCarrier");
+
+NS_OBJECT_ENSURE_REGISTERED(ComponentCarrier);
+
+TypeId
+ComponentCarrier::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::ComponentCarrier")
+            .SetParent<Object>()
+            .AddConstructor<ComponentCarrier>()
+            .AddAttribute(
+                "UlBandwidth",
+                "Uplink Transmission Bandwidth Configuration in number of Resource Blocks",
+                UintegerValue(25),
+                MakeUintegerAccessor(&ComponentCarrier::SetUlBandwidth,
+                                     &ComponentCarrier::GetUlBandwidth),
+                MakeUintegerChecker<uint8_t>())
+            .AddAttribute(
+                "DlBandwidth",
+                "Downlink Transmission Bandwidth Configuration in number of Resource Blocks",
+                UintegerValue(25),
+                MakeUintegerAccessor(&ComponentCarrier::SetDlBandwidth,
+                                     &ComponentCarrier::GetDlBandwidth),
+                MakeUintegerChecker<uint8_t>())
+            .AddAttribute("DlEarfcn",
+                          "Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
+                          "as per 3GPP 36.101 Section 5.7.3.",
+                          UintegerValue(100),
+                          MakeUintegerAccessor(&ComponentCarrier::SetDlEarfcn,
+                                               &ComponentCarrier::GetDlEarfcn),
+                          MakeUintegerChecker<uint32_t>(0, 262143))
+            .AddAttribute("UlEarfcn",
+                          "Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
+                          "as per 3GPP 36.101 Section 5.7.3.",
+                          UintegerValue(18100),
+                          MakeUintegerAccessor(&ComponentCarrier::SetUlEarfcn,
+                                               &ComponentCarrier::GetUlEarfcn),
+                          MakeUintegerChecker<uint32_t>(18000, 262143))
+            .AddAttribute(
+                "CsgId",
+                "The Closed Subscriber Group (CSG) identity that this eNodeB belongs to",
+                UintegerValue(0),
+                MakeUintegerAccessor(&ComponentCarrier::SetCsgId, &ComponentCarrier::GetCsgId),
+                MakeUintegerChecker<uint32_t>())
+            .AddAttribute(
+                "CsgIndication",
+                "If true, only UEs which are members of the CSG (i.e. same CSG ID) "
+                "can gain access to the eNodeB, therefore enforcing closed access mode. "
+                "Otherwise, the eNodeB operates as a non-CSG cell and implements open access mode.",
+                BooleanValue(false),
+                MakeBooleanAccessor(&ComponentCarrier::SetCsgIndication,
+                                    &ComponentCarrier::GetCsgIndication),
+                MakeBooleanChecker())
+            .AddAttribute(
+                "PrimaryCarrier",
+                "If true, this Carrier Component will be the Primary Carrier Component (PCC) "
+                "Only one PCC per eNodeB is (currently) allowed",
+                BooleanValue(false),
+                MakeBooleanAccessor(&ComponentCarrier::SetAsPrimary, &ComponentCarrier::IsPrimary),
+                MakeBooleanChecker());
+    return tid;
 }
-ComponentCarrier::ComponentCarrier () : Object ()
+
+ComponentCarrier::ComponentCarrier()
+    : Object()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-ComponentCarrier::~ComponentCarrier ()
+ComponentCarrier::~ComponentCarrier()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-ComponentCarrier::DoDispose ()
+ComponentCarrier::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  Object::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    Object::DoDispose();
 }
 
 uint16_t
-ComponentCarrier::GetUlBandwidth () const
+ComponentCarrier::GetUlBandwidth() const
 {
-  return m_ulBandwidth;
+    return m_ulBandwidth;
 }
 
 void
-ComponentCarrier::SetUlBandwidth (uint16_t bw)
+ComponentCarrier::SetUlBandwidth(uint16_t bw)
 {
-  NS_LOG_FUNCTION (this << bw);
-  switch (bw)
+    NS_LOG_FUNCTION(this << bw);
+    switch (bw)
     {
     case 6:
     case 15:
@@ -122,26 +128,26 @@ ComponentCarrier::SetUlBandwidth (uint16_t bw)
     case 50:
     case 75:
     case 100:
-      m_ulBandwidth = bw;
-      break;
+        m_ulBandwidth = bw;
+        break;
 
     default:
-      NS_FATAL_ERROR ("Invalid bandwidth value " << bw);
-      break;
+        NS_FATAL_ERROR("Invalid bandwidth value " << bw);
+        break;
     }
 }
 
 uint16_t
-ComponentCarrier::GetDlBandwidth () const
+ComponentCarrier::GetDlBandwidth() const
 {
-  return m_dlBandwidth;
+    return m_dlBandwidth;
 }
 
 void
-ComponentCarrier::SetDlBandwidth (uint16_t bw)
+ComponentCarrier::SetDlBandwidth(uint16_t bw)
 {
-  NS_LOG_FUNCTION (this << bw);
-  switch (bw)
+    NS_LOG_FUNCTION(this << bw);
+    switch (bw)
     {
     case 6:
     case 15:
@@ -149,116 +155,115 @@ ComponentCarrier::SetDlBandwidth (uint16_t bw)
     case 50:
     case 75:
     case 100:
-      m_dlBandwidth = bw;
-      break;
+        m_dlBandwidth = bw;
+        break;
 
     default:
-      NS_FATAL_ERROR ("Invalid bandwidth value " << bw);
-      break;
+        NS_FATAL_ERROR("Invalid bandwidth value " << bw);
+        break;
     }
 }
 
 uint32_t
-ComponentCarrier::GetDlEarfcn () const
+ComponentCarrier::GetDlEarfcn() const
 {
-  return m_dlEarfcn;
+    return m_dlEarfcn;
 }
 
 void
-ComponentCarrier::SetDlEarfcn (uint32_t earfcn)
+ComponentCarrier::SetDlEarfcn(uint32_t earfcn)
 {
-  NS_LOG_FUNCTION (this << earfcn);
-  m_dlEarfcn = earfcn;
+    NS_LOG_FUNCTION(this << earfcn);
+    m_dlEarfcn = earfcn;
 }
 
 uint32_t
-ComponentCarrier::GetUlEarfcn () const
+ComponentCarrier::GetUlEarfcn() const
 {
-  return m_ulEarfcn;
+    return m_ulEarfcn;
 }
 
 void
-ComponentCarrier::SetUlEarfcn (uint32_t earfcn)
+ComponentCarrier::SetUlEarfcn(uint32_t earfcn)
 {
-  NS_LOG_FUNCTION (this << earfcn);
-  m_ulEarfcn = earfcn;
+    NS_LOG_FUNCTION(this << earfcn);
+    m_ulEarfcn = earfcn;
 }
 
 uint32_t
-ComponentCarrier::GetCsgId () const
+ComponentCarrier::GetCsgId() const
 {
-  return m_csgId;
+    return m_csgId;
 }
 
 void
-ComponentCarrier::SetCsgId (uint32_t csgId)
+ComponentCarrier::SetCsgId(uint32_t csgId)
 {
-  NS_LOG_FUNCTION (this << csgId);
-  m_csgId = csgId;
+    NS_LOG_FUNCTION(this << csgId);
+    m_csgId = csgId;
 }
 
 bool
-ComponentCarrier::GetCsgIndication () const
+ComponentCarrier::GetCsgIndication() const
 {
-  return m_csgIndication;
+    return m_csgIndication;
 }
 
 void
-ComponentCarrier::SetCsgIndication (bool csgIndication)
+ComponentCarrier::SetCsgIndication(bool csgIndication)
 {
-  NS_LOG_FUNCTION (this << csgIndication);
-  m_csgIndication = csgIndication;
+    NS_LOG_FUNCTION(this << csgIndication);
+    m_csgIndication = csgIndication;
 }
 
 bool
-ComponentCarrier::IsPrimary () const
+ComponentCarrier::IsPrimary() const
 {
-  return m_primaryCarrier;
+    return m_primaryCarrier;
 }
 
 void
-ComponentCarrier::SetAsPrimary (bool primaryCarrier)
+ComponentCarrier::SetAsPrimary(bool primaryCarrier)
 {
-  NS_LOG_FUNCTION (this << primaryCarrier);
-  m_primaryCarrier = primaryCarrier;
+    NS_LOG_FUNCTION(this << primaryCarrier);
+    m_primaryCarrier = primaryCarrier;
 }
 
 //====================================================
 
-NS_OBJECT_ENSURE_REGISTERED (ComponentCarrierBaseStation);
+NS_OBJECT_ENSURE_REGISTERED(ComponentCarrierBaseStation);
 
-TypeId ComponentCarrierBaseStation::GetTypeId ()
+TypeId
+ComponentCarrierBaseStation::GetTypeId()
 {
-  static TypeId
-    tid =
-    TypeId ("ns3::ComponentCarrierBaseStation")
-    .SetParent<ComponentCarrier> ()
-    .AddConstructor<ComponentCarrierBaseStation> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::ComponentCarrierBaseStation")
+                            .SetParent<ComponentCarrier>()
+                            .AddConstructor<ComponentCarrierBaseStation>();
+    return tid;
 }
 
-ComponentCarrierBaseStation::ComponentCarrierBaseStation () : ComponentCarrier ()
+ComponentCarrierBaseStation::ComponentCarrierBaseStation()
+    : ComponentCarrier()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-ComponentCarrierBaseStation::~ComponentCarrierBaseStation ()
+ComponentCarrierBaseStation::~ComponentCarrierBaseStation()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 uint16_t
-ComponentCarrierBaseStation::GetCellId ()
+ComponentCarrierBaseStation::GetCellId()
 {
-  return m_cellId;
+    return m_cellId;
 }
 
 void
-ComponentCarrierBaseStation::SetCellId (uint16_t cellId)
+ComponentCarrierBaseStation::SetCellId(uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << cellId);
-  m_cellId = cellId;
+    NS_LOG_FUNCTION(this << cellId);
+    m_cellId = cellId;
 }
 
 } // namespace ns3

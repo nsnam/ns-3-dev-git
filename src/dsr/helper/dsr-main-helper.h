@@ -32,13 +32,14 @@
 #ifndef DSR_MAIN_HELPER_H
 #define DSR_MAIN_HELPER_H
 
-#include "ns3/object-factory.h"
-#include "ns3/node.h"
-#include "ns3/node-container.h"
-#include "ns3/dsr-routing.h"
 #include "ns3/dsr-helper.h"
+#include "ns3/dsr-routing.h"
+#include "ns3/node-container.h"
+#include "ns3/node.h"
+#include "ns3/object-factory.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup dsr
@@ -47,45 +48,45 @@ namespace ns3 {
  */
 class DsrMainHelper
 {
-public:
-  /**
-   * Create an DsrMainHelper that makes life easier for people who want to install
-   * DSR routing to nodes.
-   */
-  DsrMainHelper ();
-  ~DsrMainHelper ();
-  /**
-   * \brief Construct an DsrMainHelper from another previously initialized instance
-   * (Copy Constructor).
-   * \param o object to copy from
-   */
-  DsrMainHelper (const DsrMainHelper &o);
-  /**
-   * Install routing to the nodes
-   * \param dsrHelper The DSR helper class
-   * \param nodes the collection of nodes
-   */
-  void Install (DsrHelper &dsrHelper, NodeContainer nodes);
-  /**
-   * Set the helper class
-   * \param dsrHelper the DSR helper class
-   */
-  void SetDsrHelper (DsrHelper &dsrHelper);
+  public:
+    /**
+     * Create an DsrMainHelper that makes life easier for people who want to install
+     * DSR routing to nodes.
+     */
+    DsrMainHelper();
+    ~DsrMainHelper();
+    /**
+     * \brief Construct an DsrMainHelper from another previously initialized instance
+     * (Copy Constructor).
+     * \param o object to copy from
+     */
+    DsrMainHelper(const DsrMainHelper& o);
+    /**
+     * Install routing to the nodes
+     * \param dsrHelper The DSR helper class
+     * \param nodes the collection of nodes
+     */
+    void Install(DsrHelper& dsrHelper, NodeContainer nodes);
+    /**
+     * Set the helper class
+     * \param dsrHelper the DSR helper class
+     */
+    void SetDsrHelper(DsrHelper& dsrHelper);
 
-private:
-  /**
-   * Install routing to a node
-   * \param node the node to install DSR routing
-   */
-  void Install (Ptr<Node> node);
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \param o source object to assign
-   * \return DsrHelper object
-  */
-  DsrMainHelper &operator = (const DsrMainHelper &o);
-  const DsrHelper *m_dsrHelper; ///< helper class
+  private:
+    /**
+     * Install routing to a node
+     * \param node the node to install DSR routing
+     */
+    void Install(Ptr<Node> node);
+    /**
+     * \brief Assignment operator declared private and not implemented to disallow
+     * assignment and prevent the compiler from happily inserting its own.
+     * \param o source object to assign
+     * \return DsrHelper object
+     */
+    DsrMainHelper& operator=(const DsrMainHelper& o);
+    const DsrHelper* m_dsrHelper; ///< helper class
 };
 
 } // namespace ns3

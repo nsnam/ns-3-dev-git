@@ -24,12 +24,9 @@
 #define LTE_TEST_UPLINK_SINR_H
 
 #include "ns3/spectrum-value.h"
-
 #include "ns3/test.h"
 
-
 using namespace ns3;
-
 
 /**
  * \ingroup lte-test
@@ -39,10 +36,9 @@ using namespace ns3;
  */
 class LteUplinkSinrTestSuite : public TestSuite
 {
-public:
-  LteUplinkSinrTestSuite ();
+  public:
+    LteUplinkSinrTestSuite();
 };
-
 
 /**
  * \ingroup lte-test
@@ -54,70 +50,74 @@ public:
  */
 class LteUplinkDataSinrTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param sv1 spectrum value 1
-   * \param sv2 spectrum value 2
-   * \param sinr the SINR
-   * \param name the reference name
-   */
-  LteUplinkDataSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
-  ~LteUplinkDataSinrTestCase () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param sv1 spectrum value 1
+     * \param sv2 spectrum value 2
+     * \param sinr the SINR
+     * \param name the reference name
+     */
+    LteUplinkDataSinrTestCase(Ptr<SpectrumValue> sv1,
+                              Ptr<SpectrumValue> sv2,
+                              Ptr<SpectrumValue> sinr,
+                              std::string name);
+    ~LteUplinkDataSinrTestCase() override;
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 
-  Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
-  Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2
-  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
-  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
+    Ptr<SpectrumValue> m_sv1;          ///< the spectrum value #1
+    Ptr<SpectrumValue> m_sv2;          ///< the spectrum value #2
+    Ptr<const SpectrumModel> m_sm;     ///< the spectrum model
+    Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
 };
-
 
 /**
  * \ingroup lte-test
  * \ingroup tests
  *
  * \brief  In this test one signal will be of interest, i.e., the
-  *  SRS of the first signal will have the same CellId of the
-  *  receiving PHY; the others will have a different
-  *  CellId and hence will be the interfering signals. The test
-  *  checks whether the SINR of the signal correspond to the
-  *  theoretical value.
+ *  SRS of the first signal will have the same CellId of the
+ *  receiving PHY; the others will have a different
+ *  CellId and hence will be the interfering signals. The test
+ *  checks whether the SINR of the signal correspond to the
+ *  theoretical value.
  */
 class LteUplinkSrsSinrTestCase : public TestCase
 {
   public:
-  /**
-   * Constructor
-   *
-   * \param sv1 spectrum value 1
-   * \param sv2 spectrum value 2
-   * \param sinr the SINR
-   * \param name the reference name
-   */
-    LteUplinkSrsSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
-    ~LteUplinkSrsSinrTestCase () override;
+    /**
+     * Constructor
+     *
+     * \param sv1 spectrum value 1
+     * \param sv2 spectrum value 2
+     * \param sinr the SINR
+     * \param name the reference name
+     */
+    LteUplinkSrsSinrTestCase(Ptr<SpectrumValue> sv1,
+                             Ptr<SpectrumValue> sv2,
+                             Ptr<SpectrumValue> sinr,
+                             std::string name);
+    ~LteUplinkSrsSinrTestCase() override;
 
-  /**
-   * Callback to be connected to an LteChunkProcessor to collect the reported SINR
-   *
-   * \param sinr
-   */
-  void ReportSinr (const SpectrumValue& sinr);
+    /**
+     * Callback to be connected to an LteChunkProcessor to collect the reported SINR
+     *
+     * \param sinr
+     */
+    void ReportSinr(const SpectrumValue& sinr);
 
-private:
-  void DoRun () override;
+  private:
+    void DoRun() override;
 
-  Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
-  Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2
-  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
+    Ptr<SpectrumValue> m_sv1;      ///< the spectrum value #1
+    Ptr<SpectrumValue> m_sv2;      ///< the spectrum value #2
+    Ptr<const SpectrumModel> m_sm; ///< the spectrum model
 
-  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
-  Ptr<SpectrumValue> m_actualSinr; ///< the actual SINR
+    Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
+    Ptr<SpectrumValue> m_actualSinr;   ///< the actual SINR
 };
-
 
 #endif /* LTE_TEST_UPLINK_SINR_H */

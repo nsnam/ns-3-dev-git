@@ -21,11 +21,12 @@
 #ifndef UAN_NOISE_MODEL_DEFAULT_H
 #define UAN_NOISE_MODEL_DEFAULT_H
 
-#include "ns3/uan-noise-model.h"
 #include "ns3/attribute.h"
 #include "ns3/object.h"
+#include "ns3/uan-noise-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup uan
@@ -47,24 +48,24 @@ namespace ns3 {
  */
 class UanNoiseModelDefault : public UanNoiseModel
 {
-public:
-  UanNoiseModelDefault ();           //!< Default constructor.
-  ~UanNoiseModelDefault () override;  //!< Dummy destructor, DoDispose.
+  public:
+    UanNoiseModelDefault();           //!< Default constructor.
+    ~UanNoiseModelDefault() override; //!< Dummy destructor, DoDispose.
 
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId ();
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
 
-  // Inherited methods
-  double GetNoiseDbHz (double fKhz) const override;
+    // Inherited methods
+    double GetNoiseDbHz(double fKhz) const override;
 
-private:
-  double m_wind;      //!< Wind speed in m/s.
-  double m_shipping;  //!< Shipping contribution to noise between 0 and 1.
+  private:
+    double m_wind;     //!< Wind speed in m/s.
+    double m_shipping; //!< Shipping contribution to noise between 0 and 1.
 
-};  // class UanNoiseModelDefault
+}; // class UanNoiseModelDefault
 
 } // namespace ns3
 

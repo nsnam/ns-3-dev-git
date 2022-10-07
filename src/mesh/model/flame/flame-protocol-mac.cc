@@ -19,116 +19,145 @@
  */
 
 #include "flame-protocol-mac.h"
-#include "flame-protocol.h"
+
 #include "flame-header.h"
-#include "ns3/wifi-mac-header.h"
+#include "flame-protocol.h"
+
 #include "ns3/log.h"
+#include "ns3/wifi-mac-header.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("FlameProtocolMac");
+NS_LOG_COMPONENT_DEFINE("FlameProtocolMac");
 
-namespace flame {
+namespace flame
+{
 
-FlameProtocolMac::FlameProtocolMac (Ptr<FlameProtocol> protocol) :
-  m_protocol (protocol)
+FlameProtocolMac::FlameProtocolMac(Ptr<FlameProtocol> protocol)
+    : m_protocol(protocol)
 {
 }
-FlameProtocolMac::~FlameProtocolMac ()
+
+FlameProtocolMac::~FlameProtocolMac()
 {
-  m_protocol = nullptr;
-  m_parent = nullptr;
+    m_protocol = nullptr;
+    m_parent = nullptr;
 }
+
 void
-FlameProtocolMac::SetParent (Ptr<MeshWifiInterfaceMac> parent)
+FlameProtocolMac::SetParent(Ptr<MeshWifiInterfaceMac> parent)
 {
-  m_parent = parent;
+    m_parent = parent;
 }
 
 bool
-FlameProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
+FlameProtocolMac::Receive(Ptr<Packet> packet, const WifiMacHeader& header)
 {
-  if (!header.IsData ())
+    if (!header.IsData())
     {
-      return true;
+        return true;
     }
-  FlameTag tag;
-  if (packet->PeekPacketTag (tag))
+    FlameTag tag;
+    if (packet->PeekPacketTag(tag))
     {
-      NS_FATAL_ERROR ("FLAME tag is not supposed to be received by network");
+        NS_FATAL_ERROR("FLAME tag is not supposed to be received by network");
     }
-  tag.receiver = header.GetAddr1 ();
-  tag.transmitter = header.GetAddr2 ();
-  if (tag.receiver == Mac48Address::GetBroadcast ())
+    tag.receiver = header.GetAddr1();
+    tag.transmitter = header.GetAddr2();
+    if (tag.receiver == Mac48Address::GetBroadcast())
     {
-      m_stats.rxBroadcast++;
+        m_stats.rxBroadcast++;
     }
-  else
+    else
     {
-      m_stats.rxUnicast++;
+        m_stats.rxUnicast++;
     }
-  m_stats.rxBytes += packet->GetSize ();
-  packet->AddPacketTag (tag);
-  return true;
+    m_stats.rxBytes += packet->GetSize();
+    packet->AddPacketTag(tag);
+    return true;
 }
+
 bool
-FlameProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from,
-                                        Mac48Address to)
+FlameProtocolMac::UpdateOutcomingFrame(Ptr<Packet> packet,
+                                       WifiMacHeader& header,
+                                       Mac48Address from,
+                                       Mac48Address to)
 {
-  if (!header.IsData ())
+    if (!header.IsData())
     {
-      return true;
+        return true;
     }
-  FlameTag tag;
-  if (!packet->RemovePacketTag (tag))
+    FlameTag tag;
+    if (!packet->RemovePacketTag(tag))
     {
-      NS_FATAL_ERROR ("FLAME tag must exist here");
+        NS_FATAL_ERROR("FLAME tag must exist here");
     }
-  header.SetAddr1 (tag.receiver);
-  if (tag.receiver == Mac48Address::GetBroadcast ())
+    header.SetAddr1(tag.receiver);
+    if (tag.receiver == Mac48Address::GetBroadcast())
     {
-      m_stats.txBroadcast++;
+        m_stats.txBroadcast++;
     }
-  else
+    else
     {
-      m_stats.txUnicast++;
+        m_stats.txUnicast++;
     }
-  m_stats.txBytes += packet->GetSize ();
-  return true;
+    m_stats.txBytes += packet->GetSize();
+    return true;
 }
+
 uint16_t
-FlameProtocolMac::GetChannelId () const
+FlameProtocolMac::GetChannelId() const
 {
-  return m_parent->GetFrequencyChannel ();
+    return m_parent->GetFrequencyChannel();
 }
-FlameProtocolMac::Statistics::Statistics () :
-  txUnicast (0), txBroadcast (0), txBytes (0), rxUnicast (0), rxBroadcast (0), rxBytes (0)
-{
-}
-void
-FlameProtocolMac::Statistics::Print (std::ostream &os) const
-{
-  os << "<Statistics "
-  "txUnicast=\"" << txUnicast << "\" "
-  "txBroadcast=\"" << txBroadcast << "\" "
-  "txBytes=\"" << txBytes << "\" "
-  "rxUnicast=\"" << rxUnicast << "\" "
-  "rxBroadcast=\"" << rxBroadcast << "\" "
-  "rxBytes=\"" << rxBytes << "\"/>" << std::endl;
-}
-void
-FlameProtocolMac::Report (std::ostream & os) const
-{
-  os << "<FlameProtocolMac" << std::endl <<
-  "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
-  m_stats.Print (os);
-  os << "</FlameProtocolMac>" << std::endl;
 
-}
-void
-FlameProtocolMac::ResetStats ()
+FlameProtocolMac::Statistics::Statistics()
+    : txUnicast(0),
+      txBroadcast(0),
+      txBytes(0),
+      rxUnicast(0),
+      rxBroadcast(0),
+      rxBytes(0)
 {
-  m_stats = Statistics ();
+}
+
+void
+FlameProtocolMac::Statistics::Print(std::ostream& os) const
+{
+    os << "<Statistics "
+          "txUnicast=\""
+       << txUnicast
+       << "\" "
+          "txBroadcast=\""
+       << txBroadcast
+       << "\" "
+          "txBytes=\""
+       << txBytes
+       << "\" "
+          "rxUnicast=\""
+       << rxUnicast
+       << "\" "
+          "rxBroadcast=\""
+       << rxBroadcast
+       << "\" "
+          "rxBytes=\""
+       << rxBytes << "\"/>" << std::endl;
+}
+
+void
+FlameProtocolMac::Report(std::ostream& os) const
+{
+    os << "<FlameProtocolMac" << std::endl
+       << "address =\"" << m_parent->GetAddress() << "\">" << std::endl;
+    m_stats.Print(os);
+    os << "</FlameProtocolMac>" << std::endl;
+}
+
+void
+FlameProtocolMac::ResetStats()
+{
+    m_stats = Statistics();
 }
 
 } // namespace flame

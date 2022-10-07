@@ -24,67 +24,79 @@
  */
 
 #include "nix-vector-helper.h"
-#include "ns3/nix-vector-routing.h"
-#include "ns3/assert.h"
 
-namespace ns3 {
+#include "ns3/assert.h"
+#include "ns3/nix-vector-routing.h"
+
+namespace ns3
+{
 
 template <typename T>
-NixVectorHelper<T>::NixVectorHelper ()
+NixVectorHelper<T>::NixVectorHelper()
 {
-  std::string name;
-  if constexpr (IsIpv4)
+    std::string name;
+    if constexpr (IsIpv4)
     {
-      name = "Ipv4";
+        name = "Ipv4";
     }
-  else
+    else
     {
-      name = "Ipv6";
+        name = "Ipv6";
     }
 
-  m_agentFactory.SetTypeId ("ns3::" + name + "NixVectorRouting");
+    m_agentFactory.SetTypeId("ns3::" + name + "NixVectorRouting");
 }
 
 template <typename T>
-NixVectorHelper<T>::NixVectorHelper (const NixVectorHelper<T> &o)
-  : m_agentFactory (o.m_agentFactory)
+NixVectorHelper<T>::NixVectorHelper(const NixVectorHelper<T>& o)
+    : m_agentFactory(o.m_agentFactory)
 {
-  // Check if the T is Ipv4RoutingHelper or Ipv6RoutingHelper.
-  static_assert ((std::is_same_v<Ipv4RoutingHelper, T> || std::is_same_v<Ipv6RoutingHelper, T>),
-                 "Template parameter is not Ipv4RoutingHelper or Ipv6Routing Helper");
+    // Check if the T is Ipv4RoutingHelper or Ipv6RoutingHelper.
+    static_assert((std::is_same_v<Ipv4RoutingHelper, T> || std::is_same_v<Ipv6RoutingHelper, T>),
+                  "Template parameter is not Ipv4RoutingHelper or Ipv6Routing Helper");
 }
 
 template <typename T>
 NixVectorHelper<T>*
-NixVectorHelper<T>::Copy () const
+NixVectorHelper<T>::Copy() const
 {
-  return new NixVectorHelper<T> (*this);
+    return new NixVectorHelper<T>(*this);
 }
 
 template <typename T>
 Ptr<typename NixVectorHelper<T>::IpRoutingProtocol>
-NixVectorHelper<T>::Create (Ptr<Node> node) const
+NixVectorHelper<T>::Create(Ptr<Node> node) const
 {
-  Ptr<NixVectorRouting<IpRoutingProtocol>> agent = m_agentFactory.Create<NixVectorRouting<IpRoutingProtocol>> ();
-  agent->SetNode (node);
-  node->AggregateObject (agent);
-  return agent;
+    Ptr<NixVectorRouting<IpRoutingProtocol>> agent =
+        m_agentFactory.Create<NixVectorRouting<IpRoutingProtocol>>();
+    agent->SetNode(node);
+    node->AggregateObject(agent);
+    return agent;
 }
 
 template <typename T>
 void
-NixVectorHelper<T>::PrintRoutingPathAt (Time printTime, Ptr<Node> source, IpAddress dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit)
+NixVectorHelper<T>::PrintRoutingPathAt(Time printTime,
+                                       Ptr<Node> source,
+                                       IpAddress dest,
+                                       Ptr<OutputStreamWrapper> stream,
+                                       Time::Unit unit)
 {
-  Simulator::Schedule (printTime, &NixVectorHelper<T>::PrintRoute, source, dest, stream, unit);
+    Simulator::Schedule(printTime, &NixVectorHelper<T>::PrintRoute, source, dest, stream, unit);
 }
 
 template <typename T>
 void
-NixVectorHelper<T>::PrintRoute (Ptr<Node> source, IpAddress dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit)
+NixVectorHelper<T>::PrintRoute(Ptr<Node> source,
+                               IpAddress dest,
+                               Ptr<OutputStreamWrapper> stream,
+                               Time::Unit unit)
 {
-  Ptr<NixVectorRouting<IpRoutingProtocol>> rp = T::template GetRouting <NixVectorRouting<IpRoutingProtocol>> (source->GetObject<Ip> ()->GetRoutingProtocol ());
-  NS_ASSERT (rp);
-  rp->PrintRoutingPath (source, dest, stream, unit);
+    Ptr<NixVectorRouting<IpRoutingProtocol>> rp =
+        T::template GetRouting<NixVectorRouting<IpRoutingProtocol>>(
+            source->GetObject<Ip>()->GetRoutingProtocol());
+    NS_ASSERT(rp);
+    rp->PrintRoutingPath(source, dest, stream, unit);
 }
 
 template class NixVectorHelper<Ipv4RoutingHelper>;

@@ -29,25 +29,25 @@
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
 
-#include <vector>
-#include "ns3/ptr.h"
 #include "ns3/boolean.h"
-#include "ns3/test.h"
+#include "ns3/double.h"
+#include "ns3/dsr-fs-header.h"
+#include "ns3/dsr-helper.h"
+#include "ns3/dsr-main-helper.h"
+#include "ns3/dsr-option-header.h"
+#include "ns3/dsr-rcache.h"
+#include "ns3/dsr-rreq-table.h"
+#include "ns3/dsr-rsendbuff.h"
+#include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/mesh-helper.h"
+#include "ns3/ptr.h"
 #include "ns3/simulator.h"
-#include "ns3/double.h"
-#include "ns3/uinteger.h"
 #include "ns3/string.h"
-#include "ns3/ipv4-address-helper.h"
+#include "ns3/test.h"
+#include "ns3/uinteger.h"
 
-#include "ns3/dsr-fs-header.h"
-#include "ns3/dsr-option-header.h"
-#include "ns3/dsr-rreq-table.h"
-#include "ns3/dsr-rcache.h"
-#include "ns3/dsr-rsendbuff.h"
-#include "ns3/dsr-main-helper.h"
-#include "ns3/dsr-helper.h"
+#include <vector>
 
 using namespace ns3;
 using namespace dsr;
@@ -58,7 +58,6 @@ using namespace dsr;
  * \defgroup dsr-test DSR routing module tests
  */
 
-
 /**
  * \ingroup dsr-test
  * \ingroup tests
@@ -68,34 +67,41 @@ using namespace dsr;
  */
 class DsrFsHeaderTest : public TestCase
 {
-public:
-  DsrFsHeaderTest ();
-  ~DsrFsHeaderTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrFsHeaderTest();
+    ~DsrFsHeaderTest() override;
+    void DoRun() override;
 };
-DsrFsHeaderTest::DsrFsHeaderTest ()
-  : TestCase ("DSR Fixed size Header")
+
+DsrFsHeaderTest::DsrFsHeaderTest()
+    : TestCase("DSR Fixed size Header")
 {
 }
-DsrFsHeaderTest::~DsrFsHeaderTest ()
+
+DsrFsHeaderTest::~DsrFsHeaderTest()
 {
 }
+
 void
-DsrFsHeaderTest::DoRun ()
+DsrFsHeaderTest::DoRun()
 {
-  dsr::DsrRoutingHeader header;
-  dsr::DsrOptionRreqHeader rreqHeader;
-  header.AddDsrOption (rreqHeader); // has an alignment of 4n+0
+    dsr::DsrRoutingHeader header;
+    dsr::DsrOptionRreqHeader rreqHeader;
+    header.AddDsrOption(rreqHeader); // has an alignment of 4n+0
 
-  NS_TEST_EXPECT_MSG_EQ (header.GetSerializedSize () % 2, 0, "length of routing header is not a multiple of 4");
-  Buffer buf;
-  buf.AddAtStart (header.GetSerializedSize ());
-  header.Serialize (buf.Begin ());
+    NS_TEST_EXPECT_MSG_EQ(header.GetSerializedSize() % 2,
+                          0,
+                          "length of routing header is not a multiple of 4");
+    Buffer buf;
+    buf.AddAtStart(header.GetSerializedSize());
+    header.Serialize(buf.Begin());
 
-  const uint8_t* data = buf.PeekData ();
-  NS_TEST_EXPECT_MSG_EQ (*(data + 8), rreqHeader.GetType (), "expect the rreqHeader after fixed size header");
+    const uint8_t* data = buf.PeekData();
+    NS_TEST_EXPECT_MSG_EQ(*(data + 8),
+                          rreqHeader.GetType(),
+                          "expect the rreqHeader after fixed size header");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -106,49 +112,52 @@ DsrFsHeaderTest::DoRun ()
  */
 class DsrRreqHeaderTest : public TestCase
 {
-public:
-  DsrRreqHeaderTest ();
-  ~DsrRreqHeaderTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrRreqHeaderTest();
+    ~DsrRreqHeaderTest() override;
+    void DoRun() override;
 };
-DsrRreqHeaderTest::DsrRreqHeaderTest ()
-  : TestCase ("DSR RREQ")
+
+DsrRreqHeaderTest::DsrRreqHeaderTest()
+    : TestCase("DSR RREQ")
 {
 }
-DsrRreqHeaderTest::~DsrRreqHeaderTest ()
+
+DsrRreqHeaderTest::~DsrRreqHeaderTest()
 {
 }
+
 void
-DsrRreqHeaderTest::DoRun ()
+DsrRreqHeaderTest::DoRun()
 {
-  dsr::DsrOptionRreqHeader h;
+    dsr::DsrOptionRreqHeader h;
 
-  const std::vector<Ipv4Address> nodeList {
-    Ipv4Address ("1.1.1.0"),
-    Ipv4Address ("1.1.1.1"),
-    Ipv4Address ("1.1.1.2"),
-  };
+    const std::vector<Ipv4Address> nodeList{
+        Ipv4Address("1.1.1.0"),
+        Ipv4Address("1.1.1.1"),
+        Ipv4Address("1.1.1.2"),
+    };
 
-  h.SetTarget (Ipv4Address ("1.1.1.3"));
-  NS_TEST_EXPECT_MSG_EQ (h.GetTarget (), Ipv4Address ("1.1.1.3"), "trivial");
-  h.SetNodesAddress (nodeList);
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (0), Ipv4Address ("1.1.1.0"), "trivial");
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (1), Ipv4Address ("1.1.1.1"), "trivial");
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (2), Ipv4Address ("1.1.1.2"), "trivial");
-  h.SetId (1);
-  NS_TEST_EXPECT_MSG_EQ (h.GetId (), 1, "trivial");
+    h.SetTarget(Ipv4Address("1.1.1.3"));
+    NS_TEST_EXPECT_MSG_EQ(h.GetTarget(), Ipv4Address("1.1.1.3"), "trivial");
+    h.SetNodesAddress(nodeList);
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(0), Ipv4Address("1.1.1.0"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(1), Ipv4Address("1.1.1.1"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(2), Ipv4Address("1.1.1.2"), "trivial");
+    h.SetId(1);
+    NS_TEST_EXPECT_MSG_EQ(h.GetId(), 1, "trivial");
 
-  Ptr<Packet> p = Create<Packet> ();
-  dsr::DsrRoutingHeader header;
-  header.AddDsrOption (h);
-  p->AddHeader (header);
-  p->RemoveAtStart (8);
-  dsr::DsrOptionRreqHeader h2;
-  h2.SetNumberAddress (3);
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_EXPECT_MSG_EQ (bytes, 20, "Total RREP is 20 bytes long");
+    Ptr<Packet> p = Create<Packet>();
+    dsr::DsrRoutingHeader header;
+    header.AddDsrOption(h);
+    p->AddHeader(header);
+    p->RemoveAtStart(8);
+    dsr::DsrOptionRreqHeader h2;
+    h2.SetNumberAddress(3);
+    uint32_t bytes = p->RemoveHeader(h2);
+    NS_TEST_EXPECT_MSG_EQ(bytes, 20, "Total RREP is 20 bytes long");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -159,45 +168,48 @@ DsrRreqHeaderTest::DoRun ()
  */
 class DsrRrepHeaderTest : public TestCase
 {
-public:
-  DsrRrepHeaderTest ();
-  ~DsrRrepHeaderTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrRrepHeaderTest();
+    ~DsrRrepHeaderTest() override;
+    void DoRun() override;
 };
-DsrRrepHeaderTest::DsrRrepHeaderTest ()
-  : TestCase ("DSR RREP")
+
+DsrRrepHeaderTest::DsrRrepHeaderTest()
+    : TestCase("DSR RREP")
 {
 }
-DsrRrepHeaderTest::~DsrRrepHeaderTest ()
+
+DsrRrepHeaderTest::~DsrRrepHeaderTest()
 {
 }
+
 void
-DsrRrepHeaderTest::DoRun ()
+DsrRrepHeaderTest::DoRun()
 {
-  dsr::DsrOptionRrepHeader h;
+    dsr::DsrOptionRrepHeader h;
 
-  const std::vector<Ipv4Address> nodeList {
-    Ipv4Address ("1.1.1.0"),
-    Ipv4Address ("1.1.1.1"),
-    Ipv4Address ("1.1.1.2"),
-  };
+    const std::vector<Ipv4Address> nodeList{
+        Ipv4Address("1.1.1.0"),
+        Ipv4Address("1.1.1.1"),
+        Ipv4Address("1.1.1.2"),
+    };
 
-  h.SetNodesAddress (nodeList);
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (0), Ipv4Address ("1.1.1.0"), "trivial");
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (1), Ipv4Address ("1.1.1.1"), "trivial");
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (2), Ipv4Address ("1.1.1.2"), "trivial");
+    h.SetNodesAddress(nodeList);
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(0), Ipv4Address("1.1.1.0"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(1), Ipv4Address("1.1.1.1"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(2), Ipv4Address("1.1.1.2"), "trivial");
 
-  Ptr<Packet> p = Create<Packet> ();
-  dsr::DsrRoutingHeader header;
-  header.AddDsrOption (h);
-  p->AddHeader (header);
-  p->RemoveAtStart (8);
-  dsr::DsrOptionRrepHeader h2;
-  h2.SetNumberAddress (3);
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_EXPECT_MSG_EQ (bytes, 16, "Total RREP is 16 bytes long");
+    Ptr<Packet> p = Create<Packet>();
+    dsr::DsrRoutingHeader header;
+    header.AddDsrOption(h);
+    p->AddHeader(header);
+    p->RemoveAtStart(8);
+    dsr::DsrOptionRrepHeader h2;
+    h2.SetNumberAddress(3);
+    uint32_t bytes = p->RemoveHeader(h2);
+    NS_TEST_EXPECT_MSG_EQ(bytes, 16, "Total RREP is 16 bytes long");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -208,50 +220,53 @@ DsrRrepHeaderTest::DoRun ()
  */
 class DsrSRHeaderTest : public TestCase
 {
-public:
-  DsrSRHeaderTest ();
-  ~DsrSRHeaderTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrSRHeaderTest();
+    ~DsrSRHeaderTest() override;
+    void DoRun() override;
 };
-DsrSRHeaderTest::DsrSRHeaderTest ()
-  : TestCase ("DSR Source Route")
+
+DsrSRHeaderTest::DsrSRHeaderTest()
+    : TestCase("DSR Source Route")
 {
 }
-DsrSRHeaderTest::~DsrSRHeaderTest ()
+
+DsrSRHeaderTest::~DsrSRHeaderTest()
 {
 }
+
 void
-DsrSRHeaderTest::DoRun ()
+DsrSRHeaderTest::DoRun()
 {
-  dsr::DsrOptionSRHeader h;
+    dsr::DsrOptionSRHeader h;
 
-  const std::vector<Ipv4Address> nodeList {
-    Ipv4Address ("1.1.1.0"),
-    Ipv4Address ("1.1.1.1"),
-    Ipv4Address ("1.1.1.2"),
-  };
+    const std::vector<Ipv4Address> nodeList{
+        Ipv4Address("1.1.1.0"),
+        Ipv4Address("1.1.1.1"),
+        Ipv4Address("1.1.1.2"),
+    };
 
-  h.SetNodesAddress (nodeList);
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (0), Ipv4Address ("1.1.1.0"), "trivial");
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (1), Ipv4Address ("1.1.1.1"), "trivial");
-  NS_TEST_EXPECT_MSG_EQ (h.GetNodeAddress (2), Ipv4Address ("1.1.1.2"), "trivial");
+    h.SetNodesAddress(nodeList);
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(0), Ipv4Address("1.1.1.0"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(1), Ipv4Address("1.1.1.1"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ(h.GetNodeAddress(2), Ipv4Address("1.1.1.2"), "trivial");
 
-  h.SetSalvage (1);
-  NS_TEST_EXPECT_MSG_EQ (h.GetSalvage (), 1, "trivial");
-  h.SetSegmentsLeft (2);
-  NS_TEST_EXPECT_MSG_EQ (h.GetSegmentsLeft (), 2, "trivial");
+    h.SetSalvage(1);
+    NS_TEST_EXPECT_MSG_EQ(h.GetSalvage(), 1, "trivial");
+    h.SetSegmentsLeft(2);
+    NS_TEST_EXPECT_MSG_EQ(h.GetSegmentsLeft(), 2, "trivial");
 
-  Ptr<Packet> p = Create<Packet> ();
-  dsr::DsrRoutingHeader header;
-  header.AddDsrOption (h);
-  p->AddHeader (header);
-  p->RemoveAtStart (8);
-  dsr::DsrOptionSRHeader h2;
-  h2.SetNumberAddress (3);
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_EXPECT_MSG_EQ (bytes, 16, "Total RREP is 16 bytes long");
+    Ptr<Packet> p = Create<Packet>();
+    dsr::DsrRoutingHeader header;
+    header.AddDsrOption(h);
+    p->AddHeader(header);
+    p->RemoveAtStart(8);
+    dsr::DsrOptionSRHeader h2;
+    h2.SetNumberAddress(3);
+    uint32_t bytes = p->RemoveHeader(h2);
+    NS_TEST_EXPECT_MSG_EQ(bytes, 16, "Total RREP is 16 bytes long");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -262,41 +277,44 @@ DsrSRHeaderTest::DoRun ()
  */
 class DsrRerrHeaderTest : public TestCase
 {
-public:
-  DsrRerrHeaderTest ();
-  ~DsrRerrHeaderTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrRerrHeaderTest();
+    ~DsrRerrHeaderTest() override;
+    void DoRun() override;
 };
-DsrRerrHeaderTest::DsrRerrHeaderTest ()
-  : TestCase ("DSR RERR")
-{
-}
-DsrRerrHeaderTest::~DsrRerrHeaderTest ()
-{
-}
-void
-DsrRerrHeaderTest::DoRun ()
-{
-  dsr::DsrOptionRerrUnreachHeader h;
-  h.SetErrorSrc (Ipv4Address ("1.1.1.0"));
-  NS_TEST_EXPECT_MSG_EQ (h.GetErrorSrc (), Ipv4Address ("1.1.1.0"), "trivial");
-  h.SetErrorDst (Ipv4Address ("1.1.1.1"));
-  NS_TEST_EXPECT_MSG_EQ (h.GetErrorDst (), Ipv4Address ("1.1.1.1"), "trivial");
-  h.SetSalvage (1);
-  NS_TEST_EXPECT_MSG_EQ (h.GetSalvage (), 1, "trivial");
-  h.SetUnreachNode (Ipv4Address ("1.1.1.2"));
-  NS_TEST_EXPECT_MSG_EQ (h.GetUnreachNode (), Ipv4Address ("1.1.1.2"), "trivial");
 
-  Ptr<Packet> p = Create<Packet> ();
-  dsr::DsrRoutingHeader header;
-  header.AddDsrOption (h);
-  p->AddHeader (header);
-  p->RemoveAtStart (8);
-  dsr::DsrOptionRerrUnreachHeader h2;
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_EXPECT_MSG_EQ (bytes, 20, "Total RREP is 20 bytes long");
+DsrRerrHeaderTest::DsrRerrHeaderTest()
+    : TestCase("DSR RERR")
+{
 }
+
+DsrRerrHeaderTest::~DsrRerrHeaderTest()
+{
+}
+
+void
+DsrRerrHeaderTest::DoRun()
+{
+    dsr::DsrOptionRerrUnreachHeader h;
+    h.SetErrorSrc(Ipv4Address("1.1.1.0"));
+    NS_TEST_EXPECT_MSG_EQ(h.GetErrorSrc(), Ipv4Address("1.1.1.0"), "trivial");
+    h.SetErrorDst(Ipv4Address("1.1.1.1"));
+    NS_TEST_EXPECT_MSG_EQ(h.GetErrorDst(), Ipv4Address("1.1.1.1"), "trivial");
+    h.SetSalvage(1);
+    NS_TEST_EXPECT_MSG_EQ(h.GetSalvage(), 1, "trivial");
+    h.SetUnreachNode(Ipv4Address("1.1.1.2"));
+    NS_TEST_EXPECT_MSG_EQ(h.GetUnreachNode(), Ipv4Address("1.1.1.2"), "trivial");
+
+    Ptr<Packet> p = Create<Packet>();
+    dsr::DsrRoutingHeader header;
+    header.AddDsrOption(h);
+    p->AddHeader(header);
+    p->RemoveAtStart(8);
+    dsr::DsrOptionRerrUnreachHeader h2;
+    uint32_t bytes = p->RemoveHeader(h2);
+    NS_TEST_EXPECT_MSG_EQ(bytes, 20, "Total RREP is 20 bytes long");
+}
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -307,38 +325,41 @@ DsrRerrHeaderTest::DoRun ()
  */
 class DsrAckReqHeaderTest : public TestCase
 {
-public:
-  DsrAckReqHeaderTest ();
-  ~DsrAckReqHeaderTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrAckReqHeaderTest();
+    ~DsrAckReqHeaderTest() override;
+    void DoRun() override;
 };
-DsrAckReqHeaderTest::DsrAckReqHeaderTest ()
-  : TestCase ("DSR Ack Req")
+
+DsrAckReqHeaderTest::DsrAckReqHeaderTest()
+    : TestCase("DSR Ack Req")
 {
 }
-DsrAckReqHeaderTest::~DsrAckReqHeaderTest ()
+
+DsrAckReqHeaderTest::~DsrAckReqHeaderTest()
 {
 }
+
 void
-DsrAckReqHeaderTest::DoRun ()
+DsrAckReqHeaderTest::DoRun()
 {
-  dsr::DsrOptionAckReqHeader h;
+    dsr::DsrOptionAckReqHeader h;
 
-  h.SetAckId (1);
-  NS_TEST_EXPECT_MSG_EQ (h.GetAckId (), 1, "trivial");
+    h.SetAckId(1);
+    NS_TEST_EXPECT_MSG_EQ(h.GetAckId(), 1, "trivial");
 
-  Ptr<Packet> p = Create<Packet> ();
-  dsr::DsrRoutingHeader header;
-  header.AddDsrOption (h);
-  p->AddHeader (header);
-  p->RemoveAtStart (8);
-  p->AddHeader (header);
-  dsr::DsrOptionAckReqHeader h2;
-  p->RemoveAtStart (8);
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_EXPECT_MSG_EQ (bytes, 4, "Total RREP is 4 bytes long");
+    Ptr<Packet> p = Create<Packet>();
+    dsr::DsrRoutingHeader header;
+    header.AddDsrOption(h);
+    p->AddHeader(header);
+    p->RemoveAtStart(8);
+    p->AddHeader(header);
+    dsr::DsrOptionAckReqHeader h2;
+    p->RemoveAtStart(8);
+    uint32_t bytes = p->RemoveHeader(h2);
+    NS_TEST_EXPECT_MSG_EQ(bytes, 4, "Total RREP is 4 bytes long");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -349,42 +370,45 @@ DsrAckReqHeaderTest::DoRun ()
  */
 class DsrAckHeaderTest : public TestCase
 {
-public:
-  DsrAckHeaderTest ();
-  ~DsrAckHeaderTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrAckHeaderTest();
+    ~DsrAckHeaderTest() override;
+    void DoRun() override;
 };
-DsrAckHeaderTest::DsrAckHeaderTest ()
-  : TestCase ("DSR ACK")
+
+DsrAckHeaderTest::DsrAckHeaderTest()
+    : TestCase("DSR ACK")
 {
 }
-DsrAckHeaderTest::~DsrAckHeaderTest ()
+
+DsrAckHeaderTest::~DsrAckHeaderTest()
 {
 }
+
 void
-DsrAckHeaderTest::DoRun ()
+DsrAckHeaderTest::DoRun()
 {
-  dsr::DsrOptionAckHeader h;
+    dsr::DsrOptionAckHeader h;
 
-  h.SetRealSrc (Ipv4Address ("1.1.1.0"));
-  NS_TEST_EXPECT_MSG_EQ (h.GetRealSrc (), Ipv4Address ("1.1.1.0"), "trivial");
-  h.SetRealDst (Ipv4Address ("1.1.1.1"));
-  NS_TEST_EXPECT_MSG_EQ (h.GetRealDst (), Ipv4Address ("1.1.1.1"), "trivial");
-  h.SetAckId (1);
-  NS_TEST_EXPECT_MSG_EQ (h.GetAckId (), 1, "trivial");
+    h.SetRealSrc(Ipv4Address("1.1.1.0"));
+    NS_TEST_EXPECT_MSG_EQ(h.GetRealSrc(), Ipv4Address("1.1.1.0"), "trivial");
+    h.SetRealDst(Ipv4Address("1.1.1.1"));
+    NS_TEST_EXPECT_MSG_EQ(h.GetRealDst(), Ipv4Address("1.1.1.1"), "trivial");
+    h.SetAckId(1);
+    NS_TEST_EXPECT_MSG_EQ(h.GetAckId(), 1, "trivial");
 
-  Ptr<Packet> p = Create<Packet> ();
-  dsr::DsrRoutingHeader header;
-  header.AddDsrOption (h);
-  p->AddHeader (header);
-  p->RemoveAtStart (8);
-  p->AddHeader (header);
-  dsr::DsrOptionAckHeader h2;
-  p->RemoveAtStart (8);
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_EXPECT_MSG_EQ (bytes, 12, "Total RREP is 12 bytes long");
+    Ptr<Packet> p = Create<Packet>();
+    dsr::DsrRoutingHeader header;
+    header.AddDsrOption(h);
+    p->AddHeader(header);
+    p->RemoveAtStart(8);
+    p->AddHeader(header);
+    dsr::DsrOptionAckHeader h2;
+    p->RemoveAtStart(8);
+    uint32_t bytes = p->RemoveHeader(h2);
+    NS_TEST_EXPECT_MSG_EQ(bytes, 12, "Total RREP is 12 bytes long");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -395,60 +419,63 @@ DsrAckHeaderTest::DoRun ()
  */
 class DsrCacheEntryTest : public TestCase
 {
-public:
-  DsrCacheEntryTest ();
-  ~DsrCacheEntryTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrCacheEntryTest();
+    ~DsrCacheEntryTest() override;
+    void DoRun() override;
 };
-DsrCacheEntryTest::DsrCacheEntryTest ()
-  : TestCase ("DSR ACK")
+
+DsrCacheEntryTest::DsrCacheEntryTest()
+    : TestCase("DSR ACK")
 {
 }
-DsrCacheEntryTest::~DsrCacheEntryTest ()
+
+DsrCacheEntryTest::~DsrCacheEntryTest()
 {
 }
+
 void
-DsrCacheEntryTest::DoRun ()
+DsrCacheEntryTest::DoRun()
 {
-  Ptr<dsr::DsrRouteCache> rcache = CreateObject<dsr::DsrRouteCache> ();
+    Ptr<dsr::DsrRouteCache> rcache = CreateObject<dsr::DsrRouteCache>();
 
-  std::vector<Ipv4Address> ip {
-    Ipv4Address ("0.0.0.0"),
-    Ipv4Address ("0.0.0.1"),
-  };
+    std::vector<Ipv4Address> ip{
+        Ipv4Address("0.0.0.0"),
+        Ipv4Address("0.0.0.1"),
+    };
 
-  Ipv4Address dst = Ipv4Address ("0.0.0.1");
-  dsr::DsrRouteCacheEntry entry (ip, dst, Seconds (1));
-  NS_TEST_EXPECT_MSG_EQ (entry.GetVector ().size (), 2, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (entry.GetDestination (), Ipv4Address ("0.0.0.1"), "trivial");
-  NS_TEST_EXPECT_MSG_EQ (entry.GetExpireTime (), Seconds (1), "trivial");
+    Ipv4Address dst = Ipv4Address("0.0.0.1");
+    dsr::DsrRouteCacheEntry entry(ip, dst, Seconds(1));
+    NS_TEST_EXPECT_MSG_EQ(entry.GetVector().size(), 2, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(entry.GetDestination(), Ipv4Address("0.0.0.1"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ(entry.GetExpireTime(), Seconds(1), "trivial");
 
-  entry.SetExpireTime (Seconds (3));
-  NS_TEST_EXPECT_MSG_EQ (entry.GetExpireTime (), Seconds (3), "trivial");
-  entry.SetDestination (Ipv4Address ("1.1.1.1"));
-  NS_TEST_EXPECT_MSG_EQ (entry.GetDestination (), Ipv4Address ("1.1.1.1"), "trivial");
-  ip.emplace_back("0.0.0.2");
-  entry.SetVector (ip);
-  NS_TEST_EXPECT_MSG_EQ (entry.GetVector ().size (), 3, "trivial");
+    entry.SetExpireTime(Seconds(3));
+    NS_TEST_EXPECT_MSG_EQ(entry.GetExpireTime(), Seconds(3), "trivial");
+    entry.SetDestination(Ipv4Address("1.1.1.1"));
+    NS_TEST_EXPECT_MSG_EQ(entry.GetDestination(), Ipv4Address("1.1.1.1"), "trivial");
+    ip.emplace_back("0.0.0.2");
+    entry.SetVector(ip);
+    NS_TEST_EXPECT_MSG_EQ(entry.GetVector().size(), 3, "trivial");
 
-  NS_TEST_EXPECT_MSG_EQ (rcache->AddRoute (entry), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(rcache->AddRoute(entry), true, "trivial");
 
-  std::vector<Ipv4Address> ip2 {
-    Ipv4Address ("1.1.1.0"),
-    Ipv4Address ("1.1.1.1"),
-  };
+    std::vector<Ipv4Address> ip2{
+        Ipv4Address("1.1.1.0"),
+        Ipv4Address("1.1.1.1"),
+    };
 
-  Ipv4Address dst2 = Ipv4Address ("1.1.1.1");
-  dsr::DsrRouteCacheEntry entry2 (ip2, dst2, Seconds (2));
-  dsr::DsrRouteCacheEntry newEntry;
-  NS_TEST_EXPECT_MSG_EQ (rcache->AddRoute (entry2), true, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (rcache->LookupRoute (dst2, newEntry), true, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (rcache->DeleteRoute (Ipv4Address ("2.2.2.2")), false, "trivial");
+    Ipv4Address dst2 = Ipv4Address("1.1.1.1");
+    dsr::DsrRouteCacheEntry entry2(ip2, dst2, Seconds(2));
+    dsr::DsrRouteCacheEntry newEntry;
+    NS_TEST_EXPECT_MSG_EQ(rcache->AddRoute(entry2), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(rcache->LookupRoute(dst2, newEntry), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(rcache->DeleteRoute(Ipv4Address("2.2.2.2")), false, "trivial");
 
-  NS_TEST_EXPECT_MSG_EQ (rcache->DeleteRoute (Ipv4Address ("1.1.1.1")), true, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (rcache->DeleteRoute (Ipv4Address ("1.1.1.1")), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(rcache->DeleteRoute(Ipv4Address("1.1.1.1")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(rcache->DeleteRoute(Ipv4Address("1.1.1.1")), false, "trivial");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -459,98 +486,105 @@ DsrCacheEntryTest::DoRun ()
  */
 class DsrSendBuffTest : public TestCase
 {
-public:
-  DsrSendBuffTest ();
-  ~DsrSendBuffTest () override;
-  void
-  DoRun () override;
-  /// Check size limit function
-  void CheckSizeLimit ();
-  /// Check timeout function
-  void CheckTimeout ();
+  public:
+    DsrSendBuffTest();
+    ~DsrSendBuffTest() override;
+    void DoRun() override;
+    /// Check size limit function
+    void CheckSizeLimit();
+    /// Check timeout function
+    void CheckTimeout();
 
-  dsr::DsrSendBuffer q; ///< send buffer
+    dsr::DsrSendBuffer q; ///< send buffer
 };
-DsrSendBuffTest::DsrSendBuffTest ()
-  : TestCase ("DSR SendBuff"),
-    q ()
+
+DsrSendBuffTest::DsrSendBuffTest()
+    : TestCase("DSR SendBuff"),
+      q()
 {
 }
-DsrSendBuffTest::~DsrSendBuffTest ()
+
+DsrSendBuffTest::~DsrSendBuffTest()
 {
 }
+
 void
-DsrSendBuffTest::DoRun ()
+DsrSendBuffTest::DoRun()
 {
-  q.SetMaxQueueLen (32);
-  NS_TEST_EXPECT_MSG_EQ (q.GetMaxQueueLen (), 32, "trivial");
-  q.SetSendBufferTimeout (Seconds (10));
-  NS_TEST_EXPECT_MSG_EQ (q.GetSendBufferTimeout (), Seconds (10), "trivial");
+    q.SetMaxQueueLen(32);
+    NS_TEST_EXPECT_MSG_EQ(q.GetMaxQueueLen(), 32, "trivial");
+    q.SetSendBufferTimeout(Seconds(10));
+    NS_TEST_EXPECT_MSG_EQ(q.GetSendBufferTimeout(), Seconds(10), "trivial");
 
-  Ptr<const Packet> packet = Create<Packet> ();
-  Ipv4Address dst1 = Ipv4Address ("0.0.0.1");
-  dsr::DsrSendBuffEntry e1 (packet, dst1, Seconds (1));
-  q.Enqueue (e1);
-  q.Enqueue (e1);
-  q.Enqueue (e1);
-  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("0.0.0.1")), true, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("1.1.1.1")), false, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 1, "trivial");
-  q.DropPacketWithDst (Ipv4Address ("0.0.0.1"));
-  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("0.0.0.1")), false, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 0, "trivial");
+    Ptr<const Packet> packet = Create<Packet>();
+    Ipv4Address dst1 = Ipv4Address("0.0.0.1");
+    dsr::DsrSendBuffEntry e1(packet, dst1, Seconds(1));
+    q.Enqueue(e1);
+    q.Enqueue(e1);
+    q.Enqueue(e1);
+    NS_TEST_EXPECT_MSG_EQ(q.Find(Ipv4Address("0.0.0.1")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(q.Find(Ipv4Address("1.1.1.1")), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 1, "trivial");
+    q.DropPacketWithDst(Ipv4Address("0.0.0.1"));
+    NS_TEST_EXPECT_MSG_EQ(q.Find(Ipv4Address("0.0.0.1")), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 0, "trivial");
 
-  Ipv4Address dst2 = Ipv4Address ("0.0.0.2");
-  dsr::DsrSendBuffEntry e2 (packet, dst2, Seconds (1));
-  q.Enqueue (e1);
-  q.Enqueue (e2);
-  Ptr<Packet> packet2 = Create<Packet> ();
-  dsr::DsrSendBuffEntry e3 (packet2, dst2, Seconds (1));
-  NS_TEST_EXPECT_MSG_EQ (q.Dequeue (Ipv4Address ("0.0.0.3"), e3), false, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (q.Dequeue (Ipv4Address ("0.0.0.2"), e3), true, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("0.0.0.2")), false, "trivial");
-  q.Enqueue (e2);
-  q.Enqueue (e3);
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 2, "trivial");
-  Ptr<Packet> packet4 = Create<Packet> ();
-  Ipv4Address dst4 = Ipv4Address ("0.0.0.4");
-  dsr::DsrSendBuffEntry e4 (packet4, dst4, Seconds (20));
-  q.Enqueue (e4);
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 3, "trivial");
-  q.DropPacketWithDst (Ipv4Address ("0.0.0.4"));
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 2, "trivial");
+    Ipv4Address dst2 = Ipv4Address("0.0.0.2");
+    dsr::DsrSendBuffEntry e2(packet, dst2, Seconds(1));
+    q.Enqueue(e1);
+    q.Enqueue(e2);
+    Ptr<Packet> packet2 = Create<Packet>();
+    dsr::DsrSendBuffEntry e3(packet2, dst2, Seconds(1));
+    NS_TEST_EXPECT_MSG_EQ(q.Dequeue(Ipv4Address("0.0.0.3"), e3), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(q.Dequeue(Ipv4Address("0.0.0.2"), e3), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(q.Find(Ipv4Address("0.0.0.2")), false, "trivial");
+    q.Enqueue(e2);
+    q.Enqueue(e3);
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 2, "trivial");
+    Ptr<Packet> packet4 = Create<Packet>();
+    Ipv4Address dst4 = Ipv4Address("0.0.0.4");
+    dsr::DsrSendBuffEntry e4(packet4, dst4, Seconds(20));
+    q.Enqueue(e4);
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 3, "trivial");
+    q.DropPacketWithDst(Ipv4Address("0.0.0.4"));
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 2, "trivial");
 
-  CheckSizeLimit ();
+    CheckSizeLimit();
 
-  Simulator::Schedule (q.GetSendBufferTimeout () + Seconds (1), &DsrSendBuffTest::CheckTimeout, this);
+    Simulator::Schedule(q.GetSendBufferTimeout() + Seconds(1),
+                        &DsrSendBuffTest::CheckTimeout,
+                        this);
 
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Run();
+    Simulator::Destroy();
 }
-void
-DsrSendBuffTest::CheckSizeLimit ()
-{
-  Ptr<Packet> packet = Create<Packet> ();
-  Ipv4Address dst;
-  dsr::DsrSendBuffEntry e1 (packet, dst, Seconds (1));
 
-  for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
+void
+DsrSendBuffTest::CheckSizeLimit()
+{
+    Ptr<Packet> packet = Create<Packet>();
+    Ipv4Address dst;
+    dsr::DsrSendBuffEntry e1(packet, dst, Seconds(1));
+
+    for (uint32_t i = 0; i < q.GetMaxQueueLen(); ++i)
     {
-      q.Enqueue (e1);
+        q.Enqueue(e1);
     }
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 3, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 3, "trivial");
 
-  for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
+    for (uint32_t i = 0; i < q.GetMaxQueueLen(); ++i)
     {
-      q.Enqueue (e1);
+        q.Enqueue(e1);
     }
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 3, "trivial");
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 3, "trivial");
 }
+
 void
-DsrSendBuffTest::CheckTimeout ()
+DsrSendBuffTest::CheckTimeout()
 {
-  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 0, "Must be empty now");
+    NS_TEST_EXPECT_MSG_EQ(q.GetSize(), 0, "Must be empty now");
 }
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -561,27 +595,30 @@ DsrSendBuffTest::CheckTimeout ()
  */
 class DsrRreqTableTest : public TestCase
 {
-public:
-  DsrRreqTableTest ();
-  ~DsrRreqTableTest () override;
-  void
-  DoRun () override;
+  public:
+    DsrRreqTableTest();
+    ~DsrRreqTableTest() override;
+    void DoRun() override;
 };
-DsrRreqTableTest::DsrRreqTableTest ()
-  : TestCase ("DSR RreqTable")
-{
-}
-DsrRreqTableTest::~DsrRreqTableTest ()
-{
-}
-void
-DsrRreqTableTest::DoRun ()
-{
-  dsr::RreqTableEntry rt;
 
-  rt.m_reqNo = 2;
-  NS_TEST_EXPECT_MSG_EQ (rt.m_reqNo, 2, "trivial");
+DsrRreqTableTest::DsrRreqTableTest()
+    : TestCase("DSR RreqTable")
+{
 }
+
+DsrRreqTableTest::~DsrRreqTableTest()
+{
+}
+
+void
+DsrRreqTableTest::DoRun()
+{
+    dsr::RreqTableEntry rt;
+
+    rt.m_reqNo = 2;
+    NS_TEST_EXPECT_MSG_EQ(rt.m_reqNo, 2, "trivial");
+}
+
 // -----------------------------------------------------------------------------
 /**
  * \ingroup dsr-test
@@ -592,17 +629,18 @@ DsrRreqTableTest::DoRun ()
  */
 class DsrTestSuite : public TestSuite
 {
-public:
-  DsrTestSuite () : TestSuite ("routing-dsr", UNIT)
-  {
-    AddTestCase (new DsrFsHeaderTest, TestCase::QUICK);
-    AddTestCase (new DsrRreqHeaderTest, TestCase::QUICK);
-    AddTestCase (new DsrRrepHeaderTest, TestCase::QUICK);
-    AddTestCase (new DsrSRHeaderTest, TestCase::QUICK);
-    AddTestCase (new DsrRerrHeaderTest, TestCase::QUICK);
-    AddTestCase (new DsrAckReqHeaderTest, TestCase::QUICK);
-    AddTestCase (new DsrAckHeaderTest, TestCase::QUICK);
-    AddTestCase (new DsrCacheEntryTest, TestCase::QUICK);
-    AddTestCase (new DsrSendBuffTest, TestCase::QUICK);
-  }
+  public:
+    DsrTestSuite()
+        : TestSuite("routing-dsr", UNIT)
+    {
+        AddTestCase(new DsrFsHeaderTest, TestCase::QUICK);
+        AddTestCase(new DsrRreqHeaderTest, TestCase::QUICK);
+        AddTestCase(new DsrRrepHeaderTest, TestCase::QUICK);
+        AddTestCase(new DsrSRHeaderTest, TestCase::QUICK);
+        AddTestCase(new DsrRerrHeaderTest, TestCase::QUICK);
+        AddTestCase(new DsrAckReqHeaderTest, TestCase::QUICK);
+        AddTestCase(new DsrAckHeaderTest, TestCase::QUICK);
+        AddTestCase(new DsrCacheEntryTest, TestCase::QUICK);
+        AddTestCase(new DsrSendBuffTest, TestCase::QUICK);
+    }
 } g_dsrTestSuite;

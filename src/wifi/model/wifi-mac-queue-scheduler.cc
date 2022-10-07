@@ -19,41 +19,41 @@
  */
 
 #include "wifi-mac-queue-scheduler.h"
+
 #include "wifi-mac.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("WifiMacQueueScheduler");
+NS_LOG_COMPONENT_DEFINE("WifiMacQueueScheduler");
 
-NS_OBJECT_ENSURE_REGISTERED (WifiMacQueueScheduler);
+NS_OBJECT_ENSURE_REGISTERED(WifiMacQueueScheduler);
 
 TypeId
-WifiMacQueueScheduler::GetTypeId ()
+WifiMacQueueScheduler::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiMacQueueScheduler")
-    .SetParent<Object> ()
-    .SetGroupName ("Wifi")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::WifiMacQueueScheduler").SetParent<Object>().SetGroupName("Wifi");
+    return tid;
 }
 
 void
-WifiMacQueueScheduler::DoDispose ()
+WifiMacQueueScheduler::DoDispose()
 {
-  m_mac = nullptr;
+    m_mac = nullptr;
 }
 
 void
-WifiMacQueueScheduler::SetWifiMac (Ptr<WifiMac> mac)
+WifiMacQueueScheduler::SetWifiMac(Ptr<WifiMac> mac)
 {
-  NS_LOG_FUNCTION (this << mac);
-  m_mac = mac;
+    NS_LOG_FUNCTION(this << mac);
+    m_mac = mac;
 }
 
 Ptr<WifiMac>
-WifiMacQueueScheduler::GetMac () const
+WifiMacQueueScheduler::GetMac() const
 {
-  return m_mac;
+    return m_mac;
 }
 
-} //namespace ns3
+} // namespace ns3

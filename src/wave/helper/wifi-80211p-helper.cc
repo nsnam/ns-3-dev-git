@@ -21,71 +21,82 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  * Author: Junling Bu <linlinjavaer@gmail.com>
  */
-#include "ns3/string.h"
-#include "ns3/log.h"
-#include <typeinfo>
-#include "wave-mac-helper.h"
 #include "wifi-80211p-helper.h"
 
-namespace ns3 {
+#include "wave-mac-helper.h"
 
-Wifi80211pHelper::Wifi80211pHelper ()
+#include "ns3/log.h"
+#include "ns3/string.h"
+
+#include <typeinfo>
+
+namespace ns3
+{
+
+Wifi80211pHelper::Wifi80211pHelper()
 {
 }
 
-Wifi80211pHelper::~Wifi80211pHelper ()
+Wifi80211pHelper::~Wifi80211pHelper()
 {
 }
 
 Wifi80211pHelper
-Wifi80211pHelper::Default ()
+Wifi80211pHelper::Default()
 {
-  Wifi80211pHelper helper;
-  helper.SetStandard (WIFI_STANDARD_80211p);
-  helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                  "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
-                                  "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"),
-                                  "NonUnicastMode", StringValue ("OfdmRate6MbpsBW10MHz"));
-  return helper;
+    Wifi80211pHelper helper;
+    helper.SetStandard(WIFI_STANDARD_80211p);
+    helper.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                   "DataMode",
+                                   StringValue("OfdmRate6MbpsBW10MHz"),
+                                   "ControlMode",
+                                   StringValue("OfdmRate6MbpsBW10MHz"),
+                                   "NonUnicastMode",
+                                   StringValue("OfdmRate6MbpsBW10MHz"));
+    return helper;
 }
 
 void
-Wifi80211pHelper::SetStandard (enum WifiStandard standard)
+Wifi80211pHelper::SetStandard(enum WifiStandard standard)
 {
-  if (standard == WIFI_STANDARD_80211p)
+    if (standard == WIFI_STANDARD_80211p)
     {
-      WifiHelper::SetStandard (standard);
+        WifiHelper::SetStandard(standard);
     }
-  else
+    else
     {
-      NS_FATAL_ERROR ("wrong standard selected!");
+        NS_FATAL_ERROR("wrong standard selected!");
     }
 }
 
 void
-Wifi80211pHelper::EnableLogComponents ()
+Wifi80211pHelper::EnableLogComponents()
 {
-  WifiHelper::EnableLogComponents ();
+    WifiHelper::EnableLogComponents();
 
-  LogComponentEnable ("OcbWifiMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("VendorSpecificAction", LOG_LEVEL_ALL);
+    LogComponentEnable("OcbWifiMac", LOG_LEVEL_ALL);
+    LogComponentEnable("VendorSpecificAction", LOG_LEVEL_ALL);
 }
 
 NetDeviceContainer
-Wifi80211pHelper::Install (const WifiPhyHelper &phyHelper, const WifiMacHelper &macHelper, NodeContainer c) const
+Wifi80211pHelper::Install(const WifiPhyHelper& phyHelper,
+                          const WifiMacHelper& macHelper,
+                          NodeContainer c) const
 {
-  [[maybe_unused]] QosWaveMacHelper const * qosMac = dynamic_cast <QosWaveMacHelper const *> (&macHelper);
-  if (qosMac == nullptr)
+    [[maybe_unused]] const QosWaveMacHelper* qosMac =
+        dynamic_cast<const QosWaveMacHelper*>(&macHelper);
+    if (qosMac == nullptr)
     {
-      [[maybe_unused]] NqosWaveMacHelper const * nqosMac = dynamic_cast <NqosWaveMacHelper const *> (&macHelper);
-      if (nqosMac == nullptr)
+        [[maybe_unused]] const NqosWaveMacHelper* nqosMac =
+            dynamic_cast<const NqosWaveMacHelper*>(&macHelper);
+        if (nqosMac == nullptr)
         {
-          NS_FATAL_ERROR ("the macHelper should be either QosWaveMacHelper or NqosWaveMacHelper"
-                          ", or should be the subclass of QosWaveMacHelper or NqosWaveMacHelper");
+            NS_FATAL_ERROR("the macHelper should be either QosWaveMacHelper or NqosWaveMacHelper"
+                           ", or should be the subclass of QosWaveMacHelper or NqosWaveMacHelper");
         }
     }
 
-  return WifiHelper::Install (phyHelper, macHelper, c);
+    return WifiHelper::Install(phyHelper, macHelper, c);
 }
 
 } // namespace ns3

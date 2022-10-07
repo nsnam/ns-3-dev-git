@@ -22,9 +22,11 @@
 #define SPECTRUM_MODEL_H
 
 #include <ns3/simple-ref-count.h>
+
 #include <vector>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \defgroup spectrum Spectrum Models
@@ -49,11 +51,10 @@ namespace ns3 {
  */
 struct BandInfo
 {
-  double fl; //!< lower limit of subband
-  double fc; //!< center frequency
-  double fh; //!< upper limit of subband
+    double fl; //!< lower limit of subband
+    double fc; //!< center frequency
+    double fh; //!< upper limit of subband
 };
-
 
 /// Container of BandInfo
 typedef std::vector<BandInfo> Bands;
@@ -70,84 +71,81 @@ typedef uint32_t SpectrumModelUid_t;
  */
 class SpectrumModel : public SimpleRefCount<SpectrumModel>
 {
-public:
-  /**
-   * Comparison operator. Returns true if the two SpectumModels are identical
-   * \param lhs left operand
-   * \param rhs right operand
-   * \returns true if the two operands are identical
-   */
-  friend bool operator== (const SpectrumModel& lhs, const SpectrumModel& rhs);
+  public:
+    /**
+     * Comparison operator. Returns true if the two SpectumModels are identical
+     * \param lhs left operand
+     * \param rhs right operand
+     * \returns true if the two operands are identical
+     */
+    friend bool operator==(const SpectrumModel& lhs, const SpectrumModel& rhs);
 
-  /**
-   * This constructs a SpectrumModel based on a given set of frequencies,
-   * which is assumed to be sorted by increasing frequency. The lower
-   * (resp. upper) frequency band limit is determined as the mean value
-   * between the center frequency of the considered band and the
-   * center frequency of the adjacent lower (resp. upper) band.
-   *
-   * @param centerFreqs the vector of center frequencies.
-   */
-  SpectrumModel (const std::vector<double>& centerFreqs);
+    /**
+     * This constructs a SpectrumModel based on a given set of frequencies,
+     * which is assumed to be sorted by increasing frequency. The lower
+     * (resp. upper) frequency band limit is determined as the mean value
+     * between the center frequency of the considered band and the
+     * center frequency of the adjacent lower (resp. upper) band.
+     *
+     * @param centerFreqs the vector of center frequencies.
+     */
+    SpectrumModel(const std::vector<double>& centerFreqs);
 
+    /**
+     * This constructs a SpectrumModel based on the explicit values of
+     * center frequencies and boundaries of each subband.
+     *
+     * @param bands the vector of bands for this model
+     */
+    SpectrumModel(const Bands& bands);
 
-  /**
-   * This constructs a SpectrumModel based on the explicit values of
-   * center frequencies and boundaries of each subband.
-   *
-   * @param bands the vector of bands for this model
-   */
-  SpectrumModel (const Bands& bands);
+    /**
+     * This constructs a SpectrumModel based on the explicit values of
+     * center frequencies and boundaries of each subband. This is used
+     * if <i>bands</i> is an rvalue.
+     *
+     * @param bands the vector of bands for this model
+     */
+    SpectrumModel(Bands&& bands);
 
-  /**
-   * This constructs a SpectrumModel based on the explicit values of
-   * center frequencies and boundaries of each subband. This is used
-   * if <i>bands</i> is an rvalue.
-   *
-   * @param bands the vector of bands for this model
-   */
-  SpectrumModel (Bands&& bands);
+    /**
+     *
+     * @return the number of frequencies in this SpectrumModel
+     */
+    size_t GetNumBands() const;
 
-  /**
-   *
-   * @return the number of frequencies in this SpectrumModel
-   */
-  size_t GetNumBands () const;
+    /**
+     *
+     * @return the unique id of this SpectrumModel
+     */
+    SpectrumModelUid_t GetUid() const;
 
+    /**
+     * Const Iterator to the model Bands container start.
+     *
+     * @return a const iterator to the start of the vector of bands
+     */
+    Bands::const_iterator Begin() const;
+    /**
+     * Const Iterator to the model Bands container end.
+     *
+     * @return a const iterator to past-the-end of the vector of bands
+     */
+    Bands::const_iterator End() const;
 
-  /**
-   *
-   * @return the unique id of this SpectrumModel
-   */
-  SpectrumModelUid_t GetUid () const;
+    /**
+     * Check if another SpectrumModels has bands orthogonal to our bands.
+     *
+     * \param other another SpectrumModel
+     * \returns true if bands are orthogonal
+     */
+    bool IsOrthogonal(const SpectrumModel& other) const;
 
-  /**
-   * Const Iterator to the model Bands container start.
-   *
-   * @return a const iterator to the start of the vector of bands
-   */
-  Bands::const_iterator Begin () const;
-  /**
-   * Const Iterator to the model Bands container end.
-   *
-   * @return a const iterator to past-the-end of the vector of bands
-   */
-  Bands::const_iterator End () const;
-
-  /**
-   * Check if another SpectrumModels has bands orthogonal to our bands.
-   *
-   * \param other another SpectrumModel
-   * \returns true if bands are orthogonal
-   */
-  bool IsOrthogonal (const SpectrumModel &other) const;
-
-private:
-  Bands m_bands;         //!< Actual definition of frequency bands within this SpectrumModel
-  SpectrumModelUid_t m_uid;        //!< unique id for a given set of frequencies
-  static SpectrumModelUid_t m_uidCount;    //!< counter to assign m_uids
+  private:
+    Bands m_bands;            //!< Actual definition of frequency bands within this SpectrumModel
+    SpectrumModelUid_t m_uid; //!< unique id for a given set of frequencies
+    static SpectrumModelUid_t m_uidCount; //!< counter to assign m_uids
 };
-
 
 } // namespace ns3
 

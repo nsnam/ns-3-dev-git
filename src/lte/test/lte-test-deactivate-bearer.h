@@ -6,8 +6,8 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 
-
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lte-test
@@ -24,38 +24,42 @@ namespace ns3 {
 
 class LenaDeactivateBearerTestCase : public TestCase
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param dist distance between the nodes
-   * \param estThrPssDl estimated throughput PSS DL
-   * \param packetSize packet size in bytes
-   * \param interval interval time in ms
-   * \param errorModelEnabled whether the error model is enabled
-   * \param useIdealRrc whether to use ideal RRC
-   */
-  LenaDeactivateBearerTestCase (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled, bool useIdealRrc);
-  ~LenaDeactivateBearerTestCase () override;
+  public:
+    /**
+     * Constructor
+     *
+     * \param dist distance between the nodes
+     * \param estThrPssDl estimated throughput PSS DL
+     * \param packetSize packet size in bytes
+     * \param interval interval time in ms
+     * \param errorModelEnabled whether the error model is enabled
+     * \param useIdealRrc whether to use ideal RRC
+     */
+    LenaDeactivateBearerTestCase(std::vector<uint16_t> dist,
+                                 std::vector<uint32_t> estThrPssDl,
+                                 std::vector<uint16_t> packetSize,
+                                 uint16_t interval,
+                                 bool errorModelEnabled,
+                                 bool useIdealRrc);
+    ~LenaDeactivateBearerTestCase() override;
 
-private:
-  /**
-   * Build name string function
-   *
-   * \param nUser number of UE nodes
-   * \param dist distance between nodes
-   * \returns name string
-   */
-  static std::string BuildNameString (uint16_t nUser, std::vector<uint16_t> dist);
-  void DoRun () override;
-  uint16_t m_nUser; ///< number of UE nodes
-  std::vector<uint16_t> m_dist; ///< distance between the nodes
-  std::vector<uint16_t> m_packetSize;  ///< packet size in bytes
-  uint16_t m_interval;    ///< interval time in ms
-  std::vector<uint32_t> m_estThrPssDl; ///< estimated threshold PSS DL
-  bool m_errorModelEnabled; ///< error mode enabled?
+  private:
+    /**
+     * Build name string function
+     *
+     * \param nUser number of UE nodes
+     * \param dist distance between nodes
+     * \returns name string
+     */
+    static std::string BuildNameString(uint16_t nUser, std::vector<uint16_t> dist);
+    void DoRun() override;
+    uint16_t m_nUser;                    ///< number of UE nodes
+    std::vector<uint16_t> m_dist;        ///< distance between the nodes
+    std::vector<uint16_t> m_packetSize;  ///< packet size in bytes
+    uint16_t m_interval;                 ///< interval time in ms
+    std::vector<uint32_t> m_estThrPssDl; ///< estimated threshold PSS DL
+    bool m_errorModelEnabled;            ///< error mode enabled?
 };
-
 
 /**
  * \ingroup lte-test
@@ -66,8 +70,8 @@ private:
 
 class LenaTestBearerDeactivateSuite : public TestSuite
 {
-public:
-  LenaTestBearerDeactivateSuite ();
+  public:
+    LenaTestBearerDeactivateSuite();
 };
 
 } // namespace ns3

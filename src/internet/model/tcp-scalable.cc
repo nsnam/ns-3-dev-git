@@ -28,118 +28,118 @@
  */
 
 #include "tcp-scalable.h"
+
 #include "tcp-socket-state.h"
 
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("TcpScalable");
-NS_OBJECT_ENSURE_REGISTERED (TcpScalable);
+NS_LOG_COMPONENT_DEFINE("TcpScalable");
+NS_OBJECT_ENSURE_REGISTERED(TcpScalable);
 
 TypeId
-TcpScalable::GetTypeId ()
+TcpScalable::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::TcpScalable")
-    .SetParent<TcpNewReno> ()
-    .AddConstructor<TcpScalable> ()
-    .SetGroupName ("Internet")
-    .AddAttribute ("AIFactor", "Additive Increase Factor",
-                   UintegerValue (50),
-                   MakeUintegerAccessor (&TcpScalable::m_aiFactor),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MDFactor", "Multiplicative Decrease Factor",
-                   DoubleValue (0.125),
-                   MakeDoubleAccessor (&TcpScalable::m_mdFactor),
-                   MakeDoubleChecker<double> ())
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::TcpScalable")
+                            .SetParent<TcpNewReno>()
+                            .AddConstructor<TcpScalable>()
+                            .SetGroupName("Internet")
+                            .AddAttribute("AIFactor",
+                                          "Additive Increase Factor",
+                                          UintegerValue(50),
+                                          MakeUintegerAccessor(&TcpScalable::m_aiFactor),
+                                          MakeUintegerChecker<uint32_t>())
+                            .AddAttribute("MDFactor",
+                                          "Multiplicative Decrease Factor",
+                                          DoubleValue(0.125),
+                                          MakeDoubleAccessor(&TcpScalable::m_mdFactor),
+                                          MakeDoubleChecker<double>());
+    return tid;
 }
 
-TcpScalable::TcpScalable ()
-  : TcpNewReno (),
-    m_ackCnt (0),
-    m_aiFactor (50),
-    m_mdFactor (0.125)
+TcpScalable::TcpScalable()
+    : TcpNewReno(),
+      m_ackCnt(0),
+      m_aiFactor(50),
+      m_mdFactor(0.125)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpScalable::TcpScalable (const TcpScalable& sock)
-  : TcpNewReno (sock),
-    m_ackCnt (sock.m_ackCnt),
-    m_aiFactor (sock.m_aiFactor),
-    m_mdFactor (sock.m_mdFactor)
+TcpScalable::TcpScalable(const TcpScalable& sock)
+    : TcpNewReno(sock),
+      m_ackCnt(sock.m_ackCnt),
+      m_aiFactor(sock.m_aiFactor),
+      m_mdFactor(sock.m_mdFactor)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-TcpScalable::~TcpScalable ()
+TcpScalable::~TcpScalable()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 Ptr<TcpCongestionOps>
-TcpScalable::Fork ()
+TcpScalable::Fork()
 {
-  return CopyObject<TcpScalable> (this);
+    return CopyObject<TcpScalable>(this);
 }
 
 void
-TcpScalable::CongestionAvoidance (Ptr<TcpSocketState> tcb,
-                                  uint32_t segmentsAcked)
+TcpScalable::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
-  NS_LOG_FUNCTION (this << tcb << segmentsAcked);
+    NS_LOG_FUNCTION(this << tcb << segmentsAcked);
 
-  uint32_t segCwnd = tcb->GetCwndInSegments ();
-  NS_ASSERT (segCwnd >= 1);
+    uint32_t segCwnd = tcb->GetCwndInSegments();
+    NS_ASSERT(segCwnd >= 1);
 
-  uint32_t oldCwnd = segCwnd;
-  uint32_t w = std::min (segCwnd, m_aiFactor);
+    uint32_t oldCwnd = segCwnd;
+    uint32_t w = std::min(segCwnd, m_aiFactor);
 
-  if (m_ackCnt >= w)
+    if (m_ackCnt >= w)
     {
-      m_ackCnt = 0;
-      segCwnd++;
+        m_ackCnt = 0;
+        segCwnd++;
     }
 
-  m_ackCnt += segmentsAcked;
-  if (m_ackCnt >= w)
+    m_ackCnt += segmentsAcked;
+    if (m_ackCnt >= w)
     {
-      uint32_t delta = m_ackCnt / w;
-      m_ackCnt = 0;
-      segCwnd += delta;
+        uint32_t delta = m_ackCnt / w;
+        m_ackCnt = 0;
+        segCwnd += delta;
     }
 
-  if (segCwnd != oldCwnd)
+    if (segCwnd != oldCwnd)
     {
-      tcb->m_cWnd = segCwnd * tcb->m_segmentSize;
-      NS_LOG_INFO ("In CongAvoid, updated to cwnd " << tcb->m_cWnd <<
-                   " ssthresh " << tcb->m_ssThresh);
+        tcb->m_cWnd = segCwnd * tcb->m_segmentSize;
+        NS_LOG_INFO("In CongAvoid, updated to cwnd " << tcb->m_cWnd << " ssthresh "
+                                                     << tcb->m_ssThresh);
     }
 }
 
 std::string
-TcpScalable::GetName () const
+TcpScalable::GetName() const
 {
-  return "TcpScalable";
+    return "TcpScalable";
 }
 
 uint32_t
-TcpScalable::GetSsThresh (Ptr<const TcpSocketState> tcb,
-                          uint32_t bytesInFlight)
+TcpScalable::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 {
-  NS_LOG_FUNCTION (this << tcb << bytesInFlight);
+    NS_LOG_FUNCTION(this << tcb << bytesInFlight);
 
-  uint32_t segCwnd = bytesInFlight / tcb->m_segmentSize;
+    uint32_t segCwnd = bytesInFlight / tcb->m_segmentSize;
 
-  double b = 1.0 - m_mdFactor;
-  uint32_t ssThresh = static_cast<uint32_t> (std::max (2.0, segCwnd * b));
+    double b = 1.0 - m_mdFactor;
+    uint32_t ssThresh = static_cast<uint32_t>(std::max(2.0, segCwnd * b));
 
-  NS_LOG_DEBUG ("Calculated b(w) = " << b <<
-                " resulting (in segment) ssThresh=" << ssThresh);
+    NS_LOG_DEBUG("Calculated b(w) = " << b << " resulting (in segment) ssThresh=" << ssThresh);
 
-  return ssThresh * tcb->m_segmentSize;
+    return ssThresh * tcb->m_segmentSize;
 }
 
 } // namespace ns3

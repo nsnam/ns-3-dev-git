@@ -37,18 +37,18 @@ namespace dot11s
  */
 class IePeeringProtocol : public WifiInformationElement
 {
-public:
-  IePeeringProtocol ();
+  public:
+    IePeeringProtocol();
 
-  // Inherited from WifiInformationElement
-  WifiInformationElementId ElementId () const override;
-  uint16_t GetInformationFieldSize () const override;
-  void SerializeInformationField (Buffer::Iterator i) const override;
-  uint16_t DeserializeInformationField (Buffer::Iterator i, uint16_t length) override;
-  void Print (std::ostream& os) const override;
+    // Inherited from WifiInformationElement
+    WifiInformationElementId ElementId() const override;
+    uint16_t GetInformationFieldSize() const override;
+    void SerializeInformationField(Buffer::Iterator i) const override;
+    uint16_t DeserializeInformationField(Buffer::Iterator i, uint16_t length) override;
+    void Print(std::ostream& os) const override;
 
-private:
-  uint8_t m_protocol; ///< the protocol
+  private:
+    uint8_t m_protocol; ///< the protocol
 };
 } // namespace dot11s
 } // namespace ns3

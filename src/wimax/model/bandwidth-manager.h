@@ -23,17 +23,20 @@
 #ifndef BANDWIDTH_MANAGER_H
 #define BANDWIDTH_MANAGER_H
 
-#include <stdint.h>
-#include "wimax-net-device.h"
-#include "ul-job.h"
 #include "bs-uplink-scheduler.h"
 #include "cid.h"
+#include "ul-job.h"
+#include "wimax-net-device.h"
+
+#include <stdint.h>
 
 /*
- The same bandwidth manager class serves both for BS and SS though some functions are exclusive to only one of them.
+ The same bandwidth manager class serves both for BS and SS though some functions are exclusive to
+ only one of them.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 class SSRecord;
 class ServiceFlow;
@@ -53,60 +56,61 @@ class UplinkScheduler;
  */
 class BandwidthManager : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  /**
-   * Constructor
-   *
-   * \param device WIMAX device
-   */
-  BandwidthManager (Ptr<WimaxNetDevice> device);
-  ~BandwidthManager () override;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    /**
+     * Constructor
+     *
+     * \param device WIMAX device
+     */
+    BandwidthManager(Ptr<WimaxNetDevice> device);
+    ~BandwidthManager() override;
 
-  // Delete copy constructor and assignment operator to avoid misuse
-  BandwidthManager (const BandwidthManager &) = delete;
-  BandwidthManager &operator= (const BandwidthManager &) = delete;
+    // Delete copy constructor and assignment operator to avoid misuse
+    BandwidthManager(const BandwidthManager&) = delete;
+    BandwidthManager& operator=(const BandwidthManager&) = delete;
 
-  void DoDispose () override;
+    void DoDispose() override;
 
-  /**
-   * Calculate allocation size function
-   * \param ssRecord the SS record
-   * \param serviceFlow the service flow
-   * \returns the allocation size
-   */
-  uint32_t CalculateAllocationSize (const SSRecord *ssRecord, const ServiceFlow *serviceFlow);
-  /**
-   * Select flow for request function
-   * \param bytesToRequest bytes to request
-   * \returns a service flow
-   */
-  ServiceFlow* SelectFlowForRequest (uint32_t &bytesToRequest);
-  /**
-   * Send bandwidth request
-   * \param uiuc the UIUC
-   * \param allocationSize the allocation size
-   */
-  void SendBandwidthRequest (uint8_t uiuc, uint16_t allocationSize);
-  /**
-   * Process bandwidth request
-   * \param bwRequestHdr the bandwidth request
-   */
-  void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
-  /// Set subframe ratio
-  void SetSubframeRatio ();
-  /**
-   * Get symbols per frame allocated
-   * \returns the symbols per the frame allocated
-   */
-  uint32_t GetSymbolsPerFrameAllocated ();
-private:
-  Ptr<WimaxNetDevice> m_device; ///< the device
-  uint16_t m_nrBwReqsSent; ///< bandwidth requests sent
+    /**
+     * Calculate allocation size function
+     * \param ssRecord the SS record
+     * \param serviceFlow the service flow
+     * \returns the allocation size
+     */
+    uint32_t CalculateAllocationSize(const SSRecord* ssRecord, const ServiceFlow* serviceFlow);
+    /**
+     * Select flow for request function
+     * \param bytesToRequest bytes to request
+     * \returns a service flow
+     */
+    ServiceFlow* SelectFlowForRequest(uint32_t& bytesToRequest);
+    /**
+     * Send bandwidth request
+     * \param uiuc the UIUC
+     * \param allocationSize the allocation size
+     */
+    void SendBandwidthRequest(uint8_t uiuc, uint16_t allocationSize);
+    /**
+     * Process bandwidth request
+     * \param bwRequestHdr the bandwidth request
+     */
+    void ProcessBandwidthRequest(const BandwidthRequestHeader& bwRequestHdr);
+    /// Set subframe ratio
+    void SetSubframeRatio();
+    /**
+     * Get symbols per frame allocated
+     * \returns the symbols per the frame allocated
+     */
+    uint32_t GetSymbolsPerFrameAllocated();
+
+  private:
+    Ptr<WimaxNetDevice> m_device; ///< the device
+    uint16_t m_nrBwReqsSent;      ///< bandwidth requests sent
 };
 
 } // namespace ns3

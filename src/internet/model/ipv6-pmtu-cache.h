@@ -21,15 +21,16 @@
 #ifndef IPV6_PMTU_CACHE_H
 #define IPV6_PMTU_CACHE_H
 
-#include <map>
-
-#include "ns3/object.h"
-#include "ns3/nstime.h"
-#include "ns3/type-id.h"
 #include "ns3/event-id.h"
 #include "ns3/ipv6-address.h"
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/type-id.h"
 
-namespace ns3 {
+#include <map>
+
+namespace ns3
+{
 
 /**
  * \ingroup ipv6
@@ -46,85 +47,85 @@ namespace ns3 {
 
 class Ipv6PmtuCache : public Object
 {
-public:
-  class Entry;
+  public:
+    class Entry;
 
-  /**
-   * \brief Get the type ID
-   * \return type ID
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID
+     * \return type ID
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Constructor.
-   */
-  Ipv6PmtuCache ();
+    /**
+     * \brief Constructor.
+     */
+    Ipv6PmtuCache();
 
-  /**
-   * \brief Destructor.
-   */
-  ~Ipv6PmtuCache () override;
+    /**
+     * \brief Destructor.
+     */
+    ~Ipv6PmtuCache() override;
 
-  /**
-   * \brief Dispose object.
-   */
-  void DoDispose () override;
+    /**
+     * \brief Dispose object.
+     */
+    void DoDispose() override;
 
-  /**
-   * \brief Gets the known Path MTU for the specific destination
-   * \param dst the destination
-   * \return the Path MTU (zero if unknown)
-   */
-  uint32_t GetPmtu (Ipv6Address dst);
+    /**
+     * \brief Gets the known Path MTU for the specific destination
+     * \param dst the destination
+     * \return the Path MTU (zero if unknown)
+     */
+    uint32_t GetPmtu(Ipv6Address dst);
 
-  /**
-   * \brief Sets the Path MTU for the specific destination
-   * \param dst the destination
-   * \param pmtu the Path MTU
-   */
-  void SetPmtu (Ipv6Address dst, uint32_t pmtu);
+    /**
+     * \brief Sets the Path MTU for the specific destination
+     * \param dst the destination
+     * \param pmtu the Path MTU
+     */
+    void SetPmtu(Ipv6Address dst, uint32_t pmtu);
 
-  /**
-   * \brief Gets the Path MTU validity time
-   * \return the Path MTU validity time
-   */
-  Time GetPmtuValidityTime () const;
+    /**
+     * \brief Gets the Path MTU validity time
+     * \return the Path MTU validity time
+     */
+    Time GetPmtuValidityTime() const;
 
-  /**
-   * \brief Sets the Path MTU validity time (minimum is 5 minutes)
-   * \param validity the Path MTU validity time
-   * \return true if the change was successful
-   */
-  bool SetPmtuValidityTime (Time validity);
+    /**
+     * \brief Sets the Path MTU validity time (minimum is 5 minutes)
+     * \param validity the Path MTU validity time
+     * \return true if the change was successful
+     */
+    bool SetPmtuValidityTime(Time validity);
 
-private:
-  /**
-   * \brief Clears the Path MTU for the specific destination
-   * \param dst the destination
-   */
-  void ClearPmtu (Ipv6Address dst);
+  private:
+    /**
+     * \brief Clears the Path MTU for the specific destination
+     * \param dst the destination
+     */
+    void ClearPmtu(Ipv6Address dst);
 
-  /**
-   * \brief Path MTU table
-   */
-  std::map<Ipv6Address, uint32_t> m_pathMtu;
+    /**
+     * \brief Path MTU table
+     */
+    std::map<Ipv6Address, uint32_t> m_pathMtu;
 
-  /**
-   * \brief Container of the IPv6 PMTU data (Ipv6 destination address and expiration event).
-   */
-  typedef std::map<Ipv6Address, EventId>::iterator pathMtuTimerIter;
+    /**
+     * \brief Container of the IPv6 PMTU data (Ipv6 destination address and expiration event).
+     */
+    typedef std::map<Ipv6Address, EventId>::iterator pathMtuTimerIter;
 
-  /**
-   * \brief Path MTU Expiration table
-   */
-  std::map<Ipv6Address, EventId> m_pathMtuTimer;
+    /**
+     * \brief Path MTU Expiration table
+     */
+    std::map<Ipv6Address, EventId> m_pathMtuTimer;
 
-  /**
-   * \brief Path MTU entry validity time
-   */
-  Time m_validityTime;
+    /**
+     * \brief Path MTU entry validity time
+     */
+    Time m_validityTime;
 };
 
-}
+} // namespace ns3
 
 #endif /* IPV6_PMTU_CACHE_H */

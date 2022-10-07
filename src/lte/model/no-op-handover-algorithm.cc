@@ -20,79 +20,71 @@
  */
 
 #include "no-op-handover-algorithm.h"
+
 #include <ns3/log.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("NoOpHandoverAlgorithm");
-
-NS_OBJECT_ENSURE_REGISTERED (NoOpHandoverAlgorithm);
-
-
-NoOpHandoverAlgorithm::NoOpHandoverAlgorithm ()
-  : m_handoverManagementSapUser (nullptr)
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
-  m_handoverManagementSapProvider = new MemberLteHandoverManagementSapProvider<NoOpHandoverAlgorithm> (this);
+
+NS_LOG_COMPONENT_DEFINE("NoOpHandoverAlgorithm");
+
+NS_OBJECT_ENSURE_REGISTERED(NoOpHandoverAlgorithm);
+
+NoOpHandoverAlgorithm::NoOpHandoverAlgorithm()
+    : m_handoverManagementSapUser(nullptr)
+{
+    NS_LOG_FUNCTION(this);
+    m_handoverManagementSapProvider =
+        new MemberLteHandoverManagementSapProvider<NoOpHandoverAlgorithm>(this);
 }
 
-
-NoOpHandoverAlgorithm::~NoOpHandoverAlgorithm ()
+NoOpHandoverAlgorithm::~NoOpHandoverAlgorithm()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
-
 
 void
-NoOpHandoverAlgorithm::DoDispose ()
+NoOpHandoverAlgorithm::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  delete m_handoverManagementSapProvider;
+    NS_LOG_FUNCTION(this);
+    delete m_handoverManagementSapProvider;
 }
-
 
 TypeId
-NoOpHandoverAlgorithm::GetTypeId ()
+NoOpHandoverAlgorithm::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::NoOpHandoverAlgorithm")
-    .SetParent<LteHandoverAlgorithm> ()
-    .SetGroupName("Lte")
-    .AddConstructor<NoOpHandoverAlgorithm> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::NoOpHandoverAlgorithm")
+                            .SetParent<LteHandoverAlgorithm>()
+                            .SetGroupName("Lte")
+                            .AddConstructor<NoOpHandoverAlgorithm>();
+    return tid;
 }
-
 
 void
-NoOpHandoverAlgorithm::SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s)
+NoOpHandoverAlgorithm::SetLteHandoverManagementSapUser(LteHandoverManagementSapUser* s)
 {
-  NS_LOG_FUNCTION (this << s);
-  m_handoverManagementSapUser = s;
+    NS_LOG_FUNCTION(this << s);
+    m_handoverManagementSapUser = s;
 }
-
 
 LteHandoverManagementSapProvider*
-NoOpHandoverAlgorithm::GetLteHandoverManagementSapProvider ()
+NoOpHandoverAlgorithm::GetLteHandoverManagementSapProvider()
 {
-  NS_LOG_FUNCTION (this);
-  return m_handoverManagementSapProvider;
+    NS_LOG_FUNCTION(this);
+    return m_handoverManagementSapProvider;
 }
-
 
 void
-NoOpHandoverAlgorithm::DoInitialize ()
+NoOpHandoverAlgorithm::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
-  LteHandoverAlgorithm::DoInitialize ();
+    NS_LOG_FUNCTION(this);
+    LteHandoverAlgorithm::DoInitialize();
 }
-
 
 void
-NoOpHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
-                                       LteRrcSap::MeasResults measResults)
+NoOpHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults)
 {
-  NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
+    NS_LOG_FUNCTION(this << rnti << (uint16_t)measResults.measId);
 }
-
 
 } // end of namespace ns3

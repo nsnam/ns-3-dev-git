@@ -18,11 +18,12 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef MESH_STACK_INSTALLER_H
 #define MESH_STACK_INSTALLER_H
 #include "ns3/mesh-point-device.h"
-namespace ns3 {
+
+namespace ns3
+{
 /**
  * \ingroup mesh
  *
@@ -34,29 +35,28 @@ namespace ns3 {
  */
 class MeshStack : public Object
 {
-public:
-  /// \brief Register this type.
-  /// \return The TypeId.
-  static TypeId GetTypeId ();
+  public:
+    /// \brief Register this type.
+    /// \return The TypeId.
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Installs mesh stack. needed by helper only
-   * \param mp the mesh point device
-   * \returns true if successful
-   */
-  virtual bool InstallStack (Ptr<MeshPointDevice> mp) = 0;
-  /**
-   * Report statistics of a given mesh point
-   * \param mp the mesh point device
-   * \param os the output stream
-   */
-  virtual void Report (const Ptr<MeshPointDevice> mp, std::ostream& os) = 0;
-  /**
-   * Reset statistics of a given mesh point
-   * \param mp the mesh point device
-   */
-  virtual void ResetStats (const Ptr<MeshPointDevice> mp) = 0;
+    /**
+     * \brief Installs mesh stack. needed by helper only
+     * \param mp the mesh point device
+     * \returns true if successful
+     */
+    virtual bool InstallStack(Ptr<MeshPointDevice> mp) = 0;
+    /**
+     * Report statistics of a given mesh point
+     * \param mp the mesh point device
+     * \param os the output stream
+     */
+    virtual void Report(const Ptr<MeshPointDevice> mp, std::ostream& os) = 0;
+    /**
+     * Reset statistics of a given mesh point
+     * \param mp the mesh point device
+     */
+    virtual void ResetStats(const Ptr<MeshPointDevice> mp) = 0;
 };
-}
+} // namespace ns3
 #endif
-

@@ -23,11 +23,12 @@
 #define LTE_RLC_TM_H
 
 #include "ns3/lte-rlc.h"
-
 #include <ns3/event-id.h>
+
 #include <map>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * LTE RLC Transparent Mode (TM), see 3GPP TS 36.322
@@ -38,71 +39,71 @@ namespace ns3 {
  */
 class LteRlcTm : public LteRlc
 {
-public:
-  LteRlcTm ();
-  ~LteRlcTm () override;
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  void DoDispose () override;
-
-  /**
-   * RLC SAP
-   *
-   * \param p packet
-   */
-  void DoTransmitPdcpPdu (Ptr<Packet> p) override;
-
-  /**
-   * MAC SAP
-   *
-   * \param txOpParams the LteMacSapUser::TxOpportunityParameters
-   */
-  void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams) override;
-  /**
-   * Notify HARQ deliver failure
-   */
-  void DoNotifyHarqDeliveryFailure () override;
-  void DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams) override;
-
-private:
-  /// Expire RBS timer function
-  void ExpireRbsTimer ();
-  /// Report buffer status
-  void DoReportBufferStatus ();
-
-private:
-  /**
-   * \brief Store an incoming (from layer above us) PDU, waiting to transmit it
-   */
-  struct TxPdu
-  {
+  public:
+    LteRlcTm();
+    ~LteRlcTm() override;
     /**
-     * \brief TxPdu default constructor
-     * \param pdu the PDU
-     * \param time the arrival time
+     * \brief Get the type ID.
+     * \return the object TypeId
      */
-    TxPdu (const Ptr<Packet> &pdu, const Time &time) :
-      m_pdu (pdu),
-      m_waitingSince (time)
-    { }
+    static TypeId GetTypeId();
+    void DoDispose() override;
 
-    TxPdu () = delete;
+    /**
+     * RLC SAP
+     *
+     * \param p packet
+     */
+    void DoTransmitPdcpPdu(Ptr<Packet> p) override;
 
-    Ptr<Packet> m_pdu;           ///< PDU
-    Time        m_waitingSince;  ///< Layer arrival time
-  };
+    /**
+     * MAC SAP
+     *
+     * \param txOpParams the LteMacSapUser::TxOpportunityParameters
+     */
+    void DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParams) override;
+    /**
+     * Notify HARQ deliver failure
+     */
+    void DoNotifyHarqDeliveryFailure() override;
+    void DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams) override;
 
-  std::vector < TxPdu > m_txBuffer; ///< Transmission buffer
+  private:
+    /// Expire RBS timer function
+    void ExpireRbsTimer();
+    /// Report buffer status
+    void DoReportBufferStatus();
 
-  uint32_t m_maxTxBufferSize; ///< maximum transmit buffer size
-  uint32_t m_txBufferSize; ///< transmit buffer size
+  private:
+    /**
+     * \brief Store an incoming (from layer above us) PDU, waiting to transmit it
+     */
+    struct TxPdu
+    {
+        /**
+         * \brief TxPdu default constructor
+         * \param pdu the PDU
+         * \param time the arrival time
+         */
+        TxPdu(const Ptr<Packet>& pdu, const Time& time)
+            : m_pdu(pdu),
+              m_waitingSince(time)
+        {
+        }
 
-  EventId m_rbsTimer; ///< RBS timer
+        TxPdu() = delete;
+
+        Ptr<Packet> m_pdu;   ///< PDU
+        Time m_waitingSince; ///< Layer arrival time
+    };
+
+    std::vector<TxPdu> m_txBuffer; ///< Transmission buffer
+
+    uint32_t m_maxTxBufferSize; ///< maximum transmit buffer size
+    uint32_t m_txBufferSize;    ///< transmit buffer size
+
+    EventId m_rbsTimer; ///< RBS timer
 };
-
 
 } // namespace ns3
 

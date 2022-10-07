@@ -18,15 +18,19 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "buffer.h"
+
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-#define LOG_INTERNAL_STATE(y)                                                                    \
-  NS_LOG_LOGIC (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaStart<<              \
-                ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
-                ", dirty start="<<m_data->m_dirtyStart<<", dirty end="<<m_data->m_dirtyEnd)
+#define LOG_INTERNAL_STATE(y)                                                                      \
+    NS_LOG_LOGIC(y << "start=" << m_start << ", end=" << m_end                                     \
+                   << ", zero start=" << m_zeroAreaStart << ", zero end=" << m_zeroAreaEnd         \
+                   << ", count=" << m_data->m_count << ", size=" << m_data->m_size                 \
+                   << ", dirty start=" << m_data->m_dirtyStart                                     \
+                   << ", dirty end=" << m_data->m_dirtyEnd)
 
-namespace {
+namespace
+{
 
 /**
  * \ingroup packet
@@ -34,21 +38,22 @@ namespace {
  */
 struct Zeroes
 {
-  Zeroes ()
-    : size (1000)
-  {
-    memset (buffer, 0, size);
-  }
-  char buffer[1000];    //!< buffer containing zero values
-  const uint32_t size;  //!< buffer size
-} g_zeroes; //!< Zero-filled buffer
+    Zeroes()
+        : size(1000)
+    {
+        memset(buffer, 0, size);
+    }
 
-}
+    char buffer[1000];   //!< buffer containing zero values
+    const uint32_t size; //!< buffer size
+} g_zeroes;              //!< Zero-filled buffer
 
-namespace ns3 {
+} // namespace
 
-NS_LOG_COMPONENT_DEFINE ("Buffer");
+namespace ns3
+{
 
+NS_LOG_COMPONENT_DEFINE("Buffer");
 
 uint32_t Buffer::g_recommendedStart = 0;
 #ifdef BUFFER_FREE_LIST
@@ -69,147 +74,144 @@ uint32_t Buffer::g_recommendedStart = 0;
  * before the constructors run so this ensures perfect handling of crazy
  * constructor orderings.
  */
-#define MAGIC_DESTROYED (~(long) 0)
+#define MAGIC_DESTROYED (~(long)0)
 #define IS_UNINITIALIZED(x) (x == (Buffer::FreeList*)0)
 #define IS_DESTROYED(x) (x == (Buffer::FreeList*)MAGIC_DESTROYED)
-#define IS_INITIALIZED(x) (!IS_UNINITIALIZED (x) && !IS_DESTROYED (x))
+#define IS_INITIALIZED(x) (!IS_UNINITIALIZED(x) && !IS_DESTROYED(x))
 #define DESTROYED ((Buffer::FreeList*)MAGIC_DESTROYED)
 #define UNINITIALIZED ((Buffer::FreeList*)0)
 uint32_t Buffer::g_maxSize = 0;
-Buffer::FreeList *Buffer::g_freeList = nullptr;
+Buffer::FreeList* Buffer::g_freeList = nullptr;
 struct Buffer::LocalStaticDestructor Buffer::g_localStaticDestructor;
 
 Buffer::LocalStaticDestructor::~LocalStaticDestructor()
 {
-  NS_LOG_FUNCTION (this);
-  if (IS_INITIALIZED (g_freeList))
+    NS_LOG_FUNCTION(this);
+    if (IS_INITIALIZED(g_freeList))
     {
-      for (Buffer::FreeList::iterator i = g_freeList->begin ();
-           i != g_freeList->end (); i++)
+        for (Buffer::FreeList::iterator i = g_freeList->begin(); i != g_freeList->end(); i++)
         {
-          Buffer::Deallocate (*i);
+            Buffer::Deallocate(*i);
         }
-      delete g_freeList;
-      g_freeList = DESTROYED;
+        delete g_freeList;
+        g_freeList = DESTROYED;
     }
 }
 
 void
-Buffer::Recycle (struct Buffer::Data *data)
+Buffer::Recycle(struct Buffer::Data* data)
 {
-  NS_LOG_FUNCTION (data);
-  NS_ASSERT (data->m_count == 0);
-  NS_ASSERT (!IS_UNINITIALIZED (g_freeList));
-  g_maxSize = std::max (g_maxSize, data->m_size);
-  /* feed into free list */
-  if (data->m_size < g_maxSize ||
-      IS_DESTROYED (g_freeList) ||
-      g_freeList->size () > 1000)
+    NS_LOG_FUNCTION(data);
+    NS_ASSERT(data->m_count == 0);
+    NS_ASSERT(!IS_UNINITIALIZED(g_freeList));
+    g_maxSize = std::max(g_maxSize, data->m_size);
+    /* feed into free list */
+    if (data->m_size < g_maxSize || IS_DESTROYED(g_freeList) || g_freeList->size() > 1000)
     {
-      Buffer::Deallocate (data);
+        Buffer::Deallocate(data);
     }
-  else
+    else
     {
-      NS_ASSERT (IS_INITIALIZED (g_freeList));
-      g_freeList->push_back (data);
+        NS_ASSERT(IS_INITIALIZED(g_freeList));
+        g_freeList->push_back(data);
     }
 }
 
-Buffer::Data *
-Buffer::Create (uint32_t dataSize)
+Buffer::Data*
+Buffer::Create(uint32_t dataSize)
 {
-  NS_LOG_FUNCTION (dataSize);
-  /* try to find a buffer correctly sized. */
-  if (IS_UNINITIALIZED (g_freeList))
+    NS_LOG_FUNCTION(dataSize);
+    /* try to find a buffer correctly sized. */
+    if (IS_UNINITIALIZED(g_freeList))
     {
-      g_freeList = new Buffer::FreeList ();
+        g_freeList = new Buffer::FreeList();
     }
-  else if (IS_INITIALIZED (g_freeList))
+    else if (IS_INITIALIZED(g_freeList))
     {
-      while (!g_freeList->empty ())
+        while (!g_freeList->empty())
         {
-          struct Buffer::Data *data = g_freeList->back ();
-          g_freeList->pop_back ();
-          if (data->m_size >= dataSize)
+            struct Buffer::Data* data = g_freeList->back();
+            g_freeList->pop_back();
+            if (data->m_size >= dataSize)
             {
-              data->m_count = 1;
-              return data;
+                data->m_count = 1;
+                return data;
             }
-          Buffer::Deallocate (data);
+            Buffer::Deallocate(data);
         }
     }
-  struct Buffer::Data *data = Buffer::Allocate (dataSize);
-  NS_ASSERT (data->m_count == 1);
-  return data;
+    struct Buffer::Data* data = Buffer::Allocate(dataSize);
+    NS_ASSERT(data->m_count == 1);
+    return data;
 }
-#else /* BUFFER_FREE_LIST */
+#else  /* BUFFER_FREE_LIST */
 void
-Buffer::Recycle (struct Buffer::Data *data)
+Buffer::Recycle(struct Buffer::Data* data)
 {
-  NS_LOG_FUNCTION (data);
-  NS_ASSERT (data->m_count == 0);
-  Deallocate (data);
+    NS_LOG_FUNCTION(data);
+    NS_ASSERT(data->m_count == 0);
+    Deallocate(data);
 }
 
-Buffer::Data *
-Buffer::Create (uint32_t size)
+Buffer::Data*
+Buffer::Create(uint32_t size)
 {
-  NS_LOG_FUNCTION (size);
-  return Allocate (size);
+    NS_LOG_FUNCTION(size);
+    return Allocate(size);
 }
 #endif /* BUFFER_FREE_LIST */
 
-struct Buffer::Data *
-Buffer::Allocate (uint32_t reqSize)
+struct Buffer::Data*
+Buffer::Allocate(uint32_t reqSize)
 {
-  NS_LOG_FUNCTION (reqSize);
-  if (reqSize == 0)
+    NS_LOG_FUNCTION(reqSize);
+    if (reqSize == 0)
     {
-      reqSize = 1;
+        reqSize = 1;
     }
-  NS_ASSERT (reqSize >= 1);
-  uint32_t size = reqSize - 1 + sizeof (struct Buffer::Data);
-  uint8_t *b = new uint8_t [size];
-  struct Buffer::Data *data = reinterpret_cast<struct Buffer::Data*>(b);
-  data->m_size = reqSize;
-  data->m_count = 1;
-  return data;
+    NS_ASSERT(reqSize >= 1);
+    uint32_t size = reqSize - 1 + sizeof(struct Buffer::Data);
+    uint8_t* b = new uint8_t[size];
+    struct Buffer::Data* data = reinterpret_cast<struct Buffer::Data*>(b);
+    data->m_size = reqSize;
+    data->m_count = 1;
+    return data;
 }
 
 void
-Buffer::Deallocate (struct Buffer::Data *data)
+Buffer::Deallocate(struct Buffer::Data* data)
 {
-  NS_LOG_FUNCTION (data);
-  NS_ASSERT (data->m_count == 0);
-  uint8_t *buf = reinterpret_cast<uint8_t *> (data);
-  delete [] buf;
+    NS_LOG_FUNCTION(data);
+    NS_ASSERT(data->m_count == 0);
+    uint8_t* buf = reinterpret_cast<uint8_t*>(data);
+    delete[] buf;
 }
 
-Buffer::Buffer ()
+Buffer::Buffer()
 {
-  NS_LOG_FUNCTION (this);
-  Initialize (0);
+    NS_LOG_FUNCTION(this);
+    Initialize(0);
 }
 
-Buffer::Buffer (uint32_t dataSize)
+Buffer::Buffer(uint32_t dataSize)
 {
-  NS_LOG_FUNCTION (this << dataSize);
-  Initialize (dataSize);
+    NS_LOG_FUNCTION(this << dataSize);
+    Initialize(dataSize);
 }
 
-Buffer::Buffer (uint32_t dataSize, bool initialize)
+Buffer::Buffer(uint32_t dataSize, bool initialize)
 {
-  NS_LOG_FUNCTION (this << dataSize << initialize);
-  if (initialize == true)
+    NS_LOG_FUNCTION(this << dataSize << initialize);
+    if (initialize == true)
     {
-      Initialize (dataSize);
+        Initialize(dataSize);
     }
 }
 
 bool
-Buffer::CheckInternalState () const
+Buffer::CheckInternalState() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 #if 0
   // If you want to modify any code in this file, enable this checking code.
   // Otherwise, there is not much point is enabling it because the
@@ -236,546 +238,542 @@ Buffer::CheckInternalState () const
     }
   return ok;
 #else
-  return true;
+    return true;
 #endif
 }
 
 void
-Buffer::Initialize (uint32_t zeroSize)
+Buffer::Initialize(uint32_t zeroSize)
 {
-  NS_LOG_FUNCTION (this << zeroSize);
-  m_data = Buffer::Create (0);
-  m_start = std::min (m_data->m_size, g_recommendedStart);
-  m_maxZeroAreaStart = m_start;
-  m_zeroAreaStart = m_start;
-  m_zeroAreaEnd = m_zeroAreaStart + zeroSize;
-  m_end = m_zeroAreaEnd;
-  m_data->m_dirtyStart = m_start;
-  m_data->m_dirtyEnd = m_end;
-  NS_ASSERT (CheckInternalState ());
+    NS_LOG_FUNCTION(this << zeroSize);
+    m_data = Buffer::Create(0);
+    m_start = std::min(m_data->m_size, g_recommendedStart);
+    m_maxZeroAreaStart = m_start;
+    m_zeroAreaStart = m_start;
+    m_zeroAreaEnd = m_zeroAreaStart + zeroSize;
+    m_end = m_zeroAreaEnd;
+    m_data->m_dirtyStart = m_start;
+    m_data->m_dirtyEnd = m_end;
+    NS_ASSERT(CheckInternalState());
 }
 
 Buffer&
-Buffer::operator= (const Buffer& o)
+Buffer::operator=(const Buffer& o)
 {
-  NS_ASSERT (CheckInternalState ());
-  if (m_data != o.m_data)
+    NS_ASSERT(CheckInternalState());
+    if (m_data != o.m_data)
     {
-      // not assignment to self.
-      m_data->m_count--;
-      if (m_data->m_count == 0)
+        // not assignment to self.
+        m_data->m_count--;
+        if (m_data->m_count == 0)
         {
-          Recycle (m_data);
+            Recycle(m_data);
         }
-      m_data = o.m_data;
-      m_data->m_count++;
+        m_data = o.m_data;
+        m_data->m_count++;
     }
-  g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
-  m_maxZeroAreaStart = o.m_maxZeroAreaStart;
-  m_zeroAreaStart = o.m_zeroAreaStart;
-  m_zeroAreaEnd = o.m_zeroAreaEnd;
-  m_start = o.m_start;
-  m_end = o.m_end;
-  NS_ASSERT (CheckInternalState ());
-  return *this;
+    g_recommendedStart = std::max(g_recommendedStart, m_maxZeroAreaStart);
+    m_maxZeroAreaStart = o.m_maxZeroAreaStart;
+    m_zeroAreaStart = o.m_zeroAreaStart;
+    m_zeroAreaEnd = o.m_zeroAreaEnd;
+    m_start = o.m_start;
+    m_end = o.m_end;
+    NS_ASSERT(CheckInternalState());
+    return *this;
 }
 
-Buffer::~Buffer ()
+Buffer::~Buffer()
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (CheckInternalState ());
-  g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
-  m_data->m_count--;
-  if (m_data->m_count == 0)
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(CheckInternalState());
+    g_recommendedStart = std::max(g_recommendedStart, m_maxZeroAreaStart);
+    m_data->m_count--;
+    if (m_data->m_count == 0)
     {
-      Recycle (m_data);
+        Recycle(m_data);
     }
 }
 
 uint32_t
-Buffer::GetInternalSize () const
+Buffer::GetInternalSize() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_zeroAreaStart - m_start + m_end - m_zeroAreaEnd;
+    NS_LOG_FUNCTION(this);
+    return m_zeroAreaStart - m_start + m_end - m_zeroAreaEnd;
 }
+
 uint32_t
-Buffer::GetInternalEnd () const
+Buffer::GetInternalEnd() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
+    NS_LOG_FUNCTION(this);
+    return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
 }
 
 void
-Buffer::AddAtStart (uint32_t start)
+Buffer::AddAtStart(uint32_t start)
 {
-  NS_LOG_FUNCTION (this << start);
-  NS_ASSERT (CheckInternalState ());
-  bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
-  if (m_start >= start && !isDirty)
+    NS_LOG_FUNCTION(this << start);
+    NS_ASSERT(CheckInternalState());
+    bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
+    if (m_start >= start && !isDirty)
     {
-      /* enough space in the buffer and not dirty.
-       * To add: |..|
-       * Before: |*****---------***|
-       * After:  |***..---------***|
-       */
-      NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
-      m_start -= start;
-      // update dirty area
-      m_data->m_dirtyStart = m_start;
+        /* enough space in the buffer and not dirty.
+         * To add: |..|
+         * Before: |*****---------***|
+         * After:  |***..---------***|
+         */
+        NS_ASSERT(m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
+        m_start -= start;
+        // update dirty area
+        m_data->m_dirtyStart = m_start;
     }
-  else
+    else
     {
-      uint32_t newSize = GetInternalSize () + start;
-      struct Buffer::Data *newData = Buffer::Create (newSize);
-      memcpy (newData->m_data + start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0)
+        uint32_t newSize = GetInternalSize() + start;
+        struct Buffer::Data* newData = Buffer::Create(newSize);
+        memcpy(newData->m_data + start, m_data->m_data + m_start, GetInternalSize());
+        m_data->m_count--;
+        if (m_data->m_count == 0)
         {
-          Buffer::Recycle (m_data);
+            Buffer::Recycle(m_data);
         }
-      m_data = newData;
+        m_data = newData;
 
-      int32_t delta = start - m_start;
-      m_start += delta;
-      m_zeroAreaStart += delta;
-      m_zeroAreaEnd += delta;
-      m_end += delta;
-      m_start -= start;
+        int32_t delta = start - m_start;
+        m_start += delta;
+        m_zeroAreaStart += delta;
+        m_zeroAreaEnd += delta;
+        m_end += delta;
+        m_start -= start;
 
-      // update dirty area
-      m_data->m_dirtyStart = m_start;
-      m_data->m_dirtyEnd = m_end;
+        // update dirty area
+        m_data->m_dirtyStart = m_start;
+        m_data->m_dirtyEnd = m_end;
     }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  LOG_INTERNAL_STATE ("add start=" << start << ", ");
-  NS_ASSERT (CheckInternalState ());
+    m_maxZeroAreaStart = std::max(m_maxZeroAreaStart, m_zeroAreaStart);
+    LOG_INTERNAL_STATE("add start=" << start << ", ");
+    NS_ASSERT(CheckInternalState());
 }
+
 void
-Buffer::AddAtEnd (uint32_t end)
+Buffer::AddAtEnd(uint32_t end)
 {
-  NS_LOG_FUNCTION (this << end);
-  NS_ASSERT (CheckInternalState ());
-  bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
-  if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
+    NS_LOG_FUNCTION(this << end);
+    NS_ASSERT(CheckInternalState());
+    bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
+    if (GetInternalEnd() + end <= m_data->m_size && !isDirty)
     {
-      /* enough space in buffer and not dirty
-       * Add:    |...|
-       * Before: |**----*****|
-       * After:  |**----...**|
-       */
-      NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
-      m_end += end;
-      // update dirty area.
-      m_data->m_dirtyEnd = m_end;
+        /* enough space in buffer and not dirty
+         * Add:    |...|
+         * Before: |**----*****|
+         * After:  |**----...**|
+         */
+        NS_ASSERT(m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
+        m_end += end;
+        // update dirty area.
+        m_data->m_dirtyEnd = m_end;
     }
-  else
+    else
     {
-      uint32_t newSize = GetInternalSize () + end;
-      struct Buffer::Data *newData = Buffer::Create (newSize);
-      memcpy (newData->m_data, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0)
+        uint32_t newSize = GetInternalSize() + end;
+        struct Buffer::Data* newData = Buffer::Create(newSize);
+        memcpy(newData->m_data, m_data->m_data + m_start, GetInternalSize());
+        m_data->m_count--;
+        if (m_data->m_count == 0)
         {
-          Buffer::Recycle (m_data);
+            Buffer::Recycle(m_data);
         }
-      m_data = newData;
+        m_data = newData;
 
-      int32_t delta = -m_start;
-      m_zeroAreaStart += delta;
-      m_zeroAreaEnd += delta;
-      m_end += delta;
-      m_start += delta;
-      m_end += end;
+        int32_t delta = -m_start;
+        m_zeroAreaStart += delta;
+        m_zeroAreaEnd += delta;
+        m_end += delta;
+        m_start += delta;
+        m_end += end;
 
-      // update dirty area
-      m_data->m_dirtyStart = m_start;
-      m_data->m_dirtyEnd = m_end;
+        // update dirty area
+        m_data->m_dirtyStart = m_start;
+        m_data->m_dirtyEnd = m_end;
     }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  LOG_INTERNAL_STATE ("add end=" << end << ", ");
-  NS_ASSERT (CheckInternalState ());
+    m_maxZeroAreaStart = std::max(m_maxZeroAreaStart, m_zeroAreaStart);
+    LOG_INTERNAL_STATE("add end=" << end << ", ");
+    NS_ASSERT(CheckInternalState());
 }
 
 void
-Buffer::AddAtEnd (const Buffer &o)
+Buffer::AddAtEnd(const Buffer& o)
 {
-  NS_LOG_FUNCTION (this << &o);
+    NS_LOG_FUNCTION(this << &o);
 
-  if (m_data->m_count == 1 &&
-      (m_end == m_zeroAreaEnd || m_zeroAreaStart == m_zeroAreaEnd) &&
-      m_end == m_data->m_dirtyEnd &&
-      o.m_start == o.m_zeroAreaStart &&
-      o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
+    if (m_data->m_count == 1 && (m_end == m_zeroAreaEnd || m_zeroAreaStart == m_zeroAreaEnd) &&
+        m_end == m_data->m_dirtyEnd && o.m_start == o.m_zeroAreaStart &&
+        o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
     {
-      /**
-       * This is an optimization which kicks in when
-       * we attempt to aggregate two buffers which contain
-       * adjacent zero areas.
-       */
-      if (m_zeroAreaStart == m_zeroAreaEnd)
+        /**
+         * This is an optimization which kicks in when
+         * we attempt to aggregate two buffers which contain
+         * adjacent zero areas.
+         */
+        if (m_zeroAreaStart == m_zeroAreaEnd)
         {
-          m_zeroAreaStart = m_end;
+            m_zeroAreaStart = m_end;
         }
-      uint32_t zeroSize = o.m_zeroAreaEnd - o.m_zeroAreaStart;
-      m_zeroAreaEnd = m_end + zeroSize;
-      m_end = m_zeroAreaEnd;
-      m_data->m_dirtyEnd = m_zeroAreaEnd;
-      uint32_t endData = o.m_end - o.m_zeroAreaEnd;
-      AddAtEnd (endData);
-      Buffer::Iterator dst = End ();
-      dst.Prev (endData);
-      Buffer::Iterator src = o.End ();
-      src.Prev (endData);
-      dst.Write (src, o.End ());
-      NS_ASSERT (CheckInternalState ());
-      return;
+        uint32_t zeroSize = o.m_zeroAreaEnd - o.m_zeroAreaStart;
+        m_zeroAreaEnd = m_end + zeroSize;
+        m_end = m_zeroAreaEnd;
+        m_data->m_dirtyEnd = m_zeroAreaEnd;
+        uint32_t endData = o.m_end - o.m_zeroAreaEnd;
+        AddAtEnd(endData);
+        Buffer::Iterator dst = End();
+        dst.Prev(endData);
+        Buffer::Iterator src = o.End();
+        src.Prev(endData);
+        dst.Write(src, o.End());
+        NS_ASSERT(CheckInternalState());
+        return;
     }
 
-  *this = CreateFullCopy ();
-  AddAtEnd (o.GetSize ());
-  Buffer::Iterator destStart = End ();
-  destStart.Prev (o.GetSize ());
-  destStart.Write (o.Begin (), o.End ());
-  NS_ASSERT (CheckInternalState ());
+    *this = CreateFullCopy();
+    AddAtEnd(o.GetSize());
+    Buffer::Iterator destStart = End();
+    destStart.Prev(o.GetSize());
+    destStart.Write(o.Begin(), o.End());
+    NS_ASSERT(CheckInternalState());
 }
 
 void
-Buffer::RemoveAtStart (uint32_t start)
+Buffer::RemoveAtStart(uint32_t start)
 {
-  NS_LOG_FUNCTION (this << start);
-  NS_ASSERT (CheckInternalState ());
-  uint32_t newStart = m_start + start;
-  if (newStart <= m_zeroAreaStart)
+    NS_LOG_FUNCTION(this << start);
+    NS_ASSERT(CheckInternalState());
+    uint32_t newStart = m_start + start;
+    if (newStart <= m_zeroAreaStart)
     {
-      /* only remove start of buffer
-       */
-      m_start = newStart;
+        /* only remove start of buffer
+         */
+        m_start = newStart;
     }
-  else if (newStart <= m_zeroAreaEnd)
+    else if (newStart <= m_zeroAreaEnd)
     {
-      /* remove start of buffer _and_ start of zero area
-       */
-      uint32_t delta = newStart - m_zeroAreaStart;
-      m_start = m_zeroAreaStart;
-      m_zeroAreaEnd -= delta;
-      m_end -= delta;
+        /* remove start of buffer _and_ start of zero area
+         */
+        uint32_t delta = newStart - m_zeroAreaStart;
+        m_start = m_zeroAreaStart;
+        m_zeroAreaEnd -= delta;
+        m_end -= delta;
     }
-  else if (newStart <= m_end)
+    else if (newStart <= m_end)
     {
-      /* remove start of buffer, complete zero area, and part
-       * of end of buffer
-       */
-      NS_ASSERT (m_end >= start);
-      uint32_t zeroSize = m_zeroAreaEnd - m_zeroAreaStart;
-      m_start = newStart - zeroSize;
-      m_end -= zeroSize;
-      m_zeroAreaStart = m_start;
-      m_zeroAreaEnd = m_start;
+        /* remove start of buffer, complete zero area, and part
+         * of end of buffer
+         */
+        NS_ASSERT(m_end >= start);
+        uint32_t zeroSize = m_zeroAreaEnd - m_zeroAreaStart;
+        m_start = newStart - zeroSize;
+        m_end -= zeroSize;
+        m_zeroAreaStart = m_start;
+        m_zeroAreaEnd = m_start;
     }
-  else
+    else
     {
-      /* remove all buffer */
-      m_end -= m_zeroAreaEnd - m_zeroAreaStart;
-      m_start = m_end;
-      m_zeroAreaEnd = m_end;
-      m_zeroAreaStart = m_end;
+        /* remove all buffer */
+        m_end -= m_zeroAreaEnd - m_zeroAreaStart;
+        m_start = m_end;
+        m_zeroAreaEnd = m_end;
+        m_zeroAreaStart = m_end;
     }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  LOG_INTERNAL_STATE ("rem start=" << start << ", ");
-  NS_ASSERT (CheckInternalState ());
+    m_maxZeroAreaStart = std::max(m_maxZeroAreaStart, m_zeroAreaStart);
+    LOG_INTERNAL_STATE("rem start=" << start << ", ");
+    NS_ASSERT(CheckInternalState());
 }
+
 void
-Buffer::RemoveAtEnd (uint32_t end)
+Buffer::RemoveAtEnd(uint32_t end)
 {
-  NS_LOG_FUNCTION (this << end);
-  NS_ASSERT (CheckInternalState ());
-  uint32_t newEnd = m_end - std::min (end, m_end - m_start);
-  if (newEnd > m_zeroAreaEnd)
+    NS_LOG_FUNCTION(this << end);
+    NS_ASSERT(CheckInternalState());
+    uint32_t newEnd = m_end - std::min(end, m_end - m_start);
+    if (newEnd > m_zeroAreaEnd)
     {
-      /* remove part of end of buffer */
-      m_end = newEnd;
+        /* remove part of end of buffer */
+        m_end = newEnd;
     }
-  else if (newEnd > m_zeroAreaStart)
+    else if (newEnd > m_zeroAreaStart)
     {
-      /* remove end of buffer, part of zero area */
-      m_end = newEnd;
-      m_zeroAreaEnd = newEnd;
+        /* remove end of buffer, part of zero area */
+        m_end = newEnd;
+        m_zeroAreaEnd = newEnd;
     }
-  else if (newEnd > m_start)
+    else if (newEnd > m_start)
     {
-      /* remove end of buffer, zero area, part of start of buffer */
-      m_end = newEnd;
-      m_zeroAreaEnd = newEnd;
-      m_zeroAreaStart = newEnd;
+        /* remove end of buffer, zero area, part of start of buffer */
+        m_end = newEnd;
+        m_zeroAreaEnd = newEnd;
+        m_zeroAreaStart = newEnd;
     }
-  else
+    else
     {
-      /* remove all buffer */
-      m_end = m_start;
-      m_zeroAreaEnd = m_start;
-      m_zeroAreaStart = m_start;
+        /* remove all buffer */
+        m_end = m_start;
+        m_zeroAreaEnd = m_start;
+        m_zeroAreaStart = m_start;
     }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  LOG_INTERNAL_STATE ("rem end=" << end << ", ");
-  NS_ASSERT (CheckInternalState ());
+    m_maxZeroAreaStart = std::max(m_maxZeroAreaStart, m_zeroAreaStart);
+    LOG_INTERNAL_STATE("rem end=" << end << ", ");
+    NS_ASSERT(CheckInternalState());
 }
 
 Buffer
-Buffer::CreateFragment (uint32_t start, uint32_t length) const
+Buffer::CreateFragment(uint32_t start, uint32_t length) const
 {
-  NS_LOG_FUNCTION (this << start << length);
-  NS_ASSERT (CheckInternalState ());
-  Buffer tmp = *this;
-  tmp.RemoveAtStart (start);
-  tmp.RemoveAtEnd (GetSize () - (start + length));
-  NS_ASSERT (CheckInternalState ());
-  return tmp;
+    NS_LOG_FUNCTION(this << start << length);
+    NS_ASSERT(CheckInternalState());
+    Buffer tmp = *this;
+    tmp.RemoveAtStart(start);
+    tmp.RemoveAtEnd(GetSize() - (start + length));
+    NS_ASSERT(CheckInternalState());
+    return tmp;
 }
 
 Buffer
-Buffer::CreateFullCopy () const
+Buffer::CreateFullCopy() const
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (CheckInternalState ());
-  if (m_zeroAreaEnd - m_zeroAreaStart != 0)
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(CheckInternalState());
+    if (m_zeroAreaEnd - m_zeroAreaStart != 0)
     {
-      Buffer tmp;
-      tmp.AddAtStart (m_zeroAreaEnd - m_zeroAreaStart);
-      tmp.Begin ().WriteU8 (0, m_zeroAreaEnd - m_zeroAreaStart);
-      uint32_t dataStart = m_zeroAreaStart - m_start;
-      tmp.AddAtStart (dataStart);
-      tmp.Begin ().Write (m_data->m_data+m_start, dataStart);
-      uint32_t dataEnd = m_end - m_zeroAreaEnd;
-      tmp.AddAtEnd (dataEnd);
-      Buffer::Iterator i = tmp.End ();
-      i.Prev (dataEnd);
-      i.Write (m_data->m_data+m_zeroAreaStart,dataEnd);
-      NS_ASSERT (tmp.CheckInternalState ());
-      return tmp;
+        Buffer tmp;
+        tmp.AddAtStart(m_zeroAreaEnd - m_zeroAreaStart);
+        tmp.Begin().WriteU8(0, m_zeroAreaEnd - m_zeroAreaStart);
+        uint32_t dataStart = m_zeroAreaStart - m_start;
+        tmp.AddAtStart(dataStart);
+        tmp.Begin().Write(m_data->m_data + m_start, dataStart);
+        uint32_t dataEnd = m_end - m_zeroAreaEnd;
+        tmp.AddAtEnd(dataEnd);
+        Buffer::Iterator i = tmp.End();
+        i.Prev(dataEnd);
+        i.Write(m_data->m_data + m_zeroAreaStart, dataEnd);
+        NS_ASSERT(tmp.CheckInternalState());
+        return tmp;
     }
-  NS_ASSERT (CheckInternalState ());
-  return *this;
+    NS_ASSERT(CheckInternalState());
+    return *this;
 }
 
 uint32_t
-Buffer::GetSerializedSize () const
+Buffer::GetSerializedSize() const
 {
-  NS_LOG_FUNCTION (this);
-  uint32_t dataStart = (m_zeroAreaStart - m_start + 3) & (~0x3);
-  uint32_t dataEnd = (m_end - m_zeroAreaEnd + 3) & (~0x3);
+    NS_LOG_FUNCTION(this);
+    uint32_t dataStart = (m_zeroAreaStart - m_start + 3) & (~0x3);
+    uint32_t dataEnd = (m_end - m_zeroAreaEnd + 3) & (~0x3);
 
-  // total size 4-bytes for dataStart length
-  // + X number of bytes for dataStart
-  // + 4-bytes for dataEnd length
-  // + X number of bytes for dataEnd
-  uint32_t sz = sizeof (uint32_t)
-    + sizeof (uint32_t)
-    + dataStart
-    + sizeof (uint32_t)
-    + dataEnd;
+    // total size 4-bytes for dataStart length
+    // + X number of bytes for dataStart
+    // + 4-bytes for dataEnd length
+    // + X number of bytes for dataEnd
+    uint32_t sz = sizeof(uint32_t) + sizeof(uint32_t) + dataStart + sizeof(uint32_t) + dataEnd;
 
-  return sz;
+    return sz;
 }
 
 uint32_t
-Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
+Buffer::Serialize(uint8_t* buffer, uint32_t maxSize) const
 {
-  NS_LOG_FUNCTION (this << &buffer << maxSize);
-  uint32_t* p = reinterpret_cast<uint32_t *> (buffer);
-  uint32_t size = 0;
+    NS_LOG_FUNCTION(this << &buffer << maxSize);
+    uint32_t* p = reinterpret_cast<uint32_t*>(buffer);
+    uint32_t size = 0;
 
-  // Add the zero data length
-  if (size + 4 <= maxSize)
+    // Add the zero data length
+    if (size + 4 <= maxSize)
     {
-      size += 4;
-      *p++ = m_zeroAreaEnd - m_zeroAreaStart;
+        size += 4;
+        *p++ = m_zeroAreaEnd - m_zeroAreaStart;
     }
-  else
+    else
     {
-      return 0;
-    }
-
-  // Add the length of actual start data
-  uint32_t dataStartLength = m_zeroAreaStart - m_start;
-  if (size + 4 <= maxSize)
-    {
-      size += 4;
-      *p++ = dataStartLength;
-    }
-  else
-    {
-      return 0;
+        return 0;
     }
 
-  // Add the actual data
-  if (size + ((dataStartLength + 3) & (~3))  <= maxSize)
+    // Add the length of actual start data
+    uint32_t dataStartLength = m_zeroAreaStart - m_start;
+    if (size + 4 <= maxSize)
     {
-      size += (dataStartLength + 3) & (~3);
-      memcpy (p, m_data->m_data + m_start, dataStartLength);
-      p += (((dataStartLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+        size += 4;
+        *p++ = dataStartLength;
     }
-  else
+    else
     {
-      return 0;
-    }
-
-  // Add the length of the actual end data
-  uint32_t dataEndLength = m_end - m_zeroAreaEnd;
-  if (size + 4 <= maxSize)
-    {
-      size += 4;
-      *p++ = dataEndLength;
-    }
-  else
-    {
-      return 0;
+        return 0;
     }
 
-  // Add the actual data
-  if (size + ((dataEndLength + 3) & (~3)) <= maxSize)
+    // Add the actual data
+    if (size + ((dataStartLength + 3) & (~3)) <= maxSize)
     {
-      // The following line is unnecessary.
-      // size += (dataEndLength + 3) & (~3);
-      memcpy (p, m_data->m_data+m_zeroAreaStart, dataEndLength);
-      // The following line is unnecessary.
-      // p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+        size += (dataStartLength + 3) & (~3);
+        memcpy(p, m_data->m_data + m_start, dataStartLength);
+        p += (((dataStartLength + 3) & (~3)) / 4); // Advance p, insuring 4 byte boundary
     }
-  else
+    else
     {
-      return 0;
+        return 0;
     }
 
-  // Serialized everything successfully
-  return 1;
+    // Add the length of the actual end data
+    uint32_t dataEndLength = m_end - m_zeroAreaEnd;
+    if (size + 4 <= maxSize)
+    {
+        size += 4;
+        *p++ = dataEndLength;
+    }
+    else
+    {
+        return 0;
+    }
+
+    // Add the actual data
+    if (size + ((dataEndLength + 3) & (~3)) <= maxSize)
+    {
+        // The following line is unnecessary.
+        // size += (dataEndLength + 3) & (~3);
+        memcpy(p, m_data->m_data + m_zeroAreaStart, dataEndLength);
+        // The following line is unnecessary.
+        // p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+    }
+    else
+    {
+        return 0;
+    }
+
+    // Serialized everything successfully
+    return 1;
 }
 
 uint32_t
-Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
+Buffer::Deserialize(const uint8_t* buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << &buffer << size);
-  const uint32_t* p = reinterpret_cast<const uint32_t *> (buffer);
-  uint32_t sizeCheck = size-4;
+    NS_LOG_FUNCTION(this << &buffer << size);
+    const uint32_t* p = reinterpret_cast<const uint32_t*>(buffer);
+    uint32_t sizeCheck = size - 4;
 
-  NS_ASSERT (sizeCheck >= 4);
-  uint32_t zeroDataLength = *p++;
-  sizeCheck -= 4;
+    NS_ASSERT(sizeCheck >= 4);
+    uint32_t zeroDataLength = *p++;
+    sizeCheck -= 4;
 
-  // Create zero bytes
-  Initialize (zeroDataLength);
+    // Create zero bytes
+    Initialize(zeroDataLength);
 
-  // Add start data
-  NS_ASSERT (sizeCheck >= 4);
-  uint32_t dataStartLength = *p++;
-  sizeCheck -= 4;
-  AddAtStart (dataStartLength);
+    // Add start data
+    NS_ASSERT(sizeCheck >= 4);
+    uint32_t dataStartLength = *p++;
+    sizeCheck -= 4;
+    AddAtStart(dataStartLength);
 
-  NS_ASSERT (sizeCheck >= dataStartLength);
-  Begin ().Write (reinterpret_cast<uint8_t *> (const_cast<uint32_t *> (p)), dataStartLength);
-  p += (((dataStartLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
-  sizeCheck -= ((dataStartLength+3)&(~3));
+    NS_ASSERT(sizeCheck >= dataStartLength);
+    Begin().Write(reinterpret_cast<uint8_t*>(const_cast<uint32_t*>(p)), dataStartLength);
+    p += (((dataStartLength + 3) & (~3)) / 4); // Advance p, insuring 4 byte boundary
+    sizeCheck -= ((dataStartLength + 3) & (~3));
 
-  // Add end data
-  NS_ASSERT (sizeCheck >= 4);
-  uint32_t dataEndLength = *p++;
-  sizeCheck -= 4;
-  AddAtEnd (dataEndLength);
+    // Add end data
+    NS_ASSERT(sizeCheck >= 4);
+    uint32_t dataEndLength = *p++;
+    sizeCheck -= 4;
+    AddAtEnd(dataEndLength);
 
-  NS_ASSERT (sizeCheck >= dataEndLength);
-  Buffer::Iterator tmp = End ();
-  tmp.Prev (dataEndLength);
-  tmp.Write (reinterpret_cast<uint8_t *> (const_cast<uint32_t *> (p)), dataEndLength);
-  // The following line is unnecessary.
-  // p += (((dataEndLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
-  sizeCheck -= ((dataEndLength+3)&(~3));
+    NS_ASSERT(sizeCheck >= dataEndLength);
+    Buffer::Iterator tmp = End();
+    tmp.Prev(dataEndLength);
+    tmp.Write(reinterpret_cast<uint8_t*>(const_cast<uint32_t*>(p)), dataEndLength);
+    // The following line is unnecessary.
+    // p += (((dataEndLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
+    sizeCheck -= ((dataEndLength + 3) & (~3));
 
-  NS_ASSERT (sizeCheck == 0);
-  // return zero if buffer did not
-  // contain a complete message
-  return (sizeCheck != 0) ? 0 : 1;
+    NS_ASSERT(sizeCheck == 0);
+    // return zero if buffer did not
+    // contain a complete message
+    return (sizeCheck != 0) ? 0 : 1;
 }
-
 
 void
-Buffer::TransformIntoRealBuffer () const
+Buffer::TransformIntoRealBuffer() const
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (CheckInternalState ());
-  Buffer tmp = CreateFullCopy ();
-  *const_cast<Buffer *> (this) = tmp;
-  NS_ASSERT (CheckInternalState ());
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(CheckInternalState());
+    Buffer tmp = CreateFullCopy();
+    *const_cast<Buffer*>(this) = tmp;
+    NS_ASSERT(CheckInternalState());
 }
 
 const uint8_t*
-Buffer::PeekData () const
+Buffer::PeekData() const
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (CheckInternalState ());
-  TransformIntoRealBuffer ();
-  NS_ASSERT (CheckInternalState ());
-  return m_data->m_data + m_start;
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(CheckInternalState());
+    TransformIntoRealBuffer();
+    NS_ASSERT(CheckInternalState());
+    return m_data->m_data + m_start;
 }
 
 void
-Buffer::CopyData (std::ostream *os, uint32_t size) const
+Buffer::CopyData(std::ostream* os, uint32_t size) const
 {
-  NS_LOG_FUNCTION (this << &os << size);
-  if (size > 0)
+    NS_LOG_FUNCTION(this << &os << size);
+    if (size > 0)
     {
-      uint32_t tmpsize = std::min (m_zeroAreaStart-m_start, size);
-      os->write ((const char*)(m_data->m_data + m_start), tmpsize);
-      if (size > tmpsize)
+        uint32_t tmpsize = std::min(m_zeroAreaStart - m_start, size);
+        os->write((const char*)(m_data->m_data + m_start), tmpsize);
+        if (size > tmpsize)
         {
-          size -= m_zeroAreaStart-m_start;
-          tmpsize = std::min (m_zeroAreaEnd - m_zeroAreaStart, size);
-          uint32_t left = tmpsize;
-          while (left > 0)
+            size -= m_zeroAreaStart - m_start;
+            tmpsize = std::min(m_zeroAreaEnd - m_zeroAreaStart, size);
+            uint32_t left = tmpsize;
+            while (left > 0)
             {
-              uint32_t toWrite = std::min (left, g_zeroes.size);
-              os->write (g_zeroes.buffer, toWrite);
-              left -= toWrite;
+                uint32_t toWrite = std::min(left, g_zeroes.size);
+                os->write(g_zeroes.buffer, toWrite);
+                left -= toWrite;
             }
-          if (size > tmpsize)
+            if (size > tmpsize)
             {
-              size -= tmpsize;
-              tmpsize = std::min (m_end - m_zeroAreaEnd, size);
-              os->write ((const char*)(m_data->m_data + m_zeroAreaStart), tmpsize);
+                size -= tmpsize;
+                tmpsize = std::min(m_end - m_zeroAreaEnd, size);
+                os->write((const char*)(m_data->m_data + m_zeroAreaStart), tmpsize);
             }
         }
     }
 }
 
 uint32_t
-Buffer::CopyData (uint8_t *buffer, uint32_t size) const
+Buffer::CopyData(uint8_t* buffer, uint32_t size) const
 {
-  NS_LOG_FUNCTION (this << &buffer << size);
-  uint32_t originalSize = size;
-  if (size > 0)
+    NS_LOG_FUNCTION(this << &buffer << size);
+    uint32_t originalSize = size;
+    if (size > 0)
     {
-      uint32_t tmpsize = std::min (m_zeroAreaStart-m_start, size);
-      memcpy (buffer, (const char*)(m_data->m_data + m_start), tmpsize);
-      buffer += tmpsize;
-      size -= tmpsize;
-      if (size > 0)
+        uint32_t tmpsize = std::min(m_zeroAreaStart - m_start, size);
+        memcpy(buffer, (const char*)(m_data->m_data + m_start), tmpsize);
+        buffer += tmpsize;
+        size -= tmpsize;
+        if (size > 0)
         {
-          tmpsize = std::min (m_zeroAreaEnd - m_zeroAreaStart, size);
-          uint32_t left = tmpsize;
-          while (left > 0)
+            tmpsize = std::min(m_zeroAreaEnd - m_zeroAreaStart, size);
+            uint32_t left = tmpsize;
+            while (left > 0)
             {
-              uint32_t toWrite = std::min (left, g_zeroes.size);
-              memcpy (buffer, g_zeroes.buffer, toWrite);
-              left -= toWrite;
-              buffer += toWrite;
+                uint32_t toWrite = std::min(left, g_zeroes.size);
+                memcpy(buffer, g_zeroes.buffer, toWrite);
+                left -= toWrite;
+                buffer += toWrite;
             }
-          size -= tmpsize;
-          if (size > 0)
+            size -= tmpsize;
+            if (size > 0)
             {
-              tmpsize = std::min (m_end - m_zeroAreaEnd, size);
-              memcpy (buffer, (const char*)(m_data->m_data + m_zeroAreaStart), tmpsize);
-              size -= tmpsize;
+                tmpsize = std::min(m_end - m_zeroAreaEnd, size);
+                memcpy(buffer, (const char*)(m_data->m_data + m_zeroAreaStart), tmpsize);
+                size -= tmpsize;
             }
         }
     }
-  return originalSize - size;
+    return originalSize - size;
 }
 
 /******************************************************
@@ -783,441 +781,446 @@ Buffer::CopyData (uint8_t *buffer, uint32_t size) const
  ******************************************************/
 
 uint32_t
-Buffer::Iterator::GetDistanceFrom (const Iterator& o) const
+Buffer::Iterator::GetDistanceFrom(const Iterator& o) const
 {
-  NS_LOG_FUNCTION (this << &o);
-  NS_ASSERT (m_data == o.m_data);
-  int32_t diff = m_current - o.m_current;
-  if (diff < 0)
+    NS_LOG_FUNCTION(this << &o);
+    NS_ASSERT(m_data == o.m_data);
+    int32_t diff = m_current - o.m_current;
+    if (diff < 0)
     {
-      return -diff;
+        return -diff;
     }
-  else
+    else
     {
-      return diff;
+        return diff;
     }
 }
 
 bool
-Buffer::Iterator::IsEnd () const
+Buffer::Iterator::IsEnd() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_current == m_dataEnd;
-}
-bool
-Buffer::Iterator::IsStart () const
-{
-  NS_LOG_FUNCTION (this);
-  return m_current == m_dataStart;
+    NS_LOG_FUNCTION(this);
+    return m_current == m_dataEnd;
 }
 
 bool
-Buffer::Iterator::CheckNoZero (uint32_t start, uint32_t end) const
+Buffer::Iterator::IsStart() const
 {
-  NS_LOG_FUNCTION (this << &start << &end);
-  return !(start < m_dataStart ||
-           end > m_dataEnd ||
-           (end > m_zeroStart && start < m_zeroEnd && m_zeroEnd != m_zeroStart && start != end)
-           );
+    NS_LOG_FUNCTION(this);
+    return m_current == m_dataStart;
 }
+
 bool
-Buffer::Iterator::Check (uint32_t i) const
+Buffer::Iterator::CheckNoZero(uint32_t start, uint32_t end) const
 {
-  NS_LOG_FUNCTION (this << &i);
-  return i >= m_dataStart &&
-         !(i >= m_zeroStart && i < m_zeroEnd) &&
-         i <= m_dataEnd;
+    NS_LOG_FUNCTION(this << &start << &end);
+    return !(start < m_dataStart || end > m_dataEnd ||
+             (end > m_zeroStart && start < m_zeroEnd && m_zeroEnd != m_zeroStart && start != end));
 }
 
+bool
+Buffer::Iterator::Check(uint32_t i) const
+{
+    NS_LOG_FUNCTION(this << &i);
+    return i >= m_dataStart && !(i >= m_zeroStart && i < m_zeroEnd) && i <= m_dataEnd;
+}
 
 void
-Buffer::Iterator::Write (Iterator start, Iterator end)
+Buffer::Iterator::Write(Iterator start, Iterator end)
 {
-  NS_LOG_FUNCTION (this << &start << &end);
-  NS_ASSERT (start.m_data == end.m_data);
-  NS_ASSERT (start.m_current <= end.m_current);
-  NS_ASSERT (start.m_zeroStart == end.m_zeroStart);
-  NS_ASSERT (start.m_zeroEnd == end.m_zeroEnd);
-  NS_ASSERT (m_data != start.m_data);
-  uint32_t size = end.m_current - start.m_current;
-  NS_ASSERT_MSG (CheckNoZero (m_current, m_current + size),
-                 GetWriteErrorMessage ());
-  if (start.m_current <= start.m_zeroStart)
+    NS_LOG_FUNCTION(this << &start << &end);
+    NS_ASSERT(start.m_data == end.m_data);
+    NS_ASSERT(start.m_current <= end.m_current);
+    NS_ASSERT(start.m_zeroStart == end.m_zeroStart);
+    NS_ASSERT(start.m_zeroEnd == end.m_zeroEnd);
+    NS_ASSERT(m_data != start.m_data);
+    uint32_t size = end.m_current - start.m_current;
+    NS_ASSERT_MSG(CheckNoZero(m_current, m_current + size), GetWriteErrorMessage());
+    if (start.m_current <= start.m_zeroStart)
     {
-      uint32_t toCopy = std::min (size, start.m_zeroStart - start.m_current);
-      memcpy (&m_data[m_current], &start.m_data[start.m_current], toCopy);
-      start.m_current += toCopy;
-      m_current += toCopy;
-      size -= toCopy;
+        uint32_t toCopy = std::min(size, start.m_zeroStart - start.m_current);
+        memcpy(&m_data[m_current], &start.m_data[start.m_current], toCopy);
+        start.m_current += toCopy;
+        m_current += toCopy;
+        size -= toCopy;
     }
-  if (start.m_current <= start.m_zeroEnd)
+    if (start.m_current <= start.m_zeroEnd)
     {
-      uint32_t toCopy = std::min (size, start.m_zeroEnd - start.m_current);
-      memset (&m_data[m_current], 0, toCopy);
-      start.m_current += toCopy;
-      m_current += toCopy;
-      size -= toCopy;
+        uint32_t toCopy = std::min(size, start.m_zeroEnd - start.m_current);
+        memset(&m_data[m_current], 0, toCopy);
+        start.m_current += toCopy;
+        m_current += toCopy;
+        size -= toCopy;
     }
-  uint32_t toCopy = std::min (size, start.m_dataEnd - start.m_current);
-  uint8_t *from = &start.m_data[start.m_current - (start.m_zeroEnd-start.m_zeroStart)];
-  uint8_t *to = &m_data[m_current];
-  memcpy (to, from, toCopy);
-  m_current += toCopy;
+    uint32_t toCopy = std::min(size, start.m_dataEnd - start.m_current);
+    uint8_t* from = &start.m_data[start.m_current - (start.m_zeroEnd - start.m_zeroStart)];
+    uint8_t* to = &m_data[m_current];
+    memcpy(to, from, toCopy);
+    m_current += toCopy;
 }
 
 void
-Buffer::Iterator::WriteU16 (uint16_t data)
+Buffer::Iterator::WriteU16(uint16_t data)
 {
-  NS_LOG_FUNCTION (this << data);
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-}
-void
-Buffer::Iterator::WriteU32 (uint32_t data)
-{
-  NS_LOG_FUNCTION (this << data);
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-}
-void
-Buffer::Iterator::WriteU64 (uint64_t data)
-{
-  NS_LOG_FUNCTION (this << data);
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-  data >>= 8;
-  WriteU8 (data & 0xff);
-}
-void
-Buffer::Iterator::WriteHtolsbU16 (uint16_t data)
-{
-  NS_LOG_FUNCTION (this << data);
-  WriteU8 ((data >> 0) & 0xff);
-  WriteU8 ((data >> 8) & 0xff);
-}
-void
-Buffer::Iterator::WriteHtolsbU32 (uint32_t data)
-{
-  NS_LOG_FUNCTION (this << data);
-  WriteU8 ((data >> 0) & 0xff);
-  WriteU8 ((data >> 8) & 0xff);
-  WriteU8 ((data >> 16) & 0xff);
-  WriteU8 ((data >> 24) & 0xff);
-}
-void
-Buffer::Iterator::WriteHtolsbU64 (uint64_t data)
-{
-  NS_LOG_FUNCTION (this << data);
-  WriteU8 ((data >> 0) & 0xff);
-  WriteU8 ((data >> 8) & 0xff);
-  WriteU8 ((data >> 16) & 0xff);
-  WriteU8 ((data >> 24) & 0xff);
-  WriteU8 ((data >> 32) & 0xff);
-  WriteU8 ((data >> 40) & 0xff);
-  WriteU8 ((data >> 48) & 0xff);
-  WriteU8 ((data >> 56) & 0xff);
+    NS_LOG_FUNCTION(this << data);
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
 }
 
 void
-Buffer::Iterator::WriteHtonU64 (uint64_t data)
+Buffer::Iterator::WriteU32(uint32_t data)
 {
-  NS_LOG_FUNCTION (this << data);
-  WriteU8 ((data >> 56) & 0xff);
-  WriteU8 ((data >> 48) & 0xff);
-  WriteU8 ((data >> 40) & 0xff);
-  WriteU8 ((data >> 32) & 0xff);
-  WriteU8 ((data >> 24) & 0xff);
-  WriteU8 ((data >> 16) & 0xff);
-  WriteU8 ((data >> 8) & 0xff);
-  WriteU8 ((data >> 0) & 0xff);
+    NS_LOG_FUNCTION(this << data);
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
 }
 
 void
-Buffer::Iterator::Write (const uint8_t* buffer, uint32_t size)
+Buffer::Iterator::WriteU64(uint64_t data)
 {
-  NS_LOG_FUNCTION (this << &buffer << size);
-  NS_ASSERT_MSG (CheckNoZero (m_current, size),
-                 GetWriteErrorMessage ());
-  uint8_t *to;
-  if (m_current <= m_zeroStart)
+    NS_LOG_FUNCTION(this << data);
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+    data >>= 8;
+    WriteU8(data & 0xff);
+}
+
+void
+Buffer::Iterator::WriteHtolsbU16(uint16_t data)
+{
+    NS_LOG_FUNCTION(this << data);
+    WriteU8((data >> 0) & 0xff);
+    WriteU8((data >> 8) & 0xff);
+}
+
+void
+Buffer::Iterator::WriteHtolsbU32(uint32_t data)
+{
+    NS_LOG_FUNCTION(this << data);
+    WriteU8((data >> 0) & 0xff);
+    WriteU8((data >> 8) & 0xff);
+    WriteU8((data >> 16) & 0xff);
+    WriteU8((data >> 24) & 0xff);
+}
+
+void
+Buffer::Iterator::WriteHtolsbU64(uint64_t data)
+{
+    NS_LOG_FUNCTION(this << data);
+    WriteU8((data >> 0) & 0xff);
+    WriteU8((data >> 8) & 0xff);
+    WriteU8((data >> 16) & 0xff);
+    WriteU8((data >> 24) & 0xff);
+    WriteU8((data >> 32) & 0xff);
+    WriteU8((data >> 40) & 0xff);
+    WriteU8((data >> 48) & 0xff);
+    WriteU8((data >> 56) & 0xff);
+}
+
+void
+Buffer::Iterator::WriteHtonU64(uint64_t data)
+{
+    NS_LOG_FUNCTION(this << data);
+    WriteU8((data >> 56) & 0xff);
+    WriteU8((data >> 48) & 0xff);
+    WriteU8((data >> 40) & 0xff);
+    WriteU8((data >> 32) & 0xff);
+    WriteU8((data >> 24) & 0xff);
+    WriteU8((data >> 16) & 0xff);
+    WriteU8((data >> 8) & 0xff);
+    WriteU8((data >> 0) & 0xff);
+}
+
+void
+Buffer::Iterator::Write(const uint8_t* buffer, uint32_t size)
+{
+    NS_LOG_FUNCTION(this << &buffer << size);
+    NS_ASSERT_MSG(CheckNoZero(m_current, size), GetWriteErrorMessage());
+    uint8_t* to;
+    if (m_current <= m_zeroStart)
     {
-      to = &m_data[m_current];
+        to = &m_data[m_current];
     }
-  else
+    else
     {
-      to = &m_data[m_current - (m_zeroEnd - m_zeroStart)];
+        to = &m_data[m_current - (m_zeroEnd - m_zeroStart)];
     }
-  memcpy (to, buffer, size);
-  m_current += size;
+    memcpy(to, buffer, size);
+    m_current += size;
 }
 
 uint32_t
-Buffer::Iterator::ReadU32 ()
+Buffer::Iterator::ReadU32()
 {
-  NS_LOG_FUNCTION (this);
-  uint8_t byte0 = ReadU8 ();
-  uint8_t byte1 = ReadU8 ();
-  uint8_t byte2 = ReadU8 ();
-  uint8_t byte3 = ReadU8 ();
-  uint32_t data = byte3;
-  data <<= 8;
-  data |= byte2;
-  data <<= 8;
-  data |= byte1;
-  data <<= 8;
-  data |= byte0;
-  return data;
+    NS_LOG_FUNCTION(this);
+    uint8_t byte0 = ReadU8();
+    uint8_t byte1 = ReadU8();
+    uint8_t byte2 = ReadU8();
+    uint8_t byte3 = ReadU8();
+    uint32_t data = byte3;
+    data <<= 8;
+    data |= byte2;
+    data <<= 8;
+    data |= byte1;
+    data <<= 8;
+    data |= byte0;
+    return data;
 }
+
 uint64_t
-Buffer::Iterator::ReadU64 ()
+Buffer::Iterator::ReadU64()
 {
-  NS_LOG_FUNCTION (this);
-  uint8_t byte0 = ReadU8 ();
-  uint8_t byte1 = ReadU8 ();
-  uint8_t byte2 = ReadU8 ();
-  uint8_t byte3 = ReadU8 ();
-  uint8_t byte4 = ReadU8 ();
-  uint8_t byte5 = ReadU8 ();
-  uint8_t byte6 = ReadU8 ();
-  uint8_t byte7 = ReadU8 ();
-  uint64_t data = byte7;
-  data <<= 8;
-  data |= byte6;
-  data <<= 8;
-  data |= byte5;
-  data <<= 8;
-  data |= byte4;
-  data <<= 8;
-  data |= byte3;
-  data <<= 8;
-  data |= byte2;
-  data <<= 8;
-  data |= byte1;
-  data <<= 8;
-  data |= byte0;
+    NS_LOG_FUNCTION(this);
+    uint8_t byte0 = ReadU8();
+    uint8_t byte1 = ReadU8();
+    uint8_t byte2 = ReadU8();
+    uint8_t byte3 = ReadU8();
+    uint8_t byte4 = ReadU8();
+    uint8_t byte5 = ReadU8();
+    uint8_t byte6 = ReadU8();
+    uint8_t byte7 = ReadU8();
+    uint64_t data = byte7;
+    data <<= 8;
+    data |= byte6;
+    data <<= 8;
+    data |= byte5;
+    data <<= 8;
+    data |= byte4;
+    data <<= 8;
+    data |= byte3;
+    data <<= 8;
+    data |= byte2;
+    data <<= 8;
+    data |= byte1;
+    data <<= 8;
+    data |= byte0;
 
-  return data;
+    return data;
 }
-uint16_t
-Buffer::Iterator::SlowReadNtohU16 ()
-{
-  NS_LOG_FUNCTION (this);
-  uint16_t retval = 0;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  return retval;
-}
-uint32_t
-Buffer::Iterator::SlowReadNtohU32 ()
-{
-  NS_LOG_FUNCTION (this);
-  uint32_t retval = 0;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  return retval;
-}
-uint64_t
-Buffer::Iterator::ReadNtohU64 ()
-{
-  NS_LOG_FUNCTION (this);
-  uint64_t retval = 0;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  retval <<= 8;
-  retval |= ReadU8 ();
-  return retval;
-}
-uint16_t
-Buffer::Iterator::ReadLsbtohU16 ()
-{
-  NS_LOG_FUNCTION (this);
-  uint8_t byte0 = ReadU8 ();
-  uint8_t byte1 = ReadU8 ();
-  uint16_t data = byte1;
-  data <<= 8;
-  data |= byte0;
-  return data;
-}
-uint32_t
-Buffer::Iterator::ReadLsbtohU32 ()
-{
-  NS_LOG_FUNCTION (this);
-  uint8_t byte0 = ReadU8 ();
-  uint8_t byte1 = ReadU8 ();
-  uint8_t byte2 = ReadU8 ();
-  uint8_t byte3 = ReadU8 ();
-  uint32_t data = byte3;
-  data <<= 8;
-  data |= byte2;
-  data <<= 8;
-  data |= byte1;
-  data <<= 8;
-  data |= byte0;
-  return data;
-}
-uint64_t
-Buffer::Iterator::ReadLsbtohU64 ()
-{
-  NS_LOG_FUNCTION (this);
-  uint8_t byte0 = ReadU8 ();
-  uint8_t byte1 = ReadU8 ();
-  uint8_t byte2 = ReadU8 ();
-  uint8_t byte3 = ReadU8 ();
-  uint8_t byte4 = ReadU8 ();
-  uint8_t byte5 = ReadU8 ();
-  uint8_t byte6 = ReadU8 ();
-  uint8_t byte7 = ReadU8 ();
-  uint64_t data = byte7;
-  data <<= 8;
-  data |= byte6;
-  data <<= 8;
-  data |= byte5;
-  data <<= 8;
-  data |= byte4;
-  data <<= 8;
-  data |= byte3;
-  data <<= 8;
-  data |= byte2;
-  data <<= 8;
-  data |= byte1;
-  data <<= 8;
-  data |= byte0;
 
-  return data;
+uint16_t
+Buffer::Iterator::SlowReadNtohU16()
+{
+    NS_LOG_FUNCTION(this);
+    uint16_t retval = 0;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    return retval;
 }
+
+uint32_t
+Buffer::Iterator::SlowReadNtohU32()
+{
+    NS_LOG_FUNCTION(this);
+    uint32_t retval = 0;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    return retval;
+}
+
+uint64_t
+Buffer::Iterator::ReadNtohU64()
+{
+    NS_LOG_FUNCTION(this);
+    uint64_t retval = 0;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    retval <<= 8;
+    retval |= ReadU8();
+    return retval;
+}
+
+uint16_t
+Buffer::Iterator::ReadLsbtohU16()
+{
+    NS_LOG_FUNCTION(this);
+    uint8_t byte0 = ReadU8();
+    uint8_t byte1 = ReadU8();
+    uint16_t data = byte1;
+    data <<= 8;
+    data |= byte0;
+    return data;
+}
+
+uint32_t
+Buffer::Iterator::ReadLsbtohU32()
+{
+    NS_LOG_FUNCTION(this);
+    uint8_t byte0 = ReadU8();
+    uint8_t byte1 = ReadU8();
+    uint8_t byte2 = ReadU8();
+    uint8_t byte3 = ReadU8();
+    uint32_t data = byte3;
+    data <<= 8;
+    data |= byte2;
+    data <<= 8;
+    data |= byte1;
+    data <<= 8;
+    data |= byte0;
+    return data;
+}
+
+uint64_t
+Buffer::Iterator::ReadLsbtohU64()
+{
+    NS_LOG_FUNCTION(this);
+    uint8_t byte0 = ReadU8();
+    uint8_t byte1 = ReadU8();
+    uint8_t byte2 = ReadU8();
+    uint8_t byte3 = ReadU8();
+    uint8_t byte4 = ReadU8();
+    uint8_t byte5 = ReadU8();
+    uint8_t byte6 = ReadU8();
+    uint8_t byte7 = ReadU8();
+    uint64_t data = byte7;
+    data <<= 8;
+    data |= byte6;
+    data <<= 8;
+    data |= byte5;
+    data <<= 8;
+    data |= byte4;
+    data <<= 8;
+    data |= byte3;
+    data <<= 8;
+    data |= byte2;
+    data <<= 8;
+    data |= byte1;
+    data <<= 8;
+    data |= byte0;
+
+    return data;
+}
+
 void
-Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)
+Buffer::Iterator::Read(uint8_t* buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << &buffer << size);
-  for (uint32_t i = 0; i < size; i++)
+    NS_LOG_FUNCTION(this << &buffer << size);
+    for (uint32_t i = 0; i < size; i++)
     {
-      buffer[i] = ReadU8 ();
+        buffer[i] = ReadU8();
     }
 }
 
 uint16_t
-Buffer::Iterator::CalculateIpChecksum (uint16_t size)
+Buffer::Iterator::CalculateIpChecksum(uint16_t size)
 {
-  NS_LOG_FUNCTION (this << size);
-  return CalculateIpChecksum (size, 0);
+    NS_LOG_FUNCTION(this << size);
+    return CalculateIpChecksum(size, 0);
 }
 
 uint16_t
-Buffer::Iterator::CalculateIpChecksum (uint16_t size, uint32_t initialChecksum)
+Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum)
 {
-  NS_LOG_FUNCTION (this << size << initialChecksum);
-  /* see RFC 1071 to understand this code. */
-  uint32_t sum = initialChecksum;
+    NS_LOG_FUNCTION(this << size << initialChecksum);
+    /* see RFC 1071 to understand this code. */
+    uint32_t sum = initialChecksum;
 
-  for (int j = 0; j < size / 2; j++)
+    for (int j = 0; j < size / 2; j++)
     {
-      sum += ReadU16 ();
+        sum += ReadU16();
     }
 
-  if (size & 1)
+    if (size & 1)
     {
-      sum += ReadU8 ();
+        sum += ReadU8();
     }
 
-  while (sum >> 16)
+    while (sum >> 16)
     {
-      sum = (sum & 0xffff) + (sum >> 16);
+        sum = (sum & 0xffff) + (sum >> 16);
     }
-  return ~sum;
+    return ~sum;
 }
 
 uint32_t
-Buffer::Iterator::GetSize () const
+Buffer::Iterator::GetSize() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_dataEnd - m_dataStart;
+    NS_LOG_FUNCTION(this);
+    return m_dataEnd - m_dataStart;
 }
 
 uint32_t
-Buffer::Iterator::GetRemainingSize () const
+Buffer::Iterator::GetRemainingSize() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_dataEnd - m_current;
+    NS_LOG_FUNCTION(this);
+    return m_dataEnd - m_current;
 }
-
 
 std::string
-Buffer::Iterator::GetReadErrorMessage () const
+Buffer::Iterator::GetReadErrorMessage() const
 {
-  NS_LOG_FUNCTION (this);
-  std::string str = "You have attempted to read beyond the bounds of the "
-    "available buffer space. This usually indicates that a "
-    "Header::Deserialize or Trailer::Deserialize method "
-    "is trying to read data which was not written by "
-    "a Header::Serialize or Trailer::Serialize method. "
-    "In short: check the code of your Serialize and Deserialize "
-    "methods.";
-  return str;
-}
-std::string
-Buffer::Iterator::GetWriteErrorMessage () const
-{
-  NS_LOG_FUNCTION (this);
-  std::string str;
-  if (m_current < m_dataStart)
-    {
-      str = "You have attempted to write before the start of the available "
-        "buffer space. This usually indicates that Trailer::GetSerializedSize "
-        "returned a size which is too small compared to what Trailer::Serialize "
-        "is actually using.";
-    }
-  else if (m_current >= m_dataEnd)
-    {
-      str = "You have attempted to write after the end of the available "
-        "buffer space. This usually indicates that Header::GetSerializedSize "
-        "returned a size which is too small compared to what Header::Serialize "
-        "is actually using.";
-    }
-  else
-    {
-      NS_ASSERT (m_current >= m_zeroStart && m_current < m_zeroEnd);
-      str = "You have attempted to write inside the payload area of the "
-        "buffer. This usually indicates that your Serialize method uses more "
-        "buffer space than what your GetSerialized method returned.";
-    }
-  return str;
+    NS_LOG_FUNCTION(this);
+    std::string str = "You have attempted to read beyond the bounds of the "
+                      "available buffer space. This usually indicates that a "
+                      "Header::Deserialize or Trailer::Deserialize method "
+                      "is trying to read data which was not written by "
+                      "a Header::Serialize or Trailer::Serialize method. "
+                      "In short: check the code of your Serialize and Deserialize "
+                      "methods.";
+    return str;
 }
 
+std::string
+Buffer::Iterator::GetWriteErrorMessage() const
+{
+    NS_LOG_FUNCTION(this);
+    std::string str;
+    if (m_current < m_dataStart)
+    {
+        str = "You have attempted to write before the start of the available "
+              "buffer space. This usually indicates that Trailer::GetSerializedSize "
+              "returned a size which is too small compared to what Trailer::Serialize "
+              "is actually using.";
+    }
+    else if (m_current >= m_dataEnd)
+    {
+        str = "You have attempted to write after the end of the available "
+              "buffer space. This usually indicates that Header::GetSerializedSize "
+              "returned a size which is too small compared to what Header::Serialize "
+              "is actually using.";
+    }
+    else
+    {
+        NS_ASSERT(m_current >= m_zeroStart && m_current < m_zeroEnd);
+        str = "You have attempted to write inside the payload area of the "
+              "buffer. This usually indicates that your Serialize method uses more "
+              "buffer space than what your GetSerialized method returned.";
+    }
+    return str;
+}
 
 } // namespace ns3
-
-

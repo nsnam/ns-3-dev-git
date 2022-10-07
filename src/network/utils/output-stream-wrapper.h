@@ -19,12 +19,14 @@
 #ifndef OUTPUT_STREAM_WRAPPER_H
 #define OUTPUT_STREAM_WRAPPER_H
 
-#include <fstream>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
 
-namespace ns3 {
+#include <fstream>
+
+namespace ns3
+{
 
 /**
  * @brief A class encapsulating an output stream.
@@ -69,32 +71,32 @@ namespace ns3 {
  */
 class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 {
-public:
-  /**
-   * Constructor
-   * \param filename file name
-   * \param filemode std::ios::openmode flags
-   */
-  OutputStreamWrapper (std::string filename, std::ios::openmode filemode);
-  /**
-   * Constructor
-   * \param os output stream
-   */
-  OutputStreamWrapper (std::ostream* os);
-  ~OutputStreamWrapper ();
+  public:
+    /**
+     * Constructor
+     * \param filename file name
+     * \param filemode std::ios::openmode flags
+     */
+    OutputStreamWrapper(std::string filename, std::ios::openmode filemode);
+    /**
+     * Constructor
+     * \param os output stream
+     */
+    OutputStreamWrapper(std::ostream* os);
+    ~OutputStreamWrapper();
 
-  /**
-   * Return a pointer to an ostream previously set in the wrapper.
-   *
-   * \see SetStream
-   *
-   * \returns a pointer to the encapsulated std::ostream
-   */
-  std::ostream *GetStream ();
+    /**
+     * Return a pointer to an ostream previously set in the wrapper.
+     *
+     * \see SetStream
+     *
+     * \returns a pointer to the encapsulated std::ostream
+     */
+    std::ostream* GetStream();
 
-private:
-  std::ostream *m_ostream; //!< The output stream
-  bool m_destroyable; //!< Can be destroyed
+  private:
+    std::ostream* m_ostream; //!< The output stream
+    bool m_destroyable;      //!< Can be destroyed
 };
 
 } // namespace ns3

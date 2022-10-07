@@ -25,7 +25,8 @@
  * ns3::IntToType template class.
  */
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * Convert an integer into a type.
@@ -42,11 +43,11 @@ namespace ns3 {
 template <int v>
 struct IntToType
 {
-  /** Enumeration holding the type-specific value. */
-  enum v_e
-  {
-    value = v  /**< The integer value distinguishing this type. */
-  };
+    /** Enumeration holding the type-specific value. */
+    enum v_e
+    {
+        value = v /**< The integer value distinguishing this type. */
+    };
 };
 
 } // namespace ns3

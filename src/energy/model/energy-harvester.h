@@ -25,13 +25,14 @@
 #include <iostream>
 
 // include from ns-3
+#include "ns3/energy-source-container.h"
+#include "ns3/node.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/type-id.h"
-#include "ns3/node.h"
-#include "ns3/energy-source-container.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class EnergySource;
 
@@ -43,92 +44,91 @@ class EnergySource;
 
 class EnergyHarvester : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  EnergyHarvester ();
+    EnergyHarvester();
 
-  ~EnergyHarvester () override;
+    ~EnergyHarvester() override;
 
-  /**
-   * \brief Sets pointer to node containing this EnergyHarvester.
-   *
-   * \param node Pointer to node containing this EnergyHarvester.
-   */
-  void SetNode (Ptr<Node> node);
+    /**
+     * \brief Sets pointer to node containing this EnergyHarvester.
+     *
+     * \param node Pointer to node containing this EnergyHarvester.
+     */
+    void SetNode(Ptr<Node> node);
 
-  /**
-   * \returns Pointer to node containing this EnergyHarvester.
-   *
-   * When a subclass needs to get access to the underlying node base class to
-   * print the nodeId for example, it can invoke this method.
-   */
-  Ptr<Node> GetNode () const;
+    /**
+     * \returns Pointer to node containing this EnergyHarvester.
+     *
+     * When a subclass needs to get access to the underlying node base class to
+     * print the nodeId for example, it can invoke this method.
+     */
+    Ptr<Node> GetNode() const;
 
-  /**
-   * \param source Pointer to energy source to which this EnergyHarvester is
-   * installed.
-   *
-   * This function sets the pointer to the energy source connected to the energy
-   * harvester.
-   */
-  void SetEnergySource (Ptr<EnergySource> source);
+    /**
+     * \param source Pointer to energy source to which this EnergyHarvester is
+     * installed.
+     *
+     * This function sets the pointer to the energy source connected to the energy
+     * harvester.
+     */
+    void SetEnergySource(Ptr<EnergySource> source);
 
-  /**
-   * \returns Pointer to energy source connected to the harvester.
-   *
-   * When a subclass needs to get access to the connected energy source,
-   * it can invoke this method.
-   */
-  Ptr<EnergySource> GetEnergySource () const;
+    /**
+     * \returns Pointer to energy source connected to the harvester.
+     *
+     * When a subclass needs to get access to the connected energy source,
+     * it can invoke this method.
+     */
+    Ptr<EnergySource> GetEnergySource() const;
 
-  /**
-   * \returns Amount of power currently provided by the harvester.
-   *
-   * This method is called by the energy source connected to the harvester in order
-   * to determine the amount of energy that the harvester provided since last update.
-   */
-  double GetPower () const;
+    /**
+     * \returns Amount of power currently provided by the harvester.
+     *
+     * This method is called by the energy source connected to the harvester in order
+     * to determine the amount of energy that the harvester provided since last update.
+     */
+    double GetPower() const;
 
-private:
-  /**
-   *
-   * Defined in ns3::Object
-   */
-  void DoDispose () override;
+  private:
+    /**
+     *
+     * Defined in ns3::Object
+     */
+    void DoDispose() override;
 
-  /**
-   * This method is called by the GetPower method and it needs to be implemented by the
-   * subclasses of the energy harvester. It returns the actual amount of power that is
-   * currently provided by the energy harvester.
-   *
-   * This method should be used to connect the logic behind the particular implementation
-   * of the energy harvester with the energy source.
-   *
-   * \returns Amount of power currently provided by the harvester.
-   */
-  virtual double DoGetPower () const;
+    /**
+     * This method is called by the GetPower method and it needs to be implemented by the
+     * subclasses of the energy harvester. It returns the actual amount of power that is
+     * currently provided by the energy harvester.
+     *
+     * This method should be used to connect the logic behind the particular implementation
+     * of the energy harvester with the energy source.
+     *
+     * \returns Amount of power currently provided by the harvester.
+     */
+    virtual double DoGetPower() const;
 
-private:
-  /**
-   * Pointer to node containing this EnergyHarvester. Used by helper class to make
-   * sure energy harvesters are installed onto the corresponding node.
-   */
-  Ptr<Node> m_node;
+  private:
+    /**
+     * Pointer to node containing this EnergyHarvester. Used by helper class to make
+     * sure energy harvesters are installed onto the corresponding node.
+     */
+    Ptr<Node> m_node;
 
-  /**
-   * Pointer to the Energy Source to which this EnergyHarvester is connected. Used
-   * by helper class to make sure energy harvesters are installed onto the
-   * corresponding energy source.
-   */
-  Ptr<EnergySource> m_energySource;
+    /**
+     * Pointer to the Energy Source to which this EnergyHarvester is connected. Used
+     * by helper class to make sure energy harvesters are installed onto the
+     * corresponding energy source.
+     */
+    Ptr<EnergySource> m_energySource;
 
-protected:
-
+  protected:
 };
 
 } // namespace ns3

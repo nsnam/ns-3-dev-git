@@ -18,277 +18,277 @@
  * Author: Jahanzeb Farooq <jahanzeb.farooq@sophia.inria.fr>
  */
 
-#include <stdint.h>
 #include "ofdm-downlink-frame-prefix.h"
+
 #include "ns3/address-utils.h"
 
-namespace ns3 {
+#include <stdint.h>
 
-DlFramePrefixIe::DlFramePrefixIe ()
-  : m_rateId (0),
-    m_diuc (0),
-    m_preamblePresent (0),
-    m_length (0),
-    m_startTime (0)
+namespace ns3
+{
+
+DlFramePrefixIe::DlFramePrefixIe()
+    : m_rateId(0),
+      m_diuc(0),
+      m_preamblePresent(0),
+      m_length(0),
+      m_startTime(0)
 {
 }
 
-DlFramePrefixIe::~DlFramePrefixIe ()
+DlFramePrefixIe::~DlFramePrefixIe()
 {
-}
-
-void
-DlFramePrefixIe::SetRateId (uint8_t rateId)
-{
-  m_rateId = rateId;
 }
 
 void
-DlFramePrefixIe::SetDiuc (uint8_t diuc)
+DlFramePrefixIe::SetRateId(uint8_t rateId)
 {
-  m_diuc = diuc;
+    m_rateId = rateId;
 }
 
 void
-DlFramePrefixIe::SetPreamblePresent (uint8_t preamblePresent)
+DlFramePrefixIe::SetDiuc(uint8_t diuc)
 {
-  m_preamblePresent = preamblePresent;
+    m_diuc = diuc;
 }
 
 void
-DlFramePrefixIe::SetLength (uint16_t length)
+DlFramePrefixIe::SetPreamblePresent(uint8_t preamblePresent)
 {
-  m_length = length;
+    m_preamblePresent = preamblePresent;
 }
 
 void
-DlFramePrefixIe::SetStartTime (uint16_t startTime)
+DlFramePrefixIe::SetLength(uint16_t length)
 {
-  m_startTime = startTime;
+    m_length = length;
+}
+
+void
+DlFramePrefixIe::SetStartTime(uint16_t startTime)
+{
+    m_startTime = startTime;
 }
 
 uint8_t
-DlFramePrefixIe::GetRateId () const
+DlFramePrefixIe::GetRateId() const
 {
-  return m_rateId;
+    return m_rateId;
 }
 
 uint8_t
-DlFramePrefixIe::GetDiuc () const
+DlFramePrefixIe::GetDiuc() const
 {
-  return m_diuc;
+    return m_diuc;
 }
 
 uint8_t
-DlFramePrefixIe::GetPreamblePresent () const
+DlFramePrefixIe::GetPreamblePresent() const
 {
-  return m_preamblePresent;
+    return m_preamblePresent;
 }
 
 uint16_t
-DlFramePrefixIe::GetLength () const
+DlFramePrefixIe::GetLength() const
 {
-  return m_length;
+    return m_length;
 }
 
 uint16_t
-DlFramePrefixIe::GetStartTime () const
+DlFramePrefixIe::GetStartTime() const
 {
-  return m_startTime;
+    return m_startTime;
 }
 
 uint16_t
-DlFramePrefixIe::GetSize () const
+DlFramePrefixIe::GetSize() const
 {
-  return 1 + 1 + 1 + 2 + 2;
+    return 1 + 1 + 1 + 2 + 2;
 }
 
 Buffer::Iterator
-DlFramePrefixIe::Write (Buffer::Iterator start) const
+DlFramePrefixIe::Write(Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
-  i.WriteU8 (m_rateId);
-  i.WriteU8 (m_diuc);
-  i.WriteU8 (m_preamblePresent);
-  i.WriteU16 (m_length);
-  i.WriteU16 (m_startTime);
-  return i;
+    Buffer::Iterator i = start;
+    i.WriteU8(m_rateId);
+    i.WriteU8(m_diuc);
+    i.WriteU8(m_preamblePresent);
+    i.WriteU16(m_length);
+    i.WriteU16(m_startTime);
+    return i;
 }
 
 Buffer::Iterator
-DlFramePrefixIe::Read (Buffer::Iterator start)
+DlFramePrefixIe::Read(Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  m_rateId = i.ReadU8 ();
-  m_diuc = i.ReadU8 ();
-  m_preamblePresent = i.ReadU8 ();
-  m_length = i.ReadU16 ();
-  m_startTime = i.ReadU16 ();
-  return i;
+    Buffer::Iterator i = start;
+    m_rateId = i.ReadU8();
+    m_diuc = i.ReadU8();
+    m_preamblePresent = i.ReadU8();
+    m_length = i.ReadU16();
+    m_startTime = i.ReadU16();
+    return i;
 }
 
-OfdmDownlinkFramePrefix::OfdmDownlinkFramePrefix ()
-  : m_baseStationId (Mac48Address ("00:00:00:00:00:00")),
-    m_frameNumber (0),
-    m_configurationChangeCount (0),
-    m_hcs (0)
+OfdmDownlinkFramePrefix::OfdmDownlinkFramePrefix()
+    : m_baseStationId(Mac48Address("00:00:00:00:00:00")),
+      m_frameNumber(0),
+      m_configurationChangeCount(0),
+      m_hcs(0)
 {
 }
 
-OfdmDownlinkFramePrefix::~OfdmDownlinkFramePrefix ()
+OfdmDownlinkFramePrefix::~OfdmDownlinkFramePrefix()
 {
 }
 
 /* static */
 TypeId
-OfdmDownlinkFramePrefix::GetTypeId ()
+OfdmDownlinkFramePrefix::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::OfdmDownlinkFramePrefix")
-    .SetParent<Header> ()
-    .SetGroupName ("Wimax")
-    // No AddConstructor because this is an abstract class.
-    ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::OfdmDownlinkFramePrefix").SetParent<Header>().SetGroupName("Wimax")
+        // No AddConstructor because this is an abstract class.
+        ;
+    return tid;
 }
 
 void
-OfdmDownlinkFramePrefix::SetBaseStationId (Mac48Address baseStationId)
+OfdmDownlinkFramePrefix::SetBaseStationId(Mac48Address baseStationId)
 {
-  m_baseStationId = baseStationId;
+    m_baseStationId = baseStationId;
 }
 
 void
-OfdmDownlinkFramePrefix::SetFrameNumber (uint32_t frameNumber)
+OfdmDownlinkFramePrefix::SetFrameNumber(uint32_t frameNumber)
 {
-  m_frameNumber = frameNumber;
+    m_frameNumber = frameNumber;
 }
 
 void
-OfdmDownlinkFramePrefix::SetConfigurationChangeCount (
-  uint8_t configurationChangeCount)
+OfdmDownlinkFramePrefix::SetConfigurationChangeCount(uint8_t configurationChangeCount)
 {
-  m_configurationChangeCount = configurationChangeCount;
+    m_configurationChangeCount = configurationChangeCount;
 }
 
 void
-OfdmDownlinkFramePrefix::AddDlFramePrefixElement (
-  DlFramePrefixIe dlFramePrefixElement)
+OfdmDownlinkFramePrefix::AddDlFramePrefixElement(DlFramePrefixIe dlFramePrefixElement)
 {
-  m_dlFramePrefixElements.push_back (dlFramePrefixElement);
+    m_dlFramePrefixElements.push_back(dlFramePrefixElement);
 }
 
 void
-OfdmDownlinkFramePrefix::SetHcs (uint8_t hcs)
+OfdmDownlinkFramePrefix::SetHcs(uint8_t hcs)
 {
-  m_hcs = hcs;
+    m_hcs = hcs;
 }
 
 Mac48Address
-OfdmDownlinkFramePrefix::GetBaseStationId () const
+OfdmDownlinkFramePrefix::GetBaseStationId() const
 {
-  return m_baseStationId;
+    return m_baseStationId;
 }
 
 uint32_t
-OfdmDownlinkFramePrefix::GetFrameNumber () const
+OfdmDownlinkFramePrefix::GetFrameNumber() const
 {
-  return m_frameNumber;
+    return m_frameNumber;
 }
 
 uint8_t
-OfdmDownlinkFramePrefix::GetConfigurationChangeCount () const
+OfdmDownlinkFramePrefix::GetConfigurationChangeCount() const
 {
-  return m_configurationChangeCount;
+    return m_configurationChangeCount;
 }
 
 std::vector<DlFramePrefixIe>
-OfdmDownlinkFramePrefix::GetDlFramePrefixElements () const
+OfdmDownlinkFramePrefix::GetDlFramePrefixElements() const
 {
-  return m_dlFramePrefixElements;
+    return m_dlFramePrefixElements;
 }
 
 uint8_t
-OfdmDownlinkFramePrefix::GetHcs () const
+OfdmDownlinkFramePrefix::GetHcs() const
 {
-  return m_hcs;
+    return m_hcs;
 }
 
 std::string
-OfdmDownlinkFramePrefix::GetName () const
+OfdmDownlinkFramePrefix::GetName() const
 {
-  return "OFDM Downlink Frame Prefix";
+    return "OFDM Downlink Frame Prefix";
 }
 
 void
-OfdmDownlinkFramePrefix::Print (std::ostream &os) const
+OfdmDownlinkFramePrefix::Print(std::ostream& os) const
 {
-  os << " base station id = " << m_baseStationId << ", frame number = "
-     << m_frameNumber << ", configuration change count = "
-     << (uint32_t) m_configurationChangeCount
-     << ", number of dl frame prefix elements = "
-     << m_dlFramePrefixElements.size () << ", hcs = " << (uint32_t) m_hcs;
+    os << " base station id = " << m_baseStationId << ", frame number = " << m_frameNumber
+       << ", configuration change count = " << (uint32_t)m_configurationChangeCount
+       << ", number of dl frame prefix elements = " << m_dlFramePrefixElements.size()
+       << ", hcs = " << (uint32_t)m_hcs;
 }
 
 uint32_t
-OfdmDownlinkFramePrefix::GetSerializedSize () const
+OfdmDownlinkFramePrefix::GetSerializedSize() const
 {
-  int dlFramePrefixElementsSize = 0;
+    int dlFramePrefixElementsSize = 0;
 
-  for (std::vector<DlFramePrefixIe>::const_iterator iter =
-         m_dlFramePrefixElements.begin (); iter != m_dlFramePrefixElements.end (); iter++)
+    for (std::vector<DlFramePrefixIe>::const_iterator iter = m_dlFramePrefixElements.begin();
+         iter != m_dlFramePrefixElements.end();
+         iter++)
     {
-      DlFramePrefixIe dlFramePrefixElement = *iter;
-      dlFramePrefixElementsSize += dlFramePrefixElement.GetSize ();
+        DlFramePrefixIe dlFramePrefixElement = *iter;
+        dlFramePrefixElementsSize += dlFramePrefixElement.GetSize();
     }
 
-  return 6 + 4 + 1 + dlFramePrefixElementsSize + 1;
+    return 6 + 4 + 1 + dlFramePrefixElementsSize + 1;
 }
 
 void
-OfdmDownlinkFramePrefix::Serialize (Buffer::Iterator start) const
+OfdmDownlinkFramePrefix::Serialize(Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
-  WriteTo (i, m_baseStationId);
-  i.WriteU32 (m_frameNumber);
-  i.WriteU8 (m_configurationChangeCount);
+    Buffer::Iterator i = start;
+    WriteTo(i, m_baseStationId);
+    i.WriteU32(m_frameNumber);
+    i.WriteU8(m_configurationChangeCount);
 
-  for (std::vector<DlFramePrefixIe>::const_iterator iter =
-         m_dlFramePrefixElements.begin (); iter != m_dlFramePrefixElements.end (); iter++)
+    for (std::vector<DlFramePrefixIe>::const_iterator iter = m_dlFramePrefixElements.begin();
+         iter != m_dlFramePrefixElements.end();
+         iter++)
     {
-      DlFramePrefixIe dlFramePrefixElement = *iter;
-      i = dlFramePrefixElement.Write (i);
+        DlFramePrefixIe dlFramePrefixElement = *iter;
+        i = dlFramePrefixElement.Write(i);
     }
 
-  i.WriteU8 (m_hcs);
+    i.WriteU8(m_hcs);
 }
 
 uint32_t
-OfdmDownlinkFramePrefix::Deserialize (Buffer::Iterator start)
+OfdmDownlinkFramePrefix::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  ReadFrom (i, m_baseStationId);
-  m_frameNumber = i.ReadU32 ();
-  m_configurationChangeCount = i.ReadU8 ();
+    Buffer::Iterator i = start;
+    ReadFrom(i, m_baseStationId);
+    m_frameNumber = i.ReadU32();
+    m_configurationChangeCount = i.ReadU8();
 
-  bool end = false;
+    bool end = false;
 
-  while (!end)
+    while (!end)
     {
-      DlFramePrefixIe dlFramePrefixElement;
-      i = dlFramePrefixElement.Read (i);
+        DlFramePrefixIe dlFramePrefixElement;
+        i = dlFramePrefixElement.Read(i);
 
-      AddDlFramePrefixElement (dlFramePrefixElement);
+        AddDlFramePrefixElement(dlFramePrefixElement);
 
-      if (dlFramePrefixElement.GetDiuc () == 14)
+        if (dlFramePrefixElement.GetDiuc() == 14)
         {
-          end = true;
+            end = true;
         }
     }
 
-  m_hcs = i.ReadU8 ();
+    m_hcs = i.ReadU8();
 
-  return GetSerializedSize ();
+    return GetSerializedSize();
 }
 
 } // namespace ns3
-

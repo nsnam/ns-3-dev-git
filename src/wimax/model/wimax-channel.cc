@@ -18,49 +18,51 @@
  * Author: Jahanzeb Farooq <jahanzeb.farooq@sophia.inria.fr>
  */
 
-#include "ns3/assert.h"
-#include "ns3/net-device.h"
 #include "wimax-channel.h"
+
 #include "wimax-phy.h"
 
-namespace ns3 {
+#include "ns3/assert.h"
+#include "ns3/net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("WimaxChannel");
-
-NS_OBJECT_ENSURE_REGISTERED (WimaxChannel);
-
-TypeId WimaxChannel::GetTypeId ()
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::WimaxChannel")
-    .SetParent<Channel> ()
-    .SetGroupName("Wimax");
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("WimaxChannel");
+
+NS_OBJECT_ENSURE_REGISTERED(WimaxChannel);
+
+TypeId
+WimaxChannel::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::WimaxChannel").SetParent<Channel>().SetGroupName("Wimax");
+    return tid;
 }
 
-WimaxChannel::WimaxChannel ()
+WimaxChannel::WimaxChannel()
 {
 }
 
-WimaxChannel::~WimaxChannel ()
+WimaxChannel::~WimaxChannel()
 {
 }
 
 void
-WimaxChannel::Attach (Ptr<WimaxPhy> phy)
+WimaxChannel::Attach(Ptr<WimaxPhy> phy)
 {
-  DoAttach (phy);
+    DoAttach(phy);
 }
 
 std::size_t
-WimaxChannel::GetNDevices () const
+WimaxChannel::GetNDevices() const
 {
-  return DoGetNDevices ();
+    return DoGetNDevices();
 }
 
 Ptr<NetDevice>
-WimaxChannel::GetDevice (std::size_t index) const
+WimaxChannel::GetDevice(std::size_t index) const
 {
-  return DoGetDevice (index);
+    return DoGetDevice(index);
 }
 
 } // namespace ns3

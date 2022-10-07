@@ -22,6 +22,7 @@
  */
 
 #include "ref-count-base.h"
+
 #include "log.h"
 
 /**
@@ -31,13 +32,14 @@
  * \deprecated See \ref ns3::SimpleRefCount
  */
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("RefCountBase");
-
-RefCountBase::~RefCountBase ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("RefCountBase");
+
+RefCountBase::~RefCountBase()
+{
+    NS_LOG_FUNCTION(this);
 }
 
 } // namespace ns3

@@ -18,18 +18,21 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "byte-tag-list.h"
+
 #include "ns3/log.h"
-#include <vector>
+
 #include <cstring>
 #include <limits>
+#include <vector>
 
 #define USE_FREE_LIST 1
 #define FREE_LIST_SIZE 1000
-#define OFFSET_MAX (std::numeric_limits<int32_t>::max ())
+#define OFFSET_MAX (std::numeric_limits<int32_t>::max())
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("ByteTagList");
+NS_LOG_COMPONENT_DEFINE("ByteTagList");
 
 /**
  * \ingroup packet
@@ -38,11 +41,12 @@ NS_LOG_COMPONENT_DEFINE ("ByteTagList");
  *
  * This structure is only used by ByteTagList and should not be accessed directly.
  */
-struct ByteTagListData {
-  uint32_t size;   //!< size of the data
-  uint32_t count;  //!< use counter (for smart deallocation)
-  uint32_t dirty;  //!< number of bytes actually in use
-  uint8_t data[4]; //!< data
+struct ByteTagListData
+{
+    uint32_t size;   //!< size of the data
+    uint32_t count;  //!< use counter (for smart deallocation)
+    uint32_t dirty;  //!< number of bytes actually in use
+    uint8_t data[4]; //!< data
 };
 
 #ifdef USE_FREE_LIST
@@ -53,550 +57,556 @@ struct ByteTagListData {
  *
  * Internal use only.
  */
-static class ByteTagListDataFreeList : public std::vector<struct ByteTagListData *>
+static class ByteTagListDataFreeList : public std::vector<struct ByteTagListData*>
 {
-public:
-  ~ByteTagListDataFreeList ();
+  public:
+    ~ByteTagListDataFreeList();
 } g_freeList; //!< Container for struct ByteTagListData
+
 static uint32_t g_maxSize = 0; //!< maximum data size (used for allocation)
 
-ByteTagListDataFreeList::~ByteTagListDataFreeList ()
+ByteTagListDataFreeList::~ByteTagListDataFreeList()
 {
-  NS_LOG_FUNCTION (this);
-  for (ByteTagListDataFreeList::iterator i = begin ();
-       i != end (); i++)
+    NS_LOG_FUNCTION(this);
+    for (ByteTagListDataFreeList::iterator i = begin(); i != end(); i++)
     {
-      uint8_t *buffer = (uint8_t *)(*i);
-      delete [] buffer;
+        uint8_t* buffer = (uint8_t*)(*i);
+        delete[] buffer;
     }
 }
 #endif /* USE_FREE_LIST */
 
-ByteTagList::Iterator::Item::Item (TagBuffer buf_)
-  : buf (buf_)
+ByteTagList::Iterator::Item::Item(TagBuffer buf_)
+    : buf(buf_)
 {
-  NS_LOG_FUNCTION (this << &buf_);
+    NS_LOG_FUNCTION(this << &buf_);
 }
 
 bool
-ByteTagList::Iterator::HasNext () const
+ByteTagList::Iterator::HasNext() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_current < m_end;
+    NS_LOG_FUNCTION(this);
+    return m_current < m_end;
 }
+
 struct ByteTagList::Iterator::Item
-ByteTagList::Iterator::Next ()
+ByteTagList::Iterator::Next()
 {
-  NS_ASSERT (HasNext ());
-  struct Item item = Item (TagBuffer (m_current+16, m_end));
-  item.tid.SetUid (m_nextTid);
-  item.size = m_nextSize;
-  item.start = std::max (m_nextStart, m_offsetStart);
-  item.end = std::min (m_nextEnd, m_offsetEnd);
-  m_current += 4 + 4 + 4 + 4 + item.size;
-  item.buf.TrimAtEnd (m_end - m_current);
-  PrepareForNext ();
-  return item;
+    NS_ASSERT(HasNext());
+    struct Item item = Item(TagBuffer(m_current + 16, m_end));
+    item.tid.SetUid(m_nextTid);
+    item.size = m_nextSize;
+    item.start = std::max(m_nextStart, m_offsetStart);
+    item.end = std::min(m_nextEnd, m_offsetEnd);
+    m_current += 4 + 4 + 4 + 4 + item.size;
+    item.buf.TrimAtEnd(m_end - m_current);
+    PrepareForNext();
+    return item;
 }
+
 void
-ByteTagList::Iterator::PrepareForNext ()
+ByteTagList::Iterator::PrepareForNext()
 {
-  NS_LOG_FUNCTION (this);
-  while (m_current < m_end)
+    NS_LOG_FUNCTION(this);
+    while (m_current < m_end)
     {
-      TagBuffer buf = TagBuffer (m_current, m_end);
-      m_nextTid = buf.ReadU32 ();
-      m_nextSize = buf.ReadU32 ();
-      m_nextStart = buf.ReadU32 () + m_adjustment;
-      m_nextEnd = buf.ReadU32 () + m_adjustment;
-      if (m_nextStart >= m_offsetEnd || m_nextEnd <= m_offsetStart)
+        TagBuffer buf = TagBuffer(m_current, m_end);
+        m_nextTid = buf.ReadU32();
+        m_nextSize = buf.ReadU32();
+        m_nextStart = buf.ReadU32() + m_adjustment;
+        m_nextEnd = buf.ReadU32() + m_adjustment;
+        if (m_nextStart >= m_offsetEnd || m_nextEnd <= m_offsetStart)
         {
-          m_current += 4 + 4 + 4 + 4 + m_nextSize;
+            m_current += 4 + 4 + 4 + 4 + m_nextSize;
         }
-      else
+        else
         {
-          break;
+            break;
         }
     }
 }
-ByteTagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd, int32_t adjustment)
-  : m_current (start),
-    m_end (end),
-    m_offsetStart (offsetStart),
-    m_offsetEnd (offsetEnd),
-    m_adjustment (adjustment)
+
+ByteTagList::Iterator::Iterator(uint8_t* start,
+                                uint8_t* end,
+                                int32_t offsetStart,
+                                int32_t offsetEnd,
+                                int32_t adjustment)
+    : m_current(start),
+      m_end(end),
+      m_offsetStart(offsetStart),
+      m_offsetEnd(offsetEnd),
+      m_adjustment(adjustment)
 {
-  NS_LOG_FUNCTION (this << &start << &end << offsetStart << offsetEnd << adjustment);
-  PrepareForNext ();
+    NS_LOG_FUNCTION(this << &start << &end << offsetStart << offsetEnd << adjustment);
+    PrepareForNext();
 }
 
 uint32_t
-ByteTagList::Iterator::GetOffsetStart () const
+ByteTagList::Iterator::GetOffsetStart() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_offsetStart;
+    NS_LOG_FUNCTION(this);
+    return m_offsetStart;
 }
 
+ByteTagList::ByteTagList()
+    : m_minStart(INT32_MAX),
+      m_maxEnd(INT32_MIN),
+      m_adjustment(0),
+      m_used(0),
+      m_data(nullptr)
+{
+    NS_LOG_FUNCTION(this);
+}
 
-ByteTagList::ByteTagList ()
-  : m_minStart (INT32_MAX),
-    m_maxEnd (INT32_MIN),
-    m_adjustment (0),
-    m_used (0),
-    m_data (nullptr)
+ByteTagList::ByteTagList(const ByteTagList& o)
+    : m_minStart(o.m_minStart),
+      m_maxEnd(o.m_maxEnd),
+      m_adjustment(o.m_adjustment),
+      m_used(o.m_used),
+      m_data(o.m_data)
 {
-  NS_LOG_FUNCTION (this);
-}
-ByteTagList::ByteTagList (const ByteTagList &o)
-  : m_minStart (o.m_minStart),
-    m_maxEnd (o.m_maxEnd),
-    m_adjustment (o.m_adjustment),
-    m_used (o.m_used),
-    m_data (o.m_data)
-{
-  NS_LOG_FUNCTION (this << &o);
-  if (m_data != nullptr)
+    NS_LOG_FUNCTION(this << &o);
+    if (m_data != nullptr)
     {
-      m_data->count++;
+        m_data->count++;
     }
 }
-ByteTagList &
-ByteTagList::operator = (const ByteTagList &o)
+
+ByteTagList&
+ByteTagList::operator=(const ByteTagList& o)
 {
-  if (this == &o)
+    if (this == &o)
     {
-      return *this;
+        return *this;
     }
 
-  Deallocate (m_data);
-  m_minStart = o.m_minStart;
-  m_maxEnd = o.m_maxEnd;
-  m_adjustment = o.m_adjustment;
-  m_data = o.m_data;
-  m_used = o.m_used;
-  if (m_data != nullptr)
+    Deallocate(m_data);
+    m_minStart = o.m_minStart;
+    m_maxEnd = o.m_maxEnd;
+    m_adjustment = o.m_adjustment;
+    m_data = o.m_data;
+    m_used = o.m_used;
+    if (m_data != nullptr)
     {
-      m_data->count++;
+        m_data->count++;
     }
-  return *this;
+    return *this;
 }
-ByteTagList::~ByteTagList ()
+
+ByteTagList::~ByteTagList()
 {
-  NS_LOG_FUNCTION (this);
-  Deallocate (m_data);
-  m_data = nullptr;
-  m_used = 0;
+    NS_LOG_FUNCTION(this);
+    Deallocate(m_data);
+    m_data = nullptr;
+    m_used = 0;
 }
 
 TagBuffer
-ByteTagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
+ByteTagList::Add(TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
 {
-  NS_LOG_FUNCTION (this << tid << bufferSize << start << end);
-  uint32_t spaceNeeded = m_used + bufferSize + 4 + 4 + 4 + 4;
-  NS_ASSERT (m_used <= spaceNeeded);
-  if (m_data == nullptr)
+    NS_LOG_FUNCTION(this << tid << bufferSize << start << end);
+    uint32_t spaceNeeded = m_used + bufferSize + 4 + 4 + 4 + 4;
+    NS_ASSERT(m_used <= spaceNeeded);
+    if (m_data == nullptr)
     {
-      m_data = Allocate (spaceNeeded);
-      m_used = 0;
+        m_data = Allocate(spaceNeeded);
+        m_used = 0;
     }
-  else if (m_data->size < spaceNeeded ||
-           (m_data->count != 1 && m_data->dirty != m_used))
+    else if (m_data->size < spaceNeeded || (m_data->count != 1 && m_data->dirty != m_used))
     {
-      struct ByteTagListData *newData = Allocate (spaceNeeded);
-      std::memcpy (&newData->data, &m_data->data, m_used);
-      Deallocate (m_data);
-      m_data = newData;
+        struct ByteTagListData* newData = Allocate(spaceNeeded);
+        std::memcpy(&newData->data, &m_data->data, m_used);
+        Deallocate(m_data);
+        m_data = newData;
     }
-  TagBuffer tag = TagBuffer (&m_data->data[m_used],
-                             &m_data->data[spaceNeeded]);
-  tag.WriteU32 (tid.GetUid ());
-  tag.WriteU32 (bufferSize);
-  tag.WriteU32 (start - m_adjustment);
-  tag.WriteU32 (end - m_adjustment);
-  if (start - m_adjustment < m_minStart)
+    TagBuffer tag = TagBuffer(&m_data->data[m_used], &m_data->data[spaceNeeded]);
+    tag.WriteU32(tid.GetUid());
+    tag.WriteU32(bufferSize);
+    tag.WriteU32(start - m_adjustment);
+    tag.WriteU32(end - m_adjustment);
+    if (start - m_adjustment < m_minStart)
     {
-      m_minStart = start - m_adjustment;
+        m_minStart = start - m_adjustment;
     }
-  if (end - m_adjustment > m_maxEnd)
+    if (end - m_adjustment > m_maxEnd)
     {
-      m_maxEnd = end - m_adjustment;
+        m_maxEnd = end - m_adjustment;
     }
-  m_used = spaceNeeded;
-  m_data->dirty = m_used;
-  return tag;
+    m_used = spaceNeeded;
+    m_data->dirty = m_used;
+    return tag;
 }
 
 void
-ByteTagList::Add (const ByteTagList &o)
+ByteTagList::Add(const ByteTagList& o)
 {
-  NS_LOG_FUNCTION (this << &o);
-  ByteTagList::Iterator i = o.BeginAll ();
-  while (i.HasNext ())
+    NS_LOG_FUNCTION(this << &o);
+    ByteTagList::Iterator i = o.BeginAll();
+    while (i.HasNext())
     {
-      ByteTagList::Iterator::Item item = i.Next ();
-      TagBuffer buf = Add (item.tid, item.size, item.start, item.end);
-      buf.CopyFrom (item.buf);
+        ByteTagList::Iterator::Item item = i.Next();
+        TagBuffer buf = Add(item.tid, item.size, item.start, item.end);
+        buf.CopyFrom(item.buf);
     }
 }
 
 void
-ByteTagList::RemoveAll ()
+ByteTagList::RemoveAll()
 {
-  NS_LOG_FUNCTION (this);
-  Deallocate (m_data);
-  m_minStart = INT32_MAX;
-  m_maxEnd = INT32_MIN;
-  m_adjustment = 0;
-  m_data = nullptr;
-  m_used = 0;
+    NS_LOG_FUNCTION(this);
+    Deallocate(m_data);
+    m_minStart = INT32_MAX;
+    m_maxEnd = INT32_MIN;
+    m_adjustment = 0;
+    m_data = nullptr;
+    m_used = 0;
 }
 
 ByteTagList::Iterator
-ByteTagList::BeginAll () const
+ByteTagList::BeginAll() const
 {
-  NS_LOG_FUNCTION (this);
-  // I am not totally sure but I might need to use
-  // INT32_MIN instead of zero below.
-  return Begin (0, OFFSET_MAX);
+    NS_LOG_FUNCTION(this);
+    // I am not totally sure but I might need to use
+    // INT32_MIN instead of zero below.
+    return Begin(0, OFFSET_MAX);
 }
 
 ByteTagList::Iterator
-ByteTagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
+ByteTagList::Begin(int32_t offsetStart, int32_t offsetEnd) const
 {
-  NS_LOG_FUNCTION (this << offsetStart << offsetEnd);
-  if (m_data == nullptr)
+    NS_LOG_FUNCTION(this << offsetStart << offsetEnd);
+    if (m_data == nullptr)
     {
-      return Iterator (nullptr, nullptr, offsetStart, offsetEnd, 0);
+        return Iterator(nullptr, nullptr, offsetStart, offsetEnd, 0);
     }
-  else
+    else
     {
-      return Iterator (m_data->data, &m_data->data[m_used], offsetStart, offsetEnd, m_adjustment);
+        return Iterator(m_data->data, &m_data->data[m_used], offsetStart, offsetEnd, m_adjustment);
     }
 }
 
 void
-ByteTagList::AddAtEnd (int32_t appendOffset)
+ByteTagList::AddAtEnd(int32_t appendOffset)
 {
-  NS_LOG_FUNCTION (this << appendOffset);
-  if (m_maxEnd <= appendOffset - m_adjustment)
+    NS_LOG_FUNCTION(this << appendOffset);
+    if (m_maxEnd <= appendOffset - m_adjustment)
     {
-      return;
+        return;
     }
-  ByteTagList list;
-  ByteTagList::Iterator i = BeginAll ();
-  while (i.HasNext ())
+    ByteTagList list;
+    ByteTagList::Iterator i = BeginAll();
+    while (i.HasNext())
     {
-      ByteTagList::Iterator::Item item = i.Next ();
+        ByteTagList::Iterator::Item item = i.Next();
 
-      if (item.start >= appendOffset)
+        if (item.start >= appendOffset)
         {
-          continue;
+            continue;
         }
-      if (item.end > appendOffset)
+        if (item.end > appendOffset)
         {
-          item.end = appendOffset;
+            item.end = appendOffset;
         }
-      TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
-      buf.CopyFrom (item.buf);
-      if (item.end > m_maxEnd)
+        TagBuffer buf = list.Add(item.tid, item.size, item.start, item.end);
+        buf.CopyFrom(item.buf);
+        if (item.end > m_maxEnd)
         {
-          m_maxEnd = item.end;
+            m_maxEnd = item.end;
         }
     }
-  *this = list;
+    *this = list;
 }
 
 void
-ByteTagList::AddAtStart (int32_t prependOffset)
+ByteTagList::AddAtStart(int32_t prependOffset)
 {
-  NS_LOG_FUNCTION (this << prependOffset);
-  if (m_minStart >= prependOffset - m_adjustment)
+    NS_LOG_FUNCTION(this << prependOffset);
+    if (m_minStart >= prependOffset - m_adjustment)
     {
-      return;
+        return;
     }
-  m_minStart = INT32_MAX;
-  ByteTagList list;
-  ByteTagList::Iterator i = BeginAll ();
-  while (i.HasNext ())
+    m_minStart = INT32_MAX;
+    ByteTagList list;
+    ByteTagList::Iterator i = BeginAll();
+    while (i.HasNext())
     {
-      ByteTagList::Iterator::Item item = i.Next ();
+        ByteTagList::Iterator::Item item = i.Next();
 
-      if (item.end <= prependOffset)
+        if (item.end <= prependOffset)
         {
-          continue;
+            continue;
         }
-      if (item.start < prependOffset)
+        if (item.start < prependOffset)
         {
-          item.start = prependOffset;
+            item.start = prependOffset;
         }
-      TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
-      buf.CopyFrom (item.buf);
-      if (item.start < m_minStart)
+        TagBuffer buf = list.Add(item.tid, item.size, item.start, item.end);
+        buf.CopyFrom(item.buf);
+        if (item.start < m_minStart)
         {
-          m_minStart = item.start;
+            m_minStart = item.start;
         }
     }
-  *this = list;
+    *this = list;
 }
 
 #ifdef USE_FREE_LIST
 
-struct ByteTagListData *
-ByteTagList::Allocate (uint32_t size)
+struct ByteTagListData*
+ByteTagList::Allocate(uint32_t size)
 {
-  NS_LOG_FUNCTION (this << size);
-  while (!g_freeList.empty ())
+    NS_LOG_FUNCTION(this << size);
+    while (!g_freeList.empty())
     {
-      struct ByteTagListData *data = g_freeList.back ();
-      g_freeList.pop_back ();
-      NS_ASSERT (data != nullptr);
-      if (data->size >= size)
+        struct ByteTagListData* data = g_freeList.back();
+        g_freeList.pop_back();
+        NS_ASSERT(data != nullptr);
+        if (data->size >= size)
         {
-          data->count = 1;
-          data->dirty = 0;
-          return data;
+            data->count = 1;
+            data->dirty = 0;
+            return data;
         }
-      uint8_t *buffer = (uint8_t *)data;
-      delete [] buffer;
+        uint8_t* buffer = (uint8_t*)data;
+        delete[] buffer;
     }
-  uint8_t *buffer = new uint8_t [std::max (size, g_maxSize) + sizeof (struct ByteTagListData) - 4];
-  struct ByteTagListData *data = (struct ByteTagListData *)buffer;
-  data->count = 1;
-  data->size = size;
-  data->dirty = 0;
-  return data;
+    uint8_t* buffer = new uint8_t[std::max(size, g_maxSize) + sizeof(struct ByteTagListData) - 4];
+    struct ByteTagListData* data = (struct ByteTagListData*)buffer;
+    data->count = 1;
+    data->size = size;
+    data->dirty = 0;
+    return data;
 }
 
 void
-ByteTagList::Deallocate (struct ByteTagListData *data)
+ByteTagList::Deallocate(struct ByteTagListData* data)
 {
-  NS_LOG_FUNCTION (this << data);
-  if (data == nullptr)
+    NS_LOG_FUNCTION(this << data);
+    if (data == nullptr)
     {
-      return;
+        return;
     }
-  g_maxSize = std::max (g_maxSize, data->size);
-  data->count--;
-  if (data->count == 0)
+    g_maxSize = std::max(g_maxSize, data->size);
+    data->count--;
+    if (data->count == 0)
     {
-      if (g_freeList.size () > FREE_LIST_SIZE ||
-          data->size < g_maxSize)
+        if (g_freeList.size() > FREE_LIST_SIZE || data->size < g_maxSize)
         {
-          uint8_t *buffer = (uint8_t *)data;
-          delete [] buffer;
+            uint8_t* buffer = (uint8_t*)data;
+            delete[] buffer;
         }
-      else
+        else
         {
-          g_freeList.push_back (data);
+            g_freeList.push_back(data);
         }
     }
 }
 
 #else /* USE_FREE_LIST */
 
-struct ByteTagListData *
-ByteTagList::Allocate (uint32_t size)
+struct ByteTagListData*
+ByteTagList::Allocate(uint32_t size)
 {
-  NS_LOG_FUNCTION (this << size);
-  uint8_t *buffer = new uint8_t [size + sizeof (struct ByteTagListData) - 4];
-  struct ByteTagListData *data = (struct ByteTagListData *)buffer;
-  data->count = 1;
-  data->size = size;
-  data->dirty = 0;
-  return data;
+    NS_LOG_FUNCTION(this << size);
+    uint8_t* buffer = new uint8_t[size + sizeof(struct ByteTagListData) - 4];
+    struct ByteTagListData* data = (struct ByteTagListData*)buffer;
+    data->count = 1;
+    data->size = size;
+    data->dirty = 0;
+    return data;
 }
 
 void
-ByteTagList::Deallocate (struct ByteTagListData *data)
+ByteTagList::Deallocate(struct ByteTagListData* data)
 {
-  NS_LOG_FUNCTION (this << data);
-  if (data == 0)
+    NS_LOG_FUNCTION(this << data);
+    if (data == 0)
     {
-      return;
+        return;
     }
-  data->count--;
-  if (data->count == 0)
+    data->count--;
+    if (data->count == 0)
     {
-      uint8_t *buffer = (uint8_t *)data;
-      delete [] buffer;
+        uint8_t* buffer = (uint8_t*)data;
+        delete[] buffer;
     }
 }
 
 #endif /* USE_FREE_LIST */
 
 uint32_t
-ByteTagList::GetSerializedSize () const
+ByteTagList::GetSerializedSize() const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  uint32_t size = 0;
+    uint32_t size = 0;
 
-  // Number of tags in list
-  size += 4; // numberOfTags
+    // Number of tags in list
+    size += 4; // numberOfTags
 
-  ByteTagList::Iterator i = BeginAll ();
-  while (i.HasNext ())
+    ByteTagList::Iterator i = BeginAll();
+    while (i.HasNext())
     {
-      ByteTagList::Iterator::Item item = i.Next ();
+        ByteTagList::Iterator::Item item = i.Next();
 
-      // TypeId hash; ensure size is multiple of 4 bytes
-      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
-      size += hashSize;
+        // TypeId hash; ensure size is multiple of 4 bytes
+        uint32_t hashSize = (sizeof(TypeId::hash_t) + 3) & (~3);
+        size += hashSize;
 
-      size += 3 * 4; // size, start, end
+        size += 3 * 4; // size, start, end
 
-      // tag data; ensure size is multiple of 4 bytes
-      uint32_t tagWordSize = (item.size+3) & (~3);
-      size += tagWordSize;
+        // tag data; ensure size is multiple of 4 bytes
+        uint32_t tagWordSize = (item.size + 3) & (~3);
+        size += tagWordSize;
     }
 
-  return size;
+    return size;
 }
 
 uint32_t
-ByteTagList::Serialize (uint32_t* buffer, uint32_t maxSize) const
+ByteTagList::Serialize(uint32_t* buffer, uint32_t maxSize) const
 {
-  NS_LOG_FUNCTION (this << buffer << maxSize);
+    NS_LOG_FUNCTION(this << buffer << maxSize);
 
-  uint32_t* p = buffer;
-  uint32_t size = 0;
+    uint32_t* p = buffer;
+    uint32_t size = 0;
 
-  uint32_t* numberOfTags = nullptr;
+    uint32_t* numberOfTags = nullptr;
 
-  if (size + 4 <= maxSize)
+    if (size + 4 <= maxSize)
     {
-      numberOfTags = p;
-      *p++ = 0;
-      size += 4;
+        numberOfTags = p;
+        *p++ = 0;
+        size += 4;
     }
-  else
+    else
     {
-      return 0;
-    }
-
-  ByteTagList::Iterator i = BeginAll ();
-  while (i.HasNext ())
-    {
-      ByteTagList::Iterator::Item item = i.Next ();
-
-      NS_LOG_INFO ("Serializing " << item.tid);
-
-      // ensure size is multiple of 4 bytes for 4 byte boundaries
-      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
-      if (size + hashSize <= maxSize)
-        {
-          TypeId::hash_t tid = item.tid.GetHash ();
-          memcpy (p, &tid, sizeof (TypeId::hash_t));
-          p += hashSize / 4;
-          size += hashSize;
-        }
-      else
-        {
-          return 0;
-        }
-
-      if (size + 4 <= maxSize)
-        {
-          *p++ = item.size;
-          size += 4;
-        }
-      else
-        {
-          return 0;
-        }
-
-      if (size + 4 <= maxSize)
-        {
-          *p++ = item.start;
-          size += 4;
-        }
-      else
-        {
-          return 0;
-        }
-
-      if (size + 4 <= maxSize)
-        {
-          *p++ = item.end;
-          size += 4;
-        }
-      else
-        {
-          return 0;
-        }
-
-      // ensure size is multiple of 4 bytes for 4 byte boundaries
-      uint32_t tagWordSize = (item.size+3) & (~3);
-
-      if (size + tagWordSize <= maxSize)
-        {
-          item.buf.Read (reinterpret_cast<uint8_t *> (p), item.size);
-          size += tagWordSize;
-          p += tagWordSize / 4;
-        }
-      else
-        {
-          return 0;
-        }
-
-      (*numberOfTags)++;
+        return 0;
     }
 
-  // Serialized successfully
-  return 1;
+    ByteTagList::Iterator i = BeginAll();
+    while (i.HasNext())
+    {
+        ByteTagList::Iterator::Item item = i.Next();
+
+        NS_LOG_INFO("Serializing " << item.tid);
+
+        // ensure size is multiple of 4 bytes for 4 byte boundaries
+        uint32_t hashSize = (sizeof(TypeId::hash_t) + 3) & (~3);
+        if (size + hashSize <= maxSize)
+        {
+            TypeId::hash_t tid = item.tid.GetHash();
+            memcpy(p, &tid, sizeof(TypeId::hash_t));
+            p += hashSize / 4;
+            size += hashSize;
+        }
+        else
+        {
+            return 0;
+        }
+
+        if (size + 4 <= maxSize)
+        {
+            *p++ = item.size;
+            size += 4;
+        }
+        else
+        {
+            return 0;
+        }
+
+        if (size + 4 <= maxSize)
+        {
+            *p++ = item.start;
+            size += 4;
+        }
+        else
+        {
+            return 0;
+        }
+
+        if (size + 4 <= maxSize)
+        {
+            *p++ = item.end;
+            size += 4;
+        }
+        else
+        {
+            return 0;
+        }
+
+        // ensure size is multiple of 4 bytes for 4 byte boundaries
+        uint32_t tagWordSize = (item.size + 3) & (~3);
+
+        if (size + tagWordSize <= maxSize)
+        {
+            item.buf.Read(reinterpret_cast<uint8_t*>(p), item.size);
+            size += tagWordSize;
+            p += tagWordSize / 4;
+        }
+        else
+        {
+            return 0;
+        }
+
+        (*numberOfTags)++;
+    }
+
+    // Serialized successfully
+    return 1;
 }
 
 uint32_t
-ByteTagList::Deserialize (const uint32_t* buffer, uint32_t size)
+ByteTagList::Deserialize(const uint32_t* buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
-  const uint32_t* p = buffer;
-  uint32_t sizeCheck = size - 4;
+    NS_LOG_FUNCTION(this << buffer << size);
+    const uint32_t* p = buffer;
+    uint32_t sizeCheck = size - 4;
 
-  NS_ASSERT (sizeCheck >= 4);
-  uint32_t numberTagData = *p++;
-  sizeCheck -= 4;
+    NS_ASSERT(sizeCheck >= 4);
+    uint32_t numberTagData = *p++;
+    sizeCheck -= 4;
 
-  NS_LOG_INFO ("Deserializing number of tags " << numberTagData);
+    NS_LOG_INFO("Deserializing number of tags " << numberTagData);
 
-  for(uint32_t i = 0; i < numberTagData; ++i)
+    for (uint32_t i = 0; i < numberTagData; ++i)
     {
-      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
-      NS_ASSERT (sizeCheck >= hashSize);
-      TypeId::hash_t hash;
-      memcpy (&hash, p, sizeof (TypeId::hash_t));
-      p += hashSize / 4;
-      sizeCheck -= hashSize;
+        uint32_t hashSize = (sizeof(TypeId::hash_t) + 3) & (~3);
+        NS_ASSERT(sizeCheck >= hashSize);
+        TypeId::hash_t hash;
+        memcpy(&hash, p, sizeof(TypeId::hash_t));
+        p += hashSize / 4;
+        sizeCheck -= hashSize;
 
-      TypeId tid = TypeId::LookupByHash (hash);
+        TypeId tid = TypeId::LookupByHash(hash);
 
-      NS_ASSERT (sizeCheck >= 4);
-      uint32_t bufferSize = *p++;
-      sizeCheck -= 4;
+        NS_ASSERT(sizeCheck >= 4);
+        uint32_t bufferSize = *p++;
+        sizeCheck -= 4;
 
-      NS_ASSERT (sizeCheck >= 4);
-      uint32_t start = *p++;
-      sizeCheck -= 4;
+        NS_ASSERT(sizeCheck >= 4);
+        uint32_t start = *p++;
+        sizeCheck -= 4;
 
-      NS_ASSERT (sizeCheck >= 4);
-      uint32_t end = *p++;
-      sizeCheck -= 4;
+        NS_ASSERT(sizeCheck >= 4);
+        uint32_t end = *p++;
+        sizeCheck -= 4;
 
-      NS_ASSERT (sizeCheck >= bufferSize);
-      TagBuffer buf = Add (tid, bufferSize, start, end);
-      buf.Write ( reinterpret_cast<const uint8_t *> (p), bufferSize);
+        NS_ASSERT(sizeCheck >= bufferSize);
+        TagBuffer buf = Add(tid, bufferSize, start, end);
+        buf.Write(reinterpret_cast<const uint8_t*>(p), bufferSize);
 
-      // ensure 4 byte boundary
-      uint32_t tagSizeBytes = (bufferSize+3) & (~3);
-      sizeCheck -= tagSizeBytes;
-      p += tagSizeBytes / 4;
+        // ensure 4 byte boundary
+        uint32_t tagSizeBytes = (bufferSize + 3) & (~3);
+        sizeCheck -= tagSizeBytes;
+        p += tagSizeBytes / 4;
     }
 
-  NS_ASSERT (sizeCheck == 0);
+    NS_ASSERT(sizeCheck == 0);
 
-  // return zero if buffer did not
-  // contain a complete message
-  return (sizeCheck != 0) ? 0 : 1;
+    // return zero if buffer did not
+    // contain a complete message
+    return (sizeCheck != 0) ? 0 : 1;
 }
 
 } // namespace ns3

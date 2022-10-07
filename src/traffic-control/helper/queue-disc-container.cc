@@ -20,54 +20,55 @@
 
 #include "queue-disc-container.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-QueueDiscContainer::QueueDiscContainer ()
+QueueDiscContainer::QueueDiscContainer()
 {
 }
 
-QueueDiscContainer::QueueDiscContainer (Ptr<QueueDisc> qDisc)
+QueueDiscContainer::QueueDiscContainer(Ptr<QueueDisc> qDisc)
 {
-  m_queueDiscs.push_back (qDisc);
-}
-
-QueueDiscContainer::ConstIterator
-QueueDiscContainer::Begin () const
-{
-  return m_queueDiscs.begin ();
+    m_queueDiscs.push_back(qDisc);
 }
 
 QueueDiscContainer::ConstIterator
-QueueDiscContainer::End () const
+QueueDiscContainer::Begin() const
 {
-  return m_queueDiscs.end ();
+    return m_queueDiscs.begin();
+}
+
+QueueDiscContainer::ConstIterator
+QueueDiscContainer::End() const
+{
+    return m_queueDiscs.end();
 }
 
 std::size_t
-QueueDiscContainer::GetN () const
+QueueDiscContainer::GetN() const
 {
-  return m_queueDiscs.size ();
+    return m_queueDiscs.size();
 }
 
 Ptr<QueueDisc>
-QueueDiscContainer::Get (std::size_t i) const
+QueueDiscContainer::Get(std::size_t i) const
 {
-  return m_queueDiscs[i];
+    return m_queueDiscs[i];
 }
 
 void
-QueueDiscContainer::Add (QueueDiscContainer other)
+QueueDiscContainer::Add(QueueDiscContainer other)
 {
-  for (ConstIterator i = other.Begin (); i != other.End (); i++)
+    for (ConstIterator i = other.Begin(); i != other.End(); i++)
     {
-      m_queueDiscs.push_back (*i);
+        m_queueDiscs.push_back(*i);
     }
 }
 
 void
-QueueDiscContainer::Add (Ptr<QueueDisc> qDisc)
+QueueDiscContainer::Add(Ptr<QueueDisc> qDisc)
 {
-  m_queueDiscs.push_back (qDisc);
+    m_queueDiscs.push_back(qDisc);
 }
 
 } // namespace ns3

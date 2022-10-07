@@ -23,10 +23,12 @@
 #include "constant-velocity-helper.h"
 #include "mobility-model.h"
 #include "position-allocator.h"
+
 #include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup mobility
@@ -51,33 +53,35 @@ namespace ns3 {
  */
 class RandomWaypointMobilityModel : public MobilityModel
 {
-public:
-  /**
-   * Register this type with the TypeId system.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-protected:
-  void DoInitialize () override;
-private:
-  /**
-   * Get next position, begin moving towards it, schedule future pause event
-   */
-  void BeginWalk ();
-  /**
-   * Begin current pause event, schedule future walk event
-   */
-  void DoInitializePrivate ();
-  Vector DoGetPosition () const override;
-  void DoSetPosition (const Vector &position) override;
-  Vector DoGetVelocity () const override;
-  int64_t DoAssignStreams (int64_t) override;
+  public:
+    /**
+     * Register this type with the TypeId system.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  ConstantVelocityHelper m_helper; //!< helper for velocity computations
-  Ptr<PositionAllocator> m_position; //!< pointer to position allocator
-  Ptr<RandomVariableStream> m_speed; //!< random variable to generate speeds
-  Ptr<RandomVariableStream> m_pause; //!< random variable to generate pauses
-  EventId m_event; //!< event ID of next scheduled event
+  protected:
+    void DoInitialize() override;
+
+  private:
+    /**
+     * Get next position, begin moving towards it, schedule future pause event
+     */
+    void BeginWalk();
+    /**
+     * Begin current pause event, schedule future walk event
+     */
+    void DoInitializePrivate();
+    Vector DoGetPosition() const override;
+    void DoSetPosition(const Vector& position) override;
+    Vector DoGetVelocity() const override;
+    int64_t DoAssignStreams(int64_t) override;
+
+    ConstantVelocityHelper m_helper;   //!< helper for velocity computations
+    Ptr<PositionAllocator> m_position; //!< pointer to position allocator
+    Ptr<RandomVariableStream> m_speed; //!< random variable to generate speeds
+    Ptr<RandomVariableStream> m_pause; //!< random variable to generate pauses
+    EventId m_event;                   //!< event ID of next scheduled event
 };
 
 } // namespace ns3

@@ -23,10 +23,12 @@
 #include "constant-velocity-helper.h"
 #include "mobility-model.h"
 #include "position-allocator.h"
+
 #include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup mobility
@@ -54,63 +56,65 @@ namespace ns3 {
  */
 class SteadyStateRandomWaypointMobilityModel : public MobilityModel
 {
-public:
-  /**
-   * Register this type with the TypeId system.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  SteadyStateRandomWaypointMobilityModel ();
-protected:
-  void DoInitialize () override;
-private:
-  /**
-   * Configure random variables based on attributes; calculate the steady
-   * state probability that node is initially paused; schedule either end
-   * of pause time or initial motion of the node.
-   */
-  void DoInitializePrivate ();
-  /**
-   * Use provided destination to calculate travel delay, and schedule a
-   * Start() event at that time.
-   * \param destination the destination to move to
-   */
-  void SteadyStateBeginWalk (const Vector &destination);
-  /**
-   * Start a pause period and schedule the ending of the pause
-   */
-  void Start ();
-  /**
-   * Start a motion period and schedule the ending of the motion
-   */
-  void BeginWalk ();
-  Vector DoGetPosition () const override;
-  void DoSetPosition (const Vector &position) override;
-  Vector DoGetVelocity () const override;
-  int64_t DoAssignStreams (int64_t) override;
+  public:
+    /**
+     * Register this type with the TypeId system.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    SteadyStateRandomWaypointMobilityModel();
 
-  ConstantVelocityHelper m_helper; //!< helper for velocity computations
-  double m_maxSpeed; //!< maximum speed value (m/s)
-  double m_minSpeed; //!< minimum speed value (m/s)
-  Ptr<UniformRandomVariable> m_speed; //!< random variable for speed values
-  double m_minX; //!< minimum x value of traveling region (m)
-  double m_maxX; //!< maximum x value of traveling region (m)
-  double m_minY; //!< minimum y value of traveling region (m)
-  double m_maxY; //!< maximum y value of traveling region (m)
-  double m_z; //!< z value of traveling region
-  Ptr<RandomBoxPositionAllocator> m_position; //!< position allocator
-  double m_minPause; //!< minimum pause value (s)
-  double m_maxPause; //!< maximum pause value (s)
-  Ptr<UniformRandomVariable> m_pause; //!< random variable for pause values
-  EventId m_event; //!< current event ID
-  bool alreadyStarted; //!< flag for starting state
-  Ptr<UniformRandomVariable> m_x1_r; //!< rv used in rejection sampling phase
-  Ptr<UniformRandomVariable> m_y1_r; //!< rv used in rejection sampling phase
-  Ptr<UniformRandomVariable> m_x2_r; //!< rv used in rejection sampling phase
-  Ptr<UniformRandomVariable> m_y2_r; //!< rv used in rejection sampling phase
-  Ptr<UniformRandomVariable> m_u_r; //!< rv used in step 5 of algorithm
-  Ptr<UniformRandomVariable> m_x; //!< rv used for position allocator
-  Ptr<UniformRandomVariable> m_y; //!< rv used for position allocator
+  protected:
+    void DoInitialize() override;
+
+  private:
+    /**
+     * Configure random variables based on attributes; calculate the steady
+     * state probability that node is initially paused; schedule either end
+     * of pause time or initial motion of the node.
+     */
+    void DoInitializePrivate();
+    /**
+     * Use provided destination to calculate travel delay, and schedule a
+     * Start() event at that time.
+     * \param destination the destination to move to
+     */
+    void SteadyStateBeginWalk(const Vector& destination);
+    /**
+     * Start a pause period and schedule the ending of the pause
+     */
+    void Start();
+    /**
+     * Start a motion period and schedule the ending of the motion
+     */
+    void BeginWalk();
+    Vector DoGetPosition() const override;
+    void DoSetPosition(const Vector& position) override;
+    Vector DoGetVelocity() const override;
+    int64_t DoAssignStreams(int64_t) override;
+
+    ConstantVelocityHelper m_helper;            //!< helper for velocity computations
+    double m_maxSpeed;                          //!< maximum speed value (m/s)
+    double m_minSpeed;                          //!< minimum speed value (m/s)
+    Ptr<UniformRandomVariable> m_speed;         //!< random variable for speed values
+    double m_minX;                              //!< minimum x value of traveling region (m)
+    double m_maxX;                              //!< maximum x value of traveling region (m)
+    double m_minY;                              //!< minimum y value of traveling region (m)
+    double m_maxY;                              //!< maximum y value of traveling region (m)
+    double m_z;                                 //!< z value of traveling region
+    Ptr<RandomBoxPositionAllocator> m_position; //!< position allocator
+    double m_minPause;                          //!< minimum pause value (s)
+    double m_maxPause;                          //!< maximum pause value (s)
+    Ptr<UniformRandomVariable> m_pause;         //!< random variable for pause values
+    EventId m_event;                            //!< current event ID
+    bool alreadyStarted;                        //!< flag for starting state
+    Ptr<UniformRandomVariable> m_x1_r;          //!< rv used in rejection sampling phase
+    Ptr<UniformRandomVariable> m_y1_r;          //!< rv used in rejection sampling phase
+    Ptr<UniformRandomVariable> m_x2_r;          //!< rv used in rejection sampling phase
+    Ptr<UniformRandomVariable> m_y2_r;          //!< rv used in rejection sampling phase
+    Ptr<UniformRandomVariable> m_u_r;           //!< rv used in step 5 of algorithm
+    Ptr<UniformRandomVariable> m_x;             //!< rv used for position allocator
+    Ptr<UniformRandomVariable> m_y;             //!< rv used for position allocator
 };
 
 } // namespace ns3

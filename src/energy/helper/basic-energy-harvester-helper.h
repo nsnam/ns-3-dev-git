@@ -23,10 +23,12 @@
 #define BASIC_ENERGY_HARVESTER_HELPER_H
 
 #include "energy-harvester-helper.h"
+
 #include "ns3/energy-source.h"
 #include "ns3/node.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup energy
@@ -34,18 +36,17 @@ namespace ns3 {
  */
 class BasicEnergyHarvesterHelper : public EnergyHarvesterHelper
 {
-public:
-  BasicEnergyHarvesterHelper ();
-  ~BasicEnergyHarvesterHelper () override;
+  public:
+    BasicEnergyHarvesterHelper();
+    ~BasicEnergyHarvesterHelper() override;
 
-  void Set (std::string name, const AttributeValue &v) override;
+    void Set(std::string name, const AttributeValue& v) override;
 
-private:
-  Ptr<EnergyHarvester> DoInstall (Ptr<EnergySource> source) const override;
+  private:
+    Ptr<EnergyHarvester> DoInstall(Ptr<EnergySource> source) const override;
 
-private:
-  ObjectFactory m_basicEnergyHarvester; //!< Energy source factory
-
+  private:
+    ObjectFactory m_basicEnergyHarvester; //!< Energy source factory
 };
 
 } // namespace ns3

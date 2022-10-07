@@ -18,18 +18,16 @@
  * Author: Marco Miozzo <mmiozzo@cttc.es>
  */
 
-
 #include "lte-ue-cmac-sap.h"
 
+namespace ns3
+{
 
-namespace ns3 {
-
-
-LteUeCmacSapProvider::~LteUeCmacSapProvider ()
+LteUeCmacSapProvider::~LteUeCmacSapProvider()
 {
 }
 
-LteUeCmacSapUser::~LteUeCmacSapUser ()
+LteUeCmacSapUser::~LteUeCmacSapUser()
 {
 }
 

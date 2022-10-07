@@ -18,8 +18,9 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "ns3/test.h"
 #include "flame-regression.h"
+
+#include "ns3/test.h"
 
 using namespace ns3;
 
@@ -31,12 +32,13 @@ using namespace ns3;
  */
 class FlameRegressionSuite : public TestSuite
 {
-public:
-  FlameRegressionSuite () : TestSuite ("devices-mesh-flame-regression", SYSTEM)
-  {
-    // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has
-    // subdirectories
-    SetDataDir (std::string ("src/mesh/test/flame"));
-    AddTestCase (new FlameRegressionTest, TestCase::QUICK);
-  }
+  public:
+    FlameRegressionSuite()
+        : TestSuite("devices-mesh-flame-regression", SYSTEM)
+    {
+        // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has
+        // subdirectories
+        SetDataDir(std::string("src/mesh/test/flame"));
+        AddTestCase(new FlameRegressionTest, TestCase::QUICK);
+    }
 } g_flameRegressionSuite; ///< the test suite

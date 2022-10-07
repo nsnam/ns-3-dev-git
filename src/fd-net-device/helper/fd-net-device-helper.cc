@@ -33,178 +33,188 @@
 
 #include <string>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("FdNetDeviceHelper");
-
-FdNetDeviceHelper::FdNetDeviceHelper ()
+namespace ns3
 {
-  m_deviceFactory.SetTypeId ("ns3::FdNetDevice");
+
+NS_LOG_COMPONENT_DEFINE("FdNetDeviceHelper");
+
+FdNetDeviceHelper::FdNetDeviceHelper()
+{
+    m_deviceFactory.SetTypeId("ns3::FdNetDevice");
 }
 
 void
-FdNetDeviceHelper::SetTypeId (std::string type)
+FdNetDeviceHelper::SetTypeId(std::string type)
 {
-  m_deviceFactory.SetTypeId (type);
+    m_deviceFactory.SetTypeId(type);
 }
 
 void
-FdNetDeviceHelper::SetAttribute (std::string n1, const AttributeValue &v1)
+FdNetDeviceHelper::SetAttribute(std::string n1, const AttributeValue& v1)
 {
-  NS_LOG_FUNCTION (this);
-  m_deviceFactory.Set (n1, v1);
+    NS_LOG_FUNCTION(this);
+    m_deviceFactory.Set(n1, v1);
 }
 
 void
-FdNetDeviceHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
+FdNetDeviceHelper::EnablePcapInternal(std::string prefix,
+                                      Ptr<NetDevice> nd,
+                                      bool promiscuous,
+                                      bool explicitFilename)
 {
-  //
-  // All of the Pcap enable functions vector through here including the ones
-  // that are wandering through all of devices on perhaps all of the nodes in
-  // the system.  We can only deal with devices of type FdNetDevice.
-  //
-  Ptr<FdNetDevice> device = nd->GetObject<FdNetDevice> ();
-  if (!device)
+    //
+    // All of the Pcap enable functions vector through here including the ones
+    // that are wandering through all of devices on perhaps all of the nodes in
+    // the system.  We can only deal with devices of type FdNetDevice.
+    //
+    Ptr<FdNetDevice> device = nd->GetObject<FdNetDevice>();
+    if (!device)
     {
-      NS_LOG_INFO ("FdNetDeviceHelper::EnablePcapInternal(): Device " << device << " not of type ns3::FdNetDevice");
-      return;
+        NS_LOG_INFO("FdNetDeviceHelper::EnablePcapInternal(): Device "
+                    << device << " not of type ns3::FdNetDevice");
+        return;
     }
 
-  PcapHelper pcapHelper;
+    PcapHelper pcapHelper;
 
-  std::string filename;
-  if (explicitFilename)
+    std::string filename;
+    if (explicitFilename)
     {
-      filename = prefix;
+        filename = prefix;
     }
-  else
+    else
     {
-      filename = pcapHelper.GetFilenameFromDevice (prefix, device);
+        filename = pcapHelper.GetFilenameFromDevice(prefix, device);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, PcapHelper::DLT_EN10MB);
-  if (promiscuous)
+    Ptr<PcapFileWrapper> file =
+        pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_EN10MB);
+    if (promiscuous)
     {
-      pcapHelper.HookDefaultSink<FdNetDevice> (device, "PromiscSniffer", file);
+        pcapHelper.HookDefaultSink<FdNetDevice>(device, "PromiscSniffer", file);
     }
-  else
+    else
     {
-      pcapHelper.HookDefaultSink<FdNetDevice> (device, "Sniffer", file);
+        pcapHelper.HookDefaultSink<FdNetDevice>(device, "Sniffer", file);
     }
 }
 
 void
-FdNetDeviceHelper::EnableAsciiInternal (
-  Ptr<OutputStreamWrapper> stream,
-  std::string prefix,
-  Ptr<NetDevice> nd,
-  bool explicitFilename)
+FdNetDeviceHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
+                                       std::string prefix,
+                                       Ptr<NetDevice> nd,
+                                       bool explicitFilename)
 {
-  //
-  // All of the ascii enable functions vector through here including the ones
-  // that are wandering through all of devices on perhaps all of the nodes in
-  // the system.  We can only deal with devices of type FdNetDevice.
-  //
-  Ptr<FdNetDevice> device = nd->GetObject<FdNetDevice> ();
-  if (!device)
+    //
+    // All of the ascii enable functions vector through here including the ones
+    // that are wandering through all of devices on perhaps all of the nodes in
+    // the system.  We can only deal with devices of type FdNetDevice.
+    //
+    Ptr<FdNetDevice> device = nd->GetObject<FdNetDevice>();
+    if (!device)
     {
-      NS_LOG_INFO ("FdNetDeviceHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::FdNetDevice");
-      return;
+        NS_LOG_INFO("FdNetDeviceHelper::EnableAsciiInternal(): Device "
+                    << device << " not of type ns3::FdNetDevice");
+        return;
     }
 
-  //
-  // Our default trace sinks are going to use packet printing, so we have to
-  // make sure that is turned on.
-  //
-  Packet::EnablePrinting ();
+    //
+    // Our default trace sinks are going to use packet printing, so we have to
+    // make sure that is turned on.
+    //
+    Packet::EnablePrinting();
 
-  //
-  // If we are not provided an OutputStreamWrapper, we are expected to create
-  // one using the usual trace filename conventions and do a Hook*WithoutContext
-  // since there will be one file per context and therefore the context would
-  // be redundant.
-  //
-  if (!stream)
+    //
+    // If we are not provided an OutputStreamWrapper, we are expected to create
+    // one using the usual trace filename conventions and do a Hook*WithoutContext
+    // since there will be one file per context and therefore the context would
+    // be redundant.
+    //
+    if (!stream)
     {
-      //
-      // Set up an output stream object to deal with private ofstream copy
-      // constructor and lifetime issues.  Let the helper decide the actual
-      // name of the file given the prefix.
-      //
-      AsciiTraceHelper asciiTraceHelper;
+        //
+        // Set up an output stream object to deal with private ofstream copy
+        // constructor and lifetime issues.  Let the helper decide the actual
+        // name of the file given the prefix.
+        //
+        AsciiTraceHelper asciiTraceHelper;
 
-      std::string filename;
-      if (explicitFilename)
+        std::string filename;
+        if (explicitFilename)
         {
-          filename = prefix;
+            filename = prefix;
         }
-      else
+        else
         {
-          filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+            filename = asciiTraceHelper.GetFilenameFromDevice(prefix, device);
         }
 
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
+        Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream(filename);
 
-      //
-      // The MacRx trace source provides our "r" event.
-      //
-      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<FdNetDevice> (device, "MacRx", theStream);
+        //
+        // The MacRx trace source provides our "r" event.
+        //
+        asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<FdNetDevice>(device,
+                                                                           "MacRx",
+                                                                           theStream);
 
-      return;
+        return;
     }
 
-  //
-  // If we are provided an OutputStreamWrapper, we are expected to use it, and
-  // to providd a context.  We are free to come up with our own context if we
-  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for
-  // compatibility and simplicity, we just use Config::Connect and let it deal
-  // with the context.
-  //
-  // Note that we are going to use the default trace sinks provided by the
-  // ascii trace helper.  There is actually no AsciiTraceHelper in sight here,
-  // but the default trace sinks are actually publicly available static
-  // functions that are always there waiting for just such a case.
-  //
-  uint32_t deviceid = nd->GetIfIndex ();
-  std::ostringstream oss;
+    //
+    // If we are provided an OutputStreamWrapper, we are expected to use it, and
+    // to providd a context.  We are free to come up with our own context if we
+    // want, and use the AsciiTraceHelper Hook*WithContext functions, but for
+    // compatibility and simplicity, we just use Config::Connect and let it deal
+    // with the context.
+    //
+    // Note that we are going to use the default trace sinks provided by the
+    // ascii trace helper.  There is actually no AsciiTraceHelper in sight here,
+    // but the default trace sinks are actually publicly available static
+    // functions that are always there waiting for just such a case.
+    //
+    uint32_t deviceid = nd->GetIfIndex();
+    std::ostringstream oss;
 
-  oss << "/NodeList/" << nd->GetNode ()->GetId () << "/DeviceList/" << deviceid << "/$ns3::FdNetDevice/MacRx";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
+    oss << "/NodeList/" << nd->GetNode()->GetId() << "/DeviceList/" << deviceid
+        << "/$ns3::FdNetDevice/MacRx";
+    Config::Connect(oss.str(),
+                    MakeBoundCallback(&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
 }
 
 NetDeviceContainer
-FdNetDeviceHelper::Install (Ptr<Node> node) const
+FdNetDeviceHelper::Install(Ptr<Node> node) const
 {
-  return NetDeviceContainer (InstallPriv (node));
+    return NetDeviceContainer(InstallPriv(node));
 }
 
 NetDeviceContainer
-FdNetDeviceHelper::Install (std::string nodeName) const
+FdNetDeviceHelper::Install(std::string nodeName) const
 {
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  return NetDeviceContainer (InstallPriv (node));
+    Ptr<Node> node = Names::Find<Node>(nodeName);
+    return NetDeviceContainer(InstallPriv(node));
 }
 
 NetDeviceContainer
-FdNetDeviceHelper::Install (const NodeContainer &c) const
+FdNetDeviceHelper::Install(const NodeContainer& c) const
 {
-  NetDeviceContainer devs;
+    NetDeviceContainer devs;
 
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
+    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); i++)
     {
-      devs.Add (InstallPriv (*i));
+        devs.Add(InstallPriv(*i));
     }
 
-  return devs;
+    return devs;
 }
 
 Ptr<NetDevice>
-FdNetDeviceHelper::InstallPriv (Ptr<Node> node) const
+FdNetDeviceHelper::InstallPriv(Ptr<Node> node) const
 {
-  Ptr<FdNetDevice> device = m_deviceFactory.Create<FdNetDevice> ();
-  device->SetAddress (Mac48Address::Allocate ());
-  node->AddDevice (device);
-  return device;
+    Ptr<FdNetDevice> device = m_deviceFactory.Create<FdNetDevice>();
+    device->SetAddress(Mac48Address::Allocate());
+    node->AddDevice(device);
+    return device;
 }
 
 } // namespace ns3

@@ -19,21 +19,17 @@
  *
  */
 
-
 #include "lte-ffr-rrc-sap.h"
 
+namespace ns3
+{
 
-namespace ns3 {
-
-
-LteFfrRrcSapProvider::~LteFfrRrcSapProvider ()
+LteFfrRrcSapProvider::~LteFfrRrcSapProvider()
 {
 }
 
-
-LteFfrRrcSapUser::~LteFfrRrcSapUser ()
+LteFfrRrcSapUser::~LteFfrRrcSapUser()
 {
 }
-
 
 } // namespace ns3

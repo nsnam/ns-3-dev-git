@@ -20,123 +20,124 @@
 
 #include "vht-operation.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-VhtOperation::VhtOperation ()
-  : m_channelWidth (0),
-    m_channelCenterFrequencySegment0 (0),
-    m_channelCenterFrequencySegment1 (0),
-    m_basicVhtMcsAndNssSet (0)
+VhtOperation::VhtOperation()
+    : m_channelWidth(0),
+      m_channelCenterFrequencySegment0(0),
+      m_channelCenterFrequencySegment1(0),
+      m_basicVhtMcsAndNssSet(0)
 {
 }
 
 WifiInformationElementId
-VhtOperation::ElementId () const
+VhtOperation::ElementId() const
 {
-  return IE_VHT_OPERATION;
+    return IE_VHT_OPERATION;
 }
 
 uint16_t
-VhtOperation::GetInformationFieldSize () const
+VhtOperation::GetInformationFieldSize() const
 {
-  return 5;
+    return 5;
 }
 
 void
-VhtOperation::SetChannelWidth (uint8_t channelWidth)
+VhtOperation::SetChannelWidth(uint8_t channelWidth)
 {
-  m_channelWidth = channelWidth;
+    m_channelWidth = channelWidth;
 }
 
 void
-VhtOperation::SetChannelCenterFrequencySegment0 (uint8_t channelCenterFrequencySegment0)
+VhtOperation::SetChannelCenterFrequencySegment0(uint8_t channelCenterFrequencySegment0)
 {
-  m_channelCenterFrequencySegment0 = channelCenterFrequencySegment0;
+    m_channelCenterFrequencySegment0 = channelCenterFrequencySegment0;
 }
 
 void
-VhtOperation::SetChannelCenterFrequencySegment1 (uint8_t channelCenterFrequencySegment1)
+VhtOperation::SetChannelCenterFrequencySegment1(uint8_t channelCenterFrequencySegment1)
 {
-  m_channelCenterFrequencySegment1 = channelCenterFrequencySegment1;
+    m_channelCenterFrequencySegment1 = channelCenterFrequencySegment1;
 }
 
 void
-VhtOperation::SetMaxVhtMcsPerNss (uint8_t nss, uint8_t maxVhtMcs)
+VhtOperation::SetMaxVhtMcsPerNss(uint8_t nss, uint8_t maxVhtMcs)
 {
-  NS_ASSERT ((maxVhtMcs == 0 || (maxVhtMcs >= 7 && maxVhtMcs <= 9)) && (nss >= 1 && nss <= 8));
-  if (maxVhtMcs != 0)
+    NS_ASSERT((maxVhtMcs == 0 || (maxVhtMcs >= 7 && maxVhtMcs <= 9)) && (nss >= 1 && nss <= 8));
+    if (maxVhtMcs != 0)
     {
-      m_basicVhtMcsAndNssSet |= (((maxVhtMcs - 7) & 0x03) << ((nss - 1) * 2));
+        m_basicVhtMcsAndNssSet |= (((maxVhtMcs - 7) & 0x03) << ((nss - 1) * 2));
     }
-  else
+    else
     {
-      m_basicVhtMcsAndNssSet |= (3 << ((nss - 1) * 2));
+        m_basicVhtMcsAndNssSet |= (3 << ((nss - 1) * 2));
     }
 }
 
 void
-VhtOperation::SetBasicVhtMcsAndNssSet (uint16_t basicVhtMcsAndNssSet)
+VhtOperation::SetBasicVhtMcsAndNssSet(uint16_t basicVhtMcsAndNssSet)
 {
-  m_basicVhtMcsAndNssSet = basicVhtMcsAndNssSet;
+    m_basicVhtMcsAndNssSet = basicVhtMcsAndNssSet;
 }
 
 uint8_t
-VhtOperation::GetChannelWidth () const
+VhtOperation::GetChannelWidth() const
 {
-  return m_channelWidth;
+    return m_channelWidth;
 }
 
 uint8_t
-VhtOperation::GetChannelCenterFrequencySegment0 () const
+VhtOperation::GetChannelCenterFrequencySegment0() const
 {
-  return m_channelCenterFrequencySegment0;
+    return m_channelCenterFrequencySegment0;
 }
 
 uint8_t
-VhtOperation::GetChannelCenterFrequencySegment1 () const
+VhtOperation::GetChannelCenterFrequencySegment1() const
 {
-  return m_channelCenterFrequencySegment1;
+    return m_channelCenterFrequencySegment1;
 }
 
 uint16_t
-VhtOperation::GetBasicVhtMcsAndNssSet () const
+VhtOperation::GetBasicVhtMcsAndNssSet() const
 {
-  return m_basicVhtMcsAndNssSet;
+    return m_basicVhtMcsAndNssSet;
 }
 
 void
-VhtOperation::SerializeInformationField (Buffer::Iterator start) const
+VhtOperation::SerializeInformationField(Buffer::Iterator start) const
 {
-  //write the corresponding value for each bit
-  start.WriteU8 (GetChannelWidth ());
-  start.WriteU8 (GetChannelCenterFrequencySegment0 ());
-  start.WriteU8 (GetChannelCenterFrequencySegment1 ());
-  start.WriteU16 (GetBasicVhtMcsAndNssSet ());
+    // write the corresponding value for each bit
+    start.WriteU8(GetChannelWidth());
+    start.WriteU8(GetChannelCenterFrequencySegment0());
+    start.WriteU8(GetChannelCenterFrequencySegment1());
+    start.WriteU16(GetBasicVhtMcsAndNssSet());
 }
 
 uint16_t
-VhtOperation::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
+VhtOperation::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
-  Buffer::Iterator i = start;
-  uint8_t channelWidth = i.ReadU8 ();
-  uint8_t channelCenterFrequencySegment0 = i.ReadU8 ();
-  uint8_t channelCenterFrequencySegment1 = i.ReadU8 ();
-  uint16_t basicVhtMcsAndNssSet = i.ReadU16 ();
-  SetChannelWidth (channelWidth);
-  SetChannelCenterFrequencySegment0 (channelCenterFrequencySegment0);
-  SetChannelCenterFrequencySegment1 (channelCenterFrequencySegment1);
-  SetBasicVhtMcsAndNssSet (basicVhtMcsAndNssSet);
-  return length;
+    Buffer::Iterator i = start;
+    uint8_t channelWidth = i.ReadU8();
+    uint8_t channelCenterFrequencySegment0 = i.ReadU8();
+    uint8_t channelCenterFrequencySegment1 = i.ReadU8();
+    uint16_t basicVhtMcsAndNssSet = i.ReadU16();
+    SetChannelWidth(channelWidth);
+    SetChannelCenterFrequencySegment0(channelCenterFrequencySegment0);
+    SetChannelCenterFrequencySegment1(channelCenterFrequencySegment1);
+    SetBasicVhtMcsAndNssSet(basicVhtMcsAndNssSet);
+    return length;
 }
 
-std::ostream &
-operator << (std::ostream &os, const VhtOperation &VhtOperation)
+std::ostream&
+operator<<(std::ostream& os, const VhtOperation& VhtOperation)
 {
-  os << +VhtOperation.GetChannelWidth () << "|"
-     << +VhtOperation.GetChannelCenterFrequencySegment0 () << "|"
-     << +VhtOperation.GetChannelCenterFrequencySegment1 () << "|"
-     << VhtOperation.GetBasicVhtMcsAndNssSet ();
-  return os;
+    os << +VhtOperation.GetChannelWidth() << "|"
+       << +VhtOperation.GetChannelCenterFrequencySegment0() << "|"
+       << +VhtOperation.GetChannelCenterFrequencySegment1() << "|"
+       << VhtOperation.GetBasicVhtMcsAndNssSet();
+    return os;
 }
 
-} //namespace ns3
+} // namespace ns3

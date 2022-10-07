@@ -17,411 +17,408 @@
  *
  */
 #include "sqlite-output.h"
-#include <sys/stat.h>
-#include <fcntl.h>
+
 #include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/nstime.h"
 
-namespace ns3 {
+#include <fcntl.h>
+#include <sys/stat.h>
 
-NS_LOG_COMPONENT_DEFINE ("SQLiteOutput");
-
-SQLiteOutput::SQLiteOutput (const std::string &name)
+namespace ns3
 {
-  int rc = sqlite3_open (name.c_str (), &m_db);
-  NS_ABORT_MSG_UNLESS (rc == SQLITE_OK, "Failed to open DB");
+
+NS_LOG_COMPONENT_DEFINE("SQLiteOutput");
+
+SQLiteOutput::SQLiteOutput(const std::string& name)
+{
+    int rc = sqlite3_open(name.c_str(), &m_db);
+    NS_ABORT_MSG_UNLESS(rc == SQLITE_OK, "Failed to open DB");
 }
 
-SQLiteOutput::~SQLiteOutput ()
+SQLiteOutput::~SQLiteOutput()
 {
-  int rc = SQLITE_FAIL;
+    int rc = SQLITE_FAIL;
 
-  rc = sqlite3_close_v2 (m_db);
-  NS_ABORT_MSG_UNLESS (rc == SQLITE_OK, "Failed to close DB");
+    rc = sqlite3_close_v2(m_db);
+    NS_ABORT_MSG_UNLESS(rc == SQLITE_OK, "Failed to close DB");
 }
 
 void
-SQLiteOutput::SetJournalInMemory ()
+SQLiteOutput::SetJournalInMemory()
 {
-  NS_LOG_FUNCTION (this);
-  SpinExec ("PRAGMA journal_mode = MEMORY");
+    NS_LOG_FUNCTION(this);
+    SpinExec("PRAGMA journal_mode = MEMORY");
 }
 
 bool
-SQLiteOutput::SpinExec (const std::string &cmd) const
+SQLiteOutput::SpinExec(const std::string& cmd) const
 {
-  return (SpinExec (m_db, cmd) == SQLITE_OK);
+    return (SpinExec(m_db, cmd) == SQLITE_OK);
 }
 
 bool
-SQLiteOutput::SpinExec (sqlite3_stmt *stmt) const
+SQLiteOutput::SpinExec(sqlite3_stmt* stmt) const
 {
-  int rc = SpinExec (m_db, stmt);
-  return !CheckError (m_db, rc, "", false);
+    int rc = SpinExec(m_db, stmt);
+    return !CheckError(m_db, rc, "", false);
 }
 
 bool
-SQLiteOutput::WaitExec (const std::string &cmd) const
+SQLiteOutput::WaitExec(const std::string& cmd) const
 {
-  int rc = WaitExec (m_db, cmd);
-  return !CheckError (m_db, rc, cmd, false);
+    int rc = WaitExec(m_db, cmd);
+    return !CheckError(m_db, rc, cmd, false);
 }
 
 bool
-SQLiteOutput::WaitExec (sqlite3_stmt *stmt) const
+SQLiteOutput::WaitExec(sqlite3_stmt* stmt) const
 {
-  return (WaitExec (m_db, stmt) == SQLITE_OK);
+    return (WaitExec(m_db, stmt) == SQLITE_OK);
 }
 
 bool
-SQLiteOutput::WaitPrepare (sqlite3_stmt **stmt, const std::string &cmd) const
+SQLiteOutput::WaitPrepare(sqlite3_stmt** stmt, const std::string& cmd) const
 {
-  return (WaitPrepare (m_db, stmt, cmd) == SQLITE_OK);
+    return (WaitPrepare(m_db, stmt, cmd) == SQLITE_OK);
 }
 
 bool
-SQLiteOutput::SpinPrepare (sqlite3_stmt **stmt, const std::string &cmd) const
+SQLiteOutput::SpinPrepare(sqlite3_stmt** stmt, const std::string& cmd) const
 {
-  return (SpinPrepare (m_db, stmt, cmd) == SQLITE_OK);
+    return (SpinPrepare(m_db, stmt, cmd) == SQLITE_OK);
 }
 
-template<typename T>
+template <typename T>
 T
-SQLiteOutput::RetrieveColumn ([[maybe_unused]] sqlite3_stmt *stmt, [[maybe_unused]] int pos) const
+SQLiteOutput::RetrieveColumn([[maybe_unused]] sqlite3_stmt* stmt, [[maybe_unused]] int pos) const
 {
-  NS_FATAL_ERROR ("Can't call generic fn");
+    NS_FATAL_ERROR("Can't call generic fn");
 }
 
 /// \copydoc SQLiteOutput::RetrieveColumn
-template<>
+template <>
 int
-SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
+SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
 {
-  return sqlite3_column_int (stmt, pos);
+    return sqlite3_column_int(stmt, pos);
 }
 
 /// \copydoc SQLiteOutput::RetrieveColumn
-template<>
+template <>
 uint32_t
-SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
+SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
 {
-  return static_cast<uint32_t> (sqlite3_column_int (stmt, pos));
+    return static_cast<uint32_t>(sqlite3_column_int(stmt, pos));
 }
 
 /// \copydoc SQLiteOutput::RetrieveColumn
-template<>
+template <>
 double
-SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
+SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
 {
-  return sqlite3_column_double (stmt, pos);
+    return sqlite3_column_double(stmt, pos);
 }
 
-template<typename T>
+template <typename T>
 bool
-SQLiteOutput::Bind ([[maybe_unused]] sqlite3_stmt *stmt, [[maybe_unused]] int pos, [[maybe_unused]] const T &value) const
+SQLiteOutput::Bind([[maybe_unused]] sqlite3_stmt* stmt,
+                   [[maybe_unused]] int pos,
+                   [[maybe_unused]] const T& value) const
 {
-  NS_FATAL_ERROR ("Can't call generic fn");
-  return false;
-}
-
-//! \copydoc SQLiteOutput::Bind
-template<>
-bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const Time &value) const
-{
-  if (sqlite3_bind_double (stmt, pos, value.GetSeconds ()) == SQLITE_OK)
-    {
-      return true;
-    }
-  return false;
+    NS_FATAL_ERROR("Can't call generic fn");
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const double &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const Time& value) const
 {
-  if (sqlite3_bind_double (stmt, pos, value) == SQLITE_OK)
+    if (sqlite3_bind_double(stmt, pos, value.GetSeconds()) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint32_t &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const double& value) const
 {
-  if (sqlite3_bind_int (stmt, pos, static_cast<int> (value)) == SQLITE_OK)
+    if (sqlite3_bind_double(stmt, pos, value) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const uint32_t& value) const
 {
-  if (sqlite3_bind_int64 (stmt, pos, value) == SQLITE_OK)
+    if (sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long long &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const long& value) const
 {
-  if (sqlite3_bind_int64 (stmt, pos, value) == SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, pos, value) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint16_t &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const long long& value) const
 {
-  if (sqlite3_bind_int (stmt, pos, static_cast<int> (value)) == SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, pos, value) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint8_t &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const uint16_t& value) const
 {
-  if (sqlite3_bind_int (stmt, pos, static_cast<int> (value)) == SQLITE_OK)
+    if (sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const int &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const uint8_t& value) const
 {
-  if (sqlite3_bind_int (stmt, pos, value) == SQLITE_OK)
+    if (sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 //! \copydoc SQLiteOutput::Bind
-template<>
+template <>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const std::string &value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const int& value) const
 {
-  if (sqlite3_bind_text (stmt, pos, value.c_str (), -1, SQLITE_STATIC) == SQLITE_OK)
+    if (sqlite3_bind_int(stmt, pos, value) == SQLITE_OK)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
+}
+
+//! \copydoc SQLiteOutput::Bind
+template <>
+bool
+SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const std::string& value) const
+{
+    if (sqlite3_bind_text(stmt, pos, value.c_str(), -1, SQLITE_STATIC) == SQLITE_OK)
+    {
+        return true;
+    }
+    return false;
 }
 
 int
-SQLiteOutput::WaitPrepare (sqlite3 *db, sqlite3_stmt **stmt, const std::string &cmd) const
+SQLiteOutput::WaitPrepare(sqlite3* db, sqlite3_stmt** stmt, const std::string& cmd) const
 {
-  int rc;
-  bool ret;
+    int rc;
+    bool ret;
 
-  std::unique_lock lock {m_mutex};
+    std::unique_lock lock{m_mutex};
 
-  rc = sqlite3_prepare_v2 (db, cmd.c_str (),
-                           static_cast<int> (cmd.size ()),
-                           stmt, nullptr);
+    rc = sqlite3_prepare_v2(db, cmd.c_str(), static_cast<int>(cmd.size()), stmt, nullptr);
 
-  ret = CheckError (db, rc, cmd, false);
-  if (ret)
+    ret = CheckError(db, rc, cmd, false);
+    if (ret)
     {
-      return rc;
+        return rc;
     }
 
-  return rc;
+    return rc;
 }
 
 int
-SQLiteOutput::SpinPrepare (sqlite3 *db, sqlite3_stmt **stmt, const std::string &cmd)
+SQLiteOutput::SpinPrepare(sqlite3* db, sqlite3_stmt** stmt, const std::string& cmd)
 {
-  int rc;
+    int rc;
 
-  do
+    do
     {
-      rc = sqlite3_prepare_v2 (db, cmd.c_str (),
-                               static_cast<int> (cmd.size ()),
-                               stmt, nullptr);
-    }
-  while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
-  return rc;
+        rc = sqlite3_prepare_v2(db, cmd.c_str(), static_cast<int>(cmd.size()), stmt, nullptr);
+    } while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
+    return rc;
 }
 
 int
-SQLiteOutput::SpinStep (sqlite3_stmt *stmt)
+SQLiteOutput::SpinStep(sqlite3_stmt* stmt)
 {
-  int rc;
-  do
+    int rc;
+    do
     {
-      rc = sqlite3_step (stmt);
-    }
-  while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
+        rc = sqlite3_step(stmt);
+    } while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
 
-  return rc;
+    return rc;
 }
 
 int
-SQLiteOutput::SpinFinalize (sqlite3_stmt *stmt)
+SQLiteOutput::SpinFinalize(sqlite3_stmt* stmt)
 {
-  int rc;
-  do
+    int rc;
+    do
     {
-      rc = sqlite3_finalize (stmt);
-    }
-  while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
+        rc = sqlite3_finalize(stmt);
+    } while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
 
-  return rc;
+    return rc;
 }
 
-int SQLiteOutput::SpinReset (sqlite3_stmt *stmt)
+int
+SQLiteOutput::SpinReset(sqlite3_stmt* stmt)
 {
-  int rc;
+    int rc;
 
-  do
+    do
     {
-      rc = sqlite3_reset (stmt);
-    }
-  while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
+        rc = sqlite3_reset(stmt);
+    } while (rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
 
-  return rc;
+    return rc;
 }
 
 void
-SQLiteOutput::Error (sqlite3 *db, const std::string &cmd)
+SQLiteOutput::Error(sqlite3* db, const std::string& cmd)
 {
-  NS_ABORT_MSG (cmd << " error " << sqlite3_errmsg (db));
+    NS_ABORT_MSG(cmd << " error " << sqlite3_errmsg(db));
 }
 
 bool
-SQLiteOutput::CheckError (sqlite3 *db, int rc, const std::string &cmd,
-                          bool hardExit)
+SQLiteOutput::CheckError(sqlite3* db, int rc, const std::string& cmd, bool hardExit)
 {
-  if (rc != SQLITE_OK && rc != SQLITE_DONE)
+    if (rc != SQLITE_OK && rc != SQLITE_DONE)
     {
-      if (hardExit)
+        if (hardExit)
         {
-          Error (db, cmd);
+            Error(db, cmd);
         }
-      else
+        else
         {
-          std::cerr << sqlite3_errmsg (db) << std::endl;
+            std::cerr << sqlite3_errmsg(db) << std::endl;
         }
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 int
-SQLiteOutput::SpinExec (sqlite3 *db, const std::string &cmd)
+SQLiteOutput::SpinExec(sqlite3* db, const std::string& cmd)
 {
-  sqlite3_stmt *stmt;
-  bool ret;
+    sqlite3_stmt* stmt;
+    bool ret;
 
-  int rc = SpinPrepare (db, &stmt, cmd);
-  ret = CheckError (db, rc, cmd, false);
-  if (ret)
+    int rc = SpinPrepare(db, &stmt, cmd);
+    ret = CheckError(db, rc, cmd, false);
+    if (ret)
     {
-      return rc;
+        return rc;
     }
 
-  rc = SpinStep (stmt);
-  ret = CheckError (db, rc, cmd, false);
-  if (ret)
+    rc = SpinStep(stmt);
+    ret = CheckError(db, rc, cmd, false);
+    if (ret)
     {
-      return rc;
+        return rc;
     }
 
-  rc = SpinFinalize (stmt);
-  CheckError (db, rc, cmd, false);
+    rc = SpinFinalize(stmt);
+    CheckError(db, rc, cmd, false);
 
-  return rc;
+    return rc;
 }
 
 int
-SQLiteOutput::SpinExec (sqlite3 *db, sqlite3_stmt *stmt)
+SQLiteOutput::SpinExec(sqlite3* db, sqlite3_stmt* stmt)
 {
-  bool ret;
-  int rc = SpinStep (stmt);
-  ret = CheckError (db, rc, "", false);
-  if (ret)
+    bool ret;
+    int rc = SpinStep(stmt);
+    ret = CheckError(db, rc, "", false);
+    if (ret)
     {
-      return rc;
+        return rc;
     }
 
-  rc = SpinFinalize (stmt);
-  return rc;
+    rc = SpinFinalize(stmt);
+    return rc;
 }
 
 int
-SQLiteOutput::WaitExec (sqlite3 *db, sqlite3_stmt *stmt) const
+SQLiteOutput::WaitExec(sqlite3* db, sqlite3_stmt* stmt) const
 {
-  bool ret;
-  int rc = SQLITE_ERROR;
+    bool ret;
+    int rc = SQLITE_ERROR;
 
-  std::unique_lock lock {m_mutex};
+    std::unique_lock lock{m_mutex};
 
-  rc = SpinStep (stmt);
+    rc = SpinStep(stmt);
 
-  ret = CheckError (db, rc, "", false);
-  if (ret)
+    ret = CheckError(db, rc, "", false);
+    if (ret)
     {
-      return rc;
+        return rc;
     }
 
-  rc = SpinFinalize (stmt);
+    rc = SpinFinalize(stmt);
 
-  return rc;
+    return rc;
 }
 
 int
-SQLiteOutput::WaitExec (sqlite3 *db, const std::string &cmd) const
+SQLiteOutput::WaitExec(sqlite3* db, const std::string& cmd) const
 {
-  sqlite3_stmt *stmt;
-  bool ret;
-  int rc = SQLITE_ERROR;
+    sqlite3_stmt* stmt;
+    bool ret;
+    int rc = SQLITE_ERROR;
 
-  std::unique_lock lock {m_mutex};
+    std::unique_lock lock{m_mutex};
 
-  rc = SpinPrepare (db, &stmt, cmd);
-  ret = CheckError (db, rc, cmd, false);
-  if (ret)
+    rc = SpinPrepare(db, &stmt, cmd);
+    ret = CheckError(db, rc, cmd, false);
+    if (ret)
     {
-      return rc;
+        return rc;
     }
 
-  rc = SpinStep (stmt);
+    rc = SpinStep(stmt);
 
-  ret = CheckError (db, rc, cmd, false);
-  if (ret)
+    ret = CheckError(db, rc, cmd, false);
+    if (ret)
     {
-      return rc;
+        return rc;
     }
 
-  rc = SpinFinalize (stmt);
+    rc = SpinFinalize(stmt);
 
-  return rc;
+    return rc;
 }
 
-} // namespace ns3;
+} // namespace ns3

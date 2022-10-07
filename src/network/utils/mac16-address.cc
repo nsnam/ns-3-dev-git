@@ -19,19 +19,22 @@
  */
 
 #include "mac16-address.h"
+
 #include "ns3/address.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+
+#include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <cstring>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("Mac16Address");
+NS_LOG_COMPONENT_DEFINE("Mac16Address");
 
-ATTRIBUTE_HELPER_CPP (Mac16Address);
+ATTRIBUTE_HELPER_CPP(Mac16Address);
 
 #define ASCII_a (0x41)
 #define ASCII_z (0x5a)
@@ -46,226 +49,235 @@ ATTRIBUTE_HELPER_CPP (Mac16Address);
  * \returns the lower case
  */
 static char
-AsciiToLowCase (char c)
+AsciiToLowCase(char c)
 {
-  if (c >= ASCII_a && c <= ASCII_z) {
-      return c;
-    } else if (c >= ASCII_A && c <= ASCII_Z) {
-      return c + (ASCII_a - ASCII_A);
-    } else {
-      return c;
+    if (c >= ASCII_a && c <= ASCII_z)
+    {
+        return c;
+    }
+    else if (c >= ASCII_A && c <= ASCII_Z)
+    {
+        return c + (ASCII_a - ASCII_A);
+    }
+    else
+    {
+        return c;
     }
 }
 
 uint64_t Mac16Address::m_allocationIndex = 0;
 
-Mac16Address::Mac16Address ()
+Mac16Address::Mac16Address()
 {
-  NS_LOG_FUNCTION (this);
-  memset (m_address, 0, 2);
+    NS_LOG_FUNCTION(this);
+    memset(m_address, 0, 2);
 }
 
-Mac16Address::Mac16Address (const char *str)
+Mac16Address::Mac16Address(const char* str)
 {
-  NS_LOG_FUNCTION (this << str);
-  int i = 0;
-  while (*str != 0 && i < 2)
+    NS_LOG_FUNCTION(this << str);
+    int i = 0;
+    while (*str != 0 && i < 2)
     {
-      uint8_t byte = 0;
-      while (*str != ASCII_COLON && *str != 0)
+        uint8_t byte = 0;
+        while (*str != ASCII_COLON && *str != 0)
         {
-          byte <<= 4;
-          char low = AsciiToLowCase (*str);
-          if (low >= ASCII_a)
+            byte <<= 4;
+            char low = AsciiToLowCase(*str);
+            if (low >= ASCII_a)
             {
-              byte |= low - ASCII_a + 10;
+                byte |= low - ASCII_a + 10;
             }
-          else
+            else
             {
-              byte |= low - ASCII_ZERO;
+                byte |= low - ASCII_ZERO;
             }
-          str++;
+            str++;
         }
-      m_address[i] = byte;
-      i++;
-      if (*str == 0)
+        m_address[i] = byte;
+        i++;
+        if (*str == 0)
         {
-          break;
+            break;
         }
-      str++;
+        str++;
     }
-  NS_ASSERT (i == 2);
+    NS_ASSERT(i == 2);
 }
 
 void
-Mac16Address::CopyFrom (const uint8_t buffer[2])
+Mac16Address::CopyFrom(const uint8_t buffer[2])
 {
-  NS_LOG_FUNCTION (this << &buffer);
-  memcpy (m_address, buffer, 2);
+    NS_LOG_FUNCTION(this << &buffer);
+    memcpy(m_address, buffer, 2);
 }
+
 void
-Mac16Address::CopyTo (uint8_t buffer[2]) const
+Mac16Address::CopyTo(uint8_t buffer[2]) const
 {
-  NS_LOG_FUNCTION (this << &buffer);
-  memcpy (buffer, m_address, 2);
+    NS_LOG_FUNCTION(this << &buffer);
+    memcpy(buffer, m_address, 2);
 }
 
 bool
-Mac16Address::IsMatchingType (const Address &address)
+Mac16Address::IsMatchingType(const Address& address)
 {
-  NS_LOG_FUNCTION (&address);
-  return address.CheckCompatible (GetType (), 2);
+    NS_LOG_FUNCTION(&address);
+    return address.CheckCompatible(GetType(), 2);
 }
 
-Mac16Address::operator Address () const
+Mac16Address::operator Address() const
 {
-  return ConvertTo ();
+    return ConvertTo();
 }
 
 Mac16Address
-Mac16Address::ConvertFrom (const Address &address)
+Mac16Address::ConvertFrom(const Address& address)
 {
-  NS_LOG_FUNCTION (address);
-  NS_ASSERT (address.CheckCompatible (GetType (), 2));
-  Mac16Address retval;
-  address.CopyTo (retval.m_address);
-  return retval;
+    NS_LOG_FUNCTION(address);
+    NS_ASSERT(address.CheckCompatible(GetType(), 2));
+    Mac16Address retval;
+    address.CopyTo(retval.m_address);
+    return retval;
 }
+
 Address
-Mac16Address::ConvertTo () const
+Mac16Address::ConvertTo() const
 {
-  NS_LOG_FUNCTION (this);
-  return Address (GetType (), m_address, 2);
+    NS_LOG_FUNCTION(this);
+    return Address(GetType(), m_address, 2);
 }
 
 Mac16Address
-Mac16Address::Allocate ()
+Mac16Address::Allocate()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  if (m_allocationIndex == 0)
+    if (m_allocationIndex == 0)
     {
-      Simulator::ScheduleDestroy (Mac16Address::ResetAllocationIndex);
+        Simulator::ScheduleDestroy(Mac16Address::ResetAllocationIndex);
     }
 
-  m_allocationIndex++;
-  Mac16Address address;
-  address.m_address[0] = (m_allocationIndex >> 8) & 0xff;
-  address.m_address[1] = m_allocationIndex & 0xff;
-  return address;
+    m_allocationIndex++;
+    Mac16Address address;
+    address.m_address[0] = (m_allocationIndex >> 8) & 0xff;
+    address.m_address[1] = m_allocationIndex & 0xff;
+    return address;
 }
 
 void
-Mac16Address::ResetAllocationIndex ()
+Mac16Address::ResetAllocationIndex()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  m_allocationIndex = 0;
+    NS_LOG_FUNCTION_NOARGS();
+    m_allocationIndex = 0;
 }
 
 uint8_t
-Mac16Address::GetType ()
+Mac16Address::GetType()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static uint8_t type = Address::Register ();
-  return type;
+    static uint8_t type = Address::Register();
+    return type;
 }
 
 Mac16Address
-Mac16Address::GetBroadcast ()
+Mac16Address::GetBroadcast()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static Mac16Address broadcast = Mac16Address ("ff:ff");
-  return broadcast;
+    static Mac16Address broadcast = Mac16Address("ff:ff");
+    return broadcast;
 }
 
 Mac16Address
-Mac16Address::GetMulticast (Ipv6Address address)
+Mac16Address::GetMulticast(Ipv6Address address)
 {
-  NS_LOG_FUNCTION (address);
+    NS_LOG_FUNCTION(address);
 
-  uint8_t ipv6AddrBuf[16];
-  address.GetBytes(ipv6AddrBuf);
+    uint8_t ipv6AddrBuf[16];
+    address.GetBytes(ipv6AddrBuf);
 
-  uint8_t addrBuf[2];
+    uint8_t addrBuf[2];
 
-  addrBuf[0] = 0x80 | (ipv6AddrBuf[14] & 0x1F);
-  addrBuf[1] = ipv6AddrBuf[15];
+    addrBuf[0] = 0x80 | (ipv6AddrBuf[14] & 0x1F);
+    addrBuf[1] = ipv6AddrBuf[15];
 
-  Mac16Address multicastAddr;
-  multicastAddr.CopyFrom (addrBuf);
+    Mac16Address multicastAddr;
+    multicastAddr.CopyFrom(addrBuf);
 
-  return multicastAddr;
+    return multicastAddr;
 }
 
 bool
-Mac16Address::IsBroadcast () const
+Mac16Address::IsBroadcast() const
 {
-  NS_LOG_FUNCTION (this);
-  if (m_address[0] == 0xff && m_address[1] == 0xff)
+    NS_LOG_FUNCTION(this);
+    if (m_address[0] == 0xff && m_address[1] == 0xff)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
 bool
-Mac16Address::IsMulticast () const
+Mac16Address::IsMulticast() const
 {
-  NS_LOG_FUNCTION (this);
-  uint8_t val = m_address[0];
-  val >>= 5;
-  if (val == 0x4)
+    NS_LOG_FUNCTION(this);
+    uint8_t val = m_address[0];
+    val >>= 5;
+    if (val == 0x4)
     {
-      return true;
+        return true;
     }
-  return false;
+    return false;
 }
 
-std::ostream & operator<< (std::ostream& os, const Mac16Address & address)
+std::ostream&
+operator<<(std::ostream& os, const Mac16Address& address)
 {
-  uint8_t ad[2];
-  address.CopyTo (ad);
+    uint8_t ad[2];
+    address.CopyTo(ad);
 
-  os.setf (std::ios::hex, std::ios::basefield);
-  os.fill ('0');
-  for (uint8_t i = 0; i < 1; i++)
+    os.setf(std::ios::hex, std::ios::basefield);
+    os.fill('0');
+    for (uint8_t i = 0; i < 1; i++)
     {
-      os << std::setw (2) << (uint32_t)ad[i] << ":";
+        os << std::setw(2) << (uint32_t)ad[i] << ":";
     }
-  // Final byte not suffixed by ":"
-  os << std::setw (2) << (uint32_t)ad[1];
-  os.setf (std::ios::dec, std::ios::basefield);
-  os.fill (' ');
-  return os;
+    // Final byte not suffixed by ":"
+    os << std::setw(2) << (uint32_t)ad[1];
+    os.setf(std::ios::dec, std::ios::basefield);
+    os.fill(' ');
+    return os;
 }
 
-std::istream& operator>> (std::istream& is, Mac16Address & address)
+std::istream&
+operator>>(std::istream& is, Mac16Address& address)
 {
-  std::string v;
-  is >> v;
+    std::string v;
+    is >> v;
 
-  std::string::size_type col = 0;
-  for (uint8_t i = 0; i < 2; ++i)
+    std::string::size_type col = 0;
+    for (uint8_t i = 0; i < 2; ++i)
     {
-      std::string tmp;
-      std::string::size_type next;
-      next = v.find (':', col);
-      if (next == std::string::npos)
+        std::string tmp;
+        std::string::size_type next;
+        next = v.find(':', col);
+        if (next == std::string::npos)
         {
-          tmp = v.substr (col, v.size ()-col);
-          address.m_address[i] = strtoul (tmp.c_str(), nullptr, 16);
-          break;
+            tmp = v.substr(col, v.size() - col);
+            address.m_address[i] = strtoul(tmp.c_str(), nullptr, 16);
+            break;
         }
-      else
+        else
         {
-          tmp = v.substr (col, next-col);
-          address.m_address[i] = strtoul (tmp.c_str(), nullptr, 16);
-          col = next + 1;
+            tmp = v.substr(col, next - col);
+            address.m_address[i] = strtoul(tmp.c_str(), nullptr, 16);
+            col = next + 1;
         }
     }
-  return is;
+    return is;
 }
 
-}
+} // namespace ns3

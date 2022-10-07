@@ -19,43 +19,46 @@
  */
 #include "constant-position-mobility-model.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantPositionMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED(ConstantPositionMobilityModel);
 
 TypeId
-ConstantPositionMobilityModel::GetTypeId ()
+ConstantPositionMobilityModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ConstantPositionMobilityModel")
-    .SetParent<MobilityModel> ()
-    .SetGroupName ("Mobility")
-    .AddConstructor<ConstantPositionMobilityModel> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::ConstantPositionMobilityModel")
+                            .SetParent<MobilityModel>()
+                            .SetGroupName("Mobility")
+                            .AddConstructor<ConstantPositionMobilityModel>();
+    return tid;
 }
 
-ConstantPositionMobilityModel::ConstantPositionMobilityModel ()
+ConstantPositionMobilityModel::ConstantPositionMobilityModel()
 {
 }
-ConstantPositionMobilityModel::~ConstantPositionMobilityModel ()
+
+ConstantPositionMobilityModel::~ConstantPositionMobilityModel()
 {
 }
 
 Vector
-ConstantPositionMobilityModel::DoGetPosition () const
+ConstantPositionMobilityModel::DoGetPosition() const
 {
-  return m_position;
+    return m_position;
 }
+
 void
-ConstantPositionMobilityModel::DoSetPosition (const Vector &position)
+ConstantPositionMobilityModel::DoSetPosition(const Vector& position)
 {
-  m_position = position;
-  NotifyCourseChange ();
+    m_position = position;
+    NotifyCourseChange();
 }
+
 Vector
-ConstantPositionMobilityModel::DoGetVelocity () const
+ConstantPositionMobilityModel::DoGetVelocity() const
 {
-  return Vector (0.0, 0.0, 0.0);
+    return Vector(0.0, 0.0, 0.0);
 }
 
 } // namespace ns3

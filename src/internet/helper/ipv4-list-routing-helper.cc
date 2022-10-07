@@ -18,10 +18,12 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ipv4-list-routing-helper.h"
+
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/node.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 Ipv4ListRoutingHelper::Ipv4ListRoutingHelper()
 {
@@ -29,45 +31,47 @@ Ipv4ListRoutingHelper::Ipv4ListRoutingHelper()
 
 Ipv4ListRoutingHelper::~Ipv4ListRoutingHelper()
 {
-  for (std::list<std::pair<const Ipv4RoutingHelper *, int16_t> >::iterator i = m_list.begin ();
-       i != m_list.end (); ++i)
+    for (std::list<std::pair<const Ipv4RoutingHelper*, int16_t>>::iterator i = m_list.begin();
+         i != m_list.end();
+         ++i)
     {
-      delete i->first;
+        delete i->first;
     }
 }
 
-Ipv4ListRoutingHelper::Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &o)
+Ipv4ListRoutingHelper::Ipv4ListRoutingHelper(const Ipv4ListRoutingHelper& o)
 {
-  std::list<std::pair<const Ipv4RoutingHelper *, int16_t> >::const_iterator i;
-  for (i = o.m_list.begin (); i != o.m_list.end (); ++i)
+    std::list<std::pair<const Ipv4RoutingHelper*, int16_t>>::const_iterator i;
+    for (i = o.m_list.begin(); i != o.m_list.end(); ++i)
     {
-      m_list.emplace_back (const_cast<const Ipv4RoutingHelper *> (i->first->Copy ()), i->second);
+        m_list.emplace_back(const_cast<const Ipv4RoutingHelper*>(i->first->Copy()), i->second);
     }
 }
 
 Ipv4ListRoutingHelper*
-Ipv4ListRoutingHelper::Copy () const
+Ipv4ListRoutingHelper::Copy() const
 {
-  return new Ipv4ListRoutingHelper (*this);
+    return new Ipv4ListRoutingHelper(*this);
 }
 
 void
-Ipv4ListRoutingHelper::Add (const Ipv4RoutingHelper &routing, int16_t priority)
+Ipv4ListRoutingHelper::Add(const Ipv4RoutingHelper& routing, int16_t priority)
 {
-  m_list.emplace_back (const_cast<const Ipv4RoutingHelper *> (routing.Copy ()), priority);
+    m_list.emplace_back(const_cast<const Ipv4RoutingHelper*>(routing.Copy()), priority);
 }
 
 Ptr<Ipv4RoutingProtocol>
-Ipv4ListRoutingHelper::Create (Ptr<Node> node) const
+Ipv4ListRoutingHelper::Create(Ptr<Node> node) const
 {
-  Ptr<Ipv4ListRouting> list = CreateObject<Ipv4ListRouting> ();
-  for (std::list<std::pair<const Ipv4RoutingHelper *, int16_t> >::const_iterator i = m_list.begin ();
-       i != m_list.end (); ++i)
+    Ptr<Ipv4ListRouting> list = CreateObject<Ipv4ListRouting>();
+    for (std::list<std::pair<const Ipv4RoutingHelper*, int16_t>>::const_iterator i = m_list.begin();
+         i != m_list.end();
+         ++i)
     {
-      Ptr<Ipv4RoutingProtocol> prot = i->first->Create (node);
-      list->AddRoutingProtocol (prot,i->second);
+        Ptr<Ipv4RoutingProtocol> prot = i->first->Create(node);
+        list->AddRoutingProtocol(prot, i->second);
     }
-  return list;
+    return list;
 }
 
 } // namespace ns3

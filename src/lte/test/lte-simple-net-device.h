@@ -21,15 +21,15 @@
 #ifndef LTE_SIMPLE_NET_DEVICE_H
 #define LTE_SIMPLE_NET_DEVICE_H
 
-#include "ns3/event-id.h"
-#include "ns3/node.h"
 #include "ns3/error-model.h"
+#include "ns3/event-id.h"
+#include "ns3/lte-rlc.h"
+#include "ns3/node.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
-#include "ns3/lte-rlc.h"
 
-namespace ns3 {
-
+namespace ns3
+{
 
 /**
  * \ingroup lte
@@ -39,37 +39,32 @@ namespace ns3 {
  */
 class LteSimpleNetDevice : public SimpleNetDevice
 {
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    LteSimpleNetDevice();
+    /**
+     * Constructor
+     *
+     * \param node the Node
+     */
+    LteSimpleNetDevice(Ptr<Node> node);
 
-  LteSimpleNetDevice ();
-  /**
-   * Constructor
-   *
-   * \param node the Node
-   */
-  LteSimpleNetDevice (Ptr<Node> node);
+    ~LteSimpleNetDevice() override;
+    void DoDispose() override;
 
-  ~LteSimpleNetDevice () override;
-  void DoDispose () override;
+    // inherited from NetDevice
+    bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
-
-  // inherited from NetDevice
-  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
-
-
-protected:
-  // inherited from Object
-  void DoInitialize () override;
-
+  protected:
+    // inherited from Object
+    void DoInitialize() override;
 };
 
 } // namespace ns3
-
 
 #endif // LTE_SIMPLE_NET_DEVICE_H

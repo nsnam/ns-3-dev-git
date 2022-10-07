@@ -21,7 +21,8 @@
 #ifndef WIFI_MPDU_TYPE_H
 #define WIFI_MPDU_TYPE_H
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup wifi
@@ -29,18 +30,20 @@ namespace ns3 {
  */
 enum MpduType
 {
-  /** The MPDU is not part of an A-MPDU */
-  NORMAL_MPDU,
-  /** The MPDU is a single MPDU */
-  SINGLE_MPDU,
-  /** The MPDU is the first aggregate in an A-MPDU with multiple MPDUs, but is not the last aggregate */
-  FIRST_MPDU_IN_AGGREGATE,
-  /** The MPDU is part of an A-MPDU with multiple MPDUs, but is neither the first nor the last aggregate */
-  MIDDLE_MPDU_IN_AGGREGATE,
-  /** The MPDU is the last aggregate in an A-MPDU with multiple MPDUs */
-  LAST_MPDU_IN_AGGREGATE
+    /** The MPDU is not part of an A-MPDU */
+    NORMAL_MPDU,
+    /** The MPDU is a single MPDU */
+    SINGLE_MPDU,
+    /** The MPDU is the first aggregate in an A-MPDU with multiple MPDUs, but is not the last
+     * aggregate */
+    FIRST_MPDU_IN_AGGREGATE,
+    /** The MPDU is part of an A-MPDU with multiple MPDUs, but is neither the first nor the last
+     * aggregate */
+    MIDDLE_MPDU_IN_AGGREGATE,
+    /** The MPDU is the last aggregate in an A-MPDU with multiple MPDUs */
+    LAST_MPDU_IN_AGGREGATE
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* WIFI_MPDU_TYPE_H */

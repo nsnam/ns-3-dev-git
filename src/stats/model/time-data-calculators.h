@@ -21,12 +21,13 @@
 #ifndef TIME_DATA_CALCULATORS_H
 #define TIME_DATA_CALCULATORS_H
 
-#include "ns3/nstime.h"
-
 #include "data-calculator.h"
 #include "data-output-interface.h"
 
-namespace ns3 {
+#include "ns3/nstime.h"
+
+namespace ns3
+{
 
 //------------------------------------------------------------
 //--------------------------------------------
@@ -38,43 +39,43 @@ namespace ns3 {
  * are setting the maximum value, which can be worked around easily
  * as it done here, and dividing to get the average, which is not as
  * easily worked around.
-*/
-class TimeMinMaxAvgTotalCalculator : public DataCalculator {
-public:
-  TimeMinMaxAvgTotalCalculator();
-  ~TimeMinMaxAvgTotalCalculator() override;
+ */
+class TimeMinMaxAvgTotalCalculator : public DataCalculator
+{
+  public:
+    TimeMinMaxAvgTotalCalculator();
+    ~TimeMinMaxAvgTotalCalculator() override;
 
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId ();
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Updates all variables of TimeMinMaxAvgTotalCalculator
-   * \param i value of type Time to use for updating the calculator
-   */
-  void Update (const Time i);
+    /**
+     * Updates all variables of TimeMinMaxAvgTotalCalculator
+     * \param i value of type Time to use for updating the calculator
+     */
+    void Update(const Time i);
 
-  /**
-   * Outputs data based on the provided callback
-   * \param callback
-   */
-  void Output (DataOutputCallback &callback) const override;
+    /**
+     * Outputs data based on the provided callback
+     * \param callback
+     */
+    void Output(DataOutputCallback& callback) const override;
 
-protected:
-  void DoDispose () override;
+  protected:
+    void DoDispose() override;
 
-  uint32_t m_count; //!< Count value of TimeMinMaxAvgTotalCalculator
-  Time m_total;     //!< Total value of TimeMinMaxAvgTotalCalculator
-  Time m_min;       //!< Minimum value of TimeMinMaxAvgTotalCalculator
-  Time m_max;       //!< Maximum value of TimeMinMaxAvgTotalCalculator
+    uint32_t m_count; //!< Count value of TimeMinMaxAvgTotalCalculator
+    Time m_total;     //!< Total value of TimeMinMaxAvgTotalCalculator
+    Time m_min;       //!< Minimum value of TimeMinMaxAvgTotalCalculator
+    Time m_max;       //!< Maximum value of TimeMinMaxAvgTotalCalculator
 
-  // end class TimeMinMaxAvgTotalCalculator
+    // end class TimeMinMaxAvgTotalCalculator
 };
 
 // end namespace ns3
-};
-
+}; // namespace ns3
 
 #endif /* TIME_DATA_CALCULATORS_H */

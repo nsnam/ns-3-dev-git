@@ -30,7 +30,8 @@
 
 #include "tcp-congestion-ops.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class TcpSocketState;
 
@@ -107,145 +108,142 @@ class TcpSocketState;
  */
 class TcpIllinois : public TcpNewReno
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Create an unbound tcp socket.
-   */
-  TcpIllinois ();
+    /**
+     * Create an unbound tcp socket.
+     */
+    TcpIllinois();
 
-  /**
-   * \brief Copy constructor
-   * \param sock the object to copy
-   */
-  TcpIllinois (const TcpIllinois& sock);
-  ~TcpIllinois () override;
+    /**
+     * \brief Copy constructor
+     * \param sock the object to copy
+     */
+    TcpIllinois(const TcpIllinois& sock);
+    ~TcpIllinois() override;
 
-  std::string GetName () const override;
+    std::string GetName() const override;
 
-  /**
-   * \brief Get slow start threshold after congestion event
-   *
-   * \param tcb internal congestion state
-   * \param bytesInFlight bytes in flight
-   *
-   * \return the slow start threshold value
-   */
-  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight) override;
+    /**
+     * \brief Get slow start threshold after congestion event
+     *
+     * \param tcb internal congestion state
+     * \param bytesInFlight bytes in flight
+     *
+     * \return the slow start threshold value
+     */
+    uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
 
-  Ptr<TcpCongestionOps> Fork () override;
+    Ptr<TcpCongestionOps> Fork() override;
 
-  /**
-    * \brief Reset Illinois parameters to default values upon a loss
-    *
-    * \param tcb internal congestion state
-    * \param newState new congestion state to which the TCP is going to switch
-    */
-  void CongestionStateSet (Ptr<TcpSocketState> tcb,
-                                   const TcpSocketState::TcpCongState_t newState) override;
+    /**
+     * \brief Reset Illinois parameters to default values upon a loss
+     *
+     * \param tcb internal congestion state
+     * \param newState new congestion state to which the TCP is going to switch
+     */
+    void CongestionStateSet(Ptr<TcpSocketState> tcb,
+                            const TcpSocketState::TcpCongState_t newState) override;
 
-  /**
-   * \brief Adjust cwnd following Illinois congestion avoidance algorithm
-   *
-   * \param tcb internal congestion state
-   * \param segmentsAcked count of segments ACKed
-   */
-  void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+    /**
+     * \brief Adjust cwnd following Illinois congestion avoidance algorithm
+     *
+     * \param tcb internal congestion state
+     * \param segmentsAcked count of segments ACKed
+     */
+    void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
-  /**
-   * \brief Measure RTT for each ACK
-   * Keep track of min and max RTT
-   *
-   * \param tcb internal congestion state
-   * \param segmentsAcked count of segments ACKed
-   * \param rtt last RTT
-   */
-  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time& rtt) override;
+    /**
+     * \brief Measure RTT for each ACK
+     * Keep track of min and max RTT
+     *
+     * \param tcb internal congestion state
+     * \param segmentsAcked count of segments ACKed
+     * \param rtt last RTT
+     */
+    void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt) override;
 
-protected:
-private:
-  /**
-   * \brief Recalculate alpha and beta every RTT
-   *
-   * \param cWnd current Cwnd (in bytes)
-   */
-  void RecalcParam (uint32_t cWnd);
+  protected:
+  private:
+    /**
+     * \brief Recalculate alpha and beta every RTT
+     *
+     * \param cWnd current Cwnd (in bytes)
+     */
+    void RecalcParam(uint32_t cWnd);
 
-  /**
-   * \brief Calculate additive increase factor alpha
-   *
-   * If average queueing delay is at minimum, then alpha is set to alphaMax.
-   * Otherwise, alpha is a decreasing function of average queueing delay.
-   *
-   * \param da current average queueing delay
-   * \param dm maximum average queueing delay
-   *
-   */
-  void CalculateAlpha (double da, double dm);
+    /**
+     * \brief Calculate additive increase factor alpha
+     *
+     * If average queueing delay is at minimum, then alpha is set to alphaMax.
+     * Otherwise, alpha is a decreasing function of average queueing delay.
+     *
+     * \param da current average queueing delay
+     * \param dm maximum average queueing delay
+     *
+     */
+    void CalculateAlpha(double da, double dm);
 
-  /**
-   * \brief Calculate multiplicative decrease factor beta
-   *
-   * If the current average queueing delay is <= 10% of max. (average) queueing delay,
-   * beta is set to betaMin, which equals to 1/8 by default.
-   * If the current average queueing delay is >= 80% of max. (average) queueing delay,
-   * beta is set to betaMax, which equals to 1/2 by default.
-   * Otherwise, beta is an increasing function of average queueing delay.
-   *
-   * \param da current average queueing delay
-   * \param dm maximum average queueing delay
-   *
-   */
-  void CalculateBeta (double da, double dm);
+    /**
+     * \brief Calculate multiplicative decrease factor beta
+     *
+     * If the current average queueing delay is <= 10% of max. (average) queueing delay,
+     * beta is set to betaMin, which equals to 1/8 by default.
+     * If the current average queueing delay is >= 80% of max. (average) queueing delay,
+     * beta is set to betaMax, which equals to 1/2 by default.
+     * Otherwise, beta is an increasing function of average queueing delay.
+     *
+     * \param da current average queueing delay
+     * \param dm maximum average queueing delay
+     *
+     */
+    void CalculateBeta(double da, double dm);
 
-  /**
-   * \brief Calculate average queueing delay
-   *
-   * \return average queueing delay da
-   */
-  Time CalculateAvgDelay () const;
+    /**
+     * \brief Calculate average queueing delay
+     *
+     * \return average queueing delay da
+     */
+    Time CalculateAvgDelay() const;
 
-  /**
-   * \brief Calculate maximum queueing delay
-   *
-   * \return maximum average queueing delay dm
-   */
-  Time CalculateMaxDelay () const;
+    /**
+     * \brief Calculate maximum queueing delay
+     *
+     * \return maximum average queueing delay dm
+     */
+    Time CalculateMaxDelay() const;
 
-  /**
-   * \brief Reset Illinois parameters
-   *
-   * \param nextTxSequence Next sequence to transmit
-   */
-  void Reset (const SequenceNumber32 &nextTxSequence);
+    /**
+     * \brief Reset Illinois parameters
+     *
+     * \param nextTxSequence Next sequence to transmit
+     */
+    void Reset(const SequenceNumber32& nextTxSequence);
 
-private:
-  Time m_sumRtt;             //!< Sum of all RTT measurements during last RTT
-  uint32_t m_cntRtt;         //!< Number of RTT measurements during last RTT
-  Time m_baseRtt;            //!< Minimum of all RTT measurements
-  Time m_maxRtt;             //!< Maximum of all RTT measurements
-  SequenceNumber32 m_endSeq; //!< Right edge of current RTT
-  bool m_rttAbove;           //!< True when da > d1
-  uint8_t m_rttLow;          //!< Number of RTTs da has stayed below d1
-  double m_alphaMin;         //!< Minimum alpha threshold
-  double m_alphaMax;         //!< Maximum alpha threshold
-  double m_alphaBase;        //!< Base value of alpha for standard AIMD
-  double m_alpha;            //!< Additive increase factor
-  double m_betaMin;          //!< Minimum beta threshold
-  double m_betaMax;          //!< Maximum beta threshold
-  double m_betaBase;         //!< Base value of beta for standard AIMD
-  double m_beta;             //!< Multiplicative decrease factor
-  uint32_t m_winThresh;      //!< Window threshold for adaptive sizing
-  uint32_t m_theta;          //!< Number of RTTs required before setting alpha to its max
-  uint32_t m_ackCnt;         //!< Number of received ACK
-
+  private:
+    Time m_sumRtt;             //!< Sum of all RTT measurements during last RTT
+    uint32_t m_cntRtt;         //!< Number of RTT measurements during last RTT
+    Time m_baseRtt;            //!< Minimum of all RTT measurements
+    Time m_maxRtt;             //!< Maximum of all RTT measurements
+    SequenceNumber32 m_endSeq; //!< Right edge of current RTT
+    bool m_rttAbove;           //!< True when da > d1
+    uint8_t m_rttLow;          //!< Number of RTTs da has stayed below d1
+    double m_alphaMin;         //!< Minimum alpha threshold
+    double m_alphaMax;         //!< Maximum alpha threshold
+    double m_alphaBase;        //!< Base value of alpha for standard AIMD
+    double m_alpha;            //!< Additive increase factor
+    double m_betaMin;          //!< Minimum beta threshold
+    double m_betaMax;          //!< Maximum beta threshold
+    double m_betaBase;         //!< Base value of beta for standard AIMD
+    double m_beta;             //!< Multiplicative decrease factor
+    uint32_t m_winThresh;      //!< Window threshold for adaptive sizing
+    uint32_t m_theta;          //!< Number of RTTs required before setting alpha to its max
+    uint32_t m_ackCnt;         //!< Number of received ACK
 };
 
 } // namespace ns3

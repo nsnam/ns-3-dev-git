@@ -18,19 +18,22 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "mac48-address.h"
+
 #include "ns3/address.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+
+#include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <cstring>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("Mac48Address");
+NS_LOG_COMPONENT_DEFINE("Mac48Address");
 
-ATTRIBUTE_HELPER_CPP (Mac48Address);
+ATTRIBUTE_HELPER_CPP(Mac48Address);
 
 #define ASCII_a (0x41)
 #define ASCII_z (0x5a)
@@ -45,266 +48,286 @@ ATTRIBUTE_HELPER_CPP (Mac48Address);
  * \returns the lower case
  */
 static char
-AsciiToLowCase (char c)
+AsciiToLowCase(char c)
 {
-  NS_LOG_FUNCTION (c);
-  if (c >= ASCII_a && c <= ASCII_z) {
-      return c;
-    } else if (c >= ASCII_A && c <= ASCII_Z) {
-      return c + (ASCII_a - ASCII_A);
-    } else {
-      return c;
+    NS_LOG_FUNCTION(c);
+    if (c >= ASCII_a && c <= ASCII_z)
+    {
+        return c;
+    }
+    else if (c >= ASCII_A && c <= ASCII_Z)
+    {
+        return c + (ASCII_a - ASCII_A);
+    }
+    else
+    {
+        return c;
     }
 }
 
 uint64_t Mac48Address::m_allocationIndex = 0;
 
-Mac48Address::Mac48Address ()
+Mac48Address::Mac48Address()
 {
-  NS_LOG_FUNCTION (this);
-  std::memset (m_address, 0, 6);
+    NS_LOG_FUNCTION(this);
+    std::memset(m_address, 0, 6);
 }
-Mac48Address::Mac48Address (const char *str)
+
+Mac48Address::Mac48Address(const char* str)
 {
-  NS_LOG_FUNCTION (this << str);
-  int i = 0;
-  while (*str != 0 && i < 6)
+    NS_LOG_FUNCTION(this << str);
+    int i = 0;
+    while (*str != 0 && i < 6)
     {
-      uint8_t byte = 0;
-      while (*str != ASCII_COLON && *str != 0)
+        uint8_t byte = 0;
+        while (*str != ASCII_COLON && *str != 0)
         {
-          byte <<= 4;
-          char low = AsciiToLowCase (*str);
-          if (low >= ASCII_a)
+            byte <<= 4;
+            char low = AsciiToLowCase(*str);
+            if (low >= ASCII_a)
             {
-              byte |= low - ASCII_a + 10;
+                byte |= low - ASCII_a + 10;
             }
-          else
+            else
             {
-              byte |= low - ASCII_ZERO;
+                byte |= low - ASCII_ZERO;
             }
-          str++;
+            str++;
         }
-      m_address[i] = byte;
-      i++;
-      if (*str == 0)
+        m_address[i] = byte;
+        i++;
+        if (*str == 0)
         {
-          break;
+            break;
         }
-      str++;
+        str++;
     }
-  NS_ASSERT (i == 6);
+    NS_ASSERT(i == 6);
 }
+
 void
-Mac48Address::CopyFrom (const uint8_t buffer[6])
+Mac48Address::CopyFrom(const uint8_t buffer[6])
 {
-  NS_LOG_FUNCTION (this << &buffer);
-  std::memcpy (m_address, buffer, 6);
+    NS_LOG_FUNCTION(this << &buffer);
+    std::memcpy(m_address, buffer, 6);
 }
+
 void
-Mac48Address::CopyTo (uint8_t buffer[6]) const
+Mac48Address::CopyTo(uint8_t buffer[6]) const
 {
-  NS_LOG_FUNCTION (this << &buffer);
-  std::memcpy (buffer, m_address, 6);
+    NS_LOG_FUNCTION(this << &buffer);
+    std::memcpy(buffer, m_address, 6);
 }
 
 bool
-Mac48Address::IsMatchingType (const Address &address)
+Mac48Address::IsMatchingType(const Address& address)
 {
-  NS_LOG_FUNCTION (&address);
-  return address.CheckCompatible (GetType (), 6);
+    NS_LOG_FUNCTION(&address);
+    return address.CheckCompatible(GetType(), 6);
 }
-Mac48Address::operator Address () const
-{
-  return ConvertTo ();
-}
-Address
-Mac48Address::ConvertTo () const
-{
-  NS_LOG_FUNCTION (this);
-  return Address (GetType (), m_address, 6);
-}
-Mac48Address
-Mac48Address::ConvertFrom (const Address &address)
-{
-  NS_LOG_FUNCTION (&address);
-  NS_ASSERT (address.CheckCompatible (GetType (), 6));
-  Mac48Address retval;
-  address.CopyTo (retval.m_address);
-  return retval;
-}
-Mac48Address
-Mac48Address::Allocate ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
 
-  if (m_allocationIndex == 0)
+Mac48Address::operator Address() const
+{
+    return ConvertTo();
+}
+
+Address
+Mac48Address::ConvertTo() const
+{
+    NS_LOG_FUNCTION(this);
+    return Address(GetType(), m_address, 6);
+}
+
+Mac48Address
+Mac48Address::ConvertFrom(const Address& address)
+{
+    NS_LOG_FUNCTION(&address);
+    NS_ASSERT(address.CheckCompatible(GetType(), 6));
+    Mac48Address retval;
+    address.CopyTo(retval.m_address);
+    return retval;
+}
+
+Mac48Address
+Mac48Address::Allocate()
+{
+    NS_LOG_FUNCTION_NOARGS();
+
+    if (m_allocationIndex == 0)
     {
-      Simulator::ScheduleDestroy (Mac48Address::ResetAllocationIndex);
+        Simulator::ScheduleDestroy(Mac48Address::ResetAllocationIndex);
     }
 
-  m_allocationIndex++;
-  Mac48Address address;
-  address.m_address[0] = (m_allocationIndex >> 40) & 0xff;
-  address.m_address[1] = (m_allocationIndex >> 32) & 0xff;
-  address.m_address[2] = (m_allocationIndex >> 24) & 0xff;
-  address.m_address[3] = (m_allocationIndex >> 16) & 0xff;
-  address.m_address[4] = (m_allocationIndex >> 8) & 0xff;
-  address.m_address[5] = m_allocationIndex & 0xff;
-  return address;
+    m_allocationIndex++;
+    Mac48Address address;
+    address.m_address[0] = (m_allocationIndex >> 40) & 0xff;
+    address.m_address[1] = (m_allocationIndex >> 32) & 0xff;
+    address.m_address[2] = (m_allocationIndex >> 24) & 0xff;
+    address.m_address[3] = (m_allocationIndex >> 16) & 0xff;
+    address.m_address[4] = (m_allocationIndex >> 8) & 0xff;
+    address.m_address[5] = m_allocationIndex & 0xff;
+    return address;
 }
 
 void
-Mac48Address::ResetAllocationIndex ()
+Mac48Address::ResetAllocationIndex()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  m_allocationIndex = 0;
+    NS_LOG_FUNCTION_NOARGS();
+    m_allocationIndex = 0;
 }
 
 uint8_t
-Mac48Address::GetType ()
+Mac48Address::GetType()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static uint8_t type = Address::Register ();
-  return type;
+    NS_LOG_FUNCTION_NOARGS();
+    static uint8_t type = Address::Register();
+    return type;
 }
 
 bool
-Mac48Address::IsBroadcast () const
+Mac48Address::IsBroadcast() const
 {
-  NS_LOG_FUNCTION (this);
-  return *this == GetBroadcast ();
+    NS_LOG_FUNCTION(this);
+    return *this == GetBroadcast();
 }
+
 bool
-Mac48Address::IsGroup () const
+Mac48Address::IsGroup() const
 {
-  NS_LOG_FUNCTION (this);
-  return (m_address[0] & 0x01) == 0x01;
+    NS_LOG_FUNCTION(this);
+    return (m_address[0] & 0x01) == 0x01;
 }
+
 Mac48Address
-Mac48Address::GetBroadcast ()
+Mac48Address::GetBroadcast()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
-  return broadcast;
+    NS_LOG_FUNCTION_NOARGS();
+    static Mac48Address broadcast = Mac48Address("ff:ff:ff:ff:ff:ff");
+    return broadcast;
 }
+
 Mac48Address
-Mac48Address::GetMulticastPrefix ()
+Mac48Address::GetMulticastPrefix()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static Mac48Address multicast = Mac48Address ("01:00:5e:00:00:00");
-  return multicast;
+    NS_LOG_FUNCTION_NOARGS();
+    static Mac48Address multicast = Mac48Address("01:00:5e:00:00:00");
+    return multicast;
 }
+
 Mac48Address
-Mac48Address::GetMulticast6Prefix ()
+Mac48Address::GetMulticast6Prefix()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  static Mac48Address multicast = Mac48Address ("33:33:00:00:00:00");
-  return multicast;
+    NS_LOG_FUNCTION_NOARGS();
+    static Mac48Address multicast = Mac48Address("33:33:00:00:00:00");
+    return multicast;
 }
+
 Mac48Address
-Mac48Address::GetMulticast (Ipv4Address multicastGroup)
+Mac48Address::GetMulticast(Ipv4Address multicastGroup)
 {
-  NS_LOG_FUNCTION (multicastGroup);
-  Mac48Address etherAddr = Mac48Address::GetMulticastPrefix ();
-  //
-  // We now have the multicast address in an abstract 48-bit container.  We
-  // need to pull it out so we can play with it.  When we're done, we have the
-  // high order bits in etherBuffer[0], etc.
-  //
-  uint8_t etherBuffer[6];
-  etherAddr.CopyTo (etherBuffer);
+    NS_LOG_FUNCTION(multicastGroup);
+    Mac48Address etherAddr = Mac48Address::GetMulticastPrefix();
+    //
+    // We now have the multicast address in an abstract 48-bit container.  We
+    // need to pull it out so we can play with it.  When we're done, we have the
+    // high order bits in etherBuffer[0], etc.
+    //
+    uint8_t etherBuffer[6];
+    etherAddr.CopyTo(etherBuffer);
 
-  //
-  // Now we need to pull the raw bits out of the Ipv4 destination address.
-  //
-  uint8_t ipBuffer[4];
-  multicastGroup.Serialize (ipBuffer);
+    //
+    // Now we need to pull the raw bits out of the Ipv4 destination address.
+    //
+    uint8_t ipBuffer[4];
+    multicastGroup.Serialize(ipBuffer);
 
-  //
-  // RFC 1112 says that an Ipv4 host group address is mapped to an EUI-48
-  // multicast address by placing the low-order 23-bits of the IP address into
-  // the low-order 23 bits of the Ethernet multicast address
-  // 01-00-5E-00-00-00 (hex).
-  //
-  etherBuffer[3] |= ipBuffer[1] & 0x7f;
-  etherBuffer[4] = ipBuffer[2];
-  etherBuffer[5] = ipBuffer[3];
+    //
+    // RFC 1112 says that an Ipv4 host group address is mapped to an EUI-48
+    // multicast address by placing the low-order 23-bits of the IP address into
+    // the low-order 23 bits of the Ethernet multicast address
+    // 01-00-5E-00-00-00 (hex).
+    //
+    etherBuffer[3] |= ipBuffer[1] & 0x7f;
+    etherBuffer[4] = ipBuffer[2];
+    etherBuffer[5] = ipBuffer[3];
 
-  //
-  // Now, etherBuffer has the desired ethernet multicast address.  We have to
-  // suck these bits back into the Mac48Address,
-  //
-  Mac48Address result;
-  result.CopyFrom (etherBuffer);
-  return result;
-}
-Mac48Address Mac48Address::GetMulticast (Ipv6Address addr)
-{
-  NS_LOG_FUNCTION (addr);
-  Mac48Address etherAddr = Mac48Address::GetMulticast6Prefix ();
-  uint8_t etherBuffer[6];
-  uint8_t ipBuffer[16];
-
-  /* a MAC multicast IPv6 address is like 33:33 and the four low bytes */
-  /* for 2001:db8::2fff:fe11:ac10 => 33:33:FE:11:AC:10 */
-  etherAddr.CopyTo (etherBuffer);
-  addr.Serialize (ipBuffer);
-
-  etherBuffer[2] = ipBuffer[12];
-  etherBuffer[3] = ipBuffer[13];
-  etherBuffer[4] = ipBuffer[14];
-  etherBuffer[5] = ipBuffer[15];
-
-  etherAddr.CopyFrom (etherBuffer);
-
-  return etherAddr;
+    //
+    // Now, etherBuffer has the desired ethernet multicast address.  We have to
+    // suck these bits back into the Mac48Address,
+    //
+    Mac48Address result;
+    result.CopyFrom(etherBuffer);
+    return result;
 }
 
-std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
+Mac48Address
+Mac48Address::GetMulticast(Ipv6Address addr)
 {
-  uint8_t ad[6];
-  address.CopyTo (ad);
+    NS_LOG_FUNCTION(addr);
+    Mac48Address etherAddr = Mac48Address::GetMulticast6Prefix();
+    uint8_t etherBuffer[6];
+    uint8_t ipBuffer[16];
 
-  os.setf (std::ios::hex, std::ios::basefield);
-  os.fill ('0');
-  for (uint8_t i=0; i < 5; i++)
+    /* a MAC multicast IPv6 address is like 33:33 and the four low bytes */
+    /* for 2001:db8::2fff:fe11:ac10 => 33:33:FE:11:AC:10 */
+    etherAddr.CopyTo(etherBuffer);
+    addr.Serialize(ipBuffer);
+
+    etherBuffer[2] = ipBuffer[12];
+    etherBuffer[3] = ipBuffer[13];
+    etherBuffer[4] = ipBuffer[14];
+    etherBuffer[5] = ipBuffer[15];
+
+    etherAddr.CopyFrom(etherBuffer);
+
+    return etherAddr;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Mac48Address& address)
+{
+    uint8_t ad[6];
+    address.CopyTo(ad);
+
+    os.setf(std::ios::hex, std::ios::basefield);
+    os.fill('0');
+    for (uint8_t i = 0; i < 5; i++)
     {
-      os << std::setw (2) << (uint32_t)ad[i] << ":";
+        os << std::setw(2) << (uint32_t)ad[i] << ":";
     }
-  // Final byte not suffixed by ":"
-  os << std::setw (2) << (uint32_t)ad[5];
-  os.setf (std::ios::dec, std::ios::basefield);
-  os.fill (' ');
-  return os;
+    // Final byte not suffixed by ":"
+    os << std::setw(2) << (uint32_t)ad[5];
+    os.setf(std::ios::dec, std::ios::basefield);
+    os.fill(' ');
+    return os;
 }
 
-std::istream& operator>> (std::istream& is, Mac48Address & address)
+std::istream&
+operator>>(std::istream& is, Mac48Address& address)
 {
-  std::string v;
-  is >> v;
+    std::string v;
+    is >> v;
 
-  std::string::size_type col = 0;
-  for (uint8_t i = 0; i < 6; ++i)
+    std::string::size_type col = 0;
+    for (uint8_t i = 0; i < 6; ++i)
     {
-      std::string tmp;
-      std::string::size_type next;
-      next = v.find (':', col);
-      if (next == std::string::npos)
+        std::string tmp;
+        std::string::size_type next;
+        next = v.find(':', col);
+        if (next == std::string::npos)
         {
-          tmp = v.substr (col, v.size ()-col);
-          address.m_address[i] = strtoul (tmp.c_str(), nullptr, 16);
-          break;
+            tmp = v.substr(col, v.size() - col);
+            address.m_address[i] = strtoul(tmp.c_str(), nullptr, 16);
+            break;
         }
-      else
+        else
         {
-          tmp = v.substr (col, next-col);
-          address.m_address[i] = strtoul (tmp.c_str(), nullptr, 16);
-          col = next + 1;
+            tmp = v.substr(col, next - col);
+            address.m_address[i] = strtoul(tmp.c_str(), nullptr, 16);
+            col = next + 1;
         }
     }
-  return is;
+    return is;
 }
-
 
 } // namespace ns3

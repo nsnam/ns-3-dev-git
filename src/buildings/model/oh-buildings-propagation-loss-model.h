@@ -24,7 +24,8 @@
 
 #include <ns3/buildings-propagation-loss-model.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 class OkumuraHataPropagationLossModel;
 
@@ -38,29 +39,26 @@ class OkumuraHataPropagationLossModel;
  */
 class OhBuildingsPropagationLossModel : public BuildingsPropagationLossModel
 {
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+    OhBuildingsPropagationLossModel();
+    ~OhBuildingsPropagationLossModel() override;
 
-public:
-  /**
-   * \brief Get the type ID.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
-  OhBuildingsPropagationLossModel ();
-  ~OhBuildingsPropagationLossModel () override;
+    /**
+     * \param a the mobility model of the source
+     * \param b the mobility model of the destination
+     * \returns the propagation loss (in dBm)
+     */
+    double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
-  /**
-   * \param a the mobility model of the source
-   * \param b the mobility model of the destination
-   * \returns the propagation loss (in dBm)
-   */
-  double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-
-private:
-
-  Ptr<OkumuraHataPropagationLossModel> m_okumuraHata; //!< OkumuraHata Propagation Loss Model
-
+  private:
+    Ptr<OkumuraHataPropagationLossModel> m_okumuraHata; //!< OkumuraHata Propagation Loss Model
 };
 
-}
+} // namespace ns3
 
 #endif /* OH_BUILDINGS_PROPAGATION_LOSS_MODEL_H_ */

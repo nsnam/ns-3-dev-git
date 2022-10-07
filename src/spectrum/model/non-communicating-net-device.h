@@ -21,23 +21,22 @@
 #ifndef NON_COMMUNICATING_NET_DEVICE_H
 #define NON_COMMUNICATING_NET_DEVICE_H
 
-#include <cstring>
-#include <ns3/node.h>
 #include <ns3/address.h>
-#include <ns3/net-device.h>
 #include <ns3/callback.h>
+#include <ns3/net-device.h>
+#include <ns3/node.h>
 #include <ns3/packet.h>
-#include <ns3/traced-callback.h>
 #include <ns3/ptr.h>
+#include <ns3/traced-callback.h>
 
-namespace ns3 {
+#include <cstring>
 
+namespace ns3
+{
 
 class SpectrumChannel;
 class Channel;
 class SpectrumErrorModel;
-
-
 
 /**
  * \ingroup spectrum
@@ -52,86 +51,78 @@ class SpectrumErrorModel;
  */
 class NonCommunicatingNetDevice : public NetDevice
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  NonCommunicatingNetDevice ();
-  ~NonCommunicatingNetDevice () override;
+    NonCommunicatingNetDevice();
+    ~NonCommunicatingNetDevice() override;
 
+    /**
+     * This class doesn't talk directly with the underlying channel (a
+     * dedicated PHY class is expected to do it), however the NetDevice
+     * specification features a GetChannel() method. This method here
+     * is therefore provide to allow NonCommunicatingNetDevice::GetChannel() to have
+     * something meaningful to return.
+     *
+     * @param c the underlying channel
+     */
+    void SetChannel(Ptr<Channel> c);
 
-  /**
-   * This class doesn't talk directly with the underlying channel (a
-   * dedicated PHY class is expected to do it), however the NetDevice
-   * specification features a GetChannel() method. This method here
-   * is therefore provide to allow NonCommunicatingNetDevice::GetChannel() to have
-   * something meaningful to return.
-   *
-   * @param c the underlying channel
-   */
-  void SetChannel (Ptr<Channel> c);
+    /**
+     * Set the Phy object which is attached to this device.
+     * This object is needed so that we can set/get attributes and
+     * connect to trace sources of the PHY from the net device.
+     *
+     * @param phy the Phy object embedded within this device.
+     */
+    void SetPhy(Ptr<Object> phy);
 
+    /**
+     * @return a reference to the PHY object embedded in this NetDevice.
+     */
+    Ptr<Object> GetPhy() const;
 
-  /**
-   * Set the Phy object which is attached to this device.
-   * This object is needed so that we can set/get attributes and
-   * connect to trace sources of the PHY from the net device.
-   *
-   * @param phy the Phy object embedded within this device.
-   */
-  void SetPhy (Ptr<Object> phy);
+    // inherited from NetDevice
+    void SetIfIndex(const uint32_t index) override;
+    uint32_t GetIfIndex() const override;
+    Ptr<Channel> GetChannel() const override;
+    bool SetMtu(const uint16_t mtu) override;
+    uint16_t GetMtu() const override;
+    void SetAddress(Address address) override;
+    Address GetAddress() const override;
+    bool IsLinkUp() const override;
+    void AddLinkChangeCallback(Callback<void> callback) override;
+    bool IsBroadcast() const override;
+    Address GetBroadcast() const override;
+    bool IsMulticast() const override;
+    bool IsPointToPoint() const override;
+    bool IsBridge() const override;
+    bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
+    bool SendFrom(Ptr<Packet> packet,
+                  const Address& source,
+                  const Address& dest,
+                  uint16_t protocolNumber) override;
+    Ptr<Node> GetNode() const override;
+    void SetNode(Ptr<Node> node) override;
+    bool NeedsArp() const override;
+    void SetReceiveCallback(NetDevice::ReceiveCallback cb) override;
+    Address GetMulticast(Ipv4Address addr) const override;
+    Address GetMulticast(Ipv6Address addr) const override;
+    void SetPromiscReceiveCallback(PromiscReceiveCallback cb) override;
+    bool SupportsSendFrom() const override;
 
-  /**
-   * @return a reference to the PHY object embedded in this NetDevice.
-   */
-  Ptr<Object> GetPhy () const;
+  private:
+    void DoDispose() override;
 
-
-
-  // inherited from NetDevice
-  void SetIfIndex (const uint32_t index) override;
-  uint32_t GetIfIndex () const override;
-  Ptr<Channel> GetChannel () const override;
-  bool SetMtu (const uint16_t mtu) override;
-  uint16_t GetMtu () const override;
-  void SetAddress (Address address) override;
-  Address GetAddress () const override;
-  bool IsLinkUp () const override;
-  void AddLinkChangeCallback (Callback<void> callback) override;
-  bool IsBroadcast () const override;
-  Address GetBroadcast () const override;
-  bool IsMulticast () const override;
-  bool IsPointToPoint () const override;
-  bool IsBridge () const override;
-  bool Send (Ptr<Packet> packet, const Address& dest,
-                     uint16_t protocolNumber) override;
-  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest,
-                         uint16_t protocolNumber) override;
-  Ptr<Node> GetNode () const override;
-  void SetNode (Ptr<Node> node) override;
-  bool NeedsArp () const override;
-  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
-  Address GetMulticast (Ipv4Address addr) const override;
-  Address GetMulticast (Ipv6Address addr) const override;
-  void SetPromiscReceiveCallback (PromiscReceiveCallback cb) override;
-  bool SupportsSendFrom () const override;
-
-
-
-
-
-private:
-  void DoDispose () override;
-
-  Ptr<Node>    m_node;    //!< node this NetDevice is associated to
-  Ptr<Channel> m_channel; //!< Channel used by the NetDevice
-  uint32_t m_ifIndex;     //!< Interface index
-  Ptr<Object> m_phy;      //!< Phy object
+    Ptr<Node> m_node;       //!< node this NetDevice is associated to
+    Ptr<Channel> m_channel; //!< Channel used by the NetDevice
+    uint32_t m_ifIndex;     //!< Interface index
+    Ptr<Object> m_phy;      //!< Phy object
 };
-
 
 } // namespace ns3
 
