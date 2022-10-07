@@ -191,7 +191,7 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
 EventImpl * MakeEvent (void (*f)());
 
 /**
- * \copybrief MakeEvent(void(*f)(void))
+ * \copybrief MakeEvent(void(*f)())
  * \tparam U1 \deduced Formal type of the argument to the function.
  * \tparam T1 \deduced Actual type of the argument to the function.
  * \param [in] f The function pointer.
@@ -203,7 +203,7 @@ template <typename U1,
 EventImpl * MakeEvent (void (*f)(U1), T1 a1);
 
 /**
- * \copybrief MakeEvent(void(*f)(void))
+ * \copybrief MakeEvent(void(*f)())
  * \tparam U1 \deduced Formal type of the first argument to the function.
  * \tparam U2 \deduced Formal type of the second argument to the function.
  * \tparam T1 \deduced Actual type of the first argument to the function.
@@ -218,7 +218,7 @@ template <typename U1, typename U2,
 EventImpl * MakeEvent (void (*f)(U1,U2), T1 a1, T2 a2);
 
 /**
- * \copybrief MakeEvent(void(*f)(void))
+ * \copybrief MakeEvent(void(*f)())
  * \tparam U1 \deduced Formal type of the first argument to the function.
  * \tparam U2 \deduced Formal type of the second argument to the function.
  * \tparam U3 \deduced Formal type of the third argument to the function.
@@ -236,7 +236,7 @@ template <typename U1, typename U2, typename U3,
 EventImpl * MakeEvent (void (*f)(U1,U2,U3), T1 a1, T2 a2, T3 a3);
 
 /**
- * \copybrief MakeEvent(void(*f)(void))
+ * \copybrief MakeEvent(void(*f)())
  * \tparam U1 \deduced Formal type of the first argument to the function.
  * \tparam U2 \deduced Formal type of the second argument to the function.
  * \tparam U3 \deduced Formal type of the third argument to the function.
@@ -257,7 +257,7 @@ template <typename U1, typename U2, typename U3, typename U4,
 EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
 
 /**
- * \copybrief MakeEvent(void(*f)(void))
+ * \copybrief MakeEvent(void(*f)())
  * \tparam U1 \deduced Formal type of the first argument to the function.
  * \tparam U2 \deduced Formal type of the second argument to the function.
  * \tparam U3 \deduced Formal type of the third argument to the function.
@@ -281,7 +281,7 @@ template <typename U1, typename U2, typename U3, typename U4, typename U5,
 EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
 /**
- * \copybrief MakeEvent(void(*f)(void))
+ * \copybrief MakeEvent(void(*f)())
  * \tparam U1 Formal type of the first argument to the function.
  * \tparam U2 Formal type of the second argument to the function.
  * \tparam U3 Formal type of the third argument to the function.

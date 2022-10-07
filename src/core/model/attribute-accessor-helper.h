@@ -493,7 +493,7 @@ DoMakeAccessorHelperTwo (void (T::*setter)(U),
 
 /**
  * \ingroup attributeimpl
- * \copydoc DoMakeAccessorHelperTwo(void(T::*)(U),V(T::*)(void)const)
+ * \copydoc DoMakeAccessorHelperTwo(void(T::*)(U),V(T::*)()const)
  */
 template <typename W, typename T, typename U, typename V>
 inline
@@ -581,7 +581,7 @@ DoMakeAccessorHelperTwo (bool (T::*setter)(U),
 
 /**
  * \ingroup attributeimpl
- * \copydoc ns3::DoMakeAccessorHelperTwo(bool(T::*)(U),V(T::*)(void)const)
+ * \copydoc ns3::DoMakeAccessorHelperTwo(bool(T::*)(U),V(T::*)()const)
  */
 template <typename W, typename T, typename U, typename V>
 inline

@@ -395,11 +395,13 @@ public:
 
   /**
    * \brief build handover preparation failure message
+   * \return the handover preparation failure message.
    */
   EpcX2Sap::HandoverPreparationFailureParams BuildHoPrepFailMsg ();
 
   /**
    * \brief build handover cancel message
+   * \return the handover cancel message.
    */
   EpcX2Sap::HandoverCancelParams BuildHoCancelMsg ();
 
