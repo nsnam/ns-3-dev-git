@@ -476,31 +476,6 @@ uint16_t ConvertGuardIntervalToNanoSeconds(WifiMode mode,
 WifiPreamble GetPreambleForTransmission(WifiModulationClass modulation, bool useShortPreamble);
 
 /**
- * Return the channel width that is allowed based on the selected mode and the given
- * maximum channel width. This is especially useful when using non-HT modes with
- * HT/VHT/HE capable stations (with default width above 20 MHz).
- *
- * \param mode selected WifiMode
- * \param maxAllowedChannelWidth maximum channel width allowed for the transmission
- * \return channel width adapted to the selected mode
- */
-uint16_t GetChannelWidthForTransmission(WifiMode mode, uint16_t maxAllowedChannelWidth);
-/**
- * Return the channel width that is allowed based on the selected mode, the current
- * width of the operating channel and the maximum channel width supported by the
- * receiver. This is especially useful when using non-HT modes with HT/VHT/HE
- * capable stations (with default width above 20 MHz).
- *
- * \param mode selected WifiMode
- * \param operatingChannelWidth operating channel width
- * \param maxSupportedChannelWidth maximum channel width supported by the receiver
- * \return channel width adapted to the selected mode
- */
-uint16_t GetChannelWidthForTransmission(WifiMode mode,
-                                        uint16_t operatingChannelWidth,
-                                        uint16_t maxSupportedChannelWidth);
-
-/**
  * Return whether the modulation class of the selected mode for the
  * control answer frame is allowed.
  *
