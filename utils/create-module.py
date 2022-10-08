@@ -34,8 +34,7 @@ build_lib(
 '''
 
 
-MODEL_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-
+MODEL_CC_TEMPLATE = '''\
 #include "{MODULE}.h"
 
 namespace ns3
@@ -47,8 +46,7 @@ namespace ns3
 '''
 
 
-
-MODEL_H_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+MODEL_H_TEMPLATE = '''\
 #ifndef {INCLUDE_GUARD}
 #define {INCLUDE_GUARD}
 
@@ -63,9 +61,7 @@ namespace ns3
 '''
 
 
-
-HELPER_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-
+HELPER_CC_TEMPLATE = '''\
 #include "{MODULE}-helper.h"
 
 namespace ns3
@@ -77,8 +73,7 @@ namespace ns3
 '''
 
 
-
-HELPER_H_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+HELPER_H_TEMPLATE = '''\
 #ifndef {INCLUDE_GUARD}
 #define {INCLUDE_GUARD}
 
@@ -104,8 +99,7 @@ build_lib_example(
 
 '''
 
-EXAMPLE_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-
+EXAMPLE_CC_TEMPLATE = '''\
 #include "ns3/core-module.h"
 #include "ns3/{MODULE}-helper.h"
 
@@ -130,7 +124,7 @@ main(int argc, char* argv[])
 '''
 
 
-TEST_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+TEST_CC_TEMPLATE = '''\
 
 // Include a header file from your module to test.
 #include "ns3/{MODULE}.h"

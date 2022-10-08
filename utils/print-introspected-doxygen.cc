@@ -1506,14 +1506,6 @@ main(int argc, char* argv[])
     NodeContainer c;
     c.Create(1);
 
-    // mode-line:  helpful when debugging introspected-doxygen.h
-    if (!outputText)
-    {
-        std::cout << "/* -*- Mode:C++; c-file-style:\"gnu\"; "
-                     "indent-tabs-mode:nil; -*- */\n"
-                  << std::endl;
-    }
-
     std::cout << std::endl;
     std::cout << commentStart << file << "\n"
               << sectionStart << "utils\n"
