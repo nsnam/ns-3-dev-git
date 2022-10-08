@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2013 Magister Solutions (original test-lte-handover-delay.cc)
  * Copyright (c) 2021 University of Washington (handover failure cases)

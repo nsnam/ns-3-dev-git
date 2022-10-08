@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010-2015 Adrian Sai-wah Tam
  * Copyright (c) 2016 Natale Patriciello <natale.patriciello@gmail.com>

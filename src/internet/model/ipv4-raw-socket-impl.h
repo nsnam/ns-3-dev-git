@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 #ifndef IPV4_RAW_SOCKET_IMPL_H
 #define IPV4_RAW_SOCKET_IMPL_H
 

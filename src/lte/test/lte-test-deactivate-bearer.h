@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #ifndef LENA_TEST_DEACTIVATE_BEARER_H
 #define LENA_TEST_DEACTIVATE_BEARER_H

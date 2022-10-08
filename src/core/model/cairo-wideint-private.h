@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* cairo - a vector graphics library with display and print output
  *
  * Copyright © 2004 Keith Packard

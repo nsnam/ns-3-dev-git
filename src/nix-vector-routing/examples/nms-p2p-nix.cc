@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009, GTech Systems, Inc.
  * Copyright (c) 2021 NITK Surathkal: Extended to handle IPv6

@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
  * Copyright (c) 2010 Adrian Sai-wah Tam

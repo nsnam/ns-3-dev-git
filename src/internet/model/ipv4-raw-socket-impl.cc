@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 #include "ipv4-raw-socket-impl.h"
 
 #include "icmpv4.h"

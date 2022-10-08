@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 //
 //  Copyright (C) 2001  Pierre L'Ecuyer (lecuyer@iro.umontreal.ca)
 //

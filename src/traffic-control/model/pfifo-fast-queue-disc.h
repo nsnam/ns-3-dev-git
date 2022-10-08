@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007, 2014 University of Washington
  *               2015 Universita' degli Studi di Napoli Federico II

@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari

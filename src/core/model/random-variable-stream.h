@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 Georgia Tech Research Corporation
  * Copyright (c) 2011 Mathieu Lacage

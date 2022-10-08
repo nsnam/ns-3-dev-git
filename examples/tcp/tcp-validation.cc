@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2019 Cable Television Laboratories, Inc.
  * Copyright (c) 2020 Tom Henderson (adapted for DCTCP testing)

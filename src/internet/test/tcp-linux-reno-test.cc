@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2019 Apoorva Bhargava <apoorvabhargava13@gmail.com>
  *

@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2015 Natale Patriciello <natale.patriciello@gmail.com>
  *               2016 Stefano Avallone <stavallo@unina.it>

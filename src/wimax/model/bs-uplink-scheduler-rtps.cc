@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007,2008 INRIA
  *               2009 TELEMATICS LAB, Politecnico di Bari

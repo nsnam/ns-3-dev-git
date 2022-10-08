@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
  * Copyright (C) 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)

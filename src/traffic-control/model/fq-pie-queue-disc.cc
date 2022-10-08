@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
  * Copyright (c) 2018 NITK Surathkal (modified for FQ-PIE)

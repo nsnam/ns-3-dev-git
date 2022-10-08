@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #ifndef WIN32_INTERNET_H
 #define WIN32_INTERNET_H

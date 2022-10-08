@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2020 Institute for the Wireless Internet of Things, Northeastern University,
  * Boston, MA Copyright (c) 2021, University of Washington: refactor for hierarchical model

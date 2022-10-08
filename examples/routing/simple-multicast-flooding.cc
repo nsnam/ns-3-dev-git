@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2013 Universita' di Firenze
  * Copyright (c) 2019 Caliola Engineering, LLC : RFC 6621 multicast packet de-duplication

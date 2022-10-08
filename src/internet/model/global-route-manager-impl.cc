@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
  * Copyright (C) 1999, 2000 Kunihiro Ishiguro, Toshiaki Takada
