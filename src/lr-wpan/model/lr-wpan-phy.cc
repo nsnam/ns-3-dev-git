@@ -29,12 +29,14 @@
 #include <ns3/abort.h>
 #include <ns3/antenna-model.h>
 #include <ns3/double.h>
+#include <ns3/error-model.h>
 #include <ns3/log.h>
 #include <ns3/mobility-model.h>
 #include <ns3/net-device.h>
 #include <ns3/node.h>
 #include <ns3/packet-burst.h>
 #include <ns3/packet.h>
+#include <ns3/pointer.h>
 #include <ns3/random-variable-stream.h>
 #include <ns3/simulator.h>
 #include <ns3/spectrum-channel.h>
@@ -80,49 +82,58 @@ const LrWpanPhyPpduHeaderSymbolNumber
 TypeId
 LrWpanPhy::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::LrWpanPhy")
-                            .SetParent<SpectrumPhy>()
-                            .SetGroupName("LrWpan")
-                            .AddConstructor<LrWpanPhy>()
-                            .AddTraceSource("TrxStateValue",
-                                            "The state of the transceiver",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_trxState),
-                                            "ns3::TracedValueCallback::LrWpanPhyEnumeration")
-                            .AddTraceSource("TrxState",
-                                            "The state of the transceiver",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_trxStateLogger),
-                                            "ns3::LrWpanPhy::StateTracedCallback")
-                            .AddTraceSource("PhyTxBegin",
-                                            "Trace source indicating a packet has "
-                                            "begun transmitting over the channel medium",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyTxBeginTrace),
-                                            "ns3::Packet::TracedCallback")
-                            .AddTraceSource("PhyTxEnd",
-                                            "Trace source indicating a packet has been "
-                                            "completely transmitted over the channel.",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyTxEndTrace),
-                                            "ns3::Packet::TracedCallback")
-                            .AddTraceSource("PhyTxDrop",
-                                            "Trace source indicating a packet has been "
-                                            "dropped by the device during transmission",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyTxDropTrace),
-                                            "ns3::Packet::TracedCallback")
-                            .AddTraceSource("PhyRxBegin",
-                                            "Trace source indicating a packet has begun "
-                                            "being received from the channel medium by the device",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyRxBeginTrace),
-                                            "ns3::Packet::TracedCallback")
-                            .AddTraceSource("PhyRxEnd",
-                                            "Trace source indicating a packet has been "
-                                            "completely received from the channel medium "
-                                            "by the device",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyRxEndTrace),
-                                            "ns3::Packet::SinrTracedCallback")
-                            .AddTraceSource("PhyRxDrop",
-                                            "Trace source indicating a packet has been "
-                                            "dropped by the device during reception",
-                                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyRxDropTrace),
-                                            "ns3::Packet::TracedCallback");
+    static TypeId tid =
+        TypeId("ns3::LrWpanPhy")
+            .SetParent<SpectrumPhy>()
+            .SetGroupName("LrWpan")
+            .AddConstructor<LrWpanPhy>()
+            .AddAttribute("PostReceptionErrorModel",
+                          "An optional packet error model can be added to the receive "
+                          "packet process after any propagation-based (SNR-based) error "
+                          "models have been applied. Typically this is used to force "
+                          "specific packet drops, for testing purposes.",
+                          PointerValue(),
+                          MakePointerAccessor(&LrWpanPhy::m_postReceptionErrorModel),
+                          MakePointerChecker<ErrorModel>())
+            .AddTraceSource("TrxStateValue",
+                            "The state of the transceiver",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_trxState),
+                            "ns3::TracedValueCallback::LrWpanPhyEnumeration")
+            .AddTraceSource("TrxState",
+                            "The state of the transceiver",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_trxStateLogger),
+                            "ns3::LrWpanPhy::StateTracedCallback")
+            .AddTraceSource("PhyTxBegin",
+                            "Trace source indicating a packet has "
+                            "begun transmitting over the channel medium",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyTxBeginTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("PhyTxEnd",
+                            "Trace source indicating a packet has been "
+                            "completely transmitted over the channel.",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyTxEndTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("PhyTxDrop",
+                            "Trace source indicating a packet has been "
+                            "dropped by the device during transmission",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyTxDropTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("PhyRxBegin",
+                            "Trace source indicating a packet has begun "
+                            "being received from the channel medium by the device",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyRxBeginTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("PhyRxEnd",
+                            "Trace source indicating a packet has been "
+                            "completely received from the channel medium "
+                            "by the device",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyRxEndTrace),
+                            "ns3::Packet::SinrTracedCallback")
+            .AddTraceSource("PhyRxDrop",
+                            "Trace source indicating a packet has been "
+                            "dropped by the device during reception",
+                            MakeTraceSourceAccessor(&LrWpanPhy::m_phyRxDropTrace),
+                            "ns3::Packet::TracedCallback");
     return tid;
 }
 
@@ -196,6 +207,7 @@ LrWpanPhy::DoDispose()
     m_errorModel = nullptr;
     m_currentRxPacket.first = nullptr;
     m_currentTxPacket.first = nullptr;
+    m_postReceptionErrorModel = nullptr;
 
     m_ccaRequest.Cancel();
     m_edRequest.Cancel();
@@ -513,6 +525,13 @@ LrWpanPhy::EndRx(Ptr<SpectrumSignalParameters> par)
     {
         Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets().front();
         NS_ASSERT(currentPacket);
+
+        if (m_postReceptionErrorModel &&
+            m_postReceptionErrorModel->IsCorrupt(currentPacket->Copy()))
+        {
+            NS_LOG_DEBUG("Reception failed due to post-rx error model");
+            m_currentRxPacket.second = true;
+        }
 
         // If there is no error model attached to the PHY, we always report the maximum LQI value.
         LrWpanLqiTag tag(std::numeric_limits<uint8_t>::max());
@@ -1800,6 +1819,13 @@ LrWpanPhy::AssignStreams(int64_t stream)
     NS_LOG_FUNCTION(this);
     m_random->SetStream(stream);
     return 1;
+}
+
+void
+LrWpanPhy::SetPostReceptionErrorModel(const Ptr<ErrorModel> em)
+{
+    NS_LOG_FUNCTION(this << em);
+    m_postReceptionErrorModel = em;
 }
 
 } // namespace ns3

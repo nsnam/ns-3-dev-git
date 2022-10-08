@@ -31,6 +31,7 @@ Release 3-dev
 - (utils) `utils/bench-scheduler` has been enhanced to test multiple schedulers.
 - (lte) LTE handover failure is now handled for joining and leaving timeouts, RACH failure, and preamble allocation failure.
 - (lr-wpan) !1131 - Add support for configurable tx queue and ind tx queue limits.
+- (lr-wpan) !1133 - Add a post-rx error model.
 
 ### Bugs fixed
 

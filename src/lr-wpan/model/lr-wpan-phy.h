@@ -41,6 +41,7 @@ class SpectrumModel;
 class AntennaModel;
 class NetDevice;
 class UniformRandomVariable;
+class ErrorModel;
 
 /**
  * \ingroup lr-wpan
@@ -480,6 +481,19 @@ class LrWpanPhy : public SpectrumPhy
      * \return pointer to LrWpanErrorModel in use
      */
     Ptr<LrWpanErrorModel> GetErrorModel() const;
+
+    /**
+     * Attach a receive ErrorModel to the LrWpanPhy.
+     *
+     * The LrWpanPhy may optionally include an ErrorModel in
+     * the packet receive chain. The error model is additive
+     * to any modulation-based error model based on SNR, and
+     * is typically used to force specific packet losses or
+     * for testing purposes.
+     *
+     * \param em Pointer to the ErrorModel.
+     */
+    void SetPostReceptionErrorModel(const Ptr<ErrorModel> em);
 
     /**
      * Get the duration of the SHR (preamble and SFD) in symbols, depending on
@@ -924,6 +938,8 @@ class LrWpanPhy : public SpectrumPhy
      * Uniform random variable stream.
      */
     Ptr<UniformRandomVariable> m_random;
+
+    Ptr<ErrorModel> m_postReceptionErrorModel; //!< Error model for receive packet events
 };
 
 } // namespace ns3
