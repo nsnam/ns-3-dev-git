@@ -592,10 +592,8 @@ and implemented in a source file named ``my-class.cc``. The goal of this
 naming pattern is to allow a reader to quickly navigate through the |ns3|
 codebase to locate the source file relevant to a specific type.
 
-Each ``my-class.h`` header should start with the following comments: the
-first line ensures that developers who use the emacs editor will be able to
-indent your code correctly. The following lines ensure that your code
-is licensed under the GPL, that the copyright holders are properly
+Each ``my-class.h`` header should start with the following comment to ensure
+that your code is licensed under the GPL, that the copyright holders are properly
 identified (typically, you or your employer), and that the actual author
 of the code is identified. The latter is purely informational and we use it
 to try to track the most appropriate person to review a patch or fix a bug.
@@ -604,7 +602,6 @@ statement.
 
 .. sourcecode:: cpp
 
-  /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
   /*
    * Copyright (c) YEAR COPYRIGHTHOLDER
    *
@@ -675,7 +672,6 @@ The ``my-class.cc`` file is structured similarly:
 
 .. sourcecode:: cpp
 
-  /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
   /*
    * Copyright (c) YEAR COPYRIGHTHOLDER
    *
@@ -1008,12 +1004,6 @@ language support forward as our minimally supported compiler moves forward.
 
 Miscellaneous items
 ===================
-
-- The following emacs mode line should be the first line in a file:
-
-  .. sourcecode:: cpp
-
-    /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 - ``NS_LOG_COMPONENT_DEFINE("log-component-name");`` statements should be
   placed within namespace ns3 (for module code) and after the
