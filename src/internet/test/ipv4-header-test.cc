@@ -38,11 +38,16 @@
 #include "ns3/test.h"
 #include "ns3/traffic-control-layer.h"
 
-#include <limits>
+#ifdef __WIN32__
+#include "ns3/win32-internet.h"
+#else
 #include <netinet/in.h>
+#include <sys/socket.h>
+#endif
+
+#include <limits>
 #include <sstream>
 #include <string>
-#include <sys/socket.h>
 #include <sys/types.h>
 
 using namespace ns3;

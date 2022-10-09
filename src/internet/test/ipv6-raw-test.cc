@@ -42,10 +42,15 @@
 #include "ns3/test.h"
 #include "ns3/uinteger.h"
 
-#include <limits>
+#ifdef __WIN32__
+#include "ns3/win32-internet.h"
+#else
 #include <netinet/in.h>
-#include <string>
 #include <sys/socket.h>
+#endif
+
+#include <limits>
+#include <string>
 #include <sys/types.h>
 
 using namespace ns3;

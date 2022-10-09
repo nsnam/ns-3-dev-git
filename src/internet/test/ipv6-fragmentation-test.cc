@@ -23,11 +23,20 @@
  * This is the test code for ipv6-l3protocol.cc (only the fragmentation and reassembly part).
  */
 
+#include "ns3/arp-l3-protocol.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
+#include "ns3/error-channel.h"
+#include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-raw-socket-factory.h"
+#include "ns3/ipv4-static-routing.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/ipv6-list-routing.h"
 #include "ns3/ipv6-raw-socket-factory.h"
 #include "ns3/ipv6-static-routing.h"
@@ -38,24 +47,19 @@
 #include "ns3/socket-factory.h"
 #include "ns3/socket.h"
 #include "ns3/test.h"
+#include "ns3/traffic-control-layer.h"
+#include "ns3/udp-l4-protocol.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/udp-socket.h"
 #include "ns3/uinteger.h"
-#
-#include "ns3/arp-l3-protocol.h"
-#include "ns3/error-channel.h"
-#include "ns3/icmpv4-l4-protocol.h"
-#include "ns3/icmpv6-l4-protocol.h"
-#include "ns3/internet-stack-helper.h"
-#include "ns3/ipv4-l3-protocol.h"
-#include "ns3/ipv4-list-routing.h"
-#include "ns3/ipv4-static-routing.h"
-#include "ns3/ipv6-l3-protocol.h"
-#include "ns3/traffic-control-layer.h"
-#include "ns3/udp-l4-protocol.h"
+
+#ifdef __WIN32__
+#include "ns3/win32-internet.h"
+#else
+#include <netinet/in.h>
+#endif
 
 #include <limits>
-#include <netinet/in.h>
 #include <string>
 
 using namespace ns3;
