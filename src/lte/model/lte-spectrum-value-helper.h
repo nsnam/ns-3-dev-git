@@ -23,6 +23,7 @@
 
 #include <ns3/spectrum-value.h>
 
+#include <map>
 #include <vector>
 
 namespace ns3
