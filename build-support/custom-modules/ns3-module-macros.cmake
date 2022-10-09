@@ -35,8 +35,14 @@ function(build_lib)
   # Argument parsing
   set(options IGNORE_PCH)
   set(oneValueArgs LIBNAME)
-  set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK TEST_SOURCES
-                     DEPRECATED_HEADER_FILES MODULE_ENABLED_FEATURES
+  set(multiValueArgs
+      SOURCE_FILES
+      HEADER_FILES
+      LIBRARIES_TO_LINK
+      TEST_SOURCES
+      DEPRECATED_HEADER_FILES
+      MODULE_ENABLED_FEATURES
+      PRIVATE_HEADER_FILES
   )
   cmake_parse_arguments(
     "BLIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
@@ -119,7 +125,7 @@ function(build_lib)
     ${lib${BLIB_LIBNAME}}
     PROPERTIES
       PUBLIC_HEADER
-      "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
+      "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${BLIB_PRIVATE_HEADER_FILES};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} # set output
                                                                  # directory for
                                                                  # DLLs
@@ -221,8 +227,8 @@ function(build_lib)
 
   # Copy all header files to outputfolder/include before each build
   copy_headers_before_building_lib(
-    ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY} "${BLIB_HEADER_FILES}"
-    public
+    ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY}
+    "${BLIB_HEADER_FILES};${BLIB_PRIVATE_HEADER_FILES}" public
   )
   if(BLIB_DEPRECATED_HEADER_FILES)
     copy_headers_before_building_lib(

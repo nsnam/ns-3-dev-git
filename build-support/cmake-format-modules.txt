@@ -17,6 +17,7 @@ additional_commands:
             LIBNAME : '1'
             SOURCE_FILES : '*'
             HEADER_FILES : '*'
+            PRIVATE_HEADER_FILES : '*'
             LIBRARIES_TO_LINK : '*'
             TEST_SOURCES : '*'
             DEPRECATED_HEADER_FILES : '*'
