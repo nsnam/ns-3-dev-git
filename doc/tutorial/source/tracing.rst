@@ -2078,7 +2078,7 @@ generate some pretty pictures:
 You should now have a graph of the congestion window versus time
 sitting in the file "cwnd.png" that looks like:
 
-.. figure:: figures/cwnd.png
+.. figure:: ../figures/cwnd.png
 
 Using Mid-Level Helpers
 +++++++++++++++++++++++

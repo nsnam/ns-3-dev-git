@@ -989,7 +989,7 @@ confusing to newcomers, and when done poorly it leads to subtle build
 errors.  The solutions above are the way to go.
 
 Building with CMake
-+++++++++++++++++++++++
++++++++++++++++++++
 
 The ns3 wrapper script calls CMake directly, mapping Waf-like options
 to the verbose settings used by CMake. Calling ``./ns3`` will execute
@@ -1064,13 +1064,40 @@ Corresponds to:
 Note: the command above would fail if ``./ns3 build`` was not executed first,
 since the examples won't be built by the test-runner target.
 
+On Windows, the Msys2/MinGW64/bin directory path must be on the PATH environment variable,
+otherwise the dll's required by the C++ runtime will not be found, resulting in crashes
+without any explicit reasoning.
+
+Note: The ns-3 script adds only the ns-3 lib directory path to the PATH,
+ensuring the ns-3 dlls will be found by running programs. If you are using CMake directly or
+an IDE, make sure to also include the path to ns-3-dev/build/lib in the PATH variable.
+
+If you are using one of Windows's terminals (CMD, PowerShell or Terminal), you can use the
+`setx<https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/setx/>__`
+command to change environment variables permanently or `set` to set them temporarily for that shell:
+
+.. sourcecode:: console
+
+  C:\\Windows\\system32>echo %PATH%
+  C:\\Windows\\system32;C:\\Windows;D:\\tools\\msys64\\mingw64\\bin;
+
+  C:\\Windows\\system32>setx PATH "%PATH%;D:\\tools\\msys64\\usr\\bin;" /m
+
+  C:\\Windows\\system32>echo %PATH%
+  C:\\Windows\\system32;C:\\Windows;D:\\tools\\msys64\\mingw64\\bin;
+  D:\\tools\\msys64\\usr\\bin;
+
+Note: running on an administrator terminal will change the system PATH,
+while the user terminal will change the user PATH, unless the `/m` flag is added.
+
+
 Building with IDEs
 ++++++++++++++++++
 
 With CMake, IDE integration is much easier. We list the steps on how to use ns-3 with a few IDEs.
 
-Microsoft Visual Code
-=====================
+Microsoft Visual Studio Code
+============================
 
 Start by downloading `VS Code <https://code.visualstudio.com/>`_.
 
@@ -1078,38 +1105,38 @@ Then install it and then install the CMake and C++ plugins.
 
 This can be done accessing the extensions' menu button on the left.
 
-.. figure:: figures/vscode/install_cmake_tools.png
+.. figure:: ../figures/vscode/install_cmake_tools.png
 
-.. figure:: figures/vscode/install_cpp_tools.png
+.. figure:: ../figures/vscode/install_cpp_tools.png
 
 It will take a while, but it will locate the available toolchains for you to use.
 
 After that, open the ns-3-dev folder. It should run CMake automatically and preconfigure it.
 
-.. figure:: figures/vscode/open_project.png
+.. figure:: ../figures/vscode/open_project.png
 
 After this happens, you can choose ns-3 features by opening the CMake cache and toggling them on or off.
 
-.. figure:: figures/vscode/open_cmake_cache.png
+.. figure:: ../figures/vscode/open_cmake_cache.png
 
-.. figure:: figures/vscode/configure_ns3.png
+.. figure:: ../figures/vscode/configure_ns3.png
 
 Just as an example, here is how to enable examples
 
-.. figure:: figures/vscode/enable_examples_and_save_to_reload_cache.png
+.. figure:: ../figures/vscode/enable_examples_and_save_to_reload_cache.png
 
 After saving the cache, CMake will run, refreshing the cache. Then VsCode will update its
 list of targets on the left side of the screen in the CMake menu.
 
 After selecting a target on the left side menu, there are options to build, run or debug it.
 
-.. figure:: figures/vscode/select_target_build_and_debug.png
+.. figure:: ../figures/vscode/select_target_build_and_debug.png
 
 Any of them will automatically build the selected target.
 If you choose run or debug, the executable targets will be executed.
 You can open the source files you want, put some breakpoints and then click debug to visually debug programs.
 
-.. figure:: figures/vscode/debugging.png
+.. figure:: ../figures/vscode/debugging.png
 
 JetBrains CLion
 ===============
@@ -1120,30 +1147,30 @@ Start by downloading `CLion <https://www.jetbrains.com/clion/>`_.
 The following image contains the toolchain configuration window for
 CLion running on Windows (only WSLv2 is currently supported).
 
-.. figure:: figures/clion/toolchains.png
+.. figure:: ../figures/clion/toolchains.png
 
 CLion uses Makefiles for your platform as the default generator.
 Here you can choose a better generator like `ninja` by setting the cmake options flag to `-G Ninja`.
 You can also set options to enable examples (`-DNS3_EXAMPLES=ON`) and tests (`-DNS3_TESTS=ON`).
 
-.. figure:: figures/clion/cmake_configuration.png
+.. figure:: ../figures/clion/cmake_configuration.png
 
 To refresh the CMake cache, triggering the discovery of new targets (libraries, executables and/or modules),
 you can either configure to re-run CMake automatically after editing CMake files (pretty slow and easily
 triggered) or reload it manually. The following image shows how to trigger the CMake cache refresh.
 
-.. figure:: figures/clion/reload_cache.png
+.. figure:: ../figures/clion/reload_cache.png
 
 After configuring the project, the available targets are listed in a drop-down list on the top right corner.
 Select the target you want and then click the hammer symbol to build, as shown in the image below.
 
-.. figure:: figures/clion/build_targets.png
+.. figure:: ../figures/clion/build_targets.png
 
 If you have selected and executable target, you can click either the play button to execute the program;
 the bug to debug the program; the play button with a chip, to run Valgrind and analyze memory usage,
 leaks and so on.
 
-.. figure:: figures/clion/run_target.png
+.. figure:: ../figures/clion/run_target.png
 
 Code::Blocks
 ============
@@ -1168,30 +1195,30 @@ This is a Code::Blocks project file that can be opened by the IDE.
 
 When you first open the IDE, you will be greeted by a window asking you to select the compiler you want.
 
-.. figure:: figures/codeblocks/compiler_detection.png
+.. figure:: ../figures/codeblocks/compiler_detection.png
 
 After that you will get into the landing page where you can open the project.
 
-.. figure:: figures/codeblocks/landing.png
+.. figure:: ../figures/codeblocks/landing.png
 
 Loading it will take a while.
 
-.. figure:: figures/codeblocks/open_project.png
+.. figure:: ../figures/codeblocks/open_project.png
 
 After that we can select a target in the top menu (where it says "all") and click to build, run or debug.
 We can also set breakpoints on the source code.
 
-.. figure:: figures/codeblocks/breakpoint_and_debug.png
+.. figure:: ../figures/codeblocks/breakpoint_and_debug.png
 
 After clicking to build, the build commands of the underlying build system will be printed in the tab at the bottom.
 If you clicked to debug, the program will start automatically and stop at the first breakpoint.
 
-.. figure:: figures/codeblocks/build_finished_breakpoint_waiting.png
+.. figure:: ../figures/codeblocks/build_finished_breakpoint_waiting.png
 
 You can inspect memory and the current stack enabling those views in Debug->Debugging Windows->Watches and Call Stack.
 Using the debugging buttons, you can advance line by line, continue until the next breakpoint.
 
-.. figure:: figures/codeblocks/debug_watches.png
+.. figure:: ../figures/codeblocks/debug_watches.png
 
 Note: as Code::Blocks doesn't natively support CMake projects, it doesn't refresh the CMake cache, which means you
 will need to close the project, run the ``./ns3`` command to refresh the CMake caches after adding/removing
@@ -1204,7 +1231,7 @@ Start by installing `XCode <https://developer.apple.com/xcode/>`_.
 Then open it for the first time and accept the license.
 Then open Xcode->Preferences->Locations and select the command-line tools location.
 
-.. figure:: figures/xcode/select_command_line.png
+.. figure:: ../figures/xcode/select_command_line.png
 
 XCode does not support CMake project natively, but we can use the corresponding CMake
 generator to generate a project in order to use it. The generator name depends on the operating
@@ -1225,27 +1252,27 @@ There will be a NS3.xcodeproj file inside the cache folder used during configura
 Loading the project will take a while, and you will be greeted with the following prompt.
 Select to automatically create the schemes.
 
-.. figure:: figures/xcode/create_schemes.png
+.. figure:: ../figures/xcode/create_schemes.png
 
 After that we can select a target in the top menu and click to run, which will build and run
 (if executable, or debug if build with debugging symbols).
 
-.. figure:: figures/xcode/target_dropdown.png
+.. figure:: ../figures/xcode/target_dropdown.png
 
 After clicking to build, the build will start and progress is shown in the top bar.
 
-.. figure:: figures/xcode/select_target_and_build.png
+.. figure:: ../figures/xcode/select_target_and_build.png
 
 Before debugging starts, Xcode will request for permissions to attach to the process
 (as an attacker could pretend to be a debugging tool and steal data from other processes).
 
-.. figure:: figures/xcode/debug_permission_to_attach.png
+.. figure:: ../figures/xcode/debug_permission_to_attach.png
 
 After attaching, we are greeted with profiling information and call stack on the left panel,
 source code, breakpoint and warnings on the central panel. At the bottom there are the memory
 watches panel in the left and the output panel on the right, which is also used to read the command line.
 
-.. figure:: figures/xcode/profiling_stack_watches_output.png
+.. figure:: ../figures/xcode/profiling_stack_watches_output.png
 
 
 Note: as XCode doesn't natively support CMake projects, it doesn't refresh the CMake cache, which means you

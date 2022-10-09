@@ -17,4 +17,5 @@ This chapter describes the development ecosystem generally used to create new mo
    documentation
    profiling
    working-with-gitlab-ci-local
+   windows
 
