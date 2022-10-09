@@ -23,4 +23,10 @@ clang-tidy:
       clang-tidy-14
   script:
     - ./ns3 configure --enable-examples --enable-tests --enable-clang-tidy
-    - run-clang-tidy-14 -p cmake-cache/ -quiet
+    - run-clang-tidy-14 -p cmake-cache/ -quiet 1> clang-tidy-errors.log 2> /dev/null || true
+    - (! egrep -A 3 "error:|warning:" clang-tidy-errors.log)
+    - echo "No clang-tidy errors found"
+  artifacts:
+    paths:
+      - clang-tidy-errors.log
+    when: on_failure
