@@ -253,6 +253,13 @@ set(header_files
     model/windowed-filter.h
 )
 
+set(private_header_files)
+if(WIN32)
+  set(private_header_files
+      model/win32-internet.h
+  )
+endif()
+
 set(test_sources
     test/global-route-manager-impl-test-suite.cc
     test/icmp-test.cc
@@ -333,6 +340,7 @@ build_lib(
   LIBNAME internet
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
+  PRIVATE_HEADER_FILES ${private_header_files}
   LIBRARIES_TO_LINK
     ${libnetwork}
     ${libcore}
