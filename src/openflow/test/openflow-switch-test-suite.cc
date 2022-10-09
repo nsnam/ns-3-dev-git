@@ -47,13 +47,13 @@ class SwitchFlowTableTestCase : public TestCase
     }
 
   private:
-    virtual void DoRun(void);
+    void DoRun() override;
 
     sw_chain* m_chain; //!< OpenFlow service function chain
 };
 
 void
-SwitchFlowTableTestCase::DoRun(void)
+SwitchFlowTableTestCase::DoRun()
 {
     // Flow Table implementation is used by the OpenFlowSwitchNetDevice under the chain_ methods
     // we should test its implementation to verify the flow table works.
@@ -66,7 +66,8 @@ SwitchFlowTableTestCase::DoRun(void)
 
     Mac48Address dl_src("00:00:00:00:00:00"), dl_dst("00:00:00:00:00:01");
     Ipv4Address nw_src("192.168.1.1"), nw_dst("192.168.1.2");
-    int tp_src = 5000, tp_dst = 80;
+    int tp_src = 5000;
+    int tp_dst = 80;
 
     // Create an sw_flow_key; in actual usage this is generated from the received packet's headers.
     sw_flow_key key;

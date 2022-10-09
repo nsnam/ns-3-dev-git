@@ -79,13 +79,13 @@ class RngUniformTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param u The random number generaor.
+     * \param u The random number generator.
      * \return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<UniformRandomVariable> u);
 
   private:
-    virtual void DoRun(void);
+    virtual void DoRun();
 };
 
 RngUniformTestCase::RngUniformTestCase()
@@ -133,7 +133,7 @@ RngUniformTestCase::ChiSquaredTest(Ptr<UniformRandomVariable> u)
 }
 
 void
-RngUniformTestCase::DoRun(void)
+RngUniformTestCase::DoRun()
 {
     RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
 
@@ -172,13 +172,13 @@ class RngNormalTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param n The random number generaor.
+     * \param n The random number generator.
      * \return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<NormalRandomVariable> n);
 
   private:
-    virtual void DoRun(void);
+    virtual void DoRun();
 };
 
 RngNormalTestCase::RngNormalTestCase()
@@ -240,7 +240,7 @@ RngNormalTestCase::ChiSquaredTest(Ptr<NormalRandomVariable> n)
 }
 
 void
-RngNormalTestCase::DoRun(void)
+RngNormalTestCase::DoRun()
 {
     RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
 
@@ -279,13 +279,13 @@ class RngExponentialTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param n The random number generaor.
+     * \param n The random number generator.
      * \return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<ExponentialRandomVariable> n);
 
   private:
-    virtual void DoRun(void);
+    virtual void DoRun();
 };
 
 RngExponentialTestCase::RngExponentialTestCase()
@@ -346,7 +346,7 @@ RngExponentialTestCase::ChiSquaredTest(Ptr<ExponentialRandomVariable> e)
 }
 
 void
-RngExponentialTestCase::DoRun(void)
+RngExponentialTestCase::DoRun()
 {
     RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
 
@@ -385,13 +385,13 @@ class RngParetoTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param p The random number generaor.
+     * \param p The random number generator.
      * \return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<ParetoRandomVariable> p);
 
   private:
-    virtual void DoRun(void);
+    virtual void DoRun();
 };
 
 RngParetoTestCase::RngParetoTestCase()
@@ -455,7 +455,7 @@ RngParetoTestCase::ChiSquaredTest(Ptr<ParetoRandomVariable> p)
 }
 
 void
-RngParetoTestCase::DoRun(void)
+RngParetoTestCase::DoRun()
 {
     RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
 

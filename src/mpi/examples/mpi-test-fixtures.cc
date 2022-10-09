@@ -37,7 +37,7 @@ int SinkTracer::m_worldRank = -1;
 int SinkTracer::m_worldSize = -1;
 
 void
-SinkTracer::Init(void)
+SinkTracer::Init()
 {
     m_sinkCount = 0;
     m_line = 0;

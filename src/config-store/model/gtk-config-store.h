@@ -35,11 +35,11 @@ class GtkConfigStore
     /**
      * Process default values
      */
-    void ConfigureDefaults(void);
+    void ConfigureDefaults();
     /**
      * Process attribute values
      */
-    void ConfigureAttributes(void);
+    void ConfigureAttributes();
 };
 
 } // namespace ns3

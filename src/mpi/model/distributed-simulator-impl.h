@@ -111,33 +111,33 @@ class DistributedSimulatorImpl : public SimulatorImpl
      *  Register this type.
      *  \return The object TypeId.
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     /** Default constructor. */
     DistributedSimulatorImpl();
     /** Destructor. */
-    ~DistributedSimulatorImpl();
+    ~DistributedSimulatorImpl() override;
 
     // virtual from SimulatorImpl
-    virtual void Destroy();
-    virtual bool IsFinished(void) const;
-    virtual void Stop(void);
-    virtual void Stop(const Time& delay);
-    virtual EventId Schedule(const Time& delay, EventImpl* event);
-    virtual void ScheduleWithContext(uint32_t context, const Time& delay, EventImpl* event);
-    virtual EventId ScheduleNow(EventImpl* event);
-    virtual EventId ScheduleDestroy(EventImpl* event);
-    virtual void Remove(const EventId& id);
-    virtual void Cancel(const EventId& id);
-    virtual bool IsExpired(const EventId& id) const;
-    virtual void Run(void);
-    virtual Time Now(void) const;
-    virtual Time GetDelayLeft(const EventId& id) const;
-    virtual Time GetMaximumSimulationTime(void) const;
-    virtual void SetScheduler(ObjectFactory schedulerFactory);
-    virtual uint32_t GetSystemId(void) const;
-    virtual uint32_t GetContext(void) const;
-    virtual uint64_t GetEventCount(void) const;
+    void Destroy() override;
+    bool IsFinished() const override;
+    void Stop() override;
+    void Stop(const Time& delay) override;
+    EventId Schedule(const Time& delay, EventImpl* event) override;
+    void ScheduleWithContext(uint32_t context, const Time& delay, EventImpl* event) override;
+    EventId ScheduleNow(EventImpl* event) override;
+    EventId ScheduleDestroy(EventImpl* event) override;
+    void Remove(const EventId& id) override;
+    void Cancel(const EventId& id) override;
+    bool IsExpired(const EventId& id) const override;
+    void Run() override;
+    Time Now() const override;
+    Time GetDelayLeft(const EventId& id) const override;
+    Time GetMaximumSimulationTime() const override;
+    void SetScheduler(ObjectFactory schedulerFactory) override;
+    uint32_t GetSystemId() const override;
+    uint32_t GetContext() const override;
+    uint64_t GetEventCount() const override;
 
     /**
      * Add additional bound to lookahead constraints.
@@ -156,7 +156,7 @@ class DistributedSimulatorImpl : public SimulatorImpl
 
   private:
     // Inherited from Object
-    virtual void DoDispose(void);
+    void DoDispose() override;
 
     /**
      * Calculate lookahead constraint based on network latency.
@@ -166,17 +166,17 @@ class DistributedSimulatorImpl : public SimulatorImpl
      * user may impose additional constraints on lookahead
      * using the ConstrainLookAhead() method.
      */
-    void CalculateLookAhead(void);
+    void CalculateLookAhead();
     /**
      * Check if this rank is finished.  It's finished when there are
      * no more events or stop has been requested.
      *
      * \returns \c true when this rank is finished.
      */
-    bool IsLocalFinished(void) const;
+    bool IsLocalFinished() const;
 
     /** Process the next event. */
-    void ProcessOneEvent(void);
+    void ProcessOneEvent();
     /**
      * Get the timestep of the next event.
      *
@@ -184,13 +184,13 @@ class DistributedSimulatorImpl : public SimulatorImpl
      *
      * \return The next event timestep.
      */
-    uint64_t NextTs(void) const;
+    uint64_t NextTs() const;
     /**
      * Get the time of the next event, as returned by NextTs().
      *
      * \return The next event time stamp.
      */
-    Time Next(void) const;
+    Time Next() const;
 
     /** Container type for the events to run at Simulator::Destroy(). */
     typedef std::list<EventId> DestroyEvents;

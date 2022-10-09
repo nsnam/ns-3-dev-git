@@ -192,7 +192,7 @@ class int64x64_t
      *
      * \return This value in floating form.
      */
-    inline double GetDouble(void) const
+    inline double GetDouble() const
     {
         return (double)_v;
     }
@@ -203,7 +203,7 @@ class int64x64_t
      *
      * \return A pair of the high and low words
      */
-    std::pair<int64_t, uint64_t> GetHighLow(void) const
+    std::pair<int64_t, uint64_t> GetHighLow() const
     {
         const bool negative = _v < 0;
         const long double v = negative ? -_v : _v;
@@ -245,7 +245,7 @@ class int64x64_t
      *
      * \return The integer portion of this value.
      */
-    inline int64_t GetHigh(void) const
+    inline int64_t GetHigh() const
     {
         return GetHighLow().first;
     }
@@ -255,7 +255,7 @@ class int64x64_t
      *
      * \return The fractional portion, unscaled, as an integer.
      */
-    inline uint64_t GetLow(void) const
+    inline uint64_t GetLow() const
     {
         return GetHighLow().second;
     }
@@ -265,7 +265,7 @@ class int64x64_t
      * Truncation is always toward zero,
      * \return The value truncated toward zero.
      */
-    int64_t GetInt(void) const
+    int64_t GetInt() const
     {
         int64_t retval = static_cast<int64_t>(_v);
         return retval;
@@ -277,7 +277,7 @@ class int64x64_t
      * regardless of the current (floating) rounding mode.
      * \return The value rounded to the nearest int.
      */
-    int64_t Round(void) const
+    int64_t Round() const
     {
         int64_t retval = std::round(_v);
         return retval;

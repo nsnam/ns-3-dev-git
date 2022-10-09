@@ -59,7 +59,7 @@ TypeNameGet()
  */
 #define TYPENAMEGET_DEFINE(T)                                                                      \
     template <>                                                                                    \
-    inline std::string TypeNameGet<T>(void)                                                        \
+    inline std::string TypeNameGet<T>()                                                            \
     {                                                                                              \
         return #T;                                                                                 \
     }

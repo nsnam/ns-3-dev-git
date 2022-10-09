@@ -59,12 +59,12 @@ TypeTraitsTestCase::TypeTraitsTestCase()
 void
 TypeTraitsTestCase::DoRun()
 {
-    NS_TEST_ASSERT_MSG_EQ(TypeTraits<void (TypeTraitsTestCase::*)(void)>::IsPointerToMember,
+    NS_TEST_ASSERT_MSG_EQ(TypeTraits<void (TypeTraitsTestCase::*)()>::IsPointerToMember,
                           1,
-                          "Check pointer to member function (void)");
-    NS_TEST_ASSERT_MSG_EQ(TypeTraits<void (TypeTraitsTestCase::*)(void) const>::IsPointerToMember,
+                          "Check pointer to member function ()");
+    NS_TEST_ASSERT_MSG_EQ(TypeTraits<void (TypeTraitsTestCase::*)() const>::IsPointerToMember,
                           1,
-                          "Check pointer to member function (void) const");
+                          "Check pointer to member function () const");
     NS_TEST_ASSERT_MSG_EQ(TypeTraits<void (TypeTraitsTestCase::*)(int)>::IsPointerToMember,
                           1,
                           "Check pointer to member function (int)");
@@ -72,9 +72,9 @@ TypeTraitsTestCase::DoRun()
                           1,
                           "Check pointer to member function (int) const");
     NS_TEST_ASSERT_MSG_EQ(
-        TypeTraits<void (TypeTraitsTestCase::*)(void) const>::PointerToMemberTraits::nArgs,
+        TypeTraits<void (TypeTraitsTestCase::*)() const>::PointerToMemberTraits::nArgs,
         0,
-        "Check number of arguments for pointer to member function (void) const");
+        "Check number of arguments for pointer to member function () const");
     NS_TEST_ASSERT_MSG_EQ(
         TypeTraits<void (TypeTraitsTestCase::*)(int) const>::PointerToMemberTraits::nArgs,
         1,

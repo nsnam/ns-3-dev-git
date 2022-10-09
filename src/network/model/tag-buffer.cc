@@ -58,7 +58,7 @@ TagBuffer::WriteU32(uint32_t data)
 }
 
 uint8_t
-TagBuffer::ReadU8(void)
+TagBuffer::ReadU8()
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT(m_current + 1 <= m_end);
@@ -69,7 +69,7 @@ TagBuffer::ReadU8(void)
 }
 
 uint16_t
-TagBuffer::ReadU16(void)
+TagBuffer::ReadU16()
 {
     NS_LOG_FUNCTION(this);
     uint8_t byte0 = ReadU8();
@@ -81,7 +81,7 @@ TagBuffer::ReadU16(void)
 }
 
 uint32_t
-TagBuffer::ReadU32(void)
+TagBuffer::ReadU32()
 {
     NS_LOG_FUNCTION(this);
     uint8_t byte0 = ReadU8();

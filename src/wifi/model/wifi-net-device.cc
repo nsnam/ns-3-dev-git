@@ -64,7 +64,7 @@ WifiNetDevice::GetTypeId()
             .AddAttribute("Phy",
                           "The PHY layer attached to this device.",
                           PointerValue(),
-                          MakePointerAccessor((Ptr<WifiPhy>(WifiNetDevice::*)(void) const) &
+                          MakePointerAccessor((Ptr<WifiPhy>(WifiNetDevice::*)() const) &
                                                   WifiNetDevice::GetPhy,
                                               &WifiNetDevice::SetPhy),
                           MakePointerChecker<WifiPhy>())
@@ -84,7 +84,7 @@ WifiNetDevice::GetTypeId()
                 "The station manager attached to this device.",
                 PointerValue(),
                 MakePointerAccessor(&WifiNetDevice::SetRemoteStationManager,
-                                    (Ptr<WifiRemoteStationManager>(WifiNetDevice::*)(void) const) &
+                                    (Ptr<WifiRemoteStationManager>(WifiNetDevice::*)() const) &
                                         WifiNetDevice::GetRemoteStationManager),
                 MakePointerChecker<WifiRemoteStationManager>())
             .AddAttribute("RemoteStationManagers",

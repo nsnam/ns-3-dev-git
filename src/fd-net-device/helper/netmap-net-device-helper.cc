@@ -69,7 +69,7 @@ NetmapNetDeviceHelper::NetmapNetDeviceHelper()
 }
 
 std::string
-NetmapNetDeviceHelper::GetDeviceName(void)
+NetmapNetDeviceHelper::GetDeviceName()
 {
     return m_deviceName;
 }
@@ -195,7 +195,7 @@ NetmapNetDeviceHelper::SetDeviceAttributes(Ptr<FdNetDevice> device) const
 }
 
 int
-NetmapNetDeviceHelper::CreateFileDescriptor(void) const
+NetmapNetDeviceHelper::CreateFileDescriptor() const
 {
     NS_LOG_FUNCTION(this);
 

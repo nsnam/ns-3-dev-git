@@ -35,7 +35,7 @@ GtkConfigStore::GtkConfigStore()
 }
 
 void
-GtkConfigStore::ConfigureDefaults(void)
+GtkConfigStore::ConfigureDefaults()
 {
     // this function should be called before running the script to enable the user
     // to configure the default values for the objects he wants to use
@@ -84,7 +84,7 @@ GtkConfigStore::ConfigureDefaults(void)
 }
 
 void
-GtkConfigStore::ConfigureAttributes(void)
+GtkConfigStore::ConfigureAttributes()
 {
     GtkWidget* window;
     GtkWidget* view;

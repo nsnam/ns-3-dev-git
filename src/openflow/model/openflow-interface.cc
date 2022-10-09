@@ -673,7 +673,7 @@ EricssonAction::Execute(er_action_type type,
 
 /* static */
 TypeId
-Controller::GetTypeId(void)
+Controller::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::ofi::Controller")
                             .SetParent<Object>()
@@ -786,7 +786,7 @@ Controller::StartDump(StatsDumpCallback* cb)
 
 /* static */
 TypeId
-DropController::GetTypeId(void)
+DropController::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::ofi::DropController")
                             .SetParent<Controller>()
@@ -826,7 +826,7 @@ DropController::ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* bu
 }
 
 TypeId
-LearningController::GetTypeId(void)
+LearningController::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::ofi::LearningController")

@@ -41,7 +41,7 @@ BriteTopologyHelper::BriteTopologyHelper(std::string confFile,
       m_seedFile(seedFile),
       m_newSeedFile(newseedFile),
       m_numAs(0),
-      m_topology(NULL),
+      m_topology(nullptr),
       m_numNodes(0),
       m_numEdges(0)
 {
@@ -53,7 +53,7 @@ BriteTopologyHelper::BriteTopologyHelper(std::string confFile,
 BriteTopologyHelper::BriteTopologyHelper(std::string confFile)
     : m_confFile(confFile),
       m_numAs(0),
-      m_topology(NULL),
+      m_topology(nullptr),
       m_numNodes(0),
       m_numEdges(0)
 {
@@ -93,7 +93,7 @@ BriteTopologyHelper::AssignStreams(int64_t streamNumber)
 }
 
 void
-BriteTopologyHelper::BuildBriteNodeInfoList(void)
+BriteTopologyHelper::BuildBriteNodeInfoList()
 {
     NS_LOG_FUNCTION(this);
     brite::Graph* g = m_topology->GetGraph();
@@ -139,7 +139,7 @@ BriteTopologyHelper::BuildBriteNodeInfoList(void)
                 break;
             default:
                 NS_FATAL_ERROR(
-                    "Topology::Output(): Improperly classfied Router node encountered...");
+                    "Topology::Output(): Improperly classified Router node encountered...");
             }
             break;
 
@@ -165,7 +165,7 @@ BriteTopologyHelper::BuildBriteNodeInfoList(void)
                 nodeInfo.type = "AS_BACKBONE ";
                 break;
             default:
-                NS_FATAL_ERROR("Topology::Output(): Improperly classfied AS node encountered...");
+                NS_FATAL_ERROR("Topology::Output(): Improperly classified AS node encountered...");
             }
             break;
         }
@@ -180,7 +180,7 @@ BriteTopologyHelper::BuildBriteNodeInfoList(void)
 }
 
 void
-BriteTopologyHelper::BuildBriteEdgeInfoList(void)
+BriteTopologyHelper::BuildBriteEdgeInfoList()
 {
     NS_LOG_FUNCTION(this);
     brite::Graph* g = m_topology->GetGraph();
@@ -309,7 +309,7 @@ BriteTopologyHelper::GetNEdgesTopology() const
 }
 
 uint32_t
-BriteTopologyHelper::GetNAs(void) const
+BriteTopologyHelper::GetNAs() const
 {
     return m_numAs;
 }
@@ -321,9 +321,9 @@ BriteTopologyHelper::GetSystemNumberForAs(uint32_t asNum) const
 }
 
 void
-BriteTopologyHelper::GenerateBriteTopology(void)
+BriteTopologyHelper::GenerateBriteTopology()
 {
-    NS_ASSERT_MSG(m_topology == NULL, "Brite Topology Already Created");
+    NS_ASSERT_MSG(!m_topology, "Brite Topology Already Created");
 
     // check to see if need to generate seed file
     bool generateSeedFile = m_seedFile.empty();
@@ -436,7 +436,7 @@ BriteTopologyHelper::AssignIpv4Addresses(Ipv4AddressHelper& address)
 {
     NS_LOG_FUNCTION(this);
     // assign IPs
-    for (unsigned int i = 0; i < m_netDevices.size(); ++i)
+    for (std::size_t i = 0; i < m_netDevices.size(); ++i)
     {
         address.Assign(*m_netDevices[i]);
         address.NewNetwork();
@@ -448,7 +448,7 @@ BriteTopologyHelper::AssignIpv6Addresses(Ipv6AddressHelper& address)
 {
     NS_LOG_FUNCTION(this);
 
-    for (unsigned int i = 0; i < m_netDevices.size(); ++i)
+    for (std::size_t i = 0; i < m_netDevices.size(); ++i)
     {
         address.Assign(*m_netDevices[i]);
         address.NewNetwork();

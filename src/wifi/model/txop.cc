@@ -61,7 +61,7 @@ Txop::GetTypeId()
                           TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
                           UintegerValue(15),
                           MakeUintegerAccessor((void(Txop::*)(uint32_t)) & Txop::SetMinCw,
-                                               (uint32_t(Txop::*)(void) const) & Txop::GetMinCw),
+                                               (uint32_t(Txop::*)() const) & Txop::GetMinCw),
                           MakeUintegerChecker<uint32_t>())
             .AddAttribute(
                 "MinCws",
@@ -77,7 +77,7 @@ Txop::GetTypeId()
                           TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
                           UintegerValue(1023),
                           MakeUintegerAccessor((void(Txop::*)(uint32_t)) & Txop::SetMaxCw,
-                                               (uint32_t(Txop::*)(void) const) & Txop::GetMaxCw),
+                                               (uint32_t(Txop::*)() const) & Txop::GetMaxCw),
                           MakeUintegerChecker<uint32_t>())
             .AddAttribute(
                 "MaxCws",
@@ -94,7 +94,7 @@ Txop::GetTypeId()
                 TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
                 UintegerValue(2),
                 MakeUintegerAccessor((void(Txop::*)(uint8_t)) & Txop::SetAifsn,
-                                     (uint8_t(Txop::*)(void) const) & Txop::GetAifsn),
+                                     (uint8_t(Txop::*)() const) & Txop::GetAifsn),
                 MakeUintegerChecker<uint8_t>())
             .AddAttribute(
                 "Aifsns",
@@ -110,7 +110,7 @@ Txop::GetTypeId()
                           TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
                           TimeValue(MilliSeconds(0)),
                           MakeTimeAccessor((void(Txop::*)(Time)) & Txop::SetTxopLimit,
-                                           (Time(Txop::*)(void) const) & Txop::GetTxopLimit),
+                                           (Time(Txop::*)() const) & Txop::GetTxopLimit),
                           MakeTimeChecker())
             .AddAttribute(
                 "TxopLimits",

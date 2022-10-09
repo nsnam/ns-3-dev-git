@@ -48,7 +48,7 @@ ModelCreator::Add(ModelNode* node)
 }
 
 void
-ModelCreator::Remove(void)
+ModelCreator::Remove()
 {
     GtkTreeIter* iter = m_iters.back();
     g_free(iter);
@@ -76,7 +76,7 @@ ModelCreator::DoStartVisitObject(Ptr<Object> object)
 }
 
 void
-ModelCreator::DoEndVisitObject(void)
+ModelCreator::DoEndVisitObject()
 {
     Remove();
 }
@@ -92,7 +92,7 @@ ModelCreator::DoStartVisitPointerAttribute(Ptr<Object> object, std::string name,
 }
 
 void
-ModelCreator::DoEndVisitPointerAttribute(void)
+ModelCreator::DoEndVisitPointerAttribute()
 {
     Remove();
 }
@@ -110,7 +110,7 @@ ModelCreator::DoStartVisitArrayAttribute(Ptr<Object> object,
 }
 
 void
-ModelCreator::DoEndVisitArrayAttribute(void)
+ModelCreator::DoEndVisitArrayAttribute()
 {
     Remove();
 }
@@ -132,7 +132,7 @@ ModelCreator::DoStartVisitArrayItem(const ObjectPtrContainerValue& vector,
 }
 
 void
-ModelCreator::DoEndVisitArrayItem(void)
+ModelCreator::DoEndVisitArrayItem()
 {
     GtkTreeIter* iter = m_iters.back();
     g_free(iter);

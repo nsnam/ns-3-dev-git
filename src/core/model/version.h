@@ -112,7 +112,7 @@ class Version
      *
      * \return ns-3 version tag
      */
-    static std::string VersionTag(void);
+    static std::string VersionTag();
 
     /**
      * Returns the closest tag that is attached to a commit that is an ancestor
@@ -123,7 +123,7 @@ class Version
      *
      * \return Closest tag attached to an ancestor of the current commit
      */
-    static std::string ClosestAncestorTag(void);
+    static std::string ClosestAncestorTag();
 
     /**
      * Major component of the build version
@@ -135,7 +135,7 @@ class Version
      *
      * \return The major component of the build version
      */
-    static uint32_t Major(void);
+    static uint32_t Major();
 
     /**
      * Minor component of the build version
@@ -147,7 +147,7 @@ class Version
      *
      * \return The minor component of the build version
      */
-    static uint32_t Minor(void);
+    static uint32_t Minor();
 
     /**
      * Patch component of the build version
@@ -160,7 +160,7 @@ class Version
      * \return The patch component of the build version or 0 if the build version
      * does not have a patch component
      */
-    static uint32_t Patch(void);
+    static uint32_t Patch();
 
     /**
      * Release candidate component of the build version
@@ -173,7 +173,7 @@ class Version
      * \return The release candidate component of the build version or an empty
      * string if the build version does not have a release candidate component
      */
-    static std::string ReleaseCandidate(void);
+    static std::string ReleaseCandidate();
 
     /**
      * The number of commits between the current
@@ -181,14 +181,14 @@ class Version
      *
      * \return The number of commits made since the last tagged commit
      */
-    static uint32_t TagDistance(void);
+    static uint32_t TagDistance();
 
     /**
      * Indicates whether there were uncommitted changes during the build
      *
      * \return \c true if the working tree had uncommitted changes.
      */
-    static bool DirtyWorkingTree(void);
+    static bool DirtyWorkingTree();
 
     /**
      * Hash of the most recent commit
@@ -204,7 +204,7 @@ class Version
      *
      * \return hexadecimal representation of the most recent commit id
      */
-    static std::string CommitHash(void);
+    static std::string CommitHash();
 
     /**
      * Indicates the type of build that was performed (debug/release/optimized).
@@ -213,7 +213,7 @@ class Version
      *
      * \return String containing the type of build
      */
-    static std::string BuildProfile(void);
+    static std::string BuildProfile();
 
     /**
      * Constructs a string containing the ns-3 major and minor version components,
@@ -232,7 +232,7 @@ class Version
      *
      * \return String containing the ns-3 major and minor components and flags.
      */
-    static std::string ShortVersion(void);
+    static std::string ShortVersion();
 
     /**
      * Constructs a string containing the most recent tag and status flags.
@@ -250,7 +250,7 @@ class Version
      *
      * \return String containing the closest ancestor tag and flags.
      */
-    static std::string BuildSummary(void);
+    static std::string BuildSummary();
 
     /**
      * Constructs a string containing all of the build details
@@ -268,7 +268,7 @@ class Version
      *
      * \return String containing full version
      */
-    static std::string LongVersion(void);
+    static std::string LongVersion();
 
 }; // class Version
 

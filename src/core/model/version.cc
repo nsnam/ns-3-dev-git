@@ -33,67 +33,67 @@ namespace ns3
 {
 
 std::string
-Version::VersionTag(void)
+Version::VersionTag()
 {
     return NS3_VERSION_TAG;
 }
 
 std::string
-Version::ClosestAncestorTag(void)
+Version::ClosestAncestorTag()
 {
     return NS3_VERSION_CLOSEST_TAG;
 }
 
 uint32_t
-Version::Major(void)
+Version::Major()
 {
     return NS3_VERSION_MAJOR;
 }
 
 uint32_t
-Version::Minor(void)
+Version::Minor()
 {
     return NS3_VERSION_MINOR;
 }
 
 uint32_t
-Version::Patch(void)
+Version::Patch()
 {
     return NS3_VERSION_PATCH;
 }
 
 std::string
-Version::ReleaseCandidate(void)
+Version::ReleaseCandidate()
 {
     return std::string{NS3_VERSION_RELEASE_CANDIDATE};
 }
 
 uint32_t
-Version::TagDistance(void)
+Version::TagDistance()
 {
     return NS3_VERSION_TAG_DISTANCE;
 }
 
 bool
-Version::DirtyWorkingTree(void)
+Version::DirtyWorkingTree()
 {
     return static_cast<bool>(NS3_VERSION_DIRTY_FLAG);
 }
 
 std::string
-Version::CommitHash(void)
+Version::CommitHash()
 {
     return std::string{NS3_VERSION_COMMIT_HASH};
 }
 
 std::string
-Version::BuildProfile(void)
+Version::BuildProfile()
 {
     return std::string{NS3_VERSION_BUILD_PROFILE};
 }
 
 std::string
-Version::ShortVersion(void)
+Version::ShortVersion()
 {
     std::ostringstream ostream;
     ostream << VersionTag();
@@ -112,7 +112,7 @@ Version::ShortVersion(void)
 }
 
 std::string
-Version::BuildSummary(void)
+Version::BuildSummary()
 {
     std::ostringstream ostream;
     ostream << ClosestAncestorTag();
@@ -130,7 +130,7 @@ Version::BuildSummary(void)
 }
 
 std::string
-Version::LongVersion(void)
+Version::LongVersion()
 {
     std::ostringstream ostream;
     ostream << VersionTag();

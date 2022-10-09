@@ -48,7 +48,7 @@ namespace ns3
  *   - allocate a type id with Address::Register
  *   - provide a method to convert his new address to an Address
  *     instance. This method is typically a member method named ConvertTo:
- *     Address MyAddress::ConvertTo (void) const;
+ *     Address MyAddress::ConvertTo () const;
  *   - provide a method to convert an Address instance back to
  *     an instance of his new address type. This method is typically
  *     a static member method of his address class named ConvertFrom:
@@ -62,13 +62,13 @@ namespace ns3
  * class MyAddress
  * {
  * public:
- *   Address ConvertTo (void) const;
- *   static MyAddress ConvertFrom (void);
+ *   Address ConvertTo () const;
+ *   static MyAddress ConvertFrom ();
  * private:
- *   static uint8_t GetType (void);
+ *   static uint8_t GetType ();
  * };
  *
- * Address MyAddress::ConvertTo (void) const
+ * Address MyAddress::ConvertTo () const
  * {
  *   return Address (GetType (), m_buffer, 2);
  * }
@@ -79,7 +79,7 @@ namespace ns3
  *   address.CopyTo (ad.m_buffer, 2);
  *   return ad;
  * }
- * uint8_t MyAddress::GetType (void)
+ * uint8_t MyAddress::GetType ()
  * {
  *   static uint8_t type = Address::Register ();
  *   return type;

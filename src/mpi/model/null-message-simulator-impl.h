@@ -54,42 +54,42 @@ class NullMessageSimulatorImpl : public SimulatorImpl
      *  Register this type.
      *  \return The object TypeId.
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     /** Default constructor. */
     NullMessageSimulatorImpl();
 
     /** Destructor. */
-    ~NullMessageSimulatorImpl();
+    ~NullMessageSimulatorImpl() override;
 
     // virtual from SimulatorImpl
-    virtual void Destroy();
-    virtual bool IsFinished(void) const;
-    virtual void Stop(void);
-    virtual void Stop(const Time& delay);
-    virtual EventId Schedule(const Time& delay, EventImpl* event);
-    virtual void ScheduleWithContext(uint32_t context, const Time& delay, EventImpl* event);
-    virtual EventId ScheduleNow(EventImpl* event);
-    virtual EventId ScheduleDestroy(EventImpl* event);
-    virtual void Remove(const EventId& id);
-    virtual void Cancel(const EventId& id);
-    virtual bool IsExpired(const EventId& id) const;
-    virtual void Run(void);
+    void Destroy() override;
+    bool IsFinished() const override;
+    void Stop() override;
+    void Stop(const Time& delay) override;
+    EventId Schedule(const Time& delay, EventImpl* event) override;
+    void ScheduleWithContext(uint32_t context, const Time& delay, EventImpl* event) override;
+    EventId ScheduleNow(EventImpl* event) override;
+    EventId ScheduleDestroy(EventImpl* event) override;
+    void Remove(const EventId& id) override;
+    void Cancel(const EventId& id) override;
+    bool IsExpired(const EventId& id) const override;
+    void Run() override;
 
-    virtual Time Now(void) const;
-    virtual Time GetDelayLeft(const EventId& id) const;
-    virtual Time GetMaximumSimulationTime(void) const;
-    virtual void SetScheduler(ObjectFactory schedulerFactory);
-    virtual uint32_t GetSystemId(void) const;
-    virtual uint32_t GetContext(void) const;
-    virtual uint64_t GetEventCount(void) const;
+    Time Now() const override;
+    Time GetDelayLeft(const EventId& id) const override;
+    Time GetMaximumSimulationTime() const override;
+    void SetScheduler(ObjectFactory schedulerFactory) override;
+    uint32_t GetSystemId() const override;
+    uint32_t GetContext() const override;
+    uint64_t GetEventCount() const override;
 
     /**
      * \return singleton instance
      *
      * Singleton accessor.
      */
-    static NullMessageSimulatorImpl* GetInstance(void);
+    static NullMessageSimulatorImpl* GetInstance();
 
   private:
     friend class NullMessageEvent;
@@ -99,35 +99,35 @@ class NullMessageSimulatorImpl : public SimulatorImpl
     /**
      * Non blocking receive of pending messages.
      */
-    void HandleArrivingMessagesNonBlocking(void);
+    void HandleArrivingMessagesNonBlocking();
 
     /**
      * Blocking receive of arriving messages.
      */
-    void HandleArrivingMessagesBlocking(void);
+    void HandleArrivingMessagesBlocking();
 
-    virtual void DoDispose(void);
+    void DoDispose() override;
 
     /**
      * Calculate the lookahead allowable for this MPI task.   Basically
      * the minimum latency on links to neighbor MPI tasks.
      */
-    void CalculateLookAhead(void);
+    void CalculateLookAhead();
 
     /**
      * Process the next event on the queue.
      */
-    void ProcessOneEvent(void);
+    void ProcessOneEvent();
 
     /**
      * \return next local event time.
      */
-    Time Next(void) const;
+    Time Next() const;
 
     /**
      * Calculate the SafeTime. Should be called after message receives.
      */
-    void CalculateSafeTime(void);
+    void CalculateSafeTime();
 
     /**
      * Get the current SafeTime; the maximum time that events can
@@ -135,7 +135,7 @@ class NullMessageSimulatorImpl : public SimulatorImpl
      * MPI tasks.
      * \return the current SafeTime
      */
-    Time GetSafeTime(void);
+    Time GetSafeTime();
 
     /**
      * \param bundle Bundle to schedule Null Message event for

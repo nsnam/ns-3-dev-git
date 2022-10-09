@@ -59,7 +59,7 @@ class ClickIfidFromNameTest : public TestCase
 {
   public:
     ClickIfidFromNameTest();
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 ClickIfidFromNameTest::ClickIfidFromNameTest()
@@ -105,7 +105,7 @@ class ClickIpMacAddressFromNameTest : public TestCase
 {
   public:
     ClickIpMacAddressFromNameTest();
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 ClickIpMacAddressFromNameTest::ClickIpMacAddressFromNameTest()
@@ -130,8 +130,7 @@ ClickIpMacAddressFromNameTest::DoRun()
     Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting>(ipv4->GetRoutingProtocol());
     click->DoInitialize();
 
-    char* buf = NULL;
-    buf = new char[255];
+    char* buf = new char[255];
 
     simclick_sim_command(click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth0", buf, 255);
     NS_TEST_EXPECT_MSG_EQ(strcmp(buf, "10.1.1.1"), 0, "eth0 has IP 10.1.1.1");
@@ -166,7 +165,7 @@ class ClickTrivialTest : public TestCase
 {
   public:
     ClickTrivialTest();
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 ClickTrivialTest::ClickTrivialTest()
@@ -189,8 +188,7 @@ ClickTrivialTest::DoRun()
     click->DoInitialize();
 
     int ret = 0;
-    char* buf = NULL;
-    buf = new char[255];
+    char* buf = new char[255];
 
     ret = simclick_sim_command(click->m_simNode, SIMCLICK_GET_NODE_NAME, buf, 255);
     NS_TEST_EXPECT_MSG_EQ(strcmp(buf, "myNode"), 0, "Node name is Node");

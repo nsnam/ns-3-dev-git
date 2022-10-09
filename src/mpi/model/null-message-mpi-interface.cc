@@ -96,8 +96,8 @@ const uint32_t NULL_MESSAGE_MAX_MPI_MSG_SIZE = 2000;
 
 NullMessageSentBuffer::NullMessageSentBuffer()
 {
-    m_buffer = 0;
-    m_request = 0;
+    m_buffer = nullptr;
+    m_request = nullptr;
 }
 
 NullMessageSentBuffer::~NullMessageSentBuffer()
@@ -137,7 +137,7 @@ MPI_Request* NullMessageMpiInterface::g_requests;
 char** NullMessageMpiInterface::g_pRxBuffers;
 
 TypeId
-NullMessageMpiInterface::GetTypeId(void)
+NullMessageMpiInterface::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::NullMessageMpiInterface").SetParent<Object>().SetGroupName("Mpi");
@@ -228,7 +228,7 @@ NullMessageMpiInterface::Enable(MPI_Comm communicator)
 }
 
 void
-NullMessageMpiInterface::InitializeSendReceiveBuffers(void)
+NullMessageMpiInterface::InitializeSendReceiveBuffers()
 {
     NS_LOG_FUNCTION_NOARGS();
     NS_ASSERT(g_enabled);
@@ -414,7 +414,7 @@ NullMessageMpiInterface::ReceiveMessages(bool blocking)
 
                 // Find the correct node/device to schedule receive event
                 Ptr<Node> pNode = NodeList::GetNode(node);
-                Ptr<MpiReceiver> pMpiRec = 0;
+                Ptr<MpiReceiver> pMpiRec = nullptr;
                 uint32_t nDevices = pNode->GetNDevices();
                 for (uint32_t i = 0; i < nDevices; ++i)
                 {

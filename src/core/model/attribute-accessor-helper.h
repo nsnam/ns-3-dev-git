@@ -38,7 +38,7 @@ namespace ns3
  *
  * The get functor method should have a signature like
  * \code
- *   typedef U (T::*getter)(void) const
+ *   typedef U (T::*getter)() const
  * \endcode
  * where \pname{T} is the class and \pname{U} is the type of
  * the return value.
@@ -76,7 +76,7 @@ inline Ptr<const AttributeAccessor> MakeAccessorHelper(T1 a1);
  *
  * The get functor method should have a signature like
  * \code
- *   typedef U (T::*getter)(void) const
+ *   typedef U (T::*getter)() const
  * \endcode
  * where \pname{T} is the class and \pname{U} is the type of
  * the return value.

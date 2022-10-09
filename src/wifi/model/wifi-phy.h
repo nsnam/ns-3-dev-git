@@ -341,7 +341,7 @@ class WifiPhy : public Object
      * \param modulation the modulation class
      * \return the list of supported (non-MCS) modes for the given modulation class.
      *
-     * \see GetModeList (void)
+     * \see GetModeList ()
      */
     std::list<WifiMode> GetModeList(WifiModulationClass modulation) const;
     /**
@@ -452,7 +452,7 @@ class WifiPhy : public Object
     /**
      * \return the number of supported MCSs.
      *
-     * \see GetMcsList (void)
+     * \see GetMcsList ()
      */
     uint16_t GetNMcs() const;
     /**
@@ -471,7 +471,7 @@ class WifiPhy : public Object
      * \param modulation the modulation class
      * \return the list of supported MCSs for the given modulation class.
      *
-     * \see GetMcsList (void)
+     * \see GetMcsList ()
      */
     std::list<WifiMode> GetMcsList(WifiModulationClass modulation) const;
     /**

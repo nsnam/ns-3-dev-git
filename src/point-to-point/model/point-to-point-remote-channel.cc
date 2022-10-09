@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE("PointToPointRemoteChannel");
 NS_OBJECT_ENSURE_REGISTERED(PointToPointRemoteChannel);
 
 TypeId
-PointToPointRemoteChannel::GetTypeId(void)
+PointToPointRemoteChannel::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::PointToPointRemoteChannel")
                             .SetParent<PointToPointChannel>()

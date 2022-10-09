@@ -148,7 +148,9 @@ main(int argc, char* argv[])
     {
         Ptr<ns3::ofi::LearningController> controller = CreateObject<ns3::ofi::LearningController>();
         if (!timeout.IsZero())
+        {
             controller->SetAttribute("ExpirationTime", TimeValue(timeout));
+        }
         swtch.Install(switchNode, switchDevices, controller);
     }
 
@@ -220,4 +222,6 @@ main(int argc, char* argv[])
 #else
     NS_LOG_INFO("NS-3 OpenFlow is not enabled. Cannot run simulation.");
 #endif // NS3_OPENFLOW
+
+    return 0;
 }

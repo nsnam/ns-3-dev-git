@@ -49,7 +49,7 @@ class NetDeviceQueueLock : public NetDeviceQueue
      * \brief Get the type ID.
      * \return the object TypeId
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     NetDeviceQueueLock();
     virtual ~NetDeviceQueueLock();
@@ -58,20 +58,20 @@ class NetDeviceQueueLock : public NetDeviceQueue
      * Called by the device to start this device transmission queue.
      * This is the analogous to the netif_tx_start_queue function of the Linux kernel.
      */
-    virtual void Start(void);
+    virtual void Start();
 
     /**
      * Called by the device to stop this device transmission queue.
      * This is the analogous to the netif_tx_stop_queue function of the Linux kernel.
      */
-    virtual void Stop(void);
+    virtual void Stop();
 
     /**
      * Called by the device to wake the queue disc associated with this
      * device transmission queue. This is done by invoking the wake callback.
      * This is the analogous to the netif_tx_wake_queue function of the Linux kernel.
      */
-    virtual void Wake(void);
+    virtual void Wake();
 
     /**
      * \brief Get the status of the device transmission queue.
@@ -80,7 +80,7 @@ class NetDeviceQueueLock : public NetDeviceQueue
      * Called by queue discs to enquire about the status of a given transmission queue.
      * This is the analogous to the netif_xmit_stopped function of the Linux kernel.
      */
-    virtual bool IsStopped(void) const;
+    virtual bool IsStopped() const;
 
     /**
      * \brief Called by the netdevice to report the number of bytes queued to the device queue
@@ -121,7 +121,7 @@ class NetmapNetDeviceFdReader : public FdReader
     void SetNetmapIfp(struct netmap_if* nifp);
 
   private:
-    FdReader::Data DoRead(void);
+    FdReader::Data DoRead();
 
     uint32_t m_bufferSize;    //!< size of the read buffer
     struct netmap_if* m_nifp; //!< Netmap interface representation
@@ -142,7 +142,7 @@ class NetmapNetDevice : public FdNetDevice
      * \brief Get the type ID.
      * \return the object TypeId
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     NetmapNetDevice();
     virtual ~NetmapNetDevice();
@@ -194,9 +194,9 @@ class NetmapNetDevice : public FdNetDevice
     virtual ssize_t Write(uint8_t* buffer, size_t length);
 
   private:
-    Ptr<FdReader> DoCreateFdReader(void);
-    void DoFinishStartingDevice(void);
-    void DoFinishStoppingDevice(void);
+    Ptr<FdReader> DoCreateFdReader();
+    void DoFinishStartingDevice();
+    void DoFinishStoppingDevice();
 
     /**
      * \brief This function syncs netmap ring and notifies netdevice queue.

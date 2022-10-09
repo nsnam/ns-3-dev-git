@@ -48,7 +48,7 @@ SqliteDataOutput::~SqliteDataOutput()
 
 /* static */
 TypeId
-SqliteDataOutput::GetTypeId(void)
+SqliteDataOutput::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::SqliteDataOutput")
                             .SetParent<DataOutputInterface>()

@@ -35,7 +35,7 @@ namespace ns3
 {
 
 TypeId
-RemoteChannelBundle::GetTypeId(void)
+RemoteChannelBundle::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::RemoteChannelBundle")
                             .SetParent<Object>()
@@ -72,7 +72,7 @@ RemoteChannelBundle::GetSystemId() const
 }
 
 Time
-RemoteChannelBundle::GetGuaranteeTime(void) const
+RemoteChannelBundle::GetGuaranteeTime() const
 {
     return m_guaranteeTime;
 }
@@ -86,7 +86,7 @@ RemoteChannelBundle::SetGuaranteeTime(Time time)
 }
 
 Time
-RemoteChannelBundle::GetDelay(void) const
+RemoteChannelBundle::GetDelay() const
 {
     return m_delay;
 }
@@ -98,13 +98,13 @@ RemoteChannelBundle::SetEventId(EventId id)
 }
 
 EventId
-RemoteChannelBundle::GetEventId(void) const
+RemoteChannelBundle::GetEventId() const
 {
     return m_nullEventId;
 }
 
 std::size_t
-RemoteChannelBundle::GetSize(void) const
+RemoteChannelBundle::GetSize() const
 {
     return m_channels.size();
 }
@@ -122,7 +122,7 @@ operator<<(std::ostream& out, ns3::RemoteChannelBundle& bundle)
         << ", GuaranteeTime = " << bundle.m_guaranteeTime << ", Delay = " << bundle.m_delay
         << std::endl;
 
-    for (auto element : bundle.m_channels)
+    for (const auto& element : bundle.m_channels)
     {
         out << "\t" << element.second << std::endl;
     }

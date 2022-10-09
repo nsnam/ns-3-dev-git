@@ -55,21 +55,21 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
      *  Register this type.
      *  \return The object TypeId.
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     NullMessageMpiInterface();
-    ~NullMessageMpiInterface();
+    ~NullMessageMpiInterface() override;
 
     // Inherited
-    virtual void Destroy();
-    virtual uint32_t GetSystemId();
-    virtual uint32_t GetSize();
-    virtual bool IsEnabled();
-    virtual void Enable(int* pargc, char*** pargv);
-    virtual void Enable(MPI_Comm communicator);
-    virtual void Disable();
-    virtual void SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev);
-    virtual MPI_Comm GetCommunicator();
+    void Destroy() override;
+    uint32_t GetSystemId() override;
+    uint32_t GetSize() override;
+    bool IsEnabled() override;
+    void Enable(int* pargc, char*** pargv) override;
+    void Enable(MPI_Comm communicator) override;
+    void Disable() override;
+    void SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev) override;
+    MPI_Comm GetCommunicator() override;
 
   private:
     /**
@@ -121,7 +121,7 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
      * This method should be called after all links have been added to the RemoteChannelBundle
      * manager to setup any required send and receive buffers.
      */
-    static void InitializeSendReceiveBuffers(void);
+    static void InitializeSendReceiveBuffers();
 
     /**
      * Check for received messages complete.  Will block until message

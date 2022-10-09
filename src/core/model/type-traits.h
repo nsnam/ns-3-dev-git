@@ -228,7 +228,7 @@ struct TypeTraits
      *  \tparam U \deduced Return type.
      */
     template <typename U>
-    struct FunctionPtrTraits<U (*)(void)>
+    struct FunctionPtrTraits<U (*)()>
     {
         /** Value. */
         enum
@@ -438,7 +438,7 @@ struct TypeTraits
      *  \tparam V \deduced Class type.
      */
     template <typename U, typename V>
-    struct PtrToMemberTraits<U (V::*)(void)>
+    struct PtrToMemberTraits<U (V::*)()>
     {
         /** Value. */
         enum
@@ -460,7 +460,7 @@ struct TypeTraits
      *  \tparam V \deduced Class type.
      */
     template <typename U, typename V>
-    struct PtrToMemberTraits<U (V::*)(void) const>
+    struct PtrToMemberTraits<U (V::*)() const>
     {
         /** Value. */
         enum

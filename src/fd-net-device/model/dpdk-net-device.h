@@ -51,7 +51,7 @@ class DpdkNetDevice : public FdNetDevice
      * \brief Get the type ID.
      * \return the object TypeId
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     /**
      * Constructor for the DpdkNetDevice.
@@ -67,7 +67,7 @@ class DpdkNetDevice : public FdNetDevice
      * Check the link status of all ports in up to 9s
      * and print them finally
      */
-    void CheckAllPortsLinkStatus(void);
+    void CheckAllPortsLinkStatus();
 
     /**
      * Initialize Dpdk.
@@ -114,7 +114,7 @@ class DpdkNetDevice : public FdNetDevice
      * Check the status of the link.
      * \return Status of the link - up/down as true/false.
      */
-    bool IsLinkUp(void) const;
+    bool IsLinkUp() const;
 
     /**
      * Free the given packet buffer.
@@ -149,7 +149,7 @@ class DpdkNetDevice : public FdNetDevice
     std::string m_deviceName;
 
   private:
-    void DoFinishStoppingDevice(void);
+    void DoFinishStoppingDevice();
     /**
      * Condition variable for Dpdk to stop
      */

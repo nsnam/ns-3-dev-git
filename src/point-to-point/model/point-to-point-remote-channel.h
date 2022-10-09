@@ -46,7 +46,7 @@ class PointToPointRemoteChannel : public PointToPointChannel
      *
      * \return The TypeId for this class
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     /**
      * \brief Constructor
@@ -56,7 +56,7 @@ class PointToPointRemoteChannel : public PointToPointChannel
     /**
      * \brief Deconstructor
      */
-    ~PointToPointRemoteChannel();
+    ~PointToPointRemoteChannel() override;
 
     /**
      * \brief Transmit the packet
@@ -66,7 +66,7 @@ class PointToPointRemoteChannel : public PointToPointChannel
      * \param txTime Transmit time to apply
      * \returns true if successful (currently always true)
      */
-    virtual bool TransmitStart(Ptr<const Packet> p, Ptr<PointToPointNetDevice> src, Time txTime);
+    bool TransmitStart(Ptr<const Packet> p, Ptr<PointToPointNetDevice> src, Time txTime) override;
 };
 
 } // namespace ns3

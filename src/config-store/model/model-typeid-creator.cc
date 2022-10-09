@@ -45,7 +45,7 @@ ModelTypeidCreator::Add(ModelTypeid* node)
 }
 
 void
-ModelTypeidCreator::Remove(void)
+ModelTypeidCreator::Remove()
 {
     GtkTreeIter* iter = m_iters.back();
     g_free(iter);
@@ -78,7 +78,7 @@ ModelTypeidCreator::StartVisitTypeId(std::string name)
 }
 
 void
-ModelTypeidCreator::EndVisitTypeId(void)
+ModelTypeidCreator::EndVisitTypeId()
 {
     Remove();
 }

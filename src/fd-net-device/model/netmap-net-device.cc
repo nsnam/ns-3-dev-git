@@ -31,7 +31,7 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("NetmapNetDevice");
 
 TypeId
-NetDeviceQueueLock::GetTypeId(void)
+NetDeviceQueueLock::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::NetDeviceQueueLock")
                             .SetParent<NetDeviceQueue>()
@@ -49,7 +49,7 @@ NetDeviceQueueLock::~NetDeviceQueueLock()
 }
 
 bool
-NetDeviceQueueLock::IsStopped(void) const
+NetDeviceQueueLock::IsStopped() const
 {
     m_mutex.lock();
     bool stopped = NetDeviceQueue::IsStopped();
@@ -58,7 +58,7 @@ NetDeviceQueueLock::IsStopped(void) const
 }
 
 void
-NetDeviceQueueLock::Start(void)
+NetDeviceQueueLock::Start()
 {
     m_mutex.lock();
     NetDeviceQueue::Start();
@@ -66,7 +66,7 @@ NetDeviceQueueLock::Start(void)
 }
 
 void
-NetDeviceQueueLock::Stop(void)
+NetDeviceQueueLock::Stop()
 {
     m_mutex.lock();
     NetDeviceQueue::Stop();
@@ -74,7 +74,7 @@ NetDeviceQueueLock::Stop(void)
 }
 
 void
-NetDeviceQueueLock::Wake(void)
+NetDeviceQueueLock::Wake()
 {
     m_mutex.lock();
     NetDeviceQueue::Wake();
@@ -119,7 +119,7 @@ NetmapNetDeviceFdReader::SetNetmapIfp(struct netmap_if* nifp)
 }
 
 FdReader::Data
-NetmapNetDeviceFdReader::DoRead(void)
+NetmapNetDeviceFdReader::DoRead()
 {
     NS_LOG_FUNCTION(this);
 
@@ -172,7 +172,7 @@ NetmapNetDeviceFdReader::DoRead(void)
 NS_OBJECT_ENSURE_REGISTERED(NetmapNetDevice);
 
 TypeId
-NetmapNetDevice::GetTypeId(void)
+NetmapNetDevice::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::NetmapNetDevice")
@@ -209,7 +209,7 @@ NetmapNetDevice::~NetmapNetDevice()
 }
 
 Ptr<FdReader>
-NetmapNetDevice::DoCreateFdReader(void)
+NetmapNetDevice::DoCreateFdReader()
 {
     NS_LOG_FUNCTION(this);
 
@@ -221,7 +221,7 @@ NetmapNetDevice::DoCreateFdReader(void)
 }
 
 void
-NetmapNetDevice::DoFinishStartingDevice(void)
+NetmapNetDevice::DoFinishStartingDevice()
 {
     NS_LOG_FUNCTION(this);
 
@@ -230,7 +230,7 @@ NetmapNetDevice::DoFinishStartingDevice(void)
 }
 
 void
-NetmapNetDevice::DoFinishStoppingDevice(void)
+NetmapNetDevice::DoFinishStoppingDevice()
 {
     NS_LOG_FUNCTION(this);
 

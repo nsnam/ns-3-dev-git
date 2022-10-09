@@ -336,9 +336,9 @@ public:
   virtual ~AppendModeCreateTestCase ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup ();
+  virtual void DoRun ();
+  virtual void DoTeardown ();
 
   std::string m_testFilename;
 };
@@ -353,7 +353,7 @@ AppendModeCreateTestCase::~AppendModeCreateTestCase ()
 }
 
 void
-AppendModeCreateTestCase::DoSetup (void)
+AppendModeCreateTestCase::DoSetup ()
 {
   std::stringstream filename;
   uint32_t n = rand ();
@@ -362,7 +362,7 @@ AppendModeCreateTestCase::DoSetup (void)
 }
 
 void
-AppendModeCreateTestCase::DoTeardown (void)
+AppendModeCreateTestCase::DoTeardown ()
 {
   if (remove (m_testFilename.c_str ()))
     {
@@ -371,7 +371,7 @@ AppendModeCreateTestCase::DoTeardown (void)
 }
 
 void
-AppendModeCreateTestCase::DoRun (void)
+AppendModeCreateTestCase::DoRun ()
 {
   PcapFile f;
 

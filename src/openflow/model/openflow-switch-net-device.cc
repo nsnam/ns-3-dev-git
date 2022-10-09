@@ -61,7 +61,7 @@ GenerateId()
 }
 
 TypeId
-OpenFlowSwitchNetDevice::GetTypeId(void)
+OpenFlowSwitchNetDevice::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::OpenFlowSwitchNetDevice")
@@ -214,14 +214,14 @@ OpenFlowSwitchNetDevice::SetIfIndex(const uint32_t index)
 }
 
 uint32_t
-OpenFlowSwitchNetDevice::GetIfIndex(void) const
+OpenFlowSwitchNetDevice::GetIfIndex() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_ifIndex;
 }
 
 Ptr<Channel>
-OpenFlowSwitchNetDevice::GetChannel(void) const
+OpenFlowSwitchNetDevice::GetChannel() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_channel;
@@ -235,7 +235,7 @@ OpenFlowSwitchNetDevice::SetAddress(Address address)
 }
 
 Address
-OpenFlowSwitchNetDevice::GetAddress(void) const
+OpenFlowSwitchNetDevice::GetAddress() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_address;
@@ -250,14 +250,14 @@ OpenFlowSwitchNetDevice::SetMtu(const uint16_t mtu)
 }
 
 uint16_t
-OpenFlowSwitchNetDevice::GetMtu(void) const
+OpenFlowSwitchNetDevice::GetMtu() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_mtu;
 }
 
 bool
-OpenFlowSwitchNetDevice::IsLinkUp(void) const
+OpenFlowSwitchNetDevice::IsLinkUp() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return true;
@@ -269,21 +269,21 @@ OpenFlowSwitchNetDevice::AddLinkChangeCallback(Callback<void> callback)
 }
 
 bool
-OpenFlowSwitchNetDevice::IsBroadcast(void) const
+OpenFlowSwitchNetDevice::IsBroadcast() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return true;
 }
 
 Address
-OpenFlowSwitchNetDevice::GetBroadcast(void) const
+OpenFlowSwitchNetDevice::GetBroadcast() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return Mac48Address("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-OpenFlowSwitchNetDevice::IsMulticast(void) const
+OpenFlowSwitchNetDevice::IsMulticast() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return true;
@@ -298,14 +298,14 @@ OpenFlowSwitchNetDevice::GetMulticast(Ipv4Address multicastGroup) const
 }
 
 bool
-OpenFlowSwitchNetDevice::IsPointToPoint(void) const
+OpenFlowSwitchNetDevice::IsPointToPoint() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return false;
 }
 
 bool
-OpenFlowSwitchNetDevice::IsBridge(void) const
+OpenFlowSwitchNetDevice::IsBridge() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return true;
@@ -360,7 +360,7 @@ OpenFlowSwitchNetDevice::SendFrom(Ptr<Packet> packet,
 }
 
 Ptr<Node>
-OpenFlowSwitchNetDevice::GetNode(void) const
+OpenFlowSwitchNetDevice::GetNode() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_node;
@@ -374,7 +374,7 @@ OpenFlowSwitchNetDevice::SetNode(Ptr<Node> node)
 }
 
 bool
-OpenFlowSwitchNetDevice::NeedsArp(void) const
+OpenFlowSwitchNetDevice::NeedsArp() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return true;
@@ -1660,7 +1660,7 @@ OpenFlowSwitchNetDevice::GetChain()
 }
 
 uint32_t
-OpenFlowSwitchNetDevice::GetNSwitchPorts(void) const
+OpenFlowSwitchNetDevice::GetNSwitchPorts() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_ports.size();

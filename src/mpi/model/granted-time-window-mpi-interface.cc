@@ -51,8 +51,8 @@ NS_OBJECT_ENSURE_REGISTERED(GrantedTimeWindowMpiInterface);
 
 SentBuffer::SentBuffer()
 {
-    m_buffer = 0;
-    m_request = 0;
+    m_buffer = nullptr;
+    m_request = nullptr;
 }
 
 SentBuffer::~SentBuffer()
@@ -93,7 +93,7 @@ bool GrantedTimeWindowMpiInterface::g_freeCommunicator = false;
 ;
 
 TypeId
-GrantedTimeWindowMpiInterface::GetTypeId(void)
+GrantedTimeWindowMpiInterface::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::GrantedTimeWindowMpiInterface").SetParent<Object>().SetGroupName("Mpi");
@@ -284,7 +284,7 @@ GrantedTimeWindowMpiInterface::ReceiveMessages()
 
         // Find the correct node/device to schedule receive event
         Ptr<Node> pNode = NodeList::GetNode(node);
-        Ptr<MpiReceiver> pMpiRec = 0;
+        Ptr<MpiReceiver> pMpiRec = nullptr;
         uint32_t nDevices = pNode->GetNDevices();
         for (uint32_t i = 0; i < nDevices; ++i)
         {

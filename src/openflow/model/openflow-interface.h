@@ -397,7 +397,7 @@ class Controller : public Object
      * Register this type.
      * \return The TypeId.
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
     /** Destructor. */
     virtual ~Controller();
 
@@ -497,7 +497,7 @@ class DropController : public Controller
      * Register this type.
      * \return The TypeId.
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     void ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer);
 };
@@ -517,7 +517,7 @@ class LearningController : public Controller
      * Register this type.
      * \return The TypeId.
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     virtual ~LearningController()
     {

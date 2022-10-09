@@ -150,7 +150,7 @@ class BriteTopologyHelper
      *
      * \returns the number of AS created in the topology
      */
-    uint32_t GetNAs(void) const;
+    uint32_t GetNAs() const;
 
     /**
      * Returns the system number for the MPI instance that this AS is assigned to.  Will always
@@ -241,13 +241,13 @@ class BriteTopologyHelper
     NodeContainer m_nodes;
 
     /// Build the Node Info list
-    void BuildBriteNodeInfoList(void);
+    void BuildBriteNodeInfoList();
     /// Build the Edge Info list
-    void BuildBriteEdgeInfoList(void);
+    void BuildBriteEdgeInfoList();
     /// Construct the topology.
-    void ConstructTopology(void);
+    void ConstructTopology();
     /// Generate the BRITE topology.
-    void GenerateBriteTopology(void);
+    void GenerateBriteTopology();
 
     /// brite configuration file to use
     std::string m_confFile;

@@ -51,7 +51,7 @@ NS_OBJECT_ENSURE_REGISTERED(DpdkNetDevice);
 volatile bool DpdkNetDevice::m_forceQuit = false;
 
 TypeId
-DpdkNetDevice::GetTypeId(void)
+DpdkNetDevice::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::DpdkNetDevice")
@@ -117,7 +117,7 @@ DpdkNetDevice::SetDeviceName(std::string deviceName)
 }
 
 void
-DpdkNetDevice::CheckAllPortsLinkStatus(void)
+DpdkNetDevice::CheckAllPortsLinkStatus()
 {
     NS_LOG_FUNCTION(this);
 
@@ -241,7 +241,7 @@ DpdkNetDevice::LaunchCore(void* arg)
 }
 
 bool
-DpdkNetDevice::IsLinkUp(void) const
+DpdkNetDevice::IsLinkUp() const
 {
     // Refer https://mails.dpdk.org/archives/users/2018-December/003822.html
     return true;
@@ -458,7 +458,7 @@ DpdkNetDevice::Write(uint8_t* buffer, size_t length)
 }
 
 void
-DpdkNetDevice::DoFinishStoppingDevice(void)
+DpdkNetDevice::DoFinishStoppingDevice()
 {
     std::unique_lock lock{m_pendingReadMutex};
 

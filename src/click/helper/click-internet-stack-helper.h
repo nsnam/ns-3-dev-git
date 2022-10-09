@@ -53,19 +53,19 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
     /**
      * Create a new ClickInternetStackHelper which uses Ipv4ClickRouting for routing
      */
-    ClickInternetStackHelper(void);
+    ClickInternetStackHelper();
 
     /**
      * Destroy the ClickInternetStackHelper
      */
-    virtual ~ClickInternetStackHelper(void);
+    ~ClickInternetStackHelper() override;
     ClickInternetStackHelper(const ClickInternetStackHelper&);
     ClickInternetStackHelper& operator=(const ClickInternetStackHelper& o);
 
     /**
      * Return helper internal state to that of a newly constructed one
      */
-    void Reset(void);
+    void Reset();
 
     /**
      * Aggregate implementations of the ns3::Ipv4L3ClickProtocol, ns3::ArpL3Protocol,
@@ -99,7 +99,7 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
     /**
      * Aggregate IPv4, UDP, and TCP stacks to all nodes in the simulation
      */
-    void InstallAll(void) const;
+    void InstallAll() const;
 
     /**
      * \brief set the Tcp stack which will not need any other parameter.
@@ -179,10 +179,10 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
      * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
      * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
      */
-    virtual void EnablePcapIpv4Internal(std::string prefix,
-                                        Ptr<Ipv4> ipv4,
-                                        uint32_t interface,
-                                        bool explicitFilename);
+    void EnablePcapIpv4Internal(std::string prefix,
+                                Ptr<Ipv4> ipv4,
+                                uint32_t interface,
+                                bool explicitFilename) override;
 
     /**
      * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
@@ -193,18 +193,18 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
      * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
      * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
      */
-    virtual void EnableAsciiIpv4Internal(Ptr<OutputStreamWrapper> stream,
-                                         std::string prefix,
-                                         Ptr<Ipv4> ipv4,
-                                         uint32_t interface,
-                                         bool explicitFilename);
+    void EnableAsciiIpv4Internal(Ptr<OutputStreamWrapper> stream,
+                                 std::string prefix,
+                                 Ptr<Ipv4> ipv4,
+                                 uint32_t interface,
+                                 bool explicitFilename) override;
 
-    void Initialize(void);
+    void Initialize();
     ObjectFactory m_tcpFactory;
 
     static void CreateAndAggregateObjectFromTypeId(Ptr<Node> node, const std::string typeId);
 
-    static void Cleanup(void);
+    static void Cleanup();
 
     bool PcapHooked(Ptr<Ipv4> ipv4);
 

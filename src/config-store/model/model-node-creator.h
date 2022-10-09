@@ -76,28 +76,28 @@ class ModelCreator : public AttributeIterator
     void Build(GtkTreeStore* treestore);
 
   private:
-    virtual void DoVisitAttribute(Ptr<Object> object, std::string name);
-    virtual void DoStartVisitObject(Ptr<Object> object);
-    virtual void DoEndVisitObject(void);
-    virtual void DoStartVisitPointerAttribute(Ptr<Object> object,
-                                              std::string name,
-                                              Ptr<Object> value);
-    virtual void DoEndVisitPointerAttribute(void);
-    virtual void DoStartVisitArrayAttribute(Ptr<Object> object,
-                                            std::string name,
-                                            const ObjectPtrContainerValue& vector);
-    virtual void DoEndVisitArrayAttribute(void);
-    virtual void DoStartVisitArrayItem(const ObjectPtrContainerValue& vector,
-                                       uint32_t index,
-                                       Ptr<Object> item);
-    virtual void DoEndVisitArrayItem(void);
+    void DoVisitAttribute(Ptr<Object> object, std::string name) override;
+    void DoStartVisitObject(Ptr<Object> object) override;
+    void DoEndVisitObject() override;
+    void DoStartVisitPointerAttribute(Ptr<Object> object,
+                                      std::string name,
+                                      Ptr<Object> value) override;
+    void DoEndVisitPointerAttribute() override;
+    void DoStartVisitArrayAttribute(Ptr<Object> object,
+                                    std::string name,
+                                    const ObjectPtrContainerValue& vector) override;
+    void DoEndVisitArrayAttribute() override;
+    void DoStartVisitArrayItem(const ObjectPtrContainerValue& vector,
+                               uint32_t index,
+                               Ptr<Object> item) override;
+    void DoEndVisitArrayItem() override;
     /**
      * Add item to attribute tree
      * \param node The model node
      */
     void Add(ModelNode* node);
     /// Remove current tree item
-    void Remove(void);
+    void Remove();
 
     GtkTreeStore* m_treestore;         ///< attribute tree
     std::vector<GtkTreeIter*> m_iters; ///< attribute tree item

@@ -1441,8 +1441,8 @@ NixVectorRouting<T>::CheckCacheStateAndFlush() const
 /* Public template function declarations */
 template void NixVectorRouting<Ipv4RoutingProtocol>::SetNode(Ptr<Node> node);
 template void NixVectorRouting<Ipv6RoutingProtocol>::SetNode(Ptr<Node> node);
-template void NixVectorRouting<Ipv4RoutingProtocol>::FlushGlobalNixRoutingCache(void) const;
-template void NixVectorRouting<Ipv6RoutingProtocol>::FlushGlobalNixRoutingCache(void) const;
+template void NixVectorRouting<Ipv4RoutingProtocol>::FlushGlobalNixRoutingCache() const;
+template void NixVectorRouting<Ipv6RoutingProtocol>::FlushGlobalNixRoutingCache() const;
 template void NixVectorRouting<Ipv4RoutingProtocol>::PrintRoutingPath(
     Ptr<Node> source,
     IpAddress dest,

@@ -69,22 +69,22 @@ class RemoteChannelBundleManager
      * Get the number of ns-3 channels in this bundle
      * \return The number of channels.
      */
-    static std::size_t Size(void);
+    static std::size_t Size();
 
     /**
      * Setup initial Null Message events for every RemoteChannelBundle.
      * All RemoteChannelBundles should be added before this method is invoked.
      */
-    static void InitializeNullMessageEvents(void);
+    static void InitializeNullMessageEvents();
 
     /**
      * Get the safe time across all channels in this bundle.
      * \return The safe time.
      */
-    static Time GetSafeTime(void);
+    static Time GetSafeTime();
 
     /** Destroy the singleton. */
-    static void Destroy(void);
+    static void Destroy();
 
   private:
     /**

@@ -229,14 +229,14 @@ class UniformRandomVariable : public RandomVariableStream
     UniformRandomVariable();
 
     /**
-     * \brief Get the lower bound on randoms returned by GetValue(void).
-     * \return The lower bound on values from GetValue(void).
+     * \brief Get the lower bound on randoms returned by GetValue().
+     * \return The lower bound on values from GetValue().
      */
     double GetMin() const;
 
     /**
-     * \brief Get the upper bound on values returned by GetValue(void).
-     * \return The upper bound on values from GetValue(void).
+     * \brief Get the upper bound on values returned by GetValue().
+     * \return The upper bound on values from GetValue().
      */
     double GetMax() const;
 

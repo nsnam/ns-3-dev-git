@@ -118,7 +118,7 @@ class MobilityModel : public Object
      * \return the current position.
      *
      * Unless subclasses override, this method will disregard the reference
-     * position and return "DoGetPosition (void)".
+     * position and return "DoGetPosition ()".
      */
     virtual Vector DoGetPositionWithReference(const Vector& referencePosition) const;
     /**

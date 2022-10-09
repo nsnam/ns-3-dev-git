@@ -94,7 +94,7 @@ ClickInternetStackHelper::operator=(const ClickInternetStackHelper& o)
 }
 
 void
-ClickInternetStackHelper::Reset(void)
+ClickInternetStackHelper::Reset()
 {
     m_ipv4Enabled = true;
     Initialize();
@@ -168,7 +168,7 @@ ClickInternetStackHelper::Install(NodeContainer c) const
 }
 
 void
-ClickInternetStackHelper::InstallAll(void) const
+ClickInternetStackHelper::InstallAll() const
 {
     Install(NodeContainer::GetGlobal());
 }

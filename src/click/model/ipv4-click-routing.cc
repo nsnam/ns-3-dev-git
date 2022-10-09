@@ -49,7 +49,7 @@ NS_OBJECT_ENSURE_REGISTERED(Ipv4ClickRouting);
 std::map<simclick_node_t*, Ptr<Ipv4ClickRouting>> Ipv4ClickRouting::m_clickInstanceFromSimNode;
 
 TypeId
-Ipv4ClickRouting::GetTypeId(void)
+Ipv4ClickRouting::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::Ipv4ClickRouting")
                             .SetParent<Ipv4RoutingProtocol>()
@@ -112,7 +112,7 @@ Ipv4ClickRouting::SetIpv4(Ptr<Ipv4> ipv4)
 }
 
 Ptr<UniformRandomVariable>
-Ipv4ClickRouting::GetRandomVariable(void)
+Ipv4ClickRouting::GetRandomVariable()
 {
     return m_random;
 }
@@ -142,7 +142,7 @@ Ipv4ClickRouting::SetDefines(std::map<std::string, std::string> defines)
 }
 
 std::map<std::string, std::string>
-Ipv4ClickRouting::GetDefines(void)
+Ipv4ClickRouting::GetDefines()
 {
     return m_defines;
 }
@@ -630,7 +630,7 @@ simclick_sim_send(simclick_node_t* simnode,
                                                 << ifid << " " << type << " " << data << " "
                                                 << len);
 
-    if (simnode == NULL)
+    if (!simnode)
     {
         return -1;
     }

@@ -476,7 +476,7 @@ OfdmPhy::GetOfdmRate(uint64_t rate, uint16_t bw)
 }
 
 #define GET_OFDM_MODE(x, f)                                                                        \
-    WifiMode OfdmPhy::Get##x(void)                                                                 \
+    WifiMode OfdmPhy::Get##x()                                                                     \
     {                                                                                              \
         static WifiMode mode = CreateOfdmMode(#x, f);                                              \
         return mode;                                                                               \

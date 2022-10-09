@@ -61,19 +61,19 @@ PathSplit(std::string str)
 namespace ns3
 {
 
-static PyViz* g_visualizer = NULL; ///< the visualizer
+static PyViz* g_visualizer = nullptr; ///< the visualizer
 
 /**
  * PyVizPacketTag structure
  */
 struct PyVizPacketTag : public Tag
 {
-    static TypeId GetTypeId(void);
-    virtual TypeId GetInstanceTypeId(void) const;
-    virtual uint32_t GetSerializedSize(void) const;
-    virtual void Serialize(TagBuffer buf) const;
-    virtual void Deserialize(TagBuffer buf);
-    virtual void Print(std::ostream& os) const;
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(TagBuffer buf) const override;
+    void Deserialize(TagBuffer buf) override;
+    void Print(std::ostream& os) const override;
     PyVizPacketTag();
 
     uint32_t m_packetId; ///< packet id
@@ -84,7 +84,7 @@ struct PyVizPacketTag : public Tag
  * \return the object TypeId
  */
 TypeId
-PyVizPacketTag::GetTypeId(void)
+PyVizPacketTag::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::PyVizPacketTag")
                             .SetParent<Tag>()
@@ -94,13 +94,13 @@ PyVizPacketTag::GetTypeId(void)
 }
 
 TypeId
-PyVizPacketTag::GetInstanceTypeId(void) const
+PyVizPacketTag::GetInstanceTypeId() const
 {
     return GetTypeId();
 }
 
 uint32_t
-PyVizPacketTag::GetSerializedSize(void) const
+PyVizPacketTag::GetSerializedSize() const
 {
     return 4;
 }
@@ -131,7 +131,7 @@ PyVizPacketTag::PyVizPacketTag()
 PyViz::PyViz()
 {
     NS_LOG_FUNCTION_NOARGS();
-    NS_ASSERT(g_visualizer == NULL);
+    NS_ASSERT(g_visualizer == nullptr);
     g_visualizer = this;
 
     // WiFi
@@ -247,7 +247,7 @@ PyViz::~PyViz()
     NS_LOG_FUNCTION_NOARGS();
 
     NS_ASSERT(g_visualizer == this);
-    g_visualizer = NULL;
+    g_visualizer = nullptr
 }
 
 void
@@ -1085,24 +1085,40 @@ class FastClipping
         uint8_t lineCode = 0;
 
         if (line.end.y < m_clipMin.y)
+        {
             lineCode |= 8;
+        }
         else if (line.end.y > m_clipMax.y)
+        {
             lineCode |= 4;
+        }
 
         if (line.end.x > m_clipMax.x)
+        {
             lineCode |= 2;
+        }
         else if (line.end.x < m_clipMin.x)
+        {
             lineCode |= 1;
+        }
 
         if (line.start.y < m_clipMin.y)
+        {
             lineCode |= 128;
+        }
         else if (line.start.y > m_clipMax.y)
+        {
             lineCode |= 64;
+        }
 
         if (line.start.x > m_clipMax.x)
+        {
             lineCode |= 32;
+        }
         else if (line.start.x < m_clipMin.x)
+        {
             lineCode |= 16;
+        }
 
         // 9 - 8 - A
         // |   |   |
@@ -1130,13 +1146,17 @@ class FastClipping
         case 0x05:
             ClipEndLeft(line);
             if (line.end.y > m_clipMax.y)
+            {
                 ClipEndBottom(line);
+            }
             return true;
 
         case 0x06:
             ClipEndRight(line);
             if (line.end.y > m_clipMax.y)
+            {
                 ClipEndBottom(line);
+            }
             return true;
 
         case 0x08:
@@ -1146,13 +1166,17 @@ class FastClipping
         case 0x09:
             ClipEndLeft(line);
             if (line.end.y < m_clipMin.y)
+            {
                 ClipEndTop(line);
+            }
             return true;
 
         case 0x0A:
             ClipEndRight(line);
             if (line.end.y < m_clipMin.y)
+            {
                 ClipEndTop(line);
+            }
             return true;
 
         // left
@@ -1168,33 +1192,45 @@ class FastClipping
         case 0x14:
             ClipStartLeft(line);
             if (line.start.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipEndBottom(line);
             return true;
 
         case 0x16:
             ClipStartLeft(line);
             if (line.start.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipEndBottom(line);
             if (line.end.x > m_clipMax.x)
+            {
                 ClipEndRight(line);
+            }
             return true;
 
         case 0x18:
             ClipStartLeft(line);
             if (line.start.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipEndTop(line);
             return true;
 
         case 0x1A:
             ClipStartLeft(line);
             if (line.start.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipEndTop(line);
             if (line.end.x > m_clipMax.x)
+            {
                 ClipEndRight(line);
+            }
             return true;
 
         // right
@@ -1210,33 +1246,45 @@ class FastClipping
         case 0x24:
             ClipStartRight(line);
             if (line.start.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipEndBottom(line);
             return true;
 
         case 0x25:
             ClipStartRight(line);
             if (line.start.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipEndBottom(line);
             if (line.end.x < m_clipMin.x)
+            {
                 ClipEndLeft(line);
+            }
             return true;
 
         case 0x28:
             ClipStartRight(line);
             if (line.start.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipEndTop(line);
             return true;
 
         case 0x29:
             ClipStartRight(line);
             if (line.start.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipEndTop(line);
             if (line.end.x < m_clipMin.x)
+            {
                 ClipEndLeft(line);
+            }
             return true;
 
         // bottom
@@ -1247,16 +1295,22 @@ class FastClipping
         case 0x41:
             ClipStartBottom(line);
             if (line.start.x < m_clipMin.x)
+            {
                 return false;
+            }
             ClipEndLeft(line);
             if (line.end.y > m_clipMax.y)
+            {
                 ClipEndBottom(line);
+            }
             return true;
 
         case 0x42:
             ClipStartBottom(line);
             if (line.start.x > m_clipMax.x)
+            {
                 return false;
+            }
             ClipEndRight(line);
             return true;
 
@@ -1268,95 +1322,139 @@ class FastClipping
         case 0x49:
             ClipStartBottom(line);
             if (line.start.x < m_clipMin.x)
+            {
                 return false;
+            }
             ClipEndLeft(line);
             if (line.end.y < m_clipMin.y)
+            {
                 ClipEndTop(line);
+            }
             return true;
 
         case 0x4A:
             ClipStartBottom(line);
             if (line.start.x > m_clipMax.x)
+            {
                 return false;
+            }
             ClipEndRight(line);
             if (line.end.y < m_clipMin.y)
+            {
                 ClipEndTop(line);
+            }
             return true;
 
         // bottom-left
         case 0x50:
             ClipStartLeft(line);
             if (line.start.y > m_clipMax.y)
+            {
                 ClipStartBottom(line);
+            }
             return true;
 
         case 0x52:
             ClipEndRight(line);
             if (line.end.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipStartBottom(line);
             if (line.start.x < m_clipMin.x)
+            {
                 ClipStartLeft(line);
+            }
             return true;
 
         case 0x58:
             ClipEndTop(line);
             if (line.end.x < m_clipMin.x)
+            {
                 return false;
+            }
             ClipStartBottom(line);
             if (line.start.x < m_clipMin.x)
+            {
                 ClipStartLeft(line);
+            }
             return true;
 
         case 0x5A:
             ClipStartLeft(line);
             if (line.start.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipEndRight(line);
             if (line.end.y > m_clipMax.y)
+            {
                 return false;
+            }
             if (line.start.y > m_clipMax.y)
+            {
                 ClipStartBottom(line);
+            }
             if (line.end.y < m_clipMin.y)
+            {
                 ClipEndTop(line);
+            }
             return true;
 
         // bottom-right
         case 0x60:
             ClipStartRight(line);
             if (line.start.y > m_clipMax.y)
+            {
                 ClipStartBottom(line);
+            }
             return true;
 
         case 0x61:
             ClipEndLeft(line);
             if (line.end.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipStartBottom(line);
             if (line.start.x > m_clipMax.x)
+            {
                 ClipStartRight(line);
+            }
             return true;
 
         case 0x68:
             ClipEndTop(line);
             if (line.end.x > m_clipMax.x)
+            {
                 return false;
+            }
             ClipStartRight(line);
             if (line.start.y > m_clipMax.y)
+            {
                 ClipStartBottom(line);
+            }
             return true;
 
         case 0x69:
             ClipEndLeft(line);
             if (line.end.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipStartRight(line);
             if (line.start.y < m_clipMin.y)
+            {
                 return false;
+            }
             if (line.end.y < m_clipMin.y)
+            {
                 ClipEndTop(line);
+            }
             if (line.start.y > m_clipMax.y)
+            {
                 ClipStartBottom(line);
+            }
             return true;
 
         // top
@@ -1367,14 +1465,18 @@ class FastClipping
         case 0x81:
             ClipStartTop(line);
             if (line.start.x < m_clipMin.x)
+            {
                 return false;
+            }
             ClipEndLeft(line);
             return true;
 
         case 0x82:
             ClipStartTop(line);
             if (line.start.x > m_clipMax.x)
+            {
                 return false;
+            }
             ClipEndRight(line);
             return true;
 
@@ -1386,95 +1488,139 @@ class FastClipping
         case 0x85:
             ClipStartTop(line);
             if (line.start.x < m_clipMin.x)
+            {
                 return false;
+            }
             ClipEndLeft(line);
             if (line.end.y > m_clipMax.y)
+            {
                 ClipEndBottom(line);
+            }
             return true;
 
         case 0x86:
             ClipStartTop(line);
             if (line.start.x > m_clipMax.x)
+            {
                 return false;
+            }
             ClipEndRight(line);
             if (line.end.y > m_clipMax.y)
+            {
                 ClipEndBottom(line);
+            }
             return true;
 
         // top-left
         case 0x90:
             ClipStartLeft(line);
             if (line.start.y < m_clipMin.y)
+            {
                 ClipStartTop(line);
+            }
             return true;
 
         case 0x92:
             ClipEndRight(line);
             if (line.end.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipStartTop(line);
             if (line.start.x < m_clipMin.x)
+            {
                 ClipStartLeft(line);
+            }
             return true;
 
         case 0x94:
             ClipEndBottom(line);
             if (line.end.x < m_clipMin.x)
+            {
                 return false;
+            }
             ClipStartLeft(line);
             if (line.start.y < m_clipMin.y)
+            {
                 ClipStartTop(line);
+            }
             return true;
 
         case 0x96:
             ClipStartLeft(line);
             if (line.start.y > m_clipMax.y)
+            {
                 return false;
+            }
             ClipEndRight(line);
             if (line.end.y < m_clipMin.y)
+            {
                 return false;
+            }
             if (line.start.y < m_clipMin.y)
+            {
                 ClipStartTop(line);
+            }
             if (line.end.y > m_clipMax.y)
+            {
                 ClipEndBottom(line);
+            }
             return true;
 
         // top-right
         case 0xA0:
             ClipStartRight(line);
             if (line.start.y < m_clipMin.y)
+            {
                 ClipStartTop(line);
+            }
             return true;
 
         case 0xA1:
             ClipEndLeft(line);
             if (line.end.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipStartTop(line);
             if (line.start.x > m_clipMax.x)
+            {
                 ClipStartRight(line);
+            }
             return true;
 
         case 0xA4:
             ClipEndBottom(line);
             if (line.end.x > m_clipMax.x)
+            {
                 return false;
+            }
             ClipStartRight(line);
             if (line.start.y < m_clipMin.y)
+            {
                 ClipStartTop(line);
+            }
             return true;
 
         case 0xA5:
             ClipEndLeft(line);
             if (line.end.y < m_clipMin.y)
+            {
                 return false;
+            }
             ClipStartRight(line);
             if (line.start.y > m_clipMax.y)
+            {
                 return false;
+            }
             if (line.end.y > m_clipMax.y)
+            {
                 ClipEndBottom(line);
+            }
             if (line.start.y < m_clipMin.y)
+            {
                 ClipStartTop(line);
+            }
             return true;
         }
 
@@ -1493,7 +1639,8 @@ PyViz::LineClipping(double boundsX1,
                     double& lineX2,
                     double& lineY2)
 {
-    FastClipping::Vector2 clipMin = {boundsX1, boundsY1}, clipMax = {boundsX2, boundsY2};
+    FastClipping::Vector2 clipMin = {boundsX1, boundsY1};
+    FastClipping::Vector2 clipMax = {boundsX2, boundsY2};
     FastClipping::Line line = {{lineX1, lineY1},
                                {lineX2, lineY2},
                                (lineX2 - lineX1),

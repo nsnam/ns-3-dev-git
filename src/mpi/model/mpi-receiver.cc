@@ -28,7 +28,7 @@ namespace ns3
 {
 
 TypeId
-MpiReceiver::GetTypeId(void)
+MpiReceiver::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::MpiReceiver")
                             .SetParent<Object>()
@@ -55,7 +55,7 @@ MpiReceiver::Receive(Ptr<Packet> p)
 }
 
 void
-MpiReceiver::DoDispose(void)
+MpiReceiver::DoDispose()
 {
     m_rxCallback = MakeNullCallback<void, Ptr<Packet>>();
 }

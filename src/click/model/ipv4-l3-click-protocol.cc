@@ -46,7 +46,7 @@ const uint16_t Ipv4L3ClickProtocol::PROT_NUMBER = 0x0800;
 NS_OBJECT_ENSURE_REGISTERED(Ipv4L3ClickProtocol);
 
 TypeId
-Ipv4L3ClickProtocol::GetTypeId(void)
+Ipv4L3ClickProtocol::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::Ipv4L3ClickProtocol")
@@ -77,7 +77,7 @@ Ipv4L3ClickProtocol::~Ipv4L3ClickProtocol()
 }
 
 void
-Ipv4L3ClickProtocol::DoDispose(void)
+Ipv4L3ClickProtocol::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
@@ -94,8 +94,8 @@ Ipv4L3ClickProtocol::DoDispose(void)
     m_reverseInterfacesContainer.clear();
 
     m_sockets.clear();
-    m_node = 0;
-    m_routingProtocol = 0;
+    m_node = nullptr;
+    m_routingProtocol = nullptr;
     Object::DoDispose();
 }
 
@@ -124,7 +124,7 @@ Ipv4L3ClickProtocol::SetRoutingProtocol(Ptr<Ipv4RoutingProtocol> routingProtocol
 }
 
 Ptr<Ipv4RoutingProtocol>
-Ipv4L3ClickProtocol::GetRoutingProtocol(void) const
+Ipv4L3ClickProtocol::GetRoutingProtocol() const
 {
     return m_routingProtocol;
 }
@@ -141,7 +141,7 @@ Ipv4L3ClickProtocol::GetInterface(uint32_t index) const
 }
 
 uint32_t
-Ipv4L3ClickProtocol::GetNInterfaces(void) const
+Ipv4L3ClickProtocol::GetNInterfaces() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_interfaces.size();
@@ -283,7 +283,7 @@ Ipv4L3ClickProtocol::SetIpForward(bool forward)
 }
 
 bool
-Ipv4L3ClickProtocol::GetIpForward(void) const
+Ipv4L3ClickProtocol::GetIpForward() const
 {
     return m_ipForward;
 }
@@ -295,7 +295,7 @@ Ipv4L3ClickProtocol::SetWeakEsModel(bool model)
 }
 
 bool
-Ipv4L3ClickProtocol::GetWeakEsModel(void) const
+Ipv4L3ClickProtocol::GetWeakEsModel() const
 {
     return m_weakEsModel;
 }
@@ -315,7 +315,7 @@ Ipv4L3ClickProtocol::SetDefaultTtl(uint8_t ttl)
 }
 
 void
-Ipv4L3ClickProtocol::SetupLoopback(void)
+Ipv4L3ClickProtocol::SetupLoopback()
 {
     NS_LOG_FUNCTION_NOARGS();
 
@@ -352,7 +352,7 @@ Ipv4L3ClickProtocol::SetupLoopback(void)
 }
 
 Ptr<Socket>
-Ipv4L3ClickProtocol::CreateRawSocket(void)
+Ipv4L3ClickProtocol::CreateRawSocket()
 {
     NS_LOG_FUNCTION(this);
     Ptr<Ipv4RawSocketImpl> socket = CreateObject<Ipv4RawSocketImpl>();
@@ -373,7 +373,6 @@ Ipv4L3ClickProtocol::DeleteRawSocket(Ptr<Socket> socket)
             return;
         }
     }
-    return;
 }
 
 void
@@ -725,7 +724,6 @@ Ipv4L3ClickProtocol::Send(Ptr<Packet> packet,
     }
     packet->AddHeader(ipHeader);
     click->Send(packet->Copy(), source, destination);
-    return;
 }
 
 void
@@ -882,7 +880,7 @@ Ipv4L3ClickProtocol::LocalDeliver(Ptr<const Packet> packet, const Ipv4Header& ip
 }
 
 Ptr<Icmpv4L4Protocol>
-Ipv4L3ClickProtocol::GetIcmp(void) const
+Ipv4L3ClickProtocol::GetIcmp() const
 {
     Ptr<IpL4Protocol> prot = GetProtocol(Icmpv4L4Protocol::GetStaticProtocolNumber());
     if (prot)

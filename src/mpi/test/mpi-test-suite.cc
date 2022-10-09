@@ -46,7 +46,9 @@ class MpiTestCase : public ExampleAsTestCase
                 const std::string args = "");
 
     /** Destructor */
-    virtual ~MpiTestCase(void){};
+    ~MpiTestCase() override
+    {
+    }
 
     /**
      * Produce the `--command-template` argument which will invoke
@@ -54,7 +56,7 @@ class MpiTestCase : public ExampleAsTestCase
      *
      * \returns The `--command-template` string.
      */
-    std::string GetCommandTemplate(void) const;
+    std::string GetCommandTemplate() const override;
 
     /**
      * Sort the output from parallel execution.
@@ -62,7 +64,7 @@ class MpiTestCase : public ExampleAsTestCase
      *
      * \returns Sort command
      */
-    std::string GetPostProcessingCommand(void) const;
+    std::string GetPostProcessingCommand() const override;
 
   private:
     /** The number of ranks. */
@@ -80,7 +82,7 @@ MpiTestCase::MpiTestCase(const std::string name,
 }
 
 std::string
-MpiTestCase::GetCommandTemplate(void) const
+MpiTestCase::GetCommandTemplate() const
 {
     std::stringstream ss;
     ss << "mpiexec -n " << m_ranks << " %s --test " << m_args;
@@ -88,7 +90,7 @@ MpiTestCase::GetCommandTemplate(void) const
 }
 
 std::string
-MpiTestCase::GetPostProcessingCommand(void) const
+MpiTestCase::GetPostProcessingCommand() const
 {
     std::string command("| grep TEST | sort ");
     return command;

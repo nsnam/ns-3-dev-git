@@ -73,7 +73,7 @@ namespace ns3
  *
  * There are three versions of DoMakeAccessorHelperOne:
  *  - With a member variable: DoMakeAccessorHelperOne(U T::*)
- *  - With a class get functor: DoMakeAccessorHelperOne(U(T::*)(void) const)
+ *  - With a class get functor: DoMakeAccessorHelperOne(U(T::*)() const)
  *  - With a class set method:  DoMakeAccessorHelperOne(void(T::*)(U))
  *
  * There are two pairs of DoMakeAccessorHelperTwo (four total):
@@ -202,17 +202,17 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
         name##Value();                                                                             \
         name##Value(const type& value);                                                            \
         void Set(const type& value);                                                               \
-        type Get(void) const;                                                                      \
+        type Get() const;                                                                          \
         template <typename T>                                                                      \
         bool GetAccessor(T& value) const                                                           \
         {                                                                                          \
             value = T(m_value);                                                                    \
             return true;                                                                           \
         }                                                                                          \
-        virtual Ptr<AttributeValue> Copy(void) const;                                              \
-        virtual std::string SerializeToString(Ptr<const AttributeChecker> checker) const;          \
-        virtual bool DeserializeFromString(std::string value,                                      \
-                                           Ptr<const AttributeChecker> checker);                   \
+        Ptr<AttributeValue> Copy() const override;                                                 \
+        std::string SerializeToString(Ptr<const AttributeChecker> checker) const override;         \
+        bool DeserializeFromString(std::string value,                                              \
+                                   Ptr<const AttributeChecker> checker) override;                  \
                                                                                                    \
       private:                                                                                     \
         type m_value;                                                                              \
@@ -268,7 +268,7 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
     class type##Checker : public AttributeChecker                                                  \
     {                                                                                              \
     };                                                                                             \
-    Ptr<const AttributeChecker> Make##type##Checker(void)
+    Ptr<const AttributeChecker> Make##type##Checker()
 
 /**
  * \ingroup attributehelper
@@ -299,11 +299,11 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
     {                                                                                              \
         m_value = v;                                                                               \
     }                                                                                              \
-    type name##Value::Get(void) const                                                              \
+    type name##Value::Get() const                                                                  \
     {                                                                                              \
         return m_value;                                                                            \
     }                                                                                              \
-    Ptr<AttributeValue> name##Value::Copy(void) const                                              \
+    Ptr<AttributeValue> name##Value::Copy() const                                                  \
     {                                                                                              \
         return ns3::Create<name##Value>(*this);                                                    \
     }                                                                                              \
@@ -354,7 +354,7 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
  * Typically invoked in the source file..
  */
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)                                                          \
-    Ptr<const AttributeChecker> Make##type##Checker(void)                                          \
+    Ptr<const AttributeChecker> Make##type##Checker()                                              \
     {                                                                                              \
         return MakeSimpleAttributeChecker<type##Value, type##Checker>(#type "Value", #type);       \
     }
@@ -373,7 +373,7 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
  * Typically invoked in the source file..
  */
 #define ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME(type, name)                                          \
-    Ptr<const AttributeChecker> Make##type##Checker(void)                                          \
+    Ptr<const AttributeChecker> Make##type##Checker()                                              \
     {                                                                                              \
         return MakeSimpleAttributeChecker<type##Value, type##Checker>(#type "Value", name);        \
     }

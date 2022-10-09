@@ -146,7 +146,7 @@ class TestCaseBase : public TestCase
          * Create a new instance of a random variable stream
          * \returns The new random variable stream instance.
          */
-        virtual Ptr<RandomVariableStream> Create(void) const = 0;
+        virtual Ptr<RandomVariableStream> Create() const = 0;
     };
 
     /**
@@ -168,7 +168,7 @@ class TestCaseBase : public TestCase
         }
 
         // Inherited
-        Ptr<RandomVariableStream> Create(void) const
+        Ptr<RandomVariableStream> Create() const
         {
             auto rng = CreateObject<RNG>();
             rng->SetAttribute("Antithetic", BooleanValue(m_anti));
@@ -314,7 +314,7 @@ class TestCaseBase : public TestCase
      * based on time-of-day, and run number=0:
      *   NS_GLOBAL_VALUE="RngRun=0" ./test.py -s random-variable-stream-generators
      */
-    void SetTestSuiteSeed(void)
+    void SetTestSuiteSeed()
     {
         if (m_seedSet == false)
         {
@@ -358,7 +358,7 @@ class UniformTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 };
 
 UniformTestCase::UniformTestCase()
@@ -383,7 +383,7 @@ UniformTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-UniformTestCase::DoRun(void)
+UniformTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -480,7 +480,7 @@ class UniformAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 };
 
 UniformAntitheticTestCase::UniformAntitheticTestCase()
@@ -505,7 +505,7 @@ UniformAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-UniformAntitheticTestCase::DoRun(void)
+UniformAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -552,7 +552,7 @@ class ConstantTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /** Tolerance for testing rng values against expectation. */
     static constexpr double TOLERANCE{1e-8};
@@ -564,7 +564,7 @@ ConstantTestCase::ConstantTestCase()
 }
 
 void
-ConstantTestCase::DoRun(void)
+ConstantTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -603,7 +603,7 @@ class SequentialTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /** Tolerance for testing rng values against expectation. */
     static constexpr double TOLERANCE{1e-8};
@@ -615,7 +615,7 @@ SequentialTestCase::SequentialTestCase()
 }
 
 void
-SequentialTestCase::DoRun(void)
+SequentialTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -663,7 +663,7 @@ class NormalTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -699,7 +699,7 @@ NormalTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-NormalTestCase::DoRun(void)
+NormalTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -749,7 +749,7 @@ class NormalAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -786,7 +786,7 @@ NormalAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-NormalAntitheticTestCase::DoRun(void)
+NormalAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -837,7 +837,7 @@ class ExponentialTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -873,7 +873,7 @@ ExponentialTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-ExponentialTestCase::DoRun(void)
+ExponentialTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -918,7 +918,7 @@ class ExponentialAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -954,7 +954,7 @@ ExponentialAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) con
 }
 
 void
-ExponentialAntitheticTestCase::DoRun(void)
+ExponentialAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1002,7 +1002,7 @@ class ParetoTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1041,7 +1041,7 @@ ParetoTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-ParetoTestCase::DoRun(void)
+ParetoTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1095,7 +1095,7 @@ class ParetoAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1134,7 +1134,7 @@ ParetoAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-ParetoAntitheticTestCase::DoRun(void)
+ParetoAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1192,7 +1192,7 @@ class WeibullTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1234,7 +1234,7 @@ WeibullTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-WeibullTestCase::DoRun(void)
+WeibullTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1301,7 +1301,7 @@ class WeibullAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1342,7 +1342,7 @@ WeibullAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-WeibullAntitheticTestCase::DoRun(void)
+WeibullAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1412,7 +1412,7 @@ class LogNormalTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1454,7 +1454,7 @@ LogNormalTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-LogNormalTestCase::DoRun(void)
+LogNormalTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1514,7 +1514,7 @@ class LogNormalAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1556,7 +1556,7 @@ LogNormalAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-LogNormalAntitheticTestCase::DoRun(void)
+LogNormalAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1618,7 +1618,7 @@ class GammaTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1660,7 +1660,7 @@ GammaTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-GammaTestCase::DoRun(void)
+GammaTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1710,7 +1710,7 @@ class GammaAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1752,7 +1752,7 @@ GammaAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-GammaAntitheticTestCase::DoRun(void)
+GammaAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1806,7 +1806,7 @@ class ErlangTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1851,7 +1851,7 @@ ErlangTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-ErlangTestCase::DoRun(void)
+ErlangTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1901,7 +1901,7 @@ class ErlangAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1946,7 +1946,7 @@ ErlangAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
 }
 
 void
-ErlangAntitheticTestCase::DoRun(void)
+ErlangAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -1997,7 +1997,7 @@ class ZipfTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2012,7 +2012,7 @@ ZipfTestCase::ZipfTestCase()
 }
 
 void
-ZipfTestCase::DoRun(void)
+ZipfTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -2077,7 +2077,7 @@ class ZipfAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2092,7 +2092,7 @@ ZipfAntitheticTestCase::ZipfAntitheticTestCase()
 }
 
 void
-ZipfAntitheticTestCase::DoRun(void)
+ZipfAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -2160,7 +2160,7 @@ class ZetaTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2175,7 +2175,7 @@ ZetaTestCase::ZetaTestCase()
 }
 
 void
-ZetaTestCase::DoRun(void)
+ZetaTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -2223,7 +2223,7 @@ class ZetaAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2238,7 +2238,7 @@ ZetaAntitheticTestCase::ZetaAntitheticTestCase()
 }
 
 void
-ZetaAntitheticTestCase::DoRun(void)
+ZetaAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -2289,7 +2289,7 @@ class DeterministicTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /** Tolerance for testing rng values against expectation. */
     static constexpr double TOLERANCE{1e-8};
@@ -2301,7 +2301,7 @@ DeterministicTestCase::DeterministicTestCase()
 }
 
 void
-DeterministicTestCase::DoRun(void)
+DeterministicTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -2364,7 +2364,7 @@ class EmpiricalTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2379,7 +2379,7 @@ EmpiricalTestCase::EmpiricalTestCase()
 }
 
 void
-EmpiricalTestCase::DoRun(void)
+EmpiricalTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -2464,7 +2464,7 @@ class EmpiricalAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2479,7 +2479,7 @@ EmpiricalAntitheticTestCase::EmpiricalAntitheticTestCase()
 }
 
 void
-EmpiricalAntitheticTestCase::DoRun(void)
+EmpiricalAntitheticTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();
@@ -2543,7 +2543,7 @@ class NormalCachingTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun(void);
+    virtual void DoRun();
 };
 
 NormalCachingTestCase::NormalCachingTestCase()
@@ -2552,7 +2552,7 @@ NormalCachingTestCase::NormalCachingTestCase()
 }
 
 void
-NormalCachingTestCase::DoRun(void)
+NormalCachingTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     SetTestSuiteSeed();

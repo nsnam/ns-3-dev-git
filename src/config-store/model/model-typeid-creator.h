@@ -95,7 +95,7 @@ class ModelTypeidCreator : public AttributeDefaultIterator
     /**
      * \brief Remove the last gtk tree iterator
      */
-    virtual void EndVisitTypeId(void);
+    virtual void EndVisitTypeId();
     /**
      * \brief Adds a treestore iterator to m_treestore model
      * \param node the node to be added
@@ -104,7 +104,7 @@ class ModelTypeidCreator : public AttributeDefaultIterator
     /**
      * Removes the last GtkTreeIterator from m_iters
      */
-    void Remove(void);
+    void Remove();
     /// this is the TreeStore model corresponding to the view
     GtkTreeStore* m_treestore;
     /// This contains a vector of iterators used to build the TreeStore

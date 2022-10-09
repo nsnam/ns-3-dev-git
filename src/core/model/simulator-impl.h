@@ -58,7 +58,7 @@ class SimulatorImpl : public Object
     virtual void Destroy() = 0;
     /** \copydoc Simulator::IsFinished */
     virtual bool IsFinished() const = 0;
-    /** \copydoc Simulator::Stop(void) */
+    /** \copydoc Simulator::Stop() */
     virtual void Stop() = 0;
     /** \copydoc Simulator::Stop(const Time&) */
     virtual void Stop(const Time& delay) = 0;

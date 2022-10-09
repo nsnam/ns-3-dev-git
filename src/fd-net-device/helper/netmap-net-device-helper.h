@@ -54,7 +54,7 @@ class NetmapNetDeviceHelper : public FdNetDeviceHelper
      * \brief Get the device name of this device.
      * \returns The device name of this device.
      */
-    std::string GetDeviceName(void);
+    std::string GetDeviceName();
 
     /**
      * \brief Set the device name of this device.
@@ -82,7 +82,7 @@ class NetmapNetDeviceHelper : public FdNetDeviceHelper
      * socket.  We do this to avoid having the entire simulation running as root.
      * \return the rawSocket number
      */
-    virtual int CreateFileDescriptor(void) const;
+    virtual int CreateFileDescriptor() const;
 
     /**
      * \brief Switch the fd in netmap mode.

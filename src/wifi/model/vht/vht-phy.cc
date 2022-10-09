@@ -367,7 +367,7 @@ VhtPhy::GetVhtMcs(uint8_t index)
 }
 
 #define GET_VHT_MCS(x)                                                                             \
-    WifiMode VhtPhy::GetVhtMcs##x(void)                                                            \
+    WifiMode VhtPhy::GetVhtMcs##x()                                                                \
     {                                                                                              \
         static WifiMode mcs = CreateVhtMcs(x);                                                     \
         return mcs;                                                                                \

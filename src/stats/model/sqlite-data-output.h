@@ -48,7 +48,7 @@ class SqliteDataOutput : public DataOutputInterface
      * Register this type.
      * \return The TypeId.
      */
-    static TypeId GetTypeId(void);
+    static TypeId GetTypeId();
 
     virtual void Output(DataCollector& dc) override;
 

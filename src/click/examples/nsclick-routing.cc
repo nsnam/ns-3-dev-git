@@ -134,4 +134,6 @@ main(int argc, char* argv[])
 #else
     NS_FATAL_ERROR("Can't use ns-3-click without NSCLICK compiled in");
 #endif
+
+    return 0;
 }
