@@ -49,6 +49,8 @@ Changes from ns-3.36 to ns-3.37
 * Adds support for **LrWpanMac** devices association.
 * Pan Id compression is now possible in **LrWpanMac** when transmitting data frames. i.e. When src and dst pan ID are the same, only one PanId is used, making the MAC header 2 bytes smaller. See IEEE 802.15.4-2006 (7.5.6.1).
 * Add O2I Low/High Building Penetration Losses in 3GPP propagation loss model (`ThreeGppPropagationLossModel`) according to **3GPP TR 38.901 7.4.3.1**. Currently, UMa, UMi and RMa scenarios are supported.
+* Replace **LrWpanMac** Tx Queue and Ind Tx Queue pointers for smart pointers. 
+* Add **LrWpanMac** packet traces and queue limits to Tx queue and Ind Tx queue. 
 
 ### Changes to build system
 

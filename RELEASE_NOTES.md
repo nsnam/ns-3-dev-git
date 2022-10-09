@@ -30,6 +30,7 @@ Release 3-dev
 - (utils) `utils/bench-simulator` has been moved to `utils/bench-scheduler` to better reflect what it actually tests
 - (utils) `utils/bench-scheduler` has been enhanced to test multiple schedulers.
 - (lte) LTE handover failure is now handled for joining and leaving timeouts, RACH failure, and preamble allocation failure.
+- (lr-wpan) !1131 - Add support for configurable tx queue and ind tx queue limits.
 
 ### Bugs fixed
 
@@ -47,6 +48,7 @@ Release 3-dev
 - (wifi) Fix the TID of QoS Null frames in response to BSRP TF
 - (core) #756 - Fix `CsvReader::GetValueAs()` functions for `char` arguments
 - #758 - Fix warnings about `for` loops with variables that are "too small" to fully represent the data being looped
+- (lr-wpan) #692 - Replace raw pointers for smart pointers in Tx queue and Ind Tx queue.
 
 Release 3.36.1
 --------------

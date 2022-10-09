@@ -175,6 +175,14 @@ Bootstrap (a.k.a. network initialization) is possible with a combination of scan
 
 Bootstrap as whole depends on procedures that also take place on higher layers of devices and coordinators. These procedures are briefly described in the standard but out of its scope (See IEE 802.15.4-2011 Section 5.1.3.1.). However, these procedures are necessary for a "complete bootstrap" process. In the examples in |ns3|, these high layer procedures are only briefly implemented to demonstrate a complete example that shows the use of scan and association. A full high layer (e.g. such as those found in Zigbee and Thread protocol stacks) should complete these procedures more robustly.
 
+MAC queues
+++++++++++
+
+By default, ``Tx queue`` and ``Ind Tx queue`` (the pending transaction list) are not limited but they can configure to drop packets after they 
+reach a limit of elements (transaction overflow). Additionally, the ``Ind Tx queue`` drop packets when the packet has been longer than
+``macTransactionPersistenceTime`` (transaction expiration). Expiration of packets in the Tx queue is not supported.
+Finally, packets in the ``Tx queue`` may be dropped due to excessive transmission retries or channel access failure.
+
 PHY
 ###
 
@@ -285,16 +293,16 @@ Scope and Limitations
 Future versions of this document will contain a PICS proforma similar to
 Appendix D of IEEE 802.15.4-2006. The current emphasis is on direct transmissions
 running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for use in Zigbee.
-Indirect data transmissions are not supported but planned for a future update.
-Devices are capable of associating with a single PAN coordinator. Interference is modeled as AWGN but this is currently not thoroughly tested.
 
-The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
-
-The NetDevice Tx queue is not limited, i.e., packets are never dropped
-due to queue becoming full. They may be dropped due to excessive transmission
-retries or channel access failure.
-
-Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
+- Indirect data transmissions are not supported but planned for a future update.
+- Devices are capable of associating with a single PAN coordinator. Interference is modeled as AWGN but this is currently not thoroughly tested.
+- The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
+- Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
+- Configuration of Rx Sensitivity and ED thresholds are currently not supported.
+- Orphan scans are not supported.
+- Disassociation primitives are not supported.
+- Security is not supported.
+- Beacon enabled mode GTS are not supported.
 
 References
 ==========

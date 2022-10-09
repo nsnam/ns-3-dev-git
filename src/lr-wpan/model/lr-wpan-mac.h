@@ -1097,6 +1097,20 @@ class LrWpanMac : public Object
      */
     void SetAssociationStatus(LrWpanAssociationStatus status);
 
+    /**
+     * Set the max size of the transmit queue.
+     *
+     * \param queueSize The transmit queue size.
+     */
+    void SetTxQMaxSize(uint32_t queueSize);
+
+    /**
+     * Set the max size of the indirect transmit queue (Pending Transaction list)
+     *
+     * \param queueSize The indirect transmit queue size.
+     */
+    void SetIndTxQMaxSize(uint32_t queueSize);
+
     // MAC PIB attributes
 
     /**
@@ -1445,7 +1459,7 @@ class LrWpanMac : public Object
     /**
      * Helper structure for managing transmission queue elements.
      */
-    struct TxQueueElement
+    struct TxQueueElement : public SimpleRefCount<TxQueueElement>
     {
         uint8_t txQMsduHandle; //!< MSDU Handle
         Ptr<Packet> txQPkt;    //!< Queued packet
@@ -1454,7 +1468,7 @@ class LrWpanMac : public Object
     /**
      * Helper structure for managing pending transaction list elements (Indirect transmissions).
      */
-    struct IndTxQueueElement
+    struct IndTxQueueElement : public SimpleRefCount<IndTxQueueElement>
     {
         uint8_t seqNum;               //!< The sequence number of  the queued packet
         Mac16Address dstShortAddress; //!< The destination short Mac Address
@@ -1561,6 +1575,13 @@ class LrWpanMac : public Object
     void SendAck(uint8_t seqno);
 
     /**
+     * Add an element to the transmission queue.
+     *
+     * \param txQElement The element added to the Tx Queue.
+     */
+    void EnqueueTxQElement(Ptr<TxQueueElement> txQElement);
+
+    /**
      * Remove the tip of the transmission queue, including clean up related to the
      * last packet transmission.
      */
@@ -1609,7 +1630,7 @@ class LrWpanMac : public Object
      * transaction list. \param entry The dequeued element from the pending transaction list.
      * \return The status of the dequeue
      */
-    bool DequeueInd(Mac64Address dst, IndTxQueueElement* entry);
+    bool DequeueInd(Mac64Address dst, Ptr<IndTxQueueElement> entry);
 
     /**
      * Purge expired transactions from the pending transactions list.
@@ -1688,12 +1709,20 @@ class LrWpanMac : public Object
     TracedCallback<Ptr<const Packet>> m_macTxDequeueTrace;
 
     /**
+     * The trace source fired when packets come into the "top" of the device
+     * at the L3/L2 transition, when being queued for indirect transmission
+     * (pending transaction list).
+     * \see class CallBackTraceSource
+     */
+    TracedCallback<Ptr<const Packet>> m_macIndTxEnqueueTrace;
+
+    /**
      * The trace source fired when packets are dequeued from the
-     * L3/l2 pending transaction list.
+     * L3/l2 indirect transmission queue (Pending transaction list).
      *
      * \see class CallBackTraceSource
      */
-    TracedCallback<Ptr<const Packet>> m_macPendTxDequeueTrace;
+    TracedCallback<Ptr<const Packet>> m_macIndTxDequeueTrace;
 
     /**
      * The trace source fired when packets are being sent down to L1.
@@ -1718,6 +1747,14 @@ class LrWpanMac : public Object
      * \see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macTxDropTrace;
+
+    /**
+     * The trace source fired when packets are dropped due to indirect Tx queue
+     * overflows or expiration.
+     *
+     * \see class CallBackTraceSource
+     */
+    TracedCallback<Ptr<const Packet>> m_macIndTxDropTrace;
 
     /**
      * The trace source fired for packets successfully received by the device
@@ -1918,13 +1955,23 @@ class LrWpanMac : public Object
     /**
      * The transmit queue used by the MAC.
      */
-    std::deque<TxQueueElement*> m_txQueue;
+    std::deque<Ptr<TxQueueElement>> m_txQueue;
 
     /**
-     * The indirect transmit queue used by the MAC pending messages (a.k.a. The pending transaction
+     * The indirect transmit queue used by the MAC pending messages (The pending transaction
      * list).
      */
-    std::deque<std::unique_ptr<IndTxQueueElement>> m_indTxQueue;
+    std::deque<Ptr<IndTxQueueElement>> m_indTxQueue;
+
+    /**
+     * The maximum size of the transmit queue.
+     */
+    uint32_t m_maxTxQueueSize;
+
+    /**
+     * The maximum size of the indirect transmit queue (The pending transaction list).
+     */
+    uint32_t m_maxIndTxQueueSize;
 
     /**
      * The list of PAN descriptors accumulated during channel scans, used to select a PAN to

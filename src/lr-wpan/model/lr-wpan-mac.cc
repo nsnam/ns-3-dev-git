@@ -70,6 +70,16 @@ LrWpanMac::GetTypeId()
                             "dequeued from the transaction queue",
                             MakeTraceSourceAccessor(&LrWpanMac::m_macTxDequeueTrace),
                             "ns3::Packet::TracedCallback")
+            .AddTraceSource("MacIndTxEnqueue",
+                            "Trace source indicating a packet has been "
+                            "enqueued in the indirect transaction queue",
+                            MakeTraceSourceAccessor(&LrWpanMac::m_macIndTxEnqueueTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("MacIndTxDequeue",
+                            "Trace source indicating a packet has was "
+                            "dequeued from the indirect transaction queue",
+                            MakeTraceSourceAccessor(&LrWpanMac::m_macIndTxDequeueTrace),
+                            "ns3::Packet::TracedCallback")
             .AddTraceSource("MacTx",
                             "Trace source indicating a packet has "
                             "arrived for transmission by this device",
@@ -84,6 +94,12 @@ LrWpanMac::GetTypeId()
                             "Trace source indicating a packet has been "
                             "dropped during transmission",
                             MakeTraceSourceAccessor(&LrWpanMac::m_macTxDropTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("MacIndTxDrop",
+                            "Trace source indicating a packet has been "
+                            "dropped from the indirect transaction queue"
+                            "(The pending transaction list)",
+                            MakeTraceSourceAccessor(&LrWpanMac::m_macIndTxDropTrace),
                             "ns3::Packet::TracedCallback")
             .AddTraceSource("MacPromiscRx",
                             "A packet has been received by this device, "
@@ -190,6 +206,9 @@ LrWpanMac::LrWpanMac()
     m_macResponseWaitTime = aBaseSuperframeDuration * 32;
     m_assocRespCmdWaitTime = 960;
 
+    m_maxTxQueueSize = m_txQueue.max_size();
+    m_maxIndTxQueueSize = m_indTxQueue.max_size();
+
     Ptr<UniformRandomVariable> uniformVar = CreateObject<UniformRandomVariable>();
     uniformVar->SetAttribute("Min", DoubleValue(0.0));
     uniformVar->SetAttribute("Max", DoubleValue(255.0));
@@ -230,14 +249,16 @@ LrWpanMac::DoDispose()
     for (uint32_t i = 0; i < m_txQueue.size(); i++)
     {
         m_txQueue[i]->txQPkt = nullptr;
-        delete m_txQueue[i];
+        m_txQueue[i]->txQMsduHandle = 0;
     }
     m_txQueue.clear();
 
     for (uint32_t i = 0; i < m_indTxQueue.size(); i++)
     {
         m_indTxQueue[i]->txQPkt = nullptr;
-        m_indTxQueue[i].release();
+        m_indTxQueue[i]->seqNum = 0;
+        m_indTxQueue[i]->dstExtAddress = nullptr;
+        m_indTxQueue[i]->dstShortAddress = nullptr;
     }
     m_indTxQueue.clear();
 
@@ -480,22 +501,11 @@ LrWpanMac::McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p)
         }
         p->AddTrailer(macTrailer);
 
-        if (m_txQueue.size() == m_txQueue.max_size())
-        {
-            confirmParams.m_status = IEEE_802_15_4_TRANSACTION_OVERFLOW;
-            if (!m_mcpsDataConfirmCallback.IsNull())
-            {
-                m_mcpsDataConfirmCallback(confirmParams);
-            }
-        }
-        else
-        {
-            NS_LOG_ERROR(this << " Indirect transmissions not currently supported");
-            // Note: The current Pending transaction list should work for indirect transmissions.
-            // However, this is not tested yet. For now, we block the use of indirect transmissions.
-            // TODO: Save packet in the Pending Transaction list.
-            // EnqueueInd (p);
-        }
+        NS_LOG_ERROR(this << " Indirect transmissions not currently supported");
+        // Note: The current Pending transaction list should work for indirect transmissions.
+        // However, this is not tested yet. For now, we block the use of indirect transmissions.
+        // TODO: Save packet in the Pending Transaction list.
+        // EnqueueInd (p);
     }
     else
     {
@@ -516,12 +526,10 @@ LrWpanMac::McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p)
         }
         p->AddTrailer(macTrailer);
 
-        m_macTxEnqueueTrace(p);
-
-        TxQueueElement* txQElement = new TxQueueElement;
+        Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
         txQElement->txQMsduHandle = params.m_msduHandle;
         txQElement->txQPkt = p;
-        m_txQueue.push_back(txQElement);
+        EnqueueTxQElement(txQElement);
         CheckQueue();
     }
 }
@@ -911,9 +919,9 @@ LrWpanMac::SendBeaconRequestCommand()
 
     commandPacket->AddTrailer(macTrailer);
 
-    TxQueueElement* txQElement = new TxQueueElement;
+    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
-    m_txQueue.push_back(txQElement);
+    EnqueueTxQElement(txQElement);
     CheckQueue();
 }
 
@@ -960,9 +968,9 @@ LrWpanMac::SendAssocRequestCommand()
 
     commandPacket->AddTrailer(macTrailer);
 
-    TxQueueElement* txQElement = new TxQueueElement;
+    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
-    m_txQueue.push_back(txQElement);
+    EnqueueTxQElement(txQElement);
     CheckQueue();
 }
 
@@ -1019,9 +1027,9 @@ LrWpanMac::SendDataRequestCommand()
     commandPacket->AddTrailer(macTrailer);
 
     // Set the Command packet to be transmitted
-    TxQueueElement* txQElement = new TxQueueElement;
+    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
-    m_txQueue.push_back(txQElement);
+    EnqueueTxQElement(txQElement);
     CheckQueue();
 }
 
@@ -1035,12 +1043,12 @@ LrWpanMac::SendAssocResponseCommand(Ptr<Packet> rxDataReqPkt)
 
     NS_ASSERT(receivedMacPayload.GetCommandFrameType() == CommandPayloadHeader::DATA_REQ);
 
-    IndTxQueueElement* indTxQElement = new IndTxQueueElement;
+    Ptr<IndTxQueueElement> indTxQElement = Create<IndTxQueueElement>();
     bool elementFound;
     elementFound = DequeueInd(receivedMacHdr.GetExtSrcAddr(), indTxQElement);
     if (elementFound)
     {
-        TxQueueElement* txQElement = new TxQueueElement;
+        Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
         txQElement->txQPkt = indTxQElement->txQPkt;
         m_txQueue.emplace_back(txQElement);
     }
@@ -1448,7 +1456,7 @@ LrWpanMac::CheckQueue()
             // check MAC is not in a IFS
             if (!m_ifsEvent.IsRunning())
             {
-                TxQueueElement* txQElement = m_txQueue.front();
+                Ptr<TxQueueElement> txQElement = m_txQueue.front();
                 m_txPkt = txQElement->txQPkt;
 
                 m_setMacState =
@@ -2192,7 +2200,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                         {
                             if (!m_mcpsDataConfirmCallback.IsNull())
                             {
-                                TxQueueElement* txQElement = m_txQueue.front();
+                                Ptr<TxQueueElement> txQElement = m_txQueue.front();
                                 McpsDataConfirmParams confirmParams;
                                 confirmParams.m_msduHandle = txQElement->txQMsduHandle;
                                 confirmParams.m_status = IEEE_802_15_4_SUCCESS;
@@ -2271,9 +2279,31 @@ LrWpanMac::SendAck(uint8_t seqno)
 }
 
 void
+LrWpanMac::EnqueueTxQElement(Ptr<TxQueueElement> txQElement)
+{
+    if (m_txQueue.size() < m_maxTxQueueSize)
+    {
+        m_txQueue.emplace_back(txQElement);
+        m_macTxEnqueueTrace(txQElement->txQPkt);
+    }
+    else
+    {
+        if (!m_mcpsDataConfirmCallback.IsNull())
+        {
+            McpsDataConfirmParams confirmParams;
+            confirmParams.m_msduHandle = txQElement->txQMsduHandle;
+            confirmParams.m_status = IEEE_802_15_4_TRANSACTION_OVERFLOW;
+            m_mcpsDataConfirmCallback(confirmParams);
+        }
+        NS_LOG_DEBUG("TX Queue with size " << m_txQueue.size() << " is full, dropping packet");
+        m_macTxDropTrace(txQElement->txQPkt);
+    }
+}
+
+void
 LrWpanMac::RemoveFirstTxQElement()
 {
-    TxQueueElement* txQElement = m_txQueue.front();
+    Ptr<TxQueueElement> txQElement = m_txQueue.front();
     Ptr<const Packet> p = txQElement->txQPkt;
     m_numCsmacaRetry += m_csmaCa->GetNB() + 1;
 
@@ -2286,7 +2316,7 @@ LrWpanMac::RemoveFirstTxQElement()
     }
 
     txQElement->txQPkt = nullptr;
-    delete txQElement;
+    txQElement = nullptr;
     m_txQueue.pop_front();
     m_txPkt = nullptr;
     m_retransmission = 0;
@@ -2427,7 +2457,7 @@ LrWpanMac::PrepareRetransmission()
         {
             // Maximum number of retransmissions has been reached.
             // remove the copy of the DATA packet that was just sent
-            TxQueueElement* txQElement = m_txQueue.front();
+            Ptr<TxQueueElement> txQElement = m_txQueue.front();
             m_macTxDropTrace(txQElement->txQPkt);
             if (!m_mcpsDataConfirmCallback.IsNull())
             {
@@ -2453,7 +2483,7 @@ LrWpanMac::PrepareRetransmission()
 void
 LrWpanMac::EnqueueInd(Ptr<Packet> p)
 {
-    std::unique_ptr<IndTxQueueElement> indTxQElement = std::make_unique<IndTxQueueElement>();
+    Ptr<IndTxQueueElement> indTxQElement = Create<IndTxQueueElement>();
     LrWpanMacHeader peekedMacHdr;
     p->PeekHeader(peekedMacHdr);
 
@@ -2487,18 +2517,37 @@ LrWpanMac::EnqueueInd(Ptr<Packet> p)
                m_macTransactionPersistenceTime;
     }
 
-    double symbolRate = m_phy->GetDataOrSymbolRate(false);
-    Time expireTime = Seconds(unit / symbolRate);
-    expireTime += Simulator::Now();
-
-    indTxQElement->expireTime = expireTime;
-    indTxQElement->txQPkt = p;
-
-    m_indTxQueue.emplace_back(std::move(indTxQElement));
+    if (m_indTxQueue.size() < m_maxIndTxQueueSize)
+    {
+        double symbolRate = m_phy->GetDataOrSymbolRate(false);
+        Time expireTime = Seconds(unit / symbolRate);
+        expireTime += Simulator::Now();
+        indTxQElement->expireTime = expireTime;
+        indTxQElement->txQPkt = p;
+        m_indTxQueue.emplace_back(indTxQElement);
+        m_macIndTxEnqueueTrace(p);
+    }
+    else
+    {
+        if (!m_mlmeCommStatusIndicationCallback.IsNull())
+        {
+            LrWpanMacHeader peekedMacHdr;
+            indTxQElement->txQPkt->PeekHeader(peekedMacHdr);
+            MlmeCommStatusIndicationParams commStatusParams;
+            commStatusParams.m_panId = m_macPanId;
+            commStatusParams.m_srcAddrMode = LrWpanMacHeader::EXTADDR;
+            commStatusParams.m_srcExtAddr = peekedMacHdr.GetExtSrcAddr();
+            commStatusParams.m_dstAddrMode = LrWpanMacHeader::EXTADDR;
+            commStatusParams.m_dstExtAddr = peekedMacHdr.GetExtDstAddr();
+            commStatusParams.m_status = MLMECOMMSTATUS_TRANSACTION_OVERFLOW;
+            m_mlmeCommStatusIndicationCallback(commStatusParams);
+        }
+        m_macIndTxDropTrace(p);
+    }
 }
 
 bool
-LrWpanMac::DequeueInd(Mac64Address dst, IndTxQueueElement* entry)
+LrWpanMac::DequeueInd(Mac64Address dst, Ptr<IndTxQueueElement> entry)
 {
     PurgeInd();
 
@@ -2507,6 +2556,7 @@ LrWpanMac::DequeueInd(Mac64Address dst, IndTxQueueElement* entry)
         if ((*iter)->dstExtAddress == dst)
         {
             *entry = **iter;
+            m_macIndTxDequeueTrace((*iter)->txQPkt->Copy());
             m_indTxQueue.erase(iter);
             return true;
         }
@@ -2523,7 +2573,7 @@ LrWpanMac::PurgeInd()
         {
             // Transaction expired, remove and send proper confirmation/indication to a higher layer
             LrWpanMacHeader peekedMacHdr;
-            m_indTxQueue[i]->txQPkt->Copy()->PeekHeader(peekedMacHdr);
+            m_indTxQueue[i]->txQPkt->PeekHeader(peekedMacHdr);
 
             if (peekedMacHdr.IsCommand())
             {
@@ -2551,7 +2601,7 @@ LrWpanMac::PurgeInd()
                     m_mcpsDataConfirmCallback(confParams);
                 }
             }
-            m_macTxDropTrace(m_indTxQueue[i]->txQPkt);
+            m_macIndTxDropTrace(m_indTxQueue[i]->txQPkt->Copy());
             m_indTxQueue.erase(m_indTxQueue.begin() + i);
         }
         else
@@ -2642,7 +2692,7 @@ LrWpanMac::RemovePendTxQElement(Ptr<Packet> p)
             if (((*it)->dstExtAddress == peekedMacHdr.GetExtDstAddr()) &&
                 ((*it)->seqNum == peekedMacHdr.GetSeqNum()))
             {
-                m_macPendTxDequeueTrace(p);
+                m_macIndTxDequeueTrace(p);
                 m_indTxQueue.erase(it);
                 break;
             }
@@ -2652,7 +2702,7 @@ LrWpanMac::RemovePendTxQElement(Ptr<Packet> p)
             if (((*it)->dstShortAddress == peekedMacHdr.GetShortDstAddr()) &&
                 ((*it)->seqNum == peekedMacHdr.GetSeqNum()))
             {
-                m_macPendTxDequeueTrace(p);
+                m_macIndTxDequeueTrace(p);
                 m_indTxQueue.erase(it);
                 break;
             }
@@ -2741,7 +2791,7 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
                 {
                     McpsDataConfirmParams confirmParams;
                     NS_ASSERT_MSG(m_txQueue.size() > 0, "TxQsize = 0");
-                    TxQueueElement* txQElement = m_txQueue.front();
+                    Ptr<TxQueueElement> txQElement = m_txQueue.front();
                     confirmParams.m_msduHandle = txQElement->txQMsduHandle;
                     confirmParams.m_status = IEEE_802_15_4_SUCCESS;
                     m_mcpsDataConfirmCallback(confirmParams);
@@ -2846,7 +2896,7 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
         if (!macHdr.IsAcknowledgment())
         {
             NS_ASSERT_MSG(m_txQueue.size() > 0, "TxQsize = 0");
-            TxQueueElement* txQElement = m_txQueue.front();
+            Ptr<TxQueueElement> txQElement = m_txQueue.front();
             m_macTxDropTrace(txQElement->txQPkt);
             if (!m_mcpsDataConfirmCallback.IsNull())
             {
@@ -3333,6 +3383,18 @@ void
 LrWpanMac::SetAssociationStatus(LrWpanAssociationStatus status)
 {
     m_associationStatus = status;
+}
+
+void
+LrWpanMac::SetTxQMaxSize(uint32_t queueSize)
+{
+    m_maxTxQueueSize = queueSize;
+}
+
+void
+LrWpanMac::SetIndTxQMaxSize(uint32_t queueSize)
+{
+    m_maxIndTxQueueSize = queueSize;
 }
 
 uint16_t
