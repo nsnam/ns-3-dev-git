@@ -123,9 +123,25 @@ if(${ENABLE_BUILD_VERSION})
   )
 endif()
 
+if(WIN32)
+  set(libraries_to_link
+      ${libraries_to_link}
+      wsock32
+      ws2_32
+  )
+  set(fd-reader-sources
+      model/win32-fd-reader.cc
+  )
+else()
+  set(fd-reader-sources
+      model/unix-fd-reader.cc
+  )
+endif()
+
 # Define core lib sources
 set(source_files
     ${int64x64_sources}
+    ${fd-reader-sources}
     ${example_as_test_sources}
     ${embedded_version_sources}
     helper/csv-reader.cc
@@ -191,7 +207,6 @@ set(source_files
     model/system-wall-clock-timestamp.cc
     model/length.cc
     model/trickle-timer.cc
-    model/unix-fd-reader.cc
     model/realtime-simulator-impl.cc
     model/wall-clock-synchronizer.cc
 )

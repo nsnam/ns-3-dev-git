@@ -27,6 +27,15 @@
 #include <cstdint>
 #include <thread>
 
+#ifdef __WIN32__
+#include <BaseTsd.h>
+
+/**
+ * Signed version of size_t
+ */
+typedef SSIZE_T ssize_t;
+#endif
+
 /**
  * \file
  * \ingroup system
@@ -69,6 +78,12 @@ class FdReader : public SimpleRefCount<FdReader>
      */
     void Stop();
 
+#ifdef __WIN32__
+    /**
+     * Keeps track if the Winsock library has been initialized.
+     */
+    static bool winsock_initialized;
+#endif
   protected:
     /**
      * \brief A structure representing data read.
