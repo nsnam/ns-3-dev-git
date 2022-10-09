@@ -40,9 +40,8 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("ExampleAsTestCase");
 
-// Running tests as examples currently requires bash shell; uses Unix
-// piping that does not work on Windows.
-#if defined(NS3_ENABLE_EXAMPLES) && !defined(__win32__)
+// Running tests as examples currently requires Python.
+#if defined(NS3_ENABLE_EXAMPLES)
 
 ExampleAsTestCase::ExampleAsTestCase(const std::string name,
                                      const std::string program,
@@ -89,21 +88,15 @@ ExampleAsTestCase::DoRun()
 
     std::stringstream ss;
 
-    // Use bash as shell to allow use of PIPESTATUS
-    ss << "bash -c './ns3 run " << m_program << " --no-build --command-template=\""
+    ss << "python3 ./ns3 run " << m_program << " --no-build --command-template=\""
        << GetCommandTemplate()
        << "\""
 
        // redirect std::clog, std::cerr to std::cout
        << " 2>&1 "
-
        // Suppress the waf lines from output; waf output contains directory paths which will
        // obviously differ during a test run
-       << " | grep -v 'Waf:' " << GetPostProcessingCommand() << " > "
-       << testFile
-
-       // Get the status of ns3
-       << "; exit ${PIPESTATUS[0]}'";
+       << " " << GetPostProcessingCommand() << " > " << testFile;
 
     int status = std::system(ss.str().c_str());
 
@@ -147,6 +140,6 @@ ExampleAsTestSuite::ExampleAsTestSuite(const std::string name,
     AddTestCase(new ExampleAsTestCase(name, program, dataDir, args), duration);
 }
 
-#endif // NS3_ENABLE_EXAMPLES && !defined (__win32__)
+#endif // NS3_ENABLE_EXAMPLES
 
 } // namespace ns3
