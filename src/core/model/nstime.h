@@ -184,7 +184,7 @@ class Time
      *  \param [in] v The value.
      */
     explicit inline Time(double v)
-        : m_data(lround(v))
+        : m_data(llround(v))
     {
         if (g_markingTimes)
         {
