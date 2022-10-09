@@ -18,13 +18,13 @@
  * Author: Tom Goff <thomas.goff@boeing.com>
  */
 
-#ifndef UNIX_FD_READER_H
-#define UNIX_FD_READER_H
+#ifndef FD_READER_H
+#define FD_READER_H
 
 #include "callback.h"
 #include "event-id.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <thread>
 
 /**
@@ -146,4 +146,4 @@ class FdReader : public SimpleRefCount<FdReader>
 
 } // namespace ns3
 
-#endif /* UNIX_FD_READER_H */
+#endif /* FD_READER_H */

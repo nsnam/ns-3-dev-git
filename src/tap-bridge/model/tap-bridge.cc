@@ -25,6 +25,7 @@
 #include "ns3/channel.h"
 #include "ns3/enum.h"
 #include "ns3/ethernet-header.h"
+#include "ns3/fd-reader.h"
 #include "ns3/ipv4.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
@@ -34,7 +35,6 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
-#include "ns3/unix-fd-reader.h"
 
 #include <cerrno>
 #include <cstdlib>

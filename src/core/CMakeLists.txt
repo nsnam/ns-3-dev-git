@@ -230,6 +230,7 @@ set(header_files
     model/event-impl.h
     model/fatal-error.h
     model/fatal-impl.h
+    model/fd-reader.h
     model/global-value.h
     model/hash-fnv.h
     model/hash-function.h
@@ -290,7 +291,6 @@ set(header_files
     model/type-name.h
     model/type-traits.h
     model/uinteger.h
-    model/unix-fd-reader.h
     model/unused.h
     model/valgrind.h
     model/vector.h
