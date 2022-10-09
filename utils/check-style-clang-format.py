@@ -47,9 +47,9 @@ from typing import List, Tuple
 # PARAMETERS
 ###########################################################
 CLANG_FORMAT_VERSIONS = [
-    14,
-    15,
     16,
+    15,
+    14,
 ]
 
 DIRECTORIES_TO_SKIP = [
