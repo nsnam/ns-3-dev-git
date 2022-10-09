@@ -125,6 +125,7 @@ CommandLine::CommandLine(const std::string filename)
     NS_LOG_FUNCTION(this << filename);
     std::string basename = SystemPath::Split(filename).back();
     m_shortName = basename.substr(0, basename.rfind(".cc"));
+    m_shortName = m_shortName.substr(basename.find_last_of('/') + 1);
 }
 
 CommandLine::CommandLine(const CommandLine& cmd)
