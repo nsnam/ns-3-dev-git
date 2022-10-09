@@ -234,12 +234,30 @@ def find_clang_format_path() -> str:
     @return Path to clang-format.
     """
 
+    # Find exact version
     for version in CLANG_FORMAT_VERSIONS:
         clang_format_path = shutil.which(f'clang-format-{version}')
 
         if clang_format_path:
             return clang_format_path
 
+    # Find default version and check if it is supported
+    clang_format_path = shutil.which('clang-format')
+
+    if clang_format_path:
+        process = subprocess.run([clang_format_path, '--version'],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        version = process.stdout.strip().split(' ')[-1]
+        major_version = int(version.split('.')[0])
+
+        if major_version in CLANG_FORMAT_VERSIONS:
+            return clang_format_path
+
+    # No supported version of clang-format found
     raise RuntimeError(
         f'Could not find any supported version of clang-format installed on this system. '
         f'List of supported versions: {CLANG_FORMAT_VERSIONS}.'
