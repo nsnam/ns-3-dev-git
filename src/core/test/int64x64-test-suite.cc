@@ -26,6 +26,18 @@
 #include <iomanip>
 #include <limits> // numeric_limits<>::epsilon ()
 
+#ifdef __WIN32__
+/**
+ * Indicates that Windows long doubles are 64-bit doubles
+ */
+#define RUNNING_WITH_LIMITED_PRECISION 1
+#else
+/**
+ * Checks if running on Valgrind, which assumes long doubles are 64-bit doubles
+ */
+#define RUNNING_WITH_LIMITED_PRECISION RUNNING_ON_VALGRIND
+#endif
+
 using namespace ns3;
 
 namespace ns3
@@ -1256,9 +1268,9 @@ Int64x64DoubleTestCase::Check(const long double dec,
         // Darwin 12.5.0 (Mac 10.8.5) g++ 4.2.1
         margin = 1.0;
     }
-    if (RUNNING_ON_VALGRIND)
+    if (RUNNING_WITH_LIMITED_PRECISION)
     {
-        // Valgrind uses 64-bit doubles for long doubles
+        // Valgrind and Windows use 64-bit doubles for long doubles
         // See ns-3 bug 1882
         // Need non-zero margin to ensure final tolerance is non-zero
         margin = 1.0;
@@ -1515,9 +1527,9 @@ Int64x64ImplTestCase::DoRun()
     std::cout << "cairo_impl128: " << cairo_impl128 << std::endl;
 #endif
 
-    if (RUNNING_ON_VALGRIND != 0)
+    if (RUNNING_WITH_LIMITED_PRECISION != 0)
     {
-        std::cout << "Running with valgrind" << std::endl;
+        std::cout << "Running with 64-bit long doubles" << std::endl;
     }
 }
 
