@@ -137,6 +137,9 @@ class MemberLteAsSapProvider : public LteAsSapProvider
      */
     MemberLteAsSapProvider(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberLteAsSapProvider() = delete;
+
     // inherited from LteAsSapProvider
     void SetCsgWhiteList(uint32_t csgId) override;
     void StartCellSelection(uint32_t dlEarfcn) override;
@@ -146,18 +149,12 @@ class MemberLteAsSapProvider : public LteAsSapProvider
     void Disconnect() override;
 
   private:
-    MemberLteAsSapProvider();
     C* m_owner; ///< the owner class
 };
 
 template <class C>
 MemberLteAsSapProvider<C>::MemberLteAsSapProvider(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberLteAsSapProvider<C>::MemberLteAsSapProvider()
 {
 }
 
@@ -218,6 +215,9 @@ class MemberLteAsSapUser : public LteAsSapUser
      */
     MemberLteAsSapUser(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberLteAsSapUser() = delete;
+
     // inherited from LteAsSapUser
     void NotifyConnectionSuccessful() override;
     void NotifyConnectionFailed() override;
@@ -225,18 +225,12 @@ class MemberLteAsSapUser : public LteAsSapUser
     void NotifyConnectionReleased() override;
 
   private:
-    MemberLteAsSapUser();
     C* m_owner; ///< the owner class
 };
 
 template <class C>
 MemberLteAsSapUser<C>::MemberLteAsSapUser(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberLteAsSapUser<C>::MemberLteAsSapUser()
 {
 }
 

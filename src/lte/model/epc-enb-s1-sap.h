@@ -163,6 +163,9 @@ class MemberEpcEnbS1SapProvider : public EpcEnbS1SapProvider
      */
     MemberEpcEnbS1SapProvider(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberEpcEnbS1SapProvider() = delete;
+
     // inherited from EpcEnbS1SapProvider
     void InitialUeMessage(uint64_t imsi, uint16_t rnti) override;
     void DoSendReleaseIndication(uint64_t imsi, uint16_t rnti, uint8_t bearerId) override;
@@ -171,18 +174,12 @@ class MemberEpcEnbS1SapProvider : public EpcEnbS1SapProvider
     void UeContextRelease(uint16_t rnti) override;
 
   private:
-    MemberEpcEnbS1SapProvider();
     C* m_owner; ///< owner class
 };
 
 template <class C>
 MemberEpcEnbS1SapProvider<C>::MemberEpcEnbS1SapProvider(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberEpcEnbS1SapProvider<C>::MemberEpcEnbS1SapProvider()
 {
 }
 
@@ -231,24 +228,21 @@ class MemberEpcEnbS1SapUser : public EpcEnbS1SapUser
      */
     MemberEpcEnbS1SapUser(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberEpcEnbS1SapUser() = delete;
+
     // inherited from EpcEnbS1SapUser
     void InitialContextSetupRequest(InitialContextSetupRequestParameters params) override;
     void DataRadioBearerSetupRequest(DataRadioBearerSetupRequestParameters params) override;
     void PathSwitchRequestAcknowledge(PathSwitchRequestAcknowledgeParameters params) override;
 
   private:
-    MemberEpcEnbS1SapUser();
     C* m_owner; ///< owner class
 };
 
 template <class C>
 MemberEpcEnbS1SapUser<C>::MemberEpcEnbS1SapUser(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberEpcEnbS1SapUser<C>::MemberEpcEnbS1SapUser()
 {
 }
 

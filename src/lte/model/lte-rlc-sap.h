@@ -88,6 +88,9 @@ class LteRlcSpecificLteRlcSapProvider : public LteRlcSapProvider
      */
     LteRlcSpecificLteRlcSapProvider(C* rlc);
 
+    // Delete default constructor to avoid misuse
+    LteRlcSpecificLteRlcSapProvider() = delete;
+
     /**
      * Interface implemented from LteRlcSapProvider
      * \param params the TransmitPdcpPduParameters
@@ -95,18 +98,12 @@ class LteRlcSpecificLteRlcSapProvider : public LteRlcSapProvider
     void TransmitPdcpPdu(TransmitPdcpPduParameters params) override;
 
   private:
-    LteRlcSpecificLteRlcSapProvider();
     C* m_rlc; ///< the RLC
 };
 
 template <class C>
 LteRlcSpecificLteRlcSapProvider<C>::LteRlcSpecificLteRlcSapProvider(C* rlc)
     : m_rlc(rlc)
-{
-}
-
-template <class C>
-LteRlcSpecificLteRlcSapProvider<C>::LteRlcSpecificLteRlcSapProvider()
 {
 }
 
@@ -129,22 +126,19 @@ class LteRlcSpecificLteRlcSapUser : public LteRlcSapUser
      */
     LteRlcSpecificLteRlcSapUser(C* pdcp);
 
+    // Delete default constructor to avoid misuse
+    LteRlcSpecificLteRlcSapUser() = delete;
+
     // Interface implemented from LteRlcSapUser
     void ReceivePdcpPdu(Ptr<Packet> p) override;
 
   private:
-    LteRlcSpecificLteRlcSapUser();
     C* m_pdcp; ///< the PDCP
 };
 
 template <class C>
 LteRlcSpecificLteRlcSapUser<C>::LteRlcSpecificLteRlcSapUser(C* pdcp)
     : m_pdcp(pdcp)
-{
-}
-
-template <class C>
-LteRlcSpecificLteRlcSapUser<C>::LteRlcSpecificLteRlcSapUser()
 {
 }
 

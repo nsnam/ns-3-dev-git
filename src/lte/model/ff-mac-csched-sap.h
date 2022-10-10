@@ -470,6 +470,9 @@ class MemberCschedSapProvider : public FfMacCschedSapProvider
      */
     MemberCschedSapProvider(C* scheduler);
 
+    // Delete default constructor to avoid misuse
+    MemberCschedSapProvider() = delete;
+
     // inherited from FfMacCschedSapProvider
     void CschedCellConfigReq(const struct CschedCellConfigReqParameters& params) override;
     void CschedUeConfigReq(const struct CschedUeConfigReqParameters& params) override;
@@ -478,14 +481,8 @@ class MemberCschedSapProvider : public FfMacCschedSapProvider
     void CschedUeReleaseReq(const struct CschedUeReleaseReqParameters& params) override;
 
   private:
-    MemberCschedSapProvider();
     C* m_scheduler; ///< scheduler class
 };
-
-template <class C>
-MemberCschedSapProvider<C>::MemberCschedSapProvider()
-{
-}
 
 template <class C>
 MemberCschedSapProvider<C>::MemberCschedSapProvider(C* scheduler)

@@ -202,6 +202,9 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
      */
     MemberEpcS1apSapMme(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberEpcS1apSapMme() = delete;
+
     // inherited from EpcS1apSapMme
     /**
      * Initial UE Message function
@@ -248,18 +251,12 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
         std::list<ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList) override;
 
   private:
-    MemberEpcS1apSapMme();
     C* m_owner; ///< owner class
 };
 
 template <class C>
 MemberEpcS1apSapMme<C>::MemberEpcS1apSapMme(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberEpcS1apSapMme<C>::MemberEpcS1apSapMme()
 {
 }
 
@@ -318,6 +315,9 @@ class MemberEpcS1apSapEnb : public EpcS1apSapEnb
      */
     MemberEpcS1apSapEnb(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberEpcS1apSapEnb() = delete;
+
     // inherited from EpcS1apSapEnb
     /**
      * Initial context setup request function
@@ -342,18 +342,12 @@ class MemberEpcS1apSapEnb : public EpcS1apSapEnb
         std::list<ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList) override;
 
   private:
-    MemberEpcS1apSapEnb();
     C* m_owner; ///< owner class
 };
 
 template <class C>
 MemberEpcS1apSapEnb<C>::MemberEpcS1apSapEnb(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberEpcS1apSapEnb<C>::MemberEpcS1apSapEnb()
 {
 }
 

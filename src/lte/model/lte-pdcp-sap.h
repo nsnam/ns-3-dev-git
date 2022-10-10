@@ -100,22 +100,19 @@ class LtePdcpSpecificLtePdcpSapProvider : public LtePdcpSapProvider
      */
     LtePdcpSpecificLtePdcpSapProvider(C* pdcp);
 
+    // Delete default constructor to avoid misuse
+    LtePdcpSpecificLtePdcpSapProvider() = delete;
+
     // Interface implemented from LtePdcpSapProvider
     void TransmitPdcpSdu(TransmitPdcpSduParameters params) override;
 
   private:
-    LtePdcpSpecificLtePdcpSapProvider();
     C* m_pdcp; ///< the PDCP
 };
 
 template <class C>
 LtePdcpSpecificLtePdcpSapProvider<C>::LtePdcpSpecificLtePdcpSapProvider(C* pdcp)
     : m_pdcp(pdcp)
-{
-}
-
-template <class C>
-LtePdcpSpecificLtePdcpSapProvider<C>::LtePdcpSpecificLtePdcpSapProvider()
 {
 }
 
@@ -138,22 +135,19 @@ class LtePdcpSpecificLtePdcpSapUser : public LtePdcpSapUser
      */
     LtePdcpSpecificLtePdcpSapUser(C* rrc);
 
+    // Delete default constructor to avoid misuse
+    LtePdcpSpecificLtePdcpSapUser() = delete;
+
     // Interface implemented from LtePdcpSapUser
     void ReceivePdcpSdu(ReceivePdcpSduParameters params) override;
 
   private:
-    LtePdcpSpecificLtePdcpSapUser();
     C* m_rrc; ///< RRC
 };
 
 template <class C>
 LtePdcpSpecificLtePdcpSapUser<C>::LtePdcpSpecificLtePdcpSapUser(C* rrc)
     : m_rrc(rrc)
-{
-}
-
-template <class C>
-LtePdcpSpecificLtePdcpSapUser<C>::LtePdcpSpecificLtePdcpSapUser()
 {
 }
 

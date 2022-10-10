@@ -360,6 +360,9 @@ class MemberSchedSapProvider : public FfMacSchedSapProvider
      */
     MemberSchedSapProvider(C* scheduler);
 
+    // Delete default constructor to avoid misuse
+    MemberSchedSapProvider() = delete;
+
     // inherited from FfMacSchedSapProvider
     void SchedDlRlcBufferReq(const struct SchedDlRlcBufferReqParameters& params) override;
     void SchedDlPagingBufferReq(const struct SchedDlPagingBufferReqParameters& params) override;
@@ -375,14 +378,8 @@ class MemberSchedSapProvider : public FfMacSchedSapProvider
     void SchedUlCqiInfoReq(const struct SchedUlCqiInfoReqParameters& params) override;
 
   private:
-    MemberSchedSapProvider();
     C* m_scheduler; ///< the scheduler class
 };
-
-template <class C>
-MemberSchedSapProvider<C>::MemberSchedSapProvider()
-{
-}
 
 template <class C>
 MemberSchedSapProvider<C>::MemberSchedSapProvider(C* scheduler)

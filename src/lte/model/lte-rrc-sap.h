@@ -1336,6 +1336,9 @@ class MemberLteUeRrcSapUser : public LteUeRrcSapUser
      */
     MemberLteUeRrcSapUser(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberLteUeRrcSapUser() = delete;
+
     // inherited from LteUeRrcSapUser
     void Setup(SetupParameters params) override;
     void SendRrcConnectionRequest(RrcConnectionRequest msg) override;
@@ -1349,18 +1352,12 @@ class MemberLteUeRrcSapUser : public LteUeRrcSapUser
     void SendIdealUeContextRemoveRequest(uint16_t rnti) override;
 
   private:
-    MemberLteUeRrcSapUser();
     C* m_owner; ///< the owner class
 };
 
 template <class C>
 MemberLteUeRrcSapUser<C>::MemberLteUeRrcSapUser(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberLteUeRrcSapUser<C>::MemberLteUeRrcSapUser()
 {
 }
 
@@ -1438,6 +1435,9 @@ class MemberLteUeRrcSapProvider : public LteUeRrcSapProvider
      */
     MemberLteUeRrcSapProvider(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberLteUeRrcSapProvider() = delete;
+
     // methods inherited from LteUeRrcSapProvider go here
     void CompleteSetup(CompleteSetupParameters params) override;
     void RecvSystemInformation(SystemInformation msg) override;
@@ -1449,18 +1449,12 @@ class MemberLteUeRrcSapProvider : public LteUeRrcSapProvider
     void RecvRrcConnectionReject(RrcConnectionReject msg) override;
 
   private:
-    MemberLteUeRrcSapProvider();
     C* m_owner; ///< the owner class
 };
 
 template <class C>
 MemberLteUeRrcSapProvider<C>::MemberLteUeRrcSapProvider(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberLteUeRrcSapProvider<C>::MemberLteUeRrcSapProvider()
 {
 }
 
@@ -1537,8 +1531,10 @@ class MemberLteEnbRrcSapUser : public LteEnbRrcSapUser
      */
     MemberLteEnbRrcSapUser(C* owner);
 
-    // inherited from LteEnbRrcSapUser
+    // Delete default constructor to avoid misuse
+    MemberLteEnbRrcSapUser() = delete;
 
+    // inherited from LteEnbRrcSapUser
     void SetupUe(uint16_t rnti, SetupUeParameters params) override;
     void RemoveUe(uint16_t rnti) override;
     void SendSystemInformation(uint16_t cellId, SystemInformation msg) override;
@@ -1555,18 +1551,12 @@ class MemberLteEnbRrcSapUser : public LteEnbRrcSapUser
     RrcConnectionReconfiguration DecodeHandoverCommand(Ptr<Packet> p) override;
 
   private:
-    MemberLteEnbRrcSapUser();
     C* m_owner; ///< the owner class
 };
 
 template <class C>
 MemberLteEnbRrcSapUser<C>::MemberLteEnbRrcSapUser(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberLteEnbRrcSapUser<C>::MemberLteEnbRrcSapUser()
 {
 }
 
@@ -1680,8 +1670,10 @@ class MemberLteEnbRrcSapProvider : public LteEnbRrcSapProvider
      */
     MemberLteEnbRrcSapProvider(C* owner);
 
-    // methods inherited from LteEnbRrcSapProvider go here
+    // Delete default constructor to avoid misuse
+    MemberLteEnbRrcSapProvider() = delete;
 
+    // methods inherited from LteEnbRrcSapProvider go here
     void CompleteSetupUe(uint16_t rnti, CompleteSetupUeParameters params) override;
     void RecvRrcConnectionRequest(uint16_t rnti, RrcConnectionRequest msg) override;
     void RecvRrcConnectionSetupCompleted(uint16_t rnti, RrcConnectionSetupCompleted msg) override;
@@ -1697,18 +1689,12 @@ class MemberLteEnbRrcSapProvider : public LteEnbRrcSapProvider
     void RecvIdealUeContextRemoveRequest(uint16_t rnti) override;
 
   private:
-    MemberLteEnbRrcSapProvider();
     C* m_owner; ///< the owner class
 };
 
 template <class C>
 MemberLteEnbRrcSapProvider<C>::MemberLteEnbRrcSapProvider(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberLteEnbRrcSapProvider<C>::MemberLteEnbRrcSapProvider()
 {
 }
 

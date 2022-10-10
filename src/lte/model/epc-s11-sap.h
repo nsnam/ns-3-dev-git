@@ -257,13 +257,15 @@ class MemberEpcS11SapMme : public EpcS11SapMme
      */
     MemberEpcS11SapMme(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberEpcS11SapMme() = delete;
+
     // inherited from EpcS11SapMme
     void CreateSessionResponse(CreateSessionResponseMessage msg) override;
     void ModifyBearerResponse(ModifyBearerResponseMessage msg) override;
     void DeleteBearerRequest(DeleteBearerRequestMessage msg) override;
 
   private:
-    MemberEpcS11SapMme();
     C* m_owner; ///< owner class
 };
 
@@ -275,11 +277,6 @@ class MemberEpcS11SapMme : public EpcS11SapMme
 template <class C>
 MemberEpcS11SapMme<C>::MemberEpcS11SapMme(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberEpcS11SapMme<C>::MemberEpcS11SapMme()
 {
 }
 
@@ -319,6 +316,9 @@ class MemberEpcS11SapSgw : public EpcS11SapSgw
      */
     MemberEpcS11SapSgw(C* owner);
 
+    // Delete default constructor to avoid misuse
+    MemberEpcS11SapSgw() = delete;
+
     // inherited from EpcS11SapSgw
     void CreateSessionRequest(CreateSessionRequestMessage msg) override;
     void ModifyBearerRequest(ModifyBearerRequestMessage msg) override;
@@ -326,7 +326,6 @@ class MemberEpcS11SapSgw : public EpcS11SapSgw
     void DeleteBearerResponse(DeleteBearerResponseMessage msg) override;
 
   private:
-    MemberEpcS11SapSgw();
     C* m_owner; ///< owner class
 };
 
@@ -338,11 +337,6 @@ class MemberEpcS11SapSgw : public EpcS11SapSgw
 template <class C>
 MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw(C* owner)
     : m_owner(owner)
-{
-}
-
-template <class C>
-MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw()
 {
 }
 
