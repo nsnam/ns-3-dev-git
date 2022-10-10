@@ -186,13 +186,13 @@ FindSelfDirectory()
         //  LPTSTR = char *
         DWORD size = 1024;
         LPTSTR lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
-        DWORD status = GetModuleFileName(0, lpFilename, size);
+        DWORD status = GetModuleFileName(nullptr, lpFilename, size);
         while (status == size)
         {
             size = size * 2;
             free(lpFilename);
             lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
-            status = GetModuleFileName(0, lpFilename, size);
+            status = GetModuleFileName(nullptr, lpFilename, size);
         }
         NS_ASSERT(status != 0);
         filename = lpFilename;
