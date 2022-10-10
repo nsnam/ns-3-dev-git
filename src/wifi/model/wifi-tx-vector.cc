@@ -654,14 +654,14 @@ WifiTxVector::GetOrderedRus(uint8_t p20Index) const
     return orderedRus;
 }
 
-ContentChannelAllocation
-WifiTxVector::GetContentChannelAllocation(uint8_t p20Index) const
+HeSigBContentChannels
+WifiTxVector::GetContentChannels(uint8_t p20Index) const
 {
-    ContentChannelAllocation channelAlloc{{}};
+    HeSigBContentChannels contentChannels{{}};
 
     if (m_channelWidth > 20)
     {
-        channelAlloc.emplace_back();
+        contentChannels.emplace_back();
     }
 
     const auto& orderedRus = GetOrderedRus(p20Index);
@@ -677,8 +677,8 @@ WifiTxVector::GetContentChannelAllocation(uint8_t p20Index) const
         {
             for (auto i = 0; i < ((ruType == HeRu::RU_2x996_TONE) ? 2 : 1); ++i)
             {
-                channelAlloc[0].push_back(staId);
-                channelAlloc[1].push_back(staId);
+                contentChannels[0].push_back({staId, userInfo.nss, userInfo.mcs});
+                contentChannels[1].push_back({staId, userInfo.nss, userInfo.mcs});
             }
             continue;
         }
@@ -691,15 +691,15 @@ WifiTxVector::GetContentChannelAllocation(uint8_t p20Index) const
 
         if (((ruIdx - 1) / numRus) % 2 == 0)
         {
-            channelAlloc[0].push_back(staId);
+            contentChannels[0].push_back({staId, userInfo.nss, userInfo.mcs});
         }
         else
         {
-            channelAlloc[1].push_back(staId);
+            contentChannels[1].push_back({staId, userInfo.nss, userInfo.mcs});
         }
     }
 
-    return channelAlloc;
+    return contentChannels;
 }
 
 RuAllocation

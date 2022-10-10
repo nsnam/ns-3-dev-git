@@ -423,6 +423,16 @@ class HePhy : public VhtPhy
      */
     static bool IsAllowed(const WifiTxVector& txVector);
 
+    /**
+     * Create and return the HE MCS corresponding to
+     * the provided index.
+     * This method binds all the callbacks used by WifiMode.
+     *
+     * \param index the index of the MCS
+     * \return an HE MCS
+     */
+    static WifiMode CreateHeMcs(uint8_t index);
+
   protected:
     PhyFieldRxStatus ProcessSig(Ptr<Event> event,
                                 PhyFieldRxStatus status,
@@ -580,16 +590,6 @@ class HePhy : public VhtPhy
      * \return the per-20 MHz CCA durations vector
      */
     std::vector<Time> GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu);
-
-    /**
-     * Create and return the HE MCS corresponding to
-     * the provided index.
-     * This method binds all the callbacks used by WifiMode.
-     *
-     * \param index the index of the MCS
-     * \return an HE MCS
-     */
-    static WifiMode CreateHeMcs(uint8_t index);
 
     /**
      * Given a PPDU duration value, the TXVECTOR used to transmit the PPDU and

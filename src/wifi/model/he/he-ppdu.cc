@@ -75,9 +75,6 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
             auto [it, ret] = m_muUserInfos.emplace(heMuUserInfo);
             NS_ABORT_MSG_IF(!ret, "STA-ID " << heMuUserInfo.first << " already present");
         }
-        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        m_contentChannelAlloc = txVector.GetContentChannelAllocation(p20Index);
-        m_ruAllocation = txVector.GetRuAllocation(p20Index);
     }
     SetPhyHeaders(txVector, ppduDuration);
 }
@@ -142,6 +139,7 @@ void
 HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
 {
     heSig.SetFormat(m_preamble);
+    heSig.SetChannelWidth(txVector.GetChannelWidth());
     // TODO: EHT PHY headers not implemented yet, hence we do not fill in HE-SIG-B for EHT SU
     /* See section 36.3.12.8.2 of IEEE 802.11be D3.0 (EHT-SIG content channels):
      * In non-OFDMA transmission, the Common field of the EHT-SIG content channel does not contain
@@ -150,8 +148,15 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
      * this encoding block contains a CRC and Tail, referred to as a common encoding block. */
     if (txVector.IsDlMu())
     {
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
         heSig.SetMuFlag(true);
         heSig.SetSigBMcs(txVector.GetSigBMode().GetMcsValue());
+        heSig.SetRuAllocation(txVector.GetRuAllocation(p20Index));
+        heSig.SetHeSigBContentChannels(txVector.GetContentChannels(p20Index));
+        if (txVector.GetChannelWidth() >= 80)
+        {
+            heSig.SetCenter26ToneRuIndication(txVector.GetCenter26ToneRuIndication());
+        }
     }
     else
     {
@@ -163,7 +168,6 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
         }
     }
     heSig.SetBssColor(txVector.GetBssColor());
-    heSig.SetChannelWidth(txVector.GetChannelWidth());
     if (!txVector.IsUlMu())
     {
         heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(), 2 /*NLTF currently unused*/);
@@ -185,8 +189,7 @@ HePpdu::DoGetTxVector() const
         NS_FATAL_ERROR("Missing L-SIG header in HE PPDU");
     }
 
-    HeSigHeader heSig;
-    heSig.SetMuFlag(IsDlMu());
+    HeSigHeader heSig(IsDlMu());
     if (phyHeaders->PeekHeader(heSig) == 0)
     {
         NS_FATAL_ERROR("Missing HE-SIG header in HE PPDU");
@@ -229,7 +232,12 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     {
         txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        txVector.SetRuAllocation(m_ruAllocation, p20Index);
+        txVector.SetRuAllocation(heSig.GetRuAllocation(), p20Index);
+        auto center26ToneRuIndication = heSig.GetCenter26ToneRuIndication();
+        if (center26ToneRuIndication.has_value())
+        {
+            txVector.SetCenter26ToneRuIndication(center26ToneRuIndication.value());
+        }
     }
 }
 
@@ -321,8 +329,7 @@ HePpdu::GetPsdu(uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
     auto phyHeaders = m_phyHeaders->Copy();
     LSigHeader lSig;
     phyHeaders->RemoveHeader(lSig);
-    HeSigHeader heSig;
-    heSig.SetMuFlag(IsDlMu());
+    HeSigHeader heSig(IsDlMu());
     phyHeaders->RemoveHeader(heSig);
     ppduBssColor = heSig.GetBssColor();
 #else
@@ -524,6 +531,11 @@ HePpdu::PrintPayload() const
 }
 
 HePpdu::HeSigHeader::HeSigHeader()
+    : HeSigHeader(false)
+{
+}
+
+HePpdu::HeSigHeader::HeSigHeader(bool mu)
     : m_format(0),
       m_bssColor(0),
       m_mcs(0),
@@ -531,7 +543,7 @@ HePpdu::HeSigHeader::HeSigHeader()
       m_gi_ltf_size(0),
       m_nsts(0),
       m_sigBMcs(0),
-      m_mu(false)
+      m_mu(mu)
 {
 }
 
@@ -566,7 +578,7 @@ HePpdu::HeSigHeader::GetSerializedSize() const
     size += 4; // HE-SIG-A2
     if (m_mu)
     {
-        size += 1; // HE-SIG-B
+        size += GetSigBSize(); // HE-SIG-B
     }
     return size;
 }
@@ -575,6 +587,12 @@ void
 HePpdu::HeSigHeader::SetMuFlag(bool mu)
 {
     m_mu = mu;
+}
+
+uint32_t
+HePpdu::HeSigHeader::GetSigBSize() const
+{
+    return HePpdu::GetSigBFieldSize(GetChannelWidth(), m_ruAllocation);
 }
 
 void
@@ -717,6 +735,231 @@ HePpdu::HeSigHeader::GetSigBMcs() const
 }
 
 void
+HePpdu::HeSigHeader::SetRuAllocation(const RuAllocation& ruAlloc)
+{
+    m_ruAllocation = ruAlloc;
+}
+
+const RuAllocation&
+HePpdu::HeSigHeader::GetRuAllocation() const
+{
+    return m_ruAllocation;
+}
+
+void
+HePpdu::HeSigHeader::SetHeSigBContentChannels(const HeSigBContentChannels& contentChannels)
+{
+    m_contentChannels = contentChannels;
+}
+
+const HeSigBContentChannels&
+HePpdu::HeSigHeader::GetHeSigBContentChannels() const
+{
+    return m_contentChannels;
+}
+
+void
+HePpdu::HeSigHeader::SetCenter26ToneRuIndication(
+    std::optional<Center26ToneRuIndication> center26ToneRuIndication)
+{
+    m_center26ToneRuIndication = center26ToneRuIndication;
+}
+
+std::optional<Center26ToneRuIndication>
+HePpdu::HeSigHeader::GetCenter26ToneRuIndication() const
+{
+    return m_center26ToneRuIndication;
+}
+
+void
+HePpdu::HeSigHeader::SerializeSigBContentChannel(
+    Buffer::Iterator& start,
+    uint8_t contentChannelId,
+    const std::vector<uint32_t>& userBlockFieldsContentChannel) const
+{
+    NS_ASSERT(contentChannelId <= WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS);
+    NS_ASSERT(!userBlockFieldsContentChannel.empty());
+
+    // Common field
+    const auto bw = GetChannelWidth();
+    switch (bw)
+    {
+    case 20:
+        NS_ASSERT(contentChannelId == 1);
+        NS_ASSERT(m_ruAllocation.size() == 1);
+        start.WriteU8(m_ruAllocation.at(0));
+        break;
+    case 40:
+        NS_ASSERT(m_ruAllocation.size() == 2);
+        start.WriteU8(m_ruAllocation.at(contentChannelId - 1));
+        break;
+    case 80:
+        NS_ASSERT(m_ruAllocation.size() == 4);
+        start.WriteU8(m_ruAllocation.at(contentChannelId - 1));
+        start.WriteU8(m_ruAllocation.at(contentChannelId + 1));
+        break;
+    case 160:
+        NS_ASSERT(m_ruAllocation.size() == 8);
+        start.WriteU8(m_ruAllocation.at(contentChannelId - 1));
+        start.WriteU8(m_ruAllocation.at(contentChannelId + 1));
+        start.WriteU8(m_ruAllocation.at(contentChannelId + 3));
+        start.WriteU8(m_ruAllocation.at(contentChannelId + 5));
+        break;
+    default:
+        NS_FATAL_ERROR("Invalid channel width: " << bw << " MHz");
+    }
+    uint8_t byte = 0;
+    uint8_t offset = 0;
+    if (m_center26ToneRuIndication.has_value())
+    {
+        NS_ASSERT(bw >= 80);
+        if ((m_center26ToneRuIndication.value() ==
+             CENTER_26_TONE_RU_LOW_AND_HIGH_80_MHZ_ALLOCATED) ||
+            ((contentChannelId == 1) &&
+             (m_center26ToneRuIndication.value() == CENTER_26_TONE_RU_LOW_80_MHZ_ALLOCATED)) ||
+            ((contentChannelId == 2) &&
+             (m_center26ToneRuIndication.value() == CENTER_26_TONE_RU_HIGH_80_MHZ_ALLOCATED)))
+        {
+            byte |= 0x01;
+        }
+        offset++;
+    }
+
+    // CRC and tail (set to 0 for simplification)
+    offset += 10;
+    start.WriteU8(byte);
+    byte = 0;
+    offset -= 8;
+
+    // User fields
+    for (auto userField : userBlockFieldsContentChannel)
+    {
+        std::size_t nBits = 0;
+        const uint8_t bitsPerUserField = 21 + 4 /* CRC */ + 6 /* tail */;
+        while (nBits < bitsPerUserField)
+        {
+            NS_ASSERT(offset < 8);
+            const uint8_t nBitsLeftToWrite = bitsPerUserField - nBits;
+            const uint8_t bitsLeft = (8 - offset);
+            if (nBitsLeftToWrite >= 8)
+            {
+                const uint8_t bitMask = (0x01 << bitsLeft) - 0x01;
+                byte |= ((userField >> nBits) & bitMask) << offset;
+                start.WriteU8(byte);
+                nBits += bitsLeft;
+                byte = 0;
+                offset = 0;
+            }
+            else
+            {
+                // less than one byte to write, set bits to be used by next user field
+                const uint8_t bitMask = (0x01 << (8 - offset)) - 0x01;
+                byte |= (userField & (bitMask << nBits)) << offset;
+                offset = nBitsLeftToWrite;
+                nBits = bitsPerUserField;
+            }
+        }
+    }
+}
+
+uint16_t
+HePpdu::HeSigHeader::DeserializeSigBContentChannel(
+    Buffer::Iterator start,
+    uint8_t contentChannelId,
+    std::vector<uint32_t>& userBlockFieldsContentChannel)
+{
+    NS_ASSERT(contentChannelId <= WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS);
+    Buffer::Iterator i = start;
+    uint16_t count = 0;
+
+    // Common field
+    const auto bw = GetChannelWidth();
+    switch (bw)
+    {
+    case 20:
+        NS_ASSERT(contentChannelId == 1);
+        NS_ASSERT(m_ruAllocation.size() == 1);
+        m_ruAllocation.at(0) = i.ReadU8();
+        count += 1;
+        break;
+    case 40:
+        NS_ASSERT(m_ruAllocation.size() == 2);
+        m_ruAllocation.at(contentChannelId - 1) = i.ReadU8();
+        count += 1;
+        break;
+    case 80:
+        NS_ASSERT(m_ruAllocation.size() == 4);
+        m_ruAllocation.at(contentChannelId - 1) = i.ReadU8();
+        m_ruAllocation.at(contentChannelId + 1) = i.ReadU8();
+        count += 2;
+        break;
+    case 160:
+        NS_ASSERT(m_ruAllocation.size() == 8);
+        m_ruAllocation.at(contentChannelId - 1) = i.ReadU8();
+        m_ruAllocation.at(contentChannelId + 1) = i.ReadU8();
+        m_ruAllocation.at(contentChannelId + 3) = i.ReadU8();
+        m_ruAllocation.at(contentChannelId + 5) = i.ReadU8();
+        count += 4;
+        break;
+    default:
+        NS_FATAL_ERROR("Invalid channel width: " << bw << " MHz");
+    }
+    uint8_t offset = 0;
+    uint8_t byte = i.ReadU8();
+    count += 1;
+    if (bw >= 80)
+    {
+        NS_ASSERT(m_center26ToneRuIndication.has_value());
+        auto val = static_cast<uint8_t>(m_center26ToneRuIndication.value());
+        val |= (byte & 0x01) << (contentChannelId - 1);
+        m_center26ToneRuIndication = static_cast<Center26ToneRuIndication>(val);
+        offset++;
+    }
+
+    // CRC and tail
+    offset += 10;
+    byte = i.ReadU8();
+    count += 1;
+    offset -= 8;
+
+    // User fields
+    const auto numRusPerHeSigBContentChannel = GetNumRusPerHeSigBContentChannel(bw, m_ruAllocation);
+    std::size_t nUserFields = (contentChannelId == 1) ? numRusPerHeSigBContentChannel.first
+                                                      : numRusPerHeSigBContentChannel.second;
+    userBlockFieldsContentChannel.reserve(nUserFields);
+    for (std::size_t field = 0; field < nUserFields; ++field)
+    {
+        uint8_t nBits = 0;
+        uint32_t userField = 0;
+        const uint8_t bitsPerUserField = 21 + 4 /* CRC */ + 6 /* tail */;
+        while (nBits < bitsPerUserField)
+        {
+            NS_ASSERT(offset < 8);
+            const uint8_t bitsLeft = std::min(8 - offset, bitsPerUserField - nBits);
+            const uint8_t bitMask = (0x01 << bitsLeft) - 0x01;
+            userField |= ((byte >> offset) & bitMask) << nBits;
+            offset += bitsLeft;
+            nBits += bitsLeft;
+            if ((bitsPerUserField - nBits < 8) && (field == nUserFields - 1))
+            {
+                // reached padding, can stop deserializing user fields
+                break;
+            }
+            if (offset == 8)
+            {
+                // reached end of byte, read next one
+                byte = i.ReadU8();
+                count += 1;
+                offset = 0;
+            }
+        }
+        userBlockFieldsContentChannel.push_back(userField);
+    }
+
+    return count;
+}
+
+void
 HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
 {
     // HE-SIG-A1
@@ -763,7 +1006,30 @@ HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
     if (m_mu)
     {
         // HE-SIG-B
-        start.WriteU8(0);
+        std::vector<uint32_t> userBlockFieldsContentChannel1;
+        std::vector<uint32_t> userBlockFieldsContentChannel2;
+        for (const auto& userInfo : m_contentChannels.at(0))
+        {
+            uint32_t userField = userInfo.staId;
+            userField |= ((userInfo.nss & 0x07) << 11);
+            userField |= ((userInfo.mcs & 0x0f) << 15);
+            // CRC and tail set to 0 for simplification
+            userBlockFieldsContentChannel1.push_back(userField);
+        }
+        SerializeSigBContentChannel(start, 1, userBlockFieldsContentChannel1);
+        if (m_contentChannels.size() > 1)
+        {
+            NS_ASSERT(GetChannelWidth() > 20);
+            for (const auto& userInfo : m_contentChannels.at(1))
+            {
+                uint32_t userField = userInfo.staId;
+                userField |= ((userInfo.nss & 0x07) << 11);
+                userField |= ((userInfo.mcs & 0x0f) << 15);
+                // CRC and tail set to 0 for simplification
+                userBlockFieldsContentChannel2.push_back(userField);
+            }
+            SerializeSigBContentChannel(start, 2, userBlockFieldsContentChannel2);
+        }
     }
 }
 
@@ -808,7 +1074,61 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
     if (m_mu)
     {
         // HE-SIG-B
-        i.ReadU8();
+        m_ruAllocation.clear();
+        m_contentChannels.clear();
+        std::size_t ruAllocationSize = 0;
+        const auto bw = GetChannelWidth();
+        switch (bw)
+        {
+        case 20:
+            ruAllocationSize = 1;
+            break;
+        case 40:
+            ruAllocationSize = 2;
+            break;
+        case 80:
+            ruAllocationSize = 4;
+            break;
+        case 160:
+            ruAllocationSize = 8;
+            break;
+        default:
+            NS_FATAL_ERROR("Invalid channel width: " << bw << " MHz");
+        }
+        m_ruAllocation.resize(ruAllocationSize);
+        std::vector<uint32_t> userBlockFieldsContentChannel1;
+        std::vector<uint32_t> userBlockFieldsContentChannel2;
+        if (bw < 80)
+        {
+            m_center26ToneRuIndication = std::nullopt;
+        }
+        else
+        {
+            m_center26ToneRuIndication = CENTER_26_TONE_RU_UNALLOCATED;
+        }
+        uint16_t nBytes = DeserializeSigBContentChannel(i, 1, userBlockFieldsContentChannel1);
+        i.Next(nBytes);
+        m_contentChannels.push_back({});
+        for (auto userField : userBlockFieldsContentChannel1)
+        {
+            uint16_t staId = (userField & 0x07ff);
+            uint8_t nss = (userField >> 11) & 0x07;
+            uint8_t mcs = (userField >> 15) & 0x0f;
+            m_contentChannels.at(0).push_back({staId, nss, mcs});
+        }
+        if (bw >= 40)
+        {
+            nBytes = DeserializeSigBContentChannel(i, 2, userBlockFieldsContentChannel2);
+            i.Next(nBytes);
+            m_contentChannels.push_back({});
+            for (auto userField : userBlockFieldsContentChannel2)
+            {
+                uint16_t staId = (userField & 0x07ff);
+                uint8_t nss = (userField >> 11) & 0x07;
+                uint8_t mcs = (userField >> 15) & 0x0f;
+                m_contentChannels.at(1).push_back({staId, nss, mcs});
+            }
+        }
     }
 
     return i.GetDistanceFrom(start);

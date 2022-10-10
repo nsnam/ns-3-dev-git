@@ -56,11 +56,16 @@ struct HeMuUserInfo
     bool operator!=(const HeMuUserInfo& other) const;
 };
 
-/// A vector of subcarrier group
-using SubcarrierGroups = std::vector<HeRu::SubcarrierGroup>;
+/// User Specific Fields in HE-SIG-Bs.
+struct HeSigBUserSpecificField
+{
+    uint16_t staId : 11; ///< STA-ID
+    uint8_t nss : 4;     ///< number of spatial streams
+    uint8_t mcs : 4;     ///< MCS index
+};
 
-/// HE SIG-B Content Channels STA ID Allocation
-using ContentChannelAllocation = std::vector<std::vector<uint16_t>>;
+/// HE SIG-B Content Channels
+using HeSigBContentChannels = std::vector<std::vector<HeSigBUserSpecificField>>;
 
 /// 8 bit RU_ALLOCATION per 20 MHz
 using RuAllocation = std::vector<uint8_t>;
@@ -464,12 +469,12 @@ class WifiTxVector
     const RuAllocation& GetRuAllocation(uint8_t p20Index) const;
 
     /**
-     * Get the HE SIG-B content channel STA ID allocation
+     * Get the HE SIG-B content channels
      * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
      * \param p20Index the index of the primary20 channel
-     * \return content channel allocation
+     * \return HE-SIG-B content channels
      */
-    ContentChannelAllocation GetContentChannelAllocation(uint8_t p20Index) const;
+    HeSigBContentChannels GetContentChannels(uint8_t p20Index) const;
 
     /**
      * Set CENTER_26_TONE_RU field

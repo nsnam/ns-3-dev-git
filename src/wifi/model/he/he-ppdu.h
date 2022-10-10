@@ -54,6 +54,12 @@ class HePpdu : public OfdmPpdu
     {
       public:
         HeSigHeader();
+        /**
+         * Constructor.
+         *
+         * \param mu the MU flag
+         */
+        HeSigHeader(bool mu);
 
         /**
          * \brief Get the type ID.
@@ -156,7 +162,79 @@ class HePpdu : public OfdmPpdu
          */
         uint8_t GetSigBMcs() const;
 
+        /**
+         * Set RU Allocation of SIG-B common field
+         * \param ruAlloc 8 bit RU_ALLOCATION per 20 MHz
+         */
+        void SetRuAllocation(const RuAllocation& ruAlloc);
+
+        /**
+         * Get RU Allocation of SIG-B
+         * \return 8 bit RU_ALLOCATION per 20 MHz
+         */
+        const RuAllocation& GetRuAllocation() const;
+
+        /**
+         * Set the HE SIG-B content channels
+         * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
+         * \param contentChannels HE-SIG-B content channels
+         */
+        void SetHeSigBContentChannels(const HeSigBContentChannels& contentChannels);
+
+        /**
+         * Get the HE SIG-B content channels
+         * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
+         * \return HE-SIG-B content channels
+         */
+        const HeSigBContentChannels& GetHeSigBContentChannels() const;
+
+        /**
+         * Set the HE-SIG-B CENTER_26_TONE_RU field
+         * \param center26ToneRuIndication the CENTER_26_TONE_RU field
+         */
+        void SetCenter26ToneRuIndication(
+            std::optional<Center26ToneRuIndication> center26ToneRuIndication);
+
+        /**
+         * Get the HE-SIG-B CENTER_26_TONE_RU field
+         * \return the CENTER_26_TONE_RU field
+         */
+        std::optional<Center26ToneRuIndication> GetCenter26ToneRuIndication() const;
+
       private:
+        /**
+         * Return the size of HE-SIG-B in bytes
+         *
+         * \return the size of HE-SIG-B in bytes
+         */
+        uint32_t GetSigBSize() const;
+        /**
+         * Serialize one user field content channel.
+         *
+         * \param start an iterator which points to where the user field content channel should be
+         * written
+         * \param contentChannelId the ID of the content channel (either 1 or 2)
+         * \param userBlockFieldsContentChannel the user block fields contained in the content
+         * channel to write
+         */
+        void SerializeSigBContentChannel(
+            Buffer::Iterator& start,
+            uint8_t contentChannelId,
+            const std::vector<uint32_t>& userBlockFieldsContentChannel) const;
+        /**
+         * Deserialize one user field content channel.
+         *
+         * \param start an iterator which points to where the user field
+         * content channel should be read
+         * \param contentChannelId the ID of the content channel (either 1 or 2)
+         * \param userBlockFieldsContentChannel the user block fields to fill in
+         * \return the number of bytes read
+         */
+        uint16_t DeserializeSigBContentChannel(
+            Buffer::Iterator start,
+            uint8_t contentChannelId,
+            std::vector<uint32_t>& userBlockFieldsContentChannel);
+
         // HE-SIG-A1 fields
         uint8_t m_format;      ///< Format bit
         uint8_t m_bssColor;    ///< BSS color field
@@ -167,8 +245,14 @@ class HePpdu : public OfdmPpdu
         uint8_t m_sigBMcs;     ///< HE-SIG-B MCS
 
         /// This is used to decide whether MU SIG-B should be added or not
-        bool m_mu;
-    }; // class HeSigHeader
+        bool m_mu; // TODO: rename to express the need for HE-SIG-B
+
+        RuAllocation m_ruAllocation; //!< RU allocations that are going to be carried in SIG-B
+                                     //!< common subfields
+        HeSigBContentChannels m_contentChannels; //!< HE SIG-B Content Channels
+        std::optional<Center26ToneRuIndication>
+            m_center26ToneRuIndication; //!< center 26 tone RU indication in SIG-B common subfields
+    };                                  // class HeSigHeader
 
     /**
      * The transmit power spectral density flag, namely used
@@ -293,11 +377,6 @@ class HePpdu : public OfdmPpdu
 
     WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< HE MU specific per-user information (to be
                                                  //!< removed once HE-SIG-B headers are implemented)
-    ContentChannelAllocation
-        m_contentChannelAlloc; //!< HE SIG-B Content Channel allocation (to be removed once HE-SIG-B
-                               //!< headers are implemented)
-    RuAllocation m_ruAllocation; //!< RU_ALLOCATION in SIG-B common field (to be removed once
-                                 //!< HE-SIG-B headers are implemented)
 
   private:
     std::string PrintPayload() const override;
