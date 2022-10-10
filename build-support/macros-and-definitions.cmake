@@ -434,7 +434,7 @@ macro(process_options)
   if(${NS3_CLANG_FORMAT})
     find_program(CLANG_FORMAT clang-format)
     if("${CLANG_FORMAT}" STREQUAL "CLANG_FORMAT-NOTFOUND")
-      message(${HIGHLIGHTED_STATUS} "Proceeding without clang-format")
+      message(FATAL_ERROR "Clang-format was not found")
     else()
       file(
         GLOB_RECURSE
@@ -449,7 +449,7 @@ macro(process_options)
         scratch/*.h
       )
       add_custom_target(
-        clang-format COMMAND clang-format -style=file -i
+        clang-format COMMAND ${CLANG_FORMAT} -style=file -i
                              ${ALL_CXX_SOURCE_FILES}
       )
       unset(ALL_CXX_SOURCE_FILES)
@@ -457,13 +457,13 @@ macro(process_options)
   endif()
 
   if(${NS3_CLANG_TIDY})
-    find_program(CLANG_TIDY clang-tidy)
+    find_program(
+      CLANG_TIDY NAMES clang-tidy clang-tidy-14 clang-tidy-15 clang-tidy-16
+    )
     if("${CLANG_TIDY}" STREQUAL "CLANG_TIDY-NOTFOUND")
-      message(${HIGHLIGHTED_STATUS}
-              "Proceeding without clang-tidy static analysis"
-      )
+      message(FATAL_ERROR "Clang-tidy was not found")
     else()
-      set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")
     endif()
   else()
     unset(CMAKE_CXX_CLANG_TIDY)
