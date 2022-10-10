@@ -142,15 +142,25 @@ void
 HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
 {
     heSig.SetFormat(m_preamble);
-    if (ns3::IsDlMu(m_preamble))
+    // TODO: EHT PHY headers not implemented yet, hence we do not fill in HE-SIG-B for EHT SU
+    /* See section 36.3.12.8.2 of IEEE 802.11be D3.0 (EHT-SIG content channels):
+     * In non-OFDMA transmission, the Common field of the EHT-SIG content channel does not contain
+     * the RU Allocation subfield. For non-OFDMA transmission except for EHT sounding NDP, the
+     * Common field of the EHT-SIG content channel is encoded together with the first User field and
+     * this encoding block contains a CRC and Tail, referred to as a common encoding block. */
+    if (txVector.IsDlMu())
     {
         heSig.SetMuFlag(true);
         heSig.SetMcs(txVector.GetSigBMode().GetMcsValue());
     }
-    else if (!ns3::IsUlMu(m_preamble))
+    else
     {
-        heSig.SetMcs(txVector.GetMode().GetMcsValue());
-        heSig.SetNStreams(txVector.GetNss());
+        heSig.SetMuFlag(false);
+        if (!ns3::IsUlMu(m_preamble))
+        {
+            heSig.SetMcs(txVector.GetMode().GetMcsValue());
+            heSig.SetNStreams(txVector.GetNss());
+        }
     }
     heSig.SetBssColor(txVector.GetBssColor());
     heSig.SetChannelWidth(txVector.GetChannelWidth());
@@ -176,6 +186,7 @@ HePpdu::DoGetTxVector() const
     }
 
     HeSigHeader heSig;
+    heSig.SetMuFlag(IsDlMu());
     if (phyHeaders->PeekHeader(heSig) == 0)
     {
         NS_FATAL_ERROR("Missing HE-SIG header in HE PPDU");
@@ -310,6 +321,7 @@ HePpdu::GetPsdu(uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
     LSigHeader lSig;
     phyHeaders->RemoveHeader(lSig);
     HeSigHeader heSig;
+    heSig.SetMuFlag(IsDlMu());
     phyHeaders->RemoveHeader(heSig);
     ppduBssColor = heSig.GetBssColor();
 #else
@@ -627,20 +639,43 @@ void
 HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
 {
     // HE-SIG-A1
-    uint8_t byte = m_format & 0x01;
-    byte |= ((m_mcs & 0x0f) << 3);
-    start.WriteU8(byte);
-    uint16_t bytes = (m_bssColor & 0x3f);
-    bytes |= (0x01 << 6); // Reserved set to 1
-    bytes |= ((m_bandwidth & 0x03) << 11);
-    bytes |= ((m_gi_ltf_size & 0x03) << 13);
-    bytes |= ((m_nsts & 0x01) << 15);
-    start.WriteU16(bytes);
-    start.WriteU8((m_nsts >> 1) & 0x03);
+    uint32_t sigA1 = 0;
+    if (!m_mu)
+    {
+        sigA1 |= m_format & 0x01;
+        if (m_format == 1) // HE SU or HE ER SU PPDU
+        {
+            sigA1 |= ((m_mcs & 0x0f) << 3);
+            sigA1 |= ((m_bssColor & 0x3f) << 8);
+            sigA1 |= (0x01 << 14); // Reserved set to 1
+            sigA1 |= ((m_bandwidth & 0x03) << 19);
+            sigA1 |= ((m_gi_ltf_size & 0x03) << 21);
+            sigA1 |= ((m_nsts & 0x07) << 23);
+        }
+        else
+        {
+            // HE TB PPDU
+            sigA1 |= ((m_bssColor & 0x3f) << 1);
+            sigA1 |= (0x01 << 23); // Reserved set to 1
+            sigA1 |= ((m_bandwidth & 0x03) << 24);
+        }
+    }
+    else
+    {
+        // HE MU PPDU
+        sigA1 |= ((m_bssColor & 0x3f) << 5);
+        sigA1 |= ((m_bandwidth & 0x03) << 15);
+        sigA1 |= ((m_gi_ltf_size & 0x03) << 23);
+    }
+    start.WriteU32(sigA1);
 
     // HE-SIG-A2
     uint32_t sigA2 = 0;
-    sigA2 |= (0x01 << 14); // Set Reserved bit #14 to 1
+    if (!m_mu && (m_format == 1))
+    {
+        // HE SU or HE ER SU PPDU
+        sigA2 |= (0x01 << 14); // Set Reserved bit #14 to 1
+    }
     start.WriteU32(sigA2);
 
     if (m_mu)
@@ -656,16 +691,33 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
     Buffer::Iterator i = start;
 
     // HE-SIG-A1
-    uint8_t byte = i.ReadU8();
-    m_format = (byte & 0x01);
-    m_mcs = ((byte >> 3) & 0x0f);
-    uint16_t bytes = i.ReadU16();
-    m_bssColor = (bytes & 0x3f);
-    m_bandwidth = ((bytes >> 11) & 0x03);
-    m_gi_ltf_size = ((bytes >> 13) & 0x03);
-    m_nsts = ((bytes >> 15) & 0x01);
-    byte = i.ReadU8();
-    m_nsts |= (byte & 0x03) << 1;
+    uint32_t sigA1 = i.ReadU32();
+    if (!m_mu)
+    {
+        m_format = (sigA1 & 0x01);
+        if (m_format == 1)
+        {
+            // HE SU or HE ER SU PPDU
+            m_mcs = ((sigA1 >> 3) & 0x0f);
+            m_bssColor = ((sigA1 >> 8) & 0x3f);
+            m_bandwidth = ((sigA1 >> 19) & 0x03);
+            m_gi_ltf_size = ((sigA1 >> 21) & 0x03);
+            m_nsts = ((sigA1 >> 23) & 0x07);
+        }
+        else
+        {
+            // HE TB PPDU
+            m_bssColor = ((sigA1 >> 1) & 0x3f);
+            m_bandwidth = ((sigA1 >> 24) & 0x03);
+        }
+    }
+    else
+    {
+        // HE MU PPDU
+        m_bssColor = ((sigA1 >> 5) & 0x3f);
+        m_bandwidth = ((sigA1 >> 15) & 0x03);
+        m_gi_ltf_size = ((sigA1 >> 23) & 0x03);
+    }
 
     // HE-SIG-A2
     i.ReadU32();
