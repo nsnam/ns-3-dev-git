@@ -17,7 +17,6 @@
  * Author: Gustavo Carneiro <gjcarneiro@gmail.com> <gjc@inescporto.pt>
  */
 #include <Python.h>
-#undef HAVE_PTHREAD_H
 #undef HAVE_SYS_STAT_H
 #include "visual-simulator-impl.h"
 
