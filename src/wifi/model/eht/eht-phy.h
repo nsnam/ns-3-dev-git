@@ -262,6 +262,7 @@ class EhtPhy : public HePhy
     WifiPhyRxfailureReason GetFailureReason(WifiPpduField field) const override;
     Time CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const override;
     Time CalculateNonOfdmaDurationForHeMu(const WifiTxVector& txVector) const override;
+    uint32_t GetSigBSize(const WifiTxVector& txVector) const override;
 
     /**
      * Create and return the EHT MCS corresponding to

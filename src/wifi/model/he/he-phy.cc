@@ -216,14 +216,22 @@ HePhy::GetSigADuration(WifiPreamble preamble) const
                : MicroSeconds(8); // HE-SIG-A (first and second symbol)
 }
 
+uint32_t
+HePhy::GetSigBSize(const WifiTxVector& txVector) const
+{
+    if (ns3::IsDlMu(txVector.GetPreambleType()))
+    {
+        NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
+        return HePpdu::GetSigBFieldSize(txVector.GetChannelWidth(), txVector.GetRuAllocation());
+    }
+    return 0;
+}
+
 Time
 HePhy::GetSigBDuration(const WifiTxVector& txVector) const
 {
-    if (ns3::IsDlMu(txVector.GetPreambleType())) // See section 27.3.11.8 of IEEE 802.11ax-2021
+    if (auto sigBSize = GetSigBSize(txVector); sigBSize > 0)
     {
-        NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
-
-        auto sigBSize = GetSigBFieldSize(txVector);
         auto symbolDuration = MicroSeconds(4);
         // Number of data bits per symbol
         auto ndbps =
@@ -1777,41 +1785,6 @@ uint32_t
 HePhy::GetMaxPsduSize() const
 {
     return 6500631;
-}
-
-uint32_t
-HePhy::GetSigBFieldSize(const WifiTxVector& txVector)
-{
-    NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
-    NS_ASSERT(ns3::IsDlMu(txVector.GetPreambleType()));
-
-    // Compute the number of bits used by common field.
-    // Assume that compression bit in HE-SIG-A is not set (i.e. not
-    // full band MU-MIMO); the field is present.
-    auto bw = txVector.GetChannelWidth();
-    auto commonFieldSize = 4 /* CRC */ + 6 /* tail */;
-    if (bw <= 40)
-    {
-        commonFieldSize += 8; // only one allocation subfield
-    }
-    else
-    {
-        commonFieldSize += 8 * (bw / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
-    }
-
-    auto numStaPerContentChannel = txVector.GetNumRusPerHeSigBContentChannel();
-    auto maxNumStaPerContentChannel =
-        std::max(numStaPerContentChannel.first, numStaPerContentChannel.second);
-    auto maxNumUserBlockFields = maxNumStaPerContentChannel /
-                                 2; // handle last user block with single user, if any, further down
-    std::size_t userSpecificFieldSize =
-        maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
-    if (maxNumStaPerContentChannel % 2 != 0)
-    {
-        userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
-    }
-
-    return commonFieldSize + userSpecificFieldSize;
 }
 
 bool

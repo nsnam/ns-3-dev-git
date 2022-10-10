@@ -129,6 +129,18 @@ EhtPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
     }
 }
 
+uint32_t
+EhtPhy::GetSigBSize(const WifiTxVector& txVector) const
+{
+    if (ns3::IsDlMu(txVector.GetPreambleType()) && ns3::IsEht(txVector.GetPreambleType()))
+    {
+        return EhtPpdu::GetEhtSigFieldSize(txVector.GetChannelWidth(),
+                                           txVector.GetRuAllocation(),
+                                           txVector.GetEhtPpduType());
+    }
+    return HePhy::GetSigBSize(txVector);
+}
+
 Time
 EhtPhy::CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const
 {

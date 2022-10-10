@@ -19,7 +19,8 @@
  */
 
 #include "ns3/dsss-phy.h"
-#include "ns3/eht-phy.h" //includes OFDM, HT, VHT and HE
+#include "ns3/eht-phy.h"  //includes OFDM, HT, VHT and HE
+#include "ns3/eht-ppdu.h" //includes OFDM, HT, VHT and HE
 #include "ns3/erp-ofdm-phy.h"
 #include "ns3/he-ru.h"
 #include "ns3/log.h"
@@ -1361,7 +1362,9 @@ HeSigBDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs5(),
                           "HE-SIG-B should be sent at MCS 5");
-    std::pair<std::size_t, std::size_t> numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel();
+    std::pair<std::size_t, std::size_t> numUsersPerCc =
+        HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
+                                                 txVector.GetRuAllocation());
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
                           2,
                           "Both users should be on HE-SIG-B content channel 1");
@@ -1383,7 +1386,8 @@ HeSigBDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs4(),
                           "HE-SIG-B should be sent at MCS 4");
-    numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel();
+    numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
+                                                             txVector.GetRuAllocation());
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
                           2,
                           "Two users should be on HE-SIG-B content channel 1");
@@ -1402,7 +1406,8 @@ HeSigBDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs3(),
                           "HE-SIG-B should be sent at MCS 3");
-    numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel();
+    numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
+                                                             txVector.GetRuAllocation());
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
                           2,
                           "Two users should be on HE-SIG-B content channel 1");
@@ -1422,7 +1427,8 @@ HeSigBDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs1(),
                           "HE-SIG-B should be sent at MCS 1");
-    numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel();
+    numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
+                                                             txVector.GetRuAllocation());
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
                           3,
                           "Three users should be on HE-SIG-B content channel 1");
@@ -1441,7 +1447,8 @@ HeSigBDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs1(),
                           "HE-SIG-B should be sent at MCS 1");
-    numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel();
+    numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
+                                                             txVector.GetRuAllocation());
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
                           4,
                           "Four users should be on HE-SIG-B content channel 1");

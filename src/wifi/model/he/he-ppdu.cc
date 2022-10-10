@@ -425,19 +425,75 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
     }
 }
 
-bool
-HePpdu::IsAllocated(uint16_t staId) const
+std::pair<std::size_t, std::size_t>
+HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth,
+                                         const std::vector<uint8_t>& ruAllocation)
 {
-    return (m_muUserInfos.find(staId) != m_muUserInfos.cend());
+    // MU-MIMO is not handled for now, i.e. one station per RU
+    NS_ASSERT_MSG(!ruAllocation.empty(), "RU allocation is not set");
+    NS_ASSERT_MSG(ruAllocation.size() == channelWidth / 20,
+                  "RU allocation is not consistent with packet bandwidth");
+
+    std::pair<std::size_t /* number of RUs in content channel 1 */,
+              std::size_t /* number of RUs in content channel 2 */>
+        chSize{0, 0};
+
+    switch (channelWidth)
+    {
+    case 40:
+        chSize.second += HeRu::GetRuSpecs(ruAllocation[1]).size();
+        [[fallthrough]];
+    case 20:
+        chSize.first += HeRu::GetRuSpecs(ruAllocation[0]).size();
+        break;
+    default:
+        for (auto n = 0; n < channelWidth / 20;)
+        {
+            chSize.first += HeRu::GetRuSpecs(ruAllocation[n]).size();
+            chSize.second += HeRu::GetRuSpecs(ruAllocation[n + 1]).size();
+            if (ruAllocation[n] >= 208)
+            {
+                // 996 tone RU occupies 80 MHz
+                n += 4;
+                continue;
+            }
+            n += 2;
+        }
+        break;
+    }
+    return chSize;
 }
 
-bool
-HePpdu::IsStaInContentChannel(uint16_t staId, std::size_t channelId) const
+uint32_t
+HePpdu::GetSigBFieldSize(uint16_t channelWidth, const RuAllocation& ruAllocation)
 {
-    NS_ASSERT_MSG(channelId < m_contentChannelAlloc.size(),
-                  "Invalid content channel ID " << channelId);
-    const auto& channelAlloc = m_contentChannelAlloc.at(channelId);
-    return (std::find(channelAlloc.cbegin(), channelAlloc.cend(), staId) != channelAlloc.cend());
+    // Compute the number of bits used by common field.
+    // Assume that compression bit in HE-SIG-A is not set (i.e. not
+    // full band MU-MIMO); the field is present.
+    auto commonFieldSize = 4 /* CRC */ + 6 /* tail */;
+    if (channelWidth <= 40)
+    {
+        commonFieldSize += 8; // only one allocation subfield
+    }
+    else
+    {
+        commonFieldSize +=
+            8 * (channelWidth / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+    }
+
+    auto numStaPerContentChannel = GetNumRusPerHeSigBContentChannel(channelWidth, ruAllocation);
+    auto maxNumStaPerContentChannel =
+        std::max(numStaPerContentChannel.first, numStaPerContentChannel.second);
+    auto maxNumUserBlockFields = maxNumStaPerContentChannel /
+                                 2; // handle last user block with single user, if any, further down
+    std::size_t userSpecificFieldSize =
+        maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
+    if (maxNumStaPerContentChannel % 2 != 0)
+    {
+        userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
+    }
+
+    return commonFieldSize + userSpecificFieldSize;
 }
 
 std::string

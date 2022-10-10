@@ -59,9 +59,6 @@ struct HeMuUserInfo
 /// A vector of subcarrier group
 using SubcarrierGroups = std::vector<HeRu::SubcarrierGroup>;
 
-/// Maximum number of HE-SIG-B content channels
-constexpr size_t WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS = 2;
-
 /// HE SIG-B Content Channels STA ID Allocation
 using ContentChannelAllocation = std::vector<std::vector<uint16_t>>;
 
@@ -422,15 +419,6 @@ class WifiTxVector
      * \return a reference to the map of HE MU user-specific information indexed by STA-ID
      */
     HeMuUserInfoMap& GetHeMuUserInfoMap();
-    /**
-     * Get the number of RUs per HE-SIG-B content channel.
-     * This is applicable only for MU. MU-MIMO (i.e. multiple stations
-     * per RU) is not supported yet.
-     * See section 27.3.10.8.3 of IEEE 802.11ax draft 4.0.
-     *
-     * \return a pair containing the number of RUs in each HE-SIG-B content channel (resp. 1 and 2)
-     */
-    std::pair<std::size_t, std::size_t> GetNumRusPerHeSigBContentChannel() const;
 
     /**
      * Set the 20 MHz subchannels that are punctured.

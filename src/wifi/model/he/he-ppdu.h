@@ -33,6 +33,9 @@
 namespace ns3
 {
 
+/// HE SIG-B Content Channels
+constexpr size_t WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS = 2;
+
 class WifiPsdu;
 
 /**
@@ -249,19 +252,27 @@ class HePpdu : public OfdmPpdu
     void UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) const;
 
     /**
-     * Check if STA ID is in HE SIG-B Content Channel ID
-     * \param staId STA ID
-     * \param channelId Content Channel ID
-     * \return true if STA ID in content channel ID, false otherwise
+     * Get the number of RUs per HE-SIG-B content channel.
+     * This is applicable only for MU. MU-MIMO (i.e. multiple stations
+     * per RU) is not supported yet.
+     * See section 27.3.10.8.3 of IEEE 802.11ax draft 4.0.
+     *
+     * \param channelWidth the channel width occupied by the PPDU (in MHz)
+     * \param ruAllocation 8 bit RU_ALLOCATION per 20 MHz
+     * \return a pair containing the number of RUs in each HE-SIG-B content channel (resp. 1 and 2)
      */
-    bool IsStaInContentChannel(uint16_t staId, size_t channelId) const;
+    static std::pair<std::size_t, std::size_t> GetNumRusPerHeSigBContentChannel(
+        uint16_t channelWidth,
+        const std::vector<uint8_t>& ruAllocation);
 
     /**
-     * Check if STA ID is allocated
-     * \param staId STA ID
-     * \return true if allocated, false otherwise
+     * Get variable length HE SIG-B field size
+     * \param channelWidth the channel width occupied by the PPDU (in MHz)
+     * \param ruAllocation 8 bit RU_ALLOCATION per 20 MHz
+     * \return field size in bytes
      */
-    bool IsAllocated(uint16_t staId) const;
+    static uint32_t GetSigBFieldSize(uint16_t channelWidth,
+                                     const std::vector<uint8_t>& ruAllocation);
 
   protected:
     /**

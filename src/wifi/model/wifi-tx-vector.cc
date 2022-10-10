@@ -530,54 +530,6 @@ WifiTxVector::GetHeMuUserInfoMap()
     return m_muUserInfos;
 }
 
-std::pair<std::size_t, std::size_t>
-WifiTxVector::GetNumRusPerHeSigBContentChannel() const
-{
-    if (m_preamble == WIFI_PREAMBLE_EHT_MU && m_ehtPpduType == 1)
-    {
-        return {1, 0};
-    }
-
-    // MU-MIMO is not handled for now, i.e. one station per RU
-    auto ruAllocation = GetRuAllocation();
-    NS_ASSERT_MSG(!ruAllocation.empty(), "RU allocation is not set");
-    if (ruAllocation.size() != m_channelWidth / 20)
-    {
-        ruAllocation = DeriveRuAllocation();
-    }
-    NS_ASSERT_MSG(ruAllocation.size() == m_channelWidth / 20,
-                  "RU allocation is not consistent with packet bandwidth");
-
-    std::pair<std::size_t /* number of RUs in content channel 1 */,
-              std::size_t /* number of RUs in content channel 2 */>
-        chSize{0, 0};
-
-    switch (GetChannelWidth())
-    {
-    case 40:
-        chSize.second += HeRu::GetRuSpecs(ruAllocation[1]).size();
-        [[fallthrough]];
-    case 20:
-        chSize.first += HeRu::GetRuSpecs(ruAllocation[0]).size();
-        break;
-    default:
-        for (auto n = 0; n < m_channelWidth / 20;)
-        {
-            chSize.first += HeRu::GetRuSpecs(ruAllocation[n]).size();
-            chSize.second += HeRu::GetRuSpecs(ruAllocation[n + 1]).size();
-            if (ruAllocation[n] >= 208)
-            {
-                // 996 tone RU occupies 80 MHz
-                n += 4;
-                continue;
-            }
-            n += 2;
-        }
-        break;
-    }
-    return chSize;
-}
-
 void
 WifiTxVector::SetInactiveSubchannels(const std::vector<bool>& inactiveSubchannels)
 {

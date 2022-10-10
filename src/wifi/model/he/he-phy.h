@@ -423,13 +423,6 @@ class HePhy : public VhtPhy
      */
     static bool IsAllowed(const WifiTxVector& txVector);
 
-    /**
-     * Get variable length HE SIG-B field size based on TX Vector
-     * \param txVector WiFi TX Vector
-     * \return field size in bytes
-     */
-    static uint32_t GetSigBFieldSize(const WifiTxVector& txVector);
-
   protected:
     PhyFieldRxStatus ProcessSig(Ptr<Event> event,
                                 PhyFieldRxStatus status,
@@ -478,6 +471,12 @@ class HePhy : public VhtPhy
      * \return the updated status of the reception of the SIG-B
      */
     virtual PhyFieldRxStatus ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status);
+
+    /**
+     * \param txVector the transmission parameters
+     * \return the number of bits of the HE-SIG-B
+     */
+    virtual uint32_t GetSigBSize(const WifiTxVector& txVector) const;
 
     /**
      * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an OFDMA

@@ -52,6 +52,7 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
         m_ehtSuMcs = txVector.GetMode().GetMcsValue();
         m_ehtSuNStreams = txVector.GetNss();
     }
+    m_ehtPpduType = txVector.GetEhtPpduType();
 }
 
 WifiPpduType
@@ -97,10 +98,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     txVector.SetBssColor(heSig.GetBssColor());
     txVector.SetLength(lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
-    if (!m_muUserInfos.empty())
-    {
-        txVector.SetEhtPpduType(0); // FIXME set to 2 for DL MU-MIMO (non-OFDMA) transmission
-    }
+    txVector.SetEhtPpduType(m_ehtPpduType); // FIXME: PPDU type should be read from U-SIG
     for (const auto& muUserInfo : m_muUserInfos)
     {
         txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
@@ -110,6 +108,51 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
         txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
         txVector.SetRuAllocation(m_ruAllocation);
     }
+}
+
+std::pair<std::size_t, std::size_t>
+EhtPpdu::GetNumRusPerEhtSigBContentChannel(uint16_t channelWidth,
+                                           uint8_t ehtPpduType,
+                                           const std::vector<uint8_t>& ruAllocation)
+{
+    if (ehtPpduType == 1)
+    {
+        return {1, 0};
+    }
+    return HePpdu::GetNumRusPerHeSigBContentChannel(channelWidth, ruAllocation);
+}
+
+uint32_t
+EhtPpdu::GetEhtSigFieldSize(uint16_t channelWidth,
+                            const RuAllocation& ruAllocation,
+                            uint8_t ehtPpduType)
+{
+    // FIXME: EHT-SIG is not implemented yet, hence this is a copy of HE-SIG-B
+    auto commonFieldSize = 4 /* CRC */ + 6 /* tail */;
+    if (channelWidth <= 40)
+    {
+        commonFieldSize += 8; // only one allocation subfield
+    }
+    else
+    {
+        commonFieldSize +=
+            8 * (channelWidth / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+    }
+
+    auto numStaPerContentChannel =
+        GetNumRusPerEhtSigBContentChannel(channelWidth, ehtPpduType, ruAllocation);
+    auto maxNumStaPerContentChannel =
+        std::max(numStaPerContentChannel.first, numStaPerContentChannel.second);
+    auto maxNumUserBlockFields = maxNumStaPerContentChannel /
+                                 2; // handle last user block with single user, if any, further down
+    std::size_t userSpecificFieldSize =
+        maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
+    if (maxNumStaPerContentChannel % 2 != 0)
+    {
+        userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
+    }
+
+    return commonFieldSize + userSpecificFieldSize;
 }
 
 Ptr<WifiPpdu>
