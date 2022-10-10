@@ -1083,7 +1083,7 @@ of rules that should be observed while developing code.
 - Prefer to use ``.emplace_back()`` over ``.push_back()`` to optimize performance.
 
 - When creating STL smart pointers, prefer to use ``std::make_shared`` or
-  ``std::make_unique``, instead of creating the pointer with ``new``:
+  ``std::make_unique``, instead of creating the pointer with ``new``.
 
   .. sourcecode:: cpp
 
@@ -1091,21 +1091,21 @@ of rules that should be observed while developing code.
     auto node = std::shared_ptr<Node>(new Node());  // Avoid
 
 - When looping through containers, prefer to use range-based for loops rather than
-  index-based loops:
+  index-based loops.
 
   .. sourcecode:: cpp
 
-    std::vector<int> myVector = {1, 2, 3};
+    std::vector<int> myVector {1, 2, 3};
 
     for (const auto& v : myVector) { ... }             // Prefer
     for (int i = 0; i < myVector.size(); i++) { ... }  // Avoid
 
 - When looping through containers, prefer to use const-ref syntax over copying
-  elements:
+  elements.
 
   .. sourcecode:: cpp
 
-    std::vector<int> myVector = {1, 2, 3};
+    std::vector<int> myVector {1, 2, 3};
 
     for (const auto& v : myVector) { ... }  // OK
     for (auto v : myVector) { ... }         // Avoid
