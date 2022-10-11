@@ -85,15 +85,11 @@ Ipv6ForwardingTest::Ipv6ForwardingTest()
 void
 Ipv6ForwardingTest::ReceivePkt(Ptr<Socket> socket)
 {
-    uint32_t availableData;
-    availableData = socket->GetRxAvailable();
+    uint32_t availableData [[maybe_unused]] = socket->GetRxAvailable();
     m_receivedPacket = socket->Recv(std::numeric_limits<uint32_t>::max(), 0);
     NS_TEST_ASSERT_MSG_EQ(availableData,
                           m_receivedPacket->GetSize(),
                           "Received packet size is not equal to Rx buffer size");
-    // cast availableData to void, to suppress 'availableData' set but not used
-    // compiler warning
-    (void)availableData;
 }
 
 void

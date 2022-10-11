@@ -271,9 +271,8 @@ TcpGeneralTest::DoConnect()
 }
 
 void
-TcpGeneralTest::HandleAccept(Ptr<Socket> socket, const Address& from)
+TcpGeneralTest::HandleAccept(Ptr<Socket> socket, const Address& from [[maybe_unused]])
 {
-    (void)from;
     socket->SetRecvCallback(MakeCallback(&TcpGeneralTest::ReceivePacket, this));
     socket->SetCloseCallbacks(MakeCallback(&TcpGeneralTest::NormalCloseCb, this),
                               MakeCallback(&TcpGeneralTest::ErrorCloseCb, this));
