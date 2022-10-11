@@ -39,6 +39,7 @@ stages:
     - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts $ENABLE_MPI
     - ./ns3 build
     - if [ "$MODE" != "debug" ]; then ./test.py -n; fi
+    - ./ns3 clean
   cache:
     # Use separate key for each (debug/default/optimized) jobs because
     # they run in parallel and will otherwise overwrite each other
