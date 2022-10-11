@@ -26,10 +26,10 @@
 #ifndef NS3_MPI_INTERFACE_H
 #define NS3_MPI_INTERFACE_H
 
-#include "mpi.h"
-
 #include <ns3/nstime.h>
 #include <ns3/packet.h>
+
+#include <mpi.h>
 
 namespace ns3
 {

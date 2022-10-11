@@ -64,7 +64,6 @@
  */
 
 #include "mpi-test-fixtures.h"
-#include "mpi.h"
 
 #include "ns3/core-module.h"
 #include "ns3/internet-stack-helper.h"
@@ -76,6 +75,8 @@
 #include "ns3/on-off-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-helper.h"
+
+#include <mpi.h>
 
 using namespace ns3;
 
