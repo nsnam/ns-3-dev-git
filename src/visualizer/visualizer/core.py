@@ -1139,7 +1139,7 @@ class Visualizer(GObject.GObject):
 
             for devI in range(node.GetNDevices()):
                 device = node.GetDevice(devI)
-                device_traits = lookup_netdevice_traits(type(device))
+                device_traits = lookup_netdevice_traits(type(device.__deref__()))
                 if device_traits.is_wireless:
                     continue
                 if device_traits.is_virtual:
