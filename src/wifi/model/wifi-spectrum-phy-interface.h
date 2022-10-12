@@ -60,6 +60,12 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
      */
     void SetSpectrumWifiPhy(const Ptr<SpectrumWifiPhy> phy);
 
+    /**
+     * Get SpectrumWifiPhy object
+     * \return Pointer to SpectrumWifiPhy object
+     */
+    Ptr<const SpectrumWifiPhy> GetSpectrumWifiPhy() const;
+
     Ptr<NetDevice> GetDevice() const override;
     void SetDevice(const Ptr<NetDevice> d) override;
     void SetMobility(const Ptr<MobilityModel> m) override;

@@ -64,6 +64,12 @@ WifiSpectrumPhyInterface::SetSpectrumWifiPhy(const Ptr<SpectrumWifiPhy> spectrum
     m_spectrumWifiPhy = spectrumWifiPhy;
 }
 
+Ptr<const SpectrumWifiPhy>
+WifiSpectrumPhyInterface::GetSpectrumWifiPhy() const
+{
+    return m_spectrumWifiPhy;
+}
+
 Ptr<NetDevice>
 WifiSpectrumPhyInterface::GetDevice() const
 {
