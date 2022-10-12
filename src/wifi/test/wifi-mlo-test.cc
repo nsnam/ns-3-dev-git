@@ -1044,7 +1044,8 @@ MultiLinkTxNoBaTest::Transmit(uint8_t linkId,
     switch (psdu->GetHeader(0).GetType())
     {
     case WIFI_MAC_MGT_ACTION:
-        // CheckAddresses (psdu, true); TODO uncomment when ADDBA_REQUEST contains proper addresses
+        // a management frame is a DL frame if TA equals BSSID
+        CheckAddresses(psdu, psdu->GetHeader(0).GetAddr2() == psdu->GetHeader(0).GetAddr3());
         // corrupt all management action frames (ADDBA Request frames) to prevent
         // the establishment of a BA agreement
         m_uidList.push_front(uid);
