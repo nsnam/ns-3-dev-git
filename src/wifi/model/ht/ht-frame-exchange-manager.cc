@@ -147,7 +147,9 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
 
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_MGT_ACTION);
-    hdr.SetAddr1(dest);
+    // use the remote link address if dest is an MLD address
+    auto addr1 = GetWifiRemoteStationManager()->GetAffiliatedStaAddress(dest);
+    hdr.SetAddr1(addr1 ? *addr1 : dest);
     hdr.SetAddr2(m_self);
     hdr.SetAddr3(m_bssid);
     hdr.SetDsNotTo();
@@ -691,17 +693,23 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
         if (actionHdr.GetCategory() == WifiActionHeader::BLOCK_ACK)
         {
             uint8_t tid = GetTid(mpdu->GetPacket(), mpdu->GetHeader());
-            if (GetBaManager(tid)->ExistsAgreementInState(mpdu->GetHeader().GetAddr1(),
+            auto recipient = mpdu->GetHeader().GetAddr1();
+            // if the recipient is an MLD, use its MLD address
+            if (auto mldAddr = GetWifiRemoteStationManager()->GetMldAddress(recipient))
+            {
+                recipient = *mldAddr;
+            }
+            if (GetBaManager(tid)->ExistsAgreementInState(recipient,
                                                           tid,
                                                           OriginatorBlockAckAgreement::PENDING))
             {
                 NS_LOG_DEBUG("No ACK after ADDBA request");
                 Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
-                qosTxop->NotifyAgreementNoReply(mpdu->GetHeader().GetAddr1(), tid);
+                qosTxop->NotifyAgreementNoReply(recipient, tid);
                 Simulator::Schedule(qosTxop->GetFailedAddBaTimeout(),
                                     &QosTxop::ResetBa,
                                     qosTxop,
-                                    mpdu->GetHeader().GetAddr1(),
+                                    recipient,
                                     tid);
             }
         }
