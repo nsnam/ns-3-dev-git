@@ -118,6 +118,7 @@ set(source_files
     model/wifi-ack-manager.cc
     model/wifi-acknowledgment.cc
     model/wifi-assoc-manager.cc
+    model/wifi-bandwidth-filter.cc
     model/wifi-default-ack-manager.cc
     model/wifi-default-assoc-manager.cc
     model/wifi-default-protection-manager.cc
@@ -269,6 +270,7 @@ set(header_files
     model/wifi-ack-manager.h
     model/wifi-acknowledgment.h
     model/wifi-assoc-manager.h
+    model/wifi-bandwidth-filter.h
     model/wifi-default-ack-manager.h
     model/wifi-default-assoc-manager.h
     model/wifi-default-protection-manager.h

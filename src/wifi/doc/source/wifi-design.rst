@@ -707,6 +707,18 @@ is spread across the sub-bands roughly according to how power would
 be allocated to sub-carriers. Adjacent channels are models by the use of
 OFDM transmit spectrum masks as defined in the standards.
 
+The class ``WifiBandwidthFilter`` is used to discard signals early in the
+transmission process by ignoring any Wi-Fi PPDU whose TX band (including guard bands)
+does not overlap the current operating channel. Therefore, it bypasses the signal
+propagation/loss calculations reducing the computational load and increasing the
+simulation performance. To enable the ``WifiBandwidthFilter``, the user can use object
+aggregation as follows:
+.. sourcecode:: cpp
+
+  Ptr<WifiBandwidthFilter> wifiFilter = CreateObject<WifiBandwidthFilter> ();
+  Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
+  spectrumChannel->AddSpectrumTransmitFilter(wifiFilter);
+
 To support an easier user configuration experience, the existing
 YansWifi helper classes (in ``src/wifi/helper``) were copied and
 adapted to provide equivalent SpectrumWifi helper classes.
