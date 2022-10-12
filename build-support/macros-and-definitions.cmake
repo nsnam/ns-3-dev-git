@@ -2023,9 +2023,10 @@ function(find_external_library)
 
   # Include parent directories in the search paths to handle Bake cases
   get_filename_component(parent_project_dir ${PROJECT_SOURCE_DIR} DIRECTORY)
-  get_filename_component(grandparent_project_dir ${parent_project_dir} DIRECTORY)
+  get_filename_component(
+    grandparent_project_dir ${parent_project_dir} DIRECTORY
+  )
   set(project_parent_dirs ${parent_project_dir} ${grandparent_project_dir})
-
 
   # Paths and suffixes where libraries will be searched on
   set(library_search_paths

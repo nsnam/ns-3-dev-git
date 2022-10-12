@@ -7,8 +7,9 @@ cmake_minimum_required(VERSION 3.10..3.10)
 mark_as_advanced(CCACHE)
 find_program(CCACHE ccache)
 if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
   message(STATUS "CCache is enabled.")
+  set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
+  set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
   execute_process(
     COMMAND
       ${CCACHE} --set-config
