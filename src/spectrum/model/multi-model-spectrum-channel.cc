@@ -35,6 +35,7 @@
 #include <ns3/spectrum-converter.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-propagation-loss-model.h>
+#include <ns3/spectrum-transmit-filter.h>
 
 #include <algorithm>
 #include <iostream>
@@ -306,6 +307,11 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                             "same node, not supported yet by any pathloss model in ns-3.");
                         continue;
                     }
+                }
+
+                if (m_filter && m_filter->Filter(txParams, *rxPhyIterator))
+                {
+                    continue;
                 }
 
                 NS_LOG_LOGIC("copying signal parameters " << txParams);

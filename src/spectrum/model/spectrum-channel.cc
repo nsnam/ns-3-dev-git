@@ -147,6 +147,18 @@ SpectrumChannel::AddPhasedArraySpectrumPropagationLossModel(
 }
 
 void
+SpectrumChannel::AddSpectrumTransmitFilter(Ptr<SpectrumTransmitFilter> filter)
+{
+    NS_LOG_FUNCTION(this << filter);
+
+    if (m_filter)
+    {
+        filter->SetNext(m_filter);
+    }
+    m_filter = filter;
+}
+
+void
 SpectrumChannel::SetPropagationDelayModel(Ptr<PropagationDelayModel> delay)
 {
     NS_ASSERT(!m_propagationDelay);
