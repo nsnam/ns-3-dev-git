@@ -728,6 +728,7 @@ However, it still needs one more file to do that: the default Vagrantfile.
 This file will be used by Vagrant to configure the VM later on and how to connect to it.
 
 .. sourcecode:: ruby
+
     # -*- mode: ruby -*-
     # vi: set ft=ruby :
 
