@@ -37,10 +37,12 @@
 #include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simple-frame-capture-model.h"
+#include "ns3/single-model-spectrum-channel.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/test.h"
 #include "ns3/threshold-preamble-detection-model.h"
+#include "ns3/wifi-bandwidth-filter.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-mpdu.h"
 #include "ns3/wifi-net-device.h"
@@ -4687,6 +4689,176 @@ TestPrimary20CoveredByPpdu::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief This test verifies the correct function of the WifiBandwidthFilter. 2 SpectrumWifiPhy are
+ * setup and connected on the same spectrum channel. The test will
+ * send a packet over the channel and if the signal plus guardband overlaps the channel the
+ * filter will not discard the signal but if there is no overlap the filter will filter it out.
+ */
+class TestSpectrumChannelWithBandwidthFilter : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param channel channel to be used by transmitter
+     * \param expectedValue expected number of received packets
+     */
+    TestSpectrumChannelWithBandwidthFilter(uint16_t channel, uint16_t expectedValue);
+
+  protected:
+    void DoSetup() override;
+    void DoTeardown() override;
+
+  private:
+    /**
+     * Callback invoked when the PHY model starts to process a signal
+     *
+     * \param signalType whether signal is WiFi (true) or foreign (false)
+     * \param senderNodeId node Id of the sender of the signal
+     * \param rxPower received signal power (dBm)
+     * \param duration signal duration
+     */
+    void RxBegin(bool signalType, uint32_t senderNodeId, double rxPower, Time duration);
+
+    /**
+     * Send function (sends a single packet)
+     */
+    void Send() const;
+
+    /**
+     * Event scheduled at end of simulation for validation
+     *
+     * \param expectedValue expected number of receive events
+     */
+    void CheckRxPacketCount(uint16_t expectedValue);
+
+    void DoRun() override;
+
+    Ptr<SpectrumWifiPhy> m_tx{nullptr}; ///< transmit function
+    Ptr<SpectrumWifiPhy> m_rx{nullptr}; ///< receive function
+    uint32_t m_countRxBegin{0};         ///< count of receive events
+    uint16_t m_channel{36};             ///< channel for packet transmission
+    uint16_t m_expectedValue{0};        ///< expected count of receive events
+};
+
+TestSpectrumChannelWithBandwidthFilter::TestSpectrumChannelWithBandwidthFilter(
+    uint16_t channel,
+    uint16_t expectedValue)
+    : TestCase("Test for early discard of signal in single-model-spectrum-channel::StartTx()"),
+      m_channel(channel),
+      m_expectedValue(expectedValue)
+{
+}
+
+void
+TestSpectrumChannelWithBandwidthFilter::Send() const
+{
+    WifiTxVector txVector =
+        WifiTxVector(HePhy::GetHeMcs7(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
+
+    Ptr<Packet> pkt = Create<Packet>(1000);
+    WifiMacHeader hdr;
+
+    hdr.SetType(WIFI_MAC_QOSDATA);
+    hdr.SetQosTid(0);
+
+    Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
+    m_tx->Send(psdu, txVector);
+}
+
+void
+TestSpectrumChannelWithBandwidthFilter::CheckRxPacketCount(uint16_t expectedValue)
+{
+    NS_TEST_ASSERT_MSG_EQ(m_countRxBegin,
+                          expectedValue,
+                          "Received a different amount of packets than expected.");
+}
+
+void
+TestSpectrumChannelWithBandwidthFilter::RxBegin(bool signalType [[maybe_unused]],
+                                                uint32_t senderNodeId [[maybe_unused]],
+                                                double rxPower [[maybe_unused]],
+                                                Time duration [[maybe_unused]])
+{
+    NS_LOG_FUNCTION(this << signalType << senderNodeId << rxPower << duration);
+    m_countRxBegin++;
+}
+
+void
+TestSpectrumChannelWithBandwidthFilter::DoSetup()
+{
+    NS_LOG_FUNCTION(this);
+    Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel>();
+
+    Ptr<WifiBandwidthFilter> wifiFilter = CreateObject<WifiBandwidthFilter>();
+    channel->AddSpectrumTransmitFilter(wifiFilter);
+
+    Ptr<Node> node = CreateObject<Node>();
+    Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice>();
+    m_tx = CreateObject<SpectrumWifiPhy>();
+    m_tx->SetDevice(dev);
+    m_tx->SetTxPowerStart(20);
+    m_tx->SetTxPowerEnd(20);
+
+    Ptr<Node> nodeRx = CreateObject<Node>();
+    Ptr<WifiNetDevice> devRx = CreateObject<WifiNetDevice>();
+    m_rx = CreateObject<SpectrumWifiPhy>();
+    m_rx->SetDevice(devRx);
+
+    Ptr<InterferenceHelper> interferenceTx = CreateObject<InterferenceHelper>();
+    m_tx->SetInterferenceHelper(interferenceTx);
+    Ptr<ErrorRateModel> errorTx = CreateObject<NistErrorRateModel>();
+    m_tx->SetErrorRateModel(errorTx);
+
+    Ptr<InterferenceHelper> interferenceRx = CreateObject<InterferenceHelper>();
+    m_rx->SetInterferenceHelper(interferenceRx);
+    Ptr<ErrorRateModel> errorRx = CreateObject<NistErrorRateModel>();
+    m_rx->SetErrorRateModel(errorRx);
+
+    m_tx->AddChannel(channel);
+    m_rx->AddChannel(channel);
+
+    m_tx->ConfigureStandard(WIFI_STANDARD_80211ax);
+    m_rx->ConfigureStandard(WIFI_STANDARD_80211ax);
+
+    dev->SetPhy(m_tx);
+    node->AddDevice(dev);
+    devRx->SetPhy(m_rx);
+    nodeRx->AddDevice(devRx);
+
+    m_rx->TraceConnectWithoutContext(
+        "SignalArrival",
+        MakeCallback(&TestSpectrumChannelWithBandwidthFilter::RxBegin, this));
+}
+
+void
+TestSpectrumChannelWithBandwidthFilter::DoTeardown()
+{
+    m_tx->Dispose();
+    m_rx->Dispose();
+}
+
+void
+TestSpectrumChannelWithBandwidthFilter::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+    m_tx->SetOperatingChannel(WifiPhy::ChannelTuple{m_channel, 0, WIFI_PHY_BAND_5GHZ, 0});
+    m_rx->SetOperatingChannel(WifiPhy::ChannelTuple{36, 0, WIFI_PHY_BAND_5GHZ, 0});
+
+    Simulator::Schedule(MilliSeconds(100), &TestSpectrumChannelWithBandwidthFilter::Send, this);
+    Simulator::Schedule(MilliSeconds(101),
+                        &TestSpectrumChannelWithBandwidthFilter::CheckRxPacketCount,
+                        this,
+                        m_expectedValue);
+
+    Simulator::Run();
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi PHY reception Test Suite
  */
 class WifiPhyReceptionTestSuite : public TestSuite
@@ -4706,6 +4878,14 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite()
     AddTestCase(new TestUnsupportedModulationReception(), TestCase::QUICK);
     AddTestCase(new TestUnsupportedBandwidthReception(), TestCase::QUICK);
     AddTestCase(new TestPrimary20CoveredByPpdu(), TestCase::QUICK);
+    // The below three test cases are related.  The test involves a receiver tuned to
+    // channel 36 and a transmitter sending on channels 36, 40, and 44, respectively.
+    // The second argument corresponds to the number of signals expected to be received.
+    // Signals on channel 36 and 40 will fall within the receiver bandwidth, while
+    // a signal on channel 44 will fall completely outside and will be filtered.
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(36, 1), TestCase::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(40, 1), TestCase::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(44, 0), TestCase::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite
