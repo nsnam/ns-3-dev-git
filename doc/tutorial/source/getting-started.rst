@@ -1072,8 +1072,9 @@ Note: The ns-3 script adds only the ns-3 lib directory path to the PATH,
 ensuring the ns-3 dlls will be found by running programs. If you are using CMake directly or
 an IDE, make sure to also include the path to ns-3-dev/build/lib in the PATH variable.
 
-If you are using one of Windows's terminals (CMD, PowerShell or Terminal), you can use the
-`setx<https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/setx/>__`
+.. _setx : https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/setx/
+
+If you are using one of Windows's terminals (CMD, PowerShell or Terminal), you can use the `setx`_
 command to change environment variables permanently or `set` to set them temporarily for that shell:
 
 .. sourcecode:: console

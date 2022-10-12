@@ -390,7 +390,7 @@ Using the pre-packaged Vagrant box
 
 The provider for the ns-3 Vagrant box is `VirtualBox`_.
 
-The virtual machine can be downloaded via the following Vagrant command
+The reference Windows virtual machine can be downloaded via the following Vagrant command
 
 .. sourcecode:: console
 
@@ -518,7 +518,7 @@ At this point, we can clone ns-3 locally:
 
 .. sourcecode:: console
 
-    C:\Users\vagrant> git clone -b mingw_patches `https://gitlab.com/gabrielcarvfer/ns-3-dev`
+    C:\Users\vagrant> git clone `https://gitlab.com/nsnam/ns-3-dev`
     C:\Users\vagrant> cd ns-3-dev
     C:\Users\vagrant\ns-3-dev> python3 ns3 configure --enable-tests --enable-examples --enable-mpi
     C:\Users\vagrant\ns-3-dev> python3 test.py
