@@ -283,7 +283,7 @@ Ptr<Ipv6RoutingProtocol>
 Ipv6ListRouting::GetRoutingProtocol(uint32_t index, int16_t& priority) const
 {
     NS_LOG_FUNCTION(index);
-    if (index > m_routingProtocols.size())
+    if (index >= m_routingProtocols.size())
     {
         NS_FATAL_ERROR("Ipv6ListRouting::GetRoutingProtocol ():  index " << index
                                                                          << " out of range");
