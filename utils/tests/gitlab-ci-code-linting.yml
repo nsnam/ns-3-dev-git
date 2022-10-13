@@ -12,6 +12,7 @@ check-style-clang-format:
       clang-format-14
   script:
     - python3 utils/check-style-clang-format.py .
+  timeout: 3h
 
 clang-tidy:
   stage: code-linting
@@ -30,3 +31,4 @@ clang-tidy:
     paths:
       - clang-tidy-errors.log
     when: on_failure
+  timeout: 3h
