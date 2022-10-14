@@ -30,7 +30,7 @@ def exit_handler(dry_run):
         return
     if print_buffer == "":
         return
-    print_buffer = print_buffer.replace('\\','/').replace('//','/').replace('/', os.sep)
+    print_buffer = print_buffer.replace('\\', '/').replace('//', '/').replace('/', os.sep)
     if dry_run:
         print("The following commands would be executed:")
     elif run_verbose:
@@ -244,6 +244,15 @@ def parse_args(argv):
                             action="store_true", default=None)
     parser_run.add_argument('-g', '--valgrind',
                             help='Change the default command template to run programs with valgrind',
+                            action="store_true", default=None)
+    parser_run.add_argument('--memray',
+                            help='Use Memray memory profiler for Python scripts. Output will be saved to memray.output',
+                            action="store_true", default=None)
+    parser_run.add_argument('--heaptrack',
+                            help='Use Heaptrack memory profiler for C++',
+                            action="store_true", default=None)
+    parser_run.add_argument('--perf',
+                            help='Use Linux\'s perf to profile a program',
                             action="store_true", default=None)
     parser_run.add_argument('--vis', '--visualize',
                             help='Modify --run arguments to enable the visualizer',
@@ -706,17 +715,16 @@ def get_program_shortcuts(build_profile, ns3_version):
 
             # Add an additional shortcut with .exe suffix when running on Windows
             if sys.platform == "win32":
-                ns3_program_map[shortcut_path.replace("\\","/")] = [program]
-                ns3_program_map[shortcut_path+".exe"] = [program]
-                ns3_program_map[shortcut_path.replace("\\","/")+".exe"] = [program]
-
+                ns3_program_map[shortcut_path.replace("\\", "/")] = [program]
+                ns3_program_map[shortcut_path + ".exe"] = [program]
+                ns3_program_map[shortcut_path.replace("\\", "/") + ".exe"] = [program]
 
             if source_shortcut:
                 cc_shortcut_path = shortcut_path + ".cc"
                 ns3_program_map[cc_shortcut_path] = [program]
                 if sys.platform == "win32":
                     ns3_program_map[cc_shortcut_path] = [program]
-                    ns3_program_map[cc_shortcut_path.replace("\\","/")] = [program]
+                    ns3_program_map[cc_shortcut_path.replace("\\", "/")] = [program]
 
                 # Store longest shortcut path for collisions
                 if cc_shortcut_path not in longest_shortcut_map:
@@ -1008,6 +1016,7 @@ def check_program_installed(program_name: str) -> str:
         exit(-1)
     return program_path
 
+
 def check_module_installed(module_name: str):
     import importlib
     try:
@@ -1015,6 +1024,7 @@ def check_module_installed(module_name: str):
     except ImportError:
         print("Python module '{module}' was not found".format(module=module_name))
         exit(-1)
+
 
 def run_step(args, target_to_run, target_args):
     libdir = "%s/lib" % out_dir
@@ -1046,13 +1056,23 @@ def run_step(args, target_to_run, target_args):
             target_args = [target_to_run] + target_args
             target_to_run = "python3"
 
+            # running with memray?
+            if args.memray:
+                check_module_installed("memray")
+                target_args = ["-m", "memray", "run", "-o", "memray.output", "--native"] + target_args
+
         # running from ns-3-dev (ns3_path) or cwd
         if args.cwd:
             working_dir = args.cwd
 
+        # running with heaptrack?
+        if args.heaptrack:
+            debugging_software.append(check_program_installed("heaptrack"))
+
         # running valgrind?
         if args.valgrind:
-            debugging_software.extend([check_program_installed("valgrind"), "--leak-check=full", "--show-leak-kinds=all"])
+            debugging_software.extend(
+                [check_program_installed("valgrind"), "--leak-check=full", "--show-leak-kinds=all"])
 
         # running gdb?
         if args.gdb:
@@ -1064,6 +1084,14 @@ def run_step(args, target_to_run, target_args):
         # running lldb?
         if args.lldb:
             debugging_software.extend([check_program_installed("lldb"), "--"])
+
+        # running with perf?
+        if args.perf:
+            debugging_software.extend([
+                check_program_installed("perf"),
+                "record", "--call-graph", "dwarf", "-a", "-e",
+                "cache-misses,branch-misses,cpu-cycles,stalled-cycles-frontend,stalled-cycles-backend,context-switches"
+            ])
 
         # running with the visualizer?
         if args.visualize:
@@ -1099,10 +1127,10 @@ def run_step(args, target_to_run, target_args):
         try:
             subprocess.run(program_arguments, env=proc_env, cwd=working_dir, shell=use_shell, check=True)
         except subprocess.CalledProcessError as e:
-            # Replace full path to binary to relative path
-            e.cmd[0] = os.path.relpath(target_to_run, ns3_path)
             # Replace list of arguments with a single string
             e.cmd = " ".join(e.cmd)
+            # Replace full path to binary to relative path
+            e.cmd = e.cmd.replace(os.path.abspath(target_to_run), os.path.relpath(target_to_run, ns3_path))
             # Print error message and forward the return code
             print(e)
             exit(e.returncode)
@@ -1130,7 +1158,7 @@ def non_ambiguous_program_target_list(programs: dict) -> list:
 
 
 def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
-    def list_to_table(l: list) -> str:
+    def list_to_table(targets_list: list) -> str:
         # Set column width and check how much is space is left at the end
         columnwidth = 30
         try:
@@ -1140,10 +1168,10 @@ def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
         dead_space = terminal_width % columnwidth
 
         # Filter the targets with names longer than the column width
-        large_items = list(filter(lambda x: len(x) >= columnwidth, l))
+        large_items = list(filter(lambda x: len(x) >= columnwidth, targets_list))
 
         # Then filter the targets with names shorter than the column width
-        small_items = sorted(list(set(l) - set(large_items)))
+        small_items = sorted(list(set(targets_list) - set(large_items)))
 
         prev_new_line = 0
         output = "\n"
