@@ -411,8 +411,8 @@ class NS3StyleTestCase(unittest.TestCase):
                 self.skipTest("Git is not available")
 
             try:
-                from git import Repo
-                import git.exc
+                from git import Repo  # noqa
+                import git.exc  # noqa
             except ImportError:
                 self.skipTest("GitPython is not available")
 
@@ -812,7 +812,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         @return None
         """
 
-        class ns3rc_str:
+        class ns3rc_str:  # noqa
             ## python-based ns3rc template # noqa
             ns3rc_python_template = "# ! /usr/bin/env python\
                                  \
@@ -841,8 +841,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 "cmake": ns3rc_cmake_template
             }
 
-            def __init__(self, ns3rc_type):
-                self.type = ns3rc_type
+            def __init__(self, type_ns3rc):
+                self.type = type_ns3rc
 
             def format(self, **args):
                 # Convert arguments from python-based ns3rc format to CMake
@@ -970,7 +970,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Build target before using below
         run_ns3("configure -G \"{generator}\" -d release --enable-verbose")
-        return_code, stdout, stderr = run_ns3("build scratch-simulator")
+        run_ns3("build scratch-simulator")
 
         # Run all cases and then check outputs
         return_code0, stdout0, stderr0 = run_ns3("--dry-run run scratch-simulator")
@@ -1189,12 +1189,16 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         if shutil.which("mpiexec") is None or win32:
             self.skipTest("Mpi is not available")
 
+        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-examples")
+        self.assertEqual(return_code, 0)
+        executables = get_programs_list()
+
         # Ensure sample simulator was built
         return_code, stdout, stderr = run_ns3("build sample-simulator")
         self.assertEqual(return_code, 0)
 
         # Get executable path
-        sample_simulator_path = list(filter(lambda x: "sample-simulator" in x, self.ns3_executables))[0]
+        sample_simulator_path = list(filter(lambda x: "sample-simulator" in x, executables))[0]
 
         mpi_command = "--dry-run run sample-simulator --command-template=\"mpiexec -np 2 %s\""
         non_mpi_command = "--dry-run run sample-simulator --command-template=\"echo %s\""
@@ -1207,10 +1211,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Get the commands to run sample-simulator in two processes with mpi, now with the environment variable
         return_code, stdout, stderr = run_ns3(mpi_command, env={"MPI_CI": "1"})
         self.assertEqual(return_code, 0)
-        if shutil.which("ompi_info"):
-            self.assertIn("mpiexec --allow-run-as-root --oversubscribe -np 2 %s" % sample_simulator_path, stdout)
+        if os.getenv("USER", "") == "root":
+            if shutil.which("ompi_info") and os.cpu_count() < 2:
+                self.assertIn("mpiexec --allow-run-as-root --oversubscribe -np 2 %s" % sample_simulator_path, stdout)
+            else:
+                self.assertIn("mpiexec --allow-run-as-root -np 2 %s" % sample_simulator_path, stdout)
         else:
-            self.assertIn("mpiexec --allow-run-as-root -np 2 %s" % sample_simulator_path, stdout)
+            self.assertIn("mpiexec -np 2 %s" % sample_simulator_path, stdout)
 
         # Now we repeat for the non-mpi command
         return_code, stdout, stderr = run_ns3(non_mpi_command)
@@ -1221,6 +1228,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3(non_mpi_command, env={"MPI_CI": "1"})
         self.assertEqual(return_code, 0)
         self.assertIn("echo %s" % sample_simulator_path, stdout)
+
+        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-examples")
+        self.assertEqual(return_code, 0)
 
     def test_15_InvalidLibrariesToLink(self):
         """!
@@ -1389,6 +1399,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             from python_on_whales import docker
             from python_on_whales.exceptions import DockerException
         except ModuleNotFoundError:
+            docker = None  # noqa
+            DockerException = None  # noqa
             self.skipTest("python-on-whales was not found")
 
         # Import rootless docker settings from .bashrc
@@ -1406,8 +1418,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                         volumes=[(ns3_path, "/ns-3-dev")]
                         ) as container:
             # Redefine the execute command of the container
-            def split_exec(self, cmd):
-                return self._execute(cmd.split(), workdir="/ns-3-dev")
+            def split_exec(docker_container, cmd):
+                return docker_container._execute(cmd.split(), workdir="/ns-3-dev")
 
             container._execute = container.execute
             container.execute = partial(split_exec, container)
@@ -1467,7 +1479,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 container.execute("./ns3 clean")
                 container.execute("./ns3 configure -G Ninja --enable-build-version")
                 container.execute("./ns3 build core")
-            except Exception:
+            except DockerException:
                 pass
             os.rename(os.path.join(ns3_path, "temp_git"), os.path.join(ns3_path, ".git"))
             self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
@@ -1540,6 +1552,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             from python_on_whales import docker
             from python_on_whales.exceptions import DockerException
         except ModuleNotFoundError:
+            docker = None  # noqa
+            DockerException = None  # noqa
             self.skipTest("python-on-whales was not found")
 
         run_ns3("clean")
@@ -1559,8 +1573,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                         volumes=[(ns3_path, "/ns-3-dev")],
                         ) as container:
             # Redefine the execute command of the container
-            def split_exec(self, cmd):
-                return self._execute(cmd.split(), workdir="/ns-3-dev")
+            def split_exec(docker_container, cmd):
+                return docker_container._execute(cmd.split(), workdir="/ns-3-dev")
 
             container._execute = container.execute
             container.execute = partial(split_exec, container)
@@ -1580,7 +1594,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Try to build using the lld linker
             try:
                 container.execute("./ns3 build core")
-            except Exception as e:
+            except DockerException:
                 self.assertTrue(False, "Build with lld failed")
 
             # Now add mold to the PATH
@@ -1601,7 +1615,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Try to build using the lld linker
             try:
                 container.execute("./ns3 build core")
-            except Exception as e:
+            except DockerException:
                 self.assertTrue(False, "Build with mold failed")
 
             # Delete mold leftovers
@@ -1917,9 +1931,12 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
                 # Configure the test project
                 cmake = shutil.which("cmake")
-                return_code, stdout, stderr = run_program(cmake,
-                                                          "-DCMAKE_BUILD_TYPE=debug -G\"{generator}\" .".format(generator=platform_makefiles),
-                                                          cwd=install_prefix)
+                return_code, stdout, stderr = run_program(
+                    cmake,
+                    "-DCMAKE_BUILD_TYPE=debug -G\"{generator}\" .".format(generator=platform_makefiles),
+                    cwd=install_prefix
+                )
+
                 if version == "3.00":
                     self.assertEqual(return_code, 1)
                     if import_method == cmake_find_package_import:
@@ -2550,12 +2567,14 @@ class NS3QualityControlTestCase(unittest.TestCase):
         try:
             import django
         except ImportError:
+            django = None  # noqa
             self.skipTest("Django URL validators are not available")
 
         # Skip this test if requests library is not available
         try:
             import requests
         except ImportError:
+            requests = None  # noqa
             self.skipTest("Requests library is not available")
 
         regex = re.compile(r'((http|https)://[^\ \n\)\"\'\}\>\<\]\;\`\\]*)')  # noqa
@@ -2614,24 +2633,24 @@ class NS3QualityControlTestCase(unittest.TestCase):
                         files_and_urls.add((filepath, url))
 
         # Instantiate the Django URL validator
-        from django.core.validators import URLValidator
-        from django.core.exceptions import ValidationError
+        from django.core.validators import URLValidator  # noqa
+        from django.core.exceptions import ValidationError  # noqa
         validate_url = URLValidator()
 
         # User agent string to make ACM and Elsevier let us check if links to papers are working
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36' # noqa
         }
 
         def test_file_url(args):
-            filepath, url = args
+            test_filepath, test_url = args
             dead_link_msg = None
 
             # Skip invalid URLs
             try:
-                validate_url(url)
+                validate_url(test_url)
             except ValidationError:
-                dead_link_msg = "%s: URL %s, invalid URL" % (filepath, url)
+                dead_link_msg = "%s: URL %s, invalid URL" % (test_filepath, test_url)
 
             # Check if valid URLs are alive
             if dead_link_msg is None:
@@ -2641,7 +2660,7 @@ class NS3QualityControlTestCase(unittest.TestCase):
                         # Not verifying the certificate (verify=False) is potentially dangerous
                         # HEAD checks are not as reliable as GET ones,
                         # in some cases they may return bogus error codes and reasons
-                        response = requests.get(url, verify=False, headers=headers)
+                        response = requests.get(test_url, verify=False, headers=headers)
 
                         # In case of success and redirection
                         if response.status_code in [200, 301]:
@@ -2661,20 +2680,20 @@ class NS3QualityControlTestCase(unittest.TestCase):
                                 break
                         # In case it didn't pass in any of the previous tests,
                         # set dead_link_msg with the most recent error and try again
-                        dead_link_msg = "%s: URL %s: returned code %d" % (filepath, url, response.status_code)
+                        dead_link_msg = "%s: URL %s: returned code %d" % (test_filepath, test_url, response.status_code)
                         tries -= 1
                 except requests.exceptions.InvalidURL:
-                    dead_link_msg = "%s: URL %s: invalid URL" % (filepath, url)
+                    dead_link_msg = "%s: URL %s: invalid URL" % (test_filepath, test_url)
                 except requests.exceptions.SSLError:
-                    dead_link_msg = "%s: URL %s: SSL error" % (filepath, url)
+                    dead_link_msg = "%s: URL %s: SSL error" % (test_filepath, test_url)
                 except requests.exceptions.TooManyRedirects:
-                    dead_link_msg = "%s: URL %s: too many redirects" % (filepath, url)
+                    dead_link_msg = "%s: URL %s: too many redirects" % (test_filepath, test_url)
                 except Exception as e:
                     try:
                         error_msg = e.args[0].reason.__str__()
                     except AttributeError:
                         error_msg = e.args[0]
-                    dead_link_msg = "%s: URL %s: failed with exception: %s" % (filepath, url, error_msg)
+                    dead_link_msg = "%s: URL %s: failed with exception: %s" % (test_filepath, test_url, error_msg)
             return dead_link_msg
 
         # Dispatch threads to test multiple URLs concurrently
@@ -2805,7 +2824,7 @@ def main():
         tests = dict(map(lambda x: (x._testMethodName, x), suite._tests))
         keys = list(tests.keys())
 
-        while not args.resume_from_test_name in keys[0] and len(tests) > 0:
+        while args.resume_from_test_name not in keys[0] and len(tests) > 0:
             suite._tests.remove(tests[keys[0]])
             keys.pop(0)
 
@@ -2816,7 +2835,7 @@ def main():
 
     # Run tests and fail as fast as possible
     runner = unittest.TextTestRunner(failfast=True, verbosity=1 if args.quiet else 2)
-    result = runner.run(suite)
+    runner.run(suite)
 
     # After completing the tests successfully, restore the ns3rc file
     if os.path.exists(ns3rc_script_bak):
