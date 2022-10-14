@@ -247,7 +247,7 @@ PyViz::~PyViz()
     NS_LOG_FUNCTION_NOARGS();
 
     NS_ASSERT(g_visualizer == this);
-    g_visualizer = nullptr
+    g_visualizer = nullptr;
 }
 
 void
