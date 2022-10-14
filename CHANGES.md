@@ -56,7 +56,8 @@ Changes from ns-3.36 to ns-3.37
 
 * Replaced the Pybindgen python bindings framework with Cppyy.
 * Enabled precompiled headers (`NS3_PRECOMPILE_HEADERS`) by default when CCache is found.
-* Added a `./ns3 show targets` option to list buildable/runnable targets.
+* Added the `./ns3 show targets` option to list buildable/runnable targets.
+* Added the `./ns3 show (all)` option to list a summary of the current settings.
 * Replaced `./ns3 --check-config` with `./ns3 show config`.
 * Replaced `./ns3 --check-profile` with `./ns3 show profile`.
 * Replaced `./ns3 --check-version` with `./ns3 show version`.
@@ -64,6 +65,10 @@ Changes from ns-3.36 to ns-3.37
 * Replaced Python-based .ns3rc with a CMake-based version.
 * Deprecated .ns3rc files will be updated to the new CMake-based format and a backup will be placed alongside it.
 * Added the `./ns3 configure --filter-module-examples-and-tests='module1;module2'` option, which can be used to filter out examples and tests that do not use the listed modules.
+* Deprecated symlinks in favor of stub headers.
+* Added support for faster linkers `lld` and `mold`. These will be used if found. The order of priority is: `mold` > `lld` > default linker.
+* Added support for Windows using the Msys2/MinGW64 toolchain (supports both Unix-like Bash shell shipped with Msys2 and native shells such as CMD and PowerShell).
+* Added new `./ns3 run` options for profilers: `--memray` and `--heaptrack` for memory profiling of Python scripts and C++ programs, respectively, and `--perf` for performance profiling on Linux.
 
 ### Changed behavior
 

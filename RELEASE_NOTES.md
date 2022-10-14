@@ -12,6 +12,18 @@ API and behavior across ns-3 releases.
 Release 3-dev
 -------------
 
+### Supported platforms
+
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-8 or later, or LLVM/clang++-6 or later
+- Python 3.6 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain
+
+Python API requires Cppyy (https://cppyy.readthedocs.io/en/latest/installation.html).
+
 ### New user-visible features
 
 - (lr-wpan) !959 - Add PHY channel page support
@@ -50,6 +62,19 @@ Release 3-dev
 - (core) #756 - Fix `CsvReader::GetValueAs()` functions for `char` arguments
 - #758 - Fix warnings about `for` loops with variables that are "too small" to fully represent the data being looped
 - (lr-wpan) #692 - Replace raw pointers for smart pointers in Tx queue and Ind Tx queue.
+- (core) Fix int64x64-cairo.h bool operator
+- (build) #676 Fix missing version defines
+- (build) #684 Fix prevents hidden source files from being processed as scratches
+- (build) #687 Display how to forward arguments to programs with the ns3 script
+- (build) #694 Fix .ns3rc search scope
+- (build) #699 Fix the ns3 script behavior for `-h`
+- (build) #700 Suppress build chatter for `./ns3 show version`
+- (build) #712 Fix build version parsing
+- (build) #713 Fix build version requirements checking to allow for custom embedded version
+- (build) #732 Fix WSLv1 check that failed in systems that included a `;` in their `/proc/version` output
+- (build) #733 Fix installation to optionally include python bindings and uninstallation to remove pkg-config files
+- (build) #734 Fix installation to include tap-creator and raw-sock-creator
+- (build) Widen the search scope of headers and libraries to better support Bake
 
 Release 3.36.1
 --------------
