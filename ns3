@@ -650,7 +650,7 @@ def update_scratches_list(current_cmake_cache_folder):
 
 
 def refresh_cmake(current_cmake_cache_folder, output):
-    ret = subprocess.run([shutil.which("cmake"), ".."], cwd=current_cmake_cache_folder, stdout=output)
+    ret = subprocess.run([check_program_installed("cmake"), ".."], cwd=current_cmake_cache_folder, stdout=output)
     if ret.returncode != 0:
         exit(ret.returncode)
     update_scratches_list(current_cmake_cache_folder)
@@ -1001,6 +1001,21 @@ def build_step(args,
                     )
 
 
+def check_program_installed(program_name: str) -> str:
+    program_path = shutil.which(program_name)
+    if program_path is None:
+        print("Executable '{program}' was not found".format(program=program_name.capitalize()))
+        exit(-1)
+    return program_path
+
+def check_module_installed(module_name: str):
+    import importlib
+    try:
+        importlib.import_module(module_name)
+    except ImportError:
+        print("Python module '{module}' was not found".format(module=module_name))
+        exit(-1)
+
 def run_step(args, target_to_run, target_args):
     libdir = "%s/lib" % out_dir
 
@@ -1037,18 +1052,18 @@ def run_step(args, target_to_run, target_args):
 
         # running valgrind?
         if args.valgrind:
-            debugging_software.extend([shutil.which("valgrind"), "--leak-check=full", "--show-leak-kinds=all"])
+            debugging_software.extend([check_program_installed("valgrind"), "--leak-check=full", "--show-leak-kinds=all"])
 
         # running gdb?
         if args.gdb:
             gdb_eval_command = []
             if os.getenv("gdb_eval"):
                 gdb_eval_command.append("--eval-command=quit")
-            debugging_software.extend([shutil.which("gdb"), *gdb_eval_command, "--args"])
+            debugging_software.extend([check_program_installed("gdb"), *gdb_eval_command, "--args"])
 
         # running lldb?
         if args.lldb:
-            debugging_software.extend([shutil.which("lldb"), "--"])
+            debugging_software.extend([check_program_installed("lldb"), "--"])
 
         # running with the visualizer?
         if args.visualize:
@@ -1057,7 +1072,7 @@ def run_step(args, target_to_run, target_args):
         # running with command template?
         if args.command_template:
             commands = (args.command_template % target_to_run).split()
-            target_to_run = commands[0]
+            target_to_run = check_program_installed(commands[0])
             target_args = commands[1:] + target_args
 
             # running mpi on the CI?
