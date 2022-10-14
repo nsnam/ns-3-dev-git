@@ -2020,10 +2020,17 @@ function(find_external_library)
   set(not_found_libraries)
   set(library_dirs)
   set(libraries)
+  
+  # Include parent directories in the search paths to handle Bake cases
+  get_filename_component(parent_project_dir ${PROJECT_SOURCE_DIR} DIRECTORY)
+  get_filename_component(grandparent_project_dir ${parent_project_dir} DIRECTORY)
+  set(project_parent_dirs ${parent_project_dir} ${grandparent_project_dir})
+  
 
   # Paths and suffixes where libraries will be searched on
   set(library_search_paths
       ${search_paths}
+      ${project_parent_dirs}
       ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
       ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install directory
                               # (e.g. /usr/)
@@ -2135,8 +2142,9 @@ function(find_external_library)
   endforeach()
 
   set(header_search_paths
-      ${parent_dirs}
       ${search_paths}
+      ${parent_dirs}
+      ${project_parent_dirs}
       ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in
       # ns-3-dev/build
       ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
