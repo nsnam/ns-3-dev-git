@@ -81,6 +81,7 @@ ENABLE_TESTS = True
 NSCLICK = False
 ENABLE_BRITE = False
 ENABLE_OPENFLOW = False
+ENABLE_PYTHON_BINDINGS = False
 EXAMPLE_DIRECTORIES = []
 APPNAME = ""
 BUILD_PROFILE = ""
@@ -1081,26 +1082,13 @@ def run_tests():
     #
     if not options.no_build:
 
-        #
-        # If the user is running the "kinds" or "list" options, there is an
-        # implied dependency on the test-runner since we call that program
-        # if those options are selected.  We will exit after processing those
-        # options, so if we see them, we can safely only build the test-runner.
-        #
-        # If the user has constrained us to running only a particular type of
-        # file, we can only ask ns3 to build what we know will be necessary.
-        # For example, if the user only wants to run BVT tests, we only have
-        # to build the test-runner and can ignore all of the examples.
-        #
         # If the user only wants to run a single example, then we can just build
         # that example.
         #
         # If there is no constraint, then we have to build everything since the
         # user wants to run everything.
         #
-        if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
-            build_cmd = "./ns3 build test-runner"
-        elif len(options.example):
+        if len(options.example):
             build_cmd = "./ns3 build %s" % os.path.basename(options.example)
         else:
             build_cmd = "./ns3"
@@ -1224,27 +1212,39 @@ def run_tests():
         print(standard_out)
 
     if options.list:
-        if len(options.constrain):
-            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types --test-type=%s" % options.constrain)
-        else:
-            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
-        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
-        if rc != 0:
-            # This is usually a sign that ns-3 crashed or exited uncleanly
-            print(('test.py error:  test-runner return code returned {}'.format(rc)))
-            print(('To debug, try running {}\n'.format('\'./ns3 run \"test-runner --print-test-name-list\"\'')))
-            return
-        if isinstance(standard_out, bytes):
-            standard_out = standard_out.decode()
-        list_items = standard_out.split('\n')
-        list_items.sort()
+        list_items = []
+        if ENABLE_TESTS:
+            if len(options.constrain):
+                path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types --test-type=%s" % options.constrain)
+            else:
+                path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
+            (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+            if rc != 0:
+                # This is usually a sign that ns-3 crashed or exited uncleanly
+                print(('test.py error:  test-runner return code returned {}'.format(rc)))
+                print(('To debug, try running {}\n'.format('\'./ns3 run \"test-runner --print-test-name-list\"\'')))
+                return
+            if isinstance(standard_out, bytes):
+                standard_out = standard_out.decode()
+            list_items = standard_out.split('\n')
+            list_items.sort()
         print("Test Type    Test Name")
         print("---------    ---------")
         for item in list_items:
             if len(item.strip()):
                 print(item)
-        example_names_original.sort()
-        for item in example_names_original:
+        examples_sorted = []
+        if ENABLE_EXAMPLES:
+            examples_sorted = example_names_original
+            examples_sorted.sort()
+        if ENABLE_PYTHON_BINDINGS:
+            python_examples_sorted = []
+            for (x,y) in python_tests:
+                if y == 'True':
+                    python_examples_sorted.append(x)
+            python_examples_sorted.sort()
+            examples_sorted.extend(python_examples_sorted)
+        for item in examples_sorted:
                 print("example     ", item)
         print()
 
@@ -1334,7 +1334,7 @@ def run_tests():
 
         suites = '\n'.join(suites_found)
 
-    elif len(options.example) == 0 and len(options.pyexample) == 0:
+    elif ENABLE_TESTS and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain):
             path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % options.constrain)
             (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
