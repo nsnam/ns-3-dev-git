@@ -245,7 +245,8 @@ def find_clang_format_path() -> str:
     clang_format_path = shutil.which('clang-format')
 
     if clang_format_path:
-        process = subprocess.run([clang_format_path, '--version'],
+        process = subprocess.run(
+            [clang_format_path, '--version'],
             capture_output=True,
             text=True,
             check=True,
