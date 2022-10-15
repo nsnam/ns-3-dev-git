@@ -63,7 +63,7 @@ BreakpointFallback()
      */
     if (a == nullptr)
     {
-        *a = nullptr;
+        *a = 0;
     }
 }
 
