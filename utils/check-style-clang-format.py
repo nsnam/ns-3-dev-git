@@ -71,6 +71,7 @@ FILE_EXTENSIONS_TO_CHECK_WHITESPACE = [
     '.c',
     '.cc',
     '.click',
+    '.cmake',
     '.conf',
     '.css',
     '.dot',
