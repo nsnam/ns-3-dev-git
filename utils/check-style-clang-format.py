@@ -309,7 +309,7 @@ def check_style(path: str,
         print('')
 
     if enable_check_tabs:
-        check_whitespace_successful = check_tabs(
+        check_tabs_successful = check_tabs(
             files_to_check_tabs, fix, n_jobs)
 
     if check_formatting_successful and \
