@@ -5,9 +5,9 @@ jobs:
   Ubuntu:
     runs-on: ubuntu-latest
     outputs:
-      cache_misses: ${{ steps.ccache_results.outputs.cache_misses }}
+      cache_misses: ${{ env.cache_misses }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Install required packages
         run: |
           sudo apt-get update
@@ -18,13 +18,13 @@ jobs:
           sudo apt-get -y install ccache
       - name: Get timestamp
         id: time
-        run: python3 -c "from datetime import datetime; print('::set-output name=time::'+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))"
+        run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v1.1.0
+        uses: actions/cache@v3
         with:
           path: .ccache
-          key: ubuntu-ci-${{steps.time.outputs.time}}
+          key: ubuntu-ci-${{env.time}}
           restore-keys: ubuntu-ci-
       - name: Setup ccache
         run: |
@@ -34,20 +34,17 @@ jobs:
           ccache -z
       - name: Configure CMake
         run: |
-          mkdir cmake-cache
-          cd cmake-cache
-          cmake -DCMAKE_BUILD_TYPE=release -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -DNS3_WARNINGS_AS_ERRORS=OFF -G"Ninja"  ..
+          ./ns3 configure -d release --enable-asserts --enable-examples --enable-tests --disable-werror -G"Ninja"
       - name: Build ns-3
         run: |
-          cd cmake-cache
-          ninja
+          ./ns3 build
       - name: Print ccache statistics
         id: ccache_results
         run: |
           ccache -s
-          python3 -c "import re, subprocess;print('::set-output name=cache_misses::%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))"
+          python3 -c "import re, subprocess;print('cache_misses=%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))" >> $GITHUB_ENV
       - name: Run tests and examples
-        if: steps.ccache_results.outputs.cache_misses != '0'
+        if: env.cache_misses != '0'
         run: python3 test.py --no-build
 
   CodeQL:
@@ -58,7 +55,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
@@ -74,13 +71,13 @@ jobs:
           sudo apt-get -y install ccache
       - name: Get timestamp
         id: time
-        run: python3 -c "from datetime import datetime; print('::set-output name=time::'+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))"
+        run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v1.1.0
+        uses: actions/cache@v3
         with:
           path: .ccache
-          key: ubuntu-ci-${{steps.time.outputs.time}}
+          key: ubuntu-ci-${{env.time}}
           restore-keys: ubuntu-ci-
       - name: Setup ccache
         run: |
@@ -90,13 +87,10 @@ jobs:
           ccache -z
       - name: Configure CMake
         run: |
-          mkdir cmake-cache
-          cd cmake-cache
-          cmake -DCMAKE_BUILD_TYPE=release -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -DNS3_WARNINGS_AS_ERRORS=OFF -G"Ninja"  ..
+          ./ns3 configure -d release --enable-asserts --enable-examples --enable-tests --disable-werror -G"Ninja"
       - name: Build ns-3
         run: |
-          cd cmake-cache
-          ninja
+          ./ns3 build
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
@@ -105,7 +99,7 @@ jobs:
     needs: Ubuntu
     if: needs.Ubuntu.outputs.cache_misses != '0'
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Install required packages
         run: |
           sudo apt-get update
@@ -117,13 +111,13 @@ jobs:
           sudo apt-get -y install lcov
       - name: Get timestamp
         id: time
-        run: python3 -c "from datetime import datetime; print('::set-output name=time::'+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))"
+        run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v1.1.0
+        uses: actions/cache@v3
         with:
           path: .ccache
-          key: ubuntu-coverage-${{steps.time.outputs.time}}
+          key: ubuntu-coverage-${{env.time}}
           restore-keys: ubuntu-coverage-
       - name: Setup ccache
         run: |
@@ -133,24 +127,20 @@ jobs:
           ccache -z
       - name: Configure CMake
         run: |
-          mkdir cmake-cache
-          cd cmake-cache
-          cmake -DCMAKE_BUILD_TYPE=relwithdebinfo -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -DNS3_COVERAGE=ON -DNS3_WARNINGS_AS_ERRORS=OFF -G"Ninja"  ..
+          ./ns3 configure --enable-asserts --enable-examples --enable-tests --disable-werror --enable-gcov -G"Ninja"
       - name: Build ns-3
         run: |
-          cd cmake-cache
-          cmake --build . -j3
+          ./ns3 build
       - name: Print ccache statistics
         id: ccache_results
         run: |
           ccache -s
-          python3 -c "import re, subprocess;print('::set-output name=cache_misses::%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))"
+          python3 -c "import re, subprocess;print('cache_misses=%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))" >> $GITHUB_ENV
       - name: Generate coverage data and submit to codecov.io
-        if: steps.ccache_results.outputs.cache_misses != '0'
+        if: env.cache_misses != '0'
         run: |
-          cd cmake-cache
-          ninja coverage_gcc
-          cd ../build/coverage
+          ./ns3 build coverage_gcc
+          cd ./build/coverage
           bash <(curl -s https://codecov.io/bash) -f ns3.info || echo "Codecov did not collect coverage reports"
 
   Windows_MinGW:
@@ -159,7 +149,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
       - name: Install required msys2/mingw64 packages
         run: |
@@ -178,13 +168,13 @@ jobs:
           pacman --noconfirm -Scc
       - name: Get timestamp
         id: time
-        run: python -c "from datetime import datetime; print('::set-output name=time::'+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))"
+        run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v1.1.0
+        uses: actions/cache@v3
         with:
           path: .ccache
-          key: msys2-${{steps.time.outputs.time}}
+          key: msys2-${{env.time}}
           restore-keys: msys2-
       - name: Setup ccache
         run: |
@@ -194,38 +184,35 @@ jobs:
           ccache -z
       - name: Configure CMake
         run: |
-          mkdir cmake-cache
-          cd cmake-cache
-          cmake -DCMAKE_BUILD_TYPE=release -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -DNS3_WARNINGS_AS_ERRORS=OFF -G"Ninja" ..
+          python3 ns3 configure -d release --enable-asserts --enable-examples --enable-tests --disable-werror -G"Ninja"
       - name: Build ns-3
         run: |
-          cd cmake-cache
-          ninja
+          python3 ns3 build
       - name: Print ccache statistics
         id: ccache_results
         run: |
           ccache -s
-          python3 -c "import re, subprocess;print('::set-output name=cache_misses::%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))"
+          python3 -c "import re, subprocess;print('cache_misses=%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))" >> $GITHUB_ENV
       - name: Run tests and examples
-        if: steps.ccache_results.outputs.cache_misses != '0'
-        run: python test.py --no-build
+        if: env.cache_misses != '0'
+        run: python3 test.py --no-build
 
   Mac_OS_X:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Install required packages
         run: |
           brew install ninja cmake ccache libxml2 gsl open-mpi #qt5
       - name: Get timestamp
         id: time
-        run: python3 -c "from datetime import datetime; print('::set-output name=time::'+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))"
+        run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v1.1.0
+        uses: actions/cache@v3
         with:
           path: .ccache
-          key: osx_brew-ci-${{steps.time.outputs.time}}
+          key: osx_brew-ci-${{env.time}}
           restore-keys: osx_brew-ci-
       - name: Setup ccache
         run: |
@@ -237,19 +224,16 @@ jobs:
       - name: Configure CMake
         run: |
           export PATH=/usr/local/bin:$PATH #:/usr/local/opt/qt/bin
-          mkdir cmake-cache
-          cd cmake-cache
-          cmake -DCMAKE_BUILD_TYPE=release -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -DNS3_WARNINGS_AS_ERRORS=OFF -G"Ninja" ..
+          ./ns3 configure -d release --enable-asserts --enable-examples --enable-tests --disable-werror -G"Ninja"
       - name: Build ns-3
         run: |
           export PATH="$PATH" #:/usr/local/opt/qt/bin
-          cd cmake-cache
-          ninja
+          ./ns3 build
       - name: Print ccache statistics
         id: ccache_results
         run: |
           ccache -s
-          python3 -c "import re, subprocess;print('::set-output name=cache_misses::%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))"
+          python3 -c "import re, subprocess;print('cache_misses=%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))" >> $GITHUB_ENV
       - name: Run tests and examples
-        if: steps.ccache_results.outputs.cache_misses != '0'
-        run: python3 test.py --no-build
+        if: env.cache_misses != '0'
+        run: ./test.py --no-build
