@@ -178,7 +178,7 @@ Bootstrap as whole depends on procedures that also take place on higher layers o
 MAC queues
 ++++++++++
 
-By default, ``Tx queue`` and ``Ind Tx queue`` (the pending transaction list) are not limited but they can configure to drop packets after they 
+By default, ``Tx queue`` and ``Ind Tx queue`` (the pending transaction list) are not limited but they can configure to drop packets after they
 reach a limit of elements (transaction overflow). Additionally, the ``Ind Tx queue`` drop packets when the packet has been longer than
 ``macTransactionPersistenceTime`` (transaction expiration). Expiration of packets in the Tx queue is not supported.
 Finally, packets in the ``Tx queue`` may be dropped due to excessive transmission retries or channel access failure.
