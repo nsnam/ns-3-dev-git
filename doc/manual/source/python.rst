@@ -159,28 +159,104 @@ For example, when handling command-line arguments, we could set additional param
     # Import the ns-3 C++ modules with Cppyy
     from ns import ns
 
-    # ns.cppyy.cppdef compiles the code defined in the block
-    # The defined types, values and functions are available in ns.cppyy.gbl
-    ns.cppyy.cppdef("""
-    using namespace ns3;
-
-    CommandLine& GetCommandLine(std::string filename, int& nCsma, bool& verbose)
-    {
-        static CommandLine cmd = CommandLine(filename);
-        cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma);
-        cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
-        return cmd;
-    }
-    """)
-
     # To pass the addresses of the Python variables to c++, we need to use ctypes
-    from ctypes import c_int, c_bool
-    nCsma = c_int(3)
+    from ctypes import c_bool, c_int, c_double, c_char_p, create_string_buffer
     verbose = c_bool(True)
+    nCsma = c_int(3)
+    throughputKbps = c_double(3.1415)
+    BUFFLEN = 4096
+    outputFileBuffer = create_string_buffer(b"default_output_file.xml", BUFFLEN)
+    outputFile = c_char_p(outputFileBuffer.raw)
 
-    # Pass the addresses of Python variables to C++
-    cmd = ns.cppyy.gbl.GetCommandLine(__file__, nCsma, verbose)
+    # Cppyy will transform the ctype types into the appropriate reference or raw pointers
+    cmd = ns.CommandLine(__file__)
+    cmd.AddValue("verbose", "Tell echo applications to log if true", verbose)
+    cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma)
+    cmd.AddValue("throughputKbps", "Throughput of nodes", throughputKbps)
+    cmd.AddValue("outputFile", "Output file name", outputFile, BUFFLEN)
     cmd.Parse(sys.argv)
+
+    # Printing values of the different ctypes passed as arguments post parsing
+    print("Verbose:", verbose.value)
+    print("nCsma:", nCsma.value)
+    print("throughputKbps:", throughputKbps.value)
+    print("outputFile:", outputFile.value)
+
+Note that the variables are passed as references or raw pointers. Reassigning them on the Python side
+(e.g. ``verbose = verbose.value``) can result in the Python garbage collector destroying the object
+since its only reference has been overwritten, allowing the garbage collector to reclaim that memory space.
+The C++ side will then have a dangling reference to the variable, which can be overwritten with
+unexpected values, which can be read later, causing ns-3 to behave erratically due to the memory corruption.
+
+String values are problematic since Python and C++ string lifetimes are handled differently.
+To workaround that, we need to use null-terminated C strings (``char*``) to exchange strings between
+the bindings and ns-3 module libraries. However, C strings are particularly dangerous, since
+overwriting the null-terminator can also result in memory corruption. When passing a C string, remember
+to allocate a large buffer and perform bounds checking whenever possible. The CommandLine::AddValue
+variant for ``char*`` performs bounds checking and aborts the execution in case the parsed value
+does not fit in the buffer. Make sure to pass the complete size of the buffer, including the null terminator.
+
+There is an example below demonstrating how the memory corruption could happen in case there was
+no bounds checking in CommandLine::AddValue variant for ``char*``.
+
+.. sourcecode:: python
+
+    from ns import ns
+    from ctypes import c_char_p, c_char, create_string_buffer, byref, cast
+
+    # The following buffer represent the memory contents
+    # of a program containing two adjacent C strings
+    # This could be the result of two subsequent variables
+    # on the stack or dynamically allocated
+    memoryContents = create_string_buffer(b"SHORT_STRING_CONTENTS\0"+b"DoNotWriteHere_"*5+b"\0")
+    lenShortString = len(b"SHORT_STRING_CONTENTS\0")
+
+    # In the next lines, we pick pointers to these two C strings
+    shortStringBuffer = cast(byref(memoryContents, 0), c_char_p)
+    victimBuffer = cast(byref(memoryContents, lenShortString), c_char_p)
+
+    cmd = ns.core.CommandLine(__file__)
+    # in the real implementation, the buffer size of 21+1 bytes containing SHORT_STRING_CONTENTS\0 is passed
+    cmd.AddValue("shortString", "", shortStringBuffer)
+
+    print("Memory contents before the memory corruption")
+    print("Full Memory contents", memoryContents.raw)
+    print("shortStringBuffer contents: ", shortStringBuffer.value)
+    print("victimBuffer contents: ", victimBuffer.value)
+
+    # The following block should print to the terminal.
+    # Note that the strings are correctly
+    # identified due to the null terminator (\x00)
+    #
+    # Memory contents before the memory corruption
+    # Full Memory contents b'SHORT_STRING_CONTENTS\x00DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00'
+    # shortStringBuffer size=21, contents: b'SHORT_STRING_CONTENTS'
+    # victimBuffer size=75, contents: b'DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_'
+
+    # Write a very long string to a small buffer of size lenShortString = 22
+    cmd.Parse(["python", "--shortString="+("OkToWrite"*lenShortString)[:lenShortString]+"CORRUPTED_"*3])
+
+    print("\n\nMemory contents after the memory corruption")
+    print("Full Memory contents", memoryContents.raw)
+    print("shortStringBuffer contents: ", shortStringBuffer.value)
+    print("victimBuffer contents: ", victimBuffer.value)
+
+    # The following block should print to the terminal.
+    #
+    # Memory contents after the memory corruption
+    # Full Memory contents b'OkToWriteOkToWriteOkToCORRUPTED_CORRUPTED_CORRUPTED_\x00oNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00'
+    # shortStringBuffer size=52, contents: b'OkToWriteOkToWriteOkToCORRUPTED_CORRUPTED_CORRUPTED_'
+    # victimBuffer size=30, contents: b'CORRUPTED_CORRUPTED_CORRUPTED_'
+    #
+    # Note that shortStringBuffer invaded the victimBuffer since the
+    # string being written was bigger than the shortStringBuffer.
+    #
+    # Since no bounds checks were performed, the adjacent memory got
+    # overwritten and both buffers are now corrupted.
+    #
+    # We also have a memory leak of the final block in the memory
+    # 'oNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00', caused
+    # by the null terminator written at the middle of the victimBuffer.
 
 If you find a segmentation violation, be sure to wait for the stacktrace provided by Cppyy
 and try to find the root cause of the issue. If you have multiple cores, the number of

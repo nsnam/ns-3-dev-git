@@ -26,37 +26,26 @@ import sys
 # //    point-to-point  |    |    |    |
 # //                    ================
 # //                      LAN 10.1.2.0
-ns.cppyy.cppdef("""
-using namespace ns3;
 
-CommandLine& GetCommandLine(std::string filename, int& nCsma, bool& verbose)
-{
-    static CommandLine cmd = CommandLine(filename);
-    cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma);
-    cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
-    return cmd;
-}
-""")
 from ctypes import c_int, c_bool
 nCsma = c_int(3)
 verbose = c_bool(True)
-cmd = ns.cppyy.gbl.GetCommandLine(__file__, nCsma, verbose)
+cmd = ns.CommandLine(__file__)
+cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma)
+cmd.AddValue("verbose", "Tell echo applications to log if true", verbose)
 cmd.Parse(sys.argv)
 
-nCsma = nCsma.value
-verbose = verbose.value
-
-if verbose == "True":
+if verbose.value:
     ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
     ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
-nCsma = 1 if nCsma == 0 else nCsma
+nCsma.value = 1 if nCsma.value == 0 else nCsma.value
 
 p2pNodes = ns.network.NodeContainer()
 p2pNodes.Create(2)
 
 csmaNodes = ns.network.NodeContainer()
 csmaNodes.Add(p2pNodes.Get(1))
-csmaNodes.Create(nCsma)
+csmaNodes.Create(nCsma.value)
 
 pointToPoint = ns.point_to_point.PointToPointHelper()
 pointToPoint.SetDeviceAttribute("DataRate", ns.core.StringValue("5Mbps"))
@@ -83,11 +72,11 @@ csmaInterfaces = address.Assign(csmaDevices)
 
 echoServer = ns.applications.UdpEchoServerHelper(9)
 
-serverApps = echoServer.Install(csmaNodes.Get(nCsma))
+serverApps = echoServer.Install(csmaNodes.Get(nCsma.value))
 serverApps.Start(ns.core.Seconds(1.0))
 serverApps.Stop(ns.core.Seconds(10.0))
 
-echoClient = ns.applications.UdpEchoClientHelper(ns.addressFromIpv4Address(csmaInterfaces.GetAddress(nCsma)), 9)
+echoClient = ns.applications.UdpEchoClientHelper(ns.addressFromIpv4Address(csmaInterfaces.GetAddress(nCsma.value)), 9)
 echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
 echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds (1.0)))
 echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))

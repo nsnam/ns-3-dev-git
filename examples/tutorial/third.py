@@ -30,30 +30,28 @@ import sys
 # //                                   ================
 # //                                     LAN 10.1.2.0
 
-cmd = ns.getCommandLine(__file__)
-nCsma ="3"
-verbose = "True"
-nWifi = "3"
-tracing = "False"
+from ctypes import c_bool, c_int
+nCsma = c_int(3)
+verbose = c_bool(True)
+nWifi = c_int(3)
+tracing = c_bool(False)
 
-cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", ns.null_callback(), nCsma)
-cmd.AddValue("nWifi", "Number of wifi STA devices", ns.null_callback(), nWifi)
-cmd.AddValue("verbose", "Tell echo applications to log if true", ns.null_callback(), verbose)
-cmd.AddValue("tracing", "Enable pcap tracing", ns.null_callback(), tracing)
+cmd = ns.CommandLine(__file__)
+cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma)
+cmd.AddValue("nWifi", "Number of wifi STA devices", nWifi)
+cmd.AddValue("verbose", "Tell echo applications to log if true", verbose)
+cmd.AddValue("tracing", "Enable pcap tracing", tracing)
 
 cmd.Parse(sys.argv)
-
-nCsma = int(nCsma)
-nWifi = int(nWifi)
 
 # The underlying restriction of 18 is due to the grid position
 # allocator's configuration; the grid layout will exceed the
 # bounding box if more than 18 nodes are provided.
-if nWifi > 18:
+if nWifi.value > 18:
     print("nWifi should be 18 or less; otherwise grid layout exceeds the bounding box")
     sys.exit(1)
 
-if verbose == "True":
+if verbose.value:
     ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
     ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
 
@@ -68,7 +66,7 @@ p2pDevices = pointToPoint.Install(p2pNodes)
 
 csmaNodes = ns.network.NodeContainer()
 csmaNodes.Add(p2pNodes.Get(1))
-csmaNodes.Create(nCsma)
+csmaNodes.Create(nCsma.value)
 
 csma = ns.csma.CsmaHelper()
 csma.SetChannelAttribute("DataRate", ns.core.StringValue("100Mbps"))
@@ -77,7 +75,7 @@ csma.SetChannelAttribute("Delay", ns.core.TimeValue(ns.core.NanoSeconds(6560)))
 csmaDevices = csma.Install(csmaNodes)
 
 wifiStaNodes = ns.network.NodeContainer()
-wifiStaNodes.Create(nWifi)
+wifiStaNodes.Create(nWifi.value)
 wifiApNode = p2pNodes.Get(0)
 
 channel = ns.wifi.YansWifiChannelHelper.Default()
@@ -124,16 +122,16 @@ address.Assign(apDevices)
 
 echoServer = ns.applications.UdpEchoServerHelper(9)
 
-serverApps = echoServer.Install(csmaNodes.Get(nCsma))
+serverApps = echoServer.Install(csmaNodes.Get(nCsma.value))
 serverApps.Start(ns.core.Seconds(1.0))
 serverApps.Stop(ns.core.Seconds(10.0))
 
-echoClient = ns.applications.UdpEchoClientHelper(ns.addressFromIpv4Address(csmaInterfaces.GetAddress(nCsma)), 9)
+echoClient = ns.applications.UdpEchoClientHelper(ns.addressFromIpv4Address(csmaInterfaces.GetAddress(nCsma.value)), 9)
 echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
 echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds (1.0)))
 echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
 
-clientApps = echoClient.Install(wifiStaNodes.Get (nWifi - 1))
+clientApps = echoClient.Install(wifiStaNodes.Get (nWifi.value - 1))
 clientApps.Start(ns.core.Seconds(2.0))
 clientApps.Stop(ns.core.Seconds(10.0))
 
@@ -141,7 +139,7 @@ ns.internet.Ipv4GlobalRoutingHelper.PopulateRoutingTables()
 
 ns.core.Simulator.Stop(ns.core.Seconds(10.0))
 
-if tracing == "True":
+if tracing.value:
     phy.SetPcapDataLinkType(phy.DLT_IEEE802_11_RADIO)
     pointToPoint.EnablePcapAll ("third")
     phy.EnablePcap ("third", apDevices.Get (0))

@@ -319,14 +319,6 @@ def load_modules():
     setattr(cppyy.gbl.ns3, "addressFromIpv4Address", cppyy.gbl.addressFromIpv4Address)
     setattr(cppyy.gbl.ns3, "addressFromInetSocketAddress", cppyy.gbl.addressFromInetSocketAddress)
     setattr(cppyy.gbl.ns3, "addressFromPacketSocketAddress", cppyy.gbl.addressFromPacketSocketAddress)
-    cppyy.cppdef(
-        """using namespace ns3; CommandLine& getCommandLine(std::string filename){ static CommandLine g_cmd = CommandLine(filename); return g_cmd; };""")
-    setattr(cppyy.gbl.ns3, "getCommandLine", cppyy.gbl.getCommandLine)
-    cppyy.cppdef(
-        """using namespace ns3; template Callback<bool, std::string> ns3::MakeNullCallback<bool, std::string>(void);""")
-    cppyy.cppdef(
-        """using namespace ns3; Callback<bool, std::string> null_callback(){ return MakeNullCallback<bool, std::string>(); };""")
-    setattr(cppyy.gbl.ns3, "null_callback", cppyy.gbl.null_callback)
 
     cppyy.cppdef("""
         using namespace ns3;

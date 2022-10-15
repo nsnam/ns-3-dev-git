@@ -277,30 +277,39 @@ class TestSimulator(unittest.TestCase):
         ok, typeId1 = ns.LookupByNameFailSafe("ns3::__InvalidTypeName__")
         self.assertFalse(ok)
 
-#    def testCommandLine(self):
-#        """! Test command line
-#        @param self this object
-#        @return none
-#        """
-#        cmd = ns.core.CommandLine(__file__)
-#        cmd.AddValue("Test1", "this is a test option")
-#        cmd.AddValue("Test2", "this is a test option")
-#        cmd.AddValue("Test3", "this is a test option", variable="test_xxx")
-#        cmd.Test1 = None
-#        cmd.Test2 = None
-#        cmd.test_xxx = None
-#        class Foo:
-#            pass
-#        foo = Foo()
-#        foo.test_foo = None
-#        cmd.AddValue("Test4", "this is a test option", variable="test_foo", namespace=foo)
-#
-#        cmd.Parse(["python", "--Test1=value1", "--Test2=value2", "--Test3=123", "--Test4=xpto"])
-#
-#        self.assertEqual(cmd.Test1, "value1")
-#        self.assertEqual(cmd.Test2, "value2")
-#        self.assertEqual(cmd.test_xxx, "123")
-#        self.assertEqual(foo.test_foo, "xpto")
+    def testCommandLine(self):
+        """! Test command line
+        @param self this object
+        @return none
+        """
+        from ctypes import c_bool, c_int, c_double, c_char_p, create_string_buffer
+
+        test1 = c_bool(True)
+        test2 = c_int(42)
+        test3 = c_double(3.1415)
+        BUFFLEN = 40
+        test4Buffer = create_string_buffer(b"this is a test option", BUFFLEN)
+        test4 = c_char_p(test4Buffer.raw)
+
+        cmd = ns.core.CommandLine(__file__)
+        cmd.AddValue("Test1", "this is a test option", test1)
+        cmd.AddValue("Test2", "this is a test option", test2)
+        cmd.AddValue("Test3", "this is a test option", test3)
+        cmd.AddValue("Test4", "this is a test option", test4, BUFFLEN)
+
+        cmd.Parse(["python"])
+        self.assertEqual(test1.value, True)
+        self.assertEqual(test2.value, 42)
+        self.assertEqual(test3.value, 3.1415)
+        self.assertEqual(test4.value, b"this is a test option")
+
+        cmd.Parse(["python", "--Test1=false", "--Test2=0", "--Test3=0.0"])
+        self.assertEqual(test1.value, False)
+        self.assertEqual(test2.value, 0)
+        self.assertEqual(test3.value, 0.0)
+
+        cmd.Parse(["python", "--Test4=new_string"])
+        self.assertEqual(test4.value, b"new_string")
 
     def testSubclass(self):
         """! Test subclass

@@ -68,12 +68,12 @@ def main(argv):
     #  First, we initialize a few local variables that control some
     #  simulation parameters.
     #
-
-    cmd = ns.getCommandLine(__file__)
-    cmd.backboneNodes = "10"
-    cmd.infraNodes = "2"
-    cmd.lanNodes = "2"
-    cmd.stopTime = "20"
+    from ctypes import c_int, c_double
+    backboneNodes = c_int(10)
+    infraNodes = c_int(2)
+    lanNodes = c_int(2)
+    stopTime = c_double(20)
+    cmd = ns.CommandLine(__file__)
 
     #
     #  Simulation defaults are typically set next, before command line
@@ -88,10 +88,10 @@ def main(argv):
     #  "--backboneNodes=20"
     #
 
-    cmd.AddValue("backboneNodes", "number of backbone nodes", ns.null_callback(), cmd.backboneNodes)
-    cmd.AddValue("infraNodes", "number of leaf nodes", ns.null_callback(), cmd.infraNodes)
-    cmd.AddValue("lanNodes", "number of LAN nodes", ns.null_callback(), cmd.lanNodes)
-    cmd.AddValue("stopTime", "simulation stop time(seconds)", ns.null_callback(), cmd.stopTime)
+    cmd.AddValue("backboneNodes", "number of backbone nodes", backboneNodes)
+    cmd.AddValue("infraNodes", "number of leaf nodes", infraNodes)
+    cmd.AddValue("lanNodes", "number of LAN nodes", lanNodes)
+    cmd.AddValue("stopTime", "simulation stop time(seconds)", stopTime)
 
     #
     #  The system global variables and the local values added to the argument
@@ -99,12 +99,7 @@ def main(argv):
     #
     cmd.Parse(argv)
 
-    backboneNodes = int(cmd.backboneNodes)
-    infraNodes = int(cmd.infraNodes)
-    lanNodes = int(cmd.lanNodes)
-    stopTime = int(cmd.stopTime)
-
-    if (stopTime < 10):
+    if (stopTime.value < 10):
         print ("Use a simulation stop time >= 10 seconds")
         exit(1)
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # /
@@ -118,7 +113,7 @@ def main(argv):
     #  Later we'll create the rest of the nodes we'll need.
     #
     backbone = ns.network.NodeContainer()
-    backbone.Create(backboneNodes)
+    backbone.Create(backboneNodes.value)
     #
     #  Create the backbone wifi net devices and install them into the nodes in
     #  our container
@@ -179,7 +174,7 @@ def main(argv):
     #  the "172.16 address space
     ipAddrs.SetBase(ns.network.Ipv4Address("172.16.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
 
-    for i in range(backboneNodes):
+    for i in range(backboneNodes.value):
         print ("Configuring local area network for backbone node ", i)
         #
         #  Create a container to manage the nodes of the LAN.  We need
@@ -187,7 +182,7 @@ def main(argv):
         #  with all of the nodes including new and existing nodes
         #
         newLanNodes = ns.network.NodeContainer()
-        newLanNodes.Create(lanNodes - 1)
+        newLanNodes.Create(lanNodes.value - 1)
         #  Now, create the container with all nodes on this link
         lan = ns.network.NodeContainer(ns.network.NodeContainer(backbone.Get(i)), newLanNodes)
         #
@@ -236,7 +231,7 @@ def main(argv):
     #  the "10.0" address space
     ipAddrs.SetBase(ns.network.Ipv4Address("10.0.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
     tempRef = []  # list of references to be held to prevent garbage collection
-    for i in range(backboneNodes):
+    for i in range(backboneNodes.value):
         print ("Configuring wireless network for backbone node ", i)
         #
         #  Create a container to manage the nodes of the LAN.  We need
@@ -244,7 +239,7 @@ def main(argv):
         #  with all of the nodes including new and existing nodes
         #
         stas = ns.network.NodeContainer()
-        stas.Create(infraNodes - 1)
+        stas.Create(infraNodes.value - 1)
         #  Now, create the container with all nodes on this link
         infra = ns.network.NodeContainer(ns.network.NodeContainer(backbone.Get(i)), stas)
         #
@@ -313,8 +308,8 @@ def main(argv):
     print ("Create Applications.")
     port = 9   #  Discard port(RFC 863)
 
-    appSource = ns.network.NodeList.GetNode(backboneNodes)
-    lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1
+    appSource = ns.network.NodeList.GetNode(backboneNodes.value)
+    lastNodeIndex = backboneNodes.value + backboneNodes.value*(lanNodes.value - 1) + backboneNodes.value*(infraNodes.value - 1) - 1
     appSink = ns.network.NodeList.GetNode(lastNodeIndex)
 
     ns.cppyy.cppdef("""
@@ -329,7 +324,7 @@ def main(argv):
     onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", genericAddress)
     apps = onoff.Install(ns.network.NodeContainer(appSource))
     apps.Start(ns.core.Seconds(3))
-    apps.Stop(ns.core.Seconds(stopTime - 1))
+    apps.Stop(ns.core.Seconds(stopTime.value - 1))
 
     #  Create a packet sink to receive these packets
     sink = ns.applications.PacketSinkHelper("ns3::UdpSocketFactory",
@@ -374,7 +369,7 @@ def main(argv):
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     print ("Run Simulation.")
-    ns.core.Simulator.Stop(ns.core.Seconds(stopTime))
+    ns.core.Simulator.Stop(ns.core.Seconds(stopTime.value))
     ns.core.Simulator.Run()
     ns.core.Simulator.Destroy()
 

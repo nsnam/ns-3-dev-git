@@ -103,14 +103,14 @@ ns.cppyy.cppdef("""
    """)
 
 
-def main(dummy_argv):
-    cmd = ns.getCommandLine(__file__)
-    cmd.Parse(dummy_argv)
+def main(argv):
+    cmd = ns.CommandLine(__file__)
+    cmd.Parse(argv)
 
     model = ns.cppyy.gbl.MyModel()
     v = ns.CreateObject("UniformRandomVariable")
-    v.SetAttribute("Min", ns.core.DoubleValue (10))
-    v.SetAttribute("Max", ns.core.DoubleValue (20))
+    v.SetAttribute("Min", ns.core.DoubleValue(10))
+    v.SetAttribute("Max", ns.core.DoubleValue(20))
 
     ev = ns.cppyy.gbl.ExampleFunctionEvent(model)
     ns.core.Simulator.Schedule(ns.core.Seconds(10.0), ev)
