@@ -106,17 +106,23 @@ class ServiceFlow
      */
     ServiceFlow(Tlv tlv);
     /**
+     * \brief check classifier match.
+     * \param srcAddress the source ip address
+     * \param dstAddress the destination ip address
+     * \param srcPort the source port
+     * \param dstPort the destination port
+     * \param proto the layer 4 protocol
      * \return true if the passed parameters match the classifier of the service flow, false
-     * otherwise \param srcAddress the source ip address \param dstAddress the destination ip
-     * address \param srcPort the source port \param dstPort the destination port \param proto the
-     * layer 4 protocol
+     * otherwise
      */
     bool CheckClassifierMatch(Ipv4Address srcAddress,
                               Ipv4Address dstAddress,
                               uint16_t srcPort,
                               uint16_t dstPort,
                               uint8_t proto) const;
-    /// default constructor
+    /**
+     * Default constructor.
+     */
     ServiceFlow();
     /**
      * Constructor
@@ -138,6 +144,9 @@ class ServiceFlow
      * \param connection the connection object
      */
     ServiceFlow(uint32_t sfid, enum Direction direction, Ptr<WimaxConnection> connection);
+    /**
+     * Destructor.
+     */
     ~ServiceFlow();
     /**
      * assignment operator
@@ -146,7 +155,9 @@ class ServiceFlow
      */
     ServiceFlow& operator=(const ServiceFlow& o);
 
-    /// Initial values
+    /**
+     * Initialize values.
+     */
     void InitValues();
     /**
      * Set direction
@@ -231,10 +242,14 @@ class ServiceFlow
      */
     bool HasPackets(MacHeaderType::HeaderType packetType) const;
 
-    /// shall be called only by BS
+    /**
+     * Shall be called only by BS.
+     */
     void CleanUpQueue();
 
-    /// Print QOS parameters
+    /**
+     * Print QoS parameters.
+     */
     void PrintQoSParameters() const;
 
     /**
@@ -309,7 +324,7 @@ class ServiceFlow
      */
     uint32_t GetMaximumLatency() const;
     /**
-     * Get fixed versus varaiable SDU indicator
+     * Get fixed versus variable SDU indicator
      * \returns the fixed vs variable SDU indicator
      */
     uint8_t GetFixedversusVariableSduIndicator() const;
@@ -404,13 +419,14 @@ class ServiceFlow
      * \param sfid the SFID
      */
     void SetSfid(uint32_t sfid);
-    /** Set service class name
+    /**
+     * Set service class name
      * \param name the service class name
      */
     void SetServiceClassName(std::string name);
     /**
      * Set QOS parameter set type
-     * \param type the QOS paraneter set type
+     * \param type the QOS parameter set type
      */
     void SetQosParamSetType(uint8_t type);
     /**
@@ -455,7 +471,7 @@ class ServiceFlow
     void SetToleratedJitter(uint32_t jitter);
     /**
      * Set maximum latency
-     * \param MaximumLatency the maximjum latency
+     * \param MaximumLatency the maximum latency
      */
     void SetMaximumLatency(uint32_t MaximumLatency);
     /**
@@ -530,7 +546,7 @@ class ServiceFlow
     void SetConvergenceSublayerParam(CsParameters csparam);
 
     /**
-     * Set unsolicied grant interval
+     * Set unsolicited grant interval
      * \param unsolicitedGrantInterval the unsolicited grant interval
      */
     void SetUnsolicitedGrantInterval(uint16_t unsolicitedGrantInterval);
@@ -565,7 +581,7 @@ class ServiceFlow
     uint32_t m_maximumLatency;                         ///< maximum latency
     uint8_t m_fixedversusVariableSduIndicator;         ///< fixed versus variable SDI indicator
     uint8_t m_sduSize;                                 ///< SDU size
-    uint16_t m_targetSAID;                             ///< traget SAID
+    uint16_t m_targetSAID;                             ///< target SAID
     uint8_t m_arqEnable;                               ///< ARQ enable
     uint16_t m_arqWindowSize;                          ///< ARQ window size
     uint16_t m_arqRetryTimeoutTx;                      ///< ARQ retry timeout transmit

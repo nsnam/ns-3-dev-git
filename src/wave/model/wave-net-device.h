@@ -243,8 +243,8 @@ class WaveNetDevice : public WifiNetDevice
      */
     bool StartSch(const SchInfo& schInfo);
     /**
-     *  \param channelNumber the channel which access resource will be released.
-     *  \return whether channel access is released successfully
+     * \param channelNumber the channel which access resource will be released.
+     * \return whether channel access is released successfully
      */
     bool StopSch(uint32_t channelNumber);
 

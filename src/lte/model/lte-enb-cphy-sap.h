@@ -41,24 +41,28 @@ class LteEnbCphySapProvider
 {
   public:
     /**
-     * destructor
+     * Destructor
      */
     virtual ~LteEnbCphySapProvider();
 
     /**
-     *
+     * Set cell ID
      *
      * \param cellId the Cell Identifier
      */
     virtual void SetCellId(uint16_t cellId) = 0;
 
     /**
+     * Set bandwidth
+     *
      * \param ulBandwidth the UL bandwidth in PRBs
      * \param dlBandwidth the DL bandwidth in PRBs
      */
     virtual void SetBandwidth(uint16_t ulBandwidth, uint16_t dlBandwidth) = 0;
 
     /**
+     * Set EARFCN
+     *
      * \param ulEarfcn the UL EARFCN
      * \param dlEarfcn the DL EARFCN
      */
@@ -87,30 +91,37 @@ class LteEnbCphySapProvider
     virtual void SetPa(uint16_t rnti, double pa) = 0;
 
     /**
+     * Set transmission mode
+     *
      * \param rnti the RNTI of the user
      * \param txMode the transmissionMode of the user
      */
     virtual void SetTransmissionMode(uint16_t rnti, uint8_t txMode) = 0;
 
     /**
+     * Set SRS configuration index
+     *
      * \param rnti the RNTI of the user
      * \param srsCi the SRS Configuration Index of the user
      */
     virtual void SetSrsConfigurationIndex(uint16_t rnti, uint16_t srsCi) = 0;
 
     /**
+     * Set master information block
      *
      * \param mib the Master Information Block to be sent on the BCH
      */
     virtual void SetMasterInformationBlock(LteRrcSap::MasterInformationBlock mib) = 0;
 
     /**
+     * Set system information block type 1
      *
      * \param sib1 the System Information Block Type 1 to be sent on the BCH
      */
     virtual void SetSystemInformationBlockType1(LteRrcSap::SystemInformationBlockType1 sib1) = 0;
 
     /**
+     * Get reference signal power
      *
      * \return Reference Signal Power for SIB2
      */
@@ -127,7 +138,7 @@ class LteEnbCphySapUser
 {
   public:
     /**
-     * destructor
+     * Destructor
      */
     virtual ~LteEnbCphySapUser();
 };
@@ -135,7 +146,6 @@ class LteEnbCphySapUser
 /**
  * Template for the implementation of the LteEnbCphySapProvider as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteEnbCphySapProvider : public LteEnbCphySapProvider
@@ -258,7 +268,6 @@ MemberLteEnbCphySapProvider<C>::GetReferenceSignalPower()
 /**
  * Template for the implementation of the LteEnbCphySapUser as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteEnbCphySapUser : public LteEnbCphySapUser

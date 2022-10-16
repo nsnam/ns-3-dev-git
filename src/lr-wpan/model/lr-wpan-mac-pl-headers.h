@@ -155,7 +155,8 @@ class CommandPayloadHeader : public Header
     void SetCommandFrameType(MacCommand macCmd);
     /**
      * Set the Capability Information Field to the command payload header (Association Request
-     * Command). \param cap The capability Information field
+     * Command).
+     * \param cap The capability Information field
      */
     void SetCapabilityField(CapabilityField cap);
     /**
@@ -185,14 +186,15 @@ class CommandPayloadHeader : public Header
     MacCommand GetCommandFrameType() const;
     /**
      * Get the Capability Information Field from the command payload header. (Association Request
-     * Command) \return The Capability Information Field
+     * Command)
+     * \return The Capability Information Field
      */
     CapabilityField GetCapabilityField() const;
 
   private:
     MacCommand m_cmdFrameId; //!< The command Frame Identifier
     CapabilityField
-        m_capabilityInfo;      //!< Capability Information Field   (Association Request Command)
+        m_capabilityInfo;      //!< Capability Information Field (Association Request Command)
     Mac16Address m_shortAddr;  //!< Contains the short address assigned by the coordinator
                                //!< (Association Response Command) See IEEE 802.15.4-2011 5.3.2.2.
     AssocStatus m_assocStatus; //!< Association Status (Association Response Command)

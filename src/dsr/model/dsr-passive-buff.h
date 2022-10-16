@@ -295,7 +295,9 @@ class DsrPassiveBuffer : public Object
     ~DsrPassiveBuffer() override;
 
     /// Push entry in queue, if there is no entry with the same packet and destination address in
-    /// queue. \param entry Buffer Entry \return true on success adding the Entry.
+    /// queue.
+    /// \param entry Buffer Entry
+    /// \return true on success adding the Entry.
     bool Enqueue(DsrPassiveBuffEntry& entry);
     /// Return first found (the earliest) entry for given destination
     /// \param [in] dst Entry destination

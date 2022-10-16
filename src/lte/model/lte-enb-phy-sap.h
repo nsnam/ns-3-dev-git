@@ -86,7 +86,8 @@ class LteEnbPhySapUser
 
     /**
      * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control
-     * channel \param msg the Ideal Control Message to receive
+     * channel
+     * \param msg the Ideal Control Message to receive
      */
     virtual void ReceiveLteControlMessage(Ptr<LteControlMessage> msg) = 0;
 

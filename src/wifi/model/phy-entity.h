@@ -277,9 +277,10 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
      * \param incFlag this flag is used to indicate that the variables need to be update or not
      * This function is called a couple of times for the same packet so variables should not be
-     * increased each time. \param totalAmpduSize the total size of the previously transmitted MPDUs
-     * for the concerned A-MPDU. If incFlag is set, this parameter will be updated. \param
-     * totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the
+     * increased each time.
+     * \param totalAmpduSize the total size of the previously transmitted MPDUs for the concerned
+     * A-MPDU. If incFlag is set, this parameter will be updated.
+     * \param totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the
      * concerned A-MPDU, used for the computation of the number of symbols needed for the last MPDU.
      * If incFlag is set, this parameter will be updated.
      * \param staId the STA-ID of the PSDU (only used for MU PPDUs)
@@ -660,8 +661,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param psdu the arriving MPDU formatted as a PSDU
      * \param event the event holding incoming PPDU's information
      * \param staId the station ID of the PSDU (only used for MU)
-     * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU. 0 for normal
-     * MPDUs \param mpduDuration the duration of the MPDU
+     * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU.
+     * 0 for normal MPDUs
+     * \param mpduDuration the duration of the MPDU
      *
      * \return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
      */

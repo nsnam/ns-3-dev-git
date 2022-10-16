@@ -39,8 +39,9 @@ class ArpHeader : public Header
      * \brief Set the ARP request parameters
      * \param sourceHardwareAddress the source hardware address
      * \param sourceProtocolAddress the source IP address
-     * \param destinationHardwareAddress the destination hardware address (usually the broadcast
-     * address) \param destinationProtocolAddress the destination IP address
+     * \param destinationHardwareAddress the destination hardware address (usually the
+     * broadcast address)
+     * \param destinationProtocolAddress the destination IP address
      */
     void SetRequest(Address sourceHardwareAddress,
                     Ipv4Address sourceProtocolAddress,
@@ -50,8 +51,9 @@ class ArpHeader : public Header
      * \brief Set the ARP reply parameters
      * \param sourceHardwareAddress the source hardware address
      * \param sourceProtocolAddress the source IP address
-     * \param destinationHardwareAddress the destination hardware address (usually the broadcast
-     * address) \param destinationProtocolAddress the destination IP address
+     * \param destinationHardwareAddress the destination hardware address (usually the
+     * broadcast address)
+     * \param destinationProtocolAddress the destination IP address
      */
     void SetReply(Address sourceHardwareAddress,
                   Ipv4Address sourceProtocolAddress,

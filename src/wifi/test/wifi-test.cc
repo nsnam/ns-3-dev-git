@@ -1526,8 +1526,9 @@ class Bug2843TestCase : public TestCase
 
     /**
      * Stores the distinct {starting frequency, channelWidth, Number of subbands in SpectrumModel,
-     * modulation type} tuples that have been used during the testcase run. \param context the
-     * context \param txParams spectrum signal parameters set by transmitter
+     * modulation type} tuples that have been used during the testcase run.
+     * \param context the context
+     * \param txParams spectrum signal parameters set by transmitter
      */
     void StoreDistinctTuple(std::string context, Ptr<SpectrumSignalParameters> txParams);
     /**
@@ -3528,7 +3529,8 @@ class HeRuMcsDataRateTestCase : public TestCase
      * \param nss the number of spatial streams
      * \param guardInterval the guard interval to use
      * \param expectedDataRate the expected data rate in 100 kbps units (minimum granularity in
-     * standard tables) \returns true if data rates are the same, false otherwise
+     * standard tables)
+     * \returns true if data rates are the same, false otherwise
      */
     bool CheckDataRate(HeRu::RuType ruType,
                        std::string mcs,

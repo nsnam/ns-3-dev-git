@@ -62,7 +62,8 @@ class LteUeCcmRrcSapProvider
      *
      * \param lcId is the Logical Channel Id
      * \param lcConfig is a single structure contains logical Channel Id, Logical Channel config and
-     * Component Carrier Id \param msu is the pointer to LteMacSapUser related to the Rlc instance
+     * Component Carrier Id
+     * \param msu is the pointer to LteMacSapUser related to the Rlc instance
      * \return vector of LcsConfig contains the lc configuration for each Mac
      *                the size of the vector is equal to the number of component
      *                carrier enabled.

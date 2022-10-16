@@ -129,31 +129,33 @@ class RngRsp : public Header
     /**
      * \brief set the  Tx timing offset adjustment (signed 32-bit).
      * \param timingAdjust The time required to advance SS transmission so frames
-     *  arrive at the expected time instance at the BS.
+     * arrive at the expected time instance at the BS.
      */
     void SetTimingAdjust(uint32_t timingAdjust);
     /**
-     *  \brief set the relative change in transmission power level that the SS should make in order
+     * \brief set the relative change in transmission power level that the SS should make in order
      * that transmissions arrive at the BS at the desired power. When subchannelization is employed,
      * the subscriber shall interpret the power offset adjustment as a required change to the
-     * transmitted power density. \param powerLevelAdjust the relative change in transmission power
-     * level
+     * transmitted power density.
+     * \param powerLevelAdjust the relative change in transmission power level
      */
     void SetPowerLevelAdjust(uint8_t powerLevelAdjust);
     /**
      * \brief set the relative change in transmission frequency that the SS should take in order to
      * better match the BS. This is fine-frequency adjustment within a channel, not reassignment to
-     * a different channel \param offsetFreqAdjust
+     * a different channel
+     * \param offsetFreqAdjust Offset frequency adjustment
      */
     void SetOffsetFreqAdjust(uint32_t offsetFreqAdjust);
     /**
      * \brief set the range status.
-     * \param rangStatus
+     * \param rangStatus Range status
      */
     void SetRangStatus(uint8_t rangStatus);
     /**
      * \brief set the Center frequency, in kHz, of new downlink channel where the SS should redo
-     * initial ranging. \param dlFreqOverride the Center frequency in kHz
+     * initial ranging.
+     * \param dlFreqOverride the Center frequency in kHz
      */
     void SetDlFreqOverride(uint32_t dlFreqOverride);
     /**
@@ -174,33 +176,33 @@ class RngRsp : public Header
 
     /**
      * \brief set basic CID.
-     * \param basicCid
+     * \param basicCid Basic CID
      */
     void SetBasicCid(Cid basicCid);
     /**
      * \brief set primary CID.
-     * \param primaryCid
+     * \param primaryCid Primary CID
      */
     void SetPrimaryCid(Cid primaryCid);
 
     /**
      * \brief set AAS broadcast permission.
-     * \param aasBdcastPermission
+     * \param aasBdcastPermission AAS broadcast permission
      */
     void SetAasBdcastPermission(uint8_t aasBdcastPermission);
     /**
      * \brief set frame number.
-     * \param frameNumber
+     * \param frameNumber Frame number
      */
     void SetFrameNumber(uint32_t frameNumber);
     /**
      * \brief set initial range opp number.
-     * \param initRangOppNumber
+     * \param initRangOppNumber Initial range opp number
      */
     void SetInitRangOppNumber(uint8_t initRangOppNumber);
     /**
      * \brief set range sub channel.
-     * \param rangSubchnl
+     * \param rangSubchnl Range subchannel
      */
     void SetRangSubchnl(uint8_t rangSubchnl);
     /**
@@ -209,7 +211,7 @@ class RngRsp : public Header
      */
     uint32_t GetTimingAdjust() const;
     /**
-     *  \return the relative change in transmission power level that the SS should take in order
+     * \return the relative change in transmission power level that the SS should take in order
      * that transmissions arrive at the BS at the desired power. When subchannelization is employed,
      * the subscriber shall interpret the power offset adjustment as a required change to the
      * transmitted power density.

@@ -50,8 +50,8 @@ class LteStatsCalculator : public Object
     ~LteStatsCalculator() override;
 
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
 

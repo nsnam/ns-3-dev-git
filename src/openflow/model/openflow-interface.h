@@ -455,12 +455,15 @@ class Controller : public Object
      *
      * \param key The matching key data; used to create a flow that matches the packet.
      * \param buffer_id The OpenFlow Buffer ID; used to run the actions on the packet if we add or
-     * modify the flow. \param command Whether to add, modify, or delete this flow. \param acts List
-     * of actions to execute. \param actions_len Length of the actions buffer. \param idle_timeout
-     * Flow expires if left inactive for this amount of time (specify OFP_FLOW_PERMANENT to disable
-     * feature). \param hard_timeout Flow expires after this amount of time (specify
-     * OFP_FLOW_PERMANENT to disable feature). \return Flow data that when passed to SetFlow will
-     * add, modify, or delete a flow it defines.
+     * modify the flow.
+     * \param command Whether to add, modify, or delete this flow.
+     * \param acts List of actions to execute.
+     * \param actions_len Length of the actions buffer.
+     * \param idle_timeout Flow expires if left inactive for this amount of time (specify
+     * OFP_FLOW_PERMANENT to disable feature).
+     * \param hard_timeout Flow expires after this amount of time (specify OFP_FLOW_PERMANENT to
+     * disable feature).
+     * \return Flow data that when passed to SetFlow will add, modify, or delete a flow it defines.
      */
     ofp_flow_mod* BuildFlow(sw_flow_key key,
                             uint32_t buffer_id,

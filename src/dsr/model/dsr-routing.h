@@ -320,7 +320,10 @@ class DsrRouting : public IpL4Protocol
     uint32_t GetPriority(DsrMessageType messageType);
     /**
      * \brief This function is responsible for sending error packets in case of break link to next
-     * hop \param unreachNode unreachable node \param destination address \param originalDst address
+     * hop
+     * \param unreachNode unreachable node
+     * \param destination address
+     * \param originalDst address
      * \param salvage packet flag
      * \param protocol number
      */
@@ -328,13 +331,16 @@ class DsrRouting : public IpL4Protocol
                           Ipv4Address destination,
                           Ipv4Address originalDst,
                           uint8_t salvage,
-                          uint8_t protocol); /**
-                                              * \brief This function is responsible for forwarding
-                                              * error packets along the route \param rerr
-                                              * unreachable header \param sourceRoute source routing
-                                              * header \param nextHop IP address of next hop \param
-                                              * protocol number \param route IP route
-                                              */
+                          uint8_t protocol);
+
+    /**
+     * \brief This function is responsible for forwarding error packets along the route
+     * \param rerr unreachable header
+     * \param sourceRoute source routing header
+     * \param nextHop IP address of next hop
+     * \param protocol number
+     * \param route IP route
+     */
     void ForwardErrPacket(DsrOptionRerrUnreachHeader& rerr,
                           DsrOptionSRHeader& sourceRoute,
                           Ipv4Address nextHop,
@@ -392,7 +398,8 @@ class DsrRouting : public IpL4Protocol
     bool SendRealDown(DsrNetworkQueueEntry& newEntry);
     /**
      * \brief This function is responsible for sending out data packets when have route, if no route
-     * found, it will cache the packet and send out route requests \param sourceRoute source route
+     * found, it will cache the packet and send out route requests
+     * \param sourceRoute source route
      * \param nextHop next hop IP address
      * \param protocol number
      */
@@ -448,22 +455,24 @@ class DsrRouting : public IpL4Protocol
                                Ipv4Address realDst);
     /**
      * \brief Cancel the network packet retransmission timer for a specific maintenance entry
-     * \param mb maintian byffer entry
+     * \param mb maintain buffer entry
      */
     void CancelNetworkPacketTimer(DsrMaintainBuffEntry& mb);
     /**
      * \brief Cancel the passive packet retransmission timer for a specific maintenance entry
-     * \param mb maintian byffer entry
+     * \param mb maintain buffer entry
      */
     void CancelPassivePacketTimer(DsrMaintainBuffEntry& mb);
     /**
      * \brief Cancel the link packet retransmission timer for a specific maintenance entry
-     * \param mb maintian byffer entry
+     * \param mb maintain buffer entry
      */
     void CancelLinkPacketTimer(DsrMaintainBuffEntry& mb);
     /**
      * \brief Cancel the packet retransmission timer for a all maintenance entries with nextHop
-     * address \param nextHop next hop IP address \param protocol number
+     * address
+     * \param nextHop next hop IP address
+     * \param protocol number
      */
     void CancelPacketTimerNextHop(Ipv4Address nextHop, uint8_t protocol);
     /**
@@ -504,12 +513,16 @@ class DsrRouting : public IpL4Protocol
     void LinkScheduleTimerExpire(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**
      * \brief This function deals with packet retransmission timer expire using network
-     * acknowledgment \param mb maintenance buffer entry \param protocol the protocol number
+     * acknowledgment
+     * \param mb maintenance buffer entry
+     * \param protocol the protocol number
      */
     void NetworkScheduleTimerExpire(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**
      * \brief This function deals with packet retransmission timer expire using passive
-     * acknowledgment \param mb maintenance buffer entry \param protocol the protocol number
+     * acknowledgment
+     * \param mb maintenance buffer entry
+     * \param protocol the protocol number
      */
     void PassiveScheduleTimerExpire(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**

@@ -290,10 +290,14 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * Compute the channel matrix between two nodes a and b, and their
      * antenna arrays aAntenna and bAntenna using the procedure
      * described in 3GPP TR 38.901
-     * \param channelParams the channel parameters previously generated for the pair of nodes a and
-     * b \param table3gpp the 3gpp parameters table \param sMob the mobility model of node s \param
-     * uMob the mobility model of node u \param sAntenna the antenna array of node s \param uAntenna
-     * the antenna array of node u \return the channel realization
+     * \param channelParams the channel parameters previously generated for the pair of
+     * nodes a and b
+     * \param table3gpp the 3gpp parameters table
+     * \param sMob the mobility model of node s
+     * \param uMob the mobility model of node u
+     * \param sAntenna the antenna array of node s
+     * \param uAntenna the antenna array of node u
+     * \return the channel realization
      */
 
     virtual Ptr<ChannelMatrix> GetNewChannel(Ptr<const ThreeGppChannelParams> channelParams,
@@ -325,9 +329,10 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
 
     /**
      * Check if the channel matrix has to be updated (it needs update when the channel params
-     * generation time is more recent than channel matrix generation time \param channelParams
-     * channel params structure \param channelMatrix channel matrix structure \return true if the
-     * channel matrix has to be updated, false otherwise
+     * generation time is more recent than channel matrix generation time
+     * \param channelParams channel params structure
+     * \param channelMatrix channel matrix structure
+     * \return true if the channel matrix has to be updated, false otherwise
      */
     bool ChannelMatrixNeedsUpdate(Ptr<const ThreeGppChannelParams> channelParams,
                                   Ptr<const ChannelMatrix> channelMatrix);

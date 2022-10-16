@@ -606,7 +606,9 @@ class DsrRouteCache : public Object
 
     /**
      * \brief Update route cache entry if it has been recently used and successfully delivered the
-     * data packet \param dst destination address of the route \return true in success
+     * data packet
+     * \param dst destination address of the route
+     * \return true in success
      */
     bool UpdateRouteEntry(Ipv4Address dst);
     /**
@@ -686,7 +688,7 @@ class DsrRouteCache : public Object
     /// Structure to manage neighbor state
     struct Neighbor
     {
-        Ipv4Address m_neighborAddress;  ///< neightbor address
+        Ipv4Address m_neighborAddress;  ///< neighbor address
         Mac48Address m_hardwareAddress; ///< neighbor MAC address
         Time m_expireTime;              ///< route expire time
         bool close;                     ///< is route active
@@ -766,8 +768,8 @@ class DsrRouteCache : public Object
 
     /**
      * \brief Get callback to ProcessTxError, this callback is trying to use the wifi mac tx error
-     * header to notify a link layer drop event, however, it is not fully supported yet \return The
-     * callback to ProcessTxError
+     * header to notify a link layer drop event, however, it is not fully supported yet
+     * \return The callback to ProcessTxError
      */
     Callback<void, const WifiMacHeader&> GetTxErrorCallback() const
     {
@@ -864,8 +866,8 @@ class DsrRouteCache : public Object
   public:
     /**
      * \brief Dijsktra algorithm to get the best route from m_netGraph and update the
-     * m_bestRoutesTable_link when current graph information has changed \param type The type of the
-     * cache
+     * m_bestRoutesTable_link when current graph information has changed
+     * \param type The type of the cache
      */
     void SetCacheType(std::string type);
     /**
@@ -881,14 +883,14 @@ class DsrRouteCache : public Object
      */
     bool AddRoute_Link(DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address node);
     /**
-     *  \brief Rebuild the best route table
-     *  \note Use MAXWEIGHT to represeant maximum weight, use the IPv4 broadcast
-     *        address of 255.255.255.255 to represent a null preceding address
-     *  \param source The source address used for computing the routes
+     * \brief Rebuild the best route table
+     * \note Use MAXWEIGHT to represent maximum weight, use the IPv4 broadcast
+     *       address of 255.255.255.255 to represent a null preceding address
+     * \param source The source address used for computing the routes
      */
     void RebuildBestRouteTable(Ipv4Address source);
     /**
-     *  \brief Purge from the cache if the stability time expired
+     * \brief Purge from the cache if the stability time expired
      */
     void PurgeLinkNode();
     /**
@@ -896,11 +898,12 @@ class DsrRouteCache : public Object
      * by that node, the stability metric for each of the two endpoint nodes of that link is
      * incremented by the amount of time since that link was last used. When a link is used in a
      * route chosen for a packet originated or salvaged by this node, the link's lifetime is set to
-     * be at least UseExtends into the future \param rt cache entry
+     * be at least UseExtends into the future
+     * \param rt cache entry
      */
     void UseExtends(DsrRouteCacheEntry::IP_VECTOR rt);
     /**
-     *  \brief Update the Net Graph for the link and node cache has changed
+     * \brief Update the Net Graph for the link and node cache has changed
      */
     void UpdateNetGraph();
     //---------------------------------------------------------------------------------------

@@ -203,9 +203,9 @@ class LrWpanCsmaCa : public Object
      */
     void DeferCsmaTimeout();
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.2
-     *  PLME-CCA.confirm status
-     *  @param status TRX_OFF, BUSY or IDLE
+     * IEEE 802.15.4-2006 section 6.2.2.2
+     * PLME-CCA.confirm status
+     * \param status TRX_OFF, BUSY or IDLE
      *
      * When Phy has completed CCA, it calls back here which in turn execute the final steps
      * of the CSMA-CA algorithm.
@@ -260,8 +260,8 @@ class LrWpanCsmaCa : public Object
   private:
     void DoDispose() override;
     /**
-     *  \brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.
-     *  \return the time left in the CAP
+     * \brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.
+     * \return the time left in the CAP
      */
     Time GetTimeLeftInCap();
     /**

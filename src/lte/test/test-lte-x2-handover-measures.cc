@@ -84,8 +84,9 @@ class LteX2HandoverMeasuresTestCase : public TestCase
      * \param useUdp true if UDP is to be used, false if TCP is to be used
      * \param schedulerType type of scheduler to be used (e.g. "ns3::PfFfMacScheduler")
      * \param handoverAlgorithmType type of handover algorithm to be used (e.g.
-     * "ns3::A3RsrpHandoverAlgorithm") \param admitHo true if Ho is admitted, false if it is not
-     * admitted \param useIdealRrc true if ideal RRC is to be used, false if real RRC is to be used
+     * "ns3::A3RsrpHandoverAlgorithm")
+     * \param admitHo true if Ho is admitted, false if it is not admitted
+     * \param useIdealRrc true if ideal RRC is to be used, false if real RRC is to be used
      */
     LteX2HandoverMeasuresTestCase(uint32_t nEnbs,
                                   uint32_t nUes,
@@ -108,8 +109,10 @@ class LteX2HandoverMeasuresTestCase : public TestCase
      * \param useUdp true if UDP is to be used, false if TCP is to be used
      * \param schedulerType the scheduler type
      * \param handoverAlgorithmType type of handover algorithm to be used (e.g.
-     * "ns3::A3RsrpHandoverAlgorithm") \param admitHo true if Ho is admitted, false if it is not
-     * admitted \param useIdealRrc true if the ideal RRC should be used \returns the name string
+     * "ns3::A3RsrpHandoverAlgorithm")
+     * \param admitHo true if Ho is admitted, false if it is not admitted
+     * \param useIdealRrc true if the ideal RRC should be used
+     * \returns the name string
      */
     static std::string BuildNameString(uint32_t nEnbs,
                                        uint32_t nUes,

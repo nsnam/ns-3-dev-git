@@ -70,20 +70,24 @@ class MobilityBuildingInfo : public Object
      * \brief Mark this MobilityBuildingInfo instance as indoor
      *
      * \param building the building into which the MobilityBuildingInfo instance is located
-     * \param nfloor the floor number 1...nFloors at which the  MobilityBuildingInfo instance is
-     * located \param nroomx the X room number 1...nRoomsX at which the  MobilityBuildingInfo
-     * instance is located \param nroomy the Y room number 1...nRoomsY at which the
-     * MobilityBuildingInfo instance is located
+     * \param nfloor the floor number 1...nFloors at which the MobilityBuildingInfo instance
+     * is located
+     * \param nroomx the X room number 1...nRoomsX at which the MobilityBuildingInfo instance
+     * is located
+     * \param nroomy the Y room number 1...nRoomsY at which the MobilityBuildingInfo instance
+     * is located
      */
     void SetIndoor(Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy);
 
     /**
      * \brief Mark this MobilityBuildingInfo instance as indoor
      *
-     * \param nfloor the floor number 1...nFloors at which the MobilityBuildingInfo instance is
-     * located \param nroomx the X room number 1...nRoomsX at which the MobilityBuildingInfo
-     * instance is located \param nroomy the Y room number 1...nRoomsY at which the
-     * MobilityBuildingInfo instance is located
+     * \param nfloor the floor number 1...nFloors at which the MobilityBuildingInfo instance
+     * is located
+     * \param nroomx the X room number 1...nRoomsX at which the MobilityBuildingInfo instance
+     * is located
+     * \param nroomy the Y room number 1...nRoomsY at which the MobilityBuildingInfo instance
+     * is located
      */
 
     void SetIndoor(uint8_t nfloor, uint8_t nroomx, uint8_t nroomy);

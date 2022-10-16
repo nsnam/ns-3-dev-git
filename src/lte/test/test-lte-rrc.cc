@@ -45,8 +45,10 @@ class LteRrcConnectionEstablishmentTestCase : public TestCase
      * \param nBearers number of bearers to be setup in each connection
      * \param tConnBase connection time base value for all UEs in ms
      * \param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1) in
-     * ms \param delayDiscStart expected duration to perform connection establishment in ms \param
-     * errorExpected if true, test case will wait a bit longer to accommodate for transmission error
+     * ms
+     * \param delayDiscStart expected duration to perform connection establishment in ms
+     * \param errorExpected if true, test case will wait a bit longer to accommodate for
+     * transmission error
      * \param useIdealRrc If set to false, real RRC protocol model will be used
      * \param admitRrcConnectionRequest If set to false, eNb will not allow UE connections
      * \param description additional description of the test case
@@ -71,11 +73,13 @@ class LteRrcConnectionEstablishmentTestCase : public TestCase
      * \param nUes number of UEs in the test
      * \param nBearers number of bearers to be setup in each connection
      * \param tConnBase connection time base value for all UEs in ms
-     * \param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1) in
-     * ms \param delayDiscStart expected duration to perform connection establishment in ms \param
-     * useIdealRrc If set to false, real RRC protocol model will be used \param
-     * admitRrcConnectionRequest If set to false, eNb will not allow UE connections \param
-     * description additional description of the test case \returns the name string
+     * \param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1)
+     * in ms
+     * \param delayDiscStart expected duration to perform connection establishment in ms
+     * \param useIdealRrc If set to false, real RRC protocol model will be used
+     * \param admitRrcConnectionRequest If set to false, eNb will not allow UE connections
+     * \param description additional description of the test case
+     * \returns the name string
      */
     static std::string BuildNameString(uint32_t nUes,
                                        uint32_t nBearers,

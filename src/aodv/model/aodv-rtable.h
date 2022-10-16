@@ -500,12 +500,12 @@ class RoutingTable
     void GetListOfDestinationWithNextHop(Ipv4Address nextHop,
                                          std::map<Ipv4Address, uint32_t>& unreachable);
     /**
-     *   Update routing entries with this destination as follows:
-     *  1. The destination sequence number of this routing entry, if it
-     *     exists and is valid, is incremented.
-     *  2. The entry is invalidated by marking the route entry as invalid
-     *  3. The Lifetime field is updated to current time plus DELETE_PERIOD.
-     *  \param unreachable routes to invalidate
+     * Update routing entries with this destination as follows:
+     * 1. The destination sequence number of this routing entry, if it
+     *    exists and is valid, is incremented.
+     * 2. The entry is invalidated by marking the route entry as invalid
+     * 3. The Lifetime field is updated to current time plus DELETE_PERIOD.
+     * \param unreachable routes to invalidate
      */
     void InvalidateRoutesWithDst(const std::map<Ipv4Address, uint32_t>& unreachable);
     /**
@@ -523,9 +523,10 @@ class RoutingTable
     /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
     void Purge();
     /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout
-     * period) \param neighbor - neighbor address link to which assumed to be unidirectional \param
-     * blacklistTimeout - time for which the neighboring node is put into the blacklist \return true
-     * on success
+     * period)
+     * \param neighbor neighbor address link to which assumed to be unidirectional
+     * \param blacklistTimeout time for which the neighboring node is put into the blacklist
+     * \return true on success
      */
     bool MarkLinkAsUnidirectional(Ipv4Address neighbor, Time blacklistTimeout);
     /**

@@ -544,31 +544,31 @@ class QueueDisc : public Object
     void DoInitialize() override;
 
     /**
-     *  \brief Perform the actions required when the queue disc is notified of
-     *         a packet dropped before enqueue
-     *  \param item item that was dropped
-     *  \param reason the reason why the item was dropped
-     *  This method must be called by subclasses to record that a packet was
-     *  dropped before enqueue for the specified reason
+     * \brief Perform the actions required when the queue disc is notified of
+     *        a packet dropped before enqueue
+     * \param item item that was dropped
+     * \param reason the reason why the item was dropped
+     * This method must be called by subclasses to record that a packet was
+     * dropped before enqueue for the specified reason
      */
     void DropBeforeEnqueue(Ptr<const QueueDiscItem> item, const char* reason);
 
     /**
-     *  \brief Perform the actions required when the queue disc is notified of
-     *         a packet dropped after dequeue
-     *  \param item item that was dropped
-     *  \param reason the reason why the item was dropped
-     *  This method must be called by subclasses to record that a packet was
-     *  dropped after dequeue for the specified reason
+     * \brief Perform the actions required when the queue disc is notified of
+     *        a packet dropped after dequeue
+     * \param item item that was dropped
+     * \param reason the reason why the item was dropped
+     * This method must be called by subclasses to record that a packet was
+     * dropped after dequeue for the specified reason
      */
     void DropAfterDequeue(Ptr<const QueueDiscItem> item, const char* reason);
 
     /**
-     *  \brief Marks the given packet and, if successful, updates the counters
-     *         associated with the given reason
-     *  \param item item that has to be marked
-     *  \param reason the reason why the item has to be marked
-     *  \return true if the item was successfully marked, false otherwise
+     * \brief Marks the given packet and, if successful, updates the counters
+     *        associated with the given reason
+     * \param item item that has to be marked
+     * \param reason the reason why the item has to be marked
+     * \return true if the item was successfully marked, false otherwise
      */
     bool Mark(Ptr<QueueDiscItem> item, const char* reason);
 
@@ -671,21 +671,21 @@ class QueueDisc : public Object
     bool Transmit(Ptr<QueueDiscItem> item);
 
     /**
-     *  \brief Perform the actions required when the queue disc is notified of
-     *         a packet enqueue
-     *  \param item item that was enqueued
+     * \brief Perform the actions required when the queue disc is notified of
+     *        a packet enqueue
+     * \param item item that was enqueued
      */
     void PacketEnqueued(Ptr<const QueueDiscItem> item);
 
     /**
-     *  \brief Perform the actions required when the queue disc is notified of
-     *         a packet dequeue
-     *  \param item item that was dequeued
+     * \brief Perform the actions required when the queue disc is notified of
+     *        a packet dequeue
+     * \param item item that was dequeued
      */
     void PacketDequeued(Ptr<const QueueDiscItem> item);
 
-    static const uint32_t DEFAULT_QUOTA =
-        64; //!< Default quota (as in /proc/sys/net/core/dev_weight)
+    /// Default quota (as in /proc/sys/net/core/dev_weight)
+    static const uint32_t DEFAULT_QUOTA = 64;
 
     std::vector<Ptr<InternalQueue>> m_queues;   //!< Internal queues
     std::vector<Ptr<PacketFilter>> m_filters;   //!< Packet filters

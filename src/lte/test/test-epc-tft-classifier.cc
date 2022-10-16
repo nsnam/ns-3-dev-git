@@ -95,8 +95,9 @@ class EpcTftClassifierTestCase : public TestCase
      * \param dp the destination port
      * \param tos the TOS
      * \param tftId the TFT ID
-     * \param useIpv6 use IPv6 or IPv4 addresses. If set, addresses will be used as IPv4 mapped
-     * addresses \returns the name string
+     * \param useIpv6 use IPv6 or IPv4 addresses. If set, addresses will be used as IPv4
+     * mapped addresses
+     * \returns the name string
      */
     static std::string BuildNameString(Ptr<EpcTftClassifier> c,
                                        EpcTft::Direction d,

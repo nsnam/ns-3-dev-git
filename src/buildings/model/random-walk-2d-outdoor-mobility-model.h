@@ -94,16 +94,19 @@ class RandomWalk2dOutdoorMobilityModel : public MobilityModel
     /**
      * Check if there is a building between two positions (or if the nextPosition is inside a
      * building). The code is taken from MmWave3gppBuildingsPropagationLossModel from the NYU/UNIPD
-     * ns-3 mmWave module \param currentPosition The current position of the node \param
-     * nextPosition The position to check \return a pair with a boolean (true if the line between
-     * the two position does not intersect building), and a pointer which is 0 if the boolean is
-     * true, or it points to the building which is intersected
+     * ns-3 mmWave module
+     * \param currentPosition The current position of the node
+     * \param nextPosition The position to check
+     * \return a pair with a boolean (true if the line between the two position does not intersect
+     * building), and a pointer which is 0 if the boolean is true, or it points to the building
+     * which is intersected
      */
     std::pair<bool, Ptr<Building>> IsLineClearOfBuildings(Vector currentPosition,
                                                           Vector nextPosition) const;
     /**
      * Compute the intersecting point of the box represented by boundaries and the line between
-     * current and next Notice that we only consider a 2d plane \param current The current position
+     * current and next. Notice that we only consider a 2d plane.
+     * \param current The current position
      * \param next The next position
      * \param boundaries The boundaries of the building we will intersect
      * \return a vector with the position of the intersection

@@ -2562,8 +2562,10 @@ class TestAmpduReception : public TestCase
 
     /**
      * Send A-MPDU with 3 MPDUs of different size (i-th MSDU will have 100 bytes more than
-     * (i-1)-th). \param rxPowerDbm the transmit power in dBm \param referencePacketSize the
-     * reference size of the packets in bytes (i-th MSDU will have 100 bytes more than (i-1)-th)
+     * (i-1)-th).
+     * \param rxPowerDbm the transmit power in dBm
+     * \param referencePacketSize the reference size of the packets in bytes (i-th MSDU will have
+     * 100 bytes more than (i-1)-th)
      */
     void SendAmpduWithThreeMpdus(double rxPowerDbm, uint32_t referencePacketSize);
 

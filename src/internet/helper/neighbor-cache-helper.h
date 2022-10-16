@@ -142,23 +142,26 @@ class NeighborCacheHelper
 
     /**
      * \brief Update neighbor caches when an address is removed from a Ipv4Interface with auto
-     * generated neighbor cache. \param interface the Ipv4Interface that address removed from.
-     * \param ifAddr the removed IPv4 interface address .
+     * generated neighbor cache.
+     * \param interface the Ipv4Interface that address removed from.
+     * \param ifAddr the removed IPv4 interface address.
      */
     void UpdateCacheByIpv4AddressRemoved(const Ptr<Ipv4Interface> interface,
                                          const Ipv4InterfaceAddress ifAddr) const;
 
     /**
      * \brief Update neighbor caches when an address is added to a Ipv4Interface with auto generated
-     * neighbor cache. \param interface the Ipv4Interface that address added to. \param ifAddr the
-     * added IPv4 interface address.
+     * neighbor cache.
+     * \param interface the Ipv4Interface that address added to.
+     * \param ifAddr the added IPv4 interface address.
      */
     void UpdateCacheByIpv4AddressAdded(const Ptr<Ipv4Interface> interface,
                                        const Ipv4InterfaceAddress ifAddr) const;
 
     /**
      * \brief Update neighbor caches when an address is removed from a Ipv6Interface with auto
-     * generated neighbor cache. \param interface the Ipv6Interface that address removed from.
+     * generated neighbor cache.
+     * \param interface the Ipv6Interface that address removed from.
      * \param ifAddr the removed IPv6 interface address.
      */
     void UpdateCacheByIpv6AddressRemoved(const Ptr<Ipv6Interface> interface,
@@ -166,8 +169,9 @@ class NeighborCacheHelper
 
     /**
      * \brief Update neighbor cache when an address is added to a Ipv6Interface with auto generated
-     * neighbor cache. \param interface the Ipv6Interface that address added to. \param ifAddr the
-     * added IPv6 interface address.
+     * neighbor cache.
+     * \param interface the Ipv6Interface that address added to.
+     * \param ifAddr the added IPv6 interface address.
      */
     void UpdateCacheByIpv6AddressAdded(const Ptr<Ipv6Interface> interface,
                                        const Ipv6InterfaceAddress ifAddr) const;

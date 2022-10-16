@@ -52,12 +52,12 @@ class EpcS1apSapMme : public EpcS1apSap
 {
   public:
     /**
+     * Initial UE message.
      *
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
      * \param stmsi in practice, the imsi
      * \param ecgi in practice, the cell Id
-     *
      */
     virtual void InitialUeMessage(uint64_t mmeUeS1Id,
                                   uint16_t enbUeS1Id,
@@ -66,7 +66,6 @@ class EpcS1apSapMme : public EpcS1apSap
 
     /**
      *  E-RAB Release Indication Item IEs, 3GPP TS 36.413 version 9.8.0 section 9.1.3.7
-     *
      */
     struct ErabToBeReleasedIndication
     {
@@ -81,7 +80,6 @@ class EpcS1apSapMme : public EpcS1apSap
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
      * \param erabToBeReleaseIndication List of bearers to be deactivated
-     *
      */
     virtual void ErabReleaseIndication(
         uint64_t mmeUeS1Id,
@@ -90,7 +88,6 @@ class EpcS1apSapMme : public EpcS1apSap
 
     /**
      *  E-RAB Setup Item IEs, see 3GPP TS 36.413 9.1.4.2
-     *
      */
     struct ErabSetupItem
     {
@@ -104,7 +101,7 @@ class EpcS1apSapMme : public EpcS1apSap
      *
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabSetupList
+     * \param erabSetupList List of ERAB setup
      *
      */
     virtual void InitialContextSetupResponse(uint64_t mmeUeS1Id,
@@ -113,7 +110,6 @@ class EpcS1apSapMme : public EpcS1apSap
 
     /**
      * E-RABs Switched in Downlink Item IE, see 3GPP TS 36.413 9.1.5.8
-     *
      */
     struct ErabSwitchedInDownlinkItem
     {
@@ -127,8 +123,8 @@ class EpcS1apSapMme : public EpcS1apSap
      *
      * \param enbUeS1Id in practice, we use the RNTI
      * \param mmeUeS1Id in practice, we use the IMSI
-     * \param gci
-     * \param erabToBeSwitchedInDownlinkList
+     * \param gci GCI
+     * \param erabToBeSwitchedInDownlinkList List of ERAB to be switched in downlink
      */
     virtual void PathSwitchRequest(
         uint64_t enbUeS1Id,
@@ -160,8 +156,7 @@ class EpcS1apSapEnb : public EpcS1apSap
      *
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabToBeSetupList
-     *
+     * \param erabToBeSetupList List of ERAB to be setup
      */
     virtual void InitialContextSetupRequest(uint64_t mmeUeS1Id,
                                             uint16_t enbUeS1Id,
@@ -169,7 +164,6 @@ class EpcS1apSapEnb : public EpcS1apSap
 
     /**
      * E-RABs Switched in Uplink Item IE, see 3GPP TS 36.413 9.1.5.9
-     *
      */
     struct ErabSwitchedInUplinkItem
     {
@@ -183,8 +177,8 @@ class EpcS1apSapEnb : public EpcS1apSap
      *
      * \param enbUeS1Id in practice, we use the RNTI
      * \param mmeUeS1Id in practice, we use the IMSI
-     * \param cgi
-     * \param erabToBeSwitchedInUplinkList
+     * \param cgi CGI
+     * \param erabToBeSwitchedInUplinkList List of ERAB to be switched in uplink
      */
     virtual void PathSwitchRequestAcknowledge(
         uint64_t enbUeS1Id,
@@ -196,7 +190,6 @@ class EpcS1apSapEnb : public EpcS1apSap
 /**
  * Template for the implementation of the EpcS1apSapMme as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberEpcS1apSapMme : public EpcS1apSapMme
@@ -215,7 +208,7 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
      * \param imsi the IMSI
-     * \param ecgi
+     * \param ecgi ECGI
      */
     void InitialUeMessage(uint64_t mmeUeS1Id,
                           uint16_t enbUeS1Id,
@@ -225,7 +218,7 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
      * ERAB Release Indiation function
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabToBeReleaseIndication
+     * \param erabToBeReleaseIndication List of ERAB to be release indication
      */
     void ErabReleaseIndication(
         uint64_t mmeUeS1Id,
@@ -236,7 +229,7 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
      * Initial context setup response
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabSetupList
+     * \param erabSetupList List of ERAB setup
      */
     void InitialContextSetupResponse(uint64_t mmeUeS1Id,
                                      uint16_t enbUeS1Id,
@@ -245,8 +238,8 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
      * Path switch request
      * \param enbUeS1Id in practice, we use the RNTI
      * \param mmeUeS1Id in practice, we use the IMSI
-     * \param cgi
-     * \param erabToBeSwitchedInDownlinkList
+     * \param cgi CGI
+     * \param erabToBeSwitchedInDownlinkList List of ERAB to be switched in downlink
      */
     void PathSwitchRequest(
         uint64_t enbUeS1Id,
@@ -313,7 +306,6 @@ MemberEpcS1apSapMme<C>::PathSwitchRequest(
 /**
  * Template for the implementation of the EpcS1apSapEnb as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberEpcS1apSapEnb : public EpcS1apSapEnb
@@ -331,7 +323,7 @@ class MemberEpcS1apSapEnb : public EpcS1apSapEnb
      * Initial context setup request function
      * \param mmeUeS1Id in practice, we use the IMSI
      * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabToBeSetupList
+     * \param erabToBeSetupList List of ERAB to be setup
      */
     void InitialContextSetupRequest(uint64_t mmeUeS1Id,
                                     uint16_t enbUeS1Id,
@@ -340,8 +332,8 @@ class MemberEpcS1apSapEnb : public EpcS1apSapEnb
      * Path switch request acknowledge function
      * \param enbUeS1Id in practice, we use the RNTI
      * \param mmeUeS1Id in practice, we use the IMSI
-     * \param cgi
-     * \param erabToBeSwitchedInUplinkList
+     * \param cgi CGI
+     * \param erabToBeSwitchedInUplinkList List of ERAB to be switched in uplink
      */
     void PathSwitchRequestAcknowledge(
         uint64_t enbUeS1Id,

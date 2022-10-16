@@ -228,11 +228,14 @@ class PyViz
      * \param [in] boundsY1 Bounding box, minimum Y coord
      * \param [in] boundsX2 Bounding box, maximum X coord
      * \param [in] boundsY2 Bounding box, maximum Y coord
-     * \param [in,out] lineX1 Line, minimum X coord (any on input, clipped to the bounding box on
-     * output) \param [in,out] lineY1 Line, minimum Y coord (any on input, clipped to the bounding
-     * box on output) \param [in,out] lineX2 Line, maximum X coord (any on input, clipped to the
-     * bounding box on output) \param [in,out] lineY2 Line, maximum Y coord (any on input, clipped
-     * to the bounding box on output)
+     * \param [in,out] lineX1 Line, minimum X coord (any on input, clipped to the bounding box
+     * on output)
+     * \param [in,out] lineY1 Line, minimum Y coord (any on input, clipped to the bounding box
+     * on output)
+     * \param [in,out] lineX2 Line, maximum X coord (any on input, clipped to the bounding box
+     * on output)
+     * \param [in,out] lineY2 Line, maximum Y coord (any on input, clipped to the bounding box
+     * on output)
      */
     // -#- @lineX1(direction=inout); @lineY1(direction=inout); @lineX2(direction=inout);
     // @lineY2(direction=inout) -#-
@@ -276,14 +279,14 @@ class PyViz
     struct TransmissionSampleKey
     {
         /**
-         * less than operator
+         * Less than operator
          *
          * \param other object to compare
          * \return true if less than
          */
         bool operator<(const TransmissionSampleKey& other) const;
         /**
-         * equality operator
+         * Equality operator
          *
          * \param other object to compare
          * \return true if equal
@@ -300,22 +303,22 @@ class PyViz
         uint32_t bytes; ///< bytes
     };
 
-    // data
+    // Data
     std::map<uint32_t, PacketCaptureOptions> m_packetCaptureOptions; ///< packet capture options
     std::vector<std::string> m_pauseMessages;                        ///< pause message
     std::map<TxRecordKey, TxRecordValue> m_txRecords;                ///< transmit records
     std::map<TransmissionSampleKey, TransmissionSampleValue>
         m_transmissionSamples;                   ///< transmission samples
-    std::map<Ptr<Node>, uint32_t> m_packetDrops; ///< packt drops
+    std::map<Ptr<Node>, uint32_t> m_packetDrops; ///< packet drops
     std::set<uint32_t>
         m_nodesOfInterest; ///< list of node IDs whose transmissions will be monitored
     std::map<uint32_t, Time> m_packetsOfInterest; ///< list of packet UIDs that will be monitored
     std::map<uint32_t, LastPacketsSample> m_lastPackets;                    ///< last packets
-    std::map<uint32_t, std::vector<NetDeviceStatistics>> m_nodesStatistics; ///< node statsitics
+    std::map<uint32_t, std::vector<NetDeviceStatistics>> m_nodesStatistics; ///< node statistics
 
     // Trace callbacks
     /**
-     * network transmit common trace callback function
+     * Network transmit common trace callback function
      * \param context the context
      * \param packet the packet
      * \param destination the destination MAC address
@@ -324,7 +327,7 @@ class PyViz
                              Ptr<const Packet> packet,
                              const Mac48Address& destination);
     /**
-     * network receive common trace callback function
+     * Network receive common trace callback function
      * \param context the context
      * \param packet the packet
      * \param source the source MAC address
@@ -334,31 +337,31 @@ class PyViz
                              const Mac48Address& source);
 
     /**
-     * WIFI transmit trace callback function
+     * Wi-Fi transmit trace callback function
      * \param context the context
      * \param packet the packet
      */
     void TraceNetDevTxWifi(std::string context, Ptr<const Packet> packet);
     /**
-     * WIFI receive trace callback function
+     * Wi-Fi receive trace callback function
      * \param context the context
      * \param packet the packet
      */
     void TraceNetDevRxWifi(std::string context, Ptr<const Packet> packet);
 
     /**
-     * queue drop trace callback function
+     * Queue drop trace callback function
      * \param context the context
      * \param packet the packet
      */
     void TraceDevQueueDrop(std::string context, Ptr<const Packet> packet);
     /**
-     * ipv4 drop trace callback function
+     * Ipv4 drop trace callback function
      * \param context the context
      * \param hdr the header
      * \param packet the packet
      * \param reason the drop reason
-     * \param dummy_ipv4
+     * \param dummy_ipv4 the dummy Ipv4
      * \param interface the interface
      */
     void TraceIpv4Drop(std::string context,
@@ -381,14 +384,14 @@ class PyViz
      */
     void TraceNetDevRxCsma(std::string context, Ptr<const Packet> packet);
     /**
-     * CSMA promiscious receive function
+     * CSMA promiscuous receive function
      * \param context the context
      * \param packet the packet
      */
     void TraceNetDevPromiscRxCsma(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Point to point transmit trace calllback function
+     * Point to point transmit trace callback function
      * \param context the context
      * \param packet the packet
      */
@@ -401,7 +404,7 @@ class PyViz
     void TraceNetDevRxPointToPoint(std::string context, Ptr<const Packet> packet);
 
     /**
-     * WIMax transmit trace callback function
+     * WiMax transmit trace callback function
      * \param context the context
      * \param packet the packet
      * \param destination the destination MAC address
@@ -410,7 +413,7 @@ class PyViz
                             Ptr<const Packet> packet,
                             const Mac48Address& destination);
     /**
-     * WIMax transmit trace callback function
+     * WiMax transmit trace callback function
      * \param context the context
      * \param packet the packet
      * \param source the source MAC address
@@ -439,7 +442,7 @@ class PyViz
                           const Mac48Address& source);
 
     /**
-     * Findnet device statistics function
+     * Find net device statistics function
      * \param node the node
      * \param interface the interface number
      * \returns the device statistics
@@ -454,7 +457,8 @@ class PyViz
 
     bool m_stop;     ///< stop?
     Time m_runUntil; ///< run until time
-    /// stop simulation callback function
+
+    /// Stop simulation callback function
     void CallbackStopSimulation();
 };
 

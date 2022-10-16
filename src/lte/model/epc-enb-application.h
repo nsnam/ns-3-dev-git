@@ -68,9 +68,11 @@ class EpcEnbApplication : public Application
     /**
      * Constructor
      *
-     * \param lteSocket the socket to be used to send/receive IPv4 packets to/from the LTE radio
-     * interface \param lteSocket6 the socket to be used to send/receive IPv6 packets to/from the
-     * LTE radio interface \param cellId the identifier of the eNB
+     * \param lteSocket the socket to be used to send/receive IPv4 packets to/from the
+     * LTE radio interface
+     * \param lteSocket6 the socket to be used to send/receive IPv6 packets to/from the
+     * LTE radio interface
+     * \param cellId the identifier of the eNB
      */
     EpcEnbApplication(Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, uint16_t cellId);
 
@@ -78,8 +80,9 @@ class EpcEnbApplication : public Application
      * Add a S1-U interface to the eNB
      *
      * \param s1uSocket the socket to be used to send/receive packets to/from the S1-U interface
-     * connected with the SGW \param enbS1uAddress the IPv4 address of the S1-U interface of this
-     * eNB \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for
+     * connected with the SGW
+     * \param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
+     * \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for
      * S1-U communications
      */
     void AddS1Interface(Ptr<Socket> s1uSocket,
@@ -222,8 +225,10 @@ class EpcEnbApplication : public Application
 
     /**
      * \brief This function accepts bearer id corresponding to a particular UE and schedules
-     * indication of bearer release towards MME \param imsi maps to mmeUeS1Id \param rnti maps to
-     * enbUeS1Id \param bearerId Bearer Identity which is to be de-activated
+     * indication of bearer release towards MME
+     * \param imsi maps to mmeUeS1Id
+     * \param rnti maps to enbUeS1Id
+     * \param bearerId Bearer Identity which is to be de-activated
      */
     void DoReleaseIndication(uint64_t imsi, uint16_t rnti, uint8_t bearerId);
 

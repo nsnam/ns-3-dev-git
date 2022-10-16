@@ -174,9 +174,9 @@ typedef struct
  *
  * This method implements the PD SAP: PdDataIndication
  *
- *  @param psduLength number of bytes in the PSDU
- *  @param p the packet to be transmitted
- *  @param lqi Link quality (LQI) value measured during reception of the PPDU
+ * \param psduLength number of bytes in the PSDU
+ * \param p the packet to be transmitted
+ * \param lqi Link quality (LQI) value measured during reception of the PPDU
  */
 typedef Callback<void, uint32_t, Ptr<Packet>, uint8_t> PdDataIndicationCallback;
 
@@ -336,148 +336,148 @@ class LrWpanPhy : public SpectrumPhy
     void StartRx(Ptr<SpectrumSignalParameters> params) override;
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.1.1
-     *  PD-DATA.request
-     *  Request to transfer MPDU from MAC (transmitting)
-     *  @param psduLength number of bytes in the PSDU
-     *  @param p the packet to be transmitted
+     * IEEE 802.15.4-2006 section 6.2.1.1
+     * PD-DATA.request
+     * Request to transfer MPDU from MAC (transmitting)
+     * \param psduLength number of bytes in the PSDU
+     * \param p the packet to be transmitted
      */
     void PdDataRequest(const uint32_t psduLength, Ptr<Packet> p);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.1
-     *  PLME-CCA.request
-     *  Perform a CCA per section 6.9.9
+     * IEEE 802.15.4-2006 section 6.2.2.1
+     * PLME-CCA.request
+     * Perform a CCA per section 6.9.9
      */
     void PlmeCcaRequest();
 
     /**
-     *  Cancel an ongoing CCA request.
+     * Cancel an ongoing CCA request.
      */
     void CcaCancel();
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.3
-     *  PLME-ED.request
-     *  Perform an ED per section 6.9.7
+     * IEEE 802.15.4-2006 section 6.2.2.3
+     * PLME-ED.request
+     * Perform an ED per section 6.9.7
      */
     void PlmeEdRequest();
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.5
-     *  PLME-GET.request
-     *  Get attributes per definition from Table 23 in section 6.4.2
-     *  @param id the attributed identifier
+     * IEEE 802.15.4-2006 section 6.2.2.5
+     * PLME-GET.request
+     * Get attributes per definition from Table 23 in section 6.4.2
+     * \param id the attributed identifier
      */
     void PlmeGetAttributeRequest(LrWpanPibAttributeIdentifier id);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.7
-     *  PLME-SET-TRX-STATE.request
-     *  Set PHY state
-     *  @param state in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
+     * IEEE 802.15.4-2006 section 6.2.2.7
+     * PLME-SET-TRX-STATE.request
+     * Set PHY state
+     * \param state in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
      */
     void PlmeSetTRXStateRequest(LrWpanPhyEnumeration state);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.9
-     *  PLME-SET.request
-     *  Set attributes per definition from Table 23 in section 6.4.2
-     *  @param id the attributed identifier
-     *  @param attribute the attribute value
+     * IEEE 802.15.4-2006 section 6.2.2.9
+     * PLME-SET.request
+     * Set attributes per definition from Table 23 in section 6.4.2
+     * \param id the attributed identifier
+     * \param attribute the attribute value
      */
     void PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier id,
                                  LrWpanPhyPibAttributes* attribute);
 
     /**
      * set the callback for the end of a RX, as part of the
-     * interconnections betweenthe PHY and the MAC. The callback
+     * interconnections between the PHY and the MAC. The callback
      * implements PD Indication SAP.
-     * @param c the callback
+     * \param c the callback
      */
     void SetPdDataIndicationCallback(PdDataIndicationCallback c);
 
     /**
      * set the callback for the end of a TX, as part of the
-     * interconnections betweenthe PHY and the MAC. The callback
+     * interconnections between the PHY and the MAC. The callback
      * implements PD SAP.
-     * @param c the callback
+     * \param c the callback
      */
     void SetPdDataConfirmCallback(PdDataConfirmCallback c);
 
     /**
      * set the callback for the end of a CCA, as part of the
-     * interconnections betweenthe PHY and the MAC. The callback
+     * interconnections between the PHY and the MAC. The callback
      * implement PLME CCA confirm SAP
-     * @param c the callback
+     * \param c the callback
      */
     void SetPlmeCcaConfirmCallback(PlmeCcaConfirmCallback c);
 
     /**
      * set the callback for the end of an ED, as part of the
-     * interconnections betweenthe PHY and the MAC. The callback
+     * interconnections between the PHY and the MAC. The callback
      * implement PLME ED confirm SAP
-     * @param c the callback
+     * \param c the callback
      */
     void SetPlmeEdConfirmCallback(PlmeEdConfirmCallback c);
 
     /**
      * set the callback for the end of an GetAttribute, as part of the
-     * interconnections betweenthe PHY and the MAC. The callback
+     * interconnections between the PHY and the MAC. The callback
      * implement PLME GetAttribute confirm SAP
-     * @param c the callback
+     * \param c the callback
      */
     void SetPlmeGetAttributeConfirmCallback(PlmeGetAttributeConfirmCallback c);
 
     /**
      * set the callback for the end of an SetTRXState, as part of the
-     * interconnections betweenthe PHY and the MAC. The callback
+     * interconnections between the PHY and the MAC. The callback
      * implement PLME SetTRXState confirm SAP
-     * @param c the callback
+     * \param c the callback
      */
     void SetPlmeSetTRXStateConfirmCallback(PlmeSetTRXStateConfirmCallback c);
 
     /**
      * set the callback for the end of an SetAttribute, as part of the
-     * interconnections betweenthe PHY and the MAC. The callback
+     * interconnections between the PHY and the MAC. The callback
      * implement PLME SetAttribute confirm SAP
-     * @param c the callback
+     * \param c the callback
      */
     void SetPlmeSetAttributeConfirmCallback(PlmeSetAttributeConfirmCallback c);
 
     /**
      * Get The current channel page number in use in this PHY from the PIB attributes.
      *
-     * @return The current page number
+     * \return The current page number
      */
     uint8_t GetCurrentPage() const;
 
     /**
      * Get The current channel number in use in this PHY from the PIB attributes.
      *
-     * @return The current channel number
+     * \return The current channel number
      */
     uint8_t GetCurrentChannelNum() const;
 
     /**
      * implement PLME SetAttribute confirm SAP
      * bit rate is in bit/s.  Symbol rate is in symbol/s.
-     * @param isData is true for data rate or false for symbol rate
-     * @return the rate value of this PHY
+     * \param isData is true for data rate or false for symbol rate
+     * \return the rate value of this PHY
      */
     double GetDataOrSymbolRate(bool isData);
 
     /**
      * set the error model to use
      *
-     * @param e pointer to LrWpanErrorModel to use
+     * \param e pointer to LrWpanErrorModel to use
      */
     void SetErrorModel(Ptr<LrWpanErrorModel> e);
 
     /**
      * get the error model in use
      *
-     * @return pointer to LrWpanErrorModel in use
+     * \return pointer to LrWpanErrorModel in use
      */
     Ptr<LrWpanErrorModel> GetErrorModel() const;
 

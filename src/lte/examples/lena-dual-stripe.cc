@@ -81,7 +81,9 @@ class FemtocellBlockAllocator
   private:
     /**
      * Function that checks if the box area is overlapping with some of previously created building
-     * blocks. \param box the area to check \returns true if there is an overlap
+     * blocks.
+     * \param box the area to check
+     * \returns true if there is an overlap
      */
     bool OverlapsWithAnyPrevious(Box box);
     Box m_area;                           ///< Area

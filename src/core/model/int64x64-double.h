@@ -316,10 +316,10 @@ class int64x64_t
      */
     /*
      * @{
-     *  Arithmetic operator.
-     *  \param [in] lhs Left hand argument
-     *  \param [in] rhs Right hand argument
-     *  \return The result of the operator.
+     * Arithmetic operator.
+     * \param [in] lhs Left hand argument
+     * \param [in] rhs Right hand argument
+     * \return The result of the operator.
      */
 
     friend inline bool operator==(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -341,25 +341,25 @@ class int64x64_t
     {
         lhs._v += rhs._v;
         return lhs;
-    };
+    }
 
     friend inline int64x64_t& operator-=(int64x64_t& lhs, const int64x64_t& rhs)
     {
         lhs._v -= rhs._v;
         return lhs;
-    };
+    }
 
     friend inline int64x64_t& operator*=(int64x64_t& lhs, const int64x64_t& rhs)
     {
         lhs._v *= rhs._v;
         return lhs;
-    };
+    }
 
     friend inline int64x64_t& operator/=(int64x64_t& lhs, const int64x64_t& rhs)
     {
         lhs._v /= rhs._v;
         return lhs;
-    };
+    }
 
     /**@}*/
 
@@ -369,24 +369,24 @@ class int64x64_t
      */
     /*
      * @{
-     *  Unary operator.
-     *  \param [in] lhs Left hand argument
-     *  \return The result of the operator.
+     * Unary operator.
+     * \param [in] lhs Left hand argument
+     * \return The result of the operator.
      */
     friend inline int64x64_t operator+(const int64x64_t& lhs)
     {
         return lhs;
-    };
+    }
 
     friend inline int64x64_t operator-(const int64x64_t& lhs)
     {
         return int64x64_t(-lhs._v);
-    };
+    }
 
     friend inline int64x64_t operator!(const int64x64_t& lhs)
     {
         return int64x64_t(!lhs._v);
-    };
+    }
 
     /**@}*/
 

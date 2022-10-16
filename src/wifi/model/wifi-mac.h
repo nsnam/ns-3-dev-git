@@ -310,8 +310,9 @@ class WifiMac : public Object
     void SetWifiRemoteStationManagers(
         const std::vector<Ptr<WifiRemoteStationManager>>& stationManagers);
     /**
-     * \param linkId the ID (starting at 0) of the link of the RemoteStationManager object to
-     * retrieve \return the remote station manager operating on the given link
+     * \param linkId the ID (starting at 0) of the link of the RemoteStationManager object
+     * to retrieve
+     * \return the remote station manager operating on the given link
      */
     Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager(uint8_t linkId = 0) const;
 

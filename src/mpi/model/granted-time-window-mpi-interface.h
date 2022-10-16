@@ -93,8 +93,8 @@ class GrantedTimeWindowMpiInterface : public ParallelCommunicationInterface, Obj
 {
   public:
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
 

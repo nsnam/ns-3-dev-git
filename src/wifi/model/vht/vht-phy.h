@@ -307,8 +307,9 @@ class VhtPhy : public HtPhy
      *
      * \param event the event holding incoming PPDU's information
      * \param status the status of the reception of the correctly received SIG-A or SIG-B after the
-     * configuration support check \param field the current PPDU field to identify whether it is
-     * SIG-A or SIG-B \return the updated status of the reception of the SIG-A or SIG-B
+     * configuration support check
+     * \param field the current PPDU field to identify whether it is SIG-A or SIG-B
+     * \return the updated status of the reception of the SIG-A or SIG-B
      */
     virtual PhyFieldRxStatus ProcessSig(Ptr<Event> event,
                                         PhyFieldRxStatus status,

@@ -231,7 +231,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      *         in HNA messages sent by the node.
      *         If this method is called more than once, entries from the old
      *         association are deleted before entries from the new one are added.
-     *  \param routingTable the Ipv4StaticRouting routing table to be associated.
+     * \param routingTable the Ipv4StaticRouting routing table to be associated.
      */
     void SetRoutingTableAssociation(Ptr<Ipv4StaticRouting> routingTable);
 
@@ -415,9 +415,9 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
   private:
     /**
-     *  \brief Tests whether or not the specified route uses a non-OLSR outgoing interface.
-     *  \param route The route to be tested.
-     *  \returns True if the outgoing interface of the specified route is a non-OLSR interface,
+     * \brief Tests whether or not the specified route uses a non-OLSR outgoing interface.
+     * \param route The route to be tested.
+     * \returns True if the outgoing interface of the specified route is a non-OLSR interface,
      * false otherwise.
      */
     bool UsesNonOlsrOutgoingInterface(const Ipv4RoutingTableEntry& route);
@@ -542,8 +542,9 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      *
      * \param olsrMessage The %OLSR message which must be forwarded.
      * \param duplicated NULL if the message has never been considered for forwarding, or a
-     * duplicate tuple in other case. \param localIface The address of the interface where the
-     * message was received from. \param senderAddress The sender IPv4 address.
+     * duplicate tuple in other case.
+     * \param localIface The address of the interface where the message was received from.
+     * \param senderAddress The sender IPv4 address.
      */
     void ForwardDefault(olsr::MessageHeader olsrMessage,
                         DuplicateTuple* duplicated,
@@ -815,9 +816,9 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     int Degree(const NeighborTuple& tuple);
 
     /**
-     *  Check that address is one of my interfaces.
-     *  \param a the address to check.
-     *  \return true if the address is own by the node.
+     * Check that address is one of my interfaces.
+     * \param a the address to check.
+     * \return true if the address is own by the node.
      */
     bool IsMyOwnAddress(const Ipv4Address& a) const;
 

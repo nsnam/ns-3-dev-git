@@ -96,14 +96,14 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     WimaxHelper();
     ~WimaxHelper() override;
     /**
-     *  \brief Enable ascii trace output on the indicated net device for a given connection
-     *  \param oss The output stream object to use when logging ascii traces.
-     *  \param nodeid the id of the node for which you want to enable tracing.
-     *  \param deviceid the id of the net device for which you want to enable tracing.
-     *  \param netdevice the type of net device for which you want to enable tracing
-     * (SubscriberStationNetDevice, BaseStationNetDevice or WimaxNetDevice) \param connection the
-     * connection for which you want to enable tracing (InitialRangingConnection,
-     *   BroadcastConnection, BasicConnection, PrimaryConnection).
+     * \brief Enable ascii trace output on the indicated net device for a given connection
+     * \param oss The output stream object to use when logging ascii traces.
+     * \param nodeid the id of the node for which you want to enable tracing.
+     * \param deviceid the id of the net device for which you want to enable tracing.
+     * \param netdevice the type of net device for which you want to enable tracing
+     * (SubscriberStationNetDevice, BaseStationNetDevice or WimaxNetDevice)
+     * \param connection the connection for which you want to enable tracing
+     * (InitialRangingConnection, BroadcastConnection, BasicConnection, PrimaryConnection).
      */
     static void EnableAsciiForConnection(Ptr<OutputStreamWrapper> oss,
                                          uint32_t nodeid,

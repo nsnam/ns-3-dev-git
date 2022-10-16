@@ -61,8 +61,8 @@ class CcHelper : public Object
     ~CcHelper() override;
 
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -180,8 +180,9 @@ class CcHelper : public Object
      * \param dlBandwidth downlink bandwidth for the current CC
      * \param ulEarfcn uplink EARFCN - not control on the validity at this point
      * \param dlEarfcn downlink EARFCN - not control on the validity at this point
-     * \param isPrimary identify if this is the Primary Component Carrier (PCC) - only one PCC is
-     * allowed \return the component carrier
+     * \param isPrimary identify if this is the Primary Component Carrier (PCC) - only one
+     * PCC is allowed
+     * \return the component carrier
      */
     ComponentCarrier CreateSingleCc(uint16_t ulBandwidth,
                                     uint16_t dlBandwidth,

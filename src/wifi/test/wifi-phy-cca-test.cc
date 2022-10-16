@@ -116,10 +116,12 @@ class WifiPhyCcaThresholdsTest : public TestCase
 
     /**
      * Function to verify the CCA threshold that is being reported by a given PHY entity upon
-     * reception of a signal or a PPDU \param phy the PHY entity to verify \param ppdu the incoming
-     * PPDU or signal (if nullptr) \param channelType the channel list type that indicates which
-     * channel the PPDU or the signal occupies \param expectedCcaThresholdDbm the CCA threshold in
-     * dBm that is expected to be reported
+     * reception of a signal or a PPDU
+     * \param phy the PHY entity to verify
+     * \param ppdu the incoming PPDU or signal (if nullptr)
+     * \param channelType the channel list type that indicates which channel the PPDU or the
+     * signal occupies
+     * \param expectedCcaThresholdDbm the CCA threshold in dBm that is expected to be reported
      */
     void VerifyCcaThreshold(const Ptr<PhyEntity> phy,
                             const Ptr<const WifiPpdu> ppdu,

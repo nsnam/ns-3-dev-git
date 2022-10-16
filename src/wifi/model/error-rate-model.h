@@ -79,7 +79,8 @@ class ErrorRateModel : public Object
      * \param nbits the number of bits in this chunk
      * \param numRxAntennas the number of active RX antennas (1 if not provided)
      * \param field the PPDU field to which the chunk belongs to (assumes this is for the payload
-     * part if not provided) \param staId the station ID for MU
+     * part if not provided)
+     * \param staId the station ID for MU
      *
      * \return probability of successfully receiving the chunk
      */

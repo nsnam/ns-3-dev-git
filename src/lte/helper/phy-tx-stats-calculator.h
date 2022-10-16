@@ -63,8 +63,8 @@ class PhyTxStatsCalculator : public LteStatsCalculator
 
     // Inherited from ns3::Object
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
 

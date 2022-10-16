@@ -34,7 +34,6 @@ namespace ns3
  * In particular, this class implements the
  * Provider part of the SAP, i.e., the methods exported by the
  * LteUeRrc and called by the EpcUeNas.
- *
  */
 class LteAsSapProvider
 {
@@ -84,7 +83,6 @@ class LteAsSapProvider
 
     /**
      * \brief Tell the RRC entity to release the connection.
-     *
      */
     virtual void Disconnect() = 0;
 };
@@ -95,7 +93,6 @@ class LteAsSapProvider
  * In particular, this class implements the
  * User part of the SAP, i.e., the methods exported by the
  * EpcUeNas and called by the LteUeRrc.
- *
  */
 class LteAsSapUser
 {
@@ -104,19 +101,16 @@ class LteAsSapUser
 
     /**
      * \brief Notify the NAS that RRC Connection Establishment was successful.
-     *
      */
     virtual void NotifyConnectionSuccessful() = 0;
 
     /**
      * \brief Notify the NAS that RRC Connection Establishment failed.
-     *
      */
     virtual void NotifyConnectionFailed() = 0;
 
     /**
      * Notify the NAS that RRC Connection was released
-     *
      */
     virtual void NotifyConnectionReleased() = 0;
 
@@ -131,7 +125,6 @@ class LteAsSapUser
 /**
  * Template for the implementation of the LteAsSapProvider as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteAsSapProvider : public LteAsSapProvider
@@ -213,7 +206,6 @@ MemberLteAsSapProvider<C>::Disconnect()
 /**
  * Template for the implementation of the LteAsSapUser as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteAsSapUser : public LteAsSapUser

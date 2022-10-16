@@ -152,7 +152,8 @@ class NoOpComponentCarrierManager : public LteEnbComponentCarrierManager
     virtual void DoUlReceiveSr(uint16_t rnti, uint8_t componentCarrierId);
     /**
      * \brief Function implements the function of the SAP interface of CCM instance which is used by
-     * MAC to notify the PRB occupancy reported by scheduler. \param prbOccupancy the PRB occupancy
+     * MAC to notify the PRB occupancy reported by scheduler.
+     * \param prbOccupancy the PRB occupancy
      * \param componentCarrierId the component carrier ID
      */
     virtual void DoNotifyPrbOccupancy(double prbOccupancy, uint8_t componentCarrierId);

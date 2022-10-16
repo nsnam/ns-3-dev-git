@@ -190,8 +190,9 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
      * The packet is not removed from queue.
      *
      * \param linkId the ID of the given link
-     * \param blockedPackets the destination address & TID pairs that are waiting for a BlockAck
-     * response \param item the item after which the search starts from
+     * \param blockedPackets the destination address & TID pairs that are waiting for a
+     * BlockAck response
+     * \param item the item after which the search starts from
      *
      * \return the peeked packet or nullptr if no packet was found
      */

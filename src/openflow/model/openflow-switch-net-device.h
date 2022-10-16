@@ -185,9 +185,9 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * \param packet_uid Packet UID; used to fetch the packet and its metadata.
      * \param in_port The index of the port the Packet was initially received on.
      * \param max_len The maximum number of bytes the caller wants to be sent; a value of 0
-     * indicates the entire packet should be sent. Used when outputting to controller. \param
-     * out_port The port we want to output on. \param ignore_no_fwd If true, Ports that are set to
-     * not forward are forced to forward.
+     * indicates the entire packet should be sent. Used when outputting to controller.
+     * \param out_port The port we want to output on.
+     * \param ignore_no_fwd If true, Ports that are set to not forward are forced to forward.
      */
     void DoOutput(uint32_t packet_uid,
                   int in_port,
@@ -321,8 +321,9 @@ class OpenFlowSwitchNetDevice : public NetDevice
      *
      * \param packet_uid Packet UID; used to fetch the packet and its metadata.
      * \param in_port The index of the port the Packet was initially received on. This port doesn't
-     * forward when flooding. \param flood If true, don't send out on the ports with flooding
-     * disabled. \return 0 if everything's ok, otherwise an error number.
+     * forward when flooding.
+     * \param flood If true, don't send out on the ports with flooding disabled.
+     * \return 0 if everything's ok, otherwise an error number.
      */
     int OutputAll(uint32_t packet_uid, int in_port, bool flood);
 
@@ -355,7 +356,8 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * \param packet_uid Packet UID; used to fetch the packet and its metadata.
      * \param in_port The index of the port the Packet was initially received on.
      * \param max_len The maximum number of bytes that the caller wants to be sent; a value of 0
-     * indicates the entire packet should be sent. \param reason Why the packet is being sent.
+     * indicates the entire packet should be sent.
+     * \param reason Why the packet is being sent.
      */
     void OutputControl(uint32_t packet_uid, int in_port, size_t max_len, int reason);
 

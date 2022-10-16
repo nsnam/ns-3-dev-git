@@ -111,11 +111,13 @@ class PeerManagementProtocol : public Object
     /**
      * Deliver Peer link management information to the protocol-part
      * \param interface is a interface ID of a given MAC (interfaceID rather than MAC address,
-     * because many interfaces may have the same MAC) \param peerAddress is address of peer \param
-     * peerMeshPointAddress is address of peer mesh point device (equal to peer address when only
-     * one interface) \param aid is association ID, which peer has assigned to us \param
-     * peerManagementElement is peer link management element \param meshConfig is mesh configuration
-     * element taken from the peer management frame
+     * because many interfaces may have the same MAC)
+     * \param peerAddress is address of peer
+     * \param peerMeshPointAddress is address of peer mesh point device (equal to peer address when
+     * only one interface)
+     * \param aid is association ID, which peer has assigned to us
+     * \param peerManagementElement is peer link management element
+     * \param meshConfig is mesh configuration element taken from the peer management frame
      */
     void ReceivePeerLinkFrame(uint32_t interface,
                               Mac48Address peerAddress,
@@ -154,8 +156,8 @@ class PeerManagementProtocol : public Object
     /// \name Interface to other protocols (MLME)
     ///@{
     /**
-     *  Set peer link status change callback
-     *  \param cb the callback
+     * Set peer link status change callback
+     * \param cb the callback
      */
     void SetPeerLinkStatusCallback(Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb);
     /**

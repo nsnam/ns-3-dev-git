@@ -305,7 +305,8 @@ class Ipv6ExtensionFragment : public Ipv6Extension
      * \param packet the packet.
      * \param ipv6Header the IPv6 header.
      * \param fragmentSize the maximal size of the fragment (unfragmentable part + fragmentation
-     * header + fragmentable part). \param listFragments the list of fragments.
+     * header + fragmentable part).
+     * \param listFragments the list of fragments.
      */
     void GetFragments(Ptr<Packet> packet,
                       Ipv6Header ipv6Header,

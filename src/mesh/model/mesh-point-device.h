@@ -66,7 +66,8 @@ class MeshPointDevice : public NetDevice
     ///@{
     /**
      * \brief Attach new interface to the station. Interface must support 48-bit MAC address and
-     * SendFrom method. \param port the port used
+     * SendFrom method.
+     * \param port the port used
      *
      * \attention Only MeshPointDevice can have IP address, but not individual interfaces.
      */

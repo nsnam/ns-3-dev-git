@@ -210,7 +210,9 @@ class RequestQueue
 
     /**
      * Push entry in queue, if there is no entry with the same packet and destination address in
-     * queue. \param entry the queue entry \returns true if the entry is queued
+     * queue.
+     * \param entry the queue entry
+     * \returns true if the entry is queued
      */
     bool Enqueue(QueueEntry& entry);
     /**

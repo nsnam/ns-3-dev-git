@@ -57,10 +57,10 @@ void cell_data_function_col_0(GtkTreeViewColumn* col,
 /**
  * This is the callback called when the value of an attribute is changed
  *
- *  \param cell the changed cell
- *  \param path_string the path
- *  \param new_text the updated text in the cell
- *  \param user_data user data
+ * \param cell the changed cell
+ * \param path_string the path
+ * \param new_text the updated text in the cell
+ * \param user_data user data
  */
 void cell_edited_callback(GtkCellRendererText* cell,
                           gchar* path_string,
@@ -107,7 +107,7 @@ void exit_clicked_callback(GtkButton* button, gpointer user_data);
 /**
  * Exit the application
  * \param widget a pointer to the widget
- * \param event the event responsible for the aplication exit
+ * \param event the event responsible for the application exit
  * \param user_data user data
  * \returns true on clean exit
  */
@@ -125,7 +125,7 @@ gboolean clean_model_callback(GtkTreeModel* model,
                               GtkTreeIter* iter,
                               gpointer data);
 
-//     display functions used by default configurator
+// display functions used by default configurator
 
 /**
  * This function writes data in the second column, this data is going to be editable
@@ -187,14 +187,14 @@ void save_clicked_attribute(GtkButton* button, gpointer user_data);
  */
 void load_clicked_attribute(GtkButton* button, gpointer user_data);
 /**
- *  This functions is called whenever there is a change in the value of an attribute
- *  If the input value is ok, it will be updated in the default value and in the
- *  GUI, otherwise, it won't be updated in both.
+ * This functions is called whenever there is a change in the value of an attribute
+ * If the input value is ok, it will be updated in the default value and in the
+ * GUI, otherwise, it won't be updated in both.
  *
- *  \param cell the changed cell
- *  \param path_string the path
- *  \param new_text the updated text in the cell
- *  \param user_data user data
+ * \param cell the changed cell
+ * \param path_string the path
+ * \param new_text the updated text in the cell
+ * \param user_data user data
  */
 void cell_edited_callback_config_default(GtkCellRendererText* cell,
                                          gchar* path_string,

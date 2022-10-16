@@ -341,15 +341,17 @@ class DsrRreqTable : public Object
     void Invalidate();
     /**
      * \brief Verify if entry is unidirectional or not(e.g. add this neighbor to "blacklist" for
-     * blacklistTimeout period) \param neighbor neighbor address link to which assumed to be
-     * unidirectional \return true on success
+     * blacklistTimeout period)
+     * \param neighbor neighbor address link to which assumed to be unidirectional
+     * \return true on success
      */
     BlackList* FindUnidirectional(Ipv4Address neighbor);
     /**
      * \brief Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for
-     * blacklistTimeout period) \param neighbor - neighbor address link to which assumed to be
-     * unidirectional \param blacklistTimeout - time for which the neighboring node is put into the
-     * blacklist \return true on success
+     * blacklistTimeout period)
+     * \param neighbor neighbor address link to which assumed to be unidirectional
+     * \param blacklistTimeout time for which the neighboring node is put into the blacklist
+     * \return true on success
      */
     bool MarkLinkAsUnidirectional(Ipv4Address neighbor, Time blacklistTimeout);
     /**

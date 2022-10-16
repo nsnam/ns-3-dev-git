@@ -616,7 +616,8 @@ RoutingProtocol::RecvOlsr(Ptr<Socket> socket)
 /// \brief This auxiliary function (defined in \RFC{3626}) is used for calculating the MPR Set.
 ///
 /// \param tuple the neighbor tuple which has the main address of the node we are going to calculate
-/// its degree to. \return the degree of the node.
+/// its degree to.
+/// \return the degree of the node.
 ///
 int
 RoutingProtocol::Degree(const NeighborTuple& tuple)

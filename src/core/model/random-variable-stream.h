@@ -651,9 +651,11 @@ class ParetoRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a Pareto distribution with the specified scale, shape,
-     * and upper bound. \param [in] scale Mean parameter for the Pareto distribution. \param [in]
-     * shape Shape parameter for the Pareto distribution. \param [in] bound Upper bound on values
-     * returned. \return A floating point random value.
+     * and upper bound.
+     * \param [in] scale Mean parameter for the Pareto distribution.
+     * \param [in] shape Shape parameter for the Pareto distribution.
+     * \param [in] bound Upper bound on values returned.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -678,9 +680,11 @@ class ParetoRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a Pareto distribution with the specified mean,
-     * shape, and upper bound. \param [in] scale Scale parameter for the Pareto distribution. \param
-     * [in] shape Shape parameter for the Pareto distribution. \param [in] bound Upper bound on
-     * values returned. \return A random unsigned integer value.
+     * shape, and upper bound.
+     * \param [in] scale Scale parameter for the Pareto distribution.
+     * \param [in] shape Shape parameter for the Pareto distribution.
+     * \param [in] bound Upper bound on values returned.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -705,7 +709,8 @@ class ParetoRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a Pareto distribution with the current mean, shape, and
-     * upper bound. \return A floating point random value.
+     * upper bound.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -739,7 +744,8 @@ class ParetoRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a Pareto distribution with the current mean,
-     * shape, and upper bound. \return A random unsigned integer value.
+     * shape, and upper bound.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -865,9 +871,11 @@ class WeibullRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a Weibull distribution with the specified scale, shape,
-     * and upper bound. \param [in] scale Scale parameter for the Weibull distribution. \param [in]
-     * shape Shape parameter for the Weibull distribution. \param [in] bound Upper bound on values
-     * returned. \return A floating point random value.
+     * and upper bound.
+     * \param [in] scale Scale parameter for the Weibull distribution.
+     * \param [in] shape Shape parameter for the Weibull distribution.
+     * \param [in] bound Upper bound on values returned.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -891,9 +899,11 @@ class WeibullRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a Weibull distribution with the specified
-     * scale, shape, and upper bound. \param [in] scale Scale parameter for the Weibull
-     * distribution. \param [in] shape Shape parameter for the Weibull distribution. \param [in]
-     * bound Upper bound on values returned. \return A random unsigned integer value.
+     * scale, shape, and upper bound.
+     * \param [in] scale Scale parameter for the Weibull distribution.
+     * \param [in] shape Shape parameter for the Weibull distribution.
+     * \param [in] bound Upper bound on values returned.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -917,7 +927,8 @@ class WeibullRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a Weibull distribution with the current scale, shape, and
-     * upper bound. \return A floating point random value.
+     * upper bound.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -946,7 +957,8 @@ class WeibullRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a Weibull distribution with the current scale,
-     * shape, and upper bound. \return A random unsigned integer value.
+     * shape, and upper bound.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -1051,8 +1063,10 @@ class NormalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a normal distribution with the specified mean, variance,
-     * and bound. \param [in] mean Mean value for the normal distribution. \param [in] variance
-     * Variance value for the normal distribution. \param [in] bound Bound on values returned.
+     * and bound.
+     * \param [in] mean Mean value for the normal distribution.
+     * \param [in] variance Variance value for the normal distribution.
+     * \param [in] bound Bound on values returned.
      * \return A floating point random value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
@@ -1091,9 +1105,11 @@ class NormalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a normal distribution with the specified mean,
-     * variance, and bound. \param [in] mean Mean value for the normal distribution. \param [in]
-     * variance Variance value for the normal distribution. \param [in] bound Bound on values
-     * returned. \return A random unsigned integer value.
+     * variance, and bound.
+     * \param [in] mean Mean value for the normal distribution.
+     * \param [in] variance Variance value for the normal distribution.
+     * \param [in] bound Bound on values returned.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
@@ -1129,7 +1145,8 @@ class NormalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a normal distribution with the current mean, variance,
-     * and bound. \return A floating point random value.
+     * and bound.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
@@ -1170,7 +1187,8 @@ class NormalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a normal distribution with the current mean,
-     * variance, and bound. \return A random unsigned integer value.
+     * variance, and bound.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
@@ -1296,8 +1314,10 @@ class LogNormalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a log-normal distribution with the specified mu and
-     * sigma. \param [in] mu Mu value for the log-normal distribution. \param [in] sigma Sigma value
-     * for the log-normal distribution. \return A floating point random value.
+     * sigma.
+     * \param [in] mu Mu value for the log-normal distribution.
+     * \param [in] sigma Sigma value for the log-normal distribution.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
@@ -1331,8 +1351,10 @@ class LogNormalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a log-normal distribution with the specified mu
-     * and sigma. \param [in] mu Mu value for the log-normal distribution. \param [in] sigma Sigma
-     * value for the log-normal distribution. \return A random unsigned integer value.
+     * and sigma.
+     * \param [in] mu Mu value for the log-normal distribution.
+     * \param [in] sigma Sigma value for the log-normal distribution.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
@@ -1405,7 +1427,8 @@ class LogNormalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a log-normal distribution with the current mu
-     * and sigma. \return A random unsigned integer value.
+     * and sigma.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
@@ -1521,8 +1544,10 @@ class GammaRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a gamma distribution with the specified alpha
-     * and beta. \param [in] alpha Alpha value for the gamma distribution. \param [in] beta Beta
-     * value for the gamma distribution. \return A random unsigned integer value.
+     * and beta.
+     * \param [in] alpha Alpha value for the gamma distribution.
+     * \param [in] beta Beta value for the gamma distribution.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
@@ -1553,7 +1578,8 @@ class GammaRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a gamma distribution with the current alpha and
-     * beta. \return A random unsigned integer value.
+     * beta.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
@@ -1567,8 +1593,10 @@ class GammaRandomVariable : public RandomVariableStream
   private:
     /**
      * \brief Returns a random double from a normal distribution with the specified mean, variance,
-     * and bound. \param [in] mean Mean value for the normal distribution. \param [in] variance
-     * Variance value for the normal distribution. \param [in] bound Bound on values returned.
+     * and bound.
+     * \param [in] mean Mean value for the normal distribution.
+     * \param [in] variance Variance value for the normal distribution.
+     * \param [in] bound Bound on values returned.
      * \return A floating point random value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
@@ -1698,8 +1726,10 @@ class ErlangRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from an Erlang distribution with the specified k and
-     * lambda. \param [in] k K value for the Erlang distribution. \param [in] lambda Lambda value
-     * for the Erlang distribution. \return A random unsigned integer value.
+     * lambda.
+     * \param [in] k K value for the Erlang distribution.
+     * \param [in] lambda Lambda value for the Erlang distribution.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
@@ -1730,7 +1760,8 @@ class ErlangRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from an Erlang distribution with the current k and
-     * lambda. \return A random unsigned integer value.
+     * lambda.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
@@ -1744,8 +1775,10 @@ class ErlangRandomVariable : public RandomVariableStream
   private:
     /**
      * \brief Returns a random double from an exponential distribution with the specified mean and
-     * upper bound. \param [in] mean Mean value of the random variables. \param [in] bound Upper
-     * bound on values returned. \return A floating point random value.
+     * upper bound.
+     * \param [in] mean Mean value of the random variables.
+     * \param [in] bound Upper bound on values returned.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -1838,8 +1871,11 @@ class TriangularRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a triangular distribution with the specified mean, min,
-     * and max. \param [in] mean Mean value for the triangular distribution. \param [in] min Low end
-     * of the range. \param [in] max High end of the range. \return A floating point random value.
+     * and max.
+     * \param [in] mean Mean value for the triangular distribution.
+     * \param [in] min Low end of the range.
+     * \param [in] max High end of the range.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -1875,9 +1911,11 @@ class TriangularRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a triangular distribution with the specified
-     * mean, min, and max. \param [in] mean Mean value for the triangular distribution. \param [in]
-     * min Low end of the range. \param [in] max High end of the range. \return A random unsigned
-     * integer value.
+     * mean, min, and max.
+     * \param [in] mean Mean value for the triangular distribution.
+     * \param [in] min Low end of the range.
+     * \param [in] max High end of the range.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -1913,7 +1951,8 @@ class TriangularRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random double from a triangular distribution with the current mean, min, and
-     * max. \return A floating point random value.
+     * max.
+     * \return A floating point random value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -1954,7 +1993,8 @@ class TriangularRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a triangular distribution with the current
-     * mean, min, and max. \return A random unsigned integer value.
+     * mean, min, and max.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if
      * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
@@ -2102,8 +2142,10 @@ class ZipfRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a Zipf distribution with the specified n and
-     * alpha. \param [in] n N value for the Zipf distribution. \param [in] alpha Alpha value for the
-     * Zipf distribution. \return A random unsigned integer value.
+     * alpha.
+     * \param [in] n N value for the Zipf distribution.
+     * \param [in] alpha Alpha value for the Zipf distribution.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
@@ -2134,7 +2176,8 @@ class ZipfRandomVariable : public RandomVariableStream
 
     /**
      * \brief Returns a random unsigned integer from a Zipf distribution with the current n and
-     * alpha. \return A random unsigned integer value.
+     * alpha.
+     * \return A random unsigned integer value.
      *
      * Note that antithetic values are being generated if m_isAntithetic
      * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]

@@ -78,10 +78,10 @@ class LteCellSelectionTestCase : public TestCase
          * \param relPosY relative position to the inter site distance in Y
          * \param isCsgMember if true, simulation is allowed access to CSG cell
          * \param checkPoint the time in the simulation when the UE is verified
-         * \param expectedCellId1 ///< The cell ID that the UE is expected to attach to (0 means
-         * that the UE should not attach to any cell). \param expectedCellId2 ///< An alternative
-         * cell ID that the UE is expected to attach to (0 means that this no alternative cell is
-         * expected).
+         * \param expectedCellId1 the cell ID that the UE is expected to attach to
+         * (0 means that the UE should not attach to any cell).
+         * \param expectedCellId2 an alternative cell ID that the UE is expected to attach to
+         * (0 means that this no alternative cell is expected).
          */
         UeSetup_t(double relPosX,
                   double relPosY,

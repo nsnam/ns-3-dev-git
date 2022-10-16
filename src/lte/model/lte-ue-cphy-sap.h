@@ -41,13 +41,12 @@ class LteUeCphySapProvider
 {
   public:
     /**
-     * destructor
+     * Destructor
      */
     virtual ~LteUeCphySapProvider();
 
     /**
-     * reset the PHY
-     *
+     * Reset the PHY
      */
     virtual void Reset() = 0;
 
@@ -176,7 +175,6 @@ class LteUeCphySapProvider
      * \brief Reset the PHY after radio link failure function
      * It resets the physical layer parameters of the
      * UE after RLF.
-     *
      */
     virtual void ResetPhyAfterRlf() = 0;
 
@@ -186,7 +184,6 @@ class LteUeCphySapProvider
      * Upon receiving N311 in-sync indications from the UE
      * PHY the UE RRC instructs the UE PHY to reset the
      * RLF parameters so, it can start RLF detection again.
-     *
      */
     virtual void ResetRlfParams() = 0;
 
@@ -196,7 +193,6 @@ class LteUeCphySapProvider
      * problems are detected at the UE and the recovery process is
      * started by checking if the radio frames are in-sync for N311
      * consecutive times.
-     *
      */
     virtual void StartInSnycDetection() = 0;
 
@@ -299,7 +295,6 @@ class LteUeCphySapUser
 /**
  * Template for the implementation of the LteUeCphySapProvider as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteUeCphySapProvider : public LteUeCphySapProvider
@@ -477,7 +472,6 @@ MemberLteUeCphySapProvider<C>::SetImsi(uint64_t imsi)
 /**
  * Template for the implementation of the LteUeCphySapUser as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteUeCphySapUser : public LteUeCphySapUser

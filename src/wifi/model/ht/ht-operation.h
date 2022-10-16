@@ -82,8 +82,9 @@ class HtOperation : public WifiInformationElement
     /**
      * Set the Basic MCS Set field in the HT Operation information element.
      *
-     * \param ctrl1 the first 64 bytes of the Basic MCS Set field in the HT Operation information
-     * element \param ctrl2 the last 64 bytes of the Basic MCS Set field in the HT Operation
+     * \param ctrl1 the first 64 bytes of the Basic MCS Set field in the HT Operation
+     * information element
+     * \param ctrl2 the last 64 bytes of the Basic MCS Set field in the HT Operation
      * information element
      */
     void SetBasicMcsSet(uint64_t ctrl1, uint64_t ctrl2);

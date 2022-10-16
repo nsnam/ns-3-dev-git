@@ -374,9 +374,9 @@ class LollipopCounter
      * be on a circular region, and it is represented by
      * the smallest circular distance between two numbers.
      *
-     *  Arithmetic operator.
-     *  \param [in] val Counter to compute the difference against
-     *  \return The result of the difference.
+     * Arithmetic operator.
+     * \param [in] val Counter to compute the difference against
+     * \return The result of the difference.
      */
     T AbsoluteMagnitudeOfDifference(const LollipopCounter& val) const
     {

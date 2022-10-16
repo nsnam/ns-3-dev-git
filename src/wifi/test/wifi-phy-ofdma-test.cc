@@ -2275,8 +2275,10 @@ class TestMultipleHeTbPreambles : public TestCase
      * Receive HE TB PPDU function.
      *
      * \param uid the UID used to identify a set of HE TB PPDUs belonging to the same UL-MU
-     * transmission \param staId the STA ID \param txPowerWatts the TX power in watts \param
-     * payloadSize the size of the payload in bytes
+     * transmission
+     * \param staId the STA ID
+     * \param txPowerWatts the TX power in watts
+     * \param payloadSize the size of the payload in bytes
      */
     void RxHeTbPpdu(uint64_t uid, uint16_t staId, double txPowerWatts, size_t payloadSize);
 
@@ -3082,17 +3084,17 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Check the the number of RX start notifications at the AP as well as the last time a RX start
-     * has been notified \param expectedNotifications the expected number of RX start notifications
-     * at the AP \param expectedLastNotification the expected time of the last RX start notification
-     * at the AP
+     * has been notified
+     * \param expectedNotifications the expected number of RX start notifications at the AP
+     * \param expectedLastNotification the expected time of the last RX start notification at the AP
      */
     void CheckApRxStart(uint32_t expectedNotifications, Time expectedLastNotification);
     /**
      * Check the the number of RX end notifications at the AP as well as the last time a RX end has
-     * been notified \param expectedNotifications the expected number of RX end notifications at the
-     * AP \param expectedLastNotification the expected time of the last RX end notification at the
-     * AP \param expectedSuccess true if the last RX notification indicates a success, false
-     * otherwise
+     * been notified
+     * \param expectedNotifications the expected number of RX end notifications at the AP
+     * \param expectedLastNotification the expected time of the last RX end notification at the AP
+     * \param expectedSuccess true if the last RX notification indicates a success, false otherwise
      */
     void CheckApRxEnd(uint32_t expectedNotifications,
                       Time expectedLastNotification,
@@ -3135,9 +3137,11 @@ class TestUlOfdmaPhyTransmission : public TestCase
      * \param expectedFailuresFromSta2 the expected number of failures from STA 2
      * \param expectedBytesFromSta2 the expected number of bytes from STA 2
      * \param scheduleTxSta1 flag indicating to schedule a HE TB PPDU from STA 1
-     * \param ulTimeDifference delay between HE TB PPDU from STA 1 and HE TB PPDU from STA 2 are
-     * received \param expectedStateBeforeEnd the expected state of the PHY before the end of the
-     * transmission \param error the erroneous info (if any) in the TRIGVECTOR to set
+     * \param ulTimeDifference delay between HE TB PPDU from STA 1 and HE TB PPDU from STA 2
+     * are received
+     * \param expectedStateBeforeEnd the expected state of the PHY before the end of the
+     * transmission
+     * \param error the erroneous info (if any) in the TRIGVECTOR to set
      */
     void ScheduleTest(Time delay,
                       bool solicited,

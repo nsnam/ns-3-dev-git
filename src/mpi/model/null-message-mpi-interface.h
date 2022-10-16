@@ -52,8 +52,8 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
 {
   public:
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
 

@@ -96,8 +96,9 @@ class WifiSpectrumValueHelper
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
      * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
      * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
-     * (in dBr) \return a pointer to a newly allocated SpectrumValue representing the OFDM Transmit
-     * Power Spectral Density in W/Hz for each Band
+     * (in dBr)
+     * \return a pointer to a newly allocated SpectrumValue representing the OFDM Transmit Power
+     * Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
                                                                uint16_t channelWidth,
@@ -118,9 +119,10 @@ class WifiSpectrumValueHelper
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
      * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
      * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
-     * (in dBr) \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is
-     * punctured or not \return a pointer to a newly allocated SpectrumValue representing the
-     * duplicated 20 MHz OFDM Transmit Power Spectral Density in W/Hz for each Band
+     * (in dBr)
+     * \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is punctured or not
+     * \return a pointer to a newly allocated SpectrumValue representing the duplicated 20 MHz OFDM
+     * Transmit Power Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateDuplicated20MhzTxPowerSpectralDensity(
         uint32_t centerFrequency,
@@ -144,8 +146,9 @@ class WifiSpectrumValueHelper
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
      * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
      * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
-     * (in dBr) \return a pointer to a newly allocated SpectrumValue representing the HT OFDM
-     * Transmit Power Spectral Density in W/Hz for each Band
+     * (in dBr)
+     * \return a pointer to a newly allocated SpectrumValue representing the HT OFDM Transmit Power
+     * Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
                                                                  uint16_t channelWidth,
@@ -167,9 +170,10 @@ class WifiSpectrumValueHelper
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
      * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
      * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
-     * (in dBr) \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is
-     * punctured or not \return a pointer to a newly allocated SpectrumValue representing the HE
-     * OFDM Transmit Power Spectral Density in W/Hz for each Band
+     * (in dBr)
+     * \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is punctured or not
+     * \return a pointer to a newly allocated SpectrumValue representing the HE OFDM Transmit Power
+     * Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity(
         uint32_t centerFrequency,
@@ -274,18 +278,24 @@ class WifiSpectrumValueHelper
      * between the inner and the middle bands.
      *
      * \param c spectrumValue to allocate according to transmit power spectral density mask (in W/Hz
-     * for each band) \param allocatedSubBands vector of start and stop subcarrier indexes of the
-     * allocated sub bands \param maskBand start and stop subcarrier indexes of transmit mask (in
-     * case signal doesn't cover whole SpectrumModel) \param txPowerPerBandW power allocated to each
-     * subcarrier in the allocated sub bands \param nGuardBands size (in number of subcarriers) of
-     * the guard band (left and right) \param innerSlopeWidth size (in number of subcarriers) of the
-     * inner band (i.e. slope going from 0 dBr to -20 dBr in the figure above) \param
-     * minInnerBandDbr the minimum relative power in the inner band (i.e. -20 dBr in the figure
-     * above) \param minOuterbandDbr the minimum relative power in the outer band (i.e. -28 dBr in
-     * the figure above) \param lowestPointDbr maximum relative power of the outermost subcarriers
-     * of the guard band (in dBr) \param puncturedSubBands vector of start and stop subcarrier
-     * indexes of the punctured sub bands \param puncturedSlopeWidth size (in number of subcarriers)
-     * of the punctured band slope
+     * for each band)
+     * \param allocatedSubBands vector of start and stop subcarrier indexes of the allocated sub
+     * bands
+     * \param maskBand start and stop subcarrier indexes of transmit mask (in case signal doesn't
+     * cover whole SpectrumModel)
+     * \param txPowerPerBandW power allocated to each subcarrier in the allocated sub bands
+     * \param nGuardBands size (in number of subcarriers) of the guard band (left and right)
+     * \param innerSlopeWidth size (in number of subcarriers) of the inner band (i.e. slope going
+     * from 0 dBr to -20 dBr in the figure above)
+     * \param minInnerBandDbr the minimum relative power in the inner band (i.e., -20 dBr in the
+     * figure above)
+     * \param minOuterbandDbr the minimum relative power in the outer band (i.e., -28 dBr in the
+     * figure above)
+     * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
+     * (in dBr)
+     * \param puncturedSubBands vector of start and stop subcarrier indexes of the punctured sub
+     * bands
+     * \param puncturedSlopeWidth size (in number of subcarriers) of the punctured band slope
      */
     static void CreateSpectrumMaskForOfdm(
         Ptr<SpectrumValue> c,

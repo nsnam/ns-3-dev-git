@@ -88,14 +88,13 @@ class BriteTopologyHelper
      * generate brite seed file
      *
      * \param streamNumber the stream number to assign
-     *
      */
     void AssignStreams(int64_t streamNumber);
 
     /**
-     *  Create NS3 topology using information generated from BRITE.
+     * Create NS3 topology using information generated from BRITE.
      *
-     *  \param stack Internet stack to assign to nodes in topology
+     * \param stack Internet stack to assign to nodes in topology
      */
     void BuildBriteTopology(InternetStackHelper& stack);
 
@@ -105,7 +104,6 @@ class BriteTopologyHelper
      *
      * \param stack Internet stack to assign to nodes in topology.
      * \param systemCount The number of MPI instances to be used in the simulation.
-     *
      */
     void BuildBriteTopology(InternetStackHelper& stack, const uint32_t systemCount);
 
@@ -114,7 +112,6 @@ class BriteTopologyHelper
      *
      * \param asNum the AS number
      * \returns the number of leaf nodes in the specified AS
-     *
      */
     uint32_t GetNLeafNodesForAs(uint32_t asNum);
 
@@ -141,7 +138,6 @@ class BriteTopologyHelper
      * \param asNum the AS number
      * \param nodeNum the Node number
      * \return the specified node
-     *
      */
     Ptr<Node> GetNodeForAs(uint32_t asNum, uint32_t nodeNum);
 
@@ -163,6 +159,8 @@ class BriteTopologyHelper
     uint32_t GetSystemNumberForAs(uint32_t asNum) const;
 
     /**
+     * Assign IPv4 addresses.
+     *
      * \param address an Ipv4AddressHelper which is used to install
      *                IPv4 addresses on all the node interfaces in
      *                the topology
@@ -170,6 +168,8 @@ class BriteTopologyHelper
     void AssignIpv4Addresses(Ipv4AddressHelper& address);
 
     /**
+     * Assign IPv6 addresses.
+     *
      * \param address an Ipv6AddressHelper which is used to install
      *                IPv6 addresses on all the node interfaces in
      *                the topology

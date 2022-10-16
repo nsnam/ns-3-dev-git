@@ -50,8 +50,8 @@ class RadioEnvironmentMapHelper : public Object
     // inherited from Object
     void DoDispose() override;
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
 

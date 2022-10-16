@@ -819,84 +819,84 @@ class LrWpanMac : public Object
     uint16_t GetPanId() const;
 
     /**
-     *  Get the coordinator short address currently associated to this device.
+     * Get the coordinator short address currently associated to this device.
      *
-     *  \return The coordinator short address
+     * \return The coordinator short address
      */
     Mac16Address GetCoordShortAddress() const;
 
     /**
-     *  Get the coordinator extended address currently associated to this device.
+     * Get the coordinator extended address currently associated to this device.
      *
-     *  \return The coordinator extended address
+     * \return The coordinator extended address
      */
     Mac64Address GetCoordExtAddress() const;
 
     /**
-     *  IEEE 802.15.4-2006, section 7.1.1.1
-     *  MCPS-DATA.request
-     *  Request to transfer a MSDU.
+     * IEEE 802.15.4-2006, section 7.1.1.1
+     * MCPS-DATA.request
+     * Request to transfer a MSDU.
      *
-     *  \param params the request parameters
-     *  \param p the packet to be transmitted
+     * \param params the request parameters
+     * \param p the packet to be transmitted
      */
     void McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p);
 
     /**
-     *  IEEE 802.15.4-2006, section 7.1.14.1
-     *  MLME-START.request
-     *  Request to allow a PAN coordinator to initiate
-     *  a new PAN or beginning a new superframe configuration.
+     * IEEE 802.15.4-2006, section 7.1.14.1
+     * MLME-START.request
+     * Request to allow a PAN coordinator to initiate
+     * a new PAN or beginning a new superframe configuration.
      *
-     *  \param params the request parameters
+     * \param params the request parameters
      */
     void MlmeStartRequest(MlmeStartRequestParams params);
 
     /**
-     *  IEEE 802.15.4-2011, section 6.2.10.1
-     *  MLME-SCAN.request
-     *  Request primitive used to initiate a channel scan over a given list of channels.
+     * IEEE 802.15.4-2011, section 6.2.10.1
+     * MLME-SCAN.request
+     * Request primitive used to initiate a channel scan over a given list of channels.
      *
-     *  \param params the scan request parameters
+     * \param params the scan request parameters
      */
     void MlmeScanRequest(MlmeScanRequestParams params);
 
     /**
-     *  IEEE 802.15.4-2011, section 6.2.2.1
-     *  MLME-ASSOCIATE.request
-     *  Request primitive used by a device to request an association with
-     *  a coordinator.
+     * IEEE 802.15.4-2011, section 6.2.2.1
+     * MLME-ASSOCIATE.request
+     * Request primitive used by a device to request an association with
+     * a coordinator.
      *
-     *  \param params the request parameters
+     * \param params the request parameters
      */
     void MlmeAssociateRequest(MlmeAssociateRequestParams params);
 
     /**
-     *  IEEE 802.15.4-2011, section 6.2.2.3
-     *  MLME-ASSOCIATE.response
-     *  Primitive used to initiate a response to an MLME-ASSOCIATE.indication
-     *  primitive.
+     * IEEE 802.15.4-2011, section 6.2.2.3
+     * MLME-ASSOCIATE.response
+     * Primitive used to initiate a response to an MLME-ASSOCIATE.indication
+     * primitive.
      *
-     *  \param params the associate response parameters
+     * \param params the associate response parameters
      */
     void MlmeAssociateResponse(MlmeAssociateResponseParams params);
 
     /**
-     *  IEEE 802.15.4-2011, section 6.2.13.1
-     *  MLME-SYNC.request
-     *  Request to synchronize with the coordinator by acquiring and,
-     *  if specified, tracking beacons.
+     * IEEE 802.15.4-2011, section 6.2.13.1
+     * MLME-SYNC.request
+     * Request to synchronize with the coordinator by acquiring and,
+     * if specified, tracking beacons.
      *
-     *  \param params the request parameters
+     * \param params the request parameters
      */
     void MlmeSyncRequest(MlmeSyncRequestParams params);
 
     /**
-     *  IEEE 802.15.4-2011, section 6.2.14.2
-     *  MLME-POLL.request
-     *  Prompts the device to request data from the coordinator.
+     * IEEE 802.15.4-2011, section 6.2.14.2
+     * MLME-POLL.request
+     * Prompts the device to request data from the coordinator.
      *
-     *  \param params the request parameters
+     * \param params the request parameters
      */
     void MlmePollRequest(MlmePollRequestParams params);
 
@@ -1014,64 +1014,64 @@ class LrWpanMac : public Object
     // interfaces between MAC and PHY
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.1.3
-     *  PD-DATA.indication
-     *  Indicates the transfer of an MPDU from PHY to MAC (receiving)
-     *  @param psduLength number of bytes in the PSDU
-     *  @param p the packet to be transmitted
-     *  @param lqi Link quality (LQI) value measured during reception of the PPDU
+     * IEEE 802.15.4-2006 section 6.2.1.3
+     * PD-DATA.indication
+     * Indicates the transfer of an MPDU from PHY to MAC (receiving)
+     * \param psduLength number of bytes in the PSDU
+     * \param p the packet to be transmitted
+     * \param lqi Link quality (LQI) value measured during reception of the PPDU
      */
     void PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.1.2
-     *  Confirm the end of transmission of an MPDU to MAC
-     *  @param status to report to MAC
-     *         PHY PD-DATA.confirm status
+     * IEEE 802.15.4-2006 section 6.2.1.2
+     * Confirm the end of transmission of an MPDU to MAC
+     * \param status to report to MAC
+     *        PHY PD-DATA.confirm status
      */
     void PdDataConfirm(LrWpanPhyEnumeration status);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.2
-     *  PLME-CCA.confirm status
-     *  @param status TRX_OFF, BUSY or IDLE
+     * IEEE 802.15.4-2006 section 6.2.2.2
+     * PLME-CCA.confirm status
+     * \param status TRX_OFF, BUSY or IDLE
      */
     void PlmeCcaConfirm(LrWpanPhyEnumeration status);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.4
-     *  PLME-ED.confirm status and energy level
-     *  @param status SUCCESS, TRX_OFF or TX_ON
-     *  @param energyLevel 0x00-0xff ED level for the channel
+     * IEEE 802.15.4-2006 section 6.2.2.4
+     * PLME-ED.confirm status and energy level
+     * \param status SUCCESS, TRX_OFF or TX_ON
+     * \param energyLevel 0x00-0xff ED level for the channel
      */
     void PlmeEdConfirm(LrWpanPhyEnumeration status, uint8_t energyLevel);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.6
-     *  PLME-GET.confirm
-     *  Get attributes per definition from Table 23 in section 6.4.2
-     *  @param status SUCCESS or UNSUPPORTED_ATTRIBUTE
-     *  @param id the attributed identifier
-     *  @param attribute the attribute value
+     * IEEE 802.15.4-2006 section 6.2.2.6
+     * PLME-GET.confirm
+     * Get attributes per definition from Table 23 in section 6.4.2
+     * \param status SUCCESS or UNSUPPORTED_ATTRIBUTE
+     * \param id the attributed identifier
+     * \param attribute the attribute value
      */
     void PlmeGetAttributeConfirm(LrWpanPhyEnumeration status,
                                  LrWpanPibAttributeIdentifier id,
                                  LrWpanPhyPibAttributes* attribute);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.8
-     *  PLME-SET-TRX-STATE.confirm
-     *  Set PHY state
-     *  @param status in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
+     * IEEE 802.15.4-2006 section 6.2.2.8
+     * PLME-SET-TRX-STATE.confirm
+     * Set PHY state
+     * \param status in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
      */
     void PlmeSetTRXStateConfirm(LrWpanPhyEnumeration status);
 
     /**
-     *  IEEE 802.15.4-2006 section 6.2.2.10
-     *  PLME-SET.confirm
-     *  Set attributes per definition from Table 23 in section 6.4.2
-     *  @param status SUCCESS, UNSUPPORTED_ATTRIBUTE, INVALID_PARAMETER, or READ_ONLY
-     *  @param id the attributed identifier
+     * IEEE 802.15.4-2006 section 6.2.2.10
+     * PLME-SET.confirm
+     * Set attributes per definition from Table 23 in section 6.4.2
+     * \param status SUCCESS, UNSUPPORTED_ATTRIBUTE, INVALID_PARAMETER, or READ_ONLY
+     * \param id the attributed identifier
      */
     void PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttributeIdentifier id);
 
@@ -1626,7 +1626,8 @@ class LrWpanMac : public Object
     /**
      * Extracts a packet from pending transactions list (Indirect transmissions).
      * \param dst The extended address used an index to obtain an element from the pending
-     * transaction list. \param entry The dequeued element from the pending transaction list.
+     * transaction list.
+     * \param entry The dequeued element from the pending transaction list.
      * \return The status of the dequeue
      */
     bool DequeueInd(Mac64Address dst, Ptr<IndTxQueueElement> entry);

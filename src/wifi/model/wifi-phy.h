@@ -295,9 +295,10 @@ class WifiPhy : public Object
      * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
      * \param incFlag this flag is used to indicate that the variables need to be update or not
      * This function is called a couple of times for the same packet so variables should not be
-     * increased each time. \param totalAmpduSize the total size of the previously transmitted MPDUs
-     * for the concerned A-MPDU. If incFlag is set, this parameter will be updated. \param
-     * totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the
+     * increased each time.
+     * \param totalAmpduSize the total size of the previously transmitted MPDUs for the concerned
+     * A-MPDU. If incFlag is set, this parameter will be updated.
+     * \param totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the
      * concerned A-MPDU, used for the computation of the number of symbols needed for the last MPDU.
      * If incFlag is set, this parameter will be updated.
      * \param staId the STA-ID of the PSDU (only used for MU PPDUs)
@@ -595,7 +596,9 @@ class WifiPhy : public Object
      *        on a nearby channel.
      * \param txVector the TXVECTOR that holds RX parameters
      * \param signalNoise signal power and noise power in dBm (noise power includes the noise
-     * figure) \param statusPerMpdu reception status per MPDU \param staId the STA-ID
+     * figure)
+     * \param statusPerMpdu reception status per MPDU
+     * \param staId the STA-ID
      */
     void NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                               uint16_t channelFreqMhz,
@@ -619,9 +622,11 @@ class WifiPhy : public Object
      * \param txVector the TXVECTOR that holds RX parameters
      * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU
      * and 2 is the last MPDU in an A-MPDU) and the A-MPDU reference number (must be a different
-     * value for each A-MPDU but the same for each subframe within one A-MPDU) \param signalNoise
-     * signal power and noise power in dBm \param staId the STA-ID \todo WifiTxVector should be
-     * passed by const reference because of its size.
+     * value for each A-MPDU but the same for each subframe within one A-MPDU)
+     * \param signalNoise signal power and noise power in dBm
+     * \param staId the STA-ID
+     *
+     * \todo WifiTxVector should be passed by const reference because of its size.
      */
     typedef void (*MonitorSnifferRxCallback)(Ptr<const Packet> packet,
                                              uint16_t channelFreqMhz,
@@ -657,8 +662,10 @@ class WifiPhy : public Object
      * \param txVector the TXVECTOR that holds TX parameters
      * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU
      * and 2 is the last MPDU in an A-MPDU) and the A-MPDU reference number (must be a different
-     * value for each A-MPDU but the same for each subframe within one A-MPDU) \param staId the
-     * STA-ID \todo WifiTxVector should be passed by const reference because of its size.
+     * value for each A-MPDU but the same for each subframe within one A-MPDU)
+     * \param staId the STA-ID
+     *
+     * \todo WifiTxVector should be passed by const reference because of its size.
      */
     typedef void (*MonitorSnifferTxCallback)(const Ptr<const Packet> packet,
                                              uint16_t channelFreqMhz,
@@ -990,9 +997,9 @@ class WifiPhy : public Object
      * Reset PHY to IDLE, with some potential TX power restrictions for the next transmission.
      *
      * \param powerRestricted flag whether the transmit power is restricted for the next
-     * transmission \param txPowerMaxSiso the SISO transmit power restriction for the next
-     * transmission in dBm \param txPowerMaxMimo the MIMO transmit power restriction for the next
-     * transmission in dBm
+     * transmission
+     * \param txPowerMaxSiso the SISO transmit power restriction for the next transmission in dBm
+     * \param txPowerMaxMimo the MIMO transmit power restriction for the next transmission in dBm
      */
     void ResetCca(bool powerRestricted, double txPowerMaxSiso = 0, double txPowerMaxMimo = 0);
     /**

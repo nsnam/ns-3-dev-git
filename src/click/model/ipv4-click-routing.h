@@ -137,9 +137,10 @@ class Ipv4ClickRouting : public Ipv4RoutingProtocol
   public:
     /**
      * \brief Allows the Click service methods, which reside outside Ipv4ClickRouting, to get the
-     * required Ipv4ClickRouting instances. \param simnode The Click simclick_node_t instance for
-     * which the Ipv4ClickRouting instance is required \return A Ptr to the required
-     * Ipv4ClickRouting instance
+     * required Ipv4ClickRouting instances.
+     * \param simnode The Click simclick_node_t instance for which the Ipv4ClickRouting instance is
+     * required
+     * \return A Ptr to the required Ipv4ClickRouting instance
      */
     static Ptr<Ipv4ClickRouting> GetClickInstanceFromSimNode(simclick_node_t* simnode);
 

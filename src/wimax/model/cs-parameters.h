@@ -58,7 +58,8 @@ class CsParameters
     CsParameters(enum Action classifierDscAction, IpcsClassifierRecord classifier);
     /**
      * \brief sets the dynamic service classifier action to ADD, Change or delete. Only ADD is
-     * supported \param action the action enumeration
+     * supported
+     * \param action the action enumeration
      */
     void SetClassifierDscAction(enum Action action);
     /**

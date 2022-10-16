@@ -135,7 +135,8 @@ class SuperframeField
     /**
      * Serialize the entire superframe specification field.
      * \param i an iterator which points to where the superframe specification field should be
-     * written. \return an iterator.
+     * written.
+     * \return an iterator.
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
     /**
@@ -177,7 +178,7 @@ class GtsFields
     GtsFields();
     /**
      * Get the GTS Specification Field from the GTS Fields
-     * \return The GTS Spcecification Field
+     * \return The GTS Specification Field
      */
     uint8_t GetGtsSpecField() const;
     /**
@@ -196,8 +197,8 @@ class GtsFields
      */
     void SetGtsDirectionField(uint8_t gtsDir);
     /**
-     *  Get the GTS Specification Permit. TRUE if coordinator is accepting GTS requests.
-     *  \return True if the coordinator is accepting GTS request.
+     * Get the GTS Specification Permit. TRUE if coordinator is accepting GTS requests.
+     * \return True if the coordinator is accepting GTS request.
      */
     bool GetGtsPermit() const;
     /**
@@ -208,7 +209,8 @@ class GtsFields
     /**
      * Serialize the entire GTS fields.
      * \param i an iterator which points to where the superframe specification field should be
-     * written. \return an iterator.
+     * written.
+     * \return an iterator.
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
     /**
@@ -292,7 +294,8 @@ class PendingAddrFields
     uint8_t GetNumShortAddr() const;
     /**
      * Get the number of Extended Pending Address indicated in the Pending Address Specification
-     * Field. \return The number Short Pending Address.
+     * Field.
+     * \return The number Short Pending Address.
      */
     uint8_t GetNumExtAddr() const;
 
@@ -359,8 +362,9 @@ class CapabilityField
     uint32_t GetSerializedSize() const;
     /**
      * Serialize the entire Capability Information Field.
-     * \param i an iterator which points to where the Capability information field should be
-     * written. \return an iterator.
+     * \param i an iterator which points to where the Capability information field
+     * should be written.
+     * \return an iterator.
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
     /**
@@ -371,8 +375,9 @@ class CapabilityField
     Buffer::Iterator Deserialize(Buffer::Iterator i);
     /**
      * True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional
-     * Device (RFD). \return True if the device type is a Full Functional Device (FFD) false if is a
-     * Reduced Functional Device (RFD).
+     * Device (RFD).
+     * \return True if the device type is a Full Functional Device (FFD) false if is a Reduced
+     * Functional Device (RFD).
      */
     bool IsDeviceTypeFfd() const;
     /**
@@ -388,14 +393,16 @@ class CapabilityField
     bool IsReceiverOnWhenIdle() const;
     /**
      * True if the device is capable of sending and receiving cryptographically protected MAC
-     * frames. \return True if the device is capable of sending and receiving cryptographically
-     * protected MAC frames.
+     * frames.
+     * \return True if the device is capable of sending and receiving cryptographically protected
+     * MAC frames.
      */
     bool IsSecurityCapability() const;
     /**
      * True if the device wishes the coordinator to allocate a short address as result of the
-     * association procedure. \return True if the device wishes the coordinator to allocate a short
-     * address as result of the association procedure.
+     * association procedure.
+     * \return True if the device wishes the coordinator to allocate a short address as result of
+     * the association procedure.
      */
     bool IsShortAddrAllocOn() const;
     /**

@@ -266,8 +266,8 @@ class WifiTxVector
     void SetNess(uint8_t ness);
     /**
      * Checks whether the PSDU contains A-MPDU.
-     *  \returns true if this PSDU has A-MPDU aggregation,
-     *           false otherwise.
+     * \returns true if this PSDU has A-MPDU aggregation,
+     *          false otherwise.
      */
     bool IsAggregation() const;
     /**

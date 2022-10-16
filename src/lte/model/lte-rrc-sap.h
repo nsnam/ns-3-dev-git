@@ -50,7 +50,6 @@ class Packet;
  * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331,
  * detailed doxygen documentation is omitted, so please refer to
  * 36.331 for the meaning of these data structures / fields.
- *
  */
 class LteRrcSap
 {
@@ -736,7 +735,7 @@ class LteRrcSap
     struct CellIdentification
     {
         uint32_t physCellId;    ///< physical cell ID
-        uint32_t dlCarrierFreq; ///<  ARFCN - valueEUTRA
+        uint32_t dlCarrierFreq; ///< ARFCN - valueEUTRA
     };
 
     /// AntennaInfoCommon structure
@@ -1427,7 +1426,6 @@ MemberLteUeRrcSapUser<C>::SendIdealUeContextRemoveRequest(uint16_t rnti)
 /**
  * Template for the implementation of the LteUeRrcSapProvider as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteUeRrcSapProvider : public LteUeRrcSapProvider
@@ -1670,7 +1668,6 @@ MemberLteEnbRrcSapUser<C>::DecodeHandoverCommand(Ptr<Packet> p)
 /**
  * Template for the implementation of the LteEnbRrcSapProvider as a member
  * of an owner class of type C to which all methods are forwarded
- *
  */
 template <class C>
 class MemberLteEnbRrcSapProvider : public LteEnbRrcSapProvider

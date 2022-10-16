@@ -87,16 +87,19 @@ class MeshWifiInterfaceMac : public WifiMac
     /// \name Beacons
     ///@{
     /**
-     *  Set maximum initial random delay before first beacon
-     *  \param interval maximum random interval
+     * Set maximum initial random delay before first beacon
+     * \param interval maximum random interval
      */
     void SetRandomStartDelay(Time interval);
     /**
-     *  Set interval between two successive beacons
-     *  \param interval beacon interval
+     * Set interval between two successive beacons
+     * \param interval beacon interval
      */
     void SetBeaconInterval(Time interval);
-    /// \return interval between two beacons
+    /**
+     * Get beacon interval.
+     * \return interval between two beacons
+     */
     Time GetBeaconInterval() const;
     /**
      * \brief Next beacon frame time
@@ -108,7 +111,7 @@ class MeshWifiInterfaceMac : public WifiMac
     Time GetTbtt() const;
     /**
      * \brief Shift TBTT.
-     * \param shift
+     * \param shift Shift
      *
      * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer
      * management protocol in 802.11s)
@@ -121,7 +124,7 @@ class MeshWifiInterfaceMac : public WifiMac
     /**
      * Install plugin.
      *
-     * \param plugin
+     * \param plugin Plugin
      *
      * \todo return unique ID to allow user to unregister plugins
      */
@@ -143,7 +146,7 @@ class MeshWifiInterfaceMac : public WifiMac
     /**
      * Switch frequency channel.
      *
-     * \param new_id
+     * \param new_id New ID.
      */
     void SwitchFrequencyChannel(uint16_t new_id);
 
@@ -157,11 +160,15 @@ class MeshWifiInterfaceMac : public WifiMac
     /**
      * Check supported rates.
      *
-     * \param rates
+     * \param rates Rates.
      * \return true if rates are supported
      */
     bool CheckSupportedRates(SupportedRates rates) const;
-    /// \return list of supported bitrates
+
+    /**
+     * Get supported rates.
+     * \return list of supported bitrates
+     */
     SupportedRates GetSupportedRates() const;
 
     /// \name Metric Calculation routines:
@@ -184,7 +191,10 @@ class MeshWifiInterfaceMac : public WifiMac
      * \param os the output stream
      */
     void Report(std::ostream& os) const;
-    /// Reset statistics function
+
+    /**
+     * Reset statistics function
+     */
     void ResetStats();
 
     /**
@@ -234,9 +244,13 @@ class MeshWifiInterfaceMac : public WifiMac
      * \param to the to address
      */
     void ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to);
-    /// Send beacon
+    /**
+     * Send beacon.
+     */
     void SendBeacon();
-    /// Schedule next beacon
+    /**
+     * Schedule next beacon.
+     */
     void ScheduleNextBeacon();
     /**
      * Get current beaconing status
@@ -244,7 +258,9 @@ class MeshWifiInterfaceMac : public WifiMac
      * \returns true if beacon active
      */
     bool GetBeaconGeneration() const;
-    /// Real d-tor
+    /**
+     * Real d-tor.
+     */
     void DoDispose() override;
 
   private:
@@ -254,7 +270,7 @@ class MeshWifiInterfaceMac : public WifiMac
 
     /// \name Mesh timing intervals
     ///@{
-    /// whether beaconing is enabled
+    /// Whether beaconing is enabled
     bool m_beaconEnable;
     /// Beaconing interval.
     Time m_beaconInterval;
@@ -285,10 +301,12 @@ class MeshWifiInterfaceMac : public WifiMac
         /**
          * Print statistics.
          *
-         * \param os
+         * \param os Output stream
          */
         void Print(std::ostream& os) const;
-        /// constructor
+        /**
+         * Constructor.
+         */
         Statistics();
     };
 

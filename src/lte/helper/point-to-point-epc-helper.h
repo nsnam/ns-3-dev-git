@@ -50,8 +50,8 @@ class PointToPointEpcHelper : public NoBackhaulEpcHelper
 
     // inherited from Object
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

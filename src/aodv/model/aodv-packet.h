@@ -625,8 +625,9 @@ class RerrHeader : public Header
     bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
     /**
      * \brief Delete pair (address + sequence number) from REER header, if the number of unreachable
-     * destinations > 0 \param un unreachable pair (address + sequence number) \return true on
-     * success
+     * destinations > 0
+     * \param un unreachable pair (address + sequence number)
+     * \return true on success
      */
     bool RemoveUnDestination(std::pair<Ipv4Address, uint32_t>& un);
     /// Clear header

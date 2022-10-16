@@ -145,7 +145,7 @@ class Ns2MobilityHelperTest : public TestCase
 
     /**
      * Set NS-2 trace to read as single large string (don't forget to add \\n and quote \"'s)
-     *  \param trace the mobility trace
+     * \param trace the mobility trace
      */
     void SetTrace(const std::string& trace)
     {

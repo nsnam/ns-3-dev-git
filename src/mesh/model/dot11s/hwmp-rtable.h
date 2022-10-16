@@ -174,7 +174,8 @@ class HwmpRtable : public Object
     LookupResult LookupReactiveExpired(Mac48Address destination);
     /**
      * Find proactive path to tree root. Note that calling this method has side effect of deleting
-     * expired proactive path \return The lookup result
+     * expired proactive path
+     * \return The lookup result
      */
     LookupResult LookupProactive();
     /**
@@ -186,7 +187,9 @@ class HwmpRtable : public Object
 
     /**
      * When peer link with a given MAC-address fails - it returns list of unreachable destination
-     * addresses \param peerAddress the peer address \returns the list of unreachable destinations
+     * addresses
+     * \param peerAddress the peer address
+     * \returns the list of unreachable destinations
      */
     std::vector<HwmpProtocol::FailedDestination> GetUnreachableDestinations(
         Mac48Address peerAddress);

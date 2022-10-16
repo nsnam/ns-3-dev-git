@@ -119,8 +119,9 @@ class WimaxConnection : public Object
     bool HasPackets() const;
     /**
      * \return true if the connection has at least one packet of type packetType in its queue, false
-     * otherwise \param packetType type of packet to check in the queue \return true if packets
-     * available
+     * otherwise
+     * \param packetType type of packet to check in the queue
+     * \return true if packets available
      */
     bool HasPackets(MacHeaderType::HeaderType packetType) const;
 

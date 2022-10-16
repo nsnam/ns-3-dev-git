@@ -458,7 +458,8 @@ class HePhy : public VhtPhy
      *
      * \param event the event holding incoming PPDU's information
      * \param status the status of the reception of the correctly received SIG-A after the
-     * configuration support check \return the updated status of the reception of the SIG-A
+     * configuration support check
+     * \return the updated status of the reception of the SIG-A
      */
     virtual PhyFieldRxStatus ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status);
 
@@ -468,7 +469,8 @@ class HePhy : public VhtPhy
      *
      * \param event the event holding incoming PPDU's information
      * \param status the status of the reception of the correctly received SIG-A after the
-     * configuration support check \return the updated status of the reception of the SIG-B
+     * configuration support check
+     * \return the updated status of the reception of the SIG-B
      */
     virtual PhyFieldRxStatus ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status);
 

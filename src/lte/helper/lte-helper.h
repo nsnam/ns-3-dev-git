@@ -106,8 +106,8 @@ class LteHelper : public Object
     ~LteHelper() override;
 
     /**
-     *  Register this type.
-     *  \return The object TypeId.
+     * Register this type.
+     * \return The object TypeId.
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -469,12 +469,13 @@ class LteHelper : public Object
     uint8_t ActivateDedicatedEpsBearer(Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
     /**
-     *  \brief Manually trigger dedicated bearer de-activation at specific simulation time
-     *  \param ueDevice the UE on which dedicated bearer to be de-activated must be of the type
-     * LteUeNetDevice \param enbDevice eNB, must be of the type LteEnbNetDevice \param bearerId
-     * Bearer Identity which is to be de-activated
+     * \brief Manually trigger dedicated bearer de-activation at specific simulation time
+     * \param ueDevice the UE on which dedicated bearer to be de-activated must be of the type
+     * LteUeNetDevice
+     * \param enbDevice eNB, must be of the type LteEnbNetDevice
+     * \param bearerId Bearer Identity which is to be de-activated
      *
-     *  \warning Requires the use of EPC mode. See SetEpcHelper() method.
+     * \warning Requires the use of EPC mode. See SetEpcHelper() method.
      */
 
     void DeActivateDedicatedEpsBearer(Ptr<NetDevice> ueDevice,
@@ -725,13 +726,13 @@ class LteHelper : public Object
                            uint16_t targetCellId);
 
     /**
-     *  \brief The actual function to trigger a manual bearer de-activation
-     *  \param ueDevice the UE on which bearer to be de-activated must be of the type LteUeNetDevice
-     *  \param enbDevice eNB, must be of the type LteEnbNetDevice
-     *  \param bearerId Bearer Identity which is to be de-activated
+     * \brief The actual function to trigger a manual bearer de-activation
+     * \param ueDevice the UE on which bearer to be de-activated must be of the type LteUeNetDevice
+     * \param enbDevice eNB, must be of the type LteEnbNetDevice
+     * \param bearerId Bearer Identity which is to be de-activated
      *
-     *  This method is normally scheduled by DeActivateDedicatedEpsBearer() to run at a specific
-     *  time when a manual bearer de-activation is desired by the simulation user.
+     * This method is normally scheduled by DeActivateDedicatedEpsBearer() to run at a specific
+     * time when a manual bearer de-activation is desired by the simulation user.
      */
     void DoDeActivateDedicatedEpsBearer(Ptr<NetDevice> ueDevice,
                                         Ptr<NetDevice> enbDevice,

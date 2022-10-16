@@ -179,12 +179,12 @@ class LiIonEnergySource : public EnergySource
     void CalculateRemainingEnergy();
 
     /**
-     *  \param current the actual discharge current value.
-     *  \return the cell voltage
+     * Get the cell voltage in function of the discharge current.
+     * It consider different discharge curves for different discharge currents
+     * and the remaining energy of the cell.
      *
-     *  Get the cell voltage in function of the discharge current.
-     *  It consider different discharge curves for different discharge currents
-     *  and the remaining energy of the cell.
+     * \param current the actual discharge current value.
+     * \return the cell voltage
      */
     double GetVoltage(double current) const;
 
