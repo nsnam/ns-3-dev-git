@@ -33,23 +33,23 @@
     ENABLE_MPI: --enable-mpi
 
 # GCC 8
-# weekly-build-gcc-8-debug:
-#   extends: .weekly-build-gcc
-#   image: gcc:8
-#   variables:
-#     MODE: debug
+weekly-build-gcc-8-debug:
+  extends: .weekly-build-gcc
+  image: gcc:8
+  variables:
+    MODE: debug
 
-# weekly-build-gcc-8-default:
-#   extends: .weekly-build-gcc
-#   image: gcc:8
-#   variables:
-#     MODE: default
+weekly-build-gcc-8-default:
+  extends: .weekly-build-gcc
+  image: gcc:8
+  variables:
+    MODE: default
 
-# weekly-build-gcc-8-optimized:
-#   extends: .weekly-build-gcc
-#   image: gcc:8
-#   variables:
-#     MODE: optimized
+weekly-build-gcc-8-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:8
+  variables:
+    MODE: optimized
 
 # GCC 9
 weekly-build-gcc-9-debug:
