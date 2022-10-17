@@ -976,13 +976,13 @@ the |ns3| smart pointer class ``Ptr`` should be used in boolean comparisons as f
 
   for Ptr<> p, do not use:      use instead:
   ========================      =================================
-  if (p != 0)      {...}        if (p)      {...}
-  if (p != NULL)   {...}
-  if (p != nullptr {...}
+  if (p != nullptr) {...}        if (p)      {...}
+  if (p != NULL)    {...}
+  if (p != 0)       {...}        if (p)      {...}
 
-  if (p == 0)      {...}        if (!p)     {...}
-  if (p == NULL)   {...}
-  if (p == nullptr {...}
+  if (p == nullptr) {...}        if (!p)     {...}
+  if (p == NULL)    {...}
+  if (p == 0)       {...}
 
   NS_ASSERT... (p != 0, ...)     NS_ASSERT... (p, ...)
   NS_ABORT...  (p != 0, ...)     NS_ABORT...  (p, ...)
