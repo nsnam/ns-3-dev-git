@@ -337,7 +337,7 @@ NodeContainer
 RocketfuelTopologyReader::Read()
 {
     std::ifstream topgen;
-    topgen.open(GetFileName().c_str());
+    topgen.open(GetFileName());
     NodeContainer nodes;
 
     std::istringstream lineBuffer;

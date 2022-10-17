@@ -181,7 +181,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor(Ptr<FdNetDevice> device) const
     if ((ifr.ifr_flags & IFF_PROMISC) == 0)
     {
         NS_FATAL_ERROR("EmuFdNetDeviceHelper::SetFileDescriptor (): "
-                       << m_deviceName.c_str() << " is not in promiscuous mode");
+                       << m_deviceName << " is not in promiscuous mode");
     }
 
     if ((ifr.ifr_flags & IFF_BROADCAST) != IFF_BROADCAST)

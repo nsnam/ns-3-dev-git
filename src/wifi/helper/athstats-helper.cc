@@ -273,10 +273,9 @@ AthstatsWifiTraceSink::Open(const std::string& name)
 
     NS_LOG_LOGIC("Created writer " << m_writer);
 
-    m_writer->open(name.c_str(), std::ios_base::binary | std::ios_base::out);
+    m_writer->open(name, std::ios_base::binary | std::ios_base::out);
     NS_ABORT_MSG_IF(m_writer->fail(),
-                    "AthstatsWifiTraceSink::Open (): m_writer->open (" << name.c_str()
-                                                                       << ") failed");
+                    "AthstatsWifiTraceSink::Open (): m_writer->open (" << name << ") failed");
 
     NS_ASSERT_MSG(m_writer->is_open(), "AthstatsWifiTraceSink::Open (): m_writer not open");
 

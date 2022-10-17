@@ -272,11 +272,11 @@ main(int argc, char* argv[])
 
     AsciiTraceHelper ascii;
     p2p.EnableAsciiAll(ascii.CreateFileStream(tr_name));
-    // p2p.EnablePcapAll (pcap_name.c_str());
+    // p2p.EnablePcapAll(pcap_name);
 
     // Ptr<FlowMonitor> flowmon;
     // FlowMonitorHelper flowmonHelper;
-    // flowmon = flowmonHelper.InstallAll ();
+    // flowmon = flowmonHelper.InstallAll();
 
     // Configure animator with default settings
 
@@ -285,7 +285,7 @@ main(int argc, char* argv[])
 
     Simulator::Stop(Seconds(SimTime));
     Simulator::Run();
-    // flowmon->SerializeToXmlFile (flow_name.c_str(), true, true);
+    // flowmon->SerializeToXmlFile(flow_name, true, true);
     Simulator::Destroy();
 
     // ---------- End of Simulation Monitoring ---------------------------------
@@ -299,10 +299,10 @@ std::vector<std::vector<bool>>
 readNxNMatrix(std::string adj_mat_file_name)
 {
     std::ifstream adj_mat_file;
-    adj_mat_file.open(adj_mat_file_name.c_str(), std::ios::in);
+    adj_mat_file.open(adj_mat_file_name, std::ios::in);
     if (adj_mat_file.fail())
     {
-        NS_FATAL_ERROR("File " << adj_mat_file_name.c_str() << " not found");
+        NS_FATAL_ERROR("File " << adj_mat_file_name << " not found");
     }
     std::vector<std::vector<bool>> array;
     int i = 0;
@@ -364,10 +364,10 @@ std::vector<std::vector<double>>
 readCordinatesFile(std::string node_coordinates_file_name)
 {
     std::ifstream node_coordinates_file;
-    node_coordinates_file.open(node_coordinates_file_name.c_str(), std::ios::in);
+    node_coordinates_file.open(node_coordinates_file_name, std::ios::in);
     if (node_coordinates_file.fail())
     {
-        NS_FATAL_ERROR("File " << node_coordinates_file_name.c_str() << " not found");
+        NS_FATAL_ERROR("File " << node_coordinates_file_name << " not found");
     }
     std::vector<std::vector<double>> coord_array;
     int m = 0;

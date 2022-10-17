@@ -104,14 +104,14 @@ PhyRxStatsCalculator::DlPhyReception(PhyReceptionStatParameters params)
     NS_LOG_FUNCTION(this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti
                          << params.m_layer << params.m_mcs << params.m_size << params.m_rv
                          << params.m_ndi << params.m_correctness);
-    NS_LOG_INFO("Write DL Rx Phy Stats in " << GetDlRxOutputFilename().c_str());
+    NS_LOG_INFO("Write DL Rx Phy Stats in " << GetDlRxOutputFilename());
 
     if (m_dlRxFirstWrite == true)
     {
-        m_dlRxOutFile.open(GetDlRxOutputFilename().c_str());
+        m_dlRxOutFile.open(GetDlRxOutputFilename());
         if (!m_dlRxOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetDlRxOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetDlRxOutputFilename());
             return;
         }
         m_dlRxFirstWrite = false;
@@ -140,14 +140,14 @@ PhyRxStatsCalculator::UlPhyReception(PhyReceptionStatParameters params)
     NS_LOG_FUNCTION(this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti
                          << params.m_layer << params.m_mcs << params.m_size << params.m_rv
                          << params.m_ndi << params.m_correctness);
-    NS_LOG_INFO("Write UL Rx Phy Stats in " << GetUlRxOutputFilename().c_str());
+    NS_LOG_INFO("Write UL Rx Phy Stats in " << GetUlRxOutputFilename());
 
     if (m_ulRxFirstWrite == true)
     {
-        m_ulRxOutFile.open(GetUlRxOutputFilename().c_str());
+        m_ulRxOutFile.open(GetUlRxOutputFilename());
         if (!m_ulRxOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetUlRxOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetUlRxOutputFilename());
             return;
         }
         m_ulRxFirstWrite = false;

@@ -91,11 +91,11 @@ CheckQueueSize(Ptr<QueueDisc> queue)
     // check queue size every 1/100 of a second
     Simulator::Schedule(Seconds(0.01), &CheckQueueSize, queue);
 
-    std::ofstream fPlotQueue(filePlotQueue.str().c_str(), std::ios::out | std::ios::app);
+    std::ofstream fPlotQueue(filePlotQueue.str(), std::ios::out | std::ios::app);
     fPlotQueue << Simulator::Now().GetSeconds() << " " << qSize << std::endl;
     fPlotQueue.close();
 
-    std::ofstream fPlotQueueAvg(filePlotQueueAvg.str().c_str(), std::ios::out | std::ios::app);
+    std::ofstream fPlotQueueAvg(filePlotQueueAvg.str(), std::ios::out | std::ios::app);
     fPlotQueueAvg << Simulator::Now().GetSeconds() << " " << avgQueueSize / checkTimes << std::endl;
     fPlotQueueAvg.close();
 }

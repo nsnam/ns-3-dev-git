@@ -73,9 +73,9 @@ GnuplotAggregator::~GnuplotAggregator()
 
     // Open the gnuplot plot and data files.
     std::ofstream plotFile;
-    plotFile.open(plotFileName.c_str());
+    plotFile.open(plotFileName);
     std::ofstream dataFile;
-    dataFile.open(dataFileName.c_str());
+    dataFile.open(dataFileName);
 
     // Skip any NaN's that appear in data.
     m_gnuplot.AppendExtra("set datafile missing \"-nan\"");
@@ -89,7 +89,7 @@ GnuplotAggregator::~GnuplotAggregator()
 
     // Open the shell script file.
     std::ofstream scriptFile;
-    scriptFile.open(scriptFileName.c_str());
+    scriptFile.open(scriptFileName);
 
     // Write the shell script file.
     scriptFile << "#!/bin/sh" << std::endl;

@@ -69,7 +69,7 @@ SetTimeout(std::string value)
 {
     try
     {
-        timeout = ns3::Seconds(atof(value.c_str()));
+        timeout = ns3::Seconds(std::stof(value));
         return true;
     }
     catch (...)

@@ -237,26 +237,26 @@ RadioBearerStatsCalculator::DlRxPdu(uint16_t cellId,
 void
 RadioBearerStatsCalculator::ShowResults()
 {
-    NS_LOG_FUNCTION(this << GetUlOutputFilename().c_str() << GetDlOutputFilename().c_str());
-    NS_LOG_INFO("Write Rlc Stats in " << GetUlOutputFilename().c_str() << " and in "
-                                      << GetDlOutputFilename().c_str());
+    NS_LOG_FUNCTION(this << GetUlOutputFilename() << GetDlOutputFilename());
+    NS_LOG_INFO("Write Rlc Stats in " << GetUlOutputFilename() << " and in "
+                                      << GetDlOutputFilename());
 
     std::ofstream ulOutFile;
     std::ofstream dlOutFile;
 
     if (m_firstWrite == true)
     {
-        ulOutFile.open(GetUlOutputFilename().c_str());
+        ulOutFile.open(GetUlOutputFilename());
         if (!ulOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetUlOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetUlOutputFilename());
             return;
         }
 
-        dlOutFile.open(GetDlOutputFilename().c_str());
+        dlOutFile.open(GetDlOutputFilename());
         if (!dlOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetDlOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetDlOutputFilename());
             return;
         }
         m_firstWrite = false;
@@ -271,17 +271,17 @@ RadioBearerStatsCalculator::ShowResults()
     }
     else
     {
-        ulOutFile.open(GetUlOutputFilename().c_str(), std::ios_base::app);
+        ulOutFile.open(GetUlOutputFilename(), std::ios_base::app);
         if (!ulOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetUlOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetUlOutputFilename());
             return;
         }
 
-        dlOutFile.open(GetDlOutputFilename().c_str(), std::ios_base::app);
+        dlOutFile.open(GetDlOutputFilename(), std::ios_base::app);
         if (!dlOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetDlOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetDlOutputFilename());
             return;
         }
     }

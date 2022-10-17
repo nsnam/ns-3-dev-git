@@ -104,14 +104,14 @@ PhyTxStatsCalculator::DlPhyTransmission(PhyTransmissionStatParameters params)
     NS_LOG_FUNCTION(this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti
                          << params.m_layer << params.m_mcs << params.m_size << params.m_rv
                          << params.m_ndi);
-    NS_LOG_INFO("Write DL Tx Phy Stats in " << GetDlTxOutputFilename().c_str());
+    NS_LOG_INFO("Write DL Tx Phy Stats in " << GetDlTxOutputFilename());
 
     if (m_dlTxFirstWrite == true)
     {
-        m_dlTxOutFile.open(GetDlOutputFilename().c_str());
+        m_dlTxOutFile.open(GetDlOutputFilename());
         if (!m_dlTxOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetDlTxOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetDlTxOutputFilename());
             return;
         }
         m_dlTxFirstWrite = false;
@@ -138,14 +138,14 @@ PhyTxStatsCalculator::UlPhyTransmission(PhyTransmissionStatParameters params)
     NS_LOG_FUNCTION(this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti
                          << params.m_layer << params.m_mcs << params.m_size << params.m_rv
                          << params.m_ndi);
-    NS_LOG_INFO("Write UL Tx Phy Stats in " << GetUlTxOutputFilename().c_str());
+    NS_LOG_INFO("Write UL Tx Phy Stats in " << GetUlTxOutputFilename());
 
     if (m_ulTxFirstWrite == true)
     {
-        m_ulTxOutFile.open(GetUlTxOutputFilename().c_str());
+        m_ulTxOutFile.open(GetUlTxOutputFilename());
         if (!m_ulTxOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetUlTxOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetUlTxOutputFilename());
             return;
         }
         m_ulTxFirstWrite = false;

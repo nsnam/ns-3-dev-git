@@ -146,7 +146,7 @@ ComputeSnr(const ComputeSnrParams& params)
 }
 
 /**
- * Generates a GNU-plottable file representig the buildings deployed in the
+ * Generates a GNU-plottable file representing the buildings deployed in the
  * scenario
  * \param filename the name of the output file
  */
@@ -154,7 +154,7 @@ void
 PrintGnuplottableBuildingListToFile(std::string filename)
 {
     std::ofstream outFile;
-    outFile.open(filename.c_str(), std::ios_base::out | std::ios_base::trunc);
+    outFile.open(filename, std::ios_base::out | std::ios_base::trunc);
     if (!outFile.is_open())
     {
         NS_LOG_ERROR("Can't open file " << filename);

@@ -192,7 +192,7 @@ UdpTraceClient::LoadTrace(std::string filename)
     char frameType;
     TraceEntry entry;
     std::ifstream ifTraceFile;
-    ifTraceFile.open(filename.c_str(), std::ifstream::in);
+    ifTraceFile.open(filename, std::ifstream::in);
     m_entries.clear();
     if (!ifTraceFile.good())
     {

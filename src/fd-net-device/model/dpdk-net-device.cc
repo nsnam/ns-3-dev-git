@@ -256,9 +256,9 @@ DpdkNetDevice::InitDpdk(int argc, char** argv, std::string dpdkDriver)
     std::string command;
     command.append("dpdk-devbind.py --force ");
     command.append("--bind=");
-    command.append(dpdkDriver.c_str());
+    command.append(dpdkDriver);
     command.append(" ");
-    command.append(m_deviceName.c_str());
+    command.append(m_deviceName);
     printf("Executing: %s\n", command.c_str());
     if (system(command.c_str()))
     {

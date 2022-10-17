@@ -475,7 +475,7 @@ class DictFiles
 
             // Open the file
             std::ifstream dictStream;
-            dictStream.open(dictFile.c_str());
+            dictStream.open(dictFile);
             if (!dictStream.is_open())
             {
                 std::cerr << "Failed to open dictionary file."

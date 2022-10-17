@@ -85,14 +85,14 @@ std::map<Mac48Address, uint64_t>
 std::map<Mac48Address, uint64_t> phyHeaderFailed; ///< Map that stores the total number of
                                                   ///< unsuccessfully received PHY headers per STA
 std::map<Mac48Address, uint64_t>
-    rxEventWhileTxing; ///< Map that stores the number of reception events per STA that occured
+    rxEventWhileTxing; ///< Map that stores the number of reception events per STA that occurred
                        ///< while PHY was already transmitting a PPDU
 std::map<Mac48Address, uint64_t>
-    rxEventWhileRxing; ///< Map that stores the number of reception events per STA that occured
+    rxEventWhileRxing; ///< Map that stores the number of reception events per STA that occurred
                        ///< while PHY was already receiving a PPDU
 std::map<Mac48Address, uint64_t>
     rxEventWhileDecodingPreamble; ///< Map that stores the number of reception events per STA that
-                                  ///< occured while PHY was already decoding a preamble
+                                  ///< occurred while PHY was already decoding a preamble
 std::map<Mac48Address, uint64_t>
     rxEventAbortedByTx; ///< Map that stores the number of reception events aborted per STA because
                         ///< the PHY has started to transmit
@@ -1914,7 +1914,7 @@ ContextToNodeId(std::string context)
 {
     std::string sub = context.substr(10);
     uint32_t pos = sub.find("/Device");
-    return atoi(sub.substr(0, pos).c_str());
+    return std::stoi(sub.substr(0, pos));
 }
 
 /**
@@ -1928,7 +1928,7 @@ ContextToMac(std::string context)
 {
     std::string sub = context.substr(10);
     uint32_t pos = sub.find("/Device");
-    uint32_t nodeId = atoi(sub.substr(0, pos).c_str());
+    uint32_t nodeId = std::stoi(sub.substr(0, pos));
     Ptr<Node> n = NodeList::GetNode(nodeId);
     Ptr<WifiNetDevice> d;
     for (uint32_t i = 0; i < n->GetNDevices(); i++)
@@ -2833,7 +2833,7 @@ main(int argc, char* argv[])
     ss << "wifi-" << standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") << "-r-"
        << phyModeStr.str() << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize
        << "-throughput.plt";
-    std::ofstream throughputPlot(ss.str().c_str());
+    std::ofstream throughputPlot(ss.str());
     ss.str("");
     ss << "wifi-" << standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") << "-r-"
        << phyModeStr.str() << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize

@@ -74,7 +74,7 @@ FileAggregator::FileAggregator(const std::string& outputFileName, enum FileType 
         break;
     }
 
-    m_file.open(m_outputFileName.c_str());
+    m_file.open(m_outputFileName);
 }
 
 FileAggregator::~FileAggregator()

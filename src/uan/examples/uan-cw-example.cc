@@ -222,7 +222,7 @@ Experiment::Run(UanHelper& uan)
 
         m_bytesTotal = 0;
 
-        std::ofstream ascii(m_asciitracefile.c_str());
+        std::ofstream ascii(m_asciitracefile);
         if (!ascii.is_open())
         {
             NS_FATAL_ERROR("Could not open ascii trace file: " << m_asciitracefile);
@@ -321,7 +321,7 @@ main(int argc, char** argv)
 
     gp.AddDataset(ds);
 
-    std::ofstream of(exp.m_gnudatfile.c_str());
+    std::ofstream of(exp.m_gnudatfile);
     if (!of.is_open())
     {
         NS_FATAL_ERROR("Can not open GNU Plot outfile: " << exp.m_gnudatfile);

@@ -540,9 +540,9 @@ DsrRouting::GetNetDeviceFromContext(std::string context)
     // where element [1] is the Node Id
     // element [2] is the NetDevice Id
     std::vector<std::string> elements = GetElementsFromContext(context);
-    Ptr<Node> n = NodeList::GetNode(atoi(elements[1].c_str()));
+    Ptr<Node> n = NodeList::GetNode(std::stoi(elements[1]));
     NS_ASSERT(n);
-    return n->GetDevice(atoi(elements[3].c_str()));
+    return n->GetDevice(std::stoi(elements[3]));
 }
 
 std::vector<std::string>

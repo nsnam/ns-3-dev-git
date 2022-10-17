@@ -339,7 +339,7 @@ PcapFile::Open(const std::string& filename, std::ios::openmode mode)
     mode |= std::ios::binary;
 
     m_filename = filename;
-    m_file.open(filename.c_str(), mode);
+    m_file.open(filename, mode);
     if (mode & std::ios::in)
     {
         // will set the fail bit if file header is invalid.

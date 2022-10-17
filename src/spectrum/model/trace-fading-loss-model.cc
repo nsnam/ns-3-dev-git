@@ -120,7 +120,7 @@ TraceFadingLossModel::LoadTrace()
 {
     NS_LOG_FUNCTION(this << "Loading Fading Trace " << m_traceFile);
     std::ifstream ifTraceFile;
-    ifTraceFile.open(m_traceFile.c_str(), std::ifstream::in);
+    ifTraceFile.open(m_traceFile, std::ifstream::in);
     m_fadingTrace.clear();
     if (!ifTraceFile.good())
     {

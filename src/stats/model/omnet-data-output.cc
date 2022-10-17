@@ -111,7 +111,7 @@ OmnetDataOutput::Output(DataCollector& dc)
 
     std::ofstream scalarFile;
     std::string fn = m_filePrefix + "-" + dc.GetRunLabel() + ".sca";
-    scalarFile.open(fn.c_str(), std::ios_base::out);
+    scalarFile.open(fn, std::ios_base::out);
 
     /// \todo add timestamp to the runlevel
     scalarFile << "run " << dc.GetRunLabel() << std::endl;

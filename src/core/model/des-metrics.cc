@@ -70,7 +70,7 @@ DesMetrics::Initialize(std::vector<std::string> args, std::string outDir /* = ""
     const char* date = ctime(&current_time);
     std::string capture_date(date, 24); // discard trailing newline from ctime
 
-    m_os.open(jsonFile.c_str());
+    m_os.open(jsonFile);
     m_os << "{" << std::endl;
     m_os << " \"simulator_name\" : \"ns-3\"," << std::endl;
     m_os << " \"model_name\" : \"" << model_name << "\"," << std::endl;

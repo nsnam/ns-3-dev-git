@@ -843,29 +843,28 @@ main(int argc, char* argv[])
     std::ofstream queueLengthOfStream;
     if (g_validate == "")
     {
-        pingOfStream.open(pingTraceFile.c_str(), std::ofstream::out);
-        firstTcpRttOfStream.open(firstTcpRttTraceFile.c_str(), std::ofstream::out);
-        firstTcpCwndOfStream.open(firstTcpCwndTraceFile.c_str(), std::ofstream::out);
-        firstTcpThroughputOfStream.open(firstTcpThroughputTraceFile.c_str(), std::ofstream::out);
+        pingOfStream.open(pingTraceFile, std::ofstream::out);
+        firstTcpRttOfStream.open(firstTcpRttTraceFile, std::ofstream::out);
+        firstTcpCwndOfStream.open(firstTcpCwndTraceFile, std::ofstream::out);
+        firstTcpThroughputOfStream.open(firstTcpThroughputTraceFile, std::ofstream::out);
         if (firstTcpType == "dctcp")
         {
-            firstTcpDctcpOfStream.open(firstDctcpTraceFile.c_str(), std::ofstream::out);
+            firstTcpDctcpOfStream.open(firstDctcpTraceFile, std::ofstream::out);
         }
         if (enableSecondTcp)
         {
-            secondTcpRttOfStream.open(secondTcpRttTraceFile.c_str(), std::ofstream::out);
-            secondTcpCwndOfStream.open(secondTcpCwndTraceFile.c_str(), std::ofstream::out);
-            secondTcpThroughputOfStream.open(secondTcpThroughputTraceFile.c_str(),
-                                             std::ofstream::out);
+            secondTcpRttOfStream.open(secondTcpRttTraceFile, std::ofstream::out);
+            secondTcpCwndOfStream.open(secondTcpCwndTraceFile, std::ofstream::out);
+            secondTcpThroughputOfStream.open(secondTcpThroughputTraceFile, std::ofstream::out);
             if (secondTcpType == "dctcp")
             {
-                secondTcpDctcpOfStream.open(secondDctcpTraceFile.c_str(), std::ofstream::out);
+                secondTcpDctcpOfStream.open(secondDctcpTraceFile, std::ofstream::out);
             }
         }
-        queueDropOfStream.open(queueDropTraceFile.c_str(), std::ofstream::out);
-        queueMarkOfStream.open(queueMarkTraceFile.c_str(), std::ofstream::out);
-        queueMarksFrequencyOfStream.open(queueMarksFrequencyTraceFile.c_str(), std::ofstream::out);
-        queueLengthOfStream.open(queueLengthTraceFile.c_str(), std::ofstream::out);
+        queueDropOfStream.open(queueDropTraceFile, std::ofstream::out);
+        queueMarkOfStream.open(queueMarkTraceFile, std::ofstream::out);
+        queueMarksFrequencyOfStream.open(queueMarksFrequencyTraceFile, std::ofstream::out);
+        queueLengthOfStream.open(queueLengthTraceFile, std::ofstream::out);
     }
 
     ////////////////////////////////////////////////////////////

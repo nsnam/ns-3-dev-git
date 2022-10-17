@@ -577,7 +577,7 @@ AnimationInterface::WriteRoutePath(uint32_t nodeId,
                                    std::string destination,
                                    Ipv4RoutePathElements rpElements)
 {
-    NS_LOG_INFO("Writing Route Path From :" << nodeId << " To: " << destination.c_str());
+    NS_LOG_INFO("Writing Route Path From :" << nodeId << " To: " << destination);
     WriteXmlRp(nodeId, destination, rpElements);
     /*for (Ipv4RoutePathElements::const_iterator i = rpElements.begin ();
          i != rpElements.end ();
@@ -623,7 +623,7 @@ AnimationInterface::GetNodeFromContext(const std::string& context) const
     // where element [1] is the Node Id
 
     std::vector<std::string> elements = GetElementsFromContext(context);
-    Ptr<Node> n = NodeList::GetNode(atoi(elements.at(1).c_str()));
+    Ptr<Node> n = NodeList::GetNode(std::stoi(elements.at(1)));
     NS_ASSERT(n);
 
     return n;
@@ -639,7 +639,7 @@ AnimationInterface::GetNetDeviceFromContext(std::string context)
     std::vector<std::string> elements = GetElementsFromContext(context);
     Ptr<Node> n = GetNodeFromContext(context);
 
-    return n->GetDevice(atoi(elements.at(3).c_str()));
+    return n->GetDevice(std::stoi(elements.at(3)));
 }
 
 uint64_t
@@ -864,7 +864,7 @@ AnimationInterface::GenericWirelessTxTrace(std::string context,
     UpdatePosition(ndev);
 
     ++gAnimUid;
-    NS_LOG_INFO(ProtocolTypeToString(protocolType).c_str()
+    NS_LOG_INFO(ProtocolTypeToString(protocolType)
                 << " GenericWirelessTxTrace for packet:" << gAnimUid);
     AddByteTag(gAnimUid, p);
     AnimPacketInfo pktInfo(ndev, Simulator::Now());
@@ -896,11 +896,10 @@ AnimationInterface::GenericWirelessRxTrace(std::string context,
     NS_ASSERT(ndev);
     UpdatePosition(ndev);
     uint64_t animUid = GetAnimUidFromPacket(p);
-    NS_LOG_INFO(ProtocolTypeToString(protocolType).c_str() << " for packet:" << animUid);
+    NS_LOG_INFO(ProtocolTypeToString(protocolType) << " for packet:" << animUid);
     if (!IsPacketPending(animUid, protocolType))
     {
-        NS_LOG_WARN(ProtocolTypeToString(protocolType).c_str()
-                    << " GenericWirelessRxTrace: unknown Uid");
+        NS_LOG_WARN(ProtocolTypeToString(protocolType) << " GenericWirelessRxTrace: unknown Uid");
         return;
     }
     AnimUidPacketInfoMap* pendingPackets = ProtocolTypeToPendingPackets(protocolType);
@@ -2171,12 +2170,12 @@ AnimationInterface::SetOutputFile(const std::string& fn, bool routing)
         return;
     }
 
-    NS_LOG_INFO("Creating new trace file:" << fn.c_str());
+    NS_LOG_INFO("Creating new trace file:" << fn);
     FILE* f = nullptr;
     f = std::fopen(fn.c_str(), "w");
     if (!f)
     {
-        NS_FATAL_ERROR("Unable to open output file:" << fn.c_str());
+        NS_FATAL_ERROR("Unable to open output file:" << fn);
         return; // Can't open output file
     }
     if (routing)
@@ -2320,7 +2319,7 @@ AnimationInterface::TrackIpv4RoutePaths()
             NS_LOG_WARN("Routing protocol object not found");
             continue;
         }
-        NS_LOG_INFO("Begin Track Route for: " << trackElement.destination.c_str()
+        NS_LOG_INFO("Begin Track Route for: " << trackElement.destination
                                               << " From:" << trackElement.fromNodeId);
         Ptr<Packet> pkt = Create<Packet>();
         Ipv4Header header;
@@ -2330,7 +2329,7 @@ AnimationInterface::TrackIpv4RoutePaths()
         Ipv4RoutePathElements rpElements;
         if (!rt)
         {
-            NS_LOG_INFO("No route to :" << trackElement.destination.c_str());
+            NS_LOG_INFO("No route to :" << trackElement.destination);
             Ipv4RoutePathElement elem = {trackElement.fromNodeId, "-1"};
             rpElements.push_back(elem);
             WriteRoutePath(trackElement.fromNodeId, trackElement.destination, rpElements);
@@ -2413,10 +2412,10 @@ AnimationInterface::RecursiveIpv4RoutePathSearch(std::string from,
                                                  std::string to,
                                                  Ipv4RoutePathElements& rpElements)
 {
-    NS_LOG_INFO("RecursiveIpv4RoutePathSearch from:" << from.c_str() << " to:" << to.c_str());
-    if ((from == "0.0.0.0") || (from == "127.0.0.1"))
+    NS_LOG_INFO("RecursiveIpv4RoutePathSearch from:" << from << " to:" << to);
+    if (from == "0.0.0.0" || from == "127.0.0.1")
     {
-        NS_LOG_INFO("Got " << from.c_str() << " End recursion");
+        NS_LOG_INFO("Got " << from << " End recursion");
         return;
     }
     Ptr<Node> fromNode = NodeList::GetNode(m_ipv4ToNodeIdMap[from]);

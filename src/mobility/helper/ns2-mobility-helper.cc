@@ -233,10 +233,10 @@ static Vector SetSchedPosition(Ptr<ConstantVelocityMobilityModel> model,
 Ns2MobilityHelper::Ns2MobilityHelper(std::string filename)
     : m_filename(filename)
 {
-    std::ifstream file(m_filename.c_str(), std::ios::in);
+    std::ifstream file(m_filename, std::ios::in);
     if (!(file.is_open()))
     {
-        NS_FATAL_ERROR("Could not open trace file " << m_filename.c_str()
+        NS_FATAL_ERROR("Could not open trace file " << m_filename
                                                     << " for reading, aborting here \n");
     }
 }
@@ -274,7 +274,7 @@ Ns2MobilityHelper::ConfigNodesMovements(const ObjectStore& store) const
     // Look through the whole the file for the the initial node
     // positions to make this helper robust to handle trace files with
     // the initial node positions at the end.
-    std::ifstream file(m_filename.c_str(), std::ios::in);
+    std::ifstream file(m_filename, std::ios::in);
     if (file.is_open())
     {
         while (!file.eof())
@@ -346,7 +346,7 @@ Ns2MobilityHelper::ConfigNodesMovements(const ObjectStore& store) const
 
     // The reason the file is parsed again is to make this helper robust
     // to handle trace files with the initial node positions at the end.
-    file.open(m_filename.c_str(), std::ios::in);
+    file.open(m_filename, std::ios::in);
     if (file.is_open())
     {
         while (!file.eof())

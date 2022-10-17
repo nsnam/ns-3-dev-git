@@ -420,7 +420,7 @@ GetRandomStream(std::string filename)
         else
         {
             LOG("  Event time distribution:      from " << filename);
-            input = new std::ifstream(filename.c_str());
+            input = new std::ifstream(filename);
         }
 
         double value;

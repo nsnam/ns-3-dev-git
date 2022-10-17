@@ -269,11 +269,11 @@ operator>>(std::istream& is, Address& address)
     std::string::size_type secondDash;
     firstDash = v.find('-');
     secondDash = v.find('-', firstDash + 1);
-    std::string type = v.substr(0, firstDash - 0);
+    std::string type = v.substr(0, firstDash);
     std::string len = v.substr(firstDash + 1, secondDash - (firstDash + 1));
 
-    address.m_type = strtoul(type.c_str(), nullptr, 16);
-    address.m_len = strtoul(len.c_str(), nullptr, 16);
+    address.m_type = std::stoul(type, nullptr, 16);
+    address.m_len = std::stoul(len, nullptr, 16);
     NS_ASSERT(address.m_len <= Address::MAX_SIZE);
 
     std::string::size_type col = secondDash + 1;
@@ -285,13 +285,13 @@ operator>>(std::istream& is, Address& address)
         if (next == std::string::npos)
         {
             tmp = v.substr(col, v.size() - col);
-            address.m_data[i] = strtoul(tmp.c_str(), nullptr, 16);
+            address.m_data[i] = std::stoul(tmp, nullptr, 16);
             break;
         }
         else
         {
             tmp = v.substr(col, next - col);
-            address.m_data[i] = strtoul(tmp.c_str(), nullptr, 16);
+            address.m_data[i] = std::stoul(tmp, nullptr, 16);
             col = next + 1;
         }
     }

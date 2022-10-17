@@ -117,7 +117,7 @@ main(int argc, char* argv[])
 
     // open log file for output
     std::ofstream os;
-    os.open(logFile.c_str());
+    os.open(logFile);
 
     // Create all nodes.
     NodeContainer stas;

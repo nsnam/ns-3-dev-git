@@ -1743,7 +1743,7 @@ VanetRoutingExperiment::ProcessOutputs()
                                   << "Kbps MAC/PHY-oh=" << mac_phy_oh);
     }
 
-    std::ofstream out(m_CSVfileName2.c_str(), std::ios::app);
+    std::ofstream out(m_CSVfileName2, std::ios::app);
 
     out << bsm_pdr1 << "," << bsm_pdr2 << "," << bsm_pdr3 << "," << bsm_pdr4 << "," << bsm_pdr5
         << "," << bsm_pdr6 << "," << bsm_pdr7 << "," << bsm_pdr8 << "," << bsm_pdr9 << ","
@@ -1832,7 +1832,7 @@ VanetRoutingExperiment::CheckThroughput()
         mac_phy_oh = (double)(totalPhyBytes - totalAppBytes) / (double)totalPhyBytes;
     }
 
-    std::ofstream out(m_CSVfileName.c_str(), std::ios::app);
+    std::ofstream out(m_CSVfileName, std::ios::app);
 
     if (m_log != 0)
     {
@@ -2132,7 +2132,7 @@ void
 VanetRoutingExperiment::SetupLogFile()
 {
     // open log file for output
-    m_os.open(m_logFile.c_str());
+    m_os.open(m_logFile);
 }
 
 void
@@ -2450,7 +2450,7 @@ void
 VanetRoutingExperiment::WriteCsvHeader()
 {
     // blank out the last output file and write the column headers
-    std::ofstream out(m_CSVfileName.c_str());
+    std::ofstream out(m_CSVfileName);
     out << "SimulationSecond,"
         << "ReceiveRate,"
         << "PacketsReceived,"
@@ -2475,7 +2475,7 @@ VanetRoutingExperiment::WriteCsvHeader()
         << "MacPhyOverhead" << std::endl;
     out.close();
 
-    std::ofstream out2(m_CSVfileName2.c_str());
+    std::ofstream out2(m_CSVfileName2);
     out2 << "BSM_PDR1,"
          << "BSM_PDR2,"
          << "BSM_PDR3,"

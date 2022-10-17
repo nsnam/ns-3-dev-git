@@ -28,7 +28,7 @@
  * NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI),
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  *
- * “TCP Westwood(+) Protocol Implementation in ns-3”
+ * "TCP Westwood(+) Protocol Implementation in ns-3"
  * Siddharth Gangadhar, Trúc Anh Ngọc Nguyễn , Greeshma Umapathi, and James P.G. Sterbenz,
  * ICST SIMUTools Workshop on ns-3 (WNS3), Cannes, France, March 2013
  */
@@ -552,13 +552,13 @@ main(int argc, char* argv[])
     {
         std::ofstream ascii;
         Ptr<OutputStreamWrapper> ascii_wrap;
-        ascii.open((prefix_file_name + "-ascii").c_str());
+        ascii.open(prefix_file_name + "-ascii");
         ascii_wrap = new OutputStreamWrapper(prefix_file_name + "-ascii", std::ios::out);
         stack.EnableAsciiIpv4All(ascii_wrap);
 
         for (uint16_t index = 0; index < num_flows; index++)
         {
-            std::string flowString("");
+            std::string flowString;
             if (num_flows > 1)
             {
                 flowString = "-flow" + std::to_string(index);

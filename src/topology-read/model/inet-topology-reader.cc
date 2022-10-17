@@ -64,7 +64,7 @@ NodeContainer
 InetTopologyReader::Read()
 {
     std::ifstream topgen;
-    topgen.open(GetFileName().c_str());
+    topgen.open(GetFileName());
     std::map<std::string, Ptr<Node>> nodeMap;
     NodeContainer nodes;
 

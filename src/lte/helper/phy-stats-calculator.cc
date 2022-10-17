@@ -130,14 +130,14 @@ PhyStatsCalculator::ReportCurrentCellRsrpSinr(uint16_t cellId,
                                               uint8_t componentCarrierId)
 {
     NS_LOG_FUNCTION(this << cellId << imsi << rnti << rsrp << sinr);
-    NS_LOG_INFO("Write RSRP/SINR Phy Stats in " << GetCurrentCellRsrpSinrFilename().c_str());
+    NS_LOG_INFO("Write RSRP/SINR Phy Stats in " << GetCurrentCellRsrpSinrFilename());
 
     if (m_RsrpSinrFirstWrite == true)
     {
-        m_rsrpOutFile.open(GetCurrentCellRsrpSinrFilename().c_str());
+        m_rsrpOutFile.open(GetCurrentCellRsrpSinrFilename());
         if (!m_rsrpOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetCurrentCellRsrpSinrFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetCurrentCellRsrpSinrFilename());
             return;
         }
         m_RsrpSinrFirstWrite = false;
@@ -162,14 +162,14 @@ PhyStatsCalculator::ReportUeSinr(uint16_t cellId,
                                  uint8_t componentCarrierId)
 {
     NS_LOG_FUNCTION(this << cellId << imsi << rnti << sinrLinear);
-    NS_LOG_INFO("Write SINR Linear Phy Stats in " << GetUeSinrFilename().c_str());
+    NS_LOG_INFO("Write SINR Linear Phy Stats in " << GetUeSinrFilename());
 
     if (m_UeSinrFirstWrite == true)
     {
-        m_ueSinrOutFile.open(GetUeSinrFilename().c_str());
+        m_ueSinrOutFile.open(GetUeSinrFilename());
         if (!m_ueSinrOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetUeSinrFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetUeSinrFilename());
             return;
         }
         m_UeSinrFirstWrite = false;
@@ -188,14 +188,14 @@ void
 PhyStatsCalculator::ReportInterference(uint16_t cellId, Ptr<SpectrumValue> interference)
 {
     NS_LOG_FUNCTION(this << cellId << interference);
-    NS_LOG_INFO("Write Interference Phy Stats in " << GetInterferenceFilename().c_str());
+    NS_LOG_INFO("Write Interference Phy Stats in " << GetInterferenceFilename());
 
     if (m_InterferenceFirstWrite == true)
     {
-        m_interferenceOutFile.open(GetInterferenceFilename().c_str());
+        m_interferenceOutFile.open(GetInterferenceFilename());
         if (!m_interferenceOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetInterferenceFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetInterferenceFilename());
             return;
         }
         m_InterferenceFirstWrite = false;

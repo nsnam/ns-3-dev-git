@@ -71,7 +71,7 @@ AsciiFile::Open(const std::string& filename, std::ios::openmode mode)
     NS_ASSERT((mode & std::ios::app) == 0);
     NS_ASSERT(!m_file.fail());
 
-    m_file.open(filename.c_str(), mode);
+    m_file.open(filename, mode);
 }
 
 void

@@ -108,14 +108,14 @@ MacStatsCalculator::DlScheduling(uint16_t cellId,
              << dlSchedulingCallbackInfo.subframeNo << dlSchedulingCallbackInfo.rnti
              << (uint32_t)dlSchedulingCallbackInfo.mcsTb1 << dlSchedulingCallbackInfo.sizeTb1
              << (uint32_t)dlSchedulingCallbackInfo.mcsTb2 << dlSchedulingCallbackInfo.sizeTb2);
-    NS_LOG_INFO("Write DL Mac Stats in " << GetDlOutputFilename().c_str());
+    NS_LOG_INFO("Write DL Mac Stats in " << GetDlOutputFilename());
 
     if (m_dlFirstWrite == true)
     {
-        m_dlOutFile.open(GetDlOutputFilename().c_str());
+        m_dlOutFile.open(GetDlOutputFilename());
         if (!m_dlOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetDlOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetDlOutputFilename());
             return;
         }
         m_dlFirstWrite = false;
@@ -149,14 +149,14 @@ MacStatsCalculator::UlScheduling(uint16_t cellId,
 {
     NS_LOG_FUNCTION(this << cellId << imsi << frameNo << subframeNo << rnti << (uint32_t)mcsTb
                          << size);
-    NS_LOG_INFO("Write UL Mac Stats in " << GetUlOutputFilename().c_str());
+    NS_LOG_INFO("Write UL Mac Stats in " << GetUlOutputFilename());
 
     if (m_ulFirstWrite == true)
     {
-        m_ulOutFile.open(GetUlOutputFilename().c_str());
+        m_ulOutFile.open(GetUlOutputFilename());
         if (!m_ulOutFile.is_open())
         {
-            NS_LOG_ERROR("Can't open file " << GetUlOutputFilename().c_str());
+            NS_LOG_ERROR("Can't open file " << GetUlOutputFilename());
             return;
         }
         m_ulFirstWrite = false;

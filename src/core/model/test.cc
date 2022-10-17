@@ -1073,7 +1073,7 @@ TestRunnerImpl::Run(int argc, char* argv[])
         {
             mode |= std::ios_base::trunc;
         }
-        ofs->open(out.c_str(), mode);
+        ofs->open(out, mode);
         os = ofs;
     }
     else

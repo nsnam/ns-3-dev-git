@@ -701,7 +701,7 @@ main(int argc, char* argv[])
     // for commandline input
     experiment.CommandSetup(argc, argv);
 
-    std::ofstream outfile((experiment.GetOutputFileName() + ".plt").c_str());
+    std::ofstream outfile(experiment.GetOutputFileName() + ".plt");
 
     MobilityHelper mobility;
     Gnuplot gnuplot;

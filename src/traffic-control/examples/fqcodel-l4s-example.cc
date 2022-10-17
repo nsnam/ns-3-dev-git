@@ -684,35 +684,35 @@ main(int argc, char* argv[])
     }
 
     std::ofstream pingOfStream;
-    pingOfStream.open(pingTraceFile.c_str(), std::ofstream::out);
+    pingOfStream.open(pingTraceFile, std::ofstream::out);
     std::ofstream n0TcpRttOfStream;
-    n0TcpRttOfStream.open(n0TcpRttTraceFile.c_str(), std::ofstream::out);
+    n0TcpRttOfStream.open(n0TcpRttTraceFile, std::ofstream::out);
     std::ofstream n0TcpCwndOfStream;
-    n0TcpCwndOfStream.open(n0TcpCwndTraceFile.c_str(), std::ofstream::out);
+    n0TcpCwndOfStream.open(n0TcpCwndTraceFile, std::ofstream::out);
     std::ofstream n0TcpThroughputOfStream;
-    n0TcpThroughputOfStream.open(n0TcpThroughputTraceFile.c_str(), std::ofstream::out);
+    n0TcpThroughputOfStream.open(n0TcpThroughputTraceFile, std::ofstream::out);
     std::ofstream n1TcpRttOfStream;
-    n1TcpRttOfStream.open(n1TcpRttTraceFile.c_str(), std::ofstream::out);
+    n1TcpRttOfStream.open(n1TcpRttTraceFile, std::ofstream::out);
     std::ofstream n1TcpCwndOfStream;
-    n1TcpCwndOfStream.open(n1TcpCwndTraceFile.c_str(), std::ofstream::out);
+    n1TcpCwndOfStream.open(n1TcpCwndTraceFile, std::ofstream::out);
     std::ofstream n1TcpThroughputOfStream;
-    n1TcpThroughputOfStream.open(n1TcpThroughputTraceFile.c_str(), std::ofstream::out);
+    n1TcpThroughputOfStream.open(n1TcpThroughputTraceFile, std::ofstream::out);
 
     // Queue disc files
     std::ofstream dropOfStream;
-    dropOfStream.open(dropTraceFile.c_str(), std::ofstream::out);
+    dropOfStream.open(dropTraceFile, std::ofstream::out);
     std::ofstream markOfStream;
-    markOfStream.open(markTraceFile.c_str(), std::ofstream::out);
+    markOfStream.open(markTraceFile, std::ofstream::out);
     std::ofstream dropsFrequencyOfStream;
-    dropsFrequencyOfStream.open(dropsFrequencyTraceFile.c_str(), std::ofstream::out);
+    dropsFrequencyOfStream.open(dropsFrequencyTraceFile, std::ofstream::out);
     std::ofstream marksFrequencyOfStream;
-    marksFrequencyOfStream.open(marksFrequencyTraceFile.c_str(), std::ofstream::out);
+    marksFrequencyOfStream.open(marksFrequencyTraceFile, std::ofstream::out);
     std::ofstream lengthOfStream;
-    lengthOfStream.open(lengthTraceFile.c_str(), std::ofstream::out);
+    lengthOfStream.open(lengthTraceFile, std::ofstream::out);
     std::ofstream queueDelayN0OfStream;
-    queueDelayN0OfStream.open(queueDelayN0TraceFile.c_str(), std::ofstream::out);
+    queueDelayN0OfStream.open(queueDelayN0TraceFile, std::ofstream::out);
     std::ofstream queueDelayN1OfStream;
-    queueDelayN1OfStream.open(queueDelayN1TraceFile.c_str(), std::ofstream::out);
+    queueDelayN1OfStream.open(queueDelayN1TraceFile, std::ofstream::out);
 
     ////////////////////////////////////////////////////////////
     // scenario setup                                         //

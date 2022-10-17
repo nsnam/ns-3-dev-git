@@ -44,7 +44,7 @@ ConvertContextToNodeId(std::string context)
 {
     std::string sub = context.substr(10);
     uint32_t pos = sub.find("/Device");
-    uint32_t nodeId = atoi(sub.substr(0, pos).c_str());
+    uint32_t nodeId = std::stoi(sub.substr(0, pos));
     return nodeId;
 }
 

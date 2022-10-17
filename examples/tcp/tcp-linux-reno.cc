@@ -60,7 +60,7 @@ CheckQueueSize(Ptr<QueueDisc> queue)
 
     // Check queue size every 1/100 of a second
     Simulator::Schedule(Seconds(0.001), &CheckQueueSize, queue);
-    std::ofstream fPlotQueue(std::stringstream(dir + "queue-size.dat").str().c_str(),
+    std::ofstream fPlotQueue(std::stringstream(dir + "queue-size.dat").str(),
                              std::ios::out | std::ios::app);
     fPlotQueue << Simulator::Now().GetSeconds() << " " << qSize << std::endl;
     fPlotQueue.close();

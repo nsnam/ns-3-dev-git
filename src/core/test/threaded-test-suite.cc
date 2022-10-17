@@ -272,7 +272,7 @@ ThreadedSimulatorEventsTestCase::DoRun()
     Simulator::Run();
     Simulator::Destroy();
 
-    NS_TEST_EXPECT_MSG_EQ(m_error.empty(), true, m_error.c_str());
+    NS_TEST_EXPECT_MSG_EQ(m_error.empty(), true, m_error);
     NS_TEST_EXPECT_MSG_EQ(m_a, m_b, "Bad scheduling");
     NS_TEST_EXPECT_MSG_EQ(m_a, m_c, "Bad scheduling");
     NS_TEST_EXPECT_MSG_EQ(m_a, m_d, "Bad scheduling");
