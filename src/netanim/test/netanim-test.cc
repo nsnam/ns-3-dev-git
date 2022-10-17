@@ -105,7 +105,7 @@ void
 AbstractAnimationInterfaceTestCase::CheckFileExistence()
 {
     FILE* fp = fopen(m_traceFileName, "r");
-    NS_TEST_ASSERT_MSG_NE(fp, 0, "Trace file was not created");
+    NS_TEST_ASSERT_MSG_NE(fp, nullptr, "Trace file was not created");
     fclose(fp);
     unlink(m_traceFileName);
 }

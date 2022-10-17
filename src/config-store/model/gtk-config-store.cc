@@ -43,7 +43,7 @@ GtkConfigStore::ConfigureDefaults()
     GtkWidget* view;
     GtkWidget* scroll;
 
-    gtk_init(0, 0);
+    gtk_init(nullptr, nullptr);
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "ns-3 Default attributes.");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 600);
@@ -54,7 +54,7 @@ GtkConfigStore::ConfigureDefaults()
     creator.Build(model);
 
     view = create_view_config_default(model);
-    scroll = gtk_scrolled_window_new(0, 0);
+    scroll = gtk_scrolled_window_new(nullptr, nullptr);
     gtk_container_add(GTK_CONTAINER(scroll), view);
 
     GtkWidget* vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -78,7 +78,7 @@ GtkConfigStore::ConfigureDefaults()
 
     gtk_main();
 
-    gtk_tree_model_foreach(GTK_TREE_MODEL(model), clean_model_callback_config_default, 0);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(model), clean_model_callback_config_default, nullptr);
 
     gtk_widget_destroy(window);
 }
@@ -90,7 +90,7 @@ GtkConfigStore::ConfigureAttributes()
     GtkWidget* view;
     GtkWidget* scroll;
 
-    gtk_init(0, 0);
+    gtk_init(nullptr, nullptr);
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "ns-3 Object attributes.");
@@ -103,7 +103,7 @@ GtkConfigStore::ConfigureAttributes()
     creator.Build(model);
 
     view = create_view(model);
-    scroll = gtk_scrolled_window_new(0, 0);
+    scroll = gtk_scrolled_window_new(nullptr, nullptr);
     gtk_container_add(GTK_CONTAINER(scroll), view);
 
     GtkWidget* vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -127,7 +127,7 @@ GtkConfigStore::ConfigureAttributes()
 
     gtk_main();
 
-    gtk_tree_model_foreach(GTK_TREE_MODEL(model), clean_model_callback, 0);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(model), clean_model_callback, nullptr);
 
     gtk_widget_destroy(window);
 }

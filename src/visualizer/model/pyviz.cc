@@ -501,7 +501,7 @@ PyViz::TraceDevQueueDrop(std::string context, Ptr<const Packet> packet)
         PacketSample lastPacket;
         lastPacket.time = Simulator::Now();
         lastPacket.packet = packet->Copy();
-        lastPacket.device = NULL;
+        lastPacket.device = nullptr;
         last.lastDroppedPackets.push_back(lastPacket);
         while (last.lastDroppedPackets.size() > captureOptions->numLastPackets)
         {

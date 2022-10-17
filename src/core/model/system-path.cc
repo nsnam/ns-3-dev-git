@@ -205,7 +205,7 @@ FindSelfDirectory()
     {
         uint32_t bufsize = 1024;
         char* buffer = (char*)malloc(bufsize);
-        NS_ASSERT(buffer != 0);
+        NS_ASSERT(buffer);
         int status = _NSGetExecutablePath(buffer, &bufsize);
         if (status == -1)
         {
@@ -228,7 +228,7 @@ FindSelfDirectory()
         mib[2] = KERN_PROC_PATHNAME;
         mib[3] = -1;
 
-        sysctl(mib, 4, buf, &bufSize, NULL, 0);
+        sysctl(mib, 4, buf, &bufSize, nullptr, 0);
         filename = buf;
     }
 #endif
@@ -318,10 +318,10 @@ MakeTemporaryDirectoryName()
     char* path = nullptr;
 
     path = std::getenv("TMP");
-    if (path == nullptr || std::strlen(path) == 0)
+    if (!path || std::strlen(path) == 0)
     {
         path = std::getenv("TEMP");
-        if (path == nullptr || std::strlen(path) == 0)
+        if (path || std::strlen(path) == 0)
         {
             path = const_cast<char*>("/tmp");
         }

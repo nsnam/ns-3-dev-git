@@ -230,7 +230,7 @@ GlobalRoutingLSA::ClearLinkRecords()
         delete p;
         p = nullptr;
 
-        *i = 0;
+        *i = nullptr;
     }
     NS_LOG_LOGIC("Clear list");
     m_linkRecords.clear();
@@ -565,7 +565,7 @@ GlobalRouter::ClearLSAs()
         delete p;
         p = nullptr;
 
-        *i = 0;
+        *i = nullptr;
     }
     NS_LOG_LOGIC("Clear list of LSAs");
     m_LSAs.clear();

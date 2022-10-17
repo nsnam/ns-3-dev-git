@@ -37,7 +37,7 @@ cell_data_function_col_1(GtkTreeViewColumn* col,
                          GtkTreeIter* iter,
                          gpointer user_data)
 {
-    ModelNode* node = 0;
+    ModelNode* node = nullptr;
     gtk_tree_model_get(model, iter, COL_NODE, &node, -1);
     if (!node)
     {
@@ -47,13 +47,13 @@ cell_data_function_col_1(GtkTreeViewColumn* col,
     {
         StringValue str;
         node->object->GetAttribute(node->name, str);
-        g_object_set(renderer, "text", str.Get().c_str(), (char*)0);
-        g_object_set(renderer, "editable", TRUE, (char*)0);
+        g_object_set(renderer, "text", str.Get().c_str(), nullptr);
+        g_object_set(renderer, "editable", TRUE, nullptr);
     }
     else
     {
-        g_object_set(renderer, "text", "", (char*)0);
-        g_object_set(renderer, "editable", FALSE, (char*)0);
+        g_object_set(renderer, "text", "", nullptr);
+        g_object_set(renderer, "editable", FALSE, nullptr);
     }
 }
 
@@ -68,9 +68,9 @@ cell_data_function_col_0(GtkTreeViewColumn* col,
                          GtkTreeIter* iter,
                          gpointer user_data)
 {
-    ModelNode* node = 0;
+    ModelNode* node = nullptr;
     gtk_tree_model_get(model, iter, COL_NODE, &node, -1);
-    g_object_set(renderer, "editable", FALSE, (char*)0);
+    g_object_set(renderer, "editable", FALSE, nullptr);
     if (!node)
     {
         return;
@@ -82,22 +82,22 @@ cell_data_function_col_0(GtkTreeViewColumn* col,
         g_object_set(renderer,
                      "text",
                      node->object->GetInstanceTypeId().GetName().c_str(),
-                     (char*)0);
+                     nullptr);
         break;
     case ModelNode::NODE_POINTER:
-        g_object_set(renderer, "text", node->name.c_str(), (char*)0);
+        g_object_set(renderer, "text", node->name.c_str(), nullptr);
         break;
     case ModelNode::NODE_VECTOR:
-        g_object_set(renderer, "text", node->name.c_str(), (char*)0);
+        g_object_set(renderer, "text", node->name.c_str(), nullptr);
         break;
     case ModelNode::NODE_VECTOR_ITEM: {
         std::stringstream oss;
         oss << node->index;
-        g_object_set(renderer, "text", oss.str().c_str(), (char*)0);
+        g_object_set(renderer, "text", oss.str().c_str(), nullptr);
     }
     break;
     case ModelNode::NODE_ATTRIBUTE:
-        g_object_set(renderer, "text", node->name.c_str(), (char*)0);
+        g_object_set(renderer, "text", node->name.c_str(), nullptr);
         break;
     }
 }
@@ -114,7 +114,7 @@ cell_edited_callback(GtkCellRendererText* cell,
     GtkTreeModel* model = GTK_TREE_MODEL(user_data);
     GtkTreeIter iter;
     gtk_tree_model_get_iter_from_string(model, &iter, path_string);
-    ModelNode* node = 0;
+    ModelNode* node = nullptr;
     gtk_tree_model_get(model, &iter, COL_NODE, &node, -1);
     if (!node)
     {
@@ -133,8 +133,8 @@ get_col_number_from_tree_view_column(GtkTreeViewColumn* col)
 {
     GList* cols;
     int num;
-    g_return_val_if_fail(col != 0, -1);
-    g_return_val_if_fail(gtk_tree_view_column_get_tree_view(col) != 0, -1);
+    g_return_val_if_fail(col != nullptr, -1);
+    g_return_val_if_fail(gtk_tree_view_column_get_tree_view(col) != nullptr, -1);
     cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(gtk_tree_view_column_get_tree_view(col)));
     num = g_list_index(cols, (gpointer)col);
     g_list_free(cols);
@@ -161,18 +161,24 @@ cell_tooltip_callback(GtkWidget* widget,
                                            &y,
                                            keyboard_tip,
                                            &model,
-                                           0,
+                                           nullptr,
                                            &iter))
     {
         return FALSE;
     }
-    if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(widget), x, y, 0, &column, 0, 0))
+    if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(widget),
+                                       x,
+                                       y,
+                                       nullptr,
+                                       &column,
+                                       nullptr,
+                                       nullptr))
     {
         return FALSE;
     }
     int col = get_col_number_from_tree_view_column(column);
 
-    ModelNode* node = 0;
+    ModelNode* node = nullptr;
     gtk_tree_model_get(model, &iter, COL_NODE, &node, -1);
     if (!node)
     {
@@ -263,7 +269,7 @@ create_view(GtkTreeStore* model)
     GtkWidget* view;
 
     view = gtk_tree_view_new();
-    g_object_set(view, "has-tooltip", TRUE, (char*)0);
+    g_object_set(view, "has-tooltip", TRUE, nullptr);
     g_signal_connect(view, "query-tooltip", (GCallback)cell_tooltip_callback, 0);
 
     gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(view), GTK_TREE_VIEW_GRID_LINES_BOTH);
@@ -274,8 +280,12 @@ create_view(GtkTreeStore* model)
     gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
     renderer = gtk_cell_renderer_text_new();
     gtk_tree_view_column_pack_start(col, renderer, TRUE);
-    gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_0, 0, 0);
-    g_object_set(renderer, "editable", FALSE, (char*)0);
+    gtk_tree_view_column_set_cell_data_func(col,
+                                            renderer,
+                                            cell_data_function_col_0,
+                                            nullptr,
+                                            nullptr);
+    g_object_set(renderer, "editable", FALSE, nullptr);
 
     col = gtk_tree_view_column_new();
     gtk_tree_view_column_set_title(col, "Attribute Value");
@@ -283,7 +293,11 @@ create_view(GtkTreeStore* model)
     renderer = gtk_cell_renderer_text_new();
     g_signal_connect(renderer, "edited", (GCallback)cell_edited_callback, model);
     gtk_tree_view_column_pack_start(col, renderer, TRUE);
-    gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_1, 0, 0);
+    gtk_tree_view_column_set_cell_data_func(col,
+                                            renderer,
+                                            cell_data_function_col_1,
+                                            nullptr,
+                                            nullptr);
 
     gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(model));
 
@@ -319,13 +333,13 @@ delete_event_callback(GtkWidget* widget, GdkEvent* event, gpointer user_data)
 gboolean
 clean_model_callback(GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer data)
 {
-    ModelNode* node = 0;
+    ModelNode* node = nullptr;
     gtk_tree_model_get(GTK_TREE_MODEL(model), iter, COL_NODE, &node, -1);
     if (node)
     {
         delete node;
     }
-    gtk_tree_store_set(GTK_TREE_STORE(model), iter, COL_NODE, (ModelNode*)0, -1);
+    gtk_tree_store_set(GTK_TREE_STORE(model), iter, COL_NODE, nullptr, -1);
     return FALSE;
 }
 
@@ -341,7 +355,7 @@ cell_data_function_col_1_config_default(GtkTreeViewColumn* col,
                                         GtkTreeIter* iter,
                                         gpointer user_data)
 {
-    ModelTypeid* node = 0;
+    ModelTypeid* node = nullptr;
     gtk_tree_model_get(model, iter, COL_TYPEID, &node, -1);
     if (!node)
     {
@@ -349,13 +363,13 @@ cell_data_function_col_1_config_default(GtkTreeViewColumn* col,
     }
     if (node->type == ModelTypeid::NODE_ATTRIBUTE)
     {
-        g_object_set(renderer, "text", node->defaultValue.c_str(), (char*)0);
-        g_object_set(renderer, "editable", TRUE, (char*)0);
+        g_object_set(renderer, "text", node->defaultValue.c_str(), nullptr);
+        g_object_set(renderer, "editable", TRUE, nullptr);
     }
     else
     {
-        g_object_set(renderer, "text", "", (char*)0);
-        g_object_set(renderer, "editable", FALSE, (char*)0);
+        g_object_set(renderer, "text", "", nullptr);
+        g_object_set(renderer, "editable", FALSE, nullptr);
     }
 }
 
@@ -369,9 +383,9 @@ cell_data_function_col_0_config_default(GtkTreeViewColumn* col,
                                         GtkTreeIter* iter,
                                         gpointer user_data)
 {
-    ModelTypeid* node = 0;
+    ModelTypeid* node = nullptr;
     gtk_tree_model_get(model, iter, COL_NODE, &node, -1);
-    g_object_set(renderer, "editable", FALSE, (char*)0);
+    g_object_set(renderer, "editable", FALSE, nullptr);
     if (!node)
     {
         return;
@@ -380,10 +394,10 @@ cell_data_function_col_0_config_default(GtkTreeViewColumn* col,
     switch (node->type)
     {
     case ModelTypeid::NODE_TYPEID:
-        g_object_set(renderer, "text", node->tid.GetName().c_str(), (char*)0);
+        g_object_set(renderer, "text", node->tid.GetName().c_str(), nullptr);
         break;
     case ModelTypeid::NODE_ATTRIBUTE:
-        g_object_set(renderer, "text", node->name.c_str(), (char*)0);
+        g_object_set(renderer, "text", node->name.c_str(), nullptr);
         break;
     }
 }
@@ -402,7 +416,7 @@ cell_edited_callback_config_default(GtkCellRendererText* cell,
     GtkTreeModel* model = GTK_TREE_MODEL(user_data);
     GtkTreeIter iter;
     gtk_tree_model_get_iter_from_string(model, &iter, path_string);
-    ModelTypeid* node = 0;
+    ModelTypeid* node = nullptr;
     gtk_tree_model_get(model, &iter, COL_NODE, &node, -1);
     if (!node)
     {
@@ -446,18 +460,24 @@ cell_tooltip_callback_config_default(GtkWidget* widget,
                                            &y,
                                            keyboard_tip,
                                            &model,
-                                           0,
+                                           nullptr,
                                            &iter))
     {
         return FALSE;
     }
-    if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(widget), x, y, 0, &column, 0, 0))
+    if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(widget),
+                                       x,
+                                       y,
+                                       nullptr,
+                                       &column,
+                                       nullptr,
+                                       nullptr))
     {
         return FALSE;
     }
     int col = get_col_number_from_tree_view_column(column);
 
-    ModelTypeid* node = 0;
+    ModelTypeid* node = nullptr;
     gtk_tree_model_get(model, &iter, COL_NODE, &node, -1);
     if (!node)
     {
@@ -651,7 +671,7 @@ create_view_config_default(GtkTreeStore* model)
     GtkWidget* view;
 
     view = gtk_tree_view_new();
-    g_object_set(view, "has-tooltip", TRUE, (char*)0);
+    g_object_set(view, "has-tooltip", TRUE, nullptr);
     g_signal_connect(view, "query-tooltip", (GCallback)cell_tooltip_callback_config_default, 0);
 
     gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(view), GTK_TREE_VIEW_GRID_LINES_BOTH);
@@ -665,9 +685,9 @@ create_view_config_default(GtkTreeStore* model)
     gtk_tree_view_column_set_cell_data_func(col,
                                             renderer,
                                             cell_data_function_col_0_config_default,
-                                            0,
-                                            0);
-    g_object_set(renderer, "editable", FALSE, (char*)0);
+                                            nullptr,
+                                            nullptr);
+    g_object_set(renderer, "editable", FALSE, nullptr);
 
     col = gtk_tree_view_column_new();
     gtk_tree_view_column_set_title(col, "Attribute Value");
@@ -678,8 +698,8 @@ create_view_config_default(GtkTreeStore* model)
     gtk_tree_view_column_set_cell_data_func(col,
                                             renderer,
                                             cell_data_function_col_1_config_default,
-                                            0,
-                                            0);
+                                            nullptr,
+                                            nullptr);
 
     gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(model));
 
@@ -697,13 +717,13 @@ clean_model_callback_config_default(GtkTreeModel* model,
                                     GtkTreeIter* iter,
                                     gpointer data)
 {
-    ModelTypeid* node = 0;
+    ModelTypeid* node = nullptr;
     gtk_tree_model_get(GTK_TREE_MODEL(model), iter, COL_TYPEID, &node, -1);
     if (node)
     {
         delete node;
     }
-    gtk_tree_store_set(GTK_TREE_STORE(model), iter, COL_TYPEID, (ModelTypeid*)0, -1);
+    gtk_tree_store_set(GTK_TREE_STORE(model), iter, COL_TYPEID, nullptr, -1);
     return FALSE;
 }
 

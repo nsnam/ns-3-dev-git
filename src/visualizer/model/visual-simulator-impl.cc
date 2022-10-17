@@ -119,7 +119,7 @@ VisualSimulatorImpl::Run()
 {
     if (!Py_IsInitialized())
     {
-        const wchar_t* argv[] = {L"python", NULL};
+        const wchar_t* argv[] = {L"python", nullptr};
         Py_Initialize();
         PySys_SetArgv(1, (wchar_t**)argv);
         PyRun_SimpleString("import visualizer\n"

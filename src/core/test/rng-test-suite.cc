@@ -135,7 +135,7 @@ RngUniformTestCase::ChiSquaredTest(Ptr<UniformRandomVariable> u)
 void
 RngUniformTestCase::DoRun()
 {
-    RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
+    RngSeedManager::SetSeed(static_cast<uint32_t>(time(nullptr)));
 
     double sum = 0.;
     double maxStatistic = gsl_cdf_chisq_Qinv(0.05, N_BINS);
@@ -242,7 +242,7 @@ RngNormalTestCase::ChiSquaredTest(Ptr<NormalRandomVariable> n)
 void
 RngNormalTestCase::DoRun()
 {
-    RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
+    RngSeedManager::SetSeed(static_cast<uint32_t>(time(nullptr)));
 
     double sum = 0.;
     double maxStatistic = gsl_cdf_chisq_Qinv(0.05, N_BINS);
@@ -348,7 +348,7 @@ RngExponentialTestCase::ChiSquaredTest(Ptr<ExponentialRandomVariable> e)
 void
 RngExponentialTestCase::DoRun()
 {
-    RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
+    RngSeedManager::SetSeed(static_cast<uint32_t>(time(nullptr)));
 
     double sum = 0.;
     double maxStatistic = gsl_cdf_chisq_Qinv(0.05, N_BINS);
@@ -457,7 +457,7 @@ RngParetoTestCase::ChiSquaredTest(Ptr<ParetoRandomVariable> p)
 void
 RngParetoTestCase::DoRun()
 {
-    RngSeedManager::SetSeed(static_cast<uint32_t>(time(0)));
+    RngSeedManager::SetSeed(static_cast<uint32_t>(time(nullptr)));
 
     double sum = 0.;
     double maxStatistic = gsl_cdf_chisq_Qinv(0.05, N_BINS);

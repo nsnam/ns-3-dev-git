@@ -29,7 +29,7 @@ void
 ModelTypeidCreator::Build(GtkTreeStore* treestore)
 {
     m_treestore = treestore;
-    m_iters.push_back(0);
+    m_iters.push_back(nullptr);
     Iterate();
     NS_ASSERT(m_iters.size() == 1);
 }

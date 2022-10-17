@@ -321,7 +321,7 @@ class TestCaseBase : public TestCase
             uint32_t seed;
             if (RngSeedManager::GetRun() == 0)
             {
-                seed = static_cast<uint32_t>(time(0));
+                seed = static_cast<uint32_t>(time(nullptr));
                 m_seedSet = true;
                 NS_LOG_DEBUG(
                     "Special run number value of zero; seeding with time of day: " << seed);

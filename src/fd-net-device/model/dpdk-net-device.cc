@@ -92,7 +92,7 @@ DpdkNetDevice::GetTypeId()
 }
 
 DpdkNetDevice::DpdkNetDevice()
-    : m_mempool(NULL)
+    : m_mempool(nullptr)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -205,7 +205,7 @@ DpdkNetDevice::HandleRx()
 
     for (uint16_t i = 0; i < m_rxBuffer->length; i++)
     {
-        struct rte_mbuf* pkt = NULL;
+        struct rte_mbuf* pkt = nullptr;
         pkt = m_rxBuffer->pkts[i];
 
         if (!pkt)
@@ -306,7 +306,7 @@ DpdkNetDevice::InitDpdk(int argc, char** argv, std::string dpdkDriver)
                                         RTE_MBUF_DEFAULT_BUF_SIZE,
                                         rte_socket_id());
 
-    if (m_mempool == NULL)
+    if (!m_mempool)
     {
         rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
     }
@@ -380,7 +380,7 @@ DpdkNetDevice::InitDpdk(int argc, char** argv, std::string dpdkDriver)
                                                             RTE_ETH_TX_BUFFER_SIZE(m_maxRxPktBurst),
                                                             0,
                                                             rte_eth_dev_socket_id(m_portId));
-    if (m_txBuffer == NULL || m_rxBuffer == NULL)
+    if (!m_txBuffer || !m_rxBuffer)
     {
         rte_exit(EXIT_FAILURE, "Cannot allocate buffer for rx/tx on port %u\n", m_portId);
     }
@@ -409,7 +409,7 @@ DpdkNetDevice::AllocateBuffer(size_t len)
     struct rte_mbuf* pkt = rte_pktmbuf_alloc(m_mempool);
     if (!pkt)
     {
-        return NULL;
+        return nullptr;
     }
     uint8_t* buf = rte_pktmbuf_mtod(pkt, uint8_t*);
     return buf;
@@ -435,7 +435,7 @@ DpdkNetDevice::Write(uint8_t* buffer, size_t length)
     struct rte_mbuf** pkt = new struct rte_mbuf*[1];
     int queueId = 0;
 
-    if (buffer == NULL || m_txBuffer->length == m_maxTxPktBurst)
+    if (!buffer || m_txBuffer->length == m_maxTxPktBurst)
     {
         NS_LOG_ERROR("Error allocating mbuf" << buffer);
         return -1;

@@ -508,7 +508,7 @@ FileHeaderTestCase::DoRun()
     //
     FILE* p = std::fopen(m_testFilename.c_str(), "r+b");
     NS_TEST_ASSERT_MSG_NE(p,
-                          0,
+                          nullptr,
                           "fopen("
                               << m_testFilename
                               << ") should have been able to open a correctly created pcap file");
@@ -650,7 +650,7 @@ FileHeaderTestCase::DoRun()
     //
     p = std::fopen(m_testFilename.c_str(), "r+b");
     NS_TEST_ASSERT_MSG_NE(p,
-                          0,
+                          nullptr,
                           "fopen("
                               << m_testFilename
                               << ") should have been able to open a correctly created pcap file");
@@ -806,7 +806,7 @@ RecordHeaderTestCase::DoRun()
     //
     FILE* p = std::fopen(m_testFilename.c_str(), "r+b");
     NS_TEST_ASSERT_MSG_NE(p,
-                          0,
+                          nullptr,
                           "fopen() should have been able to open a correctly created pcap file");
 
     //
@@ -978,7 +978,7 @@ RecordHeaderTestCase::DoRun()
     //
     p = std::fopen(m_testFilename.c_str(), "r+b");
     NS_TEST_ASSERT_MSG_NE(p,
-                          0,
+                          nullptr,
                           "fopen() should have been able to open a correctly created pcap file");
 
     //

@@ -2377,7 +2377,7 @@ OLSR::mac_failed (Ptr<Packet> p)
     }
 
   OLSR_link_tuple* link_tuple = state_.find_link_tuple (ch->next_hop ());
-  if (link_tuple != NULL)
+  if (link_tuple)
     {
       link_tuple->lost_time () = now + OLSR_NEIGHB_HOLD_TIME;
       link_tuple->time ()      = now + OLSR_NEIGHB_HOLD_TIME;

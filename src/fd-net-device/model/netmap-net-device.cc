@@ -151,7 +151,7 @@ NetmapNetDeviceFdReader::DoRead()
             // advance the netmap pointers and sync the fd
             rxring->head = rxring->cur = nm_ring_next(rxring, i);
 
-            ioctl(m_fd, NIOCRXSYNC, NULL);
+            ioctl(m_fd, NIOCRXSYNC, nullptr);
 
             break;
         }
@@ -328,7 +328,7 @@ NetmapNetDevice::SyncAndNotifyQueue()
     {
         // we sync the netmap ring periodically.
         // the traffic control layer can write packets during the period between two syncs.
-        ioctl(GetFileDescriptor(), NIOCTXSYNC, NULL);
+        ioctl(GetFileDescriptor(), NIOCTXSYNC, nullptr);
 
         // we need of a nearly periodic notification to queue limits of the transmitted bytes.
         uint32_t totalTransmittedBytes = m_totalQueuedBytes - GetBytesInNetmapTxRing();
@@ -353,7 +353,7 @@ NetmapNetDevice::SyncAndNotifyQueue()
         NS_LOG_DEBUG("Space in the netmap ring of " << nm_ring_space(txring) << " packets");
     }
 
-    ioctl(GetFileDescriptor(), NIOCTXSYNC, NULL);
+    ioctl(GetFileDescriptor(), NIOCTXSYNC, nullptr);
 }
 
 ssize_t
