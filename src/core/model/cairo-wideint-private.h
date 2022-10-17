@@ -356,11 +356,11 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num,
 
 #undef I
 
+    // clang-format on
+    // NOLINTEND
+
 #ifdef __cplusplus
 };
 #endif
-
-    // clang-format on
-    // NOLINTEND
 
 #endif /* CAIRO_WIDEINT_H */

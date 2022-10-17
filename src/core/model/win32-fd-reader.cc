@@ -16,6 +16,7 @@
  *
  * Author: Tom Goff <thomas.goff@boeing.com>
  */
+
 #include "fatal-error.h"
 #include "fd-reader.h"
 #include "log.h"
@@ -27,7 +28,7 @@
 #include <fcntl.h>
 #include <winsock.h>
 
-//#define pipe(fds) _pipe(fds,4096, _O_BINARY)
+// #define pipe(fds) _pipe(fds,4096, _O_BINARY)
 
 /**
  * \file
