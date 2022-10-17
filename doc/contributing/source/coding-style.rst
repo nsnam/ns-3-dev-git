@@ -881,57 +881,108 @@ Compilers will typically issue warnings on unused entities (e.g., variables,
 function parameters). Use the ``[[maybe_unused]]`` attribute to suppress
 such warnings when the entity may be unused depending on how the code
 is compiled (e.g., if the entity is only used in a logging statement or
-an assert statement). Example (parameter ``p`` is only used for logging):
+an assert statement).
 
-.. sourcecode:: cpp
+The general guidelines are as follows:
 
-  void
-  TcpSocketBase::CompleteFork(Ptr<Packet> p [[maybe_unused]],
-                              const TcpHeader& h,
-                              const Address& fromAddress,
-                              const Address& toAddress)
-  {
-      NS_LOG_FUNCTION(this << p << h << fromAddress << toAddress);
-      ...
-  }
+- If a function's or a method's parameter is definitely unused,
+  prefer to leave it unnamed. In the following example, the second
+  parameter is unnamed.
 
-In function or method parameters, if the parameter is definitely unused,
-it should be left unnamed. Example (second parameter is not used):
+  .. sourcecode:: cpp
 
-.. sourcecode:: cpp
+    void
+    UanMacAloha::RxPacketGood(Ptr<Packet> pkt, double, UanTxMode txMode)
+    {
+        UanHeaderCommon header;
+        pkt->RemoveHeader(header);
+        ...
+    }
 
-  void
-  UanMacAloha::RxPacketGood(Ptr<Packet> pkt, double, UanTxMode txMode)
-  {
-      UanHeaderCommon header;
-      pkt->RemoveHeader(header);
-      ...
-  }
+  In this case, the parameter is also not referenced by Doxygen; e.g.,:
 
-In this case, the parameter is also not referenced by Doxygen; e.g.,:
+  .. sourcecode:: cpp
 
-.. sourcecode:: cpp
+    /**
+     * Receive packet from lower layer (passed to PHY as callback).
+     *
+     * \param pkt Packet being received.
+     * \param txMode Mode of received packet.
+     */
+    void RxPacketGood(Ptr<Packet> pkt, double, UanTxMode txMode);
 
-  /**
-   * Receive packet from lower layer (passed to PHY as callback).
-   *
-   * \param pkt Packet being received.
-   * \param txMode Mode of received packet.
-   */
-  void RxPacketGood(Ptr<Packet> pkt, double, UanTxMode txMode);
+  The omission is preferred to commenting out unused parameters, such as:
 
-The omission is preferred to commenting out unused parameters, such as:
+  .. sourcecode:: cpp
 
-.. sourcecode:: cpp
+    void
+    UanMacAloha::RxPacketGood(Ptr<Packet> pkt, double /*sinr*/, UanTxMode txMode)
+    {
+        UanHeaderCommon header;
+        pkt->RemoveHeader(header);
+        ...
+    }
 
-  void
-  UanMacAloha::RxPacketGood(Ptr<Packet> pkt, double /*sinr*/, UanTxMode txMode)
-  {
-      UanHeaderCommon header;
-      pkt->RemoveHeader(header);
-      ...
-  }
+- If a function's parameter is only used in certain cases (e.g., logging),
+  or it is part of the function's Doxygen, mark it as ``[[maybe_unused]]``.
 
+  .. sourcecode:: cpp
+
+    void
+    TcpSocketBase::CompleteFork(Ptr<Packet> p [[maybe_unused]],
+                                const TcpHeader& h,
+                                const Address& fromAddress,
+                                const Address& toAddress)
+    {
+        NS_LOG_FUNCTION(this << p << h << fromAddress << toAddress);
+
+        // Remaining code that definitely uses 'h', 'fromAddress' and 'toAddress'
+        ...
+    }
+
+- If a local variable saves the result of a function that must always run,
+  but whose value may not be used, declare it ``[[maybe_unused]]``.
+
+  .. sourcecode:: cpp
+
+    void
+    MyFunction()
+    {
+        int result [[maybe_unused]] = MandatoryFunction();
+        NS_LOG_DEBUG("result = " << result);
+    }
+
+- If a local variable saves the result of a function that is only run in
+  certain cases, prefer to not declare the variable and use the function's
+  return value directly where needed. This avoids unnecessarily calling the
+  function if its result is not used.
+
+  .. sourcecode:: cpp
+
+    void
+    MyFunction()
+    {
+        // Prefer to call GetDebugInfo() directly on the log statement
+        NS_LOG_DEBUG("Debug information: " << GetDebugInfo());
+
+        // Avoid declaring a local variable with the result of GetDebugInfo()
+        int debugInfo [[maybe_unused]] = GetDebugInfo();
+        NS_LOG_DEBUG("Debug information: " << debugInfo);
+    }
+
+  If the calculation of the maybe unused variable is complex, consider wrapping
+  the calculation of its value in a conditional block that is only run if the
+  variable is used.
+
+  .. sourcecode:: cpp
+
+    if (g_log.IsEnabled(ns3::LOG_DEBUG))
+    {
+        auto debugInfo = GetDebugInfo();
+        auto value = DoComplexCalculation(debugInfo);
+
+        NS_LOG_DEBUG("The value is " << value);
+    }
 
 Unnecessary else after return
 =============================
