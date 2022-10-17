@@ -316,7 +316,7 @@ CreateTap(const char* dev,
     // configured a network tap that we are just going to use.  So don't mess
     // up his hard work by changing anything, just return the tap fd.
     //
-    if (strcmp(mode, "2") == 0 || strcmp(mode, "3") == 0)
+    if (std::string(mode) == "2" || std::string(mode) == "3")
     {
         LOG("Returning precreated tap ");
         return tap;

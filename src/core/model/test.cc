@@ -907,76 +907,76 @@ TestRunnerImpl::Run(int argc, char* argv[])
 
     while (*argi != nullptr)
     {
-        char* arg = *argi;
+        std::string arg = *argi;
 
-        if (strcmp(arg, "--assert-on-failure") == 0)
+        if (arg == "--assert-on-failure")
         {
             m_assertOnFailure = true;
         }
-        else if (strcmp(arg, "--stop-on-failure") == 0)
+        else if (arg == "--stop-on-failure")
         {
             m_continueOnFailure = false;
         }
-        else if (strcmp(arg, "--verbose") == 0)
+        else if (arg == "--verbose")
         {
             m_verbose = true;
         }
-        else if (strcmp(arg, "--print-temp-dir") == 0)
+        else if (arg == "--print-temp-dir")
         {
             printTempDir = true;
         }
-        else if (strcmp(arg, "--update-data") == 0)
+        else if (arg == "--update-data")
         {
             m_updateData = true;
         }
-        else if (strcmp(arg, "--help") == 0)
+        else if (arg == "--help")
         {
             PrintHelp(progname);
             return 0;
         }
-        else if (strcmp(arg, "--print-test-name-list") == 0 || strcmp(arg, "--list") == 0)
+        else if (arg == "--print-test-name-list" || arg == "--list")
         {
             printTestNameList = true;
         }
-        else if (strcmp(arg, "--print-test-types") == 0)
+        else if (arg == "--print-test-types")
         {
             printTestTypeAndName = true;
         }
-        else if (strcmp(arg, "--print-test-type-list") == 0)
+        else if (arg == "--print-test-type-list")
         {
             printTestTypeList = true;
         }
-        else if (strcmp(arg, "--append") == 0)
+        else if (arg == "--append")
         {
             append = true;
         }
-        else if (strcmp(arg, "--xml") == 0)
+        else if (arg == "--xml")
         {
             xml = true;
         }
-        else if (strncmp(arg, "--test-type=", strlen("--test-type=")) == 0)
+        else if (arg.find("--test-type=") != std::string::npos)
         {
-            testTypeString = arg + strlen("--test-type=");
+            testTypeString = arg.substr(arg.find_first_of('=') + 1);
         }
-        else if (strncmp(arg, "--test-name=", strlen("--test-name=")) == 0)
+        else if (arg.find("--test-name=") != std::string::npos)
         {
-            testName = arg + strlen("--test-name=");
+            testName = arg.substr(arg.find_first_of('=') + 1);
         }
-        else if (strncmp(arg, "--suite=", strlen("--suite=")) == 0)
+        else if (arg.find("--suite=") != std::string::npos)
         {
-            testName = arg + strlen("--suite=");
+            testName = arg.substr(arg.find_first_of('=') + 1);
         }
-        else if (strncmp(arg, "--tempdir=", strlen("--tempdir=")) == 0)
+        else if (arg.find("--tempdir=") != std::string::npos)
         {
-            m_tempDir = arg + strlen("--tempdir=");
+            m_tempDir = arg.substr(arg.find_first_of('=') + 1);
         }
-        else if (strncmp(arg, "--out=", strlen("--out=")) == 0)
+        else if (arg.find("--out=") != std::string::npos)
         {
-            out = arg + strlen("--out=");
+            out = arg.substr(arg.find_first_of('=') + 1);
         }
-        else if (strncmp(arg, "--fullness=", strlen("--fullness=")) == 0)
+        else if (arg.find("--fullness=") != std::string::npos)
         {
-            fullness = arg + strlen("--fullness=");
+            fullness = arg.substr(arg.find_first_of('=') + 1);
 
             // Set the maximum test length allowed.
             if (fullness == "QUICK")
