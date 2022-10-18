@@ -233,7 +233,7 @@ LteX2HandoverTestCase::DoRun()
     Config::Reset();
     // This test is sensitive to random variable stream assigments
     RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(2);
+    RngSeedManager::SetRun(3);
     Config::SetDefault("ns3::UdpClient::Interval", TimeValue(m_udpClientInterval));
     Config::SetDefault("ns3::UdpClient::MaxPackets", UintegerValue(1000000));
     Config::SetDefault("ns3::UdpClient::PacketSize", UintegerValue(m_udpClientPktSize));
