@@ -35,6 +35,7 @@ namespace ns3
 {
 
 class PointToPointHelper;
+class Ipv4AddressHelper;
 
 /**
  * \defgroup brite BRITE Topology Generator
