@@ -24,6 +24,24 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("DirectIP");
 
+const uint8_t HG_TCP = 146;
+
+void send_packet(Ptr<Node> src, 
+                 const Ipv4Address& saddr,
+                 const Ipv4Address& daddr,
+                 Ptr<NetDevice> oif){
+
+  Ptr<Packet> packet = Create<Packet> (100);
+  Ptr<Ipv4> ipv4 = src->GetObject<Ipv4>();
+  Ipv4Header header;
+  header.SetSource(saddr);
+  header.SetDestination(daddr);
+  header.SetProtocol(HG_TCP);
+  Socket::SocketErrno errno_;
+  Ptr<Ipv4Route> route;
+  route = ipv4->GetRoutingProtocol()->RouteOutput(packet, header, oif, errno_);
+  ipv4->Send(packet, saddr, daddr, HG_TCP, route);
+}
 
 int 
 main (int argc, char *argv[])
@@ -85,7 +103,17 @@ main (int argc, char *argv[])
     }
 
     NS_LOG_UNCOND("");
-  }  
+  } 
+
+  // Send a packet
+  Ptr<Node> src = *nodes.Begin();
+  Ptr<Ipv4Interface> src_intf = src->GetObject<Ipv4L3Protocol>()->GetInterface(1); 
+  Ipv4Address saddr = src_intf->GetAddress(0).GetAddress();
+  NS_LOG_UNCOND("Source address: " << saddr);
+  Ptr<Node> dst = *(nodes.End() - 1);
+  Ipv4Address daddr = dst->GetObject<Ipv4L3Protocol>()->GetInterface(1)->GetAddress(0).GetAddress();
+  NS_LOG_UNCOND("Destination address: " << daddr);
+  Simulator::Schedule(Seconds(1), &send_packet, src, saddr, daddr, src_intf->GetDevice());
 
   Simulator::Run ();
   Simulator::Destroy ();
