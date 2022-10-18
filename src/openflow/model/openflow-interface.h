@@ -77,19 +77,25 @@ extern "C"
 }
 
 // Capabilities supported by this implementation.
+#ifndef OFP_SUPPORTED_CAPABILITIES
 #define OFP_SUPPORTED_CAPABILITIES                                                                 \
     (OFPC_FLOW_STATS | OFPC_TABLE_STATS | OFPC_PORT_STATS | OFPC_MULTI_PHY_TX | OFPC_VPORT_TABLE)
+#endif
 
 // Actions supported by this implementation.
+#ifndef OFP_SUPPORTED_ACTIONS
 #define OFP_SUPPORTED_ACTIONS                                                                      \
     ((1 << OFPAT_OUTPUT) | (1 << OFPAT_SET_VLAN_VID) | (1 << OFPAT_SET_VLAN_PCP) |                 \
      (1 << OFPAT_STRIP_VLAN) | (1 << OFPAT_SET_DL_SRC) | (1 << OFPAT_SET_DL_DST) |                 \
      (1 << OFPAT_SET_NW_SRC) | (1 << OFPAT_SET_NW_DST) | (1 << OFPAT_SET_TP_SRC) |                 \
      (1 << OFPAT_SET_TP_DST) | (1 << OFPAT_SET_MPLS_LABEL) | (1 << OFPAT_SET_MPLS_EXP))
+#endif
 
+#ifndef OFP_SUPPORTED_VPORT_TABLE_ACTIONS
 #define OFP_SUPPORTED_VPORT_TABLE_ACTIONS                                                          \
     ((1 << OFPPAT_OUTPUT) | (1 << OFPPAT_POP_MPLS) | (1 << OFPPAT_PUSH_MPLS) |                     \
      (1 << OFPPAT_SET_MPLS_LABEL) | (1 << OFPPAT_SET_MPLS_EXP))
+#endif
 
 namespace ns3
 {
