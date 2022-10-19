@@ -128,8 +128,8 @@ def skip_directory(dirpath: str) -> bool:
 
     _, directory = os.path.split(dirpath)
 
-    return directory in DIRECTORIES_TO_SKIP or \
-        (directory.startswith('.') and directory != '.')
+    return (directory in DIRECTORIES_TO_SKIP or
+            (directory.startswith('.') and directory != '.'))
 
 
 def skip_file_formatting(filename: str) -> bool:
@@ -155,8 +155,8 @@ def skip_file_whitespace(filename: str) -> bool:
 
     basename, extension = os.path.splitext(os.path.split(filename)[1])
 
-    return basename not in FILES_TO_CHECK_WHITESPACE and \
-        extension not in FILE_EXTENSIONS_TO_CHECK_WHITESPACE
+    return (basename not in FILES_TO_CHECK_WHITESPACE and
+            extension not in FILE_EXTENSIONS_TO_CHECK_WHITESPACE)
 
 
 def skip_file_tabs(filename: str) -> bool:
