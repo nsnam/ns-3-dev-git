@@ -731,14 +731,8 @@ QosTxop::AddBaResponseTimeout(Mac48Address recipient, uint8_t tid)
     // If agreement is still pending, ADDBA response is not received
     if (m_baManager->ExistsAgreementInState(recipient, tid, OriginatorBlockAckAgreement::PENDING))
     {
-        m_baManager->NotifyAgreementNoReply(recipient, tid);
+        NotifyAgreementNoReply(recipient, tid);
         Simulator::Schedule(m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
-        GenerateBackoff(SINGLE_LINK_OP_ID);
-        if (HasFramesToTransmit(SINGLE_LINK_OP_ID) &&
-            GetLink(SINGLE_LINK_OP_ID).access == NOT_REQUESTED)
-        {
-            m_mac->GetChannelAccessManager(SINGLE_LINK_OP_ID)->RequestAccess(this);
-        }
     }
 }
 
