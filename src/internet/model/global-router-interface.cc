@@ -662,7 +662,8 @@ GlobalRouter::DiscoverLSAs()
         // IP addresses in routing.
         //
         int32_t interfaceNumber = ipv4Local->GetInterfaceForDevice(ndLocal);
-        if (interfaceNumber == -1 || !(ipv4Local->IsUp(interfaceNumber) && ipv4Local->IsForwarding(interfaceNumber)))
+        if (interfaceNumber == -1 ||
+            !(ipv4Local->IsUp(interfaceNumber) && ipv4Local->IsForwarding(interfaceNumber)))
         {
             NS_LOG_LOGIC("Net device "
                          << ndLocal
