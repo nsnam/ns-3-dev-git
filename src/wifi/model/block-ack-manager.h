@@ -40,8 +40,6 @@ class MgtAddBaRequestHeader;
 class CtrlBAckResponseHeader;
 class CtrlBAckRequestHeader;
 class WifiMacQueue;
-class WifiMode;
-class Packet;
 
 /**
  * \ingroup wifi
@@ -101,29 +99,21 @@ class BlockAckManager : public Object
      * \param bamMap an AC-indexed map of all the Block Ack Managers installed on this device
      */
     void SetBlockAckManagerMap(const std::map<AcIndex, Ptr<BlockAckManager>>& bamMap);
+
+    /// optional const reference to OriginatorBlockAckAgreement
+    using OriginatorAgreementOptConstRef =
+        std::optional<std::reference_wrapper<const OriginatorBlockAckAgreement>>;
+
     /**
-     * \param recipient Address of peer station involved in block ack mechanism.
-     * \param tid Traffic ID.
+     * \param recipient MAC address of the recipient
+     * \param tid Traffic ID
      *
-     * \return true  if a block ack agreement exists, false otherwise
+     * \return a const reference to the block ack agreement with the given recipient, if it exists
      *
-     * Checks if a block ack agreement exists with station addressed by
-     * <i>recipient</i> for TID <i>tid</i>.
+     * Check if we are the originator of an existing block ack agreement with the given recipient.
      */
-    bool ExistsAgreement(Mac48Address recipient, uint8_t tid) const;
-    /**
-     * \param recipient Address of peer station involved in block ack mechanism.
-     * \param tid Traffic ID.
-     * \param state The state for block ack agreement
-     *
-     * \return true if a block ack agreement exists, false otherwise
-     *
-     * Checks if a block ack agreement with a state equals to <i>state</i> exists with
-     * station addressed by <i>recipient</i> for TID <i>tid</i>.
-     */
-    bool ExistsAgreementInState(Mac48Address recipient,
-                                uint8_t tid,
-                                OriginatorBlockAckAgreement::State state) const;
+    OriginatorAgreementOptConstRef GetAgreementAsOriginator(Mac48Address recipient,
+                                                            uint8_t tid) const;
     /**
      * \param reqHdr Relative Add block ack request (action frame).
      * \param recipient Address of peer station involved in block ack mechanism.
@@ -302,20 +292,6 @@ class BlockAckManager : public Object
      */
     void SetUnblockDestinationCallback(Callback<void, Mac48Address, uint8_t> callback);
 
-    /**
-     * \param recipient the destination address
-     * \param tid the Traffic ID
-     * \param startingSeq the starting sequence number
-     *
-     * \return true if there are packets in the queue that could be sent under block ack,
-     *         false otherwise
-     *
-     * Checks if there are in the queue other packets that could be send under block ack.
-     * If yes adds these packets in current block ack exchange.
-     * However, number of packets exchanged in the current block ack, will not exceed
-     * the value of BufferSize in the corresponding OriginatorBlockAckAgreement object.
-     */
-    bool SwitchToBlockAckIfNeeded(Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
     /**
      * This function returns true if a block ack agreement is established with the
      * given recipient for the given TID and there is at least an outstanding MPDU

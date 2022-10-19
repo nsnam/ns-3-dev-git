@@ -266,9 +266,8 @@ QosTxop::GetBaManager()
 bool
 QosTxop::GetBaAgreementEstablished(Mac48Address address, uint8_t tid) const
 {
-    return m_baManager->ExistsAgreementInState(address,
-                                               tid,
-                                               OriginatorBlockAckAgreement::ESTABLISHED);
+    auto agreement = m_baManager->GetAgreementAsOriginator(address, tid);
+    return agreement && agreement->get().IsEstablished();
 }
 
 uint16_t
@@ -728,7 +727,8 @@ QosTxop::AddBaResponseTimeout(Mac48Address recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     // If agreement is still pending, ADDBA response is not received
-    if (m_baManager->ExistsAgreementInState(recipient, tid, OriginatorBlockAckAgreement::PENDING))
+    if (auto agreement = m_baManager->GetAgreementAsOriginator(recipient, tid);
+        agreement && agreement->get().IsPending())
     {
         NotifyAgreementNoReply(recipient, tid);
         Simulator::Schedule(m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
@@ -743,10 +743,8 @@ QosTxop::ResetBa(Mac48Address recipient, uint8_t tid)
     // before this function is called, a DELBA request may arrive, which causes
     // the agreement to be deleted. Hence, check if an agreement exists before
     // notifying that the agreement has to be reset.
-    if (m_baManager->ExistsAgreement(recipient, tid) &&
-        !m_baManager->ExistsAgreementInState(recipient,
-                                             tid,
-                                             OriginatorBlockAckAgreement::ESTABLISHED))
+    if (auto agreement = m_baManager->GetAgreementAsOriginator(recipient, tid);
+        agreement && !agreement->get().IsEstablished())
     {
         m_baManager->NotifyAgreementReset(recipient, tid);
     }

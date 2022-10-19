@@ -113,10 +113,8 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
     {
         establish = false;
     }
-    else if (qosTxop->GetBaManager()->ExistsAgreement(recipient, tid) &&
-             !qosTxop->GetBaManager()->ExistsAgreementInState(recipient,
-                                                              tid,
-                                                              OriginatorBlockAckAgreement::RESET))
+    else if (auto agreement = qosTxop->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
+             agreement && !agreement->get().IsReset())
     {
         establish = false;
     }
@@ -700,9 +698,8 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
             {
                 recipient = *mldAddr;
             }
-            if (GetBaManager(tid)->ExistsAgreementInState(recipient,
-                                                          tid,
-                                                          OriginatorBlockAckAgreement::PENDING))
+            if (auto agreement = GetBaManager(tid)->GetAgreementAsOriginator(recipient, tid);
+                agreement && agreement->get().IsPending())
             {
                 NS_LOG_DEBUG("No ACK after ADDBA request");
                 Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
@@ -1279,9 +1276,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
             // if a BA agreement exists, we can get here if there is no outstanding
             // MPDU whose lifetime has not expired yet.
             GetWifiRemoteStationManager()->ReportFinalDataFailed(*psdu->begin());
-            if (GetBaManager(tid)->ExistsAgreementInState(recipient,
-                                                          tid,
-                                                          OriginatorBlockAckAgreement::ESTABLISHED))
+            if (edca->GetBaAgreementEstablished(recipient, tid))
             {
                 // schedule a BlockAckRequest with skipIfNoDataQueued set to true, so that the
                 // BlockAckRequest is only sent if there are data frames queued for this recipient.
