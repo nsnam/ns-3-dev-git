@@ -419,8 +419,10 @@ def print_and_buffer(message):
 
 def clean_cmake_artifacts(dry_run=False):
     print_and_buffer("rm -R %s" % os.path.relpath(out_dir, ns3_path))
-
     if not dry_run:
+        if out_dir == ns3_path:
+            raise Exception("The output directory and the ns-3 directory are the same. "
+                            "Deleting it can cause data loss.")
         shutil.rmtree(out_dir, ignore_errors=True)
 
     cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path, recursive=True)
@@ -428,6 +430,9 @@ def clean_cmake_artifacts(dry_run=False):
         dirname = os.path.dirname(cmake_cache_file)
         print_and_buffer("rm -R %s" % os.path.relpath(dirname, ns3_path))
         if not dry_run:
+            if dirname == ns3_path:
+                raise Exception("The CMake cache directory and the ns-3 directory are the same. "
+                                "Deleting it can cause data loss.")
             shutil.rmtree(dirname, ignore_errors=True)
 
     if os.path.exists(lock_file):
