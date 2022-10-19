@@ -690,7 +690,8 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
     {
         WifiActionHeader actionHdr;
         mpdu->GetPacket()->PeekHeader(actionHdr);
-        if (actionHdr.GetCategory() == WifiActionHeader::BLOCK_ACK)
+        if (actionHdr.GetCategory() == WifiActionHeader::BLOCK_ACK &&
+            actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
         {
             uint8_t tid = GetTid(mpdu->GetPacket(), mpdu->GetHeader());
             auto recipient = mpdu->GetHeader().GetAddr1();
