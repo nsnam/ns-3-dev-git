@@ -68,6 +68,12 @@ DIRECTORIES_TO_SKIP = [
     'testpy-output',
 ]
 
+# List of files entirely copied from elsewhere that should not be checked,
+# in order to optimize the performance of this script
+FILES_TO_SKIP = [
+    'valgrind.h',
+]
+
 FILE_EXTENSIONS_TO_CHECK_FORMATTING = [
     '.c',
     '.cc',
@@ -139,42 +145,57 @@ def skip_directory(dirpath: str) -> bool:
             (directory.startswith('.') and directory != '.'))
 
 
-def skip_file_formatting(filename: str) -> bool:
+def skip_file_formatting(path: str) -> bool:
     """
     Check if a file should be skipped from formatting analysis.
 
-    @param filename Name of the file.
+    @param path Path to the file.
     @return Whether the file should be skipped or not.
     """
 
-    _, extension = os.path.splitext(os.path.split(filename)[1])
+    filename = os.path.split(path)[1]
+
+    if filename in FILES_TO_SKIP:
+        return True
+
+    _, extension = os.path.splitext(filename)
 
     return extension not in FILE_EXTENSIONS_TO_CHECK_FORMATTING
 
 
-def skip_file_whitespace(filename: str) -> bool:
+def skip_file_whitespace(path: str) -> bool:
     """
     Check if a file should be skipped from trailing whitespace analysis.
 
-    @param filename Name of the file.
+    @param path Path to the file.
     @return Whether the file should be skipped or not.
     """
 
-    basename, extension = os.path.splitext(os.path.split(filename)[1])
+    filename = os.path.split(path)[1]
+
+    if filename in FILES_TO_SKIP:
+        return True
+
+    basename, extension = os.path.splitext(filename)
 
     return (basename not in FILES_TO_CHECK_WHITESPACE and
             extension not in FILE_EXTENSIONS_TO_CHECK_WHITESPACE)
 
 
-def skip_file_tabs(filename: str) -> bool:
+def skip_file_tabs(path: str) -> bool:
     """
     Check if a file should be skipped from tabs analysis.
 
-    @param filename Name of the file.
+    @param path Path to the file.
     @return Whether the file should be skipped or not.
     """
 
-    _, extension = os.path.splitext(os.path.split(filename)[1])
+    filename = os.path.split(path)[1]
+
+    if filename in FILES_TO_SKIP:
+        return True
+
+    _, extension = os.path.splitext(filename)
 
     return extension not in FILE_EXTENSIONS_TO_CHECK_TABS
 
