@@ -1,6 +1,10 @@
 import builtins
+from copy import copy
+from functools import cache
+import glob
 import os.path
 import sys
+import sysconfig
 import re
 
 
@@ -26,8 +30,138 @@ def find_ns3_lock():
     return path_to_lock
 
 
+SYSTEM_LIBRARY_DIRECTORIES = (sysconfig.get_config_var("LIBDIR"),
+                              os.path.dirname(sysconfig.get_config_var("LIBDIR"))
+                              )
+DYNAMIC_LIBRARY_EXTENSIONS = {"linux": "so",
+                              "win32": "dll",
+                              "darwin": "dylib"
+                              }
+LIBRARY_EXTENSION = DYNAMIC_LIBRARY_EXTENSIONS[sys.platform]
+
+
+def trim_library_path(library_path: str) -> str:
+    trimmed_library_path = os.path.basename(library_path)
+
+    # Remove lib prefix if it exists and extensions
+    trimmed_library_path = trimmed_library_path.split(".")[0]
+    if trimmed_library_path[0:3] == "lib":
+        trimmed_library_path = trimmed_library_path[3:]
+    return trimmed_library_path
+
+
+@cache
+def _search_libraries() -> dict:
+    # Otherwise, search for ns-3 libraries
+    # Should be the case when ns-3 is installed as a package
+    env_sep = ";" if sys.platform == "win32" else ":"
+
+    # Search in default directories PATH and LD_LIBRARY_PATH
+    library_search_paths = os.getenv("PATH", "").split(env_sep)
+    library_search_paths += os.getenv("LD_LIBRARY_PATH", "").split(env_sep)
+    if "" in library_search_paths:
+        library_search_paths.remove("")
+    del env_sep
+
+    # And the current working directory too
+    library_search_paths += [os.path.abspath(os.getcwd())]
+
+    # And finally the directories containing this file and its parent directory
+    library_search_paths += [os.path.abspath(os.path.dirname(__file__))]
+    library_search_paths += [os.path.dirname(library_search_paths[-1])]
+    library_search_paths += [os.path.dirname(library_search_paths[-1])]
+
+    # Search for the core library in the search paths
+    libraries = []
+    for search_path in library_search_paths:
+        libraries += glob.glob("%s/**/*.%s*" % (search_path, LIBRARY_EXTENSION), recursive=True)
+
+    # Search system library directories (too slow for recursive search)
+    for search_path in SYSTEM_LIBRARY_DIRECTORIES:
+        libraries += glob.glob("%s/**/*.%s*" % (search_path, LIBRARY_EXTENSION), recursive=False)
+
+    del search_path, library_search_paths
+
+    library_map = {}
+    # Organize libraries into a map
+    for library in libraries:
+        library_infix = trim_library_path(library)
+
+        # Then check if a key already exists
+        if library_infix not in library_map:
+            library_map[library_infix] = set()
+
+        # Append the directory
+        library_map[library_infix].add(library)
+
+    # Replace sets with lists
+    for (key, values) in library_map.items():
+        library_map[key] = list(values)
+    return library_map
+
+
+def search_libraries(library_name: str) -> list:
+    libraries_map = _search_libraries()
+    trimmed_library_name = trim_library_path(library_name)
+    matched_names = list(filter(lambda x: trimmed_library_name in x, libraries_map.keys()))
+    matched_libraries = []
+
+    if matched_names:
+        for match in matched_names:
+            matched_libraries += libraries_map[match]
+    return matched_libraries
+
+
+def extract_library_include_dirs(library_name: str, prefix: str) -> list:
+    library_path = "%s/lib/%s" % (prefix, library_name)
+    linked_libs = []
+    # First discover which 3rd-party libraries are used by the current module
+    try:
+        with open(os.path.abspath(library_path), "rb") as f:
+            linked_libs = re.findall(b"\x00(lib.*?.%b)" % LIBRARY_EXTENSION.encode("utf-8"), f.read())
+    except Exception as e:
+        print("Failed to extract libraries used by {library} with exception:{exception}"
+              .format(library=library_path, exception=e))
+        exit(-1)
+
+    linked_libs_include_dirs = []
+    # Now find these libraries and add a few include paths for them
+    for linked_library in map(lambda x: x.decode("utf-8"), linked_libs):
+        # Skip ns-3 modules
+        if "libns3" in linked_library:
+            continue
+
+        # Search for the absolute path of the library
+        linked_library_path = search_libraries(linked_library)
+
+        # Raise error in case the library can't be found
+        if len(linked_library_path) == 0:
+            raise Exception(
+                "Failed to find {library}. Make sure its library directory is in LD_LIBRARY_PATH.".format(
+                    library=linked_library))
+
+        # Get path with shortest length
+        linked_library_path = sorted(linked_library_path, key=lambda x: len(x))[0]
+
+        # If the system library directories are part of the path, skip the library include directories
+        if sum(map(lambda x: x in linked_library_path, [*SYSTEM_LIBRARY_DIRECTORIES, prefix])) > 0:
+            continue
+
+        # In case it isn't, include new include directories based on the path
+        linked_libs_include_dirs += [os.path.dirname(linked_library_path)]
+        linked_libs_include_dirs += [os.path.dirname(linked_libs_include_dirs[-1])]
+        linked_libs_include_dirs += [os.path.dirname(linked_libs_include_dirs[-1])]
+
+        for lib_path in [*linked_libs_include_dirs]:
+            inc_path = os.path.join(lib_path, "include")
+            if os.path.exists(inc_path):
+                linked_libs_include_dirs += [inc_path]
+    return linked_libs_include_dirs
+
+
 def load_modules():
     lock_file = find_ns3_lock()
+    libraries_to_load = []
 
     if lock_file:
         # Load NS3_ENABLED_MODULES from the lock file inside the build directory
@@ -42,31 +176,7 @@ def load_modules():
         libraries = {x.split(".")[0]: x for x in os.listdir(os.path.join(prefix, "lib"))}
         version = values["VERSION"]
     else:
-        # Otherwise, search for ns-3 libraries
-        # Should be the case when ns-3 is installed as a package
-        import glob
-        env_sep = ";" if sys.platform == "win32" else ":"
-
-        # Search in default directories PATH and LD_LIBRARY_PATH
-        library_search_paths = os.getenv("PATH", "").split(env_sep)
-        library_search_paths += os.getenv("LD_LIBRARY_PATH", "").split(env_sep)
-        if "" in library_search_paths:
-            library_search_paths.remove("")
-        del env_sep
-
-        # And the current working directory too
-        library_search_paths += [os.path.abspath(os.getcwd())]
-
-        # And finally the directories containing this file and its parent directory
-        library_search_paths += [os.path.abspath(os.path.dirname(__file__))]
-        library_search_paths += [os.path.dirname(library_search_paths[-1])]
-        library_search_paths += [os.path.dirname(library_search_paths[-1])]
-
-        # Search for the core library in the search paths
-        libraries = []
-        for search_path in library_search_paths:
-            libraries += glob.glob("%s/**/libns3*" % search_path, recursive=True)
-        del search_path, library_search_paths
+        libraries = search_libraries("ns3")
 
         if not libraries:
             raise Exception("ns-3 libraries were not found.")
@@ -92,6 +202,7 @@ def load_modules():
 
         # Filter out module names
         modules = set([filter_module_name(library) for library in libraries])
+        libraries_to_load = list(map(lambda x: os.path.basename(x), libraries))
 
     # Try to import Cppyy and warn the user in case it is not found
     try:
@@ -113,11 +224,8 @@ def load_modules():
     cppyy.add_library_path("%s/lib" % prefix)
     cppyy.add_include_path("%s/include" % prefix)
 
-    for module in modules:
-        cppyy.include("ns3/%s-module.h" % module)
-
     if lock_file:
-        # When we have the lock file, we assemble the correct library name
+        # When we have the lock file, we assemble the correct library names
         for module in modules:
             library_name = "libns{version}-{module}{suffix}".format(
                 version=version,
@@ -128,11 +236,22 @@ def load_modules():
                 raise Exception("Missing library %s\n" % library_name,
                                 "Build all modules with './ns3 build'"
                                 )
-            cppyy.load_library(libraries[library_name])
-    else:
-        # When we don't have the lock, we just load the known libraries
-        for library in libraries:
-            cppyy.load_library(os.path.basename(library))
+            libraries_to_load.append(libraries[library_name])
+
+    # We first need to include all include directories for dependencies
+    known_include_dirs = set()
+    for library in libraries_to_load:
+        for linked_lib_include_dir in extract_library_include_dirs(library, prefix):
+            if linked_lib_include_dir not in known_include_dirs:
+                known_include_dirs.add(linked_lib_include_dir)
+                cppyy.add_include_path(linked_lib_include_dir)
+
+    for module in modules:
+        cppyy.include("ns3/%s-module.h" % module)
+
+    # After including all headers, we finally load the modules
+    for library in libraries_to_load:
+        cppyy.load_library(library)
 
     # We expose cppyy to consumers of this module as ns.cppyy
     setattr(cppyy.gbl.ns3, "cppyy", cppyy)
@@ -267,7 +386,8 @@ def load_modules():
                }
             """ % (aggregatedType, aggregatedType, aggregatedType, aggregatedType)
         )
-        return cppyy.gbl.getAggregatedObject(parentObject, aggregatedObject if aggregatedIsClass else aggregatedObject.__class__)
+        return cppyy.gbl.getAggregatedObject(parentObject,
+                                             aggregatedObject if aggregatedIsClass else aggregatedObject.__class__)
 
     setattr(cppyy.gbl.ns3, "GetObject", GetObject)
     return cppyy.gbl.ns3
