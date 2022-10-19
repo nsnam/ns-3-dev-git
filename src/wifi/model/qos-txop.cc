@@ -656,10 +656,9 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader* respHdr, Mac48Address re
         m_baManager->NotifyAgreementRejected(recipient, tid);
     }
 
-    if (HasFramesToTransmit(SINGLE_LINK_OP_ID) &&
-        GetLink(SINGLE_LINK_OP_ID).access == NOT_REQUESTED)
+    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
     {
-        m_mac->GetChannelAccessManager(SINGLE_LINK_OP_ID)->RequestAccess(this);
+        StartAccessIfNeeded(linkId);
     }
 }
 
