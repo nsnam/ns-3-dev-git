@@ -529,6 +529,25 @@ class WifiMac : public Object
      */
     uint16_t GetMaxAmsduSize(AcIndex ac) const;
 
+    /**
+     * \param recipient MAC address
+     * \param tid traffic ID
+     *
+     * \return the type of Block Acks sent by the recipient
+     *
+     * This function returns the type of Block Acks sent by the recipient.
+     */
+    BlockAckType GetBaTypeAsOriginator(const Mac48Address& recipient, uint8_t tid) const;
+    /**
+     * \param recipient MAC address of recipient
+     * \param tid traffic ID
+     *
+     * \return the type of Block Ack Requests sent to the recipient
+     *
+     * This function returns the type of Block Ack Requests sent to the recipient.
+     */
+    BlockAckReqType GetBarTypeAsOriginator(const Mac48Address& recipient, uint8_t tid) const;
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;

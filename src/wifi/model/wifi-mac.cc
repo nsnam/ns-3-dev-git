@@ -1238,6 +1238,24 @@ WifiMac::DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu)
     }
 }
 
+BlockAckType
+WifiMac::GetBaTypeAsOriginator(const Mac48Address& recipient, uint8_t tid) const
+{
+    auto agreement = GetQosTxop(tid)->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
+    NS_ABORT_MSG_IF(!agreement,
+                    "No existing Block Ack agreement with " << recipient << " TID: " << +tid);
+    return agreement->get().GetBlockAckType();
+}
+
+BlockAckReqType
+WifiMac::GetBarTypeAsOriginator(const Mac48Address& recipient, uint8_t tid) const
+{
+    auto agreement = GetQosTxop(tid)->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
+    NS_ABORT_MSG_IF(!agreement,
+                    "No existing Block Ack agreement with " << recipient << " TID: " << +tid);
+    return agreement->get().GetBlockAckReqType();
+}
+
 Ptr<HtConfiguration>
 WifiMac::GetHtConfiguration() const
 {

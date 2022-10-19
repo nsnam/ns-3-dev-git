@@ -145,24 +145,6 @@ class QosTxop : public Txop
      */
     uint16_t GetBaStartingSequence(Mac48Address address, uint8_t tid) const;
     /**
-     * \param recipient MAC address of recipient
-     * \param tid traffic ID
-     *
-     * \return the type of Block Ack Requests sent to the recipient
-     *
-     * This function returns the type of Block Ack Requests sent to the recipient.
-     */
-    BlockAckReqType GetBlockAckReqType(Mac48Address recipient, uint8_t tid) const;
-    /**
-     * \param recipient MAC address
-     * \param tid traffic ID
-     *
-     * \return the type of Block Acks sent by the recipient
-     *
-     * This function returns the type of Block Acks sent by the recipient.
-     */
-    BlockAckType GetBlockAckType(Mac48Address recipient, uint8_t tid) const;
-    /**
      * \param recipient Address of recipient.
      * \param tid traffic ID.
      * \return the BlockAckRequest to send

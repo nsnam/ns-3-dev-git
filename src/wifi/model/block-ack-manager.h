@@ -315,24 +315,6 @@ class BlockAckManager : public Object
      */
     uint16_t GetRecipientBufferSize(Mac48Address recipient, uint8_t tid) const;
     /**
-     * This function returns the type of Block Acks sent to the recipient.
-     *
-     * \param recipient MAC address of recipient
-     * \param tid Traffic ID
-     *
-     * \returns the type of Block Acks sent to the recipient
-     */
-    BlockAckReqType GetBlockAckReqType(Mac48Address recipient, uint8_t tid) const;
-    /**
-     * This function returns the type of Block Acks sent by the recipient.
-     *
-     * \param recipient MAC address
-     * \param tid Traffic ID
-     *
-     * \returns the type of Block Acks sent by the recipient
-     */
-    BlockAckType GetBlockAckType(Mac48Address recipient, uint8_t tid) const;
-    /**
      * This function returns the starting sequence number of the transmit window.
      *
      * \param tid Traffic ID

@@ -850,22 +850,6 @@ BlockAckManager::GetRecipientBufferSize(Mac48Address recipient, uint8_t tid) con
     return size;
 }
 
-BlockAckReqType
-BlockAckManager::GetBlockAckReqType(Mac48Address recipient, uint8_t tid) const
-{
-    AgreementsCI it = m_agreements.find(std::make_pair(recipient, tid));
-    NS_ABORT_MSG_IF(it == m_agreements.end(), "No established Block Ack agreement");
-    return it->second.first.GetBlockAckReqType();
-}
-
-BlockAckType
-BlockAckManager::GetBlockAckType(Mac48Address recipient, uint8_t tid) const
-{
-    AgreementsCI it = m_agreements.find(std::make_pair(recipient, tid));
-    NS_ABORT_MSG_IF(it == m_agreements.end(), "No established Block Ack agreement");
-    return it->second.first.GetBlockAckType();
-}
-
 uint16_t
 BlockAckManager::GetOriginatorStartingSequence(Mac48Address recipient, uint8_t tid) const
 {

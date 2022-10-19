@@ -564,18 +564,6 @@ QosTxop::AssignSequenceNumber(Ptr<WifiMpdu> mpdu) const
     }
 }
 
-BlockAckReqType
-QosTxop::GetBlockAckReqType(Mac48Address recipient, uint8_t tid) const
-{
-    return m_baManager->GetBlockAckReqType(recipient, tid);
-}
-
-BlockAckType
-QosTxop::GetBlockAckType(Mac48Address recipient, uint8_t tid) const
-{
-    return m_baManager->GetBlockAckType(recipient, tid);
-}
-
 void
 QosTxop::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {

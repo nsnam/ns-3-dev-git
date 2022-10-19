@@ -318,8 +318,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
         acknowledgment->blockAckReqTxVector =
             GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector);
         acknowledgment->blockAckTxVector = acknowledgment->blockAckReqTxVector;
-        acknowledgment->barType = m_mac->GetQosTxop(tid)->GetBlockAckReqType(receiver, tid);
-        acknowledgment->baType = m_mac->GetQosTxop(tid)->GetBlockAckType(receiver, tid);
+        acknowledgment->barType = m_mac->GetBarTypeAsOriginator(receiver, tid);
+        acknowledgment->baType = m_mac->GetBaTypeAsOriginator(receiver, tid);
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::BLOCK_ACK);
         return std::unique_ptr<WifiAcknowledgment>(acknowledgment);
     }
@@ -329,7 +329,7 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
     WifiBlockAck* acknowledgment = new WifiBlockAck;
     acknowledgment->blockAckTxVector =
         GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector);
-    acknowledgment->baType = m_mac->GetQosTxop(tid)->GetBlockAckType(receiver, tid);
+    acknowledgment->baType = m_mac->GetBaTypeAsOriginator(receiver, tid);
     acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::NORMAL_ACK);
     return std::unique_ptr<WifiAcknowledgment>(acknowledgment);
 }
@@ -404,7 +404,7 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
             receiver,
             WifiDlMuBarBaSequence::BlockAckInfo{
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
-                edca->GetBlockAckType(receiver, tid)});
+                m_mac->GetBaTypeAsOriginator(receiver, tid)});
         return std::unique_ptr<WifiDlMuBarBaSequence>(acknowledgment);
     }
 
@@ -434,9 +434,9 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
             receiver,
             WifiDlMuBarBaSequence::BlockAckReqInfo{
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
-                edca->GetBlockAckReqType(receiver, tid),
+                m_mac->GetBarTypeAsOriginator(receiver, tid),
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
-                edca->GetBlockAckType(receiver, tid)});
+                m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::BLOCK_ACK);
         return std::unique_ptr<WifiDlMuBarBaSequence>(acknowledgment);
@@ -535,9 +535,9 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
             receiver,
             WifiDlMuTfMuBar::BlockAckInfo{edca->GetBaManager()->GetBlockAckReqHeader(receiver, tid),
                                           blockAckTxVector,
-                                          edca->GetBlockAckType(receiver, tid)});
+                                          m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
-        acknowledgment->barTypes.push_back(edca->GetBlockAckReqType(receiver, tid));
+        acknowledgment->barTypes.push_back(m_mac->GetBarTypeAsOriginator(receiver, tid));
         acknowledgment->muBarTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(receiver);
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::BLOCK_ACK);
         return std::unique_ptr<WifiDlMuTfMuBar>(acknowledgment);
@@ -619,10 +619,10 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         acknowledgment->stationsReplyingWithBlockAck.emplace(
             receiver,
             WifiDlMuAggregateTf::BlockAckInfo{
-                GetMuBarSize({edca->GetBlockAckReqType(receiver, tid)}),
+                GetMuBarSize({m_mac->GetBarTypeAsOriginator(receiver, tid)}),
                 edca->GetBaManager()->GetBlockAckReqHeader(receiver, tid),
                 blockAckTxVector,
-                edca->GetBlockAckType(receiver, tid)});
+                m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::NO_EXPLICIT_ACK);
         return std::unique_ptr<WifiDlMuAggregateTf>(acknowledgment);
