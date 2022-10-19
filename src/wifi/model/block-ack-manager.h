@@ -417,23 +417,15 @@ class BlockAckManager : public Object
      * typedef for an iterator for PacketQueue.
      */
     typedef std::list<Ptr<WifiMpdu>>::iterator PacketQueueI;
-    /**
-     * typedef for a map between MAC address and block ack agreement.
-     */
-    typedef std::map<std::pair<Mac48Address, uint8_t>,
-                     std::pair<OriginatorBlockAckAgreement, PacketQueue>>
-        Agreements;
-    /**
-     * typedef for an iterator for Agreements.
-     */
-    typedef std::map<std::pair<Mac48Address, uint8_t>,
-                     std::pair<OriginatorBlockAckAgreement, PacketQueue>>::iterator AgreementsI;
-    /**
-     * typedef for a const iterator for Agreements.
-     */
-    typedef std::map<std::pair<Mac48Address, uint8_t>,
-                     std::pair<OriginatorBlockAckAgreement, PacketQueue>>::const_iterator
-        AgreementsCI;
+
+    /// agreement key typedef (MAC address and TID)
+    using AgreementKey = std::pair<Mac48Address, uint8_t>;
+
+    /// AgreementKey-indexed map of originator block ack agreements
+    using OriginatorAgreements =
+        std::map<AgreementKey, std::pair<OriginatorBlockAckAgreement, PacketQueue>>;
+    /// typedef for an iterator for Agreements
+    using OriginatorAgreementsI = OriginatorAgreements::iterator;
 
     /**
      * Handle the given in flight MPDU based on its given status. If the status is
@@ -453,16 +445,16 @@ class BlockAckManager : public Object
     PacketQueueI HandleInFlightMpdu(uint8_t linkId,
                                     PacketQueueI mpduIt,
                                     MpduStatus status,
-                                    const AgreementsI& it,
+                                    const OriginatorAgreementsI& it,
                                     const Time& now);
 
     /**
-     * This data structure contains, for each block ack agreement (recipient, TID), a set of packets
-     * for which an ack by block ack is requested.
+     * This data structure contains, for each originator block ack agreement (recipient, TID),
+     * a set of packets for which an ack by block ack is requested.
      * Every packet or fragment indicated as correctly received in BlockAck frame is
      * erased from this data structure. Pushed back in retransmission queue otherwise.
      */
-    Agreements m_agreements;
+    OriginatorAgreements m_originatorAgreements;
 
     std::list<Bar> m_bars; ///< list of BARs
 
@@ -481,7 +473,7 @@ class BlockAckManager : public Object
      * The trace source fired when a state transition occurred.
      */
     TracedCallback<Time, Mac48Address, uint8_t, OriginatorBlockAckAgreement::State>
-        m_agreementState;
+        m_originatorAgreementState;
 };
 
 } // namespace ns3
