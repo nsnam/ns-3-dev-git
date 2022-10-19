@@ -179,7 +179,7 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
     // set the starting sequence number for the BA agreement
     reqHdr.SetStartingSequence(startingSeq);
 
-    GetBaManager(tid)->CreateAgreement(&reqHdr, dest);
+    GetBaManager(tid)->CreateOriginatorAgreement(&reqHdr, dest);
 
     packet->AddHeader(reqHdr);
     packet->AddHeader(actionHdr);
@@ -301,7 +301,7 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOr
     if (byOriginator)
     {
         delbaHdr.SetByOriginator();
-        GetBaManager(tid)->DestroyAgreement(addr, tid);
+        GetBaManager(tid)->DestroyOriginatorAgreement(addr, tid);
     }
     else
     {
@@ -612,7 +612,7 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                 if (delBa.IsByOriginator())
                 {
                     GetBaManager(delBa.GetTid())
-                        ->DestroyAgreement(mpdu->GetHeader().GetAddr1(), delBa.GetTid());
+                        ->DestroyOriginatorAgreement(mpdu->GetHeader().GetAddr1(), delBa.GetTid());
                 }
                 else
                 {
@@ -703,7 +703,7 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
             {
                 NS_LOG_DEBUG("No ACK after ADDBA request");
                 Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
-                qosTxop->NotifyAgreementNoReply(recipient, tid);
+                qosTxop->NotifyOriginatorAgreementNoReply(recipient, tid);
                 Simulator::Schedule(qosTxop->GetFailedAddBaTimeout(),
                                     &QosTxop::ResetBa,
                                     qosTxop,

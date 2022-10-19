@@ -647,12 +647,12 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader* respHdr, Mac48Address re
         {
             startingSeq = peekedItem->GetHeader().GetSequenceNumber();
         }
-        m_baManager->UpdateAgreement(respHdr, recipient, startingSeq);
+        m_baManager->UpdateOriginatorAgreement(respHdr, recipient, startingSeq);
     }
     else
     {
         NS_LOG_DEBUG("discard ADDBA response" << recipient);
-        m_baManager->NotifyAgreementRejected(recipient, tid);
+        m_baManager->NotifyOriginatorAgreementRejected(recipient, tid);
     }
 
     for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
@@ -666,15 +666,15 @@ QosTxop::GotDelBaFrame(const MgtDelBaHeader* delBaHdr, Mac48Address recipient)
 {
     NS_LOG_FUNCTION(this << delBaHdr << recipient);
     NS_LOG_DEBUG("received DELBA frame from=" << recipient);
-    m_baManager->DestroyAgreement(recipient, delBaHdr->GetTid());
+    m_baManager->DestroyOriginatorAgreement(recipient, delBaHdr->GetTid());
 }
 
 void
-QosTxop::NotifyAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
+QosTxop::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << tid);
 
-    m_baManager->NotifyAgreementNoReply(recipient, tid);
+    m_baManager->NotifyOriginatorAgreementNoReply(recipient, tid);
     // the recipient has been "unblocked" and transmissions can resume using normal
     // acknowledgment, hence start access (if needed) on all the links
     for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
@@ -730,7 +730,7 @@ QosTxop::AddBaResponseTimeout(Mac48Address recipient, uint8_t tid)
     if (auto agreement = m_baManager->GetAgreementAsOriginator(recipient, tid);
         agreement && agreement->get().IsPending())
     {
-        NotifyAgreementNoReply(recipient, tid);
+        NotifyOriginatorAgreementNoReply(recipient, tid);
         Simulator::Schedule(m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
     }
 }
@@ -746,7 +746,7 @@ QosTxop::ResetBa(Mac48Address recipient, uint8_t tid)
     if (auto agreement = m_baManager->GetAgreementAsOriginator(recipient, tid);
         agreement && !agreement->get().IsEstablished())
     {
-        m_baManager->NotifyAgreementReset(recipient, tid);
+        m_baManager->NotifyOriginatorAgreementReset(recipient, tid);
     }
 }
 

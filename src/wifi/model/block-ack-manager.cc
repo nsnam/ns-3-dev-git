@@ -105,9 +105,9 @@ BlockAckManager::GetAgreementAsOriginator(Mac48Address recipient, uint8_t tid) c
 }
 
 void
-BlockAckManager::CreateAgreement(const MgtAddBaRequestHeader* reqHdr,
-                                 Mac48Address recipient,
-                                 bool htSupported)
+BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader* reqHdr,
+                                           Mac48Address recipient,
+                                           bool htSupported)
 {
     NS_LOG_FUNCTION(this << reqHdr << recipient << htSupported);
     const uint8_t tid = reqHdr->GetTid();
@@ -140,7 +140,7 @@ BlockAckManager::CreateAgreement(const MgtAddBaRequestHeader* reqHdr,
 }
 
 void
-BlockAckManager::DestroyAgreement(Mac48Address recipient, uint8_t tid)
+BlockAckManager::DestroyOriginatorAgreement(Mac48Address recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     AgreementsI it = m_agreements.find(std::make_pair(recipient, tid));
@@ -163,9 +163,9 @@ BlockAckManager::DestroyAgreement(Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::UpdateAgreement(const MgtAddBaResponseHeader* respHdr,
-                                 Mac48Address recipient,
-                                 uint16_t startingSeq)
+BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader* respHdr,
+                                           Mac48Address recipient,
+                                           uint16_t startingSeq)
 {
     NS_LOG_FUNCTION(this << respHdr << recipient << startingSeq);
     uint8_t tid = respHdr->GetTid();
@@ -705,9 +705,9 @@ BlockAckManager::InactivityTimeout(Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::NotifyAgreementEstablished(Mac48Address recipient,
-                                            uint8_t tid,
-                                            uint16_t startingSeq)
+BlockAckManager::NotifyOriginatorAgreementEstablished(Mac48Address recipient,
+                                                      uint8_t tid,
+                                                      uint16_t startingSeq)
 {
     NS_LOG_FUNCTION(this << recipient << +tid << startingSeq);
     AgreementsI it = m_agreements.find(std::make_pair(recipient, tid));
@@ -724,7 +724,7 @@ BlockAckManager::NotifyAgreementEstablished(Mac48Address recipient,
 }
 
 void
-BlockAckManager::NotifyAgreementRejected(Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementRejected(Mac48Address recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     AgreementsI it = m_agreements.find(std::make_pair(recipient, tid));
@@ -737,7 +737,7 @@ BlockAckManager::NotifyAgreementRejected(Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::NotifyAgreementNoReply(Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementNoReply(Mac48Address recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     AgreementsI it = m_agreements.find(std::make_pair(recipient, tid));
@@ -751,7 +751,7 @@ BlockAckManager::NotifyAgreementNoReply(Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::NotifyAgreementReset(Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementReset(Mac48Address recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     AgreementsI it = m_agreements.find(std::make_pair(recipient, tid));

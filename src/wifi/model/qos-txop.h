@@ -204,7 +204,7 @@ class QosTxop : public Txop
      * \param recipient the intended recipient of the ADDBA_REQUEST frame
      * \param tid the TID
      */
-    void NotifyAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
+    void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
     /**
      * Callback when ADDBA response is not received after timeout.
      *

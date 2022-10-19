@@ -119,12 +119,12 @@ class BlockAckManager : public Object
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param htSupported Whether both originator and recipient support HT
      *
-     * Creates a new block ack agreement in pending state. When a ADDBA response
+     * Creates a new originator block ack agreement in pending state. When a ADDBA response
      * with a successful status code is received, the relative agreement becomes established.
      */
-    void CreateAgreement(const MgtAddBaRequestHeader* reqHdr,
-                         Mac48Address recipient,
-                         bool htSupported = true);
+    void CreateOriginatorAgreement(const MgtAddBaRequestHeader* reqHdr,
+                                   Mac48Address recipient,
+                                   bool htSupported = true);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid traffic ID of transmitted packet.
@@ -132,7 +132,7 @@ class BlockAckManager : public Object
      * Invoked when a recipient reject a block ack agreement or when a DELBA frame
      * is Received/Transmitted.
      */
-    void DestroyAgreement(Mac48Address recipient, uint8_t tid);
+    void DestroyOriginatorAgreement(Mac48Address recipient, uint8_t tid);
     /**
      * \param respHdr Relative Add block ack response (action frame).
      * \param recipient Address of peer station involved in block ack mechanism.
@@ -140,9 +140,9 @@ class BlockAckManager : public Object
      *
      * Invoked upon receipt of a ADDBA response frame from <i>recipient</i>.
      */
-    void UpdateAgreement(const MgtAddBaResponseHeader* respHdr,
-                         Mac48Address recipient,
-                         uint16_t startingSeq);
+    void UpdateOriginatorAgreement(const MgtAddBaResponseHeader* respHdr,
+                                   Mac48Address recipient,
+                                   uint16_t startingSeq);
     /**
      * \param mpdu MPDU to store.
      *
@@ -232,36 +232,38 @@ class BlockAckManager : public Object
      * \param tid Traffic ID of transmitted packet.
      * \param startingSeq starting sequence field
      *
-     * Puts corresponding agreement in established state and updates number of packets
+     * Puts corresponding originator agreement in established state and updates number of packets
      * and starting sequence field. Invoked typically after a block ack refresh.
      */
-    void NotifyAgreementEstablished(Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
+    void NotifyOriginatorAgreementEstablished(Mac48Address recipient,
+                                              uint8_t tid,
+                                              uint16_t startingSeq);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID of transmitted packet.
      *
-     * Marks an agreement as rejected. This happens if <i>recipient</i> station reject block ack
-     * setup by an ADDBA Response frame with a failure status code. For now we assume that every QoS
-     * station accepts a block ack setup.
+     * Marks an originator agreement as rejected. This happens if <i>recipient</i> station reject
+     * block ack setup by an ADDBA Response frame with a failure status code. For now we assume
+     * that every QoS station accepts a block ack setup.
      */
-    void NotifyAgreementRejected(Mac48Address recipient, uint8_t tid);
+    void NotifyOriginatorAgreementRejected(Mac48Address recipient, uint8_t tid);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID of transmitted packet.
      *
-     * Marks an agreement after not receiving response to ADDBA request. During this state
-     * any packets in queue will be transmitted using normal MPDU. This also unblock
+     * Marks an originator agreement after not receiving response to ADDBA request. During this
+     * state any packets in queue will be transmitted using normal MPDU. This also unblocks
      * recipient address.
      */
-    void NotifyAgreementNoReply(Mac48Address recipient, uint8_t tid);
+    void NotifyOriginatorAgreementNoReply(Mac48Address recipient, uint8_t tid);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID of transmitted packet.
      *
-     * Set BA agreement to a transitory state to reset it after not receiving response to ADDBA
-     * request.
+     * Set Originator BA agreement to a transitory state to reset it after not receiving response
+     * to ADDBA request.
      */
-    void NotifyAgreementReset(Mac48Address recipient, uint8_t tid);
+    void NotifyOriginatorAgreementReset(Mac48Address recipient, uint8_t tid);
     /**
      * \param nPackets Minimum number of packets for use of block ack.
      *
