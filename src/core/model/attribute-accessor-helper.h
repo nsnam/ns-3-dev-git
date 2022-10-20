@@ -327,7 +327,7 @@ DoMakeAccessorHelperOne(U (T::*getter)() const)
         }
 
       private:
-        bool DoSet(T* object [[maybe_unused]], const V* v [[maybe_unused]]) const override
+        bool DoSet(T* /* object */, const V* /* v */) const override
         {
             return false;
         }
@@ -398,7 +398,7 @@ DoMakeAccessorHelperOne(void (T::*setter)(U))
             return true;
         }
 
-        bool DoGet(const T* object [[maybe_unused]], V* v [[maybe_unused]]) const override
+        bool DoGet(const T* /* object */, V* /* v */) const override
         {
             return false;
         }

@@ -437,8 +437,7 @@ CobaltQueueDiscMarkTest::CobaltQueueDiscMarkTest(QueueSizeUnit mode)
 }
 
 void
-CobaltQueueDiscMarkTest::DropNextTracer(int64_t oldVal [[maybe_unused]],
-                                        int64_t newVal [[maybe_unused]])
+CobaltQueueDiscMarkTest::DropNextTracer(int64_t /* oldVal */, int64_t /* newVal */)
 {
     m_dropNextCount++;
 }

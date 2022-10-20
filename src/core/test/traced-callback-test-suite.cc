@@ -66,7 +66,7 @@ BasicTracedCallbackTestCase::BasicTracedCallbackTestCase()
 }
 
 void
-BasicTracedCallbackTestCase::CbOne(uint8_t a [[maybe_unused]], double b [[maybe_unused]])
+BasicTracedCallbackTestCase::CbOne(uint8_t /* a */, double /* b */)
 {
     m_one = true;
 }

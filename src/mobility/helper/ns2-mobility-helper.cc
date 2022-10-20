@@ -608,7 +608,7 @@ bool
 IsNumber(const std::string& s)
 {
     char* endp;
-    double v [[maybe_unused]] = strtod(s.c_str(), &endp);
+    strtod(s.c_str(), &endp);
     return endp == s.c_str() + s.size();
 }
 

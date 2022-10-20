@@ -925,8 +925,8 @@ AnimationInterface::UanPhyGenRxTrace(std::string context, Ptr<const Packet> p)
 void
 AnimationInterface::WifiPhyTxBeginTrace(std::string context,
                                         WifiConstPsduMap psduMap,
-                                        WifiTxVector txVector [[maybe_unused]],
-                                        double txPowerW)
+                                        WifiTxVector /* txVector */,
+                                        double /* txPowerW */)
 {
     NS_LOG_FUNCTION(this);
     CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;

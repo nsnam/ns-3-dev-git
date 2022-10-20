@@ -892,7 +892,7 @@ TcpSocketBase::Send(Ptr<Packet> p, uint32_t flags)
 
 /* Inherit from Socket class: In TcpSocketBase, it is same as Send() call */
 int
-TcpSocketBase::SendTo(Ptr<Packet> p, uint32_t flags, const Address& address [[maybe_unused]])
+TcpSocketBase::SendTo(Ptr<Packet> p, uint32_t flags, const Address& /* address */)
 {
     return Send(p, flags); // SendTo() and Send() are the same
 }
@@ -2369,7 +2369,7 @@ void
 TcpSocketBase::ProcessSynRcvd(Ptr<Packet> packet,
                               const TcpHeader& tcpHeader,
                               const Address& fromAddress,
-                              const Address& toAddress [[maybe_unused]])
+                              const Address& /* toAddress */)
 {
     NS_LOG_FUNCTION(this << tcpHeader);
 

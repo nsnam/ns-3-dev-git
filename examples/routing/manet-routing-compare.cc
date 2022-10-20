@@ -296,7 +296,7 @@ RoutingExperiment::Run(int nSinks, double txp, std::string CSVfileName)
     NetDeviceContainer adhocDevices = wifi.Install(wifiPhy, wifiMac, adhocNodes);
 
     MobilityHelper mobilityAdhoc;
-    int64_t streamIndex [[maybe_unused]] = 0; // used to get consistent mobility across scenarios
+    int64_t streamIndex = 0; // used to get consistent mobility across scenarios
 
     ObjectFactory pos;
     pos.SetTypeId("ns3::RandomRectanglePositionAllocator");

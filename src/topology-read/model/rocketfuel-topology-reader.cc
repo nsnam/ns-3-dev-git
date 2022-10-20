@@ -256,7 +256,7 @@ RocketfuelTopologyReader::GenerateFromWeightsFile(const std::vector<std::string>
 
     sname = argv[0];
     tname = argv[1];
-    double v [[maybe_unused]] = std::stod(argv[2], &endptr); // weight
+    std::stod(argv[2], &endptr); // weight
 
     if (argv[2].size() != endptr)
     {

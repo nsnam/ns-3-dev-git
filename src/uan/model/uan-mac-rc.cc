@@ -143,7 +143,7 @@ Reservation::IncrementRetry()
 }
 
 void
-Reservation::SetTransmitted(bool t [[maybe_unused]])
+Reservation::SetTransmitted(bool /* t */)
 {
     m_transmitted = true;
 }
@@ -324,7 +324,7 @@ UanMacRc::AttachPhy(Ptr<UanPhy> phy)
 }
 
 void
-UanMacRc::ReceiveOkFromPhy(Ptr<Packet> pkt, double sinr [[maybe_unused]], UanTxMode mode)
+UanMacRc::ReceiveOkFromPhy(Ptr<Packet> pkt, double /* sinr */, UanTxMode mode)
 {
     UanHeaderCommon ch;
     pkt->RemoveHeader(ch);
@@ -349,7 +349,7 @@ UanMacRc::ReceiveOkFromPhy(Ptr<Packet> pkt, double sinr [[maybe_unused]], UanTxM
         break;
     case TYPE_RTS:
         // Currently don't respond to RTS packets at non-gateway nodes
-        // (Code assumes single network neighberhood)
+        // (Code assumes single network neighborhood)
         break;
     case TYPE_CTS: {
         uint32_t ctsBytes = ch.GetSerializedSize() + pkt->GetSize();

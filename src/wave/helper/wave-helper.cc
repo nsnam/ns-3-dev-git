@@ -48,9 +48,9 @@ static void
 AsciiPhyTransmitSinkWithContext(Ptr<OutputStreamWrapper> stream,
                                 std::string context,
                                 Ptr<const Packet> p,
-                                WifiMode mode,
-                                WifiPreamble preamble,
-                                uint8_t txLevel)
+                                WifiMode mode [[maybe_unused]],
+                                WifiPreamble preamble [[maybe_unused]],
+                                uint8_t txLevel [[maybe_unused]])
 {
     NS_LOG_FUNCTION(stream << context << p << mode << preamble << txLevel);
     *stream->GetStream() << "t " << Simulator::Now().GetSeconds() << " " << context << " " << *p
@@ -129,7 +129,7 @@ YansWavePhyHelper::Default()
 void
 YansWavePhyHelper::EnablePcapInternal(std::string prefix,
                                       Ptr<NetDevice> nd,
-                                      bool promiscuous,
+                                      bool /* promiscuous */,
                                       bool explicitFilename)
 {
     //

@@ -513,8 +513,7 @@ CoDelQueueDiscBasicDrop::CoDelQueueDiscBasicDrop(QueueSizeUnit mode)
 }
 
 void
-CoDelQueueDiscBasicDrop::DropNextTracer(uint32_t oldVal [[maybe_unused]],
-                                        uint32_t newVal [[maybe_unused]])
+CoDelQueueDiscBasicDrop::DropNextTracer(uint32_t /* oldVal */, uint32_t /* newVal */)
 {
     m_dropNextCount++;
 }
@@ -731,8 +730,7 @@ CoDelQueueDiscBasicMark::CoDelQueueDiscBasicMark(QueueSizeUnit mode)
 }
 
 void
-CoDelQueueDiscBasicMark::DropNextTracer(uint32_t oldVal [[maybe_unused]],
-                                        uint32_t newVal [[maybe_unused]])
+CoDelQueueDiscBasicMark::DropNextTracer(uint32_t /* oldVal */, uint32_t /* newVal */)
 {
     m_dropNextCount++;
 }

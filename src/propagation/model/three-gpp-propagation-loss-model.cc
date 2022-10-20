@@ -726,10 +726,7 @@ ThreeGppRmaPropagationLossModel::GetShadowingCorrelationDistance(
 }
 
 double
-ThreeGppRmaPropagationLossModel::Pl1(double frequency,
-                                     double distance3D,
-                                     double h,
-                                     double w [[maybe_unused]])
+ThreeGppRmaPropagationLossModel::Pl1(double frequency, double distance3D, double h, double /* w */)
 {
     double loss = 20.0 * log10(40.0 * M_PI * distance3D * frequency / 1e9 / 3.0) +
                   std::min(0.03 * pow(h, 1.72), 10.0) * log10(distance3D) -
@@ -925,8 +922,8 @@ ThreeGppUmaPropagationLossModel::GetLossNlos(double distance2D,
 }
 
 double
-ThreeGppUmaPropagationLossModel::GetShadowingStd(Ptr<MobilityModel> a [[maybe_unused]],
-                                                 Ptr<MobilityModel> b [[maybe_unused]],
+ThreeGppUmaPropagationLossModel::GetShadowingStd(Ptr<MobilityModel> /* a */,
+                                                 Ptr<MobilityModel> /* b */,
                                                  ChannelCondition::LosConditionValue cond) const
 {
     NS_LOG_FUNCTION(this);
@@ -1013,7 +1010,7 @@ ThreeGppUmiStreetCanyonPropagationLossModel::~ThreeGppUmiStreetCanyonPropagation
 double
 ThreeGppUmiStreetCanyonPropagationLossModel::GetBpDistance(double hUt,
                                                            double hBs,
-                                                           double distance2D [[maybe_unused]]) const
+                                                           double /* distance2D */) const
 {
     NS_LOG_FUNCTION(this);
 
@@ -1174,8 +1171,8 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetUtAndBsHeights(double za, double
 
 double
 ThreeGppUmiStreetCanyonPropagationLossModel::GetShadowingStd(
-    Ptr<MobilityModel> a [[maybe_unused]],
-    Ptr<MobilityModel> b [[maybe_unused]],
+    Ptr<MobilityModel> /* a */,
+    Ptr<MobilityModel> /* b */,
     ChannelCondition::LosConditionValue cond) const
 {
     NS_LOG_FUNCTION(this);
@@ -1256,10 +1253,10 @@ ThreeGppIndoorOfficePropagationLossModel::GetO2iDistance2dIn() const
 }
 
 double
-ThreeGppIndoorOfficePropagationLossModel::GetLossLos(double distance2D [[maybe_unused]],
-                                                     double distance3D [[maybe_unused]],
-                                                     double hUt [[maybe_unused]],
-                                                     double hBs [[maybe_unused]]) const
+ThreeGppIndoorOfficePropagationLossModel::GetLossLos(double /* distance2D */,
+                                                     double distance3D,
+                                                     double /* hUt */,
+                                                     double /* hBs */) const
 {
     NS_LOG_FUNCTION(this);
 
@@ -1306,8 +1303,8 @@ ThreeGppIndoorOfficePropagationLossModel::GetLossNlos(double distance2D,
 
 double
 ThreeGppIndoorOfficePropagationLossModel::GetShadowingStd(
-    Ptr<MobilityModel> a [[maybe_unused]],
-    Ptr<MobilityModel> b [[maybe_unused]],
+    Ptr<MobilityModel> /* a */,
+    Ptr<MobilityModel> /* b */,
     ChannelCondition::LosConditionValue cond) const
 {
     NS_LOG_FUNCTION(this);

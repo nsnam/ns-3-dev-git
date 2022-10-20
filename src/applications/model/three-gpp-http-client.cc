@@ -363,10 +363,10 @@ ThreeGppHttpClient::OpenConnection()
     {
         m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
 
-        int ret [[maybe_unused]];
-
         if (Ipv4Address::IsMatchingType(m_remoteServerAddress))
         {
+            int ret [[maybe_unused]];
+
             ret = m_socket->Bind();
             NS_LOG_DEBUG(this << " Bind() return value= " << ret
                               << " GetErrNo= " << m_socket->GetErrno() << ".");
@@ -381,6 +381,8 @@ ThreeGppHttpClient::OpenConnection()
         }
         else if (Ipv6Address::IsMatchingType(m_remoteServerAddress))
         {
+            int ret [[maybe_unused]];
+
             ret = m_socket->Bind6();
             NS_LOG_DEBUG(this << " Bind6() return value= " << ret
                               << " GetErrNo= " << m_socket->GetErrno() << ".");

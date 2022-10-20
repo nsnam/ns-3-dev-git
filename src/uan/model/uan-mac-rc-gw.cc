@@ -176,9 +176,9 @@ UanMacRcGw::GetTypeId()
 }
 
 bool
-UanMacRcGw::Enqueue(Ptr<Packet> packet,
-                    uint16_t protocolNumber [[maybe_unused]],
-                    const Address& dest [[maybe_unused]])
+UanMacRcGw::Enqueue(Ptr<Packet> /* packet */,
+                    uint16_t /* protocolNumber */,
+                    const Address& /* dest */)
 {
     NS_LOG_WARN("RCMAC Gateway transmission to acoustic nodes is not yet implemented");
     return false;
@@ -199,12 +199,12 @@ UanMacRcGw::AttachPhy(Ptr<UanPhy> phy)
 }
 
 void
-UanMacRcGw::ReceiveError(Ptr<Packet> pkt, double sinr [[maybe_unused]])
+UanMacRcGw::ReceiveError(Ptr<Packet> /* pkt */, double /* sinr */)
 {
 }
 
 void
-UanMacRcGw::ReceivePacket(Ptr<Packet> pkt, double sinr [[maybe_unused]], UanTxMode mode)
+UanMacRcGw::ReceivePacket(Ptr<Packet> pkt, double /* sinr */, UanTxMode mode)
 {
     UanHeaderCommon ch;
     pkt->PeekHeader(ch);
@@ -559,7 +559,7 @@ UanMacRcGw::SendPacket(Ptr<Packet> pkt, uint32_t rate)
 double
 UanMacRcGw::ComputeAlpha(uint32_t totalFrames,
                          uint32_t totalBytes,
-                         uint32_t n [[maybe_unused]],
+                         uint32_t /* n */,
                          uint32_t a,
                          double deltaK)
 {

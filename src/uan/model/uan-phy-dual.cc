@@ -294,10 +294,10 @@ UanPhyDual::RegisterListener(UanPhyListener* listener)
 }
 
 void
-UanPhyDual::StartRxPacket(Ptr<Packet> pkt,
-                          double rxPowerDb [[maybe_unused]],
-                          UanTxMode txMode,
-                          UanPdp pdp)
+UanPhyDual::StartRxPacket(Ptr<Packet> /* pkt */,
+                          double /* rxPowerDb */,
+                          UanTxMode /* txMode */,
+                          UanPdp /* pdp */)
 {
     // Not called.  StartRxPacket in m_phy1 and m_phy2 are called directly from Transducer.
 }
@@ -523,9 +523,9 @@ UanPhyDual::SetMac(Ptr<UanMac> mac)
 }
 
 void
-UanPhyDual::NotifyTransStartTx(Ptr<Packet> packet,
-                               double txPowerDb [[maybe_unused]],
-                               UanTxMode txMode)
+UanPhyDual::NotifyTransStartTx(Ptr<Packet> /* packet */,
+                               double /* txPowerDb */,
+                               UanTxMode /* txMode */)
 {
 }
 

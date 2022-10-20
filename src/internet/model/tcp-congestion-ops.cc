@@ -81,8 +81,8 @@ TcpCongestionOps::HasCongControl() const
 
 void
 TcpCongestionOps::CongControl(Ptr<TcpSocketState> tcb,
-                              const TcpRateOps::TcpRateConnection& rc [[maybe_unused]],
-                              const TcpRateOps::TcpRateSample& rs [[maybe_unused]])
+                              const TcpRateOps::TcpRateConnection& /* rc */,
+                              const TcpRateOps::TcpRateSample& /* rs */)
 {
     NS_LOG_FUNCTION(this << tcb);
 }

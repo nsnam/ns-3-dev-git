@@ -1037,7 +1037,7 @@ PacketTagListTest::CheckRef(const PacketTagList& ref, ATestTagBase& t, const cha
     ATestTag<5> t5(1);                                                                             \
     ATestTag<6> t6(1);                                                                             \
     ATestTag<7> t7(1);                                                                             \
-    const int tagLast [[maybe_unused]] = 7; /* length of ref PacketTagList */
+    constexpr int TAG_LAST [[maybe_unused]] = 7; /* length of ref PacketTagList */
 
 void
 PacketTagListTest::CheckRefList(const PacketTagList& ptl, const char* msg, int miss /* = 0 */)
@@ -1215,10 +1215,10 @@ PacketTagListTest::DoRun()
 
     std::cout << GetName() << "remove timing" << std::endl;
     // tags numbered from 1, so add one for (unused) entry at 0
-    std::vector<int> rmn(tagLast + 1, std::numeric_limits<int>::max());
+    std::vector<int> rmn(TAG_LAST + 1, std::numeric_limits<int>::max());
     for (int i = 0; i < nIterations; ++i)
     {
-        for (int j = 1; j <= tagLast; ++j)
+        for (int j = 1; j <= TAG_LAST; ++j)
         {
             int now = 0;
             switch (j)
@@ -1252,7 +1252,7 @@ PacketTagListTest::DoRun()
             }
         } // for tag j
     }     // for iteration i
-    for (int j = tagLast; j > 0; --j)
+    for (int j = TAG_LAST; j > 0; --j)
     {
         std::cout << GetName() << "min remove time: t" << j << ": " << std::setw(8) << rmn[j]
                   << " ticks" << std::endl;

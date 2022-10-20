@@ -1594,10 +1594,6 @@ DsrOptionRerr::Process(Ptr<Packet> packet,
      */
     Ptr<Node> node = GetNodeWithAddress(ipv4Address);
     Ptr<dsr::DsrRouting> dsr = node->GetObject<dsr::DsrRouting>();
-    /*
-     * The error serialized size
-     */
-    uint32_t rerrSize [[maybe_unused]];
     NS_LOG_DEBUG("The error type value here " << (uint32_t)errorType);
     if (errorType == 1) // unreachable ip address
     {
@@ -1617,7 +1613,7 @@ DsrOptionRerr::Process(Ptr<Packet> packet,
         /*
          * Get the serialized size of the rerr header
          */
-        rerrSize = rerrUnreach.GetSerializedSize();
+        uint32_t rerrSize = rerrUnreach.GetSerializedSize();
         /*
          * Delete all the routes including the unreachable node address from the route cache
          */
@@ -1640,9 +1636,9 @@ DsrOptionRerr::Process(Ptr<Packet> packet,
          */
         DsrOptionRerrUnsupportHeader rerrUnsupport;
         p->RemoveHeader(rerrUnsupport);
-        rerrSize = rerrUnsupport.GetSerializedSize();
 
         /// \todo This is for the other two error options, not supporting for now
+        // uint32_t rerrSize = rerrUnsupport.GetSerializedSize();
         // uint32_t serialized = DoSendError (p, rerrUnsupport, rerrSize, ipv4Address, protocol);
         uint32_t serialized = 0;
         return serialized;

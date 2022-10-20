@@ -203,9 +203,8 @@ AlwaysLosChannelConditionModel::~AlwaysLosChannelConditionModel()
 }
 
 Ptr<ChannelCondition>
-AlwaysLosChannelConditionModel::GetChannelCondition(Ptr<const MobilityModel> a [[maybe_unused]],
-                                                    Ptr<const MobilityModel> b
-                                                    [[maybe_unused]]) const
+AlwaysLosChannelConditionModel::GetChannelCondition(Ptr<const MobilityModel> /* a */,
+                                                    Ptr<const MobilityModel> /* b */) const
 {
     Ptr<ChannelCondition> c = CreateObject<ChannelCondition>(ChannelCondition::LOS);
 
@@ -241,9 +240,8 @@ NeverLosChannelConditionModel::~NeverLosChannelConditionModel()
 }
 
 Ptr<ChannelCondition>
-NeverLosChannelConditionModel::GetChannelCondition(Ptr<const MobilityModel> a [[maybe_unused]],
-                                                   Ptr<const MobilityModel> b
-                                                   [[maybe_unused]]) const
+NeverLosChannelConditionModel::GetChannelCondition(Ptr<const MobilityModel> /* a */,
+                                                   Ptr<const MobilityModel> /* b */) const
 {
     Ptr<ChannelCondition> c = CreateObject<ChannelCondition>(ChannelCondition::NLOS);
 
@@ -408,8 +406,8 @@ ThreeGppChannelConditionModel::GetChannelCondition(Ptr<const MobilityModel> a,
 }
 
 ChannelCondition::O2iConditionValue
-ThreeGppChannelConditionModel::ComputeO2i(Ptr<const MobilityModel> a [[maybe_unused]],
-                                          Ptr<const MobilityModel> b [[maybe_unused]]) const
+ThreeGppChannelConditionModel::ComputeO2i(Ptr<const MobilityModel> a,
+                                          Ptr<const MobilityModel> b) const
 {
     double o2iProb = m_uniformVarO2i->GetValue(0, 1);
 
