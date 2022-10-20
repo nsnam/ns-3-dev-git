@@ -23,7 +23,7 @@ clang-tidy:
       clang cmake
       clang-tidy-14
   script:
-    - ./ns3 configure --enable-examples --enable-tests --enable-clang-tidy
+    - ./ns3 configure --enable-clang-tidy -d debug --enable-examples --enable-tests
     - run-clang-tidy-14 -p cmake-cache/ -quiet
       1> clang-tidy-errors.log
       2> /dev/null
