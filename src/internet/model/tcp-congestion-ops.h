@@ -79,7 +79,7 @@ class TcpCongestionOps : public Object
      *
      * \param tcb internal congestion state
      */
-    virtual void Init([[maybe_unused]] Ptr<TcpSocketState> tcb)
+    virtual void Init(Ptr<TcpSocketState> tcb [[maybe_unused]])
     {
     }
 

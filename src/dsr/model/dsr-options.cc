@@ -1597,7 +1597,7 @@ DsrOptionRerr::Process(Ptr<Packet> packet,
     /*
      * The error serialized size
      */
-    [[maybe_unused]] uint32_t rerrSize;
+    uint32_t rerrSize [[maybe_unused]];
     NS_LOG_DEBUG("The error type value here " << (uint32_t)errorType);
     if (errorType == 1) // unreachable ip address
     {

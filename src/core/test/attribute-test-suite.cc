@@ -80,7 +80,7 @@ class ValueClassTest
  * \return always true.
  */
 bool
-operator!=([[maybe_unused]] const ValueClassTest& a, [[maybe_unused]] const ValueClassTest& b)
+operator!=(const ValueClassTest& a [[maybe_unused]], const ValueClassTest& b [[maybe_unused]])
 {
     return true;
 }
@@ -93,7 +93,7 @@ operator!=([[maybe_unused]] const ValueClassTest& a, [[maybe_unused]] const Valu
  * \returns The reference to the output stream.
  */
 std::ostream&
-operator<<(std::ostream& os, [[maybe_unused]] ValueClassTest v)
+operator<<(std::ostream& os, ValueClassTest v [[maybe_unused]])
 {
     return os;
 }
@@ -106,7 +106,7 @@ operator<<(std::ostream& os, [[maybe_unused]] ValueClassTest v)
  * \returns The reference to the input stream.
  */
 std::istream&
-operator>>(std::istream& is, [[maybe_unused]] ValueClassTest& v)
+operator>>(std::istream& is, ValueClassTest& v [[maybe_unused]])
 {
     return is;
 }
@@ -1471,7 +1471,7 @@ class IntegerTraceSourceTestCase : public TestCase
      * \param old First value.
      * \param n Second value.
      */
-    void NotifySource1([[maybe_unused]] int8_t old, int8_t n)
+    void NotifySource1(int8_t old [[maybe_unused]], int8_t n)
     {
         m_got1 = n;
     }
@@ -1574,7 +1574,7 @@ class TracedCallbackTestCase : public TestCase
      * \param b Second value.
      * \param c Third value.
      */
-    void NotifySource2(double a, [[maybe_unused]] int b, [[maybe_unused]] float c)
+    void NotifySource2(double a, int b [[maybe_unused]], float c [[maybe_unused]])
     {
         m_got2 = a;
     }
@@ -1675,7 +1675,7 @@ class PointerAttributeTestCase : public TestCase
      * \param b Second value.
      * \param c Third value.
      */
-    void NotifySource2(double a, [[maybe_unused]] int b, [[maybe_unused]] float c)
+    void NotifySource2(double a, int b [[maybe_unused]], float c [[maybe_unused]])
     {
         m_got2 = a;
     }

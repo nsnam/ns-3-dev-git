@@ -687,7 +687,7 @@ TcpTxBuffer::DiscardUpTo(const SequenceNumber32& seq, const Callback<void, TcpTx
         if (i == m_sentList.end())
         {
             // Move data from app list to sent list, so we can delete the item
-            [[maybe_unused]] Ptr<Packet> p =
+            Ptr<Packet> p [[maybe_unused]] =
                 CopyFromSequence(offset, m_firstByteSeq)->GetPacketCopy();
             NS_ASSERT(p);
             i = m_sentList.begin();

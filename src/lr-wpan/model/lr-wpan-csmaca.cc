@@ -199,8 +199,8 @@ LrWpanCsmaCa::GetTimeToNextSlot() const
     uint64_t elapsedSuperframeSymbols;
     uint64_t symbolRate;
     Time timeAtBoundary;
-    [[maybe_unused]] Time elapsedCap;
-    [[maybe_unused]] Time beaconTime;
+    Time elapsedCap [[maybe_unused]];
+    Time beaconTime [[maybe_unused]];
 
     currentTime = Simulator::Now();
     symbolRate = (uint64_t)m_mac->GetPhy()->GetDataOrSymbolRate(false); // symbols per second

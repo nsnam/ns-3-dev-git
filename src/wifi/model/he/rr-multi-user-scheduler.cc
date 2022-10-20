@@ -810,7 +810,7 @@ RrMultiUserScheduler::ComputeDlMuInfo()
         mpdu = candidate.second;
         NS_ASSERT(mpdu);
 
-        [[maybe_unused]] bool ret =
+        bool ret [[maybe_unused]] =
             m_heFem->TryAddMpdu(mpdu, dlMuInfo.txParams, actualAvailableTime);
         NS_ASSERT_MSG(ret,
                       "Weird that an MPDU does not meet constraints when "

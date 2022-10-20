@@ -295,7 +295,7 @@ UanPhyDual::RegisterListener(UanPhyListener* listener)
 
 void
 UanPhyDual::StartRxPacket(Ptr<Packet> pkt,
-                          [[maybe_unused]] double rxPowerDb,
+                          double rxPowerDb [[maybe_unused]],
                           UanTxMode txMode,
                           UanPdp pdp)
 {
@@ -524,7 +524,7 @@ UanPhyDual::SetMac(Ptr<UanMac> mac)
 
 void
 UanPhyDual::NotifyTransStartTx(Ptr<Packet> packet,
-                               [[maybe_unused]] double txPowerDb,
+                               double txPowerDb [[maybe_unused]],
                                UanTxMode txMode)
 {
 }

@@ -59,8 +59,8 @@ static void
 AsciiPhyTxEvent(std::ostream* os,
                 std::string context,
                 Ptr<const Packet> packet,
-                [[maybe_unused]] double txPowerDb,
-                UanTxMode mode)
+                double txPowerDb [[maybe_unused]],
+                UanTxMode mode [[maybe_unused]])
 {
     *os << "+ " << Simulator::Now().GetSeconds() << " " << context << " " << *packet << std::endl;
 }
@@ -78,8 +78,8 @@ static void
 AsciiPhyRxOkEvent(std::ostream* os,
                   std::string context,
                   Ptr<const Packet> packet,
-                  [[maybe_unused]] double snr,
-                  UanTxMode mode)
+                  double snr [[maybe_unused]],
+                  UanTxMode mode [[maybe_unused]])
 {
     *os << "r " << Simulator::Now().GetSeconds() << " " << context << " " << *packet << std::endl;
 }

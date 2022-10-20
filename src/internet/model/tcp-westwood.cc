@@ -175,7 +175,7 @@ TcpWestwood::EstimateBW(const Time& rtt, Ptr<TcpSocketState> tcb)
 }
 
 uint32_t
-TcpWestwood::GetSsThresh(Ptr<const TcpSocketState> tcb, [[maybe_unused]] uint32_t bytesInFlight)
+TcpWestwood::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight [[maybe_unused]])
 {
     uint32_t ssThresh = static_cast<uint32_t>((m_currentBW * tcb->m_minRtt) / 8.0);
 

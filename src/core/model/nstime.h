@@ -856,7 +856,7 @@ typedef void (*Time)(Time oldValue, Time newValue);
  * This is internal to the Time implementation.
  * \relates Time
  */
-[[maybe_unused]] static bool g_TimeStaticInit = Time::StaticInit();
+static bool g_TimeStaticInit [[maybe_unused]] = Time::StaticInit();
 
 /**
  * Equality operator for Time.

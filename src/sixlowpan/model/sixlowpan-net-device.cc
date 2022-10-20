@@ -876,7 +876,7 @@ SixLowPanNetDevice::DecompressLowPanHc1(Ptr<Packet> packet, const Address& src, 
     Ipv6Header ipHeader;
     SixLowPanHc1 encoding;
 
-    [[maybe_unused]] uint32_t ret = packet->RemoveHeader(encoding);
+    uint32_t ret [[maybe_unused]] = packet->RemoveHeader(encoding);
     NS_LOG_DEBUG("removed " << ret << " bytes - pkt is " << *packet);
 
     ipHeader.SetHopLimit(encoding.GetHopLimit());
@@ -1397,7 +1397,7 @@ SixLowPanNetDevice::DecompressLowPanIphc(Ptr<Packet> packet, const Address& src,
     Ipv6Header ipHeader;
     SixLowPanIphc encoding;
 
-    [[maybe_unused]] uint32_t ret = packet->RemoveHeader(encoding);
+    uint32_t ret [[maybe_unused]] = packet->RemoveHeader(encoding);
     NS_LOG_DEBUG("removed " << ret << " bytes - pkt is " << *packet);
 
     // Hop Limit
@@ -1998,7 +1998,7 @@ SixLowPanNetDevice::DecompressLowPanNhc(Ptr<Packet> packet,
 
     SixLowPanNhcExtension encoding;
 
-    [[maybe_unused]] uint32_t ret = packet->RemoveHeader(encoding);
+    uint32_t ret [[maybe_unused]] = packet->RemoveHeader(encoding);
     NS_LOG_DEBUG("removed " << ret << " bytes - pkt is " << *packet);
 
     Ipv6ExtensionHopByHopHeader hopHeader;
@@ -2273,7 +2273,7 @@ SixLowPanNetDevice::DecompressLowPanUdpNhc(Ptr<Packet> packet, Ipv6Address saddr
     UdpHeader udpHeader;
     SixLowPanUdpNhcExtension encoding;
 
-    [[maybe_unused]] uint32_t ret = packet->RemoveHeader(encoding);
+    uint32_t ret [[maybe_unused]] = packet->RemoveHeader(encoding);
     NS_LOG_DEBUG("removed " << ret << " bytes - pkt is " << *packet);
 
     // Set the value of the ports

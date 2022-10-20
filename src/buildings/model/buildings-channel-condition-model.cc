@@ -132,7 +132,7 @@ BuildingsChannelConditionModel::IsLineOfSightBlocked(const ns3::Vector& l1,
 }
 
 int64_t
-BuildingsChannelConditionModel::AssignStreams([[maybe_unused]] int64_t stream)
+BuildingsChannelConditionModel::AssignStreams(int64_t stream [[maybe_unused]])
 {
     return 0;
 }

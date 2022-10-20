@@ -189,7 +189,7 @@ QueueSize::GetValue() const
 QueueSize::QueueSize(std::string size)
 {
     NS_LOG_FUNCTION(this << size);
-    [[maybe_unused]] bool ok = DoParse(size, &m_unit, &m_value);
+    bool ok [[maybe_unused]] = DoParse(size, &m_unit, &m_value);
     NS_ABORT_MSG_IF(!ok, "Could not parse queue size: " << size);
 }
 

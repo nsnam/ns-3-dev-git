@@ -189,7 +189,7 @@ RtoTracer(std::string context, Time oldval, Time newval)
  * \param nextTx Next sequence number.
  */
 static void
-NextTxTracer(std::string context, [[maybe_unused]] SequenceNumber32 old, SequenceNumber32 nextTx)
+NextTxTracer(std::string context, SequenceNumber32 old [[maybe_unused]], SequenceNumber32 nextTx)
 {
     uint32_t nodeId = GetNodeIdFromContext(context);
 
@@ -205,7 +205,7 @@ NextTxTracer(std::string context, [[maybe_unused]] SequenceNumber32 old, Sequenc
  * \param inFlight In flight value.
  */
 static void
-InFlightTracer(std::string context, [[maybe_unused]] uint32_t old, uint32_t inFlight)
+InFlightTracer(std::string context, uint32_t old [[maybe_unused]], uint32_t inFlight)
 {
     uint32_t nodeId = GetNodeIdFromContext(context);
 
@@ -221,7 +221,7 @@ InFlightTracer(std::string context, [[maybe_unused]] uint32_t old, uint32_t inFl
  * \param nextRx Next sequence number.
  */
 static void
-NextRxTracer(std::string context, [[maybe_unused]] SequenceNumber32 old, SequenceNumber32 nextRx)
+NextRxTracer(std::string context, SequenceNumber32 old [[maybe_unused]], SequenceNumber32 nextRx)
 {
     uint32_t nodeId = GetNodeIdFromContext(context);
 

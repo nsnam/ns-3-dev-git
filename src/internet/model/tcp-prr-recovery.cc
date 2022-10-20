@@ -70,7 +70,7 @@ TcpPrrRecovery::~TcpPrrRecovery()
 
 void
 TcpPrrRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
-                              [[maybe_unused]] uint32_t dupAckCount,
+                              uint32_t dupAckCount [[maybe_unused]],
                               uint32_t unAckDataCount,
                               uint32_t deliveredBytes)
 {

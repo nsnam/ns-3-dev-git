@@ -925,7 +925,7 @@ AnimationInterface::UanPhyGenRxTrace(std::string context, Ptr<const Packet> p)
 void
 AnimationInterface::WifiPhyTxBeginTrace(std::string context,
                                         WifiConstPsduMap psduMap,
-                                        [[maybe_unused]] WifiTxVector txVector,
+                                        WifiTxVector txVector [[maybe_unused]],
                                         double txPowerW)
 {
     NS_LOG_FUNCTION(this);

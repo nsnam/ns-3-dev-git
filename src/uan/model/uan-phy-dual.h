@@ -133,7 +133,7 @@ class UanPhyDual : public UanPhy
     UanTxMode GetMode(uint32_t n) override;
     void Clear() override;
 
-    void SetSleepMode([[maybe_unused]] bool sleep) override
+    void SetSleepMode(bool sleep [[maybe_unused]]) override
     {
         /// \todo This method has to be implemented
     }

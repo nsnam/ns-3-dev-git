@@ -364,7 +364,7 @@ TcpGeneralTest::QueueDropCb(std::string context, Ptr<const Packet> p)
 }
 
 void
-TcpGeneralTest::PhyDropCb(std::string context, [[maybe_unused]] Ptr<const Packet> p)
+TcpGeneralTest::PhyDropCb(std::string context, Ptr<const Packet> p [[maybe_unused]])
 {
     if (context == "SENDER")
     {

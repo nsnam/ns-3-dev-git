@@ -104,8 +104,8 @@ UanTest::UanTest()
 bool
 UanTest::RxPacket(Ptr<NetDevice> dev,
                   Ptr<const Packet> pkt,
-                  [[maybe_unused]] uint16_t mode,
-                  [[maybe_unused]] const Address& sender)
+                  uint16_t mode [[maybe_unused]],
+                  const Address& sender [[maybe_unused]])
 {
     m_bytesRx += pkt->GetSize();
     return true;

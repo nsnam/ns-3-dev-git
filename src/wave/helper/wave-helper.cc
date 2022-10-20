@@ -339,7 +339,7 @@ WaveHelper::Install(const WifiPhyHelper& phyHelper,
 {
     try
     {
-        [[maybe_unused]] const QosWaveMacHelper& qosMac =
+        const QosWaveMacHelper& qosMac [[maybe_unused]] =
             dynamic_cast<const QosWaveMacHelper&>(macHelper);
     }
     catch (const std::bad_cast&)

@@ -90,7 +90,7 @@ SQLiteOutput::SpinPrepare(sqlite3_stmt** stmt, const std::string& cmd) const
 
 template <typename T>
 T
-SQLiteOutput::RetrieveColumn([[maybe_unused]] sqlite3_stmt* stmt, [[maybe_unused]] int pos) const
+SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt [[maybe_unused]], int pos [[maybe_unused]]) const
 {
     NS_FATAL_ERROR("Can't call generic fn");
 }
@@ -121,9 +121,9 @@ SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
 
 template <typename T>
 bool
-SQLiteOutput::Bind([[maybe_unused]] sqlite3_stmt* stmt,
-                   [[maybe_unused]] int pos,
-                   [[maybe_unused]] const T& value) const
+SQLiteOutput::Bind(sqlite3_stmt* stmt [[maybe_unused]],
+                   int pos [[maybe_unused]],
+                   const T& value [[maybe_unused]]) const
 {
     NS_FATAL_ERROR("Can't call generic fn");
     return false;

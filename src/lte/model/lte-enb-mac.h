@@ -349,7 +349,7 @@ class LteEnbMac : public Object
      *
      * Since SR is not implemented in LTE, this method does nothing.
      */
-    void DoReportSrToScheduler([[maybe_unused]] uint16_t rnti)
+    void DoReportSrToScheduler(uint16_t rnti [[maybe_unused]])
     {
     }
 

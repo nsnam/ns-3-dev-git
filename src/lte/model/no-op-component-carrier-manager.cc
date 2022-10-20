@@ -475,7 +475,7 @@ RrComponentCarrierManager::DoUlReceiveMacCe(MacCeListElement_s bsr, uint8_t comp
 }
 
 void
-RrComponentCarrierManager::DoUlReceiveSr(uint16_t rnti, [[maybe_unused]] uint8_t componentCarrierId)
+RrComponentCarrierManager::DoUlReceiveSr(uint16_t rnti, uint8_t componentCarrierId [[maybe_unused]])
 {
     NS_LOG_FUNCTION(this);
     // split traffic in uplink equally among carriers

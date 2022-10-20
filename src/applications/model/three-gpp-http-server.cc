@@ -208,7 +208,7 @@ ThreeGppHttpServer::StartApplication()
             m_initialSocket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
             m_initialSocket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
 
-            [[maybe_unused]] int ret;
+            int ret [[maybe_unused]];
 
             if (Ipv4Address::IsMatchingType(m_localAddress))
             {
@@ -453,8 +453,8 @@ ThreeGppHttpServer::SendCallback(Ptr<Socket> socket, uint32_t availableBufferSiz
 
     if (!m_txBuffer->IsBufferEmpty(socket))
     {
-        [[maybe_unused]] const uint32_t txBufferSize = m_txBuffer->GetBufferSize(socket);
-        [[maybe_unused]] const uint32_t actualSent = ServeFromTxBuffer(socket);
+        const uint32_t txBufferSize [[maybe_unused]] = m_txBuffer->GetBufferSize(socket);
+        const uint32_t actualSent [[maybe_unused]] = ServeFromTxBuffer(socket);
 
 #ifdef NS3_LOG_ENABLE
         // Some log messages.

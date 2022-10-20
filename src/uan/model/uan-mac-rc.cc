@@ -143,7 +143,7 @@ Reservation::IncrementRetry()
 }
 
 void
-Reservation::SetTransmitted([[maybe_unused]] bool t)
+Reservation::SetTransmitted(bool t [[maybe_unused]])
 {
     m_transmitted = true;
 }
@@ -324,7 +324,7 @@ UanMacRc::AttachPhy(Ptr<UanPhy> phy)
 }
 
 void
-UanMacRc::ReceiveOkFromPhy(Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTxMode mode)
+UanMacRc::ReceiveOkFromPhy(Ptr<Packet> pkt, double sinr [[maybe_unused]], UanTxMode mode)
 {
     UanHeaderCommon ch;
     pkt->RemoveHeader(ch);

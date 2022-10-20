@@ -96,8 +96,8 @@ TcpClassicRecovery::~TcpClassicRecovery()
 void
 TcpClassicRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
                                   uint32_t dupAckCount,
-                                  [[maybe_unused]] uint32_t unAckDataCount,
-                                  [[maybe_unused]] uint32_t deliveredBytes)
+                                  uint32_t unAckDataCount [[maybe_unused]],
+                                  uint32_t deliveredBytes [[maybe_unused]])
 {
     NS_LOG_FUNCTION(this << tcb << dupAckCount << unAckDataCount);
     tcb->m_cWnd = tcb->m_ssThresh;
@@ -105,7 +105,7 @@ TcpClassicRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
 }
 
 void
-TcpClassicRecovery::DoRecovery(Ptr<TcpSocketState> tcb, [[maybe_unused]] uint32_t deliveredBytes)
+TcpClassicRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes [[maybe_unused]])
 {
     NS_LOG_FUNCTION(this << tcb << deliveredBytes);
     tcb->m_cWndInfl += tcb->m_segmentSize;

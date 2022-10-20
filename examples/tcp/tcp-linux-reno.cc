@@ -231,7 +231,7 @@ main(int argc, char* argv[])
 
     // Create directories to store dat files
     struct stat buffer;
-    [[maybe_unused]] int retVal;
+    int retVal [[maybe_unused]];
     if ((stat(dir.c_str(), &buffer)) == 0)
     {
         std::string dirToRemove = "rm -rf " + dir;

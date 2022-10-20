@@ -118,7 +118,7 @@ UanMacAloha::AttachPhy(Ptr<UanPhy> phy)
 }
 
 void
-UanMacAloha::RxPacketGood(Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTxMode txMode)
+UanMacAloha::RxPacketGood(Ptr<Packet> pkt, double sinr [[maybe_unused]], UanTxMode txMode)
 {
     UanHeaderCommon header;
     pkt->RemoveHeader(header);

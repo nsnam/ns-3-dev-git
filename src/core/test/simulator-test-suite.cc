@@ -107,7 +107,7 @@ SimulatorEventsTestCase::NowUs()
 }
 
 void
-SimulatorEventsTestCase::EventA([[maybe_unused]] int a)
+SimulatorEventsTestCase::EventA(int a [[maybe_unused]])
 {
     m_a = false;
 }
@@ -128,7 +128,7 @@ SimulatorEventsTestCase::EventB(int b)
 }
 
 void
-SimulatorEventsTestCase::EventC([[maybe_unused]] int c)
+SimulatorEventsTestCase::EventC(int c [[maybe_unused]])
 {
     m_c = false;
 }

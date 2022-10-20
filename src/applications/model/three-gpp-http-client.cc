@@ -363,7 +363,7 @@ ThreeGppHttpClient::OpenConnection()
     {
         m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
 
-        [[maybe_unused]] int ret;
+        int ret [[maybe_unused]];
 
         if (Ipv4Address::IsMatchingType(m_remoteServerAddress))
         {

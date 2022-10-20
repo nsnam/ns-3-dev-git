@@ -100,7 +100,7 @@ class SimpleRefCount : public PARENT
      * \param [in] o The object to copy
      * \returns The copy of \pname{o}
      */
-    SimpleRefCount& operator=([[maybe_unused]] const SimpleRefCount& o)
+    SimpleRefCount& operator=(const SimpleRefCount& o [[maybe_unused]])
     {
         return *this;
     }

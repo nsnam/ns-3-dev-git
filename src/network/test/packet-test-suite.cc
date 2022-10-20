@@ -1037,7 +1037,7 @@ PacketTagListTest::CheckRef(const PacketTagList& ref, ATestTagBase& t, const cha
     ATestTag<5> t5(1);                                                                             \
     ATestTag<6> t6(1);                                                                             \
     ATestTag<7> t7(1);                                                                             \
-    [[maybe_unused]] const int tagLast = 7; /* length of ref PacketTagList */
+    const int tagLast [[maybe_unused]] = 7; /* length of ref PacketTagList */
 
 void
 PacketTagListTest::CheckRefList(const PacketTagList& ptl, const char* msg, int miss /* = 0 */)

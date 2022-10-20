@@ -244,7 +244,7 @@ void LogComponentDisableAll(enum LogLevel level);
  * \param [in] name The log component name.
  */
 #define NS_LOG_STATIC_TEMPLATE_DEFINE(name)                                                        \
-    [[maybe_unused]] static LogComponent& g_log = GetLogComponent(name)
+    static LogComponent& g_log [[maybe_unused]] = GetLogComponent(name)
 
 /**
  * Use \ref NS_LOG to output a message of level LOG_ERROR.
