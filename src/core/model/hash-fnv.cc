@@ -69,11 +69,13 @@ namespace Fnv1aImplementation
 
 extern "C"
 {
-    // Changes from FNV distribution are marked with `//PDB'
-    //
-
     // NOLINTBEGIN
     // clang-format off
+
+// Changes from FNV distribution are marked with `//PDB'
+//
+
+/* Begin fnv.h ----------------------------------------> */
 
 /*
  * fnv - Fowler/Noll/Vo- hash code
@@ -296,6 +298,10 @@ enum fnv_type {
 
 #endif /* __FNV_H__ */
 
+/* End fnv.h ------------------------------------------> */
+
+/* Begin hash_32a.c -----------------------------------> */
+
 /*
  * hash_32 - 32 bit Fowler/Noll/Vo FNV-1a hash code
  *
@@ -438,6 +444,10 @@ fnv_32a_str(char *str, Fnv32_t hval)
     /* return our new hash value */
     return hval;
 }
+
+/* End hash_32a.c -------------------------------------> */
+
+/* Begin hash_64a.c -----------------------------------> */
 
 /*
  * hash_64 - 64 bit Fowler/Noll/Vo-0 FNV-1a hash code
@@ -730,6 +740,8 @@ fnv_64a_str(char *str, Fnv64_t hval)
     /* return our new hash value */
     return hval;
 }
+
+/* End hash_64a.c -------------------------------------> */
 
     // clang-format on
     // NOLINTEND
