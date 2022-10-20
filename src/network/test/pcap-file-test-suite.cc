@@ -60,7 +60,7 @@ CheckFileExists(std::string filename)
 }
 
 static bool
-CheckFileLength(std::string filename, uint64_t sizeExpected)
+CheckFileLength(std::string filename, long sizeExpected)
 {
     FILE* p = std::fopen(filename.c_str(), "rb");
     if (p == nullptr)
@@ -70,7 +70,7 @@ CheckFileLength(std::string filename, uint64_t sizeExpected)
 
     std::fseek(p, 0, SEEK_END);
 
-    uint64_t sizeActual = std::ftell(p);
+    auto sizeActual = std::ftell(p);
     std::fclose(p);
 
     return sizeActual == sizeExpected;
@@ -815,7 +815,7 @@ RecordHeaderTestCase::DoRun()
     // double check that this is exactly what happened.
     //
     std::fseek(p, 0, SEEK_END);
-    uint64_t size = std::ftell(p);
+    auto size = std::ftell(p);
     NS_TEST_ASSERT_MSG_EQ(size, 83, "Pcap file with one 43 byte packet is incorrect size");
 
     //
