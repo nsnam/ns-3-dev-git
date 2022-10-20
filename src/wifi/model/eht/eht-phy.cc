@@ -134,9 +134,11 @@ EhtPhy::GetSigBSize(const WifiTxVector& txVector) const
 {
     if (ns3::IsDlMu(txVector.GetPreambleType()) && ns3::IsEht(txVector.GetPreambleType()))
     {
-        return EhtPpdu::GetEhtSigFieldSize(txVector.GetChannelWidth(),
-                                           txVector.GetRuAllocation(),
-                                           txVector.GetEhtPpduType());
+        return EhtPpdu::GetEhtSigFieldSize(
+            txVector.GetChannelWidth(),
+            txVector.GetRuAllocation(
+                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20) : 0),
+            txVector.GetEhtPpduType());
     }
     return HePhy::GetSigBSize(txVector);
 }

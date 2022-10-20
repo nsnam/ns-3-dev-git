@@ -452,21 +452,24 @@ class WifiTxVector
     /**
      * Set RU_ALLOCATION field
      * \param ruAlloc 8 bit RU_ALLOCATION per 20 MHz
+     * \param p20Index the index of the primary20 channel
      */
-    void SetRuAllocation(const RuAllocation& ruAlloc);
+    void SetRuAllocation(const RuAllocation& ruAlloc, uint8_t p20Index);
 
     /**
      * Get RU_ALLOCATION field
      * \return 8 bit RU_ALLOCATION per 20 MHz
+     * \param p20Index the index of the primary20 channel
      */
-    const RuAllocation& GetRuAllocation() const;
+    const RuAllocation& GetRuAllocation(uint8_t p20Index) const;
 
     /**
      * Get the HE SIG-B content channel STA ID allocation
      * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
+     * \param p20Index the index of the primary20 channel
      * \return content channel allocation
      */
-    ContentChannelAllocation GetContentChannelAllocation() const;
+    ContentChannelAllocation GetContentChannelAllocation(uint8_t p20Index) const;
 
     /**
      * Set CENTER_26_TONE_RU field
@@ -500,9 +503,10 @@ class WifiTxVector
      * based on the content of per-user information.
      * This is valid only for allocations of RUs of the same size per 20 MHz subchannel.
      *
+     * \param p20Index the index of the primary20 channel
      * \return 8 bit RU_ALLOCATION per 20 MHz
      */
-    RuAllocation DeriveRuAllocation() const;
+    RuAllocation DeriveRuAllocation(uint8_t p20Index) const;
 
     /**
      * Derive the CENTER_26_TONE_RU field from the TXVECTOR
@@ -512,6 +516,17 @@ class WifiTxVector
      * \return the CENTER_26_TONE_RU field
      */
     Center26ToneRuIndication DeriveCenter26ToneRuIndication() const;
+
+    /// Ordered RUs per increasing frequency
+    using OrderedRus = std::map<HeRu::RuSpec, uint16_t, HeRu::RuSpecCompare>;
+
+    /**
+     * Get the ordered RUs with their associated STA-IDs per increasing frequency.
+     *
+     * \param p20Index the index of the primary20 channel
+     * \return the ordered RUs with their associated STA-IDs
+     */
+    OrderedRus GetOrderedRus(uint8_t p20Index) const;
 
     WifiMode m_mode;          /**< The DATARATE parameter in Table 15-4.
                               It is the value that will be passed

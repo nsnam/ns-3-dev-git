@@ -300,19 +300,19 @@ TestMultiUserScheduler::ComputeWifiTxVector()
     {
     case 20:
         ruType = HeRu::RU_52_TONE;
-        m_txVector.SetRuAllocation({112});
+        m_txVector.SetRuAllocation({112}, 0);
         break;
     case 40:
         ruType = HeRu::RU_106_TONE;
-        m_txVector.SetRuAllocation({96, 96});
+        m_txVector.SetRuAllocation({96, 96}, 0);
         break;
     case 80:
         ruType = HeRu::RU_242_TONE;
-        m_txVector.SetRuAllocation({192, 192, 192, 192});
+        m_txVector.SetRuAllocation({192, 192, 192, 192}, 0);
         break;
     case 160:
         ruType = HeRu::RU_484_TONE;
-        m_txVector.SetRuAllocation({200, 200, 200, 200, 200, 200, 200, 200});
+        m_txVector.SetRuAllocation({200, 200, 200, 200, 200, 200, 200, 200}, 0);
         break;
     default:
         NS_ABORT_MSG("Unsupported channel width");

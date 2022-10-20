@@ -47,8 +47,9 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
     // This is a workaround needed until we properly implement 11be PHY headers.
     if (ns3::IsDlMu(m_preamble) && !txVector.IsDlMu())
     {
-        m_contentChannelAlloc = txVector.GetContentChannelAllocation();
-        m_ruAllocation = txVector.GetRuAllocation();
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+        m_contentChannelAlloc = txVector.GetContentChannelAllocation(p20Index);
+        m_ruAllocation = txVector.GetRuAllocation(p20Index);
         m_ehtSuMcs = txVector.GetMode().GetMcsValue();
         m_ehtSuNStreams = txVector.GetNss();
     }
@@ -105,8 +106,9 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     }
     if (ns3::IsDlMu(m_preamble))
     {
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
         txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
-        txVector.SetRuAllocation(m_ruAllocation);
+        txVector.SetRuAllocation(m_ruAllocation, p20Index);
     }
 }
 

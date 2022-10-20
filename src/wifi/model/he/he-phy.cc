@@ -222,7 +222,10 @@ HePhy::GetSigBSize(const WifiTxVector& txVector) const
     if (ns3::IsDlMu(txVector.GetPreambleType()))
     {
         NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
-        return HePpdu::GetSigBFieldSize(txVector.GetChannelWidth(), txVector.GetRuAllocation());
+        return HePpdu::GetSigBFieldSize(
+            txVector.GetChannelWidth(),
+            txVector.GetRuAllocation(
+                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20) : 0));
     }
     return 0;
 }

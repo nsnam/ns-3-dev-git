@@ -75,11 +75,11 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
             auto [it, ret] = m_muUserInfos.emplace(heMuUserInfo);
             NS_ABORT_MSG_IF(!ret, "STA-ID " << heMuUserInfo.first << " already present");
         }
-        m_contentChannelAlloc = txVector.GetContentChannelAllocation();
-        m_ruAllocation = txVector.GetRuAllocation();
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+        m_contentChannelAlloc = txVector.GetContentChannelAllocation(p20Index);
+        m_ruAllocation = txVector.GetRuAllocation(p20Index);
     }
     SetPhyHeaders(txVector, ppduDuration);
-    SetTxPsdFlag(flag);
 }
 
 HePpdu::HePpdu(Ptr<const WifiPsdu> psdu,
@@ -91,12 +91,12 @@ HePpdu::HePpdu(Ptr<const WifiPsdu> psdu,
                txVector,
                channel,
                uid,
-               false) // don't instantiate LSigHeader of OfdmPpdu
+               false), // don't instantiate LSigHeader of OfdmPpdu
+      m_txPsdFlag(PSD_NON_HE_PORTION)
 {
     NS_LOG_FUNCTION(this << psdu << txVector << channel << ppduDuration << uid);
     NS_ASSERT(!IsMu());
     SetPhyHeaders(txVector, ppduDuration);
-    SetTxPsdFlag(PSD_NON_HE_PORTION);
 }
 
 void
@@ -228,7 +228,8 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     if (txVector.IsDlMu())
     {
         txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
-        txVector.SetRuAllocation(m_ruAllocation);
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+        txVector.SetRuAllocation(m_ruAllocation, p20Index);
     }
 }
 

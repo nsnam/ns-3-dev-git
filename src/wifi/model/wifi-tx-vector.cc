@@ -396,21 +396,21 @@ WifiTxVector::GetSigBMode() const
 }
 
 void
-WifiTxVector::SetRuAllocation(const RuAllocation& ruAlloc)
+WifiTxVector::SetRuAllocation(const RuAllocation& ruAlloc, uint8_t p20Index)
 {
     if (ns3::IsDlMu(m_preamble) && !m_muUserInfos.empty())
     {
-        NS_ASSERT(ruAlloc == DeriveRuAllocation());
+        NS_ASSERT(ruAlloc == DeriveRuAllocation(p20Index));
     }
     m_ruAllocation = ruAlloc;
 }
 
 const RuAllocation&
-WifiTxVector::GetRuAllocation() const
+WifiTxVector::GetRuAllocation(uint8_t p20Index) const
 {
     if (ns3::IsDlMu(m_preamble) && m_ruAllocation.empty())
     {
-        m_ruAllocation = DeriveRuAllocation();
+        m_ruAllocation = DeriveRuAllocation(p20Index);
     }
     return m_ruAllocation;
 }
@@ -641,8 +641,21 @@ HeMuUserInfo::operator!=(const HeMuUserInfo& other) const
     return !(*this == other);
 }
 
+WifiTxVector::OrderedRus
+WifiTxVector::GetOrderedRus(uint8_t p20Index) const
+{
+    auto heRuComparator = HeRu::RuSpecCompare(m_channelWidth, p20Index);
+    OrderedRus orderedRus{heRuComparator};
+    std::transform(
+        m_muUserInfos.cbegin(),
+        m_muUserInfos.cend(),
+        std::inserter(orderedRus, orderedRus.end()),
+        [](auto&& userInfo) { return std::make_pair(userInfo.second.ru, userInfo.first); });
+    return orderedRus;
+}
+
 ContentChannelAllocation
-WifiTxVector::GetContentChannelAllocation() const
+WifiTxVector::GetContentChannelAllocation(uint8_t p20Index) const
 {
     ContentChannelAllocation channelAlloc{{}};
 
@@ -651,10 +664,13 @@ WifiTxVector::GetContentChannelAllocation() const
         channelAlloc.emplace_back();
     }
 
-    for (const auto& [staId, userInfo] : m_muUserInfos)
+    const auto& orderedRus = GetOrderedRus(p20Index);
+    for (const auto& [ru, staId] : orderedRus)
     {
-        auto ruType = userInfo.ru.GetRuType();
-        auto ruIdx = userInfo.ru.GetIndex();
+        auto ruType = ru.GetRuType();
+        auto ruIdx = ru.GetIndex();
+        const auto& userInfo = GetHeMuUserInfo(staId);
+        NS_ASSERT(ru == userInfo.ru);
 
         if ((ruType == HeRu::RU_484_TONE) || (ruType == HeRu::RU_996_TONE))
         {
@@ -683,21 +699,19 @@ WifiTxVector::GetContentChannelAllocation() const
 }
 
 RuAllocation
-WifiTxVector::DeriveRuAllocation() const
+WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
 {
-    std::all_of(m_muUserInfos.cbegin(), m_muUserInfos.cend(), [&](const auto& userInfo) {
-        return userInfo.second.ru.GetRuType() == m_muUserInfos.cbegin()->second.ru.GetRuType();
-    });
     RuAllocation ruAllocations(m_channelWidth / 20, HeRu::EMPTY_242_TONE_RU);
     std::vector<HeRu::RuType> ruTypes{};
     ruTypes.resize(ruAllocations.size());
-    for (auto it = m_muUserInfos.begin(); it != m_muUserInfos.end(); ++it)
+    const auto& orderedRus = GetOrderedRus(p20Index);
+    for (const auto& [ru, staId] : orderedRus)
     {
-        const auto ruType = it->second.ru.GetRuType();
+        const auto ruType = ru.GetRuType();
         const auto ruBw = HeRu::GetBandwidth(ruType);
-        const auto isPrimary80MHz = it->second.ru.GetPrimary80MHz();
+        const auto isPrimary80MHz = ru.GetPrimary80MHz();
         const auto rusPerSubchannel = HeRu::GetRusOfType(ruBw > 20 ? ruBw : 20, ruType);
-        auto ruIndex = it->second.ru.GetIndex();
+        auto ruIndex = ru.GetIndex();
         if ((m_channelWidth >= 80) && (ruIndex > 19))
         {
             // take into account the center 26-tone RU in the primary 80 MHz

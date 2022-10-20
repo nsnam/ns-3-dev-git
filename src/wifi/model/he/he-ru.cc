@@ -370,6 +370,24 @@ const HeRu::RuAllocationMap HeRu::m_heRuAllocations = {
     // clang-format on
 };
 
+HeRu::RuSpecCompare::RuSpecCompare(uint16_t channelWidth, uint8_t p20Index)
+    : m_channelWidth(channelWidth),
+      m_p20Index(p20Index)
+{
+}
+
+bool
+HeRu::RuSpecCompare::operator()(const HeRu::RuSpec& lhs, const HeRu::RuSpec& rhs) const
+{
+    const auto lhsIndex = lhs.GetPhyIndex(m_channelWidth, m_p20Index);
+    const auto rhsIndex = rhs.GetPhyIndex(m_channelWidth, m_p20Index);
+    const auto lhsStartTone =
+        HeRu::GetSubcarrierGroup(m_channelWidth, lhs.GetRuType(), lhsIndex).front().first;
+    const auto rhsStartTone =
+        HeRu::GetSubcarrierGroup(m_channelWidth, rhs.GetRuType(), rhsIndex).front().first;
+    return lhsStartTone < rhsStartTone;
+}
+
 std::vector<HeRu::RuSpec>
 HeRu::GetRuSpecs(uint8_t ruAllocation)
 {

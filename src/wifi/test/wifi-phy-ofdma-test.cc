@@ -495,22 +495,22 @@ TestDlOfdmaPhyTransmission::SendMuPpdu(uint16_t rxStaId1, uint16_t rxStaId2)
     if (m_channelWidth == 20)
     {
         ruType = HeRu::RU_106_TONE;
-        txVector.SetRuAllocation({96});
+        txVector.SetRuAllocation({96}, 0);
     }
     else if (m_channelWidth == 40)
     {
         ruType = HeRu::RU_242_TONE;
-        txVector.SetRuAllocation({192, 192});
+        txVector.SetRuAllocation({192, 192}, 0);
     }
     else if (m_channelWidth == 80)
     {
         ruType = HeRu::RU_484_TONE;
-        txVector.SetRuAllocation({200, 200, 200, 200});
+        txVector.SetRuAllocation({200, 200, 200, 200}, 0);
     }
     else if (m_channelWidth == 160)
     {
         ruType = HeRu::RU_996_TONE;
-        txVector.SetRuAllocation({208, 208, 208, 208, 208, 208, 208, 208});
+        txVector.SetRuAllocation({208, 208, 208, 208, 208, 208, 208, 208}, 0);
     }
     else
     {
@@ -1404,7 +1404,7 @@ TestDlOfdmaPhyPuncturing::SendMuPpdu(uint16_t rxStaId1,
                                                      : (puncturedSubchannels.at(3) ? 113 : 200));
     }
 
-    txVector.SetRuAllocation(ruAlloc);
+    txVector.SetRuAllocation(ruAlloc, 0);
     txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
 
     Ptr<Packet> pkt1 = Create<Packet>(1000);
@@ -2078,7 +2078,7 @@ TestUlOfdmaPpduUid::SendMuPpdu()
     txVector.SetMode(HePhy::GetHeMcs9(), rxStaId2);
     txVector.SetNss(1, rxStaId2);
     txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
-    txVector.SetRuAllocation({96});
+    txVector.SetRuAllocation({96}, 0);
 
     Ptr<Packet> pkt1 = Create<Packet>(1000);
     WifiMacHeader hdr1;
