@@ -385,8 +385,6 @@ CommandLine::PrintHelp(std::ostream& os) const
        << std::endl;
 }
 
-#include <unistd.h> // getcwd
-
 std::string
 CommandLine::GetVersion() const
 {
