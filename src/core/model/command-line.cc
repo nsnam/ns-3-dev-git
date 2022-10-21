@@ -858,12 +858,12 @@ CommandLineHelper::GetDefault<bool>(const bool& val)
 
 template <>
 bool
-CommandLineHelper::UserItemParse<bool>(const std::string& value, bool& val)
+CommandLineHelper::UserItemParse<bool>(const std::string& value, bool& dest)
 {
     // No new value, so just toggle it
     if (value.empty())
     {
-        val = !val;
+        dest = !dest;
         return true;
     }
 
@@ -873,19 +873,19 @@ CommandLineHelper::UserItemParse<bool>(const std::string& value, bool& val)
     });
     if (src == "true" || src == "t")
     {
-        val = true;
+        dest = true;
         return true;
     }
     else if (src == "false" || src == "f")
     {
-        val = false;
+        dest = false;
         return true;
     }
     else
     {
         std::istringstream iss;
         iss.str(src);
-        iss >> val;
+        iss >> dest;
         return !iss.bad() && !iss.fail();
     }
 }
@@ -901,32 +901,32 @@ CommandLineHelper::GetDefault<Time>(const Time& val)
 
 template <>
 bool
-CommandLineHelper::UserItemParse<uint8_t>(const std::string& value, uint8_t& val)
+CommandLineHelper::UserItemParse<uint8_t>(const std::string& value, uint8_t& dest)
 {
-    uint8_t oldVal = val;
-    int newVal;
+    uint8_t oldDest = dest;
+    int newDest;
 
     try
     {
-        newVal = std::stoi(value);
+        newDest = std::stoi(value);
     }
     catch (std::invalid_argument& ia)
     {
         NS_LOG_WARN("invalid argument: " << ia.what());
-        val = oldVal;
+        dest = oldDest;
         return false;
     }
     catch (std::out_of_range& oor)
     {
         NS_LOG_WARN("out of range: " << oor.what());
-        val = oldVal;
+        dest = oldDest;
         return false;
     }
-    if (newVal < 0 || newVal > 255)
+    if (newDest < 0 || newDest > 255)
     {
         return false;
     }
-    val = newVal;
+    dest = newDest;
     return true;
 }
 

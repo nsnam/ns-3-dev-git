@@ -642,31 +642,31 @@ namespace CommandLineHelper
  * \brief Helpers to specialize CommandLine::UserItem::Parse()
  *
  * \param [in] value The argument name
- * \param [out] val The argument location
+ * \param [out] dest The argument location
  * \tparam T \deduced The type being specialized
  * \return \c true if parsing was successful
  */
 template <typename T>
-bool UserItemParse(const std::string& value, T& val);
+bool UserItemParse(const std::string& value, T& dest);
 /**
  * \brief Specialization of CommandLine::UserItem::Parse() to \c bool
  *
  * \param [in] value The argument name
- * \param [out] val The boolean variable to set
+ * \param [out] dest The boolean variable to set
  * \return \c true if parsing was successful
  */
 template <>
-bool UserItemParse<bool>(const std::string& value, bool& val);
+bool UserItemParse<bool>(const std::string& value, bool& dest);
 /**
  * \brief Specialization of CommandLine::UserItem::Parse() to \c uint8_t
  * to distinguish from \c char
  *
  * \param [in] value The argument name
- * \param [out] val The \c uint8_t variable to set
+ * \param [out] dest The \c uint8_t variable to set
  * \return \c true if parsing was successful
  */
 template <>
-bool UserItemParse<uint8_t>(const std::string& value, uint8_t& val);
+bool UserItemParse<uint8_t>(const std::string& value, uint8_t& dest);
 
 /**
  * \ingroup commandlinehelper
@@ -760,11 +760,11 @@ CommandLine::UserItem<T>::Parse(const std::string& value) const
 
 template <typename T>
 bool
-CommandLineHelper::UserItemParse(const std::string& value, T& val)
+CommandLineHelper::UserItemParse(const std::string& value, T& dest)
 {
     std::istringstream iss;
     iss.str(value);
-    iss >> val;
+    iss >> dest;
     return !iss.bad() && !iss.fail();
 }
 
