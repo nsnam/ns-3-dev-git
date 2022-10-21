@@ -445,7 +445,7 @@ ListErrorModel::~ListErrorModel()
     NS_LOG_FUNCTION(this);
 }
 
-std::list<uint32_t>
+std::list<uint64_t>
 ListErrorModel::GetList() const
 {
     NS_LOG_FUNCTION(this);
@@ -453,7 +453,7 @@ ListErrorModel::GetList() const
 }
 
 void
-ListErrorModel::SetList(const std::list<uint32_t>& packetlist)
+ListErrorModel::SetList(const std::list<uint64_t>& packetlist)
 {
     NS_LOG_FUNCTION(this << &packetlist);
     m_packetList = packetlist;
@@ -470,7 +470,7 @@ ListErrorModel::DoCorrupt(Ptr<Packet> p)
     {
         return false;
     }
-    uint32_t uid = p->GetUid();
+    auto uid = p->GetUid();
     for (PacketListCI i = m_packetList.begin(); i != m_packetList.end(); i++)
     {
         if (uid == *i)
