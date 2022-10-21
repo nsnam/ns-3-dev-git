@@ -210,7 +210,7 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
     NS_ASSERT(qosTxop);
 
     // Have to make sure that the block ack agreement is established and A-MPDU is enabled
-    if (qosTxop->GetBaAgreementEstablished(recipient, tid) &&
+    if (m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid) &&
         GetMaxAmpduSize(recipient, tid, txParams.m_txVector.GetModulationClass()) > 0)
     {
         /* here is performed MPDU aggregation */

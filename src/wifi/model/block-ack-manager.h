@@ -22,6 +22,7 @@
 
 #include "block-ack-type.h"
 #include "originator-block-ack-agreement.h"
+#include "recipient-block-ack-agreement.h"
 #include "wifi-mac-header.h"
 #include "wifi-mpdu.h"
 #include "wifi-tx-vector.h"
@@ -40,6 +41,7 @@ class MgtAddBaRequestHeader;
 class CtrlBAckResponseHeader;
 class CtrlBAckRequestHeader;
 class WifiMacQueue;
+class MacRxMiddle;
 
 /**
  * \ingroup wifi
@@ -103,6 +105,9 @@ class BlockAckManager : public Object
     /// optional const reference to OriginatorBlockAckAgreement
     using OriginatorAgreementOptConstRef =
         std::optional<std::reference_wrapper<const OriginatorBlockAckAgreement>>;
+    /// optional const reference to RecipientBlockAckAgreement
+    using RecipientAgreementOptConstRef =
+        std::optional<std::reference_wrapper<const RecipientBlockAckAgreement>>;
 
     /**
      * \param recipient MAC address of the recipient
@@ -115,6 +120,17 @@ class BlockAckManager : public Object
     OriginatorAgreementOptConstRef GetAgreementAsOriginator(Mac48Address recipient,
                                                             uint8_t tid) const;
     /**
+     * \param originator MAC address of the originator
+     * \param tid Traffic ID
+     *
+     * \return a const reference to the block ack agreement with the given originator, if it exists
+     *
+     * Check if we are the recipient of an existing block ack agreement with the given originator.
+     */
+    RecipientAgreementOptConstRef GetAgreementAsRecipient(Mac48Address originator,
+                                                          uint8_t tid) const;
+
+    /**
      * \param reqHdr Relative Add block ack request (action frame).
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param htSupported Whether both originator and recipient support HT
@@ -122,7 +138,7 @@ class BlockAckManager : public Object
      * Creates a new originator block ack agreement in pending state. When a ADDBA response
      * with a successful status code is received, the relative agreement becomes established.
      */
-    void CreateOriginatorAgreement(const MgtAddBaRequestHeader* reqHdr,
+    void CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
                                    Mac48Address recipient,
                                    bool htSupported = true);
     /**
@@ -140,9 +156,40 @@ class BlockAckManager : public Object
      *
      * Invoked upon receipt of a ADDBA response frame from <i>recipient</i>.
      */
-    void UpdateOriginatorAgreement(const MgtAddBaResponseHeader* respHdr,
+    void UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr,
                                    Mac48Address recipient,
                                    uint16_t startingSeq);
+
+    /**
+     * \param respHdr Add block ack response from originator (action
+     *        frame).
+     * \param originator Address of peer station involved in block ack
+     *        mechanism.
+     * \param startingSeq Sequence number of the first MPDU of all
+     *        packets for which block ack was negotiated.
+     * \param htSupported whether HT support is enabled
+     * \param rxMiddle the MAC RX Middle on this station
+     *
+     * This function is typically invoked only by ns3::WifiMac
+     * when the STA (which may be non-AP in ESS, or in an IBSS) has
+     * received an ADDBA Request frame and is transmitting an ADDBA
+     * Response frame. At this point the frame exchange manager must
+     * allocate buffers to collect all correctly received packets belonging
+     * to the category for which block ack was negotiated.
+     */
+    void CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
+                                  Mac48Address originator,
+                                  uint16_t startingSeq,
+                                  bool htSupported,
+                                  Ptr<MacRxMiddle> rxMiddle);
+    /**
+     * Destroy a recipient Block Ack agreement.
+     *
+     * \param originator the originator MAC address
+     * \param tid the TID associated with the Block Ack agreement
+     */
+    void DestroyRecipientAgreement(Mac48Address originator, uint8_t tid);
+
     /**
      * \param mpdu MPDU to store.
      *
@@ -217,6 +264,20 @@ class BlockAckManager : public Object
      * sent with ack policy set to Block Ack, should be placed in the retransmission queue.
      */
     void NotifyMissedBlockAck(uint8_t linkId, Mac48Address recipient, uint8_t tid);
+    /**
+     * \param originator MAC address of the sender of the Block Ack Request
+     * \param tid Traffic ID
+     * \param startingSeq the starting sequence number in the Block Ack Request
+     *
+     * Perform required actions upon receiving a Block Ack Request frame.
+     */
+    void NotifyGotBlockAckRequest(Mac48Address originator, uint8_t tid, uint16_t startingSeq);
+    /**
+     * \param mpdu the received MPDU
+     *
+     * Perform required actions upon receiving an MPDU.
+     */
+    void NotifyGotMpdu(Ptr<const WifiMpdu> mpdu);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID.
@@ -427,6 +488,9 @@ class BlockAckManager : public Object
     /// typedef for an iterator for Agreements
     using OriginatorAgreementsI = OriginatorAgreements::iterator;
 
+    /// AgreementKey-indexed map of recipient block ack agreements
+    using RecipientAgreements = std::map<AgreementKey, RecipientBlockAckAgreement>;
+
     /**
      * Handle the given in flight MPDU based on its given status. If the status is
      * ACKNOWLEDGED, the MPDU is removed from both the EDCA queue and the queue of
@@ -455,6 +519,7 @@ class BlockAckManager : public Object
      * erased from this data structure. Pushed back in retransmission queue otherwise.
      */
     OriginatorAgreements m_originatorAgreements;
+    RecipientAgreements m_recipientAgreements; //!< Recipient Block Ack agreements
 
     std::list<Bar> m_bars; ///< list of BARs
 

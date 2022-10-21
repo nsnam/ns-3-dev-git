@@ -263,13 +263,6 @@ QosTxop::GetBaManager()
     return m_baManager;
 }
 
-bool
-QosTxop::GetBaAgreementEstablished(Mac48Address address, uint8_t tid) const
-{
-    auto agreement = m_baManager->GetAgreementAsOriginator(address, tid);
-    return agreement && agreement->get().IsEstablished();
-}
-
 uint16_t
 QosTxop::GetBaBufferSize(Mac48Address address, uint8_t tid) const
 {
@@ -356,7 +349,7 @@ QosTxop::IsQosOldPacket(Ptr<const WifiMpdu> mpdu)
     Mac48Address recipient = mpdu->GetHeader().GetAddr1();
     uint8_t tid = mpdu->GetHeader().GetQosTid();
 
-    if (!GetBaAgreementEstablished(recipient, tid))
+    if (!m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid))
     {
         return false;
     }
@@ -417,8 +410,8 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
 
             // if no BA agreement, we cannot have multiple MPDUs in-flight
             if (item->GetHeader().IsQosData() &&
-                !GetBaAgreementEstablished(item->GetHeader().GetAddr1(),
-                                           item->GetHeader().GetQosTid()))
+                !m_mac->GetBaAgreementEstablishedAsOriginator(item->GetHeader().GetAddr1(),
+                                                              item->GetHeader().GetQosTid()))
             {
                 NS_LOG_DEBUG("No BA agreement and an MPDU is already in-flight");
                 return nullptr;
@@ -456,7 +449,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
         Mac48Address recipient = hdr.GetAddr1();
         uint8_t tid = hdr.GetQosTid();
 
-        if (GetBaAgreementEstablished(recipient, tid) &&
+        if (m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid) &&
             !IsInWindow(sequence,
                         GetBaStartingSequence(recipient, tid),
                         GetBaBufferSize(recipient, tid)))
@@ -511,7 +504,7 @@ QosTxop::GetNextMpdu(uint8_t linkId,
         // we should not be asked to dequeue an MPDU that is beyond the transmit window.
         // Note that PeekNextMpdu() temporarily assigns the next available sequence number
         // to the peeked frame
-        NS_ASSERT(!GetBaAgreementEstablished(recipient, tid) ||
+        NS_ASSERT(!m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid) ||
                   IsInWindow(peekedItem->GetHeader().GetSequenceNumber(),
                              GetBaStartingSequence(recipient, tid),
                              GetBaBufferSize(recipient, tid)));
@@ -615,11 +608,11 @@ QosTxop::GetRemainingTxop(uint8_t linkId) const
 }
 
 void
-QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader* respHdr, Mac48Address recipient)
+QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address recipient)
 {
     NS_LOG_FUNCTION(this << respHdr << recipient);
-    uint8_t tid = respHdr->GetTid();
-    if (respHdr->GetStatusCode().IsSuccess())
+    uint8_t tid = respHdr.GetTid();
+    if (respHdr.GetStatusCode().IsSuccess())
     {
         NS_LOG_DEBUG("block ack agreement established with " << recipient << " tid " << +tid);
         // A (destination, TID) pair is "blocked" (i.e., no more packets are sent)
@@ -676,7 +669,8 @@ QosTxop::CompleteMpduTx(Ptr<WifiMpdu> mpdu)
 {
     NS_ASSERT(mpdu->GetHeader().IsQosData());
     // If there is an established BA agreement, store the packet in the queue of outstanding packets
-    if (GetBaAgreementEstablished(mpdu->GetHeader().GetAddr1(), mpdu->GetHeader().GetQosTid()))
+    if (m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
+                                                     mpdu->GetHeader().GetQosTid()))
     {
         m_baManager->StorePacket(mpdu);
     }

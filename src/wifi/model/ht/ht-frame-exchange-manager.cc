@@ -67,7 +67,6 @@ void
 HtFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_agreements.clear();
     m_pendingAddBaResp.clear();
     m_msduAggregator = nullptr;
     m_mpduAggregator = nullptr;
@@ -178,7 +177,7 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
     // set the starting sequence number for the BA agreement
     reqHdr.SetStartingSequence(startingSeq);
 
-    GetBaManager(tid)->CreateOriginatorAgreement(&reqHdr, dest);
+    GetBaManager(tid)->CreateOriginatorAgreement(reqHdr, dest);
 
     packet->AddHeader(reqHdr);
     packet->AddHeader(actionHdr);
@@ -228,7 +227,8 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     {
         respHdr.SetDelayedBlockAck();
     }
-    respHdr.SetTid(reqHdr->GetTid());
+    auto tid = reqHdr->GetTid();
+    respHdr.SetTid(tid);
 
     respHdr.SetBufferSize(GetSupportedBaBufferSize());
     respHdr.SetTimeout(reqHdr->GetTimeout());
@@ -242,7 +242,28 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     packet->AddHeader(respHdr);
     packet->AddHeader(actionHdr);
 
-    CreateBlockAckAgreement(&respHdr, originator, reqHdr->GetStartingSequence());
+    bool htSupported = GetWifiRemoteStationManager()->GetHtSupported() &&
+                       GetWifiRemoteStationManager()->GetHtSupported(originator);
+    GetBaManager(tid)->CreateRecipientAgreement(respHdr,
+                                                originator,
+                                                reqHdr->GetStartingSequence(),
+                                                htSupported,
+                                                m_rxMiddle);
+
+    auto agreement = GetBaManager(tid)->GetAgreementAsRecipient(originator, tid);
+    NS_ASSERT(agreement);
+    if (respHdr.GetTimeout() != 0)
+    {
+        Time timeout = MicroSeconds(1024 * agreement->get().GetTimeout());
+
+        agreement->get().m_inactivityEvent =
+            Simulator::Schedule(timeout,
+                                &HtFrameExchangeManager::SendDelbaFrame,
+                                this,
+                                originator,
+                                tid,
+                                false);
+    }
 
     auto mpdu = Create<WifiMpdu>(packet, hdr);
 
@@ -257,7 +278,7 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
      */
 
     // remove any pending ADDBA_RESPONSE frame
-    AgreementKey key(originator, reqHdr->GetTid());
+    AgreementKey key(originator, tid);
     if (auto it = m_pendingAddBaResp.find(key); it != m_pendingAddBaResp.end())
     {
         NS_ASSERT_MSG(it->second, "The pointer to the pending ADDBA_RESPONSE cannot be null");
@@ -271,7 +292,7 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     // bung it into the queue corresponding to the TID for which we are
     // establishing an agreement, and push it to the head.
     //  Wifi MAC queue scheduler is expected to prioritize management frames
-    m_mac->GetQosTxop(reqHdr->GetTid())->Queue(mpdu);
+    m_mac->GetQosTxop(tid)->Queue(mpdu);
 }
 
 uint16_t
@@ -302,7 +323,7 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOr
     else
     {
         delbaHdr.SetByRecipient();
-        DestroyBlockAckAgreement(addr, tid);
+        GetBaManager(tid)->DestroyRecipientAgreement(addr, tid);
     }
 
     WifiActionHeader actionHdr;
@@ -315,62 +336,6 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOr
     packet->AddHeader(actionHdr);
 
     m_mac->GetQosTxop(tid)->GetWifiMacQueue()->Enqueue(Create<WifiMpdu>(packet, hdr));
-}
-
-void
-HtFrameExchangeManager::CreateBlockAckAgreement(const MgtAddBaResponseHeader* respHdr,
-                                                Mac48Address originator,
-                                                uint16_t startingSeq)
-{
-    NS_LOG_FUNCTION(this << *respHdr << originator << startingSeq);
-    uint8_t tid = respHdr->GetTid();
-
-    RecipientBlockAckAgreement agreement(
-        originator,
-        respHdr->IsAmsduSupported(),
-        tid,
-        respHdr->GetBufferSize(),
-        respHdr->GetTimeout(),
-        startingSeq,
-        GetWifiRemoteStationManager()->GetHtSupported() &&
-            GetWifiRemoteStationManager()->GetHtSupported(originator));
-    agreement.SetMacRxMiddle(m_rxMiddle);
-    if (respHdr->IsImmediateBlockAck())
-    {
-        agreement.SetImmediateBlockAck();
-    }
-    else
-    {
-        agreement.SetDelayedBlockAck();
-    }
-
-    if (respHdr->GetTimeout() != 0)
-    {
-        Time timeout = MicroSeconds(1024 * agreement.GetTimeout());
-
-        agreement.m_inactivityEvent = Simulator::Schedule(timeout,
-                                                          &HtFrameExchangeManager::SendDelbaFrame,
-                                                          this,
-                                                          originator,
-                                                          tid,
-                                                          false);
-    }
-
-    m_agreements.insert_or_assign({originator, tid}, agreement);
-}
-
-void
-HtFrameExchangeManager::DestroyBlockAckAgreement(Mac48Address originator, uint8_t tid)
-{
-    NS_LOG_FUNCTION(this << originator << +tid);
-
-    auto agreementIt = m_agreements.find({originator, tid});
-    if (agreementIt != m_agreements.end())
-    {
-        // forward up the buffered MPDUs before destroying the agreement
-        agreementIt->second.Flush();
-        m_agreements.erase(agreementIt);
-    }
 }
 
 bool
@@ -588,7 +553,7 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
         uint8_t tid = mpdu->GetHeader().GetQosTid();
         Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
 
-        if (edca->GetBaAgreementEstablished(mpdu->GetHeader().GetAddr1(), tid))
+        if (m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(), tid))
         {
             // notify the BA manager that the MPDU was acknowledged
             edca->GetBaManager()->NotifyGotAck(m_linkId, mpdu);
@@ -605,14 +570,15 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
             {
                 MgtDelBaHeader delBa;
                 p->PeekHeader(delBa);
+                auto tid = delBa.GetTid();
                 if (delBa.IsByOriginator())
                 {
-                    GetBaManager(delBa.GetTid())
-                        ->DestroyOriginatorAgreement(mpdu->GetHeader().GetAddr1(), delBa.GetTid());
+                    GetBaManager(tid)->DestroyOriginatorAgreement(mpdu->GetHeader().GetAddr1(),
+                                                                  tid);
                 }
                 else
                 {
-                    DestroyBlockAckAgreement(mpdu->GetHeader().GetAddr1(), delBa.GetTid());
+                    GetBaManager(tid)->DestroyRecipientAgreement(mpdu->GetHeader().GetAddr1(), tid);
                 }
             }
             else if (actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
@@ -632,12 +598,12 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                 // A recipient Block Ack agreement must exist
                 MgtAddBaResponseHeader addBa;
                 p->PeekHeader(addBa);
-                AgreementKey key(mpdu->GetHeader().GetAddr1(), addBa.GetTid());
-                auto agreementIt = m_agreements.find(key);
-                NS_ASSERT_MSG(agreementIt != m_agreements.end(),
-                              "Recipient BA agreement {" << key.first << ", " << +key.second
+                auto originator = mpdu->GetHeader().GetAddr1();
+                auto tid = addBa.GetTid();
+                NS_ASSERT_MSG(GetBaManager(tid)->GetAgreementAsRecipient(originator, tid),
+                              "Recipient BA agreement {" << originator << ", " << +tid
                                                          << "} not found");
-                m_pendingAddBaResp.erase(key);
+                m_pendingAddBaResp.erase({originator, tid});
             }
         }
     }
@@ -718,7 +684,7 @@ HtFrameExchangeManager::RetransmitMpduAfterMissedAck(Ptr<WifiMpdu> mpdu) const
         uint8_t tid = mpdu->GetHeader().GetQosTid();
         Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
 
-        if (edca->GetBaAgreementEstablished(mpdu->GetHeader().GetAddr1(), tid))
+        if (m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(), tid))
         {
             // notify the BA manager that the MPDU was not acknowledged
             edca->GetBaManager()->NotifyMissedAck(m_linkId, mpdu);
@@ -740,7 +706,7 @@ HtFrameExchangeManager::ReleaseSequenceNumber(Ptr<WifiMpdu> mpdu) const
         uint8_t tid = hdr.GetQosTid();
         Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
 
-        if (edca->GetBaAgreementEstablished(hdr.GetAddr1(), tid) && !hdr.IsRetry())
+        if (m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr1(), tid) && !hdr.IsRetry())
         {
             // The MPDU has never been transmitted, so we can make its sequence
             // number available again if it is lower than the sequence number
@@ -1269,7 +1235,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
             // if a BA agreement exists, we can get here if there is no outstanding
             // MPDU whose lifetime has not expired yet.
             GetWifiRemoteStationManager()->ReportFinalDataFailed(*psdu->begin());
-            if (edca->GetBaAgreementEstablished(recipient, tid))
+            if (m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid))
             {
                 // schedule a BlockAckRequest with skipIfNoDataQueued set to true, so that the
                 // BlockAckRequest is only sent if there are data frames queued for this recipient.
@@ -1345,20 +1311,6 @@ HtFrameExchangeManager::SendBlockAck(const RecipientBlockAckAgreement& agreement
     psdu->GetPayload(0)->AddPacketTag(tag);
 
     ForwardPsduDown(psdu, blockAckTxVector);
-}
-
-bool
-HtFrameExchangeManager::GetBaAgreementEstablished(Mac48Address originator, uint8_t tid) const
-{
-    return (m_agreements.find({originator, tid}) != m_agreements.end());
-}
-
-BlockAckType
-HtFrameExchangeManager::GetBlockAckType(Mac48Address originator, uint8_t tid) const
-{
-    auto it = m_agreements.find({originator, tid});
-    NS_ABORT_MSG_IF(it == m_agreements.end(), "No established Block Ack agreement");
-    return it->second.GetBlockAckType();
 }
 
 void
@@ -1441,22 +1393,24 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             NS_ABORT_MSG_IF(blockAckReq.IsMultiTid(), "Multi-TID BlockAckReq not supported");
             uint8_t tid = blockAckReq.GetTidInfo();
 
-            auto agreementIt = m_agreements.find({sender, tid});
+            auto agreement = GetBaManager(tid)->GetAgreementAsRecipient(sender, tid);
 
-            if (agreementIt == m_agreements.end())
+            if (!agreement)
             {
                 NS_LOG_DEBUG("There's not a valid agreement for this BlockAckReq");
                 return;
             }
 
-            agreementIt->second.NotifyReceivedBar(blockAckReq.GetStartingSequence());
+            GetBaManager(tid)->NotifyGotBlockAckRequest(sender,
+                                                        tid,
+                                                        blockAckReq.GetStartingSequence());
 
             NS_LOG_DEBUG("Schedule Block Ack");
             Simulator::Schedule(
                 m_phy->GetSifs(),
                 &HtFrameExchangeManager::SendBlockAck,
                 this,
-                agreementIt->second,
+                *agreement,
                 hdr.GetDuration(),
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(sender, txVector),
                 rxSnr);
@@ -1473,13 +1427,12 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     {
         uint8_t tid = hdr.GetQosTid();
 
-        auto agreementIt = m_agreements.find({hdr.GetAddr2(), tid});
-        if (agreementIt != m_agreements.end())
+        if (m_mac->GetBaAgreementEstablishedAsRecipient(hdr.GetAddr2(), tid))
         {
             // a Block Ack agreement has been established
             NS_LOG_DEBUG("Received from=" << hdr.GetAddr2() << " (" << *mpdu << ")");
 
-            agreementIt->second.NotifyReceivedMpdu(mpdu);
+            GetBaManager(tid)->NotifyGotMpdu(mpdu);
 
             if (!inAmpdu && hdr.GetQosAckPolicy() == WifiMacHeader::NORMAL_ACK)
             {
@@ -1519,14 +1472,14 @@ HtFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         {
             // Normal Ack or Implicit Block Ack Request
             NS_LOG_DEBUG("Schedule Block Ack");
-            auto agreementIt = m_agreements.find({psdu->GetAddr2(), tid});
-            NS_ASSERT(agreementIt != m_agreements.end());
+            auto agreement = GetBaManager(tid)->GetAgreementAsRecipient(psdu->GetAddr2(), tid);
+            NS_ASSERT(agreement);
 
             Simulator::Schedule(
                 m_phy->GetSifs(),
                 &HtFrameExchangeManager::SendBlockAck,
                 this,
-                agreementIt->second,
+                *agreement,
                 psdu->GetDuration(),
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(psdu->GetAddr2(), txVector),
                 rxSignalInfo.snr);

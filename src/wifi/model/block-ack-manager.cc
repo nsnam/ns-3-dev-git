@@ -20,6 +20,7 @@
 #include "block-ack-manager.h"
 
 #include "ctrl-headers.h"
+#include "mac-rx-middle.h"
 #include "mgt-headers.h"
 #include "qos-utils.h"
 #include "wifi-mac-queue.h"
@@ -104,22 +105,34 @@ BlockAckManager::GetAgreementAsOriginator(Mac48Address recipient, uint8_t tid) c
     return std::nullopt;
 }
 
+BlockAckManager::RecipientAgreementOptConstRef
+BlockAckManager::GetAgreementAsRecipient(Mac48Address originator, uint8_t tid) const
+{
+    NS_LOG_FUNCTION(this << originator << +tid);
+    if (auto it = m_recipientAgreements.find({originator, tid}); it != m_recipientAgreements.end())
+    {
+        return std::cref(it->second);
+    }
+
+    return std::nullopt;
+}
+
 void
-BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader* reqHdr,
+BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
                                            Mac48Address recipient,
                                            bool htSupported)
 {
     NS_LOG_FUNCTION(this << reqHdr << recipient << htSupported);
-    const uint8_t tid = reqHdr->GetTid();
+    const uint8_t tid = reqHdr.GetTid();
     OriginatorBlockAckAgreement agreement(recipient, tid);
-    agreement.SetStartingSequence(reqHdr->GetStartingSequence());
+    agreement.SetStartingSequence(reqHdr.GetStartingSequence());
     /* For now we assume that originator doesn't use this field. Use of this field
        is mandatory only for recipient */
-    agreement.SetBufferSize(reqHdr->GetBufferSize());
-    agreement.SetTimeout(reqHdr->GetTimeout());
-    agreement.SetAmsduSupport(reqHdr->IsAmsduSupported());
+    agreement.SetBufferSize(reqHdr.GetBufferSize());
+    agreement.SetTimeout(reqHdr.GetTimeout());
+    agreement.SetAmsduSupport(reqHdr.IsAmsduSupported());
     agreement.SetHtSupported(htSupported);
-    if (reqHdr->IsImmediateBlockAck())
+    if (reqHdr.IsImmediateBlockAck())
     {
         agreement.SetImmediateBlockAck();
     }
@@ -166,22 +179,22 @@ BlockAckManager::DestroyOriginatorAgreement(Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader* respHdr,
+BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr,
                                            Mac48Address recipient,
                                            uint16_t startingSeq)
 {
     NS_LOG_FUNCTION(this << respHdr << recipient << startingSeq);
-    uint8_t tid = respHdr->GetTid();
+    uint8_t tid = respHdr.GetTid();
     auto it = m_originatorAgreements.find({recipient, tid});
     if (it != m_originatorAgreements.end())
     {
         OriginatorBlockAckAgreement& agreement = it->second.first;
-        agreement.SetBufferSize(respHdr->GetBufferSize());
-        agreement.SetTimeout(respHdr->GetTimeout());
-        agreement.SetAmsduSupport(respHdr->IsAmsduSupported());
+        agreement.SetBufferSize(respHdr.GetBufferSize());
+        agreement.SetTimeout(respHdr.GetTimeout());
+        agreement.SetAmsduSupport(respHdr.IsAmsduSupported());
         agreement.SetStartingSequence(startingSeq);
         agreement.InitTxWindow();
-        if (respHdr->IsImmediateBlockAck())
+        if (respHdr.IsImmediateBlockAck())
         {
             agreement.SetImmediateBlockAck();
         }
@@ -208,6 +221,50 @@ BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader* respHdr
         }
     }
     m_unblockPackets(recipient, tid);
+}
+
+void
+BlockAckManager::CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
+                                          Mac48Address originator,
+                                          uint16_t startingSeq,
+                                          bool htSupported,
+                                          Ptr<MacRxMiddle> rxMiddle)
+{
+    NS_LOG_FUNCTION(this << respHdr << originator << startingSeq << htSupported << rxMiddle);
+    uint8_t tid = respHdr.GetTid();
+
+    RecipientBlockAckAgreement agreement(originator,
+                                         respHdr.IsAmsduSupported(),
+                                         tid,
+                                         respHdr.GetBufferSize(),
+                                         respHdr.GetTimeout(),
+                                         startingSeq,
+                                         htSupported);
+    agreement.SetMacRxMiddle(rxMiddle);
+    if (respHdr.IsImmediateBlockAck())
+    {
+        agreement.SetImmediateBlockAck();
+    }
+    else
+    {
+        agreement.SetDelayedBlockAck();
+    }
+
+    m_recipientAgreements.insert_or_assign({originator, tid}, agreement);
+}
+
+void
+BlockAckManager::DestroyRecipientAgreement(Mac48Address originator, uint8_t tid)
+{
+    NS_LOG_FUNCTION(this << originator << tid);
+
+    if (auto agreementIt = m_recipientAgreements.find({originator, tid});
+        agreementIt != m_recipientAgreements.end())
+    {
+        // forward up the buffered MPDUs before destroying the agreement
+        agreementIt->second.Flush();
+        m_recipientAgreements.erase(agreementIt);
+    }
 }
 
 void
@@ -635,6 +692,36 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
     hdr.SetNoMoreFragments();
 
     ScheduleBar(Create<const WifiMpdu>(bar, hdr));
+}
+
+void
+BlockAckManager::NotifyGotBlockAckRequest(Mac48Address originator,
+                                          uint8_t tid,
+                                          uint16_t startingSeq)
+{
+    NS_LOG_FUNCTION(this << originator << tid << startingSeq);
+    auto it = m_recipientAgreements.find({originator, tid});
+    if (it == m_recipientAgreements.end())
+    {
+        return;
+    }
+    it->second.NotifyReceivedBar(startingSeq);
+}
+
+void
+BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
+{
+    NS_LOG_FUNCTION(this << *mpdu);
+    auto originator = mpdu->GetHeader().GetAddr2();
+    NS_ASSERT(mpdu->GetHeader().IsQosData());
+    auto tid = mpdu->GetHeader().GetQosTid();
+
+    auto it = m_recipientAgreements.find({originator, tid});
+    if (it == m_recipientAgreements.end())
+    {
+        return;
+    }
+    it->second.NotifyReceivedMpdu(mpdu);
 }
 
 CtrlBAckRequestHeader

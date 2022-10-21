@@ -235,7 +235,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
         {
             // check that a BA agreement is established with the receiver for the
             // considered TID, since ack sequences for UL MU require block ack
-            if (m_heFem->GetBaAgreementEstablished(staIt->address, tid))
+            if (m_apMac->GetBaAgreementEstablishedAsRecipient(staIt->address, tid))
             {
                 break;
             }
@@ -653,7 +653,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
             NS_ASSERT(ac >= primaryAc);
             // check that a BA agreement is established with the receiver for the
             // considered TID, since ack sequences for DL MU PPDUs require block ack
-            if (m_apMac->GetQosTxop(ac)->GetBaAgreementEstablished(staIt->address, tid))
+            if (m_apMac->GetBaAgreementEstablishedAsOriginator(staIt->address, tid))
             {
                 mpdu =
                     m_apMac->GetQosTxop(ac)->PeekNextMpdu(SINGLE_LINK_OP_ID, tid, staIt->address);

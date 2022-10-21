@@ -101,7 +101,7 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq(Ptr<const WifiMpdu> mpdu,
 
     uint8_t tid = hdr.GetQosTid();
     Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
-    NS_ABORT_MSG_IF(!edca->GetBaAgreementEstablished(receiver, tid),
+    NS_ABORT_MSG_IF(!m_mac->GetBaAgreementEstablishedAsOriginator(receiver, tid),
                     "An established Block Ack agreement is required");
 
     uint16_t startingSeq = edca->GetBaStartingSequence(receiver, tid);
@@ -257,8 +257,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
         return std::unique_ptr<WifiAcknowledgment>(acknowledgment);
     }
 
-    if ((!hdr.IsQosData() || !m_mac->GetQosTxop(hdr.GetQosTid())
-                                  ->GetBaAgreementEstablished(receiver, hdr.GetQosTid())) &&
+    if ((!hdr.IsQosData() ||
+         !m_mac->GetBaAgreementEstablishedAsOriginator(receiver, hdr.GetQosTid())) &&
         !hdr.IsBlockAckReq())
     {
         NS_LOG_DEBUG(
@@ -675,7 +675,7 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
 
             // find a TID for which a BA agreement exists with the given originator
             uint8_t tid = 0;
-            while (tid < 8 && !heFem->GetBaAgreementEstablished(staAddress, tid))
+            while (tid < 8 && !m_mac->GetBaAgreementEstablishedAsRecipient(staAddress, tid))
             {
                 tid++;
             }
@@ -689,7 +689,7 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
             // we assume the Block Acknowledgment context is used for the multi-STA BlockAck frame
             // (since it requires the longest TX time due to the presence of a bitmap)
             acknowledgment->baType.m_bitmapLen.push_back(
-                heFem->GetBlockAckType(staAddress, tid).m_bitmapLen.at(0));
+                m_mac->GetBaTypeAsRecipient(staAddress, tid).m_bitmapLen.at(0));
         }
 
         uint16_t staId = trigger.begin()->GetAid12();
