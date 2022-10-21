@@ -461,7 +461,7 @@ class CommandLine
 
     /**
      * \ingroup commandline
-     * \brief Extension of Item for non-options, stored as strings.
+     * \brief Extension of Item for extra non-options, stored as strings.
      */
     class StringItem : public Item
     {
@@ -487,16 +487,10 @@ class CommandLine
     {
       public:
         // Inherited
+        bool Parse(const std::string& value) const override;
         bool HasDefault() const override;
         std::string GetDefault() const override;
 
-        /**
-         * Parse from a string.
-         *
-         * \param [in] value The string representation
-         * \return \c true if parsing the value succeeded
-         */
-        bool Parse(const std::string& value) const override;
         ns3::Callback<bool, std::string> m_callback; /**< The Callback */
         std::string m_default; /**< The default value, as a string, if it exists. */
     };                         // class CallbackItem
@@ -576,7 +570,7 @@ class CommandLine
      */
     void PrintGroups(std::ostream& os) const;
     /**
-     * Copy constructor
+     * Copy constructor implementation
      *
      * \param [in] cmd CommandLine to copy
      */
@@ -610,11 +604,11 @@ class CommandLine
 }; // class CommandLine
 
 /** \ingroup commandline
- *  \defgroup commandlinehelper Helpers to Specialize on bool
+ *  \defgroup commandlinehelper Helpers to specialize UserItem
  */
 /**
  * \ingroup commandlinehelper
- * \brief Helpers for CommandLine to specialize on bool
+ * \brief Helpers for CommandLine to specialize UserItem
  */
 namespace CommandLineHelper
 {
@@ -631,7 +625,7 @@ namespace CommandLineHelper
 template <typename T>
 bool UserItemParse(const std::string& value, T& val);
 /**
- * \brief Specialization of CommandLine::UserItem to \c bool
+ * \brief Specialization of CommandLine::UserItem::Parse() to \c bool
  *
  * \param [in] value The argument name
  * \param [out] val The boolean variable to set
@@ -640,7 +634,7 @@ bool UserItemParse(const std::string& value, T& val);
 template <>
 bool UserItemParse<bool>(const std::string& value, bool& val);
 /**
- * \brief Specialization of CommandLine::UserItem to \c uint8_t
+ * \brief Specialization of CommandLine::UserItem::Parse() to \c uint8_t
  * to distinguish from \c char
  *
  * \param [in] value The argument name
