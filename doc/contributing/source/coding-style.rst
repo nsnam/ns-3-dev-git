@@ -131,6 +131,10 @@ flags: ``--no-formatting``, ``--no-whitespace`` and ``--no-tabs``.
 In addition to checking the files, the script can automatically fix detected issues in-place.
 This mode is enabled by adding the ``--fix`` flag.
 
+The formatting and tabs checks respect clang-format guards, which mark code blocks
+that should not be checked. Trailing whitespace is always checked regardless of
+clang-format guards.
+
 The complete API of the ``check-style-clang-format.py`` script can be obtained with the
 following command:
 

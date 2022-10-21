@@ -26,6 +26,10 @@ the ".clang-format" file. This script performs the following checks / fixes:
 - Check / trim trailing whitespace.
 - Check / replace tabs with spaces.
 
+The clang-format and tabs checks respect clang-format guards, which mark code blocks
+that should not be checked. Trailing whitespace is always checked regardless of
+clang-format guards.
+
 This script can be applied to all text files in a given path or to individual files.
 
 NOTE: The formatting check requires clang-format (version >= 14) to be found on the path.
@@ -51,6 +55,9 @@ CLANG_FORMAT_VERSIONS = [
     15,
     14,
 ]
+
+CLANG_FORMAT_GUARD_ON = '// clang-format on'
+CLANG_FORMAT_GUARD_OFF = '// clang-format off'
 
 DIRECTORIES_TO_SKIP = [
     '__pycache__',
@@ -574,12 +581,26 @@ def check_tabs_file(filename: str, fix: bool) -> Tuple[str, bool]:
     """
 
     has_tabs = False
+    clang_format_enabled = True
 
     with open(filename, 'r', encoding='utf-8') as f:
         file_lines = f.readlines()
 
-    # Check if there are tabs and fix them
     for (i, line) in enumerate(file_lines):
+
+        # Check clang-format guards
+        line_stripped = line.strip()
+
+        if line_stripped == CLANG_FORMAT_GUARD_ON:
+            clang_format_enabled = True
+        elif line_stripped == CLANG_FORMAT_GUARD_OFF:
+            clang_format_enabled = False
+
+        if (not clang_format_enabled and
+                line_stripped not in (CLANG_FORMAT_GUARD_ON, CLANG_FORMAT_GUARD_OFF)):
+            continue
+
+        # Check if there are tabs and fix them
         if line.find('\t') != -1:
             has_tabs = True
 
@@ -606,6 +627,7 @@ if __name__ == '__main__':
         description='Check and apply the ns-3 coding style to all files in a given PATH. '
         'The script checks the formatting of the file with clang-format. '
         'Additionally, it checks the presence of trailing whitespace and tabs. '
+        'Formatting and tabs checks respect clang-format guards. '
         'When used in "check mode" (default), the script checks if all files are well '
         'formatted and do not have trailing whitespace nor tabs. '
         'If it detects non-formatted files, they will be printed and this process exits with a '
