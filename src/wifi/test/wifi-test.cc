@@ -2161,6 +2161,20 @@ class Bug2470TestCase : public TestCase
                                    uint8_t tid,
                                    OriginatorBlockAckAgreement::State state);
     /**
+     * Callback when a frame is transmitted.
+     * \param rxErrorModel the post reception error model on the receiver
+     * \param context the context
+     * \param psduMap the PSDU map
+     * \param txVector the TX vector
+     * \param txPowerW the tx power in Watts
+     */
+    void TxCallback(Ptr<ListErrorModel> rxErrorModel,
+                    std::string context,
+                    WifiConstPsduMap psduMap,
+                    WifiTxVector txVector,
+                    double txPowerW);
+
+    /**
      * Callback when packet is received
      * \param context node context
      * \param p the received packet
@@ -2195,10 +2209,9 @@ class Bug2470TestCase : public TestCase
                          Address& destination) const;
     /**
      * Run subtest for this test suite
-     * \param apErrorModel ErrorModel used for AP
-     * \param staErrorModel ErrorModel used for STA
+     * \param rcvErrorType type of station (STA or AP) to install the post reception error model on
      */
-    void RunSubtest(PointerValue apErrorModel, PointerValue staErrorModel);
+    void RunSubtest(TypeOfStation rcvErrorType);
 
     uint16_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
     uint16_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
@@ -2258,6 +2271,25 @@ Bug2470TestCase::AddbaStateChangedCallback(std::string context,
 }
 
 void
+Bug2470TestCase::TxCallback(Ptr<ListErrorModel> rxErrorModel,
+                            std::string context,
+                            WifiConstPsduMap psduMap,
+                            WifiTxVector txVector,
+                            double txPowerW)
+{
+    auto psdu = psduMap.begin()->second;
+
+    // The sender is transmitting an ADDBA_REQUEST or ADDBA_RESPONSE frame. If this is
+    // the first attempt at establishing a BA agreement (i.e., before the second set of packets
+    // is generated), make the reception of the frame fail at the receiver.
+    if (psdu->GetHeader(0).GetType() == WIFI_MAC_MGT_ACTION && Simulator::Now() < Seconds(0.8))
+    {
+        auto uid = psdu->GetPayload(0)->GetUid();
+        rxErrorModel->SetList({uid});
+    }
+}
+
+void
 Bug2470TestCase::RxCallback(std::string context,
                             Ptr<const Packet> p,
                             uint16_t channelFreqMhz,
@@ -2307,7 +2339,7 @@ Bug2470TestCase::SendPacketBurst(uint32_t numPackets,
 }
 
 void
-Bug2470TestCase::RunSubtest(PointerValue apErrorModel, PointerValue staErrorModel)
+Bug2470TestCase::RunSubtest(TypeOfStation rcvErrorType)
 {
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(1);
@@ -2332,13 +2364,11 @@ Bug2470TestCase::RunSubtest(PointerValue apErrorModel, PointerValue staErrorMode
 
     WifiMacHelper mac;
     NetDeviceContainer apDevice;
-    phy.Set("PostReceptionErrorModel", apErrorModel);
     phy.Set("ChannelSettings", StringValue("{36, 20, BAND_5GHZ, 0}"));
     mac.SetType("ns3::ApWifiMac", "EnableBeaconJitter", BooleanValue(false));
     apDevice = wifi.Install(phy, mac, wifiApNode);
 
     NetDeviceContainer staDevice;
-    phy.Set("PostReceptionErrorModel", staErrorModel);
     mac.SetType("ns3::StaWifiMac");
     staDevice = wifi.Install(phy, mac, wifiStaNode);
 
@@ -2356,6 +2386,21 @@ Bug2470TestCase::RunSubtest(PointerValue apErrorModel, PointerValue staErrorMode
     mobility.Install(wifiApNode);
     mobility.Install(wifiStaNode);
 
+    auto rxErrorModel = CreateObject<ListErrorModel>();
+    Ptr<WifiMac> wifiMac;
+    switch (rcvErrorType)
+    {
+    case AP:
+        wifiMac = DynamicCast<WifiNetDevice>(apDevice.Get(0))->GetMac();
+        break;
+    case STA:
+        wifiMac = DynamicCast<WifiNetDevice>(staDevice.Get(0))->GetMac();
+        break;
+    default:
+        NS_ABORT_MSG("Station type " << +rcvErrorType << " cannot be used here");
+    }
+    wifiMac->GetWifiPhy(0)->SetPostReceptionErrorModel(rxErrorModel);
+
     Config::Connect(
         "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSnifferRx",
         MakeCallback(&Bug2470TestCase::RxCallback, this));
@@ -2364,6 +2409,9 @@ Bug2470TestCase::RunSubtest(PointerValue apErrorModel, PointerValue staErrorMode
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/BE_Txop/"
                     "BlockAckManager/AgreementState",
                     MakeCallback(&Bug2470TestCase::AddbaStateChangedCallback, this));
+    Config::Connect("/NodeList/" + std::to_string(rcvErrorType == STA ? 0 /* AP */ : 1 /* STA */) +
+                        "/DeviceList/*/$ns3::WifiNetDevice/Phys/0/PhyTxPsduBegin",
+                    MakeCallback(&Bug2470TestCase::TxCallback, this).Bind(rxErrorModel));
 
     Simulator::Schedule(Seconds(0.5),
                         &Bug2470TestCase::SendPacketBurst,
@@ -2398,35 +2446,19 @@ Bug2470TestCase::RunSubtest(PointerValue apErrorModel, PointerValue staErrorMode
 void
 Bug2470TestCase::DoRun()
 {
-    // Create ReceiveListErrorModel to corrupt ADDBA req packet. We use ReceiveListErrorModel
-    // instead of ListErrorModel since packet UID is incremented between simulations. But
-    // problem may occur because of random stream, therefore we suppress usage of RNG as
-    // much as possible (i.e., removing beacon jitter).
-    Ptr<ReceiveListErrorModel> staPem = CreateObject<ReceiveListErrorModel>();
-    std::list<uint32_t> blackList;
-    // Block ADDBA request 6 times (== maximum number of MAC frame transmissions in the ADDBA
-    // response timeout interval)
-    blackList.push_back(9);
-    blackList.push_back(10);
-    blackList.push_back(11);
-    blackList.push_back(12);
-    blackList.push_back(13);
-    blackList.push_back(14);
-    staPem->SetList(blackList);
-
     {
-        RunSubtest(PointerValue(), PointerValue(staPem));
-        NS_TEST_ASSERT_MSG_EQ(m_failedActionCount, 6, "ADDBA request packets are not failed");
+        RunSubtest(STA);
+        NS_TEST_ASSERT_MSG_EQ(m_failedActionCount, 7, "ADDBA request packets are not failed");
         // There are two sets of 5 packets to be transmitted. The first 5 packets should be sent by
         // normal MPDU because of failed ADDBA handshake. For the second set, the first packet
-        // should be sent by normal MPDU, and the rest with A-MPDU. In total we expect to receive 2
-        // normal MPDU packets and 8 A-MPDU packets.
+        // should be sent by normal MPDU, and the rest with A-MPDU. In total we expect to receive 6
+        // normal MPDU packets and 4 A-MPDU packet.
         NS_TEST_ASSERT_MSG_EQ(m_receivedNormalMpduCount,
-                              2,
+                              6,
                               "Receiving incorrect number of normal MPDU packet on subtest 1");
         NS_TEST_ASSERT_MSG_EQ(m_receivedAmpduCount,
-                              8,
-                              "Receiving incorrect number of A-MPDU packet on subtest 1");
+                              4,
+                              "Receiving incorrect number of A-MPDU packets on subtest 1");
 
         NS_TEST_ASSERT_MSG_EQ(m_addbaEstablishedCount,
                               1,
@@ -2434,7 +2466,7 @@ Bug2470TestCase::DoRun()
                               "established state on subtest 1");
         NS_TEST_ASSERT_MSG_EQ(
             m_addbaPendingCount,
-            1,
+            2,
             "Incorrect number of times the ADDBA state machine was in pending state on subtest 1");
         NS_TEST_ASSERT_MSG_EQ(
             m_addbaRejectedCount,
@@ -2442,11 +2474,11 @@ Bug2470TestCase::DoRun()
             "Incorrect number of times the ADDBA state machine was in rejected state on subtest 1");
         NS_TEST_ASSERT_MSG_EQ(
             m_addbaNoReplyCount,
-            0,
+            1,
             "Incorrect number of times the ADDBA state machine was in no_reply state on subtest 1");
         NS_TEST_ASSERT_MSG_EQ(
             m_addbaResetCount,
-            0,
+            1,
             "Incorrect number of times the ADDBA state machine was in reset state on subtest 1");
     }
 
@@ -2459,19 +2491,9 @@ Bug2470TestCase::DoRun()
     m_addbaNoReplyCount = 0;
     m_addbaResetCount = 0;
 
-    Ptr<ReceiveListErrorModel> apPem = CreateObject<ReceiveListErrorModel>();
-    blackList.clear();
-    // Block ADDBA request 4 times (== maximum number of MAC frame transmissions in the ADDBA
-    // response timeout interval)
-    blackList.push_back(5);
-    blackList.push_back(6);
-    blackList.push_back(7);
-    blackList.push_back(9);
-    apPem->SetList(blackList);
-
     {
-        RunSubtest(PointerValue(apPem), PointerValue());
-        NS_TEST_ASSERT_MSG_EQ(m_failedActionCount, 4, "ADDBA response packets are not failed");
+        RunSubtest(AP);
+        NS_TEST_ASSERT_MSG_EQ(m_failedActionCount, 7, "ADDBA response packets are not failed");
         // Similar to subtest 1, we also expect to receive 6 normal MPDU packets and 4 A-MPDU
         // packets.
         NS_TEST_ASSERT_MSG_EQ(m_receivedNormalMpduCount,
@@ -2487,7 +2509,7 @@ Bug2470TestCase::DoRun()
                               "established state on subtest 2");
         NS_TEST_ASSERT_MSG_EQ(
             m_addbaPendingCount,
-            1,
+            2,
             "Incorrect number of times the ADDBA state machine was in pending state on subtest 2");
         NS_TEST_ASSERT_MSG_EQ(
             m_addbaRejectedCount,
@@ -2499,7 +2521,7 @@ Bug2470TestCase::DoRun()
             "Incorrect number of times the ADDBA state machine was in no_reply state on subtest 2");
         NS_TEST_ASSERT_MSG_EQ(
             m_addbaResetCount,
-            0,
+            1,
             "Incorrect number of times the ADDBA state machine was in reset state on subtest 2");
     }
 
