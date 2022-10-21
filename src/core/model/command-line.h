@@ -26,6 +26,7 @@
 #include <memory> // shared_ptr
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 /**
@@ -494,6 +495,29 @@ class CommandLine
         ns3::Callback<bool, std::string> m_callback; /**< The Callback */
         std::string m_default; /**< The default value, as a string, if it exists. */
     };                         // class CallbackItem
+
+    /**
+     * Tuple type returned by GetOptionName().
+     *
+     * | Field    | Meaning
+     * |----------|--------------------------------------------
+     * | `get<0>` | Is this an option (beginning with `-`)?
+     * | `get<1>` | The option name (after any `-`, before `=`)
+     * | `get<2>` | The value (after any `=`)
+     */
+    using HasOptionName = std::tuple<bool, std::string, std::string>;
+
+    /**
+     * Strip leading `--` or `-` from options.
+     * \returns \c false if none found, indicating this is a non-option.
+     */
+    HasOptionName GetOptionName(const std::string& param) const;
+    /**
+     * Handle hard-coded options.
+     *
+     * \note: if any hard-coded options are found this function exits.
+     */
+    void HandleHardOptions(const std::vector<std::string>& args) const;
 
     /**
      * Handle an option in the form \c param=value.

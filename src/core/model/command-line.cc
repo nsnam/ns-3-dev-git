@@ -202,6 +202,8 @@ CommandLine::Parse(std::vector<std::string>& args)
     {
         args.erase(args.begin()); // discard the program name
 
+        HandleHardOptions(args);
+
         for (const auto& param : args)
         {
             if (HandleOption(param))
@@ -224,8 +226,8 @@ CommandLine::Parse(std::vector<std::string>& args)
 #endif
 }
 
-bool
-CommandLine::HandleOption(const std::string& param) const
+CommandLine::HasOptionName
+CommandLine::GetOptionName(const std::string& param) const
 {
     // remove leading "--" or "-"
     std::string arg = param;
@@ -244,9 +246,10 @@ CommandLine::HandleOption(const std::string& param) const
         else
         {
             // non-option argument?
-            return false;
+            return {false, param, ""};
         }
     }
+
     // find any value following '='
     cur = arg.find('=');
     std::string name;
@@ -261,6 +264,78 @@ CommandLine::HandleOption(const std::string& param) const
         name = arg.substr(0, cur);
         value = arg.substr(cur + 1, arg.size() - (cur + 1));
     }
+
+    return {true, name, value};
+}
+
+void
+CommandLine::HandleHardOptions(const std::vector<std::string>& args) const
+{
+    NS_LOG_FUNCTION(this << args.size() << args);
+
+    for (const auto& param : args)
+    {
+        auto [isOpt, name, value] = GetOptionName(param);
+        if (!isOpt)
+        {
+            continue;
+        }
+
+        // Hard-coded options
+        if (name == "PrintHelp" || name == "help")
+        {
+            // method below never returns.
+            PrintHelp(std::cout);
+            std::exit(0);
+        }
+        if (name == "PrintVersion" || name == "version")
+        {
+            // Print the version, then exit the program
+            PrintVersion(std::cout);
+            std::exit(0);
+        }
+        else if (name == "PrintGroups")
+        {
+            // method below never returns.
+            PrintGroups(std::cout);
+            std::exit(0);
+        }
+        else if (name == "PrintTypeIds")
+        {
+            // method below never returns.
+            PrintTypeIds(std::cout);
+            std::exit(0);
+        }
+        else if (name == "PrintGlobals")
+        {
+            // method below never returns.
+            PrintGlobals(std::cout);
+            std::exit(0);
+        }
+        else if (name == "PrintGroup")
+        {
+            // method below never returns.
+            PrintGroup(std::cout, value);
+            std::exit(0);
+        }
+        else if (name == "PrintAttributes")
+        {
+            // method below never returns.
+            PrintAttributes(std::cout, value);
+            std::exit(0);
+        }
+    }
+}
+
+bool
+CommandLine::HandleOption(const std::string& param) const
+{
+    auto [isOpt, name, value] = GetOptionName(param);
+    if (!isOpt)
+    {
+        return false;
+    }
+
     HandleArgument(name, value);
 
     return true;
@@ -613,50 +688,6 @@ CommandLine::HandleArgument(const std::string& name, const std::string& value) c
     NS_LOG_FUNCTION(this << name << value);
 
     NS_LOG_DEBUG("Handle arg name=" << name << " value=" << value);
-
-    // Hard-coded options
-    if (name == "PrintHelp" || name == "help")
-    {
-        // method below never returns.
-        PrintHelp(std::cout);
-        std::exit(0);
-    }
-    if (name == "PrintVersion" || name == "version")
-    {
-        // Print the version, then exit the program
-        PrintVersion(std::cout);
-        std::exit(0);
-    }
-    else if (name == "PrintGroups")
-    {
-        // method below never returns.
-        PrintGroups(std::cout);
-        std::exit(0);
-    }
-    else if (name == "PrintTypeIds")
-    {
-        // method below never returns.
-        PrintTypeIds(std::cout);
-        std::exit(0);
-    }
-    else if (name == "PrintGlobals")
-    {
-        // method below never returns.
-        PrintGlobals(std::cout);
-        std::exit(0);
-    }
-    else if (name == "PrintGroup")
-    {
-        // method below never returns.
-        PrintGroup(std::cout, value);
-        std::exit(0);
-    }
-    else if (name == "PrintAttributes")
-    {
-        // method below never returns.
-        PrintAttributes(std::cout, value);
-        std::exit(0);
-    }
 
     auto errorExit = [this, name, value]() {
         std::cerr << "Invalid command-line argument: --" << name;
