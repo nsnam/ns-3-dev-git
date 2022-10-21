@@ -116,7 +116,7 @@ CommandLine::CommandLine()
     NS_LOG_FUNCTION(this);
 }
 
-CommandLine::CommandLine(const std::string filename)
+CommandLine::CommandLine(const std::string& filename)
     : m_NNonOptions(0),
       m_nonOptionCount(0),
       m_usage()
@@ -181,7 +181,7 @@ CommandLine::Clear()
 }
 
 void
-CommandLine::Usage(const std::string usage)
+CommandLine::Usage(const std::string& usage)
 {
     m_usage = usage;
 }
@@ -198,7 +198,7 @@ CommandLine::Item::~Item()
 }
 
 void
-CommandLine::Parse(std::vector<std::string> args)
+CommandLine::Parse(std::vector<std::string>& args)
 {
     NS_LOG_FUNCTION(this << args.size() << args);
 
@@ -724,7 +724,7 @@ CommandLine::CallbackItem::GetDefault() const
 }
 
 bool
-CommandLine::CallbackItem::Parse(const std::string value)
+CommandLine::CallbackItem::Parse(const std::string& value)
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_DEBUG("CommandLine::CallbackItem::Parse \"" << value << "\"");
@@ -735,7 +735,7 @@ void
 CommandLine::AddValue(const std::string& name,
                       const std::string& help,
                       ns3::Callback<bool, std::string> callback,
-                      std::string defaultValue /* = "" */)
+                      const std::string& defaultValue /* = "" */)
 
 {
     NS_LOG_FUNCTION(this << &name << &help << &callback);
@@ -807,7 +807,7 @@ CommandLine::GetNExtraNonOptions() const
 
 /* static */
 bool
-CommandLine::HandleAttribute(const std::string name, const std::string value)
+CommandLine::HandleAttribute(const std::string& name, const std::string& value)
 {
     bool success = true;
     if (!Config::SetGlobalFailSafe(name, StringValue(value)) &&
@@ -825,7 +825,7 @@ CommandLine::Item::HasDefault() const
 }
 
 bool
-CommandLine::StringItem::Parse(const std::string value)
+CommandLine::StringItem::Parse(const std::string& value)
 {
     m_value = value;
     return true;
@@ -854,7 +854,7 @@ CommandLineHelper::GetDefault<bool>(const bool& val)
 
 template <>
 bool
-CommandLineHelper::UserItemParse<bool>(const std::string value, bool& val)
+CommandLineHelper::UserItemParse<bool>(const std::string& value, bool& val)
 {
     std::string src = value;
     std::transform(src.begin(), src.end(), src.begin(), [](char c) {
@@ -895,7 +895,7 @@ CommandLineHelper::GetDefault<Time>(const Time& val)
 
 template <>
 bool
-CommandLineHelper::UserItemParse<uint8_t>(const std::string value, uint8_t& val)
+CommandLineHelper::UserItemParse<uint8_t>(const std::string& value, uint8_t& val)
 {
     uint8_t oldVal = val;
     long newVal;

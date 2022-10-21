@@ -241,7 +241,7 @@ class CommandLine
      *
      * \param [in] filename The source file name.
      */
-    CommandLine(const std::string filename);
+    CommandLine(const std::string& filename);
     /**
      * Copy constructor
      *
@@ -263,7 +263,7 @@ class CommandLine
      *
      * \param [in] usage Program usage message to write with \c \--help.
      */
-    void Usage(const std::string usage);
+    void Usage(const std::string& usage);
 
     /**
      * Add a program argument, assigning to POD
@@ -283,7 +283,7 @@ class CommandLine
      *
      * \param [in] value The argument value.
      */
-    typedef bool (*Callback)(const std::string value);
+    typedef bool (*Callback)(const std::string& value);
 
     /**
      * Add a program argument, using a Callback to parse the value
@@ -300,7 +300,7 @@ class CommandLine
     void AddValue(const std::string& name,
                   const std::string& help,
                   ns3::Callback<bool, std::string> callback,
-                  const std::string defaultValue = "");
+                  const std::string& defaultValue = "");
 
     /**
      * Add a program argument as a shorthand for an Attribute.
@@ -320,7 +320,7 @@ class CommandLine
      *        is parsed, this variable is not modified).
      */
     template <typename T>
-    void AddNonOption(const std::string name, const std::string help, T& value);
+    void AddNonOption(const std::string& name, const std::string& help, T& value);
 
     /**
      * Get extra non-option arguments by index.
@@ -370,7 +370,7 @@ class CommandLine
      *
      * \param [in] args The vector of arguments.
      */
-    void Parse(std::vector<std::string> args);
+    void Parse(std::vector<std::string>& args);
 
     /**
      * Get the program name
@@ -430,7 +430,7 @@ class CommandLine
          * \param [in] value The string representation
          * \return \c true if parsing the value succeeded
          */
-        virtual bool Parse(const std::string value) = 0;
+        virtual bool Parse(const std::string& value) = 0;
         /**
          * \return \c true if this item has a default value.
          */
@@ -450,7 +450,7 @@ class CommandLine
     {
       public:
         // Inherited
-        bool Parse(const std::string value) override;
+        bool Parse(const std::string& value) override;
         bool HasDefault() const override;
         std::string GetDefault() const override;
 
@@ -460,13 +460,13 @@ class CommandLine
 
     /**
      * \ingroup commandline
-     * \brief Extension of Item for strings.
+     * \brief Extension of Item for non-options, stored as strings.
      */
     class StringItem : public Item
     {
       public:
         // Inherited
-        bool Parse(const std::string value) override;
+        bool Parse(const std::string& value) override;
         bool HasDefault() const override;
         std::string GetDefault() const override;
 
@@ -490,7 +490,7 @@ class CommandLine
          * \param [in] value The string representation
          * \return \c true if parsing the value succeeded
          */
-        bool Parse(const std::string value) override;
+        bool Parse(const std::string& value) override;
         ns3::Callback<bool, std::string> m_callback; /**< The Callback */
         std::string m_default; /**< The default value, as a string, if it exists. */
     };                         // class CallbackItem
@@ -526,7 +526,7 @@ class CommandLine
      * \param [in] value The value to assign to \pname{name}.
      * \return \c true if the value was set successfully, false otherwise.
      */
-    static bool HandleAttribute(const std::string name, const std::string value);
+    static bool HandleAttribute(const std::string& name, const std::string& value);
 
     /**
      * Handler for \c \--PrintGlobals:  print all global variables and values
@@ -614,7 +614,7 @@ namespace CommandLineHelper
  * \return \c true if parsing was successful
  */
 template <typename T>
-bool UserItemParse(const std::string value, T& val);
+bool UserItemParse(const std::string& value, T& val);
 /**
  * \brief Specialization of CommandLine::UserItem to \c bool
  *
@@ -623,7 +623,7 @@ bool UserItemParse(const std::string value, T& val);
  * \return \c true if parsing was successful
  */
 template <>
-bool UserItemParse<bool>(const std::string value, bool& val);
+bool UserItemParse<bool>(const std::string& value, bool& val);
 /**
  * \brief Specialization of CommandLine::UserItem to \c uint8_t
  * to distinguish from \c char
@@ -633,7 +633,7 @@ bool UserItemParse<bool>(const std::string value, bool& val);
  * \return \c true if parsing was successful
  */
 template <>
-bool UserItemParse<uint8_t>(const std::string value, uint8_t& val);
+bool UserItemParse<uint8_t>(const std::string& value, uint8_t& val);
 
 /**
  * \ingroup commandlinehelper
@@ -681,7 +681,7 @@ CommandLine::AddValue(const std::string& name, const std::string& help, T& value
 
 template <typename T>
 void
-CommandLine::AddNonOption(const std::string name, const std::string help, T& value)
+CommandLine::AddNonOption(const std::string& name, const std::string& help, T& value)
 {
     UserItem<T>* item = new UserItem<T>();
     item->m_name = name;
@@ -720,14 +720,14 @@ CommandLineHelper::GetDefault(const T& val)
 
 template <typename T>
 bool
-CommandLine::UserItem<T>::Parse(const std::string value)
+CommandLine::UserItem<T>::Parse(const std::string& value)
 {
     return CommandLineHelper::UserItemParse<T>(value, *m_valuePtr);
 }
 
 template <typename T>
 bool
-CommandLineHelper::UserItemParse(const std::string value, T& val)
+CommandLineHelper::UserItemParse(const std::string& value, T& val)
 {
     std::istringstream iss;
     iss.str(value);
