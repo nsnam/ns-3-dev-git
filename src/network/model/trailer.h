@@ -78,7 +78,7 @@ class Trailer : public Chunk
      * The data read is expected to match bit-for-bit the
      * representation of this trailer in real networks.
      * The input iterator points to the end of the area where the
-     * data shall be written. This method is thus expected to call
+     * data shall be read from. This method is thus expected to call
      * Buffer::Iterator::Prev prior to actually reading any data.
      */
     uint32_t Deserialize(Buffer::Iterator end) override = 0;
@@ -94,7 +94,7 @@ class Trailer : public Chunk
      * The data read is expected to match bit-for-bit the
      * representation of this trailer in real networks.
      * The input iterator end points to the end of the area where the
-     * data shall be written.
+     * data shall be read from.
      *
      * This variant should be provided by any variable-sized trailer subclass
      * (i.e. if GetSerializedSize () does not return a constant).
