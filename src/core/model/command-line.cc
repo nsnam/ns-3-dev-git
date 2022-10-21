@@ -702,7 +702,7 @@ CommandLine::CallbackItem::GetDefault() const
 }
 
 bool
-CommandLine::CallbackItem::Parse(const std::string& value)
+CommandLine::CallbackItem::Parse(const std::string& value) const
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_DEBUG("CommandLine::CallbackItem::Parse \"" << value << "\"");
@@ -798,9 +798,9 @@ CommandLine::Item::HasDefault() const
 }
 
 bool
-CommandLine::StringItem::Parse(const std::string& value)
+CommandLine::StringItem::Parse(const std::string& value) const
 {
-    m_value = value;
+    m_value = value; // mutable
     return true;
 }
 

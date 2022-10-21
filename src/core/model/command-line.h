@@ -431,7 +431,7 @@ class CommandLine
          * \param [in] value The string representation
          * \return \c true if parsing the value succeeded
          */
-        virtual bool Parse(const std::string& value) = 0;
+        virtual bool Parse(const std::string& value) const = 0;
         /**
          * \return \c true if this item has a default value.
          */
@@ -451,7 +451,7 @@ class CommandLine
     {
       public:
         // Inherited
-        bool Parse(const std::string& value) override;
+        bool Parse(const std::string& value) const override;
         bool HasDefault() const override;
         std::string GetDefault() const override;
 
@@ -467,12 +467,17 @@ class CommandLine
     {
       public:
         // Inherited
-        bool Parse(const std::string& value) override;
+        bool Parse(const std::string& value) const override;
         bool HasDefault() const override;
         std::string GetDefault() const override;
 
-        std::string m_value; /**< The argument value. */
-    };                       // class StringItem
+        /**
+         * The argument value.
+         * \internal This has to be \c mutable because the Parse()
+         * function is \const in the base class Item.
+         */
+        mutable std::string m_value;
+    }; // class StringItem
 
     /**
      * \ingroup commandline
@@ -491,7 +496,7 @@ class CommandLine
          * \param [in] value The string representation
          * \return \c true if parsing the value succeeded
          */
-        bool Parse(const std::string& value) override;
+        bool Parse(const std::string& value) const override;
         ns3::Callback<bool, std::string> m_callback; /**< The Callback */
         std::string m_default; /**< The default value, as a string, if it exists. */
     };                         // class CallbackItem
@@ -730,7 +735,7 @@ CommandLineHelper::GetDefault(const T& val)
 
 template <typename T>
 bool
-CommandLine::UserItem<T>::Parse(const std::string& value)
+CommandLine::UserItem<T>::Parse(const std::string& value) const
 {
     return CommandLineHelper::UserItemParse<T>(value, *m_valuePtr);
 }
