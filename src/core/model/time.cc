@@ -247,7 +247,8 @@ Time::SetResolution(enum Unit unit, struct Resolution* resolution, const bool co
                                                << quotient);
 
         struct Information* info = &resolution->info[i];
-        if (std::pow(10, std::fabs(shift)) * quotient > std::numeric_limits<int64_t>::max())
+        if ((std::pow(10, std::fabs(shift)) * quotient) >
+            static_cast<double>(std::numeric_limits<int64_t>::max()))
         {
             NS_LOG_DEBUG("SetResolution for unit " << (int)unit << " loop iteration " << i
                                                    << " marked as INVALID");
