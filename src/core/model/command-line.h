@@ -496,7 +496,7 @@ class CommandLine
         /**
          * The argument value.
          * \internal This has to be \c mutable because the Parse()
-         * function is \const in the base class Item.
+         * function is \c const in the base class Item.
          */
         mutable std::string m_value;
     }; // class StringItem
@@ -550,6 +550,8 @@ class CommandLine
 
     /**
      * Strip leading `--` or `-` from options.
+     *
+     * \param [in] param Option name to search
      * \returns \c false if none found, indicating this is a non-option.
      */
     HasOptionName GetOptionName(const std::string& param) const;
@@ -557,6 +559,8 @@ class CommandLine
      * Handle hard-coded options.
      *
      * \note: if any hard-coded options are found this function exits.
+     *
+     * \param [in] args Vector of hard-coded options to handle.
      */
     void HandleHardOptions(const std::vector<std::string>& args) const;
 
@@ -714,7 +718,7 @@ bool UserItemParse<uint8_t>(const std::string& value, uint8_t& dest);
  * \brief Helper to specialize CommandLine::UserItem::GetDefault() on types
  * needing special handling.
  *
- * \param [in] default The default value from the UserItem.
+ * \param [in] defaultValue The default value from the UserItem.
  * \return The string representation of value.
  * @{
  */

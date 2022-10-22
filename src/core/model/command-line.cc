@@ -493,7 +493,7 @@ CommandLine::PrintDoxygenUsage() const
     }
 
     auto listOptions = [&os](const std::string& head, const Items& items, std::string pre) {
-        os << "\n<dl>\n<h3>" << head << "</h3>\n";
+        os << "\n<h3>" << head << "</h3>\n<dl>\n";
         for (const auto& i : items)
         {
             os << "  <dt>" << pre << i->m_name << " </dt>\n"

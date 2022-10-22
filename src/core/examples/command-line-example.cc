@@ -57,6 +57,19 @@ SetCbArg(std::string val)
 
 } // unnamed namespace
 
+/**
+ * Print a row containing the name, the default
+ * and the final values of an argument.
+ *
+ * \param [in] label The argument label.
+ * \param [in] defaultValue The default value of the argument.
+ * \param [in] finalValue The final value of the argument.
+ *
+ */
+#define DefaultFinal(label, defaultValue, finalValue)                                              \
+    std::left << std::setw(20) << label + std::string(":") << std::setw(20) << defaultValue        \
+              << finalValue << "\n"
+
 int
 main(int argc, char* argv[])
 {
@@ -123,12 +136,10 @@ main(int argc, char* argv[])
     std::cout << "Argument            Initial Value       Final Value\n"
               << std::left << std::boolalpha;
 
-#define DefaultFinal(label, default, final)                                                        \
-    std::left << std::setw(20) << label + std::string(":") << std::setw(20) << default << final    \
-              << "\n"
-
-    std::cout << DefaultFinal("intArg", intDef, intArg)
-              << DefaultFinal("boolArg", std::boolalpha << boolDef, std::boolalpha << boolArg)
+    std::cout << DefaultFinal("intArg", intDef, intArg) //
+              << DefaultFinal("boolArg",
+                              (boolDef ? "true" : "false"),
+                              (boolArg ? "true" : "false")) //
               << DefaultFinal("strArg", "\"" + strDef + "\"", "\"" + strArg + "\"");
 
     // Look up new default value for attribute
