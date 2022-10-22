@@ -645,7 +645,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
 
                     m_txParams.m_txVector.SetHeMuUserInfo(
                         staIt->aid,
-                        {{currRuType, 1, false}, suTxVector.GetMode(), suTxVector.GetNss()});
+                        {{currRuType, 1, true}, suTxVector.GetMode(), suTxVector.GetNss()});
 
                     if (!m_heFem->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
                     {
