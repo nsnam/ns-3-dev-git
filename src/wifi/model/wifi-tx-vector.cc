@@ -657,14 +657,28 @@ WifiTxVector::DeriveRuAllocation() const
         const auto isPrimary80MHz = it->second.ru.GetPrimary80MHz();
         const auto rusPerSubchannel = HeRu::GetRusOfType(ruBw > 20 ? ruBw : 20, ruType);
         auto ruIndex = it->second.ru.GetIndex();
-        if (!isPrimary80MHz)
+        if ((m_channelWidth >= 80) && (ruIndex > 19))
         {
-            ruIndex *= 2;
+            // take into account the center 26-tone RU in the primary 80 MHz
+            ruIndex--;
+        }
+        if ((!isPrimary80MHz) && (ruIndex > 19))
+        {
+            // take into account the center 26-tone RU in the secondary 80 MHz
+            ruIndex--;
+        }
+        if (!isPrimary80MHz && (ruType != HeRu::RU_2x996_TONE))
+        {
+            NS_ASSERT(m_channelWidth > 80);
+            // adjust RU index for the secondary 80 MHz: in that case index is restarting at 1,
+            // hence we need to add an offset corresponding to the number of RUs of the same type in
+            // the primary 80 MHz
+            ruIndex += HeRu::GetRusOfType(80, ruType).size();
         }
         const auto index =
             (ruBw < 20) ? ((ruIndex - 1) / rusPerSubchannel.size()) : ((ruIndex - 1) * (ruBw / 20));
         const auto numSubchannelsForRu = (ruBw < 20) ? 1 : (ruBw / 20);
-        NS_ASSERT(index < (m_channelWidth / 20));
+        NS_ABORT_IF(index >= (m_channelWidth / 20));
         auto ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, false);
         if (ruAllocations.at(index) != HeRu::EMPTY_242_TONE_RU)
         {
