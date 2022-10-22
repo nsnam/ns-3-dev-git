@@ -24,62 +24,16 @@
 
 #include <cstdlib>
 
+#ifdef __WIN32__
+#include <WS2tcpip.h>
+#else
+#include <arpa/inet.h>
+#endif
+
 namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("Ipv4Address");
-
-#define ASCII_DOT (0x2e)
-#define ASCII_ZERO (0x30)
-#define ASCII_SLASH (0x2f)
-
-/**
- * \brief Converts a string representing an IP address into the address
- * \param address the address string
- * \returns the address
- */
-static uint32_t
-AsciiToIpv4Host(const char* address)
-{
-    NS_LOG_FUNCTION(&address);
-    uint32_t host = 0;
-    uint8_t numberOfDots = 0;
-    const char* ptr = address;
-
-    NS_ASSERT_MSG(*ptr != ASCII_DOT,
-                  "Error, can not build an IPv4 address from an invalid string: " << address);
-    while (true)
-    {
-        uint8_t byte = 0;
-        while (*ptr != ASCII_DOT && *ptr != 0)
-        {
-            byte *= 10;
-            byte += *ptr - ASCII_ZERO;
-            ptr++;
-        }
-        host <<= 8;
-        host |= byte;
-        if (*ptr == 0)
-        {
-            break;
-        }
-        ptr++;
-        NS_ASSERT_MSG(*ptr != ASCII_DOT,
-                      "Error, can not build an IPv4 address from an invalid string: " << address);
-        numberOfDots++;
-    }
-    NS_ASSERT_MSG(*(ptr - 1) != ASCII_DOT,
-                  "Error, can not build an IPv4 address from an invalid string: " << address);
-    NS_ASSERT_MSG(numberOfDots == 3,
-                  "Error, can not build an IPv4 address from an invalid string: " << address);
-
-    return host;
-}
-
-} // namespace ns3
-
-namespace ns3
-{
 
 Ipv4Mask::Ipv4Mask()
     : m_mask(0x66666666)
@@ -96,7 +50,7 @@ Ipv4Mask::Ipv4Mask(uint32_t mask)
 Ipv4Mask::Ipv4Mask(const char* mask)
 {
     NS_LOG_FUNCTION(this << mask);
-    if (*mask == ASCII_SLASH)
+    if (*mask == '/')
     {
         uint32_t plen = static_cast<uint32_t>(std::atoi(++mask));
         NS_ASSERT(plen <= 32);
@@ -111,7 +65,11 @@ Ipv4Mask::Ipv4Mask(const char* mask)
     }
     else
     {
-        m_mask = AsciiToIpv4Host(mask);
+        if (inet_pton(AF_INET, mask, &m_mask) <= 0)
+        {
+            NS_ABORT_MSG("Error, can not build an IPv4 mask from an invalid string: " << mask);
+        }
+        m_mask = ntohl(m_mask);
     }
 }
 
@@ -219,8 +177,16 @@ Ipv4Address::Ipv4Address(uint32_t address)
 Ipv4Address::Ipv4Address(const char* address)
 {
     NS_LOG_FUNCTION(this << address);
-    m_address = AsciiToIpv4Host(address);
+
+    if (inet_pton(AF_INET, address, &m_address) <= 0)
+    {
+        NS_LOG_LOGIC("Error, can not build an IPv4 address from an invalid string: " << address);
+        m_address = 0;
+        m_initialized = false;
+        return;
+    }
     m_initialized = true;
+    m_address = ntohl(m_address);
 }
 
 uint32_t
@@ -242,8 +208,15 @@ void
 Ipv4Address::Set(const char* address)
 {
     NS_LOG_FUNCTION(this << address);
-    m_address = AsciiToIpv4Host(address);
+    if (inet_pton(AF_INET, address, &m_address) <= 0)
+    {
+        NS_LOG_LOGIC("Error, can not build an IPv4 address from an invalid string: " << address);
+        m_address = 0;
+        m_initialized = false;
+        return;
+    }
     m_initialized = true;
+    m_address = ntohl(m_address);
 }
 
 Ipv4Address
