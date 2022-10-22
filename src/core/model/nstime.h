@@ -498,6 +498,9 @@ class Time
     inline static Time FromInteger(uint64_t value, enum Unit unit)
     {
         struct Information* info = PeekInformation(unit);
+
+        NS_ASSERT_MSG(info->isValid, "Attempted a conversion from an unavailable unit.");
+
         if (info->fromMul)
         {
             value *= info->factor;
@@ -517,6 +520,9 @@ class Time
     inline static Time From(const int64x64_t& value, enum Unit unit)
     {
         struct Information* info = PeekInformation(unit);
+
+        NS_ASSERT_MSG(info->isValid, "Attempted a conversion from an unavailable unit.");
+
         // DO NOT REMOVE this temporary variable. It's here
         // to work around a compiler bug in gcc 3.4
         int64x64_t retval = value;
@@ -548,6 +554,9 @@ class Time
     inline int64_t ToInteger(enum Unit unit) const
     {
         struct Information* info = PeekInformation(unit);
+
+        NS_ASSERT_MSG(info->isValid, "Attempted a conversion to an unavailable unit.");
+
         int64_t v = m_data;
         if (info->toMul)
         {
@@ -568,6 +577,9 @@ class Time
     inline int64x64_t To(enum Unit unit) const
     {
         struct Information* info = PeekInformation(unit);
+
+        NS_ASSERT_MSG(info->isValid, "Attempted a conversion to an unavailable unit.");
+
         int64x64_t retval = int64x64_t(m_data);
         if (info->toMul)
         {
@@ -624,6 +636,7 @@ class Time
         int64_t factor;      //!< Ratio of this unit / current unit
         int64x64_t timeTo;   //!< Multiplier to convert to this unit
         int64x64_t timeFrom; //!< Multiplier to convert from this unit
+        bool isValid;        //!< True if the current unit can be used
     };
 
     /** Current time unit, and conversion info. */
