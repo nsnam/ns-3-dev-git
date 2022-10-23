@@ -1106,7 +1106,8 @@ def run_step(args, target_to_run, target_args):
         # running with command template?
         if args.command_template:
             commands = (args.command_template % target_to_run).split()
-            target_to_run = check_program_installed(commands[0])
+            check_program_installed(commands[0])
+            target_to_run = commands[0]
             target_args = commands[1:] + target_args
 
             # running mpi on the CI?
