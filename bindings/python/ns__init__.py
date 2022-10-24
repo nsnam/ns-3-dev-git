@@ -7,6 +7,9 @@ import sys
 import sysconfig
 import re
 
+DEFAULT_INCLUDE_DIR = sysconfig.get_config_var("INCLUDEDIR")
+DEFAULT_LIB_DIR = sysconfig.get_config_var("LIBDIR")
+
 
 def find_ns3_lock():
     # Get the absolute path to this file
@@ -30,8 +33,8 @@ def find_ns3_lock():
     return path_to_lock
 
 
-SYSTEM_LIBRARY_DIRECTORIES = (sysconfig.get_config_var("LIBDIR"),
-                              os.path.dirname(sysconfig.get_config_var("LIBDIR"))
+SYSTEM_LIBRARY_DIRECTORIES = (DEFAULT_LIB_DIR,
+                              os.path.dirname(DEFAULT_LIB_DIR)
                               )
 DYNAMIC_LIBRARY_EXTENSIONS = {"linux": "so",
                               "win32": "dll",
@@ -124,7 +127,7 @@ def extract_library_include_dirs(library_name: str, prefix: str) -> list:
               .format(library=library_path, exception=e))
         exit(-1)
 
-    linked_libs_include_dirs = []
+    linked_libs_include_dirs = set()
     # Now find these libraries and add a few include paths for them
     for linked_library in map(lambda x: x.decode("utf-8"), linked_libs):
         # Skip ns-3 modules
@@ -143,20 +146,35 @@ def extract_library_include_dirs(library_name: str, prefix: str) -> list:
         # Get path with shortest length
         linked_library_path = sorted(linked_library_path, key=lambda x: len(x))[0]
 
-        # If the system library directories are part of the path, skip the library include directories
-        if sum(map(lambda x: x in linked_library_path, [*SYSTEM_LIBRARY_DIRECTORIES, prefix])) > 0:
+        # If library is part of the ns-3 build, continue without any new includes
+        if prefix in linked_library_path:
             continue
 
-        # In case it isn't, include new include directories based on the path
-        linked_libs_include_dirs += [os.path.dirname(linked_library_path)]
-        linked_libs_include_dirs += [os.path.dirname(linked_libs_include_dirs[-1])]
-        linked_libs_include_dirs += [os.path.dirname(linked_libs_include_dirs[-1])]
+        # If it is part of the system directories, try to find it
+        system_include_dir = os.path.dirname(linked_library_path).replace("lib", "include")
+        if os.path.exists(system_include_dir):
+            linked_libs_include_dirs.add(system_include_dir)
 
-        for lib_path in [*linked_libs_include_dirs]:
+            # If system_include_dir/library_name exists, we add it too
+            linked_library_name = linked_library.replace("lib", "").replace("." + LIBRARY_EXTENSION, "")
+            if os.path.exists(os.path.join(system_include_dir, linked_library_name)):
+                linked_libs_include_dirs.add(os.path.join(system_include_dir, linked_library_name))
+
+        # In case it isn't, include new include directories based on the path
+        def add_parent_dir_recursively(x: str, y: int) -> None:
+            if y <= 0:
+                return
+            parent_dir = os.path.dirname(x)
+            linked_libs_include_dirs.add(parent_dir)
+            add_parent_dir_recursively(parent_dir, y - 1)
+
+        add_parent_dir_recursively(linked_library_path, 2)
+
+        for lib_path in list(linked_libs_include_dirs):
             inc_path = os.path.join(lib_path, "include")
             if os.path.exists(inc_path):
-                linked_libs_include_dirs += [inc_path]
-    return linked_libs_include_dirs
+                linked_libs_include_dirs.add(inc_path)
+    return list(linked_libs_include_dirs)
 
 
 def load_modules():
@@ -238,8 +256,8 @@ def load_modules():
                                 )
             libraries_to_load.append(libraries[library_name])
 
-    # We first need to include all include directories for dependencies
     known_include_dirs = set()
+    # We then need to include all include directories for dependencies
     for library in libraries_to_load:
         for linked_lib_include_dir in extract_library_include_dirs(library, prefix):
             if linked_lib_include_dir not in known_include_dirs:
