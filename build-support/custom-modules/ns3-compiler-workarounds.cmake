@@ -55,17 +55,21 @@ endif()
 # link it manually. https://en.cppreference.com/w/cpp/filesystem
 check_cxx_source_compiles(
   "
-  # ifdef __cpp_lib_filesystem
-    #include <filesystem>
-    namespace fs = std::filesystem;
-  #else
-    #include <experimental/filesystem>
-    namespace fs = std::experimental::filesystem;
+  #ifdef __has_include
+    #if __has_include(<filesystem>)
+      #include <filesystem>
+      namespace fs = std::filesystem;
+    #elif __has_include(<experimental/filesystem>)
+      #include <experimental/filesystem>
+      namespace fs = std::experimental::filesystem;
+    #else
+      #error \"No support for filesystem library\"
+    #endif
   #endif
   int main()
   {
     std::string path = \"/\";
-    return !fs::exists (path);
+    return !fs::exists(path);
   }
   "
   FILESYSTEM_LIBRARY_IS_LINKED

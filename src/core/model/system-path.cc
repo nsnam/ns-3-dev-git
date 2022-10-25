@@ -39,12 +39,16 @@
 // version or require a more up-to-date GCC.
 // we use the "fs" namespace to prevent collisions
 // with musl libc.
-#ifdef __cpp_lib_filesystem
+#ifdef __has_include
+#if __has_include(<filesystem>)
 #include <filesystem>
 namespace fs = std::filesystem;
-#else
+#elif __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
+#else
+#error "No support for filesystem library"
+#endif
 #endif
 
 #ifdef __APPLE__
