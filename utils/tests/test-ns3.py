@@ -1209,10 +1209,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertIn("mpiexec -np 2 %s" % sample_simulator_path, stdout)
 
         # Get the commands to run sample-simulator in two processes with mpi, now with the environment variable
-        return_code, stdout, stderr = run_ns3(mpi_command, env={"MPI_CI": "1"})
+        return_code, stdout, stderr = run_ns3(mpi_command)
         self.assertEqual(return_code, 0)
         if os.getenv("USER", "") == "root":
-            if shutil.which("ompi_info") and os.cpu_count() < 2:
+            if shutil.which("ompi_info"):
                 self.assertIn("mpiexec --allow-run-as-root --oversubscribe -np 2 %s" % sample_simulator_path, stdout)
             else:
                 self.assertIn("mpiexec --allow-run-as-root -np 2 %s" % sample_simulator_path, stdout)
@@ -1225,7 +1225,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertIn("echo %s" % sample_simulator_path, stdout)
 
         # Again the non-mpi command, with the MPI_CI environment variable set
-        return_code, stdout, stderr = run_ns3(non_mpi_command, env={"MPI_CI": "1"})
+        return_code, stdout, stderr = run_ns3(non_mpi_command)
         self.assertEqual(return_code, 0)
         self.assertIn("echo %s" % sample_simulator_path, stdout)
 
