@@ -75,7 +75,7 @@ CommandLineExampleTestCase::CommandLineExampleTestCase()
                         "command-line-example",
                         NS_TEST_SOURCEDIR,
                         "--intArg=2 --boolArg --strArg=deadbeef --anti=t "
-                        "--cbArg=beefstew 3 4 extraOne extraTwo")
+                        "--cbArg=beefstew --charbuf=stewmeat 3 4 extraOne extraTwo")
 {
 }
 

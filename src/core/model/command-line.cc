@@ -747,7 +747,7 @@ CommandLine::AddValue(const std::string& name,
                       std::size_t num)
 {
     NS_LOG_FUNCTION(this << name << help << value << num);
-    std::shared_ptr<CharStarItem> item{new CharStarItem()};
+    auto item = std::make_shared<CharStarItem>();
     item->m_name = name;
     item->m_help = help;
     item->m_buffer = value;

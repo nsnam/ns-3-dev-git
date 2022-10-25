@@ -540,18 +540,16 @@ void
 CommandLineCharStarTestCase::DoRun()
 {
     // char* buffer option
-    const int bufsize = 10;
-    char* charbuf = new char[bufsize];
-    std::strncpy(charbuf, "charstar", bufsize);
+    constexpr int CHARBUF_SIZE = 10;
+    char charbuf[CHARBUF_SIZE] = "charstar";
 
     CommandLine cmd;
-    cmd.AddValue("charbuf", "a char* buffer", charbuf, bufsize);
+    cmd.AddValue("charbuf", "a char* buffer", charbuf, CHARBUF_SIZE);
     Parse(cmd, 1, "--charbuf=deadbeef");
 
     std::string value{charbuf};
 
     NS_TEST_ASSERT_MSG_EQ(value, "deadbeef", "CommandLine did not correctly set a char* buffer");
-    delete[] charbuf;
 }
 
 /**

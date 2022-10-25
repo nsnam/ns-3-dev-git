@@ -84,9 +84,8 @@ main(int argc, char* argv[])
     const std::string attrPath = attrClass + "::" + attrName;
 
     // char* buffer option
-    const int bufsize = 10;
-    char* charbuf = new char[bufsize];
-    std::strncpy(charbuf, "charstar", bufsize);
+    constexpr int CHARBUF_SIZE = 10;
+    char charbuf[CHARBUF_SIZE] = "charstar";
 
     // Non-option arguments
     int nonOpt1 = 1;
@@ -119,7 +118,7 @@ main(int argc, char* argv[])
     cmd.AddValue("strArg", "a string argument", strArg);
     cmd.AddValue("anti", attrPath);
     cmd.AddValue("cbArg", "a string via callback", MakeCallback(SetCbArg));
-    cmd.AddValue("charbuf", "a char* buffer", charbuf, bufsize);
+    cmd.AddValue("charbuf", "a char* buffer", charbuf, CHARBUF_SIZE);
     cmd.AddNonOption("nonOpt1", "first non-option", nonOpt1);
     cmd.AddNonOption("nonOpt2", "second non-option", nonOpt2);
     cmd.Parse(argc, argv);
