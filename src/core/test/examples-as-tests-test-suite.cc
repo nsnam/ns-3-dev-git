@@ -71,7 +71,11 @@ class CommandLineExampleTestCase : public ExampleAsTestCase
 };
 
 CommandLineExampleTestCase::CommandLineExampleTestCase()
-    : ExampleAsTestCase("core-example-command-line", "command-line-example", NS_TEST_SOURCEDIR)
+    : ExampleAsTestCase("core-example-command-line",
+                        "command-line-example",
+                        NS_TEST_SOURCEDIR,
+                        "--intArg=2 --boolArg --strArg=deadbeef --anti=t "
+                        "--cbArg=beefstew 3 4 extraOne extraTwo")
 {
 }
 

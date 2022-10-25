@@ -2,13 +2,14 @@
 command-line-example:
 
 Argument            Initial Value       Final Value
-intArg:             1                   1
-boolArg:            false               false
-strArg:             "strArg default"    "strArg default"
-anti:               "false"             "false"
-cbArg:              cbArg default       cbArg default
-nonOpt1:            1                   1
-nonOpt2:            1                   1
+intArg:             1                   2
+boolArg:            false               true
+strArg:             "strArg default"    "deadbeef"
+anti:               "false"             "true"
+cbArg:              cbArg default       beefstew
+nonOpt1:            1                   3
+nonOpt2:            1                   4
 
-Number of extra non-option arguments:   0
-
+Number of extra non-option arguments:   2
+extra non-option 0:                     "extraOne"
+extra non-option 1:                     "extraTwo"
