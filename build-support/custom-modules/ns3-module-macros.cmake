@@ -237,6 +237,26 @@ function(build_lib)
     )
   endif()
 
+  # Build lib examples if requested
+  set(examples_before ${ns3-execs-clean})
+  foreach(example_folder example;examples)
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+      if(${ENABLE_EXAMPLES})
+        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder}/CMakeLists.txt)
+          add_subdirectory(${example_folder})
+        endif()
+      endif()
+      scan_python_examples(${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+    endif()
+  endforeach()
+  set(module_examples ${ns3-execs-clean})
+
+  # Filter only module examples
+  foreach(example ${examples_before})
+    list(REMOVE_ITEM module_examples ${example})
+  endforeach()
+  unset(examples_before)
+
   # Check if the module tests should be built
   set(filtered_in ON)
   if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
@@ -291,20 +311,23 @@ function(build_lib)
       if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_IGNORE_PCH}))
         target_precompile_headers(${test${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
       endif()
+
+      # Add dependency between tests and examples used as tests
+      if(${ENABLE_EXAMPLES})
+        foreach(source_file ${BLIB_TEST_SOURCES})
+          file(READ ${source_file} source_file_contents)
+          foreach(example_as_test ${module_examples})
+            string(FIND "${source_file_contents}" "${example_as_test}"
+                        is_sub_string
+            )
+            if(NOT (${is_sub_string} EQUAL -1))
+              add_dependencies(test-runner-examples-as-tests ${example_as_test})
+            endif()
+          endforeach()
+        endforeach()
+      endif()
     endif()
   endif()
-
-  # Build lib examples if requested
-  foreach(example_folder example;examples)
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
-      if(${ENABLE_EXAMPLES})
-        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder}/CMakeLists.txt)
-          add_subdirectory(${example_folder})
-        endif()
-      endif()
-      scan_python_examples(${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
-    endif()
-  endforeach()
 
   # Handle package export
   install(

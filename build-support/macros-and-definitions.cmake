@@ -293,6 +293,7 @@ macro(clear_global_cached_variables)
   unset(ns3-contrib-libs CACHE)
   unset(ns3-example-folders CACHE)
   unset(ns3-execs CACHE)
+  unset(ns3-execs-clean CACHE)
   unset(ns3-execs-py CACHE)
   unset(ns3-external-libs CACHE)
   unset(ns3-headers-to-module-map CACHE)
@@ -306,6 +307,7 @@ macro(clear_global_cached_variables)
     ns3-contrib-libs
     ns3-example-folders
     ns3-execs
+    ns3-execs-clean
     ns3-execs-py
     ns3-external-libs
     ns3-headers-to-module-map
@@ -888,6 +890,7 @@ macro(process_options)
   endif()
 
   if(${ENABLE_TESTS})
+    add_custom_target(test-runner-examples-as-tests)
     add_custom_target(all-test-targets)
 
     # Create a custom target to run test.py --no-build Target is also used to
@@ -1381,6 +1384,10 @@ function(set_runtime_outputdirectory target_name output_directory target_prefix)
   set(ns3-exec-outputname ns${NS3_VER}-${target_name}${build_profile_suffix})
   set(ns3-execs "${output_directory}${ns3-exec-outputname};${ns3-execs}"
       CACHE INTERNAL "list of c++ executables"
+  )
+  set(ns3-execs-clean "${target_prefix}${target_name};${ns3-execs-clean}"
+      CACHE INTERNAL
+            "list of c++ executables without version prefix and build suffix"
   )
 
   set_target_properties(

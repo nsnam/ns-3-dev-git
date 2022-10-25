@@ -30,6 +30,7 @@ if(${ENABLE_TESTS} AND (test IN_LIST libs_to_build))
   set_runtime_outputdirectory(
     test-runner ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/utils/ ""
   )
+  add_dependencies(test-runner test-runner-examples-as-tests)
   add_dependencies(all-test-targets test-runner)
 endif()
 
