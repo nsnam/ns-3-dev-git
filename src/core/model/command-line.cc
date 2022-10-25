@@ -190,7 +190,7 @@ CommandLine::Item::~Item()
 }
 
 void
-CommandLine::Parse(std::vector<std::string>& args)
+CommandLine::Parse(std::vector<std::string> args)
 {
     NS_LOG_FUNCTION(this << args.size() << args);
 
@@ -743,6 +743,22 @@ CommandLine::CallbackItem::Parse(const std::string& value) const
 void
 CommandLine::AddValue(const std::string& name,
                       const std::string& help,
+                      char* value,
+                      std::size_t num)
+{
+    NS_LOG_FUNCTION(this << name << help << value << num);
+    std::shared_ptr<CharStarItem> item{new CharStarItem()};
+    item->m_name = name;
+    item->m_help = help;
+    item->m_buffer = value;
+    item->m_size = num;
+    item->m_default.assign(value);
+    m_options.push_back(item);
+}
+
+void
+CommandLine::AddValue(const std::string& name,
+                      const std::string& help,
                       ns3::Callback<bool, std::string> callback,
                       const std::string& defaultValue /* = "" */)
 
@@ -845,6 +861,33 @@ std::string
 CommandLine::StringItem::GetDefault() const
 {
     return "";
+}
+
+bool
+CommandLine::CharStarItem::Parse(const std::string& value) const
+{
+    if (value.size() > m_size - 1)
+    {
+        std::cerr << "Value \"" << value << "\" (" << value.size() << " bytes) is too long for "
+                  << m_name << " buffer (" << m_size << " bytes, including terminating null)."
+                  << std::endl;
+        return false;
+    }
+
+    std::strncpy(m_buffer, value.c_str(), m_size);
+    return true;
+}
+
+bool
+CommandLine::CharStarItem::HasDefault() const
+{
+    return true;
+}
+
+std::string
+CommandLine::CharStarItem::GetDefault() const
+{
+    return m_default;
 }
 
 template <>

@@ -280,6 +280,27 @@ class CommandLine
     void AddValue(const std::string& name, const std::string& help, T& value);
 
     /**
+     * Retrieve the \c char* in \c char* and add it as a program argument
+     *
+     * This variant it used to receive C string pointers
+     * from the python bindings.
+     *
+     * The C string result stored in \c value will be null-terminated,
+     * and have a maximum length of \c (num - 1).
+     * The result will be truncated to fit, if necessary.
+     *
+     * \param [in] name The name of the program-supplied argument
+     * \param [in] help The help text used by \c \--PrintHelp
+     * \param [out] value A pointer pointing to the beginning
+     *        of a null-terminated C string buffer provided by
+     *        the caller. The parsed value will be stored in
+     *        that buffer (if no value is parsed, this
+     *        variable is not modified).
+     * \param num The size of the buffer pointed to by \c value,
+     *        including any terminating null.
+     */
+    void AddValue(const std::string& name, const std::string& help, char* value, std::size_t num);
+    /**
      * Callback function signature for
      * AddValue(const std::string&,const std::string&,Callback<bool,const std::string>).
      *
@@ -372,7 +393,7 @@ class CommandLine
      *
      * \param [in] args The vector of arguments.
      */
-    void Parse(std::vector<std::string>& args);
+    void Parse(std::vector<std::string> args);
 
     /**
      * Get the program name
@@ -479,6 +500,26 @@ class CommandLine
          */
         mutable std::string m_value;
     }; // class StringItem
+
+    /**
+     * \ingroup commandline
+     * \brief Extension of Item for \c char*.
+     */
+    class CharStarItem : public Item
+    {
+      public:
+        // Inherited
+        bool Parse(const std::string& value) const override;
+        bool HasDefault() const override;
+        std::string GetDefault() const override;
+
+        /** The buffer to write in to. */
+        char* m_buffer;
+        /** The size of the buffer, including terminating null. */
+        std::size_t m_size;
+        /** The default value. */
+        std::string m_default;
+    }; // class CharStarItem
 
     /**
      * \ingroup commandline

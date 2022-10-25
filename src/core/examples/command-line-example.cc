@@ -60,13 +60,21 @@ SetCbArg(std::string val)
 int
 main(int argc, char* argv[])
 {
+    // Plain old data options
     int intArg = 1;
     bool boolArg = false;
     std::string strArg = "strArg default";
-    // Attribute path
+
+    // Attribute path option
     const std::string attrClass = "ns3::RandomVariableStream";
     const std::string attrName = "Antithetic";
     const std::string attrPath = attrClass + "::" + attrName;
+
+    // char* buffer option
+    const int bufsize = 10;
+    char* charbuf = new char[bufsize];
+    std::strncpy(charbuf, "charstar", bufsize);
+
     // Non-option arguments
     int nonOpt1 = 1;
     int nonOpt2 = 1;
@@ -85,6 +93,7 @@ main(int argc, char* argv[])
         tid.LookupAttributeByName(attrName, &info);
         attrDef = info.originalInitialValue->SerializeToString(info.checker);
     }
+    const std::string charbufDef{charbuf};
     const int nonOpt1Def = nonOpt1;
     const int nonOpt2Def = nonOpt2;
 
@@ -97,6 +106,7 @@ main(int argc, char* argv[])
     cmd.AddValue("strArg", "a string argument", strArg);
     cmd.AddValue("anti", attrPath);
     cmd.AddValue("cbArg", "a string via callback", MakeCallback(SetCbArg));
+    cmd.AddValue("charbuf", "a char* buffer", charbuf, bufsize);
     cmd.AddNonOption("nonOpt1", "first non-option", nonOpt1);
     cmd.AddNonOption("nonOpt2", "second non-option", nonOpt2);
     cmd.Parse(argc, argv);
@@ -131,6 +141,9 @@ main(int argc, char* argv[])
 
     std::cout << DefaultFinal("anti", "\"" + attrDef + "\"", "\"" + antiArg + "\"")
               << DefaultFinal("cbArg", cbDef, g_cbArg)
+              << DefaultFinal("charbuf",
+                              "\"" + charbufDef + "\"",
+                              "\"" + std::string(charbuf) + "\"")
               << DefaultFinal("nonOpt1", nonOpt1Def, nonOpt1)
               << DefaultFinal("nonOpt2", nonOpt2Def, nonOpt2) << std::endl;
 

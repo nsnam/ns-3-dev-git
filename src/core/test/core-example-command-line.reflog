@@ -7,6 +7,7 @@ boolArg:            false               true
 strArg:             "strArg default"    "deadbeef"
 anti:               "false"             "true"
 cbArg:              cbArg default       beefstew
+charbuf:            "charstar"          "charstar"
 nonOpt1:            1                   3
 nonOpt2:            1                   4
 

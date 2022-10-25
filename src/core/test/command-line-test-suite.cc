@@ -513,6 +513,48 @@ CommandLineNonOptionTestCase::DoRun()
 
 /**
  * \ingroup commandline-tests
+ * Test \c char* buffer argument
+ */
+class CommandLineCharStarTestCase : public CommandLineTestCaseBase
+{
+  public:
+    /** Constructor */
+    CommandLineCharStarTestCase();
+
+    /** Destructor */
+    ~CommandLineCharStarTestCase() override
+    {
+    }
+
+  private:
+    /** Run the test */
+    void DoRun() override;
+};
+
+CommandLineCharStarTestCase::CommandLineCharStarTestCase()
+    : CommandLineTestCaseBase("charstar")
+{
+}
+
+void
+CommandLineCharStarTestCase::DoRun()
+{
+    // char* buffer option
+    const int bufsize = 10;
+    char* charbuf = new char[bufsize];
+    std::strncpy(charbuf, "charstar", bufsize);
+
+    CommandLine cmd;
+    cmd.AddValue("charbuf", "a char* buffer", charbuf, bufsize);
+    Parse(cmd, 1, "--charbuf=deadbeef");
+
+    std::string value{charbuf};
+
+    NS_TEST_ASSERT_MSG_EQ(value, "deadbeef", "CommandLine did not correctly set a char* buffer");
+}
+
+/**
+ * \ingroup commandline-tests
  * The Test Suite that glues all of the Test Cases together.
  */
 class CommandLineTestSuite : public TestSuite
@@ -533,6 +575,7 @@ CommandLineTestSuite::CommandLineTestSuite()
     AddTestCase(new CommandLineOrderTestCase);
     AddTestCase(new CommandLineInvalidTestCase);
     AddTestCase(new CommandLineNonOptionTestCase);
+    AddTestCase(new CommandLineCharStarTestCase);
 }
 
 /**
