@@ -1,21 +1,14 @@
 
 command-line-example:
 
-Initial values:
-intArg:   1
-boolArg:  false
-strArg:   "strArg default"
-anti:     "false"
-cbArg:    "cbArg default"
-nonOpt1:  1
-nonOpt2:  1
+Argument            Initial Value       Final Value
+intArg:             1                   1
+boolArg:            false               false
+strArg:             "strArg default"    "strArg default"
+anti:               "false"             "false"
+cbArg:              cbArg default       cbArg default
+nonOpt1:            1                   1
+nonOpt2:            1                   1
 
-Final values:
-intArg:   1
-boolArg:  false
-strArg:   "strArg default"
-anti:     "false"
-cbArg:    "cbArg default"
-nonOpt1:  1
-nonOpt2:  1
-Number of extra non-option arguments:0
+Number of extra non-option arguments:   0
+
