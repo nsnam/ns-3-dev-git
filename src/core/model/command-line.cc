@@ -165,14 +165,6 @@ CommandLine::Clear()
 {
     NS_LOG_FUNCTION(this);
 
-    for (auto i : m_options)
-    {
-        delete i;
-    }
-    for (auto i : m_nonOptions)
-    {
-        delete i;
-    }
     m_options.clear();
     m_nonOptions.clear();
     m_NNonOptions = 0;
@@ -284,7 +276,7 @@ CommandLine::HandleNonOption(const std::string& value)
         // Add an unspecified non-option as a string
         NS_LOG_LOGIC("adding StringItem, NOCount:" << m_nonOptionCount
                                                    << ", NOSize:" << m_nonOptions.size());
-        StringItem* item = new StringItem;
+        auto item = std::make_shared<StringItem>();
         item->m_name = "extra-non-option-argument";
         item->m_help = "Extra non-option argument encountered.";
         item->m_value = value;
@@ -321,56 +313,43 @@ CommandLine::PrintHelp(std::ostream& os) const
     os << m_shortName << (m_options.size() ? " [Program Options]" : "")
        << (nonOptions.size() ? " [Program Arguments]" : "") << " [General Arguments]" << std::endl;
 
-    if (m_usage.length())
+    if (!m_usage.empty())
     {
         os << std::endl;
         os << m_usage << std::endl;
     }
 
     std::size_t width = 0;
-    for (auto it : m_options)
-    {
-        width = std::max(width, it->m_name.size());
-    }
-    for (auto it : nonOptions)
-    {
-        width = std::max(width, it->m_name.size());
-    }
+    auto max_width = [&width](const std::shared_ptr<Item> item) {
+        width = std::max(width, item->m_name.size());
+    };
+    std::for_each(m_options.begin(), m_options.end(), max_width);
+    std::for_each(nonOptions.begin(), nonOptions.end(), max_width);
     width += 3; // room for ":  " between option and help
+
+    auto optionsHelp = [&os, width](const std::string& head, bool option, const Items& items) {
+        os << "\n" << head << "\n";
+        for (const auto& item : items)
+        {
+            os << "    " << (option ? "--" : "  ") << std::left << std::setw(width)
+               << (item->m_name + ":") << std::right << item->m_help;
+
+            if (item->HasDefault())
+            {
+                os << " [" << item->GetDefault() << "]";
+            }
+            os << "\n";
+        }
+    };
 
     if (!m_options.empty())
     {
-        os << std::endl;
-        os << "Program Options:" << std::endl;
-        for (auto i : m_options)
-        {
-            os << "    --" << std::left << std::setw(width) << (i->m_name + ":") << std::right
-               << i->m_help;
-
-            if (i->HasDefault())
-            {
-                os << " [" << i->GetDefault() << "]";
-            }
-            os << std::endl;
-        }
+        optionsHelp("Program Options:", true, m_options);
     }
 
     if (!nonOptions.empty())
     {
-        width += 2; // account for "--" added above
-        os << std::endl;
-        os << "Program Arguments:" << std::endl;
-        for (auto i : nonOptions)
-        {
-            os << "    " << std::left << std::setw(width) << (i->m_name + ":") << std::right
-               << i->m_help;
-
-            if (i->HasDefault())
-            {
-                os << " [" << i->GetDefault() << "]";
-            }
-            os << std::endl;
-        }
+        optionsHelp("Program Arguments:", false, nonOptions);
     }
 
     os << std::endl;
@@ -433,14 +412,14 @@ CommandLine::PrintDoxygenUsage() const
        << "<code>$ ./ns3 run \"" << m_shortName << (m_options.size() ? " [Program Options]" : "")
        << (nonOptions.size() ? " [Program Arguments]" : "") << "\"</code>\n";
 
-    if (m_usage.length())
+    if (!m_usage.empty())
     {
         os << Encode(m_usage) << "\n";
     }
 
-    auto listOptions = [&os](Items items, std::string pre) {
-        os << "<dl>\n";
-        for (const auto i : items)
+    auto listOptions = [&os](const std::string& head, const Items& items, std::string pre) {
+        os << "\n<dl>\n<h3>" << head << "</h3>\n";
+        for (const auto& i : items)
         {
             os << "  <dt>" << pre << i->m_name << " </dt>\n"
                << "    <dd>" << Encode(i->m_help);
@@ -456,16 +435,12 @@ CommandLine::PrintDoxygenUsage() const
 
     if (!m_options.empty())
     {
-        os << std::endl;
-        os << "<h3>Program Options</h3>\n";
-        listOptions(m_options, "\\c --");
+        listOptions("Program Options", m_options, "\\c --");
     }
 
     if (!nonOptions.empty())
     {
-        os << std::endl;
-        os << "<h3>Program Arguments</h3>\n";
-        listOptions(nonOptions, "\\c ");
+        listOptions("Program Arguments", nonOptions, "\\c ");
     }
 
     os << "*/" << std::endl;
@@ -632,7 +607,7 @@ CommandLine::PrintGroups(std::ostream& os) const
     }
 }
 
-void
+bool
 CommandLine::HandleArgument(const std::string& name, const std::string& value) const
 {
     NS_LOG_FUNCTION(this << name << value);
@@ -682,33 +657,36 @@ CommandLine::HandleArgument(const std::string& name, const std::string& value) c
         PrintAttributes(std::cout, value);
         std::exit(0);
     }
-    else
-    {
-        for (auto i : m_options)
+
+    auto errorExit = [this, name, value]() {
+        std::cerr << "Invalid command-line argument: --" << name;
+        if (value != "")
         {
-            if (i->m_name == name)
-            {
-                if (!i->Parse(value))
-                {
-                    std::cerr << "Invalid argument value: " << name << "=" << value << std::endl;
-                    PrintHelp(std::cerr);
-                    std::exit(1);
-                }
-                else
-                {
-                    return;
-                }
-            }
+            std::cerr << "=" << value;
         }
-    }
-    // Global or ConfigPath options
-    if (!Config::SetGlobalFailSafe(name, StringValue(value)) &&
-        !Config::SetDefaultFailSafe(name, StringValue(value)))
-    {
-        std::cerr << "Invalid command-line arguments: --" << name << "=" << value << std::endl;
-        PrintHelp(std::cerr);
+        std::cerr << std::endl;
+        this->PrintHelp(std::cerr);
         std::exit(1);
+    };
+
+    auto item = std::find_if(m_options.begin(), m_options.end(), [name](std::shared_ptr<Item> it) {
+        return it->m_name == name;
+    });
+    if (item != m_options.end())
+    {
+        if (!(*item)->Parse(value))
+        {
+            errorExit();
+        }
+        return true;
     }
+
+    // Global or ConfigPath options
+    if (!HandleAttribute(name, value))
+    {
+        errorExit();
+    }
+    return true;
 }
 
 bool
@@ -739,7 +717,7 @@ CommandLine::AddValue(const std::string& name,
 
 {
     NS_LOG_FUNCTION(this << &name << &help << &callback);
-    CallbackItem* item = new CallbackItem();
+    auto item = std::make_shared<CallbackItem>();
     item->m_name = name;
     item->m_help = help;
     item->m_callback = callback;
@@ -783,7 +761,7 @@ CommandLine::GetExtraNonOption(std::size_t i) const
 
     if (m_nonOptions.size() >= i + m_NNonOptions)
     {
-        auto ip = dynamic_cast<StringItem*>(m_nonOptions[i + m_NNonOptions]);
+        auto ip = std::dynamic_pointer_cast<StringItem>(m_nonOptions[i + m_NNonOptions]);
         if (ip != nullptr)
         {
             value = ip->m_value;
@@ -809,13 +787,8 @@ CommandLine::GetNExtraNonOptions() const
 bool
 CommandLine::HandleAttribute(const std::string& name, const std::string& value)
 {
-    bool success = true;
-    if (!Config::SetGlobalFailSafe(name, StringValue(value)) &&
-        !Config::SetDefaultFailSafe(name, StringValue(value)))
-    {
-        success = false;
-    }
-    return success;
+    return Config::SetGlobalFailSafe(name, StringValue(value)) ||
+           Config::SetDefaultFailSafe(name, StringValue(value));
 }
 
 bool
@@ -856,21 +829,23 @@ template <>
 bool
 CommandLineHelper::UserItemParse<bool>(const std::string& value, bool& val)
 {
-    std::string src = value;
-    std::transform(src.begin(), src.end(), src.begin(), [](char c) {
-        return static_cast<char>(std::tolower(c));
-    });
-    if (src.length() == 0)
+    // No new value, so just toggle it
+    if (value.empty())
     {
         val = !val;
         return true;
     }
-    else if ((src == "true") || (src == "t"))
+
+    std::string src = value;
+    std::transform(src.begin(), src.end(), src.begin(), [](char c) {
+        return static_cast<char>(std::tolower(c));
+    });
+    if (src == "true" || src == "t")
     {
         val = true;
         return true;
     }
-    else if ((src == "false") || (src == "f"))
+    else if (src == "false" || src == "f")
     {
         val = false;
         return true;
@@ -898,7 +873,7 @@ bool
 CommandLineHelper::UserItemParse<uint8_t>(const std::string& value, uint8_t& val)
 {
     uint8_t oldVal = val;
-    long newVal;
+    int newVal;
 
     try
     {

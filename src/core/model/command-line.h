@@ -23,6 +23,7 @@
 #include "nstime.h"
 #include "type-id.h"
 
+#include <memory> // shared_ptr
 #include <sstream>
 #include <string>
 #include <vector>
@@ -517,8 +518,9 @@ class CommandLine
      *
      * \param [in] name The argument name
      * \param [in] value The command line value
+     * \returns \c true if the argument was handled successfully
      */
-    void HandleArgument(const std::string& name, const std::string& value) const;
+    bool HandleArgument(const std::string& name, const std::string& value) const;
     /**
      * Callback function to handle attributes.
      *
@@ -583,14 +585,22 @@ class CommandLine
      */
     void PrintDoxygenUsage() const;
 
-    typedef std::vector<Item*> Items; /**< Argument list container */
-    Items m_options;                  /**< The list of option arguments */
-    Items m_nonOptions;               /**< The list of non-option arguments */
-    std::size_t m_NNonOptions;        /**< The expected number of non-option arguments */
-    std::size_t m_nonOptionCount;     /**< The number of actual non-option arguments seen so far. */
-    std::string m_usage;              /**< The Usage string */
-    std::string
-        m_shortName; /**< The source file name (without `.cc`), as would be given to `ns3 run` */
+    /** Argument list container */
+    using Items = std::vector<std::shared_ptr<Item>>;
+
+    /** The list of option arguments */
+    Items m_options;
+    /** The list of non-option arguments */
+    Items m_nonOptions;
+
+    /** The expected number of non-option arguments */
+    std::size_t m_NNonOptions;
+    /** The number of actual non-option arguments seen so far. */
+    std::size_t m_nonOptionCount;
+    /** The Usage string */
+    std::string m_usage;
+    /** The source file name (without `.cc`), as would be given to `ns3 run` */
+    std::string m_shortName;
 
 }; // class CommandLine
 
@@ -667,7 +677,7 @@ template <typename T>
 void
 CommandLine::AddValue(const std::string& name, const std::string& help, T& value)
 {
-    UserItem<T>* item = new UserItem<T>();
+    auto item = std::make_shared<UserItem<T>>();
     item->m_name = name;
     item->m_help = help;
     item->m_valuePtr = &value;
@@ -683,7 +693,7 @@ template <typename T>
 void
 CommandLine::AddNonOption(const std::string& name, const std::string& help, T& value)
 {
-    UserItem<T>* item = new UserItem<T>();
+    auto item = std::make_shared<UserItem<T>>();
     item->m_name = name;
     item->m_help = help;
     item->m_valuePtr = &value;
