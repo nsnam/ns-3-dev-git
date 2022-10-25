@@ -849,10 +849,13 @@ CommandLine::StringItem::GetDefault() const
 
 template <>
 std::string
-CommandLineHelper::GetDefault<bool>(const bool& val)
+CommandLineHelper::GetDefault<bool>(const std::string& defaultValue)
 {
+    bool value;
+    std::istringstream iss(defaultValue);
+    iss >> value;
     std::ostringstream oss;
-    oss << std::boolalpha << val;
+    oss << std::boolalpha << value;
     return oss.str();
 }
 
@@ -892,10 +895,10 @@ CommandLineHelper::UserItemParse<bool>(const std::string& value, bool& dest)
 
 template <>
 std::string
-CommandLineHelper::GetDefault<Time>(const Time& val)
+CommandLineHelper::GetDefault<Time>(const std::string& defaultValue)
 {
     std::ostringstream oss;
-    oss << val.As();
+    oss << Time(defaultValue).As();
     return oss.str();
 }
 

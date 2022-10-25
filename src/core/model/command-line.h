@@ -673,16 +673,16 @@ bool UserItemParse<uint8_t>(const std::string& value, uint8_t& dest);
  * \brief Helper to specialize CommandLine::UserItem::GetDefault() on types
  * needing special handling.
  *
- * \param [in] val The argument value
- * \return The string representation of value
+ * \param [in] default The default value from the UserItem.
+ * \return The string representation of value.
  * @{
  */
 template <typename T>
-std::string GetDefault(const T& val);
+std::string GetDefault(const std::string& defaultValue);
 template <>
-std::string GetDefault<bool>(const bool& val);
+std::string GetDefault<bool>(const std::string& defaultValue);
 template <>
-std::string GetDefault<Time>(const Time& val);
+std::string GetDefault<Time>(const std::string& defaultValue);
 /**@}*/
 
 } // namespace CommandLineHelper
@@ -739,16 +739,14 @@ template <typename T>
 std::string
 CommandLine::UserItem<T>::GetDefault() const
 {
-    return CommandLineHelper::GetDefault<T>(*m_valuePtr);
+    return CommandLineHelper::GetDefault<T>(m_default);
 }
 
 template <typename T>
 std::string
-CommandLineHelper::GetDefault(const T& val)
+CommandLineHelper::GetDefault(const std::string& defaultValue)
 {
-    std::ostringstream oss;
-    oss << val;
-    return oss.str();
+    return defaultValue;
 }
 
 template <typename T>
