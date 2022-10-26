@@ -8,8 +8,7 @@ mark_as_advanced(CCACHE)
 find_program(CCACHE ccache)
 if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
   message(STATUS "CCache is enabled.")
-  set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
-  set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
   execute_process(
     COMMAND
       ${CCACHE} --set-config
