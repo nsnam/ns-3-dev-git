@@ -235,6 +235,9 @@ class MultiLinkOperationsTestBase : public TestCase
 
     void DoSetup() override;
 
+    /// PHY band-indexed map of spectrum channels
+    using ChannelMap = std::map<FrequencyRange, Ptr<MultiModelSpectrumChannel>>;
+
     /**
      * Uplink or Downlink direction
      */
@@ -279,11 +282,11 @@ class MultiLinkOperationsTestBase : public TestCase
      *
      * \param helper the given PHY helper
      * \param channels the strings specifying the operating channels to configure
-     * \param channel the created spectrum channel
+     * \param channelMap the created spectrum channels
      */
     void SetChannels(SpectrumWifiPhyHelper& helper,
                      const std::vector<std::string>& channels,
-                     Ptr<MultiModelSpectrumChannel> channel);
+                     const ChannelMap& channelMap);
 
     /**
      * Set the SSID on the next station that needs to start the association procedure.
@@ -425,7 +428,7 @@ MultiLinkOperationsTestBase::Transmit(uint8_t linkId,
 void
 MultiLinkOperationsTestBase::SetChannels(SpectrumWifiPhyHelper& helper,
                                          const std::vector<std::string>& channels,
-                                         Ptr<MultiModelSpectrumChannel> channel)
+                                         const ChannelMap& channelMap)
 {
     helper = SpectrumWifiPhyHelper(channels.size());
     helper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
@@ -436,7 +439,12 @@ MultiLinkOperationsTestBase::SetChannels(SpectrumWifiPhyHelper& helper,
         helper.Set(linkId++, "ChannelSettings", StringValue(str));
     }
 
-    helper.SetChannel(channel);
+    // NOTE replace this for loop with the line below to use a single spectrum channel
+    // helper.SetChannel(channelMap.begin()->second);
+    for (const auto& [band, channel] : channelMap)
+    {
+        helper.AddChannel(channel, band);
+    }
 }
 
 void
@@ -461,12 +469,14 @@ MultiLinkOperationsTestBase::DoSetup()
                                  "ControlMode",
                                  StringValue("HtMcs0"));
 
-    auto channel = CreateObject<MultiModelSpectrumChannel>();
+    ChannelMap channelMap{{WIFI_SPECTRUM_2_4_GHZ, CreateObject<MultiModelSpectrumChannel>()},
+                          {WIFI_SPECTRUM_5_GHZ, CreateObject<MultiModelSpectrumChannel>()},
+                          {WIFI_SPECTRUM_6_GHZ, CreateObject<MultiModelSpectrumChannel>()}};
 
     SpectrumWifiPhyHelper staPhyHelper;
     SpectrumWifiPhyHelper apPhyHelper;
-    SetChannels(staPhyHelper, m_staChannels, channel);
-    SetChannels(apPhyHelper, m_apChannels, channel);
+    SetChannels(staPhyHelper, m_staChannels, channelMap);
+    SetChannels(apPhyHelper, m_apChannels, channelMap);
 
     for (const auto& linkId : m_fixedPhyBands)
     {
