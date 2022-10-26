@@ -217,12 +217,6 @@ class MultiLinkOperationsTestBase : public TestCase
 
   protected:
     /**
-     * \param str the given channel string
-     * \return the PHY band specified in the given channel string
-     */
-    WifiPhyBand GetPhyBandFromChannelStr(const std::string& str);
-
-    /**
      * Callback invoked when a FEM passes PSDUs to the PHY.
      *
      * \param linkId the ID of the link transmitting the PSDUs
@@ -238,26 +232,6 @@ class MultiLinkOperationsTestBase : public TestCase
                           double txPowerW);
 
     void DoSetup() override;
-
-    /// PHY band-indexed map of spectrum channels
-    using ChannelMap = std::map<WifiPhyBand, Ptr<MultiModelSpectrumChannel>>;
-
-    /**
-     * Notify a PHY state change for the given link of the given station.
-     *
-     * \param staId the ID of the given station
-     * \param linkId the ID of the given link
-     * \param channelMap the PHY-band indexed map of spectrum channels
-     * \param now the time of the transition to the given PHY state
-     * \param duration the time spent in the given PHY state
-     * \param state the PHY state
-     */
-    void NotifyPhyStateChange(uint8_t staId,
-                              uint8_t linkId,
-                              const ChannelMap& channelMap,
-                              Time now,
-                              Time duration,
-                              WifiPhyState state);
 
     /**
      * Check that the Address 1 and Address 2 fields of the given PSDU contain device MAC addresses.
@@ -293,11 +267,11 @@ class MultiLinkOperationsTestBase : public TestCase
      *
      * \param helper the given PHY helper
      * \param channels the strings specifying the operating channels to configure
-     * \param channelMap the created spectrum channels
+     * \param channel the created spectrum channel
      */
     void SetChannels(SpectrumWifiPhyHelper& helper,
                      const std::vector<std::string>& channels,
-                     const ChannelMap& channelMap);
+                     Ptr<MultiModelSpectrumChannel> channel);
 
     /**
      * Set the SSID on the next station that needs to start the association procedure.
@@ -429,7 +403,7 @@ MultiLinkOperationsTestBase::Transmit(uint8_t linkId,
 void
 MultiLinkOperationsTestBase::SetChannels(SpectrumWifiPhyHelper& helper,
                                          const std::vector<std::string>& channels,
-                                         const ChannelMap& channelMap)
+                                         Ptr<MultiModelSpectrumChannel> channel)
 {
     helper = SpectrumWifiPhyHelper(channels.size());
     helper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
@@ -437,32 +411,10 @@ MultiLinkOperationsTestBase::SetChannels(SpectrumWifiPhyHelper& helper,
     uint8_t linkId = 0;
     for (const auto& str : channels)
     {
-        helper.Set(linkId, "ChannelSettings", StringValue(str));
-        // helper.SetChannel (linkId, channelMap.at (GetPhyBandFromChannelStr (str)));
-        // TODO replace this line with the one above to use per-band spectrum channels
-        helper.SetChannel(linkId, channelMap.begin()->second);
+        helper.Set(linkId++, "ChannelSettings", StringValue(str));
+    }
 
-        linkId++;
-    }
-}
-
-WifiPhyBand
-MultiLinkOperationsTestBase::GetPhyBandFromChannelStr(const std::string& str)
-{
-    if (str.find("2_4GHZ") != std::string::npos)
-    {
-        return WIFI_PHY_BAND_2_4GHZ;
-    }
-    if (str.find("5GHZ") != std::string::npos)
-    {
-        return WIFI_PHY_BAND_5GHZ;
-    }
-    if (str.find("6GHZ") != std::string::npos)
-    {
-        return WIFI_PHY_BAND_6GHZ;
-    }
-    NS_ABORT_MSG("Band in channel settings must be specified");
-    return WIFI_PHY_BAND_UNSPECIFIED;
+    helper.SetChannel(channel);
 }
 
 void
@@ -485,14 +437,12 @@ MultiLinkOperationsTestBase::DoSetup()
                                  "DataMode",
                                  StringValue("EhtMcs0"));
 
-    ChannelMap channelMap{{WIFI_PHY_BAND_2_4GHZ, CreateObject<MultiModelSpectrumChannel>()},
-                          {WIFI_PHY_BAND_5GHZ, CreateObject<MultiModelSpectrumChannel>()},
-                          {WIFI_PHY_BAND_6GHZ, CreateObject<MultiModelSpectrumChannel>()}};
+    auto channel = CreateObject<MultiModelSpectrumChannel>();
 
     SpectrumWifiPhyHelper staPhyHelper;
     SpectrumWifiPhyHelper apPhyHelper;
-    SetChannels(staPhyHelper, m_staChannels, channelMap);
-    SetChannels(apPhyHelper, m_apChannels, channelMap);
+    SetChannels(staPhyHelper, m_staChannels, channel);
+    SetChannels(apPhyHelper, m_apChannels, channel);
 
     for (const auto& linkId : m_fixedPhyBands)
     {
@@ -560,19 +510,6 @@ MultiLinkOperationsTestBase::DoSetup()
         }
     }
 
-    // notify PHY state changes on the stations
-    for (uint8_t i = 0; i < m_nStations; i++)
-    {
-        auto dev = StaticCast<WifiNetDevice>(staDevices.Get(i));
-        for (uint8_t linkId = 0; linkId < dev->GetNPhys(); linkId++)
-        {
-            dev->GetPhy(linkId)->GetState()->TraceConnectWithoutContext(
-                "State",
-                MakeCallback(&MultiLinkOperationsTestBase::NotifyPhyStateChange, this)
-                    .Bind(i, linkId, channelMap));
-        }
-    }
-
     // schedule ML setup for one station at a time
     m_apMac->TraceConnectWithoutContext("AssociatedSta",
                                         MakeCallback(&MultiLinkOperationsTestBase::SetSsid, this));
@@ -580,41 +517,8 @@ MultiLinkOperationsTestBase::DoSetup()
 }
 
 void
-MultiLinkOperationsTestBase::NotifyPhyStateChange(uint8_t staId,
-                                                  uint8_t linkId,
-                                                  const ChannelMap& channelMap,
-                                                  Time now,
-                                                  Time duration,
-                                                  WifiPhyState state)
-{
-    if (state != WifiPhyState::SWITCHING)
-    {
-        return;
-    }
-
-    // this PHY is switching channel. Connect it to the proper spectrum channel
-    auto staPhy = DynamicCast<SpectrumWifiPhy>(m_staMacs[staId]->GetWifiPhy(linkId));
-    NS_ASSERT(staPhy);
-    // TODO causes an assert failure
-    // staPhy->SetChannel (channelMap.at (staPhy->GetPhyBand ()));
-}
-
-void
 MultiLinkOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
 {
-    // connect each PHY of the STA that completed ML setup to the correct spectrum channel
-    // auto currId = aid - 1;
-    // for (uint8_t linkId = 0; linkId < m_staMacs[currId]->GetNLinks (); linkId++)
-    //   {
-    //     if (const auto& apLinkId = m_staMacs[currId]->GetLink (linkId).apLinkId)
-    //       {
-    //         auto staPhy = DynamicCast<SpectrumWifiPhy> (m_staMacs[currId]->GetWifiPhy (linkId));
-    //         NS_ASSERT (staPhy);
-    //         auto apChannel = DynamicCast<SpectrumChannel> (m_apMac->GetWifiPhy
-    //         (*apLinkId)->GetChannel ()); NS_ASSERT (apChannel); staPhy->SetChannel (apChannel);
-    //       }
-    //   }
-
     if (m_lastAid == aid)
     {
         // another STA of this non-AP MLD has already fired this callback
@@ -1029,21 +933,6 @@ MultiLinkSetupTest::CheckDisabledLinks()
             NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(linkId)->GetState()->IsStateOff(),
                                   true,
                                   "Link " << +linkId << " has not been setup but is not disabled");
-            continue;
-        }
-
-        if (GetPhyBandFromChannelStr(m_staChannels.at(it->first)) !=
-            GetPhyBandFromChannelStr(m_apChannels.at(it->second)))
-        {
-            // TODO Uncomment this check if distinct spectrum channels are used (one per PHY band)
-            // and spectrum channels are not reassigned based on the final operating PHY band
-
-            // STA had to switch PHY band to match AP's operating band. Given that we
-            // are using three distinct spectrum channels (one per band), a STA will
-            // not receive Beacon frames after switching PHY band. After a number of
-            // missed Beacon frames, the link is disabled
-            // NS_TEST_EXPECT_MSG_EQ (m_staMacs[0]->GetWifiPhy (linkId)->GetState ()->IsStateOff (),
-            // true, "Expecting link " << +linkId << " to be disabled due to switching PHY band");
             continue;
         }
 
