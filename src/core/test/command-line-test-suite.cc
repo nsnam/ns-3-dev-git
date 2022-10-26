@@ -551,6 +551,7 @@ CommandLineCharStarTestCase::DoRun()
     std::string value{charbuf};
 
     NS_TEST_ASSERT_MSG_EQ(value, "deadbeef", "CommandLine did not correctly set a char* buffer");
+    delete[] charbuf;
 }
 
 /**
