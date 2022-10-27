@@ -70,7 +70,7 @@ You may want to take this opportunity to explore the |ns3| wiki
 a bit, or the main web site at https://www.nsnam.org, since there is a
 wealth of information there.
 
-As of the most recent |ns3| release (ns-3.36.1), the following tools
+As of the most recent |ns3| release (ns-3.37), the following tools
 are needed to get started with |ns3|:
 
 ============  ===========================================================
@@ -124,22 +124,21 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget https://www.nsnam.org/release/ns-allinone-3.36.1.tar.bz2
-  $ tar xjf ns-allinone-3.36.1.tar.bz2
+  $ wget https://www.nsnam.org/release/ns-allinone-3.37.tar.bz2
+  $ tar xjf ns-allinone-3.37.tar.bz2
 
 Notice the use above of the ``wget`` utility, which is a command-line
 tool to fetch objects from the web; if you do not have this installed,
 you can use a browser for this step.
 
 Following these steps, if you change into the directory
-``ns-allinone-3.36.1``, you should see a number of files and directories
+``ns-allinone-3.37``, you should see a number of files and directories
 
 .. sourcecode:: text
 
-  $ cd ns-allinone-3.36.1
+  $ cd ns-allinone-3.37
   $ ls
-  bake      constants.py   ns-3.36.1                          README.md
-  build.py  netanim-3.108  pybindgen-0.22.1                   util.py
+  bake  build.py  constants.py  netanim-3.108 ns-3.37  README.md  util.py
 
 You are now ready to build the base |ns3| distribution and may skip ahead
 to the section on building |ns3|.
@@ -189,7 +188,7 @@ release number:
 
 .. sourcecode:: console
 
-  $ python3 download.py -n ns-3.36.1
+  $ python3 download.py -n ns-3.37
 
 After this step, the additional repositories of |ns3|, bake, pybindgen,
 and netanim will be downloaded to the ``ns-3-allinone`` directory.
@@ -258,16 +257,15 @@ distribution of your choice.
 
 There are a few configuration targets available:
 
-1.  ``ns-3.36.1``:  the module corresponding to the release; it will download
-    components similar to the release tarball.
+1.  ``ns-3.37``:  the code corresponding to the release
 2.  ``ns-3-dev``:  a similar module but using the development code tree
-3.  ``ns-allinone-3.36.1``:  the module that includes other optional features
+3.  ``ns-allinone-3.37``:  the module that includes other optional features
     such as bake build system, netanim animator, and pybindgen
 4.  ``ns-3-allinone``:  similar to the released version of the allinone
     module, but for development code.
 
 The current development snapshot (unreleased) of |ns3| may be found
-at https://gitlab.com/nsnam/ns-3-dev.git.  The
+and cloned from https://gitlab.com/nsnam/ns-3-dev.git.  The
 developers attempt to keep these repositories in consistent, working states but
 they are in a development area with unreleased code present, so you may want
 to consider staying with an official release if you do not need newly-
@@ -278,7 +276,7 @@ code either by inspection of the repository list or by going to the
 `"ns-3 Releases"
 <https://www.nsnam.org/releases>`_
 web page and clicking on the latest release link.  We'll proceed in
-this tutorial example with ``ns-3.36.1``.
+this tutorial example with ``ns-3.37``.
 
 We are now going to use the bake tool to pull down the various pieces of
 |ns3| you will be using.  First, we'll say a word about running bake.
@@ -294,8 +292,9 @@ environment variables:
 .. sourcecode:: console
 
   $ export BAKE_HOME=`pwd`
-  $ export PATH=$PATH:$BAKE_HOME:$BAKE_HOME/build/bin
-  $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME:$BAKE_HOME/build/lib
+  $ export PATH=$PATH:$BAKE_HOME/build/bin
+  $ export PYTHONPATH=$BAKE_HOME/build/lib
+  $ export LD_LIBRARY_PATH=$BAKE_HOME/build/lib
 
 This will put the bake.py program into the shell's path, and will allow
 other programs to find executables and libraries created by bake.  Although
@@ -306,7 +305,7 @@ Step into the workspace directory and type the following into your shell:
 
 .. sourcecode:: console
 
-  $ ./bake.py configure -e ns-3.36.1
+  $ ./bake.py configure -e ns-allinone-3.37
 
 Next, we'll ask bake to check whether we have enough tools to download
 various components.  Type:
@@ -321,7 +320,6 @@ You should see something like the following:
 
   > Python - OK
   > GNU C++ compiler - OK
-  > Mercurial - OK
   > Git - OK
   > Tar tool - OK
   > Unzip tool - OK
@@ -330,11 +328,9 @@ You should see something like the following:
   > patch tool - OK
   > Path searched for tools: /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin ...
 
-In particular, download tools such as Git and Mercurial
-are our principal concerns at this point, since they allow us to fetch
-the code.  Please install missing tools at this stage, in the usual
+Please install missing tools at this stage, in the usual
 way for your system (if you are able to), or contact your system
-administrator as needed to install these tools.  You can also
+administrator as needed to install these tools.
 
 Next, try to download the software:
 
@@ -346,23 +342,20 @@ should yield something like:
 
 .. sourcecode:: text
 
-  >> Searching for system dependency setuptools - OK
-  >> Searching for system dependency libgoocanvas2 - OK
-  >> Searching for system dependency gi-cairo - OK
-  >> Searching for system dependency pygobject - OK
-  >> Searching for system dependency pygraphviz - OK
-  >> Searching for system dependency python-dev - OK
-  >> Searching for system dependency qt - OK
-  >> Searching for system dependency g++ - OK
-  >> Searching for system dependency cxxfilt - OK
-  >> Searching for system dependency setuptools - OK
+  >> Searching for system dependency libxml2-dev - OK
   >> Searching for system dependency gi-cairo - OK
   >> Searching for system dependency gir-bindings - OK
   >> Searching for system dependency pygobject - OK
+  >> Searching for system dependency pygraphviz - OK
+  >> Searching for system dependency python3-dev - OK
+  >> Searching for system dependency qt - OK
+  >> Searching for system dependency g++ - OK
   >> Searching for system dependency cmake - OK
   >> Downloading netanim-3.108 - OK
-  >> Downloading pybindgen-0.22.1 (target directory:pybindgen) - OK
-  >> Downloading ns-3.36.1 (target directory:ns-3.36.1) - OK
+  >> Downloading click-ns-3.37 - OK
+  >> Downloading BRITE - OK
+  >> Downloading openflow-dev - OK
+  >> Downloading ns-3.37 (target directory:ns-3.37) - OK
 
 The above suggests that three sources have been downloaded.  Check the
 ``source`` directory now and type ``ls``; one should see:
@@ -371,7 +364,7 @@ The above suggests that three sources have been downloaded.  Check the
 
   $ cd source
   $ ls
-  netanim-3.108  ns-3.36.1 pybindgen
+  BRITE  click-ns-3.37  netanim-3.108  ns-3.37  openflow-dev
 
 You are now ready to build the |ns3| distribution.
 
@@ -401,7 +394,7 @@ native |ns3| build system, CMake, to be introduced later in this tutorial.
 
 If you downloaded
 using a tarball you should have a directory called something like
-``ns-allinone-3.36.1`` under your ``~/workspace`` directory.
+``ns-allinone-3.37`` under your ``~/workspace`` directory.
 Type the following:
 
 .. sourcecode:: console
@@ -417,8 +410,7 @@ are not necessary for your work, if you wish.
 
 You will see lots of compiler output messages displayed as the build
 script builds the various pieces you downloaded.  First, the script will
-attempt to build the netanim animator, then the pybindgen bindings generator,
-and finally |ns3|.
+attempt to build the netanim animator, and then |ns3|.
 
 Building with bake
 ++++++++++++++++++
@@ -434,25 +426,11 @@ and you should see something like:
 
 .. sourcecode:: text
 
-  >> Building pybindgen-0.22.1 - OK
   >> Building netanim-3.108 - OK
-  >> Building ns-3.36.1 - OK
+  >> Building ns-3.37 - OK
 
 There may be failures to build all components, but the build will proceed
-anyway if the component is optional.  For example, a recent portability issue
-has been that castxml may not build via the bake build tool on all
-platforms; in this case, the line will show something like::
-
-  >> Building castxml - Problem
-  > Problem: Optional dependency, module "castxml" failed
-    This may reduce the  functionality of the final build.
-    However, bake will continue since "castxml" is not an essential dependency.
-    For more information call bake with -v or -vvv, for full verbose mode.
-
-However, castxml is only needed if one wants to generate updated Python
-bindings, and most users do not need to do so (or to do so until they are
-more involved with ns-3 changes), so such warnings might be safely ignored
-for now.
+anyway if the component is optional.
 
 If there happens to be a failure, please have a look at what the following
 command tells you; it may give a hint as to a missing dependency:

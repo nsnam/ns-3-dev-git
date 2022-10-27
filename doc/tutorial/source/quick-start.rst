@@ -39,7 +39,10 @@ We focus in this chapter only on getting |ns3| up and running on a system
 supported by a recent C++ compiler and Python runtime support.
 
 For Linux, use either g++ or clang++ compilers.  For macOS, use clang++
-(available in Xcode or Xcode Command Line Tools).  For Windows, we recommend
+(available in Xcode or Xcode Command Line Tools).  For Windows, Msys2 tools
+with the MinGW64 toolchain can be used (since ns-3.37) for most use
+cases.  For releases earlier than ns-3.37, or for use of emulation modes
+or Python bindings, we recommend
 to either use a Linux virtual machine, or the Windows Subsystem for Linux.
 
 Downloading ns-3
@@ -61,13 +64,13 @@ Downloading the Latest Release
 
    ::
 
-    $ tar xjf ns-allinone-3.36.1.tar.bz2
+    $ tar xjf ns-allinone-3.37.tar.bz2
 
 3) Change into the |ns3| directory directly; e.g.
 
    ::
 
-    $ cd ns-allinone-3.36.1/ns-3.36.1
+    $ cd ns-allinone-3.37/ns-3.37
 
 The ns-allinone directory has some additional components but we are skipping
 over them here; one can work directly from the |ns3| source code directory.
@@ -89,12 +92,12 @@ only to `cd` into ns-3-dev; the `master` branch is checked out by default.
 
   $ cd ns-3-dev
 
-If instead you want to try the most recent release (version 3.36.1 as of this
+If instead you want to try the most recent release (version 3.37 as of this
 writing), you can checkout a branch corresponding to that git tag:
 
 ::
 
-  $ git checkout -b ns-3.36.1-branch ns-3.36.1
+  $ git checkout -b ns-3.37-branch ns-3.37
 
 Building and testing ns-3
 *************************
