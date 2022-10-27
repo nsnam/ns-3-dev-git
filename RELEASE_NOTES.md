@@ -3,11 +3,15 @@ ns-3 RELEASE NOTES
 
 This file contains ns-3 release notes (most recent releases first).
 
-All of the ns-3 documentation is accessible from the ns-3 website:
-<http://www.nsnam.org> including tutorials: <http://www.nsnam.org/tutorials.html>
+ns-3 documentation is accessible from the [ns-3 website](https://www.nsnam.org).
 
 Consult the file [CHANGES.md](CHANGES.md) for more detailed information about changed
 API and behavior across ns-3 releases.
+
+In the following, numeric references prefixed by '#' refer to
+a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
+and references prefixed by '!' refer to a
+[GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
 Release 3-dev
 -------------
@@ -19,50 +23,35 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 - g++-8 or later, or LLVM/clang++-6 or later
 - Python 3.6 or later
+- CMake 3.10 or later
 - (macOS only) Xcode 11 or later
 - (Windows only) Msys2/MinGW64 toolchain
 
-Python API requires Cppyy (https://cppyy.readthedocs.io/en/latest/installation.html).
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).
 
 ### New user-visible features
 
-- (lr-wpan) !959 - Add PHY channel page support
-- (lr-wpan) Adds PAN descriptor, CommandPayload Header and Capability Field
-- (wifi) !984 - MultiUserScheduler can request channel access periodically
-- (lr-wpan) !991 - Adds MAC ED scan support
 - (internet) !996 - IPv6 Router Solicitations (RS) are now retransmitted up to 4 times, following RFC 5779.
-- (lr-wpan) !997 - Adds MAC ACTIVE and PASSIVE scan support
-- (wifi) CCA has been reworked to report the channel type in the CCA-BUSY indication and the per-20 MHz CCA bitmap for 802.11ax.
-- (wifi) PPDUs are transmitted on the largest primary channel that is found to be idle (according to the CCA-BUSY indication provided by the PHY) when gaining a TXOP.
 - (internet) Add auto-generate ARP/NDISC cache, as the outcome of GSoC 2022 project.
-- (wifi) Add support for fragmentation of Information Elements.
-- (wifi) Implement 802.11be Multi-link discovery and setup
-- (lr-wpan) !1072 - Adds support for association (network bootstrap)
-- (lr-wpan) Adds support for PAN Id compression (IEEE 802.15.4-2006 (7.5.6.1))
-- (utils) `utils/bench-simulator` has been moved to `utils/bench-scheduler` to better reflect what it actually tests
-- (utils) `utils/bench-scheduler` has been enhanced to test multiple schedulers.
 - (lte) LTE handover failure is now handled for joining and leaving timeouts, RACH failure, and preamble allocation failure.
+- (lr-wpan) !991 - Adds MAC ED scan support
+- (lr-wpan) !959 - Add PHY channel page support
+- (lr-wpan) !997 - Adds MAC ACTIVE and PASSIVE scan support
+- (lr-wpan) !1072 - Adds support for association (network bootstrap)
 - (lr-wpan) !1131 - Add support for configurable tx queue and ind tx queue limits.
 - (lr-wpan) !1133 - Add a post-rx error model.
+- (lr-wpan) Adds support for PAN Id compression (IEEE 802.15.4-2006 (7.5.6.1))
+- (lr-wpan) Adds PAN descriptor, CommandPayload Header and Capability Field
+- (utils) `utils/bench-simulator` has been moved to `utils/bench-scheduler` to better reflect what it actually tests
+- (utils) `utils/bench-scheduler` has been enhanced to test multiple schedulers.
+- (wifi) !984 - MultiUserScheduler can request channel access periodically
+- (wifi) CCA has been reworked to report the channel type in the CCA-BUSY indication and the per-20 MHz CCA bitmap for 802.11ax.
+- (wifi) PPDUs are transmitted on the largest primary channel that is found to be idle (according to the CCA-BUSY indication provided by the PHY) when gaining a TXOP.
+- (wifi) Add support for fragmentation of Information Elements.
+- (wifi) Implement 802.11be Multi-link discovery and setup
 
 ### Bugs fixed
 
-- (wifi) Fix setting of stations' max supported channel width
-- (wifi) Fix setting TX power for HE TB PPDUs in case AP requested using the max TX power
-- (wifi) #521 - UL OFDMA support
-- (lr-wpan) #536 - Fixes PHY not going to TRX_OFF after CSMA-CA failure (RxOnWhenIdle(false))
-- (wifi) Only include QoS Null frames for TIDs for which a BA agreement exists in responses to BSRP TFs
-- (wifi) Notify RX end only for the last received HE TB PPDU
-- (wifi) Correctly compute the time to RX end to be passed to WifiPhyStateHelper::SwitchToRx()
-- (wifi) #709 Adjust WifiPhy::RxSensitivity with channel width for YansWifiChannel
-- (wifi) Align default TXOP limit for VI and VO to 802.11-2020
-- (wifi) #696 - 802.11ax assert failed. cond="seqNumber < SEQNO_SPACE_SIZE && startingSeqNumber < SEQNO_SPACE_SIZE"
-- (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
-- (wifi) Fix the TID of QoS Null frames in response to BSRP TF
-- (core) #756 - Fix `CsvReader::GetValueAs()` functions for `char` arguments
-- #758 - Fix warnings about `for` loops with variables that are "too small" to fully represent the data being looped
-- (lr-wpan) #692 - Replace raw pointers for smart pointers in Tx queue and Ind Tx queue.
-- (core) Fix int64x64-cairo.h bool operator
 - (build) #676 Fix missing version defines
 - (build) #684 Fix prevents hidden source files from being processed as scratches
 - (build) #687 Display how to forward arguments to programs with the ns3 script
@@ -75,6 +64,22 @@ Python API requires Cppyy (https://cppyy.readthedocs.io/en/latest/installation.h
 - (build) #733 Fix installation to optionally include python bindings and uninstallation to remove pkg-config files
 - (build) #734 Fix installation to include tap-creator and raw-sock-creator
 - (build) Widen the search scope of headers and libraries to better support Bake
+- (core) #756 - Fix `CsvReader::GetValueAs()` functions for `char` arguments
+- (core) Fix int64x64-cairo.h bool operator
+- (general) #758 - Fix warnings about `for` loops with variables that are "too small" to fully represent the data being looped
+- (lr-wpan) #536 - Fixes PHY not going to TRX_OFF after CSMA-CA failure (RxOnWhenIdle(false))
+- (lr-wpan) #692 - Replace raw pointers for smart pointers in Tx queue and Ind Tx queue.
+- (wifi) #521 - UL OFDMA support
+- (wifi) #696 - 802.11ax assert failed. cond="seqNumber < SEQNO_SPACE_SIZE && startingSeqNumber < SEQNO_SPACE_SIZE"
+- (wifi) #709 Adjust WifiPhy::RxSensitivity with channel width for YansWifiChannel
+- (wifi) Fix setting of stations' maximum supported channel width
+- (wifi) Fix setting TX power for HE TB PPDUs in case AP requested using the max TX power
+- (wifi) Only include QoS Null frames for TIDs for which a BA agreement exists in responses to BSRP TFs
+- (wifi) Notify RX end only for the last received HE TB PPDU
+- (wifi) Correctly compute the time to RX end to be passed to WifiPhyStateHelper::SwitchToRx()
+- (wifi) Align default TXOP limit for VI and VO to 802.11-2020
+- (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
+- (wifi) Fix the TID of QoS Null frames in response to BSRP TF
 
 Release 3.36.1
 --------------
