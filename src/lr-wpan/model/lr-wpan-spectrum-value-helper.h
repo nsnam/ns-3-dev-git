@@ -53,6 +53,12 @@ class LrWpanSpectrumValueHelper
     Ptr<SpectrumValue> CreateNoisePowerSpectralDensity(uint32_t channel);
 
     /**
+     * Set the noise factor added to the thermal noise.
+     * \param f A dimensionless ratio (i.e. Not in dB)
+     */
+    void SetNoiseFactor(double f);
+
+    /**
      * \brief total average power of the signal is the integral of the PSD using
      * the limits of the given channel
      * \param psd spectral density
@@ -64,6 +70,8 @@ class LrWpanSpectrumValueHelper
   private:
     /**
      * A scaling factor for the noise power.
+     * It specifies how much additional noise the device
+     * contribute to the thermal noise (floor noise).
      */
     double m_noiseFactor;
 };

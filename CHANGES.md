@@ -34,6 +34,7 @@ Changes from ns-3.37 to ns-3.38
 * (lr-wpan) Remove the functions `LrWpanCsmaCa::GetUnitBackoffPeriod()` and `LrWpanCsmaCa::SetUnitBackoffPeriod()`, and move the constant `m_aUnitBackoffPeriod` to `src/lr-wpan/model/lr-wpan-constants.h`.
 * (lr-wpan) Adds beacon payload handle support (MLME-SET.request) in  **LrWpanMac**.
 * (core) Now test-runner exits if no TestSuite is specified.
+* (lr-wpan) Adds the possibility to modify the Rx sensitivity in **LrWpanPhy**.
 
 ### Changes to build system
 

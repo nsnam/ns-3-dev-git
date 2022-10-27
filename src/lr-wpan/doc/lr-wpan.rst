@@ -14,7 +14,6 @@ IEEE standard 802.15.4 (2003,2006,2011).
 Model Description
 *****************
 
-The source code for the lr-wpan module lives in the directory ``src/lr-wpan``.
 
 Design
 ======
@@ -214,16 +213,33 @@ Std 802.15.4-2006, appendix E, Figure E.2. Reception of the packet will finish
 after the packet was completely transmitted. Other packets arriving during
 reception will add up to the interference/noise.
 
-Currently the receiver sensitivity is set to a fixed value of -106.58 dBm. This
-corresponds to a packet error rate of 1% for 20 byte PSDU reference packets for this
-signal power, according to IEEE Std 802.15.4-2006, section 6.1.7. In the future
-we will provide support for changing the sensitivity to different values.
+Rx sensitivity is defined as the weakest possible signal point at which a receiver can receive and decode a packet with a high success rate.
+According to the standard (IEEE Std 802.15.4-2006, section 6.1.7), this
+corresponds to the point where the packet error rate is under 1% for 20 bytes PSDU
+reference packets (11 bytes MAC header + 7 bytes payload (MSDU) + FCS 2 bytes). Setting low Rx sensitivity values (increasing the radio hearing capabilities)
+have the effect to receive more packets (and at a greater distance) but it raises the probability to have dropped packets at the
+MAC layer or the probability of corrupted packets. By default, the receiver sensitivity is set to the maximum theoretical possible value of -106.58 dBm for the supported IEEE 802.15.4 O-QPSK 250kps.
+This rx sensitivity is set for the "perfect radio" which only considers the floor noise, in essence, this do not include the noise factor (noise introduced by imperfections in the demodulator chip or external factors).
+The receiver sensitivity can be changed to different values using ``SetRxSensitivity`` function in the PHY to simulate the hearing capabilities of different compliant radio transceivers (the standard minimum compliant Rx sensitivity is -85 dBm).:::
+                                                              (defined by the standard)
+   NoiseFloor          Max Sensitivity                          Min Sensitivity
+   -106.987dBm          -106.58dBm                                   -85dBm
+    |-------------------------|------------------------------------------|
+                          Noise Factor = 1
+                              | <--------------------------------------->|
+                                    Acceptable sensitivity range
+
+The example ``lr-wpan-per-plot.cc` shows that at given Rx sensitiviy, packets are dropped regardless of their theoretical error probability.
+This program outputs a file named ``802.15.4-per-vs-rxSignal.plt``.
+Loading this file into gnuplot yields a file ``802.15.4-per-vs-rsSignal.eps``, which can
+be converted to pdf or other formats. Packet payload size, Tx power and Rx sensitivity can be configurated.
+The point where the blue line crosses with the PER indicates the Rx sensitivity. The default output is shown below.
 
 .. _fig-802-15-4-per-sens:
 
 .. figure:: figures/802-15-4-per-sens.*
 
-    Packet error rate vs. signal power
+    Default output of the program ``lr-wpan-per-plot.cc``
 
 
 NetDevice
@@ -298,7 +314,7 @@ running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for 
 - Devices are capable of associating with a single PAN coordinator. Interference is modeled as AWGN but this is currently not thoroughly tested.
 - The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
 - Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
-- Configuration of Rx Sensitivity and ED thresholds are currently not supported.
+- Configuration of the ED thresholds are currently not supported.
 - Orphan scans are not supported.
 - Disassociation primitives are not supported.
 - Security is not supported.
@@ -338,6 +354,7 @@ The following examples have been written, which can be found in ``src/lr-wpan/ex
 
 * ``lr-wpan-data.cc``:  A simple example showing end-to-end data transfer.
 * ``lr-wpan-error-distance-plot.cc``:  An example to plot variations of the packet success ratio as a function of distance.
+* ``lr-wpan-per-plot.cc``: An example to plot the theoretical and experimental packet error rate (PER) as a function of receive signal.
 * ``lr-wpan-error-model-plot.cc``:  An example to test the phy.
 * ``lr-wpan-packet-print.cc``:  An example to print out the MAC header fields.
 * ``lr-wpan-phy-test.cc``:  An example to test the phy.
@@ -364,11 +381,14 @@ in a DataIndication on the peer node.
 The example ``lr-wpan-error-distance-plot.cc`` plots the packet success
 ratio (PSR) as a function of distance, using the default LogDistance
 propagation loss model and the 802.15.4 error model.  The channel (default 11),
-packet size (default 20 bytes) and transmit power (default 0 dBm) can be
-varied by command line arguments.  The program outputs a file named
-``802.15.4-psr-distance.plt``.  Loading this file into gnuplot yields
-a file ``802.15.4-psr-distance.eps``, which can be converted to pdf or
-other formats.  The default output is shown below.
+packet size (default PSDU 20 bytes = 11 bytes MAC header + data payload), transmit power (default 0 dBm)
+and Rx sensitivity (default -106.58 dBm) can be varied by command line arguments.
+The program outputs a file named ``802.15.4-psr-distance.plt``.
+Loading this file into gnuplot yields a file ``802.15.4-psr-distance.eps``, which can
+be converted to pdf or other formats.  The following image shows the output
+of multiple runs using different Rx sensitivity values. A higher Rx sensitivity (lower dBm) results
+in a increased communication distance but also makes the radio suceptible to more interference from
+surronding devices.
 
 .. _fig-802-15-4-psr-distance:
 

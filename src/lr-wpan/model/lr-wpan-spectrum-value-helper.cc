@@ -126,6 +126,12 @@ LrWpanSpectrumValueHelper::CreateNoisePowerSpectralDensity(uint32_t channel)
     return noisePsd;
 }
 
+void
+LrWpanSpectrumValueHelper::SetNoiseFactor(double f)
+{
+    m_noiseFactor = f;
+}
+
 double
 LrWpanSpectrumValueHelper::TotalAvgPower(Ptr<const SpectrumValue> psd, uint32_t channel)
 {

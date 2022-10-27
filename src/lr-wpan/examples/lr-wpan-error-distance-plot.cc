@@ -17,11 +17,25 @@
  * Author: Tom Henderson <thomas.r.henderson@boeing.com>
  */
 
-// This program produces a gnuplot file that plots the packet success rate
-// as a function of distance for the 802.15.4 models, assuming a default
-// LogDistance propagation loss model, the 2.4 GHz OQPSK error model, a
-// default transmit power of 0 dBm, and a default packet size of 20 bytes of
-// 802.15.4 payload.
+/*
+   This program produces a gnuplot file that plots the packet success rate
+   as a function of distance for the 802.15.4 models, assuming a default
+   LogDistance propagation loss model, the 2.4 GHz OQPSK error model, a
+   default transmit power of 0 dBm, and a default packet size of 20 bytes of
+   802.15.4 payload and a default rx sensitivity of -106.58 dBm.
+
+   Tx power of the transmitter node and the Rx sensitivity of the receiving node
+   as well as the transmitted packet size can be adjusted to obtain a different
+   distance plot.
+
+    Node1                       Node2
+   (dev0) --------------------->(dev1)
+
+   Usage:
+
+   ./ns3 run "lr-wpan-error-distance-plot --txPower= 0 --rxSensitivity=-92"
+
+*/
 #include <ns3/abort.h>
 #include <ns3/callback.h>
 #include <ns3/command-line.h>
@@ -52,7 +66,7 @@
 
 using namespace ns3;
 
-static uint32_t g_received = 0; //!< number of packets received
+uint32_t g_packetsReceived = 0; //!< number of packets received
 
 NS_LOG_COMPONENT_DEFINE("LrWpanErrorDistancePlot");
 
@@ -61,10 +75,10 @@ NS_LOG_COMPONENT_DEFINE("LrWpanErrorDistancePlot");
  * \param params MCPS data indication parameters
  * \param p packet
  */
-static void
+void
 LrWpanErrorDistanceCallback(McpsDataIndicationParams params, Ptr<Packet> p)
 {
-    g_received++;
+    g_packetsReceived++;
 }
 
 int
@@ -77,20 +91,22 @@ main(int argc, char* argv[])
     int maxDistance = 200; // meters
     int increment = 1;
     int maxPackets = 1000;
-    int packetSize = 20;
+    int packetSize = 7; // PSDU = 20 bytes (11 bytes MAC header + 7 bytes MSDU )
     double txPower = 0;
     uint32_t channelNumber = 11;
+    double rxSensitivity = -106.58; // dBm
 
     CommandLine cmd(__FILE__);
 
     cmd.AddValue("txPower", "transmit power (dBm)", txPower);
     cmd.AddValue("packetSize", "packet (MSDU) size (bytes)", packetSize);
     cmd.AddValue("channelNumber", "channel number", channelNumber);
+    cmd.AddValue("rxSensitivity", "the rx sensitivity (dBm)", rxSensitivity);
 
     cmd.Parse(argc, argv);
 
     os << "Packet (MSDU) size = " << packetSize << " bytes; tx power = " << txPower
-       << " dBm; channel = " << channelNumber;
+       << " dBm; channel = " << channelNumber << "; Rx sensitivity = " << rxSensitivity << " dBm";
 
     Gnuplot psrplot = Gnuplot("802.15.4-psr-distance.eps");
     Gnuplot2dDataset psrdataset("802.15.4-psr-vs-distance");
@@ -117,6 +133,9 @@ main(int argc, char* argv[])
     Ptr<SpectrumValue> psd = svh.CreateTxPowerSpectralDensity(txPower, channelNumber);
     dev0->GetPhy()->SetTxPowerSpectralDensity(psd);
 
+    // Set Rx sensitivity of the receiving device
+    dev1->GetPhy()->SetRxSensitivity(rxSensitivity);
+
     McpsDataIndicationCallback cb0;
     cb0 = MakeCallback(&LrWpanErrorDistanceCallback);
     dev1->GetMac()->SetMcpsDataIndicationCallback(cb0);
@@ -132,7 +151,7 @@ main(int argc, char* argv[])
     Ptr<Packet> p;
     mob0->SetPosition(Vector(0, 0, 0));
     mob1->SetPosition(Vector(minDistance, 0, 0));
-    for (int j = minDistance; j < maxDistance;)
+    for (int j = minDistance; j < maxDistance; j += increment)
     {
         for (int i = 0; i < maxPackets; i++)
         {
@@ -140,10 +159,10 @@ main(int argc, char* argv[])
             Simulator::Schedule(Seconds(i), &LrWpanMac::McpsDataRequest, dev0->GetMac(), params, p);
         }
         Simulator::Run();
-        NS_LOG_DEBUG("Received " << g_received << " packets for distance " << j);
-        psrdataset.Add(j, g_received / 1000.0);
-        g_received = 0;
-        j += increment;
+        NS_LOG_DEBUG("Received " << g_packetsReceived << " packets for distance " << j);
+        psrdataset.Add(j, g_packetsReceived / 1000.0);
+        g_packetsReceived = 0;
+
         mob1->SetPosition(Vector(j, 0, 0));
     }
 
@@ -153,10 +172,10 @@ main(int argc, char* argv[])
     psrplot.SetTerminal("postscript eps color enh \"Times-BoldItalic\"");
     psrplot.SetLegend("distance (m)", "Packet Success Rate (PSR)");
     psrplot.SetExtra("set xrange [0:200]\n\
-set yrange [0:1]\n\
-set grid\n\
-set style line 1 linewidth 5\n\
-set style increment user");
+                      set yrange [0:1]\n\
+                      set grid\n\
+                      set style line 1 linewidth 5\n\
+                      set style increment user");
     psrplot.GenerateOutput(berfile);
     berfile.close();
 

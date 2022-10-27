@@ -1166,14 +1166,10 @@ LrWpanPhy::PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier id,
 
             m_phyPIBAttributes.phyCurrentPage = attribute->phyCurrentPage;
 
-            LrWpanSpectrumValueHelper psdHelper;
-            m_txPsd = psdHelper.CreateTxPowerSpectralDensity(
-                GetNominalTxPowerFromPib(m_phyPIBAttributes.phyTransmitPower),
-                m_phyPIBAttributes.phyCurrentChannel);
-            // if the page is changed we need to also update the Noise Power Spectral Density
-            m_noise =
-                psdHelper.CreateNoisePowerSpectralDensity(m_phyPIBAttributes.phyCurrentChannel);
-            m_signal = Create<LrWpanInterferenceHelper>(m_noise->GetSpectrumModel());
+            // TODO: Set the maximum possible sensitivity by default.
+            //       This maximum sensitivity depends on the modulation used.
+            //       Currently Only O-QPSK 250kbps is supported so we use its max sensitivity.
+            SetRxSensitivity(-106.58);
         }
         break;
     }
@@ -1216,14 +1212,8 @@ LrWpanPhy::PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier id,
 
             m_phyPIBAttributes.phyCurrentChannel = attribute->phyCurrentChannel;
 
-            LrWpanSpectrumValueHelper psdHelper;
-            m_txPsd = psdHelper.CreateTxPowerSpectralDensity(
-                GetNominalTxPowerFromPib(m_phyPIBAttributes.phyTransmitPower),
-                m_phyPIBAttributes.phyCurrentChannel);
-            // if the channel is changed we need to also update the Noise Power Spectral Density
-            m_noise =
-                psdHelper.CreateNoisePowerSpectralDensity(m_phyPIBAttributes.phyCurrentChannel);
-            m_signal = Create<LrWpanInterferenceHelper>(m_noise->GetSpectrumModel());
+            // use the prev configured sensitivity before changing the channel
+            SetRxSensitivity(WToDbm(m_rxSensitivity));
         }
         break;
     }
@@ -1695,21 +1685,72 @@ LrWpanPhy::SetPhyOption(LrWpanPhyOption phyOption)
     m_edPower.lastUpdate = Seconds(0.0);
     m_edPower.measurementLength = Seconds(0.0);
 
-    // TODO: What is the RX sensibility that should be set for other frequencies?
-    // default -110 dBm in W for 2.4 GHz
-    m_rxSensitivity = pow(10.0, -106.58 / 10.0) / 1000.0;
-    LrWpanSpectrumValueHelper psdHelper;
-    m_txPsd = psdHelper.CreateTxPowerSpectralDensity(
-        GetNominalTxPowerFromPib(m_phyPIBAttributes.phyTransmitPower),
-        m_phyPIBAttributes.phyCurrentChannel);
-    m_noise = psdHelper.CreateNoisePowerSpectralDensity(m_phyPIBAttributes.phyCurrentChannel);
-    m_signal = Create<LrWpanInterferenceHelper>(m_noise->GetSpectrumModel());
+    // TODO: Change the limits  Rx sensitivity when other modulations are supported
+    // Currently, only O-QPSK 250kbps is supported and its maximum possible sensitivity is
+    // equal to -106.58 dBm and its minimum sensitivity is defined as -85 dBm
+    SetRxSensitivity(-106.58);
+
     m_rxLastUpdate = Seconds(0);
     Ptr<Packet> none_packet = nullptr;
     Ptr<LrWpanSpectrumSignalParameters> none_params = nullptr;
     m_currentRxPacket = std::make_pair(none_params, true);
     m_currentTxPacket = std::make_pair(none_packet, true);
     m_errorModel = nullptr;
+}
+
+void
+LrWpanPhy::SetRxSensitivity(double dbmSensitivity)
+{
+    NS_LOG_FUNCTION(this << dbmSensitivity << "dBm");
+
+    // See IEEE 802.15.4-2011 Sections 10.3.4, 11.3.4, 13.3.4, 13.3.4, 14.3.4, 15.3.4
+    if (m_phyOption == IEEE_802_15_4_915MHZ_BPSK || m_phyOption == IEEE_802_15_4_950MHZ_BPSK)
+    {
+        if (dbmSensitivity > -92)
+        {
+            NS_ABORT_MSG("The minimum Rx sensitivity for this band should be at least -92 dBm");
+        }
+    }
+    else
+    {
+        if (dbmSensitivity > -85)
+        {
+            NS_ABORT_MSG("The minimum Rx sensitivity for this band should be at least -85 dBm");
+        }
+    }
+
+    // Calculate the noise factor required to reduce the Rx sensitivity.
+    // The maximum possible sensitivity in the current modulation is used as a reference
+    // to calculate the noise factor (F). The noise factor is a dimensionless ratio.
+    // Currently only one PHY modulation is supported:
+    // O-QPSK 250kpps which has a Max Rx sensitivity: -106.58 dBm (Noise factor = 1).
+    // After Rx sensitivity is set, this becomes the new point where PER < 1 % for a
+    // PSDU of 20 bytes as described by the standard.
+
+    // TODO: recalculate maxRxSensitivity (Noise factor = 1) when additional modulations are
+    // supported.
+    double maxRxSensitivityW = DbmToW(-106.58);
+
+    LrWpanSpectrumValueHelper psdHelper;
+    m_txPsd = psdHelper.CreateTxPowerSpectralDensity(
+        GetNominalTxPowerFromPib(m_phyPIBAttributes.phyTransmitPower),
+        m_phyPIBAttributes.phyCurrentChannel);
+    // Update thermal noise + noise factor added.
+    long double noiseFactor = DbmToW(dbmSensitivity) / maxRxSensitivityW;
+    psdHelper.SetNoiseFactor(noiseFactor);
+    m_noise = psdHelper.CreateNoisePowerSpectralDensity(m_phyPIBAttributes.phyCurrentChannel);
+
+    m_signal = Create<LrWpanInterferenceHelper>(m_noise->GetSpectrumModel());
+    // Change receiver sensitivity from dBm to Watts
+    m_rxSensitivity = DbmToW(dbmSensitivity);
+}
+
+double
+LrWpanPhy::GetRxSensitivity()
+{
+    NS_LOG_FUNCTION(this);
+    // Change receiver sensitivity from Watt to dBm
+    return WToDbm(m_rxSensitivity);
 }
 
 LrWpanPhyOption

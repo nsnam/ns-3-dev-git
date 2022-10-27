@@ -317,6 +317,26 @@ class LrWpanPhy : public SpectrumPhy
     void SetPhyOption(LrWpanPhyOption phyOption);
 
     /**
+     * Set the receiver power sensitivity used by this device in dBm.
+     *
+     * In ns-3 , rx sensitivity is only checked to be at least what is specified by
+     * the standard (-85dBm or -92dBm for BPSK bands). Most vendors provide better sensitivity
+     * options and exceed the minimum values proposed by the standard. Default sensitivity
+     * is -106.58 dBm (This does not include any noise figure).
+     * A sensitivity of -95dBm or less is considered by many vendors a high sensitivity.
+     *
+     * \param dbmSensitivity The receiver power sensitivity to set in dBm.
+     */
+    void SetRxSensitivity(double dbmSensitivity);
+
+    /**
+     * Get the receiver power sensitivity used by this device in dBm.
+     *
+     * \return The receiver power sensitivity used by this device in dBm.
+     */
+    double GetRxSensitivity();
+
+    /**
      * Notify the SpectrumPhy instance of an incoming waveform.
      *
      * @param params the SpectrumSignalParameters associated with the incoming waveform
@@ -723,10 +743,10 @@ class LrWpanPhy : public SpectrumPhy
     int8_t GetNominalTxPowerFromPib(uint8_t phyTransmitPower);
 
     /**
-     * Transform watts (W) to decibels milliwatts (DBm).
+     * Transform watts (W) to decibels milliwatts (dBm).
      *
-     * \param watt The Watts that will be converted to DBm.
-     * \return The value of Watts in DBm.
+     * \param watt The Watts that will be converted to dBm.
+     * \return The value of Watts in dBm.
      */
     double WToDbm(double watt);
 

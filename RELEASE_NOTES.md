@@ -31,6 +31,7 @@ Release 3-dev
 - (wifi) Implement 802.11ax dual NAV (basic NAV and intra-BSS NAV)
 - (wifi) Implement 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
 - (wifi) Add support for 802.11ax MU-RTS/CTS protection
+- (lr-wpan) !1006 - Add rx Sensitivity configuration support.
 
 ### Bugs fixed
 
