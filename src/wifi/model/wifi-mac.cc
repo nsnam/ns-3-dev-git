@@ -1117,11 +1117,11 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << linkId);
 
-    const WifiMacHeader* hdr = &mpdu->GetHeader();
-    Ptr<Packet> packet = mpdu->GetPacket()->Copy();
+    const WifiMacHeader* hdr = &mpdu->GetOriginal()->GetHeader();
     Mac48Address to = hdr->GetAddr1();
     Mac48Address from = hdr->GetAddr2();
-    auto& link = GetLink(SINGLE_LINK_OP_ID);
+    auto myAddr = hdr->IsData() ? Mac48Address::ConvertFrom(GetDevice()->GetAddress())
+                                : GetFrameExchangeManager(linkId)->GetAddress();
 
     // We don't know how to deal with any frame that is not addressed to
     // us (and odds are there is nothing sensible we could do anyway),
@@ -1129,7 +1129,7 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     //
     // The derived class may also do some such filtering, but it doesn't
     // hurt to have it here too as a backstop.
-    if (to != GetAddress())
+    if (to != myAddr)
     {
         return;
     }
@@ -1140,7 +1140,9 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // frames to be flying about if we are a QoS STA.
         NS_ASSERT(GetQosSupported());
 
+        auto& link = GetLink(linkId);
         WifiActionHeader actionHdr;
+        Ptr<Packet> packet = mpdu->GetPacket()->Copy();
         packet->RemoveHeader(actionHdr);
 
         switch (actionHdr.GetCategory())
@@ -1175,7 +1177,9 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 // seems a waste given the level of the current model)
                 // and act by locally establishing the agreement on
                 // the appropriate queue.
-                GetQosTxop(respHdr.GetTid())->GotAddBaResponse(respHdr, from);
+                auto recipientMld = link.stationManager->GetMldAddress(from);
+                auto recipient = (recipientMld ? *recipientMld : from);
+                GetQosTxop(respHdr.GetTid())->GotAddBaResponse(respHdr, recipient);
                 auto htFem = DynamicCast<HtFrameExchangeManager>(link.feManager);
                 if (htFem)
                 {
@@ -1190,6 +1194,8 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             case WifiActionHeader::BLOCK_ACK_DELBA: {
                 MgtDelBaHeader delBaHdr;
                 packet->RemoveHeader(delBaHdr);
+                auto recipientMld = link.stationManager->GetMldAddress(from);
+                auto recipient = (recipientMld ? *recipientMld : from);
 
                 if (delBaHdr.IsByOriginator())
                 {
@@ -1199,14 +1205,14 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                     // destroy it.
                     GetQosTxop(delBaHdr.GetTid())
                         ->GetBaManager()
-                        ->DestroyRecipientAgreement(from, delBaHdr.GetTid());
+                        ->DestroyRecipientAgreement(recipient, delBaHdr.GetTid());
                 }
                 else
                 {
                     // We must have been the originator. We need to
                     // tell the correct queue that the agreement has
                     // been torn down
-                    GetQosTxop(delBaHdr.GetTid())->GotDelBaFrame(&delBaHdr, from);
+                    GetQosTxop(delBaHdr.GetTid())->GotDelBaFrame(&delBaHdr, recipient);
                 }
                 // This frame is now completely dealt with, so we're done.
                 return;

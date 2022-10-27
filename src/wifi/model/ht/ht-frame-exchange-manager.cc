@@ -242,6 +242,11 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     packet->AddHeader(respHdr);
     packet->AddHeader(actionHdr);
 
+    // Get the MLD address of the originator, if an ML setup was performed
+    if (auto originatorMld = GetWifiRemoteStationManager()->GetMldAddress(originator))
+    {
+        originator = *originatorMld;
+    }
     bool htSupported = GetWifiRemoteStationManager()->GetHtSupported() &&
                        GetWifiRemoteStationManager()->GetHtSupported(originator);
     GetBaManager(tid)->CreateRecipientAgreement(respHdr,
@@ -307,7 +312,8 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOr
     NS_LOG_FUNCTION(this << addr << +tid << byOriginator);
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_MGT_ACTION);
-    hdr.SetAddr1(addr);
+    // use the remote link address if addr is an MLD address
+    hdr.SetAddr1(GetWifiRemoteStationManager()->GetAffiliatedStaAddress(addr).value_or(addr));
     hdr.SetAddr2(m_self);
     hdr.SetAddr3(m_bssid);
     hdr.SetDsNotTo();
@@ -561,6 +567,8 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
     }
     else if (mpdu->GetHeader().IsAction())
     {
+        auto addr1 = mpdu->GetHeader().GetAddr1();
+        auto address = GetWifiRemoteStationManager()->GetMldAddress(addr1).value_or(addr1);
         WifiActionHeader actionHdr;
         Ptr<Packet> p = mpdu->GetPacket()->Copy();
         p->RemoveHeader(actionHdr);
@@ -573,12 +581,11 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                 auto tid = delBa.GetTid();
                 if (delBa.IsByOriginator())
                 {
-                    GetBaManager(tid)->DestroyOriginatorAgreement(mpdu->GetHeader().GetAddr1(),
-                                                                  tid);
+                    GetBaManager(tid)->DestroyOriginatorAgreement(address, tid);
                 }
                 else
                 {
-                    GetBaManager(tid)->DestroyRecipientAgreement(mpdu->GetHeader().GetAddr1(), tid);
+                    GetBaManager(tid)->DestroyRecipientAgreement(address, tid);
                 }
             }
             else if (actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
@@ -590,7 +597,7 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                 Simulator::Schedule(edca->GetAddBaResponseTimeout(),
                                     &QosTxop::AddBaResponseTimeout,
                                     edca,
-                                    mpdu->GetHeader().GetAddr1(),
+                                    address,
                                     addBa.GetTid());
             }
             else if (actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE)
@@ -598,12 +605,11 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                 // A recipient Block Ack agreement must exist
                 MgtAddBaResponseHeader addBa;
                 p->PeekHeader(addBa);
-                auto originator = mpdu->GetHeader().GetAddr1();
                 auto tid = addBa.GetTid();
-                NS_ASSERT_MSG(GetBaManager(tid)->GetAgreementAsRecipient(originator, tid),
-                              "Recipient BA agreement {" << originator << ", " << +tid
+                NS_ASSERT_MSG(GetBaManager(tid)->GetAgreementAsRecipient(address, tid),
+                              "Recipient BA agreement {" << address << ", " << +tid
                                                          << "} not found");
-                m_pendingAddBaResp.erase({originator, tid});
+                m_pendingAddBaResp.erase({address, tid});
             }
         }
     }
