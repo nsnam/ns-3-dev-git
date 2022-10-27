@@ -97,9 +97,15 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     txVector.SetLength(lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
     txVector.SetEhtPpduType(m_ehtPpduType); // FIXME: PPDU type should be read from U-SIG
-    for (const auto& muUserInfo : m_muUserInfos)
+    if (txVector.IsDlMu())
     {
-        txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
+        auto copyTxVector = txVector;
+        for (const auto& muUserInfo : m_muUserInfos)
+        {
+            txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
+        }
+        SetHeMuUserInfos(copyTxVector, heSig);
+        NS_ASSERT(txVector.GetHeMuUserInfoMap() == copyTxVector.GetHeMuUserInfoMap());
     }
     if (ns3::IsDlMu(m_preamble))
     {

@@ -379,6 +379,12 @@ class WifiTxVector
      */
     bool IsUlMu() const;
     /**
+     * Check if STA ID is allocated
+     * \param staId STA ID
+     * \return true if allocated, false otherwise
+     */
+    bool IsAllocated(uint16_t staId) const;
+    /**
      * Get the RU specification for the STA-ID.
      * This is applicable only for MU.
      *

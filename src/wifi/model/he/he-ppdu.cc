@@ -223,10 +223,13 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     }
     if (IsDlMu())
     {
+        auto copyTxVector = txVector;
         for (const auto& muUserInfo : m_muUserInfos)
         {
             txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
         }
+        SetHeMuUserInfos(copyTxVector, heSig);
+        NS_ASSERT(txVector.GetHeMuUserInfoMap() == copyTxVector.GetHeMuUserInfoMap());
     }
     if (txVector.IsDlMu())
     {
@@ -238,6 +241,71 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
         {
             txVector.SetCenter26ToneRuIndication(center26ToneRuIndication.value());
         }
+    }
+}
+
+void
+HePpdu::SetHeMuUserInfos(WifiTxVector& txVector, const HeSigHeader& heSig) const
+{
+    WifiTxVector::HeMuUserInfoMap userInfos{};
+    const auto contentChannels = heSig.GetHeSigBContentChannels();
+    const auto ruAllocation = heSig.GetRuAllocation();
+    auto contentChannelIndex = 0;
+    for (const auto& contentChannel : contentChannels)
+    {
+        auto numRusLeft = 0;
+        auto ruAllocIndex = contentChannelIndex;
+        for (const auto& userInfo : contentChannel)
+        {
+            auto ruSpecs = HeRu::GetRuSpecs(ruAllocation.at(ruAllocIndex));
+            if (ruSpecs.empty())
+            {
+                continue;
+            }
+            if (numRusLeft == 0)
+            {
+                numRusLeft = ruSpecs.size();
+            }
+            auto ruIndex = (ruSpecs.size() - numRusLeft);
+            auto ruSpec = ruSpecs.at(ruIndex);
+            auto ruType = ruSpec.GetRuType();
+            if ((ruAllocation.size() == 8) && (ruType == HeRu::RU_996_TONE) &&
+                (std::all_of(
+                    contentChannel.cbegin(),
+                    contentChannel.cend(),
+                    [&userInfo](const auto& item) { return userInfo.staId == item.staId; })))
+            {
+                NS_ASSERT(txVector.GetChannelWidth() == 160);
+                ruType = HeRu::RU_2x996_TONE;
+            }
+            const auto ruBw = HeRu::GetBandwidth(ruType);
+            auto primary80 = ruAllocIndex < 4;
+            auto num20MhzSubchannelsInRu = (ruBw < 20) ? 1 : (ruBw / 20);
+            auto numRuAllocsInContentChannel = std::max(1, num20MhzSubchannelsInRu / 2);
+            auto ruIndexOffset = (ruBw < 20) ? (ruSpecs.size() * ruAllocIndex)
+                                             : (ruAllocIndex / num20MhzSubchannelsInRu);
+            if (!primary80)
+            {
+                ruIndexOffset -= HeRu::GetRusOfType(80, ruType).size();
+            }
+            if (!txVector.IsAllocated(userInfo.staId))
+            {
+                txVector.SetHeMuUserInfo(userInfo.staId,
+                                         {{ruType, ruSpec.GetIndex() + ruIndexOffset, primary80},
+                                          userInfo.mcs,
+                                          userInfo.nss});
+            }
+            if (ruType == HeRu::RU_2x996_TONE)
+            {
+                return;
+            }
+            numRusLeft--;
+            if (numRusLeft == 0)
+            {
+                ruAllocIndex += (2 * numRuAllocsInContentChannel);
+            }
+        }
+        contentChannelIndex++;
     }
 }
 

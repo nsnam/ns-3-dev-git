@@ -482,6 +482,12 @@ WifiTxVector::IsUlMu() const
     return ns3::IsUlMu(m_preamble);
 }
 
+bool
+WifiTxVector::IsAllocated(uint16_t staId) const
+{
+    return m_muUserInfos.count(staId) > 0;
+}
+
 HeRu::RuSpec
 WifiTxVector::GetRu(uint16_t staId) const
 {

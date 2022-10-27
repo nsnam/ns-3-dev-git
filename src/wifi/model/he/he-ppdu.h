@@ -370,6 +370,14 @@ class HePpdu : public OfdmPpdu
                                            const LSigHeader& lSig,
                                            const HeSigHeader& heSig) const;
 
+    /**
+     * Reconstruct HeMuUserInfoMap from HE-SIG-B header.
+     *
+     * \param txVector the TXVECTOR to set its HeMuUserInfoMap
+     * \param heSig the HE-SIG-B to use to reconstruct HeMuUserInfoMap
+     */
+    void SetHeMuUserInfos(WifiTxVector& txVector, const HeSigHeader& heSig) const;
+
 #ifndef NS3_BUILD_PROFILE_DEBUG
     HeSigHeader m_heSig; //!< the HE-SIG PHY header
 #endif
