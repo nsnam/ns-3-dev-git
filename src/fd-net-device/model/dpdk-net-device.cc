@@ -123,12 +123,13 @@ DpdkNetDevice::CheckAllPortsLinkStatus()
 
 #define CHECK_INTERVAL 100 /* 100ms */
 #define MAX_CHECK_TIME 90  /* 9s (90 * 100ms) in total */
-    uint8_t count, allPortsUp, printFlag = 0;
+
+    uint8_t printFlag = 0;
     struct rte_eth_link link;
 
-    for (count = 0; count <= MAX_CHECK_TIME; count++)
+    for (uint8_t count = 0; count <= MAX_CHECK_TIME; count++)
     {
-        allPortsUp = 1;
+        uint8_t allPortsUp = 1;
 
         if (m_forceQuit)
         {
