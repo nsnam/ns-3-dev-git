@@ -15,6 +15,8 @@ Python bindings allow the C++ code in |ns3| to be called from Python.
 
 This chapter shows you how to create a Python script that can run |ns3| and also the process of creating Python bindings for a C++ |ns3| module.
 
+Python bindings are also needed to run the Pyviz visualizer.
+
 Introduction
 ************
 
@@ -25,18 +27,25 @@ Python, to allow integration of |ns3| with other Python tools and workflows.
 The intent is not to provide a different language choice to author new
 |ns3| models implemented in Python.
 
+As of ns-3.37 release or later,
 Python bindings for |ns3| use a tool called Cppyy (https://cppyy.readthedocs.io/en/latest/)
 to create a Python module from the C++ libraries built by CMake. The Python bindings that Cppyy
-uses are built at runtime, by importing the C++ libraries and headers for each ns-3 module.
+uses are built at runtime, by importing the C++ libraries and headers for each |ns3| module.
 This means that even if the C++ API changes, the Python bindings will adapt to them
 without requiring any preprocessing or scanning.
 
 If a user is not interested in Python, no action is needed; the Python bindings
-are only built on-demand by Cppyy.
+are only built on-demand by Cppyy, and only if the user enables them in the
+configuration of |ns3|.
 
-As of ns-3.37, the previous Python bindings framework based on Pybindgen has been
-removed due to a lack of active maintainers. The Cppyy frameword that replaced
-it may also be removed from future ns-3 releases if new maintainers are not found.
+It is also important to note that the current capability is provided on a
+lightly maintained basis and not officially supported by the project
+(in other words, we are currently looking for a Python bindings maintainer).
+The Cppyy framework could be replaced if it becomes too burdensome to
+maintain as we are presently doing.
+
+Prior to ns-3.37, the previous Python bindings framework was based on
+`Pybindgen <https://github.com/gjcarneiro/pybindgen>`_.
 
 An Example Python Script that Runs |ns3|
 ****************************************
@@ -92,11 +101,32 @@ Here is some example code that is written in Python and that runs |ns3|, which i
 Running Python Scripts
 **********************
 
+The main prerequisite is to install `cppyy`.  Depending on how you may manage
+Python extensions, the installation instructions may vary, but you can first
+check if it installed by seeing if the `cppyy` module can be
+successfully imported:
+
+.. sourcecode:: bash
+
+  $ python3
+  Python 3.8.10 (default, Jun 22 2022, 20:18:18)
+  [GCC 9.4.0] on linux
+  Type "help", "copyright", "credits" or "license" for more information.
+  >>> import cppyy
+  >>>
+
+If not, you may try to install via `pip` or whatever other manager you are
+using; e.g.:
+
+.. sourcecode:: bash
+
+  $ python3 -m pip install --user cppyy
+
 First, we need to enable the build of Python bindings:
 
 .. sourcecode:: bash
 
-  $ ./ns3 configure
+  $ ./ns3 configure --enable-python-bindings
 
 Other options such as ``--enable-examples`` may be passed to the above command.
 ns3 contains some options that automatically update the python path to find the ns3 module.
@@ -138,7 +168,7 @@ To run your own Python script that calls |ns3| and that has this path, ``/path/t
 Caveats
 *******
 
-Some of the limitations of the Cppyy-based byindings are listed here.
+Some of the limitations of the Cppyy-based bindings are listed here.
 
 Incomplete Coverage
 ===================
@@ -266,9 +296,9 @@ define the environment variable `OPENBLAS_NUM_THREADS=1`.
 Operators
 #########
 
-Cppyy may fail to map C++ operators due to the implementation style used by ns-3.
+Cppyy may fail to map C++ operators due to the implementation style used by |ns3|.
 This happens for the fundamental type `Time`. To provide the expected behavior, we
-redefine these operators from the Python side during the setup of the ns-3 bindings
+redefine these operators from the Python side during the setup of the |ns3| bindings
 module (`ns-3-dev/bindings/python/ns__init__.py`).
 
 .. sourcecode:: python
@@ -291,7 +321,7 @@ module (`ns-3-dev/bindings/python/ns__init__.py`).
     cppyy.gbl.ns3.Time.__lt__ = cppyy.gbl.Time_lt
 
 
-A different operator used by ns-3 is `operator Address()`, used to
+A different operator used by |ns3| is `operator Address()`, used to
 convert different types of Addresses into the generic type Address.
 This is not supported by Cppyy and requires explicit conversion.
 Some helpers have been added to handle the common cases.
@@ -337,8 +367,6 @@ That means that the 'ascii' variable above must not be allowed to go out of scop
 
 Working with Python Bindings
 ****************************
-
-Python bindings are built on a module-by-module basis, and can be found in each module's  ``bindings`` directory.
 
 Overview
 ========
