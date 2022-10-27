@@ -71,7 +71,6 @@ static int gVerbose = 0; // Set to true to turn on logging messages.
 #define ASCII_A (0x61)
 #define ASCII_Z (0x7a)
 #define ASCII_COLON (0x3a)
-#define ASCII_ZERO (0x30)
 
 static char
 AsciiToLowCase(char c)
