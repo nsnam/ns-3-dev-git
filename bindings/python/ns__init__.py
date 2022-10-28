@@ -195,17 +195,21 @@ def load_modules():
         version = values["VERSION"]
 
         # Filter out test libraries and incorrect versions
-        def filter_in_matching_ns3_libraries(libraries_to_filter: dict, modules_to_filter: list, version: str) -> dict:
+        def filter_in_matching_ns3_libraries(libraries_to_filter: dict,
+                                             modules_to_filter: list,
+                                             version: str,
+                                             suffix: str) -> dict:
+            suffix = [suffix[1:]] if len(suffix) > 1 else []
+            filtered_in_modules = []
             for module in modules_to_filter:
-                for library in list(libraries_to_filter.keys()):
-                    if module not in library:
-                        continue
-                    if "-".join([version, module]) not in library:
-                        libraries_to_filter.pop(library)
-                    elif "test" in library:
-                        libraries_to_filter.pop(library)
+                filtered_in_modules += list(filter(lambda x: "-".join([version, module, *suffix]) in x,
+                                                   libraries_to_filter.keys()))
+            for library in list(libraries_to_filter.keys()):
+                if library not in filtered_in_modules:
+                    libraries_to_filter.pop(library)
             return libraries_to_filter
-        libraries = filter_in_matching_ns3_libraries(libraries, modules, version)
+
+        libraries = filter_in_matching_ns3_libraries(libraries, modules, version, suffix)
     else:
         libraries = search_libraries("ns3")
 
@@ -241,7 +245,8 @@ def load_modules():
         modules = set([filter_module_name(library) for library in libraries])
 
         def extract_version(library: str, module: str) -> str:
-            return os.path.basename(library).replace("libns", "").split(module)[0][:-1]
+            library = os.path.basename(library)
+            return re.findall(r"libns([\d.|rc|\-dev]+)-", library)[0]
 
         def get_newest_version(versions: list) -> str:
             versions = list(sorted(versions))
@@ -250,7 +255,7 @@ def load_modules():
 
             # Check if there is a release of a possible candidate
             try:
-                pos = versions.index(versions[-1].split('-')[0])
+                pos = versions.index(os.path.splitext(versions[-1])[0])
             except ValueError:
                 pos = None
 
@@ -261,19 +266,37 @@ def load_modules():
                 return versions[-1]
 
         def filter_in_newest_ns3_libraries(libraries_to_filter: list, modules_to_filter: list) -> list:
+            newest_version_found = None
             # Filter out older ns-3 libraries
             for module in list(modules_to_filter):
                 # Filter duplicates of modules, while excluding test libraries
-                conflicting_libraries = list(filter(lambda x: module in x, libraries_to_filter))
+                conflicting_libraries = list(filter(lambda x: module == filter_module_name(x), libraries_to_filter))
 
                 # Extract versions from conflicting libraries
                 conflicting_libraries_versions = list(map(lambda x: extract_version(x, module), conflicting_libraries))
 
+                # Get the newest version found for that library
                 newest_version = get_newest_version(conflicting_libraries_versions)
 
-                for conflicting_library in conflicting_libraries:
+                # Check if the version found is the global newest version
+                if not newest_version_found:
+                    newest_version_found = newest_version
+                else:
+                    newest_version_found = get_newest_version([newest_version, newest_version_found])
+                    if newest_version != newest_version_found:
+                        raise Exception("Incompatible versions of the ns-3 module '%s' were found: %s != %s."
+                                        % (module, newest_version, newest_version_found))
+
+                for conflicting_library in list(conflicting_libraries):
                     if "-".join([newest_version, module]) not in conflicting_library:
                         libraries.remove(conflicting_library)
+                        conflicting_libraries.remove(conflicting_library)
+                        num_libraries -= 1
+
+                if len(conflicting_libraries) > 1:
+                    raise Exception("There are multiple build profiles for module '%s'.\nDelete one to continue: %s"
+                                    % (module, ", ".join(conflicting_libraries)))
+
             return libraries_to_filter
 
         # Get library base names
