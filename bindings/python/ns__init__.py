@@ -1,6 +1,6 @@
 import builtins
 from copy import copy
-from functools import cache
+from functools import lru_cache
 import glob
 import os.path
 import sys
@@ -53,7 +53,7 @@ def trim_library_path(library_path: str) -> str:
     return trimmed_library_path
 
 
-@cache
+@lru_cache(maxsize=None)
 def _search_libraries() -> dict:
     # Otherwise, search for ns-3 libraries
     # Should be the case when ns-3 is installed as a package
