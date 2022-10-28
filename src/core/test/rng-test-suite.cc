@@ -75,7 +75,7 @@ class RngUniformTestCase : public TestCase
     static const uint32_t N_MEASUREMENTS = 1000000;
 
     RngUniformTestCase();
-    virtual ~RngUniformTestCase();
+    ~RngUniformTestCase() override;
 
     /**
      * Run a chi-squared test on the results of the random number generator.
@@ -85,7 +85,7 @@ class RngUniformTestCase : public TestCase
     double ChiSquaredTest(Ptr<UniformRandomVariable> u);
 
   private:
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 RngUniformTestCase::RngUniformTestCase()
@@ -168,7 +168,7 @@ class RngNormalTestCase : public TestCase
     static const uint32_t N_MEASUREMENTS = 1000000;
 
     RngNormalTestCase();
-    virtual ~RngNormalTestCase();
+    ~RngNormalTestCase() override;
 
     /**
      * Run a chi-squared test on the results of the random number generator.
@@ -178,7 +178,7 @@ class RngNormalTestCase : public TestCase
     double ChiSquaredTest(Ptr<NormalRandomVariable> n);
 
   private:
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 RngNormalTestCase::RngNormalTestCase()
@@ -275,7 +275,7 @@ class RngExponentialTestCase : public TestCase
     static const uint32_t N_MEASUREMENTS = 1000000;
 
     RngExponentialTestCase();
-    virtual ~RngExponentialTestCase();
+    ~RngExponentialTestCase() override;
 
     /**
      * Run a chi-squared test on the results of the random number generator.
@@ -285,7 +285,7 @@ class RngExponentialTestCase : public TestCase
     double ChiSquaredTest(Ptr<ExponentialRandomVariable> n);
 
   private:
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 RngExponentialTestCase::RngExponentialTestCase()
@@ -381,7 +381,7 @@ class RngParetoTestCase : public TestCase
     static const uint32_t N_MEASUREMENTS = 1000000;
 
     RngParetoTestCase();
-    virtual ~RngParetoTestCase();
+    ~RngParetoTestCase() override;
 
     /**
      * Run a chi-squared test on the results of the random number generator.
@@ -391,7 +391,7 @@ class RngParetoTestCase : public TestCase
     double ChiSquaredTest(Ptr<ParetoRandomVariable> p);
 
   private:
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 RngParetoTestCase::RngParetoTestCase()

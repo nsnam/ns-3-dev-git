@@ -83,19 +83,19 @@ class ModelTypeidCreator : public AttributeDefaultIterator
      * \param defaultValue default value
      * \param index index of the attribute in the specified Typeid
      */
-    virtual void VisitAttribute(TypeId tid,
-                                std::string name,
-                                std::string defaultValue,
-                                uint32_t index);
+    void VisitAttribute(TypeId tid,
+                        std::string name,
+                        std::string defaultValue,
+                        uint32_t index) override;
     /**
      * \brief Add a node for the new TypeId object
      * \param name TypeId name
      */
-    virtual void StartVisitTypeId(std::string name);
+    void StartVisitTypeId(std::string name) override;
     /**
      * \brief Remove the last gtk tree iterator
      */
-    virtual void EndVisitTypeId();
+    void EndVisitTypeId() override;
     /**
      * \brief Adds a treestore iterator to m_treestore model
      * \param node the node to be added

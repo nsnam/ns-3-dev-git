@@ -85,7 +85,7 @@ class TestCaseBase : public TestCase
      * \param [in] start The minimum value of the lowest bin.
      * \param [in] end The maximum value of the last bin.
      * \param [in] underflow If \c true the lowest bin should contain the underflow,
-     * \param [in] overflow If \c ture the highest bin should contain the overflow.
+     * \param [in] overflow If \c true the highest bin should contain the overflow.
      * \returns A vector of the bin edges, including the top of the highest bin.
      * This vector has one more entry than the number of bins in the histogram.
      */
@@ -168,7 +168,7 @@ class TestCaseBase : public TestCase
         }
 
         // Inherited
-        Ptr<RandomVariableStream> Create() const
+        Ptr<RandomVariableStream> Create() const override
         {
             auto rng = CreateObject<RNG>();
             rng->SetAttribute("Antithetic", BooleanValue(m_anti));
@@ -354,11 +354,11 @@ class UniformTestCase : public TestCaseBase
     UniformTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 UniformTestCase::UniformTestCase()
@@ -476,11 +476,11 @@ class UniformAntitheticTestCase : public TestCaseBase
     UniformAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 UniformAntitheticTestCase::UniformAntitheticTestCase()
@@ -552,7 +552,7 @@ class ConstantTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /** Tolerance for testing rng values against expectation. */
     static constexpr double TOLERANCE{1e-8};
@@ -603,7 +603,7 @@ class SequentialTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /** Tolerance for testing rng values against expectation. */
     static constexpr double TOLERANCE{1e-8};
@@ -659,11 +659,11 @@ class NormalTestCase : public TestCaseBase
     NormalTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -745,11 +745,11 @@ class NormalAntitheticTestCase : public TestCaseBase
     NormalAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -833,11 +833,11 @@ class ExponentialTestCase : public TestCaseBase
     ExponentialTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -914,11 +914,11 @@ class ExponentialAntitheticTestCase : public TestCaseBase
     ExponentialAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /** Tolerance for testing rng values against expectation, in rms. */
     static constexpr double TOLERANCE{5};
@@ -998,11 +998,11 @@ class ParetoTestCase : public TestCaseBase
     ParetoTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1091,11 +1091,11 @@ class ParetoAntitheticTestCase : public TestCaseBase
     ParetoAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1188,11 +1188,11 @@ class WeibullTestCase : public TestCaseBase
     WeibullTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1297,11 +1297,11 @@ class WeibullAntitheticTestCase : public TestCaseBase
     WeibullAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1408,11 +1408,11 @@ class LogNormalTestCase : public TestCaseBase
     LogNormalTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1510,11 +1510,11 @@ class LogNormalAntitheticTestCase : public TestCaseBase
     LogNormalAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1614,11 +1614,11 @@ class GammaTestCase : public TestCaseBase
     GammaTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1706,11 +1706,11 @@ class GammaAntitheticTestCase : public TestCaseBase
     GammaAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1802,11 +1802,11 @@ class ErlangTestCase : public TestCaseBase
     ErlangTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1897,11 +1897,11 @@ class ErlangAntitheticTestCase : public TestCaseBase
     ErlangAntitheticTestCase();
 
     // Inherited
-    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const;
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -1997,7 +1997,7 @@ class ZipfTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2077,7 +2077,7 @@ class ZipfAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2160,7 +2160,7 @@ class ZetaTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2223,7 +2223,7 @@ class ZetaAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2289,7 +2289,7 @@ class DeterministicTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /** Tolerance for testing rng values against expectation. */
     static constexpr double TOLERANCE{1e-8};
@@ -2364,7 +2364,7 @@ class EmpiricalTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2464,7 +2464,7 @@ class EmpiricalAntitheticTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 
     /**
      * Tolerance for testing rng values against expectation,
@@ -2543,7 +2543,7 @@ class NormalCachingTestCase : public TestCaseBase
 
   private:
     // Inherited
-    virtual void DoRun();
+    void DoRun() override;
 };
 
 NormalCachingTestCase::NormalCachingTestCase()
