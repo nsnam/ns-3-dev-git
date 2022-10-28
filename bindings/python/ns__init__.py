@@ -191,8 +191,21 @@ def load_modules():
         suffix = "-" + values["BUILD_PROFILE"] if values["BUILD_PROFILE"] != "release" else ""
         modules = [module.replace("ns3-", "") for module in values["NS3_ENABLED_MODULES"]]
         prefix = values["out_dir"]
-        libraries = {x.split(".")[0]: x for x in os.listdir(os.path.join(prefix, "lib"))}
+        libraries = {os.path.splitext(os.path.basename(x))[0]: x for x in os.listdir(os.path.join(prefix, "lib"))}
         version = values["VERSION"]
+
+        # Filter out test libraries and incorrect versions
+        def filter_in_matching_ns3_libraries(libraries_to_filter: dict, modules_to_filter: list, version: str) -> dict:
+            for module in modules_to_filter:
+                for library in list(libraries_to_filter.keys()):
+                    if module not in library:
+                        continue
+                    if "-".join([version, module]) not in library:
+                        libraries_to_filter.pop(library)
+                    elif "test" in library:
+                        libraries_to_filter.pop(library)
+            return libraries_to_filter
+        libraries = filter_in_matching_ns3_libraries(libraries, modules, version)
     else:
         libraries = search_libraries("ns3")
 
@@ -203,23 +216,68 @@ def load_modules():
         # libns3-dev-core.so/../../
         prefix = os.path.dirname(os.path.dirname(libraries[0]))
 
+        # Remove test libraries
+        libraries = list(filter(lambda x: "test" not in x, libraries))
+
         # Extract version and build suffix (if it exists)
         def filter_module_name(library):
-            library = os.path.basename(library)
-            # Drop extension and libns3.version prefix
-            components = ".".join(library.split(".")[:-1]).split("-")[1:]
+            library = os.path.splitext(os.path.basename(library))[0]
+            components = library.split("-")
+
+            # Remove version-related prefixes
+            if "libns3" in components[0]:
+                components.pop(0)
+            if "dev" == components[0]:
+                components.pop(0)
+            if "rc" in components[0]:
+                components.pop(0)
 
             # Drop build profile suffix and test libraries
-            if components[0] == "dev":
-                components.pop(0)
             if components[-1] in ["debug", "default", "optimized", "release", "relwithdebinfo"]:
-                components.pop(-1)
-            if components[-1] == "test":
                 components.pop(-1)
             return "-".join(components)
 
         # Filter out module names
         modules = set([filter_module_name(library) for library in libraries])
+
+        def extract_version(library: str, module: str) -> str:
+            return os.path.basename(library).replace("libns", "").split(module)[0][:-1]
+
+        def get_newest_version(versions: list) -> str:
+            versions = list(sorted(versions))
+            if "dev" in versions[0]:
+                return versions[0]
+
+            # Check if there is a release of a possible candidate
+            try:
+                pos = versions.index(versions[-1].split('-')[0])
+            except ValueError:
+                pos = None
+
+            # Remove release candidates
+            if pos is not None:
+                return versions[pos]
+            else:
+                return versions[-1]
+
+        def filter_in_newest_ns3_libraries(libraries_to_filter: list, modules_to_filter: list) -> list:
+            # Filter out older ns-3 libraries
+            for module in list(modules_to_filter):
+                # Filter duplicates of modules, while excluding test libraries
+                conflicting_libraries = list(filter(lambda x: module in x, libraries_to_filter))
+
+                # Extract versions from conflicting libraries
+                conflicting_libraries_versions = list(map(lambda x: extract_version(x, module), conflicting_libraries))
+
+                newest_version = get_newest_version(conflicting_libraries_versions)
+
+                for conflicting_library in conflicting_libraries:
+                    if "-".join([newest_version, module]) not in conflicting_library:
+                        libraries.remove(conflicting_library)
+            return libraries_to_filter
+
+        # Get library base names
+        libraries = filter_in_newest_ns3_libraries(libraries, modules)
         libraries_to_load = list(map(lambda x: os.path.basename(x), libraries))
 
     # Try to import Cppyy and warn the user in case it is not found
