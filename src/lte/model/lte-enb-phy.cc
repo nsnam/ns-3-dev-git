@@ -878,17 +878,15 @@ LteEnbPhy::CreatePuschCqiReport(const SpectrumValue& sinr)
     Values::const_iterator it;
     FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
     ulcqi.m_ulCqi.m_type = UlCqi_s::PUSCH;
-    int i = 0;
     for (it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
     {
         double sinrdb = 10 * std::log10((*it));
-        //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
+        // NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
         // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
         int16_t sinrFp = LteFfConverter::double2fpS11dot3(sinrdb);
         ulcqi.m_ulCqi.m_sinr.push_back(sinrFp);
-        i++;
     }
-    return (ulcqi);
+    return ulcqi;
 }
 
 void

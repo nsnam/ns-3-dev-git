@@ -1306,7 +1306,6 @@ FdMtFfMacScheduler::DoSchedUlTriggerReq(
     // Generate RBs map
     FfMacSchedSapUser::SchedUlConfigIndParameters ret;
     std::vector<bool> rbMap;
-    uint16_t rbAllocatedNum = 0;
     std::set<uint16_t> rntiAllocated;
     std::vector<uint16_t> rbgAllocationMap;
     // update with RACH allocation map
@@ -1380,7 +1379,6 @@ FdMtFfMacScheduler::DoSchedUlTriggerReq(
                         rbMap.at(j) = true;
                         rbgAllocationMap.at(j) = dci.m_rnti;
                         NS_LOG_INFO("\tRB " << j);
-                        rbAllocatedNum++;
                     }
                     NS_LOG_INFO(this << " Send retx in the same RBs " << (uint16_t)dci.m_rbStart
                                      << " to " << dci.m_rbStart + dci.m_rbLen << " RV "

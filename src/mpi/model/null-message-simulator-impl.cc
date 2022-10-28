@@ -137,8 +137,6 @@ NullMessageSimulatorImpl::CalculateLookAhead()
 {
     NS_LOG_FUNCTION(this);
 
-    int num_local_nodes = 0;
-
     if (MpiInterface::GetSize() > 1)
     {
         NodeContainer c = NodeContainer::GetGlobal();
@@ -148,8 +146,6 @@ NullMessageSimulatorImpl::CalculateLookAhead()
             {
                 continue;
             }
-
-            num_local_nodes++;
 
             for (uint32_t i = 0; i < (*iter)->GetNDevices(); ++i)
             {

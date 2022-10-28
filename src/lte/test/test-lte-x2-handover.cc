@@ -748,16 +748,16 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite()
         ue2bwd,
     };
 
-    std::string hel6name("2 fwd");
-    const std::list<HandoverEvent> hel6{
-        ue2fwd,
-    };
+    // std::string hel6name("2 fwd");
+    // const std::list<HandoverEvent> hel6{
+    //     ue2fwd,
+    // };
 
-    std::string hel7name("2 fwd & bwd");
-    const std::list<HandoverEvent> hel7{
-        ue2fwd,
-        ue2bwd,
-    };
+    // std::string hel7name("2 fwd & bwd");
+    // const std::list<HandoverEvent> hel7{
+    //     ue2fwd,
+    //     ue2bwd,
+    // };
 
     std::vector<std::string> schedulers{
         "ns3::RrFfMacScheduler",

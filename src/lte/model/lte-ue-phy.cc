@@ -819,14 +819,12 @@ LteUePhy::ReportRsReceivedPower(const SpectrumValue& power)
     if (m_enableUplinkPowerControl)
     {
         double sum = 0;
-        uint32_t rbNum = 0;
         Values::const_iterator it;
         for (it = m_rsReceivedPower.ConstValuesBegin(); it != m_rsReceivedPower.ConstValuesEnd();
              it++)
         {
             double powerTxW = ((*it) * 180000);
             sum += powerTxW;
-            rbNum++;
         }
         double rsrp = 10 * log10(sum) + 30;
 

@@ -704,7 +704,6 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
     }
 
     // RACH Allocation
-    uint16_t rbAllocatedNum = 0;
     std::vector<bool> ulRbMap;
     ulRbMap.resize(m_cschedCellConfig.m_ulBandwidth, false);
     ulRbMap = m_ffrSapProvider->GetAvailableUlRbg();
@@ -718,7 +717,6 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
     {
         if ((*it) == true)
         {
-            rbAllocatedNum++;
             if (tmpMinBandwidth > maxContinuousUlBandwidth)
             {
                 maxContinuousUlBandwidth = tmpMinBandwidth;
@@ -1610,7 +1608,6 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
     // RBGs of the same RNTI)
     // FfMacSchedSapUser::SchedDlConfigIndParameters ret;
     itMap = allocationMapPerRntiPerLCId.begin();
-    int counter = 0;
     std::map<uint16_t, double> m_rnti_per_ratio;
 
     while (itMap != allocationMapPerRntiPerLCId.end())
@@ -1649,7 +1646,6 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
             {
                 worstCqi = it->second.cqi_value_for_lc;
             }
-            counter++;
         }
 
         newDci.m_mcs.push_back(m_amc->GetMcsFromCqi(worstCqi));

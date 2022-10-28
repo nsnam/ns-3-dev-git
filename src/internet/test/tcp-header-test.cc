@@ -382,9 +382,6 @@ TcpHeaderWithRFC793OptionTestCase::OneOptionAtTime()
 void
 TcpHeaderWithRFC793OptionTestCase::DoTeardown()
 {
-    uint32_t foo;
-    foo = UINT32_MAX;
-    foo--;
 }
 
 /**
