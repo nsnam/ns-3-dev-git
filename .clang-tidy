@@ -43,4 +43,3 @@ Checks: >
 
 FormatStyle: "file"
 HeaderFilterRegex: ".*h$"
-WarningsAsErrors: "*"
