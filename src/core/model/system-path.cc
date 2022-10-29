@@ -318,10 +318,10 @@ MakeTemporaryDirectoryName()
     char* path = nullptr;
 
     path = std::getenv("TMP");
-    if (!path || std::strlen(path) == 0)
+    if (!path  || std::strlen(path) == 0)
     {
         path = std::getenv("TEMP");
-        if (path || std::strlen(path) == 0)
+        if (!path || std::strlen(path) == 0)
         {
             path = const_cast<char*>("/tmp");
         }
