@@ -31,7 +31,8 @@ namespace ofi
 Stats::Stats(ofp_stats_types _type, size_t body_len)
 {
     type = _type;
-    size_t min_body = 0, max_body = 0;
+    size_t min_body = 0;
+    size_t max_body = 0;
 
     switch (type)
     {
@@ -378,7 +379,7 @@ Stats::PortStatsDump(Ptr<OpenFlowSwitchNetDevice> swtch, PortStatsState* s, ofpb
             // lookup the virtual port
             vport_table_t vt = swtch->GetVPortTable();
             vport_table_entry* vpe = vport_table_lookup(&vt, port);
-            if (vpe == 0)
+            if (!vpe)
             {
                 NS_LOG_ERROR("vport entry not found!");
                 continue;
@@ -588,12 +589,12 @@ VPortAction::Execute(ofp_vport_action_type type,
     {
     case OFPPAT_POP_MPLS: {
         ofp_vport_action_pop_mpls* opapm = (ofp_vport_action_pop_mpls*)ah;
-        pop_mpls_act(0, buffer, key, &opapm->apm);
+        pop_mpls_act(nullptr, buffer, key, &opapm->apm);
         break;
     }
     case OFPPAT_PUSH_MPLS: {
         ofp_vport_action_push_mpls* opapm = (ofp_vport_action_push_mpls*)ah;
-        push_mpls_act(0, buffer, key, &opapm->apm);
+        push_mpls_act(nullptr, buffer, key, &opapm->apm);
         break;
     }
     case OFPPAT_SET_MPLS_LABEL: {
@@ -658,12 +659,12 @@ EricssonAction::Execute(er_action_type type,
     {
     case ERXT_POP_MPLS: {
         er_action_pop_mpls* erapm = (er_action_pop_mpls*)ah;
-        pop_mpls_act(0, buffer, key, &erapm->apm);
+        pop_mpls_act(nullptr, buffer, key, &erapm->apm);
         break;
     }
     case ERXT_PUSH_MPLS: {
         er_action_push_mpls* erapm = (er_action_push_mpls*)ah;
-        push_mpls_act(0, buffer, key, &erapm->apm);
+        push_mpls_act(nullptr, buffer, key, &erapm->apm);
         break;
     }
     default:
@@ -766,7 +767,7 @@ Controller::GetPacketType(ofpbuf* buffer)
 void
 Controller::StartDump(StatsDumpCallback* cb)
 {
-    if (cb != 0)
+    if (cb)
     {
         int error = 1;
         while (error > 0) // Switch's StatsDump returns 1 if the reply isn't complete.
@@ -819,8 +820,13 @@ DropController::ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* bu
         key.wildcards = 0;
         flow_extract(buffer, port != -1 ? port : OFPP_NONE, &key.flow);
 
-        ofp_flow_mod* ofm =
-            BuildFlow(key, opi->buffer_id, OFPFC_ADD, 0, 0, OFP_FLOW_PERMANENT, OFP_FLOW_PERMANENT);
+        ofp_flow_mod* ofm = BuildFlow(key,
+                                      opi->buffer_id,
+                                      OFPFC_ADD,
+                                      nullptr,
+                                      0,
+                                      OFP_FLOW_PERMANENT,
+                                      OFP_FLOW_PERMANENT);
         SendToSwitch(swtch, ofm, ofm->header.length);
     }
 }

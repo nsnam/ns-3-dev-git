@@ -99,7 +99,7 @@ OpenFlowSwitchNetDevice::GetTypeId()
 }
 
 OpenFlowSwitchNetDevice::OpenFlowSwitchNetDevice()
-    : m_node(0),
+    : m_node(nullptr),
       m_ifIndex(0),
       m_mtu(0xffff)
 {
@@ -110,11 +110,11 @@ OpenFlowSwitchNetDevice::OpenFlowSwitchNetDevice()
     time_init(); // OFSI's clock; needed to use the buffer storage system.
     // m_lastTimeout = time_now ();
 
-    m_controller = 0;
+    m_controller = nullptr;
     // m_listenPVConn = 0;
 
     m_chain = chain_create();
-    if (m_chain == 0)
+    if (!m_chain)
     {
         NS_LOG_ERROR("Not enough memory to create the flow table.");
     }
@@ -136,16 +136,16 @@ OpenFlowSwitchNetDevice::DoDispose()
     for (Ports_t::iterator b = m_ports.begin(), e = m_ports.end(); b != e; b++)
     {
         SendPortStatus(*b, OFPPR_DELETE);
-        b->netdev = 0;
+        b->netdev = nullptr;
     }
     m_ports.clear();
 
-    m_controller = 0;
+    m_controller = nullptr;
 
     chain_destroy(m_chain);
     RBTreeDestroy(m_vportTable.table);
-    m_channel = 0;
-    m_node = 0;
+    m_channel = nullptr;
+    m_node = nullptr;
     NetDevice::DoDispose();
 }
 
@@ -418,7 +418,7 @@ OpenFlowSwitchNetDevice::AddVPort(const ofp_vport_mod* ovpm)
 
     // check whether port table entry exists for specified port number
     vport_table_entry* vpe = vport_table_lookup(&m_vportTable, vport);
-    if (vpe != 0)
+    if (vpe)
     {
         NS_LOG_ERROR("vport " << vport << " already exists!");
         SendErrorMsg(OFPET_BAD_ACTION, OFPET_VPORT_MOD_FAILED, ovpm, ntohs(ovpm->header.length));
@@ -478,7 +478,9 @@ OpenFlowSwitchNetDevice::BufferFromPacket(Ptr<const Packet> constPacket,
     ofpbuf* buffer = ofpbuf_new(headroom + hard_header + mtu);
     buffer->data = (char*)buffer->data + headroom + hard_header;
 
-    int l2_length = 0, l3_length = 0, l4_length = 0;
+    int l2_length = 0;
+    int l3_length = 0;
+    int l4_length = 0;
 
     // Parse Ethernet header
     buffer->l2 = new eth_header;
@@ -707,19 +709,24 @@ OpenFlowSwitchNetDevice::ReceiveFromDevice(Ptr<NetDevice> netdev,
 
         // If any flows have expired, delete them and notify the controller.
         List deleted = LIST_INITIALIZER(&deleted);
-        sw_flow *f, *n;
+        sw_flow* f;
+        sw_flow* n;
         chain_timeout(m_chain, &deleted);
         LIST_FOR_EACH_SAFE(f, n, sw_flow, node, &deleted)
         {
             std::ostringstream str;
             str << "Flow [";
             for (int i = 0; i < 6; i++)
+            {
                 str << (i != 0 ? ":" : "") << std::hex << f->key.flow.dl_src[i] / 16
                     << f->key.flow.dl_src[i] % 16;
+            }
             str << " -> ";
             for (int i = 0; i < 6; i++)
+            {
                 str << (i != 0 ? ":" : "") << std::hex << f->key.flow.dl_dst[i] / 16
                     << f->key.flow.dl_dst[i] % 16;
+            }
             str << "] expired.";
 
             NS_LOG_INFO(str.str());
@@ -1014,7 +1021,7 @@ OpenFlowSwitchNetDevice::FlowTableLookup(sw_flow_key key,
                                          bool send_to_controller)
 {
     sw_flow* flow = chain_lookup(m_chain, &key);
-    if (flow != 0)
+    if (flow)
     {
         NS_LOG_INFO("Flow matched");
         flow_used(flow, buffer);
@@ -1120,7 +1127,7 @@ OpenFlowSwitchNetDevice::RunThroughVPortTable(uint32_t packet_uid, int port, uin
     {
         m_vportTable.port_match_count++;
     }
-    while (vpe != 0)
+    while (vpe)
     {
         ofi::ExecuteVPortActions(this,
                                  packet_uid,
@@ -1129,7 +1136,7 @@ OpenFlowSwitchNetDevice::RunThroughVPortTable(uint32_t packet_uid, int port, uin
                                  vpe->port_acts->actions,
                                  vpe->port_acts->actions_len);
         vport_used(vpe, buffer); // update counters for virtual port
-        if (vpe->parent_port_ptr == 0)
+        if (!vpe->parent_port_ptr)
         {
             // if a port table's parent_port_ptr is 0 then
             // the parent_port should be a physical port
@@ -1220,7 +1227,7 @@ OpenFlowSwitchNetDevice::ReceivePacketOut(const void* msg)
     else
     {
         buffer = retrieve_buffer(ntohl(opo->buffer_id));
-        if (buffer == 0)
+        if (!buffer)
         {
             return -ESRCH;
         }
@@ -1316,7 +1323,7 @@ OpenFlowSwitchNetDevice::AddFlow(const ofp_flow_mod* ofm)
 
     // Allocate memory.
     sw_flow* flow = flow_alloc(actions_len);
-    if (flow == 0)
+    if (!flow)
     {
         if (ntohl(ofm->buffer_id) != (uint32_t)-1)
         {
@@ -1540,7 +1547,7 @@ OpenFlowSwitchNetDevice::ReceiveStatsRequest(const void* oh)
     int body_len = rq_len - offsetof(ofp_stats_request, body);
     ofi::Stats* st = new ofi::Stats((ofp_stats_types)type, (unsigned)body_len);
 
-    if (st == 0)
+    if (!st)
     {
         return -EINVAL;
     }
@@ -1549,7 +1556,7 @@ OpenFlowSwitchNetDevice::ReceiveStatsRequest(const void* oh)
     cb.done = false;
     cb.rq = (ofp_stats_request*)xmemdup(rq, rq_len);
     cb.s = st;
-    cb.state = 0;
+    cb.state = nullptr;
     cb.swtch = this;
 
     if (cb.s)
@@ -1646,7 +1653,7 @@ OpenFlowSwitchNetDevice::ForwardControlInput(const void* msg, size_t length)
         error = -EINVAL;
     }
 
-    if (msg != 0)
+    if (msg)
     {
         free((ofpbuf*)msg);
     }

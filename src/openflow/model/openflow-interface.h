@@ -119,7 +119,7 @@ struct Port
     Port()
         : config(0),
           state(0),
-          netdev(0),
+          netdev(nullptr),
           rx_packets(0),
           tx_packets(0),
           rx_bytes(0),
@@ -405,7 +405,7 @@ class Controller : public Object
      */
     static TypeId GetTypeId();
     /** Destructor. */
-    virtual ~Controller();
+    ~Controller() override;
 
     /**
      * Adds a switch to the controller.
@@ -508,7 +508,7 @@ class DropController : public Controller
      */
     static TypeId GetTypeId();
 
-    void ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer);
+    void ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer) override;
 };
 
 /**
@@ -528,12 +528,12 @@ class LearningController : public Controller
      */
     static TypeId GetTypeId();
 
-    virtual ~LearningController()
+    ~LearningController() override
     {
         m_learnState.clear();
     }
 
-    void ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer);
+    void ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer) override;
 
   protected:
     /// Learned state
