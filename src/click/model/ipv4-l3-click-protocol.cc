@@ -82,13 +82,13 @@ Ipv4L3ClickProtocol::DoDispose()
     NS_LOG_FUNCTION(this);
     for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
-        i->second = 0;
+        i->second = nullptr;
     }
     m_protocols.clear();
 
     for (Ipv4InterfaceList::iterator i = m_interfaces.begin(); i != m_interfaces.end(); ++i)
     {
-        *i = 0;
+        *i = nullptr;
     }
     m_interfaces.clear();
     m_reverseInterfacesContainer.clear();
@@ -137,7 +137,7 @@ Ipv4L3ClickProtocol::GetInterface(uint32_t index) const
     {
         return m_interfaces[index];
     }
-    return 0;
+    return nullptr;
 }
 
 uint32_t
@@ -320,7 +320,7 @@ Ipv4L3ClickProtocol::SetupLoopback()
     NS_LOG_FUNCTION_NOARGS();
 
     Ptr<Ipv4Interface> interface = CreateObject<Ipv4Interface>();
-    Ptr<LoopbackNetDevice> device = 0;
+    Ptr<LoopbackNetDevice> device = nullptr;
     // First check whether an existing LoopbackNetDevice exists on the node
     for (uint32_t i = 0; i < m_node->GetNDevices(); i++)
     {
@@ -889,7 +889,7 @@ Ipv4L3ClickProtocol::GetIcmp() const
     }
     else
     {
-        return 0;
+        return nullptr;
     }
 }
 
@@ -989,7 +989,7 @@ Ipv4L3ClickProtocol::GetProtocol(int protocolNumber, int32_t interfaceIndex) con
         return i->second;
     }
 
-    return 0;
+    return nullptr;
 }
 
 } // namespace ns3

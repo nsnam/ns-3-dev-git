@@ -61,7 +61,7 @@ Ipv4ClickRouting::GetTypeId()
 
 Ipv4ClickRouting::Ipv4ClickRouting()
     : m_nonDefaultName(false),
-      m_ipv4(0)
+      m_ipv4(nullptr)
 {
     m_random = CreateObject<UniformRandomVariable>();
     m_simNode = new simclick_node_t;
@@ -124,7 +124,7 @@ Ipv4ClickRouting::DoDispose()
     {
         simclick_click_kill(m_simNode);
     }
-    m_ipv4 = 0;
+    m_ipv4 = nullptr;
     delete m_simNode;
     Ipv4RoutingProtocol::DoDispose();
 }
@@ -441,8 +441,11 @@ Ipv4ClickRouting::Receive(Ptr<Packet> p, Mac48Address receiverAddr, Mac48Address
 std::string
 Ipv4ClickRouting::ReadHandler(std::string elementName, std::string handlerName)
 {
-    char* handle =
-        simclick_click_read_handler(m_simNode, elementName.c_str(), handlerName.c_str(), 0, 0);
+    char* handle = simclick_click_read_handler(m_simNode,
+                                               elementName.c_str(),
+                                               handlerName.c_str(),
+                                               nullptr,
+                                               nullptr);
     std::string ret(handle);
 
     // This is required because Click does not free
@@ -497,7 +500,7 @@ Ipv4ClickRouting::RouteOutput(Ptr<Packet> p,
     std::string s = ReadHandler(m_clickRoutingTableElement, addr.str());
     NS_LOG_DEBUG("string from click routing table: " << s);
 
-    size_t pos = s.find(" ");
+    size_t pos = s.find(' ');
     Ipv4Address destination;
     int interfaceId;
     if (pos == std::string::npos)
