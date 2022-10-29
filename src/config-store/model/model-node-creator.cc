@@ -30,7 +30,7 @@ void
 ModelCreator::Build(GtkTreeStore* treestore)
 {
     m_treestore = treestore;
-    m_iters.push_back(0);
+    m_iters.push_back(nullptr);
     // this function will go through all the objects and call on them
     // DoStartVisitObject, DoIterate and DoEndVisitObject
     Iterate();
