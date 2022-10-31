@@ -139,7 +139,14 @@ function(configure_embedded_version)
     if(${NS3_VERSION_RELEASE_CANDIDATE} STREQUAL " ")
       set(NS3_VERSION_RELEASE_CANDIDATE \"\")
     endif()
-    set(NS3_VERSION_BUILD_PROFILE ${cmakeBuildType})
+
+    if(${cmakeBuildType} STREQUAL relwithdebinfo)
+      set(NS3_VERSION_BUILD_PROFILE default)
+    elseif((${cmakeBuildType} STREQUAL release) AND ${NS3_NATIVE_OPTIMIZATIONS})
+      set(NS3_VERSION_BUILD_PROFILE optimized)
+    else()
+      set(NS3_VERSION_BUILD_PROFILE ${cmakeBuildType})
+    endif()
 
     set(version_cache_file_template
         ${PROJECT_SOURCE_DIR}/build-support/version.cache.in

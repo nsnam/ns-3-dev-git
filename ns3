@@ -110,7 +110,7 @@ def parse_args(argv):
     parser_configure.add_argument('-d', '--build-profile',
                                   help='Build profile',
                                   dest='build_profile',
-                                  choices=["debug", "default", "release", "optimized"],
+                                  choices=["debug", "default", "release", "optimized", "minsizerel"],
                                   action="store", type=str, default=None)
 
     parser_configure.add_argument('-G',
@@ -552,7 +552,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
     # Build type
     if args.build_profile is not None:
         args.build_profile = args.build_profile.lower()
-        if args.build_profile not in ["debug", "default", "release", "optimized"]:
+        if args.build_profile not in ["debug", "default", "release", "optimized", "minsizerel"]:
             raise Exception("Unknown build type")
         else:
             if args.build_profile == "debug":
@@ -563,7 +563,8 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
                     "-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF".split())
             else:
                 cmake_args.extend(
-                    "-DCMAKE_BUILD_TYPE=release -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF".split()
+                    f"-DCMAKE_BUILD_TYPE={args.build_profile} -DNS3_ASSERT=OFF -DNS3_LOG=OFF "
+                    f"-DNS3_WARNINGS_AS_ERRORS=OFF".split()
                 )
             cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
 
