@@ -30,8 +30,8 @@ function(check_git_repo_has_ns3_tags HAS_TAGS GIT_VERSION_TAG)
 endfunction()
 
 # Function to generate version fields from an ns-3 git repository
-function(check_ns3_closest_tags CLOSEST_TAG VERSION_TAG_DISTANCE
-         VERSION_COMMIT_HASH VERSION_DIRTY_FLAG
+function(check_ns3_closest_tags CLOSEST_TAG VERSION_COMMIT_HASH
+         VERSION_DIRTY_FLAG VERSION_TAG_DISTANCE
 )
   execute_process(
     COMMAND ${GIT} describe --tags --dirty --long
@@ -61,7 +61,7 @@ function(check_ns3_closest_tags CLOSEST_TAG VERSION_TAG_DISTANCE
     list(GET TAG_LIST 3 HASH)
   endif()
 
-  set(${VERSION_TAG_DISTANCE} ${DISTANCE} PARENT_SCOPE)
+  set(${VERSION_TAG_DISTANCE} "${DISTANCE}" PARENT_SCOPE)
   set(${VERSION_COMMIT_HASH} "${HASH}" PARENT_SCOPE)
 
   set(${VERSION_DIRTY_FLAG} 0 PARENT_SCOPE)
@@ -100,8 +100,8 @@ function(configure_embedded_version)
   # If git tags were found, extract the information
   if(HAS_NS3_TAGS)
     check_ns3_closest_tags(
-      NS3_VERSION_CLOSEST_TAG NS3_VERSION_TAG_DISTANCE NS3_VERSION_COMMIT_HASH
-      NS3_VERSION_DIRTY_FLAG
+      NS3_VERSION_CLOSEST_TAG NS3_VERSION_COMMIT_HASH NS3_VERSION_DIRTY_FLAG
+      NS3_VERSION_TAG_DISTANCE
     )
     # Split commit tag (ns-3.<minor>[.patch][-RC<digit>]) into
     # (ns;3.<minor>[.patch];[-RC<digit>]):
@@ -131,10 +131,10 @@ function(configure_embedded_version)
     endif()
 
     # Transform list with 1 entry into strings
+    set(NS3_VERSION_TAG "${NS3_VERSION_TAG}")
     set(NS3_VERSION_MAJOR "${NS3_VERSION_MAJOR}")
     set(NS3_VERSION_MINOR "${NS3_VERSION_MINOR}")
     set(NS3_VERSION_PATCH "${NS3_VERSION_PATCH}")
-    set(NS3_VERSION_TAG "${NS3_VERSION_TAG}")
     set(NS3_VERSION_RELEASE_CANDIDATE "${RELEASE_CANDIDATE}")
     if(${NS3_VERSION_RELEASE_CANDIDATE} STREQUAL " ")
       set(NS3_VERSION_RELEASE_CANDIDATE \"\")
