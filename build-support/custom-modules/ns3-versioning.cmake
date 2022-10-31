@@ -196,6 +196,16 @@ function(configure_embedded_version)
       set(NS3_${varname} ${varvalue})
     endforeach()
     set(NS3_VERSION_CLOSEST_TAG ${NS3_CLOSEST_TAG})
+
+    # We overwrite the build profile from version.cache with the current build
+    # profile
+    if(${cmakeBuildType} STREQUAL relwithdebinfo)
+      set(NS3_VERSION_BUILD_PROFILE default)
+    elseif((${cmakeBuildType} STREQUAL release) AND ${NS3_NATIVE_OPTIMIZATIONS})
+      set(NS3_VERSION_BUILD_PROFILE optimized)
+    else()
+      set(NS3_VERSION_BUILD_PROFILE ${cmakeBuildType})
+    endif()
   endif()
 
   set(DIRTY)
