@@ -943,20 +943,6 @@ macro(process_options)
     endif()
   endif()
 
-  if(${NS3_GNUPLOT})
-    find_package(Gnuplot-ios) # Not sure what package would contain the correct
-                              # header/library
-    if(NOT ${GNUPLOT_FOUND})
-      message(${HIGHLIGHTED_STATUS}
-              "GNUPLOT was not found. Continuing without it."
-      )
-    else()
-      message(STATUS "GNUPLOT was found.")
-      include_directories(${GNUPLOT_INCLUDE_DIRS})
-      link_directories(${GNUPLOT_LIBRARY})
-    endif()
-  endif()
-
   # checking for documentation dependencies and creating targets
 
   # First we check for doxygen dependencies
