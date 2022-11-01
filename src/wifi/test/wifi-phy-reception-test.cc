@@ -4293,6 +4293,181 @@ TestUnsupportedModulationReception::CheckResults()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Primary 20 MHz Covered By Ppdu Test
+ * This test checks whether the functions WifiPpdu::DoesOverlapChannel and
+ * WifiPpdu::CanBeReceived are returning the expected results.
+ */
+class TestPrimary20CoveredByPpdu : public TestCase
+{
+  public:
+    TestPrimary20CoveredByPpdu();
+
+  private:
+    void DoSetup() override;
+    void DoRun() override;
+    void DoTeardown() override;
+
+    /**
+     * Function to create a PPDU
+     *
+     * \param band the PHY band to use
+     * \param ppduCenterFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
+     * \return the created PPDU
+     */
+    Ptr<HePpdu> CreatePpdu(WifiPhyBand band, uint16_t ppduCenterFreqMhz);
+
+    /**
+     * Run one function
+     *
+     * \param band the PHY band to use
+     * \param phyCenterFreqMhz the operating center frequency of the PHY (in MHz)
+     * \param p20Index the primary20 index
+     * \param ppduCenterFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
+     * \param expectedP20Overlap flag whether the primary 20 MHz channel is expected to be fully
+     * covered by the bandwidth of the incoming PPDU \param expectedP20Covered flag whether the
+     * primary 20 MHz channel is expected to overlap with the bandwidth of the incoming PPDU
+     */
+    void RunOne(WifiPhyBand band,
+                uint16_t phyCenterFreqMhz,
+                uint8_t p20Index,
+                uint16_t ppduCenterFreqMhz,
+                bool expectedP20Overlap,
+                bool expectedP20Covered);
+
+    Ptr<SpectrumWifiPhy> m_phy; ///< PHY
+};
+
+TestPrimary20CoveredByPpdu::TestPrimary20CoveredByPpdu()
+    : TestCase("Check correct detection of whether P20 is fully covered or overlaps with the "
+               "bandwidth of an incoming PPDU")
+{
+}
+
+Ptr<HePpdu>
+TestPrimary20CoveredByPpdu::CreatePpdu(WifiPhyBand band, uint16_t ppduCenterFreqMhz)
+{
+    [[maybe_unused]] auto [channelNumber, centerFreq, channelWidth, type, phyBand] =
+        (*WifiPhyOperatingChannel::FindFirst(0, ppduCenterFreqMhz, 0, WIFI_STANDARD_80211ax, band));
+
+    auto txVector =
+        WifiTxVector(HePhy::GetHeMcs7(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, channelWidth, false);
+
+    auto pkt = Create<Packet>(1000);
+    WifiMacHeader hdr(WIFI_MAC_QOSDATA);
+
+    auto psdu = Create<WifiPsdu>(pkt, hdr);
+    auto txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, band);
+
+    return Create<HePpdu>(psdu, txVector, ppduCenterFreqMhz, txDuration, band, 0);
+}
+
+void
+TestPrimary20CoveredByPpdu::DoSetup()
+{
+    m_phy = CreateObject<SpectrumWifiPhy>();
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    auto interferenceHelper = CreateObject<InterferenceHelper>();
+    m_phy->SetInterferenceHelper(interferenceHelper);
+    auto error = CreateObject<NistErrorRateModel>();
+    m_phy->SetErrorRateModel(error);
+}
+
+void
+TestPrimary20CoveredByPpdu::DoTeardown()
+{
+    m_phy->Dispose();
+    m_phy = nullptr;
+}
+
+void
+TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
+                                   uint16_t phyCenterFreqMhz,
+                                   uint8_t p20Index,
+                                   uint16_t ppduCenterFreqMhz,
+                                   bool expectedP20Overlap,
+                                   bool expectedP20Covered)
+{
+    [[maybe_unused]] const auto [channelNumber, centerFreq, channelWidth, type, phyBand] =
+        (*WifiPhyOperatingChannel::FindFirst(0, phyCenterFreqMhz, 0, WIFI_STANDARD_80211ax, band));
+
+    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{channelNumber, channelWidth, band, p20Index});
+    auto p20CenterFreq = m_phy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(20);
+    auto p20MinFreq = p20CenterFreq - 10;
+    auto p20MaxFreq = p20CenterFreq + 10;
+
+    auto ppdu = CreatePpdu(band, ppduCenterFreqMhz);
+
+    auto p20Overlap = ppdu->DoesOverlapChannel(p20MinFreq, p20MaxFreq);
+    NS_ASSERT(p20Overlap == expectedP20Overlap);
+    NS_TEST_ASSERT_MSG_EQ(p20Overlap,
+                          expectedP20Overlap,
+                          "PPDU is not expected to overlap with the P20");
+
+    auto p20Covered = ppdu->CanBeReceived(p20MinFreq, p20MaxFreq);
+    NS_ASSERT(p20Covered == expectedP20Covered);
+    NS_TEST_ASSERT_MSG_EQ(p20Covered,
+                          expectedP20Covered,
+                          "PPDU is not expected to cover the whole P20");
+}
+
+void
+TestPrimary20CoveredByPpdu::DoRun()
+{
+    /*
+     * Receiver PHY Operating Channel: 2.4 GHz Channel 4 (2417 MHz – 2437 MHz)
+     * Transmitted 20 MHz PPDU: 2.4 GHz Channel 4 (2417 MHz – 2437 MHz)
+     * Overlap with primary 20 MHz: yes
+     * Primary 20 MHz fully covered: yes
+     */
+    RunOne(WIFI_PHY_BAND_2_4GHZ, 2427, 0, 2427, true, true);
+
+    /*
+     * Receiver PHY Operating Channel: 2.4 GHz Channel 4 (2417 MHz – 2437 MHz)
+     * Transmitted 40 MHz PPDU: 2.4 GHz Channel 6 (2427 MHz – 2447 MHz)
+     * Overlap with primary 20 MHz: yes
+     * Primary 20 MHz fully covered: no
+     */
+    RunOne(WIFI_PHY_BAND_2_4GHZ, 2427, 0, 2437, true, false);
+
+    /*
+     * Receiver PHY Operating Channel: 5 GHz Channel 36 (5170 MHz – 5190 MHz)
+     * Transmitted 40 MHz PPDU: 5 GHz Channel 38 (5170 MHz – 5210 MHz)
+     * Overlap with primary 20 MHz: yes
+     * Primary 20 MHz fully covered: yes
+     */
+    RunOne(WIFI_PHY_BAND_5GHZ, 5180, 0, 5190, true, true);
+
+    /*
+     * Receiver PHY Operating Channel: 5 GHz Channel 36 (5170 MHz–5190 MHz)
+     * Transmitted 20 MHz PPDU: 5 GHz Channel 40 (5190 MHz – 5210 MHz)
+     * Overlap with primary 20 MHz: no
+     * Primary 20 MHz fully covered: no
+     */
+    RunOne(WIFI_PHY_BAND_5GHZ, 5180, 0, 5200, false, false);
+
+    /*
+     * Receiver PHY Operating Channel: 5 GHz Channel 38 (5170 MHz – 5210 MHz) with P20 index 0
+     * Transmitted 20 MHz PPDU: 5 GHz Channel 36 (5170 MHz – 5190 MHz)
+     * Overlap with primary 20 MHz: yes
+     * Primary 20 MHz fully covered: yes
+     */
+    RunOne(WIFI_PHY_BAND_5GHZ, 5190, 0, 5180, true, true);
+
+    /*
+     * Receiver PHY Operating Channel: 5 GHz Channel 38 (5170 MHz – 5210 MHz) with P20 index 1
+     * Transmitted 20 MHz PPDU: 5 GHz Channel 36 (5170 MHz – 5190 MHz)
+     * Overlap with primary 20 MHz: no
+     * Primary 20 MHz fully covered: no
+     */
+    RunOne(WIFI_PHY_BAND_5GHZ, 5190, 1, 5180, false, false);
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi PHY reception Test Suite
  */
 class WifiPhyReceptionTestSuite : public TestSuite
@@ -4310,6 +4485,7 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite()
     AddTestCase(new TestPhyHeadersReception, TestCase::QUICK);
     AddTestCase(new TestAmpduReception, TestCase::QUICK);
     AddTestCase(new TestUnsupportedModulationReception(), TestCase::QUICK);
+    AddTestCase(new TestPrimary20CoveredByPpdu(), TestCase::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite
