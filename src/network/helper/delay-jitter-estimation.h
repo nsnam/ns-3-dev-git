@@ -74,8 +74,8 @@ class DelayJitterEstimation
     uint64_t GetLastJitter() const;
 
   private:
-    Time m_jitter;  //!< Jitter estimation
-    Time m_transit; //!< Relative transit time for the previous packet
+    Time m_jitter{0};  //!< Jitter estimation
+    Time m_transit{0}; //!< Relative transit time for the previous packet
 };
 
 } // namespace ns3
