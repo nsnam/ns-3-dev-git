@@ -124,16 +124,16 @@ bake commit ba47854c (July 14, 2021).
 Make sure that the version.cache file included in the source archive looks
 something like the below example:
 
-CLOSEST_TAG = '"ns-3.36.1"'
-VERSION_COMMIT_HASH = '"g7004d1a66"'
+CLOSEST_TAG = '"ns-3.37"'
+VERSION_COMMIT_HASH = '"g4407a9528"'
 VERSION_DIRTY_FLAG = '0'
 VERSION_MAJOR = '3'
-VERSION_MINOR = '36'
-VERSION_PATCH = '1'
+VERSION_MINOR = '37'
+VERSION_PATCH = '0'
 VERSION_RELEASE_CANDIDATE = '""'
-VERSION_TAG = '"ns-3.36.1"'
+VERSION_TAG = '"ns-3.37"'
 VERSION_TAG_DISTANCE = '0'
-VERSION_BUILD_PROFILE = 'relwithdebinfo
+VERSION_BUILD_PROFILE = 'default'
 
 4.  Test this tarball on at least one system
    - check that ns-3-allinone build.py works
