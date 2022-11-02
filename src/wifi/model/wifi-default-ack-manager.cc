@@ -518,7 +518,9 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
         WifiTxVector blockAckTxVector;
         blockAckTxVector.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
-        blockAckTxVector.SetGuardInterval(txParams.m_txVector.GetGuardInterval());
+        // 800ns GI is not allowed for HE TB
+        blockAckTxVector.SetGuardInterval(
+            std::max<uint16_t>(txParams.m_txVector.GetGuardInterval(), 1600));
         const auto& userInfo = txParams.m_txVector.GetHeMuUserInfo(staId);
         blockAckTxVector.SetHeMuUserInfo(
             staId,
@@ -602,7 +604,9 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         WifiTxVector blockAckTxVector;
         blockAckTxVector.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
-        blockAckTxVector.SetGuardInterval(txParams.m_txVector.GetGuardInterval());
+        // 800ns GI is not allowed for HE TB
+        blockAckTxVector.SetGuardInterval(
+            std::max<uint16_t>(txParams.m_txVector.GetGuardInterval(), 1600));
         const auto& userInfo = txParams.m_txVector.GetHeMuUserInfo(staId);
         blockAckTxVector.SetHeMuUserInfo(
             staId,
