@@ -42,34 +42,38 @@ class DelayJitterEstimation
     DelayJitterEstimation();
 
     /**
-     * \param packet the packet to send over a wire
-     *
      * This method should be invoked once on each packet to
      * record within the packet the tx time which is used upon
      * packet reception to calculate the delay and jitter. The
      * tx time is stored in the packet as an ns3::Tag which means
      * that it does not use any network resources and is not
      * taken into account in transmission delay calculations.
+     *
+     * \param packet the packet to send over a wire
      */
     static void PrepareTx(Ptr<const Packet> packet);
+
     /**
-     * \param packet the packet received
-     *
      * Invoke this method to update the delay and jitter calculations
      * After a call to this method, \ref GetLastDelay and \ref GetLastJitter
      * will return an updated delay and jitter.
+     *
+     * \param packet the packet received
      */
     void RecordRx(Ptr<const Packet> packet);
 
     /**
-     * \returns the updated delay.
+     * Get the Last Delay object.
+     *
+     * \return the updated delay.
      */
     Time GetLastDelay() const;
+
     /**
      * The jitter is calculated using the \RFC{1889} (RTP) jitter
      * definition.
      *
-     * \returns the updated jitter.
+     * \return the updated jitter.
      */
     uint64_t GetLastJitter() const;
 
