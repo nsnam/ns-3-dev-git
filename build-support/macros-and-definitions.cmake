@@ -975,7 +975,7 @@ macro(process_options)
     add_custom_target(doxygen-no-build COMMAND ${doxygen_missing_msg})
   else()
     # We checked this already exists, but we need the path to the executable
-    find_package(Doxygen QUIET)
+    set(DOXYGEN_EXECUTABLE ${DOXYGEN})
 
     # Get introspected doxygen
     add_custom_target(
