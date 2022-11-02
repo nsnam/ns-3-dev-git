@@ -475,9 +475,9 @@ class HePhy : public VhtPhy
     virtual PhyFieldRxStatus ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status);
 
     /**
-     * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an UL-OFDMA
+     * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an OFDMA
      * transmission. This function is called upon the RX event corresponding to the OFDMA part of
-     * the UL MU PPDU.
+     * the MU PPDU.
      *
      * \param event the event holding incoming OFDMA part of the PPDU's information
      */
@@ -526,6 +526,15 @@ class HePhy : public VhtPhy
     void BuildModeList() override;
     uint8_t GetNumberBccEncoders(const WifiTxVector& txVector) const override;
     Time GetSymbolDuration(const WifiTxVector& txVector) const override;
+
+    /**
+     * Start the transmission of the OFDMA part of the MU PPDU.
+     *
+     * \param ppdu the PPDU
+     * \param txVector the TXVECTOR
+     * \param ofdmaDuration the duration of the OFDMA part
+     */
+    void StartTxOfdma(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time ofdmaDuration);
 
     /**
      * Notify PHY state helper to switch to CCA busy state,

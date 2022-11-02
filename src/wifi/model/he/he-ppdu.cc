@@ -303,7 +303,7 @@ HePpdu::GetTxPsdFlag() const
 }
 
 void
-HePpdu::SetTxPsdFlag(TxPsdFlag flag)
+HePpdu::SetTxPsdFlag(TxPsdFlag flag) const
 {
     NS_LOG_FUNCTION(this << flag);
     m_txPsdFlag = flag;

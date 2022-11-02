@@ -230,7 +230,7 @@ class HePpdu : public OfdmPpdu
      *
      * \see TxPsdFlag
      */
-    void SetTxPsdFlag(TxPsdFlag flag);
+    void SetTxPsdFlag(TxPsdFlag flag) const;
 
     /**
      * Check if STA ID is in HE SIG-B Content Channel ID
@@ -275,8 +275,8 @@ class HePpdu : public OfdmPpdu
      */
     virtual void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
 
-    HeSigHeader m_heSig;   //!< the HE-SIG PHY header
-    TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
+    HeSigHeader m_heSig;           //!< the HE-SIG PHY header
+    mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 
     WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< HE MU specific per-user information (to be
                                                  //!< removed once HE-SIG-B headers are implemented)

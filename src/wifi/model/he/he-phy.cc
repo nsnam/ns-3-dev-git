@@ -1378,22 +1378,27 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
         Transmit(nonOfdmaDuration, ppdu, txVector, "non-OFDMA transmission");
 
         // OFDMA part
-        auto hePpdu = DynamicCast<HePpdu>(ppdu->Copy()); // since flag will be modified
-        NS_ASSERT(hePpdu);
-        hePpdu->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
         Time ofdmaDuration = ppdu->GetTxDuration() - nonOfdmaDuration;
         Simulator::Schedule(nonOfdmaDuration,
-                            &PhyEntity::Transmit,
+                            &HePhy::StartTxOfdma,
                             this,
-                            ofdmaDuration,
-                            hePpdu,
+                            ppdu,
                             txVector,
-                            "OFDMA transmission");
+                            ofdmaDuration);
     }
     else
     {
         PhyEntity::StartTx(ppdu, txVector);
     }
+}
+
+void
+HePhy::StartTxOfdma(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time ofdmaDuration)
+{
+    auto hePpdu = DynamicCast<const HePpdu>(ppdu);
+    NS_ASSERT(hePpdu);
+    hePpdu->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
+    Transmit(ofdmaDuration, ppdu, txVector, "OFDMA transmission");
 }
 
 Time
