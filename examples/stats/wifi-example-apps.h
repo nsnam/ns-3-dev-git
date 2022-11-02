@@ -31,6 +31,10 @@
 
 using namespace ns3;
 
+// ==============================================
+// SENDER
+// ==============================================
+
 /**
  * Sender application.
  */
@@ -42,6 +46,7 @@ class Sender : public Application
      * \return The object TypeId.
      */
     static TypeId GetTypeId();
+
     Sender();
     ~Sender() override;
 
@@ -57,22 +62,23 @@ class Sender : public Application
      */
     void SendPacket();
 
-    uint32_t m_pktSize;                     //!< The packet size.
-    Ipv4Address m_destAddr;                 //!< Destination address.
-    uint32_t m_destPort;                    //!< Destination port.
-    Ptr<ConstantRandomVariable> m_interval; //!< Rng for sending packets.
-    uint32_t m_numPkts;                     //!< Number of packets to send.
+    Ipv4Address m_destAddr;                 //!< Destination address
+    uint32_t m_destPort{0};                 //!< Destination port
+    uint32_t m_packetSize{0};               //!< The packet size
+    Ptr<ConstantRandomVariable> m_interval; //!< Rng for sending packets
+    uint32_t m_nPackets{0};                 //!< Number of packets to send
+    uint32_t m_count{0};                    //!< Number of packets sent
 
-    Ptr<Socket> m_socket; //!< Sending socket.
-    EventId m_sendEvent;  //!< Send packet event.
+    Ptr<Socket> m_socket; //!< Sending socket
+    EventId m_sendEvent;  //!< Send packet event
 
-    /// Tx TracedCallback.
+    /// Tx TracedCallback
     TracedCallback<Ptr<const Packet>> m_txTrace;
-
-    uint32_t m_count; //!< Number of packets sent.
-
-    // end class Sender
 };
+
+// ==============================================
+// RECEIVER
+// ==============================================
 
 /**
  * Receiver application.
@@ -85,6 +91,7 @@ class Receiver : public Application
      * \return The object TypeId.
      */
     static TypeId GetTypeId();
+
     Receiver();
     ~Receiver() override;
 
@@ -113,11 +120,9 @@ class Receiver : public Application
      */
     void Receive(Ptr<Socket> socket);
 
-    Ptr<Socket> m_socket; //!< Receiving socket.
-    uint32_t m_port;      //!< Listening port.
+    Ptr<Socket> m_socket; //!< Receiving socket
+    uint32_t m_port{0};   //!< Listening port
 
-    Ptr<CounterCalculator<>> m_calc;           //!< Counter of the number of received packets.
-    Ptr<TimeMinMaxAvgTotalCalculator> m_delay; //!< Delay calculator.
-
-    // end class Receiver
+    Ptr<CounterCalculator<>> m_calc;           //!< Counter of the number of received packets
+    Ptr<TimeMinMaxAvgTotalCalculator> m_delay; //!< Delay calculator
 };

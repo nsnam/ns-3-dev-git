@@ -36,7 +36,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/network-module.h"
 #include "ns3/stats-module.h"
-#include "ns3/yans-wifi-helper.h"
+#include "ns3/wifi-module.h"
 
 #include <ctime>
 #include <sstream>
@@ -49,20 +49,16 @@ NS_LOG_COMPONENT_DEFINE("WiFiDistanceExperiment");
  * Function called when a packet is transmitted.
  *
  * \param datac The counter of the number of transmitted packets.
- * \param path The callback context
- * \param packet The transmsiotted packet.
+ * \param path The callback context.
+ * \param packet The transmitted packet.
  */
 void
 TxCallback(Ptr<CounterCalculator<uint32_t>> datac, std::string path, Ptr<const Packet> packet)
 {
     NS_LOG_INFO("Sent frame counted in " << datac->GetKey());
     datac->Update();
-    // end TxCallback
 }
 
-//----------------------------------------------------------------------
-//-- main
-//----------------------------------------------
 int
 main(int argc, char* argv[])
 {
@@ -109,7 +105,7 @@ main(int argc, char* argv[])
         input = sstr.str();
     }
 
-    //------------------------------------------------------------
+    //--------------------------------------------
     //-- Create nodes and network stacks
     //--------------------------------------------
     NS_LOG_INFO("Creating nodes.");
@@ -131,7 +127,7 @@ main(int argc, char* argv[])
     ipAddrs.SetBase("192.168.0.0", "255.255.255.0");
     ipAddrs.Assign(nodeDevices);
 
-    //------------------------------------------------------------
+    //--------------------------------------------
     //-- Setup physical layout
     //--------------------------------------------
     NS_LOG_INFO("Installing static mobility; distance " << distance << " .");
@@ -142,7 +138,7 @@ main(int argc, char* argv[])
     mobility.SetPositionAllocator(positionAlloc);
     mobility.Install(nodes);
 
-    //------------------------------------------------------------
+    //--------------------------------------------
     //-- Create a custom traffic source and sink
     //--------------------------------------------
     NS_LOG_INFO("Create traffic source & sink.");
@@ -159,7 +155,7 @@ main(int argc, char* argv[])
     Config::Set("/NodeList/*/ApplicationList/*/$Sender/Destination",
                 Ipv4AddressValue("192.168.0.2"));
 
-    //------------------------------------------------------------
+    //--------------------------------------------
     //-- Setup stats and data collection
     //--------------------------------------------
 
@@ -212,23 +208,24 @@ main(int argc, char* argv[])
     receiver->SetCounter(appRx);
     data.AddDataCalculator(appRx);
 
-    /**
-     * Just to show this is here...
-     Ptr<MinMaxAvgTotalCalculator<uint32_t> > test =
-     CreateObject<MinMaxAvgTotalCalculator<uint32_t> >();
-     test->SetKey("test-dc");
-     data.AddDataCalculator(test);
+    // Just to show this is here...
 
-     test->Update(4);
-     test->Update(8);
-     test->Update(24);
-     test->Update(12);
-    **/
+    /*
+    Ptr<MinMaxAvgTotalCalculator<uint32_t>> test =
+        CreateObject<MinMaxAvgTotalCalculator<uint32_t>>();
+    test->SetKey("test-dc");
+    data.AddDataCalculator(test);
+
+    test->Update(4);
+    test->Update(8);
+    test->Update(24);
+    test->Update(12);
+    */
 
     // This DataCalculator connects directly to the transmit trace
     // provided by our Sender Application.  It records some basic
     // statistics about the sizes of the packets received (min, max,
-    // avg, total # bytes), although in this scenaro they're fixed.
+    // avg, total # bytes), although in this scenario they're fixed.
     Ptr<PacketSizeMinMaxAvgTotalCalculator> appTxPkts =
         CreateObject<PacketSizeMinMaxAvgTotalCalculator>();
     appTxPkts->SetKey("tx-pkt-size");
@@ -247,13 +244,13 @@ main(int argc, char* argv[])
     receiver->SetDelayTracker(delayStat);
     data.AddDataCalculator(delayStat);
 
-    //------------------------------------------------------------
+    //--------------------------------------------
     //-- Run the simulation
     //--------------------------------------------
     NS_LOG_INFO("Run Simulation.");
     Simulator::Run();
 
-    //------------------------------------------------------------
+    //--------------------------------------------
     //-- Generate statistics output.
     //--------------------------------------------
 
@@ -286,6 +283,5 @@ main(int argc, char* argv[])
     // Free any memory here at the end of this example.
     Simulator::Destroy();
 
-    // end main
     return 0;
 }

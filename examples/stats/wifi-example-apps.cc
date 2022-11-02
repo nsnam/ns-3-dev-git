@@ -37,6 +37,10 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WiFiDistanceApps");
 
+// ==============================================
+// SENDER
+// ==============================================
+
 TypeId
 Sender::GetTypeId()
 {
@@ -46,7 +50,7 @@ Sender::GetTypeId()
                             .AddAttribute("PacketSize",
                                           "The size of packets transmitted.",
                                           UintegerValue(64),
-                                          MakeUintegerAccessor(&Sender::m_pktSize),
+                                          MakeUintegerAccessor(&Sender::m_packetSize),
                                           MakeUintegerChecker<uint32_t>(1))
                             .AddAttribute("Destination",
                                           "Target host address.",
@@ -61,7 +65,7 @@ Sender::GetTypeId()
                             .AddAttribute("NumPackets",
                                           "Total number of packets to send.",
                                           UintegerValue(30),
-                                          MakeUintegerAccessor(&Sender::m_numPkts),
+                                          MakeUintegerAccessor(&Sender::m_nPackets),
                                           MakeUintegerChecker<uint32_t>(1))
                             .AddAttribute("Interval",
                                           "Delay between transmissions.",
@@ -79,7 +83,6 @@ Sender::Sender()
 {
     NS_LOG_FUNCTION_NOARGS();
     m_interval = CreateObject<ConstantRandomVariable>();
-    m_socket = nullptr;
 }
 
 Sender::~Sender()
@@ -114,8 +117,6 @@ Sender::StartApplication()
 
     Simulator::Cancel(m_sendEvent);
     m_sendEvent = Simulator::ScheduleNow(&Sender::SendPacket, this);
-
-    // end Sender::StartApplication
 }
 
 void
@@ -123,16 +124,15 @@ Sender::StopApplication()
 {
     NS_LOG_FUNCTION_NOARGS();
     Simulator::Cancel(m_sendEvent);
-    // end Sender::StopApplication
 }
 
 void
 Sender::SendPacket()
 {
-    // NS_LOG_FUNCTION_NOARGS ();
+    // NS_LOG_FUNCTION_NOARGS();
     NS_LOG_INFO("Sending packet at " << Simulator::Now() << " to " << m_destAddr);
 
-    Ptr<Packet> packet = Create<Packet>(m_pktSize);
+    Ptr<Packet> packet = Create<Packet>(m_packetSize);
 
     TimestampTag timestamp;
     timestamp.SetTimestamp(Simulator::Now());
@@ -145,18 +145,17 @@ Sender::SendPacket()
     // Report the event to the trace.
     m_txTrace(packet);
 
-    if (++m_count < m_numPkts)
+    if (++m_count < m_nPackets)
     {
         m_sendEvent =
             Simulator::Schedule(Seconds(m_interval->GetValue()), &Sender::SendPacket, this);
     }
-
-    // end Sender::SendPacket
 }
 
-//----------------------------------------------------------------------
-//-- Receiver
-//------------------------------------------------------
+// ==============================================
+// RECEIVER
+// ==============================================
+
 TypeId
 Receiver::GetTypeId()
 {
@@ -172,11 +171,8 @@ Receiver::GetTypeId()
 }
 
 Receiver::Receiver()
-    : m_calc(nullptr),
-      m_delay(nullptr)
 {
     NS_LOG_FUNCTION_NOARGS();
-    m_socket = nullptr;
 }
 
 Receiver::~Receiver()
@@ -209,8 +205,6 @@ Receiver::StartApplication()
     }
 
     m_socket->SetRecvCallback(MakeCallback(&Receiver::Receive, this));
-
-    // end Receiver::StartApplication
 }
 
 void
@@ -222,22 +216,18 @@ Receiver::StopApplication()
     {
         m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
     }
-
-    // end Receiver::StopApplication
 }
 
 void
 Receiver::SetCounter(Ptr<CounterCalculator<>> calc)
 {
     m_calc = calc;
-    // end Receiver::SetCounter
 }
 
 void
 Receiver::SetDelayTracker(Ptr<TimeMinMaxAvgTotalCalculator> delay)
 {
     m_delay = delay;
-    // end Receiver::SetDelayTracker
 }
 
 void
@@ -272,9 +262,5 @@ Receiver::Receive(Ptr<Socket> socket)
         {
             m_calc->Update();
         }
-
-        // end receiving packets
     }
-
-    // end Receiver::Receive
 }
