@@ -50,13 +50,13 @@ class TestUtils
     {
         uint32_t psize = pkt->GetSize();
         uint8_t buffer[psize];
-        char sbuffer[psize * 3];
+        std::ostringstream oss(std::ostringstream::out);
         pkt->CopyData(buffer, psize);
         for (uint32_t i = 0; i < psize; i++)
         {
-            sprintf(&sbuffer[i * 3], "%02x ", buffer[i]);
+            oss << std::setfill('0') << std::setw(2) << std::hex << +(buffer[i]) << " ";
         }
-        return std::string(sbuffer);
+        return std::string(oss.str() + "\n");
     }
 
     /**
