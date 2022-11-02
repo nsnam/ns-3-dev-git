@@ -61,7 +61,7 @@ ns-3 is intentionally very modular, and it's possible that a feature you need or
 
 ### Design Decisions
 
-When we make a significant decision in how we maintain the project and what we can or cannot support, we will document it through the [ns-developers mailing list](https://mailman.isi.edu/mailman/listinfo/ns-developers). If you have a question around how we do things, please subscribe and lurk around to see how we proceed. If you have a development problem, please open a new topic and ask your question.
+When we make a significant decision in how we maintain the project and what we can or cannot support, we will document it through the [ns-developers mailing list](https://groups.google.com/g/ns-developers). If you have a question around how we do things, please subscribe and lurk around to see how we proceed. If you have a development problem, please open a new topic and ask your question.
 
 ## How Can I Contribute?
 
