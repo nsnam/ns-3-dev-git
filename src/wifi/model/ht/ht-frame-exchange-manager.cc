@@ -68,7 +68,6 @@ HtFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     m_agreements.clear();
-    m_pendingAgreements.clear();
     m_pendingAddBaResp.clear();
     m_msduAggregator = nullptr;
     m_mpduAggregator = nullptr;
@@ -253,11 +252,8 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
      * an ADDBA_RESPONSE frame, but is not able to successfully transmit it before the timer to
      * wait for ADDBA_RESPONSE expires at the originator. The latter may then send another
      * ADDBA_REQUEST frame, which triggers the creation of another ADDBA_RESPONSE frame.
-     * The first ADDBA_RESPONSE frame that is acknowledged causes the Block Ack agreement to be
-     * moved from the queue of pending agreements to the queue of establish agreements; the next
-     * one will find no pending agreement, thus causing the simulation to abort.
-     * As a solution, we keep track of the previously enqueued ADDBA_RESPONSE frame (if any),
-     * dequeue it and replace it with the new ADDBA_RESPONSE frame.
+     * To avoid sending unnecessary ADDBA_RESPONSE frames, we keep track of the previously enqueued
+     * ADDBA_RESPONSE frame (if any), dequeue it and replace it with the new ADDBA_RESPONSE frame.
      */
 
     // remove any pending ADDBA_RESPONSE frame
@@ -360,7 +356,7 @@ HtFrameExchangeManager::CreateBlockAckAgreement(const MgtAddBaResponseHeader* re
                                                           false);
     }
 
-    m_pendingAgreements.insert_or_assign({originator, tid}, agreement);
+    m_agreements.insert_or_assign({originator, tid}, agreement);
 }
 
 void
@@ -633,17 +629,14 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
             }
             else if (actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE)
             {
-                // The recipient Block Ack agreement can be moved from the pending queue
-                // to the queue of established Block Ack agreements
+                // A recipient Block Ack agreement must exist
                 MgtAddBaResponseHeader addBa;
                 p->PeekHeader(addBa);
                 AgreementKey key(mpdu->GetHeader().GetAddr1(), addBa.GetTid());
-                auto nh = m_pendingAgreements.extract(key);
-                NS_ASSERT_MSG(!nh.empty(),
-                              "Pending agreement {" << key.first << ", " << +key.second
-                                                    << "} not found");
-                m_agreements.erase(nh.key());
-                m_agreements.insert(std::move(nh));
+                auto agreementIt = m_agreements.find(key);
+                NS_ASSERT_MSG(agreementIt != m_agreements.end(),
+                              "Recipient BA agreement {" << key.first << ", " << +key.second
+                                                         << "} not found");
                 m_pendingAddBaResp.erase(key);
             }
         }

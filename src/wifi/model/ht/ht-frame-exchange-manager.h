@@ -390,11 +390,9 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     /// typedef for map of recipient Block Ack agreements
     using RecipientBlockAckAgreementMap = std::map<AgreementKey, RecipientBlockAckAgreement>;
 
-    RecipientBlockAckAgreementMap m_agreements;        //!< Block Ack agreements
-    RecipientBlockAckAgreementMap m_pendingAgreements; //!< pending Block Ack agreements (waiting
-                                                       //!< for Ack in response to ADDBA_RESPONSE)
-    Ptr<MsduAggregator> m_msduAggregator;              //!< A-MSDU aggregator
-    Ptr<MpduAggregator> m_mpduAggregator;              //!< A-MPDU aggregator
+    RecipientBlockAckAgreementMap m_agreements; //!< Block Ack agreements
+    Ptr<MsduAggregator> m_msduAggregator;       //!< A-MSDU aggregator
+    Ptr<MpduAggregator> m_mpduAggregator;       //!< A-MPDU aggregator
 
     /// pending ADDBA_RESPONSE frames indexed by agreement key
     std::map<AgreementKey, Ptr<WifiMpdu>> m_pendingAddBaResp;
