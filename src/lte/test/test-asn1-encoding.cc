@@ -28,6 +28,8 @@
 #include "ns3/string.h"
 #include "ns3/test.h"
 
+#include <iomanip>
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Asn1EncodingTest");
