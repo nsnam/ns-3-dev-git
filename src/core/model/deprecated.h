@@ -93,11 +93,4 @@
  */
 #define NS_DEPRECATED_3_35 NS_DEPRECATED("")
 
-/**
- * \ingroup core
- * \def NS_DEPRECATED_3_34
- * Tag for things deprecated in version ns-3.34.
- */
-#define NS_DEPRECATED_3_34 NS_DEPRECATED("")
-
 #endif /* NS3_DEPRECATED_H */

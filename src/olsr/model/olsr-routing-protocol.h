@@ -356,11 +356,6 @@ class RoutingProtocol : public Ipv4RoutingProtocol
                     ErrorCallback ecb) override;
     void SetIpv4(Ptr<Ipv4> ipv4) override;
 
-    /**
-     * \returns the ipv4 object this routing protocol is associated with
-     */
-    NS_DEPRECATED_3_34
-    virtual Ptr<Ipv4> GetIpv4() const;
     void PrintRoutingTable(Ptr<OutputStreamWrapper> stream,
                            Time::Unit unit = Time::S) const override;
 

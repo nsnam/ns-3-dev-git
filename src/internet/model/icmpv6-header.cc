@@ -657,19 +657,6 @@ Icmpv6RA::SetFlagH(bool h)
     m_flagH = h;
 }
 
-uint8_t
-Icmpv6RA::GetFlags() const
-{
-    NS_LOG_FUNCTION(this);
-    return 0;
-}
-
-void
-Icmpv6RA::SetFlags(uint8_t f)
-{
-    NS_LOG_FUNCTION(this << static_cast<uint32_t>(f));
-}
-
 void
 Icmpv6RA::Print(std::ostream& os) const
 {

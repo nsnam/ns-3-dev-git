@@ -248,12 +248,6 @@ RoutingProtocol::SetIpv4(Ptr<Ipv4> ipv4)
     m_hnaRoutingTable->SetIpv4(ipv4);
 }
 
-Ptr<Ipv4>
-RoutingProtocol::GetIpv4() const
-{
-    return m_ipv4;
-}
-
 void
 RoutingProtocol::DoDispose()
 {

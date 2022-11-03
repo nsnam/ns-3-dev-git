@@ -683,20 +683,6 @@ class Icmpv6RA : public Icmpv6Header
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Getflags.
-     * \return the flags value
-     */
-    NS_DEPRECATED_3_34
-    uint8_t GetFlags() const;
-
-    /**
-     * \brief Setflags.
-     * \param f the flags value
-     */
-    NS_DEPRECATED_3_34
-    void SetFlags(uint8_t f);
-
-    /**
      * \brief Get the serialized size.
      * \return serialized size
      */
