@@ -1081,6 +1081,23 @@ Miscellaneous items
     int* ptr = &x;
     int& ref = x;
 
+- Use a trailing comma in braced-init-lists, so that each item is positioned in a new line.
+
+  .. sourcecode:: cpp
+
+    const std::vector<std::string> myVector{
+      "string-1",
+      "string-2",
+      "string-3",
+    };
+
+    const std::map<int, std::string> myMap{
+      {1, "string-1"},
+      {2, "string-2"},
+      {3, "string-3"},
+    };
+
+
 - Const reference syntax:
 
   .. sourcecode:: cpp
