@@ -34,3 +34,12 @@ clang-tidy:
       - clang-tidy-errors.log
     when: on_failure
   timeout: 3h
+
+emacs-line:
+  stage: code-linting
+  image: ubuntu:latest
+  script:
+    - (! grep -rn --include="*.h" --include="*.cc" "c-file-style:\"gnu\"" ) ||
+      (echo "Found Emacs lines on the above C++ files" && exit 1)
+    - echo "No Emacs lines found on C++ files"
+  timeout: 1h
