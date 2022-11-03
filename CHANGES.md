@@ -18,6 +18,8 @@ Changes from ns-3.37 to ns-3.38
 
 ### New API
 
+* (network) Add class `TimestampTag` for associating a timestamp with a packet.
+
 ### Changes to existing API
 
 * (network) **Ipv4Address** and **Ipv6Address** now do not raise an exception if built from an invalid string. Instead the address is marked as not initialized.
