@@ -32,11 +32,13 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("EpcUeNas");
 
 /// Map each of UE NAS states to its string representation.
-static const std::string g_ueNasStateName[EpcUeNas::NUM_STATES] = {"OFF",
-                                                                   "ATTACHING",
-                                                                   "IDLE_REGISTERED",
-                                                                   "CONNECTING_TO_EPC",
-                                                                   "ACTIVE"};
+static const std::string g_ueNasStateName[EpcUeNas::NUM_STATES] = {
+    "OFF",
+    "ATTACHING",
+    "IDLE_REGISTERED",
+    "CONNECTING_TO_EPC",
+    "ACTIVE",
+};
 
 /**
  * \param s The UE NAS state.

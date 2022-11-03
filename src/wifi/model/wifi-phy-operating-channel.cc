@@ -265,7 +265,8 @@ const std::set<FrequencyChannelInfo> WifiPhyOperatingChannel::m_frequencyChannel
     {std::make_tuple(111, 6505, 160, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ)},
     {std::make_tuple(143, 6665, 160, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ)},
     {std::make_tuple(175, 6825, 160, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ)},
-    {std::make_tuple(207, 6985, 160, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ)}};
+    {std::make_tuple(207, 6985, 160, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ)},
+};
 
 WifiPhyOperatingChannel::WifiPhyOperatingChannel()
     : WifiPhyOperatingChannel(m_frequencyChannels.end())

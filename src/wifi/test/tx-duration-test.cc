@@ -1550,9 +1550,11 @@ PhyHeaderSectionsTest::DoRun()
     // -> long PPDU format
     txVector.SetPreambleType(WIFI_PREAMBLE_LONG);
     nonHtMode = DsssPhy::GetDsssRate1Mbps();
-    sections = {{WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(144)}, nonHtMode}},
-                {WIFI_PPDU_FIELD_NON_HT_HEADER,
-                 {{ppduStart + MicroSeconds(144), ppduStart + MicroSeconds(192)}, nonHtMode}}};
+    sections = {
+        {WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(144)}, nonHtMode}},
+        {WIFI_PPDU_FIELD_NON_HT_HEADER,
+         {{ppduStart + MicroSeconds(144), ppduStart + MicroSeconds(192)}, nonHtMode}},
+    };
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 
     // -> long PPDU format if data rate is 1 Mbps (even if preamble is tagged short)
@@ -1563,9 +1565,11 @@ PhyHeaderSectionsTest::DoRun()
     txVector.SetMode(DsssPhy::GetDsssRate11Mbps());
     nonHtMode = DsssPhy::GetDsssRate2Mbps();
     txVector.SetPreambleType(WIFI_PREAMBLE_SHORT);
-    sections = {{WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(72)}, nonHtMode}},
-                {WIFI_PPDU_FIELD_NON_HT_HEADER,
-                 {{ppduStart + MicroSeconds(72), ppduStart + MicroSeconds(96)}, nonHtMode}}};
+    sections = {
+        {WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(72)}, nonHtMode}},
+        {WIFI_PPDU_FIELD_NON_HT_HEADER,
+         {{ppduStart + MicroSeconds(72), ppduStart + MicroSeconds(96)}, nonHtMode}},
+    };
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 
     // ==================================================================================
@@ -1577,7 +1581,8 @@ PhyHeaderSectionsTest::DoRun()
         // number to use to deduce rate and BW info for each variant
         {OFDM_PHY_DEFAULT, 1},
         {OFDM_PHY_10_MHZ, 2},
-        {OFDM_PHY_5_MHZ, 4}};
+        {OFDM_PHY_5_MHZ, 4},
+    };
     for (auto variant : variants)
     {
         phyEntity = Create<OfdmPhy>(variant.first);
@@ -1586,11 +1591,13 @@ PhyHeaderSectionsTest::DoRun()
         txVector.SetChannelWidth(bw);
         txVector.SetMode(OfdmPhy::GetOfdmRate(12000000 / ratio, bw));
         nonHtMode = OfdmPhy::GetOfdmRate(6000000 / ratio, bw);
-        sections = {{WIFI_PPDU_FIELD_PREAMBLE,
-                     {{ppduStart, ppduStart + MicroSeconds(16 * ratio)}, nonHtMode}},
-                    {WIFI_PPDU_FIELD_NON_HT_HEADER,
-                     {{ppduStart + MicroSeconds(16 * ratio), ppduStart + MicroSeconds(20 * ratio)},
-                      nonHtMode}}};
+        sections = {
+            {WIFI_PPDU_FIELD_PREAMBLE,
+             {{ppduStart, ppduStart + MicroSeconds(16 * ratio)}, nonHtMode}},
+            {WIFI_PPDU_FIELD_NON_HT_HEADER,
+             {{ppduStart + MicroSeconds(16 * ratio), ppduStart + MicroSeconds(20 * ratio)},
+              nonHtMode}},
+        };
         CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
     }
 
@@ -1600,9 +1607,11 @@ PhyHeaderSectionsTest::DoRun()
     txVector.SetChannelWidth(20);
     txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(54000000));
     nonHtMode = ErpOfdmPhy::GetErpOfdmRate6Mbps();
-    sections = {{WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(16)}, nonHtMode}},
-                {WIFI_PPDU_FIELD_NON_HT_HEADER,
-                 {{ppduStart + MicroSeconds(16), ppduStart + MicroSeconds(20)}, nonHtMode}}};
+    sections = {
+        {WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(16)}, nonHtMode}},
+        {WIFI_PPDU_FIELD_NON_HT_HEADER,
+         {{ppduStart + MicroSeconds(16), ppduStart + MicroSeconds(20)}, nonHtMode}},
+    };
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 
     // ==================================================================================
@@ -1625,7 +1634,8 @@ PhyHeaderSectionsTest::DoRun()
          {{ppduStart + MicroSeconds(20), ppduStart + MicroSeconds(28)}, htSigMode}},
         {WIFI_PPDU_FIELD_TRAINING,
          {{ppduStart + MicroSeconds(28), ppduStart + MicroSeconds(40)}, // 1 HT-STF + 2 HT-LTFs
-          htSigMode}}};
+          htSigMode}},
+    };
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
     txVector.SetChannelWidth(20); // shouldn't have any impact
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
@@ -1659,7 +1669,8 @@ PhyHeaderSectionsTest::DoRun()
          {{ppduStart + MicroSeconds(20), ppduStart + MicroSeconds(28)}, sigAMode}},
         {WIFI_PPDU_FIELD_TRAINING,
          {{ppduStart + MicroSeconds(28), ppduStart + MicroSeconds(56)}, // 1 VHT-STF + 6 VHT-LTFs
-          sigAMode}}};
+          sigAMode}},
+    };
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 
     // -> VHT SU format for 7 SS
@@ -1690,22 +1701,25 @@ PhyHeaderSectionsTest::DoRun()
     txVector.SetMode(HePhy::GetHeMcs9());
     std::map<uint16_t, HeMuUserInfo> userInfoMap = {
         {1, {{HeRu::RU_106_TONE, 1, true}, HePhy::GetHeMcs4(), 2}},
-        {2, {{HeRu::RU_106_TONE, 1, true}, HePhy::GetHeMcs9(), 1}}};
+        {2, {{HeRu::RU_106_TONE, 1, true}, HePhy::GetHeMcs9(), 1}},
+    };
     sigAMode = HePhy::GetVhtMcs0();
     sigBMode = HePhy::GetVhtMcs4(); // because of first user info map
 
     // -> HE SU format
     txVector.SetPreambleType(WIFI_PREAMBLE_HE_SU);
-    sections = {{WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(16)}, nonHtMode}},
-                {WIFI_PPDU_FIELD_NON_HT_HEADER,
-                 {{ppduStart + MicroSeconds(16), ppduStart + MicroSeconds(24)}, // L-SIG + RL-SIG
-                  nonHtMode}},
-                {WIFI_PPDU_FIELD_SIG_A,
-                 {{ppduStart + MicroSeconds(24), ppduStart + MicroSeconds(32)}, sigAMode}},
-                {WIFI_PPDU_FIELD_TRAINING,
-                 {{ppduStart + MicroSeconds(32),
-                   ppduStart + MicroSeconds(52)}, // 1 HE-STF (@ 4 us) + 2 HE-LTFs (@ 8 us)
-                  sigAMode}}};
+    sections = {
+        {WIFI_PPDU_FIELD_PREAMBLE, {{ppduStart, ppduStart + MicroSeconds(16)}, nonHtMode}},
+        {WIFI_PPDU_FIELD_NON_HT_HEADER,
+         {{ppduStart + MicroSeconds(16), ppduStart + MicroSeconds(24)}, // L-SIG + RL-SIG
+          nonHtMode}},
+        {WIFI_PPDU_FIELD_SIG_A,
+         {{ppduStart + MicroSeconds(24), ppduStart + MicroSeconds(32)}, sigAMode}},
+        {WIFI_PPDU_FIELD_TRAINING,
+         {{ppduStart + MicroSeconds(32),
+           ppduStart + MicroSeconds(52)}, // 1 HE-STF (@ 4 us) + 2 HE-LTFs (@ 8 us)
+          sigAMode}},
+    };
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 
     // -> HE ER SU format
@@ -1759,8 +1773,10 @@ PhyHeaderSectionsTest::DoRun()
     txVector.SetNss(2); // EHT-LTF duration assumed to be always 8 us for the time being (see note
                         // in HePhy::GetTrainingDuration)
     txVector.SetMode(EhtPhy::GetEhtMcs9());
-    userInfoMap = {{1, {{HeRu::RU_106_TONE, 1, true}, EhtPhy::GetEhtMcs4(), 2}},
-                   {2, {{HeRu::RU_106_TONE, 1, true}, EhtPhy::GetEhtMcs9(), 1}}};
+    userInfoMap = {
+        {1, {{HeRu::RU_106_TONE, 1, true}, EhtPhy::GetEhtMcs4(), 2}},
+        {2, {{HeRu::RU_106_TONE, 1, true}, EhtPhy::GetEhtMcs9(), 1}},
+    };
     WifiMode uSigMode = EhtPhy::GetVhtMcs0();
     WifiMode ehtSigMode = EhtPhy::GetVhtMcs4(); // because of first user info map
 

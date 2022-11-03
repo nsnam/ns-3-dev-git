@@ -181,7 +181,8 @@ Convert(double value, ns3::Length::Unit fromUnit, ns3::Length::Unit toUnit)
         {{Unit::Yard, Unit::Meter}, USToMeter<std::ratio<3, 1>>},
         {{Unit::Meter, Unit::Yard}, MeterToUS<std::ratio<1, 3>>},
         {{Unit::Mile, Unit::Meter}, USToMeter<std::ratio<5280, 1>>},
-        {{Unit::Meter, Unit::Mile}, MeterToUS<std::ratio<1, 5280>>}};
+        {{Unit::Meter, Unit::Mile}, MeterToUS<std::ratio<1, 5280>>},
+    };
 
     auto iter = CONVERSIONS.find(Key{fromUnit, toUnit});
 
@@ -514,17 +515,19 @@ ToSymbol(Length::Unit unit)
 {
     using StringTable = std::unordered_map<Length::Unit, std::string, EnumHash>;
 
-    static const StringTable STRINGS{{Length::Unit::Nanometer, "nm"},
-                                     {Length::Unit::Micrometer, "um"},
-                                     {Length::Unit::Millimeter, "mm"},
-                                     {Length::Unit::Centimeter, "cm"},
-                                     {Length::Unit::Meter, "m"},
-                                     {Length::Unit::Kilometer, "km"},
-                                     {Length::Unit::NauticalMile, "nmi"},
-                                     {Length::Unit::Inch, "in"},
-                                     {Length::Unit::Foot, "ft"},
-                                     {Length::Unit::Yard, "yd"},
-                                     {Length::Unit::Mile, "mi"}};
+    static const StringTable STRINGS{
+        {Length::Unit::Nanometer, "nm"},
+        {Length::Unit::Micrometer, "um"},
+        {Length::Unit::Millimeter, "mm"},
+        {Length::Unit::Centimeter, "cm"},
+        {Length::Unit::Meter, "m"},
+        {Length::Unit::Kilometer, "km"},
+        {Length::Unit::NauticalMile, "nmi"},
+        {Length::Unit::Inch, "in"},
+        {Length::Unit::Foot, "ft"},
+        {Length::Unit::Yard, "yd"},
+        {Length::Unit::Mile, "mi"},
+    };
 
     auto iter = STRINGS.find(unit);
 
@@ -554,7 +557,8 @@ ToName(Length::Unit unit, bool plural /*=false*/)
         {Length::Unit::Inch, Entry{"inch", "inches"}},
         {Length::Unit::Foot, Entry{"foot", "feet"}},
         {Length::Unit::Yard, Entry{"yard", "yards"}},
-        {Length::Unit::Mile, Entry{"mile", "miles"}}};
+        {Length::Unit::Mile, Entry{"mile", "miles"}},
+    };
 
     auto iter = STRINGS.find(unit);
 
@@ -577,51 +581,53 @@ FromString(std::string unitString)
 {
     using UnitTable = std::unordered_map<std::string, Length::Unit>;
 
-    static const UnitTable UNITS{{"nm", Length::Unit::Nanometer},
-                                 {"nanometer", Length::Unit::Nanometer},
-                                 {"nanometers", Length::Unit::Nanometer},
-                                 {"nanometre", Length::Unit::Nanometer},
-                                 {"nanometres", Length::Unit::Nanometer},
-                                 {"um", Length::Unit::Micrometer},
-                                 {"micrometer", Length::Unit::Micrometer},
-                                 {"micrometers", Length::Unit::Micrometer},
-                                 {"micrometre", Length::Unit::Micrometer},
-                                 {"micrometres", Length::Unit::Micrometer},
-                                 {"mm", Length::Unit::Millimeter},
-                                 {"millimeter", Length::Unit::Millimeter},
-                                 {"millimeters", Length::Unit::Millimeter},
-                                 {"millimetre", Length::Unit::Millimeter},
-                                 {"millimetres", Length::Unit::Millimeter},
-                                 {"cm", Length::Unit::Centimeter},
-                                 {"centimeter", Length::Unit::Centimeter},
-                                 {"centimeters", Length::Unit::Centimeter},
-                                 {"centimetre", Length::Unit::Centimeter},
-                                 {"centimetres", Length::Unit::Centimeter},
-                                 {"m", Length::Unit::Meter},
-                                 {"meter", Length::Unit::Meter},
-                                 {"metre", Length::Unit::Meter},
-                                 {"meters", Length::Unit::Meter},
-                                 {"metres", Length::Unit::Meter},
-                                 {"km", Length::Unit::Kilometer},
-                                 {"kilometer", Length::Unit::Kilometer},
-                                 {"kilometers", Length::Unit::Kilometer},
-                                 {"kilometre", Length::Unit::Kilometer},
-                                 {"kilometres", Length::Unit::Kilometer},
-                                 {"nmi", Length::Unit::NauticalMile},
-                                 {"nauticalmile", Length::Unit::NauticalMile},
-                                 {"nauticalmiles", Length::Unit::NauticalMile},
-                                 {"in", Length::Unit::Inch},
-                                 {"inch", Length::Unit::Inch},
-                                 {"inches", Length::Unit::Inch},
-                                 {"ft", Length::Unit::Foot},
-                                 {"foot", Length::Unit::Foot},
-                                 {"feet", Length::Unit::Foot},
-                                 {"yd", Length::Unit::Yard},
-                                 {"yard", Length::Unit::Yard},
-                                 {"yards", Length::Unit::Yard},
-                                 {"mi", Length::Unit::Mile},
-                                 {"mile", Length::Unit::Mile},
-                                 {"miles", Length::Unit::Mile}};
+    static const UnitTable UNITS{
+        {"nm", Length::Unit::Nanometer},
+        {"nanometer", Length::Unit::Nanometer},
+        {"nanometers", Length::Unit::Nanometer},
+        {"nanometre", Length::Unit::Nanometer},
+        {"nanometres", Length::Unit::Nanometer},
+        {"um", Length::Unit::Micrometer},
+        {"micrometer", Length::Unit::Micrometer},
+        {"micrometers", Length::Unit::Micrometer},
+        {"micrometre", Length::Unit::Micrometer},
+        {"micrometres", Length::Unit::Micrometer},
+        {"mm", Length::Unit::Millimeter},
+        {"millimeter", Length::Unit::Millimeter},
+        {"millimeters", Length::Unit::Millimeter},
+        {"millimetre", Length::Unit::Millimeter},
+        {"millimetres", Length::Unit::Millimeter},
+        {"cm", Length::Unit::Centimeter},
+        {"centimeter", Length::Unit::Centimeter},
+        {"centimeters", Length::Unit::Centimeter},
+        {"centimetre", Length::Unit::Centimeter},
+        {"centimetres", Length::Unit::Centimeter},
+        {"m", Length::Unit::Meter},
+        {"meter", Length::Unit::Meter},
+        {"metre", Length::Unit::Meter},
+        {"meters", Length::Unit::Meter},
+        {"metres", Length::Unit::Meter},
+        {"km", Length::Unit::Kilometer},
+        {"kilometer", Length::Unit::Kilometer},
+        {"kilometers", Length::Unit::Kilometer},
+        {"kilometre", Length::Unit::Kilometer},
+        {"kilometres", Length::Unit::Kilometer},
+        {"nmi", Length::Unit::NauticalMile},
+        {"nauticalmile", Length::Unit::NauticalMile},
+        {"nauticalmiles", Length::Unit::NauticalMile},
+        {"in", Length::Unit::Inch},
+        {"inch", Length::Unit::Inch},
+        {"inches", Length::Unit::Inch},
+        {"ft", Length::Unit::Foot},
+        {"foot", Length::Unit::Foot},
+        {"feet", Length::Unit::Foot},
+        {"yd", Length::Unit::Yard},
+        {"yard", Length::Unit::Yard},
+        {"yards", Length::Unit::Yard},
+        {"mi", Length::Unit::Mile},
+        {"mile", Length::Unit::Mile},
+        {"miles", Length::Unit::Mile},
+    };
 
     // function to trim whitespace and convert to lowercase in one pass
     static auto Normalize = [](const std::string& str) {

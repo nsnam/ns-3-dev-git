@@ -400,7 +400,8 @@ MultiLinkSetupTest::DoRun()
     std::map<WifiPhyBand, Ptr<MultiModelSpectrumChannel>> channelMap = {
         {WIFI_PHY_BAND_2_4GHZ, CreateObject<MultiModelSpectrumChannel>()},
         {WIFI_PHY_BAND_5GHZ, CreateObject<MultiModelSpectrumChannel>()},
-        {WIFI_PHY_BAND_6GHZ, CreateObject<MultiModelSpectrumChannel>()}};
+        {WIFI_PHY_BAND_6GHZ, CreateObject<MultiModelSpectrumChannel>()},
+    };
 
     SpectrumWifiPhyHelper staPhyHelper;
     SpectrumWifiPhyHelper apPhyHelper;

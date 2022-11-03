@@ -159,7 +159,8 @@ const HeRu::SubcarrierGroups HeRu::m_heRuSubcarrierGroups = {
     {{80, HeRu::RU_484_TONE},
      {/* 1 */ {{-500, -17}},
       /* 2 */ {{17, 500}}}},
-    {{80, HeRu::RU_996_TONE}, {/* 1 */ {{-500, -3}, {3, 500}}}}};
+    {{80, HeRu::RU_996_TONE}, {/* 1 */ {{-500, -3}, {3, 500}}}},
+};
 
 // Table 27-26 IEEE802.11ax-2021
 const HeRu::RuAllocationMap HeRu::m_heRuAllocations = {

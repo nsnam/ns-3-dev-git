@@ -104,7 +104,8 @@ static const struct EutraChannelNumbers
     {37, 1910, 37550, 37550, 37749, 1910, 37550, 37550, 37749},
     {38, 2570, 37750, 37750, 38249, 2570, 37750, 37750, 38249},
     {39, 1880, 38250, 38250, 38649, 1880, 38250, 38250, 38649},
-    {40, 2300, 38650, 38650, 39649, 2300, 38650, 38650, 39649}}; ///< eutra channel numbers
+    {40, 2300, 38650, 38650, 39649, 2300, 38650, 38650, 39649},
+}; ///< eutra channel numbers
 
 /// number of EUTRA bands
 #define NUM_EUTRA_BANDS (sizeof(g_eutraChannelNumbers) / sizeof(EutraChannelNumbers))

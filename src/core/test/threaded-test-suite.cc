@@ -289,11 +289,16 @@ class ThreadedSimulatorTestSuite : public TestSuite
     ThreadedSimulatorTestSuite()
         : TestSuite("threaded-simulator")
     {
-        std::string simulatorTypes[] = {"ns3::RealtimeSimulatorImpl", "ns3::DefaultSimulatorImpl"};
-        std::string schedulerTypes[] = {"ns3::ListScheduler",
-                                        "ns3::HeapScheduler",
-                                        "ns3::MapScheduler",
-                                        "ns3::CalendarScheduler"};
+        std::string simulatorTypes[] = {
+            "ns3::RealtimeSimulatorImpl",
+            "ns3::DefaultSimulatorImpl",
+        };
+        std::string schedulerTypes[] = {
+            "ns3::ListScheduler",
+            "ns3::HeapScheduler",
+            "ns3::MapScheduler",
+            "ns3::CalendarScheduler",
+        };
         unsigned int threadCounts[] = {0, 2, 10, 20};
         ObjectFactory factory;
 

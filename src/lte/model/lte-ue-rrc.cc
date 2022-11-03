@@ -91,19 +91,21 @@ UeMemberLteUeCmacSapUser::NotifyRandomAccessFailed()
 }
 
 /// Map each of UE RRC states to its string representation.
-static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] = {"IDLE_START",
-                                                                   "IDLE_CELL_SEARCH",
-                                                                   "IDLE_WAIT_MIB_SIB1",
-                                                                   "IDLE_WAIT_MIB",
-                                                                   "IDLE_WAIT_SIB1",
-                                                                   "IDLE_CAMPED_NORMALLY",
-                                                                   "IDLE_WAIT_SIB2",
-                                                                   "IDLE_RANDOM_ACCESS",
-                                                                   "IDLE_CONNECTING",
-                                                                   "CONNECTED_NORMALLY",
-                                                                   "CONNECTED_HANDOVER",
-                                                                   "CONNECTED_PHY_PROBLEM",
-                                                                   "CONNECTED_REESTABLISHING"};
+static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] = {
+    "IDLE_START",
+    "IDLE_CELL_SEARCH",
+    "IDLE_WAIT_MIB_SIB1",
+    "IDLE_WAIT_MIB",
+    "IDLE_WAIT_SIB1",
+    "IDLE_CAMPED_NORMALLY",
+    "IDLE_WAIT_SIB2",
+    "IDLE_RANDOM_ACCESS",
+    "IDLE_CONNECTING",
+    "CONNECTED_NORMALLY",
+    "CONNECTED_HANDOVER",
+    "CONNECTED_PHY_PROBLEM",
+    "CONNECTED_REESTABLISHING",
+};
 
 /////////////////////////////
 // ue RRC methods

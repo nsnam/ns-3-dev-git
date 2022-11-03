@@ -62,42 +62,12 @@ main(int argc, char* argv[])
 {
     std::ofstream file("80211n-mimo-throughput.plt");
 
-    // clang-format off
-  std::vector <std::string> modes = {
-    "HtMcs0",
-    "HtMcs1",
-    "HtMcs2",
-    "HtMcs3",
-    "HtMcs4",
-    "HtMcs5",
-    "HtMcs6",
-    "HtMcs7",
-    "HtMcs8",
-    "HtMcs9",
-    "HtMcs10",
-    "HtMcs11",
-    "HtMcs12",
-    "HtMcs13",
-    "HtMcs14",
-    "HtMcs15",
-    "HtMcs16",
-    "HtMcs17",
-    "HtMcs18",
-    "HtMcs19",
-    "HtMcs20",
-    "HtMcs21",
-    "HtMcs22",
-    "HtMcs23",
-    "HtMcs24",
-    "HtMcs25",
-    "HtMcs26",
-    "HtMcs27",
-    "HtMcs28",
-    "HtMcs29",
-    "HtMcs30",
-    "HtMcs31",
-  };
-    // clang-format on
+    std::vector<std::string> modes = {
+        "HtMcs0",  "HtMcs1",  "HtMcs2",  "HtMcs3",  "HtMcs4",  "HtMcs5",  "HtMcs6",  "HtMcs7",
+        "HtMcs8",  "HtMcs9",  "HtMcs10", "HtMcs11", "HtMcs12", "HtMcs13", "HtMcs14", "HtMcs15",
+        "HtMcs16", "HtMcs17", "HtMcs18", "HtMcs19", "HtMcs20", "HtMcs21", "HtMcs22", "HtMcs23",
+        "HtMcs24", "HtMcs25", "HtMcs26", "HtMcs27", "HtMcs28", "HtMcs29", "HtMcs30", "HtMcs31",
+    };
 
     bool udp = true;
     double simulationTime = 5; // seconds

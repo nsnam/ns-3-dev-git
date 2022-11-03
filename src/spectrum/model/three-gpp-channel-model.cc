@@ -45,7 +45,8 @@ NS_OBJECT_ENSURE_REGISTERED(ThreeGppChannelModel);
 /// (Table 7.5-3)
 static const double offSetAlpha[20] = {
     0.0447, -0.0447, 0.1413, -0.1413, 0.2492, -0.2492, 0.3715, -0.3715, 0.5129, -0.5129,
-    0.6797, -0.6797, 0.8844, -0.8844, 1.1481, -1.1481, 1.5195, -1.5195, 2.1551, -2.1551};
+    0.6797, -0.6797, 0.8844, -0.8844, 1.1481, -1.1481, 1.5195, -1.5195, 2.1551, -2.1551,
+};
 
 /**
  * The square root matrix for <em>RMa LOS</em>, which is generated using the

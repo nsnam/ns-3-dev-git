@@ -53,7 +53,8 @@ static const struct FrStrictDownlinkDefaultConfiguration
     {3, 75, 36, 24, 15},
     {1, 100, 28, 0, 24},
     {2, 100, 28, 24, 24},
-    {3, 100, 28, 48, 24}}; ///< the strict downlink default configuration
+    {3, 100, 28, 48, 24},
+}; ///< the strict downlink default configuration
 
 /// FrStrictUplinkDefaultConfiguration structure
 static const struct FrStrictUplinkDefaultConfiguration
@@ -78,7 +79,8 @@ static const struct FrStrictUplinkDefaultConfiguration
     {3, 75, 36, 24, 15},
     {1, 100, 28, 0, 24},
     {2, 100, 28, 24, 24},
-    {3, 100, 28, 48, 24}}; ///< the strict uplink default configuration
+    {3, 100, 28, 48, 24},
+}; ///< the strict uplink default configuration
 
 /** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS(sizeof(g_frStrictDownlinkDefaultConfiguration) /

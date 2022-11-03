@@ -241,22 +241,24 @@ Ipv6Address
 Ipv6Address::MakeIpv4MappedAddress(Ipv4Address addr)
 {
     NS_LOG_FUNCTION(addr);
-    uint8_t buf[16] = {0x00,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0xff,
-                       0xff,
-                       0x00,
-                       0x00,
-                       0x00,
-                       0x00};
+    uint8_t buf[16] = {
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xff,
+        0xff,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+    };
     addr.Serialize(&buf[12]);
     return (Ipv6Address(buf));
 }

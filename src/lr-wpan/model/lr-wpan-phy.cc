@@ -64,20 +64,24 @@ const LrWpanPhyDataAndSymbolRates LrWpanPhy::dataSymbolRates[IEEE_802_15_4_INVAL
     {250.0, 62.5},
     {100.0, 25.0},
     {250.0, 62.5},
-    {250.0, 62.5}};
+    {250.0, 62.5},
+};
+
 // IEEE802.15.4-2006,IEEE 802.15.4c-2009, IEEE 802.15.4d-2009  Table 19 and Table 20 in section 6.3.
 // The PHR is 1 octet and it follows phySymbolsPerOctet in Table 23
 // The index follows LrWpanPhyOption
 const LrWpanPhyPpduHeaderSymbolNumber
-    LrWpanPhy::ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION] = {{32.0, 8.0, 8.0},
-                                                                            {32.0, 8.0, 8.0},
-                                                                            {32.0, 8.0, 8.0},
-                                                                            {2.0, 1.0, 0.4},
-                                                                            {6.0, 1.0, 1.6},
-                                                                            {8.0, 2.0, 2.0},
-                                                                            {8.0, 2.0, 2.0},
-                                                                            {8.0, 2.0, 2.0},
-                                                                            {8.0, 2.0, 2.0}};
+    LrWpanPhy::ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION] = {
+        {32.0, 8.0, 8.0},
+        {32.0, 8.0, 8.0},
+        {32.0, 8.0, 8.0},
+        {2.0, 1.0, 0.4},
+        {6.0, 1.0, 1.6},
+        {8.0, 2.0, 2.0},
+        {8.0, 2.0, 2.0},
+        {8.0, 2.0, 2.0},
+        {8.0, 2.0, 2.0},
+};
 
 TypeId
 LrWpanPhy::GetTypeId()

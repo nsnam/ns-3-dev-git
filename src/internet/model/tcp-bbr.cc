@@ -131,10 +131,12 @@ TcpBbr::TcpBbr(const TcpBbr& sock)
     NS_LOG_FUNCTION(this);
 }
 
-const char* const TcpBbr::BbrModeName[BBR_PROBE_RTT + 1] = {"BBR_STARTUP",
-                                                            "BBR_DRAIN",
-                                                            "BBR_PROBE_BW",
-                                                            "BBR_PROBE_RTT"};
+const char* const TcpBbr::BbrModeName[BBR_PROBE_RTT + 1] = {
+    "BBR_STARTUP",
+    "BBR_DRAIN",
+    "BBR_PROBE_BW",
+    "BBR_PROBE_RTT",
+};
 
 void
 TcpBbr::SetStream(uint32_t stream)

@@ -44,22 +44,24 @@ NS_OBJECT_ENSURE_REGISTERED(LteAmc);
  * file `TBS_support.xls` tab "MCS Table" (rounded to 2 decimal digits).
  * The index of the vector (range 0-15) identifies the CQI value.
  */
-static const double SpectralEfficiencyForCqi[16] = {0.0, // out of range
-                                                    0.15,
-                                                    0.23,
-                                                    0.38,
-                                                    0.6,
-                                                    0.88,
-                                                    1.18,
-                                                    1.48,
-                                                    1.91,
-                                                    2.41,
-                                                    2.73,
-                                                    3.32,
-                                                    3.9,
-                                                    4.52,
-                                                    5.12,
-                                                    5.55};
+static const double SpectralEfficiencyForCqi[16] = {
+    0.0, // out of range
+    0.15,
+    0.23,
+    0.38,
+    0.6,
+    0.88,
+    1.18,
+    1.48,
+    1.91,
+    2.41,
+    2.73,
+    3.32,
+    3.9,
+    4.52,
+    5.12,
+    5.55,
+};
 
 #if 0 // currently unused
 /**
@@ -91,23 +93,28 @@ static const int ModulationSchemeForMcs[32] = {
  */
 static const double SpectralEfficiencyForMcs[32] = {
     0.15, 0.19, 0.23, 0.31, 0.38, 0.49, 0.6, 0.74, 0.88, 1.03, 1.18, 1.33, 1.48, 1.7, 1.91, 2.16,
-    2.41, 2.57, 2.73, 3.03, 3.32, 3.61, 3.9, 4.21, 4.52, 4.82, 5.12, 5.33, 5.55, 0,   0,    0};
+    2.41, 2.57, 2.73, 3.03, 3.32, 3.61, 3.9, 4.21, 4.52, 4.82, 5.12, 5.33, 5.55, 0,   0,    0,
+};
 
 /**
  * Table of MCS index (IMCS) and its TBS index (ITBS). Taken from 3GPP TS
  * 36.213 v8.8.0 Table 7.1.7.1-1: _Modulation and TBS index table for PDSCH_.
  * The index of the vector (range 0-28) identifies the MCS index.
  */
-static const int McsToItbsDl[29] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  9,  10, 11, 12, 13,
-                                    14, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
+static const int McsToItbsDl[29] = {
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  9,  10, 11, 12, 13,
+    14, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+};
 
 /**
  * Table of MCS index (IMCS) and its TBS index (ITBS). Taken from 3GPP TS
  * 36.213 v8.8.0 Table 8.6.1-1: _Modulation, TBS index and redundancy version table for PUSCH_.
  * The index of the vector (range 0-28) identifies the MCS index.
  */
-static const int McsToItbsUl[29] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 10, 11, 12, 13,
-                                    14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 23, 24, 25, 26};
+static const int McsToItbsUl[29] = {
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 10, 11, 12, 13,
+    14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 23, 24, 25, 26,
+};
 
 /**
  * Table of number of physical resource blocks (NPRB), TBS index (ITBS), and
@@ -444,8 +451,7 @@ static const int TransportBlockSizeTable[110][27] = {
                    43816, 46888, 51024, 55056, 59256, 61664, 66592, 68808, 75376},
     /* NPRB 110*/ {3112,  4008,  4968,  6456,  7992,  9528,  11448, 13536, 15264,
                    17568, 19080, 22152, 25456, 28336, 31704, 34008, 35160, 39232,
-                   43816, 46888, 51024, 55056, 59256, 63776, 66592, 71112, 75376}
-
+                   43816, 46888, 51024, 55056, 59256, 63776, 66592, 71112, 75376},
 };
 
 LteAmc::LteAmc()

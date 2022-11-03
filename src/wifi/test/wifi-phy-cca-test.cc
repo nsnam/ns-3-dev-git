@@ -60,9 +60,11 @@ constexpr uint32_t P160_CENTER_FREQUENCY = P80_CENTER_FREQUENCY + 40;
 const Time smallDelta = NanoSeconds(1);
 // add small delta to be right after aCCATime, since test checks are scheduled before wifi events
 const Time aCcaTime = MicroSeconds(4) + smallDelta;
-const std::map<uint16_t, Time> PpduDurations = {{20, NanoSeconds(1009600)},
-                                                {40, NanoSeconds(533600)},
-                                                {80, NanoSeconds(275200)}};
+const std::map<uint16_t, Time> PpduDurations = {
+    {20, NanoSeconds(1009600)},
+    {40, NanoSeconds(533600)},
+    {80, NanoSeconds(275200)},
+};
 
 /**
  * \ingroup wifi-test

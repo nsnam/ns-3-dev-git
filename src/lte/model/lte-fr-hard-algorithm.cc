@@ -51,7 +51,8 @@ static const struct FrHardDownlinkDefaultConfiguration
     {3, 75, 48, 27},
     {1, 100, 0, 32},
     {2, 100, 32, 32},
-    {3, 100, 64, 36}}; ///< the hard downlink default configuration
+    {3, 100, 64, 36},
+}; ///< the hard downlink default configuration
 
 /// FrHardUplinkDefaultConfiguration structure
 static const struct FrHardUplinkDefaultConfiguration
@@ -75,7 +76,8 @@ static const struct FrHardUplinkDefaultConfiguration
     {3, 75, 48, 27},
     {1, 100, 0, 32},
     {2, 100, 32, 32},
-    {3, 100, 64, 36}}; ///< the hard uplink default configuration
+    {3, 100, 64, 36},
+}; ///< the hard uplink default configuration
 
 /** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS(sizeof(g_frHardDownlinkDefaultConfiguration) /

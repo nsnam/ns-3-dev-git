@@ -48,16 +48,18 @@ NS_OBJECT_ENSURE_REGISTERED(UdpTraceClient);
 /**
  * \brief Default trace to send
  */
-struct UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {{0, 534, 'I'},
-                                                                        {40, 1542, 'P'},
-                                                                        {120, 134, 'B'},
-                                                                        {80, 390, 'B'},
-                                                                        {240, 765, 'P'},
-                                                                        {160, 407, 'B'},
-                                                                        {200, 504, 'B'},
-                                                                        {360, 903, 'P'},
-                                                                        {280, 421, 'B'},
-                                                                        {320, 587, 'B'}};
+struct UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
+    {0, 534, 'I'},
+    {40, 1542, 'P'},
+    {120, 134, 'B'},
+    {80, 390, 'B'},
+    {240, 765, 'P'},
+    {160, 407, 'B'},
+    {200, 504, 'B'},
+    {360, 903, 'P'},
+    {280, 421, 'B'},
+    {320, 587, 'B'},
+};
 
 TypeId
 UdpTraceClient::GetTypeId()

@@ -53,7 +53,8 @@ static const struct FfrSoftDownlinkDefaultConfiguration
     {3, 75, 36, 24, 15},
     {1, 100, 28, 0, 24},
     {2, 100, 28, 24, 24},
-    {3, 100, 28, 48, 24}}; ///< the soft downlink default configuration
+    {3, 100, 28, 48, 24},
+}; ///< the soft downlink default configuration
 
 /// FfrSoftUplinkDefaultConfiguration structure
 static const struct FfrSoftUplinkDefaultConfiguration
@@ -78,7 +79,8 @@ static const struct FfrSoftUplinkDefaultConfiguration
     {3, 75, 36, 24, 15},
     {1, 100, 28, 0, 24},
     {2, 100, 28, 24, 24},
-    {3, 100, 28, 48, 24}}; ///< the soft uplink default configuration
+    {3, 100, 28, 48, 24},
+}; ///< the soft uplink default configuration
 
 /** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS(sizeof(g_ffrSoftDownlinkDefaultConfiguration) /

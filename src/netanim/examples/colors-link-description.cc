@@ -40,7 +40,7 @@ struct rgb
 struct rgb colors[] = {
     {255, 0, 0}, // Red
     {0, 255, 0}, // Blue
-    {0, 0, 255}  // Green
+    {0, 0, 255}, // Green
 };
 
 void

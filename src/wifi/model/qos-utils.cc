@@ -123,10 +123,12 @@ operator<=(enum AcIndex left, enum AcIndex right)
     return !(left > right);
 }
 
-const std::map<AcIndex, WifiAc> wifiAcList = {{AC_BE, {0, 3}},
-                                              {AC_BK, {1, 2}},
-                                              {AC_VI, {4, 5}},
-                                              {AC_VO, {6, 7}}};
+const std::map<AcIndex, WifiAc> wifiAcList = {
+    {AC_BE, {0, 3}},
+    {AC_BK, {1, 2}},
+    {AC_VI, {4, 5}},
+    {AC_VO, {6, 7}},
+};
 
 AcIndex
 QosUtilsMapTidToAc(uint8_t tid)

@@ -371,12 +371,14 @@ BenchSuite::Log() const
 #undef ACCUMULATE
     }
 
-    auto stdev = Result{{std::sqrt(moment2.init.time / n),
-                         std::sqrt(moment2.init.rate / n),
-                         std::sqrt(moment2.init.period / n)},
-                        {std::sqrt(moment2.run.time / n),
-                         std::sqrt(moment2.run.rate / n),
-                         std::sqrt(moment2.run.period / n)}};
+    auto stdev = Result{
+        {std::sqrt(moment2.init.time / n),
+         std::sqrt(moment2.init.rate / n),
+         std::sqrt(moment2.init.period / n)},
+        {std::sqrt(moment2.run.time / n),
+         std::sqrt(moment2.run.rate / n),
+         std::sqrt(moment2.run.period / n)},
+    };
 
     average.Log("average");
     stdev.Log("stdev");

@@ -37,22 +37,24 @@ NS_LOG_COMPONENT_DEFINE("LteFfrEnhancedAlgorithm");
 NS_OBJECT_ENSURE_REGISTERED(LteFfrEnhancedAlgorithm);
 
 /// Spectral efficiency for CQI table
-static const double SpectralEfficiencyForCqi[16] = {0.0, // out of range
-                                                    0.15,
-                                                    0.23,
-                                                    0.38,
-                                                    0.6,
-                                                    0.88,
-                                                    1.18,
-                                                    1.48,
-                                                    1.91,
-                                                    2.41,
-                                                    2.73,
-                                                    3.32,
-                                                    3.9,
-                                                    4.52,
-                                                    5.12,
-                                                    5.55};
+static const double SpectralEfficiencyForCqi[16] = {
+    0.0, // out of range
+    0.15,
+    0.23,
+    0.38,
+    0.6,
+    0.88,
+    1.18,
+    1.48,
+    1.91,
+    2.41,
+    2.73,
+    3.32,
+    3.9,
+    4.52,
+    5.12,
+    5.55,
+};
 
 /// FfrEnhancedDownlinkDefaultConfiguration structure
 static const struct FfrEnhancedDownlinkDefaultConfiguration
@@ -74,7 +76,8 @@ static const struct FfrEnhancedDownlinkDefaultConfiguration
     {3, 75, 48, 8, 16},
     {1, 100, 0, 16, 16},
     {2, 100, 32, 16, 16},
-    {3, 100, 64, 16, 16}}; ///< the enhanced downlink default configation
+    {3, 100, 64, 16, 16},
+}; ///< the enhanced downlink default configation
 
 /// FfrEnhancedUplinkDefaultConfiguration structure
 static const struct FfrEnhancedUplinkDefaultConfiguration
@@ -96,7 +99,8 @@ static const struct FfrEnhancedUplinkDefaultConfiguration
     {3, 75, 48, 8, 16},
     {1, 100, 0, 16, 16},
     {2, 100, 32, 16, 16},
-    {3, 100, 64, 16, 16}}; ///< the enhanced uplink default configuration
+    {3, 100, 64, 16, 16},
+}; ///< the enhanced uplink default configuration
 
 /** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS(sizeof(g_ffrEnhancedDownlinkDefaultConfiguration) /

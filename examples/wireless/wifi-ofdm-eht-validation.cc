@@ -125,20 +125,22 @@ main(int argc, char* argv[])
     plotExtra << "set xrange [-5:55]\n\
 set yrange [0:1]\n";
     uint8_t lineNumber = 1;
-    const std::string colors[14] = {"green",
-                                    "blue",
-                                    "red",
-                                    "black",
-                                    "orange",
-                                    "purple",
-                                    "yellow",
-                                    "pink",
-                                    "grey",
-                                    "magenta",
-                                    "brown",
-                                    "turquoise",
-                                    "olive",
-                                    "beige"};
+    const std::string colors[14] = {
+        "green",
+        "blue",
+        "red",
+        "black",
+        "orange",
+        "purple",
+        "yellow",
+        "pink",
+        "grey",
+        "magenta",
+        "brown",
+        "turquoise",
+        "olive",
+        "beige",
+    };
     for (uint32_t i = 0; i < modes.size(); i++)
     {
         plotExtra << "set style line " << +lineNumber++ << " linewidth 5 linecolor rgb \""
