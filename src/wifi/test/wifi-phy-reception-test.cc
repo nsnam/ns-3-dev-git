@@ -49,6 +49,8 @@
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/wifi-utils.h"
 
+#include <optional>
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiPhyReceptionTest");
@@ -4293,6 +4295,276 @@ TestUnsupportedModulationReception::CheckResults()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Unsupported Bandwidth Reception Test
+ * This test checks whether a PHY receiving a PPDU sent over a channel width
+ * larger than the one supported by the PHY is getting dropped at the expected
+ * time. The expected time corresponds to the moment the PHY header indicating
+ * the channel width used to transmit the PPDU is received. Since we are considering
+ * 802.11ax for this test, this corresponds to the time HE-SIG-A is received.
+ */
+class TestUnsupportedBandwidthReception : public TestCase
+{
+  public:
+    TestUnsupportedBandwidthReception();
+
+  private:
+    void DoSetup() override;
+    void DoTeardown() override;
+    void DoRun() override;
+
+    /**
+     * Function to create a PPDU
+     *
+     * \param band the PHY band to use
+     * \param centerFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
+     * \param bandwidthMhz the bandwidth used for the transmission of the PPDU (in MHz)
+     */
+    void SendPpdu(WifiPhyBand band, uint16_t centerFreqMhz, uint16_t bandwidthMhz);
+
+    /**
+     * Function called upon a PSDU received successfully
+     * \param psdu the PSDU
+     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * \param txVector the transmit vector
+     * \param statusPerMpdu reception status per MPDU
+     */
+    void RxSuccess(Ptr<const WifiPsdu> psdu,
+                   RxSignalInfo rxSignalInfo,
+                   WifiTxVector txVector,
+                   std::vector<bool> statusPerMpdu);
+
+    /**
+     * Function called upon a PSDU received unsuccessfully
+     * \param psdu the PSDU
+     */
+    void RxFailure(Ptr<const WifiPsdu> psdu);
+
+    /**
+     * Function called upon a PSDU dropped by the PHY
+     * \param packet the packet that was dropped
+     * \param reason the reason the packet was dropped
+     */
+    void RxDropped(Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
+
+    /**
+     * Check the reception results
+     * \param expectedCountRxSuccess the expected number of RX success
+     * \param expectedCountRxFailure the expected number of RX failure
+     * \param expectedCountRxDropped the expected number of RX drop
+     * \param expectedLastRxSucceeded the expected time the last RX success occurred or std::nullopt
+     * if the expected number of RX success is not strictly positive \param expectedLastRxFailed the
+     * expected time the last RX failure occurred or std::nullopt if the expected number of RX
+     * failure is not strictly positive \param expectedLastRxDropped the expected time the last RX
+     * drop occurred or std::nullopt if the expected number of RX drop is not strictly positive
+     */
+    void CheckRx(uint32_t expectedCountRxSuccess,
+                 uint32_t expectedCountRxFailure,
+                 uint32_t expectedCountRxDropped,
+                 std::optional<Time> expectedLastRxSucceeded,
+                 std::optional<Time> expectedLastRxFailed,
+                 std::optional<Time> expectedLastRxDropped);
+
+    uint32_t m_countRxSuccess; ///< count RX success
+    uint32_t m_countRxFailure; ///< count RX failure
+    uint32_t m_countRxDropped; ///< count RX drop
+
+    std::optional<Time> m_lastRxSucceeded; ///< time of last RX success, if any
+    std::optional<Time> m_lastRxFailed;    ///< time of last RX failure, if any
+    std::optional<Time> m_lastRxDropped;   ///< time of last RX drop, if any
+
+    Ptr<SpectrumWifiPhy> m_phy; ///< PHY
+};
+
+TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
+    : TestCase("Check correct behavior when a STA is receiving a transmission using an unsupported "
+               "bandwidth"),
+      m_countRxSuccess(0),
+      m_countRxFailure(0),
+      m_countRxDropped(0),
+      m_lastRxSucceeded(std::nullopt),
+      m_lastRxFailed(std::nullopt),
+      m_lastRxDropped(std::nullopt)
+{
+}
+
+void
+TestUnsupportedBandwidthReception::SendPpdu(WifiPhyBand band,
+                                            uint16_t centerFreqMhz,
+                                            uint16_t bandwidthMhz)
+{
+    auto txVector =
+        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidthMhz, false);
+
+    auto pkt = Create<Packet>(1000);
+    WifiMacHeader hdr;
+
+    hdr.SetType(WIFI_MAC_QOSDATA);
+    hdr.SetQosTid(0);
+
+    Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
+    Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
+
+    auto ppdu = Create<HePpdu>(psdu, txVector, centerFreqMhz, txDuration, WIFI_PHY_BAND_5GHZ, 0);
+
+    auto txPowerSpectrum =
+        WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(centerFreqMhz,
+                                                                    bandwidthMhz,
+                                                                    DbmToW(-50),
+                                                                    bandwidthMhz);
+
+    auto txParams = Create<WifiSpectrumSignalParameters>();
+    txParams->psd = txPowerSpectrum;
+    txParams->txPhy = nullptr;
+    txParams->duration = txDuration;
+    txParams->ppdu = ppdu;
+
+    m_phy->StartRx(txParams);
+}
+
+void
+TestUnsupportedBandwidthReception::RxSuccess(Ptr<const WifiPsdu> psdu,
+                                             RxSignalInfo rxSignalInfo,
+                                             WifiTxVector txVector,
+                                             std::vector<bool> statusPerMpdu)
+{
+    NS_LOG_FUNCTION(this << *psdu << rxSignalInfo << txVector);
+    m_countRxSuccess++;
+    m_lastRxSucceeded = Simulator::Now();
+}
+
+void
+TestUnsupportedBandwidthReception::RxFailure(Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu);
+    m_countRxFailure++;
+    m_lastRxFailed = Simulator::Now();
+}
+
+void
+TestUnsupportedBandwidthReception::RxDropped(Ptr<const Packet> p, WifiPhyRxfailureReason reason)
+{
+    NS_LOG_FUNCTION(this << p << reason);
+    NS_ASSERT(reason == UNSUPPORTED_SETTINGS);
+    m_countRxDropped++;
+    m_lastRxDropped = Simulator::Now();
+}
+
+void
+TestUnsupportedBandwidthReception::CheckRx(uint32_t expectedCountRxSuccess,
+                                           uint32_t expectedCountRxFailure,
+                                           uint32_t expectedCountRxDropped,
+                                           std::optional<Time> expectedLastRxSucceeded,
+                                           std::optional<Time> expectedLastRxFailed,
+                                           std::optional<Time> expectedLastRxDropped)
+{
+    NS_TEST_ASSERT_MSG_EQ(m_countRxSuccess,
+                          expectedCountRxSuccess,
+                          "Didn't receive right number of successful packets");
+
+    NS_TEST_ASSERT_MSG_EQ(m_countRxFailure,
+                          expectedCountRxFailure,
+                          "Didn't receive right number of unsuccessful packets");
+
+    NS_TEST_ASSERT_MSG_EQ(m_countRxDropped,
+                          expectedCountRxDropped,
+                          "Didn't receive right number of dropped packets");
+
+    if (expectedCountRxSuccess > 0)
+    {
+        NS_ASSERT(m_lastRxSucceeded.has_value());
+        NS_ASSERT(expectedLastRxSucceeded.has_value());
+        NS_TEST_ASSERT_MSG_EQ(m_lastRxSucceeded.value(),
+                              expectedLastRxSucceeded.value(),
+                              "Didn't receive the last successful packet at the expected time");
+    }
+
+    if (expectedCountRxFailure > 0)
+    {
+        NS_ASSERT(m_lastRxFailed.has_value());
+        NS_ASSERT(expectedLastRxFailed.has_value());
+        NS_TEST_ASSERT_MSG_EQ(m_lastRxFailed.value(),
+                              expectedLastRxFailed.value(),
+                              "Didn't receive the last unsuccessful packet at the expected time");
+    }
+
+    if (expectedCountRxDropped > 0)
+    {
+        NS_ASSERT(m_lastRxDropped.has_value());
+        NS_ASSERT(expectedLastRxDropped.has_value());
+        NS_TEST_ASSERT_MSG_EQ(m_lastRxDropped.value(),
+                              expectedLastRxDropped.value(),
+                              "Didn't drop the last filtered packet at the expected time");
+    }
+}
+
+void
+TestUnsupportedBandwidthReception::DoSetup()
+{
+    m_phy = CreateObject<SpectrumWifiPhy>();
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    auto interferenceHelper = CreateObject<InterferenceHelper>();
+    m_phy->SetInterferenceHelper(interferenceHelper);
+    auto error = CreateObject<NistErrorRateModel>();
+    m_phy->SetErrorRateModel(error);
+
+    m_phy->SetReceiveOkCallback(MakeCallback(&TestUnsupportedBandwidthReception::RxSuccess, this));
+    m_phy->SetReceiveErrorCallback(
+        MakeCallback(&TestUnsupportedBandwidthReception::RxFailure, this));
+    m_phy->TraceConnectWithoutContext(
+        "PhyRxDrop",
+        MakeCallback(&TestUnsupportedBandwidthReception::RxDropped, this));
+}
+
+void
+TestUnsupportedBandwidthReception::DoTeardown()
+{
+    m_phy->Dispose();
+    m_phy = nullptr;
+}
+
+void
+TestUnsupportedBandwidthReception::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    int64_t streamNumber = 0;
+    m_phy->AssignStreams(streamNumber);
+
+    // Case 1: the PHY is operating on channel 36 (20 MHz) and receives a 40 MHz PPDU (channel 38).
+    // The PPDU should be dropped once HE-SIG-A is successfully received, since it contains
+    // indication about the BW used for the transmission and the PHY shall detect it is larger than
+    // its operating BW.
+    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, WIFI_PHY_BAND_5GHZ, 0});
+
+    Simulator::Schedule(Seconds(1.0),
+                        &TestUnsupportedBandwidthReception::SendPpdu,
+                        this,
+                        WIFI_PHY_BAND_5GHZ,
+                        5190,
+                        40);
+
+    auto heSigAExpectedRxTime = Seconds(1.0) + MicroSeconds(32);
+    Simulator::Schedule(Seconds(1.5),
+                        &TestUnsupportedBandwidthReception::CheckRx,
+                        this,
+                        0,
+                        0,
+                        1,
+                        std::nullopt,
+                        std::nullopt,
+                        heSigAExpectedRxTime);
+
+    // TODO: this test can be extended with other scenarios
+
+    Simulator::Run();
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Primary 20 MHz Covered By Ppdu Test
  * This test checks whether the functions WifiPpdu::DoesOverlapChannel and
  * WifiPpdu::CanBeReceived are returning the expected results.
@@ -4485,6 +4757,7 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite()
     AddTestCase(new TestPhyHeadersReception, TestCase::QUICK);
     AddTestCase(new TestAmpduReception, TestCase::QUICK);
     AddTestCase(new TestUnsupportedModulationReception(), TestCase::QUICK);
+    AddTestCase(new TestUnsupportedBandwidthReception(), TestCase::QUICK);
     AddTestCase(new TestPrimary20CoveredByPpdu(), TestCase::QUICK);
 }
 
