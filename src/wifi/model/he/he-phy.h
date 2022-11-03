@@ -114,6 +114,7 @@ class HePhy : public VhtPhy
     void NotifyCcaBusy(const Ptr<const WifiPpdu> ppdu,
                        Time duration,
                        WifiChannelListType channelType) override;
+    bool CanStartRx(Ptr<const WifiPpdu> ppdu) const override;
 
     /**
      * \return the BSS color of this PHY.

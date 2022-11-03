@@ -281,18 +281,6 @@ HePpdu::GetTransmissionChannelWidth() const
     }
 }
 
-bool
-HePpdu::CanBeReceived(uint16_t p20MinFreq, uint16_t p20MaxFreq) const
-{
-    NS_LOG_FUNCTION(this << p20MinFreq << p20MaxFreq);
-    if (IsUlMu())
-    {
-        // APs are able to receive TB PPDUs sent on a band other than the primary20 channel
-        return true;
-    }
-    return OfdmPpdu::CanBeReceived(p20MinFreq, p20MaxFreq);
-}
-
 HePpdu::TxPsdFlag
 HePpdu::GetTxPsdFlag() const
 {

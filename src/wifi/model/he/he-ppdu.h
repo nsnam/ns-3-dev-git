@@ -205,7 +205,6 @@ class HePpdu : public OfdmPpdu
     WifiPpduType GetType() const override;
     uint16_t GetStaId() const override;
     uint16_t GetTransmissionChannelWidth() const override;
-    bool CanBeReceived(uint16_t p20MinFreq, uint16_t p20MaxFreq) const override;
 
     /**
      * Get the payload of the PPDU.

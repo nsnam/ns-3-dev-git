@@ -267,6 +267,12 @@ SpectrumWifiPhy::DoChannelSwitch()
     }
 }
 
+bool
+SpectrumWifiPhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
+{
+    return GetPhyEntity(GetStandard())->CanStartRx(ppdu);
+}
+
 void
 SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
 {
@@ -397,20 +403,11 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
         return;
     }
 
-    // Unless we are receiving a TB PPDU, do not sync with this signal if the PPDU
-    // does not overlap with the receiver's primary20 channel
     if (wifiRxParams->txPhy)
     {
-        // if the channel width is a multiple of 20 MHz, then we consider the primary20 channel
-        uint16_t width = (GetChannelWidth() % 20 == 0 ? 20 : GetChannelWidth());
-        uint16_t p20MinFreq =
-            GetOperatingChannel().GetPrimaryChannelCenterFrequency(width) - width / 2;
-        uint16_t p20MaxFreq =
-            GetOperatingChannel().GetPrimaryChannelCenterFrequency(width) + width / 2;
-
-        if (!ppdu->CanBeReceived(p20MinFreq, p20MaxFreq))
+        if (!CanStartRx(ppdu))
         {
-            NS_LOG_INFO("Cannot receive the PPDU, consider it as interference");
+            NS_LOG_INFO("Cannot start reception of the PPDU, consider it as interference");
             m_interference->Add(ppdu, txVector, rxDuration, rxPowerW);
             SwitchMaybeToCcaBusy(ppdu);
             return;

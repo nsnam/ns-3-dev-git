@@ -145,7 +145,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      * \param p20MaxFreq the maximum frequency (MHz) of the primary channel
      * \return true if this PPDU can be received, false otherwise
      */
-    virtual bool CanBeReceived(uint16_t p20MinFreq, uint16_t p20MaxFreq) const;
+    bool CanBeReceived(uint16_t p20MinFreq, uint16_t p20MaxFreq) const;
 
     /**
      * Get the modulation used for the PPDU.
