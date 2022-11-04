@@ -1349,7 +1349,7 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
     const auto p20MinFreq = p20CenterFreq - (primaryWidth / 2);
     const auto p20MaxFreq = p20CenterFreq + (primaryWidth / 2);
 
-    return ppdu->CanBeReceived(p20MinFreq, p20MaxFreq);
+    return ppdu->DoesCoverChannel(p20MinFreq, p20MaxFreq);
 }
 
 } // namespace ns3

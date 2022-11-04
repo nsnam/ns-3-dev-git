@@ -4567,7 +4567,7 @@ TestUnsupportedBandwidthReception::DoRun()
  *
  * \brief Primary 20 MHz Covered By Ppdu Test
  * This test checks whether the functions WifiPpdu::DoesOverlapChannel and
- * WifiPpdu::CanBeReceived are returning the expected results.
+ * WifiPpdu::DoesCoverChannel are returning the expected results.
  */
 class TestPrimary20CoveredByPpdu : public TestCase
 {
@@ -4675,7 +4675,7 @@ TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
                           expectedP20Overlap,
                           "PPDU is not expected to overlap with the P20");
 
-    auto p20Covered = ppdu->CanBeReceived(p20MinFreq, p20MaxFreq);
+    auto p20Covered = ppdu->DoesCoverChannel(p20MinFreq, p20MaxFreq);
     NS_ASSERT(p20Covered == expectedP20Covered);
     NS_TEST_ASSERT_MSG_EQ(p20Covered,
                           expectedP20Covered,
