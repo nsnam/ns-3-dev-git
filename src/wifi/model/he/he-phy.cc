@@ -1755,7 +1755,8 @@ HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
      * or at the secondary 20 MHz channel, the secondary 40 MHz channel, or the secondary
      * 80 MHz channel.
      */
-    if (ppdu->GetTxVector().IsUlMu())
+    Ptr<WifiMac> mac = m_wifiPhy->GetDevice() ? m_wifiPhy->GetDevice()->GetMac() : nullptr;
+    if (ppdu->GetTxVector().IsUlMu() && mac && mac->GetTypeOfStation() == AP)
     {
         return true;
     }
