@@ -210,8 +210,9 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
                                               (primary80IsLower80 && phyIndex <= nRus / 2) ||
                                               (!primary80IsLower80 && phyIndex > nRus / 2));
                             HeRu::RuSpec ru(ruType, index, primary80);
-                            ru.SetPhyIndex(bw, GetOperatingChannel().GetPrimaryChannelIndex(20));
-                            NS_ABORT_IF(ru.GetPhyIndex() != phyIndex);
+                            NS_ABORT_IF(ru.GetPhyIndex(bw,
+                                                       GetOperatingChannel().GetPrimaryChannelIndex(
+                                                           20)) != phyIndex);
                             m_ruBands[channelWidth].insert({band, ru});
                         }
                     }

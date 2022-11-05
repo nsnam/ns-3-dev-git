@@ -35,12 +35,11 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
                  Time ppduDuration,
                  WifiPhyBand band,
                  uint64_t uid,
-                 TxPsdFlag flag,
-                 uint8_t p20Index)
-    : HePpdu(psdus, txVector, txCenterFreq, ppduDuration, band, uid, flag, p20Index)
+                 TxPsdFlag flag)
+    : HePpdu(psdus, txVector, txCenterFreq, ppduDuration, band, uid, flag)
 {
-    NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << ppduDuration << band << uid << flag
-                         << p20Index);
+    NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << ppduDuration << band << uid
+                         << flag);
 }
 
 EhtPpdu::~EhtPpdu()

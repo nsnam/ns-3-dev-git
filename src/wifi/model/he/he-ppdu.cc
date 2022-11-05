@@ -54,8 +54,7 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
                Time ppduDuration,
                WifiPhyBand band,
                uint64_t uid,
-               TxPsdFlag flag,
-               uint8_t p20Index)
+               TxPsdFlag flag)
     : OfdmPpdu(psdus.begin()->second,
                txVector,
                txCenterFreq,
@@ -72,10 +71,8 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
     m_psdus = psdus;
     if (txVector.IsMu())
     {
-        for (auto heMuUserInfo : txVector.GetHeMuUserInfoMap())
+        for (const auto& heMuUserInfo : txVector.GetHeMuUserInfoMap())
         {
-            // Set RU PHY index
-            heMuUserInfo.second.ru.SetPhyIndex(txVector.GetChannelWidth(), p20Index);
             auto [it, ret] = m_muUserInfos.emplace(heMuUserInfo);
             NS_ABORT_MSG_IF(!ret, "STA-ID " << heMuUserInfo.first << " already present");
         }

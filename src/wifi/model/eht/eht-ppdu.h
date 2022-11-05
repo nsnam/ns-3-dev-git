@@ -52,7 +52,6 @@ class EhtPpdu : public HePpdu
      * \param band the WifiPhyBand used for the transmission of this PPDU
      * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an EHT TB PPDU
      * \param flag the flag indicating the type of Tx PSD to build
-     * \param p20Index the index of the primary 20 MHz channel
      */
     EhtPpdu(const WifiConstPsduMap& psdus,
             const WifiTxVector& txVector,
@@ -60,8 +59,7 @@ class EhtPpdu : public HePpdu
             Time ppduDuration,
             WifiPhyBand band,
             uint64_t uid,
-            TxPsdFlag flag,
-            uint8_t p20Index);
+            TxPsdFlag flag);
     /**
      * Destructor for EhtPpdu.
      */

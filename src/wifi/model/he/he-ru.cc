@@ -425,8 +425,7 @@ HeRu::RuSpec::RuSpec()
 HeRu::RuSpec::RuSpec(RuType ruType, std::size_t index, bool primary80MHz)
     : m_ruType(ruType),
       m_index(index),
-      m_primary80MHz(primary80MHz),
-      m_phyIndex(0)
+      m_primary80MHz(primary80MHz)
 {
     NS_ABORT_MSG_IF(index == 0, "Index cannot be zero");
 }
@@ -452,33 +451,20 @@ HeRu::RuSpec::GetPrimary80MHz() const
     return m_primary80MHz;
 }
 
-void
-HeRu::RuSpec::SetPhyIndex(uint16_t bw, uint8_t p20Index)
+std::size_t
+HeRu::RuSpec::GetPhyIndex(uint16_t bw, uint8_t p20Index) const
 {
     bool primary80IsLower80 = (p20Index < bw / 40);
 
     if (bw < 160 || m_ruType == HeRu::RU_2x996_TONE || (primary80IsLower80 && m_primary80MHz) ||
         (!primary80IsLower80 && !m_primary80MHz))
     {
-        m_phyIndex = m_index;
+        return m_index;
     }
     else
     {
-        m_phyIndex = m_index + GetNRus(bw, m_ruType) / 2;
+        return m_index + GetNRus(bw, m_ruType) / 2;
     }
-}
-
-bool
-HeRu::RuSpec::IsPhyIndexSet() const
-{
-    return (m_phyIndex != 0);
-}
-
-std::size_t
-HeRu::RuSpec::GetPhyIndex() const
-{
-    NS_ABORT_MSG_IF(m_phyIndex == 0, "RU PHY index not set");
-    return m_phyIndex;
 }
 
 std::size_t
@@ -653,7 +639,7 @@ HeRu::DoesOverlap(uint16_t bw, RuSpec ru, const std::vector<RuSpec>& v)
 }
 
 bool
-HeRu::DoesOverlap(uint16_t bw, RuSpec ru, const SubcarrierGroup& toneRanges)
+HeRu::DoesOverlap(uint16_t bw, RuSpec ru, const SubcarrierGroup& toneRanges, uint8_t p20Index)
 {
     for (const auto& range : toneRanges)
     {
@@ -662,7 +648,8 @@ HeRu::DoesOverlap(uint16_t bw, RuSpec ru, const SubcarrierGroup& toneRanges)
             return true;
         }
 
-        SubcarrierGroup rangesRu = GetSubcarrierGroup(bw, ru.GetRuType(), ru.GetPhyIndex());
+        SubcarrierGroup rangesRu =
+            GetSubcarrierGroup(bw, ru.GetRuType(), ru.GetPhyIndex(bw, p20Index));
         for (auto& r : rangesRu)
         {
             if (range.second >= r.first && r.second >= range.first)
@@ -748,10 +735,6 @@ operator<<(std::ostream& os, const HeRu::RuSpec& ru)
 {
     os << "RU{" << ru.GetRuType() << "/" << ru.GetIndex() << "/"
        << (ru.GetPrimary80MHz() ? "primary80MHz" : "secondary80MHz");
-    if (ru.IsPhyIndexSet())
-    {
-        os << "[" << ru.GetPhyIndex() << "]";
-    }
     os << "}";
     return os;
 }

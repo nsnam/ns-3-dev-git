@@ -2408,7 +2408,6 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
                                          false);
 
     HeRu::RuSpec ru(HeRu::RU_106_TONE, staId, false);
-    ru.SetPhyIndex(DEFAULT_CHANNEL_WIDTH, 0);
     txVector.SetRu(ru, staId);
     txVector.SetMode(HePhy::GetHeMcs7(), staId);
     txVector.SetNss(1, staId);
@@ -2432,8 +2431,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
                                       ppduDuration,
                                       WIFI_PHY_BAND_5GHZ,
                                       uid,
-                                      HePpdu::PSD_NON_HE_PORTION,
-                                      0);
+                                      HePpdu::PSD_NON_HE_PORTION);
 
     // Send non-OFDMA part
     Time nonOfdmaDuration = m_phy->GetHePhy()->CalculateNonOfdmaDurationForHeTb(txVector);
@@ -3316,7 +3314,6 @@ TestUlOfdmaPhyTransmission::GetTxVectorForHeTbPpdu(uint16_t txStaId,
         index = 1;
     }
     HeRu::RuSpec ru(ruType, index, primary80MHz);
-    ru.SetPhyIndex(m_channelWidth, 0);
     txVector.SetRu(ru, txStaId);
     txVector.SetMode(HePhy::GetHeMcs7(), txStaId);
     txVector.SetNss(1, txStaId);
@@ -3371,13 +3368,11 @@ TestUlOfdmaPhyTransmission::SetTrigVector(uint8_t bssColor, TrigVectorInfo error
     uint16_t aid2 = (error == AID ? 4 : 2);
 
     HeRu::RuSpec ru1(ruType, 1, true);
-    ru1.SetPhyIndex(channelWidth, 0);
     txVector.SetRu(ru1, aid1);
     txVector.SetMode((error == MCS ? HePhy::GetHeMcs5() : HePhy::GetHeMcs7()), aid1);
     txVector.SetNss(1, aid1);
 
     HeRu::RuSpec ru2(ruType, (channelWidth == 160 ? 1 : 2), (channelWidth == 160 ? false : true));
-    ru2.SetPhyIndex(channelWidth, 0);
     txVector.SetRu(ru2, aid2);
     txVector.SetMode((error == MCS ? HePhy::GetHeMcs5() : HePhy::GetHeMcs7()), aid2);
     txVector.SetNss(1, aid2);

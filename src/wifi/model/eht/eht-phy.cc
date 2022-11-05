@@ -133,8 +133,7 @@ EhtPhy::BuildPpdu(const WifiConstPsduMap& psdus, const WifiTxVector& txVector, T
                            ppduDuration,
                            m_wifiPhy->GetPhyBand(),
                            ObtainNextUid(txVector),
-                           HePpdu::PSD_NON_HE_PORTION,
-                           m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20));
+                           HePpdu::PSD_NON_HE_PORTION);
 }
 
 PhyEntity::PhyFieldRxStatus
