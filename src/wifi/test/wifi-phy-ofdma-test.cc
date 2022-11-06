@@ -149,6 +149,7 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
     void DoDispose() override;
 
     using WifiPhy::Reset;
+    void StartTx(Ptr<const WifiPpdu> ppdu) override;
 
     /**
      * TracedCallback signature for UID of transmitted PPDU.
@@ -156,12 +157,6 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
      * \param uid the UID of the transmitted PPDU
      */
     typedef void (*TxPpduUidCallback)(uint64_t uid);
-
-    /**
-     * \param ppdu the PPDU to send
-     * \param txVector the TXVECTOR used for the transmission of the PPDU
-     */
-    void StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
 
     /**
      * Set the global PPDU UID counter.
@@ -263,10 +258,10 @@ OfdmaSpectrumWifiPhy::SetTriggerFrameUid(uint64_t uid)
 }
 
 void
-OfdmaSpectrumWifiPhy::StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
+OfdmaSpectrumWifiPhy::StartTx(Ptr<const WifiPpdu> ppdu)
 {
     m_phyTxPpduUidTrace(ppdu->GetUid());
-    SpectrumWifiPhy::StartTx(ppdu, txVector);
+    SpectrumWifiPhy::StartTx(ppdu);
 }
 
 std::map<std::pair<uint64_t, WifiPreamble>, Ptr<Event>>&

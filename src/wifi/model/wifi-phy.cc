@@ -1727,7 +1727,7 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     m_endTxEvent =
         Simulator::Schedule(txDuration, &WifiPhy::NotifyTxEnd, this, psdus); // TODO: fix for MU
 
-    StartTx(ppdu, txVector);
+    StartTx(ppdu);
     ppdu->ResetTxVector();
 
     m_channelAccessRequested = false;
@@ -2073,7 +2073,7 @@ double
 WifiPhy::GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const
 {
     NS_LOG_FUNCTION(this << m_powerRestricted << ppdu);
-    const WifiTxVector& txVector = ppdu->GetTxVector();
+    const auto& txVector = ppdu->GetTxVector();
     // Get transmit power before antenna gain
     double txPowerDbm;
     if (!m_powerRestricted)

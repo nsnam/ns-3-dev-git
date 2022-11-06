@@ -464,8 +464,7 @@ class HtPhy : public OfdmPhy
     bool IsAllConfigSupported(WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
     bool IsConfigSupported(Ptr<const WifiPpdu> ppdu) const override;
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
-                                                 Ptr<const WifiPpdu> ppdu,
-                                                 const WifiTxVector& txVector) const override;
+                                                 Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
     CcaIndication GetCcaIndication(const Ptr<const WifiPpdu> ppdu) override;
 

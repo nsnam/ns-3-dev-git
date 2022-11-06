@@ -1279,23 +1279,23 @@ PhyEntity::NotifyPayloadBegin(const WifiTxVector& txVector, const Time& payloadD
 }
 
 void
-PhyEntity::StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
+PhyEntity::StartTx(Ptr<const WifiPpdu> ppdu)
 {
-    NS_LOG_FUNCTION(this << ppdu << txVector);
+    NS_LOG_FUNCTION(this << ppdu);
     auto txPowerDbm = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
-    auto txPowerSpectrum = GetTxPowerSpectralDensity(DbmToW(txPowerDbm), ppdu, txVector);
-    Transmit(ppdu->GetTxDuration(), ppdu, txVector, txPowerDbm, txPowerSpectrum, "transmission");
+    auto txVector = ppdu->GetTxVector();
+    auto txPowerSpectrum = GetTxPowerSpectralDensity(DbmToW(txPowerDbm), ppdu);
+    Transmit(ppdu->GetTxDuration(), ppdu, txPowerDbm, txPowerSpectrum, "transmission");
 }
 
 void
 PhyEntity::Transmit(Time txDuration,
                     Ptr<const WifiPpdu> ppdu,
-                    const WifiTxVector& txVector,
                     double txPowerDbm,
                     Ptr<SpectrumValue> txPowerSpectrum,
                     const std::string& type)
 {
-    NS_LOG_FUNCTION(this << txDuration << ppdu << txVector << txPowerDbm << type);
+    NS_LOG_FUNCTION(this << txDuration << ppdu << txPowerDbm << type);
     NS_LOG_DEBUG("Start " << type << ": signal power before antenna gain=" << txPowerDbm << "dBm");
     auto txParams = Create<WifiSpectrumSignalParameters>();
     txParams->duration = txDuration;

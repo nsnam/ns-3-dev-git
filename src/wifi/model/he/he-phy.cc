@@ -346,7 +346,7 @@ HePhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
                             Time rxDuration)
 {
     NS_LOG_FUNCTION(this << ppdu << rxDuration);
-    const WifiTxVector& txVector = ppdu->GetTxVector();
+    const auto& txVector = ppdu->GetTxVector();
     auto hePpdu = DynamicCast<const HePpdu>(ppdu);
     NS_ASSERT(hePpdu);
     HePpdu::TxPsdFlag psdFlag = hePpdu->GetTxPsdFlag();
@@ -447,7 +447,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
     {
         auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
-        const WifiTxVector& txVector = ppdu->GetTxVector();
+        const auto& txVector = ppdu->GetTxVector();
         Time rxDuration = CalculateNonOfdmaDurationForHeTb(
             txVector); // the OFDMA part of the transmission will be added later on
         const auto& currentPreambleEvents = GetCurrentPreambleEvents();
@@ -505,7 +505,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     }
     else if (ppdu->GetType() == WIFI_PPDU_TYPE_DL_MU)
     {
-        const WifiTxVector& txVector = ppdu->GetTxVector();
+        const auto& txVector = ppdu->GetTxVector();
         Time rxDuration = CalculateNonOfdmaDurationForHeMu(
             txVector); // the OFDMA part of the transmission will be added later on
         event = CreateInterferenceEvent(ppdu, ppdu->GetTxVector(), rxDuration, rxPowersW);
@@ -747,7 +747,7 @@ Time
 HePhy::DoStartReceivePayload(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
-    const WifiTxVector& txVector = event->GetTxVector();
+    const auto& txVector = event->GetTxVector();
 
     if (!txVector.IsMu())
     {
@@ -1247,22 +1247,20 @@ HePhy::ObtainNextUid(const WifiTxVector& txVector)
 }
 
 Ptr<SpectrumValue>
-HePhy::GetTxPowerSpectralDensity(double txPowerW,
-                                 Ptr<const WifiPpdu> ppdu,
-                                 const WifiTxVector& txVector) const
+HePhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {
     auto hePpdu = DynamicCast<const HePpdu>(ppdu);
     NS_ASSERT(hePpdu);
     HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag();
-    return GetTxPowerSpectralDensity(txPowerW, ppdu, txVector, flag);
+    return GetTxPowerSpectralDensity(txPowerW, ppdu, flag);
 }
 
 Ptr<SpectrumValue>
 HePhy::GetTxPowerSpectralDensity(double txPowerW,
                                  Ptr<const WifiPpdu> ppdu,
-                                 const WifiTxVector& txVector,
                                  HePpdu::TxPsdFlag flag) const
 {
+    const auto& txVector = ppdu->GetTxVector();
     uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
     uint16_t channelWidth = txVector.GetChannelWidth();
     NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW << txVector);
@@ -1378,7 +1376,7 @@ HePhy::GetCenterFrequencyForNonOfdmaPart(const WifiTxVector& txVector, uint16_t 
 }
 
 void
-HePhy::StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
+HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
 {
     NS_LOG_FUNCTION(this << ppdu);
     if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || ppdu->GetType() == WIFI_PPDU_TYPE_DL_MU)
@@ -1395,44 +1393,38 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
         hePpdu->SetTxPsdFlag(HePpdu::PSD_NON_HE_PORTION);
 
         // non-OFDMA part
+        const auto& txVector = ppdu->GetTxVector();
         auto nonOfdmaDuration = ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU
                                     ? CalculateNonOfdmaDurationForHeTb(txVector)
                                     : CalculateNonOfdmaDurationForHeMu(txVector);
-        auto nonOfdmaTxPowerSpectrum = GetTxPowerSpectralDensity(DbmToW(nonOfdmaTxPowerDbm),
-                                                                 ppdu,
-                                                                 txVector,
-                                                                 HePpdu::PSD_NON_HE_PORTION);
+        auto nonOfdmaTxPowerSpectrum =
+            GetTxPowerSpectralDensity(DbmToW(nonOfdmaTxPowerDbm), ppdu, HePpdu::PSD_NON_HE_PORTION);
         Transmit(nonOfdmaDuration,
                  ppdu,
-                 txVector,
                  nonOfdmaTxPowerDbm,
                  nonOfdmaTxPowerSpectrum,
                  "non-OFDMA transmission");
 
         // OFDMA part
         auto ofdmaDuration = ppdu->GetTxDuration() - nonOfdmaDuration;
-        auto ofdmaTxPowerSpectrum = GetTxPowerSpectralDensity(DbmToW(ofdmaTxPowerDbm),
-                                                              ppdu,
-                                                              txVector,
-                                                              HePpdu::PSD_HE_PORTION);
+        auto ofdmaTxPowerSpectrum =
+            GetTxPowerSpectralDensity(DbmToW(ofdmaTxPowerDbm), ppdu, HePpdu::PSD_HE_PORTION);
         Simulator::Schedule(nonOfdmaDuration,
                             &HePhy::StartTxOfdma,
                             this,
                             ppdu,
-                            txVector,
                             ofdmaTxPowerDbm,
                             ofdmaTxPowerSpectrum,
                             ofdmaDuration);
     }
     else
     {
-        PhyEntity::StartTx(ppdu, txVector);
+        PhyEntity::StartTx(ppdu);
     }
 }
 
 void
 HePhy::StartTxOfdma(Ptr<const WifiPpdu> ppdu,
-                    const WifiTxVector& txVector,
                     double txPowerDbm,
                     Ptr<SpectrumValue> txPowerSpectrum,
                     Time ofdmaDuration)
@@ -1441,7 +1433,7 @@ HePhy::StartTxOfdma(Ptr<const WifiPpdu> ppdu,
     auto hePpdu = DynamicCast<const HePpdu>(ppdu);
     NS_ASSERT(hePpdu);
     hePpdu->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
-    Transmit(ofdmaDuration, ppdu, txVector, txPowerDbm, txPowerSpectrum, "OFDMA transmission");
+    Transmit(ofdmaDuration, ppdu, txPowerDbm, txPowerSpectrum, "OFDMA transmission");
 }
 
 Time

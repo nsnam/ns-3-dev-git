@@ -104,7 +104,7 @@ class HePhy : public VhtPhy
     void CancelAllEvents() override;
     uint16_t GetStaId(const Ptr<const WifiPpdu> ppdu) const override;
     uint16_t GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;
-    void StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
+    void StartTx(Ptr<const WifiPpdu> ppdu) override;
     Time CalculateTxDuration(WifiConstPsduMap psduMap,
                              const WifiTxVector& txVector,
                              WifiPhyBand band) const override;
@@ -448,8 +448,7 @@ class HePhy : public VhtPhy
     void DoAbortCurrentReception(WifiPhyRxfailureReason reason) override;
     uint64_t ObtainNextUid(const WifiTxVector& txVector) override;
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
-                                                 Ptr<const WifiPpdu> ppdu,
-                                                 const WifiTxVector& txVector) const override;
+                                                 Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
     WifiConstPsduMap GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu,
                                          const WifiTxVector& txVector) const override;
@@ -534,26 +533,22 @@ class HePhy : public VhtPhy
      *
      * \param txPowerW power in W to spread across the bands
      * \param ppdu the PPDU that will be transmitted
-     * \param txVector the transmission parameters
      * \param flag flag indicating whether the PSD is for non-HE portion or HE portion
      * \return Pointer to SpectrumValue
      */
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
                                                  Ptr<const WifiPpdu> ppdu,
-                                                 const WifiTxVector& txVector,
                                                  HePpdu::TxPsdFlag flag) const;
 
     /**
      * Start the transmission of the OFDMA part of the MU PPDU.
      *
      * \param ppdu the PPDU
-     * \param txVector the TXVECTOR used for the transmission of the PPDU
      * \param txPowerDbm the total TX power in dBm
      * \param txPowerSpectrum the TX PSD
      * \param ofdmaDuration the duration of the OFDMA part
      */
     void StartTxOfdma(Ptr<const WifiPpdu> ppdu,
-                      const WifiTxVector& txVector,
                       double txPowerDbm,
                       Ptr<SpectrumValue> txPowerSpectrum,
                       Time ofdmaDuration);
