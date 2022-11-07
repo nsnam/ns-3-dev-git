@@ -22,6 +22,8 @@
 #ifndef HE_PHY_H
 #define HE_PHY_H
 
+#include "he-ppdu.h"
+
 #include "ns3/callback.h"
 #include "ns3/vht-phy.h"
 #include "ns3/wifi-phy-band.h"
@@ -528,13 +530,33 @@ class HePhy : public VhtPhy
     Time GetSymbolDuration(const WifiTxVector& txVector) const override;
 
     /**
+     * This is a helper function to create the TX PSD of the non-HE and HE portions.
+     *
+     * \param txPowerW power in W to spread across the bands
+     * \param ppdu the PPDU that will be transmitted
+     * \param txVector the transmission parameters
+     * \param flag flag indicating whether the PSD is for non-HE portion or HE portion
+     * \return Pointer to SpectrumValue
+     */
+    Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
+                                                 Ptr<const WifiPpdu> ppdu,
+                                                 const WifiTxVector& txVector,
+                                                 HePpdu::TxPsdFlag flag) const;
+
+    /**
      * Start the transmission of the OFDMA part of the MU PPDU.
      *
      * \param ppdu the PPDU
-     * \param txVector the TXVECTOR
+     * \param txVector the TXVECTOR used for the transmission of the PPDU
+     * \param txPowerDbm the total TX power in dBm
+     * \param txPowerSpectrum the TX PSD
      * \param ofdmaDuration the duration of the OFDMA part
      */
-    void StartTxOfdma(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time ofdmaDuration);
+    void StartTxOfdma(Ptr<const WifiPpdu> ppdu,
+                      const WifiTxVector& txVector,
+                      double txPowerDbm,
+                      Ptr<SpectrumValue> txPowerSpectrum,
+                      Time ofdmaDuration);
 
     /**
      * Notify PHY state helper to switch to CCA busy state,

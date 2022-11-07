@@ -488,12 +488,16 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param txDuration the duration of the transmission
      * \param ppdu the PPDU to send
      * \param txVector the TXVECTOR used for the transmission of the PPDU
+     * \param txPowerDbm the total TX power in dBm
+     * \param txPowerSpectrum the TX PSD
      * \param type the type of transmission (for logging)
      */
     void Transmit(Time txDuration,
                   Ptr<const WifiPpdu> ppdu,
                   const WifiTxVector& txVector,
-                  std::string type);
+                  double txPowerDbm,
+                  Ptr<SpectrumValue> txPowerSpectrum,
+                  const std::string& type);
 
     /**
      * \param psduMap the PSDU(s) to transmit indexed by STA-ID

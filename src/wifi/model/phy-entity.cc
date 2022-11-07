@@ -1282,26 +1282,26 @@ void
 PhyEntity::StartTx(Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << ppdu << txVector);
-    Transmit(ppdu->GetTxDuration(), ppdu, txVector, "transmission");
+    auto txPowerDbm = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+    auto txPowerSpectrum = GetTxPowerSpectralDensity(DbmToW(txPowerDbm), ppdu, txVector);
+    Transmit(ppdu->GetTxDuration(), ppdu, txVector, txPowerDbm, txPowerSpectrum, "transmission");
 }
 
 void
 PhyEntity::Transmit(Time txDuration,
                     Ptr<const WifiPpdu> ppdu,
                     const WifiTxVector& txVector,
-                    std::string type)
+                    double txPowerDbm,
+                    Ptr<SpectrumValue> txPowerSpectrum,
+                    const std::string& type)
 {
-    NS_LOG_FUNCTION(this << txDuration << ppdu << txVector << type);
-    double txPowerWatts =
-        DbmToW(m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain());
-    NS_LOG_DEBUG("Start " << type << ": signal power before antenna gain=" << WToDbm(txPowerWatts)
-                          << "dBm");
-    Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity(txPowerWatts, ppdu, txVector);
-    Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters>();
+    NS_LOG_FUNCTION(this << txDuration << ppdu << txVector << txPowerDbm << type);
+    NS_LOG_DEBUG("Start " << type << ": signal power before antenna gain=" << txPowerDbm << "dBm");
+    auto txParams = Create<WifiSpectrumSignalParameters>();
     txParams->duration = txDuration;
     txParams->psd = txPowerSpectrum;
     txParams->ppdu = ppdu;
-    NS_LOG_DEBUG("Starting " << type << " with power " << WToDbm(txPowerWatts) << " dBm on channel "
+    NS_LOG_DEBUG("Starting " << type << " with power " << txPowerDbm << " dBm on channel "
                              << +m_wifiPhy->GetChannelNumber() << " for "
                              << txParams->duration.As(Time::MS));
     NS_LOG_DEBUG("Starting " << type << " with integrated spectrum power "
