@@ -1728,6 +1728,7 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
         Simulator::Schedule(txDuration, &WifiPhy::NotifyTxEnd, this, psdus); // TODO: fix for MU
 
     StartTx(ppdu, txVector);
+    ppdu->ResetTxVector();
 
     m_channelAccessRequested = false;
     m_powerRestricted = false;

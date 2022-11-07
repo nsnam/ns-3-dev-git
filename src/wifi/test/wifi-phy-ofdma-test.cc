@@ -2457,6 +2457,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     m_trigVector.SetLength(length);
     auto hePhy = DynamicCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
     hePhy->SetTrigVector(m_trigVector, ppduDuration);
+    ppdu->ResetTxVector();
     m_phy->StartRx(rxParams);
 
     // Schedule OFDMA part

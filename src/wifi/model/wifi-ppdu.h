@@ -25,6 +25,7 @@
 #include "ns3/nstime.h"
 
 #include <list>
+#include <optional>
 #include <unordered_map>
 
 /**
@@ -87,7 +88,12 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      *
      * \return the TXVECTOR of the PPDU.
      */
-    WifiTxVector GetTxVector() const;
+    const WifiTxVector& GetTxVector() const;
+
+    /**
+     * Reset the TXVECTOR.
+     */
+    void ResetTxVector();
 
     /**
      * Get the payload of the PPDU.
@@ -209,7 +215,11 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     uint8_t m_txPowerLevel; //!< the transmission power level (used only for TX and initializing the
                             //!< returned WifiTxVector)
     uint8_t m_txAntennas;   //!< the number of antennas used to transmit this PPDU
-};                          // class WifiPpdu
+
+    mutable std::optional<WifiTxVector>
+        m_txVector; //!< the TXVECTOR at TX PHY or the reconstructed TXVECTOR at RX PHY (or
+                    //!< std::nullopt if TXVECTOR has not been reconstructed yet)
+};                  // class WifiPpdu
 
 /**
  * \brief Stream insertion operator.

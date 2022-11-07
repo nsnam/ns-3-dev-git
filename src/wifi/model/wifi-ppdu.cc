@@ -38,7 +38,8 @@ WifiPpdu::WifiPpdu(Ptr<const WifiPsdu> psdu,
       m_txCenterFreq(txCenterFreq),
       m_uid(uid),
       m_truncatedTx(false),
-      m_txPowerLevel(txVector.GetTxPowerLevel())
+      m_txPowerLevel(txVector.GetTxPowerLevel()),
+      m_txVector(txVector)
 {
     NS_LOG_FUNCTION(this << *psdu << txVector << txCenterFreq << uid);
     m_psdus.insert(std::make_pair(SU_STA_ID, psdu));
@@ -55,7 +56,8 @@ WifiPpdu::WifiPpdu(const WifiConstPsduMap& psdus,
       m_uid(uid),
       m_truncatedTx(false),
       m_txPowerLevel(txVector.GetTxPowerLevel()),
-      m_txAntennas(txVector.GetNTx())
+      m_txAntennas(txVector.GetNTx()),
+      m_txVector(txVector)
 {
     NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << uid);
     m_psdus = psdus;
@@ -70,13 +72,16 @@ WifiPpdu::~WifiPpdu()
     m_psdus.clear();
 }
 
-WifiTxVector
+const WifiTxVector&
 WifiPpdu::GetTxVector() const
 {
-    WifiTxVector txVector = DoGetTxVector();
-    txVector.SetTxPowerLevel(m_txPowerLevel);
-    txVector.SetNTx(m_txAntennas);
-    return txVector;
+    if (!m_txVector.has_value())
+    {
+        m_txVector = DoGetTxVector();
+        m_txVector->SetTxPowerLevel(m_txPowerLevel);
+        m_txVector->SetNTx(m_txAntennas);
+    }
+    return m_txVector.value();
 }
 
 WifiTxVector
@@ -85,6 +90,13 @@ WifiPpdu::DoGetTxVector() const
     NS_FATAL_ERROR("This method should not be called for the base WifiPpdu class. Use the "
                    "overloaded version in the amendment-specific PPDU subclasses instead!");
     return WifiTxVector(); // should be overloaded
+}
+
+void
+WifiPpdu::ResetTxVector()
+{
+    NS_LOG_FUNCTION(this);
+    m_txVector.reset();
 }
 
 Ptr<const WifiPsdu>

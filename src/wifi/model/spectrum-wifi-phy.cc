@@ -386,14 +386,13 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     // Do no further processing if signal is too weak
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity
-    uint16_t txWidth = wifiRxParams->ppdu->GetTransmissionChannelWidth();
+    const auto& ppdu = wifiRxParams->ppdu;
+    const auto& txVector = ppdu->GetTxVector();
+    uint16_t txWidth = ppdu->GetTransmissionChannelWidth();
     if (totalRxPowerW < DbmToW(GetRxSensitivity()) * (txWidth / 20.0))
     {
         NS_LOG_INFO("Received signal too weak to process: " << WToDbm(totalRxPowerW) << " dBm");
-        m_interference->Add(wifiRxParams->ppdu,
-                            wifiRxParams->ppdu->GetTxVector(),
-                            rxDuration,
-                            rxPowerW);
+        m_interference->Add(ppdu, txVector, rxDuration, rxPowerW);
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
@@ -409,20 +408,17 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
         uint16_t p20MaxFreq =
             GetOperatingChannel().GetPrimaryChannelCenterFrequency(width) + width / 2;
 
-        if (!wifiRxParams->ppdu->CanBeReceived(p20MinFreq, p20MaxFreq))
+        if (!ppdu->CanBeReceived(p20MinFreq, p20MaxFreq))
         {
             NS_LOG_INFO("Cannot receive the PPDU, consider it as interference");
-            m_interference->Add(wifiRxParams->ppdu,
-                                wifiRxParams->ppdu->GetTxVector(),
-                                rxDuration,
-                                rxPowerW);
-            SwitchMaybeToCcaBusy(wifiRxParams->ppdu);
+            m_interference->Add(ppdu, txVector, rxDuration, rxPowerW);
+            SwitchMaybeToCcaBusy(ppdu);
             return;
         }
     }
 
     NS_LOG_INFO("Received Wi-Fi signal");
-    StartReceivePreamble(wifiRxParams->ppdu, rxPowerW, rxDuration);
+    StartReceivePreamble(ppdu, rxPowerW, rxDuration);
 }
 
 Ptr<Object>
