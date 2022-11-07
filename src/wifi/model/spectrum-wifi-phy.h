@@ -152,6 +152,14 @@ class SpectrumWifiPhy : public WifiPhy
      */
     void Transmit(Ptr<WifiSpectrumSignalParameters> txParams);
 
+    /**
+     * Determine the WifiPpdu to be used by the RX PHY based on the WifiPpdu sent by the TX PHY.
+     *
+     * \param ppdu the WifiPpdu transmitted by the TX PHY
+     * \return the WifiPpdu to be used by the RX PHY
+     */
+    Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu);
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;

@@ -1773,6 +1773,20 @@ HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
     return PhyEntity::CanStartRx(ppdu);
 }
 
+Ptr<const WifiPpdu>
+HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
+{
+    // We only copy if the AP that is expecting a HE TB PPDU, since the content
+    // of the TXVECTOR is reconstructed from the TRIGVECTOR, hence the other RX
+    // PHYs should not have this information.
+    if ((ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU) &&
+        (Simulator::Now() <= m_trigVectorExpirationTime))
+    {
+        return ppdu->Copy();
+    }
+    return PhyEntity::GetRxPpduFromTxPpdu(ppdu);
+}
+
 } // namespace ns3
 
 namespace

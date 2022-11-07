@@ -392,7 +392,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     // Do no further processing if signal is too weak
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity
-    const auto& ppdu = wifiRxParams->ppdu;
+    const auto& ppdu = GetRxPpduFromTxPpdu(wifiRxParams->ppdu);
     const auto& txVector = ppdu->GetTxVector();
     uint16_t txWidth = ppdu->GetTransmissionChannelWidth();
     if (totalRxPowerW < DbmToW(GetRxSensitivity()) * (txWidth / 20.0))
@@ -416,6 +416,12 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
 
     NS_LOG_INFO("Received Wi-Fi signal");
     StartReceivePreamble(ppdu, rxPowerW, rxDuration);
+}
+
+Ptr<const WifiPpdu>
+SpectrumWifiPhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
+{
+    return GetLatestPhyEntity()->GetRxPpduFromTxPpdu(ppdu);
 }
 
 Ptr<Object>

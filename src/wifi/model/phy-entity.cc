@@ -1352,4 +1352,10 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
     return ppdu->DoesCoverChannel(p20MinFreq, p20MaxFreq);
 }
 
+Ptr<const WifiPpdu>
+PhyEntity::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
+{
+    return ppdu;
+}
+
 } // namespace ns3
