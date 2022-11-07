@@ -421,8 +421,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     }
 
     NS_LOG_INFO("Received Wi-Fi signal");
-    Ptr<WifiPpdu> ppdu = wifiRxParams->ppdu->Copy();
-    StartReceivePreamble(ppdu, rxPowerW, rxDuration);
+    StartReceivePreamble(wifiRxParams->ppdu, rxPowerW, rxDuration);
 }
 
 Ptr<Object>
