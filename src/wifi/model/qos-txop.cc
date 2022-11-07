@@ -363,24 +363,24 @@ QosTxop::IsQosOldPacket(Ptr<const WifiMpdu> mpdu)
 }
 
 Ptr<WifiMpdu>
-QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<WifiMpdu> item)
+QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<const WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(this << +linkId << +tid << recipient << item);
+    NS_LOG_FUNCTION(this << +linkId << +tid << recipient << mpdu);
 
     // lambda to peek the next frame
-    auto peek = [this, &linkId, &tid, &recipient, &item]() -> Ptr<WifiMpdu> {
+    auto peek = [this, &linkId, &tid, &recipient, &mpdu]() -> Ptr<WifiMpdu> {
         if (tid == 8 && recipient.IsBroadcast()) // undefined TID and recipient
         {
-            return m_queue->PeekFirstAvailable(linkId, m_qosBlockedDestinations, item);
+            return m_queue->PeekFirstAvailable(linkId, m_qosBlockedDestinations, mpdu);
         }
         if (m_qosBlockedDestinations->IsBlocked(recipient, tid))
         {
             return nullptr;
         }
-        return m_queue->PeekByTidAndAddress(tid, recipient, item);
+        return m_queue->PeekByTidAndAddress(tid, recipient, mpdu);
     };
 
-    item = peek();
+    auto item = peek();
     // remove old packets (must be retransmissions or in flight, otherwise they did
     // not get a sequence number assigned)
     while (item && !item->IsFragment())
@@ -392,9 +392,9 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
             {
                 m_droppedMpduCallback(WIFI_MAC_DROP_QOS_OLD_PACKET, item);
             }
-            auto oldItem = item;
+            mpdu = item;
             item = peek();
-            m_queue->Remove(oldItem);
+            m_queue->Remove(mpdu);
             continue;
         }
 
@@ -418,6 +418,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
             }
 
             NS_LOG_DEBUG("Skipping in flight MPDU: " << *item);
+            mpdu = item;
             item = peek();
             continue;
         }
@@ -426,6 +427,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
             !m_mac->CanForwardPacketsTo(item->GetHeader().GetAddr1()))
         {
             NS_LOG_DEBUG("Skipping frame that cannot be forwarded: " << *item);
+            mpdu = item;
             item = peek();
             continue;
         }
