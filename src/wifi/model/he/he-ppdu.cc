@@ -68,14 +68,6 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
     m_psdus.begin()->second = nullptr;
     m_psdus.clear();
     m_psdus = psdus;
-    if (txVector.IsMu())
-    {
-        for (const auto& heMuUserInfo : txVector.GetHeMuUserInfoMap())
-        {
-            auto [it, ret] = m_muUserInfos.emplace(heMuUserInfo);
-            NS_ABORT_MSG_IF(!ret, "STA-ID " << heMuUserInfo.first << " already present");
-        }
-    }
     SetPhyHeaders(txVector, ppduDuration);
 }
 
@@ -223,13 +215,7 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     }
     if (IsDlMu())
     {
-        auto copyTxVector = txVector;
-        for (const auto& muUserInfo : m_muUserInfos)
-        {
-            txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
-        }
-        SetHeMuUserInfos(copyTxVector, heSig);
-        NS_ASSERT(txVector.GetHeMuUserInfoMap() == copyTxVector.GetHeMuUserInfoMap());
+        SetHeMuUserInfos(txVector, heSig);
     }
     if (txVector.IsDlMu())
     {

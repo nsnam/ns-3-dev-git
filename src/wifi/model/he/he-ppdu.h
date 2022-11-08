@@ -383,9 +383,6 @@ class HePpdu : public OfdmPpdu
 #endif
     mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 
-    WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< HE MU specific per-user information (to be
-                                                 //!< removed once HE-SIG-B headers are implemented)
-
   private:
     std::string PrintPayload() const override;
     WifiTxVector DoGetTxVector() const override;

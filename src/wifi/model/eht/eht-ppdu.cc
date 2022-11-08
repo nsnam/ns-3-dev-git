@@ -56,7 +56,7 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
 WifiPpduType
 EhtPpdu::GetType() const
 {
-    if (m_muUserInfos.empty())
+    if (m_psdus.count(SU_STA_ID) > 0)
     {
         return WIFI_PPDU_TYPE_SU;
     }
@@ -75,13 +75,13 @@ EhtPpdu::GetType() const
 bool
 EhtPpdu::IsDlMu() const
 {
-    return (m_preamble == WIFI_PREAMBLE_EHT_MU) && !m_muUserInfos.empty();
+    return (m_preamble == WIFI_PREAMBLE_EHT_MU) && (m_psdus.count(SU_STA_ID) == 0);
 }
 
 bool
 EhtPpdu::IsUlMu() const
 {
-    return (m_preamble == WIFI_PREAMBLE_EHT_TB) && !m_muUserInfos.empty();
+    return (m_preamble == WIFI_PREAMBLE_EHT_TB) && (m_psdus.count(SU_STA_ID) == 0);
 }
 
 void
@@ -99,13 +99,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     txVector.SetEhtPpduType(m_ehtPpduType); // FIXME: PPDU type should be read from U-SIG
     if (txVector.IsDlMu())
     {
-        auto copyTxVector = txVector;
-        for (const auto& muUserInfo : m_muUserInfos)
-        {
-            txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
-        }
-        SetHeMuUserInfos(copyTxVector, heSig);
-        NS_ASSERT(txVector.GetHeMuUserInfoMap() == copyTxVector.GetHeMuUserInfoMap());
+        SetHeMuUserInfos(txVector, heSig);
     }
     if (ns3::IsDlMu(m_preamble))
     {
