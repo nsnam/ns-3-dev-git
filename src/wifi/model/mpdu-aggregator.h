@@ -38,6 +38,7 @@ class Packet;
 class WifiMac;
 class WifiMpdu;
 class WifiTxParameters;
+class HtFrameExchangeManager;
 
 /**
  * \brief Aggregator used to construct A-MPDUs
@@ -165,8 +166,9 @@ class MpduAggregator : public Object
     void DoDispose() override;
 
   private:
-    Ptr<WifiMac> m_mac;  //!< the MAC of this station
-    uint8_t m_linkId{0}; //!< ID of the link this object is connected to
+    Ptr<WifiMac> m_mac;                  //!< the MAC of this station
+    Ptr<HtFrameExchangeManager> m_htFem; //!< the HT Frame Exchange Manager of this station
+    uint8_t m_linkId{0};                 //!< ID of the link this object is connected to
 };
 
 } // namespace ns3
