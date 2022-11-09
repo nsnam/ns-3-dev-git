@@ -44,6 +44,7 @@ WifiTxVector::WifiTxVector()
       m_ldpc(false),
       m_bssColor(0),
       m_length(0),
+      m_triggerResponding(false),
       m_modeInitialized(false),
       m_inactiveSubchannels(),
       m_ruAllocation(),
@@ -63,7 +64,8 @@ WifiTxVector::WifiTxVector(WifiMode mode,
                            bool stbc,
                            bool ldpc,
                            uint8_t bssColor,
-                           uint16_t length)
+                           uint16_t length,
+                           bool triggerResponding)
     : m_mode(mode),
       m_txPowerLevel(powerLevel),
       m_preamble(preamble),
@@ -77,6 +79,7 @@ WifiTxVector::WifiTxVector(WifiMode mode,
       m_ldpc(ldpc),
       m_bssColor(bssColor),
       m_length(length),
+      m_triggerResponding(triggerResponding),
       m_modeInitialized(true),
       m_inactiveSubchannels(),
       m_ruAllocation(),
@@ -98,6 +101,7 @@ WifiTxVector::WifiTxVector(const WifiTxVector& txVector)
       m_ldpc(txVector.m_ldpc),
       m_bssColor(txVector.m_bssColor),
       m_length(txVector.m_length),
+      m_triggerResponding(txVector.m_triggerResponding),
       m_modeInitialized(txVector.m_modeInitialized),
       m_inactiveSubchannels(txVector.m_inactiveSubchannels),
       m_sigBMcs(txVector.m_sigBMcs),
@@ -355,6 +359,18 @@ uint16_t
 WifiTxVector::GetLength() const
 {
     return m_length;
+}
+
+bool
+WifiTxVector::IsTriggerResponding() const
+{
+    return m_triggerResponding;
+}
+
+void
+WifiTxVector::SetTriggerResponding(bool triggerResponding)
+{
+    m_triggerResponding = triggerResponding;
 }
 
 void

@@ -122,6 +122,7 @@ class WifiTxVector
      * \param ldpc enable or disable LDPC (BCC is used otherwise)
      * \param bssColor the BSS color
      * \param length the LENGTH field of the L-SIG
+     * \param triggerResponding the Trigger Responding parameter
      */
     WifiTxVector(WifiMode mode,
                  uint8_t powerLevel,
@@ -135,7 +136,8 @@ class WifiTxVector
                  bool stbc = false,
                  bool ldpc = false,
                  uint8_t bssColor = 0,
-                 uint16_t length = 0);
+                 uint16_t length = 0,
+                 bool triggerResponding = false);
     /**
      * Copy constructor
      * \param txVector the TXVECTOR to copy
@@ -323,6 +325,16 @@ class WifiTxVector
      */
     uint16_t GetLength() const;
     /**
+     * Return true if the Trigger Responding parameter is set to true, false otherwise.
+     * \return true if the Trigger Responding parameter is set to true, false otherwise
+     */
+    bool IsTriggerResponding() const;
+    /**
+     * Set the Trigger Responding parameter to the given value
+     * \param triggerResponding the value for the Trigger Responding parameter
+     */
+    void SetTriggerResponding(bool triggerResponding);
+    /**
      * The standard disallows certain combinations of WifiMode, number of
      * spatial streams, and channel widths.  This method can be used to
      * check whether this WifiTxVector contains an invalid combination.
@@ -485,6 +497,7 @@ class WifiTxVector
     bool m_ldpc;              /**< LDPC FEC coding if true, BCC otherwise*/
     uint8_t m_bssColor;       /**< BSS color */
     uint16_t m_length;        /**< LENGTH field of the L-SIG */
+    bool m_triggerResponding; /**< The Trigger Responding parameter */
 
     bool m_modeInitialized; /**< Internal initialization flag */
 
