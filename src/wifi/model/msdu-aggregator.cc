@@ -178,9 +178,23 @@ MsduAggregator::GetMaxAmsduSize(Mac48Address recipient,
     NS_ASSERT(stationManager);
 
     // Retrieve the Capabilities elements advertised by the recipient
-    Ptr<const VhtCapabilities> vhtCapabilities =
-        stationManager->GetStationVhtCapabilities(recipient);
-    Ptr<const HtCapabilities> htCapabilities = stationManager->GetStationHtCapabilities(recipient);
+    auto ehtCapabilities = stationManager->GetStationEhtCapabilities(recipient);
+    auto vhtCapabilities = stationManager->GetStationVhtCapabilities(recipient);
+    auto htCapabilities = stationManager->GetStationHtCapabilities(recipient);
+
+    // Determine the maximum MPDU size, which is used to indirectly constrain the maximum
+    // A-MSDU size in some cases (see below). The maximum MPDU size is advertised
+    // in the EHT Capabilities element, for the 2.4 GHz band, or in the VHT Capabilities
+    // element, otherwise.
+    uint16_t maxMpduSize = 0;
+    if (ehtCapabilities && m_mac->GetWifiPhy(m_linkId)->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
+    {
+        maxMpduSize = ehtCapabilities->GetMaxMpduLength();
+    }
+    else if (vhtCapabilities && m_mac->GetWifiPhy(m_linkId)->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ)
+    {
+        maxMpduSize = vhtCapabilities->GetMaxMpduLength();
+    }
 
     if (!htCapabilities)
     {
@@ -195,29 +209,49 @@ MsduAggregator::GetMaxAmsduSize(Mac48Address recipient,
 
     // Determine the constraint imposed by the recipient based on the PPDU
     // format used to transmit the A-MSDU
-    if (modulation >= WIFI_MOD_CLASS_VHT)
+    if (modulation >= WIFI_MOD_CLASS_EHT)
+    {
+        // the maximum A-MSDU size is indirectly constrained by the maximum MPDU size
+        // supported by the recipient (see Table 9-34 of 802.11be D2.0)
+        NS_ABORT_MSG_IF(maxMpduSize == 0, "Max MPDU size not advertised");
+        maxAmsduSize = std::min(maxAmsduSize, static_cast<uint16_t>(maxMpduSize - 56));
+    }
+    else if (modulation == WIFI_MOD_CLASS_HE)
+    {
+        // for a non-EHT STA operating in the 2.4 GHz band, the maximum A-MSDU size is
+        // advertised in the HT Capabilities element. Otherwise, the maximum A-MSDU size is
+        // indirectly constrained by the maximum MPDU size supported by the recipient
+        // (see Table 9-34 of 802.11be D2.0)
+        if (m_mac->GetWifiPhy(m_linkId)->GetStandard() < WIFI_STANDARD_80211be &&
+            m_mac->GetWifiPhy(m_linkId)->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
+        {
+            maxAmsduSize = std::min(maxAmsduSize, htCapabilities->GetMaxAmsduLength());
+        }
+        else
+        {
+            NS_ABORT_MSG_IF(maxMpduSize == 0, "Max MPDU size not advertised");
+            maxAmsduSize = std::min(maxAmsduSize, static_cast<uint16_t>(maxMpduSize - 56));
+        }
+    }
+    else if (modulation == WIFI_MOD_CLASS_VHT)
     {
         // the maximum A-MSDU size is indirectly constrained by the maximum MPDU
         // size supported by the recipient and advertised in the VHT Capabilities
-        // element (see Table 9-19 of 802.11-2016 as amended by 802.11ax)
-        NS_ABORT_MSG_IF(!vhtCapabilities, "VHT Capabilities element not received");
-
-        maxAmsduSize =
-            std::min(maxAmsduSize, static_cast<uint16_t>(vhtCapabilities->GetMaxMpduLength() - 56));
+        // element (see Table 9-25 of 802.11-2020)
+        NS_ABORT_MSG_IF(maxMpduSize == 0, "Max MPDU size not advertised");
+        maxAmsduSize = std::min(maxAmsduSize, static_cast<uint16_t>(maxMpduSize - 56));
     }
-    else if (modulation == WIFI_MOD_CLASS_HT)
+    else if (modulation >= WIFI_MOD_CLASS_HT)
     {
         // the maximum A-MSDU size is constrained by the maximum A-MSDU size
         // supported by the recipient and advertised in the HT Capabilities
         // element (see Table 9-19 of 802.11-2016)
-
         maxAmsduSize = std::min(maxAmsduSize, htCapabilities->GetMaxAmsduLength());
     }
     else // non-HT PPDU
     {
         // the maximum A-MSDU size is indirectly constrained by the maximum PSDU size
         // supported by the recipient (see Table 9-19 of 802.11-2016)
-
         maxAmsduSize = std::min(maxAmsduSize, static_cast<uint16_t>(3839));
     }
 
