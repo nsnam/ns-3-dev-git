@@ -2166,7 +2166,7 @@ Ptr<const WifiPsdu>
 WifiPhy::GetAddressedPsduInPpdu(Ptr<const WifiPpdu> ppdu) const
 {
     // TODO: wrapper. See if still needed
-    return GetLatestPhyEntity()->GetAddressedPsduInPpdu(ppdu);
+    return GetPhyEntityForPpdu(ppdu)->GetAddressedPsduInPpdu(ppdu);
 }
 
 WifiSpectrumBand

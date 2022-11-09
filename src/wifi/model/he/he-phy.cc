@@ -447,19 +447,35 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     // detection window. If a preamble is received after the preamble detection window, it is stored
     // anyway because this is needed for HE TB PPDUs in order to properly update the received power
     // in InterferenceHelper. The map is cleaned anyway at the end of the current reception.
-    if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
+    auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
+    const auto& currentPreambleEvents = GetCurrentPreambleEvents();
+    auto it = currentPreambleEvents.find(uidPreamblePair);
+    bool isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
+    if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || isResponseToTrigger)
     {
-        auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
         const auto& txVector = ppdu->GetTxVector();
-        Time rxDuration = CalculateNonOfdmaDurationForHeTb(
-            txVector); // the OFDMA part of the transmission will be added later on
-        const auto& currentPreambleEvents = GetCurrentPreambleEvents();
-        auto it = currentPreambleEvents.find(uidPreamblePair);
+        Time rxDuration;
+        if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
+        {
+            rxDuration = CalculateNonOfdmaDurationForHeTb(
+                txVector); // the OFDMA part of the transmission will be added later on
+        }
+        else
+        {
+            rxDuration = ppdu->GetTxDuration();
+        }
         if (it != currentPreambleEvents.end())
         {
-            NS_LOG_DEBUG("Received another HE TB PPDU for UID "
-                         << ppdu->GetUid() << " from STA-ID " << ppdu->GetStaId()
-                         << " and BSS color " << +txVector.GetBssColor());
+            if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
+            {
+                NS_LOG_DEBUG("Received another HE TB PPDU for UID "
+                             << ppdu->GetUid() << " from STA-ID " << ppdu->GetStaId()
+                             << " and BSS color " << +txVector.GetBssColor());
+            }
+            else
+            {
+                NS_LOG_DEBUG("Received another response to a trigger frame " << ppdu->GetUid());
+            }
             event = it->second;
 
             auto heConfiguration = m_wifiPhy->GetDevice()->GetHeConfiguration();
@@ -490,18 +506,33 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
                 UpdateInterferenceEvent(event, rxPowersW);
             }
 
-            if (GetCurrentEvent() && (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
+            if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU && GetCurrentEvent() &&
+                (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
             {
                 NS_LOG_DEBUG("Drop packet because already receiving another HE TB PPDU");
+                m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
+            }
+            else if (isResponseToTrigger && GetCurrentEvent() &&
+                     (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
+            {
+                NS_LOG_DEBUG(
+                    "Drop packet because already receiving another response to a trigger frame");
                 m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
             }
             return nullptr;
         }
         else
         {
-            NS_LOG_DEBUG("Received a new HE TB PPDU for UID "
-                         << ppdu->GetUid() << " from STA-ID " << ppdu->GetStaId()
-                         << " and BSS color " << +txVector.GetBssColor());
+            if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
+            {
+                NS_LOG_DEBUG("Received a new HE TB PPDU for UID "
+                             << ppdu->GetUid() << " from STA-ID " << ppdu->GetStaId()
+                             << " and BSS color " << +txVector.GetBssColor());
+            }
+            else
+            {
+                NS_LOG_DEBUG("Received response to a trigger frame for UID " << ppdu->GetUid());
+            }
             event = CreateInterferenceEvent(ppdu, txVector, rxDuration, rxPowersW);
             AddPreambleEvent(event);
         }
@@ -516,7 +547,19 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     }
     else
     {
-        event = PhyEntity::DoGetEvent(ppdu, rxPowersW);
+        if (it == currentPreambleEvents.end())
+        {
+            event = PhyEntity::DoGetEvent(ppdu, rxPowersW);
+        }
+        else
+        {
+            NS_LOG_DEBUG(
+                "Update received power of the event associated to these UL transmissions with UID "
+                << ppdu->GetUid());
+            event = it->second;
+            UpdateInterferenceEvent(event, rxPowersW);
+            return nullptr;
+        }
     }
     return event;
 }
@@ -1243,9 +1286,8 @@ HePhy::ObtainNextUid(const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << txVector);
     uint64_t uid;
-    if (txVector.IsUlMu())
+    if (txVector.IsUlMu() || txVector.IsTriggerResponding())
     {
-        NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
         // Use UID of PPDU containing trigger frame to identify resulting HE TB PPDUs, since the
         // latter should immediately follow the former
         uid = m_wifiPhy->GetPreviouslyRxPpduUid();

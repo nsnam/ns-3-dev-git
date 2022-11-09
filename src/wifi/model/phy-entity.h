@@ -539,6 +539,15 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     virtual Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu);
 
+    /**
+     * Obtain the next UID for the PPDU to transmit.
+     * Note that the global UID counter could be incremented.
+     *
+     * \param txVector the transmission parameters
+     * \return the UID to use for the PPDU to transmit
+     */
+    virtual uint64_t ObtainNextUid(const WifiTxVector& txVector);
+
   protected:
     /**
      * A map of PPDU field elements per preamble type.
@@ -839,15 +848,6 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param reset whether to reset WifiPhy
      */
     void NotifyInterferenceRxEndAndClear(bool reset);
-
-    /**
-     * Obtain the next UID for the PPDU to transmit.
-     * Note that the global UID counter could be incremented.
-     *
-     * \param txVector the transmission parameters
-     * \return the UID to use for the PPDU to transmit
-     */
-    virtual uint64_t ObtainNextUid(const WifiTxVector& txVector);
 
     /**
      * \param txPowerW power in W to spread across the bands

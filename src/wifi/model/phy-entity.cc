@@ -239,11 +239,9 @@ PhyEntity::GetPhyHeaderSections(const WifiTxVector& txVector, Time ppduStart) co
 }
 
 Ptr<WifiPpdu>
-PhyEntity::BuildPpdu(const WifiConstPsduMap& psdus,
-                     const WifiTxVector& txVector,
-                     Time /* ppduDuration */)
+PhyEntity::BuildPpdu(const WifiConstPsduMap& psdus, const WifiTxVector& txVector, Time ppduDuration)
 {
-    NS_LOG_FUNCTION(this << psdus << txVector);
+    NS_LOG_FUNCTION(this << psdus << txVector << ppduDuration);
     NS_FATAL_ERROR("This method is unsupported for the base PhyEntity class. Use the overloaded "
                    "version in the amendment-specific subclasses instead!");
     return Create<WifiPpdu>(psdus.begin()->second,
@@ -410,7 +408,9 @@ PhyEntity::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
            const std::pair<WifiSpectrumBand, double>& p2) { return p1.second < p2.second; });
     NS_LOG_FUNCTION(this << ppdu << it->second);
 
-    Ptr<Event> event = DoGetEvent(ppdu, rxPowersW);
+    Ptr<Event> event = m_wifiPhy->GetPhyEntityForPpdu(ppdu)->DoGetEvent(
+        ppdu,
+        rxPowersW); // use latest PHY entity to handle MU-RTS sent with non-HT rate
     if (!event)
     {
         // PPDU should be simply considered as interference (once it has been accounted for in
