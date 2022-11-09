@@ -1095,7 +1095,7 @@ SetChannelFrequencyTest::DoRun()
         phySta = GetYansWifiPhyPtr(staDevice);
         NS_TEST_ASSERT_MSG_EQ(phySta->GetChannelNumber(), 7, "802.11ax-6GHz configuration");
         NS_TEST_ASSERT_MSG_EQ(phySta->GetChannelWidth(), 80, "802.11ax-6GHz configuration");
-        NS_TEST_ASSERT_MSG_EQ(phySta->GetFrequency(), 5975, "802.11ax-6GHz configuration");
+        NS_TEST_ASSERT_MSG_EQ(phySta->GetFrequency(), 5985, "802.11ax-6GHz configuration");
         phy.Set("ChannelSettings", StringValue("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
     }
     {
