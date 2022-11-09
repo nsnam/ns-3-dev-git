@@ -1582,9 +1582,10 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             mpdu->GetPacket()->PeekHeader(blockAckReq);
             NS_ABORT_MSG_IF(blockAckReq.IsMultiTid(), "Multi-TID BlockAckReq not supported");
             uint8_t tid = blockAckReq.GetTidInfo();
-            GetBaManager(tid)->NotifyGotBlockAckRequest(sender,
-                                                        tid,
-                                                        blockAckReq.GetStartingSequence());
+            GetBaManager(tid)->NotifyGotBlockAckRequest(
+                m_mac->GetMldAddress(sender).value_or(sender),
+                tid,
+                blockAckReq.GetStartingSequence());
 
             // Block Acknowledgment context
             acknowledgment->stationsReceivingMultiStaBa.emplace(std::make_pair(sender, tid), index);
@@ -1758,8 +1759,11 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             mpdu->GetPacket()->PeekHeader(blockAck);
             uint8_t tid = blockAck.GetTidInfo();
             std::pair<uint16_t, uint16_t> ret =
-                GetBaManager(tid)->NotifyGotBlockAck(m_linkId, blockAck, hdr.GetAddr2(), {tid});
-            GetWifiRemoteStationManager()->ReportAmpduTxStatus(hdr.GetAddr2(),
+                GetBaManager(tid)->NotifyGotBlockAck(m_linkId,
+                                                     blockAck,
+                                                     m_mac->GetMldAddress(sender).value_or(sender),
+                                                     {tid});
+            GetWifiRemoteStationManager()->ReportAmpduTxStatus(sender,
                                                                ret.first,
                                                                ret.second,
                                                                rxSignalInfo.snr,
@@ -1838,12 +1842,12 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                         tid = *tids.begin();
                     }
 
-                    std::pair<uint16_t, uint16_t> ret =
-                        GetBaManager(tid)->NotifyGotBlockAck(m_linkId,
-                                                             blockAck,
-                                                             hdr.GetAddr2(),
-                                                             {tid},
-                                                             index);
+                    std::pair<uint16_t, uint16_t> ret = GetBaManager(tid)->NotifyGotBlockAck(
+                        m_linkId,
+                        blockAck,
+                        m_mac->GetMldAddress(hdr.GetAddr2()).value_or(hdr.GetAddr2()),
+                        {tid},
+                        index);
                     GetWifiRemoteStationManager()->ReportAmpduTxStatus(hdr.GetAddr2(),
                                                                        ret.first,
                                                                        ret.second,
@@ -1923,7 +1927,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 NS_ABORT_MSG_IF(blockAckReq.IsMultiTid(), "Multi-TID BlockAckReq not supported");
                 uint8_t tid = blockAckReq.GetTidInfo();
 
-                auto agreement = GetBaManager(tid)->GetAgreementAsRecipient(sender, tid);
+                auto agreement = m_mac->GetBaAgreementEstablishedAsRecipient(sender, tid);
 
                 if (!agreement)
                 {
@@ -1931,9 +1935,10 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                     return;
                 }
 
-                GetBaManager(tid)->NotifyGotBlockAckRequest(sender,
-                                                            tid,
-                                                            blockAckReq.GetStartingSequence());
+                GetBaManager(tid)->NotifyGotBlockAckRequest(
+                    m_mac->GetMldAddress(sender).value_or(sender),
+                    tid,
+                    blockAckReq.GetStartingSequence());
 
                 NS_LOG_DEBUG("Schedule Block Ack in TB PPDU");
                 Simulator::Schedule(m_phy->GetSifs(),

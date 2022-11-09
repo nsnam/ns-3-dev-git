@@ -418,7 +418,7 @@ BlockAckManager::HandleInFlightMpdu(uint8_t linkId,
         return it->second.second.erase(mpduIt);
     }
 
-    WifiMacHeader& hdr = (*mpduIt)->GetHeader();
+    const WifiMacHeader& hdr = (*mpduIt)->GetHeader();
 
     NS_ASSERT(hdr.GetAddr1() == it->first.first);
     NS_ASSERT(hdr.IsQosData() && hdr.GetQosTid() == it->first.second);
@@ -468,7 +468,7 @@ BlockAckManager::NotifyGotAck(uint8_t linkId, Ptr<const WifiMpdu> mpdu)
     NS_LOG_FUNCTION(this << linkId << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
-    Mac48Address recipient = mpdu->GetHeader().GetAddr1();
+    Mac48Address recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
     uint8_t tid = mpdu->GetHeader().GetQosTid();
 
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -495,7 +495,7 @@ BlockAckManager::NotifyMissedAck(uint8_t linkId, Ptr<WifiMpdu> mpdu)
     NS_LOG_FUNCTION(this << linkId << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
-    Mac48Address recipient = mpdu->GetHeader().GetAddr1();
+    Mac48Address recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
     uint8_t tid = mpdu->GetHeader().GetQosTid();
 
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -712,7 +712,7 @@ void
 BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
-    auto originator = mpdu->GetHeader().GetAddr2();
+    auto originator = mpdu->GetOriginal()->GetHeader().GetAddr2();
     NS_ASSERT(mpdu->GetHeader().IsQosData());
     auto tid = mpdu->GetHeader().GetQosTid();
 

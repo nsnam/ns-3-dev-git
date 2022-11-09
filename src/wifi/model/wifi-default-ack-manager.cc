@@ -96,15 +96,15 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq(Ptr<const WifiMpdu> mpdu,
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
-    const WifiMacHeader& hdr = mpdu->GetHeader();
-    Mac48Address receiver = hdr.GetAddr1();
+    auto receiver = mpdu->GetHeader().GetAddr1();
+    auto origReceiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
 
-    uint8_t tid = hdr.GetQosTid();
+    uint8_t tid = mpdu->GetHeader().GetQosTid();
     Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
-    NS_ABORT_MSG_IF(!m_mac->GetBaAgreementEstablishedAsOriginator(receiver, tid),
+    NS_ABORT_MSG_IF(!m_mac->GetBaAgreementEstablishedAsOriginator(origReceiver, tid),
                     "An established Block Ack agreement is required");
 
-    uint16_t startingSeq = edca->GetBaStartingSequence(receiver, tid);
+    uint16_t startingSeq = edca->GetBaStartingSequence(origReceiver, tid);
     uint16_t maxDistFromStartingSeq =
         (mpdu->GetHeader().GetSequenceNumber() - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
     NS_ABORT_MSG_IF(maxDistFromStartingSeq >= SEQNO_SPACE_HALF_SIZE,
@@ -143,7 +143,7 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
     uint8_t tid = mpdu->GetHeader().GetQosTid();
-    Mac48Address receiver = mpdu->GetHeader().GetAddr1();
+    Mac48Address receiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
     Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
 
     // An immediate response (Ack or Block Ack) is needed if any of the following holds:
@@ -295,8 +295,9 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
 
     // we get here if a response is needed
     uint8_t tid = GetTid(mpdu->GetPacket(), hdr);
+    auto origReceiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
     if (!hdr.IsBlockAckReq() && txParams.GetSize(receiver) == 0 &&
-        hdr.GetSequenceNumber() == m_mac->GetQosTxop(tid)->GetBaStartingSequence(receiver, tid))
+        hdr.GetSequenceNumber() == m_mac->GetQosTxop(tid)->GetBaStartingSequence(origReceiver, tid))
     {
         NS_LOG_DEBUG("Sending a single MPDU, no previous frame to ack: request Normal Ack");
         WifiNormalAck* acknowledgment = new WifiNormalAck;

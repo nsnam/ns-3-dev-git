@@ -1539,7 +1539,10 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             mpdu->GetHeader().GetAddr1() == GetFrameExchangeManager(*apLinkId)->GetAddress())
         {
             Mac48Address to = hdr->GetAddr3();
-            if (to == GetAddress())
+            // Address3 can be our MLD address (e.g., this is an MPDU containing a single MSDU
+            // addressed to us) or a BSSID (e.g., this is an MPDU containing an A-MSDU)
+            if (to == GetAddress() ||
+                (hdr->IsQosData() && hdr->IsQosAmsdu() && to == mpdu->GetHeader().GetAddr1()))
             {
                 NS_LOG_DEBUG("frame for me from=" << from);
                 if (hdr->IsQosData())
