@@ -1910,17 +1910,16 @@ ApWifiMac::DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu)
     NS_LOG_FUNCTION(this << *mpdu);
     for (auto& i : *PeekPointer(mpdu))
     {
-        if (i.second.GetDestinationAddr() == GetAddress())
+        auto from = i.second.GetSourceAddr();
+        auto to = i.second.GetDestinationAddr();
+
+        if (to.IsGroup() || IsAssociated(to))
         {
-            ForwardUp(i.first, i.second.GetSourceAddr(), i.second.GetDestinationAddr());
-        }
-        else
-        {
-            Mac48Address from = i.second.GetSourceAddr();
-            Mac48Address to = i.second.GetDestinationAddr();
             NS_LOG_DEBUG("forwarding QoS frame from=" << from << ", to=" << to);
             ForwardDown(i.first->Copy(), from, to, mpdu->GetHeader().GetQosTid());
         }
+
+        ForwardUp(i.first, from, to);
     }
 }
 
