@@ -76,11 +76,31 @@ EhtFrameExchangeManager::CreateAlias(Ptr<WifiMpdu> mpdu) const
     }
 
     mpdu = mpdu->CreateAlias(m_linkId);
-    mpdu->GetHeader().SetAddr2(GetAddress());
-    auto address =
-        GetWifiRemoteStationManager()->GetAffiliatedStaAddress(mpdu->GetHeader().GetAddr1());
+    auto& hdr = mpdu->GetHeader();
+    hdr.SetAddr2(GetAddress());
+    auto address = GetWifiRemoteStationManager()->GetAffiliatedStaAddress(hdr.GetAddr1());
     NS_ASSERT(address);
-    mpdu->GetHeader().SetAddr1(*address);
+    hdr.SetAddr1(*address);
+    /*
+     * Set Address3 according to Table 9-30 of 802.11-2020 and Section 35.3.3 of
+     * 802.11be D2.0 ["the value of the Address 3 field and the Address 4 field (if present)
+     * in the MAC header of a data frame shall be set based on Table 9-30 (Address field
+     * contents) and the settings of the To DS and From DS bits, where the BSSID is the
+     * MAC address of the AP affiliated with the AP MLD corresponding to that link"].
+     */
+    if (hdr.IsQosAmsdu())
+    {
+        if (hdr.IsToDs() && !hdr.IsFromDs())
+        {
+            // from STA to AP: BSSID is in Address1
+            hdr.SetAddr3(hdr.GetAddr1());
+        }
+        else if (!hdr.IsToDs() && hdr.IsFromDs())
+        {
+            // from AP to STA: BSSID is in Address2
+            hdr.SetAddr3(hdr.GetAddr2());
+        }
+    }
 
     return mpdu;
 }
