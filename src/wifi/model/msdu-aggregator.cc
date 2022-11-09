@@ -97,7 +97,7 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
     Ptr<WifiMacQueue> queue = m_mac->GetTxopQueue(peekedItem->GetQueueAc());
 
     uint8_t tid = peekedItem->GetHeader().GetQosTid();
-    Mac48Address recipient = peekedItem->GetHeader().GetAddr1();
+    auto recipient = peekedItem->GetOriginal()->GetHeader().GetAddr1();
 
     /* "The Address 1 field of an MPDU carrying an A-MSDU shall be set to an
      * individual address or to the GCR concealment address" (Section 10.12
@@ -123,15 +123,17 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
         return nullptr;
     }
 
-    Ptr<WifiMpdu> amsdu = peekedItem;
+    Ptr<WifiMpdu> amsdu = queue->GetOriginal(peekedItem);
     uint8_t nMsdu = 1;
-    peekedItem = queue->PeekByTidAndAddress(tid, recipient, peekedItem);
+    peekedItem = queue->PeekByTidAndAddress(tid, recipient, peekedItem->GetOriginal());
 
-    while (peekedItem && m_htFem->TryAggregateMsdu(peekedItem, txParams, availableTime))
+    while (peekedItem && m_htFem->TryAggregateMsdu(peekedItem = m_htFem->CreateAlias(peekedItem),
+                                                   txParams,
+                                                   availableTime))
     {
         // find the next MPDU before dequeuing the current one
-        Ptr<const WifiMpdu> msdu = peekedItem;
-        peekedItem = queue->PeekByTidAndAddress(tid, recipient, peekedItem);
+        Ptr<const WifiMpdu> msdu = peekedItem->GetOriginal();
+        peekedItem = queue->PeekByTidAndAddress(tid, recipient, msdu);
         queue->DequeueIfQueued({amsdu});
         // perform A-MSDU aggregation
         amsdu->Aggregate(msdu);
@@ -147,7 +149,7 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
     }
 
     // Aggregation succeeded
-    return amsdu;
+    return m_htFem->CreateAlias(amsdu);
 }
 
 uint8_t
