@@ -598,6 +598,7 @@ OfdmaAckSequenceTest::Transmit(std::string context,
         {
             // the AP is starting the transmission of the Basic Trigger frame, so generate
             // the configured number of packets at STAs, which are sent in HE TB PPDUs
+            Time txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, WIFI_PHY_BAND_5GHZ);
             for (uint16_t i = 0; i < m_nStations; i++)
             {
                 Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient>();
@@ -607,7 +608,7 @@ OfdmaAckSequenceTest::Transmit(std::string context,
                 client->SetAttribute("Priority", UintegerValue(i * 2)); // 0, 2, 4 and 6
                 client->SetRemote(m_sockets[i]);
                 m_staDevices.Get(i)->GetNode()->AddApplication(client);
-                client->SetStartTime(Seconds(0));  // start now
+                client->SetStartTime(txDuration);  // start when TX ends
                 client->SetStopTime(Seconds(1.0)); // stop in a second
                 client->Initialize();
             }
