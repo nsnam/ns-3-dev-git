@@ -94,7 +94,7 @@ BlockAckManager::SetBlockAckManagerMap(const std::map<AcIndex, Ptr<BlockAckManag
 }
 
 BlockAckManager::OriginatorAgreementOptConstRef
-BlockAckManager::GetAgreementAsOriginator(Mac48Address recipient, uint8_t tid) const
+BlockAckManager::GetAgreementAsOriginator(const Mac48Address& recipient, uint8_t tid) const
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     if (auto it = m_originatorAgreements.find({recipient, tid}); it != m_originatorAgreements.end())
@@ -106,7 +106,7 @@ BlockAckManager::GetAgreementAsOriginator(Mac48Address recipient, uint8_t tid) c
 }
 
 BlockAckManager::RecipientAgreementOptConstRef
-BlockAckManager::GetAgreementAsRecipient(Mac48Address originator, uint8_t tid) const
+BlockAckManager::GetAgreementAsRecipient(const Mac48Address& originator, uint8_t tid) const
 {
     NS_LOG_FUNCTION(this << originator << +tid);
     if (auto it = m_recipientAgreements.find({originator, tid}); it != m_recipientAgreements.end())
@@ -119,7 +119,7 @@ BlockAckManager::GetAgreementAsRecipient(Mac48Address originator, uint8_t tid) c
 
 void
 BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
-                                           Mac48Address recipient,
+                                           const Mac48Address& recipient,
                                            bool htSupported)
 {
     NS_LOG_FUNCTION(this << reqHdr << recipient << htSupported);
@@ -156,7 +156,7 @@ BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
 }
 
 void
-BlockAckManager::DestroyOriginatorAgreement(Mac48Address recipient, uint8_t tid)
+BlockAckManager::DestroyOriginatorAgreement(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -180,7 +180,7 @@ BlockAckManager::DestroyOriginatorAgreement(Mac48Address recipient, uint8_t tid)
 
 void
 BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr,
-                                           Mac48Address recipient,
+                                           const Mac48Address& recipient,
                                            uint16_t startingSeq)
 {
     NS_LOG_FUNCTION(this << respHdr << recipient << startingSeq);
@@ -225,7 +225,7 @@ BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr
 
 void
 BlockAckManager::CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
-                                          Mac48Address originator,
+                                          const Mac48Address& originator,
                                           uint16_t startingSeq,
                                           bool htSupported,
                                           Ptr<MacRxMiddle> rxMiddle)
@@ -254,7 +254,7 @@ BlockAckManager::CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
 }
 
 void
-BlockAckManager::DestroyRecipientAgreement(Mac48Address originator, uint8_t tid)
+BlockAckManager::DestroyRecipientAgreement(const Mac48Address& originator, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << originator << tid);
 
@@ -315,7 +315,7 @@ BlockAckManager::StorePacket(Ptr<WifiMpdu> mpdu)
 }
 
 Ptr<const WifiMpdu>
-BlockAckManager::GetBar(bool remove, uint8_t tid, Mac48Address address)
+BlockAckManager::GetBar(bool remove, uint8_t tid, const Mac48Address& address)
 {
     Time now = Simulator::Now();
     Ptr<const WifiMpdu> bar;
@@ -377,7 +377,7 @@ BlockAckManager::GetBar(bool remove, uint8_t tid, Mac48Address address)
 }
 
 uint32_t
-BlockAckManager::GetNBufferedPackets(Mac48Address recipient, uint8_t tid) const
+BlockAckManager::GetNBufferedPackets(const Mac48Address& recipient, uint8_t tid) const
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -517,7 +517,7 @@ BlockAckManager::NotifyMissedAck(uint8_t linkId, Ptr<WifiMpdu> mpdu)
 std::pair<uint16_t, uint16_t>
 BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
                                    const CtrlBAckResponseHeader& blockAck,
-                                   Mac48Address recipient,
+                                   const Mac48Address& recipient,
                                    const std::set<uint8_t>& tids,
                                    size_t index)
 {
@@ -598,7 +598,7 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
 }
 
 void
-BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << linkId << recipient << +tid);
 
@@ -695,7 +695,7 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
 }
 
 void
-BlockAckManager::NotifyGotBlockAckRequest(Mac48Address originator,
+BlockAckManager::NotifyGotBlockAckRequest(const Mac48Address& originator,
                                           uint8_t tid,
                                           uint16_t startingSeq)
 {
@@ -725,7 +725,7 @@ BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
 }
 
 CtrlBAckRequestHeader
-BlockAckManager::GetBlockAckReqHeader(Mac48Address recipient, uint8_t tid) const
+BlockAckManager::GetBlockAckReqHeader(const Mac48Address& recipient, uint8_t tid) const
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -788,14 +788,14 @@ BlockAckManager::ScheduleBar(Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued)
 }
 
 void
-BlockAckManager::InactivityTimeout(Mac48Address recipient, uint8_t tid)
+BlockAckManager::InactivityTimeout(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     m_blockAckInactivityTimeout(recipient, tid, true);
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementEstablished(Mac48Address recipient,
+BlockAckManager::NotifyOriginatorAgreementEstablished(const Mac48Address& recipient,
                                                       uint8_t tid,
                                                       uint16_t startingSeq)
 {
@@ -814,7 +814,7 @@ BlockAckManager::NotifyOriginatorAgreementEstablished(Mac48Address recipient,
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementRejected(Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -830,7 +830,7 @@ BlockAckManager::NotifyOriginatorAgreementRejected(Mac48Address recipient, uint8
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementNoReply(Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -847,7 +847,7 @@ BlockAckManager::NotifyOriginatorAgreementNoReply(Mac48Address recipient, uint8_
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementReset(Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementReset(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -870,7 +870,7 @@ BlockAckManager::SetQueue(const Ptr<WifiMacQueue> queue)
 }
 
 bool
-BlockAckManager::NeedBarRetransmission(uint8_t tid, Mac48Address recipient)
+BlockAckManager::NeedBarRetransmission(uint8_t tid, const Mac48Address& recipient)
 {
     auto it = m_originatorAgreements.find({recipient, tid});
     if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
@@ -938,7 +938,7 @@ BlockAckManager::SetDroppedOldMpduCallback(DroppedOldMpdu callback)
 }
 
 uint16_t
-BlockAckManager::GetRecipientBufferSize(Mac48Address recipient, uint8_t tid) const
+BlockAckManager::GetRecipientBufferSize(const Mac48Address& recipient, uint8_t tid) const
 {
     uint16_t size = 0;
     auto it = m_originatorAgreements.find({recipient, tid});
@@ -950,7 +950,7 @@ BlockAckManager::GetRecipientBufferSize(Mac48Address recipient, uint8_t tid) con
 }
 
 uint16_t
-BlockAckManager::GetOriginatorStartingSequence(Mac48Address recipient, uint8_t tid) const
+BlockAckManager::GetOriginatorStartingSequence(const Mac48Address& recipient, uint8_t tid) const
 {
     uint16_t seqNum = 0;
     auto it = m_originatorAgreements.find({recipient, tid});

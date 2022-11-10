@@ -117,7 +117,7 @@ class BlockAckManager : public Object
      *
      * Check if we are the originator of an existing block ack agreement with the given recipient.
      */
-    OriginatorAgreementOptConstRef GetAgreementAsOriginator(Mac48Address recipient,
+    OriginatorAgreementOptConstRef GetAgreementAsOriginator(const Mac48Address& recipient,
                                                             uint8_t tid) const;
     /**
      * \param originator MAC address of the originator
@@ -127,7 +127,7 @@ class BlockAckManager : public Object
      *
      * Check if we are the recipient of an existing block ack agreement with the given originator.
      */
-    RecipientAgreementOptConstRef GetAgreementAsRecipient(Mac48Address originator,
+    RecipientAgreementOptConstRef GetAgreementAsRecipient(const Mac48Address& originator,
                                                           uint8_t tid) const;
 
     /**
@@ -139,7 +139,7 @@ class BlockAckManager : public Object
      * with a successful status code is received, the relative agreement becomes established.
      */
     void CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
-                                   Mac48Address recipient,
+                                   const Mac48Address& recipient,
                                    bool htSupported = true);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
@@ -148,7 +148,7 @@ class BlockAckManager : public Object
      * Invoked when a recipient reject a block ack agreement or when a DELBA frame
      * is Received/Transmitted.
      */
-    void DestroyOriginatorAgreement(Mac48Address recipient, uint8_t tid);
+    void DestroyOriginatorAgreement(const Mac48Address& recipient, uint8_t tid);
     /**
      * \param respHdr Relative Add block ack response (action frame).
      * \param recipient Address of peer station involved in block ack mechanism.
@@ -157,7 +157,7 @@ class BlockAckManager : public Object
      * Invoked upon receipt of a ADDBA response frame from <i>recipient</i>.
      */
     void UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr,
-                                   Mac48Address recipient,
+                                   const Mac48Address& recipient,
                                    uint16_t startingSeq);
 
     /**
@@ -178,7 +178,7 @@ class BlockAckManager : public Object
      * to the category for which block ack was negotiated.
      */
     void CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
-                                  Mac48Address originator,
+                                  const Mac48Address& originator,
                                   uint16_t startingSeq,
                                   bool htSupported,
                                   Ptr<MacRxMiddle> rxMiddle);
@@ -188,7 +188,7 @@ class BlockAckManager : public Object
      * \param originator the originator MAC address
      * \param tid the TID associated with the Block Ack agreement
      */
-    void DestroyRecipientAgreement(Mac48Address originator, uint8_t tid);
+    void DestroyRecipientAgreement(const Mac48Address& originator, uint8_t tid);
 
     /**
      * \param mpdu MPDU to store.
@@ -211,7 +211,7 @@ class BlockAckManager : public Object
      */
     Ptr<const WifiMpdu> GetBar(bool remove = true,
                                uint8_t tid = 8,
-                               Mac48Address recipient = Mac48Address::GetBroadcast());
+                               const Mac48Address& recipient = Mac48Address::GetBroadcast());
     /**
      * Invoked upon receipt of an Ack frame on the given link after the transmission of a
      * QoS data frame sent under an established block ack agreement. Remove the acknowledged
@@ -251,7 +251,7 @@ class BlockAckManager : public Object
      */
     std::pair<uint16_t, uint16_t> NotifyGotBlockAck(uint8_t linkId,
                                                     const CtrlBAckResponseHeader& blockAck,
-                                                    Mac48Address recipient,
+                                                    const Mac48Address& recipient,
                                                     const std::set<uint8_t>& tids,
                                                     size_t index = 0);
     /**
@@ -263,7 +263,7 @@ class BlockAckManager : public Object
      * function is called by ns3::QosTxop object. Performs a check on which MPDUs, previously
      * sent with ack policy set to Block Ack, should be placed in the retransmission queue.
      */
-    void NotifyMissedBlockAck(uint8_t linkId, Mac48Address recipient, uint8_t tid);
+    void NotifyMissedBlockAck(uint8_t linkId, const Mac48Address& recipient, uint8_t tid);
     /**
      * \param originator MAC address of the sender of the Block Ack Request
      * \param tid Traffic ID
@@ -271,7 +271,9 @@ class BlockAckManager : public Object
      *
      * Perform required actions upon receiving a Block Ack Request frame.
      */
-    void NotifyGotBlockAckRequest(Mac48Address originator, uint8_t tid, uint16_t startingSeq);
+    void NotifyGotBlockAckRequest(const Mac48Address& originator,
+                                  uint8_t tid,
+                                  uint16_t startingSeq);
     /**
      * \param mpdu the received MPDU
      *
@@ -287,7 +289,7 @@ class BlockAckManager : public Object
      * Returns the number of packets buffered for a specified agreement. This methods doesn't return
      * the number of buffered MPDUs but the number of buffered MSDUs.
      */
-    uint32_t GetNBufferedPackets(Mac48Address recipient, uint8_t tid) const;
+    uint32_t GetNBufferedPackets(const Mac48Address& recipient, uint8_t tid) const;
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID of transmitted packet.
@@ -296,7 +298,7 @@ class BlockAckManager : public Object
      * Puts corresponding originator agreement in established state and updates number of packets
      * and starting sequence field. Invoked typically after a block ack refresh.
      */
-    void NotifyOriginatorAgreementEstablished(Mac48Address recipient,
+    void NotifyOriginatorAgreementEstablished(const Mac48Address& recipient,
                                               uint8_t tid,
                                               uint16_t startingSeq);
     /**
@@ -307,7 +309,7 @@ class BlockAckManager : public Object
      * block ack setup by an ADDBA Response frame with a failure status code. For now we assume
      * that every QoS station accepts a block ack setup.
      */
-    void NotifyOriginatorAgreementRejected(Mac48Address recipient, uint8_t tid);
+    void NotifyOriginatorAgreementRejected(const Mac48Address& recipient, uint8_t tid);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID of transmitted packet.
@@ -316,7 +318,7 @@ class BlockAckManager : public Object
      * state any packets in queue will be transmitted using normal MPDU. This also unblocks
      * recipient address.
      */
-    void NotifyOriginatorAgreementNoReply(Mac48Address recipient, uint8_t tid);
+    void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID of transmitted packet.
@@ -324,7 +326,7 @@ class BlockAckManager : public Object
      * Set Originator BA agreement to a transitory state to reset it after not receiving response
      * to ADDBA request.
      */
-    void NotifyOriginatorAgreementReset(Mac48Address recipient, uint8_t tid);
+    void NotifyOriginatorAgreementReset(const Mac48Address& recipient, uint8_t tid);
     /**
      * \param nPackets Minimum number of packets for use of block ack.
      *
@@ -365,7 +367,7 @@ class BlockAckManager : public Object
      *
      * \returns true if BAR retransmission needed
      */
-    bool NeedBarRetransmission(uint8_t tid, Mac48Address recipient);
+    bool NeedBarRetransmission(uint8_t tid, const Mac48Address& recipient);
     /**
      * This function returns the buffer size negotiated with the recipient.
      *
@@ -374,7 +376,7 @@ class BlockAckManager : public Object
      *
      * \returns the buffer size negotiated with the recipient
      */
-    uint16_t GetRecipientBufferSize(Mac48Address recipient, uint8_t tid) const;
+    uint16_t GetRecipientBufferSize(const Mac48Address& recipient, uint8_t tid) const;
     /**
      * This function returns the starting sequence number of the transmit window.
      *
@@ -383,7 +385,7 @@ class BlockAckManager : public Object
      *
      * \returns the starting sequence number of the transmit window (WinStartO)
      */
-    uint16_t GetOriginatorStartingSequence(Mac48Address recipient, uint8_t tid) const;
+    uint16_t GetOriginatorStartingSequence(const Mac48Address& recipient, uint8_t tid) const;
 
     /**
      * typedef for a callback to invoke when an MPDU is successfully ack'ed.
@@ -422,7 +424,7 @@ class BlockAckManager : public Object
      * \param [in] state The state.
      */
     typedef void (*AgreementStateTracedCallback)(Time now,
-                                                 Mac48Address recipient,
+                                                 const Mac48Address& recipient,
                                                  uint8_t tid,
                                                  OriginatorBlockAckAgreement::State state);
 
@@ -446,7 +448,7 @@ class BlockAckManager : public Object
      * Get the BlockAckRequest header for the established BA agreement
      * (<i>recipient</i>,<i>tid</i>).
      */
-    CtrlBAckRequestHeader GetBlockAckReqHeader(Mac48Address recipient, uint8_t tid) const;
+    CtrlBAckRequestHeader GetBlockAckReqHeader(const Mac48Address& recipient, uint8_t tid) const;
 
     /**
      * \param bar the BlockAckRequest to enqueue
@@ -468,7 +470,7 @@ class BlockAckManager : public Object
      * \param recipient the recipient MAC address
      * \param tid Traffic ID
      */
-    void InactivityTimeout(Mac48Address recipient, uint8_t tid);
+    void InactivityTimeout(const Mac48Address& recipient, uint8_t tid);
 
     /**
      * typedef for a list of WifiMpdu.
