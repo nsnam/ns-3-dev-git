@@ -377,6 +377,12 @@ AnimationInterface::SetBackgroundImage(std::string fileName,
 }
 
 void
+AnimationInterface::UpdateNodeSize(Ptr<Node> n, double width, double height)
+{
+    UpdateNodeSize(n->GetId(), width, height);
+}
+
+void
 AnimationInterface::UpdateNodeSize(uint32_t nodeId, double width, double height)
 {
     AnimationInterface::NodeSize s = {width, height};

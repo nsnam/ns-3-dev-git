@@ -286,6 +286,15 @@ class AnimationInterface
 
     /**
      * \brief Helper function to update the size of a node
+     * \param n Ptr to the node
+     * \param width Width of the node
+     * \param height Height of the node
+     *
+     */
+    void UpdateNodeSize(Ptr<Node> n, double width, double height);
+
+    /**
+     * \brief Helper function to update the size of a node
      * \param nodeId Id of the node
      * \param width Width of the node
      * \param height Height of the node
