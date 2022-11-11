@@ -19,8 +19,8 @@ Changes from ns-3.37 to ns-3.38
 ### New API
 
 ### Changes to existing API
-* (network) **Ipv4Address** and **Ipv6Address** now do not raise an exception if built from an invalid string. Instead the address is marked as not initialized.
 
+* (network) **Ipv4Address** and **Ipv6Address** now do not raise an exception if built from an invalid string. Instead the address is marked as not initialized.
 
 ### Changes to build system
 
