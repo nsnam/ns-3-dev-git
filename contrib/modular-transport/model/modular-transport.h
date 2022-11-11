@@ -2,8 +2,16 @@
 #ifndef MODULAR_TRANSPORT_H
 #define MODULAR_TRANSPORT_H
 
+#include "ns3/ip-l4-protocol.h"
+
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
+#include "ns3/sequence-number.h"
+
 namespace ns3
 {
+
+class Node;
 
 class ModularTransport: public IpL4Protocol
 {

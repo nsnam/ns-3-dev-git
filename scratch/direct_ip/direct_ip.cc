@@ -113,7 +113,8 @@ main (int argc, char *argv[])
   Ptr<Node> dst = *(nodes.End() - 1);
   Ipv4Address daddr = dst->GetObject<Ipv4L3Protocol>()->GetInterface(1)->GetAddress(0).GetAddress();
   NS_LOG_UNCOND("Destination address: " << daddr);
-  Simulator::Schedule(Seconds(1), &send_packet, src, saddr, daddr, src_intf->GetDevice());
+  //Simulator::Schedule(Seconds(1), &send_packet, src, saddr, daddr, src_intf->GetDevice());
+  Simulator::Schedule(Seconds(1), &send_packet, src, saddr, daddr, nullptr);
 
   Simulator::Run ();
   Simulator::Destroy ();

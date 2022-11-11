@@ -16,7 +16,7 @@ build_lib(
                  helper/modular-transport-helper.cc
     HEADER_FILES model/modular-transport.h
                  helper/modular-transport-helper.h
-    LIBRARIES_TO_LINK ${libcore}
+    LIBRARIES_TO_LINK ${libinternet}
     TEST_SOURCES test/modular-transport-test-suite.cc
                  ${examples_as_tests_sources}
 )
