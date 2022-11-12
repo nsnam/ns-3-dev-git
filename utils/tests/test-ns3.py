@@ -1810,6 +1810,51 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Clean leftovers before proceeding
         run_ns3("clean")
 
+    def test_23_PrecompiledHeaders(self):
+        """!
+        Check if precompiled headers are being enabled correctly.
+        @return None
+        """
+
+        run_ns3("clean")
+        # Ubuntu 18.04 ships with:
+        # - cmake 3.10: does not support PCH
+        # - ccache 3.4: incompatible with pch
+        with DockerContainerManager(self, "ubuntu:18.04") as container:
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake ccache clang-10")
+            try:
+                container.execute("./ns3 configure -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10")
+            except DockerException as e:
+                self.assertIn("does not support precompiled headers", e.stderr)
+        run_ns3("clean")
+
+        # Ubuntu 20.04 ships with:
+        # - cmake 3.16: does support PCH
+        # - ccache 3.7: incompatible with pch
+        with DockerContainerManager(self, "ubuntu:20.04") as container:
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake ccache g++")
+            try:
+                container.execute("./ns3 configure")
+            except DockerException as e:
+                self.assertIn("incompatible with ccache", e.stderr)
+        run_ns3("clean")
+
+        # Ubuntu 22.04 ships with:
+        # - cmake 3.22: does support PCH
+        # - ccache 4.5: compatible with pch
+        with DockerContainerManager(self, "ubuntu:22.04") as container:
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake ccache g++")
+            try:
+                container.execute("./ns3 configure")
+            except DockerException as e:
+                self.assertTrue(False, "Precompiled headers should have been enabled")
+
+        # Clean build system leftovers
+        run_ns3("clean")
+
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
     """!
