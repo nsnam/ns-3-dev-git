@@ -595,6 +595,11 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
     for (cmake_flag, option_name) in options:
         arg = on_off_condition(args, cmake_flag, option_name)
         if arg:
+            is_on = "=ON" in arg
+            reverse = arg.replace("=ON" if is_on else "=OFF",
+                                  "=OFF" if is_on else "=ON")
+            if reverse in cmake_args:
+                cmake_args.remove(reverse)
             cmake_args.append(arg)
 
     if args.lcov_zerocounters is not None:

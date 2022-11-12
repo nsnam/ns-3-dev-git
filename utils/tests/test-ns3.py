@@ -596,6 +596,30 @@ class NS3ConfigureBuildProfileTestCase(unittest.TestCase):
         self.assertEqual(return_code, 2)
         self.assertIn("invalid choice: 'OPTIMIZED'", stderr)
 
+    def test_06_OverwriteDefaultSettings(self):
+        """!
+        Replace settings set by default (e.g. ASSERT/LOGs enabled in debug builds and disabled in default ones)
+        @return None
+        """
+        return_code, _, _ = run_ns3("clean")
+        self.assertEqual(return_code, 0)
+
+        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run -d debug")
+        self.assertEqual(return_code, 0)
+        self.assertIn("-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON -DNS3_NATIVE_OPTIMIZATIONS=OFF", stdout)
+
+        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run -d debug --disable-asserts --disable-logs --disable-werror")
+        self.assertEqual(return_code, 0)
+        self.assertIn("-DCMAKE_BUILD_TYPE=debug -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF", stdout)
+
+        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run")
+        self.assertEqual(return_code, 0)
+        self.assertIn("-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF -DNS3_NATIVE_OPTIMIZATIONS=OFF", stdout)
+
+        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run --enable-asserts --enable-logs --enable-werror")
+        self.assertEqual(return_code, 0)
+        self.assertIn("-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON", stdout)
+
 
 class NS3BaseTestCase(unittest.TestCase):
     """!
