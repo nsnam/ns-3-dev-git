@@ -876,6 +876,37 @@ macro(process_options)
     endif()
   endif()
 
+  if(${NS3_NINJA_TRACING})
+    if(${CMAKE_GENERATOR} STREQUAL Ninja)
+      include(ExternalProject)
+      ExternalProject_Add(
+        NinjaTracing
+        GIT_REPOSITORY "https://github.com/nico/ninjatracing.git"
+        GIT_TAG "f9d21e973cfdeafa913b83a927fef56258f70b9a"
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+      )
+      ExternalProject_Get_Property(NinjaTracing SOURCE_DIR)
+      set(embed_time_trace)
+      if(${NS3_CLANG_TIMETRACE} AND ${CLANG})
+        set(embed_time_trace --embed-time-trace)
+      endif()
+      add_custom_target(
+        ninjaTrace
+        COMMAND
+          ${Python3_EXECUTABLE} ${SOURCE_DIR}/ninjatracing -a
+          ${embed_time_trace} ${PROJECT_BINARY_DIR}/.ninja_log >
+          ${PROJECT_SOURCE_DIR}/ninja_performance_trace.json
+        DEPENDS NinjaTracing
+      )
+      unset(embed_time_trace)
+      unset(SOURCE_DIR)
+    else()
+      message(FATAL_ERROR "Ninjatracing requires the Ninja generator")
+    endif()
+  endif()
+
   # Disable the below warning from bindings built in debug mode with clang++:
   # "expression with side effects will be evaluated despite being used as an
   # operand to 'typeid'"
