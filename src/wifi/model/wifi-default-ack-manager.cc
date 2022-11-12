@@ -237,11 +237,10 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
         return TryUlMuTransmission(mpdu, txParams);
     }
 
-    // if the current protection method (if any) is already BLOCK_ACK or BAR_BLOCK_ACK,
-    // it will not change by adding an MPDU
+    // if the current acknowledgment method (if any) is already BLOCK_ACK, it will not
+    // change by adding an MPDU
     if (txParams.m_acknowledgment &&
-        (txParams.m_acknowledgment->method == WifiAcknowledgment::BLOCK_ACK ||
-         txParams.m_acknowledgment->method == WifiAcknowledgment::BAR_BLOCK_ACK))
+        txParams.m_acknowledgment->method == WifiAcknowledgment::BLOCK_ACK)
     {
         return nullptr;
     }
