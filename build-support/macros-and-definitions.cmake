@@ -1319,8 +1319,34 @@ macro(process_options)
         "Clang-tidy is incompatible with precompiled headers. Continuing without them."
       )
     elseif(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
-      set(PRECOMPILE_HEADERS_ENABLED ON)
-      message(STATUS "Precompiled headers were enabled")
+      # If ccache was not found, we can continue with precompiled headers
+      if("${CCACHE}" STREQUAL "CCACHE-NOTFOUND")
+        set(PRECOMPILE_HEADERS_ENABLED ON)
+        message(STATUS "Precompiled headers were enabled")
+      else()
+        # If ccache was found, we need to check if it is ccache >= 4
+        execute_process(COMMAND ${CCACHE} -V OUTPUT_VARIABLE CCACHE_OUT)
+        # Extract ccache version
+        if(CCACHE_OUT MATCHES "ccache version ([0-9\.]*)")
+          # If an incompatible version is found, do not enable precompiled
+          # headers
+          if("${CMAKE_MATCH_1}" VERSION_LESS "4.0.0")
+            set(PRECOMPILE_HEADERS_ENABLED OFF)
+            message(
+              ${HIGHLIGHTED_STATUS}
+              "Precompiled headers are incompatible with ccache ${CMAKE_MATCH_1} and will be disabled."
+            )
+          else()
+            set(PRECOMPILE_HEADERS_ENABLED ON)
+            message(STATUS "Precompiled headers were enabled.")
+          endif()
+        else()
+          message(
+            FATAL_ERROR
+              "Failed to extract the ccache version while enabling precompiled headers."
+          )
+        endif()
+      endif()
     else()
       message(
         STATUS
