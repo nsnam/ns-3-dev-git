@@ -180,6 +180,71 @@ def get_enabled_modules():
     return read_lock_entry("NS3_ENABLED_MODULES")
 
 
+class DockerContainerManager:
+    """!
+    Python-on-whales wrapper for Docker-based ns-3 tests
+    """
+
+    def __init__(self, currentTestCase: unittest.TestCase, containerName: str = "ubuntu:latest"):
+        """!
+        Create and start container with containerName in the current ns-3 directory
+        @param self: the current DockerContainerManager instance
+        @param currentTestCase: the test case instance creating the DockerContainerManager
+        @param containerName: name of the container image to be used
+        """
+        global DockerException
+        try:
+            from python_on_whales import docker
+            from python_on_whales.exceptions import DockerException
+        except ModuleNotFoundError:
+            docker = None  # noqa
+            DockerException = None  # noqa
+            currentTestCase.skipTest("python-on-whales was not found")
+
+        # Import rootless docker settings from .bashrc
+        with open(os.path.expanduser("~/.bashrc"), "r") as f:
+            docker_settings = re.findall("(DOCKER_.*=.*)", f.read())
+            for setting in docker_settings:
+                key, value = setting.split("=")
+                os.environ[key] = value
+            del docker_settings, setting, key, value
+
+        # Create Docker client instance and start it
+        ## The Python-on-whales container instance
+        self.container = docker.run(containerName,
+                                    interactive=True, detach=True,
+                                    tty=False,
+                                    volumes=[(ns3_path, "/ns-3-dev")]
+                                    )
+
+        # Redefine the execute command of the container
+        def split_exec(docker_container, cmd):
+            return docker_container._execute(cmd.split(), workdir="/ns-3-dev")
+
+        self.container._execute = self.container.execute
+        self.container.execute = partial(split_exec, self.container)
+
+    def __enter__(self):
+        """!
+        Return the managed container when entiring the block "with DockerContainerManager() as container"
+        @param self: the current DockerContainerManager instance
+        @return container managed by DockerContainerManager.
+        """
+        return self.container
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """!
+        Clean up the managed container at the end of the block "with DockerContainerManager() as container"
+        @param self: the current DockerContainerManager instance
+        @param exc_type: unused parameter
+        @param exc_val: unused parameter
+        @param exc_tb: unused parameter
+        @return None
+        """
+        self.container.stop()
+        self.container.remove()
+
+
 class NS3UnusedSourcesTestCase(unittest.TestCase):
     """!
     ns-3 tests related to checking if source files were left behind, not being used by CMake
@@ -606,19 +671,29 @@ class NS3ConfigureBuildProfileTestCase(unittest.TestCase):
 
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run -d debug")
         self.assertEqual(return_code, 0)
-        self.assertIn("-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON -DNS3_NATIVE_OPTIMIZATIONS=OFF", stdout)
+        self.assertIn(
+            "-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON -DNS3_NATIVE_OPTIMIZATIONS=OFF",
+            stdout)
 
-        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run -d debug --disable-asserts --disable-logs --disable-werror")
+        return_code, stdout, stderr = run_ns3(
+            "configure -G \"{generator}\" --dry-run -d debug --disable-asserts --disable-logs --disable-werror")
         self.assertEqual(return_code, 0)
-        self.assertIn("-DCMAKE_BUILD_TYPE=debug -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF", stdout)
+        self.assertIn(
+            "-DCMAKE_BUILD_TYPE=debug -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF",
+            stdout)
 
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run")
         self.assertEqual(return_code, 0)
-        self.assertIn("-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF -DNS3_NATIVE_OPTIMIZATIONS=OFF", stdout)
+        self.assertIn(
+            "-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF -DNS3_NATIVE_OPTIMIZATIONS=OFF",
+            stdout)
 
-        return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --dry-run --enable-asserts --enable-logs --enable-werror")
+        return_code, stdout, stderr = run_ns3(
+            "configure -G \"{generator}\" --dry-run --enable-asserts --enable-logs --enable-werror")
         self.assertEqual(return_code, 0)
-        self.assertIn("-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON", stdout)
+        self.assertIn(
+            "-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON",
+            stdout)
 
 
 class NS3BaseTestCase(unittest.TestCase):
@@ -1419,35 +1494,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         @return None
         """
 
-        try:
-            from python_on_whales import docker
-            from python_on_whales.exceptions import DockerException
-        except ModuleNotFoundError:
-            docker = None  # noqa
-            DockerException = None  # noqa
-            self.skipTest("python-on-whales was not found")
-
-        # Import rootless docker settings from .bashrc
-        with open(os.path.expanduser("~/.bashrc"), "r") as f:
-            docker_settings = re.findall("(DOCKER_.*=.*)", f.read())
-            for setting in docker_settings:
-                key, value = setting.split("=")
-                os.environ[key] = value
-            del docker_settings, setting, key, value
-
         # Create Docker client instance and start it
-        with docker.run("ubuntu:22.04",
-                        interactive=True, detach=True,
-                        tty=False,
-                        volumes=[(ns3_path, "/ns-3-dev")]
-                        ) as container:
-            # Redefine the execute command of the container
-            def split_exec(docker_container, cmd):
-                return docker_container._execute(cmd.split(), workdir="/ns-3-dev")
-
-            container._execute = container.execute
-            container.execute = partial(split_exec, container)
-
+        with DockerContainerManager(self, "ubuntu:22.04") as container:
             # Install basic packages
             container.execute("apt-get update")
             container.execute("apt-get install -y python3 ninja-build cmake g++")
@@ -1572,37 +1620,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         @return None
         """
 
-        try:
-            from python_on_whales import docker
-            from python_on_whales.exceptions import DockerException
-        except ModuleNotFoundError:
-            docker = None  # noqa
-            DockerException = None  # noqa
-            self.skipTest("python-on-whales was not found")
-
         run_ns3("clean")
-
-        # Import rootless docker settings from .bashrc
-        with open(os.path.expanduser("~/.bashrc"), "r") as f:
-            docker_settings = re.findall("(DOCKER_.*=.*)", f.read())
-            for setting in docker_settings:
-                key, value = setting.split("=")
-                os.environ[key] = value
-            del docker_settings, setting, key, value
-
-        # Create Docker client instance and start it
-        with docker.run("gcc:12.1",  # Debian with minimum supported version of GCC for Mold
-                        interactive=True, detach=True,
-                        tty=False,
-                        volumes=[(ns3_path, "/ns-3-dev")],
-                        ) as container:
-            # Redefine the execute command of the container
-            def split_exec(docker_container, cmd):
-                return docker_container._execute(cmd.split(), workdir="/ns-3-dev")
-
-            container._execute = container.execute
-            container.execute = partial(split_exec, container)
-
+        with DockerContainerManager(self, "gcc:12.1") as container:
             # Install basic packages
             container.execute("apt-get update")
             container.execute("apt-get install -y python3 ninja-build cmake g++ lld")
@@ -2663,7 +2682,8 @@ class NS3QualityControlTestCase(unittest.TestCase):
 
         # User agent string to make ACM and Elsevier let us check if links to papers are working
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36' # noqa
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+            # noqa
         }
 
         def test_file_url(args):
