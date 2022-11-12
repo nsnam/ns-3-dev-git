@@ -1667,6 +1667,62 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Clean leftovers before proceeding
         run_ns3("clean")
 
+    def test_21_ClangTimeTrace(self):
+        """!
+        Check if NS3_CLANG_TIMETRACE feature is working
+        Clang's -ftime-trace plus ClangAnalyzer report
+        @return None
+        """
+
+        run_ns3("clean")
+        with DockerContainerManager(self, "ubuntu:20.04") as container:
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 ninja-build cmake clang-10")
+
+            # Enable ClangTimeTrace without git (it should fail)
+            try:
+                container.execute(
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-examples --enable-tests -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10 -DNS3_CLANG_TIMETRACE=ON")
+            except DockerException as e:
+                self.assertIn("could not find git for clone of ClangBuildAnalyzer", e.stderr)
+
+            container.execute("apt-get install -y git")
+
+            # Enable ClangTimeTrace without git (it should succeed)
+            try:
+                container.execute(
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-examples --enable-tests -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10 -DNS3_CLANG_TIMETRACE=ON")
+            except DockerException as e:
+                self.assertIn("could not find git for clone of ClangBuildAnalyzer", e.stderr)
+
+            # Clean leftover time trace report
+            time_trace_report_path = os.path.join(ns3_path, "ClangBuildAnalyzerReport.txt")
+            if os.path.exists(time_trace_report_path):
+                os.remove(time_trace_report_path)
+
+            # Build new time trace report
+            try:
+                container.execute("./ns3 build timeTraceReport")
+            except DockerException as e:
+                self.assertTrue(False, "Failed to build the ClangAnalyzer's time trace report")
+
+            # Check if the report exists
+            self.assertTrue(os.path.exists(time_trace_report_path))
+
+            # Now try with GCC, which should fail during the configuration
+            run_ns3("clean")
+            container.execute("apt-get install -y g++")
+            container.execute("apt-get remove -y clang-10")
+
+            try:
+                container.execute(
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-examples --enable-tests -- -DNS3_CLANG_TIMETRACE=ON")
+                self.assertTrue(False, "ClangTimeTrace requires Clang, but GCC just passed the checks too")
+            except DockerException as e:
+                self.assertIn("TimeTrace is a Clang feature", e.stderr)
+
+        # Clean leftovers before proceeding
+        run_ns3("clean")
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
     """!

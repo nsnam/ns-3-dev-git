@@ -479,6 +479,7 @@ macro(process_options)
         ClangBuildAnalyzer
         GIT_REPOSITORY "https://github.com/aras-p/ClangBuildAnalyzer.git"
         GIT_TAG "47406981a1c5a89e8f8c62802b924c3e163e7cb4"
+        CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         INSTALL_COMMAND cmake -E copy_if_different ClangBuildAnalyzer
                         ${PROJECT_BINARY_DIR}
       )
