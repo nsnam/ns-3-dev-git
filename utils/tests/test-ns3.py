@@ -1724,6 +1724,93 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Clean leftovers before proceeding
         run_ns3("clean")
 
+    def test_22_NinjaTrace(self):
+        """!
+        Check if NS3_NINJA_TRACE feature is working
+        Ninja's .ninja_log conversion to about://tracing
+        json format conversion with Ninjatracing
+        @return None
+        """
+
+        run_ns3("clean")
+        with DockerContainerManager(self, "ubuntu:20.04") as container:
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake clang-10")
+
+            # Enable Ninja tracing without using the Ninja generator
+            try:
+                container.execute(
+                    "./ns3 configure --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10")
+            except DockerException as e:
+                self.assertIn("Ninjatracing requires the Ninja generator", e.stderr)
+
+            # Clean build system leftovers
+            run_ns3("clean")
+
+            container.execute("apt-get install -y ninja-build")
+            # Enable Ninjatracing support without git (should fail)
+            try:
+                container.execute(
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10")
+            except DockerException as e:
+                self.assertIn("could not find git for clone of NinjaTracing", e.stderr)
+
+            container.execute("apt-get install -y git")
+            # Enable Ninjatracing support with git (it should succeed)
+            try:
+                container.execute(
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10")
+            except DockerException as e:
+                self.assertTrue(False, "Failed to configure with Ninjatracing")
+
+            # Clean leftover ninja trace
+            ninja_trace_path = os.path.join(ns3_path, "ninja_performance_trace.json")
+            if os.path.exists(ninja_trace_path):
+                os.remove(ninja_trace_path)
+
+            # Build the core module
+            container.execute("./ns3 build core")
+
+            # Build new ninja trace
+            try:
+                container.execute("./ns3 build ninjaTrace")
+            except DockerException as e:
+                self.assertTrue(False, "Failed to run Ninjatracing's tool to build the trace")
+
+            # Check if the report exists
+            self.assertTrue(os.path.exists(ninja_trace_path))
+            trace_size = os.stat(ninja_trace_path).st_size
+            os.remove(ninja_trace_path)
+
+            run_ns3("clean")
+
+            # Enable Clang TimeTrace feature for more detailed traces
+            try:
+                container.execute(
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10 -DNS3_CLANG_TIMETRACE=ON")
+            except DockerException as e:
+                self.assertTrue(False, "Failed to configure Ninjatracing with Clang's TimeTrace")
+
+            # Build the core module
+            container.execute("./ns3 build core")
+
+            # Build new ninja trace
+            try:
+                container.execute("./ns3 build ninjaTrace")
+            except DockerException as e:
+                self.assertTrue(False, "Failed to run Ninjatracing's tool to build the trace")
+
+            self.assertTrue(os.path.exists(ninja_trace_path))
+            timetrace_size = os.stat(ninja_trace_path).st_size
+            os.remove(ninja_trace_path)
+
+            # Check if timetrace's trace is bigger than the original trace (it should be)
+            self.assertGreater(timetrace_size, trace_size)
+
+        # Clean leftovers before proceeding
+        run_ns3("clean")
+
+
 class NS3BuildBaseTestCase(NS3BaseTestCase):
     """!
     Tests ns3 regarding building the project
