@@ -77,8 +77,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .ccache
-          key: ubuntu-ci-${{env.time}}
-          restore-keys: ubuntu-ci-
+          key: ubuntu-codeql-${{env.time}}
+          restore-keys: ubuntu-codeql-
       - name: Setup ccache
         run: |
           ccache --set-config=cache_dir="$GITHUB_WORKSPACE/.ccache"
