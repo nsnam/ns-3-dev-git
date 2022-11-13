@@ -122,8 +122,7 @@ class OfdmPpdu : public WifiPpdu
     Ptr<WifiPpdu> Copy() const override;
 
   protected:
-    WifiPhyBand m_band;      //!< the WifiPhyBand used to transmit that PPDU
-    uint16_t m_channelWidth; //!< the channel width used to transmit that PPDU in MHz
+    WifiPhyBand m_band; //!< the WifiPhyBand used to transmit that PPDU
 #ifndef NS3_BUILD_PROFILE_DEBUG
     LSigHeader m_lSig; //!< the L-SIG PHY header
 #endif
@@ -155,7 +154,10 @@ class OfdmPpdu : public WifiPpdu
      * \param lSig the L-SIG header
      */
     virtual void SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const;
-}; // class OfdmPpdu
+
+    uint16_t m_channelWidth; //!< the channel width used to transmit that PPDU in MHz (needed to
+                             //!< distinguish 5 MHz, 10 MHz or 20 MHz PPDUs)
+};                           // class OfdmPpdu
 
 } // namespace ns3
 

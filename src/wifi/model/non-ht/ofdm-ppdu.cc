@@ -94,10 +94,10 @@ OfdmPpdu::DoGetTxVector() const
 void
 OfdmPpdu::SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const
 {
+    NS_ASSERT(m_channelWidth <= 20);
     // OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 MHz
-    uint16_t channelWidth = m_channelWidth < 20 ? m_channelWidth : 20;
-    txVector.SetMode(OfdmPhy::GetOfdmRate(lSig.GetRate(m_channelWidth), channelWidth));
-    txVector.SetChannelWidth(channelWidth);
+    txVector.SetMode(OfdmPhy::GetOfdmRate(lSig.GetRate(m_channelWidth), m_channelWidth));
+    txVector.SetChannelWidth(m_channelWidth);
 }
 
 Time

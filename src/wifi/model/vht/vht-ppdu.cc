@@ -85,7 +85,7 @@ VhtPpdu::SetVhtSigHeader(VhtSigHeader& vhtSig,
                          Time ppduDuration) const
 {
     vhtSig.SetMuFlag(m_preamble == WIFI_PREAMBLE_VHT_MU);
-    vhtSig.SetChannelWidth(m_channelWidth);
+    vhtSig.SetChannelWidth(txVector.GetChannelWidth());
     vhtSig.SetShortGuardInterval(txVector.GetGuardInterval() == 400);
     uint32_t nSymbols =
         (static_cast<double>(

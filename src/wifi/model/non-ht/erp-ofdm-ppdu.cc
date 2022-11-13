@@ -43,9 +43,8 @@ ErpOfdmPpdu::ErpOfdmPpdu(Ptr<const WifiPsdu> psdu,
 void
 ErpOfdmPpdu::SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const
 {
-    NS_ASSERT(m_channelWidth == 20);
     txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(lSig.GetRate()));
-    txVector.SetChannelWidth(m_channelWidth);
+    txVector.SetChannelWidth(20);
 }
 
 Ptr<WifiPpdu>

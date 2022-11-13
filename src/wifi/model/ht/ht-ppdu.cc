@@ -91,7 +91,7 @@ void
 HtPpdu::SetHtSigHeader(HtSigHeader& htSig, const WifiTxVector& txVector, std::size_t psduSize) const
 {
     htSig.SetMcs(txVector.GetMode().GetMcsValue());
-    htSig.SetChannelWidth(m_channelWidth);
+    htSig.SetChannelWidth(txVector.GetChannelWidth());
     htSig.SetHtLength(psduSize);
     htSig.SetAggregation(txVector.IsAggregation());
     htSig.SetShortGuardInterval(txVector.GetGuardInterval() == 400);

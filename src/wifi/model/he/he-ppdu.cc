@@ -154,7 +154,7 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
         heSig.SetNStreams(txVector.GetNss());
     }
     heSig.SetBssColor(txVector.GetBssColor());
-    heSig.SetChannelWidth(m_channelWidth);
+    heSig.SetChannelWidth(txVector.GetChannelWidth());
     heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(), 2 /*NLTF currently unused*/);
 }
 
