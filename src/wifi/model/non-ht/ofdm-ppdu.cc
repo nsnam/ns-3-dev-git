@@ -40,7 +40,7 @@ OfdmPpdu::OfdmPpdu(Ptr<const WifiPsdu> psdu,
                    bool instantiateLSig /* = true */)
     : WifiPpdu(psdu, txVector, txCenterFreq, uid),
       m_band(band),
-      m_channelWidth(txVector.GetChannelWidth())
+      m_channelWidth(txVector.IsNonHtDuplicate() ? 20 : txVector.GetChannelWidth())
 {
     NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << band << uid);
     if (instantiateLSig)

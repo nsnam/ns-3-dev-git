@@ -269,13 +269,13 @@ class WifiTxVector
     /**
      * Checks whether the PSDU contains A-MPDU.
      * \returns true if this PSDU has A-MPDU aggregation,
-     *          false otherwise.
+     *          false otherwise
      */
     bool IsAggregation() const;
     /**
      * Sets if PSDU contains A-MPDU.
      *
-     * \param aggregation whether the PSDU contains A-MPDU or not.
+     * \param aggregation whether the PSDU contains A-MPDU or not
      */
     void SetAggregation(bool aggregation);
     /**
@@ -304,6 +304,12 @@ class WifiTxVector
      * \param ldpc enable or disable LDPC
      */
     void SetLdpc(bool ldpc);
+    /**
+     * Checks whether this TXVECTOR corresponds to a non-HT duplicate.
+     * \returns true if this TXVECTOR corresponds to a non-HT duplicate,
+     *          false otherwise.
+     */
+    bool IsNonHtDuplicate() const;
     /**
      * Set the BSS color
      * \param color the BSS color
