@@ -20,6 +20,7 @@ Release 3-dev
 
 - (network) !938 - Add class `TimestampTag` for associating a timestamp with a packet.
 - (network) !1163 Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
+- (internet) !1186 `TcpWestwood` model has been removed, and the class has been renamed `TcpWestwoodPlus`.
 
 ### Bugs fixed
 

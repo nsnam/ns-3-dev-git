@@ -30,7 +30,7 @@
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
 
-#include "tcp-westwood.h"
+#include "tcp-westwood-plus.h"
 
 #include "rtt-estimator.h"
 #include "tcp-socket-base.h"
@@ -38,42 +38,35 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE("TcpWestwood");
+NS_LOG_COMPONENT_DEFINE("TcpWestwoodPlus");
 
 namespace ns3
 {
 
-NS_OBJECT_ENSURE_REGISTERED(TcpWestwood);
+NS_OBJECT_ENSURE_REGISTERED(TcpWestwoodPlus);
 
 TypeId
-TcpWestwood::GetTypeId()
+TcpWestwoodPlus::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::TcpWestwood")
+        TypeId("ns3::TcpWestwoodPlus")
             .SetParent<TcpNewReno>()
             .SetGroupName("Internet")
-            .AddConstructor<TcpWestwood>()
-            .AddAttribute("FilterType",
-                          "Use this to choose no filter or Tustin's approximation filter",
-                          EnumValue(TcpWestwood::TUSTIN),
-                          MakeEnumAccessor(&TcpWestwood::m_fType),
-                          MakeEnumChecker(TcpWestwood::NONE, "None", TcpWestwood::TUSTIN, "Tustin"))
-            .AddAttribute("ProtocolType",
-                          "Use this to let the code run as Westwood or WestwoodPlus",
-                          EnumValue(TcpWestwood::WESTWOOD),
-                          MakeEnumAccessor(&TcpWestwood::m_pType),
-                          MakeEnumChecker(TcpWestwood::WESTWOOD,
-                                          "Westwood",
-                                          TcpWestwood::WESTWOODPLUS,
-                                          "WestwoodPlus"))
+            .AddConstructor<TcpWestwoodPlus>()
+            .AddAttribute(
+                "FilterType",
+                "Use this to choose no filter or Tustin's approximation filter",
+                EnumValue(TcpWestwoodPlus::TUSTIN),
+                MakeEnumAccessor(&TcpWestwoodPlus::m_fType),
+                MakeEnumChecker(TcpWestwoodPlus::NONE, "None", TcpWestwoodPlus::TUSTIN, "Tustin"))
             .AddTraceSource("EstimatedBW",
                             "The estimated bandwidth",
-                            MakeTraceSourceAccessor(&TcpWestwood::m_currentBW),
+                            MakeTraceSourceAccessor(&TcpWestwoodPlus::m_currentBW),
                             "ns3::TracedValueCallback::DataRate");
     return tid;
 }
 
-TcpWestwood::TcpWestwood()
+TcpWestwoodPlus::TcpWestwoodPlus()
     : TcpNewReno(),
       m_currentBW(0),
       m_lastSampleBW(0),
@@ -85,12 +78,11 @@ TcpWestwood::TcpWestwood()
     NS_LOG_FUNCTION(this);
 }
 
-TcpWestwood::TcpWestwood(const TcpWestwood& sock)
+TcpWestwoodPlus::TcpWestwoodPlus(const TcpWestwoodPlus& sock)
     : TcpNewReno(sock),
       m_currentBW(sock.m_currentBW),
       m_lastSampleBW(sock.m_lastSampleBW),
       m_lastBW(sock.m_lastBW),
-      m_pType(sock.m_pType),
       m_fType(sock.m_fType),
       m_IsCount(sock.m_IsCount)
 {
@@ -98,12 +90,12 @@ TcpWestwood::TcpWestwood(const TcpWestwood& sock)
     NS_LOG_LOGIC("Invoked the copy constructor");
 }
 
-TcpWestwood::~TcpWestwood()
+TcpWestwoodPlus::~TcpWestwoodPlus()
 {
 }
 
 void
-TcpWestwood::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t packetsAcked, const Time& rtt)
+TcpWestwoodPlus::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t packetsAcked, const Time& rtt)
 {
     NS_LOG_FUNCTION(this << tcb << packetsAcked << rtt);
 
@@ -115,45 +107,23 @@ TcpWestwood::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t packetsAcked, const Tim
 
     m_ackedSegments += packetsAcked;
 
-    if (m_pType == TcpWestwood::WESTWOOD)
+    if (!(rtt.IsZero() || m_IsCount))
     {
-        EstimateBW(rtt, tcb);
-    }
-    else if (m_pType == TcpWestwood::WESTWOODPLUS)
-    {
-        if (!(rtt.IsZero() || m_IsCount))
-        {
-            m_IsCount = true;
-            m_bwEstimateEvent.Cancel();
-            m_bwEstimateEvent = Simulator::Schedule(rtt, &TcpWestwood::EstimateBW, this, rtt, tcb);
-        }
+        m_IsCount = true;
+        m_bwEstimateEvent.Cancel();
+        m_bwEstimateEvent = Simulator::Schedule(rtt, &TcpWestwoodPlus::EstimateBW, this, rtt, tcb);
     }
 }
 
 void
-TcpWestwood::EstimateBW(const Time& rtt, Ptr<TcpSocketState> tcb)
+TcpWestwoodPlus::EstimateBW(const Time& rtt, Ptr<TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this);
 
     NS_ASSERT(!rtt.IsZero());
 
-    if (m_pType == TcpWestwood::WESTWOOD)
-    {
-        Time currentAck = Simulator::Now();
-
-        NS_ABORT_MSG_IF(currentAck == m_lastAck,
-                        "This violates a model assumption and would lead to divide-by-zero; please "
-                        "report to ns-3 maintainers if this occurs.");
-
-        m_currentBW = DataRate(m_ackedSegments * tcb->m_segmentSize * 8.0 /
-                               (currentAck - m_lastAck).GetSeconds());
-        m_lastAck = currentAck;
-    }
-    else if (m_pType == TcpWestwood::WESTWOODPLUS)
-    {
-        m_currentBW = DataRate(m_ackedSegments * tcb->m_segmentSize * 8.0 / rtt.GetSeconds());
-        m_IsCount = false;
-    }
+    m_currentBW = DataRate(m_ackedSegments * tcb->m_segmentSize * 8.0 / rtt.GetSeconds());
+    m_IsCount = false;
 
     m_ackedSegments = 0;
 
@@ -161,12 +131,12 @@ TcpWestwood::EstimateBW(const Time& rtt, Ptr<TcpSocketState> tcb)
 
     // Filter the BW sample
 
-    constexpr double alpha = 0.9;
+    constexpr double ALPHA = 0.9;
 
-    if (m_fType == TcpWestwood::TUSTIN)
+    if (m_fType == TcpWestwoodPlus::TUSTIN)
     {
         DataRate sample_bwe = m_currentBW;
-        m_currentBW = (m_lastBW * alpha) + (((sample_bwe + m_lastSampleBW) * 0.5) * (1 - alpha));
+        m_currentBW = (m_lastBW * ALPHA) + (((sample_bwe + m_lastSampleBW) * 0.5) * (1 - ALPHA));
         m_lastSampleBW = sample_bwe;
         m_lastBW = m_currentBW;
     }
@@ -175,7 +145,7 @@ TcpWestwood::EstimateBW(const Time& rtt, Ptr<TcpSocketState> tcb)
 }
 
 uint32_t
-TcpWestwood::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight [[maybe_unused]])
+TcpWestwoodPlus::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight [[maybe_unused]])
 {
     uint32_t ssThresh = static_cast<uint32_t>((m_currentBW * tcb->m_minRtt) / 8.0);
 
@@ -186,9 +156,9 @@ TcpWestwood::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight [
 }
 
 Ptr<TcpCongestionOps>
-TcpWestwood::Fork()
+TcpWestwoodPlus::Fork()
 {
-    return CreateObject<TcpWestwood>(*this);
+    return CreateObject<TcpWestwoodPlus>(*this);
 }
 
 } // namespace ns3

@@ -554,6 +554,12 @@ bandwidth and use the estimated value to adjust the cwnd.
 While Westwood performs the bandwidth sampling every ACK reception,
 Westwood+ samples the bandwidth every RTT.
 
+The TCP Westwood model has been removed in ns-3.38 due to bugs that are impossible
+to fix without modifying the original Westwood model as presented in the published papers.
+For further info refer to https://gitlab.com/nsnam/ns-3-dev/-/issues/579
+
+The Westwood+ model does not have such issues, and is still available.
+
 WARNING: this TCP model lacks validation and regression tests; use with caution.
 
 More information at: http://dl.acm.org/citation.cfm?id=381704 and

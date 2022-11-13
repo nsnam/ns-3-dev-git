@@ -44,7 +44,7 @@
 #include "ns3/packet-sink.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
-#include "ns3/tcp-westwood.h"
+#include "ns3/tcp-westwood-plus.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
@@ -95,21 +95,11 @@ main(int argc, char* argv[])
 
     tcpVariant = std::string("ns3::") + tcpVariant;
     // Select TCP variant
-    if (tcpVariant == "ns3::TcpWestwoodPlus")
-    {
-        // TcpWestwoodPlus is not an actual TypeId name; we need TcpWestwood here
-        Config::SetDefault("ns3::TcpL4Protocol::SocketType", TypeIdValue(TcpWestwood::GetTypeId()));
-        // the default protocol type in ns3::TcpWestwood is WESTWOOD
-        Config::SetDefault("ns3::TcpWestwood::ProtocolType", EnumValue(TcpWestwood::WESTWOODPLUS));
-    }
-    else
-    {
-        TypeId tcpTid;
-        NS_ABORT_MSG_UNLESS(TypeId::LookupByNameFailSafe(tcpVariant, &tcpTid),
-                            "TypeId " << tcpVariant << " not found");
-        Config::SetDefault("ns3::TcpL4Protocol::SocketType",
-                           TypeIdValue(TypeId::LookupByName(tcpVariant)));
-    }
+    TypeId tcpTid;
+    NS_ABORT_MSG_UNLESS(TypeId::LookupByNameFailSafe(tcpVariant, &tcpTid),
+                        "TypeId " << tcpVariant << " not found");
+    Config::SetDefault("ns3::TcpL4Protocol::SocketType",
+                       TypeIdValue(TypeId::LookupByName(tcpVariant)));
 
     /* Configure TCP Options */
     Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(payloadSize));

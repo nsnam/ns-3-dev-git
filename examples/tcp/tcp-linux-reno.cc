@@ -152,21 +152,11 @@ main(int argc, char* argv[])
     // Set recovery algorithm and TCP variant
     Config::SetDefault("ns3::TcpL4Protocol::RecoveryType",
                        TypeIdValue(TypeId::LookupByName(recovery)));
-    if (tcpTypeId == "ns3::TcpWestwoodPlus")
-    {
-        // TcpWestwoodPlus is not an actual TypeId name; we need TcpWestwood here
-        Config::SetDefault("ns3::TcpL4Protocol::SocketType", TypeIdValue(TcpWestwood::GetTypeId()));
-        // the default protocol type in ns3::TcpWestwood is WESTWOOD
-        Config::SetDefault("ns3::TcpWestwood::ProtocolType", EnumValue(TcpWestwood::WESTWOODPLUS));
-    }
-    else
-    {
-        TypeId tcpTid;
-        NS_ABORT_MSG_UNLESS(TypeId::LookupByNameFailSafe(tcpTypeId, &tcpTid),
-                            "TypeId " << tcpTypeId << " not found");
-        Config::SetDefault("ns3::TcpL4Protocol::SocketType",
-                           TypeIdValue(TypeId::LookupByName(tcpTypeId)));
-    }
+    TypeId tcpTid;
+    NS_ABORT_MSG_UNLESS(TypeId::LookupByNameFailSafe(tcpTypeId, &tcpTid),
+                        "TypeId " << tcpTypeId << " not found");
+    Config::SetDefault("ns3::TcpL4Protocol::SocketType",
+                       TypeIdValue(TypeId::LookupByName(tcpTypeId)));
 
     // Create nodes
     NodeContainer leftNodes;

@@ -118,7 +118,7 @@ set(source_files
     model/tcp-tx-item.cc
     model/tcp-vegas.cc
     model/tcp-veno.cc
-    model/tcp-westwood.cc
+    model/tcp-westwood-plus.cc
     model/tcp-yeah.cc
     model/udp-header.cc
     model/udp-l4-protocol.cc
@@ -243,7 +243,7 @@ set(header_files
     model/tcp-tx-item.h
     model/tcp-vegas.h
     model/tcp-veno.h
-    model/tcp-westwood.h
+    model/tcp-westwood-plus.h
     model/tcp-yeah.h
     model/udp-header.h
     model/udp-l4-protocol.h

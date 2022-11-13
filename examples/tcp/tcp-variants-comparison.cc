@@ -342,7 +342,7 @@ TraceNextRx(std::string& next_rx_seq_file_name, uint32_t nodeId)
 int
 main(int argc, char* argv[])
 {
-    std::string transport_prot = "TcpWestwood";
+    std::string transport_prot = "TcpWestwoodPlus";
     double error_p = 0.0;
     std::string bandwidth = "2Mbps";
     std::string delay = "0.01ms";
@@ -365,7 +365,7 @@ main(int argc, char* argv[])
     cmd.AddValue("transport_prot",
                  "Transport protocol to use: TcpNewReno, TcpLinuxReno, "
                  "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
-                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus, TcpLedbat, "
+                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwoodPlus, TcpLedbat, "
                  "TcpLp, TcpDctcp, TcpCubic, TcpBbr",
                  transport_prot);
     cmd.AddValue("error_p", "Packet error rate", error_p);
@@ -423,21 +423,11 @@ main(int argc, char* argv[])
     Config::SetDefault("ns3::TcpL4Protocol::RecoveryType",
                        TypeIdValue(TypeId::LookupByName(recovery)));
     // Select TCP variant
-    if (transport_prot == "ns3::TcpWestwoodPlus")
-    {
-        // TcpWestwoodPlus is not an actual TypeId name; we need TcpWestwood here
-        Config::SetDefault("ns3::TcpL4Protocol::SocketType", TypeIdValue(TcpWestwood::GetTypeId()));
-        // the default protocol type in ns3::TcpWestwood is WESTWOOD
-        Config::SetDefault("ns3::TcpWestwood::ProtocolType", EnumValue(TcpWestwood::WESTWOODPLUS));
-    }
-    else
-    {
-        TypeId tcpTid;
-        NS_ABORT_MSG_UNLESS(TypeId::LookupByNameFailSafe(transport_prot, &tcpTid),
-                            "TypeId " << transport_prot << " not found");
-        Config::SetDefault("ns3::TcpL4Protocol::SocketType",
-                           TypeIdValue(TypeId::LookupByName(transport_prot)));
-    }
+    TypeId tcpTid;
+    NS_ABORT_MSG_UNLESS(TypeId::LookupByNameFailSafe(transport_prot, &tcpTid),
+                        "TypeId " << transport_prot << " not found");
+    Config::SetDefault("ns3::TcpL4Protocol::SocketType",
+                       TypeIdValue(TypeId::LookupByName(transport_prot)));
 
     // Create gateways, sources, and sinks
     NodeContainer gateways;

@@ -21,7 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/simple-channel.h"
-#include "ns3/tcp-westwood.h"
+#include "ns3/tcp-westwood-plus.h"
 
 using namespace ns3;
 
@@ -442,7 +442,7 @@ class TcpFastRetrTestSuite : public TestSuite
         : TestSuite("tcp-fast-retr-test", UNIT)
     {
         std::list<TypeId> types;
-        types.insert(types.begin(), TcpWestwood::GetTypeId());
+        types.insert(types.begin(), TcpWestwoodPlus::GetTypeId());
         types.insert(types.begin(), TcpNewReno::GetTypeId());
 
         for (std::list<TypeId>::iterator it = types.begin(); it != types.end(); ++it)

@@ -47,9 +47,9 @@ class Time;
 /**
  * \ingroup congestionOps
  *
- * \brief An implementation of TCP Westwood and Westwood+.
+ * \brief An implementation of TCP Westwood+.
  *
- * Westwood and Westwood+ employ the AIAD (Additive Increase/Adaptive Decrease)
+ * Westwood+ employ the AIAD (Additive Increase/Adaptive Decrease)
  * congestion control paradigm. When a congestion episode happens,
  * instead of halving the cwnd, these protocols try to estimate the network's
  * bandwidth and use the estimated value to adjust the cwnd.
@@ -60,11 +60,11 @@ class Time;
  * and the EstimateBW (int, const, Time). The CountAck method calculates
  * the number of acknowledged segments on the receipt of an ACK.
  * The EstimateBW estimates the bandwidth based on the value returned by CountAck
- * and the sampling interval (last ACK inter-arrival time for Westwood and last RTT for Westwood+).
+ * and the sampling interval (last RTT).
  *
  * WARNING: this TCP model lacks validation and regression tests; use with caution.
  */
-class TcpWestwood : public TcpNewReno
+class TcpWestwoodPlus : public TcpNewReno
 {
   public:
     /**
@@ -73,22 +73,13 @@ class TcpWestwood : public TcpNewReno
      */
     static TypeId GetTypeId();
 
-    TcpWestwood();
+    TcpWestwoodPlus();
     /**
      * \brief Copy constructor
      * \param sock the object to copy
      */
-    TcpWestwood(const TcpWestwood& sock);
-    ~TcpWestwood() override;
-
-    /**
-     * \brief Protocol variant (Westwood or Westwood+)
-     */
-    enum ProtocolType
-    {
-        WESTWOOD,
-        WESTWOODPLUS
-    };
+    TcpWestwoodPlus(const TcpWestwoodPlus& sock);
+    ~TcpWestwoodPlus() override;
 
     /**
      * \brief Filter type (None or Tustin)
@@ -125,8 +116,7 @@ class TcpWestwood : public TcpNewReno
     TracedValue<DataRate> m_currentBW; //!< Current value of the estimated BW
     DataRate m_lastSampleBW;           //!< Last bandwidth sample
     DataRate m_lastBW;                 //!< Last bandwidth sample after being filtered
-    enum ProtocolType m_pType;         //!< 0 for Westwood, 1 for Westwood+
-    enum FilterType m_fType;           //!< 0 for none, 1 for Tustin
+    FilterType m_fType;                //!< 0 for none, 1 for Tustin
 
     uint32_t m_ackedSegments;  //!< The number of segments ACKed between RTTs
     bool m_IsCount;            //!< Start keeping track of m_ackedSegments for Westwood+ if TRUE
