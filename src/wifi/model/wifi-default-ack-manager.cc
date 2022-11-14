@@ -170,6 +170,43 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     return true;
 }
 
+bool
+WifiDefaultAckManager::ExistInflightOnSameLink(Ptr<const WifiMpdu> mpdu) const
+{
+    NS_ASSERT(mpdu->GetHeader().IsQosData());
+    auto tid = mpdu->GetHeader().GetQosTid();
+    NS_ASSERT(mpdu->IsQueued());
+    auto queue = m_mac->GetTxopQueue(mpdu->GetQueueAc());
+    auto origReceiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
+    auto agreement = m_mac->GetBaAgreementEstablishedAsOriginator(origReceiver, tid);
+    NS_ASSERT(agreement);
+    auto mpduDist = agreement->get().GetDistance(mpdu->GetHeader().GetSequenceNumber());
+
+    Ptr<WifiMpdu> item = queue->PeekByTidAndAddress(tid, origReceiver);
+
+    while (item)
+    {
+        auto itemDist = agreement->get().GetDistance(item->GetHeader().GetSequenceNumber());
+        if (itemDist == mpduDist)
+        {
+            NS_LOG_DEBUG("No previous MPDU in-flight on the same link");
+            return false;
+        }
+        NS_ABORT_MSG_IF(itemDist > mpduDist,
+                        "While searching for given MPDU ("
+                            << *mpdu << "), found first another one (" << *item
+                            << ") with higher sequence number");
+        if (auto linkIds = item->GetInFlight(); linkIds.count(m_linkId) > 0)
+        {
+            NS_LOG_DEBUG("Found MPDU inflight on the same link");
+            return true;
+        }
+        item = queue->PeekByTidAndAddress(tid, origReceiver, item);
+    }
+    NS_ABORT_MSG("Should not get here");
+    return false;
+}
+
 std::unique_ptr<WifiAcknowledgment>
 WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParameters& txParams)
 {
@@ -294,9 +331,7 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
 
     // we get here if a response is needed
     uint8_t tid = GetTid(mpdu->GetPacket(), hdr);
-    auto origReceiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
-    if (!hdr.IsBlockAckReq() && txParams.GetSize(receiver) == 0 &&
-        hdr.GetSequenceNumber() == m_mac->GetQosTxop(tid)->GetBaStartingSequence(origReceiver, tid))
+    if (!hdr.IsBlockAckReq() && txParams.GetSize(receiver) == 0 && !ExistInflightOnSameLink(mpdu))
     {
         NS_LOG_DEBUG("Sending a single MPDU, no previous frame to ack: request Normal Ack");
         WifiNormalAck* acknowledgment = new WifiNormalAck;
