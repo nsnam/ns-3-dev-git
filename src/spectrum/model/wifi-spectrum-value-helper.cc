@@ -932,4 +932,29 @@ WifiSpectrumValue5MhzFactory::CreateRfFilter(uint8_t channel)
     return rf;
 }
 
+bool
+operator<(const FrequencyRange& left, const FrequencyRange& right)
+{
+    return left.minFrequency < right.minFrequency;
+}
+
+bool
+operator==(const FrequencyRange& left, const FrequencyRange& right)
+{
+    return (left.minFrequency == right.minFrequency) && (left.maxFrequency == right.maxFrequency);
+}
+
+bool
+operator!=(const FrequencyRange& left, const FrequencyRange& right)
+{
+    return !(left == right);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const FrequencyRange& freqRange)
+{
+    os << "[" << freqRange.minFrequency << " MHz - " << freqRange.maxFrequency << " MHz]";
+    return os;
+}
+
 } // namespace ns3

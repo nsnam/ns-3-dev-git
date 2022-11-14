@@ -395,6 +395,70 @@ class WifiSpectrumValue5MhzFactory
     virtual Ptr<SpectrumValue> CreateRfFilter(uint8_t channel);
 };
 
+/**
+ * \ingroup spectrum
+ * Struct defining a frequency range between minFrequency (MHz) and maxFrequency (MHz).
+ */
+struct FrequencyRange
+{
+    uint16_t minFrequency{0}; ///< the minimum frequency in MHz
+    uint16_t maxFrequency{0}; ///< the maximum frequency in MHz
+};
+
+/**
+ * Compare two FrequencyRange values
+ *
+ * \param lhs the FrequencyRange value on the left of operator
+ * \param rhs the FrequencyRange value on the right of operator
+ *
+ * \return true if minFrequency of left is less than minFrequency of right, false otherwise
+ */
+bool operator<(const FrequencyRange& lhs, const FrequencyRange& rhs);
+
+/**
+ * Compare two FrequencyRange values
+ *
+ * \param lhs the FrequencyRange value on the left of operator
+ * \param rhs the FrequencyRange value on the right of operator
+ *
+ * \return true if both minFrequency and maxFrequency of left are equal to minFrequency and
+ * maxFrequency of right respectively, false otherwise
+ */
+bool operator==(const FrequencyRange& lhs, const FrequencyRange& rhs);
+
+/**
+ * Compare two FrequencyRange values
+ *
+ * \param lhs the FrequencyRange value on the left of operator
+ * \param rhs the FrequencyRange value on the right of operator
+ *
+ * \return true if either minFrequency or maxFrequency of left different from minFrequency or
+ * maxFrequency of right respectively, false otherwise
+ */
+bool operator!=(const FrequencyRange& lhs, const FrequencyRange& rhs);
+
+/**
+ * Serialize FrequencyRange values to ostream (human-readable).
+ *
+ * \param os the output stream
+ * \param freqRange the FrequencyRange
+ *
+ * \return std::ostream
+ */
+std::ostream& operator<<(std::ostream& os, const FrequencyRange& freqRange);
+
+/// Identifier for the frequency range covering the whole wifi spectrum
+constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {2401, 7125};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 2.4 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {2401, 2483};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 5 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {5170, 5915};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 6 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {5945, 7125};
+
 } // namespace ns3
 
 #endif /*  WIFI_SPECTRUM_VALUE_HELPER_H */
