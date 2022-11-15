@@ -568,6 +568,29 @@ HePpdu::HeSigHeader::Print(std::ostream& os) const
 {
     os << "MCS=" << +m_mcs << " CHANNEL_WIDTH=" << GetChannelWidth() << " GI=" << GetGuardInterval()
        << " NSTS=" << +m_nsts << " BSSColor=" << +m_bssColor << " MU=" << +m_mu;
+    if (m_mu)
+    {
+        os << " SIG-B_MCS=" << +m_sigBMcs << " RU_ALLOCATION=";
+        for (auto alloc : m_ruAllocation)
+        {
+            os << +alloc << " ";
+        }
+        if (m_center26ToneRuIndication.has_value())
+        {
+            os << "CENTER_26_TONE_RU=" << +m_center26ToneRuIndication.value();
+        }
+        auto contentChannelIdx = 1;
+        for (const auto& contentChannel : m_contentChannels)
+        {
+            os << " CONTENT_CHANNEL_" << contentChannelIdx++ << ": {";
+            for (const auto& userInfo : contentChannel)
+            {
+                os << "STA_ID=" << userInfo.staId << " MCS=" << +userInfo.mcs
+                   << " NSS=" << +userInfo.nss << ", ";
+            }
+            os << "}";
+        }
+    }
 }
 
 uint32_t
