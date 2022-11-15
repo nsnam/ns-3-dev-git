@@ -2,6 +2,8 @@
 #ifndef MODULAR_TRANSPORT_H
 #define MODULAR_TRANSPORT_H
 
+#include "mt-header.h"
+
 #include "ns3/ip-l4-protocol.h"
 
 #include "ns3/ipv4-address.h"
@@ -45,7 +47,7 @@ class ModularTransport: public IpL4Protocol
      * \param daddr The destination Ipv4Address
      */
     void SendPacket(Ptr<Packet> pkt,
-                    const Ipv4Header& outgoing,
+                    const MTHeader& outgoing,
                     const Ipv4Address& saddr,
                     const Ipv4Address& daddr) const; 
 

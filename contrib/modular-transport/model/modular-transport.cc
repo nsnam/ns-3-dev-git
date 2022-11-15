@@ -17,7 +17,7 @@ ModularTransport::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::ModularTransport")
                             .SetParent<IpL4Protocol>()
-                            .SetGroupName("Internet")
+                            .SetGroupName("ModularTransport")
                             .AddConstructor<ModularTransport>();
     return tid;
 }
@@ -75,14 +75,14 @@ ModularTransport::NotifyNewAggregate()
 
 void
 ModularTransport::SendPacket(Ptr<Packet> packet,
-                             const Ipv4Header& outgoing,
+                             const MTHeader& outgoing,
                              const Ipv4Address& saddr,
                              const Ipv4Address& daddr) const
 {
     NS_LOG_FUNCTION(this << packet << saddr << daddr);
     // TODO:Use NS_LOG_LOGIC to record information about the segment/packet being sent out.
 
-    Ipv4Header outgoingHeader = outgoing;
+    MTHeader outgoingHeader = outgoing;
    
     packet->AddHeader(outgoingHeader);
 

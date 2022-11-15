@@ -13,8 +13,10 @@ endif()
 build_lib(
     LIBNAME modular-transport
     SOURCE_FILES model/modular-transport.cc
+                 model/mt-header.cc
                  helper/modular-transport-helper.cc
     HEADER_FILES model/modular-transport.h
+                 model/mt-header.h
                  helper/modular-transport-helper.h
     LIBRARIES_TO_LINK ${libinternet}
     TEST_SOURCES test/modular-transport-test-suite.cc
