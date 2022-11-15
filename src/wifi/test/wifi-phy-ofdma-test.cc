@@ -709,7 +709,6 @@ TestDlOfdmaPhyTransmission::DoSetup()
     Ptr<Node> apNode = CreateObject<Node>();
     Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
     m_phyAp = CreateObject<SpectrumWifiPhy>();
-    m_phyAp->CreateWifiSpectrumPhyInterface(apDev);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper>();
     m_phyAp->SetInterferenceHelper(apInterferenceHelper);
@@ -726,7 +725,6 @@ TestDlOfdmaPhyTransmission::DoSetup()
     Ptr<Node> sta1Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice>();
     m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy>(1);
-    m_phySta1->CreateWifiSpectrumPhyInterface(sta1Dev);
     m_phySta1->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta1->SetInterferenceHelper(sta1InterferenceHelper);
@@ -746,7 +744,6 @@ TestDlOfdmaPhyTransmission::DoSetup()
     Ptr<Node> sta2Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice>();
     m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy>(2);
-    m_phySta2->CreateWifiSpectrumPhyInterface(sta2Dev);
     m_phySta2->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta2->SetInterferenceHelper(sta2InterferenceHelper);
@@ -766,7 +763,6 @@ TestDlOfdmaPhyTransmission::DoSetup()
     Ptr<Node> sta3Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta3Dev = CreateObject<WifiNetDevice>();
     m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy>(3);
-    m_phySta3->CreateWifiSpectrumPhyInterface(sta3Dev);
     m_phySta3->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta3InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta3->SetInterferenceHelper(sta3InterferenceHelper);
@@ -1555,7 +1551,6 @@ TestDlOfdmaPhyPuncturing::DoSetup()
     Ptr<Node> apNode = CreateObject<Node>();
     Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
     m_phyAp = CreateObject<SpectrumWifiPhy>();
-    m_phyAp->CreateWifiSpectrumPhyInterface(apDev);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper>();
     m_phyAp->SetInterferenceHelper(apInterferenceHelper);
@@ -1572,7 +1567,6 @@ TestDlOfdmaPhyPuncturing::DoSetup()
     Ptr<Node> sta1Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice>();
     m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy>(1);
-    m_phySta1->CreateWifiSpectrumPhyInterface(sta1Dev);
     m_phySta1->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta1->SetInterferenceHelper(sta1InterferenceHelper);
@@ -1592,7 +1586,6 @@ TestDlOfdmaPhyPuncturing::DoSetup()
     Ptr<Node> sta2Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice>();
     m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy>(2);
-    m_phySta2->CreateWifiSpectrumPhyInterface(sta2Dev);
     m_phySta2->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta2->SetInterferenceHelper(sta2InterferenceHelper);
@@ -1916,7 +1909,6 @@ TestUlOfdmaPpduUid::DoSetup()
     Ptr<Node> apNode = CreateObject<Node>();
     Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
     m_phyAp = CreateObject<OfdmaSpectrumWifiPhy>(0);
-    m_phyAp->CreateWifiSpectrumPhyInterface(apDev);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper>();
     m_phyAp->SetInterferenceHelper(apInterferenceHelper);
@@ -1944,7 +1936,6 @@ TestUlOfdmaPpduUid::DoSetup()
     Ptr<Node> sta1Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice>();
     m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy>(1);
-    m_phySta1->CreateWifiSpectrumPhyInterface(sta1Dev);
     m_phySta1->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta1->SetInterferenceHelper(sta1InterferenceHelper);
@@ -1965,7 +1956,6 @@ TestUlOfdmaPpduUid::DoSetup()
     Ptr<Node> sta2Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice>();
     m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy>(2);
-    m_phySta2->CreateWifiSpectrumPhyInterface(sta2Dev);
     m_phySta2->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta2->SetInterferenceHelper(sta2InterferenceHelper);
@@ -3727,7 +3717,6 @@ TestUlOfdmaPhyTransmission::DoSetup()
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<OfdmaSpectrumWifiPhy>(0);
-    m_phyAp->CreateWifiSpectrumPhyInterface(apDev);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration>();
     apDev->SetHeConfiguration(heConfiguration);
@@ -3754,7 +3743,6 @@ TestUlOfdmaPhyTransmission::DoSetup()
     sta1Dev->SetStandard(WIFI_STANDARD_80211ax);
     sta1Dev->SetHeConfiguration(CreateObject<HeConfiguration>());
     m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy>(1);
-    m_phySta1->CreateWifiSpectrumPhyInterface(sta1Dev);
     m_phySta1->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta1->SetInterferenceHelper(sta1InterferenceHelper);
@@ -3774,7 +3762,6 @@ TestUlOfdmaPhyTransmission::DoSetup()
     sta2Dev->SetStandard(WIFI_STANDARD_80211ax);
     sta2Dev->SetHeConfiguration(CreateObject<HeConfiguration>());
     m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy>(2);
-    m_phySta2->CreateWifiSpectrumPhyInterface(sta2Dev);
     m_phySta2->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta2->SetInterferenceHelper(sta2InterferenceHelper);
@@ -3794,7 +3781,6 @@ TestUlOfdmaPhyTransmission::DoSetup()
     sta3Dev->SetStandard(WIFI_STANDARD_80211ax);
     sta3Dev->SetHeConfiguration(CreateObject<HeConfiguration>());
     m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy>(3);
-    m_phySta3->CreateWifiSpectrumPhyInterface(sta3Dev);
     m_phySta3->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta3InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta3->SetInterferenceHelper(sta3InterferenceHelper);
@@ -5089,7 +5075,6 @@ TestPhyPaddingExclusion::DoSetup()
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<OfdmaSpectrumWifiPhy>(0);
-    m_phyAp->CreateWifiSpectrumPhyInterface(apDev);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration>();
     apDev->SetHeConfiguration(heConfiguration);
@@ -5122,7 +5107,6 @@ TestPhyPaddingExclusion::DoSetup()
     Ptr<Node> sta1Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice>();
     m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy>(1);
-    m_phySta1->CreateWifiSpectrumPhyInterface(sta1Dev);
     m_phySta1->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta1->SetInterferenceHelper(sta1InterferenceHelper);
@@ -5144,7 +5128,6 @@ TestPhyPaddingExclusion::DoSetup()
     Ptr<Node> sta2Node = CreateObject<Node>();
     Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice>();
     m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy>(2);
-    m_phySta2->CreateWifiSpectrumPhyInterface(sta2Dev);
     m_phySta2->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper>();
     m_phySta2->SetInterferenceHelper(sta2InterferenceHelper);

@@ -425,7 +425,6 @@ TestNonHtDuplicatePhyReception::DoSetup()
     auto apNode = CreateObject<Node>();
     auto apDev = CreateObject<WifiNetDevice>();
     m_phyAp = CreateObject<SpectrumWifiPhy>();
-    m_phyAp->CreateWifiSpectrumPhyInterface(apDev);
     auto apInterferenceHelper = CreateObject<InterferenceHelper>();
     m_phyAp->SetInterferenceHelper(apInterferenceHelper);
     auto apErrorModel = CreateObject<NistErrorRateModel>();
@@ -444,7 +443,6 @@ TestNonHtDuplicatePhyReception::DoSetup()
         auto staNode = CreateObject<Node>();
         auto staDev = CreateObject<WifiNetDevice>();
         auto staPhy = CreateObject<SpectrumWifiPhy>();
-        staPhy->CreateWifiSpectrumPhyInterface(staDev);
         auto sta1InterferenceHelper = CreateObject<InterferenceHelper>();
         staPhy->SetInterferenceHelper(sta1InterferenceHelper);
         auto sta1ErrorModel = CreateObject<NistErrorRateModel>();
@@ -799,7 +797,6 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<MuRtsCtsSpectrumWifiPhy>();
-    m_phyAp->CreateWifiSpectrumPhyInterface(apDev);
     apDev->SetHeConfiguration(CreateObject<HeConfiguration>());
     auto apInterferenceHelper = CreateObject<InterferenceHelper>();
     m_phyAp->SetInterferenceHelper(apInterferenceHelper);
@@ -835,7 +832,6 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
         auto staNode = CreateObject<Node>();
         auto staDev = CreateObject<WifiNetDevice>();
         auto phySta = CreateObject<MuRtsCtsSpectrumWifiPhy>();
-        phySta->CreateWifiSpectrumPhyInterface(staDev);
         auto staInterferenceHelper = CreateObject<InterferenceHelper>();
         phySta->SetInterferenceHelper(staInterferenceHelper);
         auto staErrorModel = CreateObject<NistErrorRateModel>();

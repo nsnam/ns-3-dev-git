@@ -88,7 +88,6 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
     for (std::size_t i = 0; i < m_phy.size(); i++)
     {
         Ptr<SpectrumWifiPhy> phy = m_phy.at(i).Create<SpectrumWifiPhy>();
-        phy->CreateWifiSpectrumPhyInterface(device);
         auto interference = m_interferenceHelper.Create<InterferenceHelper>();
         phy->SetInterferenceHelper(interference);
         Ptr<ErrorRateModel> error = m_errorRateModel.at(i).Create<ErrorRateModel>();

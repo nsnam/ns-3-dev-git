@@ -69,6 +69,7 @@ class SpectrumWifiPhy : public WifiPhy
     ~SpectrumWifiPhy() override;
 
     // Implementation of pure virtual method.
+    void SetDevice(const Ptr<WifiNetDevice> device) override;
     void StartTx(Ptr<const WifiPpdu> ppdu) override;
     Ptr<Channel> GetChannel() const override;
     uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
@@ -89,14 +90,6 @@ class SpectrumWifiPhy : public WifiPhy
      */
     void StartRx(Ptr<SpectrumSignalParameters> rxParams);
 
-    /**
-     * Method to encapsulate the creation of the WifiSpectrumPhyInterface
-     * object (used to bind the WifiSpectrumPhy to a SpectrumChannel) and
-     * to link it to this SpectrumWifiPhy instance
-     *
-     * \param device pointer to the NetDevice object including this new object
-     */
-    void CreateWifiSpectrumPhyInterface(Ptr<NetDevice> device);
     /**
      * \param antenna an AntennaModel to include in the transmitted
      *                SpectrumSignalParameters (in case any objects downstream of the

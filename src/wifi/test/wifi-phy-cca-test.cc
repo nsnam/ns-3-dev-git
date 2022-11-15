@@ -1015,7 +1015,6 @@ WifiPhyCcaIndicationTest::DoSetup()
     Ptr<VhtConfiguration> vhtConfiguration = CreateObject<VhtConfiguration>();
     rxDev->SetVhtConfiguration(vhtConfiguration);
     m_rxPhy = CreateObject<SpectrumWifiPhy>();
-    m_rxPhy->CreateWifiSpectrumPhyInterface(rxDev);
     m_rxPhyStateListener = std::make_unique<CcaTestPhyListener>();
     m_rxPhy->RegisterListener(m_rxPhyStateListener.get());
     m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
@@ -1034,7 +1033,6 @@ WifiPhyCcaIndicationTest::DoSetup()
     Ptr<Node> txNode = CreateObject<Node>();
     Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice>();
     m_txPhy = CreateObject<SpectrumWifiPhy>();
-    m_txPhy->CreateWifiSpectrumPhyInterface(txDev);
     m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_txPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
     Ptr<InterferenceHelper> txInterferenceHelper = CreateObject<InterferenceHelper>();

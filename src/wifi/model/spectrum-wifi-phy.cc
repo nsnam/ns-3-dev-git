@@ -109,16 +109,13 @@ SpectrumWifiPhy::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
     WifiPhy::DoInitialize();
-    // This connection is deferred until frequency and channel width are set
-    if (m_channel && m_wifiSpectrumPhyInterface)
+    m_wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>();
+    m_wifiSpectrumPhyInterface->SetSpectrumWifiPhy(this);
+    if (GetDevice())
     {
-        m_channel->AddRx(m_wifiSpectrumPhyInterface);
+        m_wifiSpectrumPhyInterface->SetDevice(GetDevice());
     }
-    else
-    {
-        NS_FATAL_ERROR("SpectrumWifiPhy misses channel and WifiSpectrumPhyInterface objects at "
-                       "initialization time");
-    }
+    m_channel->AddRx(m_wifiSpectrumPhyInterface);
 }
 
 Ptr<const SpectrumModel>
@@ -438,12 +435,13 @@ SpectrumWifiPhy::SetAntenna(const Ptr<AntennaModel> a)
 }
 
 void
-SpectrumWifiPhy::CreateWifiSpectrumPhyInterface(Ptr<NetDevice> device)
+SpectrumWifiPhy::SetDevice(const Ptr<WifiNetDevice> device)
 {
-    NS_LOG_FUNCTION(this << device);
-    m_wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>();
-    m_wifiSpectrumPhyInterface->SetSpectrumWifiPhy(this);
-    m_wifiSpectrumPhyInterface->SetDevice(device);
+    WifiPhy::SetDevice(device);
+    if (m_wifiSpectrumPhyInterface)
+    {
+        m_wifiSpectrumPhyInterface->SetDevice(device);
+    }
 }
 
 void
@@ -457,13 +455,8 @@ void
 SpectrumWifiPhy::Transmit(Ptr<WifiSpectrumSignalParameters> txParams)
 {
     NS_LOG_FUNCTION(this << txParams);
-
-    // Finish configuration
-    NS_ASSERT_MSG(m_wifiSpectrumPhyInterface,
-                  "SpectrumPhy() is not set; maybe forgot to call CreateWifiSpectrumPhyInterface?");
     txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy>();
     txParams->txAntenna = m_antenna;
-
     m_channel->StartTx(txParams);
 }
 

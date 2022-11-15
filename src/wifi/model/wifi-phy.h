@@ -834,7 +834,7 @@ class WifiPhy : public Object
      *
      * \param device the device this PHY is associated with
      */
-    void SetDevice(const Ptr<WifiNetDevice> device);
+    virtual void SetDevice(const Ptr<WifiNetDevice> device);
     /**
      * Return the device this PHY is associated with
      *

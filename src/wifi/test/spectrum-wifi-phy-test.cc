@@ -538,7 +538,6 @@ SpectrumWifiPhyFilterTest::DoSetup()
     Ptr<Node> txNode = CreateObject<Node>();
     Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice>();
     m_txPhy = CreateObject<ExtSpectrumWifiPhy>();
-    m_txPhy->CreateWifiSpectrumPhyInterface(txDev);
     m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> txInterferenceHelper = CreateObject<InterferenceHelper>();
     m_txPhy->SetInterferenceHelper(txInterferenceHelper);
@@ -555,7 +554,6 @@ SpectrumWifiPhyFilterTest::DoSetup()
     Ptr<Node> rxNode = CreateObject<Node>();
     Ptr<WifiNetDevice> rxDev = CreateObject<WifiNetDevice>();
     m_rxPhy = CreateObject<ExtSpectrumWifiPhy>();
-    m_rxPhy->CreateWifiSpectrumPhyInterface(rxDev);
     m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> rxInterferenceHelper = CreateObject<InterferenceHelper>();
     m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
