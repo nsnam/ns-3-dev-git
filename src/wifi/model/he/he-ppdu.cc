@@ -451,8 +451,18 @@ HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth,
         for (auto n = 0; n < channelWidth / 20;)
         {
             chSize.first += HeRu::GetRuSpecs(ruAllocation[n]).size();
-            chSize.second += HeRu::GetRuSpecs(ruAllocation[n + 1]).size();
             if (ruAllocation[n] >= 208)
+            {
+                // 996 tone RU occupies 80 MHz
+                n += 4;
+                continue;
+            }
+            n += 2;
+        }
+        for (auto n = 0; n < channelWidth / 20;)
+        {
+            chSize.second += HeRu::GetRuSpecs(ruAllocation[n + 1]).size();
+            if (ruAllocation[n + 1] >= 208)
             {
                 // 996 tone RU occupies 80 MHz
                 n += 4;
