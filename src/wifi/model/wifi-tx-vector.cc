@@ -672,10 +672,14 @@ WifiTxVector::GetContentChannelAllocation(uint8_t p20Index) const
         const auto& userInfo = GetHeMuUserInfo(staId);
         NS_ASSERT(ru == userInfo.ru);
 
-        if ((ruType == HeRu::RU_484_TONE) || (ruType == HeRu::RU_996_TONE))
+        if ((ruType == HeRu::RU_484_TONE) || (ruType == HeRu::RU_996_TONE) ||
+            (ruType == HeRu::RU_2x996_TONE))
         {
-            channelAlloc[0].push_back(staId);
-            channelAlloc[1].push_back(staId);
+            for (auto i = 0; i < ((ruType == HeRu::RU_2x996_TONE) ? 2 : 1); ++i)
+            {
+                channelAlloc[0].push_back(staId);
+                channelAlloc[1].push_back(staId);
+            }
             continue;
         }
 
