@@ -2,8 +2,15 @@
 
 #include "modular-transport.h"
 
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/node.h"
+
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE("ModularTransport");
+
+NS_OBJECT_ENSURE_REGISTERED(ModularTransport);
 
 TypeId
 ModularTransport::GetTypeId()
@@ -16,6 +23,11 @@ ModularTransport::GetTypeId()
 }
 
 ModularTransport::ModularTransport()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+ModularTransport::~ModularTransport()
 {
     NS_LOG_FUNCTION(this);
 }
@@ -63,14 +75,14 @@ ModularTransport::NotifyNewAggregate()
 
 void
 ModularTransport::SendPacket(Ptr<Packet> packet,
-                             const TransportHeader& outgoing,
-                            const Ipv4Address& saddr,
-                            const Ipv4Address& daddr) const
+                             const Ipv4Header& outgoing,
+                             const Ipv4Address& saddr,
+                             const Ipv4Address& daddr) const
 {
     NS_LOG_FUNCTION(this << packet << saddr << daddr);
     // TODO:Use NS_LOG_LOGIC to record information about the segment/packet being sent out.
 
-    TrasnportHeader outgoingHeader = outgoing;
+    Ipv4Header outgoingHeader = outgoing;
    
     packet->AddHeader(outgoingHeader);
 
@@ -162,6 +174,7 @@ ModularTransport::Receive(Ptr<Packet> packet,
                           Ptr<Ipv6Interface> interface)
 {
     NS_LOG_UNCOND("ModularTransport: IPv6 Receive not supported");
+    return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 
 void
@@ -175,3 +188,5 @@ ModularTransport::GetDownTarget6() const
 {
     return m_downTarget6;
 }
+
+} // ns3 namespace
