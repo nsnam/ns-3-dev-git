@@ -426,7 +426,7 @@ SpectrumWifiPhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
     return GetPhyEntityForPpdu(ppdu)->GetRxPpduFromTxPpdu(ppdu);
 }
 
-Ptr<Object>
+Ptr<AntennaModel>
 SpectrumWifiPhy::GetAntenna() const
 {
     return m_antenna;
@@ -460,9 +460,7 @@ void
 SpectrumWifiPhy::Transmit(Ptr<WifiSpectrumSignalParameters> txParams)
 {
     NS_LOG_FUNCTION(this << txParams);
-    txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy>();
-    txParams->txAntenna = m_antenna;
-    m_channel->StartTx(txParams);
+    m_wifiSpectrumPhyInterface->StartTx(txParams);
 }
 
 uint32_t

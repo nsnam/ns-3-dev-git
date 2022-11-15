@@ -110,4 +110,12 @@ WifiSpectrumPhyInterface::StartRx(Ptr<SpectrumSignalParameters> params)
     m_spectrumWifiPhy->StartRx(params);
 }
 
+void
+WifiSpectrumPhyInterface::StartTx(Ptr<SpectrumSignalParameters> params)
+{
+    params->txPhy = Ptr<SpectrumPhy>(this);
+    params->txAntenna = m_spectrumWifiPhy->GetAntenna();
+    m_channel->StartTx(params);
+}
+
 } // namespace ns3

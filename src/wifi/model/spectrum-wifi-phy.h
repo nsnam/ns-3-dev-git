@@ -107,7 +107,7 @@ class SpectrumWifiPhy : public WifiPhy
      *
      * \return the AntennaModel used for reception
      */
-    Ptr<Object> GetAntenna() const;
+    Ptr<AntennaModel> GetAntenna() const;
     /**
      * \return the SpectrumModel that this SpectrumPhy expects to be used
      *         for all SpectrumValues that are passed to StartRx. If 0 is

@@ -62,6 +62,13 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     Ptr<Object> GetAntenna() const override;
     void StartRx(Ptr<SpectrumSignalParameters> params) override;
 
+    /**
+     * Start transmission over the spectrum channel
+     *
+     * \param params the parameters of the signal to transmit
+     */
+    void StartTx(Ptr<SpectrumSignalParameters> params);
+
   private:
     void DoDispose() override;
 
