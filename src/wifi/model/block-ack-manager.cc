@@ -586,12 +586,22 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
     // Remaining outstanding MPDUs have not been acknowledged
     for (auto queueIt = it->second.second.begin(); queueIt != it->second.second.end();)
     {
-        nFailedMpdus++;
-        if (!m_txFailedCallback.IsNull())
+        // transmission actually failed if the MPDU is inflight only on the same link on
+        // which we received the BlockAck frame
+        auto linkIds = (*queueIt)->GetInFlight();
+
+        if (linkIds.size() == 1 && *linkIds.begin() == linkId)
         {
-            m_txFailedCallback(*queueIt);
+            nFailedMpdus++;
+            if (!m_txFailedCallback.IsNull())
+            {
+                m_txFailedCallback(*queueIt);
+            }
+            queueIt = HandleInFlightMpdu(linkId, queueIt, TO_RETRANSMIT, it, now);
+            continue;
         }
-        queueIt = HandleInFlightMpdu(linkId, queueIt, TO_RETRANSMIT, it, now);
+
+        queueIt = HandleInFlightMpdu(linkId, queueIt, STAY_INFLIGHT, it, now);
     }
 
     return {nSuccessfulMpdus, nFailedMpdus};
@@ -614,6 +624,13 @@ BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, const Mac48Address& recipi
     // re-inserted if retransmitted)
     for (auto mpduIt = it->second.second.begin(); mpduIt != it->second.second.end();)
     {
+        // MPDUs that were transmitted on another link shall stay inflight
+        auto linkIds = (*mpduIt)->GetInFlight();
+        if (linkIds.count(linkId) == 0)
+        {
+            mpduIt = HandleInFlightMpdu(linkId, mpduIt, STAY_INFLIGHT, it, now);
+            continue;
+        }
         mpduIt = HandleInFlightMpdu(linkId, mpduIt, TO_RETRANSMIT, it, now);
     }
 }
