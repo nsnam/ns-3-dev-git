@@ -78,7 +78,7 @@ OfdmPpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 OfdmPpdu::Copy() const
 {
-    return Ptr<WifiPpdu>(new OfdmPpdu(*this));
+    return Ptr<WifiPpdu>(new OfdmPpdu(*this), false);
 }
 
 OfdmPpdu::LSigHeader::LSigHeader()

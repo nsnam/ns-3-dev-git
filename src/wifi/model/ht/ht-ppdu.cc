@@ -95,7 +95,7 @@ HtPpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 HtPpdu::Copy() const
 {
-    return Ptr<WifiPpdu>(new HtPpdu(*this));
+    return Ptr<WifiPpdu>(new HtPpdu(*this), false);
 }
 
 HtPpdu::HtSigHeader::HtSigHeader()

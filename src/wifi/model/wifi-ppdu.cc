@@ -239,7 +239,7 @@ WifiPpdu::Copy() const
 {
     NS_FATAL_ERROR("This method should not be called for the base WifiPpdu class. Use the "
                    "overloaded version in the amendment-specific PPDU subclasses instead!");
-    return Ptr<WifiPpdu>(new WifiPpdu(*this));
+    return Ptr<WifiPpdu>(new WifiPpdu(*this), false);
 }
 
 std::ostream&

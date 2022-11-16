@@ -107,7 +107,7 @@ VhtPpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 VhtPpdu::Copy() const
 {
-    return Ptr<WifiPpdu>(new VhtPpdu(*this));
+    return Ptr<WifiPpdu>(new VhtPpdu(*this), false);
 }
 
 WifiPpduType

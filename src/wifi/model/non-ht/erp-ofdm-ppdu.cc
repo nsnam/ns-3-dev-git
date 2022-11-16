@@ -58,7 +58,7 @@ ErpOfdmPpdu::DoGetTxVector() const
 Ptr<WifiPpdu>
 ErpOfdmPpdu::Copy() const
 {
-    return Ptr<WifiPpdu>(new ErpOfdmPpdu(*this));
+    return Ptr<WifiPpdu>(new ErpOfdmPpdu(*this), false);
 }
 
 } // namespace ns3

@@ -101,7 +101,7 @@ EhtPpdu::DoGetTxVector() const
 Ptr<WifiPpdu>
 EhtPpdu::Copy() const
 {
-    return Ptr<WifiPpdu>(new EhtPpdu(*this));
+    return Ptr<WifiPpdu>(new EhtPpdu(*this), false);
 }
 
 } // namespace ns3

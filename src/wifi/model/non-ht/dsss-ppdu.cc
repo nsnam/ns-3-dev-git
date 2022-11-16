@@ -72,7 +72,7 @@ DsssPpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 DsssPpdu::Copy() const
 {
-    return Ptr<WifiPpdu>(new DsssPpdu(*this));
+    return Ptr<WifiPpdu>(new DsssPpdu(*this), false);
 }
 
 DsssPpdu::DsssSigHeader::DsssSigHeader()
