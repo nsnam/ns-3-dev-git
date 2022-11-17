@@ -39,11 +39,16 @@ Checks: >
   readability-redundant-function-ptr-dereference,
   readability-redundant-smartptr-get,
   readability-redundant-string-cstr,
+  readability-simplify-boolean-expr,
   readability-simplify-subscript-expr,
   readability-static-accessed-through-instance,
   readability-static-definition-in-anonymous-namespace,
   readability-string-compare,
   readability-uppercase-literal-suffix,
+
+CheckOptions:
+  - key: readability-simplify-boolean-expr.SimplifyDeMorgan
+    value: false
 
 FormatStyle: "file"
 HeaderFilterRegex: ".*(ns|NS).*/(contrib|examples|src|scratch|utils)/*/.*h"
