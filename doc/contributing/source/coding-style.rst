@@ -1099,6 +1099,53 @@ can be rewritten as:
   n += 3;
   return n;
 
+Boolean Simplifications
+=======================
+
+In order to increase readability and performance, avoid unnecessarily complex boolean
+expressions in if statements and variable declarations.
+
+For instance, the following code:
+
+  .. sourcecode:: cpp
+
+    bool IsPositive(int n)
+    {
+        if (n > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void ProcessNumber(int n)
+    {
+        if (IsPositive(n) == true)
+        {
+            ...
+        }
+    }
+
+can be rewritten as:
+
+  .. sourcecode:: cpp
+
+    bool IsPositive(int n)
+    {
+        return n > 0;
+    }
+
+    void ProcessNumber(int n)
+    {
+        if (IsPositive(n))
+        {
+            ...
+        }
+    }
+
 Smart pointer boolean comparisons
 =================================
 
