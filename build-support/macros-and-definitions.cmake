@@ -1183,9 +1183,8 @@ macro(process_options)
   if(${NS3_INT64X64} MATCHES "INT128")
     check_cxx_source_compiles(
       "#include <stdint.h>
-       int main(int argc, char **argv)
+       int main()
          {
-            (void)argc; (void)argv;
             if ((uint128_t *) 0) return 0;
             if (sizeof (uint128_t)) return 0;
             return 1;
@@ -1194,9 +1193,8 @@ macro(process_options)
     )
     check_cxx_source_compiles(
       "#include <stdint.h>
-       int main(int argc, char **argv)
+       int main()
          {
-           (void)argc; (void)argv;
            if ((__uint128_t *) 0) return 0;
            if (sizeof (__uint128_t)) return 0;
            return 1;

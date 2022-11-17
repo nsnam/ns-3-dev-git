@@ -54,7 +54,7 @@ TestDoubleIsEqual(const double x1, const double x2, const double epsilon)
     //
     {
         double max = (std::fabs(x1) > std::fabs(x2)) ? x1 : x2;
-        (void)std::frexp(max, &exponent);
+        std::frexp(max, &exponent);
     }
 
     //

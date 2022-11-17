@@ -98,13 +98,13 @@
 #define NS_ASSERT(condition)                                                                       \
     do                                                                                             \
     {                                                                                              \
-        (void)sizeof(condition);                                                                   \
+        sizeof(condition);                                                                         \
     } while (false)
 
 #define NS_ASSERT_MSG(condition, message)                                                          \
     do                                                                                             \
     {                                                                                              \
-        (void)sizeof(condition);                                                                   \
+        sizeof(condition);                                                                         \
     } while (false)
 
 #endif /* NS3_ASSERT_ENABLE */
