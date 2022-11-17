@@ -71,7 +71,7 @@ standard output, as in::
   #include <iostream>
   ...
   void
-  SomeFunction (void)
+  SomeFunction ()
   {
     uint32_t x = SOME_INTERESTING_VALUE;
     ...
@@ -363,7 +363,7 @@ simple Object we can work with.
   class MyObject : public Object
   {
   public:
-    static TypeId GetTypeId (void)
+    static TypeId GetTypeId ()
     {
       static TypeId tid = TypeId ("MyObject")
         .SetParent (Object::GetTypeId ())
@@ -650,7 +650,7 @@ down to the end of the file, you will see a method defined called
 ``NotifyCourseChange()``::
 
   void
-  MobilityModel::NotifyCourseChange (void) const
+  MobilityModel::NotifyCourseChange () const
   {
     m_courseChangeTrace(this);
   }
@@ -1000,7 +1000,7 @@ stuff.
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect (const CallbackB ...
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext ...
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect (const Callba ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (void) const ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() () const ...
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1) const ...
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
@@ -1324,7 +1324,7 @@ had a pointer to the ``TcpSocketBase``, we could ``TraceConnect`` to the
 "CongestionWindow" trace source.  That's exactly what we have here; so
 it turns out that this line of code does exactly what we want.  Let's
 go ahead and extract the code we need from this function
-(``Ns3TcpCwndTestCase1::DoRun (void)``).  If you look at this
+(``Ns3TcpCwndTestCase1::DoRun ()``).  If you look at this
 function, you will find that it looks just like an |ns3| script.  It
 turns out that is exactly what it is.  It is a script run by the test
 framework, so we can just pull it out and wrap it in ``main`` instead
@@ -1477,11 +1477,11 @@ time.
       uint32_t nPackets, DataRate dataRate);
 
   private:
-    virtual void StartApplication (void);
-    virtual void StopApplication (void);
+    virtual void StartApplication ();
+    virtual void StopApplication ();
 
-    void ScheduleTx (void);
-    void SendPacket (void);
+    void ScheduleTx ();
+    void SendPacket ();
 
     Ptr<Socket>     m_socket;
     Address         m_peer;
@@ -1616,7 +1616,7 @@ what happens when ``Application::DoInitialize`` is called.  Take a
 look at ``src/network/model/application.cc`` and you will find::
 
   void
-  Application::DoInitialize (void)
+  Application::DoInitialize ()
   {
     m_startEvent = Simulator::Schedule (m_startTime, &Application::StartApplication, this);
     if (m_stopTime != TimeStep (0))
@@ -1702,7 +1702,7 @@ passing it to the ``Setup`` method.
 ::
 
   void
-  MyApp::StartApplication (void)
+  MyApp::StartApplication ()
   {
     m_running = true;
     m_packetsSent = 0;
@@ -1731,7 +1731,7 @@ creating simulation events.
 ::
 
   void
-  MyApp::StopApplication (void)
+  MyApp::StopApplication ()
   {
     m_running = false;
 
@@ -1765,7 +1765,7 @@ chain of events that describes the ``Application`` behavior.
 ::
 
   void
-  MyApp::SendPacket (void)
+  MyApp::SendPacket ()
   {
     Ptr<Packet> packet = Create<Packet> (m_packetSize);
     m_socket->Send (packet);
@@ -1788,7 +1788,7 @@ decides it has sent enough.
 ::
 
   void
-  MyApp::ScheduleTx (void)
+  MyApp::ScheduleTx ()
   {
     if (m_running)
       {

@@ -472,11 +472,11 @@ found.
 Finally, a number of additional functions are provided to fetch and remove
 multicast routes::
 
-  uint32_t GetNMulticastRoutes (void) const;
+  uint32_t GetNMulticastRoutes () const;
 
   Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
 
-  Ipv4MulticastRoute *GetDefaultMulticastRoute (void) const;
+  Ipv4MulticastRoute *GetDefaultMulticastRoute () const;
 
   bool RemoveMulticastRoute (Ipv4Address origin,
                              Ipv4Address group,

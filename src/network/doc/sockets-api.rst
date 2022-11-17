@@ -155,7 +155,7 @@ There are two basic variants of ``Send()`` and ``Recv()`` supported::
   virtual int Send (Ptr<Packet> p) = 0;
   int Send (const uint8_t* buf, uint32_t size);
 
-  Ptr<Packet> Recv (void);
+  Ptr<Packet> Recv ();
   int Recv (uint8_t* buf, uint32_t size);
 
 The non-Packet variants are provided for legacy API reasons.  When calling
@@ -223,7 +223,7 @@ The native sockets API for ns-3 provides two public methods
 (of the Socket base class)::
 
     void SetIpTos (uint8_t ipTos);
-    uint8_t GetIpTos (void) const;
+    uint8_t GetIpTos () const;
 
 to set and get, respectively, the type of service associated with the socket.
 These methods are equivalent to using the IP_TOS option of BSD sockets.
@@ -278,7 +278,7 @@ The native sockets API for ns-3 provides two public methods
 (of the Socket base class)::
 
     void SetPriority (uint8_t priority);
-    uint8_t GetPriority (void) const;
+    uint8_t GetPriority () const;
 
 to set and get, respectively, the priority associated with the socket.
 These methods are equivalent to using the SO_PRIORITY option of BSD sockets.

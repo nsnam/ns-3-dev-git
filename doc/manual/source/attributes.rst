@@ -155,13 +155,13 @@ a static :cpp:func:`GetTypeId ()` function call::
     class Node : public Object
     {
     public:
-      static TypeId GetTypeId (void);
+      static TypeId GetTypeId ();
       ...
 
 This is defined in the ``node.cc`` file as follows::
 
     TypeId
-    Node::GetTypeId (void)
+    Node::GetTypeId ()
     {
       static TypeId tid = TypeId ("ns3::Node")
         .SetParent<Object> ()
@@ -359,7 +359,7 @@ the following::
 
     class QueueBase : public Object {
     public:
-      static TypeId GetTypeId (void);
+      static TypeId GetTypeId ();
       ...
 
     private:
@@ -417,7 +417,7 @@ registrations are moved into the :cpp:class:`TypeId` class; *e.g*.::
     NS_OBJECT_ENSURE_REGISTERED (QueueBase);
 
     TypeId
-    QueueBase::GetTypeId (void)
+    QueueBase::GetTypeId ()
     {
       static TypeId tid = TypeId ("ns3::DropTailQueue")
         .SetParent<Queue> ()
@@ -871,7 +871,7 @@ This is a one-line public function declaration::
        *  Register this type.
        *  \return The object TypeId.
        */
-      static TypeId GetTypeId (void);
+      static TypeId GetTypeId ();
 
 We've already introduced what a :cpp:class:`TypeId` definition will look like
 in the ``my-mobility.cc`` implementation file::
@@ -879,7 +879,7 @@ in the ``my-mobility.cc`` implementation file::
     NS_OBJECT_ENSURE_REGISTERED (MyMobility);
 
     TypeId
-    MyMobility::GetTypeId (void)
+    MyMobility::GetTypeId ()
     {
       static TypeId tid = TypeId ("ns3::MyMobility")
         .SetParent<MobilityModel> ()
@@ -1014,7 +1014,7 @@ to show how the system is extended::
     class ConfigExample : public Object
     {
     public:
-      static TypeId GetTypeId (void) {
+      static TypeId GetTypeId () {
         static TypeId tid = TypeId ("ns3::A")
           .SetParent<Object> ()
           .AddAttribute ("TestInt16", "help text",
@@ -1339,5 +1339,3 @@ when you are done.
 Note that "launch the simulation" means to proceed with the simulation script.
 If GtkConfigStore has been called after ``Simulator::Run ()`` the simulation will
 not be started again - it will just end.
-
-

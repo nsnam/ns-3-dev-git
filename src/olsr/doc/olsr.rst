@@ -98,7 +98,7 @@ has been created and unique IP addresses assigned to each node, the
 simulation script writer can call one of three overloaded functions
 with different scope to enable OLSR: ``ns3::OlsrHelper::Install
 (NodeContainer container)``; ``ns3::OlsrHelper::Install (Ptr<Node>
-node)``; or ``ns3::OlsrHelper::InstallAll (void)``
+node)``; or ``ns3::OlsrHelper::InstallAll ()``
 
 Attributes
 ++++++++++

@@ -795,8 +795,8 @@ override also the ``DoSetup`` method.
   class MyTestCase : public TestCase
   {
     MyTestCase ();
-    virtual void DoSetup (void);
-    virtual void DoRun (void);
+    virtual void DoSetup ();
+    virtual void DoRun ();
   };
 
   MyTestCase::MyTestCase ()
@@ -805,7 +805,7 @@ override also the ``DoSetup`` method.
   }
 
   void
-  MyTestCase::DoRun (void)
+  MyTestCase::DoRun ()
   {
     NS_TEST_ASSERT_MSG_EQ (true, true, "Some failure message");
   }

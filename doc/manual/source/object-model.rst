@@ -250,7 +250,7 @@ configure the attributes on those objects::
 
     void SetTypeId (TypeId tid);
     void Set (std::string name, const AttributeValue &value);
-    Ptr<T> Create (void) const;
+    Ptr<T> Create () const;
 
 The first method allows one to use the |ns3| TypeId system to specify the type
 of objects created. The second allows one to set attributes on the objects to be

@@ -227,13 +227,13 @@ that access the next value in the substream.
    * \brief Returns a random double from the underlying distribution
    * \return A floating point random value
    */
-  double GetValue (void) const;
+  double GetValue () const;
 
   /**
    * \brief Returns a random integer from the underlying distribution
    * \return  Integer cast of ::GetValue()
    */
-  uint32_t GetInteger (void) const;
+  uint32_t GetInteger () const;
 
 We have already described the seeding configuration above. Different
 RandomVariable subclasses may have additional API.
@@ -273,7 +273,7 @@ that values can be set for them through the |ns3| attribute system.
 An example is in the propagation models for WifiNetDevice::
 
     TypeId
-    RandomPropagationDelayModel::GetTypeId (void)
+    RandomPropagationDelayModel::GetTypeId ()
     {
       static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
         .SetParent<PropagationDelayModel> ()

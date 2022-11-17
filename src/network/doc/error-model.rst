@@ -75,11 +75,11 @@ The base class API is as follows:
 * ``bool ErrorModel::IsCorrupt (Ptr<Packet> pkt)``:  Evaluate the packet and
   return true or false whether the packet should be considered errored or not.
   Some models could potentially alter the contents of the packet bit buffer.
-* ``void ErrorModel::Reset (void)``:  Reset any state.
-* ``void ErrorModel::Enable (void)``:  Enable the model
-* ``void ErrorModel::Disble (void)``:  Disable the model; IsCorrupt() will
+* ``void ErrorModel::Reset ()``:  Reset any state.
+* ``void ErrorModel::Enable ()``:  Enable the model
+* ``void ErrorModel::Disble ()``:  Disable the model; IsCorrupt() will
   always return false.
-* ``bool ErrorModel::IsEnabled (void) const``:  Return the enabled state
+* ``bool ErrorModel::IsEnabled () const``:  Return the enabled state
 
 
 Many |ns3| NetDevices contain attributes holding pointers to error

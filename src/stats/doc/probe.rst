@@ -168,7 +168,7 @@ The emitter's Count() function is now able to set the value for this DoubleProbe
 ::
 
   void
-  Emitter::Count (void)
+  Emitter::Count ()
   {
     ...
     m_counter += 1.0;
@@ -259,7 +259,7 @@ particular, two ways of emitting data are shown:
   ::
 
     void
-    Emitter::Count (void)
+    Emitter::Count ()
     {
       NS_LOG_FUNCTION (this);
       NS_LOG_DEBUG ("Counting at " << Simulator::Now ().GetSeconds ());

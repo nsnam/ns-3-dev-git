@@ -240,7 +240,7 @@ the wifi Information Elements.
      ...
    };
    void
-   BasicMultiLinkElementTest::DoRun (void)
+   BasicMultiLinkElementTest::DoRun ()
    {
      MultiLinkElement mle (WIFI_MAC_MGT_BEACON);
      // Fill in the Multi-Link Element
@@ -266,4 +266,3 @@ Storing and referencing non-trivial output data
 
 Presenting your output test data
 ********************************
-

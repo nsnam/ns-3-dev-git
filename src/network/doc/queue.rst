@@ -51,9 +51,9 @@ Queue is an abstract base class and is subclassed for specific scheduling and
 drop policies. Subclasses need to define the following public methods:
 
 * ``bool Enqueue (Ptr<Item> item)``:  Enqueue a packet
-* ``Ptr<Item> Dequeue (void)``:  Dequeue a packet
-* ``Ptr<Item> Remove (void)``:  Remove a packet
-* ``Ptr<const Item> Peek (void)``:  Peek a packet
+* ``Ptr<Item> Dequeue ()``:  Dequeue a packet
+* ``Ptr<Item> Remove ()``:  Remove a packet
+* ``Ptr<const Item> Peek ()``:  Peek a packet
 
 The Enqueue method does not allow to store a packet if the queue capacity is exceeded.
 Subclasses may also define specialized public methods. For instance, the
@@ -144,4 +144,3 @@ Examples
 
 The drop-tail queue is used in several examples, such as
 ``examples/udp/udp-echo.cc``.
-

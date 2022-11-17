@@ -27,7 +27,7 @@ so that they can invoke methods on each other::
 
   class B {
   public:
-    void DoSomething (void);
+    void DoSomething ();
     ...
 
   private:

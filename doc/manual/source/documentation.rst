@@ -355,11 +355,8 @@ Useful Features
   #. In the sub class mark inherited functions with an ordinary comment::
 
        // Inherited methods
-       virtual void FooBar (void);
+       virtual void FooBar ();
        virtual int BarFoo (double baz);
-
-     Note that the signatures have to match exactly, so include the formal
-     argument ``(void)``
 
      This doesn't work for static functions; see ``GetTypeId``, below, for an
      example.
@@ -641,7 +638,4 @@ cases is:
      *  Register this type.
      *  \return The object TypeId.
      */
-    static TypeId GetTypeId (void);
-
-
-
+    static TypeId GetTypeId ();

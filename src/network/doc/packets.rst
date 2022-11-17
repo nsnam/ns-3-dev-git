@@ -193,7 +193,7 @@ method::
    * \returns the size in bytes of the packet (including the zero-filled
    *          initial payload)
    */
-  uint32_t GetSize (void) const;
+  uint32_t GetSize () const;
 
 You can also initialize a packet with a character buffer. The input
 data is copied and the input buffer is untouched. The constructor
@@ -364,7 +364,7 @@ The Packet API for byte tags is given below.::
   /**
    * \returns an iterator over the set of byte tags included in this packet.
    */
-  ByteTagIterator GetByteTagIterator (void) const;
+  ByteTagIterator GetByteTagIterator () const;
   /**
    * \param tag the tag to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
@@ -377,7 +377,7 @@ The Packet API for byte tags is given below.::
   /**
    * Remove all the tags stored in this packet.
    */
-  void RemoveAllByteTags (void);
+  void RemoveAllByteTags ();
 
   /**
    * \param os output stream in which the data should be printed.
@@ -420,7 +420,7 @@ The Packet API for packet tags is given below.::
   /**
    * Remove all packet tags.
    */
-  void RemoveAllPacketTags (void);
+  void RemoveAllPacketTags ();
 
   /**
    * \param os the stream in which we want to print data.
@@ -436,7 +436,7 @@ The Packet API for packet tags is given below.::
    * \returns an object which can be used to iterate over the list of
    *  packet tags.
    */
-  PacketTagIterator GetPacketTagIterator (void) const;
+  PacketTagIterator GetPacketTagIterator () const;
 
 Here is a simple example illustrating the use of tags from the
 code in ``src/internet/model/udp-socket-impl.cc``::
@@ -675,4 +675,3 @@ Dirty operations will always be slower than non-dirty operations, sometimes by
 several orders of magnitude. However, even the dirty operations have been
 optimized for common use-cases which means that most of the time, these
 operations will not trigger data copies and will thus be still very fast.
-

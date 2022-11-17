@@ -92,13 +92,13 @@ A C++ abstract base class, class QueueDisc, is subclassed to implement a specifi
 queue disc. A subclass is required to implement the following methods:
 
 * ``bool DoEnqueue (Ptr<QueueDiscItem> item)``:  Enqueue a packet
-* ``Ptr<QueueDiscItem> DoDequeue (void)``:  Dequeue a packet
-* ``bool CheckConfig (void) const``: Check if the configuration is correct
-* ``void InitializeParams (void)``: Initialize queue disc parameters
+* ``Ptr<QueueDiscItem> DoDequeue ()``:  Dequeue a packet
+* ``bool CheckConfig () const``: Check if the configuration is correct
+* ``void InitializeParams ()``: Initialize queue disc parameters
 
 and may optionally override the default implementation of the following method:
 
-* ``Ptr<const QueueDiscItem> DoPeek (void) const``: Peek the next packet to extract
+* ``Ptr<const QueueDiscItem> DoPeek () const``: Peek the next packet to extract
 
 The default implementation of the ``DoPeek`` method is based on the qdisc_peek_dequeued
 function of the Linux kernel, which dequeues a packet and retains it in the

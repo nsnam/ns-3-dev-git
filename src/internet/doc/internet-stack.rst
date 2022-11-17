@@ -202,7 +202,7 @@ to the ``Bind ()``, ``Connect ()``, or ``Send ()`` functions may be a
 :cpp:class:`Ipv4Address`, :cpp:class:`Ipv6Address`, or :cpp:class:`Address`.
 If a :cpp:class:`Address` is passed in and contains anything other than
 a :cpp:class:`Ipv4Address` or :cpp:class:`Ipv6Address`, these functions will
-return an error.  The ``Bind (void)`` and ``Bind6 (void)`` functions bind to
+return an error.  The ``Bind ()`` and ``Bind6 ()`` functions bind to
 "0.0.0.0" and "::" respectively.
 
 The socket can also be bound to a specific NetDevice though the

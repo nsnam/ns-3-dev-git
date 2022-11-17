@@ -139,7 +139,7 @@ made using those operators.::
   class MyObject : public Object
   {
   public:
-    static TypeId GetTypeId (void)
+    static TypeId GetTypeId ()
     {
       static TypeId tid = TypeId ("MyObject")
         .SetParent (Object::GetTypeId ())

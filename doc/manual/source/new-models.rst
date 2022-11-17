@@ -112,13 +112,13 @@ a base class and first subclass that could be posted for initial review::
       ErrorModel ();
       virtual ~ErrorModel ();
       bool IsCorrupt (Ptr<Packet> pkt);
-      void Reset (void);
-      void Enable (void);
-      void Disable (void);
-      bool IsEnabled (void) const;
+      void Reset ();
+      void Enable ();
+      void Disable ();
+      bool IsEnabled () const;
     private:
       virtual bool DoCorrupt (Ptr<Packet> pkt) = 0;
-      virtual void DoReset (void) = 0;
+      virtual void DoReset () = 0;
     };
 
     enum ErrorUnit
@@ -135,14 +135,14 @@ a base class and first subclass that could be posted for initial review::
     public:
       RateErrorModel ();
       virtual ~RateErrorModel ();
-      enum ErrorUnit GetUnit (void) const;
+      enum ErrorUnit GetUnit () const;
       void SetUnit (enum ErrorUnit error_unit);
-      double GetRate (void) const;
+      double GetRate () const;
       void SetRate (double rate);
       void SetRandomVariable (const RandomVariable &ranvar);
     private:
       virtual bool DoCorrupt (Ptr<Packet> pkt);
-      virtual void DoReset (void);
+      virtual void DoReset ();
     };
 
 
@@ -294,7 +294,7 @@ from class Object.::
     class ErrorModel : public Object
     {
     public:
-      static TypeId GetTypeId (void);
+      static TypeId GetTypeId ();
 
       ErrorModel ();
       virtual ~ErrorModel ();
@@ -303,7 +303,7 @@ from class Object.::
     class RateErrorModel : public ErrorModel
     {
     public:
-      static TypeId GetTypeId (void);
+      static TypeId GetTypeId ();
 
       RateErrorModel ();
       virtual ~RateErrorModel ();
@@ -319,7 +319,7 @@ But we are in ``src/network/model``, so we must include it as "``#include
 "ns3/object.h"``". Note also that this goes outside the namespace declaration.
 
 Second, each class must implement a static public member function called
-``GetTypeId (void)``.
+``GetTypeId ()``.
 
 Third, it is a good idea to implement constructors and destructors rather than
 to let the compiler generate them, and to make the destructor virtual. In C++,
@@ -337,7 +337,7 @@ file.::
 
     NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
-    TypeId ErrorModel::GetTypeId (void)
+    TypeId ErrorModel::GetTypeId ()
     {
       static TypeId tid = TypeId ("ns3::ErrorModel")
         .SetParent<Object> ()
@@ -356,7 +356,7 @@ file.::
 
     NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
-    TypeId RateErrorModel::GetTypeId (void)
+    TypeId RateErrorModel::GetTypeId ()
     {
       static TypeId tid = TypeId ("ns3::RateErrorModel")
         .SetParent<ErrorModel> ()
@@ -374,7 +374,7 @@ file.::
     {
     }
 
-What is the ``GetTypeId (void)`` function? This function does a few things.  It
+What is the ``GetTypeId ()`` function? This function does a few things.  It
 registers a unique string into the TypeId system. It establishes  the hierarchy
 of objects in the attribute system (via ``SetParent``). It also declares that
 certain objects can be created via the object creation framework
@@ -542,19 +542,19 @@ We declare BasicErrorModel to be a subclass of ErrorModel as follows,::
     class BasicErrorModel : public ErrorModel
     {
     public:
-      static TypeId GetTypeId (void);
+      static TypeId GetTypeId ();
       ...
     private:
       // Implement base class pure virtual functions
       virtual bool DoCorrupt (Ptr<Packet> p);
-      virtual bool DoReset (void);
+      virtual bool DoReset ();
       ...
     }
 
 and configure the subclass GetTypeId function by setting a unique TypeId string
 and setting the Parent to ErrorModel::
 
-    TypeId RateErrorModel::GetTypeId (void)
+    TypeId RateErrorModel::GetTypeId ()
     {
       static TypeId tid = TypeId ("ns3::RateErrorModel")
         .SetParent<ErrorModel> ()
@@ -570,4 +570,3 @@ Assert Macros
 
 Writing Unit Tests
 ++++++++++++++++++
-
