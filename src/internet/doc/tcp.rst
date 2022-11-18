@@ -2158,7 +2158,7 @@ and then, hit "Run".
 .. note::
    This code magically runs without any reported errors; however, in real cases,
    when you discover a bug you should expect the existing test to fail (this
-   could indicate a well-written test and a bad-writted model, or a bad-written
+   could indicate a well-written test and a bad-written model, or a bad-written
    test; hopefully the first situation). Correcting bugs is an iterative
    process. For instance, commits created to make this test case running without
    errors are 11633:6b74df04cf44, (others to be merged).
