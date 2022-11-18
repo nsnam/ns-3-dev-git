@@ -179,7 +179,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
         startingFreq = 5000;
         break;
     case WIFI_PHY_BAND_6GHZ:
-        startingFreq = 5940;
+        startingFreq = 5950;
         break;
     case WIFI_PHY_BAND_UNSPECIFIED:
     default:
@@ -267,7 +267,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
         startingFreq = 5000;
         break;
     case WIFI_PHY_BAND_6GHZ:
-        startingFreq = 5940;
+        startingFreq = 5950;
         break;
     case WIFI_PHY_BAND_UNSPECIFIED:
     default:
