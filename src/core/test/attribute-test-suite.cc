@@ -265,7 +265,7 @@ class AttributeObjectTest : public Object
                               MakeBooleanChecker())
                 .AddAttribute("EnumTraceSource",
                               "help text",
-                              EnumValue(false),
+                              EnumValue(TEST_A),
                               MakeEnumAccessor(&AttributeObjectTest::m_enumSrc),
                               MakeEnumChecker(TEST_A, "TestA"))
                 .AddAttribute("ValueClassSource",
