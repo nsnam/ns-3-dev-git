@@ -46,10 +46,9 @@ class CobaltQueueDiscTestItem : public QueueDiscItem
      *
      * \param p packet
      * \param addr address
-     * \param protocol protocol
      * \param ecnCapable ECN capable
      */
-    CobaltQueueDiscTestItem(Ptr<Packet> p, const Address& addr, uint16_t protocol, bool ecnCapable);
+    CobaltQueueDiscTestItem(Ptr<Packet> p, const Address& addr, bool ecnCapable);
     ~CobaltQueueDiscTestItem() override;
 
     // Delete default constructor, copy constructor and assignment operator to avoid misuse
@@ -66,9 +65,8 @@ class CobaltQueueDiscTestItem : public QueueDiscItem
 
 CobaltQueueDiscTestItem::CobaltQueueDiscTestItem(Ptr<Packet> p,
                                                  const Address& addr,
-                                                 uint16_t protocol,
                                                  bool ecnCapable)
-    : QueueDiscItem(p, addr, ecnCapable),
+    : QueueDiscItem(p, addr, 0),
       m_ecnCapablePacket(ecnCapable)
 {
 }
@@ -177,27 +175,27 @@ CobaltQueueDiscBasicEnqueueDequeue::DoRun()
     NS_TEST_ASSERT_MSG_EQ(queue->GetCurrentSize().GetValue(),
                           0 * modeSize,
                           "There should be no packets in queue");
-    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p1, dest, 0, false));
+    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p1, dest, false));
     NS_TEST_ASSERT_MSG_EQ(queue->GetCurrentSize().GetValue(),
                           1 * modeSize,
                           "There should be one packet in queue");
-    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p2, dest, 0, false));
+    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p2, dest, false));
     NS_TEST_ASSERT_MSG_EQ(queue->GetCurrentSize().GetValue(),
                           2 * modeSize,
                           "There should be two packets in queue");
-    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p3, dest, 0, false));
+    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p3, dest, false));
     NS_TEST_ASSERT_MSG_EQ(queue->GetCurrentSize().GetValue(),
                           3 * modeSize,
                           "There should be three packets in queue");
-    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p4, dest, 0, false));
+    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p4, dest, false));
     NS_TEST_ASSERT_MSG_EQ(queue->GetCurrentSize().GetValue(),
                           4 * modeSize,
                           "There should be four packets in queue");
-    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p5, dest, 0, false));
+    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p5, dest, false));
     NS_TEST_ASSERT_MSG_EQ(queue->GetCurrentSize().GetValue(),
                           5 * modeSize,
                           "There should be five packets in queue");
-    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p6, dest, 0, false));
+    queue->Enqueue(Create<CobaltQueueDiscTestItem>(p6, dest, false));
     NS_TEST_ASSERT_MSG_EQ(queue->GetCurrentSize().GetValue(),
                           6 * modeSize,
                           "There should be six packets in queue");
@@ -372,7 +370,7 @@ CobaltQueueDiscDropTest::Enqueue(Ptr<CobaltQueueDisc> queue, uint32_t size, uint
     Address dest;
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, 0, true));
+        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, true));
     }
 }
 
@@ -632,7 +630,7 @@ CobaltQueueDiscMarkTest::Enqueue(Ptr<CobaltQueueDisc> queue,
     Address dest;
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, 0, ecnCapable));
+        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, ecnCapable));
     }
 }
 
@@ -905,7 +903,7 @@ CobaltQueueDiscCeThresholdTest::Enqueue(Ptr<CobaltQueueDisc> queue, uint32_t siz
     Address dest;
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, 0, true));
+        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, true));
     }
 }
 
@@ -1176,7 +1174,7 @@ CobaltQueueDiscEnhancedBlueTest::Enqueue(Ptr<CobaltQueueDisc> queue, uint32_t si
     Address dest;
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, 0, true));
+        queue->Enqueue(Create<CobaltQueueDiscTestItem>(Create<Packet>(size), dest, true));
     }
 }
 
