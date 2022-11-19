@@ -88,7 +88,7 @@ class CodelQueueDiscTestItem : public QueueDiscItem
 };
 
 CodelQueueDiscTestItem::CodelQueueDiscTestItem(Ptr<Packet> p, const Address& addr, bool ecnCapable)
-    : QueueDiscItem(p, addr, ecnCapable),
+    : QueueDiscItem(p, addr, 0),
       m_ecnCapablePacket(ecnCapable)
 {
 }
