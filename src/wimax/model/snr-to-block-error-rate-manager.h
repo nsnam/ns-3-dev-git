@@ -106,7 +106,7 @@ class SNRToBlockErrorRateManager
   private:
     /// Clear records function
     void ClearRecords();
-    uint8_t m_activateLoss;      ///< activate loss
+    bool m_activateLoss;         ///< activate loss
     std::string m_traceFilePath; ///< trace file path
 
     std::vector<SNRToBlockErrorRateRecord*>* m_recordModulation[7]; ///< record modulation

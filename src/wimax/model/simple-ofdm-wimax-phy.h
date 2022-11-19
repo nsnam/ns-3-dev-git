@@ -303,13 +303,13 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
      * \param burstSize the burst size
      * \param modulationType the modulation type
      * \param direction the direction
-     * \param drop the drop
+     * \param drop whether to drop
      * \param burst the burst
      */
     void EndReceiveFecBlock(uint32_t burstSize,
                             WimaxPhy::ModulationType modulationType,
                             uint8_t direction,
-                            uint8_t drop,
+                            bool drop,
                             Ptr<PacketBurst> burst);
     /**
      * Start end dummy FEC block

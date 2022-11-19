@@ -379,7 +379,7 @@ SimpleOfdmWimaxPhy::StartReceive(uint32_t burstSize,
                                  double rxPower,
                                  Ptr<PacketBurst> burst)
 {
-    uint8_t drop = 0;
+    bool drop = false;
     double Nwb = -114 + m_noiseFigure + 10 * std::log(GetBandwidth() / 1000000000.0) / 2.303;
     double SNR = rxPower - Nwb;
 
@@ -394,26 +394,26 @@ SimpleOfdmWimaxPhy::StartReceive(uint32_t burstSize,
 
     if (rand < blockErrorRate)
     {
-        drop = 1;
+        drop = true;
     }
     if (rand > blockErrorRate)
     {
-        drop = 0;
+        drop = false;
     }
 
     if (blockErrorRate == 1.0)
     {
-        drop = 1;
+        drop = true;
     }
     if (blockErrorRate == 0.0)
     {
-        drop = 0;
+        drop = false;
     }
     delete record;
 
     NS_LOG_INFO("PHY: Receive rxPower=" << rxPower << ", Nwb=" << Nwb << ", SNR=" << SNR
                                         << ", Modulation=" << modulationType << ", BlocErrorRate="
-                                        << blockErrorRate << ", drop=" << (int)drop);
+                                        << blockErrorRate << ", drop=" << std::boolalpha << drop);
 
     switch (GetState())
     {
@@ -465,7 +465,7 @@ void
 SimpleOfdmWimaxPhy::EndReceiveFecBlock(uint32_t burstSize,
                                        WimaxPhy::ModulationType modulationType,
                                        uint8_t direction,
-                                       uint8_t drop,
+                                       bool drop,
                                        Ptr<PacketBurst> burst)
 {
     SetState(PHY_STATE_IDLE);
