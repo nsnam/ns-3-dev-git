@@ -409,7 +409,9 @@ void
 TcpBbr::HandleProbeRTT(Ptr<TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this << tcb);
-    m_appLimited = (m_delivered + tcb->m_bytesInFlight.Get()) ?: 1;
+
+    uint32_t totalBytes = m_delivered + tcb->m_bytesInFlight.Get();
+    m_appLimited = (totalBytes > 0 ? totalBytes : 1);
 
     if (m_probeRttDoneStamp == Seconds(0) && tcb->m_bytesInFlight <= m_minPipeCwnd)
     {
