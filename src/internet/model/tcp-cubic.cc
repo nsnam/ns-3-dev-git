@@ -62,10 +62,15 @@ TcpCubic::GetTypeId()
                           MakeUintegerChecker<uint32_t>())
             .AddAttribute("HyStartDetect",
                           "Hybrid Slow Start detection mechanisms:"
-                          "1: packet train, 2: delay, 3: both",
-                          IntegerValue(3),
-                          MakeIntegerAccessor(&TcpCubic::m_hystartDetect),
-                          MakeIntegerChecker<int>(1, 3))
+                          "packet train, delay, both",
+                          EnumValue(HybridSSDetectionMode::BOTH),
+                          MakeEnumAccessor(&TcpCubic::m_hystartDetect),
+                          MakeEnumChecker(HybridSSDetectionMode::PACKET_TRAIN,
+                                          "PACKET_TRAIN",
+                                          HybridSSDetectionMode::DELAY,
+                                          "DELAY",
+                                          HybridSSDetectionMode::BOTH,
+                                          "BOTH"))
             .AddAttribute("HyStartMinSamples",
                           "Number of delay samples for detecting the increase of delay",
                           UintegerValue(8),

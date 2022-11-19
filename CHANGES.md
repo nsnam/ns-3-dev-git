@@ -23,7 +23,8 @@ Changes from ns-3.37 to ns-3.38
 ### Changes to existing API
 
 * (network) **Ipv4Address** and **Ipv6Address** now do not raise an exception if built from an invalid string. Instead the address is marked as not initialized.
-* (internet) TCP Westwood model has been removed due to a bug in BW estimation documented in https://gitlab.com/nsnam/ns-3-dev/-/issues/579. The TCP Westwood+ model is now named **TcpWestwoodPlus** and can be instantiated like all the other TCP flavors.
+* (internet) TCP Westwood model has been removed due to a bug in BW estimation documented in <https://gitlab.com/nsnam/ns-3-dev/-/issues/579>. The TCP Westwood+ model is now named **TcpWestwoodPlus** and can be instantiated like all the other TCP flavors.
+* (internet) `TcpCubic` attribute `HyStartDetect` changed from `int` to `enum HybridSSDetectionMode`.
 
 ### Changes to build system
 

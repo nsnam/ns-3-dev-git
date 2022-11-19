@@ -70,6 +70,16 @@ class TcpCubic : public TcpCongestionOps
 {
   public:
     /**
+     * \brief Values to detect the Slow Start mode of HyStart
+     */
+    enum HybridSSDetectionMode
+    {
+        PACKET_TRAIN = 1, //!< Detection by trains of packet
+        DELAY = 2,        //!< Detection by delay value
+        BOTH = 3,         //!< Detection by both
+    };
+
+    /**
      * \brief Get the type ID.
      * \return the object TypeId
      */
@@ -93,24 +103,15 @@ class TcpCubic : public TcpCongestionOps
     Ptr<TcpCongestionOps> Fork() override;
 
   private:
-    /**
-     * \brief Values to detect the Slow Start mode of HyStart
-     */
-    enum HybridSSDetectionMode
-    {
-        PACKET_TRAIN = 0x1, //!< Detection by trains of packet
-        DELAY = 0x2         //!< Detection by delay value
-    };
-
     bool m_fastConvergence; //!< Enable or disable fast convergence algorithm
     double m_beta;          //!< Beta for cubic multiplicative increase
 
-    bool m_hystart;              //!< Enable or disable HyStart algorithm
-    int m_hystartDetect;         //!< Detect way for HyStart algorithm \see HybridSSDetectionMode
-    uint32_t m_hystartLowWindow; //!< Lower bound cWnd for hybrid slow start (segments)
-    Time m_hystartAckDelta;      //!< Spacing between ack's indicating train
-    Time m_hystartDelayMin;      //!< Minimum time for hystart algorithm
-    Time m_hystartDelayMax;      //!< Maximum time for hystart algorithm
+    bool m_hystart;                        //!< Enable or disable HyStart algorithm
+    HybridSSDetectionMode m_hystartDetect; //!< Detect way for HyStart algorithm
+    uint32_t m_hystartLowWindow;           //!< Lower bound cWnd for hybrid slow start (segments)
+    Time m_hystartAckDelta;                //!< Spacing between ack's indicating train
+    Time m_hystartDelayMin;                //!< Minimum time for hystart algorithm
+    Time m_hystartDelayMax;                //!< Maximum time for hystart algorithm
     uint8_t m_hystartMinSamples; //!< Number of delay samples for detecting the increase of delay
 
     uint32_t m_initialCwnd; //!< Initial cWnd
