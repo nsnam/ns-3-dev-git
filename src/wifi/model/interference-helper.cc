@@ -628,7 +628,7 @@ InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
     }
 
     double psr = 1.0;
-    if (!sections.empty() > 0)
+    if (!sections.empty())
     {
         psr = CalculatePhyHeaderSectionPsr(event, nis, channelWidth, band, sections);
     }
