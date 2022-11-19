@@ -19,7 +19,7 @@ with the |ns3| mainline.
 If the contributor does not want to maintain the external code
 but wants to make the community aware that it is available with
 no ongoing support, links to the code can be posted on the |ns3|
-wiki contributed code page.  A typical example is the graduating
+`wiki`_ contributed code page.  A typical example is the graduating
 student who wishes to make his or her thesis-related code available
 but who does not plan to update it further.
 See :ref:`sec-unmaintained-contributed` below.
@@ -227,7 +227,7 @@ Links to related projects
 Some projects choose to maintain their own version of |ns3|, or maintain models
 outside of the main tree of the code.  In this case, the way to find out
 about these is to look at the Related Projects page on the |ns3|
-`wiki <https://www.nsnam.org/wiki/Related_Projects>`_.
+`wiki`_.
 
 If you know of externally maintained code that the project does not know about,
 please email ``webmaster@nsnam.org`` to request that it be added to the
@@ -250,7 +250,7 @@ not be listed in the app store, although popular extensions might be
 adopted by a future contributor.
 
 We ask anyone who wishes to do this to provide at least this information
-on our wiki:
+on our `wiki`_:
 
 * Authors,
 * Name and description of the extension,
@@ -259,6 +259,7 @@ on our wiki:
 * Status (how it is maintained)
 
 Please also make clear in your code the applicable software license.
-The contribution will be stored on our `wiki <https://www.nsnam.org/wiki/Contributed_Code>`_. If you need web server
+The contribution will be stored on our `wiki`_. If you need web server
 space for your archive, please contact ``webmaster@nsnam.org``.
 
+.. _wiki: https://www.nsnam.org/wiki/Contributed_Code

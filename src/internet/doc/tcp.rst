@@ -456,7 +456,7 @@ cwnd, 'bytes_acked' is reduced by the value of cwnd. Next, cwnd is incremented
 by a full-sized segment (SMSS).  In contrast, in ns-3 NewReno, cwnd is increased
 by (1/cwnd) with a rounding off due to type casting into int.
 
-.. code-block:: c++
+::
 
    if (m_cWndCnt >= w)
     {
@@ -469,7 +469,7 @@ by (1/cwnd) with a rounding off due to type casting into int.
 
    :label: linuxrenocongavoid
 
-.. code-block:: c++
+::
 
    if (segmentsAcked > 0)
     {
@@ -839,9 +839,8 @@ congestion that the flow itself induces in the network.
 
 As a first approximation, the LEDBAT sender operates as shown below:
 
-On receipt of an ACK:
+On receipt of an ACK::
 
-::
        currentdelay = acknowledgement.delay
        basedelay = min (basedelay, currentdelay)
        queuingdelay = currentdelay - basedelay
@@ -862,15 +861,11 @@ Following the recommendation of RFC 6817, the default values of the parameters a
 * noiseFilterLen = 4
 * Gain = 1
 
-To enable LEDBAT on all TCP sockets, the following configuration can be used:
-
-::
+To enable LEDBAT on all TCP sockets, the following configuration can be used::
 
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpLedbat::GetTypeId ()));
 
-To enable LEDBAT on a chosen TCP socket, the following configuration can be used:
-
-::
+To enable LEDBAT on a chosen TCP socket, the following configuration can be used::
 
   Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpLedbat::GetTypeId ()));
 
@@ -974,9 +969,7 @@ Following the recommendation of RFC 8257, the default values of the parameters a
   initial alpha (\alpha) = 1
 
 
-To enable DCTCP on all TCP sockets, the following configuration can be used:
-
-::
+To enable DCTCP on all TCP sockets, the following configuration can be used::
 
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
 
@@ -991,9 +984,7 @@ mark packets. The current implementation of DCTCP in ns-3 can use RED with
 a simple
 configuration to achieve the behavior of desired queue management algorithm.
 
-To configure RED router for DCTCP:
-
-::
+To configure RED router for DCTCP::
 
   Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (1.0));
@@ -1002,9 +993,7 @@ To configure RED router for DCTCP:
 
 There is also the option, when running CoDel or FqCoDel, to enable ECN
 on the queue and to set the "CeThreshold" value to a low value such as 1ms.
-The following example uses CoDel:
-
-::
+The following example uses CoDel::
 
   Config::SetDefault ("ns3::CoDelQueueDisc::UseEcn", BooleanValue (true));
   Config::SetDefault ("ns3::CoDelQueueDisc::CeThreshold", TimeValue (MilliSeconds (1)));
@@ -1062,13 +1051,15 @@ of data to send.
 
 The following is a high level overview of BBR congestion control algorithm:
 
-On receiving an ACK:
+On receiving an ACK::
+
     rtt = now - packet.sent_time
     update_minimum_rtt (rtt)
     delivery_rate = estimate_delivery_rate (packet)
     update_maximum_bandwidth (delivery_rate)
 
-After transmitting a data packet:
+After transmitting a data packet::
+
     bdp = max_bandwidth * min_rtt
     if (cwnd * bdp < inflight)
       return
@@ -1081,16 +1072,12 @@ After transmitting a data packet:
       return
     Schedule (nextSendTime, Send)
 
-To enable BBR on all TCP sockets, the following configuration can be used:
-
-::
+To enable BBR on all TCP sockets, the following configuration can be used::
 
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpBbr::GetTypeId ()));
 
 To enable BBR on a chosen TCP socket, the following configuration can be used
-(note that an appropriate Node ID must be used instead of 1):
-
-::
+(note that an appropriate Node ID must be used instead of 1)::
 
   Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpBbr::GetTypeId ()));
 
@@ -1103,7 +1090,7 @@ implementation of BBR in ns-3:
 
 * BBR should enable (if not already done) TCP pacing feature.
 * Test to validate the values of pacing_gain and cwnd_gain in different phases
-of BBR.
+  of BBR.
 
 An example program, examples/tcp/tcp-bbr-example.cc, is provided to experiment
 with BBR for one long running flow. This example uses a simple topology
@@ -1149,9 +1136,7 @@ The following ECN states are declared in ``src/internet/model/tcp-socket-state.h
 
 Current implementation of ECN is based on RFC 3168 and is referred as Classic ECN.
 
-The following enum represents the mode of ECN:
-
-::
+The following enum represents the mode of ECN::
 
   typedef enum
     {
@@ -1159,9 +1144,7 @@ The following enum represents the mode of ECN:
       DctcpEcn,    //!< ECN functionality as described in RFC 8257. Note: this mode is specific to DCTCP.
     } EcnMode_t;
 
-The following are some important ECN parameters:
-
-::
+The following are some important ECN parameters::
 
   // ECN parameters
   EcnMode_t              m_ecnMode {ClassicEcn}; //!< ECN mode
@@ -1556,7 +1539,7 @@ All operations that are delegated to a congestion control are contained in
 the class TcpCongestionOps. It mimics the structure tcp_congestion_ops of
 Linux, and the following operations are defined:
 
-.. code-block:: c++
+::
 
   virtual std::string GetName () const;
   virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight);
@@ -1680,7 +1663,7 @@ TcpSocketBase.
 All operations that are delegated to a loss recovery are contained in
 the class TcpRecoveryOps and are given below:
 
-.. code-block:: c++
+::
 
   virtual std::string GetName () const;
   virtual void EnterRecovery (Ptr<const TcpSocketState> tcb, uint32_t unAckDataCount,
@@ -1786,7 +1769,7 @@ To construct the test case, one first derives from the TcpGeneralTest class:
 
 The code is the following:
 
-.. code-block:: c++
+::
 
    TcpZeroWindowTest::TcpZeroWindowTest (const std::string &desc)
       : TcpGeneralTest (desc)
@@ -1815,7 +1798,7 @@ To define the properties of the environment (e.g. properties which should be
 set before the object creation, such as propagation delay) one next implements
 the method ConfigureEnvironment:
 
-.. code-block:: c++
+::
 
    void
    TcpZeroWindowTest::ConfigureEnvironment ()
@@ -1835,7 +1818,7 @@ to every instance we have. Usually, methods that requires an id and a value
 are meant to be called inside ConfigureProperties (). Please see the Doxygen
 documentation for an exhaustive list of the tunable properties.
 
-.. code-block:: c++
+::
 
    void
    TcpZeroWindowTest::ConfigureProperties ()
@@ -1859,7 +1842,9 @@ advertises a zero window. This can be accomplished by implementing the method
 CreateReceiverSocket, setting an Rx buffer value of 0 bytes (at line 6 of the
 following code):
 
-.. code-block:: c++
+
+::
+
    :linenos:
    :emphasize-lines: 6,7,8
 
@@ -1879,7 +1864,7 @@ Even so, to check the active window update, we should schedule an increase
 of the buffer size. We do this at line 7 and 8, scheduling the function
 IncreaseBufSize.
 
-.. code-block:: c++
+::
 
    void
    TcpZeroWindowTest::IncreaseBufSize ()
@@ -1900,7 +1885,7 @@ to be aware of the various possibilities that it offers.
    of such method is SetRcvBufSize, which allows TcpGeneralSocket subclasses
    to forcefully set the RxBuffer size.
 
-   .. code-block:: c++
+   ::
 
       void
       TcpGeneralTest::SetRcvBufSize (SocketWho who, uint32_t size)
@@ -1936,7 +1921,7 @@ connection (it will prevent the test from changing over the time, and it ensures
 that the behavior will stay consistent through releases). We start by ensuring that
 the first SYN-ACK has 0 as advertised window size:
 
-.. code-block:: c++
+::
 
    void
    TcpZeroWindowTest::Tx(const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
@@ -1984,7 +1969,7 @@ ProcessedAck, which is the method called after each processed ACK. In the
 following, we show how to check if the persistent event is running after the
 processing of the SYN-ACK:
 
-.. code-block:: c++
+::
 
    void
    TcpZeroWindowTest::ProcessedAck (const Ptr<const TcpSocketState> tcb,
@@ -2006,9 +1991,10 @@ we expect the persistent timer to fire before any rWnd changes. When it fires,
 the SENDER should send a window probe, and the receiver should reply reporting
 again a zero window situation. At first, we investigates on what the sender sends:
 
-..  code-block:: c++
-    :linenos:
-    :emphasize-lines: 1,6,7,11
+::
+
+      :linenos:
+      :emphasize-lines: 1,6,7,11
 
       if (Simulator::Now ().GetSeconds () <= 6.0)
         {
@@ -2039,7 +2025,8 @@ reader: edit the test, getting this value from the Attribute system), we need
 to check (line 6) between 6.0 and 7.0 simulated seconds that the probe is sent.
 Only one probe is allowed, and this is the reason for the check at line 11.
 
-.. code-block:: c++
+::
+
    :linenos:
    :emphasize-lines: 6,7
 
@@ -2058,7 +2045,7 @@ segment is sent.
 Other checks are redundant; the safest approach is to deny any other packet
 exchange between the 7 and 10 seconds mark.
 
-.. code-block:: c++
+::
 
    else if (Simulator::Now ().GetSeconds () > 7.0 &&
             Simulator::Now ().GetSeconds () < 10.0)
@@ -2069,7 +2056,7 @@ exchange between the 7 and 10 seconds mark.
 The state checks are performed at the end of the methods, since they are valid
 in every condition:
 
-.. code-block:: c++
+::
 
    NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (GetTcb(SENDER)), TcpSocketState::CA_OPEN,
                           "Sender State is not OPEN");
@@ -2080,7 +2067,7 @@ Now, the interesting part in the Tx method is to check that after the 10.0
 seconds mark (when the RECEIVER sends the active window update) the value of
 the window should be greater than zero (and precisely, set to 2500):
 
-.. code-block:: c++
+::
 
    else if (Simulator::Now().GetSeconds() >= 10.0)
      {
@@ -2091,7 +2078,8 @@ the window should be greater than zero (and precisely, set to 2500):
 To be sure that the sender receives the window update, we can use the Rx
 method:
 
-.. code-block:: c++
+::
+
    :linenos:
    :emphasize-lines: 5
 
@@ -2109,7 +2097,7 @@ that we effectively reach this test.
 Last but not least, we implement also the NormalClose() method, to check that
 the connection ends with a success:
 
-.. code-block:: c++
+::
 
    void
    TcpZeroWindowTest::NormalClose (SocketWho who)
@@ -2128,7 +2116,7 @@ The method is called only if all bytes are transmitted successfully. Then, in
 the method FinalChecks(), we check all variables, which should be true (which
 indicates that we have perfectly closed the connection).
 
-.. code-block:: c++
+::
 
    void
    TcpZeroWindowTest::FinalChecks ()
@@ -2168,4 +2156,3 @@ and then, hit "Run".
    test; hopefully the first situation). Correcting bugs is an iterative
    process. For instance, commits created to make this test case running without
    errors are 11633:6b74df04cf44, (others to be merged).
-
