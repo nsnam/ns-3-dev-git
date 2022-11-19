@@ -141,7 +141,7 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
     if (txVector.IsDlMu())
     {
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        heSig.SetMuFlag(true);
+        heSig.SetHeSigBPresent(true);
         heSig.SetSigBMcs(txVector.GetSigBMode().GetMcsValue());
         heSig.SetRuAllocation(txVector.GetRuAllocation(p20Index));
         heSig.SetHeSigBContentChannels(txVector.GetContentChannels(p20Index));
@@ -152,7 +152,7 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
     }
     else
     {
-        heSig.SetMuFlag(false);
+        heSig.SetHeSigBPresent(false);
         if (!ns3::IsUlMu(m_preamble))
         {
             heSig.SetMcs(txVector.GetMode().GetMcsValue());
@@ -589,7 +589,7 @@ HePpdu::HeSigHeader::HeSigHeader()
 {
 }
 
-HePpdu::HeSigHeader::HeSigHeader(bool mu)
+HePpdu::HeSigHeader::HeSigHeader(bool heSigBPresent)
     : m_format(0),
       m_bssColor(0),
       m_mcs(0),
@@ -597,7 +597,7 @@ HePpdu::HeSigHeader::HeSigHeader(bool mu)
       m_gi_ltf_size(0),
       m_nsts(0),
       m_sigBMcs(0),
-      m_mu(mu)
+      m_heSigBPresent(heSigBPresent)
 {
 }
 
@@ -621,8 +621,8 @@ void
 HePpdu::HeSigHeader::Print(std::ostream& os) const
 {
     os << "MCS=" << +m_mcs << " CHANNEL_WIDTH=" << GetChannelWidth() << " GI=" << GetGuardInterval()
-       << " NSTS=" << +m_nsts << " BSSColor=" << +m_bssColor << " MU=" << +m_mu;
-    if (m_mu)
+       << " NSTS=" << +m_nsts << " BSSColor=" << +m_bssColor;
+    if (m_heSigBPresent)
     {
         os << " SIG-B_MCS=" << +m_sigBMcs << " RU_ALLOCATION=";
         for (auto alloc : m_ruAllocation)
@@ -653,7 +653,7 @@ HePpdu::HeSigHeader::GetSerializedSize() const
     uint32_t size = 0;
     size += 4; // HE-SIG-A1
     size += 4; // HE-SIG-A2
-    if (m_mu)
+    if (m_heSigBPresent)
     {
         size += GetSigBSize(); // HE-SIG-B
     }
@@ -661,9 +661,9 @@ HePpdu::HeSigHeader::GetSerializedSize() const
 }
 
 void
-HePpdu::HeSigHeader::SetMuFlag(bool mu)
+HePpdu::HeSigHeader::SetHeSigBPresent(bool heSigBPresent)
 {
-    m_mu = mu;
+    m_heSigBPresent = heSigBPresent;
 }
 
 uint32_t
@@ -802,6 +802,7 @@ void
 HePpdu::HeSigHeader::SetSigBMcs(uint8_t mcs)
 {
     NS_ASSERT(mcs <= 5);
+    NS_ASSERT(m_heSigBPresent);
     m_sigBMcs = mcs;
 }
 
@@ -814,6 +815,7 @@ HePpdu::HeSigHeader::GetSigBMcs() const
 void
 HePpdu::HeSigHeader::SetRuAllocation(const RuAllocation& ruAlloc)
 {
+    NS_ASSERT(m_heSigBPresent);
     m_ruAllocation = ruAlloc;
 }
 
@@ -826,6 +828,7 @@ HePpdu::HeSigHeader::GetRuAllocation() const
 void
 HePpdu::HeSigHeader::SetHeSigBContentChannels(const HeSigBContentChannels& contentChannels)
 {
+    NS_ASSERT(m_heSigBPresent);
     m_contentChannels = contentChannels;
 }
 
@@ -839,6 +842,7 @@ void
 HePpdu::HeSigHeader::SetCenter26ToneRuIndication(
     std::optional<Center26ToneRuIndication> center26ToneRuIndication)
 {
+    NS_ASSERT(m_heSigBPresent);
     m_center26ToneRuIndication = center26ToneRuIndication;
 }
 
@@ -1041,7 +1045,7 @@ HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
 {
     // HE-SIG-A1
     uint32_t sigA1 = 0;
-    if (!m_mu)
+    if (!m_heSigBPresent)
     {
         sigA1 |= m_format & 0x01;
         if (m_format == 1) // HE SU or HE ER SU PPDU
@@ -1073,14 +1077,14 @@ HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
 
     // HE-SIG-A2
     uint32_t sigA2 = 0;
-    if (!m_mu && (m_format == 1))
+    if (!m_heSigBPresent && (m_format == 1))
     {
         // HE SU or HE ER SU PPDU
         sigA2 |= (0x01 << 14); // Set Reserved bit #14 to 1
     }
     start.WriteU32(sigA2);
 
-    if (m_mu)
+    if (m_heSigBPresent)
     {
         // HE-SIG-B
         std::vector<uint32_t> userBlockFieldsContentChannel1;
@@ -1117,7 +1121,7 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
 
     // HE-SIG-A1
     uint32_t sigA1 = i.ReadU32();
-    if (!m_mu)
+    if (!m_heSigBPresent)
     {
         m_format = (sigA1 & 0x01);
         if (m_format == 1)
@@ -1148,7 +1152,7 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
     // HE-SIG-A2
     i.ReadU32();
 
-    if (m_mu)
+    if (m_heSigBPresent)
     {
         // HE-SIG-B
         m_ruAllocation.clear();

@@ -57,9 +57,9 @@ class HePpdu : public OfdmPpdu
         /**
          * Constructor.
          *
-         * \param mu the MU flag
+         * \param heSigBPresent the flag indicating whether HE-SIG-B fields should be present or not
          */
-        HeSigHeader(bool mu);
+        HeSigHeader(bool heSigBPresent);
 
         /**
          * \brief Get the type ID.
@@ -74,11 +74,11 @@ class HePpdu : public OfdmPpdu
         uint32_t Deserialize(Buffer::Iterator start) override;
 
         /**
-         * Set the Multi-User (MU) flag.
+         * Set whether HE-SIG-B fields are present or not.
          *
-         * \param mu the MU flag
+         * \param heSigBPresent the flag indicating whether HE-SIG-B fields should be present or not
          */
-        void SetMuFlag(bool mu);
+        void SetHeSigBPresent(bool heSigBPresent);
 
         /**
          * Fill the FORMAT field of HE-SIG-A1 for HE SU, HE ER SU and HE TB PPDUs.
@@ -244,8 +244,8 @@ class HePpdu : public OfdmPpdu
         uint8_t m_nsts;        ///< NSTS
         uint8_t m_sigBMcs;     ///< HE-SIG-B MCS
 
-        /// This is used to decide whether MU SIG-B should be added or not
-        bool m_mu; // TODO: rename to express the need for HE-SIG-B
+        bool
+            m_heSigBPresent; //!< flag used to decide whether HE-SIG-B fields should be added or not
 
         RuAllocation m_ruAllocation; //!< RU allocations that are going to be carried in SIG-B
                                      //!< common subfields
