@@ -458,7 +458,7 @@ Ipv6StaticRouting::LookupStatic(Ipv6Address dst, Ptr<NetDevice> interface)
                 else
                 {
                     rtentry->SetSource(
-                        m_ipv6->SourceAddressSelection(interfaceIdx, route->GetGateway()));
+                        m_ipv6->SourceAddressSelection(interfaceIdx, route->GetDest()));
                 }
 
                 rtentry->SetDestination(route->GetDest());
