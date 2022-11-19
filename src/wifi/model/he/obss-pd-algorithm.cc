@@ -19,9 +19,8 @@
 
 #include "obss-pd-algorithm.h"
 
-#include "he-phy.h"
-
 #include "ns3/double.h"
+#include "ns3/eht-phy.h"
 #include "ns3/log.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
@@ -85,6 +84,13 @@ ObssPdAlgorithm::ConnectWifiNetDevice(const Ptr<WifiNetDevice> device)
 {
     NS_LOG_FUNCTION(this << device);
     m_device = device;
+    auto phy = device->GetPhy();
+    if (phy->GetStandard() >= WIFI_STANDARD_80211be)
+    {
+        auto ehtPhy = DynamicCast<EhtPhy>(device->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_EHT));
+        NS_ASSERT(ehtPhy);
+        ehtPhy->SetObssPdAlgorithm(this);
+    }
     auto hePhy = DynamicCast<HePhy>(device->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
     NS_ASSERT(hePhy);
     hePhy->SetObssPdAlgorithm(this);

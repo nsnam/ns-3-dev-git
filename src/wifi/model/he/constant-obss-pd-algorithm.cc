@@ -20,10 +20,10 @@
 #include "constant-obss-pd-algorithm.h"
 
 #include "he-configuration.h"
-#include "he-phy.h"
 
 #include "ns3/config.h"
 #include "ns3/double.h"
+#include "ns3/eht-phy.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/sta-wifi-mac.h"
@@ -56,7 +56,13 @@ ConstantObssPdAlgorithm::GetTypeId()
 void
 ConstantObssPdAlgorithm::ConnectWifiNetDevice(const Ptr<WifiNetDevice> device)
 {
-    Ptr<WifiPhy> phy = device->GetPhy();
+    auto phy = device->GetPhy();
+    if (phy->GetStandard() >= WIFI_STANDARD_80211be)
+    {
+        auto ehtPhy = DynamicCast<EhtPhy>(device->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_EHT));
+        NS_ASSERT(ehtPhy);
+        ehtPhy->SetEndOfHeSigACallback(MakeCallback(&ConstantObssPdAlgorithm::ReceiveHeSigA, this));
+    }
     auto hePhy = DynamicCast<HePhy>(phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
     NS_ASSERT(hePhy);
     hePhy->SetEndOfHeSigACallback(MakeCallback(&ConstantObssPdAlgorithm::ReceiveHeSigA, this));
