@@ -358,7 +358,7 @@ FdMtFfMacScheduler::LcActivePerFlow(uint16_t rnti)
     return (lcActive);
 }
 
-uint8_t
+bool
 FdMtFfMacScheduler::HarqProcessAvailability(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);

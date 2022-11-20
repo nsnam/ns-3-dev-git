@@ -349,7 +349,7 @@ RrFfMacScheduler::SortRlcBufferReq(FfMacSchedSapProvider::SchedDlRlcBufferReqPar
     return (i.m_rnti < j.m_rnti);
 }
 
-uint8_t
+bool
 RrFfMacScheduler::HarqProcessAvailability(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);

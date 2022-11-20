@@ -298,9 +298,9 @@ class CqaFfMacScheduler : public FfMacScheduler
      * \brief Return the availability of free process for the RNTI specified
      *
      * \param rnti the RNTI of the UE to be updated
-     * \return the process id  value
+     * \return the availability
      */
-    uint8_t HarqProcessAvailability(uint16_t rnti);
+    bool HarqProcessAvailability(uint16_t rnti);
 
     /**
      * \brief Refresh HARQ processes according to the timers

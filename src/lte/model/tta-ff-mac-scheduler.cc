@@ -358,7 +358,7 @@ TtaFfMacScheduler::LcActivePerFlow(uint16_t rnti)
     return (lcActive);
 }
 
-uint8_t
+bool
 TtaFfMacScheduler::HarqProcessAvailability(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);
