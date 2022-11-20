@@ -38,6 +38,7 @@ Checks: >
   readability-redundant-smartptr-get,
   readability-redundant-string-cstr,
   readability-simplify-subscript-expr,
+  readability-static-accessed-through-instance,
   readability-static-definition-in-anonymous-namespace,
   readability-string-compare,
   readability-uppercase-literal-suffix,
