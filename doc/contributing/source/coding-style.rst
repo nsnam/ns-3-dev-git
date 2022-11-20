@@ -1299,6 +1299,10 @@ of rules that should be observed while developing code.
     myVector.emplace_back(2);
     myVector.emplace_back(3);
 
+- Prefer to use the ``empty()`` function of STL containers (e.g., ``std::vector``),
+  instead of the condition ``size() > 0``, to avoid unnecessarily calculating the
+  size of the container.
+
 - Avoid unnecessary calls to the functions ``.c_str()`` and ``.data()`` of
   ``std::string``.
 
