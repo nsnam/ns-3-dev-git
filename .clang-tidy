@@ -29,6 +29,7 @@ Checks: >
   performance-inefficient-vector-operation,
   performance-trivially-destructible,
   readability-braces-around-statements,
+  readability-container-size-empty,
   readability-duplicate-include,
   readability-isolate-declaration,
   readability-misleading-indentation,
