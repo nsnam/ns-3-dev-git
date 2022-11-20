@@ -1318,5 +1318,17 @@ of rules that should be observed while developing code.
 
 - Avoid declaring trivial destructors, to optimize performance.
 
+- Avoid accessing class static functions and members through objects.
+  Instead, prefer to access them through the class.
+
+  .. sourcecode:: cpp
+
+    // OK
+    MyClass::StaticFunction();
+
+    // Avoid
+    MyClass myClass;
+    MyClass.StaticFunction();
+
 - Prefer to use ``static_assert()`` over ``NS_ASSERT()`` when conditions can be
   evaluated at compile-time.
