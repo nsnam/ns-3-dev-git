@@ -319,7 +319,7 @@ HeFrameExchangeManager::SendPsduMap()
                 uint8_t tid = *tids.begin();
 
                 NS_ASSERT(m_edca);
-                m_edca->ScheduleBar(
+                m_edca->GetBaManager()->ScheduleBar(
                     m_mac->GetQosTxop(tid)->PrepareBlockAckRequest(psdu.second->GetAddr1(), tid));
             }
         }
@@ -380,7 +380,7 @@ HeFrameExchangeManager::SendPsduMap()
             m_trigVector.SetLength(acknowledgment->ulLength);
 
             NS_ASSERT(m_edca);
-            m_edca->ScheduleBar(PrepareMuBar(m_trigVector, recipients));
+            m_edca->GetBaManager()->ScheduleBar(PrepareMuBar(m_trigVector, recipients));
         }
         else
         {

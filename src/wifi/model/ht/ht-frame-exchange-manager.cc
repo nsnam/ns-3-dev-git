@@ -877,7 +877,7 @@ HtFrameExchangeManager::SendPsdu()
         uint8_t tid = *tids.begin();
 
         Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
-        edca->ScheduleBar(edca->PrepareBlockAckRequest(m_psdu->GetAddr1(), tid));
+        GetBaManager(tid)->ScheduleBar(edca->PrepareBlockAckRequest(m_psdu->GetAddr1(), tid));
 
         Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
     }
@@ -1232,12 +1232,12 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
             if (isBar)
             {
                 psdu->GetHeader(0).SetRetry();
-                edca->ScheduleBar(*psdu->begin());
+                GetBaManager(tid)->ScheduleBar(*psdu->begin());
             }
             else
             {
                 // missed block ack after data frame with Implicit BAR Ack policy
-                edca->ScheduleBar(edca->PrepareBlockAckRequest(recipient, tid));
+                GetBaManager(tid)->ScheduleBar(edca->PrepareBlockAckRequest(recipient, tid));
             }
             resetCw = false;
         }
@@ -1251,7 +1251,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
             {
                 // schedule a BlockAckRequest with skipIfNoDataQueued set to true, so that the
                 // BlockAckRequest is only sent if there are data frames queued for this recipient.
-                edca->ScheduleBar(edca->PrepareBlockAckRequest(recipient, tid), true);
+                GetBaManager(tid)->ScheduleBar(edca->PrepareBlockAckRequest(recipient, tid), true);
             }
             resetCw = true;
         }

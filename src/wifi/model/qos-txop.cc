@@ -298,12 +298,6 @@ QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
     return Create<const WifiMpdu>(bar, hdr);
 }
 
-void
-QosTxop::ScheduleBar(Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued)
-{
-    m_baManager->ScheduleBar(bar, skipIfNoDataQueued);
-}
-
 bool
 QosTxop::UseExplicitBarAfterMissedBlockAck() const
 {
