@@ -456,23 +456,21 @@ cwnd, 'bytes_acked' is reduced by the value of cwnd. Next, cwnd is incremented
 by a full-sized segment (SMSS).  In contrast, in ns-3 NewReno, cwnd is increased
 by (1/cwnd) with a rounding off due to type casting into int.
 
-::
-
-   :label: linuxrenocongavoid
+.. code-block::
+   :caption: Linux Reno `cwnd` update
 
    if (m_cWndCnt >= w)
-    {
+   {
       uint32_t delta = m_cWndCnt / w;
 
       m_cWndCnt -= delta * w;
       tcb->m_cWnd += delta * tcb->m_segmentSize;
       NS_LOG_DEBUG("Subtracting delta * w from m_cWndCnt " << delta * w);
-    }
+   }
 
 
-::
-
-   :label: newrenocongavoid
+.. code-block::
+   :caption: New Reno `cwnd` update
 
    if (segmentsAcked > 0)
     {
@@ -1842,8 +1840,7 @@ advertises a zero window. This can be accomplished by implementing the method
 CreateReceiverSocket, setting an Rx buffer value of 0 bytes (at line 6 of the
 following code):
 
-::
-
+.. code-block::
    :linenos:
    :emphasize-lines: 6,7,8
 
@@ -1990,8 +1987,7 @@ we expect the persistent timer to fire before any rWnd changes. When it fires,
 the SENDER should send a window probe, and the receiver should reply reporting
 again a zero window situation. At first, we investigates on what the sender sends:
 
-::
-
+.. code-block::
       :linenos:
       :emphasize-lines: 1,6,7,11
 
@@ -2024,8 +2020,7 @@ reader: edit the test, getting this value from the Attribute system), we need
 to check (line 6) between 6.0 and 7.0 simulated seconds that the probe is sent.
 Only one probe is allowed, and this is the reason for the check at line 11.
 
-::
-
+.. code-block::
    :linenos:
    :emphasize-lines: 6,7
 
@@ -2077,8 +2072,7 @@ the window should be greater than zero (and precisely, set to 2500):
 To be sure that the sender receives the window update, we can use the Rx
 method:
 
-::
-
+.. code-block::
    :linenos:
    :emphasize-lines: 5
 

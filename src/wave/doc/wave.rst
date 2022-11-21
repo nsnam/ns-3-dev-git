@@ -527,7 +527,7 @@ From <Your Vanet Routing Application>, usage is as follows:
     double m_gpsAccuracyNs;
     // array of distances (m) at which safety PDR shall be determined,
     // e.g. 50m, 100m, 200m, 300m, 400m, 500m, 600m, 800m, 1000m, and 1500m
-    std::vector <double> m_txSafetyRanges;
+    std::vector<double> m_txSafetyRanges;
     // used to get consistent random numbers across scenarios
     int64_t m_streamIndex;
 

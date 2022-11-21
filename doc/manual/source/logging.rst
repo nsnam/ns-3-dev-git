@@ -355,7 +355,7 @@ In case you want to add logging statements to the methods of your template class
     {
     ...
     private:
-      std::list<Ptr<Item> > m_packets;          //!< the items in the queue
+      std::list<Ptr<Item>> m_packets;           //!< the items in the queue
       NS_LOG_TEMPLATE_DECLARE;                  //!< the log component
     };
 
@@ -386,7 +386,7 @@ In case you want to add logging statements to a static member template
 
     template <typename Item>
     void
-    NetDeviceQueue::PacketEnqueued(Ptr<Queue<Item> > queue,
+    NetDeviceQueue::PacketEnqueued(Ptr<Queue<Item>> queue,
                                    Ptr<NetDeviceQueueInterface> ndqi,
                                    uint8_t txq, Ptr<const Item> item)
     {

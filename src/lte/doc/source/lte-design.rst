@@ -3646,7 +3646,7 @@ the following new member variables::
 
   std::vector<EpcX2Sap::UlInterferenceOverloadIndicationItem>
     m_currentUlInterferenceOverloadIndicationList;
-  std::vector <EpcX2Sap::UlHighInterferenceInformationItem>
+  std::vector<EpcX2Sap::UlHighInterferenceInformationItem>
     m_currentUlHighInterferenceInformationList;
   EpcX2Sap::RelativeNarrowbandTxBand m_currentRelativeNarrowbandTxBand;
 

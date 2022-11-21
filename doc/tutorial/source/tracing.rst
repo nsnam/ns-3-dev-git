@@ -635,7 +635,7 @@ variable in ``mobility-model.h`` you will find
 
 ::
 
-  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+  TracedCallback<Ptr<const MobilityModel>> m_courseChangeTrace;
 
 The type declaration ``TracedCallback`` identifies
 ``m_courseChangeTrace`` as a special list of Callbacks that can be
@@ -915,7 +915,7 @@ callback will always be ``void``.  The formal parameter list for a
 the declaration.  Recall that for our current example, this is in
 ``mobility-model.h``, where we have previously found::
 
-  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+  TracedCallback<Ptr<const MobilityModel>> m_courseChangeTrace;
 
 There is a one-to-one correspondence between the template parameter
 list in the declaration and the formal arguments of the callback
@@ -971,7 +971,7 @@ The first thing we need to look at is the declaration of the trace
 source.  Recall that this is in ``mobility-model.h``, where we have
 previously found::
 
-  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+  TracedCallback<Ptr<const MobilityModel>> m_courseChangeTrace;
 
 This declaration is for a template.  The template parameter is inside
 the angle-brackets, so we are really interested in finding out what
@@ -1052,7 +1052,7 @@ This tells you that TracedCallback is a templated class.  It has eight
 possible type parameters with default values.  Go back and compare
 this with the declaration you are trying to understand::
 
-  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+  TracedCallback<Ptr<const MobilityModel>> m_courseChangeTrace;
 
 The ``typename T1`` in the templated class declaration corresponds to
 the ``Ptr<const MobilityModel>`` in the declaration above.  All of the
@@ -1084,7 +1084,7 @@ instantiated for the declaration above, the compiler will replace
   void
   TracedCallback<Ptr<const MobilityModel>::ConnectWithoutContext ... cb
   {
-    Callback<void, Ptr<const MobilityModel> > cb;
+    Callback<void, Ptr<const MobilityModel>> cb;
     cb.Assign(callback);
     m_callbackList.push_back(cb);
   }
@@ -1115,7 +1115,7 @@ We are trying to figure out what the
 
 ::
 
-    Callback<void, Ptr<const MobilityModel> > cb;
+    Callback<void, Ptr<const MobilityModel>> cb;
 
 declaration means.  Now we are in a position to understand that the
 first (non-optional) template argument, ``void``, represents the
@@ -1850,7 +1850,7 @@ see that this trace source refers to
 ``PointToPointNetDevice::m_phyRxDropTrace``.  If you then look in
 ``src/point-to-point/model/point-to-point-net-device.h`` for this
 member variable, you will find that it is declared as a
-``TracedCallback<Ptr<const Packet> >``.  This should tell you that the
+``TracedCallback<Ptr<const Packet>>``.  This should tell you that the
 callback target should be a function that returns void and takes a
 single parameter which is a ``Ptr<const Packet>`` (assuming we use
 ``ConnectWithoutContext``) -- just what we have above.

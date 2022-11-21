@@ -546,7 +546,7 @@ default values.::
     Ptr<PointToPointNetDevice> net0 = CreateObject<PointToPointNetDevice>();
     n0->AddDevice(net0);
 
-    Ptr<Queue<Packet> > q = CreateObject<DropTailQueue<Packet> >();
+    Ptr<Queue<Packet>> q = CreateObject<DropTailQueue<Packet>> ();
     net0->AddQueue(q);
 
 At this point, we have created a single :cpp:class:`Node` (``n0``)
@@ -625,7 +625,7 @@ First, we observe that we can get a pointer to the (base class)
 
     PointerValue ptr;
     net0->GetAttribute("TxQueue", ptr);
-    Ptr<Queue<Packet> > txQueue = ptr.Get<Queue<Packet> >();
+    Ptr<Queue<Packet>> txQueue = ptr.Get<Queue<Packet>>();
 
 Using the :cpp:func:`GetObject()` function, we can perform a safe downcast
 to a :cpp:class:`DropTailQueue`.  The `NS_ASSERT` checks that the pointer is
@@ -633,8 +633,8 @@ valid.
 
 ::
 
-    Ptr<DropTailQueue<Packet> > dtq = txQueue->GetObject <DropTailQueue<Packet> >();
-    NS_ASSERT(dtq);
+    Ptr<DropTailQueue<Packet>> dtq = txQueue->GetObject<DropTailQueue<Packet>>();
+    NS_ASSERT (dtq);
 
 Next, we can get the value of an attribute on this queue.  We have introduced
 wrapper ``Value`` classes for the underlying data types, similar

@@ -272,7 +272,7 @@ be treated like a broadcast CSMA link).
 The GlobalRouteManager first walks the list of nodes and aggregates
 a GlobalRouter interface to each one as follows::
 
-  typedef std::vector < Ptr<Node> >::iterator Iterator;
+  typedef std::vector<Ptr<Node>>::iterator Iterator;
   for (Iterator i = NodeList::Begin(); i != NodeList::End(); i++)
     {
       Ptr<Node> node = *i;

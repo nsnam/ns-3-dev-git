@@ -30,7 +30,7 @@ As an example, let's create a residential 10 x 20 x 10 building::
     double y_max = 20.0;
     double z_min = 0.0;
     double z_max = 10.0;
-    Ptr<Building> b = CreateObject <Building>();
+    Ptr<Building> b = CreateObject<Building>();
     b->SetBoundaries(Box(x_min, x_max, y_min, y_max, z_min, z_max));
     b->SetBuildingType(Building::Residential);
     b->SetExtWallsType(Building::ConcreteWithWindows);

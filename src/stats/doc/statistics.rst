@@ -192,7 +192,7 @@ The first thing to do in implementing this experiment is developing the simulati
 
   ::
 
-    Ptr<CounterCalculator<> > appRx = CreateObject<CounterCalculator<> >();
+    Ptr<CounterCalculator<>> appRx = CreateObject<CounterCalculator<>>();
     appRx->SetKey("receiver-rx-packets");
     receiver->SetCounter(appRx);
     data.AddDataCalculator(appRx);
