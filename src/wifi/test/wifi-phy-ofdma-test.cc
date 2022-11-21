@@ -285,7 +285,7 @@ OfdmaSpectrumWifiPhy::GetEnergyDuration(double energyW, WifiSpectrumBand band)
 Ptr<const HePhy>
 OfdmaSpectrumWifiPhy::GetHePhy() const
 {
-    return DynamicCast<const HePhy>(GetPhyEntity(WIFI_MOD_CLASS_HE));
+    return DynamicCast<const HePhy>(GetLatestPhyEntity());
 }
 
 /**
@@ -2450,7 +2450,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
         HePhy::ConvertHeTbPpduDurationToLSigLength(ppduDuration, txVector, m_phy->GetPhyBand());
     txVector.SetLength(length);
     m_trigVector.SetLength(length);
-    auto hePhy = DynamicCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhy = DynamicCast<HePhy>(m_phy->GetLatestPhyEntity());
     hePhy->SetTrigVector(m_trigVector, ppduDuration);
     ppdu->ResetTxVector();
     m_phy->StartRx(rxParams);
@@ -3383,7 +3383,7 @@ TestUlOfdmaPhyTransmission::SetTrigVector(uint8_t bssColor, TrigVectorInfo error
         ++length;
     }
     txVector.SetLength(length);
-    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetLatestPhyEntity());
     hePhyAp->SetTrigVector(txVector, m_expectedPpduDuration);
 }
 
@@ -5241,7 +5241,7 @@ TestPhyPaddingExclusion::SetTrigVector(Time ppduDuration)
     std::tie(length, ppduDuration) =
         HePhy::ConvertHeTbPpduDurationToLSigLength(ppduDuration, trigVector, m_phyAp->GetPhyBand());
     trigVector.SetLength(length);
-    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetLatestPhyEntity());
     hePhyAp->SetTrigVector(trigVector, ppduDuration);
 }
 

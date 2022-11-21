@@ -713,6 +713,12 @@ WifiPhy::GetPhyEntity(WifiStandard standard) const
     return GetPhyEntity(GetModulationClassForStandard(standard));
 }
 
+Ptr<PhyEntity>
+WifiPhy::GetLatestPhyEntity() const
+{
+    return GetPhyEntity(m_standard);
+}
+
 void
 WifiPhy::AddStaticPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
@@ -2029,14 +2035,14 @@ void
 WifiPhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
 {
     NS_LOG_FUNCTION(this);
-    GetPhyEntity(m_standard)->SwitchMaybeToCcaBusy(ppdu);
+    GetLatestPhyEntity()->SwitchMaybeToCcaBusy(ppdu);
 }
 
 void
 WifiPhy::NotifyCcaBusy(const Ptr<const WifiPpdu> ppdu, Time duration)
 {
     NS_LOG_FUNCTION(this << duration);
-    GetPhyEntity(m_standard)->NotifyCcaBusy(ppdu, duration, WIFI_CHANLIST_PRIMARY);
+    GetLatestPhyEntity()->NotifyCcaBusy(ppdu, duration, WIFI_CHANLIST_PRIMARY);
 }
 
 void
@@ -2139,7 +2145,7 @@ Ptr<const WifiPsdu>
 WifiPhy::GetAddressedPsduInPpdu(Ptr<const WifiPpdu> ppdu) const
 {
     // TODO: wrapper. See if still needed
-    return GetPhyEntity(ppdu->GetModulation())->GetAddressedPsduInPpdu(ppdu);
+    return GetLatestPhyEntity()->GetAddressedPsduInPpdu(ppdu);
 }
 
 WifiSpectrumBand

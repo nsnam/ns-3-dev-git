@@ -270,7 +270,7 @@ SpectrumWifiPhy::DoChannelSwitch()
 bool
 SpectrumWifiPhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
 {
-    return GetPhyEntity(GetStandard())->CanStartRx(ppdu);
+    return GetLatestPhyEntity()->CanStartRx(ppdu);
 }
 
 void

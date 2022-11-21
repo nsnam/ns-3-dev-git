@@ -954,7 +954,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
 
     // AP's PHY expects to receive a TRIGVECTOR (just once)
     trigVector.SetLength(length);
-    auto apHePhy = StaticCast<HePhy>(apDev->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto apHePhy = StaticCast<HePhy>(apDev->GetPhy()->GetLatestPhyEntity());
     apHePhy->SetTrigVector(trigVector, duration);
 }
 
