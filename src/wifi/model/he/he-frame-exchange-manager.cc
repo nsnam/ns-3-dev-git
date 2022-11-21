@@ -380,7 +380,7 @@ HeFrameExchangeManager::SendPsduMap()
             m_trigVector.SetLength(acknowledgment->ulLength);
 
             NS_ASSERT(m_edca);
-            m_edca->GetBaManager()->ScheduleBar(PrepareMuBar(m_trigVector, recipients));
+            m_edca->GetBaManager()->ScheduleMuBar(PrepareMuBar(m_trigVector, recipients));
         }
         else
         {

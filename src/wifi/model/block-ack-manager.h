@@ -454,12 +454,20 @@ class BlockAckManager : public Object
      * \param bar the BlockAckRequest to enqueue
      * \param skipIfNoDataQueued do not send if there is no data queued
      *
-     * Enqueue the given BlockAckRequest into the queue storing the next BAR
+     * Enqueue the given BlockAckRequest into the queue storing the next (MU-)BAR
      * frames to transmit. If a BAR for the same recipient and TID is already present
      * in the queue, it is replaced by the new one. If the given BAR is retransmitted,
      * it is placed at the head of the queue, otherwise at the tail.
      */
     void ScheduleBar(Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued = false);
+    /**
+     * \param muBar the MU-BAR Trigger Frame to enqueue
+     *
+     * Enqueue the given MU-BAR Trigger Frame into the queue storing the next (MU-)BAR
+     * frames to transmit. If the given MU-BAR Trigger Frame is retransmitted,
+     * it is placed at the head of the queue, otherwise at the tail.
+     */
+    void ScheduleMuBar(Ptr<const WifiMpdu> muBar);
 
   protected:
     void DoDispose() override;

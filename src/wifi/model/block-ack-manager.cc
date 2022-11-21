@@ -759,38 +759,24 @@ void
 BlockAckManager::ScheduleBar(Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued)
 {
     NS_LOG_FUNCTION(this << *bar);
-    NS_ASSERT(bar->GetHeader().IsBlockAckReq() || bar->GetHeader().IsTrigger());
+    NS_ASSERT(bar->GetHeader().IsBlockAckReq());
 
-    uint8_t tid = 0;
-    if (bar->GetHeader().IsBlockAckReq())
-    {
-        CtrlBAckRequestHeader reqHdr;
-        bar->GetPacket()->PeekHeader(reqHdr);
-        tid = reqHdr.GetTidInfo();
-    }
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    else
-    {
-        CtrlTriggerHeader triggerHdr;
-        bar->GetPacket()->PeekHeader(triggerHdr);
-        NS_ASSERT(triggerHdr.IsMuBar());
-    }
-#endif
+    CtrlBAckRequestHeader reqHdr;
+    bar->GetPacket()->PeekHeader(reqHdr);
+    uint8_t tid = reqHdr.GetTidInfo();
+
     Bar request(bar, tid, skipIfNoDataQueued);
 
     // if a BAR for the given agreement is present, replace it with the new one
     std::list<Bar>::const_iterator i = m_bars.end();
 
-    if (bar->GetHeader().IsBlockAckReq())
+    for (i = m_bars.begin(); i != m_bars.end(); i++)
     {
-        for (i = m_bars.begin(); i != m_bars.end(); i++)
+        if (i->bar->GetHeader().IsBlockAckReq() &&
+            i->bar->GetHeader().GetAddr1() == bar->GetHeader().GetAddr1() && i->tid == tid)
         {
-            if (i->bar->GetHeader().IsBlockAckReq() &&
-                i->bar->GetHeader().GetAddr1() == bar->GetHeader().GetAddr1() && i->tid == tid)
-            {
-                i = m_bars.erase(i);
-                break;
-            }
+            i = m_bars.erase(i);
+            break;
         }
     }
 
@@ -801,6 +787,30 @@ BlockAckManager::ScheduleBar(Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued)
     else
     {
         m_bars.insert(i, request);
+    }
+}
+
+void
+BlockAckManager::ScheduleMuBar(Ptr<const WifiMpdu> muBar)
+{
+    NS_LOG_FUNCTION(this << *muBar);
+    NS_ASSERT(muBar->GetHeader().IsTrigger());
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
+    CtrlTriggerHeader triggerHdr;
+    muBar->GetPacket()->PeekHeader(triggerHdr);
+    NS_ASSERT(triggerHdr.IsMuBar());
+#endif
+
+    Bar request(muBar, 0, false);
+
+    if (muBar->GetHeader().IsRetry())
+    {
+        m_bars.push_front(request);
+    }
+    else
+    {
+        m_bars.push_back(request);
     }
 }
 
