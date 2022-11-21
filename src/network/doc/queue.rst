@@ -96,21 +96,21 @@ the queue type and attributes from the helper, such as this example:
 
   PointToPointHelper p2p;
 
-  p2p.SetQueue ("ns3::DropTailQueue");
-  p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  NetDeviceContainer devn0n2 = p2p.Install (n0n2);
+  p2p.SetQueue("ns3::DropTailQueue");
+  p2p.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
+  p2p.SetChannelAttribute("Delay", StringValue("2ms"));
+  NetDeviceContainer devn0n2 = p2p.Install(n0n2);
 
-  p2p.SetQueue ("ns3::DropTailQueue");
-  p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue ("3ms"));
-  NetDeviceContainer devn1n2 = p2p.Install (n1n2);
+  p2p.SetQueue("ns3::DropTailQueue");
+  p2p.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
+  p2p.SetChannelAttribute("Delay", StringValue("3ms"));
+  NetDeviceContainer devn1n2 = p2p.Install(n1n2);
 
-  p2p.SetQueue ("ns3::DropTailQueue",
-                "MaxSize", StringValue ("50p"));
-  p2p.SetDeviceAttribute ("DataRate", StringValue (linkDataRate));
-  p2p.SetChannelAttribute ("Delay", StringValue (linkDelay));
-  NetDeviceContainer devn2n3 = p2p.Install (n2n3);
+  p2p.SetQueue("ns3::DropTailQueue",
+               "MaxSize", StringValue("50p"));
+  p2p.SetDeviceAttribute("DataRate", StringValue(linkDataRate));
+  p2p.SetChannelAttribute("Delay", StringValue(linkDelay));
+  NetDeviceContainer devn2n3 = p2p.Install(n2n3);
 
 Please note that the SetQueue method of the PointToPointHelper class allows
 to specify "ns3::DropTailQueue" instead of "ns3::DropTailQueue<Packet>". The

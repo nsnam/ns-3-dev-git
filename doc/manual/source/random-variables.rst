@@ -117,20 +117,20 @@ The correct way to create these objects is to use the templated
 
 ::
 
-  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable>();
 
 then you can access values by calling methods on the object such as:
 
 ::
 
-  myRandomNo = x->GetInteger ();
+  myRandomNo = x->GetInteger();
 
 
 If you try to instead do something like this:
 
 ::
 
-  myRandomNo = UniformRandomVariable().GetInteger ();
+  myRandomNo = UniformRandomVariable().GetInteger();
 
 your program will encounter a segmentation fault, because the implementation
 relies on some attribute construction that occurs only when `CreateObject`
@@ -160,11 +160,11 @@ A class :cpp:class:`ns3::RngSeedManager` provides an API to control the seeding 
 run number behavior.  This seeding and substream state setting must be called
 before any random variables are created; e.g::
 
-  RngSeedManager::SetSeed (3);  // Changes seed from default of 1 to 3
-  RngSeedManager::SetRun (7);   // Changes run number from default of 1 to 7
+  RngSeedManager::SetSeed(3);  // Changes seed from default of 1 to 3
+  RngSeedManager::SetRun(7);   // Changes run number from default of 1 to 7
   // Now, create random variables
-  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
-  Ptr<ExponentialRandomVariable> y = CreateObject<ExponentialRandomVarlable> ();
+  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable>();
+  Ptr<ExponentialRandomVariable> y = CreateObject<ExponentialRandomVarlable>();
   ...
 
 Which is better, setting a new seed or advancing the substream state?  There is
@@ -227,13 +227,13 @@ that access the next value in the substream.
    * \brief Returns a random double from the underlying distribution
    * \return A floating point random value
    */
-  double GetValue () const;
+  double GetValue() const;
 
   /**
    * \brief Returns a random integer from the underlying distribution
    * \return  Integer cast of ::GetValue()
    */
-  uint32_t GetInteger () const;
+  uint32_t GetInteger() const;
 
 We have already described the seeding configuration above. Different
 RandomVariable subclasses may have additional API.
@@ -273,17 +273,17 @@ that values can be set for them through the |ns3| attribute system.
 An example is in the propagation models for WifiNetDevice::
 
     TypeId
-    RandomPropagationDelayModel::GetTypeId ()
+    RandomPropagationDelayModel::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
-        .SetParent<PropagationDelayModel> ()
-        .SetGroupName ("Propagation")
-        .AddConstructor<RandomPropagationDelayModel> ()
-        .AddAttribute ("Variable",
-                       "The random variable which generates random delays (s).",
-                       StringValue ("ns3::UniformRandomVariable"),
-                       MakePointerAccessor (&RandomPropagationDelayModel::m_variable),
-                       MakePointerChecker<RandomVariableStream> ())
+      static TypeId tid = TypeId("ns3::RandomPropagationDelayModel")
+        .SetParent<PropagationDelayModel>()
+        .SetGroupName("Propagation")
+        .AddConstructor<RandomPropagationDelayModel>()
+        .AddAttribute("Variable",
+                      "The random variable which generates random delays (s).",
+                      StringValue("ns3::UniformRandomVariable"),
+                      MakePointerAccessor(&RandomPropagationDelayModel::m_variable),
+                      MakePointerChecker<RandomVariableStream>())
         ;
       return tid;
     }

@@ -138,7 +138,7 @@ as done in ``src/traffic-control/examples/adaptive-red-tests.cc``:
 
 .. sourcecode:: cpp
 
-  Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
+  Config::SetDefault("ns3::RedQueueDisc::ARED", BooleanValue(true));
 
 Setting ARED to true implicitly configures both: (i) automatic setting
 of Queue weight, MinTh and MaxTh and (ii) adapting m_curMaxP.
@@ -151,16 +151,16 @@ as done in ``src/traffic-control/examples/adaptive-red-tests.cc``:
 
 .. sourcecode:: cpp
 
-  Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (0.0));
-  Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (0));
-  Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (0));
+  Config::SetDefault("ns3::RedQueueDisc::QW", DoubleValue(0.0));
+  Config::SetDefault("ns3::RedQueueDisc::MinTh", DoubleValue(0));
+  Config::SetDefault("ns3::RedQueueDisc::MaxTh", DoubleValue(0));
 
 To configure (ii); AdaptMaxP must be set to true, as done in
 ``src/traffic-control/examples/adaptive-red-tests.cc``:
 
 .. sourcecode:: cpp
 
-  Config::SetDefault ("ns3::RedQueueDisc::AdaptMaxP", BooleanValue (true));
+  Config::SetDefault("ns3::RedQueueDisc::AdaptMaxP", BooleanValue(true));
 
 Simulating Feng's Adaptive RED
 ==============================
@@ -170,7 +170,7 @@ set to true, as done in ``examples/traffic-control/red-vs-fengadaptive.cc``:
 
 .. sourcecode:: cpp
 
-  Config::SetDefault ("ns3::RedQueueDisc::FengAdaptive", BooleanValue (true));
+  Config::SetDefault("ns3::RedQueueDisc::FengAdaptive", BooleanValue(true));
 
 Simulating NLRED
 ================
@@ -180,7 +180,7 @@ as shown below:
 
 .. sourcecode:: cpp
 
-  Config::SetDefault ("ns3::RedQueueDisc::NLRED", BooleanValue (true));
+  Config::SetDefault("ns3::RedQueueDisc::NLRED", BooleanValue(true));
 
 Examples
 ========

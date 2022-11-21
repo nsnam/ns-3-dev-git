@@ -210,24 +210,24 @@ helper. You just ask this helper to create as many computers (we call them
 ``Nodes``) as you need on your network::
 
   NodeContainer csmaNodes;
-  csmaNodes.Create (nCsmaNodes);
+  csmaNodes.Create(nCsmaNodes);
 
 Once you have your nodes, you need to instantiate a ``CsmaHelper`` and set any
 attributes you may want to change.::
 
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
+  csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+  csma.SetChannelAttribute("Delay", TimeValue(NanoSeconds(6560)));
 
-  csma.SetDeviceAttribute ("EncapsulationMode", StringValue ("Dix"));
-  csma.SetDeviceAttribute ("FrameSize", UintegerValue (2000));
+  csma.SetDeviceAttribute("EncapsulationMode", StringValue("Dix"));
+  csma.SetDeviceAttribute("FrameSize", UintegerValue(2000));
 
 Once the attributes are set, all that remains is to create the devices and
 install them on the required nodes, and to connect the devices together using a
 CSMA channel. When we create the net devices, we add them to a container to
 allow you to use them in the future. This all takes just one line of code.::
 
-  NetDeviceContainer csmaDevices = csma.Install (csmaNodes);
+  NetDeviceContainer csmaDevices = csma.Install(csmaNodes);
 
 We recommend thinking carefully about changing these Attributes, since
 it can result in behavior that surprises users.  We allow this because
@@ -370,4 +370,3 @@ Although the ns-3 CsmaChannel and CsmaNetDevice does not model any kind of
 network you could build or buy, it does provide us with some useful
 functionality.  You should, however, understand that it is explicitly not
 Ethernet or any flavor of IEEE 802.3 but an interesting subset.
-

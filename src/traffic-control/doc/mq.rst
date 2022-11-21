@@ -47,10 +47,10 @@ discs:
 .. sourcecode:: cpp
 
   TrafficControlHelper tch;
-  uint16_t handle = tch.SetRootQueueDisc ("ns3::MqQueueDisc");
-  TrafficControlHelper::ClassIdList cls = tch.AddQueueDiscClasses (handle, numTxQueues, "ns3::QueueDiscClass");
-  tch.AddChildQueueDiscs (handle, cls, "ns3::FqCoDelQueueDisc");
-  QueueDiscContainer qdiscs = tch.Install (devices);
+  uint16_t handle = tch.SetRootQueueDisc("ns3::MqQueueDisc");
+  TrafficControlHelper::ClassIdList cls = tch.AddQueueDiscClasses(handle, numTxQueues, "ns3::QueueDiscClass");
+  tch.AddChildQueueDiscs(handle, cls, "ns3::FqCoDelQueueDisc");
+  QueueDiscContainer qdiscs = tch.Install(devices);
 
 Note that the child queue discs attached to the classes do not necessarily have to be of the same type.
 
@@ -79,4 +79,3 @@ or
 ::
 
   $ NS_LOG="WifiAcMappingTest" ./ns3 run "test-runner --suite=ns3-wifi-ac-mapping"
-

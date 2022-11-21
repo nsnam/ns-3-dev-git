@@ -51,7 +51,7 @@ Linux model of COBALT is provided in ([Cobalt19]_).
   parameters (Pdrop of BLUE and dropping state of CoDel). If either of them
   decide to drop the packet, the packet is dropped.
 * ``CobaltQueueDisc::DoDequeue ()``: This routine performs the actual packet
-  ``drop based on ``CobaltQueueDisc::ShouldDrop ()``'s return value and
+  ``drop based on ``CobaltQueueDisc::ShouldDrop()``'s return value and
   schedules the next drop. Cobalt will decrease BLUE's drop probability
   if the queue is empty. This will ensure that the queue does not underflow.
   Otherwise Cobalt will take the next packet from the queue and calculate
@@ -138,4 +138,3 @@ or
 ::
 
   $ NS_LOG="CobaltQueueDisc" ./ns3 run "test-runner --suite=cobalt-queue-disc"
-

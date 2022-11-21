@@ -243,20 +243,20 @@ DistributedSimulatorImpl is not used.  Here is an example code snippet
 showing how to add a command line argument to control the
 synchronization algorithm choice:::
 
-  cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
-  if(nullmsg)
+  cmd.AddValue("nullmsg", "Enable the use of null-message synchronization", nullmsg);
+  if (nullmsg)
     {
-      GlobalValue::Bind ("SimulatorImplementationType",
-                         StringValue ("ns3::NullMessageSimulatorImpl"));
+      GlobalValue::Bind("SimulatorImplementationType",
+                         StringValue("ns3::NullMessageSimulatorImpl"));
     }
   else
     {
-      GlobalValue::Bind ("SimulatorImplementationType",
-                         StringValue ("ns3::DistributedSimulatorImpl"));
+      GlobalValue::Bind("SimulatorImplementationType",
+                         StringValue("ns3::DistributedSimulatorImpl"));
     }
 
   // Enable parallel simulator with the command line arguments
-  MpiInterface::Enable (&argc, &argv);
+  MpiInterface::Enable(&argc, &argv);
 
 
 
@@ -274,17 +274,17 @@ Assigning system ids to nodes is simple and can be handled two different ways.
 First, a NodeContainer can be used to create the nodes and assign system ids::
 
     NodeContainer nodes;
-    nodes.Create (5, 1); // Creates 5 nodes with system id 1.
+    nodes.Create(5, 1); // Creates 5 nodes with system id 1.
 
 Alternatively, nodes can be created individually, assigned system ids, and added
 to a NodeContainer. This is useful if a NodeContainer holds nodes with different
 system ids::
 
     NodeContainer nodes;
-    Ptr<Node> node1 = CreateObject<Node> (0); // Create node1 with system id 0
-    Ptr<Node> node2 = CreateObject<Node> (1); // Create node2 with system id 1
-    nodes.Add (node1);
-    nodes.Add (node2);
+    Ptr<Node> node1 = CreateObject<Node>(0); // Create node1 with system id 0
+    Ptr<Node> node2 = CreateObject<Node>(1); // Create node2 with system id 1
+    nodes.Add(node1);
+    nodes.Add(node2);
 
 Next, where the simulation is divided is determined by the placement of
 point-to-point links. If a point-to-point link is created between two
@@ -308,15 +308,15 @@ differently, based on the system id of the simulator. For example, something
 like this should work well, assuming all of these local variables were
 previously defined::
 
-    if (MpiInterface::GetSystemId () == 0)
+    if (MpiInterface::GetSystemId() == 0)
       {
-        pointToPoint.EnablePcapAll ("distributed-rank0");
-        phy.EnablePcap ("distributed-rank0", apDevices.Get (0));
-        csma.EnablePcap ("distributed-rank0", csmaDevices.Get (0), true);
+        pointToPoint.EnablePcapAll("distributed-rank0");
+        phy.EnablePcap("distributed-rank0", apDevices.Get(0));
+        csma.EnablePcap("distributed-rank0", csmaDevices.Get(0), true);
       }
-    else if (MpiInterface::GetSystemId () == 1)
+    else if (MpiInterface::GetSystemId() == 1)
       {
-        pointToPoint.EnablePcapAll ("distributed-rank1");
-        phy.EnablePcap ("distributed-rank1", apDevices.Get (0));
-        csma.EnablePcap ("distributed-rank1", csmaDevices.Get (0), true);
+        pointToPoint.EnablePcapAll("distributed-rank1");
+        phy.EnablePcap("distributed-rank1", apDevices.Get(0));
+        csma.EnablePcap("distributed-rank1", csmaDevices.Get(0), true);
       }

@@ -707,7 +707,7 @@ arguments as needed, but basedir is the minimum needed)::
   (gdb) r --suite=
   Starting program: <..>/build/utils/ns3-dev-test-runner-debug --suite=wifi-interference
   [Thread debugging using libthread_db enabled]
-  assert failed. file=../src/core/model/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
+  assert failed. file=../src/core/model/type-id.cc, line=138, cond="uid <= m_information.size() && uid != 0"
   ...
 
 Here is another example of how to use valgrind to debug a memory problem
@@ -757,13 +757,13 @@ as a ''unit'' test with the display name, ``my-test-suite-name``.
   class MySuite : public TestSuite
   {
   public:
-    MyTestSuite ();
+    MyTestSuite();
   };
 
-  MyTestSuite::MyTestSuite ()
-    : TestSuite ("my-test-suite-name", UNIT)
+  MyTestSuite::MyTestSuite()
+    : TestSuite("my-test-suite-name", UNIT)
   {
-    AddTestCase (new MyTestCase, TestCase::QUICK);
+    AddTestCase(new MyTestCase, TestCase::QUICK);
   }
 
   static MyTestSuite myTestSuite;
@@ -794,20 +794,20 @@ override also the ``DoSetup`` method.
 
   class MyTestCase : public TestCase
   {
-    MyTestCase ();
-    virtual void DoSetup ();
-    virtual void DoRun ();
+    MyTestCase();
+    virtual void DoSetup();
+    virtual void DoRun();
   };
 
-  MyTestCase::MyTestCase ()
-    : TestCase ("Check some bit of functionality")
+  MyTestCase::MyTestCase()
+    : TestCase("Check some bit of functionality")
   {
   }
 
   void
-  MyTestCase::DoRun ()
+  MyTestCase::DoRun()
   {
-    NS_TEST_ASSERT_MSG_EQ (true, true, "Some failure message");
+    NS_TEST_ASSERT_MSG_EQ(true, true, "Some failure message");
   }
 
 Utilities

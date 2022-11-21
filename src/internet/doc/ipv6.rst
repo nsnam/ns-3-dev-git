@@ -98,18 +98,18 @@ only IPv6 and node 2 only IPv4:
 ::
 
     NodeContainer n;
-    n.Create (3);
+    n.Create(3);
 
     InternetStackHelper internet;
     InternetStackHelper internetV4only;
     InternetStackHelper internetV6only;
 
-    internetV4only.SetIpv6StackInstall (false);
-    internetV6only.SetIpv4StackInstall (false);
+    internetV4only.SetIpv6StackInstall(false);
+    internetV6only.SetIpv4StackInstall(false);
 
-    internet.Install (n.Get (0));
-    internetV6only.Install (n.Get (1));
-    internetV4only.Install (n.Get (2));
+    internet.Install(n.Get(0));
+    internetV6only.Install(n.Get(1));
+    internetV4only.Install(n.Get(2));
 
 
 
@@ -142,16 +142,16 @@ This is probably the easiest and most used method. As an example:
 
 ::
 
-    Ptr<Node> n0 = CreateObject<Node> ();
-    Ptr<Node> n1 = CreateObject<Node> ();
-    NodeContainer net (n0, n1);
+    Ptr<Node> n0 = CreateObject<Node>();
+    Ptr<Node> n1 = CreateObject<Node>();
+    NodeContainer net(n0, n1);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net);
+    NetDeviceContainer ndc = csma.Install(net);
 
-    NS_LOG_INFO ("Assign IPv6 Addresses.");
+    NS_LOG_INFO("Assign IPv6 Addresses.");
     Ipv6AddressHelper ipv6;
-    ipv6.SetBase (Ipv6Address ("2001:db8::"), Ipv6Prefix (64));
-    Ipv6InterfaceContainer ic = ipv6.Assign (ndc);
+    ipv6.SetBase(Ipv6Address("2001:db8::"), Ipv6Prefix(64));
+    Ipv6InterfaceContainer ic = ipv6.Assign(ndc);
 
 This method will add two global IPv6 addresses to the nodes. Note that, as usual for IPv6,
 all the nodes will also have a link-local address. Typically the first address on an
@@ -168,20 +168,20 @@ Alternatively, it is possible to assign a specific address to a node:
 
 ::
 
-    Ptr<Node> n0 = CreateObject<Node> ();
-    NodeContainer net (n0);
+    Ptr<Node> n0 = CreateObject<Node>();
+    NodeContainer net(n0);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net);
+    NetDeviceContainer ndc = csma.Install(net);
 
-    NS_LOG_INFO ("Specifically Assign an IPv6 Address.");
+    NS_LOG_INFO("Specifically Assign an IPv6 Address.");
     Ipv6AddressHelper ipv6;
-    Ptr<NetDevice> device = ndc.Get (0);
-    Ptr<Node> node = device->GetNode ();
-    Ptr<Ipv6> ipv6proto = node->GetObject<Ipv6> ();
+    Ptr<NetDevice> device = ndc.Get(0);
+    Ptr<Node> node = device->GetNode();
+    Ptr<Ipv6> ipv6proto = node->GetObject<Ipv6>();
     int32_t ifIndex = 0;
-    ifIndex = ipv6proto->GetInterfaceForDevice (device);
-    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:db8:f00d:cafe::42"), Ipv6Prefix (64));
-    ipv6proto->AddAddress (ifIndex, ipv6Addr);
+    ifIndex = ipv6proto->GetInterfaceForDevice(device);
+    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress(Ipv6Address("2001:db8:f00d:cafe::42"), Ipv6Prefix(64));
+    ipv6proto->AddAddress(ifIndex, ipv6Addr);
 
 
 Auto-generated IPv6 addresses
@@ -213,8 +213,8 @@ This is accomplished using :cpp:class:`Ipv6AddressHelper::AssignWithoutAddress`,
 
     Ipv6AddressHelper ipv6;
     NetDeviceContainer tmp;
-    tmp.Add (d1.Get (0)); /* n0 */
-    Ipv6InterfaceContainer iic1 = ipv6.AssignWithoutAddress (tmp); /* n0 interface */
+    tmp.Add (d1.Get(0)); /* n0 */
+    Ipv6InterfaceContainer iic1 = ipv6.AssignWithoutAddress(tmp); /* n0 interface */
 
 
 Random-generated IPv6 addresses
@@ -341,28 +341,28 @@ The use is almost identical to the corresponding IPv4 case, e.g.:
 ::
 
     NodeContainer n;
-    n.Create (4);
+    n.Create(4);
 
-    NS_LOG_INFO ("Create IPv6 Internet Stack");
+    NS_LOG_INFO("Create IPv6 Internet Stack");
     InternetStackHelper internetv6;
-    internetv6.Install (n);
+    internetv6.Install(n);
 
-    NS_LOG_INFO ("Create channels.");
+    NS_LOG_INFO("Create channels.");
     CsmaHelper csma;
-    NetDeviceContainer d = csma.Install (n);
+    NetDeviceContainer d = csma.Install(n);
 
-    NS_LOG_INFO ("Create networks and assign IPv6 Addresses.");
+    NS_LOG_INFO("Create networks and assign IPv6 Addresses.");
     Ipv6AddressHelper ipv6;
-    ipv6.SetBase (Ipv6Address ("2001:db8::"), Ipv6Prefix (64));
-    Ipv6InterfaceContainer iic = ipv6.Assign (d);
+    ipv6.SetBase(Ipv6Address("2001:db8::"), Ipv6Prefix(64));
+    Ipv6InterfaceContainer iic = ipv6.Assign(d);
 
 Additionally, a common task is to enable forwarding on one of the nodes and to
 setup a default route toward it in the other nodes, e.g.:
 
 ::
 
-    iic.SetForwarding (0, true);
-    iic.SetDefaultRouteInAllNodes (0);
+    iic.SetForwarding(0, true);
+    iic.SetDefaultRouteInAllNodes(0);
 
 This will enable forwarding on the node *0* and will setup a default route in
 :cpp:class:`ns3::Ipv6StaticRouting` on all the other nodes. Note that this
@@ -522,4 +522,4 @@ The usages for generating NDISC cache is almost the same as generating ARP cache
 .. code-block:: c++
 
   NeighborCacheHelper neighborCache;
-  neighborCache.PopulateNeighborCache (interfaces);    // interfaces is the Ipv6InterfaceContainer want to generate ARP caches
+  neighborCache.PopulateNeighborCache(interfaces);    // interfaces is the Ipv6InterfaceContainer want to generate ARP caches

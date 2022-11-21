@@ -76,7 +76,7 @@ This is all just as it was in ``first.cc``, so there is nothing new yet.
 
   using namespace ns3;
 
-  NS_LOG_COMPONENT_DEFINE ("SecondScriptExample");
+  NS_LOG_COMPONENT_DEFINE("SecondScriptExample");
 
 The main program begins with a slightly different twist.  We use a verbose
 flag to determine whether or not the ``UdpEchoClientApplication`` and
@@ -99,10 +99,10 @@ entirely comfortable with the following code at this point in the tutorial.
   uint32_t nCsma = 3;
 
   CommandLine cmd;
-  cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
-  cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
+  cmd.AddValue("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
+  cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
 
-  cmd.Parse (argc, argv);
+  cmd.Parse(argc, argv);
 
   if (verbose)
     {
@@ -119,7 +119,7 @@ done in ``first.cc``.
 ::
 
   NodeContainer p2pNodes;
-  p2pNodes.Create (2);
+  p2pNodes.Create(2);
 
 Next, we declare another ``NodeContainer`` to hold the nodes that will be
 part of the bus (CSMA) network.  First, we just instantiate the container
@@ -128,8 +128,8 @@ object itself.
 ::
 
   NodeContainer csmaNodes;
-  csmaNodes.Add (p2pNodes.Get (1));
-  csmaNodes.Create (nCsma);
+  csmaNodes.Add(p2pNodes.Get(1));
+  csmaNodes.Create(nCsma);
 
 The next line of code ``Gets`` the first node (as in having an index of one)
 from the point-to-point node container and adds it to the container of nodes
@@ -148,11 +148,11 @@ the helper and a two millisecond delay on channels created by the helper.
 ::
 
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+  pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
 
   NetDeviceContainer p2pDevices;
-  p2pDevices = pointToPoint.Install (p2pNodes);
+  p2pDevices = pointToPoint.Install(p2pNodes);
 
 We then instantiate a ``NetDeviceContainer`` to keep track of the
 point-to-point net devices and we ``Install`` devices on the
@@ -173,11 +173,11 @@ its native data type.
 ::
 
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
+  csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+  csma.SetChannelAttribute("Delay", TimeValue(NanoSeconds(6560)));
 
   NetDeviceContainer csmaDevices;
-  csmaDevices = csma.Install (csmaNodes);
+  csmaDevices = csma.Install(csmaNodes);
 
 Just as we created a ``NetDeviceContainer`` to hold the devices created by
 the ``PointToPointHelper`` we create a ``NetDeviceContainer`` to hold
@@ -192,8 +192,8 @@ stacks present.  Just as in the ``first.cc`` script, we will use the
 ::
 
   InternetStackHelper stack;
-  stack.Install (p2pNodes.Get (0));
-  stack.Install (csmaNodes);
+  stack.Install(p2pNodes.Get(0));
+  stack.Install(csmaNodes);
 
 Recall that we took one of the nodes from the ``p2pNodes`` container and
 added it to the ``csmaNodes`` container.  Thus we only need to install
@@ -208,9 +208,9 @@ two point-to-point devices.
 ::
 
   Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.0");
+  address.SetBase("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer p2pInterfaces;
-  p2pInterfaces = address.Assign (p2pDevices);
+  p2pInterfaces = address.Assign(p2pDevices);
 
 Recall that we save the created interfaces in a container to make it easy to
 pull out addressing information later for use in setting up the applications.
@@ -224,9 +224,9 @@ from network number 10.1.2.0 in this case, as seen below.
 
 ::
 
-  address.SetBase ("10.1.2.0", "255.255.255.0");
+  address.SetBase("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer csmaInterfaces;
-  csmaInterfaces = address.Assign (csmaDevices);
+  csmaInterfaces = address.Assign(csmaDevices);
 
 Now we have a topology built, but we need applications.  This section is
 going to be fundamentally similar to the applications section of
@@ -242,11 +242,11 @@ the constructor.
 
 ::
 
-  UdpEchoServerHelper echoServer (9);
+  UdpEchoServerHelper echoServer(9);
 
-  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
-  serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (10.0));
+  ApplicationContainer serverApps = echoServer.Install(csmaNodes.Get(nCsma));
+  serverApps.Start(Seconds(1.0));
+  serverApps.Stop(Seconds(10.0));
 
 Recall that the ``csmaNodes NodeContainer`` contains one of the
 nodes created for the point-to-point network and ``nCsma`` "extra" nodes.
@@ -267,14 +267,14 @@ leftmost point-to-point node seen in the topology illustration.
 
 ::
 
-  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  UdpEchoClientHelper echoClient(csmaInterfaces.GetAddress(nCsma), 9);
+  echoClient.SetAttribute("MaxPackets", UintegerValue(1));
+  echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+  echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
-  ApplicationContainer clientApps = echoClient.Install (p2pNodes.Get (0));
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (10.0));
+  ApplicationContainer clientApps = echoClient.Install(p2pNodes.Get(0));
+  clientApps.Start(Seconds(2.0));
+  clientApps.Stop(Seconds(10.0));
 
 Since we have actually built an internetwork here, we need some form of
 internetwork routing.  |ns3| provides what we call global routing to
@@ -292,7 +292,7 @@ is a one-liner:
 
 ::
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 Next we enable pcap tracing.  The first line of code to enable pcap tracing
 in the point-to-point helper should be familiar to you by now.  The second
@@ -301,8 +301,8 @@ you haven't encountered yet.
 
 ::
 
-  pointToPoint.EnablePcapAll ("second");
-  csma.EnablePcap ("second", csmaDevices.Get (1), true);
+  pointToPoint.EnablePcapAll("second");
+  csma.EnablePcap("second", csmaDevices.Get(1), true);
 
 The CSMA network is a multi-point-to-point network.  This means that there
 can (and are in this case) multiple endpoints on a shared medium.  Each of
@@ -329,8 +329,8 @@ the ``first.cc`` example.
 
 ::
 
-    Simulator::Run ();
-    Simulator::Destroy ();
+    Simulator::Run();
+    Simulator::Destroy();
     return 0;
   }
 
@@ -564,9 +564,9 @@ number and device number as parameters.  Go ahead and replace the
 
 ::
 
-  pointToPoint.EnablePcap ("second", p2pNodes.Get (0)->GetId (), 0);
-  csma.EnablePcap ("second", csmaNodes.Get (nCsma)->GetId (), 0, false);
-  csma.EnablePcap ("second", csmaNodes.Get (nCsma-1)->GetId (), 0, false);
+  pointToPoint.EnablePcap("second", p2pNodes.Get(0)->GetId(), 0);
+  csma.EnablePcap("second", csmaNodes.Get(nCsma)->GetId(), 0, false);
+  csma.EnablePcap("second", csmaNodes.Get(nCsma-1)->GetId(), 0, false);
 
 We know that we want to create a pcap file with the base name "second" and
 we also know that the device of interest in both cases is going to be zero,
@@ -610,14 +610,14 @@ On line 110, notice the following command to enable tracing on one node
 
 .. sourcecode:: bash
 
-   csma.EnablePcap ("second", csmaDevices.Get (1), true);
+   csma.EnablePcap("second", csmaDevices.Get(1), true);
 
 Change the index to the quantity ``nCsma``, corresponding to the last
 node in the topology-- the node that contains the echo server:
 
 .. sourcecode:: bash
 
-   csma.EnablePcap ("second", csmaDevices.Get (nCsma), true);
+   csma.EnablePcap("second", csmaDevices.Get(nCsma), true);
 
 If you build the new script and run the simulation setting ``nCsma`` to 100,
 
@@ -657,7 +657,7 @@ argument of ``false`` indicates that you would like a non-promiscuous trace:
 
 .. sourcecode:: bash
 
-   csma.EnablePcap ("second", csmaDevices.Get (nCsma - 1), false);
+   csma.EnablePcap("second", csmaDevices.Get(nCsma - 1), false);
 
 Now build and run as before:
 
@@ -872,7 +872,7 @@ component is defined.  This should all be quite familiar by now.
 
   using namespace ns3;
 
-  NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
+  NS_LOG_COMPONENT_DEFINE("ThirdScriptExample");
 
 The main program begins just like ``second.cc`` by adding some command line
 parameters for enabling or disabling logging components and for changing the
@@ -885,11 +885,11 @@ number of devices created.
   uint32_t nWifi = 3;
 
   CommandLine cmd;
-  cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
-  cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
-  cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
+  cmd.AddValue("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
+  cmd.AddValue("nWifi", "Number of wifi STA devices", nWifi);
+  cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
 
-  cmd.Parse (argc,argv);
+  cmd.Parse(argc,argv);
 
   if (verbose)
     {
@@ -903,7 +903,7 @@ that we will connect via the point-to-point link.
 ::
 
   NodeContainer p2pNodes;
-  p2pNodes.Create (2);
+  p2pNodes.Create(2);
 
 Next, we see an old friend.  We instantiate a ``PointToPointHelper`` and
 set the associated default ``Attributes`` so that we create a five megabit
@@ -914,11 +914,11 @@ on the nodes and the channel between them.
 ::
 
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+  pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
 
   NetDeviceContainer p2pDevices;
-  p2pDevices = pointToPoint.Install (p2pNodes);
+  p2pDevices = pointToPoint.Install(p2pNodes);
 
 Next, we declare another ``NodeContainer`` to hold the nodes that will be
 part of the bus (CSMA) network.
@@ -926,8 +926,8 @@ part of the bus (CSMA) network.
 ::
 
   NodeContainer csmaNodes;
-  csmaNodes.Add (p2pNodes.Get (1));
-  csmaNodes.Create (nCsma);
+  csmaNodes.Add(p2pNodes.Get(1));
+  csmaNodes.Create(nCsma);
 
 The next line of code ``Gets`` the first node (as in having an index of one)
 from the point-to-point node container and adds it to the container of nodes
@@ -943,11 +943,11 @@ selected nodes.
 ::
 
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
+  csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+  csma.SetChannelAttribute("Delay", TimeValue(NanoSeconds(6560)));
 
   NetDeviceContainer csmaDevices;
-  csmaDevices = csma.Install (csmaNodes);
+  csmaDevices = csma.Install(csmaNodes);
 
 Next, we are going to create the nodes that will be part of the Wi-Fi network.
 We are going to create a number of "station" nodes as specified by the
@@ -957,8 +957,8 @@ point-to-point link as the node for the access point.
 ::
 
   NodeContainer wifiStaNodes;
-  wifiStaNodes.Create (nWifi);
-  NodeContainer wifiApNode = p2pNodes.Get (0);
+  wifiStaNodes.Create(nWifi);
+  NodeContainer wifiApNode = p2pNodes.Get(0);
 
 The next bit of code constructs the wifi devices and the interconnection
 channel between these wifi nodes. First, we configure the PHY and channel
@@ -966,8 +966,8 @@ helpers:
 
 ::
 
-  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default();
 
 For simplicity, this code uses the default PHY layer configuration and
 channel models which are documented in the API doxygen documentation for
@@ -980,7 +980,7 @@ wireless medium and can communicate and interfere:
 
 ::
 
-  phy.SetChannel (channel.Create ());
+  phy.SetChannel(channel.Create());
 
 Once the PHY helper is configured, we can focus on the MAC layer. The
 WifiMacHelper object is used to set MAC parameters.
@@ -992,7 +992,7 @@ the MAC layer implementation.
 ::
 
   WifiMacHelper mac;
-  Ssid ssid = Ssid ("ns-3-ssid");
+  Ssid ssid = Ssid("ns-3-ssid");
 
 WifiHelper will, by default, configure
 the standard in use to be 802.11ax (known commercially as Wi-Fi 6) and configure
@@ -1013,9 +1013,9 @@ the WifiNetDevice objects that the helper create.
 ::
 
   NetDeviceContainer staDevices
-  mac.SetType ("ns3::StaWifiMac",
-    "Ssid", SsidValue (ssid),
-    "ActiveProbing", BooleanValue (false));
+  mac.SetType("ns3::StaWifiMac",
+              "Ssid", SsidValue(ssid),
+              "ActiveProbing", BooleanValue(false));
 
 In the above code, the specific kind of MAC layer that
 will be created by the helper is specified by the TypeId value
@@ -1035,7 +1035,7 @@ create the Wi-Fi devices of these stations:
 ::
 
   NetDeviceContainer staDevices;
-  staDevices = wifi.Install (phy, mac, wifiStaNodes);
+  staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
 We have configured Wi-Fi for all of our STA nodes, and now we need to
 configure the AP (access point) node.  We begin this process by changing
@@ -1044,8 +1044,8 @@ requirements of the AP.
 
 ::
 
-  mac.SetType ("ns3::ApWifiMac",
-               "Ssid", SsidValue (ssid));
+  mac.SetType("ns3::ApWifiMac",
+              "Ssid", SsidValue(ssid));
 
 In this case, the ``WifiMacHelper`` is going to create MAC
 layers of the "ns3::ApWifiMac", the latter specifying that a MAC
@@ -1057,7 +1057,7 @@ The next lines create the single AP which shares the same set of PHY-level
 ::
 
   NetDeviceContainer apDevices;
-  apDevices = wifi.Install (phy, mac, wifiApNode);
+  apDevices = wifi.Install(phy, mac, wifiApNode);
 
 Now, we are going to add mobility models.  We want the STA nodes to be mobile,
 wandering around inside a bounding box, and we want to make the AP node
@@ -1069,13 +1069,13 @@ First, we instantiate a ``MobilityHelper`` object and set some
 
   MobilityHelper mobility;
 
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-    "MinX", DoubleValue (0.0),
-    "MinY", DoubleValue (0.0),
-    "DeltaX", DoubleValue (5.0),
-    "DeltaY", DoubleValue (10.0),
-    "GridWidth", UintegerValue (3),
-    "LayoutType", StringValue ("RowFirst"));
+  mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                "MinX", DoubleValue(0.0),
+                                "MinY", DoubleValue(0.0),
+                                "DeltaX", DoubleValue(5.0),
+                                "DeltaY", DoubleValue(10.0),
+                                "GridWidth", UintegerValue(3),
+                                "LayoutType", StringValue("RowFirst"));
 
 This code tells the mobility helper to use a two-dimensional grid to initially
 place the STA nodes.  Feel free to explore the Doxygen for class
@@ -1088,15 +1088,15 @@ box.
 
 ::
 
-  mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-    "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+  mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
+                            "Bounds", RectangleValue(Rectangle(-50, 50, -50, 50)));
 
 We now tell the ``MobilityHelper`` to install the mobility models on the
 STA nodes.
 
 ::
 
-  mobility.Install (wifiStaNodes);
+  mobility.Install(wifiStaNodes);
 
 We want the access point to remain in a fixed position during the simulation.
 We accomplish this by setting the mobility model for this node to be the
@@ -1104,8 +1104,8 @@ We accomplish this by setting the mobility model for this node to be the
 
 ::
 
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (wifiApNode);
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility.Install(wifiApNode);
 
 We now have our nodes, devices and channels created, and mobility models
 chosen for the Wi-Fi nodes, but we have no protocol stacks present.  Just as
@@ -1115,9 +1115,9 @@ to install these stacks.
 ::
 
   InternetStackHelper stack;
-  stack.Install (csmaNodes);
-  stack.Install (wifiApNode);
-  stack.Install (wifiStaNodes);
+  stack.Install(csmaNodes);
+  stack.Install(wifiApNode);
+  stack.Install(wifiStaNodes);
 
 Just as in the ``second.cc`` example script, we are going to use the
 ``Ipv4AddressHelper`` to assign IP addresses to our device interfaces.
@@ -1130,50 +1130,50 @@ both the STA devices and the AP on the wireless network.
 
   Ipv4AddressHelper address;
 
-  address.SetBase ("10.1.1.0", "255.255.255.0");
+  address.SetBase("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer p2pInterfaces;
-  p2pInterfaces = address.Assign (p2pDevices);
+  p2pInterfaces = address.Assign(p2pDevices);
 
-  address.SetBase ("10.1.2.0", "255.255.255.0");
+  address.SetBase("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer csmaInterfaces;
-  csmaInterfaces = address.Assign (csmaDevices);
+  csmaInterfaces = address.Assign(csmaDevices);
 
-  address.SetBase ("10.1.3.0", "255.255.255.0");
-  address.Assign (staDevices);
-  address.Assign (apDevices);
+  address.SetBase("10.1.3.0", "255.255.255.0");
+  address.Assign(staDevices);
+  address.Assign(apDevices);
 
 We put the echo server on the "rightmost" node in the illustration at the
 start of the file.  We have done this before.
 
 ::
 
-  UdpEchoServerHelper echoServer (9);
+  UdpEchoServerHelper echoServer(9);
 
-  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
-  serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (10.0));
+  ApplicationContainer serverApps = echoServer.Install(csmaNodes.Get(nCsma));
+  serverApps.Start(Seconds(1.0));
+  serverApps.Stop(Seconds(10.0));
 
 And we put the echo client on the last STA node we created, pointing it to
 the server on the CSMA network.  We have also seen similar operations before.
 
 ::
 
-  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  UdpEchoClientHelper echoClient(csmaInterfaces.GetAddress(nCsma), 9);
+  echoClient.SetAttribute("MaxPackets", UintegerValue(1));
+  echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+  echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
   ApplicationContainer clientApps =
-    echoClient.Install (wifiStaNodes.Get (nWifi - 1));
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (10.0));
+      echoClient.Install(wifiStaNodes.Get(nWifi - 1));
+  clientApps.Start(Seconds(2.0));
+  clientApps.Stop(Seconds(10.0));
 
 Since we have built an internetwork here, we need to enable internetwork routing
 just as we did in the ``second.cc`` example script.
 
 ::
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 One thing that can surprise some users is the fact that the simulation we just
 created will never "naturally" stop.  This is because we asked the wireless
@@ -1186,15 +1186,15 @@ loop.
 
 ::
 
-  Simulator::Stop (Seconds (10.0));
+  Simulator::Stop(Seconds(10.0));
 
 We create just enough tracing to cover all three networks:
 
 ::
 
-  pointToPoint.EnablePcapAll ("third");
-  phy.EnablePcap ("third", apDevices.Get (0));
-  csma.EnablePcap ("third", csmaDevices.Get (0), true);
+  pointToPoint.EnablePcapAll("third");
+  phy.EnablePcap("third", apDevices.Get(0));
+  csma.EnablePcap("third", csmaDevices.Get(0), true);
 
 These three lines of code will start pcap tracing on both of the point-to-point
 nodes that serves as our backbone, will start a promiscuous (monitor) mode
@@ -1206,8 +1206,8 @@ Finally, we actually run the simulation, clean up and then exit the program.
 
 ::
 
-    Simulator::Run ();
-    Simulator::Destroy ();
+    Simulator::Run();
+    Simulator::Destroy();
     return 0;
   }
 
@@ -1357,11 +1357,11 @@ following function:
 ::
 
   void
-  CourseChange (std::string context, Ptr<const MobilityModel> model)
+  CourseChange(std::string context, Ptr<const MobilityModel> model)
   {
-    Vector position = model->GetPosition ();
-    NS_LOG_UNCOND (context <<
-      " x = " << position.x << ", y = " << position.y);
+    Vector position = model->GetPosition();
+    NS_LOG_UNCOND(context <<
+                " x = " << position.x << ", y = " << position.y);
   }
 
 This code just pulls the position information from the mobility model and
@@ -1374,11 +1374,10 @@ script just before the ``Simulator::Run`` call.
 ::
 
   std::ostringstream oss;
-  oss <<
-    "/NodeList/" << wifiStaNodes.Get (nWifi - 1)->GetId () <<
-    "/$ns3::MobilityModel/CourseChange";
+  oss << "/NodeList/" << wifiStaNodes.Get(nWifi - 1)->GetId()
+      << "/$ns3::MobilityModel/CourseChange";
 
-  Config::Connect (oss.str (), MakeCallback (&CourseChange));
+  Config::Connect(oss.str(), MakeCallback(&CourseChange));
 
 What we do here is to create a string containing the tracing namespace path
 of the event to which we want to connect.  First, we have to figure out which
@@ -1535,29 +1534,29 @@ Changing from the defaults
 * The type of queue used by a NetDevice can be usually modified through the device helper::
 
     NodeContainer nodes;
-    nodes.Create (2);
+    nodes.Create(2);
 
     PointToPointHelper p2p;
-    p2p.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("50p"));
+    p2p.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("50p"));
 
-    NetDeviceContainer devices = p2p.Install (nodes);
+    NetDeviceContainer devices = p2p.Install(nodes);
 
 * The type of queue disc installed on a NetDevice can be modified through the
   traffic control helper::
 
     InternetStackHelper stack;
-    stack.Install (nodes);
+    stack.Install(nodes);
 
     TrafficControlHelper tch;
-    tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
-    tch.Install (devices);
+    tch.SetRootQueueDisc("ns3::CoDelQueueDisc", "MaxSize", StringValue("1000p"));
+    tch.Install(devices);
 
 * BQL can be enabled on a device that supports it through the traffic control helper::
 
     InternetStackHelper stack;
-    stack.Install (nodes);
+    stack.Install(nodes);
 
     TrafficControlHelper tch;
-    tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
-    tch.SetQueueLimits ("ns3::DynamicQueueLimits", "HoldTime", StringValue ("4ms"));
-    tch.Install (devices);
+    tch.SetRootQueueDisc("ns3::CoDelQueueDisc", "MaxSize", StringValue("1000p"));
+    tch.SetQueueLimits("ns3::DynamicQueueLimits", "HoldTime", StringValue("4ms"));
+    tch.Install(devices);

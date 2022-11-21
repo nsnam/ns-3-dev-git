@@ -88,9 +88,9 @@ the queue limits type and attributes from the helper, such as this example:
 .. sourcecode:: cpp
 
   TrafficControlHelper tch;
-  uint32_t handle = tch.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "Limit", UintegerValue (1000));
+  uint32_t handle = tch.SetRootQueueDisc("ns3::PfifoFastQueueDisc", "Limit", UintegerValue(1000));
 
-  tch.SetQueueLimits ("ns3::DynamicQueueLimits", "HoldTime", StringValue ("4ms"));
+  tch.SetQueueLimits("ns3::DynamicQueueLimits", "HoldTime", StringValue("4ms"));
 
 then install the configuration on a NetDevices container
 

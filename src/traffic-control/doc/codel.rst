@@ -28,22 +28,22 @@ Andrew McGregor based on Linux kernel code implemented by Dave Täht and Eric Du
 
 * class :cpp:class:`CoDelQueueDisc`: This class implements the main CoDel algorithm:
 
-  * ``CoDelQueueDisc::DoEnqueue ()``: This routine tags a packet with the current time before pushing it into the queue.  The timestamp tag is used by ``CoDelQueue::DoDequeue()`` to compute the packet's sojourn time.  If the queue is full upon the packet arrival, this routine will drop the packet and record the number of drops due to queue overflow, which is stored in `m_dropOverLimit`.
+  * ``CoDelQueueDisc::DoEnqueue()``: This routine tags a packet with the current time before pushing it into the queue.  The timestamp tag is used by ``CoDelQueue::DoDequeue()`` to compute the packet's sojourn time.  If the queue is full upon the packet arrival, this routine will drop the packet and record the number of drops due to queue overflow, which is stored in `m_dropOverLimit`.
 
-  * ``CoDelQueueDisc::ShouldDrop ()``: This routine is ``CoDelQueueDisc::DoDequeue()``'s helper routine that determines whether a packet should be dropped or not based on its sojourn time.  If the sojourn time goes above `m_target` and remains above continuously for at least `m_interval`, the routine returns ``true`` indicating that it is OK to drop the packet. Otherwise, it returns ``false``.
+  * ``CoDelQueueDisc::ShouldDrop()``: This routine is ``CoDelQueueDisc::DoDequeue()``'s helper routine that determines whether a packet should be dropped or not based on its sojourn time.  If the sojourn time goes above `m_target` and remains above continuously for at least `m_interval`, the routine returns ``true`` indicating that it is OK to drop the packet. Otherwise, it returns ``false``.
 
-  * ``CoDelQueueDisc::DoDequeue ()``: This routine performs the actual packet drop based on ``CoDelQueueDisc::ShouldDrop ()``'s return value and schedules the next drop/mark.
+  * ``CoDelQueueDisc::DoDequeue()``: This routine performs the actual packet drop based on ``CoDelQueueDisc::ShouldDrop()``'s return value and schedules the next drop/mark.
 * class :cpp:class:`CoDelTimestampTag`: This class implements the timestamp tagging for a packet.  This tag is used to compute the packet's sojourn time (the difference between the time the packet is dequeued and the time it is pushed into the queue).
 
-There are 2 branches to ``CoDelQueueDisc::DoDequeue ()``:
+There are 2 branches to ``CoDelQueueDisc::DoDequeue()``:
 
-1. If the queue is currently in the dropping state, which means the sojourn time has remained above `m_target` for more than `m_interval`, the routine determines if it's OK to leave the dropping state or it's time for the next drop/mark. When ``CoDelQueueDisc::ShouldDrop ()`` returns ``false``, the queue can move out of the dropping state (set `m_dropping` to ``false``).  Otherwise, the queue continuously drops/marks packets and updates the time for next drop (`m_dropNext`) until one of the following conditions is met:
+1. If the queue is currently in the dropping state, which means the sojourn time has remained above `m_target` for more than `m_interval`, the routine determines if it's OK to leave the dropping state or it's time for the next drop/mark. When ``CoDelQueueDisc::ShouldDrop()`` returns ``false``, the queue can move out of the dropping state (set `m_dropping` to ``false``).  Otherwise, the queue continuously drops/marks packets and updates the time for next drop (`m_dropNext`) until one of the following conditions is met:
 
-    1. The queue is empty, upon which the queue leaves the dropping state and exits ``CoDelQueueDisc::ShouldDrop ()`` routine;
-    2. ``CoDelQueueDisc::ShouldDrop ()`` returns ``false`` (meaning the sojourn time goes below `m_target`) upon which the queue leaves the dropping state;
+    1. The queue is empty, upon which the queue leaves the dropping state and exits ``CoDelQueueDisc::ShouldDrop()`` routine;
+    2. ``CoDelQueueDisc::ShouldDrop()`` returns ``false`` (meaning the sojourn time goes below `m_target`) upon which the queue leaves the dropping state;
     3. It is not yet time for next drop/mark (`m_dropNext` is less than current time) upon which the queue waits for the next packet dequeue to check the condition again.
 
-2. If the queue is not in the dropping state, the routine enters the dropping state and drop/mark the first packet if ``CoDelQueueDisc::ShouldDrop ()`` returns ``true`` (meaning the sojourn time has gone above `m_target` for at least `m_interval` for the first time or it has gone above again after the queue leaves the dropping state).
+2. If the queue is not in the dropping state, the routine enters the dropping state and drop/mark the first packet if ``CoDelQueueDisc::ShouldDrop()`` returns ``true`` (meaning the sojourn time has gone above `m_target` for at least `m_interval` for the first time or it has gone above again after the queue leaves the dropping state).
 
 The CoDel queue disc does not require packet filters, does not admit
 child queue discs and uses a single internal queue. If not provided by
@@ -146,4 +146,3 @@ or
 .. sourcecode:: bash
 
   $ NS_LOG="CoDelQueueDisc" ./ns3 run "test-runner --suite=codel-queue-disc"
-

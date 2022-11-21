@@ -271,14 +271,14 @@ Initialization of DPDK driver requires initialization of EAL. EAL requires PMD (
 
 .. sourcecode:: text
 
- DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
+ DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper();
  dpdk->SetPmdLibrary("librte_pmd_e1000.so");
 
 Also, NIC should be bound to DPDK Driver in order to be used with EAL. The default driver used is ``uio_pci_generic`` which supports most of the NICs. You can change it using ``DpdkNetDeviceHelper::SetDpdkDriver``, as follows:
 
 .. sourcecode:: text
 
- DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
+ DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper();
  dpdk->SetDpdkDriver("igb_uio");
 
 Attributes

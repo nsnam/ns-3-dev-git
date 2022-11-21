@@ -79,23 +79,23 @@ helper. You just ask this helper to create as many computers (we call them
 ``Nodes``) as you need on your network::
 
   NodeContainer nodes;
-  nodes.Create (2);
+  nodes.Create(2);
 
 Once you have your nodes, you need to instantiate a ``PointToPointHelper`` and
 set any attributes you may want to change. Note that since this is a
-point-to-point (as compared to a point-to-multipoint) there may only be two
+point-to-point(as compared to a point-to-multipoint) there may only be two
 nodes with associated net devices connected by a PointToPointChannel.::
 
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+  pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
 
 Once the attributes are set, all that remains is to create the devices and
 install them on the required nodes, and to connect the devices together using a
 PointToPoint channel. When we create the net devices, we add them to a container
 to allow you to use them in the future. This all takes just one line of code.::
 
-  NetDeviceContainer devices = pointToPoint.Install (nodes);
+  NetDeviceContainer devices = pointToPoint.Install(nodes);
 
 PointToPoint Tracing
 ********************

@@ -227,13 +227,13 @@ First, the user instantiates a ``MobilityHelper`` object and sets some
 
   MobilityHelper mobility;
 
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-    "MinX", DoubleValue (0.0),
-    "MinY", DoubleValue (0.0),
-    "DeltaX", DoubleValue (5.0),
-    "DeltaY", DoubleValue (10.0),
-    "GridWidth", UintegerValue (3),
-    "LayoutType", StringValue ("RowFirst"));
+  mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+    "MinX", DoubleValue(0.0),
+    "MinY", DoubleValue(0.0),
+    "DeltaX", DoubleValue(5.0),
+    "DeltaY", DoubleValue(10.0),
+    "GridWidth", UintegerValue(3),
+    "LayoutType", StringValue("RowFirst"));
 
 This code tells the mobility helper to use a two-dimensional grid to initially
 place the nodes.  The first argument is an |ns3| TypeId specifying the
@@ -244,14 +244,14 @@ Next, the user typically sets the MobilityModel subclass; e.g.:
 
 .. sourcecode:: cpp
 
-  mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-    "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+  mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
+    "Bounds", RectangleValue(Rectangle(-50, 50, -50, 50)));
 
 Once the helper is configured, it is typically passed a container, such as:
 
 .. sourcecode:: cpp
 
-  mobility.Install (wifiStaNodes);
+  mobility.Install(wifiStaNodes);
 
 A MobilityHelper object may be reconfigured and reused for different
 NodeContainers during the configuration of an |ns3| scenario.
@@ -391,7 +391,7 @@ API to assign streams to underlying random variables:
    * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */
-  int64_t AssignStreams (int64_t stream);
+  int64_t AssignStreams(int64_t stream);
 
 The class ``MobilityHelper`` also provides this API.  The typical usage
 pattern when using the helper is:
@@ -401,8 +401,8 @@ pattern when using the helper is:
   int64_t streamIndex = /*some positive integer */
   MobilityHelper mobility;
   ... (configure mobility)
-  mobility.Install (wifiStaNodes);
-  int64_t streamsUsed = mobility.AssignStreams (wifiStaNodes, streamIndex);
+  mobility.Install(wifiStaNodes);
+  int64_t streamsUsed = mobility.AssignStreams(wifiStaNodes, streamIndex);
 
 If AssignStreams is called before Install, it will not have any effect.
 

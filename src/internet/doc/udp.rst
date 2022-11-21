@@ -63,34 +63,34 @@ is how one would create a UDP receiver::
 
   // Create a packet sink on the receiver
   uint16_t port = 50000;
-  Address sinkLocalAddress(InetSocketAddress (Ipv4Address::GetAny (), port));
-  PacketSinkHelper sinkHelper ("ns3::UdpSocketFactory", sinkLocalAddress);
-  ApplicationContainer sinkApp = sinkHelper.Install (serverNode);
-  sinkApp.Start (Seconds (1.0));
-  sinkApp.Stop (Seconds (10.0));
+  Address sinkLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
+  PacketSinkHelper sinkHelper("ns3::UdpSocketFactory", sinkLocalAddress);
+  ApplicationContainer sinkApp = sinkHelper.Install(serverNode);
+  sinkApp.Start(Seconds(1.0));
+  sinkApp.Stop(Seconds(10.0));
 
 Similarly, the below snippet configures OnOffApplication traffic source to use
 UDP::
 
   // Create the OnOff applications to send data to the UDP receiver
-  OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
-  clientHelper.SetAttribute ("Remote", remoteAddress);
-  ApplicationContainer clientApps = (clientHelper.Install (clientNode);
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (9.0));
+  OnOffHelper clientHelper("ns3::UdpSocketFactory", Address());
+  clientHelper.SetAttribute("Remote", remoteAddress);
+  ApplicationContainer clientApps =(clientHelper.Install(clientNode);
+  clientApps.Start(Seconds(2.0));
+  clientApps.Stop(Seconds(9.0));
 
-For users who wish to have a pointer to the actual socket (so that
+For users who wish to have a pointer to the actual socket(so that
 socket operations like ``Bind()``, setting socket options, etc. can be
 done on a per-socket basis), UDP sockets can be created by using the
 ``Socket::CreateSocket()`` method as given below::
 
-  Ptr<Node> node = CreateObject<Node> ();
+  Ptr<Node> node = CreateObject<Node>();
   InternetStackHelper internet;
-  internet.Install (node);
+  internet.Install(node);
 
-  Ptr<SocketFactory> socketFactory = node->GetObject<UdpSocketFactory> ();
-  Ptr<Socket> socket = socketFactory->CreateSocket ();
-  socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 80));
+  Ptr<SocketFactory> socketFactory = node->GetObject<UdpSocketFactory>();
+  Ptr<Socket> socket = socketFactory->CreateSocket();
+  socket->Bind(InetSocketAddress(Ipv4Address::GetAny(), 80));
 
 Once a UDP socket is created, we do not need an explicit connection setup before
 sending and receiving data. Being a connectionless protocol, all we need to do

@@ -62,7 +62,7 @@ So far, in our design, we have::
       * \returns true if the Packet is to be considered as errored/corrupted
       * \param pkt Packet to apply error model to
       */
-      bool IsCorrupt (Ptr<Packet> pkt);
+      bool IsCorrupt(Ptr<Packet> pkt);
     };
 
 Note that we do not pass a const pointer, thereby allowing the function to
@@ -109,16 +109,16 @@ a base class and first subclass that could be posted for initial review::
     class ErrorModel
     {
     public:
-      ErrorModel ();
-      virtual ~ErrorModel ();
-      bool IsCorrupt (Ptr<Packet> pkt);
-      void Reset ();
-      void Enable ();
-      void Disable ();
-      bool IsEnabled () const;
+      ErrorModel();
+      virtual ~ErrorModel();
+      bool IsCorrupt(Ptr<Packet> pkt);
+      void Reset();
+      void Enable();
+      void Disable();
+      bool IsEnabled() const;
     private:
-      virtual bool DoCorrupt (Ptr<Packet> pkt) = 0;
-      virtual void DoReset () = 0;
+      virtual bool DoCorrupt(Ptr<Packet> pkt) = 0;
+      virtual void DoReset() = 0;
     };
 
     enum ErrorUnit
@@ -133,16 +133,16 @@ a base class and first subclass that could be posted for initial review::
     class RateErrorModel : public ErrorModel
     {
     public:
-      RateErrorModel ();
-      virtual ~RateErrorModel ();
-      enum ErrorUnit GetUnit () const;
-      void SetUnit (enum ErrorUnit error_unit);
-      double GetRate () const;
-      void SetRate (double rate);
-      void SetRandomVariable (const RandomVariable &ranvar);
+      RateErrorModel();
+      virtual ~RateErrorModel();
+      enum ErrorUnit GetUnit() const;
+      void SetUnit(enum ErrorUnit error_unit);
+      double GetRate() const;
+      void SetRate(double rate);
+      void SetRandomVariable(const RandomVariable &ranvar);
     private:
-      virtual bool DoCorrupt (Ptr<Packet> pkt);
-      virtual void DoReset ();
+      virtual bool DoCorrupt(Ptr<Packet> pkt);
+      virtual void DoReset();
     };
 
 
@@ -294,19 +294,19 @@ from class Object.::
     class ErrorModel : public Object
     {
     public:
-      static TypeId GetTypeId ();
+      static TypeId GetTypeId();
 
-      ErrorModel ();
-      virtual ~ErrorModel ();
+      ErrorModel();
+      virtual ~ErrorModel();
     };
 
     class RateErrorModel : public ErrorModel
     {
     public:
-      static TypeId GetTypeId ();
+      static TypeId GetTypeId();
 
-      RateErrorModel ();
-      virtual ~RateErrorModel ();
+      RateErrorModel();
+      virtual ~RateErrorModel();
     };
     #endif
 
@@ -319,7 +319,7 @@ But we are in ``src/network/model``, so we must include it as "``#include
 "ns3/object.h"``". Note also that this goes outside the namespace declaration.
 
 Second, each class must implement a static public member function called
-``GetTypeId ()``.
+``GetTypeId()``.
 
 Third, it is a good idea to implement constructors and destructors rather than
 to let the compiler generate them, and to make the destructor virtual. In C++,
@@ -335,52 +335,52 @@ file.::
 
     namespace ns3 {
 
-    NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
+    NS_OBJECT_ENSURE_REGISTERED(ErrorModel);
 
-    TypeId ErrorModel::GetTypeId ()
+    TypeId ErrorModel::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::ErrorModel")
-        .SetParent<Object> ()
-        .SetGroupName ("Network")
+      static TypeId tid = TypeId("ns3::ErrorModel")
+        .SetParent<Object>()
+        .SetGroupName("Network")
         ;
       return tid;
     }
 
-    ErrorModel::ErrorModel ()
+    ErrorModel::ErrorModel()
     {
     }
 
-    ErrorModel::~ErrorModel ()
+    ErrorModel::~ErrorModel()
     {
     }
 
-    NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
+    NS_OBJECT_ENSURE_REGISTERED(RateErrorModel);
 
-    TypeId RateErrorModel::GetTypeId ()
+    TypeId RateErrorModel::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::RateErrorModel")
-        .SetParent<ErrorModel> ()
-        .SetGroupName ("Network")
-        .AddConstructor<RateErrorModel> ()
+      static TypeId tid = TypeId("ns3::RateErrorModel")
+        .SetParent<ErrorModel>()
+        .SetGroupName("Network")
+        .AddConstructor<RateErrorModel>()
         ;
       return tid;
     }
 
-    RateErrorModel::RateErrorModel ()
+    RateErrorModel::RateErrorModel()
     {
     }
 
-    RateErrorModel::~RateErrorModel ()
+    RateErrorModel::~RateErrorModel()
     {
     }
 
-What is the ``GetTypeId ()`` function? This function does a few things.  It
+What is the ``GetTypeId()`` function? This function does a few things.  It
 registers a unique string into the TypeId system. It establishes  the hierarchy
 of objects in the attribute system (via ``SetParent``). It also declares that
 certain objects can be created via the object creation framework
 (``AddConstructor``).
 
-The macro ``NS_OBJECT_ENSURE_REGISTERED (classname)`` is needed also once for
+The macro ``NS_OBJECT_ENSURE_REGISTERED(classname)`` is needed also once for
 every class that defines a new GetTypeId method, and it does the actual
 registration of the class into the system.  The :ref:`Object-model` chapter
 discusses this in more detail.
@@ -434,35 +434,35 @@ Add Accessor
 ::
 
     void
-    PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
+    PointToPointNetDevice::SetReceiveErrorModel(Ptr<ErrorModel> em)
     {
-      NS_LOG_FUNCTION (this << em);
+      NS_LOG_FUNCTION(this << em);
       m_receiveErrorModel = em;
     }
 
-       .AddAttribute ("ReceiveErrorModel",
+       .AddAttribute("ReceiveErrorModel",
                        "The receiver error model used to simulate packet loss",
-                       PointerValue (),
-                       MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
-                       MakePointerChecker<ErrorModel> ())
+                       PointerValue(),
+                       MakePointerAccessor(&PointToPointNetDevice::m_receiveErrorModel),
+                       MakePointerChecker<ErrorModel>())
 
 Plumb Into the System
 +++++++++++++++++++++
 
 ::
 
-    void PointToPointNetDevice::Receive (Ptr<Packet> packet)
+    void PointToPointNetDevice::Receive(Ptr<Packet> packet)
     {
-      NS_LOG_FUNCTION (this << packet);
+      NS_LOG_FUNCTION(this << packet);
       uint16_t protocol = 0;
 
-      if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
+      if(m_receiveErrorModel && m_receiveErrorModel->IsCorrupt(packet) )
         {
     //
     // If we have an error model and it indicates that it is time to lose a
     // corrupted packet, don't forward this packet up, let it go.
     //
-          m_dropTrace (packet);
+          m_dropTrace(packet);
         }
       else
         {
@@ -470,12 +470,12 @@ Plumb Into the System
     // Hit the receive trace hook, strip off the point-to-point protocol header
     // and forward this packet up the protocol stack.
     //
-          m_rxTrace (packet);
+          m_rxTrace(packet);
           ProcessHeader(packet, protocol);
-          m_rxCallback (this, packet, protocol, GetRemote ());
-          if (!m_promiscCallback.IsNull ())
-            {           m_promiscCallback (this, packet, protocol, GetRemote (),
-                          GetAddress (), NetDevice::PACKET_HOST);
+          m_rxCallback(this, packet, protocol, GetRemote());
+          if(!m_promiscCallback.IsNull())
+            {           m_promiscCallback(this, packet, protocol, GetRemote(),
+                          GetAddress(), NetDevice::PACKET_HOST);
             }
         }
     }
@@ -492,13 +492,13 @@ Create Null Functional Script
       // We can obtain a handle to the NetDevice via the channel and node
       // pointers
       Ptr<PointToPointNetDevice> nd3 = PointToPointTopology::GetNetDevice
-        (n3, channel2);
-      Ptr<ErrorModel> em = Create<ErrorModel> ();
-      nd3->SetReceiveErrorModel (em);
+       (n3, channel2);
+      Ptr<ErrorModel> em = Create<ErrorModel>();
+      nd3->SetReceiveErrorModel(em);
 
 
     bool
-    ErrorModel::DoCorrupt (Packet& p)
+    ErrorModel::DoCorrupt(Packet& p)
     {
       NS_LOG_FUNCTION;
       NS_LOG_UNCOND("Corrupt!");
@@ -514,7 +514,7 @@ Add a Subclass
 **************
 
 The trivial base class ErrorModel does not do anything interesting, but it
-provides a useful base class interface (Corrupt () and Reset ()), forwarded to
+provides a useful base class interface (``Corrupt()`` and ``Reset()``), forwarded to
 virtual functions that can be subclassed. Let's next consider what we call a
 BasicErrorModel which is based on the |ns2| ErrorModel class (in
 ``ns-2/queue/errmodel.{cc,h}``).
@@ -542,24 +542,24 @@ We declare BasicErrorModel to be a subclass of ErrorModel as follows,::
     class BasicErrorModel : public ErrorModel
     {
     public:
-      static TypeId GetTypeId ();
+      static TypeId GetTypeId();
       ...
     private:
       // Implement base class pure virtual functions
-      virtual bool DoCorrupt (Ptr<Packet> p);
-      virtual bool DoReset ();
+      virtual bool DoCorrupt(Ptr<Packet> p);
+      virtual bool DoReset();
       ...
     }
 
 and configure the subclass GetTypeId function by setting a unique TypeId string
 and setting the Parent to ErrorModel::
 
-    TypeId RateErrorModel::GetTypeId ()
+    TypeId RateErrorModel::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::RateErrorModel")
-        .SetParent<ErrorModel> ()
-        .SetGroupName ("Network")
-        .AddConstructor<RateErrorModel> ()
+      static TypeId tid = TypeId("ns3::RateErrorModel")
+        .SetParent<ErrorModel>()
+        .SetGroupName("Network")
+        .AddConstructor<RateErrorModel>()
       ...
 
 Build Core Functions and Unit Tests

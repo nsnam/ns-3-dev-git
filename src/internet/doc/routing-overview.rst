@@ -130,11 +130,11 @@ Ipv[4,6]ListRouting::AddRoutingProtocol
 Classes Ipv4ListRouting and Ipv6ListRouting provides a pure virtual function declaration
 for the method that allows one to add a routing protocol::
 
-  void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                           int16_t priority);
+  void AddRoutingProtocol(Ptr<Ipv4RoutingProtocol> routingProtocol,
+                          int16_t priority);
 
-  void AddRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtocol,
-                           int16_t priority);
+  void AddRoutingProtocol(Ptr<Ipv6RoutingProtocol> routingProtocol,
+                          int16_t priority);
 
 These methods are implemented respectively by class Ipv4ListRoutingImpl and by class
 Ipv6ListRoutingImpl in the internet module.
@@ -148,8 +148,8 @@ in decreasing order of priority to see whether a match is found. Therefore, if
 you want your Ipv4RoutingProtocol to have priority lower than the static
 routing, insert it with priority less than 0; e.g.::
 
-  Ptr<MyRoutingProtocol> myRoutingProto = CreateObject<MyRoutingProtocol> ();
-  listRoutingPtr->AddRoutingProtocol (myRoutingProto, -10);
+  Ptr<MyRoutingProtocol> myRoutingProto = CreateObject<MyRoutingProtocol>();
+  listRoutingPtr->AddRoutingProtocol(myRoutingProto, -10);
 
 Upon calls to RouteOutput() or RouteInput(), the list routing object will search
 the list of routing protocols, in priority order, until a route is found. Such
@@ -195,7 +195,7 @@ will be aggregated to each node.  After IP addresses are configured, the
 following function call will cause all of the nodes that have an Ipv4 interface
 to receive forwarding tables entered automatically by the GlobalRouteManager::
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 *Note:* A reminder that the wifi NetDevice will work but does not take any
 wireless effects into account. For wireless, we recommend OLSR dynamic routing
@@ -204,7 +204,7 @@ described below.
 It is possible to call this function again in the midst of a simulation using
 the following additional public function::
 
-  Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
+  Ipv4GlobalRoutingHelper::RecomputeRoutingTables();
 
 which flushes the old tables, queries the nodes for new interface information,
 and rebuilds the routes.
@@ -212,8 +212,8 @@ and rebuilds the routes.
 For instance, this scheduling call will cause the tables to be rebuilt
 at time 5 seconds::
 
-  Simulator::Schedule (Seconds (5),
-                       &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
+  Simulator::Schedule(Seconds(5),
+                      &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 
 
 There are two attributes that govern the behavior. The first is
@@ -273,11 +273,11 @@ The GlobalRouteManager first walks the list of nodes and aggregates
 a GlobalRouter interface to each one as follows::
 
   typedef std::vector < Ptr<Node> >::iterator Iterator;
-  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+  for (Iterator i = NodeList::Begin(); i != NodeList::End(); i++)
     {
       Ptr<Node> node = *i;
-      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> (node);
-      node->AggregateObject (globalRouter);
+      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter>(node);
+      node->AggregateObject(globalRouter);
     }
 
 This interface is later queried and used to generate a Link State
@@ -429,10 +429,10 @@ The following function is used to add a static multicast route
 to a node::
 
     void
-    Ipv4StaticRouting::AddMulticastRoute (Ipv4Address origin,
-                                          Ipv4Address group,
-                                          uint32_t inputInterface,
-                                          std::vector<uint32_t> outputInterfaces);
+    Ipv4StaticRouting::AddMulticastRoute(Ipv4Address origin,
+                                         Ipv4Address group,
+                                         uint32_t inputInterface,
+                                         std::vector<uint32_t> outputInterfaces);
 
 A multicast route must specify an origin IP address, a multicast group and an
 input network interface index as conditions and provide a vector of output
@@ -452,7 +452,7 @@ through `Ipv4StaticRouting::AddHostRouteTo`.
 Another command sets the default multicast route::
 
     void
-    Ipv4StaticRouting::SetDefaultMulticastRoute (uint32_t outputInterface);
+    Ipv4StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface);
 
 This is the multicast equivalent of the unicast version SetDefaultRoute. We
 tell the routing system what to do in the case where a specific route to a
@@ -472,14 +472,14 @@ found.
 Finally, a number of additional functions are provided to fetch and remove
 multicast routes::
 
-  uint32_t GetNMulticastRoutes () const;
+  uint32_t GetNMulticastRoutes() const;
 
-  Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+  Ipv4MulticastRoute *GetMulticastRoute(uint32_t i) const;
 
-  Ipv4MulticastRoute *GetDefaultMulticastRoute () const;
+  Ipv4MulticastRoute *GetDefaultMulticastRoute() const;
 
-  bool RemoveMulticastRoute (Ipv4Address origin,
-                             Ipv4Address group,
-                             uint32_t inputInterface);
+  bool RemoveMulticastRoute(Ipv4Address origin,
+                            Ipv4Address group,
+                            uint32_t inputInterface);
 
-  void RemoveMulticastRoute (uint32_t index);
+  void RemoveMulticastRoute(uint32_t index);

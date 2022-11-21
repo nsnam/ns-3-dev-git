@@ -40,16 +40,16 @@ This is probably the easiest and most used method. As an example:
 
 ::
 
-    Ptr<Node> n0 = CreateObject<Node> ();
-    Ptr<Node> n1 = CreateObject<Node> ();
-    NodeContainer net (n0, n1);
+    Ptr<Node> n0 = CreateObject<Node>();
+    Ptr<Node> n1 = CreateObject<Node>();
+    NodeContainer net(n0, n1);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net);
+    NetDeviceContainer ndc = csma.Install(net);
 
-    NS_LOG_INFO ("Assign IPv4 Addresses.");
+    NS_LOG_INFO("Assign IPv4 Addresses.");
     Ipv4AddressHelper ipv4;
-    ipv4.SetBase (Ipv4Address ("192.168.1.0"), NetMask ("/24"));
-    Ipv4InterfaceContainer ic = ipv4.Assign (ndc);
+    ipv4.SetBase(Ipv4Address("192.168.1.0"), NetMask("/24"));
+    Ipv4InterfaceContainer ic = ipv4.Assign(ndc);
 
 This method will add two global IPv4 addresses to the nodes.
 
@@ -64,20 +64,20 @@ Alternatively, it is possible to assign a specific address to a node:
 
 ::
 
-    Ptr<Node> n0 = CreateObject<Node> ();
-    NodeContainer net (n0);
+    Ptr<Node> n0 = CreateObject<Node>();
+    NodeContainer net(n0);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net);
+    NetDeviceContainer ndc = csma.Install(net);
 
-    NS_LOG_INFO ("Specifically Assign an IPv4 Address.");
+    NS_LOG_INFO("Specifically Assign an IPv4 Address.");
     Ipv4AddressHelper ipv4;
-    Ptr<NetDevice> device = ndc.Get (0);
-    Ptr<Node> node = device->GetNode ();
-    Ptr<Ipv4> ipv4proto = node->GetObject<Ipv4> ();
+    Ptr<NetDevice> device = ndc.Get(0);
+    Ptr<Node> node = device->GetNode();
+    Ptr<Ipv4> ipv4proto = node->GetObject<Ipv4>();
     int32_t ifIndex = 0;
-    ifIndex = ipv4proto->GetInterfaceForDevice (device);
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("192.168.1.42"), NetMask ("/24"));
-    ipv4proto->AddAddress (ifIndex, ipv4Addr);
+    ifIndex = ipv4proto->GetInterfaceForDevice(device);
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress(Ipv4Address("192.168.1.42"), NetMask("/24"));
+    ipv4proto->AddAddress(ifIndex, ipv4Addr);
 
 
 DHCP assigned IPv4 addresses
@@ -264,25 +264,25 @@ The typical usages are::
 .. code-block:: c++
 
   NeighborCacheHelper neighborCache;
-  neighborCache.PopulateNeighborCache ();
+  neighborCache.PopulateNeighborCache();
 
 * Populate neighbor ARP caches for a given channel:
 
 .. code-block:: c++
 
   NeighborCacheHelper neighborCache;
-  neighborCache.PopulateNeighborCache (channel);     // channel is the Ptr<Channel> want to generate ARP caches
+  neighborCache.PopulateNeighborCache(channel);     // channel is the Ptr<Channel> want to generate ARP caches
 
 * Populate neighbor ARP caches for devices in a given NetDeviceContainer:
 
 .. code-block:: c++
 
   NeighborCacheHelper neighborCache;
-  neighborCache.PopulateNeighborCache (netDevices);   // netDevices is the NetDeviceContainer want to generate ARP caches
+  neighborCache.PopulateNeighborCache(netDevices);   // netDevices is the NetDeviceContainer want to generate ARP caches
 
 * Populate neighbor ARP caches for a given Ipv4InterfaceContainer:
 
 .. code-block:: c++
 
   NeighborCacheHelper neighborCache;
-  neighborCache.PopulateNeighborCache (interfaces);    // interfaces is the Ipv4InterfaceContainer want to generate ARP caches
+  neighborCache.PopulateNeighborCache(interfaces);    // interfaces is the Ipv4InterfaceContainer want to generate ARP caches

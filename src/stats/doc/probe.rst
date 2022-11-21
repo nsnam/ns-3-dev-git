@@ -45,19 +45,19 @@ trace source are as follows:
   complicated structures; for instance, outputting the packet size value
   from a received ns3::Packet.
 * Probes register a name in the ns3::Config namespace (using
-  ``Names::Add ()``) so that other objects may refer to them.
+  ``Names::Add()``) so that other objects may refer to them.
 * Probes provide a static method that allows one to manipulate a Probe
   by name, such as what is done in ns2measure [Cic06]_
 
   ::
 
-    Stat::put ("my_metric", ID, sample);
+    Stat::put("my_metric", ID, sample);
 
   The ns-3 equivalent of the above ns2measure code is, e.g.
 
   ::
 
-    DoubleProbe::SetValueByPath ("/path/to/probe", sample);
+    DoubleProbe::SetValueByPath("/path/to/probe", sample);
 
 Creation
 ########
@@ -74,7 +74,7 @@ just needs to call the |ns3| method ``CreateObject()``:
 
 ::
 
-  Ptr<DoubleProbe> myprobe = CreateObject<DoubleProbe> ();
+  Ptr<DoubleProbe> myprobe = CreateObject<DoubleProbe>();
 
 The declaration above creates DoubleProbes using the default values for its
 attributes.  There are four attributes in the DoubleProbe class; two in the
@@ -90,11 +90,11 @@ method:
 
 ::
 
-  Ptr<DoubleProbe> myprobe = CreateObjectWithAttributes<DoubleProbe> (
-      "Name", StringValue ("myprobe"),
-      "Enabled", BooleanValue (false),
-      "Start", TimeValue (Seconds (100.0)),
-      "Stop", TimeValue (Seconds (1000.0)));
+  Ptr<DoubleProbe> myprobe = CreateObjectWithAttributes<DoubleProbe>(
+      "Name", StringValue("myprobe"),
+      "Enabled", BooleanValue(false),
+      "Start", TimeValue(Seconds(100.0)),
+      "Stop", TimeValue(Seconds(1000.0)));
 
 Start and Stop are Time variables which determine the interval of action
 of the Probe. The Probe will only output data if the current time of the
@@ -128,14 +128,14 @@ probing a Counter exported by an emitter object (class Emitter).
 
 ::
 
-  Ptr<Emitter> emitter = CreateObject<Emitter> ();
-  Names::Add ("/Names/Emitter", emitter);
+  Ptr<Emitter> emitter = CreateObject<Emitter>();
+  Names::Add("/Names/Emitter", emitter);
   ...
 
-  Ptr<DoubleProbe> probe1 = CreateObject<DoubleProbe> ();
+  Ptr<DoubleProbe> probe1 = CreateObject<DoubleProbe>();
 
   // Connect the probe to the emitter's Counter
-  bool connected = probe1->ConnectByObject ("Counter", emitter);
+  bool connected = probe1->ConnectByObject("Counter", emitter);
 
 The following code is probing the same Counter exported by the same
 emitter object.  This DoubleProbe, however, is using a path in the
@@ -145,10 +145,10 @@ otherwise, the ConnectByPath would not work.
 
 ::
 
-  Ptr<DoubleProbe> probe2 = CreateObject<DoubleProbe> ();
+  Ptr<DoubleProbe> probe2 = CreateObject<DoubleProbe>();
 
   // Note, no return value is checked here
-  probe2->ConnectByPath ("/Names/Emitter/Counter");
+  probe2->ConnectByPath("/Names/Emitter/Counter");
 
 The next DoubleProbe shown that is shown below will have its value set using
 its path in the configuration namespace.  Note that this time the
@@ -157,22 +157,22 @@ created.
 
 ::
 
-  Ptr<DoubleProbe> probe3 = CreateObject<DoubleProbe> ();
-  probe3->SetName ("StaticallyAccessedProbe");
+  Ptr<DoubleProbe> probe3 = CreateObject<DoubleProbe>();
+  probe3->SetName("StaticallyAccessedProbe");
 
   // We must add it to the config database
-  Names::Add ("/Names/Probes", probe3->GetName (), probe3);
+  Names::Add("/Names/Probes", probe3->GetName(), probe3);
 
 The emitter's Count() function is now able to set the value for this DoubleProbe as follows:
 
 ::
 
   void
-  Emitter::Count ()
+  Emitter::Count()
   {
     ...
     m_counter += 1.0;
-    DoubleProbe::SetValueByPath ("/Names/StaticallyAccessedProbe", m_counter);
+    DoubleProbe::SetValueByPath("/Names/StaticallyAccessedProbe", m_counter);
     ...
   }
 
@@ -197,7 +197,7 @@ a downstream object can hook a trace sink (NotifyViaProbe) to this as follows:
 
 ::
 
-  connected = probe1->TraceConnect ("Output", probe1->GetName (), MakeCallback (&NotifyViaProbe));
+  connected = probe1->TraceConnect("Output", probe1->GetName(), MakeCallback(&NotifyViaProbe));
 
 
 Other probes
@@ -259,13 +259,13 @@ particular, two ways of emitting data are shown:
   ::
 
     void
-    Emitter::Count ()
+    Emitter::Count()
     {
-      NS_LOG_FUNCTION (this);
-      NS_LOG_DEBUG ("Counting at " << Simulator::Now ().GetSeconds ());
+      NS_LOG_FUNCTION(this);
+      NS_LOG_DEBUG("Counting at " << Simulator::Now().GetSeconds());
       m_counter += 1.0;
-      DoubleProbe::SetValueByPath ("/Names/StaticallyAccessedProbe", m_counter);
-      Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
+      DoubleProbe::SetValueByPath("/Names/StaticallyAccessedProbe", m_counter);
+      Simulator::Schedule(Seconds(m_var->GetValue()), &Emitter::Count, this);
     }
 
 Let's look at the Probe more carefully.  Probes can receive their values
@@ -287,21 +287,21 @@ with a Probe object.  We'll call this case 0) below.
 
   // This is a function to test hooking a raw function to the trace source
   void
-  NotifyViaTraceSource (std::string context, double oldVal, double newVal)
+  NotifyViaTraceSource(std::string context, double oldVal, double newVal)
   {
-    NS_LOG_DEBUG ("context: " << context << " old " << oldVal << " new " << newVal);
+    NS_LOG_DEBUG("context: " << context << " old " << oldVal << " new " << newVal);
   }
 
 First, the emitter needs to be setup:
 
 ::
 
-    Ptr<Emitter> emitter = CreateObject<Emitter> ();
-    Names::Add ("/Names/Emitter", emitter);
+    Ptr<Emitter> emitter = CreateObject<Emitter>();
+    Names::Add("/Names/Emitter", emitter);
 
     // The Emitter object is not associated with an ns-3 node, so
     // it won't get started automatically, so we need to do this ourselves
-    Simulator::Schedule (Seconds (0.0), &Emitter::Start, emitter);
+    Simulator::Schedule(Seconds(0.0), &Emitter::Start, emitter);
 
 The various DoubleProbes interact with the emitter in the example as
 shown below.
@@ -313,8 +313,8 @@ Case 0):
     // The below shows typical functionality without a probe
     // (connect a sink function to a trace source)
     //
-    connected = emitter->TraceConnect ("Counter", "sample context", MakeCallback (&NotifyViaTraceSource));
-    NS_ASSERT_MSG (connected, "Trace source not connected");
+    connected = emitter->TraceConnect("Counter", "sample context", MakeCallback(&NotifyViaTraceSource));
+    NS_ASSERT_MSG(connected, "Trace source not connected");
 
 
 case 1):
@@ -326,13 +326,13 @@ case 1):
     //
 
     // probe1 will be hooked to the Emitter trace source
-    Ptr<DoubleProbe> probe1 = CreateObject<DoubleProbe> ();
+    Ptr<DoubleProbe> probe1 = CreateObject<DoubleProbe>();
     // the probe's name can serve as its context in the tracing
-    probe1->SetName ("ObjectProbe");
+    probe1->SetName("ObjectProbe");
 
     // Connect the probe to the emitter's Counter
-    connected = probe1->ConnectByObject ("Counter", emitter);
-    NS_ASSERT_MSG (connected, "Trace source not connected to probe1");
+    connected = probe1->ConnectByObject("Counter", emitter);
+    NS_ASSERT_MSG(connected, "Trace source not connected to probe1");
 
 case 2):
 
@@ -344,13 +344,13 @@ case 2):
     //
 
     // Create another similar probe; this will hook up via a Config path
-    Ptr<DoubleProbe> probe2 = CreateObject<DoubleProbe> ();
-    probe2->SetName ("PathProbe");
+    Ptr<DoubleProbe> probe2 = CreateObject<DoubleProbe>();
+    probe2->SetName("PathProbe");
 
     // Note, no return value is checked here
-    probe2->ConnectByPath ("/Names/Emitter/Counter");
+    probe2->ConnectByPath("/Names/Emitter/Counter");
 
-case 4) (case 3 is not shown in this example):
+case 4)(case 3 is not shown in this example):
 
   ::
 
@@ -358,10 +358,10 @@ case 4) (case 3 is not shown in this example):
     // Probe3 will be called by the emitter directly through the
     // static method SetValueByPath().
     //
-    Ptr<DoubleProbe> probe3 = CreateObject<DoubleProbe> ();
-    probe3->SetName ("StaticallyAccessedProbe");
+    Ptr<DoubleProbe> probe3 = CreateObject<DoubleProbe>();
+    probe3->SetName("StaticallyAccessedProbe");
     // We must add it to the config database
-    Names::Add ("/Names/Probes", probe3->GetName (), probe3);
+    Names::Add("/Names/Probes", probe3->GetName(), probe3);
 
 And finally, the example shows how the probes can be hooked to
 generate output:
@@ -371,10 +371,10 @@ generate output:
     // The probe itself should generate output.  The context that we provide
     // to this probe (in this case, the probe name) will help to disambiguate
     // the source of the trace
-    connected = probe3->TraceConnect ("Output",
-                                      "/Names/Probes/StaticallyAccessedProbe/Output",
-                                      MakeCallback (&NotifyViaProbe));
-    NS_ASSERT_MSG (connected, "Trace source not .. connected to probe3 Output");
+    connected = probe3->TraceConnect("Output",
+                                     "/Names/Probes/StaticallyAccessedProbe/Output",
+                                     MakeCallback(&NotifyViaProbe));
+    NS_ASSERT_MSG(connected, "Trace source not .. connected to probe3 Output");
 
 The following callback is hooked to the Probe in this example for
 illustrative purposes; normally, the Probe would be hooked to a
@@ -384,9 +384,9 @@ Collector object.
 
   // This is a function to test hooking it to the probe output
   void
-  NotifyViaProbe (std::string context, double oldVal, double newVal)
+  NotifyViaProbe(std::string context, double oldVal, double newVal)
   {
-    NS_LOG_DEBUG ("context: " << context << " old " << oldVal << " new " << newVal);
+    NS_LOG_DEBUG("context: " << context << " old " << oldVal << " new " << newVal);
   }
 
 
@@ -424,17 +424,17 @@ itself (`Output`) and a count of the number of bytes in the packet
 ::
 
     TypeId
-    Ipv4PacketProbe::GetTypeId ()
+    Ipv4PacketProbe::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::Ipv4PacketProbe")
-        .SetParent<Probe> ()
-        .AddConstructor<Ipv4PacketProbe> ()
-        .AddTraceSource ( "Output",
-                          "The packet plus its IPv4 object and interface that serve as the output for this probe",
-                          MakeTraceSourceAccessor (&Ipv4PacketProbe::m_output))
-        .AddTraceSource ( "OutputBytes",
-                          "The number of bytes in the packet",
-                          MakeTraceSourceAccessor (&Ipv4PacketProbe::m_outputBytes))
+      static TypeId tid = TypeId("ns3::Ipv4PacketProbe")
+        .SetParent<Probe>()
+        .AddConstructor<Ipv4PacketProbe>()
+        .AddTraceSource( "Output",
+                         "The packet plus its IPv4 object and interface that serve as the output for this probe",
+                         MakeTraceSourceAccessor(&Ipv4PacketProbe::m_output))
+        .AddTraceSource( "OutputBytes",
+                         "The number of bytes in the packet",
+                         MakeTraceSourceAccessor(&Ipv4PacketProbe::m_outputBytes))
       ;
       return tid;
     }
@@ -447,18 +447,18 @@ output the number of bytes on the `OutputBytes` trace source.
 ::
 
     void
-    Ipv4PacketProbe::TraceSink (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+    Ipv4PacketProbe::TraceSink(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
     {
-      NS_LOG_FUNCTION (this << packet << ipv4 << interface);
-      if (IsEnabled ())
+      NS_LOG_FUNCTION(this << packet << ipv4 << interface);
+      if (IsEnabled())
         {
           m_packet    = packet;
           m_ipv4      = ipv4;
           m_interface = interface;
-          m_output (packet, ipv4, interface);
+          m_output(packet, ipv4, interface);
 
-          uint32_t packetSizeNew = packet->GetSize ();
-          m_outputBytes (m_packetSizeOld, packetSizeNew);
+          uint32_t packetSizeNew = packet->GetSize();
+          m_outputBytes(m_packetSizeOld, packetSizeNew);
           m_packetSizeOld = packetSizeNew;
         }
     }

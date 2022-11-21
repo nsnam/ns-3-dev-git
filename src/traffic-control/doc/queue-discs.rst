@@ -211,9 +211,9 @@ the pfifo_fast can be configured as follows:
 .. sourcecode:: cpp
 
   TrafficControlHelper tch;
-  uint16_t handle = tch.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
-  tch.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxSize", StringValue ("1000p"));
-  QueueDiscContainer qdiscs = tch.Install (devices);
+  uint16_t handle = tch.SetRootQueueDisc("ns3::PfifoFastQueueDisc");
+  tch.AddInternalQueues(handle, 3, "ns3::DropTailQueue", "MaxSize", StringValue("1000p"));
+  QueueDiscContainer qdiscs = tch.Install(devices);
 
 The above code adds three internal queues to the root queue disc of type PfifoFast.
 With the above configuration, the config path of the root queue disc installed on the j-th
@@ -235,7 +235,7 @@ method of the TrafficControlHelper:
 .. sourcecode:: cpp
 
   TrafficControlHelper tch;
-  tch.Uninstall (device);
+  tch.Uninstall(device);
 
 Note that the Uninstall method must be called after ``InternetStackHelper::Install()`` is called
 and after that IP addresses are configured using ``Ipv{4,6}AddressHelper``. For an example program,

@@ -69,20 +69,20 @@ output type, where the output type defaults to PNG if unspecified):
 
 ::
 
-   void ConfigurePlot (const std::string &outputFileNameWithoutExtension,
-                       const std::string &title,
-                       const std::string &xLegend,
-                       const std::string &yLegend,
-                       const std::string &terminalType = ".png");
+   void ConfigurePlot(const std::string &outputFileNameWithoutExtension,
+                      const std::string &title,
+                      const std::string &xLegend,
+                      const std::string &yLegend,
+                      const std::string &terminalType = ".png");
 
 The second statement hooks the trace source of interest:
 
 ::
 
-   void PlotProbe (const std::string &typeId,
-                   const std::string &path,
-                   const std::string &probeTraceSource,
-                   const std::string &title);
+   void PlotProbe(const std::string &typeId,
+                  const std::string &path,
+                  const std::string &probeTraceSource,
+                  const std::string &title);
 
 The arguments are as follows:
 
@@ -105,21 +105,21 @@ A fully worked example (from ``seventh.cc``) is shown below:
    // Configure the plot.  The first argument is the file name prefix
    // for the output files generated.  The second, third, and fourth
    // arguments are, respectively, the plot title, x-axis, and y-axis labels
-   plotHelper.ConfigurePlot ("seventh-packet-byte-count",
-                             "Packet Byte Count vs. Time",
-                             "Time (Seconds)",
-                             "Packet Byte Count",
-                             "png");
+   plotHelper.ConfigurePlot("seventh-packet-byte-count",
+                            "Packet Byte Count vs. Time",
+                            "Time(Seconds)",
+                            "Packet Byte Count",
+                            "png");
 
    // Specify the probe type, trace source path (in configuration namespace), and
    // probe output trace source ("OutputBytes") to plot.  The fourth argument
    // specifies the name of the data series label on the plot.  The last
    // argument formats the plot by specifying where the key should be placed.
-   plotHelper.PlotProbe (probeType,
-                         tracePath,
-                         "OutputBytes",
-                         "Packet Byte Count",
-                         GnuplotAggregator::KEY_BELOW);
+   plotHelper.PlotProbe(probeType,
+                        tracePath,
+                        "OutputBytes",
+                        "Packet Byte Count",
+                        GnuplotAggregator::KEY_BELOW);
 
 In this example, the ``probeType`` and ``tracePath`` are as follows (for IPv4):
 
@@ -176,11 +176,11 @@ It has the following prototype:
 
 ::
 
-  void ConfigurePlot (const std::string &outputFileNameWithoutExtension,
-                      const std::string &title,
-                      const std::string &xLegend,
-                      const std::string &yLegend,
-                      const std::string &terminalType = ".png");
+  void ConfigurePlot(const std::string &outputFileNameWithoutExtension,
+                     const std::string &title,
+                     const std::string &xLegend,
+                     const std::string &yLegend,
+                     const std::string &terminalType = ".png");
 
 It has the following arguments:
 
@@ -217,11 +217,11 @@ An example of how to use this function can be seen in the
 
 ::
 
-  plotHelper.ConfigurePlot ("seventh-packet-byte-count",
-                            "Packet Byte Count vs. Time",
-                            "Time (Seconds)",
-                            "Packet Byte Count",
-                            "png");
+  plotHelper.ConfigurePlot("seventh-packet-byte-count",
+                           "Packet Byte Count vs. Time",
+                           "Time(Seconds)",
+                           "Packet Byte Count",
+                           "png");
 
 GnuplotHelper PlotProbe
 #######################
@@ -233,11 +233,11 @@ It has the following prototype:
 
 ::
 
-  void PlotProbe (const std::string &typeId,
-                  const std::string &path,
-                  const std::string &probeTraceSource,
-                  const std::string &title,
-                  enum GnuplotAggregator::KeyLocation keyLocation = GnuplotAggregator::KEY_INSIDE);
+  void PlotProbe(const std::string &typeId,
+                 const std::string &path,
+                 const std::string &probeTraceSource,
+                 const std::string &title,
+                 enum GnuplotAggregator::KeyLocation keyLocation = GnuplotAggregator::KEY_INSIDE);
 
 It has the following arguments:
 
@@ -283,11 +283,11 @@ variable substitution) as follows:
 
 ::
 
-  plotHelper.PlotProbe ("ns3::Ipv4PacketProbe",
-                        "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
-                        "OutputBytes",
-                        "Packet Byte Count",
-                        GnuplotAggregator::KEY_BELOW);
+  plotHelper.PlotProbe("ns3::Ipv4PacketProbe",
+                       "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
+                       "OutputBytes",
+                       "Packet Byte Count",
+                       GnuplotAggregator::KEY_BELOW);
 
 Other Examples
 ##############
@@ -311,8 +311,8 @@ value as a trace source.
 
 ::
 
-  Ptr<Emitter> emitter = CreateObject<Emitter> ();
-  Names::Add ("/Names/Emitter", emitter);
+  Ptr<Emitter> emitter = CreateObject<Emitter>();
+  Names::Add("/Names/Emitter", emitter);
 
 Note that because there are no wildcards in the path
 used below, only 1 datastream was drawn in the plot.
@@ -326,19 +326,19 @@ see if there were wildcards in the path.
   GnuplotHelper plotHelper;
 
   // Configure the plot.
-  plotHelper.ConfigurePlot ("gnuplot-helper-example",
-                            "Emitter Counts vs. Time",
-                            "Time (Seconds)",
-                            "Emitter Count",
-                            "png");
+  plotHelper.ConfigurePlot("gnuplot-helper-example",
+                           "Emitter Counts vs. Time",
+                           "Time(Seconds)",
+                           "Emitter Count",
+                           "png");
 
   // Plot the values generated by the probe.  The path that we provide
   // helps to disambiguate the source of the trace.
-  plotHelper.PlotProbe ("ns3::Uinteger32Probe",
-                        "/Names/Emitter/Counter",
-                        "Output",
-                        "Emitter Count",
-                        GnuplotAggregator::KEY_INSIDE);
+  plotHelper.PlotProbe("ns3::Uinteger32Probe",
+                       "/Names/Emitter/Counter",
+                       "Output",
+                       "Emitter Count",
+                       GnuplotAggregator::KEY_INSIDE);
 
 FileHelper
 ==========
@@ -425,16 +425,16 @@ there are no matches for a path that contains wildcards.
    FileHelper fileHelper;
 
    // Configure the file to be written.
-   fileHelper.ConfigureFile ("seventh-packet-byte-count",
-                             FileAggregator::FORMATTED);
+   fileHelper.ConfigureFile("seventh-packet-byte-count",
+                            FileAggregator::FORMATTED);
 
    // Set the labels for this formatted output file.
-   fileHelper.Set2dFormat ("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
+   fileHelper.Set2dFormat("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
 
    // Write the values generated by the probe.
-   fileHelper.WriteProbe ("ns3::Ipv4PacketProbe",
-                          "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
-                          "OutputBytes");
+   fileHelper.WriteProbe("ns3::Ipv4PacketProbe",
+                         "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
+                         "OutputBytes");
 
 FileHelper ConfigureFile
 ########################
@@ -446,8 +446,8 @@ It has the following prototype:
 
 ::
 
-  void ConfigureFile (const std::string &outputFileNameWithoutExtension,
-                      enum FileAggregator::FileType fileType = FileAggregator::SPACE_SEPARATED);
+  void ConfigureFile(const std::string &outputFileNameWithoutExtension,
+                     enum FileAggregator::FileType fileType = FileAggregator::SPACE_SEPARATED);
 
 It has the following arguments:
 
@@ -474,8 +474,8 @@ An example of how to use this function can be seen in the
 
 ::
 
-  fileHelper.ConfigureFile ("seventh-packet-byte-count",
-                            FileAggregator::FORMATTED);
+  fileHelper.ConfigureFile("seventh-packet-byte-count",
+                           FileAggregator::FORMATTED);
 
 FileHelper WriteProbe
 #####################
@@ -487,9 +487,9 @@ It has the following prototype:
 
 ::
 
-  void WriteProbe (const std::string &typeId,
-                   const std::string &path,
-                   const std::string &probeTraceSource);
+  void WriteProbe(const std::string &typeId,
+                  const std::string &path,
+                  const std::string &probeTraceSource);
 
 It has the following arguments:
 
@@ -530,9 +530,9 @@ An example of how to use this function can be seen in the
 
 ::
 
-  fileHelper.WriteProbe ("ns3::Ipv4PacketProbe",
-                         "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
-                         "OutputBytes");
+  fileHelper.WriteProbe("ns3::Ipv4PacketProbe",
+                        "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
+                        "OutputBytes");
 
 Other Examples
 ##############
@@ -567,8 +567,8 @@ value as a trace source.
 
 ::
 
-  Ptr<Emitter> emitter = CreateObject<Emitter> ();
-  Names::Add ("/Names/Emitter", emitter);
+  Ptr<Emitter> emitter = CreateObject<Emitter>();
+  Names::Add("/Names/Emitter", emitter);
 
 Note that because there are no wildcards in the path
 used below, only 1 text file was created.
@@ -582,17 +582,17 @@ you would see if there were wildcards in the path.
   FileHelper fileHelper;
 
   // Configure the file to be written.
-  fileHelper.ConfigureFile ("file-helper-example",
-                            FileAggregator::FORMATTED);
+  fileHelper.ConfigureFile("file-helper-example",
+                           FileAggregator::FORMATTED);
 
   // Set the labels for this formatted output file.
-  fileHelper.Set2dFormat ("Time (Seconds) = %.3e\tCount = %.0f");
+  fileHelper.Set2dFormat("Time (Seconds) = %.3e\tCount = %.0f");
 
   // Write the values generated by the probe.  The path that we
   // provide helps to disambiguate the source of the trace.
-  fileHelper.WriteProbe ("ns3::Uinteger32Probe",
-                         "/Names/Emitter/Counter",
-                         "Output");
+  fileHelper.WriteProbe("ns3::Uinteger32Probe",
+                        "/Names/Emitter/Counter",
+                        "Output");
 
 Scope and Limitations
 =====================

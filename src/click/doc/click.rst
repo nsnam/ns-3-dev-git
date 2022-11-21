@@ -142,9 +142,9 @@ class in your simulation script. For instance:
 .. sourcecode:: cpp
 
   ClickInternetStackHelper click;
-  click.SetClickFile (myNodeContainer, "nsclick-simple-lan.click");
-  click.SetRoutingTableElement (myNodeContainer, "u/rt");
-  click.Install (myNodeContainer);
+  click.SetClickFile(myNodeContainer, "nsclick-simple-lan.click");
+  click.SetRoutingTableElement(myNodeContainer, "u/rt");
+  click.Install(myNodeContainer);
 
 The example scripts inside ``src/click/examples/`` demonstrate the use of Click based nodes
 in different scenarios. The helper source can be found inside ``src/click/helper/click-internet-stack-helper.{h,cc}``

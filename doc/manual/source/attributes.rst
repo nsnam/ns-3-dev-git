@@ -32,7 +32,7 @@ specificity, these are:
 +=====================================+====================================+
 | Default Attribute values set when   | Affect all instances of the class. |
 | Attributes are defined in           |                                    |
-| :cpp:func:`GetTypeId ()`.           |                                    |
+| :cpp:func:`GetTypeId()`.            |                                    |
 +-------------------------------------+------------------------------------+
 | :cpp:class:`CommandLine`            | Affect all future instances.       |
 | :cpp:func:`Config::SetDefault()`    |                                    |
@@ -44,8 +44,8 @@ specificity, these are:
 | Helper methods with (string/        | Affects all instances created by   |
 | AttributeValue) parameter pairs     | the helper.                        |
 +-------------------------------------+------------------------------------+
-| :cpp:func:`MyClass::SetX ()`        | Alters this particular instance.   |
-| :cpp:func:`Object::SetAttribute ()` | Generally this is the only form    |
+| :cpp:func:`MyClass::SetX()`         | Alters this particular instance.   |
+| :cpp:func:`Object::SetAttribute()`  | Generally this is the only form    |
 | :cpp:func:`Config::Set()`           | which can be scheduled to alter    |
 |                                     | an instance once the simulation    |
 |                                     | is running.                        |
@@ -99,7 +99,7 @@ references to heap-allocated objects that may cause memory leaks.
 For most basic usage (syntax), treat a smart pointer like a regular pointer::
 
   Ptr<WifiNetDevice> nd = ...;
-  nd->CallSomeFunction ();
+  nd->CallSomeFunction();
   // etc.
 
 So how do you get a smart pointer to an object, as in the first line
@@ -111,24 +111,24 @@ CreateObject
 As we discussed above in :ref:`Memory-management-and-class-Ptr`, at the
 lowest-level API, objects of type :cpp:class:`Object` are not instantiated
 using ``operator new`` as usual but instead by a templated function called
-:cpp:func:`CreateObject ()`.
+:cpp:func:`CreateObject()`.
 
 A typical way to create such an object is as follows::
 
-  Ptr<WifiNetDevice> nd = CreateObject<WifiNetDevice> ();
+  Ptr<WifiNetDevice> nd = CreateObject<WifiNetDevice>();
 
 You can think of this as being functionally equivalent to::
 
-  WifiNetDevice* nd = new WifiNetDevice ();
+  WifiNetDevice* nd = new WifiNetDevice();
 
 Objects that derive from :cpp:class:`Object` must be allocated on the heap
-using :cpp:func:`CreateObject ()`. Those deriving from :cpp:class:`ObjectBase`,
+using :cpp:func:`CreateObject()`. Those deriving from :cpp:class:`ObjectBase`,
 such as |ns3| helper functions and packet headers and trailers,
 can be allocated on the stack.
 
-In some scripts, you may not see a lot of :cpp:func:`CreateObject ()` calls
+In some scripts, you may not see a lot of :cpp:func:`CreateObject()` calls
 in the code; this is because there are some helper objects in effect
-that are doing the :cpp:func:`CreateObject ()` calls for you.
+that are doing the :cpp:func:`CreateObject()` calls for you.
 
 TypeId
 ++++++
@@ -150,39 +150,39 @@ Putting all of these concepts together, let's look at a specific
 example: class :cpp:class:`Node`.
 
 The public header file ``node.h`` has a declaration that includes
-a static :cpp:func:`GetTypeId ()` function call::
+a static :cpp:func:`GetTypeId()` function call::
 
     class Node : public Object
     {
     public:
-      static TypeId GetTypeId ();
+      static TypeId GetTypeId();
       ...
 
 This is defined in the ``node.cc`` file as follows::
 
     TypeId
-    Node::GetTypeId ()
+    Node::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::Node")
-        .SetParent<Object> ()
-        .SetGroupName ("Network")
-        .AddConstructor<Node> ()
-        .AddAttribute ("DeviceList",
-                       "The list of devices associated to this Node.",
-                       ObjectVectorValue (),
-                       MakeObjectVectorAccessor (&Node::m_devices),
-                       MakeObjectVectorChecker<NetDevice> ())
-        .AddAttribute ("ApplicationList",
-                       "The list of applications associated to this Node.",
-                       ObjectVectorValue (),
-                       MakeObjectVectorAccessor (&Node::m_applications),
-                       MakeObjectVectorChecker<Application> ())
-        .AddAttribute ("Id",
-                       "The id (unique integer) of this Node.",
-                       TypeId::ATTR_GET, // allow only getting it.
-                       UintegerValue (0),
-                       MakeUintegerAccessor (&Node::m_id),
-                       MakeUintegerChecker<uint32_t> ())
+      static TypeId tid = TypeId("ns3::Node")
+        .SetParent<Object>()
+        .SetGroupName("Network")
+        .AddConstructor<Node>()
+        .AddAttribute("DeviceList",
+                      "The list of devices associated to this Node.",
+                      ObjectVectorValue(),
+                      MakeObjectVectorAccessor(&Node::m_devices),
+                      MakeObjectVectorChecker<NetDevice>())
+        .AddAttribute("ApplicationList",
+                      "The list of applications associated to this Node.",
+                      ObjectVectorValue(),
+                      MakeObjectVectorAccessor(&Node::m_applications),
+                      MakeObjectVectorChecker<Application>())
+        .AddAttribute("Id",
+                      "The id(unique integer) of this Node.",
+                      TypeId::ATTR_GET, // allow only getting it.
+                      UintegerValue(0),
+                      MakeUintegerAccessor(&Node::m_id),
+                      MakeUintegerChecker<uint32_t>())
         ;
       return tid;
     }
@@ -192,38 +192,38 @@ as an extended form of run time type information (RTTI). The C++ language
 includes a simple kind of RTTI in order to support ``dynamic_cast`` and
 ``typeid`` operators.
 
-The :cpp:func:`SetParent<Object> ()` call in the definition above is used in
+The :cpp:func:`SetParent<Object>()` call in the definition above is used in
 conjunction with our object aggregation mechanisms to allow safe up- and
-down-casting in inheritance trees during :cpp:func:`GetObject ()`.
+down-casting in inheritance trees during :cpp:func:`GetObject()`.
 It also enables subclasses to inherit the Attributes of their parent class.
 
-The :cpp:func:`AddConstructor<Node> ()` call is used in conjunction
+The :cpp:func:`AddConstructor<Node>()` call is used in conjunction
 with our abstract object factory mechanisms to allow us to construct
 C++ objects without forcing a user to know the concrete class of
 the object she is building.
 
-The three calls to :cpp:func:`AddAttribute ()` associate a given string
+The three calls to :cpp:func:`AddAttribute()` associate a given string
 with a strongly typed value in the class. Notice that you must provide
 a help string which may be displayed, for example, *via* command line
 processors. Each :cpp:class:`Attribute` is associated with mechanisms
 for accessing the underlying member variable in the object (for example,
-:cpp:func:`MakeUintegerAccessor ()` tells the generic :cpp:class:`Attribute`
+:cpp:func:`MakeUintegerAccessor()` tells the generic :cpp:class:`Attribute`
 code how to get to the node ID above). There are also "Checker" methods which
 are used to validate values against range limitations, such as maximum
 and minimum allowed values.
 
 When users want to create Nodes, they will usually call some form of
-:cpp:func:`CreateObject ()`,::
+:cpp:func:`CreateObject()`,::
 
-    Ptr<Node> n = CreateObject<Node> ();
+    Ptr<Node> n = CreateObject<Node>();
 
 or more abstractly, using an object factory, you can create a
 :cpp:class:`Node` object without even knowing the concrete C++ type::
 
     ObjectFactory factory;
     const std::string typeId = "ns3::Node'';
-    factory.SetTypeId (typeId);
-    Ptr<Object> node = factory.Create <Object> ();
+    factory.SetTypeId(typeId);
+    Ptr<Object> node = factory.Create <Object>();
 
 Both of these methods result in fully initialized attributes being available
 in the resulting :cpp:class:`Object` instances.
@@ -359,7 +359,7 @@ the following::
 
     class QueueBase : public Object {
     public:
-      static TypeId GetTypeId ();
+      static TypeId GetTypeId();
       ...
 
     private:
@@ -408,34 +408,34 @@ Let's consider things that a user may want to do with the value of
   to that default.
 * Set or get the value on an already instantiated queue.
 
-The above things typically require providing ``Set ()`` and ``Get ()``
+The above things typically require providing ``Set()`` and ``Get()``
 functions, and some type of global default value.
 
 In the |ns3| attribute system, these value definitions and accessor function
 registrations are moved into the :cpp:class:`TypeId` class; *e.g*.::
 
-    NS_OBJECT_ENSURE_REGISTERED (QueueBase);
+    NS_OBJECT_ENSURE_REGISTERED(QueueBase);
 
     TypeId
-    QueueBase::GetTypeId ()
+    QueueBase::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::DropTailQueue")
-        .SetParent<Queue> ()
-        .SetGroupName ("Network")
+      static TypeId tid = TypeId("ns3::DropTailQueue")
+        .SetParent<Queue>()
+        .SetGroupName("Network")
         ...
-        .AddAttribute ("MaxSize",
-                       "The max queue size",
-                       QueueSizeValue (QueueSize ("100p")),
-                       MakeQueueSizeAccessor (&QueueBase::SetMaxSize,
-                                              &QueueBase::GetMaxSize),
-                       MakeQueueSizeChecker ())
+        .AddAttribute("MaxSize",
+                      "The max queue size",
+                      QueueSizeValue(QueueSize("100p")),
+                      MakeQueueSizeAccessor(&QueueBase::SetMaxSize,
+                                            &QueueBase::GetMaxSize),
+                      MakeQueueSizeChecker())
         ...
         ;
 
       return tid;
     }
 
-The :cpp:func:`AddAttribute ()` method is performing a number of things for the
+The :cpp:func:`AddAttribute()` method is performing a number of things for the
 :cpp:member:`m_maxSize` value:
 
 * Binding the (usually private) member variable :cpp:member:`m_maxSize`
@@ -452,7 +452,7 @@ we will provide an example script that shows how users may manipulate
 these values.
 
 Note that initialization of the attribute relies on the macro
-``NS_OBJECT_ENSURE_REGISTERED (QueueBase)`` being called; if you leave this
+``NS_OBJECT_ENSURE_REGISTERED(QueueBase)`` being called; if you leave this
 out of your new class implementation, your attributes will not be initialized
 correctly.
 
@@ -486,13 +486,13 @@ function begins::
     //
 
     int
-    main (int argc, char *argv[])
+    main(int argc, char *argv[])
     {
 
       // Queues in ns-3 are objects that hold items (other objects) in
       // a queue structure.  The C++ implementation uses templates to
       // allow queues to hold various types of items, but the most
-      // common is a pointer to a packet (Ptr<Packet>).
+      // common is a pointer to a packet(Ptr<Packet>).
       //
       // The maximum queue size can either be enforced in bytes ('b') or
       // packets ('p').  A special type called the ns3::QueueSize can
@@ -505,12 +505,12 @@ function begins::
       //
       // Here, we set it to 80 packets.  We could use one of two value types:
       // a string-based value or a QueueSizeValue value
-      Config::SetDefault ("ns3::QueueBase::MaxSize", StringValue ("80p"));
+      Config::SetDefault("ns3::QueueBase::MaxSize", StringValue("80p"));
       // The below function call is redundant
-      Config::SetDefault ("ns3::QueueBase::MaxSize", QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, 80)));
+      Config::SetDefault("ns3::QueueBase::MaxSize", QueueSizeValue(QueueSize(QueueSizeUnit::PACKETS, 80)));
 
 The main thing to notice in the above are the two equivalent calls to
-:cpp:func:`Config::SetDefault ()`.  This is how we set the default value
+:cpp:func:`Config::SetDefault()`.  This is how we set the default value
 for all subsequently instantiated :cpp:class:`DropTailQueue`\s.  We illustrate
 that two types of ``Value`` classes, a :cpp:class:`StringValue` and
 a :cpp:class:`QueueSizeValue` class, can be used to assign the value
@@ -532,21 +532,21 @@ the :cpp:class:`CommandLine` API documentation.
       // For example, via "--ns3::QueueBase::MaxSize=80p"
       CommandLine cmd;
       // This provides yet another way to set the value from the command line:
-      cmd.AddValue ("maxSize", "ns3::QueueBase::MaxSize");
-      cmd.Parse (argc, argv);
+      cmd.AddValue("maxSize", "ns3::QueueBase::MaxSize");
+      cmd.Parse(argc, argv);
 
 Now, we will create a few objects using the low-level API.  Our
 newly created queues will not have :cpp:member:`m_maxSize` initialized to
-0 packets, as defined in the :cpp:func:`QueueBase::GetTypeId ()`
+0 packets, as defined in the :cpp:func:`QueueBase::GetTypeId()`
 function, but to 80 packets, because of what we did above with
 default values.::
 
-    Ptr<Node> n0 = CreateObject<Node> ();
+    Ptr<Node> n0 = CreateObject<Node>();
 
-    Ptr<PointToPointNetDevice> net0 = CreateObject<PointToPointNetDevice> ();
-    n0->AddDevice (net0);
+    Ptr<PointToPointNetDevice> net0 = CreateObject<PointToPointNetDevice>();
+    n0->AddDevice(net0);
 
-    Ptr<Queue<Packet> > q = CreateObject<DropTailQueue<Packet> > ();
+    Ptr<Queue<Packet> > q = CreateObject<DropTailQueue<Packet> >();
     net0->AddQueue(q);
 
 At this point, we have created a single :cpp:class:`Node` (``n0``)
@@ -569,23 +569,23 @@ the helper and low-level APIs; either from the constructors themselves::
 
     Ptr<GridPositionAllocator> p =
       CreateObjectWithAttributes<GridPositionAllocator>
-        ("MinX", DoubleValue (-100.0),
-         "MinY", DoubleValue (-100.0),
-         "DeltaX", DoubleValue (5.0),
-         "DeltaY", DoubleValue (20.0),
-         "GridWidth", UintegerValue (20),
-         "LayoutType", StringValue ("RowFirst"));
+       ("MinX", DoubleValue(-100.0),
+        "MinY", DoubleValue(-100.0),
+        "DeltaX", DoubleValue(5.0),
+        "DeltaY", DoubleValue(20.0),
+        "GridWidth", UintegerValue(20),
+        "LayoutType", StringValue("RowFirst"));
 
 or from the higher-level helper APIs, such as::
 
     mobility.SetPositionAllocator
-        ("ns3::GridPositionAllocator",
-         "MinX", DoubleValue (-100.0),
-         "MinY", DoubleValue (-100.0),
-         "DeltaX", DoubleValue (5.0),
-         "DeltaY", DoubleValue (20.0),
-         "GridWidth", UintegerValue (20),
-         "LayoutType", StringValue ("RowFirst"));
+       ("ns3::GridPositionAllocator",
+        "MinX", DoubleValue(-100.0),
+        "MinY", DoubleValue(-100.0),
+        "DeltaX", DoubleValue(5.0),
+        "DeltaY", DoubleValue(20.0),
+        "GridWidth", UintegerValue(20),
+        "LayoutType", StringValue("RowFirst"));
 
 We don't illustrate it here, but you can also configure an
 :cpp:class:`ObjectFactory` with new values for specific attributes.
@@ -596,9 +596,9 @@ one of the helper APIs for the class.
 To review, there are several ways to set values for attributes for
 class instances *to be created in the future:*
 
-* :cpp:func:`Config::SetDefault ()`
-* :cpp:func:`CommandLine::AddValue ()`
-* :cpp:func:`CreateObjectWithAttributes<> ()`
+* :cpp:func:`Config::SetDefault()`
+* :cpp:func:`CommandLine::AddValue()`
+* :cpp:func:`CreateObjectWithAttributes<>()`
 * Various helper APIs
 
 But what if you've already created an instance, and you want
@@ -624,35 +624,35 @@ First, we observe that we can get a pointer to the (base class)
 ``"TxQueue"``::
 
     PointerValue ptr;
-    net0->GetAttribute ("TxQueue", ptr);
-    Ptr<Queue<Packet> > txQueue = ptr.Get<Queue<Packet> > ();
+    net0->GetAttribute("TxQueue", ptr);
+    Ptr<Queue<Packet> > txQueue = ptr.Get<Queue<Packet> >();
 
-Using the :cpp:func:`GetObject ()` function, we can perform a safe downcast
+Using the :cpp:func:`GetObject()` function, we can perform a safe downcast
 to a :cpp:class:`DropTailQueue`.  The `NS_ASSERT` checks that the pointer is
 valid.
 
 ::
 
-    Ptr<DropTailQueue<Packet> > dtq = txQueue->GetObject <DropTailQueue<Packet> > ();
-    NS_ASSERT (dtq != 0);
+    Ptr<DropTailQueue<Packet> > dtq = txQueue->GetObject <DropTailQueue<Packet> >();
+    NS_ASSERT(dtq);
 
 Next, we can get the value of an attribute on this queue.  We have introduced
 wrapper ``Value`` classes for the underlying data types, similar
 to Java wrappers around these types, since the attribute system stores values
 serialized to strings, and not disparate types.  Here, the attribute value
-is assigned to a :cpp:class:`QueueSizeValue`, and the :cpp:func:`Get ()`
 method on this value produces the (unwrapped) ``QueueSize``.  That is,
+is assigned to a :cpp:class:`QueueSizeValue`, and the :cpp:func:`Get()`
 the variable `limit` is written into by the GetAttribute method.::
 
     QueueSizeValue limit;
-    dtq->GetAttribute ("MaxSize", limit);
-    NS_LOG_INFO ("1.  dtq limit: " << limit.Get ());
+    dtq->GetAttribute("MaxSize", limit);
+    NS_LOG_INFO("1.  dtq limit: " << limit.Get());
 
 Note that the above downcast is not really needed; we could have gotten
 the attribute value directly from ``txQueue``::
 
-    txQueue->GetAttribute ("MaxSize", limit);
-    NS_LOG_INFO ("2.  txQueue limit: " << limit.Get ());
+    txQueue->GetAttribute("MaxSize", limit);
+    NS_LOG_INFO("2.  txQueue limit: " << limit.Get());
 
 Now, let's set it to another value (60 packets).  Let's also make
 use of the StringValue shorthand notation to set the size by
@@ -661,9 +661,9 @@ by either the `p` or `b` character).
 
 ::
 
-    txQueue->SetAttribute ("MaxSize", StringValue ("60p"));
-    txQueue->GetAttribute ("MaxSize", limit);
-    NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get ());
+    txQueue->SetAttribute("MaxSize", StringValue("60p"));
+    txQueue->GetAttribute("MaxSize", limit);
+    NS_LOG_INFO("3.  txQueue limit changed: " << limit.Get());
 
 Config Namespace Path
 =====================
@@ -675,11 +675,11 @@ would like to configure a specific attribute with a single statement.
 
 ::
 
-    Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxSize",
-                 StringValue ("25p"));
-    txQueue->GetAttribute ("MaxSize", limit);
-    NS_LOG_INFO ("4.  txQueue limit changed through namespace: "
-                 << limit.Get ());
+    Config::Set("/NodeList/0/DeviceList/0/TxQueue/MaxSize",
+                StringValue("25p"));
+    txQueue->GetAttribute("MaxSize", limit);
+    NS_LOG_INFO("4.  txQueue limit changed through namespace: "
+                << limit.Get());
 
 The configuration path often has the form of
 ``".../<container name>/<index>/.../<attribute>/<attribute>"``
@@ -691,14 +691,14 @@ ends with a succession of member attributes, in this case the ``"MaxSize"``
 attribute of the ``"TxQueue"`` of the chosen :cpp:class:`NetDevice`.
 
 We could have also used wildcards to set this value for all nodes and all net
-devices (which in this simple example has the same effect as the previous
-:cpp:func:`Config::Set ()`)::
+devices(which in this simple example has the same effect as the previous
+:cpp:func:`Config::Set()`)::
 
-    Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxSize",
-                 StringValue ("15p"));
-    txQueue->GetAttribute ("MaxSize", limit);
-    NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: "
-                 << limit.Get ());
+    Config::Set("/NodeList/*/DeviceList/*/TxQueue/MaxSize",
+                StringValue("15p"));
+    txQueue->GetAttribute("MaxSize", limit);
+    NS_LOG_INFO("5.  txQueue limit changed through wildcarded namespace: "
+                << limit.Get());
 
 If you run this program from the command line, you should see the following
 output corresponding to the steps we took above:
@@ -724,12 +724,12 @@ namespace path.
 
 ::
 
-    Names::Add ("server", n0);
-    Names::Add ("server/eth0", net0);
+    Names::Add("server", n0);
+    Names::Add("server/eth0", net0);
 
     ...
 
-    Config::Set ("/Names/server/eth0/TxQueue/MaxPackets", UintegerValue (25));
+    Config::Set("/Names/server/eth0/TxQueue/MaxPackets", UintegerValue(25));
 
 Here we've added the path elements ``"server"`` and ``"eth0"`` under
 the ``"/Names/"`` namespace, then used the resulting configuration path
@@ -755,8 +755,8 @@ or *via* strings. Direct implicit conversion of types to
 :cpp:class:`AttributeValue` is not really practical.
 So in the above, users have a choice of using strings or values::
 
-    p->Set ("cwnd", StringValue ("100")); // string-based setter
-    p->Set ("cwnd", IntegerValue (100)); // integer-based setter
+    p->Set("cwnd", StringValue("100")); // string-based setter
+    p->Set("cwnd", IntegerValue(100)); // integer-based setter
 
 The system provides some macros that help users declare and define
 new AttributeValue subclasses for new types that they want to introduce into
@@ -792,18 +792,18 @@ In general, the attribute code to assign values to the underlying class member
 variables is executed after an object is constructed. But what if you need the
 values assigned before the constructor body executes, because you need them in
 the logic of the constructor? There is a way to do this, used for example in the
-class :cpp:class:`ConfigStore`: call :cpp:func:`ObjectBase::ConstructSelf ()` as
+class :cpp:class:`ConfigStore`: call :cpp:func:`ObjectBase::ConstructSelf()` as
 follows::
 
-    ConfigStore::ConfigStore ()
+    ConfigStore::ConfigStore()
     {
-      ObjectBase::ConstructSelf (AttributeConstructionList ());
+      ObjectBase::ConstructSelf(AttributeConstructionList());
       // continue on with constructor.
     }
 
 Beware that the object and all its derived classes must also implement
-a :cpp:func:`GetInstanceTypeId ()` method. Otherwise
-the :cpp:func:`ObjectBase::ConstructSelf ()` will not be able to read
+a :cpp:func:`GetInstanceTypeId()` method. Otherwise
+the :cpp:func:`ObjectBase::ConstructSelf()` will not be able to read
 the attributes.
 
 Adding Attributes
@@ -834,11 +834,11 @@ variable using the metadata system. If it were not already provided by |ns3|,
 the user could declare the following addition in the runtime metadata system (to
 the :cpp:func:`GetTypeId` definition for :cpp:class:`TcpSocket`)::
 
-    .AddAttribute ("Congestion window",
-                   "Tcp congestion window (bytes)",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&TcpSocket::m_cWnd),
-                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute("Congestion window",
+                  "Tcp congestion window(bytes)",
+                  UintegerValue(1),
+                  MakeUintegerAccessor(&TcpSocket::m_cWnd),
+                  MakeUintegerChecker<uint16_t>())
 
 Now, the user with a pointer to a :cpp:class:`TcpSocket` instance
 can perform operations such as
@@ -863,7 +863,7 @@ In the ``my-mobility.h`` header file::
     class MyMobility : public MobilityModel
     {
 
-This requires we declare the :cpp:func:`GetTypeId ()` function.
+This requires we declare the :cpp:func:`GetTypeId()` function.
 This is a one-line public function declaration::
 
     public:
@@ -871,31 +871,31 @@ This is a one-line public function declaration::
        *  Register this type.
        *  \return The object TypeId.
        */
-      static TypeId GetTypeId ();
+      static TypeId GetTypeId();
 
 We've already introduced what a :cpp:class:`TypeId` definition will look like
 in the ``my-mobility.cc`` implementation file::
 
-    NS_OBJECT_ENSURE_REGISTERED (MyMobility);
+    NS_OBJECT_ENSURE_REGISTERED(MyMobility);
 
     TypeId
-    MyMobility::GetTypeId ()
+    MyMobility::GetTypeId()
     {
-      static TypeId tid = TypeId ("ns3::MyMobility")
-        .SetParent<MobilityModel> ()
-        .SetGroupName ("Mobility")
-        .AddConstructor<MyMobility> ()
-        .AddAttribute ("Bounds",
-                       "Bounds of the area to cruise.",
-                       RectangleValue (Rectangle (0.0, 0.0, 100.0, 100.0)),
-                       MakeRectangleAccessor (&MyMobility::m_bounds),
-                       MakeRectangleChecker ())
-        .AddAttribute ("Time",
-                       "Change current direction and speed after moving for this delay.",
-                       TimeValue (Seconds (1.0)),
-                       MakeTimeAccessor (&MyMobility::m_modeTime),
-                       MakeTimeChecker ())
-        // etc (more parameters).
+      static TypeId tid = TypeId("ns3::MyMobility")
+        .SetParent<MobilityModel>()
+        .SetGroupName("Mobility")
+        .AddConstructor<MyMobility>()
+        .AddAttribute("Bounds",
+                      "Bounds of the area to cruise.",
+                      RectangleValue(Rectangle(0.0, 0.0, 100.0, 100.0)),
+                      MakeRectangleAccessor(&MyMobility::m_bounds),
+                      MakeRectangleChecker())
+        .AddAttribute("Time",
+                      "Change current direction and speed after moving for this delay.",
+                      // etc (more parameters).
+                      TimeValue(Seconds(1.0)),
+                      MakeTimeAccessor(&MyMobility::m_modeTime),
+                      MakeTimeChecker())
         ;
       return tid;
     }
@@ -903,14 +903,14 @@ in the ``my-mobility.cc`` implementation file::
 If we don't want to subclass from an existing class, in the header file
 we just inherit from :cpp:class:`ns3::Object`, and in the object file
 we set the parent class to :cpp:class:`ns3::Object` with
-``.SetParent<Object> ()``.
+``.SetParent<Object>()``.
 
 Typical mistakes here involve:
 
-* Not calling ``NS_OBJECT_ENSURE_REGISTERED ()``
-* Not calling the :cpp:func:`SetParent ()` method,
+* Not calling ``NS_OBJECT_ENSURE_REGISTERED()``
+* Not calling the :cpp:func:`SetParent()` method,
   or calling it with the wrong type.
-* Not calling the :cpp:func:`AddConstructor ()` method,
+* Not calling the :cpp:func:`AddConstructor()` method,
   or calling it with the wrong type.
 * Introducing a typographical error in the name of the :cpp:class:`TypeId`
   in its constructor.
@@ -950,27 +950,27 @@ Header File
 One macro call and two operators, must be added below the class declaration in
 order to turn a Rectangle into a value usable by the ``Attribute`` system::
 
-    std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
-    std::istream &operator >> (std::istream &is, Rectangle &rectangle);
+    std::ostream &operator <<(std::ostream &os, const Rectangle &rectangle);
+    std::istream &operator >>(std::istream &is, Rectangle &rectangle);
 
-    ATTRIBUTE_HELPER_HEADER (Rectangle);
+    ATTRIBUTE_HELPER_HEADER(Rectangle);
 
 Implementation File
 ~~~~~~~~~~~~~~~~~~~
 
 In the class definition (``.cc`` file), the code looks like this::
 
-    ATTRIBUTE_HELPER_CPP (Rectangle);
+    ATTRIBUTE_HELPER_CPP(Rectangle);
 
     std::ostream &
-    operator << (std::ostream &os, const Rectangle &rectangle)
+    operator <<(std::ostream &os, const Rectangle &rectangle)
     {
       os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|"
          << rectangle.yMax;
       return os;
     }
     std::istream &
-    operator >> (std::istream &is, Rectangle &rectangle)
+    operator >>(std::istream &is, Rectangle &rectangle)
      {
       char c1, c2, c3;
       is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3
@@ -979,13 +979,13 @@ In the class definition (``.cc`` file), the code looks like this::
           c2 != '|' ||
           c3 != '|')
         {
-          is.setstate (std::ios_base::failbit);
+          is.setstate(std::ios_base::failbit);
         }
       return is;
     }
 
 These stream operators simply convert from a string representation of the
-Rectangle (``"xMin|xMax|yMin|yMax"``) to the underlying Rectangle.  The modeler
+Rectangle(``"xMin|xMax|yMin|yMax"``) to the underlying Rectangle.  The modeler
 must specify these operators and the string syntactical representation of an
 instance of the new class.
 
@@ -1014,36 +1014,36 @@ to show how the system is extended::
     class ConfigExample : public Object
     {
     public:
-      static TypeId GetTypeId () {
-        static TypeId tid = TypeId ("ns3::A")
-          .SetParent<Object> ()
-          .AddAttribute ("TestInt16", "help text",
-                         IntegerValue (-2),
-                         MakeIntegerAccessor (&A::m_int16),
-                         MakeIntegerChecker<int16_t> ())
+      static TypeId GetTypeId() {
+        static TypeId tid = TypeId("ns3::A")
+          .SetParent<Object>()
+          .AddAttribute("TestInt16", "help text",
+                        IntegerValue(-2),
+                        MakeIntegerAccessor(&A::m_int16),
+                        MakeIntegerChecker<int16_t>())
           ;
           return tid;
         }
       int16_t m_int16;
     };
 
-    NS_OBJECT_ENSURE_REGISTERED (ConfigExample);
+    NS_OBJECT_ENSURE_REGISTERED(ConfigExample);
 
 Next, we use the Config subsystem to override the defaults in a couple of
 ways::
 
-      Config::SetDefault ("ns3::ConfigExample::TestInt16", IntegerValue (-5));
+      Config::SetDefault("ns3::ConfigExample::TestInt16", IntegerValue(-5));
 
-      Ptr<ConfigExample> a_obj = CreateObject<ConfigExample> ();
-      NS_ABORT_MSG_UNLESS (a_obj->m_int16 == -5,
-                           "Cannot set ConfigExample's integer attribute via Config::SetDefault");
+      Ptr<ConfigExample> a_obj = CreateObject<ConfigExample>();
+      NS_ABORT_MSG_UNLESS(a_obj->m_int16 == -5,
+                          "Cannot set ConfigExample's integer attribute via Config::SetDefault");
 
-      Ptr<ConfigExample> a2_obj = CreateObject<ConfigExample> ();
-      a2_obj->SetAttribute ("TestInt16", IntegerValue (-3));
+      Ptr<ConfigExample> a2_obj = CreateObject<ConfigExample>();
+      a2_obj->SetAttribute("TestInt16", IntegerValue(-3));
       IntegerValue iv;
-      a2_obj->GetAttribute ("TestInt16", iv);
-      NS_ABORT_MSG_UNLESS (iv.Get () == -3,
-                           "Cannot set ConfigExample's integer attribute via SetAttribute");
+      a2_obj->GetAttribute("TestInt16", iv);
+      NS_ABORT_MSG_UNLESS(iv.Get() == -3,
+                          "Cannot set ConfigExample's integer attribute via SetAttribute");
 
 The next statement is necessary to make sure that (one of) the objects
 created is rooted in the configuration namespace as an object instance.
@@ -1052,14 +1052,14 @@ or :cpp:class:`ns3::Channel` instance,
 but here, since we are working at the core level, we need to create a
 new root namespace object::
 
-      Config::RegisterRootNamespaceObject (a2_obj);
+      Config::RegisterRootNamespaceObject(a2_obj);
 
 Writing
 +++++++
 
 Next, we want to output the configuration store.  The examples show how
 to do it in two formats, XML and raw text.  In practice, one should perform
-this step just before calling :cpp:func:`Simulator::Run ()` to save the
+this step just before calling :cpp:func:`Simulator::Run()` to save the
 final configuration just before running the simulation.
 
 There are three Attributes that govern the behavior of the ConfigStore:
@@ -1072,27 +1072,26 @@ the ConfigStore format is plain text or Xml (``"FileFormat=Xml"``)
 
 The example shows::
 
-      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.xml"));
-      Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
-      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+      Config::SetDefault("ns3::ConfigStore::Filename", StringValue("output-attributes.xml"));
+      Config::SetDefault("ns3::ConfigStore::FileFormat", StringValue("Xml"));
+      Config::SetDefault("ns3::ConfigStore::Mode", StringValue("Save"));
       ConfigStore outputConfig;
-      outputConfig.ConfigureDefaults ();
-      outputConfig.ConfigureAttributes ();
+      outputConfig.ConfigureDefaults();
+      outputConfig.ConfigureAttributes();
 
       // Output config store to txt format
-      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.txt"));
-      Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("RawText"));
-      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+      Config::SetDefault("ns3::ConfigStore::Filename", StringValue("output-attributes.txt"));
+      Config::SetDefault("ns3::ConfigStore::FileFormat", StringValue("RawText"));
+      Config::SetDefault("ns3::ConfigStore::Mode", StringValue("Save"));
       ConfigStore outputConfig2;
-      outputConfig2.ConfigureDefaults ();
-      outputConfig2.ConfigureAttributes ();
+      outputConfig2.ConfigureDefaults();
+      outputConfig2.ConfigureAttributes();
 
-      Simulator::Run ();
+      Simulator::Run();
 
-      Simulator::Destroy ();
+      Simulator::Destroy();
 
 Note the placement of these statements just prior to the
-:cpp:func:`Simulator::Run ()` statement.  This output logs all of the
 values in place just prior to starting the simulation (*i.e*. after
 all of the configuration has taken place).
 
@@ -1184,11 +1183,11 @@ are registered before being used in object construction).
 
 ::
 
-      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("input-defaults.xml"));
-      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Load"));
-      Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
+      Config::SetDefault("ns3::ConfigStore::Filename", StringValue("input-defaults.xml"));
+      Config::SetDefault("ns3::ConfigStore::Mode", StringValue("Load"));
+      Config::SetDefault("ns3::ConfigStore::FileFormat", StringValue("Xml"));
       ConfigStore inputConfig;
-      inputConfig.ConfigureDefaults ();
+      inputConfig.ConfigureDefaults();
 
 Next, note that loading of input configuration data is limited to Attribute
 default (*i.e*. not instance) values, and global values.  Attribute instance
@@ -1219,31 +1218,31 @@ write out the resulting attributes to a separate file called
 
     #include "ns3/config-store-module.h"
     ...
-    int main (...)
+    int main(...)
     {
 
-      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("input-defaults.xml"));
-      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Load"));
-      Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
+      Config::SetDefault("ns3::ConfigStore::Filename", StringValue("input-defaults.xml"));
+      Config::SetDefault("ns3::ConfigStore::Mode", StringValue("Load"));
+      Config::SetDefault("ns3::ConfigStore::FileFormat", StringValue("Xml"));
       ConfigStore inputConfig;
-      inputConfig.ConfigureDefaults ();
+      inputConfig.ConfigureDefaults();
 
       //
-      // Allow the user to override any of the defaults and the above Bind () at
+      // Allow the user to override any of the defaults and the above Bind() at
       // run-time, viacommand-line arguments
       //
       CommandLine cmd;
-      cmd.Parse (argc, argv);
+      cmd.Parse(argc, argv);
 
       // setup topology
       ...
 
-      // Invoke just before entering Simulator::Run ()
-      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.xml"));
-      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+      // Invoke just before entering Simulator::Run()
+      Config::SetDefault("ns3::ConfigStore::Filename", StringValue("output-attributes.xml"));
+      Config::SetDefault("ns3::ConfigStore::Mode", StringValue("Save"));
       ConfigStore outputConfig;
-      outputConfig.ConfigureAttributes ();
-      Simulator::Run ();
+      outputConfig.ConfigureAttributes();
+      Simulator::Run();
     }
 
 ConfigStore use cases (pre- and post-simulation)
@@ -1262,13 +1261,13 @@ As a matter of fact, some Objects might be created when the simulation starts.
 Hence, ConfigStore will not "report" their attributes if invoked earlier in the code.
 
 A typical workflow might involve running the simulation, calling ConfigStore
-at the end of the simulation (after ``Simulator::Run ()`` and before ``Simulator::Destroy ()``)
+at the end of the simulation (after ``Simulator::Run()`` and before ``Simulator::Destroy()``)
 This will show all the attributes in the Objects, both those with default values, and those
 with values changed during the simulation execution.
 
 To change these values, you'll need to either change the default (class-wide) attribute values
 (in this case call ConfigStore before the Object creation), or  specific object attribute
-(in this case call ConfigStore after the Object creation, typically just before ``Simulator::Run ()``.
+(in this case call ConfigStore after the Object creation, typically just before ``Simulator::Run()``.
 
 
 ConfigStore GUI
@@ -1278,7 +1277,7 @@ There is a GTK-based front end for the ConfigStore.  This allows users to use a
 GUI to access and change variables.
 
 Some screenshots are presented here. They are the result of using GtkConfig on
-``src/lte/examples/lena-dual-stripe.cc`` after ``Simulator::Run ()``.
+``src/lte/examples/lena-dual-stripe.cc`` after ``Simulator::Run()``.
 
 .. _GtkConfig:
 
@@ -1327,15 +1326,15 @@ is rerun.
 Usage is almost the same as the non-GTK-based version, but there
 are no :cpp:class:`ConfigStore` attributes involved::
 
-  // Invoke just before entering Simulator::Run ()
+  // Invoke just before entering Simulator::Run()
   GtkConfigStore config;
-  config.ConfigureDefaults ();
-  config.ConfigureAttributes ();
+  config.ConfigureDefaults();
+  config.ConfigureAttributes();
 
 Now, when you run the script, a GUI should pop up, allowing you to open menus of
 attributes on different nodes/objects, and then launch the simulation execution
 when you are done.
 
 Note that "launch the simulation" means to proceed with the simulation script.
-If GtkConfigStore has been called after ``Simulator::Run ()`` the simulation will
+If GtkConfigStore has been called after ``Simulator::Run()`` the simulation will
 not be started again - it will just end.

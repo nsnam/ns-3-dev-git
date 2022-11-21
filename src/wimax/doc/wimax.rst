@@ -99,18 +99,18 @@ shows how to set up the model::
   NodeContainer ssNodes;
   NodeContainer bsNodes;
 
-  ssNodes.Create (2);
-  bsNodes.Create (1);
+  ssNodes.Create(2);
+  bsNodes.Create(1);
 
   WimaxHelper wimax;
 
   NetDeviceContainer ssDevs, bsDevs;
 
-  ssDevs = wimax.Install (ssNodes,
-                          WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,
-                          WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
-                          scheduler);
-  bsDevs = wimax.Install (bsNodes, WimaxHelper::DEVICE_TYPE_BASE_STATION, WimaxHelper::SIMPLE_PHY_TYPE_OFDM, scheduler);
+  ssDevs = wimax.Install(ssNodes,
+                         WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,
+                         WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
+                         scheduler);
+  bsDevs = wimax.Install(bsNodes, WimaxHelper::DEVICE_TYPE_BASE_STATION, WimaxHelper::SIMPLE_PHY_TYPE_OFDM, scheduler);
 
 This example shows that there are two subscriber stations and one base station
 created. The helper method ``Install`` allows the user to specify the scheduler
@@ -120,18 +120,18 @@ Different variants of ``Install`` are available; for instance, the example
 ``src/wimax/examples/wimax-multicast.cc`` shows how to specify a non-default channel
 or propagation model::
 
-  channel = CreateObject<SimpleOfdmWimaxChannel> ();
-  channel->SetPropagationModel (SimpleOfdmWimaxChannel::COST231_PROPAGATION);
-  ssDevs = wimax.Install (ssNodes,
-                          WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,
-                          WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
-                          channel,
-                          scheduler);
-  Ptr<WimaxNetDevice> dev = wimax.Install (bsNodes.Get (0),
-                                           WimaxHelper::DEVICE_TYPE_BASE_STATION,
-                                           WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
-                                           channel,
-                                           scheduler);
+  channel = CreateObject<SimpleOfdmWimaxChannel>();
+  channel->SetPropagationModel(SimpleOfdmWimaxChannel::COST231_PROPAGATION);
+  ssDevs = wimax.Install(ssNodes,
+                         WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,
+                         WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
+                         channel,
+                         scheduler);
+  Ptr<WimaxNetDevice> dev = wimax.Install(bsNodes.Get(0),
+                                          WimaxHelper::DEVICE_TYPE_BASE_STATION,
+                                          WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
+                                          channel,
+                                          scheduler);
 
 Mobility is also supported in the same way as in Wifi models; see the
 ``src/wimax/examples/wimax-multicast.cc``.
@@ -143,11 +143,11 @@ issuing service flow identifiers and mapping them to WiMAX connections. The
 following code from ``src/wimax/examples/wimax-multicast.cc`` shows how this is
 configured from a helper level::
 
- ServiceFlow MulticastServiceFlow = wimax.CreateServiceFlow (ServiceFlow::SF_DIRECTION_DOWN,
-                                                             ServiceFlow::SF_TYPE_UGS,
-                                                             MulticastClassifier);
+ ServiceFlow MulticastServiceFlow = wimax.CreateServiceFlow(ServiceFlow::SF_DIRECTION_DOWN,
+                                                            ServiceFlow::SF_TYPE_UGS,
+                                                            MulticastClassifier);
 
-  bs->GetServiceFlowManager ()->AddMulticastServiceFlow (MulticastServiceFlow, WimaxPhy::MODULATION_TYPE_QPSK_12);
+  bs->GetServiceFlowManager()->AddMulticastServiceFlow(MulticastServiceFlow, WimaxPhy::MODULATION_TYPE_QPSK_12);
 
 
 Wimax Attributes
@@ -183,8 +183,8 @@ WimaxHelper has similar APIs::
 
     AsciiTraceHelper ascii;
     WimaxHelper wimax;
-    wimax.EnablePcap ("wimax-program", false);
-    wimax.EnableAsciiAll (ascii.CreateFileStream ("wimax-program.tr");
+    wimax.EnablePcap("wimax-program", false);
+    wimax.EnableAsciiAll(ascii.CreateFileStream("wimax-program.tr");
 
 Unlike other helpers, there is also a special ``EnableAsciiForConnection()``
 method that limits the ascii tracing to a specific device and connection.

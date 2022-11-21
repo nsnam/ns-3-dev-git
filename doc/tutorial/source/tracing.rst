@@ -71,7 +71,7 @@ standard output, as in::
   #include <iostream>
   ...
   void
-  SomeFunction ()
+  SomeFunction()
   {
     uint32_t x = SOME_INTERESTING_VALUE;
     ...
@@ -107,16 +107,16 @@ other people as a patch to the existing core.
 Let's pick a random example.  If you wanted to add more logging to the
 |ns3| TCP socket (``tcp-socket-base.cc``) you could just add a new
 message down in the implementation.  Notice that in
-``TcpSocketBase::ProcessEstablished ()`` there is no log message for the
+``TcpSocketBase::ProcessEstablished()`` there is no log message for the
 reception of a SYN+ACK in ESTABLISHED state.
 You could simply add one, changing the code.  Here is the original::
 
   /* Received a packet upon ESTABLISHED state. This function is mimicking the
       role of tcp_rcv_established() in tcp_input.c in Linux kernel. */
   void
-  TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader)
+  TcpSocketBase::ProcessEstablished(Ptr<Packet> packet, const TcpHeader& tcpHeader)
   {
-    NS_LOG_FUNCTION (this << tcpHeader);
+    NS_LOG_FUNCTION(this << tcpHeader);
     ...
 
     else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
@@ -130,13 +130,13 @@ To log the SYN+ACK case, you can add a new ``NS_LOG_LOGIC`` in the
   /* Received a packet upon ESTABLISHED state. This function is mimicking the
       role of tcp_rcv_established() in tcp_input.c in Linux kernel. */
   void
-  TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader)
+  TcpSocketBase::ProcessEstablished(Ptr<Packet> packet, const TcpHeader& tcpHeader)
   {
-    NS_LOG_FUNCTION (this << tcpHeader);
+    NS_LOG_FUNCTION(this << tcpHeader);
     ...
     else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
       { // No action for received SYN+ACK, it is probably a duplicated packet
-        NS_LOG_LOGIC ("TcpSocketBase " << this << " ignoring SYN+ACK");
+        NS_LOG_LOGIC("TcpSocketBase " << this << " ignoring SYN+ACK");
       }
     ...
 
@@ -261,7 +261,7 @@ initialize this pointer to something meaningful, you need to have a
 function with a matching signature.  In this case, you could provide a
 function that looks like::
 
-  int MyFunction (int arg) {}
+  int MyFunction(int arg) {}
 
 If you have this target, you can initialize the variable to point to
 your function::
@@ -271,14 +271,14 @@ your function::
 You can then call MyFunction indirectly using the more suggestive form
 of the call::
 
-  int result = (*pfi) (1234);
+  int result = (*pfi)(1234);
 
 This is suggestive since it looks like you are dereferencing the
 function pointer just like you would dereference any pointer.
 Typically, however, people take advantage of the fact that the
 compiler knows what is going on and will just use a shorter form::
 
-  int result = pfi (1234);
+  int result = pfi(1234);
 
 This looks like you are calling a function named ``pfi``, but the
 compiler is smart enough to know to call through the variable ``pfi``
@@ -363,21 +363,21 @@ simple Object we can work with.
   class MyObject : public Object
   {
   public:
-    static TypeId GetTypeId ()
+    static TypeId GetTypeId()
     {
-      static TypeId tid = TypeId ("MyObject")
-        .SetParent (Object::GetTypeId ())
-        .SetGroupName ("MyGroup")
-        .AddConstructor<MyObject> ()
-        .AddTraceSource ("MyInteger",
-                         "An integer value to trace.",
-                         MakeTraceSourceAccessor (&MyObject::m_myInt),
-                         "ns3::TracedValueCallback::Int32")
+      static TypeId tid = TypeId("MyObject")
+        .SetParent(Object::GetTypeId())
+        .SetGroupName("MyGroup")
+        .AddConstructor<MyObject>()
+        .AddTraceSource("MyInteger",
+                        "An integer value to trace.",
+                        MakeTraceSourceAccessor(&MyObject::m_myInt),
+                        "ns3::TracedValueCallback::Int32")
         ;
       return tid;
     }
 
-    MyObject () {}
+    MyObject() {}
     TracedValue<int32_t> m_myInt;
   };
 
@@ -405,7 +405,7 @@ sink function ``traceSink`` for this TracedValue will need the signature
 
 ::
 
-  void (* traceSink)(int32_t oldValue, int32_t newValue);
+  void (*traceSink)(int32_t oldValue, int32_t newValue);
 
 All trace sinks hooking this trace source must have this signature.
 We'll discuss below how you can determine the required callback
@@ -414,7 +414,7 @@ signature in other cases.
 Sure enough, continuing through ``fourth.cc`` we see::
 
   void
-  IntTrace (int32_t oldValue, int32_t newValue)
+  IntTrace(int32_t oldValue, int32_t newValue)
   {
     std::cout << "Traced " << oldValue << " to " << newValue << std::endl;
   }
@@ -427,10 +427,10 @@ We have now seen the trace source and the trace sink.  What remains is
 code to connect the source to the sink, which happens in ``main``::
 
   int
-  main (int argc, char *argv[])
+  main(int argc, char *argv[])
   {
-    Ptr<MyObject> myObject = CreateObject<MyObject> ();
-    myObject->TraceConnectWithoutContext ("MyInteger", MakeCallback(&IntTrace));
+    Ptr<MyObject> myObject = CreateObject<MyObject>();
+    myObject->TraceConnectWithoutContext("MyInteger", MakeCallback(&IntTrace));
 
     myObject->m_myInt = 1234;
   }
@@ -519,10 +519,10 @@ from the mobility models of our simulation.  It should now be a lot
 more clear to you what this function is doing::
 
   void
-  CourseChange (std::string context, Ptr<const MobilityModel> model)
+  CourseChange(std::string context, Ptr<const MobilityModel> model)
   {
-    Vector position = model->GetPosition ();
-    NS_LOG_UNCOND (context <<
+    Vector position = model->GetPosition();
+    NS_LOG_UNCOND(context <<
       " x = " << position.x << ", y = " << position.y);
   }
 
@@ -533,10 +533,10 @@ sink::
 
   std::ostringstream oss;
   oss << "/NodeList/"
-      << wifiStaNodes.Get (nWifi - 1)->GetId ()
+      << wifiStaNodes.Get(nWifi - 1)->GetId()
       << "/$ns3::MobilityModel/CourseChange";
 
-  Config::Connect (oss.str (), MakeCallback (&CourseChange));
+  Config::Connect(oss.str(), MakeCallback(&CourseChange));
 
 Let's try and make some sense of what is sometimes considered
 relatively mysterious code.  For the purposes of discussion, assume
@@ -558,16 +558,16 @@ container to get a ``Ptr<Node>`` which we used to call ``GetId()``.  We
 could have used this ``Ptr<Node>`` to call a Connect method
 directly::
 
-  Ptr<Object> theObject = wifiStaNodes.Get (nWifi - 1);
-  theObject->TraceConnectWithoutContext ("CourseChange", MakeCallback (&CourseChange));
+  Ptr<Object> theObject = wifiStaNodes.Get(nWifi - 1);
+  theObject->TraceConnectWithoutContext("CourseChange", MakeCallback(&CourseChange));
 
 In the ``third.cc`` example, we actually wanted an additional "context"
 to be delivered along with the Callback parameters (which will be
 explained below) so we could actually use the following equivalent
 code::
 
-  Ptr<Object> theObject = wifiStaNodes.Get (nWifi - 1);
-  theObject->TraceConnect ("CourseChange", MakeCallback (&CourseChange));
+  Ptr<Object> theObject = wifiStaNodes.Get(nWifi - 1);
+  theObject->TraceConnect("CourseChange", MakeCallback(&CourseChange));
 
 It turns out that the internal code for
 ``Config::ConnectWithoutContext`` and ``Config::Connect`` actually
@@ -613,7 +613,7 @@ mobility model --- which is of type ``ns3::MobilityModel``.  If you
 are familiar with ``GetObject``, we have asked the system to do the
 following::
 
-  Ptr<MobilityModel> mobilityModel = node->GetObject<MobilityModel> ()
+  Ptr<MobilityModel> mobilityModel = node->GetObject<MobilityModel>()
 
 We are now at the last Object in the path, so we turn our attention to
 the Attributes of that Object.  The ``MobilityModel`` class defines an
@@ -623,10 +623,10 @@ for "CourseChange" in your favorite editor.  You should find
 
 ::
 
-  .AddTraceSource ("CourseChange",
-                   "The value of the position and/or velocity vector changed",
-                   MakeTraceSourceAccessor (&MobilityModel::m_courseChangeTrace),
-                   "ns3::MobilityModel::CourseChangeCallback")
+  .AddTraceSource("CourseChange",
+                  "The value of the position and/or velocity vector changed",
+                  MakeTraceSourceAccessor(&MobilityModel::m_courseChangeTrace),
+                  "ns3::MobilityModel::CourseChangeCallback")
 
 which should look very familiar at this point.
 
@@ -650,7 +650,7 @@ down to the end of the file, you will see a method defined called
 ``NotifyCourseChange()``::
 
   void
-  MobilityModel::NotifyCourseChange () const
+  MobilityModel::NotifyCourseChange() const
   {
     m_courseChangeTrace(this);
   }
@@ -843,8 +843,8 @@ and you may find your answer along with working code.  For example, in
 this case, ``src/mobility/examples/main-random-topology.cc`` has
 something just waiting for you to use::
 
-  Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
-    MakeCallback (&CourseChange));
+  Config::Connect("/NodeList/*/$ns3::MobilityModel/CourseChange",
+                  MakeCallback(&CourseChange));
 
 We'll return to this example in a moment.
 
@@ -889,7 +889,7 @@ an example.  The example above, from
 same file::
 
   static void
-  CourseChange (std::string context, Ptr<const MobilityModel> model)
+  CourseChange(std::string context, Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -925,7 +925,7 @@ that returns void and takes a ``Ptr<const MobilityModel>``.  For
 example::
 
   void
-  CourseChange (Ptr<const MobilityModel> model)
+  CourseChange(Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -936,7 +936,7 @@ Callback function that takes a string context, then the template
 arguments::
 
   void
-  CourseChange (std::string context, Ptr<const MobilityModel> model)
+  CourseChange(std::string context, Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -946,7 +946,7 @@ visible in your local file, you can add the keyword ``static`` and
 come up with::
 
   static void
-  CourseChange (std::string path, Ptr<const MobilityModel> model)
+  CourseChange(std::string path, Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -995,19 +995,19 @@ stuff.
 
 ::
 
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::TracedCallback ()
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext (c ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect (const CallbackB ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::TracedCallback()
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext(c ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect(const CallbackB ...
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect (const Callba ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() () const ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1) const ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect(const Callba ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()() const ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1) const ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
 
 It turns out that all of this comes from the header file
 ``traced-callback.h`` which sounds very promising.  You can then take
@@ -1071,8 +1071,8 @@ functions.  If you scroll down, you will see a
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext ...
   {
     Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
-    cb.Assign (callback);
-    m_callbackList.push_back (cb);
+    cb.Assign(callback);
+    m_callbackList.push_back(cb);
   }
 
 You are now in the belly of the beast.  When the template is
@@ -1085,8 +1085,8 @@ instantiated for the declaration above, the compiler will replace
   TracedCallback<Ptr<const MobilityModel>::ConnectWithoutContext ... cb
   {
     Callback<void, Ptr<const MobilityModel> > cb;
-    cb.Assign (callback);
-    m_callbackList.push_back (cb);
+    cb.Assign(callback);
+    m_callbackList.push_back(cb);
   }
 
 You can now see the implementation of everything we've been talking
@@ -1130,7 +1130,7 @@ and takes a ``Ptr<const MobilityModel>``.  For example,
 ::
 
   void
-  CourseChangeCallback (Ptr<const MobilityModel> model)
+  CourseChangeCallback(Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -1141,7 +1141,7 @@ Callback function that takes a string context.  This is because the
 ``Connect`` function will provide the context for you.  You'll need::
 
   void
-  CourseChangeCallback (std::string context, Ptr<const MobilityModel> model)
+  CourseChangeCallback(std::string context, Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -1151,7 +1151,7 @@ visible in your local file, you can add the keyword ``static`` and
 come up with::
 
   static void
-  CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+  CourseChangeCallback(std::string path, Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -1316,15 +1316,15 @@ and search for "CongestionWindow".  You will find,
 
 ::
 
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow",
-    MakeCallback (&Ns3TcpCwndTestCase1::CwndChange, this));
+  ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow",
+      MakeCallback(&Ns3TcpCwndTestCase1::CwndChange, this));
 
 This should look very familiar to you.  We mentioned above that if we
 had a pointer to the ``TcpSocketBase``, we could ``TraceConnect`` to the
 "CongestionWindow" trace source.  That's exactly what we have here; so
 it turns out that this line of code does exactly what we want.  Let's
 go ahead and extract the code we need from this function
-(``Ns3TcpCwndTestCase1::DoRun ()``).  If you look at this
+(``Ns3TcpCwndTestCase1::DoRun()``).  If you look at this
 function, you will find that it looks just like an |ns3| script.  It
 turns out that is exactly what it is.  It is a script run by the test
 framework, so we can just pull it out and wrap it in ``main`` instead
@@ -1415,7 +1415,7 @@ see some familiar looking code::
 
   using namespace ns3;
 
-  NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
+  NS_LOG_COMPONENT_DEFINE("FifthScriptExample");
 
 This has all been covered, so we won't rehash it.  The next lines of
 source are the network illustration and a comment addressing the
@@ -1470,18 +1470,18 @@ time.
   {
   public:
 
-    MyApp ();
+    MyApp();
     virtual ~MyApp();
 
-    void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize,
+    void Setup(Ptr<Socket> socket, Address address, uint32_t packetSize,
       uint32_t nPackets, DataRate dataRate);
 
   private:
-    virtual void StartApplication ();
-    virtual void StopApplication ();
+    virtual void StartApplication();
+    virtual void StopApplication();
 
-    void ScheduleTx ();
-    void SendPacket ();
+    void ScheduleTx();
+    void SendPacket();
 
     Ptr<Socket>     m_socket;
     Address         m_peer;
@@ -1516,8 +1516,8 @@ The most common way to start pumping events is to start an
 (hopefully) familiar lines of an |ns3| script::
 
   ApplicationContainer apps = ...
-  apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (10.0));
+  apps.Start(Seconds(1.0));
+  apps.Stop(Seconds(10.0));
 
 The application container code (see
 ``src/network/helper/application-container.h`` if you are interested)
@@ -1525,13 +1525,13 @@ loops through its contained applications and calls,
 
 ::
 
-  app->SetStartTime (startTime);
+  app->SetStartTime(startTime);
 
 as a result of the ``apps.Start`` call and
 
 ::
 
-  app->SetStopTime (stopTime);
+  app->SetStopTime(stopTime);
 
 as a result of the ``apps.Stop`` call.
 
@@ -1571,7 +1571,7 @@ relatively common idom in |ns3|.  So, take a look at
 
 ::
 
-  Simulator::ScheduleWithContext (index, TimeStep (0), &Node::Initialize, node);
+  Simulator::ScheduleWithContext(index, TimeStep(0), &Node::Initialize, node);
 
 This tells you that whenever a Node is created in a simulation, as
 a side-effect, a call to that node's ``Initialize`` method is
@@ -1616,14 +1616,14 @@ what happens when ``Application::DoInitialize`` is called.  Take a
 look at ``src/network/model/application.cc`` and you will find::
 
   void
-  Application::DoInitialize ()
+  Application::DoInitialize()
   {
-    m_startEvent = Simulator::Schedule (m_startTime, &Application::StartApplication, this);
-    if (m_stopTime != TimeStep (0))
+    m_startEvent = Simulator::Schedule(m_startTime, &Application::StartApplication, this);
+    if (m_stopTime != TimeStep(0))
       {
-        m_stopEvent = Simulator::Schedule (m_stopTime, &Application::StopApplication, this);
+        m_stopEvent = Simulator::Schedule(m_stopTime, &Application::StopApplication, this);
       }
-    Object::DoInitialize ();
+    Object::DoInitialize();
   }
 
 Here, we finally come to the end of the trail.  If you have kept it
@@ -1658,15 +1658,15 @@ The MyApp Application
 The ``MyApp`` ``Application`` needs a constructor and a destructor, of
 course::
 
-  MyApp::MyApp ()
-    : m_socket (0),
-      m_peer (),
-      m_packetSize (0),
-      m_nPackets (0),
-      m_dataRate (0),
-      m_sendEvent (),
-      m_running (false),
-      m_packetsSent (0)
+  MyApp::MyApp()
+    : m_socket(0),
+      m_peer(),
+      m_packetSize(0),
+      m_nPackets(0),
+      m_dataRate(0),
+      m_sendEvent(),
+      m_running(false),
+      m_packetsSent(0)
   {
   }
 
@@ -1681,8 +1681,8 @@ this ``Application`` in the first place.
 ::
 
   void
-  MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize,
-                       uint32_t nPackets, DataRate dataRate)
+  MyApp::Setup(Ptr<Socket> socket, Address address, uint32_t packetSize,
+               uint32_t nPackets, DataRate dataRate)
   {
     m_socket = socket;
     m_peer = address;
@@ -1702,13 +1702,13 @@ passing it to the ``Setup`` method.
 ::
 
   void
-  MyApp::StartApplication ()
+  MyApp::StartApplication()
   {
     m_running = true;
     m_packetsSent = 0;
-    m_socket->Bind ();
-    m_socket->Connect (m_peer);
-    SendPacket ();
+    m_socket->Bind();
+    m_socket->Connect(m_peer);
+    SendPacket();
   }
 
 The above code is the overridden implementation
@@ -1731,18 +1731,18 @@ creating simulation events.
 ::
 
   void
-  MyApp::StopApplication ()
+  MyApp::StopApplication()
   {
     m_running = false;
 
-    if (m_sendEvent.IsRunning ())
+    if (m_sendEvent.IsRunning())
       {
-        Simulator::Cancel (m_sendEvent);
+        Simulator::Cancel(m_sendEvent);
       }
 
     if (m_socket)
       {
-        m_socket->Close ();
+        m_socket->Close();
       }
   }
 
@@ -1765,14 +1765,14 @@ chain of events that describes the ``Application`` behavior.
 ::
 
   void
-  MyApp::SendPacket ()
+  MyApp::SendPacket()
   {
-    Ptr<Packet> packet = Create<Packet> (m_packetSize);
-    m_socket->Send (packet);
+    Ptr<Packet> packet = Create<Packet>(m_packetSize);
+    m_socket->Send(packet);
 
     if (++m_packetsSent < m_nPackets)
       {
-        ScheduleTx ();
+        ScheduleTx();
       }
   }
 
@@ -1788,12 +1788,12 @@ decides it has sent enough.
 ::
 
   void
-  MyApp::ScheduleTx ()
+  MyApp::ScheduleTx()
   {
     if (m_running)
       {
-        Time tNext (Seconds (m_packetSize * 8 / static_cast<double> (m_dataRate.GetBitRate ())));
-        m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
+        Time tNext(Seconds(m_packetSize * 8 / static_cast<double>(m_dataRate.GetBitRate())));
+        m_sendEvent = Simulator::Schedule(tNext, &MyApp::SendPacket, this);
       }
   }
 
@@ -1817,9 +1817,9 @@ indicating the congestion window has been updated.  The next piece of
 code implements the corresponding trace sink::
 
   static void
-  CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
+  CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
   {
-    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
   }
 
 This should be very familiar to you now, so we won't dwell on the
@@ -1836,9 +1836,9 @@ demonstrate this working.
 ::
 
   static void
-  RxDrop (Ptr<const Packet> p)
+  RxDrop(Ptr<const Packet> p)
   {
-    NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
+    NS_LOG_UNCOND("RxDrop at " << Simulator::Now().GetSeconds());
   }
 
 This trace sink will be connected to the "PhyRxDrop" trace source of
@@ -1861,17 +1861,17 @@ Main Program
 The following code should be very familiar to you by now::
 
   int
-  main (int argc, char *argv[])
+  main(int argc, char *argv[])
   {
     NodeContainer nodes;
-    nodes.Create (2);
+    nodes.Create(2);
 
     PointToPointHelper pointToPoint;
-    pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-    pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+    pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+    pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
 
     NetDeviceContainer devices;
-    devices = pointToPoint.Install (nodes);
+    devices = pointToPoint.Install(nodes);
 
 This creates two nodes with a point-to-point channel between them,
 just as shown in the illustration at the start of the file.
@@ -1890,9 +1890,9 @@ into a ``Channel`` at a given *rate*.
 
 ::
 
-  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-  em->SetAttribute ("ErrorRate", DoubleValue (0.00001));
-  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
+  Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
+  em->SetAttribute("ErrorRate", DoubleValue(0.00001));
+  devices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
 
 The above code instantiates a ``RateErrorModel`` Object, and we set
 the "ErrorRate" ``Attribute`` to the desired value.  We then set the
@@ -1903,11 +1903,11 @@ retransmissions and make our plot a little more interesting.
 ::
 
   InternetStackHelper stack;
-  stack.Install (nodes);
+  stack.Install(nodes);
 
   Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.252");
-  Ipv4InterfaceContainer interfaces = address.Assign (devices);
+  address.SetBase("10.1.1.0", "255.255.255.252");
+  Ipv4InterfaceContainer interfaces = address.Assign(devices);
 
 The above code should be familiar.  It installs internet stacks on our
 two nodes and creates interfaces and assigns IP addresses for the
@@ -1920,19 +1920,19 @@ is commonly used in |ns3| for that purpose.
 ::
 
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress(interfaces.GetAddress (1), sinkPort));
-  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory",
-    InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
-  ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
-  sinkApps.Start (Seconds (0.));
-  sinkApps.Stop (Seconds (20.));
+  Address sinkAddress(InetSocketAddress(interfaces.GetAddress(1), sinkPort));
+  PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory",
+      InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
+  ApplicationContainer sinkApps = packetSinkHelper.Install(nodes.Get(1));
+  sinkApps.Start(Seconds(0.));
+  sinkApps.Stop(Seconds(20.));
 
 This should all be familiar, with the exception of,
 
 ::
 
-  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory",
-    InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
+  PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory",
+      InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
 
 This code instantiates a ``PacketSinkHelper`` and tells it to create
 sockets using the class ``ns3::TcpSocketFactory``.  This class
@@ -1952,10 +1952,10 @@ trace source.
 
 ::
 
-  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0),
-    TcpSocketFactory::GetTypeId ());
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow",
-    MakeCallback (&CwndChange));
+  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(nodes.Get(0),
+      TcpSocketFactory::GetTypeId());
+  ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow",
+      MakeCallback(&CwndChange));
 
 The first statement calls the static member function
 ``Socket::CreateSocket`` and provides a Node and an explicit
@@ -1975,11 +1975,11 @@ didn't go to any trouble to create a helper to manage the
 ``Application`` so we are going to have to create and install it
 "manually".  This is actually quite easy::
 
-  Ptr<MyApp> app = CreateObject<MyApp> ();
-  app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
-  nodes.Get (0)->AddApplication (app);
-  app->Start (Seconds (1.));
-  app->Stop (Seconds (20.));
+  Ptr<MyApp> app = CreateObject<MyApp>();
+  app->Setup(ns3TcpSocket, sinkAddress, 1040, 1000, DataRate("1Mbps"));
+  nodes.Get(0)->AddApplication(app);
+  app->Start(Seconds(1.));
+  app->Stop(Seconds(20.));
 
 The first line creates an ``Object`` of type ``MyApp`` -- our
 ``Application``.  The second line tells the ``Application`` what
@@ -1996,7 +1996,7 @@ We need to actually do the connect from the receiver point-to-point
 
 ::
 
-  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback (&RxDrop));
+  devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback(&RxDrop));
 
 It should now be obvious that we are getting a reference to the
 receiving ``Node NetDevice`` from its container and connecting the
@@ -2008,9 +2008,9 @@ just stop processing events at 20 seconds into the simulation.
 
 ::
 
-    Simulator::Stop (Seconds(20));
-    Simulator::Run ();
-    Simulator::Destroy ();
+    Simulator::Stop(Seconds(20));
+    Simulator::Run();
+    Simulator::Destroy();
 
     return 0;
   }
@@ -2061,7 +2061,7 @@ of all of this work.  Let's redirect that output to a file called
 Now edit up "cwnd.dat" in your favorite editor and remove the ns3
 build status and drop lines, leaving only the traced data (you could
 also comment out the ``TraceConnectWithoutContext("PhyRxDrop",
-MakeCallback (&RxDrop));`` in the script to get rid of the drop prints
+MakeCallback(&RxDrop));`` in the script to get rid of the drop prints
 just as easily.
 
 You can now run gnuplot (if you have it installed) and tell it to
@@ -2119,16 +2119,16 @@ information to a stream representing a file.
 ::
 
   static void
-  CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
+  CwndChange(Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
   {
-    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
-    *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
+    *stream->GetStream() << Simulator::Now().GetSeconds() << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
   }
 
   static void
-  RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
+  RxDrop(Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
   {
-    NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
+    NS_LOG_UNCOND("RxDrop at " << Simulator::Now().GetSeconds());
     file->Write(Simulator::Now(), p);
   }
 
@@ -2144,12 +2144,11 @@ the |ns3| callback system, which as you may recall, requires objects
 that obey value semantics.  Further notice that we have added the
 following line in the ``CwndChange`` trace sink implementation::
 
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+  *stream->GetStream() << Simulator::Now().GetSeconds() << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
 
-This would be very familiar code if you replaced ``*stream->GetStream
-()`` with ``std::cout``, as in::
+This would be very familiar code if you replaced ``*stream->GetStream()`` with ``std::cout``, as in::
 
-  std::cout << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+  std::cout << Simulator::Now().GetSeconds() << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
 
 This illustrates that the ``Ptr<OutputStreamWrapper>`` is really just
 carrying around a ``std::ofstream`` for you, and you can use it here
@@ -2168,14 +2167,14 @@ sinks.  If you look in the ``main`` function, you will find new code
 to do just that::
 
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("sixth.cwnd");
+  ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow", MakeBoundCallback(&CwndChange, stream));
 
   ...
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
-  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
+  devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
 
 In the first section of the code snippet above, we are creating the
 ASCII trace file, creating an object responsible for managing it and
@@ -2208,7 +2207,7 @@ did with the ``AsciiTraceHelper``. The line of code,
 
 ::
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap",
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap",
   "w", PcapHelper::DLT_PPP);
 
 creates a PCAP file named "sixth.pcap" with file mode "w".  This means
@@ -2325,32 +2324,32 @@ tools.  We did this without modifying any of the core code involved,
 and we did this in only 18 lines of code::
 
   static void
-  CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
+  CwndChange(Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
   {
-    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
-    *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
+    *stream->GetStream() << Simulator::Now().GetSeconds() << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
   }
 
   ...
 
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("sixth.cwnd");
+  ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow", MakeBoundCallback(&CwndChange, stream));
 
   ...
 
   static void
-  RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
+  RxDrop(Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
   {
-    NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
+    NS_LOG_UNCOND("RxDrop at " << Simulator::Now().GetSeconds());
     file->Write(Simulator::Now(), p);
   }
 
   ...
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
-  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
 
 Trace Helpers
 *************
@@ -2365,10 +2364,10 @@ Perhaps you will recall seeing some of these variations:
 
 ::
 
-  pointToPoint.EnablePcapAll ("second");
-  pointToPoint.EnablePcap ("second", p2pNodes.Get (0)->GetId (), 0);
-  csma.EnablePcap ("third", csmaDevices.Get (0), true);
-  pointToPoint.EnableAsciiAll (ascii.CreateFileStream ("myfirst.tr"));
+  pointToPoint.EnablePcapAll("second");
+  pointToPoint.EnablePcap("second", p2pNodes.Get(0)->GetId(), 0);
+  csma.EnablePcap("third", csmaDevices.Get(0), true);
+  pointToPoint.EnableAsciiAll(ascii.CreateFileStream("myfirst.tr"));
 
 What may not be obvious, though, is that there is a consistent model
 for all of the trace-related methods found in the system.  We will now
@@ -2433,7 +2432,7 @@ class.
 
 ::
 
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename) = 0;
+  virtual void EnablePcapInternal(std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename) = 0;
 
 The signature of this method reflects the device-centric view of the
 situation at this level.  All of the public methods inherited from
@@ -2443,7 +2442,7 @@ PCAP method,
 
 ::
 
-  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap(std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
 
 will call the device implementation of ``EnablePcapInternal``
 directly.  All other public PCAP tracing methods build on this
@@ -2458,12 +2457,12 @@ Methods
 
 ::
 
-  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous = false);
-  void EnablePcap (std::string prefix, NodeContainer n, bool promiscuous = false);
-  void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
-  void EnablePcapAll (std::string prefix, bool promiscuous = false);
+  void EnablePcap(std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap(std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap(std::string prefix, NetDeviceContainer d, bool promiscuous = false);
+  void EnablePcap(std::string prefix, NodeContainer n, bool promiscuous = false);
+  void EnablePcap(std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
+  void EnablePcapAll(std::string prefix, bool promiscuous = false);
 
 In each of the methods shown above, there is a default parameter
 called ``promiscuous`` that defaults to ``false``.  This parameter
@@ -2476,7 +2475,7 @@ parameter to any of the calls above.  For example,
 
   Ptr<NetDevice> nd;
   ...
-  helper.EnablePcap ("prefix", nd, true);
+  helper.EnablePcap("prefix", nd, true);
 
 will enable promiscuous mode captures on the ``NetDevice`` specified
 by ``nd``.
@@ -2497,7 +2496,7 @@ summarize ...
 
     Ptr<NetDevice> nd;
     ...
-    helper.EnablePcap ("prefix", nd);
+    helper.EnablePcap("prefix", nd);
 
 * You can enable PCAP tracing on a particular node/net-device pair by
   providing a ``std::string`` representing an object name service string
@@ -2507,10 +2506,10 @@ summarize ...
 
   ::
 
-    Names::Add ("server" ...);
-    Names::Add ("server/eth0" ...);
+    Names::Add("server" ...);
+    Names::Add("server/eth0" ...);
     ...
-    helper.EnablePcap ("prefix", "server/ath0");
+    helper.EnablePcap("prefix", "server/ath0");
 
 * You can enable PCAP tracing on a collection of node/net-device pairs
   by providing a ``NetDeviceContainer``.  For each ``NetDevice`` in the
@@ -2523,7 +2522,7 @@ summarize ...
 
     NetDeviceContainer d = ...;
     ...
-    helper.EnablePcap ("prefix", d);
+    helper.EnablePcap("prefix", d);
 
 * You can enable PCAP tracing on a collection of node/net-device pairs
   by providing a ``NodeContainer``.  For each Node in the
@@ -2536,7 +2535,7 @@ summarize ...
 
     NodeContainer n;
     ...
-    helper.EnablePcap ("prefix", n);
+    helper.EnablePcap("prefix", n);
 
 * You can enable PCAP tracing on the basis of Node ID and device ID as
   well as with explicit ``Ptr``.  Each Node in the system has an
@@ -2545,14 +2544,14 @@ summarize ...
 
   ::
 
-    helper.EnablePcap ("prefix", 21, 1);
+    helper.EnablePcap("prefix", 21, 1);
 
 * Finally, you can enable PCAP tracing for all devices in the system,
   with the same type as that managed by the device helper.
 
   ::
 
-    helper.EnablePcapAll ("prefix");
+    helper.EnablePcapAll("prefix");
 
 Filenames
 #########
@@ -2580,8 +2579,8 @@ Finally, two of the methods shown above,
 
 ::
 
-  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap(std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap(std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
 
 have a default parameter called ``explicitFilename``.  When set to
 true, this parameter disables the automatic filename completion
@@ -2595,7 +2594,7 @@ single promiscuous PCAP capture file of a specific name
 
   Ptr<NetDevice> nd;
   ...
-  helper.EnablePcap ("my-pcap-file.pcap", nd, true, true);
+  helper.EnablePcap("my-pcap-file.pcap", nd, true, true);
 
 The first ``true`` parameter enables promiscuous mode traces and the
 second tells the helper to interpret the ``prefix`` parameter as a
@@ -2616,10 +2615,10 @@ inherited from the ASCII trace ``mixin``.
 
 ::
 
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
-                                    std::string prefix,
-                                    Ptr<NetDevice> nd,
-                                    bool explicitFilename) = 0;
+  virtual void EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
+                                   std::string prefix,
+                                   Ptr<NetDevice> nd,
+                                   bool explicitFilename) = 0;
 
 
 The signature of this method reflects the device-centric view of the
@@ -2632,8 +2631,8 @@ trace methods,
 
 ::
 
-  void EnableAscii (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename = false);
-  void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
+  void EnableAscii(std::string prefix, Ptr<NetDevice> nd, bool explicitFilename = false);
+  void EnableAscii(Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 
 
 will call the device implementation of ``EnableAsciiInternal``
@@ -2650,23 +2649,23 @@ Methods
 
 ::
 
-  void EnableAscii (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename = false);
-  void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
+  void EnableAscii(std::string prefix, Ptr<NetDevice> nd, bool explicitFilename = false);
+  void EnableAscii(Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 
-  void EnableAscii (std::string prefix, std::string ndName, bool explicitFilename = false);
-  void EnableAscii (Ptr<OutputStreamWrapper> stream, std::string ndName);
+  void EnableAscii(std::string prefix, std::string ndName, bool explicitFilename = false);
+  void EnableAscii(Ptr<OutputStreamWrapper> stream, std::string ndName);
 
-  void EnableAscii (std::string prefix, NetDeviceContainer d);
-  void EnableAscii (Ptr<OutputStreamWrapper> stream, NetDeviceContainer d);
+  void EnableAscii(std::string prefix, NetDeviceContainer d);
+  void EnableAscii(Ptr<OutputStreamWrapper> stream, NetDeviceContainer d);
 
-  void EnableAscii (std::string prefix, NodeContainer n);
-  void EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n);
+  void EnableAscii(std::string prefix, NodeContainer n);
+  void EnableAscii(Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
-  void EnableAsciiAll (std::string prefix);
-  void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
+  void EnableAsciiAll(std::string prefix);
+  void EnableAsciiAll(Ptr<OutputStreamWrapper> stream);
 
-  void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
-  void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid);
+  void EnableAscii(std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
+  void EnableAscii(Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid);
 
 You are encouraged to peruse the API Documentation for class
 ``AsciiTraceHelperForDevice`` to find the details of these methods;
@@ -2690,7 +2689,7 @@ but to summarize ...
 
   Ptr<NetDevice> nd;
   ...
-  helper.EnableAscii ("prefix", nd);
+  helper.EnableAscii("prefix", nd);
 
 * The first four methods also include a default parameter called
   ``explicitFilename`` that operate similar to equivalent parameters
@@ -2710,10 +2709,10 @@ but to summarize ...
     Ptr<NetDevice> nd1;
     Ptr<NetDevice> nd2;
     ...
-    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("trace-file-name.tr");
     ...
-    helper.EnableAscii (stream, nd1);
-    helper.EnableAscii (stream, nd2);
+    helper.EnableAscii(stream, nd1);
+    helper.EnableAscii(stream, nd2);
 
 
   In this case, trace contexts *are* written to the ASCII trace file
@@ -2730,13 +2729,13 @@ but to summarize ...
 
   ::
 
-    Names::Add ("client" ...);
-    Names::Add ("client/eth0" ...);
-    Names::Add ("server" ...);
-    Names::Add ("server/eth0" ...);
+    Names::Add("client" ...);
+    Names::Add("client/eth0" ...);
+    Names::Add("server" ...);
+    Names::Add("server/eth0" ...);
     ...
-    helper.EnableAscii ("prefix", "client/eth0");
-    helper.EnableAscii ("prefix", "server/eth0");
+    helper.EnableAscii("prefix", "client/eth0");
+    helper.EnableAscii("prefix", "server/eth0");
 
   This would result in two files named ``prefix-client-eth0.tr`` and
   ``prefix-server-eth0.tr`` with traces for each device in the
@@ -2744,15 +2743,15 @@ but to summarize ...
   are overloaded to take a stream wrapper, you can use that form as
   well::
 
-    Names::Add ("client" ...);
-    Names::Add ("client/eth0" ...);
-    Names::Add ("server" ...);
-    Names::Add ("server/eth0" ...);
+    Names::Add("client" ...);
+    Names::Add("client/eth0" ...);
+    Names::Add("server" ...);
+    Names::Add("server/eth0" ...);
     ...
-    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("trace-file-name.tr");
     ...
-    helper.EnableAscii (stream, "client/eth0");
-    helper.EnableAscii (stream, "server/eth0");
+    helper.EnableAscii(stream, "client/eth0");
+    helper.EnableAscii(stream, "server/eth0");
 
   This would result in a single trace file called
   ``trace-file-name.tr`` that contains all of the trace events for
@@ -2770,7 +2769,7 @@ but to summarize ...
 
     NetDeviceContainer d = ...;
     ...
-    helper.EnableAscii ("prefix", d);
+    helper.EnableAscii("prefix", d);
 
   This would result in a number of ASCII trace files being created,
   each of which follows the ``<prefix>-<node id>-<device id>.tr``
@@ -2781,9 +2780,9 @@ but to summarize ...
 
     NetDeviceContainer d = ...;
     ...
-    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("trace-file-name.tr");
     ...
-    helper.EnableAscii (stream, d);
+    helper.EnableAscii(stream, d);
 
 * You can enable ASCII tracing on a collection of (node, net-device)
   pairs by providing a ``NodeContainer``.  For each Node in the
@@ -2796,7 +2795,7 @@ but to summarize ...
 
     NodeContainer n;
     ...
-    helper.EnableAscii ("prefix", n);
+    helper.EnableAscii("prefix", n);
 
   This would result in a number of ASCII trace files being created,
   each of which follows the ``<prefix>-<node id>-<device id>.tr``
@@ -2810,7 +2809,7 @@ but to summarize ...
 
   ::
 
-    helper.EnableAscii ("prefix", 21, 1);
+    helper.EnableAscii("prefix", 21, 1);
 
   Of course, the traces can be combined into a single file as shown
   above.
@@ -2820,7 +2819,7 @@ but to summarize ...
 
   ::
 
-    helper.EnableAsciiAll ("prefix");
+    helper.EnableAsciiAll("prefix");
 
   This would result in a number of ASCII trace files being created,
   one for every device in the system of the type managed by the
@@ -2886,10 +2885,10 @@ class ``Object``, and methods that share the same signature.
 
 ::
 
-  virtual void EnablePcapIpv4Internal (std::string prefix,
-                                       Ptr<Ipv4> ipv4,
-                                       uint32_t interface,
-                                       bool explicitFilename) = 0;
+  virtual void EnablePcapIpv4Internal(std::string prefix,
+                                      Ptr<Ipv4> ipv4,
+                                      uint32_t interface,
+                                      bool explicitFilename) = 0;
 
 The signature of this method reflects the protocol and
 interface-centric view of the situation at this level.  All of the
@@ -2899,7 +2898,7 @@ example, the lowest level PCAP method,
 
 ::
 
-  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
+  void EnablePcapIpv4(std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
 
 
 will call the device implementation of ``EnablePcapIpv4Internal``
@@ -2920,12 +2919,12 @@ protocol and interface constraints.
 
 Note that just like in the device version, there are six methods::
 
-  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
-  void EnablePcapIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface, bool explicitFilename = false);
-  void EnablePcapIpv4 (std::string prefix, Ipv4InterfaceContainer c);
-  void EnablePcapIpv4 (std::string prefix, NodeContainer n);
-  void EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename);
-  void EnablePcapIpv4All (std::string prefix);
+  void EnablePcapIpv4(std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
+  void EnablePcapIpv4(std::string prefix, std::string ipv4Name, uint32_t interface, bool explicitFilename = false);
+  void EnablePcapIpv4(std::string prefix, Ipv4InterfaceContainer c);
+  void EnablePcapIpv4(std::string prefix, NodeContainer n);
+  void EnablePcapIpv4(std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename);
+  void EnablePcapIpv4All(std::string prefix);
 
 You are encouraged to peruse the API Documentation for class
 ``PcapHelperForIpv4`` to find the details of these methods; but to
@@ -2937,9 +2936,9 @@ summarize ...
 
   ::
 
-    Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+    Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
     ...
-    helper.EnablePcapIpv4 ("prefix", ipv4, 0);
+    helper.EnablePcapIpv4("prefix", ipv4, 0);
 
 * You can enable PCAP tracing on a particular node/net-device pair by
   providing a ``std::string`` representing an object name service string
@@ -2948,9 +2947,9 @@ summarize ...
 
   ::
 
-    Names::Add ("serverIPv4" ...);
+    Names::Add("serverIPv4" ...);
     ...
-    helper.EnablePcapIpv4 ("prefix", "serverIpv4", 1);
+    helper.EnablePcapIpv4("prefix", "serverIpv4", 1);
 
 * You can enable PCAP tracing on a collection of protocol/interface
   pairs by providing an ``Ipv4InterfaceContainer``.  For each ``Ipv4`` /
@@ -2963,13 +2962,13 @@ summarize ...
 
     NodeContainer nodes;
     ...
-    NetDeviceContainer devices = deviceHelper.Install (nodes);
+    NetDeviceContainer devices = deviceHelper.Install(nodes);
     ...
     Ipv4AddressHelper ipv4;
-    ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = ipv4.Assign(devices);
     ...
-    helper.EnablePcapIpv4 ("prefix", interfaces);
+    helper.EnablePcapIpv4("prefix", interfaces);
 
 * You can enable PCAP tracing on a collection of protocol/interface
   pairs by providing a ``NodeContainer``.  For each Node in the
@@ -2981,7 +2980,7 @@ summarize ...
 
     NodeContainer n;
     ...
-    helper.EnablePcapIpv4 ("prefix", n);
+    helper.EnablePcapIpv4("prefix", n);
 
 * You can enable PCAP tracing on the basis of Node ID and interface as
   well.  In this case, the node-id is translated to a ``Ptr<Node>`` and
@@ -2990,7 +2989,7 @@ summarize ...
 
   ::
 
-    helper.EnablePcapIpv4 ("prefix", 21, 1);
+    helper.EnablePcapIpv4("prefix", 21, 1);
 
 * Finally, you can enable PCAP tracing for all interfaces in the
   system, with associated protocol being the same type as that managed
@@ -2998,7 +2997,7 @@ summarize ...
 
   ::
 
-    helper.EnablePcapIpv4All ("prefix");
+    helper.EnablePcapIpv4All("prefix");
 
 Filenames
 #########
@@ -3058,11 +3057,11 @@ method inherited from this class.
 
 ::
 
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream,
-                                        std::string prefix,
-                                        Ptr<Ipv4> ipv4,
-                                        uint32_t interface,
-                                        bool explicitFilename) = 0;
+  virtual void EnableAsciiIpv4Internal(Ptr<OutputStreamWrapper> stream,
+                                       std::string prefix,
+                                       Ptr<Ipv4> ipv4,
+                                       uint32_t interface,
+                                       bool explicitFilename) = 0;
 
 The signature of this method reflects the protocol- and
 interface-centric view of the situation at this level; and also the
@@ -3074,8 +3073,8 @@ level ASCII trace methods,
 
 ::
 
-  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
-  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4(std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
+  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 
 
 will call the device implementation of ``EnableAsciiIpv4Internal``
@@ -3092,23 +3091,23 @@ Methods
 
 ::
 
-  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
-  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4(std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
+  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 
-  void EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface, bool explicitFilename = false);
-  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4(std::string prefix, std::string ipv4Name, uint32_t interface, bool explicitFilename = false);
+  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, std::string ipv4Name, uint32_t interface);
 
-  void EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c);
-  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4(std::string prefix, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, Ipv4InterfaceContainer c);
 
-  void EnableAsciiIpv4 (std::string prefix, NodeContainer n);
-  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, NodeContainer n);
+  void EnableAsciiIpv4(std::string prefix, NodeContainer n);
+  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
-  void EnableAsciiIpv4All (std::string prefix);
-  void EnableAsciiIpv4All (Ptr<OutputStreamWrapper> stream);
+  void EnableAsciiIpv4All(std::string prefix);
+  void EnableAsciiIpv4All(Ptr<OutputStreamWrapper> stream);
 
-  void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
-  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv4(std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
+  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
 
 You are encouraged to peruse the API Documentation for class
 ``PcapAndAsciiHelperForIpv4`` to find the details of these methods;
@@ -3132,7 +3131,7 @@ but to summarize ...
 
     Ptr<Ipv4> ipv4;
     ...
-    helper.EnableAsciiIpv4 ("prefix", ipv4, 1);
+    helper.EnableAsciiIpv4("prefix", ipv4, 1);
 
   In this case, no trace contexts are written to the ASCII trace file
   since they would be redundant.  The system will pick the file name to
@@ -3144,13 +3143,13 @@ but to summarize ...
   using an object to refer to a single file.  We have already something
   similar to this in the "cwnd" example above::
 
-    Ptr<Ipv4> protocol1 = node1->GetObject<Ipv4> ();
-    Ptr<Ipv4> protocol2 = node2->GetObject<Ipv4> ();
+    Ptr<Ipv4> protocol1 = node1->GetObject<Ipv4>();
+    Ptr<Ipv4> protocol2 = node2->GetObject<Ipv4>();
     ...
-    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("trace-file-name.tr");
     ...
-    helper.EnableAsciiIpv4 (stream, protocol1, 1);
-    helper.EnableAsciiIpv4 (stream, protocol2, 1);
+    helper.EnableAsciiIpv4(stream, protocol1, 1);
+    helper.EnableAsciiIpv4(stream, protocol2, 1);
 
   In this case, trace contexts are written to the ASCII trace file since
   they are required to disambiguate traces from the two interfaces.
@@ -3166,24 +3165,24 @@ but to summarize ...
 
   ::
 
-    Names::Add ("node1Ipv4" ...);
-    Names::Add ("node2Ipv4" ...);
+    Names::Add("node1Ipv4" ...);
+    Names::Add("node2Ipv4" ...);
     ...
-    helper.EnableAsciiIpv4 ("prefix", "node1Ipv4", 1);
-    helper.EnableAsciiIpv4 ("prefix", "node2Ipv4", 1);
+    helper.EnableAsciiIpv4("prefix", "node1Ipv4", 1);
+    helper.EnableAsciiIpv4("prefix", "node2Ipv4", 1);
 
   This would result in two files named "prefix-nnode1Ipv4-i1.tr" and
   "prefix-nnode2Ipv4-i1.tr" with traces for each interface in the
   respective trace file.  Since all of the EnableAscii functions are
   overloaded to take a stream wrapper, you can use that form as well::
 
-    Names::Add ("node1Ipv4" ...);
-    Names::Add ("node2Ipv4" ...);
+    Names::Add("node1Ipv4" ...);
+    Names::Add("node2Ipv4" ...);
     ...
-    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("trace-file-name.tr");
     ...
-    helper.EnableAsciiIpv4 (stream, "node1Ipv4", 1);
-    helper.EnableAsciiIpv4 (stream, "node2Ipv4", 1);
+    helper.EnableAsciiIpv4(stream, "node1Ipv4", 1);
+    helper.EnableAsciiIpv4(stream, "node2Ipv4", 1);
 
   This would result in a single trace file called "trace-file-name.tr"
   that contains all of the trace events for both interfaces.  The events
@@ -3200,14 +3199,14 @@ but to summarize ...
 
     NodeContainer nodes;
     ...
-    NetDeviceContainer devices = deviceHelper.Install (nodes);
+    NetDeviceContainer devices = deviceHelper.Install(nodes);
     ...
     Ipv4AddressHelper ipv4;
-    ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = ipv4.Assign(devices);
     ...
     ...
-    helper.EnableAsciiIpv4 ("prefix", interfaces);
+    helper.EnableAsciiIpv4("prefix", interfaces);
 
   This would result in a number of ASCII trace files being created, each
   of which follows the <prefix>-n<node id>-i<interface>.tr convention.
@@ -3216,15 +3215,15 @@ but to summarize ...
 
     NodeContainer nodes;
     ...
-    NetDeviceContainer devices = deviceHelper.Install (nodes);
+    NetDeviceContainer devices = deviceHelper.Install(nodes);
     ...
     Ipv4AddressHelper ipv4;
-    ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = ipv4.Assign(devices);
     ...
-    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("trace-file-name.tr");
     ...
-    helper.EnableAsciiIpv4 (stream, interfaces);
+    helper.EnableAsciiIpv4(stream, interfaces);
 
 * You can enable ASCII tracing on a collection of protocol/interface
   pairs by providing a ``NodeContainer``.  For each Node in the
@@ -3236,7 +3235,7 @@ but to summarize ...
 
     NodeContainer n;
     ...
-    helper.EnableAsciiIpv4 ("prefix", n);
+    helper.EnableAsciiIpv4("prefix", n);
 
   This would result in a number of ASCII trace files being created,
   each of which follows the <prefix>-<node id>-<device id>.tr
@@ -3250,7 +3249,7 @@ but to summarize ...
 
   ::
 
-    helper.EnableAsciiIpv4 ("prefix", 21, 1);
+    helper.EnableAsciiIpv4("prefix", 21, 1);
 
   Of course, the traces can be combined into a single file as shown
   above.
@@ -3261,7 +3260,7 @@ but to summarize ...
 
   ::
 
-    helper.EnableAsciiIpv4All ("prefix");
+    helper.EnableAsciiIpv4All("prefix");
 
   This would result in a number of ASCII trace files being created, one
   for every interface in the system related to a protocol of the type

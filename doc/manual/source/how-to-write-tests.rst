@@ -60,8 +60,8 @@ is called "router" such as here:
 
 ::
 
-  RouterTestSuite::RouterTestSuite ()
-    : TestSuite ("router", UNIT)
+  RouterTestSuite::RouterTestSuite()
+    : TestSuite("router", UNIT)
 
 Try this command:
 
@@ -154,8 +154,8 @@ which looks like this:
 ::
 
    #include "ns3/example-as-test.h"
-   static ns3::ExampleAsTestSuite g_modExampleOne ("mymodule-example-mod-example-one", "mod-example", NS_TEST_SOURCEDIR, "--arg-one");
-   static ns3::ExampleAsTestSuite g_modExampleTwo ("mymodule-example-mod-example-two", "mod-example", NS_TEST_SOURCEDIR, "--arg-two");
+   static ns3::ExampleAsTestSuite g_modExampleOne("mymodule-example-mod-example-one", "mod-example", NS_TEST_SOURCEDIR, "--arg-one");
+   static ns3::ExampleAsTestSuite g_modExampleTwo("mymodule-example-mod-example-two", "mod-example", NS_TEST_SOURCEDIR, "--arg-two");
 
 The arguments to the constructor are the name of the test suite, the
 example to run, the directory that contains the "good" reference file
@@ -240,11 +240,11 @@ the wifi Information Elements.
      ...
    };
    void
-   BasicMultiLinkElementTest::DoRun ()
+   BasicMultiLinkElementTest::DoRun()
    {
-     MultiLinkElement mle (WIFI_MAC_MGT_BEACON);
+     MultiLinkElement mle(WIFI_MAC_MGT_BEACON);
      // Fill in the Multi-Link Element
-     TestHeaderSerialization (mle, WIFI_MAC_MGT_BEACON);
+     TestHeaderSerialization(mle, WIFI_MAC_MGT_BEACON);
    }
 
 Examples of this approach are found, e.g., in ``src/wifi/test/wifi-eht-info-elems-test.cc``

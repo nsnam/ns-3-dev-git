@@ -125,13 +125,13 @@ The typical use is::
   FlowMonitorHelper flowHelper;
   flowMonitor = flowHelper.InstallAll();
 
-  -yourApplicationsContainer-.Stop (Seconds (stop_time));;
-  Simulator::Stop (Seconds(stop_time+cleanup_time));
-  Simulator::Run ();
+  -yourApplicationsContainer-.Stop(Seconds(stop_time));;
+  Simulator::Stop(Seconds(stop_time+cleanup_time));
+  Simulator::Run();
 
   flowMonitor->SerializeToXmlFile("NameOfFile.xml", true, true);
 
-the ``SerializeToXmlFile ()`` function 2nd and 3rd parameters are used respectively to
+the ``SerializeToXmlFile()`` function 2nd and 3rd parameters are used respectively to
 activate/deactivate the histograms and the per-probe detailed stats.
 Other possible alternatives can be found in the Doxygen documentation, while
 ``cleanup_time`` is the time needed by in-flight packets to reach their destinations.
