@@ -397,7 +397,7 @@ class RoutingHelper : public Object
      * route data
      * \param protocol the routing protocol (1=OLSR;2=AODV;3=DSDV;4=DSR)
      * \param nSinks the number of nodes which will act as data sinks
-     * \param routingTables dump routing tables at t=5 seconds (0=no;1=yes)
+     * \param routingTables whether to dump routing tables at t=5 seconds
      */
     void Install(NodeContainer& c,
                  NetDeviceContainer& d,
@@ -405,7 +405,7 @@ class RoutingHelper : public Object
                  double totalTime,
                  int protocol,
                  uint32_t nSinks,
-                 int routingTables);
+                 bool routingTables);
 
     /**
      * \brief Trace the receipt of an on-off-application generated packet
@@ -422,9 +422,9 @@ class RoutingHelper : public Object
 
     /**
      * \brief Enable/disable logging
-     * \param log non-zero to enable logging
+     * \param log whether to enable logging
      */
-    void SetLogging(int log);
+    void SetLogging(bool log);
 
   private:
     /**
@@ -465,10 +465,10 @@ class RoutingHelper : public Object
     uint32_t m_protocol;        ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR
     uint32_t m_port;            ///< port
     uint32_t m_nSinks;          ///< number of sink nodes (< all nodes)
-    int m_routingTables;        ///< dump routing table (at t=5 sec).  0=No, 1=Yes
+    bool m_routingTables;       ///< dump routing table (at t=5 sec).  0=No, 1=Yes
     RoutingStats routingStats;  ///< routing statistics
     std::string m_protocolName; ///< protocol name
-    int m_log;                  ///< log
+    bool m_log;                 ///< log
 };
 
 NS_OBJECT_ENSURE_REGISTERED(RoutingHelper);
@@ -486,8 +486,8 @@ RoutingHelper::RoutingHelper()
       m_protocol(0),
       m_port(9),
       m_nSinks(0),
-      m_routingTables(0),
-      m_log(0)
+      m_routingTables(false),
+      m_log(false)
 {
 }
 
@@ -502,7 +502,7 @@ RoutingHelper::Install(NodeContainer& c,
                        double totalTime,
                        int protocol,
                        uint32_t nSinks,
-                       int routingTables)
+                       bool routingTables)
 {
     m_TotalSimTime = totalTime;
     m_protocol = protocol;
@@ -547,7 +547,7 @@ RoutingHelper::SetupRoutingProtocol(NodeContainer& c)
         m_protocolName = "NONE";
         break;
     case 1:
-        if (m_routingTables != 0)
+        if (m_routingTables)
         {
             olsr.PrintRoutingTableAllAt(rtt, rtw);
         }
@@ -555,7 +555,7 @@ RoutingHelper::SetupRoutingProtocol(NodeContainer& c)
         m_protocolName = "OLSR";
         break;
     case 2:
-        if (m_routingTables != 0)
+        if (m_routingTables)
         {
             aodv.PrintRoutingTableAllAt(rtt, rtw);
         }
@@ -563,7 +563,7 @@ RoutingHelper::SetupRoutingProtocol(NodeContainer& c)
         m_protocolName = "AODV";
         break;
     case 3:
-        if (m_routingTables != 0)
+        if (m_routingTables)
         {
             dsdv.PrintRoutingTableAllAt(rtt, rtw);
         }
@@ -590,7 +590,7 @@ RoutingHelper::SetupRoutingProtocol(NodeContainer& c)
         dsrMain.Install(dsr, c);
     }
 
-    if (m_log != 0)
+    if (m_log)
     {
         NS_LOG_UNCOND("Routing Setup for " << m_protocolName);
     }
@@ -673,7 +673,7 @@ RoutingHelper::ReceiveRoutingPacket(Ptr<Socket> socket)
         uint32_t RxRoutingBytes = packet->GetSize();
         GetRoutingStats().IncRxBytes(RxRoutingBytes);
         GetRoutingStats().IncRxPkts();
-        if (m_log != 0)
+        if (m_log)
         {
             NS_LOG_UNCOND(m_protocolName + " " +
                           PrintReceivedRoutingPacket(socket, packet, srcAddress));
@@ -695,7 +695,7 @@ RoutingHelper::GetRoutingStats()
 }
 
 void
-RoutingHelper::SetLogging(int log)
+RoutingHelper::SetLogging(bool log)
 {
     m_log = log;
 }
@@ -1227,23 +1227,23 @@ class VanetRoutingExperiment : public WifiApp
     int m_nodePause;                            ///< in s
     uint32_t m_wavePacketSize;                  ///< bytes
     double m_waveInterval;                      ///< seconds
-    int m_verbose;                              ///< verbose
+    bool m_verbose;                             ///< verbose
     std::ofstream m_os;                         ///< output stream
     NetDeviceContainer m_adhocTxDevices;        ///< adhoc transmit devices
     Ipv4InterfaceContainer m_adhocTxInterfaces; ///< adhoc transmit interfaces
     uint32_t m_scenario;                        ///< scenario
     double m_gpsAccuracyNs;                     ///< GPS accuracy
     double m_txMaxDelayMs;                      ///< transmit maximum delay
-    int m_routingTables;                        ///< routing tables
-    int m_asciiTrace;                           ///< ascii trace
-    int m_pcap;                                 ///< PCAP
+    bool m_routingTables;                       ///< routing tables
+    bool m_asciiTrace;                          ///< ascii trace
+    bool m_pcap;                                ///< PCAP
     std::string m_loadConfigFilename;           ///< load config file name
-    std::string m_saveConfigFilename;           ///< save configi file name
+    std::string m_saveConfigFilename;           ///< save config file name
 
     WaveBsmHelper m_waveBsmHelper;      ///< helper
     Ptr<RoutingHelper> m_routingHelper; ///< routing helper
     Ptr<WifiPhyStats> m_wifiPhyStats;   ///< wifi phy statistics
-    int m_log;                          ///< log
+    bool m_log;                         ///< log
     /// used to get consistent random numbers across scenarios
     int64_t m_streamIndex;
     NodeContainer m_adhocTxNodes;         ///< adhoc transmit nodes
@@ -1291,16 +1291,16 @@ VanetRoutingExperiment::VanetRoutingExperiment()
       m_nodePause(0),
       m_wavePacketSize(200),
       m_waveInterval(0.1),
-      m_verbose(0),
+      m_verbose(false),
       m_scenario(1),
       m_gpsAccuracyNs(40),
       m_txMaxDelayMs(10),
-      m_routingTables(0),
-      m_asciiTrace(0),
-      m_pcap(0),
+      m_routingTables(false),
+      m_asciiTrace(false),
+      m_pcap(false),
       m_loadConfigFilename("load-config.txt"),
       m_saveConfigFilename(""),
-      m_log(0),
+      m_log(false),
       m_streamIndex(0),
       m_adhocTxNodes(),
       m_txSafetyRange1(50.0),
@@ -1320,9 +1320,8 @@ VanetRoutingExperiment::VanetRoutingExperiment()
     m_wifiPhyStats = CreateObject<WifiPhyStats>();
     m_routingHelper = CreateObject<RoutingHelper>();
 
-    // set to non-zero value to enable
     // simply uncond logging during simulation run
-    m_log = 1;
+    m_log = true;
 }
 
 void
@@ -1347,9 +1346,9 @@ static ns3::GlobalValue g_nSinks("VRCnSinks",
 
 /// Trace mobility 1=yes;0=no
 static ns3::GlobalValue g_traceMobility("VRCtraceMobility",
-                                        "Trace mobility 1=yes;0=no",
-                                        ns3::UintegerValue(0),
-                                        ns3::MakeUintegerChecker<uint32_t>());
+                                        "Enable trace mobility",
+                                        ns3::BooleanValue(false),
+                                        ns3::MakeBooleanChecker());
 
 /// Routing protocol
 static ns3::GlobalValue g_protocol("VRCprotocol",
@@ -1407,9 +1406,9 @@ static ns3::GlobalValue g_wavePacketSize("VRCwavePacketSize",
 
 /// Verbose 0=no;1=yes
 static ns3::GlobalValue g_verbose("VRCverbose",
-                                  "Verbose 0=no;1=yes",
-                                  ns3::UintegerValue(0),
-                                  ns3::MakeUintegerChecker<uint32_t>());
+                                  "Enable verbose",
+                                  ns3::BooleanValue(false),
+                                  ns3::MakeBooleanChecker());
 
 /// Scenario
 static ns3::GlobalValue g_scenario("VRCscenario",
@@ -1419,21 +1418,21 @@ static ns3::GlobalValue g_scenario("VRCscenario",
 
 /// Dump routing tables at t=5 seconds 0=no;1=yes
 static ns3::GlobalValue g_routingTables("VRCroutingTables",
-                                        "Dump routing tables at t=5 seconds 0=no;1=yes",
-                                        ns3::UintegerValue(0),
-                                        ns3::MakeUintegerChecker<uint32_t>());
+                                        "Dump routing tables at t=5 seconds",
+                                        ns3::BooleanValue(false),
+                                        ns3::MakeBooleanChecker());
 
 /// Dump ASCII trace 0=no;1=yes
 static ns3::GlobalValue g_asciiTrace("VRCasciiTrace",
-                                     "Dump ASCII trace 0=no;1=yes",
-                                     ns3::UintegerValue(0),
-                                     ns3::MakeUintegerChecker<uint32_t>());
+                                     "Dump ASCII trace",
+                                     ns3::BooleanValue(false),
+                                     ns3::MakeBooleanChecker());
 
 /// Generate PCAP files 0=no;1=yes
 static ns3::GlobalValue g_pcap("VRCpcap",
-                               "Generate PCAP files 0=no;1=yes",
-                               ns3::UintegerValue(0),
-                               ns3::MakeUintegerChecker<uint32_t>());
+                               "Generate PCAP files",
+                               ns3::BooleanValue(false),
+                               ns3::MakeBooleanChecker());
 
 /// Simulation start time for capturing cumulative BSM
 static ns3::GlobalValue g_cumulativeBsmCaptureStart(
@@ -1732,7 +1731,7 @@ VanetRoutingExperiment::ProcessOutputs()
         mac_phy_oh = (double)(totalPhyBytes - totalAppBytes) / (double)totalPhyBytes;
     }
 
-    if (m_log != 0)
+    if (m_log)
     {
         NS_LOG_UNCOND("BSM_PDR1=" << bsm_pdr1 << " BSM_PDR2=" << bsm_pdr2
                                   << " BSM_PDR3=" << bsm_pdr3 << " BSM_PDR4=" << bsm_pdr4
@@ -1834,7 +1833,7 @@ VanetRoutingExperiment::CheckThroughput()
 
     std::ofstream out(m_CSVfileName, std::ios::app);
 
-    if (m_log != 0)
+    if (m_log)
     {
         NS_LOG_UNCOND("At t=" << (Simulator::Now()).As(Time::S) << " BSM_PDR1=" << wavePDR1_2
                               << " BSM_PDR1=" << wavePDR2_2 << " BSM_PDR3=" << wavePDR3_2
@@ -1885,6 +1884,7 @@ VanetRoutingExperiment::SetConfigFromGlobals()
     DoubleValue doubleValue;
     StringValue stringValue;
     TimeValue timeValue;
+    BooleanValue booleanValue;
 
     // This may not be the best way to manage program configuration
     // (directing them through global values), but management
@@ -1895,8 +1895,8 @@ VanetRoutingExperiment::SetConfigFromGlobals()
     m_port = uintegerValue.Get();
     GlobalValue::GetValueByName("VRCnSinks", uintegerValue);
     m_nSinks = uintegerValue.Get();
-    GlobalValue::GetValueByName("VRCtraceMobility", uintegerValue);
-    m_traceMobility = uintegerValue.Get();
+    GlobalValue::GetValueByName("VRCtraceMobility", booleanValue);
+    m_traceMobility = booleanValue.Get();
     GlobalValue::GetValueByName("VRCprotocol", uintegerValue);
     m_protocol = uintegerValue.Get();
     GlobalValue::GetValueByName("VRClossModel", uintegerValue);
@@ -1915,16 +1915,16 @@ VanetRoutingExperiment::SetConfigFromGlobals()
     m_nodePause = uintegerValue.Get();
     GlobalValue::GetValueByName("VRCwavePacketSize", uintegerValue);
     m_wavePacketSize = uintegerValue.Get();
-    GlobalValue::GetValueByName("VRCverbose", uintegerValue);
-    m_verbose = uintegerValue.Get();
+    GlobalValue::GetValueByName("VRCverbose", booleanValue);
+    m_verbose = booleanValue.Get();
     GlobalValue::GetValueByName("VRCscenario", uintegerValue);
     m_scenario = uintegerValue.Get();
-    GlobalValue::GetValueByName("VRCroutingTables", uintegerValue);
-    m_routingTables = uintegerValue.Get();
-    GlobalValue::GetValueByName("VRCasciiTrace", uintegerValue);
-    m_asciiTrace = uintegerValue.Get();
-    GlobalValue::GetValueByName("VRCpcap", uintegerValue);
-    m_pcap = uintegerValue.Get();
+    GlobalValue::GetValueByName("VRCroutingTables", booleanValue);
+    m_routingTables = booleanValue.Get();
+    GlobalValue::GetValueByName("VRCasciiTrace", booleanValue);
+    m_asciiTrace = booleanValue.Get();
+    GlobalValue::GetValueByName("VRCpcap", booleanValue);
+    m_pcap = booleanValue.Get();
     GlobalValue::GetValueByName("VRCcumulativeBsmCaptureStart", timeValue);
     m_cumulativeBsmCaptureStart = timeValue.Get();
 
@@ -1987,7 +1987,7 @@ VanetRoutingExperiment::SetGlobalsFromConfig()
 
     g_port.SetValue(UintegerValue(m_port));
     g_nSinks.SetValue(UintegerValue(m_nSinks));
-    g_traceMobility.SetValue(UintegerValue(m_traceMobility));
+    g_traceMobility.SetValue(BooleanValue(m_traceMobility));
     g_protocol.SetValue(UintegerValue(m_protocol));
     g_lossModel.SetValue(UintegerValue(m_lossModel));
     g_fading.SetValue(UintegerValue(m_fading));
@@ -1997,11 +1997,11 @@ VanetRoutingExperiment::SetGlobalsFromConfig()
     g_nodeSpeed.SetValue(UintegerValue(m_nodeSpeed));
     g_nodePause.SetValue(UintegerValue(m_nodePause));
     g_wavePacketSize.SetValue(UintegerValue(m_wavePacketSize));
-    g_verbose.SetValue(UintegerValue(m_verbose));
+    g_verbose.SetValue(BooleanValue(m_verbose));
     g_scenario.SetValue(UintegerValue(m_scenario));
-    g_routingTables.SetValue(UintegerValue(m_routingTables));
-    g_asciiTrace.SetValue(UintegerValue(m_asciiTrace));
-    g_pcap.SetValue(UintegerValue(m_pcap));
+    g_routingTables.SetValue(BooleanValue(m_routingTables));
+    g_asciiTrace.SetValue(BooleanValue(m_asciiTrace));
+    g_pcap.SetValue(BooleanValue(m_pcap));
     g_cumulativeBsmCaptureStart.SetValue(TimeValue(m_cumulativeBsmCaptureStart));
 
     g_txSafetyRange1.SetValue(DoubleValue(m_txSafetyRange1));
@@ -2067,7 +2067,7 @@ VanetRoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("phyModeB", "Phy mode 802.11b", m_phyModeB);
     cmd.AddValue("speed", "Node speed (m/s)", m_nodeSpeed);
     cmd.AddValue("pause", "Node pause (s)", m_nodePause);
-    cmd.AddValue("verbose", "0=quiet;1=verbose", m_verbose);
+    cmd.AddValue("verbose", "Enable verbose output", m_verbose);
     cmd.AddValue("bsm", "(WAVE) BSM size (bytes)", m_wavePacketSize);
     cmd.AddValue("interval", "(WAVE) BSM interval (s)", m_waveInterval);
     cmd.AddValue("scenario", "1=synthetic, 2=playback-trace", m_scenario);
@@ -2086,9 +2086,9 @@ VanetRoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("txdist10", "Expected BSM tx range, m", txDist10);
     cmd.AddValue("gpsaccuracy", "GPS time accuracy, in ns", m_gpsAccuracyNs);
     cmd.AddValue("txmaxdelay", "Tx max delay, in ms", m_txMaxDelayMs);
-    cmd.AddValue("routingTables", "Dump routing tables at t=5 seconds", m_routingTables);
-    cmd.AddValue("asciiTrace", "Dump ASCII Trace data", m_asciiTrace);
-    cmd.AddValue("pcap", "Create PCAP files for all nodes", m_pcap);
+    cmd.AddValue("routingTables", "Whether to dump routing tables at t=5 seconds", m_routingTables);
+    cmd.AddValue("asciiTrace", "Whether to dump ASCII Trace data", m_asciiTrace);
+    cmd.AddValue("pcap", "Whether to create PCAP files for all nodes", m_pcap);
     cmd.AddValue("loadconfig", "Config-store filename to load", m_loadConfigFilename);
     cmd.AddValue("saveconfig", "Config-store filename to save", m_saveConfigFilename);
     cmd.AddValue("exp", "Experiment", m_exp);
@@ -2350,14 +2350,14 @@ VanetRoutingExperiment::SetupAdhocDevices()
         m_adhocTxDevices = wifi.Install(wifiPhy, wifiMac, m_adhocTxNodes);
     }
 
-    if (m_asciiTrace != 0)
+    if (m_asciiTrace)
     {
         AsciiTraceHelper ascii;
         Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream(m_trName + ".tr");
         wifiPhy.EnableAsciiAll(osw);
         wavePhy.EnableAsciiAll(osw);
     }
-    if (m_pcap != 0)
+    if (m_pcap)
     {
         wifiPhy.EnablePcapAll("vanet-routing-compare-pcap");
         wavePhy.EnablePcapAll("vanet-routing-compare-pcap");
@@ -2496,4 +2496,6 @@ main(int argc, char* argv[])
 {
     VanetRoutingExperiment experiment;
     experiment.Simulate(argc, argv);
+
+    return 0;
 }
