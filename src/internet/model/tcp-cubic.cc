@@ -346,7 +346,7 @@ TcpCubic::HystartUpdate(Ptr<TcpSocketState> tcb, const Time& delay)
 {
     NS_LOG_FUNCTION(this << delay);
 
-    if (!(m_found & m_hystartDetect))
+    if (!m_found)
     {
         Time now = Simulator::Now();
 
@@ -357,7 +357,11 @@ TcpCubic::HystartUpdate(Ptr<TcpSocketState> tcb, const Time& delay)
 
             if ((now - m_roundStart) > m_delayMin)
             {
-                m_found |= PACKET_TRAIN;
+                if (m_hystartDetect == HybridSSDetectionMode::PACKET_TRAIN ||
+                    m_hystartDetect == HybridSSDetectionMode::BOTH)
+                {
+                    m_found = true;
+                }
             }
         }
 
@@ -371,18 +375,20 @@ TcpCubic::HystartUpdate(Ptr<TcpSocketState> tcb, const Time& delay)
 
             ++m_sampleCnt;
         }
-        else
+        else if (m_currRtt > m_delayMin + HystartDelayThresh(m_delayMin))
         {
-            if (m_currRtt > m_delayMin + HystartDelayThresh(m_delayMin))
+            if (m_hystartDetect == HybridSSDetectionMode::DELAY ||
+                m_hystartDetect == HybridSSDetectionMode::BOTH)
             {
-                m_found |= DELAY;
+                m_found = true;
             }
         }
+
         /*
          * Either one of two conditions are met,
          * we exit from slow start immediately.
          */
-        if (m_found & m_hystartDetect)
+        if (m_found)
         {
             NS_LOG_DEBUG("Exit from SS, immediately :-)");
             tcb->m_ssThresh = tcb->m_cWnd;
