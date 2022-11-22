@@ -54,7 +54,25 @@ void
 HtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration, std::size_t psduSize)
 {
     NS_LOG_FUNCTION(this << txVector << ppduDuration << psduSize);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     LSigHeader lSig;
+    SetLSigHeader(lSig, ppduDuration);
+
+    HtSigHeader htSig;
+    SetHtSigHeader(htSig, txVector, psduSize);
+
+    m_phyHeaders->AddHeader(htSig);
+    m_phyHeaders->AddHeader(lSig);
+#else
+    SetLSigHeader(m_lSig, ppduDuration);
+    SetHtSigHeader(m_htSig, txVector, psduSize);
+#endif
+}
+
+void
+HtPpdu::SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const
+{
     uint8_t sigExtension = 0;
     if (m_band == WIFI_PHY_BAND_2_4GHZ)
     {
@@ -67,21 +85,25 @@ HtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration, std::size
                         3) -
                        3);
     lSig.SetLength(length);
+}
 
-    HtSigHeader htSig;
+void
+HtPpdu::SetHtSigHeader(HtSigHeader& htSig, const WifiTxVector& txVector, std::size_t psduSize) const
+{
     htSig.SetMcs(txVector.GetMode().GetMcsValue());
     htSig.SetChannelWidth(m_channelWidth);
     htSig.SetHtLength(psduSize);
     htSig.SetAggregation(txVector.IsAggregation());
     htSig.SetShortGuardInterval(txVector.GetGuardInterval() == 400);
-
-    m_phyHeaders->AddHeader(htSig);
-    m_phyHeaders->AddHeader(lSig);
 }
 
 WifiTxVector
 HtPpdu::DoGetTxVector() const
 {
+    WifiTxVector txVector;
+    txVector.SetPreambleType(m_preamble);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     auto phyHeaders = m_phyHeaders->Copy();
 
     LSigHeader lSig;
@@ -96,14 +118,24 @@ HtPpdu::DoGetTxVector() const
         NS_FATAL_ERROR("Missing HT-SIG header in HT PPDU");
     }
 
-    WifiTxVector txVector;
-    txVector.SetPreambleType(m_preamble);
+    SetTxVectorFromPhyHeaders(txVector, lSig, htSig);
+#else
+    SetTxVectorFromPhyHeaders(txVector, m_lSig, m_htSig);
+#endif
+
+    return txVector;
+}
+
+void
+HtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
+                                  const LSigHeader& lSig,
+                                  const HtSigHeader& htSig) const
+{
     txVector.SetMode(HtPhy::GetHtMcs(htSig.GetMcs()));
     txVector.SetChannelWidth(htSig.GetChannelWidth());
     txVector.SetNss(1 + (htSig.GetMcs() / 8));
     txVector.SetGuardInterval(htSig.GetShortGuardInterval() ? 400 : 800);
     txVector.SetAggregation(htSig.GetAggregation());
-    return txVector;
 }
 
 Time
@@ -111,6 +143,9 @@ HtPpdu::GetTxDuration() const
 {
     Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
+
+    uint16_t htLength = 0;
+#ifdef NS3_BUILD_PROFILE_DEBUG
     auto phyHeaders = m_phyHeaders->Copy();
 
     LSigHeader lSig;
@@ -118,7 +153,12 @@ HtPpdu::GetTxDuration() const
     HtSigHeader htSig;
     phyHeaders->RemoveHeader(htSig);
 
-    ppduDuration = WifiPhy::CalculateTxDuration(htSig.GetHtLength(), txVector, m_band);
+    htLength = htSig.GetHtLength();
+#else
+    htLength = m_htSig.GetHtLength();
+#endif
+
+    ppduDuration = WifiPhy::CalculateTxDuration(htLength, txVector, m_band);
     return ppduDuration;
 }
 

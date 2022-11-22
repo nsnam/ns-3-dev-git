@@ -178,8 +178,42 @@ class VhtPpdu : public OfdmPpdu
      * \param txVector the TXVECTOR that was used for this PPDU
      * \param ppduDuration the transmission duration of this PPDU
      */
-    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
-};                         // class VhtPpdu
+    virtual void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
+
+    /**
+     * Fill in the L-SIG header.
+     *
+     * \param lSig the L-SIG header to fill in
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    virtual void SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const;
+
+    /**
+     * Fill in the VHT-SIG header.
+     *
+     * \param vhtSig the VHT-SIG header to fill in
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    void SetVhtSigHeader(VhtSigHeader& vhtSig,
+                         const WifiTxVector& txVector,
+                         Time ppduDuration) const;
+
+    /**
+     * Fill in the TXVECTOR from PHY headers.
+     *
+     * \param txVector the TXVECTOR to fill in
+     * \param lSig the L-SIG header
+     * \param vhtSig the VHT-SIG header
+     */
+    void SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
+                                   const LSigHeader& lSig,
+                                   const VhtSigHeader& vhtSig) const;
+
+#ifndef NS3_BUILD_PROFILE_DEBUG
+    VhtSigHeader m_vhtSig; //!< the VHT-SIG PHY header
+#endif
+}; // class VhtPpdu
 
 } // namespace ns3
 

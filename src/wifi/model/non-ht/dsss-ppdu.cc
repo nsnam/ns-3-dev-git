@@ -46,28 +46,53 @@ DsssPpdu::DsssPpdu(Ptr<const WifiPsdu> psdu,
 void
 DsssPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
-    NS_LOG_FUNCTION(this << txVector << ppduDuration);
+    NS_LOG_FUNCTION(this << txVector);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     DsssSigHeader dsssSig;
+    SetDsssHeader(dsssSig, txVector, ppduDuration);
+    m_phyHeaders->AddHeader(dsssSig);
+#else
+    SetDsssHeader(m_dsssSig, txVector, ppduDuration);
+#endif
+}
+
+void
+DsssPpdu::SetDsssHeader(DsssSigHeader& dsssSig,
+                        const WifiTxVector& txVector,
+                        Time ppduDuration) const
+{
     dsssSig.SetRate(txVector.GetMode().GetDataRate(22));
     Time psduDuration = ppduDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
     dsssSig.SetLength(psduDuration.GetMicroSeconds());
-    m_phyHeaders->AddHeader(dsssSig);
 }
 
 WifiTxVector
 DsssPpdu::DoGetTxVector() const
 {
+    WifiTxVector txVector;
+    txVector.SetPreambleType(m_preamble);
+    txVector.SetChannelWidth(22);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     DsssSigHeader dsssSig;
     if (m_phyHeaders->PeekHeader(dsssSig) == 0)
     {
         NS_FATAL_ERROR("Missing DSSS SIG PHY header in DSSS PPDU");
     }
 
-    WifiTxVector txVector;
-    txVector.SetPreambleType(m_preamble);
-    txVector.SetMode(DsssPhy::GetDsssRate(dsssSig.GetRate()));
-    txVector.SetChannelWidth(22);
+    SetTxVectorFromDsssHeader(txVector, dsssSig);
+#else
+    SetTxVectorFromDsssHeader(txVector, m_dsssSig);
+#endif
+
     return txVector;
+}
+
+void
+DsssPpdu::SetTxVectorFromDsssHeader(WifiTxVector& txVector, const DsssSigHeader& dsssSig) const
+{
+    txVector.SetMode(DsssPhy::GetDsssRate(dsssSig.GetRate()));
 }
 
 Time
@@ -75,10 +100,15 @@ DsssPpdu::GetTxDuration() const
 {
     Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
+    uint16_t length = 0;
+#ifdef NS3_BUILD_PROFILE_DEBUG
     DsssSigHeader dsssSig;
     m_phyHeaders->PeekHeader(dsssSig);
-    ppduDuration = MicroSeconds(dsssSig.GetLength()) +
-                   WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
+    length = dsssSig.GetLength();
+#else
+    length = m_dsssSig.GetLength();
+#endif
+    ppduDuration = MicroSeconds(length) + WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
     return ppduDuration;
 }
 

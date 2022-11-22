@@ -62,7 +62,7 @@ class ErpOfdmPpdu : public OfdmPpdu
     Ptr<WifiPpdu> Copy() const override;
 
   private:
-    WifiTxVector DoGetTxVector() const override;
+    void SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const override;
 }; // class ErpOfdmPpdu
 
 } // namespace ns3

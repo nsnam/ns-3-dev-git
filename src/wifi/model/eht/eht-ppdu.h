@@ -64,10 +64,12 @@ class EhtPpdu : public HePpdu
     WifiPpduType GetType() const override;
     Ptr<WifiPpdu> Copy() const override;
 
-  protected:
+  private:
     bool IsDlMu() const override;
     bool IsUlMu() const override;
-    WifiTxVector DoGetTxVector() const override;
+    void SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
+                                   const LSigHeader& lSig,
+                                   const HeSigHeader& heSig) const override;
 
     uint8_t m_ehtSuMcs{0};      //!< EHT-MCS for EHT SU transmissions
     uint8_t m_ehtSuNStreams{1}; //!< Number of streams for EHT SU transmissions

@@ -53,14 +53,37 @@ void
 VhtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
     NS_LOG_FUNCTION(this << txVector << ppduDuration);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     LSigHeader lSig;
+    SetLSigHeader(lSig, ppduDuration);
+
+    VhtSigHeader vhtSig;
+    SetVhtSigHeader(vhtSig, txVector, ppduDuration);
+
+    m_phyHeaders->AddHeader(vhtSig);
+    m_phyHeaders->AddHeader(lSig);
+#else
+    SetLSigHeader(m_lSig, ppduDuration);
+    SetVhtSigHeader(m_vhtSig, txVector, ppduDuration);
+#endif
+}
+
+void
+VhtPpdu::SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const
+{
     uint16_t length =
         ((ceil((static_cast<double>(ppduDuration.GetNanoSeconds() - (20 * 1000)) / 1000) / 4.0) *
           3) -
          3);
     lSig.SetLength(length);
+}
 
-    VhtSigHeader vhtSig;
+void
+VhtPpdu::SetVhtSigHeader(VhtSigHeader& vhtSig,
+                         const WifiTxVector& txVector,
+                         Time ppduDuration) const
+{
     vhtSig.SetMuFlag(m_preamble == WIFI_PREAMBLE_VHT_MU);
     vhtSig.SetChannelWidth(m_channelWidth);
     vhtSig.SetShortGuardInterval(txVector.GetGuardInterval() == 400);
@@ -75,14 +98,15 @@ VhtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
     }
     vhtSig.SetSuMcs(txVector.GetMode().GetMcsValue());
     vhtSig.SetNStreams(txVector.GetNss());
-
-    m_phyHeaders->AddHeader(vhtSig);
-    m_phyHeaders->AddHeader(lSig);
 }
 
 WifiTxVector
 VhtPpdu::DoGetTxVector() const
 {
+    WifiTxVector txVector;
+    txVector.SetPreambleType(m_preamble);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     auto phyHeaders = m_phyHeaders->Copy();
 
     LSigHeader lSig;
@@ -97,14 +121,24 @@ VhtPpdu::DoGetTxVector() const
         NS_FATAL_ERROR("Missing VHT-SIG header in VHT PPDU");
     }
 
-    WifiTxVector txVector;
-    txVector.SetPreambleType(m_preamble);
+    SetTxVectorFromPhyHeaders(txVector, lSig, vhtSig);
+#else
+    SetTxVectorFromPhyHeaders(txVector, m_lSig, m_vhtSig);
+#endif
+
+    return txVector;
+}
+
+void
+VhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
+                                   const LSigHeader& lSig,
+                                   const VhtSigHeader& vhtSig) const
+{
     txVector.SetMode(VhtPhy::GetVhtMcs(vhtSig.GetSuMcs()));
     txVector.SetChannelWidth(vhtSig.GetChannelWidth());
     txVector.SetNss(vhtSig.GetNStreams());
     txVector.SetGuardInterval(vhtSig.GetShortGuardInterval() ? 400 : 800);
     txVector.SetAggregation(GetPsdu()->IsAggregate());
-    return txVector;
 }
 
 Time
@@ -112,6 +146,11 @@ VhtPpdu::GetTxDuration() const
 {
     Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
+
+    uint16_t length = 0;
+    bool sgi = false;
+    bool sgiDisambiguation = false;
+#ifdef NS3_BUILD_PROFILE_DEBUG
     auto phyHeaders = m_phyHeaders->Copy();
 
     LSigHeader lSig;
@@ -119,14 +158,22 @@ VhtPpdu::GetTxDuration() const
     VhtSigHeader vhtSig;
     phyHeaders->RemoveHeader(vhtSig);
 
+    length = lSig.GetLength();
+    sgi = vhtSig.GetShortGuardInterval();
+    sgiDisambiguation = vhtSig.GetShortGuardIntervalDisambiguation();
+#else
+    length = m_lSig.GetLength();
+    sgi = m_vhtSig.GetShortGuardInterval();
+    sgiDisambiguation = m_vhtSig.GetShortGuardIntervalDisambiguation();
+#endif
+
     Time tSymbol = NanoSeconds(3200 + txVector.GetGuardInterval());
     Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
-    Time calculatedDuration =
-        MicroSeconds(((ceil(static_cast<double>(lSig.GetLength() + 3) / 3)) * 4) + 20);
+    Time calculatedDuration = MicroSeconds(((ceil(static_cast<double>(length + 3) / 3)) * 4) + 20);
     uint32_t nSymbols =
         floor(static_cast<double>((calculatedDuration - preambleDuration).GetNanoSeconds()) /
               tSymbol.GetNanoSeconds());
-    if (vhtSig.GetShortGuardInterval() && vhtSig.GetShortGuardIntervalDisambiguation())
+    if (sgi && sgiDisambiguation)
     {
         nSymbols--;
     }

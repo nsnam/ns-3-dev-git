@@ -53,39 +53,66 @@ void
 OfdmPpdu::SetPhyHeaders(const WifiTxVector& txVector, std::size_t psduSize)
 {
     NS_LOG_FUNCTION(this << txVector << psduSize);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     LSigHeader lSig;
+    SetLSigHeader(lSig, txVector, psduSize);
+    m_phyHeaders->AddHeader(lSig);
+#else
+    SetLSigHeader(m_lSig, txVector, psduSize);
+#endif
+}
+
+void
+OfdmPpdu::SetLSigHeader(LSigHeader& lSig, const WifiTxVector& txVector, std::size_t psduSize) const
+{
     lSig.SetRate(txVector.GetMode().GetDataRate(txVector), m_channelWidth);
     lSig.SetLength(psduSize);
-    m_phyHeaders->AddHeader(lSig);
 }
 
 WifiTxVector
 OfdmPpdu::DoGetTxVector() const
 {
+    WifiTxVector txVector;
+    txVector.SetPreambleType(m_preamble);
+
+#ifdef NS3_BUILD_PROFILE_DEBUG
     LSigHeader lSig;
     if (m_phyHeaders->PeekHeader(lSig) == 0)
     {
         NS_FATAL_ERROR("Missing L-SIG in PPDU");
     }
 
-    WifiTxVector txVector;
-    txVector.SetPreambleType(m_preamble);
+    SetTxVectorFromLSigHeader(txVector, lSig);
+#else
+    SetTxVectorFromLSigHeader(txVector, m_lSig);
+#endif
+
+    return txVector;
+}
+
+void
+OfdmPpdu::SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const
+{
     // OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 MHz
     uint16_t channelWidth = m_channelWidth < 20 ? m_channelWidth : 20;
     txVector.SetMode(OfdmPhy::GetOfdmRate(lSig.GetRate(m_channelWidth), channelWidth));
     txVector.SetChannelWidth(channelWidth);
-    return txVector;
 }
 
 Time
 OfdmPpdu::GetTxDuration() const
 {
-    Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
+    uint16_t length = 0;
+#ifdef NS3_BUILD_PROFILE_DEBUG
     LSigHeader lSig;
     m_phyHeaders->PeekHeader(lSig);
-    ppduDuration = WifiPhy::CalculateTxDuration(lSig.GetLength(), txVector, m_band);
-    return ppduDuration;
+    length = lSig.GetLength();
+#else
+    length = m_lSig.GetLength();
+#endif
+    return WifiPhy::CalculateTxDuration(length, txVector, m_band);
 }
 
 Ptr<WifiPpdu>

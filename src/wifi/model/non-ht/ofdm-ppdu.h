@@ -124,6 +124,9 @@ class OfdmPpdu : public WifiPpdu
   protected:
     WifiPhyBand m_band;      //!< the WifiPhyBand used to transmit that PPDU
     uint16_t m_channelWidth; //!< the channel width used to transmit that PPDU in MHz
+#ifndef NS3_BUILD_PROFILE_DEBUG
+    LSigHeader m_lSig; //!< the L-SIG PHY header
+#endif
 
   private:
     WifiTxVector DoGetTxVector() const override;
@@ -135,6 +138,23 @@ class OfdmPpdu : public WifiPpdu
      * \param psduSize the size duration of the PHY payload (PSDU)
      */
     void SetPhyHeaders(const WifiTxVector& txVector, std::size_t psduSize);
+
+    /**
+     * Fill in the L-SIG header.
+     *
+     * \param lSig the L-SIG header to fill in
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param psduSize the size duration of the PHY payload (PSDU)
+     */
+    void SetLSigHeader(LSigHeader& lSig, const WifiTxVector& txVector, std::size_t psduSize) const;
+
+    /**
+     * Fill in the TXVECTOR from L-SIG header.
+     *
+     * \param txVector the TXVECTOR to fill in
+     * \param lSig the L-SIG header
+     */
+    virtual void SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const;
 }; // class OfdmPpdu
 
 } // namespace ns3

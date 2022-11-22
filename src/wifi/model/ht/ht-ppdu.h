@@ -165,6 +165,40 @@ class HtPpdu : public OfdmPpdu
      * \param psduSize the size duration of the PHY payload (PSDU)
      */
     void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration, std::size_t psduSize);
+
+    /**
+     * Fill in the L-SIG header.
+     *
+     * \param lSig the L-SIG header to fill in
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    virtual void SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const;
+
+    /**
+     * Fill in the HT-SIG header.
+     *
+     * \param htSig the HT-SIG header to fill in
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param psduSize the size duration of the PHY payload (PSDU)
+     */
+    void SetHtSigHeader(HtSigHeader& htSig,
+                        const WifiTxVector& txVector,
+                        std::size_t psduSize) const;
+
+    /**
+     * Fill in the TXVECTOR from PHY headers.
+     *
+     * \param txVector the TXVECTOR to fill in
+     * \param lSig the L-SIG header
+     * \param htSig the HT-SIG header
+     */
+    void SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
+                                   const LSigHeader& lSig,
+                                   const HtSigHeader& htSig) const;
+
+#ifndef NS3_BUILD_PROFILE_DEBUG
+    HtSigHeader m_htSig; //!< the HT-SIG PHY header
+#endif
 }; // class HtPpdu
 
 } // namespace ns3

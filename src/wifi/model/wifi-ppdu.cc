@@ -37,7 +37,9 @@ WifiPpdu::WifiPpdu(Ptr<const WifiPsdu> psdu,
       m_modulation(txVector.IsValid() ? txVector.GetModulationClass() : WIFI_MOD_CLASS_UNKNOWN),
       m_txCenterFreq(txCenterFreq),
       m_uid(uid),
+#ifdef NS3_BUILD_PROFILE_DEBUG
       m_phyHeaders(Create<Packet>()),
+#endif
       m_truncatedTx(false),
       m_txPowerLevel(txVector.GetTxPowerLevel()),
       m_txVector(txVector)
@@ -55,7 +57,9 @@ WifiPpdu::WifiPpdu(const WifiConstPsduMap& psdus,
                                       : WIFI_MOD_CLASS_UNKNOWN),
       m_txCenterFreq(txCenterFreq),
       m_uid(uid),
+#ifdef NS3_BUILD_PROFILE_DEBUG
       m_phyHeaders(Create<Packet>()),
+#endif
       m_truncatedTx(false),
       m_txPowerLevel(txVector.GetTxPowerLevel()),
       m_txAntennas(txVector.GetNTx()),

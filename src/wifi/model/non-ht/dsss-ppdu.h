@@ -124,6 +124,30 @@ class DsssPpdu : public WifiPpdu
      * \param ppduDuration the transmission duration of this PPDU
      */
     void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
+
+    /**
+     * Fill in the DSSS header.
+     *
+     * \param dsssSig the DSSS header to fill in
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    void SetDsssHeader(DsssSigHeader& dsssSig,
+                       const WifiTxVector& txVector,
+                       Time ppduDuration) const;
+
+    /**
+     * Fill in the TXVECTOR from DSSS header.
+     *
+     * \param txVector the TXVECTOR to fill in
+     * \param dsssSig the DSSS header
+     */
+    virtual void SetTxVectorFromDsssHeader(WifiTxVector& txVector,
+                                           const DsssSigHeader& dsssSig) const;
+
+#ifndef NS3_BUILD_PROFILE_DEBUG
+    DsssSigHeader m_dsssSig; //!< the DSSS SIG PHY header
+#endif
 }; // class DsssPpdu
 
 } // namespace ns3

@@ -201,7 +201,9 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     uint16_t m_txCenterFreq; //!< the center frequency (MHz) used for the transmission of this PPDU
     uint64_t m_uid;          //!< the unique ID of this PPDU
 
+#ifdef NS3_BUILD_PROFILE_DEBUG
     Ptr<Packet> m_phyHeaders; //!< the PHY headers contained in this PPDU
+#endif
 
   private:
     /**
