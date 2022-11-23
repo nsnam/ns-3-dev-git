@@ -207,28 +207,27 @@ LogComponent::EnvVarCheck()
                     {
                         level |= LOG_LOGIC;
                     }
-                    else if (pre_pipe && ((lev == "all") || (lev == "*")))
+                    else if (pre_pipe && (lev == "all" || lev == "*"))
                     {
                         level |= LOG_LEVEL_ALL;
                     }
-                    else if ((lev == "prefix_func") || (lev == "func"))
+                    else if (lev == "prefix_func" || lev == "func")
                     {
                         level |= LOG_PREFIX_FUNC;
                     }
-                    else if ((lev == "prefix_time") || (lev == "time"))
+                    else if (lev == "prefix_time" || lev == "time")
                     {
                         level |= LOG_PREFIX_TIME;
                     }
-                    else if ((lev == "prefix_node") || (lev == "node"))
+                    else if (lev == "prefix_node" || lev == "node")
                     {
                         level |= LOG_PREFIX_NODE;
                     }
-                    else if ((lev == "prefix_level") || (lev == "level"))
+                    else if (lev == "prefix_level" || lev == "level")
                     {
                         level |= LOG_PREFIX_LEVEL;
                     }
-                    else if ((lev == "prefix_all") ||
-                             (!pre_pipe && ((lev == "all") || (lev == "*"))))
+                    else if (lev == "prefix_all" || (!pre_pipe && (lev == "all" || lev == "*")))
                     {
                         level |= LOG_PREFIX_ALL;
                     }
