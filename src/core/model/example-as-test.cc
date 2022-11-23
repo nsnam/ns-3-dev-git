@@ -21,9 +21,10 @@
 
 #include "ascii-test.h"
 #include "assert.h"
+#include "environment-variable.h"
 #include "log.h"
 
-#include <cstdlib> // itoa(), system (), getenv ()
+#include <cstdlib> // itoa(), system ()
 #include <cstring>
 #include <sstream>
 #include <string>
@@ -118,8 +119,8 @@ ExampleAsTestCase::DoRun()
     NS_TEST_ASSERT_MSG_EQ(status, 0, "example " + m_program + " failed");
 
     // Check that we're not just introspecting the command-line
-    const char* envVar = std::getenv("NS_COMMANDLINE_INTROSPECTION");
-    if (envVar != nullptr && std::strlen(envVar) != 0)
+    auto [found, intro] = EnvironmentVariable::Get("NS_COMMANDLINE_INTROSPECTION");
+    if (found)
     {
         return;
     }

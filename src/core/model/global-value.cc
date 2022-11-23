@@ -19,15 +19,13 @@
 #include "global-value.h"
 
 #include "attribute.h"
+#include "environment-variable.h"
 #include "fatal-error.h"
 #include "log.h"
 #include "string.h"
 #include "uinteger.h"
 
 #include "ns3/core-config.h"
-
-#include <cstdlib> // getenv
-#include <cstring> // strlen
 
 /**
  * \file
@@ -70,35 +68,15 @@ GlobalValue::InitializeFromEnv()
 {
     NS_LOG_FUNCTION(this);
 
-    const char* envVar = getenv("NS_GLOBAL_VALUE");
-    if (envVar == nullptr || std::strlen(envVar) == 0)
+    auto [found, value] = EnvironmentVariable::Get("NS_GLOBAL_VALUE", m_name);
+    if (found)
     {
-        return;
-    }
-    std::string env = envVar;
-    std::string::size_type cur = 0;
-    std::string::size_type next = 0;
-    while (next != std::string::npos)
-    {
-        next = env.find(';', cur);
-        std::string tmp = std::string(env, cur, next - cur);
-        std::string::size_type equal = tmp.find('=');
-        if (equal != std::string::npos)
+        Ptr<AttributeValue> v = m_checker->CreateValidValue(StringValue(value));
+        if (v)
         {
-            std::string name = tmp.substr(0, equal);
-            std::string value = tmp.substr(equal + 1, tmp.size() - equal - 1);
-            if (name == m_name)
-            {
-                Ptr<AttributeValue> v = m_checker->CreateValidValue(StringValue(value));
-                if (v)
-                {
-                    m_initialValue = v;
-                    m_currentValue = v;
-                }
-                return;
-            }
+            m_initialValue = v;
+            m_currentValue = v;
         }
-        cur = next + 1;
     }
 }
 

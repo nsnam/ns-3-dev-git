@@ -19,12 +19,11 @@
 #include "system-path.h"
 
 #include "assert.h"
+#include "environment-variable.h"
 #include "fatal-error.h"
 #include "log.h"
 
 #include <algorithm>
-#include <cstdlib> // getenv
-#include <cstring> // strlen
 #include <ctime>
 #include <regex>
 #include <sstream>
@@ -315,15 +314,13 @@ std::string
 MakeTemporaryDirectoryName()
 {
     NS_LOG_FUNCTION_NOARGS();
-    char* path = nullptr;
-
-    path = std::getenv("TMP");
-    if (!path || std::strlen(path) == 0)
+    auto [found, path] = EnvironmentVariable::Get("TMP");
+    if (!found)
     {
-        path = std::getenv("TEMP");
-        if (!path || std::strlen(path) == 0)
+        std::tie(found, path) = EnvironmentVariable::Get("TEMP");
+        if (!found)
         {
-            path = const_cast<char*>("/tmp");
+            path = "/tmp";
         }
     }
 
