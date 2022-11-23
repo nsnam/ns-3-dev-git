@@ -32,11 +32,36 @@ class WifiMpdu;
 /**
  * \ingroup wifi
  *
- * FcfsWifiQueueScheduler is a wifi queue scheduler that serves data frames in a
- * first come first serve fashion. Management frames have higher priority than data
- * frames, hence the former will be served before the latter.
+ * Definition of priority for container queues.
  */
-class FcfsWifiQueueScheduler : public WifiMacQueueSchedulerImpl<Time>
+struct FcfsPrio
+{
+    Time priority;               ///< time priority
+    WifiContainerQueueType type; ///< type of container queue
+};
+
+/**
+ * \param lhs the left hand side priority
+ * \param rhs the right hand side priority
+ * \return whether the left hand side priority is equal to the right hand side priority
+ */
+bool operator==(const FcfsPrio& lhs, const FcfsPrio& rhs);
+/**
+ * \param lhs the left hand side priority
+ * \param rhs the right hand side priority
+ * \return whether the left hand side priority is less than the right hand side priority
+ */
+bool operator<(const FcfsPrio& lhs, const FcfsPrio& rhs);
+
+/**
+ * \ingroup wifi
+ *
+ * FcfsWifiQueueScheduler is a wifi queue scheduler that serves data frames in a
+ * first come first serve fashion. Control frames have the highest priority.
+ * Management frames have the second highest priority. Hence, data frames are
+ * served after control and management frames.
+ */
+class FcfsWifiQueueScheduler : public WifiMacQueueSchedulerImpl<FcfsPrio>
 {
   public:
     /**
