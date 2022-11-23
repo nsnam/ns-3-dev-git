@@ -81,7 +81,7 @@ WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
 
     if (hdr.IsMgt())
     {
-        return {WIFI_MGT_QUEUE, hdr.GetAddr2(), WIFI_TID_UNDEFINED};
+        return {WIFI_MGT_QUEUE, hdr.GetAddr2(), std::nullopt};
     }
     if (hdr.IsQosData())
     {
@@ -91,7 +91,7 @@ WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
         }
         return {WIFI_QOSDATA_UNICAST_QUEUE, hdr.GetAddr1(), hdr.GetQosTid()};
     }
-    return {WIFI_DATA_QUEUE, hdr.GetAddr1(), WIFI_TID_UNDEFINED};
+    return {WIFI_DATA_QUEUE, hdr.GetAddr1(), std::nullopt};
 }
 
 const WifiMacQueueContainer::ContainerQueue&
@@ -184,12 +184,16 @@ std::size_t
 std::hash<ns3::WifiContainerQueueId>::operator()(ns3::WifiContainerQueueId queueId) const
 {
     auto [type, address, tid] = queueId;
+    const std::size_t size = tid.has_value() ? 8 : 7;
 
-    uint8_t buffer[8];
+    uint8_t buffer[size];
     buffer[0] = type;
     address.CopyTo(buffer + 1);
-    buffer[7] = tid;
+    if (tid.has_value())
+    {
+        buffer[7] = *tid;
+    }
 
-    std::string s(buffer, buffer + 8);
+    std::string s(buffer, buffer + size);
     return std::hash<std::string>{}(s);
 }

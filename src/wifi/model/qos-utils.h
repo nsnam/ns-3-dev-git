@@ -34,8 +34,6 @@ class Mac48Address;
 
 typedef std::pair<Mac48Address, uint8_t> WifiAddressTidPair; //!< (MAC address, TID) pair
 
-#define WIFI_TID_UNDEFINED 0xff
-
 /**
  * Function object to compute the hash of a (MAC address, TID) pair
  */

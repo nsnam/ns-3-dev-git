@@ -351,11 +351,17 @@ WifiMacQueue::PeekFirstAvailable(uint8_t linkId,
         queueId = m_scheduler->GetNext(m_ac, linkId);
     }
 
+    NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_UNICAST_QUEUE ||
+              std::get<2>(*queueId));
+
     while (queueId.has_value() && blockedPackets &&
            std::get<0>(queueId.value()) == WIFI_QOSDATA_UNICAST_QUEUE &&
-           blockedPackets->IsBlocked(std::get<1>(queueId.value()), std::get<2>(queueId.value())))
+           blockedPackets->IsBlocked(std::get<1>(queueId.value()), *std::get<2>(queueId.value())))
     {
         queueId = m_scheduler->GetNext(m_ac, linkId, queueId.value());
+
+        NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_UNICAST_QUEUE ||
+                  std::get<2>(*queueId));
     }
 
     if (!queueId.has_value())

@@ -25,6 +25,7 @@
 #include "ns3/mac48-address.h"
 
 #include <list>
+#include <optional>
 #include <tuple>
 #include <unordered_map>
 
@@ -59,7 +60,8 @@ enum WifiContainerQueueType
  * Transmitter Address (TA) because 11be stations are QoS stations and hence do
  * not send non-QoS Data frames. TID is ignored.
  */
-using WifiContainerQueueId = std::tuple<WifiContainerQueueType, Mac48Address, uint8_t>;
+using WifiContainerQueueId =
+    std::tuple<WifiContainerQueueType, Mac48Address, std::optional<uint8_t>>;
 
 } // namespace ns3
 
