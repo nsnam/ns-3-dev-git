@@ -35,16 +35,22 @@ namespace ns3
 /// enumeration of container queue types
 enum WifiContainerQueueType
 {
-    WIFI_MGT_QUEUE = 0,
-    WIFI_QOSDATA_UNICAST_QUEUE = 1,
-    WIFI_QOSDATA_BROADCAST_QUEUE = 2,
-    WIFI_DATA_QUEUE = 3
+    WIFI_CTL_QUEUE = 0,
+    WIFI_MGT_QUEUE = 1,
+    WIFI_QOSDATA_UNICAST_QUEUE = 2,
+    WIFI_QOSDATA_BROADCAST_QUEUE = 3,
+    WIFI_DATA_QUEUE = 4
 };
 
 /**
  * Tuple (queue type, Address, TID) identifying a container queue.
  *
  * \note that Address has a different meaning depending on container queue type:
+ * - if container queue type is WIFI_CTL_QUEUE, Address is the Transmitter Address
+ * (TA) of the frames stored in the queue. We have distinct control queues
+ * depending on TA to distinguish among control frames that need to be sent
+ * over different links by 11be MLDs. MLD address as TA indicates that the frames
+ * can be sent on any link. TID is ignored.
  * - if container queue type is WIFI_MGT_QUEUE, Address is the Transmitter Address
  * (TA) of the frames stored in the queue. We have distinct management queues
  * depending on TA to distinguish among management frames that need to be sent

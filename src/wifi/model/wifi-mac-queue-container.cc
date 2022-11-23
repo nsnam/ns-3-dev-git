@@ -19,6 +19,7 @@
 
 #include "wifi-mac-queue-container.h"
 
+#include "ctrl-headers.h"
 #include "wifi-mpdu.h"
 
 #include "ns3/mac48-address.h"
@@ -77,8 +78,11 @@ WifiContainerQueueId
 WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
 {
     const WifiMacHeader& hdr = mpdu->GetHeader();
-    NS_ABORT_IF(hdr.IsCtl());
 
+    if (hdr.IsCtl())
+    {
+        return {WIFI_CTL_QUEUE, hdr.GetAddr2(), std::nullopt};
+    }
     if (hdr.IsMgt())
     {
         return {WIFI_MGT_QUEUE, hdr.GetAddr2(), std::nullopt};

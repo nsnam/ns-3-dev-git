@@ -306,12 +306,15 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac,
         // The given queueid has just been inserted in the queue info map.
         // Initialize the set of link IDs depending on the container queue type
         auto queueType = std::get<WifiContainerQueueType>(queueId);
+        auto address = std::get<Mac48Address>(queueId);
 
-        if (queueType == WIFI_MGT_QUEUE || queueType == WIFI_QOSDATA_BROADCAST_QUEUE)
+        if (queueType == WIFI_MGT_QUEUE ||
+            (queueType == WIFI_CTL_QUEUE && GetMac() && address != GetMac()->GetAddress()) ||
+            queueType == WIFI_QOSDATA_BROADCAST_QUEUE)
         {
             // these queue types are associated with just one link
             NS_ASSERT(GetMac());
-            auto linkId = GetMac()->GetLinkIdByAddress(std::get<Mac48Address>(queueId));
+            auto linkId = GetMac()->GetLinkIdByAddress(address);
             NS_ASSERT(linkId.has_value());
             queueInfoIt->second.linkIds = {*linkId};
         }
