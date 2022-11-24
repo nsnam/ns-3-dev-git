@@ -99,7 +99,9 @@ class LteRrcSap
             UM_BI_DIRECTIONAL,
             UM_UNI_DIRECTIONAL_UL,
             UM_UNI_DIRECTIONAL_DL
-        } choice; ///< direction choice
+        };
+
+        direction choice; ///< direction choice
     };
 
     /// LogicalChannelConfig structure
@@ -119,7 +121,9 @@ class LteRrcSap
         {
             SETUP,
             RESET
-        } type; ///< action type
+        };
+
+        action type; ///< action type
 
         uint16_t srsBandwidthConfig; ///< SRS bandwidth config
         uint8_t srsSubframeConfig;   ///< SRS subframe config
@@ -133,7 +137,9 @@ class LteRrcSap
         {
             SETUP,
             RESET
-        } type; ///< action type
+        };
+
+        action type; ///< action type
 
         uint16_t srsBandwidth;   ///< SRS bandwidth
         uint16_t srsConfigIndex; ///< SRS config index
@@ -409,7 +415,9 @@ class LteRrcSap
         {
             REPORT_STRONGEST_CELLS,
             REPORT_CGI
-        } purpose; ///< purpose
+        };
+
+        report purpose; ///< purpose
 
         /// Trigger type enumeration
         enum
@@ -491,14 +499,18 @@ class LteRrcSap
         {
             SETUP,
             RESET
-        } type; ///< action type
+        };
 
-        /// the gap offest
+        action type; ///< action type
+
+        /// the gap offset
         enum gap
         {
             GP0,
             GP1
-        } gapOffsetChoice; ///< gap offset
+        };
+
+        gap gapOffsetChoice; ///< gap offset
 
         uint8_t gapOffsetValue; ///< gap offset value
     };
@@ -528,7 +540,9 @@ class LteRrcSap
         {
             SETUP,
             RESET
-        } type; ///< action type
+        };
+
+        action type; ///< action type
 
         MobilityStateParameters mobilityStateParameters; ///< mobility state parameters
         SpeedStateScaleFactors timeToTriggerSf;          ///< time to trigger scale factors

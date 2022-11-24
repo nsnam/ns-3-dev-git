@@ -66,7 +66,7 @@ NS_LOG_COMPONENT_DEFINE("LteSpectrumValueHelper");
  * filter: awk '{if ((NR % 7) == 1) printf("{"); printf ("%s",$0); if ((NR % 7) == 0)
  * printf("},\n"); else printf(", ");}' | sed 's/ – /, /g'
  */
-static const struct EutraChannelNumbers
+struct EutraChannelNumbers
 {
     uint8_t band;       ///< band
     double fDlLow;      ///<  DL low
@@ -77,7 +77,10 @@ static const struct EutraChannelNumbers
     uint32_t nOffsUl;   ///< number offset UL
     uint32_t rangeNul1; ///< range UL 1
     uint32_t rangeNul2; ///< range UL 2
-} g_eutraChannelNumbers[] = {
+};
+
+/// Eutra channel numbers
+static const EutraChannelNumbers g_eutraChannelNumbers[]{
     {1, 2110, 0, 0, 599, 1920, 18000, 18000, 18599},
     {2, 1930, 600, 600, 1199, 1850, 18600, 18600, 19199},
     {3, 1805, 1200, 1200, 1949, 1710, 19200, 19200, 19949},
@@ -105,7 +108,7 @@ static const struct EutraChannelNumbers
     {38, 2570, 37750, 37750, 38249, 2570, 37750, 37750, 38249},
     {39, 1880, 38250, 38250, 38649, 1880, 38250, 38250, 38649},
     {40, 2300, 38650, 38650, 39649, 2300, 38650, 38650, 39649},
-}; ///< eutra channel numbers
+};
 
 /// number of EUTRA bands
 #define NUM_EUTRA_BANDS (sizeof(g_eutraChannelNumbers) / sizeof(EutraChannelNumbers))

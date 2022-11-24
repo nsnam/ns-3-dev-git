@@ -135,7 +135,9 @@ class EpcS11SapMme : public EpcS11Sap
             REQUEST_ACCEPTED_PARTIALLY,
             REQUEST_REJECTED,
             CONTEXT_NOT_FOUND
-        } cause; ///< the cause
+        };
+
+        Cause cause; ///< the cause
     };
 
     /**

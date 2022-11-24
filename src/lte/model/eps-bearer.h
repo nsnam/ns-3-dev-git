@@ -132,7 +132,9 @@ class EpsBearer : public ObjectBase
         DGBR_ITS = 84, ///< Delay-Critical GBR Intelligent Transport Systems (TS 22.261)
         DGBR_ELECTRICITY =
             85, ///< Delay-Critical GBR Electricity Distribution High Voltage (TS 22.261)
-    } qci;      ///< Qos class indicator
+    };
+
+    Qci qci; ///< Qos class indicator
 
     GbrQosInformation gbrQosInfo;    ///< GBR QOS information
     AllocationRetentionPriority arp; ///< allocation retention priority

@@ -31,14 +31,17 @@ NS_LOG_COMPONENT_DEFINE("LteFrStrictAlgorithm");
 NS_OBJECT_ENSURE_REGISTERED(LteFrStrictAlgorithm);
 
 /// FrStrictDownlinkDefaultConfiguration structure
-static const struct FrStrictDownlinkDefaultConfiguration
+struct FrStrictDownlinkDefaultConfiguration
 {
     uint8_t cellId;               ///< cell ID
     uint8_t dlBandwidth;          ///< DL bandwidth
     uint8_t dlCommonSubBandwidth; ///< DL common subbandwidth
     uint8_t dlEdgeSubBandOffset;  ///< DL edge subband offset
     uint8_t dlEdgeSubBandwidth;   ///< DL edge subbandwidth
-} g_frStrictDownlinkDefaultConfiguration[] = {
+};
+
+/// The strict downlink default configuration
+static const FrStrictDownlinkDefaultConfiguration g_frStrictDownlinkDefaultConfiguration[]{
     {1, 15, 2, 0, 4},
     {2, 15, 2, 4, 4},
     {3, 15, 2, 8, 4},
@@ -54,17 +57,20 @@ static const struct FrStrictDownlinkDefaultConfiguration
     {1, 100, 28, 0, 24},
     {2, 100, 28, 24, 24},
     {3, 100, 28, 48, 24},
-}; ///< the strict downlink default configuration
+};
 
 /// FrStrictUplinkDefaultConfiguration structure
-static const struct FrStrictUplinkDefaultConfiguration
+struct FrStrictUplinkDefaultConfiguration
 {
     uint8_t cellId;               ///< cell ID
     uint8_t ulBandwidth;          ///< UL bandwidth
     uint8_t ulCommonSubBandwidth; ///< UL common subbandwidth
     uint8_t ulEdgeSubBandOffset;  ///< UL edge subband offset
     uint8_t ulEdgeSubBandwidth;   ///< UL edge subbandwidth
-} g_frStrictUplinkDefaultConfiguration[] = {
+};
+
+/// The strict uplink default configuration
+static const FrStrictUplinkDefaultConfiguration g_frStrictUplinkDefaultConfiguration[]{
     {1, 15, 3, 0, 4},
     {2, 15, 3, 4, 4},
     {3, 15, 3, 8, 4},
@@ -80,7 +86,7 @@ static const struct FrStrictUplinkDefaultConfiguration
     {1, 100, 28, 0, 24},
     {2, 100, 28, 24, 24},
     {3, 100, 28, 48, 24},
-}; ///< the strict uplink default configuration
+};
 
 /** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS(sizeof(g_frStrictDownlinkDefaultConfiguration) /

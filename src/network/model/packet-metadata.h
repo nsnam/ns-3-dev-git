@@ -91,7 +91,12 @@ class PacketMetadata
             PAYLOAD, //!< Payload
             HEADER,  //!< Header
             TRAILER  //!< Trailer
-        } type;      //!< metadata type
+        };
+
+        /**
+         * metadata type
+         */
+        ItemType type;
 
         /**
          * true: this is a fragmented header, trailer, or, payload.

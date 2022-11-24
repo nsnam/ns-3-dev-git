@@ -141,11 +141,14 @@ TcpHighSpeedDecrementTest::DoRun()
  *
  * \brief TcpHighSpeed Congestion window values to test.
  */
-static const struct HighSpeedImportantValues
+struct HighSpeedImportantValues
 {
     unsigned int cwnd; //!< Congestion window.
     unsigned int md;   //!< Currently unused.
-} highSpeedImportantValues[] = {
+};
+
+/// List of data to be tested
+static const HighSpeedImportantValues highSpeedImportantValues[]{
     {38, 128, /*  0.50 */},   {118, 112, /*  0.44 */},  {221, 104, /*  0.41 */},
     {347, 98, /*  0.38 */},   {495, 93, /*  0.37 */},   {663, 89, /*  0.35 */},
     {851, 86, /*  0.34 */},   {1058, 83, /*  0.33 */},  {1284, 81, /*  0.32 */},
@@ -170,7 +173,7 @@ static const struct HighSpeedImportantValues
     {58932, 30, /*  0.12 */}, {61799, 29, /*  0.12 */}, {64851, 28, /*  0.11 */},
     {68113, 28, /*  0.11 */}, {71617, 27, /*  0.11 */}, {75401, 26, /*  0.10 */},
     {79517, 26, /*  0.10 */}, {84035, 25, /*  0.10 */}, {89053, 24, /*  0.10 */},
-}; //!< List of data to be tested.
+};
 
 #define HIGHSPEED_VALUES_N 71
 

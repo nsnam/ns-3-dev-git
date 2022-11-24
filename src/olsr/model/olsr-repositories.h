@@ -102,7 +102,10 @@ struct NeighborTuple
     {
         STATUS_NOT_SYM = 0, // "not symmetric"
         STATUS_SYM = 1,     // "symmetric"
-    } status;               //!< Status of the link.
+    };
+
+    /// Status of the link.
+    Status status;
 
     /// A value between 0 and 7 specifying the node's willingness to carry traffic on behalf of
     /// other nodes.
