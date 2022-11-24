@@ -1244,19 +1244,18 @@ class VanetRoutingExperiment : public WifiApp
     Ptr<RoutingHelper> m_routingHelper; ///< routing helper
     Ptr<WifiPhyStats> m_wifiPhyStats;   ///< wifi phy statistics
     bool m_log;                         ///< log
-    /// used to get consistent random numbers across scenarios
-    int64_t m_streamIndex;
-    NodeContainer m_adhocTxNodes;         ///< adhoc transmit nodes
-    double m_txSafetyRange1;              ///< range 1
-    double m_txSafetyRange2;              ///< range 2
-    double m_txSafetyRange3;              ///< range 3
-    double m_txSafetyRange4;              ///< range 4
-    double m_txSafetyRange5;              ///< range 5
-    double m_txSafetyRange6;              ///< range 6
-    double m_txSafetyRange7;              ///< range 7
-    double m_txSafetyRange8;              ///< range 8
-    double m_txSafetyRange9;              ///< range 9
-    double m_txSafetyRange10;             ///< range 10
+    int64_t m_streamIndex;              ///< used to get consistent random numbers across scenarios
+    NodeContainer m_adhocTxNodes;       ///< adhoc transmit nodes
+    double m_txSafetyRange1;            ///< range 1
+    double m_txSafetyRange2;            ///< range 2
+    double m_txSafetyRange3;            ///< range 3
+    double m_txSafetyRange4;            ///< range 4
+    double m_txSafetyRange5;            ///< range 5
+    double m_txSafetyRange6;            ///< range 6
+    double m_txSafetyRange7;            ///< range 7
+    double m_txSafetyRange8;            ///< range 8
+    double m_txSafetyRange9;            ///< range 9
+    double m_txSafetyRange10;           ///< range 10
     std::vector<double> m_txSafetyRanges; ///< list of ranges
     std::string m_exp;                    ///< exp
     Time m_cumulativeBsmCaptureStart;     ///< capture start
