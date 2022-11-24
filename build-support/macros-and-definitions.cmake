@@ -59,6 +59,12 @@ endif()
 
 if(APPLE)
   add_definitions(-D__APPLE__)
+  # cmake-format: off
+  # Configure find_program to search for AppBundles only if programs are not found in PATH.
+  # This prevents Doxywizard from being launched when the Doxygen.app is installed.
+  # https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/FindDoxygen.cmake
+  # cmake-format: on
+  set(CMAKE_FIND_APPBUNDLE "LAST")
 endif()
 
 if(WIN32)
@@ -317,6 +323,9 @@ macro(clear_global_cached_variables)
   )
 endmacro()
 
+# Include CMake file with common find_program HINTS
+include(build-support/3rd-party/find-program-hints.cmake)
+
 # function used to search for package and program dependencies than store list
 # of missing dependencies in the list whose name is stored in missing_deps
 function(check_deps package_deps program_deps missing_deps)
@@ -335,7 +344,9 @@ function(check_deps package_deps program_deps missing_deps)
     # here or it won't check other dependencies
     string(TOUPPER ${program} upper_${program})
     mark_as_advanced(${upper_${program}})
-    find_program(${upper_${program}} ${program})
+    find_program(
+      ${upper_${program}} ${program} HINTS ${3RD_PARTY_FIND_PROGRAM_HINTS}
+    )
     if("${${upper_${program}}}" STREQUAL "${upper_${program}}-NOTFOUND")
       list(APPEND local_missing_deps ${program})
     endif()
