@@ -1149,6 +1149,8 @@ Miscellaneous items
 
 - Do not use the C++ ``goto`` statement.
 
+- Do not add the ``enum`` or ``struct`` specifiers when declaring the variable's type.
+
 Clang-tidy rules
 ================
 
