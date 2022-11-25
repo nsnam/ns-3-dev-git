@@ -183,6 +183,12 @@ class Ipv4Address
      */
     static Ipv4Address ConvertFrom(const Address& address);
     /**
+     * \brief Convert to an Address type
+     * \return the Address corresponding to this object.
+     */
+    Address ConvertTo() const;
+
+    /**
      * \return the 0.0.0.0 address
      */
     static Ipv4Address GetZero();
@@ -200,12 +206,6 @@ class Ipv4Address
     static Ipv4Address GetLoopback();
 
   private:
-    /**
-     * \brief Convert to an Address type
-     * \return the Address corresponding to this object.
-     */
-    Address ConvertTo() const;
-
     /**
      * \brief Get the underlying address type (automatically assigned).
      *

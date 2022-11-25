@@ -116,13 +116,13 @@ class InetSocketAddress
      */
     static InetSocketAddress ConvertFrom(const Address& address);
 
-  private:
     /**
      * \brief Convert to an Address type
      * \return the Address corresponding to this object.
      */
     Address ConvertTo() const;
 
+  private:
     /**
      * \brief Get the underlying address type (automatically assigned).
      *

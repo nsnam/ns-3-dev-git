@@ -320,15 +320,14 @@ def main(argv):
     # Let's fetch the IP address of the last node, which is on Ipv4Interface 1
     remoteAddr = ns.cppyy.gbl.getIpv4AddressFromNode(appSink)
     socketAddr = ns.network.InetSocketAddress(remoteAddr, port)
-    genericAddress = ns.addressFromInetSocketAddress(socketAddr)
-    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", genericAddress)
+    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", socketAddr.ConvertTo())
     apps = onoff.Install(ns.network.NodeContainer(appSource))
     apps.Start(ns.core.Seconds(3))
     apps.Stop(ns.core.Seconds(stopTime.value - 1))
 
     #  Create a packet sink to receive these packets
     sink = ns.applications.PacketSinkHelper("ns3::UdpSocketFactory",
-                                ns.addressFromInetSocketAddress(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), port)))
+                                ns.network.InetSocketAddress(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), port)).ConvertTo())
     sinkContainer = ns.network.NodeContainer(appSink)
     apps = sink.Install(sinkContainer)
     apps.Start(ns.core.Seconds(3))

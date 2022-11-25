@@ -82,6 +82,13 @@ class Mac48Address
      */
     static Mac48Address ConvertFrom(const Address& address);
     /**
+     * \returns a new Address instance
+     *
+     * Convert an instance of this class to a polymorphic Address instance.
+     */
+    Address ConvertTo() const;
+
+    /**
      * \param address address to test
      * \returns true if the address matches, false otherwise.
      */
@@ -154,13 +161,6 @@ class Mac48Address
     typedef void (*TracedCallback)(Mac48Address value);
 
   private:
-    /**
-     * \returns a new Address instance
-     *
-     * Convert an instance of this class to a polymorphic Address instance.
-     */
-    Address ConvertTo() const;
-
     /**
      * \brief Return the Type of address.
      * \return type of address

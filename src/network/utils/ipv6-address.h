@@ -346,6 +346,12 @@ class Ipv6Address
     static Ipv6Address ConvertFrom(const Address& address);
 
     /**
+     * \brief convert the IPv6Address object to an Address object.
+     * \return the Address object corresponding to this object.
+     */
+    Address ConvertTo() const;
+
+    /**
      * \return true if address is initialized (i.e., set to something), false otherwise
      */
     bool IsInitialized() const;
@@ -399,12 +405,6 @@ class Ipv6Address
     void GetBytes(uint8_t buf[16]) const;
 
   private:
-    /**
-     * \brief convert the IPv6Address object to an Address object.
-     * \return the Address object corresponding to this object.
-     */
-    Address ConvertTo() const;
-
     /**
      * \brief Return the Type of address.
      * \return type of address

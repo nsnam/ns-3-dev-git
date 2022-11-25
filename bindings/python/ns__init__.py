@@ -396,17 +396,6 @@ def load_modules():
 
     cppyy.gbl.ns3.Node.__del__ = Node_del
 
-    # Define ns.cppyy.gbl.addressFromIpv4Address and others
-    cppyy.cppdef("""using namespace ns3;
-                    Address addressFromIpv4Address(Ipv4Address ip){ return Address(ip); };
-                    Address addressFromInetSocketAddress(InetSocketAddress addr){ return Address(addr); };
-                    Address addressFromPacketSocketAddress(PacketSocketAddress addr){ return Address(addr); };
-                    """)
-    # Expose addressFromIpv4Address as a member of the ns3 namespace (equivalent to ns)
-    setattr(cppyy.gbl.ns3, "addressFromIpv4Address", cppyy.gbl.addressFromIpv4Address)
-    setattr(cppyy.gbl.ns3, "addressFromInetSocketAddress", cppyy.gbl.addressFromInetSocketAddress)
-    setattr(cppyy.gbl.ns3, "addressFromPacketSocketAddress", cppyy.gbl.addressFromPacketSocketAddress)
-
     cppyy.cppdef("""
         using namespace ns3;
         std::tuple<bool, TypeId> LookupByNameFailSafe(std::string name)

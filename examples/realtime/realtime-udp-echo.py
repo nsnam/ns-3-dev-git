@@ -85,7 +85,7 @@ def main(argv):
   packetSize = 1024
   maxPacketCount = 500
   interPacketInterval = ns.core.Seconds(0.01)
-  client = ns.applications.UdpEchoClientHelper(ns.addressFromIpv4Address(i.GetAddress (1)), port)
+  client = ns.applications.UdpEchoClientHelper(i.GetAddress(1).ConvertTo(), port)
   client.SetAttribute("MaxPackets", ns.core.UintegerValue(maxPacketCount))
   client.SetAttribute("Interval", ns.core.TimeValue(interPacketInterval))
   client.SetAttribute("PacketSize", ns.core.UintegerValue(packetSize))

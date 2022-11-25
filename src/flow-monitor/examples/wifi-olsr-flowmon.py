@@ -62,8 +62,7 @@ def main(argv):
 
     port = 9   # Discard port(RFC 863)
     inetAddress = ns.network.InetSocketAddress(ns.network.Ipv4Address("10.0.0.1"), port)
-    onOffHelper = ns.applications.OnOffHelper("ns3::UdpSocketFactory",
-                                  ns.network.Address(ns.addressFromInetSocketAddress(inetAddress)))
+    onOffHelper = ns.applications.OnOffHelper("ns3::UdpSocketFactory", inetAddress.ConvertTo())
     onOffHelper.SetAttribute("DataRate", ns.network.DataRateValue(ns.network.DataRate("100kbps")))
     onOffHelper.SetAttribute("OnTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=1]"))
     onOffHelper.SetAttribute("OffTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0]"))
@@ -97,8 +96,7 @@ def main(argv):
     for i, node in [(i, nodes.Get(i)) for i in range(nodes.GetN())]:
         destaddr = addresses[(len(addresses) - 1 - i) % len(addresses)]
         #print (i, destaddr)
-        genericAddress = ns.addressFromInetSocketAddress(ns.network.InetSocketAddress(destaddr, port))
-        onOffHelper.SetAttribute("Remote", ns.network.AddressValue(genericAddress))
+        onOffHelper.SetAttribute("Remote", ns.network.AddressValue(ns.network.InetSocketAddress(destaddr, port).ConvertTo()))
         container = ns.network.NodeContainer(node)
         app = onOffHelper.Install(container)
         urv = ns.CreateObject("UniformRandomVariable")#ns.cppyy.gbl.get_rng()

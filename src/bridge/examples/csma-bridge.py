@@ -96,8 +96,7 @@ def main(argv):
     port = 9   # Discard port(RFC 863)
 
     inet_sock_address = ns.network.InetSocketAddress(ns.network.Ipv4Address("10.1.1.2"), port)
-    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory",
-                            ns.network.Address(ns.addressFromInetSocketAddress(inet_sock_address)))
+    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", inet_sock_address.ConvertTo())
     onoff.SetConstantRate (ns.network.DataRate ("500kb/s"))
 
     app = onoff.Install(ns.network.NodeContainer(terminals.Get(0)))
@@ -107,8 +106,7 @@ def main(argv):
 
     # Create an optional packet sink to receive these packets
     inet_address = ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), port)
-    sink = ns.applications.PacketSinkHelper("ns3::UdpSocketFactory",
-                                ns.network.Address(ns.addressFromInetSocketAddress(inet_address)))
+    sink = ns.applications.PacketSinkHelper("ns3::UdpSocketFactory", inet_address.ConvertTo())
     app = sink.Install(ns.network.NodeContainer(terminals.Get(1)))
     app.Start(ns.core.Seconds(0.0))
 
@@ -117,7 +115,7 @@ def main(argv):
     #
     inet_address = ns.network.InetSocketAddress(ns.network.Ipv4Address("10.1.1.1"), port)
     onoff.SetAttribute("Remote",
-                       ns.network.AddressValue(ns.addressFromInetSocketAddress(inet_address)))
+                       ns.network.AddressValue(inet_address.ConvertTo()))
     app = onoff.Install(ns.network.NodeContainer(terminals.Get(3)))
     app.Start(ns.core.Seconds(1.1))
     app.Stop(ns.core.Seconds(10.0))

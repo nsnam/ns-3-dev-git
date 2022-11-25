@@ -204,11 +204,11 @@ class TestSimulator(unittest.TestCase):
         """)
 
         sink = ns.network.Socket.CreateSocket(node, ns.core.TypeId.LookupByName("ns3::UdpSocketFactory"))
-        sink.Bind(ns.addressFromInetSocketAddress(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), 80)))
+        sink.Bind(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), 80).ConvertTo())
         sink.SetRecvCallback(ns.cppyy.gbl.make_rx_callback(python_rx_callback))
 
         source = ns.network.Socket.CreateSocket(node, ns.core.TypeId.LookupByName("ns3::UdpSocketFactory"))
-        source.SendTo(ns.network.Packet(19), 0, ns.addressFromInetSocketAddress(ns.network.InetSocketAddress(ns.network.Ipv4Address("127.0.0.1"), 80)))
+        source.SendTo(ns.network.Packet(19), 0, ns.network.InetSocketAddress(ns.network.Ipv4Address("127.0.0.1"), 80).ConvertTo())
 
         ns.Simulator.Run()
         self.assertTrue(self._received_packet is not None)

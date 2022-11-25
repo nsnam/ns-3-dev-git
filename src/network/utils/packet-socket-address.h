@@ -104,6 +104,12 @@ class PacketSocketAddress
     static PacketSocketAddress ConvertFrom(const Address& address);
 
     /**
+     * \brief Convert an instance of this class to a polymorphic Address instance.
+     * \returns a new Address instance
+     */
+    Address ConvertTo() const;
+
+    /**
      * \param address address to test
      * \returns true if the address matches, false otherwise.
      */
@@ -115,12 +121,6 @@ class PacketSocketAddress
      * \return type of address
      */
     static uint8_t GetType();
-
-    /**
-     * \brief Convert an instance of this class to a polymorphic Address instance.
-     * \returns a new Address instance
-     */
-    Address ConvertTo() const;
 
     uint16_t m_protocol;   //!< Protocol
     bool m_isSingleDevice; //!< True if directed to a specific outgoing NetDevice

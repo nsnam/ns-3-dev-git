@@ -83,7 +83,7 @@ Here is some example code that is written in Python and that runs |ns3|, which i
   serverApps.Start(ns.core.Seconds(1.0))
   serverApps.Stop(ns.core.Seconds(10.0))
 
-  address = ns.addressFromIpv4Address(interfaces.GetAddress(1))
+  address = interfaces.GetAddress(1).ConvertTo()
   echoClient = ns.applications.UdpEchoClientHelper(address, 9)
   echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
   echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds(1.0)))
@@ -324,20 +324,11 @@ module (`ns-3-dev/bindings/python/ns__init__.py`).
 A different operator used by |ns3| is `operator Address()`, used to
 convert different types of Addresses into the generic type Address.
 This is not supported by Cppyy and requires explicit conversion.
-Some helpers have been added to handle the common cases.
 
 .. sourcecode:: python
 
-    # Define ns.cppyy.gbl.addressFromIpv4Address and others
-    cppyy.cppdef("""using namespace ns3;
-                    Address addressFromIpv4Address(Ipv4Address ip){ return Address(ip); };
-                    Address addressFromInetSocketAddress(InetSocketAddress addr){ return Address(addr); };
-                    Address addressFromPacketSocketAddress(PacketSocketAddress addr){ return Address(addr); };
-                    """)
-    # Expose addressFromIpv4Address as a member of the ns3 namespace (equivalent to ns)
-    setattr(cppyy.gbl.ns3, "addressFromIpv4Address", cppyy.gbl.addressFromIpv4Address)
-    setattr(cppyy.gbl.ns3, "addressFromInetSocketAddress", cppyy.gbl.addressFromInetSocketAddress)
-    setattr(cppyy.gbl.ns3, "addressFromPacketSocketAddress", cppyy.gbl.addressFromPacketSocketAddress)
+    # Explicitly convert the InetSocketAddress to Address using InetSocketAddress.ConvertTo()
+    sink.Bind(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), 80).ConvertTo())
 
 Most of the missing APIs can be wrapped, given enough time, patience, and expertise, and will likely be wrapped if bug reports are submitted.
 However, don't file a bug report saying "bindings are incomplete", because the project does not have maintainers to maintain every API.

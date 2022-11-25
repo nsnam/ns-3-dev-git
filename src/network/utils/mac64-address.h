@@ -81,6 +81,13 @@ class Mac64Address
      */
     static Mac64Address ConvertFrom(const Address& address);
     /**
+     * \returns a new Address instance
+     *
+     * Convert an instance of this class to a polymorphic Address instance.
+     */
+    Address ConvertTo() const;
+
+    /**
      * \param address address to test
      * \returns true if the address matches, false otherwise.
      */
@@ -107,13 +114,6 @@ class Mac64Address
     static void ResetAllocationIndex();
 
   private:
-    /**
-     * \returns a new Address instance
-     *
-     * Convert an instance of this class to a polymorphic Address instance.
-     */
-    Address ConvertTo() const;
-
     /**
      * \brief Return the Type of address.
      * \return type of address

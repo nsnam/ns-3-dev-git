@@ -128,8 +128,7 @@ def main(argv):
     socket.SetPhysicalAddress(staDevs.Get(1).GetAddress())
     socket.SetProtocol(1)
 
-    genericAddress = ns.addressFromPacketSocketAddress(socket)
-    onoff = ns.applications.OnOffHelper("ns3::PacketSocketFactory", genericAddress)
+    onoff = ns.applications.OnOffHelper("ns3::PacketSocketFactory", socket.ConvertTo())
     onoff.SetConstantRate (ns.network.DataRate ("500kb/s"))
 
     apps = onoff.Install(ns.network.NodeContainer(stas.Get(0)))

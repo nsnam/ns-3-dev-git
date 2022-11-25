@@ -86,6 +86,14 @@ namespace ns3
  * }
  * \endcode
  *
+ * To convert a specific Address T (e.g., Ipv6Address) to and from an Address type,
+ * a class must implement three public functions:
+ * \code
+ * static T ConvertFrom(const Address& address);
+ * Address ConvertTo() const;
+ * operator Address() const;
+ * \endcode
+ *
  * \see attribute_Address
  */
 class Address

@@ -113,13 +113,13 @@ class Inet6SocketAddress
      */
     static Inet6SocketAddress ConvertFrom(const Address& addr);
 
-  private:
     /**
      * \brief Convert to Address.
      * \return Address instance
      */
     Address ConvertTo() const;
 
+  private:
     /**
      * \brief Get the type.
      * \return the type of Inet6SocketAddress

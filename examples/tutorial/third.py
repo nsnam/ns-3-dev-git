@@ -126,7 +126,7 @@ serverApps = echoServer.Install(csmaNodes.Get(nCsma.value))
 serverApps.Start(ns.core.Seconds(1.0))
 serverApps.Stop(ns.core.Seconds(10.0))
 
-echoClient = ns.applications.UdpEchoClientHelper(ns.addressFromIpv4Address(csmaInterfaces.GetAddress(nCsma.value)), 9)
+echoClient = ns.applications.UdpEchoClientHelper(csmaInterfaces.GetAddress(nCsma.value).ConvertTo(), 9)
 echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
 echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds (1.0)))
 echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
