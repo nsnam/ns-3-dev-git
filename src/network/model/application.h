@@ -74,7 +74,7 @@ class Application : public Object
      *        relative to the current simulation time.
      *
      * Applications start at various times in the simulation scenario.
-     * The Start method specifies when the application should be
+     * This method specifies when the application should be
      * started.  The application subclasses should override the
      * private "StartApplication" method defined below, which is called at the
      * time specified, to cause the application to begin.
@@ -87,7 +87,7 @@ class Application : public Object
      *        current simulation time.
      *
      * Once an application has started, it is sometimes useful
-     * to stop the application.  The Stop method specifies when an
+     * to stop the application.  This method specifies when an
      * application is to stop.  The application subclasses should override
      * the private StopApplication method, to be notified when that
      * time has come.

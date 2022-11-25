@@ -180,8 +180,8 @@ class ApplicationContainer
     void Add(std::string name);
 
     /**
-     * \brief Arrange for all of the Applications in this container to Start()
-     * at the Time given as a parameter.
+     * \brief Start all of the Applications in this container at the start time
+     * given as a parameter.
      *
      * All Applications need to be provided with a starting simulation time and
      * a stopping simulation time.  The ApplicationContainer is a convenient
@@ -189,7 +189,7 @@ class ApplicationContainer
      * up and start doing their thing (Start) at a common time.
      *
      * This method simply iterates through the contained Applications and calls
-     * their Start() methods with the provided Time.
+     * their Application::SetStartTime() methods with the provided Time.
      *
      * \param start The Time at which each of the applications should start.
      */
@@ -200,8 +200,8 @@ class ApplicationContainer
      * given as a parameter, plus some jitter.
      *
      * This method iterates through the contained Applications and calls
-     * their Start() methods with the provided start Time, plus a jitter value
-     * drawn from the provided random variable.
+     * their Application::SetStartTime() methods with the provided start Time, plus
+     * a jitter value drawn from the provided random variable.
      *
      * \param start The Time at which each of the applications should start.
      * \param rv The random variable that adds jitter (units of seconds)
@@ -218,7 +218,7 @@ class ApplicationContainer
      * down and stop doing their thing (Stop) at a common time.
      *
      * This method simply iterates through the contained Applications and calls
-     * their Stop() methods with the provided Time.
+     * their Application::SetStopTime() methods with the provided Time.
      *
      * \param stop The Time at which each of the applications should stop.
      */
