@@ -275,10 +275,19 @@ Ipv4RawSocketImpl::SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddres
         p->AddPacketTag(tag);
     }
 
-    bool subnetDirectedBroadcast = false;
-    if (m_boundnetdevice)
+    Ptr<NetDevice> boundNetDevice = m_boundnetdevice;
+
+    if (!m_src.IsAny())
     {
-        uint32_t iif = ipv4->GetInterfaceForDevice(m_boundnetdevice);
+        int32_t index = ipv4->GetInterfaceForAddress(m_src);
+        NS_ASSERT(index >= 0);
+        boundNetDevice = ipv4->GetNetDevice(index);
+    }
+
+    bool subnetDirectedBroadcast = false;
+    if (boundNetDevice)
+    {
+        uint32_t iif = ipv4->GetInterfaceForDevice(boundNetDevice);
         for (uint32_t j = 0; j < ipv4->GetNAddresses(iif); j++)
         {
             Ipv4InterfaceAddress ifAddr = ipv4->GetAddress(iif, j);
@@ -291,7 +300,6 @@ Ipv4RawSocketImpl::SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddres
 
     if (dst.IsBroadcast() || subnetDirectedBroadcast)
     {
-        Ptr<NetDevice> boundNetDevice = m_boundnetdevice;
         if (ipv4->GetNInterfaces() == 1)
         {
             boundNetDevice = ipv4->GetNetDevice(0);
@@ -312,6 +320,7 @@ Ipv4RawSocketImpl::SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddres
             route->SetSource(src);
             route->SetDestination(dst);
             route->SetOutputDevice(boundNetDevice);
+            route->SetGateway("0.0.0.0");
             ipv4->Send(p, route->GetSource(), dst, m_protocol, route);
         }
         else
@@ -324,6 +333,7 @@ Ipv4RawSocketImpl::SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddres
             route->SetSource(src);
             route->SetDestination(dst);
             route->SetOutputDevice(boundNetDevice);
+            route->SetGateway("0.0.0.0");
             ipv4->SendWithHeader(p, header, route);
         }
         NotifyDataSent(pktSize);

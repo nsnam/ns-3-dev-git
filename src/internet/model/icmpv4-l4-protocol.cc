@@ -300,9 +300,35 @@ Icmpv4L4Protocol::Receive(Ptr<Packet> p,
     p->RemoveHeader(icmp);
     switch (icmp.GetType())
     {
-    case Icmpv4Header::ICMPV4_ECHO:
-        HandleEcho(p, icmp, header.GetSource(), header.GetDestination());
+    case Icmpv4Header::ICMPV4_ECHO: {
+        Ipv4Address dst = header.GetDestination();
+        // We could have received an Echo request to a broadcast-type address.
+        if (dst.IsBroadcast())
+        {
+            Ipv4Address src = header.GetSource();
+            for (uint32_t index = 0; index < incomingInterface->GetNAddresses(); index++)
+            {
+                Ipv4InterfaceAddress addr = incomingInterface->GetAddress(index);
+                if (addr.IsInSameSubnet(src))
+                {
+                    dst = addr.GetAddress();
+                }
+            }
+        }
+        else
+        {
+            for (uint32_t index = 0; index < incomingInterface->GetNAddresses(); index++)
+            {
+                Ipv4InterfaceAddress addr = incomingInterface->GetAddress(index);
+                if (dst == addr.GetBroadcast())
+                {
+                    dst = addr.GetAddress();
+                }
+            }
+        }
+        HandleEcho(p, icmp, header.GetSource(), dst);
         break;
+    }
     case Icmpv4Header::ICMPV4_DEST_UNREACH:
         HandleDestUnreach(p, icmp, header.GetSource(), header.GetDestination());
         break;

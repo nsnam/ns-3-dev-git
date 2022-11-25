@@ -248,7 +248,7 @@ Ipv4Address::IsSubnetDirectedBroadcast(const Ipv4Mask& mask) const
         // broadcast for this address.
         return false;
     }
-    return ((Get() | mask.GetInverse()) == Get());
+    return ((Get() | mask.Get()) == Ipv4Address::GetBroadcast().Get());
 }
 
 bool

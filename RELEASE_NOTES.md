@@ -19,13 +19,16 @@ Release 3-dev
 ### New user-visible features
 
 - (network) !938 - Add class `TimestampTag` for associating a timestamp with a packet.
-- (network) !1163 Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
-- (internet) !1186 `TcpWestwood` model has been removed, and the class has been renamed `TcpWestwoodPlus`.
+- (network) !1163 - Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
+- (internet) !1186 - `TcpWestwood` model has been removed, and the class has been renamed `TcpWestwoodPlus`.
+- (internet) !1229 - You can now ping broadcast addresses.
 
 ### Bugs fixed
 
 - (build) #808 - Handle profile setting changes in the first ns3 run
 - (build) #815 - Configure find_program to search for programs in PATH first, then AppBundles in MacOS
+- (network) !1229 - Fixed a bug in `Ipv4Address::IsSubnetDirectedBroadcast`
+- (internet) !1229 - Fixed a bug in `Icmpv4Header::HandleEcho` when replying to broadcast-type Echo requests, and two bugs in `Ipv4RawSocketImpl::SendTo` in handling sockets bound to a specific address and directed to a broadcast-type address.
 
 Release 3.37
 ------------
