@@ -24,6 +24,9 @@ Release 3-dev
 
 ### Bugs fixed
 
+- (build) #808 - Handle profile setting changes in the first ns3 run
+- (build) #815 - Configure find_program to search for programs in PATH first, then AppBundles in MacOS
+
 Release 3.37
 ------------
 

@@ -27,6 +27,10 @@ Changes from ns-3.37 to ns-3.38
 
 ### Changes to build system
 
+* Added NinjaTracing support.
+* Check if the ccache version is equal or higher than 4.0 before enabling precompiled headers.
+* Improve bindings search for linked libraries and their include directories.
+
 ### Changed behavior
 
 * (applications) **UdpClient** and **UdpEchoClient** MaxPackets attribute is aligned with other applications, in that the value zero means infinite packets.
