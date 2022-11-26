@@ -1003,30 +1003,30 @@ output for a file is shown below. The line of ``---`` was inserted for clarity.
 
 .. sourcecode:: console
 
-  Time variable                                  usr           sys          wall               GGC
-  phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    1478 kB (  2%)
-  phase parsing                      :   0.31 ( 46%)   0.17 ( 85%)   0.48 ( 55%)   55432 kB ( 71%)
-  phase lang. deferred               :   0.03 (  4%)   0.00 (  0%)   0.03 (  3%)    4287 kB (  5%)
-  phase opt and generate             :   0.32 ( 48%)   0.03 ( 15%)   0.35 ( 40%)   16635 kB ( 21%)
-  phase last asm                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     769 kB (  1%)
-  ------------------------------------------------------------------------------------------------
-  |name lookup                       :   0.05 (  7%)   0.02 ( 10%)   0.04 (  5%)    2468 kB (  3%)
-  |overload resolution               :   0.05 (  7%)   0.00 (  0%)   0.05 (  6%)    4217 kB (  5%)
-  dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)       0 kB (  0%)
-  callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    2170 kB (  3%)
+  Time variable                      usr           sys          wall               GGC
+  phase setup            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    1478 kB (  2%)
+  phase parsing          :   0.31 ( 46%)   0.17 ( 85%)   0.48 ( 55%)   55432 kB ( 71%)
+  phase lang. deferred   :   0.03 (  4%)   0.00 (  0%)   0.03 (  3%)    4287 kB (  5%)
+  phase opt and generate :   0.32 ( 48%)   0.03 ( 15%)   0.35 ( 40%)   16635 kB ( 21%)
+  phase last asm         :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     769 kB (  1%)
+  ------------------------------------------------------------------------------------
+  |name lookup           :   0.05 (  7%)   0.02 ( 10%)   0.04 (  5%)    2468 kB (  3%)
+  |overload resolution   :   0.05 (  7%)   0.00 (  0%)   0.05 (  6%)    4217 kB (  5%)
+  dump files             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)       0 kB (  0%)
+  callgraph construction :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    2170 kB (  3%)
   ...
-  preprocessing                      :   0.05 (  7%)   0.06 ( 30%)   0.10 ( 11%)    1751 kB (  2%)
-  parser (global)                    :   0.06 (  9%)   0.03 ( 15%)   0.07 (  8%)   16303 kB ( 21%)
-  parser struct body                 :   0.06 (  9%)   0.04 ( 20%)   0.08 (  9%)   12525 kB ( 16%)
-  parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     112 kB (  0%)
-  parser function body               :   0.02 (  3%)   0.02 ( 10%)   0.02 (  2%)    3039 kB (  4%)
-  parser inl. func. body             :   0.03 (  4%)   0.00 (  0%)   0.01 (  1%)    2024 kB (  3%)
-  parser inl. meth. body             :   0.02 (  3%)   0.01 (  5%)   0.06 (  7%)    5792 kB (  7%)
-  template instantiation             :   0.09 ( 13%)   0.01 (  5%)   0.13 ( 15%)   12274 kB ( 16%)
+  preprocessing          :   0.05 (  7%)   0.06 ( 30%)   0.10 ( 11%)    1751 kB (  2%)
+  parser (global)        :   0.06 (  9%)   0.03 ( 15%)   0.07 (  8%)   16303 kB ( 21%)
+  parser struct body     :   0.06 (  9%)   0.04 ( 20%)   0.08 (  9%)   12525 kB ( 16%)
+  parser enumerator list :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     112 kB (  0%)
+  parser function body   :   0.02 (  3%)   0.02 ( 10%)   0.02 (  2%)    3039 kB (  4%)
+  parser inl. func. body :   0.03 (  4%)   0.00 (  0%)   0.01 (  1%)    2024 kB (  3%)
+  parser inl. meth. body :   0.02 (  3%)   0.01 (  5%)   0.06 (  7%)    5792 kB (  7%)
+  template instantiation :   0.09 ( 13%)   0.01 (  5%)   0.13 ( 15%)   12274 kB ( 16%)
   ...
-  symout                             :   0.01 (  1%)   0.00 (  0%)   0.02 (  2%)    8114 kB ( 10%)
+  symout                 :   0.01 (  1%)   0.00 (  0%)   0.02 (  2%)    8114 kB ( 10%)
   ...
-  TOTAL                              :   0.67          0.20          0.88          78612 kB
+  TOTAL                  :   0.67          0.20          0.88          78612 kB
 
 In the table above, the first few lines show the five main compilations steps: ``setup``,
 ``parsing``, ``lang. deferred`` (C++ specific transformations),
@@ -1040,6 +1040,8 @@ Aggregating the data into a meaningful output to help focus where to improve is 
 and it is `not a priority`_ for GCC developers.
 
 It is recommended to use the Clang alternative.
+
+.. _Clang :
 
 Clang
 +++++
@@ -1164,6 +1166,37 @@ Precompiled headers (``-DNS3_PRECOMPILE_HEADERS=ON``) can `drastically speed up 
 however, they can increase ccache misses, reducing the time of the first
 compilation at the cost of increasing recompilation times.
 
+.. _Perfetto UI : https://ui.perfetto.dev/
+.. _NinjaTracing : https://github.com/nico/ninjatracing
+
+NinjaTracing
+++++++++++++
+
+If the Ninja generator is being used (``./ns3 configure -G Ninja``), its build log
+can be used to identify targets slowing down the build process. The `NinjaTracing`_
+utility is used to convert the log format into a tracing Json file.
+
+The following steps show how it can be used:
+
+.. sourcecode:: console
+
+  ~/ns-3-dev$ ./ns3 configure --enable-ninja-tracing
+  ~/ns-3-dev$ ./ns3 build
+  ~/ns-3-dev$ ./ns3 build ninjaTrace
+
+The output ``ninja_performance_trace.json`` should be located in the ``~/ns-3-dev`` directory.
+You can then visualize the results using the ``about:tracing`` panel available in
+Chromium-based browser or with a compatible trace viewer such as `Perfetto UI`_.
+
+It can also be used in conjunction with the `Clang`_ time-trace feature for more granular
+information from within the compiler and linker.
+
+.. sourcecode:: console
+
+  ~/ns-3-dev$ CXX=clang++ ./ns3 configure --enable-ninja-tracing -- -DNS3_CLANG_TIMETRACE=ON
+  ~/ns-3-dev$ ./ns3 build
+  ~/ns-3-dev$ ./ns3 build ninjaTrace
+
 
 CMake Profiler
 **************
@@ -1181,9 +1214,6 @@ Or using the ns3 wrapper:
 .. sourcecode:: console
 
   ~/ns-3-dev$ ./ns3 configure --trace-performance
-
-
-.. _Perfetto UI: https://ui.perfetto.dev/
 
 A ``cmake_performance_trace.log`` file will be generated in the ns-3-dev directory.
 The tracing results can be visualized using the ``about:tracing`` panel available
