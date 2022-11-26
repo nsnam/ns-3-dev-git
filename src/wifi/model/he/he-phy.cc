@@ -1755,7 +1755,7 @@ HePhy::GetSigBFieldSize(const WifiTxVector& txVector)
 }
 
 bool
-HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
+HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const
 {
     /*
      * The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU
@@ -1770,7 +1770,7 @@ HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
     {
         return true;
     }
-    return PhyEntity::CanStartRx(ppdu);
+    return PhyEntity::CanStartRx(ppdu, txChannelWidth);
 }
 
 Ptr<const WifiPpdu>

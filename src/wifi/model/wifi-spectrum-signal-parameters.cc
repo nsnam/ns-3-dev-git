@@ -30,15 +30,19 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("WifiSpectrumSignalParameters");
 
 WifiSpectrumSignalParameters::WifiSpectrumSignalParameters()
+    : SpectrumSignalParameters(),
+      ppdu(nullptr),
+      txWidth(0)
 {
     NS_LOG_FUNCTION(this);
 }
 
 WifiSpectrumSignalParameters::WifiSpectrumSignalParameters(const WifiSpectrumSignalParameters& p)
-    : SpectrumSignalParameters(p)
+    : SpectrumSignalParameters(p),
+      ppdu(p.ppdu),
+      txWidth(p.txWidth)
 {
     NS_LOG_FUNCTION(this << &p);
-    ppdu = p.ppdu;
 }
 
 Ptr<SpectrumSignalParameters>

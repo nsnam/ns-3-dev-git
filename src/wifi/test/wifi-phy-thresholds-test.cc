@@ -165,6 +165,7 @@ WifiPhyThresholdsTest::MakeWifiSignal(double txPowerWatts)
     txParams->txPhy = nullptr;
     txParams->duration = txDuration;
     txParams->ppdu = ppdu;
+    txParams->txWidth = CHANNEL_WIDTH;
     return txParams;
 }
 

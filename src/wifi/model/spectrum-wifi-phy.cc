@@ -268,9 +268,9 @@ SpectrumWifiPhy::DoChannelSwitch()
 }
 
 bool
-SpectrumWifiPhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
+SpectrumWifiPhy::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txWidth) const
 {
-    return GetLatestPhyEntity()->CanStartRx(ppdu);
+    return GetLatestPhyEntity()->CanStartRx(ppdu, txWidth);
 }
 
 void
@@ -392,9 +392,9 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     // Do no further processing if signal is too weak
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity
+    const auto txWidth = wifiRxParams->txWidth;
     const auto& ppdu = GetRxPpduFromTxPpdu(wifiRxParams->ppdu);
     const auto& txVector = ppdu->GetTxVector();
-    uint16_t txWidth = ppdu->GetTransmissionChannelWidth();
     if (totalRxPowerW < DbmToW(GetRxSensitivity()) * (txWidth / 20.0))
     {
         NS_LOG_INFO("Received signal too weak to process: " << WToDbm(totalRxPowerW) << " dBm");
@@ -405,7 +405,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
 
     if (wifiRxParams->txPhy)
     {
-        if (!CanStartRx(ppdu))
+        if (!CanStartRx(ppdu, txWidth))
         {
             NS_LOG_INFO("Cannot start reception of the PPDU, consider it as interference");
             m_interference->Add(ppdu, txVector, rxDuration, rxPowerW);

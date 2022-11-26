@@ -129,6 +129,11 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     virtual uint16_t GetTransmissionChannelWidth() const;
 
     /**
+     * \return the center frequency (MHz) used for the transmission of this PPDU
+     */
+    uint16_t GetTxCenterFreq() const;
+
+    /**
      * Check whether the given PPDU overlaps a given channel.
      *
      * \param minFreq the minimum frequency (MHz) of the channel
@@ -136,15 +141,6 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      * \return true if this PPDU overlaps the channel, false otherwise
      */
     bool DoesOverlapChannel(uint16_t minFreq, uint16_t maxFreq) const;
-
-    /**
-     * Check whether the given PPDU covers the whole channel.
-     *
-     * \param p20MinFreq the minimum frequency (MHz) of the primary channel
-     * \param p20MaxFreq the maximum frequency (MHz) of the primary channel
-     * \return true if this PPDU covers the whole channel, false otherwise
-     */
-    bool DoesCoverChannel(uint16_t p20MinFreq, uint16_t p20MaxFreq) const;
 
     /**
      * Get the modulation used for the PPDU.

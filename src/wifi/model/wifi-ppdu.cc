@@ -136,6 +136,12 @@ WifiPpdu::GetTransmissionChannelWidth() const
     return GetTxVector().GetChannelWidth();
 }
 
+uint16_t
+WifiPpdu::GetTxCenterFreq() const
+{
+    return m_txCenterFreq;
+}
+
 bool
 WifiPpdu::DoesOverlapChannel(uint16_t minFreq, uint16_t maxFreq) const
 {
@@ -173,20 +179,6 @@ WifiPpdu::DoesOverlapChannel(uint16_t minFreq, uint16_t maxFreq) const
      *                   └──────────────────────────────┘
      */
     if (minTxFreq >= maxFreq || maxTxFreq <= minFreq)
-    {
-        return false;
-    }
-    return true;
-}
-
-bool
-WifiPpdu::DoesCoverChannel(uint16_t p20MinFreq, uint16_t p20MaxFreq) const
-{
-    NS_LOG_FUNCTION(this << p20MinFreq << p20MaxFreq);
-    uint16_t txChannelWidth = GetTxVector().GetChannelWidth();
-    uint16_t minTxFreq = m_txCenterFreq - txChannelWidth / 2;
-    uint16_t maxTxFreq = m_txCenterFreq + txChannelWidth / 2;
-    if (p20MinFreq < minTxFreq || p20MaxFreq > maxTxFreq)
     {
         return false;
     }

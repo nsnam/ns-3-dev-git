@@ -205,10 +205,11 @@ class SpectrumWifiPhy : public WifiPhy
      * given PPDU.
      *
      * \param ppdu the PPDU
+     * \param txChannelWidth the channel width (MHz) used to transmit the PPDU
      * \return true if the PHY shall issue a PHY-RXSTART.indication primitive in response to a PPDU,
      * false otherwise
      */
-    bool CanStartRx(Ptr<const WifiPpdu> ppdu) const;
+    bool CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const;
 
     Ptr<SpectrumChannel> m_channel; //!< SpectrumChannel that this SpectrumWifiPhy is connected to
 

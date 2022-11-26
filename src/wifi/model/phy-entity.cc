@@ -1301,6 +1301,8 @@ PhyEntity::Transmit(Time txDuration,
     txParams->duration = txDuration;
     txParams->psd = txPowerSpectrum;
     txParams->ppdu = ppdu;
+    txParams->txWidth = ppdu->GetTxVector().GetChannelWidth();
+    ;
     NS_LOG_DEBUG("Starting " << type << " with power " << txPowerDbm << " dBm on channel "
                              << +m_wifiPhy->GetChannelNumber() << " for "
                              << txParams->duration.As(Time::MS));
@@ -1335,7 +1337,7 @@ PhyEntity::CalculateTxDuration(WifiConstPsduMap psduMap,
 }
 
 bool
-PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
+PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const
 {
     // The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU that does
     // not overlap the primary channel
@@ -1348,8 +1350,14 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth);
     const auto p20MinFreq = p20CenterFreq - (primaryWidth / 2);
     const auto p20MaxFreq = p20CenterFreq + (primaryWidth / 2);
-
-    return ppdu->DoesCoverChannel(p20MinFreq, p20MaxFreq);
+    const auto txCenterFreq = ppdu->GetTxCenterFreq();
+    const auto minTxFreq = txCenterFreq - txChannelWidth / 2;
+    const auto maxTxFreq = txCenterFreq + txChannelWidth / 2;
+    if (p20MinFreq < minTxFreq || p20MaxFreq > maxTxFreq)
+    {
+        return false;
+    }
+    return true;
 }
 
 Ptr<const WifiPpdu>
