@@ -56,7 +56,7 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
     auto wifiRxParams = DynamicCast<const WifiSpectrumSignalParameters>(params);
     if (!wifiRxParams)
     {
-        NS_LOG_DEBUG("Received a non Wi-Fi signal");
+        NS_LOG_DEBUG("Received a non Wi-Fi signal: do not filter");
         return false;
     }
 
@@ -112,7 +112,9 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
      *                                       │           Channel            │
      *                                       └──────────────────────────────┘
      */
-    return (rxMinFreq >= channelMaxFreq || rxMaxFreq <= channelMinFreq);
+    auto filter = (rxMinFreq >= channelMaxFreq || rxMaxFreq <= channelMinFreq);
+    NS_LOG_DEBUG("Returning " << filter);
+    return filter;
 }
 
 } // namespace ns3
