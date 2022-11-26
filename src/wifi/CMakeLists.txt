@@ -347,4 +347,5 @@ build_lib(
     test/wifi-transmit-mask-test.cc
     test/wifi-txop-test.cc
     test/wifi-phy-cca-test.cc
+    test/wifi-non-ht-dup-test.cc
 )
