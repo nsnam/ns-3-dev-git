@@ -102,10 +102,6 @@ HePpdu::HePpdu(Ptr<const WifiPsdu> psdu,
     SetTxPsdFlag(PSD_NON_HE_PORTION);
 }
 
-HePpdu::~HePpdu()
-{
-}
-
 void
 HePpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
@@ -335,10 +331,6 @@ HePpdu::HeSigHeader::HeSigHeader()
       m_gi_ltf_size(0),
       m_nsts(0),
       m_mu(false)
-{
-}
-
-HePpdu::HeSigHeader::~HeSigHeader()
 {
 }
 

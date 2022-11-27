@@ -55,11 +55,6 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
     }
 }
 
-EhtPpdu::~EhtPpdu()
-{
-    NS_LOG_FUNCTION(this);
-}
-
 WifiPpduType
 EhtPpdu::GetType() const
 {

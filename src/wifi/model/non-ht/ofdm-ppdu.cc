@@ -50,10 +50,6 @@ OfdmPpdu::OfdmPpdu(Ptr<const WifiPsdu> psdu,
     }
 }
 
-OfdmPpdu::~OfdmPpdu()
-{
-}
-
 WifiTxVector
 OfdmPpdu::DoGetTxVector() const
 {
@@ -84,10 +80,6 @@ OfdmPpdu::Copy() const
 OfdmPpdu::LSigHeader::LSigHeader()
     : m_rate(0b1101),
       m_length(0)
-{
-}
-
-OfdmPpdu::LSigHeader::~LSigHeader()
 {
 }
 

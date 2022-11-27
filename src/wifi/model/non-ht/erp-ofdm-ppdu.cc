@@ -40,10 +40,6 @@ ErpOfdmPpdu::ErpOfdmPpdu(Ptr<const WifiPsdu> psdu,
     NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << band << uid);
 }
 
-ErpOfdmPpdu::~ErpOfdmPpdu()
-{
-}
-
 WifiTxVector
 ErpOfdmPpdu::DoGetTxVector() const
 {

@@ -58,10 +58,6 @@ class ErpOfdmPpdu : public OfdmPpdu
                 uint16_t txCenterFreq,
                 WifiPhyBand band,
                 uint64_t uid);
-    /**
-     * Destructor for ErpOfdmPpdu.
-     */
-    ~ErpOfdmPpdu() override;
 
     Ptr<WifiPpdu> Copy() const override;
 

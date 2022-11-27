@@ -60,10 +60,6 @@ class EhtPpdu : public HePpdu
             WifiPhyBand band,
             uint64_t uid,
             TxPsdFlag flag);
-    /**
-     * Destructor for EhtPpdu.
-     */
-    ~EhtPpdu() override;
 
     WifiPpduType GetType() const override;
     Ptr<WifiPpdu> Copy() const override;

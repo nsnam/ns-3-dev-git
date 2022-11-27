@@ -53,7 +53,6 @@ class DsssPpdu : public WifiPpdu
     {
       public:
         DsssSigHeader();
-        ~DsssSigHeader() override;
 
         /**
          * \brief Get the type ID.
@@ -111,10 +110,6 @@ class DsssPpdu : public WifiPpdu
              uint16_t txCenterFreq,
              Time ppduDuration,
              uint64_t uid);
-    /**
-     * Destructor for DsssPpdu.
-     */
-    ~DsssPpdu() override;
 
     Time GetTxDuration() const override;
     Ptr<WifiPpdu> Copy() const override;

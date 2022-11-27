@@ -55,7 +55,6 @@ class OfdmPpdu : public WifiPpdu
     {
       public:
         LSigHeader();
-        ~LSigHeader() override;
 
         /**
          * \brief Get the type ID.
@@ -118,10 +117,6 @@ class OfdmPpdu : public WifiPpdu
              WifiPhyBand band,
              uint64_t uid,
              bool instantiateLSig = true);
-    /**
-     * Destructor for OfdmPpdu.
-     */
-    ~OfdmPpdu() override;
 
     Time GetTxDuration() const override;
     Ptr<WifiPpdu> Copy() const override;

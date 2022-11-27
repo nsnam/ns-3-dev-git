@@ -66,10 +66,6 @@ HtPpdu::HtPpdu(Ptr<const WifiPsdu> psdu,
     m_htSig.SetShortGuardInterval(txVector.GetGuardInterval() == 400);
 }
 
-HtPpdu::~HtPpdu()
-{
-}
-
 WifiTxVector
 HtPpdu::DoGetTxVector() const
 {
@@ -104,10 +100,6 @@ HtPpdu::HtSigHeader::HtSigHeader()
       m_htLength(0),
       m_aggregation(0),
       m_sgi(0)
-{
-}
-
-HtPpdu::HtSigHeader::~HtSigHeader()
 {
 }
 

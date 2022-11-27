@@ -51,7 +51,6 @@ class HePpdu : public OfdmPpdu
     {
       public:
         HeSigHeader();
-        ~HeSigHeader() override;
 
         /**
          * \brief Get the type ID.
@@ -195,10 +194,6 @@ class HePpdu : public OfdmPpdu
            WifiPhyBand band,
            uint64_t uid,
            TxPsdFlag flag);
-    /**
-     * Destructor for HePpdu.
-     */
-    ~HePpdu() override;
 
     Time GetTxDuration() const override;
     Ptr<WifiPpdu> Copy() const override;
