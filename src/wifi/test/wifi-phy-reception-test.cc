@@ -170,7 +170,7 @@ void
 TestThresholdPreambleDetectionWithoutFrameCapture::CheckPhyState(WifiPhyState expectedState)
 {
     // This is needed to make sure PHY state will be checked as the last event if a state change
-    // occured at the exact same time as the check
+    // occurred at the exact same time as the check
     Simulator::ScheduleNow(&TestThresholdPreambleDetectionWithoutFrameCapture::DoCheckPhyState,
                            this,
                            expectedState);
@@ -843,7 +843,7 @@ void
 TestThresholdPreambleDetectionWithFrameCapture::CheckPhyState(WifiPhyState expectedState)
 {
     // This is needed to make sure PHY state will be checked as the last event if a state change
-    // occured at the exact same time as the check
+    // occurred at the exact same time as the check
     Simulator::ScheduleNow(&TestThresholdPreambleDetectionWithFrameCapture::DoCheckPhyState,
                            this,
                            expectedState);
@@ -2156,7 +2156,7 @@ void
 TestPhyHeadersReception::CheckPhyState(WifiPhyState expectedState)
 {
     // This is needed to make sure PHY state will be checked as the last event if a state change
-    // occured at the exact same time as the check
+    // occurred at the exact same time as the check
     Simulator::ScheduleNow(&TestPhyHeadersReception::DoCheckPhyState, this, expectedState);
 }
 
