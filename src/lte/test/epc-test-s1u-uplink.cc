@@ -52,7 +52,6 @@ NS_LOG_COMPONENT_DEFINE("EpcTestS1uUplink");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * A Udp client. Sends UDP packet carrying sequence number and time
  * stamp but also including the EpsBearerTag. This tag is normally
@@ -250,7 +249,6 @@ EpsBearerTagUdpClient::Send()
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Custom test structure to hold information of data transmitted in the uplink per UE
  */
@@ -285,7 +283,6 @@ UeUlTestData::UeUlTestData(uint32_t n, uint32_t s, uint16_t r, uint8_t l)
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Custom structure containing information about data sent in the uplink
  * of eNodeB. Includes the information of the data sent in the uplink per UE.
@@ -297,7 +294,6 @@ struct EnbUlTestData
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief EpcS1uUlTestCase class
  */

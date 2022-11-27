@@ -37,7 +37,6 @@ class LteTestMac;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief A simplified version of LteHelper, that
  * is used for creation and configuration of LTE entities for testing purposes

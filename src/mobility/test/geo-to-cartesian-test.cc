@@ -1486,12 +1486,12 @@ const double ZWGS84_MATLAB[216] = {
 
 /**
  * \ingroup mobility
+ * \ingroup tests
  * \defgroup mobility-test mobility module tests
  */
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Geo To Cartesian Test Case
  *
@@ -1674,7 +1674,6 @@ GeoToCartesianTestCase::DoRun()
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Cartesian to Geo Test Case
  *
@@ -1791,7 +1790,6 @@ CartesianToGeoTestCase::DoRun()
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Geo To Cartesian Test Suite
  */
@@ -1876,4 +1874,8 @@ GeoToCartesianTestSuite::GeoToCartesianTestSuite()
     }
 }
 
+/**
+ * \ingroup mobility-test
+ * Static variable for test initialization
+ */
 static GeoToCartesianTestSuite g_GeoToCartesianTestSuite;

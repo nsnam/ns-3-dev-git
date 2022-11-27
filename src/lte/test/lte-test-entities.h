@@ -33,7 +33,6 @@ namespace ns3
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This class implements a testing RRC entity
  */
@@ -166,7 +165,6 @@ class LteTestRrc : public Object
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This class implements a testing PDCP entity
  */
@@ -229,7 +227,6 @@ class LteTestPdcp : public Object
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This class implements a testing loopback MAC layer
  */
@@ -404,7 +401,6 @@ class LteTestMac : public Object
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief RRC stub providing a testing S1 SAP user to be used with the EpcEnbApplication
  */

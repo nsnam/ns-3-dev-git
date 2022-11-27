@@ -35,7 +35,6 @@ NS_LOG_COMPONENT_DEFINE("TcpIllinoisTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TcpIllinois C-AIMD algorithm tests.
  */
@@ -346,7 +345,6 @@ TcpIllinoisTest::GetSsThresh()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Illinois TestSuite
  */

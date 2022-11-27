@@ -255,6 +255,10 @@ TestCarrierAggregationSuite::TestCarrierAggregationSuite()
     }
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static TestCarrierAggregationSuite lenaTestRrFfMacSchedulerSuite;
 
 std::string

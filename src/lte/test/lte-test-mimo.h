@@ -32,7 +32,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This system test program creates different test cases with a
  * single eNB and single UE. The traffic is configured to be in saturation
@@ -85,7 +84,6 @@ class LenaMimoTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lena Test Mimo Suite
  */

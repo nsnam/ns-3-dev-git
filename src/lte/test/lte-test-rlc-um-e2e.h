@@ -32,7 +32,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for RlcUmE2eTestCase
  */
@@ -44,7 +43,6 @@ class LteRlcUmE2eTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test end-to-end flow when RLC UM is being used.
  */

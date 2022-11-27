@@ -139,8 +139,6 @@ SortedTraceSourceInfo(const TypeId tid)
 
 /**
  * Initialize the markup strings, for either doxygen or text.
- *
- * \param [in] outputText true for text output, false for doxygen output.
  */
 void
 SetMarkup()

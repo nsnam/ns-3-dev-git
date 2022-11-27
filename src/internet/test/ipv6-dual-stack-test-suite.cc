@@ -52,7 +52,6 @@ NS_LOG_COMPONENT_DEFINE("Ipv6DualStackTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 dual stack Test
  */
@@ -354,7 +353,6 @@ DualStackTestCase::DoTeardown()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 dual stack TestSuite
  */

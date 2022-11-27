@@ -85,7 +85,7 @@ SecondsToEmf(double seconds)
 ///
 /// \brief Converts a number of seconds in the mantissa/exponent format to a decimal number.
 ///
-/// \param olsr_format number of seconds in mantissa/exponent format.
+/// \param olsrFormat number of seconds in mantissa/exponent format.
 /// \return the decimal number of seconds.
 ///
 double

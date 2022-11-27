@@ -31,7 +31,6 @@ NS_LOG_COMPONENT_DEFINE("TcpLedbatTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief LEDBAT should be same as NewReno during slow start, and when timestamps are disabled
  */
@@ -132,7 +131,6 @@ TcpLedbatToNewReno::ExecuteTest()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Test to validate cWnd increment in LEDBAT
  */
@@ -234,7 +232,6 @@ TcpLedbatIncrementTest::ExecuteTest()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Test to validate cWnd decrement in LEDBAT
  */
@@ -339,7 +336,6 @@ TcpLedbatDecrementTest::ExecuteTest()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Ledbat TestSuite
  */

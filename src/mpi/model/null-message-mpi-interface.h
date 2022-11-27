@@ -72,7 +72,7 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
     MPI_Comm GetCommunicator() override;
 
   private:
-    /**
+    /*
      * The null message implementation is a collaboration of several
      * classes.  Methods that should be invoked only by the
      * collaborators are private to restrict use.

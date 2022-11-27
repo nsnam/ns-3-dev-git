@@ -260,6 +260,10 @@ LenaTestCqaFfMacSchedulerSuite::LenaTestCqaFfMacSchedulerSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LenaTestCqaFfMacSchedulerSuite lenaTestCqaFfMacSchedulerSuite;
 
 // --------------- T E S T - C A S E   # 1 ------------------------------

@@ -145,7 +145,6 @@ PrrRecoveryTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief PRR Recovery TestSuite
  */

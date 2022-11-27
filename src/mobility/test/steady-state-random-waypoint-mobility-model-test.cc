@@ -30,7 +30,6 @@ using namespace ns3;
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Steady State Random Waypoint Test
  */
@@ -153,7 +152,6 @@ SteadyStateRandomWaypointTest::DistribCompare()
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Steady State Random Waypoint Test Suite
  */

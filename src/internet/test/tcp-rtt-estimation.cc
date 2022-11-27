@@ -29,7 +29,6 @@ NS_LOG_COMPONENT_DEFINE("TcpRttEstimationTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Check Rtt calculations
  *
@@ -192,7 +191,6 @@ TcpRttEstimationTest::FinalChecks()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Check Rtt calculations with packet losses.
  *
@@ -246,7 +244,6 @@ TcpRttEstimationWithLossTest::CreateReceiverErrorModel()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP RTT estimation TestSuite
  */

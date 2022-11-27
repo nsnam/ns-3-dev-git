@@ -35,7 +35,6 @@ using namespace ns3;
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Fifo Queue Disc Test Item
  */
@@ -82,7 +81,6 @@ FifoQueueDiscTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Fifo Queue Disc Test Case
  */
@@ -269,7 +267,6 @@ FifoQueueDiscTestCase::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Fifo Queue Disc Test Suite
  */

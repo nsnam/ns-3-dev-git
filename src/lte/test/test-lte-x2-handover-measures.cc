@@ -32,7 +32,6 @@ NS_LOG_COMPONENT_DEFINE("LteX2HandoverMeasuresTest");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief CheckPointEvent structure
  */
@@ -65,7 +64,6 @@ struct CheckPointEvent
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test different X2 handover measures and algorithms, e.g. A2A4RsrqHandoverAlgorithm and
  * A3RsrpHandoverAlgorithm. Test defines different handover parameters and scenario configurations.
@@ -147,7 +145,6 @@ class LteX2HandoverMeasuresTestCase : public TestCase
 
     /**
      * \ingroup lte-test
-     * \ingroup tests
      *
      * \brief BearerData structure
      */
@@ -162,7 +159,6 @@ class LteX2HandoverMeasuresTestCase : public TestCase
 
     /**
      * \ingroup lte-test
-     * \ingroup tests
      *
      * \brief UeData structure
      */
@@ -740,7 +736,6 @@ LteX2HandoverMeasuresTestCase::CheckStats(uint32_t ueIndex)
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte X2 Handover Measures Test Suite
  */
@@ -1007,4 +1002,8 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
 
 } // end of LteX2HandoverMeasuresTestSuite ()
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteX2HandoverMeasuresTestSuite g_lteX2HandoverMeasuresTestSuiteInstance;

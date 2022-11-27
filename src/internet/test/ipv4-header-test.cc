@@ -53,7 +53,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Header Test
  */
@@ -293,7 +292,6 @@ Ipv4HeaderTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Header TestSuite
  */

@@ -35,7 +35,6 @@ namespace ns3
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test Utils
  */
@@ -106,7 +105,6 @@ class TestUtils
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Rlc Am Status Pdu Test Case
  */
@@ -187,7 +185,6 @@ RlcAmStatusPduTestCase::DoRun()
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Rlc Header Test Suite
  */

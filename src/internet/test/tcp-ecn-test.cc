@@ -42,7 +42,6 @@ NS_LOG_COMPONENT_DEFINE("TcpEcnTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief checks if ECT, CWR and ECE bits are set correctly in different scenarios
  *
@@ -81,7 +80,6 @@ class TcpEcnTest : public TcpGeneralTest
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief A TCP socket which sends certain data packets with CE flags set for tests 5 and 6.
  *
@@ -580,7 +578,6 @@ TcpEcnTest::CreateSenderSocket(Ptr<Node> node)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP ECN TestSuite
  */

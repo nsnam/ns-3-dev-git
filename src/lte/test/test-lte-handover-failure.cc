@@ -46,7 +46,6 @@ NS_LOG_COMPONENT_DEFINE("LteHandoverFailureTest");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Verifying that a handover failure occurs due to various causes
  *
@@ -364,7 +363,6 @@ LteHandoverFailureTestCase::DoTeardown()
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * The following log components can be used to debug this test's behavior:
  * LteHandoverFailureTest:LteEnbRrc:LteEnbMac:LteUeRrc:EpcX2

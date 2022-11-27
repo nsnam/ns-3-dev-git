@@ -44,7 +44,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 Duplicate Address Detection Test
  */
@@ -118,7 +117,6 @@ Ipv6DadTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 Duplicate Address Detection TestSuite
  */

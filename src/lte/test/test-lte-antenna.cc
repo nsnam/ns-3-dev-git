@@ -41,7 +41,6 @@ NS_LOG_COMPONENT_DEFINE("LteAntennaTest");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Tests that the propagation model and the antenna parameters are
  * generate the correct values. Different test cases are created by specifying different
@@ -264,7 +263,6 @@ LteEnbAntennaTestCase::DoRun()
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Enb Antenna Test Suite
  */
@@ -310,4 +308,8 @@ LteAntennaTestSuite::LteAntennaTestSuite()
     AddTestCase(new LteEnbAntennaTestCase(-120.0, 120.0, 1, -0.1, -12.754), TestCase::QUICK);
 }
 
-static LteAntennaTestSuite lteAntennaTestSuite;
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
+static LteAntennaTestSuite g_lteAntennaTestSuite;

@@ -36,9 +36,7 @@ enum
 struct ModelNode
 {
     /**
-     * \enum node type
      * \brief node type structure
-     *
      */
     enum
     {

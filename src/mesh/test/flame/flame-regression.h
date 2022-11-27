@@ -32,7 +32,6 @@ using namespace ns3;
 
 /**
  * \ingroup flame-test
- * \ingroup tests
  *
  * \brief FLAME protocol regression test of three stations:
  * \verbatim

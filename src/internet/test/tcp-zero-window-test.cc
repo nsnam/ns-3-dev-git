@@ -28,7 +28,6 @@ NS_LOG_COMPONENT_DEFINE("TcpZeroWindowTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the congestion avoidance increment on TCP ZeroWindow
  */
@@ -249,7 +248,6 @@ TcpZeroWindowTest::ProcessedAck(const Ptr<const TcpSocketState> tcb,
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP ZeroWindow TestSuite
  */

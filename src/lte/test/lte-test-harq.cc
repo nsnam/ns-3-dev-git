@@ -73,6 +73,10 @@ LenaTestHarqSuite::LenaTestHarqSuite()
     AddTestCase(new LenaHarqTestCase(1, 770, 472, 0.06, 209964), TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LenaTestHarqSuite lenaTestHarqSuite;
 
 std::string

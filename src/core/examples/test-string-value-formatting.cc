@@ -18,7 +18,7 @@
 #include "ns3/core-module.h"
 
 /**
- * \defgroup string-value-formatting
+ * \defgroup string-value-formatting StringValue parsing tests
  * Check that StringValue parses complex values correctly.
  */
 

@@ -41,13 +41,12 @@
 // UDP/IP, but tunneling directly IP-over-IP would also be possible;
 // see src/node/ipv4-raw-socket-factory.h.
 
-#include "ns3/virtual-net-device.h"
-
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/network-module.h"
 #include "ns3/point-to-point-module.h"
+#include "ns3/virtual-net-device.h"
 
 #include <cassert>
 #include <fstream>

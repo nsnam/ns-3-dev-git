@@ -29,7 +29,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for the interference test when using different
  * frequency reuse algorithms.Check if the interfence values correspond to
@@ -43,7 +42,6 @@ class LteInterferenceFrTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte interference test when using hard frequency reuse algorithm. Check
  * if the interfence values correspond to theoretical values.
@@ -77,7 +75,6 @@ class LteInterferenceHardFrTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte interference test when using strict frequency reuse algorithm.
  */

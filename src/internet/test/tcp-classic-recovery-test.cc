@@ -118,7 +118,6 @@ ClassicRecoveryTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Classic Recovery TestSuite
  */

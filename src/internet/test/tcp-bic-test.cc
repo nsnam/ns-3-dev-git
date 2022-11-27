@@ -28,7 +28,6 @@ NS_LOG_COMPONENT_DEFINE("TcpBicTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the congestion avoidance increment on TcpBic
  */
@@ -191,7 +190,6 @@ TcpBicIncrementTest::Update(Ptr<TcpSocketState> tcb)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the congestion avoidance decrement on TcpBic
  */
@@ -305,7 +303,6 @@ TcpBicDecrementTest::ExecuteTest()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Bic TestSuite
  */

@@ -52,7 +52,6 @@ NS_LOG_COMPONENT_DEFINE("TcpTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Test - send string data from client to server and back.
  */
@@ -537,7 +536,6 @@ TcpTestCase::AddSimpleNetDevice6(Ptr<Node> node, Ipv6Address ipaddr, Ipv6Prefix 
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP TestSuite - send string data from client to server and back.
  */

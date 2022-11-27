@@ -32,12 +32,12 @@ using namespace ns3;
 
 /**
  * \ingroup internet
+ * \ingroup tests
  * \defgroup internet-test internet module tests
  */
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Global Route Manager Test
  */
@@ -224,7 +224,6 @@ GlobalRouteManagerImplTestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Global Route Manager TestSuite
  */

@@ -73,7 +73,6 @@ NS_LOG_COMPONENT_DEFINE("TestCarrierAggregationConfig");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Carrier aggregation configuration test case.
  */
@@ -388,7 +387,6 @@ CarrierAggregationConfigTestCase::DoRun()
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Carrier aggregation configuration test suite.
  */
@@ -451,4 +449,8 @@ CarrierAggregationConfigTestSuite::CarrierAggregationConfigTestSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static CarrierAggregationConfigTestSuite g_carrierAggregationConfigTestSuite;

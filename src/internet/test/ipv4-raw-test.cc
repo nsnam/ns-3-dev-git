@@ -54,7 +54,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 RAW Socket Test
  */
@@ -372,7 +371,6 @@ Ipv4RawSocketImplTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 RAW Socket TestSuite
  */

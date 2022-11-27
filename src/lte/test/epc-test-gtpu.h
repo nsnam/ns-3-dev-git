@@ -27,12 +27,12 @@ using namespace ns3;
 
 /**
  * \ingroup lte
+ * \ingroup tests
  * \defgroup lte-test lte module tests
  */
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for testing GPRS tunnelling protocol header coding and decoding.
  */

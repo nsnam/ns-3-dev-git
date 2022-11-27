@@ -191,7 +191,6 @@ LoopbackTestCase::DoRun()
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief AODV Loopback test suite
  */

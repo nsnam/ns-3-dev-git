@@ -58,7 +58,6 @@ _reciprocal_scale(uint32_t val, uint32_t ep_ro)
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Codel Queue Disc Test Item
  */
@@ -114,7 +113,6 @@ CodelQueueDiscTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 1: simple enqueue/dequeue with no drops
  */
@@ -277,7 +275,6 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 2: enqueue with drops due to queue overflow
  */
@@ -369,7 +366,6 @@ CoDelQueueDiscBasicOverflow::Enqueue(Ptr<CoDelQueueDisc> queue, uint32_t size, u
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 3: NewtonStep unit test - test against explicit port of Linux implementation
  */
@@ -408,7 +404,6 @@ CoDelQueueDiscNewtonStepTest::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 4: ControlLaw unit test - test against explicit port of Linux implementation
  */
@@ -467,7 +462,6 @@ CoDelQueueDiscControlLawTest::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 5: enqueue/dequeue with drops according to CoDel algorithm
  */
@@ -680,7 +674,6 @@ CoDelQueueDiscBasicDrop::Dequeue(Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 6: enqueue/dequeue with marks according to CoDel algorithm
  */
@@ -1333,7 +1326,6 @@ CoDelQueueDiscBasicMark::Dequeue(Ptr<CoDelQueueDisc> queue, uint32_t modeSize, u
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief CoDel Queue Disc Test Suite
  */

@@ -35,7 +35,6 @@ using namespace ns3;
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Prio Queue Disc Test Item
  */
@@ -75,7 +74,6 @@ PrioQueueDiscTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Prio Queue Disc Test Packet Filter
  */
@@ -134,7 +132,6 @@ PrioQueueDiscTestFilter::DoClassify(Ptr<QueueDiscItem> item) const
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Prio Queue Disc Test Case
  */
@@ -318,7 +315,6 @@ PrioQueueDiscTestCase::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Prio Queue Disc Test Suite
  */

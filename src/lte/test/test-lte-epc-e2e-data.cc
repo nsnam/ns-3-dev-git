@@ -44,7 +44,6 @@ NS_LOG_COMPONENT_DEFINE("LteEpcE2eData");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  */
 
 /// BearerTestData structure
@@ -91,7 +90,6 @@ struct EnbTestData
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test that e2e packet flow is correct. Compares the data send and the
  * data received. Test uses mostly the PDCP stats to check the performance.
@@ -375,7 +373,7 @@ LteEpcE2eDataTestCase::DoRun()
 }
 
 /**
- * \ingroup tests lte-test
+ * \ingroup lte-test
  *
  * \brief Test that the S1-U interface implementation works correctly
  */

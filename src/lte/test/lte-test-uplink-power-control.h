@@ -38,7 +38,6 @@ class MobilityModel;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test 1.1 Uplink Power Control
  */
@@ -50,7 +49,6 @@ class LteUplinkPowerControlTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Uplink Power Control Test Case
  */
@@ -138,7 +136,6 @@ class LteUplinkPowerControlTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Uplink Open Loop Power Control Test Case
  */
@@ -159,7 +156,6 @@ class LteUplinkOpenLoopPowerControlTestCase : public LteUplinkPowerControlTestCa
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Uplink Closed Loop Power Control Absolute Mode Test Case
  */
@@ -180,7 +176,6 @@ class LteUplinkClosedLoopPowerControlAbsoluteModeTestCase : public LteUplinkPowe
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Uplink Closed Loop Power Control Accumulated Mode Test Case
  */

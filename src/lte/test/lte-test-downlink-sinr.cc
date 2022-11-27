@@ -103,6 +103,10 @@ LteDownlinkSinrTestSuite::LteDownlinkSinrTestSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteDownlinkSinrTestSuite lteDownlinkSinrTestSuite;
 
 /**

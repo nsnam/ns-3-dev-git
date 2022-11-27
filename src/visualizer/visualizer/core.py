@@ -113,10 +113,10 @@ class Node(PyVizObject):
     #  label
     ## @var _label_canvas_item
     #  label canvas
-    ## @var selected
-    #  selected property
     ## @var highlighted
     #  highlighted property
+    ## @var selected
+    #  selected property
 
     ## signal emitted whenever a tooltip is about to be shown for the node
     ## the first signal parameter is a python list of strings, to which
@@ -301,7 +301,10 @@ class Node(PyVizObject):
         @param event: event
         @return none
         """
+
+        ## highlighted property
         self.highlighted = True
+
     def on_leave_notify_event(self, view, target, event):
         """!
         On Leave event handle.

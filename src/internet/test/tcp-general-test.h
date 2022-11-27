@@ -31,7 +31,6 @@ namespace ns3
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Class for inserting callbacks special points of the flow of TCP sockets
  *
@@ -151,7 +150,6 @@ class TcpSocketMsgBase : public ns3::TcpSocketBase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief A TCP socket which sends ACKs smaller than the segment received.
  *
@@ -215,7 +213,6 @@ class TcpSocketSmallAcks : public TcpSocketMsgBase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief General infrastructure for TCP testing
  *
@@ -1162,7 +1159,6 @@ class TcpGeneralTest : public TestCase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Convenience function to retrieve the ACK state from a TCB
  *

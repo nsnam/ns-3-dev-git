@@ -35,12 +35,12 @@ using namespace ns3;
 
 /**
  * \ingroup netanim
+ * \ingroup tests
  * \defgroup netanim-test animation module tests
  */
 
 /**
  * \ingroup netanim-test
- * \ingroup tests
  *
  * \brief Abstract Animation Interface Test Case
  */
@@ -112,7 +112,6 @@ AbstractAnimationInterfaceTestCase::CheckFileExistence()
 
 /**
  * \ingroup netanim-test
- * \ingroup tests
  *
  * \brief Animation Interface Test Case
  */
@@ -181,7 +180,6 @@ AnimationInterfaceTestCase::CheckLogic()
 
 /**
  * \ingroup netanim-test
- * \ingroup tests
  *
  * \brief Animation Remaining Energy Test Case
  */
@@ -243,7 +241,6 @@ AnimationRemainingEnergyTestCase::CheckLogic()
 
 /**
  * \ingroup netanim-test
- * \ingroup tests
  *
  * \brief Animation Interface Test Suite
  */

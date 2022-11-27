@@ -29,7 +29,6 @@ NS_LOG_COMPONENT_DEFINE("TcpFastRetrTest");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Test the fast retransmission
  *
@@ -431,7 +430,6 @@ TcpFastRetrTest::FinalChecks()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testsuite for the fast retransmission
  */

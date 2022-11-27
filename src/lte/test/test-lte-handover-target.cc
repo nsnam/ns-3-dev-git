@@ -49,7 +49,6 @@ NS_LOG_COMPONENT_DEFINE("LteHandoverTargetTest");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Testing a handover algorithm, verifying that it selects the right
  *        target cell when more than one options available.
@@ -449,4 +448,8 @@ LteHandoverTargetTestSuite::LteHandoverTargetTestSuite()
 
 } // end of LteHandoverTargetTestSuite ()
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteHandoverTargetTestSuite g_lteHandoverTargetTestSuiteInstance;

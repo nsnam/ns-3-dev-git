@@ -17,10 +17,9 @@
  * Author: Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
-#include "ns3/li-ion-energy-source.h"
-
 #include "ns3/command-line.h"
 #include "ns3/energy-source-container.h"
+#include "ns3/li-ion-energy-source.h"
 #include "ns3/log.h"
 #include "ns3/simple-device-energy-model.h"
 #include "ns3/simulator.h"

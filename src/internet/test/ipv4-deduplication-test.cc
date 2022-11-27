@@ -57,7 +57,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Deduplication Test
  *
@@ -546,7 +545,6 @@ Ipv4DeduplicationTest::CheckDrops(const std::string& name)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Deduplication TestSuite
  */
@@ -572,7 +570,6 @@ static Ipv4DeduplicationTestSuite
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Deduplication Performance Test
  *
@@ -730,7 +727,6 @@ Ipv4DeduplicationPerformanceTest::DoSendData(Ptr<Socket> socket, Address to, uin
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Deduplication Performance TestSuite
  */

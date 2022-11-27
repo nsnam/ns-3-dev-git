@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This system test program creates different test cases with a single eNB and
  * This system test program creates different test cases with a single eNB and
@@ -75,7 +74,6 @@ class LenaRrFfMacSchedulerTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for RrFfMacScheduler test
  */

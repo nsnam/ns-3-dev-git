@@ -271,11 +271,6 @@ class MemberEpcS11SapMme : public EpcS11SapMme
     C* m_owner; ///< owner class
 };
 
-/**
- * Constructor
- *
- * \param owner the owner class
- */
 template <class C>
 MemberEpcS11SapMme<C>::MemberEpcS11SapMme(C* owner)
     : m_owner(owner)
@@ -331,11 +326,6 @@ class MemberEpcS11SapSgw : public EpcS11SapSgw
     C* m_owner; ///< owner class
 };
 
-/**
- * Constructor
- *
- * \param owner the owner class
- */
 template <class C>
 MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw(C* owner)
     : m_owner(owner)

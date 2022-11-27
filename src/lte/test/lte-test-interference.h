@@ -28,7 +28,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for interference test.
  */
@@ -40,7 +39,6 @@ class LteInterferenceTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test that SINR calculation and MCS selection works fine in a
  * multi-cell interference scenario.

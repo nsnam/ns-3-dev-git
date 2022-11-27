@@ -57,7 +57,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief UDP Socket Loopback over IPv4 Test
  */
@@ -115,7 +114,6 @@ UdpSocketLoopbackTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief UDP Socket Loopback over IPv6 Test
  */
@@ -172,7 +170,6 @@ Udp6SocketLoopbackTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief UDP Socket over IPv4 Test
  */
@@ -524,7 +521,6 @@ UdpSocketImplTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief UDP Socket over IPv6 Test
  */
@@ -768,7 +764,6 @@ Udp6SocketImplTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief UDP TestSuite
  */

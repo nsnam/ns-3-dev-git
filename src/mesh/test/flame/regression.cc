@@ -25,7 +25,6 @@ using namespace ns3;
 
 /**
  * \ingroup flame-test
- * \ingroup tests
  *
  * \brief Flame Regression Suite
  */

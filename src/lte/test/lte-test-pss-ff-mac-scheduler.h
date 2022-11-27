@@ -29,7 +29,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This system test program creates different test cases with a single eNB and
  * several UEs, all having the same Radio Bearer specification. In each test
@@ -82,7 +81,6 @@ class LenaPssFfMacSchedulerTestCase1 : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Simillar to the LenaPssFfMacSchedulerTestCase1 with the difference that
  * UEs are places in such a way to experience different SINRs. Test checks if the
@@ -126,7 +124,6 @@ class LenaPssFfMacSchedulerTestCase2 : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lena Pss Ff Mac Scheduler Test Suite
  */

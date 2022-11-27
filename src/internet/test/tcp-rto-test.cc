@@ -30,7 +30,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the moments after an RTO expiration
  *
@@ -167,7 +166,6 @@ TcpRtoTest::FinalChecks()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the ssthresh behavior after the RTO expires
  *
@@ -314,7 +312,6 @@ TcpSsThreshRtoTest::AfterRTOExpired(const Ptr<const TcpSocketState> tcb, SocketW
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the timing of RTO
  *
@@ -510,7 +507,6 @@ TcpTimeRtoTest::FinalChecks()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP RTO TestSuite
  */

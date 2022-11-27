@@ -31,7 +31,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for the LteDownlinkPowerControlSpectrumValueTestCase.
  *
@@ -52,7 +51,6 @@ class LteDownlinkPowerControlTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test SINR calculation in the downlink when power control is used.
  * Test if the difference in power levels are corresponding to the estamated values.
@@ -88,7 +86,6 @@ class LteDownlinkPowerControlSpectrumValueTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test SINR calculation in the downlink when the power control is used.
  * Test the power control by comparing the downlink data and ctrl power
@@ -117,7 +114,6 @@ class LteDownlinkPowerControlTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test if RRC connection reconfiguration messages are properly
  * generated upon the change in the downlink power.

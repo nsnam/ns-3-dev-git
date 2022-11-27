@@ -33,7 +33,6 @@ NS_LOG_COMPONENT_DEFINE("TcpLpTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the behaviour common to New Reno
  */
@@ -114,7 +113,6 @@ TcpLpToNewReno::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing TcpLp when cwd exceeds threshold
  */
@@ -184,7 +182,6 @@ TcpLpInferenceTest1::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing TcpLp when it is inference phase
  */
@@ -258,7 +255,6 @@ TcpLpInferenceTest2::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * Test the behaviour common to New Reno
  */

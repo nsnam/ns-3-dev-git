@@ -29,7 +29,6 @@ NS_LOG_COMPONENT_DEFINE("TcpBytesInFlightTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Check the value of BytesInFlight against a home-made guess
  *
@@ -283,7 +282,6 @@ TcpBytesInFlightTest::FinalChecks()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TestSuite: Check the value of BytesInFlight against a home-made guess
  */

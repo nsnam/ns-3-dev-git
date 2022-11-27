@@ -31,7 +31,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This is a system test program. The test is based on a scenario with single eNB and several
  * UEs. The goal of the test is validating if the obtained throughput performance is consistent with
@@ -82,7 +81,6 @@ class LenaCqaFfMacSchedulerTestCase1 : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This is a system test program. The test is based on a scenario with single eNB and several
  * UEs. The goal of the test is validating if the obtained throughput performance is consistent with
@@ -128,7 +126,6 @@ class LenaCqaFfMacSchedulerTestCase2 : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief The test suite for testing CQA scheduler functionality
  */

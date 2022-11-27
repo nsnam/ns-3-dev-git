@@ -33,7 +33,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for RlcAmE2e test case.
  */
@@ -45,7 +44,6 @@ class LteRlcAmE2eTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * Test cases used for the test suite lte-rlc-am-e2e. See the testing section of
  * the LTE module documentation for details.

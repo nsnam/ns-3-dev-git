@@ -44,7 +44,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteHandoverDelayTest");
 
 /**
- * \ingroup tests lte-test
+ * \ingroup lte-test
  *
  * \brief Verifying that the time needed for handover is under a
  * specified threshold.
@@ -286,7 +286,6 @@ LteHandoverDelayTestCase::EnbHandoverEndOkCallback(std::string context,
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Handover Delay Test Suite
  */

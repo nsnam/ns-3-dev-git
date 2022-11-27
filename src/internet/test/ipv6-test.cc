@@ -32,7 +32,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 Test
  */
@@ -180,7 +179,6 @@ Ipv6L3ProtocolTestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 TestSuite
  */

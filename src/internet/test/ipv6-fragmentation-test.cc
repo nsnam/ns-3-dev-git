@@ -67,7 +67,6 @@ class UdpSocketImpl;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Tag used in IPv6 Fragmentation Test
  */
@@ -133,7 +132,6 @@ class IPv6TestTag : public Tag
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 Fragmentation Test
  */
@@ -618,7 +616,6 @@ Ipv6FragmentationTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 Fragmentation TestSuite
  */

@@ -10,7 +10,6 @@ namespace ns3
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test case that for testing the deactivation of the bearer
  * functionality. The test consist in deactivating the bearer and checking
@@ -62,7 +61,6 @@ class LenaDeactivateBearerTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief The test suite class for the LenaDeactivateBearerTestCase.
  */

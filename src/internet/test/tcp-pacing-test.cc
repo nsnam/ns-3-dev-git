@@ -30,7 +30,6 @@ NS_LOG_COMPONENT_DEFINE("TcpPacingTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Test the behavior of TCP pacing
  *
@@ -373,7 +372,6 @@ TcpPacingTest::NormalClose(SocketWho who)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TestSuite for the behavior of TCP pacing
  */

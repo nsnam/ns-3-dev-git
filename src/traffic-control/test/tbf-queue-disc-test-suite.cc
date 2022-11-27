@@ -37,7 +37,6 @@ using namespace ns3;
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Tbf Queue Disc Test Item
  */
@@ -84,7 +83,6 @@ TbfQueueDiscTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Tbf Queue Disc Test Case
  */
@@ -541,7 +539,6 @@ TbfQueueDiscTestCase::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Tbf Queue Disc Test Suite
  */

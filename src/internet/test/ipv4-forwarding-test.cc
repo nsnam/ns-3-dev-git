@@ -44,7 +44,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Forwarding Test
  */
@@ -227,7 +226,6 @@ Ipv4ForwardingTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Forwarding TestSuite
  */

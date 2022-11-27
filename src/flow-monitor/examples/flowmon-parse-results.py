@@ -45,10 +45,6 @@ class Histogram(object):
     ## class variables
     ## @var bins
     #  histogram bins
-    ## @var nbins
-    #  number of bins
-    ## @var number_of_flows
-    #  number of flows
     ## @var __slots_
     #  class variable list
     __slots_ = 'bins', 'nbins', 'number_of_flows'
@@ -76,8 +72,6 @@ class Flow(object):
     #  receive bit rate
     ## @var txBitrate
     #  transmit bit rate
-    ## @var fiveTuple
-    #  five tuple
     ## @var packetSizeMean
     #  packet size mean
     ## @var probe_stats_unsorted
@@ -140,14 +134,10 @@ class Flow(object):
 ## ProbeFlowStats
 class ProbeFlowStats(object):
     ## class variables
-    ## @var probeId
-    #  probe ID
     ## @var packets
     #  network packets
     ## @var bytes
     #  bytes
-    ## @var delayFromFirstProbe
-    #  delay from first probe
     ## @var __slots_
     #  class variable list
     __slots_ = ['probeId', 'packets', 'bytes', 'delayFromFirstProbe']

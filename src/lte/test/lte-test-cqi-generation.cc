@@ -144,6 +144,10 @@ LteCqiGenerationTestSuite::LteCqiGenerationTestSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteCqiGenerationTestSuite lteCqiGenerationTestSuite;
 
 LteCqiGenerationTestCase::LteCqiGenerationTestCase(std::string name,

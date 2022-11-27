@@ -28,7 +28,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Window Scaling option Test
  */
@@ -107,7 +106,6 @@ TcpOptionWSTestCase::DoTeardown()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP TimeStamp option Test
  */
@@ -198,7 +196,6 @@ TcpOptionTSTestCase::DoTeardown()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP options TestSuite
  */

@@ -314,7 +314,7 @@ class int64x64_t
      * \name Arithmetic Operators
      * Arithmetic operators for int64x64_t.
      */
-    /*
+    /**
      * @{
      * Arithmetic operator.
      * \param [in] lhs Left hand argument
@@ -367,7 +367,7 @@ class int64x64_t
      * \name Unary Operators
      * Unary operators for int64x64_t.
      */
-    /*
+    /**
      * @{
      * Unary operator.
      * \param [in] lhs Left hand argument

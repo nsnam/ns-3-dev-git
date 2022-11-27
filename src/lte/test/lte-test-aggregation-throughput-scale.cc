@@ -54,6 +54,10 @@ LteAggregationThroughputScaleTestSuite::LteAggregationThroughputScaleTestSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteAggregationThroughputScaleTestSuite g_lteAggregationThroughputScaleTestSuite;
 
 LteAggregationThroughputScaleTestCase::LteAggregationThroughputScaleTestCase(std::string name)

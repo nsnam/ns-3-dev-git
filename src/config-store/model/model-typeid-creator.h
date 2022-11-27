@@ -38,7 +38,6 @@ enum
 struct ModelTypeid
 {
     /**
-     * \enum node type
      * \brief Whether the node represents an attribute or TypeId
      */
     enum

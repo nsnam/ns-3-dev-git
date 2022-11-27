@@ -260,7 +260,6 @@ class RoutingProtocol : public Ipv4RoutingProtocol
                              ///< originated route discovery.
     bool m_enableHello;      ///< Indicates whether a hello messages enable
     bool m_enableBroadcast;  ///< Indicates whether a a broadcast data packets forwarding enable
-    //\}
 
     /// IP protocol
     Ptr<Ipv4> m_ipv4;
@@ -377,8 +376,10 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      */
     Ptr<Ipv4Route> LoopbackRoute(const Ipv4Header& header, Ptr<NetDevice> oif) const;
 
-    ///\name Receive control packets
-    //\{
+    /**
+     * \name Receive control packets
+     * @{
+     */
     /**
      * Receive and process control packet
      * \param socket input socket
@@ -410,10 +411,12 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      */
     /// Receive  from node with address src
     void RecvError(Ptr<Packet> p, Ipv4Address src);
-    //\}
+    /** @} */
 
-    ///\name Send
-    //\{
+    /**
+     * \name Send
+     * @{
+     */
     /** Forward packet from route request queue
      * \param dst destination address
      * \param route route to use
@@ -459,7 +462,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      * \param origin originating node IP address
      */
     void SendRerrWhenNoRouteToForward(Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
-    /// @}
+    /** @} */
 
     /**
      * Send packet to destination socket
