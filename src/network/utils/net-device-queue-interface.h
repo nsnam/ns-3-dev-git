@@ -25,6 +25,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
+#include "ns3/simulator.h"
 
 #include <functional>
 #include <vector>
@@ -361,19 +362,21 @@ void
 NetDeviceQueue::PacketDequeued(QueueType* queue, Ptr<const typename QueueType::ItemType> item)
 {
     NS_LOG_FUNCTION(this << queue << item);
-
-    // Inform BQL
-    NotifyTransmittedBytes(item->GetSize());
-
     NS_ASSERT_MSG(m_device, "Aggregated NetDevice not set");
-    // After dequeuing a packet, if there is room for another packet we
-    // call Wake () that ensures that the queue is not stopped and restarts
-    // the queue disc if the queue was stopped
 
-    if (!queue->WouldOverflow(1, m_device->GetMtu()))
-    {
-        Wake();
-    }
+    Simulator::ScheduleNow([=]() {
+        // Inform BQL
+        NotifyTransmittedBytes(item->GetSize());
+
+        // After dequeuing a packet, if there is room for another packet we
+        // call Wake () that ensures that the queue is not stopped and restarts
+        // the queue disc if the queue was stopped
+
+        if (!queue->WouldOverflow(1, m_device->GetMtu()))
+        {
+            Wake();
+        }
+    });
 }
 
 template <typename QueueType>
