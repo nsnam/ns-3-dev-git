@@ -8,7 +8,7 @@
             "name": "(gdb) Launch from scratch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/${relativeFileDirname}/ns3-dev-${fileBasenameNoExtension}-default",
+            "program": "${workspaceFolder}/build/${relativeFileDirname}/ns3-dev-${fileBasenameNoExtension}-${input:buildType}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -33,7 +33,7 @@
             "name": "(lldb) Launch from scratch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/${relativeFileDirname}/ns3-dev-${fileBasenameNoExtension}-default",
+            "program": "${workspaceFolder}/build/${relativeFileDirname}/ns3-dev-${fileBasenameNoExtension}-${input:buildType}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -51,7 +51,7 @@
             "name": "(gdb) Launch testrunner",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/utils/ns3-dev-test-runner-debug",
+            "program": "${workspaceFolder}/build/utils/ns3-dev-test-runner-${input:buildType}",
             "args": [
                 "--suite=${selectedText}"
             ],
@@ -78,7 +78,7 @@
             "name": "(lldb) Launch testrunner",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/utils/ns3-dev-test-runner-debug",
+            "program": "${workspaceFolder}/build/utils/ns3-dev-test-runner-${input:buildType}",
             "args": [
                 "--suite=${selectedText}"
             ],
@@ -93,6 +93,21 @@
             ],
             "externalConsole": false,
             "MIMode": "lldb"
+        }
+    ],
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "buildType",
+            "description": "What is the build option?",
+            "options": [
+                "debug",
+                "default",
+                "optimized",
+                "release",
+                "minsizerel"
+            ],
+            "default": "default"
         }
     ]
 }
