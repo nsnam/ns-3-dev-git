@@ -111,11 +111,17 @@ WifiMacQueue::ExtractExpiredMpdus(const WifiContainerQueueId& queueId) const
     for (auto it = first; it != last; it++)
     {
         mpdus.push_back(it->mpdu);
+    }
+    for (const auto& mpdu : mpdus)
+    {
         // fire the Expired trace
-        m_traceExpired(it->mpdu);
+        Simulator::ScheduleNow(&WifiMacQueue::m_traceExpired, this, mpdu);
     }
     // notify the scheduler
-    m_scheduler->NotifyRemove(m_ac, mpdus);
+    if (!mpdus.empty())
+    {
+        m_scheduler->NotifyRemove(m_ac, mpdus);
+    }
 }
 
 void
@@ -129,11 +135,17 @@ WifiMacQueue::ExtractAllExpiredMpdus() const
     for (auto it = first; it != last; it++)
     {
         mpdus.push_back(it->mpdu);
+    }
+    for (const auto& mpdu : mpdus)
+    {
         // fire the Expired trace
-        m_traceExpired(it->mpdu);
+        Simulator::ScheduleNow(&WifiMacQueue::m_traceExpired, this, mpdu);
     }
     // notify the scheduler
-    m_scheduler->NotifyRemove(m_ac, mpdus);
+    if (!mpdus.empty())
+    {
+        m_scheduler->NotifyRemove(m_ac, mpdus);
+    }
 }
 
 void
