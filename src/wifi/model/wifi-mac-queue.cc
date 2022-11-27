@@ -440,11 +440,19 @@ WifiMacQueue::DoEnqueue(ConstIterator pos, Ptr<WifiMpdu> item)
 {
     NS_LOG_FUNCTION(this << *item);
 
+    auto currSize = GetMaxSize();
+    // control frames should not consume room in the MAC queue, so increase queue size
+    // if we are trying to enqueue a control frame
+    if (item->GetHeader().IsCtl())
+    {
+        SetMaxSize(currSize + item);
+    }
     auto mpdu = m_scheduler->HasToDropBeforeEnqueue(m_ac, item);
 
     if (mpdu == item)
     {
         // the given item must be dropped
+        SetMaxSize(currSize);
         return false;
     }
 
@@ -465,13 +473,14 @@ WifiMacQueue::DoEnqueue(ConstIterator pos, Ptr<WifiMpdu> item)
         // set item's information about its position in the queue
         item->SetQueueIt(ret, {});
         ret->ac = m_ac;
-        ret->expiryTime = Simulator::Now() + m_maxDelay;
+        ret->expiryTime = item->GetHeader().IsCtl() ? Time::Max() : Simulator::Now() + m_maxDelay;
         WmqIteratorTag tag;
         ret->deleter = [tag](auto mpdu) { mpdu->SetQueueIt(std::nullopt, tag); };
 
         m_scheduler->NotifyEnqueue(m_ac, item);
         return true;
     }
+    SetMaxSize(currSize);
     return false;
 }
 
@@ -485,9 +494,13 @@ WifiMacQueue::DoDequeue(const std::list<ConstIterator>& iterators)
     // First, dequeue all the items
     for (auto& it : iterators)
     {
-        if (auto item = Queue<WifiMpdu, WifiMacQueueContainer>::DoDequeue(it); item)
+        if (auto item = Queue<WifiMpdu, WifiMacQueueContainer>::DoDequeue(it))
         {
             items.push_back(item);
+            if (item->GetHeader().IsCtl())
+            {
+                SetMaxSize(GetMaxSize() - item);
+            }
         }
     }
 
@@ -507,6 +520,10 @@ WifiMacQueue::DoRemove(ConstIterator pos)
 
     if (item)
     {
+        if (item->GetHeader().IsCtl())
+        {
+            SetMaxSize(GetMaxSize() - item);
+        }
         m_scheduler->NotifyRemove(m_ac, {item});
     }
 
