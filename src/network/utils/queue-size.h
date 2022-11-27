@@ -221,7 +221,8 @@ std::istream& operator>>(std::istream& is, QueueSize& size);
 ATTRIBUTE_HELPER_HEADER(QueueSize);
 
 /**
- * \brief Increase the queue size by a packet size
+ * Increase the queue size by a packet size, if the queue size is in bytes,
+ * or by one, otherwise.
  *
  * \param lhs queue size
  * \param rhs packet
@@ -230,7 +231,8 @@ ATTRIBUTE_HELPER_HEADER(QueueSize);
 template <typename Item>
 QueueSize operator+(const QueueSize& lhs, const Ptr<Item>& rhs);
 /**
- * \brief Increase the queue size by a packet size
+ * Increase the queue size by a packet size, if the queue size is in bytes,
+ * or by one, otherwise.
  *
  * \param lhs packet
  * \param rhs queue size
@@ -238,6 +240,27 @@ QueueSize operator+(const QueueSize& lhs, const Ptr<Item>& rhs);
  */
 template <typename Item>
 QueueSize operator+(const Ptr<Item>& lhs, const QueueSize& rhs);
+
+/**
+ * Decrease the queue size by a packet size, if the queue size is in bytes,
+ * or by one, otherwise.
+ *
+ * \param lhs queue size
+ * \param rhs packet
+ * \return the queue size decreased by the packet size
+ */
+template <typename Item>
+QueueSize operator-(const QueueSize& lhs, const Ptr<Item>& rhs);
+/**
+ * Decrease the queue size by a packet size, if the queue size is in bytes,
+ * or by one, otherwise.
+ *
+ * \param lhs packet
+ * \param rhs queue size
+ * \return the queue size decreased by the packet size
+ */
+template <typename Item>
+QueueSize operator-(const Ptr<Item>& lhs, const QueueSize& rhs);
 
 /**
  * Implementation of the templates declared above.
@@ -269,6 +292,40 @@ operator+(const Ptr<Item>& lhs, const QueueSize& rhs)
     if (rhs.GetUnit() == QueueSizeUnit::BYTES)
     {
         return QueueSize(rhs.GetUnit(), rhs.GetValue() + lhs->GetSize());
+    }
+    NS_FATAL_ERROR("Unknown queue size mode");
+}
+
+template <typename Item>
+QueueSize
+operator-(const QueueSize& lhs, const Ptr<Item>& rhs)
+{
+    if (lhs.GetUnit() == QueueSizeUnit::PACKETS)
+    {
+        NS_ABORT_IF(lhs.GetValue() < 1);
+        return QueueSize(lhs.GetUnit(), lhs.GetValue() - 1);
+    }
+    if (lhs.GetUnit() == QueueSizeUnit::BYTES)
+    {
+        NS_ABORT_IF(lhs.GetValue() < rhs->GetSize());
+        return QueueSize(lhs.GetUnit(), lhs.GetValue() - rhs->GetSize());
+    }
+    NS_FATAL_ERROR("Unknown queue size mode");
+}
+
+template <typename Item>
+QueueSize
+operator-(const Ptr<Item>& lhs, const QueueSize& rhs)
+{
+    if (rhs.GetUnit() == QueueSizeUnit::PACKETS)
+    {
+        NS_ABORT_IF(rhs.GetValue() < 1);
+        return QueueSize(rhs.GetUnit(), rhs.GetValue() - 1);
+    }
+    if (rhs.GetUnit() == QueueSizeUnit::BYTES)
+    {
+        NS_ABORT_IF(rhs.GetValue() < lhs->GetSize());
+        return QueueSize(rhs.GetUnit(), rhs.GetValue() - lhs->GetSize());
     }
     NS_FATAL_ERROR("Unknown queue size mode");
 }
