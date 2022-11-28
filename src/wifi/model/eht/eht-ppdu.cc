@@ -89,15 +89,28 @@ EhtPpdu::IsUlMu() const
 WifiTxVector
 EhtPpdu::DoGetTxVector() const
 {
+    auto phyHeaders = m_phyHeaders->Copy();
+
+    LSigHeader lSig;
+    if (phyHeaders->RemoveHeader(lSig) == 0)
+    {
+        NS_FATAL_ERROR("Missing L-SIG header in EHT PPDU");
+    }
+
     // FIXME: define EHT PHY headers
+    HeSigHeader ehtPhyHdr;
+    if (phyHeaders->PeekHeader(ehtPhyHdr) == 0)
+    {
+        NS_FATAL_ERROR("Missing EHT PHY headers in EHT PPDU");
+    }
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
     txVector.SetMode(EhtPhy::GetEhtMcs(m_ehtSuMcs));
-    txVector.SetChannelWidth(m_heSig.GetChannelWidth());
+    txVector.SetChannelWidth(ehtPhyHdr.GetChannelWidth());
     txVector.SetNss(m_ehtSuNStreams);
-    txVector.SetGuardInterval(m_heSig.GetGuardInterval());
-    txVector.SetBssColor(m_heSig.GetBssColor());
-    txVector.SetLength(m_lSig.GetLength());
+    txVector.SetGuardInterval(ehtPhyHdr.GetGuardInterval());
+    txVector.SetBssColor(ehtPhyHdr.GetBssColor());
+    txVector.SetLength(lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
     if (!m_muUserInfos.empty())
     {
@@ -109,7 +122,7 @@ EhtPpdu::DoGetTxVector() const
     }
     if (ns3::IsDlMu(m_preamble))
     {
-        txVector.SetSigBMode(HePhy::GetVhtMcs(m_heSig.GetMcs()));
+        txVector.SetSigBMode(HePhy::GetVhtMcs(ehtPhyHdr.GetMcs()));
         txVector.SetRuAllocation(m_ruAllocation);
     }
     return txVector;

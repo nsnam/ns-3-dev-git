@@ -179,8 +179,6 @@ class VhtPpdu : public OfdmPpdu
      * \param ppduDuration the transmission duration of this PPDU
      */
     void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
-
-    VhtSigHeader m_vhtSig; //!< the VHT-SIG PHY header
 };                         // class VhtPpdu
 
 } // namespace ns3

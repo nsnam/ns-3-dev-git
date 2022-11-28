@@ -106,6 +106,8 @@ void
 HePpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
     NS_LOG_FUNCTION(this << txVector << ppduDuration);
+
+    LSigHeader lSig;
     uint8_t sigExtension = 0;
     if (m_band == WIFI_PHY_BAND_2_4GHZ)
     {
@@ -118,33 +120,52 @@ HePpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
                              4.0) *
                         3) -
                        3 - m);
-    m_lSig.SetLength(length);
+    lSig.SetLength(length);
+
+    HeSigHeader heSig;
     if (ns3::IsDlMu(m_preamble))
     {
-        m_heSig.SetMuFlag(true);
-        m_heSig.SetMcs(txVector.GetSigBMode().GetMcsValue());
+        heSig.SetMuFlag(true);
+        heSig.SetMcs(txVector.GetSigBMode().GetMcsValue());
     }
     else if (!ns3::IsUlMu(m_preamble))
     {
-        m_heSig.SetMcs(txVector.GetMode().GetMcsValue());
-        m_heSig.SetNStreams(txVector.GetNss());
+        heSig.SetMcs(txVector.GetMode().GetMcsValue());
+        heSig.SetNStreams(txVector.GetNss());
     }
-    m_heSig.SetBssColor(txVector.GetBssColor());
-    m_heSig.SetChannelWidth(m_channelWidth);
-    m_heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(), 2 /*NLTF currently unused*/);
+    heSig.SetBssColor(txVector.GetBssColor());
+    heSig.SetChannelWidth(m_channelWidth);
+    heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(), 2 /*NLTF currently unused*/);
+
+    m_phyHeaders->AddHeader(heSig);
+    m_phyHeaders->AddHeader(lSig);
 }
 
 WifiTxVector
 HePpdu::DoGetTxVector() const
 {
+    auto phyHeaders = m_phyHeaders->Copy();
+
+    LSigHeader lSig;
+    if (phyHeaders->RemoveHeader(lSig) == 0)
+    {
+        NS_FATAL_ERROR("Missing L-SIG header in HE PPDU");
+    }
+
+    HeSigHeader heSig;
+    if (phyHeaders->PeekHeader(heSig) == 0)
+    {
+        NS_FATAL_ERROR("Missing HE-SIG header in HE PPDU");
+    }
+
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
-    txVector.SetMode(HePhy::GetHeMcs(m_heSig.GetMcs()));
-    txVector.SetChannelWidth(m_heSig.GetChannelWidth());
-    txVector.SetNss(m_heSig.GetNStreams());
-    txVector.SetGuardInterval(m_heSig.GetGuardInterval());
-    txVector.SetBssColor(m_heSig.GetBssColor());
-    txVector.SetLength(m_lSig.GetLength());
+    txVector.SetMode(HePhy::GetHeMcs(heSig.GetMcs()));
+    txVector.SetChannelWidth(heSig.GetChannelWidth());
+    txVector.SetNss(heSig.GetNStreams());
+    txVector.SetGuardInterval(heSig.GetGuardInterval());
+    txVector.SetBssColor(heSig.GetBssColor());
+    txVector.SetLength(lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
     for (const auto& muUserInfo : m_muUserInfos)
     {
@@ -152,7 +173,7 @@ HePpdu::DoGetTxVector() const
     }
     if (txVector.IsDlMu())
     {
-        txVector.SetSigBMode(HePhy::GetVhtMcs(m_heSig.GetMcs()));
+        txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetMcs()));
         txVector.SetRuAllocation(m_ruAllocation);
     }
     return txVector;
@@ -163,6 +184,10 @@ HePpdu::GetTxDuration() const
 {
     Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
+
+    LSigHeader lSig;
+    m_phyHeaders->PeekHeader(lSig);
+
     Time tSymbol = NanoSeconds(12800 + txVector.GetGuardInterval());
     Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
     uint8_t sigExtension = 0;
@@ -173,7 +198,7 @@ HePpdu::GetTxDuration() const
     uint8_t m = IsDlMu() ? 1 : 2;
     // Equation 27-11 of IEEE P802.11ax/D4.0
     Time calculatedDuration = MicroSeconds(
-        ((ceil(static_cast<double>(m_lSig.GetLength() + 3 + m) / 3)) * 4) + 20 + sigExtension);
+        ((ceil(static_cast<double>(lSig.GetLength() + 3 + m) / 3)) * 4) + 20 + sigExtension);
     NS_ASSERT(calculatedDuration > preambleDuration);
     uint32_t nSymbols =
         floor(static_cast<double>((calculatedDuration - preambleDuration).GetNanoSeconds() -
@@ -229,17 +254,24 @@ HePpdu::GetPsdu(uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
         NS_ASSERT(m_psdus.size() == 1);
         return m_psdus.at(SU_STA_ID);
     }
-    else if (IsUlMu())
+
+    auto phyHeaders = m_phyHeaders->Copy();
+    LSigHeader lSig;
+    phyHeaders->RemoveHeader(lSig);
+    HeSigHeader heSig;
+    phyHeaders->RemoveHeader(heSig);
+
+    if (IsUlMu())
     {
         NS_ASSERT(m_psdus.size() == 1);
-        if (bssColor == 0 || m_heSig.GetBssColor() == 0 || (bssColor == m_heSig.GetBssColor()))
+        if (bssColor == 0 || heSig.GetBssColor() == 0 || (bssColor == heSig.GetBssColor()))
         {
             return m_psdus.begin()->second;
         }
     }
     else
     {
-        if (bssColor == 0 || m_heSig.GetBssColor() == 0 || (bssColor == m_heSig.GetBssColor()))
+        if (bssColor == 0 || heSig.GetBssColor() == 0 || (bssColor == heSig.GetBssColor()))
         {
             auto it = m_psdus.find(staId);
             if (it != m_psdus.end())

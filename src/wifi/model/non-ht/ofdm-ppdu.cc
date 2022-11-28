@@ -53,18 +53,26 @@ void
 OfdmPpdu::SetPhyHeaders(const WifiTxVector& txVector, std::size_t psduSize)
 {
     NS_LOG_FUNCTION(this << txVector << psduSize);
-    m_lSig.SetRate(txVector.GetMode().GetDataRate(txVector), m_channelWidth);
-    m_lSig.SetLength(psduSize);
+    LSigHeader lSig;
+    lSig.SetRate(txVector.GetMode().GetDataRate(txVector), m_channelWidth);
+    lSig.SetLength(psduSize);
+    m_phyHeaders->AddHeader(lSig);
 }
 
 WifiTxVector
 OfdmPpdu::DoGetTxVector() const
 {
+    LSigHeader lSig;
+    if (m_phyHeaders->PeekHeader(lSig) == 0)
+    {
+        NS_FATAL_ERROR("Missing L-SIG in PPDU");
+    }
+
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
     // OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 MHz
     uint16_t channelWidth = m_channelWidth < 20 ? m_channelWidth : 20;
-    txVector.SetMode(OfdmPhy::GetOfdmRate(m_lSig.GetRate(m_channelWidth), channelWidth));
+    txVector.SetMode(OfdmPhy::GetOfdmRate(lSig.GetRate(m_channelWidth), channelWidth));
     txVector.SetChannelWidth(channelWidth);
     return txVector;
 }
@@ -74,7 +82,9 @@ OfdmPpdu::GetTxDuration() const
 {
     Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
-    ppduDuration = WifiPhy::CalculateTxDuration(m_lSig.GetLength(), txVector, m_band);
+    LSigHeader lSig;
+    m_phyHeaders->PeekHeader(lSig);
+    ppduDuration = WifiPhy::CalculateTxDuration(lSig.GetLength(), txVector, m_band);
     return ppduDuration;
 }
 

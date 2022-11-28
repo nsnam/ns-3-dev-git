@@ -38,6 +38,7 @@
 namespace ns3
 {
 
+class Packet;
 class WifiPsdu;
 
 /**
@@ -199,6 +200,8 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     WifiConstPsduMap m_psdus;         //!< the PSDUs contained in this PPDU
     uint16_t m_txCenterFreq; //!< the center frequency (MHz) used for the transmission of this PPDU
     uint64_t m_uid;          //!< the unique ID of this PPDU
+
+    Ptr<Packet> m_phyHeaders; //!< the PHY headers contained in this PPDU
 
   private:
     /**

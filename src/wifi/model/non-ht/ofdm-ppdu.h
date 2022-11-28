@@ -124,7 +124,6 @@ class OfdmPpdu : public WifiPpdu
   protected:
     WifiPhyBand m_band;      //!< the WifiPhyBand used to transmit that PPDU
     uint16_t m_channelWidth; //!< the channel width used to transmit that PPDU in MHz
-    LSigHeader m_lSig;       //!< the L-SIG PHY header
 
   private:
     WifiTxVector DoGetTxVector() const override;

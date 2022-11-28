@@ -124,9 +124,7 @@ class DsssPpdu : public WifiPpdu
      * \param ppduDuration the transmission duration of this PPDU
      */
     void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
-
-    DsssSigHeader m_dsssSig; //!< the DSSS SIG PHY header
-};                           // class DsssPpdu
+}; // class DsssPpdu
 
 } // namespace ns3
 

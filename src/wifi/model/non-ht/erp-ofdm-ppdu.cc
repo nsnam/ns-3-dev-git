@@ -35,7 +35,7 @@ ErpOfdmPpdu::ErpOfdmPpdu(Ptr<const WifiPsdu> psdu,
                          uint16_t txCenterFreq,
                          WifiPhyBand band,
                          uint64_t uid)
-    : OfdmPpdu(psdu, txVector, txCenterFreq, band, uid, true) // instantiate LSigHeader of OfdmPpdu
+    : OfdmPpdu(psdu, txVector, txCenterFreq, band, uid, true) // add LSigHeader of OfdmPpdu
 {
     NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << band << uid);
 }
@@ -43,10 +43,16 @@ ErpOfdmPpdu::ErpOfdmPpdu(Ptr<const WifiPsdu> psdu,
 WifiTxVector
 ErpOfdmPpdu::DoGetTxVector() const
 {
+    LSigHeader lSig;
+    if (m_phyHeaders->PeekHeader(lSig) == 0)
+    {
+        NS_FATAL_ERROR("Missing L-SIG in PPDU");
+    }
+
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
     NS_ASSERT(m_channelWidth == 20);
-    txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(m_lSig.GetRate()));
+    txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(lSig.GetRate()));
     txVector.SetChannelWidth(m_channelWidth);
     return txVector;
 }

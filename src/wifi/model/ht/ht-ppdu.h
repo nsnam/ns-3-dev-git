@@ -165,9 +165,7 @@ class HtPpdu : public OfdmPpdu
      * \param psduSize the size duration of the PHY payload (PSDU)
      */
     void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration, std::size_t psduSize);
-
-    HtSigHeader m_htSig; //!< the HT-SIG PHY header
-};                       // class HtPpdu
+}; // class HtPpdu
 
 } // namespace ns3
 
