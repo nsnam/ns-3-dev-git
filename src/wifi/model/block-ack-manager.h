@@ -44,27 +44,6 @@ class WifiMacQueue;
 class MacRxMiddle;
 
 /**
- * \ingroup wifi
- * \brief BlockAckRequest frame information
- *
- */
-struct Bar
-{
-    Bar();
-    /**
-     * Store a BlockAckRequest along with the corresponding TID or a MU-BAR Trigger Frame.
-     *
-     * \param bar the BAR
-     * \param tid the Traffic ID
-     * \param skipIfNoDataQueued true to hold this BAR if there is no data queued
-     */
-    Bar(Ptr<const WifiMpdu> bar, uint8_t tid, bool skipIfNoDataQueued = false);
-    Ptr<const WifiMpdu> bar; ///< BlockAckRequest or MU-BAR Trigger Frame
-    uint8_t tid;             ///< TID (unused if MU-BAR)
-    bool skipIfNoDataQueued; ///< do not send if there is no data queued (unused if MU-BAR)
-};
-
-/**
  * \brief Manages all block ack agreements for an originator station.
  * \ingroup wifi
  */
@@ -94,13 +73,6 @@ class BlockAckManager : public Object
     // Delete copy constructor and assignment operator to avoid misuse
     BlockAckManager(const BlockAckManager&) = delete;
     BlockAckManager& operator=(const BlockAckManager&) = delete;
-
-    /**
-     * Provide information about all the Block Ack Managers installed on this device.
-     *
-     * \param bamMap an AC-indexed map of all the Block Ack Managers installed on this device
-     */
-    void SetBlockAckManagerMap(const std::map<AcIndex, Ptr<BlockAckManager>>& bamMap);
 
     /// optional const reference to OriginatorBlockAckAgreement
     using OriginatorAgreementOptConstRef =
@@ -197,21 +169,6 @@ class BlockAckManager : public Object
      * if the packet, in a BlockAck frame, is indicated by recipient as not received.
      */
     void StorePacket(Ptr<WifiMpdu> mpdu);
-    /**
-     * Returns the next BlockAckRequest or MU-BAR Trigger Frame to send, if any.
-     * If the given recipient is not the broadcast address and the given TID is less
-     * than 8, then only return a BlockAckRequest, if any, addressed to that recipient
-     * and for the given TID.
-     *
-     * \param remove true if the BAR has to be removed from the queue
-     * \param tid the TID
-     * \param recipient the recipient of the BAR
-     *
-     * \return the next BAR to be sent, if any
-     */
-    Ptr<const WifiMpdu> GetBar(bool remove = true,
-                               uint8_t tid = 8,
-                               const Mac48Address& recipient = Mac48Address::GetBroadcast());
     /**
      * Invoked upon receipt of an Ack frame on the given link after the transmission of a
      * QoS data frame sent under an established block ack agreement. Remove the acknowledged
@@ -554,11 +511,9 @@ class BlockAckManager : public Object
 
     std::list<AgreementKey> m_sendBarIfDataQueued; ///< list of BA agreements for which a BAR shall
                                                    ///< only be sent if data is queued
-    std::list<Bar> m_bars;                         ///< list of BARs
 
-    std::map<AcIndex, Ptr<BlockAckManager>> m_bamMap; ///< AC-indexed map of all Block Ack Managers
-    uint8_t m_blockAckThreshold;                      ///< block ack threshold
-    Ptr<WifiMacQueue> m_queue;                        ///< queue
+    uint8_t m_blockAckThreshold; ///< block ack threshold
+    Ptr<WifiMacQueue> m_queue;   ///< queue
     Callback<void, Mac48Address, uint8_t, bool>
         m_blockAckInactivityTimeout;                      ///< BlockAck inactivity timeout callback
     Callback<void, Mac48Address, uint8_t> m_blockPackets; ///< block packets callback
