@@ -29,6 +29,7 @@ Release 3-dev
 - (build) #815 - Configure find_program to search for programs in PATH first, then AppBundles in MacOS
 - (network) !1229 - Fixed a bug in `Ipv4Address::IsSubnetDirectedBroadcast`
 - (internet) !1229 - Fixed a bug in `Icmpv4Header::HandleEcho` when replying to broadcast-type Echo requests, and two bugs in `Ipv4RawSocketImpl::SendTo` in handling sockets bound to a specific address and directed to a broadcast-type address.
+- (internet) - `NeighborCacheHelper::PopulateNeighborCache` is now robust against missing IPv4 or IPv6 stack in nodes.
 
 Release 3.37
 ------------

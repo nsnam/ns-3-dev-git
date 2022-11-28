@@ -409,6 +409,14 @@ NeighborCacheExample::Run()
     csmaDevicesRight = csmaRight.Install(csmaNodesRight);
 
     InternetStackHelper stack;
+    if (!m_useIpv6)
+    {
+        stack.SetIpv6StackInstall(false);
+    }
+    else
+    {
+        stack.SetIpv4StackInstall(false);
+    }
     // disabled Ipv4ArpJitter and Ipv6NsRsJitter to avoid the influence on packet dropped
     stack.SetIpv4ArpJitter(false);
     stack.SetIpv6NsRsJitter(false);
