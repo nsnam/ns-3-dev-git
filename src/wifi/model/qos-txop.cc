@@ -275,7 +275,7 @@ QosTxop::GetBaStartingSequence(Mac48Address address, uint8_t tid) const
     return m_baManager->GetOriginatorStartingSequence(address, tid);
 }
 
-Ptr<const WifiMpdu>
+Ptr<WifiMpdu>
 QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
@@ -295,7 +295,7 @@ QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
     hdr.SetNoRetry();
     hdr.SetNoMoreFragments();
 
-    return Create<const WifiMpdu>(bar, hdr);
+    return Create<WifiMpdu>(bar, hdr);
 }
 
 bool
@@ -307,16 +307,12 @@ QosTxop::UseExplicitBarAfterMissedBlockAck() const
 bool
 QosTxop::HasFramesToTransmit(uint8_t linkId)
 {
-    // check if the BA manager has anything to send, so that expired
-    // frames (if any) are removed and a BlockAckRequest is scheduled to advance
-    // the starting sequence number of the transmit (and receiver) window
-    bool baManagerHasPackets{m_baManager->GetBar(false)};
     // remove MSDUs with expired lifetime starting from the head of the queue
     m_queue->WipeAllExpiredMpdus();
     bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable(linkId, m_qosBlockedDestinations));
 
-    NS_LOG_FUNCTION(this << baManagerHasPackets << queueIsNotEmpty);
-    return baManagerHasPackets || queueIsNotEmpty;
+    NS_LOG_FUNCTION(this << queueIsNotEmpty);
+    return queueIsNotEmpty;
 }
 
 uint16_t

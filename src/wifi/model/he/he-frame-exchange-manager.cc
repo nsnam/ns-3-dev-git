@@ -123,7 +123,7 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
      *   or the next frame in the AC queue is a non-broadcast QoS data frame addressed to
      *   a receiver with which a BA agreement has been already established
      */
-    if (m_muScheduler && !edca->GetBaManager()->GetBar(false) &&
+    if (m_muScheduler && !GetBar(edca->GetAccessCategory()) &&
         (!(mpdu = edca->PeekNextMpdu(m_linkId)) ||
          (mpdu->GetHeader().IsQosData() && !mpdu->GetHeader().GetAddr1().IsGroup() &&
           m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
@@ -168,29 +168,20 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
 }
 
 bool
-HeFrameExchangeManager::SendMpduFromBaManager(Ptr<QosTxop> edca,
+HeFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
                                               Time availableTime,
                                               bool initialFrame)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << *mpdu << availableTime << initialFrame);
 
-    // First, check if there is a BAR to be transmitted
-    Ptr<const WifiMpdu> peekedItem = edca->GetBaManager()->GetBar(false);
-
-    if (!peekedItem)
-    {
-        NS_LOG_DEBUG("Block Ack Manager returned no frame to send");
-        return false;
-    }
-
-    if (peekedItem->GetHeader().IsBlockAckReq())
+    // First, check if there is a Trigger Frame to be transmitted
+    if (!mpdu->GetHeader().IsTrigger())
     {
         // BlockAckReq are handled by the HT FEM
-        return HtFrameExchangeManager::SendMpduFromBaManager(edca, availableTime, initialFrame);
+        return HtFrameExchangeManager::SendMpduFromBaManager(mpdu, availableTime, initialFrame);
     }
 
-    NS_ASSERT(peekedItem->GetHeader().IsTrigger());
-    m_triggerFrame = Copy(edca->GetBaManager()->GetBar());
+    m_triggerFrame = mpdu;
 
     SendPsduMap();
     return true;
@@ -1030,7 +1021,12 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(
         resetCw = true;
     }
 
-    m_triggerFrame = nullptr; // this is strictly needed for DL_MU_TF_MU_BAR only
+    if (m_triggerFrame)
+    {
+        // this is strictly needed for DL_MU_TF_MU_BAR only
+        DequeueMpdu(m_triggerFrame);
+        m_triggerFrame = nullptr;
+    }
 
     for (const auto& sta : *staMissedBlockAckFrom)
     {
@@ -1409,21 +1405,18 @@ HeFrameExchangeManager::ReceiveBasicTrigger(const CtrlTriggerHeader& trigger,
         txParams.m_txVector = tbTxVector;
 
         // first, check if there is a pending BlockAckReq frame
-        if (Ptr<const WifiMpdu> mpdu;
-            (mpdu = edca->GetBaManager()->GetBar(false, tid, hdr.GetAddr2())) &&
-            TryAddMpdu(mpdu, txParams, ppduDuration))
+        if (auto mpdu = GetBar(edca->GetAccessCategory(), tid, hdr.GetAddr2());
+            mpdu && TryAddMpdu(mpdu, txParams, ppduDuration))
         {
             NS_LOG_DEBUG("Sending a BAR within a TB PPDU");
-            psdu = Create<WifiPsdu>(edca->GetBaManager()->GetBar(true, tid, hdr.GetAddr2()), true);
+            psdu = Create<WifiPsdu>(mpdu, true);
             break;
         }
 
         // otherwise, check if a suitable data frame is available
-        if (Ptr<WifiMpdu> mpdu; (mpdu = edca->PeekNextMpdu(m_linkId, tid, hdr.GetAddr2())))
+        if (auto mpdu = edca->PeekNextMpdu(m_linkId, tid, hdr.GetAddr2()))
         {
-            Ptr<WifiMpdu> item = edca->GetNextMpdu(m_linkId, mpdu, txParams, ppduDuration, false);
-
-            if (item)
+            if (auto item = edca->GetNextMpdu(m_linkId, mpdu, txParams, ppduDuration, false))
             {
                 // try A-MPDU aggregation
                 std::vector<Ptr<WifiMpdu>> mpduList =
@@ -1782,7 +1775,12 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 // we do not expect any other BlockAck frame
                 m_txTimer.Cancel();
                 m_channelAccessManager->NotifyAckTimeoutResetNow();
-                m_triggerFrame = nullptr; // this is strictly needed for DL_MU_TF_MU_BAR only
+                if (m_triggerFrame)
+                {
+                    // this is strictly needed for DL_MU_TF_MU_BAR only
+                    DequeueMpdu(m_triggerFrame);
+                    m_triggerFrame = nullptr;
+                }
 
                 m_edca->ResetCw(m_linkId);
                 m_psduMap.clear();
@@ -1875,6 +1873,14 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             // cancel the timer
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyAckTimeoutResetNow();
+            // dequeue BlockAckReq frames included in acknowledged TB PPDUs (if any)
+            for (const auto& [staId, psdu] : m_psduMap)
+            {
+                if (psdu->GetNMpdus() == 1 && psdu->GetHeader(0).IsBlockAckReq())
+                {
+                    DequeuePsdu(psdu);
+                }
+            }
             m_psduMap.clear();
         }
         else if (hdr.IsBlockAck() && m_txTimer.IsRunning() &&

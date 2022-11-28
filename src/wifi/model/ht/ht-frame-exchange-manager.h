@@ -166,6 +166,21 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      */
     void SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOriginator);
 
+    /**
+     * Get the next BlockAckRequest or MU-BAR Trigger Frame to send, if any. If TID and recipient
+     * address are given, then only return a BlockAckRequest, if any, addressed to that recipient
+     * and for the given TID.
+     *
+     * \param ac the AC whose queue is searched for BlockAckRequest or Trigger Frames
+     * \param optTid the TID (optional)
+     * \param optAddress the recipient of the BAR (optional)
+     *
+     * \return the next BAR or Trigger Frame to be sent, if any
+     */
+    Ptr<WifiMpdu> GetBar(AcIndex ac,
+                         std::optional<uint8_t> optTid = std::nullopt,
+                         std::optional<Mac48Address> optAddress = std::nullopt);
+
   protected:
     void DoDispose() override;
 
@@ -247,12 +262,11 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     void DequeuePsdu(Ptr<const WifiPsdu> psdu);
 
     /**
-     * If the Block Ack Manager associated with the given EDCA has a BlockAckReq frame
-     * to transmit (the duration of which plus the response fits within the given
-     * available time, if the latter is not Time::Min() and this is not the initial
-     * frame of a TXOP), transmit the frame and return true. Otherwise, return false.
+     * If the given MPDU contains a BlockAckReq frame (the duration of which plus the response
+     * fits within the given available time, if the latter is not Time::Min() and this is not
+     * the initial frame of a TXOP), transmit the frame and return true. Otherwise, return false.
      *
-     * \param edca the EDCAF which has been granted the opportunity to transmit
+     * \param mpdu the given MPDU
      * \param availableTime the amount of time allowed for the frame exchange. Equals
      *                      Time::Min() in case the TXOP limit is null
      * \param initialFrame true if the frame being transmitted is the initial frame
@@ -260,7 +274,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      *                     limit can be exceeded
      * \return true if frame is transmitted, false otherwise
      */
-    virtual bool SendMpduFromBaManager(Ptr<QosTxop> edca, Time availableTime, bool initialFrame);
+    virtual bool SendMpduFromBaManager(Ptr<WifiMpdu> mpdu, Time availableTime, bool initialFrame);
 
     /**
      * Given a non-broadcast QoS data frame, prepare the PSDU to transmit by attempting

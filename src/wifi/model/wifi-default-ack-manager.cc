@@ -444,9 +444,11 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
     }
 
     // we get here if this is the first MPDU for this receiver
-    if (edca->GetBaManager()->GetBar(true, tid, receiver) ||
-        (acknowledgment && (!acknowledgment->stationsReplyingWithNormalAck.empty() ||
-                            !acknowledgment->stationsReplyingWithBlockAck.empty())))
+    auto htFem = DynamicCast<HtFrameExchangeManager>(m_mac->GetFrameExchangeManager(m_linkId));
+    NS_ASSERT(htFem);
+    if (auto bar = htFem->GetBar(QosUtilsMapTidToAc(tid), tid, receiver);
+        bar || (acknowledgment && (!acknowledgment->stationsReplyingWithNormalAck.empty() ||
+                                   !acknowledgment->stationsReplyingWithBlockAck.empty())))
     {
         // there is a pending BlockAckReq for this receiver or another receiver
         // was selected for immediate response.

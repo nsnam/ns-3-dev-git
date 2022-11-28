@@ -452,14 +452,13 @@ class BlockAckManager : public Object
 
     /**
      * \param bar the BlockAckRequest to enqueue
-     * \param skipIfNoDataQueued do not send if there is no data queued
      *
      * Enqueue the given BlockAckRequest into the queue storing the next (MU-)BAR
      * frames to transmit. If a BAR for the same recipient and TID is already present
      * in the queue, it is replaced by the new one. If the given BAR is retransmitted,
      * it is placed at the head of the queue, otherwise at the tail.
      */
-    void ScheduleBar(Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued = false);
+    void ScheduleBar(Ptr<WifiMpdu> bar);
     /**
      * \param muBar the MU-BAR Trigger Frame to enqueue
      *
@@ -467,7 +466,32 @@ class BlockAckManager : public Object
      * frames to transmit. If the given MU-BAR Trigger Frame is retransmitted,
      * it is placed at the head of the queue, otherwise at the tail.
      */
-    void ScheduleMuBar(Ptr<const WifiMpdu> muBar);
+    void ScheduleMuBar(Ptr<WifiMpdu> muBar);
+
+    /// agreement key typedef (MAC address and TID)
+    using AgreementKey = std::pair<Mac48Address, uint8_t>;
+
+    /**
+     * \return the list of BA agreements (identified by the recipient and TID pair) for which a BAR
+     * shall only be sent if there are queued data frames belonging to those agreements
+     */
+    const std::list<AgreementKey>& GetSendBarIfDataQueuedList() const;
+    /**
+     * Add the given (recipient, TID) pair to the list of BA agreements for which a BAR
+     * shall only be sent if there are queued data frames belonging to those agreements
+     *
+     * \param recipient the recipient
+     * \param tid the TID
+     */
+    void AddToSendBarIfDataQueuedList(const Mac48Address& recipient, uint8_t tid);
+    /**
+     * Remove the given (recipient, TID) pair from the list of BA agreements for which a BAR
+     * shall only be sent if there are queued data frames belonging to those agreements
+     *
+     * \param recipient the recipient
+     * \param tid the TID
+     */
+    void RemoveFromSendBarIfDataQueuedList(const Mac48Address& recipient, uint8_t tid);
 
   protected:
     void DoDispose() override;
@@ -488,9 +512,6 @@ class BlockAckManager : public Object
      * typedef for an iterator for PacketQueue.
      */
     typedef std::list<Ptr<WifiMpdu>>::iterator PacketQueueI;
-
-    /// agreement key typedef (MAC address and TID)
-    using AgreementKey = std::pair<Mac48Address, uint8_t>;
 
     /// AgreementKey-indexed map of originator block ack agreements
     using OriginatorAgreements =
@@ -531,7 +552,9 @@ class BlockAckManager : public Object
     OriginatorAgreements m_originatorAgreements;
     RecipientAgreements m_recipientAgreements; //!< Recipient Block Ack agreements
 
-    std::list<Bar> m_bars; ///< list of BARs
+    std::list<AgreementKey> m_sendBarIfDataQueued; ///< list of BA agreements for which a BAR shall
+                                                   ///< only be sent if data is queued
+    std::list<Bar> m_bars;                         ///< list of BARs
 
     std::map<AcIndex, Ptr<BlockAckManager>> m_bamMap; ///< AC-indexed map of all Block Ack Managers
     uint8_t m_blockAckThreshold;                      ///< block ack threshold
