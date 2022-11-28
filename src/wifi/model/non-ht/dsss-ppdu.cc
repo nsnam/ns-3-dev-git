@@ -40,6 +40,13 @@ DsssPpdu::DsssPpdu(Ptr<const WifiPsdu> psdu,
     : WifiPpdu(psdu, txVector, txCenterFreq, uid)
 {
     NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << ppduDuration << uid);
+    SetPhyHeaders(txVector, ppduDuration);
+}
+
+void
+DsssPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
+{
+    NS_LOG_FUNCTION(this << txVector << ppduDuration);
     m_dsssSig.SetRate(txVector.GetMode().GetDataRate(22));
     Time psduDuration = ppduDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
     m_dsssSig.SetLength(psduDuration.GetMicroSeconds());

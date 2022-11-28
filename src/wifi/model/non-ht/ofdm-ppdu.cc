@@ -45,9 +45,16 @@ OfdmPpdu::OfdmPpdu(Ptr<const WifiPsdu> psdu,
     NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << band << uid);
     if (instantiateLSig)
     {
-        m_lSig.SetRate(txVector.GetMode().GetDataRate(txVector), m_channelWidth);
-        m_lSig.SetLength(psdu->GetSize());
+        SetPhyHeaders(txVector, psdu->GetSize());
     }
+}
+
+void
+OfdmPpdu::SetPhyHeaders(const WifiTxVector& txVector, std::size_t psduSize)
+{
+    NS_LOG_FUNCTION(this << txVector << psduSize);
+    m_lSig.SetRate(txVector.GetMode().GetDataRate(txVector), m_channelWidth);
+    m_lSig.SetLength(psduSize);
 }
 
 WifiTxVector

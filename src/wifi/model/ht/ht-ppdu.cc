@@ -47,6 +47,13 @@ HtPpdu::HtPpdu(Ptr<const WifiPsdu> psdu,
                false) // don't instantiate LSigHeader of OfdmPpdu
 {
     NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
+    SetPhyHeaders(txVector, ppduDuration, psdu->GetSize());
+}
+
+void
+HtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration, std::size_t psduSize)
+{
+    NS_LOG_FUNCTION(this << txVector << ppduDuration << psduSize);
     uint8_t sigExtension = 0;
     if (m_band == WIFI_PHY_BAND_2_4GHZ)
     {
@@ -61,7 +68,7 @@ HtPpdu::HtPpdu(Ptr<const WifiPsdu> psdu,
     m_lSig.SetLength(length);
     m_htSig.SetMcs(txVector.GetMode().GetMcsValue());
     m_htSig.SetChannelWidth(m_channelWidth);
-    m_htSig.SetHtLength(psdu->GetSize());
+    m_htSig.SetHtLength(psduSize);
     m_htSig.SetAggregation(txVector.IsAggregation());
     m_htSig.SetShortGuardInterval(txVector.GetGuardInterval() == 400);
 }

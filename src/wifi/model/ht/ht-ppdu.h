@@ -157,6 +157,15 @@ class HtPpdu : public OfdmPpdu
   private:
     WifiTxVector DoGetTxVector() const override;
 
+    /**
+     * Fill in the PHY headers.
+     *
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     * \param psduSize the size duration of the PHY payload (PSDU)
+     */
+    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration, std::size_t psduSize);
+
     HtSigHeader m_htSig; //!< the HT-SIG PHY header
 };                       // class HtPpdu
 

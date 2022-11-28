@@ -172,6 +172,14 @@ class VhtPpdu : public OfdmPpdu
   private:
     WifiTxVector DoGetTxVector() const override;
 
+    /**
+     * Fill in the PHY headers.
+     *
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
+
     VhtSigHeader m_vhtSig; //!< the VHT-SIG PHY header
 };                         // class VhtPpdu
 

@@ -128,6 +128,14 @@ class OfdmPpdu : public WifiPpdu
 
   private:
     WifiTxVector DoGetTxVector() const override;
+
+    /**
+     * Fill in the PHY headers.
+     *
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param psduSize the size duration of the PHY payload (PSDU)
+     */
+    void SetPhyHeaders(const WifiTxVector& txVector, std::size_t psduSize);
 }; // class OfdmPpdu
 
 } // namespace ns3

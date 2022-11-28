@@ -46,6 +46,13 @@ VhtPpdu::VhtPpdu(Ptr<const WifiPsdu> psdu,
                false) // don't instantiate LSigHeader of OfdmPpdu
 {
     NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
+    SetPhyHeaders(txVector, ppduDuration);
+}
+
+void
+VhtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
+{
+    NS_LOG_FUNCTION(this << txVector << ppduDuration);
     uint16_t length =
         ((ceil((static_cast<double>(ppduDuration.GetNanoSeconds() - (20 * 1000)) / 1000) / 4.0) *
           3) -
