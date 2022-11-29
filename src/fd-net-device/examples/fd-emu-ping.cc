@@ -302,4 +302,6 @@ main(int argc, char* argv[])
     Simulator::Destroy();
     delete helper;
     NS_LOG_INFO("Done.");
+
+    return 0;
 }

@@ -100,4 +100,6 @@ main(int argc, char** argv)
     DoubleValue v;
     es->GetAttribute("ThresholdVoltage", v);
     NS_ASSERT(es->GetSupplyVoltage() <= v.Get());
+
+    return 0;
 }

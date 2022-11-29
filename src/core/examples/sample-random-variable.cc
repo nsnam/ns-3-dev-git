@@ -68,4 +68,6 @@ main(int argc, char* argv[])
     Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
 
     std::cout << uv->GetValue() << std::endl;
+
+    return 0;
 }

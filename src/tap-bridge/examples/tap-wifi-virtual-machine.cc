@@ -165,4 +165,6 @@ main(int argc, char* argv[])
     Simulator::Stop(Seconds(600.));
     Simulator::Run();
     Simulator::Destroy();
+
+    return 0;
 }

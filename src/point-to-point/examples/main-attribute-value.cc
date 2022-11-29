@@ -153,4 +153,6 @@ main(int argc, char* argv[])
     NS_LOG_INFO("5.  txQueue limit changed through wildcarded namespace: " << limit.Get());
 
     Simulator::Destroy();
+
+    return 0;
 }

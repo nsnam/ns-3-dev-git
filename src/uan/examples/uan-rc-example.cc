@@ -307,4 +307,6 @@ main(int argc, char* argv[])
         NS_FATAL_ERROR("Can not open GNU Plot outfile: " << exp.m_gnuplotfile);
     }
     gp.GenerateOutput(of);
+
+    return 0;
 }

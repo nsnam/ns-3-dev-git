@@ -304,4 +304,6 @@ main(int argc, char** argv)
 
     per = nullptr;
     sinr = nullptr;
+
+    return 0;
 }

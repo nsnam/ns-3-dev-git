@@ -317,4 +317,6 @@ main(int argc, char* argv[])
     delete helper0;
     delete helper1;
     NS_LOG_INFO("Done.");
+
+    return 0;
 }

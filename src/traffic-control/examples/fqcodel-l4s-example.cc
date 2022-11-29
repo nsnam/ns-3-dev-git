@@ -935,4 +935,6 @@ main(int argc, char* argv[])
     lengthOfStream.close();
     queueDelayN0OfStream.close();
     queueDelayN1OfStream.close();
+
+    return 0;
 }

@@ -85,4 +85,6 @@ main(int argc, char* argv[])
     Simulator::Stop(Seconds(5) + TimeStep(1));
     Simulator::Run();
     Simulator::Destroy();
+
+    return 0;
 }

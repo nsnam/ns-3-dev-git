@@ -140,4 +140,6 @@ main(int argc, char* argv[])
     Simulator::Stop(Seconds(30.0));
     Simulator::Run();
     Simulator::Destroy();
+
+    return 0;
 }

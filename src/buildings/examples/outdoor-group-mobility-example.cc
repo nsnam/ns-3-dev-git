@@ -279,4 +279,6 @@ main(int argc, char* argv[])
     Simulator::Run();
     g_timeSeries.close();
     Simulator::Destroy();
+
+    return 0;
 }

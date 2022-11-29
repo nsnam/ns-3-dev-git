@@ -545,4 +545,5 @@ main(int argc, char* argv[])
         dict.Time();
     } // if (timing)
 
+    return 0;
 } // main
