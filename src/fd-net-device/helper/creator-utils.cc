@@ -39,7 +39,7 @@ namespace ns3
 {
 
 /// Flag to enable / disable verbose log mode
-int gVerbose = 0;
+bool gVerbose = false;
 
 /**
  * \brief Send the file descriptor back to the code that invoked the creation.

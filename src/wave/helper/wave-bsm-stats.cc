@@ -170,12 +170,12 @@ WaveBsmStats::GetCumulativeBsmPdr(int index)
 }
 
 void
-WaveBsmStats::SetLogging(int log)
+WaveBsmStats::SetLogging(bool log)
 {
     m_log = log;
 }
 
-int
+bool
 WaveBsmStats::GetLogging()
 {
     return m_log;

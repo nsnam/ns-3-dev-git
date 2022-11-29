@@ -212,15 +212,15 @@ class WaveBsmStats : public Object
 
     /**
      * \brief Enables/disables logging
-     * \param log
+     * \param log logging state
      */
-    void SetLogging(int log);
+    void SetLogging(bool log);
 
     /**
      * \brief Gets logging state
      * \return logging state
      */
-    int GetLogging();
+    bool GetLogging();
 
   private:
     int m_wavePktSendCount;                            ///< packet sent count
@@ -231,7 +231,7 @@ class WaveBsmStats : public Object
     std::vector<int>
         m_waveTotalPktInCoverageReceiveCounts; ///< total packet in coverage receive counts
     std::vector<int> m_waveTotalPktExpectedReceiveCounts; ///< total packet expected receive counts
-    int m_log;                                            ///< log
+    bool m_log;                                           ///< logging state
 };
 
 } // namespace ns3

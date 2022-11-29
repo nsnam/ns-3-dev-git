@@ -31,7 +31,7 @@
 namespace ns3
 {
 
-extern int gVerbose;
+extern bool gVerbose;
 
 #define LOG(msg)                                                                                   \
     if (gVerbose)                                                                                  \
