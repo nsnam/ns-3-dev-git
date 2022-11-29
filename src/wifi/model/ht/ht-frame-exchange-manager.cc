@@ -1344,11 +1344,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
     NS_LOG_FUNCTION(this << psdu << txVector << resetCw);
 
     auto recipient = psdu->GetAddr1();
-    auto recipientMld = recipient;
-    if (auto optAddr = GetWifiRemoteStationManager()->GetMldAddress(recipient))
-    {
-        recipientMld = *optAddr;
-    }
+    auto recipientMld = GetWifiRemoteStationManager()->GetMldAddress(recipient).value_or(recipient);
     bool isBar;
     uint8_t tid;
 
@@ -1378,6 +1374,16 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
         if (GetBaManager(tid)->NeedBarRetransmission(tid, recipientMld))
         {
             NS_LOG_DEBUG("Missed Block Ack, transmit a BlockAckReq");
+            /**
+             * The BlockAckReq must be sent on the same link as the data frames to avoid issues.
+             * As an example, assume that an A-MPDU is sent on link 0, the BlockAck timer
+             * expires and the BlockAckReq is sent on another link (e.g., on link 1). When the
+             * originator processes the BlockAck response, it will not interpret a '0' in the
+             * bitmap corresponding to the transmitted MPDUs as a negative acknowledgment,
+             * because the BlockAck is received on a different link than the one on which the
+             * MPDUs are (still) inflight. Hence, such MPDUs stay inflight and are not
+             * retransmitted.
+             */
             if (isBar)
             {
                 psdu->GetHeader(0).SetRetry();
@@ -1403,7 +1409,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
             {
                 // schedule a BlockAckRequest to be sent only if there are data frames queued
                 // for this recipient
-                GetBaManager(tid)->AddToSendBarIfDataQueuedList(recipient, tid);
+                GetBaManager(tid)->AddToSendBarIfDataQueuedList(recipientMld, tid);
             }
             resetCw = true;
         }

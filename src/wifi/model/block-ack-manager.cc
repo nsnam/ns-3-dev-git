@@ -557,7 +557,7 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
         return;
     }
 
-    Mac48Address recipient = mpdu->GetHeader().GetAddr1();
+    Mac48Address recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
     uint8_t tid = mpdu->GetHeader().GetQosTid();
     auto it = m_originatorAgreements.find({recipient, tid});
     if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
@@ -606,8 +606,7 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_CTL_BACKREQ);
     hdr.SetAddr1(recipient);
-    hdr.SetAddr2(mpdu->GetHeader().GetAddr2());
-    hdr.SetAddr3(mpdu->GetHeader().GetAddr3());
+    hdr.SetAddr2(mpdu->GetOriginal()->GetHeader().GetAddr2());
     hdr.SetDsNotTo();
     hdr.SetDsNotFrom();
     hdr.SetNoRetry();
