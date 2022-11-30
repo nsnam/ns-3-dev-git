@@ -1402,10 +1402,15 @@ macro(process_options)
         <unordered_map>
         <vector>
     )
-    add_library(stdlib_pch OBJECT ${PROJECT_SOURCE_DIR}/build-support/empty.cc)
-    target_precompile_headers(
-      stdlib_pch PUBLIC "${precompiled_header_libraries}"
+    add_library(
+      stdlib_pch${build_profile_suffix} OBJECT
+      ${PROJECT_SOURCE_DIR}/build-support/empty.cc
     )
+    target_precompile_headers(
+      stdlib_pch${build_profile_suffix} PUBLIC
+      "${precompiled_header_libraries}"
+    )
+    add_library(stdlib_pch ALIAS stdlib_pch${build_profile_suffix})
 
     add_executable(
       stdlib_pch_exec ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
