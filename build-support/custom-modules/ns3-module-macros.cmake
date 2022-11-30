@@ -225,6 +225,23 @@ function(build_lib)
   # Write a module header that includes all headers from that module
   write_module_header("${BLIB_LIBNAME}" "${BLIB_HEADER_FILES}")
 
+  # Check if headers actually exist to prevent copying errors during
+  # installation
+  get_target_property(headers_to_check ${lib${BLIB_LIBNAME}} PUBLIC_HEADER)
+  set(missing_headers)
+  foreach(header ${headers_to_check})
+    if(NOT ((EXISTS ${header}) OR (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${header})
+           )
+    )
+      list(APPEND missing_headers ${header})
+    endif()
+  endforeach()
+  if(missing_headers)
+    message(
+      FATAL_ERROR "Missing header files for ${BLIB_LIBNAME}: ${missing_headers}"
+    )
+  endif()
+
   # Copy all header files to outputfolder/include before each build
   copy_headers_before_building_lib(
     ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY}
