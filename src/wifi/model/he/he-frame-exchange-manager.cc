@@ -129,8 +129,11 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
           m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
                                                        mpdu->GetHeader().GetQosTid()))))
     {
-        txFormat =
-            m_muScheduler->NotifyAccessGranted(edca, availableTime, initialFrame, m_allowedWidth);
+        txFormat = m_muScheduler->NotifyAccessGranted(edca,
+                                                      availableTime,
+                                                      initialFrame,
+                                                      m_allowedWidth,
+                                                      m_linkId);
     }
 
     if (txFormat == MultiUserScheduler::SU_TX)

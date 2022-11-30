@@ -173,14 +173,16 @@ MultiUserScheduler::TxFormat
 MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
                                         Time availableTime,
                                         bool initialFrame,
-                                        uint16_t allowedWidth)
+                                        uint16_t allowedWidth,
+                                        uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame << allowedWidth);
+    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame << allowedWidth << linkId);
 
     m_edca = edca;
     m_availableTime = availableTime;
     m_initialFrame = initialFrame;
     m_allowedWidth = allowedWidth;
+    m_linkId = linkId;
 
     if (m_accessReqTimer.IsRunning() && m_restartTimerUponAccess)
     {

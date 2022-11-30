@@ -94,12 +94,14 @@ class MultiUserScheduler : public Object
      *                     of the TXOP. This is used to determine whether the TXOP
      *                     limit can be exceeded
      * \param allowedWidth the allowed width in MHz for the next transmission
+     * \param linkId the ID of the link over which channel access was gained
      * \return the format of the next transmission
      */
     TxFormat NotifyAccessGranted(Ptr<QosTxop> edca,
                                  Time availableTime,
                                  bool initialFrame,
-                                 uint16_t allowedWidth);
+                                 uint16_t allowedWidth,
+                                 uint8_t linkId);
 
     /**
      * Get the information required to perform a DL MU transmission. Note
@@ -164,6 +166,7 @@ class MultiUserScheduler : public Object
     Time m_availableTime;                //!< the time available for frame exchange
     bool m_initialFrame;                 //!< true if a TXOP is being started
     uint16_t m_allowedWidth;             //!< the allowed width in MHz for the current transmission
+    uint8_t m_linkId; //!< the ID of the link over which channel access has been granted
 
   private:
     /**
