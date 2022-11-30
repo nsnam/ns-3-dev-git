@@ -3,19 +3,6 @@
 # ##############################################################################
 cmake_minimum_required(VERSION 3.10..3.10)
 
-# Use ccache if available
-mark_as_advanced(CCACHE)
-find_program(CCACHE ccache)
-if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
-  message(STATUS "CCache is enabled.")
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
-  execute_process(
-    COMMAND
-      ${CCACHE} --set-config
-      sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
-  )
-endif()
-
 # ##############################################################################
 # Project name                        #
 # ##############################################################################
@@ -66,6 +53,8 @@ option(NS3_NETANIM "Build netanim" OFF)
 
 # other options
 option(NS3_ENABLE_BUILD_VERSION "Embed version info into libraries" OFF)
+option(NS3_CCACHE "Use Ccache to speed up recompilation" ON)
+option(NS3_FAST_LINKERS "Use Mold or LLD to speed up linking if available" ON)
 option(NS3_GSL "Build with GSL support" ON)
 option(NS3_GTK3 "Build with GTK3 support" ON)
 option(NS3_LINK_TIME_OPTIMIZATION "Build with link-time optimization" OFF)
@@ -110,6 +99,21 @@ set(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS
       STRING
       "List of modules that should have their examples and tests built (e.g. lte;wifi)"
 )
+
+if(${NS3_CCACHE})
+  # Use ccache if available
+  mark_as_advanced(CCACHE)
+  find_program(CCACHE ccache)
+  if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
+    message(STATUS "CCache is enabled.")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
+    execute_process(
+      COMMAND
+        ${CCACHE} --set-config
+        sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
+    )
+  endif()
+endif()
 
 # Include macros used below
 include(build-support/macros-and-definitions.cmake)

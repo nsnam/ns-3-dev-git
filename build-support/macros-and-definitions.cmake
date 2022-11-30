@@ -240,33 +240,35 @@ if(${CLANG} AND APPLE)
   set(STATIC_LINK_FLAGS)
 endif()
 
-# Search for faster linkers mold and lld, and use them if available
-mark_as_advanced(MOLD LLD)
-find_program(MOLD mold)
-find_program(LLD ld.lld)
+if(${NS3_FAST_LINKERS})
+  # Search for faster linkers mold and lld, and use them if available
+  mark_as_advanced(MOLD LLD)
+  find_program(MOLD mold)
+  find_program(LLD ld.lld)
 
-# USING_FAST_LINKER will be defined if a fast linker is being used and its
-# content will correspond to the fast linker name
+  # USING_FAST_LINKER will be defined if a fast linker is being used and its
+  # content will correspond to the fast linker name
 
-# Mold support was added in GCC 12.1.0
-if(NOT USING_FAST_LINKER
-   AND NOT (${MOLD} STREQUAL "MOLD-NOTFOUND")
-   AND LINUX
-   AND ${GCC}
-   AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.1.0)
-)
-  set(USING_FAST_LINKER MOLD)
-  add_link_options("-fuse-ld=mold")
-endif()
+  # Mold support was added in GCC 12.1.0
+  if(NOT USING_FAST_LINKER
+     AND NOT (${MOLD} STREQUAL "MOLD-NOTFOUND")
+     AND LINUX
+     AND ${GCC}
+     AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.1.0)
+  )
+    set(USING_FAST_LINKER MOLD)
+    add_link_options("-fuse-ld=mold")
+  endif()
 
-if(NOT USING_FAST_LINKER AND NOT (${LLD} STREQUAL "LLD-NOTFOUND")
-   AND (${GCC} OR ${CLANG})
-)
-  set(USING_FAST_LINKER LLD)
-  add_link_options("-fuse-ld=lld")
-  if(WIN32)
-    # Clear unsupported linker flags on Windows
-    set(LIB_AS_NEEDED_PRE)
+  if(NOT USING_FAST_LINKER AND NOT (${LLD} STREQUAL "LLD-NOTFOUND")
+     AND (${GCC} OR ${CLANG})
+  )
+    set(USING_FAST_LINKER LLD)
+    add_link_options("-fuse-ld=lld")
+    if(WIN32)
+      # Clear unsupported linker flags on Windows
+      set(LIB_AS_NEEDED_PRE)
+    endif()
   endif()
 endif()
 
@@ -1331,8 +1333,9 @@ macro(process_options)
         "Clang-tidy is incompatible with precompiled headers. Continuing without them."
       )
     elseif(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
-      # If ccache was not found, we can continue with precompiled headers
-      if("${CCACHE}" STREQUAL "CCACHE-NOTFOUND")
+      # If ccache is not enable or was not found, we can continue with
+      # precompiled headers
+      if((NOT ${NS3_CCACHE}) OR ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
         set(PRECOMPILE_HEADERS_ENABLED ON)
         message(STATUS "Precompiled headers were enabled")
       else()
