@@ -21,6 +21,7 @@
 
 #include "callback.h"
 #include "type-id.h"
+#include "warnings.h"
 
 #include <list>
 #include <string>
@@ -47,9 +48,11 @@
     {                                                                                              \
         Object##type##RegistrationClass()                                                          \
         {                                                                                          \
+            NS_WARNING_PUSH_DEPRECATED;                                                            \
             ns3::TypeId tid = type::GetTypeId();                                                   \
             tid.SetSize(sizeof(type));                                                             \
             tid.GetParent();                                                                       \
+            NS_WARNING_POP;                                                                        \
         }                                                                                          \
     } Object##type##RegistrationVariable
 

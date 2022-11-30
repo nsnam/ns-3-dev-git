@@ -60,6 +60,15 @@
  *     void SomethingUseful () { ... }
  *     \endcode.
  *
+ * \note Sometimes it is necessary to silence a deprecation warning.
+ * Even though this is highly discouraged, if necessary it is possible to use:
+ * \code
+ *   NS_WARNING_PUSH_DEPRECATED;
+ *   // call to a function or class that has been deprecated.
+ *   NS_WARNING_POP;
+ * \endcode
+ * These macros are defined in warnings.h
+ *
  * \param msg Optional message to add to the compiler warning.
  *
  */

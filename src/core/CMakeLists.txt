@@ -309,6 +309,7 @@ set(header_files
     model/unused.h
     model/valgrind.h
     model/vector.h
+    model/warnings.h
     model/watchdog.h
     model/realtime-simulator-impl.h
     model/wall-clock-synchronizer.h
