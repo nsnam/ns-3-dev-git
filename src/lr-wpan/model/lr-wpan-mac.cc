@@ -46,6 +46,51 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("LrWpanMac");
 NS_OBJECT_ENSURE_REGISTERED(LrWpanMac);
 
+/**
+ * \defgroup LrWpanMacSublayerConstants MAC sublayer constants
+ * \ingroup lr-wpan
+ * @{
+ */
+
+/**
+ * The minimum number of octets added by the MAC sublayer to the PSDU.
+ * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aMinMPDUOverhead = 9;
+
+/**
+ * Length of a superframe slot in symbols. Defaults to 60 symbols in each superframe slot.
+ * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aBaseSlotDuration = 60;
+
+/**
+ * Number of a superframe slots per superframe. Defaults to 16.
+ * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aNumSuperframeSlots = 16;
+
+/**
+ * Length of a superframe in symbols. Defaults to aBaseSlotDuration * aNumSuperframeSlots in
+ * symbols. See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aBaseSuperframeDuration = aBaseSlotDuration * aNumSuperframeSlots;
+
+/**
+ * The number of consecutive lost beacons that will cause the MAC sublayer of a receiving device to
+ * declare a loss of synchronization.
+ * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aMaxLostBeacons = 4;
+
+/**
+ * The maximum size of an MPDU, in octets, that can be followed by a Short InterFrame Spacing (SIFS)
+ * period. See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aMaxSIFSFrameSize = 18;
+
+/**@}*/
+
 TypeId
 LrWpanMac::GetTypeId()
 {
