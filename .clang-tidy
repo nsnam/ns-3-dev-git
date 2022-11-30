@@ -42,4 +42,4 @@ Checks: >
   readability-uppercase-literal-suffix,
 
 FormatStyle: "file"
-HeaderFilterRegex: ".*h$"
+HeaderFilterRegex: "(contrib|examples|src|scratch|utils)/*/.*h"
