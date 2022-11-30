@@ -986,6 +986,15 @@ enum class WifiBaEnabled : uint8_t
 };
 
 /**
+ * Whether to send a BlockAckReq after a missed BlockAck
+ */
+enum class WifiUseBarAfterMissedBa : uint8_t
+{
+    NO = 0,
+    YES
+};
+
+/**
  * \ingroup wifi-test
  * \ingroup tests
  *
@@ -1006,6 +1015,12 @@ enum class WifiBaEnabled : uint8_t
  * re-transmission, unless the traffic scenario is from the AP to broadcast (broadcast frames
  * are not retransmitted) or is a scenario where the AP forwards frame (to limit the
  * probability of collisions).
+ *
+ * When BlockAck agreements are enabled, we also corrupt a BlockAck frame, so as to simulate
+ * the case of BlockAck timeout. Both the case where a BlockAckReq is sent and the case where
+ * data frame are retransmitted are tested. Finally, when BlockAck agreements are enabled, we
+ * also enable the concurrent transmission of data frames over two links and check that at
+ * least one MPDU is concurrently transmitted over two links.
  */
 class MultiLinkTxTest : public MultiLinkOperationsTestBase
 {
@@ -1015,6 +1030,7 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
      *
      * \param trafficPattern the pattern of traffic to generate
      * \param baEnabled whether BA agreement is enabled or disabled
+     * \param useBarAfterMissedBa whether a BAR or Data frames are sent after missed BlockAck
      * \param nMaxInflight the max number of links on which an MPDU can be simultaneously inflight
      *                     (unused if Block Ack agreements are not established)
      * \param staChannels the strings specifying the operating channels for the STA
@@ -1023,6 +1039,7 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
      */
     MultiLinkTxTest(WifiTrafficPattern trafficPattern,
                     WifiBaEnabled baEnabled,
+                    WifiUseBarAfterMissedBa useBarAfterMissedBa,
                     uint8_t nMaxInflight,
                     const std::vector<std::string>& staChannels,
                     const std::vector<std::string>& apChannels,
@@ -1067,9 +1084,11 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
     bool m_dataCorrupted{false};           ///< whether second data frame has been already corrupted
     WifiTrafficPattern m_trafficPattern;   ///< the pattern of traffic to generate
     bool m_baEnabled;                      ///< whether BA agreement is enabled or disabled
+    bool m_useBarAfterMissedBa;            ///< whether to send BAR after missed BlockAck
     std::size_t m_nMaxInflight;            ///< max number of links on which an MPDU can be inflight
     std::size_t m_nPackets;                ///< number of application packets to generate
     std::size_t m_blockAckCount{0};        ///< transmitted BlockAck counter
+    std::size_t m_blockAckReqCount{0};     ///< transmitted BlockAckReq counter
     std::array<std::size_t, 3> m_rxPkts{}; ///< number of packets received at application layer
                                            ///< by each node (AP, STA 0, STA 1)
     std::map<uint16_t, std::size_t> m_inflightCount; ///< seqNo-indexed max number of simultaneous
@@ -1079,24 +1098,29 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
 
 MultiLinkTxTest::MultiLinkTxTest(WifiTrafficPattern trafficPattern,
                                  WifiBaEnabled baEnabled,
+                                 WifiUseBarAfterMissedBa useBarAfterMissedBa,
                                  uint8_t nMaxInflight,
                                  const std::vector<std::string>& staChannels,
                                  const std::vector<std::string>& apChannels,
                                  const std::vector<uint8_t>& fixedPhyBands)
-    : MultiLinkOperationsTestBase(std::string("Check data transmission between MLDs ") +
-                                      (baEnabled == WifiBaEnabled::YES ? "with" : "without") +
-                                      " BA agreement (Traffic pattern: " +
-                                      std::to_string(static_cast<uint8_t>(trafficPattern)) +
-                                      (baEnabled == WifiBaEnabled::YES
-                                           ? ", nMaxInflight=" + std::to_string(nMaxInflight)
-                                           : "") +
-                                      ")",
-                                  2,
-                                  staChannels,
-                                  apChannels,
-                                  fixedPhyBands),
+    : MultiLinkOperationsTestBase(
+          std::string("Check data transmission between MLDs ") +
+              (baEnabled == WifiBaEnabled::YES
+                   ? (useBarAfterMissedBa == WifiUseBarAfterMissedBa::YES
+                          ? "with BA agreement, send BAR after BlockAck timeout"
+                          : "with BA agreement, send Data frames after BlockAck timeout")
+                   : "without BA agreement") +
+              " (Traffic pattern: " + std::to_string(static_cast<uint8_t>(trafficPattern)) +
+              (baEnabled == WifiBaEnabled::YES ? ", nMaxInflight=" + std::to_string(nMaxInflight)
+                                               : "") +
+              ")",
+          2,
+          staChannels,
+          apChannels,
+          fixedPhyBands),
       m_trafficPattern(trafficPattern),
       m_baEnabled(baEnabled == WifiBaEnabled::YES),
+      m_useBarAfterMissedBa(useBarAfterMissedBa == WifiUseBarAfterMissedBa::YES),
       m_nMaxInflight(nMaxInflight),
       m_nPackets(trafficPattern == WifiTrafficPattern::STA_TO_BCAST ||
                          trafficPattern == WifiTrafficPattern::STA_TO_STA
@@ -1203,6 +1227,13 @@ MultiLinkTxTest::Transmit(uint8_t linkId,
             m_uidList.push_front(psdu->GetPacket()->GetUid());
             NS_LOG_INFO("CORRUPTED");
             m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
+        }
+        break;
+    case WIFI_MAC_CTL_BACKREQ:
+        // ignore BlockAckReq frames not transmitted by the source of the application packets
+        if (m_sourceMac->GetLinkIdByAddress(psdu->GetHeader(0).GetAddr2()))
+        {
+            m_blockAckReqCount++;
         }
         break;
     }
@@ -1364,9 +1395,8 @@ MultiLinkTxTest::DoSetup()
         for (auto mac : std::initializer_list<Ptr<WifiMac>>{m_apMac, m_staMacs[0], m_staMacs[1]})
         {
             mac->SetAttribute("BE_MaxAmsduSize", UintegerValue(2100));
-            // TODO
             mac->GetQosTxop(AC_BE)->SetAttribute("UseExplicitBarAfterMissedBlockAck",
-                                                 BooleanValue(false));
+                                                 BooleanValue(m_useBarAfterMissedBa));
             mac->GetQosTxop(AC_BE)->SetAttribute("NMaxInflights", UintegerValue(m_nMaxInflight));
         }
     }
@@ -1521,6 +1551,7 @@ MultiLinkTxTest::DoRun()
     if (m_baEnabled && m_nMaxInflight == 1)
     {
         std::size_t expectedBaCount = 0;
+        std::size_t expectedBarCount = 0;
 
         switch (m_trafficPattern)
         {
@@ -1528,6 +1559,8 @@ MultiLinkTxTest::DoRun()
         case WifiTrafficPattern::AP_TO_STA:
             // two A-MPDUs are transmitted and one BlockAck is corrupted
             expectedBaCount = 3;
+            // one BlockAckReq is sent if m_useBarAfterMissedBa is true
+            expectedBarCount = m_useBarAfterMissedBa ? 1 : 0;
             break;
         case WifiTrafficPattern::STA_TO_STA:
         case WifiTrafficPattern::STA_TO_BCAST:
@@ -1539,6 +1572,9 @@ MultiLinkTxTest::DoRun()
         NS_TEST_EXPECT_MSG_EQ(m_blockAckCount,
                               expectedBaCount,
                               "Unexpected number of BlockAck frames");
+        NS_TEST_EXPECT_MSG_EQ(m_blockAckReqCount,
+                              expectedBarCount,
+                              "Unexpected number of BlockAckReq frames");
     }
 
     // check that setting the QosTxop::NMaxInflights attribute has the expected effect.
@@ -1670,27 +1706,34 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
             // No Block Ack agreement
             AddTestCase(new MultiLinkTxTest(trafficPattern,
                                             WifiBaEnabled::NO,
+                                            WifiUseBarAfterMissedBa::NO,
                                             1,
                                             staChannels,
                                             apChannels,
                                             fixedPhyBands),
                         TestCase::QUICK);
-            // Block Ack agreement with nMaxInflight=1
-            AddTestCase(new MultiLinkTxTest(trafficPattern,
-                                            WifiBaEnabled::YES,
-                                            1,
-                                            staChannels,
-                                            apChannels,
-                                            fixedPhyBands),
-                        TestCase::QUICK);
-            // Block Ack agreement with nMaxInflight=2
-            AddTestCase(new MultiLinkTxTest(trafficPattern,
-                                            WifiBaEnabled::YES,
-                                            2,
-                                            staChannels,
-                                            apChannels,
-                                            fixedPhyBands),
-                        TestCase::QUICK);
+            for (const auto& useBarAfterMissedBa :
+                 {WifiUseBarAfterMissedBa::YES, WifiUseBarAfterMissedBa::NO})
+            {
+                // Block Ack agreement with nMaxInflight=1
+                AddTestCase(new MultiLinkTxTest(trafficPattern,
+                                                WifiBaEnabled::YES,
+                                                useBarAfterMissedBa,
+                                                1,
+                                                staChannels,
+                                                apChannels,
+                                                fixedPhyBands),
+                            TestCase::QUICK);
+                // Block Ack agreement with nMaxInflight=2
+                AddTestCase(new MultiLinkTxTest(trafficPattern,
+                                                WifiBaEnabled::YES,
+                                                useBarAfterMissedBa,
+                                                2,
+                                                staChannels,
+                                                apChannels,
+                                                fixedPhyBands),
+                            TestCase::QUICK);
+            }
         }
     }
 }
