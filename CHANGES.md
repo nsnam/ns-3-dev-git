@@ -31,6 +31,7 @@ Changes from ns-3.37 to ns-3.38
 * (internet-apps) Classes `v4Ping` and `Ping6` will be deprecated and removed in the future, replaced by the new `Ping` class.
 * (lr-wpan) Add file `src/lr-wpan/model/lr-wpan-constants.h` with common constants of the LR-WPAN module.
 * (lr-wpan) Remove the functions `LrWpanCsmaCa::GetUnitBackoffPeriod()` and `LrWpanCsmaCa::SetUnitBackoffPeriod()`, and move the constant `m_aUnitBackoffPeriod` to `src/lr-wpan/model/lr-wpan-constants.h`.
+* (lr-wpan) Adds beacon payload handle support (MLME-SET.request) in  **LrWpanMac**.
 
 ### Changes to build system
 

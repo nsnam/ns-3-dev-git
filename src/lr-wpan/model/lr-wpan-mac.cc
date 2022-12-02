@@ -214,6 +214,8 @@ LrWpanMac::LrWpanMac()
     uniformVar->SetAttribute("Max", DoubleValue(255.0));
     m_macDsn = SequenceNumber8(uniformVar->GetValue());
     m_macBsn = SequenceNumber8(uniformVar->GetValue());
+    m_macBeaconPayload = nullptr;
+    m_macBeaconPayloadLength = 0;
     m_shortAddress = Mac16Address("00:00");
 }
 
@@ -267,7 +269,7 @@ LrWpanMac::DoDispose()
     m_mcpsDataIndicationCallback = MakeNullCallback<void, McpsDataIndicationParams, Ptr<Packet>>();
     m_mlmeStartConfirmCallback = MakeNullCallback<void, MlmeStartConfirmParams>();
     m_mlmeBeaconNotifyIndicationCallback =
-        MakeNullCallback<void, MlmeBeaconNotifyIndicationParams, Ptr<Packet>>();
+        MakeNullCallback<void, MlmeBeaconNotifyIndicationParams>();
     m_mlmeSyncLossIndicationCallback = MakeNullCallback<void, MlmeSyncLossIndicationParams>();
     m_mlmePollConfirmCallback = MakeNullCallback<void, MlmePollConfirmParams>();
     m_mlmeScanConfirmCallback = MakeNullCallback<void, MlmeScanConfirmParams>();
@@ -825,6 +827,40 @@ LrWpanMac::MlmePollRequest(MlmePollRequestParams params)
 }
 
 void
+LrWpanMac::MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAttributes> attribute)
+{
+    MlmeSetConfirmParams confirmParams;
+    switch (id)
+    {
+    case macBeaconPayload:
+        if (attribute->macBeaconPayload->GetSize() > lrwpan::aMaxBeaconPayloadLenght)
+        {
+            confirmParams.m_status = MLMESET_INVALID_PARAMETER;
+        }
+        else
+        {
+            confirmParams.m_status = MLMESET_SUCCESS;
+            m_macBeaconPayload = attribute->macBeaconPayload;
+            m_macBeaconPayloadLength = attribute->macBeaconPayload->GetSize();
+        }
+        break;
+    case macBeaconPayloadLength:
+        confirmParams.m_status = MLMESET_INVALID_PARAMETER;
+        break;
+    default:
+        // TODO: Add support for setting other attributes
+        confirmParams.m_status = MLMESET_UNSUPPORTED_ATTRIBUTE;
+        break;
+    }
+
+    if (!m_mlmeSetConfirmCallback.IsNull())
+    {
+        confirmParams.id = id;
+        m_mlmeSetConfirmCallback(confirmParams);
+    }
+}
+
+void
 LrWpanMac::SendOneBeacon()
 {
     NS_LOG_FUNCTION(this);
@@ -833,8 +869,17 @@ LrWpanMac::SendOneBeacon()
     LrWpanMacHeader macHdr(LrWpanMacHeader::LRWPAN_MAC_BEACON, m_macBsn.GetValue());
     m_macBsn++;
     BeaconPayloadHeader macPayload;
-    Ptr<Packet> beaconPacket = Create<Packet>();
+    Ptr<Packet> beaconPacket;
     LrWpanMacTrailer macTrailer;
+
+    if (m_macBeaconPayload == nullptr)
+    {
+        beaconPacket = Create<Packet>();
+    }
+    else
+    {
+        beaconPacket = m_macBeaconPayload;
+    }
 
     macHdr.SetDstAddrMode(LrWpanMacHeader::SHORTADDR);
     macHdr.SetDstAddrFields(GetPanId(), Mac16Address("ff:ff"));
@@ -1594,6 +1639,12 @@ LrWpanMac::SetMlmePollConfirmCallback(MlmePollConfirmCallback c)
 }
 
 void
+LrWpanMac::SetMlmeSetConfirmCallback(MlmeSetConfirmCallback c)
+{
+    m_mlmeSetConfirmCallback = c;
+}
+
+void
 LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 {
     NS_ASSERT(m_lrWpanMacState == MAC_IDLE || m_lrWpanMacState == MAC_ACK_PENDING ||
@@ -1985,7 +2036,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                                 beaconParams.m_panDescriptor = panDescriptor;
                                 beaconParams.m_sduLength = p->GetSize();
                                 beaconParams.m_sdu = p;
-                                m_mlmeBeaconNotifyIndicationCallback(beaconParams, originalPkt);
+                                m_mlmeBeaconNotifyIndicationCallback(beaconParams);
                             }
                         }
 
@@ -2071,7 +2122,9 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                             MlmeBeaconNotifyIndicationParams beaconParams;
                             beaconParams.m_bsn = receivedMacHdr.GetSeqNum();
                             beaconParams.m_panDescriptor = panDescriptor;
-                            m_mlmeBeaconNotifyIndicationCallback(beaconParams, originalPkt);
+                            beaconParams.m_sduLength = p->GetSize();
+                            beaconParams.m_sdu = p;
+                            m_mlmeBeaconNotifyIndicationCallback(beaconParams);
                         }
                     }
                 }

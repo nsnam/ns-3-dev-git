@@ -46,21 +46,20 @@
 
 using namespace ns3;
 
-static void
-BeaconIndication(MlmeBeaconNotifyIndicationParams params, Ptr<Packet> p)
+void
+BeaconIndication(MlmeBeaconNotifyIndicationParams params)
 {
-    NS_LOG_UNCOND(Simulator::Now().GetSeconds()
-                  << " secs | Received BEACON packet of size " << p->GetSize());
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds() << " secs | Received BEACON packet of size ");
 }
 
-static void
+void
 DataIndication(McpsDataIndicationParams params, Ptr<Packet> p)
 {
     NS_LOG_UNCOND(Simulator::Now().GetSeconds()
                   << " secs | Received DATA packet of size " << p->GetSize());
 }
 
-static void
+void
 TransEndIndication(McpsDataConfirmParams params)
 {
     // In the case of transmissions with the Ack flag activated, the transaction is only
@@ -71,14 +70,14 @@ TransEndIndication(McpsDataConfirmParams params)
     }
 }
 
-static void
+void
 DataIndicationCoordinator(McpsDataIndicationParams params, Ptr<Packet> p)
 {
     NS_LOG_UNCOND(Simulator::Now().GetSeconds()
                   << "s Coordinator Received DATA packet (size " << p->GetSize() << " bytes)");
 }
 
-static void
+void
 StartConfirm(MlmeStartConfirmParams params)
 {
     if (params.m_status == MLMESTART_SUCCESS)
@@ -156,7 +155,7 @@ main(int argc, char* argv[])
 
     //////////// Manual device association ////////////////////
     // Note: We manually associate the devices to a PAN coordinator
-    //       because currently there is no automatic association behavior (bootstrap);
+    //       (i.e. bootstrap is not used);
     //       The PAN COORDINATOR does not need to associate or set its
     //       PAN Id or its own coordinator id, these are set
     //       by the MLME-start.request primitive when used.

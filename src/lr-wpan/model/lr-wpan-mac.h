@@ -312,14 +312,53 @@ typedef enum
 /**
  * \ingroup lr-wpan
  *
+ * Table 33 of IEEE 802.15.4-2011
+ */
+enum LrWpanMlmeSetConfirmStatus
+{
+    MLMESET_SUCCESS = 0,
+    MLMESET_READ_ONLY = 1,
+    MLMESET_UNSUPPORTED_ATTRIBUTE = 2,
+    MLMESET_INVALID_INDEX = 3,
+    MLMESET_INVALID_PARAMETER = 4
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * IEEE802.15.4-2011 MAC PIB Attribute Identifiers Table 52 in section 6.4.2
+ *
+ */
+enum LrWpanMacPibAttributeIdentifier
+{
+    macBeaconPayload = 0,
+    macBeaconPayloadLength = 1
+    // TODO: complete other MAC pib attributes
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * IEEE802.15.4-2011 PHY PIB Attributes Table 52 in section 6.4.2
+ */
+struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
+{
+    Ptr<Packet> macBeaconPayload;      //!< The contents of the beacon payload.
+    uint8_t macBeaconPayloadLength{0}; //!< The length in octets of the beacon payload.
+    // TODO: complete other MAC pib attributes
+};
+
+/**
+ * \ingroup lr-wpan
+ *
  * PAN Descriptor, Table 17 IEEE 802.15.4-2011
  */
 struct PanDescriptor
 {
     LrWpanAddressMode m_coorAddrMode{SHORT_ADDR}; //!< The coordinator addressing mode corresponding
                                                   //!< to the received beacon frame.
-    uint16_t m_coorPanId{
-        0xffff}; //!< The PAN ID of the coordinator as specified in the received beacon frame.
+    uint16_t m_coorPanId{0xffff};                 //!< The PAN ID of the coordinator as specified in
+                                                  //!<  the received beacon frame.
     Mac16Address m_coorShortAddr; //!< The coordinator short address as specified in the coordinator
                                   //!< address mode.
     Mac64Address m_coorExtAddr;   //!< The coordinator extended address as specified in the
@@ -328,10 +367,10 @@ struct PanDescriptor
     uint8_t m_logChPage{0};       //!< The current channel page occupied by the network.
     SuperframeField m_superframeSpec; //!< The superframe specification as specified in the received
                                       //!< beacon frame.
-    bool m_gtsPermit{
-        false}; //!< TRUE if the beacon is from the PAN coordinator that is accepting GTS requests.
-    uint8_t m_linkQuality{
-        0}; //!< The LQI at which the network beacon was received. Lower values represent lower LQI.
+    bool m_gtsPermit{false};          //!< TRUE if the beacon is from the PAN coordinator
+                                      //!< that is accepting GTS requests.
+    uint8_t m_linkQuality{0};         //!< The LQI at which the network beacon was received.
+                                      //!< Lower values represent lower LQI.
     Time m_timeStamp; //!< Beacon frame reception time. Used as Time data type in ns-3 to avoid
                       //!< precision problems.
 };
@@ -603,6 +642,19 @@ struct MlmePollConfirmParams
 /**
  * \ingroup lr-wpan
  *
+ * MLME-SET.confirm params. See  802.15.4-2011   Section 6.2.11.2
+ */
+struct MlmeSetConfirmParams
+{
+    LrWpanMlmeSetConfirmStatus m_status{
+        MLMESET_UNSUPPORTED_ATTRIBUTE}; //!< The result of the request to write
+                                        //!< the PIB attribute.
+    LrWpanMacPibAttributeIdentifier id; //!< The id of the PIB attribute that was written.
+};
+
+/**
+ * \ingroup lr-wpan
+ *
  * This callback is called after a McpsDataRequest has been called from
  * the higher layer.  It returns a status of the outcome of the
  * transmission request
@@ -638,8 +690,7 @@ typedef Callback<void, MlmeStartConfirmParams> MlmeStartConfirmCallback;
  *  \todo for now, we do not deliver all of the parameters in section
  *  802.15.4-2006 6.2.4.1 but just send up the packet.
  */
-typedef Callback<void, MlmeBeaconNotifyIndicationParams, Ptr<Packet>>
-    MlmeBeaconNotifyIndicationCallback;
+typedef Callback<void, MlmeBeaconNotifyIndicationParams> MlmeBeaconNotifyIndicationCallback;
 
 /**
  * \ingroup lr-wpan
@@ -699,6 +750,15 @@ typedef Callback<void, MlmeAssociateIndicationParams> MlmeAssociateIndicationCal
  *  See 802.15.4-2011 6.2.4.2
  */
 typedef Callback<void, MlmeCommStatusIndicationParams> MlmeCommStatusIndicationCallback;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called after a MlmeSetRequest has been called from
+ * the higher layer to set a PIB. It returns a status of the outcome of the
+ * write attempt.
+ */
+typedef Callback<void, MlmeSetConfirmParams> MlmeSetConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -861,6 +921,16 @@ class LrWpanMac : public Object
     void MlmePollRequest(MlmePollRequestParams params);
 
     /**
+     * IEEE 802.15.4-2011, section 6.2.11.1
+     * MLME-SET.request
+     * Attempts to write the given value to the indicated PIB attribute.
+     *
+     * \param id the attributed identifier
+     * \param attribute the attribute value
+     */
+    void MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAttributes> attribute);
+
+    /**
      * Set the CSMA/CA implementation to be used by the MAC.
      *
      * \param csmaCa the CSMA/CA implementation
@@ -970,6 +1040,15 @@ class LrWpanMac : public Object
      * \param c the callback
      */
     void SetMlmePollConfirmCallback(MlmePollConfirmCallback c);
+
+    /**
+     * Set the callback for the confirmation of an attempt to write an attribute.
+     * The callback implements MLME-SET.confirm SAP of IEEE 802.15.4-2011,
+     * section 6.2.11.2
+     *
+     * \param c the callback
+     */
+    void SetMlmeSetConfirmCallback(MlmeSetConfirmCallback c);
 
     // interfaces between MAC and PHY
 
@@ -1213,6 +1292,19 @@ class LrWpanMac : public Object
      * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
      */
     SequenceNumber8 m_macBsn;
+
+    /**
+     * The contents of the beacon payload.
+     * This value is set directly by the MLME-SET primitive.
+     * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
+     */
+    Ptr<Packet> m_macBeaconPayload;
+
+    /**
+     * The length, in octets, of the beacon payload.
+     * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
+     */
+    uint32_t m_macBeaconPayloadLength;
 
     /**
      * The maximum number of retries allowed after a transmission failure.
@@ -1802,6 +1894,13 @@ class LrWpanMac : public Object
      * The CSMA/CA implementation used by this MAC.
      */
     Ptr<LrWpanCsmaCa> m_csmaCa;
+
+    /**
+     * This callback is used to report the result of an attribute writing request
+     * to the upper layers.
+     * See IEEE 802.15.4-2011, section 6.2.11.2.
+     */
+    MlmeSetConfirmCallback m_mlmeSetConfirmCallback;
 
     /**
      * This callback is used to notify incoming beacon packets to the upper layers.

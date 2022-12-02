@@ -44,6 +44,27 @@ namespace lrwpan
  * @{
  */
 
+///////////////////
+// PHY constants //
+///////////////////
+
+/**
+ * The maximum packet size accepted by the PHY.
+ * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
+ */
+constexpr uint32_t aMaxPhyPacketSize{127};
+
+/**
+ * The turnaround time in symbol periods for switching the transceiver from RX to TX or
+ * vice-versa.
+ * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
+ */
+constexpr uint32_t aTurnaroundTime{12};
+
+///////////////////
+// MAC constants //
+///////////////////
+
 /**
  * The minimum number of octets added by the MAC sublayer to the PSDU.
  * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
@@ -84,22 +105,21 @@ constexpr uint32_t aMaxLostBeacons{4};
 constexpr uint32_t aMaxSIFSFrameSize{18};
 
 /**
- * The maximum packet size accepted by the PHY.
- * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
- */
-constexpr uint32_t aMaxPhyPacketSize{127};
-
-/**
- * The turnaround time in symbol periods for switching the transceiver from RX to TX or
- * vice-versa.
- * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
- */
-constexpr uint32_t aTurnaroundTime{12};
-
-/**
  * Number of symbols per CSMA/CA time unit, default 20 symbols.
  */
 constexpr uint32_t aUnitBackoffPeriod{20};
+
+/**
+ * The maximum number of octets added by the MAC sublayer to the MAC payload o a a beacon frame.
+ * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aMaxBeaconOverhead{75};
+
+/**
+ * The maximum size, in octets, of a beacon payload.
+ * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
+ */
+constexpr uint32_t aMaxBeaconPayloadLenght{aMaxPhyPacketSize - aMaxBeaconOverhead};
 
 /** @} */
 
