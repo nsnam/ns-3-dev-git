@@ -674,7 +674,8 @@ def update_scratches_list(current_cmake_cache_folder):
 
 
 def refresh_cmake(current_cmake_cache_folder, output):
-    ret = subprocess.run([check_program_installed("cmake"), ".."], cwd=current_cmake_cache_folder, stdout=output)
+    cmake, _ = cmake_check_version()
+    ret = subprocess.run([cmake, ".."], cwd=current_cmake_cache_folder, stdout=output)
     if ret.returncode != 0:
         exit(ret.returncode)
     update_scratches_list(current_cmake_cache_folder)
@@ -775,7 +776,8 @@ def parse_version(version_str):
 
 def cmake_check_version():
     # Check CMake version
-    cmake = shutil.which("cmake")
+    cmake3 = shutil.which("cmake3")
+    cmake = cmake3 if cmake3 else shutil.which("cmake")
     if not cmake:
         print("Error:  CMake not found; please install version 3.10 or greater, or modify", path_variable)
         exit(1)
@@ -788,12 +790,12 @@ def cmake_check_version():
 
 
 def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=False, build_verbose=False):
-    _, version = cmake_check_version()
+    cmake, version = cmake_check_version()
 
     # Older CMake versions don't accept the number of jobs directly
     jobs_part = ("-j %d" % jobs) if parse_version(version) >= parse_version("3.12.0") else ""
     target_part = (" --target %s" % target) if target else ""
-    cmake_build_command = "cmake --build . %s%s" % (jobs_part, target_part)
+    cmake_build_command = "%s --build . %s%s" % (cmake, jobs_part, target_part)
 
     print_and_buffer("cd %s; %s ; cd %s" % (os.path.relpath(current_cmake_cache_folder, ns3_path),
                                             cmake_build_command,
