@@ -178,6 +178,28 @@ weekly-build-ubuntu-22.04-optimized:
     MODE: optimized
     LIBGSL: libgsl27
 
+# Ubuntu Latest
+weekly-build-ubuntu-latest-debug:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:latest
+  variables:
+    MODE: debug
+    LIBGSL: libgsl27
+
+weekly-build-ubuntu-latest-default:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:latest
+  variables:
+    MODE: default
+    LIBGSL: libgsl27
+
+weekly-build-ubuntu-latest-optimized:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:latest
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl27
+
 # Ubuntu Rolling
 # weekly-build-ubuntu-rolling-debug:
 #   extends: .weekly-build-ubuntu
