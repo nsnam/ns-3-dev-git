@@ -40,7 +40,7 @@ clang-tidy:
     - run-clang-tidy-14 -p cmake-cache/ -quiet
       1> clang-tidy-errors.log
       2> /dev/null
-    - (! egrep -A 3 "error:|warning:" clang-tidy-errors.log)
+    - (! egrep -A 3 "error:|warning:|note:" clang-tidy-errors.log)
     - echo "No clang-tidy errors found"
   variables:
     MPI_CI: 1
