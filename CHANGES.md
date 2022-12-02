@@ -19,6 +19,7 @@ Changes from ns-3.37 to ns-3.38
 ### New API
 
 * (network) Add class `TimestampTag` for associating a timestamp with a packet.
+* (wifi) Added a new attribute **NMaxInflights** to QosTxop to set the maximum number of links on which an MPDU can be simultaneously in-flight.
 
 ### Changes to existing API
 
