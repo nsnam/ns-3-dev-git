@@ -12,7 +12,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install apt-utils
-          sudo apt-get -y install git gcc g++ cmake python make ninja-build
+          sudo apt-get -y install git gcc g++ cmake python3 make ninja-build
           sudo apt-get -y install tcpdump libgsl-dev libxml2-dev
           sudo apt-get -y install curl unzip tar
           sudo apt-get -y install ccache
@@ -65,7 +65,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install apt-utils
-          sudo apt-get -y install git gcc g++ cmake python make ninja-build
+          sudo apt-get -y install git gcc g++ cmake python3 make ninja-build
           sudo apt-get -y install tcpdump libgsl-dev libxml2-dev
           sudo apt-get -y install curl unzip tar
           sudo apt-get -y install ccache
