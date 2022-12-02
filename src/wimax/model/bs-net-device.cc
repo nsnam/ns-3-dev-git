@@ -1001,18 +1001,9 @@ BaseStationNetDevice::SendBursts()
         if (cid != GetInitialRangingConnection()->GetCid() &&
             cid != GetBroadcastConnection()->GetCid())
         {
-            if (m_serviceFlowManager->GetServiceFlow(cid) != nullptr)
-            {
-                modulationType =
-                    GetBurstProfileManager()->GetModulationType(diuc,
-                                                                WimaxNetDevice::DIRECTION_DOWNLINK);
-            }
-            else
-            {
-                modulationType =
-                    GetBurstProfileManager()->GetModulationType(diuc,
-                                                                WimaxNetDevice::DIRECTION_DOWNLINK);
-            }
+            modulationType =
+                GetBurstProfileManager()->GetModulationType(diuc,
+                                                            WimaxNetDevice::DIRECTION_DOWNLINK);
         }
         else
         {
