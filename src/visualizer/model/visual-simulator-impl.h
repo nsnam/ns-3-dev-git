@@ -50,7 +50,7 @@ class VisualSimulatorImpl : public SimulatorImpl
     static TypeId GetTypeId();
 
     VisualSimulatorImpl();
-    ~VisualSimulatorImpl();
+    ~VisualSimulatorImpl() override;
 
     // Inherited
     void Destroy() override;
@@ -77,8 +77,8 @@ class VisualSimulatorImpl : public SimulatorImpl
     void RunRealSimulator();
 
   protected:
-    void DoDispose();
-    void NotifyConstructionCompleted();
+    void DoDispose() override;
+    void NotifyConstructionCompleted() override;
 
   private:
     /**
