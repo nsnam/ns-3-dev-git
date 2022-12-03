@@ -6,7 +6,7 @@
   before_script:
     - pacman-key --init
     - pacman -Syu --noconfirm
-      base-devel ninja cmake python ccache gsl gtk3 boost
+      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh
       graphviz imagemagick texlive-core texlive-bin texlive-latexextra python-sphinx
     # dia is self-hosted
     - pacman --noconfirm -U https://www.nsnam.org/wp-content/uploads/2022/dia-0.97.3-9-x86_64.pkg.tar.zst
@@ -29,7 +29,8 @@ doxygen:
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     # debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
-    - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d debug
+    - export MPI_CI=1
+    - CXX=$COMPILER ./ns3 configure -d debug -GNinja --enable-examples --enable-tests --enable-asserts --enable-mpi
     - ./ns3 build
     - ./ns3 build assemble-introspected-command-line
     # - mkdir -p public/doxygen
@@ -47,18 +48,11 @@ doxygen:
     # - doxygen doc/doxygen.conf
     # - mv doc/html/ public/doxygen
   cache:
-    # Use separate key for each (debug/default/optimized) jobs because
-    # they run in parallel and will otherwise overwrite each other
-    # cache when they upload the cache archive at the end of the job,
-    # resulting in only the cache for the last finished configuration
-    # being stored.
-    #
-    # Do not distinguish between branches though to avoid
-    # recompilation of all the files when a new branch is created.
-    key: "ccache-$CI_JOB_NAME"
+    # Reuse the ccache from the per-commit-gcc-debug job
+    key: "ccache-per-commit-gcc-debug"
     paths:
       - $CCACHE_BASEDIR_VALUE/
-    when: "always"
+    policy: pull
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
     COMPILER: g++
