@@ -19,6 +19,7 @@ clang-tidy:
   image: ubuntu:latest
   variables:
     MPI_CI: 1
+    CLANG_TIDY_OUTPUT: clang-tidy-output.log
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
@@ -37,11 +38,11 @@ clang-tidy:
     - run-clang-tidy-14 -p cmake-cache/ -quiet
       1> clang-tidy-errors.log
       2> /dev/null
-    - (! egrep -A 3 "error:|warning:|note:" clang-tidy-errors.log)
+    - (! egrep -A 3 "error:|warning:|note:" $CLANG_TIDY_OUTPUT)
     - echo "No clang-tidy errors found"
   artifacts:
     paths:
-      - clang-tidy-errors.log
+      - $CLANG_TIDY_OUTPUT
     when: on_failure
   timeout: 3h
 
