@@ -908,16 +908,16 @@ AttributeTestCase<DoubleValue>::DoRun()
     // When the object is first created, the Attribute should have the default
     // value.
     //
-    ok = CheckGetCodePaths(p, "TestFloat", "-1.1", DoubleValue((float)-1.1));
+    ok = CheckGetCodePaths(p, "TestFloat", "-1.1", DoubleValue(-1.1F));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
 
     //
     // Set the Attribute.
     //
-    ok = p->SetAttributeFailSafe("TestFloat", DoubleValue((float)2.3));
+    ok = p->SetAttributeFailSafe("TestFloat", DoubleValue(2.3F));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() to 2.3");
 
-    ok = CheckGetCodePaths(p, "TestFloat", "2.3", DoubleValue((float)2.3));
+    ok = CheckGetCodePaths(p, "TestFloat", "2.3", DoubleValue(2.3F));
     NS_TEST_ASSERT_MSG_EQ(ok,
                           true,
                           "Attribute not set properly by SetAttributeFailSafe() via DoubleValue");

@@ -337,7 +337,7 @@ void
 SSLinkManager::ResetRangingRequestCW()
 {
     m_rangingCW =
-        (uint8_t)std::pow((double)2, (double)m_ss->GetCurrentUcd().GetRangingBackoffStart()) - 1;
+        (uint8_t)std::pow(2.0, (double)m_ss->GetCurrentUcd().GetRangingBackoffStart()) - 1;
 }
 
 void

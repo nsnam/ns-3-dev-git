@@ -171,7 +171,7 @@ SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy()
     m_rxGain = 0;
     m_txGain = 0;
     m_nfft = 256;
-    m_g = (double)1 / 4;
+    m_g = 1.0 / 4;
     SetNrCarriers(192);
     m_fecBlocks = new std::list<bvec>;
     m_receivedFecBlocks = new std::list<bvec>;
@@ -648,27 +648,27 @@ SimpleOfdmWimaxPhy::GetModulationFecParams(WimaxPhy::ModulationType modulationTy
     {
     case MODULATION_TYPE_BPSK_12:
         bitsPerSymbol = 1;
-        fecCode = (double)1 / 2;
+        fecCode = 1.0 / 2;
         break;
     case MODULATION_TYPE_QPSK_12:
         bitsPerSymbol = 2;
-        fecCode = (double)1 / 2;
+        fecCode = 1.0 / 2;
         break;
     case MODULATION_TYPE_QPSK_34:
         bitsPerSymbol = 2;
-        fecCode = (double)3 / 4;
+        fecCode = 3.0 / 4;
         break;
     case MODULATION_TYPE_QAM16_12:
         bitsPerSymbol = 4;
-        fecCode = (double)1 / 2;
+        fecCode = 1.0 / 2;
         break;
     case MODULATION_TYPE_QAM16_34:
         bitsPerSymbol = 4;
-        fecCode = (double)3 / 4;
+        fecCode = 3.0 / 4;
         break;
     case MODULATION_TYPE_QAM64_23:
         bitsPerSymbol = 6;
-        fecCode = (double)2 / 3;
+        fecCode = 2.0 / 3;
         break;
     case MODULATION_TYPE_QAM64_34:
         bitsPerSymbol = 6;
@@ -954,20 +954,20 @@ SimpleOfdmWimaxPhy::DoSetPhyParameters()
      frequency is 23040000, symbol (OFDM symbol) duration is 1.388888888888889e-05 seconds, PS
      duration is 1.7361111111111112e-07 seconds. Hence PSs per frame is 57600, symbols per frame is
      720 and PSs per symbol is 80. Note that defining these parameters (symbol and PS duration) as
-     Time may not result in exaclty these values therefore lrint has been used (otherwise should be
+     Time may not result in exactly these values therefore lrint has been used (otherwise should be
      defined as double). For licensed bands set channel bandwidth according to Table B.26, page
      810.*/
 
     double samplingFrequency = DoGetSamplingFrequency();
-    Time psDuration = Seconds((double)4 / samplingFrequency);
+    Time psDuration = Seconds(4.0 / samplingFrequency);
 
     SetPsDuration(psDuration);
     uint16_t psPerFrame = (uint16_t)(GetFrameDuration().GetSeconds() / psDuration.GetSeconds());
     SetPsPerFrame(psPerFrame);
     double subcarrierSpacing = samplingFrequency / DoGetNfft();
-    double tb = (double)1 / subcarrierSpacing; // Tb (useful symbol time)
-    double tg = DoGetGValue() * tb;            // Tg (cyclic prefix time)
-    Time symbolDuration = Seconds(tb + tg);    // OFDM Symbol Time
+    double tb = 1.0 / subcarrierSpacing;    // Tb (useful symbol time)
+    double tg = DoGetGValue() * tb;         // Tg (cyclic prefix time)
+    Time symbolDuration = Seconds(tb + tg); // OFDM Symbol Time
     SetSymbolDuration(symbolDuration);
     uint16_t psPerSymbol = lrint(symbolDuration.GetSeconds() / psDuration.GetSeconds());
     SetPsPerSymbol(psPerSymbol);
@@ -996,23 +996,23 @@ SimpleOfdmWimaxPhy::DoGetSamplingFactor() const
 
     if (channelBandwidth % 1750000 == 0)
     {
-        return (double)8 / 7;
+        return 8.0 / 7;
     }
     else if (channelBandwidth % 1500000 == 0)
     {
-        return (double)86 / 75;
+        return 86.0 / 75;
     }
     else if (channelBandwidth % 1250000 == 0)
     {
-        return (double)144 / 125;
+        return 144.0 / 125;
     }
     else if (channelBandwidth % 2750000 == 0)
     {
-        return (double)316 / 275;
+        return 316.0 / 275;
     }
     else if (channelBandwidth % 2000000 == 0)
     {
-        return (double)57 / 50;
+        return 57.0 / 50;
     }
     else
     {
@@ -1020,7 +1020,7 @@ SimpleOfdmWimaxPhy::DoGetSamplingFactor() const
         NS_FATAL_ERROR("wrong channel bandwidth for OFDM PHY");
     }
 
-    return (double)8 / 7;
+    return 8.0 / 7;
 }
 
 double
