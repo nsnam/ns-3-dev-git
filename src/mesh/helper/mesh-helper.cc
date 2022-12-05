@@ -48,7 +48,7 @@ MeshHelper::~MeshHelper()
 }
 
 void
-MeshHelper::SetSpreadInterfaceChannels(enum ChannelPolicy policy)
+MeshHelper::SetSpreadInterfaceChannels(ChannelPolicy policy)
 {
     m_spreadChannelPolicy = policy;
 }
@@ -105,7 +105,7 @@ MeshHelper::Default()
 }
 
 void
-MeshHelper::SetStandard(enum WifiStandard standard)
+MeshHelper::SetStandard(WifiStandard standard)
 {
     m_standard = standard;
 }

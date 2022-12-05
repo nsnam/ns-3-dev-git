@@ -342,7 +342,7 @@ OcbWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 }
 
 void
-OcbWifiMac::ConfigureEdca(uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum AcIndex ac)
+OcbWifiMac::ConfigureEdca(uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, AcIndex ac)
 {
     NS_LOG_FUNCTION(this << cwmin << cwmax << aifsn << ac);
     Ptr<Txop> dcf;
@@ -413,7 +413,7 @@ OcbWifiMac::SetWifiPhy(Ptr<WifiPhy> phy)
 }
 
 void
-OcbWifiMac::ConfigureStandard(enum WifiStandard standard)
+OcbWifiMac::ConfigureStandard(WifiStandard standard)
 {
     NS_LOG_FUNCTION(this << standard);
     NS_ASSERT(standard == WIFI_STANDARD_80211p);
@@ -488,7 +488,7 @@ OcbWifiMac::MakeVirtualBusy(Time duration)
 }
 
 void
-OcbWifiMac::CancleTx(enum AcIndex ac)
+OcbWifiMac::CancleTx(AcIndex ac)
 {
     NS_LOG_FUNCTION(this << ac);
     Ptr<QosTxop> queue = GetQosTxop(ac);

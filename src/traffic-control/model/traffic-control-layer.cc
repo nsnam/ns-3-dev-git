@@ -111,7 +111,7 @@ TrafficControlLayer::RegisterProtocolHandler(Node::ProtocolHandler handler,
 {
     NS_LOG_FUNCTION(this << protocolType << device);
 
-    struct ProtocolHandlerEntry entry;
+    ProtocolHandlerEntry entry;
     entry.handler = handler;
     entry.protocol = protocolType;
     entry.device = device;

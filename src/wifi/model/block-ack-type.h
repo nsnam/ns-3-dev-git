@@ -44,7 +44,8 @@ struct BlockAckType
         MULTI_TID,
         MULTI_STA
     };
-    enum Variant m_variant;           //!< Block Ack variant
+
+    Variant m_variant;                //!< Block Ack variant
     std::vector<uint8_t> m_bitmapLen; //!< Length (bytes) of included bitmaps
 
     /**
@@ -84,7 +85,8 @@ struct BlockAckReqType
         EXTENDED_COMPRESSED,
         MULTI_TID
     };
-    enum Variant m_variant; //!< Block Ack Request variant
+
+    Variant m_variant;      //!< Block Ack Request variant
     uint8_t m_nSeqControls; //!< Number of included Starting Sequence Control fields.
                             //!< This member is added for future support of Multi-TID BARs
 

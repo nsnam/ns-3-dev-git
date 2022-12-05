@@ -86,7 +86,7 @@ class MeshHelper
      * Set standard
      * \param standard the wifi phy standard
      */
-    void SetStandard(enum WifiStandard standard);
+    void SetStandard(WifiStandard standard);
 
     /// \todo SetMeshId
     // void SetMeshId (std::string s);
@@ -182,7 +182,7 @@ class MeshHelper
     ObjectFactory m_mac;                  ///< the MAC
     ObjectFactory m_stationManager;       ///< the station manager
     ObjectFactory m_ackPolicySelector[4]; ///< ack policy selector for all ACs
-    enum WifiStandard m_standard;         ///< standard
+    WifiStandard m_standard;              ///< standard
 };
 
 /***************************************************************

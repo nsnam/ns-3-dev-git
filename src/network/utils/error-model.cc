@@ -198,7 +198,7 @@ RateErrorModel::GetUnit() const
 }
 
 void
-RateErrorModel::SetUnit(enum ErrorUnit error_unit)
+RateErrorModel::SetUnit(ErrorUnit error_unit)
 {
     NS_LOG_FUNCTION(this << error_unit);
     m_unit = error_unit;

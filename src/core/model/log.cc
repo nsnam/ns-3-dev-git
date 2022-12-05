@@ -103,7 +103,7 @@ PrintList::PrintList()
 
 LogComponent::LogComponent(const std::string& name,
                            const std::string& file,
-                           const enum LogLevel mask /* = 0 */)
+                           const LogLevel mask /* = 0 */)
     : m_levels(0),
       m_mask(mask),
       m_name(name),
@@ -276,7 +276,7 @@ LogComponent::EnvVarCheck()
 }
 
 bool
-LogComponent::IsEnabled(const enum LogLevel level) const
+LogComponent::IsEnabled(const LogLevel level) const
 {
     //  LogComponentEnableEnvVar ();
     return (level & m_levels) ? 1 : 0;
@@ -289,19 +289,19 @@ LogComponent::IsNoneEnabled() const
 }
 
 void
-LogComponent::SetMask(const enum LogLevel level)
+LogComponent::SetMask(const LogLevel level)
 {
     m_mask |= level;
 }
 
 void
-LogComponent::Enable(const enum LogLevel level)
+LogComponent::Enable(const LogLevel level)
 {
     m_levels |= (level & ~m_mask);
 }
 
 void
-LogComponent::Disable(const enum LogLevel level)
+LogComponent::Disable(const LogLevel level)
 {
     m_levels &= ~level;
 }
@@ -320,7 +320,7 @@ LogComponent::File() const
 
 /* static */
 std::string
-LogComponent::GetLevelLabel(const enum LogLevel level)
+LogComponent::GetLevelLabel(const LogLevel level)
 {
     if (level == LOG_ERROR)
     {
@@ -355,7 +355,7 @@ LogComponent::GetLevelLabel(const enum LogLevel level)
 }
 
 void
-LogComponentEnable(const char* name, enum LogLevel level)
+LogComponentEnable(const char* name, LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
     LogComponent::ComponentList::const_iterator i;
@@ -377,7 +377,7 @@ LogComponentEnable(const char* name, enum LogLevel level)
 }
 
 void
-LogComponentEnableAll(enum LogLevel level)
+LogComponentEnableAll(LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
     for (LogComponent::ComponentList::const_iterator i = components->begin();
@@ -389,7 +389,7 @@ LogComponentEnableAll(enum LogLevel level)
 }
 
 void
-LogComponentDisable(const char* name, enum LogLevel level)
+LogComponentDisable(const char* name, LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
     for (LogComponent::ComponentList::const_iterator i = components->begin();
@@ -405,7 +405,7 @@ LogComponentDisable(const char* name, enum LogLevel level)
 }
 
 void
-LogComponentDisableAll(enum LogLevel level)
+LogComponentDisableAll(LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
     for (LogComponent::ComponentList::const_iterator i = components->begin();

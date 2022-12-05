@@ -811,7 +811,7 @@ RealtimeSimulatorImpl::GetEventCount() const
 }
 
 void
-RealtimeSimulatorImpl::SetSynchronizationMode(enum SynchronizationMode mode)
+RealtimeSimulatorImpl::SetSynchronizationMode(SynchronizationMode mode)
 {
     NS_LOG_FUNCTION(this << mode);
     m_synchronizationMode = mode;

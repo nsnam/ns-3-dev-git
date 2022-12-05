@@ -89,11 +89,11 @@ class OrganizationIdentifier
     /**
      * \param type set the type of current OrganizationIdentifier
      */
-    void SetType(enum OrganizationIdentifierType type);
+    void SetType(OrganizationIdentifierType type);
     /**
      * \returns whether this OrganizationIdentifier is OUI24 or OUI36.
      */
-    enum OrganizationIdentifierType GetType() const;
+    OrganizationIdentifierType GetType() const;
 
     // below methods will be called by VendorSpecificActionHeader
     /**
@@ -120,8 +120,8 @@ class OrganizationIdentifier
     friend std::ostream& operator<<(std::ostream& os, const OrganizationIdentifier& oi);
     friend std::istream& operator>>(std::istream& is, const OrganizationIdentifier& oi);
 
-    enum OrganizationIdentifierType m_type; ///< OI type
-    uint8_t m_oi[5];                        ///< organization identifier
+    OrganizationIdentifierType m_type; ///< OI type
+    uint8_t m_oi[5];                   ///< organization identifier
 };
 
 ATTRIBUTE_HELPER_HEADER(OrganizationIdentifier);

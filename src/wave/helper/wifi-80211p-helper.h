@@ -58,7 +58,7 @@ class Wifi80211pHelper : public WifiHelper
      * Users can only configure 802.11p with 10MHz or 5 MHz channel bandwidth.
      * The default 802.11p standard uses 10MHz.
      */
-    void SetStandard(enum WifiStandard standard) override;
+    void SetStandard(WifiStandard standard) override;
 
     /**
      * \param phy the PHY helper to create PHY objects

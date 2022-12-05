@@ -81,7 +81,7 @@ EpsBearer::EpsBearer(Qci x)
     ObjectBase::ConstructSelf(AttributeConstructionList());
 }
 
-EpsBearer::EpsBearer(Qci x, struct GbrQosInformation y)
+EpsBearer::EpsBearer(Qci x, GbrQosInformation y)
     : ObjectBase(),
       qci(x),
       gbrQosInfo(y)

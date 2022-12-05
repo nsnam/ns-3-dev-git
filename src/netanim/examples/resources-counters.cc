@@ -37,7 +37,7 @@ struct rgb
     uint8_t b; ///< blue
 };
 
-struct rgb colors[] = {
+rgb colors[] = {
     {255, 0, 0}, // Red
     {0, 255, 0}, // Blue
     {0, 0, 255}, // Green
@@ -96,7 +96,7 @@ modify()
     {
         index = 0;
     }
-    struct rgb color = colors[index];
+    rgb color = colors[index];
     for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
     {
         pAnim->UpdateNodeColor(nodeId, color.r, color.g, color.b);

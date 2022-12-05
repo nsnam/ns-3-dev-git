@@ -101,7 +101,7 @@ class SllHeader : public Header
     /**
      * \return Packet type
      */
-    enum PacketType GetPacketType() const;
+    PacketType GetPacketType() const;
 
     /**
      * \param type Depends on source and address of the packet

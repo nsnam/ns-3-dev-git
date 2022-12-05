@@ -430,7 +430,7 @@ IidManager::AllocateUid(std::string name)
         }
     }
 
-    struct IidInformation information;
+    IidInformation information;
     information.name = name;
     information.hash = hash;
     information.parent = 0;
@@ -1201,7 +1201,7 @@ TypeId::LookupTraceSourceByName(std::string name, struct TraceSourceInformation*
 Ptr<const TraceSourceAccessor>
 TypeId::LookupTraceSourceByName(std::string name) const
 {
-    struct TraceSourceInformation info;
+    TraceSourceInformation info;
     return LookupTraceSourceByName(name, &info);
 }
 

@@ -577,9 +577,9 @@ class TcpSocketBase : public TcpSocket
     void SetPaceInitialWindow(bool paceWindow);
 
     // Necessary implementations of null functions from ns3::Socket
-    enum SocketErrno GetErrno() const override;     // returns m_errno
-    enum SocketType GetSocketType() const override; // returns socket type
-    Ptr<Node> GetNode() const override;             // returns m_node
+    SocketErrno GetErrno() const override;     // returns m_errno
+    SocketType GetSocketType() const override; // returns socket type
+    Ptr<Node> GetNode() const override;        // returns m_node
     int Bind() override;  // Bind a socket by setting up endpoint in TcpL4Protocol
     int Bind6() override; // Bind a socket by setting up endpoint in TcpL4Protocol
     int Bind(const Address& address) override; // ... endpoint of specific addr or port
@@ -1323,10 +1323,7 @@ class TcpSocketBase : public TcpSocket
     // State-related attributes
     TracedValue<TcpStates_t> m_state{CLOSED}; //!< TCP state
 
-    mutable enum SocketErrno m_errno
-    {
-        ERROR_NOTERROR
-    }; //!< Socket error code
+    mutable SocketErrno m_errno{ERROR_NOTERROR}; //!< Socket error code
 
     bool m_closeNotified{false}; //!< Told app to close socket
     bool m_closeOnEmpty{false};  //!< Close socket upon tx buffer emptied

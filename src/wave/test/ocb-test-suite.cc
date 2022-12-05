@@ -108,7 +108,7 @@ class OcbWifiMacTestCase : public TestCase
                       Ptr<const Packet> packet,
                       double snr,
                       WifiMode mode,
-                      enum WifiPreamble preamble);
+                      WifiPreamble preamble);
     /**
      * Phy transmit trace function
      * \param context the context
@@ -233,7 +233,7 @@ OcbWifiMacTestCase::PhyRxOkTrace(std::string context,
                                  Ptr<const Packet> packet,
                                  double snr,
                                  WifiMode mode,
-                                 enum WifiPreamble preamble)
+                                 WifiPreamble preamble)
 {
     if (phyrx_time == Time(0))
     {

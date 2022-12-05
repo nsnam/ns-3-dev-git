@@ -135,7 +135,7 @@ CommandPayloadHeader::CommandPayloadHeader()
     SetCommandFrameType(CMD_RESERVED);
 }
 
-CommandPayloadHeader::CommandPayloadHeader(enum MacCommand macCmd)
+CommandPayloadHeader::CommandPayloadHeader(MacCommand macCmd)
 {
     SetCommandFrameType(macCmd);
 }

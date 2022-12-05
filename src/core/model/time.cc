@@ -203,14 +203,14 @@ struct Time::Resolution&
 Time::SetDefaultNsResolution()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static struct Resolution resolution;
+    static Resolution resolution;
     SetResolution(Time::NS, &resolution, false);
     return resolution;
 }
 
 // static
 void
-Time::SetResolution(enum Unit resolution)
+Time::SetResolution(Unit resolution)
 {
     NS_LOG_FUNCTION(resolution);
     SetResolution(resolution, PeekResolution());
@@ -218,7 +218,7 @@ Time::SetResolution(enum Unit resolution)
 
 // static
 void
-Time::SetResolution(enum Unit unit, struct Resolution* resolution, const bool convert /* = true */)
+Time::SetResolution(Unit unit, Resolution* resolution, const bool convert /* = true */)
 {
     NS_LOG_FUNCTION(resolution);
     if (convert)
@@ -375,7 +375,7 @@ Time::Clear(Time* const time)
 
 // static
 void
-Time::ConvertTimes(const enum Unit unit)
+Time::ConvertTimes(const Unit unit)
 {
     std::unique_lock lock{g_markingMutex};
 
@@ -414,7 +414,7 @@ Time::GetResolution()
 }
 
 TimeWithUnit
-Time::As(const enum Unit unit /* = Time::AUTO */) const
+Time::As(const Unit unit /* = Time::AUTO */) const
 {
     return TimeWithUnit(*this, unit);
 }

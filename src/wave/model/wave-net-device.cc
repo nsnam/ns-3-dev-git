@@ -469,7 +469,7 @@ WaveNetDevice::ChangeAddress(Address newAddress)
 }
 
 void
-WaveNetDevice::CancelTx(uint32_t channelNumber, enum AcIndex ac)
+WaveNetDevice::CancelTx(uint32_t channelNumber, AcIndex ac)
 {
     if (IsAvailableChannel(channelNumber))
     {

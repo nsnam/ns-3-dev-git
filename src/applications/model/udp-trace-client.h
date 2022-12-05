@@ -165,9 +165,9 @@ class UdpTraceClient : public Application
     uint16_t m_peerPort;   //!< Remote peer port
     EventId m_sendEvent;   //!< Event to send the next packet
 
-    std::vector<struct TraceEntry> m_entries;    //!< Entries in the trace to send
-    uint32_t m_currentEntry;                     //!< Current entry index
-    static struct TraceEntry g_defaultEntries[]; //!< Default trace to send
+    std::vector<TraceEntry> m_entries;    //!< Entries in the trace to send
+    uint32_t m_currentEntry;              //!< Current entry index
+    static TraceEntry g_defaultEntries[]; //!< Default trace to send
     uint16_t m_maxPacketSize; //!< Maximum packet size to send (including the SeqTsHeader)
     bool m_traceLoop;         //!< Loop through the trace file
 };

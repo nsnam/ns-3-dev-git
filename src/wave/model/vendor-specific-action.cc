@@ -107,7 +107,7 @@ OrganizationIdentifier::GetSerializedSize() const
 }
 
 void
-OrganizationIdentifier::SetType(enum OrganizationIdentifierType type)
+OrganizationIdentifier::SetType(OrganizationIdentifierType type)
 {
     NS_LOG_FUNCTION(this);
     m_type = type;

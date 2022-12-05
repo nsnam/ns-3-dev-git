@@ -223,7 +223,7 @@ CsmaNetDevice::DoDispose()
 }
 
 void
-CsmaNetDevice::SetEncapsulationMode(enum EncapsulationMode mode)
+CsmaNetDevice::SetEncapsulationMode(EncapsulationMode mode)
 {
     NS_LOG_FUNCTION(mode);
 

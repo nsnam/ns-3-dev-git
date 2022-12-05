@@ -423,7 +423,7 @@ Ipv4RawSocketImpl::RecvFrom(uint32_t maxSize, uint32_t flags, Address& fromAddre
     {
         return nullptr;
     }
-    struct Data data = m_recv.front();
+    Data data = m_recv.front();
     m_recv.pop_front();
     InetSocketAddress inet = InetSocketAddress(data.fromIp, data.fromProtocol);
     fromAddress = inet;
@@ -511,7 +511,7 @@ Ipv4RawSocketImpl::ForwardUp(Ptr<const Packet> p,
             }
         }
         copy->AddHeader(ipHeader);
-        struct Data data;
+        Data data;
         data.packet = copy;
         data.fromIp = ipHeader.GetSource();
         data.fromProtocol = ipHeader.GetProtocol();

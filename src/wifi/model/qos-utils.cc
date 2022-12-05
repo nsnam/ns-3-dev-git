@@ -84,7 +84,7 @@ WifiAc::GetOtherTid(uint8_t tid) const
 }
 
 bool
-operator>(enum AcIndex left, enum AcIndex right)
+operator>(AcIndex left, AcIndex right)
 {
     NS_ABORT_MSG_IF(left > 3 || right > 3, "Cannot compare non-QoS ACs");
 
@@ -104,7 +104,7 @@ operator>(enum AcIndex left, enum AcIndex right)
 }
 
 bool
-operator>=(enum AcIndex left, enum AcIndex right)
+operator>=(AcIndex left, AcIndex right)
 {
     NS_ABORT_MSG_IF(left > 3 || right > 3, "Cannot compare non-QoS ACs");
 
@@ -112,13 +112,13 @@ operator>=(enum AcIndex left, enum AcIndex right)
 }
 
 bool
-operator<(enum AcIndex left, enum AcIndex right)
+operator<(AcIndex left, AcIndex right)
 {
     return !(left >= right);
 }
 
 bool
-operator<=(enum AcIndex left, enum AcIndex right)
+operator<=(AcIndex left, AcIndex right)
 {
     return !(left > right);
 }

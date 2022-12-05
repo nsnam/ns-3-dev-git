@@ -594,7 +594,7 @@ MeshWifiInterfaceMac::ResetStats()
 }
 
 void
-MeshWifiInterfaceMac::ConfigureStandard(enum WifiStandard standard)
+MeshWifiInterfaceMac::ConfigureStandard(WifiStandard standard)
 {
     NS_ABORT_IF(!GetQosSupported());
     WifiMac::ConfigureStandard(standard);

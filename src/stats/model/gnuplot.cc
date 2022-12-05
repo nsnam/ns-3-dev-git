@@ -173,8 +173,8 @@ struct Gnuplot2dDataset::Data2d : public GnuplotDataset::Data
 {
     // *** Data Variables ***
 
-    enum Style m_style;         //!< The plotting style to use for this dataset.
-    enum ErrorBars m_errorBars; //!< Whether errorbars should be used for this dataset.
+    Style m_style;         //!< The plotting style to use for this dataset.
+    ErrorBars m_errorBars; //!< Whether errorbars should be used for this dataset.
 
     PointSet m_pointset; //!< The set of points in this data set
 
@@ -350,25 +350,25 @@ Gnuplot2dDataset::Gnuplot2dDataset(const std::string& title)
 }
 
 void
-Gnuplot2dDataset::SetDefaultStyle(enum Style style)
+Gnuplot2dDataset::SetDefaultStyle(Style style)
 {
     m_defaultStyle = style;
 }
 
 void
-Gnuplot2dDataset::SetStyle(enum Style style)
+Gnuplot2dDataset::SetStyle(Style style)
 {
     reinterpret_cast<Data2d*>(m_data)->m_style = style;
 }
 
 void
-Gnuplot2dDataset::SetDefaultErrorBars(enum ErrorBars errorBars)
+Gnuplot2dDataset::SetDefaultErrorBars(ErrorBars errorBars)
 {
     m_defaultErrorBars = errorBars;
 }
 
 void
-Gnuplot2dDataset::SetErrorBars(enum ErrorBars errorBars)
+Gnuplot2dDataset::SetErrorBars(ErrorBars errorBars)
 {
     reinterpret_cast<Data2d*>(m_data)->m_errorBars = errorBars;
 }
@@ -378,7 +378,7 @@ Gnuplot2dDataset::Add(double x, double y)
 {
     NS_ASSERT(reinterpret_cast<Data2d*>(m_data)->m_errorBars == NONE);
 
-    struct Point data;
+    Point data;
     data.empty = false;
     data.x = x;
     data.y = y;
@@ -393,7 +393,7 @@ Gnuplot2dDataset::Add(double x, double y, double errorDelta)
     NS_ASSERT(reinterpret_cast<Data2d*>(m_data)->m_errorBars == X ||
               reinterpret_cast<Data2d*>(m_data)->m_errorBars == Y);
 
-    struct Point data;
+    Point data;
     data.empty = false;
     data.x = x;
     data.y = y;
@@ -407,7 +407,7 @@ Gnuplot2dDataset::Add(double x, double y, double xErrorDelta, double yErrorDelta
 {
     NS_ASSERT(reinterpret_cast<Data2d*>(m_data)->m_errorBars == XY);
 
-    struct Point data;
+    Point data;
     data.empty = false;
     data.x = x;
     data.y = y;
@@ -419,7 +419,7 @@ Gnuplot2dDataset::Add(double x, double y, double xErrorDelta, double yErrorDelta
 void
 Gnuplot2dDataset::AddEmptyLine()
 {
-    struct Point data;
+    Point data;
     data.empty = true;
     reinterpret_cast<Data2d*>(m_data)->m_pointset.push_back(data);
 }
@@ -621,7 +621,7 @@ Gnuplot3dDataset::SetStyle(const std::string& style)
 void
 Gnuplot3dDataset::Add(double x, double y, double z)
 {
-    struct Point data;
+    Point data;
     data.empty = false;
     data.x = x;
     data.y = y;
@@ -632,7 +632,7 @@ Gnuplot3dDataset::Add(double x, double y, double z)
 void
 Gnuplot3dDataset::AddEmptyLine()
 {
-    struct Point data;
+    Point data;
     data.empty = true;
     reinterpret_cast<Data3d*>(m_data)->m_pointset.push_back(data);
 }

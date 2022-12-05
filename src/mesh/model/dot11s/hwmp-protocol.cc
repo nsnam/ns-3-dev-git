@@ -469,7 +469,7 @@ HwmpProtocol::ReceivePreq(IePreq preq,
                                   MicroSeconds(preq.GetLifetime() * 1024),
                                   preq.GetOriginatorSeqNumber());
         // Notify trace source of routing change
-        struct RouteChange rChange;
+        RouteChange rChange;
         rChange.type = "Add Reactive";
         rChange.destination = preq.GetOriginatorAddress();
         rChange.retransmitter = from;
@@ -490,7 +490,7 @@ HwmpProtocol::ReceivePreq(IePreq preq,
                                   MicroSeconds(preq.GetLifetime() * 1024),
                                   preq.GetOriginatorSeqNumber());
         // Notify trace source of routing change
-        struct RouteChange rChange;
+        RouteChange rChange;
         rChange.type = "Add Reactive";
         rChange.destination = fromMp;
         rChange.retransmitter = from;
@@ -525,7 +525,7 @@ HwmpProtocol::ReceivePreq(IePreq preq,
                                            MicroSeconds(preq.GetLifetime() * 1024),
                                            preq.GetOriginatorSeqNumber());
                 // Notify trace source of routing change
-                struct RouteChange rChange;
+                RouteChange rChange;
                 rChange.type = "Add Proactive";
                 rChange.destination = preq.GetOriginatorAddress();
                 rChange.retransmitter = from;
@@ -658,7 +658,7 @@ HwmpProtocol::ReceivePrep(IePrep prep,
                                   MicroSeconds(prep.GetLifetime() * 1024),
                                   sequence);
         // Notify trace source of routing change
-        struct RouteChange rChange;
+        RouteChange rChange;
         rChange.type = "Add Reactive";
         rChange.destination = prep.GetOriginatorAddress();
         rChange.retransmitter = from;
@@ -690,7 +690,7 @@ HwmpProtocol::ReceivePrep(IePrep prep,
                                   MicroSeconds(prep.GetLifetime() * 1024),
                                   sequence);
         // Notify trace source of routing change
-        struct RouteChange rChange;
+        RouteChange rChange;
         rChange.type = "Add Reactive";
         rChange.destination = fromMp;
         rChange.retransmitter = from;
@@ -876,7 +876,7 @@ HwmpProtocol::MakePathError(std::vector<FailedDestination> destinations)
         retval.destinations.push_back(destinations[i]);
         m_rtable->DeleteReactivePath(destinations[i].destination);
         // Notify trace source of routing change
-        struct RouteChange rChange;
+        RouteChange rChange;
         rChange.type = "Delete Reactive";
         rChange.destination = destinations[i].destination;
         rChange.seqnum = destinations[i].seqnum;
@@ -938,14 +938,14 @@ HwmpProtocol::GetPerrReceivers(std::vector<FailedDestination> failedDest)
         HwmpRtable::PrecursorList precursors = m_rtable->GetPrecursors(failedDest[i].destination);
         m_rtable->DeleteReactivePath(failedDest[i].destination);
         // Notify trace source of routing change
-        struct RouteChange rChange;
+        RouteChange rChange;
         rChange.type = "Delete Reactive";
         rChange.destination = failedDest[i].destination;
         rChange.seqnum = failedDest[i].seqnum;
         m_routeChangeTraceSource(rChange);
         m_rtable->DeleteProactivePath(failedDest[i].destination);
         // Notify trace source of routing change
-        struct RouteChange rChangePro;
+        RouteChange rChangePro;
         rChangePro.type = "Delete Proactive";
         rChangePro.destination = failedDest[i].destination;
         rChangePro.seqnum = failedDest[i].seqnum;

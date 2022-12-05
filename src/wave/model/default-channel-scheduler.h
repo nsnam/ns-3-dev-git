@@ -49,7 +49,7 @@ class DefaultChannelScheduler : public ChannelScheduler
      * \param channelNumber the specified channel number
      * \return  the type of current assigned channel access for the specific channel.
      */
-    enum ChannelAccess GetAssignedAccessType(uint32_t channelNumber) const override;
+    ChannelAccess GetAssignedAccessType(uint32_t channelNumber) const override;
 
     /**
      * Notify CCH slot start
@@ -126,10 +126,10 @@ class DefaultChannelScheduler : public ChannelScheduler
      *   is extended access, extends is the number of extends access.
      *  when m_channelAccess is DefaultCchAccess, m_channelNumber is CCH.
      */
-    uint32_t m_channelNumber;           ///< channel number
-    uint32_t m_extend;                  ///< extend
-    EventId m_extendEvent;              ///< extend event
-    enum ChannelAccess m_channelAccess; ///< channel access
+    uint32_t m_channelNumber;      ///< channel number
+    uint32_t m_extend;             ///< extend
+    EventId m_extendEvent;         ///< extend event
+    ChannelAccess m_channelAccess; ///< channel access
 
     EventId m_waitEvent;          ///< wait event
     uint32_t m_waitChannelNumber; ///< wait channel number

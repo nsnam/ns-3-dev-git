@@ -109,8 +109,8 @@ class PacketSocket : public Socket
      */
     void SetNode(Ptr<Node> node);
 
-    enum SocketErrno GetErrno() const override;
-    enum SocketType GetSocketType() const override;
+    SocketErrno GetErrno() const override;
+    SocketType GetSocketType() const override;
     Ptr<Node> GetNode() const override;
     /**
      * \brief Bind the socket to the NetDevice and register the protocol handler.
@@ -196,15 +196,15 @@ class PacketSocket : public Socket
         STATE_CLOSED
     };
 
-    Ptr<Node> m_node;                 //!< the associated node
-    mutable enum SocketErrno m_errno; //!< Socket error code
-    bool m_shutdownSend;              //!< Send no longer allowed
-    bool m_shutdownRecv;              //!< Receive no longer allowed
-    enum State m_state;               //!< Socket state
-    uint16_t m_protocol;              //!< Socket protocol
-    bool m_isSingleDevice;            //!< Is bound to a single netDevice
-    uint32_t m_device;                //!< index of the bound NetDevice
-    Address m_destAddr;               //!< Default destination address
+    Ptr<Node> m_node;            //!< the associated node
+    mutable SocketErrno m_errno; //!< Socket error code
+    bool m_shutdownSend;         //!< Send no longer allowed
+    bool m_shutdownRecv;         //!< Receive no longer allowed
+    State m_state;               //!< Socket state
+    uint16_t m_protocol;         //!< Socket protocol
+    bool m_isSingleDevice;       //!< Is bound to a single netDevice
+    uint32_t m_device;           //!< index of the bound NetDevice
+    Address m_destAddr;          //!< Default destination address
 
     std::queue<std::pair<Ptr<Packet>, Address>> m_deliveryQueue; //!< Rx queue
     uint32_t m_rxAvailable;                                      //!< Rx queue size [Bytes]

@@ -159,7 +159,7 @@ SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite()
     Ptr<const SpectrumModel> m;
 
     Bands bands;
-    struct BandInfo bi;
+    BandInfo bi;
 
     bi.fl = 2.400e9;
     bi.fc = 2.410e9;

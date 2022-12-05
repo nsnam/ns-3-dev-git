@@ -96,7 +96,7 @@ class LrWpanMacHeader : public Header
      * Data, ACK, Control MAC Header must have frame control and sequence number.
      * Beacon MAC Header must have frame control, sequence number, source PAN Id, source address.
      */
-    LrWpanMacHeader(enum LrWpanMacType wpanMacType, uint8_t seqNum);
+    LrWpanMacHeader(LrWpanMacType wpanMacType, uint8_t seqNum);
 
     ~LrWpanMacHeader() override;
 
@@ -104,7 +104,7 @@ class LrWpanMacHeader : public Header
      * Get the header type
      * \return the header type
      */
-    enum LrWpanMacType GetType() const;
+    LrWpanMacType GetType() const;
     /**
      * Get the Frame control field
      * \return the Frame control field
@@ -250,7 +250,7 @@ class LrWpanMacHeader : public Header
      * Set the Frame Control field "Frame Type" bits
      * \param wpanMacType the frame type
      */
-    void SetType(enum LrWpanMacType wpanMacType);
+    void SetType(LrWpanMacType wpanMacType);
     /**
      * Set the whole Frame Control field
      * \param frameControl the Frame Control field

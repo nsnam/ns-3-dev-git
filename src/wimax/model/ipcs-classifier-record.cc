@@ -158,7 +158,7 @@ IpcsClassifierRecord::IpcsClassifierRecord(Ipv4Address SrcAddress,
 void
 IpcsClassifierRecord::AddSrcAddr(Ipv4Address srcAddress, Ipv4Mask srcMask)
 {
-    struct ipv4Addr tmp;
+    ipv4Addr tmp;
     tmp.Address = srcAddress;
     tmp.Mask = srcMask;
     m_srcAddr.push_back(tmp);
@@ -167,7 +167,7 @@ IpcsClassifierRecord::AddSrcAddr(Ipv4Address srcAddress, Ipv4Mask srcMask)
 void
 IpcsClassifierRecord::AddDstAddr(Ipv4Address dstAddress, Ipv4Mask dstMask)
 {
-    struct ipv4Addr tmp;
+    ipv4Addr tmp;
     tmp.Address = dstAddress;
     tmp.Mask = dstMask;
     m_dstAddr.push_back(tmp);
@@ -176,7 +176,7 @@ IpcsClassifierRecord::AddDstAddr(Ipv4Address dstAddress, Ipv4Mask dstMask)
 void
 IpcsClassifierRecord::AddSrcPortRange(uint16_t srcPortLow, uint16_t srcPortHigh)
 {
-    struct PortRange tmp;
+    PortRange tmp;
     tmp.PortLow = srcPortLow;
     tmp.PortHigh = srcPortHigh;
     m_srcPortRange.push_back(tmp);
@@ -185,7 +185,7 @@ IpcsClassifierRecord::AddSrcPortRange(uint16_t srcPortLow, uint16_t srcPortHigh)
 void
 IpcsClassifierRecord::AddDstPortRange(uint16_t dstPortLow, uint16_t dstPortHigh)
 {
-    struct PortRange tmp;
+    PortRange tmp;
     tmp.PortLow = dstPortLow;
     tmp.PortHigh = dstPortHigh;
     m_dstPortRange.push_back(tmp);
@@ -236,8 +236,7 @@ IpcsClassifierRecord::GetPriority() const
 bool
 IpcsClassifierRecord::CheckMatchSrcAddr(Ipv4Address srcAddress) const
 {
-    for (std::vector<struct ipv4Addr>::const_iterator iter = m_srcAddr.begin();
-         iter != m_srcAddr.end();
+    for (std::vector<ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
          ++iter)
     {
         NS_LOG_INFO("src addr check match: pkt=" << srcAddress << " cls=" << (*iter).Address << "/"
@@ -254,8 +253,7 @@ IpcsClassifierRecord::CheckMatchSrcAddr(Ipv4Address srcAddress) const
 bool
 IpcsClassifierRecord::CheckMatchDstAddr(Ipv4Address dstAddress) const
 {
-    for (std::vector<struct ipv4Addr>::const_iterator iter = m_dstAddr.begin();
-         iter != m_dstAddr.end();
+    for (std::vector<ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
          ++iter)
     {
         NS_LOG_INFO("dst addr check match: pkt=" << dstAddress << " cls=" << (*iter).Address << "/"
@@ -272,7 +270,7 @@ IpcsClassifierRecord::CheckMatchDstAddr(Ipv4Address dstAddress) const
 bool
 IpcsClassifierRecord::CheckMatchSrcPort(uint16_t port) const
 {
-    for (std::vector<struct PortRange>::const_iterator iter = m_srcPortRange.begin();
+    for (std::vector<PortRange>::const_iterator iter = m_srcPortRange.begin();
          iter != m_srcPortRange.end();
          ++iter)
     {
@@ -290,7 +288,7 @@ IpcsClassifierRecord::CheckMatchSrcPort(uint16_t port) const
 bool
 IpcsClassifierRecord::CheckMatchDstPort(uint16_t port) const
 {
-    for (std::vector<struct PortRange>::const_iterator iter = m_dstPortRange.begin();
+    for (std::vector<PortRange>::const_iterator iter = m_dstPortRange.begin();
          iter != m_dstPortRange.end();
          ++iter)
     {
@@ -336,16 +334,14 @@ Tlv
 IpcsClassifierRecord::ToTlv() const
 {
     Ipv4AddressTlvValue ipv4AddrValSrc;
-    for (std::vector<struct ipv4Addr>::const_iterator iter = m_srcAddr.begin();
-         iter != m_srcAddr.end();
+    for (std::vector<ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
          ++iter)
     {
         ipv4AddrValSrc.Add((*iter).Address, (*iter).Mask);
     }
 
     Ipv4AddressTlvValue ipv4AddrValDst;
-    for (std::vector<struct ipv4Addr>::const_iterator iter = m_dstAddr.begin();
-         iter != m_dstAddr.end();
+    for (std::vector<ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
          ++iter)
     {
         ipv4AddrValDst.Add((*iter).Address, (*iter).Mask);
@@ -359,7 +355,7 @@ IpcsClassifierRecord::ToTlv() const
     }
 
     PortRangeTlvValue portValueSrc;
-    for (std::vector<struct PortRange>::const_iterator iter = m_srcPortRange.begin();
+    for (std::vector<PortRange>::const_iterator iter = m_srcPortRange.begin();
          iter != m_srcPortRange.end();
          ++iter)
     {
@@ -367,7 +363,7 @@ IpcsClassifierRecord::ToTlv() const
     }
 
     PortRangeTlvValue portValueDst;
-    for (std::vector<struct PortRange>::const_iterator iter = m_dstPortRange.begin();
+    for (std::vector<PortRange>::const_iterator iter = m_dstPortRange.begin();
          iter != m_dstPortRange.end();
          ++iter)
     {

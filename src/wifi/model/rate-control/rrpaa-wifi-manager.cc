@@ -220,7 +220,7 @@ WifiRrpaaThresholds
 RrpaaWifiManager::GetThresholds(RrpaaWifiRemoteStation* station, WifiMode mode) const
 {
     NS_LOG_FUNCTION(this << station << mode);
-    struct WifiRrpaaThresholds threshold;
+    WifiRrpaaThresholds threshold;
     for (RrpaaThresholdsTable::const_iterator i = station->m_thresholds.begin();
          i != station->m_thresholds.end();
          i++)

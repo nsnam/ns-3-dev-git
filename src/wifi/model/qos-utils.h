@@ -136,7 +136,7 @@ class WifiAc
  * \param right the AC on the right of operator>
  * \return true if the AC on the left has higher priority than the AC on the right
  */
-bool operator>(enum AcIndex left, enum AcIndex right);
+bool operator>(AcIndex left, AcIndex right);
 
 /**
  * \ingroup wifi
@@ -147,7 +147,7 @@ bool operator>(enum AcIndex left, enum AcIndex right);
  * \param right the AC on the right of operator>=
  * \return true if the AC on the left has higher or the same priority than the AC on the right
  */
-bool operator>=(enum AcIndex left, enum AcIndex right);
+bool operator>=(AcIndex left, AcIndex right);
 
 /**
  * \ingroup wifi
@@ -158,7 +158,7 @@ bool operator>=(enum AcIndex left, enum AcIndex right);
  * \param right the AC on the right of operator<
  * \return true if the AC on the left has lower priority than the AC on the right
  */
-bool operator<(enum AcIndex left, enum AcIndex right);
+bool operator<(AcIndex left, AcIndex right);
 
 /**
  * \ingroup wifi
@@ -169,7 +169,7 @@ bool operator<(enum AcIndex left, enum AcIndex right);
  * \param right the AC on the right of operator<=
  * \return true if the AC on the left has lower or the same priority than the AC on the right
  */
-bool operator<=(enum AcIndex left, enum AcIndex right);
+bool operator<=(AcIndex left, AcIndex right);
 
 /**
  * Map containing the four ACs in increasing order of priority (according to

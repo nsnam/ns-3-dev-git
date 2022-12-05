@@ -577,8 +577,9 @@ class Ipv4AddressTlvValue : public TlvValue
         Ipv4Address Address; ///< address
         Ipv4Mask Mask;       ///< mask
     };
+
     /// IPv4 address vector iterator typedef
-    typedef std::vector<struct ipv4Addr>::const_iterator Iterator;
+    typedef std::vector<ipv4Addr>::const_iterator Iterator;
     Ipv4AddressTlvValue();
     ~Ipv4AddressTlvValue() override;
     uint32_t GetSerializedSize() const override;
@@ -603,7 +604,7 @@ class Ipv4AddressTlvValue : public TlvValue
     Ipv4AddressTlvValue* Copy() const override;
 
   private:
-    std::vector<struct ipv4Addr>* m_ipv4Addr; ///< ipv4 addr
+    std::vector<ipv4Addr>* m_ipv4Addr; ///< ipv4 addr
 };
 
 } // namespace ns3

@@ -207,7 +207,7 @@ FdNetDevice::DoDispose()
 }
 
 void
-FdNetDevice::SetEncapsulationMode(enum EncapsulationMode mode)
+FdNetDevice::SetEncapsulationMode(EncapsulationMode mode)
 {
     NS_LOG_FUNCTION(this << mode);
     m_encapMode = mode;

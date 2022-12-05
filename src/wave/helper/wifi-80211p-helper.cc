@@ -56,7 +56,7 @@ Wifi80211pHelper::Default()
 }
 
 void
-Wifi80211pHelper::SetStandard(enum WifiStandard standard)
+Wifi80211pHelper::SetStandard(WifiStandard standard)
 {
     if (standard == WIFI_STANDARD_80211p)
     {

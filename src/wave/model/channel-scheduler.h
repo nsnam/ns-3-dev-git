@@ -182,7 +182,7 @@ class ChannelScheduler : public Object
      * \param channelNumber the specified channel number
      * \return  the type of current assigned channel access for the specific channel.
      */
-    virtual enum ChannelAccess GetAssignedAccessType(uint32_t channelNumber) const = 0;
+    virtual ChannelAccess GetAssignedAccessType(uint32_t channelNumber) const = 0;
 
     /**
      * \param schInfo the request information for assigning SCH access.

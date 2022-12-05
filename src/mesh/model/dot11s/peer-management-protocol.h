@@ -409,7 +409,8 @@ class PeerManagementProtocol : public Object
          */
         void Print(std::ostream& os) const;
     };
-    struct Statistics m_stats; ///< statistics
+
+    Statistics m_stats; ///< statistics
 
     /// Add randomness to beacon shift
     Ptr<UniformRandomVariable> m_beaconShift;

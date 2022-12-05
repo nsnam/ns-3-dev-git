@@ -252,7 +252,7 @@ class GnuplotAggregator : public DataCollectionObject
      *
      * \brief Set the location of the key in the plot.
      */
-    void SetKeyLocation(enum KeyLocation keyLocation);
+    void SetKeyLocation(KeyLocation keyLocation);
 
   private:
     /// The output file name without any extension.

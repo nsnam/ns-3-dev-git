@@ -75,10 +75,7 @@ class ProbabilisticV2vUrbanChannelConditionModel : public ThreeGppChannelConditi
      */
     double ComputePnlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
-    enum VehicleDensity m_densityUrban
-    {
-        VehicleDensity::INVALID
-    }; //!< vehicle density
+    VehicleDensity m_densityUrban{VehicleDensity::INVALID}; //!< vehicle density
 };
 
 /**
@@ -130,10 +127,7 @@ class ProbabilisticV2vHighwayChannelConditionModel : public ThreeGppChannelCondi
      */
     double ComputePnlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
-    enum VehicleDensity m_densityHighway
-    {
-        VehicleDensity::INVALID
-    }; //!< vehicle density
+    VehicleDensity m_densityHighway{VehicleDensity::INVALID}; //!< vehicle density
 };
 
 } // namespace ns3

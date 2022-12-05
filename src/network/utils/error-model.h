@@ -209,7 +209,7 @@ class RateErrorModel : public ErrorModel
     /**
      * \param error_unit the ErrorUnit to be used by the underlying model
      */
-    void SetUnit(enum ErrorUnit error_unit);
+    void SetUnit(ErrorUnit error_unit);
 
     /**
      * \returns the error rate being applied by the model
@@ -257,8 +257,8 @@ class RateErrorModel : public ErrorModel
     virtual bool DoCorruptBit(Ptr<Packet> p);
     void DoReset() override;
 
-    enum ErrorUnit m_unit; //!< Error rate unit
-    double m_rate;         //!< Error rate
+    ErrorUnit m_unit; //!< Error rate unit
+    double m_rate;    //!< Error rate
 
     Ptr<RandomVariableStream> m_ranvar; //!< rng stream
 };

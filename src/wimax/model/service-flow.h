@@ -129,7 +129,7 @@ class ServiceFlow
      *
      * \param direction the direction
      */
-    ServiceFlow(enum Direction direction);
+    ServiceFlow(Direction direction);
     /**
      * Constructor
      *
@@ -143,7 +143,7 @@ class ServiceFlow
      * \param direction the direction
      * \param connection the connection object
      */
-    ServiceFlow(uint32_t sfid, enum Direction direction, Ptr<WimaxConnection> connection);
+    ServiceFlow(uint32_t sfid, Direction direction, Ptr<WimaxConnection> connection);
     /**
      * Destructor.
      */
@@ -163,12 +163,12 @@ class ServiceFlow
      * Set direction
      * \param direction the direction value
      */
-    void SetDirection(enum Direction direction);
+    void SetDirection(Direction direction);
     /**
      * Get direction
      * \returns the direction
      */
-    enum Direction GetDirection() const;
+    Direction GetDirection() const;
     /**
      * Copy parameters from another service flow
      * \param sf the service flow
@@ -179,12 +179,12 @@ class ServiceFlow
      * Set type of service flow
      * \param type the type value
      */
-    void SetType(enum Type type);
+    void SetType(Type type);
     /**
      * Get type of service flow
      * \returns the type
      */
-    enum Type GetType() const;
+    Type GetType() const;
     /**
      * Set connection
      * \param connection the connection
@@ -387,7 +387,7 @@ class ServiceFlow
      * Get CS specification
      * \returns the CS specification
      */
-    enum CsSpecification GetCsSpecification() const;
+    CsSpecification GetCsSpecification() const;
     /**
      * Get convergence sublayer
      * \returns the convergence sublayer
@@ -538,7 +538,7 @@ class ServiceFlow
      * Set CS specification
      * \param spec the CS specification
      */
-    void SetCsSpecification(enum CsSpecification spec);
+    void SetCsSpecification(CsSpecification spec);
     /**
      * Set convergence sublayer parameters
      * \param csparam the convergence sublayer parameters
@@ -591,7 +591,7 @@ class ServiceFlow
     uint8_t m_arqDeliverInOrder;                       ///< ARQ deliver in order
     uint16_t m_arqPurgeTimeout;                        ///< ARQ purge timeout
     uint16_t m_arqBlockSize;                           ///< ARQ block size
-    enum CsSpecification m_csSpecification;            ///< CS specification
+    CsSpecification m_csSpecification;                 ///< CS specification
     CsParameters m_convergenceSublayerParam;           ///< convergence sublayer parameters
     uint16_t m_unsolicitedGrantInterval;               ///< unsolicited grant interval
     uint16_t m_unsolicitedPollingInterval;             ///< unsolicited polling interval

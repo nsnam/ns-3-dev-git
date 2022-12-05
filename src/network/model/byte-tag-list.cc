@@ -92,7 +92,7 @@ struct ByteTagList::Iterator::Item
 ByteTagList::Iterator::Next()
 {
     NS_ASSERT(HasNext());
-    struct Item item = Item(TagBuffer(m_current + 16, m_end));
+    Item item = Item(TagBuffer(m_current + 16, m_end));
     item.tid.SetUid(m_nextTid);
     item.size = m_nextSize;
     item.start = std::max(m_nextStart, m_offsetStart);

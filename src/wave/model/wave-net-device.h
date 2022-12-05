@@ -319,7 +319,7 @@ class WaveNetDevice : public WifiNetDevice
      *
      * Cancel all transmissions with the particular category and channel number.
      */
-    void CancelTx(uint32_t channelNumber, enum AcIndex ac);
+    void CancelTx(uint32_t channelNumber, AcIndex ac);
 
     /**
      * \param packet packet sent from above down to Network Device

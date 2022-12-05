@@ -137,7 +137,7 @@ class Collider
      * \param [in] hash Hash function.
      * \param [in] bits Which hash length to use.
      */
-    Collider(const std::string name, Hasher hash, const enum Bits bits)
+    Collider(const std::string name, Hasher hash, const Bits bits)
         : m_name(name),
           m_hash(hash),
           m_bits(bits)
@@ -245,7 +245,7 @@ class Collider
     }
 
     /** Hash function. */
-    enum Bits m_bits;
+    Bits m_bits;
 
     /** Hashed dictionary of first instance of each hash. */
     typedef std::map<uint64_t, std::string> hashdict_t;

@@ -62,13 +62,13 @@ enum VsaTransmitInterval
  */
 struct VsaInfo
 {
-    Mac48Address peer;                     ///< peer
-    OrganizationIdentifier oi;             ///< OI
-    uint8_t managementId;                  ///< management ID
-    Ptr<Packet> vsc;                       ///< VSC
-    uint32_t channelNumber;                ///< channel number
-    uint8_t repeatRate;                    ///< repeat rate
-    enum VsaTransmitInterval sendInterval; ///< send interval
+    Mac48Address peer;                ///< peer
+    OrganizationIdentifier oi;        ///< OI
+    uint8_t managementId;             ///< management ID
+    Ptr<Packet> vsc;                  ///< VSC
+    uint32_t channelNumber;           ///< channel number
+    uint8_t repeatRate;               ///< repeat rate
+    VsaTransmitInterval sendInterval; ///< send interval
 
     /**
      * Initializer
@@ -86,7 +86,7 @@ struct VsaInfo
             Ptr<Packet> vscPacket,
             uint32_t channel,
             uint8_t repeat,
-            enum VsaTransmitInterval interval)
+            VsaTransmitInterval interval)
         : peer(peer),
           oi(identifier),
           managementId(manageId),
@@ -183,13 +183,13 @@ class VsaManager : public Object
     /// VsaWork structure
     struct VsaWork
     {
-        Mac48Address peer;                     ///< peer
-        OrganizationIdentifier oi;             ///< OI
-        Ptr<Packet> vsc;                       ///< VSC
-        uint32_t channelNumber;                ///< channel number
-        enum VsaTransmitInterval sentInterval; ///< VSA transmit interval
-        Time repeatPeriod;                     ///< repeat period
-        EventId repeat;                        ///< repeat ID
+        Mac48Address peer;                ///< peer
+        OrganizationIdentifier oi;        ///< OI
+        Ptr<Packet> vsc;                  ///< VSC
+        uint32_t channelNumber;           ///< channel number
+        VsaTransmitInterval sentInterval; ///< VSA transmit interval
+        Time repeatPeriod;                ///< repeat period
+        EventId repeat;                   ///< repeat ID
     };
 
     /**
@@ -205,7 +205,7 @@ class VsaManager : public Object
      * \param oi the Organization Identifier for VSA frame
      * \param peer the destination address
      */
-    void DoSendVsa(enum VsaTransmitInterval interval,
+    void DoSendVsa(VsaTransmitInterval interval,
                    uint32_t channel,
                    Ptr<Packet> vsc,
                    OrganizationIdentifier oi,

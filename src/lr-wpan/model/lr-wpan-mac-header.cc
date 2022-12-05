@@ -40,7 +40,7 @@ LrWpanMacHeader::LrWpanMacHeader()
     SetFrameVer(1); // Indicates an IEEE 802.15.4 frame
 }
 
-LrWpanMacHeader::LrWpanMacHeader(enum LrWpanMacType wpanMacType, uint8_t seqNum)
+LrWpanMacHeader::LrWpanMacHeader(LrWpanMacType wpanMacType, uint8_t seqNum)
 {
     SetType(wpanMacType);
     SetSeqNum(seqNum);
@@ -266,7 +266,7 @@ LrWpanMacHeader::IsCommand() const
 }
 
 void
-LrWpanMacHeader::SetType(enum LrWpanMacType wpanMacType)
+LrWpanMacHeader::SetType(LrWpanMacType wpanMacType)
 {
     m_fctrlFrmType = wpanMacType;
 }

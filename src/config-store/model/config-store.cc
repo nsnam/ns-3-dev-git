@@ -154,14 +154,14 @@ ConfigStore::~ConfigStore()
 }
 
 void
-ConfigStore::SetMode(enum Mode mode)
+ConfigStore::SetMode(Mode mode)
 {
     NS_LOG_FUNCTION(this << mode);
     m_mode = mode;
 }
 
 void
-ConfigStore::SetFileFormat(enum FileFormat format)
+ConfigStore::SetFileFormat(FileFormat format)
 {
     NS_LOG_FUNCTION(this << format);
     m_fileFormat = format;

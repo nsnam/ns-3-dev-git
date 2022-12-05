@@ -1242,7 +1242,7 @@ class TestCase
     TestRunnerImpl* m_runner;          //!< Pointer to the TestRunner
     struct Result* m_result;           //!< Results data
     std::string m_name;                //!< TestCase name
-    enum TestDuration m_duration;      //!< TestCase duration
+    TestDuration m_duration;           //!< TestCase duration
 };
 
 /**

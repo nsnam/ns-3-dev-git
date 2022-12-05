@@ -232,7 +232,7 @@ GridPositionAllocator::SetN(uint32_t n)
 }
 
 void
-GridPositionAllocator::SetLayoutType(enum LayoutType layoutType)
+GridPositionAllocator::SetLayoutType(LayoutType layoutType)
 {
     m_layoutType = layoutType;
 }

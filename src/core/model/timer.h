@@ -121,7 +121,7 @@ class Timer
      * \param [in] destroyPolicy the event lifetime management policies
      * to use for destroy events
      */
-    Timer(enum DestroyPolicy destroyPolicy);
+    Timer(DestroyPolicy destroyPolicy);
     ~Timer();
 
     /**

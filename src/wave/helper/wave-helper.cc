@@ -91,7 +91,7 @@ AsciiPhyReceiveSinkWithContext(Ptr<OutputStreamWrapper> stream,
                                Ptr<const Packet> p,
                                double snr,
                                WifiMode mode,
-                               enum WifiPreamble preamble)
+                               WifiPreamble preamble)
 {
     NS_LOG_FUNCTION(stream << context << p << snr << mode << preamble);
     *stream->GetStream() << "r " << Simulator::Now().GetSeconds() << " " << context << " " << *p
@@ -111,7 +111,7 @@ AsciiPhyReceiveSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
                                   Ptr<const Packet> p,
                                   double snr,
                                   WifiMode mode,
-                                  enum WifiPreamble preamble)
+                                  WifiPreamble preamble)
 {
     NS_LOG_FUNCTION(stream << p << snr << mode << preamble);
     *stream->GetStream() << "r " << Simulator::Now().GetSeconds() << " " << *p << std::endl;

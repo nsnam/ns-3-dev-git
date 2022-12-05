@@ -42,7 +42,7 @@ FileAggregator::GetTypeId()
     return tid;
 }
 
-FileAggregator::FileAggregator(const std::string& outputFileName, enum FileType fileType)
+FileAggregator::FileAggregator(const std::string& outputFileName, FileType fileType)
     : m_outputFileName(outputFileName),
       m_fileType(fileType),
       m_hasHeadingBeenSet(false),
@@ -84,7 +84,7 @@ FileAggregator::~FileAggregator()
 }
 
 void
-FileAggregator::SetFileType(enum FileType fileType)
+FileAggregator::SetFileType(FileType fileType)
 {
     NS_LOG_FUNCTION(this << fileType);
     m_fileType = fileType;

@@ -55,13 +55,13 @@ class CsParameters
      * \param classifierDscAction the DCS action type
      * \param classifier the IPCS classifier record
      */
-    CsParameters(enum Action classifierDscAction, IpcsClassifierRecord classifier);
+    CsParameters(Action classifierDscAction, IpcsClassifierRecord classifier);
     /**
      * \brief sets the dynamic service classifier action to ADD, Change or delete. Only ADD is
      * supported
      * \param action the action enumeration
      */
-    void SetClassifierDscAction(enum Action action);
+    void SetClassifierDscAction(Action action);
     /**
      * \brief sets the packet classifier rules
      * \param packetClassifierRule the IPCS classifier record
@@ -70,7 +70,7 @@ class CsParameters
     /**
      * \return the  dynamic service classifier action
      */
-    enum Action GetClassifierDscAction() const;
+    Action GetClassifierDscAction() const;
     /**
      * \return the  the packet classifier rules
      */
@@ -82,7 +82,7 @@ class CsParameters
     Tlv ToTlv() const;
 
   private:
-    enum Action m_classifierDscAction;           ///< classifier DSC action
+    Action m_classifierDscAction;                ///< classifier DSC action
     IpcsClassifierRecord m_packetClassifierRule; ///< packet classifier rule
 };
 

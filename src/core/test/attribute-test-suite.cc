@@ -495,7 +495,7 @@ class AttributeObjectTest : public Object
     Ptr<Derived> m_ptrInitialized;           //!< Pointer to Derived class.
     Ptr<Derived> m_ptrInitialized2;          //!< Pointer to Derived class.
     TracedValue<uint8_t> m_uintSrc;          //!< uint8_t Traced value.
-    TracedValue<enum Test_e> m_enumSrc;      //!< enum Traced value.
+    TracedValue<Test_e> m_enumSrc;           //!< enum Traced value.
     TracedValue<double> m_doubleSrc;         //!< double Traced value.
     TracedValue<bool> m_boolSrc;             //!< bool Traced value.
     Time m_timeWithBounds;                   //!< Time with bounds

@@ -914,7 +914,7 @@ PortRangeTlvValue::Deserialize(Buffer::Iterator i, uint64_t valueLength)
 void
 PortRangeTlvValue::Add(uint16_t portLow, uint16_t portHigh)
 {
-    struct PortRange tmp;
+    PortRange tmp;
     tmp.PortLow = portLow;
     tmp.PortHigh = portHigh;
     m_portRange->push_back(tmp);
@@ -1024,7 +1024,7 @@ ProtocolTlvValue::Copy() const
 
 Ipv4AddressTlvValue::Ipv4AddressTlvValue()
 {
-    m_ipv4Addr = new std::vector<struct ipv4Addr>;
+    m_ipv4Addr = new std::vector<ipv4Addr>;
 }
 
 Ipv4AddressTlvValue::~Ipv4AddressTlvValue()
@@ -1046,7 +1046,7 @@ Ipv4AddressTlvValue::GetSerializedSize() const
 void
 Ipv4AddressTlvValue::Serialize(Buffer::Iterator i) const
 {
-    for (std::vector<struct ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
+    for (std::vector<ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
          iter != m_ipv4Addr->end();
          ++iter)
     {
@@ -1072,7 +1072,7 @@ Ipv4AddressTlvValue::Deserialize(Buffer::Iterator i, uint64_t valueLength)
 void
 Ipv4AddressTlvValue::Add(Ipv4Address address, Ipv4Mask Mask)
 {
-    struct ipv4Addr tmp;
+    ipv4Addr tmp;
     tmp.Address = address;
     tmp.Mask = Mask;
     m_ipv4Addr->push_back(tmp);
@@ -1094,7 +1094,7 @@ Ipv4AddressTlvValue*
 Ipv4AddressTlvValue::Copy() const
 {
     Ipv4AddressTlvValue* tmp = new Ipv4AddressTlvValue();
-    for (std::vector<struct ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
+    for (std::vector<ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
          iter != m_ipv4Addr->end();
          ++iter)
     {

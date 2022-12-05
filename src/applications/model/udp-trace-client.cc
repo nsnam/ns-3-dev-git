@@ -231,9 +231,9 @@ UdpTraceClient::LoadDefaultTrace()
 {
     NS_LOG_FUNCTION(this);
     uint32_t prevTime = 0;
-    for (uint32_t i = 0; i < (sizeof(g_defaultEntries) / sizeof(struct TraceEntry)); i++)
+    for (uint32_t i = 0; i < (sizeof(g_defaultEntries) / sizeof(TraceEntry)); i++)
     {
-        struct TraceEntry entry = g_defaultEntries[i];
+        TraceEntry entry = g_defaultEntries[i];
         if (entry.frameType == 'B')
         {
             entry.timeToSend = 0;

@@ -465,11 +465,11 @@ class Time
      * user-provided time values in Time objects and Time objects
      * in user-expected time units.
      */
-    static void SetResolution(enum Unit resolution);
+    static void SetResolution(Unit resolution);
     /**
      * \returns The current global resolution.
      */
-    static enum Unit GetResolution();
+    static Unit GetResolution();
 
     /**
      * Create a Time in the current unit.
@@ -495,7 +495,7 @@ class Time
      * \param [in] unit The unit of \pname{value}
      * \return The Time representing \pname{value} in \c unit
      */
-    inline static Time FromInteger(uint64_t value, enum Unit unit)
+    inline static Time FromInteger(uint64_t value, Unit unit)
     {
         struct Information* info = PeekInformation(unit);
 
@@ -512,12 +512,12 @@ class Time
         return Time(value);
     }
 
-    inline static Time FromDouble(double value, enum Unit unit)
+    inline static Time FromDouble(double value, Unit unit)
     {
         return From(int64x64_t(value), unit);
     }
 
-    inline static Time From(const int64x64_t& value, enum Unit unit)
+    inline static Time From(const int64x64_t& value, Unit unit)
     {
         struct Information* info = PeekInformation(unit);
 
@@ -551,7 +551,7 @@ class Time
      * \param [in] unit The desired unit
      * \return The Time expressed in \pname{unit}
      */
-    inline int64_t ToInteger(enum Unit unit) const
+    inline int64_t ToInteger(Unit unit) const
     {
         struct Information* info = PeekInformation(unit);
 
@@ -569,12 +569,12 @@ class Time
         return v;
     }
 
-    inline double ToDouble(enum Unit unit) const
+    inline double ToDouble(Unit unit) const
     {
         return To(unit).GetDouble();
     }
 
-    inline int64x64_t To(enum Unit unit) const
+    inline int64x64_t To(Unit unit) const
     {
         struct Information* info = PeekInformation(unit);
 
@@ -600,7 +600,7 @@ class Time
      * \param [in] unit The unit to round to.
      * \return The Time rounded to the specific unit.
      */
-    Time RoundTo(enum Unit unit) const
+    Time RoundTo(Unit unit) const
     {
         return From(this->To(unit).Round(), unit);
     }
@@ -618,7 +618,7 @@ class Time
      * \param [in] unit The unit to use.
      * \return The Time with embedded unit.
      */
-    TimeWithUnit As(const enum Unit unit = Time::AUTO) const;
+    TimeWithUnit As(const Unit unit = Time::AUTO) const;
 
     /**
      * TracedCallback signature for Time
@@ -642,8 +642,8 @@ class Time
     /** Current time unit, and conversion info. */
     struct Resolution
     {
-        struct Information info[LAST]; //!<  Conversion info from current unit
-        enum Time::Unit unit;          //!<  Current time unit
+        Information info[LAST]; //!<  Conversion info from current unit
+        Time::Unit unit;        //!<  Current time unit
     };
 
     /**
@@ -663,7 +663,7 @@ class Time
      *  \param [in] timeUnit The Unit to get Information for
      *  \return The Information for \pname{timeUnit}
      */
-    static inline struct Information* PeekInformation(enum Unit timeUnit)
+    static inline struct Information* PeekInformation(Unit timeUnit)
     {
         return &(PeekResolution()->info[timeUnit]);
     }
@@ -681,9 +681,7 @@ class Time
      *  \param [in,out] resolution The Resolution record to update.
      *  \param [in] convert Whether to convert existing Time objects to the new resolution.
      */
-    static void SetResolution(enum Unit unit,
-                              struct Resolution* resolution,
-                              const bool convert = true);
+    static void SetResolution(Unit unit, Resolution* resolution, const bool convert = true);
 
     /**
      *  Record all instances of Time, so we can rescale them when
@@ -762,7 +760,7 @@ class Time
      *  Convert existing Times to the new unit.
      *  \param [in] unit The Unit to convert existing Times to.
      */
-    static void ConvertTimes(const enum Unit unit);
+    static void ConvertTimes(const Unit unit);
 
     // Operator and related functions which need access
 

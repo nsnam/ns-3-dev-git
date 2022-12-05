@@ -124,7 +124,7 @@ VsaManager::DoRepeat(VsaWork* vsa)
 }
 
 void
-VsaManager::DoSendVsa(enum VsaTransmitInterval interval,
+VsaManager::DoSendVsa(VsaTransmitInterval interval,
                       uint32_t channel,
                       Ptr<Packet> vsc,
                       OrganizationIdentifier oi,

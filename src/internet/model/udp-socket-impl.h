@@ -93,8 +93,8 @@ class UdpSocketImpl : public UdpSocket
      */
     void SetUdp(Ptr<UdpL4Protocol> udp);
 
-    enum SocketErrno GetErrno() const override;
-    enum SocketType GetSocketType() const override;
+    SocketErrno GetErrno() const override;
+    SocketType GetSocketType() const override;
     Ptr<Node> GetNode() const override;
     int Bind() override;
     int Bind6() override;
@@ -262,11 +262,11 @@ class UdpSocketImpl : public UdpSocket
     uint16_t m_defaultPort;                        //!< Default port
     TracedCallback<Ptr<const Packet>> m_dropTrace; //!< Trace for dropped packets
 
-    mutable enum SocketErrno m_errno; //!< Socket error code
-    bool m_shutdownSend;              //!< Send no longer allowed
-    bool m_shutdownRecv;              //!< Receive no longer allowed
-    bool m_connected;                 //!< Connection established
-    bool m_allowBroadcast;            //!< Allow send broadcast packets
+    mutable SocketErrno m_errno; //!< Socket error code
+    bool m_shutdownSend;         //!< Send no longer allowed
+    bool m_shutdownRecv;         //!< Receive no longer allowed
+    bool m_connected;            //!< Connection established
+    bool m_allowBroadcast;       //!< Allow send broadcast packets
 
     std::queue<std::pair<Ptr<Packet>, Address>> m_deliveryQueue; //!< Queue for incoming packets
     uint32_t m_rxAvailable; //!< Number of available bytes to be received

@@ -136,7 +136,7 @@ class OcbWifiMac : public WifiMac
      *
      * configure EDCA queue parameters
      */
-    void ConfigureEdca(uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum AcIndex ac);
+    void ConfigureEdca(uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, AcIndex ac);
 
     // below six public methods are used for MAC extension defined in IEEE 1609.4
     /**
@@ -169,7 +169,7 @@ class OcbWifiMac : public WifiMac
      * To support MAC extension for multiple channel operation,
      * Cancel transmit operation for internal queue associated with a specified Access Category.
      */
-    void CancleTx(enum AcIndex ac);
+    void CancleTx(AcIndex ac);
     /**
      * To support MAC extension for multiple channel operation,
      * Reset current MAC entity and flush its internal queues.
@@ -183,7 +183,7 @@ class OcbWifiMac : public WifiMac
     void SetWifiPhy(Ptr<WifiPhy> phy);
 
     // Inherited from base class
-    void ConfigureStandard(enum WifiStandard standard) override;
+    void ConfigureStandard(WifiStandard standard) override;
 
   protected:
     void DoDispose() override;

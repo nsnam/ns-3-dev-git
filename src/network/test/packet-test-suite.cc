@@ -565,7 +565,7 @@ PacketTest::DoCheck(Ptr<const Packet> p, uint32_t n, ...)
     while (i.HasNext() && j < expected.size())
     {
         ByteTagIterator::Item item = i.Next();
-        struct Expected e = expected[j];
+        Expected e = expected[j];
         std::ostringstream oss;
         oss << "anon::ATestTag<" << e.n << ">";
         NS_TEST_EXPECT_MSG_EQ(item.GetTypeId().GetName(), oss.str(), "trivial");
@@ -603,7 +603,7 @@ PacketTest::DoCheckData(Ptr<const Packet> p, uint32_t n, ...)
     while (i.HasNext() && j < expected.size())
     {
         ByteTagIterator::Item item = i.Next();
-        struct Expected e = expected[j];
+        Expected e = expected[j];
         std::ostringstream oss;
         oss << "anon::ATestTag<" << e.n << ">";
         NS_TEST_EXPECT_MSG_EQ(item.GetTypeId().GetName(), oss.str(), "trivial");

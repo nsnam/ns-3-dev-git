@@ -134,7 +134,7 @@ enum LogLevel
  * \param [in] name The log component name.
  * \param [in] level The logging level.
  */
-void LogComponentEnable(const char* name, enum LogLevel level);
+void LogComponentEnable(const char* name, LogLevel level);
 
 /**
  * Enable the logging output for all registered log components.
@@ -144,7 +144,7 @@ void LogComponentEnable(const char* name, enum LogLevel level);
  *
  * \param [in] level The logging level.
  */
-void LogComponentEnableAll(enum LogLevel level);
+void LogComponentEnableAll(LogLevel level);
 
 /**
  * Disable the logging output associated with that log component.
@@ -155,14 +155,14 @@ void LogComponentEnableAll(enum LogLevel level);
  * \param [in] name The log component name.
  * \param [in] level The logging level.
  */
-void LogComponentDisable(const char* name, enum LogLevel level);
+void LogComponentDisable(const char* name, LogLevel level);
 
 /**
  * Disable all logging for all components.
  *
  * \param [in] level The logging level.
  */
-void LogComponentDisableAll(enum LogLevel level);
+void LogComponentDisableAll(LogLevel level);
 
 } // namespace ns3
 
@@ -336,16 +336,14 @@ class LogComponent
      *                  a log level helps prevent recursion by logging in
      *                  functions which help implement the logging facility.
      */
-    LogComponent(const std::string& name,
-                 const std::string& file,
-                 const enum LogLevel mask = LOG_NONE);
+    LogComponent(const std::string& name, const std::string& file, const LogLevel mask = LOG_NONE);
     /**
      * Check if this LogComponent is enabled for \c level
      *
      * \param [in] level The level to check for.
      * \return \c true if we are enabled at \c level.
      */
-    bool IsEnabled(const enum LogLevel level) const;
+    bool IsEnabled(const LogLevel level) const;
     /**
      * Check if all levels are disabled.
      *
@@ -357,13 +355,13 @@ class LogComponent
      *
      * \param [in] level The LogLevel to enable.
      */
-    void Enable(const enum LogLevel level);
+    void Enable(const LogLevel level);
     /**
      * Disable logging at \c level for this LogComponent.
      *
      * \param [in] level The LogLevel to disable.
      */
-    void Disable(const enum LogLevel level);
+    void Disable(const LogLevel level);
     /**
      * Get the name of this LogComponent.
      *
@@ -381,13 +379,13 @@ class LogComponent
      * \param [in] level The LogLevel to get the label for.
      * \return The string label for \c level.
      */
-    static std::string GetLevelLabel(const enum LogLevel level);
+    static std::string GetLevelLabel(const LogLevel level);
     /**
      * Prevent the enabling of a specific LogLevel.
      *
      * \param [in] level The LogLevel to block.
      */
-    void SetMask(const enum LogLevel level);
+    void SetMask(const LogLevel level);
 
     /**
      * LogComponent name map.

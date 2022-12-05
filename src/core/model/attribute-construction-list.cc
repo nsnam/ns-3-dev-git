@@ -54,7 +54,7 @@ AttributeConstructionList::Add(std::string name,
         }
     }
     // store the new value.
-    struct Item attr;
+    Item attr;
     attr.checker = checker;
     attr.value = value;
     attr.name = name;

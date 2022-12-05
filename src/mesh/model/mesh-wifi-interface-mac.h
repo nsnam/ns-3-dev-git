@@ -208,7 +208,7 @@ class MeshWifiInterfaceMac : public WifiMac
      *
      * \param standard the WifiStandard being configured
      */
-    void ConfigureStandard(enum WifiStandard standard) override;
+    void ConfigureStandard(WifiStandard standard) override;
     /**
      * \param cwMin the minimum contention window size
      * \param cwMax the maximum contention window size

@@ -96,12 +96,12 @@ class ConfigStore : public ObjectBase
      * Set the mode of operation
      * \param mode mode of operation
      */
-    void SetMode(enum Mode mode);
+    void SetMode(Mode mode);
     /**
      * Set the file format
      * \param format the file format
      */
-    void SetFileFormat(enum FileFormat format);
+    void SetFileFormat(FileFormat format);
     /**
      * Set the filename
      * \param filename the file name
@@ -123,11 +123,11 @@ class ConfigStore : public ObjectBase
     void ConfigureAttributes();
 
   private:
-    enum Mode m_mode;             ///< store mode
-    enum FileFormat m_fileFormat; ///< store format
-    bool m_saveDeprecated;        ///< save deprecated attributes
-    std::string m_filename;       ///< store file name
-    FileConfig* m_file;           ///< configuration file
+    Mode m_mode;             ///< store mode
+    FileFormat m_fileFormat; ///< store format
+    bool m_saveDeprecated;   ///< save deprecated attributes
+    std::string m_filename;  ///< store file name
+    FileConfig* m_file;      ///< configuration file
 };
 
 /**

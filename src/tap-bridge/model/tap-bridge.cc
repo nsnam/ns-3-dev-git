@@ -1092,7 +1092,7 @@ TapBridge::GetAddress() const
 }
 
 void
-TapBridge::SetMode(enum Mode mode)
+TapBridge::SetMode(Mode mode)
 {
     NS_LOG_FUNCTION(this << mode);
     m_mode = mode;

@@ -136,7 +136,7 @@ class CommandPayloadHeader : public Header
      * Constructor
      * \param macCmd the command type of this command header
      */
-    CommandPayloadHeader(enum MacCommand macCmd);
+    CommandPayloadHeader(MacCommand macCmd);
     /**
      * \brief Get the type ID.
      * \return the object TypeId

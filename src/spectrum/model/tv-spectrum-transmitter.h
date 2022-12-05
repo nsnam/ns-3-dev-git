@@ -129,7 +129,7 @@ class TvSpectrumTransmitter : public SpectrumPhy
     /** Sets up signal to be transmitted */
     virtual void SetupTx();
 
-    enum TvType m_tvType;      //!< Type of TV transmitter
+    TvType m_tvType;           //!< Type of TV transmitter
     double m_startFrequency;   //!< Start frequency (in Hz) of TV transmitter's signal
     double m_channelBandwidth; //!< Bandwidth (in Hz) of TV transmitter's signal
     double m_basePsd; //!< Base power spectral density value (in dBm/Hz) of TV transmitter's signal

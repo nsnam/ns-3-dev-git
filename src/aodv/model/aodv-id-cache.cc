@@ -43,7 +43,7 @@ IdCache::IsDuplicate(Ipv4Address addr, uint32_t id)
             return true;
         }
     }
-    struct UniqueId uniqueId = {addr, id, m_lifetime + Simulator::Now()};
+    UniqueId uniqueId = {addr, id, m_lifetime + Simulator::Now()};
     m_idCache.push_back(uniqueId);
     return false;
 }

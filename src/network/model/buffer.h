@@ -802,9 +802,9 @@ class Buffer
         ~LocalStaticDestructor();
     };
 
-    static uint32_t g_maxSize;                                   //!< Max observed data size
-    static FreeList* g_freeList;                                 //!< Buffer data container
-    static struct LocalStaticDestructor g_localStaticDestructor; //!< Local static destructor
+    static uint32_t g_maxSize;                            //!< Max observed data size
+    static FreeList* g_freeList;                          //!< Buffer data container
+    static LocalStaticDestructor g_localStaticDestructor; //!< Local static destructor
 #endif
 };
 

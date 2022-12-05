@@ -63,7 +63,7 @@ class FileAggregator : public DataCollectionObject
      * outputFileName with values printed as specified by fileType.  The
      * default file type is space-separated.
      */
-    FileAggregator(const std::string& outputFileName, enum FileType fileType = SPACE_SEPARATED);
+    FileAggregator(const std::string& outputFileName, FileType fileType = SPACE_SEPARATED);
 
     ~FileAggregator() override;
 
@@ -74,7 +74,7 @@ class FileAggregator : public DataCollectionObject
      * \brief Set the file type to create, which determines the
      * separator to use when printing values to the file.
      */
-    void SetFileType(enum FileType fileType);
+    void SetFileType(FileType fileType);
 
     /**
      * \param heading the heading string.
@@ -344,7 +344,7 @@ class FileAggregator : public DataCollectionObject
     std::ofstream m_file;
 
     /// Determines the kind of file written by the aggregator.
-    enum FileType m_fileType;
+    FileType m_fileType;
 
     /// Printed between values in the file.
     std::string m_separator;
