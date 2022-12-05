@@ -258,7 +258,7 @@ NetmapNetDeviceHelper::CreateFileDescriptor() const
     // we wait for the child (the socket creator) to complete and read the
     // socket it created using the ancillary data mechanism.
     //
-    // Tom Goff reports the possiblility of a deadlock when trying to acquire the
+    // Tom Goff reports the possibility of a deadlock when trying to acquire the
     // python GIL here.  He says that this might be due to trying to access Python
     // objects after fork() without calling PyOS_AfterFork() to properly reset
     // Python state (including the GIL).  There is no code to cause the problem
@@ -375,7 +375,7 @@ NetmapNetDeviceHelper::CreateFileDescriptor() const
         // data we expect to receive and point it to buffer.
         //
         struct msghdr msg;
-        msg.msg_name = 0;
+        msg.msg_name = nullptr;
         msg.msg_namelen = 0;
         msg.msg_iov = &iov;
         msg.msg_iovlen = 1;
