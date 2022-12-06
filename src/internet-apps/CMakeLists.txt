@@ -2,6 +2,7 @@ build_lib(
   LIBNAME internet-apps
   SOURCE_FILES
     helper/dhcp-helper.cc
+    helper/ping-helper.cc
     helper/ping6-helper.cc
     helper/radvd-helper.cc
     helper/v4ping-helper.cc
@@ -18,6 +19,7 @@ build_lib(
     model/v4traceroute.cc
   HEADER_FILES
     helper/dhcp-helper.h
+    helper/ping-helper.h
     helper/ping6-helper.h
     helper/radvd-helper.h
     helper/v4ping-helper.h
