@@ -234,7 +234,7 @@ AodvExample::InstallInternetStack()
     {
         Ptr<OutputStreamWrapper> routingStream =
             Create<OutputStreamWrapper>("aodv.routes", std::ios::out);
-        aodv.PrintRoutingTableAllAt(Seconds(8), routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAllAt(Seconds(8), routingStream);
     }
 }
 

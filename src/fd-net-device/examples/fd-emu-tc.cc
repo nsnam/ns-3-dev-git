@@ -304,10 +304,9 @@ main(int argc, char* argv[])
         }
 #endif
 
-        Ipv4GlobalRoutingHelper g;
         Ptr<OutputStreamWrapper> routingStream =
             Create<OutputStreamWrapper>("router-routes.txt", std::ios::out);
-        g.PrintRoutingTableAllAt(Seconds(3), routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAllAt(Seconds(3), routingStream);
     }
 
     NS_LOG_INFO("Run Emulation.");

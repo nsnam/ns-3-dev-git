@@ -168,7 +168,7 @@ main(int argc, char* argv[])
     WifiHelper wifi;
     if (verbose)
     {
-        wifi.EnableLogComponents(); // Turn on all Wifi logging
+        WifiHelper::EnableLogComponents(); // Turn on all Wifi logging
     }
 
     YansWifiPhyHelper wifiPhy;
@@ -246,10 +246,10 @@ main(int argc, char* argv[])
         // Trace routing tables
         Ptr<OutputStreamWrapper> routingStream =
             Create<OutputStreamWrapper>("wifi-simple-adhoc-grid.routes", std::ios::out);
-        olsr.PrintRoutingTableAllEvery(Seconds(2), routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAllEvery(Seconds(2), routingStream);
         Ptr<OutputStreamWrapper> neighborStream =
             Create<OutputStreamWrapper>("wifi-simple-adhoc-grid.neighbors", std::ios::out);
-        olsr.PrintNeighborCacheAllEvery(Seconds(2), neighborStream);
+        Ipv4RoutingHelper::PrintNeighborCacheAllEvery(Seconds(2), neighborStream);
 
         // To do-- enable an IP-level trace that shows forwarding events only
     }

@@ -227,7 +227,7 @@ Experiment::Run(UanHelper& uan)
         {
             NS_FATAL_ERROR("Could not open ascii trace file: " << m_asciitracefile);
         }
-        uan.EnableAsciiAll(ascii);
+        UanHelper::EnableAsciiAll(ascii);
 
         Simulator::Run();
         sinkNode = nullptr;

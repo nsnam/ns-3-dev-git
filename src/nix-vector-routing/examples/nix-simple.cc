@@ -255,7 +255,7 @@ main(int argc, char* argv[])
                                       interfaces01.GetAddress(1),
                                       routingStream);
         // Trace routing tables
-        nixRouting.PrintRoutingTableAllAt(Seconds(8), routingStream);
+        Ipv4NixVectorHelper::PrintRoutingTableAllAt(Seconds(8), routingStream);
     }
     else
     {
@@ -302,7 +302,7 @@ main(int argc, char* argv[])
                                       interfaces01.GetAddress(1, 1),
                                       routingStream);
         // Trace routing tables
-        nixRouting.PrintRoutingTableAllAt(Seconds(8), routingStream);
+        Ipv6NixVectorHelper::PrintRoutingTableAllAt(Seconds(8), routingStream);
     }
 
     UdpEchoServerHelper echoServer(9);

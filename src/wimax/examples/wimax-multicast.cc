@@ -157,7 +157,7 @@ main(int argc, char* argv[])
     bsDevs.Add(dev);
     if (verbose)
     {
-        wimax.EnableLogComponents(); // Turn on all wimax logging
+        WimaxHelper::EnableLogComponents(); // Turn on all wimax logging
     }
 
     for (int i = 0; i < nbSS; i++)

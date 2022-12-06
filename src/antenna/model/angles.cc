@@ -132,7 +132,7 @@ operator<<(std::ostream& os, const Angles& a)
     double incl;
     std::string unit;
 
-    if (a.m_printDeg)
+    if (Angles::m_printDeg)
     {
         azim = RadiansToDegrees(a.m_azimuth);
         incl = RadiansToDegrees(a.m_inclination);

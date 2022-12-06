@@ -144,7 +144,7 @@ main(int argc, char* argv[])
     Ipv4InterfaceContainer BSinterface = address.Assign(bsDevs);
     if (verbose)
     {
-        wimax.EnableLogComponents(); // Turn on all wimax logging
+        WimaxHelper::EnableLogComponents(); // Turn on all wimax logging
     }
     /*------------------------------*/
     UdpServerHelper* udpServer = new UdpServerHelper[nbSS / 2];

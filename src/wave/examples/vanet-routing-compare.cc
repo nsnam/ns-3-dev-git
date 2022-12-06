@@ -549,7 +549,7 @@ RoutingHelper::SetupRoutingProtocol(NodeContainer& c)
     case 1:
         if (m_routingTables)
         {
-            olsr.PrintRoutingTableAllAt(rtt, rtw);
+            Ipv4RoutingHelper::PrintRoutingTableAllAt(rtt, rtw);
         }
         list.Add(olsr, 100);
         m_protocolName = "OLSR";
@@ -557,7 +557,7 @@ RoutingHelper::SetupRoutingProtocol(NodeContainer& c)
     case 2:
         if (m_routingTables)
         {
-            aodv.PrintRoutingTableAllAt(rtt, rtw);
+            Ipv4RoutingHelper::PrintRoutingTableAllAt(rtt, rtw);
         }
         list.Add(aodv, 100);
         m_protocolName = "AODV";
@@ -565,7 +565,7 @@ RoutingHelper::SetupRoutingProtocol(NodeContainer& c)
     case 3:
         if (m_routingTables)
         {
-            dsdv.PrintRoutingTableAllAt(rtt, rtw);
+            ns3::DsdvHelper::PrintRoutingTableAllAt(rtt, rtw);
         }
         list.Add(dsdv, 100);
         m_protocolName = "DSDV";
@@ -2293,9 +2293,9 @@ VanetRoutingExperiment::SetupAdhocDevices()
     Wifi80211pHelper wifi80211p = Wifi80211pHelper::Default();
     if (m_verbose)
     {
-        wifi80211p.EnableLogComponents(); // Turn on all Wifi 802.11p logging
+        Wifi80211pHelper::EnableLogComponents(); // Turn on all Wifi 802.11p logging
         // likewise, turn on WAVE PHY logging
-        waveHelper.EnableLogComponents();
+        WaveHelper::EnableLogComponents();
     }
 
     WifiHelper wifi;

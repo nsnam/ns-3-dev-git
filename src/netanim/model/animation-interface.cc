@@ -611,13 +611,13 @@ AnimationInterface::GetElementsFromContext(const std::string& context) const
     std::vector<std::string> elements;
     std::size_t pos1 = 0;
     std::size_t pos2;
-    while (pos1 != context.npos)
+    while (pos1 != std::string::npos)
     {
         pos1 = context.find('/', pos1);
         pos2 = context.find('/', pos1 + 1);
         elements.push_back(context.substr(pos1 + 1, pos2 - (pos1 + 1)));
         pos1 = pos2;
-        pos2 = context.npos;
+        pos2 = std::string::npos;
     }
     return elements;
 }

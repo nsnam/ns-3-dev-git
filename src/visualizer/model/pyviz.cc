@@ -43,7 +43,7 @@ PathSplit(std::string str)
 {
     std::vector<std::string> results;
     size_t cutAt;
-    while ((cutAt = str.find_first_of('/')) != str.npos)
+    while ((cutAt = str.find_first_of('/')) != std::string::npos)
     {
         if (cutAt > 0)
         {

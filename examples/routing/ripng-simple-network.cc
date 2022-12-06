@@ -218,24 +218,22 @@ main(int argc, char** argv)
 
     if (printRoutingTables)
     {
-        RipNgHelper routingHelper;
-
         Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
 
-        routingHelper.PrintRoutingTableAt(Seconds(30.0), a, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(30.0), b, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(30.0), c, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(30.0), d, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(30.0), a, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(30.0), b, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(30.0), c, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(30.0), d, routingStream);
 
-        routingHelper.PrintRoutingTableAt(Seconds(60.0), a, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(60.0), b, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(60.0), c, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(60.0), d, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(60.0), a, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(60.0), b, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(60.0), c, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(60.0), d, routingStream);
 
-        routingHelper.PrintRoutingTableAt(Seconds(90.0), a, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(90.0), b, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(90.0), c, routingStream);
-        routingHelper.PrintRoutingTableAt(Seconds(90.0), d, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(90.0), a, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(90.0), b, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(90.0), c, routingStream);
+        Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(90.0), d, routingStream);
     }
 
     NS_LOG_INFO("Create Applications.");

@@ -120,9 +120,8 @@ main(int argc, char** argv)
     i3.SetForwarding(0, true);
     i3.SetDefaultRouteInAllNodes(0);
 
-    Ipv6StaticRoutingHelper routingHelper;
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
-    routingHelper.PrintRoutingTableAt(Seconds(0), r1, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(0), r1, routingStream);
 
     // Create an UDP Echo server on n2
     UdpEchoServerHelper echoServer(42);

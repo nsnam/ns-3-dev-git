@@ -297,8 +297,8 @@ NixVectorRoutingTest::DoRun()
     ifIndex = ipv6->GetInterfaceForDevice(dAdC.Get(0));
     Simulator::Schedule(Seconds(5), &Ipv6::SetDown, ipv6, ifIndex);
 
-    ipv4NixRouting.PrintRoutingTableAllAt(Seconds(7), cacheStreamv4);
-    ipv6NixRouting.PrintRoutingTableAllAt(Seconds(7), cacheStreamv6);
+    Ipv4NixVectorHelper::PrintRoutingTableAllAt(Seconds(7), cacheStreamv4);
+    Ipv6NixVectorHelper::PrintRoutingTableAllAt(Seconds(7), cacheStreamv6);
 
     SendData(Seconds(8), txSocket, Ipv4Address("10.1.3.2"));
     SendData(Seconds(8), txSocket, Ipv6Address("2001:3::200:ff:fe00:8"));

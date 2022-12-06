@@ -146,7 +146,7 @@ main(int argc, char* argv[])
     Wifi80211pHelper wifi80211p = Wifi80211pHelper::Default();
     if (verbose)
     {
-        wifi80211p.EnableLogComponents(); // Turn on all Wifi 802.11p logging
+        Wifi80211pHelper::EnableLogComponents(); // Turn on all Wifi 802.11p logging
     }
 
     wifi80211p.SetRemoteStationManager("ns3::ConstantRateWifiManager",

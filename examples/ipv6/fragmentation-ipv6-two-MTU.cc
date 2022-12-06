@@ -95,9 +95,8 @@ main(int argc, char** argv)
     i2.SetForwarding(0, true);
     i2.SetDefaultRouteInAllNodes(0);
 
-    Ipv6StaticRoutingHelper routingHelper;
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
-    routingHelper.PrintRoutingTableAt(Seconds(0), n0, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(0), n0, routingStream);
 
     /* Create a UdpEchoClient and UdpEchoServer application to send packets from n0 to n1 via r */
     uint32_t packetSize = 4096;

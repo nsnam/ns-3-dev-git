@@ -114,8 +114,8 @@ main(int argc, char** argv)
                             iic1.GetInterfaceIndex(1));
 
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
-    routingHelper.PrintRoutingTableAt(Seconds(0.0), r1, routingStream);
-    routingHelper.PrintRoutingTableAt(Seconds(3.0), sta1, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(0.0), r1, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(3.0), sta1, routingStream);
 
     NS_LOG_INFO("Create Applications.");
     uint32_t packetSize = 1024;
