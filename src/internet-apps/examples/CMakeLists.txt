@@ -21,3 +21,14 @@ build_lib_example(
     ${libwifi}
     ${libinternet-apps}
 )
+
+build_lib_example(
+  NAME ping-example
+  SOURCE_FILES ping-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libinternet}
+    ${libinternet-apps}
+    ${libnix-vector-routing}
+    ${libpoint-to-point}
+)
