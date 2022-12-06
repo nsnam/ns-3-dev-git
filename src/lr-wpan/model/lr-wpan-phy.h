@@ -529,21 +529,6 @@ class LrWpanPhy : public SpectrumPhy
                                         LrWpanPhyEnumeration oldState,
                                         LrWpanPhyEnumeration newState);
 
-  protected:
-    /**
-     * The data and symbol rates for the different PHY options.
-     * See Table 1 in section 6.1.1 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE 802.15.4d-2009.
-     * Bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
-     */
-    static const LrWpanPhyDataAndSymbolRates dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPTION];
-    /**
-     * The preamble, SFD, and PHR lengths in symbols for the different PHY options.
-     * See Table 19 and Table 20 in section 6.3 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE
-     * 802.15.4d-2009.
-     */
-    static const LrWpanPhyPpduHeaderSymbolNumber
-        ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION];
-
   private:
     /**
      * The second is true if the first is flagged as error/invalid.
