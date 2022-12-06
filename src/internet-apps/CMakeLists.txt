@@ -35,4 +35,5 @@ build_lib(
   LIBRARIES_TO_LINK ${libinternet}
   TEST_SOURCES test/dhcp-test.cc
                test/ipv6-radvd-test.cc
+               test/ping-test.cc
 )
