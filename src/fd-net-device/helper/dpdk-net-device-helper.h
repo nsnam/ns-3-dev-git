@@ -37,9 +37,6 @@ class DpdkNetDeviceHelper : public EmuFdNetDeviceHelper
   public:
     /**
      * Construct a DpdkNetDeviceHelper and initialize DPDK EAL
-     *
-     * \param argc Dpdk EAL args count.
-     * \param argv Dpdk EAL args list.
      */
     DpdkNetDeviceHelper();
 
