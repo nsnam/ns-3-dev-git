@@ -9,6 +9,7 @@ build_lib(
     model/dhcp-client.cc
     model/dhcp-header.cc
     model/dhcp-server.cc
+    model/ping.cc
     model/ping6.cc
     model/radvd-interface.cc
     model/radvd-prefix.cc
@@ -24,6 +25,7 @@ build_lib(
     model/dhcp-client.h
     model/dhcp-header.h
     model/dhcp-server.h
+    model/ping.h
     model/ping6.h
     model/radvd-interface.h
     model/radvd-prefix.h
