@@ -24,8 +24,8 @@
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/network-module.h"
+#include "ns3/ping-helper.h"
 #include "ns3/point-to-point-module.h"
-#include "ns3/v4ping-helper.h"
 #include "ns3/yans-wifi-helper.h"
 
 #include <cmath>
@@ -46,8 +46,8 @@ using namespace ns3;
  *
  * When 1/3 of simulation time has elapsed, one of the nodes is moved out of
  * range, thereby breaking the topology.  By default, this will result in
- * only 34 of 100 pings being received.  If the step size is reduced
- * to cover the gap, then all pings can be received.
+ * stopping ping replies reception after sequence number 33. If the step size is reduced
+ * to cover the gap, then also the following pings can be received.
  */
 class AodvExample
 {
@@ -241,8 +241,8 @@ AodvExample::InstallInternetStack()
 void
 AodvExample::InstallApplications()
 {
-    V4PingHelper ping(interfaces.GetAddress(size - 1));
-    ping.SetAttribute("Verbose", BooleanValue(true));
+    PingHelper ping(interfaces.GetAddress(size - 1));
+    ping.SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::VERBOSE));
 
     ApplicationContainer p = ping.Install(nodes.Get(0));
     p.Start(Seconds(0));

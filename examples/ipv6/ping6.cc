@@ -43,9 +43,11 @@ int
 main(int argc, char** argv)
 {
     bool verbose = false;
+    bool allNodes = false;
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("verbose", "turn on log components", verbose);
+    cmd.AddValue("allNodes", "Ping all the nodes (true) or just one neighbor (false)", allNodes);
     cmd.Parse(argc, argv);
 
     if (verbose)
@@ -57,7 +59,7 @@ main(int argc, char** argv)
         LogComponentEnable("Ipv6ListRouting", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
         LogComponentEnable("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
+        LogComponentEnable("Ping", LOG_LEVEL_ALL);
         LogComponentEnable("NdiscCache", LOG_LEVEL_ALL);
     }
 
@@ -82,25 +84,18 @@ main(int argc, char** argv)
 
     NS_LOG_INFO("Create Applications.");
 
-    /* Create a Ping6 application to send ICMPv6 echo request from node zero to
-     * all-nodes (ff02::1).
-     */
+    // Create a Ping application to send ICMPv6 echo request from node zero
     uint32_t packetSize = 1024;
     uint32_t maxPacketCount = 5;
-    Time interPacketInterval = Seconds(1.);
-    Ping6Helper ping6;
 
-    /*
-    ping6.SetLocal (i.GetAddress (0, 1));
-    ping6.SetRemote (i.GetAddress (1, 1));
-    */
-    ping6.SetIfIndex(i.GetInterfaceIndex(0));
-    ping6.SetRemote(Ipv6Address::GetAllNodesMulticast());
+    Ipv6Address destination = allNodes ? Ipv6Address::GetAllNodesMulticast() : i.GetAddress(1, 0);
+    PingHelper ping(destination);
 
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(n.Get(0));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ping.SetAttribute("InterfaceAddress", AddressValue(i.GetAddress(0, 0)));
+
+    ApplicationContainer apps = ping.Install(n.Get(0));
     apps.Start(Seconds(2.0));
     apps.Stop(Seconds(10.0));
 

@@ -52,6 +52,9 @@ Ping6Helper::SetAttribute(std::string name, const AttributeValue& value)
 ApplicationContainer
 Ping6Helper::Install(NodeContainer c)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
     ApplicationContainer apps;
     for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
@@ -65,6 +68,8 @@ Ping6Helper::Install(NodeContainer c)
         apps.Add(client);
     }
     return apps;
+
+#pragma GCC diagnostic pop
 }
 
 void

@@ -60,7 +60,7 @@ main(int argc, char** argv)
 
     if (verbose)
     {
-        LogComponentEnable("Ipv6ExtensionLooseRouting", LOG_LEVEL_ALL);
+        // LogComponentEnable("Ipv6ExtensionLooseRouting", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6Extension", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6L3Protocol", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6StaticRouting", LOG_LEVEL_ALL);
@@ -68,6 +68,8 @@ main(int argc, char** argv)
         LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
         LogComponentEnable("NdiscCache", LOG_LEVEL_ALL);
     }
+
+    // LogComponentEnable("Ping", LOG_LEVEL_INFO);
 
     NS_LOG_INFO("Create nodes.");
     Ptr<Node> h0 = CreateObject<Node>();
@@ -164,16 +166,16 @@ main(int argc, char** argv)
     routersAddress.push_back(i6.GetAddress(1, 1));
     routersAddress.push_back(i2.GetAddress(0, 1));
 
-    Ping6Helper client;
-    /* remote address is first routers in RH0 => source routing */
-    client.SetRemote(i1.GetAddress(1, 1));
-    client.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    // remote address is first routers in RH0 => source routing
+    PingHelper client(i1.GetAddress(1, 1));
+    client.SetAttribute("Count", UintegerValue(maxPacketCount));
     client.SetAttribute("Interval", TimeValue(interPacketInterval));
-    client.SetAttribute("PacketSize", UintegerValue(packetSize));
-    client.SetRoutersAddress(routersAddress);
+    client.SetAttribute("Size", UintegerValue(packetSize));
     ApplicationContainer apps = client.Install(h0);
+    DynamicCast<Ping>(apps.Get(0))->SetRouters(routersAddress);
+
     apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Stop(Seconds(20.0));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("loose-routing-ipv6.tr"));

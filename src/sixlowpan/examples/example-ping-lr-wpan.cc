@@ -49,7 +49,7 @@ main(int argc, char** argv)
 
     if (verbose)
     {
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
+        LogComponentEnable("Ping", LOG_LEVEL_ALL);
         LogComponentEnable("LrWpanMac", LOG_LEVEL_ALL);
         LogComponentEnable("LrWpanPhy", LOG_LEVEL_ALL);
         LogComponentEnable("LrWpanNetDevice", LOG_LEVEL_ALL);
@@ -107,21 +107,18 @@ main(int argc, char** argv)
                   << deviceInterfaces.GetAddress(1, 1) << std::endl;
     }
 
-    uint32_t packetSize = 10;
+    uint32_t packetSize = 16;
     uint32_t maxPacketCount = 5;
     Time interPacketInterval = Seconds(1.);
-    Ping6Helper ping6;
+    PingHelper ping(deviceInterfaces.GetAddress(1, 1));
 
-    ping6.SetLocal(deviceInterfaces.GetAddress(0, 1));
-    ping6.SetRemote(deviceInterfaces.GetAddress(1, 1));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(nodes.Get(0));
 
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(nodes.Get(0));
-
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2.0));
+    apps.Stop(Seconds(20.0));
 
     if (!disableAsciiTrace)
     {
@@ -138,7 +135,7 @@ main(int argc, char** argv)
         Ipv6RoutingHelper::PrintNeighborCacheAllAt(Seconds(9), routingStream);
     }
 
-    Simulator::Stop(Seconds(10));
+    Simulator::Stop(Seconds(20));
 
     Simulator::Run();
     Simulator::Destroy();

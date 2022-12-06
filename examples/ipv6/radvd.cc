@@ -26,7 +26,7 @@
 // //                router
 // // - R sends RA to n0's subnet (2001:1::/64);
 // // - R sends RA to n1's subnet (2001:2::/64);
-// // - n0 ping6 n1.
+// // - n0 ping n1.
 // //
 // // - Tracing of queues and packet receptions to file "radvd.tr"
 
@@ -62,7 +62,7 @@ main(int argc, char** argv)
         LogComponentEnable("Ipv6StaticRouting", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
         LogComponentEnable("RadvdApplication", LOG_LEVEL_ALL);
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
+        LogComponentEnable("Ping", LOG_LEVEL_ALL);
     }
 
     NS_LOG_INFO("Create nodes.");
@@ -129,21 +129,15 @@ main(int argc, char** argv)
     radvdApps.Start(Seconds(1.0));
     radvdApps.Stop(Seconds(10.0));
 
-    /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via R */
+    /* Create a Ping application to send ICMPv6 echo request from n0 to n1 via R */
     uint32_t packetSize = 1024;
     uint32_t maxPacketCount = 5;
-    Time interPacketInterval = Seconds(1.);
-    Ping6Helper ping6;
-
-    /* ping6.SetLocal (iic1.GetAddress (0, 1)); */
-    ping6.SetRemote(
+    PingHelper ping(
         Ipv6Address("2001:2::200:ff:fe00:4")); /* should be n1 address after autoconfiguration */
-    ping6.SetIfIndex(iic1.GetInterfaceIndex(0));
 
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(net1.Get(0));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(net1.Get(0));
     apps.Start(Seconds(2.0));
     apps.Stop(Seconds(7.0));
 

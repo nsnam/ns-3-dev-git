@@ -65,10 +65,15 @@ V4PingHelper::Install(NodeContainer c) const
 Ptr<Application>
 V4PingHelper::InstallPriv(Ptr<Node> node) const
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
     Ptr<V4Ping> app = m_factory.Create<V4Ping>();
     node->AddApplication(app);
 
     return app;
+
+#pragma GCC diagnostic pop
 }
 
 } // namespace ns3

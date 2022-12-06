@@ -30,6 +30,7 @@
 // //
 // // - Tracing of queues and packet receptions to file "fragmentation-ipv6-PMTU.tr"
 
+#include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-apps-module.h"
@@ -60,8 +61,10 @@ main(int argc, char** argv)
         LogComponentEnable("Icmpv6L4Protocol", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6StaticRouting", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
+        LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
+        LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
     }
+    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
 
     NS_LOG_INFO("Create nodes.");
     Ptr<Node> n0 = CreateObject<Node>();
@@ -121,31 +124,30 @@ main(int argc, char** argv)
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
     routingHelper.PrintRoutingTableAt(Seconds(0), r1, routingStream);
 
-    /* Create a Ping6 application to send ICMPv6 echo request from r to n2 */
-    uint32_t packetSize = 1600; // Packet should fragment as intermediate link MTU is 1500
+    // Create an UDP Echo server on n2
+    UdpEchoServerHelper echoServer(42);
+    ApplicationContainer serverApps = echoServer.Install(n2);
+    serverApps.Start(Seconds(0.0));
+    serverApps.Stop(Seconds(30.0));
+
     uint32_t maxPacketCount = 5;
-    Time interPacketInterval = Seconds(1.0);
-    Ping6Helper ping6;
 
-    ping6.SetLocal(i2.GetAddress(1, 1));
-    ping6.SetRemote(i3.GetAddress(1, 1));
+    // Create an UDP Echo client on n1 to send UDP packets to n2 via r1
+    uint32_t packetSizeN1 = 1600; // Packet should fragment as intermediate link MTU is 1500
+    UdpEchoClientHelper echoClient(i3.GetAddress(1, 1), 42);
+    echoClient.SetAttribute("PacketSize", UintegerValue(packetSizeN1));
+    echoClient.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    ApplicationContainer clientAppsN1 = echoClient.Install(n1);
+    clientAppsN1.Start(Seconds(2.0));
+    clientAppsN1.Stop(Seconds(10.0));
 
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(n1);
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
-
-    /* Create a Ping6 application to send ICMPv6 echo request from n0 to n2 */
-    packetSize = 4000;
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-
-    ping6.SetLocal(i1.GetAddress(0, 1));
-    ping6.SetRemote(i3.GetAddress(1, 1));
-    apps = ping6.Install(n0);
-    apps.Start(Seconds(11.0));
-    apps.Stop(Seconds(20.0));
+    // Create an UDP Echo client on n0 to send UDP packets to n2 via r0 and r1
+    uint32_t packetSizeN2 = 4000; // Packet should fragment as intermediate link MTU is 1500
+    echoClient.SetAttribute("PacketSize", UintegerValue(packetSizeN2));
+    echoClient.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    ApplicationContainer clientAppsN2 = echoClient.Install(n1);
+    clientAppsN2.Start(Seconds(11.0));
+    clientAppsN2.Stop(Seconds(20.0));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("fragmentation-ipv6-PMTU.tr"));

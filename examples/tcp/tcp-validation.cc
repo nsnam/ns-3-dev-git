@@ -344,7 +344,7 @@ TraceSecondDctcp(std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
  * \param rtt RTT value.
  */
 void
-TracePingRtt(std::ofstream* ofStream, Time rtt)
+TracePingRtt(std::ofstream* ofStream, uint16_t, Time rtt)
 {
     if (g_validate == "")
     {
@@ -975,12 +975,13 @@ main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////
     // application setup                                      //
     ////////////////////////////////////////////////////////////
-    V4PingHelper pingHelper("192.168.1.2");
+    PingHelper pingHelper(Ipv4Address("192.168.1.2"));
     pingHelper.SetAttribute("Interval", TimeValue(pingInterval));
     pingHelper.SetAttribute("Size", UintegerValue(pingSize));
+    pingHelper.SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::SILENT));
     ApplicationContainer pingContainer = pingHelper.Install(pingServer);
-    Ptr<V4Ping> v4Ping = pingContainer.Get(0)->GetObject<V4Ping>();
-    v4Ping->TraceConnectWithoutContext("Rtt", MakeBoundCallback(&TracePingRtt, &pingOfStream));
+    Ptr<Ping> ping = pingContainer.Get(0)->GetObject<Ping>();
+    ping->TraceConnectWithoutContext("Rtt", MakeBoundCallback(&TracePingRtt, &pingOfStream));
     pingContainer.Start(Seconds(1));
     pingContainer.Stop(stopTime - Seconds(1));
 

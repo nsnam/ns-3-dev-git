@@ -38,13 +38,13 @@
 #include "ns3/packet-socket-address.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet.h"
+#include "ns3/ping-helper.h"
 #include "ns3/pointer.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/uinteger.h"
-#include "ns3/v4ping-helper.h"
 
 #include <string>
 
@@ -784,23 +784,18 @@ class CsmaPingTestCase : public TestCase
     void DoRun() override;
     /**
      * Sink called when a packet is received by a node.
-     * \param p Received packet (unused).
-     * \param ad Sender's address (uused).
      */
-    void SinkRx(Ptr<const Packet> p, const Address& ad);
+    void SinkRx(Ptr<const Packet>, const Address&);
 
     /**
      * Sink called when a PING ois received.
-     * \param context Context path (unused).
-     * \param rtt Round Trip Time (unused).
      */
-    void PingRtt(std::string context, Time rtt);
+    void PingRtt(std::string, uint16_t, Time);
 
     /**
      * Sink called when a packet is dropped.
-     * \param p Received packet (unused).
      */
-    void DropEvent(Ptr<const Packet> p);
+    void DropEvent(Ptr<const Packet>);
 
     uint32_t m_countSinkRx;  //!< Counter of received packets.
     uint32_t m_countPingRtt; //!< Counter of PING received.
@@ -821,19 +816,19 @@ CsmaPingTestCase::~CsmaPingTestCase()
 }
 
 void
-CsmaPingTestCase::SinkRx(Ptr<const Packet> p, const Address& ad)
+CsmaPingTestCase::SinkRx(Ptr<const Packet>, const Address&)
 {
     m_countSinkRx++;
 }
 
 void
-CsmaPingTestCase::PingRtt(std::string context, Time rtt)
+CsmaPingTestCase::PingRtt(std::string, uint16_t, Time)
 {
     m_countPingRtt++;
 }
 
 void
-CsmaPingTestCase::DropEvent(Ptr<const Packet> p)
+CsmaPingTestCase::DropEvent(Ptr<const Packet>)
 {
     m_drops++;
 }
@@ -888,7 +883,7 @@ CsmaPingTestCase::DoRun()
     apps.Start(Seconds(0.0));
     apps.Stop(Seconds(11.0));
 
-    V4PingHelper ping = V4PingHelper(addresses.GetAddress(2));
+    PingHelper ping(addresses.GetAddress(2));
     NodeContainer pingers;
     pingers.Add(c.Get(0));
     pingers.Add(c.Get(1));
@@ -902,7 +897,7 @@ CsmaPingTestCase::DoRun()
                                   MakeCallback(&CsmaPingTestCase::SinkRx, this));
 
     // Trace pings
-    Config::Connect("/NodeList/*/ApplicationList/*/$ns3::V4Ping/Rtt",
+    Config::Connect("/NodeList/*/ApplicationList/*/$ns3::Ping/Rtt",
                     MakeCallback(&CsmaPingTestCase::PingRtt, this));
 
     Simulator::Run();

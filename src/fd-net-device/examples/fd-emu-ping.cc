@@ -94,9 +94,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("PingEmulationExample");
 
 static void
-PingRtt(std::string context, Time rtt)
+PingRtt(std::string context, uint16_t seqNo, Time rtt)
 {
-    NS_LOG_UNCOND("Received Response with RTT = " << rtt);
+    NS_LOG_UNCOND("Received " << seqNo << " Response with RTT = " << rtt);
 }
 
 int
@@ -269,10 +269,10 @@ main(int argc, char* argv[])
     // of a hassle and since there is no law that says we cannot mix the
     // helper API with the low level API, let's just use the helper.
     //
-    NS_LOG_INFO("Create V4Ping Appliation");
-    Ptr<V4Ping> app = CreateObject<V4Ping>();
-    app->SetAttribute("Remote", Ipv4AddressValue(remoteIp));
-    app->SetAttribute("Verbose", BooleanValue(true));
+    NS_LOG_INFO("Create Ping Appliation");
+    Ptr<Ping> app = CreateObject<Ping>();
+    app->SetAttribute("Destination", AddressValue(remoteIp));
+    app->SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::VERBOSE));
     node->AddApplication(app);
     app->SetStartTime(Seconds(1.0));
     app->SetStopTime(Seconds(22.0));
