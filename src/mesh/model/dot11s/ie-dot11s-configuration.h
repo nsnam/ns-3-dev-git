@@ -31,33 +31,33 @@ namespace dot11s
 // according to IEEE 802.11 - 2012
 
 // in 7.3.2.98.2 Active Path Selection Protocol Identifier - 802.11s-2011
-enum dot11sPathSelectionProtocol
+enum Dot11sPathSelectionProtocol
 {
     PROTOCOL_HWMP = 0x01,
 };
 
 // in 7.3.2.98.3 Active Path Selection Metric Identifier - 802.11s-2011
-enum dot11sPathSelectionMetric
+enum Dot11sPathSelectionMetric
 {
     METRIC_AIRTIME = 0x01,
 };
 
 // in 7.3.2.98.4 Congestion Control Mode Identifier - 802.11s-2011
-enum dot11sCongestionControlMode
+enum Dot11sCongestionControlMode
 {
     CONGESTION_SIGNALING = 0x01,
     CONGESTION_NULL = 0x00,
 };
 
 // in 7.3.2.98.5 Synchronization Method Identifier - 802.11s-2011
-enum dot11sSynchronizationProtocolIdentifier
+enum Dot11sSynchronizationProtocolIdentifier
 {
     SYNC_NEIGHBOUR_OFFSET = 0x01, // Neighbor offset synchronization method
     SYNC_NULL = 0x00,             // Reserved
 };
 
 // in 7.3.2.98.6 Authentication Protocol Identifier - 802.11s-2011
-enum dot11sAuthenticationProtocol
+enum Dot11sAuthenticationProtocol
 {
     AUTH_NULL =
         0x00, // No authentication method is required to establish mesh peerings within the MBSS
@@ -134,12 +134,12 @@ class IeConfiguration : public WifiInformationElement
      * Set routing value
      * \param routingId the routing ID
      */
-    void SetRouting(dot11sPathSelectionProtocol routingId);
+    void SetRouting(Dot11sPathSelectionProtocol routingId);
     /**
      * Set metric value
      * \param metricId the path selection metric
      */
-    void SetMetric(dot11sPathSelectionMetric metricId);
+    void SetMetric(Dot11sPathSelectionMetric metricId);
     /**
      * Is HWMP function
      * \returns true if Active Path Selection Protocol Identifier field set
@@ -177,15 +177,15 @@ class IeConfiguration : public WifiInformationElement
 
   private:
     /** Active Path Selection Protocol ID */
-    dot11sPathSelectionProtocol m_APSPId;
+    Dot11sPathSelectionProtocol m_APSPId;
     /** Active Path Metric ID */
-    dot11sPathSelectionMetric m_APSMId;
+    Dot11sPathSelectionMetric m_APSMId;
     /** Congestion Control Mode ID */
-    dot11sCongestionControlMode m_CCMId;
+    Dot11sCongestionControlMode m_CCMId;
     /** Sync protocol ID */
-    dot11sSynchronizationProtocolIdentifier m_SPId;
+    Dot11sSynchronizationProtocolIdentifier m_SPId;
     /** Auth protocol ID */
-    dot11sAuthenticationProtocol m_APId;
+    Dot11sAuthenticationProtocol m_APId;
     /** Mesh capability */
     Dot11sMeshCapability m_meshCap;
     uint8_t m_neighbors; ///< neighbors

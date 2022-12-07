@@ -93,7 +93,7 @@ class LteRrcSap
     struct RlcConfig
     {
         /// the direction choice
-        enum direction
+        enum Direction
         {
             AM,
             UM_BI_DIRECTIONAL,
@@ -101,7 +101,7 @@ class LteRrcSap
             UM_UNI_DIRECTIONAL_DL
         };
 
-        direction choice; ///< direction choice
+        Direction choice; ///< direction choice
     };
 
     /// LogicalChannelConfig structure
@@ -117,13 +117,13 @@ class LteRrcSap
     struct SoundingRsUlConfigCommon
     {
         /// the config action
-        enum action
+        enum Action
         {
             SETUP,
             RESET
         };
 
-        action type; ///< action type
+        Action type; ///< action type
 
         uint16_t srsBandwidthConfig; ///< SRS bandwidth config
         uint8_t srsSubframeConfig;   ///< SRS subframe config
@@ -133,13 +133,13 @@ class LteRrcSap
     struct SoundingRsUlConfigDedicated
     {
         /// the config action
-        enum action
+        enum Action
         {
             SETUP,
             RESET
         };
 
-        action type; ///< action type
+        Action type; ///< action type
 
         uint16_t srsBandwidth;   ///< SRS bandwidth
         uint16_t srsConfigIndex; ///< SRS config index
@@ -165,7 +165,7 @@ class LteRrcSap
          * P_A values, TS 36.331 6.3.2 PDSCH-Config
          * ENUMERATED { dB-6, dB-4dot77, dB-3, dB-1dot77, dB0, dB1, dB2, dB3 }
          */
-        enum db
+        enum Db
         {
             dB_6,
             dB_4dot77,
@@ -411,13 +411,13 @@ class LteRrcSap
         uint16_t timeToTrigger;
 
         /// the report purpose
-        enum report
+        enum Report
         {
             REPORT_STRONGEST_CELLS,
             REPORT_CGI
         };
 
-        report purpose; ///< purpose
+        Report purpose; ///< purpose
 
         /// Trigger type enumeration
         enum
@@ -495,22 +495,22 @@ class LteRrcSap
     struct MeasGapConfig
     {
         /// the action type
-        enum action
+        enum Action
         {
             SETUP,
             RESET
         };
 
-        action type; ///< action type
+        Action type; ///< action type
 
         /// the gap offset
-        enum gap
+        enum Gap
         {
             GP0,
             GP1
         };
 
-        gap gapOffsetChoice; ///< gap offset
+        Gap gapOffsetChoice; ///< gap offset
 
         uint8_t gapOffsetValue; ///< gap offset value
     };
@@ -536,13 +536,13 @@ class LteRrcSap
     struct SpeedStatePars
     {
         /// the action type
-        enum action
+        enum Action
         {
             SETUP,
             RESET
         };
 
-        action type; ///< action type
+        Action type; ///< action type
 
         MobilityStateParameters mobilityStateParameters; ///< mobility state parameters
         SpeedStateScaleFactors timeToTriggerSf;          ///< time to trigger scale factors

@@ -40,7 +40,7 @@ namespace ns3
  * \ingroup ptr
  * \brief Empty class, used as a default parent class for SimpleRefCount
  */
-class empty
+class Empty
 {
 };
 
@@ -66,7 +66,7 @@ class empty
  *      common C++ template pattern whose name is CRTP (Curiously
  *      Recursive Template Pattern)
  * \tparam PARENT \explicit The typename of the parent of this template.
- *      By default, this typename is "'ns3::empty'" which is an empty
+ *      By default, this typename is "'ns3::Empty'" which is an empty
  *      class: compilers which implement the EBCO optimization (empty
  *      base class optimization) will make this a no-op
  * \tparam DELETER \explicit The typename of a class which implements
@@ -76,7 +76,7 @@ class empty
  *
  * Interesting users of this class include ns3::Object as well as ns3::Packet.
  */
-template <typename T, typename PARENT = empty, typename DELETER = DefaultDeleter<T>>
+template <typename T, typename PARENT = Empty, typename DELETER = DefaultDeleter<T>>
 class SimpleRefCount : public PARENT
 {
   public:

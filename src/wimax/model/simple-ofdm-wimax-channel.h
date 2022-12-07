@@ -122,9 +122,9 @@ class SimpleOfdmWimaxChannel : public WimaxChannel
     /**
      * End send dummy block function
      * \param rxphy the Ptr<SimpleOfdmWimaxPhy>
-     * \param param the simpleOfdmSendParam *
+     * \param param the SimpleOfdmSendParam *
      */
-    void EndSendDummyBlock(Ptr<SimpleOfdmWimaxPhy> rxphy, simpleOfdmSendParam* param);
+    void EndSendDummyBlock(Ptr<SimpleOfdmWimaxPhy> rxphy, SimpleOfdmSendParam* param);
     /**
      * Get device function
      * \param i the device index

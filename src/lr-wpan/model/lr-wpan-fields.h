@@ -224,7 +224,7 @@ class GtsFields
     /**
      * GTS Descriptor
      */
-    struct gtsDescriptor
+    struct GtsDescriptor
     {
         Mac16Address m_gtsDescDevShortAddr; //!< GTS Descriptor Device Short Address (Bit 0-15)
         uint8_t m_gtsDescStartSlot;         //!< GTS Descriptor GTS Starting Slot(Bit 16-19)
@@ -239,7 +239,7 @@ class GtsFields
     uint8_t m_gtsDirMask; //!< GTS Direction field Directions Mask (Bit 0-6)
     // GTS Direction field Reserved (Not Necessary) (Bit 7)
     // GTS List
-    gtsDescriptor m_gtsList[7]; //!< GTS List field (maximum descriptors stored == 7)
+    GtsDescriptor m_gtsList[7]; //!< GTS List field (maximum descriptors stored == 7)
 };
 
 /**

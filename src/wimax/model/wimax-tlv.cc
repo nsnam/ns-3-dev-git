@@ -1024,7 +1024,7 @@ ProtocolTlvValue::Copy() const
 
 Ipv4AddressTlvValue::Ipv4AddressTlvValue()
 {
-    m_ipv4Addr = new std::vector<ipv4Addr>;
+    m_ipv4Addr = new std::vector<Ipv4Addr>;
 }
 
 Ipv4AddressTlvValue::~Ipv4AddressTlvValue()
@@ -1046,7 +1046,7 @@ Ipv4AddressTlvValue::GetSerializedSize() const
 void
 Ipv4AddressTlvValue::Serialize(Buffer::Iterator i) const
 {
-    for (std::vector<ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
+    for (std::vector<Ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
          iter != m_ipv4Addr->end();
          ++iter)
     {
@@ -1070,12 +1070,9 @@ Ipv4AddressTlvValue::Deserialize(Buffer::Iterator i, uint64_t valueLength)
 }
 
 void
-Ipv4AddressTlvValue::Add(Ipv4Address address, Ipv4Mask Mask)
+Ipv4AddressTlvValue::Add(Ipv4Address address, Ipv4Mask mask)
 {
-    ipv4Addr tmp;
-    tmp.Address = address;
-    tmp.Mask = Mask;
-    m_ipv4Addr->push_back(tmp);
+    m_ipv4Addr->push_back({address, mask});
 }
 
 Ipv4AddressTlvValue::Iterator
@@ -1094,7 +1091,7 @@ Ipv4AddressTlvValue*
 Ipv4AddressTlvValue::Copy() const
 {
     Ipv4AddressTlvValue* tmp = new Ipv4AddressTlvValue();
-    for (std::vector<ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
+    for (std::vector<Ipv4Addr>::const_iterator iter = m_ipv4Addr->begin();
          iter != m_ipv4Addr->end();
          ++iter)
     {

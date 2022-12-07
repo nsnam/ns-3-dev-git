@@ -30,14 +30,14 @@ using namespace ns3;
 AnimationInterface* pAnim = nullptr;
 
 /// RGB struture
-struct rgb
+struct Rgb
 {
     uint8_t r; ///< red
     uint8_t g; ///< green
     uint8_t b; ///< blue
 };
 
-rgb colors[] = {
+Rgb colors[] = {
     {255, 0, 0}, // Red
     {0, 255, 0}, // Blue
     {0, 0, 255}, // Green
@@ -96,7 +96,7 @@ modify()
     {
         index = 0;
     }
-    rgb color = colors[index];
+    Rgb color = colors[index];
     for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
     {
         pAnim->UpdateNodeColor(nodeId, color.r, color.g, color.b);

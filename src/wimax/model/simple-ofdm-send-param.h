@@ -34,12 +34,12 @@ namespace ns3
 
 /**
  * \ingroup wimax
- * simpleOfdmSendParam class
+ * SimpleOfdmSendParam class
  */
-class simpleOfdmSendParam
+class SimpleOfdmSendParam
 {
   public:
-    simpleOfdmSendParam();
+    SimpleOfdmSendParam();
     /**
      * Constructor
      *
@@ -51,7 +51,7 @@ class simpleOfdmSendParam
      * \param direction the direction
      * \param rxPowerDbm receive power
      */
-    simpleOfdmSendParam(const bvec& fecBlock,
+    SimpleOfdmSendParam(const Bvec& fecBlock,
                         uint32_t burstSize,
                         bool isFirstBlock,
                         uint64_t Frequency,
@@ -69,19 +69,19 @@ class simpleOfdmSendParam
      * \param rxPowerDbm receive power
      * \param burst packet burst object
      */
-    simpleOfdmSendParam(uint32_t burstSize,
+    SimpleOfdmSendParam(uint32_t burstSize,
                         bool isFirstBlock,
                         uint64_t Frequency,
                         WimaxPhy::ModulationType modulationType,
                         uint8_t direction,
                         double rxPowerDbm,
                         Ptr<PacketBurst> burst);
-    ~simpleOfdmSendParam();
+    ~SimpleOfdmSendParam();
     /**
      * \brief sent the fec block to send
      * \param fecBlock the fec block to send
      */
-    void SetFecBlock(const bvec& fecBlock);
+    void SetFecBlock(const Bvec& fecBlock);
     /**
      * \brief set the burst size
      * \param burstSize the burst size in bytes
@@ -111,7 +111,7 @@ class simpleOfdmSendParam
     /**
      * \return the fec block
      */
-    bvec GetFecBlock();
+    Bvec GetFecBlock();
     /**
      * \return the burst size
      */
@@ -142,7 +142,7 @@ class simpleOfdmSendParam
     Ptr<PacketBurst> GetBurst();
 
   private:
-    bvec m_fecBlock;                           ///< FEC block
+    Bvec m_fecBlock;                           ///< FEC block
     uint32_t m_burstSize;                      ///< burst size
     bool m_isFirstBlock;                       ///< is first block
     uint64_t m_frequency;                      ///< frequency

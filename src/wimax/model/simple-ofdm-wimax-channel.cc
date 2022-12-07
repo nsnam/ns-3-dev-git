@@ -159,7 +159,7 @@ SimpleOfdmWimaxChannel::Send(Time BlockTime,
     Ptr<MobilityModel> senderMobility = nullptr;
     Ptr<MobilityModel> receiverMobility = nullptr;
     senderMobility = phy->GetDevice()->GetNode()->GetObject<MobilityModel>();
-    simpleOfdmSendParam* param;
+    SimpleOfdmSendParam* param;
     for (std::list<Ptr<SimpleOfdmWimaxPhy>>::iterator iter = m_phyList.begin();
          iter != m_phyList.end();
          ++iter)
@@ -176,7 +176,7 @@ SimpleOfdmWimaxChannel::Send(Time BlockTime,
                 rxPowerDbm = m_loss->CalcRxPower(txPowerDbm, senderMobility, receiverMobility);
             }
 
-            param = new simpleOfdmSendParam(burstSize,
+            param = new SimpleOfdmSendParam(burstSize,
                                             isFirstBlock,
                                             frequency,
                                             modulationType,
@@ -204,7 +204,7 @@ SimpleOfdmWimaxChannel::Send(Time BlockTime,
 }
 
 void
-SimpleOfdmWimaxChannel::EndSendDummyBlock(Ptr<SimpleOfdmWimaxPhy> rxphy, simpleOfdmSendParam* param)
+SimpleOfdmWimaxChannel::EndSendDummyBlock(Ptr<SimpleOfdmWimaxPhy> rxphy, SimpleOfdmSendParam* param)
 {
     rxphy->StartReceive(param->GetBurstSize(),
                         param->GetIsFirstBlock(),
