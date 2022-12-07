@@ -2302,7 +2302,7 @@ window and a new congestion window suitable for directly importing
 into your plot program.  There are no extraneous prints in the file,
 no parsing or editing is required.
 
-Since "sixth.pcap" is a PCAP file, you can fiew it with ``tcpdump``.
+Since "sixth.pcap" is a PCAP file, you can view it with ``tcpdump``.
 
 .. sourcecode:: bash
 
