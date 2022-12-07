@@ -63,7 +63,7 @@ EhtFrameExchangeManager::SetLinkId(uint8_t linkId)
 }
 
 Ptr<WifiMpdu>
-EhtFrameExchangeManager::CreateAlias(Ptr<WifiMpdu> mpdu) const
+EhtFrameExchangeManager::CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const
 {
     NS_LOG_FUNCTION(this << *mpdu);
 
@@ -72,7 +72,7 @@ EhtFrameExchangeManager::CreateAlias(Ptr<WifiMpdu> mpdu) const
         mpdu->GetHeader().GetAddr1().IsGroup() ||
         !GetWifiRemoteStationManager()->GetMldAddress(mpdu->GetHeader().GetAddr1()))
     {
-        return HeFrameExchangeManager::CreateAlias(mpdu);
+        return HeFrameExchangeManager::CreateAliasIfNeeded(mpdu);
     }
 
     mpdu = mpdu->CreateAlias(m_linkId);

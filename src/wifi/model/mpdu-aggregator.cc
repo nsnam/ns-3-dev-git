@@ -246,7 +246,7 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
                                      qosTxop->GetBaStartingSequence(origRecipient, tid),
                                      qosTxop->GetBaBufferSize(origRecipient, tid)));
 
-                peekedMpdu = m_htFem->CreateAlias(peekedMpdu);
+                peekedMpdu = m_htFem->CreateAliasIfNeeded(peekedMpdu);
                 // get the next MPDU to aggregate, provided that the constraints on size
                 // and duration limit are met. Note that the returned MPDU differs from
                 // the peeked MPDU if A-MSDU aggregation is enabled.

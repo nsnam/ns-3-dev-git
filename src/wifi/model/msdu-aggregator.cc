@@ -127,9 +127,10 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
     uint8_t nMsdu = 1;
     peekedItem = queue->PeekByTidAndAddress(tid, recipient, peekedItem->GetOriginal());
 
-    while (peekedItem && m_htFem->TryAggregateMsdu(peekedItem = m_htFem->CreateAlias(peekedItem),
-                                                   txParams,
-                                                   availableTime))
+    while (peekedItem &&
+           m_htFem->TryAggregateMsdu(peekedItem = m_htFem->CreateAliasIfNeeded(peekedItem),
+                                     txParams,
+                                     availableTime))
     {
         // find the next MPDU before dequeuing the current one
         Ptr<const WifiMpdu> msdu = peekedItem->GetOriginal();
@@ -149,7 +150,7 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
     }
 
     // Aggregation succeeded
-    return m_htFem->CreateAlias(amsdu);
+    return m_htFem->CreateAliasIfNeeded(amsdu);
 }
 
 uint8_t

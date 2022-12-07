@@ -388,7 +388,8 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
 
     // Use SendDataFrame if we can try aggregation
     if (hdr.IsQosData() && !hdr.GetAddr1().IsGroup() && !peekedItem->IsFragment() &&
-        !GetWifiRemoteStationManager()->NeedFragmentation(peekedItem = CreateAlias(peekedItem)))
+        !GetWifiRemoteStationManager()->NeedFragmentation(peekedItem =
+                                                              CreateAliasIfNeeded(peekedItem)))
     {
         return SendDataFrame(peekedItem, availableTime, initialFrame);
     }

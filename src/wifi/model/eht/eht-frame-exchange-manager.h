@@ -43,7 +43,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     ~EhtFrameExchangeManager() override;
 
     void SetLinkId(uint8_t linkId) override;
-    Ptr<WifiMpdu> CreateAlias(Ptr<WifiMpdu> mpdu) const override;
+    Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const override;
 
   protected:
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
