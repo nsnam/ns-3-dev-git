@@ -179,7 +179,7 @@ TestMultiUserScheduler::SelectTxFormat()
         m_txParams.m_txVector =
             m_apMac->GetWifiRemoteStationManager()->GetRtsTxVector(m_triggerHdr.GetAddr1());
 
-        if (!m_heFem->TryAddMpdu(item, m_txParams, m_availableTime) ||
+        if (!GetHeFem(SINGLE_LINK_OP_ID)->TryAddMpdu(item, m_txParams, m_availableTime) ||
             (m_availableTime != Time::Min() &&
              m_txParams.m_protection->protectionTime + m_txParams.m_txDuration // TF tx time
                      + m_apMac->GetWifiPhy()->GetSifs() + duration +
@@ -236,8 +236,9 @@ TestMultiUserScheduler::SelectTxFormat()
             }
 
             std::vector<Ptr<WifiMpdu>> mpduList;
-            mpduList =
-                m_heFem->GetMpduAggregator()->GetNextAmpdu(mpdu, m_txParams, m_availableTime);
+            mpduList = GetHeFem(SINGLE_LINK_OP_ID)
+                           ->GetMpduAggregator()
+                           ->GetNextAmpdu(mpdu, m_txParams, m_availableTime);
 
             if (mpduList.size() > 1)
             {

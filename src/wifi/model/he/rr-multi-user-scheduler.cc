@@ -317,7 +317,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
                                 ->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
 
-    if (!m_heFem->TryAddMpdu(item, m_txParams, m_availableTime))
+    if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {
         // sending the BSRP Trigger Frame is not possible, hence return NO_TX. In
         // this way, no transmission will occur now and the next time we will
@@ -435,7 +435,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
                                 ->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
 
-    if (!m_heFem->TryAddMpdu(item, m_txParams, m_availableTime))
+    if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {
         // an UL OFDMA transmission is not possible, hence return NO_TX. In
         // this way, no transmission will occur now and the next time we will
@@ -704,7 +704,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                                                            suTxVector.GetMode().GetMcsValue(),
                                                            suTxVector.GetNss()});
 
-                    if (!m_heFem->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
+                    if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
                     {
                         NS_LOG_DEBUG("Adding the peeked frame violates the time constraints");
                         m_txParams.m_txVector = txVectorCopy;
@@ -879,7 +879,7 @@ RrMultiUserScheduler::ComputeDlMuInfo()
         NS_ASSERT(mpdu);
 
         bool ret [[maybe_unused]] =
-            m_heFem->TryAddMpdu(mpdu, dlMuInfo.txParams, actualAvailableTime);
+            GetHeFem(m_linkId)->TryAddMpdu(mpdu, dlMuInfo.txParams, actualAvailableTime);
         NS_ASSERT_MSG(ret,
                       "Weird that an MPDU does not meet constraints when "
                       "transmitted over a larger RU");
@@ -905,9 +905,9 @@ RrMultiUserScheduler::ComputeDlMuInfo()
         {
             // this MPDU must have been dequeued from the AC queue and we can try
             // A-MSDU aggregation
-            item = m_heFem->GetMsduAggregator()->GetNextAmsdu(mpdu,
-                                                              dlMuInfo.txParams,
-                                                              m_availableTime);
+            item = GetHeFem(m_linkId)->GetMsduAggregator()->GetNextAmsdu(mpdu,
+                                                                         dlMuInfo.txParams,
+                                                                         m_availableTime);
 
             if (!item)
             {
@@ -919,7 +919,9 @@ RrMultiUserScheduler::ComputeDlMuInfo()
 
         // Now, let's try A-MPDU aggregation if possible
         std::vector<Ptr<WifiMpdu>> mpduList =
-            m_heFem->GetMpduAggregator()->GetNextAmpdu(item, dlMuInfo.txParams, m_availableTime);
+            GetHeFem(m_linkId)->GetMpduAggregator()->GetNextAmpdu(item,
+                                                                  dlMuInfo.txParams,
+                                                                  m_availableTime);
 
         if (mpduList.size() > 1)
         {

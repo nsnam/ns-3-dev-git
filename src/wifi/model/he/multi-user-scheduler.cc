@@ -92,7 +92,6 @@ MultiUserScheduler::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     m_apMac = nullptr;
-    m_heFem = nullptr;
     m_edca = nullptr;
     m_dlInfo.psduMap.clear();
     m_dlInfo.txParams.Clear();
@@ -141,14 +140,24 @@ MultiUserScheduler::SetWifiMac(Ptr<ApWifiMac> mac)
     NS_ABORT_MSG_IF(!m_apMac || !m_apMac->GetHeConfiguration(),
                     "MultiUserScheduler can only be installed on HE APs");
 
-    m_heFem = DynamicCast<HeFrameExchangeManager>(m_apMac->GetFrameExchangeManager());
-    m_heFem->SetMultiUserScheduler(this);
+    for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+    {
+        auto heFem = DynamicCast<HeFrameExchangeManager>(m_apMac->GetFrameExchangeManager(linkId));
+        NS_ASSERT(heFem);
+        heFem->SetMultiUserScheduler(this);
+    }
 }
 
 Ptr<WifiRemoteStationManager>
 MultiUserScheduler::GetWifiRemoteStationManager(uint8_t linkId) const
 {
     return m_apMac->GetWifiRemoteStationManager(linkId);
+}
+
+Ptr<HeFrameExchangeManager>
+MultiUserScheduler::GetHeFem(uint8_t linkId) const
+{
+    return StaticCast<HeFrameExchangeManager>(m_apMac->GetFrameExchangeManager(linkId));
 }
 
 void
@@ -200,7 +209,6 @@ MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
     }
     else if (txFormat == UL_MU_TX)
     {
-        NS_ABORT_MSG_IF(!m_heFem, "UL MU PPDUs are only supported by HE APs");
         m_ulInfo = ComputeUlMuInfo();
         CheckTriggerFrame();
     }
@@ -281,7 +289,7 @@ MultiUserScheduler::CheckTriggerFrame()
     // than or equal to 76 (see Section 26.5.2.5 of 802.11ax-2021)
     m_ulInfo.trigger.SetCsRequired(m_ulInfo.trigger.GetUlLength() > 76);
 
-    m_heFem->SetTargetRssi(m_ulInfo.trigger);
+    GetHeFem(m_linkId)->SetTargetRssi(m_ulInfo.trigger);
 }
 
 uint32_t

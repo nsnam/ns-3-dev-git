@@ -129,6 +129,14 @@ class MultiUserScheduler : public Object
     Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager(uint8_t linkId) const;
 
     /**
+     * Get the HE Frame Exchange Manager attached to the AP on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \return the HE Frame Exchange Manager attached to the AP on the given link
+     */
+    Ptr<HeFrameExchangeManager> GetHeFem(uint8_t linkId) const;
+
+    /**
      * Get an MPDU containing the given Trigger Frame.
      *
      * \param trigger the given Trigger Frame
@@ -161,13 +169,12 @@ class MultiUserScheduler : public Object
     void NotifyNewAggregate() override;
     void DoInitialize() override;
 
-    Ptr<ApWifiMac> m_apMac;              //!< the AP wifi MAC
-    Ptr<HeFrameExchangeManager> m_heFem; //!< HE Frame Exchange Manager
-    Ptr<QosTxop> m_edca;                 //!< the AC that gained channel access
-    Time m_availableTime;                //!< the time available for frame exchange
-    bool m_initialFrame;                 //!< true if a TXOP is being started
-    uint16_t m_allowedWidth;             //!< the allowed width in MHz for the current transmission
-    uint8_t m_linkId; //!< the ID of the link over which channel access has been granted
+    Ptr<ApWifiMac> m_apMac;  //!< the AP wifi MAC
+    Ptr<QosTxop> m_edca;     //!< the AC that gained channel access
+    Time m_availableTime;    //!< the time available for frame exchange
+    bool m_initialFrame;     //!< true if a TXOP is being started
+    uint16_t m_allowedWidth; //!< the allowed width in MHz for the current transmission
+    uint8_t m_linkId;        //!< the ID of the link over which channel access has been granted
 
   private:
     /**
