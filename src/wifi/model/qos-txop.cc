@@ -399,7 +399,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
             continue;
         }
 
-        if (auto linkIds = item->GetInFlight(); !linkIds.empty()) // MPDU is in-flight
+        if (auto linkIds = item->GetInFlightLinkIds(); !linkIds.empty()) // MPDU is in-flight
         {
             // if the MPDU is not already in-flight on the link for which we are requesting an
             // MPDU and the number of links on which the MPDU is in-flight is less than the

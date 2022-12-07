@@ -196,7 +196,7 @@ WifiDefaultAckManager::ExistInflightOnSameLink(Ptr<const WifiMpdu> mpdu) const
                         "While searching for given MPDU ("
                             << *mpdu << "), found first another one (" << *item
                             << ") with higher sequence number");
-        if (auto linkIds = item->GetInFlight(); linkIds.count(m_linkId) > 0)
+        if (auto linkIds = item->GetInFlightLinkIds(); linkIds.count(m_linkId) > 0)
         {
             NS_LOG_DEBUG("Found MPDU inflight on the same link");
             return true;

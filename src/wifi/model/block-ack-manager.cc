@@ -588,7 +588,7 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
     {
         // transmission actually failed if the MPDU is inflight only on the same link on
         // which we received the BlockAck frame
-        auto linkIds = (*queueIt)->GetInFlight();
+        auto linkIds = (*queueIt)->GetInFlightLinkIds();
 
         if (linkIds.size() == 1 && *linkIds.begin() == linkId)
         {
@@ -625,7 +625,7 @@ BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, const Mac48Address& recipi
     for (auto mpduIt = it->second.second.begin(); mpduIt != it->second.second.end();)
     {
         // MPDUs that were transmitted on another link shall stay inflight
-        auto linkIds = (*mpduIt)->GetInFlight();
+        auto linkIds = (*mpduIt)->GetInFlightLinkIds();
         if (linkIds.count(linkId) == 0)
         {
             mpduIt = HandleInFlightMpdu(linkId, mpduIt, STAY_INFLIGHT, it, now);

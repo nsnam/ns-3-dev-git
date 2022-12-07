@@ -210,7 +210,7 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
     /**
      * \return the set of IDs of the links on which this MPDU is currently in flight
      */
-    std::set<uint8_t> GetInFlight() const;
+    std::set<uint8_t> GetInFlightLinkIds() const;
     /**
      * \return true if this MPDU is in flight on any link, false otherwise
      */

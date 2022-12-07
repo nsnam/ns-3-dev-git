@@ -295,7 +295,7 @@ WifiMpdu::ResetInFlight(uint8_t linkId) const
 }
 
 std::set<uint8_t>
-WifiMpdu::GetInFlight() const
+WifiMpdu::GetInFlightLinkIds() const
 {
     if (!IsQueued())
     {
