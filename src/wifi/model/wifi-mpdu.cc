@@ -207,7 +207,7 @@ WifiMpdu::DoAggregate(Ptr<const WifiMpdu> msdu)
 
     auto& original = std::get<OriginalInfo>(m_instanceInfo);
 
-    original.m_msduList.push_back({msdu->GetPacket(), hdr});
+    original.m_msduList.emplace_back(msdu->GetPacket(), hdr);
 
     // build the A-MSDU
     NS_ASSERT(original.m_packet);
