@@ -150,8 +150,7 @@ RrMultiUserScheduler::SelectTxFormat()
 
     Ptr<const WifiMpdu> mpdu = m_edca->PeekNextMpdu(m_linkId);
 
-    if (mpdu && !GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
-                     ->GetHeSupported(mpdu->GetHeader().GetAddr1()))
+    if (mpdu && !m_apMac->GetHeSupported(mpdu->GetHeader().GetAddr1()))
     {
         return SU_TX;
     }
@@ -263,10 +262,12 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
         // prepare the MAC header of a frame that would be sent to the candidate station,
         // just for the purpose of retrieving the TXVECTOR used to transmit to that station
         WifiMacHeader hdr(WIFI_MAC_QOSDATA);
-        hdr.SetAddr1(staIt->address);
-        hdr.SetAddr2(m_apMac->GetAddress());
+        hdr.SetAddr1(GetWifiRemoteStationManager(m_linkId)
+                         ->GetAffiliatedStaAddress(staIt->address)
+                         .value_or(staIt->address));
+        hdr.SetAddr2(m_apMac->GetFrameExchangeManager(m_linkId)->GetAddress());
         WifiTxVector suTxVector =
-            GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)->GetDataTxVector(hdr, m_allowedWidth);
+            GetWifiRemoteStationManager(m_linkId)->GetDataTxVector(hdr, m_allowedWidth);
         txVector.SetHeMuUserInfo(staIt->aid,
                                  {HeRu::RuSpec(), // assigned later by FinalizeTxVector
                                   suTxVector.GetMode().GetMcsValue(),
@@ -314,8 +315,8 @@ RrMultiUserScheduler::TrySendingBsrpTf()
 
     m_txParams.Clear();
     // set the TXVECTOR used to send the Trigger Frame
-    m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
-                                ->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
+    m_txParams.m_txVector =
+        m_apMac->GetWifiRemoteStationManager(m_linkId)->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
 
     if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {
@@ -332,7 +333,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     {
         Time duration = WifiPhy::CalculateTxDuration(GetMaxSizeOfQosNullAmpdu(m_trigger),
                                                      txVector,
-                                                     m_apMac->GetWifiPhy()->GetPhyBand(),
+                                                     m_apMac->GetWifiPhy(m_linkId)->GetPhyBand(),
                                                      userInfo.GetAid12());
         qosNullTxDuration = Max(qosNullTxDuration, duration);
     }
@@ -347,7 +348,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
         NS_ASSERT(m_txParams.m_txDuration != Time::Min());
 
         if (m_txParams.m_protection->protectionTime + m_txParams.m_txDuration // BSRP TF tx time
-                + m_apMac->GetWifiPhy()->GetSifs() + qosNullTxDuration >
+                + m_apMac->GetWifiPhy(m_linkId)->GetSifs() + qosNullTxDuration >
             m_availableTime)
         {
             NS_LOG_DEBUG("Remaining TXOP duration is not enough for BSRP TF exchange");
@@ -359,7 +360,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     std::tie(ulLength, qosNullTxDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength(
         qosNullTxDuration,
         m_trigger.GetHeTbTxVector(m_trigger.begin()->GetAid12()),
-        m_apMac->GetWifiPhy()->GetPhyBand());
+        m_apMac->GetWifiPhy(m_linkId)->GetPhyBand());
     NS_LOG_DEBUG("Duration of QoS Null frames: " << qosNullTxDuration.As(Time::MS));
     m_trigger.SetUlLength(ulLength);
 
@@ -432,8 +433,8 @@ RrMultiUserScheduler::TrySendingBasicTf()
 
     m_txParams.Clear();
     // set the TXVECTOR used to send the Trigger Frame
-    m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
-                                ->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
+    m_txParams.m_txVector =
+        m_apMac->GetWifiRemoteStationManager(m_linkId)->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
 
     if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {
@@ -455,7 +456,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
 
         maxDuration = Min(maxDuration,
                           m_availableTime - m_txParams.m_protection->protectionTime -
-                              m_txParams.m_txDuration - m_apMac->GetWifiPhy()->GetSifs() -
+                              m_txParams.m_txDuration - m_apMac->GetWifiPhy(m_linkId)->GetSifs() -
                               m_txParams.m_acknowledgment->acknowledgmentTime);
         if (maxDuration.IsNegative())
         {
@@ -470,7 +471,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     {
         Time duration = WifiPhy::CalculateTxDuration(maxBufferSize,
                                                      txVector,
-                                                     m_apMac->GetWifiPhy()->GetPhyBand(),
+                                                     m_apMac->GetWifiPhy(m_linkId)->GetPhyBand(),
                                                      userInfo.GetAid12());
         bufferTxTime = Max(bufferTxTime, duration);
     }
@@ -487,10 +488,11 @@ RrMultiUserScheduler::TrySendingBasicTf()
         Time minDuration = Seconds(0);
         for (const auto& userInfo : m_trigger)
         {
-            Time duration = WifiPhy::CalculateTxDuration(m_ulPsduSize,
-                                                         txVector,
-                                                         m_apMac->GetWifiPhy()->GetPhyBand(),
-                                                         userInfo.GetAid12());
+            Time duration =
+                WifiPhy::CalculateTxDuration(m_ulPsduSize,
+                                             txVector,
+                                             m_apMac->GetWifiPhy(m_linkId)->GetPhyBand(),
+                                             userInfo.GetAid12());
             minDuration = (minDuration.IsZero() ? duration : Min(minDuration, duration));
         }
 
@@ -509,7 +511,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     std::tie(ulLength, maxDuration) =
         HePhy::ConvertHeTbPpduDurationToLSigLength(maxDuration,
                                                    txVector,
-                                                   m_apMac->GetWifiPhy()->GetPhyBand());
+                                                   m_apMac->GetWifiPhy(m_linkId)->GetPhyBand());
     NS_LOG_DEBUG("TB PPDU duration: " << maxDuration.As(Time::MS));
     m_trigger.SetUlLength(ulLength);
     // set Preferred AC to the AC that gained channel access
@@ -690,13 +692,14 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                 // and duration constraints. We do not explore the queues further.
                 if (mpdu)
                 {
+                    mpdu = GetHeFem(m_linkId)->CreateAliasIfNeeded(mpdu);
                     // Use a temporary TX vector including only the STA-ID of the
                     // candidate station to check if the MPDU meets the size and time limits.
                     // An RU of the computed size is tentatively assigned to the candidate
                     // station, so that the TX duration can be correctly computed.
                     WifiTxVector suTxVector =
-                        GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
-                            ->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
+                        GetWifiRemoteStationManager(m_linkId)->GetDataTxVector(mpdu->GetHeader(),
+                                                                               m_allowedWidth);
                     WifiTxVector txVectorCopy = m_txParams.m_txVector;
 
                     m_txParams.m_txVector.SetHeMuUserInfo(staIt->aid,
@@ -887,7 +890,6 @@ RrMultiUserScheduler::ComputeDlMuInfo()
 
     // We have to complete the PSDUs to send
     Ptr<WifiMacQueue> queue;
-    Mac48Address receiver;
 
     for (const auto& candidate : m_candidates)
     {
@@ -895,8 +897,8 @@ RrMultiUserScheduler::ComputeDlMuInfo()
         mpdu = candidate.second;
         NS_ASSERT(mpdu);
         uint8_t tid = mpdu->GetHeader().GetQosTid();
-        receiver = mpdu->GetHeader().GetAddr1();
-        NS_ASSERT(receiver == candidate.first->address);
+        NS_ASSERT_MSG(mpdu->GetOriginal()->GetHeader().GetAddr1() == candidate.first->address,
+                      "RA of the stored MPDU must match the stored address");
 
         NS_ASSERT(mpdu->IsQueued());
         Ptr<WifiMpdu> item = mpdu;
