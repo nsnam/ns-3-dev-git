@@ -394,22 +394,23 @@ RrMultiUserScheduler::TrySendingBasicTf()
 
     for (const auto& candidate : txVector.GetHeMuUserInfoMap())
     {
-        auto staIt = m_apMac->GetStaList().find(candidate.first);
-        NS_ASSERT(staIt != m_apMac->GetStaList().end());
-        uint8_t queueSize = m_apMac->GetMaxBufferStatus(staIt->second);
+        auto address = m_apMac->GetMldOrLinkAddressByAid(candidate.first);
+        NS_ASSERT_MSG(address, "AID " << candidate.first << " not found");
+
+        uint8_t queueSize = m_apMac->GetMaxBufferStatus(*address);
         if (queueSize == 255)
         {
-            NS_LOG_DEBUG("Buffer status of station " << staIt->second << " is unknown");
+            NS_LOG_DEBUG("Buffer status of station " << *address << " is unknown");
             maxBufferSize = std::max(maxBufferSize, m_ulPsduSize);
         }
         else if (queueSize == 254)
         {
-            NS_LOG_DEBUG("Buffer status of station " << staIt->second << " is not limited");
+            NS_LOG_DEBUG("Buffer status of station " << *address << " is not limited");
             maxBufferSize = 0xffffffff;
         }
         else
         {
-            NS_LOG_DEBUG("Buffer status of station " << staIt->second << " is " << +queueSize);
+            NS_LOG_DEBUG("Buffer status of station " << *address << " is " << +queueSize);
             maxBufferSize = std::max(maxBufferSize, static_cast<uint32_t>(queueSize * 256));
         }
     }
