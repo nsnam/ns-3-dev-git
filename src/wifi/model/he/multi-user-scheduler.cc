@@ -168,9 +168,12 @@ MultiUserScheduler::AccessReqTimeout()
     // request channel access if not requested yet
     auto edca = m_apMac->GetQosTxop(m_accessReqAc);
 
-    if (edca->GetAccessStatus(SINGLE_LINK_OP_ID) == Txop::NOT_REQUESTED)
+    for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
     {
-        m_apMac->GetChannelAccessManager()->RequestAccess(edca);
+        if (edca->GetAccessStatus(linkId) == Txop::NOT_REQUESTED)
+        {
+            m_apMac->GetChannelAccessManager(linkId)->RequestAccess(edca);
+        }
     }
 
     // restart timer
@@ -255,9 +258,9 @@ MultiUserScheduler::GetUlMuInfo()
 }
 
 Ptr<WifiMpdu>
-MultiUserScheduler::GetTriggerFrame(const CtrlTriggerHeader& trigger) const
+MultiUserScheduler::GetTriggerFrame(const CtrlTriggerHeader& trigger, uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << linkId);
 
     Ptr<Packet> packet = Create<Packet>();
     packet->AddHeader(trigger);
@@ -266,14 +269,14 @@ MultiUserScheduler::GetTriggerFrame(const CtrlTriggerHeader& trigger) const
     if (trigger.GetNUserInfoFields() == 1)
     {
         auto aid = trigger.begin()->GetAid12();
-        auto aidAddrMapIt = m_apMac->GetStaList().find(aid);
-        NS_ASSERT(aidAddrMapIt != m_apMac->GetStaList().end());
+        auto aidAddrMapIt = m_apMac->GetStaList(linkId).find(aid);
+        NS_ASSERT(aidAddrMapIt != m_apMac->GetStaList(linkId).end());
         receiver = aidAddrMapIt->second;
     }
 
     WifiMacHeader hdr(WIFI_MAC_CTL_TRIGGER);
     hdr.SetAddr1(receiver);
-    hdr.SetAddr2(m_apMac->GetAddress());
+    hdr.SetAddr2(GetHeFem(linkId)->GetAddress());
     hdr.SetDsNotTo();
     hdr.SetDsNotFrom();
 
@@ -300,12 +303,13 @@ MultiUserScheduler::GetMaxSizeOfQosNullAmpdu(const CtrlTriggerHeader& trigger) c
     uint8_t maxNTids = 0;
     for (const auto& userInfo : trigger)
     {
-        const auto staIt = m_apMac->GetStaList().find(userInfo.GetAid12());
-        NS_ASSERT(staIt != m_apMac->GetStaList().cend());
+        auto address = m_apMac->GetMldOrLinkAddressByAid(userInfo.GetAid12());
+        NS_ASSERT_MSG(address, "AID " << userInfo.GetAid12() << " not found");
+
         uint8_t staNTids = 0;
         for (uint8_t tid = 0; tid < 8; tid++)
         {
-            if (m_apMac->GetBaAgreementEstablishedAsRecipient(staIt->second, tid))
+            if (m_apMac->GetBaAgreementEstablishedAsRecipient(*address, tid))
             {
                 staNTids++;
             }

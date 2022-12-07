@@ -140,9 +140,10 @@ class MultiUserScheduler : public Object
      * Get an MPDU containing the given Trigger Frame.
      *
      * \param trigger the given Trigger Frame
+     * \param linkId the ID of the link on which the Trigger Frame has to be sent
      * \return an MPDU containing the given Trigger Frame
      */
-    Ptr<WifiMpdu> GetTriggerFrame(const CtrlTriggerHeader& trigger) const;
+    Ptr<WifiMpdu> GetTriggerFrame(const CtrlTriggerHeader& trigger, uint8_t linkId) const;
 
     /**
      * Get the format of the last transmission, as determined by the last call

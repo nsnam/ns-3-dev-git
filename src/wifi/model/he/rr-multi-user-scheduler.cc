@@ -309,7 +309,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     m_trigger = CtrlTriggerHeader(TriggerFrameType::BSRP_TRIGGER, txVector);
     txVector.SetGuardInterval(m_trigger.GetGuardInterval());
 
-    auto item = GetTriggerFrame(m_trigger);
+    auto item = GetTriggerFrame(m_trigger, m_linkId);
     m_triggerMacHdr = item->GetHeader();
 
     m_txParams.Clear();
@@ -423,7 +423,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     m_trigger = CtrlTriggerHeader(TriggerFrameType::BASIC_TRIGGER, txVector);
     txVector.SetGuardInterval(m_trigger.GetGuardInterval());
 
-    auto item = GetTriggerFrame(m_trigger);
+    auto item = GetTriggerFrame(m_trigger, m_linkId);
     m_triggerMacHdr = item->GetHeader();
 
     // compute the maximum amount of time that can be granted to stations.
