@@ -494,6 +494,27 @@ class WifiMac : public Object
     bool GetEhtSupported() const;
 
     /**
+     * \param address the (link or MLD) address of a remote station
+     * \return true if the remote station with the given address supports HT
+     */
+    bool GetHtSupported(const Mac48Address& address) const;
+    /**
+     * \param address the (link or MLD) address of a remote station
+     * \return true if the remote station with the given address supports VHT
+     */
+    bool GetVhtSupported(const Mac48Address& address) const;
+    /**
+     * \param address the (link or MLD) address of a remote station
+     * \return true if the remote station with the given address supports HE
+     */
+    bool GetHeSupported(const Mac48Address& address) const;
+    /**
+     * \param address the (link or MLD) address of a remote station
+     * \return true if the remote station with the given address supports EHT
+     */
+    bool GetEhtSupported(const Mac48Address& address) const;
+
+    /**
      * Return the maximum A-MPDU size of the given Access Category.
      *
      * \param ac Access Category index

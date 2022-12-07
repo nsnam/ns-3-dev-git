@@ -1287,6 +1287,58 @@ WifiMac::GetEhtSupported() const
     return bool(GetDevice()->GetEhtConfiguration());
 }
 
+bool
+WifiMac::GetHtSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetHtSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+WifiMac::GetVhtSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetVhtSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+WifiMac::GetHeSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetHeSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+WifiMac::GetEhtSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetEhtSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void
 WifiMac::SetVoBlockAckThreshold(uint8_t threshold)
 {
