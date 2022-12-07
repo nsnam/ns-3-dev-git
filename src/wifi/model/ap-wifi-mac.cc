@@ -1177,6 +1177,11 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
         aid = GetNextAssociationId(linkIds);
     }
 
+    // store the MLD or link address in the AID-to-address map
+    const auto& [linkId, staAddr] = *linkIdStaAddrMap.cbegin();
+    m_aidToMldOrLinkAddress[aid] =
+        GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
+
     for (const auto& [id, staAddr] : linkIdStaAddrMap)
     {
         auto remoteStationManager = GetWifiRemoteStationManager(id);
@@ -1529,6 +1534,17 @@ ApWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
     auto linkId = IsAssociated(remoteAddr);
     NS_ASSERT_MSG(linkId, remoteAddr << " is not associated");
     return GetFrameExchangeManager(*linkId)->GetAddress();
+}
+
+std::optional<Mac48Address>
+ApWifiMac::GetMldOrLinkAddressByAid(uint16_t aid) const
+{
+    if (const auto staIt = m_aidToMldOrLinkAddress.find(aid);
+        staIt != m_aidToMldOrLinkAddress.cend())
+    {
+        return staIt->second;
+    }
+    return std::nullopt;
 }
 
 void
