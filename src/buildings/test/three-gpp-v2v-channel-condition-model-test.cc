@@ -68,13 +68,13 @@ class ThreeGppV2vBuildingsChCondModelTestCase : public TestCase
     /**
      * Struct containing the parameters for each test
      */
-    typedef struct
+    struct TestVector
     {
         Vector m_positionA;                            //!< the position of the first node
         Vector m_positionB;                            //!< the position of the second node
         ChannelCondition::LosConditionValue m_losCond; //!< the correct channel condition
         TypeId m_typeId; //!< the type ID of the channel condition model to be used
-    } TestVector;
+    };
 
     TestVectors<TestVector> m_testVectors; //!< array containg all the test vectors
 };
@@ -221,13 +221,13 @@ class ThreeGppV2vUrbanLosNlosvChCondModelTestCase : public TestCase
     /**
      * Struct containing the parameters for each test
      */
-    typedef struct
+    struct TestVector
     {
         Vector m_positionA; //!< the position of the first node
         Vector m_positionB; //!< the position of the second node
         double m_pLos;      //!< LOS probability
         TypeId m_typeId;    //!< the type ID of the channel condition model to be used
-    } TestVector;
+    };
 
     TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
     Ptr<ThreeGppV2vUrbanChannelConditionModel> m_condModel; //!< the channel condition model
@@ -386,13 +386,13 @@ class ThreeGppV2vHighwayLosNlosvChCondModelTestCase : public TestCase
     /**
      * Struct containing the parameters for each test
      */
-    typedef struct
+    struct TestVector
     {
         Vector m_positionA; //!< the position of the first node
         Vector m_positionB; //!< the position of the second node
         double m_pLos;      //!< LOS probability
         TypeId m_typeId;    //!< the type ID of the channel condition model to be used
-    } TestVector;
+    };
 
     TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
     Ptr<ThreeGppV2vHighwayChannelConditionModel> m_condModel; //!< the channel condition model

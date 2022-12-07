@@ -275,7 +275,7 @@ class TcpHeader : public Header
     /**
      * \brief TCP flag field values
      */
-    typedef enum
+    enum Flags_t
     {
         NONE = 0, //!< No flags
         FIN = 1,  //!< FIN
@@ -286,7 +286,7 @@ class TcpHeader : public Header
         URG = 32, //!< Urgent
         ECE = 64, //!< ECE
         CWR = 128 //!< CWR
-    } Flags_t;
+    };
 
     /**
      * \brief Get the type ID.

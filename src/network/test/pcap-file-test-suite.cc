@@ -1116,14 +1116,14 @@ static const uint32_t N_PACKET_BYTES = 16;
 /**
  * PCAP Packet structure
  */
-typedef struct PACKET_ENTRY
+struct PacketEntry
 {
     uint32_t tsSec;                //!< Time (seconds part)
     uint32_t tsUsec;               //!< Time (micro seconds part)
     uint32_t inclLen;              //!< Length of the entry in the PCAP
     uint32_t origLen;              //!< length of the original packet
     uint16_t data[N_PACKET_BYTES]; //!< Packet data
-} PacketEntry;
+};
 
 static const PacketEntry knownPackets[] = {
     {2,

@@ -1359,13 +1359,13 @@ PrintMakeChecker(std::ostream& os, const std::string& name, const std::string& h
 } // PrintMakeChecker ()
 
 /**Descriptor for an AttributeValue. */
-typedef struct
+struct AttributeDescriptor
 {
     const std::string m_name;   //!< The base name of the resulting AttributeValue type.
     const std::string m_type;   //!< The name of the underlying type.
     const bool m_seeBase;       //!< Print a "see also" pointing to the base class.
     const std::string m_header; //!< The header file name.
-} AttributeDescriptor;
+};
 
 /**
  * Print documentation corresponding to use of the

@@ -100,25 +100,25 @@ class LteRlcHeader : public Header
     uint16_t PopLengthIndicator();
 
     /// ExtensionBit_t typedef
-    typedef enum
+    enum ExtensionBit_t
     {
         DATA_FIELD_FOLLOWS = 0,
         E_LI_FIELDS_FOLLOWS = 1
-    } ExtensionBit_t; ///< ExtensionBit_t enumeration
+    };
 
     /// FramingInfoFirstByte_t typedef
-    typedef enum
+    enum FramingInfoFirstByte_t
     {
         FIRST_BYTE = 0x00,
         NO_FIRST_BYTE = 0x02
-    } FramingInfoFirstByte_t; ///< FramingInfoFirstByte_t enumeration
+    };
 
     /// FramingInfoLastByte_t tyedef
-    typedef enum
+    enum FramingInfoLastByte_t
     {
         LAST_BYTE = 0x00,
         NO_LAST_BYTE = 0x01
-    } FramingInfoLastByte_t; ///< FramingInfoLastByte_t enumeration
+    };
 
     /**
      * \brief Get the type ID.

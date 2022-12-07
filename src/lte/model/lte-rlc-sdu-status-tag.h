@@ -59,15 +59,15 @@ class LteRlcSduStatusTag : public Tag
     void Deserialize(TagBuffer i) override;
     void Print(std::ostream& os) const override;
 
-    /// SduStatus_t typedef
-    typedef enum
+    /// SduStatus_t enumeration
+    enum SduStatus_t
     {
         FULL_SDU = 1,
         FIRST_SEGMENT = 2,
         MIDDLE_SEGMENT = 3,
         LAST_SEGMENT = 4,
         ANY_SEGMENT = 5
-    } SduStatus_t; ///< SduStatus_t enumeration
+    };
 
   private:
     uint8_t m_sduStatus; ///< SDU status

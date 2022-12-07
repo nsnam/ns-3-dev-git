@@ -296,7 +296,7 @@ class PcapFile
     /**
      * \brief Pcap file header
      */
-    typedef struct
+    struct PcapFileHeader
     {
         uint32_t m_magicNumber; //!< Magic number identifying this as a pcap file
         uint16_t
@@ -307,18 +307,18 @@ class PcapFile
         uint32_t m_sigFigs; //!< Unused by pretty much everybody
         uint32_t m_snapLen; //!< Maximum length of packet data stored in records
         uint32_t m_type;    //!< Data link type of packet data
-    } PcapFileHeader;
+    };
 
     /**
      * \brief Pcap record header
      */
-    typedef struct
+    struct PcapRecordHeader
     {
         uint32_t m_tsSec;   //!< seconds part of timestamp
         uint32_t m_tsUsec;  //!< microseconds part of timestamp (nsecs for PCAP_NSEC_MAGIC)
         uint32_t m_inclLen; //!< number of octets of packet saved in file
         uint32_t m_origLen; //!< actual length of original packet
-    } PcapRecordHeader;
+    };
 
     /**
      * \brief Swap a value byte order

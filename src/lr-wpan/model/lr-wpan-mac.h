@@ -56,20 +56,20 @@ class LrWpanCsmaCa;
  *
  * Tx options
  */
-typedef enum
+enum LrWpanTxOption
 {
     TX_OPTION_NONE = 0,    //!< TX_OPTION_NONE
     TX_OPTION_ACK = 1,     //!< TX_OPTION_ACK
     TX_OPTION_GTS = 2,     //!< TX_OPTION_GTS
     TX_OPTION_INDIRECT = 4 //!< TX_OPTION_INDIRECT
-} LrWpanTxOption;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * MAC states
  */
-typedef enum
+enum LrWpanMacState
 {
     MAC_IDLE,               //!< MAC_IDLE
     MAC_CSMA,               //!< MAC_CSMA
@@ -81,45 +81,45 @@ typedef enum
     MAC_GTS,                //!< MAC_GTS
     MAC_INACTIVE,           //!< MAC_INACTIVE
     MAC_CSMA_DEFERRED       //!< MAC_CSMA_DEFERRED
-} LrWpanMacState;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Superframe status
  */
-typedef enum
+enum SuperframeStatus
 {
     BEACON,  //!< The Beacon transmission or reception Period
     CAP,     //!< Contention Access Period
     CFP,     //!< Contention Free Period
     INACTIVE //!< Inactive Period or unslotted CSMA-CA
-} SuperframeStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Superframe type
  */
-typedef enum
+enum SuperframeType
 {
     OUTGOING = 0, //!< Outgoing Superframe
     INCOMING = 1  //!< Incoming Superframe
-} SuperframeType;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Indicates a pending MAC primitive
  */
-typedef enum
+enum PendingPrimitiveStatus
 {
     MLME_NONE = 0,      //!< No pending primitive
     MLME_START_REQ = 1, //!< Pending MLME-START.request primitive
     MLME_SCAN_REQ = 2,  //!< Pending MLME-SCAN.request primitive
     MLME_ASSOC_REQ = 3, //!< Pending MLME-ASSOCIATION.request primitive
     MLME_SYNC_REQ = 4   //!< Pending MLME-SYNC.request primitive
-} PendingPrimitiveStatus;
+};
 
 namespace TracedValueCallback
 {
@@ -149,47 +149,47 @@ typedef void (*SuperframeStatus)(SuperframeStatus oldValue, SuperframeStatus new
  *
  * table 80 of 802.15.4
  */
-typedef enum
+enum LrWpanAddressMode
 {
     NO_PANID_ADDR = 0,
     ADDR_MODE_RESERVED = 1,
     SHORT_ADDR = 2,
     EXT_ADDR = 3
-} LrWpanAddressMode;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * table 83 of 802.15.4
  */
-typedef enum
+enum LrWpanAssociationStatus
 {
     ASSOCIATED = 0,
     PAN_AT_CAPACITY = 1,
     PAN_ACCESS_DENIED = 2,
     ASSOCIATED_WITHOUT_ADDRESS = 0xfe,
     DISASSOCIATED = 0xff
-} LrWpanAssociationStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 30 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeScanType
 {
     MLMESCAN_ED = 0x00,
     MLMESCAN_ACTIVE = 0x01,
     MLMESCAN_PASSIVE = 0x02,
     MLMESCAN_ORPHAN = 0x03
-} LrWpanMlmeScanType;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 42 of 802.15.4-2006
  */
-typedef enum
+enum LrWpanMcpsDataConfirmStatus
 {
     IEEE_802_15_4_SUCCESS = 0,
     IEEE_802_15_4_TRANSACTION_OVERFLOW = 1,
@@ -203,14 +203,14 @@ typedef enum
     IEEE_802_15_4_UNAVAILABLE_KEY = 9,
     IEEE_802_15_4_UNSUPPORTED_SECURITY = 10,
     IEEE_802_15_4_INVALID_PARAMETER = 11
-} LrWpanMcpsDataConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 35 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeStartConfirmStatus
 {
     MLMESTART_SUCCESS = 0,
     MLMESTART_NO_SHORT_ADDRESS = 1,
@@ -222,14 +222,14 @@ typedef enum
     MLMESTART_UNAVAILABLE_KEY = 7,
     MLMESTART_UNSUPPORTED_SECURITY = 8,
     MLMESTART_CHANNEL_ACCESS_FAILURE = 9
-} LrWpanMlmeStartConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 31 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeScanConfirmStatus
 {
     MLMESCAN_SUCCESS = 0,
     MLMESCAN_LIMIT_REACHED = 1,
@@ -240,14 +240,14 @@ typedef enum
     MLMESCAN_UNAVAILABLE_KEY = 6,
     MLMESCAN_UNSUPPORTED_SECURITY = 7,
     MLMESCAN_INVALID_PARAMETER = 8
-} LrWpanMlmeScanConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 12 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeAssociateConfirmStatus
 {
     MLMEASSOC_SUCCESS = 0,
     MLMEASSOC_FULL_CAPACITY = 1,
@@ -259,27 +259,27 @@ typedef enum
     MLMEASSOC_FRAME_TOO_LONG = 7,
     MLMEASSOC_UNSUPPORTED_LEGACY = 8,
     MLMEASSOC_INVALID_PARAMETER = 9
-} LrWpanMlmeAssociateConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 37 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanSyncLossReason
 {
     MLMESYNCLOSS_PAN_ID_CONFLICT = 0,
     MLMESYNCLOSS_REALIGMENT = 1,
     MLMESYNCLOSS_BEACON_LOST = 2,
     MLMESYNCLOSS_SUPERFRAME_OVERLAP = 3
-} LrWpanSyncLossReason;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 18 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeCommStatus
 {
     MLMECOMMSTATUS_SUCCESS = 0,
     MLMECOMMSTATUS_TRANSACTION_OVERFLOW = 1,
@@ -289,14 +289,14 @@ typedef enum
     MLMECOMMSTATUS_COUNTER_ERROR = 5,
     MLMECOMMSTATUS_FRAME_TOO_LONG = 6,
     MLMECOMMSTATUS_INVALID_PARAMETER = 7
-} LrWpanMlmeCommStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 39 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmePollConfirmStatus
 {
     MLMEPOLL_SUCCESS = 0,
     MLMEPOLL_CHANNEL_ACCESS_FAILURE = 2,
@@ -307,7 +307,7 @@ typedef enum
     MLMEPOLL_UNAVAILABLE_KEY = 7,
     MLMEPOLL_UNSUPPORTED_SECURITY = 8,
     MLMEPOLL_INVALID_PARAMETER = 9
-} LrWpanMlmePollConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan

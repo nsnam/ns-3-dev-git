@@ -1460,13 +1460,13 @@ class Icmpv6OptionPrefixInformation : public Icmpv6OptionHeader
     /**
      * \brief Icmpv6 Option Prefix Information flag field values
      */
-    typedef enum
+    enum Flags_t
     {
         NONE = 0,         //!< No flags
         ROUTERADDR = 32,  //!< Router Address
         AUTADDRCONF = 64, //!< Autonomous Address Configuration
         ONLINK = 128      //!< On-link
-    } Flags_t;
+    };
 
     /**
      * \brief Get the prefix length.

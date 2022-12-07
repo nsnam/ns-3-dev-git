@@ -107,13 +107,13 @@ class UanMacCw : public UanMac, public UanPhyListener
 
   private:
     /** Enum defining possible Phy states. */
-    typedef enum
+    enum State
     {
         IDLE,    //!< Idle state.
         CCABUSY, //!< Channel busy.
         RUNNING, //!< Delay timer running.
         TX       //!< Transmitting.
-    } State;
+    };
 
     /** Forwarding up callback. */
     Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forwardUpCb;

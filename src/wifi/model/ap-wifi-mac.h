@@ -448,14 +448,14 @@ class ApWifiMac : public WifiMac
     Time m_bsrLifetime;            //!< Lifetime of Buffer Status Reports
 
     /// store value and timestamp for each Buffer Status Report
-    typedef struct
+    struct BsrType
     {
         uint8_t value;  //!< value of BSR
         Time timestamp; //!< timestamp of BSR
-    } bsrType;
+    };
 
     /// Per (MAC address, TID) buffer status reports
-    std::unordered_map<WifiAddressTidPair, bsrType, WifiAddressTidHash> m_bufferStatus;
+    std::unordered_map<WifiAddressTidPair, BsrType, WifiAddressTidHash> m_bufferStatus;
 
     /**
      * TracedCallback signature for association/deassociation events.

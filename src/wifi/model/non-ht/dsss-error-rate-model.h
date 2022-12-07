@@ -36,11 +36,11 @@ namespace ns3
 /**
  * Structure for integral function parameters
  */
-typedef struct FunctionParameterType
+struct FunctionParameters
 {
     double beta; ///< Beta parameter
     double n;    ///< n parameter
-} FunctionParameters;
+};
 
 /**
  * Integral function using GSL library

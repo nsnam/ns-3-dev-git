@@ -69,13 +69,13 @@ class ThreeGppChannelConditionModelTestCase : public TestCase
     /**
      * Struct containing the parameters for each test
      */
-    typedef struct
+    struct TestVector
     {
         Vector m_positionA; //!< the position of the first node
         Vector m_positionB; //!< the position of the second node
         double m_pLos;      //!< LOS probability
         TypeId m_typeId;    //!< the type ID of the channel condition model to be used
-    } TestVector;
+    };
 
     TestVectors<TestVector> m_testVectors;          //!< array containing all the test vectors
     Ptr<ThreeGppChannelConditionModel> m_condModel; //!< the channel condition model
