@@ -1151,6 +1151,22 @@ Miscellaneous items
 
 - Do not add the ``enum`` or ``struct`` specifiers when declaring the variable's type.
 
+- Do not unnecessarily add ``typedef`` to ``struct`` or ``enum``.
+
+  .. sourcecode:: cpp
+
+    // Avoid
+    typedef struct
+    {
+        ...
+    } MyStruct;
+
+    // Prefer
+    struct MyStruct
+    {
+        ...
+    };
+
 Clang-tidy rules
 ================
 
