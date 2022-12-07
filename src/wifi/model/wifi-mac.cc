@@ -1244,6 +1244,40 @@ WifiMac::GetMldAddress(const Mac48Address& remoteAddr) const
     return std::nullopt;
 }
 
+Mac48Address
+WifiMac::GetLocalAddress(const Mac48Address& remoteAddr) const
+{
+    for (const auto& link : m_links)
+    {
+        if (auto mldAddress = link->stationManager->GetMldAddress(remoteAddr))
+        {
+            // this is a link setup with remote MLD
+            if (mldAddress != remoteAddr)
+            {
+                // the remote address is the address of a STA affiliated with the remote MLD
+                return link->feManager->GetAddress();
+            }
+            // we have to return our MLD address
+            return m_address;
+        }
+    }
+    // we get here if no ML setup was established between this device and the remote device,
+    // i.e., they are not both multi-link devices
+    if (GetNLinks() == 1)
+    {
+        // this is a single link device
+        return m_address;
+    }
+    // this is an MLD (hence the remote device is single link)
+    return DoGetLocalAddress(remoteAddr);
+}
+
+Mac48Address
+WifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr [[maybe_unused]]) const
+{
+    return m_address;
+}
+
 WifiMac::OriginatorAgreementOptConstRef
 WifiMac::GetBaAgreementEstablishedAsOriginator(Mac48Address recipient, uint8_t tid) const
 {

@@ -157,6 +157,22 @@ class WifiMac : public Object
     std::optional<Mac48Address> GetMldAddress(const Mac48Address& remoteAddr) const;
 
     /**
+     * Get the local MAC address used to communicate with a remote STA. Specifically:
+     * - If the given remote address is the address of a STA affiliated with a remote MLD
+     * and operating on a setup link, the address of the local STA operating on such a link
+     * is returned.
+     * - If the given remote address is the MLD address of a remote MLD (with which some link
+     * has been setup), the MLD address of this device is returned.
+     * - If this is a single link device, the unique MAC address of this device is returned.
+     * - Otherwise, return the MAC address of the affiliated STA (which must exists) that
+     * can be used to communicate with the remote device.
+     *
+     * \param remoteAddr the MAC address of the remote device
+     * \return the local MAC address used to communicate with the remote device
+     */
+    Mac48Address GetLocalAddress(const Mac48Address& remoteAddr) const;
+
+    /**
      * Accessor for the Txop object
      *
      * \return a smart pointer to Txop
@@ -786,6 +802,17 @@ class WifiMac : public Object
      * \return a unique pointer to the created LinkEntity object
      */
     virtual std::unique_ptr<LinkEntity> CreateLinkEntity() const;
+
+    /**
+     * This method is called if this device is an MLD to determine the MAC address of
+     * the affiliated STA used to communicate with the single link device having the
+     * given MAC address. This method is overridden because its implementation depends
+     * on the type of station.
+     *
+     * \param remoteAddr the MAC address of the remote single link device
+     * \return the MAC address of the affiliated STA used to communicate with the remote device
+     */
+    virtual Mac48Address DoGetLocalAddress(const Mac48Address& remoteAddr) const;
 
     /**
      * Enable or disable ERP support for the given link.

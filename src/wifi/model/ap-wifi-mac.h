@@ -195,8 +195,9 @@ class ApWifiMac : public WifiMac
 
   private:
     std::unique_ptr<LinkEntity> CreateLinkEntity() const override;
-
+    Mac48Address DoGetLocalAddress(const Mac48Address& remoteAddr) const override;
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+
     /**
      * Check whether the supported rate set included in the received (Re)Association
      * Request frame is compatible with our Basic Rate Set. If so, record all the station's

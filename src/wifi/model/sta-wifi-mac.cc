@@ -733,6 +733,15 @@ StaWifiMac::GetSetupLinkIds() const
     return linkIds;
 }
 
+Mac48Address
+StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
+{
+    auto linkIds = GetSetupLinkIds();
+    NS_ASSERT_MSG(!linkIds.empty(), "Not associated");
+    uint8_t linkId = *linkIds.begin();
+    return GetFrameExchangeManager(linkId)->GetAddress();
+}
+
 bool
 StaWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {

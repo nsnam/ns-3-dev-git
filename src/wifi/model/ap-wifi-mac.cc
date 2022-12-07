@@ -1523,6 +1523,14 @@ ApWifiMac::IsAssociated(const Mac48Address& address) const
     return std::nullopt;
 }
 
+Mac48Address
+ApWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
+{
+    auto linkId = IsAssociated(remoteAddr);
+    NS_ASSERT_MSG(linkId, remoteAddr << " is not associated");
+    return GetFrameExchangeManager(*linkId)->GetAddress();
+}
+
 void
 ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {

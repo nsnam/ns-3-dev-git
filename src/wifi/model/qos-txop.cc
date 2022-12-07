@@ -281,15 +281,17 @@ QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
     NS_LOG_FUNCTION(this << recipient << +tid);
     NS_ASSERT(QosUtilsMapTidToAc(tid) == m_ac);
 
+    auto recipientMld = m_mac->GetMldAddress(recipient);
+
     CtrlBAckRequestHeader reqHdr =
-        m_baManager->GetBlockAckReqHeader(m_mac->GetMldAddress(recipient).value_or(recipient), tid);
+        m_baManager->GetBlockAckReqHeader(recipientMld.value_or(recipient), tid);
     Ptr<Packet> bar = Create<Packet>();
     bar->AddHeader(reqHdr);
 
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_CTL_BACKREQ);
     hdr.SetAddr1(recipient);
-    hdr.SetAddr2(m_mac->GetAddress());
+    hdr.SetAddr2(m_mac->GetLocalAddress(recipient));
     hdr.SetDsNotTo();
     hdr.SetDsNotFrom();
     hdr.SetNoRetry();
