@@ -25,6 +25,14 @@
 // The test consists of a device acting as server and a device as client generating traffic.
 //
 // The output consists of a plot of the rate observed and selected at the client device.
+// A special FixedRss propagation loss model is used to set a specific receive
+// power on the receiver.  The noise power is exclusively the thermal noise
+// for the channel bandwidth (no noise figure is configured).  Furthermore,
+// the CCA sensitivity attribute in WifiPhy can prevent signals from being
+// received even though the error model would permit it.  Therefore, for
+// the purpose of this example, the CCA sensitivity is lowered to a value
+// that disables it, and furthermore, the preamble detection model (which
+// also contains a similar threshold) is disabled.
 //
 // By default, the 802.11a standard using IdealWifiManager is plotted. Several command line
 // arguments can change the following options:
@@ -593,9 +601,24 @@ main(int argc, char* argv[])
     Config::SetDefault("ns3::MinstrelWifiManager::PrintSamples", BooleanValue(true));
     Config::SetDefault("ns3::MinstrelHtWifiManager::PrintStats", BooleanValue(true));
 
+    // Disable the default noise figure of 7 dBm in WifiPhy; the calculations
+    // of SNR below assume that the only noise is thermal noise
+    Config::SetDefault("ns3::WifiPhy::RxNoiseFigure", DoubleValue(0));
+
+    // By default, the CCA sensitivity is -82 dBm, meaning if the RSS is
+    // below this value, the receiver will reject the Wi-Fi frame.
+    // However, we want to probe the error model down to low SNR values,
+    // and we have disabled the noise figure, so the noise level in 20 MHz
+    // will be about -101 dBm.  Therefore, lower the CCA sensitivity to a
+    // value that disables it (e.g. -110 dBm)
+    Config::SetDefault("ns3::WifiPhy::CcaSensitivity", DoubleValue(-110));
+
     WifiHelper wifi;
     wifi.SetStandard(serverSelectedStandard.m_standard);
     YansWifiPhyHelper wifiPhy;
+    // Disable the preamble detection model for the same reason that we
+    // disabled CCA sensitivity above-- we want to enable reception at low SNR
+    wifiPhy.DisablePreambleDetectionModel();
 
     Ptr<YansWifiChannel> wifiChannel = CreateObject<YansWifiChannel>();
     Ptr<ConstantSpeedPropagationDelayModel> delayModel =
