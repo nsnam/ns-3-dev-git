@@ -21,6 +21,7 @@ Release 3-dev
 ### New user-visible features
 
 - (wifi) Added support for 802.11be TID-to-Link Mapping
+- (energy) - !1329 - Extensions to battery discharge module
 
 ### Bugs fixed
 

@@ -79,6 +79,7 @@ class LiIonEnergySource : public EnergySource
      * \return The object TypeId.
      */
     static TypeId GetTypeId();
+    NS_DEPRECATED_3_40("Use GenericBatteryModel instead")
     LiIonEnergySource();
     ~LiIonEnergySource() override;
 

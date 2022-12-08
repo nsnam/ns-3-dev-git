@@ -360,7 +360,13 @@ SOURCEFIGS = \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
 	$(SRC)/lr-wpan/doc/802-15-4-ber.eps \
 	$(SRC)/lr-wpan/doc/802-15-4-per-sens.eps \
-	$(SRC)/lr-wpan/doc/802-15-4-psr-distance.eps
+	$(SRC)/lr-wpan/doc/802-15-4-psr-distance.eps \
+	$(SRC)/energy/doc/figures/dischargeCurve.png \
+	$(SRC)/energy/doc/figures/energyFramework.dia \
+	$(SRC)/energy/doc/figures/leadacid.png \
+	$(SRC)/energy/doc/figures/liion.png \
+	$(SRC)/energy/doc/figures/nicd.png \
+	$(SRC)/energy/doc/figures/nimh.png
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
@@ -457,6 +463,7 @@ IMAGES_EPS = \
 	$(FIGURES)/802-15-4-ber.eps \
 	$(FIGURES)/802-15-4-per-sens.eps \
 	$(FIGURES)/802-15-4-psr-distance.eps \
+	$(FIGURES)/energyFramework.eps \
 	$(FIGURES)/clear-channel.eps \
 	$(FIGURES)/assoc-manager.eps \
 	$(FIGURES)/nist-frame-success-rate.eps \

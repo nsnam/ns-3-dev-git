@@ -20,6 +20,10 @@ Changes from ns-3.39 to ns-3-dev
 
 ### Changes to existing API
 
+* (energy) Added `GenericBatteryModel` to the energy module with working examples.
+* (energy) Support for battery presets and cell packs.
+* (energy) Documentation was updated and reformatted.
+
 ### Changes to build system
 
 ### Changed behavior
