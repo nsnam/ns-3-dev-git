@@ -22,7 +22,6 @@ check-style-clang-format:
   variables:
     MPI_CI: 1
     CLANG_TIDY_OUTPUT: clang-tidy-output.log
-    GIT_DEPTH: 0
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
@@ -74,7 +73,9 @@ clang-tidy-diff:
       when: never
     - when: on_success
   script:
-    - git diff -U0 $(git merge-base --fork-point origin/$CI_DEFAULT_BRANCH) |
+    - git remote add upstream https://gitlab.com/nsnam/ns-3-dev.git
+    - git fetch upstream master
+    - git diff -U0 upstream/master |
       clang-tidy-diff-14.py -path cmake-cache/ -p1 -quiet
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null
