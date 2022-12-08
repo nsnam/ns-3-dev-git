@@ -148,20 +148,16 @@ MultiModelSpectrumChannel::AddRx(Ptr<SpectrumPhy> phy)
 
     ++m_numDevices;
 
-    RxSpectrumModelInfoMap_t::iterator rxInfoIterator =
-        m_rxSpectrumModelInfoMap.find(rxSpectrumModelUid);
+    auto [rxInfoIterator, inserted] =
+        m_rxSpectrumModelInfoMap.emplace(rxSpectrumModelUid, RxSpectrumModelInfo(rxSpectrumModel));
 
-    if (rxInfoIterator == m_rxSpectrumModelInfoMap.end())
+    // rxInfoIterator points either to the newly inserted element or to the element that
+    // prevented insertion. In both cases, add the phy to the element pointed to by rxInfoIterator
+    rxInfoIterator->second.m_rxPhys.push_back(phy);
+
+    if (inserted)
     {
-        // spectrum model unknown, add it to the list of RxSpectrumModels
-        std::pair<RxSpectrumModelInfoMap_t::iterator, bool> ret;
-        ret = m_rxSpectrumModelInfoMap.insert(
-            std::make_pair(rxSpectrumModelUid, RxSpectrumModelInfo(rxSpectrumModel)));
-        NS_ASSERT(ret.second);
-        // also add the phy to the newly created set of SpectrumPhy for this RxSpectrumModel
-        ret.first->second.m_rxPhys.push_back(phy);
-
-        // and create the necessary converters for all the TX spectrum models that we know of
+        // create the necessary converters for all the TX spectrum models that we know of
         for (TxSpectrumModelInfoMap_t::iterator txInfoIterator = m_txSpectrumModelInfoMap.begin();
              txInfoIterator != m_txSpectrumModelInfoMap.end();
              ++txInfoIterator)
@@ -181,11 +177,6 @@ MultiModelSpectrumChannel::AddRx(Ptr<SpectrumPhy> phy)
                 NS_ASSERT(ret2.second);
             }
         }
-    }
-    else
-    {
-        // spectrum model is already known, just add the device to the corresponding list
-        rxInfoIterator->second.m_rxPhys.push_back(phy);
     }
 }
 
