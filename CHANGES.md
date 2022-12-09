@@ -38,6 +38,7 @@ Changes from ns-3.37 to ns-3.38
 * Added NinjaTracing support.
 * Check if the ccache version is equal or higher than 4.0 before enabling precompiled headers.
 * Improve bindings search for linked libraries and their include directories.
+* Added `./ns3 distclean` option. It removes the same build artifacts as `./ns3 clean`, along with documentation, python and test artifacts.
 
 ### Changed behavior
 

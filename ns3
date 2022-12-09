@@ -212,6 +212,9 @@ def parse_args(argv):
     parser_clean = sub_parser.add_parser('clean', help='Removes files created by ns3')
     parser_clean.add_argument('clean', action="store_true", default=False)
 
+    parser_distclean = sub_parser.add_parser('distclean', help='Removes files created by ns3, tests and documentation')
+    parser_distclean.add_argument('distclean', action="store_true", default=False)
+
     parser_install = sub_parser.add_parser('install', help='Install ns-3')
     parser_install.add_argument('install', action="store_true", default=False)
 
@@ -291,7 +294,7 @@ def parse_args(argv):
                              action="store", type=str, nargs="?", default="all")
 
     add_argument_to_subparsers(
-        [parser, parser_build, parser_configure, parser_clean, parser_docs, parser_run, parser_show],
+        [parser, parser_build, parser_configure, parser_clean, parser_distclean, parser_docs, parser_run, parser_show],
         ["--dry-run"],
         help_msg="Do not execute the commands.",
         dest="dry_run")
@@ -369,7 +372,7 @@ def parse_args(argv):
         setattr(args, attribute, min(merging_attributes))
 
     # If some positional options are not in args, set them to false.
-    for option in ["clean", "configure", "docs", "install", "run", "shell", "uninstall", "show"]:
+    for option in ["clean", "configure", "docs", "install", "run", "shell", "uninstall", "show", "distclean"]:
         if option not in args:
             setattr(args, option, False)
 
@@ -423,28 +426,74 @@ def print_and_buffer(message):
     print_buffer += "\n" + message
 
 
+def remove_dir(dir_to_remove, dry_run, directory_qualifier=""):
+    dir_to_remove = os.path.abspath(dir_to_remove)
+    if os.path.exists(dir_to_remove):
+        if ".." in os.path.relpath(dir_to_remove, ns3_path):
+            # In case the directory to remove isn't within
+            # the current ns-3 directory, print an error
+            # message for the dry-run case
+            # Or throw an exception in a normal run
+            error_message = (f"The {directory_qualifier} directory '{dir_to_remove}' "
+                             "is not within the current ns-3 directory. "
+                             "Deleting it can cause data loss.")
+            if dry_run:
+                print_and_buffer(error_message)
+                return
+            else:
+                raise Exception(error_message)
+
+        # Remove directories that are within the current ns-3 directory
+        print_and_buffer("rm -R %s" % os.path.relpath(dir_to_remove, ns3_path))
+        if not dry_run:
+            shutil.rmtree(dir_to_remove, ignore_errors=True)
+
+
+def remove_file(file_to_remove, dry_run):
+    if os.path.exists(file_to_remove):
+        print_and_buffer("rm -R %s" % os.path.relpath(file_to_remove, ns3_path))
+        if not dry_run:
+            os.remove(file_to_remove)
+
+
 def clean_cmake_artifacts(dry_run=False):
-    print_and_buffer("rm -R %s" % os.path.relpath(out_dir, ns3_path))
-    if not dry_run:
-        if out_dir == ns3_path:
-            raise Exception("The output directory and the ns-3 directory are the same. "
-                            "Deleting it can cause data loss.")
-        shutil.rmtree(out_dir, ignore_errors=True)
+    remove_dir(out_dir, dry_run, "output")
 
     cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path, recursive=True)
     for cmake_cache_file in cmake_cache_files:
         dirname = os.path.dirname(cmake_cache_file)
-        print_and_buffer("rm -R %s" % os.path.relpath(dirname, ns3_path))
-        if not dry_run:
-            if dirname == ns3_path:
-                raise Exception("The CMake cache directory and the ns-3 directory are the same. "
-                                "Deleting it can cause data loss.")
-            shutil.rmtree(dirname, ignore_errors=True)
+        remove_dir(dirname, dry_run, "CMake cache")
 
-    if os.path.exists(lock_file):
-        print_and_buffer("rm %s" % os.path.relpath(lock_file, ns3_path))
-        if not dry_run:
-            os.remove(lock_file)
+    dirs_to_remove = [os.path.join(ns3_path, "testpy-output"),
+                      os.path.join(ns3_path, "__pycache__")
+                      ]
+    for dir_to_remove in dirs_to_remove:
+        remove_dir(dir_to_remove, dry_run)
+
+    remove_file(lock_file, dry_run)
+
+
+def clean_docs_and_tests_artifacts(dry_run=False):
+    docs_dir = os.path.join(ns3_path, 'doc')
+
+    file_artifacts = ["doxygen.log",
+                      "doxygen.warnings.log",
+                      "introspected-command-line.h",
+                      "introspected-doxygen.h",
+                      "ns3-object.txt"]
+    docs_files = [os.path.join(docs_dir, filename) for filename in file_artifacts]
+
+    docs_and_tests_dirs = [os.path.join(docs_dir, "html"),
+                           os.path.join(docs_dir, "html-warn"),
+                           ]
+    docs_and_tests_dirs.extend(glob.glob(f"{docs_dir}/**/build", recursive=True))
+    docs_and_tests_dirs.extend(glob.glob(f"{docs_dir}/**/source-temp", recursive=True))
+
+    for directory in docs_and_tests_dirs:
+        remove_dir(directory, dry_run)
+
+    for file in docs_files:
+        remove_file(file, dry_run)
 
 
 def search_cmake_cache(build_profile):
@@ -612,7 +661,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
     if args.lcov_zerocounters is not None:
         cmake_args.append("-DNS3_COVERAGE_ZERO_COUNTERS=%s" % on_off(args.lcov_zerocounters))
 
-    # Output, Brite, Click and Openflow directories
+    # Output, Brite, Click and Openflow dirs
     if args.output_directory is not None:
         cmake_args.append("-DNS3_OUTPUT_DIRECTORY=%s" % args.output_directory)
 
@@ -1368,6 +1417,12 @@ def main():
     # Clean project if needed
     if args.clean:
         clean_cmake_artifacts(dry_run=args.dry_run)
+        # We end things earlier when cleaning
+        return
+
+    if args.distclean:
+        clean_cmake_artifacts(dry_run=args.dry_run)
+        clean_docs_and_tests_artifacts(dry_run=args.dry_run)
         # We end things earlier when cleaning
         return
 
