@@ -10,10 +10,10 @@
 
 .. _Working with git:
 
-Working with git as a user
+Working with Git as a user
 --------------------------
 
-The ns-3 project used Mercurial in the past as its source code control system, but it has moved to Git in December 2018. Git is a VCS like Mercurial, Subversion or CVS, and it is used to maintain many open-source (and closed-source) projects. While git and mercurial have a lot of common properties, if you are new to git you should read first an introduction to it. The most up-to-date guide is the Git Book, at https://git-scm.com/book/en/v2/Getting-Started-Git-Basics.
+The ns-3 project used Mercurial in the past as its source code control system, but it has moved to Git in December 2018. Git is a VCS like Mercurial, Subversion or CVS, and it is used to maintain many open-source (and closed-source) projects. While Git and mercurial have a lot of common properties, if you are new to Git you should read first an introduction to it. The most up-to-date guide is the Git Book, at https://git-scm.com/book/en/v2/Getting-Started-Git-Basics.
 
 The ns-3 project is officially hosted on GitLab.com at https://gitlab.com/nsnam/.  For convenience and historical reasons, ns-3-dev mirrors are currently posted on Bitbucket.com and GitHub.com, and kept in sync with the official repository periodically via cron jobs.  We recommend that users who have been working from one of these mirrors repoint their remotes so that they pull origin or upstream from GitLab.com (see below explanation about how to configure remotes).
 
@@ -22,10 +22,10 @@ This section of the manual provides common tips for both users and maintainers. 
 ns-3's Git workflow in a nutshell
 *********************************
 
-Experienced git users will not necessarily need instruction on how to set up personal repositories (below).  However, they should be aware of the project's workflow:
+Experienced Git users will not necessarily need instruction on how to set up personal repositories (below).  However, they should be aware of the project's workflow:
 
 * The main repository's ``master`` branch is the main development branch.  The project maintains only this one branch and strives to maintain a mostly linear history on it.
-* Releases are made by creating a branch from the ``master`` branch and tagging the branch with the release number when ready, and then merging the release branch back to the ``master`` branch.  Releases can be identified by a git tag, and a modified ``VERSION`` file in the branch.  However, the modified ``VERSION`` file is not merged back to ``master``.
+* Releases are made by creating a branch from the ``master`` branch and tagging the branch with the release number when ready, and then merging the release branch back to the ``master`` branch.  Releases can be identified by a Git tag, and a modified ``VERSION`` file in the branch.  However, the modified ``VERSION`` file is not merged back to ``master``.
 
   * If a hotfix release must be made to update a past release, a new hotfix support branch will be created by branching from the tip of the last relevant release.  Changesets from ``master`` branch (such as bug fixes) may be cherry-picked to the hotfix branch.  The hotfix release is tagged with the hotfix version number, and merged back to the ``master`` branch.
 
@@ -64,7 +64,7 @@ Assume that you are the user *john* on GitLab.com and that you want to create a 
 
 Note that you may only do this once; if you try to fork again, Gitlab will take you to the page of the original fork. So, if you are planning to maintain two or more separate forks (for example, one for your private work, another for maintenance, etc.), you are doing a mistake. Instead, you should add these forks as a remote of your existing directory (see below for adding remotes). Usually, it is a good thing to add the maintainer's repository as remotes, because it can happen that "bleeding edge" features will appear there before landing in ns-3-dev.
 
-For more information on forking with Gilab, there is plenty of visual documentation (https://docs.gitlab.com/ee/user/project/repository/forking_workflow.html). To work with your forked repository, you have two ways: one is a clean clone while the other is meant to re-use an existing ns-3 git repository.
+For more information on forking with Gilab, there is plenty of visual documentation (https://docs.gitlab.com/ee/user/project/repository/forking_workflow.html). To work with your forked repository, you have two ways: one is a clean clone while the other is meant to re-use an existing ns-3 Git repository.
 
 Clone your forked repository on your machine
 ============================================
@@ -81,16 +81,16 @@ In this example we used the HTTPS address because in some place the git + ssh ad
 Naming conventions
 ==================
 
-Git is able to fetch and push changes to several repositories, each of them is called ``remote``. With time, you probably will have many remotes, each one with many branches. To avoid confusion, it is recommended to give meaningful names to the remotes; in the following, we will use ``origin`` to indicate the ns-3-dev repository in your personal namespace (your forked version, server-side) and ``nsnam`` to indicate the ns-3-dev repository in the nsnam namespace, server-side.
+Git is able to fetch and push changes to several repositories, each of them is called ``remote``. With time, you probably will have many remotes, each one with many branches. To avoid confusion, it is recommended to give meaningful names to the remotes. Following the Git terminology, we will use ``origin`` to indicate the ns-3-dev repository in your personal namespace (your forked version, server-side) and ``upstream`` to indicate the ns-3-dev repository in the nsnam namespace, server-side.
 
 Add the official ns-3 repository as remote upstream
 ***************************************************
 
-You could have already used git in the past, and therefore already having a ns-3 git repository somewhere. Or, instead, you could have it cloned for the first time in the step above. In both cases, when you fork/clone a repository, your history is no more bound to the repository itself. At this point, it is your duty to sync your fork with the original repository. The first remote repository we have encountered is ``origin``; we must add the official ns-3 repo as another remote repository::
+You could have already used Git in the past, and therefore already having a ns-3 Git repository somewhere. Or, instead, you could have it cloned for the first time in the step above. In both cases, when you fork/clone a repository, your history is no more bound to the repository itself. At this point, it is your duty to sync your fork with the original repository. The first remote repository we have encountered is ``origin``; we must add the official ns-3 repo as another remote repository::
 
-   $ git remote add nsnam https://gitlab.com/nsnam/ns-3-dev
+   $ git remote add upstream https://gitlab.com/nsnam/ns-3-dev
 
-With the command above, we added a remote repository, named nsnam, which links to the official ns-3 repo. To show your remote repositories::
+With the command above, we added a remote repository, named upstream, which links to the official ns-3 repo. To show your remote repositories::
 
    $ git remote show
 
@@ -98,12 +98,12 @@ To see what ``origin`` is linking to::
 
    $ git remote show origin
 
-Many options are available; please refer to the git manual for more.
+Many options are available; please refer to the Git manual for more.
 
 Add your forked repository as remote
 ************************************
 
-If you were a user of the old github mirror, you probably have an existing git repository installed somewhere. In your case, it is not necessary to clone your fork and to port all your work in the new directory; you can add the fork as new remote::
+If you were a user of the old github mirror, you probably have an existing Git repository installed somewhere. In your case, it is not necessary to clone your fork and to port all your work in the new directory; you can add the fork as new remote::
 
    $ git remote rename origin old-origin
    $ git remote add origin https://gitlab.com/your-user-name/ns-3-dev
@@ -117,10 +117,10 @@ Keep in sync your repository with latest ns-3-dev updates
 We assume, from now to the end of this document, that you will not make commits on top of the master branch. It should be kept clean from *any* personal modifications: all the works must be done in branches. Therefore, to move the current HEAD of the master branch to the latest commit in ns-3-dev, you should do::
 
    $ git checkout master
-   $ git fetch nsnam
-   $ git pull nsnam master
+   $ git fetch upstream
+   $ git pull upstream master
 
-If you tried a pull which resulted in a conflict and you would like to start over, you can recover with git reset (but this never happens if you do not commit over master).
+If you tried a pull which resulted in a conflict and you would like to start over, you can recover with Git reset (but this never happens if you do not commit over master).
 
 Start a new branch to do some work
 **********************************
@@ -133,7 +133,7 @@ you should see something like::
 
    * master
      remotes/origin/master
-     remotes/nsnam/master
+     remotes/upstream/master
 
 The branch master is your local master branch; remotes/origin/master point at the master branch on your repository located in the Gitlab server, while remotes/nsnam/master points to the official master branch.
 
@@ -150,14 +150,14 @@ To switch between branches, remove the -b option. You should now see::
     * master
      [name_of_your_new_branch]
      remotes/origin/master
-     remotes/nsnam/master
+     remotes/upstream/master
 
 Edit and commit the modifications
 *********************************
 
-After you edit some file, you should commit the difference. As a policy, git users love small and incremental patches. So, commit early, and commit often: you could rewrite your history later.
+After you edit some file, you should commit the difference. As a policy, Git users love small and incremental patches. So, commit early, and commit often: you could rewrite your history later.
 
-Suppose we edited ``src/internet/model/tcp-socket-base.cc``. With git status, we can see the repository status::
+Suppose we edited ``src/internet/model/tcp-socket-base.cc``. With Git status, we can see the repository status::
 
    $ git status
       On branch tcp-next
@@ -220,7 +220,7 @@ You can see the history of the commits with git log. To show a particular commit
 Rebase your branch on top of master
 ***********************************
 
-Meanwhile you were busy with your branch, the upstream master could have changed. To rebase your work with the now new master, first of all sync your master branch (pulling the nsnam/master branch into your local master branch) as explained before; then
+Meanwhile you were busy with your branch, the upstream master could have changed. To rebase your work with the now new master, first of all sync your master branch (pulling the upstream/master branch into your local master branch) as explained before; then
 
 ::
 
@@ -241,7 +241,7 @@ After you have done some work on a branch, if you would like to share it with ot
 
 The ``git push`` command can be used every time you need to push something from your computer to a remote repository, except when you propose changes to the main ns-3-dev repository: your changes must pass a review stage.
 
-Please note that for older git version, the push command looks like::
+Please note that for older Git version, the push command looks like::
 
     $ git push -u origin [name_of_your_new_branch]
 
@@ -251,6 +251,9 @@ Submit work for review
 
 After you push your branch to origin, you can follow the instructions here https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html
 to create a merge request.
+
+It is strongly suggested to rebase your branch on top of upstream/master (or master, if you kept it synced) before submitting your work.
+This helps reviewing the code changes proposed in the branch. merge it without conflicts, and it increase the speed of the GitLab CI.
 
 GitLab CI (Continous Integration)
 +++++++++++++++++++++++++++++++++
@@ -270,13 +273,19 @@ In these cases it is useful to skip the CI to save time, CI runners quota, and e
 
     $ git push -o ci.skip
 
+GitLab CI optimization
+++++++++++++++++++++++
 
-Porting patches from mercurial repositories to git
+The GitLab Ci jobs are optimized to take advantage of caches (this is done automatically).
+
+In order to take full advantage of the caches, it is suggested to rebase your branches on top of upstream/master (or your own 'master' branch if you keep it synced with the latest commits from upstream/master).
+
+Porting patches from mercurial repositories to Git
 **************************************************
 
 *Placeholder section; please improve it.*
 
-Working with git as a maintainer
+Working with Git as a maintainer
 --------------------------------
 
 As a maintainer, you are a person who has write access to the main nsnam repository. You could push your own work (without passing from code review) or push someone else's work. Let's investigate the two cases.
@@ -287,11 +296,11 @@ Pushing your own work
 Since you have been added to the Developer list on Gitlab (if not, please open an issue) you can use the git + ssh address when adding nsnam as remote. Once you have done that, you can do your modifications to a local branch, then update the master to point to the latest changes of the nsnam repo, and then::
 
     $ git checkout master
-    $ git pull nsnam master
+    $ git pull upstream master
     $ git merge [your_branch_name]
-    $ git push nsnam master
+    $ git push upstream master
 
-Please note that if you want to keep track of your branch, you can use as command ``git merge --no-ff [your_branch_name]``. It is always recommended to rebase your branch before merging, to have a clean history. That is not a requirement, though: git perfectly handles a master with parallel merged branches.
+Please note that if you want to keep track of your branch, you can use as command ``git merge --no-ff [your_branch_name]``. It is always recommended to rebase your branch before merging, to have a clean history. That is not a requirement, though: Git perfectly handles a master with parallel merged branches.
 
 Review and merge someone else's work
 ************************************
@@ -306,11 +315,11 @@ As stated above, the project has adopted a workflow to aim for a mostly
 linear history on a single ``master`` branch.  Releases are branches from
 this ``master`` branch but the branches themselves are not long-lived;
 the release branches are merged back to ``master`` in a special way.  However,
-the release branches can be checked out by using the git tag facility;
+the release branches can be checked out by using the Git tag facility;
 a named release such as 'ns-3.30' can be checked out on a branch by specifying
 the release name 'ns-3.30' (or 'ns-3.30.1' etc.).
 
-A compact way to represent a git history is the following command:
+A compact way to represent a Git history is the following command:
 
 ::
 
@@ -397,7 +406,7 @@ Commit this change:
 
   $ git commit -m"Update availability in RELEASE_NOTES.md" RELEASE_NOTES.md
 
-Finally, add a git annotated tag:
+Finally, add a Git annotated tag:
 
 ::
 
@@ -435,7 +444,7 @@ Finally, commit the branch and delete our local release branch.
   $ git commit -m"Merge ns-3.34-release branch"
   $ git branch -d ns-3.34-release
 
-The git history now looks like this::
+The Git history now looks like this::
 
   $ git log --graph --decorate --oneline --all
   *   fd075f6 (HEAD -> master) Merge ns-3.34-release branch
@@ -549,7 +558,7 @@ We can next hand-edit these files to restore them to original state, so that::
   $ git commit
   $ git branch -d ns-3.34.1-release
 
-The new log should show something like the below, with parallel git
+The new log should show something like the below, with parallel Git
 history paths until the merge back again::
 
   $ git log --graph --decorate --oneline --all
