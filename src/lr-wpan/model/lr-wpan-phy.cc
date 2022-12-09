@@ -20,6 +20,7 @@
  */
 #include "lr-wpan-phy.h"
 
+#include "lr-wpan-constants.h"
 #include "lr-wpan-error-model.h"
 #include "lr-wpan-lqi-tag.h"
 #include "lr-wpan-net-device.h"
@@ -597,7 +598,7 @@ LrWpanPhy::PdDataRequest(const uint32_t psduLength, Ptr<Packet> p)
 {
     NS_LOG_FUNCTION(this << psduLength << p);
 
-    if (psduLength > aMaxPhyPacketSize)
+    if (psduLength > lrwpan::aMaxPhyPacketSize)
     {
         if (!m_pdDataConfirmCallback.IsNull())
         {
@@ -865,7 +866,7 @@ LrWpanPhy::PlmeSetTRXStateRequest(LrWpanPhyEnumeration state)
             m_trxStatePending = IEEE_802_15_4_PHY_TX_ON;
 
             // Delay for turnaround time (BUSY_RX|RX_ON ---> TX_ON)
-            Time setTime = Seconds((double)aTurnaroundTime / GetDataOrSymbolRate(false));
+            Time setTime = Seconds((double)lrwpan::aTurnaroundTime / GetDataOrSymbolRate(false));
             m_setTRXState = Simulator::Schedule(setTime, &LrWpanPhy::EndSetTRXState, this);
             return;
         }
@@ -932,7 +933,7 @@ LrWpanPhy::PlmeSetTRXStateRequest(LrWpanPhyEnumeration state)
             //       even when the transmitter is not busy? (6.9.1)
             m_trxStatePending = IEEE_802_15_4_PHY_RX_ON;
 
-            Time setTime = Seconds((double)aTurnaroundTime / GetDataOrSymbolRate(false));
+            Time setTime = Seconds((double)lrwpan::aTurnaroundTime / GetDataOrSymbolRate(false));
             m_setTRXState = Simulator::Schedule(setTime, &LrWpanPhy::EndSetTRXState, this);
             return;
         }

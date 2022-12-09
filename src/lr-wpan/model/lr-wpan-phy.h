@@ -258,19 +258,6 @@ class LrWpanPhy : public SpectrumPhy
     static TypeId GetTypeId();
 
     /**
-     * The maximum packet size accepted by the PHY.
-     * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
-     */
-    static const uint32_t aMaxPhyPacketSize;
-
-    /**
-     * The turnaround time for switching the transceiver from RX to TX or vice
-     * versa.
-     * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
-     */
-    static const uint32_t aTurnaroundTime;
-
-    /**
      * Default constructor.
      */
     LrWpanPhy();

@@ -29,6 +29,7 @@ Changes from ns-3.37 to ns-3.38
 * (internet) TCP Westwood model has been removed due to a bug in BW estimation documented in <https://gitlab.com/nsnam/ns-3-dev/-/issues/579>. The TCP Westwood+ model is now named **TcpWestwoodPlus** and can be instantiated like all the other TCP flavors.
 * (internet) `TcpCubic` attribute `HyStartDetect` changed from `int` to `enum HybridSSDetectionMode`.
 * (internet-apps) Classes `v4Ping` and `Ping6` will be deprecated and removed in the future, replaced by the new `Ping` class.
+* (lr-wpan) Add file `src/lr-wpan/model/lr-wpan-constants.h` with common constants of the LR-WPAN module.
 
 ### Changes to build system
 

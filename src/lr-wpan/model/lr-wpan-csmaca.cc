@@ -22,6 +22,8 @@
 
 #include "lr-wpan-csmaca.h"
 
+#include "lr-wpan-constants.h"
+
 #include <ns3/log.h>
 #include <ns3/random-variable-stream.h>
 #include <ns3/simulator.h>
@@ -424,7 +426,7 @@ LrWpanCsmaCa::CanProceed()
     else
     {
         // time the PHY takes to switch from Rx to Tx and Tx to Rx
-        transactionSymbols += (m_mac->GetPhy()->aTurnaroundTime * 2);
+        transactionSymbols += (lrwpan::aTurnaroundTime * 2);
     }
     transactionSymbols += m_mac->GetIfsSize();
 
