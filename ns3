@@ -81,17 +81,22 @@ def add_argument_to_subparsers(parsers: list,
 def parse_args(argv):
     parser = argparse.ArgumentParser(description="ns-3 wrapper for the CMake build system", add_help=False)
 
+    sub_parser = parser.add_subparsers()
+
     parser.add_argument('-h', '--help',
                         help="Print a summary of available commands",
-                        action="store_true", default=None, dest="help")
+                        action="store_true", default=None, dest="main_help")
+    parser_help = sub_parser.add_parser('help',
+                                        help='Print a summary of available commands')
+    parser_help.add_argument('help',
+                             help='Print a summary of available commands',
+                             action="store_true", default=False)
     # parser.add_argument('--docset',
     #               help=(
     #                   'Create Docset, without building. This requires the docsetutil tool from Xcode 9.2 or earlier.'
     #                   'See Bugzilla 2196 for more details.'),
     #               action="store_true", default=None,
     #               dest="docset_build")
-
-    sub_parser = parser.add_subparsers()
 
     parser_build = sub_parser.add_parser('build',
                                          help=('Accepts a list of targets to build,'
@@ -326,6 +331,15 @@ def parse_args(argv):
         parser_run.print_help()
         exit(-1)
 
+    # Merge attributes
+    attributes_to_merge = ["dry_run", "help", "verbose", "quiet"]
+    filtered_attributes = list(
+        filter(lambda x: x if ("disable" not in x and "enable" not in x) else None, args.__dir__()))
+    for attribute in attributes_to_merge:
+        merging_attributes = list(
+            map(lambda x: args.__getattribute__(x) if attribute in x else None, filtered_attributes))
+        setattr(args, attribute, merging_attributes.count(True) > 0)
+
     if args.help:
         print(parser.description)
         print("")
@@ -346,15 +360,6 @@ def parse_args(argv):
 
         print(parser.format_help().replace(parser.description, "").replace(parser.format_usage(), ""))
         exit(0)
-
-    # Merge attributes
-    attributes_to_merge = ["dry_run", "verbose", "quiet"]
-    filtered_attributes = list(
-        filter(lambda x: x if ("disable" not in x and "enable" not in x) else None, args.__dir__()))
-    for attribute in attributes_to_merge:
-        merging_attributes = list(
-            map(lambda x: args.__getattribute__(x) if attribute in x else None, filtered_attributes))
-        setattr(args, attribute, merging_attributes.count(True) > 0)
 
     attributes_to_merge = ["jobs"]
     filtered_attributes = list(filter(lambda x: x if ("disable" not in x and "enable" not in x) else 0, args.__dir__()))
