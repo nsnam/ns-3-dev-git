@@ -20,7 +20,7 @@ Changes from ns-3.37 to ns-3.38
 
 * (network) Add class `TimestampTag` for associating a timestamp with a packet.
 * (wifi) Added a new attribute **NMaxInflights** to QosTxop to set the maximum number of links on which an MPDU can be simultaneously in-flight.
-* (core) Added several macros in **warnings.h** to silence compiler warnings in specific sections of code. Their use is discouraged, uness really necessary.
+* (core) Added several macros in **warnings.h** to silence compiler warnings in specific sections of code. Their use is discouraged, unless really necessary.
 * (internet-apps) Add class `Ping` for a ping model that works for both IPv4 and IPv6.
 
 ### Changes to existing API
