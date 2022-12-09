@@ -3435,7 +3435,7 @@ LrWpanMac::ChangeMacState(LrWpanMacState newState)
 uint64_t
 LrWpanMac::GetMacAckWaitDuration() const
 {
-    return m_csmaCa->GetUnitBackoffPeriod() + lrwpan::aTurnaroundTime + m_phy->GetPhySHRDuration() +
+    return lrwpan::aUnitBackoffPeriod + lrwpan::aTurnaroundTime + m_phy->GetPhySHRDuration() +
            ceil(6 * m_phy->GetPhySymbolsPerOctet());
 }
 

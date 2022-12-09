@@ -150,22 +150,6 @@ class LrWpanCsmaCa : public Object
      */
     uint8_t GetMacMaxCSMABackoffs() const;
     /**
-     * Set the number of symbols forming the basic time period used by the
-     * CSMA-CA algorithm.
-     * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
-     *
-     * \param unitBackoffPeriod the period length in symbols
-     */
-    void SetUnitBackoffPeriod(uint64_t unitBackoffPeriod);
-    /**
-     * Get the number of symbols forming the basic time period used by the
-     * CSMA-CA algorithm.
-     * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
-     *
-     * \return the period length in symbols
-     */
-    uint64_t GetUnitBackoffPeriod() const;
-    /**
      * Locates the time to the next backoff period boundary in the SUPERFRAME
      * and returns the amount of time left to this moment.
      *
@@ -277,7 +261,7 @@ class LrWpanCsmaCa : public Object
      */
     bool m_isSlotted;
     /**
-     * The MAC instance for which this CSMA/CA implemenation is configured.
+     * The MAC instance for which this CSMA/CA implementation is configured.
      */
     Ptr<LrWpanMac> m_mac;
     /**
@@ -299,7 +283,7 @@ class LrWpanCsmaCa : public Object
     /**
      * Minimum backoff exponent. 0 - macMaxBE, default 3
      */
-    uint8_t m_macMinBE; //
+    uint8_t m_macMinBE;
     /**
      * Maximum backoff exponent. 3 - 8, default 5
      */
@@ -308,10 +292,6 @@ class LrWpanCsmaCa : public Object
      * Maximum number of backoffs. 0 - 5, default 4
      */
     uint8_t m_macMaxCSMABackoffs;
-    /**
-     * Number of symbols per CSMA/CA time unit, default 20 symbols.
-     */
-    uint64_t m_aUnitBackoffPeriod;
     /**
      * Count the number of remaining random backoff periods left to delay.
      */

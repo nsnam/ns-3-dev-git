@@ -96,6 +96,11 @@ constexpr uint32_t aMaxPhyPacketSize{127};
  */
 constexpr uint32_t aTurnaroundTime{12};
 
+/**
+ * Number of symbols per CSMA/CA time unit, default 20 symbols.
+ */
+constexpr uint32_t aUnitBackoffPeriod{20};
+
 /** @} */
 
 } // namespace lrwpan
