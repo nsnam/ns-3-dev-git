@@ -68,6 +68,10 @@ def run_ns3(args, env=None, generator=platform_makefiles):
                 shutil.rmtree(leftover, ignore_errors=True)
     if " -G " in args:
         args = args.format(generator=generator)
+    if env is None:
+        env = {}
+    # Disable colored output by default during tests
+    env["CLICOLOR"] = "0"
     return run_program(ns3_script, args, python=True, env=env)
 
 
@@ -2662,9 +2666,8 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         return_code2, stdout2, stderr2 = run_ns3('run sample-simulator --command-template " "')
         return_code3, stdout3, stderr3 = run_ns3('run sample-simulator --command-template "echo "')
         self.assertEqual((return_code1, return_code2, return_code3), (1, 1, 1))
-        self.assertIn("not all arguments converted during string formatting", stderr1)
-        self.assertEqual(stderr1, stderr2)
-        self.assertEqual(stderr2, stderr3)
+        for stderr in [stderr1, stderr2, stderr3]:
+            self.assertIn("not all arguments converted during string formatting", stderr)
 
         # Command templates with %s should at least continue and try to run the target
         return_code4, stdout4, _ = run_ns3('run sample-simulator --command-template "%s --PrintVersion" --verbose')

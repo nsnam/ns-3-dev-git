@@ -1391,7 +1391,8 @@ def main():
     refuse_run_as_root()
 
     # Enable colorized output for CMake and GCC/Clang
-    os.environ["CLICOLOR"] = "1"
+    if os.getenv("CLICOLOR") is None:
+        os.environ["CLICOLOR"] = "1"
 
     # If pybindgen exists in the parent directory
     # (e.g. ns3-all-in-one), add it to the PYTHONPATH
