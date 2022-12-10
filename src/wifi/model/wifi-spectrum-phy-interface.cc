@@ -50,6 +50,7 @@ void
 WifiSpectrumPhyInterface::DoDispose()
 {
     NS_LOG_FUNCTION(this);
+    m_rxSpectrumModel = nullptr;
     m_spectrumWifiPhy = nullptr;
     m_netDevice = nullptr;
     m_channel = nullptr;
@@ -89,13 +90,21 @@ void
 WifiSpectrumPhyInterface::SetChannel(const Ptr<SpectrumChannel> c)
 {
     NS_LOG_FUNCTION(this << c);
+    NS_ASSERT_MSG(!m_rxSpectrumModel, "Spectrum channel shall be set before RX spectrum model");
     m_channel = c;
+}
+
+void
+WifiSpectrumPhyInterface::SetRxSpectrumModel(Ptr<const SpectrumModel> rxSpectrumModel)
+{
+    NS_LOG_FUNCTION(this << rxSpectrumModel);
+    m_rxSpectrumModel = rxSpectrumModel;
 }
 
 Ptr<const SpectrumModel>
 WifiSpectrumPhyInterface::GetRxSpectrumModel() const
 {
-    return m_spectrumWifiPhy->GetRxSpectrumModel();
+    return m_rxSpectrumModel;
 }
 
 Ptr<Object>

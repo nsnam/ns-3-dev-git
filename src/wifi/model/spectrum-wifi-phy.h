@@ -29,7 +29,6 @@
 
 #include "ns3/antenna-model.h"
 #include "ns3/spectrum-channel.h"
-#include "ns3/spectrum-model.h"
 
 #include <map>
 
@@ -108,12 +107,6 @@ class SpectrumWifiPhy : public WifiPhy
      * \return the AntennaModel used for reception
      */
     Ptr<AntennaModel> GetAntenna() const;
-    /**
-     * \return the SpectrumModel that this SpectrumPhy expects to be used
-     *         for all SpectrumValues that are passed to StartRx. If 0 is
-     *         returned, it means that any model will be accepted.
-     */
-    Ptr<const SpectrumModel> GetRxSpectrumModel();
 
     /**
      * \return the width of each band (Hz)
@@ -208,7 +201,6 @@ class SpectrumWifiPhy : public WifiPhy
 
     Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface; //!< Spectrum PHY interface
     Ptr<AntennaModel> m_antenna;                              //!< antenna model
-    mutable Ptr<const SpectrumModel> m_rxSpectrumModel;       //!< receive spectrum model
 
     /// Map a spectrum band associated with an RU to the RU specification
     typedef std::map<WifiSpectrumBand, HeRu::RuSpec> RuBand;

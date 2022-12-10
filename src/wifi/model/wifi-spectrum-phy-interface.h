@@ -69,12 +69,20 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
      */
     void StartTx(Ptr<SpectrumSignalParameters> params);
 
+    /**
+     * Set the RX spectrum model
+     *
+     * \param rxSpectrumModel the RX spectrum model
+     */
+    void SetRxSpectrumModel(Ptr<const SpectrumModel> rxSpectrumModel);
+
   private:
     void DoDispose() override;
 
-    Ptr<SpectrumWifiPhy> m_spectrumWifiPhy; ///< spectrum PHY
-    Ptr<NetDevice> m_netDevice;             ///< the device
-    Ptr<SpectrumChannel> m_channel;         ///< spectrum channel
+    Ptr<SpectrumWifiPhy> m_spectrumWifiPhy;     ///< spectrum PHY
+    Ptr<NetDevice> m_netDevice;                 ///< the device
+    Ptr<SpectrumChannel> m_channel;             ///< spectrum channel
+    Ptr<const SpectrumModel> m_rxSpectrumModel; ///< receive spectrum model
 };
 
 } // namespace ns3
