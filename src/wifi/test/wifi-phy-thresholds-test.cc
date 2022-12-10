@@ -19,13 +19,16 @@
 
 #include "ns3/interference-helper.h"
 #include "ns3/log.h"
+#include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/ofdm-phy.h"
 #include "ns3/ofdm-ppdu.h"
+#include "ns3/spectrum-phy.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/test.h"
 #include "ns3/wifi-mac-header.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-spectrum-value-helper.h"
@@ -253,13 +256,18 @@ WifiPhyThresholdsTest::PhyStateChanged(Time start, Time duration, WifiPhyState n
 void
 WifiPhyThresholdsTest::DoSetup()
 {
+    Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    Ptr<Node> node = CreateObject<Node>();
+    Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice>();
     m_phy = CreateObject<SpectrumWifiPhy>();
-    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper>();
     m_phy->SetInterferenceHelper(interferenceHelper);
     Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel>();
     m_phy->SetErrorRateModel(error);
+    m_phy->SetDevice(dev);
+    m_phy->SetChannel(spectrumChannel);
     m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phy->SetReceiveOkCallback(MakeCallback(&WifiPhyThresholdsTest::RxSuccess, this));
     m_phy->SetReceiveErrorCallback(MakeCallback(&WifiPhyThresholdsTest::RxFailure, this));
     m_phy->TraceConnectWithoutContext("PhyRxDrop",
@@ -267,6 +275,8 @@ WifiPhyThresholdsTest::DoSetup()
     m_phy->GetState()->TraceConnectWithoutContext(
         "State",
         MakeCallback(&WifiPhyThresholdsTest::PhyStateChanged, this));
+    dev->SetPhy(m_phy);
+    node->AddDevice(dev);
 }
 
 void

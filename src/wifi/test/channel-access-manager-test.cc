@@ -20,6 +20,8 @@
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/channel-access-manager.h"
 #include "ns3/frame-exchange-manager.h"
+#include "ns3/interference-helper.h"
+#include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/qos-txop.h"
 #include "ns3/simulator.h"
 #include "ns3/spectrum-wifi-phy.h"
@@ -409,7 +411,7 @@ class ChannelAccessManagerTest : public TestCase
 
     Ptr<FrameExchangeManagerStub<TxopType>> m_feManager;  //!< the Frame Exchange Manager stubbed
     Ptr<ChannelAccessManagerStub> m_ChannelAccessManager; //!< the channel access manager
-    Ptr<WifiPhy> m_phy;                                   //!< the PHY object
+    Ptr<SpectrumWifiPhy> m_phy;                           //!< the PHY object
     TxopTests m_txop;                                     //!< the vector of Txop test instances
     uint32_t m_ackTimeoutValue;                           //!< the Ack timeout value
 };
@@ -620,6 +622,8 @@ ChannelAccessManagerTest<TxopType>::StartTest(uint64_t slotTime,
     // SetupPhyListener(), requires an attached PHY to determine the channel types
     // to initialize
     m_phy = CreateObject<SpectrumWifiPhy>();
+    m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
+    m_phy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
     m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_UNSPECIFIED, 0});
     m_phy->ConfigureStandard(WIFI_STANDARD_80211ac); // required to use 160 MHz channels
     m_ChannelAccessManager->SetupPhyListener(m_phy);
@@ -1342,7 +1346,7 @@ class LargestIdlePrimaryChannelTest : public TestCase
     void RunOne(uint16_t chWidth, WifiChannelListType busyChannel);
 
     Ptr<ChannelAccessManager> m_cam; //!< channel access manager
-    Ptr<WifiPhy> m_phy;              //!< PHY object
+    Ptr<SpectrumWifiPhy> m_phy;      //!< PHY object
 };
 
 LargestIdlePrimaryChannelTest::LargestIdlePrimaryChannelTest()
@@ -1495,6 +1499,8 @@ LargestIdlePrimaryChannelTest::DoRun()
                 }
                 // create a new PHY operating on a channel of the current width
                 m_phy = CreateObject<SpectrumWifiPhy>();
+                m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
+                m_phy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
                 m_phy->SetOperatingChannel(
                     WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_5GHZ, 0});
                 m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);

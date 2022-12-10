@@ -193,17 +193,24 @@ SpectrumWifiPhyBasicTest::~SpectrumWifiPhyBasicTest()
 void
 SpectrumWifiPhyBasicTest::DoSetup()
 {
+    Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    Ptr<Node> node = CreateObject<Node>();
+    Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice>();
     m_phy = CreateObject<SpectrumWifiPhy>();
-    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
-    m_phy->ConfigureStandard(WIFI_STANDARD_80211n);
     Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper>();
     m_phy->SetInterferenceHelper(interferenceHelper);
     Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel>();
     m_phy->SetErrorRateModel(error);
+    m_phy->SetDevice(dev);
+    m_phy->SetChannel(spectrumChannel);
+    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211n);
     m_phy->SetReceiveOkCallback(
         MakeCallback(&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess, this));
     m_phy->SetReceiveErrorCallback(
         MakeCallback(&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure, this));
+    dev->SetPhy(m_phy);
+    node->AddDevice(dev);
 }
 
 void
@@ -538,13 +545,13 @@ SpectrumWifiPhyFilterTest::DoSetup()
     Ptr<Node> txNode = CreateObject<Node>();
     Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice>();
     m_txPhy = CreateObject<ExtSpectrumWifiPhy>();
-    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> txInterferenceHelper = CreateObject<InterferenceHelper>();
     m_txPhy->SetInterferenceHelper(txInterferenceHelper);
     Ptr<ErrorRateModel> txErrorModel = CreateObject<NistErrorRateModel>();
     m_txPhy->SetErrorRateModel(txErrorModel);
     m_txPhy->SetDevice(txDev);
     m_txPhy->SetChannel(spectrumChannel);
+    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel>();
     m_txPhy->SetMobility(apMobility);
     txDev->SetPhy(m_txPhy);
@@ -554,12 +561,12 @@ SpectrumWifiPhyFilterTest::DoSetup()
     Ptr<Node> rxNode = CreateObject<Node>();
     Ptr<WifiNetDevice> rxDev = CreateObject<WifiNetDevice>();
     m_rxPhy = CreateObject<ExtSpectrumWifiPhy>();
-    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> rxInterferenceHelper = CreateObject<InterferenceHelper>();
     m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
     Ptr<ErrorRateModel> rxErrorModel = CreateObject<NistErrorRateModel>();
     m_rxPhy->SetErrorRateModel(rxErrorModel);
     m_rxPhy->SetChannel(spectrumChannel);
+    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<ConstantPositionMobilityModel> sta1Mobility = CreateObject<ConstantPositionMobilityModel>();
     m_rxPhy->SetMobility(sta1Mobility);
     rxDev->SetPhy(m_rxPhy);

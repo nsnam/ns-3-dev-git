@@ -240,9 +240,11 @@ WifiPhyCcaThresholdsTest::DoSetup()
     m_vhtConfiguration = CreateObject<VhtConfiguration>();
     m_device->SetVhtConfiguration(m_vhtConfiguration);
 
-    m_phy = Create<SpectrumWifiPhy>();
+    m_phy = CreateObject<SpectrumWifiPhy>();
     m_phy->SetDevice(m_device);
     m_device->SetPhy(m_phy);
+    m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
+    m_phy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
 
     auto channelNum = std::get<0>(
         *WifiPhyOperatingChannel::FindFirst(0, 0, 160, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ));
@@ -1017,7 +1019,6 @@ WifiPhyCcaIndicationTest::DoSetup()
     m_rxPhy = CreateObject<SpectrumWifiPhy>();
     m_rxPhyStateListener = std::make_unique<CcaTestPhyListener>();
     m_rxPhy->RegisterListener(m_rxPhyStateListener.get());
-    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     Ptr<InterferenceHelper> rxInterferenceHelper = CreateObject<InterferenceHelper>();
     m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
     Ptr<ErrorRateModel> rxErrorModel = CreateObject<NistErrorRateModel>();
@@ -1026,6 +1027,7 @@ WifiPhyCcaIndicationTest::DoSetup()
         CreateObject<ThresholdPreambleDetectionModel>();
     m_rxPhy->SetPreambleDetectionModel(preambleDetectionModel);
     m_rxPhy->SetChannel(spectrumChannel);
+    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_rxPhy->SetDevice(rxDev);
     rxDev->SetPhy(m_rxPhy);
     rxNode->AddDevice(rxDev);
@@ -1033,13 +1035,13 @@ WifiPhyCcaIndicationTest::DoSetup()
     Ptr<Node> txNode = CreateObject<Node>();
     Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice>();
     m_txPhy = CreateObject<SpectrumWifiPhy>();
-    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_txPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
     Ptr<InterferenceHelper> txInterferenceHelper = CreateObject<InterferenceHelper>();
     m_txPhy->SetInterferenceHelper(txInterferenceHelper);
     Ptr<ErrorRateModel> txErrorModel = CreateObject<NistErrorRateModel>();
     m_txPhy->SetErrorRateModel(txErrorModel);
     m_txPhy->SetChannel(spectrumChannel);
+    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_txPhy->SetDevice(txDev);
     txDev->SetPhy(m_txPhy);
     txNode->AddDevice(txDev);
