@@ -1,7 +1,7 @@
-# Ignore everything on scratch by default, except the provided examples
-/*
-!.gitignore
+# Ignore everything on scratch by default, except the .cc files
+# /*
+# !.gitignore
 
-!subdir/
-!scratch-simulator.cc
-!CMakeLists.txt
+# !subdir/
+# !*.cc
+# !CMakeLists.txt
