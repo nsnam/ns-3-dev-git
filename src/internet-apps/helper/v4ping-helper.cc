@@ -21,14 +21,17 @@
 
 #include "ns3/names.h"
 #include "ns3/v4ping.h"
+#include "ns3/warnings.h"
 
 namespace ns3
 {
 
 V4PingHelper::V4PingHelper(Ipv4Address remote)
 {
+    NS_WARNING_PUSH_DEPRECATED;
     m_factory.SetTypeId("ns3::V4Ping");
     m_factory.Set("Remote", Ipv4AddressValue(remote));
+    NS_WARNING_POP;
 }
 
 void

@@ -21,6 +21,7 @@
 
 #include "ns3/ping6.h"
 #include "ns3/uinteger.h"
+#include "ns3/warnings.h"
 
 namespace ns3
 {
@@ -28,7 +29,9 @@ namespace ns3
 Ping6Helper::Ping6Helper()
     : m_ifIndex(0)
 {
+    NS_WARNING_PUSH_DEPRECATED;
     m_factory.SetTypeId(Ping6::GetTypeId());
+    NS_WARNING_POP;
 }
 
 void
