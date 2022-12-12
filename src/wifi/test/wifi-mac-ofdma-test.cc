@@ -151,10 +151,11 @@ TestMultiUserScheduler::SelectTxFormat()
                                  ? GetMaxSizeOfQosNullAmpdu(m_trigger)
                                  : 3500; // allows aggregation of 2 MPDUs in TB PPDUs
 
-        Time duration = WifiPhy::CalculateTxDuration(ampduSize,
-                                                     txVector,
-                                                     m_apMac->GetWifiPhy()->GetPhyBand(),
-                                                     m_apMac->GetStaList().begin()->first);
+        Time duration =
+            WifiPhy::CalculateTxDuration(ampduSize,
+                                         txVector,
+                                         m_apMac->GetWifiPhy()->GetPhyBand(),
+                                         m_apMac->GetStaList(SINGLE_LINK_OP_ID).begin()->first);
 
         uint16_t length;
         std::tie(length, duration) = HePhy::ConvertHeTbPpduDurationToLSigLength(
@@ -197,7 +198,7 @@ TestMultiUserScheduler::SelectTxFormat()
     {
         // try to send a DL MU PPDU
         m_psduMap.clear();
-        const std::map<uint16_t, Mac48Address>& staList = m_apMac->GetStaList();
+        const std::map<uint16_t, Mac48Address>& staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
         NS_ABORT_MSG_IF(staList.size() != 4, "There must be 4 associated stations");
 
         /* Initialize TX params */
@@ -289,7 +290,7 @@ TestMultiUserScheduler::ComputeWifiTxVector()
     m_txVector.SetTxPowerLevel(
         GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)->GetDefaultTxPowerLevel());
 
-    const std::map<uint16_t, Mac48Address>& staList = m_apMac->GetStaList();
+    const std::map<uint16_t, Mac48Address>& staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
     NS_ABORT_MSG_IF(staList.size() != 4, "There must be 4 associated stations");
 
     HeRu::RuType ruType;

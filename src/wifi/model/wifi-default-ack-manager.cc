@@ -707,8 +707,8 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
             }
             NS_ABORT_MSG_IF(aid12 == 0 || aid12 > 2007, "Allocation of RA-RUs is not supported");
 
-            NS_ASSERT(apMac->GetStaList().find(aid12) != apMac->GetStaList().end());
-            Mac48Address staAddress = apMac->GetStaList().find(aid12)->second;
+            NS_ASSERT(apMac->GetStaList(m_linkId).find(aid12) != apMac->GetStaList(m_linkId).end());
+            Mac48Address staAddress = apMac->GetStaList(m_linkId).find(aid12)->second;
 
             // find a TID for which a BA agreement exists with the given originator
             uint8_t tid = 0;
@@ -732,7 +732,7 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
         uint16_t staId = trigger.begin()->GetAid12();
         acknowledgment->tbPpduTxVector = trigger.GetHeTbTxVector(staId);
         acknowledgment->multiStaBaTxVector = GetWifiRemoteStationManager()->GetBlockAckTxVector(
-            apMac->GetStaList().find(staId)->second,
+            apMac->GetStaList(m_linkId).find(staId)->second,
             acknowledgment->tbPpduTxVector);
         return std::unique_ptr<WifiUlMuMultiStaBa>(acknowledgment);
     }

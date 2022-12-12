@@ -965,7 +965,7 @@ WifiPrimaryChannelsTest::CheckAssociation()
     {
         auto dev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
         auto mac = DynamicCast<ApWifiMac>(dev->GetMac());
-        NS_TEST_EXPECT_MSG_EQ(mac->GetStaList().size(),
+        NS_TEST_EXPECT_MSG_EQ(mac->GetStaList(SINGLE_LINK_OP_ID).size(),
                               m_nStationsPerBss,
                               "Not all the stations completed association");
     }

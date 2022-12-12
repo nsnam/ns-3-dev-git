@@ -108,7 +108,7 @@ class ApWifiMac : public WifiMac
      * \param linkId the ID of the given link
      * \return a const reference to the map of associated stations
      */
-    const std::map<uint16_t, Mac48Address>& GetStaList(uint8_t linkId = SINGLE_LINK_OP_ID) const;
+    const std::map<uint16_t, Mac48Address>& GetStaList(uint8_t linkId) const;
     /**
      * \param addr the address of the associated station
      * \param linkId the ID of the link on which the station is associated

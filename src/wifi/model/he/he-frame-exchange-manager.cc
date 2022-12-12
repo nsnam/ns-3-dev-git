@@ -520,8 +520,8 @@ HeFrameExchangeManager::SendPsduMap()
 
         for (const auto& userInfo : trigger)
         {
-            auto staIt = m_apMac->GetStaList().find(userInfo.GetAid12());
-            NS_ASSERT(staIt != m_apMac->GetStaList().end());
+            auto staIt = m_apMac->GetStaList(m_linkId).find(userInfo.GetAid12());
+            NS_ASSERT(staIt != m_apMac->GetStaList(m_linkId).end());
             m_staExpectTbPpduFrom.insert(staIt->second);
         }
 
@@ -747,7 +747,7 @@ HeFrameExchangeManager::PrepareMuBar(const WifiTxVector& responseTxVector,
     else
     {
         NS_ASSERT(m_apMac);
-        rxAddress = m_apMac->GetStaList().at(recipients.begin()->first);
+        rxAddress = m_apMac->GetStaList(m_linkId).at(recipients.begin()->first);
     }
 
     WifiMacHeader hdr;
@@ -1241,7 +1241,7 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
         m_phy->GetPowerDbm(GetWifiRemoteStationManager()->GetDefaultTxPowerLevel())));
     for (auto& userInfo : trigger)
     {
-        const auto staList = m_apMac->GetStaList();
+        const auto staList = m_apMac->GetStaList(m_linkId);
         auto itAidAddr = staList.find(userInfo.GetAid12());
         NS_ASSERT(itAidAddr != staList.end());
         int8_t rssi = static_cast<int8_t>(
