@@ -1195,10 +1195,12 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
      *
      * Refer to section 27.3.14.2 (Power pre-correction) of 802.11ax Draft 4.0 for more details.
      */
+    auto optRssi = GetMostRecentRssi(triggerSender);
+    NS_ASSERT(optRssi);
     int8_t pathLossDb =
         trigger.GetApTxPower() -
-        static_cast<int8_t>(GetWifiRemoteStationManager()->GetMostRecentRssi(
-            triggerSender)); // cast RSSI to be on equal footing with AP Tx power information
+        static_cast<int8_t>(
+            *optRssi); // cast RSSI to be on equal footing with AP Tx power information
     double reqTxPowerDbm = static_cast<double>(userInfoIt->GetUlTargetRssi() + pathLossDb);
 
     // Convert the transmit power to a power level
@@ -1231,6 +1233,12 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     return v;
 }
 
+std::optional<double>
+HeFrameExchangeManager::GetMostRecentRssi(const Mac48Address& address) const
+{
+    return GetWifiRemoteStationManager()->GetMostRecentRssi(address);
+}
+
 void
 HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
 {
@@ -1244,8 +1252,9 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
         const auto staList = m_apMac->GetStaList(m_linkId);
         auto itAidAddr = staList.find(userInfo.GetAid12());
         NS_ASSERT(itAidAddr != staList.end());
-        int8_t rssi = static_cast<int8_t>(
-            GetWifiRemoteStationManager()->GetMostRecentRssi(itAidAddr->second));
+        auto optRssi = GetMostRecentRssi(itAidAddr->second);
+        NS_ASSERT(optRssi);
+        int8_t rssi = static_cast<int8_t>(*optRssi);
         rssi = (rssi >= -20)
                    ? -20
                    : ((rssi <= -110) ? -110 : rssi); // cap so as to keep within [-110; -20] dBm

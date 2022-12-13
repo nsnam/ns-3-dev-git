@@ -973,7 +973,7 @@ class WifiRemoteStationManager : public Object
      * to estimate the target UL RSSI info to put in the
      * Trigger frame to send to the remote station.
      */
-    double GetMostRecentRssi(Mac48Address address) const;
+    std::optional<double> GetMostRecentRssi(Mac48Address address) const;
     /**
      * Set the default transmission power level
      *

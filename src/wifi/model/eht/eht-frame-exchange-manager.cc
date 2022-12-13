@@ -121,4 +121,37 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
 }
 
+std::optional<double>
+EhtFrameExchangeManager::GetMostRecentRssi(const Mac48Address& address) const
+{
+    auto optRssi = HeFrameExchangeManager::GetMostRecentRssi(address);
+
+    if (optRssi)
+    {
+        return optRssi;
+    }
+
+    auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
+
+    if (!mldAddress)
+    {
+        // not an MLD, nothing else can be done
+        return std::nullopt;
+    }
+
+    for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
+    {
+        std::optional<Mac48Address> linkAddress;
+        if (linkId != m_linkId &&
+            (linkAddress = m_mac->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(
+                 *mldAddress)) &&
+            (optRssi = m_mac->GetWifiRemoteStationManager(linkId)->GetMostRecentRssi(*linkAddress)))
+        {
+            return optRssi;
+        }
+    }
+
+    return std::nullopt;
+}
+
 } // namespace ns3

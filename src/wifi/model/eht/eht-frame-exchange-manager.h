@@ -45,6 +45,17 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SetLinkId(uint8_t linkId) override;
     Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const override;
 
+    /**
+     * Get the RSSI (in dBm) of the most recent packet received from the station having
+     * the given address. If there is no such information for the given station and the
+     * station is affiliated with an MLD, return the RSSI (in dBm) of the most recent
+     * packet received from another station of the same MLD.
+     *
+     * \param address of the remote station
+     * \return the RSSI (in dBm) of the most recent packet received from the remote station
+     */
+    std::optional<double> GetMostRecentRssi(const Mac48Address& address) const override;
+
   protected:
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
 };
