@@ -168,7 +168,6 @@ set(source_files
     model/type-id.cc
     model/attribute-construction-list.cc
     model/object-base.cc
-    model/ref-count-base.cc
     model/object.cc
     model/test.cc
     model/random-variable-stream.cc
@@ -278,7 +277,6 @@ set(header_files
     model/priority-queue-scheduler.h
     model/ptr.h
     model/random-variable-stream.h
-    model/ref-count-base.h
     model/rng-seed-manager.h
     model/rng-stream.h
     model/scheduler.h
