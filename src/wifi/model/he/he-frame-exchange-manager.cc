@@ -1308,10 +1308,7 @@ HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams)
             // Block acknowledgment context
             blockAck.SetAckType(false, index);
 
-            auto addressTidPair = staInfo.first;
-            auto agreement =
-                GetBaManager(addressTidPair.second)
-                    ->GetAgreementAsRecipient(addressTidPair.first, addressTidPair.second);
+            auto agreement = m_mac->GetBaAgreementEstablishedAsRecipient(receiver, tid);
             NS_ASSERT(agreement);
             agreement->get().FillBlockAckBitmap(&blockAck, index);
             NS_LOG_DEBUG("Multi-STA Block Ack: Sending Block Ack with seq="
@@ -1426,8 +1423,11 @@ HeFrameExchangeManager::ReceiveBasicTrigger(const CtrlTriggerHeader& trigger,
         }
 
         // otherwise, check if a suitable data frame is available
-        if (auto mpdu = edca->PeekNextMpdu(m_linkId, tid, hdr.GetAddr2()))
+        auto receiver =
+            GetWifiRemoteStationManager()->GetMldAddress(hdr.GetAddr2()).value_or(hdr.GetAddr2());
+        if (auto mpdu = edca->PeekNextMpdu(m_linkId, tid, receiver))
         {
+            mpdu = CreateAliasIfNeeded(mpdu);
             if (auto item = edca->GetNextMpdu(m_linkId, mpdu, txParams, ppduDuration, false))
             {
                 // try A-MPDU aggregation

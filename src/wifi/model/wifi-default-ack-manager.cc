@@ -570,7 +570,9 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
         Ptr<QosTxop> edca = m_mac->GetQosTxop(QosUtilsMapTidToAc(tid));
         acknowledgment->stationsReplyingWithBlockAck.emplace(
             receiver,
-            WifiDlMuTfMuBar::BlockAckInfo{edca->GetBaManager()->GetBlockAckReqHeader(receiver, tid),
+            WifiDlMuTfMuBar::BlockAckInfo{edca->GetBaManager()->GetBlockAckReqHeader(
+                                              mpdu->GetOriginal()->GetHeader().GetAddr1(),
+                                              tid),
                                           blockAckTxVector,
                                           m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
@@ -657,7 +659,9 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
             receiver,
             WifiDlMuAggregateTf::BlockAckInfo{
                 GetMuBarSize({m_mac->GetBarTypeAsOriginator(receiver, tid)}),
-                edca->GetBaManager()->GetBlockAckReqHeader(receiver, tid),
+                edca->GetBaManager()->GetBlockAckReqHeader(
+                    mpdu->GetOriginal()->GetHeader().GetAddr1(),
+                    tid),
                 blockAckTxVector,
                 m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
