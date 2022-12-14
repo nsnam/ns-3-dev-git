@@ -35,6 +35,7 @@
 #include "ns3/pointer.h"
 #include "ns3/qos-utils.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/rr-multi-user-scheduler.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/sta-wifi-mac.h"
@@ -398,26 +399,26 @@ MultiLinkOperationsTestBase::Transmit(uint8_t linkId,
 {
     m_txPsdus.push_back({Simulator::Now(), psduMap, txVector, linkId});
 
-    std::stringstream ss;
-    ss << std::setprecision(10) << "PSDU #" << m_txPsdus.size() << " Link ID " << +linkId << " "
-       << psduMap.begin()->second->GetHeader(0).GetTypeString() << " #MPDUs "
-       << psduMap.begin()->second->GetNMpdus() << " duration/ID "
-       << psduMap.begin()->second->GetHeader(0).GetDuration()
-       << " RA = " << psduMap.begin()->second->GetAddr1()
-       << " TA = " << psduMap.begin()->second->GetAddr2()
-       << " ADDR3 = " << psduMap.begin()->second->GetHeader(0).GetAddr3()
-       << " ToDS = " << psduMap.begin()->second->GetHeader(0).IsToDs()
-       << " FromDS = " << psduMap.begin()->second->GetHeader(0).IsFromDs();
-    if (psduMap.begin()->second->GetHeader(0).IsQosData())
+    for (const auto& [aid, psdu] : psduMap)
     {
-        ss << " seqNo = {";
-        for (auto& mpdu : *PeekPointer(psduMap.begin()->second))
+        std::stringstream ss;
+        ss << std::setprecision(10) << "PSDU #" << m_txPsdus.size() << " Link ID " << +linkId << " "
+           << psdu->GetHeader(0).GetTypeString() << " #MPDUs " << psdu->GetNMpdus()
+           << " duration/ID " << psdu->GetHeader(0).GetDuration() << " RA = " << psdu->GetAddr1()
+           << " TA = " << psdu->GetAddr2() << " ADDR3 = " << psdu->GetHeader(0).GetAddr3()
+           << " ToDS = " << psdu->GetHeader(0).IsToDs()
+           << " FromDS = " << psdu->GetHeader(0).IsFromDs();
+        if (psdu->GetHeader(0).IsQosData())
         {
-            ss << mpdu->GetHeader().GetSequenceNumber() << ",";
+            ss << " seqNo = {";
+            for (auto& mpdu : *PeekPointer(psdu))
+            {
+                ss << mpdu->GetHeader().GetSequenceNumber() << ",";
+            }
+            ss << "} TID = " << +psdu->GetHeader(0).GetQosTid();
         }
-        ss << "} TID = " << +psduMap.begin()->second->GetHeader(0).GetQosTid();
+        NS_LOG_INFO(ss.str());
     }
-    NS_LOG_INFO(ss.str());
     NS_LOG_INFO("TXVECTOR = " << txVector << "\n");
 }
 
@@ -456,7 +457,9 @@ MultiLinkOperationsTestBase::DoSetup()
     wifi.SetStandard(WIFI_STANDARD_80211be);
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                  "DataMode",
-                                 StringValue("EhtMcs0"));
+                                 StringValue("EhtMcs0"),
+                                 "ControlMode",
+                                 StringValue("HtMcs0"));
 
     auto channel = CreateObject<MultiModelSpectrumChannel>();
 
@@ -1610,6 +1613,689 @@ MultiLinkTxTest::DoRun()
 }
 
 /**
+ * Tested MU traffic patterns.
+ */
+enum class WifiMuTrafficPattern : uint8_t
+{
+    DL_MU_BAR_BA_SEQUENCE = 0,
+    DL_MU_MU_BAR,
+    DL_MU_AGGR_MU_BAR,
+    UL_MU
+};
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test data transmission between MLDs using OFDMA MU transmissions
+ *
+ * This test sets up an AP MLD and two non-AP MLDs having a variable number of links.
+ * The RF channels to set each link to are provided as input parameters through the test
+ * case constructor, along with the identifiers (starting at 0) of the links that cannot
+ * switch PHY band (if any). This test aims at veryfing the successful transmission of both
+ * DL MU and UL MU frames. In the DL MU scenarios, the client applications installed on the
+ * AP generate 8 packets addressed to each of the stations (plus 3 packets to trigger the
+ * establishment of BlockAck agreements). In the UL MU scenario, client applications
+ * installed on the stations generate 4 packets each (plus 3 packets to trigger the
+ * establishment of BlockAck agreements).
+ *
+ * The maximum A-MSDU size is set such that two packets can be aggregated in an A-MSDU.
+ * The MPDU with sequence number equal to 3 is corrupted (by using a post reception error
+ * model) once and for a single station, to test its successful re-transmission.
+ *
+ * Also, we enable the concurrent transmission of data frames over two links and check that at
+ * least one MPDU is concurrently transmitted over two links.
+ */
+class MultiLinkMuTxTest : public MultiLinkOperationsTestBase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param muTrafficPattern the pattern of traffic to generate
+     * \param useBarAfterMissedBa whether a BAR or Data frames are sent after missed BlockAck
+     * \param nMaxInflight the max number of links on which an MPDU can be simultaneously inflight
+     *                     (unused if Block Ack agreements are not established)
+     * \param staChannels the strings specifying the operating channels for the STA
+     * \param apChannels the strings specifying the operating channels for the AP
+     * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
+     */
+    MultiLinkMuTxTest(WifiMuTrafficPattern muTrafficPattern,
+                      WifiUseBarAfterMissedBa useBarAfterMissedBa,
+                      uint8_t nMaxInflight,
+                      const std::vector<std::string>& staChannels,
+                      const std::vector<std::string>& apChannels,
+                      const std::vector<uint8_t>& fixedPhyBands = {});
+    ~MultiLinkMuTxTest() override = default;
+
+  protected:
+    /**
+     * Function to trace packets received by the server application
+     * \param nodeId the ID of the node that received the packet
+     * \param p the packet
+     * \param addr the address
+     */
+    void L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr);
+
+    /**
+     * Check the content of a received BlockAck frame when the max number of links on which
+     * an MPDU can be inflight is one.
+     *
+     * \param psdu the PSDU containing the BlockAck
+     * \param txVector the TXVECTOR used to transmit the BlockAck
+     * \param linkId the ID of the link on which the BlockAck was transmitted
+     */
+    void CheckBlockAck(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId);
+
+    void Transmit(uint8_t linkId,
+                  std::string context,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+    void DoSetup() override;
+    void DoRun() override;
+
+  private:
+    void StartTraffic() override;
+
+    /// Receiver address-indexed map of list error models
+    using RxErrorModelMap = std::unordered_map<Mac48Address, Ptr<ListErrorModel>, WifiAddressHash>;
+
+    /// A pair of a MAC address (the address of the receiver for DL frames and the address of
+    /// the sender for UL frames) and a sequence number identifying a transmitted QoS data frame
+    using AddrSeqNoPair = std::pair<Mac48Address, uint16_t>;
+
+    RxErrorModelMap m_errorModels;                  ///< error rate models to corrupt packets
+    std::list<uint64_t> m_uidList;                  ///< list of UIDs of packets to corrupt
+    std::optional<Mac48Address> m_dataCorruptedSta; ///< MAC address of the station that received
+                                                    ///< MPDU with SeqNo=2 corrupted
+    bool m_waitFirstTf{true}; ///< whether we are waiting for the first Basic Trigger Frame
+    WifiMuTrafficPattern m_muTrafficPattern; ///< the pattern of traffic to generate
+    bool m_useBarAfterMissedBa;              ///< whether to send BAR after missed BlockAck
+    std::size_t m_nMaxInflight; ///< max number of links on which an MPDU can be inflight
+    std::vector<PacketSocketAddress> m_sockets; ///< packet socket addresses for STAs
+    std::size_t m_nPackets;                     ///< number of application packets to generate
+    std::size_t m_blockAckCount{0};             ///< transmitted BlockAck counter
+    // std::size_t m_blockAckReqCount{0};     ///< transmitted BlockAckReq counter
+    std::array<std::size_t, 3> m_rxPkts{}; ///< number of packets received at application layer
+                                           ///< by each node (AP, STA 0, STA 1)
+    std::map<AddrSeqNoPair, std::size_t> m_inflightCount; ///< max number of simultaneous
+                                                          ///< transmissions of each data frame
+    Ptr<WifiMac> m_sourceMac; ///< MAC of the node sending application packets
+};
+
+MultiLinkMuTxTest::MultiLinkMuTxTest(WifiMuTrafficPattern muTrafficPattern,
+                                     WifiUseBarAfterMissedBa useBarAfterMissedBa,
+                                     uint8_t nMaxInflight,
+                                     const std::vector<std::string>& staChannels,
+                                     const std::vector<std::string>& apChannels,
+                                     const std::vector<uint8_t>& fixedPhyBands)
+    : MultiLinkOperationsTestBase(
+          std::string("Check MU data transmission between MLDs ") +
+              (useBarAfterMissedBa == WifiUseBarAfterMissedBa::YES
+                   ? "(send BAR after BlockAck timeout,"
+                   : "(send Data frames after BlockAck timeout,") +
+              " MU Traffic pattern: " + std::to_string(static_cast<uint8_t>(muTrafficPattern)) +
+              ", nMaxInflight=" + std::to_string(nMaxInflight) + ")",
+          2,
+          staChannels,
+          apChannels,
+          fixedPhyBands),
+      m_muTrafficPattern(muTrafficPattern),
+      m_useBarAfterMissedBa(useBarAfterMissedBa == WifiUseBarAfterMissedBa::YES),
+      m_nMaxInflight(nMaxInflight),
+      m_sockets(m_nStations),
+      m_nPackets(muTrafficPattern == WifiMuTrafficPattern::UL_MU ? 4 : 8)
+{
+}
+
+void
+MultiLinkMuTxTest::Transmit(uint8_t linkId,
+                            std::string context,
+                            WifiConstPsduMap psduMap,
+                            WifiTxVector txVector,
+                            double txPowerW)
+{
+    CtrlTriggerHeader trigger;
+
+    for (const auto& [staId, psdu] : psduMap)
+    {
+        switch (psdu->GetHeader(0).GetType())
+        {
+        case WIFI_MAC_QOSDATA:
+            CheckAddresses(psdu);
+            if (psdu->GetHeader(0).HasData())
+            {
+                bool isDl = psdu->GetHeader(0).IsFromDs();
+                auto linkAddress =
+                    isDl ? psdu->GetHeader(0).GetAddr1() : psdu->GetHeader(0).GetAddr2();
+                auto address = m_apMac->GetMldAddress(linkAddress).value_or(linkAddress);
+
+                for (const auto& mpdu : *psdu)
+                {
+                    // determine the max number of simultaneous transmissions for this MPDU
+                    auto seqNo = mpdu->GetHeader().GetSequenceNumber();
+                    auto [it, success] = m_inflightCount.insert(
+                        {{address, seqNo}, mpdu->GetInFlightLinkIds().size()});
+                    if (!success)
+                    {
+                        it->second = std::max(it->second, mpdu->GetInFlightLinkIds().size());
+                    }
+                }
+                for (std::size_t i = 0; i < psdu->GetNMpdus(); i++)
+                {
+                    // MPDUs with seqNo=2 are always transmitted in an MU PPDU
+                    if (psdu->GetHeader(i).GetSequenceNumber() == 2)
+                    {
+                        if (m_muTrafficPattern == WifiMuTrafficPattern::UL_MU)
+                        {
+                            NS_TEST_EXPECT_MSG_EQ(txVector.IsUlMu(),
+                                                  true,
+                                                  "MPDU " << **std::next(psdu->begin(), i)
+                                                          << " not transmitted in a TB PPDU");
+                        }
+                        else
+                        {
+                            NS_TEST_EXPECT_MSG_EQ(txVector.GetHeMuUserInfoMap().size(),
+                                                  2,
+                                                  "MPDU " << **std::next(psdu->begin(), i)
+                                                          << " not transmitted in a DL MU PPDU");
+                        }
+                    }
+                    // corrupt QoS data frame with sequence number equal to 3 (only once)
+                    if (psdu->GetHeader(i).GetSequenceNumber() != 3)
+                    {
+                        continue;
+                    }
+                    auto uid = psdu->GetPayload(i)->GetUid();
+                    if (!m_dataCorruptedSta)
+                    {
+                        m_uidList.push_front(uid);
+                        m_dataCorruptedSta = isDl ? psdu->GetAddr1() : psdu->GetAddr2();
+                        NS_LOG_INFO("CORRUPTED");
+                        m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
+                    }
+                    else if ((isDl && m_dataCorruptedSta == psdu->GetAddr1()) ||
+                             (!isDl && m_dataCorruptedSta == psdu->GetAddr2()))
+                    {
+                        // do not corrupt the QoS data frame anymore
+                        if (auto it = std::find(m_uidList.cbegin(), m_uidList.cend(), uid);
+                            it != m_uidList.cend())
+                        {
+                            m_uidList.erase(it);
+                        }
+                        m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
+                    }
+                    break;
+                }
+            }
+            break;
+        case WIFI_MAC_CTL_BACKRESP:
+            if (m_nMaxInflight > 1)
+            {
+                // we do not check the content of BlockAck when m_nMaxInflight is greater than 1
+                break;
+            }
+            CheckBlockAck(psdu, txVector, linkId);
+            m_blockAckCount++;
+            // to simulate a missed BlockAck, corrupt the fifth BlockAck frame (the first
+            // two BlockAck frames are sent to acknowledge the QoS data frames that triggered
+            // the establishment of Block Ack agreements)
+            if (m_blockAckCount == 5)
+            {
+                // corrupt the third BlockAck frame to simulate a missed BlockAck
+                m_uidList.push_front(psdu->GetPacket()->GetUid());
+                NS_LOG_INFO("CORRUPTED");
+                m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
+            }
+            break;
+        case WIFI_MAC_CTL_TRIGGER:
+            psdu->GetPayload(0)->PeekHeader(trigger);
+            // the MU scheduler requests channel access on all links but we have to perform the
+            // following actions only once (hence why we only consider TF transmitted on link 0)
+            if (trigger.IsBasic() && m_waitFirstTf)
+            {
+                m_waitFirstTf = false;
+                // the AP is starting the transmission of the Basic Trigger frame, so generate
+                // the configured number of packets at STAs, which are sent in TB PPDUs
+                auto band = m_apMac->GetWifiPhy(linkId)->GetPhyBand();
+                Time txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, band);
+                for (uint8_t i = 0; i < m_nStations; i++)
+                {
+                    Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient>();
+                    client->SetAttribute("PacketSize", UintegerValue(450));
+                    client->SetAttribute("MaxPackets", UintegerValue(m_nPackets));
+                    client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+                    client->SetAttribute("Priority", UintegerValue(i * 4)); // 0 and 4
+                    client->SetRemote(m_sockets[i]);
+                    m_staMacs[i]->GetDevice()->GetNode()->AddApplication(client);
+                    client->SetStartTime(txDuration);  // start when TX ends
+                    client->SetStopTime(Seconds(1.0)); // stop in a second
+                    client->Initialize();
+                }
+            }
+            break;
+        default:;
+        }
+    }
+
+    MultiLinkOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
+}
+
+void
+MultiLinkMuTxTest::CheckBlockAck(Ptr<const WifiPsdu> psdu,
+                                 const WifiTxVector& txVector,
+                                 uint8_t linkId)
+{
+    /*
+     * Example sequence with DL_MU_BAR_BA_SEQUENCE
+     *                  ┌───────┬───────X
+     *           (To:1) │   2   │   3   │
+     *                  ├───────┼───────┤   ┌───┐             ┌───────┐
+     *  [link 0] (To:0) │   2   │   3   │   │BAR│      (To:1) │   3   │
+     *  ────────────────┴───────┴───────┴┬──┼───┼──┬──────────┴───────┴┬───┬────────
+     *                                   │BA│   │BA│                   │ACK│
+     *                                   └──┘   └──┘                   └───┘
+     *                              ┌───────┬───────┐
+     *                       (To:1) │   4   │   5   │
+     *                              ├───────┼───────┤        ┌───┐   ┌───┐
+     *  [link 1]             (To:0) │   4   │   5   │        │BAR│   │BAR│
+     *  ────────────────────────────┴───────┴───────┴┬──X────┴───┴┬──┼───┼──┬───────
+     *                                               │BA│         │BA│   │BA│
+     *                                               └──┘         └──┘   └──┘
+     *
+     * Example sequence with UL_MU
+     *
+     *           ┌──┐                     ┌────┐                      ┌───┐
+     *  [link 0] │TF│                     │M-BA│                      │ACK│
+     *  ─────────┴──┴──┬───────┬───────┬──┴────┴────────────┬───────┬─┴───┴─────────
+     *        (From:0) │   2   │   3   │           (From:1) │   3   │
+     *                 ├───────┼───────┤                    └───────┘
+     *        (From:1) │   2   │   3   │
+     *                 └───────┴───────X
+     *           ┌──┐
+     *  [link 1] │TF│
+     *  ─────────┴──┴──┬───────────────┬────────────────────────────────────────────
+     *        (From:0) │   QoS Null    │
+     *                 ├───────────────┤
+     *        (From:1) │   QoS Null    │
+     *                 └───────────────┘
+     */
+    auto mpdu = *psdu->begin();
+    CtrlBAckResponseHeader blockAck;
+    mpdu->GetPacket()->PeekHeader(blockAck);
+    bool isMpdu3corrupted;
+
+    switch (m_blockAckCount)
+    {
+    case 0:
+    case 1: // Ignore the first two BlockAck frames that acknowledged frames sent to establish BA
+        break;
+    case 2:
+        if (m_muTrafficPattern == WifiMuTrafficPattern::UL_MU)
+        {
+            NS_TEST_EXPECT_MSG_EQ(blockAck.IsMultiSta(), true, "Expected a Multi-STA BlockAck");
+            for (uint8_t i = 0; i < m_nStations; i++)
+            {
+                auto indices = blockAck.FindPerAidTidInfoWithAid(m_staMacs[i]->GetAssociationId());
+                NS_TEST_ASSERT_MSG_EQ(indices.size(), 1, "Expected one Per AID TID Info per STA");
+                auto index = indices.front();
+                NS_TEST_ASSERT_MSG_EQ(m_dataCorruptedSta.has_value(),
+                                      true,
+                                      "Expected that a QoS data frame was corrupted");
+                isMpdu3corrupted =
+                    m_staMacs[i]->GetLinkIdByAddress(*m_dataCorruptedSta).has_value();
+                NS_TEST_EXPECT_MSG_EQ(blockAck.IsPacketReceived(2, index),
+                                      true,
+                                      "MPDU 2 expected to be successfully received");
+                NS_TEST_EXPECT_MSG_EQ(blockAck.IsPacketReceived(3, index),
+                                      !isMpdu3corrupted,
+                                      "Unexpected reception status for MPDU 3");
+            }
+
+            break;
+        }
+    case 3:
+        // BlockAck frames in response to the first DL MU PPDU
+        isMpdu3corrupted = (mpdu->GetHeader().GetAddr2() == m_dataCorruptedSta);
+        NS_TEST_EXPECT_MSG_EQ(blockAck.IsPacketReceived(2),
+                              true,
+                              "MPDU 2 expected to be successfully received");
+        NS_TEST_EXPECT_MSG_EQ(blockAck.IsPacketReceived(3),
+                              !isMpdu3corrupted,
+                              "Unexpected reception status for MPDU 3");
+        // in case of DL MU, if there are at least two links setup, we expect all MPDUs to
+        // be inflight (on distinct links)
+        if (m_muTrafficPattern != WifiMuTrafficPattern::UL_MU &&
+            m_staMacs[0]->GetSetupLinkIds().size() > 1)
+        {
+            auto queue = m_apMac->GetTxopQueue(AC_BE);
+            Ptr<StaWifiMac> rcvMac;
+            if (m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress() ==
+                mpdu->GetHeader().GetAddr2())
+            {
+                rcvMac = m_staMacs[0];
+            }
+            else if (m_staMacs[1]->GetFrameExchangeManager(linkId)->GetAddress() ==
+                     mpdu->GetHeader().GetAddr2())
+            {
+                rcvMac = m_staMacs[1];
+            }
+            else
+            {
+                NS_ABORT_MSG("BlockAck frame not sent by a station in DL scenario");
+            }
+            auto item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress());
+            std::size_t nQueuedPkt = 0;
+            auto delay = WifiPhy::CalculateTxDuration(psdu,
+                                                      txVector,
+                                                      rcvMac->GetWifiPhy(linkId)->GetPhyBand()) +
+                         MicroSeconds(1); // to account for propagation delay
+
+            while (item)
+            {
+                auto seqNo = item->GetHeader().GetSequenceNumber();
+                NS_TEST_EXPECT_MSG_EQ(item->IsInFlight(),
+                                      true,
+                                      "MPDU with seqNo=" << seqNo << " is not in flight");
+                auto linkIds = item->GetInFlightLinkIds();
+                NS_TEST_EXPECT_MSG_EQ(linkIds.size(),
+                                      1,
+                                      "MPDU with seqNo=" << seqNo
+                                                         << " is in flight on multiple links");
+                // The first two MPDUs are in flight on the same link on which the BlockAck
+                // is sent. The other two MPDUs (only for AP to STA/STA to AP scenarios) are
+                // in flight on a different link.
+                auto srcLinkId = m_apMac->GetLinkIdByAddress(mpdu->GetHeader().GetAddr1());
+                NS_TEST_ASSERT_MSG_EQ(srcLinkId.has_value(),
+                                      true,
+                                      "Addr1 of BlockAck is not an originator's link address");
+                NS_TEST_EXPECT_MSG_EQ((*linkIds.begin() == *srcLinkId),
+                                      (seqNo <= 3),
+                                      "MPDU with seqNo=" << seqNo
+                                                         << " in flight on unexpected link");
+                // check the Retry subfield and whether this MPDU is still queued
+                // after the originator has processed this BlockAck
+
+                // MPDUs acknowledged via this BlockAck are no longer queued
+                bool isQueued = (seqNo > (isMpdu3corrupted ? 2 : 3));
+                // The Retry subfield is set if the MPDU has not been acknowledged (i.e., it
+                // is still queued) and has been transmitted on the same link as the BlockAck
+                // (i.e., its sequence number is less than or equal to 2)
+                bool isRetry = isQueued && seqNo <= 3;
+
+                Simulator::Schedule(delay, [this, item, isQueued, isRetry]() {
+                    NS_TEST_EXPECT_MSG_EQ(item->IsQueued(),
+                                          isQueued,
+                                          "MPDU with seqNo="
+                                              << item->GetHeader().GetSequenceNumber() << " should "
+                                              << (isQueued ? "" : "not") << " be queued");
+                    NS_TEST_EXPECT_MSG_EQ(
+                        item->GetHeader().IsRetry(),
+                        isRetry,
+                        "Unexpected value for the Retry subfield of the MPDU with seqNo="
+                            << item->GetHeader().GetSequenceNumber());
+                });
+
+                nQueuedPkt++;
+                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), item);
+            }
+            // Each MPDU contains an A-MSDU consisting of two MSDUs
+            NS_TEST_EXPECT_MSG_EQ(nQueuedPkt, m_nPackets / 2, "Unexpected number of queued MPDUs");
+        }
+        break;
+    }
+}
+
+void
+MultiLinkMuTxTest::L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr)
+{
+    NS_LOG_INFO("Packet received by NODE " << +nodeId << "\n");
+    m_rxPkts[nodeId]++;
+}
+
+void
+MultiLinkMuTxTest::DoSetup()
+{
+    switch (m_muTrafficPattern)
+    {
+    case WifiMuTrafficPattern::DL_MU_BAR_BA_SEQUENCE:
+        Config::SetDefault("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
+                           EnumValue(WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE));
+        break;
+    case WifiMuTrafficPattern::DL_MU_MU_BAR:
+        Config::SetDefault("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
+                           EnumValue(WifiAcknowledgment::DL_MU_TF_MU_BAR));
+        break;
+    case WifiMuTrafficPattern::DL_MU_AGGR_MU_BAR:
+        Config::SetDefault("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
+                           EnumValue(WifiAcknowledgment::DL_MU_AGGREGATE_TF));
+        break;
+    default:;
+    }
+
+    MultiLinkOperationsTestBase::DoSetup();
+
+    // Enable A-MSDU aggregation. Max A-MSDU size is set such that two MSDUs can be aggregated
+    for (auto mac : std::initializer_list<Ptr<WifiMac>>{m_apMac, m_staMacs[0], m_staMacs[1]})
+    {
+        mac->SetAttribute("BE_MaxAmsduSize", UintegerValue(1050));
+        mac->GetQosTxop(AC_BE)->SetAttribute("UseExplicitBarAfterMissedBlockAck",
+                                             BooleanValue(m_useBarAfterMissedBa));
+        mac->GetQosTxop(AC_BE)->SetAttribute("NMaxInflights", UintegerValue(m_nMaxInflight));
+
+        mac->SetAttribute("VI_MaxAmsduSize", UintegerValue(1050));
+        mac->GetQosTxop(AC_VI)->SetAttribute("UseExplicitBarAfterMissedBlockAck",
+                                             BooleanValue(m_useBarAfterMissedBa));
+        mac->GetQosTxop(AC_VI)->SetAttribute("NMaxInflights", UintegerValue(m_nMaxInflight));
+    }
+
+    // aggregate MU scheduler
+    auto muScheduler = CreateObjectWithAttributes<RrMultiUserScheduler>(
+        "EnableUlOfdma",
+        BooleanValue(m_muTrafficPattern == WifiMuTrafficPattern::UL_MU),
+        "EnableBsrp",
+        BooleanValue(false),
+        "UlPsduSize",
+        UintegerValue(2000));
+    m_apMac->AggregateObject(muScheduler);
+
+    // install post reception error model on all devices
+    for (std::size_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+    {
+        auto errorModel = CreateObject<ListErrorModel>();
+        m_errorModels[m_apMac->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
+        m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
+    }
+    for (std::size_t linkId = 0; linkId < m_staMacs[0]->GetNLinks(); linkId++)
+    {
+        auto errorModel = CreateObject<ListErrorModel>();
+        m_errorModels[m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
+        m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
+
+        errorModel = CreateObject<ListErrorModel>();
+        m_errorModels[m_staMacs[1]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
+        m_staMacs[1]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
+    }
+}
+
+void
+MultiLinkMuTxTest::StartTraffic()
+{
+    const Time duration = Seconds(1);
+    Address destAddr;
+
+    PacketSocketHelper packetSocket;
+    packetSocket.Install(m_apMac->GetDevice()->GetNode());
+    packetSocket.Install(m_staMacs[0]->GetDevice()->GetNode());
+    packetSocket.Install(m_staMacs[1]->GetDevice()->GetNode());
+
+    if (m_muTrafficPattern < WifiMuTrafficPattern::UL_MU)
+    {
+        // DL Traffic
+        for (uint8_t i = 0; i < m_nStations; i++)
+        {
+            PacketSocketAddress socket;
+            socket.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+            socket.SetPhysicalAddress(m_staMacs[i]->GetDevice()->GetAddress());
+            socket.SetProtocol(1);
+
+            // the first client application generates three packets in order
+            // to trigger the establishment of a Block Ack agreement
+            auto client1 = CreateObject<PacketSocketClient>();
+            client1->SetAttribute("PacketSize", UintegerValue(450));
+            client1->SetAttribute("MaxPackets", UintegerValue(3));
+            client1->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+            client1->SetRemote(socket);
+            m_apMac->GetDevice()->GetNode()->AddApplication(client1);
+            client1->SetStartTime(i * MilliSeconds(50));
+            client1->SetStopTime(duration);
+
+            // the second client application generates the first half of the selected number
+            // of packets, which are sent in DL MU PPDUs.
+            auto client2 = CreateObject<PacketSocketClient>();
+            client2->SetAttribute("PacketSize", UintegerValue(450));
+            client2->SetAttribute("MaxPackets", UintegerValue(m_nPackets / 2));
+            client2->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+            client2->SetRemote(socket);
+            m_apMac->GetDevice()->GetNode()->AddApplication(client2);
+            // start after all BA agreements are established
+            client2->SetStartTime(m_nStations * MilliSeconds(50));
+            client2->SetStopTime(duration);
+
+            // the third client application generates the second half of the selected number
+            // of packets, which are sent in DL MU PPDUs.
+            auto client3 = CreateObject<PacketSocketClient>();
+            client3->SetAttribute("PacketSize", UintegerValue(450));
+            client3->SetAttribute("MaxPackets", UintegerValue(m_nPackets / 2));
+            client3->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+            client3->SetRemote(socket);
+            m_apMac->GetDevice()->GetNode()->AddApplication(client3);
+            // start during transmission of first A-MPDU, if multiple links are setup
+            client3->SetStartTime(m_nStations * MilliSeconds(50) + MilliSeconds(3));
+            client3->SetStopTime(duration);
+        }
+    }
+    else
+    {
+        // UL Traffic
+        for (uint8_t i = 0; i < m_nStations; i++)
+        {
+            m_sockets[i].SetSingleDevice(m_staMacs[i]->GetDevice()->GetIfIndex());
+            m_sockets[i].SetPhysicalAddress(m_apMac->GetDevice()->GetAddress());
+            m_sockets[i].SetProtocol(1);
+
+            // the first client application generates three packets in order
+            // to trigger the establishment of a Block Ack agreement
+            Ptr<PacketSocketClient> client1 = CreateObject<PacketSocketClient>();
+            client1->SetAttribute("PacketSize", UintegerValue(450));
+            client1->SetAttribute("MaxPackets", UintegerValue(3));
+            client1->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+            client1->SetAttribute("Priority", UintegerValue(i * 4)); // 0 and 4
+            client1->SetRemote(m_sockets[i]);
+            m_staMacs[i]->GetDevice()->GetNode()->AddApplication(client1);
+            client1->SetStartTime(i * MilliSeconds(50));
+            client1->SetStopTime(duration);
+
+            // packets to be included in TB PPDUs are generated (by Transmit()) when
+            // the first Basic Trigger Frame is sent by the AP
+        }
+
+        // MU scheduler starts requesting channel access when we are done with BA agreements
+        Simulator::Schedule(m_nStations * MilliSeconds(50), [this]() {
+            auto muScheduler = m_apMac->GetObject<MultiUserScheduler>();
+            NS_TEST_ASSERT_MSG_NE(muScheduler, nullptr, "Expected an aggregated MU scheduler");
+            muScheduler->SetAccessReqInterval(MilliSeconds(3));
+            // channel access is requested only once
+            muScheduler->SetAccessReqInterval(Seconds(0));
+        });
+    }
+
+    // install a server on all nodes and connect traced callback
+    for (auto nodeIt = NodeList::Begin(); nodeIt != NodeList::End(); nodeIt++)
+    {
+        PacketSocketAddress srvAddr;
+        auto device = DynamicCast<WifiNetDevice>((*nodeIt)->GetDevice(0));
+        NS_TEST_ASSERT_MSG_NE(device, nullptr, "Expected a WifiNetDevice");
+        srvAddr.SetSingleDevice(device->GetIfIndex());
+        srvAddr.SetProtocol(1);
+
+        Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
+        server->SetLocal(srvAddr);
+        (*nodeIt)->AddApplication(server);
+        server->SetStartTime(Seconds(0)); // now
+        server->SetStopTime(duration);
+        server->TraceConnectWithoutContext(
+            "Rx",
+            MakeCallback(&MultiLinkMuTxTest::L7Receive, this).Bind(device->GetNode()->GetId()));
+    }
+
+    Simulator::Stop(duration);
+}
+
+void
+MultiLinkMuTxTest::DoRun()
+{
+    Simulator::Run();
+
+    // Expected number of packets received by each node (AP, STA 0, STA 1) at application layer
+    std::array<std::size_t, 3> expectedRxPkts{};
+
+    switch (m_muTrafficPattern)
+    {
+    case WifiMuTrafficPattern::DL_MU_BAR_BA_SEQUENCE:
+    case WifiMuTrafficPattern::DL_MU_MU_BAR:
+    case WifiMuTrafficPattern::DL_MU_AGGR_MU_BAR:
+        // both STA 0 and STA 1 receive m_nPackets + 3 (sent to trigger BA establishment) packets
+        expectedRxPkts[1] = m_nPackets + 3;
+        expectedRxPkts[2] = m_nPackets + 3;
+        break;
+    case WifiMuTrafficPattern::UL_MU:
+        // AP receives m_nPackets + 3 (sent to trigger BA establishment) packets from each station
+        expectedRxPkts[0] = 2 * (m_nPackets + 3);
+        break;
+    }
+
+    NS_TEST_EXPECT_MSG_EQ(+m_rxPkts[0],
+                          +expectedRxPkts[0],
+                          "Unexpected number of packets received by the AP");
+    NS_TEST_EXPECT_MSG_EQ(+m_rxPkts[1],
+                          +expectedRxPkts[1],
+                          "Unexpected number of packets received by STA 0");
+    NS_TEST_EXPECT_MSG_EQ(+m_rxPkts[2],
+                          +expectedRxPkts[2],
+                          "Unexpected number of packets received by STA 1");
+
+    // check that setting the QosTxop::NMaxInflights attribute has the expected effect.
+    // For DL, for each station we send 2 MPDUs to trigger BA agreement and m_nPackets / 2 MPDUs
+    // For UL, each station sends 2 MPDUs to trigger BA agreement and m_nPackets / 2 MPDUs
+    NS_TEST_EXPECT_MSG_EQ(
+        m_inflightCount.size(),
+        2 * (2 + m_nPackets / 2),
+        "Did not collect number of simultaneous transmissions for all data frames");
+
+    auto nMaxInflight = std::min(m_nMaxInflight, m_staMacs[0]->GetSetupLinkIds().size());
+    std::size_t maxCount = 0;
+    for (const auto& [txSeqNoPair, count] : m_inflightCount)
+    {
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(count,
+                                    nMaxInflight,
+                                    "MPDU with seqNo="
+                                        << txSeqNoPair.second
+                                        << " transmitted simultaneously more times than allowed");
+        maxCount = std::max(maxCount, count);
+    }
+
+    NS_TEST_EXPECT_MSG_EQ(
+        maxCount,
+        nMaxInflight,
+        "Expected that at least one data frame was transmitted simultaneously a number of "
+        "times equal to the NMaxInflights attribute");
+
+    Simulator::Destroy();
+}
+
+/**
  * \ingroup wifi-test
  * \ingroup tests
  *
@@ -1624,10 +2310,12 @@ class WifiMultiLinkOperationsTestSuite : public TestSuite
 WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     : TestSuite("wifi-mlo", UNIT)
 {
-    using ParamsTuple = std::tuple<std::vector<std::string>,
-                                   std::vector<std::string>,
-                                   std::vector<std::pair<uint8_t, uint8_t>>,
-                                   std::vector<uint8_t>>;
+    using ParamsTuple =
+        std::tuple<std::vector<std::string>,                 // non-AP MLD channels
+                   std::vector<std::string>,                 // AP MLD channels
+                   std::vector<std::pair<uint8_t, uint8_t>>, // (STA link ID, AP link ID) of setup
+                                                             // links
+                   std::vector<uint8_t>>; // IDs of link that cannot change PHY band
 
     AddTestCase(new GetRnrLinkInfoTest(), TestCase::QUICK);
 
@@ -1732,6 +2420,33 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                                                 staChannels,
                                                 apChannels,
                                                 fixedPhyBands),
+                            TestCase::QUICK);
+            }
+        }
+
+        for (const auto& muTrafficPattern : {WifiMuTrafficPattern::DL_MU_BAR_BA_SEQUENCE,
+                                             WifiMuTrafficPattern::DL_MU_MU_BAR,
+                                             WifiMuTrafficPattern::DL_MU_AGGR_MU_BAR,
+                                             WifiMuTrafficPattern::UL_MU})
+        {
+            for (const auto& useBarAfterMissedBa :
+                 {WifiUseBarAfterMissedBa::YES, WifiUseBarAfterMissedBa::NO})
+            {
+                // Block Ack agreement with nMaxInflight=1
+                AddTestCase(new MultiLinkMuTxTest(muTrafficPattern,
+                                                  useBarAfterMissedBa,
+                                                  1,
+                                                  staChannels,
+                                                  apChannels,
+                                                  fixedPhyBands),
+                            TestCase::QUICK);
+                // Block Ack agreement with nMaxInflight=2
+                AddTestCase(new MultiLinkMuTxTest(muTrafficPattern,
+                                                  useBarAfterMissedBa,
+                                                  2,
+                                                  staChannels,
+                                                  apChannels,
+                                                  fixedPhyBands),
                             TestCase::QUICK);
             }
         }
