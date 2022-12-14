@@ -299,7 +299,11 @@ RrMultiUserScheduler::TrySendingBsrpTf()
         return TxFormat::SU_TX;
     }
 
-    WifiTxVector txVector = GetTxVectorForUlMu([](const MasterInfo&) { return true; });
+    // only consider stations that have setup the current link
+    WifiTxVector txVector = GetTxVectorForUlMu([this](const MasterInfo& info) {
+        const auto& staList = m_apMac->GetStaList(m_linkId);
+        return staList.find(info.aid) != staList.cend();
+    });
 
     if (txVector.GetHeMuUserInfoMap().empty())
     {
@@ -381,9 +385,13 @@ RrMultiUserScheduler::TrySendingBasicTf()
     // check if an UL OFDMA transmission is possible after a DL OFDMA transmission
     NS_ABORT_MSG_IF(m_ulPsduSize == 0, "The UlPsduSize attribute must be set to a non-null value");
 
-    // only consider stations that do not have reported a null queue size
-    WifiTxVector txVector = GetTxVectorForUlMu(
-        [this](const MasterInfo& info) { return m_apMac->GetMaxBufferStatus(info.address) > 0; });
+    // only consider stations that have setup the current link and do not have
+    // reported a null queue size
+    WifiTxVector txVector = GetTxVectorForUlMu([this](const MasterInfo& info) {
+        const auto& staList = m_apMac->GetStaList(m_linkId);
+        return staList.find(info.aid) != staList.cend() &&
+               m_apMac->GetMaxBufferStatus(info.address) > 0;
+    });
 
     if (txVector.GetHeMuUserInfoMap().empty())
     {
