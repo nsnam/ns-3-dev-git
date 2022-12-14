@@ -130,6 +130,19 @@ MultiUserScheduler::DoInitialize()
 }
 
 void
+MultiUserScheduler::SetAccessReqInterval(Time interval)
+{
+    NS_LOG_FUNCTION(this << interval.As(Time::MS));
+    m_accessReqInterval = interval;
+    // start the timer if past initialization
+    if (m_accessReqInterval.IsStrictlyPositive() && IsInitialized())
+    {
+        m_accessReqTimer =
+            Simulator::Schedule(m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+    }
+}
+
+void
 MultiUserScheduler::SetWifiMac(Ptr<ApWifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
@@ -177,8 +190,11 @@ MultiUserScheduler::AccessReqTimeout()
     }
 
     // restart timer
-    m_accessReqTimer =
-        Simulator::Schedule(m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+    if (m_accessReqInterval.IsStrictlyPositive())
+    {
+        m_accessReqTimer =
+            Simulator::Schedule(m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+    }
 }
 
 MultiUserScheduler::TxFormat
@@ -200,8 +216,12 @@ MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
     {
         // restart access timer
         m_accessReqTimer.Cancel();
-        m_accessReqTimer =
-            Simulator::Schedule(m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+        if (m_accessReqInterval.IsStrictlyPositive())
+        {
+            m_accessReqTimer = Simulator::Schedule(m_accessReqInterval,
+                                                   &MultiUserScheduler::AccessReqTimeout,
+                                                   this);
+        }
     }
 
     TxFormat txFormat = SelectTxFormat();

@@ -119,6 +119,15 @@ class MultiUserScheduler : public Object
      */
     UlMuInfo& GetUlMuInfo();
 
+    /**
+     * Set the duration of the interval between two consecutive requests for channel
+     * access made by the MultiUserScheduler.
+     *
+     * \param interval the duration of the interval between two consecutive requests
+     *                 for channel access
+     */
+    void SetAccessReqInterval(Time interval);
+
   protected:
     /**
      * Get the station manager attached to the AP on the given link.
