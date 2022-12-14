@@ -282,7 +282,7 @@ class HeRu
                                               std::size_t& nCentral26TonesRus);
 
     /// (bandwidth, number of tones) pair
-    typedef std::pair<uint8_t, RuType> BwTonesPair;
+    typedef std::pair<uint16_t, RuType> BwTonesPair;
 
     /// map (bandwidth, number of tones) pairs to the group of subcarrier ranges
     typedef std::map<BwTonesPair, std::vector<SubcarrierGroup>> SubcarrierGroups;
