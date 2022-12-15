@@ -526,13 +526,33 @@ RrMultiUserScheduler::NotifyStationAssociated(uint16_t aid, Mac48Address address
 {
     NS_LOG_FUNCTION(this << aid << address);
 
-    if (GetWifiRemoteStationManager()->GetHeSupported(address))
+    if (!m_apMac->GetHeSupported(address))
     {
-        for (auto& staList : m_staListDl)
+        return;
+    }
+
+    auto mldOrLinkAddress = m_apMac->GetMldOrLinkAddressByAid(aid);
+    NS_ASSERT_MSG(mldOrLinkAddress, "AID " << aid << " not found");
+
+    for (auto& staList : m_staListDl)
+    {
+        // if this is not the first STA of a non-AP MLD to be notified, an entry
+        // for this non-AP MLD already exists
+        const auto staIt = std::find_if(staList.second.cbegin(),
+                                        staList.second.cend(),
+                                        [aid](auto&& info) { return info.aid == aid; });
+        if (staIt == staList.second.cend())
         {
-            staList.second.push_back(MasterInfo{aid, address, 0.0});
+            staList.second.push_back(MasterInfo{aid, *mldOrLinkAddress, 0.0});
         }
-        m_staListUl.push_back(MasterInfo{aid, address, 0.0});
+    }
+
+    const auto staIt = std::find_if(m_staListUl.cbegin(), m_staListUl.cend(), [aid](auto&& info) {
+        return info.aid == aid;
+    });
+    if (staIt == m_staListUl.cend())
+    {
+        m_staListUl.push_back(MasterInfo{aid, *mldOrLinkAddress, 0.0});
     }
 }
 
@@ -541,18 +561,25 @@ RrMultiUserScheduler::NotifyStationDeassociated(uint16_t aid, Mac48Address addre
 {
     NS_LOG_FUNCTION(this << aid << address);
 
-    if (GetWifiRemoteStationManager()->GetHeSupported(address))
+    if (!m_apMac->GetHeSupported(address))
     {
-        for (auto& staList : m_staListDl)
-        {
-            staList.second.remove_if([&aid, &address](const MasterInfo& info) {
-                return info.aid == aid && info.address == address;
-            });
-        }
-        m_staListUl.remove_if([&aid, &address](const MasterInfo& info) {
-            return info.aid == aid && info.address == address;
-        });
+        return;
     }
+
+    auto mldOrLinkAddress = m_apMac->GetMldOrLinkAddressByAid(aid);
+    NS_ASSERT_MSG(mldOrLinkAddress, "AID " << aid << " not found");
+
+    if (m_apMac->IsAssociated(*mldOrLinkAddress))
+    {
+        // Another STA of the non-AP MLD is still associated
+        return;
+    }
+
+    for (auto& staList : m_staListDl)
+    {
+        staList.second.remove_if([&aid](const MasterInfo& info) { return info.aid == aid; });
+    }
+    m_staListUl.remove_if([&aid](const MasterInfo& info) { return info.aid == aid; });
 }
 
 MultiUserScheduler::TxFormat
