@@ -209,6 +209,7 @@ set(source_files
     model/trickle-timer.cc
     model/realtime-simulator-impl.cc
     model/wall-clock-synchronizer.cc
+    model/matrix-array.cc
 )
 
 # Define core lib headers
@@ -314,6 +315,7 @@ set(header_files
     model/realtime-simulator-impl.h
     model/wall-clock-synchronizer.h
     model/val-array.h
+    model/matrix-array.h
 )
 
 set(test_sources
@@ -350,6 +352,7 @@ set(test_sources
     test/type-traits-test-suite.cc
     test/watchdog-test-suite.cc
     test/val-array-test-suite.cc
+    test/matrix-array-test-suite.cc
 )
 
 # Build core lib
