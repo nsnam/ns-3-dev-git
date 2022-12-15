@@ -146,9 +146,9 @@ MultiUserScheduler::SetWifiMac(Ptr<ApWifiMac> mac)
 }
 
 Ptr<WifiRemoteStationManager>
-MultiUserScheduler::GetWifiRemoteStationManager() const
+MultiUserScheduler::GetWifiRemoteStationManager(uint8_t linkId) const
 {
-    return m_apMac->GetWifiRemoteStationManager();
+    return m_apMac->GetWifiRemoteStationManager(linkId);
 }
 
 void
@@ -227,7 +227,10 @@ MultiUserScheduler::GetDlMuInfo()
     // check that all the addressed stations support HE
     for (auto& psdu : m_dlInfo.psduMap)
     {
-        NS_ABORT_MSG_IF(!GetWifiRemoteStationManager()->GetHeSupported(psdu.second->GetAddr1()),
+        auto receiver = psdu.second->GetAddr1();
+        auto linkId = m_apMac->IsAssociated(receiver);
+        NS_ABORT_MSG_IF(!linkId, "Station " << receiver << " should be associated");
+        NS_ABORT_MSG_IF(!GetWifiRemoteStationManager(*linkId)->GetHeSupported(receiver),
                         "Station " << psdu.second->GetAddr1() << " does not support HE");
     }
 #endif

@@ -150,7 +150,8 @@ RrMultiUserScheduler::SelectTxFormat()
 
     Ptr<const WifiMpdu> mpdu = m_edca->PeekNextMpdu(m_linkId);
 
-    if (mpdu && !GetWifiRemoteStationManager()->GetHeSupported(mpdu->GetHeader().GetAddr1()))
+    if (mpdu && !GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
+                     ->GetHeSupported(mpdu->GetHeader().GetAddr1()))
     {
         return SU_TX;
     }
@@ -265,7 +266,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
         hdr.SetAddr1(staIt->address);
         hdr.SetAddr2(m_apMac->GetAddress());
         WifiTxVector suTxVector =
-            GetWifiRemoteStationManager()->GetDataTxVector(hdr, m_allowedWidth);
+            GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)->GetDataTxVector(hdr, m_allowedWidth);
         txVector.SetHeMuUserInfo(staIt->aid,
                                  {HeRu::RuSpec(), // assigned later by FinalizeTxVector
                                   suTxVector.GetMode().GetMcsValue(),
@@ -313,8 +314,8 @@ RrMultiUserScheduler::TrySendingBsrpTf()
 
     m_txParams.Clear();
     // set the TXVECTOR used to send the Trigger Frame
-    m_txParams.m_txVector =
-        m_apMac->GetWifiRemoteStationManager()->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
+    m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
+                                ->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
 
     if (!m_heFem->TryAddMpdu(item, m_txParams, m_availableTime))
     {
@@ -430,8 +431,8 @@ RrMultiUserScheduler::TrySendingBasicTf()
 
     m_txParams.Clear();
     // set the TXVECTOR used to send the Trigger Frame
-    m_txParams.m_txVector =
-        m_apMac->GetWifiRemoteStationManager()->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
+    m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
+                                ->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
 
     if (!m_heFem->TryAddMpdu(item, m_txParams, m_availableTime))
     {
@@ -693,8 +694,8 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                     // An RU of the computed size is tentatively assigned to the candidate
                     // station, so that the TX duration can be correctly computed.
                     WifiTxVector suTxVector =
-                        GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(),
-                                                                       m_allowedWidth);
+                        GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
+                            ->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
                     WifiTxVector txVectorCopy = m_txParams.m_txVector;
 
                     m_txParams.m_txVector.SetHeMuUserInfo(staIt->aid,

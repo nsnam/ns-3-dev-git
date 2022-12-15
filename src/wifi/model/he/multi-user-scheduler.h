@@ -121,11 +121,12 @@ class MultiUserScheduler : public Object
 
   protected:
     /**
-     * Get the station manager attached to the AP.
+     * Get the station manager attached to the AP on the given link.
      *
-     * \return the station manager attached to the AP
+     * \param linkId the ID of the given link
+     * \return the station manager attached to the AP on the given link
      */
-    Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager() const;
+    Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager(uint8_t linkId) const;
 
     /**
      * Get an MPDU containing the given Trigger Frame.
