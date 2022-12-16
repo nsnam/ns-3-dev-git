@@ -32,6 +32,7 @@ Checks: >
   readability-container-size-empty,
   readability-duplicate-include,
   readability-isolate-declaration,
+  readability-make-member-function-const,
   readability-misleading-indentation,
   readability-misplaced-array-index,
   readability-redundant-control-flow,
