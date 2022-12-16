@@ -28,6 +28,7 @@ Checks: >
   performance-inefficient-algorithm,
   performance-inefficient-vector-operation,
   performance-trivially-destructible,
+  performance-unnecessary-copy-initialization,
   readability-braces-around-statements,
   readability-container-size-empty,
   readability-duplicate-include,
@@ -47,6 +48,8 @@ Checks: >
   readability-uppercase-literal-suffix,
 
 CheckOptions:
+  - key: performance-unnecessary-copy-initialization.AllowedTypes
+    value: Ptr
   - key: readability-simplify-boolean-expr.SimplifyDeMorgan
     value: false
 
