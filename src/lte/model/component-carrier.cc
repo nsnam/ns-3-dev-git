@@ -253,7 +253,7 @@ ComponentCarrierBaseStation::~ComponentCarrierBaseStation()
 }
 
 uint16_t
-ComponentCarrierBaseStation::GetCellId()
+ComponentCarrierBaseStation::GetCellId() const
 {
     return m_cellId;
 }

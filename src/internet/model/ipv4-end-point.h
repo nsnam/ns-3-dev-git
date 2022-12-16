@@ -187,7 +187,7 @@ class Ipv4EndPoint
      * \brief Checks if the endpoint can receive packets.
      * \returns true if the endpoint can receive packets.
      */
-    bool IsRxEnabled();
+    bool IsRxEnabled() const;
 
   private:
     /**

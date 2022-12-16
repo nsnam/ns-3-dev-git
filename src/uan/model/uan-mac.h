@@ -127,7 +127,7 @@ class UanMac : public Object
      * Get the Tx mode index (Modulation type).
      * \return the Tx mode index
      */
-    uint32_t GetTxModeIndex();
+    uint32_t GetTxModeIndex() const;
 
     /**
      * Set the Tx mode index (Modulation type).

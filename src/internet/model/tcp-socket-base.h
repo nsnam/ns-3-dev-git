@@ -376,28 +376,28 @@ class TcpSocketBase : public TcpSocket
      * \param oldValue old pacing rate value
      * \param newValue new pacing rate value
      */
-    void UpdatePacingRateTrace(DataRate oldValue, DataRate newValue);
+    void UpdatePacingRateTrace(DataRate oldValue, DataRate newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState congestion window
      * \param oldValue old cWnd value
      * \param newValue new cWnd value
      */
-    void UpdateCwnd(uint32_t oldValue, uint32_t newValue);
+    void UpdateCwnd(uint32_t oldValue, uint32_t newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState inflated congestion window
      * \param oldValue old cWndInfl value
      * \param newValue new cWndInfl value
      */
-    void UpdateCwndInfl(uint32_t oldValue, uint32_t newValue);
+    void UpdateCwndInfl(uint32_t oldValue, uint32_t newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState slow start threshold
      * \param oldValue old ssTh value
      * \param newValue new ssTh value
      */
-    void UpdateSsThresh(uint32_t oldValue, uint32_t newValue);
+    void UpdateSsThresh(uint32_t oldValue, uint32_t newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState congestion state
@@ -405,42 +405,43 @@ class TcpSocketBase : public TcpSocket
      * \param newValue new congestion state value
      */
     void UpdateCongState(TcpSocketState::TcpCongState_t oldValue,
-                         TcpSocketState::TcpCongState_t newValue);
+                         TcpSocketState::TcpCongState_t newValue) const;
 
     /**
      * \brief Callback function to hook to EcnState state
      * \param oldValue old ecn state value
      * \param newValue new ecn state value
      */
-    void UpdateEcnState(TcpSocketState::EcnState_t oldValue, TcpSocketState::EcnState_t newValue);
+    void UpdateEcnState(TcpSocketState::EcnState_t oldValue,
+                        TcpSocketState::EcnState_t newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState high tx mark
      * \param oldValue old high tx mark
      * \param newValue new high tx mark
      */
-    void UpdateHighTxMark(SequenceNumber32 oldValue, SequenceNumber32 newValue);
+    void UpdateHighTxMark(SequenceNumber32 oldValue, SequenceNumber32 newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState next tx sequence
      * \param oldValue old nextTxSeq value
      * \param newValue new nextTxSeq value
      */
-    void UpdateNextTxSequence(SequenceNumber32 oldValue, SequenceNumber32 newValue);
+    void UpdateNextTxSequence(SequenceNumber32 oldValue, SequenceNumber32 newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState bytes inflight
      * \param oldValue old bytesInFlight value
      * \param newValue new bytesInFlight value
      */
-    void UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue);
+    void UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue) const;
 
     /**
      * \brief Callback function to hook to TcpSocketState rtt
      * \param oldValue old rtt value
      * \param newValue new rtt value
      */
-    void UpdateRtt(Time oldValue, Time newValue);
+    void UpdateRtt(Time oldValue, Time newValue) const;
 
     /**
      * \brief Install a congestion control algorithm on this socket

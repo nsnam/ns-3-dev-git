@@ -274,14 +274,14 @@ CsmaNetDevice::SetReceiveEnable(bool receiveEnable)
 }
 
 bool
-CsmaNetDevice::IsSendEnabled()
+CsmaNetDevice::IsSendEnabled() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_sendEnable;
 }
 
 bool
-CsmaNetDevice::IsReceiveEnabled()
+CsmaNetDevice::IsReceiveEnabled() const
 {
     NS_LOG_FUNCTION_NOARGS();
     return m_receiveEnable;

@@ -202,7 +202,7 @@ class Ns2MobilityHelperTest : public TestCase
     }
 
     /// Create and name nodes
-    void CreateNodes()
+    void CreateNodes() const
     {
         NodeContainer nodes;
         nodes.Create(m_nodeCount);

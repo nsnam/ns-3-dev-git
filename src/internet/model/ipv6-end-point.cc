@@ -61,7 +61,7 @@ Ipv6EndPoint::SetLocalAddress(Ipv6Address addr)
 }
 
 uint16_t
-Ipv6EndPoint::GetLocalPort()
+Ipv6EndPoint::GetLocalPort() const
 {
     return m_localPort;
 }
@@ -79,7 +79,7 @@ Ipv6EndPoint::GetPeerAddress()
 }
 
 uint16_t
-Ipv6EndPoint::GetPeerPort()
+Ipv6EndPoint::GetPeerPort() const
 {
     return m_peerPort;
 }
@@ -151,7 +151,7 @@ Ipv6EndPoint::SetRxEnabled(bool enabled)
 }
 
 bool
-Ipv6EndPoint::IsRxEnabled()
+Ipv6EndPoint::IsRxEnabled() const
 {
     return m_rxEnabled;
 }

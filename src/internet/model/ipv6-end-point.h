@@ -74,7 +74,7 @@ class Ipv6EndPoint
      * \brief Get the local port.
      * \return the local port
      */
-    uint16_t GetLocalPort();
+    uint16_t GetLocalPort() const;
 
     /**
      * \brief Set the local port.
@@ -92,7 +92,7 @@ class Ipv6EndPoint
      * \brief Get the peer port.
      * \return the peer port
      */
-    uint16_t GetPeerPort();
+    uint16_t GetPeerPort() const;
 
     /**
      * \brief Set the peer information (address and port).
@@ -191,7 +191,7 @@ class Ipv6EndPoint
      * \brief Checks if the endpoint can receive packets.
      * \returns true if the endpoint can receive packets.
      */
-    bool IsRxEnabled();
+    bool IsRxEnabled() const;
 
   private:
     /**

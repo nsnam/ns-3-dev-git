@@ -188,7 +188,7 @@ class ComponentCarrierBaseStation : public ComponentCarrier
      * Get cell identifier
      * \return cell identifier
      */
-    uint16_t GetCellId();
+    uint16_t GetCellId() const;
 
     /**
      * Set physical cell identifier

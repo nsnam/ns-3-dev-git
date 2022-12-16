@@ -193,7 +193,7 @@ class ApplicationContainer
      *
      * \param start The Time at which each of the applications should start.
      */
-    void Start(Time start);
+    void Start(Time start) const;
 
     /**
      * \brief Start all of the Applications in this container at the start time
@@ -206,7 +206,7 @@ class ApplicationContainer
      * \param start The Time at which each of the applications should start.
      * \param rv The random variable that adds jitter (units of seconds)
      */
-    void StartWithJitter(Time start, Ptr<RandomVariableStream> rv);
+    void StartWithJitter(Time start, Ptr<RandomVariableStream> rv) const;
 
     /**
      * \brief Arrange for all of the Applications in this container to Stop()
@@ -222,7 +222,7 @@ class ApplicationContainer
      *
      * \param stop The Time at which each of the applications should stop.
      */
-    void Stop(Time stop);
+    void Stop(Time stop) const;
 
   private:
     std::vector<Ptr<Application>> m_applications; //!< Applications smart pointers

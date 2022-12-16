@@ -640,13 +640,13 @@ SubscriberStationNetDevice::Stop()
 }
 
 void
-SubscriberStationNetDevice::AddServiceFlow(ServiceFlow sf)
+SubscriberStationNetDevice::AddServiceFlow(ServiceFlow sf) const
 {
     GetServiceFlowManager()->AddServiceFlow(sf);
 }
 
 void
-SubscriberStationNetDevice::AddServiceFlow(ServiceFlow* sf)
+SubscriberStationNetDevice::AddServiceFlow(ServiceFlow* sf) const
 {
     GetServiceFlowManager()->AddServiceFlow(sf);
 }

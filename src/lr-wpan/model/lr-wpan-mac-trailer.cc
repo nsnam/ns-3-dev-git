@@ -136,7 +136,7 @@ LrWpanMacTrailer::EnableFcs(bool enable)
 }
 
 bool
-LrWpanMacTrailer::IsFcsEnabled()
+LrWpanMacTrailer::IsFcsEnabled() const
 {
     return m_calcFcs;
 }

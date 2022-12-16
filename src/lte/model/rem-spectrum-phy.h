@@ -83,7 +83,7 @@ class RemSpectrumPhy : public SpectrumPhy
      * \param noisePower the noise power
      * \return the Signal to Noise Ratio calculated
      */
-    double GetSinr(double noisePower);
+    double GetSinr(double noisePower) const;
 
     /**
      * make StartRx a no-op from now on, and mark instance as inactive
@@ -95,7 +95,7 @@ class RemSpectrumPhy : public SpectrumPhy
      *
      * \return true if active
      */
-    bool IsActive();
+    bool IsActive() const;
 
     /**
      * Reset the SINR calculator

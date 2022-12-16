@@ -103,7 +103,7 @@ Experiment::IncrementCw(uint32_t cw)
 }
 
 void
-Experiment::UpdatePositions(NodeContainer& nodes)
+Experiment::UpdatePositions(NodeContainer& nodes) const
 {
     NS_LOG_DEBUG(Now().As(Time::S) << " Updating positions");
     NodeContainer::Iterator it = nodes.Begin();

@@ -100,7 +100,7 @@ PppHeader::SetProtocol(uint16_t protocol)
 }
 
 uint16_t
-PppHeader::GetProtocol()
+PppHeader::GetProtocol() const
 {
     return m_protocol;
 }

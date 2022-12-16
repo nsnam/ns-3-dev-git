@@ -253,7 +253,7 @@ class LteEnbMac : public Object
      * \brief Get RACH configuration function
      * \returns LteEnbCmacSapProvider::RachConfig
      */
-    LteEnbCmacSapProvider::RachConfig DoGetRachConfig();
+    LteEnbCmacSapProvider::RachConfig DoGetRachConfig() const;
     /**
      * \brief Allocate NC RA preamble function
      * \param rnti the RNTI

@@ -154,7 +154,7 @@ LtePdcp::GetLteRlcSapUser()
 }
 
 LtePdcp::Status
-LtePdcp::GetStatus()
+LtePdcp::GetStatus() const
 {
     Status s;
     s.txSn = m_txSequenceNumber;

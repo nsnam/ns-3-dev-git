@@ -158,7 +158,7 @@ class UdpHeader : public Header
      * \brief Return the checksum (only known after a Deserialize)
      * \return The checksum for this UdpHeader
      */
-    uint16_t GetChecksum();
+    uint16_t GetChecksum() const;
 
   private:
     /**

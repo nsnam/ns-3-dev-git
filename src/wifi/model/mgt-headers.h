@@ -1212,7 +1212,7 @@ class MgtProbeResponseHeader : public Header
      *
      * \return time stamp
      */
-    uint64_t GetTimestamp();
+    uint64_t GetTimestamp() const;
 
     /**
      * Register this type.
@@ -1467,13 +1467,13 @@ class WifiActionHeader : public Header
      *
      * \return CategoryValue
      */
-    CategoryValue GetCategory();
+    CategoryValue GetCategory() const;
     /**
      * Return the action value.
      *
      * \return ActionValue
      */
-    ActionValue GetAction();
+    ActionValue GetAction() const;
 
     /**
      * Register this type.

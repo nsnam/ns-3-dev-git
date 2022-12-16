@@ -182,7 +182,7 @@ RemSpectrumPhy::SetRxSpectrumModel(Ptr<const SpectrumModel> m)
 }
 
 double
-RemSpectrumPhy::GetSinr(double noisePower)
+RemSpectrumPhy::GetSinr(double noisePower) const
 {
     return m_referenceSignalPower / (m_sumPower - m_referenceSignalPower + noisePower);
 }
@@ -194,7 +194,7 @@ RemSpectrumPhy::Deactivate()
 }
 
 bool
-RemSpectrumPhy::IsActive()
+RemSpectrumPhy::IsActive() const
 {
     return m_active;
 }

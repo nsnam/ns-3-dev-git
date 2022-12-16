@@ -88,7 +88,7 @@ Backoff::ResetBackoffTime()
 }
 
 bool
-Backoff::MaxRetriesReached()
+Backoff::MaxRetriesReached() const
 {
     return (m_numBackoffRetries >= m_maxRetries);
 }

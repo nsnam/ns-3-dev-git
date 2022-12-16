@@ -325,7 +325,7 @@ class RadvdInterface : public SimpleRefCount<RadvdInterface>
      * \brief Checks if the interface is subject to the initial Rtr Advertisements rule.
      * \returns true if the initial Rtr Advertisements counter is greater than zero.
      */
-    bool IsInitialRtrAdv();
+    bool IsInitialRtrAdv() const;
 
   private:
     /**

@@ -161,7 +161,7 @@ class IeConfiguration : public WifiInformationElement
      * Get neighbor count
      * \returns the the neighbor count
      */
-    uint8_t GetNeighborCount();
+    uint8_t GetNeighborCount() const;
     /**
      * Mesh capability
      * \returns the dot11s mesh capability

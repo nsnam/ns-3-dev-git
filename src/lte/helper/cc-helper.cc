@@ -138,31 +138,31 @@ CcHelper::SetUlBandwidth(uint16_t ulBandwidth)
 }
 
 uint16_t
-CcHelper::GetNumberOfComponentCarriers()
+CcHelper::GetNumberOfComponentCarriers() const
 {
     return m_numberOfComponentCarriers;
 }
 
 uint32_t
-CcHelper::GetUlEarfcn()
+CcHelper::GetUlEarfcn() const
 {
     return m_ulEarfcn;
 }
 
 uint32_t
-CcHelper::GetDlEarfcn()
+CcHelper::GetDlEarfcn() const
 {
     return m_dlEarfcn;
 }
 
 uint16_t
-CcHelper::GetDlBandwidth()
+CcHelper::GetDlBandwidth() const
 {
     return m_dlBandwidth;
 }
 
 uint16_t
-CcHelper::GetUlBandwidth()
+CcHelper::GetUlBandwidth() const
 {
     return m_ulBandwidth;
 }
@@ -231,7 +231,7 @@ CcHelper::CreateSingleCc(uint16_t ulBandwidth,
                          uint16_t dlBandwidth,
                          uint32_t ulEarfcn,
                          uint32_t dlEarfcn,
-                         bool isPrimary)
+                         bool isPrimary) const
 {
     ComponentCarrier cc;
     if (m_ulEarfcn != 0)

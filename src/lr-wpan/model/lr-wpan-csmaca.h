@@ -233,13 +233,13 @@ class LrWpanCsmaCa : public Object
      *
      * \returns the number of CSMA retries
      */
-    uint8_t GetNB();
+    uint8_t GetNB() const;
     /**
      * Get the value of the Battery Life Extension
      *
      * \returns  true or false to Battery Life Extension support
      */
-    bool GetBatteryLifeExtension();
+    bool GetBatteryLifeExtension() const;
 
   private:
     void DoDispose() override;

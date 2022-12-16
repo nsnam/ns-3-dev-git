@@ -95,7 +95,7 @@ NetAnimExperiment::IncrementCw(uint32_t cw)
 }
 
 void
-NetAnimExperiment::UpdatePositions(NodeContainer& nodes)
+NetAnimExperiment::UpdatePositions(NodeContainer& nodes) const
 {
     NS_LOG_DEBUG(Simulator::Now().As(Time::S) << " Updating positions");
     NodeContainer::Iterator it = nodes.Begin();

@@ -94,7 +94,7 @@ class LrWpanMacTrailer : public Trailer
      *
      * \return true, if FCS calculation is enabled, false otherwise.
      */
-    bool IsFcsEnabled();
+    bool IsFcsEnabled() const;
 
   private:
     /**

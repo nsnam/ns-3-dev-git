@@ -166,7 +166,7 @@ Ipv4EndPoint::SetRxEnabled(bool enabled)
 }
 
 bool
-Ipv4EndPoint::IsRxEnabled()
+Ipv4EndPoint::IsRxEnabled() const
 {
     return m_rxEnabled;
 }

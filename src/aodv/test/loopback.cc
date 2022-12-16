@@ -74,7 +74,7 @@ class LoopbackTestCase : public TestCase
      * Echo data function
      * \param socket The socket to echo data
      */
-    void EchoData(Ptr<Socket> socket);
+    void EchoData(Ptr<Socket> socket) const;
 
   public:
     LoopbackTestCase();
@@ -98,7 +98,7 @@ LoopbackTestCase::ReceivePkt(Ptr<Socket> socket)
 }
 
 void
-LoopbackTestCase::EchoData(Ptr<Socket> socket)
+LoopbackTestCase::EchoData(Ptr<Socket> socket) const
 {
     Address from;
     Ptr<Packet> receivedPacket = socket->RecvFrom(std::numeric_limits<uint32_t>::max(), 0, from);

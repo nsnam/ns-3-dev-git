@@ -142,31 +142,31 @@ class CcHelper : public Object
      *
      * \returns the number of component carriers
      */
-    uint16_t GetNumberOfComponentCarriers();
+    uint16_t GetNumberOfComponentCarriers() const;
     /**
      * Get UL EARFCN.
      *
      * \returns the UL EARFCN
      */
-    uint32_t GetUlEarfcn();
+    uint32_t GetUlEarfcn() const;
     /**
      * Get DL EARFCN.
      *
      * \returns the DL EARFCN
      */
-    uint32_t GetDlEarfcn();
+    uint32_t GetDlEarfcn() const;
     /**
      * Get DL bandwidth.
      *
      * \returns the DL bandwidth
      */
-    uint16_t GetDlBandwidth();
+    uint16_t GetDlBandwidth() const;
     /**
      * Get UL bandwidth.
      *
      * \returns the UL bandwidth
      */
-    uint16_t GetUlBandwidth();
+    uint16_t GetUlBandwidth() const;
 
   protected:
     // inherited from Object
@@ -188,7 +188,7 @@ class CcHelper : public Object
                                     uint16_t dlBandwidth,
                                     uint32_t ulEarfcn,
                                     uint32_t dlEarfcn,
-                                    bool isPrimary);
+                                    bool isPrimary) const;
 
     /// Factory for each Carrier Component.
     ObjectFactory m_ccFactory;

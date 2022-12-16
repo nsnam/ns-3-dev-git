@@ -950,7 +950,7 @@ LteEnbMac::DoUeUpdateConfigurationReq(LteEnbCmacSapProvider::UeConfig params)
 }
 
 LteEnbCmacSapProvider::RachConfig
-LteEnbMac::DoGetRachConfig()
+LteEnbMac::DoGetRachConfig() const
 {
     struct LteEnbCmacSapProvider::RachConfig rc;
     rc.numberOfRaPreambles = m_numberOfRaPreambles;

@@ -4463,64 +4463,64 @@ TcpSocketBase::SetRetxThresh(uint32_t retxThresh)
 }
 
 void
-TcpSocketBase::UpdatePacingRateTrace(DataRate oldValue, DataRate newValue)
+TcpSocketBase::UpdatePacingRateTrace(DataRate oldValue, DataRate newValue) const
 {
     m_pacingRateTrace(oldValue, newValue);
 }
 
 void
-TcpSocketBase::UpdateCwnd(uint32_t oldValue, uint32_t newValue)
+TcpSocketBase::UpdateCwnd(uint32_t oldValue, uint32_t newValue) const
 {
     m_cWndTrace(oldValue, newValue);
 }
 
 void
-TcpSocketBase::UpdateCwndInfl(uint32_t oldValue, uint32_t newValue)
+TcpSocketBase::UpdateCwndInfl(uint32_t oldValue, uint32_t newValue) const
 {
     m_cWndInflTrace(oldValue, newValue);
 }
 
 void
-TcpSocketBase::UpdateSsThresh(uint32_t oldValue, uint32_t newValue)
+TcpSocketBase::UpdateSsThresh(uint32_t oldValue, uint32_t newValue) const
 {
     m_ssThTrace(oldValue, newValue);
 }
 
 void
 TcpSocketBase::UpdateCongState(TcpSocketState::TcpCongState_t oldValue,
-                               TcpSocketState::TcpCongState_t newValue)
+                               TcpSocketState::TcpCongState_t newValue) const
 {
     m_congStateTrace(oldValue, newValue);
 }
 
 void
 TcpSocketBase::UpdateEcnState(TcpSocketState::EcnState_t oldValue,
-                              TcpSocketState::EcnState_t newValue)
+                              TcpSocketState::EcnState_t newValue) const
 {
     m_ecnStateTrace(oldValue, newValue);
 }
 
 void
-TcpSocketBase::UpdateNextTxSequence(SequenceNumber32 oldValue, SequenceNumber32 newValue)
+TcpSocketBase::UpdateNextTxSequence(SequenceNumber32 oldValue, SequenceNumber32 newValue) const
 
 {
     m_nextTxSequenceTrace(oldValue, newValue);
 }
 
 void
-TcpSocketBase::UpdateHighTxMark(SequenceNumber32 oldValue, SequenceNumber32 newValue)
+TcpSocketBase::UpdateHighTxMark(SequenceNumber32 oldValue, SequenceNumber32 newValue) const
 {
     m_highTxMarkTrace(oldValue, newValue);
 }
 
 void
-TcpSocketBase::UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue)
+TcpSocketBase::UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue) const
 {
     m_bytesInFlightTrace(oldValue, newValue);
 }
 
 void
-TcpSocketBase::UpdateRtt(Time oldValue, Time newValue)
+TcpSocketBase::UpdateRtt(Time oldValue, Time newValue) const
 {
     m_lastRttTrace(oldValue, newValue);
 }

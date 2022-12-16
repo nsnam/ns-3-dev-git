@@ -273,7 +273,7 @@ DsrOptionField::CalculatePad(DsrOptionHeader::Alignment alignment) const
 }
 
 uint32_t
-DsrOptionField::GetDsrOptionsOffset()
+DsrOptionField::GetDsrOptionsOffset() const
 {
     return m_optionsOffset;
 }

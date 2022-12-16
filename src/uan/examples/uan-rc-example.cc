@@ -95,7 +95,7 @@ Experiment::ReceivePacket(Ptr<Socket> socket)
 }
 
 UanTxMode
-Experiment::CreateMode(uint32_t kass, uint32_t fc, bool upperblock, std::string name)
+Experiment::CreateMode(uint32_t kass, uint32_t fc, bool upperblock, std::string name) const
 {
     std::ostringstream buf;
     buf << name << " " << kass;

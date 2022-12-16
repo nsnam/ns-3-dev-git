@@ -123,19 +123,19 @@ SimpleOfdmSendParam::GetFecBlock()
 }
 
 uint32_t
-SimpleOfdmSendParam::GetBurstSize()
+SimpleOfdmSendParam::GetBurstSize() const
 {
     return m_burstSize;
 }
 
 bool
-SimpleOfdmSendParam::GetIsFirstBlock()
+SimpleOfdmSendParam::GetIsFirstBlock() const
 {
     return m_isFirstBlock;
 }
 
 uint64_t
-SimpleOfdmSendParam::GetFrequency()
+SimpleOfdmSendParam::GetFrequency() const
 {
     return m_frequency;
 }
@@ -147,13 +147,13 @@ SimpleOfdmSendParam::GetModulationType()
 }
 
 uint8_t
-SimpleOfdmSendParam::GetDirection()
+SimpleOfdmSendParam::GetDirection() const
 {
     return m_direction;
 }
 
 double
-SimpleOfdmSendParam::GetRxPowerDbm()
+SimpleOfdmSendParam::GetRxPowerDbm() const
 {
     return m_rxPowerDbm;
 }

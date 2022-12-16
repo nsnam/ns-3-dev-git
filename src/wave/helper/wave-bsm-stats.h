@@ -70,7 +70,7 @@ class WaveBsmStats : public Object
      * \brief Returns the count of transmitted packets
      * \return count of packets transmitted
      */
-    int GetTxPktCount();
+    int GetTxPktCount() const;
 
     /*
      * Note:
@@ -129,7 +129,7 @@ class WaveBsmStats : public Object
      * \brief Returns the count of packets received
      * \return the count of packets received
      */
-    int GetRxPktCount();
+    int GetRxPktCount() const;
 
     /**
      * \brief Returns the count of expected packets received within range(index)
@@ -190,7 +190,7 @@ class WaveBsmStats : public Object
      * not include MAC/PHY overhead
      * \return number of bytes of application-data transmitted
      */
-    int GetTxByteCount();
+    int GetTxByteCount() const;
 
     /**
      * \brief Returns the BSM Packet Delivery Ratio (PDR)
@@ -220,7 +220,7 @@ class WaveBsmStats : public Object
      * \brief Gets logging state
      * \return logging state
      */
-    bool GetLogging();
+    bool GetLogging() const;
 
   private:
     int m_wavePktSendCount;                            ///< packet sent count

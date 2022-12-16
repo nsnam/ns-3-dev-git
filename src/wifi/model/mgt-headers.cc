@@ -304,7 +304,7 @@ MgtProbeResponseHeader::~MgtProbeResponseHeader()
 }
 
 uint64_t
-MgtProbeResponseHeader::GetTimestamp()
+MgtProbeResponseHeader::GetTimestamp() const
 {
     return m_timestamp;
 }
@@ -2188,7 +2188,7 @@ WifiActionHeader::SetAction(WifiActionHeader::CategoryValue type,
 }
 
 WifiActionHeader::CategoryValue
-WifiActionHeader::GetCategory()
+WifiActionHeader::GetCategory() const
 {
     switch (m_category)
     {
@@ -2221,7 +2221,7 @@ WifiActionHeader::GetCategory()
 }
 
 WifiActionHeader::ActionValue
-WifiActionHeader::GetAction()
+WifiActionHeader::GetAction() const
 {
     ActionValue retval;
     retval.selfProtectedAction =

@@ -120,7 +120,7 @@ class Cost231PropagationLossModel : public PropagationLossModel
      * Get the shadowing value
      * \returns the shadowing value
      */
-    double GetShadowing();
+    double GetShadowing() const;
     /**
      * Set the shadowing value
      * \param shadowing the shadowing value

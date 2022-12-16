@@ -382,7 +382,7 @@ class AnimationInterface
      *
      * \returns true if AnimationInterface was started
      */
-    bool IsStarted();
+    bool IsStarted() const;
 
     /**
      * \brief Do not trace packets. This helps reduce the trace file size if AnimationInterface is
@@ -405,7 +405,7 @@ class AnimationInterface
      *
      * \returns Number of packets recorded in the current trace file
      */
-    uint64_t GetTracePktCount();
+    uint64_t GetTracePktCount() const;
 
     /**
      *

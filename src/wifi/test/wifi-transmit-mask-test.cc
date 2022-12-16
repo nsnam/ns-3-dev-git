@@ -89,7 +89,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
     */
     void InterpolateAndAppendValues(IndexPowerVect& vect,
                                     IndexPowerPair start,
-                                    IndexPowerPair stop);
+                                    IndexPowerPair stop) const;
 
     WifiStandard m_standard; ///< the wifi standard to use for the test
     WifiPhyBand m_band;      ///< the wifi PHY band to use for the test
@@ -253,7 +253,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
 void
 WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues(IndexPowerVect& vect,
                                                        IndexPowerPair start,
-                                                       IndexPowerPair stop)
+                                                       IndexPowerPair stop) const
 {
     NS_LOG_FUNCTION(start.first << start.second << stop.first << stop.second);
     NS_ASSERT(start.first <= stop.first);

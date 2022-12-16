@@ -35,7 +35,7 @@ SrsCqiRntiVsp::~SrsCqiRntiVsp()
 }
 
 uint16_t
-SrsCqiRntiVsp::GetRnti()
+SrsCqiRntiVsp::GetRnti() const
 {
     return (m_rnti);
 }

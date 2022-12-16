@@ -144,25 +144,25 @@ class RoutingStats
      * \brief Returns the number of bytes received
      * \return the number of bytes received
      */
-    uint32_t GetRxBytes();
+    uint32_t GetRxBytes() const;
 
     /**
      * \brief Returns the cumulative number of bytes received
      * \return the cumulative number of bytes received
      */
-    uint32_t GetCumulativeRxBytes();
+    uint32_t GetCumulativeRxBytes() const;
 
     /**
      * \brief Returns the count of packets received
      * \return the count of packets received
      */
-    uint32_t GetRxPkts();
+    uint32_t GetRxPkts() const;
 
     /**
      * \brief Returns the cumulative count of packets received
      * \return the cumulative count of packets received
      */
-    uint32_t GetCumulativeRxPkts();
+    uint32_t GetCumulativeRxPkts() const;
 
     /**
      * \brief Increments the number of (application-data)
@@ -192,25 +192,25 @@ class RoutingStats
      * \brief Returns the number of bytes transmitted
      * \return the number of bytes transmitted
      */
-    uint32_t GetTxBytes();
+    uint32_t GetTxBytes() const;
 
     /**
      * \brief Returns the cumulative number of bytes transmitted
      * \return the cumulative number of bytes transmitted
      */
-    uint32_t GetCumulativeTxBytes();
+    uint32_t GetCumulativeTxBytes() const;
 
     /**
      * \brief Returns the number of packets transmitted
      * \return the number of packets transmitted
      */
-    uint32_t GetTxPkts();
+    uint32_t GetTxPkts() const;
 
     /**
      * \brief Returns the cumulative number of packets transmitted
      * \return the cumulative number of packets transmitted
      */
-    uint32_t GetCumulativeTxPkts();
+    uint32_t GetCumulativeTxPkts() const;
 
     /**
      * \brief Increment the number of bytes transmitted
@@ -259,25 +259,25 @@ RoutingStats::RoutingStats()
 }
 
 uint32_t
-RoutingStats::GetRxBytes()
+RoutingStats::GetRxBytes() const
 {
     return m_RxBytes;
 }
 
 uint32_t
-RoutingStats::GetCumulativeRxBytes()
+RoutingStats::GetCumulativeRxBytes() const
 {
     return m_cumulativeRxBytes;
 }
 
 uint32_t
-RoutingStats::GetRxPkts()
+RoutingStats::GetRxPkts() const
 {
     return m_RxPkts;
 }
 
 uint32_t
-RoutingStats::GetCumulativeRxPkts()
+RoutingStats::GetCumulativeRxPkts() const
 {
     return m_cumulativeRxPkts;
 }
@@ -309,25 +309,25 @@ RoutingStats::SetRxPkts(uint32_t rxPkts)
 }
 
 uint32_t
-RoutingStats::GetTxBytes()
+RoutingStats::GetTxBytes() const
 {
     return m_TxBytes;
 }
 
 uint32_t
-RoutingStats::GetCumulativeTxBytes()
+RoutingStats::GetCumulativeTxBytes() const
 {
     return m_cumulativeTxBytes;
 }
 
 uint32_t
-RoutingStats::GetTxPkts()
+RoutingStats::GetTxPkts() const
 {
     return m_TxPkts;
 }
 
 uint32_t
-RoutingStats::GetCumulativeTxPkts()
+RoutingStats::GetCumulativeTxPkts() const
 {
     return m_cumulativeTxPkts;
 }
@@ -728,7 +728,7 @@ class WifiPhyStats : public Object
      * (this includes MAC/PHY overhead)
      * \return the number of bytes transmitted
      */
-    uint32_t GetTxBytes();
+    uint32_t GetTxBytes() const;
 
     /**
      * \brief Callback signature for Phy/Tx trace
@@ -814,7 +814,7 @@ WifiPhyStats::PhyRxDrop(std::string context,
 }
 
 uint32_t
-WifiPhyStats::GetTxBytes()
+WifiPhyStats::GetTxBytes() const
 {
     return m_phyTxBytes;
 }

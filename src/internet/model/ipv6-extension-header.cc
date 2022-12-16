@@ -216,7 +216,7 @@ OptionField::CalculatePad(Ipv6OptionHeader::Alignment alignment) const
 }
 
 uint32_t
-OptionField::GetOptionsOffset()
+OptionField::GetOptionsOffset() const
 {
     return m_optionsOffset;
 }

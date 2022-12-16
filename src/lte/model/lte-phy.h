@@ -216,7 +216,7 @@ class LtePhy : public Object
      *
      * \returns the component carrier ID index
      */
-    uint8_t GetComponentCarrierId();
+    uint8_t GetComponentCarrierId() const;
 
   protected:
     /// Pointer to the NetDevice where this PHY layer is attached.

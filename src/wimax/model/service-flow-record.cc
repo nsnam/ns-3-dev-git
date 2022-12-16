@@ -165,7 +165,7 @@ ServiceFlowRecord::UpdateRequestedBandwidth(uint32_t requestedBandwidth)
 }
 
 uint32_t
-ServiceFlowRecord::GetRequestedBandwidth()
+ServiceFlowRecord::GetRequestedBandwidth() const
 {
     return m_requestedBandwidth;
 }
@@ -183,7 +183,7 @@ ServiceFlowRecord::UpdateGrantedBandwidth(uint32_t grantedBandwidth)
 }
 
 uint32_t
-ServiceFlowRecord::GetGrantedBandwidth()
+ServiceFlowRecord::GetGrantedBandwidth() const
 {
     return m_grantedBandwidth;
 }
@@ -201,7 +201,7 @@ ServiceFlowRecord::UpdateGrantedBandwidthTemp(uint32_t grantedBandwidthTemp)
 }
 
 uint32_t
-ServiceFlowRecord::GetGrantedBandwidthTemp()
+ServiceFlowRecord::GetGrantedBandwidthTemp() const
 {
     return m_grantedBandwidthTemp;
 }
@@ -267,7 +267,7 @@ ServiceFlowRecord::UpdateBwSinceLastExpiry(uint32_t bwSinceLastExpiry)
 }
 
 uint32_t
-ServiceFlowRecord::GetBwSinceLastExpiry()
+ServiceFlowRecord::GetBwSinceLastExpiry() const
 {
     return m_bwSinceLastExpiry;
 }

@@ -297,12 +297,12 @@ class SubscriberStationNetDevice : public WimaxNetDevice
      * \brief adds a new service flow
      * \param sf pointer to service flow to add
      */
-    void AddServiceFlow(ServiceFlow* sf);
+    void AddServiceFlow(ServiceFlow* sf) const;
     /**
      * \brief adds a new service flow
      * \param sf service flow to add
      */
-    void AddServiceFlow(ServiceFlow sf);
+    void AddServiceFlow(ServiceFlow sf) const;
     /**
      * \brief Set timer.  If in stopped state, the EventId passed in the first
      * argument will be cancelled.  If not, the second parameter will be set

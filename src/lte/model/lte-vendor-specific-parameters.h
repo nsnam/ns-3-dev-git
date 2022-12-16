@@ -46,7 +46,7 @@ class SrsCqiRntiVsp : public VendorSpecificValue
      *
      * \returns the RNTI
      */
-    uint16_t GetRnti();
+    uint16_t GetRnti() const;
 
   private:
     uint16_t m_rnti; ///< the rnti

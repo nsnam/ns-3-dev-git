@@ -129,7 +129,8 @@ LteUeRrcProtocolReal::DoSendRrcConnectionRequest(LteRrcSap::RrcConnectionRequest
 }
 
 void
-LteUeRrcProtocolReal::DoSendRrcConnectionSetupCompleted(LteRrcSap::RrcConnectionSetupCompleted msg)
+LteUeRrcProtocolReal::DoSendRrcConnectionSetupCompleted(
+    LteRrcSap::RrcConnectionSetupCompleted msg) const
 {
     Ptr<Packet> packet = Create<Packet>();
 
@@ -220,7 +221,7 @@ LteUeRrcProtocolReal::DoSendIdealUeContextRemoveRequest(uint16_t rnti)
 
 void
 LteUeRrcProtocolReal::DoSendRrcConnectionReestablishmentRequest(
-    LteRrcSap::RrcConnectionReestablishmentRequest msg)
+    LteRrcSap::RrcConnectionReestablishmentRequest msg) const
 {
     Ptr<Packet> packet = Create<Packet>();
 
@@ -239,7 +240,7 @@ LteUeRrcProtocolReal::DoSendRrcConnectionReestablishmentRequest(
 
 void
 LteUeRrcProtocolReal::DoSendRrcConnectionReestablishmentComplete(
-    LteRrcSap::RrcConnectionReestablishmentComplete msg)
+    LteRrcSap::RrcConnectionReestablishmentComplete msg) const
 {
     Ptr<Packet> packet = Create<Packet>();
 

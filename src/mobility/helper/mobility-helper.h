@@ -171,7 +171,7 @@ class MobilityHelper
      * Perform the work of MobilityHelper::Install on _all_ nodes which
      * exist in the simulation.
      */
-    void InstallAll();
+    void InstallAll() const;
 
     /**
      * \param stream an output stream wrapper

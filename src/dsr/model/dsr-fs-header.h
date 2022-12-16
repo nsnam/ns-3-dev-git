@@ -247,7 +247,7 @@ class DsrOptionField
      * the extension header.
      * \return the offset from the start of the extension header
      */
-    uint32_t GetDsrOptionsOffset();
+    uint32_t GetDsrOptionsOffset() const;
     /**
      * \brief Get the buffer.
      * \return buffer

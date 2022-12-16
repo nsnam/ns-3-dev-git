@@ -1105,7 +1105,7 @@ MinstrelWifiManager::InitSampleTable(MinstrelWifiRemoteStation* station)
 }
 
 void
-MinstrelWifiManager::PrintSampleTable(MinstrelWifiRemoteStation* station)
+MinstrelWifiManager::PrintSampleTable(MinstrelWifiRemoteStation* station) const
 {
     uint8_t numSampleRates = station->m_nModes;
     std::stringstream table;

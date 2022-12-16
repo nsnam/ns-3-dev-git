@@ -178,7 +178,7 @@ class CsmaNetDevice : public NetDevice
      *
      * \returns True if the send side is enabled, otherwise false.
      */
-    bool IsSendEnabled();
+    bool IsSendEnabled() const;
 
     /**
      * Enable or disable the send side of the network device.
@@ -192,7 +192,7 @@ class CsmaNetDevice : public NetDevice
      *
      * \returns True if the receiver side is enabled, otherwise false.
      */
-    bool IsReceiveEnabled();
+    bool IsReceiveEnabled() const;
 
     /**
      * Enable or disable the receive side of the network device.

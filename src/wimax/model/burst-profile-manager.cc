@@ -149,7 +149,7 @@ BurstProfileManager::GetBurstProfile(WimaxPhy::ModulationType modulationType,
 uint8_t
 BurstProfileManager::GetBurstProfileForSS(const SSRecord* ssRecord,
                                           const RngReq* rngreq,
-                                          WimaxPhy::ModulationType& modulationType)
+                                          WimaxPhy::ModulationType& modulationType) const
 {
     /*during initial ranging or periodic ranging (or when RNG-REQ is used instead of
      DBPC) calculates the least robust burst profile for SS, e.g., based on distance,
@@ -160,7 +160,7 @@ BurstProfileManager::GetBurstProfileForSS(const SSRecord* ssRecord,
 }
 
 WimaxPhy::ModulationType
-BurstProfileManager::GetModulationTypeForSS(const SSRecord* ssRecord, const RngReq* rngreq)
+BurstProfileManager::GetModulationTypeForSS(const SSRecord* ssRecord, const RngReq* rngreq) const
 {
     return GetModulationType(rngreq->GetReqDlBurstProfile(), WimaxNetDevice::DIRECTION_DOWNLINK);
 }

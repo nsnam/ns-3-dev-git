@@ -84,7 +84,7 @@ class CarrierAggregationTestCase : public TestCase
                       uint16_t sizeTb,
                       uint8_t componentCarrierId);
     /// Write result to file function
-    void WriteResultToFile();
+    void WriteResultToFile() const;
 
   private:
     void DoRun() override;

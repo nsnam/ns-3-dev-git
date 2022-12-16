@@ -43,7 +43,7 @@ UanMac::SetTxModeIndex(uint32_t txModeIndex)
 }
 
 uint32_t
-UanMac::GetTxModeIndex()
+UanMac::GetTxModeIndex() const
 {
     return m_txModeIndex;
 }

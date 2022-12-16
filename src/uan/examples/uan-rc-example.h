@@ -87,7 +87,7 @@ class Experiment
      * \param name Mode name.
      * \return The new mode.
      */
-    UanTxMode CreateMode(uint32_t kass, uint32_t fc, bool upperblock, std::string name);
+    UanTxMode CreateMode(uint32_t kass, uint32_t fc, bool upperblock, std::string name) const;
     /**
      * Create m_numRates matching control and data modes.
      *

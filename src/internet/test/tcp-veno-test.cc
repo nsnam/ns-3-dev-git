@@ -79,7 +79,7 @@ class TcpVenoTest : public TestCase
      */
     uint32_t MultiplicativeDecrease(uint32_t diff,
                                     const UintegerValue& beta,
-                                    uint32_t bytesInFlight);
+                                    uint32_t bytesInFlight) const;
 
     /**
      * \brief Mimics the NewReno IncreaseWindow algorithm.
@@ -243,7 +243,7 @@ TcpVenoTest::AdditiveIncrease(Ptr<TcpSocketState> state, uint32_t diff, Uinteger
 uint32_t
 TcpVenoTest::MultiplicativeDecrease(uint32_t diff,
                                     const UintegerValue& beta,
-                                    uint32_t bytesInFlight)
+                                    uint32_t bytesInFlight) const
 {
     uint32_t calculatedSsThresh;
     if (diff < beta.Get())

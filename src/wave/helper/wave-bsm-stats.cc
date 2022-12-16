@@ -58,7 +58,7 @@ WaveBsmStats::IncTxPktCount()
 }
 
 int
-WaveBsmStats::GetTxPktCount()
+WaveBsmStats::GetTxPktCount() const
 {
     return m_wavePktSendCount;
 }
@@ -84,7 +84,7 @@ WaveBsmStats::IncRxPktInRangeCount(int index)
 }
 
 int
-WaveBsmStats::GetRxPktCount()
+WaveBsmStats::GetRxPktCount() const
 {
     return m_wavePktReceiveCount;
 }
@@ -120,7 +120,7 @@ WaveBsmStats::IncTxByteCount(int bytes)
 }
 
 int
-WaveBsmStats::GetTxByteCount()
+WaveBsmStats::GetTxByteCount() const
 {
     return m_waveByteSendCount;
 }
@@ -176,7 +176,7 @@ WaveBsmStats::SetLogging(bool log)
 }
 
 bool
-WaveBsmStats::GetLogging()
+WaveBsmStats::GetLogging() const
 {
     return m_log;
 }

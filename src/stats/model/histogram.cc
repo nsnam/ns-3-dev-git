@@ -46,13 +46,13 @@ Histogram::GetNBins() const
 }
 
 double
-Histogram::GetBinStart(uint32_t index)
+Histogram::GetBinStart(uint32_t index) const
 {
     return index * m_binWidth;
 }
 
 double
-Histogram::GetBinEnd(uint32_t index)
+Histogram::GetBinEnd(uint32_t index) const
 {
     return (index + 1) * m_binWidth;
 }

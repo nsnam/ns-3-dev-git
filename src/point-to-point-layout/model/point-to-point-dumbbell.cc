@@ -219,7 +219,7 @@ void
 PointToPointDumbbellHelper::BoundingBox(double ulx,
                                         double uly, // Upper left x/y
                                         double lrx,
-                                        double lry) // Lower right x/y
+                                        double lry) const // Lower right x/y
 {
     double xDist;
     double yDist;

@@ -401,7 +401,7 @@ PeerManagementProtocol::IsActiveLink(uint32_t interface, Mac48Address peerAddres
 }
 
 bool
-PeerManagementProtocol::ShouldSendOpen(uint32_t interface, Mac48Address peerAddress)
+PeerManagementProtocol::ShouldSendOpen(uint32_t interface, Mac48Address peerAddress) const
 {
     return (m_stats.linksTotal < m_maxNumberOfPeerLinks);
 }
@@ -409,7 +409,7 @@ PeerManagementProtocol::ShouldSendOpen(uint32_t interface, Mac48Address peerAddr
 bool
 PeerManagementProtocol::ShouldAcceptOpen(uint32_t interface,
                                          Mac48Address peerAddress,
-                                         PmpReasonCode& reasonCode)
+                                         PmpReasonCode& reasonCode) const
 {
     if (m_stats.linksTotal >= m_maxNumberOfPeerLinks)
     {
@@ -574,7 +574,7 @@ PeerManagementProtocol::PeerLinkStatus(uint32_t interface,
 }
 
 uint8_t
-PeerManagementProtocol::GetNumberOfLinks()
+PeerManagementProtocol::GetNumberOfLinks() const
 {
     return m_stats.linksTotal;
 }

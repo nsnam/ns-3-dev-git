@@ -420,12 +420,12 @@ class HwmpProtocol : public MeshL2RoutingProtocol
      * Get do flag function
      * \returns DO flag
      */
-    bool GetDoFlag();
+    bool GetDoFlag() const;
     /**
      * Get rf flag function
      * \returns the RF flag
      */
-    bool GetRfFlag();
+    bool GetRfFlag() const;
     /**
      * Get PREQ minimum interval function
      * \returns the PREQ
@@ -440,7 +440,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
      * Get maximum TTL function
      * \returns the maximum TTL
      */
-    uint8_t GetMaxTtl();
+    uint8_t GetMaxTtl() const;
     /**
      * Get next period function
      * \returns the next period
@@ -460,7 +460,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
      * Get unicast PERR threshold function
      * \returns the unicast PERR threshold
      */
-    uint8_t GetUnicastPerrThreshold();
+    uint8_t GetUnicastPerrThreshold() const;
     ///@}
 
   private:

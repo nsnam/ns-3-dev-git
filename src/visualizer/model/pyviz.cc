@@ -986,7 +986,7 @@ class FastClipping
      * Clip start top function
      * \param line the clip line
      */
-    void ClipStartTop(Line& line)
+    void ClipStartTop(Line& line) const
     {
         line.start.x += line.dx * (m_clipMin.y - line.start.y) / line.dy;
         line.start.y = m_clipMin.y;
@@ -996,7 +996,7 @@ class FastClipping
      * Clip start bottom function
      * \param line the clip line
      */
-    void ClipStartBottom(Line& line)
+    void ClipStartBottom(Line& line) const
     {
         line.start.x += line.dx * (m_clipMax.y - line.start.y) / line.dy;
         line.start.y = m_clipMax.y;
@@ -1006,7 +1006,7 @@ class FastClipping
      * Clip start right function
      * \param line the clip line
      */
-    void ClipStartRight(Line& line)
+    void ClipStartRight(Line& line) const
     {
         line.start.y += line.dy * (m_clipMax.x - line.start.x) / line.dx;
         line.start.x = m_clipMax.x;
@@ -1016,7 +1016,7 @@ class FastClipping
      * Clip start left function
      * \param line the clip line
      */
-    void ClipStartLeft(Line& line)
+    void ClipStartLeft(Line& line) const
     {
         line.start.y += line.dy * (m_clipMin.x - line.start.x) / line.dx;
         line.start.x = m_clipMin.x;
@@ -1026,7 +1026,7 @@ class FastClipping
      * Clip end top function
      * \param line the clip line
      */
-    void ClipEndTop(Line& line)
+    void ClipEndTop(Line& line) const
     {
         line.end.x += line.dx * (m_clipMin.y - line.end.y) / line.dy;
         line.end.y = m_clipMin.y;
@@ -1036,7 +1036,7 @@ class FastClipping
      * Clip end bottom function
      * \param line the clip line
      */
-    void ClipEndBottom(Line& line)
+    void ClipEndBottom(Line& line) const
     {
         line.end.x += line.dx * (m_clipMax.y - line.end.y) / line.dy;
         line.end.y = m_clipMax.y;
@@ -1046,7 +1046,7 @@ class FastClipping
      * Clip end right function
      * \param line the clip line
      */
-    void ClipEndRight(Line& line)
+    void ClipEndRight(Line& line) const
     {
         line.end.y += line.dy * (m_clipMax.x - line.end.x) / line.dx;
         line.end.x = m_clipMax.x;
@@ -1056,7 +1056,7 @@ class FastClipping
      * Clip end left function
      * \param line the clip line
      */
-    void ClipEndLeft(Line& line)
+    void ClipEndLeft(Line& line) const
     {
         line.end.y += line.dy * (m_clipMin.x - line.end.x) / line.dx;
         line.end.x = m_clipMin.x;

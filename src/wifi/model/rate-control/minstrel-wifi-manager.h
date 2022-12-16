@@ -328,7 +328,7 @@ class MinstrelWifiManager : public WifiRemoteStationManager
      *
      * \param station the station object
      */
-    void PrintSampleTable(MinstrelWifiRemoteStation* station);
+    void PrintSampleTable(MinstrelWifiRemoteStation* station) const;
 
     /**
      * Print Minstrel Table.

@@ -97,7 +97,7 @@ class Backoff
     /**
      * \return True if the maximum number of retries has been reached
      */
-    bool MaxRetriesReached();
+    bool MaxRetriesReached() const;
 
     /**
      * Increments the number of retries by 1.

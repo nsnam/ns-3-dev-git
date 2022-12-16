@@ -59,17 +59,17 @@ class DestinationAddressUnit : public SimpleRefCount<DestinationAddressUnit>
      * Is do function
      * \returns true if DO flag is set
      */
-    bool IsDo();
+    bool IsDo() const;
     /**
      * is RF function
      * \returns true if RF flag is set
      */
-    bool IsRf();
+    bool IsRf() const;
     /**
      * Is USN function
      * \returns true if USN flag set
      */
-    bool IsUsn();
+    bool IsUsn() const;
     /**
      * Get destination address function
      * \returns the MAC address

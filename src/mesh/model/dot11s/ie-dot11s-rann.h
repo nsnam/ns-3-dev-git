@@ -72,17 +72,17 @@ class IeRann : public WifiInformationElement
      * Get flags value
      * \returns the flags
      */
-    uint8_t GetFlags();
+    uint8_t GetFlags() const;
     /**
      * Get hop count value
      * \returns the hop count
      */
-    uint8_t GetHopcount();
+    uint8_t GetHopcount() const;
     /**
      * Get TTL value
      * \returns the TTL
      */
-    uint8_t GetTtl();
+    uint8_t GetTtl() const;
     /**
      * Get originator address value
      * \returns the MAC address of the originator
@@ -92,12 +92,12 @@ class IeRann : public WifiInformationElement
      * Get destination sequence number value
      * \returns the destination sequence number
      */
-    uint32_t GetDestSeqNumber();
+    uint32_t GetDestSeqNumber() const;
     /**
      * Get metric value
      * \returns the metric
      */
-    uint32_t GetMetric();
+    uint32_t GetMetric() const;
     /// Decrement TTL function
     void DecrementTtl();
     /**

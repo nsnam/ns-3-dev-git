@@ -86,7 +86,7 @@ Cost231PropagationLossModel::SetLambda(double frequency, double speed)
 }
 
 double
-Cost231PropagationLossModel::GetShadowing()
+Cost231PropagationLossModel::GetShadowing() const
 {
     return m_shadowing;
 }

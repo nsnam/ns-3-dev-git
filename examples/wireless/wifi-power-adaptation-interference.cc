@@ -189,7 +189,7 @@ class NodeStatistics
      *
      * \return the busy time.
      */
-    double GetBusyTime();
+    double GetBusyTime() const;
 
   private:
     /// Time, DataRate pair vector.
@@ -416,7 +416,7 @@ NodeStatistics::GetTxDatafile()
 }
 
 double
-NodeStatistics::GetBusyTime()
+NodeStatistics::GetBusyTime() const
 {
     return m_totalBusyTime + m_totalRxTime;
 }

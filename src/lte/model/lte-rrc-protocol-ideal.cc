@@ -476,7 +476,7 @@ class IdealHandoverPreparationInfoHeader : public Header
      *
      * \returns the message ID
      */
-    uint32_t GetMsgId();
+    uint32_t GetMsgId() const;
     /**
      * Set the message ID function
      *
@@ -499,7 +499,7 @@ class IdealHandoverPreparationInfoHeader : public Header
 };
 
 uint32_t
-IdealHandoverPreparationInfoHeader::GetMsgId()
+IdealHandoverPreparationInfoHeader::GetMsgId() const
 {
     return m_msgId;
 }
@@ -601,7 +601,7 @@ class IdealHandoverCommandHeader : public Header
      *
      * \returns the message ID
      */
-    uint32_t GetMsgId();
+    uint32_t GetMsgId() const;
     /**
      * Set the message ID function
      *
@@ -624,7 +624,7 @@ class IdealHandoverCommandHeader : public Header
 };
 
 uint32_t
-IdealHandoverCommandHeader::GetMsgId()
+IdealHandoverCommandHeader::GetMsgId() const
 {
     return m_msgId;
 }

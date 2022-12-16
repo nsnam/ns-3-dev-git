@@ -48,7 +48,7 @@ IeLinkMetricReport::GetInformationFieldSize() const
 }
 
 uint32_t
-IeLinkMetricReport::GetMetric()
+IeLinkMetricReport::GetMetric() const
 {
     return m_metric;
 }

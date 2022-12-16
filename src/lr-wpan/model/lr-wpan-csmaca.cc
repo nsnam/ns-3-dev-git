@@ -558,13 +558,13 @@ LrWpanCsmaCa::AssignStreams(int64_t stream)
 }
 
 uint8_t
-LrWpanCsmaCa::GetNB()
+LrWpanCsmaCa::GetNB() const
 {
     return m_NB;
 }
 
 bool
-LrWpanCsmaCa::GetBatteryLifeExtension()
+LrWpanCsmaCa::GetBatteryLifeExtension() const
 {
     return m_macBattLifeExt;
 }

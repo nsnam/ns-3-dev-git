@@ -186,7 +186,7 @@ class OptionField
      * the extension header.
      * \return the offset from the start of the extension header
      */
-    uint32_t GetOptionsOffset();
+    uint32_t GetOptionsOffset() const;
 
     /**
      * \brief Get the buffer.

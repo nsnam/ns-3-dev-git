@@ -786,7 +786,7 @@ class LrWpanMac : public Object
      *
      * \return true, if the receiver is enabled during idle periods, false otherwise
      */
-    bool GetRxOnWhenIdle();
+    bool GetRxOnWhenIdle() const;
 
     /**
      * Set if the receiver should be enabled when the MAC is idle.

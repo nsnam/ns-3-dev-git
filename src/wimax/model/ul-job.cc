@@ -120,7 +120,7 @@ UlJob::SetDeadline(Time deadline)
 }
 
 uint32_t
-UlJob::GetSize()
+UlJob::GetSize() const
 {
     return m_size;
 }
@@ -155,7 +155,7 @@ PriorityUlJob::PriorityUlJob()
 }
 
 int
-PriorityUlJob::GetPriority()
+PriorityUlJob::GetPriority() const
 {
     return m_priority;
 }

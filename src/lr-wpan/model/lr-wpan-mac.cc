@@ -283,7 +283,7 @@ LrWpanMac::DoDispose()
 }
 
 bool
-LrWpanMac::GetRxOnWhenIdle()
+LrWpanMac::GetRxOnWhenIdle() const
 {
     return m_macRxOnWhenIdle;
 }

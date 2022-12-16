@@ -253,7 +253,7 @@ SSRecord::SetIsBroadcastSS(bool broadcast_enable)
 }
 
 bool
-SSRecord::GetIsBroadcastSS()
+SSRecord::GetIsBroadcastSS() const
 {
     return m_broadcast;
 }

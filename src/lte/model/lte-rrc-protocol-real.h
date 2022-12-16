@@ -108,7 +108,7 @@ class LteUeRrcProtocolReal : public Object
      *
      * \param msg LteRrcSap::RrcConnectionSetupCompleted
      */
-    void DoSendRrcConnectionSetupCompleted(LteRrcSap::RrcConnectionSetupCompleted msg);
+    void DoSendRrcConnectionSetupCompleted(LteRrcSap::RrcConnectionSetupCompleted msg) const;
     /**
      * Send RRC connection reconfiguration setup completed function
      *
@@ -122,14 +122,14 @@ class LteUeRrcProtocolReal : public Object
      * \param msg LteRrcSap::RrcConnectionReestablishmentRequest
      */
     void DoSendRrcConnectionReestablishmentRequest(
-        LteRrcSap::RrcConnectionReestablishmentRequest msg);
+        LteRrcSap::RrcConnectionReestablishmentRequest msg) const;
     /**
      * Send RRC connection reestablishment complete function
      *
      * \param msg LteRrcSap::RrcConnectionReestablishmentComplete
      */
     void DoSendRrcConnectionReestablishmentComplete(
-        LteRrcSap::RrcConnectionReestablishmentComplete msg);
+        LteRrcSap::RrcConnectionReestablishmentComplete msg) const;
     /**
      * Send measurement report function
      *

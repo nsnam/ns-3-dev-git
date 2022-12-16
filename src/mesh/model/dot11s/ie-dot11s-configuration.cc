@@ -217,7 +217,7 @@ IeConfiguration::SetNeighborCount(uint8_t neighbors)
 }
 
 uint8_t
-IeConfiguration::GetNeighborCount()
+IeConfiguration::GetNeighborCount() const
 {
     return m_neighbors;
 }

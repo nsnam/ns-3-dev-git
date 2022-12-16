@@ -229,7 +229,7 @@ class GtpcIes
      * \param [out] imsi The IMSI
      * \return the number of deserialized bytes
      */
-    uint32_t DeserializeImsi(Buffer::Iterator& i, uint64_t& imsi);
+    uint32_t DeserializeImsi(Buffer::Iterator& i, uint64_t& imsi) const;
 
     /**
      * Serialize the Cause
@@ -243,7 +243,7 @@ class GtpcIes
      * \param [out] cause The cause
      * \return the number of deserialized bytes
      */
-    uint32_t DeserializeCause(Buffer::Iterator& i, Cause_t& cause);
+    uint32_t DeserializeCause(Buffer::Iterator& i, Cause_t& cause) const;
 
     /**
      * Serialize the eps Bearer Id
@@ -257,7 +257,7 @@ class GtpcIes
      * \param [out] epsBearerId The eps Bearer Id
      * \return the number of deserialized bytes
      */
-    uint32_t DeserializeEbi(Buffer::Iterator& i, uint8_t& epsBearerId);
+    uint32_t DeserializeEbi(Buffer::Iterator& i, uint8_t& epsBearerId) const;
 
     /**
      * \param i Buffer iterator
@@ -305,7 +305,7 @@ class GtpcIes
      * \param [out] epcTft The Bearer TFT
      * \return the number of deserialized bytes
      */
-    uint32_t DeserializeBearerTft(Buffer::Iterator& i, Ptr<EpcTft> epcTft);
+    uint32_t DeserializeBearerTft(Buffer::Iterator& i, Ptr<EpcTft> epcTft) const;
 
     /**
      * Serialize the UliEcgi
@@ -319,7 +319,7 @@ class GtpcIes
      * \param [out] uliEcgi UliEcgi
      * \return the number of deserialized bytes
      */
-    uint32_t DeserializeUliEcgi(Buffer::Iterator& i, uint32_t& uliEcgi);
+    uint32_t DeserializeUliEcgi(Buffer::Iterator& i, uint32_t& uliEcgi) const;
 
     /**
      * Serialize the Fteid_t
@@ -333,7 +333,7 @@ class GtpcIes
      * \param [out] fteid Fteid
      * \return the number of deserialized bytes
      */
-    uint32_t DeserializeFteid(Buffer::Iterator& i, GtpcHeader::Fteid_t& fteid);
+    uint32_t DeserializeFteid(Buffer::Iterator& i, GtpcHeader::Fteid_t& fteid) const;
 
     /**
      * Serialize the Bearer Context Header
@@ -347,7 +347,7 @@ class GtpcIes
      * \param [out] length length
      * \return the number of deserialized bytes
      */
-    uint32_t DeserializeBearerContextHeader(Buffer::Iterator& i, uint16_t& length);
+    uint32_t DeserializeBearerContextHeader(Buffer::Iterator& i, uint16_t& length) const;
 };
 
 /**

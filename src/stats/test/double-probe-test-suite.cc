@@ -51,13 +51,13 @@ class SampleEmitter : public Object
     }
 
     /// \return the time delta of the next report.
-    double GetTime()
+    double GetTime() const
     {
         return m_time;
     }
 
     /// \return a random variable, different for each reschedule.
-    double GetValue()
+    double GetValue() const
     {
         return aux;
     }

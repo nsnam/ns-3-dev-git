@@ -1025,7 +1025,7 @@ WifiPhy::HasFixedPhyBand() const
 }
 
 uint16_t
-WifiPhy::GetTxBandwidth(WifiMode mode, uint16_t maxAllowedWidth)
+WifiPhy::GetTxBandwidth(WifiMode mode, uint16_t maxAllowedWidth) const
 {
     auto modulation = mode.GetModulationClass();
     if (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS)

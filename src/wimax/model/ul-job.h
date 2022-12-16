@@ -138,7 +138,7 @@ class UlJob : public Object
      * Get size
      * \returns the size
      */
-    uint32_t GetSize();
+    uint32_t GetSize() const;
     /**
      * Set size
      * \param size the size
@@ -176,7 +176,7 @@ class PriorityUlJob : public Object
      * Get priority
      * \returns the priority
      */
-    int GetPriority();
+    int GetPriority() const;
     /**
      * Set priority
      * \param priority the priority

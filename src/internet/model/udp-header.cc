@@ -241,7 +241,7 @@ UdpHeader::Deserialize(Buffer::Iterator start)
 }
 
 uint16_t
-UdpHeader::GetChecksum()
+UdpHeader::GetChecksum() const
 {
     return m_checksum;
 }

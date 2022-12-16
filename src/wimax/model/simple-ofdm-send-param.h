@@ -115,15 +115,15 @@ class SimpleOfdmSendParam
     /**
      * \return the burst size
      */
-    uint32_t GetBurstSize();
+    uint32_t GetBurstSize() const;
     /**
      * \return true if this fec block is the first one in the burst, false otherwise
      */
-    bool GetIsFirstBlock();
+    bool GetIsFirstBlock() const;
     /**
      * \return the frequency on which the fec block is sent/received
      */
-    uint64_t GetFrequency();
+    uint64_t GetFrequency() const;
     /**
      * \return the modulation type used to send this fec block
      */
@@ -131,11 +131,11 @@ class SimpleOfdmSendParam
     /**
      * \return the direction on which this fec block was sent. UP or DOWN
      */
-    uint8_t GetDirection();
+    uint8_t GetDirection() const;
     /**
      * \return the Received power
      */
-    double GetRxPowerDbm();
+    double GetRxPowerDbm() const;
     /**
      * \return the received burst
      */

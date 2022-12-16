@@ -133,7 +133,7 @@ MobilityHelper::Install(NodeContainer c) const
 }
 
 void
-MobilityHelper::InstallAll()
+MobilityHelper::InstallAll() const
 {
     Install(NodeContainer::GetGlobal());
 }

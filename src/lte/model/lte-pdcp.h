@@ -107,7 +107,7 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
      *
      * \return the current status of the PDCP
      */
-    Status GetStatus();
+    Status GetStatus() const;
 
     /**
      * Set the status of the PDCP

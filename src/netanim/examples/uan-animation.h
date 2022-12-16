@@ -47,7 +47,7 @@ class NetAnimExperiment
      * Update positions function
      * \param nodes the collection of nodes
      */
-    void UpdatePositions(NodeContainer& nodes);
+    void UpdatePositions(NodeContainer& nodes) const;
     /// Reset data function
     void ResetData();
     /**

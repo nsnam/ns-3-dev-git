@@ -209,7 +209,7 @@ GtpcIes::SerializeImsi(Buffer::Iterator& i, uint64_t imsi) const
 }
 
 uint32_t
-GtpcIes::DeserializeImsi(Buffer::Iterator& i, uint64_t& imsi)
+GtpcIes::DeserializeImsi(Buffer::Iterator& i, uint64_t& imsi) const
 {
     uint8_t type = i.ReadU8();
     NS_ASSERT_MSG(type == 1, "Wrong IMSI IE type = " << (uint16_t)type);
@@ -233,7 +233,7 @@ GtpcIes::SerializeCause(Buffer::Iterator& i, Cause_t cause) const
 }
 
 uint32_t
-GtpcIes::DeserializeCause(Buffer::Iterator& i, Cause_t& cause)
+GtpcIes::DeserializeCause(Buffer::Iterator& i, Cause_t& cause) const
 {
     uint8_t type = i.ReadU8();
     NS_ASSERT_MSG(type == 2, "Wrong Cause IE type = " << (uint16_t)type);
@@ -257,7 +257,7 @@ GtpcIes::SerializeEbi(Buffer::Iterator& i, uint8_t epsBearerId) const
 }
 
 uint32_t
-GtpcIes::DeserializeEbi(Buffer::Iterator& i, uint8_t& epsBearerId)
+GtpcIes::DeserializeEbi(Buffer::Iterator& i, uint8_t& epsBearerId) const
 {
     uint8_t type = i.ReadU8();
     NS_ASSERT_MSG(type == 73, "Wrong EBI IE type = " << (uint16_t)type);
@@ -362,7 +362,7 @@ GtpcIes::SerializeBearerTft(Buffer::Iterator& i,
 }
 
 uint32_t
-GtpcIes::DeserializeBearerTft(Buffer::Iterator& i, Ptr<EpcTft> epcTft)
+GtpcIes::DeserializeBearerTft(Buffer::Iterator& i, Ptr<EpcTft> epcTft) const
 {
     uint8_t type = i.ReadU8();
     NS_ASSERT_MSG(type == 84, "Wrong Bearer TFT IE type = " << (uint16_t)type);
@@ -417,7 +417,7 @@ GtpcIes::SerializeUliEcgi(Buffer::Iterator& i, uint32_t uliEcgi) const
 }
 
 uint32_t
-GtpcIes::DeserializeUliEcgi(Buffer::Iterator& i, uint32_t& uliEcgi)
+GtpcIes::DeserializeUliEcgi(Buffer::Iterator& i, uint32_t& uliEcgi) const
 {
     uint8_t type = i.ReadU8();
     NS_ASSERT_MSG(type == 86, "Wrong ULI ECGI IE type = " << (uint16_t)type);
@@ -443,7 +443,7 @@ GtpcIes::SerializeFteid(Buffer::Iterator& i, GtpcHeader::Fteid_t fteid) const
 }
 
 uint32_t
-GtpcIes::DeserializeFteid(Buffer::Iterator& i, GtpcHeader::Fteid_t& fteid)
+GtpcIes::DeserializeFteid(Buffer::Iterator& i, GtpcHeader::Fteid_t& fteid) const
 {
     uint8_t type = i.ReadU8();
     NS_ASSERT_MSG(type == 87, "Wrong FTEID IE type = " << (uint16_t)type);
@@ -468,7 +468,7 @@ GtpcIes::SerializeBearerContextHeader(Buffer::Iterator& i, uint16_t length) cons
 }
 
 uint32_t
-GtpcIes::DeserializeBearerContextHeader(Buffer::Iterator& i, uint16_t& length)
+GtpcIes::DeserializeBearerContextHeader(Buffer::Iterator& i, uint16_t& length) const
 {
     uint8_t type = i.ReadU8();
     NS_ASSERT_MSG(type == 93, "Wrong Bearer Context IE type = " << (uint16_t)type);

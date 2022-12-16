@@ -252,7 +252,7 @@ LtePhy::SetComponentCarrierId(uint8_t index)
 }
 
 uint8_t
-LtePhy::GetComponentCarrierId()
+LtePhy::GetComponentCarrierId() const
 {
     return m_componentCarrierId;
 }

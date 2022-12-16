@@ -52,7 +52,7 @@ class IeLinkMetricReport : public WifiInformationElement
      * Get metric value
      * \returns the metric
      */
-    uint32_t GetMetric();
+    uint32_t GetMetric() const;
 
     // Inherited from WifiInformationElement
     WifiInformationElementId ElementId() const override;

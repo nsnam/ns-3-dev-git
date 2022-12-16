@@ -237,7 +237,7 @@ class SSRecord
      * Get is broadcast SS
      * \returns the is broadcast SS flag
      */
-    bool GetIsBroadcastSS();
+    bool GetIsBroadcastSS() const;
 
     /**
      * Get IP address

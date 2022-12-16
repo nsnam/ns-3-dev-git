@@ -397,7 +397,7 @@ RadvdInterface::SetLastRaTxTime(Time now)
 }
 
 bool
-RadvdInterface::IsInitialRtrAdv()
+RadvdInterface::IsInitialRtrAdv() const
 {
     return m_initialRtrAdvertisementsLeft;
 }

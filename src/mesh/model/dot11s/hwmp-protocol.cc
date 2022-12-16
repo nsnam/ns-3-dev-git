@@ -1214,13 +1214,13 @@ HwmpProtocol::SendProactivePreq()
 }
 
 bool
-HwmpProtocol::GetDoFlag()
+HwmpProtocol::GetDoFlag() const
 {
     return m_doFlag;
 }
 
 bool
-HwmpProtocol::GetRfFlag()
+HwmpProtocol::GetRfFlag() const
 {
     return m_rfFlag;
 }
@@ -1238,7 +1238,7 @@ HwmpProtocol::GetPerrMinInterval()
 }
 
 uint8_t
-HwmpProtocol::GetMaxTtl()
+HwmpProtocol::GetMaxTtl() const
 {
     return m_maxTtl;
 }
@@ -1264,7 +1264,7 @@ HwmpProtocol::GetActivePathLifetime()
 }
 
 uint8_t
-HwmpProtocol::GetUnicastPerrThreshold()
+HwmpProtocol::GetUnicastPerrThreshold() const
 {
     return m_unicastPerrThreshold;
 }

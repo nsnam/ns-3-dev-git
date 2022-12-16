@@ -56,7 +56,7 @@ class Experiment
      *
      * \param nodes The nodes to reposition.
      */
-    void UpdatePositions(NodeContainer& nodes);
+    void UpdatePositions(NodeContainer& nodes) const;
     /** Save the throughput from a single run. */
     void ResetData();
     /**

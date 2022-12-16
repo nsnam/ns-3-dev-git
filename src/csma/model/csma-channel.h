@@ -65,7 +65,7 @@ class CsmaDeviceRec
      * \return If the net device pointed to by the devicePtr is active
      * and ready to RX/TX.
      */
-    bool IsActive();
+    bool IsActive() const;
 };
 
 /**

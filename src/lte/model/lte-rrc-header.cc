@@ -66,7 +66,7 @@ RrcAsn1Header::GetInstanceTypeId() const
 }
 
 int
-RrcAsn1Header::GetMessageType()
+RrcAsn1Header::GetMessageType() const
 {
     return m_messageType;
 }
@@ -5912,7 +5912,7 @@ RrcConnectionReconfigurationHeader::GetRrcTransactionIdentifier() const
 }
 
 bool
-RrcConnectionReconfigurationHeader::GetHaveMeasConfig()
+RrcConnectionReconfigurationHeader::GetHaveMeasConfig() const
 {
     return m_haveMeasConfig;
 }
@@ -5924,7 +5924,7 @@ RrcConnectionReconfigurationHeader::GetMeasConfig()
 }
 
 bool
-RrcConnectionReconfigurationHeader::GetHaveMobilityControlInfo()
+RrcConnectionReconfigurationHeader::GetHaveMobilityControlInfo() const
 {
     return m_haveMobilityControlInfo;
 }
@@ -5936,7 +5936,7 @@ RrcConnectionReconfigurationHeader::GetMobilityControlInfo()
 }
 
 bool
-RrcConnectionReconfigurationHeader::GetHaveRadioResourceConfigDedicated()
+RrcConnectionReconfigurationHeader::GetHaveRadioResourceConfigDedicated() const
 {
     return m_haveRadioResourceConfigDedicated;
 }
@@ -5948,7 +5948,7 @@ RrcConnectionReconfigurationHeader::GetRadioResourceConfigDedicated()
 }
 
 bool
-RrcConnectionReconfigurationHeader::GetHaveNonCriticalExtensionConfig()
+RrcConnectionReconfigurationHeader::GetHaveNonCriticalExtensionConfig() const
 {
     return m_haveNonCriticalExtension;
 }

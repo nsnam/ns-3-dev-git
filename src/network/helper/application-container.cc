@@ -89,7 +89,7 @@ ApplicationContainer::Add(std::string name)
 }
 
 void
-ApplicationContainer::Start(Time start)
+ApplicationContainer::Start(Time start) const
 {
     for (Iterator i = Begin(); i != End(); ++i)
     {
@@ -99,7 +99,7 @@ ApplicationContainer::Start(Time start)
 }
 
 void
-ApplicationContainer::StartWithJitter(Time start, Ptr<RandomVariableStream> rv)
+ApplicationContainer::StartWithJitter(Time start, Ptr<RandomVariableStream> rv) const
 {
     for (Iterator i = Begin(); i != End(); ++i)
     {
@@ -111,7 +111,7 @@ ApplicationContainer::StartWithJitter(Time start, Ptr<RandomVariableStream> rv)
 }
 
 void
-ApplicationContainer::Stop(Time stop)
+ApplicationContainer::Stop(Time stop) const
 {
     for (Iterator i = Begin(); i != End(); ++i)
     {

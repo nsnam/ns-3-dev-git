@@ -93,7 +93,7 @@ class PppHeader : public Header
      *
      * \return the protocol type being carried
      */
-    uint16_t GetProtocol();
+    uint16_t GetProtocol() const;
 
   private:
     /**

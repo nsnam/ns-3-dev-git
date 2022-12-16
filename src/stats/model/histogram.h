@@ -64,13 +64,13 @@ class Histogram
      * \param index the bin index
      * \return the bin start
      */
-    double GetBinStart(uint32_t index);
+    double GetBinStart(uint32_t index) const;
     /**
      * \brief Returns the bin end, i.e., (index+1)*binWidth
      * \param index the bin index
      * \return the bin start
      */
-    double GetBinEnd(uint32_t index);
+    double GetBinEnd(uint32_t index) const;
     /**
      * \brief Returns the bin width.
      *

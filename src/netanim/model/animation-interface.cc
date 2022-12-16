@@ -301,7 +301,7 @@ AnimationInterface::IsInitialized()
 }
 
 bool
-AnimationInterface::IsStarted()
+AnimationInterface::IsStarted() const
 {
     return m_started;
 }
@@ -1504,7 +1504,7 @@ AnimationInterface::GetPacketMetadata(Ptr<const Packet> p)
 }
 
 uint64_t
-AnimationInterface::GetTracePktCount()
+AnimationInterface::GetTracePktCount() const
 {
     return m_currentPktCount;
 }

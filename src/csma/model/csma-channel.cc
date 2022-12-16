@@ -362,7 +362,7 @@ CsmaDeviceRec::CsmaDeviceRec(const CsmaDeviceRec& deviceRec)
 }
 
 bool
-CsmaDeviceRec::IsActive()
+CsmaDeviceRec::IsActive() const
 {
     return active;
 }

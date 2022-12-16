@@ -64,19 +64,19 @@ DestinationAddressUnit::SetDestinationAddress(Mac48Address dest_address)
 }
 
 bool
-DestinationAddressUnit::IsDo()
+DestinationAddressUnit::IsDo() const
 {
     return m_do;
 }
 
 bool
-DestinationAddressUnit::IsRf()
+DestinationAddressUnit::IsRf() const
 {
     return m_rf;
 }
 
 bool
-DestinationAddressUnit::IsUsn()
+DestinationAddressUnit::IsUsn() const
 {
     return m_usn;
 }

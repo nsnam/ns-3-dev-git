@@ -54,32 +54,32 @@ class SNRToBlockErrorRateRecord
     /**
      * \return the SNR value
      */
-    double GetSNRValue();
+    double GetSNRValue() const;
     /**
      * \return the BER value
      */
-    double GetBitErrorRate();
+    double GetBitErrorRate() const;
     /**
      * \return the BlcER value
      */
-    double GetBlockErrorRate();
+    double GetBlockErrorRate() const;
     /**
      * \return the standard deviation
      */
-    double GetSigma2();
+    double GetSigma2() const;
     /**
      * \return the lower boundary of the confidence interval
      */
-    double GetI1();
+    double GetI1() const;
     /**
      * \return the upper boundary of the confidence interval
      */
-    double GetI2();
+    double GetI2() const;
     /**
      * \brief copy a record
      * \return a copy of this record
      */
-    SNRToBlockErrorRateRecord* Copy();
+    SNRToBlockErrorRateRecord* Copy() const;
 
     /**
      * \brief set the snr value
