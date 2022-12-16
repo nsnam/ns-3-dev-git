@@ -28,7 +28,9 @@
 #include "ns3/names.h"
 #include "ns3/preamble-detection-model.h"
 #include "ns3/spectrum-channel.h"
+#include "ns3/spectrum-transmit-filter.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/wifi-bandwidth-filter.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 
@@ -53,6 +55,7 @@ void
 SpectrumWifiPhyHelper::SetChannel(const Ptr<SpectrumChannel> channel)
 {
     m_channels[WHOLE_WIFI_SPECTRUM] = channel;
+    AddWifiBandwidthFilter(channel);
 }
 
 void
@@ -60,6 +63,7 @@ SpectrumWifiPhyHelper::SetChannel(const std::string& channelName)
 {
     Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
     m_channels[WHOLE_WIFI_SPECTRUM] = channel;
+    AddWifiBandwidthFilter(channel);
 }
 
 void
@@ -67,6 +71,7 @@ SpectrumWifiPhyHelper::AddChannel(const Ptr<SpectrumChannel> channel,
                                   const FrequencyRange& freqRange)
 {
     m_channels[freqRange] = channel;
+    AddWifiBandwidthFilter(channel);
 }
 
 void
@@ -74,6 +79,33 @@ SpectrumWifiPhyHelper::AddChannel(const std::string& channelName, const Frequenc
 {
     Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
     AddChannel(channel, freqRange);
+    AddWifiBandwidthFilter(channel);
+}
+
+void
+SpectrumWifiPhyHelper::AddWifiBandwidthFilter(Ptr<SpectrumChannel> channel)
+{
+    Ptr<const SpectrumTransmitFilter> p = channel->GetSpectrumTransmitFilter();
+    bool found = false;
+    while (p && !found)
+    {
+        if (DynamicCast<const WifiBandwidthFilter>(p))
+        {
+            NS_LOG_DEBUG("Found existing WifiBandwidthFilter for channel " << channel);
+            found = true;
+        }
+        else
+        {
+            NS_LOG_DEBUG("Found different SpectrumTransmitFilter for channel " << channel);
+            p = p->GetNext();
+        }
+    }
+    if (!found)
+    {
+        Ptr<WifiBandwidthFilter> pWifi = CreateObject<WifiBandwidthFilter>();
+        channel->AddSpectrumTransmitFilter(pWifi);
+        NS_LOG_DEBUG("Adding WifiBandwidthFilter to channel " << channel);
+    }
 }
 
 std::vector<Ptr<WifiPhy>>

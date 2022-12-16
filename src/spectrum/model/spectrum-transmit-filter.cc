@@ -61,6 +61,12 @@ SpectrumTransmitFilter::SetNext(Ptr<SpectrumTransmitFilter> next)
     m_next = next;
 }
 
+Ptr<const SpectrumTransmitFilter>
+SpectrumTransmitFilter::GetNext() const
+{
+    return m_next;
+}
+
 bool
 SpectrumTransmitFilter::Filter(Ptr<const SpectrumSignalParameters> params,
                                Ptr<const SpectrumPhy> receiverPhy)

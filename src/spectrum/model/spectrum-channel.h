@@ -126,6 +126,13 @@ class SpectrumChannel : public Channel
     void AddSpectrumTransmitFilter(Ptr<SpectrumTransmitFilter> filter);
 
     /**
+     * Get the transmit filter, or first in a chain of transmit filters
+     * if more than one is present.
+     * \returns a pointer to the transmit filter.
+     */
+    Ptr<const SpectrumTransmitFilter> GetSpectrumTransmitFilter() const;
+
+    /**
      * Used by attached PHY instances to transmit signals on the channel
      *
      * \param params the parameters of the signals being transmitted

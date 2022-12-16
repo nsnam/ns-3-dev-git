@@ -56,6 +56,13 @@ class SpectrumTransmitFilter : public Object
     void SetNext(Ptr<SpectrumTransmitFilter> next);
 
     /**
+     * Return the next transmit filter in the chain
+     *
+     * \return next transmit filter in the chain
+     */
+    Ptr<const SpectrumTransmitFilter> GetNext() const;
+
+    /**
      * Evaluate whether the signal to be scheduled on the receiving Phy should
      * instead be filtered (discarded) before being processed in this channel
      * and on the receiving Phy.

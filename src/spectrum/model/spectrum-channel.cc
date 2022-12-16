@@ -158,6 +158,12 @@ SpectrumChannel::AddSpectrumTransmitFilter(Ptr<SpectrumTransmitFilter> filter)
     m_filter = filter;
 }
 
+Ptr<const SpectrumTransmitFilter>
+SpectrumChannel::GetSpectrumTransmitFilter() const
+{
+    return m_filter;
+}
+
 void
 SpectrumChannel::SetPropagationDelayModel(Ptr<PropagationDelayModel> delay)
 {
