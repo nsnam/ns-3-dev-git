@@ -27,6 +27,7 @@
 #include "ns3/error-model.h"
 #include "ns3/fcfs-wifi-queue-scheduler.h"
 #include "ns3/he-frame-exchange-manager.h"
+#include "ns3/he-phy.h"
 #include "ns3/header-serialization-test.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/interference-helper.h"
@@ -43,7 +44,6 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
-#include "ns3/vht-phy.h"
 #include "ns3/waypoint-mobility-model.h"
 #include "ns3/wifi-default-ack-manager.h"
 #include "ns3/wifi-default-assoc-manager.h"
@@ -3603,9 +3603,23 @@ HeRuMcsDataRateTestCase::CheckDataRate(HeRu::RuType ruType,
                                        uint16_t guardInterval,
                                        uint16_t expectedDataRate)
 {
-    uint16_t approxWidth = HeRu::GetBandwidth(ruType);
+    uint8_t staId = 1;
+    auto txVector = WifiTxVector(HePhy::GetHeMcs(0),
+                                 0,
+                                 WIFI_PREAMBLE_HE_MU,
+                                 guardInterval,
+                                 1,
+                                 1,
+                                 0,
+                                 160,
+                                 false,
+                                 false);
     WifiMode mode(mcs);
-    uint64_t dataRate = round(mode.GetDataRate(approxWidth, guardInterval, nss) / 100000.0);
+    txVector.SetMode(mode, staId);
+    txVector.SetNss(nss, staId);
+    HeRu::RuSpec ru(ruType, 1, true);
+    txVector.SetRu(ru, staId);
+    uint64_t dataRate = round(mode.GetDataRate(txVector, staId) / 100000.0);
     NS_ABORT_MSG_IF(dataRate > 65535, "Rate is way too high");
     if (static_cast<uint16_t>(dataRate) != expectedDataRate)
     {
