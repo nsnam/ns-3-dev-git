@@ -497,7 +497,7 @@ HeFrameExchangeManager::SendPsduMap()
             m_muScheduler->GetUlMuInfo().trigger.GetUlLength(),
             acknowledgment->tbPpduTxVector,
             m_phy->GetPhyBand());
-        acknowledgment->acknowledgmentTime += m_mac->GetWifiPhy()->GetSifs() + tbPpduDuration;
+        acknowledgment->acknowledgmentTime += m_phy->GetSifs() + tbPpduDuration;
 
         timerType = WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF;
         responseTxVector = &acknowledgment->tbPpduTxVector;
@@ -530,10 +530,9 @@ HeFrameExchangeManager::SendPsduMap()
         WifiNoAck* acknowledgment = static_cast<WifiNoAck*>(m_txParams.m_acknowledgment.get());
         txVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
         acknowledgment->acknowledgmentTime +=
-            m_mac->GetWifiPhy()->GetSifs() +
-            HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
-                                                       txVector,
-                                                       m_phy->GetPhyBand());
+            m_phy->GetSifs() + HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
+                                                                          txVector,
+                                                                          m_phy->GetPhyBand());
 
         timerType = WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF;
         responseTxVector = &txVector;
