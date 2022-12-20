@@ -45,6 +45,7 @@
 
 #include <array>
 #include <functional>
+#include <numeric>
 
 // This is a simple example in order to show how to configure an IEEE 802.11be Wi-Fi network.
 //
@@ -68,6 +69,78 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("eht-wifi-network");
 
+/**
+ * \param udp true if UDP is used, false if TCP is used
+ * \param serverApp a container of server applications
+ * \param payloadSize the size in bytes of the packets
+ * \return the bytes received by each server application
+ */
+std::vector<uint64_t>
+GetRxBytes(bool udp, const ApplicationContainer& serverApp, uint32_t payloadSize)
+{
+    std::vector<uint64_t> rxBytes(serverApp.GetN(), 0);
+    if (udp)
+    {
+        for (uint32_t i = 0; i < serverApp.GetN(); i++)
+        {
+            rxBytes[i] = payloadSize * DynamicCast<UdpServer>(serverApp.Get(i))->GetReceived();
+        }
+    }
+    else
+    {
+        for (uint32_t i = 0; i < serverApp.GetN(); i++)
+        {
+            rxBytes[i] = DynamicCast<PacketSink>(serverApp.Get(i))->GetTotalRx();
+        }
+    }
+    return rxBytes;
+};
+
+/**
+ * Print average throughput over an intermediate time interval.
+ * \param rxBytes a vector of the amount of bytes received by each server application
+ * \param udp true if UDP is used, false if TCP is used
+ * \param serverApp a container of server applications
+ * \param payloadSize the size in bytes of the packets
+ * \param tputInterval the duration of an intermediate time interval
+ * \param simulationTime the simulation time in seconds
+ */
+void
+PrintIntermediateTput(std::vector<uint64_t>& rxBytes,
+                      bool udp,
+                      const ApplicationContainer& serverApp,
+                      uint32_t payloadSize,
+                      Time tputInterval,
+                      double simulationTime)
+{
+    auto newRxBytes = GetRxBytes(udp, serverApp, payloadSize);
+    Time now = Simulator::Now();
+
+    std::cout << "[" << (now - tputInterval).As(Time::S) << " - " << now.As(Time::S)
+              << "] Per-STA Throughput (Mbit/s):";
+
+    for (std::size_t i = 0; i < newRxBytes.size(); i++)
+    {
+        std::cout << "\t\t(" << i << ") "
+                  << (newRxBytes[i] - rxBytes[i]) * 8. / tputInterval.GetMicroSeconds(); // Mbit/s
+    }
+    std::cout << std::endl;
+
+    rxBytes.swap(newRxBytes);
+
+    if (now < Seconds(simulationTime) - NanoSeconds(1))
+    {
+        Simulator::Schedule(Min(tputInterval, Seconds(simulationTime) - now - NanoSeconds(1)),
+                            &PrintIntermediateTput,
+                            rxBytes,
+                            udp,
+                            serverApp,
+                            payloadSize,
+                            tputInterval,
+                            simulationTime);
+    }
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -89,6 +162,7 @@ main(int argc, char* argv[])
     int mcs{-1}; // -1 indicates an unset value
     uint32_t payloadSize =
         700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
+    Time tputInterval{0}; // interval for detailed throughput measurement
     double minExpectedThroughput{0};
     double maxExpectedThroughput{0};
     Time accessReqInterval{0};
@@ -134,6 +208,7 @@ main(int argc, char* argv[])
         accessReqInterval);
     cmd.AddValue("mcs", "if set, limit testing to a specific MCS (0-11)", mcs);
     cmd.AddValue("payloadSize", "The application payload size in bytes", payloadSize);
+    cmd.AddValue("tputInterval", "duration of intervals for throughput measurement", tputInterval);
     cmd.AddValue("minExpectedThroughput",
                  "if set, simulation fails if the lowest throughput is below this value",
                  minExpectedThroughput);
@@ -420,6 +495,21 @@ main(int argc, char* argv[])
                     }
                 }
 
+                // cumulative number of bytes received by each server application
+                std::vector<uint64_t> cumulRxBytes(nStations, 0);
+
+                if (tputInterval.IsStrictlyPositive())
+                {
+                    Simulator::Schedule(Seconds(1) + tputInterval,
+                                        &PrintIntermediateTput,
+                                        cumulRxBytes,
+                                        udp,
+                                        serverApp,
+                                        payloadSize,
+                                        tputInterval,
+                                        simulationTime + 1);
+                }
+
                 Simulator::Schedule(Seconds(0), &Ipv4GlobalRoutingHelper::PopulateRoutingTables);
 
                 Simulator::Stop(Seconds(simulationTime + 1));
@@ -430,22 +520,8 @@ main(int argc, char* argv[])
                 // the check that the throughput cannot decrease by introducing a scaling factor (or
                 // tolerance)
                 double tolerance = 0.10;
-                uint64_t rxBytes = 0;
-                if (udp)
-                {
-                    for (uint32_t i = 0; i < serverApp.GetN(); i++)
-                    {
-                        rxBytes +=
-                            payloadSize * DynamicCast<UdpServer>(serverApp.Get(i))->GetReceived();
-                    }
-                }
-                else
-                {
-                    for (uint32_t i = 0; i < serverApp.GetN(); i++)
-                    {
-                        rxBytes += DynamicCast<PacketSink>(serverApp.Get(i))->GetTotalRx();
-                    }
-                }
+                cumulRxBytes = GetRxBytes(udp, serverApp, payloadSize);
+                uint64_t rxBytes = std::accumulate(cumulRxBytes.cbegin(), cumulRxBytes.cend(), 0);
                 double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); // Mbit/s
 
                 Simulator::Destroy();
