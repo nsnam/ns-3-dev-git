@@ -378,6 +378,14 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
     // not get a sequence number assigned)
     while (item && !item->IsFragment())
     {
+        if (item->GetHeader().IsCtl())
+        {
+            NS_LOG_DEBUG("Skipping control frame: " << *item);
+            mpdu = item;
+            item = peek();
+            continue;
+        }
+
         if ((item->GetHeader().IsRetry() || item->IsInFlight()) && IsQosOldPacket(item))
         {
             NS_LOG_DEBUG("Removing an old packet from EDCA queue: " << *item);
