@@ -539,12 +539,6 @@ class HtPhy : public OfdmPhy
 
     /**
      * \param channelWidth the channel width in MHz
-     * \return the symbol duration excluding guard interval
-     */
-    static Time GetSymbolDuration(uint16_t channelWidth);
-
-    /**
-     * \param channelWidth the channel width in MHz
      * \return the number of usable subcarriers for data
      */
     static uint16_t GetUsableSubcarriers(uint16_t channelWidth);
