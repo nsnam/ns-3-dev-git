@@ -7,7 +7,7 @@
 namespace std
 {
 inline std::ostream&
-operator<<(std::ostream& os, std::nullptr_t ptr)
+operator<<(std::ostream& os, std::nullptr_t)
 {
     return os << "nullptr"; // whatever you want nullptr to show up as in the console
 }
