@@ -78,7 +78,7 @@ clang-tidy-diff:
     - git remote add upstream https://gitlab.com/nsnam/ns-3-dev.git
     - git fetch upstream master
     - git diff -U0 upstream/master |
-      clang-tidy-diff-14.py -path cmake-cache/ -p1 -quiet
+      clang-tidy-diff-14.py -path cmake-cache/ -p1 -quiet -use-color
       -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|c|h|hpp)"
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null
