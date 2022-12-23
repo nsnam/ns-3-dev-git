@@ -35,7 +35,8 @@ build_lib(
     model/v4ping.h
     model/v4traceroute.h
   LIBRARIES_TO_LINK ${libinternet}
-  TEST_SOURCES test/dhcp-test.cc
-               test/ipv6-radvd-test.cc
-               test/ping-test.cc
+  TEST_SOURCES
+    test/dhcp-test.cc
+    test/ipv6-radvd-test.cc
+    test/ping-test.cc
 )
