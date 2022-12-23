@@ -47,7 +47,8 @@ struct WifiProtection
     {
         NONE = 0,
         RTS_CTS,
-        CTS_TO_SELF
+        CTS_TO_SELF,
+        MU_RTS_CTS
     };
 
     /**
@@ -115,6 +116,23 @@ struct WifiCtsToSelfProtection : public WifiProtection
     void Print(std::ostream& os) const override;
 
     WifiTxVector ctsTxVector; //!< CTS TXVECTOR
+};
+
+/**
+ * \ingroup wifi
+ *
+ * WifiMuRtsCtsProtection specifies that MU-RTS/CTS protection method is used.
+ */
+struct WifiMuRtsCtsProtection : public WifiProtection
+{
+    WifiMuRtsCtsProtection();
+
+    // Overridden from WifiProtection
+    std::unique_ptr<WifiProtection> Copy() const override;
+    void Print(std::ostream& os) const override;
+
+    CtrlTriggerHeader muRts;    //!< MU-RTS
+    WifiTxVector muRtsTxVector; //!< MU-RTS TXVECTOR
 };
 
 /**

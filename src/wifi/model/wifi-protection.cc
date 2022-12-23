@@ -102,6 +102,27 @@ WifiCtsToSelfProtection::Print(std::ostream& os) const
     os << "CTS_TO_SELF";
 }
 
+/*
+ * WifiMuRtsCtsProtection
+ */
+
+WifiMuRtsCtsProtection::WifiMuRtsCtsProtection()
+    : WifiProtection(MU_RTS_CTS)
+{
+}
+
+std::unique_ptr<WifiProtection>
+WifiMuRtsCtsProtection::Copy() const
+{
+    return std::unique_ptr<WifiProtection>(new WifiMuRtsCtsProtection(*this));
+}
+
+void
+WifiMuRtsCtsProtection::Print(std::ostream& os) const
+{
+    os << "MU_RTS_CTS";
+}
+
 std::ostream&
 operator<<(std::ostream& os, const WifiProtection* protection)
 {
