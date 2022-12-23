@@ -211,7 +211,7 @@ Moreover, the following examples use the flow-monitor module:
 * examples/routing/manet-routing-compare.cc
 * examples/routing/simple-global-routing.cc
 * examples/tcp/tcp-variants-comparison.cc
-* examples/wireless/multirate.cc
+* examples/wireless/wifi-multirate.cc
 * examples/wireless/wifi-hidden-terminal.cc
 
 
