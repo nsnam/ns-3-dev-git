@@ -320,8 +320,9 @@ WifiMac::GetTypeId()
                 "An MPDU whose response was not received before the timeout, along with "
                 "an identifier of the type of timeout (see WifiTxTimer::Reason) and the "
                 "TXVECTOR used to transmit the MPDU. This trace source is fired when a "
-                "CTS is missing after an RTS or a Normal Ack is missing after an MPDU "
-                "or after a DL MU PPDU acknowledged in SU format.",
+                "CTS is missing after an RTS, when all CTS frames are missing after an MU-RTS, "
+                "or when a Normal Ack is missing after an MPDU or after a DL MU PPDU "
+                "acknowledged in SU format.",
                 MakeTraceSourceAccessor(&WifiMac::m_mpduResponseTimeoutCallback),
                 "ns3::WifiMac::MpduResponseTimeoutCallback")
             .AddTraceSource(

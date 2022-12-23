@@ -107,6 +107,7 @@ WifiTxTimer::GetReasonString(Reason reason) const
         FOO(CTS);
         FOO(NORMAL_ACK);
         FOO(BLOCK_ACK);
+        FOO(CTS_AFTER_MU_RTS);
         FOO(NORMAL_ACK_AFTER_DL_MU_PPDU);
         FOO(BLOCK_ACKS_IN_TB_PPDU);
         FOO(TB_PPDU_AFTER_BASIC_TF);
