@@ -106,7 +106,7 @@ if(${NS3_CCACHE})
   find_program(CCACHE ccache)
   if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
     message(STATUS "CCache is enabled.")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
     execute_process(
       COMMAND
         ${CCACHE} --set-config

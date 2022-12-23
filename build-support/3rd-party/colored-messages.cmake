@@ -71,25 +71,25 @@ if(${NS3_COLORED_OUTPUT} OR "$ENV{CLICOLOR}")
   # Replace the default message macro with a custom colored one
   function(message)
     list(GET ARGV 0 MessageType)
+    list(REMOVE_AT ARGV 0)
+
+    # Transform list of arguments into a single line.
+    string(REPLACE ";" " " ARGV "${ARGV}")
+
     if((${MessageType} STREQUAL FATAL_ERROR) OR (${MessageType} STREQUAL
                                                  SEND_ERROR)
     )
-      list(REMOVE_AT ARGV 0)
       _message(${MessageType} "${BoldRed}${ARGV}${ColourReset}")
     elseif(MessageType STREQUAL WARNING)
-      list(REMOVE_AT ARGV 0)
       _message(${MessageType} "${Yellow}${ARGV}${ColourReset}")
     elseif(MessageType STREQUAL AUTHOR_WARNING)
-      list(REMOVE_AT ARGV 0)
       _message(${MessageType} "${BoldCyan}${ARGV}${ColourReset}")
     elseif(MessageType STREQUAL HIGHLIGHTED_STATUS) # Custom message type
-      list(REMOVE_AT ARGV 0)
       _message(STATUS "${Yellow}${ARGV}${ColourReset}")
     elseif(MessageType STREQUAL STATUS)
-      list(REMOVE_AT ARGV 0)
       _message(${MessageType} "${ARGV}")
     else()
-      _message(${ARGV})
+      _message(${MessageType} "${ARGV}")
     endif()
   endfunction()
 endif()
