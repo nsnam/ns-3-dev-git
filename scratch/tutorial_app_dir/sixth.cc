@@ -13,12 +13,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "mytutorial-app.h"
+// #include "mytutorial-app.h"
 
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/network-module.h"
+#include "ns3/network-module.h" 
 #include "ns3/point-to-point-module.h"
 
 #include <fstream>
@@ -62,6 +62,8 @@ NS_LOG_COMPONENT_DEFINE("SixthScriptExample");
 // ===========================================================================
 //
 
+// std::ofstream file;
+
 /**
  * Congestion window change callback
  *
@@ -69,26 +71,12 @@ NS_LOG_COMPONENT_DEFINE("SixthScriptExample");
  * \param oldCwnd Old congestion window.
  * \param newCwnd New congestion window.
  */
-static void
-CwndChange(Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
-{
-    NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
-    *stream->GetStream() << Simulator::Now().GetSeconds() << "\t" << oldCwnd << "\t" << newCwnd
-                         << std::endl;
-}
-
-/**
- * Rx drop callback
- *
- * \param file The ouput PCAP file.
- * \param p The dropped packet.
- */
-static void
-RxDrop(Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
-{
-    NS_LOG_UNCOND("RxDrop at " << Simulator::Now().GetSeconds());
-    file->Write(Simulator::Now(), p);
-}
+// static void
+// CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
+// {
+//     NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
+//     file << Simulator::Now().GetSeconds() << ',' << newCwnd << std::endl;
+// }
 
 int
 main(int argc, char* argv[])
@@ -106,10 +94,6 @@ main(int argc, char* argv[])
     NetDeviceContainer devices;
     devices = pointToPoint.Install(nodes);
 
-    Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
-    em->SetAttribute("ErrorRate", DoubleValue(0.00001));
-    devices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
-
     InternetStackHelper stack;
     stack.Install(nodes);
 
@@ -122,26 +106,15 @@ main(int argc, char* argv[])
     PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory",
                                       InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
     ApplicationContainer sinkApps = packetSinkHelper.Install(nodes.Get(1));
-    sinkApps.Start(Seconds(0.));
-    sinkApps.Stop(Seconds(20.));
+    sinkApps.Start(Seconds(0));
+    sinkApps.Stop(Seconds(20));
 
-    Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(nodes.Get(0), TcpSocketFactory::GetTypeId());
+    BulkSendHelper sender_("ns3::TcpSocketFactory", sinkAddress);
+    ApplicationContainer sourceApps = sender_.Install(nodes.Get(0));
+    sourceApps.Start(Seconds(1));
+    sourceApps.Stop(Seconds(15));
 
-    Ptr<TutorialApp> app = CreateObject<TutorialApp>();
-    app->Setup(ns3TcpSocket, sinkAddress, 1040, 1000, DataRate("1Mbps"));
-    nodes.Get(0)->AddApplication(app);
-    app->SetStartTime(Seconds(1.));
-    app->SetStopTime(Seconds(20.));
-
-    AsciiTraceHelper asciiTraceHelper;
-    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream("sixth.cwnd");
-    ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow",
-                                             MakeBoundCallback(&CwndChange, stream));
-
-    PcapHelper pcapHelper;
-    Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
-    devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
+    pointToPoint.EnablePcapAll("sixth", false);
 
     Simulator::Stop(Seconds(20));
     Simulator::Run();
