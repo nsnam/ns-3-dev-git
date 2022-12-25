@@ -1162,8 +1162,8 @@ def run_step(args, target_to_run, target_args):
         if args.perf:
             debugging_software.extend([
                 check_program_installed("perf"),
-                "record", "--call-graph", "dwarf", "-a", "-e",
-                "cache-misses,branch-misses,cpu-cycles,stalled-cycles-frontend,stalled-cycles-backend,context-switches"
+                "record", "--call-graph", "dwarf", "-e",
+                "cache-misses,branch-misses,cpu-cycles,stalled-cycles-frontend,stalled-cycles-backend"
             ])
 
         # running with the visualizer?
