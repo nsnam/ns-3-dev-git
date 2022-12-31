@@ -62,8 +62,6 @@ NS_LOG_COMPONENT_DEFINE("SixthScriptExample");
 // ===========================================================================
 //
 
-// std::ofstream file;
-
 /**
  * Congestion window change callback
  *
@@ -71,12 +69,21 @@ NS_LOG_COMPONENT_DEFINE("SixthScriptExample");
  * \param oldCwnd Old congestion window.
  * \param newCwnd New congestion window.
  */
-// static void
-// CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
-// {
-//     NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
-//     file << Simulator::Now().GetSeconds() << ',' << newCwnd << std::endl;
-// }
+static void
+CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
+{
+    std::ofstream file("cwndtrace.csv", std::ios::out | std::ios::app);
+    NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
+    file << Simulator::Now().GetSeconds() << ',' << newCwnd << std::endl;
+    file.close();
+}
+
+static void
+InitTrace()
+{
+    Config::ConnectWithoutContext("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", 
+                                    MakeBoundCallback(&CwndChange));
+}
 
 int
 main(int argc, char* argv[])
@@ -115,6 +122,8 @@ main(int argc, char* argv[])
     sourceApps.Stop(Seconds(15));
 
     pointToPoint.EnablePcapAll("sixth", false);
+
+    Simulator::Schedule(Seconds(1.000001), &InitTrace);
 
     Simulator::Stop(Seconds(20));
     Simulator::Run();
