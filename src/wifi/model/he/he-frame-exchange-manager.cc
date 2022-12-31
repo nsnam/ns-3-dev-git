@@ -25,11 +25,13 @@
 
 #include "ns3/abort.h"
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/erp-ofdm-phy.h"
 #include "ns3/log.h"
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/snr-tag.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
+#include "ns3/wifi-mac-trailer.h"
 
 #include <algorithm>
 #include <functional>
@@ -224,22 +226,6 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
     m_psduMap = std::move(psduMap);
     m_txParams = std::move(txParams);
 
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    // If protection is required, the MPDUs must be stored in some queue because
-    // they are not put back in a queue if the MU-RTS/CTS exchange fails
-    if (m_txParams.m_protection->method != WifiProtection::NONE)
-    {
-        for (const auto& psdu : psduMap)
-        {
-            for (const auto& mpdu : *PeekPointer(psdu.second))
-            {
-                NS_ASSERT(mpdu->GetHeader().IsCtl() || !mpdu->GetHeader().HasData() ||
-                          mpdu->IsQueued());
-            }
-        }
-    }
-#endif
-
     // Make sure that the acknowledgment time has been computed, so that SendMuRts()
     // can reuse this value.
     NS_ASSERT(m_txParams.m_acknowledgment);
@@ -247,6 +233,30 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
     if (m_txParams.m_acknowledgment->acknowledgmentTime == Time::Min())
     {
         CalculateAcknowledgmentTime(m_txParams.m_acknowledgment.get());
+    }
+
+    // in case we are sending a Trigger Frame, update the acknowledgment time so that
+    // the Duration/ID of the MU-RTS is correctly computed
+    if (!m_txParams.m_txVector.IsUlMu() && m_psduMap.size() == 1 &&
+        m_psduMap.begin()->first == SU_STA_ID &&
+        m_psduMap.begin()->second->GetHeader(0).IsTrigger())
+    {
+        NS_ASSERT(m_muScheduler);
+        const auto& trigger = m_muScheduler->GetUlMuInfo(m_linkId).trigger;
+        NS_ASSERT_MSG(!trigger.IsBasic() || m_txParams.m_acknowledgment->method ==
+                                                WifiAcknowledgment::UL_MU_MULTI_STA_BA,
+                      "Acknowledgment (" << m_txParams.m_acknowledgment.get()
+                                         << ") incompatible with Basic Trigger Frame");
+        NS_ASSERT_MSG(!trigger.IsBsrp() ||
+                          m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE,
+                      "Acknowledgment (" << m_txParams.m_acknowledgment.get()
+                                         << ") incompatible with BSRP Trigger Frame");
+        // Add a SIFS and the TB PPDU duration to the acknowledgment time of the Trigger Frame
+        auto txVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
+        m_txParams.m_acknowledgment->acknowledgmentTime +=
+            m_phy->GetSifs() + HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
+                                                                          txVector,
+                                                                          m_phy->GetPhyBand());
     }
 
     // Set QoS Ack policy
@@ -260,6 +270,10 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
         NS_ABORT_MSG_IF(m_psduMap.size() > 1, "Cannot use RTS/CTS with MU PPDUs");
         SendRts(m_txParams);
     }
+    else if (m_txParams.m_protection->method == WifiProtection::MU_RTS_CTS)
+    {
+        SendMuRts(m_txParams);
+    }
     else if (m_txParams.m_protection->method == WifiProtection::NONE)
     {
         SendPsduMap();
@@ -268,6 +282,136 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
     {
         NS_ABORT_MSG("Unknown or prohibited protection type: " << m_txParams.m_protection.get());
     }
+}
+
+Time
+HeFrameExchangeManager::GetMuRtsDurationId(uint32_t muRtsSize,
+                                           const WifiTxVector& muRtsTxVector,
+                                           Time txDuration,
+                                           Time response) const
+{
+    NS_LOG_FUNCTION(this << muRtsSize << muRtsTxVector << txDuration << response);
+
+    if (m_edca->GetTxopLimit(m_linkId).IsZero())
+    {
+        WifiTxVector txVector;
+        txVector.SetMode(GetCtsModeAfterMuRts());
+        return VhtFrameExchangeManager::GetRtsDurationId(txVector, txDuration, response);
+    }
+
+    // under multiple protection settings, if the TXOP limit is not null, Duration/ID
+    // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
+    // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
+    // of 802.11-2016)
+    return std::max(m_edca->GetRemainingTxop(m_linkId) -
+                        m_phy->CalculateTxDuration(muRtsSize, muRtsTxVector, m_phy->GetPhyBand()),
+                    Seconds(0));
+}
+
+void
+HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
+{
+    NS_LOG_FUNCTION(this << &txParams);
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_CTL_TRIGGER);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    hdr.SetAddr2(m_self);
+    hdr.SetDsNotTo();
+    hdr.SetDsNotFrom();
+    hdr.SetNoRetry();
+    hdr.SetNoMoreFragments();
+
+    NS_ASSERT(txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS);
+    WifiMuRtsCtsProtection* protection =
+        static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
+
+    NS_ASSERT(protection->muRts.IsMuRts());
+    protection->muRts.SetCsRequired(true);
+    Ptr<Packet> payload = Create<Packet>();
+    payload->AddHeader(protection->muRts);
+
+    auto mpdu = Create<WifiMpdu>(payload, hdr);
+
+    NS_ASSERT(txParams.m_txDuration != Time::Min());
+    mpdu->GetHeader().SetDuration(
+        GetMuRtsDurationId(mpdu->GetSize(),
+                           protection->muRtsTxVector,
+                           txParams.m_txDuration,
+                           txParams.m_acknowledgment->acknowledgmentTime));
+
+    // Get the TXVECTOR used by one station to send the CTS response. This is used
+    // to compute the preamble duration, so it does not matter which station we choose
+    WifiTxVector ctsTxVector =
+        GetCtsTxVectorAfterMuRts(protection->muRts, protection->muRts.begin()->GetAid12());
+
+    // After transmitting an MU-RTS frame, the STA shall wait for a CTSTimeout interval of
+    // aSIFSTime + aSlotTime + aRxPHYStartDelay (Sec. 27.2.5.2 of 802.11ax D3.0).
+    // aRxPHYStartDelay equals the time to transmit the PHY header.
+    Time timeout = m_phy->CalculateTxDuration(mpdu->GetSize(),
+                                              protection->muRtsTxVector,
+                                              m_phy->GetPhyBand()) +
+                   m_phy->GetSifs() + m_phy->GetSlot() +
+                   m_phy->CalculatePhyPreambleAndHeaderDuration(ctsTxVector);
+
+    NS_ASSERT(!m_txTimer.IsRunning());
+    m_txTimer.Set(WifiTxTimer::WAIT_CTS_AFTER_MU_RTS,
+                  timeout,
+                  &HeFrameExchangeManager::CtsAfterMuRtsTimeout,
+                  this,
+                  mpdu,
+                  protection->muRtsTxVector);
+    m_channelAccessManager->NotifyCtsTimeoutStartNow(timeout);
+
+    ForwardMpduDown(mpdu, protection->muRtsTxVector);
+}
+
+void
+HeFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << *muRts << txVector);
+
+    NS_ASSERT(!m_psduMap.empty());
+    // NOTE Implementation of QSRC[AC] and QLRC[AC] should be improved...
+    const auto& hdr = m_psduMap.cbegin()->second->GetHeader(0);
+    if (!hdr.GetAddr1().IsGroup())
+    {
+        GetWifiRemoteStationManager()->ReportRtsFailed(hdr);
+    }
+
+    if (!hdr.GetAddr1().IsGroup() &&
+        !GetWifiRemoteStationManager()->NeedRetransmission(*m_psduMap.cbegin()->second->begin()))
+    {
+        NS_LOG_DEBUG("Missed CTS, discard MPDUs");
+        GetWifiRemoteStationManager()->ReportFinalRtsFailed(hdr);
+        for (const auto& psdu : m_psduMap)
+        {
+            // Dequeue the MPDUs if they are stored in a queue
+            DequeuePsdu(psdu.second);
+            for (const auto& mpdu : *PeekPointer(psdu.second))
+            {
+                NotifyPacketDiscarded(mpdu);
+            }
+        }
+        m_edca->ResetCw(m_linkId);
+    }
+    else
+    {
+        NS_LOG_DEBUG("Missed CTS, retransmit MPDUs");
+        m_edca->UpdateFailedCw(m_linkId);
+    }
+    // Make the sequence numbers of the MPDUs available again if the MPDUs have never
+    // been transmitted, both in case the MPDUs have been discarded and in case the
+    // MPDUs have to be transmitted (because a new sequence number is assigned to
+    // MPDUs that have never been transmitted and are selected for transmission)
+    for (const auto& psdu : m_psduMap)
+    {
+        for (const auto& mpdu : *PeekPointer(psdu.second))
+        {
+            ReleaseSequenceNumber(mpdu);
+        }
+    }
+    m_psduMap.clear();
+    TransmissionFailed();
 }
 
 Ptr<WifiPsdu>
@@ -516,15 +660,6 @@ HeFrameExchangeManager::SendPsduMap()
         acknowledgment->stationsReceivingMultiStaBa.clear();
         acknowledgment->baType.m_bitmapLen.clear();
 
-        // Add a SIFS and the TB PPDU duration to the acknowledgment time of the
-        // Trigger Frame, so that its Duration/ID is correctly computed
-        NS_ASSERT(m_muScheduler);
-        Time tbPpduDuration = HePhy::ConvertLSigLengthToHeTbPpduDuration(
-            m_muScheduler->GetUlMuInfo(m_linkId).trigger.GetUlLength(),
-            acknowledgment->tbPpduTxVector,
-            m_phy->GetPhyBand());
-        acknowledgment->acknowledgmentTime += m_phy->GetSifs() + tbPpduDuration;
-
         timerType = WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF;
         responseTxVector = &acknowledgment->tbPpduTxVector;
         m_trigVector = GetTrigVector(m_muScheduler->GetUlMuInfo(m_linkId).trigger);
@@ -551,16 +686,8 @@ HeFrameExchangeManager::SendPsduMap()
             m_staExpectTbPpduFrom.insert(staIt->second);
         }
 
-        // Add a SIFS and the TB PPDU duration to the acknowledgment time of the
-        // Trigger Frame, so that its Duration/ID is correctly computed
-        WifiNoAck* acknowledgment = static_cast<WifiNoAck*>(m_txParams.m_acknowledgment.get());
-        txVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
-        acknowledgment->acknowledgmentTime +=
-            m_phy->GetSifs() + HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
-                                                                          txVector,
-                                                                          m_phy->GetPhyBand());
-
         timerType = WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF;
+        txVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
         responseTxVector = &txVector;
         m_trigVector = GetTrigVector(m_muScheduler->GetUlMuInfo(m_linkId).trigger);
     }
@@ -788,6 +915,38 @@ HeFrameExchangeManager::PrepareMuBar(const WifiTxVector& responseTxVector,
 }
 
 void
+HeFrameExchangeManager::CalculateProtectionTime(WifiProtection* protection) const
+{
+    NS_LOG_FUNCTION(this << protection);
+    NS_ASSERT(protection != nullptr);
+
+    if (protection->method == WifiProtection::MU_RTS_CTS)
+    {
+        WifiMuRtsCtsProtection* muRtsCtsProtection =
+            static_cast<WifiMuRtsCtsProtection*>(protection);
+
+        // Get the TXVECTOR used by one station to send the CTS response. This is used
+        // to compute the TX duration, so it does not matter which station we choose
+        WifiTxVector ctsTxVector =
+            GetCtsTxVectorAfterMuRts(muRtsCtsProtection->muRts,
+                                     muRtsCtsProtection->muRts.begin()->GetAid12());
+
+        uint32_t muRtsSize = WifiMacHeader(WIFI_MAC_CTL_TRIGGER).GetSize() +
+                             muRtsCtsProtection->muRts.GetSerializedSize() + WIFI_MAC_FCS_LENGTH;
+        muRtsCtsProtection->protectionTime =
+            m_phy->CalculateTxDuration(muRtsSize,
+                                       muRtsCtsProtection->muRtsTxVector,
+                                       m_phy->GetPhyBand()) +
+            m_phy->CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
+            2 * m_phy->GetSifs();
+    }
+    else
+    {
+        VhtFrameExchangeManager::CalculateProtectionTime(protection);
+    }
+}
+
+void
 HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const
 {
     NS_LOG_FUNCTION(this << acknowledgment);
@@ -948,6 +1107,50 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
     {
         VhtFrameExchangeManager::CalculateAcknowledgmentTime(acknowledgment);
     }
+}
+
+WifiMode
+HeFrameExchangeManager::GetCtsModeAfterMuRts() const
+{
+    // The CTS frame sent in response to an MU-RTS Trigger frame shall be carried in a non-HT or
+    // non-HT duplicate PPDU (see Clause 17) with a 6 Mb/s rate (Sec. 26.2.6.3 of 802.11ax-2021)
+    return m_phy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ ? ErpOfdmPhy::GetErpOfdmRate6Mbps()
+                                                       : OfdmPhy::GetOfdmRate6Mbps();
+}
+
+WifiTxVector
+HeFrameExchangeManager::GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigger,
+                                                 uint16_t staId) const
+{
+    NS_LOG_FUNCTION(this << trigger << staId);
+
+    auto userInfoIt = trigger.FindUserInfoWithAid(staId);
+    NS_ASSERT_MSG(userInfoIt != trigger.end(), "User Info field for AID=" << staId << " not found");
+    uint16_t bw = 0;
+
+    if (uint8_t ru = userInfoIt->GetMuRtsRuAllocation(); ru < 65)
+    {
+        bw = 20;
+    }
+    else if (ru < 67)
+    {
+        bw = 40;
+    }
+    else if (ru == 67)
+    {
+        bw = 80;
+    }
+    else
+    {
+        NS_ASSERT(ru == 68);
+        bw = 160;
+    }
+
+    auto txVector = GetWifiRemoteStationManager()->GetCtsTxVector(m_bssid, GetCtsModeAfterMuRts());
+    // set the channel width of the CTS TXVECTOR according to the allocated RU
+    txVector.SetChannelWidth(bw);
+
+    return txVector;
 }
 
 Time
@@ -1285,6 +1488,65 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
                    : ((rssi <= -110) ? -110 : rssi); // cap so as to keep within [-110; -20] dBm
         userInfo.SetUlTargetRssi(rssi);
     }
+}
+
+void
+HeFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    auto txVectorCopy = txVector;
+
+    if (psdu->GetNMpdus() == 1 && psdu->GetHeader(0).IsTrigger())
+    {
+        CtrlTriggerHeader trigger;
+        psdu->GetPayload(0)->PeekHeader(trigger);
+        if (trigger.IsMuRts())
+        {
+            const WifiMacHeader& muRts = psdu->GetHeader(0);
+            // A station receiving an MU-RTS behaves just like as if it received an RTS.
+            // Determine whether the MU-RTS is addressed to this station or not and
+            // prepare an "equivalent" RTS frame so that we can reuse the UpdateNav()
+            // and SetTxopHolder() methods of the parent classes
+            WifiMacHeader rts;
+            rts.SetType(WIFI_MAC_CTL_RTS);
+            rts.SetDsNotFrom();
+            rts.SetDsNotTo();
+            rts.SetDuration(muRts.GetDuration());
+            rts.SetAddr2(muRts.GetAddr2());
+            if (m_staMac != nullptr && m_staMac->IsAssociated() &&
+                muRts.GetAddr2() == m_bssid // sent by the AP this STA is associated with
+                && trigger.FindUserInfoWithAid(m_staMac->GetAssociationId()) != trigger.end())
+            {
+                // the MU-RTS is addressed to this station
+                rts.SetAddr1(m_self);
+            }
+            else
+            {
+                rts.SetAddr1(muRts.GetAddr2()); // an address different from that of this station
+            }
+            psdu = Create<const WifiPsdu>(Create<Packet>(), rts);
+            // The duration of the NAV reset timeout has to take into account that the CTS
+            // response is sent using the 6 Mbps data rate
+            txVectorCopy =
+                GetWifiRemoteStationManager()->GetCtsTxVector(m_bssid, GetCtsModeAfterMuRts());
+        }
+    }
+    VhtFrameExchangeManager::PostProcessFrame(psdu, txVectorCopy);
+}
+
+void
+HeFrameExchangeManager::SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
+                                          const CtrlTriggerHeader& trigger,
+                                          double muRtsSnr)
+{
+    NS_LOG_FUNCTION(this << muRtsHdr << trigger << muRtsSnr);
+
+    NS_ASSERT(m_staMac != nullptr && m_staMac->IsAssociated());
+    WifiTxVector ctsTxVector = GetCtsTxVectorAfterMuRts(trigger, m_staMac->GetAssociationId());
+    ctsTxVector.SetTriggerResponding(true);
+
+    DoSendCtsAfterRts(muRtsHdr, ctsTxVector, muRtsSnr);
 }
 
 void
@@ -1716,10 +1978,12 @@ HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& 
         // (IEEE 802.11-2016 sec. 10.3.2.4)
         if (psdu->GetHeader(0).IsRts())
         {
+            WifiTxVector ctsTxVector =
+                GetWifiRemoteStationManager()->GetCtsTxVector(psdu->GetAddr2(), txVector.GetMode());
             auto navResetDelay =
                 2 * m_phy->GetSifs() +
-                WifiPhy::CalculateTxDuration(GetCtsSize(), txVector, m_phy->GetPhyBand()) +
-                m_phy->CalculatePhyPreambleAndHeaderDuration(txVector) + 2 * m_phy->GetSlot();
+                WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
+                m_phy->CalculatePhyPreambleAndHeaderDuration(ctsTxVector) + 2 * m_phy->GetSlot();
             m_intraBssNavResetEvent =
                 Simulator::Schedule(navResetDelay,
                                     &HeFrameExchangeManager::IntraBssNavResetTimeout,
@@ -1813,9 +2077,20 @@ HeFrameExchangeManager::UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const
                   "No User Info field for STA (" << m_self
                                                  << ") AID=" << m_staMac->GetAssociationId());
 
-    const auto indices =
-        m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(userInfoIt->GetRuAllocation(),
-                                                               trigger.GetUlBandwidth());
+    std::set<uint8_t> indices;
+
+    if (trigger.IsMuRts())
+    {
+        auto ctsTxVector = GetCtsTxVectorAfterMuRts(trigger, m_staMac->GetAssociationId());
+        auto bw = ctsTxVector.GetChannelWidth();
+        indices = m_phy->GetOperatingChannel().GetAll20MHzChannelIndicesInPrimary(bw);
+    }
+    else
+    {
+        indices =
+            m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(userInfoIt->GetRuAllocation(),
+                                                                   trigger.GetUlBandwidth());
+    }
     return !m_channelAccessManager->GetPer20MHzBusy(indices);
 }
 
@@ -1927,7 +2202,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         m_txTimer.GetReason() == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF &&
         !inAmpdu) // if in A-MPDU, processing is done at the end of A-MPDU reception
     {
-        Mac48Address sender = hdr.GetAddr2();
+        const auto& sender = hdr.GetAddr2();
 
         if (m_staExpectTbPpduFrom.find(sender) == m_staExpectTbPpduFrom.end())
         {
@@ -1979,6 +2254,18 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                                        rxSignalInfo.snr,
                                                        txVector.GetMode(),
                                                        tag.Get());
+
+            m_txTimer.Cancel();
+            m_channelAccessManager->NotifyCtsTimeoutResetNow();
+            Simulator::Schedule(m_phy->GetSifs(), &HeFrameExchangeManager::SendPsduMap, this);
+        }
+        else if (hdr.IsCts() && !m_psduMap.empty() && m_txTimer.IsRunning() &&
+                 m_txTimer.GetReason() == WifiTxTimer::WAIT_CTS_AFTER_MU_RTS)
+        {
+            NS_ABORT_MSG_IF(inAmpdu, "Received CTS as part of an A-MPDU");
+            NS_ASSERT(hdr.GetAddr1() == m_self);
+
+            NS_LOG_DEBUG("Received a CTS frame in response to an MU-RTS");
 
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyCtsTimeoutResetNow();
@@ -2201,7 +2488,35 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             uint16_t staId = m_staMac->GetAssociationId();
 
-            if (trigger.IsMuBar())
+            if (trigger.IsMuRts())
+            {
+                Mac48Address sender = hdr.GetAddr2();
+                NS_LOG_DEBUG("Received MU-RTS Trigger Frame from=" << sender);
+                GetWifiRemoteStationManager()->ReportRxOk(sender, rxSignalInfo, txVector);
+
+                // If a non-AP STA receives an MU-RTS Trigger frame, the non-AP STA shall commence
+                // the transmission of a CTS frame response at the SIFS time boundary after
+                // the end of a received PPDU when all the following conditions are met:
+                // - The MU-RTS Trigger frame has one of the User Info fields addressed to
+                //   the non-AP STA (this is guaranteed if we get here)
+                // - The UL MU CS condition indicates that the medium is idle
+                // (Sec. 26.2.6.3 of 802.11ax-2021)
+                if (UlMuCsMediumIdle(trigger))
+                {
+                    NS_LOG_DEBUG("Schedule CTS");
+                    Simulator::Schedule(m_phy->GetSifs(),
+                                        &HeFrameExchangeManager::SendCtsAfterMuRts,
+                                        this,
+                                        hdr,
+                                        trigger,
+                                        rxSignalInfo.snr);
+                }
+                else
+                {
+                    NS_LOG_DEBUG("Cannot schedule CTS");
+                }
+            }
+            else if (trigger.IsMuBar())
             {
                 Mac48Address sender = hdr.GetAddr2();
                 NS_LOG_DEBUG("Received MU-BAR Trigger Frame from=" << sender);

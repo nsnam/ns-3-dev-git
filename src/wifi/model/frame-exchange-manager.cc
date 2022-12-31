@@ -1141,10 +1141,12 @@ FrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& tx
         // (IEEE 802.11-2016 sec. 10.3.2.4)
         if (psdu->GetHeader(0).IsRts())
         {
+            WifiTxVector ctsTxVector =
+                GetWifiRemoteStationManager()->GetCtsTxVector(psdu->GetAddr2(), txVector.GetMode());
             Time navResetDelay =
                 2 * m_phy->GetSifs() +
-                WifiPhy::CalculateTxDuration(GetCtsSize(), txVector, m_phy->GetPhyBand()) +
-                m_phy->CalculatePhyPreambleAndHeaderDuration(txVector) + 2 * m_phy->GetSlot();
+                WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
+                m_phy->CalculatePhyPreambleAndHeaderDuration(ctsTxVector) + 2 * m_phy->GetSlot();
             m_navResetEvent =
                 Simulator::Schedule(navResetDelay, &FrameExchangeManager::NavResetTimeout, this);
         }

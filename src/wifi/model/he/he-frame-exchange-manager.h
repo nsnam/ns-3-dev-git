@@ -66,6 +66,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void SetWifiMac(const Ptr<WifiMac> mac) override;
     void SetWifiPhy(const Ptr<WifiPhy> phy) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
+    void CalculateProtectionTime(WifiProtection* protection) const override;
     void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     bool VirtualCsMediumIdle() const override;
 
@@ -138,6 +139,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
                          const RxSignalInfo& rxSignalInfo,
                          const WifiTxVector& txVector,
                          const std::vector<bool>& perMpduStatus) override;
+    void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     Time GetTxDuration(uint32_t ppduPayloadSize,
                        Mac48Address receiver,
                        const WifiTxParameters& txParams) const override;
@@ -158,6 +160,62 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Reset the intra-BSS NAV upon expiration of the intra-BSS NAV reset timer.
      */
     virtual void IntraBssNavResetTimeout();
+
+    /**
+     * Compute how to set the Duration/ID field of an MU-RTS Trigger Frame to send to protect
+     * a frame transmitted with the given TX vector.
+     *
+     * \param muRtsSize the size of the MU-RTS Trigger Frame in bytes
+     * \param muRtsTxVector the TX vector used to send the MU-RTS Trigger Frame
+     * \param txDuration the TX duration of the data frame
+     * \param response the time taken by the response (acknowledgment) to the data frame
+     * \return the computed Duration/ID value for the MU-RTS Trigger Frame
+     */
+    virtual Time GetMuRtsDurationId(uint32_t muRtsSize,
+                                    const WifiTxVector& muRtsTxVector,
+                                    Time txDuration,
+                                    Time response) const;
+
+    /**
+     * Send an MU-RTS to begin an MU-RTS/CTS frame exchange protecting an MU PPDU.
+     *
+     * \param txParams the TX parameters for the data frame
+     */
+    void SendMuRts(const WifiTxParameters& txParams);
+
+    /**
+     * Called when no CTS frame is received after an MU-RTS.
+     *
+     * \param muRts the MU-RTS that solicited CTS responses
+     * \param txVector the TXVECTOR used to transmit the MU-RTS frame
+     */
+    virtual void CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector);
+
+    /**
+     * Send CTS after receiving an MU-RTS.
+     *
+     * \param muRtsHdr the MAC header of the received MU-RTS
+     * \param trigger the MU-RTS Trigger Frame header
+     * \param muRtsSnr the SNR of the MU-RTS in linear scale
+     */
+    void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
+                           const CtrlTriggerHeader& trigger,
+                           double muRtsSnr);
+
+    /**
+     * \return the mode used to transmit a CTS after an MU-RTS.
+     */
+    WifiMode GetCtsModeAfterMuRts() const;
+
+    /**
+     * Get the TXVECTOR that the station having the given station ID has to use to send a
+     * CTS frame after receiving an MU-RTS Trigger Frame from the AP it is associated with.
+     *
+     * \param trigger the MU-RTS Trigger Frame
+     * \param staId the station ID for MU
+     * \return the TXVECTOR to use to send a CTS frame
+     */
+    WifiTxVector GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigger, uint16_t staId) const;
 
     /**
      * Send a map of PSDUs as a DL MU PPDU.
