@@ -1305,6 +1305,8 @@ void
 CtrlTriggerUserInfoField::SetRuAllocation(HeRu::RuSpec ru)
 {
     NS_ABORT_MSG_IF(ru.GetIndex() == 0, "Valid indices start at 1");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::MU_RTS_TRIGGER,
+                    "SetMuRtsRuAllocation() must be used for MU-RTS");
 
     switch (ru.GetRuType())
     {
@@ -1346,6 +1348,9 @@ CtrlTriggerUserInfoField::SetRuAllocation(HeRu::RuSpec ru)
 HeRu::RuSpec
 CtrlTriggerUserInfoField::GetRuAllocation() const
 {
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::MU_RTS_TRIGGER,
+                    "GetMuRtsRuAllocation() must be used for MU-RTS");
+
     HeRu::RuType ruType;
     std::size_t index;
 
@@ -1394,6 +1399,39 @@ CtrlTriggerUserInfoField::GetRuAllocation() const
     }
 
     return HeRu::RuSpec(ruType, index, primary80MHz);
+}
+
+void
+CtrlTriggerUserInfoField::SetMuRtsRuAllocation(uint8_t value)
+{
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::MU_RTS_TRIGGER,
+                    "SetMuRtsRuAllocation() can only be used for MU-RTS");
+    NS_ABORT_MSG_IF(
+        value < 61 || value > 68,
+        "Value "
+            << +value
+            << " is not admitted for B7-B1 of the RU Allocation subfield of MU-RTS Trigger Frames");
+
+    m_ruAllocation = (value << 1);
+    if (value == 68)
+    {
+        // set B0 for 160 MHz and 80+80 MHz indication
+        m_ruAllocation++;
+    }
+}
+
+uint8_t
+CtrlTriggerUserInfoField::GetMuRtsRuAllocation() const
+{
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::MU_RTS_TRIGGER,
+                    "GetMuRtsRuAllocation() can only be used for MU-RTS");
+    uint8_t value = (m_ruAllocation >> 1);
+    NS_ABORT_MSG_IF(
+        value < 61 || value > 68,
+        "Value "
+            << +value
+            << " is not admitted for B7-B1 of the RU Allocation subfield of MU-RTS Trigger Frames");
+    return value;
 }
 
 void
@@ -1599,6 +1637,9 @@ CtrlTriggerHeader::CtrlTriggerHeader()
 CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& txVector)
     : CtrlTriggerHeader()
 {
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::MU_RTS_TRIGGER,
+                    "This constructor cannot be used for MU-RTS");
+
     switch (txVector.GetPreambleType())
     {
     case WIFI_PREAMBLE_HE_TB:
@@ -1611,6 +1652,7 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
         NS_ABORT_MSG("Cannot create a TF out of a TXVECTOR with preamble type: "
                      << txVector.GetPreambleType());
     }
+
     m_triggerType = type;
     SetUlBandwidth(txVector.GetChannelWidth());
     SetUlLength(txVector.GetLength());
@@ -1914,6 +1956,8 @@ CtrlTriggerHeader::GetUlLength() const
 WifiTxVector
 CtrlTriggerHeader::GetHeTbTxVector(uint16_t staId) const
 {
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::MU_RTS_TRIGGER,
+                    "GetHeTbTxVector() cannot be used for MU-RTS");
     auto userInfoIt = FindUserInfoWithAid(staId);
     NS_ASSERT(userInfoIt != end());
 
@@ -2167,6 +2211,11 @@ CtrlTriggerHeader::FindUserInfoWithRaRuUnassociated() const
 bool
 CtrlTriggerHeader::IsValid() const
 {
+    if (m_triggerType == TriggerFrameType::MU_RTS_TRIGGER)
+    {
+        return true;
+    }
+
     // check that allocated RUs do not overlap
     // TODO This is not a problem in case of UL MU-MIMO
     std::vector<HeRu::RuSpec> prevRus;

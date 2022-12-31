@@ -678,16 +678,54 @@ class CtrlTriggerUserInfoField
     bool HasRaRuForUnassociatedSta() const;
     /**
      * Set the RU Allocation subfield according to the specified RU.
+     * This method cannot be called on MU-RTS Trigger Frames (call SetMuRtsRuAllocation instead).
      *
      * \param ru the RU this User Info field is allocating
      */
     void SetRuAllocation(HeRu::RuSpec ru);
     /**
      * Get the RU specified by the RU Allocation subfield.
+     * This method cannot be called on MU-RTS Trigger Frames (call GetMuRtsRuAllocation instead).
      *
      * \return the RU this User Info field is allocating
      */
     HeRu::RuSpec GetRuAllocation() const;
+    /**
+     * Set the RU Allocation subfield based on the given value for the B7-B1 bits.
+     * This method can only be called on MU-RTS Trigger Frames.
+     *
+     * B7–B1 of the RU Allocation subfield is set to indicate the primary 20 MHz channel
+     * as follows:
+     * - 61 if the primary 20 MHz channel is the only 20 MHz channel or the lowest frequency
+     *   20 MHz channel in the primary 40 MHz channel or primary 80 MHz channel
+     * - 62 if the primary 20 MHz channel is the second lowest frequency 20 MHz channel in the
+     *   primary 40 MHz channel or primary 80 MHz channel
+     * - 63 if the primary 20 MHz channel is the third lowest frequency 20 MHz channel in the
+     *   primary 80 MHz channel
+     * - 64 if the primary 20 MHz channel is the fourth lowest frequency 20 MHz channel in the
+     *   primary 80 MHz channel
+     *
+     * B7–B1 of the RU Allocation subfield is set to indicate the primary 40 MHz channel
+     * as follows:
+     * - 65 if the primary 40 MHz channel is the only 40 MHz channel or the lowest frequency
+     *   40 MHz channel in the primary 80 MHz channel
+     * - 66 if the primary 40 MHz channel is the second lowest frequency 40 MHz channel in the
+     *   primary 80 MHz channel
+     *
+     * B7–B1 of the RU Allocation subfield is set to 67 to indicate the primary 80 MHz channel.
+     *
+     * B7–B1 of the RU Allocation subfield is set to 68 to indicate the primary and secondary
+     * 80 MHz channel.
+     *
+     * \param value the value for B7–B1 of the RU Allocation subfield
+     */
+    void SetMuRtsRuAllocation(uint8_t value);
+    /**
+     * This method can only be called on MU-RTS Trigger Frames.
+     *
+     * \return the value of B7–B1 of the RU Allocation subfield (\see SetMuRtsRuAllocation)
+     */
+    uint8_t GetMuRtsRuAllocation() const;
     /**
      * Set the UL FEC Coding Type subfield, which indicates whether BCC or LDPC is used
      *
@@ -918,6 +956,8 @@ class CtrlTriggerHeader : public Header
      *     of the TX vector are added to the Trigger Frame. The AID12, RU Allocation,
      *     UL MCS and SS Allocation subfields of each User Info field are set based
      *     on the values stored in the corresponding entry of the HeMuUserInfoMap.
+     *
+     * This constructor cannot be used to construct MU-RTS Trigger Frames.
      *
      * \param type the Trigger frame type
      * \param txVector the TX vector used to build this Trigger Frame
