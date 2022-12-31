@@ -1288,9 +1288,9 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
 }
 
 void
-HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams)
+HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams, Time durationId)
 {
-    NS_LOG_FUNCTION(this << &txParams);
+    NS_LOG_FUNCTION(this << &txParams << durationId.As(Time::US));
 
     NS_ASSERT(m_apMac);
     NS_ASSERT(txParams.m_acknowledgment &&
@@ -1356,17 +1356,30 @@ HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams)
     Ptr<WifiPsdu> psdu =
         GetWifiPsdu(Create<WifiMpdu>(packet, hdr), acknowledgment->multiStaBaTxVector);
 
-    // The Duration/ID field in a BlockAck frame transmitted in response to a frame
-    // carried in HE TB PPDU is set according to the multiple protection settings
-    // (Sec. 9.2.5.7 of 802.11ax D3.0)
     Time txDuration = m_phy->CalculateTxDuration(GetBlockAckSize(acknowledgment->baType),
                                                  acknowledgment->multiStaBaTxVector,
                                                  m_phy->GetPhyBand());
-    WifiTxParameters params;
-    // if the TXOP limit is null, GetPsduDurationId returns the acknowledgment time,
-    // hence we set an method with acknowledgment time equal to zero.
-    params.m_acknowledgment = std::unique_ptr<WifiAcknowledgment>(new WifiNoAck);
-    psdu->SetDuration(GetPsduDurationId(txDuration, params));
+    /**
+     * In a BlockAck frame transmitted in response to a frame carried in HE TB PPDU under
+     * single protection settings, the Duration/ID field is set to the value obtained from
+     * the Duration/ID field of the frame that elicited the response minus the time, in
+     * microseconds between the end of the PPDU carrying the frame that elicited the response
+     * and the end of the PPDU carrying the BlockAck frame.
+     * Under multiple protection settings, the Duration/ID field in a BlockAck frame transmitted
+     * in response to a frame carried in HE TB PPDU is set according to the multiple protection
+     * settings defined in 9.2.5.2. (Sec. 9.2.5.7 of 802.11ax-2021)
+     */
+    NS_ASSERT(m_edca);
+    if (m_edca->GetTxopLimit(m_linkId).IsZero())
+    {
+        // single protection settings
+        psdu->SetDuration(Max(durationId - m_phy->GetSifs() - txDuration, Seconds(0)));
+    }
+    else
+    {
+        // multiple protection settings
+        psdu->SetDuration(Max(m_edca->GetRemainingTxop(m_linkId) - txDuration, Seconds(0)));
+    }
 
     psdu->GetPayload(0)->AddPacketTag(m_muSnrTag);
 
@@ -1883,7 +1896,8 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             m_multiStaBaEvent = Simulator::Schedule(m_phy->GetSifs(),
                                                     &HeFrameExchangeManager::SendMultiStaBlockAck,
                                                     this,
-                                                    std::cref(m_txParams));
+                                                    std::cref(m_txParams),
+                                                    mpdu->GetHeader().GetDuration());
         }
 
         // remove the sender from the set of stations that are expected to send a TB PPDU
@@ -2303,7 +2317,8 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
             m_multiStaBaEvent = Simulator::Schedule(m_phy->GetSifs(),
                                                     &HeFrameExchangeManager::SendMultiStaBlockAck,
                                                     this,
-                                                    std::cref(m_txParams));
+                                                    std::cref(m_txParams),
+                                                    psdu->GetDuration());
         }
 
         // remove the sender from the set of stations that are expected to send a TB PPDU

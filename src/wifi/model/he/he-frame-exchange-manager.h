@@ -252,8 +252,10 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Send a Multi-STA Block Ack frame after the reception of some TB PPDUs.
      *
      * \param txParams the TX parameters for the Trigger Frame that solicited the TB PPDUs
+     * \param durationId the Duration/ID field of the HE TB PPDU that elicited the Multi-STA
+     *                   Block Ack response
      */
-    void SendMultiStaBlockAck(const WifiTxParameters& txParams);
+    void SendMultiStaBlockAck(const WifiTxParameters& txParams, Time durationId);
 
     /**
      * Send QoS Null frames in response to a Basic or BSRP Trigger Frame. The number
