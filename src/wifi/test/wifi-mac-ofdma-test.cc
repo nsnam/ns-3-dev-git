@@ -40,6 +40,8 @@
 #include "ns3/wifi-protection.h"
 #include "ns3/wifi-psdu.h"
 
+#include <iomanip>
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiMacOfdmaTestSuite");
@@ -457,6 +459,7 @@ class OfdmaAckSequenceTest : public TestCase
     Ptr<WifiNetDevice> m_apDevice;              ///< AP's device
     std::vector<PacketSocketAddress> m_sockets; ///< packet socket addresses for STAs
     uint16_t m_channelWidth;                    ///< PHY channel bandwidth in MHz
+    uint8_t m_muRtsRuAllocation;                ///< B7-B1 of RU Allocation subfield of MU-RTS
     std::vector<FrameInfo> m_txPsdus;           ///< transmitted PSDUs
     WifiAcknowledgment::Method m_dlMuAckType;   ///< DL MU ack sequence type
     uint32_t m_maxAmpduSize;                    ///< maximum A-MPDU size in bytes
@@ -508,6 +511,24 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest(uint16_t width,
         m_tbPreamble = WIFI_PREAMBLE_EHT_TB;
         break;
     }
+
+    switch (m_channelWidth)
+    {
+    case 20:
+        m_muRtsRuAllocation = 61; // p20 index is 0
+        break;
+    case 40:
+        m_muRtsRuAllocation = 65; // p20 index is 0
+        break;
+    case 80:
+        m_muRtsRuAllocation = 67;
+        break;
+    case 160:
+        m_muRtsRuAllocation = 68;
+        break;
+    default:
+        NS_ABORT_MSG("Unhandled channel width (" << m_channelWidth << " MHz)");
+    }
 }
 
 OfdmaAckSequenceTest::~OfdmaAckSequenceTest()
@@ -554,9 +575,9 @@ OfdmaAckSequenceTest::Transmit(std::string context,
                         << (psdu->GetHeader(0).IsQosData()
                                 ? " TID " + std::to_string(*psdu->GetTids().begin())
                                 : "")
-                        << " txDuration " << txDuration << " duration/ID "
+                        << std::setprecision(10) << " txDuration " << txDuration << " duration/ID "
                         << psdu->GetHeader(0).GetDuration() << " #TX PSDUs = " << m_txPsdus.size()
-                        << "\n"
+                        << " size=" << (*psdu->begin())->GetSize() << "\n"
                         << "TXVECTOR: " << txVector << "\n");
         }
     }
@@ -678,247 +699,519 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     Time navEnd;
 
     /*
-     *                                                  |--------------NAV------------------>|
-     *                |------NAV------->|               |                 |------NAV-------->|
-     *      |---------|      |----------|     |---------|      |----------|      |-----------|
-     *      |         |      |QoS Null 1|     |         |      |QoS Data 1|      |           |
-     *      |  BSRP   |      |----------|     |  Basic  |      |----------|      | Multi-STA |
-     *      | Trigger |      |QoS Null 2|     | Trigger |      |QoS Data 2|      | Block Ack |
-     *      |  Frame  |<SIFS>|----------|<IFS>|  Frame  |<SIFS>|----------|<SIFS>|           |
-     *      |         |      |QoS Null 3|     |         |      |QoS Data 3|      |           |
-     *      |         |      |----------|     |         |      |----------|      |           |
-     *      |         |      |QoS Null 4|     |         |      |QoS Data 4|      |           |
-     * -----------------------------------------------------------------------------------------
-     * From:     AP                                AP                                 AP
-     *   To:    all               AP              all               AP               all
+     *        |-------------NAV----------->|         |-----------------NAV------------------->|
+     *                 |---------NAV------>|                  |--------------NAV------------->|
+     *                           |---NAV-->|                             |--------NAV-------->|
+     *    ┌───┐    ┌───┐    ┌────┐    ┌────┐     ┌───┐    ┌───┐    ┌─────┐    ┌────┐    ┌─────┐
+     *    │   │    │   │    │    │    │QoS │     │   │    │   │    │     │    │QoS │    │     │
+     *    │   │    │   │    │    │    │Null│     │   │    │   │    │     │    │Data│    │     │
+     *    │   │    │   │    │    │    ├────┤     │   │    │   │    │     │    ├────┤    │     │
+     *    │   │    │   │    │    │    │QoS │     │   │    │   │    │     │    │QoS │    │Multi│
+     *    │MU-│    │CTS│    │BSRP│    │Null│     │MU-│    │CTS│    │Basic│    │Data│    │-STA │
+     *    │RTS│SIFS│   │SIFS│ TF │SIFS├────┤<IFS>│RTS│SIFS│   │SIFS│ TF  │SIFS├────┤SIFS│Block│
+     *    │TF │    │x4 │    │    │    │QoS │     │TF │    │x4 │    │     │    │QoS │    │ Ack │
+     *    │   │    │   │    │    │    │Null│     │   │    │   │    │     │    │Data│    │     │
+     *    │   │    │   │    │    │    ├────┤     │   │    │   │    │     │    ├────┤    │     │
+     *    │   │    │   │    │    │    │QoS │     │   │    │   │    │     │    │QoS │    │     │
+     *    │   │    │   │    │    │    │Null│     │   │    │   │    │     │    │Data│    │     │
+     * ───┴───┴────┴───┴────┴────┴────┴────┴─────┴───┴────┴───┴────┴─────┴────┴────┴────┴─────┴──
+     * From: AP     all       AP        all       AP       all       AP         all       AP
+     *   To: all    AP        all       AP        all      AP        all        AP        all
      */
 
-    // the first packet sent after 1.5s is a BSRP Trigger Frame
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 5, "Expected at least 5 transmitted packet");
+    // the first packet sent after 1.5s is an MU-RTS Trigger Frame
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 5, "Expected at least 5 transmitted packet");
     NS_TEST_EXPECT_MSG_EQ((m_txPsdus[0].psduMap.size() == 1 &&
                            m_txPsdus[0].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
                            m_txPsdus[0].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
                           true,
                           "Expected a Trigger Frame");
     m_txPsdus[0].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
-    NS_TEST_EXPECT_MSG_EQ(trigger.IsBsrp(), true, "Expected a BSRP Trigger Frame");
+    NS_TEST_EXPECT_MSG_EQ(trigger.IsMuRts(), true, "Expected an MU-RTS Trigger Frame");
     NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
                           4,
                           "Expected one User Info field per station");
-
-    // A first STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[1].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[1].psduMap.size() == 1 &&
-                           m_txPsdus[1].psduMap.begin()->second->GetNMpdus() == 1),
-                          true,
-                          "Expected a QoS Null frame in an HE TB PPDU");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[0].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the MU-RTS to occupy the entire channel width");
+    for (const auto& userInfo : trigger)
     {
-        const WifiMacHeader& hdr = m_txPsdus[1].psduMap.begin()->second->GetHeader(0);
-        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-        uint16_t staId;
-        for (staId = 0; staId < m_nStations; staId++)
-        {
-            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
-            {
-                break;
-            }
-        }
-        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
-        uint8_t tid = staId * 2;
-        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
+        NS_TEST_EXPECT_MSG_EQ(+userInfo.GetMuRtsRuAllocation(),
+                              +m_muRtsRuAllocation,
+                              "Unexpected RU Allocation value in MU-RTS");
     }
     tEnd = m_txPsdus[0].endTx;
     navEnd = tEnd + m_txPsdus[0].psduMap[SU_STA_ID]->GetDuration();
+
+    // A first STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[1].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[1].psduMap.size() == 1 &&
+         m_txPsdus[1].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[1].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[1].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
     tStart = m_txPsdus[1].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "QoS Null frame in HE TB PPDU sent too late");
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[1].endTx,
-                                "Duration/ID in BSRP Trigger Frame is too short");
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    Time ctsNavEnd = m_txPsdus[1].endTx + m_txPsdus[1].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
 
-    // A second STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP
-    // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[2].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[2].psduMap.size() == 1 &&
-                           m_txPsdus[2].psduMap.begin()->second->GetNMpdus() == 1),
-                          true,
-                          "Expected a QoS Null frame in an HE TB PPDU");
-    {
-        const WifiMacHeader& hdr = m_txPsdus[2].psduMap.begin()->second->GetHeader(0);
-        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-        uint16_t staId;
-        for (staId = 0; staId < m_nStations; staId++)
-        {
-            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
-            {
-                break;
-            }
-        }
-        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
-        uint8_t tid = staId * 2;
-        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
-    }
+    // A second STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[2].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[2].psduMap.size() == 1 &&
+         m_txPsdus[2].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[2].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[2].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
     tStart = m_txPsdus[2].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "QoS Null frame in HE TB PPDU sent too late");
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[2].endTx,
-                                "Duration/ID in BSRP Trigger Frame is too short");
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[2].endTx + m_txPsdus[2].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
 
-    // A third STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[3].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[3].psduMap.size() == 1 &&
-                           m_txPsdus[3].psduMap.begin()->second->GetNMpdus() == 1),
-                          true,
-                          "Expected a QoS Null frame in an HE TB PPDU");
-    {
-        const WifiMacHeader& hdr = m_txPsdus[3].psduMap.begin()->second->GetHeader(0);
-        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-        uint16_t staId;
-        for (staId = 0; staId < m_nStations; staId++)
-        {
-            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
-            {
-                break;
-            }
-        }
-        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
-        uint8_t tid = staId * 2;
-        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
-    }
+    // A third STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[3].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[3].psduMap.size() == 1 &&
+         m_txPsdus[3].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[3].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[3].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
     tStart = m_txPsdus[3].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "QoS Null frame in HE TB PPDU sent too late");
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[3].endTx,
-                                "Duration/ID in BSRP Trigger Frame is too short");
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[3].endTx + m_txPsdus[3].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
 
-    // A fourth STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP
-    // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[4].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[4].psduMap.size() == 1 &&
-                           m_txPsdus[4].psduMap.begin()->second->GetNMpdus() == 1),
-                          true,
-                          "Expected a QoS Null frame in an HE TB PPDU");
-    {
-        const WifiMacHeader& hdr = m_txPsdus[4].psduMap.begin()->second->GetHeader(0);
-        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-        uint16_t staId;
-        for (staId = 0; staId < m_nStations; staId++)
-        {
-            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
-            {
-                break;
-            }
-        }
-        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
-        uint8_t tid = staId * 2;
-        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
-    }
+    // A fourth STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[4].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[4].psduMap.size() == 1 &&
+         m_txPsdus[4].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[4].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[4].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
     tStart = m_txPsdus[4].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "QoS Null frame in HE TB PPDU sent too late");
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[4].endTx,
-                                "Duration/ID in BSRP Trigger Frame is too short");
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[4].endTx + m_txPsdus[4].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
 
-    // the AP sends a Basic Trigger Frame to solicit QoS data frames
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 11, "Expected at least 11 transmitted packets");
+    // the AP sends a BSRP Trigger Frame
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 10, "Expected at least 10 transmitted packet");
     NS_TEST_EXPECT_MSG_EQ((m_txPsdus[5].psduMap.size() == 1 &&
                            m_txPsdus[5].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
                            m_txPsdus[5].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
                           true,
                           "Expected a Trigger Frame");
     m_txPsdus[5].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
-    NS_TEST_EXPECT_MSG_EQ(trigger.IsBasic(), true, "Expected a Basic Trigger Frame");
+    NS_TEST_EXPECT_MSG_EQ(trigger.IsBsrp(), true, "Expected a BSRP Trigger Frame");
     NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
                           4,
                           "Expected one User Info field per station");
-    tEnd = m_txPsdus[1].endTx;
+    tEnd = m_txPsdus[4].endTx;
     tStart = m_txPsdus[5].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "BSRP Trigger Frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "BSRP Trigger Frame sent too late");
+    Time bsrpNavEnd = m_txPsdus[5].endTx + m_txPsdus[5].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= bsrpNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, bsrpNavEnd, "Duration/ID in BSRP TF is too short");
+    NS_TEST_EXPECT_MSG_LT(bsrpNavEnd, navEnd + tolerance, "Duration/ID in BSRP TF is too long");
+
+    // A first STA sends a QoS Null frame in a TB PPDU a SIFS after the reception of the BSRP TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[6].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[6].psduMap.size() == 1 &&
+                           m_txPsdus[6].psduMap.begin()->second->GetNMpdus() == 1),
+                          true,
+                          "Expected a QoS Null frame in a TB PPDU");
+    {
+        const WifiMacHeader& hdr = m_txPsdus[6].psduMap.begin()->second->GetHeader(0);
+        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+        uint16_t staId;
+        for (staId = 0; staId < m_nStations; staId++)
+        {
+            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
+            {
+                break;
+            }
+        }
+        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
+        uint8_t tid = staId * 2;
+        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
+    }
+    tEnd = m_txPsdus[5].endTx;
+    tStart = m_txPsdus[6].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart,
+                          tEnd + sifs + tolerance,
+                          "QoS Null frame in HE TB PPDU sent too late");
+    Time qosNullNavEnd = m_txPsdus[6].endTx + m_txPsdus[6].psduMap.begin()->second->GetDuration();
+    if (m_txopLimit == 0)
+    {
+        NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
+                              m_txPsdus[6].endTx,
+                              "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
+    }
+    // navEnd <= qosNullNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosNullNavEnd, "Duration/ID in QoS Null is too short");
+    NS_TEST_EXPECT_MSG_LT(qosNullNavEnd, navEnd + tolerance, "Duration/ID in QoS Null is too long");
+
+    // A second STA sends a QoS Null frame in a TB PPDU a SIFS after the reception of the BSRP TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[7].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[7].psduMap.size() == 1 &&
+                           m_txPsdus[7].psduMap.begin()->second->GetNMpdus() == 1),
+                          true,
+                          "Expected a QoS Null frame in a TB PPDU");
+    {
+        const WifiMacHeader& hdr = m_txPsdus[7].psduMap.begin()->second->GetHeader(0);
+        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+        uint16_t staId;
+        for (staId = 0; staId < m_nStations; staId++)
+        {
+            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
+            {
+                break;
+            }
+        }
+        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
+        uint8_t tid = staId * 2;
+        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
+    }
+    tStart = m_txPsdus[7].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart,
+                          tEnd + sifs + tolerance,
+                          "QoS Null frame in HE TB PPDU sent too late");
+    qosNullNavEnd = m_txPsdus[7].endTx + m_txPsdus[7].psduMap.begin()->second->GetDuration();
+    if (m_txopLimit == 0)
+    {
+        NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
+                              m_txPsdus[7].endTx,
+                              "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
+    }
+    // navEnd <= qosNullNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosNullNavEnd, "Duration/ID in QoS Null is too short");
+    NS_TEST_EXPECT_MSG_LT(qosNullNavEnd, navEnd + tolerance, "Duration/ID in QoS Null is too long");
+
+    // A third STA sends a QoS Null frame in a TB PPDU a SIFS after the reception of the BSRP TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[8].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[8].psduMap.size() == 1 &&
+                           m_txPsdus[8].psduMap.begin()->second->GetNMpdus() == 1),
+                          true,
+                          "Expected a QoS Null frame in an HE TB PPDU");
+    {
+        const WifiMacHeader& hdr = m_txPsdus[8].psduMap.begin()->second->GetHeader(0);
+        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+        uint16_t staId;
+        for (staId = 0; staId < m_nStations; staId++)
+        {
+            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
+            {
+                break;
+            }
+        }
+        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
+        uint8_t tid = staId * 2;
+        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
+    }
+    tStart = m_txPsdus[8].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart,
+                          tEnd + sifs + tolerance,
+                          "QoS Null frame in HE TB PPDU sent too late");
+    qosNullNavEnd = m_txPsdus[8].endTx + m_txPsdus[8].psduMap.begin()->second->GetDuration();
+    if (m_txopLimit == 0)
+    {
+        NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
+                              m_txPsdus[8].endTx,
+                              "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
+    }
+    // navEnd <= qosNullNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosNullNavEnd, "Duration/ID in QoS Null is too short");
+    NS_TEST_EXPECT_MSG_LT(qosNullNavEnd, navEnd + tolerance, "Duration/ID in QoS Null is too long");
+
+    // A fourth STA sends a QoS Null frame in a TB PPDU a SIFS after the reception of the BSRP TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[9].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[9].psduMap.size() == 1 &&
+                           m_txPsdus[9].psduMap.begin()->second->GetNMpdus() == 1),
+                          true,
+                          "Expected a QoS Null frame in an HE TB PPDU");
+    {
+        const WifiMacHeader& hdr = m_txPsdus[9].psduMap.begin()->second->GetHeader(0);
+        NS_TEST_EXPECT_MSG_EQ(hdr.GetType(), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+        uint16_t staId;
+        for (staId = 0; staId < m_nStations; staId++)
+        {
+            if (DynamicCast<WifiNetDevice>(m_staDevices.Get(staId))->GetAddress() == hdr.GetAddr2())
+            {
+                break;
+            }
+        }
+        NS_TEST_EXPECT_MSG_NE(+staId, m_nStations, "Sender not found among stations");
+        uint8_t tid = staId * 2;
+        NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosTid(), +tid, "Expected a TID equal to " << +tid);
+    }
+    tStart = m_txPsdus[9].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart,
+                          tEnd + sifs + tolerance,
+                          "QoS Null frame in HE TB PPDU sent too late");
+    qosNullNavEnd = m_txPsdus[9].endTx + m_txPsdus[9].psduMap.begin()->second->GetDuration();
+    if (m_txopLimit == 0)
+    {
+        NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
+                              m_txPsdus[9].endTx,
+                              "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
+    }
+    // navEnd <= qosNullNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosNullNavEnd, "Duration/ID in QoS Null is too short");
+    NS_TEST_EXPECT_MSG_LT(qosNullNavEnd, navEnd + tolerance, "Duration/ID in QoS Null is too long");
+
+    // the AP sends another MU-RTS Trigger Frame to protect the Basic TF
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 15, "Expected at least 15 transmitted packet");
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[10].psduMap.size() == 1 &&
+                           m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
+                           m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
+                          true,
+                          "Expected a Trigger Frame");
+    m_txPsdus[10].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
+    NS_TEST_EXPECT_MSG_EQ(trigger.IsMuRts(), true, "Expected an MU-RTS Trigger Frame");
+    NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
+                          4,
+                          "Expected one User Info field per station");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[10].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the MU-RTS to occupy the entire channel width");
+    for (const auto& userInfo : trigger)
+    {
+        NS_TEST_EXPECT_MSG_EQ(+userInfo.GetMuRtsRuAllocation(),
+                              +m_muRtsRuAllocation,
+                              "Unexpected RU Allocation value in MU-RTS");
+    }
+    tEnd = m_txPsdus[9].endTx;
+    tStart = m_txPsdus[10].startTx;
     NS_TEST_EXPECT_MSG_LT(tEnd + ifs, tStart, "Basic Trigger Frame sent too early");
     if (m_txopLimit > 0)
     {
         NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Basic Trigger Frame sent too late");
+        // Duration/ID still protects until the end of the TXOP
+        auto muRtsNavEnd = m_txPsdus[10].endTx + m_txPsdus[10].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= muRtsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, muRtsNavEnd, "Duration/ID in MU-RTS is too short");
+        NS_TEST_EXPECT_MSG_LT(muRtsNavEnd, navEnd + tolerance, "Duration/ID in MU-RTS is too long");
     }
 
-    // A first STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[6].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[6].psduMap.size() == 1 &&
-                           m_txPsdus[6].psduMap.begin()->second->GetNMpdus() == 2 &&
-                           m_txPsdus[6].psduMap.begin()->second->GetHeader(0).IsQosData() &&
-                           m_txPsdus[6].psduMap.begin()->second->GetHeader(1).IsQosData()),
-                          true,
-                          "Expected 2 QoS data frames in an HE TB PPDU");
-    tEnd = m_txPsdus[5].endTx;
-    tStart = m_txPsdus[6].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "QoS data frames in HE TB PPDU sent too late");
+    // NAV end is now set by the Duration/ID of the second MU-RTS TF
+    tEnd = m_txPsdus[10].endTx;
+    navEnd = tEnd + m_txPsdus[10].psduMap[SU_STA_ID]->GetDuration();
 
-    // A second STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic
-    // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[7].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[7].psduMap.size() == 1 &&
-                           m_txPsdus[7].psduMap.begin()->second->GetNMpdus() == 2 &&
-                           m_txPsdus[7].psduMap.begin()->second->GetHeader(0).IsQosData() &&
-                           m_txPsdus[7].psduMap.begin()->second->GetHeader(1).IsQosData()),
-                          true,
-                          "Expected 2 QoS data frames in an HE TB PPDU");
-    tEnd = m_txPsdus[5].endTx;
-    tStart = m_txPsdus[7].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "QoS data frames in HE TB PPDU sent too late");
+    // A first STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[11].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[11].psduMap.size() == 1 &&
+         m_txPsdus[11].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[11].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
 
-    // A third STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[8].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[8].psduMap.size() == 1 &&
-                           m_txPsdus[8].psduMap.begin()->second->GetNMpdus() == 2 &&
-                           m_txPsdus[8].psduMap.begin()->second->GetHeader(0).IsQosData() &&
-                           m_txPsdus[8].psduMap.begin()->second->GetHeader(1).IsQosData()),
-                          true,
-                          "Expected 2 QoS data frames in an HE TB PPDU");
-    tEnd = m_txPsdus[5].endTx;
-    tStart = m_txPsdus[8].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "QoS data frames in HE TB PPDU sent too late");
+    tStart = m_txPsdus[11].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[11].endTx + m_txPsdus[11].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
 
-    // A fourth STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic
-    // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[9].txVector.GetPreambleType() == m_tbPreamble &&
-                           m_txPsdus[9].psduMap.size() == 1 &&
-                           m_txPsdus[9].psduMap.begin()->second->GetNMpdus() == 2 &&
-                           m_txPsdus[9].psduMap.begin()->second->GetHeader(0).IsQosData() &&
-                           m_txPsdus[9].psduMap.begin()->second->GetHeader(1).IsQosData()),
+    // A second STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[12].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[12].psduMap.size() == 1 &&
+         m_txPsdus[12].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[12].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[12].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
+    tStart = m_txPsdus[12].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[12].endTx + m_txPsdus[12].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+
+    // A third STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[13].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[13].psduMap.size() == 1 &&
+         m_txPsdus[13].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[13].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[13].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
+    tStart = m_txPsdus[13].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[13].endTx + m_txPsdus[13].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+
+    // A fourth STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[14].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[14].psduMap.size() == 1 &&
+         m_txPsdus[14].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[14].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[14].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
+    tStart = m_txPsdus[14].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[14].endTx + m_txPsdus[14].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+
+    // the AP sends a Basic Trigger Frame to solicit QoS data frames
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 21, "Expected at least 21 transmitted packets");
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].psduMap.size() == 1 &&
+                           m_txPsdus[15].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
+                           m_txPsdus[15].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
+                          true,
+                          "Expected a Trigger Frame");
+    m_txPsdus[15].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
+    NS_TEST_EXPECT_MSG_EQ(trigger.IsBasic(), true, "Expected a Basic Trigger Frame");
+    NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
+                          4,
+                          "Expected one User Info field per station");
+    tEnd = m_txPsdus[14].endTx;
+    tStart = m_txPsdus[15].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Basic Trigger Frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Basic Trigger Frame sent too late");
+    Time basicNavEnd = m_txPsdus[15].endTx + m_txPsdus[15].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= basicNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, basicNavEnd, "Duration/ID in Basic TF is too short");
+    NS_TEST_EXPECT_MSG_LT(basicNavEnd, navEnd + tolerance, "Duration/ID in Basic TF is too long");
+
+    // A first STA sends QoS data frames in a TB PPDU a SIFS after the reception of the Basic TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[16].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[16].psduMap.size() == 1 &&
+                           m_txPsdus[16].psduMap.begin()->second->GetNMpdus() == 2 &&
+                           m_txPsdus[16].psduMap.begin()->second->GetHeader(0).IsQosData() &&
+                           m_txPsdus[16].psduMap.begin()->second->GetHeader(1).IsQosData()),
                           true,
                           "Expected 2 QoS data frames in an HE TB PPDU");
-    tEnd = m_txPsdus[5].endTx;
-    tStart = m_txPsdus[9].startTx;
+    tEnd = m_txPsdus[15].endTx;
+    tStart = m_txPsdus[16].startTx;
     NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
     NS_TEST_EXPECT_MSG_LT(tStart,
                           tEnd + sifs + tolerance,
                           "QoS data frames in HE TB PPDU sent too late");
+    Time qosDataNavEnd = m_txPsdus[16].endTx + m_txPsdus[16].psduMap.begin()->second->GetDuration();
+    // navEnd <= qosDataNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosDataNavEnd, "Duration/ID in QoS Data is too short");
+    NS_TEST_EXPECT_MSG_LT(qosDataNavEnd, navEnd + tolerance, "Duration/ID in QoS Data is too long");
+
+    // A second STA sends QoS data frames in a TB PPDU a SIFS after the reception of the Basic TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[17].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[17].psduMap.size() == 1 &&
+                           m_txPsdus[17].psduMap.begin()->second->GetNMpdus() == 2 &&
+                           m_txPsdus[17].psduMap.begin()->second->GetHeader(0).IsQosData() &&
+                           m_txPsdus[17].psduMap.begin()->second->GetHeader(1).IsQosData()),
+                          true,
+                          "Expected 2 QoS data frames in an HE TB PPDU");
+    tStart = m_txPsdus[17].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart,
+                          tEnd + sifs + tolerance,
+                          "QoS data frames in HE TB PPDU sent too late");
+    qosDataNavEnd = m_txPsdus[17].endTx + m_txPsdus[17].psduMap.begin()->second->GetDuration();
+    // navEnd <= qosDataNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosDataNavEnd, "Duration/ID in QoS Data is too short");
+    NS_TEST_EXPECT_MSG_LT(qosDataNavEnd, navEnd + tolerance, "Duration/ID in QoS Data is too long");
+
+    // A third STA sends QoS data frames in a TB PPDU a SIFS after the reception of the Basic TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[18].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[18].psduMap.size() == 1 &&
+                           m_txPsdus[18].psduMap.begin()->second->GetNMpdus() == 2 &&
+                           m_txPsdus[18].psduMap.begin()->second->GetHeader(0).IsQosData() &&
+                           m_txPsdus[18].psduMap.begin()->second->GetHeader(1).IsQosData()),
+                          true,
+                          "Expected 2 QoS data frames in an HE TB PPDU");
+    tStart = m_txPsdus[18].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart,
+                          tEnd + sifs + tolerance,
+                          "QoS data frames in HE TB PPDU sent too late");
+    qosDataNavEnd = m_txPsdus[18].endTx + m_txPsdus[18].psduMap.begin()->second->GetDuration();
+    // navEnd <= qosDataNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosDataNavEnd, "Duration/ID in QoS Data is too short");
+    NS_TEST_EXPECT_MSG_LT(qosDataNavEnd, navEnd + tolerance, "Duration/ID in QoS Data is too long");
+
+    // A fourth STA sends QoS data frames in a TB PPDU a SIFS after the reception of the Basic TF
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[19].txVector.GetPreambleType() == m_tbPreamble &&
+                           m_txPsdus[19].psduMap.size() == 1 &&
+                           m_txPsdus[19].psduMap.begin()->second->GetNMpdus() == 2 &&
+                           m_txPsdus[19].psduMap.begin()->second->GetHeader(0).IsQosData() &&
+                           m_txPsdus[19].psduMap.begin()->second->GetHeader(1).IsQosData()),
+                          true,
+                          "Expected 2 QoS data frames in an HE TB PPDU");
+    tStart = m_txPsdus[19].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart,
+                          tEnd + sifs + tolerance,
+                          "QoS data frames in HE TB PPDU sent too late");
+    qosDataNavEnd = m_txPsdus[19].endTx + m_txPsdus[19].psduMap.begin()->second->GetDuration();
+    // navEnd <= qosDataNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosDataNavEnd, "Duration/ID in QoS Data is too short");
+    NS_TEST_EXPECT_MSG_LT(qosDataNavEnd, navEnd + tolerance, "Duration/ID in QoS Data is too long");
 
     // the AP sends a Multi-STA Block Ack
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[10].psduMap.size() == 1 &&
-                           m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck() &&
-                           m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[20].psduMap.size() == 1 &&
+                           m_txPsdus[20].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck() &&
+                           m_txPsdus[20].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
                           true,
                           "Expected a Block Ack");
-    m_txPsdus[10].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(blockAck);
+    m_txPsdus[20].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(blockAck);
     NS_TEST_EXPECT_MSG_EQ(blockAck.IsMultiSta(), true, "Expected a Multi-STA Block Ack");
     NS_TEST_EXPECT_MSG_EQ(blockAck.GetNPerAidTidInfoSubfields(),
                           4,
@@ -928,415 +1221,645 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
         NS_TEST_EXPECT_MSG_EQ(blockAck.GetAckType(i), true, "Expected All-ack context");
         NS_TEST_EXPECT_MSG_EQ(+blockAck.GetTidInfo(i), 14, "Expected All-ack context");
     }
-    tEnd = m_txPsdus[9].endTx;
-    tStart = m_txPsdus[10].startTx;
+    tEnd = m_txPsdus[19].endTx;
+    tStart = m_txPsdus[20].startTx;
     NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Multi-STA Block Ack sent too early");
     NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Multi-STA Block Ack sent too late");
+    auto multiStaBaNavEnd = m_txPsdus[20].endTx + m_txPsdus[20].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= multiStaBaNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd,
+                                multiStaBaNavEnd,
+                                "Duration/ID in Multi-STA BlockAck is too short");
+    NS_TEST_EXPECT_MSG_LT(multiStaBaNavEnd,
+                          navEnd + tolerance,
+                          "Duration/ID in Multi-STA BlockAck is too long");
 
-    navEnd = m_txPsdus[5].endTx + m_txPsdus[5].psduMap[SU_STA_ID]->GetDuration(); // Basic TF's NAV
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[10].endTx,
-                                "Duration/ID in Basic Trigger Frame is too short");
-    navEnd = m_txPsdus[6].endTx +
-             m_txPsdus[6].psduMap.begin()->second->GetDuration(); // 1st QoS Data frame's NAV
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[10].endTx,
-                                "Duration/ID in 1st QoS Data frame is too short");
-    navEnd = m_txPsdus[7].endTx +
-             m_txPsdus[7].psduMap.begin()->second->GetDuration(); // 2nd QoS Data frame's NAV
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[10].endTx,
-                                "Duration/ID in 2nd QoS Data frame is too short");
-    navEnd = m_txPsdus[8].endTx +
-             m_txPsdus[8].psduMap.begin()->second->GetDuration(); // 3rd QoS Data frame's NAV
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[10].endTx,
-                                "Duration/ID in 3rd QoS Data frame is too short");
-    navEnd = m_txPsdus[9].endTx +
-             m_txPsdus[9].psduMap.begin()->second->GetDuration(); // 4th QoS Data frame's NAV
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                m_txPsdus[10].endTx,
-                                "Duration/ID in 4th QoS Data frame is too short");
+    // the AP sends an MU-RTS Trigger Frame to protect the DL MU PPDU
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 26, "Expected at least 26 transmitted packet");
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[21].psduMap.size() == 1 &&
+                           m_txPsdus[21].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
+                           m_txPsdus[21].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
+                          true,
+                          "Expected a Trigger Frame");
+    m_txPsdus[21].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
+    NS_TEST_EXPECT_MSG_EQ(trigger.IsMuRts(), true, "Expected an MU-RTS Trigger Frame");
+    NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
+                          4,
+                          "Expected one User Info field per station");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[21].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the MU-RTS to occupy the entire channel width");
+    for (const auto& userInfo : trigger)
+    {
+        NS_TEST_EXPECT_MSG_EQ(+userInfo.GetMuRtsRuAllocation(),
+                              +m_muRtsRuAllocation,
+                              "Unexpected RU Allocation value in MU-RTS");
+    }
+    tEnd = m_txPsdus[20].endTx;
+    tStart = m_txPsdus[21].startTx;
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(tEnd + ifs, tStart, "MU-RTS Trigger Frame sent too early");
+    tEnd = m_txPsdus[21].endTx;
+    navEnd = tEnd + m_txPsdus[21].psduMap[SU_STA_ID]->GetDuration();
+
+    // A first STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[22].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[22].psduMap.size() == 1 &&
+         m_txPsdus[22].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[22].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[22].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
+    tStart = m_txPsdus[22].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[22].endTx + m_txPsdus[22].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+
+    // A second STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[23].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[23].psduMap.size() == 1 &&
+         m_txPsdus[23].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[23].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[23].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
+    tStart = m_txPsdus[23].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[23].endTx + m_txPsdus[23].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+
+    // A third STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[24].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[24].psduMap.size() == 1 &&
+         m_txPsdus[24].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[24].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[24].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
+    tStart = m_txPsdus[24].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[24].endTx + m_txPsdus[24].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+
+    // A fourth STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_txPsdus[25].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+         m_txPsdus[25].psduMap.size() == 1 &&
+         m_txPsdus[25].psduMap.begin()->second->GetNMpdus() == 1 &&
+         m_txPsdus[25].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+        true,
+        "Expected a CTS frame");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[25].txVector.GetChannelWidth(),
+                          m_channelWidth,
+                          "Expected the CTS to occupy the entire channel width");
+
+    tStart = m_txPsdus[25].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+    ctsNavEnd = m_txPsdus[25].endTx + m_txPsdus[25].psduMap[SU_STA_ID]->GetDuration();
+    // navEnd <= ctsNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
 
     // the AP sends a DL MU PPDU
-    NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 12, "Expected at least 12 transmitted packet");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].txVector.GetPreambleType(),
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 27, "Expected at least 27 transmitted packet");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[26].txVector.GetPreambleType(),
                           m_dlMuPreamble,
                           "Expected a DL MU PPDU");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].psduMap.size(),
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[26].psduMap.size(),
                           4,
                           "Expected 4 PSDUs within the DL MU PPDU");
     // the TX duration cannot exceed the maximum PPDU duration
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(m_txPsdus[11].endTx - m_txPsdus[11].startTx,
-                                GetPpduMaxTime(m_txPsdus[11].txVector.GetPreambleType()),
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(m_txPsdus[26].endTx - m_txPsdus[26].startTx,
+                                GetPpduMaxTime(m_txPsdus[26].txVector.GetPreambleType()),
                                 "TX duration cannot exceed max PPDU duration");
-    for (auto& psdu : m_txPsdus[11].psduMap)
+    for (auto& psdu : m_txPsdus[26].psduMap)
     {
         NS_TEST_EXPECT_MSG_LT_OR_EQ(psdu.second->GetSize(),
                                     m_maxAmpduSize,
                                     "Max A-MPDU size exceeded");
     }
-    tEnd = m_txPsdus[10].endTx;
-    tStart = m_txPsdus[11].startTx;
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(tEnd + ifs, tStart, "DL MU PPDU sent too early");
+    tEnd = m_txPsdus[25].endTx;
+    tStart = m_txPsdus[26].startTx;
+    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "DL MU PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "DL MU PPDU sent too late");
 
     // The Duration/ID field is the same for all the PSDUs
-    navEnd = m_txPsdus[11].endTx;
-    for (auto& psdu : m_txPsdus[11].psduMap)
+    auto dlMuNavEnd = m_txPsdus[26].endTx;
+    for (auto& psdu : m_txPsdus[26].psduMap)
     {
-        if (navEnd == m_txPsdus[11].endTx)
+        if (dlMuNavEnd == m_txPsdus[26].endTx)
         {
-            navEnd += psdu.second->GetDuration();
+            dlMuNavEnd += psdu.second->GetDuration();
         }
         else
         {
-            NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].endTx + psdu.second->GetDuration(),
-                                  navEnd,
+            NS_TEST_EXPECT_MSG_EQ(m_txPsdus[26].endTx + psdu.second->GetDuration(),
+                                  dlMuNavEnd,
                                   "Duration/ID must be the same for all PSDUs");
         }
     }
-    NS_TEST_EXPECT_MSG_GT(navEnd,
-                          m_txPsdus[11].endTx,
-                          "Duration/ID of the DL MU PPDU cannot be zero");
+    // navEnd <= dlMuNavEnd < navEnd + tolerance
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, dlMuNavEnd, "Duration/ID in DL MU PPDU is too short");
+    NS_TEST_EXPECT_MSG_LT(dlMuNavEnd, navEnd + tolerance, "Duration/ID in DL MU PPDU is too long");
 
     std::size_t nTxPsdus = 0;
 
     if (m_dlMuAckType == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE)
     {
         /*
-         *        |----------------------------------------NAV---------------------------------------------->|
-         *        | |--------------------------NAV---------------------------------->| | |
-         * |-------------------NAV--------------->| |                         | | |----NAV---->|
-         * |------|      |-----|      |-----|      |-----|      |-----|      |-----|      |-----|
-         * |-----| |PSDU 1|      |     |      |     |      |     |      |     |      |     |      |
-         * |      |     |
-         * |------|      |Block|      |Block|      |Block|      |Block|      |Block|      |Block|
-         * |Block| |PSDU 2|      | Ack |      | Ack |      | Ack |      | Ack |      | Ack |      |
-         * Ack |      | Ack |
-         * |------|<SIFS>|     |<SIFS>| Req |<SIFS>|     |<SIFS>| Req |<SIFS>|     |<SIFS>| Req
-         * |<SIFS>|     | |PSDU 3|      |     |      |     |      |     |      |     |      |     |
-         * |     |      |     |
-         * |------|      |     |      |     |      |     |      |     |      |     |      |     | |
-         * | |PSDU 4|      |     |      |     |      |     |      |     |      |     |      |     |
-         * |     |
-         * ---------------------------------------------------------------------------------------------------
-         * From: AP       STA 1         AP          STA 2         AP          STA 3         AP STA 4
-         *   To:           AP          STA 2         AP          STA 3         AP          STA 4 AP
+         *        |-----------------------------------------NAV-------------------------------->|
+         *                 |----------------------------------NAV------------------------------>|
+         *                           |-----------------------------NAV------------------------->|
+         *                                   |-------------------------NAV--------------------->|
+         *                                            |--NAV->|        |--NAV->|        |--NAV->|
+         *    ┌───┐    ┌───┐    ┌────┐    ┌──┐    ┌───┐    ┌──┐    ┌───┐    ┌──┐    ┌───┐    ┌──┐
+         *    │   │    │   │    │PSDU│    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │   │    │   │    │  1 │    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │   │    │   │    ├────┤    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │   │    │   │    │PSDU│    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │MU-│    │CTS│    │  2 │    │BA│    │BAR│    │BA│    │BAR│    │BA│    │BAR│    │BA│
+         *    │RTS│SIFS│   │SIFS├────┤SIFS│  │SIFS│   │SIFS│  │SIFS│   │SIFS│  │SIFS│   │SIFS│  │
+         *    │TF │    │x4 │    │PSDU│    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │   │    │   │    │  3 │    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │   │    │   │    ├────┤    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │   │    │   │    │PSDU│    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         *    │   │    │   │    │  4 │    │  │    │   │    │  │    │   │    │  │    │   │    │  │
+         * ───┴───┴────┴───┴────┴────┴────┴──┴────┴───┴────┴──┴────┴───┴────┴──┴────┴───┴────┴──┴──
+         * From: AP     all       AP      STA 1    AP     STA 2     AP      STA 3    AP      STA 4
+         *   To: all    AP        all      AP     STA 2     AP     STA 3     AP     STA 4     AP
          */
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 19, "Expected at least 19 packets");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 34, "Expected at least 34 packets");
 
         // A first STA sends a Block Ack a SIFS after the reception of the DL MU PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[12].psduMap.size() == 1 &&
-                               m_txPsdus[12].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[27].psduMap.size() == 1 &&
+                               m_txPsdus[27].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[11].endTx;
-        tStart = m_txPsdus[12].startTx;
+        tEnd = m_txPsdus[26].endTx;
+        tStart = m_txPsdus[27].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "First Block Ack sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "First Block Ack sent too late");
+        Time baNavEnd = m_txPsdus[27].endTx + m_txPsdus[27].psduMap[SU_STA_ID]->GetDuration();
+        // The NAV of the first BlockAck, being a response to a QoS Data frame, matches the NAV
+        // set by the MU-RTS TF.
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd,
+                                    baNavEnd,
+                                    "Duration/ID in 1st BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in 1st BlockAck is too long");
 
         // the AP transmits a Block Ack Request an IFS after the reception of the Block Ack
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[13].psduMap.size() == 1 &&
-                               m_txPsdus[13].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAckReq()),
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[28].psduMap.size() == 1 &&
+                               m_txPsdus[28].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAckReq()),
                               true,
                               "Expected a Block Ack Request");
-        tEnd = m_txPsdus[12].endTx;
-        tStart = m_txPsdus[13].startTx;
+        tEnd = m_txPsdus[27].endTx;
+        tStart = m_txPsdus[28].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "First Block Ack Request sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "First Block Ack Request sent too late");
+        // under single protection setting (TXOP limit equal to zero), the NAV of the BlockAckReq
+        // only covers the following BlockAck response; under multiple protection setting, the
+        // NAV of the BlockAckReq matches the NAV set by the MU-RTS TF
+        Time barNavEnd = m_txPsdus[28].endTx + m_txPsdus[28].psduMap[SU_STA_ID]->GetDuration();
+        if (m_txopLimit > 0)
+        {
+            // navEnd <= barNavEnd < navEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd,
+                                        barNavEnd,
+                                        "Duration/ID in BlockAckReq is too short");
+            NS_TEST_EXPECT_MSG_LT(barNavEnd,
+                                  navEnd + tolerance,
+                                  "Duration/ID in BlockAckReq is too long");
+        }
 
         // A second STA sends a Block Ack a SIFS after the reception of the Block Ack Request
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[14].psduMap.size() == 1 &&
-                               m_txPsdus[14].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[29].psduMap.size() == 1 &&
+                               m_txPsdus[29].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[13].endTx;
-        tStart = m_txPsdus[14].startTx;
+        tEnd = m_txPsdus[28].endTx;
+        tStart = m_txPsdus[29].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Second Block Ack sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Second Block Ack sent too late");
+        baNavEnd = m_txPsdus[29].endTx + m_txPsdus[29].psduMap[SU_STA_ID]->GetDuration();
+        if (m_txopLimit > 0)
+        {
+            // navEnd <= baNavEnd < navEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck is too short");
+            NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                                  navEnd + tolerance,
+                                  "Duration/ID in BlockAck is too long");
+        }
+        else
+        {
+            // barNavEnd <= baNavEnd < barNavEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(barNavEnd,
+                                        baNavEnd,
+                                        "Duration/ID in BlockAck is too short");
+            NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                                  barNavEnd + tolerance,
+                                  "Duration/ID in BlockAck is too long");
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[29].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
 
         // the AP transmits a Block Ack Request an IFS after the reception of the Block Ack
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].psduMap.size() == 1 &&
-                               m_txPsdus[15].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAckReq()),
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[30].psduMap.size() == 1 &&
+                               m_txPsdus[30].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAckReq()),
                               true,
                               "Expected a Block Ack Request");
-        tEnd = m_txPsdus[14].endTx;
-        tStart = m_txPsdus[15].startTx;
+        tEnd = m_txPsdus[29].endTx;
+        tStart = m_txPsdus[30].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Second Block Ack Request sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "Second Block Ack Request sent too late");
+        // under single protection setting (TXOP limit equal to zero), the NAV of the BlockAckReq
+        // only covers the following BlockAck response; under multiple protection setting, the
+        // NAV of the BlockAckReq matches the NAV set by the MU-RTS TF
+        barNavEnd = m_txPsdus[30].endTx + m_txPsdus[30].psduMap[SU_STA_ID]->GetDuration();
+        if (m_txopLimit > 0)
+        {
+            // navEnd <= barNavEnd < navEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd,
+                                        barNavEnd,
+                                        "Duration/ID in BlockAckReq is too short");
+            NS_TEST_EXPECT_MSG_LT(barNavEnd,
+                                  navEnd + tolerance,
+                                  "Duration/ID in BlockAckReq is too long");
+        }
 
         // A third STA sends a Block Ack a SIFS after the reception of the Block Ack Request
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[16].psduMap.size() == 1 &&
-                               m_txPsdus[16].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[31].psduMap.size() == 1 &&
+                               m_txPsdus[31].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[15].endTx;
-        tStart = m_txPsdus[16].startTx;
+        tEnd = m_txPsdus[30].endTx;
+        tStart = m_txPsdus[31].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Third Block Ack sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Third Block Ack sent too late");
+        baNavEnd = m_txPsdus[31].endTx + m_txPsdus[31].psduMap[SU_STA_ID]->GetDuration();
+        if (m_txopLimit > 0)
+        {
+            // navEnd <= baNavEnd < navEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck is too short");
+            NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                                  navEnd + tolerance,
+                                  "Duration/ID in BlockAck is too long");
+        }
+        else
+        {
+            // barNavEnd <= baNavEnd < barNavEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(barNavEnd,
+                                        baNavEnd,
+                                        "Duration/ID in BlockAck is too short");
+            NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                                  barNavEnd + tolerance,
+                                  "Duration/ID in BlockAck is too long");
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[31].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
 
         // the AP transmits a Block Ack Request an IFS after the reception of the Block Ack
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[17].psduMap.size() == 1 &&
-                               m_txPsdus[17].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAckReq()),
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[32].psduMap.size() == 1 &&
+                               m_txPsdus[32].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAckReq()),
                               true,
                               "Expected a Block Ack Request");
-        tEnd = m_txPsdus[16].endTx;
-        tStart = m_txPsdus[17].startTx;
+        tEnd = m_txPsdus[31].endTx;
+        tStart = m_txPsdus[32].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Third Block Ack Request sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "Third Block Ack Request sent too late");
-
-        // A fourth STA sends a Block Ack a SIFS after the reception of the Block Ack Request
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[18].psduMap.size() == 1 &&
-                               m_txPsdus[18].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
-                              true,
-                              "Expected a Block Ack");
-        tEnd = m_txPsdus[17].endTx;
-        tStart = m_txPsdus[18].startTx;
-        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Fourth Block Ack sent too early");
-        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Fourth Block Ack sent too late");
-
+        // under single protection setting (TXOP limit equal to zero), the NAV of the BlockAckReq
+        // only covers the following BlockAck response; under multiple protection setting, the
+        // NAV of the BlockAckReq matches the NAV set by the MU-RTS TF
+        barNavEnd = m_txPsdus[32].endTx + m_txPsdus[32].psduMap[SU_STA_ID]->GetDuration();
         if (m_txopLimit > 0)
         {
-            // DL MU PPDU's NAV
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[18].endTx,
-                                        "Duration/ID in the DL MU PPDU is too short");
-            // 1st BlockAckReq's NAV
-            navEnd = m_txPsdus[13].endTx + m_txPsdus[13].psduMap[SU_STA_ID]->GetDuration();
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[18].endTx,
-                                        "Duration/ID in the 1st BlockAckReq is too short");
-            // 2nd BlockAckReq's NAV
-            navEnd = m_txPsdus[15].endTx + m_txPsdus[15].psduMap[SU_STA_ID]->GetDuration();
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[18].endTx,
-                                        "Duration/ID in the 2nd BlockAckReq is too short");
-            // 3rd BlockAckReq's NAV
-            navEnd = m_txPsdus[17].endTx + m_txPsdus[17].psduMap[SU_STA_ID]->GetDuration();
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[18].endTx,
-                                        "Duration/ID in the 3rd BlockAckReq is too short");
+            // navEnd <= barNavEnd < navEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd,
+                                        barNavEnd,
+                                        "Duration/ID in BlockAckReq is too short");
+            NS_TEST_EXPECT_MSG_LT(barNavEnd,
+                                  navEnd + tolerance,
+                                  "Duration/ID in BlockAckReq is too long");
         }
-        nTxPsdus = 19;
+
+        // A fourth STA sends a Block Ack a SIFS after the reception of the Block Ack Request
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[33].psduMap.size() == 1 &&
+                               m_txPsdus[33].psduMap[SU_STA_ID]->GetHeader(0).IsBlockAck()),
+                              true,
+                              "Expected a Block Ack");
+        tEnd = m_txPsdus[32].endTx;
+        tStart = m_txPsdus[33].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Fourth Block Ack sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Fourth Block Ack sent too late");
+        baNavEnd = m_txPsdus[33].endTx + m_txPsdus[33].psduMap[SU_STA_ID]->GetDuration();
+        if (m_txopLimit > 0)
+        {
+            // navEnd <= baNavEnd < navEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck is too short");
+            NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                                  navEnd + tolerance,
+                                  "Duration/ID in BlockAck is too long");
+        }
+        else
+        {
+            // barNavEnd <= baNavEnd < barNavEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(barNavEnd,
+                                        baNavEnd,
+                                        "Duration/ID in BlockAck is too short");
+            NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                                  barNavEnd + tolerance,
+                                  "Duration/ID in BlockAck is too long");
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[33].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
+
+        nTxPsdus = 34;
     }
     else if (m_dlMuAckType == WifiAcknowledgment::DL_MU_TF_MU_BAR)
     {
         /*
-         *             |----------------NAV--------------->|
-         *             |                |--------NAV------>|
-         *      |------|      |---------|      |-----------|
-         *      |PSDU 1|      |         |      |Block Ack 1|
-         *      |------|      | MU-BAR  |      |-----------|
-         *      |PSDU 2|      | Trigger |      |Block Ack 2|
-         *      |------|<SIFS>|  Frame  |<SIFS>|-----------|
-         *      |PSDU 3|      |         |      |Block Ack 3|
-         *      |------|      |         |      |-----------|
-         *      |PSDU 4|      |         |      |Block Ack 4|
-         * --------------------------------------------------
-         * From:   AP            AP
-         *   To:                all                 AP
+         *          |---------------------NAV------------------------>|
+         *                   |-------------------NAV----------------->|
+         *                               |---------------NAV--------->|
+         *                                            |------NAV----->|
+         *      ┌───┐    ┌───┐    ┌──────┐    ┌───────┐    ┌──────────┐
+         *      │   │    │   │    │PSDU 1│    │       │    │BlockAck 1│
+         *      │   │    │   │    ├──────┤    │MU-BAR │    ├──────────┤
+         *      │MU-│    │CTS│    │PSDU 2│    │Trigger│    │BlockAck 2│
+         *      │RTS│SIFS│   │SIFS├──────┤SIFS│ Frame │SIFS├──────────┤
+         *      │TF │    │x4 │    │PSDU 3│    │       │    │BlockAck 3│
+         *      │   │    │   │    ├──────┤    │       │    ├──────────┤
+         *      │   │    │   │    │PSDU 4│    │       │    │BlockAck 4│
+         * -----┴───┴────┴───┴────┴──────┴────┴───────┴────┴──────────┴───
+         * From: AP       all        AP          AP            all
+         *   To: all      AP         all         all           AP
          */
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 17, "Expected at least 17 packets");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 32, "Expected at least 32 packets");
 
-        // the AP transmits a MU-BAR Trigger Frame an IFS after the transmission of the DL MU PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[12].psduMap.size() == 1 &&
-                               m_txPsdus[12].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger()),
+        // the AP transmits a MU-BAR Trigger Frame a SIFS after the transmission of the DL MU PPDU
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[27].psduMap.size() == 1 &&
+                               m_txPsdus[27].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger()),
                               true,
                               "Expected a MU-BAR Trigger Frame");
-        tEnd = m_txPsdus[11].endTx;
-        tStart = m_txPsdus[12].startTx;
+        tEnd = m_txPsdus[26].endTx;
+        tStart = m_txPsdus[27].startTx;
         NS_TEST_EXPECT_MSG_EQ(tStart, tEnd + sifs, "MU-BAR Trigger Frame sent at wrong time");
+        auto muBarNavEnd = m_txPsdus[27].endTx + m_txPsdus[27].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= muBarNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd,
+                                    muBarNavEnd,
+                                    "Duration/ID in MU-BAR Trigger Frame is too short");
+        NS_TEST_EXPECT_MSG_LT(muBarNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in MU-BAR Trigger Frame is too long");
 
-        // A first STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[13].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[13].psduMap.size() == 1 &&
-                               m_txPsdus[13].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+        // A first STA sends a Block Ack in a TB PPDU a SIFS after the reception of the MU-BAR
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[28].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[28].psduMap.size() == 1 &&
+                               m_txPsdus[28].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[12].endTx;
-        tStart = m_txPsdus[13].startTx;
+        tEnd = m_txPsdus[27].endTx;
+        tStart = m_txPsdus[28].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "Block Ack in HE TB PPDU sent too late");
-
-        // A second STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[14].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[14].psduMap.size() == 1 &&
-                               m_txPsdus[14].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
-                              true,
-                              "Expected a Block Ack");
-        tEnd = m_txPsdus[12].endTx;
-        tStart = m_txPsdus[14].startTx;
-        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
-        NS_TEST_EXPECT_MSG_LT(tStart,
-                              tEnd + sifs + tolerance,
-                              "Block Ack in HE TB PPDU sent too late");
-
-        // A third STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[15].psduMap.size() == 1 &&
-                               m_txPsdus[15].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
-                              true,
-                              "Expected a Block Ack");
-        tEnd = m_txPsdus[12].endTx;
-        tStart = m_txPsdus[15].startTx;
-        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
-        NS_TEST_EXPECT_MSG_LT(tStart,
-                              tEnd + sifs + tolerance,
-                              "Block Ack in HE TB PPDU sent too late");
-
-        // A fourth STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[16].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[16].psduMap.size() == 1 &&
-                               m_txPsdus[16].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
-                              true,
-                              "Expected a Block Ack");
-        tEnd = m_txPsdus[12].endTx;
-        tStart = m_txPsdus[16].startTx;
-        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
-        NS_TEST_EXPECT_MSG_LT(tStart,
-                              tEnd + sifs + tolerance,
-                              "Block Ack in HE TB PPDU sent too late");
-
-        if (m_txopLimit > 0)
+        Time baNavEnd = m_txPsdus[28].endTx + m_txPsdus[28].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd, navEnd + tolerance, "Duration/ID in BlockAck is too long");
+        if (m_txopLimit == 0)
         {
-            // DL MU PPDU's NAV
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[13].endTx,
-                                        "Duration/ID in the DL MU PPDU is too short");
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[14].endTx,
-                                        "Duration/ID in the DL MU PPDU is too short");
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[15].endTx,
-                                        "Duration/ID in the DL MU PPDU is too short");
-            NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                        m_txPsdus[16].endTx,
-                                        "Duration/ID in the DL MU PPDU is too short");
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[28].endTx,
+                                  "Expected null Duration/ID for BlockAck");
         }
-        // MU-BAR Trigger Frame's NAV
-        navEnd = m_txPsdus[12].endTx + m_txPsdus[12].psduMap[SU_STA_ID]->GetDuration();
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[13].endTx,
-                                    "Duration/ID in the MU-BAR Trigger Frame is too short");
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[14].endTx,
-                                    "Duration/ID in the MU-BAR Trigger Frame is too short");
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[15].endTx,
-                                    "Duration/ID in the MU-BAR Trigger Frame is too short");
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[16].endTx,
-                                    "Duration/ID in the MU-BAR Trigger Frame is too short");
 
-        nTxPsdus = 17;
+        // A second STA sends a Block Ack in a TB PPDU a SIFS after the reception of the MU-BAR
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[29].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[29].psduMap.size() == 1 &&
+                               m_txPsdus[29].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+                              true,
+                              "Expected a Block Ack");
+        tStart = m_txPsdus[29].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart,
+                              tEnd + sifs + tolerance,
+                              "Block Ack in HE TB PPDU sent too late");
+        baNavEnd = m_txPsdus[29].endTx + m_txPsdus[29].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in 1st BlockAck is too long");
+        if (m_txopLimit == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[29].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
+
+        // A third STA sends a Block Ack in a TB PPDU a SIFS after the reception of the MU-BAR
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[30].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[30].psduMap.size() == 1 &&
+                               m_txPsdus[30].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+                              true,
+                              "Expected a Block Ack");
+        tStart = m_txPsdus[30].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart,
+                              tEnd + sifs + tolerance,
+                              "Block Ack in HE TB PPDU sent too late");
+        baNavEnd = m_txPsdus[30].endTx + m_txPsdus[30].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in 1st BlockAck is too long");
+        if (m_txopLimit == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[30].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
+
+        // A fourth STA sends a Block Ack in a TB PPDU a SIFS after the reception of the MU-BAR
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[31].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[31].psduMap.size() == 1 &&
+                               m_txPsdus[31].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+                              true,
+                              "Expected a Block Ack");
+        tStart = m_txPsdus[31].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart,
+                              tEnd + sifs + tolerance,
+                              "Block Ack in HE TB PPDU sent too late");
+        baNavEnd = m_txPsdus[31].endTx + m_txPsdus[31].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in 1st BlockAck is too long");
+        if (m_txopLimit == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[31].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
+
+        nTxPsdus = 32;
     }
     else if (m_dlMuAckType == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
     {
         /*
-         *                         |--------NAV------>|
-         *      |------|-----------|      |-----------|
-         *      |PSDU 1|MU-BAR TF 1|      |Block Ack 1|
-         *      |------------------|      |-----------|
-         *      |PSDU 2|MU-BAR TF 2|      |Block Ack 2|
-         *      |------------------|<SIFS>|-----------|
-         *      |PSDU 3|MU-BAR TF 3|      |Block Ack 3|
-         *      |------------------|      |-----------|
-         *      |PSDU 4|MU-BAR TF 4|      |Block Ack 4|
-         * --------------------------------------------------
-         * From:         AP
-         *   To:                               AP
+         *          |---------------------NAV----------------------->|
+         *                   |-------------------NAV---------------->|
+         *                                           |------NAV----->|
+         *      ┌───┐    ┌───┐    ┌──────┬───────────┐    ┌──────────┐
+         *      │   │    │   │    │PSDU 1│MU-BAR TF 1│    │BlockAck 1│
+         *      │   │    │   │    ├──────┼───────────┤    ├──────────┤
+         *      │MU-│    │CTS│    │PSDU 2│MU-BAR TF 2│    │BlockAck 2│
+         *      │RTS│SIFS│   │SIFS├──────┼───────────┤SIFS├──────────┤
+         *      │TF │    │x4 │    │PSDU 3│MU-BAR TF 3│    │BlockAck 3│
+         *      │   │    │   │    ├──────┼───────────┤    ├──────────┤
+         *      │   │    │   │    │PSDU 4│MU-BAR TF 4│    │BlockAck 4│
+         * -----┴───┴────┴───┴────┴──────┴───────────┴────┴──────────┴───
+         * From: AP       all            AP                    all
+         *   To: all      AP             all                   AP
          */
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 16, "Expected at least 16 packets");
+        NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 31, "Expected at least 31 packets");
 
         // The last MPDU in each PSDU is a MU-BAR Trigger Frame
-        for (auto& psdu : m_txPsdus[11].psduMap)
+        for (auto& psdu : m_txPsdus[26].psduMap)
         {
-            NS_TEST_EXPECT_MSG_EQ((*(--psdu.second->end()))->GetHeader().IsTrigger(),
+            NS_TEST_EXPECT_MSG_EQ((*std::prev(psdu.second->end()))->GetHeader().IsTrigger(),
                                   true,
                                   "Expected an aggregated MU-BAR Trigger Frame");
         }
 
-        // A first STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[12].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[12].psduMap.size() == 1 &&
-                               m_txPsdus[12].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+        // A first STA sends a Block Ack in a TB PPDU a SIFS after the reception of the DL MU PPDU
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[27].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[27].psduMap.size() == 1 &&
+                               m_txPsdus[27].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[11].endTx;
-        tStart = m_txPsdus[12].startTx;
+        tEnd = m_txPsdus[26].endTx;
+        tStart = m_txPsdus[27].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "Block Ack in HE TB PPDU sent too late");
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[12].endTx,
-                                    "Duration/ID in the DL MU PPDU is too short");
+        Time baNavEnd = m_txPsdus[27].endTx + m_txPsdus[27].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd, navEnd + tolerance, "Duration/ID in BlockAck is too long");
+        if (m_txopLimit == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[27].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
 
-        // A second STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[13].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[13].psduMap.size() == 1 &&
-                               m_txPsdus[13].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+        // A second STA sends a Block Ack in a TB PPDU a SIFS after the reception of the DL MU PPDU
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[28].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[28].psduMap.size() == 1 &&
+                               m_txPsdus[28].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[11].endTx;
-        tStart = m_txPsdus[13].startTx;
+        tStart = m_txPsdus[28].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "Block Ack in HE TB PPDU sent too late");
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[13].endTx,
-                                    "Duration/ID in the DL MU PPDU is too short");
+        baNavEnd = m_txPsdus[28].endTx + m_txPsdus[28].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd, navEnd + tolerance, "Duration/ID in BlockAck is too long");
+        if (m_txopLimit == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[28].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
 
-        // A third STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[14].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[14].psduMap.size() == 1 &&
-                               m_txPsdus[14].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+        // A third STA sends a Block Ack in a TB PPDU a SIFS after the reception of the DL MU PPDU
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[29].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[29].psduMap.size() == 1 &&
+                               m_txPsdus[29].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[11].endTx;
-        tStart = m_txPsdus[14].startTx;
+        tStart = m_txPsdus[29].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "Block Ack in HE TB PPDU sent too late");
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[14].endTx,
-                                    "Duration/ID in the DL MU PPDU is too short");
+        baNavEnd = m_txPsdus[29].endTx + m_txPsdus[29].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd, navEnd + tolerance, "Duration/ID in BlockAck is too long");
+        if (m_txopLimit == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[29].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
 
-        // A fourth STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
-        // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].txVector.GetPreambleType() == m_tbPreamble &&
-                               m_txPsdus[15].psduMap.size() == 1 &&
-                               m_txPsdus[15].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
+        // A fourth STA sends a Block Ack in a TB PPDU a SIFS after the reception of the DL MU PPDU
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[30].txVector.GetPreambleType() == m_tbPreamble &&
+                               m_txPsdus[30].psduMap.size() == 1 &&
+                               m_txPsdus[30].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
                               "Expected a Block Ack");
-        tEnd = m_txPsdus[11].endTx;
-        tStart = m_txPsdus[15].startTx;
+        tStart = m_txPsdus[30].startTx;
         NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
         NS_TEST_EXPECT_MSG_LT(tStart,
                               tEnd + sifs + tolerance,
                               "Block Ack in HE TB PPDU sent too late");
-        NS_TEST_EXPECT_MSG_GT_OR_EQ(navEnd + tolerance,
-                                    m_txPsdus[15].endTx,
-                                    "Duration/ID in the DL MU PPDU is too short");
+        baNavEnd = m_txPsdus[30].endTx + m_txPsdus[30].psduMap.begin()->second->GetDuration();
+        // navEnd <= baNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, baNavEnd, "Duration/ID in BlockAck frame is too short");
+        NS_TEST_EXPECT_MSG_LT(baNavEnd, navEnd + tolerance, "Duration/ID in BlockAck is too long");
+        if (m_txopLimit == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(baNavEnd,
+                                  m_txPsdus[30].endTx,
+                                  "Expected null Duration/ID for BlockAck");
+        }
 
-        nTxPsdus = 16;
+        nTxPsdus = 31;
     }
 
     NS_TEST_EXPECT_MSG_EQ(m_received,
@@ -1351,6 +1874,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
         for (std::size_t i = nTxPsdus; i < m_txPsdus.size(); ++i)
         {
             if (m_txPsdus[i].psduMap.size() == 1 &&
+                !m_txPsdus[i].psduMap.begin()->second->GetHeader(0).IsCts() &&
                 m_txPsdus[i].psduMap.begin()->second->GetHeader(0).GetAddr2() !=
                     m_apDevice->GetAddress() &&
                 !m_txPsdus[i].txVector.IsUlMu())
@@ -1385,7 +1909,7 @@ OfdmaAckSequenceTest::DoRun()
     uint64_t previousRun = RngSeedManager::GetRun();
     Config::SetGlobal("RngSeed", UintegerValue(1));
     Config::SetGlobal("RngRun", UintegerValue(1));
-    int64_t streamNumber = 20;
+    int64_t streamNumber = 10;
 
     NodeContainer wifiApNode;
     wifiApNode.Create(1);
@@ -1425,6 +1949,7 @@ OfdmaAckSequenceTest::DoRun()
         NS_ABORT_MSG("Invalid channel bandwidth (must be 20, 40, 80 or 160)");
     }
 
+    Config::SetDefault("ns3::WifiDefaultProtectionManager::EnableMuRts", BooleanValue(true));
     Config::SetDefault("ns3::HeConfiguration::MuBeAifsn",
                        UintegerValue(m_muEdcaParameterSet.muAifsn));
     Config::SetDefault("ns3::HeConfiguration::MuBeCwMin",
@@ -1467,7 +1992,9 @@ OfdmaAckSequenceTest::DoRun()
     WifiHelper wifi;
     wifi.SetStandard(m_scenario == WifiOfdmaScenario::EHT ? WIFI_STANDARD_80211be
                                                           : WIFI_STANDARD_80211ax);
-    wifi.SetRemoteStationManager("ns3::MinstrelHtWifiManager");
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                 "DataMode",
+                                 StringValue("HeMcs11"));
     wifi.ConfigHeOptions("MuBeAifsn",
                          UintegerValue(m_muEdcaParameterSet.muAifsn),
                          "MuBeCwMin",
@@ -1695,7 +2222,7 @@ WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite()
             AddTestCase(new OfdmaAckSequenceTest(20,
                                                  WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
                                                  10000,
-                                                 5440,
+                                                 5504,
                                                  15,
                                                  muEdcaParameterSet,
                                                  scenario),
@@ -1703,7 +2230,7 @@ WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite()
             AddTestCase(new OfdmaAckSequenceTest(20,
                                                  WifiAcknowledgment::DL_MU_AGGREGATE_TF,
                                                  10000,
-                                                 5440,
+                                                 5504,
                                                  15,
                                                  muEdcaParameterSet,
                                                  scenario),
@@ -1711,7 +2238,7 @@ WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite()
             AddTestCase(new OfdmaAckSequenceTest(20,
                                                  WifiAcknowledgment::DL_MU_TF_MU_BAR,
                                                  10000,
-                                                 5440,
+                                                 5504,
                                                  15,
                                                  muEdcaParameterSet,
                                                  scenario),
