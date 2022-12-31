@@ -98,6 +98,21 @@ class WifiProtectionManager : public Object
      */
     Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager() const;
 
+    /**
+     * Add a User Info field to the given MU-RTS Trigger Frame to solicit a CTS from
+     * the station with the given MAC address. The MU-RTS is intended to protect a data
+     * frame having the given TX width. The TX width of the solicited CTS is the minimum
+     * between the TX width of the protected data frame and the maximum width supported
+     * by the solicited station.
+     *
+     * \param muRts the MU-RTS Trigger Frame
+     * \param txWidth the TX width of the protected data frame
+     * \param receiver the MAC address of the solicited station
+     */
+    void AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
+                            uint16_t txWidth,
+                            const Mac48Address& receiver) const;
+
     Ptr<WifiMac> m_mac; //!< MAC which is using this Protection Manager
     uint8_t m_linkId;   //!< ID of the link this Protection Manager is operating on
 };

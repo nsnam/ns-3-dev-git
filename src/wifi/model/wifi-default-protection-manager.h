@@ -64,6 +64,42 @@ class WifiDefaultProtectionManager : public WifiProtectionManager
     virtual std::unique_ptr<WifiProtection> GetPsduProtection(const WifiMacHeader& hdr,
                                                               uint32_t size,
                                                               const WifiTxVector& txVector) const;
+
+  private:
+    /**
+     * Calculate the protection method to use if the given MPDU is added to the
+     * current DL MU PPDU (represented by the given TX parameters). If the computed
+     * protection method is the same as the current one, a null pointer is
+     * returned. Otherwise, the computed protection method is returned.
+     * The TX width of the PPDU containing the MU-RTS is the same as the DL MU PPDU
+     * being protected. Each non-AP station is solicited to transmit a CTS occupying a
+     * bandwidth equal to the minimum between the TX width of the DL MU PPDU and the
+     * maximum channel width supported by the non-AP station.
+     *
+     * \param mpdu the given MPDU
+     * \param txParams the TX parameters describing the current DL MU PPDU
+     * \return the new protection method or a null pointer if the protection method
+     *         is unchanged
+     */
+    virtual std::unique_ptr<WifiProtection> TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
+                                                               const WifiTxParameters& txParams);
+
+    /**
+     * Calculate the protection method for the UL MU transmission solicited by the given
+     * Trigger Frame.
+     * The TX width of the PPDU containing the MU-RTS is the same as the TB PPDUs being
+     * solicited by the given Trigger Frame. Each non-AP station is solicited to transmit a CTS
+     * occupying a bandwidth equal to the minimum between the TX width of the PPDU containing
+     * the MU-RTS and the maximum channel width supported by the non-AP station.
+     *
+     * \param mpdu the given Trigger Frame
+     * \param txParams the current TX parameters (just the TXVECTOR needs to be set)
+     * \return the protection method for the UL MU transmission solicited by the given Trigger Frame
+     */
+    virtual std::unique_ptr<WifiProtection> TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
+                                                                const WifiTxParameters& txParams);
+
+    bool m_sendMuRts; //!< true for sending an MU-RTS to protect DL MU PPDUs
 };
 
 } // namespace ns3
