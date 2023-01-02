@@ -33,6 +33,7 @@
 #include "ns3/string.h"
 #include "ns3/udp-client-server-helper.h"
 #include "ns3/uinteger.h"
+#include "ns3/vht-phy.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
@@ -148,13 +149,18 @@ main(int argc, char* argv[])
                 wifi.SetStandard(WIFI_STANDARD_80211ac);
                 WifiMacHelper mac;
 
-                std::ostringstream oss;
-                oss << "VhtMcs" << mcs;
+                std::ostringstream ossControlMode;
+                auto nonHtRefRateMbps = VhtPhy::GetNonHtReferenceRate(mcs) / 1e6;
+                ossControlMode << "OfdmRate" << nonHtRefRateMbps << "Mbps";
+
+                std::ostringstream ossDataMode;
+                ossDataMode << "VhtMcs" << mcs;
                 wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                              "DataMode",
-                                             StringValue(oss.str()),
+                                             StringValue(ossDataMode.str()),
                                              "ControlMode",
-                                             StringValue(oss.str()));
+                                             StringValue(ossControlMode.str()));
+
                 // Set guard interval
                 wifi.ConfigHtOptions("ShortGuardIntervalSupported", BooleanValue(sgi));
 

@@ -23,6 +23,7 @@
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/enum.h"
+#include "ns3/ht-phy.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
@@ -144,14 +145,17 @@ main(int argc, char* argv[])
 
                 WifiMacHelper mac;
                 WifiHelper wifi;
+                std::ostringstream ossControlMode;
 
                 if (frequency == 5.0)
                 {
+                    ossControlMode << "OfdmRate";
                     wifi.SetStandard(WIFI_STANDARD_80211n);
                 }
                 else if (frequency == 2.4)
                 {
                     wifi.SetStandard(WIFI_STANDARD_80211n);
+                    ossControlMode << "ErpOfdmRate";
                     Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
                                        DoubleValue(40.046));
                 }
@@ -161,13 +165,16 @@ main(int argc, char* argv[])
                     return 0;
                 }
 
-                std::ostringstream oss;
-                oss << "HtMcs" << mcs;
+                auto nonHtRefRateMbps = HtPhy::GetNonHtReferenceRate(mcs) / 1e6;
+                ossControlMode << nonHtRefRateMbps << "Mbps";
+
+                std::ostringstream ossDataMode;
+                ossDataMode << "HtMcs" << mcs;
                 wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                              "DataMode",
-                                             StringValue(oss.str()),
+                                             StringValue(ossDataMode.str()),
                                              "ControlMode",
-                                             StringValue(oss.str()));
+                                             StringValue(ossControlMode.str()));
                 // Set guard interval
                 wifi.ConfigHtOptions("ShortGuardIntervalSupported", BooleanValue(sgi));
 
