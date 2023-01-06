@@ -19,6 +19,8 @@
 
 #include "environment-variable.h"
 
+#include "ns3/string.h"
+
 #include <cstdlib>  // getenv
 #include <cstring>  // strlen
 #include <iostream> // clog
@@ -33,17 +35,36 @@ namespace ns3
 
 /**
  * \ingroup core-environ
+ *
  * \def NS_LOCAL_LOG(msg)
  * File-local loggging macro for environment-variable.cc
  * Our usual Logging doesn't work here because these functions
  * get called during static initialization of Logging itself.
  * \param msg The message stream to log
+ *
+ * \def NS_LOCAL_ASSERT(cond, msg)
+ * File-local assert macro for environment-variable.cc
+ * Our usual assert doesn't work here because these functions
+ * get called during static initialization of Logging itself.
+ * \param cond The condition which is asserted to be \c true
+ * \param msg The message stream to log
  */
 #if 0
 #define NS_LOCAL_LOG(msg)                                                                          \
     std::cerr << __FILE__ << ":" << __LINE__ << ":" << __FUNCTION__ << "(): " << msg << std::endl
+
+#define NS_LOCAL_ASSERT(cond, msg)                                                                 \
+    do                                                                                             \
+    {                                                                                              \
+        if (!(cond))                                                                               \
+        {                                                                                          \
+            NS_LOCAL_LOG("assert failed. cond=\"" << #cond << "\", " << msg);                      \
+        }                                                                                          \
+    } while (false)
+
 #else
 #define NS_LOCAL_LOG(msg)
+#define NS_LOCAL_ASSERT(cond, msg)
 #endif
 
 /* static */
@@ -105,6 +126,7 @@ EnvironmentVariable::Dictionary::Get(const std::string& key) const
 
     if (key.empty())
     {
+        // Empty key is request for entire value
         return {true, m_variable};
     }
 
@@ -112,7 +134,7 @@ EnvironmentVariable::Dictionary::Get(const std::string& key) const
     if (loc != m_dict.end())
     {
         NS_LOCAL_LOG("found key in dictionary");
-        NS_LOCAL_LOG("found: key '" << key << "', value: '" << value << "'");
+        NS_LOCAL_LOG("found: key '" << key << "', value: '" << loc->second << "'");
         return {true, loc->second};
     }
 
@@ -136,35 +158,33 @@ EnvironmentVariable::Dictionary::Dictionary(const std::string& envvar,
     // So it exists
     m_exists = true;
     m_variable = envCstr;
+    NS_LOCAL_LOG("found envvar in environment with value '" << m_variable << "'");
 
     // ...but might be empty
-    if (!m_variable.empty())
+    if (m_variable.empty())
     {
-        NS_LOCAL_LOG("found envvar in environment");
-        std::string::size_type cur{0};
-        std::string::size_type next{0};
-        while (next != std::string::npos)
-        {
-            next = m_variable.find(delim, cur);
-            std::string keyval{m_variable, cur, next - cur};
-            if (!keyval.empty())
-            {
-                std::string key = keyval;
-                std::string value;
-                std::string::size_type equal{keyval.find('=')};
-                if (equal != std::string::npos)
-                {
-                    // Have "key=...;"
-                    key = keyval.substr(0, equal);
-                    value = keyval.substr(equal + 1, keyval.size());
-                }
-                NS_LOCAL_LOG("found key '" << key << "' with value '" << value << "'");
-                m_dict.insert({key, value});
-            }
-            cur = next + 1;
-        } // while
+        return;
+    }
 
-    } // if !empty
+    StringVector keyvals = SplitString(m_variable, delim);
+    NS_LOCAL_ASSERT(keyvals.empty(), "Unexpected empty keyvals from non-empty m_variable");
+    for (const auto& keyval : keyvals)
+    {
+        if (keyval.empty())
+        {
+            continue;
+        }
+
+        std::size_t equals = keyval.find_first_of('=');
+        std::string key{keyval, 0, equals};
+        std::string value;
+        if (equals < keyval.size() - 1)
+        {
+            value = keyval.substr(equals + 1, keyval.size());
+        }
+        NS_LOCAL_LOG("found key '" << key << "' with value '" << value << "'");
+        m_dict.insert({key, value});
+    }
 }
 
 EnvironmentVariable::Dictionary::KeyValueStore

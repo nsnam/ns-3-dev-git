@@ -155,54 +155,55 @@ EnvVarTestCase::Check(const std::string& where, const std::string& envValue, Key
 {
     auto dict = EnvironmentVariable::GetDictionary(m_variable, m_delimiter)->GetStore();
 
-    // Print the dict and expect
+    // Print the expect and which ones were found in dict
+    std::cout << "\n"
+              << where << " variable: '" << envValue << "', expect[" << expect.size() << "]"
+              << ", dict[" << dict.size() << "]\n";
+
+    NS_TEST_EXPECT_MSG_EQ(dict.size(), expect.size(), where << ": unequal dictionary sizes");
+
     std::size_t i{0};
-    std::cout << where << " variable: '" << envValue << "' [" << dict.size() << "]:";
-    for (const auto& v : dict)
+    for (const auto& kv : expect)
     {
-        std::cout << "\n    [" << i++ << "] '" << v.first << "'\t'" << v.second << "'";
+        std::cout << "    [" << i++ << "] '" << kv.first << "'\t'" << kv.second << "'";
+
+        auto loc = dict.find(kv.first);
+        bool found = loc != dict.end();
+        std::cout << (found ? "\tfound" : "\tNOT FOUND");
+        NS_TEST_EXPECT_MSG_EQ(found, true, where << ": expected key not found: " << kv.second);
+
+        if (found)
+        {
+            bool match = kv.second == loc->second;
+            if (match)
+            {
+                std::cout << ", match";
+            }
+            else
+            {
+                std::cout << ", NO MATCH: '" << loc->second << "'";
+            }
+            NS_TEST_EXPECT_MSG_EQ(kv.second, loc->second, where << ": key found, value mismatch");
+        }
+        std::cout << "\n";
+        ++i;
     }
-    std::cout << "\n  expect [" << expect.size() << "]:";
+
+    // Now just check dict for unexpected values
     i = 0;
-    for (const auto& v : expect)
+    bool first{true};
+    for (const auto& kv : dict)
     {
-        std::cout << "\n    [" << i++ << "] '" << v.first << "'\t'" << v.second << "'";
+        bool found = expect.find(kv.first) != expect.end();
+        if (!found)
+        {
+            std::cout << (first ? "Unexpected keys:" : "");
+            first = false;
+            std::cout << "    [" << i << "] '" << kv.first << "'\t'" << kv.second << "'"
+                      << " unexpected key, value\n";
+        }
+        ++i;
     }
-    std::cout << "\n  dict[" << dict.size() << "], expect[" << expect.size() << "]" << std::endl;
-
-    NS_TEST_ASSERT_MSG_EQ(dict.size(), expect.size(), where << ": unequal dictionary sizes");
-
-    // Check that no extra key,value appear
-    std::cout << "  extras:\n";
-    i = 0;
-    for (const auto& v : dict)
-    {
-        auto loc = expect.find(v.first);
-        bool ok = loc != expect.end();
-        std::cout << "    [" << i++ << "] '" << v.first << "', '" << v.second << "' "
-                  << (ok ? "found" : "not found") << std::endl;
-        NS_TEST_ASSERT_MSG_EQ((loc != expect.end()),
-                              true,
-                              where << ": unexpected key found: " << v.first << ", " << v.second);
-    }
-    std::cout << "  no extra keys appear" << std::endl;
-
-    // Check that all expected key,value appear
-    std::cout << "  expected:\n";
-    i = 0;
-    for (const auto& v : expect)
-    {
-        auto loc = dict.find(v.first);
-        bool ok = loc != dict.end();
-        std::cout << "    [" << i++ << "] '" << v.first << "', '" << v.second << "' "
-                  << (ok ? "found" : "not found") << std::endl;
-        NS_TEST_ASSERT_MSG_EQ((loc != dict.end()),
-                              true,
-                              where << ": expected key not found: " << v.second);
-
-        NS_TEST_ASSERT_MSG_EQ(v.second, loc->second, where << ": value mismatch");
-    }
-    std::cout << "  all expected key,value appear\n" << std::endl;
 }
 
 void
@@ -241,11 +242,6 @@ EnvVarTestCase::SetCheckAndGet(const std::string& where,
 void
 EnvVarTestCase::DoRun()
 {
-    // Test non-default delimiters by default
-    // Test empty;no delimiter
-
-    // Test points
-
     // Environment variable not set.
     UnsetVariable("unset");
     Check("unset", "", {});
@@ -260,7 +256,7 @@ EnvVarTestCase::DoRun()
     SetCheckAndGet("no-key",
                    "not|the|right=value",
                    {{"not", ""}, {"the", ""}, {"right", "value"}},
-                   "no-key",
+                   "key",
                    {false, ""});
 
     // Key only (no delimiter):  "key"
@@ -303,10 +299,13 @@ EnvVarTestCase::DoRun()
 
     // Extra `=`| "key==value"
     SetCheckAndGet("key==", "key==", {{"key", "="}}, "key", {true, "="});
+
+    // Finish last line of verbose output
+    std::cout << std::endl;
 }
 
 /**
- * \ingroup typeid-tests
+ * \ingroup environ-var-tests
  *
  * TypeId test suites.
  */

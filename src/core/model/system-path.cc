@@ -22,6 +22,7 @@
 #include "environment-variable.h"
 #include "fatal-error.h"
 #include "log.h"
+#include "string.h"
 
 #include <algorithm>
 #include <ctime>
@@ -256,19 +257,8 @@ std::list<std::string>
 Split(std::string path)
 {
     NS_LOG_FUNCTION(path);
-    std::list<std::string> retval;
-    std::string::size_type current = 0;
-    std::string::size_type next = 0;
-    next = path.find(SYSTEM_PATH_SEP, current);
-    while (next != std::string::npos)
-    {
-        std::string item = path.substr(current, next - current);
-        retval.push_back(item);
-        current = next + 1;
-        next = path.find(SYSTEM_PATH_SEP, current);
-    }
-    std::string item = path.substr(current, next - current);
-    retval.push_back(item);
+    std::vector<std::string> items = SplitString(path, SYSTEM_PATH_SEP);
+    std::list<std::string> retval(items.begin(), items.end());
     return retval;
 }
 

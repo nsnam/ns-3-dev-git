@@ -338,6 +338,7 @@ set(test_sources
     test/ptr-test-suite.cc
     test/sample-test-suite.cc
     test/simulator-test-suite.cc
+    test/splitstring-test-suite.cc
     test/threaded-test-suite.cc
     test/time-test-suite.cc
     test/timer-test-suite.cc
