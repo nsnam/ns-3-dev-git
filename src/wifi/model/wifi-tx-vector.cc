@@ -589,6 +589,10 @@ operator<<(std::ostream& os, const WifiTxVector& v)
     {
         os << " Length: " << v.GetLength();
     }
+    if (ns3::IsDlMu(v.GetPreambleType()))
+    {
+        os << " SIG-B mode: " << v.GetSigBMode();
+    }
     if (v.IsMu())
     {
         WifiTxVector::HeMuUserInfoMap userInfoMap = v.GetHeMuUserInfoMap();
