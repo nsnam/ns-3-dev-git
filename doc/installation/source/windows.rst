@@ -1,20 +1,45 @@
 .. include:: replace.txt
-.. highlight:: console
+.. heading hierarchy:
+   ------------- Chapter
+   ************* Section (#.#)
+   ============= Subsection (#.#.#)
+   ############# Paragraph (no number)
 
-.. Section Separators:
-   ----
-   ****
-   ++++
-   ====
-   ~~~~
+.. _Windows:
 
-.. _Windows 10:
+Windows
+-------
 
-Windows 10
-----------
-
-This chapter describes installation steps specific to Windows 10 and its
+This chapter describes installation steps specific to Microsoft Windows (version 10) and its
 derivatives (e.g. Home, Pro, Enterprise) using the Msys2/MinGW64 toolchain.
+
+There are two documented ways to use |ns3| on Windows:  the Windows Subsystem for Linux (WSL) or
+via the Msys2/MinGW64 toolchain.  Both options are listed below; users may choose to install
+either WSL or the Msys2/MinGW64 toolchain (installing both is not required).
+
+.. note::
+  |ns3| is not fully compatible with Visual Studio IDE / MSVC compiler; only Visual Studio Code
+editor, the Msys2/MinGW64 toolchain, and WSL, as explained below.
+
+.. _WSL2:
+
+Windows Subsystem for Linux
+***************************
+
+Windows Subsystem for Linux (WSL), particularly WSL2, can be used on Windows for |ns3|.  WSL2
+runs a real Linux kernel on Windows's Hyper-V hypervisor, providing 100% code compatibility with
+Linux and seamless integration with Windows.  VS Code has excellent support and integration with
+WSL, enabling Windows users to develop for ns-3 in a native environment. It is recommended to
+install the WSL extension in VS Code for this purpose.
+
+Users starting with WSL2 can follow the Linux installation instructions to fill out other
+package prerequisites.  Note that |ns3| emulation features using WSL2 are not tested/supported.
+
+For more information:
+
+* `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_
+* `Developing in WSL with VS Code <https://code.visualstudio.com/docs/remote/wsl>`_
+* `WSL tutorial <https://code.visualstudio.com/docs/remote/wsl-tutorial>`_
 
 .. _Windows 10 package prerequisites:
 
@@ -31,7 +56,9 @@ Installation of the Msys2 environment
 The `Msys2`_ includes ports of Unix tools for Windows built with multiple toolchains,
 including: MinGW32, MinGW64, Clang64, UCRT.
 
-The MinGW64 (GCC) toolchain is the one ns-3 was tested.
+|ns3| has been tested with the  MinGW64 (GCC) toolchain.  MinGW32 is 32-bit, which |ns3| does
+not support.  The project's Windows maintainer has tested Clang64 unsuccessfully, and has
+not tested the UCRT toolchain (which may work).
 
 The `Msys2`_ installer can be found on their site.
 Msys2 will be installed by default in the ``C:\msys64`` directory.
@@ -46,7 +73,7 @@ or via the following command (assuming it was installed to the default directory
 
 Note: if the MinGW64 binary directory doesn't precede the Windows/System32 directory (already in ``%PATH%``),
 the documentation build will fail since Windows has a conflicting ``convert`` command (FAT-to-NTFS). Similarly,
-the Msys64 binary directory doesn't precede the Windows/System2 directory, running the ``bash`` command will
+if the Msys64 binary directory doesn't precede the Windows/System2 directory, running the ``bash`` command will
 result in Windows trying to run the Windows Subsystem for Linux (WSL) bash shell.
 
 Accessing the MinGW64 shell
@@ -74,8 +101,13 @@ This is the minimal set of packages needed to run ns-3 C++ programs from a relea
 
 .. sourcecode:: console
 
-    /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake \
-    mingw-w64-x86_64-ninja mingw-w64-x86_64-grep mingw-w64-x86_64-sed mingw-w64-x86_64-python
+    /c/ns-3-dev/ MINGW64$ pacman -S \
+    mingw-w64-x86_64-toolchain \
+    mingw-w64-x86_64-cmake \
+    mingw-w64-x86_64-ninja \
+    mingw-w64-x86_64-grep \
+    mingw-w64-x86_64-sed \
+    mingw-w64-x86_64-python
 
 
 Netanim animator
@@ -120,14 +152,6 @@ Debugging
 +++++++++
 
 GDB is installed along with the mingw-w64-x86_64-toolchain package.
-
-Support for utils/check-style.py code style check program
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. sourcecode:: console
-
-    /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-uncrustify
-
 
 Doxygen and related inline documentation
 ++++++++++++++++++++++++++++++++++++++++

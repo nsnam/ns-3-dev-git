@@ -45,7 +45,6 @@ SOURCES = \
 	source/tracing.rst \
 	source/troubleshoot.rst \
 	source/utilities.rst \
-	source/windows.rst \
 	source/working-with-cmake.rst \
 	source/working-with-git.rst \
 	source/working-with-gitlab-ci-local.rst \
