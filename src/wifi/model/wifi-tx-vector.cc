@@ -507,6 +507,11 @@ WifiTxVector::GetHeMuUserInfoMap()
 std::pair<std::size_t, std::size_t>
 WifiTxVector::GetNumRusPerHeSigBContentChannel() const
 {
+    if (m_preamble == WIFI_PREAMBLE_EHT_MU && m_ehtPpduType == 1)
+    {
+        return {1, 0};
+    }
+
     // MU-MIMO is not handled for now, i.e. one station per RU
     auto ruAllocation = GetRuAllocation();
     NS_ASSERT_MSG(!ruAllocation.empty(), "RU allocation is not set");
