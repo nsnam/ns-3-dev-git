@@ -452,6 +452,17 @@ class WifiTxVector
      */
     ContentChannelAllocation GetContentChannelAllocation() const;
 
+    /**
+     * Set the EHT_PPDU_TYPE parameter
+     * \param type the EHT_PPDU_TYPE parameter
+     */
+    void SetEhtPpduType(uint8_t type);
+    /**
+     * Get the EHT_PPDU_TYPE parameter
+     * \return the EHT_PPDU_TYPE parameter
+     */
+    uint8_t GetEhtPpduType() const;
+
   private:
     /**
      * Derive the RU allocation from the TXVECTOR for which its RU allocation has not been set yet.
@@ -493,6 +504,7 @@ class WifiTxVector
 
     mutable RuAllocation m_ruAllocation; /**< RU allocations that are going to be carried
                                               in SIG-B common field per Table 27-1 IEEE */
+    uint8_t m_ehtPpduType;               /**< EHT_PPDU_TYPE per Table 36-1 IEEE 802.11be D2.3 */
 };
 
 /**

@@ -44,7 +44,8 @@ WifiTxVector::WifiTxVector()
       m_length(0),
       m_modeInitialized(false),
       m_inactiveSubchannels(),
-      m_ruAllocation()
+      m_ruAllocation(),
+      m_ehtPpduType(1) // SU transmission by default
 {
 }
 
@@ -76,7 +77,8 @@ WifiTxVector::WifiTxVector(WifiMode mode,
       m_length(length),
       m_modeInitialized(true),
       m_inactiveSubchannels(),
-      m_ruAllocation()
+      m_ruAllocation(),
+      m_ehtPpduType(1) // SU transmission by default
 {
 }
 
@@ -97,7 +99,8 @@ WifiTxVector::WifiTxVector(const WifiTxVector& txVector)
       m_modeInitialized(txVector.m_modeInitialized),
       m_inactiveSubchannels(txVector.m_inactiveSubchannels),
       m_sigBMcs(txVector.m_sigBMcs),
-      m_ruAllocation(txVector.m_ruAllocation)
+      m_ruAllocation(txVector.m_ruAllocation),
+      m_ehtPpduType(txVector.m_ehtPpduType)
 {
     m_muUserInfos.clear();
     if (!txVector.m_muUserInfos.empty()) // avoids crashing for loop
@@ -374,6 +377,19 @@ WifiTxVector::GetRuAllocation() const
     return m_ruAllocation;
 }
 
+void
+WifiTxVector::SetEhtPpduType(uint8_t type)
+{
+    NS_ASSERT(IsEht(m_preamble));
+    m_ehtPpduType = type;
+}
+
+uint8_t
+WifiTxVector::GetEhtPpduType() const
+{
+    return m_ehtPpduType;
+}
+
 bool
 WifiTxVector::IsValid() const
 {
@@ -584,6 +600,10 @@ operator<<(std::ostream& os, const WifiTxVector& v)
         std::copy(puncturedSubchannels.cbegin(),
                   puncturedSubchannels.cend(),
                   std::ostream_iterator<bool>(os, ", "));
+    }
+    if (IsEht(v.GetPreambleType()))
+    {
+        os << " EHT PPDU type: " << +v.GetEhtPpduType();
     }
     return os;
 }
