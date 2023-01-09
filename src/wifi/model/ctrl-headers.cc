@@ -1569,7 +1569,7 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
         CtrlTriggerUserInfoField& ui = AddUserInfoField();
         ui.SetAid12(userInfo.first);
         ui.SetRuAllocation(userInfo.second.ru);
-        ui.SetUlMcs(userInfo.second.mcs.GetMcsValue());
+        ui.SetUlMcs(userInfo.second.mcs);
         ui.SetSsAllocation(1, userInfo.second.nss); // MU-MIMO is not supported
     }
 }
@@ -1837,10 +1837,9 @@ CtrlTriggerHeader::GetHeTbTxVector(uint16_t staId) const
     v.SetChannelWidth(GetUlBandwidth());
     v.SetGuardInterval(GetGuardInterval());
     v.SetLength(GetUlLength());
-    v.SetHeMuUserInfo(staId,
-                      {userInfoIt->GetRuAllocation(),
-                       HePhy::GetHeMcs(userInfoIt->GetUlMcs()),
-                       userInfoIt->GetNss()});
+    v.SetHeMuUserInfo(
+        staId,
+        {userInfoIt->GetRuAllocation(), userInfoIt->GetUlMcs(), userInfoIt->GetNss()});
     return v;
 }
 

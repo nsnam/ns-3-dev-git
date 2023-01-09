@@ -248,7 +248,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
             GetWifiRemoteStationManager()->GetDataTxVector(hdr, m_allowedWidth);
         txVector.SetHeMuUserInfo(staIt->aid,
                                  {HeRu::RuSpec(), // assigned later by FinalizeTxVector
-                                  suTxVector.GetMode(),
+                                  suTxVector.GetMode().GetMcsValue(),
                                   suTxVector.GetNss()});
         m_candidates.emplace_back(staIt, nullptr);
 
@@ -643,9 +643,10 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                                                                        m_allowedWidth);
                     WifiTxVector txVectorCopy = m_txParams.m_txVector;
 
-                    m_txParams.m_txVector.SetHeMuUserInfo(
-                        staIt->aid,
-                        {{currRuType, 1, true}, suTxVector.GetMode(), suTxVector.GetNss()});
+                    m_txParams.m_txVector.SetHeMuUserInfo(staIt->aid,
+                                                          {{currRuType, 1, true},
+                                                           suTxVector.GetMode().GetMcsValue(),
+                                                           suTxVector.GetNss()});
 
                     if (!m_heFem->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
                     {

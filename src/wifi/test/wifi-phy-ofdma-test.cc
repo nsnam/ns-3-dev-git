@@ -2407,7 +2407,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     txVector.SetMode(HePhy::GetHeMcs7(), staId);
     txVector.SetNss(1, staId);
 
-    m_trigVector.SetHeMuUserInfo(staId, {ru, HePhy::GetHeMcs7(), 1});
+    m_trigVector.SetHeMuUserInfo(staId, {ru, 7, 1});
 
     Ptr<Packet> pkt = Create<Packet>(payloadSize);
     WifiMacHeader hdr;

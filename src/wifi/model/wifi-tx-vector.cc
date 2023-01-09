@@ -23,6 +23,7 @@
 #include "wifi-phy-common.h"
 
 #include "ns3/abort.h"
+#include "ns3/eht-phy.h"
 
 #include <algorithm>
 #include <iterator>
@@ -130,13 +131,23 @@ WifiTxVector::GetMode(uint16_t staId) const
     {
         NS_FATAL_ERROR("WifiTxVector mode must be set before using");
     }
-    if (IsMu())
+    if (!IsMu())
     {
-        NS_ABORT_MSG_IF(staId > 2048, "STA-ID should be correctly set for MU (" << staId << ")");
-        NS_ASSERT(m_muUserInfos.find(staId) != m_muUserInfos.end());
-        return m_muUserInfos.at(staId).mcs;
+        return m_mode;
     }
-    return m_mode;
+    NS_ABORT_MSG_IF(staId > 2048, "STA-ID should be correctly set for MU (" << staId << ")");
+    const auto userInfoIt = m_muUserInfos.find(staId);
+    NS_ASSERT(userInfoIt != m_muUserInfos.cend());
+    switch (GetModulationClassForPreamble(m_preamble))
+    {
+    case WIFI_MOD_CLASS_EHT:
+        return EhtPhy::GetEhtMcs(userInfoIt->second.mcs);
+    case WIFI_MOD_CLASS_HE:
+        return HePhy::GetHeMcs(userInfoIt->second.mcs);
+    default:
+        NS_ABORT_MSG("Unsupported modulation class: " << GetModulationClassForPreamble(m_preamble));
+    }
+    return WifiMode(); // invalid WifiMode
 }
 
 WifiModulationClass
@@ -148,7 +159,7 @@ WifiTxVector::GetModulationClass() const
     {
         NS_ASSERT(!m_muUserInfos.empty());
         // all the modes belong to the same modulation class
-        return m_muUserInfos.begin()->second.mcs.GetModulationClass();
+        return GetModulationClassForPreamble(m_preamble);
     }
     return m_mode.GetModulationClass();
 }
@@ -249,7 +260,7 @@ WifiTxVector::SetMode(WifiMode mode, uint16_t staId)
 {
     NS_ABORT_MSG_IF(!IsMu(), "Not a MU transmission");
     NS_ABORT_MSG_IF(staId > 2048, "STA-ID should be correctly set for MU");
-    m_muUserInfos[staId].mcs = mode;
+    m_muUserInfos[staId].mcs = mode.GetMcsValue();
     m_modeInitialized = true;
 }
 
@@ -472,8 +483,6 @@ WifiTxVector::SetHeMuUserInfo(uint16_t staId, HeMuUserInfo userInfo)
 {
     NS_ABORT_MSG_IF(!IsMu(), "HE MU user info only available for MU");
     NS_ABORT_MSG_IF(staId > 2048, "STA-ID should be correctly set for MU");
-    NS_ABORT_MSG_IF(userInfo.mcs.GetModulationClass() < WIFI_MOD_CLASS_HE,
-                    "Only HE (or newer) modes authorized for MU");
     m_muUserInfos[staId] = userInfo;
     m_modeInitialized = true;
     m_ruAllocation.clear();
@@ -585,7 +594,7 @@ operator<<(std::ostream& os, const WifiTxVector& v)
         os << " num User Infos: " << userInfoMap.size();
         for (auto& ui : userInfoMap)
         {
-            os << ", {STA-ID: " << ui.first << ", " << ui.second.ru << ", MCS: " << ui.second.mcs
+            os << ", {STA-ID: " << ui.first << ", " << ui.second.ru << ", MCS: " << +ui.second.mcs
                << ", Nss: " << +ui.second.nss << "}";
         }
     }
@@ -611,7 +620,7 @@ operator<<(std::ostream& os, const WifiTxVector& v)
 bool
 HeMuUserInfo::operator==(const HeMuUserInfo& other) const
 {
-    return ru == other.ru && mcs.GetMcsValue() == other.mcs.GetMcsValue() && nss == other.nss;
+    return ru == other.ru && mcs == other.mcs && nss == other.nss;
 }
 
 bool

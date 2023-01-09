@@ -309,8 +309,7 @@ TestMultiUserScheduler::ComputeWifiTxVector()
             ruIndex = 1;
             primary80 = false;
         }
-        m_txVector.SetHeMuUserInfo(sta.first,
-                                   {{ruType, ruIndex++, primary80}, WifiMode("HeMcs11"), 1});
+        m_txVector.SetHeMuUserInfo(sta.first, {{ruType, ruIndex++, primary80}, 11, 1});
     }
     m_txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
 }

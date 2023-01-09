@@ -1144,10 +1144,9 @@ HeFrameExchangeManager::GetTrigVector(const CtrlTriggerHeader& trigger) const
     v.SetLength(trigger.GetUlLength());
     for (const auto& userInfoField : trigger)
     {
-        v.SetHeMuUserInfo(userInfoField.GetAid12(),
-                          {userInfoField.GetRuAllocation(),
-                           HePhy::GetHeMcs(userInfoField.GetUlMcs()),
-                           userInfoField.GetNss()});
+        v.SetHeMuUserInfo(
+            userInfoField.GetAid12(),
+            {userInfoField.GetRuAllocation(), userInfoField.GetUlMcs(), userInfoField.GetNss()});
     }
     return v;
 }

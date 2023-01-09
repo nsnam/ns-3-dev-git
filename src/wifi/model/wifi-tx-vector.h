@@ -36,7 +36,7 @@ namespace ns3
 struct HeMuUserInfo
 {
     HeRu::RuSpec ru; ///< RU specification
-    WifiMode mcs;    ///< MCS
+    uint8_t mcs;     ///< MCS index
     uint8_t nss;     ///< number of spatial streams
 
     /**

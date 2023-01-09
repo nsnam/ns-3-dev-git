@@ -28,7 +28,6 @@
 #include "wifi-tx-parameters.h"
 
 #include "ns3/he-frame-exchange-manager.h"
-#include "ns3/he-phy.h"
 #include "ns3/log.h"
 
 namespace ns3
@@ -524,9 +523,7 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
         const auto& userInfo = txParams.m_txVector.GetHeMuUserInfo(staId);
         blockAckTxVector.SetHeMuUserInfo(
             staId,
-            {userInfo.ru,
-             HePhy::GetHeMcs(std::min(userInfo.mcs.GetMcsValue(), m_maxMcsForBlockAckInTbPpdu)),
-             userInfo.nss});
+            {userInfo.ru, std::min(userInfo.mcs, m_maxMcsForBlockAckInTbPpdu), userInfo.nss});
 
         NS_LOG_DEBUG("Adding STA "
                      << receiver
@@ -610,9 +607,7 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         const auto& userInfo = txParams.m_txVector.GetHeMuUserInfo(staId);
         blockAckTxVector.SetHeMuUserInfo(
             staId,
-            {userInfo.ru,
-             HePhy::GetHeMcs(std::min(userInfo.mcs.GetMcsValue(), m_maxMcsForBlockAckInTbPpdu)),
-             userInfo.nss});
+            {userInfo.ru, std::min(userInfo.mcs, m_maxMcsForBlockAckInTbPpdu), userInfo.nss});
 
         NS_LOG_DEBUG("Adding STA " << receiver
                                    << " to the list of stations that will reply with a Block Ack");

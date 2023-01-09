@@ -153,7 +153,7 @@ HePhy::GetSigBMode(const WifiTxVector& txVector) const
     uint8_t smallestMcs = 5; // maximum MCS for HE-SIG-B
     for (auto& info : txVector.GetHeMuUserInfoMap())
     {
-        smallestMcs = std::min(smallestMcs, info.second.mcs.GetMcsValue());
+        smallestMcs = std::min(smallestMcs, info.second.mcs);
     }
     switch (smallestMcs)
     {
