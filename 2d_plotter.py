@@ -4,17 +4,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-path = str(sys.argv[1])
-path2 = str(sys.argv[2])
+def plot(i):
+    path = str(sys.argv[i])
+    print(path)
+    file = open(path)
+    array = np.loadtxt(file, delimiter=',')
+    plt.scatter(array[:, 0], array[:, 1], label=path)
 
+for i in range(1, sys.argv.__len__()):
+    plot(i)
 
-file = open(path)
-file2 = open(path2)
-
-array = np.loadtxt(file, delimiter=',')
-array2 = np.loadtxt(file2, delimiter=',')
-# print(array)
-plt.scatter(array[:, 0], array[:, 1], c='b', marker='o', label=path)
-plt.scatter(array2[:, 0], array2[:, 1], c='r', marker='s', label=path2)
+plt.grid()
 plt.legend(loc='upper left')
 plt.show()
