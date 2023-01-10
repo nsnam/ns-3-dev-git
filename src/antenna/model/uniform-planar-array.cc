@@ -84,8 +84,27 @@ UniformPlanarArray::GetTypeId()
             .AddAttribute("PolSlantAngle",
                           "The polarization slant angle in radians",
                           DoubleValue(0.0),
-                          MakeDoubleAccessor(&UniformPlanarArray::SetPolSlant),
-                          MakeDoubleChecker<double>(-M_PI, M_PI));
+                          MakeDoubleAccessor(&UniformPlanarArray::SetPolSlant,
+                                             &UniformPlanarArray::GetPolSlant),
+                          MakeDoubleChecker<double>(-M_PI, M_PI))
+            .AddAttribute("NumVerticalPorts",
+                          "Vertical number of ports",
+                          UintegerValue(1),
+                          MakeUintegerAccessor(&UniformPlanarArray::GetNumVerticalPorts,
+                                               &UniformPlanarArray::SetNumVerticalPorts),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("NumHorizontalPorts",
+                          "Horizontal number of ports",
+                          UintegerValue(1),
+                          MakeUintegerAccessor(&UniformPlanarArray::GetNumHorizontalPorts,
+                                               &UniformPlanarArray::SetNumHorizontalPorts),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("IsDualPolarized",
+                          "If true, dual polarized antenna",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&UniformPlanarArray::SetDualPol,
+                                              &UniformPlanarArray::IsDualPol),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -143,8 +162,8 @@ void
 UniformPlanarArray::SetPolSlant(double polSlant)
 {
     m_polSlant = polSlant;
-    m_cosPolSlant = cos(m_polSlant);
-    m_sinPolSlant = sin(m_polSlant);
+    m_cosPolSlant[0] = cos(m_polSlant);
+    m_sinPolSlant[0] = sin(m_polSlant);
 }
 
 void
@@ -186,9 +205,10 @@ UniformPlanarArray::GetAntennaVerticalSpacing() const
 }
 
 std::pair<double, double>
-UniformPlanarArray::GetElementFieldPattern(Angles a) const
+UniformPlanarArray::GetElementFieldPattern(Angles a, uint8_t polIndex) const
 {
     NS_LOG_FUNCTION(this << a);
+    NS_ASSERT_MSG(polIndex < GetNumPols(), "Polarization index can be 0 or 1.");
 
     // convert the theta and phi angles from GCS to LCS using eq. 7.1-7 and 7.1-8 in 3GPP TR 38.901
     // NOTE we assume a fixed slant angle of 0 degrees
@@ -208,8 +228,10 @@ UniformPlanarArray::GetElementFieldPattern(Angles a) const
     // NOTE: the slant angle (assumed to be 0) differs from the polarization slant angle
     // (m_polSlant, given by the attribute), in 3GPP TR 38.901
     double aPrimeDb = m_antennaElement->GetGainDb(aPrime);
-    double fieldThetaPrime = pow(10, aPrimeDb / 20) * m_cosPolSlant; // convert to linear magnitude
-    double fieldPhiPrime = pow(10, aPrimeDb / 20) * m_sinPolSlant;   // convert to linear magnitude
+    double fieldThetaPrime =
+        pow(10, aPrimeDb / 20) * m_cosPolSlant[polIndex]; // convert to linear magnitude
+    double fieldPhiPrime =
+        pow(10, aPrimeDb / 20) * m_sinPolSlant[polIndex]; // convert to linear magnitude
 
     // compute psi using eq. 7.1-15 in 3GPP TR 38.901, assuming that the slant
     // angle (gamma) is 0
@@ -232,13 +254,19 @@ Vector
 UniformPlanarArray::GetElementLocation(uint64_t index) const
 {
     NS_LOG_FUNCTION(this << index);
-
+    uint64_t tmpIndex = index;
+    // for dual polarization, the top half corresponds to one polarization and
+    // lower half corresponds to the other polarization
+    if (m_isDualPolarized && tmpIndex >= m_numRows * m_numColumns)
+    {
+        tmpIndex -= m_numRows * m_numColumns;
+    }
     // compute the element coordinates in the LCS
     // assume the left bottom corner is (0,0,0), and the rectangular antenna array is on the y-z
     // plane.
     double xPrime = 0;
-    double yPrime = m_disH * (index % m_numColumns);
-    double zPrime = m_disV * floor(index / m_numColumns);
+    double yPrime = m_disH * (tmpIndex % m_numColumns);
+    double zPrime = m_disV * floor(tmpIndex / m_numColumns);
 
     // convert the coordinates to the GCS using the rotation matrix 7.1-4 in 3GPP
     // TR 38.901
@@ -249,10 +277,129 @@ UniformPlanarArray::GetElementLocation(uint64_t index) const
     return loc;
 }
 
+uint8_t
+UniformPlanarArray::GetNumPols() const
+{
+    return m_isDualPolarized ? 2 : 1;
+}
+
 size_t
 UniformPlanarArray::GetNumberOfElements() const
 {
-    return m_numRows * m_numColumns;
+    // From 38.901  [M, N, P, Mg, Ng] = [m_numRows, m_numColumns, 2, 1, 1]
+    return GetNumPols() * m_numRows * m_numColumns;
+    // with dual polarization, the number of antenna elements double up
+}
+
+void
+UniformPlanarArray::SetNumVerticalPorts(uint16_t nPorts)
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(nPorts > 0, "Ports should be greater than 0");
+    NS_ASSERT_MSG(((m_numRows % nPorts) == 0),
+                  "The number of vertical ports must divide number of rows");
+    m_numVPorts = nPorts;
+}
+
+void
+UniformPlanarArray::SetNumHorizontalPorts(uint16_t nPorts)
+{
+    NS_ASSERT_MSG(nPorts > 0, "Ports should be greater than 0");
+    NS_ASSERT_MSG(((m_numColumns % nPorts) == 0),
+                  "The number of horizontal ports must divide number of columns");
+    m_numHPorts = nPorts;
+}
+
+uint16_t
+UniformPlanarArray::GetNumVerticalPorts() const
+{
+    return m_numVPorts;
+}
+
+uint16_t
+UniformPlanarArray::GetNumHorizontalPorts() const
+{
+    return m_numHPorts;
+}
+
+uint16_t
+UniformPlanarArray::GetNumPorts() const
+{
+    return GetNumPols() * m_numVPorts * m_numHPorts;
+}
+
+size_t
+UniformPlanarArray::GetVElemsPerPort() const
+{
+    return m_numRows / m_numVPorts;
+}
+
+size_t
+UniformPlanarArray::GetHElemsPerPort() const
+{
+    return m_numColumns / m_numHPorts;
+}
+
+size_t
+UniformPlanarArray::GetNumElemsPerPort() const
+{
+    // Multiply the number of rows and number of columns belonging to one antenna port.
+    // This also holds for dual polarization, where each polarization belongs to a separate port.
+    return GetVElemsPerPort() * GetHElemsPerPort();
+}
+
+uint16_t
+UniformPlanarArray::ArrayIndexFromPortIndex(uint16_t portIndex, uint16_t subElementIndex) const
+{
+    NS_ASSERT_MSG(portIndex < GetNumPorts(), "Port should be less than total Ports");
+    NS_ASSERT(subElementIndex < (GetHElemsPerPort() * GetVElemsPerPort()));
+
+    // In case the array is dual-polarized, change to the index that belongs to the first
+    // polarization
+    auto firstPolPortIdx = portIndex;
+    auto polarizationOffset = 0;
+    auto arraySize = GetNumHorizontalPorts() * GetNumVerticalPorts();
+    if (firstPolPortIdx > arraySize)
+    {
+        firstPolPortIdx = portIndex - arraySize;
+        polarizationOffset = GetNumColumns() * GetNumRows();
+    }
+    // column-major indexing
+    auto hPortIdx = firstPolPortIdx / GetNumVerticalPorts();
+    auto vPortIdx = firstPolPortIdx % GetNumVerticalPorts();
+    auto hElemIdx = (hPortIdx * GetHElemsPerPort()) + (subElementIndex % GetHElemsPerPort());
+    auto vElemIdx = (vPortIdx * GetVElemsPerPort()) + (subElementIndex / GetHElemsPerPort());
+    return (vElemIdx * GetNumColumns() + hElemIdx + polarizationOffset);
+}
+
+bool
+UniformPlanarArray::IsDualPol() const
+{
+    return m_isDualPolarized;
+}
+
+void
+UniformPlanarArray::SetDualPol(bool isDualPol)
+{
+    m_isDualPolarized = isDualPol;
+    if (isDualPol)
+    {
+        m_cosPolSlant[1] = cos(m_polSlant - M_PI / 2);
+        m_sinPolSlant[1] = sin(m_polSlant - M_PI / 2);
+    }
+}
+
+double
+UniformPlanarArray::GetPolSlant() const
+{
+    return m_polSlant;
+}
+
+uint8_t
+UniformPlanarArray::GetElemPol(size_t elemIndex) const
+{
+    NS_ASSERT(elemIndex < GetNumElems());
+    return (elemIndex < GetNumRows() * GetNumColumns()) ? 0 : 1;
 }
 
 } /* namespace ns3 */

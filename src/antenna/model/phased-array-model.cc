@@ -34,28 +34,6 @@ NS_LOG_COMPONENT_DEFINE("PhasedArrayModel");
 
 NS_OBJECT_ENSURE_REGISTERED(PhasedArrayModel);
 
-std::ostream&
-operator<<(std::ostream& os, const PhasedArrayModel::ComplexVector& cv)
-{
-    size_t N = cv.GetSize();
-
-    // empty
-    if (N == 0)
-    {
-        os << "[]";
-        return os;
-    }
-
-    // non-empty
-    os << "[";
-    for (std::size_t i = 0; i < N - 1; ++i)
-    {
-        os << cv[i] << ", ";
-    }
-    os << cv[N - 1] << "]";
-    return os;
-}
-
 PhasedArrayModel::PhasedArrayModel()
     : m_isBfVectorValid{false}
 {
@@ -101,13 +79,30 @@ PhasedArrayModel::GetBeamformingVector() const
     return m_beamformingVector;
 }
 
+const PhasedArrayModel::ComplexVector&
+PhasedArrayModel::GetBeamformingVectorRef() const
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(m_isBfVectorValid,
+                  "The beamforming vector should be Set before it's Get, and should refer to the "
+                  "current array configuration");
+    return m_beamformingVector;
+}
+
 PhasedArrayModel::ComplexVector
 PhasedArrayModel::GetBeamformingVector(Angles a) const
 {
     NS_LOG_FUNCTION(this << a);
 
     ComplexVector beamformingVector = GetSteeringVector(a);
-    double normRes = norm(beamformingVector);
+    // The normalization takes into account the total number of ports as only a
+    // portion (K,L) of beam weights associated with a specific port are non-zero.
+    // See 3GPP Section 5.2.2 36.897. This normalization corresponds to
+    // a sub-array partition model (which is different from the full-connection
+    // model). Note that the total number of ports used to perform normalization
+    // is the ratio between the total number of antenna elements and the
+    // number of antenna elements per port.
+    double normRes = norm(beamformingVector) / sqrt(GetNumPorts());
 
     for (size_t i = 0; i < GetNumberOfElements(); i++)
     {
