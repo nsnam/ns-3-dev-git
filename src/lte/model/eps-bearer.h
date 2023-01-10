@@ -198,9 +198,9 @@ class EpsBearer : public ObjectBase
 
     /**
      *
-     * @return true if the EPS Bearer is a Guaranteed Bit Rate bearer, false otherwise
+     * @return the resource type (NON-GBR, GBR, DC-GBR) of the selected QCI
      */
-    bool IsGbr() const;
+    uint8_t GetResourceType() const;
 
     /**
      *
@@ -250,20 +250,21 @@ class EpsBearer : public ObjectBase
     /**
      * \brief Map between QCI and requirements
      *
-     * The tuple is formed by: isGbr, priority, packet delay budget, packet error rate,
+     * The tuple is formed by: resource type, priority, packet delay budget, packet error rate,
      *  default maximum data burst, default averaging window (0 when does not apply)
      */
-    typedef std::
-        unordered_map<Qci, std::tuple<bool, uint8_t, uint16_t, double, uint32_t, uint32_t>, QciHash>
-            BearerRequirementsMap;
+    typedef std::unordered_map<Qci,
+                               std::tuple<uint8_t, uint8_t, uint16_t, double, uint32_t, uint32_t>,
+                               QciHash>
+        BearerRequirementsMap;
 
     /**
-     * \brief Is the selected QCI GBR?
+     * \brief Get the resource type (NON-GBR, GBR, DC-GBR) of the selected QCI
      * \param map Map between QCI and requirements
      * \param qci QCI to look for
-     * \return GBR flag for the selected CQI
+     * \return the resource type (NON-GBR, GBR, DC-GBR) of the selected QCI
      */
-    static uint32_t IsGbr(const BearerRequirementsMap& map, Qci qci)
+    static uint8_t GetResourceType(const BearerRequirementsMap& map, Qci qci)
     {
         return std::get<0>(map.at(qci));
     }

@@ -215,6 +215,7 @@ struct LogicalChannelConfigListElement_s
     {
         QBT_NON_GBR,
         QBT_GBR,
+        QBT_DGBR,
         NotValid_QosBearerType
     } m_qosBearerType{NotValid_QosBearerType}; ///< the QOS bearer type
 

@@ -897,13 +897,14 @@ LteEnbMac::DoAddLc(LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
         lccle.m_logicalChannelIdentity = lcinfo.lcId;
         lccle.m_logicalChannelGroup = lcinfo.lcGroup;
         lccle.m_direction = LogicalChannelConfigListElement_s::DIR_BOTH;
-        lccle.m_qosBearerType = lcinfo.isGbr ? LogicalChannelConfigListElement_s::QBT_GBR
-                                             : LogicalChannelConfigListElement_s::QBT_NON_GBR;
         lccle.m_qci = lcinfo.qci;
         lccle.m_eRabMaximulBitrateUl = lcinfo.mbrUl;
         lccle.m_eRabMaximulBitrateDl = lcinfo.mbrDl;
         lccle.m_eRabGuaranteedBitrateUl = lcinfo.gbrUl;
         lccle.m_eRabGuaranteedBitrateDl = lcinfo.gbrDl;
+        lccle.m_qosBearerType =
+            static_cast<LogicalChannelConfigListElement_s::QosBearerType_e>(lcinfo.resourceType);
+
         params.m_logicalChannelConfigList.push_back(lccle);
 
         m_cschedSapProvider->CschedLcConfigReq(params);

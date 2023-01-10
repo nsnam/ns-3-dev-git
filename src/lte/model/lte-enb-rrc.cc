@@ -204,7 +204,7 @@ UeManager::DoInitialize()
         // Iinterface Specification v1.11, 4.3.4 logicalChannelConfigListElement
         lcinfo.lcGroup = 0;
         lcinfo.qci = 0;
-        lcinfo.isGbr = false;
+        lcinfo.resourceType = 0;
         lcinfo.mbrUl = 0;
         lcinfo.mbrDl = 0;
         lcinfo.gbrUl = 0;
@@ -249,7 +249,7 @@ UeManager::DoInitialize()
         lcinfo.lcGroup = 0; // all SRBs always mapped to LCG 0
         lcinfo.qci =
             EpsBearer::GBR_CONV_VOICE; // not sure why the FF API requires a CQI even for SRBs...
-        lcinfo.isGbr = true;
+        lcinfo.resourceType = 1;       // GBR resource type
         lcinfo.mbrUl = 1e6;
         lcinfo.mbrDl = 1e6;
         lcinfo.gbrUl = 1e4;
@@ -468,7 +468,7 @@ UeManager::SetupDataRadioBearer(EpsBearer bearer,
     // lcinfo.lcId = lcid;
     // lcinfo.lcGroup = m_rrc->GetLogicalChannelGroup (bearer);
     // lcinfo.qci = bearer.qci;
-    // lcinfo.isGbr = bearer.IsGbr ();
+    // lcinfo.resourceType = bearer.GetResourceType();
     // lcinfo.mbrUl = bearer.gbrQosInfo.mbrUl;
     // lcinfo.mbrDl = bearer.gbrQosInfo.mbrDl;
     // lcinfo.gbrUl = bearer.gbrQosInfo.gbrUl;
@@ -503,7 +503,7 @@ UeManager::SetupDataRadioBearer(EpsBearer bearer,
     drbInfo->m_logicalChannelIdentity = lcid;
     drbInfo->m_logicalChannelConfig.priority = m_rrc->GetLogicalChannelPriority(bearer);
     drbInfo->m_logicalChannelConfig.logicalChannelGroup = m_rrc->GetLogicalChannelGroup(bearer);
-    if (bearer.IsGbr())
+    if (bearer.GetResourceType() > 0) // 1, 2 for GBR and DC-GBR
     {
         drbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = bearer.gbrQosInfo.gbrUl;
     }
@@ -3493,7 +3493,7 @@ LteEnbRrc::IsMaxSrsReached()
 uint8_t
 LteEnbRrc::GetLogicalChannelGroup(EpsBearer bearer)
 {
-    if (bearer.IsGbr())
+    if (bearer.GetResourceType() > 0) // 1, 2 for GBR and DC-GBR
     {
         return 1;
     }

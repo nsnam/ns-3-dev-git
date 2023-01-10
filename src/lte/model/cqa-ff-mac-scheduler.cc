@@ -1191,7 +1191,9 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
             }
         }
         else if (itLogicalChannels->second.m_qosBearerType ==
-                 LogicalChannelConfigListElement_s::QBT_GBR)
+                     LogicalChannelConfigListElement_s::QBT_GBR ||
+                 itLogicalChannels->second.m_qosBearerType ==
+                     LogicalChannelConfigListElement_s::QBT_DGBR)
         {
             if (map_GBRHOLgroupToUE.count(group) == 0)
             {
