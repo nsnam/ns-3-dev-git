@@ -14,6 +14,7 @@ def plot(i):
 for i in range(1, sys.argv.__len__()):
     plot(i)
 
+plt.locator_params(axis='y', nbins=15)
 plt.grid()
 plt.legend(loc='upper left')
 plt.show()
