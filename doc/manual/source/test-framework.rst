@@ -627,7 +627,7 @@ So you could use the shell and do::
 
   $ ./ns3 run "test-runner --suite=pcap-file"
 
-|ns3| logging is available when you run it this way, such as:
+|ns3| logging is available when you run it this way, such as::
 
   $ NS_LOG="Packet" ./ns3 run "test-runner --suite=pcap-file"
 
