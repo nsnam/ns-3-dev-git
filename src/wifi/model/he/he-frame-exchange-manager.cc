@@ -55,7 +55,8 @@ HeFrameExchangeManager::GetTypeId()
 }
 
 HeFrameExchangeManager::HeFrameExchangeManager()
-    : m_triggerFrameInAmpdu(false)
+    : m_intraBssNavEnd(0),
+      m_triggerFrameInAmpdu(false)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -63,6 +64,18 @@ HeFrameExchangeManager::HeFrameExchangeManager()
 HeFrameExchangeManager::~HeFrameExchangeManager()
 {
     NS_LOG_FUNCTION_NOARGS();
+}
+
+void
+HeFrameExchangeManager::Reset()
+{
+    NS_LOG_FUNCTION(this);
+    if (m_intraBssNavResetEvent.IsRunning())
+    {
+        m_intraBssNavResetEvent.Cancel();
+    }
+    m_intraBssNavEnd = Simulator::Now();
+    VhtFrameExchangeManager::Reset();
 }
 
 uint16_t
@@ -82,6 +95,18 @@ HeFrameExchangeManager::SetWifiMac(const Ptr<WifiMac> mac)
     m_apMac = DynamicCast<ApWifiMac>(mac);
     m_staMac = DynamicCast<StaWifiMac>(mac);
     VhtFrameExchangeManager::SetWifiMac(mac);
+}
+
+void
+HeFrameExchangeManager::SetWifiPhy(const Ptr<WifiPhy> phy)
+{
+    NS_LOG_FUNCTION(this << phy);
+    VhtFrameExchangeManager::SetWifiPhy(phy);
+    // Cancel intra-BSS NAV reset timer when receiving a frame from the PHY
+    phy->TraceConnectWithoutContext("PhyRxPayloadBegin",
+                                    Callback<void, WifiTxVector, Time>([this](WifiTxVector, Time) {
+                                        m_intraBssNavResetEvent.Cancel();
+                                    }));
 }
 
 void
@@ -1604,6 +1629,103 @@ HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVec
 
     // the other two conditions using the RXVECTOR parameter PARTIAL_AID are not implemented
     return false;
+}
+
+void
+HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    if (!psdu->HasNav())
+    {
+        return;
+    }
+
+    if (psdu->GetAddr1() == m_self)
+    {
+        // When the received frame’s RA is equal to the STA’s own MAC address, the STA
+        // shall not update its NAV (IEEE 802.11-2020, sec. 10.3.2.4)
+        return;
+    }
+
+    // The intra-BSS NAV is updated by an intra-BSS PPDU. The basic NAV is updated by an
+    // inter-BSS PPDU or a PPDU that cannot be classified as intra-BSS or inter-BSS.
+    // (Section 26.2.4 of 802.11ax-2021)
+    if (!IsIntraBssPpdu(psdu, txVector))
+    {
+        NS_LOG_DEBUG("PPDU not classified as intra-BSS, update the basic NAV");
+        VhtFrameExchangeManager::UpdateNav(psdu, txVector);
+        return;
+    }
+
+    NS_LOG_DEBUG("PPDU classified as intra-BSS, update the intra-BSS NAV");
+    Time duration = psdu->GetDuration();
+    NS_LOG_DEBUG("Duration/ID=" << duration);
+
+    // For all other received frames the STA shall update its NAV when the received
+    // Duration is greater than the STA’s current NAV value (IEEE 802.11-2020 sec. 10.3.2.4)
+    auto intraBssNavEnd = Simulator::Now() + duration;
+    if (intraBssNavEnd > m_intraBssNavEnd)
+    {
+        m_intraBssNavEnd = intraBssNavEnd;
+        NS_LOG_DEBUG("Updated intra-BSS NAV=" << m_intraBssNavEnd);
+
+        // A STA that used information from an RTS frame as the most recent basis to update
+        // its NAV setting is permitted to reset its NAV if no PHY-RXSTART.indication
+        // primitive is received from the PHY during a NAVTimeout period starting when the
+        // MAC receives a PHY-RXEND.indication primitive corresponding to the detection of
+        // the RTS frame. NAVTimeout period is equal to:
+        // (2 x aSIFSTime) + (CTS_Time) + aRxPHYStartDelay + (2 x aSlotTime)
+        // The “CTS_Time” shall be calculated using the length of the CTS frame and the data
+        // rate at which the RTS frame used for the most recent NAV update was received
+        // (IEEE 802.11-2016 sec. 10.3.2.4)
+        if (psdu->GetHeader(0).IsRts())
+        {
+            auto navResetDelay =
+                2 * m_phy->GetSifs() +
+                WifiPhy::CalculateTxDuration(GetCtsSize(), txVector, m_phy->GetPhyBand()) +
+                m_phy->CalculatePhyPreambleAndHeaderDuration(txVector) + 2 * m_phy->GetSlot();
+            m_intraBssNavResetEvent =
+                Simulator::Schedule(navResetDelay,
+                                    &HeFrameExchangeManager::IntraBssNavResetTimeout,
+                                    this);
+        }
+    }
+    NS_LOG_DEBUG("Current intra-BSS NAV=" << m_intraBssNavEnd);
+
+    m_channelAccessManager->NotifyNavStartNow(duration);
+}
+
+void
+HeFrameExchangeManager::ClearTxopHolderIfNeeded()
+{
+    NS_LOG_FUNCTION(this);
+    if (m_intraBssNavEnd <= Simulator::Now())
+    {
+        m_txopHolder.reset();
+    }
+}
+
+void
+HeFrameExchangeManager::NavResetTimeout()
+{
+    NS_LOG_FUNCTION(this);
+    m_navEnd = Simulator::Now();
+    // Do not reset the TXOP holder because the basic NAV is updated by inter-BSS frames
+    // The NAV seen by the ChannelAccessManager is now the intra-BSS NAV only
+    Time intraBssNav = Simulator::GetDelayLeft(m_intraBssNavResetEvent);
+    m_channelAccessManager->NotifyNavResetNow(intraBssNav);
+}
+
+void
+HeFrameExchangeManager::IntraBssNavResetTimeout()
+{
+    NS_LOG_FUNCTION(this);
+    m_intraBssNavEnd = Simulator::Now();
+    ClearTxopHolderIfNeeded();
+    // The NAV seen by the ChannelAccessManager is now the basic NAV only
+    Time basicNav = Simulator::GetDelayLeft(m_navResetEvent);
+    m_channelAccessManager->NotifyNavResetNow(basicNav);
 }
 
 void

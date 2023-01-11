@@ -591,6 +591,11 @@ class FrameExchangeManager : public Object
      */
     void DoCtsTimeout(Ptr<WifiPsdu> psdu);
 
+    /**
+     * Reset this frame exchange manager.
+     */
+    virtual void Reset();
+
   private:
     /**
      * \param txVector the TXVECTOR decoded from PHY header.
@@ -608,11 +613,6 @@ class FrameExchangeManager : public Object
      * Send the current MPDU, which can be acknowledged by a Normal Ack.
      */
     void SendMpdu();
-
-    /**
-     * Reset this frame exchange manager.
-     */
-    virtual void Reset();
 
     Ptr<WifiMpdu> m_mpdu;           //!< the MPDU being transmitted
     WifiTxParameters m_txParams;    //!< the TX parameters for the current frame

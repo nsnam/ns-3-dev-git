@@ -64,6 +64,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     uint16_t GetSupportedBaBufferSize() const override;
     bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
     void SetWifiMac(const Ptr<WifiMac> mac) override;
+    void SetWifiPhy(const Ptr<WifiPhy> phy) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
 
@@ -116,6 +117,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
 
   protected:
     void DoDispose() override;
+    void Reset() override;
 
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                      RxSignalInfo rxSignalInfo,
@@ -132,6 +134,19 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) override;
     void BlockAckTimeout(Ptr<WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
+    void UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+    void NavResetTimeout() override;
+
+    /**
+     * Clear the TXOP holder if the intra-BSS NAV counted down to zero (includes the case
+     * of intra-BSS NAV reset).
+     */
+    void ClearTxopHolderIfNeeded() override;
+
+    /**
+     * Reset the intra-BSS NAV upon expiration of the intra-BSS NAV reset timer.
+     */
+    virtual void IntraBssNavResetTimeout();
 
     /**
      * Send a map of PSDUs as a DL MU PPDU.
@@ -239,9 +254,11 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger, const WifiMacHeader& hdr);
 
-    Ptr<ApWifiMac> m_apMac;    //!< MAC pointer (null if not an AP)
-    Ptr<StaWifiMac> m_staMac;  //!< MAC pointer (null if not a STA)
-    WifiTxVector m_trigVector; //!< the TRIGVECTOR
+    Ptr<ApWifiMac> m_apMac;          //!< MAC pointer (null if not an AP)
+    Ptr<StaWifiMac> m_staMac;        //!< MAC pointer (null if not a STA)
+    WifiTxVector m_trigVector;       //!< the TRIGVECTOR
+    Time m_intraBssNavEnd;           //!< intra-BSS NAV expiration time
+    EventId m_intraBssNavResetEvent; //!< the event to reset the intra-BSS NAV after an RTS
 
   private:
     /**

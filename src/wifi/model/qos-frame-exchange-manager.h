@@ -177,6 +177,11 @@ class QosFrameExchangeManager : public FrameExchangeManager
      */
     virtual void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
 
+    /**
+     * Clear the TXOP holder if the NAV counted down to zero (includes the case of NAV reset).
+     */
+    virtual void ClearTxopHolderIfNeeded();
+
     Ptr<QosTxop> m_edca;                      //!< the EDCAF that gained channel access
     std::optional<Mac48Address> m_txopHolder; //!< MAC address of the TXOP holder
     bool m_setQosQueueSize;                   /**< whether to set the Queue Size subfield of the

@@ -95,13 +95,7 @@ FrameExchangeManager::DoDispose()
     m_channelAccessManager = nullptr;
     m_protectionManager = nullptr;
     m_ackManager = nullptr;
-    if (m_phy)
-    {
-        m_phy->TraceDisconnectWithoutContext(
-            "PhyRxPayloadBegin",
-            MakeCallback(&FrameExchangeManager::RxStartIndication, this));
-    }
-    m_phy = nullptr;
+    ResetPhy();
     Object::DoDispose();
 }
 
@@ -191,11 +185,14 @@ FrameExchangeManager::ResetPhy()
         m_phy->TraceDisconnectWithoutContext(
             "PhyRxPayloadBegin",
             MakeCallback(&FrameExchangeManager::RxStartIndication, this));
-        m_phy->SetReceiveOkCallback(MakeNullCallback<void,
-                                                     Ptr<const WifiPsdu>,
-                                                     RxSignalInfo,
-                                                     WifiTxVector,
-                                                     std::vector<bool>>());
+        if (m_phy->GetState())
+        {
+            m_phy->SetReceiveOkCallback(MakeNullCallback<void,
+                                                         Ptr<const WifiPsdu>,
+                                                         RxSignalInfo,
+                                                         WifiTxVector,
+                                                         std::vector<bool>>());
+        }
         m_phy = nullptr;
     }
 }

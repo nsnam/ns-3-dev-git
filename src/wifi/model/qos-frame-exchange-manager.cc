@@ -666,10 +666,7 @@ QosFrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxV
 
     // before updating the NAV, check if the NAV counted down to zero. In such a
     // case, clear the saved TXOP holder address.
-    if (m_navEnd <= Simulator::Now())
-    {
-        m_txopHolder.reset();
-    }
+    ClearTxopHolderIfNeeded();
 
     FrameExchangeManager::PreProcessFrame(psdu, txVector);
 }
@@ -706,11 +703,21 @@ QosFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVec
 }
 
 void
+QosFrameExchangeManager::ClearTxopHolderIfNeeded()
+{
+    NS_LOG_FUNCTION(this);
+    if (m_navEnd <= Simulator::Now())
+    {
+        m_txopHolder.reset();
+    }
+}
+
+void
 QosFrameExchangeManager::NavResetTimeout()
 {
     NS_LOG_FUNCTION(this);
-    m_txopHolder.reset();
     FrameExchangeManager::NavResetTimeout();
+    ClearTxopHolderIfNeeded();
 }
 
 void
