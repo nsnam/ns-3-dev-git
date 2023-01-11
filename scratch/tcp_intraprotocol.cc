@@ -14,7 +14,7 @@
 
 /*
                    Network Topology
-        tcp                                tcp
+        tcp        LogComponentEnable                        tcp
 n0 -------------\      10.1.2.0     /---------------n4
   (LAN 10.1.3.0) n2----------------n3 (LAN 10.1.3.0)
 n1 -------------/   point-to-point  \---------------n5
@@ -44,7 +44,7 @@ TraceCwnd()
 int main()
 {
     bool enable_log = false;
-    std::string tcp_type = "TcpBbr";
+    std::string tcp_type = "TcpCubic";
 
     if (enable_log)
     {
@@ -111,20 +111,20 @@ int main()
     apps.Add(sinkhelper.Install(rightcsmanodes.Get(1)));
 
     apps.Get(0)->SetStartTime(Seconds(1.0));
-    apps.Get(0)->SetStopTime(Seconds(100.0));
+    apps.Get(0)->SetStopTime(Seconds(30.0));
     apps.Get(1)->SetStartTime(Seconds(1.0));
-    apps.Get(1)->SetStopTime(Seconds(100.0));
+    apps.Get(1)->SetStopTime(Seconds(30.0));
 
     apps.Get(2)->SetStartTime(Seconds(0.0));
-    apps.Get(2)->SetStopTime(Seconds(150.0));
+    apps.Get(2)->SetStopTime(Seconds(100.0));
     apps.Get(3)->SetStartTime(Seconds(0.0));
-    apps.Get(3)->SetStopTime(Seconds(150.0));
+    apps.Get(3)->SetStopTime(Seconds(100.0));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     Simulator::Schedule(Seconds(1.001), TraceCwnd);
 
-    // AnimationInterface anim("../animbbr.xml");
+    // AnimationInterface anim("../anim.xml");
 
     p2phelper.EnablePcapAll("p2p");
     csmahelper.EnablePcapAll("csma");
