@@ -67,11 +67,12 @@ TraceCwnd(uint32_t nodeId, uint32_t socketId)
 int
 main(int argc, char* argv[])
 {
-    std::string tcpTypeId = "TcpCubic";
+    std::string tcpTypeId = "TcpBbr";
     std::string queueDisc = "FifoQueueDisc";
     uint32_t delAckCount = 2;
     bool bql = false;
     bool enablePcap = false;
+    Time stopTime = Seconds(100);
 
     queueDisc = std::string("ns3::") + queueDisc;
 
@@ -143,13 +144,13 @@ main(int argc, char* argv[])
     sourceApps.Start(Seconds(0.1));
     // Hook trace source after application starts
     Simulator::Schedule(Seconds(0.1) + MilliSeconds(1), &TraceCwnd, 0, 0);
-    sourceApps.Stop(Seconds(100));
+    sourceApps.Stop(stopTime);
 
     // Install application on the receiver
     PacketSinkHelper sink("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer sinkApps = sink.Install(receiver.Get(0));
     sinkApps.Start(Seconds(0.0));
-    sinkApps.Stop(Seconds(150));
+    sinkApps.Stop(stopTime);
 
     // Trace the queue occupancy on the second interface of R1
     tch.Uninstall(routers.Get(0)->GetDevice(1));
@@ -168,7 +169,7 @@ main(int argc, char* argv[])
     Ptr<FlowMonitor> monitor = flowmon.InstallAll();
     Simulator::Schedule(Seconds(0 + 0.000001), &TraceThroughput, monitor);
 
-    Simulator::Stop(Seconds(200.0) + TimeStep(1));
+    Simulator::Stop(stopTime + TimeStep(1));
     Simulator::Run();
     Simulator::Destroy();
 
