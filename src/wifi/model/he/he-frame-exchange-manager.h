@@ -102,6 +102,18 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     virtual std::optional<double> GetMostRecentRssi(const Mac48Address& address) const;
 
+    /**
+     * Return whether the received frame is classified as intra-BSS. It is assumed that
+     * this station is already associated with an AP.
+     *
+     * \param psdu the received PSDU
+     * \param txVector TX vector of the received PSDU
+     * \return true if the received frame is classified as intra-BSS, false otherwise
+     *         (the received frame is classified as inter-BSS or it cannot be classified
+     *         as intra-BSS or inter-BSS)
+     */
+    bool IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const;
+
   protected:
     void DoDispose() override;
 

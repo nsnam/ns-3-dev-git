@@ -1537,6 +1537,75 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
     SendPsduMapWithProtection(WifiPsduMap{{staId, psdu}}, txParams);
 }
 
+bool
+HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    // "If, based on the MAC address information of a frame carried in a received PPDU, the
+    // received PPDU satisfies both intra-BSS and inter-BSS conditions, then the received PPDU is
+    // classified as an intra-BSS PPDU." (Sec. 26.2.2 of 802.11ax-2021)
+    // Hence, check first if the intra-BSS conditions using MAC address information are satisfied:
+    // 1. "The PPDU carries a frame that has an RA, TA, or BSSID field value that is equal to
+    //    the BSSID of the BSS in which the STA is associated"
+    const auto ra = psdu->GetAddr1();
+    const auto ta = psdu->GetAddr2();
+    const auto bssid = psdu->GetHeader(0).GetAddr3();
+    const auto empty = Mac48Address();
+
+    if (ra == m_bssid || ta == m_bssid || bssid == m_bssid)
+    {
+        return true;
+    }
+
+    // 2. "The PPDU carries a Control frame that does not have a TA field and that has an
+    //    RA field value that matches the saved TXOP holder address of the BSS in which
+    //    the STA is associated"
+    if (psdu->GetHeader(0).IsCtl() && ta == empty && ra == m_txopHolder)
+    {
+        return true;
+    }
+
+    // If we get here, the intra-BSS conditions using MAC address information are not satisfied.
+    // "If the received PPDU satisfies the intra-BSS conditions using the RXVECTOR parameter
+    // BSS_COLOR and also satisfies the inter-BSS conditions using MAC address information of a
+    // frame carried in the PPDU, then the classification made using the MAC address information
+    // takes precedence."
+    // Hence, if the inter-BSS conditions using MAC address information are satisfied, the frame
+    // is classified as inter-BSS
+    // 1. "The PPDU carries a frame that has a BSSID field, the value of which is not the BSSID
+    //    of the BSS in which the STA is associated"
+    if (bssid != empty && bssid != m_bssid)
+    {
+        return false;
+    }
+
+    // 2. The PPDU carries a frame that does not have a BSSID field but has both an RA field and
+    //    TA field, neither value of which is equal to the BSSID of the BSS in which the STA is
+    //    associated
+    if (bssid == empty && ta != empty && ra != empty && ta != m_bssid && ra != m_bssid)
+    {
+        return false;
+    }
+
+    // If we get here, both intra-BSS and inter-bss conditions using MAC address information
+    // are not satisfied. Hence, the frame is classified as intra-BSS if the intra-BSS conditions
+    // using the RXVECTOR parameters are satisfied:
+    // 1. The RXVECTOR parameter BSS_COLOR of the PPDU carrying the frame is the BSS color of the
+    //    BSS of which the STA is a member
+    // This condition is used if the BSS is not disabled ("If a STA determines that the BSS color
+    // is disabled (see 26.17.3.3), then the RXVECTOR parameter BSS_COLOR of a PPDU shall not be
+    // used to classify the PPDU")
+    const auto bssColor = m_mac->GetHeConfiguration()->GetBssColor();
+    if (bssColor != 0 && bssColor == txVector.GetBssColor())
+    {
+        return true;
+    }
+
+    // the other two conditions using the RXVECTOR parameter PARTIAL_AID are not implemented
+    return false;
+}
+
 void
 HeFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {
