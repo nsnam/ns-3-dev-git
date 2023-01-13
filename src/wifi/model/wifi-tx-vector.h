@@ -331,21 +331,17 @@ class WifiTxVector
      */
     bool IsValid() const;
     /**
-     * Return true if this TX vector is used for a multi-user transmission.
-     *
-     * \return true if this TX vector is used for a multi-user transmission
+     * \return true if this TX vector is used for a multi-user (OFDMA and/or MU-MIMO) transmission
      */
     bool IsMu() const;
     /**
-     * Return true if this TX vector is used for a downlink multi-user transmission.
-     *
-     * \return true if this TX vector is used for a downlink multi-user transmission
+     * \return true if this TX vector is used for a downlink multi-user (OFDMA and/or MU-MIMO)
+     * transmission
      */
     bool IsDlMu() const;
     /**
-     * Return true if this TX vector is used for an uplink multi-user transmission.
-     *
-     * \return true if this TX vector is used for an uplink multi-user transmission
+     * \return true if this TX vector is used for an uplink multi-user (OFDMA and/or MU-MIMO)
+     * transmission
      */
     bool IsUlMu() const;
     /**

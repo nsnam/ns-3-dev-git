@@ -371,7 +371,7 @@ WifiTxVector::GetSigBMode() const
 void
 WifiTxVector::SetRuAllocation(const RuAllocation& ruAlloc)
 {
-    if (IsDlMu() && !m_muUserInfos.empty())
+    if (ns3::IsDlMu(m_preamble) && !m_muUserInfos.empty())
     {
         NS_ASSERT(ruAlloc == DeriveRuAllocation());
     }
@@ -381,7 +381,7 @@ WifiTxVector::SetRuAllocation(const RuAllocation& ruAlloc)
 const RuAllocation&
 WifiTxVector::GetRuAllocation() const
 {
-    if (IsDlMu() && m_ruAllocation.empty())
+    if (ns3::IsDlMu(m_preamble) && m_ruAllocation.empty())
     {
         m_ruAllocation = DeriveRuAllocation();
     }
@@ -440,13 +440,13 @@ WifiTxVector::IsValid() const
 bool
 WifiTxVector::IsMu() const
 {
-    return ns3::IsMu(m_preamble);
+    return IsDlMu() || IsUlMu();
 }
 
 bool
 WifiTxVector::IsDlMu() const
 {
-    return ns3::IsDlMu(m_preamble);
+    return ns3::IsDlMu(m_preamble) && !(IsEht(m_preamble) && m_ehtPpduType == 1);
 }
 
 bool

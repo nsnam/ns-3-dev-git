@@ -274,6 +274,10 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
     txVector.SetGuardInterval(guardInterval);
     txVector.SetStbc(0);
     txVector.SetNess(0);
+    if (IsEht(preamble))
+    {
+        txVector.SetEhtPpduType(0);
+    }
     std::list<uint16_t> staIds;
 
     uint16_t staId = 1;
@@ -1784,6 +1788,7 @@ PhyHeaderSectionsTest::DoRun()
 
     // -> EHT MU format
     txVector.SetPreambleType(WIFI_PREAMBLE_EHT_MU);
+    txVector.SetEhtPpduType(0); // EHT MU transmission
     txVector.SetRuAllocation({96});
     sections[WIFI_PPDU_FIELD_U_SIG] = {{ppduStart + MicroSeconds(24), ppduStart + MicroSeconds(32)},
                                        uSigMode};
