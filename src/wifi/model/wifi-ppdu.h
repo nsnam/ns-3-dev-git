@@ -94,7 +94,14 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Reset the TXVECTOR.
      */
-    void ResetTxVector();
+    void ResetTxVector() const;
+
+    /**
+     * Update the TXVECTOR based on some information known at the receiver.
+     *
+     * \param updatedTxVector the updated TXVECTOR.
+     */
+    void UpdateTxVector(const WifiTxVector& updatedTxVector) const;
 
     /**
      * Get the payload of the PPDU.

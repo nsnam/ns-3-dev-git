@@ -99,10 +99,18 @@ WifiPpdu::DoGetTxVector() const
 }
 
 void
-WifiPpdu::ResetTxVector()
+WifiPpdu::ResetTxVector() const
 {
     NS_LOG_FUNCTION(this);
     m_txVector.reset();
+}
+
+void
+WifiPpdu::UpdateTxVector(const WifiTxVector& updatedTxVector) const
+{
+    NS_LOG_FUNCTION(this << updatedTxVector);
+    ResetTxVector();
+    m_txVector = updatedTxVector;
 }
 
 Ptr<const WifiPsdu>

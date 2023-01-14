@@ -78,6 +78,7 @@ const PhyEntity::PpduFormats HePhy::m_hePpduFormats { // Ignoring PE (Packet Ext
 HePhy::HePhy(bool buildModeList /* = true */)
     : VhtPhy(false), // don't add VHT modes to list
       m_trigVectorExpirationTime(Seconds(0)),
+      m_currentTxVector(std::nullopt),
       m_rxHeTbPpdus(0),
       m_lastPer20MHzDurations()
 {
@@ -600,7 +601,7 @@ HePhy::GetStaId(const Ptr<const WifiPpdu> ppdu) const
     }
     else if (ppdu->GetType() == WIFI_PPDU_TYPE_DL_MU)
     {
-        Ptr<StaWifiMac> mac = DynamicCast<StaWifiMac>(m_wifiPhy->GetDevice()->GetMac());
+        auto mac = DynamicCast<StaWifiMac>(m_wifiPhy->GetDevice()->GetMac());
         if (mac && mac->IsAssociated())
         {
             return mac->GetAssociationId();
@@ -836,8 +837,7 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
     }
     Time timeToEndRx = payloadDuration + maxOffset;
 
-    bool isAp = (bool)(DynamicCast<ApWifiMac>(m_wifiPhy->GetDevice()->GetMac()));
-    if (!isAp)
+    if (m_wifiPhy->GetDevice()->GetMac()->GetTypeOfStation() != AP)
     {
         NS_LOG_DEBUG("Ignore HE TB PPDU payload received by STA but keep state in Rx");
         NotifyPayloadBegin(txVector, timeToEndRx);
@@ -1434,6 +1434,11 @@ void
 HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
 {
     NS_LOG_FUNCTION(this << ppdu);
+    const auto& txVector = ppdu->GetTxVector();
+    if (auto mac = m_wifiPhy->GetDevice()->GetMac(); mac && (mac->GetTypeOfStation() == AP))
+    {
+        m_currentTxVector = txVector;
+    }
     if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || ppdu->GetType() == WIFI_PPDU_TYPE_DL_MU)
     {
         auto nonOfdmaTxPowerDbm =
@@ -1448,7 +1453,6 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
         hePpdu->SetTxPsdFlag(HePpdu::PSD_NON_HE_PORTION);
 
         // non-OFDMA part
-        const auto& txVector = ppdu->GetTxVector();
         auto nonOfdmaDuration = ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU
                                     ? CalculateNonOfdmaDurationForHeTb(txVector)
                                     : CalculateNonOfdmaDurationForHeMu(txVector);
@@ -1825,6 +1829,18 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
         (Simulator::Now() <= m_trigVectorExpirationTime))
     {
         return ppdu->Copy();
+    }
+    else if (auto txVector = ppdu->GetTxVector();
+             m_currentTxVector.has_value() &&
+             (m_previouslyTxPpduUid == ppdu->GetUid()) &&         // response to a trigger frame
+             (txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)) // PPDU is a non-HT (duplicate)
+    {
+        auto triggerChannelWidth = m_currentTxVector->GetChannelWidth();
+        if (txVector.GetChannelWidth() != triggerChannelWidth)
+        {
+            txVector.SetChannelWidth(triggerChannelWidth);
+            ppdu->UpdateTxVector(txVector);
+        }
     }
     return PhyEntity::GetRxPpduFromTxPpdu(ppdu);
 }
