@@ -5486,7 +5486,7 @@ TestUlOfdmaPowerControl::SendMuBar(std::vector<uint16_t> staIds)
 
     // Build MU-BAR trigger frame
     CtrlTriggerHeader muBar;
-    muBar.SetType(MU_BAR_TRIGGER);
+    muBar.SetType(TriggerFrameType::MU_BAR_TRIGGER);
     muBar.SetMoreTF(true);
     muBar.SetCsRequired(true);
     muBar.SetUlBandwidth(DEFAULT_CHANNEL_WIDTH);

@@ -555,7 +555,7 @@ class CtrlBAckResponseHeader : public Header
  * \ingroup wifi
  * The different Trigger frame types.
  */
-enum TriggerFrameType : uint8_t
+enum class TriggerFrameType : uint8_t
 {
     BASIC_TRIGGER = 0,      // Basic
     BFRP_TRIGGER = 1,       // Beamforming Report Poll
@@ -583,7 +583,7 @@ class CtrlTriggerUserInfoField
      *
      * \param triggerType the Trigger frame type
      */
-    CtrlTriggerUserInfoField(uint8_t triggerType);
+    CtrlTriggerUserInfoField(TriggerFrameType triggerType);
     /**
      * Copy assignment operator.
      *
@@ -852,7 +852,7 @@ class CtrlTriggerUserInfoField
     } m_bits26To31;        //!< Fields occupying bits 26-31 in the User Info field
 
     uint8_t m_ulTargetRssi;                  //!< Expected receive signal power
-    uint8_t m_triggerType;                   //!< Trigger frame type
+    TriggerFrameType m_triggerType;          //!< Trigger frame type
     uint8_t m_basicTriggerDependentUserInfo; //!< Basic Trigger variant of Trigger Dependent User
                                              //!< Info subfield
     CtrlBAckRequestHeader
@@ -1244,14 +1244,14 @@ class CtrlTriggerHeader : public Header
     /**
      * Common Info field
      */
-    uint8_t m_triggerType;     //!< Trigger type
-    uint16_t m_ulLength;       //!< Value for the L-SIG Length field
-    bool m_moreTF;             //!< True if a subsequent Trigger frame follows
-    bool m_csRequired;         //!< Carrier Sense required
-    uint8_t m_ulBandwidth;     //!< UL BW subfield
-    uint8_t m_giAndLtfType;    //!< GI And LTF Type subfield
-    uint8_t m_apTxPower;       //!< Tx Power used by AP to transmit the Trigger Frame
-    uint16_t m_ulSpatialReuse; //!< Value for the Spatial Reuse field in HE-SIG-A
+    TriggerFrameType m_triggerType; //!< Trigger type
+    uint16_t m_ulLength;            //!< Value for the L-SIG Length field
+    bool m_moreTF;                  //!< True if a subsequent Trigger frame follows
+    bool m_csRequired;              //!< Carrier Sense required
+    uint8_t m_ulBandwidth;          //!< UL BW subfield
+    uint8_t m_giAndLtfType;         //!< GI And LTF Type subfield
+    uint8_t m_apTxPower;            //!< Tx Power used by AP to transmit the Trigger Frame
+    uint16_t m_ulSpatialReuse;      //!< Value for the Spatial Reuse field in HE-SIG-A
     /**
      * List of User Info fields
      */

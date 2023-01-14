@@ -88,7 +88,7 @@ GetMuBarSize(std::list<BlockAckReqType> types)
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_CTL_TRIGGER);
     CtrlTriggerHeader trigger;
-    trigger.SetType(MU_BAR_TRIGGER);
+    trigger.SetType(TriggerFrameType::MU_BAR_TRIGGER);
     for (auto& t : types)
     {
         auto userInfo = trigger.AddUserInfoField();
