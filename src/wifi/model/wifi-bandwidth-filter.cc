@@ -89,7 +89,7 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
     // The signal power is spread over a frequency interval that includes a guard
     // band on the left and a guard band on the right of the nominal TX band
 
-    const auto rxCenterFreq = wifiRxParams->ppdu->GetTxCenterFreq();
+    const auto rxCenterFreq = wifiRxParams->ppdu->GetTxCenterFreqs().front();
     const auto rxWidth = wifiRxParams->ppdu->GetTxVector().GetChannelWidth();
     const auto guardBandwidth = wifiPhy->GetGuardBandwidth(rxWidth);
     const auto operatingFrequency = interface->GetCenterFrequency();

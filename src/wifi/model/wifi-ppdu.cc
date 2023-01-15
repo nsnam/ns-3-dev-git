@@ -24,6 +24,49 @@
 
 #include "ns3/log.h"
 
+namespace
+{
+/**
+ * Get the center frequency (in MHz) of each segment covered by the provided channel width (in
+ * MHz). If the specified channel width is contained in a single frequency segment, a single
+ * center frequency is returned. If the specified channel width is spread over multiple
+ * frequency segments (e.g. 160 MHz if operating channel is 80+80MHz), multiple center
+ * frequencies are returned.
+ *
+ * \param channel the operating channel of the PHY
+ * \param channelWidth the channel width in MHz
+ * \return the center frequency (in MHz) of each segment covered by the given width
+ */
+std::vector<uint16_t>
+GetChannelCenterFrequenciesPerSegment(const ns3::WifiPhyOperatingChannel& channel,
+                                      ns3::ChannelWidthMhz channelWidth)
+{
+    if (!channel.IsSet())
+    {
+        return {};
+    }
+    std::vector<uint16_t> freqs{};
+    const auto width = std::min(channelWidth, channel.GetWidth(0));
+    const auto primarySegmentIndex = channel.GetPrimarySegmentIndex(width);
+    const auto secondarySegmentIndex = channel.GetSecondarySegmentIndex(width);
+    const auto primaryIndex = channel.GetPrimaryChannelIndex(channelWidth);
+    const auto segmentIndices =
+        ((channel.GetNSegments() < 2) || (channelWidth <= channel.GetWidth(primarySegmentIndex)))
+            ? std::vector<uint8_t>{primarySegmentIndex}
+            : std::vector<uint8_t>{primarySegmentIndex, secondarySegmentIndex};
+    for (auto segmentIndex : segmentIndices)
+    {
+        const auto segmentFrequency = channel.GetFrequency(segmentIndex);
+        const auto segmentWidth = channel.GetWidth(segmentIndex);
+        const auto segmentOffset = (primarySegmentIndex * (segmentWidth / channelWidth));
+        const auto freq =
+            segmentFrequency - (segmentWidth / 2.) + (primaryIndex - segmentOffset + 0.5) * width;
+        freqs.push_back(freq);
+    }
+    return freqs;
+}
+} // namespace
+
 namespace ns3
 {
 
@@ -35,9 +78,7 @@ WifiPpdu::WifiPpdu(Ptr<const WifiPsdu> psdu,
                    uint64_t uid /* = UINT64_MAX */)
     : m_preamble(txVector.GetPreambleType()),
       m_modulation(txVector.IsValid() ? txVector.GetModulationClass() : WIFI_MOD_CLASS_UNKNOWN),
-      m_txCenterFreq(channel.IsSet()
-                         ? channel.GetPrimaryChannelCenterFrequency(txVector.GetChannelWidth())
-                         : 0),
+      m_txCenterFreqs(GetChannelCenterFrequenciesPerSegment(channel, txVector.GetChannelWidth())),
       m_uid(uid),
       m_txVector(txVector),
       m_operatingChannel(channel),
@@ -57,9 +98,7 @@ WifiPpdu::WifiPpdu(const WifiConstPsduMap& psdus,
     : m_preamble(txVector.GetPreambleType()),
       m_modulation(txVector.IsValid() ? txVector.GetMode(psdus.begin()->first).GetModulationClass()
                                       : WIFI_MOD_CLASS_UNKNOWN),
-      m_txCenterFreq(channel.IsSet()
-                         ? channel.GetPrimaryChannelCenterFrequency(txVector.GetChannelWidth())
-                         : 0),
+      m_txCenterFreqs(GetChannelCenterFrequenciesPerSegment(channel, txVector.GetChannelWidth())),
       m_uid(uid),
       m_txVector(txVector),
       m_operatingChannel(channel),
@@ -148,18 +187,18 @@ WifiPpdu::GetTxChannelWidth() const
     return m_txChannelWidth;
 }
 
-uint16_t
-WifiPpdu::GetTxCenterFreq() const
+std::vector<uint16_t>
+WifiPpdu::GetTxCenterFreqs() const
 {
-    return m_txCenterFreq;
+    return m_txCenterFreqs;
 }
 
 bool
 WifiPpdu::DoesOverlapChannel(uint16_t minFreq, uint16_t maxFreq) const
 {
-    NS_LOG_FUNCTION(this << m_txCenterFreq << minFreq << maxFreq);
-    uint16_t minTxFreq = m_txCenterFreq - m_txChannelWidth / 2;
-    uint16_t maxTxFreq = m_txCenterFreq + m_txChannelWidth / 2;
+    NS_LOG_FUNCTION(this << m_txCenterFreqs.front() << minFreq << maxFreq);
+    uint16_t minTxFreq = m_txCenterFreqs.front() - m_txChannelWidth / 2;
+    uint16_t maxTxFreq = m_txCenterFreqs.front() + m_txChannelWidth / 2;
     /**
      * The PPDU does not overlap the channel in two cases.
      *

@@ -27,6 +27,7 @@
 #include <list>
 #include <optional>
 #include <unordered_map>
+#include <vector>
 
 /**
  * \file
@@ -137,9 +138,9 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     virtual ChannelWidthMhz GetTxChannelWidth() const;
 
     /**
-     * \return the center frequency (MHz) used for the transmission of this PPDU
+     * \return the center frequency per segment (MHz) used for the transmission of this PPDU
      */
-    uint16_t GetTxCenterFreq() const;
+    std::vector<uint16_t> GetTxCenterFreqs() const;
 
     /**
      * Check whether the given PPDU overlaps a given channel.
@@ -202,8 +203,9 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     WifiPreamble m_preamble;          //!< the PHY preamble
     WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
     WifiConstPsduMap m_psdus;         //!< the PSDUs contained in this PPDU
-    uint16_t m_txCenterFreq; //!< the center frequency (MHz) used for the transmission of this PPDU
-    uint64_t m_uid;          //!< the unique ID of this PPDU
+    std::vector<uint16_t> m_txCenterFreqs; //!< the center frequency (MHz) per segment used for the
+                                           //!< transmission of this PPDU
+    uint64_t m_uid;                        //!< the unique ID of this PPDU
     mutable std::optional<WifiTxVector>
         m_txVector; //!< the TXVECTOR at TX PHY or the reconstructed TXVECTOR at RX PHY (or
                     //!< std::nullopt if TXVECTOR has not been reconstructed yet)
