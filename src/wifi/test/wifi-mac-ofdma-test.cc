@@ -133,9 +133,10 @@ TestMultiUserScheduler::SelectTxFormat()
             (m_txFormat == SU_TX || m_txFormat == DL_MU_TX ? TriggerFrameType::BSRP_TRIGGER
                                                            : TriggerFrameType::BASIC_TRIGGER);
 
-        m_trigger = CtrlTriggerHeader(ulTriggerType, m_txVector);
-
         WifiTxVector txVector = m_txVector;
+        txVector.SetPreambleType(WIFI_PREAMBLE_HE_TB);
+        m_trigger = CtrlTriggerHeader(ulTriggerType, txVector);
+
         txVector.SetGuardInterval(m_trigger.GetGuardInterval());
 
         uint32_t ampduSize = (ulTriggerType == TriggerFrameType::BSRP_TRIGGER)

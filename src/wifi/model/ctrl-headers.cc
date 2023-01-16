@@ -1068,8 +1068,10 @@ CtrlBAckResponseHeader::ResetBitmap(std::size_t index)
  * Trigger frame - User Info field
  ***********************************/
 
-CtrlTriggerUserInfoField::CtrlTriggerUserInfoField(TriggerFrameType triggerType)
-    : m_aid12(0),
+CtrlTriggerUserInfoField::CtrlTriggerUserInfoField(TriggerFrameType triggerType,
+                                                   TriggerFrameVariant variant)
+    : m_variant(variant),
+      m_aid12(0),
       m_ruAllocation(0),
       m_ulFecCodingType(false),
       m_ulMcs(0),
@@ -1096,11 +1098,13 @@ CtrlTriggerUserInfoField::operator=(const CtrlTriggerUserInfoField& userInfo)
         return *this;
     }
 
+    m_variant = userInfo.m_variant;
     m_aid12 = userInfo.m_aid12;
     m_ruAllocation = userInfo.m_ruAllocation;
     m_ulFecCodingType = userInfo.m_ulFecCodingType;
     m_ulMcs = userInfo.m_ulMcs;
     m_ulDcm = userInfo.m_ulDcm;
+    m_ps160 = userInfo.m_ps160;
     m_bits26To31 = userInfo.m_bits26To31;
     m_ulTargetRssi = userInfo.m_ulTargetRssi;
     m_basicTriggerDependentUserInfo = userInfo.m_basicTriggerDependentUserInfo;
@@ -1111,7 +1115,8 @@ CtrlTriggerUserInfoField::operator=(const CtrlTriggerUserInfoField& userInfo)
 void
 CtrlTriggerUserInfoField::Print(std::ostream& os) const
 {
-    os << ", USER_INFO AID=" << m_aid12 << ", RU_Allocation=" << +m_ruAllocation
+    os << ", USER_INFO " << (m_variant == TriggerFrameVariant::HE ? "HE" : "EHT")
+       << " variant AID=" << m_aid12 << ", RU_Allocation=" << +m_ruAllocation
        << ", MCS=" << +m_ulMcs;
 }
 
@@ -1155,7 +1160,10 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
     userInfo |= (m_ruAllocation << 12);
     userInfo |= (m_ulFecCodingType ? 1 << 20 : 0);
     userInfo |= (m_ulMcs & 0x0f) << 21;
-    userInfo |= (m_ulDcm ? 1 << 25 : 0);
+    if (m_variant == TriggerFrameVariant::HE)
+    {
+        userInfo |= (m_ulDcm ? 1 << 25 : 0);
+    }
 
     if (m_aid12 != 0 && m_aid12 != 2045)
     {
@@ -1169,10 +1177,15 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
     }
 
     i.WriteHtolsbU32(userInfo);
-    // Here we need to write 8 bits covering the UL Target RSSI (7 bits) and the
-    // Reserved bit. Given how m_ulTargetRssi is set, writing m_ulTargetRssi
-    // leads to setting the Reserved bit to zero
-    i.WriteU8(m_ulTargetRssi);
+    // Here we need to write 8 bits covering the UL Target RSSI (7 bits) and B39, which is
+    // reserved in the HE variant and the PS160 subfield in the EHT variant.
+    uint8_t bit32To39 = m_ulTargetRssi;
+    if (m_variant == TriggerFrameVariant::EHT)
+    {
+        bit32To39 |= (m_ps160 ? 1 << 7 : 0);
+    }
+
+    i.WriteU8(bit32To39);
 
     if (m_triggerType == TriggerFrameType::BASIC_TRIGGER)
     {
@@ -1206,7 +1219,10 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
     m_ruAllocation = (userInfo >> 12) & 0xff;
     m_ulFecCodingType = (userInfo >> 20) & 0x01;
     m_ulMcs = (userInfo >> 21) & 0x0f;
-    m_ulDcm = (userInfo >> 25) & 0x01;
+    if (m_variant == TriggerFrameVariant::HE)
+    {
+        m_ulDcm = (userInfo >> 25) & 0x01;
+    }
 
     if (m_aid12 != 0 && m_aid12 != 2045)
     {
@@ -1219,7 +1235,12 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
         m_bits26To31.raRuInformation.moreRaRu = (userInfo >> 31) & 0x01;
     }
 
-    m_ulTargetRssi = i.ReadU8() & 0x7f; // B39 is reserved
+    uint8_t bit32To39 = i.ReadU8();
+    m_ulTargetRssi = bit32To39 & 0x7f; // B39 is reserved in HE variant
+    if (m_variant == TriggerFrameVariant::EHT)
+    {
+        m_ps160 = (bit32To39 >> 7) == 1;
+    }
 
     if (m_triggerType == TriggerFrameType::BASIC_TRIGGER)
     {
@@ -1238,6 +1259,21 @@ TriggerFrameType
 CtrlTriggerUserInfoField::GetType() const
 {
     return m_triggerType;
+}
+
+WifiPreamble
+CtrlTriggerUserInfoField::GetPreambleType() const
+{
+    switch (m_variant)
+    {
+    case TriggerFrameVariant::HE:
+        return WIFI_PREAMBLE_HE_TB;
+    case TriggerFrameVariant::EHT:
+        return WIFI_PREAMBLE_EHT_TB;
+    default:
+        NS_ABORT_MSG("Unexpected variant: " << +static_cast<uint8_t>(m_variant));
+    }
+    return WIFI_PREAMBLE_LONG; // to silence warning
 }
 
 void
@@ -1387,12 +1423,14 @@ CtrlTriggerUserInfoField::GetUlMcs() const
 void
 CtrlTriggerUserInfoField::SetUlDcm(bool dcm)
 {
+    NS_ASSERT_MSG(m_variant == TriggerFrameVariant::HE, "UL DCM flag only present in HE variant");
     m_ulDcm = dcm;
 }
 
 bool
 CtrlTriggerUserInfoField::GetUlDcm() const
 {
+    NS_ASSERT_MSG(m_variant == TriggerFrameVariant::HE, "UL DCM flag only present in HE variant");
     return m_ulDcm;
 }
 
@@ -1545,7 +1583,8 @@ CtrlTriggerUserInfoField::GetMuBarTriggerDepUserInfo() const
 NS_OBJECT_ENSURE_REGISTERED(CtrlTriggerHeader);
 
 CtrlTriggerHeader::CtrlTriggerHeader()
-    : m_triggerType(TriggerFrameType::BASIC_TRIGGER),
+    : m_variant(TriggerFrameVariant::HE),
+      m_triggerType(TriggerFrameType::BASIC_TRIGGER),
       m_ulLength(0),
       m_moreTF(false),
       m_csRequired(false),
@@ -1559,6 +1598,18 @@ CtrlTriggerHeader::CtrlTriggerHeader()
 CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& txVector)
     : CtrlTriggerHeader()
 {
+    switch (txVector.GetPreambleType())
+    {
+    case WIFI_PREAMBLE_HE_TB:
+        m_variant = TriggerFrameVariant::HE;
+        break;
+    case WIFI_PREAMBLE_EHT_TB:
+        m_variant = TriggerFrameVariant::EHT;
+        break;
+    default:
+        NS_ABORT_MSG("Cannot create a TF out of a TXVECTOR with preamble type: "
+                     << txVector.GetPreambleType());
+    }
     m_triggerType = type;
     SetUlBandwidth(txVector.GetChannelWidth());
     SetUlLength(txVector.GetLength());
@@ -1594,6 +1645,7 @@ CtrlTriggerHeader::operator=(const CtrlTriggerHeader& trigger)
         return *this;
     }
 
+    m_variant = trigger.m_variant;
     m_triggerType = trigger.m_triggerType;
     m_ulLength = trigger.m_ulLength;
     m_moreTF = trigger.m_moreTF;
@@ -1633,6 +1685,20 @@ CtrlTriggerHeader::Print(std::ostream& os) const
     {
         ui.Print(os);
     }
+}
+
+void
+CtrlTriggerHeader::SetVariant(TriggerFrameVariant variant)
+{
+    NS_ABORT_MSG_IF(!m_userInfoFields.empty(),
+                    "Cannot change Common Info field variant if User Info fields are present");
+    m_variant = variant;
+}
+
+TriggerFrameVariant
+CtrlTriggerHeader::GetVariant() const
+{
+    return m_variant;
 }
 
 uint32_t
@@ -1678,6 +1744,11 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
     commonInfo |= (m_giAndLtfType & 0x03) << 20;
     commonInfo |= static_cast<uint64_t>(m_apTxPower & 0x3f) << 28;
     commonInfo |= static_cast<uint64_t>(m_ulSpatialReuse) << 37;
+    if (m_variant == TriggerFrameVariant::HE)
+    {
+        uint64_t ulHeSigA2 = 0x01ff; // nine bits equal to 1
+        commonInfo |= ulHeSigA2 << 54;
+    }
 
     i.WriteHtolsbU64(commonInfo);
 
@@ -1704,6 +1775,8 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
     m_giAndLtfType = (commonInfo >> 20) & 0x03;
     m_apTxPower = (commonInfo >> 28) & 0x3f;
     m_ulSpatialReuse = (commonInfo >> 37) & 0xffff;
+    uint8_t bit54and55 = (commonInfo >> 54) & 0x03;
+    m_variant = bit54and55 == 3 ? TriggerFrameVariant::HE : TriggerFrameVariant::EHT;
     m_userInfoFields.clear();
 
     NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
@@ -1844,7 +1917,7 @@ CtrlTriggerHeader::GetHeTbTxVector(uint16_t staId) const
     NS_ASSERT(userInfoIt != end());
 
     WifiTxVector v;
-    v.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+    v.SetPreambleType(userInfoIt->GetPreambleType());
     v.SetChannelWidth(GetUlBandwidth());
     v.SetGuardInterval(GetGuardInterval());
     v.SetLength(GetUlLength());
@@ -2006,7 +2079,7 @@ CtrlTriggerHeader::GetCommonInfoField() const
 CtrlTriggerUserInfoField&
 CtrlTriggerHeader::AddUserInfoField()
 {
-    m_userInfoFields.emplace_back(m_triggerType);
+    m_userInfoFields.emplace_back(m_triggerType, m_variant);
     return m_userInfoFields.back();
 }
 
