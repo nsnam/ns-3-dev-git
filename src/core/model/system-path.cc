@@ -61,6 +61,7 @@ namespace fs = std::experimental::filesystem;
 #endif
 
 #ifdef __linux__
+#include <cstring>
 #include <unistd.h>
 #endif
 
