@@ -32,7 +32,7 @@ HeOperation::HeOperation()
       m_txBssidIndicator(0),
       m_bssColorDisabled(0),
       m_dualBeacon(0),
-      m_basicHeMcsAndNssSet(0)
+      m_basicHeMcsAndNssSet(0xfffc)
 {
 }
 
