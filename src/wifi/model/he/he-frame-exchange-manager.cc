@@ -418,7 +418,8 @@ HeFrameExchangeManager::SendPsduMap()
             ForwardPsduDown(triggerPsdu, acknowledgment->muBarTxVector);
 
             // Pass TRIGVECTOR to HE PHY (equivalent to PHY-TRIGGER.request primitive)
-            auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+            auto hePhy =
+                StaticCast<HePhy>(m_phy->GetPhyEntity(responseTxVector->GetModulationClass()));
             hePhy->SetTrigVector(m_trigVector, timeout);
 
             return;
@@ -674,7 +675,7 @@ HeFrameExchangeManager::SendPsduMap()
         timerType == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF)
     {
         // Pass TRIGVECTOR to HE PHY (equivalent to PHY-TRIGGER.request primitive)
-        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(responseTxVector->GetModulationClass()));
         hePhy->SetTrigVector(m_trigVector, m_txTimer.GetDelayLeft());
     }
     else if (timerType == WifiTxTimer::NOT_RUNNING && m_txParams.m_txVector.IsUlMu())
@@ -689,9 +690,9 @@ HeFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVecto
 {
     NS_LOG_FUNCTION(this << psduMap << txVector);
 
-    if (txVector.IsDlMu())
+    if (ns3::IsDlMu(txVector.GetPreambleType()))
     {
-        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(txVector.GetModulationClass()));
         auto sigBMode = hePhy->GetSigBMode(txVector);
         txVector.SetSigBMode(sigBMode);
     }
