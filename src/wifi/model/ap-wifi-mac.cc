@@ -1835,10 +1835,10 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         }
         if (GetEhtSupported())
         {
-            const auto& ehtCapabilities = frame.GetEhtCapabilities();
-            // TODO: once we support non constant rate managers, we should add checks here whether
-            // EHT is supported by the peer
-            remoteStationManager->AddStationEhtCapabilities(from, *ehtCapabilities);
+            if (const auto& ehtCapabilities = frame.GetEhtCapabilities())
+            {
+                remoteStationManager->AddStationEhtCapabilities(from, *ehtCapabilities);
+            }
             for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_EHT))
             {
                 // TODO: Add check whether MCS is supported from the capabilities
