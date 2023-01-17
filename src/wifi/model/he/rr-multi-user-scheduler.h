@@ -34,8 +34,9 @@ namespace ns3
  * transmission if the AP has frames to transmit to at least one station.
  * RrMultiUserScheduler assigns RUs of equal size (in terms of tones) to stations to
  * which the AP has frames to transmit belonging to the AC who gained access to the
- * channel or higher. The maximum number of stations that can be granted an RU
- * is configurable. Associated stations are served in a round robin fashion.
+ * channel or higher. The maximum number of stations that can be granted an RU is
+ * configurable. Associated stations are served based on their priority. The priority is
+ * determined by the credits/debits a station gets when it is selected or not for transmission.
  *
  * \todo Take the supported channel width of the stations into account while selecting
  * stations and assigning RUs to them.
