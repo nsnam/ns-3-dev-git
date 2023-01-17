@@ -515,7 +515,9 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
 
         // determine the TX vector used to send the BlockAck frame
         WifiTxVector blockAckTxVector;
-        blockAckTxVector.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+        auto preamble = IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
+                                                                     : WIFI_PREAMBLE_HE_TB;
+        blockAckTxVector.SetPreambleType(preamble);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
         // 800ns GI is not allowed for HE TB
         blockAckTxVector.SetGuardInterval(
@@ -599,7 +601,9 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
 
         // determine the TX vector used to send the BlockAck frame
         WifiTxVector blockAckTxVector;
-        blockAckTxVector.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+        auto preamble = IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
+                                                                     : WIFI_PREAMBLE_HE_TB;
+        blockAckTxVector.SetPreambleType(preamble);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
         // 800ns GI is not allowed for HE TB
         blockAckTxVector.SetGuardInterval(
