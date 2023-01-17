@@ -217,7 +217,7 @@ HePhy::GetSigADuration(WifiPreamble preamble) const
 Time
 HePhy::GetSigBDuration(const WifiTxVector& txVector) const
 {
-    if (txVector.IsDlMu()) // See section 27.3.10.8 of IEEE 802.11ax draft 4.0.
+    if (ns3::IsDlMu(txVector.GetPreambleType())) // See section 27.3.11.8 of IEEE 802.11ax-2021
     {
         NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
 
@@ -707,8 +707,18 @@ HePhy::ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status)
             return PhyFieldRxStatus(false, FILTERED, DROP);
         }
     }
-    m_currentMuPpduUid =
-        event->GetPpdu()->GetUid(); // to be able to correctly schedule start of OFDMA payload
+    if (event->GetTxVector().IsDlMu())
+    {
+        // When including a Trigger Frame, a DL MU PPDU solicits a TB PPDU.
+        // NOTE that the 'if' condition above is not needed for HE because SIG-B is only
+        // included in HE MU PPDUs, but it is necessary for EHT to avoid that a non-AP
+        // STA receiving a Trigger Frame sent as an EHT SU transmission (which carries
+        // the EHT-SIG field) stores the PPDU UID and uses it later to schedule the
+        // reception of the OFDMA payload of the TB PPDU (see HePhy::StartReceivePreamble())
+        // despite it lacks the TRIGVECTOR.
+        m_currentMuPpduUid =
+            event->GetPpdu()->GetUid(); // to be able to correctly schedule start of OFDMA payload
+    }
     return status;
 }
 
@@ -1713,7 +1723,7 @@ uint32_t
 HePhy::GetSigBFieldSize(const WifiTxVector& txVector)
 {
     NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
-    NS_ASSERT(txVector.IsDlMu());
+    NS_ASSERT(ns3::IsDlMu(txVector.GetPreambleType()));
 
     // Compute the number of bits used by common field.
     // Assume that compression bit in HE-SIG-A is not set (i.e. not

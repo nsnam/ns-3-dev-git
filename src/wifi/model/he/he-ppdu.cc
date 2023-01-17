@@ -123,12 +123,12 @@ HePpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
                         3) -
                        3 - m);
     m_lSig.SetLength(length);
-    if (txVector.IsDlMu())
+    if (ns3::IsDlMu(m_preamble))
     {
         m_heSig.SetMuFlag(true);
         m_heSig.SetMcs(txVector.GetSigBMode().GetMcsValue());
     }
-    else if (!txVector.IsUlMu())
+    else if (!ns3::IsUlMu(m_preamble))
     {
         m_heSig.SetMcs(txVector.GetMode().GetMcsValue());
         m_heSig.SetNStreams(txVector.GetNss());
