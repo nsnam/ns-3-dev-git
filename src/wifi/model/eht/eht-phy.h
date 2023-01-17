@@ -64,6 +64,7 @@ class EhtPhy : public HePhy
     Ptr<WifiPpdu> BuildPpdu(const WifiConstPsduMap& psdus,
                             const WifiTxVector& txVector,
                             Time ppduDuration) override;
+    WifiMode GetSigBMode(const WifiTxVector& txVector) const override;
 
     /**
      * Initialize all EHT modes.

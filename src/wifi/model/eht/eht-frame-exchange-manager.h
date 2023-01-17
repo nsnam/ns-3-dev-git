@@ -44,6 +44,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     void SetLinkId(uint8_t linkId) override;
     Ptr<WifiMpdu> CreateAlias(Ptr<WifiMpdu> mpdu) const override;
+
+  protected:
+    void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
 };
 
 } // namespace ns3

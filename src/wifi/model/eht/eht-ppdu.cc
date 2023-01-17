@@ -40,6 +40,19 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
 {
     NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << ppduDuration << band << uid
                          << flag);
+
+    // For EHT SU transmissions (carried in EHT MU PPDUs), we have to:
+    // - store the EHT-SIG content channels
+    // - store the MCS and the number of streams for the data field
+    // because this is not done by the parent class.
+    // This is a workaround needed until we properly implement 11be PHY headers.
+    if (ns3::IsDlMu(m_preamble) && !txVector.IsDlMu())
+    {
+        m_contentChannelAlloc = txVector.GetContentChannelAllocation();
+        m_ruAllocation = txVector.GetRuAllocation();
+        m_ehtSuMcs = txVector.GetMode().GetMcsValue();
+        m_ehtSuNStreams = txVector.GetNss();
+    }
 }
 
 EhtPpdu::~EhtPpdu()
@@ -84,16 +97,25 @@ EhtPpdu::DoGetTxVector() const
     // FIXME: define EHT PHY headers
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
-    txVector.SetMode(EhtPhy::GetEhtMcs(m_heSig.GetMcs()));
+    txVector.SetMode(EhtPhy::GetEhtMcs(m_ehtSuMcs));
     txVector.SetChannelWidth(m_heSig.GetChannelWidth());
-    txVector.SetNss(m_heSig.GetNStreams());
+    txVector.SetNss(m_ehtSuNStreams);
     txVector.SetGuardInterval(m_heSig.GetGuardInterval());
     txVector.SetBssColor(m_heSig.GetBssColor());
     txVector.SetLength(m_lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
+    if (!m_muUserInfos.empty())
+    {
+        txVector.SetEhtPpduType(0); // FIXME set to 2 for DL MU-MIMO (non-OFDMA) transmission
+    }
     for (const auto& muUserInfo : m_muUserInfos)
     {
         txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
+    }
+    if (ns3::IsDlMu(m_preamble))
+    {
+        txVector.SetSigBMode(HePhy::GetVhtMcs(m_heSig.GetMcs()));
+        txVector.SetRuAllocation(m_ruAllocation);
     }
     return txVector;
 }

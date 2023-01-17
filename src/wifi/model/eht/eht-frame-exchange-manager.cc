@@ -19,6 +19,8 @@
 
 #include "eht-frame-exchange-manager.h"
 
+#include "eht-phy.h"
+
 #include "ns3/abort.h"
 #include "ns3/log.h"
 
@@ -81,6 +83,22 @@ EhtFrameExchangeManager::CreateAlias(Ptr<WifiMpdu> mpdu) const
     mpdu->GetHeader().SetAddr1(*address);
 
     return mpdu;
+}
+
+void
+EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    // EHT-SIG, the equivalent of HE-SIG-B, is present in EHT SU transmissions, too
+    if (txVector.GetPreambleType() == WIFI_PREAMBLE_EHT_MU)
+    {
+        auto phy = StaticCast<EhtPhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_EHT));
+        auto sigBMode = phy->GetSigBMode(txVector);
+        txVector.SetSigBMode(sigBMode);
+    }
+
+    HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
 }
 
 } // namespace ns3

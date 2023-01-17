@@ -72,7 +72,10 @@ class EhtPpdu : public HePpdu
     bool IsDlMu() const override;
     bool IsUlMu() const override;
     WifiTxVector DoGetTxVector() const override;
-}; // class EhtPpdu
+
+    uint8_t m_ehtSuMcs{0};      //!< EHT-MCS for EHT SU transmissions
+    uint8_t m_ehtSuNStreams{1}; //!< Number of streams for EHT SU transmissions
+};                              // class EhtPpdu
 
 } // namespace ns3
 
