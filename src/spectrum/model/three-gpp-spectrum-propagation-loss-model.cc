@@ -122,29 +122,24 @@ ThreeGppSpectrumPropagationLossModel::CalcLongTerm(
     uint16_t sAntenna = static_cast<uint16_t>(sW.size());
     uint16_t uAntenna = static_cast<uint16_t>(uW.size());
 
-    NS_ASSERT(uAntenna == params->m_channel.size());
-    NS_ASSERT(sAntenna == params->m_channel.at(0).size());
+    NS_ASSERT(uAntenna == params->m_channel.at(0).rows());
+    NS_ASSERT(sAntenna == params->m_channel.at(0).cols());
 
     NS_LOG_DEBUG("CalcLongTerm with sAntenna " << sAntenna << " uAntenna " << uAntenna);
     // store the long term part to reduce computation load
     // only the small scale fading needs to be updated if the large scale parameters and antenna
     // weights remain unchanged.
     PhasedArrayModel::ComplexVector longTerm;
-    uint8_t numCluster = static_cast<uint8_t>(params->m_channel[0][0].size());
+    uint8_t numCluster = static_cast<uint8_t>(params->m_channel.size());
+    longTerm.resize(numCluster);
 
     for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
     {
-        std::complex<double> txSum(0, 0);
-        for (uint16_t sIndex = 0; sIndex < sAntenna; sIndex++)
-        {
-            std::complex<double> rxSum(0, 0);
-            for (uint16_t uIndex = 0; uIndex < uAntenna; uIndex++)
-            {
-                rxSum = rxSum + uW[uIndex] * params->m_channel[uIndex][sIndex][cIndex];
-            }
-            txSum = txSum + sW[sIndex] * rxSum;
-        }
-        longTerm.push_back(txSum);
+        auto txSum =
+            MatrixBasedChannelModel::MultiplyMatByLeftAndRightVec(uW,
+                                                                  sW,
+                                                                  params->m_channel[cIndex]);
+        longTerm[cIndex] = txSum;
     }
     return longTerm;
 }
@@ -162,8 +157,8 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
 
     Ptr<SpectrumValue> tempPsd = Copy<SpectrumValue>(txPsd);
 
-    // channel[rx][tx][cluster]
-    uint8_t numCluster = static_cast<uint8_t>(channelMatrix->m_channel[0][0].size());
+    // channel[cluster][rx][tx]
+    uint8_t numCluster = static_cast<uint8_t>(channelMatrix->m_channel.size());
 
     // compute the doppler term
     // NOTE the update of Doppler is simplified by only taking the center angle of

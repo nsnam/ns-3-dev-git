@@ -29,6 +29,11 @@
 
 #include <tuple>
 
+// Check for Eigen3 support
+#ifdef HAVE_EIGEN3
+#include <Eigen/Dense>
+#endif
+
 namespace ns3
 {
 
@@ -58,11 +63,140 @@ class MatrixBasedChannelModel : public Object
     /// Type definition for 3D matrices of doubles
     using Double3DVector = std::vector<Double2DVector>;
 
-    /// Type definition for complex matrices
-    using Complex2DVector = std::vector<PhasedArrayModel::ComplexVector>;
+#ifdef HAVE_EIGEN3
+    /// Type definition for complex matrices, when the Eigen library is available
+    using Complex2DVector = Eigen::Matrix<std::complex<double>, Eigen::Dynamic, Eigen::Dynamic>;
+#else
+    /**
+     * Type definition for complex matrices
+     */
+    struct Complex2DVector
+    {
+        /// the STL-based matrix data structure
+        std::vector<std::vector<std::complex<double>>> m_vec;
+
+        /**
+         * Alias for std::vector<T,Allocator>::operator[]
+         *
+         * \param rowIdx the row index of the element to be accessed
+         * \param colIdx the column index of the element to be accessed
+         *
+         * \return a reference to the specified matrix element
+         */
+        std::complex<double>& operator()(PhasedArrayModel::ComplexVectorIndex rowIdx,
+                                         PhasedArrayModel::ComplexVectorIndex colIdx)
+        {
+            NS_ASSERT(rows() > rowIdx && cols() > colIdx && rowIdx >= 0 && colIdx >= 0);
+            return m_vec[rowIdx][colIdx];
+        }
+
+        /**
+         * Read-only alias for const complex matrices for std::vector<T,Allocator>::operator[]
+         *
+         * \param rowIdx the row index of the element to be accessed
+         * \param colIdx the column index of the element to be accessed
+         *
+         * \return a constant reference to the specified matrix element
+         */
+        const std::complex<double>& operator()(PhasedArrayModel::ComplexVectorIndex rowIdx,
+                                               PhasedArrayModel::ComplexVectorIndex colIdx) const
+        {
+            NS_ASSERT(rows() > rowIdx && cols() > colIdx && rowIdx >= 0 && colIdx >= 0);
+            return m_vec[rowIdx][colIdx];
+        }
+
+        /**
+         * Alias for std::vector::resize taking both matrix dimensions as arguments
+         *
+         * \param numRows the number of rows to be set
+         * \param numCols the number of columns to be set
+         */
+        void resize(PhasedArrayModel::ComplexVectorIndex numRows,
+                    PhasedArrayModel::ComplexVectorIndex numCols)
+        {
+            m_vec.resize(numRows);
+            for (PhasedArrayModel::ComplexVectorIndex rowIdx = 0; rowIdx < numRows; rowIdx++)
+            {
+                m_vec[rowIdx].resize(numCols);
+            }
+        }
+
+        /**
+         * Alias for std::vector::size returning the size of the outermost vector
+         *
+         * \return the number of rows of the matrix
+         */
+        PhasedArrayModel::ComplexVectorIndex rows() const
+        {
+            return static_cast<PhasedArrayModel::ComplexVectorIndex>(m_vec.size());
+        }
+
+        /**
+         * Alias for std::vector::size returning the size of the innermost vector
+         *
+         * \return the number of columns of the matrix
+         */
+        PhasedArrayModel::ComplexVectorIndex cols() const
+        {
+            return static_cast<PhasedArrayModel::ComplexVectorIndex>(m_vec.at(0).size());
+        }
+    };
+#endif
 
     /// Type definition for 3D complex matrices
     using Complex3DVector = std::vector<Complex2DVector>;
+
+#ifdef HAVE_EIGEN3
+    /**
+     * Compute a product of the form a^T * B * c leveraging Eigen,
+     * where a and c are column vectors and B is a matrix.
+     *
+     * \param leftVec the vector a which left-multiplies B
+     * \param rightVec the vector c which right-multiplies B
+     * \param mat the matrix B
+     *
+     * \return the product a * B * c
+     */
+    static std::complex<double> MultiplyMatByLeftAndRightVec(
+        const PhasedArrayModel::ComplexVector& leftVec,
+        const PhasedArrayModel::ComplexVector& rightVec,
+        const Complex2DVector& mat)
+    {
+        return leftVec.transpose() * mat * rightVec;
+    }
+
+#else
+    /**
+     * Compute a product of the form a^T * B * c, where a and c are column
+     * vectors and B is a matrix, by manually iterating over the elements.
+     *
+     * \param leftVec the vector a which left-multiplies B
+     * \param rightVec the vector c which right-multiplies B
+     * \param mat the matrix B
+     *
+     * \return the product a^T * B * c
+     */
+    static std::complex<double> MultiplyMatByLeftAndRightVec(
+        const PhasedArrayModel::ComplexVector& leftVec,
+        const PhasedArrayModel::ComplexVector& rightVec,
+        const Complex2DVector& mat)
+    {
+        std::complex<double> product(0, 0);
+        for (PhasedArrayModel::ComplexVectorIndex rightIndex = 0; rightIndex < rightVec.size();
+             rightIndex++)
+        {
+            std::complex<double> rxSum(0, 0);
+            for (PhasedArrayModel::ComplexVectorIndex leftIndex = 0; leftIndex < leftVec.size();
+                 leftIndex++)
+            {
+                rxSum += leftVec[leftIndex] * mat(leftIndex, rightIndex);
+            }
+            product = product + rightVec[rightIndex] * rxSum;
+        }
+
+        return product;
+    }
+#endif
 
     /**
      * Data structure that stores a channel realization

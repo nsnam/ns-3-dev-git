@@ -176,6 +176,9 @@ macro(write_configtable)
   string(APPEND out "SQLite support                : ")
   check_on_or_off("${NS3_SQLITE}" "${ENABLE_SQLITE}")
 
+  string(APPEND out "Eigen3 support                : ")
+  check_on_or_off("${NS3_EIGEN}" "${ENABLE_EIGEN}")
+
   string(APPEND out "Tap Bridge                    : ")
   check_on_or_off("${ENABLE_TAP}" "${ENABLE_TAP}")
 

@@ -63,7 +63,6 @@ PhasedArrayModel::PhasedArrayModel()
 
 PhasedArrayModel::~PhasedArrayModel()
 {
-    m_beamformingVector.clear();
 }
 
 TypeId
@@ -101,28 +100,15 @@ PhasedArrayModel::GetBeamformingVector() const
     return m_beamformingVector;
 }
 
-double
-PhasedArrayModel::ComputeNorm(const ComplexVector& vector)
-{
-    double norm = 0;
-
-    for (uint64_t i = 0; i < vector.size(); i++)
-    {
-        norm += std::norm(vector[i]);
-    }
-
-    return std::sqrt(norm);
-}
-
 PhasedArrayModel::ComplexVector
 PhasedArrayModel::GetBeamformingVector(Angles a) const
 {
     NS_LOG_FUNCTION(this << a);
 
     ComplexVector beamformingVector = GetSteeringVector(a);
-    double norm = ComputeNorm(beamformingVector);
+    double norm = beamformingVector.norm();
 
-    for (uint64_t i = 0; i < beamformingVector.size(); i++)
+    for (ComplexVectorIndex i = 0; i < GetNumberOfElements(); i++)
     {
         beamformingVector[i] = std::conj(beamformingVector[i]) / norm;
     }
@@ -135,7 +121,7 @@ PhasedArrayModel::GetSteeringVector(Angles a) const
 {
     ComplexVector steeringVector;
     steeringVector.resize(GetNumberOfElements());
-    for (uint64_t i = 0; i < GetNumberOfElements(); i++)
+    for (ComplexVectorIndex i = 0; i < GetNumberOfElements(); i++)
     {
         Vector loc = GetElementLocation(i);
         double phase = -2 * M_PI *

@@ -106,17 +106,16 @@ ThreeGppChannelMatrixComputationTest::DoComputeNorm(Ptr<ThreeGppChannelModel> ch
         channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);
 
     double channelNorm = 0;
-    uint8_t numTotClusters = channelMatrix->m_channel.at(0).at(0).size();
-    for (uint8_t cIndex = 0; cIndex < numTotClusters; cIndex++)
+    std::size_t numTotalClusters = channelMatrix->m_channel.size();
+    for (std::size_t cIndex = 0; cIndex < numTotalClusters; cIndex++)
     {
         double clusterNorm = 0;
         for (uint64_t sIndex = 0; sIndex < txAntennaElements; sIndex++)
         {
-            for (uint32_t uIndex = 0; uIndex < rxAntennaElements; uIndex++)
+            for (uint64_t uIndex = 0; uIndex < rxAntennaElements; uIndex++)
             {
                 clusterNorm +=
-                    std::pow(std::abs(channelMatrix->m_channel.at(uIndex).at(sIndex).at(cIndex)),
-                             2);
+                    std::pow(std::abs(channelMatrix->m_channel.at(cIndex)(uIndex, sIndex)), 2);
             }
         }
         channelNorm += clusterNorm;
@@ -187,15 +186,15 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix =
         channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);
 
-    // check the channel matrix dimensions
+    // check the channel matrix dimensions, expected H[cluster][rx][tx]
     NS_TEST_ASSERT_MSG_EQ(
-        channelMatrix->m_channel.at(0).size(),
+        channelMatrix->m_channel.at(0).cols(),
         txAntennaElements[0] * txAntennaElements[1],
-        "The second dimension of H should be equal to the number of tx antenna elements");
+        "The third dimension of H should be equal to the number of tx antenna elements");
     NS_TEST_ASSERT_MSG_EQ(
-        channelMatrix->m_channel.size(),
+        channelMatrix->m_channel.at(0).rows(),
         rxAntennaElements[0] * rxAntennaElements[1],
-        "The first dimension of H should be equal to the number of rx antenna elements");
+        "The second dimension of H should be equal to the number of rx antenna elements");
 
     // test if the channel matrix is correctly generated
     uint16_t numIt = 1000;

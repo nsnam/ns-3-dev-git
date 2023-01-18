@@ -160,7 +160,7 @@ UniformPlanarArrayTestCase::ComputeGain(Ptr<UniformPlanarArray> a)
 
     // scalar product dot (sv, bf)
     std::complex<double> prod{0};
-    for (size_t i = 0; i < sv.size(); i++)
+    for (PhasedArrayModel::ComplexVectorIndex i = 0; i < sv.size(); i++)
     {
         prod += sv[i] * bf[i];
     }
