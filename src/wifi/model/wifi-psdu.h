@@ -145,6 +145,11 @@ class WifiPsdu : public SimpleRefCount<WifiPsdu>
     Mac48Address GetAddr2() const;
 
     /**
+     * \return true if the Duration/ID field contains a value for setting the NAV
+     */
+    bool HasNav() const;
+
+    /**
      * Get the duration from the Duration/ID field, which is common to all the MPDUs
      * \return the duration from the Duration/ID field.
      */

@@ -1110,13 +1110,8 @@ FrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& tx
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
 
-    if (psdu->GetHeader(0).GetRawDuration() > 32767)
+    if (!psdu->HasNav())
     {
-        // When the contents of a received Duration/ID field, treated as an unsigned
-        // integer, are greater than 32 768, the contents are interpreted as appropriate
-        // for the frame type and subtype or ignored if the receiving MAC entity does
-        // not have a defined interpretation for that type and subtype (IEEE 802.11-2016
-        // sec. 10.27.3)
         return;
     }
 
