@@ -343,6 +343,9 @@ SOURCEFIGS = \
 	$(SRC)/spectrum/doc/spectrum-tv-rand-geo-points.eps \
 	$(SRC)/spectrum/doc/spectrum-tv-8vsb.png \
 	$(SRC)/spectrum/doc/spectrum-tv-cofdm.png \
+	$(SRC)/spectrum/doc/two-ray-spectrum-loss-model-3gpp-radiation-pattern.png \
+	$(SRC)/spectrum/doc/two-ray-spectrum-loss-model-iso-radiation-pattern.png \
+	$(SRC)/spectrum/doc/three-gpp-gain-reference-gain-vs-fc.png \
 	$(SRC)/traffic-control/doc/classful-queue-disc.dia \
 	$(SRC)/traffic-control/doc/multi-queue-aware-queue-disc.dia \
 	$(SRC)/traffic-control/doc/figures/collision_prob.jpeg \

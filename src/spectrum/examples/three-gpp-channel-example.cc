@@ -91,20 +91,26 @@ DoBeamforming(Ptr<NetDevice> thisDevice,
 
     double vAngleRadian = completeAngle.GetInclination(); // the elevation angle
 
-    // retrieve the number of antenna elements
-    int totNoArrayElements = thisAntenna->GetNumberOfElements();
+    // retrieve the number of antenna elements and resize the vector
+    uint64_t totNoArrayElements = thisAntenna->GetNumberOfElements();
+    antennaWeights.resize(totNoArrayElements);
 
     // the total power is divided equally among the antenna elements
     double power = 1.0 / sqrt(totNoArrayElements);
 
     // compute the antenna weights
-    for (int ind = 0; ind < totNoArrayElements; ind++)
+    const double sinVAngleRadian = sin(vAngleRadian);
+    const double cosVAngleRadian = cos(vAngleRadian);
+    const double sinHAngleRadian = sin(hAngleRadian);
+    const double cosHAngleRadian = cos(hAngleRadian);
+
+    for (uint64_t ind = 0; ind < totNoArrayElements; ind++)
     {
         Vector loc = thisAntenna->GetElementLocation(ind);
         double phase = -2 * M_PI *
-                       (sin(vAngleRadian) * cos(hAngleRadian) * loc.x +
-                        sin(vAngleRadian) * sin(hAngleRadian) * loc.y + cos(vAngleRadian) * loc.z);
-        antennaWeights.push_back(exp(std::complex<double>(0, phase)) * power);
+                       (sinVAngleRadian * cosHAngleRadian * loc.x +
+                        sinVAngleRadian * sinHAngleRadian * loc.y + cosVAngleRadian * loc.z);
+        antennaWeights[ind] = exp(std::complex<double>(0, phase)) * power;
     }
 
     // store the antenna weights
@@ -173,7 +179,7 @@ main(int argc, char* argv[])
     double txPow = 49.0;          // tx power in dBm
     double noiseFigure = 9.0;     // noise figure in dB
     double distance = 10.0;       // distance between tx and rx nodes in meters
-    uint32_t simTime = 10000;     // simulation time in milliseconds
+    uint32_t simTime = 1000;      // simulation time in milliseconds
     uint32_t timeRes = 10;        // time resolution in milliseconds
     std::string scenario = "UMa"; // 3GPP propagation scenario
 

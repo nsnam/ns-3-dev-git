@@ -132,9 +132,6 @@ ThreeGppSpectrumPropagationLossModel::CalcLongTerm(
     PhasedArrayModel::ComplexVector longTerm;
     uint8_t numCluster = static_cast<uint8_t>(params->m_channel[0][0].size());
 
-    NS_ASSERT(uAntenna == params->m_channel.size());
-    NS_ASSERT(sAntenna == params->m_channel.at(0).size());
-
     for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
     {
         std::complex<double> txSum(0, 0);
@@ -174,6 +171,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
     double slotTime = Simulator::Now().GetSeconds();
     double factor = 2 * M_PI * slotTime * GetFrequency() / 3e8;
     PhasedArrayModel::ComplexVector doppler;
+    doppler.resize(numCluster);
 
     // The following asserts might seem paranoic, but it is important to
     // make sure that all the structures that are passed to this function
@@ -240,7 +238,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
                        sin(zod[cIndex] * M_PI / 180) * sin(aod[cIndex] * M_PI / 180) * sSpeed.y +
                        cos(zod[cIndex] * M_PI / 180) * sSpeed.z) +
                       2 * alpha * D);
-        doppler.emplace_back(cos(tempDoppler), sin(tempDoppler));
+        doppler[cIndex] = std::complex<double>(cos(tempDoppler), sin(tempDoppler));
     }
 
     NS_ASSERT(numCluster <= doppler.size());

@@ -832,3 +832,216 @@ References
    Sandra Lagen, Michele Zorzi. "Implementation of a Spatial Channel Model for
    ns-3". Submitted to the Workshop on ns-3 (WNS3 '20). 2020.
    Available: https://arxiv.org/abs/2002.09341
+
+
+Two-Ray fading model
+====================
+The model aims to provide a performance-oriented alternative to the 3GPP TR 38.901
+framework [TR38901]_ which is implemented in the ``ThreeGppSpectrumPropagationLossModel`` and
+``ThreeGppChannelModel`` classes and whose implementation is described in [Zugno2020]_.
+The overall design follows the general approach of [Polese2018]_, with aim of providing
+the means for computing a 3GPP TR 38.901-like end-to-end channel gain by combining
+several statistical terms. The frequency range of applicability is the same as
+that of [TR38901]_, i.e., 0.5 - 100 GHz.
+
+Use-cases
+#########
+The use-cases for this channel model comprise large-scale MIMO simulations involving a high
+number of nodes (100+), such as multi-cell LTE and 5G deployments in dense urban areas, for which
+the full 3GPP TR 38.901 does not represent a viable option.
+
+Implementation - ``TwoRaySpectrumPropagationLossModel``
+#######################################################
+The computation of the channel gain is taken care of by the ``TwoRaySpectrumPropagationLossModel``
+class. In particular, the latter samples a statistical term which combines:
+
+* The array and beamforming gain, computed as outlined in [Rebato2018]_ using the
+  ``CalcBeamformingGain`` function. This term supports the presence of multiple
+  antenna elements both at the transmitter and at the receiver and arbitrary antenna
+  radiation patterns. Specifically, the array gain is compute as:
+
+.. math::
+
+  G_{\mathrm{AA}}(\theta, \varphi)=\left|\boldsymbol{a}^{\mathrm{T}}(\theta, \varphi)
+  \boldsymbol{w}\left(\theta_0, \varphi_0\right)\right|^2=\left|\mathrm{AF}_{\mathrm{v}}(\theta,
+  \varphi)\right|^2\left|\mathrm{AF}_{\mathrm{h}}(\theta, \varphi)\right|^2 G(\theta, \varphi),
+..
+
+where:
+
+.. math::
+
+  \operatorname{AF}_{\mathrm{v}}(\theta, \varphi)=\frac{1}{\sqrt{N_{\mathrm{v}}}}
+  \sum_{m=0}^{N_{\mathrm{v}}-1} e^{j k d_{\mathrm{v}} m\left(\cos \theta-\cos \theta_0\right)}
+..
+
+and:
+
+.. math::
+
+  \operatorname{AF}_{\mathrm{h}}(\theta, \varphi)=\frac{1}{\sqrt{N_{\mathrm{h}}}}
+  \sum_{n=0}^{N_{\mathrm{h}}-1} e^{j k d_{\mathrm{h}} n\left(\sin \theta
+  \sin \varphi-\sin \theta_0 \sin \varphi_0\right)}
+..
+
+In turn, :math:`N_h`, :math:`N_v` are the number of horizontal and vertical antenna
+elements respectively, :math:`d_h`, :math:`d_v` are the element spacing in the
+horizontal and vertical direction respectively. The figures below depict the resulting
+array radiation pattern versus the relative azimuth of transmitter and receiver, for antenna
+arrays featuring 3GPP TR 38.901 (``ThreeGppAntennaModel``, top) and isotropic
+(``IsotropicAntennaModel``, bottom) antenna elements, respectively.
+These figures match the corresponding plots of [Asplund]_.
+
+.. _fig-two-ray-spectrum-loss-model-3gpp-radiation-pattern:
+
+.. figure:: figures/two-ray-spectrum-loss-model-3gpp-radiation-pattern.*
+   :width: 400
+   :align: center
+
+   Radiation pattern produced by the ``CalcBeamformingGain`` method when using
+   antenna arrays featuring ``ThreeGppAntennaModel`` antenna elements, for various
+   Uniform Planar Array (UPA) configurations.
+
+.. _fig-two-ray-spectrum-loss-model-iso-radiation-pattern:
+
+.. figure:: figures/two-ray-spectrum-loss-model-iso-radiation-pattern.*
+   :width: 400
+   :align: center
+
+   Radiation pattern produced by the ``CalcBeamformingGain`` method when using
+   antenna arrays featuring ``IsotropicAntennaModel`` antenna elements, for various
+   Uniform Planar Array (UPA) configurations.
+
+Whenever the link is in NLOS, a penalty factor is introduced, to account for beam
+misalignment due to the lack of a dominant multipath component [Kulkarni]_.
+
+
+* A fast fading term, sampled using the Fluctuating Two Ray (FTR) model distribution [Romero]_.
+  The latter is a fading model which is more general than typical ones, taking into account two
+  dominant specular components and a mixture of scattered paths. As, a consequence it has
+  been shown to provide a better fit to fading phenomena at mmWaves. The model parameters
+  are automatically picked once the simulation scenario is set, using a lookup table which
+  associates the simulation parameters (such as carrier frequency and LOS condition) to the
+  FTR parameters providing the best fit to the corresponding TR 38.901 channel statistics.
+  As a consequence, this channel model can be used for all the frequencies which are
+  supported by the 38.901 model, i.e., 0.5-100 GHz. The calibration has been done by
+  first obtaining the statistics of the channel gain due to the small-scale fading in
+  the 3GPP model, using an ad hoc simulation script
+  (``src/spectrum/examples/three-gpp-two-ray-channel-calibration.cc``). Then, this information
+  has been used as a reference to estimate the FTR parameters yielding the closest
+  (in a goodness-of-fit sense) fading realizations, using a custom Python script
+  (``src/spectrum/utils/two-ray-to-three-gpp-ch-calibration.py``).
+
+**Note:**
+
+  * To then obtain a full channel model characterization, the model is intended to be
+    used in conjunction of the path loss and shadowing capability provided by the
+    ``ThreeGppPropagationLossModel`` class.
+    Indeed, the goal of this model is to provide channel realizations which are as close
+    as possible to ones of [TR38901]_, but at a fraction of the complexity. Since the
+    path loss and shadowing terms are not computationally demanding anyway, the ones of
+    [Zugno2020]_ have been kept;
+
+  * Currently, the value of NLoS beamforming factor penalty factor is taken from
+    the preliminary work of [Kulkarni]_ and it is scenario-independent; As future
+    work, the possibility of using scenario-dependent penalty factors will be
+    investigated.
+
+Calibration
+###########
+The purpose of the calibration procedures is to compute offline a look-up table which
+associates the FTR fading model parameters with the simulation parameters.
+In particular, the [TR38901]_ fading distributions depend on:
+
+* The scenario (RMa, UMa, UMi-StreetCanyon, InH-OfficeOpen, InH-OfficeMixed);
+
+* The LOS condition (LoS/NLoS); and
+
+* The carrier frequency.
+
+As a consequence, the calibration output is a map which associates LoS condition and
+scenario to a list of carrier frequency-FTR parameters values. The latter represent the
+FTR parameters yielding channel realizations which exhibit the closest statistics to [TR38901]_.
+
+The actual calibration is a two-step procedure which:
+
+1. First generates reference channel gain curves using the
+``src/spectrum/examples/three-gpp-two-ray-channel-calibration.cc`` simulation script.
+Specifically, the script samples ``numRealizations`` channel realizations and computes for each of them
+the end-to-end channel gain by setting the speed of the TX and RX pair to :math:`0`, disabling the shadowing
+and fixing the LOS condition. In such a way, any variation around the mean is due to the small-scale fading only.
+The channel gain samples are produced, and returned on output conditioned on the value of
+``enableOutput``, for each combination of LoS condition, channel model scenario and carrier frequency. The
+latter cover the whole [TR38901]_ frequency range of 0.5 - 100 GHz with a relatively sparse resolution
+(500 MHz), since the dependency of the fading distribution with respect to the carrier frequency is actually
+relatively weak.
+
+.. _fig-three-gpp-gain-reference-gain-vs-fc:
+
+.. figure:: figures/three-gpp-gain-reference-gain-vs-fc.*
+   :width: 400
+   :align: center
+
+   Empirical CDF of the reference channel gains obtained using the  ``three-gpp-two-ray-channel-calibration``
+   simulation script when keeping a fixed LoS condition and channel scenario and varying the carrier
+   frequency only.
+
+2. Then, the output of the above script is parsed by the ``two-ray-to-three-gpp-ch-calibration.py``
+Python companion script. In particular, reference ECDFs are obtained from the channel gains sampled using the
+model of [TR38901]_. In turn, the reference ECDFs (one for each LoS condition, channel model scenario
+and carrier frequency combination) are compared to FTR distributions ECDFs obtained using different values
+of the parameters. Finally, the parameters which provide the best fit (in a goodness-of-fit sense) for
+the specific scenario, LOS condition and carrier frequency are found. The paramters to test are picked initially
+by performing an exhaustive seach within a discrete grid of possible values, and then by iteratively refining
+the previous search runs by scanning the neighborhood of the most recent identified values.
+In such regard, the Anderson-Darling statistical test is used to rank the various FTR distributions
+and eventually pick the one providing the closest approximation to the reference statistics.
+
+Testing
+#######
+The test suite ``TwoRaySplmTestSuite`` includes three test cases:
+
+* ``FtrFadingModelAverageTest``, which checks that the average of the Fluctuating Two Ray (FTR)
+  fading model realizations is consistent with the theoretical value provided in [Romero]_.
+
+* ``ArrayResponseTest``, which checks that the overall array response at boresight computed by the ù
+  ``CalcBeamformingGain`` function coincides with the expected theoretical values.
+
+* ``OverallGainAverageTest``, which checks that the average overall channel gain obtained using the
+  ``DoCalcRxPowerSpectralDensity`` method of the ``TwoRaySpectrumPropagationLossModel`` class is close
+  (it is, after all, a simplified and performance-oriented model) to the one obtained using
+  the ``ThreeGppSpectrumPropagationLossModel`` and ``ThreeGppChannelModel`` classes.
+
+
+References
+##########
+
+.. [Zugno2020] Zugno, Tommaso, Michele Polese, Natale Patriciello, Biljana Bojović,
+   Sandra Lagen, Michele Zorzi. "Implementation of a spatial channel model for ns-3."
+   In Proceedings of the 2020 Workshop on ns-3, pp. 49-56. 2020.
+
+.. [Polese2018] Michele Polese, Michele Zorzi. “Impact of channel models on
+   the end-to-end performance of mmwave cellular networks”. In: 2018 IEEE 19th
+   International Workshop on Signal Processing Advances in Wireless Communications
+   (SPAWC).
+
+.. [Rebato2018] Rebato, Mattia, Laura Resteghini, Christian Mazzucco, Michele Zorzi.
+   “Study of realistic antenna patterns in 5G mmWave cellular scenarios”. In: 2018
+   IEEE International Conference on Communications (ICC).
+
+.. [Romero] Romero-Jerez, Juan M., F. Javier Lopez-Martinez, José F. Paris,
+   Andrea J. Goldsmith. “The fluctuating two-ray fading model: Statistical
+   characterization and performance analysis”. In: IEEE Transactions on Wireless
+   Communications 16.7 (2017).
+
+.. [Kulkarni] Kulkarni, Mandar N., Eugene Visotsky, Jeffrey G. Andrews. "Correction
+   factor for analysis of MIMO wireless networks with highly directional beamforming.",
+   IEEE Wireless Communications Letters, 2018
+
+.. [Asplund] Asplund, Henrik, David Astely, Peter von Butovitsch, Thomas Chapman,
+   Mattias Frenne, Farshid Ghasemzadeh, Måns Hagström et al. Advanced Antenna Systems
+   for 5G Network Deployments: Bridging the Gap Between Theory and Practice.
+   Academic Press, 2020.
+
+.. [TR38901] 3GPP. 2018. TR 38.901. Study on channel for frequencies from 0.5 to
+   100 GHz. V.15.0.0. (2018-06).

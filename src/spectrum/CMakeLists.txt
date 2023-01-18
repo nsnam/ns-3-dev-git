@@ -12,6 +12,7 @@ set(source_files
     model/half-duplex-ideal-phy.cc
     model/matrix-based-channel-model.cc
     model/microwave-oven-spectrum-value-helper.cc
+    model/two-ray-spectrum-propagation-loss-model.cc
     model/multi-model-spectrum-channel.cc
     model/non-communicating-net-device.cc
     model/single-model-spectrum-channel.cc
@@ -50,6 +51,7 @@ set(header_files
     model/half-duplex-ideal-phy.h
     model/matrix-based-channel-model.h
     model/microwave-oven-spectrum-value-helper.h
+    model/two-ray-spectrum-propagation-loss-model.h
     model/multi-model-spectrum-channel.h
     model/non-communicating-net-device.h
     model/single-model-spectrum-channel.h
@@ -82,6 +84,7 @@ build_lib(
   LIBRARIES_TO_LINK ${libpropagation}
                     ${libantenna}
   TEST_SOURCES
+    test/two-ray-splm-test-suite.cc
     test/spectrum-ideal-phy-test.cc
     test/spectrum-interference-test.cc
     test/spectrum-value-test.cc

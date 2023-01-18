@@ -55,3 +55,13 @@ build_lib_example(
     ${libmobility}
     ${libspectrum}
 )
+
+build_lib_example(
+  NAME three-gpp-two-ray-channel-calibration
+  SOURCE_FILES three-gpp-two-ray-channel-calibration.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${liblte}
+    ${libmobility}
+    ${libspectrum}
+)
