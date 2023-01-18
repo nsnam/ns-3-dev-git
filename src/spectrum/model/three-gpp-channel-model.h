@@ -260,7 +260,7 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
 
     /**
      * Prepare 3gpp channel parameters among the nodes a and b.
-     * The function does the followin steps described in 3GPP 38.901:
+     * The function does the following steps described in 3GPP 38.901:
      *
      * Step 4: Generate large scale parameters. All LSPS are uncorrelated.
      * Step 5: Generate Delays.
@@ -364,7 +364,7 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     // parameters for the blockage model
     bool m_blockage;               //!< enables the blockage model A
     uint16_t m_numNonSelfBlocking; //!< number of non-self-blocking regions
-    bool m_portraitMode;           //!< true if potrait mode, false if landscape
+    bool m_portraitMode;           //!< true if portrait mode, false if landscape
     double m_blockerSpeed;         //!< the blocker speed
 
     static const uint8_t PHI_INDEX = 0; //!< index of the PHI value in the m_nonSelfBlocking array

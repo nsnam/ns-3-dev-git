@@ -1684,7 +1684,7 @@ ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition
             double sigXprLinear = pow(10, table3gpp->m_sigXpr / 10); // convert to linear
 
             temp.push_back(std::pow(10, (m_normalRv->GetValue() * sigXprLinear + uXprLinear) / 10));
-            DoubleVector temp3; // used to store the PHI valuse
+            DoubleVector temp3; // used to store the PHI values
             for (uint8_t pInd = 0; pInd < 4; pInd++)
             {
                 temp3.push_back(m_uniformRv->GetValue(-1 * M_PI, M_PI));
@@ -1854,9 +1854,9 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     MatrixBasedChannelModel::Double2DVector rayZoaRadian;
 
     // if channel params is generated in the same direction in which we
-    // generate the channel matrix, angles and zenit od departure and arrival are ok,
+    // generate the channel matrix, angles and zenith od departure and arrival are ok,
     // just set them to corresponding variable that will be used for the generation
-    // of channel matrix, otherwise we need to flip angles and zenits of departure and arrival
+    // of channel matrix, otherwise we need to flip angles and zeniths of departure and arrival
     if (isSameDirection)
     {
         rayAodRadian = channelParams->m_rayAodRadian;
@@ -2296,7 +2296,7 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
         if (std::abs(clusterAOA[cInd] - phiSb) < (xSb / 2) &&
             std::abs(clusterZOA[cInd] - thetaSb) < (ySb / 2))
         {
-            powerAttenuation[cInd] += 30; // anttenuate by 30 dB.
+            powerAttenuation[cInd] += 30; // attenuate by 30 dB.
             NS_LOG_INFO("Cluster[" << +cInd
                                    << "] is blocked by self blocking region and reduce 30 dB power,"
                                       "the attenuation is ["

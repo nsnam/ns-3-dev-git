@@ -197,9 +197,9 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
     MatrixBasedChannelModel::DoubleVector aod;
 
     // if channel params is generated in the same direction in which we
-    // generate the channel matrix, angles and zenit od departure and arrival are ok,
+    // generate the channel matrix, angles and zenith od departure and arrival are ok,
     // just set them to corresponding variable that will be used for the generation
-    // of channel matrix, otherwise we need to flip angles and zenits of departure and arrival
+    // of channel matrix, otherwise we need to flip angles and zeniths of departure and arrival
     if (isSameDirection)
     {
         zoa = channelParams->m_angle[MatrixBasedChannelModel::ZOA_INDEX];
@@ -219,7 +219,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
     {
         // Compute alpha and D as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3
         // These terms account for an additional Doppler contribution due to the
-        // presence of moving objects in the sorrounding environment, such as in
+        // presence of moving objects in the surrounding environment, such as in
         // vehicular scenarios.
         // This contribution is applied only to the delayed (reflected) paths and
         // must be properly configured by setting the value of
