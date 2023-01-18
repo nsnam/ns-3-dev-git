@@ -67,6 +67,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void SetWifiPhy(const Ptr<WifiPhy> phy) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+    bool VirtualCsMediumIdle() const override;
 
     /**
      * Set the Multi-user Scheduler associated with this Frame Exchange Manager.

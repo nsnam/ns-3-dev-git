@@ -1162,6 +1162,12 @@ FrameExchangeManager::NavResetTimeout()
     m_channelAccessManager->NotifyNavResetNow(Seconds(0));
 }
 
+bool
+FrameExchangeManager::VirtualCsMediumIdle() const
+{
+    return m_navEnd <= Simulator::Now();
+}
+
 void
 FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                   RxSignalInfo rxSignalInfo,
@@ -1185,7 +1191,7 @@ FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             // - If the NAV indicates idle, the STA shall respond with a CTS frame after a SIFS
             // - Otherwise, the STA shall not respond with a CTS frame
             // (IEEE 802.11-2016 sec. 10.3.2.7)
-            if (m_navEnd <= Simulator::Now())
+            if (VirtualCsMediumIdle())
             {
                 NS_LOG_DEBUG("Received RTS from=" << hdr.GetAddr2() << ", schedule CTS");
                 Simulator::Schedule(m_phy->GetSifs(),

@@ -748,7 +748,7 @@ QosFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         // frame matches the saved TXOP holder address, then the STA shall send the
         // CTS frame after SIFS, without regard for, and without resetting, its NAV.
         // (sec. 10.22.2.4 of 802.11-2016)
-        if (hdr.GetAddr2() == m_txopHolder || m_navEnd <= Simulator::Now())
+        if (hdr.GetAddr2() == m_txopHolder || VirtualCsMediumIdle())
         {
             NS_LOG_DEBUG("Received RTS from=" << hdr.GetAddr2() << ", schedule CTS");
             Simulator::Schedule(m_phy->GetSifs(),

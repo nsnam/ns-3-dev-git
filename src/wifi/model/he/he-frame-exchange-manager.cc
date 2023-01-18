@@ -1743,6 +1743,15 @@ HeFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVect
     }
 }
 
+bool
+HeFrameExchangeManager::VirtualCsMediumIdle() const
+{
+    // For an HE STA maintaining two NAVs, if both the NAV timers are 0, the virtual CS indication
+    // is that the medium is idle; if at least one of the two NAV timers is nonzero, the virtual CS
+    // indication is that the medium is busy. (Sec. 26.2.4 of 802.11ax-2021)
+    return m_navEnd <= Simulator::Now() && m_intraBssNavEnd <= Simulator::Now();
+}
+
 void
 HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                     RxSignalInfo rxSignalInfo,
