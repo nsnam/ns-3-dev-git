@@ -341,6 +341,7 @@ build_lib(
     test/wifi-phy-reception-test.cc
     test/wifi-phy-thresholds-test.cc
     test/wifi-primary-channels-test.cc
+    test/wifi-ru-allocation-test.cc
     test/wifi-channel-switching-test.cc
     test/wifi-test.cc
     test/wifi-transmit-mask-test.cc

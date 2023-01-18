@@ -24,6 +24,8 @@
 #include "wifi-phy-band.h"
 #include "wifi-standards.h"
 
+#include "ns3/he-ru.h"
+
 #include <set>
 #include <tuple>
 
@@ -262,6 +264,16 @@ class WifiPhyOperatingChannel
      * \return channel number of the primary channel
      */
     uint8_t GetPrimaryChannelNumber(uint16_t primaryChannelWidth, WifiStandard standard) const;
+
+    /**
+     * Get the channel indices of the minimum subset of 20 MHz channels containing the given RU.
+     *
+     * \param ru the given RU
+     * \param width the width in MHz of the channel to which the given RU refers to; normally,
+     *              it is the width in MHz of the PPDU for which the RU is allocated
+     * \return the channel indices of the minimum subset of 20 MHz channels containing the given RU
+     */
+    std::set<uint8_t> Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, uint16_t width) const;
 
   private:
     ConstIterator m_channelIt; //!< const iterator pointing to the configured frequency channel
