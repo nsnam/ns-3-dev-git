@@ -49,14 +49,14 @@ class MatrixBasedChannelModel : public Object
      */
     ~MatrixBasedChannelModel() override;
 
-    typedef std::vector<double> DoubleVector;         //!< type definition for vectors of doubles
-    typedef std::vector<DoubleVector> Double2DVector; //!< type definition for matrices of doubles
-    typedef std::vector<Double2DVector>
-        Double3DVector; //!< type definition for 3D matrices of doubles
-    typedef std::vector<PhasedArrayModel::ComplexVector>
-        Complex2DVector; //!< type definition for complex matrices
-    typedef std::vector<Complex2DVector>
-        Complex3DVector; //!< type definition for complex 3D matrices
+    using DoubleVector = std::vector<double>;         //!< type definition for vectors of doubles
+    using Double2DVector = std::vector<DoubleVector>; //!< type definition for matrices of doubles
+    using Double3DVector =
+        std::vector<Double2DVector>; //!< type definition for 3D matrices of doubles
+    using Complex2DVector =
+        std::vector<PhasedArrayModel::ComplexVector>; //!< type definition for complex matrices
+    using Complex3DVector =
+        std::vector<Complex2DVector>; //!< type definition for complex 3D matrices
 
     /**
      * Data structure that stores a channel realization
