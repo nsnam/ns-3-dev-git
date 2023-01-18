@@ -25,9 +25,6 @@
 #include <ns3/boolean.h>
 #include <ns3/channel-condition-model.h>
 #include <ns3/matrix-based-channel-model.h>
-#include <ns3/nstime.h>
-#include <ns3/object.h>
-#include <ns3/random-variable-stream.h>
 
 #include <complex.h>
 #include <unordered_map>
