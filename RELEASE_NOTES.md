@@ -26,6 +26,7 @@ Release 3-dev
 - (internet-apps) - A new Ping model that works for both IPv4 and IPv6 has been added, to replace the address family specific v4Ping and Ping6.
 - (lr-wpan) !1268 - Adding beacon payload now its possible using MLME-SET.request primitive.
 - (core) !1302 - Now test-runner exits if no TestSuite is specified.
+- (spectrum) !1046 - Addition of the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
 
 ### Bugs fixed
 
