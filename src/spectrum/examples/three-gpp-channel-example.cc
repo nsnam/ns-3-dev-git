@@ -95,7 +95,7 @@ DoBeamforming(Ptr<NetDevice> thisDevice,
     int totNoArrayElements = thisAntenna->GetNumberOfElements();
 
     // the total power is divided equally among the antenna elements
-    double power = 1 / sqrt(totNoArrayElements);
+    double power = 1.0 / sqrt(totNoArrayElements);
 
     // compute the antenna weights
     for (int ind = 0; ind < totNoArrayElements; ind++)
