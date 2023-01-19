@@ -15,37 +15,6 @@
 
 using namespace ns3;
 
-uint32_t prev = 0;
-Time prevTime = Seconds(0);
-
-// Calculate throughput
-static void
-TraceThroughput(Ptr<FlowMonitor> monitor)
-{
-    FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats();
-    auto itr = stats.begin();
-    Time curTime = Now();
-    std::ofstream thr("results/throughput.csv", std::ios::out | std::ios::app);
-    thr << curTime.GetSeconds() << ","
-        << 8 * (itr->second.txBytes - prev) /
-               (1000 * 1000 * (curTime.GetSeconds() - prevTime.GetSeconds()))
-        << std::endl;
-    prevTime = curTime;
-    prev = itr->second.txBytes;
-    Simulator::Schedule(Seconds(0.2), &TraceThroughput, monitor);
-}
-
-// Check the queue size
-void
-CheckQueueSize(Ptr<QueueDisc> qd)
-{
-    uint32_t qsize = qd->GetCurrentSize().GetValue();
-    Simulator::Schedule(Seconds(0.2), &CheckQueueSize, qd);
-    std::ofstream q("results/queueSize.csv", std::ios::out | std::ios::app);
-    q << Simulator::Now().GetSeconds() << "," << qsize << std::endl;
-    q.close();
-}
-
 // Trace congestion window
 static void
 CwndTracer(Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
@@ -71,18 +40,18 @@ main(int argc, char* argv[])
     std::string queueDisc = "FifoQueueDisc";
     uint32_t delAckCount = 2;
     bool bql = false;
-    bool enablePcap = false;
-    Time stopTime = Seconds(100);
+    bool enablePcap = true;
+    Time stopTime = Seconds(40);
 
     queueDisc = std::string("ns3::") + queueDisc;
 
     Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::" + tcpTypeId));
-    Config::SetDefault("ns3::TcpSocket::SndBufSize", UintegerValue(4194304));
-    Config::SetDefault("ns3::TcpSocket::RcvBufSize", UintegerValue(6291456));
-    Config::SetDefault("ns3::TcpSocket::InitialCwnd", UintegerValue(10));
-    Config::SetDefault("ns3::TcpSocket::DelAckCount", UintegerValue(delAckCount));
-    Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(1448));
-    Config::SetDefault("ns3::DropTailQueue<Packet>::MaxSize", QueueSizeValue(QueueSize("1p")));
+    // Config::SetDefault("ns3::TcpSocket::SndBufSize", UintegerValue(4194304));
+    // Config::SetDefault("ns3::TcpSocket::RcvBufSize", UintegerValue(6291456));
+    // Config::SetDefault("ns3::TcpSocket::InitialCwnd", UintegerValue(10));
+    // Config::SetDefault("ns3::TcpSocket::DelAckCount", UintegerValue(delAckCount));
+    // Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(1448));
+    Config::SetDefault("ns3::DropTailQueue<Packet>::MaxSize", QueueSizeValue(QueueSize("100p")));
     Config::SetDefault(queueDisc + "::MaxSize", QueueSizeValue(QueueSize("100p")));
 
     NodeContainer sender(1), receiver(1), routers(2);
@@ -156,18 +125,12 @@ main(int argc, char* argv[])
     tch.Uninstall(routers.Get(0)->GetDevice(1));
     QueueDiscContainer qd;
     qd = tch.Install(routers.Get(0)->GetDevice(1));
-    Simulator::ScheduleNow(&CheckQueueSize, qd.Get(0));
 
     // Generate PCAP traces if it is enabled
     if (enablePcap)
     {
         bottleneckLink.EnablePcapAll("results/bbr", true);
     }
-
-    // Check for dropped packets using Flow Monitor
-    FlowMonitorHelper flowmon;
-    Ptr<FlowMonitor> monitor = flowmon.InstallAll();
-    Simulator::Schedule(Seconds(0 + 0.000001), &TraceThroughput, monitor);
 
     Simulator::Stop(stopTime + TimeStep(1));
     Simulator::Run();
