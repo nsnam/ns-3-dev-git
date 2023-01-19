@@ -173,8 +173,8 @@ SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy()
     m_nfft = 256;
     m_g = 1.0 / 4;
     SetNrCarriers(192);
-    m_fecBlocks = new std::list<bvec>;
-    m_receivedFecBlocks = new std::list<bvec>;
+    m_fecBlocks = new std::list<Bvec>;
+    m_receivedFecBlocks = new std::list<Bvec>;
     m_currentBurstSize = 0;
     m_noiseFigure = 5;      // dB
     m_txPower = 30;         // dBm
@@ -500,10 +500,10 @@ SimpleOfdmWimaxPhy::EndReceive(Ptr<const PacketBurst> burst)
     m_traceRx(burst);
 }
 
-bvec
+Bvec
 SimpleOfdmWimaxPhy::ConvertBurstToBits(Ptr<const PacketBurst> burst)
 {
-    bvec buffer(burst->GetSize() * 8, 0);
+    Bvec buffer(burst->GetSize() * 8, 0);
 
     std::list<Ptr<Packet>> packets = burst->GetPackets();
 
@@ -514,7 +514,7 @@ SimpleOfdmWimaxPhy::ConvertBurstToBits(Ptr<const PacketBurst> burst)
         uint8_t* pstart = (uint8_t*)std::malloc(packet->GetSize());
         std::memset(pstart, 0, packet->GetSize());
         packet->CopyData(pstart, packet->GetSize());
-        bvec temp(8);
+        Bvec temp(8);
         temp.resize(0, 0);
         temp.resize(8, 0);
         for (uint32_t i = 0; i < packet->GetSize(); i++)
@@ -533,21 +533,21 @@ SimpleOfdmWimaxPhy::ConvertBurstToBits(Ptr<const PacketBurst> burst)
 }
 
 /*
- Converts back the bit buffer (bvec) to the actual burst.
- Actually creates byte buffer from the bvec and resets the buffer
- of each packet in the copy of the orifinal burst stored before transmitting.
+ Converts back the bit buffer (Bvec) to the actual burst.
+ Actually creates byte buffer from the Bvec and resets the buffer
+ of each packet in the copy of the original burst stored before transmitting.
  By doing this it preserves the metadata and tags in the packet.
  Function could also be named DeserializeBurst because actually it
  copying to the burst's byte buffer.
  */
 Ptr<PacketBurst>
-SimpleOfdmWimaxPhy::ConvertBitsToBurst(bvec buffer)
+SimpleOfdmWimaxPhy::ConvertBitsToBurst(Bvec buffer)
 {
     uint8_t init[buffer.size() / 8];
     uint8_t* pstart = init;
     uint8_t temp;
     int32_t j = 0;
-    // recreating byte buffer from bit buffer (bvec)
+    // recreating byte buffer from bit buffer (Bvec)
     for (uint32_t i = 0; i < buffer.size(); i += 8)
     {
         temp = 0;
@@ -592,34 +592,34 @@ SimpleOfdmWimaxPhy::ConvertBitsToBurst(bvec buffer)
 }
 
 void
-SimpleOfdmWimaxPhy::CreateFecBlocks(const bvec& buffer, WimaxPhy::ModulationType modulationType)
+SimpleOfdmWimaxPhy::CreateFecBlocks(const Bvec& buffer, WimaxPhy::ModulationType modulationType)
 {
-    bvec fecBlock(m_blockSize);
+    Bvec fecBlock(m_blockSize);
     for (uint32_t i = 0, j = m_nrBlocks; j > 0; i += m_blockSize, j--)
     {
         if (j == 1 && m_paddingBits > 0) // last block can be smaller than block size
         {
-            fecBlock = bvec(buffer.begin() + i, buffer.end());
+            fecBlock = Bvec(buffer.begin() + i, buffer.end());
             fecBlock.resize(m_blockSize, 0);
         }
         else
         {
-            fecBlock = bvec(buffer.begin() + i, buffer.begin() + i + m_blockSize);
+            fecBlock = Bvec(buffer.begin() + i, buffer.begin() + i + m_blockSize);
         }
 
         m_fecBlocks->push_back(fecBlock);
     }
 }
 
-bvec
+Bvec
 SimpleOfdmWimaxPhy::RecreateBuffer()
 {
-    bvec buffer(m_blockSize * (unsigned long)m_nrBlocks);
-    bvec block(m_blockSize);
+    Bvec buffer(m_blockSize * (unsigned long)m_nrBlocks);
+    Bvec block(m_blockSize);
     uint32_t i = 0;
     for (uint32_t j = 0; j < m_nrBlocks; j++)
     {
-        bvec tmpRecFecBloc = m_receivedFecBlocks->front();
+        Bvec tmpRecFecBloc = m_receivedFecBlocks->front();
         buffer.insert(buffer.begin() + i, tmpRecFecBloc.begin(), tmpRecFecBloc.end());
         m_receivedFecBlocks->pop_front();
         i += m_blockSize;

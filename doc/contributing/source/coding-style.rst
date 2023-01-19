@@ -326,8 +326,8 @@ Indent constructor's initialization list with 4 spaces.
 .. sourcecode:: cpp
 
   MyClass::MyClass(int x, int y)
-      : m_x (x),
-        m_y (y)
+      : m_x(x),
+        m_y(y)
   {
   }
 
@@ -837,7 +837,7 @@ Casts
 =====
 
 Where casts are necessary, use the Google C++ guidance:  "Use C++-style casts
-like ``static_cast<float> (double_value)``, or brace initialization for
+like ``static_cast<float>(double_value)``, or brace initialization for
 conversion of arithmetic types like ``int64 y = int64{1} << 42``."
 Do not use C-style casts, since they can be unsafe.
 
@@ -1047,13 +1047,13 @@ the |ns3| smart pointer class ``Ptr`` should be used in boolean comparisons as f
   if (p == NULL)    {...}
   if (p == 0)       {...}
 
-  NS_ASSERT... (p != nullptr, ...)    NS_ASSERT... (p, ...)
-  NS_ABORT...  (p != nullptr, ...)    NS_ABORT...  (p, ...)
+  NS_ASSERT...(p != nullptr, ...)    NS_ASSERT...(p, ...)
+  NS_ABORT... (p != nullptr, ...)    NS_ABORT... (p, ...)
 
-  NS_ASSERT... (p == nullptr, ...)    NS_ASSERT... (!p, ...)
-  NS_ABORT...  (p == nullptr, ...)    NS_ABORT...  (!p, ...)
+  NS_ASSERT...(p == nullptr, ...)    NS_ASSERT...(!p, ...)
+  NS_ABORT... (p == nullptr, ...)    NS_ABORT... (!p, ...)
 
-  NS_TEST...   (p, nullptr, ...)      NS_TEST...   (p, nullptr, ...)
+  NS_TEST...  (p, nullptr, ...)      NS_TEST...  (p, nullptr, ...)
 
 C++ standard
 ============
@@ -1069,9 +1069,9 @@ Miscellaneous items
 ===================
 
 - ``NS_LOG_COMPONENT_DEFINE("log-component-name");`` statements should be
-  placed within namespace ns3 (for module code) and after the
+  placed within ``namespace ns3`` (for module code) and after the
   ``using namespace ns3;``.  In examples,
-  ``NS_OBJECT_ENSURE_REGISTERED()`` should also be placed within namespace ``ns3``.
+  ``NS_OBJECT_ENSURE_REGISTERED()`` should also be placed within ``namespace ns3``.
 
 - Pointers and references are left-aligned:
 
@@ -1150,6 +1150,22 @@ Miscellaneous items
 - Do not use the C++ ``goto`` statement.
 
 - Do not add the ``enum`` or ``struct`` specifiers when declaring the variable's type.
+
+- Do not unnecessarily add ``typedef`` to ``struct`` or ``enum``.
+
+  .. sourcecode:: cpp
+
+    // Avoid
+    typedef struct
+    {
+        ...
+    } MyStruct;
+
+    // Prefer
+    struct MyStruct
+    {
+        ...
+    };
 
 Clang-tidy rules
 ================

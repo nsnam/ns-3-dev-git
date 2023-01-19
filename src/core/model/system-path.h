@@ -120,12 +120,12 @@ std::list<std::string> ReadFiles(std::string path);
  *
  * The first part, "/tmp/" is the absolute path found by inspecting
  * the environment variables `TMP`and `TEMP`, in order. If neither
- * exists the hard-codes root path `/tmp/` is used.
+ * exists the hard-coded root path `/tmp/` is used.
  *
  * The directory name itself starts with the "ns3" identifier telling folks
  * who is making all of the temp directories.
  *
- * The next three number give the hour, minute and second, separated by
+ * The next three numbers give the hour, minute and second, separated by
  * periods.
  *
  * The final number is randomly generated, to avoid name collisions.

@@ -101,7 +101,7 @@ class Murmur3 : public Implementation
      * This has to be a constant for all MPI ranks to generate
      * the same hash from the same string.
      */
-    enum seed
+    enum Seed
     {
         SEED = 0x8BADF00D // Ate bad food
     };

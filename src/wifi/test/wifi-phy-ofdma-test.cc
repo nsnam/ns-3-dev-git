@@ -675,7 +675,7 @@ void
 TestDlOfdmaPhyTransmission::CheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState)
 {
     // This is needed to make sure PHY state will be checked as the last event if a state change
-    // occured at the exact same time as the check
+    // occurred at the exact same time as the check
     Simulator::ScheduleNow(&TestDlOfdmaPhyTransmission::DoCheckPhyState, this, phy, expectedState);
 }
 
@@ -1522,7 +1522,7 @@ void
 TestDlOfdmaPhyPuncturing::CheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState)
 {
     // This is needed to make sure PHY state will be checked as the last event if a state change
-    // occured at the exact same time as the check
+    // occurred at the exact same time as the check
     Simulator::ScheduleNow(&TestDlOfdmaPhyPuncturing::DoCheckPhyState, this, phy, expectedState);
 }
 

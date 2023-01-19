@@ -311,11 +311,11 @@ class LteTestMac : public Object
     void SetRlcHeaderType(uint8_t rlcHeaderType);
 
     /// RCL Header Type enumeration
-    typedef enum
+    enum RlcHeaderType_t
     {
         UM_RLC_HEADER = 0,
         AM_RLC_HEADER = 1,
-    } RlcHeaderType_t; ///< the RLC header type
+    };
 
     /**
      * Set transmit opportunity mode
@@ -324,12 +324,12 @@ class LteTestMac : public Object
     void SetTxOpportunityMode(uint8_t mode);
 
     /// Transmit opportunity mode enumeration
-    typedef enum
+    enum TxOpportunityMode_t
     {
         MANUAL_MODE = 0,
         AUTOMATIC_MODE = 1,
         RANDOM_MODE = 2
-    } TxOpportunityMode_t; ///< transmit opportunity mode
+    };
 
     /**
      * Set transmit opportunity time

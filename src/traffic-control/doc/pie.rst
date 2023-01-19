@@ -24,13 +24,13 @@ P. Tahiliani for the ns-3.32 release, with additional unit test cases contribute
 
 * class :cpp:class:`PieQueueDisc`: This class implements the main PIE algorithm:
 
-  * ``PieQueueDisc::DoEnqueue ()``: This routine checks whether the queue is full, and if so, drops the packets and records the number of drops due to queue overflow. If queue is not full then if ActiveThreshold is set then it checks if queue delay is higher than ActiveThreshold and if it is then, this routine calls ``PieQueueDisc::DropEarly()``, and depending on the value returned, the incoming packet is either enqueued or dropped.
+  * ``PieQueueDisc::DoEnqueue()``: This routine checks whether the queue is full, and if so, drops the packets and records the number of drops due to queue overflow. If queue is not full then if ActiveThreshold is set then it checks if queue delay is higher than ActiveThreshold and if it is then, this routine calls ``PieQueueDisc::DropEarly()``, and depending on the value returned, the incoming packet is either enqueued or dropped.
 
-  * ``PieQueueDisc::DropEarly ()``: The decision to enqueue or drop the packet is taken by invoking this routine, which returns a boolean value; false indicates enqueue and true indicates drop.
+  * ``PieQueueDisc::DropEarly()``: The decision to enqueue or drop the packet is taken by invoking this routine, which returns a boolean value; false indicates enqueue and true indicates drop.
 
-  * ``PieQueueDisc::CalculateP ()``: This routine is called at a regular interval of `m_tUpdate` and updates the drop probability, which is required by ``PieQueueDisc::DropEarly()``
+  * ``PieQueueDisc::CalculateP()``: This routine is called at a regular interval of `m_tUpdate` and updates the drop probability, which is required by ``PieQueueDisc::DropEarly()``
 
-  * ``PieQueueDisc::DoDequeue ()``: This routine calculates queue delay using timestamps (by default) or, optionally with the `UseDequeRateEstimator` attribute enabled, calculates the average departure rate to estimate queue delay. A queue delay estimate required for updating the drop probability in ``PieQueueDisc::CalculateP ()``. Starting with the ns-3.32 release, the default approach to calculate queue delay has been changed to use timestamps.
+  * ``PieQueueDisc::DoDequeue()``: This routine calculates queue delay using timestamps (by default) or, optionally with the `UseDequeRateEstimator` attribute enabled, calculates the average departure rate to estimate queue delay. A queue delay estimate required for updating the drop probability in ``PieQueueDisc::CalculateP()``. Starting with the ns-3.32 release, the default approach to calculate queue delay has been changed to use timestamps.
 
 References
 ==========
@@ -112,4 +112,3 @@ or alternatively (to see logging statements in a debug build):
 .. sourcecode:: bash
 
   $ NS_LOG="PieQueueDisc" ./ns3 run "test-runner --suite=pie-queue-disc"
-

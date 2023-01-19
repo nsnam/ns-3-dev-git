@@ -23,6 +23,8 @@ Release 3-dev
 - (internet) !1186 - `TcpWestwood` model has been removed, and the class has been renamed `TcpWestwoodPlus`.
 - (internet) !1229 - You can now ping broadcast addresses.
 - (core) !1236 - Added some macros to silence compiler warnings. The new macros are in **warnings.h**, and their use is not suggested unless for very specific cases.
+- (internet-apps) - A new Ping model that works for both IPv4 and IPv6 has been added, to replace the address family specific v4Ping and Ping6.
+- (lr-wpan) !1268 - Adding beacon payload now its possible using MLME-SET.request primitive.
 
 ### Bugs fixed
 

@@ -102,12 +102,12 @@ main(int argc, char* argv[])
     //
     Ipv6AddressHelper ipv6;
 
-    ipv6.SetBase(Ipv6Address("2001:0DB8:1::"), Ipv6Prefix(64));
+    ipv6.SetBase(Ipv6Address("4001:beef:1::"), Ipv6Prefix(64));
     Ipv6InterfaceContainer i1 = ipv6.Assign(devs);
     i1.SetForwarding(1, true);
     i1.SetDefaultRouteInAllNodes(1);
 
-    ipv6.SetBase(Ipv6Address("2001:0DB8:2::"), Ipv6Prefix(64));
+    ipv6.SetBase(Ipv6Address("4001:beef:2::"), Ipv6Prefix(64));
     Ipv6Address tapAddr = ipv6.NewAddress();
     std::stringstream ss;
     std::string tapIp;
@@ -137,14 +137,20 @@ main(int argc, char* argv[])
     uint32_t maxPacketCount = 1;
     Time interPacketInterval = Seconds(1.0);
 
-    Ping6Helper ping6;
+    PingHelper ping(Ipv6Address(tapIp.c_str()));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(n);
 
-    ping6.SetRemote(tapIp.c_str());
+    // Ping6Helper ping6;
 
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(n);
+    // ping6.SetRemote(tapIp.c_str());
+
+    // ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    // ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
+    // ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
+    // ApplicationContainer apps = ping6.Install(n);
     apps.Start(Seconds(2.0));
     apps.Stop(Seconds(20.0));
 

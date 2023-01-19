@@ -40,6 +40,7 @@ class Ping6Helper
     /**
      * \brief Constructor.
      */
+    NS_DEPRECATED_3_38("Use PingHelper instead - the attributes might have been renamed.")
     Ping6Helper();
 
     /**
@@ -74,6 +75,7 @@ class Ping6Helper
      * when a node has multiple interfaces.
      * \param ifIndex interface index
      */
+    NS_DEPRECATED_3_38("Use a source address")
     void SetIfIndex(uint32_t ifIndex);
 
     /**

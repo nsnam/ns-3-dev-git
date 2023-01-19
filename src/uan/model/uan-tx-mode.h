@@ -48,13 +48,13 @@ class UanTxMode
     /**
      * Modulation type.
      */
-    typedef enum
+    enum ModulationType
     {
         PSK,  //!< Phase shift keying.
         QAM,  //!< Quadrature amplitude modulation.
         FSK,  //!< Frequency shift keying.
         OTHER //!< Unspecified/undefined.
-    } ModulationType;
+    };
 
     /**
      * Get the modulation type of the mode.

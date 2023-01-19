@@ -77,9 +77,10 @@ can be configured as follows:
 .. sourcecode:: cpp
 
   TrafficControlHelper tch;
-  tch.SetRootQueueDisc ("ns3::FqPieQueueDisc", "DropBatchSize", UintegerValue (1)
-                                                 "Perturbation", UintegerValue (256));
-  QueueDiscContainer qdiscs = tch.Install (devices);
+  tch.SetRootQueueDisc("ns3::FqPieQueueDisc",
+                       "DropBatchSize", UintegerValue(1)
+                       "Perturbation", UintegerValue(256));
+  QueueDiscContainer qdiscs = tch.Install(devices);
 
 Validation
 **********

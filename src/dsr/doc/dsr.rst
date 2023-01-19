@@ -162,7 +162,7 @@ and DsrMainHelpers in your simulation script. For instance:
 
   DsrHelper dsr;
   DsrMainHelper dsrMain;
-  dsrMain.Install (dsr, adhocNodes);
+  dsrMain.Install(dsr, adhocNodes);
 
 The example scripts inside ``src/dsr/examples/`` demonstrate the use of DSR based nodes in different scenarios.
 The helper source can be found inside ``src/dsr/helper/dsr-main-helper.{h,cc}``

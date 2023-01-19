@@ -61,14 +61,14 @@ TcpOption::GetInstanceTypeId() const
 Ptr<TcpOption>
 TcpOption::CreateOption(uint8_t kind)
 {
-    struct kindToTid
+    struct KindToTid
     {
         TcpOption::Kind kind;
         TypeId tid;
     };
 
     static ObjectFactory objectFactory;
-    static kindToTid toTid[] = {
+    static KindToTid toTid[] = {
         {TcpOption::END, TcpOptionEnd::GetTypeId()},
         {TcpOption::MSS, TcpOptionMSS::GetTypeId()},
         {TcpOption::NOP, TcpOptionNOP::GetTypeId()},
@@ -79,7 +79,7 @@ TcpOption::CreateOption(uint8_t kind)
         {TcpOption::UNKNOWN, TcpOptionUnknown::GetTypeId()},
     };
 
-    for (unsigned int i = 0; i < sizeof(toTid) / sizeof(kindToTid); ++i)
+    for (unsigned int i = 0; i < sizeof(toTid) / sizeof(KindToTid); ++i)
     {
         if (toTid[i].kind == kind)
         {

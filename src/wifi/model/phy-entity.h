@@ -454,6 +454,16 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     virtual uint16_t GetStaId(const Ptr<const WifiPpdu> ppdu) const;
 
     /**
+     * Determine whether the PHY shall issue a PHY-RXSTART.indication primitive in response to a
+     * given PPDU.
+     *
+     * \param ppdu the PPDU
+     * \return true if the PHY shall issue a PHY-RXSTART.indication primitive in response to a PPDU,
+     * false otherwise
+     */
+    virtual bool CanStartRx(Ptr<const WifiPpdu> ppdu) const;
+
+    /**
      * Check if PHY state should move to CCA busy state based on current
      * state of interference tracker.
      *

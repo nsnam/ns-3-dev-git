@@ -192,6 +192,16 @@ class SpectrumWifiPhy : public WifiPhy
      */
     void UpdateInterferenceHelperBands();
 
+    /**
+     * Determine whether the PHY shall issue a PHY-RXSTART.indication primitive in response to a
+     * given PPDU.
+     *
+     * \param ppdu the PPDU
+     * \return true if the PHY shall issue a PHY-RXSTART.indication primitive in response to a PPDU,
+     * false otherwise
+     */
+    bool CanStartRx(Ptr<const WifiPpdu> ppdu) const;
+
     Ptr<SpectrumChannel> m_channel; //!< SpectrumChannel that this SpectrumWifiPhy is connected to
 
     Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface; //!< Spectrum PHY interface

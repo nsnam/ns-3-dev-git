@@ -21,6 +21,7 @@
 
 #include "ns3/ping6.h"
 #include "ns3/uinteger.h"
+#include "ns3/warnings.h"
 
 namespace ns3
 {
@@ -28,7 +29,9 @@ namespace ns3
 Ping6Helper::Ping6Helper()
     : m_ifIndex(0)
 {
+    NS_WARNING_PUSH_DEPRECATED;
     m_factory.SetTypeId(Ping6::GetTypeId());
+    NS_WARNING_POP;
 }
 
 void
@@ -52,6 +55,9 @@ Ping6Helper::SetAttribute(std::string name, const AttributeValue& value)
 ApplicationContainer
 Ping6Helper::Install(NodeContainer c)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
     ApplicationContainer apps;
     for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
@@ -65,6 +71,8 @@ Ping6Helper::Install(NodeContainer c)
         apps.Add(client);
     }
     return apps;
+
+#pragma GCC diagnostic pop
 }
 
 void

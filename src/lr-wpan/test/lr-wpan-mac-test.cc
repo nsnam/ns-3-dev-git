@@ -308,11 +308,19 @@ class TestActiveScanPanDescriptors : public TestCase
      * \param params MLME scan confirm parameters
      */
     void ScanConfirm(MlmeScanConfirmParams params);
+    /**
+     * Function used to notify the reception of a beacon with payload.
+     *
+     * \param params The MLME-BEACON-NOTIFY.indication parameters
+     */
+    void BeaconNotifyIndication(MlmeBeaconNotifyIndicationParams params);
 
     void DoRun() override;
 
-    std::vector<PanDescriptor>
-        m_panDescriptorList; //!< The list of PAN descriptors accumulated during the scan
+    std::vector<PanDescriptor> m_panDescriptorList; //!< The list of PAN descriptors
+                                                    //!< accumulated during the scan.
+    uint32_t g_beaconPayloadSize;                   //!< The size of the beacon payload received
+                                                    //!< from a coordinator.
 };
 
 TestActiveScanPanDescriptors::TestActiveScanPanDescriptors()
@@ -334,12 +342,18 @@ TestActiveScanPanDescriptors::ScanConfirm(MlmeScanConfirmParams params)
 }
 
 void
+TestActiveScanPanDescriptors::BeaconNotifyIndication(MlmeBeaconNotifyIndicationParams params)
+{
+    g_beaconPayloadSize = params.m_sdu->GetSize();
+}
+
+void
 TestActiveScanPanDescriptors::DoRun()
 {
     /*
-     *      [00:01]                   [00:02]                                   [00:03]
-     *  PAN Coordinator 1 (PAN: 5)       End Device                        PAN Coordinator 2 (PAN:
-     * 7)
+     *      [00:01]                       [00:02]                             [00:03]
+     *  PAN Coordinator 1 (PAN: 5)       End Device                  PAN Coordinator 2 (PAN: 7)
+     *
      *       |--------100 m----------------|----------106 m -----------------------|
      *  Channel 12               (Active Scan channels 11-14)                 Channel 14
      *
@@ -408,6 +422,10 @@ TestActiveScanPanDescriptors::DoRun()
     cb0 = MakeCallback(&TestActiveScanPanDescriptors::ScanConfirm, this);
     endNodeNetDevice->GetMac()->SetMlmeScanConfirmCallback(cb0);
 
+    MlmeBeaconNotifyIndicationCallback cb1;
+    cb1 = MakeCallback(&TestActiveScanPanDescriptors::BeaconNotifyIndication, this);
+    endNodeNetDevice->GetMac()->SetMlmeBeaconNotifyIndicationCallback(cb1);
+
     /////////////////
     // ACTIVE SCAN //
     /////////////////
@@ -427,7 +445,13 @@ TestActiveScanPanDescriptors::DoRun()
                                    params);
 
     // PAN coordinator N2 (PAN 7) is set to channel 14 in non-beacon mode but answer to beacon
-    // requests.
+    // requests. The second coordinator includes a beacon payload of 25 bytes using the
+    // MLME-SET.request primitive.
+    Ptr<LrWpanMacPibAttributes> pibAttribute = Create<LrWpanMacPibAttributes>();
+    pibAttribute->macBeaconPayload = Create<Packet>(25);
+    coord2NetDevice->GetMac()->MlmeSetRequest(LrWpanMacPibAttributeIdentifier::macBeaconPayload,
+                                              pibAttribute);
+
     MlmeStartRequestParams params2;
     params2.m_panCoor = true;
     params2.m_PanId = 7;
@@ -481,6 +505,10 @@ TestActiveScanPanDescriptors::DoRun()
         m_panDescriptorList[1].m_linkQuality,
         m_panDescriptorList[0].m_linkQuality,
         "Error, Coordinator 2 (PAN 7) LQI value should be less than Coordinator 1 (PAN 5).");
+
+    NS_TEST_EXPECT_MSG_EQ(g_beaconPayloadSize,
+                          25,
+                          "Error, Beacon Payload not received or incorrect size (25 bytes)");
 
     Simulator::Destroy();
 }

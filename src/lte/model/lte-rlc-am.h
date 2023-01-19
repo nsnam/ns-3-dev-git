@@ -222,12 +222,12 @@ class LteRlcAm : public LteRlc
     /**
      * SDU Reassembling state
      */
-    typedef enum
+    enum ReassemblingState_t
     {
         NONE = 0,
         WAITING_S0_FULL = 1,
         WAITING_SI_SF = 2
-    } ReassemblingState_t;
+    };
 
     ReassemblingState_t m_reassemblingState; ///< reassembling state
     Ptr<Packet> m_keepS0;                    ///< keep S0

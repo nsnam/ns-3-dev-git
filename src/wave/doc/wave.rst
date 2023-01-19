@@ -225,7 +225,7 @@ channel operation as follows:
 10. RegisterTxProfile and DeleteTxProfile
 
   After channel access is assigned, we still cannot send IP-based
-  (or other protocol) packets by the Send () method. A tx profile should
+  (or other protocol) packets by the ``Send()`` method. A tx profile should
   be registered to specify tx parameters before transmission.
 
 11. StartVsa, StopVsa and SetWaveVsaCallback
@@ -237,7 +237,7 @@ channel operation as follows:
 12. SendX
 
   After channel access is assigned, we can send WSMP (or other protocol)
-  packets via the SendX () method. We should specify the tx parameters for
+  packets via the ``SendX()`` method. We should specify the tx parameters for
   each packet, e.g. the channel number for transmit.
 
 13. Send and SetReceiveCallback
@@ -453,13 +453,13 @@ Usage is as follows:
 
     NodeContainer nodes;
     NetDeviceContainer devices;
-    nodes.Create (2);
-    YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-    YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-    wifiPhy.SetChannel (wifiChannel.Create ());
+    nodes.Create(2);
+    YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default();
+    YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
+    wifiPhy.SetChannel(wifiChannel.Create());
     NqosWave80211pMacHelper wifi80211pMac = NqosWaveMacHelper::Default();
-    Wifi80211pHelper 80211pHelper = Wifi80211pHelper::Default ();
-    devices = 80211pHelper.Install (wifiPhy, wifi80211pMac, nodes);
+    Wifi80211pHelper 80211pHelper = Wifi80211pHelper::Default();
+    devices = 80211pHelper.Install(wifiPhy, wifi80211pMac, nodes);
 
 The relation of  ``ns3::YansWavePhyHelper``, ``ns3::QosWaveMacHelper`` and ``ns3::WaveHelper``
 is described as below:
@@ -482,13 +482,13 @@ Usage is as follows:
 
     NodeContainer nodes;
     NetDeviceContainer devices;
-    nodes.Create (2);
-    YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-    YansWavePhyHelper wavePhy =  YansWavePhyHelper::Default ();
-    wavePhy.SetChannel (wifiChannel.Create ());
-    QosWaveMacHelper waveMac = QosWaveMacHelper::Default ();
-    WaveHelper waveHelper = WaveHelper::Default ();
-    devices = waveHelper.Install (wavePhy, waveMac, nodes);
+    nodes.Create(2);
+    YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
+    YansWavePhyHelper wavePhy =  YansWavePhyHelper::Default();
+    wavePhy.SetChannel(wifiChannel.Create());
+    QosWaveMacHelper waveMac = QosWaveMacHelper::Default();
+    WaveHelper waveHelper = WaveHelper::Default();
+    devices = waveHelper.Install(wavePhy, waveMac, nodes);
 
 The higher-level helpers include ``ns3::WaveBsmStats`` and ``ns3::WaveBsmHelper``.
 
@@ -527,43 +527,43 @@ From <Your Vanet Routing Application>, usage is as follows:
     double m_gpsAccuracyNs;
     // array of distances (m) at which safety PDR shall be determined,
     // e.g. 50m, 100m, 200m, 300m, 400m, 500m, 600m, 800m, 1000m, and 1500m
-    std::vector <double> m_txSafetyRanges;
+    std::vector<double> m_txSafetyRanges;
     // used to get consistent random numbers across scenarios
     int64_t m_streamIndex;
 
-    m_waveBsmHelper.Install (m_adhocTxNodes,
-                           m_adhocTxDevices,
-                           m_adhocTxInterfaces,
-                           Seconds(m_TotalSimTime),
-                           m_wavePacketSize,
-                           Seconds(m_waveInterval),
-                           // convert GPS accuracy, in ns, to Time
-                           Seconds(m_gpsAccuracyNs / 1000000.0),
-                           m_txSafetyRanges);
+    m_waveBsmHelper.Install(m_adhocTxNodes,
+                            m_adhocTxDevices,
+                            m_adhocTxInterfaces,
+                            Seconds(m_TotalSimTime),
+                            m_wavePacketSize,
+                            Seconds(m_waveInterval),
+                            // convert GPS accuracy, in ns, to Time
+                            Seconds(m_gpsAccuracyNs / 1000000.0),
+                            m_txSafetyRanges);
 
     // fix random number streams
-    m_streamIndex += m_waveBsmHelper.AssignStreams (m_streamIndex);
+    m_streamIndex += m_waveBsmHelper.AssignStreams(m_streamIndex);
 
 Example usages of BSM statistics are as follows:
 
     // Get the cumulative PDR of the first safety Tx range (i.e, 50m in the
     // m_txSafetyRanges example above).
-    double bsm_pdr1 = m_waveBsmHelper.GetWaveBsmStats ()->GetBsmPdr (1);
+    double bsm_pdr1 = m_waveBsmHelper.GetWaveBsmStats()->GetBsmPdr(1);
 
     // total WAVE BSM bytes sent
-    uint32_t cumulativeWaveBsmBytes = m_waveBsmHelper.GetWaveBsmStats ()->GetTxByteCount ();
+    uint32_t cumulativeWaveBsmBytes = m_waveBsmHelper.GetWaveBsmStats()->GetTxByteCount();
 
     // get number of WAVE BSM packets sent
-    int wavePktsSent = m_waveBsmHelper.GetWaveBsmStats ()->GetTxPktCount ();
+    int wavePktsSent = m_waveBsmHelper.GetWaveBsmStats()->GetTxPktCount();
 
     // get number of WAVE BSM packets received
-    int wavePktsReceived = m_waveBsmHelper.GetWaveBsmStats ()->GetRxPktCount ();
+    int wavePktsReceived = m_waveBsmHelper.GetWaveBsmStats()->GetRxPktCount();
 
     // reset count of WAVE BSM packets received
-    m_waveBsmHelper.GetWaveBsmStats ()->SetRxPktCount (0);
+    m_waveBsmHelper.GetWaveBsmStats()->SetRxPktCount(0);
 
     // reset count of WAVE BSM packets sent
-    m_waveBsmHelper.GetWaveBsmStats ()->SetTxPktCount (0);
+    m_waveBsmHelper.GetWaveBsmStats()->SetTxPktCount(0);
 
     // indicate that a node (nodeId) is moving.  (set to 0 to "stop" node)
     WaveBsmHelper::GetNodesMoving()[nodeId] = 1;
@@ -590,22 +590,22 @@ OrganizationIdentifier fields to identify differences.
 
   ::
 
-    VscCallback vsccall = MakeCallback (&VsaExample::GetWsaAndOi, this);
+    VscCallback vsccall = MakeCallback(&VsaExample::GetWsaAndOi, this);
 
 4. receiver registers this identifier and function
 
   ::
 
-      Ptr<WifiNetDevice> device1 = DynamicCast<WifiNetDevice>(nodes.Get (i)->GetDevice (0));
-      Ptr<OcbWifiMac> ocb1 = DynamicCast<OcbWifiMac>(device->GetMac ());
-      ocb1->AddReceiveVscCallback (oi, vsccall);
+      Ptr<WifiNetDevice> device1 = DynamicCast<WifiNetDevice>(nodes.Get(i)->GetDevice(0));
+      Ptr<OcbWifiMac> ocb1 = DynamicCast<OcbWifiMac>(device->GetMac());
+      ocb1->AddReceiveVscCallback(oi, vsccall);
 
 5. sender transmits management information over VSA frames
 
   ::
 
-      Ptr<Packet> vsc = Create<Packet> ();
-      ocb2->SendVsc (vsc, Mac48Address::GetBroadcast (), m_16093oi);
+      Ptr<Packet> vsc = Create<Packet>();
+      ocb2->SendVsc(vsc, Mac48Address::GetBroadcast(), m_16093oi);
 
 6. then registered callbacks in the receiver will be called.
 
@@ -623,118 +623,118 @@ followed; otherwise, the packets may be discarded by devices.
   ::
 
     // the class ``ns3::WaveNetDeviceExample``here will has a receive method "Receive" to be registered.
-    receiver->SetReceiveCallback (MakeCallback (&WaveNetDeviceExample::Receive, this));
+    receiver->SetReceiveCallback(MakeCallback(&WaveNetDeviceExample::Receive, this));
 
 3. receiver registers the receive callback if WSA frames are supposed to be received.
 
   ::
 
     // the class ``ns3::WaveNetDeviceExample``here will has a receive method "ReceiveVsa" to be registered.
-    receiver->SetWaveVsaCallback (MakeCallback  (&WaveNetDeviceExample::ReceiveVsa, this));
+    receiver->SetWaveVsaCallback(MakeCallback (&WaveNetDeviceExample::ReceiveVsa, this));
 
 4. sender and receiver assign channel access by StartSch method.
 
   ::
 
     // in this case that alternating access with non-immediate mode is assigned for sender and receiver devices.
-    const SchInfo schInfo = SchInfo (SCH1, false, EXTENDED_ALTERNATING);
-    Simulator::Schedule (Seconds (0.0), &WaveNetDevice::StartSch, sender, schInfo);
-    Simulator::Schedule (Seconds (0.0), &WaveNetDevice::StartSch, receiver, schInfo);
+    const SchInfo schInfo = SchInfo(SCH1, false, EXTENDED_ALTERNATING);
+    Simulator::Schedule(Seconds(0.0), &WaveNetDevice::StartSch, sender, schInfo);
+    Simulator::Schedule(Seconds(0.0), &WaveNetDevice::StartSch, receiver, schInfo);
 
   or
 
   ::
 
     // in this case that continuous access with immediate mode is assigned for sender and receiver devices.
-    const SchInfo schInfo = SchInfo (SCH1, true, EXTENDED_CONTINUOUS);
-    Simulator::Schedule (Seconds (0.0), &WaveNetDevice::StartSch, sender, schInfo);
-    Simulator::Schedule (Seconds (0.0), &WaveNetDevice::StartSch, receiver, schInfo)
+    const SchInfo schInfo = SchInfo(SCH1, true, EXTENDED_CONTINUOUS);
+    Simulator::Schedule(Seconds(0.0), &WaveNetDevice::StartSch, sender, schInfo);
+    Simulator::Schedule(Seconds(0.0), &WaveNetDevice::StartSch, receiver, schInfo)
 
   or
 
   ::
 
     // in this case that extended access with non-immediate mode is assigned for sender and receiver devices.
-    const SchInfo schInfo = SchInfo (SCH1, false, 100);
-    Simulator::Schedule (Seconds (0.0), &WaveNetDevice::StartSch, sender, schInfo);
-    Simulator::Schedule (Seconds (0.0), &WaveNetDevice::StartSch, receiver, schInfo)
+    const SchInfo schInfo = SchInfo(SCH1, false, 100);
+    Simulator::Schedule(Seconds(0.0), &WaveNetDevice::StartSch, sender, schInfo);
+    Simulator::Schedule(Seconds(0.0), &WaveNetDevice::StartSch, receiver, schInfo)
 
 5. sender registers a tx profile if IP-based packets are planned to be transmitted
 
   ::
 
     // the IP-based packets will be transmitted in SCH1 with 6Mbps and 4 txPowerLevel with adaptable mode.
-    const TxProfile txProfile = TxProfile (SCH1, true, 4, WifiMode("OfdmRate6MbpsBW10MHz"));
-    Simulator::Schedule (Seconds (2.0), &WaveNetDevice::RegisterTxProfile, sender, txProfile);
+    const TxProfile txProfile = TxProfile(SCH1, true, 4, WifiMode("OfdmRate6MbpsBW10MHz"));
+    Simulator::Schedule(Seconds(2.0), &WaveNetDevice::RegisterTxProfile, sender, txProfile);
 
 6. sender transmits  WSMP packets by SendX method.
 
   ::
 
     // the data rate and txPowerLevel is controlled by the high layer which are 6Mbps and 0 level here.
-    const TxInfo txInfo = TxInfo (CCH, 7, WifiMode("OfdmRate6MbpsBW10MHz"),  0);
+    const TxInfo txInfo = TxInfo(CCH, 7, WifiMode("OfdmRate6MbpsBW10MHz"),  0);
     // this packet will contain WSMP header when IEEE 1609.3 model is implemented
     const static uint16_t WSMP_PROT_NUMBER = 0x88DC;
-    Ptr<Packet> wsaPacket  = Create<Packet> (100);
-    const Address dest = receiver->GetAddress ();
-    Simulator::Schedule (Seconds (2.0),  &WaveNetDevice::SendX, sender, wsaPacket, dest, WSMP_PROT_NUMBER, txInfo);
+    Ptr<Packet> wsaPacket  = Create<Packet>(100);
+    const Address dest = receiver->GetAddress();
+    Simulator::Schedule(Seconds(2.0),  &WaveNetDevice::SendX, sender, wsaPacket, dest, WSMP_PROT_NUMBER, txInfo);
 
   or
 
   ::
 
     // the data rate and txPowerLevel is controlled by the MAC layer which are decided by WifiRemoteStationManager
-    const TxInfo txInfo = TxInfo (CCH, 7, WifiMode(),  8);
+    const TxInfo txInfo = TxInfo(CCH, 7, WifiMode(),  8);
     // this packet will contain WSMP header when IEEE 1609.3 model is implemented
     const static uint16_t WSMP_PROT_NUMBER = 0x88DC;
-    Ptr<Packet> wsaPacket  = Create<Packet> (100);
-    const Address dest = receiver->GetAddress ();
-    Simulator::Schedule (Seconds (2.0),  &WaveNetDevice::SendX, sender, wsaPacket, dest, WSMP_PROT_NUMBER, txInfo);
+    Ptr<Packet> wsaPacket  = Create<Packet>(100);
+    const Address dest = receiver->GetAddress();
+    Simulator::Schedule(Seconds(2.0),  &WaveNetDevice::SendX, sender, wsaPacket, dest, WSMP_PROT_NUMBER, txInfo);
 
 7. sender transmits IP-based packets by Send method.
 
   ::
 
     const static uint16_t IPv6_PROT_NUMBER = 0x86DD;
-    Ptr<Packet> packet  = Create<Packet> (100);
-    const Address dest = receiver->GetAddress ();
-    Simulator::Schedule (Seconds (2.0),  &WaveNetDevice::Send, sender, packet, dest, IPv6_PROT_NUMBER);
+    Ptr<Packet> packet  = Create<Packet>(100);
+    const Address dest = receiver->GetAddress();
+    Simulator::Schedule(Seconds(2.0),  &WaveNetDevice::Send, sender, packet, dest, IPv6_PROT_NUMBER);
 
 8. send transmits WSA frames repeatedly by StartVsa method.
 
   ::
 
      // this packet will contain WSA management information when IEEE 1609.3 model is implemented
-    Ptr<Packet> wsaPacket = Create<Packet> (100);
-    Mac48Address dest = Mac48Address::GetBroadcast ();
-    const VsaInfo vsaInfo = VsaInfo (dest, OrganizationIdentifier (), 0, wsaPacket, SCH1, 100, VSA_TRANSMIT_IN_BOTHI);
-    Simulator::Schedule (Seconds (2.0), &WaveNetDevice::StartVsa, sender, vsaInfo);
+    Ptr<Packet> wsaPacket = Create<Packet>(100);
+    Mac48Address dest = Mac48Address::GetBroadcast();
+    const VsaInfo vsaInfo = VsaInfo(dest, OrganizationIdentifier(), 0, wsaPacket, SCH1, 100, VSA_TRANSMIT_IN_BOTHI);
+    Simulator::Schedule(Seconds(2.0), &WaveNetDevice::StartVsa, sender, vsaInfo);
 
 9. sender stops WSA frames repeatedly transmit by StopVsa method.
 
   ::
 
-    Simulator::Schedule (Seconds (3.0), &WaveNetDevice::StopVsa, sender, SCH1);
+    Simulator::Schedule(Seconds(3.0), &WaveNetDevice::StopVsa, sender, SCH1);
 
 10. sender and receiver release assigned channel access by StopSch method.
 
   ::
 
-    Simulator::Schedule (Seconds (4.0), &WaveNetDevice::StopSch, sender, SCH1);
-    Simulator::Schedule (Seconds (4.0), &WaveNetDevice::StopSch, receiver, SCH1);
+    Simulator::Schedule(Seconds(4.0), &WaveNetDevice::StopSch, sender, SCH1);
+    Simulator::Schedule(Seconds(4.0), &WaveNetDevice::StopSch, receiver, SCH1);
 
 11. sender or receiver changes current MAC address by ChangeAddress method.
 
   ::
 
-    Address newAddress = Mac48Address::Allocate ();
-    Simulator::Schedule (Seconds (4.0), &WaveNetDevice::ChangeAddress, sender, newAddress);
+    Address newAddress = Mac48Address::Allocate();
+    Simulator::Schedule(Seconds(4.0), &WaveNetDevice::ChangeAddress, sender, newAddress);
 
 12. sender cancels all transmissions with the particular category and channel number by CancelTx method.
 
   ::
 
-    Simulator::Schedule (Seconds (4.0), &WaveNetDevice::CancelTx, sender, CCH,  AC_BE);
+    Simulator::Schedule(Seconds(4.0), &WaveNetDevice::CancelTx, sender, CCH,  AC_BE);
 
 For transmitting and receiving these packets successfully,
 the normal and appropriate invocation procedures should be performed.
@@ -817,7 +817,7 @@ components can be enabled globally via the call to
 
 ::
 
-  Wifi80211pHelper::EnableLogComponents ();
+  Wifi80211pHelper::EnableLogComponents();
 
 For the WAVE device, current classes provide output of the same type as WiFi
 devices; namely, ASCII and pcap traces, and logging output. The WAVE logging
@@ -825,7 +825,7 @@ components can be enabled globally via the call to
 
 ::
 
-  WaveHelper::EnableLogComponents ();
+  WaveHelper::EnableLogComponents();
 
 
 Advanced Usage
@@ -841,10 +841,10 @@ Usage is as follows:
 ::
 
     // in this case, the MAC entities for SCH2 to SCH6 will not be created
-    WaveHelper helper = WaveHelper::Default ();
+    WaveHelper helper = WaveHelper::Default();
     uint32_t channels[] = {CCH, SCH1};
-    std::vector<uint32_t> channelsVector (channels, channels + 2);
-    helper.CreateMacForChannel (channelsVector);
+    std::vector<uint32_t> channelsVector(channels, channels + 2);
+    helper.CreateMacForChannel(channelsVector);
 
 If users can create other channel access assignment mechanism, e.g.
 in the context of more PHY entities, which may be called
@@ -853,11 +853,11 @@ with new assignment mechanisms.  Usage is as follows:
 
 ::
 
-    WaveHelper helper = WaveHelper::Default ();
-    helper.helper.CreateMacForChannel (ChannelManager::GetWaveChannels ());    // create all 7 MAC entities for WAVE
-    helper.CreatePhys (2);        // or other number which should be less than 7
-    helper.SetChannelScheduler ("ns3::AnotherScheduler");    // The AnotherScheduler should be implemented by users.
-    helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager");    // or other  rate control algorithms
+    WaveHelper helper = WaveHelper::Default();
+    helper.helper.CreateMacForChannel(ChannelManager::GetWaveChannels());    // create all 7 MAC entities for WAVE
+    helper.CreatePhys(2);        // or other number which should be less than 7
+    helper.SetChannelScheduler("ns3::AnotherScheduler");    // The AnotherScheduler should be implemented by users.
+    helper.SetRemoteStationManager("ns3::ConstantRateWifiManager");    // or other  rate control algorithms
 
 Examples
 ========

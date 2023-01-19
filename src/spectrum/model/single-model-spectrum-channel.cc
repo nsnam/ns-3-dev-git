@@ -84,7 +84,10 @@ void
 SingleModelSpectrumChannel::AddRx(Ptr<SpectrumPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
-    m_phyList.push_back(phy);
+    if (std::find(m_phyList.cbegin(), m_phyList.cend(), phy) == m_phyList.cend())
+    {
+        m_phyList.push_back(phy);
+    }
 }
 
 void

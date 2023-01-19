@@ -44,7 +44,7 @@ main(int argc, char** argv)
 
     if (verbose)
     {
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
+        LogComponentEnable("Ping", LOG_LEVEL_ALL);
         LogComponentEnable("LrWpanMac", LOG_LEVEL_ALL);
         LogComponentEnable("LrWpanPhy", LOG_LEVEL_ALL);
         LogComponentEnable("LrWpanNetDevice", LOG_LEVEL_ALL);
@@ -116,21 +116,18 @@ main(int argc, char** argv)
         dev->SetAttribute("MeshUnderRadius", UintegerValue(10));
     }
 
-    uint32_t packetSize = 10;
+    uint32_t packetSize = 16;
     uint32_t maxPacketCount = 5;
     Time interPacketInterval = Seconds(1.);
-    Ping6Helper ping6;
+    PingHelper ping(wiredDeviceInterfaces.GetAddress(0, 1));
 
-    ping6.SetLocal(wsnDeviceInterfaces.GetAddress(nWsnNodes - 1, 1));
-    ping6.SetRemote(wiredDeviceInterfaces.GetAddress(0, 1));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(wsnNodes.Get(nWsnNodes - 1));
 
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(wsnNodes.Get(nWsnNodes - 1));
-
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2.0));
+    apps.Stop(Seconds(20.0));
 
     AsciiTraceHelper ascii;
     lrWpanHelper.EnableAsciiAll(ascii.CreateFileStream("Ping-6LoW-lr-wpan-meshunder-lr-wpan.tr"));
@@ -139,7 +136,7 @@ main(int argc, char** argv)
     csmaHelper.EnableAsciiAll(ascii.CreateFileStream("Ping-6LoW-lr-wpan-meshunder-csma.tr"));
     csmaHelper.EnablePcapAll(std::string("Ping-6LoW-lr-wpan-meshunder-csma"), true);
 
-    Simulator::Stop(Seconds(10));
+    Simulator::Stop(Seconds(20));
 
     Simulator::Run();
     Simulator::Destroy();

@@ -51,14 +51,6 @@ MsduAggregator::GetTypeId()
     return tid;
 }
 
-MsduAggregator::MsduAggregator()
-{
-}
-
-MsduAggregator::~MsduAggregator()
-{
-}
-
 void
 MsduAggregator::DoDispose()
 {
@@ -72,7 +64,18 @@ MsduAggregator::SetWifiMac(const Ptr<WifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
     m_mac = mac;
-    m_htFem = DynamicCast<HtFrameExchangeManager>(m_mac->GetFrameExchangeManager());
+    m_htFem = DynamicCast<HtFrameExchangeManager>(m_mac->GetFrameExchangeManager(m_linkId));
+}
+
+void
+MsduAggregator::SetLinkId(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << +linkId);
+    m_linkId = linkId;
+    if (m_mac)
+    {
+        m_htFem = DynamicCast<HtFrameExchangeManager>(m_mac->GetFrameExchangeManager(m_linkId));
+    }
 }
 
 uint16_t
@@ -171,7 +174,7 @@ MsduAggregator::GetMaxAmsduSize(Mac48Address recipient,
         return 0;
     }
 
-    Ptr<WifiRemoteStationManager> stationManager = m_mac->GetWifiRemoteStationManager();
+    Ptr<WifiRemoteStationManager> stationManager = m_mac->GetWifiRemoteStationManager(m_linkId);
     NS_ASSERT(stationManager);
 
     // Retrieve the Capabilities elements advertised by the recipient

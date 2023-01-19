@@ -19,14 +19,18 @@
 #include "log.h"
 
 #include "assert.h"
+#include "environment-variable.h"
 #include "fatal-error.h"
+#include "string.h"
 
 #include "ns3/core-config.h"
 
-#include <cstdlib> // getenv
-#include <cstring> // strlen
+#include <algorithm> // transform
+#include <cstring>   // strlen
 #include <iostream>
 #include <list>
+#include <locale> // toupper
+#include <map>
 #include <stdexcept>
 #include <utility>
 
@@ -35,6 +39,43 @@
  * \ingroup logging
  * ns3::LogComponent and related implementations.
  */
+
+/**
+ * \ingroup logging
+ * Unnamed namespace for log.cc
+ */
+namespace
+{
+/** Mapping of log level text names to values. */
+const std::map<std::string, ns3::LogLevel> LOG_LEVEL = {
+    // clang-format off
+        {"none",           ns3::LOG_NONE},
+        {"error",          ns3::LOG_ERROR},
+        {"level_error",    ns3::LOG_LEVEL_ERROR},
+        {"warn",           ns3::LOG_WARN},
+        {"level_warn",     ns3::LOG_LEVEL_WARN},
+        {"debug",          ns3::LOG_DEBUG},
+        {"level_debug",    ns3::LOG_LEVEL_DEBUG},
+        {"info",           ns3::LOG_INFO},
+        {"level_info",     ns3::LOG_LEVEL_INFO},
+        {"function",       ns3::LOG_FUNCTION},
+        {"level_function", ns3::LOG_LEVEL_FUNCTION},
+        {"logic",          ns3::LOG_LOGIC},
+        {"level_logic",    ns3::LOG_LEVEL_LOGIC},
+        {"all",            ns3::LOG_ALL},
+        {"level_all",      ns3::LOG_LEVEL_ALL},
+        {"func",           ns3::LOG_PREFIX_FUNC},
+        {"prefix_func",    ns3::LOG_PREFIX_FUNC},
+        {"time",           ns3::LOG_PREFIX_TIME},
+        {"prefix_time",    ns3::LOG_PREFIX_TIME},
+        {"node",           ns3::LOG_PREFIX_NODE},
+        {"prefix_node",    ns3::LOG_PREFIX_NODE},
+        {"level",          ns3::LOG_PREFIX_LEVEL},
+        {"prefix_level",   ns3::LOG_PREFIX_LEVEL},
+        {"prefix_all",     ns3::LOG_PREFIX_ALL}
+    // clang-format on
+};
+} // Unnamed namespace
 
 namespace ns3
 {
@@ -79,25 +120,11 @@ LogComponent::GetComponentList()
 
 PrintList::PrintList()
 {
-    const char* envVar = std::getenv("NS_LOG");
-    if (envVar == nullptr || std::strlen(envVar) == 0)
+    auto [found, value] = EnvironmentVariable::Get("NS_LOG", "print-list", ":");
+    if (found)
     {
-        return;
-    }
-    std::string env = envVar;
-    std::string::size_type cur = 0;
-    std::string::size_type next = 0;
-    while (next != std::string::npos)
-    {
-        next = env.find_first_of(':', cur);
-        std::string tmp = std::string(env, cur, next - cur);
-        if (tmp == "print-list")
-        {
-            LogComponentPrintList();
-            exit(0);
-            break;
-        }
-        cur = next + 1;
+        LogComponentPrintList();
+        exit(0);
     }
 }
 
@@ -144,134 +171,44 @@ GetLogComponent(const std::string name)
 void
 LogComponent::EnvVarCheck()
 {
-    const char* envVar = std::getenv("NS_LOG");
-    if (envVar == nullptr || std::strlen(envVar) == 0)
+    auto [found, value] = EnvironmentVariable::Get("NS_LOG", m_name, ":");
+    if (!found)
+    {
+        std::tie(found, value) = EnvironmentVariable::Get("NS_LOG", "*", ":");
+    }
+    if (!found)
+    {
+        std::tie(found, value) = EnvironmentVariable::Get("NS_LOG", "***", ":");
+    }
+
+    if (!found || value.empty())
     {
         return;
     }
-    std::string env = envVar;
 
-    std::string::size_type cur = 0;
-    std::string::size_type next = 0;
-    while (next != std::string::npos)
+    // Got a value, might have flags
+    int level = 0;
+    StringVector flags = SplitString(value, "|");
+    NS_ASSERT_MSG(!flags.empty(), "Unexpected empty flags from non-empty value");
+    bool pre_pipe{true};
+
+    for (const auto& lev : flags)
     {
-        next = env.find_first_of(':', cur);
-        std::string tmp = std::string(env, cur, next - cur);
-        std::string::size_type equal = tmp.find('=');
-        std::string component;
-        if (equal == std::string::npos)
+        if (lev == "**")
         {
-            component = tmp;
-            if (component == m_name || component == "*" || component == "***")
-            {
-                int level = LOG_LEVEL_ALL | LOG_PREFIX_ALL;
-                Enable((enum LogLevel)level);
-                return;
-            }
+            level |= LOG_LEVEL_ALL | LOG_PREFIX_ALL;
         }
-        else
+        else if (lev == "all" || lev == "*")
         {
-            component = tmp.substr(0, equal);
-            if (component == m_name || component == "*")
-            {
-                int level = 0;
-                std::string::size_type cur_lev;
-                std::string::size_type next_lev = equal;
-                bool pre_pipe = true; // before the first '|', enables positional 'all', '*'
-                do
-                {
-                    cur_lev = next_lev + 1;
-                    next_lev = tmp.find('|', cur_lev);
-                    std::string lev = tmp.substr(cur_lev, next_lev - cur_lev);
-                    if (lev == "error")
-                    {
-                        level |= LOG_ERROR;
-                    }
-                    else if (lev == "warn")
-                    {
-                        level |= LOG_WARN;
-                    }
-                    else if (lev == "debug")
-                    {
-                        level |= LOG_DEBUG;
-                    }
-                    else if (lev == "info")
-                    {
-                        level |= LOG_INFO;
-                    }
-                    else if (lev == "function")
-                    {
-                        level |= LOG_FUNCTION;
-                    }
-                    else if (lev == "logic")
-                    {
-                        level |= LOG_LOGIC;
-                    }
-                    else if (pre_pipe && (lev == "all" || lev == "*"))
-                    {
-                        level |= LOG_LEVEL_ALL;
-                    }
-                    else if (lev == "prefix_func" || lev == "func")
-                    {
-                        level |= LOG_PREFIX_FUNC;
-                    }
-                    else if (lev == "prefix_time" || lev == "time")
-                    {
-                        level |= LOG_PREFIX_TIME;
-                    }
-                    else if (lev == "prefix_node" || lev == "node")
-                    {
-                        level |= LOG_PREFIX_NODE;
-                    }
-                    else if (lev == "prefix_level" || lev == "level")
-                    {
-                        level |= LOG_PREFIX_LEVEL;
-                    }
-                    else if (lev == "prefix_all" || (!pre_pipe && (lev == "all" || lev == "*")))
-                    {
-                        level |= LOG_PREFIX_ALL;
-                    }
-                    else if (lev == "level_error")
-                    {
-                        level |= LOG_LEVEL_ERROR;
-                    }
-                    else if (lev == "level_warn")
-                    {
-                        level |= LOG_LEVEL_WARN;
-                    }
-                    else if (lev == "level_debug")
-                    {
-                        level |= LOG_LEVEL_DEBUG;
-                    }
-                    else if (lev == "level_info")
-                    {
-                        level |= LOG_LEVEL_INFO;
-                    }
-                    else if (lev == "level_function")
-                    {
-                        level |= LOG_LEVEL_FUNCTION;
-                    }
-                    else if (lev == "level_logic")
-                    {
-                        level |= LOG_LEVEL_LOGIC;
-                    }
-                    else if (lev == "level_all")
-                    {
-                        level |= LOG_LEVEL_ALL;
-                    }
-                    else if (lev == "**")
-                    {
-                        level |= LOG_LEVEL_ALL | LOG_PREFIX_ALL;
-                    }
-
-                    pre_pipe = false;
-                } while (next_lev != std::string::npos);
-
-                Enable((enum LogLevel)level);
-            }
+            level |= (pre_pipe ? LOG_LEVEL_ALL : LOG_PREFIX_ALL);
         }
-        cur = next + 1;
+        else if (LOG_LEVEL.find(lev) != LOG_LEVEL.end())
+        {
+            level |= LOG_LEVEL.at(lev);
+        }
+        pre_pipe = false;
     }
+    Enable((LogLevel)level);
 }
 
 bool
@@ -321,36 +258,29 @@ LogComponent::File() const
 std::string
 LogComponent::GetLevelLabel(const LogLevel level)
 {
-    if (level == LOG_ERROR)
+    using LevelStringMap = std::map<LogLevel, std::string>;
+    static const LevelStringMap LOG_LABEL{[]() {
+        LevelStringMap levels;
+        for (const auto& [label, lev] : LOG_LEVEL)
+        {
+            // Only keep the first label for a level
+            if (levels.find(lev) == levels.end())
+            {
+                std::string pad{label};
+                // Add whitespace for alignment with "ERROR", "DEBUG" etc.
+                pad.insert(pad.size(), 5 - pad.size(), ' ');
+                std::transform(pad.begin(), pad.end(), pad.begin(), ::toupper);
+                levels[lev] = pad;
+            }
+        }
+        return levels;
+    }()};
+
+    if (LOG_LABEL.find(level) != LOG_LABEL.end())
     {
-        return "ERROR";
+        return LOG_LABEL.at(level);
     }
-    else if (level == LOG_WARN)
-    {
-        // whitespace left at the end for alignment
-        return "WARN ";
-    }
-    else if (level == LOG_DEBUG)
-    {
-        return "DEBUG";
-    }
-    else if (level == LOG_INFO)
-    {
-        // whitespace left at the end for alignment
-        return "INFO ";
-    }
-    else if (level == LOG_FUNCTION)
-    {
-        return "FUNCT";
-    }
-    else if (level == LOG_LOGIC)
-    {
-        return "LOGIC";
-    }
-    else
-    {
-        return "unknown";
-    }
+    return "unknown";
 }
 
 void
@@ -521,26 +451,12 @@ ComponentExists(std::string componentName)
 static void
 CheckEnvironmentVariables()
 {
-    const char* envVar = std::getenv("NS_LOG");
-    if (envVar == nullptr || std::strlen(envVar) == 0)
-    {
-        return;
-    }
+    auto dict = EnvironmentVariable::GetDictionary("NS_LOG", ":")->GetStore();
 
-    std::string env = envVar;
-    std::string::size_type cur = 0;
-    std::string::size_type next = 0;
-
-    while (next != std::string::npos)
+    for (auto& [component, value] : dict)
     {
-        next = env.find_first_of(':', cur);
-        std::string tmp = std::string(env, cur, next - cur);
-        std::string::size_type equal = tmp.find('=');
-        std::string component;
-        if (equal == std::string::npos)
+        if (value == "")
         {
-            // ie no '=' characters found
-            component = tmp;
             if (ComponentExists(component) || component == "*" || component == "***")
             {
                 return;
@@ -556,33 +472,30 @@ CheckEnvironmentVariables()
         }
         else
         {
-            component = tmp.substr(0, equal);
             if (ComponentExists(component) || component == "*")
             {
-                std::string::size_type cur_lev;
-                std::string::size_type next_lev = equal;
+                std::string::size_type next_lev{0};
+                std::string::size_type cur_lev{next_lev};
                 do
                 {
-                    cur_lev = next_lev + 1;
-                    next_lev = tmp.find('|', cur_lev);
-                    std::string lev = tmp.substr(cur_lev, next_lev - cur_lev);
-                    if (lev == "error" || lev == "warn" || lev == "debug" || lev == "info" ||
-                        lev == "function" || lev == "logic" || lev == "all" ||
-                        lev == "prefix_func" || lev == "func" || lev == "prefix_time" ||
-                        lev == "time" || lev == "prefix_node" || lev == "node" ||
-                        lev == "prefix_level" || lev == "level" || lev == "prefix_all" ||
-                        lev == "level_error" || lev == "level_warn" || lev == "level_debug" ||
-                        lev == "level_info" || lev == "level_function" || lev == "level_logic" ||
-                        lev == "level_all" || lev == "*" || lev == "**")
-                    {
-                        continue;
-                    }
-                    else
+                    next_lev = value.find('|', cur_lev);
+                    std::string lev = value.substr(cur_lev, next_lev - cur_lev);
+                    bool ok = lev == "error" || lev == "warn" || lev == "debug" || lev == "info" ||
+                              lev == "function" || lev == "logic" || lev == "all" ||
+                              lev == "prefix_func" || lev == "func" || lev == "prefix_time" ||
+                              lev == "time" || lev == "prefix_node" || lev == "node" ||
+                              lev == "prefix_level" || lev == "level" || lev == "prefix_all" ||
+                              lev == "level_error" || lev == "level_warn" || lev == "level_debug" ||
+                              lev == "level_info" || lev == "level_function" ||
+                              lev == "level_logic" || lev == "level_all" || lev == "*" ||
+                              lev == "**";
+                    if (!ok)
                     {
                         NS_FATAL_ERROR("Invalid log level \""
                                        << lev << "\" in env variable NS_LOG for component name "
                                        << component);
                     }
+                    cur_lev = next_lev + 1; // skip '|'
                 } while (next_lev != std::string::npos);
             }
             else
@@ -593,9 +506,9 @@ CheckEnvironmentVariables()
                     << component
                     << "\" in env variable NS_LOG, see above for a list of valid components");
             }
-        }
-        cur = next + 1; // parse next component
-    }
+        } // else
+
+    } // for
 }
 
 void

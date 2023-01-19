@@ -47,7 +47,7 @@ ns.cppyy.cppdef("""
     {
     public:
       /** Start model execution by scheduling a HandleEvent. */
-      void Start (void);
+      void Start ();
 
     private:
       /**
@@ -59,7 +59,7 @@ ns.cppyy.cppdef("""
     };
 
     void
-    MyModel::Start (void)
+    MyModel::Start ()
     {
       Simulator::Schedule (Seconds (10.0),
                            &MyModel::HandleEvent,
@@ -92,7 +92,7 @@ ns.cppyy.cppdef("""
         return MakeEvent(&RandomFunctionCpp, model);
     }
 
-    void CancelledFunctionCpp(void) {
+    void CancelledFunctionCpp() {
         CPyCppyy::Eval("CancelledEvent()");
     }
 

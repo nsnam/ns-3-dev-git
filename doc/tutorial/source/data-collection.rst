@@ -50,8 +50,8 @@ First, it has been enabled for IPv6 support with a command-line option:
 ::
 
   CommandLine cmd;
-  cmd.AddValue ("useIpv6", "Use Ipv6", useV6);
-  cmd.Parse (argc, argv);
+  cmd.AddValue("useIpv6", "Use Ipv6", useV6);
+  cmd.Parse(argc, argv);
 
 If the user specifies ``useIpv6``, option, the program will be run
 using IPv6 instead of IPv4.  The ``help`` option, available on all |ns3|
@@ -124,40 +124,40 @@ some of the new lines of this diff:
   +   // Configure the plot.  The first argument is the file name prefix
   +   // for the output files generated.  The second, third, and fourth
   +   // arguments are, respectively, the plot title, x-axis, and y-axis labels
-  +   plotHelper.ConfigurePlot ("seventh-packet-byte-count",
-  +                             "Packet Byte Count vs. Time",
-  +                             "Time (Seconds)",
-  +                             "Packet Byte Count");
+  +   plotHelper.ConfigurePlot("seventh-packet-byte-count",
+  +                            "Packet Byte Count vs. Time",
+  +                            "Time(Seconds)",
+  +                            "Packet Byte Count");
   +
   +   // Specify the probe type, trace source path (in configuration namespace), and
   +   // probe output trace source ("OutputBytes") to plot.  The fourth argument
   +   // specifies the name of the data series label on the plot.  The last
   +   // argument formats the plot by specifying where the key should be placed.
-  +   plotHelper.PlotProbe (probeType,
-  +                         tracePath,
-  +                         "OutputBytes",
-  +                         "Packet Byte Count",
-  +                         GnuplotAggregator::KEY_BELOW);
+  +   plotHelper.PlotProbe(probeType,
+  +                        tracePath,
+  +                        "OutputBytes",
+  +                        "Packet Byte Count",
+  +                        GnuplotAggregator::KEY_BELOW);
   +
   +   // Use FileHelper to write out the packet byte count over time
   +   FileHelper fileHelper;
   +
   +   // Configure the file to be written, and the formatting of output data.
-  +   fileHelper.ConfigureFile ("seventh-packet-byte-count",
-  +                             FileAggregator::FORMATTED);
+  +   fileHelper.ConfigureFile("seventh-packet-byte-count",
+  +                            FileAggregator::FORMATTED);
   +
   +   // Set the labels for this formatted output file.
-  +   fileHelper.Set2dFormat ("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
+  +   fileHelper.Set2dFormat("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
   +
   +   // Specify the probe type, probe path (in configuration namespace), and
   +   // probe output trace source ("OutputBytes") to write.
-  +   fileHelper.WriteProbe (probeType,
-  +                          tracePath,
-  +                          "OutputBytes");
+  +   fileHelper.WriteProbe(probeType,
+  +                         tracePath,
+  +                         "OutputBytes");
   +
-      Simulator::Stop (Seconds (20));
-      Simulator::Run ();
-      Simulator::Destroy ();
+      Simulator::Stop(Seconds(20));
+      Simulator::Run();
+      Simulator::Destroy();
 
 
 The careful reader will have noticed, when testing the IPv6 command
@@ -243,10 +243,10 @@ the GnuplotHelper object must be declared and configured:
   +  // Configure the plot.  The first argument is the file name prefix
   +  // for the output files generated.  The second, third, and fourth
   +  // arguments are, respectively, the plot title, x-axis, and y-axis labels
-  +  plotHelper.ConfigurePlot ("seventh-packet-byte-count",
-  +                            "Packet Byte Count vs. Time",
-  +                            "Time (Seconds)",
-  +                            "Packet Byte Count");
+  +  plotHelper.ConfigurePlot("seventh-packet-byte-count",
+  +                           "Packet Byte Count vs. Time",
+  +                           "Time (Seconds)",
+  +                           "Packet Byte Count");
 
 
 To this point, an empty plot has been configured.  The filename prefix
@@ -272,11 +272,11 @@ We use them here:
   +  // probe output trace source ("OutputBytes") to plot.  The fourth argument
   +  // specifies the name of the data series label on the plot.  The last
   +  // argument formats the plot by specifying where the key should be placed.
-  +  plotHelper.PlotProbe (probeType,
-  +                        tracePath,
-  +                        "OutputBytes",
-  +                        "Packet Byte Count",
-  +                        GnuplotAggregator::KEY_BELOW);
+  +  plotHelper.PlotProbe(probeType,
+  +                       tracePath,
+  +                       "OutputBytes",
+  +                       "Packet Byte Count",
+  +                       GnuplotAggregator::KEY_BELOW);
 
 The first two arguments are the name of the probe type and the trace source path.
 These two are probably the hardest to determine when you try to use
@@ -287,8 +287,8 @@ observe:
 
 ::
 
-    .AddTraceSource ("Tx", "Send IPv6 packet to outgoing interface.",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace))
+    .AddTraceSource("Tx", "Send IPv6 packet to outgoing interface.",
+                    MakeTraceSourceAccessor(&Ipv6L3Protocol::m_txTrace))
 
 This says that ``Tx`` is a name for variable ``m_txTrace``, which has
 a declaration of:
@@ -317,18 +317,18 @@ the data out of the probed Packet object:
 ::
 
   TypeId
-  Ipv6PacketProbe::GetTypeId ()
+  Ipv6PacketProbe::GetTypeId()
   {
-    static TypeId tid = TypeId ("ns3::Ipv6PacketProbe")
-      .SetParent<Probe> ()
-      .SetGroupName ("Stats")
-      .AddConstructor<Ipv6PacketProbe> ()
-      .AddTraceSource ( "Output",
-                        "The packet plus its IPv6 object and interface that serve as the output for this probe",
-                        MakeTraceSourceAccessor (&Ipv6PacketProbe::m_output))
-      .AddTraceSource ( "OutputBytes",
-                        "The number of bytes in the packet",
-                        MakeTraceSourceAccessor (&Ipv6PacketProbe::m_outputBytes))
+    static TypeId tid = TypeId("ns3::Ipv6PacketProbe")
+      .SetParent<Probe>()
+      .SetGroupName("Stats")
+      .AddConstructor<Ipv6PacketProbe>()
+      .AddTraceSource("Output",
+                      "The packet plus its IPv6 object and interface that serve as the output for this probe",
+                      MakeTraceSourceAccessor(&Ipv6PacketProbe::m_output))
+      .AddTraceSource("OutputBytes",
+                      "The number of bytes in the packet",
+                      MakeTraceSourceAccessor(&Ipv6PacketProbe::m_outputBytes))
     ;
     return tid;
   }
@@ -407,8 +407,8 @@ be seen in the filenames.  Let's look at the code piece-by-piece:
   +   FileHelper fileHelper;
   +
   +   // Configure the file to be written, and the formatting of output data.
-  +   fileHelper.ConfigureFile ("seventh-packet-byte-count",
-  +                             FileAggregator::FORMATTED);
+  +   fileHelper.ConfigureFile("seventh-packet-byte-count",
+  +                            FileAggregator::FORMATTED);
 
 The file helper file prefix is the first argument, and a format specifier
 is next.
@@ -420,7 +420,7 @@ FORMATTED is specified) with a format string such as follows:
 
   +
   +   // Set the labels for this formatted output file.
-  +   fileHelper.Set2dFormat ("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
+  +   fileHelper.Set2dFormat("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
 
 Finally, the trace source of interest must be hooked.  Again, the probeType and
 tracePath variables in this example are used, and the probe's output
@@ -431,9 +431,9 @@ trace source "OutputBytes" is hooked:
   +
   +   // Specify the probe type, trace source path (in configuration namespace), and
   +   // probe output trace source ("OutputBytes") to write.
-  +   fileHelper.WriteProbe (probeType,
-  +                          tracePath,
-  +                          "OutputBytes");
+  +   fileHelper.WriteProbe(probeType,
+  +                         tracePath,
+  +                         "OutputBytes");
   +
 
 The wildcard fields in this trace source specifier match two trace sources.
@@ -448,4 +448,3 @@ providing time series output has been added.  The basic pattern described
 above may be replicated within the scope of support of the existing
 probes and trace sources.  More capabilities including statistics
 processing will be added in future releases.
-

@@ -1334,4 +1334,22 @@ PhyEntity::CalculateTxDuration(WifiConstPsduMap psduMap,
     return WifiPhy::CalculateTxDuration(it->second->GetSize(), txVector, band, it->first);
 }
 
+bool
+PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
+{
+    // The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU that does
+    // not overlap the primary channel
+    const auto channelWidth = m_wifiPhy->GetChannelWidth();
+    const auto primaryWidth =
+        ((channelWidth % 20 == 0) ? 20
+                                  : channelWidth); // if the channel width is a multiple of 20 MHz,
+                                                   // then we consider the primary20 channel
+    const auto p20CenterFreq =
+        m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth);
+    const auto p20MinFreq = p20CenterFreq - (primaryWidth / 2);
+    const auto p20MaxFreq = p20CenterFreq + (primaryWidth / 2);
+
+    return ppdu->DoesCoverChannel(p20MinFreq, p20MaxFreq);
+}
+
 } // namespace ns3

@@ -89,13 +89,13 @@ class BatteryLifetimeTest
                           Time expLifetime);
 
     /// Load profile of the battery
-    typedef struct LoadProfile
+    struct LoadProfile
     {
         std::vector<double> loads;    //!< Loads container
         std::vector<Time> timeStamps; //!< Timestamps container
         Time itsyLifetime;            //!< Expected lifetime for an ITSY battery
         Time dualFoilLifeTime;        //!< Expected lifetime for a Dualfoil battery
-    } LoadProfile;
+    };
 
     std::vector<LoadProfile> m_loadProfiles; //!< Load profiles
     double m_alpha;                          //!< Alpha parameter of the battery model

@@ -47,25 +47,31 @@ NS_LOG_COMPONENT_DEFINE("CsmaPingExample");
 static void
 SinkRx(Ptr<const Packet> p, const Address& ad)
 {
-    // std::cout << *p << std::endl;
+    std::cout << *p << std::endl;
 }
 
 /**
  * Ping RTT trace sink
  *
  * \param context The context.
+ * \param seqNo The Sequence Number.
  * \param rtt The RTT.
  */
 static void
-PingRtt(std::string context, Time rtt)
+PingRtt(std::string context, uint16_t seqNo, Time rtt)
 {
-    // std::cout << context << " " << rtt << std::endl;
+    std::cout << context << " " << seqNo << " " << rtt << std::endl;
 }
 
 int
 main(int argc, char* argv[])
 {
+    bool verbose{false};
+
     CommandLine cmd(__FILE__);
+    cmd.AddValue("verbose",
+                 "print received background traffic packets and ping RTT values",
+                 verbose);
     cmd.Parse(argc, argv);
 
     // Here, we will explicitly create four nodes.
@@ -110,7 +116,7 @@ main(int argc, char* argv[])
     apps.Stop(Seconds(11.0));
 
     NS_LOG_INFO("Create pinger");
-    V4PingHelper ping = V4PingHelper(addresses.GetAddress(2));
+    PingHelper ping(addresses.GetAddress(2));
     NodeContainer pingers;
     pingers.Add(c.Get(0));
     pingers.Add(c.Get(1));
@@ -123,11 +129,14 @@ main(int argc, char* argv[])
     // first, pcap tracing in non-promiscuous mode
     csma.EnablePcapAll("csma-ping", false);
 
-    // then, print what the packet sink receives.
-    Config::ConnectWithoutContext("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx",
-                                  MakeCallback(&SinkRx));
-    // finally, print the ping rtts.
-    Config::Connect("/NodeList/*/ApplicationList/*/$ns3::V4Ping/Rtt", MakeCallback(&PingRtt));
+    if (verbose)
+    {
+        // then, print what the packet sink receives.
+        Config::ConnectWithoutContext("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx",
+                                      MakeCallback(&SinkRx));
+        // finally, print the ping rtts.
+        Config::Connect("/NodeList/*/ApplicationList/*/$ns3::Ping/Rtt", MakeCallback(&PingRtt));
+    }
 
     Packet::EnablePrinting();
 

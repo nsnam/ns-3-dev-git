@@ -57,18 +57,18 @@ before the node's static routing table.::
   NodeContainer c:
   ...
   // Enable OLSR
-  NS_LOG_INFO ("Enabling OLSR Routing.");
+  NS_LOG_INFO("Enabling OLSR Routing.");
   OlsrHelper olsr;
 
   Ipv4StaticRoutingHelper staticRouting;
 
   Ipv4ListRoutingHelper list;
-  list.Add (staticRouting, 0);
-  list.Add (olsr, 10);
+  list.Add(staticRouting, 0);
+  list.Add(olsr, 10);
 
   InternetStackHelper internet;
-  internet.SetRoutingHelper (list);
-  internet.Install (c);
+  internet.SetRoutingHelper(list);
+  internet.Install(c);
 
 Once installed,the OLSR "main interface" can be set with the SetMainInterface()
 command. If the user does not specify a main address, the protocol will select
@@ -98,7 +98,7 @@ has been created and unique IP addresses assigned to each node, the
 simulation script writer can call one of three overloaded functions
 with different scope to enable OLSR: ``ns3::OlsrHelper::Install
 (NodeContainer container)``; ``ns3::OlsrHelper::Install (Ptr<Node>
-node)``; or ``ns3::OlsrHelper::InstallAll (void)``
+node)``; or ``ns3::OlsrHelper::InstallAll ()``
 
 Attributes
 ++++++++++

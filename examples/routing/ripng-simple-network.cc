@@ -96,12 +96,7 @@ main(int argc, char** argv)
         LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
         LogComponentEnable("Icmpv6L4Protocol", LOG_LEVEL_ALL);
         LogComponentEnable("NdiscCache", LOG_LEVEL_ALL);
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
-    }
-
-    if (showPings)
-    {
-        LogComponentEnable("Ping6Application", LOG_LEVEL_INFO);
+        LogComponentEnable("Ping", LOG_LEVEL_ALL);
     }
 
     if (SplitHorizon == "NoSplitHorizon")
@@ -245,16 +240,16 @@ main(int argc, char** argv)
 
     NS_LOG_INFO("Create Applications.");
     uint32_t packetSize = 1024;
-    uint32_t maxPacketCount = 100;
     Time interPacketInterval = Seconds(1.0);
-    Ping6Helper ping6;
+    PingHelper ping(iic7.GetAddress(1, 1));
 
-    ping6.SetLocal(iic1.GetAddress(0, 1));
-    ping6.SetRemote(iic7.GetAddress(1, 1));
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(src);
+    ping.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    if (showPings)
+    {
+        ping.SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::VERBOSE));
+    }
+    ApplicationContainer apps = ping.Install(src);
     apps.Start(Seconds(1.0));
     apps.Stop(Seconds(110.0));
 

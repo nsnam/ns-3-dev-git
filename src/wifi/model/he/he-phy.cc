@@ -1743,6 +1743,26 @@ HePhy::GetSigBFieldSize(const WifiTxVector& txVector)
 
     return commonFieldSize + userSpecificFieldSize;
 }
+
+bool
+HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
+{
+    /*
+     * The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU
+     * that does not overlap the primary channel, unless the PHY at an AP receives the
+     * HE TB PPDU solicited by the AP. For the HE TB PPDU solicited by the AP, the PHY
+     * shall issue a PHY-RXSTART.indication primitive for a PPDU received in the primary
+     * or at the secondary 20 MHz channel, the secondary 40 MHz channel, or the secondary
+     * 80 MHz channel.
+     */
+    Ptr<WifiMac> mac = m_wifiPhy->GetDevice() ? m_wifiPhy->GetDevice()->GetMac() : nullptr;
+    if (ppdu->GetTxVector().IsUlMu() && mac && mac->GetTypeOfStation() == AP)
+    {
+        return true;
+    }
+    return PhyEntity::CanStartRx(ppdu);
+}
+
 } // namespace ns3
 
 namespace

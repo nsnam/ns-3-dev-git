@@ -99,7 +99,7 @@ To add the hash function ``foo``, follow the ``hash-murmur3.h``/``.cc`` pattern:
  * ``include`` the declaration in ``hash.h`` (at the point where
    ``hash-murmur3.h`` is included.
  * In your own code, instantiate a ``Hasher`` object via the constructor
-   ``Hasher (Ptr<Hash::Function::Foo> ())``
+   ``Hasher(Ptr<Hash::Function::Foo>())``
 
 
 If your hash function is a single function, e.g. ``hashf``, you don't

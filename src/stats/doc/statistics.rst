@@ -103,18 +103,18 @@ The first thing to do in implementing this experiment is developing the simulati
   ::
 
     double distance = 50.0;
-    string format ("OMNet++");
-    string experiment ("wifi-distance-test");
-    string strategy ("wifi-default");
+    string format("OMNet++");
+    string experiment("wifi-distance-test");
+    string strategy("wifi-default");
     string runID;
 
-    CommandLine cmd (__FILE__);
-    cmd.AddValue("distance",   "Distance apart to place nodes (in meters).", distance);
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("distance",   "Distance apart to place nodes(in meters).", distance);
     cmd.AddValue("format",     "Format to use for data output.",             format);
     cmd.AddValue("experiment", "Identifier for experiment.",                 experiment);
     cmd.AddValue("strategy",   "Identifier for strategy.",                   strategy);
     cmd.AddValue("run",        "Identifier for run.",                        runID);
-    cmd.Parse (argc, argv);
+    cmd.Parse(argc, argv);
 
 * Creating nodes and network stacks using ``ns3::NodeContainer``, ``ns3::WiFiHelper``, and ``ns3::InternetStackHelper``.
 
@@ -192,7 +192,7 @@ The first thing to do in implementing this experiment is developing the simulati
 
   ::
 
-    Ptr<CounterCalculator<> > appRx = CreateObject<CounterCalculator<> >();
+    Ptr<CounterCalculator<>> appRx = CreateObject<CounterCalculator<>>();
     appRx->SetKey("receiver-rx-packets");
     receiver->SetCounter(appRx);
     data.AddDataCalculator(appRx);
@@ -357,5 +357,3 @@ End Result
 The resulting graph provides no evidence that the default WiFi model's performance is necessarily unreasonable and lends some confidence to an at least token faithfulness to reality.  More importantly, this simple investigation has been carried all the way through using the statistical framework.  Success!
 
 .. image:: figures/Wifi-default.png
-
-

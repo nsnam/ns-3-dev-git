@@ -120,15 +120,11 @@ main(int argc, char** argv)
     NS_LOG_INFO("Create Applications.");
     uint32_t packetSize = 1024;
     uint32_t maxPacketCount = 5;
-    Time interPacketInterval = Seconds(1.);
-    Ping6Helper ping6;
+    PingHelper ping(iic2.GetAddress(1, 1));
 
-    ping6.SetLocal(iic1.GetAddress(0, 1));
-    ping6.SetRemote(iic2.GetAddress(1, 1));
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(sta1);
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(sta1);
     apps.Start(Seconds(2.0));
     apps.Stop(Seconds(10.0));
 

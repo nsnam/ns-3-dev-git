@@ -98,7 +98,7 @@ main(int argc, char** argv)
   LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
   LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
   LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ping", LOG_LEVEL_ALL);
 #endif
 
     CommandLine cmd(__FILE__);
@@ -139,19 +139,14 @@ main(int argc, char** argv)
 
     stackHelper.PrintRoutingTable(n0);
 
-    /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r */
+    /* Create a Ping application to send ICMPv6 echo request from n0 to n1 via r */
     uint32_t packetSize = 1024;
     uint32_t maxPacketCount = 5;
-    Time interPacketInterval = Seconds(1.);
-    Ping6Helper ping6;
+    PingHelper ping(i2.GetAddress(1, 1));
 
-    ping6.SetLocal(i1.GetAddress(0, 1));
-    ping6.SetRemote(i2.GetAddress(1, 1));
-
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(net1.Get(0));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(net1.Get(0));
     apps.Start(Seconds(2.0));
     apps.Stop(Seconds(20.0));
 

@@ -152,7 +152,7 @@ HeCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
     // write the corresponding value for each bit
     start.WriteHtolsbU32(GetHeMacCapabilitiesInfo1());
-    start.WriteU16(GetHeMacCapabilitiesInfo2());
+    start.WriteHtolsbU16(GetHeMacCapabilitiesInfo2());
     start.WriteHtolsbU64(GetHePhyCapabilitiesInfo1());
     start.WriteHtolsbU16(GetHePhyCapabilitiesInfo2());
     start.WriteU8(GetHePhyCapabilitiesInfo3());
@@ -610,14 +610,14 @@ HeCapabilities::GetMaxAmpduLength() const
 }
 
 std::ostream&
-operator<<(std::ostream& os, const HeCapabilities& HeCapabilities)
+operator<<(std::ostream& os, const HeCapabilities& heCapabilities)
 {
-    os << HeCapabilities.GetHeMacCapabilitiesInfo1() << "|"
-       << +HeCapabilities.GetHeMacCapabilitiesInfo2() << "|"
-       << HeCapabilities.GetHePhyCapabilitiesInfo1() << "|"
-       << HeCapabilities.GetHePhyCapabilitiesInfo2() << "|"
-       << +HeCapabilities.GetHePhyCapabilitiesInfo3() << "|"
-       << HeCapabilities.GetSupportedMcsAndNss();
+    os << heCapabilities.GetHeMacCapabilitiesInfo1() << "|"
+       << +heCapabilities.GetHeMacCapabilitiesInfo2() << "|"
+       << heCapabilities.GetHePhyCapabilitiesInfo1() << "|"
+       << heCapabilities.GetHePhyCapabilitiesInfo2() << "|"
+       << +heCapabilities.GetHePhyCapabilitiesInfo3() << "|"
+       << heCapabilities.GetSupportedMcsAndNss();
     return os;
 }
 

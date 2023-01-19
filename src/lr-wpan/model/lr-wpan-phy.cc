@@ -20,6 +20,7 @@
  */
 #include "lr-wpan-phy.h"
 
+#include "lr-wpan-constants.h"
 #include "lr-wpan-error-model.h"
 #include "lr-wpan-lqi-tag.h"
 #include "lr-wpan-net-device.h"
@@ -49,13 +50,13 @@ NS_LOG_COMPONENT_DEFINE("LrWpanPhy");
 
 NS_OBJECT_ENSURE_REGISTERED(LrWpanPhy);
 
-// Table 22 in section 6.4.1 of ieee802.15.4
-const uint32_t LrWpanPhy::aMaxPhyPacketSize = 127; // max PSDU in octets
-const uint32_t LrWpanPhy::aTurnaroundTime = 12;    // RX-to-TX or TX-to-RX in symbol periods
-
-// IEEE802.15.4-2006 Table 1 in section 6.1.1. and IEEE 802.15.4c-2009, IEEE 802.15.4d-2009
-// The index follows LrWpanPhyOption (kb/s and ksymbol/s)
-const LrWpanPhyDataAndSymbolRates LrWpanPhy::dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPTION] = {
+/**
+ * The data and symbol rates for the different PHY options.
+ * See Table 1 in section 6.1.1 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE 802.15.4d-2009.
+ * Bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
+ * The index follows LrWpanPhyOption (kb/s and ksymbol/s)
+ */
+static const LrWpanPhyDataAndSymbolRates dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPTION]{
     {20.0, 20.0},
     {40.0, 40.0},
     {20.0, 20.0},
@@ -67,20 +68,23 @@ const LrWpanPhyDataAndSymbolRates LrWpanPhy::dataSymbolRates[IEEE_802_15_4_INVAL
     {250.0, 62.5},
 };
 
-// IEEE802.15.4-2006,IEEE 802.15.4c-2009, IEEE 802.15.4d-2009  Table 19 and Table 20 in section 6.3.
-// The PHR is 1 octet and it follows phySymbolsPerOctet in Table 23
-// The index follows LrWpanPhyOption
-const LrWpanPhyPpduHeaderSymbolNumber
-    LrWpanPhy::ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION] = {
-        {32.0, 8.0, 8.0},
-        {32.0, 8.0, 8.0},
-        {32.0, 8.0, 8.0},
-        {2.0, 1.0, 0.4},
-        {6.0, 1.0, 1.6},
-        {8.0, 2.0, 2.0},
-        {8.0, 2.0, 2.0},
-        {8.0, 2.0, 2.0},
-        {8.0, 2.0, 2.0},
+/**
+ * The preamble, SFD, and PHR lengths in symbols for the different PHY options.
+ * See Table 19 and Table 20 in section 6.3 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE
+ * 802.15.4d-2009.
+ * The PHR is 1 octet and it follows phySymbolsPerOctet in Table 23.
+ * The index follows LrWpanPhyOption.
+ */
+const LrWpanPhyPpduHeaderSymbolNumber ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION]{
+    {32.0, 8.0, 8.0},
+    {32.0, 8.0, 8.0},
+    {32.0, 8.0, 8.0},
+    {2.0, 1.0, 0.4},
+    {6.0, 1.0, 1.6},
+    {8.0, 2.0, 2.0},
+    {8.0, 2.0, 2.0},
+    {8.0, 2.0, 2.0},
+    {8.0, 2.0, 2.0},
 };
 
 TypeId
@@ -597,7 +601,7 @@ LrWpanPhy::PdDataRequest(const uint32_t psduLength, Ptr<Packet> p)
 {
     NS_LOG_FUNCTION(this << psduLength << p);
 
-    if (psduLength > aMaxPhyPacketSize)
+    if (psduLength > lrwpan::aMaxPhyPacketSize)
     {
         if (!m_pdDataConfirmCallback.IsNull())
         {
@@ -865,7 +869,7 @@ LrWpanPhy::PlmeSetTRXStateRequest(LrWpanPhyEnumeration state)
             m_trxStatePending = IEEE_802_15_4_PHY_TX_ON;
 
             // Delay for turnaround time (BUSY_RX|RX_ON ---> TX_ON)
-            Time setTime = Seconds((double)aTurnaroundTime / GetDataOrSymbolRate(false));
+            Time setTime = Seconds((double)lrwpan::aTurnaroundTime / GetDataOrSymbolRate(false));
             m_setTRXState = Simulator::Schedule(setTime, &LrWpanPhy::EndSetTRXState, this);
             return;
         }
@@ -932,7 +936,7 @@ LrWpanPhy::PlmeSetTRXStateRequest(LrWpanPhyEnumeration state)
             //       even when the transmitter is not busy? (6.9.1)
             m_trxStatePending = IEEE_802_15_4_PHY_RX_ON;
 
-            Time setTime = Seconds((double)aTurnaroundTime / GetDataOrSymbolRate(false));
+            Time setTime = Seconds((double)lrwpan::aTurnaroundTime / GetDataOrSymbolRate(false));
             m_setTRXState = Simulator::Schedule(setTime, &LrWpanPhy::EndSetTRXState, this);
             return;
         }

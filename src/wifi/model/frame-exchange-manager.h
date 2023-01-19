@@ -101,7 +101,7 @@ class FrameExchangeManager : public Object
      *
      * \param linkId the ID of the link this Frame Exchange Manager is associated with
      */
-    void SetLinkId(uint8_t linkId);
+    virtual void SetLinkId(uint8_t linkId);
     /**
      * Set the MAC layer to use.
      *

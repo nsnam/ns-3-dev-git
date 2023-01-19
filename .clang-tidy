@@ -43,3 +43,4 @@ Checks: >
 
 FormatStyle: "file"
 HeaderFilterRegex: "(contrib|examples|src|scratch|utils)/*/.*h"
+UseColor: true

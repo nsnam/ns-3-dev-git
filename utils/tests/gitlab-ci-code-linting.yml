@@ -22,7 +22,6 @@ check-style-clang-format:
   variables:
     MPI_CI: 1
     CLANG_TIDY_OUTPUT: clang-tidy-output.log
-    GIT_DEPTH: 0
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
@@ -46,6 +45,8 @@ check-style-clang-format:
 clang-tidy:
   extends: .base-clang-tidy
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: on_success
     - changes:
@@ -74,10 +75,19 @@ clang-tidy-diff:
       when: never
     - when: on_success
   script:
-    - git diff -U0 $(git merge-base --fork-point origin/$CI_DEFAULT_BRANCH) |
-      clang-tidy-diff-14.py -path cmake-cache/ -p1 -quiet
+    - git remote add upstream https://gitlab.com/nsnam/ns-3-dev.git
+    - git fetch upstream master
+    - git diff -U0 upstream/master |
+      clang-tidy-diff-14.py -path cmake-cache/ -p1 -quiet -use-color
+      -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|c|h|hpp)"
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null
+    - if egrep -A 3 "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT ; then
+      echo "Clang-tidy could not find the above files. Running a full clang-tidy check." ;
+      run-clang-tidy-14 -p cmake-cache/ -quiet
+      1> $CLANG_TIDY_OUTPUT
+      2> /dev/null ;
+      fi
     - (! egrep -A 3 "error:|warning:|note:" $CLANG_TIDY_OUTPUT)
     - echo "No clang-tidy errors found"
 

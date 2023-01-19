@@ -376,8 +376,6 @@ class RngRsp : public Header
 
 namespace ns3
 {
-class serviceFlow;
-
 /**
  * \ingroup wimax
  * This class implements the DSA-REQ message described by "IEEE Standard for

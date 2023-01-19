@@ -58,8 +58,8 @@ The usage of the realtime simulator is straightforward, from a scripting
 perspective.  Users just need to set the attribute
 ``SimulatorImplementationType`` to the Realtime simulator, such as follows: ::
 
-  GlobalValue::Bind ("SimulatorImplementationType",
-    StringValue ("ns3::RealtimeSimulatorImpl"));
+  GlobalValue::Bind("SimulatorImplementationType",
+                    StringValue("ns3::RealtimeSimulatorImpl"));
 
 There is a script in ``examples/realtime/realtime-udp-echo.cc`` that
 has an example of how to configure the realtime behavior.  Try:

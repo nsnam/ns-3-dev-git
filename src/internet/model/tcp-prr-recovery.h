@@ -64,11 +64,11 @@ class TcpPrrRecovery : public TcpClassicRecovery
     /**
      * \brief Reduction Bound variant (CRB or SSRB)
      */
-    typedef enum
+    enum ReductionBound_t
     {
         CRB, /**< Conservative Reduction Bound */
         SSRB /**< Slow Start Reduction Bound */
-    } ReductionBound_t;
+    };
 
     std::string GetName() const override;
 

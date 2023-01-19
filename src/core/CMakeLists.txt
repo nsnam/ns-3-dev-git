@@ -163,12 +163,12 @@ set(source_files
     model/watchdog.cc
     model/synchronizer.cc
     model/make-event.cc
+    model/environment-variable.cc
     model/log.cc
     model/breakpoint.cc
     model/type-id.cc
     model/attribute-construction-list.cc
     model/object-base.cc
-    model/ref-count-base.cc
     model/object.cc
     model/test.cc
     model/random-variable-stream.cc
@@ -246,6 +246,7 @@ set(header_files
     model/fatal-error.h
     model/fatal-impl.h
     model/fd-reader.h
+    model/environment-variable.h
     model/global-value.h
     model/hash-fnv.h
     model/hash-function.h
@@ -278,7 +279,6 @@ set(header_files
     model/priority-queue-scheduler.h
     model/ptr.h
     model/random-variable-stream.h
-    model/ref-count-base.h
     model/rng-seed-manager.h
     model/rng-stream.h
     model/scheduler.h
@@ -324,6 +324,7 @@ set(test_sources
     test/callback-test-suite.cc
     test/command-line-test-suite.cc
     test/config-test-suite.cc
+    test/environment-variable-test-suite.cc
     test/event-garbage-collector-test-suite.cc
     test/global-value-test-suite.cc
     test/hash-test-suite.cc
@@ -337,6 +338,7 @@ set(test_sources
     test/ptr-test-suite.cc
     test/sample-test-suite.cc
     test/simulator-test-suite.cc
+    test/splitstring-test-suite.cc
     test/threaded-test-suite.cc
     test/time-test-suite.cc
     test/timer-test-suite.cc

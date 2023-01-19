@@ -59,12 +59,12 @@ class BuildingsChannelConditionModelTestCase : public TestCase
     /**
      * Struct containing the parameters for each test
      */
-    typedef struct
+    struct TestVector
     {
         Vector m_positionA;                            //!< the position of the first node
         Vector m_positionB;                            //!< the position of the second node
         ChannelCondition::LosConditionValue m_losCond; //!< the correct channel condition
-    } TestVector;
+    };
 
     TestVectors<TestVector> m_testVectors; //!< array containg all the test vectors
 };

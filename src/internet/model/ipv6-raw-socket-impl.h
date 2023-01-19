@@ -170,12 +170,12 @@ class Ipv6RawSocketImpl : public Socket
     /**
      * \brief IPv6 raw data and additional information.
      */
-    typedef struct
+    struct Data
     {
         Ptr<Packet> packet;    /**< Packet data */
         Ipv6Address fromIp;    /**< Source address */
         uint16_t fromProtocol; /**< Protocol used */
-    } Data;
+    };
 
     /**
      * \brief Dispose object.
@@ -225,10 +225,10 @@ class Ipv6RawSocketImpl : public Socket
     /**
      * \brief Struct to hold the ICMPv6 filter
      */
-    typedef struct
+    struct Icmpv6Filter
     {
         uint32_t icmpv6Filt[8]; //!< ICMPv6 filter specification
-    } Icmpv6Filter;
+    };
 
     /**
      * \brief ICMPv6 filter.

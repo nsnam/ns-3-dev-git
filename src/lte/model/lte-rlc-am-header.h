@@ -67,17 +67,17 @@ class LteRlcAmHeader : public Header
     bool IsControlPdu() const;
 
     /// DataControlPdu_t enumeration
-    typedef enum
+    enum DataControlPdu_t
     {
         CONTROL_PDU = 0,
         DATA_PDU = 1
-    } DataControlPdu_t; ///< DataControlPdu_t typedef
+    };
 
     /// ControlPduType_t enumeration
-    typedef enum
+    enum ControPduType_t
     {
         STATUS_PDU = 000,
-    } ControPduType_t; ///< ControPduType_t typedef
+    };
 
     //
     // DATA PDU
@@ -110,18 +110,18 @@ class LteRlcAmHeader : public Header
     uint8_t GetFramingInfo() const;
 
     /// FramingInfoFirstByte_t enumeration
-    typedef enum
+    enum FramingInfoFirstByte_t
     {
         FIRST_BYTE = 0x00,
         NO_FIRST_BYTE = 0x02
-    } FramingInfoFirstByte_t; ///< FramingInfoFirstByte_t typedef
+    };
 
     /// FramingInfoLastByte_t enumeration
-    typedef enum
+    enum FramingInfoLastByte_t
     {
         LAST_BYTE = 0x00,
         NO_LAST_BYTE = 0x01
-    } FramingInfoLastByte_t; ///< FramingInfoLastByte_t typedef
+    };
 
     /**
      * Push extension bit function
@@ -150,11 +150,11 @@ class LteRlcAmHeader : public Header
     uint16_t PopLengthIndicator();
 
     /// ExtensionBit_t typedef
-    typedef enum
+    enum ExtensionBit_t
     {
         DATA_FIELD_FOLLOWS = 0,
         E_LI_FIELDS_FOLLOWS = 1
-    } ExtensionBit_t; ///< ExtensionBit_t typedef
+    };
 
     /**
      * Pop extension bit function
@@ -170,11 +170,11 @@ class LteRlcAmHeader : public Header
     uint8_t GetResegmentationFlag() const;
 
     /// ResegmentationFlag_t typedef
-    typedef enum
+    enum ResegmentationFlag_t
     {
         PDU = 0,
         SEGMENT = 1
-    } ResegmentationFlag_t; ///< ResegmentationFlag_t typedef
+    };
 
     /**
      * Set polling bit function
@@ -190,11 +190,11 @@ class LteRlcAmHeader : public Header
     uint8_t GetPollingBit() const;
 
     /// PollingBit_t enumeration
-    typedef enum
+    enum PollingBit_t
     {
         STATUS_REPORT_NOT_REQUESTED = 0,
         STATUS_REPORT_IS_REQUESTED = 1
-    } PollingBit_t; ///< PollingBit_t typedef
+    };
 
     /**
      * Set last segment flag function
@@ -210,11 +210,11 @@ class LteRlcAmHeader : public Header
     uint8_t GetLastSegmentFlag() const;
 
     /// LastSegmentFlag_t typedef
-    typedef enum
+    enum LastSegmentFlag_t
     {
         NO_LAST_PDU_SEGMENT = 0,
         LAST_PDU_SEGMENT = 1
-    } LastSegmentFlag_t; ///< LastSegmentFlag_t enumeration
+    };
 
     /**
      * Set segment offset function

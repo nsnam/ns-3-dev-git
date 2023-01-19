@@ -28,7 +28,8 @@ namespace ns3
 
 NS_OBJECT_ENSURE_REGISTERED(LrWpanMacTrailer);
 
-const uint16_t LrWpanMacTrailer::LR_WPAN_MAC_FCS_LENGTH = 2;
+/// The length in octets of the IEEE 802.15.4 MAC FCS field
+constexpr uint16_t LR_WPAN_MAC_FCS_LENGTH = 2;
 
 LrWpanMacTrailer::LrWpanMacTrailer()
     : m_fcs(0),

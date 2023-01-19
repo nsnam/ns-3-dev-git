@@ -40,10 +40,10 @@ An example of how to configure PrioQueueDisc with custom child queue discs and p
 is provided by `queue-discs-benchmark.cc` located in ``examples/traffic-control``::
 
   TrafficControlHelper tch;
-  uint16_t handle = tch.SetRootQueueDisc ("ns3::PrioQueueDisc", "Priomap", StringValue ("0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1"));
-  TrafficControlHelper::ClassIdList cid = tch.AddQueueDiscClasses (handle, 2, "ns3::QueueDiscClass");
-  tch.AddChildQueueDisc (handle, cid[0], "ns3::FifoQueueDisc");
-  tch.AddChildQueueDisc (handle, cid[1], "ns3::RedQueueDisc");
+  uint16_t handle = tch.SetRootQueueDisc("ns3::PrioQueueDisc", "Priomap", StringValue("0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1"));
+  TrafficControlHelper::ClassIdList cid = tch.AddQueueDiscClasses(handle, 2, "ns3::QueueDiscClass");
+  tch.AddChildQueueDisc(handle, cid[0], "ns3::FifoQueueDisc");
+  tch.AddChildQueueDisc(handle, cid[1], "ns3::RedQueueDisc");
 
 The code above adds two classes (bands) to a PrioQueueDisc. The highest priority one
 is a FifoQueueDisc, the other one is a RedQueueDisc. The attribute Priomap is set to

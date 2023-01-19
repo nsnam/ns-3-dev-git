@@ -32,10 +32,10 @@ properties; for instance::
     class Address
     {
     public:
-      Address ();
-      Address (uint8_t type, const uint8_t *buffer, uint8_t len);
-      Address (const Address & address);
-      Address &operator = (const Address &address);
+      Address();
+      Address(uint8_t type, const uint8_t *buffer, uint8_t len);
+      Address(const Address & address);
+      Address &operator=(const Address &address);
       ...
     private:
       uint8_t m_type;
@@ -132,7 +132,7 @@ allocated using a templated Create or CreateObject method, as follows.
 
 For objects deriving from class :cpp:class:`Object`::
 
-    Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+    Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice>();
 
 Please do not create such objects using ``operator new``; create them using
 :cpp:func:`CreateObject()` instead.
@@ -141,7 +141,7 @@ For objects deriving from class :cpp:class:`SimpleRefCount`, or other objects
 that support usage of the smart pointer class, a templated helper function is
 available and recommended to be used::
 
-    Ptr<B> b = Create<B> ();
+    Ptr<B> b = Create<B>();
 
 This is simply a wrapper around operator new that correctly handles the
 reference counting system.
@@ -190,12 +190,12 @@ node. Let's look at how some Ipv4 protocols are added to a node.::
     static void
     AddIpv4Stack(Ptr<Node> node)
     {
-      Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-      ipv4->SetNode (node);
-      node->AggregateObject (ipv4);
-      Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
-      ipv4Impl->SetIpv4 (ipv4);
-      node->AggregateObject (ipv4Impl);
+      Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol>();
+      ipv4->SetNode(node);
+      node->AggregateObject(ipv4);
+      Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl>();
+      ipv4Impl->SetIpv4(ipv4);
+      node->AggregateObject(ipv4Impl);
     }
 
 Note that the Ipv4 protocols are created using :cpp:func:`CreateObject()`.
@@ -220,7 +220,7 @@ configure a default route. To do so, it must access an object within the node
 that has an interface to the IP forwarding configuration. It performs the
 following::
 
-    Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
+    Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4>();
 
 If the node in fact does not have an Ipv4 object aggregated to it, then the
 method will return null. Therefore, it is good practice to check the return
@@ -248,9 +248,9 @@ pattern in use in the |ns3| system. It is heavily used in the "helper" API.
 Class :cpp:class:`ObjectFactory` can be used to instantiate objects and to
 configure the attributes on those objects::
 
-    void SetTypeId (TypeId tid);
-    void Set (std::string name, const AttributeValue &value);
-    Ptr<T> Create (void) const;
+    void SetTypeId(TypeId tid);
+    void Set(std::string name, const AttributeValue &value);
+    Ptr<T> Create() const;
 
 The first method allows one to use the |ns3| TypeId system to specify the type
 of objects created. The second allows one to set attributes on the objects to be
@@ -260,15 +260,15 @@ For example: ::
 
     ObjectFactory factory;
     // Make this factory create objects of type FriisPropagationLossModel
-    factory.SetTypeId ("ns3::FriisPropagationLossModel")
+    factory.SetTypeId("ns3::FriisPropagationLossModel")
     // Make this factory object change a default value of an attribute, for
     // subsequently created objects
-    factory.Set ("SystemLoss", DoubleValue (2.0));
+    factory.Set("SystemLoss", DoubleValue(2.0));
     // Create one such object
-    Ptr<Object> object = factory.Create ();
-    factory.Set ("SystemLoss", DoubleValue (3.0));
+    Ptr<Object> object = factory.Create();
+    factory.Set("SystemLoss", DoubleValue(3.0));
     // Create another object with a different SystemLoss
-    Ptr<Object> object = factory.Create ();
+    Ptr<Object> object = factory.Create();
 
 Downcasting
 ***********
@@ -285,9 +285,9 @@ dynamic casting much more user friendly::
 
     template <typename T1, typename T2>
     Ptr<T1>
-    DynamicCast (Ptr<T2> const&p)
+    DynamicCast(Ptr<T2> const&p)
     {
-      return Ptr<T1> (dynamic_cast<T1 *> (PeekPointer (p)));
+      return Ptr<T1>(dynamic_cast<T1 *>(PeekPointer(p)));
     }
 
 DynamicCast works when the programmer has a base type pointer and is testing

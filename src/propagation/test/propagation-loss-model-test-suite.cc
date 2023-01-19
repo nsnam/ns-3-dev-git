@@ -53,13 +53,13 @@ class FriisPropagationLossModelTestCase : public TestCase
     void DoRun() override;
 
     /// Test vector
-    typedef struct
+    struct TestVector
     {
         Vector m_position;  //!< Test node position
         double m_pt;        //!< Tx power [dBm]
         double m_pr;        //!< Rx power [W]
         double m_tolerance; //!< Tolerance
-    } TestVector;
+    };
 
     /// Test vectors
     TestVectors<TestVector> m_testVectors;
@@ -164,13 +164,13 @@ class TwoRayGroundPropagationLossModelTestCase : public TestCase
     void DoRun() override;
 
     /// Test vector
-    typedef struct
+    struct TestVector
     {
         Vector m_position;  //!< Test node position
         double m_pt;        //!< Tx power [dBm]
         double m_pr;        //!< Rx power [W]
         double m_tolerance; //!< Tolerance
-    } TestVector;
+    };
 
     /// Test vectors
     TestVectors<TestVector> m_testVectors;
@@ -304,13 +304,13 @@ class LogDistancePropagationLossModelTestCase : public TestCase
     void DoRun() override;
 
     /// Test vector
-    typedef struct
+    struct TestVector
     {
         Vector m_position;  //!< Test node position
         double m_pt;        //!< Tx power [dBm]
         double m_pr;        //!< Rx power [W]
         double m_tolerance; //!< Tolerance
-    } TestVector;
+    };
 
     /// Test vectors
     TestVectors<TestVector> m_testVectors;

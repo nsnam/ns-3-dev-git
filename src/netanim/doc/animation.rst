@@ -159,7 +159,7 @@ Mandatory
 
 .. sourcecode:: cpp
 
-  AnimationInterface anim ("animation.xml");  // where "animation.xml" is any arbitrary filename
+  AnimationInterface anim("animation.xml");  // where "animation.xml" is any arbitrary filename
 
 [for versions before ns-3.13 you also have to use the line "anim.SetXMLOutput() to set the XML mode and also use anim.StartAnimation();]
 
@@ -172,7 +172,7 @@ Optional
 The following are optional but useful steps::
 
   // Step 1
-  anim.SetMobilityPollInterval (Seconds (1));
+  anim.SetMobilityPollInterval(Seconds(1));
 
 AnimationInterface records the position of all nodes every 250 ms by default. The statement above sets
 the periodic interval at which AnimationInterface records the position of all nodes. If the nodes are
@@ -181,21 +181,21 @@ expected to move very little, it is useful to set a high mobility poll interval 
 ::
 
   // Step 2
-  anim.SetConstantPosition (Ptr< Node > n, double x, double y);
+  anim.SetConstantPosition(Ptr< Node > n, double x, double y);
 
 AnimationInterface requires that the position of all nodes be set. In |ns3| this is done by setting an associated MobilityModel. "SetConstantPosition" is a quick way to set the x-y coordinates of a node which is stationary.
 
 ::
 
   // Step 3
-  anim.SetStartTime (Seconds(150)); and anim.SetStopTime (Seconds(150));
+  anim.SetStartTime(Seconds(150)); and anim.SetStopTime(Seconds(150));
 
 AnimationInterface can generate large XML files. The above statements restricts the window between which AnimationInterface does tracing. Restricting the window serves to focus only on relevant portions of the simulation and creating manageably small XML files
 
 ::
 
   // Step 4
-  AnimationInterface anim ("animation.xml", 50000);
+  AnimationInterface anim("animation.xml", 50000);
 
 Using the above constructor ensures that each animation XML trace file has only 50000 packets. For example, if AnimationInterface captures 150000 packets, using the above constructor splits the capture into 3 files
 
@@ -208,7 +208,7 @@ Using the above constructor ensures that each animation XML trace file has only 
 ::
 
   // Step 5
-  anim.EnablePacketMetadata (true);
+  anim.EnablePacketMetadata(true);
 
 With the above statement, AnimationInterface records the meta-data of each packet in the xml trace file. Metadata can be used by NetAnim to provide better statistics and filter, along with providing some brief information about the packet such as TCP sequence number or source & destination IP address during packet animation.
 
@@ -218,21 +218,21 @@ Please do NOT enable this feature when using Wimax links.
 ::
 
   // Step 6
-  anim.UpdateNodeDescription (5, "Access-point");
+  anim.UpdateNodeDescription(5, "Access-point");
 
 With the above statement, AnimationInterface assigns the text "Access-point" to node 5.
 
 ::
 
   // Step 7
-  anim.UpdateNodeSize (6, 1.5, 1.5);
+  anim.UpdateNodeSize(6, 1.5, 1.5);
 
 With the above statement, AnimationInterface sets the node size to scale by 1.5. NetAnim automatically scales the graphics view to fit the oboundaries of the topology. This means that NetAnim, can abnormally scale a node's size too high or too low. Using AnimationInterface::UpdateNodeSize allows you to overwrite the default scaling in NetAnim and use your own custom scale.
 
 ::
 
   // Step 8
-  anim.UpdateNodeCounter (89, 7, 3.4);
+  anim.UpdateNodeCounter(89, 7, 3.4);
 
 With the above statement, AnimationInterface sets the counter with Id == 89, associated with Node 7 with the value 3.4.
 The counter with Id 89 is obtained using AnimationInterface::AddNodeCounter. An example usage for this is in src/netanim/examples/resource-counters.cc.

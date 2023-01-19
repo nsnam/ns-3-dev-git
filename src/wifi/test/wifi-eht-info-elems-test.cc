@@ -344,6 +344,436 @@ ReducedNeighborReportTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test serialization and deserialization of EHT capabilities IE
+ */
+class WifiEhtCapabilitiesIeTest : public HeaderSerializationTestCase
+{
+  public:
+    /**
+     * Constructor
+     * \param is2_4Ghz whether the PHY is operating in 2.4 GHz
+     * \param channelWidth the supported channel width in MHz
+     */
+    WifiEhtCapabilitiesIeTest(bool is2_4Ghz, uint16_t channelWidth);
+    ~WifiEhtCapabilitiesIeTest() override = default;
+
+    /**
+     * Generate the HE capabilities IE.
+     *
+     * \return the generated HE capabilities IE
+     */
+    HeCapabilities GetHeCapabilities() const;
+
+    /**
+     * Generate the EHT capabilities IE.
+     *
+     * \param maxMpduLength the maximum MPDU length in bytes
+     * \param maxAmpduSize the maximum A-MPDU size in bytes
+     * \param maxSupportedMcs the maximum EHT MCS supported by the PHY
+     * \return the generated EHT capabilities IE
+     */
+    EhtCapabilities GetEhtCapabilities(uint16_t maxMpduLength,
+                                       uint32_t maxAmpduSize,
+                                       uint8_t maxSupportedMcs) const;
+
+    /**
+     * Serialize the EHT capabilities in a buffer.
+     *
+     * \param ehtCapabilities the EHT capabilities
+     * \return the buffer in which the EHT capabilities has been serialized
+     */
+    Buffer SerializeIntoBuffer(const EhtCapabilities& ehtCapabilities);
+
+    /**
+     * Check that the given buffer contains the given value at the given position.
+     *
+     * \param buffer the given buffer
+     * \param position the given position (starting at 0)
+     * \param value the given value
+     */
+    void CheckSerializedByte(const Buffer& buffer, uint32_t position, uint8_t value);
+
+    /**
+     * Check the content of the EHT MAC Capabilities Information subfield.
+     *
+     * \param buffer the buffer containing the serialized EHT capabilities
+     * \param expectedValueFirstByte the expected value for the first byte
+     */
+    void CheckEhtMacCapabilitiesInformation(const Buffer& buffer, uint8_t expectedValueFirstByte);
+
+    /**
+     * Check the content of the EHT PHY Capabilities Information subfield.
+     *
+     * \param buffer the buffer containing the serialized EHT capabilities
+     * \param expectedValueSixthByte the expected value for the sixth byte
+     */
+    void CheckEhtPhyCapabilitiesInformation(const Buffer& buffer, uint8_t expectedValueSixthByte);
+
+    /**
+     * Check the content of the Supported EHT-MCS And NSS Set subfield.
+     * \param maxSupportedMcs the maximum EHT MCS supported by the PHY
+     *
+     * \param buffer the buffer containing the serialized EHT capabilities
+     */
+    void CheckSupportedEhtMcsAndNssSet(const Buffer& buffer, uint8_t maxSupportedMcs);
+
+  private:
+    void DoRun() override;
+
+    bool m_is2_4Ghz;         //!< whether the PHY is operating in 2.4 GHz
+    uint16_t m_channelWidth; //!< Supported channel width by the PHY (in MHz)
+};
+
+WifiEhtCapabilitiesIeTest ::WifiEhtCapabilitiesIeTest(bool is2_4Ghz, uint16_t channelWidth)
+    : HeaderSerializationTestCase{"Check serialization and deserialization of EHT capabilities IE"},
+      m_is2_4Ghz{is2_4Ghz},
+      m_channelWidth{channelWidth}
+{
+}
+
+HeCapabilities
+WifiEhtCapabilitiesIeTest::GetHeCapabilities() const
+{
+    HeCapabilities capabilities;
+    uint8_t channelWidthSet = 0;
+    if ((m_channelWidth >= 40) && m_is2_4Ghz)
+    {
+        channelWidthSet |= 0x01;
+    }
+    if ((m_channelWidth >= 80) && !m_is2_4Ghz)
+    {
+        channelWidthSet |= 0x02;
+    }
+    if ((m_channelWidth >= 160) && !m_is2_4Ghz)
+    {
+        channelWidthSet |= 0x04;
+    }
+    capabilities.SetChannelWidthSet(channelWidthSet);
+    return capabilities;
+}
+
+EhtCapabilities
+WifiEhtCapabilitiesIeTest::GetEhtCapabilities(uint16_t maxMpduLength,
+                                              uint32_t maxAmpduSize,
+                                              uint8_t maxSupportedMcs) const
+{
+    EhtCapabilities capabilities;
+
+    if (m_is2_4Ghz)
+    {
+        capabilities.SetMaxMpduLength(maxMpduLength);
+    }
+    // round to the next power of two minus one
+    maxAmpduSize = (1UL << static_cast<uint32_t>(std::ceil(std::log2(maxAmpduSize + 1)))) - 1;
+    // The maximum A-MPDU length in EHT capabilities elements ranges from 2^23-1 to 2^24-1
+    capabilities.SetMaxAmpduLength(std::min(std::max(maxAmpduSize, 8388607U), 16777215U));
+
+    capabilities.m_phyCapabilities.supportTx1024And4096QamForRuSmallerThan242Tones =
+        (maxSupportedMcs >= 12) ? 1 : 0;
+    capabilities.m_phyCapabilities.supportRx1024And4096QamForRuSmallerThan242Tones =
+        (maxSupportedMcs >= 12) ? 1 : 0;
+    if (m_channelWidth == 20)
+    {
+        for (auto maxMcs : {7, 9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                                                    maxMcs,
+                                                    maxMcs <= maxSupportedMcs ? 1 : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                                                    maxMcs,
+                                                    maxMcs <= maxSupportedMcs ? 2 : 0);
+        }
+    }
+    else
+    {
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
+                maxMcs,
+                maxMcs <= maxSupportedMcs ? 3 : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
+                maxMcs,
+                maxMcs <= maxSupportedMcs ? 4 : 0);
+        }
+    }
+    if (m_channelWidth >= 160)
+    {
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ,
+                                                    maxMcs,
+                                                    maxMcs <= maxSupportedMcs ? 2 : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ,
+                                                    maxMcs,
+                                                    maxMcs <= maxSupportedMcs ? 1 : 0);
+        }
+    }
+    if (m_channelWidth == 320)
+    {
+        capabilities.m_phyCapabilities.support320MhzIn6Ghz = 1;
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_320_MHZ,
+                                                    maxMcs,
+                                                    maxMcs <= maxSupportedMcs ? 4 : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_320_MHZ,
+                                                    maxMcs,
+                                                    maxMcs <= maxSupportedMcs ? 3 : 0);
+        }
+    }
+    else
+    {
+        capabilities.m_phyCapabilities.support320MhzIn6Ghz = 0;
+    }
+
+    return capabilities;
+}
+
+Buffer
+WifiEhtCapabilitiesIeTest::SerializeIntoBuffer(const EhtCapabilities& ehtCapabilities)
+{
+    Buffer buffer;
+    buffer.AddAtStart(ehtCapabilities.GetSerializedSize());
+    ehtCapabilities.Serialize(buffer.Begin());
+    return buffer;
+}
+
+void
+WifiEhtCapabilitiesIeTest::CheckSerializedByte(const Buffer& buffer,
+                                               uint32_t position,
+                                               uint8_t value)
+{
+    Buffer::Iterator it = buffer.Begin();
+    it.Next(position);
+    uint8_t byte = it.ReadU8();
+    NS_TEST_EXPECT_MSG_EQ(+byte, +value, "Unexpected byte at pos=" << position);
+}
+
+void
+WifiEhtCapabilitiesIeTest::CheckEhtMacCapabilitiesInformation(const Buffer& buffer,
+                                                              uint8_t expectedValueFirstByte)
+{
+    CheckSerializedByte(buffer, 3, expectedValueFirstByte);
+    CheckSerializedByte(buffer, 4, 0x00);
+}
+
+void
+WifiEhtCapabilitiesIeTest::CheckEhtPhyCapabilitiesInformation(const Buffer& buffer,
+                                                              uint8_t expectedValueSixthByte)
+{
+    CheckSerializedByte(buffer, 5, (m_channelWidth == 320) ? 0x02 : 0x00);
+    CheckSerializedByte(buffer, 6, 0x00);
+    CheckSerializedByte(buffer, 7, 0x00);
+    CheckSerializedByte(buffer, 8, 0x00);
+    CheckSerializedByte(buffer, 9, 0x00);
+    CheckSerializedByte(buffer, 10, expectedValueSixthByte);
+    CheckSerializedByte(buffer, 11, 0x00);
+    CheckSerializedByte(buffer, 12, 0x00);
+    CheckSerializedByte(buffer, 13, 0x00);
+}
+
+void
+WifiEhtCapabilitiesIeTest::CheckSupportedEhtMcsAndNssSet(const Buffer& buffer,
+                                                         uint8_t maxSupportedMcs)
+{
+    if (m_channelWidth == 20)
+    {
+        CheckSerializedByte(buffer, 14, 0x21); // first byte of Supported EHT-MCS And NSS Set
+        CheckSerializedByte(
+            buffer,
+            15,
+            maxSupportedMcs >= 8 ? 0x21 : 0x00); // second byte of Supported EHT-MCS And NSS Set
+        CheckSerializedByte(
+            buffer,
+            16,
+            maxSupportedMcs >= 10 ? 0x21 : 0x00); // third byte of Supported EHT-MCS And NSS Set
+        CheckSerializedByte(
+            buffer,
+            17,
+            maxSupportedMcs >= 12 ? 0x21 : 0x00); // fourth byte of Supported EHT-MCS And NSS Set
+    }
+    else
+    {
+        CheckSerializedByte(buffer, 14, 0x43); // first byte of Supported EHT-MCS And NSS Set
+        CheckSerializedByte(
+            buffer,
+            15,
+            maxSupportedMcs >= 10 ? 0x43 : 0x00); // second byte of Supported EHT-MCS And NSS Set
+        CheckSerializedByte(
+            buffer,
+            16,
+            maxSupportedMcs >= 12 ? 0x43 : 0x00); // third byte of Supported EHT-MCS And NSS Set
+    }
+    if (m_channelWidth >= 160)
+    {
+        CheckSerializedByte(buffer, 17, 0x12); // first byte of EHT-MCS Map (BW = 160 MHz)
+        CheckSerializedByte(
+            buffer,
+            18,
+            maxSupportedMcs >= 10 ? 0x12 : 0x00); // second byte of EHT-MCS Map (BW = 160 MHz)
+        CheckSerializedByte(
+            buffer,
+            19,
+            maxSupportedMcs >= 12 ? 0x12 : 0x00); // third byte of EHT-MCS Map (BW = 160 MHz)
+    }
+    if (m_channelWidth == 320)
+    {
+        CheckSerializedByte(buffer, 20, 0x34); // first byte of EHT-MCS Map (BW = 320 MHz)
+        CheckSerializedByte(
+            buffer,
+            21,
+            maxSupportedMcs >= 10 ? 0x34 : 0x00); // second byte of EHT-MCS Map (BW = 320 MHz)
+        CheckSerializedByte(
+            buffer,
+            22,
+            maxSupportedMcs >= 12 ? 0x34 : 0x00); // third byte of EHT-MCS Map (BW = 320 MHz)
+    }
+}
+
+void
+WifiEhtCapabilitiesIeTest::DoRun()
+{
+    uint8_t maxMcs = 0;
+    uint16_t expectedEhtMcsAndNssSetSize = 0;
+    switch (m_channelWidth)
+    {
+    case 20:
+        expectedEhtMcsAndNssSetSize = 4;
+        break;
+    case 40:
+    case 80:
+        expectedEhtMcsAndNssSetSize = 3;
+        break;
+    case 160:
+        expectedEhtMcsAndNssSetSize = (2 * 3);
+        break;
+    case 320:
+        expectedEhtMcsAndNssSetSize = (3 * 3);
+        break;
+    default:
+        NS_ASSERT_MSG(false, "Invalid upper channel width " << m_channelWidth);
+    }
+
+    uint16_t expectedSize = 1 +                          // Element ID
+                            1 +                          // Length
+                            1 +                          // Element ID Extension
+                            2 +                          // EHT MAC Capabilities Information
+                            9 +                          // EHT PHY Capabilities Information
+                            expectedEhtMcsAndNssSetSize; // Supported EHT-MCS And NSS Set
+
+    auto mapType = m_channelWidth == 20 ? EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY
+                                        : EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ;
+
+    {
+        maxMcs = 11;
+        HeCapabilities heCapabilities = GetHeCapabilities();
+        EhtCapabilities ehtCapabilities = GetEhtCapabilities(3895, 65535, maxMcs);
+
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedRxMcs(mapType) == maxMcs);
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedTxMcs(mapType) == maxMcs);
+
+        NS_TEST_EXPECT_MSG_EQ(ehtCapabilities.GetSerializedSize(),
+                              expectedSize,
+                              "Unexpected header size");
+
+        Buffer buffer = SerializeIntoBuffer(ehtCapabilities);
+
+        CheckEhtMacCapabilitiesInformation(buffer, 0x00);
+
+        CheckEhtPhyCapabilitiesInformation(buffer, 0x00);
+
+        CheckSupportedEhtMcsAndNssSet(buffer, maxMcs);
+
+        TestHeaderSerialization(ehtCapabilities, m_is2_4Ghz, heCapabilities);
+    }
+
+    {
+        maxMcs = 11;
+        HeCapabilities heCapabilities = GetHeCapabilities();
+        EhtCapabilities ehtCapabilities = GetEhtCapabilities(11454, 65535, maxMcs);
+
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedRxMcs(mapType) == maxMcs);
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedTxMcs(mapType) == maxMcs);
+
+        NS_TEST_EXPECT_MSG_EQ(ehtCapabilities.GetSerializedSize(),
+                              expectedSize,
+                              "Unexpected header size");
+
+        Buffer buffer = SerializeIntoBuffer(ehtCapabilities);
+
+        CheckEhtMacCapabilitiesInformation(buffer, m_is2_4Ghz ? 0x80 : 0x00);
+
+        CheckEhtPhyCapabilitiesInformation(buffer, 0x00);
+
+        CheckSupportedEhtMcsAndNssSet(buffer, maxMcs);
+
+        TestHeaderSerialization(ehtCapabilities, m_is2_4Ghz, heCapabilities);
+    }
+
+    {
+        maxMcs = 13;
+        HeCapabilities heCapabilities = GetHeCapabilities();
+        EhtCapabilities ehtCapabilities = GetEhtCapabilities(3895, 65535, maxMcs);
+
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedRxMcs(mapType) == maxMcs);
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedTxMcs(mapType) == maxMcs);
+
+        NS_TEST_EXPECT_MSG_EQ(ehtCapabilities.GetSerializedSize(),
+                              expectedSize,
+                              "Unexpected header size");
+
+        Buffer buffer = SerializeIntoBuffer(ehtCapabilities);
+
+        CheckEhtMacCapabilitiesInformation(buffer, 0x00);
+
+        CheckEhtPhyCapabilitiesInformation(buffer, 0x06);
+
+        CheckSupportedEhtMcsAndNssSet(buffer, maxMcs);
+
+        TestHeaderSerialization(ehtCapabilities, m_is2_4Ghz, heCapabilities);
+    }
+
+    {
+        maxMcs = 11;
+        HeCapabilities heCapabilities = GetHeCapabilities();
+        EhtCapabilities ehtCapabilities = GetEhtCapabilities(3895, 65535, maxMcs);
+
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedRxMcs(mapType) == maxMcs);
+        NS_ASSERT(ehtCapabilities.GetHighestSupportedTxMcs(mapType) == maxMcs);
+
+        std::vector<std::pair<uint8_t, uint8_t>> ppeThresholds;
+        ppeThresholds.emplace_back(1, 2); // NSS1 242-tones RU
+        ppeThresholds.emplace_back(2, 3); // NSS1 484-tones RU
+        ppeThresholds.emplace_back(3, 4); // NSS2 242-tones RU
+        ppeThresholds.emplace_back(4, 3); // NSS2 484-tones RU
+        ppeThresholds.emplace_back(3, 2); // NSS3 242-tones RU
+        ppeThresholds.emplace_back(2, 1); // NSS3 484-tones RU
+        ehtCapabilities.SetPpeThresholds(2, 0x03, ppeThresholds);
+
+        expectedSize += 6;
+
+        NS_TEST_EXPECT_MSG_EQ(ehtCapabilities.GetSerializedSize(),
+                              expectedSize,
+                              "Unexpected header size");
+
+        Buffer buffer = SerializeIntoBuffer(ehtCapabilities);
+
+        CheckEhtMacCapabilitiesInformation(buffer, 0x00);
+
+        CheckEhtPhyCapabilitiesInformation(buffer, 0x08);
+
+        CheckSupportedEhtMcsAndNssSet(buffer, maxMcs);
+
+        TestHeaderSerialization(ehtCapabilities, m_is2_4Ghz, heCapabilities);
+    }
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi EHT Information Elements Test Suite
  */
 class WifiEhtInfoElemsTestSuite : public TestSuite
@@ -357,6 +787,13 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
 {
     AddTestCase(new BasicMultiLinkElementTest(), TestCase::QUICK);
     AddTestCase(new ReducedNeighborReportTest(), TestCase::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 20), TestCase::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 20), TestCase::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 80), TestCase::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 40), TestCase::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 80), TestCase::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 160), TestCase::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 320), TestCase::QUICK);
 }
 
 static WifiEhtInfoElemsTestSuite g_wifiEhtInfoElemsTestSuite; ///< the test suite

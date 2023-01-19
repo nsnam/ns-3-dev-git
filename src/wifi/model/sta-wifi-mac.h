@@ -25,6 +25,7 @@
 #include "mgt-headers.h"
 #include "wifi-mac.h"
 
+#include <set>
 #include <variant>
 
 class TwoLevelAggregationTest;
@@ -201,6 +202,13 @@ class StaWifiMac : public WifiMac
      * \return true if we are associated with an AP, false otherwise
      */
     bool IsAssociated() const;
+
+    /**
+     * Get the IDs of the setup links (if any).
+     *
+     * \return the IDs of the setup links
+     */
+    std::set<uint8_t> GetSetupLinkIds() const;
 
     /**
      * Return the association ID.

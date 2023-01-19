@@ -40,6 +40,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <utility> // as_const
 
 using namespace ns3;
 
@@ -96,7 +97,43 @@ std::string templArgDeduced;  ///< template argument deduced from function
 std::string templArgExplicit; ///< template argument required
 std::string templateArgument; ///< template argument
 std::string variable;         ///< variable or class member
-                              /** @} */
+
+/** @} */
+
+/**
+ * Alphabetize the AttributeInformation for a TypeId by the Attribute name
+ * \param tid The TypeId to process.
+ * \return The ordered list of Attributes.
+ */
+std::map<std::string, ns3::TypeId::AttributeInformation>
+SortedAttributeInfo(const TypeId tid)
+{
+    std::map<std::string, ns3::TypeId::AttributeInformation> index;
+    for (uint32_t j = 0; j < tid.GetAttributeN(); j++)
+    {
+        struct TypeId::AttributeInformation info = tid.GetAttribute(j);
+        index[info.name] = info;
+    }
+    return index;
+}
+
+/**
+ * Alphabetize the TraceSourceInformation for a TypeId by the
+ * TraceSource name.
+ * \param tid The TypeId to process.
+ * \return The ordered list of TraceSourceInformation
+ */
+std::map<std::string, ns3::TypeId::TraceSourceInformation>
+SortedTraceSourceInfo(const TypeId tid)
+{
+    std::map<std::string, ns3::TypeId::TraceSourceInformation> index;
+    for (uint32_t j = 0; j < tid.GetTraceSourceN(); j++)
+    {
+        struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
+        index[info.name] = info;
+    }
+    return index;
+}
 
 } // unnamed namespace
 
@@ -664,11 +701,13 @@ void
 PrintAttributesTid(std::ostream& os, const TypeId tid)
 {
     NS_LOG_FUNCTION(tid);
+
+    auto index = SortedAttributeInfo(tid);
+
     os << listStart << std::endl;
-    for (uint32_t j = 0; j < tid.GetAttributeN(); j++)
+    for (const auto& [name, info] : index)
     {
-        struct TypeId::AttributeInformation info = tid.GetAttribute(j);
-        os << listLineStart << boldStart << info.name << boldStop << ": " << info.help << std::endl;
+        os << listLineStart << boldStart << name << boldStop << ": " << info.help << std::endl;
         os << indentHtmlOnly << listStart << std::endl;
         os << "    " << listLineStart << "Set with class: " << reference
            << info.checker->GetValueTypeName() << listLineStop << std::endl;
@@ -708,23 +747,9 @@ PrintAttributesTid(std::ostream& os, const TypeId tid)
                 }
 
                 // Helper to match first part of string
-                class StringBeginMatcher
-                {
-                  public:
-                    StringBeginMatcher(const std::string s)
-                        : m_string(s){};
-
-                    bool operator()(const std::string t)
-                    {
-                        std::size_t pos = m_string.find(t);
-                        return pos == 0;
-                    };
-
-                  private:
-                    std::string m_string;
+                auto match = [&uType = std::as_const(underType)](const std::string& s) {
+                    return uType.rfind(s, 0) == 0; // only checks position 0
                 };
-
-                StringBeginMatcher match(underType);
 
                 if (match("bool") || match("double") || match("int8_t") || match("uint8_t") ||
                     match("int16_t") || match("uint16_t") || match("int32_t") ||
@@ -824,11 +849,13 @@ void
 PrintTraceSourcesTid(std::ostream& os, const TypeId tid)
 {
     NS_LOG_FUNCTION(tid);
+
+    auto index = SortedTraceSourceInfo(tid);
+
     os << listStart << std::endl;
-    for (uint32_t i = 0; i < tid.GetTraceSourceN(); ++i)
+    for (const auto& [name, info] : index)
     {
-        struct TypeId::TraceSourceInformation info = tid.GetTraceSource(i);
-        os << listLineStart << boldStart << info.name << boldStop << ": " << info.help << breakBoth;
+        os << listLineStart << boldStart << name << boldStop << ": " << info.help << breakBoth;
         if (!outputText)
         {
             //    '%' prevents doxygen from linking to the Callback class...
@@ -1016,13 +1043,14 @@ PrintAllAttributes(std::ostream& os)
         {
             continue;
         }
-        os << boldStart << tid.GetName() << boldStop << breakHtmlOnly << std::endl;
 
+        auto index = SortedAttributeInfo(tid);
+
+        os << boldStart << tid.GetName() << boldStop << breakHtmlOnly << std::endl;
         os << listStart << std::endl;
-        for (uint32_t j = 0; j < tid.GetAttributeN(); ++j)
+        for (const auto& [name, info] : index)
         {
-            struct TypeId::AttributeInformation info = tid.GetAttribute(j);
-            os << listLineStart << boldStart << info.name << boldStop << ": " << info.help
+            os << listLineStart << boldStart << name << boldStop << ": " << info.help
                << listLineStop << std::endl;
         }
         os << listStop << std::endl;
@@ -1156,13 +1184,15 @@ PrintAllTraceSources(std::ostream& os)
         {
             continue;
         }
+
+        auto index = SortedTraceSourceInfo(tid);
+
         os << boldStart << tid.GetName() << boldStop << breakHtmlOnly << std::endl;
 
         os << listStart << std::endl;
-        for (uint32_t j = 0; j < tid.GetTraceSourceN(); ++j)
+        for (const auto& [name, info] : index)
         {
-            struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
-            os << listLineStart << boldStart << info.name << boldStop << ": " << info.help
+            os << listLineStart << boldStart << name << boldStop << ": " << info.help
                << listLineStop << std::endl;
         }
         os << listStop << std::endl;
@@ -1359,13 +1389,13 @@ PrintMakeChecker(std::ostream& os, const std::string& name, const std::string& h
 } // PrintMakeChecker ()
 
 /**Descriptor for an AttributeValue. */
-typedef struct
+struct AttributeDescriptor
 {
     const std::string m_name;   //!< The base name of the resulting AttributeValue type.
     const std::string m_type;   //!< The name of the underlying type.
     const bool m_seeBase;       //!< Print a "see also" pointing to the base class.
     const std::string m_header; //!< The header file name.
-} AttributeDescriptor;
+};
 
 /**
  * Print documentation corresponding to use of the

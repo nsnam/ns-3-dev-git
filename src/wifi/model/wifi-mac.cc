@@ -1531,7 +1531,7 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
     {
         channelWidthSet |= 0x01;
     }
-    if ((phy->GetChannelWidth() >= 80) &&
+    if (((phy->GetChannelWidth() >= 80) || GetEhtSupported()) &&
         ((phy->GetPhyBand() == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)))
     {
         channelWidthSet |= 0x02;
@@ -1578,7 +1578,90 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
     NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetEhtSupported());
     EhtCapabilities capabilities;
-    // TODO: fill in EHT capabilities
+
+    Ptr<WifiPhy> phy = GetLink(linkId).phy;
+
+    // Set Maximum MPDU Length subfield (Reserved when transmitted in 5 GHz or 6 GHz band)
+    if (phy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
+    {
+        uint16_t maxAmsduSize =
+            std::max({m_voMaxAmsduSize, m_viMaxAmsduSize, m_beMaxAmsduSize, m_bkMaxAmsduSize});
+        // Table 9-34—Maximum data unit sizes (in octets) and durations (in microseconds)
+        if (maxAmsduSize <= 3839)
+        {
+            capabilities.SetMaxMpduLength(3895);
+        }
+        else if (maxAmsduSize <= 7935)
+        {
+            capabilities.SetMaxMpduLength(7991);
+        }
+        else
+        {
+            capabilities.SetMaxMpduLength(11454);
+        }
+    }
+
+    // Set Maximum A-MPDU Length Exponent Extension subfield
+    uint32_t maxAmpduLength =
+        std::max({m_voMaxAmpduSize, m_viMaxAmpduSize, m_beMaxAmpduSize, m_bkMaxAmpduSize});
+    // round to the next power of two minus one
+    maxAmpduLength = (1UL << static_cast<uint32_t>(std::ceil(std::log2(maxAmpduLength + 1)))) - 1;
+    // The maximum A-MPDU length in EHT capabilities elements ranges from 2^23-1 to 2^24-1
+    capabilities.SetMaxAmpduLength(std::min(std::max(maxAmpduLength, 8388607U), 16777215U));
+
+    // Set the PHY capabilities
+    const bool support4096Qam = phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, 12);
+    capabilities.m_phyCapabilities.supportTx1024And4096QamForRuSmallerThan242Tones =
+        support4096Qam ? 1 : 0;
+    capabilities.m_phyCapabilities.supportRx1024And4096QamForRuSmallerThan242Tones =
+        support4096Qam ? 1 : 0;
+
+    const uint8_t maxTxNss = phy->GetMaxSupportedTxSpatialStreams();
+    const uint8_t maxRxNss = phy->GetMaxSupportedRxSpatialStreams();
+    if (phy->GetChannelWidth() == 20)
+    {
+        for (auto maxMcs : {7, 9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxRxNss : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
+        }
+    }
+    else
+    {
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxRxNss : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
+        }
+    }
+    if (phy->GetChannelWidth() >= 160)
+    {
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxRxNss : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
+        }
+    }
+    // 320 MHz not supported yet
+
     return capabilities;
 }
 

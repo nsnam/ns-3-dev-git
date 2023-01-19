@@ -19,15 +19,15 @@ so that they can invoke methods on each other::
 
   class A {
   public:
-    void ReceiveInput ( // parameters );
+    void ReceiveInput( /* parameters */ );
     ...
   }
 
-  (in another source file:)
+and in another source file::
 
   class B {
   public:
-    void DoSomething (void);
+    void DoSomething();
     ...
 
   private:
@@ -38,7 +38,7 @@ so that they can invoke methods on each other::
   B::DoSomething()
   {
     // Tell a_instance that something happened
-    a_instance->ReceiveInput ( // parameters);
+    a_instance->ReceiveInput( /* parameters */ );
     ...
   }
 
@@ -58,7 +58,9 @@ This is not an abstract problem for network simulation research, but rather it
 has been a source of problems in previous simulators, when researchers want to
 extend or modify the system to do different things (as they are apt to do in
 research). Consider, for example, a user who wants to add an IPsec security
-protocol sublayer between TCP and IP::
+protocol sublayer between TCP and IP:
+
+.. code-block::text
 
   ------------                   -----------
   |   TCP    |                   |  TCP    |
@@ -104,7 +106,7 @@ What you get from this is a variable named simply ``pfi`` that is initialized to
 the value 0. If you want to initialize this pointer to something meaningful, you
 have to have a function with a matching signature. In this case::
 
-  int MyFunction (int arg) {}
+  int MyFunction(int arg) {}
 
 If you have this target, you can initialize the variable to point to your
 function like::
@@ -114,14 +116,14 @@ function like::
 You can then call MyFunction indirectly using the more suggestive form of the
 call::
 
-  int result = (*pfi) (1234);
+  int result = (*pfi)(1234);
 
 This is suggestive since it looks like you are dereferencing the function
 pointer just like you would dereference any pointer. Typically, however, people
 take advantage of the fact that the compiler knows what is going on and will
 just use a shorter form::
 
-  int result = pfi (1234);
+  int result = pfi(1234);
 
 Notice that the function pointer obeys value semantics, so you can pass it
 around like any other value. Typically, when you use an asynchronous interface
@@ -136,7 +138,7 @@ the pointer to function returning an int (PFI).
 The declaration of the variable providing the indirection looks only slightly
 different::
 
-  int (MyClass::*pmi) (int arg) = 0;
+  int (MyClass::*pmi)(int arg) = 0;
 
 This declares a variable named ``pmi`` just as the previous example declared a
 variable named ``pfi``. Since the will be to call a method of an instance of a
@@ -144,7 +146,7 @@ particular class, one must declare that method in a class::
 
   class MyClass {
   public:
-    int MyMethod (int arg);
+    int MyMethod(int arg);
   };
 
 Given this class declaration, one would then initialize that variable like
@@ -158,18 +160,18 @@ pointer. This, in turn, means there must be an object of MyClass to refer to. A
 simplistic example of this is just calling a method indirectly (think virtual
 function)::
 
-  int (MyClass::*pmi) (int arg) = 0;  // Declare a PMI
+  int (MyClass::*pmi)(int arg) = 0;   // Declare a PMI
   pmi = &MyClass::MyMethod;           // Point at the implementation code
 
   MyClass myClass;                    // Need an instance of the class
-  (myClass.*pmi) (1234);              // Call the method with an object ptr
+  (myClass.*pmi)(1234);              // Call the method with an object ptr
 
 Just like in the C example, you can use this in an asynchronous call to another
 module which will *call back* using a method and an object pointer. The
 straightforward extension one might consider is to pass a pointer to the object
 and the PMI variable. The module would just do::
 
-  (*objectPtr.*pmi) (1234);
+  (*objectPtr.*pmi)(1234);
 
 to execute the callback on the desired object.
 
@@ -186,12 +188,12 @@ It is basically just a packaged-up function call, possibly with some state.
 
 A functor has two parts, a specific part and a generic part, related through
 inheritance. The calling code (the code that executes the callback) will execute
-a generic overloaded ``operator ()`` of a generic functor to cause the callback
+a generic overloaded ``operator()`` of a generic functor to cause the callback
 to be called. The called code (the code that wants to be called back) will have
-to provide a specialized implementation of the ``operator ()`` that performs the
+to provide a specialized implementation of the ``operator()`` that performs the
 class-specific work that caused the close-coupling problem above.
 
-With the specific functor and its overloaded ``operator ()`` created, the called
+With the specific functor and its overloaded ``operator()`` created, the called
 code then gives the specialized code to the module that will execute the
 callback (the calling code).
 
@@ -210,7 +212,7 @@ of the functor::
   class Functor
   {
   public:
-    virtual int operator() (T arg) = 0;
+    virtual int operator()(T arg) = 0;
   };
 
 The caller defines a specific part of the functor that really is just there to
@@ -226,7 +228,7 @@ implement the specific ``operator()`` method::
       m_pmi = _pmi;
     }
 
-    virtual int operator() (ARG arg)
+    virtual int operator()(ARG arg)
     {
       (*m_p.*m_pmi)(arg);
     }
@@ -240,8 +242,8 @@ Here is an example of the usage::
   class A
   {
   public:
-  A (int a0) : a (a0) {}
-  int Hello (int b0)
+  A(int a0) : a(a0) {}
+  int Hello(int b0)
   {
     std::cout << "Hello from A, a = " << a << " b0 = " << b0 << std::endl;
   }
@@ -269,19 +271,19 @@ with the object pointer using the C++ PMI syntax.
 To use this, one could then declare some model code that takes a generic functor
 as a parameter::
 
-  void LibraryFunction (Functor functor);
+  void LibraryFunction(Functor functor);
 
 The code that will talk to the model would build a specific functor and pass it to ``LibraryFunction``::
 
   MyClass myClass;
-  SpecificFunctor<MyClass, int> functor (&myclass, MyClass::MyMethod);
+  SpecificFunctor<MyClass, int> functor(&myclass, MyClass::MyMethod);
 
 When ``LibraryFunction`` is done, it executes the callback using the
 ``operator()`` on the generic functor it was passed, and in this particular
 case, provides the integer argument::
 
   void
-  LibraryFunction (Functor functor)
+  LibraryFunction(Functor functor)
   {
     // Execute the library function
     functor(1234);
@@ -319,7 +321,7 @@ Using the Callback API with static functions
 Consider a function::
 
   static double
-  CbOne (double a, double b)
+  CbOne(double a, double b)
   {
     std::cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;
     return a;
@@ -327,7 +329,7 @@ Consider a function::
 
 Consider also the following main program snippet::
 
-  int main (int argc, char *argv[])
+  int main(int argc, char *argv[])
   {
     // return type: double
     // first arg type: double
@@ -365,7 +367,7 @@ Now, we need to tie together this callback instance and the actual target functi
 callback-- this is important.  We can pass in any such properly-typed function
 to this callback.  Let's look at this more closely::
 
-  static   double CbOne (double a, double b) {}
+  static   double CbOne(double a, double b) {}
              ^             ^         ^
              |             |         |
              |             |         |
@@ -378,21 +380,21 @@ arguments are the types of the arguments of the function signature.
 Now, let's bind our callback "one" to the function that matches its signature::
 
   // build callback instance which points to cbOne function
-  one = MakeCallback (&CbOne);
+  one = MakeCallback(&CbOne);
 
 This call to ``MakeCallback`` is, in essence, creating one of the specialized
 functors mentioned above.  The variable declared using the ``Callback``
 template function is going to be playing the part of the generic functor.  The
-assignment ``one = MakeCallback (&CbOne)`` is the cast that converts the
+assignment ``one = MakeCallback(&CbOne)`` is the cast that converts the
 specialized functor known to the callee to a generic functor known to the caller.
 
 Then, later in the program, if the callback is needed, it can be used as follows::
 
-  NS_ASSERT (!one.IsNull ());
+  NS_ASSERT(!one.IsNull());
 
   // invoke cbOne function through callback instance
   double retOne;
-  retOne = one (10.0, 20.0);
+  retOne = one(10.0, 20.0);
 
 The check for ``IsNull()`` ensures that the callback is not null -- that there
 is a function to call behind this callback.  Then, ``one()`` executes the
@@ -410,13 +412,13 @@ invoked.  Consider this example, also from main-callback.cc::
 
   class MyCb {
   public:
-    int CbTwo (double a) {
+    int CbTwo(double a) {
         std::cout << "invoke cbTwo a=" << a << std::endl;
         return -5;
     }
   };
 
-  int main ()
+  int main()
   {
     ...
     // return type: int
@@ -424,7 +426,7 @@ invoked.  Consider this example, also from main-callback.cc::
     Callback<int, double> two;
     MyCb cb;
     // build callback instance which points to MyCb::cbTwo
-    two = MakeCallback (&MyCb::CbTwo, &cb);
+    two = MakeCallback(&MyCb::CbTwo, &cb);
     ...
   }
 
@@ -432,7 +434,7 @@ Here, we pass an additional object pointer to the ``MakeCallback<>`` function.
 Recall from the background section above that ``Operator()`` will use the pointer to
 member syntax when it executes on an object::
 
-      virtual int operator() (ARG arg)
+      virtual int operator()(ARG arg)
       {
         (*m_p.*m_pmi)(arg);
       }
@@ -440,11 +442,11 @@ member syntax when it executes on an object::
 And so we needed to provide the two variables (``m_p`` and ``m_pmi``) when
 we made the specific functor.  The line::
 
-    two = MakeCallback (&MyCb::CbTwo, &cb);
+    two = MakeCallback(&MyCb::CbTwo, &cb);
 
-does precisely that.  In this case, when ``two ()`` is invoked::
+does precisely that.  In this case, when ``two()`` is invoked::
 
-  int result = two (1.0);
+  int result = two(1.0);
 
 will result in a call to the ``CbTwo`` member function (method) on the object
 pointed to by ``&cb``.
@@ -457,8 +459,8 @@ check before using them.  There is a special construct for a null
 callback, which is preferable to simply passing "0" as an argument;
 it is the ``MakeNullCallback<>`` construct::
 
-  two = MakeNullCallback<int, double> ();
-  NS_ASSERT (two.IsNull ());
+  two = MakeNullCallback<int, double>();
+  NS_ASSERT(two.IsNull());
 
 Invoking a null callback is just like invoking a null function pointer: it will
 crash at runtime.
@@ -484,14 +486,14 @@ function that needs to be called whenever a packet is received.  This function
 calls an object that actually writes the packet to disk in the pcap file
 format.  The signature of one of these functions will be::
 
-  static void DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p);
+  static void DefaultSink(Ptr<PcapFileWrapper> file, Ptr<const Packet> p);
 
 The static keyword means this is a static function which does not need a
 ``this`` pointer, so it will be using C-style callbacks.  We don't want the
 calling code to have to know about anything but the Packet.  What we want in
 the calling code is just a call that looks like::
 
-  m_promiscSnifferTrace (m_currentPkt);
+  m_promiscSnifferTrace(m_currentPkt);
 
 What we want to do is to *bind* the ``Ptr<PcapFileWriter> file`` to the
 specific callback implementation when it is created and arrange for the
@@ -501,7 +503,7 @@ We provide the ``MakeBoundCallback`` template function for that purpose.  It
 takes the same parameters as the ``MakeCallback`` template function but also
 takes the parameters to be bound.  In the case of the example above::
 
-    MakeBoundCallback (&DefaultSink, file);
+    MakeBoundCallback(&DefaultSink, file);
 
 will create a specific callback implementation that knows to add in the extra
 bound arguments.  Conceptually, it extends the specific functor described above
@@ -518,7 +520,7 @@ with one or more bound arguments::
         m_boundArg = boundArg;
       }
 
-      virtual int operator() (ARG arg)
+      virtual int operator()(ARG arg)
       {
         (*m_p.*m_pmi)(m_boundArg, arg);
       }
@@ -532,7 +534,7 @@ You can see that when the specific functor is created, the bound argument is sav
 in the functor / callback object itself.  When the ``operator()`` is invoked with
 the single parameter, as in::
 
-  m_promiscSnifferTrace (m_currentPkt);
+  m_promiscSnifferTrace(m_currentPkt);
 
 the implementation of ``operator()`` adds the bound parameter into the actual
 function call::
@@ -542,20 +544,20 @@ function call::
 It's possible to bind two or three arguments as well.  Say we have a function with
 signature::
 
-  static void NotifyEvent (Ptr<A> a, Ptr<B> b, MyEventType e);
+  static void NotifyEvent(Ptr<A> a, Ptr<B> b, MyEventType e);
 
 One can create bound callback binding first two arguments like::
 
-  MakeBoundCallback (&NotifyEvent, a1, b1);
+  MakeBoundCallback(&NotifyEvent, a1, b1);
 
 assuming `a1` and `b1` are objects of type `A` and `B` respectively.  Similarly for
 three arguments one would have function with a signature::
 
-  static void NotifyEvent (Ptr<A> a, Ptr<B> b, MyEventType e);
+  static void NotifyEvent(Ptr<A> a, Ptr<B> b, MyEventType e);
 
 Binding three arguments in done with::
 
-  MakeBoundCallback (&NotifyEvent, a1, b1, c1);
+  MakeBoundCallback(&NotifyEvent, a1, b1, c1);
 
 again assuming `a1`, `b1` and `c1` are objects of type `A`, `B` and `C` respectively.
 

@@ -56,20 +56,20 @@ class LrWpanCsmaCa;
  *
  * Tx options
  */
-typedef enum
+enum LrWpanTxOption
 {
     TX_OPTION_NONE = 0,    //!< TX_OPTION_NONE
     TX_OPTION_ACK = 1,     //!< TX_OPTION_ACK
     TX_OPTION_GTS = 2,     //!< TX_OPTION_GTS
     TX_OPTION_INDIRECT = 4 //!< TX_OPTION_INDIRECT
-} LrWpanTxOption;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * MAC states
  */
-typedef enum
+enum LrWpanMacState
 {
     MAC_IDLE,               //!< MAC_IDLE
     MAC_CSMA,               //!< MAC_CSMA
@@ -81,45 +81,45 @@ typedef enum
     MAC_GTS,                //!< MAC_GTS
     MAC_INACTIVE,           //!< MAC_INACTIVE
     MAC_CSMA_DEFERRED       //!< MAC_CSMA_DEFERRED
-} LrWpanMacState;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Superframe status
  */
-typedef enum
+enum SuperframeStatus
 {
     BEACON,  //!< The Beacon transmission or reception Period
     CAP,     //!< Contention Access Period
     CFP,     //!< Contention Free Period
     INACTIVE //!< Inactive Period or unslotted CSMA-CA
-} SuperframeStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Superframe type
  */
-typedef enum
+enum SuperframeType
 {
     OUTGOING = 0, //!< Outgoing Superframe
     INCOMING = 1  //!< Incoming Superframe
-} SuperframeType;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Indicates a pending MAC primitive
  */
-typedef enum
+enum PendingPrimitiveStatus
 {
     MLME_NONE = 0,      //!< No pending primitive
     MLME_START_REQ = 1, //!< Pending MLME-START.request primitive
     MLME_SCAN_REQ = 2,  //!< Pending MLME-SCAN.request primitive
     MLME_ASSOC_REQ = 3, //!< Pending MLME-ASSOCIATION.request primitive
     MLME_SYNC_REQ = 4   //!< Pending MLME-SYNC.request primitive
-} PendingPrimitiveStatus;
+};
 
 namespace TracedValueCallback
 {
@@ -149,47 +149,47 @@ typedef void (*SuperframeStatus)(SuperframeStatus oldValue, SuperframeStatus new
  *
  * table 80 of 802.15.4
  */
-typedef enum
+enum LrWpanAddressMode
 {
     NO_PANID_ADDR = 0,
     ADDR_MODE_RESERVED = 1,
     SHORT_ADDR = 2,
     EXT_ADDR = 3
-} LrWpanAddressMode;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * table 83 of 802.15.4
  */
-typedef enum
+enum LrWpanAssociationStatus
 {
     ASSOCIATED = 0,
     PAN_AT_CAPACITY = 1,
     PAN_ACCESS_DENIED = 2,
     ASSOCIATED_WITHOUT_ADDRESS = 0xfe,
     DISASSOCIATED = 0xff
-} LrWpanAssociationStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 30 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeScanType
 {
     MLMESCAN_ED = 0x00,
     MLMESCAN_ACTIVE = 0x01,
     MLMESCAN_PASSIVE = 0x02,
     MLMESCAN_ORPHAN = 0x03
-} LrWpanMlmeScanType;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 42 of 802.15.4-2006
  */
-typedef enum
+enum LrWpanMcpsDataConfirmStatus
 {
     IEEE_802_15_4_SUCCESS = 0,
     IEEE_802_15_4_TRANSACTION_OVERFLOW = 1,
@@ -203,14 +203,14 @@ typedef enum
     IEEE_802_15_4_UNAVAILABLE_KEY = 9,
     IEEE_802_15_4_UNSUPPORTED_SECURITY = 10,
     IEEE_802_15_4_INVALID_PARAMETER = 11
-} LrWpanMcpsDataConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 35 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeStartConfirmStatus
 {
     MLMESTART_SUCCESS = 0,
     MLMESTART_NO_SHORT_ADDRESS = 1,
@@ -222,14 +222,14 @@ typedef enum
     MLMESTART_UNAVAILABLE_KEY = 7,
     MLMESTART_UNSUPPORTED_SECURITY = 8,
     MLMESTART_CHANNEL_ACCESS_FAILURE = 9
-} LrWpanMlmeStartConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 31 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeScanConfirmStatus
 {
     MLMESCAN_SUCCESS = 0,
     MLMESCAN_LIMIT_REACHED = 1,
@@ -240,14 +240,14 @@ typedef enum
     MLMESCAN_UNAVAILABLE_KEY = 6,
     MLMESCAN_UNSUPPORTED_SECURITY = 7,
     MLMESCAN_INVALID_PARAMETER = 8
-} LrWpanMlmeScanConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 12 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeAssociateConfirmStatus
 {
     MLMEASSOC_SUCCESS = 0,
     MLMEASSOC_FULL_CAPACITY = 1,
@@ -259,27 +259,27 @@ typedef enum
     MLMEASSOC_FRAME_TOO_LONG = 7,
     MLMEASSOC_UNSUPPORTED_LEGACY = 8,
     MLMEASSOC_INVALID_PARAMETER = 9
-} LrWpanMlmeAssociateConfirmStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 37 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanSyncLossReason
 {
     MLMESYNCLOSS_PAN_ID_CONFLICT = 0,
     MLMESYNCLOSS_REALIGMENT = 1,
     MLMESYNCLOSS_BEACON_LOST = 2,
     MLMESYNCLOSS_SUPERFRAME_OVERLAP = 3
-} LrWpanSyncLossReason;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 18 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmeCommStatus
 {
     MLMECOMMSTATUS_SUCCESS = 0,
     MLMECOMMSTATUS_TRANSACTION_OVERFLOW = 1,
@@ -289,14 +289,14 @@ typedef enum
     MLMECOMMSTATUS_COUNTER_ERROR = 5,
     MLMECOMMSTATUS_FRAME_TOO_LONG = 6,
     MLMECOMMSTATUS_INVALID_PARAMETER = 7
-} LrWpanMlmeCommStatus;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * Table 39 of IEEE 802.15.4-2011
  */
-typedef enum
+enum LrWpanMlmePollConfirmStatus
 {
     MLMEPOLL_SUCCESS = 0,
     MLMEPOLL_CHANNEL_ACCESS_FAILURE = 2,
@@ -307,7 +307,46 @@ typedef enum
     MLMEPOLL_UNAVAILABLE_KEY = 7,
     MLMEPOLL_UNSUPPORTED_SECURITY = 8,
     MLMEPOLL_INVALID_PARAMETER = 9
-} LrWpanMlmePollConfirmStatus;
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * Table 33 of IEEE 802.15.4-2011
+ */
+enum LrWpanMlmeSetConfirmStatus
+{
+    MLMESET_SUCCESS = 0,
+    MLMESET_READ_ONLY = 1,
+    MLMESET_UNSUPPORTED_ATTRIBUTE = 2,
+    MLMESET_INVALID_INDEX = 3,
+    MLMESET_INVALID_PARAMETER = 4
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * IEEE802.15.4-2011 MAC PIB Attribute Identifiers Table 52 in section 6.4.2
+ *
+ */
+enum LrWpanMacPibAttributeIdentifier
+{
+    macBeaconPayload = 0,
+    macBeaconPayloadLength = 1
+    // TODO: complete other MAC pib attributes
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * IEEE802.15.4-2011 PHY PIB Attributes Table 52 in section 6.4.2
+ */
+struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
+{
+    Ptr<Packet> macBeaconPayload;      //!< The contents of the beacon payload.
+    uint8_t macBeaconPayloadLength{0}; //!< The length in octets of the beacon payload.
+    // TODO: complete other MAC pib attributes
+};
 
 /**
  * \ingroup lr-wpan
@@ -318,8 +357,8 @@ struct PanDescriptor
 {
     LrWpanAddressMode m_coorAddrMode{SHORT_ADDR}; //!< The coordinator addressing mode corresponding
                                                   //!< to the received beacon frame.
-    uint16_t m_coorPanId{
-        0xffff}; //!< The PAN ID of the coordinator as specified in the received beacon frame.
+    uint16_t m_coorPanId{0xffff};                 //!< The PAN ID of the coordinator as specified in
+                                                  //!<  the received beacon frame.
     Mac16Address m_coorShortAddr; //!< The coordinator short address as specified in the coordinator
                                   //!< address mode.
     Mac64Address m_coorExtAddr;   //!< The coordinator extended address as specified in the
@@ -328,10 +367,10 @@ struct PanDescriptor
     uint8_t m_logChPage{0};       //!< The current channel page occupied by the network.
     SuperframeField m_superframeSpec; //!< The superframe specification as specified in the received
                                       //!< beacon frame.
-    bool m_gtsPermit{
-        false}; //!< TRUE if the beacon is from the PAN coordinator that is accepting GTS requests.
-    uint8_t m_linkQuality{
-        0}; //!< The LQI at which the network beacon was received. Lower values represent lower LQI.
+    bool m_gtsPermit{false};          //!< TRUE if the beacon is from the PAN coordinator
+                                      //!< that is accepting GTS requests.
+    uint8_t m_linkQuality{0};         //!< The LQI at which the network beacon was received.
+                                      //!< Lower values represent lower LQI.
     Time m_timeStamp; //!< Beacon frame reception time. Used as Time data type in ns-3 to avoid
                       //!< precision problems.
 };
@@ -603,6 +642,19 @@ struct MlmePollConfirmParams
 /**
  * \ingroup lr-wpan
  *
+ * MLME-SET.confirm params. See  802.15.4-2011   Section 6.2.11.2
+ */
+struct MlmeSetConfirmParams
+{
+    LrWpanMlmeSetConfirmStatus m_status{
+        MLMESET_UNSUPPORTED_ATTRIBUTE}; //!< The result of the request to write
+                                        //!< the PIB attribute.
+    LrWpanMacPibAttributeIdentifier id; //!< The id of the PIB attribute that was written.
+};
+
+/**
+ * \ingroup lr-wpan
+ *
  * This callback is called after a McpsDataRequest has been called from
  * the higher layer.  It returns a status of the outcome of the
  * transmission request
@@ -638,8 +690,7 @@ typedef Callback<void, MlmeStartConfirmParams> MlmeStartConfirmCallback;
  *  \todo for now, we do not deliver all of the parameters in section
  *  802.15.4-2006 6.2.4.1 but just send up the packet.
  */
-typedef Callback<void, MlmeBeaconNotifyIndicationParams, Ptr<Packet>>
-    MlmeBeaconNotifyIndicationCallback;
+typedef Callback<void, MlmeBeaconNotifyIndicationParams> MlmeBeaconNotifyIndicationCallback;
 
 /**
  * \ingroup lr-wpan
@@ -699,6 +750,15 @@ typedef Callback<void, MlmeAssociateIndicationParams> MlmeAssociateIndicationCal
  *  See 802.15.4-2011 6.2.4.2
  */
 typedef Callback<void, MlmeCommStatusIndicationParams> MlmeCommStatusIndicationCallback;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called after a MlmeSetRequest has been called from
+ * the higher layer to set a PIB. It returns a status of the outcome of the
+ * write attempt.
+ */
+typedef Callback<void, MlmeSetConfirmParams> MlmeSetConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -861,6 +921,16 @@ class LrWpanMac : public Object
     void MlmePollRequest(MlmePollRequestParams params);
 
     /**
+     * IEEE 802.15.4-2011, section 6.2.11.1
+     * MLME-SET.request
+     * Attempts to write the given value to the indicated PIB attribute.
+     *
+     * \param id the attributed identifier
+     * \param attribute the attribute value
+     */
+    void MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAttributes> attribute);
+
+    /**
      * Set the CSMA/CA implementation to be used by the MAC.
      *
      * \param csmaCa the CSMA/CA implementation
@@ -970,6 +1040,15 @@ class LrWpanMac : public Object
      * \param c the callback
      */
     void SetMlmePollConfirmCallback(MlmePollConfirmCallback c);
+
+    /**
+     * Set the callback for the confirmation of an attempt to write an attribute.
+     * The callback implements MLME-SET.confirm SAP of IEEE 802.15.4-2011,
+     * section 6.2.11.2
+     *
+     * \param c the callback
+     */
+    void SetMlmeSetConfirmCallback(MlmeSetConfirmCallback c);
 
     // interfaces between MAC and PHY
 
@@ -1213,6 +1292,19 @@ class LrWpanMac : public Object
      * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
      */
     SequenceNumber8 m_macBsn;
+
+    /**
+     * The contents of the beacon payload.
+     * This value is set directly by the MLME-SET primitive.
+     * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
+     */
+    Ptr<Packet> m_macBeaconPayload;
+
+    /**
+     * The length, in octets, of the beacon payload.
+     * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
+     */
+    uint32_t m_macBeaconPayloadLength;
 
     /**
      * The maximum number of retries allowed after a transmission failure.
@@ -1802,6 +1894,13 @@ class LrWpanMac : public Object
      * The CSMA/CA implementation used by this MAC.
      */
     Ptr<LrWpanCsmaCa> m_csmaCa;
+
+    /**
+     * This callback is used to report the result of an attribute writing request
+     * to the upper layers.
+     * See IEEE 802.15.4-2011, section 6.2.11.2.
+     */
+    MlmeSetConfirmCallback m_mlmeSetConfirmCallback;
 
     /**
      * This callback is used to notify incoming beacon packets to the upper layers.

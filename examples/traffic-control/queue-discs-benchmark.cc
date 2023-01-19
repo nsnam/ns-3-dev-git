@@ -38,13 +38,13 @@
 //
 // The output will consist of a number of ping Rtt such as:
 //
-//    /NodeList/0/ApplicationList/2/$ns3::V4Ping/Rtt=111 ms
-//    /NodeList/0/ApplicationList/2/$ns3::V4Ping/Rtt=111 ms
-//    /NodeList/0/ApplicationList/2/$ns3::V4Ping/Rtt=110 ms
-//    /NodeList/0/ApplicationList/2/$ns3::V4Ping/Rtt=111 ms
-//    /NodeList/0/ApplicationList/2/$ns3::V4Ping/Rtt=111 ms
-//    /NodeList/0/ApplicationList/2/$ns3::V4Ping/Rtt=112 ms
-//    /NodeList/0/ApplicationList/2/$ns3::V4Ping/Rtt=111 ms
+//    /NodeList/0/ApplicationList/2/$ns3::Ping/Rtt=111 ms
+//    /NodeList/0/ApplicationList/2/$ns3::Ping/Rtt=111 ms
+//    /NodeList/0/ApplicationList/2/$ns3::Ping/Rtt=110 ms
+//    /NodeList/0/ApplicationList/2/$ns3::Ping/Rtt=111 ms
+//    /NodeList/0/ApplicationList/2/$ns3::Ping/Rtt=111 ms
+//    /NodeList/0/ApplicationList/2/$ns3::Ping/Rtt=112 ms
+//    /NodeList/0/ApplicationList/2/$ns3::Ping/Rtt=111 ms
 //
 // The files output will consist of a trace file with bytes in queue and of a trace file for limits
 // (when BQL is enabled) both for bottleneck NetDevice on n2, two files with upload and download
@@ -116,7 +116,7 @@ GoodputSampling(ApplicationContainer app, Ptr<OutputStreamWrapper> stream, float
  * \param rtt The RTT.
  */
 static void
-PingRtt(std::string context, Time rtt)
+PingRtt(std::string context, uint16_t, Time rtt)
 {
     std::cout << context << "=" << rtt.GetMilliSeconds() << " ms" << std::endl;
 }
@@ -326,10 +326,11 @@ main(int argc, char* argv[])
     sourceApps.Add(onOffHelperDown.Install(n3));
 
     // Configure and install ping
-    V4PingHelper ping = V4PingHelper(n3Interface.GetAddress(0));
+    PingHelper ping(n3Interface.GetAddress(0));
+    ping.SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::QUIET));
     ping.Install(n1);
 
-    Config::Connect("/NodeList/*/ApplicationList/*/$ns3::V4Ping/Rtt", MakeCallback(&PingRtt));
+    Config::Connect("/NodeList/*/ApplicationList/*/$ns3::Ping/Rtt", MakeCallback(&PingRtt));
 
     uploadApp.Start(Seconds(0));
     uploadApp.Stop(Seconds(stopTime));
@@ -358,6 +359,8 @@ main(int argc, char* argv[])
     Ptr<FlowMonitor> flowMonitor;
     FlowMonitorHelper flowHelper;
     flowMonitor = flowHelper.InstallAll();
+
+    accessLink.EnablePcapAll("queue");
 
     Simulator::Stop(Seconds(stopTime));
     Simulator::Run();

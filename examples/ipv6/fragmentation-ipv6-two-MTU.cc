@@ -29,6 +29,7 @@
 // //
 // // - Tracing of queues and packet receptions to file "fragmentation-ipv6-two-mtu.tr"
 
+#include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-apps-module.h"
@@ -57,8 +58,10 @@ main(int argc, char** argv)
         LogComponentEnable("Icmpv6L4Protocol", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6StaticRouting", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
+        LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
+        LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
     }
+    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
 
     NS_LOG_INFO("Create nodes.");
     Ptr<Node> n0 = CreateObject<Node>();
@@ -96,21 +99,21 @@ main(int argc, char** argv)
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
     routingHelper.PrintRoutingTableAt(Seconds(0), n0, routingStream);
 
-    /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r */
+    /* Create a UdpEchoClient and UdpEchoServer application to send packets from n0 to n1 via r */
     uint32_t packetSize = 4096;
     uint32_t maxPacketCount = 5;
-    Time interPacketInterval = Seconds(1.0);
-    Ping6Helper ping6;
 
-    ping6.SetLocal(i1.GetAddress(0, 1));
-    ping6.SetRemote(i2.GetAddress(1, 1));
+    UdpEchoClientHelper echoClient(i2.GetAddress(1, 1), 42);
+    echoClient.SetAttribute("PacketSize", UintegerValue(packetSize));
+    echoClient.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    ApplicationContainer clientApps = echoClient.Install(net1.Get(0));
+    clientApps.Start(Seconds(2.0));
+    clientApps.Stop(Seconds(20.0));
 
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(net1.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(20.0));
+    UdpEchoServerHelper echoServer(42);
+    ApplicationContainer serverApps = echoServer.Install(net2.Get(1));
+    serverApps.Start(Seconds(0.0));
+    serverApps.Stop(Seconds(30.0));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("fragmentation-ipv6-two-mtu.tr"));

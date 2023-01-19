@@ -22,6 +22,8 @@
 
 #include "lr-wpan-csmaca.h"
 
+#include "lr-wpan-constants.h"
+
 #include <ns3/log.h>
 #include <ns3/random-variable-stream.h>
 #include <ns3/simulator.h>
@@ -59,7 +61,6 @@ LrWpanCsmaCa::LrWpanCsmaCa()
     m_macMinBE = 3;
     m_macMaxBE = 5;
     m_macMaxCSMABackoffs = 4;
-    m_aUnitBackoffPeriod = 20; // symbols
     m_random = CreateObject<UniformRandomVariable>();
     m_BE = m_macMinBE;
     m_ccaRequestRunning = false;
@@ -169,20 +170,6 @@ LrWpanCsmaCa::GetMacMaxCSMABackoffs() const
     return m_macMaxCSMABackoffs;
 }
 
-void
-LrWpanCsmaCa::SetUnitBackoffPeriod(uint64_t unitBackoffPeriod)
-{
-    NS_LOG_FUNCTION(this << unitBackoffPeriod);
-    m_aUnitBackoffPeriod = unitBackoffPeriod;
-}
-
-uint64_t
-LrWpanCsmaCa::GetUnitBackoffPeriod() const
-{
-    NS_LOG_FUNCTION(this);
-    return m_aUnitBackoffPeriod;
-}
-
 Time
 LrWpanCsmaCa::GetTimeToNextSlot() const
 {
@@ -219,8 +206,8 @@ LrWpanCsmaCa::GetTimeToNextSlot() const
 
     // get a close value to the the boundary in symbols
     elapsedSuperframeSymbols = elapsedSuperframe.GetSeconds() * symbolRate;
-    symbolsToBoundary =
-        m_aUnitBackoffPeriod - std::fmod((double)elapsedSuperframeSymbols, m_aUnitBackoffPeriod);
+    symbolsToBoundary = lrwpan::aUnitBackoffPeriod -
+                        std::fmod((double)elapsedSuperframeSymbols, lrwpan::aUnitBackoffPeriod);
 
     timeAtBoundary = Seconds((double)(elapsedSuperframeSymbols + symbolsToBoundary) / symbolRate);
 
@@ -308,7 +295,7 @@ LrWpanCsmaCa::RandomBackoffDelay()
     }
 
     randomBackoff =
-        Seconds((double)(m_randomBackoffPeriodsLeft * GetUnitBackoffPeriod()) / symbolRate);
+        Seconds((double)(m_randomBackoffPeriodsLeft * lrwpan::aUnitBackoffPeriod) / symbolRate);
 
     if (IsUnSlottedCsmaCa())
     {
@@ -330,14 +317,14 @@ LrWpanCsmaCa::RandomBackoffDelay()
                      << randomBackoff.As(Time::S) << ")");
 
         NS_LOG_DEBUG("Backoff periods left in CAP: "
-                     << ((timeLeftInCap.GetSeconds() * symbolRate) / m_aUnitBackoffPeriod) << " ("
-                     << (timeLeftInCap.GetSeconds() * symbolRate) << " symbols or "
+                     << ((timeLeftInCap.GetSeconds() * symbolRate) / lrwpan::aUnitBackoffPeriod)
+                     << " (" << (timeLeftInCap.GetSeconds() * symbolRate) << " symbols or "
                      << timeLeftInCap.As(Time::S) << ")");
 
         if (randomBackoff >= timeLeftInCap)
         {
             uint64_t usedBackoffs =
-                (double)(timeLeftInCap.GetSeconds() * symbolRate) / m_aUnitBackoffPeriod;
+                (double)(timeLeftInCap.GetSeconds() * symbolRate) / lrwpan::aUnitBackoffPeriod;
             m_randomBackoffPeriodsLeft -= usedBackoffs;
             NS_LOG_DEBUG("No time in CAP to complete backoff delay, deferring to the next CAP");
             m_endCapEvent =
@@ -424,7 +411,7 @@ LrWpanCsmaCa::CanProceed()
     else
     {
         // time the PHY takes to switch from Rx to Tx and Tx to Rx
-        transactionSymbols += (m_mac->GetPhy()->aTurnaroundTime * 2);
+        transactionSymbols += (lrwpan::aTurnaroundTime * 2);
     }
     transactionSymbols += m_mac->GetIfsSize();
 

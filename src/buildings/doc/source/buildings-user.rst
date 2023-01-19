@@ -30,13 +30,13 @@ As an example, let's create a residential 10 x 20 x 10 building::
     double y_max = 20.0;
     double z_min = 0.0;
     double z_max = 10.0;
-    Ptr<Building> b = CreateObject <Building> ();
-    b->SetBoundaries (Box (x_min, x_max, y_min, y_max, z_min, z_max));
-    b->SetBuildingType (Building::Residential);
-    b->SetExtWallsType (Building::ConcreteWithWindows);
-    b->SetNFloors (3);
-    b->SetNRoomsX (3);
-    b->SetNRoomsY (2);
+    Ptr<Building> b = CreateObject<Building>();
+    b->SetBoundaries(Box(x_min, x_max, y_min, y_max, z_min, z_max));
+    b->SetBuildingType(Building::Residential);
+    b->SetExtWallsType(Building::ConcreteWithWindows);
+    b->SetNFloors(3);
+    b->SetNRoomsX(3);
+    b->SetNRoomsY(2);
 
 This building has three floors and an internal 3 x 2  grid of rooms of equal size.
 
@@ -45,19 +45,19 @@ create a set of buildings with identical characteristics placed on a
 rectangular grid. Here's an example of how to use it::
 
   Ptr<GridBuildingAllocator>  gridBuildingAllocator;
-  gridBuildingAllocator = CreateObject<GridBuildingAllocator> ();
-  gridBuildingAllocator->SetAttribute ("GridWidth", UintegerValue (3));
-  gridBuildingAllocator->SetAttribute ("LengthX", DoubleValue (7));
-  gridBuildingAllocator->SetAttribute ("LengthY", DoubleValue (13));
-  gridBuildingAllocator->SetAttribute ("DeltaX", DoubleValue (3));
-  gridBuildingAllocator->SetAttribute ("DeltaY", DoubleValue (3));
-  gridBuildingAllocator->SetAttribute ("Height", DoubleValue (6));
-  gridBuildingAllocator->SetBuildingAttribute ("NRoomsX", UintegerValue (2));
-  gridBuildingAllocator->SetBuildingAttribute ("NRoomsY", UintegerValue (4));
-  gridBuildingAllocator->SetBuildingAttribute ("NFloors", UintegerValue (2));
-  gridBuildingAllocator->SetAttribute ("MinX", DoubleValue (0));
-  gridBuildingAllocator->SetAttribute ("MinY", DoubleValue (0));
-  gridBuildingAllocator->Create (6);
+  gridBuildingAllocator = CreateObject<GridBuildingAllocator>();
+  gridBuildingAllocator->SetAttribute("GridWidth", UintegerValue(3));
+  gridBuildingAllocator->SetAttribute("LengthX", DoubleValue(7));
+  gridBuildingAllocator->SetAttribute("LengthY", DoubleValue(13));
+  gridBuildingAllocator->SetAttribute("DeltaX", DoubleValue(3));
+  gridBuildingAllocator->SetAttribute("DeltaY", DoubleValue(3));
+  gridBuildingAllocator->SetAttribute("Height", DoubleValue(6));
+  gridBuildingAllocator->SetBuildingAttribute("NRoomsX", UintegerValue(2));
+  gridBuildingAllocator->SetBuildingAttribute("NRoomsY", UintegerValue(4));
+  gridBuildingAllocator->SetBuildingAttribute("NFloors", UintegerValue(2));
+  gridBuildingAllocator->SetAttribute("MinX", DoubleValue(0));
+  gridBuildingAllocator->SetAttribute("MinY", DoubleValue(0));
+  gridBuildingAllocator->Create(6);
 
 
 This will create a 3x2 grid of 6 buildings, each 7 x 13 x 6 m with 2 x
@@ -74,10 +74,10 @@ use them with the buildings model you need an additional call to
 the information on their position w.r.t. the buildings. Here is an example::
 
     MobilityHelper mobility;
-    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-    ueNodes.Create (2);
-    mobility.Install (ueNodes);
-    BuildingsHelper::Install (ueNodes);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    ueNodes.Create(2);
+    mobility.Install(ueNodes);
+    BuildingsHelper::Install(ueNodes);
 
 It is to be noted that any mobility model can be used. However, the
 user is advised to make sure that the behavior of the mobility model
@@ -120,18 +120,18 @@ Any legacy ns-3 positioning method can be used to place node in the
 simulation. The important additional step is to For example, you can
 place nodes manually like this::
 
-    Ptr<ConstantPositionMobilityModel> mm0 = enbNodes.Get (0)->GetObject<ConstantPositionMobilityModel> ();
-    Ptr<ConstantPositionMobilityModel> mm1 = enbNodes.Get (1)->GetObject<ConstantPositionMobilityModel> ();
-    mm0->SetPosition (Vector (5.0, 5.0, 1.5));
-    mm1->SetPosition (Vector (30.0, 40.0, 1.5));
+    Ptr<ConstantPositionMobilityModel> mm0 = enbNodes.Get(0)->GetObject<ConstantPositionMobilityModel>();
+    Ptr<ConstantPositionMobilityModel> mm1 = enbNodes.Get(1)->GetObject<ConstantPositionMobilityModel>();
+    mm0->SetPosition(Vector(5.0, 5.0, 1.5));
+    mm1->SetPosition(Vector(30.0, 40.0, 1.5));
 
     MobilityHelper mobility;
-    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-    ueNodes.Create (2);
-    mobility.Install (ueNodes);
-    BuildingsHelper::Install (ueNodes);
-    mm0->SetPosition (Vector (5.0, 5.0, 1.5));
-    mm1->SetPosition (Vector (30.0, 40.0, 1.5));
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    ueNodes.Create(2);
+    mobility.Install(ueNodes);
+    BuildingsHelper::Install(ueNodes);
+    mm0->SetPosition(Vector(5.0, 5.0, 1.5));
+    mm1->SetPosition(Vector(30.0, 40.0, 1.5));
 
 Alternatively, you could use any existing PositionAllocator
 class. The coordinates of the node will determine whether it is placed

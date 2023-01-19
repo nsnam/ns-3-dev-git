@@ -85,7 +85,7 @@ IpcsClassifierRecord::IpcsClassifierRecord(Tlv tlv)
         }
         case ClassificationRuleVectorTlvValue::IP_src: {
             Ipv4AddressTlvValue* list = (Ipv4AddressTlvValue*)(*iter)->PeekValue();
-            for (std::vector<Ipv4AddressTlvValue::ipv4Addr>::const_iterator iter2 = list->Begin();
+            for (std::vector<Ipv4AddressTlvValue::Ipv4Addr>::const_iterator iter2 = list->Begin();
                  iter2 != list->End();
                  ++iter2)
             {
@@ -95,7 +95,7 @@ IpcsClassifierRecord::IpcsClassifierRecord(Tlv tlv)
         }
         case ClassificationRuleVectorTlvValue::IP_dst: {
             Ipv4AddressTlvValue* list = (Ipv4AddressTlvValue*)(*iter)->PeekValue();
-            for (std::vector<Ipv4AddressTlvValue::ipv4Addr>::const_iterator iter2 = list->Begin();
+            for (std::vector<Ipv4AddressTlvValue::Ipv4Addr>::const_iterator iter2 = list->Begin();
                  iter2 != list->End();
                  ++iter2)
             {
@@ -158,7 +158,7 @@ IpcsClassifierRecord::IpcsClassifierRecord(Ipv4Address SrcAddress,
 void
 IpcsClassifierRecord::AddSrcAddr(Ipv4Address srcAddress, Ipv4Mask srcMask)
 {
-    ipv4Addr tmp;
+    Ipv4Addr tmp;
     tmp.Address = srcAddress;
     tmp.Mask = srcMask;
     m_srcAddr.push_back(tmp);
@@ -167,7 +167,7 @@ IpcsClassifierRecord::AddSrcAddr(Ipv4Address srcAddress, Ipv4Mask srcMask)
 void
 IpcsClassifierRecord::AddDstAddr(Ipv4Address dstAddress, Ipv4Mask dstMask)
 {
-    ipv4Addr tmp;
+    Ipv4Addr tmp;
     tmp.Address = dstAddress;
     tmp.Mask = dstMask;
     m_dstAddr.push_back(tmp);
@@ -236,7 +236,7 @@ IpcsClassifierRecord::GetPriority() const
 bool
 IpcsClassifierRecord::CheckMatchSrcAddr(Ipv4Address srcAddress) const
 {
-    for (std::vector<ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
+    for (std::vector<Ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
          ++iter)
     {
         NS_LOG_INFO("src addr check match: pkt=" << srcAddress << " cls=" << (*iter).Address << "/"
@@ -253,7 +253,7 @@ IpcsClassifierRecord::CheckMatchSrcAddr(Ipv4Address srcAddress) const
 bool
 IpcsClassifierRecord::CheckMatchDstAddr(Ipv4Address dstAddress) const
 {
-    for (std::vector<ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
+    for (std::vector<Ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
          ++iter)
     {
         NS_LOG_INFO("dst addr check match: pkt=" << dstAddress << " cls=" << (*iter).Address << "/"
@@ -334,14 +334,14 @@ Tlv
 IpcsClassifierRecord::ToTlv() const
 {
     Ipv4AddressTlvValue ipv4AddrValSrc;
-    for (std::vector<ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
+    for (std::vector<Ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
          ++iter)
     {
         ipv4AddrValSrc.Add((*iter).Address, (*iter).Mask);
     }
 
     Ipv4AddressTlvValue ipv4AddrValDst;
-    for (std::vector<ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
+    for (std::vector<Ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
          ++iter)
     {
         ipv4AddrValDst.Add((*iter).Address, (*iter).Mask);

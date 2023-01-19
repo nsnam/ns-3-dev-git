@@ -213,7 +213,7 @@ the basics here, instead focusing on preferred usage for |ns3|.
   |   The ``Frobnitz`` is accessed by::  | The ``Frobnitz`` is accessed by::  |
   |                                      |                                    |
   |     Foo::Frobnitz frob;              |   Foo::Frobnitz frob;              |
-  |     frob.Set (...);                  |   frob.Set (...);                  |
+  |     frob.Set(...);                   |   frob.Set(...);                   |
   +--------------------------------------+------------------------------------+
 
   To use a specific syntax highlighter, for example, ``bash`` shell commands:
@@ -315,7 +315,7 @@ The preferred style for Doxygen comments is the JavaDoc style::
    *  Understanding this material shouldn't be necessary to using
    *  the class or method.
    */
-   void ExampleFunction (const int foo, double & bar, const bool baz);
+   void ExampleFunction(const int foo, double & bar, const bool baz);
 
 In this style the Doxygen comment block begins with two \`*' characters:
 ``/**``, and precedes the item being documented.
@@ -324,7 +324,7 @@ For items needing only a brief description, either of these short forms
 is appropriate::
 
   /** Destructor implementation. */
-  void DoDispose ();
+  void DoDispose();
 
   int m_count;  //!< Count of ...
 
@@ -355,11 +355,8 @@ Useful Features
   #. In the sub class mark inherited functions with an ordinary comment::
 
        // Inherited methods
-       virtual void FooBar (void);
-       virtual int BarFoo (double baz);
-
-     Note that the signatures have to match exactly, so include the formal
-     argument ``(void)``
+       virtual void FooBar();
+       virtual int BarFoo(double baz);
 
      This doesn't work for static functions; see ``GetTypeId``, below, for an
      example.
@@ -599,7 +596,7 @@ usage for |ns3|.
      * \tparam U \deduced The argument type.
      * \param [in] a The argument.
      */
-    template <typename T, typename U> T Function (U a);
+    template <typename T, typename U> T Function(U a);
 
   * Use ``\tparam U \deduced`` because the type ``U`` can be deduced at
     the site where the template is invoked.  Basically deduction can only
@@ -607,7 +604,7 @@ usage for |ns3|.
 
   * Use ``\tparam T \explicit`` because the type ``T`` can't be deduced;
     it must be given explicitly at the invocation site, as in
-    ``Create<MyObject> (...)``
+    ``Create<MyObject>(...)``
 
 * ``\internal`` should be used only to set off a discussion of implementation
   details, not to mark ``private`` functions (they are already marked,
@@ -624,16 +621,16 @@ cases is:
 
 * Default constructor/destructor::
 
-    MyClass ();   //!< Default constructor
-    ~MyClass ();  //!< Destructor
+    MyClass();   //!< Default constructor
+    ~MyClass();  //!< Destructor
 
 * Dummy destructor and DoDispose::
 
     /** Dummy destructor, see DoDispose. */
-    ~MyClass ();
+    ~MyClass();
 
     /** Destructor implementation */
-    virtual void DoDispose ();
+    virtual void DoDispose();
 
 * GetTypeId::
 
@@ -641,7 +638,4 @@ cases is:
      *  Register this type.
      *  \return The object TypeId.
      */
-    static TypeId GetTypeId (void);
-
-
-
+    static TypeId GetTypeId();

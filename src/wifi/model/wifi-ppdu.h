@@ -137,15 +137,13 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     bool DoesOverlapChannel(uint16_t minFreq, uint16_t maxFreq) const;
 
     /**
-     * Check whether the given PPDU can be received on the specified primary
-     * channel. Normally, a PPDU can be received if it is transmitted over a
-     * channel that overlaps the primary20 channel of a PHY entity.
+     * Check whether the given PPDU covers the whole channel.
      *
      * \param p20MinFreq the minimum frequency (MHz) of the primary channel
      * \param p20MaxFreq the maximum frequency (MHz) of the primary channel
-     * \return true if this PPDU can be received, false otherwise
+     * \return true if this PPDU covers the whole channel, false otherwise
      */
-    virtual bool CanBeReceived(uint16_t p20MinFreq, uint16_t p20MaxFreq) const;
+    bool DoesCoverChannel(uint16_t p20MinFreq, uint16_t p20MaxFreq) const;
 
     /**
      * Get the modulation used for the PPDU.

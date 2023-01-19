@@ -39,7 +39,8 @@ class Socket;
  *
  * Note: The RTT calculated is reported through a trace source.
  */
-class V4Ping : public Application
+class NS_DEPRECATED_3_38("Use Ping instead - the attributes might have been renamed.") V4Ping
+    : public Application
 {
   public:
     /**

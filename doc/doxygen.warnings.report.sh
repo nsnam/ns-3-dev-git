@@ -559,6 +559,12 @@ if [ "$filterin" != "" ] ; then
     echo "Filtered Warnings"
     echo "========================================"
     echo "$filterin"
+elif [ "$filter_log_results" != "" ] ; then
+    echo
+    echo
+    echo "Warnings"
+    echo "========================================"
+    echo "$filter_log_results"
 fi
 
 status_report 0 $me

@@ -159,12 +159,12 @@ Creating a new packet
 
 The following command will create a new packet with a new unique Id.::
 
-  Ptr<Packet> pkt = Create<Packet> ();
+  Ptr<Packet> pkt = Create<Packet>();
 
 What is the Uid (unique Id)?  It is an internal id that the system uses to
 identify packets.  It can be fetched via the following method::
 
-  uint32_t uid = pkt->GetUid ();
+  uint32_t uid = pkt->GetUid();
 
 But please note the following. This uid is an internal uid and cannot be counted
 on to provide an accurate counter of how many "simulated packets" of a
@@ -182,7 +182,7 @@ to have a certain number of payload bytes, but the bytes will only be allocated
 on-demand when needed).  The command to do this is, when the packet is
 created::
 
-  Ptr<Packet> pkt = Create<Packet> (N);
+  Ptr<Packet> pkt = Create<Packet>(N);
 
 where N is a positive integer.
 
@@ -193,17 +193,17 @@ method::
    * \returns the size in bytes of the packet (including the zero-filled
    *          initial payload)
    */
-  uint32_t GetSize (void) const;
+  uint32_t GetSize() const;
 
 You can also initialize a packet with a character buffer. The input
 data is copied and the input buffer is untouched. The constructor
 applied is::
 
-  Packet (uint8_t const *buffer, uint32_t size);
+  Packet(uint8_t const *buffer, uint32_t size);
 
 Here is an example::
 
-  Ptr<Packet> pkt1 = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
+  Ptr<Packet> pkt1 = Create<Packet>(reinterpret_cast<const uint8_t*>("hello"), 5);
 
 Packets are freed when there are no more references to them, as with all |ns3|
 objects referenced by the Ptr class.
@@ -244,17 +244,17 @@ Packet API can be used to add or remove such headers.::
    *
    * \param header a reference to the header to add to this packet.
    */
-  void AddHeader (const Header & header);
+  void AddHeader(const Header & header);
   /**
    * Deserialize and remove the header from the internal buffer.
    *
-   * This method invokes Header::Deserialize (begin) and should be used for
+   * This method invokes Header::Deserialize(begin) and should be used for
    * fixed-length headers.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
    */
-  uint32_t RemoveHeader (Header &header);
+  uint32_t RemoveHeader(Header &header);
   /**
    * Deserialize but does _not_ remove the header from the internal buffer.
    * This method invokes Header::Deserialize.
@@ -262,20 +262,20 @@ Packet API can be used to add or remove such headers.::
    * \param header a reference to the header to read from the internal buffer.
    * \returns the number of bytes read from the packet.
    */
-  uint32_t PeekHeader (Header &header) const;
+  uint32_t PeekHeader(Header &header) const;
 
 For instance, here are the typical operations to add and remove a UDP header.::
 
- // add header
- Ptr<Packet> packet = Create<Packet> ();
- UdpHeader udpHeader;
- // Fill out udpHeader fields appropriately
- packet->AddHeader (udpHeader);
- ...
- // remove header
- UdpHeader udpHeader;
- packet->RemoveHeader (udpHeader);
- // Read udpHeader fields as needed
+  // add header
+  Ptr<Packet> packet = Create<Packet>();
+  UdpHeader udpHeader;
+  // Fill out udpHeader fields appropriately
+  packet->AddHeader(udpHeader);
+  ...
+  // remove header
+  UdpHeader udpHeader;
+  packet->RemoveHeader(udpHeader);
+  // Read udpHeader fields as needed
 
 If the header is variable-length, then another variant of RemoveHeader() is
 needed::
@@ -283,7 +283,7 @@ needed::
   /**
    * \brief Deserialize and remove the header from the internal buffer.
    *
-   * This method invokes Header::Deserialize (begin, end) and should be
+   * This method invokes Header::Deserialize(begin, end) and should be
    * used for variable-length headers (where the size is determined somehow
    * by the caller).
    *
@@ -291,7 +291,7 @@ needed::
    * \param size number of bytes to deserialize
    * \returns the number of bytes removed from the packet.
    */
-  uint32_t RemoveHeader (Header &header, uint32_t size);
+  uint32_t RemoveHeader(Header &header, uint32_t size);
 
 In this case, the caller must figure out and provide the right 'size' as
 an argument (the Deserialization routine may not know when to stop).  An
@@ -331,7 +331,7 @@ behavior of packet tags and byte tags.
 * **Finding and Printing:** Both classes allow you to iterate over all of the
   tags and print them.
 * **Removal:** Users can add and remove the same packet tag multiple times on a
-  single packet (AddPacketTag () and RemovePacketTag ()). The packet However,
+  single packet (AddPacketTag() and RemovePacketTag()). The packet However,
   once a byte tag is added, it can only be removed by stripping all byte tags
   from the packet. Removing one of possibly multiple byte tags is not supported
   by the current API.
@@ -360,11 +360,11 @@ The Packet API for byte tags is given below.::
    * totally evil to allow a trace sink to modify the content of a
    * packet).
    */
-  void AddByteTag (const Tag &tag) const;
+  void AddByteTag(const Tag &tag) const;
   /**
    * \returns an iterator over the set of byte tags included in this packet.
    */
-  ByteTagIterator GetByteTagIterator (void) const;
+  ByteTagIterator GetByteTagIterator() const;
   /**
    * \param tag the tag to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
@@ -372,12 +372,12 @@ The Packet API for byte tags is given below.::
    * If the requested tag type is found, it is copied in the user's
    * provided tag instance.
    */
-  bool FindFirstMatchingByteTag (Tag &tag) const;
+  bool FindFirstMatchingByteTag(Tag &tag) const;
 
   /**
    * Remove all the tags stored in this packet.
    */
-  void RemoveAllByteTags (void);
+  void RemoveAllByteTags();
 
   /**
    * \param os output stream in which the data should be printed.
@@ -385,7 +385,7 @@ The Packet API for byte tags is given below.::
    * Iterate over the tags present in this packet, and
    * invoke the Print method of each tag stored in the packet.
    */
-  void PrintByteTags (std::ostream &os) const;
+  void PrintByteTags(std::ostream &os) const;
 
 The Packet API for packet tags is given below.::
 
@@ -399,7 +399,7 @@ The Packet API for packet tags is given below.::
    * modify the state of this packet, which is fairly
    * un-intuitive.
    */
-  void AddPacketTag (const Tag &tag) const;
+  void AddPacketTag(const Tag &tag) const;
   /**
    * \param tag the tag to remove from this packet
    * \returns true if the requested tag is found, false
@@ -408,7 +408,7 @@ The Packet API for packet tags is given below.::
    * Remove a tag from this packet. This method calls
    * Tag::Deserialize if the tag is found.
    */
-  bool RemovePacketTag (Tag &tag);
+  bool RemovePacketTag(Tag &tag);
   /**
    * \param tag the tag to search in this packet
    * \returns true if the requested tag is found, false
@@ -416,11 +416,11 @@ The Packet API for packet tags is given below.::
    *
    * Search a matching tag and call Tag::Deserialize if it is found.
    */
-  bool PeekPacketTag (Tag &tag) const;
+  bool PeekPacketTag(Tag &tag) const;
   /**
    * Remove all packet tags.
    */
-  void RemoveAllPacketTags (void);
+  void RemoveAllPacketTags();
 
   /**
    * \param os the stream in which we want to print data.
@@ -430,30 +430,30 @@ The Packet API for packet tags is given below.::
    * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
    *  Packet::RemoveAllPacketTags
    */
-  void PrintPacketTags (std::ostream &os) const;
+  void PrintPacketTags(std::ostream &os) const;
 
   /**
    * \returns an object which can be used to iterate over the list of
    *  packet tags.
    */
-  PacketTagIterator GetPacketTagIterator (void) const;
+  PacketTagIterator GetPacketTagIterator() const;
 
 Here is a simple example illustrating the use of tags from the
 code in ``src/internet/model/udp-socket-impl.cc``::
 
   Ptr<Packet> p;  // pointer to a pre-existing packet
   SocketIpTtlTag tag
-  tag.SetTtl (m_ipMulticastTtl); // Convey the TTL from UDP layer to IP layer
-  p->AddPacketTag (tag);
+  tag.SetTtl(m_ipMulticastTtl); // Convey the TTL from UDP layer to IP layer
+  p->AddPacketTag(tag);
 
 This tag is read at the IP layer, then stripped (``src/internet/model/ipv4-l3-protocol.cc``)::
 
   uint8_t ttl = m_defaultTtl;
   SocketIpTtlTag tag;
-  bool found = packet->RemovePacketTag (tag);
+  bool found = packet->RemovePacketTag(tag);
   if (found)
     {
-      ttl = tag.GetTtl ();
+      ttl = tag.GetTtl();
     }
 
 Fragmentation and concatenation
@@ -463,15 +463,15 @@ Packets may be fragmented or merged together.  For example, to fragment a packet
 ``p`` of 90 bytes into two packets, one containing the first 10 bytes and the
 other containing the remaining 80, one may call the following code::
 
-  Ptr<Packet> frag0 = p->CreateFragment (0, 10);
-  Ptr<Packet> frag1 = p->CreateFragment (10, 90);
+  Ptr<Packet> frag0 = p->CreateFragment(0, 10);
+  Ptr<Packet> frag1 = p->CreateFragment(10, 90);
 
 As discussed above, the packet tags from ``p`` will follow to both packet
 fragments, and the byte tags will follow the byte ranges as needed.
 
 Now, to put them back together::
 
-  frag0->AddAtEnd (frag1);
+  frag0->AddAtEnd(frag1);
 
 Now frag0 should be equivalent to the original packet ``p``.  If, however, there
 were operations on the fragments before being reassembled (such as tag
@@ -500,8 +500,8 @@ the program.
 To enable this operation, users will typically insert one or both of these
 statements at the beginning of their programs::
 
-  Packet::EnablePrinting ();
-  Packet::EnableChecking ();
+  Packet::EnablePrinting();
+  Packet::EnableChecking();
 
 Sample programs
 ***************
@@ -675,4 +675,3 @@ Dirty operations will always be slower than non-dirty operations, sometimes by
 several orders of magnitude. However, even the dirty operations have been
 optimized for common use-cases which means that most of the time, these
 operations will not trigger data copies and will thus be still very fast.
-

@@ -136,6 +136,7 @@ class PointerChecker : public ns3::PointerChecker
         }
         if (!value->GetObject())
         {
+            // a null pointer is a valid value
             return true;
         }
         T* ptr = dynamic_cast<T*>(PeekPointer(value->GetObject()));

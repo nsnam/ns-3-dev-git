@@ -52,6 +52,14 @@ EhtFrameExchangeManager::~EhtFrameExchangeManager()
     NS_LOG_FUNCTION_NOARGS();
 }
 
+void
+EhtFrameExchangeManager::SetLinkId(uint8_t linkId)
+{
+    m_msduAggregator->SetLinkId(linkId);
+    m_mpduAggregator->SetLinkId(linkId);
+    HeFrameExchangeManager::SetLinkId(linkId);
+}
+
 Ptr<WifiMpdu>
 EhtFrameExchangeManager::CreateAlias(Ptr<WifiMpdu> mpdu) const
 {

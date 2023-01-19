@@ -167,12 +167,12 @@ creating and setting the file descriptor by himself.
 ::
 
    FdNetDeviceHelper fd;
-   NetDeviceContainer devices = fd.Install (nodes);
+   NetDeviceContainer devices = fd.Install(nodes);
 
    // file descriptor generation
    ...
 
-   device->SetFileDescriptor (fd);
+   device->SetFileDescriptor(fd);
 
 
 Most commonly a FdNetDevice will be used to interact with the host system.
@@ -182,8 +182,8 @@ The typical program statements are as follows:
 
 ::
 
-   GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
-   GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+   GlobalValue::Bind("SimulatorImplementationType", StringValue("ns3::RealtimeSimulatorImpl"));
+   GlobalValue::Bind("ChecksumEnabled", BooleanValue(true));
 
 The easiest way to set up an experiment that interacts with a Linux host
 system is to user the ``Emu`` and ``Tap`` helpers.
@@ -285,10 +285,10 @@ identify which physical device should be used to open the raw socket.
 ::
 
   EmuFdNetDeviceHelper emu;
-  emu.SetDeviceName (deviceName);
-  NetDeviceContainer devices = emu.Install (node);
-  Ptr<NetDevice> device = devices.Get (0);
-  device->SetAttribute ("Address", Mac48AddressValue (Mac48Address::Allocate ()));
+  emu.SetDeviceName(deviceName);
+  NetDeviceContainer devices = emu.Install(node);
+  Ptr<NetDevice> device = devices.Get(0);
+  device->SetAttribute("Address", Mac48AddressValue(Mac48Address::Allocate()));
 
 
 TapFdNetDeviceHelper
@@ -366,12 +366,12 @@ on the device, and the PI header if needed.  For example:
 ::
 
   TapFdNetDeviceHelper helper;
-  helper.SetDeviceName (deviceName);
-  helper.SetModePi (modePi);
-  helper.SetTapIpv4Address (tapIp);
-  helper.SetTapIpv4Mask (tapMask);
+  helper.SetDeviceName(deviceName);
+  helper.SetModePi(modePi);
+  helper.SetTapIpv4Address(tapIp);
+  helper.SetTapIpv4Mask(tapMask);
   ...
-  helper.Install (node);
+  helper.Install(node);
 
 
 Attributes
@@ -394,7 +394,7 @@ real MAC addresses.  Typical code:
 
 ::
 
-   device->SetAttribute ("Address", Mac48AddressValue (Mac48Address::Allocate ()));
+   device->SetAttribute("Address", Mac48AddressValue(Mac48Address::Allocate()));
 
 Output
 ======
@@ -404,9 +404,9 @@ types, through the helpers, such as (e.g.):
 
 ::
     EmuFdNetDeviceHelper emu;
-    NetDeviceContainer devices = emu.Install (node);
+    NetDeviceContainer devices = emu.Install(node);
     ...
-    emu.EnablePcap ("emu-ping", device, true);
+    emu.EnablePcap("emu-ping", device, true);
 
 
 The standard set of Mac-level NetDevice trace sources is provided.
@@ -443,4 +443,3 @@ Several examples are provided:
   traffic over a real channel.
 * ``fd-tap-ping.cc``: This example uses the TapFdNetDeviceHelper to send ICMP
   traffic over a real channel.
-

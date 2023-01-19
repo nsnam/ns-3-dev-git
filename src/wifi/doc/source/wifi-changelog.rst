@@ -22,12 +22,12 @@ continue to set the Wi-Fi standard separately).
 For instance, where pre-ns-3.36 code may have said::
 
     WifiPhyHelper phy;
-    phy.Set("ChannelNumber", UintegerValue (36));
+    phy.Set("ChannelNumber", UintegerValue(36));
 
 the equivalent new code is::
 
     WifiPhyHelper phy;
-    phy.Set ("ChannelSettings", StringValue ("{36, 20, BAND_5GHZ, 0}"));
+    phy.Set("ChannelSettings", StringValue("{36, 20, BAND_5GHZ, 0}"));
 
 which denotes that channel 36 is used on a 20 MHz channel in the 5GHz band,
 and because a larger channel width greater than 20 MHz is not being used, there

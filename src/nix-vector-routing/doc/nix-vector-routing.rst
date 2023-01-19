@@ -112,8 +112,8 @@ use IPv4 or IPv6 Nix-Vector routing.
 
    Ipv4NixVectorHelper nixRouting;
    InternetStackHelper stack;
-   stack.SetRoutingHelper (nixRouting);  // has effect on the next Install ()
-   stack.Install (allNodes);             // allNodes is the NodeContainer
+   stack.SetRoutingHelper(nixRouting);  // has effect on the next Install()
+   stack.Install(allNodes);             // allNodes is the NodeContainer
 
 *  Using IPv6 Nix-Vector Routing:
 
@@ -121,8 +121,8 @@ use IPv4 or IPv6 Nix-Vector routing.
 
    Ipv6NixVectorHelper nixRouting;
    InternetStackHelper stack;
-   stack.SetRoutingHelper (nixRouting);  // has effect on the next Install ()
-   stack.Install (allNodes);             // allNodes is the NodeContainer
+   stack.SetRoutingHelper(nixRouting);  // has effect on the next Install()
+   stack.Install(allNodes);             // allNodes is the NodeContainer
 
 .. note::
    The NixVectorHelper helper class helps to use NixVectorRouting functionality.

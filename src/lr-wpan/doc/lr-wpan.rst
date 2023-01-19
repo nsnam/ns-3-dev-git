@@ -60,20 +60,20 @@ points (SAP):
 In general, primitives are standardized as follows (e.g. Sec 7.1.1.1.1
 of IEEE 802.15.4-2006):::
 
-  MCPS-DATA.request      (
-                          SrcAddrMode,
-                          DstAddrMode,
-                          DstPANId,
-                          DstAddr,
-                          msduLength,
-                          msdu,
-                          msduHandle,
-                          TxOptions,
-                          SecurityLevel,
-                          KeyIdMode,
-                          KeySource,
-                          KeyIndex
-                          )
+  MCPS-DATA.request(
+                    SrcAddrMode,
+                    DstAddrMode,
+                    DstPANId,
+                    DstAddr,
+                    msduLength,
+                    msdu,
+                    msduHandle,
+                    TxOptions,
+                    SecurityLevel,
+                    KeyIdMode,
+                    KeySource,
+                    KeyIndex
+                   )
 
 This maps to |ns3| classes and methods such as:::
 
@@ -85,7 +85,7 @@ This maps to |ns3| classes and methods such as:::
   };
 
   void
-  LrWpanMac::McpsDataRequest (McpsDataRequestParameters params)
+  LrWpanMac::McpsDataRequest(McpsDataRequestParameters params)
   {
   ...
   }
@@ -405,5 +405,3 @@ of the error model validation and can be reproduced by running
 .. figure:: figures/802-15-4-ber.*
 
     Default output of the program ``lr-wpan-error-model-plot.cc``
-
-

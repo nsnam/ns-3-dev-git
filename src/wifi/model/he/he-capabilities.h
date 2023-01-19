@@ -336,10 +336,10 @@ class HeCapabilities : public WifiInformationElement
 /**
  * output stream output operator
  * \param os the output stream
- * \param HeCapabilities the HE capabilities
+ * \param heCapabilities the HE capabilities
  * \returns the output stream
  */
-std::ostream& operator<<(std::ostream& os, const HeCapabilities& HeCapabilities);
+std::ostream& operator<<(std::ostream& os, const HeCapabilities& heCapabilities);
 
 } // namespace ns3
 

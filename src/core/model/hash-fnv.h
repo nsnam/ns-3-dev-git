@@ -98,7 +98,7 @@ class Fnv1a : public Implementation
     /**
      * Seed value
      */
-    enum seed
+    enum Seed
     {
         SEED = 0x8BADF00D /**< Ate bad food */
     };

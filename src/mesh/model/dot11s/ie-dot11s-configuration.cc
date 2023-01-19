@@ -161,13 +161,13 @@ IeConfiguration::DeserializeInformationField(Buffer::Iterator i, uint16_t length
 {
     Buffer::Iterator start = i;
     // Active Path Selection Protocol ID:
-    m_APSPId = (dot11sPathSelectionProtocol)i.ReadU8();
+    m_APSPId = (Dot11sPathSelectionProtocol)i.ReadU8();
     // Active Path Metric ID:
-    m_APSMId = (dot11sPathSelectionMetric)i.ReadU8();
+    m_APSMId = (Dot11sPathSelectionMetric)i.ReadU8();
     // Congestion Control Mode ID:
-    m_CCMId = (dot11sCongestionControlMode)i.ReadU8();
-    m_SPId = (dot11sSynchronizationProtocolIdentifier)i.ReadU8();
-    m_APId = (dot11sAuthenticationProtocol)i.ReadU8();
+    m_CCMId = (Dot11sCongestionControlMode)i.ReadU8();
+    m_SPId = (Dot11sSynchronizationProtocolIdentifier)i.ReadU8();
+    m_APId = (Dot11sAuthenticationProtocol)i.ReadU8();
     m_neighbors = (i.ReadU8() >> 1) & 0xF;
     i = m_meshCap.Deserialize(i);
     return i.GetDistanceFrom(start);
@@ -187,13 +187,13 @@ IeConfiguration::Print(std::ostream& os) const
 }
 
 void
-IeConfiguration::SetRouting(dot11sPathSelectionProtocol routingId)
+IeConfiguration::SetRouting(Dot11sPathSelectionProtocol routingId)
 {
     m_APSPId = routingId;
 }
 
 void
-IeConfiguration::SetMetric(dot11sPathSelectionMetric metricId)
+IeConfiguration::SetMetric(Dot11sPathSelectionMetric metricId)
 {
     m_APSMId = metricId;
 }

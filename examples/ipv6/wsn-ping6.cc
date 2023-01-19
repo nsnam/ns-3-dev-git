@@ -61,7 +61,7 @@ main(int argc, char** argv)
         LogComponentEnable("Ipv6ListRouting", LOG_LEVEL_ALL);
         LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
         LogComponentEnable("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-        LogComponentEnable("Ping6Application", LOG_LEVEL_ALL);
+        LogComponentEnable("Ping", LOG_LEVEL_ALL);
         LogComponentEnable("NdiscCache", LOG_LEVEL_ALL);
         LogComponentEnable("SixLowPanNetDevice", LOG_LEVEL_ALL);
     }
@@ -111,22 +111,18 @@ main(int argc, char** argv)
 
     NS_LOG_INFO("Create Applications.");
 
-    /* Create a Ping6 application to send ICMPv6 echo request from node zero to
+    /* Create a Ping application to send ICMPv6 echo request from node zero to
      * all-nodes (ff02::1).
      */
-    uint32_t packetSize = 10;
+    uint32_t packetSize = 16;
     uint32_t maxPacketCount = 5;
     Time interPacketInterval = Seconds(1.);
-    Ping6Helper ping6;
+    PingHelper ping(i.GetAddress(1, 1));
 
-    ping6.SetLocal(i.GetAddress(0, 1));
-    ping6.SetRemote(i.GetAddress(1, 1));
-    // ping6.SetRemote (Ipv6Address::GetAllNodesMulticast ());
-
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(nodes.Get(0));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(nodes.Get(0));
     apps.Start(Seconds(2.0));
     apps.Stop(Seconds(10.0));
 

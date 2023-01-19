@@ -97,11 +97,11 @@ class AnimationInterface
     /**
      * Counter Types
      */
-    typedef enum
+    enum CounterType
     {
         UINT32_COUNTER,
         DOUBLE_COUNTER
-    } CounterType;
+    };
 
     /**
      * \brief typedef for WriteCallBack used for listening to AnimationInterface
@@ -474,27 +474,27 @@ class AnimationInterface
     };
 
     /// RGB structure
-    typedef struct
+    struct Rgb
     {
         uint8_t r; ///< r
         uint8_t g; ///< g
         uint8_t b; ///< b
-    } Rgb;         ///< RGB structure
+    };             ///< RGB structure
 
     /// P2pLinkNodeIdPair structure
-    typedef struct
+    struct P2pLinkNodeIdPair
     {
         uint32_t fromNode; ///< from node
         uint32_t toNode;   ///< to node
-    } P2pLinkNodeIdPair;   ///< P2P link node id pair
+    };                     ///< P2P link node id pair
 
     /// LinkProperties structure
-    typedef struct
+    struct LinkProperties
     {
         std::string fromNodeDescription; ///< from node description
         std::string toNodeDescription;   ///< to node description
         std::string linkDescription;     ///< link description
-    } LinkProperties;                    ///< link properties
+    };                                   ///< link properties
 
     /// LinkPairCompare structure
     struct LinkPairCompare
@@ -523,21 +523,21 @@ class AnimationInterface
     };
 
     /// Ipv4RouteTrackElement structure
-    typedef struct
+    struct Ipv4RouteTrackElement
     {
         std::string destination; ///< destination
         uint32_t fromNodeId;     ///< from node ID
-    } Ipv4RouteTrackElement;     ///< IPv4 route track element
+    };                           ///< IPv4 route track element
 
     /// Ipv4RoutePathElement structure
-    typedef struct
+    struct Ipv4RoutePathElement
     {
         uint32_t nodeId;     ///< node ID
         std::string nextHop; ///< next hop
-    } Ipv4RoutePathElement;  ///< IPv4 route path element
+    };                       ///< IPv4 route path element
 
     /// ProtocolType enumeration
-    typedef enum
+    enum ProtocolType
     {
         UAN,
         LTE,
@@ -546,14 +546,14 @@ class AnimationInterface
         CSMA,
         LRWPAN,
         WAVE
-    } ProtocolType;
+    };
 
     /// NodeSize structure
-    typedef struct
+    struct NodeSize
     {
         double width;  ///< width
         double height; ///< height
-    } NodeSize;        ///< node size
+    };                 ///< node size
 
     typedef std::map<P2pLinkNodeIdPair, LinkProperties, LinkPairCompare>
         LinkPropertiesMap;                                       ///< LinkPropertiesMap typedef

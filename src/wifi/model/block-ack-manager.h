@@ -458,10 +458,6 @@ class BlockAckManager : public Object
      */
     typedef std::list<Ptr<WifiMpdu>>::iterator PacketQueueI;
     /**
-     * typedef for a const iterator for PacketQueue.
-     */
-    typedef std::list<Ptr<WifiMpdu>>::const_iterator PacketQueueCI;
-    /**
      * typedef for a map between MAC address and block ack agreement.
      */
     typedef std::map<std::pair<Mac48Address, uint8_t>,

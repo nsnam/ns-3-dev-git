@@ -58,7 +58,7 @@ main(int argc, char** argv)
         LogComponentEnable("LrWpanMac", LOG_LEVEL_INFO);
         LogComponentEnable("LrWpanCsmaCa", LOG_LEVEL_INFO);
         LogComponentEnable("LrWpanHelper", LOG_LEVEL_ALL);
-        LogComponentEnable("Ping6Application", LOG_LEVEL_INFO);
+        LogComponentEnable("Ping", LOG_LEVEL_INFO);
     }
 
     NodeContainer nodes;
@@ -129,21 +129,18 @@ main(int argc, char** argv)
     // Send ping packets after the 2nd second of the simulation during the
     // first 8 seconds of the CAP in the incoming superframe
 
-    uint32_t packetSize = 10;
+    uint32_t packetSize = 16;
     uint32_t maxPacketCount = 5;
     Time interPacketInterval = Seconds(1);
-    Ping6Helper ping6;
+    PingHelper ping(deviceInterfaces.GetAddress(1, 1));
 
-    ping6.SetLocal(deviceInterfaces.GetAddress(0, 1));
-    ping6.SetRemote(deviceInterfaces.GetAddress(1, 1));
-
-    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
-    ApplicationContainer apps = ping6.Install(nodes.Get(0));
+    ping.SetAttribute("Count", UintegerValue(maxPacketCount));
+    ping.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping.SetAttribute("Size", UintegerValue(packetSize));
+    ApplicationContainer apps = ping.Install(nodes.Get(0));
 
     apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Stop(Seconds(20.0));
 
     AsciiTraceHelper ascii;
     lrWpanHelper.EnableAsciiAll(ascii.CreateFileStream("Ping-6LoW-lr-wpan-beacon.tr"));

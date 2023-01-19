@@ -32,6 +32,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    energy
    flow-monitor
    internet-models
+   internet-apps
    lr-wpan
    lte
    mesh

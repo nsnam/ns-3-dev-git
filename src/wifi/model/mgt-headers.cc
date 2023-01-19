@@ -282,7 +282,10 @@ MgtProbeRequestHeader::Deserialize(Buffer::Iterator start)
     i = WifiInformationElement::DeserializeIfPresent(m_htCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_vhtCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_heCapability, i);
-    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i);
+    const bool is2_4Ghz = m_rates.IsSupportedRate(
+        1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
+                                 // Capabilities IE once the later is implemented
+    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i, is2_4Ghz, m_heCapability);
     return i.GetDistanceFrom(start);
 }
 
@@ -851,7 +854,10 @@ MgtProbeResponseHeader::Deserialize(Buffer::Iterator start)
     i = WifiInformationElement::DeserializeIfPresent(m_heOperation, i);
     i = WifiInformationElement::DeserializeIfPresent(m_muEdcaParameterSet, i);
     i = WifiInformationElement::DeserializeIfPresent(m_multiLinkElement, i, WIFI_MAC_MGT_BEACON);
-    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i);
+    const bool is2_4Ghz = m_rates.IsSupportedRate(
+        1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
+                                 // Capabilities IE once the later is implemented
+    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i, is2_4Ghz, m_heCapability);
 
     return i.GetDistanceFrom(start);
 }
@@ -1199,7 +1205,10 @@ MgtAssocRequestHeader::Deserialize(Buffer::Iterator start)
     i = WifiInformationElement::DeserializeIfPresent(m_multiLinkElement,
                                                      i,
                                                      WIFI_MAC_MGT_ASSOCIATION_REQUEST);
-    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i);
+    const bool is2_4Ghz = m_rates.IsSupportedRate(
+        1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
+                                 // Capabilities IE once the later is implemented
+    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i, is2_4Ghz, m_heCapability);
     return i.GetDistanceFrom(start);
 }
 
@@ -1539,7 +1548,10 @@ MgtReassocRequestHeader::Deserialize(Buffer::Iterator start)
     i = WifiInformationElement::DeserializeIfPresent(m_multiLinkElement,
                                                      i,
                                                      WIFI_MAC_MGT_REASSOCIATION_REQUEST);
-    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i);
+    const bool is2_4Ghz = m_rates.IsSupportedRate(
+        1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
+                                 // Capabilities IE once the later is implemented
+    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i, is2_4Ghz, m_heCapability);
     return i.GetDistanceFrom(start);
 }
 
@@ -2042,7 +2054,10 @@ MgtAssocResponseHeader::Deserialize(Buffer::Iterator start)
     i = WifiInformationElement::DeserializeIfPresent(m_multiLinkElement,
                                                      i,
                                                      WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
-    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i);
+    const bool is2_4Ghz = m_rates.IsSupportedRate(
+        1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
+                                 // Capabilities IE once the later is implemented
+    i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i, is2_4Ghz, m_heCapability);
     return i.GetDistanceFrom(start);
 }
 

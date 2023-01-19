@@ -57,13 +57,13 @@ class LrWpanAckTestCase : public TestCase
     /**
      * Test modes
      */
-    typedef enum
+    enum TestMode_e
     {
         EXTENDED_ADDRESS_UNICAST, //!< extended addresses
         SHORT_ADDRESS_UNICAST,    //!< short addresses, unicast
         SHORT_ADDRESS_MULTICAST,  //!< short addresses, multicast
         SHORT_ADDRESS_BROADCAST,  //!< short addresses, broadcast
-    } TestMode_e;
+    };
 
     /**
      * Create test case

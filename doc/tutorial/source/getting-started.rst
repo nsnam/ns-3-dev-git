@@ -822,9 +822,9 @@ use the indicated Code Wrapper macro:
 
 .. sourcecode:: cpp
 
-  NS_BUILD_DEBUG (std::cout << "Part of an output line..." << std::flush; timer.Start ());
-  DoLongInvolvedComputation ();
-  NS_BUILD_DEBUG (timer.Stop (); std::cout << "Done: " << timer << std::endl;)
+  NS_BUILD_DEBUG(std::cout << "Part of an output line..." << std::flush; timer.Start());
+  DoLongInvolvedComputation();
+  NS_BUILD_DEBUG(timer.Stop(); std::cout << "Done: " << timer << std::endl;)
 
 By default ns3 puts the build artifacts in the ``build`` directory.
 You can specify a different output directory with the ``--out``
@@ -1626,4 +1626,3 @@ The resulting text file can then be saved with any corresponding
   then
       echo "$gitDiff" >> version.txt
   fi
-

@@ -48,12 +48,12 @@ class ErrorModel;
  *
  * Helper structure to manage the power measurement during ED.
  */
-typedef struct
+struct LrWpanEdPower
 {
     double averagePower;    //!< Average measured power
     Time lastUpdate;        //!< Last update time
     Time measurementLength; //!< Total measurement period
-} LrWpanEdPower;
+};
 
 /**
  * \ingroup lr-wpan
@@ -61,11 +61,11 @@ typedef struct
  * This data structure provides the Bit rate and Symbol rate for a given channel
  * See IEEE802.15.4-2006 Table 1 and 2 in section 6.1.1 and 6.1.2
  */
-typedef struct
+struct LrWpanPhyDataAndSymbolRates
 {
     double bitRate;    //!< bit rate
     double symbolRate; //!< symbol rate
-} LrWpanPhyDataAndSymbolRates;
+};
 
 /**
  * \ingroup lr-wpan
@@ -73,19 +73,19 @@ typedef struct
  * This data structure provides number of symbols for the PPDU headers: SHR and PHR
  * See IEEE802.15.4-2006 Figure 16, Table 19 and 20 in section 6.3
  */
-typedef struct
+struct LrWpanPhyPpduHeaderSymbolNumber
 {
     double shrPreamble; //!< Number of symbols for the SHR preamble
     double shrSfd;      //!< Number of symbols for the SHR SFD
     double phr;         //!< Number of symbols for the PHR
-} LrWpanPhyPpduHeaderSymbolNumber;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * This Phy option will be used to index various Tables in IEEE802.15.4-2011
  */
-typedef enum
+enum LrWpanPhyOption
 {
     IEEE_802_15_4_868MHZ_BPSK,
     IEEE_802_15_4_915MHZ_BPSK,
@@ -97,7 +97,7 @@ typedef enum
     IEEE_802_15_4_915MHZ_OQPSK,
     IEEE_802_15_4_2_4GHZ_OQPSK,
     IEEE_802_15_4_INVALID_PHY_OPTION
-} LrWpanPhyOption;
+};
 
 /**
  * \ingroup lr-wpan
@@ -105,7 +105,7 @@ typedef enum
  * IEEE802.15.4-2006 PHY Emumerations Table 18
  * in section 6.2.3
  */
-typedef enum
+enum LrWpanPhyEnumeration
 {
     IEEE_802_15_4_PHY_BUSY = 0x00,
     IEEE_802_15_4_PHY_BUSY_RX = 0x01,
@@ -120,7 +120,7 @@ typedef enum
     IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE = 0xa,
     IEEE_802_15_4_PHY_READ_ONLY = 0xb,
     IEEE_802_15_4_PHY_UNSPECIFIED = 0xc // all cases not covered by ieee802.15.4
-} LrWpanPhyEnumeration;
+};
 
 namespace TracedValueCallback
 {
@@ -139,7 +139,7 @@ typedef void (*LrWpanPhyEnumeration)(LrWpanPhyEnumeration oldValue, LrWpanPhyEnu
  *
  * IEEE802.15.4-2006 PHY PIB Attribute Identifiers Table 23 in section 6.4.2
  */
-typedef enum
+enum LrWpanPibAttributeIdentifier
 {
     phyCurrentChannel = 0x00,
     phyChannelsSupported = 0x01,
@@ -149,14 +149,14 @@ typedef enum
     phyMaxFrameDuration = 0x05,
     phySHRDuration = 0x06,
     phySymbolsPerOctet = 0x07
-} LrWpanPibAttributeIdentifier;
+};
 
 /**
  * \ingroup lr-wpan
  *
  * IEEE802.15.4-2006 PHY PIB Attributes Table 23 in section 6.4.2
  */
-typedef struct
+struct LrWpanPhyPibAttributes
 {
     uint8_t phyCurrentChannel;         //!< The RF channel to use
     uint32_t phyChannelsSupported[32]; //!< BitField representing the available channels supported
@@ -168,7 +168,7 @@ typedef struct
     uint32_t phyMaxFrameDuration; //!< The maximum number of symbols in a frame
     uint32_t phySHRDuration;      //!< The duration of the synchronization header (SHR) in symbols
     double phySymbolsPerOctet;    //!< The number of symbols per octet
-} LrWpanPhyPibAttributes;
+};
 
 /**
  * \ingroup lr-wpan
@@ -256,19 +256,6 @@ class LrWpanPhy : public SpectrumPhy
      * \return the object TypeId
      */
     static TypeId GetTypeId();
-
-    /**
-     * The maximum packet size accepted by the PHY.
-     * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
-     */
-    static const uint32_t aMaxPhyPacketSize;
-
-    /**
-     * The turnaround time for switching the transceiver from RX to TX or vice
-     * versa.
-     * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
-     */
-    static const uint32_t aTurnaroundTime;
 
     /**
      * Default constructor.
@@ -541,21 +528,6 @@ class LrWpanPhy : public SpectrumPhy
     typedef void (*StateTracedCallback)(Time time,
                                         LrWpanPhyEnumeration oldState,
                                         LrWpanPhyEnumeration newState);
-
-  protected:
-    /**
-     * The data and symbol rates for the different PHY options.
-     * See Table 1 in section 6.1.1 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE 802.15.4d-2009.
-     * Bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
-     */
-    static const LrWpanPhyDataAndSymbolRates dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPTION];
-    /**
-     * The preamble, SFD, and PHR lengths in symbols for the different PHY options.
-     * See Table 19 and Table 20 in section 6.3 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE
-     * 802.15.4d-2009.
-     */
-    static const LrWpanPhyPpduHeaderSymbolNumber
-        ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION];
 
   private:
     /**

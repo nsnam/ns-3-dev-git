@@ -1262,7 +1262,7 @@ Second, when a PHY reset is requested by the algorithm, it performs the computat
 restrictions and informs the PHY object.
 
 The PHY keeps tracks of incoming requests from the MAC to get access to the channel.
-If a request is received and if PHY reset(s) indicating TX power limitations occured
+If a request is received and if PHY reset(s) indicating TX power limitations occurred
 before a packet was transmitted, the next packet to be transmitted will be sent with
 a reduced power. Otherwise, no TX power restrictions will be applied.
 
