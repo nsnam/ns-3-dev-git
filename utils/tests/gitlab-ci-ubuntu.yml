@@ -26,6 +26,7 @@
       libxml2 libxml2-dev
       libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
       libsqlite3-dev sqlite3
+      libeigen3-dev
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
       bison flex ssh
 

@@ -18,6 +18,7 @@
     - dnf install --assumeyes
       gcc-c++ cmake ccache ninja-build
       boost-devel
+      eigen3-devel
       gtk3 gtk3-devel
       gsl gsl-devel
       sqlite sqlite-devel
