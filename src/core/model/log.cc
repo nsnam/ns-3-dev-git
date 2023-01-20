@@ -274,7 +274,10 @@ LogComponent::GetLevelLabel(const LogLevel level)
             {
                 std::string pad{label};
                 // Add whitespace for alignment with "ERROR", "DEBUG" etc.
-                pad.insert(pad.size(), 5 - pad.size(), ' ');
+                if (pad.size() < 5)
+                {
+                    pad.insert(pad.size(), 5 - pad.size(), ' ');
+                }
                 std::transform(pad.begin(), pad.end(), pad.begin(), ::toupper);
                 levels[lev] = pad;
             }
