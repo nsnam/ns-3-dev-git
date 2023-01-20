@@ -181,9 +181,15 @@ LogComponent::EnvVarCheck()
         std::tie(found, value) = EnvironmentVariable::Get("NS_LOG", "***", ":");
     }
 
-    if (!found || value.empty())
+    if (!found)
     {
         return;
+    }
+
+    if (value.empty())
+    {
+        // Default is enable all levels, all prefixes
+        value = "**";
     }
 
     // Got a value, might have flags
