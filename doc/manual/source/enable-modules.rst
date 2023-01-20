@@ -97,6 +97,8 @@ The .ns3rc file should now be in your top level |ns3| directory, and it contains
     # Modules that depend on the listed modules will be enabled also.
     #
     # All modules can be enabled by emptying the list.
+    # To list modules, append the modules separated by space or semicolon; e.g.:
+    # set(ns3rc_enabled_modules core propagation)
     set(ns3rc_enabled_modules)
 
     # A list of the modules that will be disabled when ns-3 is run.
@@ -123,6 +125,8 @@ Use your favorite editor to modify the .ns3rc file to only enable the core modul
     # Modules that depend on the listed modules will be enabled also.
     #
     # All modules can be enabled by emptying the list.
+    # To list modules, append the modules separated by space or semicolon; e.g.:
+    # set(ns3rc_enabled_modules core propagation)
     set(ns3rc_enabled_modules core)
 
     # A list of the modules that will be disabled when ns-3 is run.
@@ -176,3 +180,16 @@ Running test.py will cause those tests that depend on only the core and network 
 .. sourcecode:: text
 
   31 of 31 tests passed (31 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
+
+As the comment in the sample ``.ns3rc`` file suggests, users may list multiple enabled modules by
+separating each requested module by space or semicolon; e.g.:
+
+.. sourcecode:: cmake
+
+    set(ns3rc_enabled_modules core propagation)
+
+The following also works (but note that a comma delimiter will not work with this CMake list):
+
+.. sourcecode:: cmake
+
+    set(ns3rc_enabled_modules core;propagation)
