@@ -31,6 +31,7 @@
 #include <list>
 #include <locale> // toupper
 #include <map>
+#include <numeric> // accumulate
 #include <stdexcept>
 #include <utility>
 
@@ -47,7 +48,7 @@
 namespace
 {
 /** Mapping of log level text names to values. */
-const std::map<std::string, ns3::LogLevel> LOG_LEVEL = {
+const std::map<std::string, ns3::LogLevel> LOG_LABEL_LEVELS = {
     // clang-format off
         {"none",           ns3::LOG_NONE},
         {"error",          ns3::LOG_ERROR},
@@ -75,6 +76,28 @@ const std::map<std::string, ns3::LogLevel> LOG_LEVEL = {
         {"prefix_all",     ns3::LOG_PREFIX_ALL}
     // clang-format on
 };
+
+/** Inverse mapping of level values to log level text names. */
+const std::map<ns3::LogLevel, std::string> LOG_LEVEL_LABELS = {[]() {
+    std::map<ns3::LogLevel, std::string> labels;
+    for (const auto& [label, lev] : LOG_LABEL_LEVELS)
+    {
+        // Only keep the first label for a level
+        if (labels.find(lev) == labels.end())
+        {
+            std::string pad{label};
+            // Add whitespace for alignment with "ERROR", "DEBUG" etc.
+            if (pad.size() < 5)
+            {
+                pad.insert(pad.size(), 5 - pad.size(), ' ');
+            }
+            std::transform(pad.begin(), pad.end(), pad.begin(), ::toupper);
+            labels[lev] = pad;
+        }
+    }
+    return labels;
+}()};
+
 } // Unnamed namespace
 
 namespace ns3
@@ -94,8 +117,13 @@ static NodePrinter g_logNodePrinter = nullptr;
 
 /**
  * \ingroup logging
- * Handler for \c print-list token in NS_LOG
- * to print the list of log components.
+ * Handler for the undocumented \c print-list token in NS_LOG
+ * which triggers printing of the list of log components, then exits.
+ *
+ * A static instance of this class is instantiated below, so the
+ * \c print-list token is handled before any other logging action
+ * can take place.
+ *
  * This is private to the logging implementation.
  */
 class PrintList
@@ -136,6 +164,7 @@ LogComponent::LogComponent(const std::string& name,
       m_name(name),
       m_file(file)
 {
+    // Check if we're mentioned in NS_LOG, and set our flags appropriately
     EnvVarCheck();
 
     LogComponent::ComponentList* components = GetComponentList();
@@ -208,9 +237,9 @@ LogComponent::EnvVarCheck()
         {
             level |= (pre_pipe ? LOG_LEVEL_ALL : LOG_PREFIX_ALL);
         }
-        else if (LOG_LEVEL.find(lev) != LOG_LEVEL.end())
+        else if (LOG_LABEL_LEVELS.find(lev) != LOG_LABEL_LEVELS.end())
         {
-            level |= LOG_LEVEL.at(lev);
+            level |= LOG_LABEL_LEVELS.at(lev);
         }
         pre_pipe = false;
     }
@@ -264,30 +293,10 @@ LogComponent::File() const
 std::string
 LogComponent::GetLevelLabel(const LogLevel level)
 {
-    using LevelStringMap = std::map<LogLevel, std::string>;
-    static const LevelStringMap LOG_LABEL{[]() {
-        LevelStringMap levels;
-        for (const auto& [label, lev] : LOG_LEVEL)
-        {
-            // Only keep the first label for a level
-            if (levels.find(lev) == levels.end())
-            {
-                std::string pad{label};
-                // Add whitespace for alignment with "ERROR", "DEBUG" etc.
-                if (pad.size() < 5)
-                {
-                    pad.insert(pad.size(), 5 - pad.size(), ' ');
-                }
-                std::transform(pad.begin(), pad.end(), pad.begin(), ::toupper);
-                levels[lev] = pad;
-            }
-        }
-        return levels;
-    }()};
-
-    if (LOG_LABEL.find(level) != LOG_LABEL.end())
+    auto it = LOG_LEVEL_LABELS.find(level);
+    if (it != LOG_LEVEL_LABELS.end())
     {
-        return LOG_LABEL.at(level);
+        return it->second;
     }
     return "unknown";
 }
@@ -308,9 +317,11 @@ LogComponentEnable(const char* name, LogLevel level)
     if (i == components->end())
     {
         // nothing matched
+        NS_LOG_UNCOND("Logging component \"" << name << "\" not found.");
         LogComponentPrintList();
         NS_FATAL_ERROR("Logging component \""
-                       << name << "\" not found. See above for a list of available log components");
+                       << name << "\" not found."
+                       << " See above for a list of available log components");
     }
 }
 
@@ -464,60 +475,38 @@ CheckEnvironmentVariables()
 
     for (auto& [component, value] : dict)
     {
-        if (value.empty())
+        if (component != "*" && component != "***" && !ComponentExists(component))
         {
-            if (ComponentExists(component) || component == "*" || component == "***")
-            {
-                return;
-            }
-            else
-            {
-                LogComponentPrintList();
-                NS_FATAL_ERROR(
-                    "Invalid or unregistered component name \""
-                    << component
-                    << "\" in env variable NS_LOG, see above for a list of valid components");
-            }
+            NS_LOG_UNCOND("Invalid or unregistered component name \"" << component << "\"");
+            LogComponentPrintList();
+            NS_FATAL_ERROR(
+                "Invalid or unregistered component name \""
+                << component
+                << "\" in env variable NS_LOG, see above for a list of valid components");
         }
-        else
-        {
-            if (ComponentExists(component) || component == "*")
-            {
-                std::string::size_type next_lev{0};
-                std::string::size_type cur_lev{next_lev};
-                do
-                {
-                    next_lev = value.find('|', cur_lev);
-                    std::string lev = value.substr(cur_lev, next_lev - cur_lev);
-                    bool ok = lev == "error" || lev == "warn" || lev == "debug" || lev == "info" ||
-                              lev == "function" || lev == "logic" || lev == "all" ||
-                              lev == "prefix_func" || lev == "func" || lev == "prefix_time" ||
-                              lev == "time" || lev == "prefix_node" || lev == "node" ||
-                              lev == "prefix_level" || lev == "level" || lev == "prefix_all" ||
-                              lev == "level_error" || lev == "level_warn" || lev == "level_debug" ||
-                              lev == "level_info" || lev == "level_function" ||
-                              lev == "level_logic" || lev == "level_all" || lev == "*" ||
-                              lev == "**";
-                    if (!ok)
-                    {
-                        NS_FATAL_ERROR("Invalid log level \""
-                                       << lev << "\" in env variable NS_LOG for component name "
-                                       << component);
-                    }
-                    cur_lev = next_lev + 1; // skip '|'
-                } while (next_lev != std::string::npos);
-            }
-            else
-            {
-                LogComponentPrintList();
-                NS_FATAL_ERROR(
-                    "Invalid or unregistered component name \""
-                    << component
-                    << "\" in env variable NS_LOG, see above for a list of valid components");
-            }
-        } // else
 
-    } // for
+        // We have a valid component or wildcard, check the flags
+        if (!value.empty())
+        {
+            // Check the flags present in value
+            StringVector flags = SplitString(value, "|");
+            for (const auto& flag : flags)
+            {
+                // Handle wild cards
+                if (flag == "*" || flag == "**")
+                {
+                    continue;
+                }
+                bool ok = LOG_LABEL_LEVELS.find(flag) != LOG_LABEL_LEVELS.end();
+                if (!ok)
+                {
+                    NS_FATAL_ERROR("Invalid log level \""
+                                   << flag << "\" in env variable NS_LOG for component name "
+                                   << component);
+                }
+            } // for flag
+        }     // !value.empty
+    }         // for component
 }
 
 void
