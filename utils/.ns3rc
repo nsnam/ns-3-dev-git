@@ -2,6 +2,8 @@
 # Modules that depend on the listed modules will be enabled also.
 #
 # All modules can be enabled by emptying the list.
+# To list modules, append the modules separated by space or semicolon; e.g.:
+# set(ns3rc_enabled_modules core propagation)
 set(ns3rc_enabled_modules)
 
 # A list of the modules that will be disabled when ns-3 is run.
