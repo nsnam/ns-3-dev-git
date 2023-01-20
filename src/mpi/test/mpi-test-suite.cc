@@ -43,7 +43,8 @@ class MpiTestCase : public ExampleAsTestCase
                 const std::string program,
                 const std::string dataDir,
                 const int ranks,
-                const std::string args = "");
+                const std::string args = "",
+                const bool shouldNotErr = true);
 
     /** Destructor */
     ~MpiTestCase() override
@@ -75,8 +76,9 @@ MpiTestCase::MpiTestCase(const std::string name,
                          const std::string program,
                          const std::string dataDir,
                          const int ranks,
-                         const std::string args /* = "" */)
-    : ExampleAsTestCase(name, program, dataDir, args),
+                         const std::string args /* = "" */,
+                         const bool shouldNotErr /* = true */)
+    : ExampleAsTestCase(name, program, dataDir, args, shouldNotErr),
       m_ranks(ranks)
 {
 }
@@ -114,10 +116,11 @@ class MpiTestSuite : public TestSuite
                  const std::string dataDir,
                  const int ranks,
                  const std::string args = "",
-                 const TestDuration duration = QUICK)
+                 const TestDuration duration = QUICK,
+                 const bool shouldNotErr = true)
         : TestSuite(name, EXAMPLE)
     {
-        AddTestCase(new MpiTestCase(name, program, dataDir, ranks, args), duration);
+        AddTestCase(new MpiTestCase(name, program, dataDir, ranks, args, shouldNotErr), duration);
     }
 
 }; // class MpiTestSuite

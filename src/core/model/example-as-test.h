@@ -39,8 +39,8 @@ namespace ns3
  * Execute an example program as a test, by comparing the output
  * to a reference file.
  *
- * User can subclass and override the GetCommandTemplate and
- * GetPostProcessingCommand methods if more complex
+ * User can subclass and override the GetCommandTemplate() and
+ * GetPostProcessingCommand() methods if more complex
  * example invocation patterns are required.
  *
  * \see examples-as-tests-test-suite.cc
@@ -64,11 +64,17 @@ class ExampleAsTestCase : public TestCase
      *                  `test-runner` the reference file will be created
      *                  with the correct name.
      * \param [in] args Any additional arguments to the program.
+     * \param [in] shouldNotErr Whether an error return status should be
+     *             considered a test failure. This is useful when testing
+     *             error detection which might return a non-zero status.
+     *             The output (on `std::cout` and `std::cerr`) will
+     *             be compared to the reference logs as normal.
      */
     ExampleAsTestCase(const std::string name,
                       const std::string program,
                       const std::string dataDir,
-                      const std::string args = "");
+                      const std::string args = "",
+                      const bool shouldNotErr = true);
 
     /** Destructor. */
     ~ExampleAsTestCase() override;
@@ -84,9 +90,15 @@ class ExampleAsTestCase : public TestCase
     /**
      * Customization point for tests requiring post-processing of stdout.
      *
-     * For example to sort return "| sort"
+     * For example to sort return `"| sort"`
      *
-     * Default is "", no processing step.
+     * One common case is to mask memory addresses, which can change
+     * when things are built on different platforms, recompiled locally,
+     * or even from run to run.  A simple post-processing filter could be
+     *
+     *    `"| sed -E 's/0x[0-9a-fA-F]{8,}/0x-address/g'"`
+     *
+     * Default is `""`, no additional processing.
      *
      * \returns The string of post-processing commands
      */
@@ -99,6 +111,7 @@ class ExampleAsTestCase : public TestCase
     std::string m_program; /**< The program to run. */
     std::string m_dataDir; /**< The source directory for the test. */
     std::string m_args;    /**< Any additional arguments to the program. */
+    bool m_shouldNotErr;   /**< Whether error return status is a test failure. */
 
 }; // class ExampleAsTestCase
 
@@ -135,12 +148,13 @@ class ExampleAsTestCase : public TestCase
  * which looks like this:
  *
  * \code{.cpp}
- * #include "ns3/example-as-test.h"
- * static ns3::ExampleAsTestSuite g_modExampleOne ("mymodule-example-mod-example-one",
- * "mod-example", NS_TEST_SOURCEDIR, "--arg-one"); static ns3::ExampleAsTestSuite g_modExampleTwo
- * ("mymodule-example-mod-example-two", "mod-example", NS_TEST_SOURCEDIR, "--arg-two"); \endcode
+ *     #include "ns3/example-as-test.h"
+ *     static ns3::ExampleAsTestSuite g_modExampleOne("mymodule-example-mod-example-one",
+ *         "mod-example", NS_TEST_SOURCEDIR, "--arg-one");
+ *     static ns3::ExampleAsTestSuite g_modExampleTwo("mymodule-example-mod-example-two",
+ *         "mod-example", NS_TEST_SOURCEDIR, "--arg-two"); \endcode
  *
- * The arguments to the constructor is the name of the test suite, the
+ * The arguments to the constructor are the name of the test suite, the
  * example to run, the directory that contains the "good" reference file
  * (the macro `NS_TEST_SOURCEDIR` is normally the correct directory),
  * and command line arguments for the example.  In the preceding code
@@ -204,7 +218,8 @@ class ExampleAsTestSuite : public TestSuite
                        const std::string program,
                        const std::string dataDir,
                        const std::string args = "",
-                       const TestDuration duration = QUICK);
+                       const TestDuration duration = QUICK,
+                       const bool shouldNotErr = true);
 }; // class ExampleAsTestSuite
 
 } // namespace ns3
