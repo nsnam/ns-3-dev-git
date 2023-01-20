@@ -21,15 +21,78 @@
 
 #include "ns3/string.h"
 
-#include <cstdlib>  // getenv
+#include <cstdlib>  // std::getenv
 #include <cstring>  // strlen
 #include <iostream> // clog
+#include <stdlib.h> // Global functions setenv, unsetenv
 
 /**
  * \file
  * \ingroup core-environ
  * Class EnvironmentVariable implementation.
  */
+
+#ifdef __WIN32__
+#include <cerrno>
+
+/**
+ * Windows implementation of the POSIX function `setenv()`
+ *
+ * \param [in] var_name The environment variable to set.
+ *             Must not be a null-pointer, and must not contain `=`.
+ * \param [in] new_value The new value to set \p var_name to.
+ *             Must not by a null pointer or empty.
+ * \param [in] change_flag Must be non-zero to actually change the environment.
+ * \returns 0 if successful, -1 if failed.
+ */
+int
+setenv(const char* var_name, const char* new_value, int change_flag)
+{
+    std::string variable{var_name};
+    std::string value{new_value};
+
+    // In case arguments are null pointers, return invalid error
+    // Windows does not accept empty environment variables
+    if (variable.empty() || value.empty())
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
+    // Posix does not accept '=', so impose that here
+    if (variable.find('=') != std::string::npos)
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
+    // Change flag equals to zero preserves a pre-existing value
+    if (change_flag == 0)
+    {
+        char* old_value = std::getenv(var_name);
+        if (old_value != nullptr)
+        {
+            return 0;
+        }
+    }
+
+    // Write new value for the environment variable
+    return _putenv_s(var_name, new_value);
+}
+
+/**
+ * Windows implementation of the POSIX function `unsetenv()`
+ * \param [in] var_name The environment variable to unset and remove from the environment.
+ * \returns 0 if successful, -1 if failed.
+ */
+int
+unsetenv(const char* var_name)
+{
+    return _putenv_s(var_name, "");
+}
+
+#endif // __WIN32__
+
 namespace ns3
 {
 
@@ -112,6 +175,22 @@ EnvironmentVariable::Get(const std::string& envvar,
 {
     auto dict = GetDictionary(envvar, delim);
     return dict->Get(key);
+}
+
+/* static */
+bool
+EnvironmentVariable::Set(const std::string& variable, const std::string& value)
+{
+    int fail = setenv(variable.c_str(), value.c_str(), 1);
+    return !fail;
+}
+
+/* static */
+bool
+EnvironmentVariable::Unset(const std::string& variable)
+{
+    int fail = unsetenv(variable.c_str());
+    return !fail;
 }
 
 EnvironmentVariable::KeyFoundType

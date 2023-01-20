@@ -20,8 +20,7 @@
 #include "ns3/environment-variable.h"
 #include "ns3/test.h"
 
-#include <cstdlib>  // setenv, unsetenv
-#include <stdlib.h> // getenv
+#include <cstdlib> // getenv
 
 namespace ns3
 {
@@ -52,7 +51,7 @@ class EnvVarTestCase : public TestCase
     EnvVarTestCase();
 
     /** Destructor */
-    ~EnvVarTestCase() override = default;
+    ~EnvVarTestCase() override;
 
   private:
     /** Run the tests */
@@ -129,12 +128,17 @@ EnvVarTestCase::EnvVarTestCase()
 {
 }
 
+EnvVarTestCase::~EnvVarTestCase()
+{
+    UnsetVariable("destructor");
+}
+
 void
 EnvVarTestCase::SetVariable(const std::string& where, const std::string& value)
 {
     EnvironmentVariable::Clear();
-    int ok = setenv(m_variable.c_str(), value.c_str(), 1);
-    NS_TEST_EXPECT_MSG_EQ(ok, 0, where << ": failed to set variable");
+    bool ok = EnvironmentVariable::Set(m_variable, value);
+    NS_TEST_EXPECT_MSG_EQ(ok, true, where << ": failed to set variable");
 
     // Double check
     const char* envCstr = std::getenv(m_variable.c_str());
@@ -146,8 +150,8 @@ void
 EnvVarTestCase::UnsetVariable(const std::string& where)
 {
     EnvironmentVariable::Clear();
-    int ok = unsetenv(m_variable.c_str());
-    NS_TEST_EXPECT_MSG_EQ(ok, 0, where << ": failed to unset variable");
+    bool ok = EnvironmentVariable::Unset(where);
+    NS_TEST_EXPECT_MSG_EQ(ok, true, where << ": failed to unset variable");
 }
 
 void
@@ -250,7 +254,10 @@ EnvVarTestCase::DoRun()
     NS_TEST_EXPECT_MSG_EQ(value.empty(), true, "unset: non-empty value from unset variable");
 
     // Variable set but empty
+#ifndef __WIN32__
+    // Windows doesn't support environment variables with empty values
     SetCheckAndGet("empty", "", {}, "", {true, ""});
+#endif
 
     // Key not in variable
     SetCheckAndGet("no-key",
@@ -307,7 +314,7 @@ EnvVarTestCase::DoRun()
 /**
  * \ingroup environ-var-tests
  *
- * TypeId test suites.
+ * Environment variable handling test suite.
  */
 class EnvironmentVariableTestSuite : public TestSuite
 {
