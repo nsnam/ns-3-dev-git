@@ -43,6 +43,7 @@
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
+#include <array>
 #include <functional>
 
 // This is a simple example in order to show how to configure an IEEE 802.11be Wi-Fi network.
@@ -76,7 +77,11 @@ main(int argc, char* argv[])
     bool useExtendedBlockAck{false};
     double simulationTime{10}; // seconds
     double distance{1.0};      // meters
-    double frequency{5};       // whether 2.4, 5 or 6 GHz
+    double frequency{5};       // whether the first link operates in the 2.4, 5 or 6 GHz
+    double frequency2{0}; // whether the second link operates in the 2.4, 5 or 6 GHz (0 means no
+                          // second link exists)
+    double frequency3{
+        0}; // whether the third link operates in the 2.4, 5 or 6 GHz (0 means no third link exists)
     std::size_t nStations{1};
     std::string dlAckSeqType{"NO-OFDMA"};
     bool enableUlOfdma{false};
@@ -89,9 +94,20 @@ main(int argc, char* argv[])
     Time accessReqInterval{0};
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("frequency",
-                 "Whether working in the 2.4, 5 or 6 GHz band (other values gets rejected)",
-                 frequency);
+    cmd.AddValue(
+        "frequency",
+        "Whether the first link operates in the 2.4, 5 or 6 GHz band (other values gets rejected)",
+        frequency);
+    cmd.AddValue(
+        "frequency2",
+        "Whether the second link operates in the 2.4, 5 or 6 GHz band (0 means the device has one "
+        "link, otherwise the band must be different than first link and third link)",
+        frequency2);
+    cmd.AddValue(
+        "frequency3",
+        "Whether the third link operates in the 2.4, 5 or 6 GHz band (0 means the device has up to "
+        "two links, otherwise the band must be different than first link and second link)",
+        frequency3);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
@@ -175,7 +191,8 @@ main(int argc, char* argv[])
     {
         uint8_t index = 0;
         double previous = 0;
-        uint8_t maxChannelWidth = frequency == 2.4 ? 40 : 160;
+        uint16_t maxChannelWidth =
+            (frequency != 2.4 && frequency2 != 2.4 && frequency3 != 2.4) ? 160 : 40;
         for (int channelWidth = 20; channelWidth <= maxChannelWidth;) // MHz
         {
             for (int gi = 3200; gi >= 800;) // Nanoseconds
@@ -194,50 +211,71 @@ main(int argc, char* argv[])
                 NetDeviceContainer staDevices;
                 WifiMacHelper mac;
                 WifiHelper wifi;
-                std::string channelStr("{0, " + std::to_string(channelWidth) + ", ");
-                StringValue ctrlRate;
-                auto nonHtRefRateMbps = EhtPhy::GetNonHtReferenceRate(mcs) / 1e6;
 
-                std::ostringstream ossDataMode;
-                ossDataMode << "EhtMcs" << mcs;
+                wifi.SetStandard(WIFI_STANDARD_80211be);
+                std::array<std::string, 3> channelStr;
+                uint8_t nLinks = 0;
+                std::string dataModeStr = "EhtMcs" + std::to_string(mcs);
+                std::string ctrlRateStr;
+                uint64_t nonHtRefRateMbps = EhtPhy::GetNonHtReferenceRate(mcs) / 1e6;
 
-                if (frequency == 6)
+                if (frequency2 == frequency || frequency3 == frequency ||
+                    (frequency3 != 0 && frequency3 == frequency2))
                 {
-                    wifi.SetStandard(WIFI_STANDARD_80211be);
-                    ctrlRate = StringValue(ossDataMode.str());
-                    channelStr += "BAND_6GHZ, 0}";
-                    Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
-                                       DoubleValue(48));
-                }
-                else if (frequency == 5)
-                {
-                    wifi.SetStandard(WIFI_STANDARD_80211be);
-                    std::ostringstream ossControlMode;
-                    ossControlMode << "OfdmRate" << nonHtRefRateMbps << "Mbps";
-                    ctrlRate = StringValue(ossControlMode.str());
-                    channelStr += "BAND_5GHZ, 0}";
-                }
-                else if (frequency == 2.4)
-                {
-                    wifi.SetStandard(WIFI_STANDARD_80211be);
-                    std::ostringstream ossControlMode;
-                    ossControlMode << "ErpOfdmRate" << nonHtRefRateMbps << "Mbps";
-                    ctrlRate = StringValue(ossControlMode.str());
-                    channelStr += "BAND_2_4GHZ, 0}";
-                    Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
-                                       DoubleValue(40));
-                }
-                else
-                {
-                    std::cout << "Wrong frequency value!" << std::endl;
+                    std::cout << "Frequency values must be unique!" << std::endl;
                     return 0;
                 }
 
-                wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
-                                             "DataMode",
-                                             StringValue(ossDataMode.str()),
-                                             "ControlMode",
-                                             ctrlRate);
+                for (auto freq : {frequency, frequency2, frequency3})
+                {
+                    if (nLinks > 0 && freq == 0)
+                    {
+                        break;
+                    }
+                    channelStr[nLinks] = "{0, " + std::to_string(channelWidth) + ", ";
+                    if (freq == 6)
+                    {
+                        channelStr[nLinks] += "BAND_6GHZ, 0}";
+                        Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
+                                           DoubleValue(48));
+                        wifi.SetRemoteStationManager(nLinks,
+                                                     "ns3::ConstantRateWifiManager",
+                                                     "DataMode",
+                                                     StringValue(dataModeStr),
+                                                     "ControlMode",
+                                                     StringValue(dataModeStr));
+                    }
+                    else if (freq == 5)
+                    {
+                        channelStr[nLinks] += "BAND_5GHZ, 0}";
+                        ctrlRateStr = "OfdmRate" + std::to_string(nonHtRefRateMbps) + "Mbps";
+                        wifi.SetRemoteStationManager(nLinks,
+                                                     "ns3::ConstantRateWifiManager",
+                                                     "DataMode",
+                                                     StringValue(dataModeStr),
+                                                     "ControlMode",
+                                                     StringValue(ctrlRateStr));
+                    }
+                    else if (freq == 2.4)
+                    {
+                        channelStr[nLinks] += "BAND_2_4GHZ, 0}";
+                        Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
+                                           DoubleValue(40));
+                        ctrlRateStr = "ErpOfdmRate" + std::to_string(nonHtRefRateMbps) + "Mbps";
+                        wifi.SetRemoteStationManager(nLinks,
+                                                     "ns3::ConstantRateWifiManager",
+                                                     "DataMode",
+                                                     StringValue(dataModeStr),
+                                                     "ControlMode",
+                                                     StringValue(ctrlRateStr));
+                    }
+                    else
+                    {
+                        std::cout << "Wrong frequency value!" << std::endl;
+                        return 0;
+                    }
+                    nLinks++;
+                }
 
                 Ssid ssid = Ssid("ns3-80211be");
 
@@ -254,12 +292,15 @@ main(int argc, char* argv[])
                     CreateObject<LogDistancePropagationLossModel>();
                 spectrumChannel->AddPropagationLossModel(lossModel);
 
-                SpectrumWifiPhyHelper phy;
+                SpectrumWifiPhyHelper phy(nLinks);
                 phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                 phy.SetChannel(spectrumChannel);
 
                 mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
-                phy.Set("ChannelSettings", StringValue(channelStr));
+                for (uint8_t linkId = 0; linkId < nLinks; linkId++)
+                {
+                    phy.Set(linkId, "ChannelSettings", StringValue(channelStr[linkId]));
+                }
                 staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
                 if (dlAckSeqType != "NO-OFDMA")
