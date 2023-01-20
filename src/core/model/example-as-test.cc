@@ -85,18 +85,22 @@ ExampleAsTestCase::DoRun()
     SetDataDir(m_dataDir);
     std::string refFile = CreateDataDirFilename(GetName() + ".reflog");
     std::string testFile = CreateTempDirFilename(GetName() + ".reflog");
+    std::string post = GetPostProcessingCommand();
 
     std::stringstream ss;
 
     ss << "python3 ./ns3 run " << m_program << " --no-build --command-template=\""
-       << GetCommandTemplate()
-       << "\""
+       << GetCommandTemplate() << "\"";
 
-       // redirect std::clog, std::cerr to std::cout
-       << " 2>&1 "
-       // Suppress the waf lines from output; waf output contains directory paths which will
-       // obviously differ during a test run
-       << " " << GetPostProcessingCommand() << " > " << testFile;
+    if (post.empty())
+    {
+        // redirect to testfile, then std::clog, std::cerr to std::cout
+        ss << " > " << testFile << " 2>&1";
+    }
+    else
+    {
+        ss << " 2>&1 " << post << " > " << testFile;
+    }
 
     int status = std::system(ss.str().c_str());
 
