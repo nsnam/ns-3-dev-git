@@ -798,10 +798,20 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
         std::vector<Ptr<WifiRemoteStationManager>> managers;
         std::vector<Ptr<WifiPhy>> phys = phyHelper.Create(node, device);
         device->SetPhys(phys);
+        // if only one remote station manager model was provided, replicate it for all the links
+        auto stationManagers = m_stationManager;
+        if (stationManagers.size() == 1 && phys.size() > 1)
+        {
+            stationManagers.resize(phys.size(), stationManagers[0]);
+        }
+        NS_ABORT_MSG_IF(stationManagers.size() != phys.size(),
+                        "Number of station manager models ("
+                            << stationManagers.size() << ") does not match the number of links ("
+                            << phys.size() << ")");
         for (std::size_t i = 0; i < phys.size(); i++)
         {
             phys[i]->ConfigureStandard(m_standard);
-            managers.push_back(m_stationManager.Create<WifiRemoteStationManager>());
+            managers.push_back(stationManagers[i].Create<WifiRemoteStationManager>());
         }
         device->SetRemoteStationManagers(managers);
         Ptr<WifiMac> mac = macHelper.Create(device, m_standard);
