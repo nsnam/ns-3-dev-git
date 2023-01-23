@@ -243,25 +243,25 @@ void
 InterferenceHelper::RemoveBands()
 {
     NS_LOG_FUNCTION(this);
-    for (auto it : m_niChangesPerBand)
+    for (auto it : m_niChanges)
     {
         it.second.clear();
     }
-    m_niChangesPerBand.clear();
-    m_firstPowerPerBand.clear();
+    m_niChanges.clear();
+    m_firstPowers.clear();
 }
 
 void
 InterferenceHelper::AddBand(WifiSpectrumBand band)
 {
     NS_LOG_FUNCTION(this << band.first << band.second);
-    NS_ASSERT(m_niChangesPerBand.find(band) == m_niChangesPerBand.end());
+    NS_ASSERT(m_niChanges.find(band) == m_niChanges.end());
     NiChanges niChanges;
-    auto result = m_niChangesPerBand.insert({band, niChanges});
+    auto result = m_niChanges.insert({band, niChanges});
     NS_ASSERT(result.second);
     // Always have a zero power noise event in the list
     AddNiChangeEvent(Time(0), NiChange(0.0, nullptr), result.first);
-    m_firstPowerPerBand.insert({band, 0.0});
+    m_firstPowers.insert({band, 0.0});
 }
 
 void
@@ -292,8 +292,8 @@ Time
 InterferenceHelper::GetEnergyDuration(double energyW, WifiSpectrumBand band)
 {
     Time now = Simulator::Now();
-    auto niIt = m_niChangesPerBand.find(band);
-    NS_ASSERT(niIt != m_niChangesPerBand.end());
+    auto niIt = m_niChanges.find(band);
+    NS_ASSERT(niIt != m_niChanges.end());
     auto i = GetPreviousPosition(now, niIt);
     Time end = i->first;
     for (; i != niIt->second.end(); ++i)
@@ -315,8 +315,8 @@ InterferenceHelper::AppendEvent(Ptr<Event> event, bool isStartOfdmaRxing)
     for (const auto& it : event->GetRxPowerWPerBand())
     {
         WifiSpectrumBand band = it.first;
-        auto niIt = m_niChangesPerBand.find(band);
-        NS_ASSERT(niIt != m_niChangesPerBand.end());
+        auto niIt = m_niChanges.find(band);
+        NS_ASSERT(niIt != m_niChanges.end());
         double previousPowerStart = 0;
         double previousPowerEnd = 0;
         auto previousPowerPosition = GetPreviousPosition(event->GetStartTime(), niIt);
@@ -324,16 +324,16 @@ InterferenceHelper::AppendEvent(Ptr<Event> event, bool isStartOfdmaRxing)
         previousPowerEnd = GetPreviousPosition(event->GetEndTime(), niIt)->second.GetPower();
         if (!m_rxing)
         {
-            m_firstPowerPerBand.find(band)->second = previousPowerStart;
+            m_firstPowers.find(band)->second = previousPowerStart;
             // Always leave the first zero power noise event in the list
             niIt->second.erase(++(niIt->second.begin()), ++previousPowerPosition);
         }
         else if (isStartOfdmaRxing)
         {
-            // When the first UL-OFDMA payload is received, we need to set m_firstPowerPerBand
+            // When the first UL-OFDMA payload is received, we need to set m_firstPowers
             // so that it takes into account interferences that arrived between the start of the
             // UL MU transmission and the start of UL-OFDMA payload.
-            m_firstPowerPerBand.find(band)->second = previousPowerStart;
+            m_firstPowers.find(band)->second = previousPowerStart;
         }
         auto first =
             AddNiChangeEvent(event->GetStartTime(), NiChange(previousPowerStart, event), niIt);
@@ -353,8 +353,8 @@ InterferenceHelper::UpdateEvent(Ptr<Event> event, const RxPowerWattPerChannelBan
     for (const auto& it : rxPower)
     {
         WifiSpectrumBand band = it.first;
-        auto niIt = m_niChangesPerBand.find(band);
-        NS_ASSERT(niIt != m_niChangesPerBand.end());
+        auto niIt = m_niChanges.find(band);
+        NS_ASSERT(niIt != m_niChanges.end());
         auto first = GetPreviousPosition(event->GetStartTime(), niIt);
         auto last = GetPreviousPosition(event->GetEndTime(), niIt);
         for (auto i = first; i != last; ++i)
@@ -403,11 +403,11 @@ InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
                                                 WifiSpectrumBand band) const
 {
     NS_LOG_FUNCTION(this << band.first << band.second);
-    auto firstPower_it = m_firstPowerPerBand.find(band);
-    NS_ASSERT(firstPower_it != m_firstPowerPerBand.end());
+    auto firstPower_it = m_firstPowers.find(band);
+    NS_ASSERT(firstPower_it != m_firstPowers.end());
     double noiseInterferenceW = firstPower_it->second;
-    auto niIt = m_niChangesPerBand.find(band);
-    NS_ASSERT(niIt != m_niChangesPerBand.end());
+    auto niIt = m_niChanges.find(band);
+    NS_ASSERT(niIt != m_niChanges.end());
     auto it = niIt->second.find(event->GetStartTime());
     for (; it != niIt->second.end() && it->first < Simulator::Now(); ++it)
     {
@@ -500,7 +500,7 @@ InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
     }
     Time windowStart = phyPayloadStart + window.first;
     Time windowEnd = phyPayloadStart + window.second;
-    double noiseInterferenceW = m_firstPowerPerBand.find(band)->second;
+    double noiseInterferenceW = m_firstPowers.find(band)->second;
     double powerW = event->GetRxPowerW(band);
     while (++j != niIt.cend())
     {
@@ -566,7 +566,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr(
     }
 
     Time previous = j->first;
-    double noiseInterferenceW = m_firstPowerPerBand.find(band)->second;
+    double noiseInterferenceW = m_firstPowers.find(band)->second;
     double powerW = event->GetRxPowerW(band);
     while (++j != niIt.end())
     {
@@ -695,12 +695,12 @@ InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
 void
 InterferenceHelper::EraseEvents()
 {
-    for (auto niIt = m_niChangesPerBand.begin(); niIt != m_niChangesPerBand.end(); ++niIt)
+    for (auto niIt = m_niChanges.begin(); niIt != m_niChanges.end(); ++niIt)
     {
         niIt->second.clear();
         // Always have a zero power noise event in the list
         AddNiChangeEvent(Time(0), NiChange(0.0, nullptr), niIt);
-        m_firstPowerPerBand.at(niIt->first) = 0.0;
+        m_firstPowers.at(niIt->first) = 0.0;
     }
     m_rxing = false;
 }
@@ -739,13 +739,13 @@ InterferenceHelper::NotifyRxEnd(Time endTime)
 {
     NS_LOG_FUNCTION(this << endTime);
     m_rxing = false;
-    // Update m_firstPowerPerBand for frame capture
-    for (auto niIt = m_niChangesPerBand.begin(); niIt != m_niChangesPerBand.end(); ++niIt)
+    // Update m_firstPowers for frame capture
+    for (auto niIt = m_niChanges.begin(); niIt != m_niChanges.end(); ++niIt)
     {
         NS_ASSERT(niIt->second.size() > 1);
         auto it = GetPreviousPosition(endTime, niIt);
         it--;
-        m_firstPowerPerBand.find(niIt->first)->second = it->second.GetPower();
+        m_firstPowers.find(niIt->first)->second = it->second.GetPower();
     }
 }
 

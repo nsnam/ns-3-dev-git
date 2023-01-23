@@ -386,12 +386,17 @@ class InterferenceHelper : public Object
     /**
      * typedef for a multimap of NiChange
      */
-    typedef std::multimap<Time, NiChange> NiChanges;
+    using NiChanges = std::multimap<Time, NiChange>;
 
     /**
      * Map of NiChanges per band
      */
-    typedef std::map<WifiSpectrumBand, NiChanges> NiChangesPerBand;
+    using NiChangesPerBand = std::map<WifiSpectrumBand, NiChanges>;
+
+    /**
+     * Map of first power per band
+     */
+    using FirstPowerPerBand = std::map<WifiSpectrumBand, double>;
 
     /**
      * Append the given Event.
@@ -470,10 +475,10 @@ class InterferenceHelper : public Object
 
     double m_noiseFigure;                 //!< noise figure (linear)
     Ptr<ErrorRateModel> m_errorRateModel; //!< error rate model
-    uint8_t m_numRxAntennas; //!< the number of RX antennas in the corresponding receiver
-    NiChangesPerBand m_niChangesPerBand;                    //!< NI Changes for each band
-    std::map<WifiSpectrumBand, double> m_firstPowerPerBand; //!< first power of each band in watts
-    bool m_rxing; //!< flag whether it is in receiving state
+    uint8_t m_numRxAntennas;         //!< the number of RX antennas in the corresponding receiver
+    NiChangesPerBand m_niChanges;    //!< NI Changes for each band in each range
+    FirstPowerPerBand m_firstPowers; //!< first power of each band in watts
+    bool m_rxing;                    //!< flag whether it is in receiving state
 
     /**
      * Returns an iterator to the first NiChange that is later than moment
