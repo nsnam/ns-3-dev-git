@@ -627,6 +627,30 @@ ChannelAccessManager::GetLargestIdlePrimaryChannel(Time interval, Time end)
     return width;
 }
 
+bool
+ChannelAccessManager::GetPer20MHzBusy(const std::set<uint8_t>& indices) const
+{
+    const auto now = Simulator::Now();
+
+    if (m_phy->GetChannelWidth() < 40)
+    {
+        NS_ASSERT_MSG(indices.size() == 1 && *indices.cbegin() == 0,
+                      "Index 0 only can be specified if the channel width is less than 40 MHz");
+        return m_lastBusyEnd.at(WIFI_CHANLIST_PRIMARY) > now;
+    }
+
+    for (const auto index : indices)
+    {
+        NS_ASSERT(index < m_lastPer20MHzBusyEnd.size());
+        if (m_lastPer20MHzBusyEnd.at(index) > now)
+        {
+            NS_LOG_DEBUG("20 MHz channel with index " << +index << " is busy");
+            return true;
+        }
+    }
+    return false;
+}
+
 void
 ChannelAccessManager::DisableEdcaFor(Ptr<Txop> qosTxop, Time duration)
 {

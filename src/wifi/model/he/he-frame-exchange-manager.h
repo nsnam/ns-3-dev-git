@@ -116,6 +116,16 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     bool IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const;
 
+    /**
+     * This method is intended to be called a SIFS after the reception of a Trigger Frame
+     * to determine whether the station is allowed to respond.
+     *
+     * \param trigger the Trigger Frame soliciting a response
+     * \return true if CS is not required or the UL MU CS mechanism indicates that the medium
+     *         is idle, false otherwise
+     */
+    bool UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const;
+
   protected:
     void DoDispose() override;
     void Reset() override;

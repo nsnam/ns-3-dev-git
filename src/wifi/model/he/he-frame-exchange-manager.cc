@@ -1752,6 +1752,38 @@ HeFrameExchangeManager::VirtualCsMediumIdle() const
     return m_navEnd <= Simulator::Now() && m_intraBssNavEnd <= Simulator::Now();
 }
 
+bool
+HeFrameExchangeManager::UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const
+{
+    if (!trigger.GetCsRequired())
+    {
+        NS_LOG_DEBUG("CS not required");
+        return true;
+    }
+
+    // A non-AP STA does not consider the intra-BSS NAV in determining whether to respond to a
+    // Trigger frame sent by the AP with which the non-AP STA is associated.
+    // A non-AP STA considers the basic NAV in determining whether to respond to a Trigger frame
+    // sent by the AP with which the non-AP STA is associated. (Sec. 26.5.2.5 of 802.11ax-2021)
+    const Time now = Simulator::Now();
+    if (m_navEnd > now)
+    {
+        NS_LOG_DEBUG("Basic NAV indicates medium busy");
+        return false;
+    }
+
+    NS_ASSERT_MSG(m_staMac, "UL MU CS is only performed by non-AP STAs");
+    const auto userInfoIt = trigger.FindUserInfoWithAid(m_staMac->GetAssociationId());
+    NS_ASSERT_MSG(userInfoIt != trigger.end(),
+                  "No User Info field for STA (" << m_self
+                                                 << ") AID=" << m_staMac->GetAssociationId());
+
+    const auto indices =
+        m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(userInfoIt->GetRuAllocation(),
+                                                               trigger.GetUlBandwidth());
+    return !m_channelAccessManager->GetPer20MHzBusy(indices);
+}
+
 void
 HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                     RxSignalInfo rxSignalInfo,

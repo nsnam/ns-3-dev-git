@@ -150,6 +150,13 @@ class ChannelAccessManager : public Object
     uint16_t GetLargestIdlePrimaryChannel(Time interval, Time end);
 
     /**
+     * \param indices a set of indices (starting at 0) specifying the 20 MHz channels to test
+     * \return true if per-20 MHz CCA indicates busy for at least one of the
+     *         specified 20 MHz channels, false otherwise
+     */
+    bool GetPer20MHzBusy(const std::set<uint8_t>& indices) const;
+
+    /**
      * \param duration expected duration of reception
      *
      * Notify the Txop that a packet reception started
