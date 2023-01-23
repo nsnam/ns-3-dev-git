@@ -45,5 +45,5 @@ Checks: >
   readability-uppercase-literal-suffix,
 
 FormatStyle: "file"
-HeaderFilterRegex: "(contrib|examples|src|scratch|utils)/*/.*h"
+HeaderFilterRegex: ".*(ns|NS).*/(contrib|examples|src|scratch|utils)/*/.*h"
 UseColor: true
