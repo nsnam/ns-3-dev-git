@@ -1389,9 +1389,8 @@ HeFrameExchangeManager::ReceiveBasicTrigger(const CtrlTriggerHeader& trigger,
 
     NS_LOG_DEBUG("Received a Trigger Frame (basic variant) soliciting a transmission");
 
-    if (trigger.GetCsRequired() && hdr.GetAddr2() != m_txopHolder && m_navEnd > Simulator::Now())
+    if (!UlMuCsMediumIdle(trigger))
     {
-        NS_LOG_DEBUG("Carrier Sensing required and channel busy, do nothing");
         return;
     }
 
@@ -1487,11 +1486,8 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
 
     NS_LOG_DEBUG("Requested to send QoS Null frames");
 
-    if (trigger.GetCsRequired() && hdr.GetAddr2() != m_txopHolder && m_navEnd > Simulator::Now())
+    if (!UlMuCsMediumIdle(trigger))
     {
-        NS_LOG_DEBUG("Carrier Sensing required and channel busy (TA="
-                     << hdr.GetAddr2() << ", TxopHolder=" << (m_txopHolder ? *m_txopHolder : "")
-                     << ", NAV end=" << m_navEnd.As(Time::S) << "), do nothing");
         return;
     }
 
@@ -1560,6 +1556,32 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
                                               : Create<WifiPsdu>(mpduList.front(), true));
     uint16_t staId = m_staMac->GetAssociationId();
     SendPsduMapWithProtection(WifiPsduMap{{staId, psdu}}, txParams);
+}
+
+void
+HeFrameExchangeManager::ReceiveMuBarTrigger(const CtrlTriggerHeader& trigger,
+                                            uint8_t tid,
+                                            Time durationId,
+                                            double snr)
+{
+    NS_LOG_FUNCTION(this << trigger << tid << durationId.As(Time::US) << snr);
+
+    auto agreement = m_mac->GetBaAgreementEstablishedAsRecipient(m_bssid, tid);
+
+    if (!agreement)
+    {
+        NS_LOG_DEBUG("There's not a valid agreement for this BlockAckReq");
+        return;
+    }
+
+    if (!UlMuCsMediumIdle(trigger))
+    {
+        return;
+    }
+
+    NS_LOG_DEBUG("Send Block Ack in TB PPDU");
+    auto txVector = GetHeTbTxVector(trigger, m_bssid);
+    SendBlockAck(*agreement, durationId, txVector, snr);
 }
 
 bool
@@ -2177,26 +2199,17 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 NS_ABORT_MSG_IF(blockAckReq.IsMultiTid(), "Multi-TID BlockAckReq not supported");
                 uint8_t tid = blockAckReq.GetTidInfo();
 
-                auto agreement = m_mac->GetBaAgreementEstablishedAsRecipient(sender, tid);
-
-                if (!agreement)
-                {
-                    NS_LOG_DEBUG("There's not a valid agreement for this BlockAckReq");
-                    return;
-                }
-
                 GetBaManager(tid)->NotifyGotBlockAckRequest(
                     m_mac->GetMldAddress(sender).value_or(sender),
                     tid,
                     blockAckReq.GetStartingSequence());
 
-                NS_LOG_DEBUG("Schedule Block Ack in TB PPDU");
                 Simulator::Schedule(m_phy->GetSifs(),
-                                    &HeFrameExchangeManager::SendBlockAck,
+                                    &HeFrameExchangeManager::ReceiveMuBarTrigger,
                                     this,
-                                    *agreement,
+                                    trigger,
+                                    tid,
                                     hdr.GetDuration(),
-                                    GetHeTbTxVector(trigger, hdr.GetAddr2()),
                                     rxSignalInfo.snr);
             }
             else if (trigger.IsBasic())

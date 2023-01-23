@@ -278,12 +278,25 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void SendPsduMap();
 
     /**
-     * Take the necessary actions when receiveing a Basic Trigger Frame.
+     * Take the necessary actions when receiving a Basic Trigger Frame.
      *
      * \param trigger the Basic Trigger Frame content
      * \param hdr the MAC header of the Basic Trigger Frame
      */
     void ReceiveBasicTrigger(const CtrlTriggerHeader& trigger, const WifiMacHeader& hdr);
+
+    /**
+     * Respond to a MU-BAR Trigger Frame (if permitted by UL MU CS mechanism).
+     *
+     * \param trigger the Basic Trigger Frame content
+     * \param tid the TID requested for us in the MU-BAR Trigger Frame
+     * \param durationId the Duration/ID field of the MPDU carrying the Trigger Frame
+     * \param snr the receive SNR
+     */
+    void ReceiveMuBarTrigger(const CtrlTriggerHeader& trigger,
+                             uint8_t tid,
+                             Time durationId,
+                             double snr);
 
     WifiPsduMap m_psduMap;                        //!< the A-MPDU being transmitted
     WifiTxParameters m_txParams;                  //!< the TX parameters for the current PPDU
