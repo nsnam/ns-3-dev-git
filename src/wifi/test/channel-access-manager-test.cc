@@ -1381,7 +1381,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
                         m_cam,
                         ccaBusyDuration,
                         busyChannel,
-                        std::vector<Time>(chWidth / 20, Seconds(0)));
+                        std::vector<Time>(chWidth == 20 ? 0 : chWidth / 20, Seconds(0)));
 
     // During any interval ending within CCA_BUSY period, the idle channel is the
     // primary channel contiguous to the busy secondary channel, if the busy channel

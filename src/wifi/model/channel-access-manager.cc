@@ -730,8 +730,10 @@ ChannelAccessManager::NotifyCcaBusyStartNow(Time duration,
     NS_ASSERT(lastBusyEndIt != m_lastBusyEnd.end());
     Time now = Simulator::Now();
     lastBusyEndIt->second = now + duration;
-    // TODO uncomment assert below when PHY passes correct parameters
-    // NS_ASSERT (per20MhzDurations.size () == m_lastPer20MHzBusyEnd.size ());
+    NS_ASSERT_MSG(per20MhzDurations.size() == m_lastPer20MHzBusyEnd.size(),
+                  "Size of received vector (" << per20MhzDurations.size()
+                                              << ") differs from the expected size ("
+                                              << m_lastPer20MHzBusyEnd.size() << ")");
     for (std::size_t chIdx = 0; chIdx < per20MhzDurations.size(); ++chIdx)
     {
         if (per20MhzDurations[chIdx].IsStrictlyPositive())
