@@ -160,6 +160,50 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
     uint32_t GetValuesN() const;
 
     /**
+     * Directly set the values using the std::vector<double>
+     * \param values a reference to the std::vector<double>
+     */
+    inline void SetValues(Values& values)
+    {
+        NS_ASSERT_MSG(
+            values.size() == m_spectrumModel->GetNumBands(),
+            "Values size does not correspond to the SpectrumModel in use by this SpectrumValue.");
+        m_values = values;
+    }
+
+    /**
+     * Directly set the values by moving the values from the input std::vector<double>
+     * \param values a reference to the std::vector<double> to be moved
+     */
+    inline void SetValues(Values&& values)
+    {
+        NS_ASSERT_MSG(
+            values.size() == m_spectrumModel->GetNumBands(),
+            "Values size does not correspond to the SpectrumModel in use by this SpectrumValue.");
+        m_values = std::move(values);
+    }
+
+    /**
+     * \brief Provides the direct access to the underlying std::vector<double>
+     * that stores the spectrum values.
+     * \return a reference to the stored values
+     */
+    inline Values& GetValues()
+    {
+        return m_values;
+    }
+
+    /**
+     * \brief Provides the direct read-only access to the underlying std::vector<double>
+     * that stores the spectrum values.
+     * \return a const reference to the stored values
+     */
+    inline const Values& GetValues() const
+    {
+        return m_values;
+    }
+
+    /**
      * \brief Get the value element at the position
      * \param pos position
      * \return the value element in that position (with bounds checking)
@@ -285,6 +329,26 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
      * @return the value of *this / rhs
      */
     friend SpectrumValue operator/(double lhs, const SpectrumValue& rhs);
+
+    /**
+     * Compare two spectrum values
+     *
+     * @param lhs Left Hand Side of the operator
+     * @param rhs Right Hand Side of the operator
+     *
+     * @return true if lhs and rhs SpectruValues are equal
+     */
+    friend bool operator==(const SpectrumValue& lhs, const SpectrumValue& rhs);
+
+    /**
+     * Compare two spectrum values
+     *
+     * @param lhs Left Hand Side of the operator
+     * @param rhs Right Hand Side of the operator
+     *
+     * @return true if lhs and rhs SpectruValues are not equal
+     */
+    friend bool operator!=(const SpectrumValue& lhs, const SpectrumValue& rhs);
 
     /**
      * unary plus operator

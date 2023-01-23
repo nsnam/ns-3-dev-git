@@ -411,6 +411,18 @@ operator+(const SpectrumValue& lhs, const SpectrumValue& rhs)
     return res;
 }
 
+bool
+operator==(const SpectrumValue& lhs, const SpectrumValue& rhs)
+{
+    return (lhs.m_values == rhs.m_values);
+}
+
+bool
+operator!=(const SpectrumValue& lhs, const SpectrumValue& rhs)
+{
+    return (lhs.m_values != rhs.m_values);
+}
+
 SpectrumValue
 operator+(const SpectrumValue& lhs, double rhs)
 {
