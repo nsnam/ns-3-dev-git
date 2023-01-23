@@ -55,3 +55,10 @@ build_lib_example(
   LIBRARIES_TO_LINK ${libcore}
                     ${libflow-monitor}
 )
+
+build_lib_example(
+  NAME log-example
+  SOURCE_FILES log-example.cc
+  LIBRARIES_TO_LINK ${libcore}
+                    ${libnetwork}
+)
