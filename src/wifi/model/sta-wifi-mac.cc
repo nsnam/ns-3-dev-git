@@ -30,6 +30,7 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
+#include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
@@ -373,8 +374,22 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
     // and the EML Capabilities subfields, and shall not include the Link ID Info, the BSS
     // Parameters Change Count, and the Medium Synchronization Delay Information subfields
     // (Sec. 35.3.5.4 of 802.11be D2.0)
-    // TODO Add the MLD Capabilities and Operations and the EML Capabilities subfields
+    // TODO Add the MLD Capabilities and Operations subfield
     multiLinkElement.SetMldMacAddress(GetAddress());
+
+    if (m_emlsrManager) // EMLSR Manager is only installed if EMLSR is activated
+    {
+        multiLinkElement.SetEmlsrSupported(true);
+        TimeValue time;
+        m_emlsrManager->GetAttribute("EmlsrPaddingDelay", time);
+        multiLinkElement.SetEmlsrPaddingDelay(time.Get());
+        m_emlsrManager->GetAttribute("EmlsrTransitionDelay", time);
+        multiLinkElement.SetEmlsrTransitionDelay(time.Get());
+        // When the Transition Timeout subfield is included in a frame sent by a non-AP STA
+        // affiliated with a non-AP MLD, the Transition Timeout subfield is reserved
+        // (Section 9.4.2.312.2.3 of 802.11be D2.3)
+    }
+
     // For each requested link in addition to the link on which the (Re)Association Request
     // frame is transmitted, the Link Info field of the Basic Multi-Link element carried
     // in the (Re)Association Request frame shall contain the corresponding Per-STA Profile
