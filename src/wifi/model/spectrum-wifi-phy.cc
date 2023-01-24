@@ -188,16 +188,16 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
         }
     }
     const auto bandsChanged = std::any_of(bands.cbegin(), bands.cend(), [&](const auto& band) {
-        return !m_interference->HasBand(band, WHOLE_WIFI_SPECTRUM);
+        return !m_interference->HasBand(band, GetCurrentFrequencyRange());
     });
     if (!bandsChanged)
     {
         return;
     }
-    m_interference->RemoveBands(WHOLE_WIFI_SPECTRUM);
+    m_interference->RemoveBands(GetCurrentFrequencyRange());
     for (const auto& band : bands)
     {
-        m_interference->AddBand(band, WHOLE_WIFI_SPECTRUM);
+        m_interference->AddBand(band, GetCurrentFrequencyRange());
     }
 }
 
@@ -407,14 +407,14 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     if (!wifiRxParams)
     {
         NS_LOG_INFO("Received non Wi-Fi signal");
-        m_interference->AddForeignSignal(rxDuration, rxPowerW, WHOLE_WIFI_SPECTRUM);
+        m_interference->AddForeignSignal(rxDuration, rxPowerW, GetCurrentFrequencyRange());
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
     if (wifiRxParams && m_disableWifiReception)
     {
         NS_LOG_INFO("Received Wi-Fi signal but blocked from syncing");
-        m_interference->AddForeignSignal(rxDuration, rxPowerW, WHOLE_WIFI_SPECTRUM);
+        m_interference->AddForeignSignal(rxDuration, rxPowerW, GetCurrentFrequencyRange());
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
@@ -427,7 +427,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     if (totalRxPowerW < DbmToW(GetRxSensitivity()) * (txWidth / 20.0))
     {
         NS_LOG_INFO("Received signal too weak to process: " << WToDbm(totalRxPowerW) << " dBm");
-        m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, WHOLE_WIFI_SPECTRUM);
+        m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, GetCurrentFrequencyRange());
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
@@ -437,7 +437,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
         if (!CanStartRx(ppdu, txWidth))
         {
             NS_LOG_INFO("Cannot start reception of the PPDU, consider it as interference");
-            m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, WHOLE_WIFI_SPECTRUM);
+            m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, GetCurrentFrequencyRange());
             SwitchMaybeToCcaBusy(ppdu);
             return;
         }
@@ -622,6 +622,13 @@ SpectrumWifiPhy::GetTxMaskRejectionParams() const
     return std::make_tuple(m_txMaskInnerBandMinimumRejection,
                            m_txMaskOuterBandMinimumRejection,
                            m_txMaskOuterBandMaximumRejection);
+}
+
+FrequencyRange
+SpectrumWifiPhy::GetCurrentFrequencyRange() const
+{
+    NS_ABORT_IF(!m_currentSpectrumPhyInterface);
+    return m_currentSpectrumPhyInterface->GetFrequencyRange();
 }
 
 Ptr<WifiSpectrumPhyInterface>

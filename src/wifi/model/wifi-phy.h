@@ -1157,6 +1157,13 @@ class WifiPhy : public Object
      */
     virtual WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) = 0;
 
+    /**
+     * Get the frequency range of the current RF interface.
+     *
+     * \return the frequency range of the current RF interface
+     */
+    virtual FrequencyRange GetCurrentFrequencyRange() const = 0;
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;

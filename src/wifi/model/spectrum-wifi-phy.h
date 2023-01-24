@@ -75,6 +75,7 @@ class SpectrumWifiPhy : public WifiPhy
     uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
     WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
+    FrequencyRange GetCurrentFrequencyRange() const override;
 
     /**
      * Attach a SpectrumChannel to use for a given frequency range.

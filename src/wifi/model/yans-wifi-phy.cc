@@ -56,7 +56,7 @@ YansWifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
     WifiSpectrumBand band;
     band.first = 0;
     band.second = 0;
-    m_interference->AddBand(band, WHOLE_WIFI_SPECTRUM);
+    m_interference->AddBand(band, GetCurrentFrequencyRange());
 }
 
 YansWifiPhy::~YansWifiPhy()
@@ -116,6 +116,12 @@ YansWifiPhy::GetBand(uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
     band.first = 0;
     band.second = 0;
     return band;
+}
+
+FrequencyRange
+YansWifiPhy::GetCurrentFrequencyRange() const
+{
+    return WHOLE_WIFI_SPECTRUM;
 }
 
 } // namespace ns3
