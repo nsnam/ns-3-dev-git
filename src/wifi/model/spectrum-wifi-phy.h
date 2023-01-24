@@ -91,8 +91,10 @@ class SpectrumWifiPhy : public WifiPhy
      * and low-level PHY interface to this SpectrumWifiPhy instance.
      *
      * \param rxParams Input signal parameters
+     * \param interface the Spectrum PHY interface for which the signal has been detected
      */
-    void StartRx(Ptr<SpectrumSignalParameters> rxParams);
+    void StartRx(Ptr<SpectrumSignalParameters> rxParams,
+                 Ptr<const WifiSpectrumPhyInterface> interface);
 
     /**
      * \param antenna an AntennaModel to include in the transmitted

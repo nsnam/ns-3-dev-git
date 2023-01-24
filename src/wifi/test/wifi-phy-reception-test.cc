@@ -45,6 +45,7 @@
 #include "ns3/wifi-mpdu.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-spectrum-phy-interface.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/wifi-utils.h"
@@ -144,7 +145,7 @@ WifiPhyReceptionTest::SendPacket(double rxPowerDbm, uint32_t packetSize, uint8_t
     txParams->ppdu = ppdu;
     txParams->txWidth = CHANNEL_WIDTH;
 
-    m_phy->StartRx(txParams);
+    m_phy->StartRx(txParams, nullptr);
 }
 
 void
@@ -2804,7 +2805,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus(double rxPowerDbm, uint32_t referenc
     txParams->ppdu = ppdu;
     txParams->txWidth = CHANNEL_WIDTH;
 
-    m_phy->StartRx(txParams);
+    m_phy->StartRx(txParams, nullptr);
 }
 
 void
@@ -4327,7 +4328,7 @@ TestUnsupportedBandwidthReception::SendPpdu(uint16_t centerFreqMhz, uint16_t ban
     txParams->ppdu = ppdu;
     txParams->txWidth = bandwidthMhz;
 
-    m_rxPhy->StartRx(txParams);
+    m_rxPhy->StartRx(txParams, nullptr);
 }
 
 void

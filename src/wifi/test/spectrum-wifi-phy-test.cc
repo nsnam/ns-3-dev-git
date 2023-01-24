@@ -15,6 +15,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "ns3/boolean.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/he-phy.h" //includes OFDM PHY
 #include "ns3/interference-helper.h"
@@ -190,7 +191,7 @@ SpectrumWifiPhyBasicTest::MakeSignal(double txPowerWatts, const WifiPhyOperating
 void
 SpectrumWifiPhyBasicTest::SendSignal(double txPowerWatts)
 {
-    m_phy->StartRx(MakeSignal(txPowerWatts, m_phy->GetOperatingChannel()));
+    m_phy->StartRx(MakeSignal(txPowerWatts, m_phy->GetOperatingChannel()), nullptr);
 }
 
 void
@@ -1002,6 +1003,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         auto txNode = CreateObject<Node>();
         auto txDev = CreateObject<WifiNetDevice>();
         auto txPhy = CreateObject<ExtSpectrumWifiPhy>();
+        txPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
         auto txInterferenceHelper = CreateObject<InterferenceHelper>();
         txPhy->SetInterferenceHelper(txInterferenceHelper);
         auto txError = CreateObject<NistErrorRateModel>();
@@ -1018,13 +1020,13 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
         txDev->SetPhy(txPhy);
         txNode->AddDevice(txDev);
-        txPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
 
         m_txPhys.push_back(txPhy);
 
         auto rxNode = CreateObject<Node>();
         auto rxDev = CreateObject<WifiNetDevice>();
         auto rxPhy = CreateObject<ExtSpectrumWifiPhy>();
+        rxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
         auto rxInterferenceHelper = CreateObject<InterferenceHelper>();
         rxPhy->SetInterferenceHelper(rxInterferenceHelper);
         auto rxError = CreateObject<NistErrorRateModel>();
@@ -1041,7 +1043,6 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
         rxDev->SetPhy(rxPhy);
         rxNode->AddDevice(rxDev);
-        rxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
 
         const auto index = m_rxPhys.size();
         rxPhy->SetReceiveOkCallback(

@@ -150,7 +150,7 @@ WifiSpectrumPhyInterface::GetChannelWidth() const
 void
 WifiSpectrumPhyInterface::StartRx(Ptr<SpectrumSignalParameters> params)
 {
-    m_spectrumWifiPhy->StartRx(params);
+    m_spectrumWifiPhy->StartRx(params, this);
 }
 
 void

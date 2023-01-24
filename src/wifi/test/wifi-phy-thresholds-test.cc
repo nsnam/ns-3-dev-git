@@ -30,6 +30,7 @@
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-spectrum-phy-interface.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/wifi-utils.h"
@@ -202,11 +203,11 @@ WifiPhyThresholdsTest::SendSignal(double txPowerWatts, bool wifiSignal)
 {
     if (wifiSignal)
     {
-        m_phy->StartRx(MakeWifiSignal(txPowerWatts, m_phy->GetOperatingChannel()));
+        m_phy->StartRx(MakeWifiSignal(txPowerWatts, m_phy->GetOperatingChannel()), nullptr);
     }
     else
     {
-        m_phy->StartRx(MakeForeignSignal(txPowerWatts));
+        m_phy->StartRx(MakeForeignSignal(txPowerWatts), nullptr);
     }
 }
 

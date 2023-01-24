@@ -303,9 +303,14 @@ SpectrumWifiPhy::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txWidth) const
 }
 
 void
-SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
+SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
+                         Ptr<const WifiSpectrumPhyInterface> interface)
 {
-    NS_LOG_FUNCTION(this << rxParams);
+    NS_ASSERT(!interface ||
+              interface == m_currentSpectrumPhyInterface); // TODO: Add support for receiving from
+                                                           // multiple RF interfaces
+    const auto range = GetCurrentFrequencyRange();
+    NS_LOG_FUNCTION(this << rxParams << interface << range);
     Time rxDuration = rxParams->duration;
     Ptr<SpectrumValue> receivedSignalPsd = rxParams->psd;
     NS_LOG_DEBUG("Received signal with PSD " << *receivedSignalPsd << " and duration "
@@ -407,14 +412,14 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     if (!wifiRxParams)
     {
         NS_LOG_INFO("Received non Wi-Fi signal");
-        m_interference->AddForeignSignal(rxDuration, rxPowerW, GetCurrentFrequencyRange());
+        m_interference->AddForeignSignal(rxDuration, rxPowerW, range);
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
     if (wifiRxParams && m_disableWifiReception)
     {
         NS_LOG_INFO("Received Wi-Fi signal but blocked from syncing");
-        m_interference->AddForeignSignal(rxDuration, rxPowerW, GetCurrentFrequencyRange());
+        m_interference->AddForeignSignal(rxDuration, rxPowerW, range);
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
@@ -427,7 +432,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
     if (totalRxPowerW < DbmToW(GetRxSensitivity()) * (txWidth / 20.0))
     {
         NS_LOG_INFO("Received signal too weak to process: " << WToDbm(totalRxPowerW) << " dBm");
-        m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, GetCurrentFrequencyRange());
+        m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, range);
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
@@ -437,7 +442,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
         if (!CanStartRx(ppdu, txWidth))
         {
             NS_LOG_INFO("Cannot start reception of the PPDU, consider it as interference");
-            m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, GetCurrentFrequencyRange());
+            m_interference->Add(ppdu, txVector, rxDuration, rxPowerW, range);
             SwitchMaybeToCcaBusy(ppdu);
             return;
         }

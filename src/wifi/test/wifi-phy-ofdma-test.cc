@@ -46,6 +46,7 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy-listener.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-spectrum-phy-interface.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/wifi-utils.h"
@@ -2454,7 +2455,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     auto hePhy = DynamicCast<HePhy>(m_phy->GetLatestPhyEntity());
     hePhy->SetTrigVector(m_trigVector, ppduDuration);
     ppdu->ResetTxVector();
-    m_phy->StartRx(rxParams);
+    m_phy->StartRx(rxParams, nullptr);
 
     // Schedule OFDMA part
     Ptr<HePpdu> ppduOfdma = DynamicCast<HePpdu>(ppdu->Copy()); // since flag will be modified
@@ -2490,7 +2491,7 @@ TestMultipleHeTbPreambles::DoRxHeTbPpduOfdmaPart(Ptr<WifiSpectrumSignalParameter
     // This is needed to make sure the OFDMA part is started as the last event since HE-SIG-A should
     // end at the exact same time as the start For normal WifiNetDevices, this the reception of the
     // OFDMA part is scheduled after end of HE-SIG-A decoding.
-    m_phy->StartRx(rxParamsOfdma);
+    m_phy->StartRx(rxParamsOfdma, nullptr);
 }
 
 void
