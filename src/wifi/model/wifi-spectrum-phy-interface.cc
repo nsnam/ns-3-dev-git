@@ -19,8 +19,6 @@
 
 #include "wifi-spectrum-phy-interface.h"
 
-#include "spectrum-wifi-phy.h"
-
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/net-device.h"
@@ -42,9 +40,10 @@ WifiSpectrumPhyInterface::GetTypeId()
     return tid;
 }
 
-WifiSpectrumPhyInterface::WifiSpectrumPhyInterface()
+WifiSpectrumPhyInterface::WifiSpectrumPhyInterface(FrequencyRange range)
+    : m_range{range}
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << range);
 }
 
 void
@@ -118,6 +117,12 @@ Ptr<Object>
 WifiSpectrumPhyInterface::GetAntenna() const
 {
     return m_spectrumWifiPhy->GetAntenna();
+}
+
+const FrequencyRange&
+WifiSpectrumPhyInterface::GetFrequencyRange() const
+{
+    return m_range;
 }
 
 void

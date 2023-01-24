@@ -227,7 +227,7 @@ SpectrumWifiPhy::AddChannel(const Ptr<SpectrumChannel> channel, const FrequencyR
                     "Added a wifi spectrum channel that overlaps with another existing wifi "
                     "spectrum channel");
 
-    auto wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>();
+    auto wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>(freqRange);
     wifiSpectrumPhyInterface->SetSpectrumWifiPhy(this);
     wifiSpectrumPhyInterface->SetChannel(channel);
     if (GetDevice())

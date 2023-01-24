@@ -20,6 +20,8 @@
 #ifndef WIFI_SPECTRUM_PHY_INTERFACE_H
 #define WIFI_SPECTRUM_PHY_INTERFACE_H
 
+#include "spectrum-wifi-phy.h"
+
 #include "ns3/spectrum-phy.h"
 
 namespace ns3
@@ -46,7 +48,12 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
      * \return the object TypeId
      */
     static TypeId GetTypeId();
-    WifiSpectrumPhyInterface();
+    /**
+     * Constructor
+     *
+     * \param range the frequency range covered by the interface
+     */
+    WifiSpectrumPhyInterface(FrequencyRange range);
     /**
      * Connect SpectrumWifiPhy object
      * \param phy SpectrumWifiPhy object to be connected to this object
@@ -70,6 +77,13 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     Ptr<SpectrumChannel> GetChannel() const;
 
     /**
+     * Get the frequency range covered by the spectrum channel this interface is attached to
+     *
+     * \return the frequency range covered by the spectrum channel this interface is attached to
+     */
+    const FrequencyRange& GetFrequencyRange() const;
+
+    /**
      * Start transmission over the spectrum channel
      *
      * \param params the parameters of the signal to transmit
@@ -86,6 +100,7 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
   private:
     void DoDispose() override;
 
+    FrequencyRange m_range;                     ///< frequency range
     Ptr<SpectrumWifiPhy> m_spectrumWifiPhy;     ///< spectrum PHY
     Ptr<NetDevice> m_netDevice;                 ///< the device
     Ptr<SpectrumChannel> m_channel;             ///< spectrum channel
