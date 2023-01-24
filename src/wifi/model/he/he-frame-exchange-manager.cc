@@ -1139,7 +1139,8 @@ WifiTxVector
 HeFrameExchangeManager::GetTrigVector(const CtrlTriggerHeader& trigger) const
 {
     WifiTxVector v;
-    v.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+    v.SetPreambleType(trigger.GetVariant() == TriggerFrameVariant::HE ? WIFI_PREAMBLE_HE_TB
+                                                                      : WIFI_PREAMBLE_EHT_TB);
     v.SetChannelWidth(trigger.GetUlBandwidth());
     v.SetGuardInterval(trigger.GetGuardInterval());
     v.SetLength(trigger.GetUlLength());
