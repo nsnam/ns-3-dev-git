@@ -49,8 +49,6 @@ CommonInfoBasicMle::GetSize() const
     ret += (m_linkIdInfo.has_value() ? 1 : 0);
     ret += (m_bssParamsChangeCount.has_value() ? 1 : 0);
     ret += (m_mediumSyncDelayInfo.has_value() ? 2 : 0);
-    // NOTE Fig. 9-1002h of 802.11be D1.5 reports that the size of the EML Capabilities
-    // subfield is 3 octets, but this is likely a typo (the correct size is 2 octets)
     ret += (m_emlCapabilities.has_value() ? 2 : 0);
     ret += (m_mldCapabilities.has_value() ? 2 : 0);
     return ret;
@@ -153,6 +151,72 @@ CommonInfoBasicMle::Deserialize(Buffer::Iterator start, uint16_t presence)
                                               "from actual number of bytes read ("
                                            << +count << ")");
     return count;
+}
+
+uint8_t
+CommonInfoBasicMle::EncodeEmlsrPaddingDelay(Time delay)
+{
+    auto delayUs = delay.GetMicroSeconds();
+
+    if (delayUs == 0)
+    {
+        return 0;
+    }
+
+    for (uint8_t i = 1; i <= 4; i++)
+    {
+        if (1 << (i + 4) == delayUs)
+        {
+            return i;
+        }
+    }
+
+    NS_ABORT_MSG("Value not allowed (" << delay.As(Time::US) << ")");
+    return 0;
+}
+
+Time
+CommonInfoBasicMle::DecodeEmlsrPaddingDelay(uint8_t value)
+{
+    NS_ABORT_MSG_IF(value > 4, "Value not allowed (" << +value << ")");
+    if (value == 0)
+    {
+        return MicroSeconds(0);
+    }
+    return MicroSeconds(1 << (4 + value));
+}
+
+uint8_t
+CommonInfoBasicMle::EncodeEmlsrTransitionDelay(Time delay)
+{
+    auto delayUs = delay.GetMicroSeconds();
+
+    if (delayUs == 0)
+    {
+        return 0;
+    }
+
+    for (uint8_t i = 1; i <= 5; i++)
+    {
+        if (1 << (i + 3) == delayUs)
+        {
+            return i;
+        }
+    }
+
+    NS_ABORT_MSG("Value not allowed (" << delay.As(Time::US) << ")");
+    return 0;
+}
+
+Time
+CommonInfoBasicMle::DecodeEmlsrTransitionDelay(uint8_t value)
+{
+    NS_ABORT_MSG_IF(value > 5, "Value not allowed (" << +value << ")");
+    if (value == 0)
+    {
+        return MicroSeconds(0);
+    }
+    return MicroSeconds(1 << (3 + value));
 }
 
 /**
@@ -326,6 +390,108 @@ bool
 MultiLinkElement::HasMediumSyncDelayInfo() const
 {
     return std::get<BASIC_VARIANT>(m_commonInfo).m_mediumSyncDelayInfo.has_value();
+}
+
+void
+MultiLinkElement::SetEmlsrSupported(bool supported)
+{
+    auto& emlCapabilities = std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities;
+    if (!emlCapabilities.has_value())
+    {
+        emlCapabilities = CommonInfoBasicMle::EmlCapabilities{};
+    }
+    emlCapabilities->emlsrSupport = supported ? 1 : 0;
+}
+
+void
+MultiLinkElement::SetEmlsrPaddingDelay(Time delay)
+{
+    auto& emlCapabilities = std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities;
+    if (!emlCapabilities.has_value())
+    {
+        emlCapabilities = CommonInfoBasicMle::EmlCapabilities{};
+    }
+    emlCapabilities->emlsrPaddingDelay = CommonInfoBasicMle::EncodeEmlsrPaddingDelay(delay);
+}
+
+void
+MultiLinkElement::SetEmlsrTransitionDelay(Time delay)
+{
+    auto& emlCapabilities = std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities;
+    if (!emlCapabilities.has_value())
+    {
+        emlCapabilities = CommonInfoBasicMle::EmlCapabilities{};
+    }
+    emlCapabilities->emlsrTransitionDelay = CommonInfoBasicMle::EncodeEmlsrTransitionDelay(delay);
+}
+
+void
+MultiLinkElement::SetTransitionTimeout(Time timeout)
+{
+    auto& emlCapabilities = std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities;
+    if (!emlCapabilities.has_value())
+    {
+        emlCapabilities = CommonInfoBasicMle::EmlCapabilities{};
+    }
+    auto timeoutUs = timeout.GetMicroSeconds();
+
+    if (timeoutUs == 0)
+    {
+        emlCapabilities->transitionTimeout = 0;
+    }
+    else
+    {
+        uint8_t i;
+        for (i = 1; i <= 10; i++)
+        {
+            if (1 << (i + 6) == timeoutUs)
+            {
+                emlCapabilities->transitionTimeout = i;
+                break;
+            }
+        }
+        NS_ABORT_MSG_IF(i > 10, "Value not allowed (" << timeout.As(Time::US) << ")");
+    }
+}
+
+bool
+MultiLinkElement::HasEmlCapabilities() const
+{
+    return std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities.has_value();
+}
+
+bool
+MultiLinkElement::IsEmlsrSupported() const
+{
+    return std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities->emlsrSupport;
+}
+
+Time
+MultiLinkElement::GetEmlsrPaddingDelay() const
+{
+    auto& emlCapabilities = std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities;
+    NS_ASSERT(emlCapabilities);
+    return CommonInfoBasicMle::DecodeEmlsrPaddingDelay(emlCapabilities->emlsrPaddingDelay);
+}
+
+Time
+MultiLinkElement::GetEmlsrTransitionDelay() const
+{
+    auto& emlCapabilities = std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities;
+    NS_ASSERT(emlCapabilities);
+    return CommonInfoBasicMle::DecodeEmlsrTransitionDelay(emlCapabilities->emlsrTransitionDelay);
+}
+
+Time
+MultiLinkElement::GetTransitionTimeout() const
+{
+    auto& emlCapabilities = std::get<BASIC_VARIANT>(m_commonInfo).m_emlCapabilities;
+    NS_ASSERT(emlCapabilities);
+    if (emlCapabilities->transitionTimeout == 0)
+    {
+        return MicroSeconds(0);
+    }
+    return MicroSeconds(1 << (6 + emlCapabilities->transitionTimeout));
 }
 
 MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(Variant variant,

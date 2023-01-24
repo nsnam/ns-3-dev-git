@@ -118,6 +118,28 @@ struct CommonInfoBasicMle
      * \return the number of bytes read
      */
     uint8_t Deserialize(Buffer::Iterator start, uint16_t presence);
+
+    /**
+     * \param delay the EMLSR Padding delay
+     * \return the encoded value for the EMLSR Padding Delay subfield
+     */
+    static uint8_t EncodeEmlsrPaddingDelay(Time delay);
+    /**
+     * \param value the value for the EMLSR Padding Delay subfield
+     * \return the corresponding EMLSR Padding delay
+     */
+    static Time DecodeEmlsrPaddingDelay(uint8_t value);
+
+    /**
+     * \param delay the EMLSR Transition delay
+     * \return the encoded value for the EMLSR Transition Delay subfield
+     */
+    static uint8_t EncodeEmlsrTransitionDelay(Time delay);
+    /**
+     * \param value the value for the EMLSR Transition Delay subfield
+     * \return the corresponding EMLSR Transition delay
+     */
+    static Time DecodeEmlsrTransitionDelay(uint8_t value);
 };
 
 /**
@@ -308,6 +330,75 @@ class MultiLinkElement : public WifiInformationElement
      * \return the number of TXOPs
      */
     uint8_t GetMediumSyncMaxNTxops() const;
+
+    /**
+     * Set the EMLSR Support subfield of the EML Capabilities subfield in the Common Info field
+     * to 1 if EMLSR mode is supported and set it to 0 otherwise. Make sure that this is a Basic
+     * Multi-Link Element.
+     *
+     * \param supported whether EMLSR mode is supported
+     */
+    void SetEmlsrSupported(bool supported);
+    /**
+     * Set the EMLSR Padding Delay subfield of the EML Capabilities subfield in the
+     * Common Info field. Make sure that this is a Basic Multi-Link Element.
+     *
+     * \param delay the EMLSR Padding delay (0us, 32us, 64us, 128us or 256us)
+     */
+    void SetEmlsrPaddingDelay(Time delay);
+    /**
+     * Set the EMLSR Transition Delay subfield of the EML Capabilities subfield in the
+     * Common Info field. Make sure that this is a Basic Multi-Link Element.
+     *
+     * \param delay the EMLSR Transition delay (0us, 16us, 32us, 64us, 128us or 256us)
+     */
+    void SetEmlsrTransitionDelay(Time delay);
+    /**
+     * Set the Transition Timeout subfield of the EML Capabilities subfield in the
+     * Common Info field. Make sure that this is a Basic Multi-Link Element.
+     *
+     * \param timeout the Transition Timeout (0us or 2^n us, with n=7..16)
+     */
+    void SetTransitionTimeout(Time timeout);
+    /**
+     * Return true if the EML Capabilities subfield in the Common Info field is present
+     * and false otherwise. Make sure that this is a Basic Multi-Link Element.
+     *
+     * \return whether the EML Capabilities subfield in the Common Info field is present
+     */
+    bool HasEmlCapabilities() const;
+    /**
+     * Return true if the EMLSR Support subfield of the EML Capabilities subfield in the
+     * Common Info field is set to 1 and false otherwise. Make sure that this is a Basic
+     * Multi-Link Element and the EML Capabilities subfield is present.
+     *
+     * \return whether the EMLSR Support subfield is set to 1
+     */
+    bool IsEmlsrSupported() const;
+    /**
+     * Get the EMLSR Padding Delay subfield of the EML Capabilities subfield in the
+     * Common Info field. Make sure that this is a Basic Multi-Link Element and the
+     * EML Capabilities subfield is present.
+     *
+     * \return the EMLSR Padding Delay
+     */
+    Time GetEmlsrPaddingDelay() const;
+    /**
+     * Get the EMLSR Transition Delay subfield of the EML Capabilities subfield in the
+     * Common Info field. Make sure that this is a Basic Multi-Link Element and the
+     * EML Capabilities subfield is present.
+     *
+     * \return the EMLSR Transition Delay
+     */
+    Time GetEmlsrTransitionDelay() const;
+    /**
+     * Get the Transition Timeout subfield of the EML Capabilities subfield in the
+     * Common Info field. Make sure that this is a Basic Multi-Link Element and the
+     * EML Capabilities subfield is present.
+     *
+     * \return the Transition Timeout
+     */
+    Time GetTransitionTimeout() const;
 
     /**
      * \ingroup wifi

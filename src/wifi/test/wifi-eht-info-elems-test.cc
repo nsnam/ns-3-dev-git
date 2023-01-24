@@ -99,6 +99,15 @@ BasicMultiLinkElementTest::GetMultiLinkElement(
             commonInfo.m_mediumSyncDelayInfo->mediumSyncOfdmEdThreshold - 72);
         mle.SetMediumSyncMaxNTxops(commonInfo.m_mediumSyncDelayInfo->mediumSyncMaxNTxops + 1);
     }
+    if (commonInfo.m_emlCapabilities.has_value())
+    {
+        auto padding = commonInfo.m_emlCapabilities->emlsrPaddingDelay;
+        mle.SetEmlsrPaddingDelay(MicroSeconds(padding == 0 ? 0 : (1 << (4 + padding))));
+        auto transitionD = commonInfo.m_emlCapabilities->emlsrTransitionDelay;
+        mle.SetEmlsrTransitionDelay(MicroSeconds(transitionD == 0 ? 0 : (1 << (3 + transitionD))));
+        auto transitionT = commonInfo.m_emlCapabilities->transitionTimeout;
+        mle.SetTransitionTimeout(MicroSeconds(transitionT == 0 ? 0 : (1 << (6 + transitionT))));
+    }
 
     for (std::size_t i = 0; i < subelements.size(); ++i)
     {
@@ -132,6 +141,14 @@ BasicMultiLinkElementTest::DoRun()
         CommonInfoBasicMle::MediumSyncDelayInfo{.mediumSyncDuration = 1,
                                                 .mediumSyncOfdmEdThreshold = 4,
                                                 .mediumSyncMaxNTxops = 5};
+
+    // Adding Medium Sync Delay Information
+    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
+
+    commonInfo.m_emlCapabilities = CommonInfoBasicMle::EmlCapabilities{.emlsrSupport = 1,
+                                                                       .emlsrPaddingDelay = 4,
+                                                                       .emlsrTransitionDelay = 5,
+                                                                       .transitionTimeout = 10};
 
     // Adding Medium Sync Delay Information
     TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
