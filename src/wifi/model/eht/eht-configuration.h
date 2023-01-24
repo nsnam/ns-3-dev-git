@@ -20,6 +20,7 @@
 #ifndef EHT_CONFIGURATION_H
 #define EHT_CONFIGURATION_H
 
+#include "ns3/nstime.h"
 #include "ns3/object.h"
 
 namespace ns3
@@ -44,6 +45,10 @@ class EhtConfiguration : public Object
      * \return the object TypeId
      */
     static TypeId GetTypeId();
+
+  private:
+    bool m_emlsrActivated;    //!< whether EMLSR option is activated
+    Time m_transitionTimeout; //!< Transition timeout
 };
 
 } // namespace ns3

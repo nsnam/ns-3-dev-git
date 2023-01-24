@@ -19,6 +19,7 @@
 
 #include "eht-configuration.h"
 
+#include "ns3/boolean.h"
 #include "ns3/log.h"
 
 namespace ns3
@@ -41,10 +42,25 @@ EhtConfiguration::~EhtConfiguration()
 TypeId
 EhtConfiguration::GetTypeId()
 {
-    static ns3::TypeId tid = ns3::TypeId("ns3::EhtConfiguration")
-                                 .SetParent<Object>()
-                                 .SetGroupName("Wifi")
-                                 .AddConstructor<EhtConfiguration>();
+    static ns3::TypeId tid =
+        ns3::TypeId("ns3::EhtConfiguration")
+            .SetParent<Object>()
+            .SetGroupName("Wifi")
+            .AddConstructor<EhtConfiguration>()
+            .AddAttribute("EmlsrActivated",
+                          "Whether EMLSR option is activated. If activated, EMLSR mode can be "
+                          "enabled on the EMLSR links by an installed EMLSR Manager.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&EhtConfiguration::m_emlsrActivated),
+                          MakeBooleanChecker())
+            .AddAttribute("TransitionTimeout",
+                          "The Transition Timeout (not used by non-AP MLDs). "
+                          "Possible values are 0us or 2^n us, with n=7..16.",
+                          TimeValue(MicroSeconds(0)),
+                          MakeTimeAccessor(&EhtConfiguration::m_transitionTimeout),
+                          MakeTimeChecker(MicroSeconds(0), MicroSeconds(65536)));
     return tid;
 }
 
