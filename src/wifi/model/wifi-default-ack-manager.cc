@@ -28,7 +28,6 @@
 #include "wifi-tx-parameters.h"
 
 #include "ns3/he-frame-exchange-manager.h"
-#include "ns3/he-phy.h"
 #include "ns3/log.h"
 
 namespace ns3
@@ -102,7 +101,7 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq(Ptr<const WifiMpdu> mpdu,
 
     uint8_t tid = hdr.GetQosTid();
     Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
-    NS_ABORT_MSG_IF(!edca->GetBaAgreementEstablished(receiver, tid),
+    NS_ABORT_MSG_IF(!m_mac->GetBaAgreementEstablishedAsOriginator(receiver, tid),
                     "An established Block Ack agreement is required");
 
     uint16_t startingSeq = edca->GetBaStartingSequence(receiver, tid);
@@ -258,8 +257,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
         return std::unique_ptr<WifiAcknowledgment>(acknowledgment);
     }
 
-    if ((!hdr.IsQosData() || !m_mac->GetQosTxop(hdr.GetQosTid())
-                                  ->GetBaAgreementEstablished(receiver, hdr.GetQosTid())) &&
+    if ((!hdr.IsQosData() ||
+         !m_mac->GetBaAgreementEstablishedAsOriginator(receiver, hdr.GetQosTid())) &&
         !hdr.IsBlockAckReq())
     {
         NS_LOG_DEBUG(
@@ -319,8 +318,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
         acknowledgment->blockAckReqTxVector =
             GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector);
         acknowledgment->blockAckTxVector = acknowledgment->blockAckReqTxVector;
-        acknowledgment->barType = m_mac->GetQosTxop(tid)->GetBlockAckReqType(receiver, tid);
-        acknowledgment->baType = m_mac->GetQosTxop(tid)->GetBlockAckType(receiver, tid);
+        acknowledgment->barType = m_mac->GetBarTypeAsOriginator(receiver, tid);
+        acknowledgment->baType = m_mac->GetBaTypeAsOriginator(receiver, tid);
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::BLOCK_ACK);
         return std::unique_ptr<WifiAcknowledgment>(acknowledgment);
     }
@@ -330,7 +329,7 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
     WifiBlockAck* acknowledgment = new WifiBlockAck;
     acknowledgment->blockAckTxVector =
         GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector);
-    acknowledgment->baType = m_mac->GetQosTxop(tid)->GetBlockAckType(receiver, tid);
+    acknowledgment->baType = m_mac->GetBaTypeAsOriginator(receiver, tid);
     acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::NORMAL_ACK);
     return std::unique_ptr<WifiAcknowledgment>(acknowledgment);
 }
@@ -405,7 +404,7 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
             receiver,
             WifiDlMuBarBaSequence::BlockAckInfo{
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
-                edca->GetBlockAckType(receiver, tid)});
+                m_mac->GetBaTypeAsOriginator(receiver, tid)});
         return std::unique_ptr<WifiDlMuBarBaSequence>(acknowledgment);
     }
 
@@ -435,9 +434,9 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
             receiver,
             WifiDlMuBarBaSequence::BlockAckReqInfo{
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
-                edca->GetBlockAckReqType(receiver, tid),
+                m_mac->GetBarTypeAsOriginator(receiver, tid),
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
-                edca->GetBlockAckType(receiver, tid)});
+                m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::BLOCK_ACK);
         return std::unique_ptr<WifiDlMuBarBaSequence>(acknowledgment);
@@ -516,7 +515,9 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
 
         // determine the TX vector used to send the BlockAck frame
         WifiTxVector blockAckTxVector;
-        blockAckTxVector.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+        auto preamble = IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
+                                                                     : WIFI_PREAMBLE_HE_TB;
+        blockAckTxVector.SetPreambleType(preamble);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
         // 800ns GI is not allowed for HE TB
         blockAckTxVector.SetGuardInterval(
@@ -524,9 +525,7 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
         const auto& userInfo = txParams.m_txVector.GetHeMuUserInfo(staId);
         blockAckTxVector.SetHeMuUserInfo(
             staId,
-            {userInfo.ru,
-             HePhy::GetHeMcs(std::min(userInfo.mcs.GetMcsValue(), m_maxMcsForBlockAckInTbPpdu)),
-             userInfo.nss});
+            {userInfo.ru, std::min(userInfo.mcs, m_maxMcsForBlockAckInTbPpdu), userInfo.nss});
 
         NS_LOG_DEBUG("Adding STA "
                      << receiver
@@ -536,9 +535,9 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
             receiver,
             WifiDlMuTfMuBar::BlockAckInfo{edca->GetBaManager()->GetBlockAckReqHeader(receiver, tid),
                                           blockAckTxVector,
-                                          edca->GetBlockAckType(receiver, tid)});
+                                          m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
-        acknowledgment->barTypes.push_back(edca->GetBlockAckReqType(receiver, tid));
+        acknowledgment->barTypes.push_back(m_mac->GetBarTypeAsOriginator(receiver, tid));
         acknowledgment->muBarTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(receiver);
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::BLOCK_ACK);
         return std::unique_ptr<WifiDlMuTfMuBar>(acknowledgment);
@@ -602,7 +601,9 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
 
         // determine the TX vector used to send the BlockAck frame
         WifiTxVector blockAckTxVector;
-        blockAckTxVector.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+        auto preamble = IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
+                                                                     : WIFI_PREAMBLE_HE_TB;
+        blockAckTxVector.SetPreambleType(preamble);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
         // 800ns GI is not allowed for HE TB
         blockAckTxVector.SetGuardInterval(
@@ -610,9 +611,7 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         const auto& userInfo = txParams.m_txVector.GetHeMuUserInfo(staId);
         blockAckTxVector.SetHeMuUserInfo(
             staId,
-            {userInfo.ru,
-             HePhy::GetHeMcs(std::min(userInfo.mcs.GetMcsValue(), m_maxMcsForBlockAckInTbPpdu)),
-             userInfo.nss});
+            {userInfo.ru, std::min(userInfo.mcs, m_maxMcsForBlockAckInTbPpdu), userInfo.nss});
 
         NS_LOG_DEBUG("Adding STA " << receiver
                                    << " to the list of stations that will reply with a Block Ack");
@@ -620,10 +619,10 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         acknowledgment->stationsReplyingWithBlockAck.emplace(
             receiver,
             WifiDlMuAggregateTf::BlockAckInfo{
-                GetMuBarSize({edca->GetBlockAckReqType(receiver, tid)}),
+                GetMuBarSize({m_mac->GetBarTypeAsOriginator(receiver, tid)}),
                 edca->GetBaManager()->GetBlockAckReqHeader(receiver, tid),
                 blockAckTxVector,
-                edca->GetBlockAckType(receiver, tid)});
+                m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::NO_EXPLICIT_ACK);
         return std::unique_ptr<WifiDlMuAggregateTf>(acknowledgment);
@@ -676,7 +675,7 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
 
             // find a TID for which a BA agreement exists with the given originator
             uint8_t tid = 0;
-            while (tid < 8 && !heFem->GetBaAgreementEstablished(staAddress, tid))
+            while (tid < 8 && !m_mac->GetBaAgreementEstablishedAsRecipient(staAddress, tid))
             {
                 tid++;
             }
@@ -690,7 +689,7 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
             // we assume the Block Acknowledgment context is used for the multi-STA BlockAck frame
             // (since it requires the longest TX time due to the presence of a bitmap)
             acknowledgment->baType.m_bitmapLen.push_back(
-                heFem->GetBlockAckType(staAddress, tid).m_bitmapLen.at(0));
+                m_mac->GetBaTypeAsRecipient(staAddress, tid).m_bitmapLen.at(0));
         }
 
         uint16_t staId = trigger.begin()->GetAid12();

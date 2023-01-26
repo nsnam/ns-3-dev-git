@@ -27,6 +27,7 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-link-element.h"
 #include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/node-list.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
@@ -35,6 +36,7 @@
 #include "ns3/qos-utils.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/spectrum-wifi-helper.h"
+#include "ns3/spectrum-wifi-phy.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
@@ -45,6 +47,8 @@
 #include "ns3/wifi-protection.h"
 #include "ns3/wifi-psdu.h"
 
+#include <algorithm>
+#include <array>
 #include <iomanip>
 #include <sstream>
 #include <vector>
@@ -206,18 +210,12 @@ class MultiLinkOperationsTestBase : public TestCase
      */
     MultiLinkOperationsTestBase(const std::string& name,
                                 uint8_t nStations,
-                                std::initializer_list<std::string> staChannels,
-                                std::initializer_list<std::string> apChannels,
-                                std::initializer_list<uint8_t> fixedPhyBands = {});
+                                std::vector<std::string> staChannels,
+                                std::vector<std::string> apChannels,
+                                std::vector<uint8_t> fixedPhyBands = {});
     ~MultiLinkOperationsTestBase() override = default;
 
   protected:
-    /**
-     * \param str the given channel string
-     * \return the PHY band specified in the given channel string
-     */
-    WifiPhyBand GetPhyBandFromChannelStr(const std::string& str);
-
     /**
      * Callback invoked when a FEM passes PSDUs to the PHY.
      *
@@ -259,6 +257,7 @@ class MultiLinkOperationsTestBase : public TestCase
     Ptr<ApWifiMac> m_apMac;                       ///< AP wifi MAC
     std::vector<Ptr<StaWifiMac>> m_staMacs;       ///< STA wifi MACs
     uint8_t m_nStations;                          ///< number of stations to create
+    uint16_t m_lastAid;                           ///< AID of last associated station
 
   private:
     /**
@@ -268,25 +267,41 @@ class MultiLinkOperationsTestBase : public TestCase
      *
      * \param helper the given PHY helper
      * \param channels the strings specifying the operating channels to configure
-     * \param channelMap the created spectrum channels
+     * \param channel the created spectrum channel
      */
     void SetChannels(SpectrumWifiPhyHelper& helper,
                      const std::vector<std::string>& channels,
-                     const std::map<WifiPhyBand, Ptr<MultiModelSpectrumChannel>>& channelMap);
+                     Ptr<MultiModelSpectrumChannel> channel);
+
+    /**
+     * Set the SSID on the next station that needs to start the association procedure.
+     * This method is connected to the ApWifiMac's AssociatedSta trace source.
+     * Start generating traffic (if needed) when all stations are associated.
+     *
+     * \param aid the AID assigned to the previous associated STA
+     */
+    void SetSsid(uint16_t aid, Mac48Address /* addr */);
+
+    /**
+     * Start the generation of traffic (needs to be overridden)
+     */
+    virtual void StartTraffic()
+    {
+    }
 };
 
-MultiLinkOperationsTestBase::MultiLinkOperationsTestBase(
-    const std::string& name,
-    uint8_t nStations,
-    std::initializer_list<std::string> staChannels,
-    std::initializer_list<std::string> apChannels,
-    std::initializer_list<uint8_t> fixedPhyBands)
+MultiLinkOperationsTestBase::MultiLinkOperationsTestBase(const std::string& name,
+                                                         uint8_t nStations,
+                                                         std::vector<std::string> staChannels,
+                                                         std::vector<std::string> apChannels,
+                                                         std::vector<uint8_t> fixedPhyBands)
     : TestCase(name),
       m_staChannels(staChannels),
       m_apChannels(apChannels),
       m_fixedPhyBands(fixedPhyBands),
       m_staMacs(nStations),
-      m_nStations(nStations)
+      m_nStations(nStations),
+      m_lastAid(0)
 {
 }
 
@@ -343,6 +358,10 @@ MultiLinkOperationsTestBase::CheckAddresses(Ptr<const WifiPsdu> psdu, bool downl
                     break;
                 }
             }
+            if (found)
+            {
+                break;
+            }
         }
         NS_TEST_EXPECT_MSG_EQ(found,
                               true,
@@ -366,7 +385,8 @@ MultiLinkOperationsTestBase::Transmit(uint8_t linkId,
        << psduMap.begin()->second->GetNMpdus() << " duration/ID "
        << psduMap.begin()->second->GetHeader(0).GetDuration()
        << " RA = " << psduMap.begin()->second->GetAddr1()
-       << " TA = " << psduMap.begin()->second->GetAddr2();
+       << " TA = " << psduMap.begin()->second->GetAddr2()
+       << " ADDR3 = " << psduMap.begin()->second->GetHeader(0).GetAddr3();
     if (psduMap.begin()->second->GetHeader(0).IsQosData())
     {
         ss << " seqNo = {";
@@ -381,10 +401,9 @@ MultiLinkOperationsTestBase::Transmit(uint8_t linkId,
 }
 
 void
-MultiLinkOperationsTestBase::SetChannels(
-    SpectrumWifiPhyHelper& helper,
-    const std::vector<std::string>& channels,
-    const std::map<WifiPhyBand, Ptr<MultiModelSpectrumChannel>>& channelMap)
+MultiLinkOperationsTestBase::SetChannels(SpectrumWifiPhyHelper& helper,
+                                         const std::vector<std::string>& channels,
+                                         Ptr<MultiModelSpectrumChannel> channel)
 {
     helper = SpectrumWifiPhyHelper(channels.size());
     helper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
@@ -392,30 +411,10 @@ MultiLinkOperationsTestBase::SetChannels(
     uint8_t linkId = 0;
     for (const auto& str : channels)
     {
-        helper.Set(linkId, "ChannelSettings", StringValue(str));
-        helper.SetChannel(linkId, channelMap.at(GetPhyBandFromChannelStr(str)));
+        helper.Set(linkId++, "ChannelSettings", StringValue(str));
+    }
 
-        linkId++;
-    }
-}
-
-WifiPhyBand
-MultiLinkOperationsTestBase::GetPhyBandFromChannelStr(const std::string& str)
-{
-    if (str.find("2_4GHZ") != std::string::npos)
-    {
-        return WIFI_PHY_BAND_2_4GHZ;
-    }
-    if (str.find("5GHZ") != std::string::npos)
-    {
-        return WIFI_PHY_BAND_5GHZ;
-    }
-    if (str.find("6GHZ") != std::string::npos)
-    {
-        return WIFI_PHY_BAND_6GHZ;
-    }
-    NS_ABORT_MSG("Band in channel settings must be specified");
-    return WIFI_PHY_BAND_UNSPECIFIED;
+    helper.SetChannel(channel);
 }
 
 void
@@ -438,15 +437,12 @@ MultiLinkOperationsTestBase::DoSetup()
                                  "DataMode",
                                  StringValue("EhtMcs0"));
 
-    std::map<WifiPhyBand, Ptr<MultiModelSpectrumChannel>> channelMap = {
-        {WIFI_PHY_BAND_2_4GHZ, CreateObject<MultiModelSpectrumChannel>()},
-        {WIFI_PHY_BAND_5GHZ, CreateObject<MultiModelSpectrumChannel>()},
-        {WIFI_PHY_BAND_6GHZ, CreateObject<MultiModelSpectrumChannel>()}};
+    auto channel = CreateObject<MultiModelSpectrumChannel>();
 
     SpectrumWifiPhyHelper staPhyHelper;
     SpectrumWifiPhyHelper apPhyHelper;
-    SetChannels(staPhyHelper, m_staChannels, channelMap);
-    SetChannels(apPhyHelper, m_apChannels, channelMap);
+    SetChannels(staPhyHelper, m_staChannels, channel);
+    SetChannels(apPhyHelper, m_apChannels, channel);
 
     for (const auto& linkId : m_fixedPhyBands)
     {
@@ -454,12 +450,17 @@ MultiLinkOperationsTestBase::DoSetup()
     }
 
     WifiMacHelper mac;
-    Ssid ssid = Ssid("ns-3-ssid");
-    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid), "ActiveProbing", BooleanValue(false));
+    mac.SetType("ns3::StaWifiMac", // default SSID
+                "ActiveProbing",
+                BooleanValue(false));
 
     NetDeviceContainer staDevices = wifi.Install(staPhyHelper, mac, wifiStaNodes);
 
-    mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid), "BeaconGeneration", BooleanValue(true));
+    mac.SetType("ns3::ApWifiMac",
+                "Ssid",
+                SsidValue(Ssid("ns-3-ssid")),
+                "BeaconGeneration",
+                BooleanValue(true));
 
     NetDeviceContainer apDevices = wifi.Install(apPhyHelper, mac, wifiApNode);
 
@@ -508,13 +509,45 @@ MultiLinkOperationsTestBase::DoSetup()
                 MakeCallback(&MultiLinkOperationsTestBase::Transmit, this).Bind(linkId));
         }
     }
+
+    // schedule ML setup for one station at a time
+    m_apMac->TraceConnectWithoutContext("AssociatedSta",
+                                        MakeCallback(&MultiLinkOperationsTestBase::SetSsid, this));
+    Simulator::Schedule(Seconds(0), [&]() { m_staMacs[0]->SetSsid(Ssid("ns-3-ssid")); });
+}
+
+void
+MultiLinkOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
+{
+    if (m_lastAid == aid)
+    {
+        // another STA of this non-AP MLD has already fired this callback
+        return;
+    }
+    m_lastAid = aid;
+
+    // make the next STA to start ML discovery & setup
+    if (aid < m_nStations)
+    {
+        m_staMacs[aid]->SetSsid(Ssid("ns-3-ssid"));
+        return;
+    }
+    // wait some time (5ms) to allow the completion of association before generating traffic
+    Simulator::Schedule(MilliSeconds(5), &MultiLinkOperationsTestBase::StartTraffic, this);
 }
 
 /**
  * \ingroup wifi-test
  * \ingroup tests
  *
- * Multi-Link Discovery & Setup test.
+ * \brief Multi-Link Discovery & Setup test.
+ *
+ * This test sets up an AP MLD and a non-AP MLD having a variable number of links.
+ * The RF channels to set each link to are provided as input parameters through the test
+ * case constructor, along with the identifiers (starting at 0) of the links that cannot
+ * switch PHY band (if any). The links that are expected to be setup are also provided as input
+ * parameters. This test verifies that the management frames exchanged during ML discovery
+ * and ML setup contain the expected values and that the two MLDs setup the expected links.
  */
 class MultiLinkSetupTest : public MultiLinkOperationsTestBase
 {
@@ -527,10 +560,10 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
      * \param setupLinks a list of links (STA link ID, AP link ID) that are expected to be setup
      * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
      */
-    MultiLinkSetupTest(std::initializer_list<std::string> staChannels,
-                       std::initializer_list<std::string> apChannels,
-                       std::initializer_list<std::pair<uint8_t, uint8_t>> setupLinks,
-                       std::initializer_list<uint8_t> fixedPhyBands = {});
+    MultiLinkSetupTest(std::vector<std::string> staChannels,
+                       std::vector<std::string> apChannels,
+                       std::vector<std::pair<uint8_t, uint8_t>> setupLinks,
+                       std::vector<uint8_t> fixedPhyBands = {});
     ~MultiLinkSetupTest() override = default;
 
   protected:
@@ -575,11 +608,10 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     const std::vector<std::pair<uint8_t, uint8_t>> m_setupLinks;
 };
 
-MultiLinkSetupTest::MultiLinkSetupTest(
-    std::initializer_list<std::string> staChannels,
-    std::initializer_list<std::string> apChannels,
-    std::initializer_list<std::pair<uint8_t, uint8_t>> setupLinks,
-    std::initializer_list<uint8_t> fixedPhyBands)
+MultiLinkSetupTest::MultiLinkSetupTest(std::vector<std::string> staChannels,
+                                       std::vector<std::string> apChannels,
+                                       std::vector<std::pair<uint8_t, uint8_t>> setupLinks,
+                                       std::vector<uint8_t> fixedPhyBands)
     : MultiLinkOperationsTestBase("Check correctness of Multi-Link Setup",
                                   1,
                                   staChannels,
@@ -904,25 +936,335 @@ MultiLinkSetupTest::CheckDisabledLinks()
             continue;
         }
 
-        if (GetPhyBandFromChannelStr(m_staChannels.at(it->first)) !=
-            GetPhyBandFromChannelStr(m_apChannels.at(it->second)))
-        {
-            // STA had to switch PHY band to match AP's operating band. Given that we
-            // are using three distinct spectrum channels (one per band), a STA will
-            // not receive Beacon frames after switching PHY band. After a number of
-            // missed Beacon frames, the link is disabled
-            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(linkId)->GetState()->IsStateOff(),
-                                  true,
-                                  "Expecting link " << +linkId
-                                                    << " to be disabled due to switching PHY band");
-            continue;
-        }
-
         // the link has been setup and must be active
         NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(linkId)->GetState()->IsStateOff(),
                               false,
                               "Expecting link " << +linkId << " to be active");
     }
+}
+
+/**
+ * Tested traffic patterns.
+ */
+enum class TrafficPattern : uint8_t
+{
+    STA_TO_STA = 0,
+    STA_TO_AP,
+    AP_TO_STA,
+    AP_TO_BCAST,
+    STA_TO_BCAST
+};
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test data transmission between two MLDs when Block Ack agreement is not established.
+ *
+ * This test sets up an AP MLD and two non-AP MLDs having a variable number of links.
+ * The RF channels to set each link to are provided as input parameters through the test
+ * case constructor, along with the identifiers (starting at 0) of the links that cannot
+ * switch PHY band (if any). This test aims at veryfing the successful transmission of both
+ * unicast QoS data frames (from one station to another, from one station to the AP, from
+ * the AP to the station) and broadcast QoS data frames (from the AP or from one station).
+ * Two QoS data frames are generated for this purpose. The second one is also corrupted once
+ * (by using a post reception error model) to test its successful re-transmission.
+ * Establishment of a BA agreement is prevented by corrupting all ADDBA_REQUEST frames
+ * with a post reception error model.
+ */
+class MultiLinkTxNoBaTest : public MultiLinkOperationsTestBase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param trafficPattern the pattern of traffic to generate
+     * \param staChannels the strings specifying the operating channels for the STA
+     * \param apChannels the strings specifying the operating channels for the AP
+     * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
+     */
+    MultiLinkTxNoBaTest(TrafficPattern trafficPattern,
+                        std::vector<std::string> staChannels,
+                        std::vector<std::string> apChannels,
+                        std::vector<uint8_t> fixedPhyBands = {});
+    ~MultiLinkTxNoBaTest() override = default;
+
+  protected:
+    /**
+     * Function to trace packets received by the server application
+     * \param nodeId the ID of the node that received the packet
+     * \param p the packet
+     * \param addr the address
+     */
+    void L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr);
+
+    void Transmit(uint8_t linkId,
+                  std::string context,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+    void DoSetup() override;
+    void DoRun() override;
+
+  private:
+    void StartTraffic() override;
+
+    Ptr<ListErrorModel> m_errorModel;      ///< error rate model to corrupt packets
+    std::list<uint64_t> m_uidList;         ///< list of UIDs of packets to corrupt
+    bool m_dataCorrupted{false};           ///< whether second data frame has been already corrupted
+    TrafficPattern m_trafficPattern;       ///< the pattern of traffic to generate
+    std::array<std::size_t, 3> m_rxPkts{}; ///< number of packets received at application layer
+                                           ///< by each node (AP, STA 0, STA 1)
+};
+
+MultiLinkTxNoBaTest::MultiLinkTxNoBaTest(TrafficPattern trafficPattern,
+                                         std::vector<std::string> staChannels,
+                                         std::vector<std::string> apChannels,
+                                         std::vector<uint8_t> fixedPhyBands)
+    : MultiLinkOperationsTestBase("Check data transmission between MLDs without BA agreement",
+                                  2,
+                                  staChannels,
+                                  apChannels,
+                                  fixedPhyBands),
+      m_errorModel(CreateObject<ListErrorModel>()),
+      m_trafficPattern(trafficPattern)
+{
+}
+
+void
+MultiLinkTxNoBaTest::Transmit(uint8_t linkId,
+                              std::string context,
+                              WifiConstPsduMap psduMap,
+                              WifiTxVector txVector,
+                              double txPowerW)
+{
+    auto psdu = psduMap.begin()->second;
+    auto uid = psdu->GetPacket()->GetUid();
+
+    switch (psdu->GetHeader(0).GetType())
+    {
+    case WIFI_MAC_MGT_ACTION:
+        // a management frame is a DL frame if TA equals BSSID
+        CheckAddresses(psdu, psdu->GetHeader(0).GetAddr2() == psdu->GetHeader(0).GetAddr3());
+        // corrupt all management action frames (ADDBA Request frames) to prevent
+        // the establishment of a BA agreement
+        m_uidList.push_front(uid);
+        m_errorModel->SetList(m_uidList);
+        NS_LOG_INFO("CORRUPTED");
+        break;
+    case WIFI_MAC_QOSDATA: {
+        Address dlAddr3; // Source Address (SA)
+        switch (m_trafficPattern)
+        {
+        case TrafficPattern::STA_TO_STA:
+        case TrafficPattern::STA_TO_BCAST:
+            dlAddr3 = m_staMacs[0]->GetDevice()->GetAddress();
+            break;
+        case TrafficPattern::STA_TO_AP:
+            dlAddr3 = Mac48Address("00:00:00:00:00:00"); // invalid address, no DL frames
+            break;
+        case TrafficPattern::AP_TO_STA:
+        case TrafficPattern::AP_TO_BCAST:
+            dlAddr3 = m_apMac->GetAddress();
+            break;
+        }
+        // a QoS data frame is a DL frame if Addr3 is the SA
+        CheckAddresses(psdu, psdu->GetHeader(0).GetAddr3() == dlAddr3);
+    }
+        // corrupt the second QoS data frame (only once)
+        if (psdu->GetHeader(0).GetSequenceNumber() != 1 ||
+            m_trafficPattern == TrafficPattern::AP_TO_BCAST ||
+            m_trafficPattern == TrafficPattern::STA_TO_BCAST)
+        {
+            break;
+        }
+        if (!m_dataCorrupted)
+        {
+            m_uidList.push_front(uid);
+            m_dataCorrupted = true;
+            NS_LOG_INFO("CORRUPTED");
+            m_errorModel->SetList(m_uidList);
+            break;
+        }
+        // do not corrupt the second data frame anymore
+        if (auto it = std::find(m_uidList.cbegin(), m_uidList.cend(), uid); it != m_uidList.cend())
+        {
+            m_uidList.erase(it);
+        }
+        m_errorModel->SetList(m_uidList);
+        break;
+    default:;
+    }
+
+    MultiLinkOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
+}
+
+void
+MultiLinkTxNoBaTest::L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr)
+{
+    NS_LOG_INFO("Packet received by NODE " << +nodeId << "\n");
+    m_rxPkts[nodeId]++;
+}
+
+void
+MultiLinkTxNoBaTest::DoSetup()
+{
+    MultiLinkOperationsTestBase::DoSetup();
+
+    // install post reception error model on receivers
+    switch (m_trafficPattern)
+    {
+    case TrafficPattern::STA_TO_STA:
+        for (std::size_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+        {
+            m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
+        }
+        for (std::size_t linkId = 0; linkId < m_staMacs[1]->GetNLinks(); linkId++)
+        {
+            m_staMacs[1]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
+        }
+        break;
+    case TrafficPattern::STA_TO_AP:
+        for (std::size_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+        {
+            m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
+        }
+        break;
+    case TrafficPattern::AP_TO_STA:
+        for (std::size_t linkId = 0; linkId < m_staMacs[1]->GetNLinks(); linkId++)
+        {
+            m_staMacs[1]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
+        }
+        break;
+    case TrafficPattern::AP_TO_BCAST:
+        // No frame to corrupt (broadcast frames do not trigger establishment of BA agreement)
+        break;
+    case TrafficPattern::STA_TO_BCAST:
+        // uplink frames are not broadcast
+        for (std::size_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+        {
+            m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
+        }
+        break;
+    }
+}
+
+void
+MultiLinkTxNoBaTest::StartTraffic()
+{
+    const Time duration = Seconds(1);
+    Ptr<WifiMac> sender;
+    Address destAddr;
+
+    switch (m_trafficPattern)
+    {
+    case TrafficPattern::STA_TO_STA:
+        sender = m_staMacs[0];
+        destAddr = m_staMacs[1]->GetDevice()->GetAddress();
+        break;
+    case TrafficPattern::STA_TO_AP:
+        sender = m_staMacs[0];
+        destAddr = m_apMac->GetDevice()->GetAddress();
+        break;
+    case TrafficPattern::AP_TO_STA:
+        sender = m_apMac;
+        destAddr = m_staMacs[1]->GetDevice()->GetAddress();
+        break;
+    case TrafficPattern::AP_TO_BCAST:
+        sender = m_apMac;
+        destAddr = Mac48Address::GetBroadcast();
+        break;
+    case TrafficPattern::STA_TO_BCAST:
+        sender = m_staMacs[0];
+        destAddr = Mac48Address::GetBroadcast();
+        break;
+    }
+
+    PacketSocketHelper packetSocket;
+    packetSocket.Install(m_apMac->GetDevice()->GetNode());
+    packetSocket.Install(m_staMacs[0]->GetDevice()->GetNode());
+    packetSocket.Install(m_staMacs[1]->GetDevice()->GetNode());
+
+    PacketSocketAddress socket;
+    socket.SetSingleDevice(sender->GetDevice()->GetIfIndex());
+    socket.SetPhysicalAddress(destAddr);
+    socket.SetProtocol(1);
+
+    // install client application
+    Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient>();
+    client->SetAttribute("PacketSize", UintegerValue(1400));
+    client->SetAttribute("MaxPackets", UintegerValue(2));
+    client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+    client->SetRemote(socket);
+    sender->GetDevice()->GetNode()->AddApplication(client);
+    client->SetStartTime(Seconds(0)); // now
+    client->SetStopTime(duration);
+
+    // install a server on all nodes
+    for (auto nodeIt = NodeList::Begin(); nodeIt != NodeList::End(); nodeIt++)
+    {
+        Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
+        server->SetLocal(socket);
+        (*nodeIt)->AddApplication(server);
+        server->SetStartTime(Seconds(0)); // now
+        server->SetStopTime(duration);
+    }
+
+    for (std::size_t nodeId = 0; nodeId < NodeList::GetNNodes(); nodeId++)
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/" + std::to_string(nodeId) +
+                "/ApplicationList/*/$ns3::PacketSocketServer/Rx",
+            MakeCallback(&MultiLinkTxNoBaTest::L7Receive, this).Bind(nodeId));
+    }
+
+    Simulator::Stop(duration);
+}
+
+void
+MultiLinkTxNoBaTest::DoRun()
+{
+    Simulator::Run();
+
+    // Expected number of packets received by each node (AP, STA 0, STA 1) at application layer
+    std::array<std::size_t, 3> expectedRxPkts{};
+
+    switch (m_trafficPattern)
+    {
+    case TrafficPattern::STA_TO_STA:
+    case TrafficPattern::AP_TO_STA:
+        // only STA 1 receives the 2 packets that have been transmitted
+        expectedRxPkts[2] = 2;
+        break;
+    case TrafficPattern::STA_TO_AP:
+        // only the AP receives the 2 packets that have been transmitted
+        expectedRxPkts[0] = 2;
+        break;
+    case TrafficPattern::AP_TO_BCAST:
+        // the AP replicates the broadcast frames on all the links, hence each station
+        // receives the 2 packets N times, where N is the number of setup link
+        expectedRxPkts[1] = 2 * m_staMacs[0]->GetSetupLinkIds().size();
+        expectedRxPkts[2] = 2 * m_staMacs[1]->GetSetupLinkIds().size();
+        break;
+    case TrafficPattern::STA_TO_BCAST:
+        // the AP receives the two packets and then replicates them on all the links,
+        // hence STA 1 receives 2 packets N times, where N is the number of setup link
+        expectedRxPkts[0] = 2;
+        expectedRxPkts[2] = 2 * m_staMacs[1]->GetSetupLinkIds().size();
+        break;
+    }
+
+    NS_TEST_EXPECT_MSG_EQ(+m_rxPkts[0],
+                          +expectedRxPkts[0],
+                          "Unexpected number of packets received by the AP");
+    NS_TEST_EXPECT_MSG_EQ(+m_rxPkts[1],
+                          +expectedRxPkts[1],
+                          "Unexpected number of packets received by STA 0");
+    NS_TEST_EXPECT_MSG_EQ(+m_rxPkts[2],
+                          +expectedRxPkts[2],
+                          "Unexpected number of packets received by STA 1");
+
+    Simulator::Destroy();
 }
 
 /**
@@ -940,71 +1282,90 @@ class WifiMultiLinkOperationsTestSuite : public TestSuite
 WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     : TestSuite("wifi-mlo", UNIT)
 {
+    using ParamsTuple = std::tuple<std::vector<std::string>,
+                                   std::vector<std::string>,
+                                   std::vector<std::pair<uint8_t, uint8_t>>,
+                                   std::vector<uint8_t>>;
+
     AddTestCase(new GetRnrLinkInfoTest(), TestCase::QUICK);
-    // matching channels: setup all links
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                    {{0, 0}, {1, 1}, {2, 2}}),
+
+    for (const auto& [staChannels, apChannels, setupLinks, fixedPhyBands] :
+         {// matching channels: setup all links
+          ParamsTuple({"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                      {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                      {{0, 0}, {1, 1}, {2, 2}},
+                      {}),
+          // non-matching channels, matching PHY bands: setup all links
+          ParamsTuple({"{108, 0, BAND_5GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                      {"{36, 0, BAND_5GHZ, 0}", "{120, 0, BAND_5GHZ, 0}", "{5, 0, BAND_6GHZ, 0}"},
+                      {{1, 0}, {0, 1}, {2, 2}},
+                      {}),
+          // non-AP MLD switches band on some links to setup 3 links
+          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+                      {"{36, 0, BAND_5GHZ, 0}", "{9, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                      {{2, 0}, {0, 1}, {1, 2}},
+                      {}),
+          // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
+          // that band, hence only 2 links are setup
+          ParamsTuple(
+              {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
+              {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+              {{1, 0}, {2, 1}},
+              {0}),
+          // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
+          // that band; the second link of the non-AP MLD cannot change PHY band and there is
+          // an AP operating on the same channel; hence 2 links are setup
+          ParamsTuple(
+              {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
+              {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+              {{1, 0}, {2, 1}},
+              {0, 1}),
+          // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
+          // that band; the second link of the non-AP MLD cannot change PHY band and there is
+          // an AP operating on the same channel; the third link of the non-AP MLD cannot
+          // change PHY band and there is an AP operating on the same band (different channel);
+          // hence 2 links are setup by switching channel (not band) on the third link
+          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{60, 0, BAND_5GHZ, 0}"},
+                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                      {{1, 0}, {2, 2}},
+                      {0, 1, 2}),
+          // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
+          // that band; the second link of the non-AP MLD cannot change PHY band and there is
+          // an AP operating on the same channel; hence one link only is setup
+          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                      {{1, 0}},
+                      {0, 1}),
+          // non-AP MLD has only two STAs and setups two links
+          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                      {{0, 1}, {1, 0}},
+                      {}),
+          // single link non-AP STA associates with an AP affiliated with an AP MLD
+          ParamsTuple({"{120, 0, BAND_5GHZ, 0}"},
+                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                      {{0, 2}},
+                      {}),
+          // a STA affiliated with a non-AP MLD associates with a single link AP
+          ParamsTuple({"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                      {"{120, 0, BAND_5GHZ, 0}"},
+                      {{2, 0}},
+                      {})})
+    {
+        AddTestCase(new MultiLinkSetupTest(staChannels, apChannels, setupLinks, fixedPhyBands),
+                    TestCase::QUICK);
+
+        for (const auto& trafficPattern : {TrafficPattern::STA_TO_STA,
+                                           TrafficPattern::STA_TO_AP,
+                                           TrafficPattern::AP_TO_STA,
+                                           TrafficPattern::AP_TO_BCAST,
+                                           TrafficPattern::STA_TO_BCAST})
+        {
+            AddTestCase(
+                new MultiLinkTxNoBaTest(trafficPattern, staChannels, apChannels, fixedPhyBands),
                 TestCase::QUICK);
-    // non-matching channels, matching PHY bands: setup all links
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{108, 0, BAND_5GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{120, 0, BAND_5GHZ, 0}", "{5, 0, BAND_6GHZ, 0}"},
-                    {{1, 0}, {0, 1}, {2, 2}}),
-                TestCase::QUICK);
-    // non-AP MLD switches band on some links to setup 3 links
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{9, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                    {{2, 0}, {0, 1}, {1, 2}}),
-                TestCase::QUICK);
-    // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
-    // that band, hence only 2 links are setup
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                    {{1, 0}, {2, 1}},
-                    {0}),
-                TestCase::QUICK);
-    // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
-    // that band; the second link of the non-AP MLD cannot change PHY band and there is
-    // an AP operating on the same channel; hence 2 links are setup
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                    {{1, 0}, {2, 1}},
-                    {0, 1}),
-                TestCase::QUICK);
-    // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
-    // that band; the second link of the non-AP MLD cannot change PHY band and there is
-    // an AP operating on the same channel; the third link of the non-AP MLD cannot
-    // change PHY band and there is an AP operating on the same band (different channel);
-    // hence 2 links are setup by switching channel (not band) on the third link
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{60, 0, BAND_5GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                    {{1, 0}, {2, 2}},
-                    {0, 1, 2}),
-                TestCase::QUICK);
-    // non-AP MLD has only two STAs and setups two links
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                    {{0, 1}, {1, 0}}),
-                TestCase::QUICK);
-    // single link non-AP STA associates with an AP affiliated with an AP MLD
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{120, 0, BAND_5GHZ, 0}"},
-                    {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                    {{0, 2}}),
-                TestCase::QUICK);
-    // a STA affiliated with a non-AP MLD associates with a single link AP
-    AddTestCase(new MultiLinkSetupTest(
-                    {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                    {"{120, 0, BAND_5GHZ, 0}"},
-                    {{2, 0}}),
-                TestCase::QUICK);
+        }
+    }
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite

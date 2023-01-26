@@ -117,16 +117,6 @@ class QosTxop : public Txop
      * \param address recipient address of the peer station
      * \param tid traffic ID.
      *
-     * \return true if a block ack agreement is established, false otherwise.
-     *
-     * Checks if a block ack agreement is established with station addressed by
-     * <i>recipient</i> for TID <i>tid</i>.
-     */
-    bool GetBaAgreementEstablished(Mac48Address address, uint8_t tid) const;
-    /**
-     * \param address recipient address of the peer station
-     * \param tid traffic ID.
-     *
      * \return the negotiated buffer size during ADDBA handshake.
      *
      * Returns the negotiated buffer size during ADDBA handshake with station addressed by
@@ -144,24 +134,6 @@ class QosTxop : public Txop
      * recipient for the given TID.
      */
     uint16_t GetBaStartingSequence(Mac48Address address, uint8_t tid) const;
-    /**
-     * \param recipient MAC address of recipient
-     * \param tid traffic ID
-     *
-     * \return the type of Block Ack Requests sent to the recipient
-     *
-     * This function returns the type of Block Ack Requests sent to the recipient.
-     */
-    BlockAckReqType GetBlockAckReqType(Mac48Address recipient, uint8_t tid) const;
-    /**
-     * \param recipient MAC address
-     * \param tid traffic ID
-     *
-     * \return the type of Block Acks sent by the recipient
-     *
-     * This function returns the type of Block Acks sent by the recipient.
-     */
-    BlockAckType GetBlockAckType(Mac48Address recipient, uint8_t tid) const;
     /**
      * \param recipient Address of recipient.
      * \param tid traffic ID.
@@ -189,7 +161,7 @@ class QosTxop : public Txop
      * \param respHdr ADDBA response header.
      * \param recipient address of the recipient.
      */
-    void GotAddBaResponse(const MgtAddBaResponseHeader* respHdr, Mac48Address recipient);
+    void GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address recipient);
     /**
      * Event handler when a DELBA frame is received.
      *
@@ -204,7 +176,7 @@ class QosTxop : public Txop
      * \param recipient the intended recipient of the ADDBA_REQUEST frame
      * \param tid the TID
      */
-    void NotifyAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
+    void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
     /**
      * Callback when ADDBA response is not received after timeout.
      *

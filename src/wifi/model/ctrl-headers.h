@@ -21,6 +21,7 @@
 #define CTRL_HEADERS_H
 
 #include "block-ack-type.h"
+#include "wifi-phy-common.h"
 
 #include "ns3/he-ru.h"
 #include "ns3/header.h"
@@ -555,7 +556,7 @@ class CtrlBAckResponseHeader : public Header
  * \ingroup wifi
  * The different Trigger frame types.
  */
-enum TriggerFrameType : uint8_t
+enum class TriggerFrameType : uint8_t
 {
     BASIC_TRIGGER = 0,      // Basic
     BFRP_TRIGGER = 1,       // Beamforming Report Poll
@@ -565,6 +566,16 @@ enum TriggerFrameType : uint8_t
     GCR_MU_BAR_TRIGGER = 5, // Groupcast with Retries MU-BAR
     BQRP_TRIGGER = 6,       // Bandwidth Query Report Poll
     NFRP_TRIGGER = 7        // NDP Feedback Report Poll
+};
+
+/**
+ * \ingroup wifi
+ * The different variants for Common Info field and User Info field of Trigger Frames.
+ */
+enum class TriggerFrameVariant : uint8_t
+{
+    HE = 0,
+    EHT
 };
 
 /**
@@ -582,8 +593,9 @@ class CtrlTriggerUserInfoField
      * Constructor
      *
      * \param triggerType the Trigger frame type
+     * \param variant the Trigger Frame variant
      */
-    CtrlTriggerUserInfoField(uint8_t triggerType);
+    CtrlTriggerUserInfoField(TriggerFrameType triggerType, TriggerFrameVariant variant);
     /**
      * Copy assignment operator.
      *
@@ -632,6 +644,10 @@ class CtrlTriggerUserInfoField
      * \return the type of the Trigger Frame this User Info field belongs to
      */
     TriggerFrameType GetType() const;
+    /**
+     * \return the preamble type of the TB PPDU solicited by this User Info field.
+     */
+    WifiPreamble GetPreambleType() const;
     /**
      * Set the AID12 subfield, which carries the 12 LSBs of the AID of the
      * station for which this User Info field is intended. The whole AID can
@@ -697,13 +713,15 @@ class CtrlTriggerUserInfoField
      */
     uint8_t GetUlMcs() const;
     /**
-     * Set the UL DCM subfield, which indicates whether or not DCM is used
+     * Set the UL DCM subfield, which indicates whether or not DCM is used.
+     * This method can only be used with HE variant User Info field.
      *
      * \param dcm whether to use DCM or not
      */
     void SetUlDcm(bool dcm);
     /**
      * Get the UL DCM subfield, which indicates whether or not DCM is used
+     * This method can only be used with HE variant User Info field.
      *
      * \return true if DCM is used
      */
@@ -831,11 +849,14 @@ class CtrlTriggerUserInfoField
     const CtrlBAckRequestHeader& GetMuBarTriggerDepUserInfo() const;
 
   private:
+    TriggerFrameVariant m_variant; //!< User Info field variant
+
     uint16_t m_aid12;       //!< Association ID of the addressed station
     uint8_t m_ruAllocation; //!< RU Allocation
     bool m_ulFecCodingType; //!< UL FEC Coding Type
     uint8_t m_ulMcs;        //!< MCS to be used by the addressed station
-    bool m_ulDcm;           //!< whether or not to use Dual Carrier Modulation
+    bool m_ulDcm;           //!< whether or not to use Dual Carrier Modulation (HE variant only)
+    bool m_ps160;           //!< identifies the location of the RU (EHT variant only)
 
     union {
         struct
@@ -852,7 +873,7 @@ class CtrlTriggerUserInfoField
     } m_bits26To31;        //!< Fields occupying bits 26-31 in the User Info field
 
     uint8_t m_ulTargetRssi;                  //!< Expected receive signal power
-    uint8_t m_triggerType;                   //!< Trigger frame type
+    TriggerFrameType m_triggerType;          //!< Trigger frame type
     uint8_t m_basicTriggerDependentUserInfo; //!< Basic Trigger variant of Trigger Dependent User
                                              //!< Info subfield
     CtrlBAckRequestHeader
@@ -924,6 +945,21 @@ class CtrlTriggerHeader : public Header
     void Serialize(Buffer::Iterator start) const override;
     uint32_t Deserialize(Buffer::Iterator start) override;
 
+    /**
+     * Set the Common Info field variant.
+     *
+     * For the moment, all User Info fields are of the same variant type, hence we
+     * forbid changing the Common Info field variant type after adding User Info fields.
+     *
+     * \param variant the Common Info field variant
+     */
+    void SetVariant(TriggerFrameVariant variant);
+    /**
+     * Get the Common Info field variant.
+     *
+     * \return the Common Info field variant
+     */
+    TriggerFrameVariant GetVariant() const;
     /**
      * Set the Trigger frame type.
      *
@@ -1244,14 +1280,16 @@ class CtrlTriggerHeader : public Header
     /**
      * Common Info field
      */
-    uint8_t m_triggerType;     //!< Trigger type
-    uint16_t m_ulLength;       //!< Value for the L-SIG Length field
-    bool m_moreTF;             //!< True if a subsequent Trigger frame follows
-    bool m_csRequired;         //!< Carrier Sense required
-    uint8_t m_ulBandwidth;     //!< UL BW subfield
-    uint8_t m_giAndLtfType;    //!< GI And LTF Type subfield
-    uint8_t m_apTxPower;       //!< Tx Power used by AP to transmit the Trigger Frame
-    uint16_t m_ulSpatialReuse; //!< Value for the Spatial Reuse field in HE-SIG-A
+    TriggerFrameVariant m_variant;  //!< Common Info field variant
+    TriggerFrameType m_triggerType; //!< Trigger type
+    uint16_t m_ulLength;            //!< Value for the L-SIG Length field
+    bool m_moreTF;                  //!< True if a subsequent Trigger frame follows
+    bool m_csRequired;              //!< Carrier Sense required
+    uint8_t m_ulBandwidth;          //!< UL BW subfield
+    uint8_t m_giAndLtfType;         //!< GI And LTF Type subfield
+    uint8_t m_apTxPower;            //!< Tx Power used by AP to transmit the Trigger Frame
+    uint16_t m_ulSpatialReuse;      //!< Value for the Spatial Reuse field in HE-SIG-A
+
     /**
      * List of User Info fields
      */

@@ -476,6 +476,15 @@ uint16_t ConvertGuardIntervalToNanoSeconds(WifiMode mode,
 WifiPreamble GetPreambleForTransmission(WifiModulationClass modulation, bool useShortPreamble);
 
 /**
+ * Return the modulation class corresponding to the given preamble type.
+ * Only preamble types used by HT/VHT/HE/EHT can be passed to this function.
+ *
+ * \param preamble the given preamble type (must be one defined by HT standard or later)
+ * \return the modulation class corresponding to the given preamble type
+ */
+WifiModulationClass GetModulationClassForPreamble(WifiPreamble preamble);
+
+/**
  * Return whether the modulation class of the selected mode for the
  * control answer frame is allowed.
  *
@@ -538,6 +547,14 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
  * \return the maximum channel width in MHz allowed for the given modulation class
  */
 uint16_t GetMaximumChannelWidth(WifiModulationClass modulation);
+
+/**
+ * Return true if a preamble corresponds to an EHT transmission.
+ *
+ * \param preamble the preamble
+ * \return true if the provided preamble corresponds to an EHT transmission
+ */
+bool IsEht(WifiPreamble preamble);
 
 } // namespace ns3
 

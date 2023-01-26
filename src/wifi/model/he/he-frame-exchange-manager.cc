@@ -126,8 +126,8 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     if (m_muScheduler && !edca->GetBaManager()->GetBar(false) &&
         (!(mpdu = edca->PeekNextMpdu(m_linkId)) ||
          (mpdu->GetHeader().IsQosData() && !mpdu->GetHeader().GetAddr1().IsGroup() &&
-          edca->GetBaAgreementEstablished(mpdu->GetHeader().GetAddr1(),
-                                          mpdu->GetHeader().GetQosTid()))))
+          m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
+                                                       mpdu->GetHeader().GetQosTid()))))
     {
         txFormat =
             m_muScheduler->NotifyAccessGranted(edca, availableTime, initialFrame, m_allowedWidth);
@@ -418,7 +418,8 @@ HeFrameExchangeManager::SendPsduMap()
             ForwardPsduDown(triggerPsdu, acknowledgment->muBarTxVector);
 
             // Pass TRIGVECTOR to HE PHY (equivalent to PHY-TRIGGER.request primitive)
-            auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+            auto hePhy =
+                StaticCast<HePhy>(m_phy->GetPhyEntity(responseTxVector->GetModulationClass()));
             hePhy->SetTrigVector(m_trigVector, timeout);
 
             return;
@@ -674,7 +675,7 @@ HeFrameExchangeManager::SendPsduMap()
         timerType == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF)
     {
         // Pass TRIGVECTOR to HE PHY (equivalent to PHY-TRIGGER.request primitive)
-        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(responseTxVector->GetModulationClass()));
         hePhy->SetTrigVector(m_trigVector, m_txTimer.GetDelayLeft());
     }
     else if (timerType == WifiTxTimer::NOT_RUNNING && m_txParams.m_txVector.IsUlMu())
@@ -689,9 +690,9 @@ HeFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVecto
 {
     NS_LOG_FUNCTION(this << psduMap << txVector);
 
-    if (txVector.IsDlMu())
+    if (ns3::IsDlMu(txVector.GetPreambleType()))
     {
-        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(txVector.GetModulationClass()));
         auto sigBMode = hePhy->GetSigBMode(txVector);
         txVector.SetSigBMode(sigBMode);
     }
@@ -1138,16 +1139,16 @@ WifiTxVector
 HeFrameExchangeManager::GetTrigVector(const CtrlTriggerHeader& trigger) const
 {
     WifiTxVector v;
-    v.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+    v.SetPreambleType(trigger.GetVariant() == TriggerFrameVariant::HE ? WIFI_PREAMBLE_HE_TB
+                                                                      : WIFI_PREAMBLE_EHT_TB);
     v.SetChannelWidth(trigger.GetUlBandwidth());
     v.SetGuardInterval(trigger.GetGuardInterval());
     v.SetLength(trigger.GetUlLength());
     for (const auto& userInfoField : trigger)
     {
-        v.SetHeMuUserInfo(userInfoField.GetAid12(),
-                          {userInfoField.GetRuAllocation(),
-                           HePhy::GetHeMcs(userInfoField.GetUlMcs()),
-                           userInfoField.GetNss()});
+        v.SetHeMuUserInfo(
+            userInfoField.GetAid12(),
+            {userInfoField.GetRuAllocation(), userInfoField.GetUlMcs(), userInfoField.GetNss()});
     }
     return v;
 }
@@ -1300,9 +1301,11 @@ HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams)
             blockAck.SetAckType(false, index);
 
             auto addressTidPair = staInfo.first;
-            auto agreementIt = m_agreements.find(addressTidPair);
-            NS_ASSERT(agreementIt != m_agreements.end());
-            agreementIt->second.FillBlockAckBitmap(&blockAck, index);
+            auto agreement =
+                GetBaManager(addressTidPair.second)
+                    ->GetAgreementAsRecipient(addressTidPair.first, addressTidPair.second);
+            NS_ASSERT(agreement);
+            agreement->get().FillBlockAckBitmap(&blockAck, index);
             NS_LOG_DEBUG("Multi-STA Block Ack: Sending Block Ack with seq="
                          << blockAck.GetStartingSequence(index) << " to=" << receiver
                          << " tid=" << +tid);
@@ -1396,7 +1399,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger(const CtrlTriggerHeader& trigger,
     {
         Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
 
-        if (!edca->GetBaAgreementEstablished(hdr.GetAddr2(), tid))
+        if (!m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr2(), tid))
         {
             // no Block Ack agreement established for this TID
             continue;
@@ -1497,7 +1500,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
                txParams,
                ppduDuration))
     {
-        if (!m_mac->GetQosTxop(tid)->GetBaAgreementEstablished(hdr.GetAddr2(), tid))
+        if (!m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr2(), tid))
         {
             NS_LOG_DEBUG("Skipping tid=" << +tid << " because no agreement established");
             header.SetQosTid(++tid);
@@ -1579,14 +1582,14 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             mpdu->GetPacket()->PeekHeader(blockAckReq);
             NS_ABORT_MSG_IF(blockAckReq.IsMultiTid(), "Multi-TID BlockAckReq not supported");
             uint8_t tid = blockAckReq.GetTidInfo();
-            auto agreementIt = m_agreements.find({sender, tid});
-            NS_ASSERT(agreementIt != m_agreements.end());
-            agreementIt->second.NotifyReceivedBar(blockAckReq.GetStartingSequence());
+            GetBaManager(tid)->NotifyGotBlockAckRequest(sender,
+                                                        tid,
+                                                        blockAckReq.GetStartingSequence());
 
             // Block Acknowledgment context
             acknowledgment->stationsReceivingMultiStaBa.emplace(std::make_pair(sender, tid), index);
             acknowledgment->baType.m_bitmapLen.push_back(
-                GetBlockAckType(sender, tid).m_bitmapLen.at(0));
+                m_mac->GetBaTypeAsRecipient(sender, tid).m_bitmapLen.at(0));
             uint16_t staId = txVector.GetHeMuUserInfoMap().begin()->first;
             m_muSnrTag.Set(staId, rxSignalInfo.snr);
         }
@@ -1595,9 +1598,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             NS_LOG_DEBUG("Received an S-MPDU in a TB PPDU from " << sender << " (" << *mpdu << ")");
 
             uint8_t tid = hdr.GetQosTid();
-            auto agreementIt = m_agreements.find({sender, tid});
-            NS_ASSERT(agreementIt != m_agreements.end());
-            agreementIt->second.NotifyReceivedMpdu(mpdu);
+            GetBaManager(tid)->NotifyGotMpdu(mpdu);
 
             // Acknowledgment context of Multi-STA Block Acks
             acknowledgment->stationsReceivingMultiStaBa.emplace(std::make_pair(sender, tid), index);
@@ -1922,21 +1923,23 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 NS_ABORT_MSG_IF(blockAckReq.IsMultiTid(), "Multi-TID BlockAckReq not supported");
                 uint8_t tid = blockAckReq.GetTidInfo();
 
-                auto agreementIt = m_agreements.find({sender, tid});
+                auto agreement = GetBaManager(tid)->GetAgreementAsRecipient(sender, tid);
 
-                if (agreementIt == m_agreements.end())
+                if (!agreement)
                 {
                     NS_LOG_DEBUG("There's not a valid agreement for this BlockAckReq");
                     return;
                 }
 
-                agreementIt->second.NotifyReceivedBar(blockAckReq.GetStartingSequence());
+                GetBaManager(tid)->NotifyGotBlockAckRequest(sender,
+                                                            tid,
+                                                            blockAckReq.GetStartingSequence());
 
                 NS_LOG_DEBUG("Schedule Block Ack in TB PPDU");
                 Simulator::Schedule(m_phy->GetSifs(),
                                     &HeFrameExchangeManager::SendBlockAck,
                                     this,
-                                    agreementIt->second,
+                                    *agreement,
                                     hdr.GetDuration(),
                                     GetHeTbTxVector(trigger, hdr.GetAddr2()),
                                     rxSignalInfo.snr);
@@ -2019,7 +2022,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
                     acknowledgment->stationsReceivingMultiStaBa.emplace(std::make_pair(sender, tid),
                                                                         index + i++);
                     acknowledgment->baType.m_bitmapLen.push_back(
-                        GetBlockAckType(sender, tid).m_bitmapLen.at(0));
+                        m_mac->GetBaTypeAsRecipient(sender, tid).m_bitmapLen.at(0));
                 }
             }
             uint16_t staId = txVector.GetHeMuUserInfoMap().begin()->first;

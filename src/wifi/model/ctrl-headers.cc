@@ -1068,8 +1068,10 @@ CtrlBAckResponseHeader::ResetBitmap(std::size_t index)
  * Trigger frame - User Info field
  ***********************************/
 
-CtrlTriggerUserInfoField::CtrlTriggerUserInfoField(uint8_t triggerType)
-    : m_aid12(0),
+CtrlTriggerUserInfoField::CtrlTriggerUserInfoField(TriggerFrameType triggerType,
+                                                   TriggerFrameVariant variant)
+    : m_variant(variant),
+      m_aid12(0),
       m_ruAllocation(0),
       m_ulFecCodingType(false),
       m_ulMcs(0),
@@ -1096,11 +1098,13 @@ CtrlTriggerUserInfoField::operator=(const CtrlTriggerUserInfoField& userInfo)
         return *this;
     }
 
+    m_variant = userInfo.m_variant;
     m_aid12 = userInfo.m_aid12;
     m_ruAllocation = userInfo.m_ruAllocation;
     m_ulFecCodingType = userInfo.m_ulFecCodingType;
     m_ulMcs = userInfo.m_ulMcs;
     m_ulDcm = userInfo.m_ulDcm;
+    m_ps160 = userInfo.m_ps160;
     m_bits26To31 = userInfo.m_bits26To31;
     m_ulTargetRssi = userInfo.m_ulTargetRssi;
     m_basicTriggerDependentUserInfo = userInfo.m_basicTriggerDependentUserInfo;
@@ -1111,7 +1115,8 @@ CtrlTriggerUserInfoField::operator=(const CtrlTriggerUserInfoField& userInfo)
 void
 CtrlTriggerUserInfoField::Print(std::ostream& os) const
 {
-    os << ", USER_INFO AID=" << m_aid12 << ", RU_Allocation=" << +m_ruAllocation
+    os << ", USER_INFO " << (m_variant == TriggerFrameVariant::HE ? "HE" : "EHT")
+       << " variant AID=" << m_aid12 << ", RU_Allocation=" << +m_ruAllocation
        << ", MCS=" << +m_ulMcs;
 }
 
@@ -1123,14 +1128,15 @@ CtrlTriggerUserInfoField::GetSerializedSize() const
 
     switch (m_triggerType)
     {
-    case BASIC_TRIGGER:
-    case BFRP_TRIGGER:
+    case TriggerFrameType::BASIC_TRIGGER:
+    case TriggerFrameType::BFRP_TRIGGER:
         size += 1;
         break;
-    case MU_BAR_TRIGGER:
+    case TriggerFrameType::MU_BAR_TRIGGER:
         size +=
             m_muBarTriggerDependentUserInfo.GetSerializedSize(); // BAR Control and BAR Information
         break;
+    default:;
         // The Trigger Dependent User Info subfield is not present in the other variants
     }
 
@@ -1140,10 +1146,12 @@ CtrlTriggerUserInfoField::GetSerializedSize() const
 Buffer::Iterator
 CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
 {
-    NS_ABORT_MSG_IF(m_triggerType == BFRP_TRIGGER, "BFRP Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == GCR_MU_BAR_TRIGGER,
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
+                    "BFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER,
                     "GCR-MU-BAR Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == NFRP_TRIGGER, "NFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
+                    "NFRP Trigger frame is not supported");
 
     Buffer::Iterator i = start;
 
@@ -1152,7 +1160,10 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
     userInfo |= (m_ruAllocation << 12);
     userInfo |= (m_ulFecCodingType ? 1 << 20 : 0);
     userInfo |= (m_ulMcs & 0x0f) << 21;
-    userInfo |= (m_ulDcm ? 1 << 25 : 0);
+    if (m_variant == TriggerFrameVariant::HE)
+    {
+        userInfo |= (m_ulDcm ? 1 << 25 : 0);
+    }
 
     if (m_aid12 != 0 && m_aid12 != 2045)
     {
@@ -1166,16 +1177,21 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
     }
 
     i.WriteHtolsbU32(userInfo);
-    // Here we need to write 8 bits covering the UL Target RSSI (7 bits) and the
-    // Reserved bit. Given how m_ulTargetRssi is set, writing m_ulTargetRssi
-    // leads to setting the Reserved bit to zero
-    i.WriteU8(m_ulTargetRssi);
+    // Here we need to write 8 bits covering the UL Target RSSI (7 bits) and B39, which is
+    // reserved in the HE variant and the PS160 subfield in the EHT variant.
+    uint8_t bit32To39 = m_ulTargetRssi;
+    if (m_variant == TriggerFrameVariant::EHT)
+    {
+        bit32To39 |= (m_ps160 ? 1 << 7 : 0);
+    }
 
-    if (m_triggerType == BASIC_TRIGGER)
+    i.WriteU8(bit32To39);
+
+    if (m_triggerType == TriggerFrameType::BASIC_TRIGGER)
     {
         i.WriteU8(m_basicTriggerDependentUserInfo);
     }
-    else if (m_triggerType == MU_BAR_TRIGGER)
+    else if (m_triggerType == TriggerFrameType::MU_BAR_TRIGGER)
     {
         m_muBarTriggerDependentUserInfo.Serialize(i);
         i.Next(m_muBarTriggerDependentUserInfo.GetSerializedSize());
@@ -1187,10 +1203,12 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
 Buffer::Iterator
 CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
 {
-    NS_ABORT_MSG_IF(m_triggerType == BFRP_TRIGGER, "BFRP Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == GCR_MU_BAR_TRIGGER,
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
+                    "BFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER,
                     "GCR-MU-BAR Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == NFRP_TRIGGER, "NFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
+                    "NFRP Trigger frame is not supported");
 
     Buffer::Iterator i = start;
 
@@ -1201,7 +1219,10 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
     m_ruAllocation = (userInfo >> 12) & 0xff;
     m_ulFecCodingType = (userInfo >> 20) & 0x01;
     m_ulMcs = (userInfo >> 21) & 0x0f;
-    m_ulDcm = (userInfo >> 25) & 0x01;
+    if (m_variant == TriggerFrameVariant::HE)
+    {
+        m_ulDcm = (userInfo >> 25) & 0x01;
+    }
 
     if (m_aid12 != 0 && m_aid12 != 2045)
     {
@@ -1214,13 +1235,18 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
         m_bits26To31.raRuInformation.moreRaRu = (userInfo >> 31) & 0x01;
     }
 
-    m_ulTargetRssi = i.ReadU8() & 0x7f; // B39 is reserved
+    uint8_t bit32To39 = i.ReadU8();
+    m_ulTargetRssi = bit32To39 & 0x7f; // B39 is reserved in HE variant
+    if (m_variant == TriggerFrameVariant::EHT)
+    {
+        m_ps160 = (bit32To39 >> 7) == 1;
+    }
 
-    if (m_triggerType == BASIC_TRIGGER)
+    if (m_triggerType == TriggerFrameType::BASIC_TRIGGER)
     {
         m_basicTriggerDependentUserInfo = i.ReadU8();
     }
-    else if (m_triggerType == MU_BAR_TRIGGER)
+    else if (m_triggerType == TriggerFrameType::MU_BAR_TRIGGER)
     {
         uint32_t len = m_muBarTriggerDependentUserInfo.Deserialize(i);
         i.Next(len);
@@ -1232,7 +1258,22 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
 TriggerFrameType
 CtrlTriggerUserInfoField::GetType() const
 {
-    return static_cast<TriggerFrameType>(m_triggerType);
+    return m_triggerType;
+}
+
+WifiPreamble
+CtrlTriggerUserInfoField::GetPreambleType() const
+{
+    switch (m_variant)
+    {
+    case TriggerFrameVariant::HE:
+        return WIFI_PREAMBLE_HE_TB;
+    case TriggerFrameVariant::EHT:
+        return WIFI_PREAMBLE_EHT_TB;
+    default:
+        NS_ABORT_MSG("Unexpected variant: " << +static_cast<uint8_t>(m_variant));
+    }
+    return WIFI_PREAMBLE_LONG; // to silence warning
 }
 
 void
@@ -1382,12 +1423,14 @@ CtrlTriggerUserInfoField::GetUlMcs() const
 void
 CtrlTriggerUserInfoField::SetUlDcm(bool dcm)
 {
+    NS_ASSERT_MSG(m_variant == TriggerFrameVariant::HE, "UL DCM flag only present in HE variant");
     m_ulDcm = dcm;
 }
 
 bool
 CtrlTriggerUserInfoField::GetUlDcm() const
 {
+    NS_ASSERT_MSG(m_variant == TriggerFrameVariant::HE, "UL DCM flag only present in HE variant");
     return m_ulDcm;
 }
 
@@ -1481,7 +1524,7 @@ CtrlTriggerUserInfoField::SetBasicTriggerDepUserInfo(uint8_t spacingFactor,
                                                      uint8_t tidLimit,
                                                      AcIndex prefAc)
 {
-    NS_ABORT_MSG_IF(m_triggerType != BASIC_TRIGGER, "Not a Basic Trigger Frame");
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::BASIC_TRIGGER, "Not a Basic Trigger Frame");
 
     m_basicTriggerDependentUserInfo = (spacingFactor & 0x03) |
                                       (tidLimit & 0x07) << 2
@@ -1492,7 +1535,7 @@ CtrlTriggerUserInfoField::SetBasicTriggerDepUserInfo(uint8_t spacingFactor,
 uint8_t
 CtrlTriggerUserInfoField::GetMpduMuSpacingFactor() const
 {
-    NS_ABORT_MSG_IF(m_triggerType != BASIC_TRIGGER, "Not a Basic Trigger Frame");
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::BASIC_TRIGGER, "Not a Basic Trigger Frame");
 
     return m_basicTriggerDependentUserInfo & 0x03;
 }
@@ -1500,7 +1543,7 @@ CtrlTriggerUserInfoField::GetMpduMuSpacingFactor() const
 uint8_t
 CtrlTriggerUserInfoField::GetTidAggregationLimit() const
 {
-    NS_ABORT_MSG_IF(m_triggerType != BASIC_TRIGGER, "Not a Basic Trigger Frame");
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::BASIC_TRIGGER, "Not a Basic Trigger Frame");
 
     return (m_basicTriggerDependentUserInfo & 0x1c) >> 2;
 }
@@ -1508,7 +1551,7 @@ CtrlTriggerUserInfoField::GetTidAggregationLimit() const
 AcIndex
 CtrlTriggerUserInfoField::GetPreferredAc() const
 {
-    NS_ABORT_MSG_IF(m_triggerType != BASIC_TRIGGER, "Not a Basic Trigger Frame");
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::BASIC_TRIGGER, "Not a Basic Trigger Frame");
 
     return AcIndex((m_basicTriggerDependentUserInfo & 0xc0) >> 6);
 }
@@ -1516,7 +1559,8 @@ CtrlTriggerUserInfoField::GetPreferredAc() const
 void
 CtrlTriggerUserInfoField::SetMuBarTriggerDepUserInfo(const CtrlBAckRequestHeader& bar)
 {
-    NS_ABORT_MSG_IF(m_triggerType != MU_BAR_TRIGGER, "Not a MU-BAR Trigger frame");
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::MU_BAR_TRIGGER,
+                    "Not a MU-BAR Trigger frame");
     NS_ABORT_MSG_IF(bar.GetType().m_variant != BlockAckReqType::COMPRESSED &&
                         bar.GetType().m_variant != BlockAckReqType::MULTI_TID,
                     "BAR Control indicates it is neither the Compressed nor the Multi-TID variant");
@@ -1526,7 +1570,8 @@ CtrlTriggerUserInfoField::SetMuBarTriggerDepUserInfo(const CtrlBAckRequestHeader
 const CtrlBAckRequestHeader&
 CtrlTriggerUserInfoField::GetMuBarTriggerDepUserInfo() const
 {
-    NS_ABORT_MSG_IF(m_triggerType != MU_BAR_TRIGGER, "Not a MU-BAR Trigger frame");
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::MU_BAR_TRIGGER,
+                    "Not a MU-BAR Trigger frame");
 
     return m_muBarTriggerDependentUserInfo;
 }
@@ -1538,7 +1583,8 @@ CtrlTriggerUserInfoField::GetMuBarTriggerDepUserInfo() const
 NS_OBJECT_ENSURE_REGISTERED(CtrlTriggerHeader);
 
 CtrlTriggerHeader::CtrlTriggerHeader()
-    : m_triggerType(0),
+    : m_variant(TriggerFrameVariant::HE),
+      m_triggerType(TriggerFrameType::BASIC_TRIGGER),
       m_ulLength(0),
       m_moreTF(false),
       m_csRequired(false),
@@ -1552,6 +1598,18 @@ CtrlTriggerHeader::CtrlTriggerHeader()
 CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& txVector)
     : CtrlTriggerHeader()
 {
+    switch (txVector.GetPreambleType())
+    {
+    case WIFI_PREAMBLE_HE_TB:
+        m_variant = TriggerFrameVariant::HE;
+        break;
+    case WIFI_PREAMBLE_EHT_TB:
+        m_variant = TriggerFrameVariant::EHT;
+        break;
+    default:
+        NS_ABORT_MSG("Cannot create a TF out of a TXVECTOR with preamble type: "
+                     << txVector.GetPreambleType());
+    }
     m_triggerType = type;
     SetUlBandwidth(txVector.GetChannelWidth());
     SetUlLength(txVector.GetLength());
@@ -1569,7 +1627,7 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
         CtrlTriggerUserInfoField& ui = AddUserInfoField();
         ui.SetAid12(userInfo.first);
         ui.SetRuAllocation(userInfo.second.ru);
-        ui.SetUlMcs(userInfo.second.mcs.GetMcsValue());
+        ui.SetUlMcs(userInfo.second.mcs);
         ui.SetSsAllocation(1, userInfo.second.nss); // MU-MIMO is not supported
     }
 }
@@ -1587,6 +1645,7 @@ CtrlTriggerHeader::operator=(const CtrlTriggerHeader& trigger)
         return *this;
     }
 
+    m_variant = trigger.m_variant;
     m_triggerType = trigger.m_triggerType;
     m_ulLength = trigger.m_ulLength;
     m_moreTF = trigger.m_moreTF;
@@ -1628,6 +1687,20 @@ CtrlTriggerHeader::Print(std::ostream& os) const
     }
 }
 
+void
+CtrlTriggerHeader::SetVariant(TriggerFrameVariant variant)
+{
+    NS_ABORT_MSG_IF(!m_userInfoFields.empty(),
+                    "Cannot change Common Info field variant if User Info fields are present");
+    m_variant = variant;
+}
+
+TriggerFrameVariant
+CtrlTriggerHeader::GetVariant() const
+{
+    return m_variant;
+}
+
 uint32_t
 CtrlTriggerHeader::GetSerializedSize() const
 {
@@ -1635,7 +1708,7 @@ CtrlTriggerHeader::GetSerializedSize() const
     size += 8; // Common Info (excluding Trigger Dependent Common Info)
 
     // Add the size of the Trigger Dependent Common Info subfield
-    if (m_triggerType == GCR_MU_BAR_TRIGGER)
+    if (m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER)
     {
         size += 4;
     }
@@ -1653,15 +1726,17 @@ CtrlTriggerHeader::GetSerializedSize() const
 void
 CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
 {
-    NS_ABORT_MSG_IF(m_triggerType == BFRP_TRIGGER, "BFRP Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == GCR_MU_BAR_TRIGGER,
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
+                    "BFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER,
                     "GCR-MU-BAR Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == NFRP_TRIGGER, "NFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
+                    "NFRP Trigger frame is not supported");
 
     Buffer::Iterator i = start;
 
     uint64_t commonInfo = 0;
-    commonInfo |= (m_triggerType & 0x0f);
+    commonInfo |= (static_cast<uint8_t>(m_triggerType) & 0x0f);
     commonInfo |= (m_ulLength & 0x0fff) << 4;
     commonInfo |= (m_moreTF ? 1 << 16 : 0);
     commonInfo |= (m_csRequired ? 1 << 17 : 0);
@@ -1669,6 +1744,11 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
     commonInfo |= (m_giAndLtfType & 0x03) << 20;
     commonInfo |= static_cast<uint64_t>(m_apTxPower & 0x3f) << 28;
     commonInfo |= static_cast<uint64_t>(m_ulSpatialReuse) << 37;
+    if (m_variant == TriggerFrameVariant::HE)
+    {
+        uint64_t ulHeSigA2 = 0x01ff; // nine bits equal to 1
+        commonInfo |= ulHeSigA2 << 54;
+    }
 
     i.WriteHtolsbU64(commonInfo);
 
@@ -1687,7 +1767,7 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
 
     uint64_t commonInfo = i.ReadLsbtohU64();
 
-    m_triggerType = (commonInfo & 0x0f);
+    m_triggerType = static_cast<TriggerFrameType>(commonInfo & 0x0f);
     m_ulLength = (commonInfo >> 4) & 0x0fff;
     m_moreTF = (commonInfo >> 16) & 0x01;
     m_csRequired = (commonInfo >> 17) & 0x01;
@@ -1695,12 +1775,16 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
     m_giAndLtfType = (commonInfo >> 20) & 0x03;
     m_apTxPower = (commonInfo >> 28) & 0x3f;
     m_ulSpatialReuse = (commonInfo >> 37) & 0xffff;
+    uint8_t bit54and55 = (commonInfo >> 54) & 0x03;
+    m_variant = bit54and55 == 3 ? TriggerFrameVariant::HE : TriggerFrameVariant::EHT;
     m_userInfoFields.clear();
 
-    NS_ABORT_MSG_IF(m_triggerType == BFRP_TRIGGER, "BFRP Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == GCR_MU_BAR_TRIGGER,
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
+                    "BFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER,
                     "GCR-MU-BAR Trigger frame is not supported");
-    NS_ABORT_MSG_IF(m_triggerType == NFRP_TRIGGER, "NFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
+                    "NFRP Trigger frame is not supported");
 
     bool isPadding = false;
 
@@ -1733,7 +1817,7 @@ CtrlTriggerHeader::SetType(TriggerFrameType type)
 TriggerFrameType
 CtrlTriggerHeader::GetType() const
 {
-    return static_cast<TriggerFrameType>(m_triggerType);
+    return m_triggerType;
 }
 
 const char*
@@ -1746,7 +1830,7 @@ const char*
 CtrlTriggerHeader::GetTypeString(TriggerFrameType type)
 {
 #define FOO(x)                                                                                     \
-    case x:                                                                                        \
+    case TriggerFrameType::x:                                                                      \
         return #x;                                                                                 \
         break;
 
@@ -1769,49 +1853,49 @@ CtrlTriggerHeader::GetTypeString(TriggerFrameType type)
 bool
 CtrlTriggerHeader::IsBasic() const
 {
-    return (m_triggerType == BASIC_TRIGGER);
+    return (m_triggerType == TriggerFrameType::BASIC_TRIGGER);
 }
 
 bool
 CtrlTriggerHeader::IsBfrp() const
 {
-    return (m_triggerType == BFRP_TRIGGER);
+    return (m_triggerType == TriggerFrameType::BFRP_TRIGGER);
 }
 
 bool
 CtrlTriggerHeader::IsMuBar() const
 {
-    return (m_triggerType == MU_BAR_TRIGGER);
+    return (m_triggerType == TriggerFrameType::MU_BAR_TRIGGER);
 }
 
 bool
 CtrlTriggerHeader::IsMuRts() const
 {
-    return (m_triggerType == MU_RTS_TRIGGER);
+    return (m_triggerType == TriggerFrameType::MU_RTS_TRIGGER);
 }
 
 bool
 CtrlTriggerHeader::IsBsrp() const
 {
-    return (m_triggerType == BSRP_TRIGGER);
+    return (m_triggerType == TriggerFrameType::BSRP_TRIGGER);
 }
 
 bool
 CtrlTriggerHeader::IsGcrMuBar() const
 {
-    return (m_triggerType == GCR_MU_BAR_TRIGGER);
+    return (m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER);
 }
 
 bool
 CtrlTriggerHeader::IsBqrp() const
 {
-    return (m_triggerType == BQRP_TRIGGER);
+    return (m_triggerType == TriggerFrameType::BQRP_TRIGGER);
 }
 
 bool
 CtrlTriggerHeader::IsNfrp() const
 {
-    return (m_triggerType == NFRP_TRIGGER);
+    return (m_triggerType == TriggerFrameType::NFRP_TRIGGER);
 }
 
 void
@@ -1833,14 +1917,13 @@ CtrlTriggerHeader::GetHeTbTxVector(uint16_t staId) const
     NS_ASSERT(userInfoIt != end());
 
     WifiTxVector v;
-    v.SetPreambleType(WifiPreamble::WIFI_PREAMBLE_HE_TB);
+    v.SetPreambleType(userInfoIt->GetPreambleType());
     v.SetChannelWidth(GetUlBandwidth());
     v.SetGuardInterval(GetGuardInterval());
     v.SetLength(GetUlLength());
-    v.SetHeMuUserInfo(staId,
-                      {userInfoIt->GetRuAllocation(),
-                       HePhy::GetHeMcs(userInfoIt->GetUlMcs()),
-                       userInfoIt->GetNss()});
+    v.SetHeMuUserInfo(
+        staId,
+        {userInfoIt->GetRuAllocation(), userInfoIt->GetUlMcs(), userInfoIt->GetNss()});
     return v;
 }
 
@@ -1996,7 +2079,7 @@ CtrlTriggerHeader::GetCommonInfoField() const
 CtrlTriggerUserInfoField&
 CtrlTriggerHeader::AddUserInfoField()
 {
-    m_userInfoFields.emplace_back(m_triggerType);
+    m_userInfoFields.emplace_back(m_triggerType, m_variant);
     return m_userInfoFields.back();
 }
 

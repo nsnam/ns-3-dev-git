@@ -32,12 +32,14 @@ Changes from ns-3.37 to ns-3.38
 * (lr-wpan) Add file `src/lr-wpan/model/lr-wpan-constants.h` with common constants of the LR-WPAN module.
 * (lr-wpan) Remove the functions `LrWpanCsmaCa::GetUnitBackoffPeriod()` and `LrWpanCsmaCa::SetUnitBackoffPeriod()`, and move the constant `m_aUnitBackoffPeriod` to `src/lr-wpan/model/lr-wpan-constants.h`.
 * (lr-wpan) Adds beacon payload handle support (MLME-SET.request) in  **LrWpanMac**.
+* (core) Now test-runner exits if no TestSuite is specified.
 
 ### Changes to build system
 
 * Added NinjaTracing support.
 * Check if the ccache version is equal or higher than 4.0 before enabling precompiled headers.
 * Improve bindings search for linked libraries and their include directories.
+* Added `./ns3 distclean` option. It removes the same build artifacts as `./ns3 clean`, along with documentation, python and test artifacts.
 
 ### Changed behavior
 

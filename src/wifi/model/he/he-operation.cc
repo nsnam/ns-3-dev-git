@@ -32,7 +32,7 @@ HeOperation::HeOperation()
       m_txBssidIndicator(0),
       m_bssColorDisabled(0),
       m_dualBeacon(0),
-      m_basicHeMcsAndNssSet(0)
+      m_basicHeMcsAndNssSet(0xfffc)
 {
 }
 
@@ -88,19 +88,27 @@ void
 HeOperation::SetMaxHeMcsPerNss(uint8_t nss, uint8_t maxHeMcs)
 {
     NS_ASSERT((maxHeMcs >= 7 && maxHeMcs <= 11) && (nss >= 1 && nss <= 8));
-    uint8_t val = 3;  // 3 means not supported
-    if (maxHeMcs > 9) // MCS 0 - 11
+
+    // IEEE 802.11ax-2021 9.4.2.248.4 Supported HE-MCS And NSS Set field
+    uint8_t val = 0x03; // not supported
+    if (maxHeMcs > 9)   // MCS 0 - 11
     {
-        val = 2;
+        val = 0x02;
     }
     else if (maxHeMcs > 7) // MCS 0 - 9
     {
-        val = 1;
+        val = 0x01;
     }
     else if (maxHeMcs == 7) // MCS 0 - 7
     {
-        val = 0;
+        val = 0x01;
     }
+
+    // clear bits for that nss
+    const uint16_t mask = ~(0x03 << ((nss - 1) * 2));
+    m_basicHeMcsAndNssSet &= mask;
+
+    // update bits for that nss
     m_basicHeMcsAndNssSet |= ((val & 0x03) << ((nss - 1) * 2));
 }
 

@@ -98,6 +98,19 @@ EhtPhy::GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const
     }
 }
 
+WifiMode
+EhtPhy::GetSigBMode(const WifiTxVector& txVector) const
+{
+    if (txVector.IsDlMu())
+    {
+        return HePhy::GetSigBMode(txVector);
+    }
+    // we get here in case of EHT SU transmission
+    // TODO fix the MCS used for EHT-SIG
+    auto smallestMcs = std::min<uint8_t>(5, txVector.GetMode().GetMcsValue());
+    return VhtPhy::GetVhtMcs(smallestMcs);
+}
+
 Time
 EhtPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
 {

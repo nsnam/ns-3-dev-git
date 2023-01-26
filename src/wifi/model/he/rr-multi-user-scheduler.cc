@@ -221,12 +221,21 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
             continue;
         }
 
+        if (txVector.GetPreambleType() == WIFI_PREAMBLE_EHT_TB &&
+            !m_apMac->GetEhtSupported(staIt->address))
+        {
+            NS_LOG_DEBUG(
+                "Skipping non-EHT STA because this Trigger Frame is only soliciting EHT STAs");
+            staIt++;
+            continue;
+        }
+
         uint8_t tid = 0;
         while (tid < 8)
         {
             // check that a BA agreement is established with the receiver for the
             // considered TID, since ack sequences for UL MU require block ack
-            if (m_heFem->GetBaAgreementEstablished(staIt->address, tid))
+            if (m_apMac->GetBaAgreementEstablishedAsRecipient(staIt->address, tid))
             {
                 break;
             }
@@ -239,6 +248,17 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
             continue;
         }
 
+        // if the first candidate STA is an EHT STA, we switch to soliciting EHT TB PPDUs
+        if (txVector.GetHeMuUserInfoMap().empty())
+        {
+            if (m_apMac->GetEhtSupported() && m_apMac->GetEhtSupported(staIt->address))
+            {
+                txVector.SetPreambleType(WIFI_PREAMBLE_EHT_TB);
+                txVector.SetEhtPpduType(0);
+            }
+            // TODO otherwise, make sure the TX width does not exceed 160 MHz
+        }
+
         // prepare the MAC header of a frame that would be sent to the candidate station,
         // just for the purpose of retrieving the TXVECTOR used to transmit to that station
         WifiMacHeader hdr(WIFI_MAC_QOSDATA);
@@ -248,7 +268,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
             GetWifiRemoteStationManager()->GetDataTxVector(hdr, m_allowedWidth);
         txVector.SetHeMuUserInfo(staIt->aid,
                                  {HeRu::RuSpec(), // assigned later by FinalizeTxVector
-                                  suTxVector.GetMode(),
+                                  suTxVector.GetMode().GetMcsValue(),
                                   suTxVector.GetNss()});
         m_candidates.emplace_back(staIt, nullptr);
 
@@ -616,6 +636,14 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     {
         NS_LOG_DEBUG("Next candidate STA (MAC=" << staIt->address << ", AID=" << staIt->aid << ")");
 
+        if (m_txParams.m_txVector.GetPreambleType() == WIFI_PREAMBLE_EHT_MU &&
+            !m_apMac->GetEhtSupported(staIt->address))
+        {
+            NS_LOG_DEBUG("Skipping non-EHT STA because this DL MU PPDU is sent to EHT STAs only");
+            staIt++;
+            continue;
+        }
+
         HeRu::RuType currRuType = (m_candidates.size() < count ? ruType : HeRu::RU_26_TONE);
 
         // check if the AP has at least one frame to be sent to the current station
@@ -625,7 +653,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
             NS_ASSERT(ac >= primaryAc);
             // check that a BA agreement is established with the receiver for the
             // considered TID, since ack sequences for DL MU PPDUs require block ack
-            if (m_apMac->GetQosTxop(ac)->GetBaAgreementEstablished(staIt->address, tid))
+            if (m_apMac->GetBaAgreementEstablishedAsOriginator(staIt->address, tid))
             {
                 mpdu =
                     m_apMac->GetQosTxop(ac)->PeekNextMpdu(SINGLE_LINK_OP_ID, tid, staIt->address);
@@ -643,9 +671,10 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                                                                        m_allowedWidth);
                     WifiTxVector txVectorCopy = m_txParams.m_txVector;
 
-                    m_txParams.m_txVector.SetHeMuUserInfo(
-                        staIt->aid,
-                        {{currRuType, 1, true}, suTxVector.GetMode(), suTxVector.GetNss()});
+                    m_txParams.m_txVector.SetHeMuUserInfo(staIt->aid,
+                                                          {{currRuType, 1, true},
+                                                           suTxVector.GetMode().GetMcsValue(),
+                                                           suTxVector.GetNss()});
 
                     if (!m_heFem->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
                     {
@@ -667,6 +696,17 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                     NS_LOG_DEBUG("No frames to send to " << staIt->address << " with TID=" << +tid);
                 }
             }
+        }
+
+        // the first candidate STA determines the preamble type for the DL MU PPDU
+        if (m_candidates.size() == 1)
+        {
+            if (m_apMac->GetEhtSupported() && m_apMac->GetEhtSupported(staIt->address))
+            {
+                m_txParams.m_txVector.SetPreambleType(WIFI_PREAMBLE_EHT_MU);
+                m_txParams.m_txVector.SetEhtPpduType(0); // indicates DL OFDMA transmission
+            }
+            // TODO otherwise, make sure the TX width does not exceed 160 MHz
         }
 
         // move to the next station in the list

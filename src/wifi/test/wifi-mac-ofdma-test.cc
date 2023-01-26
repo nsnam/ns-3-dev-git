@@ -85,6 +85,7 @@ class TestMultiUserScheduler : public MultiUserScheduler
     WifiTxVector m_txVector;          //!< the TX vector for MU PPDUs
     WifiTxParameters m_txParams;      //!< TX parameters
     WifiPsduMap m_psduMap;            //!< the DL MU PPDU to transmit
+    WifiModulationClass m_modClass;   //!< modulation class for DL MU PPDUs and TB PPDUs
 };
 
 NS_OBJECT_ENSURE_REGISTERED(TestMultiUserScheduler);
@@ -92,10 +93,16 @@ NS_OBJECT_ENSURE_REGISTERED(TestMultiUserScheduler);
 TypeId
 TestMultiUserScheduler::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::TestMultiUserScheduler")
-                            .SetParent<MultiUserScheduler>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<TestMultiUserScheduler>();
+    static TypeId tid =
+        TypeId("ns3::TestMultiUserScheduler")
+            .SetParent<MultiUserScheduler>()
+            .SetGroupName("Wifi")
+            .AddConstructor<TestMultiUserScheduler>()
+            .AddAttribute("ModulationClass",
+                          "Modulation class for DL MU PPDUs and TB PPDUs.",
+                          EnumValue(WIFI_MOD_CLASS_HE),
+                          MakeEnumAccessor(&TestMultiUserScheduler::m_modClass),
+                          MakeEnumChecker(WIFI_MOD_CLASS_HE, "HE", WIFI_MOD_CLASS_EHT, "EHT"));
     return tid;
 }
 
@@ -133,9 +140,11 @@ TestMultiUserScheduler::SelectTxFormat()
             (m_txFormat == SU_TX || m_txFormat == DL_MU_TX ? TriggerFrameType::BSRP_TRIGGER
                                                            : TriggerFrameType::BASIC_TRIGGER);
 
-        m_trigger = CtrlTriggerHeader(ulTriggerType, m_txVector);
-
         WifiTxVector txVector = m_txVector;
+        txVector.SetPreambleType(m_modClass == WIFI_MOD_CLASS_HE ? WIFI_PREAMBLE_HE_TB
+                                                                 : WIFI_PREAMBLE_EHT_TB);
+        m_trigger = CtrlTriggerHeader(ulTriggerType, txVector);
+
         txVector.SetGuardInterval(m_trigger.GetGuardInterval());
 
         uint32_t ampduSize = (ulTriggerType == TriggerFrameType::BSRP_TRIGGER)
@@ -260,7 +269,7 @@ TestMultiUserScheduler::SelectTxFormat()
 void
 TestMultiUserScheduler::ComputeWifiTxVector()
 {
-    if (m_txVector.GetPreambleType() == WIFI_PREAMBLE_HE_MU)
+    if (m_txVector.IsDlMu())
     {
         // the TX vector has been already computed
         return;
@@ -268,7 +277,12 @@ TestMultiUserScheduler::ComputeWifiTxVector()
 
     uint16_t bw = m_apMac->GetWifiPhy()->GetChannelWidth();
 
-    m_txVector.SetPreambleType(WIFI_PREAMBLE_HE_MU);
+    m_txVector.SetPreambleType(m_modClass == WIFI_MOD_CLASS_HE ? WIFI_PREAMBLE_HE_MU
+                                                               : WIFI_PREAMBLE_EHT_MU);
+    if (IsEht(m_txVector.GetPreambleType()))
+    {
+        m_txVector.SetEhtPpduType(0);
+    }
     m_txVector.SetChannelWidth(bw);
     m_txVector.SetGuardInterval(m_apMac->GetHeConfiguration()->GetGuardInterval().GetNanoSeconds());
     m_txVector.SetTxPowerLevel(GetWifiRemoteStationManager()->GetDefaultTxPowerLevel());
@@ -309,8 +323,7 @@ TestMultiUserScheduler::ComputeWifiTxVector()
             ruIndex = 1;
             primary80 = false;
         }
-        m_txVector.SetHeMuUserInfo(sta.first,
-                                   {{ruType, ruIndex++, primary80}, WifiMode("HeMcs11"), 1});
+        m_txVector.SetHeMuUserInfo(sta.first, {{ruType, ruIndex++, primary80}, 11, 1});
     }
     m_txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
 }
@@ -328,6 +341,18 @@ TestMultiUserScheduler::ComputeUlMuInfo()
     NS_LOG_FUNCTION(this);
     return UlMuInfo{m_trigger, m_triggerHdr, std::move(m_txParams)};
 }
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ * The scenarios
+ */
+enum class WifiOfdmaScenario : uint8_t
+{
+    HE = 0, // HE AP and HE non-AP STAs
+    HE_EHT, // EHT AP, some EHT non-AP STAs and some non-EHT HE non-AP STAs
+    EHT     // EHT AP and EHT non-AP STAs
+};
 
 /**
  * \ingroup wifi-test
@@ -367,13 +392,15 @@ class OfdmaAckSequenceTest : public TestCase
      * \param txopLimit the TXOP limit in microseconds
      * \param nPktsPerSta number of packets to send to/receive from each station
      * \param muEdcaParameterSet the MU EDCA Parameter Set
+     * \param scenario the OFDMA scenario to test
      */
     OfdmaAckSequenceTest(uint16_t width,
                          WifiAcknowledgment::Method dlType,
                          uint32_t maxAmpduSize,
                          uint16_t txopLimit,
                          uint16_t nPktsPerSta,
-                         MuEdcaParameterSet muEdcaParameterSet);
+                         MuEdcaParameterSet muEdcaParameterSet,
+                         WifiOfdmaScenario scenario);
     ~OfdmaAckSequenceTest() override;
 
     /**
@@ -433,6 +460,9 @@ class OfdmaAckSequenceTest : public TestCase
     uint16_t m_txopLimit;                       ///< TXOP limit in microseconds
     uint16_t m_nPktsPerSta;                     ///< number of packets to send to each station
     MuEdcaParameterSet m_muEdcaParameterSet;    ///< MU EDCA Parameter Set
+    WifiOfdmaScenario m_scenario;               ///< OFDMA scenario to test
+    WifiPreamble m_dlMuPreamble;                ///< expected preamble type for DL MU PPDUs
+    WifiPreamble m_tbPreamble;                  ///< expected preamble type for TB PPDUs
     bool m_ulPktsGenerated;           ///< whether UL packets for HE TB PPDUs have been generated
     uint16_t m_received;              ///< number of packets received by the stations
     uint16_t m_flushed;               ///< number of DL packets flushed after DL MU PPDU
@@ -445,7 +475,8 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest(uint16_t width,
                                            uint32_t maxAmpduSize,
                                            uint16_t txopLimit,
                                            uint16_t nPktsPerSta,
-                                           MuEdcaParameterSet muEdcaParameterSet)
+                                           MuEdcaParameterSet muEdcaParameterSet,
+                                           WifiOfdmaScenario scenario)
     : TestCase("Check correct operation of DL OFDMA acknowledgment sequences"),
       m_nStations(4),
       m_sockets(m_nStations),
@@ -455,12 +486,25 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest(uint16_t width,
       m_txopLimit(txopLimit),
       m_nPktsPerSta(nPktsPerSta),
       m_muEdcaParameterSet(muEdcaParameterSet),
+      m_scenario(scenario),
       m_ulPktsGenerated(false),
       m_received(0),
       m_flushed(0),
       m_edcaDisabledStartTime(Seconds(0)),
       m_cwValues(std::vector<uint32_t>(m_nStations, 2)) // 2 is an invalid CW value
 {
+    switch (m_scenario)
+    {
+    case WifiOfdmaScenario::HE:
+    case WifiOfdmaScenario::HE_EHT:
+        m_dlMuPreamble = WIFI_PREAMBLE_HE_MU;
+        m_tbPreamble = WIFI_PREAMBLE_HE_TB;
+        break;
+    case WifiOfdmaScenario::EHT:
+        m_dlMuPreamble = WIFI_PREAMBLE_EHT_MU;
+        m_tbPreamble = WIFI_PREAMBLE_EHT_TB;
+        break;
+    }
 }
 
 OfdmaAckSequenceTest::~OfdmaAckSequenceTest()
@@ -508,13 +552,15 @@ OfdmaAckSequenceTest::Transmit(std::string context,
                                 ? " TID " + std::to_string(*psdu->GetTids().begin())
                                 : "")
                         << " txDuration " << txDuration << " duration/ID "
-                        << psdu->GetHeader(0).GetDuration() << " #TX PSDUs = " << m_txPsdus.size());
+                        << psdu->GetHeader(0).GetDuration() << " #TX PSDUs = " << m_txPsdus.size()
+                        << "\n"
+                        << "TXVECTOR: " << txVector << "\n");
         }
     }
 
     // Flush the MAC queue of the AP after sending a DL MU PPDU (no need for
     // further transmissions)
-    if (txVector.GetPreambleType() == WIFI_PREAMBLE_HE_MU)
+    if (txVector.GetPreambleType() == m_dlMuPreamble)
     {
         m_flushed = 0;
         for (uint32_t i = 0; i < m_staDevices.GetN(); i++)
@@ -541,7 +587,7 @@ OfdmaAckSequenceTest::Transmit(std::string context,
             }
         }
     }
-    else if (txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    else if (txVector.GetPreambleType() == m_tbPreamble &&
              psduMap.begin()->second->GetHeader(0).HasData())
     {
         Mac48Address sender = psduMap.begin()->second->GetAddr2();
@@ -658,7 +704,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
                           "Expected one User Info field per station");
 
     // A first STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[1].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[1].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[1].psduMap.size() == 1 &&
                            m_txPsdus[1].psduMap.begin()->second->GetNMpdus() == 1),
                           true,
@@ -691,7 +737,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
     // A second STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP
     // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[2].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[2].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[2].psduMap.size() == 1 &&
                            m_txPsdus[2].psduMap.begin()->second->GetNMpdus() == 1),
                           true,
@@ -721,7 +767,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
                                 "Duration/ID in BSRP Trigger Frame is too short");
 
     // A third STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[3].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[3].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[3].psduMap.size() == 1 &&
                            m_txPsdus[3].psduMap.begin()->second->GetNMpdus() == 1),
                           true,
@@ -752,7 +798,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
     // A fourth STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP
     // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[4].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[4].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[4].psduMap.size() == 1 &&
                            m_txPsdus[4].psduMap.begin()->second->GetNMpdus() == 1),
                           true,
@@ -802,7 +848,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     }
 
     // A first STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[6].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[6].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[6].psduMap.size() == 1 &&
                            m_txPsdus[6].psduMap.begin()->second->GetNMpdus() == 2 &&
                            m_txPsdus[6].psduMap.begin()->second->GetHeader(0).IsQosData() &&
@@ -818,7 +864,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
     // A second STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic
     // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[7].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[7].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[7].psduMap.size() == 1 &&
                            m_txPsdus[7].psduMap.begin()->second->GetNMpdus() == 2 &&
                            m_txPsdus[7].psduMap.begin()->second->GetHeader(0).IsQosData() &&
@@ -833,7 +879,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
                           "QoS data frames in HE TB PPDU sent too late");
 
     // A third STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[8].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[8].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[8].psduMap.size() == 1 &&
                            m_txPsdus[8].psduMap.begin()->second->GetNMpdus() == 2 &&
                            m_txPsdus[8].psduMap.begin()->second->GetHeader(0).IsQosData() &&
@@ -849,7 +895,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
     // A fourth STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic
     // TF
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[9].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[9].txVector.GetPreambleType() == m_tbPreamble &&
                            m_txPsdus[9].psduMap.size() == 1 &&
                            m_txPsdus[9].psduMap.begin()->second->GetNMpdus() == 2 &&
                            m_txPsdus[9].psduMap.begin()->second->GetHeader(0).IsQosData() &&
@@ -912,7 +958,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     // the AP sends a DL MU PPDU
     NS_TEST_EXPECT_MSG_GT_OR_EQ(m_txPsdus.size(), 12, "Expected at least 12 transmitted packet");
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].txVector.GetPreambleType(),
-                          WIFI_PREAMBLE_HE_MU,
+                          m_dlMuPreamble,
                           "Expected a DL MU PPDU");
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].psduMap.size(),
                           4,
@@ -1106,7 +1152,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A first STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[13].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[13].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[13].psduMap.size() == 1 &&
                                m_txPsdus[13].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1120,7 +1166,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A second STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[14].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[14].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[14].psduMap.size() == 1 &&
                                m_txPsdus[14].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1134,7 +1180,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A third STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[15].psduMap.size() == 1 &&
                                m_txPsdus[15].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1148,7 +1194,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A fourth STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[16].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[16].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[16].psduMap.size() == 1 &&
                                m_txPsdus[16].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1221,7 +1267,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A first STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[12].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[12].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[12].psduMap.size() == 1 &&
                                m_txPsdus[12].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1238,7 +1284,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A second STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[13].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[13].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[13].psduMap.size() == 1 &&
                                m_txPsdus[13].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1255,7 +1301,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A third STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[14].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[14].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[14].psduMap.size() == 1 &&
                                m_txPsdus[14].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1272,7 +1318,7 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
 
         // A fourth STA sends a Block Ack in an HE TB PPDU a SIFS after the reception of the DL MU
         // PPDU
-        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB &&
+        NS_TEST_EXPECT_MSG_EQ((m_txPsdus[15].txVector.GetPreambleType() == m_tbPreamble &&
                                m_txPsdus[15].psduMap.size() == 1 &&
                                m_txPsdus[15].psduMap.begin()->second->GetHeader(0).IsBlockAck()),
                               true,
@@ -1341,8 +1387,11 @@ OfdmaAckSequenceTest::DoRun()
     NodeContainer wifiApNode;
     wifiApNode.Create(1);
 
-    NodeContainer wifiStaNodes;
-    wifiStaNodes.Create(m_nStations);
+    NodeContainer wifiOldStaNodes;
+    NodeContainer wifiNewStaNodes;
+    wifiOldStaNodes.Create(m_nStations / 2);
+    wifiNewStaNodes.Create(m_nStations - m_nStations / 2);
+    NodeContainer wifiStaNodes(wifiOldStaNodes, wifiNewStaNodes);
 
     Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel>();
@@ -1413,8 +1462,9 @@ OfdmaAckSequenceTest::DoRun()
     Config::SetDefault("ns3::WifiMacQueue::MaxDelay", TimeValue(Seconds(2)));
 
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211ax);
-    wifi.SetRemoteStationManager("ns3::IdealWifiManager");
+    wifi.SetStandard(m_scenario == WifiOfdmaScenario::EHT ? WIFI_STANDARD_80211be
+                                                          : WIFI_STANDARD_80211ax);
+    wifi.SetRemoteStationManager("ns3::MinstrelHtWifiManager");
     wifi.ConfigHeOptions("MuBeAifsn",
                          UintegerValue(m_muEdcaParameterSet.muAifsn),
                          "MuBeCwMin",
@@ -1467,15 +1517,22 @@ OfdmaAckSequenceTest::DoRun()
                 "ActiveProbing",
                 BooleanValue(false));
 
-    m_staDevices = wifi.Install(phy, mac, wifiStaNodes);
+    m_staDevices = wifi.Install(phy, mac, wifiOldStaNodes);
+
+    wifi.SetStandard(m_scenario == WifiOfdmaScenario::HE ? WIFI_STANDARD_80211ax
+                                                         : WIFI_STANDARD_80211be);
+    m_staDevices = NetDeviceContainer(m_staDevices, wifi.Install(phy, mac, wifiNewStaNodes));
 
     mac.SetType("ns3::ApWifiMac", "BeaconGeneration", BooleanValue(true));
-    mac.SetMultiUserScheduler("ns3::TestMultiUserScheduler",
-                              // request channel access at 1.5s
-                              "AccessReqInterval",
-                              TimeValue(Seconds(1.5)),
-                              "DelayAccessReqUponAccess",
-                              BooleanValue(false));
+    mac.SetMultiUserScheduler(
+        "ns3::TestMultiUserScheduler",
+        "ModulationClass",
+        EnumValue(m_scenario == WifiOfdmaScenario::EHT ? WIFI_MOD_CLASS_EHT : WIFI_MOD_CLASS_HE),
+        // request channel access at 1.5s
+        "AccessReqInterval",
+        TimeValue(Seconds(1.5)),
+        "DelayAccessReqUponAccess",
+        BooleanValue(false));
     mac.SetAckManager("ns3::WifiDefaultAckManager",
                       "DlMuAckSequenceType",
                       EnumValue(m_dlMuAckType));
@@ -1629,48 +1686,58 @@ WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite()
                                                  {0, 127, 2047, 100} /* EDCA disabled */,
                                                  {10, 127, 2047, 100} /* worse parameters */})
     {
-        AddTestCase(new OfdmaAckSequenceTest(20,
-                                             WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
-                                             10000,
-                                             5440,
-                                             15,
-                                             muEdcaParameterSet),
-                    TestCase::QUICK);
-        AddTestCase(new OfdmaAckSequenceTest(20,
-                                             WifiAcknowledgment::DL_MU_AGGREGATE_TF,
-                                             10000,
-                                             5440,
-                                             15,
-                                             muEdcaParameterSet),
-                    TestCase::QUICK);
-        AddTestCase(new OfdmaAckSequenceTest(20,
-                                             WifiAcknowledgment::DL_MU_TF_MU_BAR,
-                                             10000,
-                                             5440,
-                                             15,
-                                             muEdcaParameterSet),
-                    TestCase::QUICK);
-        AddTestCase(new OfdmaAckSequenceTest(40,
-                                             WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
-                                             10000,
-                                             0,
-                                             15,
-                                             muEdcaParameterSet),
-                    TestCase::QUICK);
-        AddTestCase(new OfdmaAckSequenceTest(40,
-                                             WifiAcknowledgment::DL_MU_AGGREGATE_TF,
-                                             10000,
-                                             0,
-                                             15,
-                                             muEdcaParameterSet),
-                    TestCase::QUICK);
-        AddTestCase(new OfdmaAckSequenceTest(40,
-                                             WifiAcknowledgment::DL_MU_TF_MU_BAR,
-                                             10000,
-                                             0,
-                                             15,
-                                             muEdcaParameterSet),
-                    TestCase::QUICK);
+        for (const auto scenario :
+             {WifiOfdmaScenario::HE, WifiOfdmaScenario::HE_EHT, WifiOfdmaScenario::EHT})
+        {
+            AddTestCase(new OfdmaAckSequenceTest(20,
+                                                 WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
+                                                 10000,
+                                                 5440,
+                                                 15,
+                                                 muEdcaParameterSet,
+                                                 scenario),
+                        TestCase::QUICK);
+            AddTestCase(new OfdmaAckSequenceTest(20,
+                                                 WifiAcknowledgment::DL_MU_AGGREGATE_TF,
+                                                 10000,
+                                                 5440,
+                                                 15,
+                                                 muEdcaParameterSet,
+                                                 scenario),
+                        TestCase::QUICK);
+            AddTestCase(new OfdmaAckSequenceTest(20,
+                                                 WifiAcknowledgment::DL_MU_TF_MU_BAR,
+                                                 10000,
+                                                 5440,
+                                                 15,
+                                                 muEdcaParameterSet,
+                                                 scenario),
+                        TestCase::QUICK);
+            AddTestCase(new OfdmaAckSequenceTest(40,
+                                                 WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
+                                                 10000,
+                                                 0,
+                                                 15,
+                                                 muEdcaParameterSet,
+                                                 scenario),
+                        TestCase::QUICK);
+            AddTestCase(new OfdmaAckSequenceTest(40,
+                                                 WifiAcknowledgment::DL_MU_AGGREGATE_TF,
+                                                 10000,
+                                                 0,
+                                                 15,
+                                                 muEdcaParameterSet,
+                                                 scenario),
+                        TestCase::QUICK);
+            AddTestCase(new OfdmaAckSequenceTest(40,
+                                                 WifiAcknowledgment::DL_MU_TF_MU_BAR,
+                                                 10000,
+                                                 0,
+                                                 15,
+                                                 muEdcaParameterSet,
+                                                 scenario),
+                        TestCase::QUICK);
+        }
     }
 }
 

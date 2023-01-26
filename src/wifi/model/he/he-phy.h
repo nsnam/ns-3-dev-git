@@ -115,6 +115,7 @@ class HePhy : public VhtPhy
                        Time duration,
                        WifiChannelListType channelType) override;
     bool CanStartRx(Ptr<const WifiPpdu> ppdu) const override;
+    Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu) override;
 
     /**
      * \return the BSS color of this PHY.

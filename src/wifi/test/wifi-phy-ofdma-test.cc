@@ -285,7 +285,7 @@ OfdmaSpectrumWifiPhy::GetEnergyDuration(double energyW, WifiSpectrumBand band)
 Ptr<const HePhy>
 OfdmaSpectrumWifiPhy::GetHePhy() const
 {
-    return DynamicCast<const HePhy>(GetPhyEntity(WIFI_MOD_CLASS_HE));
+    return DynamicCast<const HePhy>(GetLatestPhyEntity());
 }
 
 /**
@@ -2407,7 +2407,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     txVector.SetMode(HePhy::GetHeMcs7(), staId);
     txVector.SetNss(1, staId);
 
-    m_trigVector.SetHeMuUserInfo(staId, {ru, HePhy::GetHeMcs7(), 1});
+    m_trigVector.SetHeMuUserInfo(staId, {ru, 7, 1});
 
     Ptr<Packet> pkt = Create<Packet>(payloadSize);
     WifiMacHeader hdr;
@@ -2450,7 +2450,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
         HePhy::ConvertHeTbPpduDurationToLSigLength(ppduDuration, txVector, m_phy->GetPhyBand());
     txVector.SetLength(length);
     m_trigVector.SetLength(length);
-    auto hePhy = DynamicCast<HePhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhy = DynamicCast<HePhy>(m_phy->GetLatestPhyEntity());
     hePhy->SetTrigVector(m_trigVector, ppduDuration);
     ppdu->ResetTxVector();
     m_phy->StartRx(rxParams);
@@ -3383,7 +3383,7 @@ TestUlOfdmaPhyTransmission::SetTrigVector(uint8_t bssColor, TrigVectorInfo error
         ++length;
     }
     txVector.SetLength(length);
-    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetLatestPhyEntity());
     hePhyAp->SetTrigVector(txVector, m_expectedPpduDuration);
 }
 
@@ -5241,7 +5241,7 @@ TestPhyPaddingExclusion::SetTrigVector(Time ppduDuration)
     std::tie(length, ppduDuration) =
         HePhy::ConvertHeTbPpduDurationToLSigLength(ppduDuration, trigVector, m_phyAp->GetPhyBand());
     trigVector.SetLength(length);
-    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetLatestPhyEntity());
     hePhyAp->SetTrigVector(trigVector, ppduDuration);
 }
 
@@ -5486,7 +5486,7 @@ TestUlOfdmaPowerControl::SendMuBar(std::vector<uint16_t> staIds)
 
     // Build MU-BAR trigger frame
     CtrlTriggerHeader muBar;
-    muBar.SetType(MU_BAR_TRIGGER);
+    muBar.SetType(TriggerFrameType::MU_BAR_TRIGGER);
     muBar.SetMoreTF(true);
     muBar.SetCsRequired(true);
     muBar.SetUlBandwidth(DEFAULT_CHANNEL_WIDTH);

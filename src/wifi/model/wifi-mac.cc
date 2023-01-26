@@ -1117,11 +1117,11 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << linkId);
 
-    const WifiMacHeader* hdr = &mpdu->GetHeader();
-    Ptr<Packet> packet = mpdu->GetPacket()->Copy();
+    const WifiMacHeader* hdr = &mpdu->GetOriginal()->GetHeader();
     Mac48Address to = hdr->GetAddr1();
     Mac48Address from = hdr->GetAddr2();
-    auto& link = GetLink(SINGLE_LINK_OP_ID);
+    auto myAddr = hdr->IsData() ? Mac48Address::ConvertFrom(GetDevice()->GetAddress())
+                                : GetFrameExchangeManager(linkId)->GetAddress();
 
     // We don't know how to deal with any frame that is not addressed to
     // us (and odds are there is nothing sensible we could do anyway),
@@ -1129,7 +1129,7 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     //
     // The derived class may also do some such filtering, but it doesn't
     // hurt to have it here too as a backstop.
-    if (to != GetAddress())
+    if (to != myAddr)
     {
         return;
     }
@@ -1140,7 +1140,9 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // frames to be flying about if we are a QoS STA.
         NS_ASSERT(GetQosSupported());
 
+        auto& link = GetLink(linkId);
         WifiActionHeader actionHdr;
+        Ptr<Packet> packet = mpdu->GetPacket()->Copy();
         packet->RemoveHeader(actionHdr);
 
         switch (actionHdr.GetCategory())
@@ -1175,7 +1177,9 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 // seems a waste given the level of the current model)
                 // and act by locally establishing the agreement on
                 // the appropriate queue.
-                GetQosTxop(respHdr.GetTid())->GotAddBaResponse(&respHdr, from);
+                auto recipientMld = link.stationManager->GetMldAddress(from);
+                auto recipient = (recipientMld ? *recipientMld : from);
+                GetQosTxop(respHdr.GetTid())->GotAddBaResponse(respHdr, recipient);
                 auto htFem = DynamicCast<HtFrameExchangeManager>(link.feManager);
                 if (htFem)
                 {
@@ -1190,26 +1194,25 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             case WifiActionHeader::BLOCK_ACK_DELBA: {
                 MgtDelBaHeader delBaHdr;
                 packet->RemoveHeader(delBaHdr);
+                auto recipientMld = link.stationManager->GetMldAddress(from);
+                auto recipient = (recipientMld ? *recipientMld : from);
 
                 if (delBaHdr.IsByOriginator())
                 {
                     // This DELBA frame was sent by the originator, so
                     // this means that an ingoing established
-                    // agreement exists in HtFrameExchangeManager and we need to
+                    // agreement exists in BlockAckManager and we need to
                     // destroy it.
-                    NS_ASSERT(link.feManager);
-                    auto htFem = DynamicCast<HtFrameExchangeManager>(link.feManager);
-                    if (htFem)
-                    {
-                        htFem->DestroyBlockAckAgreement(from, delBaHdr.GetTid());
-                    }
+                    GetQosTxop(delBaHdr.GetTid())
+                        ->GetBaManager()
+                        ->DestroyRecipientAgreement(recipient, delBaHdr.GetTid());
                 }
                 else
                 {
                     // We must have been the originator. We need to
                     // tell the correct queue that the agreement has
                     // been torn down
-                    GetQosTxop(delBaHdr.GetTid())->GotDelBaFrame(&delBaHdr, from);
+                    GetQosTxop(delBaHdr.GetTid())->GotDelBaFrame(&delBaHdr, recipient);
                 }
                 // This frame is now completely dealt with, so we're done.
                 return;
@@ -1236,6 +1239,77 @@ WifiMac::DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu)
                   msduPair.second.GetSourceAddr(),
                   msduPair.second.GetDestinationAddr());
     }
+}
+
+std::optional<Mac48Address>
+WifiMac::GetMldAddress(const Mac48Address& remoteAddr) const
+{
+    for (std::size_t linkId = 0; linkId < m_links.size(); linkId++)
+    {
+        if (auto mldAddress = m_links[linkId]->stationManager->GetMldAddress(remoteAddr))
+        {
+            return *mldAddress;
+        }
+    }
+    return std::nullopt;
+}
+
+WifiMac::OriginatorAgreementOptConstRef
+WifiMac::GetBaAgreementEstablishedAsOriginator(Mac48Address recipient, uint8_t tid) const
+{
+    // BA agreements are indexed by the MLD address if ML setup was performed
+    recipient = GetMldAddress(recipient).value_or(recipient);
+
+    auto agreement = GetQosTxop(tid)->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
+    if (!agreement || !agreement->get().IsEstablished())
+    {
+        return std::nullopt;
+    }
+    return agreement;
+}
+
+WifiMac::RecipientAgreementOptConstRef
+WifiMac::GetBaAgreementEstablishedAsRecipient(Mac48Address originator, uint8_t tid) const
+{
+    // BA agreements are indexed by the MLD address if ML setup was performed
+    originator = GetMldAddress(originator).value_or(originator);
+    return GetQosTxop(tid)->GetBaManager()->GetAgreementAsRecipient(originator, tid);
+}
+
+BlockAckType
+WifiMac::GetBaTypeAsOriginator(const Mac48Address& recipient, uint8_t tid) const
+{
+    auto agreement = GetBaAgreementEstablishedAsOriginator(recipient, tid);
+    NS_ABORT_MSG_IF(!agreement,
+                    "No existing Block Ack agreement with " << recipient << " TID: " << +tid);
+    return agreement->get().GetBlockAckType();
+}
+
+BlockAckReqType
+WifiMac::GetBarTypeAsOriginator(const Mac48Address& recipient, uint8_t tid) const
+{
+    auto agreement = GetBaAgreementEstablishedAsOriginator(recipient, tid);
+    NS_ABORT_MSG_IF(!agreement,
+                    "No existing Block Ack agreement with " << recipient << " TID: " << +tid);
+    return agreement->get().GetBlockAckReqType();
+}
+
+BlockAckType
+WifiMac::GetBaTypeAsRecipient(Mac48Address originator, uint8_t tid) const
+{
+    auto agreement = GetBaAgreementEstablishedAsRecipient(originator, tid);
+    NS_ABORT_MSG_IF(!agreement,
+                    "No existing Block Ack agreement with " << originator << " TID: " << +tid);
+    return agreement->get().GetBlockAckType();
+}
+
+BlockAckReqType
+WifiMac::GetBarTypeAsRecipient(Mac48Address originator, uint8_t tid) const
+{
+    auto agreement = GetBaAgreementEstablishedAsRecipient(originator, tid);
+    NS_ABORT_MSG_IF(!agreement,
+                    "No existing Block Ack agreement with " << originator << " TID: " << +tid);
+    return agreement->get().GetBlockAckReqType();
 }
 
 Ptr<HtConfiguration>
@@ -1285,6 +1359,58 @@ bool
 WifiMac::GetEhtSupported() const
 {
     return bool(GetDevice()->GetEhtConfiguration());
+}
+
+bool
+WifiMac::GetHtSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetHtSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+WifiMac::GetVhtSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetVhtSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+WifiMac::GetHeSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetHeSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+WifiMac::GetEhtSupported(const Mac48Address& address) const
+{
+    for (const auto& link : m_links)
+    {
+        if (link->stationManager->GetEhtSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void

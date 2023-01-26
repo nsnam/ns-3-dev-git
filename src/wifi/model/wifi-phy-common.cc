@@ -113,6 +113,30 @@ GetPreambleForTransmission(WifiModulationClass modulation, bool useShortPreamble
     }
 }
 
+WifiModulationClass
+GetModulationClassForPreamble(WifiPreamble preamble)
+{
+    switch (preamble)
+    {
+    case WIFI_PREAMBLE_HT_MF:
+        return WIFI_MOD_CLASS_HT;
+    case WIFI_PREAMBLE_VHT_SU:
+    case WIFI_PREAMBLE_VHT_MU:
+        return WIFI_MOD_CLASS_VHT;
+    case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_HE_ER_SU:
+    case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
+        return WIFI_MOD_CLASS_HE;
+    case WIFI_PREAMBLE_EHT_MU:
+    case WIFI_PREAMBLE_EHT_TB:
+        return WIFI_MOD_CLASS_EHT;
+    default:
+        NS_ABORT_MSG("Unsupported preamble type: " << preamble);
+    }
+    return WIFI_MOD_CLASS_UNKNOWN;
+}
+
 bool
 IsAllowedControlAnswerModulationClass(WifiModulationClass modClassReq,
                                       WifiModulationClass modClassAnswer)
@@ -242,6 +266,12 @@ GetMaximumChannelWidth(WifiModulationClass modulation)
         NS_ABORT_MSG("Unknown modulation class: " << modulation);
         return 0;
     }
+}
+
+bool
+IsEht(WifiPreamble preamble)
+{
+    return ((preamble == WIFI_PREAMBLE_EHT_MU) || (preamble == WIFI_PREAMBLE_EHT_TB));
 }
 
 } // namespace ns3

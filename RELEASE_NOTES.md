@@ -25,6 +25,7 @@ Release 3-dev
 - (core) !1236 - Added some macros to silence compiler warnings. The new macros are in **warnings.h**, and their use is not suggested unless for very specific cases.
 - (internet-apps) - A new Ping model that works for both IPv4 and IPv6 has been added, to replace the address family specific v4Ping and Ping6.
 - (lr-wpan) !1268 - Adding beacon payload now its possible using MLME-SET.request primitive.
+- (core) !1302 - Now test-runner exits if no TestSuite is specified.
 
 ### Bugs fixed
 

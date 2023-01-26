@@ -527,6 +527,17 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     virtual double GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                                    WifiChannelListType channelType) const;
 
+    /**
+     * The WifiPpdu from the TX PHY is received by each RX PHY attached to the same channel.
+     * By default and for performance reasons, all RX PHYs will work on the same WifiPpdu instance
+     * from TX instead of a copy of it. Child classes can change that behavior and do a copy and/or
+     * change the content of the parameters stored in WifiPpdu.
+     *
+     * \param ppdu the WifiPpdu transmitted by the TX PHY
+     * \return the WifiPpdu to be used by the RX PHY
+     */
+    virtual Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu);
+
   protected:
     /**
      * A map of PPDU field elements per preamble type.

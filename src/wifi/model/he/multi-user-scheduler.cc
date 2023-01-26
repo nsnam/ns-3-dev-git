@@ -292,7 +292,7 @@ MultiUserScheduler::GetMaxSizeOfQosNullAmpdu(const CtrlTriggerHeader& trigger) c
         uint8_t staNTids = 0;
         for (uint8_t tid = 0; tid < 8; tid++)
         {
-            if (m_heFem->GetBaAgreementEstablished(staIt->second, tid))
+            if (m_apMac->GetBaAgreementEstablishedAsRecipient(staIt->second, tid))
             {
                 staNTids++;
             }

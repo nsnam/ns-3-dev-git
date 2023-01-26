@@ -27,6 +27,9 @@
 namespace ns3
 {
 
+/// Size in bytes of the Element ID Extension field (IEEE 802.11-2020 9.4.2.1 General)
+constexpr uint8_t WIFI_IE_ELEMENT_ID_EXT_SIZE = 1;
+
 /**
  * This type is used to represent an Information Element ID. An
  * enumeration would be tidier, but doesn't provide for the
@@ -230,8 +233,10 @@ typedef uint8_t WifiInformationElementId;
 #define IE_EXT_UORA_PARAMETER_SET ((WifiInformationElementId)37)
 #define IE_EXT_MU_EDCA_PARAMETER_SET ((WifiInformationElementId)38)
 
+#define IE_EXT_EHT_OPERATION ((WifiInformationElementId)106)
 #define IE_EXT_MULTI_LINK_ELEMENT ((WifiInformationElementId)107)
 #define IE_EXT_EHT_CAPABILITIES ((WifiInformationElementId)108)
+#define IE_EXT_TID_TO_LINK_MAPPING_ELEMENT ((WifiInformationElementId)109)
 
 /**
  * \brief Information element, as defined in 802.11-2007 standard

@@ -574,14 +574,13 @@ WifiRemoteStationManager::GetAffiliatedStaAddress(const Mac48Address& mldAddress
 {
     auto stateIt = m_states.find(mldAddress);
 
-    if (stateIt == m_states.end())
+    if (stateIt == m_states.end() || !stateIt->second->m_mldAddress)
     {
         // MLD address not found
-        return std::optional<Mac48Address>();
+        return std::nullopt;
     }
 
-    NS_ASSERT(stateIt->second->m_mldAddress.has_value() &&
-              *stateIt->second->m_mldAddress == mldAddress);
+    NS_ASSERT(*stateIt->second->m_mldAddress == mldAddress);
     return stateIt->second->m_address;
 }
 

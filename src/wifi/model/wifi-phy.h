@@ -1083,6 +1083,12 @@ class WifiPhy : public Object
      * \return the pointer to the supported PHY entity
      */
     Ptr<PhyEntity> GetPhyEntity(WifiStandard standard) const;
+    /**
+     * Get the latest PHY entity supported by this PHY instance.
+     *
+     * \return the latest PHY entity supported by this PHY instance
+     */
+    Ptr<PhyEntity> GetLatestPhyEntity() const;
 
     /**
      * \return the UID of the previously received PPDU (reset to UINT64_MAX upon transmission)

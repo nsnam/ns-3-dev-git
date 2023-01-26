@@ -1083,11 +1083,17 @@ TestRunnerImpl::Run(int argc, char* argv[])
 
     // let's run our tests now.
     bool failed = false;
-    if (tests.size() == 0)
+    if (tests.empty())
     {
         std::cerr << "Error:  no tests match the requested string" << std::endl;
         return 1;
     }
+    else if (tests.size() > 1)
+    {
+        std::cerr << "Error:  tests should be launched separately (one at a time)" << std::endl;
+        return 1;
+    }
+
     for (std::list<TestCase*>::const_iterator i = tests.begin(); i != tests.end(); ++i)
     {
         TestCase* test = *i;
