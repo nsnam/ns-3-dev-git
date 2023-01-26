@@ -421,7 +421,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams)
 Ptr<const WifiPpdu>
 SpectrumWifiPhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
 {
-    return GetLatestPhyEntity()->GetRxPpduFromTxPpdu(ppdu);
+    return GetPhyEntityForPpdu(ppdu)->GetRxPpduFromTxPpdu(ppdu);
 }
 
 Ptr<Object>

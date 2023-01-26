@@ -1071,6 +1071,19 @@ class WifiPhy : public Object
     static const Ptr<const PhyEntity> GetStaticPhyEntity(WifiModulationClass modulation);
 
     /**
+     * Get the supported PHY entity to use for a received PPDU.
+     * This typically returns the entity corresponding to the modulation class used to transmit the
+     * PPDU. If the modulation class used to transmit the PPDU is not supported by the PHY, the
+     * latest PHY entity corresponding to the configured standard is returned. If the modulation
+     * used to transmit the PPDU is non-HT (duplicate), the latest PHY entity corresponding to the
+     * configured standard is also returned.
+     *
+     * \param ppdu the received PPDU
+     * \return the pointer to the supported PHY entity
+     */
+    Ptr<PhyEntity> GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const;
+
+    /**
      * Get the supported PHY entity corresponding to the modulation class.
      *
      * \param modulation the modulation class

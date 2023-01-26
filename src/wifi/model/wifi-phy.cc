@@ -695,7 +695,7 @@ const Ptr<const PhyEntity>
 WifiPhy::GetStaticPhyEntity(WifiModulationClass modulation)
 {
     const auto it = GetStaticPhyEntities().find(modulation);
-    NS_ABORT_MSG_IF(it == GetStaticPhyEntities().end(), "Unimplemented Wi-Fi modulation class");
+    NS_ABORT_MSG_IF(it == GetStaticPhyEntities().cend(), "Unimplemented Wi-Fi modulation class");
     return it->second;
 }
 
@@ -703,7 +703,8 @@ Ptr<PhyEntity>
 WifiPhy::GetPhyEntity(WifiModulationClass modulation) const
 {
     const auto it = m_phyEntities.find(modulation);
-    NS_ABORT_MSG_IF(it == m_phyEntities.end(), "Unsupported Wi-Fi modulation class " << modulation);
+    NS_ABORT_MSG_IF(it == m_phyEntities.cend(),
+                    "Unsupported Wi-Fi modulation class " << modulation);
     return it->second;
 }
 
@@ -717,6 +718,26 @@ Ptr<PhyEntity>
 WifiPhy::GetLatestPhyEntity() const
 {
     return GetPhyEntity(m_standard);
+}
+
+Ptr<PhyEntity>
+WifiPhy::GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const
+{
+    NS_ABORT_IF(!ppdu);
+    const auto modulation = ppdu->GetModulation();
+    if (modulation > m_phyEntities.rbegin()->first)
+    {
+        // unsupported modulation: start reception process with latest PHY entity
+        return GetLatestPhyEntity();
+    }
+    if (modulation < WIFI_MOD_CLASS_HT)
+    {
+        // for non-HT (duplicate), call the latest PHY entity since some extra processing can be
+        // done in PHYs implemented in HT and later (e.g. channel width selection for non-HT
+        // duplicates)
+        return GetLatestPhyEntity();
+    }
+    return GetPhyEntity(modulation);
 }
 
 void
