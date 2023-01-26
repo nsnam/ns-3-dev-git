@@ -23,6 +23,7 @@
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/ofdm-ppdu.h"
+#include "ns3/pointer.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/test.h"
@@ -54,6 +55,7 @@ static const uint16_t GUARD_WIDTH =
 class ExtSpectrumWifiPhy : public SpectrumWifiPhy
 {
   public:
+    using SpectrumWifiPhy::GetBandForInterface;
     using SpectrumWifiPhy::SpectrumWifiPhy;
     using WifiPhy::GetBand;
 
@@ -315,7 +317,15 @@ class TestPhyListener : public ns3::WifiPhyListener
                             const std::vector<Time>& /*per20MhzDurations*/) override
     {
         NS_LOG_FUNCTION(this << duration << channelType);
-        ++m_notifyMaybeCcaBusyStart;
+        if (duration.IsStrictlyPositive())
+        {
+            ++m_notifyMaybeCcaBusyStart;
+            if (!m_ccaBusyStart.IsStrictlyPositive())
+            {
+                m_ccaBusyStart = Simulator::Now();
+            }
+            m_ccaBusyEnd = std::max(m_ccaBusyEnd, Simulator::Now() + duration);
+        }
     }
 
     void NotifySwitchingStart(Time duration) override
@@ -348,12 +358,16 @@ class TestPhyListener : public ns3::WifiPhyListener
         m_notifyRxEndOk = 0;
         m_notifyRxEndError = 0;
         m_notifyMaybeCcaBusyStart = 0;
+        m_ccaBusyStart = Seconds(0);
+        m_ccaBusyEnd = Seconds(0);
     }
 
     uint32_t m_notifyRxStart{0};           ///< notify receive start
     uint32_t m_notifyRxEndOk{0};           ///< notify receive end OK
     uint32_t m_notifyRxEndError{0};        ///< notify receive end error
     uint32_t m_notifyMaybeCcaBusyStart{0}; ///< notify maybe CCA busy start
+    Time m_ccaBusyStart{0};                ///< CCA_BUSY start time
+    Time m_ccaBusyEnd{0};                  ///< CCA_BUSY end time
 };
 
 /**
@@ -791,7 +805,13 @@ SpectrumWifiPhyFilterTest::DoRun()
 class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 {
   public:
-    SpectrumWifiPhyMultipleInterfacesTest();
+    /**
+     * Constructor
+     *
+     * \param trackSignalsInactiveInterfaces flag to indicate whether signals coming from inactive
+     * spectrum PHY interfaces shall be tracked during the test
+     */
+    SpectrumWifiPhyMultipleInterfacesTest(bool trackSignalsInactiveInterfaces);
 
   private:
     void DoSetup() override;
@@ -801,12 +821,12 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Switch channel function
      *
-     * \param phy the PHY to switch its operating channel
+     * \param index the index to identify the RX PHY
      * \param band the PHY band to use
      * \param channelNumber number the channel number to use
      * \param channelWidth the channel width to use
      */
-    void SwitchChannel(Ptr<SpectrumWifiPhy> phy,
+    void SwitchChannel(std::size_t index,
                        WifiPhyBand band,
                        uint8_t channelNumber,
                        uint16_t channelWidth);
@@ -815,30 +835,44 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
      * Send PPDU function
      *
      * \param phy the PHY to transmit the signal
+     * \param txPowerDbm the power in dBm to transmit the signal (this is also the received power
+     * since we do not have propagation loss to simplify)
      */
-    void SendPpdu(Ptr<SpectrumWifiPhy> phy);
+    void SendPpdu(Ptr<SpectrumWifiPhy> phy, double txPowerDbm);
 
     /**
-     * Spectrum wifi receive success function
-     *
+     * Callback triggered when a packet is received by a PHY
      * \param index the index to identify the RX PHY
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * \param packet the received packet
+     * \param rxPowersW the received power per channel band in watts
      */
-    void SpectrumWifiPhyRxSuccess(std::size_t index,
-                                  Ptr<const WifiPsdu> psdu,
-                                  RxSignalInfo rxSignalInfo,
-                                  WifiTxVector txVector,
-                                  std::vector<bool> statusPerMpdu);
+    void RxCallback(std::size_t index,
+                    Ptr<const Packet> packet,
+                    RxPowerWattPerChannelBand rxPowersW);
+
     /**
-     * Spectrum wifi receive failure function
-     *
-     * \param index the index to identify the RX PHY
-     * \param psdu the PSDU
+     * Schedule now to check the interferences
+     * \param phy the PHY for which the check has to be executed
+     * \param range the frequency range for which the check has to be executed
+     * \param channelWidth the channel width for which the check has to be executed
+     * \param interferencesExpected flag whether interferences are expected to have been tracked
      */
-    void SpectrumWifiPhyRxFailure(std::size_t index, Ptr<const WifiPsdu> psdu);
+    void CheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
+                            const FrequencyRange& range,
+                            uint16_t channelWidth,
+                            bool interferencesExpected);
+
+    /**
+     * Check the interferences
+     * \param phy the PHY for which the check has to be executed
+     * \param range the frequency range for which the check has to be executed
+     * \param channelWidth the channel width for which the check has to be executed
+     * \param interferencesExpected flag whether interferences are expected to have been tracked
+     */
+    void DoCheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
+                              const FrequencyRange& range,
+                              uint16_t channelWidth,
+                              bool interferencesExpected);
 
     /**
      * Verify results
@@ -856,42 +890,65 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
                       const std::vector<std::size_t>& expectedConnectedPhysPerChannel);
 
     /**
-     * Create a test PhyListener
+     * Verify CCA indication reported by a given PHY
      *
-     * \param index the index to identify the RX PHY to reset
+     * \param index the index to identify the RX PHY to check
+     * \param expectedCcaBusyIndication flag to indicate whether a CCA BUSY notification is expected
+     * \param switchingDelay delay between the TX has started and the time RX switched to the TX
+     * channel
      */
-    void Reset(std::size_t index);
+    void CheckCcaIndication(std::size_t index, bool expectedCcaBusyIndication, Time switchingDelay);
+
+    /**
+     * Reset function
+     */
+    void Reset();
 
     /// typedef for spectrum channel infos
     using SpectrumChannelInfos = std::tuple<Ptr<MultiModelSpectrumChannel>, uint16_t, uint16_t>;
+
+    bool
+        m_trackSignalsInactiveInterfaces; //!< flag to indicate whether signals coming from inactive
+                                          //!< spectrum PHY interfaces are tracked during the test
 
     std::vector<SpectrumChannelInfos> m_spectrumChannelInfos;    //!< Spectrum channels infos
     std::vector<Ptr<ExtSpectrumWifiPhy>> m_txPhys{};             //!< TX PHYs
     std::vector<Ptr<ExtSpectrumWifiPhy>> m_rxPhys{};             //!< RX PHYs
     std::vector<std::unique_ptr<TestPhyListener>> m_listeners{}; //!< listeners
 
-    std::vector<uint32_t> m_counts{}; //!< count number of packets received by PHYs
+    std::vector<uint32_t> m_counts{0}; //!< count number of packets received by PHYs
+
+    Time m_lastTxStart{0}; //!< hold the time at which the last transmission started
+    Time m_lastTxEnd{0};   //!< hold the time at which the last transmission ended
 };
 
-SpectrumWifiPhyMultipleInterfacesTest::SpectrumWifiPhyMultipleInterfacesTest()
-    : TestCase("SpectrumWifiPhy test operation with multiple RF interfaces")
+SpectrumWifiPhyMultipleInterfacesTest::SpectrumWifiPhyMultipleInterfacesTest(
+    bool trackSignalsInactiveInterfaces)
+    : TestCase{"SpectrumWifiPhy test operation with multiple RF interfaces"},
+      m_trackSignalsInactiveInterfaces{trackSignalsInactiveInterfaces}
 {
 }
 
 void
-SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel(Ptr<SpectrumWifiPhy> phy,
+SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel(std::size_t index,
                                                      WifiPhyBand band,
                                                      uint8_t channelNumber,
                                                      uint16_t channelWidth)
 {
-    NS_LOG_FUNCTION(this << phy << band << +channelNumber << channelWidth);
+    NS_LOG_FUNCTION(this << index << band << +channelNumber << channelWidth);
+    auto& listener = m_listeners.at(index);
+    listener->m_notifyMaybeCcaBusyStart = 0;
+    listener->m_ccaBusyStart = Seconds(0);
+    listener->m_ccaBusyEnd = Seconds(0);
+    auto phy = m_rxPhys.at(index);
     phy->SetOperatingChannel(WifiPhy::ChannelTuple{channelNumber, channelWidth, band, 0});
 }
 
 void
-SpectrumWifiPhyMultipleInterfacesTest::SendPpdu(Ptr<SpectrumWifiPhy> phy)
+SpectrumWifiPhyMultipleInterfacesTest::SendPpdu(Ptr<SpectrumWifiPhy> phy, double txPowerDbm)
 {
-    NS_LOG_FUNCTION(this << phy);
+    NS_LOG_FUNCTION(this << phy << txPowerDbm << phy->GetCurrentFrequencyRange()
+                         << phy->GetChannelWidth() << phy->GetChannelNumber());
 
     WifiTxVector txVector =
         WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
@@ -903,26 +960,63 @@ SpectrumWifiPhyMultipleInterfacesTest::SendPpdu(Ptr<SpectrumWifiPhy> phy)
     hdr.SetSequenceNumber(1);
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
 
+    m_lastTxStart = Simulator::Now();
+    m_lastTxEnd = m_lastTxStart + WifiPhy::CalculateTxDuration({std::make_pair(SU_STA_ID, psdu)},
+                                                               txVector,
+                                                               phy->GetPhyBand());
+    phy->SetTxPowerStart(txPowerDbm);
+    phy->SetTxPowerEnd(txPowerDbm);
     phy->Send(WifiConstPsduMap({std::make_pair(SU_STA_ID, psdu)}), txVector);
 }
 
 void
-SpectrumWifiPhyMultipleInterfacesTest::SpectrumWifiPhyRxSuccess(std::size_t index,
-                                                                Ptr<const WifiPsdu> psdu,
-                                                                RxSignalInfo rxSignalInfo,
-                                                                WifiTxVector txVector,
-                                                                std::vector<bool> statusPerMpdu)
+SpectrumWifiPhyMultipleInterfacesTest::RxCallback(std::size_t index,
+                                                  Ptr<const Packet> /*packet*/,
+                                                  RxPowerWattPerChannelBand /*rxPowersW*/)
 {
-    NS_LOG_FUNCTION(this << index << *psdu << rxSignalInfo << txVector);
+    auto phy = m_rxPhys.at(index);
+    NS_LOG_FUNCTION(this << index << phy->GetCurrentFrequencyRange() << phy->GetChannelWidth()
+                         << phy->GetChannelNumber());
     m_counts.at(index)++;
 }
 
 void
-SpectrumWifiPhyMultipleInterfacesTest::SpectrumWifiPhyRxFailure(std::size_t index,
-                                                                Ptr<const WifiPsdu> psdu)
+SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
+                                                          const FrequencyRange& range,
+                                                          uint16_t channelWidth,
+                                                          bool interferencesExpected)
 {
-    NS_LOG_FUNCTION(this << index << *psdu);
-    m_counts.at(index)++;
+    if ((!m_trackSignalsInactiveInterfaces) && (phy->GetCurrentFrequencyRange() != range))
+    {
+        // ignore since no bands for that range exists in interference helper in that case
+        return;
+    }
+    // This is needed to make sure PHY state will be checked as the last event if a state change
+    // occurred at the exact same time as the check
+    Simulator::ScheduleNow(&SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences,
+                           this,
+                           phy,
+                           range,
+                           channelWidth,
+                           interferencesExpected);
+}
+
+void
+SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
+                                                            const FrequencyRange& range,
+                                                            uint16_t channelWidth,
+                                                            bool interferencesExpected)
+{
+    NS_LOG_FUNCTION(this << phy << range << interferencesExpected);
+    PointerValue ptr;
+    phy->GetAttribute("InterferenceHelper", ptr);
+    auto interferenceHelper = DynamicCast<InterferenceHelper>(ptr.Get<InterferenceHelper>());
+    NS_ASSERT(interferenceHelper);
+    const auto band = phy->GetBandForInterface(channelWidth, 0, range, channelWidth);
+    const auto energyDuration = interferenceHelper->GetEnergyDuration(0, band, range);
+    NS_TEST_ASSERT_MSG_EQ(energyDuration.IsStrictlyPositive(),
+                          interferencesExpected,
+                          "Incorrect interferences detection");
 }
 
 void
@@ -933,12 +1027,6 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckResults(
     const std::vector<std::size_t>& expectedConnectedPhysPerChannel)
 {
     NS_LOG_FUNCTION(this << index << expectedNumRx << expectedFrequencyRangeActiveRfInterface);
-    NS_TEST_ASSERT_MSG_EQ(m_counts.at(index),
-                          expectedNumRx,
-                          "Didn't receive right number of packets");
-    NS_TEST_ASSERT_MSG_EQ(m_listeners.at(index)->m_notifyRxStart,
-                          expectedNumRx,
-                          "Didn't receive NotifyRxStart");
     const auto phy = m_rxPhys.at(index);
     std::size_t numActiveInterfaces = 0;
     for (const auto& [freqRange, interface] : phy->GetSpectrumPhyInterfaces())
@@ -960,14 +1048,56 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckResults(
                               expectedConnectedPhysPerChannel.at(i),
                               "Incorrect number of PHYs attached to the spectrum channel");
     }
+    NS_TEST_ASSERT_MSG_EQ(m_counts.at(index),
+                          expectedNumRx,
+                          "Didn't receive right number of packets");
+    NS_TEST_ASSERT_MSG_EQ(m_listeners.at(index)->m_notifyRxStart,
+                          expectedNumRx,
+                          "Didn't receive NotifyRxStart");
 }
 
 void
-SpectrumWifiPhyMultipleInterfacesTest::Reset(std::size_t index)
+SpectrumWifiPhyMultipleInterfacesTest::CheckCcaIndication(std::size_t index,
+                                                          bool expectedCcaBusyIndication,
+                                                          Time switchingDelay)
 {
-    NS_LOG_FUNCTION(this << index);
-    m_counts.at(index) = 0;
-    m_listeners.at(index)->Reset();
+    const auto expectedCcaBusyStart =
+        expectedCcaBusyIndication ? m_lastTxStart + switchingDelay : Seconds(0);
+    const auto expectedCcaBusyEnd = expectedCcaBusyIndication ? m_lastTxEnd : Seconds(0);
+    NS_LOG_FUNCTION(this << index << expectedCcaBusyIndication << expectedCcaBusyStart
+                         << expectedCcaBusyEnd);
+    auto& listener = m_listeners.at(index);
+    const auto ccaBusyIndication = (listener->m_notifyMaybeCcaBusyStart > 0);
+    const auto ccaBusyStart = listener->m_ccaBusyStart;
+    const auto ccaBusyEnd = listener->m_ccaBusyEnd;
+    NS_TEST_ASSERT_MSG_EQ(ccaBusyIndication,
+                          expectedCcaBusyIndication,
+                          "CCA busy indication check failed");
+    NS_TEST_ASSERT_MSG_EQ(ccaBusyStart, expectedCcaBusyStart, "CCA busy start mismatch");
+    NS_TEST_ASSERT_MSG_EQ(ccaBusyEnd, expectedCcaBusyEnd, "CCA busy end mismatch");
+}
+
+void
+SpectrumWifiPhyMultipleInterfacesTest::Reset()
+{
+    NS_LOG_FUNCTION(this);
+    for (auto& count : m_counts)
+    {
+        count = 0;
+    }
+    for (auto& listener : m_listeners)
+    {
+        listener->Reset();
+    }
+    // restore all RX PHYs to initial channels
+    for (std::size_t rxPhyIndex = 0; rxPhyIndex < m_rxPhys.size(); ++rxPhyIndex)
+    {
+        auto txPhy = m_txPhys.at(rxPhyIndex);
+        SwitchChannel(rxPhyIndex,
+                      txPhy->GetPhyBand(),
+                      txPhy->GetChannelNumber(),
+                      txPhy->GetChannelWidth());
+    }
 }
 
 void
@@ -1004,6 +1134,8 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         auto txDev = CreateObject<WifiNetDevice>();
         auto txPhy = CreateObject<ExtSpectrumWifiPhy>();
         txPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
+        txPhy->SetAttribute("TrackSignalsFromInactiveInterfaces",
+                            BooleanValue(m_trackSignalsInactiveInterfaces));
         auto txInterferenceHelper = CreateObject<InterferenceHelper>();
         txPhy->SetInterferenceHelper(txInterferenceHelper);
         auto txError = CreateObject<NistErrorRateModel>();
@@ -1027,6 +1159,8 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         auto rxDev = CreateObject<WifiNetDevice>();
         auto rxPhy = CreateObject<ExtSpectrumWifiPhy>();
         rxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
+        rxPhy->SetAttribute("TrackSignalsFromInactiveInterfaces",
+                            BooleanValue(m_trackSignalsInactiveInterfaces));
         auto rxInterferenceHelper = CreateObject<InterferenceHelper>();
         rxPhy->SetInterferenceHelper(rxInterferenceHelper);
         auto rxError = CreateObject<NistErrorRateModel>();
@@ -1045,12 +1179,9 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         rxNode->AddDevice(rxDev);
 
         const auto index = m_rxPhys.size();
-        rxPhy->SetReceiveOkCallback(
-            MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::SpectrumWifiPhyRxSuccess, this)
-                .Bind(index));
-        rxPhy->SetReceiveErrorCallback(
-            MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::SpectrumWifiPhyRxFailure, this)
-                .Bind(index));
+        rxPhy->TraceConnectWithoutContext(
+            "PhyRxBegin",
+            MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::RxCallback, this).Bind(index));
 
         auto listener = std::make_unique<TestPhyListener>();
         rxPhy->RegisterListener(listener.get());
@@ -1083,121 +1214,231 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
 {
     NS_LOG_FUNCTION(this);
 
-    constexpr double txAfterChannelSwitchDelay =
-        0.25; ///< delay in seconds between channel switch is triggered and transmission is started
-    constexpr double checkResultsDelay =
-        0.5; ///< delay in seconds between start of test and moment results are verified
-    constexpr double flushResultsDelay =
-        0.9; ///< delay in seconds between start of test and moment results are flushed
+    const auto ccaEdThresholdDbm = -62.0; ///< CCA-ED threshold in dBm
+    const auto txAfterChannelSwitchDelay =
+        Seconds(0.25); ///< delay in seconds between channel switch is triggered and a transmission
+                       ///< gets started
+    const auto checkResultsDelay =
+        Seconds(0.5); ///< delay in seconds between start of test and moment results are verified
+    const auto flushResultsDelay =
+        Seconds(0.9); ///< delay in seconds between start of test and moment results are flushed
+    const auto txOngoingAfterTxStartedDelay =
+        MicroSeconds(50); ///< delay in microseconds between a transmission has started and a point
+                          ///< in time the transmission is ongoing
+
+    Time delay{0};
+    // make sure all interfaces got active once for all RX PHYs to have them monitored
+    for (std::size_t rxPhyIndex = 0; rxPhyIndex < m_rxPhys.size(); ++rxPhyIndex)
+    {
+        for (std::size_t txPhyIndex = 0; txPhyIndex < m_txPhys.size(); ++txPhyIndex)
+        {
+            if (txPhyIndex == rxPhyIndex)
+            {
+                // handled at end
+                continue;
+            }
+            auto txPhy = m_txPhys.at(txPhyIndex);
+            Simulator::Schedule(delay + Seconds((rxPhyIndex + rxPhyIndex) * 0.1),
+                                &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                                this,
+                                rxPhyIndex,
+                                txPhy->GetPhyBand(),
+                                txPhy->GetChannelNumber(),
+                                txPhy->GetChannelWidth());
+        }
+        Simulator::Schedule(delay + flushResultsDelay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                            this);
+    }
+
+    for (const auto txPowerDbm : {-60.0 /* above CCA-ED */, -70.0 /* below CCA-ED */})
+    {
+        for (std::size_t i = 0; i < 4; ++i)
+        {
+            for (std::size_t j = 0; j < 4; ++j)
+            {
+                if (i == j)
+                {
+                    continue;
+                }
+                delay += Seconds(1);
+                auto txPpduPhy = m_txPhys.at(i);
+                Simulator::Schedule(delay,
+                                    &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
+                                    this,
+                                    txPpduPhy,
+                                    txPowerDbm);
+                Simulator::Schedule(delay + txOngoingAfterTxStartedDelay,
+                                    &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                                    this,
+                                    j,
+                                    txPpduPhy->GetPhyBand(),
+                                    txPpduPhy->GetChannelNumber(),
+                                    txPpduPhy->GetChannelWidth());
+                for (std::size_t k = 0; k < 4; ++k)
+                {
+                    Simulator::Schedule(delay + flushResultsDelay,
+                                        &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                                        this);
+                    if (k == i)
+                    {
+                        continue;
+                    }
+                    const auto expectCcaBusyIndication =
+                        m_trackSignalsInactiveInterfaces
+                            ? (txPowerDbm >= ccaEdThresholdDbm ? (j == k) : false)
+                            : false;
+                    Simulator::Schedule(delay + checkResultsDelay,
+                                        &SpectrumWifiPhyMultipleInterfacesTest::CheckCcaIndication,
+                                        this,
+                                        k,
+                                        expectCcaBusyIndication,
+                                        txOngoingAfterTxStartedDelay);
+                }
+            }
+        }
+    }
 
     // default channels active for all PHYs: each PHY only receives from its associated TX
-    std::vector<std::size_t> expectedConnectedPhysPerChannel{2, 2, 2, 2};
+    std::vector<std::size_t> expectedConnectedPhysPerChannel =
+        m_trackSignalsInactiveInterfaces ? std::vector<std::size_t>{5, 5, 5, 5}
+                                         : // all RX PHYs keep all channels active when tracking
+                                           // interferences on inactive interfaces
+            std::vector<std::size_t>{2, 2, 2, 2}; // default channels active for all PHYs: each PHY
+                                                  // only receives from its associated TX
     for (std::size_t i = 0; i < 4; ++i)
     {
-        Simulator::Schedule(Seconds(i),
+        auto txPpduPhy = m_txPhys.at(i);
+        delay += Seconds(1);
+        Simulator::Schedule(delay,
                             &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                             this,
-                            m_txPhys.at(i));
+                            txPpduPhy,
+                            0);
         for (std::size_t j = 0; j < 4; ++j)
         {
-            const uint16_t minExpectedFreq =
-                m_txPhys.at(j)->GetFrequency() - (m_txPhys.at(j)->GetChannelWidth() / 2);
-            const uint16_t maxExpectedFreq =
-                m_txPhys.at(j)->GetFrequency() + (m_txPhys.at(j)->GetChannelWidth() / 2);
+            auto txPhy = m_txPhys.at(j);
+            auto rxPhy = m_rxPhys.at(j);
+            const uint16_t minExpectedFreq = txPhy->GetFrequency() - (txPhy->GetChannelWidth() / 2);
+            const uint16_t maxExpectedFreq = txPhy->GetFrequency() + (txPhy->GetChannelWidth() / 2);
             const FrequencyRange expectedFreqRange = {minExpectedFreq, maxExpectedFreq};
-            Simulator::Schedule(Seconds(i + checkResultsDelay),
+            Simulator::Schedule(delay + txOngoingAfterTxStartedDelay,
+                                &SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences,
+                                this,
+                                rxPhy,
+                                txPpduPhy->GetCurrentFrequencyRange(),
+                                txPpduPhy->GetChannelWidth(),
+                                true);
+            Simulator::Schedule(delay + checkResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::CheckResults,
                                 this,
                                 j,
                                 (i == j) ? 1 : 0,
                                 expectedFreqRange,
                                 expectedConnectedPhysPerChannel);
-            Simulator::Schedule(Seconds(i + flushResultsDelay),
+            Simulator::Schedule(delay + flushResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                this,
-                                j);
+                                this);
         }
     }
 
     // same channel active for all PHYs: all PHYs receive from TX
     for (std::size_t i = 0; i < 4; ++i)
     {
-        Simulator::Schedule(Seconds(4 + i + txAfterChannelSwitchDelay),
+        delay += Seconds(1);
+        auto txPpduPhy = m_txPhys.at(i);
+        Simulator::Schedule(delay + txAfterChannelSwitchDelay,
                             &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                             this,
-                            m_txPhys.at(i));
+                            txPpduPhy,
+                            0);
         const uint16_t minExpectedFreq =
-            m_txPhys.at(i)->GetFrequency() - (m_txPhys.at(i)->GetChannelWidth() / 2);
+            txPpduPhy->GetFrequency() - (txPpduPhy->GetChannelWidth() / 2);
         const uint16_t maxExpectedFreq =
-            m_txPhys.at(i)->GetFrequency() + (m_txPhys.at(i)->GetChannelWidth() / 2);
+            txPpduPhy->GetFrequency() + (txPpduPhy->GetChannelWidth() / 2);
         const FrequencyRange expectedFreqRange = {minExpectedFreq, maxExpectedFreq};
         for (std::size_t j = 0; j < 4; ++j)
         {
-            for (std::size_t k = 0; k < expectedConnectedPhysPerChannel.size(); ++k)
+            if (!m_trackSignalsInactiveInterfaces)
             {
-                expectedConnectedPhysPerChannel.at(k) = (k == i) ? 5 : 1;
+                for (std::size_t k = 0; k < expectedConnectedPhysPerChannel.size(); ++k)
+                {
+                    expectedConnectedPhysPerChannel.at(k) = (k == i) ? 5 : 1;
+                }
             }
-            Simulator::Schedule(Seconds(4 + i),
+            auto rxPhy = m_rxPhys.at(j);
+            Simulator::Schedule(delay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
                                 this,
-                                m_rxPhys.at(j),
-                                m_txPhys.at(i)->GetPhyBand(),
-                                m_txPhys.at(i)->GetChannelNumber(),
-                                m_txPhys.at(i)->GetChannelWidth());
-            Simulator::Schedule(Seconds(4 + i + checkResultsDelay),
+                                j,
+                                txPpduPhy->GetPhyBand(),
+                                txPpduPhy->GetChannelNumber(),
+                                txPpduPhy->GetChannelWidth());
+            Simulator::Schedule(delay + txAfterChannelSwitchDelay + txOngoingAfterTxStartedDelay,
+                                &SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences,
+                                this,
+                                rxPhy,
+                                txPpduPhy->GetCurrentFrequencyRange(),
+                                txPpduPhy->GetChannelWidth(),
+                                true);
+            Simulator::Schedule(delay + checkResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::CheckResults,
                                 this,
                                 j,
                                 1,
                                 expectedFreqRange,
                                 expectedConnectedPhysPerChannel);
-            Simulator::Schedule(Seconds(4 + i + flushResultsDelay),
+            Simulator::Schedule(delay + flushResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                this,
-                                j);
+                                this);
         }
     }
 
     // Switch all PHYs to channel 36: all PHYs switch to the second spectrum channel
     // since second spectrum channel is 42 (80 MHz) and hence covers channel 36 (20 MHz)
     const auto secondSpectrumChannelIndex = 1;
+    auto channel36TxPhy = m_txPhys.at(secondSpectrumChannelIndex);
     const uint16_t minExpectedFreq =
-        m_txPhys.at(secondSpectrumChannelIndex)->GetFrequency() -
-        (m_txPhys.at(secondSpectrumChannelIndex)->GetChannelWidth() / 2);
+        channel36TxPhy->GetFrequency() - (channel36TxPhy->GetChannelWidth() / 2);
     const uint16_t maxExpectedFreq =
-        m_txPhys.at(secondSpectrumChannelIndex)->GetFrequency() +
-        (m_txPhys.at(secondSpectrumChannelIndex)->GetChannelWidth() / 2);
+        channel36TxPhy->GetFrequency() + (channel36TxPhy->GetChannelWidth() / 2);
     FrequencyRange expectedFreqRange = {minExpectedFreq, maxExpectedFreq};
     for (std::size_t i = 0; i < 4; ++i)
     {
-        Simulator::Schedule(Seconds(8 + i + txAfterChannelSwitchDelay),
+        delay += Seconds(1);
+        auto txPpduPhy = m_txPhys.at(i);
+        Simulator::Schedule(delay + txAfterChannelSwitchDelay,
                             &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                             this,
-                            m_txPhys.at(i));
+                            txPpduPhy,
+                            0);
         for (std::size_t j = 0; j < 4; ++j)
         {
-            for (std::size_t k = 0; k < expectedConnectedPhysPerChannel.size(); ++k)
+            if (!m_trackSignalsInactiveInterfaces)
             {
-                expectedConnectedPhysPerChannel.at(k) = (k == secondSpectrumChannelIndex) ? 5 : 1;
+                for (std::size_t k = 0; k < expectedConnectedPhysPerChannel.size(); ++k)
+                {
+                    expectedConnectedPhysPerChannel.at(k) =
+                        (k == secondSpectrumChannelIndex) ? 5 : 1;
+                }
             }
-            Simulator::Schedule(Seconds(8 + i),
+            Simulator::Schedule(delay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
                                 this,
-                                m_rxPhys.at(j),
+                                j,
                                 WIFI_PHY_BAND_5GHZ,
                                 CHANNEL_NUMBER,
                                 CHANNEL_WIDTH);
-            Simulator::Schedule(Seconds(8 + i + checkResultsDelay),
+            Simulator::Schedule(delay + checkResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::CheckResults,
                                 this,
                                 j,
                                 (i == secondSpectrumChannelIndex) ? 1 : 0,
                                 expectedFreqRange,
                                 expectedConnectedPhysPerChannel);
-            Simulator::Schedule(Seconds(8 + i + flushResultsDelay),
+            Simulator::Schedule(delay + flushResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                this,
-                                j);
+                                this);
         }
     }
 
@@ -1222,7 +1463,8 @@ SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
     AddTestCase(new SpectrumWifiPhyBasicTest, TestCase::QUICK);
     AddTestCase(new SpectrumWifiPhyListenerTest, TestCase::QUICK);
     AddTestCase(new SpectrumWifiPhyFilterTest, TestCase::QUICK);
-    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest, TestCase::QUICK);
+    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(false), TestCase::QUICK);
+    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(true), TestCase::QUICK);
 }
 
 static SpectrumWifiPhyTestSuite spectrumWifiPhyTestSuite; ///< the test suite
