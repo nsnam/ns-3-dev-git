@@ -24,10 +24,10 @@ static void
 TraceCwnd()
 {
     AsciiTraceHelper asciiTraceHelper;
-    Ptr<OutputStreamWrapper> file1 = asciiTraceHelper.CreateFileStream("tracecwnd1.csv");
-    Ptr<OutputStreamWrapper> file2 = asciiTraceHelper.CreateFileStream("tracecwnd2.csv");
-    Ptr<OutputStreamWrapper> file3 = asciiTraceHelper.CreateFileStream("tracecwnd3.csv");
-    Ptr<OutputStreamWrapper> file4 = asciiTraceHelper.CreateFileStream("tracecwnd4.csv");
+    Ptr<OutputStreamWrapper> file1 = asciiTraceHelper.CreateFileStream("p2p_cwnd1.csv");
+    Ptr<OutputStreamWrapper> file2 = asciiTraceHelper.CreateFileStream("p2p_cwnd2.csv");
+    Ptr<OutputStreamWrapper> file3 = asciiTraceHelper.CreateFileStream("p2p_cwnd3.csv");
+    Ptr<OutputStreamWrapper> file4 = asciiTraceHelper.CreateFileStream("p2p_cwnd4.csv");
     Config::ConnectWithoutContext("/NodeList/2/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file1));
     Config::ConnectWithoutContext("/NodeList/3/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file2));
     Config::ConnectWithoutContext("/NodeList/4/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file3));
@@ -37,7 +37,7 @@ TraceCwnd()
 int
 main(int argc, char* argv[])
 {
-    bool enable_log = true;
+    bool enable_log = false;
 
     if (enable_log)
     {
@@ -95,11 +95,11 @@ main(int argc, char* argv[])
     senderApps.Start(Seconds(1.0));
     recvApps.Start(Seconds(0.0));
 
-    senderApps.Stop(Seconds(20.0));
-    recvApps.Stop(Seconds(50.0));
+    senderApps.Stop(Seconds(50.0));
+    recvApps.Stop(Seconds(100.0));
 
     // Tracing
-    p2pbottleneckhelper.EnablePcapAll("p2p_simul");
+    p2pbottleneckhelper.EnablePcap("p2p_simul_router1", dumbbellhelper.GetLeft()->GetDevice(0), false);
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
 

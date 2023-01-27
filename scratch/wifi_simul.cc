@@ -62,7 +62,7 @@
 #include "ns3/bulk-send-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
-// #include "ns3/animation-interface.h"
+#include "ns3/animation-interface.h"
 
 using namespace ns3;
 
@@ -78,10 +78,10 @@ static void
 TraceCwnd()
 {
     AsciiTraceHelper asciiTraceHelper;
-    Ptr<OutputStreamWrapper> file1 = asciiTraceHelper.CreateFileStream("tracecwnd1.csv");
-    Ptr<OutputStreamWrapper> file2 = asciiTraceHelper.CreateFileStream("tracecwnd2.csv");
-    Ptr<OutputStreamWrapper> file3 = asciiTraceHelper.CreateFileStream("tracecwnd3.csv");
-    Ptr<OutputStreamWrapper> file4 = asciiTraceHelper.CreateFileStream("tracecwnd4.csv");
+    Ptr<OutputStreamWrapper> file1 = asciiTraceHelper.CreateFileStream("wifi_cwnd1.csv");
+    Ptr<OutputStreamWrapper> file2 = asciiTraceHelper.CreateFileStream("wifi_cwnd2.csv");
+    Ptr<OutputStreamWrapper> file3 = asciiTraceHelper.CreateFileStream("wifi_cwnd3.csv");
+    Ptr<OutputStreamWrapper> file4 = asciiTraceHelper.CreateFileStream("wifi_cwnd4.csv");
     Config::ConnectWithoutContext("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file1));
     Config::ConnectWithoutContext("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file2));
     Config::ConnectWithoutContext("/NodeList/2/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file3));
@@ -209,15 +209,15 @@ main(int argc, char* argv[])
     senderApps.Start(Seconds(1.0));
     recvApps.Start(Seconds(0.0));
 
-    senderApps.Stop(Seconds(50.0));
-    recvApps.Stop(Seconds(100.0));
+    senderApps.Stop(Seconds(100.0));
+    recvApps.Stop(Seconds(150.0));
 
     // Tracing
     wifiPhy.EnablePcap("wifi_simul", devices);
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
 
-    // AnimationInterface anim("../animwifi.xml");
+    AnimationInterface anim("../animwifi.xml");
 
     Simulator::Stop(Seconds(200.0));
     Simulator::Run();
