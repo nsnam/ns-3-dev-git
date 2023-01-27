@@ -251,6 +251,11 @@ WifiPhy::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&WifiPhy::m_postReceptionErrorModel),
                           MakePointerChecker<ErrorModel>())
+            .AddAttribute("InterferenceHelper",
+                          "Ptr to an object that implements the interference helper",
+                          PointerValue(),
+                          MakePointerAccessor(&WifiPhy::m_interference),
+                          MakePointerChecker<InterferenceHelper>())
             .AddAttribute("Sifs",
                           "The duration of the Short Interframe Space. "
                           "NOTE that the default value is overwritten by the value defined "
