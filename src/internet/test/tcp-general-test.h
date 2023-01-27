@@ -1157,20 +1157,6 @@ class TcpGeneralTest : public TestCase
     InetSocketAddress m_remoteAddr; //!< Remote peer address.
 };
 
-/**
- * \ingroup internet-test
- *
- * \brief Convenience function to retrieve the ACK state from a TCB
- *
- * \param tcb Transmission control block
- * \return the state of the ACK state machine
- */
-static inline TcpSocketState::TcpCongState_t
-GetCongStateFrom(Ptr<const TcpSocketState> tcb)
-{
-    return tcb->m_congState.Get();
-}
-
 } // namespace ns3
 
 #endif // TCPGENERALTEST_H

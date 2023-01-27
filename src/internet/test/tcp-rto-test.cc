@@ -106,7 +106,7 @@ TcpRtoTest::AfterRTOExpired(const Ptr<const TcpSocketState> tcb, SocketWho who)
     // This function is called after the management of the RTO expiration,
     // and because of this we must check all the involved variables.
     NS_TEST_ASSERT_MSG_EQ(m_afterRTOExpired, false, "Second RTO expired");
-    NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(tcb),
+    NS_TEST_ASSERT_MSG_EQ(tcb->m_congState.Get(),
                           TcpSocketState::CA_LOSS,
                           "Ack state machine not in LOSS state after a loss");
 
@@ -124,13 +124,13 @@ TcpRtoTest::RcvAck(const Ptr<const TcpSocketState> tcb, const TcpHeader& h, Sock
 
     if (m_afterRTOExpired && who == SENDER)
     {
-        NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(tcb),
+        NS_TEST_ASSERT_MSG_EQ(tcb->m_congState.Get(),
                               TcpSocketState::CA_LOSS,
                               "Ack state machine not in LOSS state after a loss");
     }
     else
     {
-        NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(tcb),
+        NS_TEST_ASSERT_MSG_EQ(tcb->m_congState.Get(),
                               TcpSocketState::CA_OPEN,
                               "Ack state machine not in OPEN state after recovering "
                               "from loss");
@@ -143,7 +143,7 @@ TcpRtoTest::ProcessedAck(const Ptr<const TcpSocketState> tcb, const TcpHeader& h
     // Called after the ACK processing. Every time we should be in OPEN state,
     // without any packet lost or marked as retransmitted, in both the sockets
 
-    NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(tcb),
+    NS_TEST_ASSERT_MSG_EQ(tcb->m_congState.Get(),
                           TcpSocketState::CA_OPEN,
                           "Ack state machine not in OPEN state after recovering "
                           "from loss");

@@ -168,10 +168,10 @@ TcpZeroWindowTest::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho w
         }
     }
 
-    NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(GetTcb(SENDER)),
+    NS_TEST_ASSERT_MSG_EQ(GetTcb(SENDER)->m_congState.Get(),
                           TcpSocketState::CA_OPEN,
                           "Sender State is not OPEN");
-    NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(GetTcb(RECEIVER)),
+    NS_TEST_ASSERT_MSG_EQ(GetTcb(RECEIVER)->m_congState.Get(),
                           TcpSocketState::CA_OPEN,
                           "Receiver State is not OPEN");
 }
