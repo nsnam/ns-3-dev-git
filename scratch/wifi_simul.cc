@@ -118,7 +118,7 @@ main(int argc, char* argv[])
 
     // The below set of helpers will help us to put together the wifi NICs we want
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211b);
+    wifi.SetStandard(WIFI_STANDARD_80211n);
     // wifi.EnableLogComponents(); // Turn on all Wifi logging
 
     YansWifiPhyHelper wifiPhy;
@@ -213,7 +213,7 @@ main(int argc, char* argv[])
     recvApps.Stop(Seconds(150.0));
 
     // Tracing
-    wifiPhy.EnablePcap("wifi_simul", devices);
+    wifiPhy.EnablePcap("wifi_simul", apDevice);
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
 
