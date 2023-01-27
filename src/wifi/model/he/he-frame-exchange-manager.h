@@ -45,6 +45,13 @@ typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiP
 typedef std::unordered_map<uint16_t /* staId */, Ptr<const WifiPsdu> /* PSDU */> WifiConstPsduMap;
 
 /**
+ * \param psduMap a PSDU map
+ * \return true if the given PSDU map contains a single PSDU including a single MPDU
+ *         that carries a Trigger Frame
+ */
+bool IsTrigger(const WifiPsduMap& psduMap);
+
+/**
  * \ingroup wifi
  *
  * HeFrameExchangeManager handles the frame exchange sequences

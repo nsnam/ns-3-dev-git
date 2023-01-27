@@ -46,6 +46,14 @@ NS_LOG_COMPONENT_DEFINE("HeFrameExchangeManager");
 
 NS_OBJECT_ENSURE_REGISTERED(HeFrameExchangeManager);
 
+bool
+IsTrigger(const WifiPsduMap& psduMap)
+{
+    return psduMap.size() == 1 && psduMap.cbegin()->first == SU_STA_ID &&
+           psduMap.cbegin()->second->GetNMpdus() == 1 &&
+           psduMap.cbegin()->second->GetHeader(0).IsTrigger();
+}
+
 TypeId
 HeFrameExchangeManager::GetTypeId()
 {
@@ -237,9 +245,7 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
 
     // in case we are sending a Trigger Frame, update the acknowledgment time so that
     // the Duration/ID of the MU-RTS is correctly computed
-    if (!m_txParams.m_txVector.IsUlMu() && m_psduMap.size() == 1 &&
-        m_psduMap.begin()->first == SU_STA_ID &&
-        m_psduMap.begin()->second->GetHeader(0).IsTrigger())
+    if (!m_txParams.m_txVector.IsUlMu() && IsTrigger(m_psduMap))
     {
         NS_ASSERT(m_muScheduler);
         const auto& trigger = m_muScheduler->GetUlMuInfo(m_linkId).trigger;
@@ -641,8 +647,8 @@ HeFrameExchangeManager::SendPsduMap()
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA)
     {
         // the PSDU map being sent must contain a (Basic) Trigger Frame
-        NS_ASSERT(m_psduMap.size() == 1 && m_psduMap.begin()->first == SU_STA_ID &&
-                  (mpdu = *m_psduMap.begin()->second->begin())->GetHeader().IsTrigger());
+        NS_ASSERT(IsTrigger(m_psduMap));
+        mpdu = *m_psduMap.begin()->second->begin();
 
         WifiUlMuMultiStaBa* acknowledgment =
             static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
@@ -668,9 +674,7 @@ HeFrameExchangeManager::SendPsduMap()
      * BSRP Trigger Frame
      */
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE &&
-             !m_txParams.m_txVector.IsUlMu() && m_psduMap.size() == 1 &&
-             m_psduMap.begin()->first == SU_STA_ID &&
-             (*m_psduMap.begin()->second->begin())->GetHeader().IsTrigger())
+             !m_txParams.m_txVector.IsUlMu() && IsTrigger(m_psduMap))
     {
         CtrlTriggerHeader& trigger = m_muScheduler->GetUlMuInfo(m_linkId).trigger;
         NS_ASSERT(trigger.IsBsrp());
@@ -1198,8 +1202,7 @@ HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap,
     NS_LOG_FUNCTION(this << psduMap << staMissedTbPpduFrom->size() << nSolicitedStations);
 
     NS_ASSERT(psduMap);
-    NS_ASSERT(psduMap->size() == 1 && psduMap->begin()->first == SU_STA_ID &&
-              psduMap->begin()->second->GetHeader(0).IsTrigger());
+    NS_ASSERT(IsTrigger(*psduMap));
 
     // This method is called if some station(s) did not send a TB PPDU
     NS_ASSERT(!staMissedTbPpduFrom->empty());
