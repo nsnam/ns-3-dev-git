@@ -150,9 +150,10 @@ class RandomVariableStream : public Object
 
     /**
      * \brief Get the next random value as an integer drawn from the distribution.
+     * The base implementation returns `(uint32_t)GetValue()`
      * \return  An integer random value.
      */
-    virtual uint32_t GetInteger() = 0;
+    virtual uint32_t GetInteger();
 
   protected:
     /**
@@ -271,10 +272,10 @@ class UniformRandomVariable : public RandomVariableStream
      * \note The upper limit is excluded from the output range.
      */
     double GetValue() override;
+
     /**
-     * \brief Get the next random value as an integer drawn from the distribution.
-     * \return  An integer random value.
-     * \note The upper limit is included in the output range.
+     * \copydoc RandomVariableStream::GetInteger()
+     * \note The upper limit is included in the output range, unlike GetValue().
      */
     uint32_t GetInteger() override;
 
@@ -334,7 +335,7 @@ class ConstantRandomVariable : public RandomVariableStream
     /* \note This RNG always returns the same value. */
     double GetValue() override;
     /* \note This RNG always returns the same value. */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The constant value returned by this RNG stream. */
@@ -420,7 +421,7 @@ class SequentialRandomVariable : public RandomVariableStream
 
     // Inherited from RandomVariableStream
     double GetValue() override;
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The first value of the sequence. */
@@ -565,7 +566,7 @@ class ExponentialRandomVariable : public RandomVariableStream
 
     // Inherited from RandomVariableStream
     double GetValue() override;
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The mean value of the unbounded exponential distribution. */
@@ -742,31 +743,7 @@ class ParetoRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a Pareto distribution with the current mean,
-     * shape, and upper bound.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = \frac{scale}{u^{\frac{1}{shape}}}
-     *    \f]
-     *
-     * is a value that would be returned normally.
-     *
-     * The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
-     *    \f]
-     *
-     * which now involves the distance \f$u\f$ is from 1 in the denominator.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The scale parameter for the Pareto distribution returned by this RNG stream. */
@@ -955,30 +932,7 @@ class WeibullRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a Weibull distribution with the current scale,
-     * shape, and upper bound.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = scale * {(-\log(u))}^{\frac{1}{shape}}
-     *    \f]
-     *
-     * is a value that would be returned normally, then \f$(1 - u\f$) is
-     * the distance that \f$u\f$ would be from \f$1\f$.  The value
-     * returned in the antithetic case, \f$x'\f$, is calculated as
-     *
-     *    \f[
-     *         x' = scale * {(-\log(1 - u))}^{\frac{1}{shape}} ,
-     *    \f]
-     *
-     * which now involves the log of the distance \f$u\f$ is from 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The scale parameter for the Weibull distribution returned by this RNG stream. */
@@ -1185,42 +1139,7 @@ class NormalRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a normal distribution with the current mean,
-     * variance, and bound.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the values that would be returned normally, \f$x1\f$ and \f$x2\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & 2 * u1 - 1     \\
-     *         v2 & = & 2 * u2 - 1     \\
-     *         w & = & v1 * v1 + v2 * v2     \\
-     *         y & = & \sqrt{\frac{-2 * \log(w)}{w}}     \\
-     *         x1 & = & mean + v1 * y * \sqrt{variance}     \\
-     *         x2 & = & mean + v2 * y * \sqrt{variance}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic values returned, \f$x1'\f$ and \f$x2'\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & 2 * (1 - u1) - 1     \\
-     *         v2' & = & 2 * (1 - u2) - 1     \\
-     *         w' & = & v1' * v1' + v2' * v2'     \\
-     *         y' & = & \sqrt{\frac{-2 * \log(w')}{w'}}     \\
-     *         x1' & = & mean + v1' * y' * \sqrt{variance}     \\
-     *         x2' & = & mean + v2' * y' * \sqrt{variance}  ,
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The mean value for the normal distribution returned by this RNG stream. */
@@ -1425,40 +1344,7 @@ class LogNormalRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a log-normal distribution with the current mu
-     * and sigma.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the value that would be returned normally, \f$x\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & -1 + 2 * u1       \\
-     *         v2 & = & -1 + 2 * u2       \\
-     *         r2 & = & v1 * v1 + v2 * v2       \\
-     *         normal & = & v1 * \sqrt{\frac{-2.0 * \log{r2}}{r2}}       \\
-     *         x & = &  \exp{sigma * normal + mu}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic value returned, \f$x'\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & -1 + 2 * (1 - u1)       \\
-     *         v2' & = & -1 + 2 * (1 - u2)       \\
-     *         r2' & = & v1' * v1' + v2' * v2'       \\
-     *         normal' & = & v1' * \sqrt{\frac{-2.0 * \log{r2'}}{r2'}}       \\
-     *         x' & = &  \exp{sigma * normal' + mu}  .
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The mu value for the log-normal distribution returned by this RNG stream. */
@@ -1576,19 +1462,7 @@ class GammaRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a gamma distribution with the current alpha and
-     * beta.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /**
@@ -1757,20 +1631,9 @@ class ErlangRandomVariable : public RandomVariableStream
      * classes.
      */
     double GetValue() override;
+    using RandomVariableStream::GetInteger;
 
-    /**
-     * \brief Returns a random unsigned integer from an Erlang distribution with the current k and
-     * lambda.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /**
@@ -1991,42 +1854,7 @@ class TriangularRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a triangular distribution with the current
-     * mean, min, and max.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *        x = \left\{ \begin{array}{rl}
-     *           min + \sqrt{u * (max - min) * (mode - min)} &\mbox{ if $u <= (mode - min)/(max -
-     * min)$} \\ max - \sqrt{ (1 - u) * (max - min) * (max - mode) } &\mbox{ otherwise} \end{array}
-     * \right. \f]
-     *
-     * is a value that would be returned normally, where the mode or
-     * peak of the triangle is calculated as
-     *
-     *    \f[
-     *         mode =  3.0 * mean - min - max  .
-     *    \f]
-     *
-     * Then, \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-     * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *        x' = \left\{ \begin{array}{rl}
-     *           min + \sqrt{(1 - u) * (max - min) * (mode - min)} &\mbox{ if $(1 - u) <= (mode -
-     * min)/(max - min)$} \\ max - \sqrt{ u * (max - min) * (max - mode) } &\mbox{ otherwise}
-     *                 \end{array} \right.
-     *     \f]
-     *
-     * which now involves the distance \f$u\f$ is from the 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The mean value for the triangular distribution returned by this RNG stream. */
@@ -2174,19 +2002,7 @@ class ZipfRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a Zipf distribution with the current n and
-     * alpha.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The n value for the Zipf distribution returned by this RNG stream. */
@@ -2307,18 +2123,7 @@ class ZetaRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns a random unsigned integer from a zeta distribution with the current alpha.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** The alpha value for the zeta distribution returned by this RNG stream. */
@@ -2391,11 +2196,7 @@ class DeterministicRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns the next value in the sequence.
-     * \return The integer next value in the sequence.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
   private:
     /** Size of the array of values. */
@@ -2525,20 +2326,7 @@ class EmpiricalRandomVariable : public RandomVariableStream
      */
     double GetValue() override;
 
-    /**
-     * \brief Returns the next value in the empirical distribution.
-     * \return The integer next value in the empirical distribution.
-     *
-     * Note that this does not interpolate the CDF, but treats it as a
-     * stepwise continuous function.
-     * Also note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
-    uint32_t GetInteger() override;
+    using RandomVariableStream::GetInteger;
 
     /**
      * \brief Returns the next value in the empirical distribution using
