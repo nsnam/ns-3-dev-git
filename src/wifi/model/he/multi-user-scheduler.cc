@@ -93,9 +93,7 @@ MultiUserScheduler::DoDispose()
     NS_LOG_FUNCTION(this);
     m_apMac = nullptr;
     m_edca = nullptr;
-    m_dlInfo.psduMap.clear();
-    m_dlInfo.txParams.Clear();
-    m_ulInfo.txParams.Clear();
+    m_lastTxInfo.clear();
     m_accessReqTimer.Cancel();
     Object::DoDispose();
 }
@@ -228,35 +226,36 @@ MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
 
     if (txFormat == DL_MU_TX)
     {
-        m_dlInfo = ComputeDlMuInfo();
+        m_lastTxInfo[linkId].dlInfo = ComputeDlMuInfo();
     }
     else if (txFormat == UL_MU_TX)
     {
-        m_ulInfo = ComputeUlMuInfo();
+        m_lastTxInfo[linkId].ulInfo = ComputeUlMuInfo();
         CheckTriggerFrame();
     }
 
     if (txFormat != NO_TX)
     {
-        m_lastTxFormat = txFormat;
+        m_lastTxInfo[linkId].lastTxFormat = txFormat;
     }
     return txFormat;
 }
 
 MultiUserScheduler::TxFormat
-MultiUserScheduler::GetLastTxFormat() const
+MultiUserScheduler::GetLastTxFormat(uint8_t linkId)
 {
-    return m_lastTxFormat;
+    return m_lastTxInfo[linkId].lastTxFormat;
 }
 
 MultiUserScheduler::DlMuInfo&
-MultiUserScheduler::GetDlMuInfo()
+MultiUserScheduler::GetDlMuInfo(uint8_t linkId)
 {
-    NS_ABORT_MSG_IF(m_lastTxFormat != DL_MU_TX, "Next transmission is not DL MU");
+    NS_ABORT_MSG_IF(m_lastTxInfo[linkId].lastTxFormat != DL_MU_TX,
+                    "Next transmission is not DL MU");
 
 #ifdef NS3_BUILD_PROFILE_DEBUG
     // check that all the addressed stations support HE
-    for (auto& psdu : m_dlInfo.psduMap)
+    for (auto& psdu : m_lastTxInfo[linkId].dlInfo.psduMap)
     {
         auto receiver = psdu.second->GetAddr1();
         auto linkId = m_apMac->IsAssociated(receiver);
@@ -266,15 +265,16 @@ MultiUserScheduler::GetDlMuInfo()
     }
 #endif
 
-    return m_dlInfo;
+    return m_lastTxInfo[linkId].dlInfo;
 }
 
 MultiUserScheduler::UlMuInfo&
-MultiUserScheduler::GetUlMuInfo()
+MultiUserScheduler::GetUlMuInfo(uint8_t linkId)
 {
-    NS_ABORT_MSG_IF(m_lastTxFormat != UL_MU_TX, "Next transmission is not UL MU");
+    NS_ABORT_MSG_IF(m_lastTxInfo[linkId].lastTxFormat != UL_MU_TX,
+                    "Next transmission is not UL MU");
 
-    return m_ulInfo;
+    return m_lastTxInfo[linkId].ulInfo;
 }
 
 Ptr<WifiMpdu>
@@ -310,9 +310,10 @@ MultiUserScheduler::CheckTriggerFrame()
 
     // Set the CS Required subfield to true, unless the UL Length subfield is less
     // than or equal to 76 (see Section 26.5.2.5 of 802.11ax-2021)
-    m_ulInfo.trigger.SetCsRequired(m_ulInfo.trigger.GetUlLength() > 76);
+    m_lastTxInfo[m_linkId].ulInfo.trigger.SetCsRequired(
+        m_lastTxInfo[m_linkId].ulInfo.trigger.GetUlLength() > 76);
 
-    GetHeFem(m_linkId)->SetTargetRssi(m_ulInfo.trigger);
+    GetHeFem(m_linkId)->SetTargetRssi(m_lastTxInfo[m_linkId].ulInfo.trigger);
 }
 
 uint32_t

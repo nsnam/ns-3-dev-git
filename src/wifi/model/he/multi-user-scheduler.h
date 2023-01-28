@@ -104,20 +104,22 @@ class MultiUserScheduler : public Object
                                  uint8_t linkId);
 
     /**
-     * Get the information required to perform a DL MU transmission. Note
-     * that this method can only be called if GetTxFormat returns DL_MU_TX.
+     * Get the information required to perform a DL MU transmission on the given link. Note
+     * that this method can only be called if GetTxFormat returns DL_MU_TX on the given link.
      *
+     * \param linkId the ID of the given link
      * \return the information required to perform a DL MU transmission
      */
-    DlMuInfo& GetDlMuInfo();
+    DlMuInfo& GetDlMuInfo(uint8_t linkId);
 
     /**
-     * Get the information required to solicit an UL MU transmission. Note
-     * that this method can only be called if GetTxFormat returns UL_MU_TX.
+     * Get the information required to solicit an UL MU transmission on the given link. Note
+     * that this method can only be called if GetTxFormat returns UL_MU_TX on the given link.
      *
+     * \param linkId the ID of the given link
      * \return the information required to solicit an UL MU transmission
      */
-    UlMuInfo& GetUlMuInfo();
+    UlMuInfo& GetUlMuInfo(uint8_t linkId);
 
     /**
      * Set the duration of the interval between two consecutive requests for channel
@@ -155,12 +157,13 @@ class MultiUserScheduler : public Object
     Ptr<WifiMpdu> GetTriggerFrame(const CtrlTriggerHeader& trigger, uint8_t linkId) const;
 
     /**
-     * Get the format of the last transmission, as determined by the last call
-     * to NotifyAccessGranted that did not return NO_TX.
+     * Get the format of the last transmission on the given link, as determined by
+     * the last call to NotifyAccessGranted that did not return NO_TX.
      *
-     * \return the format of the last transmission
+     * \param linkId the ID of the given link
+     * \return the format of the last transmission on the given link
      */
-    TxFormat GetLastTxFormat() const;
+    TxFormat GetLastTxFormat(uint8_t linkId);
 
     /**
      * Get the maximum size in bytes among the A-MPDUs containing QoS Null frames
@@ -229,14 +232,22 @@ class MultiUserScheduler : public Object
      */
     void CheckTriggerFrame();
 
-    TxFormat m_lastTxFormat{NO_TX}; ///< the format of last transmission
-    DlMuInfo m_dlInfo;              ///< information required to perform a DL MU transmission
-    UlMuInfo m_ulInfo;              ///< information required to solicit an UL MU transmission
-    EventId m_accessReqTimer;       ///< the timer controlling additional channel access requests
-    Time m_accessReqInterval;       ///< duration of the interval between channel access requests
-    AcIndex m_accessReqAc;          ///< AC we request channel access for
-    bool m_restartTimerUponAccess;  ///< whether the channel access timer has to be restarted
-                                    ///< upon channel access
+    /**
+     * Type for the information about the last transmission
+     */
+    struct LastTxInfo
+    {
+        TxFormat lastTxFormat{NO_TX}; ///< the format of last transmission
+        DlMuInfo dlInfo;              ///< information required to perform a DL MU transmission
+        UlMuInfo ulInfo;              ///< information required to solicit an UL MU transmission
+    };
+
+    std::map<uint8_t, LastTxInfo> m_lastTxInfo; ///< Information about the last transmission
+    EventId m_accessReqTimer;      ///< the timer controlling additional channel access requests
+    Time m_accessReqInterval;      ///< duration of the interval between channel access requests
+    AcIndex m_accessReqAc;         ///< AC we request channel access for
+    bool m_restartTimerUponAccess; ///< whether the channel access timer has to be restarted
+                                   ///< upon channel access
 };
 
 } // namespace ns3

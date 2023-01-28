@@ -143,27 +143,28 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
 
     if (txFormat == MultiUserScheduler::DL_MU_TX)
     {
-        if (m_muScheduler->GetDlMuInfo().psduMap.empty())
+        if (m_muScheduler->GetDlMuInfo(m_linkId).psduMap.empty())
         {
             NS_LOG_DEBUG(
                 "The Multi-user Scheduler returned DL_MU_TX with empty psduMap, do not transmit");
             return false;
         }
 
-        SendPsduMapWithProtection(m_muScheduler->GetDlMuInfo().psduMap,
-                                  m_muScheduler->GetDlMuInfo().txParams);
+        SendPsduMapWithProtection(m_muScheduler->GetDlMuInfo(m_linkId).psduMap,
+                                  m_muScheduler->GetDlMuInfo(m_linkId).txParams);
         return true;
     }
 
     if (txFormat == MultiUserScheduler::UL_MU_TX)
     {
         auto packet = Create<Packet>();
-        packet->AddHeader(m_muScheduler->GetUlMuInfo().trigger);
-        auto trigger = Create<WifiMpdu>(packet, m_muScheduler->GetUlMuInfo().macHdr);
+        packet->AddHeader(m_muScheduler->GetUlMuInfo(m_linkId).trigger);
+        auto trigger = Create<WifiMpdu>(packet, m_muScheduler->GetUlMuInfo(m_linkId).macHdr);
         SendPsduMapWithProtection(
-            WifiPsduMap{{SU_STA_ID,
-                         GetWifiPsdu(trigger, m_muScheduler->GetUlMuInfo().txParams.m_txVector)}},
-            m_muScheduler->GetUlMuInfo().txParams);
+            WifiPsduMap{
+                {SU_STA_ID,
+                 GetWifiPsdu(trigger, m_muScheduler->GetUlMuInfo(m_linkId).txParams.m_txVector)}},
+            m_muScheduler->GetUlMuInfo(m_linkId).txParams);
         return true;
     }
 
@@ -494,14 +495,14 @@ HeFrameExchangeManager::SendPsduMap()
         // Trigger Frame, so that its Duration/ID is correctly computed
         NS_ASSERT(m_muScheduler);
         Time tbPpduDuration = HePhy::ConvertLSigLengthToHeTbPpduDuration(
-            m_muScheduler->GetUlMuInfo().trigger.GetUlLength(),
+            m_muScheduler->GetUlMuInfo(m_linkId).trigger.GetUlLength(),
             acknowledgment->tbPpduTxVector,
             m_phy->GetPhyBand());
         acknowledgment->acknowledgmentTime += m_phy->GetSifs() + tbPpduDuration;
 
         timerType = WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF;
         responseTxVector = &acknowledgment->tbPpduTxVector;
-        m_trigVector = GetTrigVector(m_muScheduler->GetUlMuInfo().trigger);
+        m_trigVector = GetTrigVector(m_muScheduler->GetUlMuInfo(m_linkId).trigger);
     }
     /*
      * BSRP Trigger Frame
@@ -511,7 +512,7 @@ HeFrameExchangeManager::SendPsduMap()
              m_psduMap.begin()->first == SU_STA_ID &&
              (*m_psduMap.begin()->second->begin())->GetHeader().IsTrigger())
     {
-        CtrlTriggerHeader& trigger = m_muScheduler->GetUlMuInfo().trigger;
+        CtrlTriggerHeader& trigger = m_muScheduler->GetUlMuInfo(m_linkId).trigger;
         NS_ASSERT(trigger.IsBsrp());
         NS_ASSERT(m_apMac);
 
@@ -536,7 +537,7 @@ HeFrameExchangeManager::SendPsduMap()
 
         timerType = WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF;
         responseTxVector = &txVector;
-        m_trigVector = GetTrigVector(m_muScheduler->GetUlMuInfo().trigger);
+        m_trigVector = GetTrigVector(m_muScheduler->GetUlMuInfo(m_linkId).trigger);
     }
     /*
      * TB PPDU solicited by a Basic Trigger Frame
