@@ -143,16 +143,13 @@ class RandomVariableStream : public Object
     bool IsAntithetic() const;
 
     /**
-     * \brief Get the next random value as a double drawn from the distribution.
-     * \return A floating point random value.
+     * \brief Get the next random value drawn from the distribution.
+     * \return A random value.
      */
     virtual double GetValue() = 0;
 
-    /**
-     * \brief Get the next random value as an integer drawn from the distribution.
-     * The base implementation returns `(uint32_t)GetValue()`
-     * \return  An integer random value.
-     */
+    /** \copydoc GetValue() */
+    // The base implementation returns `(uint32_t)GetValue()`
     virtual uint32_t GetInteger();
 
   protected:
@@ -242,34 +239,23 @@ class UniformRandomVariable : public RandomVariableStream
     double GetMax() const;
 
     /**
-     * \brief Get the next random value, as a double in the specified range
-     * \f$[min, max)\f$.
-     *
-     * \note The upper limit is excluded from the output range.
+     * \copydoc GetValue()
      *
      * \param [in] min Low end of the range (included).
      * \param [in] max High end of the range (excluded).
-     * \return A floating point random value.
      */
     double GetValue(double min, double max);
 
     /**
-     * \brief Get the next random value, as an unsigned integer in the
-     * specified range \f$[min, max]\f$.
-     *
-     * \note The upper limit is included in the output range.
-     *
-     * \param [in] min Low end of the range.
-     * \param [in] max High end of the range.
-     * \return A random unsigned integer value.
+     * \copydoc GetValue(double,double)
+     * \note The upper limit is included in the output range, unlike GetValue(double,double).
      */
     uint32_t GetInteger(uint32_t min, uint32_t max);
 
-    // Inherited from RandomVariableStream
+    // Inherited
     /**
-     * \brief Get the next random value as a double drawn from the distribution.
-     * \return A floating point random value.
-     * \note The upper limit is excluded from the output range.
+     * \copydoc RandomVariableStream::GetValue()
+     * \note The upper limit is excluded from the output range, unlike GetInteger().
      */
     double GetValue() override;
 
@@ -319,20 +305,18 @@ class ConstantRandomVariable : public RandomVariableStream
     double GetConstant() const;
 
     /**
-     * \brief Get the next random value, as a double equal to the argument.
+     * \copydoc GetValue()
      * \param [in] constant The value to return.
-     * \return The floating point argument.
      */
     double GetValue(double constant);
-    /**
-     * \brief Get the next random value, as an integer equal to the argument.
-     * \param [in] constant The value to return.
-     * \return The integer argument.
-     */
+    /** \copydoc GetValue(double) */
     uint32_t GetInteger(uint32_t constant);
 
-    // Inherited from RandomVariableStream
-    /* \note This RNG always returns the same value. */
+    // Inherited
+    /*
+     * \copydoc RandomVariableStream::GetValue()
+     * \note This RNG always returns the same value.
+     */
     double GetValue() override;
     /* \note This RNG always returns the same value. */
     using RandomVariableStream::GetInteger;
@@ -419,7 +403,7 @@ class SequentialRandomVariable : public RandomVariableStream
      */
     uint32_t GetConsecutive() const;
 
-    // Inherited from RandomVariableStream
+    // Inherited
     double GetValue() override;
     using RandomVariableStream::GetInteger;
 
@@ -547,24 +531,16 @@ class ExponentialRandomVariable : public RandomVariableStream
     double GetBound() const;
 
     /**
-     * \brief Get the next random value, as a double from
-     * the exponential distribution with the specified mean and upper bound.
+     * \copydoc GetValue()
      * \param [in] mean Mean value of the unbounded exponential distribution.
      * \param [in] bound Upper bound on values returned.
-     * \return A floating point random value.
      */
     double GetValue(double mean, double bound);
 
-    /**
-     * \brief Get the next random value, as an unsigned integer from
-     * the exponential distribution with the specified mean and upper bound.
-     * \param [in] mean Mean value of the unbounded exponential distribution.
-     * \param [in] bound Upper bound on values returned.
-     * \return A random unsigned integer value.
-     */
+    /** \copydoc GetValue(double,double) */
     uint32_t GetInteger(uint32_t mean, uint32_t bound);
 
-    // Inherited from RandomVariableStream
+    // Inherited
     double GetValue() override;
     using RandomVariableStream::GetInteger;
 
@@ -586,7 +562,10 @@ class ExponentialRandomVariable : public RandomVariableStream
  * single random numbers from various Pareto distributions.
  *
  * The probability density function of a Pareto variable is defined
- * over the range [\f$x_m\f$,\f$+\infty\f$) as: \f$ k \frac{x_m^k}{x^{k+1}}\f$
+ * over the range [\f$x_m\f$,\f$+\infty\f$) as:
+ *
+ *   \f[ k \frac{x_m^k}{x^{k+1}}\f]
+ *
  * where \f$x_m > 0\f$ is called the scale parameter and \f$ k > 0\f$
  * is called the Pareto index or shape.
  *
@@ -616,6 +595,24 @@ class ExponentialRandomVariable : public RandomVariableStream
  *
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1] and
+ *
+ *    \f[
+ *         x = \frac{scale}{u^{\frac{1}{shape}}}
+ *    \f]
+ *
+ * is a value that would be returned normally then the value returned
+ * in the antithetic case, \f$x'\f$, is calculated as
+ *
+ *    \f[
+ *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
+ *    \f]
+ *
+ * which now involves the distance \f$u\f$ is from 1 in the denominator.
  */
 class ParetoRandomVariable : public RandomVariableStream
 {
@@ -651,98 +648,18 @@ class ParetoRandomVariable : public RandomVariableStream
     double GetBound() const;
 
     /**
-     * \brief Returns a random double from a Pareto distribution with the specified scale, shape,
-     * and upper bound.
+     * \copydoc GetValue()
      * \param [in] scale Mean parameter for the Pareto distribution.
      * \param [in] shape Shape parameter for the Pareto distribution.
      * \param [in] bound Upper bound on values returned.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = \frac{scale}{u^{\frac{1}{shape}}}
-     *    \f]
-     *
-     * is a value that would be returned normally.
-     *
-     * The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
-     *    \f]
-     *
-     * which now involves the distance \f$u\f$ is from 1 in the denominator.
      */
     double GetValue(double scale, double shape, double bound);
 
-    /**
-     * \brief Returns a random unsigned integer from a Pareto distribution with the specified mean,
-     * shape, and upper bound.
-     * \param [in] scale Scale parameter for the Pareto distribution.
-     * \param [in] shape Shape parameter for the Pareto distribution.
-     * \param [in] bound Upper bound on values returned.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = \frac{scale}{u^{\frac{1}{shape}}}
-     *    \f]
-     *
-     * is a value that would be returned normally.
-     *
-     * The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
-     *    \f]
-     *
-     * which now involves the distance \f$u\f$ is from 1 in the denominator.
-     */
+    /** \copydoc GetValue(double,double,double) */
     uint32_t GetInteger(uint32_t scale, uint32_t shape, uint32_t bound);
 
-    /**
-     * \brief Returns a random double from a Pareto distribution with the current mean, shape, and
-     * upper bound.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = \frac{scale}{u^{\frac{1}{shape}}}
-     *    \f]
-     *
-     * is a value that would be returned normally, where
-     *
-     *    \f[
-     *         scale  =  mean * (shape - 1.0) / shape  .
-     *    \f]
-     *
-     * The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
-     *    \f]
-     *
-     * which now involves the distance \f$u\f$ is from 1 in the denominator.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the three-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -759,20 +676,23 @@ class ParetoRandomVariable : public RandomVariableStream
 
 /**
  * \ingroup randomvariable
- * \brief The Weibull distribution Random Number Generator (RNG) that allows stream numbers to be
- * set deterministically.
+ * \brief The Weibull distribution Random Number Generator (RNG)
+ * which allows stream numbers to be set deterministically.
  *
  * This class supports the creation of objects that return random numbers
  * from a fixed Weibull distribution.  It also supports the generation of
  * single random numbers from various Weibull distributions.
  *
- * The probability density function is defined over the interval [0, \f$+\infty\f$]
- * as: \f$
- * \frac{k}{\lambda}\left(\frac{x}{\lambda}\right)^{k-1}e^{-\left(\frac{x}{\lambda}\right)^k} \f$
- * where \f$ k > 0\f$ is the shape parameter and \f$ \lambda > 0\f$  is the scale parameter. The
- * specified mean is related to the scale and shape parameters by the following relation:
- * \f$ mean = \lambda\Gamma\left(1+\frac{1}{k}\right) \f$ where \f$ \Gamma \f$ is the Gamma
- * function.
+ * The probability density function is defined over the interval
+ * [0, \f$+\infty\f$] as:
+ *
+ *    \f[
+ *          \frac{k}{\lambda}\left(\frac{x}{\lambda}\right)^{k-1}e^{-\left(\frac{x}{\lambda}\right)^k}
+ *    \f]
+ *
+ * where \f$ k > 0\f$ is the shape parameter and \f$ \lambda > 0\f$ is the scale parameter. The
+ * specified mean is related to the scale and shape parameters by the following relation: \f$ mean =
+ * \lambda\Gamma\left(1+\frac{1}{k}\right) \f$ where \f$ \Gamma \f$ is the Gamma function.
  *
  * Since Weibull distributions can theoretically return unbounded values,
  * it is sometimes useful to specify a fixed upper limit.  Note however
@@ -812,6 +732,25 @@ class ParetoRandomVariable : public RandomVariableStream
  *   //
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1] and
+ *
+ *    \f[
+ *         x = scale * {(-\log(u))}^{\frac{1}{shape}}
+ *    \f]
+ *
+ * is a value that would be returned normally, then \f$(1 - u\f$) is
+ * the distance that \f$u\f$ would be from \f$1\f$.  The value
+ * returned in the antithetic case, \f$x'\f$, is calculated as
+ *
+ *    \f[
+ *         x' = scale * {(-\log(1 - u))}^{\frac{1}{shape}} ,
+ *    \f]
+ *
+ * which now involves the log of the distance \f$u\f$ is from 1.
  */
 class WeibullRandomVariable : public RandomVariableStream
 {
@@ -847,91 +786,18 @@ class WeibullRandomVariable : public RandomVariableStream
     double GetBound() const;
 
     /**
-     * \brief Returns a random double from a Weibull distribution with the specified scale, shape,
-     * and upper bound.
+     * \copydoc GetValue()
      * \param [in] scale Scale parameter for the Weibull distribution.
      * \param [in] shape Shape parameter for the Weibull distribution.
      * \param [in] bound Upper bound on values returned.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = scale * {(-\log(u))}^{\frac{1}{shape}}
-     *    \f]
-     *
-     * is a value that would be returned normally, then \f$(1 - u\f$) is
-     * the distance that \f$u\f$ would be from \f$1\f$.  The value
-     * returned in the antithetic case, \f$x'\f$, is calculated as
-     *
-     *    \f[
-     *         x' = scale * {(-\log(1 - u))}^{\frac{1}{shape}} ,
-     *    \f]
-     *
-     * which now involves the log of the distance \f$u\f$ is from 1.
      */
     double GetValue(double scale, double shape, double bound);
 
-    /**
-     * \brief Returns a random unsigned integer from a Weibull distribution with the specified
-     * scale, shape, and upper bound.
-     * \param [in] scale Scale parameter for the Weibull distribution.
-     * \param [in] shape Shape parameter for the Weibull distribution.
-     * \param [in] bound Upper bound on values returned.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = scale * {(-\log(u))}^{\frac{1}{shape}}
-     *    \f]
-     *
-     * is a value that would be returned normally, then \f$(1 - u\f$) is
-     * the distance that \f$u\f$ would be from \f$1\f$.  The value
-     * returned in the antithetic case, \f$x'\f$, is calculated as
-     *
-     *    \f[
-     *         x' = scale * {(-\log(1 - u))}^{\frac{1}{shape}} ,
-     *    \f]
-     *
-     * which now involves the log of the distance \f$u\f$ is from 1.
-     */
+    /** \copydoc GetValue(double,double,double) */
     uint32_t GetInteger(uint32_t scale, uint32_t shape, uint32_t bound);
 
-    /**
-     * \brief Returns a random double from a Weibull distribution with the current scale, shape, and
-     * upper bound.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = scale * {(-\log(u))}^{\frac{1}{shape}}
-     *    \f]
-     *
-     * is a value that would be returned normally, then \f$(1 - u\f$) is
-     * the distance that \f$u\f$ would be from \f$1\f$.  The value
-     * returned in the antithetic case, \f$x'\f$, is calculated as
-     *
-     *    \f[
-     *         x' = scale * {(-\log(1 - u))}^{\frac{1}{shape}} ,
-     *    \f]
-     *
-     * which now involves the log of the distance \f$u\f$ is from 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the three-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -956,7 +822,10 @@ class WeibullRandomVariable : public RandomVariableStream
  * single random numbers from various normal distributions.
  *
  * The density probability function is defined over the interval (\f$-\infty\f$,\f$+\infty\f$)
- * as: \f$ \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{s\sigma^2}}\f$
+ * as:
+ *
+ *    \f[ \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{s\sigma^2}}\f]
+ *
  * where \f$ mean = \mu \f$ and \f$ variance = \sigma^2 \f$
  *
  * Since normal distributions can theoretically return unbounded
@@ -978,6 +847,38 @@ class WeibullRandomVariable : public RandomVariableStream
  *   // normally distributed random variable is equal to mean.
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1]
+ * then the values that would be returned normally, \f$x1\f$ and \f$x2\f$, are
+ * calculated as follows:
+ *
+ *    \f{eqnarray*}{
+ *         v1 & = & 2 * u1 - 1     \\
+ *         v2 & = & 2 * u2 - 1     \\
+ *         w & = & v1 * v1 + v2 * v2     \\
+ *         y & = & \sqrt{\frac{-2 * \log(w)}{w}}     \\
+ *         x1 & = & mean + v1 * y * \sqrt{variance}     \\
+ *         x2 & = & mean + v2 * y * \sqrt{variance}  .
+ *    \f}
+ *
+ * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
+ * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
+ * The antithetic values returned, \f$x1'\f$ and \f$x2'\f$, are
+ * calculated as follows:
+ *
+ *    \f{eqnarray*}{
+ *         v1' & = & 2 * (1 - u1) - 1     \\
+ *         v2' & = & 2 * (1 - u2) - 1     \\
+ *         w' & = & v1' * v1' + v2' * v2'     \\
+ *         y' & = & \sqrt{\frac{-2 * \log(w')}{w'}}     \\
+ *         x1' & = & mean + v1' * y' * \sqrt{variance}     \\
+ *         x2' & = & mean + v2' * y' * \sqrt{variance}  ,
+ *    \f}
+ *
+ * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
  */
 class NormalRandomVariable : public RandomVariableStream
 {
@@ -1016,129 +917,20 @@ class NormalRandomVariable : public RandomVariableStream
     double GetBound() const;
 
     /**
-     * \brief Returns a random double from a normal distribution with the specified mean, variance,
-     * and bound.
+     * \copydoc GetValue()
      * \param [in] mean Mean value for the normal distribution.
      * \param [in] variance Variance value for the normal distribution.
      * \param [in] bound Bound on values returned.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the values that would be returned normally, \f$x1\f$ and \f$x2\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & 2 * u1 - 1     \\
-     *         v2 & = & 2 * u2 - 1     \\
-     *         w & = & v1 * v1 + v2 * v2     \\
-     *         y & = & \sqrt{\frac{-2 * \log(w)}{w}}     \\
-     *         x1 & = & mean + v1 * y * \sqrt{variance}     \\
-     *         x2 & = & mean + v2 * y * \sqrt{variance}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic values returned, \f$x1'\f$ and \f$x2'\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & 2 * (1 - u1) - 1     \\
-     *         v2' & = & 2 * (1 - u2) - 1     \\
-     *         w' & = & v1' * v1' + v2' * v2'     \\
-     *         y' & = & \sqrt{\frac{-2 * \log(w')}{w'}}     \\
-     *         x1' & = & mean + v1' * y' * \sqrt{variance}     \\
-     *         x2' & = & mean + v2' * y' * \sqrt{variance}  ,
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
      */
     double GetValue(double mean,
                     double variance,
                     double bound = NormalRandomVariable::INFINITE_VALUE);
 
-    /**
-     * \brief Returns a random unsigned integer from a normal distribution with the specified mean,
-     * variance, and bound.
-     * \param [in] mean Mean value for the normal distribution.
-     * \param [in] variance Variance value for the normal distribution.
-     * \param [in] bound Bound on values returned.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the values that would be returned normally, \f$x1\f$ and \f$x2\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & 2 * u1 - 1     \\
-     *         v2 & = & 2 * u2 - 1     \\
-     *         w & = & v1 * v1 + v2 * v2     \\
-     *         y & = & \sqrt{\frac{-2 * \log(w)}{w}}     \\
-     *         x1 & = & mean + v1 * y * \sqrt{variance}     \\
-     *         x2 & = & mean + v2 * y * \sqrt{variance}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic values returned, \f$x1'\f$ and \f$x2'\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & 2 * (1 - u1) - 1     \\
-     *         v2' & = & 2 * (1 - u2) - 1     \\
-     *         w' & = & v1' * v1' + v2' * v2'     \\
-     *         y' & = & \sqrt{\frac{-2 * \log(w')}{w'}}     \\
-     *         x1' & = & mean + v1' * y' * \sqrt{variance}     \\
-     *         x2' & = & mean + v2' * y' * \sqrt{variance}  ,
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
-     */
+    /** \copydoc GetValue(double,double,double) */
     uint32_t GetInteger(uint32_t mean, uint32_t variance, uint32_t bound);
 
-    /**
-     * \brief Returns a random double from a normal distribution with the current mean, variance,
-     * and bound.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the values that would be returned normally, \f$x1\f$ and \f$x2\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & 2 * u1 - 1     \\
-     *         v2 & = & 2 * u2 - 1     \\
-     *         w & = & v1 * v1 + v2 * v2     \\
-     *         y & = & \sqrt{\frac{-2 * \log(w)}{w}}     \\
-     *         x1 & = & mean + v1 * y * \sqrt{variance}     \\
-     *         x2 & = & mean + v2 * y * \sqrt{variance}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic values returned, \f$x1'\f$ and \f$x2'\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & 2 * (1 - u1) - 1     \\
-     *         v2' & = & 2 * (1 - u2) - 1     \\
-     *         w' & = & v1' * v1' + v2' * v2'     \\
-     *         y' & = & \sqrt{\frac{-2 * \log(w')}{w'}}     \\
-     *         x1' & = & mean + v1' * y' * \sqrt{variance}     \\
-     *         x2' & = & mean + v2' * y' * \sqrt{variance}  ,
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the three-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -1176,14 +968,27 @@ class NormalRandomVariable : public RandomVariableStream
  * follow a normal distribution.
  *
  * The probability density function is defined over the interval [0,\f$+\infty\f$) as:
- * \f$ \frac{1}{x\sigma\sqrt{2\pi}} e^{-\frac{(ln(x) - \mu)^2}{2\sigma^2}}\f$
- * where \f$ mean = e^{\mu+\frac{\sigma^2}{2}} \f$ and
- * \f$ variance = (e^{\sigma^2}-1)e^{2\mu+\sigma^2}\f$
+ *
+ *    \f[
+ *         \frac{1}{x\sigma\sqrt{2\pi}} e^{-\frac{(ln(x) - \mu)^2}{2\sigma^2}}
+ *    \f]
+ *
+ * where
+ *
+ *    \f[ mean = e^{\mu+\frac{\sigma^2}{2}} \f]
+ *
+ * and
+ *
+ *    \f[ variance = (e^{\sigma^2}-1)e^{2\mu+\sigma^2}\f]
  *
  * The \f$ \mu \f$ and \f$ \sigma \f$ parameters can be calculated instead if
  * the mean and variance are known with the following equations:
- * \f$ \mu = ln(mean) - \frac{1}{2}ln\left(1+\frac{variance}{mean^2}\right)\f$, and,
- * \f$ \sigma = \sqrt{ln\left(1+\frac{variance}{mean^2}\right)}\f$
+ *
+ * \f[ \mu = ln(mean) - \frac{1}{2}ln\left(1+\frac{variance}{mean^2}\right)\f]
+ *
+ * and
+ *
+ * \f[ \sigma = \sqrt{ln\left(1+\frac{variance}{mean^2}\right)}\f]
  *
  * Here is an example of how to use this class:
  * \code
@@ -1203,6 +1008,36 @@ class NormalRandomVariable : public RandomVariableStream
  *   //
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1]
+ * then the value that would be returned normally, \f$x\f$, is calculated as
+ * follows:
+ *
+ *    \f{eqnarray*}{
+ *         v1 & = & -1 + 2 * u1       \\
+ *         v2 & = & -1 + 2 * u2       \\
+ *         r2 & = & v1 * v1 + v2 * v2       \\
+ *         normal & = & v1 * \sqrt{\frac{-2.0 * \log{r2}}{r2}}       \\
+ *         x & = &  \exp{sigma * normal + mu}  .
+ *    \f}
+ *
+ * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
+ * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
+ * The antithetic value returned, \f$x'\f$, is calculated as
+ * follows:
+ *
+ *    \f{eqnarray*}{
+ *         v1' & = & -1 + 2 * (1 - u1)       \\
+ *         v2' & = & -1 + 2 * (1 - u2)       \\
+ *         r2' & = & v1' * v1' + v2' * v2'       \\
+ *         normal' & = & v1' * \sqrt{\frac{-2.0 * \log{r2'}}{r2'}}       \\
+ *         x' & = &  \exp{sigma * normal' + mu}  .
+ *    \f}
+ *
+ * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
  */
 class LogNormalRandomVariable : public RandomVariableStream
 {
@@ -1232,118 +1067,17 @@ class LogNormalRandomVariable : public RandomVariableStream
     double GetSigma() const;
 
     /**
-     * \brief Returns a random double from a log-normal distribution with the specified mu and
-     * sigma.
+     * \copydoc GetValue()
      * \param [in] mu Mu value for the log-normal distribution.
      * \param [in] sigma Sigma value for the log-normal distribution.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the value that would be returned normally, \f$x\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & -1 + 2 * u1       \\
-     *         v2 & = & -1 + 2 * u2       \\
-     *         r2 & = & v1 * v1 + v2 * v2       \\
-     *         normal & = & v1 * \sqrt{\frac{-2.0 * \log{r2}}{r2}}       \\
-     *         x & = &  \exp{sigma * normal + mu}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic value returned, \f$x'\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & -1 + 2 * (1 - u1)       \\
-     *         v2' & = & -1 + 2 * (1 - u2)       \\
-     *         r2' & = & v1' * v1' + v2' * v2'       \\
-     *         normal' & = & v1' * \sqrt{\frac{-2.0 * \log{r2'}}{r2'}}       \\
-     *         x' & = &  \exp{sigma * normal' + mu}  .
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
      */
     double GetValue(double mu, double sigma);
 
-    /**
-     * \brief Returns a random unsigned integer from a log-normal distribution with the specified mu
-     * and sigma.
-     * \param [in] mu Mu value for the log-normal distribution.
-     * \param [in] sigma Sigma value for the log-normal distribution.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the value that would be returned normally, \f$x\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & -1 + 2 * u1       \\
-     *         v2 & = & -1 + 2 * u2       \\
-     *         r2 & = & v1 * v1 + v2 * v2       \\
-     *         normal & = & v1 * \sqrt{\frac{-2.0 * \log{r2}}{r2}}       \\
-     *         x & = &  \exp{sigma * normal + mu}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic value returned, \f$x'\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & -1 + 2 * (1 - u1)       \\
-     *         v2' & = & -1 + 2 * (1 - u2)       \\
-     *         r2' & = & v1' * v1' + v2' * v2'       \\
-     *         normal' & = & v1' * \sqrt{\frac{-2.0 * \log{r2'}}{r2'}}       \\
-     *         x' & = &  \exp{sigma * normal' + mu}  .
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
-     */
+    /** \copydoc GetValue(double,double) */
     uint32_t GetInteger(uint32_t mu, uint32_t sigma);
 
-    /**
-     * \brief Returns a random double from a log-normal distribution with the current mu and sigma.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the value that would be returned normally, \f$x\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & -1 + 2 * u1       \\
-     *         v2 & = & -1 + 2 * u2       \\
-     *         r2 & = & v1 * v1 + v2 * v2       \\
-     *         normal & = & v1 * \sqrt{\frac{-2.0 * \log{r2}}{r2}}       \\
-     *         x & = &  \exp{sigma * normal + mu}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic value returned, \f$x'\f$, is calculated as
-     * follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & -1 + 2 * (1 - u1)       \\
-     *         v2' & = & -1 + 2 * (1 - u2)       \\
-     *         r2' & = & v1' * v1' + v2' * v2'       \\
-     *         normal' & = & v1' * \sqrt{\frac{-2.0 * \log{r2'}}{r2'}}       \\
-     *         x' & = &  \exp{sigma * normal' + mu}  .
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the two-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -1365,9 +1099,12 @@ class LogNormalRandomVariable : public RandomVariableStream
  * single random numbers from various gamma distributions.
  *
  * The probability density function is defined over the interval [0,\f$+\infty\f$) as:
- * \f$ x^{\alpha-1} \frac{e^{-\frac{x}{\beta}}}{\beta^\alpha \Gamma(\alpha)}\f$
- * where \f$ mean = \alpha\beta \f$ and
- * \f$ variance = \alpha \beta^2\f$
+ *
+ *    \f[
+ *          x^{\alpha-1} \frac{e^{-\frac{x}{\beta}}}{\beta^\alpha \Gamma(\alpha)}
+ *    \f]
+ *
+ * where \f$ mean = \alpha\beta \f$ and \f$ variance = \alpha \beta^2\f$
  *
  * Here is an example of how to use this class:
  * \code
@@ -1385,6 +1122,38 @@ class LogNormalRandomVariable : public RandomVariableStream
  *   //
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u1\f$ and \f$u2\f$ are uniform variables
+ * over [0,1], then the values that would be returned normally,
+ *  \f$x1\f$ and \f$x2\f$, are calculated as follows:
+ *
+ *    \f{eqnarray*}{
+ *         v1 & = & 2 * u1 - 1     \\
+ *         v2 & = & 2 * u2 - 1     \\
+ *         w & = & v1 * v1 + v2 * v2     \\
+ *         y & = & \sqrt{\frac{-2 * \log(w)}{w}}     \\
+ *         x1 & = & mean + v1 * y * \sqrt{variance}     \\
+ *         x2 & = & mean + v2 * y * \sqrt{variance}  .
+ *    \f}
+ *
+ * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
+ * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
+ * The antithetic values returned, \f$x1'\f$ and \f$x2'\f$, are
+ * calculated as follows:
+ *
+ *    \f{eqnarray*}{
+ *         v1' & = & 2 * (1 - u1) - 1     \\
+ *         v2' & = & 2 * (1 - u2) - 1     \\
+ *         w' & = & v1' * v1' + v2' * v2'     \\
+ *         y' & = & \sqrt{\frac{-2 * \log(w')}{w'}}     \\
+ *         x1' & = & mean + v1' * y' * \sqrt{variance}     \\
+ *         x2' & = & mean + v2' * y' * \sqrt{variance}  ,
+ *    \f}
+ *
+ * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
  */
 class GammaRandomVariable : public RandomVariableStream
 {
@@ -1414,54 +1183,17 @@ class GammaRandomVariable : public RandomVariableStream
     double GetBeta() const;
 
     /**
-     * \brief Returns a random double from a gamma distribution with the specified alpha and beta.
+     * \copydoc GetValue()
      * \param [in] alpha Alpha value for the gamma distribution.
      * \param [in] beta Beta value for the gamma distribution.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
      */
     double GetValue(double alpha, double beta);
 
-    /**
-     * \brief Returns a random unsigned integer from a gamma distribution with the specified alpha
-     * and beta.
-     * \param [in] alpha Alpha value for the gamma distribution.
-     * \param [in] beta Beta value for the gamma distribution.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
+    /** \copydoc GetValue(double,double) */
     uint32_t GetInteger(uint32_t alpha, uint32_t beta);
 
-    /**
-     * \brief Returns a random double from a gamma distribution with the current alpha and beta.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the two-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -1472,36 +1204,6 @@ class GammaRandomVariable : public RandomVariableStream
      * \param [in] variance Variance value for the normal distribution.
      * \param [in] bound Bound on values returned.
      * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u1\f$ and \f$u2\f$ are uniform variables
-     * over [0,1], then the values that would be returned normally, \f$x1\f$ and \f$x2\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1 & = & 2 * u1 - 1     \\
-     *         v2 & = & 2 * u2 - 1     \\
-     *         w & = & v1 * v1 + v2 * v2     \\
-     *         y & = & \sqrt{\frac{-2 * \log(w)}{w}}     \\
-     *         x1 & = & mean + v1 * y * \sqrt{variance}     \\
-     *         x2 & = & mean + v2 * y * \sqrt{variance}  .
-     *    \f}
-     *
-     * For the antithetic case, \f$(1 - u1\f$) and \f$(1 - u2\f$) are
-     * the distances that \f$u1\f$ and \f$u2\f$ would be from \f$1\f$.
-     * The antithetic values returned, \f$x1'\f$ and \f$x2'\f$, are
-     * calculated as follows:
-     *
-     *    \f{eqnarray*}{
-     *         v1' & = & 2 * (1 - u1) - 1     \\
-     *         v2' & = & 2 * (1 - u2) - 1     \\
-     *         w' & = & v1' * v1' + v2' * v2'     \\
-     *         y' & = & \sqrt{\frac{-2 * \log(w')}{w'}}     \\
-     *         x1' & = & mean + v1' * y' * \sqrt{variance}     \\
-     *         x2' & = & mean + v2' * y' * \sqrt{variance}  ,
-     *    \f}
-     *
-     * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
      */
     double GetNormalValue(double mean, double variance, double bound);
 
@@ -1530,14 +1232,16 @@ class GammaRandomVariable : public RandomVariableStream
  * from a fixed Erlang distribution.  It also supports the generation of
  * single random numbers from various Erlang distributions.
  *
- * The Erlang distribution is a special case of the Gamma distribution where k
- * (= alpha) is a non-negative integer. Erlang distributed variables can be
+ * The Erlang distribution is a special case of the Gamma distribution where \f$k\f$
+ * (= \f$alpha\f$) is a non-negative integer. Erlang distributed variables can be
  * generated using a much faster algorithm than gamma variables.
  *
  * The probability density function is defined over the interval [0,\f$+\infty\f$) as:
- * \f$ \frac{x^{k-1} e^{-\frac{x}{\lambda}}}{\lambda^k (k-1)!}\f$
- * where \f$ mean = k \lambda \f$ and
- * \f$ variance = k \lambda^2\f$
+ *    \f[
+ *         \frac{x^{k-1} e^{-\frac{x}{\lambda}}}{\lambda^k (k-1)!}
+ *    \f[
+ *
+ * where \f$ mean = k \lambda \f$ and \f$ variance = k \lambda^2\f$
  *
  * Here is an example of how to use this class:
  * \code
@@ -1555,6 +1259,25 @@ class GammaRandomVariable : public RandomVariableStream
  *   //
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1] and
+ *
+ *    \f[
+ *         x = - mean * \log(u)
+ *    \f]
+ *
+ * is a value that would be returned normally, then \f$(1 - u\f$) is
+ * the distance that \f$u\f$ would be from \f$1\f$.  The value
+ * returned in the antithetic case, \f$x'\f$, is calculated as
+ *
+ *    \f[
+ *         x' = - mean * \log(1 - u),
+ *    \f]
+ *
+ * which now involves the log of the distance \f$u\f$ is from the 1.
  */
 class ErlangRandomVariable : public RandomVariableStream
 {
@@ -1584,55 +1307,17 @@ class ErlangRandomVariable : public RandomVariableStream
     double GetLambda() const;
 
     /**
-     * \brief Returns a random double from an Erlang distribution with the specified k and lambda.
+     * \copydoc GetValue()
      * \param [in] k K value for the Erlang distribution.
      * \param [in] lambda Lambda value for the Erlang distribution.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
      */
     double GetValue(uint32_t k, double lambda);
 
-    /**
-     * \brief Returns a random unsigned integer from an Erlang distribution with the specified k and
-     * lambda.
-     * \param [in] k K value for the Erlang distribution.
-     * \param [in] lambda Lambda value for the Erlang distribution.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
+    /** \copydoc GetValue(uint32_t,double) */
     uint32_t GetInteger(uint32_t k, uint32_t lambda);
 
-    /**
-     * \brief Returns a random double from an Erlang distribution with the current k and lambda.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the two-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-    using RandomVariableStream::GetInteger;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -1642,24 +1327,6 @@ class ErlangRandomVariable : public RandomVariableStream
      * \param [in] mean Mean value of the random variables.
      * \param [in] bound Upper bound on values returned.
      * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *         x = - mean * \log(u)
-     *    \f]
-     *
-     * is a value that would be returned normally, then \f$(1 - u\f$) is
-     * the distance that \f$u\f$ would be from \f$1\f$.  The value
-     * returned in the antithetic case, \f$x'\f$, is calculated as
-     *
-     *    \f[
-     *         x' = - mean * \log(1 - u),
-     *    \f]
-     *
-     * which now involves the log of the distance \f$u\f$ is from the 1.
      */
     double GetExponentialValue(double mean, double bound);
 
@@ -1698,6 +1365,37 @@ class ErlangRandomVariable : public RandomVariableStream
  *   // triangularly distributed random variable is equal to mean.
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1] and
+ *
+ *    \f[
+ *        x = \left\{ \begin{array}{rl}
+ *           min + \sqrt{u * (max - min) * (mode - min)} &\mbox{ if $u <= (mode - min)/(max -
+ * min)$} \\ max - \sqrt{ (1 - u) * (max - min) * (max - mode) } &\mbox{ otherwise} \end{array}
+ * \right. \f]
+ *
+ * is a value that would be returned normally, where the mode or
+ * peak of the triangle is calculated as
+ *
+ *    \f[
+ *         mode =  3.0 * mean - min - max  .
+ *    \f]
+ *
+ * Then, \f$(1 - u\f$) is the distance that \f$u\f$ would be from
+ * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
+ * calculated as
+ *
+ *    \f[
+ *        x' = \left\{ \begin{array}{rl}
+ *           min + \sqrt{(1 - u) * (max - min) * (mode - min)} &\mbox{ if $(1 - u) <= (mode -
+ * min)/(max - min)$} \\ max - \sqrt{ u * (max - min) * (max - mode) } &\mbox{ otherwise}
+ *                 \end{array} \right.
+ *     \f]
+ *
+ * which now involves the distance \f$u\f$ is from the 1.
  */
 class TriangularRandomVariable : public RandomVariableStream
 {
@@ -1733,127 +1431,18 @@ class TriangularRandomVariable : public RandomVariableStream
     double GetMax() const;
 
     /**
-     * \brief Returns a random double from a triangular distribution with the specified mean, min,
-     * and max.
+     * \copydoc GetValue()
      * \param [in] mean Mean value for the triangular distribution.
      * \param [in] min Low end of the range.
      * \param [in] max High end of the range.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *        x = \left\{ \begin{array}{rl}
-     *           min + \sqrt{u * (max - min) * (mode - min)} &\mbox{ if $u <= (mode - min)/(max -
-     * min)$} \\ max - \sqrt{ (1 - u) * (max - min) * (max - mode) } &\mbox{ otherwise} \end{array}
-     * \right. \f]
-     *
-     * is a value that would be returned normally, where the mode or
-     * peak of the triangle is calculated as
-     *
-     *    \f[
-     *         mode =  3.0 * mean - min - max  .
-     *    \f]
-     *
-     * Then, \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-     * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *        x' = \left\{ \begin{array}{rl}
-     *           min + \sqrt{(1 - u) * (max - min) * (mode - min)} &\mbox{ if $(1 - u) <= (mode -
-     * min)/(max - min)$} \\ max - \sqrt{ u * (max - min) * (max - mode) } &\mbox{ otherwise}
-     *                 \end{array} \right.
-     *     \f]
-     *
-     * which now involves the distance \f$u\f$ is from the 1.
      */
     double GetValue(double mean, double min, double max);
 
-    /**
-     * \brief Returns a random unsigned integer from a triangular distribution with the specified
-     * mean, min, and max.
-     * \param [in] mean Mean value for the triangular distribution.
-     * \param [in] min Low end of the range.
-     * \param [in] max High end of the range.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *        x = \left\{ \begin{array}{rl}
-     *           min + \sqrt{u * (max - min) * (mode - min)} &\mbox{ if $u <= (mode - min)/(max -
-     * min)$} \\ max - \sqrt{ (1 - u) * (max - min) * (max - mode) } &\mbox{ otherwise} \end{array}
-     * \right. \f]
-     *
-     * is a value that would be returned normally, where the mode or
-     * peak of the triangle is calculated as
-     *
-     *    \f[
-     *         mode =  3.0 * mean - min - max  .
-     *    \f]
-     *
-     * Then, \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-     * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *        x' = \left\{ \begin{array}{rl}
-     *           min + \sqrt{(1 - u) * (max - min) * (mode - min)} &\mbox{ if $(1 - u) <= (mode -
-     * min)/(max - min)$} \\ max - \sqrt{ u * (max - min) * (max - mode) } &\mbox{ otherwise}
-     *                 \end{array} \right.
-     *     \f]
-     *
-     * which now involves the distance \f$u\f$ is from the 1.
-     */
+    /** \copydoc GetValue(double,double,double) */
     uint32_t GetInteger(uint32_t mean, uint32_t min, uint32_t max);
 
-    /**
-     * \brief Returns a random double from a triangular distribution with the current mean, min, and
-     * max.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if
-     * m_isAntithetic is equal to true.  If \f$u\f$ is a uniform variable
-     * over [0,1] and
-     *
-     *    \f[
-     *        x = \left\{ \begin{array}{rl}
-     *           min + \sqrt{u * (max - min) * (mode - min)} &\mbox{ if $u <= (mode - min)/(max -
-     * min)$} \\ max - \sqrt{ (1 - u) * (max - min) * (max - mode) } &\mbox{ otherwise} \end{array}
-     * \right. \f]
-     *
-     * is a value that would be returned normally, where the mode or
-     * peak of the triangle is calculated as
-     *
-     *    \f[
-     *         mode =  3.0 * mean - min - max  .
-     *    \f]
-     *
-     * Then, \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-     * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
-     * calculated as
-     *
-     *    \f[
-     *        x' = \left\{ \begin{array}{rl}
-     *           min + \sqrt{(1 - u) * (max - min) * (mode - min)} &\mbox{ if $(1 - u) <= (mode -
-     * min)/(max - min)$} \\ max - \sqrt{ u * (max - min) * (max - mode) } &\mbox{ otherwise}
-     *                 \end{array} \right.
-     *     \f]
-     *
-     * which now involves the distance \f$u\f$ is from the 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the three-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -1925,6 +1514,15 @@ class TriangularRandomVariable : public RandomVariableStream
  *   //
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1]
+ * and \f$x\f$ is a value that would be returned normally, then
+ * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
+ * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
+ * which is the distance \f$u\f$ is from the 1.
  */
 class ZipfRandomVariable : public RandomVariableStream
 {
@@ -1954,54 +1552,18 @@ class ZipfRandomVariable : public RandomVariableStream
     double GetAlpha() const;
 
     /**
-     * \brief Returns a random double from a Zipf distribution with the specified n and alpha.
+     * \copydoc GetValue()
      * \param [in] n N value for the Zipf distribution.
      * \param [in] alpha Alpha value for the Zipf distribution.
      * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
      */
     double GetValue(uint32_t n, double alpha);
 
-    /**
-     * \brief Returns a random unsigned integer from a Zipf distribution with the specified n and
-     * alpha.
-     * \param [in] n N value for the Zipf distribution.
-     * \param [in] alpha Alpha value for the Zipf distribution.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
+    /** \copydoc GetValue(uint32_t,double) */
     uint32_t GetInteger(uint32_t n, uint32_t alpha);
 
-    /**
-     * \brief Returns a random double from a Zipf distribution with the current n and alpha.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the two-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -2055,6 +1617,15 @@ class ZipfRandomVariable : public RandomVariableStream
  *   //
  *   double value = x->GetValue ();
  * \endcode
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1]
+ * and \f$x\f$ is a value that would be returned normally, then
+ * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
+ * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
+ * which is the distance \f$u\f$ is from the 1.
  */
 class ZetaRandomVariable : public RandomVariableStream
 {
@@ -2078,51 +1649,16 @@ class ZetaRandomVariable : public RandomVariableStream
     double GetAlpha() const;
 
     /**
-     * \brief Returns a random double from a zeta distribution with the specified alpha.
+     * \copydoc GetValue()
      * \param [in] alpha Alpha value for the zeta distribution.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
      */
     double GetValue(double alpha);
 
-    /**
-     * \brief Returns a random unsigned integer from a zeta distribution with the specified alpha.
-     * \param [in] alpha Alpha value for the zeta distribution.
-     * \return A random unsigned integer value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     */
+    /** \copydoc GetValue(double) */
     uint32_t GetInteger(uint32_t alpha);
 
-    /**
-     * \brief Returns a random double from a zeta distribution with the current alpha.
-     * \return A floating point random value.
-     *
-     * Note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
-     *
-     * Note that we have to re-implement this method here because the method is
-     * overloaded above for the two-argument variant and the c++ name resolution
-     * rules don't work well with overloads split between parent and child
-     * classes.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -2190,12 +1726,8 @@ class DeterministicRandomVariable : public RandomVariableStream
      */
     void SetValueArray(double* values, std::size_t length);
 
-    /**
-     * \brief Returns the next value in the sequence.
-     * \return The floating point next value in the sequence.
-     */
+    // Inherited
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
   private:
@@ -2256,7 +1788,7 @@ class DeterministicRandomVariable : public RandomVariableStream
  * simply return the extremal CDF value, as in sampling.
  *
  * Here is an example of how to use this class:
- *
+ * \code
  *    // Create the RNG with a non-uniform distribution between 0 and 10.
  *    // in sampling mode.
  *    Ptr<EmpiricalRandomVariable> x = CreateObject<EmpiricalRandomVariable> ();
@@ -2266,6 +1798,7 @@ class DeterministicRandomVariable : public RandomVariableStream
  *    x->CDF (10.0,  1.0);
  *
  *    double value = x->GetValue ();
+ * \endcode
  *
  * The expected values and probabilities returned by GetValue are
  *
@@ -2285,6 +1818,15 @@ class DeterministicRandomVariable : public RandomVariableStream
  * This will return continuous values on the range [0,1).
  *
  * See empirical-random-variable-example.cc for an example.
+ *
+ * \par Antithetic Values.
+ *
+ * Antithetic values are being generated if `m_isAntithetic` is equal to \c true.
+ * If \f$u\f$ is a uniform variable over [0,1]
+ * and \f$x\f$ is a value that would be returned normally, then
+ * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
+ * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
+ * which is the distance \f$u\f$ is from the 1.
  */
 class EmpiricalRandomVariable : public RandomVariableStream
 {
@@ -2307,25 +1849,18 @@ class EmpiricalRandomVariable : public RandomVariableStream
      *
      * \param [in] v The function value for this point
      * \param [in] c Probability that the function is less than or equal to \p v
+     *               In other words this is cumulative distribution function
+     *               at \p v.
      */
     void CDF(double v, double c); // Value, prob <= Value
 
+    // Inherited
     /**
-     * \brief Returns the next value in the empirical distribution.
-     * \return The floating point next value in the empirical distribution.
-     *
-     * Note that this does not interpolate the CDF, but treats it as a
+     * \copydoc RandomVariableStream::GetValue()
+     * \note This does not interpolate the CDF, but treats it as a
      * stepwise continuous function.
-     *
-     * Also note that antithetic values are being generated if m_isAntithetic
-     * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
-     * and \f$x\f$ is a value that would be returned normally, then
-     * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
-     * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
-     * which is the distance \f$u\f$ is from the 1.
      */
     double GetValue() override;
-
     using RandomVariableStream::GetInteger;
 
     /**
