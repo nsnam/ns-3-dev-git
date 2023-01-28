@@ -82,13 +82,16 @@ RunSingleSample(std::string mode, Ptr<EmpiricalRandomVariable> erv)
  * \param value The value to print.
  * \param count The number of times that value has been sampled.
  * \param n The total number of random values sampled.
+ * \param sum The sum of the counts seen up to \p value, used to show
+ *            the CDF for \p value.
  */
 void
-PrintStatsLine(const double value, const long count, const long n)
+PrintStatsLine(const double value, const long count, const long n, const long sum)
 {
     std::cout << std::fixed << std::setprecision(3) << std::setw(10) << std::right << value
               << std::setw(10) << std::right << count << std::setw(10) << std::right
-              << count / static_cast<double>(n) * 100.0 << std::endl;
+              << count / static_cast<double>(n) * 100.0 << std::setw(10) << std::right
+              << sum / static_cast<double>(n) * 100.0 << std::endl;
 }
 
 /**
@@ -136,21 +139,21 @@ RunBothModes(std::string mode, Ptr<EmpiricalRandomVariable> erv, long n)
     long sum = 0;
     double weighted = 0;
     std::cout << std::endl;
-    std::cout << "     Value    Counts         %" << std::endl;
-    std::cout << "----------  --------  --------" << std::endl;
+    std::cout << "     Value    Counts         %     % CDF" << std::endl;
+    std::cout << "----------  --------  --------  --------" << std::endl;
     for (auto c : counts)
     {
         long count = c.second;
         double value = c.first;
         sum += count;
         weighted += value * count;
-        PrintStatsLine(value, count, n);
+        PrintStatsLine(value, count, n, sum);
     }
-    PrintSummary(sum, n, weighted, 8.75);
+    PrintSummary(sum, n, weighted, 0.8);
 
     std::cout << "Interpolating " << mode << std::endl;
     erv->SetInterpolate(true);
-    Histogram h(0.5);
+    Histogram h(0.1);
     for (long i = 0; i < n; ++i)
     {
         h.AddValue(erv->GetValue());
@@ -161,8 +164,8 @@ RunBothModes(std::string mode, Ptr<EmpiricalRandomVariable> erv, long n)
     sum = 0;
     weighted = 0;
     std::cout << std::endl;
-    std::cout << " Bin Start    Counts         %" << std::endl;
-    std::cout << "----------  --------  --------" << std::endl;
+    std::cout << " Bin Start    Counts         %     % CDF" << std::endl;
+    std::cout << "----------  --------  --------  --------" << std::endl;
     for (uint32_t i = 0; i < h.GetNBins(); ++i)
     {
         long count = h.GetBinCount(i);
@@ -170,9 +173,9 @@ RunBothModes(std::string mode, Ptr<EmpiricalRandomVariable> erv, long n)
         double value = start + h.GetBinWidth(i) / 2.;
         sum += count;
         weighted += count * value;
-        PrintStatsLine(start, count, n);
+        PrintStatsLine(start, count, n, sum);
     }
-    PrintSummary(sum, n, weighted, 6.25);
+    PrintSummary(sum, n, weighted, 0.760);
 }
 
 int
@@ -203,10 +206,15 @@ main(int argc, char* argv[])
 
     // Create the ERV in sampling mode
     Ptr<EmpiricalRandomVariable> erv = CreateObject<EmpiricalRandomVariable>();
-    erv->SetInterpolate(false);
-    erv->CDF(0.0, 0.0);
-    erv->CDF(5.0, 0.25);
-    erv->CDF(10.0, 1.0);
+
+    //                          // Expectation for bin
+    erv->CDF(0.0, 0.0 / 15.0);  // 0
+    erv->CDF(0.2, 1.0 / 15.0);  // 0.2 1/15  =  2/150
+    erv->CDF(0.4, 3.0 / 15.0);  // 0.4 2/15  =  8/150
+    erv->CDF(0.6, 4.0 / 15.0);  // 0.6 1/15  =  6/150
+    erv->CDF(0.8, 7.0 / 15.0);  // 0.8 3/15  = 24/150
+    erv->CDF(1.0, 9.0 / 15.0);  // 1.0 2/15  = 20/150
+    erv->CDF(1.0, 15.0 / 15.0); // 1.0 6/15  = 60/150  <avg> = 120/150 = 0.8
 
     if (single)
     {
