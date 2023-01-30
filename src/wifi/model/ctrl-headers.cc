@@ -1076,6 +1076,7 @@ CtrlTriggerUserInfoField::CtrlTriggerUserInfoField(TriggerFrameType triggerType,
       m_ulFecCodingType(false),
       m_ulMcs(0),
       m_ulDcm(false),
+      m_ps160(true),
       m_ulTargetRssi(0),
       m_triggerType(triggerType),
       m_basicTriggerDependentUserInfo(0)

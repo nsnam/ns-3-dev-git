@@ -32,7 +32,8 @@ namespace ns3
 {
 
 WifiTxVector::WifiTxVector()
-    : m_preamble(WIFI_PREAMBLE_LONG),
+    : m_txPowerLevel(1),
+      m_preamble(WIFI_PREAMBLE_LONG),
       m_channelWidth(20),
       m_guardInterval(800),
       m_nTx(1),
