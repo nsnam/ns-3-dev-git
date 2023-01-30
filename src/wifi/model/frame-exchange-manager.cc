@@ -409,6 +409,11 @@ FrameExchangeManager::SendMpduWithProtection(Ptr<WifiMpdu> mpdu, WifiTxParameter
     // Set QoS Ack policy if this is a QoS data frame
     WifiAckManager::SetQosAckPolicy(m_mpdu, m_txParams.m_acknowledgment.get());
 
+    if (m_mpdu->IsQueued())
+    {
+        m_mpdu->SetInFlight(m_linkId);
+    }
+
     switch (m_txParams.m_protection->method)
     {
     case WifiProtection::RTS_CTS:
@@ -422,6 +427,12 @@ FrameExchangeManager::SendMpduWithProtection(Ptr<WifiMpdu> mpdu, WifiTxParameter
         break;
     default:
         NS_ABORT_MSG("Unknown protection type");
+    }
+
+    if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
+    {
+        // we are done with frames that do not require acknowledgment
+        m_mpdu = nullptr;
     }
 }
 
@@ -481,23 +492,12 @@ FrameExchangeManager::SendMpdu()
 
     // transmit the MPDU
     ForwardMpduDown(m_mpdu, m_txParams.m_txVector);
-
-    if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
-    {
-        // we are done with frames that do not require acknowledgment
-        m_mpdu = nullptr;
-    }
 }
 
 void
 FrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << *mpdu << txVector);
-
-    if (mpdu->IsQueued())
-    {
-        mpdu->SetInFlight(m_linkId);
-    }
 
     m_phy->Send(Create<WifiPsdu>(mpdu, false), txVector);
 }
@@ -913,6 +913,14 @@ FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
 {
     NS_LOG_FUNCTION(this << *psdu);
 
+    for (const auto& mpdu : *PeekPointer(psdu))
+    {
+        if (mpdu->IsQueued())
+        {
+            mpdu->ResetInFlight(m_linkId);
+        }
+    }
+
     GetWifiRemoteStationManager()->ReportRtsFailed(psdu->GetHeader(0));
 
     if (!GetWifiRemoteStationManager()->NeedRetransmission(*psdu->begin()))
@@ -949,12 +957,12 @@ FrameExchangeManager::ReleaseSequenceNumber(Ptr<WifiMpdu> mpdu) const
     NS_LOG_FUNCTION(this << *mpdu);
 
     // the MPDU should be still in the DCF queue, unless it expired.
-    // If the MPDU has never been transmitted, it will be assigned a sequence
-    // number again the next time we try to transmit it. Therefore, we need to
+    // If the MPDU has never been transmitted and is not in-flight, it will be assigned
+    // a sequence number again the next time we try to transmit it. Therefore, we need to
     // make its sequence number available again
-    if (!mpdu->GetHeader().IsRetry())
+    if (!mpdu->GetHeader().IsRetry() && !mpdu->IsInFlight())
     {
-        m_txMiddle->SetSequenceNumberFor(&mpdu->GetHeader());
+        m_txMiddle->SetSequenceNumberFor(&mpdu->GetOriginal()->GetHeader());
     }
 }
 

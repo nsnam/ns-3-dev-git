@@ -862,7 +862,8 @@ HtFrameExchangeManager::ReleaseSequenceNumber(Ptr<WifiMpdu> mpdu) const
         uint8_t tid = hdr.GetQosTid();
         Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
 
-        if (m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr1(), tid) && !hdr.IsRetry())
+        if (m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr1(), tid) && !hdr.IsRetry() &&
+            !mpdu->IsInFlight())
         {
             // The MPDU has never been transmitted, so we can make its sequence
             // number available again if it is lower than the sequence number
@@ -934,6 +935,14 @@ HtFrameExchangeManager::SendPsduWithProtection(Ptr<WifiPsdu> psdu, WifiTxParamet
 
     // Set QoS Ack policy
     WifiAckManager::SetQosAckPolicy(m_psdu, m_txParams.m_acknowledgment.get());
+
+    for (const auto& mpdu : *PeekPointer(m_psdu))
+    {
+        if (mpdu->IsQueued())
+        {
+            mpdu->SetInFlight(m_linkId);
+        }
+    }
 
     if (m_txParams.m_protection->method == WifiProtection::RTS_CTS)
     {
@@ -1086,11 +1095,6 @@ HtFrameExchangeManager::NotifyTxToEdca(Ptr<const WifiPsdu> psdu) const
             {
                 edca->CompleteMpduTx(mpdu);
             }
-        }
-
-        if (mpdu->IsQueued())
-        {
-            mpdu->SetInFlight(m_linkId);
         }
     }
 }

@@ -271,6 +271,17 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
         WifiAckManager::SetQosAckPolicy(psdu.second, m_txParams.m_acknowledgment.get());
     }
 
+    for (const auto& psdu : m_psduMap)
+    {
+        for (const auto& mpdu : *PeekPointer(psdu.second))
+        {
+            if (mpdu->IsQueued())
+            {
+                mpdu->SetInFlight(m_linkId);
+            }
+        }
+    }
+
     if (m_txParams.m_protection->method == WifiProtection::RTS_CTS)
     {
         NS_ABORT_MSG_IF(m_psduMap.size() > 1, "Cannot use RTS/CTS with MU PPDUs");
@@ -377,6 +388,18 @@ HeFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVe
     NS_LOG_FUNCTION(this << *muRts << txVector);
 
     NS_ASSERT(!m_psduMap.empty());
+
+    for (const auto& psdu : m_psduMap)
+    {
+        for (const auto& mpdu : *PeekPointer(psdu.second))
+        {
+            if (mpdu->IsQueued())
+            {
+                mpdu->ResetInFlight(m_linkId);
+            }
+        }
+    }
+
     // NOTE Implementation of QSRC[AC] and QLRC[AC] should be improved...
     const auto& hdr = m_psduMap.cbegin()->second->GetHeader(0);
     if (!hdr.GetAddr1().IsGroup())
