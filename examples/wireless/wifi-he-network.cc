@@ -133,6 +133,7 @@ main(int argc, char* argv[])
     if (useRts)
     {
         Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue("0"));
+        Config::SetDefault("ns3::WifiDefaultProtectionManager::EnableMuRts", BooleanValue(true));
     }
 
     if (dlAckSeqType == "ACK-SU-FORMAT")
