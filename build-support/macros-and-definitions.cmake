@@ -537,6 +537,7 @@ macro(process_options)
   else()
     file(GLOB_RECURSE MODULES_CMAKE_FILES src/**/CMakeLists.txt
          contrib/**/CMakeLists.txt examples/**/CMakeLists.txt
+         scratch/**/CMakeLists.txt
     )
     file(
       GLOB
@@ -1517,6 +1518,17 @@ function(set_runtime_outputdirectory target_name output_directory target_prefix)
   endif()
 endfunction(set_runtime_outputdirectory)
 
+function(get_scratch_prefix prefix)
+  # /path/to/ns-3-dev/scratch/nested-subdir
+  set(temp ${CMAKE_CURRENT_SOURCE_DIR})
+  # remove /path/to/ns-3-dev/ to get scratch/nested-subdir
+  string(REPLACE "${PROJECT_SOURCE_DIR}/" "" temp "${temp}")
+  # replace path separators with underlines
+  string(REPLACE "/" "_" temp "${temp}")
+  # save the prefix value to the passed variable
+  set(${prefix} ${temp}_ PARENT_SCOPE)
+endfunction()
+
 function(build_exec)
   # Argument parsing
   set(options IGNORE_PCH STANDALONE)
@@ -1527,6 +1539,13 @@ function(build_exec)
   cmake_parse_arguments(
     "BEXEC" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
   )
+
+  # Resolve nested scratch prefixes without user intervention
+  if("${CMAKE_CURRENT_SOURCE_DIR}" MATCHES "scratch"
+     AND "${BEXEC_EXECNAME_PREFIX}" STREQUAL ""
+  )
+    get_scratch_prefix(BEXEC_EXECNAME_PREFIX)
+  endif()
 
   add_executable(
     ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} "${BEXEC_SOURCE_FILES}"
