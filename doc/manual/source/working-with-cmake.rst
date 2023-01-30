@@ -486,8 +486,8 @@ This translates to the following CMake lines:
 If your module depends on external libraries, check the section
 `Linking third-party libraries`_.
 
-Python bindings will be picked up if there is a subdirectory bindings
-and NS3_PYTHON_BINDINGS is enabled.
+Python bindings are generated at runtime for all built modules
+if NS3_PYTHON_BINDINGS is enabled.
 
 Next, we need to port the examples wscript. Repeat the copy, rename and open
 steps. We should have something like the following:
@@ -517,6 +517,49 @@ This translates into the following CMake:
       ${libinternet-apps}
   )
 
+Migrating definitions, compilation and linking options
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If your Waf modules had additional definitions, compilation or linking flags,
+you also need to translate them to CMake. The easiest way to accomplish that
+is using the CMake counterparts *BEFORE* defining your target.
+
+If you, for example, had the following:
+
+.. sourcecode:: python
+
+   conf.env.append_value("CXXFLAGS", ["-fopenmp", "-I/usr/local/include/e2sim"])
+   conf.env.append_value("CXXDEFINES", ["LAPACK", "LUSOLVER=LAPACK"])
+   conf.env.append_value("LINKFLAGS", ["-llapack", "-L/usr/local/src/GoToBLAS2", "-lblas", "-Lsrc/common", "-lthyme"])
+   conf.env.append_value("LIB", ["e2sim"])
+
+You would need to replace it with the following counterparts:
+
+.. sourcecode:: cmake
+
+   # The settings below will impact all future target declarations
+   # in the current subdirectory and its subdirectories
+   #
+   # a.k.a. the module, its examples and tests will have the definitions,
+   # compilation options and will be linked to the specified libraries
+   add_compile_options(-fopenmp) # CXXFLAGS counterpart
+   include_directories(/usr/local/include/e2sim) # CXXFLAGS -I counterpart
+   add_definitions(-DLAPACK -DLUSOLVER=LAPACK) # CXXDEFINES counterpart
+   link_directories(/usr/local/src/GoToBLAS2 src/common) # LINKFLAGS -L counterpart
+   link_libraries(lapack blas thyme e2sim) # LINKFLAGS -l or LIB counterpart
+
+   # Target definition after changing settings
+   build_lib_example(
+       NAME hypothetical-module
+       SOURCE_FILES hypothetical-module-source.cc
+       LIBRARIES_TO_LINK
+         # depends on wifi, internet, aodv and internet-apps modules
+         ${libwifi}
+         ${libinternet}
+         ${libaodv}
+         ${libinternet-apps}
+         # and lapack, blas, thyme, e2sim external libraries
+     )
 
 Running programs
 ****************
