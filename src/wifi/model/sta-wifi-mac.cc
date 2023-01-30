@@ -30,6 +30,7 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
+#include "ns3/emlsr-manager.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
@@ -153,6 +154,11 @@ StaWifiMac::DoDispose()
         m_assocManager->Dispose();
     }
     m_assocManager = nullptr;
+    if (m_emlsrManager)
+    {
+        m_emlsrManager->Dispose();
+    }
+    m_emlsrManager = nullptr;
     WifiMac::DoDispose();
 }
 
@@ -192,6 +198,20 @@ StaWifiMac::SetAssocManager(Ptr<WifiAssocManager> assocManager)
     NS_LOG_FUNCTION(this << assocManager);
     m_assocManager = assocManager;
     m_assocManager->SetStaWifiMac(this);
+}
+
+void
+StaWifiMac::SetEmlsrManager(Ptr<EmlsrManager> emlsrManager)
+{
+    NS_LOG_FUNCTION(this << emlsrManager);
+    m_emlsrManager = emlsrManager;
+    m_emlsrManager->SetWifiMac(this);
+}
+
+Ptr<EmlsrManager>
+StaWifiMac::GetEmlsrManager() const
+{
+    return m_emlsrManager;
 }
 
 uint16_t

@@ -20,6 +20,8 @@
 #include "wifi-mac-helper.h"
 
 #include "ns3/boolean.h"
+#include "ns3/eht-configuration.h"
+#include "ns3/emlsr-manager.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/multi-user-scheduler.h"
 #include "ns3/wifi-ack-manager.h"
@@ -40,6 +42,7 @@ WifiMacHelper::WifiMacHelper()
     m_queueScheduler.SetTypeId("ns3::FcfsWifiQueueScheduler");
     m_protectionManager.SetTypeId("ns3::WifiDefaultProtectionManager");
     m_ackManager.SetTypeId("ns3::WifiDefaultAckManager");
+    m_emlsrManager.SetTypeId("ns3::DefaultEmlsrManager");
 }
 
 WifiMacHelper::~WifiMacHelper()
@@ -107,10 +110,21 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     }
 
     // create and install the Association Manager if this is a STA
-    if (auto staMac = DynamicCast<StaWifiMac>(mac); staMac != nullptr)
+    auto staMac = DynamicCast<StaWifiMac>(mac);
+    if (staMac)
     {
         Ptr<WifiAssocManager> assocManager = m_assocManager.Create<WifiAssocManager>();
         staMac->SetAssocManager(assocManager);
+    }
+
+    // create and install the EMLSR Manager if this is an EHT non-AP MLD with EMLSR activated
+    if (BooleanValue emlsrActivated;
+        standard >= WIFI_STANDARD_80211be && staMac && staMac->GetNLinks() > 1 &&
+        device->GetEhtConfiguration()->GetAttributeFailSafe("EmlsrActivated", emlsrActivated) &&
+        emlsrActivated.Get())
+    {
+        auto emlsrManager = m_emlsrManager.Create<EmlsrManager>();
+        staMac->SetEmlsrManager(emlsrManager);
     }
 
     return mac;

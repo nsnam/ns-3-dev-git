@@ -40,6 +40,7 @@ class SupportedRates;
 class CapabilityInformation;
 class RandomVariableStream;
 class WifiAssocManager;
+class EmlsrManager;
 
 /**
  * \ingroup wifi
@@ -189,6 +190,18 @@ class StaWifiMac : public WifiMac
      * \param assocManager the Association Manager
      */
     void SetAssocManager(Ptr<WifiAssocManager> assocManager);
+
+    /**
+     * Set the EMLSR Manager.
+     *
+     * \param emlsrManager the EMLSR Manager
+     */
+    void SetEmlsrManager(Ptr<EmlsrManager> emlsrManager);
+
+    /**
+     * \return the EMLSR Manager
+     */
+    Ptr<EmlsrManager> GetEmlsrManager() const;
 
     /**
      * Enqueue a probe request packet for transmission on the given link.
@@ -492,6 +505,7 @@ class StaWifiMac : public WifiMac
     MacState m_state;                       ///< MAC state
     uint16_t m_aid;                         ///< Association AID
     Ptr<WifiAssocManager> m_assocManager;   ///< Association Manager
+    Ptr<EmlsrManager> m_emlsrManager;       ///< EMLSR Manager
     Time m_waitBeaconTimeout;               ///< wait beacon timeout
     Time m_probeRequestTimeout;             ///< probe request timeout
     Time m_assocRequestTimeout;             ///< association request timeout
