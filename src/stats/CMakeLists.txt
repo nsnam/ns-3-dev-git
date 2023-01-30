@@ -1,5 +1,6 @@
 set(sqlite_sources)
-set(sqlite_header)
+set(sqlite_headers)
+set(private_sqlite_header)
 set(sqlite_libraries)
 if(${ENABLE_SQLITE})
   set(sqlite_sources
@@ -8,6 +9,8 @@ if(${ENABLE_SQLITE})
   )
   set(sqlite_headers
       model/sqlite-data-output.h
+  )
+  set(private_sqlite_headers
       model/sqlite-output.h
   )
   set(sqlite_libraries
@@ -73,6 +76,7 @@ build_lib(
   LIBNAME stats
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
+  PRIVATE_HEADER_FILES ${private_sqlite_headers}
   LIBRARIES_TO_LINK ${libcore}
                     ${sqlite_libraries}
   TEST_SOURCES
