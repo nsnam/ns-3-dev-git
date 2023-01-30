@@ -900,6 +900,7 @@ WifiHelper::EnableLogComponents()
     LogComponentEnable("DsssErrorRateModel", LOG_LEVEL_ALL);
     LogComponentEnable("DsssPhy", LOG_LEVEL_ALL);
     LogComponentEnable("DsssPpdu", LOG_LEVEL_ALL);
+    LogComponentEnable("EmlsrManager", LOG_LEVEL_ALL);
     LogComponentEnable("EhtFrameExchangeManager", LOG_LEVEL_ALL);
     LogComponentEnable("ErpOfdmPhy", LOG_LEVEL_ALL);
     LogComponentEnable("ErpOfdmPpdu", LOG_LEVEL_ALL);
