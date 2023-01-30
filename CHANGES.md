@@ -44,6 +44,7 @@ Changes from ns-3.37 to ns-3.38
 ### Changed behavior
 
 * (applications) **UdpClient** and **UdpEchoClient** MaxPackets attribute is aligned with other applications, in that the value zero means infinite packets.
+* (wifi) Control frames (specifically, BlockAckRequest and MU-BAR Trigger Frames) are stored in the wifi MAC queue and no longer in a dedicated BlockAckManager queue
 
 Changes from ns-3.36 to ns-3.37
 -------------------------------
