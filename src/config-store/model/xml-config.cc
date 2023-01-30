@@ -29,6 +29,7 @@
 #include "ns3/string.h"
 
 #include <libxml/encoding.h>
+#include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
 
 namespace ns3
