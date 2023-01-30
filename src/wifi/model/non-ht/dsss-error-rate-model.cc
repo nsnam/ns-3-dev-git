@@ -23,6 +23,13 @@
 
 #include <cmath>
 
+#ifdef HAVE_GSL
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_sf_bessel.h>
+#endif
+
 namespace ns3
 {
 

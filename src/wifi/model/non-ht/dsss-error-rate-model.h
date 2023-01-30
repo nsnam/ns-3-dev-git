@@ -20,13 +20,6 @@
 #ifndef DSSS_ERROR_RATE_MODEL_H
 #define DSSS_ERROR_RATE_MODEL_H
 
-#ifdef HAVE_GSL
-#include <gsl/gsl_cdf.h>
-#include <gsl/gsl_integration.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_sf_bessel.h>
-#endif
-
 #include <cstdint>
 
 namespace ns3

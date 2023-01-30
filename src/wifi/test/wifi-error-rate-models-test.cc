@@ -18,6 +18,13 @@
  *          Sébastien Deronne (sebastien.deronne@gmail.com)
  */
 
+#ifdef HAVE_GSL
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_sf_bessel.h>
+#endif
+
 #include "ns3/dsss-error-rate-model.h"
 #include "ns3/he-phy.h" //includes HT and VHT
 #include "ns3/interference-helper.h"
