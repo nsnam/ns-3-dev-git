@@ -244,11 +244,11 @@ SpectrumWifiPhy::ResetSpectrumModel()
 
     // Replace existing spectrum model with new one
     const auto channelWidth = GetChannelWidth();
-    m_currentSpectrumPhyInterface->SetRxSpectrumModel(
-        WifiSpectrumValueHelper::GetSpectrumModel(GetFrequency(),
-                                                  channelWidth,
-                                                  GetBandBandwidth(),
-                                                  GetGuardBandwidth(channelWidth)));
+    m_currentSpectrumPhyInterface->SetRxSpectrumModel(GetFrequency(),
+                                                      channelWidth,
+                                                      GetBandBandwidth(),
+                                                      GetGuardBandwidth(channelWidth));
+
     UpdateInterferenceHelperBands();
 }
 

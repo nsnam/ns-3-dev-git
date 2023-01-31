@@ -41,7 +41,9 @@ WifiSpectrumPhyInterface::GetTypeId()
 }
 
 WifiSpectrumPhyInterface::WifiSpectrumPhyInterface(FrequencyRange range)
-    : m_range{range}
+    : m_range{range},
+      m_centerFrequency{0},
+      m_channelWidth{0}
 {
     NS_LOG_FUNCTION(this << range);
 }
@@ -95,10 +97,18 @@ WifiSpectrumPhyInterface::SetChannel(const Ptr<SpectrumChannel> c)
 }
 
 void
-WifiSpectrumPhyInterface::SetRxSpectrumModel(Ptr<const SpectrumModel> rxSpectrumModel)
+WifiSpectrumPhyInterface::SetRxSpectrumModel(uint32_t centerFrequency,
+                                             uint16_t channelWidth,
+                                             uint32_t bandBandwidth,
+                                             uint16_t guardBandwidth)
 {
-    NS_LOG_FUNCTION(this << rxSpectrumModel);
-    m_rxSpectrumModel = rxSpectrumModel;
+    NS_LOG_FUNCTION(this << centerFrequency << channelWidth << bandBandwidth << guardBandwidth);
+    m_centerFrequency = centerFrequency;
+    m_channelWidth = channelWidth;
+    m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel(centerFrequency,
+                                                                  channelWidth,
+                                                                  bandBandwidth,
+                                                                  guardBandwidth);
 }
 
 Ptr<SpectrumChannel>
@@ -123,6 +133,18 @@ const FrequencyRange&
 WifiSpectrumPhyInterface::GetFrequencyRange() const
 {
     return m_range;
+}
+
+uint16_t
+WifiSpectrumPhyInterface::GetCenterFrequency() const
+{
+    return m_centerFrequency;
+}
+
+uint16_t
+WifiSpectrumPhyInterface::GetChannelWidth() const
+{
+    return m_channelWidth;
 }
 
 void
