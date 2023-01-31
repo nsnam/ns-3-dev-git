@@ -687,7 +687,7 @@ QosFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVec
     {
         m_txopHolder = psdu->GetAddr2();
     }
-    else if (hdr.IsCts() || hdr.IsAck())
+    else if (hdr.IsCts())
     {
         m_txopHolder = psdu->GetAddr1();
     }
