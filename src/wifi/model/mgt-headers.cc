@@ -643,6 +643,10 @@ WifiActionHeader::SetAction(WifiActionHeader::CategoryValue type,
         m_actionValue = static_cast<uint8_t>(action.unprotectedDmgAction);
         break;
     }
+    case PROTECTED_EHT: {
+        m_actionValue = static_cast<uint8_t>(action.protectedEhtAction);
+        break;
+    }
     case VENDOR_SPECIFIC_ACTION: {
         break;
     }
@@ -674,6 +678,8 @@ WifiActionHeader::GetCategory() const
         return FST;
     case UNPROTECTED_DMG:
         return UNPROTECTED_DMG;
+    case PROTECTED_EHT:
+        return PROTECTED_EHT;
     case VENDOR_SPECIFIC_ACTION:
         return VENDOR_SPECIFIC_ACTION;
     default:
@@ -984,6 +990,46 @@ WifiActionHeader::GetAction() const
         }
         break;
 
+    case PROTECTED_EHT:
+        switch (m_actionValue)
+        {
+        case PROTECTED_EHT_TID_TO_LINK_MAPPING_REQUEST:
+            retval.protectedEhtAction = PROTECTED_EHT_TID_TO_LINK_MAPPING_REQUEST;
+            break;
+        case PROTECTED_EHT_TID_TO_LINK_MAPPING_RESPONSE:
+            retval.protectedEhtAction = PROTECTED_EHT_TID_TO_LINK_MAPPING_RESPONSE;
+            break;
+        case PROTECTED_EHT_TID_TO_LINK_MAPPING_TEARDOWN:
+            retval.protectedEhtAction = PROTECTED_EHT_TID_TO_LINK_MAPPING_TEARDOWN;
+            break;
+        case PROTECTED_EHT_EPCS_PRIORITY_ACCESS_ENABLE_REQUEST:
+            retval.protectedEhtAction = PROTECTED_EHT_EPCS_PRIORITY_ACCESS_ENABLE_REQUEST;
+            break;
+        case PROTECTED_EHT_EPCS_PRIORITY_ACCESS_ENABLE_RESPONSE:
+            retval.protectedEhtAction = PROTECTED_EHT_EPCS_PRIORITY_ACCESS_ENABLE_RESPONSE;
+            break;
+        case PROTECTED_EHT_EPCS_PRIORITY_ACCESS_TEARDOWN:
+            retval.protectedEhtAction = PROTECTED_EHT_EPCS_PRIORITY_ACCESS_TEARDOWN;
+            break;
+        case PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION:
+            retval.protectedEhtAction = PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION;
+            break;
+        case PROTECTED_EHT_LINK_RECOMMENDATION:
+            retval.protectedEhtAction = PROTECTED_EHT_LINK_RECOMMENDATION;
+            break;
+        case PROTECTED_EHT_MULTI_LINK_OPERATION_UPDATE_REQUEST:
+            retval.protectedEhtAction = PROTECTED_EHT_MULTI_LINK_OPERATION_UPDATE_REQUEST;
+            break;
+        case PROTECTED_EHT_MULTI_LINK_OPERATION_UPDATE_RESPONSE:
+            retval.protectedEhtAction = PROTECTED_EHT_MULTI_LINK_OPERATION_UPDATE_RESPONSE;
+            break;
+        default:
+            NS_FATAL_ERROR("Unknown Protected EHT action code");
+            retval.protectedEhtAction =
+                PROTECTED_EHT_TID_TO_LINK_MAPPING_REQUEST; /* quiet compiler */
+        }
+        break;
+
     default:
         NS_FATAL_ERROR("Unsupported action");
         retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
@@ -1032,6 +1078,8 @@ WifiActionHeader::CategoryValueToString(CategoryValue value) const
         return "Fst";
     case UNPROTECTED_DMG:
         return "UnprotectedDmg";
+    case PROTECTED_EHT:
+        return "ProtectedEht";
     case VENDOR_SPECIFIC_ACTION:
         return "VendorSpecificAction";
     default:
@@ -1549,6 +1597,164 @@ MgtDelBaHeader::SetParameterSet(uint16_t params)
 {
     m_initiator = (params >> 11) & 0x01;
     m_tid = (params >> 12) & 0x0f;
+}
+
+/***************************************************
+ *     EMLSR Operating Mode Notification
+ ****************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED(MgtEmlOperatingModeNotification);
+
+TypeId
+MgtEmlOperatingModeNotification::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::MgtEmlOperatingModeNotification")
+                            .SetParent<Header>()
+                            .SetGroupName("Wifi")
+                            .AddConstructor<MgtEmlOperatingModeNotification>();
+    return tid;
+}
+
+TypeId
+MgtEmlOperatingModeNotification::GetInstanceTypeId() const
+{
+    return GetTypeId();
+}
+
+void
+MgtEmlOperatingModeNotification::Print(std::ostream& os) const
+{
+    os << "EMLSR Mode=" << +m_emlControl.emlsrMode << " EMLMR Mode=" << +m_emlControl.emlmrMode
+       << " EMLSR Parameter Update Control=" << +m_emlControl.emlsrParamUpdateCtrl;
+    if (m_emlControl.linkBitmap)
+    {
+        os << " Link bitmap=" << std::hex << *m_emlControl.linkBitmap << std::dec;
+    }
+    if (m_emlsrParamUpdate)
+    {
+        os << " EMLSR Padding Delay="
+           << CommonInfoBasicMle::DecodeEmlsrPaddingDelay(m_emlsrParamUpdate->paddingDelay)
+                  .As(Time::US)
+           << " EMLSR Transition Delay="
+           << CommonInfoBasicMle::DecodeEmlsrTransitionDelay(m_emlsrParamUpdate->transitionDelay)
+                  .As(Time::US);
+    }
+}
+
+uint32_t
+MgtEmlOperatingModeNotification::GetSerializedSize() const
+{
+    uint32_t size = 2; // Dialog Token (1) + first byte of EML Control
+    if (m_emlControl.linkBitmap)
+    {
+        size += 2;
+    }
+    if (m_emlControl.mcsMapCountCtrl)
+    {
+        size += 1;
+    }
+    // TODO add size of EMLMR Supported MCS And NSS Set subfield when implemented
+    if (m_emlsrParamUpdate)
+    {
+        size += 1; // EMLSR Parameter Update field
+    }
+    return size;
+}
+
+void
+MgtEmlOperatingModeNotification::Serialize(Buffer::Iterator start) const
+{
+    start.WriteU8(m_dialogToken);
+
+    NS_ABORT_MSG_IF(m_emlControl.emlsrMode == 1 && m_emlControl.emlmrMode == 1,
+                    "EMLSR Mode and EMLMR Mode cannot be both set to 1");
+    uint8_t val = m_emlControl.emlsrMode | (m_emlControl.emlmrMode << 1) |
+                  (m_emlControl.emlsrParamUpdateCtrl << 2);
+    start.WriteU8(val);
+
+    NS_ABORT_MSG_IF(m_emlControl.linkBitmap.has_value() !=
+                        (m_emlControl.emlsrMode == 1 || m_emlControl.emlmrMode == 1),
+                    "The EMLSR/EMLMR Link Bitmap is present if and only if either of the EMLSR "
+                    "Mode and EMLMR Mode subfields are set to 1");
+    if (m_emlControl.linkBitmap)
+    {
+        start.WriteHtolsbU16(*m_emlControl.linkBitmap);
+    }
+    // TODO serialize MCS Map Count Control and EMLMR Supported MCS And NSS Set subfields
+    // when implemented
+
+    NS_ABORT_MSG_IF(m_emlsrParamUpdate.has_value() != (m_emlControl.emlsrParamUpdateCtrl == 1),
+                    "The EMLSR Parameter Update field is present "
+                        << std::boolalpha << m_emlsrParamUpdate.has_value()
+                        << " if and only if the EMLSR "
+                           "Parameter Update Control subfield is set to 1 "
+                        << +m_emlControl.emlsrParamUpdateCtrl);
+    if (m_emlsrParamUpdate)
+    {
+        val = m_emlsrParamUpdate->paddingDelay | (m_emlsrParamUpdate->transitionDelay << 3);
+        start.WriteU8(val);
+    }
+}
+
+uint32_t
+MgtEmlOperatingModeNotification::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+
+    m_dialogToken = i.ReadU8();
+
+    uint8_t val = i.ReadU8();
+    m_emlControl.emlsrMode = val & 0x01;
+    m_emlControl.emlmrMode = (val >> 1) & 0x01;
+    m_emlControl.emlsrParamUpdateCtrl = (val >> 2) & 0x01;
+
+    NS_ABORT_MSG_IF(m_emlControl.emlsrMode == 1 && m_emlControl.emlmrMode == 1,
+                    "EMLSR Mode and EMLMR Mode cannot be both set to 1");
+
+    if (m_emlControl.emlsrMode == 1 || m_emlControl.emlmrMode == 1)
+    {
+        m_emlControl.linkBitmap = i.ReadLsbtohU16();
+    }
+    // TODO deserialize MCS Map Count Control and EMLMR Supported MCS And NSS Set subfields
+    // when implemented
+
+    if (m_emlControl.emlsrParamUpdateCtrl == 1)
+    {
+        val = i.ReadU8();
+        m_emlsrParamUpdate = EmlsrParamUpdate{};
+        m_emlsrParamUpdate->paddingDelay = val & 0x07;
+        m_emlsrParamUpdate->transitionDelay = (val >> 3) & 0x07;
+    }
+
+    return i.GetDistanceFrom(start);
+}
+
+void
+MgtEmlOperatingModeNotification::SetLinkIdInBitmap(uint8_t linkId)
+{
+    NS_ABORT_MSG_IF(linkId > 15, "Link ID must not exceed 15");
+    if (!m_emlControl.linkBitmap)
+    {
+        m_emlControl.linkBitmap = 0;
+    }
+    m_emlControl.linkBitmap = *m_emlControl.linkBitmap | (1 << linkId);
+}
+
+std::list<uint8_t>
+MgtEmlOperatingModeNotification::GetLinkBitmap() const
+{
+    std::list<uint8_t> list;
+    NS_ASSERT_MSG(m_emlControl.linkBitmap.has_value(), "No link bitmap");
+    uint16_t bitmap = *m_emlControl.linkBitmap;
+    for (uint8_t linkId = 0; linkId < 16; linkId++)
+    {
+        if ((bitmap & 0x0001) == 1)
+        {
+            list.push_back(linkId);
+        }
+        bitmap >>= 1;
+    }
+    return list;
 }
 
 } // namespace ns3
