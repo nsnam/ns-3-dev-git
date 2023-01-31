@@ -16,6 +16,8 @@
 
 #include "brite-topology-helper.h"
 
+#include "Brite.h"
+
 #include "ns3/abort.h"
 #include "ns3/data-rate.h"
 #include "ns3/ipv4-address-helper.h"

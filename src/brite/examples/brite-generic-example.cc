@@ -14,6 +14,8 @@
  *
  */
 
+#include "Brite.h"
+
 #include "ns3/applications-module.h"
 #include "ns3/brite-module.h"
 #include "ns3/core-module.h"

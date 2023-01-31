@@ -28,8 +28,12 @@
 #include <string>
 #include <vector>
 
-// located in BRITE source directory
-#include "Brite.h"
+// These are in #include <Brite.h>,
+// here we just need a forward declaration.
+namespace brite
+{
+struct Topology;
+};
 
 namespace ns3
 {
