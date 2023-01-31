@@ -21,6 +21,7 @@
 #define EHT_FRAME_EXCHANGE_MANAGER_H
 
 #include "ns3/he-frame-exchange-manager.h"
+#include "ns3/mgt-headers.h"
 
 namespace ns3
 {
@@ -44,6 +45,15 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     void SetLinkId(uint8_t linkId) override;
     Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const override;
+
+    /**
+     * Send an EML Operating Mode Notification frame to the given station.
+     *
+     * \param dest the MAC address of the receiver
+     * \param frame the EML Operating Mode Notification frame to send
+     */
+    void SendEmlOperatingModeNotification(const Mac48Address& dest,
+                                          const MgtEmlOperatingModeNotification& frame);
 
     /**
      * Get the RSSI (in dBm) of the most recent packet received from the station having

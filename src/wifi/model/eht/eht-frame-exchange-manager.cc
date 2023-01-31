@@ -23,6 +23,7 @@
 
 #include "ns3/abort.h"
 #include "ns3/log.h"
+#include "ns3/wifi-mac-queue.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
@@ -119,6 +120,38 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     }
 
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
+}
+
+void
+EhtFrameExchangeManager::SendEmlOperatingModeNotification(
+    const Mac48Address& dest,
+    const MgtEmlOperatingModeNotification& frame)
+{
+    NS_LOG_FUNCTION(this << dest << frame);
+
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_MGT_ACTION);
+    hdr.SetAddr1(dest);
+    hdr.SetAddr2(m_self);
+    hdr.SetAddr3(m_bssid);
+    hdr.SetDsNotTo();
+    hdr.SetDsNotFrom();
+
+    // get the sequence number for the TWT Setup management frame
+    const auto sequence = m_txMiddle->GetNextSequenceNumberFor(&hdr);
+    hdr.SetSequenceNumber(sequence);
+
+    WifiActionHeader actionHdr;
+    WifiActionHeader::ActionValue action;
+    action.protectedEhtAction = WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION;
+    actionHdr.SetAction(WifiActionHeader::PROTECTED_EHT, action);
+
+    auto packet = Create<Packet>();
+    packet->AddHeader(frame);
+    packet->AddHeader(actionHdr);
+
+    // Use AC_VO to send management frame addressed to a QoS STA (Sec. 10.2.3.2 of 802.11-2020)
+    m_mac->GetQosTxop(AC_VO)->Queue(Create<WifiMpdu>(packet, hdr));
 }
 
 std::optional<double>
