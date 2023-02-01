@@ -16,7 +16,7 @@
 // Network topology
 //
 //         bridge1         The node named bridge1 (node 5 in the nodelist)
-//   ------------------        has three CMSA net devices that are bridged
+//   ------------------        has three CSMA net devices that are bridged
 //   CSMA   CSMA   CSMA        together using a BridgeNetDevice.
 //     |      |      |
 //     |      |      |     The bridge node talks over three CSMA channels
@@ -34,7 +34,7 @@
 //     |      |      |
 //     |      |      |
 //   CSMA   CSMA   CSMA    The node named bridge2 (node 6 in the nodelist)
-//   ------------------        has three CMSA net devices that are bridged
+//   ------------------        has three CSMA net devices that are bridged
 //        bridge2              together using a BridgeNetDevice.
 //
 // Or, more abstractly, recognizing that bridge 1 and bridge 2 are nodes
