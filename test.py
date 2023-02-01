@@ -137,94 +137,95 @@ def parse_examples_to_run_file(
     python_tests):
 
     # Look for the examples-to-run file exists.
-    if os.path.exists(examples_to_run_path):
+    if not os.path.exists(examples_to_run_path):
+        return
 
-        # Each tuple in the C++ list of examples to run contains
-        #
-        #     (example_name, do_run, do_valgrind_run)
-        #
-        # where example_name is the executable to be run, do_run is a
-        # condition under which to run the example, and do_valgrind_run is
-        # a condition under which to run the example under valgrind.  This
-        # is needed because NSC causes illegal instruction crashes with
-        # some tests when they are run under valgrind.
-        #
-        # Note that the two conditions are Python statements that
-        # can depend on ns3 configuration variables.  For example,
-        # when NSC was in the codebase, we could write:
-        #
-        #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
-        #
-        cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
-        for example_name, do_run, do_valgrind_run in cpp_examples:
+    # Each tuple in the C++ list of examples to run contains
+    #
+    #     (example_name, do_run, do_valgrind_run)
+    #
+    # where example_name is the executable to be run, do_run is a
+    # condition under which to run the example, and do_valgrind_run is
+    # a condition under which to run the example under valgrind.  This
+    # is needed because NSC causes illegal instruction crashes with
+    # some tests when they are run under valgrind.
+    #
+    # Note that the two conditions are Python statements that
+    # can depend on ns3 configuration variables.  For example,
+    # when NSC was in the codebase, we could write:
+    #
+    #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
+    #
+    cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
+    for example_name, do_run, do_valgrind_run in cpp_examples:
 
-            # Separate the example name from its arguments.
-            example_name_original = example_name
-            example_name_parts = example_name.split(' ', 1)
-            if len(example_name_parts) == 1:
-                example_name      = example_name_parts[0]
-                example_arguments = ""
-            else:
-                example_name      = example_name_parts[0]
-                example_arguments = example_name_parts[1]
+        # Separate the example name from its arguments.
+        example_name_original = example_name
+        example_name_parts = example_name.split(' ', 1)
+        if len(example_name_parts) == 1:
+            example_name      = example_name_parts[0]
+            example_arguments = ""
+        else:
+            example_name      = example_name_parts[0]
+            example_arguments = example_name_parts[1]
 
-            # Add the proper prefix and suffix to the example name to
-            # match what is done in the CMakeLists.txt file.
-            example_path = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
+        # Add the proper prefix and suffix to the example name to
+        # match what is done in the CMakeLists.txt file.
+        example_path = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
 
-            # Set the full path for the example.
-            example_path = os.path.join(cpp_executable_dir, example_path)
-            example_path += '.exe' if sys.platform == 'win32' else ''
-            example_name = os.path.join(
-                os.path.relpath(cpp_executable_dir, NS3_BUILDDIR),
-                example_name)
-            # Add all of the C++ examples that were built, i.e. found
-            # in the directory, to the list of C++ examples to run.
-            if os.path.exists(example_path):
-                # Add any arguments to the path.
-                if len(example_name_parts) != 1:
-                    example_path = "%s %s" % (example_path, example_arguments)
-                    example_name = "%s %s" % (example_name, example_arguments)
+        # Set the full path for the example.
+        example_path = os.path.join(cpp_executable_dir, example_path)
+        example_path += '.exe' if sys.platform == 'win32' else ''
+        example_name = os.path.join(
+            os.path.relpath(cpp_executable_dir, NS3_BUILDDIR),
+            example_name)
+        # Add all of the C++ examples that were built, i.e. found
+        # in the directory, to the list of C++ examples to run.
+        if os.path.exists(example_path):
+            # Add any arguments to the path.
+            if len(example_name_parts) != 1:
+                example_path = "%s %s" % (example_path, example_arguments)
+                example_name = "%s %s" % (example_name, example_arguments)
 
-                # Add this example.
-                example_tests.append((example_name, example_path, do_run, do_valgrind_run))
-                example_names_original.append(example_name_original)
+            # Add this example.
+            example_tests.append((example_name, example_path, do_run, do_valgrind_run))
+            example_names_original.append(example_name_original)
 
-        # Each tuple in the Python list of examples to run contains
-        #
-        #     (example_name, do_run)
-        #
-        # where example_name is the Python script to be run and
-        # do_run is a condition under which to run the example.
-        #
-        # Note that the condition is a Python statement that can
-        # depend on ns3 configuration variables.  For example,
-        #
-        #     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == True"),
-        #
-        python_examples = get_list_from_file(examples_to_run_path, "python_examples")
-        for example_name, do_run in python_examples:
-            # Separate the example name from its arguments.
-            example_name_parts = example_name.split(' ', 1)
-            if len(example_name_parts) == 1:
-                example_name      = example_name_parts[0]
-                example_arguments = ""
-            else:
-                example_name      = example_name_parts[0]
-                example_arguments = example_name_parts[1]
+    # Each tuple in the Python list of examples to run contains
+    #
+    #     (example_name, do_run)
+    #
+    # where example_name is the Python script to be run and
+    # do_run is a condition under which to run the example.
+    #
+    # Note that the condition is a Python statement that can
+    # depend on ns3 configuration variables.  For example,
+    #
+    #     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == True"),
+    #
+    python_examples = get_list_from_file(examples_to_run_path, "python_examples")
+    for example_name, do_run in python_examples:
+        # Separate the example name from its arguments.
+        example_name_parts = example_name.split(' ', 1)
+        if len(example_name_parts) == 1:
+            example_name      = example_name_parts[0]
+            example_arguments = ""
+        else:
+            example_name      = example_name_parts[0]
+            example_arguments = example_name_parts[1]
 
-            # Set the full path for the example.
-            example_path = os.path.join(python_script_dir, example_name)
+        # Set the full path for the example.
+        example_path = os.path.join(python_script_dir, example_name)
 
-            # Add all of the Python examples that were found to the
-            # list of Python examples to run.
-            if os.path.exists(example_path):
-                # Add any arguments to the path.
-                if len(example_name_parts) != 1:
-                    example_path = "%s %s" % (example_path, example_arguments)
+        # Add all of the Python examples that were found to the
+        # list of Python examples to run.
+        if os.path.exists(example_path):
+            # Add any arguments to the path.
+            if len(example_name_parts) != 1:
+                example_path = "%s %s" % (example_path, example_arguments)
 
-                # Add this example.
-                python_tests.append((example_path, do_run))
+            # Add this example.
+            python_tests.append((example_path, do_run))
 
 #
 # The test suites are going to want to output status.  They are running
