@@ -22,6 +22,8 @@
 
 #include "emlsr-manager.h"
 
+#include <optional>
+
 namespace ns3
 {
 
@@ -41,6 +43,15 @@ class DefaultEmlsrManager : public EmlsrManager
 
     DefaultEmlsrManager();
     ~DefaultEmlsrManager() override;
+
+  protected:
+    uint8_t GetLinkToSendEmlNotification() override;
+
+  private:
+    void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+
+    std::optional<uint8_t> m_assocLinkId; /**< ID of the link on which Association Response
+                                               was received */
 };
 
 } // namespace ns3

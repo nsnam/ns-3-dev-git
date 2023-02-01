@@ -20,6 +20,7 @@
 #include "default-emlsr-manager.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-mpdu.h"
 
 namespace ns3
 {
@@ -46,6 +47,25 @@ DefaultEmlsrManager::DefaultEmlsrManager()
 DefaultEmlsrManager::~DefaultEmlsrManager()
 {
     NS_LOG_FUNCTION_NOARGS();
+}
+
+void
+DefaultEmlsrManager::DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << *mpdu << linkId);
+
+    if (mpdu->GetHeader().IsAssocResp() && GetStaMac()->IsAssociated() && GetTransitionTimeout())
+    {
+        m_assocLinkId = linkId;
+    }
+}
+
+uint8_t
+DefaultEmlsrManager::GetLinkToSendEmlNotification()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(m_assocLinkId, "No recorded link on which Assoc Response was received");
+    return *m_assocLinkId;
 }
 
 } // namespace ns3

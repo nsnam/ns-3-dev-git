@@ -20,13 +20,18 @@
 #ifndef EMLSR_MANAGER_H
 #define EMLSR_MANAGER_H
 
+#include "ns3/mac48-address.h"
+#include "ns3/mgt-headers.h"
 #include "ns3/object.h"
 #include "ns3/sta-wifi-mac.h"
+
+#include <set>
 
 namespace ns3
 {
 
 class EhtFrameExchangeManager;
+class WifiMpdu;
 
 /**
  * \ingroup wifi
@@ -64,6 +69,23 @@ class EmlsrManager : public Object
      */
     std::optional<Time> GetTransitionTimeout() const;
 
+    /**
+     * Take actions to enable EMLSR mode on the given set of links, if non-empty, or
+     * disable EMLSR mode, otherwise.
+     *
+     * \param linkIds the IDs of the links on which EMLSR mode should be enabled
+     *                (empty to disable EMLSR mode)
+     */
+    void SetEmlsrLinks(const std::set<uint8_t>& linkIds);
+
+    /**
+     * Notify the reception of a management frame addressed to us.
+     *
+     * \param mpdu the received MPDU
+     * \param linkId the ID of the link over which the MPDU was received
+     */
+    void NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+
   protected:
     void DoDispose() override;
 
@@ -78,13 +100,43 @@ class EmlsrManager : public Object
      */
     Ptr<EhtFrameExchangeManager> GetEhtFem(uint8_t linkId) const;
 
+    /**
+     * \return the ID of the link on which the EML Operating Mode Notification frame has to be sent
+     */
+    virtual uint8_t GetLinkToSendEmlNotification() = 0;
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
 
   private:
+    /**
+     * Send an EML Operating Mode Notification frame.
+     */
+    void SendEmlOperatingModeNotification();
+
+    /**
+     * Notify the subclass of the reception of a management frame addressed to us.
+     *
+     * \param mpdu the received MPDU
+     * \param linkId the ID of the link over which the MPDU was received
+     */
+    virtual void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) = 0;
+
+    /**
+     * Notify the acknowledgment of the given MPDU.
+     *
+     * \param mpdu the acknowledged MPDU
+     */
+    void TxOk(Ptr<const WifiMpdu> mpdu);
+
     Ptr<StaWifiMac> m_staMac;                     //!< the MAC of the managed non-AP MLD
     std::optional<Time> m_emlsrTransitionTimeout; /**< Transition timeout advertised by APs with
                                                        EMLSR activated */
+    std::optional<std::set<uint8_t>> m_nextEmlsrLinks; /**< ID of the links that will become the
+                                                            EMLSR links when the pending
+                                                            notification frame is acknowledged */
+    Time m_lastAdvPaddingDelay;                        //!< last advertised padding delay
+    Time m_lastAdvTransitionDelay;                     //!< last advertised transition delay
 };
 
 } // namespace ns3
