@@ -234,6 +234,12 @@ class StaWifiMac : public WifiMac
     std::set<uint8_t> GetSetupLinkIds() const;
 
     /**
+     * \param linkId the IO of the given link
+     * \return the ID (as set by the AP) of the given link, if the given link has been setup
+     */
+    std::optional<uint8_t> GetApLinkId(uint8_t linkId) const;
+
+    /**
      * Return the association ID.
      *
      * \return the association ID

@@ -772,6 +772,12 @@ StaWifiMac::GetSetupLinkIds() const
     return linkIds;
 }
 
+std::optional<uint8_t>
+StaWifiMac::GetApLinkId(uint8_t linkId) const
+{
+    return GetLink(linkId).apLinkId;
+}
+
 Mac48Address
 StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
 {
