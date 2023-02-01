@@ -36,7 +36,7 @@ NS_OBJECT_ENSURE_REGISTERED(PhasedArrayModel);
 std::ostream&
 operator<<(std::ostream& os, const PhasedArrayModel::ComplexVector& cv)
 {
-    size_t N = cv.size();
+    size_t N = cv.GetSize();
 
     // empty
     if (N == 0)
@@ -84,8 +84,8 @@ void
 PhasedArrayModel::SetBeamformingVector(const ComplexVector& beamformingVector)
 {
     NS_LOG_FUNCTION(this << beamformingVector);
-    NS_ASSERT_MSG(beamformingVector.size() == GetNumberOfElements(),
-                  beamformingVector.size() << " != " << GetNumberOfElements());
+    NS_ASSERT_MSG(beamformingVector.GetSize() == GetNumberOfElements(),
+                  beamformingVector.GetSize() << " != " << GetNumberOfElements());
     m_beamformingVector = beamformingVector;
     m_isBfVectorValid = true;
 }
@@ -106,11 +106,11 @@ PhasedArrayModel::GetBeamformingVector(Angles a) const
     NS_LOG_FUNCTION(this << a);
 
     ComplexVector beamformingVector = GetSteeringVector(a);
-    double norm = beamformingVector.norm();
+    double normRes = norm(beamformingVector);
 
-    for (ComplexVectorIndex i = 0; i < GetNumberOfElements(); i++)
+    for (size_t i = 0; i < GetNumberOfElements(); i++)
     {
-        beamformingVector[i] = std::conj(beamformingVector[i]) / norm;
+        beamformingVector[i] = std::conj(beamformingVector[i]) / normRes;
     }
 
     return beamformingVector;
@@ -119,9 +119,8 @@ PhasedArrayModel::GetBeamformingVector(Angles a) const
 PhasedArrayModel::ComplexVector
 PhasedArrayModel::GetSteeringVector(Angles a) const
 {
-    ComplexVector steeringVector;
-    steeringVector.resize(GetNumberOfElements());
-    for (ComplexVectorIndex i = 0; i < GetNumberOfElements(); i++)
+    ComplexVector steeringVector(GetNumberOfElements());
+    for (size_t i = 0; i < GetNumberOfElements(); i++)
     {
         Vector loc = GetElementLocation(i);
         double phase = -2 * M_PI *

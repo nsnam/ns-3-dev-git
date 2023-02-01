@@ -1875,24 +1875,18 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
 
     // Step 11: Generate channel coefficients for each cluster n and each receiver
     //  and transmitter element pair u,s.
-    Complex3DVector hNus; // channel coefficient hUsn[n][u][s];
     // where n is cluster index, u and s are receive and transmit antenna element.
-    PhasedArrayModel::ComplexVectorIndex uSize = uAntenna->GetNumberOfElements();
-    PhasedArrayModel::ComplexVectorIndex sSize = sAntenna->GetNumberOfElements();
+    size_t uSize = uAntenna->GetNumberOfElements();
+    size_t sSize = sAntenna->GetNumberOfElements();
 
     // NOTE: Since each of the strongest 2 clusters are divided into 3 sub-clusters,
     // the total cluster will generally be numReducedCLuster + 4.
     // However, it might be that m_cluster1st = m_cluster2nd. In this case the
     // total number of clusters will be numReducedCLuster + 2.
-    uint64_t numOverallCluster = (channelParams->m_cluster1st != channelParams->m_cluster2nd)
+    uint16_t numOverallCluster = (channelParams->m_cluster1st != channelParams->m_cluster2nd)
                                      ? channelParams->m_reducedClusterNumber + 4
                                      : channelParams->m_reducedClusterNumber + 2;
-    hNus.resize(numOverallCluster);
-    for (uint64_t cIndex = 0; cIndex < numOverallCluster; cIndex++)
-    {
-        hNus[cIndex].resize(uSize, sSize);
-    }
-
+    Complex3DVector hUsn(uSize, sSize, numOverallCluster); // channel coefficient hUsn (u, s, n);
     NS_ASSERT(channelParams->m_reducedClusterNumber <= channelParams->m_clusterPhase.size());
     NS_ASSERT(channelParams->m_reducedClusterNumber <= channelParams->m_clusterPower.size());
     NS_ASSERT(channelParams->m_reducedClusterNumber <=
@@ -1922,17 +1916,17 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     Angles sAngle(uMob->GetPosition(), sMob->GetPosition());
     Angles uAngle(sMob->GetPosition(), uMob->GetPosition());
 
-    Complex2DVector raysPreComp; // stores part of the ray expression, cached as independent from
-                                 // the u- and s-indexes
-    Double2DVector sinCosA;      // cached multiplications of sin and cos of the ZoA and AoA angles
-    Double2DVector sinSinA;      // cached multiplications of sines of the ZoA and AoA angles
-    Double2DVector cosZoA;       // cached cos of the ZoA angle
-    Double2DVector sinCosD;      // cached multiplications of sin and cos of the ZoD and AoD angles
-    Double2DVector sinSinD;      // cached multiplications of the cosines of the ZoA and AoA angles
-    Double2DVector cosZoD;       // cached cos of the ZoD angle
+    Complex2DVector raysPreComp(channelParams->m_reducedClusterNumber,
+                                table3gpp->m_raysPerCluster); // stores part of the ray expression,
+    // cached as independent from the u- and s-indexes
+    Double2DVector sinCosA; // cached multiplications of sin and cos of the ZoA and AoA angles
+    Double2DVector sinSinA; // cached multiplications of sines of the ZoA and AoA angles
+    Double2DVector cosZoA;  // cached cos of the ZoA angle
+    Double2DVector sinCosD; // cached multiplications of sin and cos of the ZoD and AoD angles
+    Double2DVector sinSinD; // cached multiplications of the cosines of the ZoA and AoA angles
+    Double2DVector cosZoD;  // cached cos of the ZoD angle
 
     // resize to appropriate dimensions
-    raysPreComp.resize(channelParams->m_reducedClusterNumber, table3gpp->m_raysPerCluster);
     sinCosA.resize(channelParams->m_reducedClusterNumber);
     sinSinA.resize(channelParams->m_reducedClusterNumber);
     cosZoA.resize(channelParams->m_reducedClusterNumber);
@@ -2000,11 +1994,11 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     uint8_t numSubClustersAdded = 0;
     for (uint8_t nIndex = 0; nIndex < channelParams->m_reducedClusterNumber; nIndex++)
     {
-        for (PhasedArrayModel::ComplexVectorIndex uIndex = 0; uIndex < uSize; uIndex++)
+        for (size_t uIndex = 0; uIndex < uSize; uIndex++)
         {
             Vector uLoc = uAntenna->GetElementLocation(uIndex);
 
-            for (PhasedArrayModel::ComplexVectorIndex sIndex = 0; sIndex < sSize; sIndex++)
+            for (size_t sIndex = 0; sIndex < sSize; sIndex++)
             {
                 Vector sLoc = sAntenna->GetElementLocation(sIndex);
                 // Compute the N-2 weakest cluster, assuming 0 slant angle and a
@@ -2033,7 +2027,7 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                     }
                     rays *=
                         sqrt(channelParams->m_clusterPower[nIndex] / table3gpp->m_raysPerCluster);
-                    hNus[nIndex](uIndex, sIndex) = rays;
+                    hUsn(uIndex, sIndex, nIndex) = rays;
                 }
                 else //(7.5-28)
                 {
@@ -2087,12 +2081,13 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                         sqrt(channelParams->m_clusterPower[nIndex] / table3gpp->m_raysPerCluster);
                     raysSub3 *=
                         sqrt(channelParams->m_clusterPower[nIndex] / table3gpp->m_raysPerCluster);
-                    hNus[nIndex](uIndex, sIndex) = raysSub1;
-                    hNus[channelParams->m_reducedClusterNumber + numSubClustersAdded](uIndex,
-                                                                                      sIndex) =
-                        raysSub2;
-                    hNus[channelParams->m_reducedClusterNumber + numSubClustersAdded + 1](uIndex,
-                                                                                          sIndex) =
+                    hUsn(uIndex, sIndex, nIndex) = raysSub1;
+                    hUsn(uIndex,
+                         sIndex,
+                         channelParams->m_reducedClusterNumber + numSubClustersAdded) = raysSub2;
+                    hUsn(uIndex,
+                         sIndex,
+                         channelParams->m_reducedClusterNumber + numSubClustersAdded + 1) =
                         raysSub3;
                 }
             }
@@ -2118,14 +2113,14 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
         const double sinSAngleAz = sin(sAngle.GetAzimuth());
         const double cosSAngleAz = cos(sAngle.GetAzimuth());
 
-        for (PhasedArrayModel::ComplexVectorIndex uIndex = 0; uIndex < uSize; uIndex++)
+        for (size_t uIndex = 0; uIndex < uSize; uIndex++)
         {
             Vector uLoc = uAntenna->GetElementLocation(uIndex);
             double rxPhaseDiff = 2 * M_PI *
                                  (sinUAngleIncl * cosUAngleAz * uLoc.x +
                                   sinUAngleIncl * sinUAngleAz * uLoc.y + cosUAngleIncl * uLoc.z);
 
-            for (PhasedArrayModel::ComplexVectorIndex sIndex = 0; sIndex < sSize; sIndex++)
+            for (size_t sIndex = 0; sIndex < sSize; sIndex++)
             {
                 Vector sLoc = sAntenna->GetElementLocation(sIndex);
                 std::complex<double> ray(0, 0);
@@ -2147,14 +2142,14 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
 
                 double kLinear = pow(10, channelParams->m_K_factor / 10.0);
                 // the LOS path should be attenuated if blockage is enabled.
-                hNus[0](uIndex, sIndex) =
-                    sqrt(1.0 / (kLinear + 1)) * hNus[0](uIndex, sIndex) +
+                hUsn(uIndex, sIndex, 0) =
+                    sqrt(1.0 / (kLinear + 1)) * hUsn(uIndex, sIndex, 0) +
                     sqrt(kLinear / (1 + kLinear)) * ray /
                         pow(10,
                             channelParams->m_attenuation_dB[0] / 10.0); //(7.5-30) for tau = tau1
-                for (std::size_t nIndex = 1; nIndex < hNus.size(); nIndex++)
+                for (uint16_t nIndex = 1; nIndex < hUsn.GetNumPages(); nIndex++)
                 {
-                    hNus[nIndex](uIndex, sIndex) *=
+                    hUsn(uIndex, sIndex, nIndex) *=
                         sqrt(1.0 / (kLinear + 1)); //(7.5-30) for tau = tau2...tauN
                 }
             }
@@ -2162,21 +2157,21 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     }
 
     NS_LOG_DEBUG("Husn (sAntenna, uAntenna):" << sAntenna->GetId() << ", " << uAntenna->GetId());
-    for (std::size_t cIndex = 0; cIndex < hNus.size(); cIndex++)
+    for (uint16_t cIndex = 0; cIndex < hUsn.GetNumPages(); cIndex++)
     {
-        for (PhasedArrayModel::ComplexVectorIndex rowIdx = 0; rowIdx < hNus[cIndex].rows();
-             rowIdx++)
+        for (uint16_t rowIdx = 0; rowIdx < hUsn.GetNumRows(); rowIdx++)
         {
-            for (PhasedArrayModel::ComplexVectorIndex colIdx = 0; colIdx < hNus[cIndex].cols();
-                 colIdx++)
+            for (uint16_t colIdx = 0; colIdx < hUsn.GetNumCols(); colIdx++)
             {
-                NS_LOG_DEBUG(" " << hNus[cIndex](rowIdx, colIdx) << ",");
+                NS_LOG_DEBUG(" " << hUsn(rowIdx, colIdx, cIndex) << ",");
             }
         }
     }
-    NS_LOG_INFO("size of coefficient matrix =[" << hNus.size() << "][" << hNus[0].rows() << "]["
-                                                << hNus[0].cols() << "]");
-    channelMatrix->m_channel = hNus;
+
+    NS_LOG_INFO("size of coefficient matrix (rows, columns, clusters) = ("
+                << hUsn.GetNumRows() << ", " << hUsn.GetNumCols() << ", " << hUsn.GetNumPages()
+                << ")");
+    channelMatrix->m_channel = hUsn;
     return channelMatrix;
 }
 

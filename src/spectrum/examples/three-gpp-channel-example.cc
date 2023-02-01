@@ -79,8 +79,6 @@ DoBeamforming(Ptr<NetDevice> thisDevice,
               Ptr<PhasedArrayModel> thisAntenna,
               Ptr<NetDevice> otherDevice)
 {
-    PhasedArrayModel::ComplexVector antennaWeights;
-
     // retrieve the position of the two devices
     Vector aPos = thisDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
     Vector bPos = otherDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
@@ -93,7 +91,7 @@ DoBeamforming(Ptr<NetDevice> thisDevice,
 
     // retrieve the number of antenna elements and resize the vector
     uint64_t totNoArrayElements = thisAntenna->GetNumberOfElements();
-    antennaWeights.resize(totNoArrayElements);
+    PhasedArrayModel::ComplexVector antennaWeights(totNoArrayElements);
 
     // the total power is divided equally among the antenna elements
     double power = 1.0 / sqrt(totNoArrayElements);

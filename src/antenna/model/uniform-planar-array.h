@@ -81,7 +81,7 @@ class UniformPlanarArray : public PhasedArrayModel
      * Returns the number of antenna elements
      * \return the number of antenna elements
      */
-    ComplexVectorIndex GetNumberOfElements() const override;
+    size_t GetNumberOfElements() const override;
 
   private:
     /**

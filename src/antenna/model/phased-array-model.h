@@ -20,18 +20,10 @@
 
 #include <ns3/angles.h>
 #include <ns3/antenna-model.h>
+#include <ns3/matrix-array.h>
 #include <ns3/object.h>
 
 #include <complex>
-
-// Check for Eigen3 support
-#ifdef HAVE_EIGEN3
-#include <Eigen/Dense>
-#endif
-
-// Enforce specific index type to make sure return types are consistent among Eigen and STL-based
-// data structures
-#define EIGEN_DEFAULT_DENSE_INDEX_TYPE std::ptrdiff_t
 
 namespace ns3
 {
@@ -60,89 +52,24 @@ class PhasedArrayModel : public Object
      */
     static TypeId GetTypeId();
 
-    /// Type definition for complex vector indexes
-    using ComplexVectorIndex = EIGEN_DEFAULT_DENSE_INDEX_TYPE;
+    //!< type definition for complex vectors
+    using ComplexVector = ComplexMatrixArray; //!< the underlying Valarray
 
-#ifdef HAVE_EIGEN3
-    /// Type definition for complex vectors, when the Eigen library is available
-    using ComplexVector = Eigen::Matrix<std::complex<double>, Eigen::Dynamic, 1>;
-
-#else
     /**
-     * Type definitions for STL-based complex vectors
+     * \brief Computes the Frobenius norm of the complex vector
+     *
+     * \param complexVector on which to calculate Frobenius norm
+     * \return the Frobenius norm of the complex vector
      */
-    struct ComplexVector
+    double norm(ComplexVector& complexVector) const
     {
-        /// the underlying STL C++ vector
-        std::vector<std::complex<double>> m_vec;
-
-        /**
-         * Alias for std::vector<T,Allocator>::operator[]
-         *
-         * \param idx the index of the element to be accessed
-         * \return a reference to the specified matrix element
-         */
-        std::complex<double>& operator[](ComplexVectorIndex idx)
+        double norm = 0;
+        for (size_t i = 0; i < complexVector.GetSize(); i++)
         {
-            return m_vec[idx];
+            norm += std::norm(complexVector[i]);
         }
-
-        /**
-         * Read-only alias for std::vector<T,Allocator>::operator[]
-         *
-         * \param idx the index of the element to be accessed
-         * \return a constant reference to the specified vector element
-         */
-        const std::complex<double>& operator[](ComplexVectorIndex idx) const
-        {
-            return m_vec[idx];
-        }
-
-        /**
-         * Alias for std::vector != operator
-         *
-         * \param otherVec the other vector to compare with
-         * \return whether this and otherVec have the same content
-         */
-        const bool operator!=(const ComplexVector& otherVec) const
-        {
-            return m_vec != otherVec.m_vec;
-        }
-
-        /**
-         * Alias for std::vector::size
-         * \return the size of this vector
-         */
-        ComplexVectorIndex size() const
-        {
-            return static_cast<ComplexVectorIndex>(m_vec.size());
-        }
-
-        /**
-         * Alias for std::vector::resize
-         * \param size the new size to be set
-         */
-        void resize(PhasedArrayModel::ComplexVectorIndex size)
-        {
-            m_vec.resize(size);
-        }
-
-        /**
-         * Computes the Frobenius norm of this vector
-         * \return the Frobenius norm of this vector
-         */
-        double norm() const
-        {
-            double norm = 0;
-            for (const auto& v : m_vec)
-            {
-                norm += std::norm(v);
-            }
-
-            return std::sqrt(norm);
-        }
-    };
-#endif
+        return std::sqrt(norm);
+    }
 
     /**
      * Returns the horizontal and vertical components of the antenna element field
@@ -166,7 +93,7 @@ class PhasedArrayModel : public Object
      * Returns the number of antenna elements
      * \return the number of antenna elements
      */
-    virtual ComplexVectorIndex GetNumberOfElements() const = 0;
+    virtual size_t GetNumberOfElements() const = 0;
 
     /**
      * Sets the beamforming vector to be used

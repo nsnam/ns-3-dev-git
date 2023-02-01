@@ -119,29 +119,19 @@ ThreeGppSpectrumPropagationLossModel::CalcLongTerm(
 {
     NS_LOG_FUNCTION(this);
 
-    uint16_t sAntenna = static_cast<uint16_t>(sW.size());
-    uint16_t uAntenna = static_cast<uint16_t>(uW.size());
+    size_t uAntennaNum = uW.GetSize();
+    size_t sAntennaNum = sW.GetSize();
 
-    NS_ASSERT(uAntenna == params->m_channel.at(0).rows());
-    NS_ASSERT(sAntenna == params->m_channel.at(0).cols());
+    NS_ASSERT(uAntennaNum == params->m_channel.GetNumRows());
+    NS_ASSERT(sAntennaNum == params->m_channel.GetNumCols());
 
-    NS_LOG_DEBUG("CalcLongTerm with sAntenna " << sAntenna << " uAntenna " << uAntenna);
+    NS_LOG_DEBUG("CalcLongTerm with " << uAntennaNum << " u antenna elements and " << sAntennaNum
+                                      << " s antenna elements.");
     // store the long term part to reduce computation load
     // only the small scale fading needs to be updated if the large scale parameters and antenna
-    // weights remain unchanged.
-    PhasedArrayModel::ComplexVector longTerm;
-    uint8_t numCluster = static_cast<uint8_t>(params->m_channel.size());
-    longTerm.resize(numCluster);
-
-    for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
-    {
-        auto txSum =
-            MatrixBasedChannelModel::MultiplyMatByLeftAndRightVec(uW,
-                                                                  sW,
-                                                                  params->m_channel[cIndex]);
-        longTerm[cIndex] = txSum;
-    }
-    return longTerm;
+    // weights remain unchanged. here we calculate long term uW * Husn * sW, the result is an array
+    // of values per cluster
+    return params->m_channel.MultiplyByLeftAndRightMatrix(uW.Transpose(), sW);
 }
 
 Ptr<SpectrumValue>
@@ -158,15 +148,14 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
     Ptr<SpectrumValue> tempPsd = Copy<SpectrumValue>(txPsd);
 
     // channel[cluster][rx][tx]
-    uint8_t numCluster = static_cast<uint8_t>(channelMatrix->m_channel.size());
+    uint16_t numCluster = channelMatrix->m_channel.GetNumPages();
 
     // compute the doppler term
     // NOTE the update of Doppler is simplified by only taking the center angle of
     // each cluster in to consideration.
     double slotTime = Simulator::Now().GetSeconds();
     double factor = 2 * M_PI * slotTime * GetFrequency() / 3e8;
-    PhasedArrayModel::ComplexVector doppler;
-    doppler.resize(numCluster);
+    PhasedArrayModel::ComplexVector doppler(numCluster);
 
     // The following asserts might seem paranoic, but it is important to
     // make sure that all the structures that are passed to this function
@@ -179,7 +168,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
     NS_ASSERT(numCluster <= channelParams->m_angle[MatrixBasedChannelModel::ZOD_INDEX].size());
     NS_ASSERT(numCluster <= channelParams->m_angle[MatrixBasedChannelModel::AOA_INDEX].size());
     NS_ASSERT(numCluster <= channelParams->m_angle[MatrixBasedChannelModel::AOD_INDEX].size());
-    NS_ASSERT(numCluster <= longTerm.size());
+    NS_ASSERT(numCluster <= longTerm.GetSize());
 
     // check if channelParams structure is generated in direction s-to-u or u-to-s
     bool isSameDirection = (channelParams->m_nodeIds == channelMatrix->m_nodeIds);
@@ -208,7 +197,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
         aoa = channelParams->m_angle[MatrixBasedChannelModel::AOD_INDEX];
     }
 
-    for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
+    for (uint16_t cIndex = 0; cIndex < numCluster; cIndex++)
     {
         // Compute alpha and D as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3
         // These terms account for an additional Doppler contribution due to the
@@ -236,7 +225,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
         doppler[cIndex] = std::complex<double>(cos(tempDoppler), sin(tempDoppler));
     }
 
-    NS_ASSERT(numCluster <= doppler.size());
+    NS_ASSERT(numCluster <= doppler.GetSize());
 
     // apply the doppler term and the propagation delay to the long term component
     // to obtain the beamforming gain
@@ -248,7 +237,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
         {
             std::complex<double> subsbandGain(0.0, 0.0);
             double fsb = (*sbit).fc; // center frequency of the sub-band
-            for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
+            for (uint16_t cIndex = 0; cIndex < numCluster; cIndex++)
             {
                 double delay = -2 * M_PI * fsb * (channelParams->m_delay[cIndex]);
                 subsbandGain = subsbandGain + longTerm[cIndex] * doppler[cIndex] *

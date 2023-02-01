@@ -249,10 +249,10 @@ UniformPlanarArray::GetElementLocation(uint64_t index) const
     return loc;
 }
 
-PhasedArrayModel::ComplexVectorIndex
+size_t
 UniformPlanarArray::GetNumberOfElements() const
 {
-    return static_cast<PhasedArrayModel::ComplexVectorIndex>(m_numRows * m_numColumns);
+    return m_numRows * m_numColumns;
 }
 
 } /* namespace ns3 */

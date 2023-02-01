@@ -1052,13 +1052,11 @@ TwoRaySpectrumPropagationLossModel::CalcBeamformingGain(
     std::complex<double> bArrayOverallResponse = 0;
 
     // Compute the dot products between the array responses and the beamforming vectors
-    for (PhasedArrayModel::ComplexVectorIndex i = 0; i < aPhasedArrayModel->GetNumberOfElements();
-         i++)
+    for (size_t i = 0; i < aPhasedArrayModel->GetNumberOfElements(); i++)
     {
         aArrayOverallResponse += aArrayResponse[i] * aBfVector[i];
     }
-    for (PhasedArrayModel::ComplexVectorIndex i = 0; i < bPhasedArrayModel->GetNumberOfElements();
-         i++)
+    for (size_t i = 0; i < bPhasedArrayModel->GetNumberOfElements(); i++)
     {
         bArrayOverallResponse += bArrayResponse[i] * bBfVector[i];
     }

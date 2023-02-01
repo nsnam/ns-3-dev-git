@@ -106,8 +106,8 @@ ThreeGppChannelMatrixComputationTest::DoComputeNorm(Ptr<ThreeGppChannelModel> ch
         channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);
 
     double channelNorm = 0;
-    std::size_t numTotalClusters = channelMatrix->m_channel.size();
-    for (std::size_t cIndex = 0; cIndex < numTotalClusters; cIndex++)
+    uint16_t numTotalClusters = channelMatrix->m_channel.GetNumPages();
+    for (uint16_t cIndex = 0; cIndex < numTotalClusters; cIndex++)
     {
         double clusterNorm = 0;
         for (uint64_t sIndex = 0; sIndex < txAntennaElements; sIndex++)
@@ -115,7 +115,7 @@ ThreeGppChannelMatrixComputationTest::DoComputeNorm(Ptr<ThreeGppChannelModel> ch
             for (uint64_t uIndex = 0; uIndex < rxAntennaElements; uIndex++)
             {
                 clusterNorm +=
-                    std::pow(std::abs(channelMatrix->m_channel.at(cIndex)(uIndex, sIndex)), 2);
+                    std::pow(std::abs(channelMatrix->m_channel(uIndex, sIndex, cIndex)), 2);
             }
         }
         channelNorm += clusterNorm;
@@ -188,11 +188,11 @@ ThreeGppChannelMatrixComputationTest::DoRun()
 
     // check the channel matrix dimensions, expected H[cluster][rx][tx]
     NS_TEST_ASSERT_MSG_EQ(
-        channelMatrix->m_channel.at(0).cols(),
+        channelMatrix->m_channel.GetNumCols(),
         txAntennaElements[0] * txAntennaElements[1],
         "The third dimension of H should be equal to the number of tx antenna elements");
     NS_TEST_ASSERT_MSG_EQ(
-        channelMatrix->m_channel.at(0).rows(),
+        channelMatrix->m_channel.GetNumRows(),
         rxAntennaElements[0] * rxAntennaElements[1],
         "The second dimension of H should be equal to the number of rx antenna elements");
 
