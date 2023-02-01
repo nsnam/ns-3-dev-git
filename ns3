@@ -497,6 +497,15 @@ def clean_docs_and_tests_artifacts(dry_run=False):
         remove_file(file, dry_run)
 
 
+def clean_pip_packaging_artifacts(dry_run=False):
+    pip_dirs = [os.path.join(ns3_path, "dist"),
+                os.path.join(ns3_path, "nsnam.egg-info"),
+                os.path.join(ns3_path, "wheelhouse")
+                ]
+    for directory in pip_dirs:
+        remove_dir(directory, dry_run)
+
+
 def search_cmake_cache(build_profile):
     # Search for the CMake cache
     cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path, recursive=True)
@@ -1426,6 +1435,7 @@ def main():
     if args.distclean:
         clean_cmake_artifacts(dry_run=args.dry_run)
         clean_docs_and_tests_artifacts(dry_run=args.dry_run)
+        clean_pip_packaging_artifacts(dry_run=args.dry_run)
         # We end things earlier when cleaning
         return
 
