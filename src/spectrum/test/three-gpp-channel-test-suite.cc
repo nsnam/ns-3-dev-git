@@ -53,7 +53,10 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
     /**
      * Constructor
      */
-    ThreeGppChannelMatrixComputationTest();
+    ThreeGppChannelMatrixComputationTest(uint32_t txAntennaElements = 2,
+                                         uint32_t rxAntennaElements = 2,
+                                         uint32_t txPorts = 1,
+                                         uint32_t rxPorts = 1);
 
     /**
      * Destructor
@@ -81,11 +84,23 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
                        Ptr<PhasedArrayModel> rxAntenna);
 
     std::vector<double> m_normVector; //!< each element is the norm of a channel realization
+    uint32_t m_txAntennaElements{4};  //!< number of rows and columns of tx antenna array
+    uint32_t m_rxAntennaElements{4};  //!< number of rows and columns of rx antenna array
+    uint32_t m_txPorts{1}; //!< number of horizontal and vertical ports of tx antenna array
+    uint32_t m_rxPorts{1}; //!< number of horizontal and vertical ports of rx antenna array
 };
 
-ThreeGppChannelMatrixComputationTest::ThreeGppChannelMatrixComputationTest()
+ThreeGppChannelMatrixComputationTest::ThreeGppChannelMatrixComputationTest(
+    uint32_t txAntennaElements,
+    uint32_t rxAntennaElements,
+    uint32_t txPorts,
+    uint32_t rxPorts)
     : TestCase("Check the dimensions and the norm of the channel matrix")
 {
+    m_txAntennaElements = txAntennaElements;
+    m_rxAntennaElements = rxAntennaElements;
+    m_txPorts = txPorts;
+    m_rxPorts = rxPorts;
 }
 
 ThreeGppChannelMatrixComputationTest::~ThreeGppChannelMatrixComputationTest()
@@ -127,9 +142,7 @@ void
 ThreeGppChannelMatrixComputationTest::DoRun()
 {
     // Build the scenario for the test
-    uint8_t txAntennaElements[]{2, 2}; // tx antenna dimensions
-    uint8_t rxAntennaElements[]{2, 2}; // rx antenna dimensions
-    uint32_t updatePeriodMs = 100;     // update period in ms
+    uint32_t updatePeriodMs = 100; // update period in ms
 
     // create the channel condition model
     Ptr<ChannelConditionModel> channelConditionModel =
@@ -169,19 +182,27 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     // create the tx and rx antennas and set the their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
-        UintegerValue(txAntennaElements[0]),
+        UintegerValue(m_txAntennaElements),
         "NumRows",
-        UintegerValue(txAntennaElements[1]),
+        UintegerValue(m_txAntennaElements),
         "AntennaElement",
-        PointerValue(CreateObject<IsotropicAntennaModel>()));
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(m_txPorts),
+        "NumHorizontalPorts",
+        UintegerValue(m_txPorts));
+
     Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
-        UintegerValue(rxAntennaElements[0]),
+        UintegerValue(m_rxAntennaElements),
         "NumRows",
-        UintegerValue(rxAntennaElements[1]),
+        UintegerValue(m_rxAntennaElements),
         "AntennaElement",
-        PointerValue(CreateObject<IsotropicAntennaModel>()));
-
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(m_rxPorts),
+        "NumHorizontalPorts",
+        UintegerValue(m_rxPorts));
     // generate the channel matrix
     Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix =
         channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);
@@ -189,11 +210,11 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     // check the channel matrix dimensions, expected H[cluster][rx][tx]
     NS_TEST_ASSERT_MSG_EQ(
         channelMatrix->m_channel.GetNumCols(),
-        txAntennaElements[0] * txAntennaElements[1],
+        m_txAntennaElements * m_txAntennaElements,
         "The third dimension of H should be equal to the number of tx antenna elements");
     NS_TEST_ASSERT_MSG_EQ(
         channelMatrix->m_channel.GetNumRows(),
-        rxAntennaElements[0] * rxAntennaElements[1],
+        m_rxAntennaElements * m_rxAntennaElements,
         "The second dimension of H should be equal to the number of rx antenna elements");
 
     // test if the channel matrix is correctly generated
@@ -232,8 +253,8 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     // the hypothesis "E [|H|^2] = M*N, where |H| indicates the Frobenius norm of
     // H, M is the number of transmit antenna elements, and N is the number of
     // the receive antenna elements"
-    double t = (sampleMean - txAntennaElements[0] * txAntennaElements[1] * rxAntennaElements[0] *
-                                 rxAntennaElements[1]) /
+    double t = (sampleMean - m_txAntennaElements * m_txAntennaElements * m_rxAntennaElements *
+                                 m_rxAntennaElements) /
                (sampleStd / std::sqrt(numIt));
 
     // Using a significance level of 0.05, we reject the null hypothesis if |t| is
@@ -260,7 +281,10 @@ class ThreeGppChannelMatrixUpdateTest : public TestCase
     /**
      * Constructor
      */
-    ThreeGppChannelMatrixUpdateTest();
+    ThreeGppChannelMatrixUpdateTest(uint32_t txAntennaElements = 2,
+                                    uint32_t rxAntennaElements = 4,
+                                    uint32_t txPorts = 1,
+                                    uint32_t rxPorts = 1);
 
     /**
      * Destructor
@@ -291,12 +315,23 @@ class ThreeGppChannelMatrixUpdateTest : public TestCase
                       bool update);
 
     Ptr<const ThreeGppChannelModel::ChannelMatrix>
-        m_currentChannel; //!< used by DoGetChannel to store the current channel matrix
+        m_currentChannel;            //!< used by DoGetChannel to store the current channel matrix
+    uint32_t m_txAntennaElements{4}; //!< number of rows and columns of tx antenna array
+    uint32_t m_rxAntennaElements{4}; //!< number of rows and columns of rx antenna array
+    uint32_t m_txPorts{1}; //!< number of horizontal and vertical ports of tx antenna array
+    uint32_t m_rxPorts{1}; //!< number of horizontal and vertical ports of rx antenna array
 };
 
-ThreeGppChannelMatrixUpdateTest::ThreeGppChannelMatrixUpdateTest()
+ThreeGppChannelMatrixUpdateTest::ThreeGppChannelMatrixUpdateTest(uint32_t txAntennaElements,
+                                                                 uint32_t rxAntennaElements,
+                                                                 uint32_t txPorts,
+                                                                 uint32_t rxPorts)
     : TestCase("Check if the channel realizations are correctly updated during the simulation")
 {
+    m_txAntennaElements = txAntennaElements;
+    m_rxAntennaElements = rxAntennaElements;
+    m_txPorts = txPorts;
+    m_rxPorts = rxPorts;
 }
 
 ThreeGppChannelMatrixUpdateTest::~ThreeGppChannelMatrixUpdateTest()
@@ -324,7 +359,7 @@ ThreeGppChannelMatrixUpdateTest::DoGetChannel(Ptr<ThreeGppChannelModel> channelM
     else
     {
         // compare the old and the new channel matrices
-        NS_TEST_ASSERT_MSG_EQ((m_currentChannel != channelMatrix),
+        NS_TEST_ASSERT_MSG_EQ((m_currentChannel->m_channel != channelMatrix->m_channel),
                               update,
                               Simulator::Now().GetMilliSeconds()
                                   << " The channel matrix is not correctly updated");
@@ -335,10 +370,7 @@ void
 ThreeGppChannelMatrixUpdateTest::DoRun()
 {
     // Build the scenario for the test
-
-    uint8_t txAntennaElements[]{2, 2}; // tx antenna dimensions
-    uint8_t rxAntennaElements[]{4, 4}; // rx antenna dimensions
-    uint32_t updatePeriodMs = 100;     // update period in ms
+    uint32_t updatePeriodMs = 100; // update period in ms
 
     // create the channel condition model
     Ptr<ChannelConditionModel> channelConditionModel =
@@ -378,18 +410,27 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     // create the tx and rx antennas and set the their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
-        UintegerValue(txAntennaElements[0]),
+        UintegerValue(m_txAntennaElements),
         "NumRows",
-        UintegerValue(txAntennaElements[1]),
+        UintegerValue(m_txAntennaElements),
         "AntennaElement",
-        PointerValue(CreateObject<IsotropicAntennaModel>()));
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(m_txPorts),
+        "NumHorizontalPorts",
+        UintegerValue(m_txPorts));
+
     Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
-        UintegerValue(rxAntennaElements[0]),
+        UintegerValue(m_rxAntennaElements),
         "NumRows",
-        UintegerValue(rxAntennaElements[1]),
+        UintegerValue(m_rxAntennaElements),
         "AntennaElement",
-        PointerValue(CreateObject<IsotropicAntennaModel>()));
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(m_rxPorts),
+        "NumHorizontalPorts",
+        UintegerValue(m_rxPorts));
 
     // check if the channel matrix is correctly updated
 
@@ -468,8 +509,10 @@ class ThreeGppSpectrumPropagationLossModelTest : public TestCase
     /**
      * Constructor
      */
-    ThreeGppSpectrumPropagationLossModelTest();
-
+    ThreeGppSpectrumPropagationLossModelTest(uint32_t txAntennaElements = 4,
+                                             uint32_t rxAntennaElements = 4,
+                                             uint32_t txPorts = 1,
+                                             uint32_t rxPorts = 1);
     /**
      * Destructor
      */
@@ -501,18 +544,23 @@ class ThreeGppSpectrumPropagationLossModelTest : public TestCase
      */
     void CheckLongTermUpdate(const CheckLongTermUpdateParams& params);
 
-    /**
-     * Checks if two PSDs are equal
-     * \param first the first PSD
-     * \param second the second PSD
-     * \return true if first and second are equal, false otherwise
-     */
-    static bool ArePsdEqual(Ptr<SpectrumValue> first, Ptr<SpectrumValue> second);
+    uint32_t m_txAntennaElements{4}; //!< number of rows and columns of tx antenna array
+    uint32_t m_rxAntennaElements{4}; //!< number of rows and columns of rx antenna array
+    uint32_t m_txPorts{1}; //!< number of horizontal and vertical ports of tx antenna array
+    uint32_t m_rxPorts{1}; //!< number of horizontal and vertical ports of rx antenna array
 };
 
-ThreeGppSpectrumPropagationLossModelTest::ThreeGppSpectrumPropagationLossModelTest()
+ThreeGppSpectrumPropagationLossModelTest::ThreeGppSpectrumPropagationLossModelTest(
+    uint32_t txAntennaElements,
+    uint32_t rxAntennaElements,
+    uint32_t txPorts,
+    uint32_t rxPorts)
     : TestCase("Test case for the ThreeGppSpectrumPropagationLossModel class")
 {
+    m_txAntennaElements = txAntennaElements;
+    m_rxAntennaElements = rxAntennaElements;
+    m_txPorts = txPorts;
+    m_rxPorts = rxPorts;
 }
 
 ThreeGppSpectrumPropagationLossModelTest::~ThreeGppSpectrumPropagationLossModelTest()
@@ -536,32 +584,16 @@ ThreeGppSpectrumPropagationLossModelTest::DoBeamforming(Ptr<NetDevice> thisDevic
     thisAntenna->SetBeamformingVector(antennaWeights);
 }
 
-bool
-ThreeGppSpectrumPropagationLossModelTest::ArePsdEqual(Ptr<SpectrumValue> first,
-                                                      Ptr<SpectrumValue> second)
-{
-    bool ret = true;
-    for (uint8_t i = 0; i < first->GetSpectrumModel()->GetNumBands(); i++)
-    {
-        if ((*first)[i] != (*second)[i])
-        {
-            ret = false;
-            continue;
-        }
-    }
-    return ret;
-}
-
 void
 ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate(
     const CheckLongTermUpdateParams& params)
 {
-    Ptr<SpectrumValue> rxPsdNew = params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
-                                                                                 params.txMob,
-                                                                                 params.rxMob,
-                                                                                 params.txAntenna,
-                                                                                 params.rxAntenna);
-    NS_TEST_ASSERT_MSG_EQ(ArePsdEqual(params.rxPsdOld, rxPsdNew),
+    auto rxPsdNewParams = params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
+                                                                         params.txMob,
+                                                                         params.rxMob,
+                                                                         params.txAntenna,
+                                                                         params.rxAntenna);
+    NS_TEST_ASSERT_MSG_EQ((*params.rxPsdOld == *rxPsdNewParams->psd),
                           false,
                           "The long term is not updated when the channel matrix is recomputed");
 }
@@ -571,9 +603,6 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
 {
     // Build the scenario for the test
     Config::SetDefault("ns3::ThreeGppChannelModel::UpdatePeriod", TimeValue(MilliSeconds(100)));
-
-    uint8_t txAntennaElements[]{4, 4}; // tx antenna dimensions
-    uint8_t rxAntennaElements[]{4, 4}; // rx antenna dimensions
 
     // create the ChannelConditionModel object to be used to retrieve the
     // channel condition
@@ -618,18 +647,27 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     // create the tx and rx antennas and set the their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
-        UintegerValue(txAntennaElements[0]),
+        UintegerValue(m_txAntennaElements),
         "NumRows",
-        UintegerValue(txAntennaElements[1]),
+        UintegerValue(m_rxAntennaElements),
         "AntennaElement",
-        PointerValue(CreateObject<IsotropicAntennaModel>()));
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(m_txPorts),
+        "NumHorizontalPorts",
+        UintegerValue(m_txPorts));
+
     Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
-        UintegerValue(rxAntennaElements[0]),
+        UintegerValue(m_rxAntennaElements),
         "NumRows",
-        UintegerValue(rxAntennaElements[1]),
+        UintegerValue(m_rxAntennaElements),
         "AntennaElement",
-        PointerValue(CreateObject<IsotropicAntennaModel>()));
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(m_rxPorts),
+        "NumHorizontalPorts",
+        UintegerValue(m_rxPorts));
 
     // set the beamforming vectors
     DoBeamforming(txDev, txAntenna, rxDev, rxAntenna);
@@ -644,13 +682,13 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     txParams->psd = txPsd->Copy();
 
     // compute the rx psd
-    Ptr<SpectrumValue> rxPsdOld =
+    auto rxParamsOld =
         lossModel->DoCalcRxPowerSpectralDensity(txParams, txMob, rxMob, txAntenna, rxAntenna);
 
     // 1) check that the rx PSD is equal for both the direct and the reverse channel
-    Ptr<SpectrumValue> rxPsdNew =
+    auto rxParamsNew =
         lossModel->DoCalcRxPowerSpectralDensity(txParams, rxMob, txMob, rxAntenna, txAntenna);
-    NS_TEST_ASSERT_MSG_EQ(ArePsdEqual(rxPsdOld, rxPsdNew),
+    NS_TEST_ASSERT_MSG_EQ((*rxParamsOld->psd == *rxParamsNew->psd),
                           true,
                           "The long term for the direct and the reverse channel are different");
 
@@ -661,18 +699,23 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     txBfVector[0] = std::complex<double>(0.0, 0.0);
     txAntenna->SetBeamformingVector(txBfVector);
 
-    rxPsdNew =
+    rxParamsNew =
         lossModel->DoCalcRxPowerSpectralDensity(txParams, rxMob, txMob, rxAntenna, txAntenna);
-    NS_TEST_ASSERT_MSG_EQ(ArePsdEqual(rxPsdOld, rxPsdNew),
+    NS_TEST_ASSERT_MSG_EQ((*rxParamsOld->psd == *rxParamsNew->psd),
                           false,
                           "Changing the BF vectors the rx PSD does not change");
 
+    NS_TEST_ASSERT_MSG_EQ(
+        (*rxParamsOld->spectrumChannelMatrix == *rxParamsNew->spectrumChannelMatrix),
+        false,
+        "Changing the BF should change de frequency domain channel matrix");
+
     // update rxPsdOld
-    rxPsdOld = rxPsdNew;
+    rxParamsOld = rxParamsNew;
 
     // 3) check if the long term is updated when the channel matrix is recomputed
     CheckLongTermUpdateParams
-        params{lossModel, txParams, txMob, rxMob, rxPsdOld, txAntenna, rxAntenna};
+        params{lossModel, txParams, txMob, rxMob, rxParamsOld->psd, txAntenna, rxAntenna};
     Simulator::Schedule(MilliSeconds(101),
                         &ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate,
                         this,
@@ -699,9 +742,19 @@ class ThreeGppChannelTestSuite : public TestSuite
 ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     : TestSuite("three-gpp-channel", UNIT)
 {
-    AddTestCase(new ThreeGppChannelMatrixComputationTest, TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixUpdateTest, TestCase::QUICK);
-    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest, TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 1, 1), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 2, 2), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 4, 2, 2), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 2, 1), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 1, 1), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 1, 1), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 2, 2), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 2, 2), TestCase::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1), TestCase::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 2, 2), TestCase::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 2), TestCase::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 1), TestCase::QUICK);
 }
 
 /// Static variable for test initialization

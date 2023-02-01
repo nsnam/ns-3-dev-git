@@ -561,15 +561,15 @@ OverallGainAverageTest::DoRun()
         auto rxBfVec = rxArray->GetBeamformingVector(Angles(txPosVec, rxPosVec));
         rxArray->SetBeamformingVector(rxBfVec);
 
-        auto twoRayRxPsd =
+        auto twoRayRxParams =
             twoRaySplm->DoCalcRxPowerSpectralDensity(signalParams, txMob, rxMob, txArray, rxArray);
-        auto threeGppRayRxPsd = threeGppSplm->DoCalcRxPowerSpectralDensity(signalParams,
-                                                                           txMob,
-                                                                           rxMob,
-                                                                           txArray,
-                                                                           rxArray);
-        double twoRayRxPower = ComputePowerSpectralDensityOverallPower(twoRayRxPsd);
-        double threeGppRxPower = ComputePowerSpectralDensityOverallPower(threeGppRayRxPsd);
+        auto threeGppRayRxParams = threeGppSplm->DoCalcRxPowerSpectralDensity(signalParams,
+                                                                              txMob,
+                                                                              rxMob,
+                                                                              txArray,
+                                                                              rxArray);
+        double twoRayRxPower = ComputePowerSpectralDensityOverallPower(twoRayRxParams->psd);
+        double threeGppRxPower = ComputePowerSpectralDensityOverallPower(threeGppRayRxParams->psd);
 
         twoRayGainMean += (twoRayRxPower / txPower);
         threeGppGainMean += (threeGppRxPower / txPower);

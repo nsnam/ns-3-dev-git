@@ -47,6 +47,10 @@ SpectrumSignalParameters::SpectrumSignalParameters(const SpectrumSignalParameter
     duration = p.duration;
     txPhy = p.txPhy;
     txAntenna = p.txAntenna;
+    spectrumChannelMatrix = p.spectrumChannelMatrix; // we do not need a deep copy, it will not be
+                                                     // changed once is created
+    precodingMatrix =
+        p.precodingMatrix; // we do not need a deep copy, it will not be changed once is created
 }
 
 Ptr<SpectrumSignalParameters>

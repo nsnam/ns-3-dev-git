@@ -112,27 +112,27 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
      * a certain channel is cached and recomputed only when the channel realization
      * is updated, or when the beamforming vectors change.
      *
-     * \param params tx parameters
+     * \param spectrumSignalParams spectrum signal tx parameters
      * \param a first node mobility model
      * \param b second node mobility model
      * \param aPhasedArrayModel the antenna array of the first node
      * \param bPhasedArrayModel the antenna array of the second node
      * \return the received PSD
      */
-    Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity(
-        Ptr<const SpectrumSignalParameters> params,
+    Ptr<SpectrumSignalParameters> DoCalcRxPowerSpectralDensity(
+        Ptr<const SpectrumSignalParameters> spectrumSignalParams,
         Ptr<const MobilityModel> a,
         Ptr<const MobilityModel> b,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
         Ptr<const PhasedArrayModel> bPhasedArrayModel) const override;
 
-  private:
+  protected:
     /**
      * Data structure that stores the long term component for a tx-rx pair
      */
     struct LongTerm : public SimpleRefCount<LongTerm>
     {
-        PhasedArrayModel::ComplexVector
+        Ptr<const MatrixBasedChannelModel::Complex3DVector>
             m_longTerm; //!< vector containing the long term component for each cluster
         Ptr<const MatrixBasedChannelModel::ChannelMatrix>
             m_channel; //!< pointer to the channel matrix used to compute the long term
@@ -142,6 +142,29 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
             m_uW; //!< the beamforming vector for the node u used to compute the long term
     };
 
+    /**
+     * Computes the frequency-domain channel matrix with the dimensions numRxPorts*numTxPorts*numRBs
+     * \param inPsd the input PSD
+     * \param longTerm the long term component
+     * \param channelMatrix the channel matrix structure
+     * \param channelParams the channel parameters, including delays
+     * \param doppler the doppler for each cluster
+     * \param numTxPorts the number of antenna ports at the transmitter
+     * \param numRxPorts the number of antenna ports at the receiver
+     * \param isReverse true if params and longTerm were computed with RX->TX switched
+     * \return 3D spectrum channel matrix with dimensions numRxPorts * numTxPorts * numRBs
+     */
+    Ptr<MatrixBasedChannelModel::Complex3DVector> GenSpectrumChannelMatrix(
+        Ptr<SpectrumValue> inPsd,
+        Ptr<const MatrixBasedChannelModel::Complex3DVector> longTerm,
+        Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
+        Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
+        PhasedArrayModel::ComplexVector doppler,
+        uint8_t numTxPorts,
+        uint8_t numRxPorts,
+        bool isReverse) const;
+
+  private:
     /**
      * Get the operating frequency
      * \return the operating frequency in Hz
@@ -157,39 +180,64 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
      * \param bPhasedArrayModel the antenna array of the rx device
      * \return vector containing the long term component for each cluster
      */
-    PhasedArrayModel::ComplexVector GetLongTerm(
+    Ptr<const MatrixBasedChannelModel::Complex3DVector> GetLongTerm(
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
         Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
     /**
      * Computes the long term component
      * \param channelMatrix the channel matrix H
-     * \param sW the beamforming vector of the s device
-     * \param uW the beamforming vector of the u device
+     * \param sAnt the pointer to the antenna of the s device
+     * \param uAnt the pointer to the antenna of the u device
      * \return the long term component
      */
-    PhasedArrayModel::ComplexVector CalcLongTerm(
+    Ptr<const MatrixBasedChannelModel::Complex3DVector> CalcLongTerm(
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
-        const PhasedArrayModel::ComplexVector& sW,
-        const PhasedArrayModel::ComplexVector& uW) const;
+        Ptr<const PhasedArrayModel> sAnt,
+        Ptr<const PhasedArrayModel> uAnt) const;
 
     /**
-     * Computes the beamforming gain and applies it to the tx PSD
-     * \param txPsd the tx PSD
-     * \param longTerm the long term component
-     * \param channelMatrix The channel matrix structure
-     * \param channelParams The channel params structure
-     * \param sSpeed speed of the first node
-     * \param uSpeed speed of the second node
-     * \return the rx PSD
+     * \brief Computes a longTerm component from a specific port of s device to the
+     * specific port of u device and for a specific cluster index
+     * \param params The params that include the channel matrix
+     * \param sAnt pointer to first antenna
+     * \param uAnt uAnt pointer to second antenna
+     * \param sPortIdx the port index of the s device
+     * \param uPortIdx the port index of the u device
+     * \param cIndex the cluster index
+     * \return longTerm component for port pair and for a specific cluster index
      */
-    Ptr<SpectrumValue> CalcBeamformingGain(
-        Ptr<SpectrumValue> txPsd,
-        PhasedArrayModel::ComplexVector longTerm,
+    std::complex<double> CalculateLongTermComponent(
+        Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
+        Ptr<const PhasedArrayModel> sAnt,
+        Ptr<const PhasedArrayModel> uAnt,
+        uint16_t sPortIdx,
+        uint16_t uPortIdx,
+        uint16_t cIndex) const;
+
+    /**
+     * \brief Computes the beamforming gain and applies it to the TX PSD
+     * \param params SpectrumSignalParameters holding TX PSD
+     * \param longTerm the long term component
+     * \param channelMatrix the channel matrix structure
+     * \param channelParams the channel params structure
+     * \param sSpeed the speed of the first node
+     * \param uSpeed the speed of the second node
+     * \param numTxPorts the number of the ports of the first node
+     * \param numRxPorts the number of the porst of the second node
+     * \param isReverse indicator that tells whether the channel matrix is reverse
+     * \return
+     */
+    Ptr<SpectrumSignalParameters> CalcBeamformingGain(
+        Ptr<const SpectrumSignalParameters> params,
+        Ptr<const MatrixBasedChannelModel::Complex3DVector> longTerm,
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
         Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
         const Vector& sSpeed,
-        const Vector& uSpeed) const;
+        const Vector& uSpeed,
+        uint8_t numTxPorts,
+        uint8_t numRxPorts,
+        bool isReverse) const;
 
     mutable std::unordered_map<uint64_t, Ptr<const LongTerm>>
         m_longTermMap;                           //!< map containing the long term components

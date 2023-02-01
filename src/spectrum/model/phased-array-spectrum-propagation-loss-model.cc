@@ -60,7 +60,7 @@ PhasedArraySpectrumPropagationLossModel::SetNext(Ptr<PhasedArraySpectrumPropagat
     m_next = next;
 }
 
-Ptr<SpectrumValue>
+Ptr<SpectrumSignalParameters>
 PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
     Ptr<const SpectrumSignalParameters> params,
     Ptr<const MobilityModel> a,
@@ -71,14 +71,15 @@ PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
     // Here we assume that all the models in the chain of models are of type
     // PhasedArraySpectrumPropagationLossModel that provides the implementation of
     // this function, i.e. has phased array model of TX and RX as parameters
-    Ptr<SpectrumValue> rxPsd =
+    auto rxParams =
         DoCalcRxPowerSpectralDensity(params, a, b, aPhasedArrayModel, bPhasedArrayModel);
+
     if (m_next)
     {
-        rxPsd =
+        rxParams =
             m_next->CalcRxPowerSpectralDensity(params, a, b, aPhasedArrayModel, bPhasedArrayModel);
     }
-    return rxPsd;
+    return rxParams;
 }
 
 } // namespace ns3

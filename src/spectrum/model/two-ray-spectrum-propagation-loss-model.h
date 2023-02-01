@@ -186,9 +186,9 @@ class TwoRaySpectrumPropagationLossModel : public PhasedArraySpectrumPropagation
      * \param b second node mobility model
      * \param aPhasedArrayModel the antenna array of the first node
      * \param bPhasedArrayModel the antenna array of the second node
-     * \return the PSD of the received signal
+     * \return SpectrumSignalParameters including the PSD of the received signal
      */
-    Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity(
+    Ptr<SpectrumSignalParameters> DoCalcRxPowerSpectralDensity(
         Ptr<const SpectrumSignalParameters> txPsd,
         Ptr<const MobilityModel> a,
         Ptr<const MobilityModel> b,

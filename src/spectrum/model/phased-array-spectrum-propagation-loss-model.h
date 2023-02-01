@@ -70,10 +70,12 @@ class PhasedArraySpectrumPropagationLossModel : public Object
      * @param aPhasedArrayModel the instance of the phased antenna array of the sender
      * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
      *
-     * @return set of values Vs frequency representing the received
-     * power in the same units used for the txPower parameter.
+     * @return SpectrumSignalParameters in which is updated the PSD to contain
+     * a set of values Vs frequency representing the received
+     * power in the same units used for the txPower parameter,
+     * and additional chanSpectrumMatrix is computed to support MIMO systems.
      */
-    Ptr<SpectrumValue> CalcRxPowerSpectralDensity(
+    Ptr<SpectrumSignalParameters> CalcRxPowerSpectralDensity(
         Ptr<const SpectrumSignalParameters> txPsd,
         Ptr<const MobilityModel> a,
         Ptr<const MobilityModel> b,
@@ -92,10 +94,12 @@ class PhasedArraySpectrumPropagationLossModel : public Object
      * @param aPhasedArrayModel the instance of the phased antenna array of the sender
      * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
      *
-     * @return set of values Vs frequency representing the received
-     * power in the same units used for the txPower parameter.
+     * @return SpectrumSignalParameters in which is updated the PSD to contain
+     * a set of values Vs frequency representing the received
+     * power in the same units used for the txPower parameter,
+     * and additional chanSpectrumMatrix is set.
      */
-    virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity(
+    virtual Ptr<SpectrumSignalParameters> DoCalcRxPowerSpectralDensity(
         Ptr<const SpectrumSignalParameters> params,
         Ptr<const MobilityModel> a,
         Ptr<const MobilityModel> b,

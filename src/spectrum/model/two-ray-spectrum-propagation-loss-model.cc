@@ -1112,7 +1112,7 @@ TwoRaySpectrumPropagationLossModel::GetFtrFastFading(const FtrParams& params) co
     return norm(h);
 }
 
-Ptr<SpectrumValue>
+Ptr<SpectrumSignalParameters>
 TwoRaySpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     Ptr<const SpectrumSignalParameters> params,
     Ptr<const MobilityModel> a,
@@ -1127,8 +1127,6 @@ TwoRaySpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     NS_ASSERT_MSG(aId != bId, "The two nodes must be different from one another");
     NS_ASSERT_MSG(a->GetDistanceFrom(b) > 0.0,
                   "The position of a and b devices cannot be the same");
-
-    Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue>(params->psd);
 
     // Retrieve the antenna of device a
     NS_ASSERT_MSG(aPhasedArrayModel, "Antenna not found for node " << aId);
@@ -1147,10 +1145,11 @@ TwoRaySpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     // Compute the beamforming gain
     double bfGain = CalcBeamformingGain(a, b, aPhasedArrayModel, bPhasedArrayModel);
 
-    // Apply the above terms to the TX PSD
-    *rxPsd *= (fading * bfGain);
+    Ptr<SpectrumSignalParameters> rxParams = params->Copy();
+    // Apply the above terms to the TX PSD to calculate RX PSD
+    (*(rxParams->psd)) *= (fading * bfGain);
 
-    return rxPsd;
+    return rxParams;
 }
 
 std::size_t

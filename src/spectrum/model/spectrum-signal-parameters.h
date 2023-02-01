@@ -20,9 +20,8 @@
 #ifndef SPECTRUM_SIGNAL_PARAMETERS_H
 #define SPECTRUM_SIGNAL_PARAMETERS_H
 
+#include <ns3/matrix-array.h>
 #include <ns3/nstime.h>
-#include <ns3/ptr.h>
-#include <ns3/simple-ref-count.h>
 
 namespace ns3
 {
@@ -111,6 +110,20 @@ struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters
      * The AntennaModel instance that was used to transmit this signal.
      */
     Ptr<AntennaModel> txAntenna;
+
+    /**
+     * The 3D channel matrix where the dimensions are: the number of RX ports,
+     * the number of TX Ports, the number of resource blocks (RBs).
+     * Needed in the MIMO system in which multiple TX and RX ports can exist,
+     * hence the PSD is multidimensional. Elements are the complex numbers.
+     */
+    Ptr<const ComplexMatrixArray> spectrumChannelMatrix;
+
+    /**
+     * The 3D precoding matrix where the dimensions are: the number of TX ports,
+     * the number of TX streams, the number of RBs.
+     */
+    Ptr<const ComplexMatrixArray> precodingMatrix;
 };
 
 } // namespace ns3

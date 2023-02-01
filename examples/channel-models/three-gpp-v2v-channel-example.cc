@@ -114,11 +114,12 @@ ComputeSnr(const ComputeSnrParams& params)
     *(params.txParams->psd) *= propagationGainLinear;
 
     // apply the fast fading and the beamforming gain
-    Ptr<SpectrumValue> rxPsd = m_spectrumLossModel->CalcRxPowerSpectralDensity(params.txParams,
-                                                                               params.txMob,
-                                                                               params.rxMob,
-                                                                               params.txAntenna,
-                                                                               params.rxAntenna);
+    auto rxParams = m_spectrumLossModel->CalcRxPowerSpectralDensity(params.txParams,
+                                                                    params.txMob,
+                                                                    params.rxMob,
+                                                                    params.txAntenna,
+                                                                    params.rxAntenna);
+    Ptr<SpectrumValue> rxPsd = rxParams->psd;
     NS_LOG_DEBUG("Average rx power " << 10 * log10(Sum(*rxPsd) * 180e3) << " dB");
 
     // create the noise psd

@@ -131,14 +131,14 @@ ComputeSnr(const ComputeSnrParams& params)
     {
         activeRbs0[i] = i;
     }
-    Ptr<SpectrumValue> txPsd =
+    auto txPsd =
         LteSpectrumValueHelper::CreateTxPowerSpectralDensity(2100, 100, params.txPow, activeRbs0);
-    Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters>();
+    auto txParams = Create<SpectrumSignalParameters>();
     txParams->psd = txPsd->Copy();
     NS_LOG_DEBUG("Average tx power " << 10 * log10(Sum(*txPsd) * 180e3) << " dB");
 
     // create the noise PSD
-    Ptr<SpectrumValue> noisePsd =
+    auto noisePsd =
         LteSpectrumValueHelper::CreateNoisePowerSpectralDensity(2100, 100, params.noiseFigure);
     NS_LOG_DEBUG("Average noise power " << 10 * log10(Sum(*noisePsd) * 180e3) << " dB");
 
@@ -152,11 +152,12 @@ ComputeSnr(const ComputeSnrParams& params)
     NS_ASSERT_MSG(params.rxAntenna, "params.rxAntenna is nullptr!");
 
     // apply the fast fading and the beamforming gain
-    Ptr<SpectrumValue> rxPsd = m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
-                                                                               params.txMob,
-                                                                               params.rxMob,
-                                                                               params.txAntenna,
-                                                                               params.rxAntenna);
+    auto rxParams = m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
+                                                                    params.txMob,
+                                                                    params.rxMob,
+                                                                    params.txAntenna,
+                                                                    params.rxAntenna);
+    auto rxPsd = rxParams->psd;
     NS_LOG_DEBUG("Average rx power " << 10 * log10(Sum(*rxPsd) * 180e3) << " dB");
 
     // compute the SNR

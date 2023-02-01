@@ -417,7 +417,7 @@ MultiModelSpectrumChannel::StartRx(Ptr<SpectrumSignalParameters> params, Ptr<Spe
                       "PhasedArrayModel instances should be installed at both TX and RX "
                       "SpectrumPhy in order to use PhasedArraySpectrumPropagationLoss.");
 
-        params->psd = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity(
+        params = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity(
             params,
             params->txPhy->GetMobility(),
             receiver->GetMobility(),
