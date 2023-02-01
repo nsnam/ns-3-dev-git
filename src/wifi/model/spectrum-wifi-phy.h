@@ -119,6 +119,22 @@ class SpectrumWifiPhy : public WifiPhy
     uint32_t GetBandBandwidth() const;
 
     /**
+     * Get the start band index and the stop band index for a given band and a given spectrum PHY
+     * interface
+     *
+     * \param bandWidth the width of the band to be returned (MHz)
+     * \param bandIndex the index of the band to be returned
+     * \param range the frequency range identifying the spectrum PHY interface
+     * \param channelWidth the channel width currently used by the spectrum PHY interface
+     *
+     * \return a pair of start and stop indexes that defines the band
+     */
+    WifiSpectrumBand GetBandForInterface(uint16_t bandWidth,
+                                         uint8_t bandIndex,
+                                         FrequencyRange range,
+                                         uint16_t channelWidth);
+
+    /**
      * Callback invoked when the PHY model starts to process a signal
      *
      * \param signalType Whether signal is WiFi (true) or foreign (false)

@@ -553,9 +553,17 @@ SpectrumWifiPhy::GetGuardBandwidth(uint16_t currentChannelWidth) const
 }
 
 WifiSpectrumBand
-SpectrumWifiPhy::GetBand(uint16_t bandWidth, uint8_t bandIndex)
+SpectrumWifiPhy::GetBand(uint16_t bandWidth, uint8_t bandIndex /* = 0 */)
 {
-    uint16_t channelWidth = GetChannelWidth();
+    return GetBandForInterface(bandWidth, bandIndex, GetCurrentFrequencyRange(), GetChannelWidth());
+}
+
+WifiSpectrumBand
+SpectrumWifiPhy::GetBandForInterface(uint16_t bandWidth,
+                                     uint8_t bandIndex,
+                                     FrequencyRange range,
+                                     uint16_t channelWidth)
+{
     uint32_t bandBandwidth = GetBandBandwidth();
     size_t numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / bandBandwidth);
     size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / bandBandwidth);
@@ -563,12 +571,12 @@ SpectrumWifiPhy::GetBand(uint16_t bandWidth, uint8_t bandIndex)
     {
         numBandsInChannel += 1; // symmetry around center frequency
     }
-    NS_ABORT_IF(!m_currentSpectrumPhyInterface);
-    size_t totalNumBands = m_currentSpectrumPhyInterface->GetRxSpectrumModel()->GetNumBands();
+    size_t totalNumBands = m_spectrumPhyInterfaces.at(range)->GetRxSpectrumModel()->GetNumBands();
     NS_ASSERT_MSG((numBandsInChannel % 2 == 1) && (totalNumBands % 2 == 1),
                   "Should have odd number of bands");
     NS_ASSERT_MSG((bandIndex * bandWidth) < channelWidth, "Band index is out of bound");
     WifiSpectrumBand band;
+    NS_ASSERT(totalNumBands >= numBandsInChannel);
     band.first = ((totalNumBands - numBandsInChannel) / 2) + (bandIndex * numBandsInBand);
     band.second = band.first + numBandsInBand - 1;
     if (band.first >= totalNumBands / 2)
