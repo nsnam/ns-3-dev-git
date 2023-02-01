@@ -1067,6 +1067,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
+    std::optional<Mac48Address> apMldAddress;
     MgtAssocResponseHeader assocResp;
     mpdu->GetPacket()->PeekHeader(assocResp);
     if (m_assocRequestEvent.IsRunning())
@@ -1082,9 +1083,9 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         SetBssid(hdr.GetAddr3(), linkId);
         if ((GetNLinks() > 1) && assocResp.Get<MultiLinkElement>().has_value())
         {
-            // this is an ML setup, trace the MLD address (only once)
-            m_assocLogger(*GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr3()));
+            // this is an ML setup, trace the setup link
             m_setupCompleted(linkId, hdr.GetAddr3());
+            apMldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr3());
         }
         else
         {
@@ -1161,13 +1162,9 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                     NS_LOG_DEBUG("Setup on link " << staLinkid << " completed");
                     UpdateApInfo(assoc, *bssid, *bssid, staLinkid);
                     SetBssid(*bssid, staLinkid);
-                    if (m_state != ASSOCIATED)
-                    {
-                        m_assocLogger(
-                            *GetWifiRemoteStationManager(staLinkid)->GetMldAddress(*bssid));
-                    }
                     m_setupCompleted(staLinkid, *bssid);
                     SetState(ASSOCIATED);
+                    apMldAddress = GetWifiRemoteStationManager(staLinkid)->GetMldAddress(*bssid);
                     if (!m_linkUp.IsNull())
                     {
                         m_linkUp();
@@ -1187,6 +1184,11 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             {
                 GetLink(id).phy->SetOffMode();
             }
+        }
+        if (apMldAddress)
+        {
+            // this is an ML setup, trace the MLD address of the AP (only once)
+            m_assocLogger(*apMldAddress);
         }
     }
 
