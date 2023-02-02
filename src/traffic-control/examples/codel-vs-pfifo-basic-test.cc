@@ -78,7 +78,7 @@ static void
 TraceCwnd(std::string cwndTrFileName)
 {
     AsciiTraceHelper ascii;
-    if (cwndTrFileName == "")
+    if (cwndTrFileName.empty())
     {
         NS_LOG_DEBUG("No trace file for cwnd provided");
         return;

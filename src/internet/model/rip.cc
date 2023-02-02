@@ -570,7 +570,7 @@ Rip::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
                 // Use not implemented
                 *os << "-"
                     << "   ";
-                if (Names::FindName(m_ipv4->GetNetDevice(route->GetInterface())) != "")
+                if (!Names::FindName(m_ipv4->GetNetDevice(route->GetInterface())).empty())
                 {
                     *os << Names::FindName(m_ipv4->GetNetDevice(route->GetInterface()));
                 }

@@ -329,7 +329,7 @@ CsvReader::ParseLine(const std::string& line)
 
         start_col = end_col;
     }
-    m_blankRow = (m_columns.size() == 1) && (m_columns[0] == "");
+    m_blankRow = (m_columns.size() == 1) && (m_columns[0].empty());
     NS_LOG_LOGIC("blank row: " << m_blankRow);
 }
 

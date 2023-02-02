@@ -517,7 +517,7 @@ LteHelper::InstallSingleEnbDevice(Ptr<Node> n)
     Ptr<LteHandoverAlgorithm> handoverAlgorithm =
         m_handoverAlgorithmFactory.Create<LteHandoverAlgorithm>();
 
-    NS_ABORT_MSG_IF(m_componentCarrierPhyParams.size() != 0, "CC map is not clean");
+    NS_ABORT_MSG_IF(!m_componentCarrierPhyParams.empty(), "CC map is not clean");
     DoComponentCarrierConfigure(dev->GetUlEarfcn(),
                                 dev->GetDlEarfcn(),
                                 dev->GetUlBandwidth(),
@@ -837,7 +837,7 @@ LteHelper::InstallSingleUeDevice(Ptr<Node> n)
     // of each component carrier. These values must be updated once the UE is attached to the
     // eNB and receives RRC Connection Reconfiguration message. In case of primary carrier or
     // a single carrier, these values will be updated once the UE will receive SIB2 and MIB.
-    NS_ABORT_MSG_IF(m_componentCarrierPhyParams.size() != 0, "CC map is not clean");
+    NS_ABORT_MSG_IF(!m_componentCarrierPhyParams.empty(), "CC map is not clean");
     DoComponentCarrierConfigure(dev->GetDlEarfcn() + 18000, dev->GetDlEarfcn(), 25, 25);
     NS_ABORT_MSG_IF(m_componentCarrierPhyParams.size() != m_noOfCcs,
                     "CC map size (" << m_componentCarrierPhyParams.size()
@@ -1426,7 +1426,7 @@ LteHelper::DoComponentCarrierConfigure(uint32_t ulEarfcn,
 {
     NS_LOG_FUNCTION(this << ulEarfcn << dlEarfcn << ulbw << dlbw);
 
-    NS_ABORT_MSG_IF(m_componentCarrierPhyParams.size() != 0, "CC map is not clean");
+    NS_ABORT_MSG_IF(!m_componentCarrierPhyParams.empty(), "CC map is not clean");
     Ptr<CcHelper> ccHelper = CreateObject<CcHelper>();
     ccHelper->SetNumberOfComponentCarriers(m_noOfCcs);
     ccHelper->SetUlEarfcn(ulEarfcn);

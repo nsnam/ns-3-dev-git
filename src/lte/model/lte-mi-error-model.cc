@@ -1138,7 +1138,7 @@ LteMiErrorModel::GetTbDecodificationStats(const SpectrumValue& sinr,
     double MI = 0.0;
     double Reff = 0.0;
     NS_ASSERT(mcs < 29);
-    if (miHistory.size() > 0)
+    if (!miHistory.empty())
     {
         // evaluate R_eff and MI_eff
         uint16_t codeBitsSum = 0;
@@ -1255,7 +1255,7 @@ LteMiErrorModel::GetTbDecodificationStats(const SpectrumValue& sinr,
 
     double errorRate = 1.0;
     uint8_t ecrId = 0;
-    if (miHistory.size() == 0)
+    if (miHistory.empty())
     {
         // first tx -> get ECR from MCS
         ecrId = McsEcrBlerTableMapping[mcs];

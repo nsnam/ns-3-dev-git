@@ -72,7 +72,7 @@ BSSchedulerRtps::~BSSchedulerRtps()
 {
     std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst>>>* downlinkBursts = m_downlinkBursts;
     std::pair<OfdmDlMapIe*, Ptr<PacketBurst>> pair;
-    while (downlinkBursts->size())
+    while (!downlinkBursts->empty())
     {
         pair = downlinkBursts->front();
         pair.second = nullptr;
@@ -149,7 +149,7 @@ BSSchedulerRtps::Schedule()
 
     BSSchedulerBEConnection(availableSymbols);
 
-    if (m_downlinkBursts->size())
+    if (!m_downlinkBursts->empty())
     {
         NS_LOG_DEBUG(
             "BS scheduler, number of bursts: "

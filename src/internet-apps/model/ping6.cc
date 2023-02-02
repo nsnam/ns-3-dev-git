@@ -232,7 +232,7 @@ Ping6::Send()
     m_socket->Bind(Inet6SocketAddress(src, 0));
 
     /* use Loose Routing (routing type 0) */
-    if (m_routers.size())
+    if (!m_routers.empty())
     {
         Ipv6ExtensionLooseRoutingHeader routingHeader;
         routingHeader.SetNextHeader(Ipv6Header::IPV6_ICMPV6);

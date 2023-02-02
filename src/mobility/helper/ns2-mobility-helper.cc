@@ -591,12 +591,12 @@ TrimNs2Line(const std::string& s)
 {
     std::string ret = s;
 
-    while (ret.size() > 0 && isblank(ret[0]))
+    while (!ret.empty() && isblank(ret[0]))
     {
         ret.erase(0, 1); // Removes blank spaces at the beginning of the line
     }
 
-    while (ret.size() > 0 && (isblank(ret[ret.size() - 1]) || (ret[ret.size() - 1] == ';')))
+    while (!ret.empty() && (isblank(ret[ret.size() - 1]) || (ret[ret.size() - 1] == ';')))
     {
         ret.erase(ret.size() - 1, 1); // Removes blank spaces from at end of line
     }
@@ -616,7 +616,7 @@ template <class T>
 bool
 IsVal(const std::string& str, T& ret)
 {
-    if (str.size() == 0)
+    if (str.empty())
     {
         return false;
     }

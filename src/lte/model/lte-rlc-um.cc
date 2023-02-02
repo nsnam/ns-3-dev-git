@@ -146,7 +146,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
 
     // Remove the first packet from the transmission buffer.
     // If only a segment of the packet is taken, then the remaining is given back later
-    if (m_txBuffer.size() == 0)
+    if (m_txBuffer.empty())
     {
         NS_LOG_LOGIC("No data pending");
         return;
@@ -256,7 +256,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
             // (NO more segments) → exit
             // break;
         }
-        else if ((nextSegmentSize - firstSegment->GetSize() <= 2) || (m_txBuffer.size() == 0))
+        else if ((nextSegmentSize - firstSegment->GetSize() <= 2) || m_txBuffer.empty())
         {
             NS_LOG_LOGIC(
                 "    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txBuffer.size == 0");
@@ -274,7 +274,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
             nextSegmentId++;
 
             NS_LOG_LOGIC("        SDUs in TxBuffer  = " << m_txBuffer.size());
-            if (m_txBuffer.size() > 0)
+            if (!m_txBuffer.empty())
             {
                 NS_LOG_LOGIC("        First SDU buffer  = " << m_txBuffer.begin()->m_pdu);
                 NS_LOG_LOGIC(
@@ -304,7 +304,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
             nextSegmentId++;
 
             NS_LOG_LOGIC("        SDUs in TxBuffer  = " << m_txBuffer.size());
-            if (m_txBuffer.size() > 0)
+            if (!m_txBuffer.empty())
             {
                 NS_LOG_LOGIC("        First SDU buffer  = " << m_txBuffer.begin()->m_pdu);
                 NS_LOG_LOGIC(
@@ -741,7 +741,7 @@ LteRlcUm::ReassembleAndDeliver(Ptr<Packet> packet)
                  */
                 m_sdusBuffer.pop_front();
 
-                if (m_sdusBuffer.size() > 0)
+                if (!m_sdusBuffer.empty())
                 {
                     /**
                      * Deliver zero, one or multiple PDUs
@@ -921,7 +921,7 @@ LteRlcUm::ReassembleAndDeliver(Ptr<Packet> packet)
                  */
                 m_sdusBuffer.pop_front();
 
-                if (m_sdusBuffer.size() > 0)
+                if (!m_sdusBuffer.empty())
                 {
                     /**
                      * Deliver zero, one or multiple PDUs
@@ -1039,7 +1039,7 @@ LteRlcUm::ReassembleAndDeliver(Ptr<Packet> packet)
                  */
                 m_sdusBuffer.pop_front();
 
-                if (m_sdusBuffer.size() > 0)
+                if (!m_sdusBuffer.empty())
                 {
                     /**
                      * Deliver zero, one or multiple PDUs

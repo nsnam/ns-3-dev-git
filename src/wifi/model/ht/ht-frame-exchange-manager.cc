@@ -987,7 +987,7 @@ HtFrameExchangeManager::SendPsdu()
         std::set<uint8_t> tids = m_psdu->GetTids();
         NS_ASSERT_MSG(tids.size() <= 1, "Multi-TID A-MPDUs are not supported");
 
-        if (tids.size() == 0 || m_psdu->GetAckPolicyForTid(*tids.begin()) == WifiMacHeader::NO_ACK)
+        if (tids.empty() || m_psdu->GetAckPolicyForTid(*tids.begin()) == WifiMacHeader::NO_ACK)
         {
             // No acknowledgment, hence dequeue the PSDU if it is stored in a queue
             DequeuePsdu(m_psdu);

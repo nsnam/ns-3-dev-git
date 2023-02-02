@@ -743,7 +743,7 @@ DsrRouting::PrintVector(std::vector<Ipv4Address>& vec)
     /*
      * Check elements in a route vector
      */
-    if (!vec.size())
+    if (vec.empty())
     {
         NS_LOG_DEBUG("The vector is empty");
     }

@@ -144,7 +144,7 @@ void
 WaveNetDevice::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
-    if (m_phyEntities.size() == 0)
+    if (m_phyEntities.empty())
     {
         NS_FATAL_ERROR("there is no PHY entity in this WAVE device");
     }
@@ -153,7 +153,7 @@ WaveNetDevice::DoInitialize()
         Ptr<WifiPhy> phy = (*i);
         phy->Initialize();
     }
-    if (m_macEntities.size() == 0)
+    if (m_macEntities.empty())
     {
         NS_FATAL_ERROR("there is no MAC entity in this WAVE device");
     }

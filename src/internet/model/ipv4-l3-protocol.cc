@@ -1650,7 +1650,7 @@ Ipv4L3Protocol::Fragments::IsEntire() const
 {
     NS_LOG_FUNCTION(this);
 
-    bool ret = !m_moreFragment && m_fragments.size() > 0;
+    bool ret = !m_moreFragment && !m_fragments.empty();
 
     if (ret)
     {

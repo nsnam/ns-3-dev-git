@@ -457,7 +457,7 @@ PyViz::FilterPacket(Ptr<const Packet> packet, const PacketCaptureOptions& option
                 missingHeaders.erase(missingIter);
             }
         }
-        if (missingHeaders.size() == 0)
+        if (missingHeaders.empty())
         {
             return true;
         }

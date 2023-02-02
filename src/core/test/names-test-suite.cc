@@ -713,7 +713,7 @@ FindPathTestCase::DoRun()
 
     Ptr<TestObject> objectNotThere = CreateObject<TestObject>();
     found = Names::FindPath(objectNotThere);
-    NS_TEST_ASSERT_MSG_EQ(found, "", "Unexpectedly found a non-existent Object");
+    NS_TEST_ASSERT_MSG_EQ(found.empty(), true, "Unexpectedly found a non-existent Object");
 }
 
 /**

@@ -973,9 +973,9 @@ LteSpectrumPhy::EndRxData()
 
     while (itTb != m_expectedTbs.end())
     {
-        if ((m_dataErrorModelEnabled) &&
-            (m_rxPacketBurstList.size() >
-             0)) // avoid to check for errors when there is no actual data transmitted
+        if (m_dataErrorModelEnabled &&
+            !m_rxPacketBurstList
+                 .empty()) // avoid to check for errors when there is no actual data transmitted
         {
             // retrieve HARQ info
             HarqProcessInfoList_t harqInfoList;

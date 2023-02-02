@@ -366,7 +366,7 @@ CtrlBAckResponseHeader::Serialize(Buffer::Iterator start) const
             i.WriteHtolsbU16(m_baInfo[index].m_aidTidInfo);
             if (GetAid11(index) != 2045)
             {
-                if (m_baInfo[index].m_bitmap.size() > 0)
+                if (!m_baInfo[index].m_bitmap.empty())
                 {
                     i.WriteHtolsbU16(GetStartingSequenceControl(index));
                     i = SerializeBitmap(i, index);
@@ -730,7 +730,7 @@ CtrlBAckResponseHeader::GetStartingSequenceControl(std::size_t index) const
     else if (m_baType.m_variant == BlockAckType::MULTI_STA)
     {
         NS_ASSERT(m_baInfo.size() == m_baType.m_bitmapLen.size());
-        NS_ASSERT_MSG(m_baInfo[index].m_bitmap.size() > 0,
+        NS_ASSERT_MSG(!m_baInfo[index].m_bitmap.empty(),
                       "This Per AID TID Info subfield has no Starting Sequence Control subfield");
 
         if (m_baType.m_bitmapLen[index] == 16)

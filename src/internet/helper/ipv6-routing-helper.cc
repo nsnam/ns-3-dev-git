@@ -185,7 +185,7 @@ Ipv6RoutingHelper::PrintNdiscCache(Ptr<Node> node,
 
         *os << "NDISC Cache of node ";
         std::string found = Names::FindName(node);
-        if (Names::FindName(node) != "")
+        if (!Names::FindName(node).empty())
         {
             *os << found;
         }
@@ -219,7 +219,7 @@ Ipv6RoutingHelper::PrintNdiscCacheEvery(Time printInterval,
 
         *os << "NDISC Cache of node ";
         std::string found = Names::FindName(node);
-        if (Names::FindName(node) != "")
+        if (!Names::FindName(node).empty())
         {
             *os << found;
         }

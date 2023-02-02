@@ -581,7 +581,7 @@ SubscriberStationNetDevice::SetScheduler(Ptr<SSScheduler> scheduler)
 bool
 SubscriberStationNetDevice::HasServiceFlows() const
 {
-    return GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_ALL).size() > 0;
+    return !GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_ALL).empty();
 }
 
 Ptr<IpcsClassifier>

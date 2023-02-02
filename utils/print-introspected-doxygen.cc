@@ -766,7 +766,7 @@ PrintAttributesTid(std::ostream& os, const TypeId tid)
         if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter())
         {
             std::string value = info.initialValue->SerializeToString(info.checker);
-            if (underType == "std::string" && value == "")
+            if (underType == "std::string" && value.empty())
             {
                 value = "\"\"";
             }
@@ -1472,7 +1472,7 @@ PrintAttributeImplementations(std::ostream& os)
     // clang-format on
 
     int i = 0;
-    while (attributes[i].m_name != "")
+    while (!attributes[i].m_name.empty())
     {
         PrintAttributeHelper(os, attributes[i]);
         ++i;

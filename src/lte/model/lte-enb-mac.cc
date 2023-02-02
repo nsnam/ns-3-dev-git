@@ -490,7 +490,7 @@ LteEnbMac::DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
 
     // --- DOWNLINK ---
     // Send Dl-CQI info to the scheduler
-    if (m_dlCqiReceived.size() > 0)
+    if (!m_dlCqiReceived.empty())
     {
         FfMacSchedSapProvider::SchedDlCqiInfoReqParameters dlcqiInfoReq;
         dlcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
@@ -564,7 +564,7 @@ LteEnbMac::DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
     dlparams.m_sfnSf = ((0x3FF & dlSchedFrameNo) << 4) | (0xF & dlSchedSubframeNo);
 
     // Forward DL HARQ feebacks collected during last TTI
-    if (m_dlInfoListReceived.size() > 0)
+    if (!m_dlInfoListReceived.empty())
     {
         dlparams.m_dlInfoList = m_dlInfoListReceived;
         // empty local buffer
@@ -590,7 +590,7 @@ LteEnbMac::DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
     m_ulCqiReceived.clear();
 
     // Send BSR reports to the scheduler
-    if (m_ulCeReceived.size() > 0)
+    if (!m_ulCeReceived.empty())
     {
         FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters ulMacReq;
         ulMacReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
@@ -618,7 +618,7 @@ LteEnbMac::DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
     ulparams.m_sfnSf = ((0x3FF & ulSchedFrameNo) << 4) | (0xF & ulSchedSubframeNo);
 
     // Forward DL HARQ feebacks collected during last TTI
-    if (m_ulInfoListReceived.size() > 0)
+    if (!m_ulInfoListReceived.empty())
     {
         ulparams.m_ulInfoList = m_ulInfoListReceived;
         // empty local buffer
@@ -1209,7 +1209,7 @@ LteEnbMac::DoSchedDlConfigInd(FfMacSchedSapUser::SchedDlConfigIndParameters ind)
         NS_LOG_INFO(this << " Send RAR message to RNTI " << ind.m_buildRarList.at(i).m_rnti
                          << " rapId " << itRapId->second);
     }
-    if (ind.m_buildRarList.size() > 0)
+    if (!ind.m_buildRarList.empty())
     {
         m_enbPhySapProvider->SendLteControlMessage(rarMsg);
     }

@@ -464,7 +464,7 @@ CheckEnvironmentVariables()
 
     for (auto& [component, value] : dict)
     {
-        if (value == "")
+        if (value.empty())
         {
             if (ComponentExists(component) || component == "*" || component == "***")
             {

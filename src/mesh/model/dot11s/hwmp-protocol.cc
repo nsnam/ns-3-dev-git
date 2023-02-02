@@ -742,7 +742,7 @@ HwmpProtocol::ReceivePerr(std::vector<FailedDestination> destinations,
             retval.push_back(destinations[i]);
         }
     }
-    if (retval.size() == 0)
+    if (retval.empty())
     {
         return;
     }
@@ -866,7 +866,7 @@ HwmpProtocol::MakePathError(std::vector<FailedDestination> destinations)
     PathError retval;
     // HwmpRtable increments a sequence number as written in 11B.9.7.2
     retval.receivers = GetPerrReceivers(destinations);
-    if (retval.receivers.size() == 0)
+    if (retval.receivers.empty())
     {
         return retval;
     }
@@ -978,7 +978,7 @@ HwmpProtocol::GetPreqReceivers(uint32_t interface)
     {
         retval = m_neighboursCallback(interface);
     }
-    if ((retval.size() >= m_unicastPreqThreshold) || (retval.size() == 0))
+    if (retval.size() >= m_unicastPreqThreshold || retval.empty())
     {
         retval.clear();
         retval.push_back(Mac48Address::GetBroadcast());
@@ -995,7 +995,7 @@ HwmpProtocol::GetBroadcastReceivers(uint32_t interface)
     {
         retval = m_neighboursCallback(interface);
     }
-    if ((retval.size() >= m_unicastDataThreshold) || (retval.size() == 0))
+    if (retval.size() >= m_unicastDataThreshold || retval.empty())
     {
         retval.clear();
         retval.push_back(Mac48Address::GetBroadcast());
@@ -1039,7 +1039,7 @@ HwmpProtocol::DequeueFirstPacket()
     NS_LOG_FUNCTION(this);
     QueuedPacket retval;
     retval.pkt = nullptr;
-    if (m_rqueue.size() != 0)
+    if (!m_rqueue.empty())
     {
         retval = m_rqueue[0];
         m_rqueue.erase(m_rqueue.begin());

@@ -60,7 +60,7 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
     {
         std::cout << Simulator::Now().As(Time::S) << "| Active scan status SUCCESSFUL (Completed)"
                   << "\n";
-        if (params.m_panDescList.size() > 0)
+        if (!params.m_panDescList.empty())
         {
             std::cout << "Device [" << device->GetMac()->GetShortAddress()
                       << "] found the following PANs:\n";

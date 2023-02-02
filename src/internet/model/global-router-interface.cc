@@ -272,7 +272,7 @@ bool
 GlobalRoutingLSA::IsEmpty() const
 {
     NS_LOG_FUNCTION(this);
-    return m_linkRecords.size() == 0;
+    return m_linkRecords.empty();
 }
 
 GlobalRoutingLSA::LSType

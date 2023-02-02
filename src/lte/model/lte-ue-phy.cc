@@ -1309,7 +1309,7 @@ LteUePhy::SubframeIndication(uint32_t frameNo, uint32_t subframeNo)
         else
         {
             // send only PUCCH (ideal: fake null bandwidth signal)
-            if (ctrlMsg.size() > 0)
+            if (!ctrlMsg.empty())
             {
                 NS_LOG_LOGIC(this << " UE - start TX PUCCH (NO PUSCH)");
                 std::vector<int> dlRb;

@@ -113,7 +113,7 @@ LteRlcTm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
     // When submitting a new TMD PDU to lower layer, the transmitting TM RLC entity shall:
     // - submit a RLC SDU without any modification to lower layer.
 
-    if (m_txBuffer.size() == 0)
+    if (m_txBuffer.empty())
     {
         NS_LOG_LOGIC("No data pending");
         return;

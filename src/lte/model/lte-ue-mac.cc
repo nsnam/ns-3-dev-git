@@ -362,7 +362,7 @@ LteUeMac::SendReportBufferStatus()
         return;
     }
 
-    if (m_ulBsrReceived.size() == 0)
+    if (m_ulBsrReceived.empty())
     {
         NS_LOG_INFO("No BSR report to transmit");
         return;

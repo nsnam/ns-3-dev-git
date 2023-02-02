@@ -2188,7 +2188,7 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
     }
 
     // generate or update non-self blocking
-    if (channelParams->m_nonSelfBlocking.size() == 0) // generate new blocking regions
+    if (channelParams->m_nonSelfBlocking.empty()) // generate new blocking regions
     {
         for (uint16_t blockInd = 0; blockInd < m_numNonSelfBlocking; blockInd++)
         {

@@ -79,7 +79,7 @@ std::string
 PcapHelper::GetFilenameFromDevice(std::string prefix, Ptr<NetDevice> device, bool useObjectNames)
 {
     NS_LOG_FUNCTION(prefix << device << useObjectNames);
-    NS_ABORT_MSG_UNLESS(prefix.size(), "Empty prefix string");
+    NS_ABORT_MSG_UNLESS(!prefix.empty(), "Empty prefix string");
 
     std::ostringstream oss;
     oss << prefix << "-";
@@ -95,7 +95,7 @@ PcapHelper::GetFilenameFromDevice(std::string prefix, Ptr<NetDevice> device, boo
         devicename = Names::FindName(device);
     }
 
-    if (nodename.size())
+    if (!nodename.empty())
     {
         oss << nodename;
     }
@@ -106,7 +106,7 @@ PcapHelper::GetFilenameFromDevice(std::string prefix, Ptr<NetDevice> device, boo
 
     oss << "-";
 
-    if (devicename.size())
+    if (!devicename.empty())
     {
         oss << devicename;
     }
@@ -127,7 +127,7 @@ PcapHelper::GetFilenameFromInterfacePair(std::string prefix,
                                          bool useObjectNames)
 {
     NS_LOG_FUNCTION(prefix << object << interface << useObjectNames);
-    NS_ABORT_MSG_UNLESS(prefix.size(), "Empty prefix string");
+    NS_ABORT_MSG_UNLESS(!prefix.empty(), "Empty prefix string");
 
     std::ostringstream oss;
     oss << prefix << "-";
@@ -143,11 +143,11 @@ PcapHelper::GetFilenameFromInterfacePair(std::string prefix,
         nodename = Names::FindName(node);
     }
 
-    if (objname.size())
+    if (!objname.empty())
     {
         oss << objname;
     }
-    else if (nodename.size())
+    else if (!nodename.empty())
     {
         oss << nodename;
     }
@@ -216,7 +216,7 @@ AsciiTraceHelper::GetFilenameFromDevice(std::string prefix,
                                         bool useObjectNames)
 {
     NS_LOG_FUNCTION(prefix << device << useObjectNames);
-    NS_ABORT_MSG_UNLESS(prefix.size(), "Empty prefix string");
+    NS_ABORT_MSG_UNLESS(!prefix.empty(), "Empty prefix string");
 
     std::ostringstream oss;
     oss << prefix << "-";
@@ -232,7 +232,7 @@ AsciiTraceHelper::GetFilenameFromDevice(std::string prefix,
         devicename = Names::FindName(device);
     }
 
-    if (nodename.size())
+    if (!nodename.empty())
     {
         oss << nodename;
     }
@@ -243,7 +243,7 @@ AsciiTraceHelper::GetFilenameFromDevice(std::string prefix,
 
     oss << "-";
 
-    if (devicename.size())
+    if (!devicename.empty())
     {
         oss << devicename;
     }
@@ -264,7 +264,7 @@ AsciiTraceHelper::GetFilenameFromInterfacePair(std::string prefix,
                                                bool useObjectNames)
 {
     NS_LOG_FUNCTION(prefix << object << interface << useObjectNames);
-    NS_ABORT_MSG_UNLESS(prefix.size(), "Empty prefix string");
+    NS_ABORT_MSG_UNLESS(!prefix.empty(), "Empty prefix string");
 
     std::ostringstream oss;
     oss << prefix << "-";
@@ -280,11 +280,11 @@ AsciiTraceHelper::GetFilenameFromInterfacePair(std::string prefix,
         nodename = Names::FindName(node);
     }
 
-    if (objname.size())
+    if (!objname.empty())
     {
         oss << objname;
     }
-    else if (nodename.size())
+    else if (!nodename.empty())
     {
         oss << nodename;
     }

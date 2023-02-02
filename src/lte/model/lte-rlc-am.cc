@@ -469,7 +469,7 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
 
     // Remove the first packet from the transmission buffer.
     // If only a segment of the packet is taken, then the remaining is given back later
-    if (m_txonBuffer.size() == 0)
+    if (m_txonBuffer.empty())
     {
         NS_LOG_LOGIC("No data pending");
         return;
@@ -578,7 +578,7 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
             // (NO more segments) ? exit
             // break;
         }
-        else if ((nextSegmentSize - firstSegment->GetSize() <= 2) || (m_txonBuffer.size() == 0))
+        else if ((nextSegmentSize - firstSegment->GetSize() <= 2) || m_txonBuffer.empty())
         {
             NS_LOG_LOGIC(
                 "    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txonBuffer.size == 0");
@@ -597,7 +597,7 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
             nextSegmentId++;
 
             NS_LOG_LOGIC("        SDUs in TxBuffer  = " << m_txonBuffer.size());
-            if (m_txonBuffer.size() > 0)
+            if (!m_txonBuffer.empty())
             {
                 NS_LOG_LOGIC("        First SDU buffer  = " << m_txonBuffer.begin()->m_pdu);
                 NS_LOG_LOGIC(
@@ -627,7 +627,7 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
             nextSegmentId++;
 
             NS_LOG_LOGIC("        SDUs in TxBuffer  = " << m_txonBuffer.size());
-            if (m_txonBuffer.size() > 0)
+            if (!m_txonBuffer.empty())
             {
                 NS_LOG_LOGIC("        First SDU buffer  = " << m_txonBuffer.begin()->m_pdu);
                 NS_LOG_LOGIC(
@@ -928,7 +928,7 @@ LteRlcAm::DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams)
             std::map<uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find(seqNumber.GetValue());
             if (it != m_rxonBuffer.end())
             {
-                NS_ASSERT(it->second.m_byteSegments.size() > 0);
+                NS_ASSERT(!it->second.m_byteSegments.empty());
                 NS_ASSERT_MSG(it->second.m_byteSegments.size() == 1,
                               "re-segmentation not supported");
                 NS_LOG_LOGIC("PDU segment already received, discarded");
@@ -1459,7 +1459,7 @@ LteRlcAm::ReassembleAndDeliver(Ptr<Packet> packet)
                  */
                 m_sdusBuffer.pop_front();
 
-                if (m_sdusBuffer.size() > 0)
+                if (!m_sdusBuffer.empty())
                 {
                     /**
                      * Deliver zero, one or multiple PDUs
@@ -1577,7 +1577,7 @@ LteRlcAm::ReassembleAndDeliver(Ptr<Packet> packet)
                  */
                 m_sdusBuffer.pop_front();
 
-                if (m_sdusBuffer.size() > 0)
+                if (!m_sdusBuffer.empty())
                 {
                     /**
                      * Deliver zero, one or multiple PDUs

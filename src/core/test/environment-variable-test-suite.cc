@@ -247,7 +247,7 @@ EnvVarTestCase::DoRun()
     Check("unset", "", {});
     auto [found, value] = EnvironmentVariable::Get(m_variable);
     NS_TEST_EXPECT_MSG_EQ(found, false, "unset: variable found when not set");
-    NS_TEST_EXPECT_MSG_EQ(value, "", "unset: non-empty value from unset variable");
+    NS_TEST_EXPECT_MSG_EQ(value.empty(), true, "unset: non-empty value from unset variable");
 
     // Variable set but empty
     SetCheckAndGet("empty", "", {}, "", {true, ""});

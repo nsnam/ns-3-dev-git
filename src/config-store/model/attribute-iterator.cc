@@ -73,7 +73,7 @@ AttributeIterator::GetCurrentPath(std::string attr) const
     {
         oss << "/" << m_currentPath[i];
     }
-    if (attr != "")
+    if (!attr.empty())
     {
         oss << "/" << attr;
     }

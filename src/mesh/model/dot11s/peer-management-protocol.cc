@@ -443,7 +443,7 @@ PeerManagementProtocol::CheckBeaconCollisions(uint32_t interface)
     NS_ASSERT_MSG(TuToTime(m_maxBeaconShift) <= m_beaconInterval[interface],
                   "Wrong beacon shift parameters");
 
-    if (iface->second.size() == 0)
+    if (iface->second.empty())
     {
         // I have no peers - may be our beacons are in collision
         ShiftOwnBeacon(interface);

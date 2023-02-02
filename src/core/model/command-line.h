@@ -777,7 +777,7 @@ template <typename T>
 bool
 CommandLine::UserItem<T>::HasDefault() const
 {
-    return (m_default.size() > 0);
+    return !m_default.empty();
 }
 
 template <typename T>

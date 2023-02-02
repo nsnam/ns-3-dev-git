@@ -224,7 +224,7 @@ TapFdNetDeviceHelper::CreateFileDescriptor() const
         // which tells the system to make up a device name such as "tap123".
         //
         std::ostringstream ossDeviceName;
-        if (m_deviceName != "")
+        if (!m_deviceName.empty())
         {
             ossDeviceName << "-d" << m_deviceName;
         }

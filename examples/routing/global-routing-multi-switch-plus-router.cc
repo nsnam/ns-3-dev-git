@@ -332,7 +332,7 @@ main(int argc, char* argv[])
     // Parse the pcapLocations string into pcapLocationVec
     // ----------------------------------------------------------------------
     std::vector<std::string> pcapLocationVec;
-    if (pcapLocations != "")
+    if (!pcapLocations.empty())
     {
         std::stringstream sStream(pcapLocations);
 

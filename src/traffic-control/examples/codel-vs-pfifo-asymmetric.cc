@@ -90,7 +90,7 @@ static void
 TraceCwnd(std::string cwndTrFileName)
 {
     AsciiTraceHelper ascii;
-    if (cwndTrFileName == "")
+    if (cwndTrFileName.empty())
     {
         NS_LOG_DEBUG("No trace file for cwnd provided");
         return;
@@ -125,7 +125,7 @@ static void
 TraceSojourn(std::string sojournTrFileName)
 {
     AsciiTraceHelper ascii;
-    if (sojournTrFileName == "")
+    if (sojournTrFileName.empty())
     {
         NS_LOG_DEBUG("No trace file for sojourn provided");
         return;
@@ -161,7 +161,7 @@ static void
 TraceQueueLength(std::string queueLengthTrFileName)
 {
     AsciiTraceHelper ascii;
-    if (queueLengthTrFileName == "")
+    if (queueLengthTrFileName.empty())
     {
         NS_LOG_DEBUG("No trace file for queue length provided");
         return;
@@ -196,7 +196,7 @@ static void
 TraceEveryDrop(std::string everyDropTrFileName)
 {
     AsciiTraceHelper ascii;
-    if (everyDropTrFileName == "")
+    if (everyDropTrFileName.empty())
     {
         NS_LOG_DEBUG("No trace file for every drop event provided");
         return;
@@ -241,7 +241,7 @@ static void
 TraceDroppingState(std::string dropStateTrFileName)
 {
     AsciiTraceHelper ascii;
-    if (dropStateTrFileName == "")
+    if (dropStateTrFileName.empty())
     {
         NS_LOG_DEBUG("No trace file for dropping state provided");
         return;

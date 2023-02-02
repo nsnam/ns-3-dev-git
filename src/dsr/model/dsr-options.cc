@@ -266,7 +266,7 @@ DsrOptions::PrintVector(std::vector<Ipv4Address>& vec)
     /*
      * Check elements in a route vector
      */
-    if (!vec.size())
+    if (vec.empty())
     {
         NS_LOG_DEBUG("The vector is empty");
     }
@@ -1112,7 +1112,7 @@ DsrOptionRrep::Process(Ptr<Packet> packet,
     {
         RemoveDuplicates(nodeList); // This is for the route reply from intermediate node since we
                                     // didn't remove duplicate there
-        if (nodeList.size() == 0)
+        if (nodeList.empty())
         {
             NS_LOG_DEBUG("The route we have contains 0 entries");
             return 0;

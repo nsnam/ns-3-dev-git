@@ -1596,7 +1596,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback(
                  << " dB)");
 
         // verifying reported best cells
-        if (measResults.measResultListEutra.size() == 0)
+        if (measResults.measResultListEutra.empty())
         {
             NS_TEST_ASSERT_MSG_EQ(measResults.haveMeasResultNeighCells,
                                   false,
@@ -1889,7 +1889,7 @@ LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback(
                  << " dB)");
 
         // verifying reported best cells
-        if (measResults.measResultListEutra.size() == 0)
+        if (measResults.measResultListEutra.empty())
         {
             NS_TEST_ASSERT_MSG_EQ(measResults.haveMeasResultNeighCells,
                                   false,
@@ -2517,7 +2517,7 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback(
                  << " dB)");
 
         // verifying reported best cells
-        if (measResults.measResultListEutra.size() == 0)
+        if (measResults.measResultListEutra.empty())
         {
             NS_TEST_ASSERT_MSG_EQ(measResults.haveMeasResultNeighCells,
                                   false,

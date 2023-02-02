@@ -270,7 +270,7 @@ Join(std::list<std::string>::const_iterator begin, std::list<std::string>::const
     std::string retval = "";
     for (std::list<std::string>::const_iterator i = begin; i != end; i++)
     {
-        if (*i == "")
+        if ((*i).empty())
         {
             // skip empty strings in the path list
             continue;
@@ -384,7 +384,7 @@ Exists(const std::string path)
     auto tokens = Split(path);
     std::string file = tokens.back();
 
-    if (file == "")
+    if (file.empty())
     {
         // Last component was a directory, not a file name
         // We already checked that the directory exists,

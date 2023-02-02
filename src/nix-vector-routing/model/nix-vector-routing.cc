@@ -1147,7 +1147,7 @@ NixVectorRouting<T>::BFS(uint32_t numberOfNodes,
     parentVector.at(source->GetId()) = source;
 
     // BFS loop
-    while (greyNodeList.size() != 0)
+    while (!greyNodeList.empty())
     {
         Ptr<Node> currNode = greyNodeList.front();
         Ptr<IpL3Protocol> ip = currNode->GetObject<IpL3Protocol>();

@@ -990,7 +990,7 @@ BaseStationNetDevice::SendBursts()
     OfdmDlMapIe* dlMapIe;
     Cid cid;
 
-    while (downlinkBursts->size())
+    while (!downlinkBursts->empty())
     {
         pair = downlinkBursts->front();
         burst = pair.second;

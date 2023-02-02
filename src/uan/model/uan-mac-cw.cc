@@ -126,11 +126,11 @@ UanMacCw::Enqueue(Ptr<Packet> packet, uint16_t protocolNumber, const Address& de
             NS_LOG_DEBUG("State is not TX");
         }
 
-        NS_ASSERT(m_phy->GetTransducer()->GetArrivalList().size() >= 1 || m_phy->IsStateTx());
+        NS_ASSERT(!m_phy->GetTransducer()->GetArrivalList().empty() || m_phy->IsStateTx());
         return false;
     case RUNNING:
         NS_LOG_DEBUG("MAC " << GetAddress() << " Starting enqueue RUNNING");
-        NS_ASSERT(m_phy->GetTransducer()->GetArrivalList().size() == 0 && !m_phy->IsStateTx());
+        NS_ASSERT(m_phy->GetTransducer()->GetArrivalList().empty() && !m_phy->IsStateTx());
         return false;
     case TX:
     case IDLE: {
@@ -157,14 +157,14 @@ UanMacCw::Enqueue(Ptr<Packet> packet, uint16_t protocolNumber, const Address& de
                                  << ": Enqueuing new packet while busy:  (Chose CW " << cw
                                  << ", Sending at " << m_sendTime.As(Time::S)
                                  << " Packet size: " << packet->GetSize());
-            NS_ASSERT(m_phy->GetTransducer()->GetArrivalList().size() >= 1 || m_phy->IsStateTx());
+            NS_ASSERT(!m_phy->GetTransducer()->GetArrivalList().empty() || m_phy->IsStateTx());
         }
         else
         {
             NS_ASSERT(m_state != TX);
             NS_LOG_DEBUG("Time " << Now().As(Time::S) << ": Addr " << GetAddress()
                                  << ": Enqueuing new packet while idle (sending)");
-            NS_ASSERT(m_phy->GetTransducer()->GetArrivalList().size() == 0 && !m_phy->IsStateTx());
+            NS_ASSERT(m_phy->GetTransducer()->GetArrivalList().empty() && !m_phy->IsStateTx());
             m_state = TX;
             m_phy->SendPacket(packet, GetTxModeIndex());
         }

@@ -613,7 +613,7 @@ main(int argc, char* argv[])
             enableN1Tcp = true;
             n1TcpTypeId = TypeId::LookupByName("ns3::TcpDctcp");
         }
-        else if (n1TcpType == "")
+        else if (n1TcpType.empty())
         {
             NS_LOG_DEBUG("No N1 TCP selected");
         }

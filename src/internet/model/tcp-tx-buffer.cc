@@ -169,13 +169,13 @@ TcpTxBuffer::SetHeadSequence(const SequenceNumber32& seq)
     NS_LOG_FUNCTION(this << seq);
     m_firstByteSeq = seq;
 
-    if (m_sentList.size() > 0)
+    if (!m_sentList.empty())
     {
         m_sentList.front()->m_startSeq = seq;
     }
 
     // if you change the head with data already sent, something bad will happen
-    NS_ASSERT(m_sentList.size() == 0);
+    NS_ASSERT(m_sentList.empty());
     m_highestSack = std::make_pair(m_sentList.end(), SequenceNumber32(0));
 }
 
@@ -309,7 +309,7 @@ TcpTxBuffer::GetTransmittedSegment(uint32_t numBytes, const SequenceNumber32& se
     NS_LOG_FUNCTION(this << numBytes << seq);
     NS_ASSERT(seq >= m_firstByteSeq);
     NS_ASSERT(numBytes <= m_sentSize);
-    NS_ASSERT(m_sentList.size() >= 1);
+    NS_ASSERT(!m_sentList.empty());
 
     auto it = m_sentList.begin();
     bool listEdited = false;
@@ -1242,7 +1242,7 @@ TcpTxBuffer::ResetSentList()
     TcpTxItem* item;
 
     // Keep the head items; they will then marked as lost
-    while (m_sentList.size() > 0)
+    while (!m_sentList.empty())
     {
         item = m_sentList.back();
         item->m_retrans = item->m_sacked = item->m_lost = false;
@@ -1357,7 +1357,7 @@ TcpTxBuffer::DeleteRetransmittedFlagFromHead()
 void
 TcpTxBuffer::MarkHeadAsLost()
 {
-    if (m_sentList.size() > 0)
+    if (!m_sentList.empty())
     {
         // If the head is sacked (reneging by the receiver the previously sent
         // information) we revert the sacked flag.
@@ -1394,7 +1394,7 @@ TcpTxBuffer::AddRenoSack()
     }
     else
     {
-        NS_ASSERT(m_sentList.size() > 0);
+        NS_ASSERT(!m_sentList.empty());
     }
 
     m_renoSack = true;

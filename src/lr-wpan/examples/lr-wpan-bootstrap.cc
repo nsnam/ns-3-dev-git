@@ -90,7 +90,7 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
         // Select the coordinator with the highest LQI from the PAN Descriptor List
         int maxLqi = 0;
         int panDescIndex = 0;
-        if (params.m_panDescList.size() > 0)
+        if (!params.m_panDescList.empty())
         {
             for (uint32_t i = 0; i < params.m_panDescList.size(); i++)
             {

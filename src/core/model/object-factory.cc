@@ -66,7 +66,7 @@ void
 ObjectFactory::DoSet(const std::string& name, const AttributeValue& value)
 {
     NS_LOG_FUNCTION(this << name << &value);
-    if (name == "")
+    if (name.empty())
     {
         return;
     }

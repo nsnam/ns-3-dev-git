@@ -587,9 +587,9 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
     // Process DL HARQ feedback
     RefreshHarqProcesses();
     // retrieve past HARQ retx buffered
-    if (m_dlInfoListBuffered.size() > 0)
+    if (!m_dlInfoListBuffered.empty())
     {
-        if (params.m_dlInfoList.size() > 0)
+        if (!params.m_dlInfoList.empty())
         {
             NS_LOG_INFO(this << " Received DL-HARQ feedback");
             m_dlInfoListBuffered.insert(m_dlInfoListBuffered.end(),
@@ -599,7 +599,7 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
     }
     else
     {
-        if (params.m_dlInfoList.size() > 0)
+        if (!params.m_dlInfoList.empty())
         {
             m_dlInfoListBuffered = params.m_dlInfoList;
         }
@@ -827,7 +827,7 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
                     }
                 }
 
-                if (rlcPduListPerLc.size() > 0)
+                if (!rlcPduListPerLc.empty())
                 {
                     newEl.m_rlcPduList.push_back(rlcPduListPerLc);
                 }
@@ -877,7 +877,7 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
     if (rbgAllocatedNum == rbgNum)
     {
         // all the RBGs are already allocated -> exit
-        if ((ret.m_buildDataList.size() > 0) || (ret.m_buildRarList.size() > 0))
+        if (!ret.m_buildDataList.empty() || !ret.m_buildRarList.empty())
         {
             m_schedSapUser->SchedDlConfigInd(ret);
         }
@@ -974,7 +974,7 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
             } // end for RBG free
 
         } // end for RBGs
-        if (tempMap.size() > 0)
+        if (!tempMap.empty())
         {
             allocationMap.insert(std::pair<uint16_t, std::vector<uint16_t>>((*itMax), tempMap));
         }
@@ -1349,7 +1349,7 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq(
 
     if (nflows == 0)
     {
-        if (ret.m_dciList.size() > 0)
+        if (!ret.m_dciList.empty())
         {
             m_allocationMaps.insert(
                 std::pair<uint16_t, std::vector<uint16_t>>(params.m_sfnSf, rbgAllocationMap));
@@ -1465,7 +1465,7 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq(
         {
             // unable to allocate new resource: finish scheduling
             m_nextRntiUl = (*it).first;
-            if (ret.m_dciList.size() > 0)
+            if (!ret.m_dciList.empty())
             {
                 m_schedSapUser->SchedUlConfigInd(ret);
             }
@@ -1484,7 +1484,7 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq(
         else
         {
             // take the lowest CQI value (worst RB)
-            NS_ABORT_MSG_IF((*itCqi).second.size() == 0,
+            NS_ABORT_MSG_IF((*itCqi).second.empty(),
                             "CQI of RNTI = " << (*it).first << " has expired");
             double minSinr = (*itCqi).second.at(uldci.m_rbStart);
             if (minSinr == NO_SINR)
@@ -1739,7 +1739,7 @@ TdMtFfMacScheduler::DoSchedUlCqiInfoReq(
     case UlCqi_s::SRS: {
         // get the RNTI from vendor specific parameters
         uint16_t rnti = 0;
-        NS_ASSERT(params.m_vendorSpecificList.size() > 0);
+        NS_ASSERT(!params.m_vendorSpecificList.empty());
         for (std::size_t i = 0; i < params.m_vendorSpecificList.size(); i++)
         {
             if (params.m_vendorSpecificList.at(i).m_type == SRS_CQI_RNTI_VSP)

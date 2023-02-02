@@ -46,7 +46,7 @@ void
 XmlConfigSave::SetFilename(std::string filename)
 {
     NS_LOG_FUNCTION(filename);
-    if (filename == "")
+    if (filename.empty())
     {
         return;
     }

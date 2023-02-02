@@ -158,7 +158,7 @@ EpsBearer::GetRequirementsRel11()
      */
     static EpsBearer::BearerRequirementsMap ret;
 
-    if (ret.size() == 0)
+    if (ret.empty())
     {
         ret.insert(std::make_pair(GBR_CONV_VOICE, std::make_tuple(true, 2, 100, 1.0e-2, 0, 0)));
         ret.insert(std::make_pair(GBR_CONV_VIDEO, std::make_tuple(true, 4, 150, 1.0e-3, 0, 0)));
@@ -183,7 +183,7 @@ EpsBearer::GetRequirementsRel15()
     // Needed to support GCC 4.9. Otherwise, use list constructors (see GetRequirementsRel10)
     static EpsBearer::BearerRequirementsMap ret;
 
-    if (ret.size() == 0)
+    if (ret.empty())
     {
         ret.insert(std::make_pair(GBR_CONV_VOICE, std::make_tuple(true, 20, 100, 1.0e-2, 0, 2000)));
         ret.insert(std::make_pair(GBR_CONV_VIDEO, std::make_tuple(true, 40, 150, 1.0e-3, 0, 2000)));

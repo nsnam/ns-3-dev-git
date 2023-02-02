@@ -2845,7 +2845,7 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
                 if (!m_mcpsDataConfirmCallback.IsNull())
                 {
                     McpsDataConfirmParams confirmParams;
-                    NS_ASSERT_MSG(m_txQueue.size() > 0, "TxQsize = 0");
+                    NS_ASSERT_MSG(!m_txQueue.empty(), "TxQsize = 0");
                     Ptr<TxQueueElement> txQElement = m_txQueue.front();
                     confirmParams.m_msduHandle = txQElement->txQMsduHandle;
                     confirmParams.m_status = IEEE_802_15_4_SUCCESS;
@@ -2950,7 +2950,7 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
     {
         if (!macHdr.IsAcknowledgment())
         {
-            NS_ASSERT_MSG(m_txQueue.size() > 0, "TxQsize = 0");
+            NS_ASSERT_MSG(!m_txQueue.empty(), "TxQsize = 0");
             Ptr<TxQueueElement> txQElement = m_txQueue.front();
             m_macTxDropTrace(txQElement->txQPkt);
             if (!m_mcpsDataConfirmCallback.IsNull())

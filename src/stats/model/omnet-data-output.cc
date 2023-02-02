@@ -167,11 +167,11 @@ OmnetDataOutput::OmnetOutputCallback::OutputStatistic(std::string context,
 {
     NS_LOG_FUNCTION(this << context << name << statSum);
 
-    if (context == "")
+    if (context.empty())
     {
         context = ".";
     }
-    if (name == "")
+    if (name.empty())
     {
         name = "\"\"";
     }
@@ -213,11 +213,11 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
 {
     NS_LOG_FUNCTION(this << context << name << val);
 
-    if (context == "")
+    if (context.empty())
     {
         context = ".";
     }
-    if (name == "")
+    if (name.empty())
     {
         name = "\"\"";
     }
@@ -232,11 +232,11 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
 {
     NS_LOG_FUNCTION(this << context << name << val);
 
-    if (context == "")
+    if (context.empty())
     {
         context = ".";
     }
-    if (name == "")
+    if (name.empty())
     {
         name = "\"\"";
     }
@@ -251,11 +251,11 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
 {
     NS_LOG_FUNCTION(this << context << name << val);
 
-    if (context == "")
+    if (context.empty())
     {
         context = ".";
     }
-    if (name == "")
+    if (name.empty())
     {
         name = "\"\"";
     }
@@ -270,11 +270,11 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
 {
     NS_LOG_FUNCTION(this << context << name << val);
 
-    if (context == "")
+    if (context.empty())
     {
         context = ".";
     }
-    if (name == "")
+    if (name.empty())
     {
         name = "\"\"";
     }
@@ -289,11 +289,11 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
 {
     NS_LOG_FUNCTION(this << context << name << val);
 
-    if (context == "")
+    if (context.empty())
     {
         context = ".";
     }
-    if (name == "")
+    if (name.empty())
     {
         name = "\"\"";
     }

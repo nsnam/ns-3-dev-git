@@ -960,7 +960,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
             {
                 m_sortedRoutes.erase(jtmp);
             }
-            if (rtVector.size())
+            if (!rtVector.empty())
             {
                 /*
                  * Save the new route cache along with the destination address in map
@@ -983,7 +983,7 @@ DsrRouteCache::PrintVector(std::vector<Ipv4Address>& vec)
     /*
      * Check elements in a route vector, used when one wants to check the IP addresses saved in
      */
-    if (!vec.size())
+    if (vec.empty())
     {
         NS_LOG_DEBUG("The vector is empty");
     }
@@ -1030,7 +1030,7 @@ DsrRouteCache::Purge()
         Ipv4Address dst = i->first;
         std::list<DsrRouteCacheEntry> rtVector = i->second;
         NS_LOG_DEBUG("The route vector size of 1 " << dst << " " << rtVector.size());
-        if (rtVector.size())
+        if (!rtVector.empty())
         {
             for (std::list<DsrRouteCacheEntry>::iterator j = rtVector.begin(); j != rtVector.end();)
             {
@@ -1054,7 +1054,7 @@ DsrRouteCache::Purge()
                 }
             }
             NS_LOG_DEBUG("The route vector size of 2 " << dst << " " << rtVector.size());
-            if (rtVector.size())
+            if (!rtVector.empty())
             {
                 ++i;
                 m_sortedRoutes.erase(itmp); // erase the entry first

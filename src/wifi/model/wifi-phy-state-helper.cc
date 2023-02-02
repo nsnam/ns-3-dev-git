@@ -487,7 +487,7 @@ WifiPhyStateHelper::NotifyRxPsduSucceeded(Ptr<const WifiPsdu> psdu,
                          << std::all_of(statusPerMpdu.begin(), statusPerMpdu.end(), [](bool v) {
                                 return v;
                             })); // returns true if all true
-    NS_ASSERT(statusPerMpdu.size() != 0);
+    NS_ASSERT(!statusPerMpdu.empty());
     if (!m_rxOkTrace.IsEmpty())
     {
         m_rxOkTrace(psdu->GetPacket(),

@@ -605,7 +605,7 @@ void
 Resolver::DoArrayResolve(std::string path, const ObjectPtrContainerValue& container)
 {
     NS_LOG_FUNCTION(this << path << &container);
-    NS_ASSERT(path != "");
+    NS_ASSERT(!path.empty());
     NS_ASSERT((path.find('/')) == 0);
     std::string::size_type next = path.find('/', 1);
     if (next == std::string::npos)

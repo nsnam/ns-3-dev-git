@@ -81,7 +81,7 @@ TracedValueCbSink(T oldValue, T newValue)
 
     if (newValue != 1)
     {
-        g_Result += std::string(g_Result == "" ? "" : " | ") + "newValue should be 1";
+        g_Result += std::string(g_Result.empty() ? "" : " | ") + "newValue should be 1";
     }
 } // TracedValueCbSink<>()
 
@@ -217,7 +217,7 @@ class TracedValueCallbackTestCase : public TestCase
         U sink = TracedValueCbSink<T>;
         CreateObject<CheckTvCb<T>>()->Invoke(sink);
 
-        NS_TEST_ASSERT_MSG_EQ(g_Result, "", g_Result);
+        NS_TEST_ASSERT_MSG_EQ(g_Result.empty(), true, g_Result);
         g_Result = "";
 
     } // CheckType<>()

@@ -403,7 +403,7 @@ GetRandomStream(std::string filename)
 {
     Ptr<RandomVariableStream> stream = nullptr;
 
-    if (filename == "")
+    if (filename.empty())
     {
         LOG("  Event time distribution:      default exponential");
         auto erv = CreateObject<ExponentialRandomVariable>();

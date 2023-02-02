@@ -677,7 +677,7 @@ LteEnbPhy::StartSubFrame()
     std::list<Ptr<LteControlMessage>> ctrlMsg = GetControlMessages();
     m_dlDataRbMap.clear();
     m_dlPowerAllocationMap.clear();
-    if (ctrlMsg.size() > 0)
+    if (!ctrlMsg.empty())
     {
         std::list<Ptr<LteControlMessage>>::iterator it;
         it = ctrlMsg.begin();
@@ -1086,7 +1086,7 @@ std::list<UlDciLteControlMessage>
 LteEnbPhy::DequeueUlDci()
 {
     NS_LOG_FUNCTION(this);
-    if (m_ulDciQueue.at(0).size() > 0)
+    if (!m_ulDciQueue.at(0).empty())
     {
         std::list<UlDciLteControlMessage> ret = m_ulDciQueue.at(0);
         m_ulDciQueue.erase(m_ulDciQueue.begin());

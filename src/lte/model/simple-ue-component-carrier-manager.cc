@@ -277,7 +277,7 @@ SimpleUeComponentCarrierManager::DoRemoveLc(uint8_t lcid)
         }
         it++;
     }
-    NS_ABORT_MSG_IF(res.size() == 0,
+    NS_ABORT_MSG_IF(res.empty(),
                     "LCID " << lcid << " not found in the ComponentCarrierManager map");
 
     return res;

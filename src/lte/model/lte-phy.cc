@@ -217,7 +217,7 @@ std::list<Ptr<LteControlMessage>>
 LtePhy::GetControlMessages()
 {
     NS_LOG_FUNCTION(this);
-    if (m_controlMessagesQueue.at(0).size() > 0)
+    if (!m_controlMessagesQueue.at(0).empty())
     {
         std::list<Ptr<LteControlMessage>> ret = m_controlMessagesQueue.at(0);
         m_controlMessagesQueue.erase(m_controlMessagesQueue.begin());

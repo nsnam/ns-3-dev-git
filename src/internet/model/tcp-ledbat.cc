@@ -150,7 +150,7 @@ uint32_t
 TcpLedbat::MinCircBuf(struct OwdCircBuf& b)
 {
     NS_LOG_FUNCTION_NOARGS();
-    if (b.buffer.size() == 0)
+    if (b.buffer.empty())
     {
         return ~0U;
     }
@@ -242,7 +242,7 @@ void
 TcpLedbat::AddDelay(struct OwdCircBuf& cb, uint32_t owd, uint32_t maxlen)
 {
     NS_LOG_FUNCTION(this << owd << maxlen << cb.buffer.size());
-    if (cb.buffer.size() == 0)
+    if (cb.buffer.empty())
     {
         NS_LOG_LOGIC("First Value for queue");
         cb.buffer.push_back(owd);
@@ -274,7 +274,7 @@ void
 TcpLedbat::UpdateBaseDelay(uint32_t owd)
 {
     NS_LOG_FUNCTION(this << owd);
-    if (m_baseHistory.buffer.size() == 0)
+    if (m_baseHistory.buffer.empty())
     {
         AddDelay(m_baseHistory, owd, m_baseHistoLen);
         return;

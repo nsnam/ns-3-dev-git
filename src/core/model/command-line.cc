@@ -199,7 +199,7 @@ CommandLine::Parse(std::vector<std::string> args)
 
     m_nonOptionCount = 0;
 
-    if (args.size() > 0)
+    if (!args.empty())
     {
         args.erase(args.begin()); // discard the program name
 
@@ -386,8 +386,9 @@ CommandLine::PrintHelp(std::ostream& os) const
 
     // Hack to show just the declared non-options
     Items nonOptions(m_nonOptions.begin(), m_nonOptions.begin() + m_NNonOptions);
-    os << m_shortName << (m_options.size() ? " [Program Options]" : "")
-       << (nonOptions.size() ? " [Program Arguments]" : "") << " [General Arguments]" << std::endl;
+    os << m_shortName << (!m_options.empty() ? " [Program Options]" : "")
+       << (!nonOptions.empty() ? " [Program Arguments]" : "") << " [General Arguments]"
+       << std::endl;
 
     if (!m_usage.empty())
     {
@@ -468,7 +469,7 @@ CommandLine::PrintDoxygenUsage() const
         return;
     }
 
-    if (m_shortName.size() == 0)
+    if (m_shortName.empty())
     {
         NS_FATAL_ERROR("No file name on example-to-run; forgot to use CommandLine var (__FILE__)?");
         return;
@@ -485,8 +486,8 @@ CommandLine::PrintDoxygenUsage() const
 
     os << "/**\n \\file " << m_shortName << ".cc\n"
        << "<h3>Usage</h3>\n"
-       << "<code>$ ./ns3 run \"" << m_shortName << (m_options.size() ? " [Program Options]" : "")
-       << (nonOptions.size() ? " [Program Arguments]" : "") << "\"</code>\n";
+       << "<code>$ ./ns3 run \"" << m_shortName << (!m_options.empty() ? " [Program Options]" : "")
+       << (!nonOptions.empty() ? " [Program Arguments]" : "") << "\"</code>\n";
 
     if (!m_usage.empty())
     {
@@ -692,7 +693,7 @@ CommandLine::HandleArgument(const std::string& name, const std::string& value) c
 
     auto errorExit = [this, name, value]() {
         std::cerr << "Invalid command-line argument: --" << name;
-        if (value != "")
+        if (!value.empty())
         {
             std::cerr << "=" << value;
         }
@@ -724,7 +725,7 @@ CommandLine::HandleArgument(const std::string& name, const std::string& value) c
 bool
 CommandLine::CallbackItem::HasDefault() const
 {
-    return m_default != "";
+    return !m_default.empty();
 }
 
 std::string

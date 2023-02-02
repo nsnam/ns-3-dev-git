@@ -150,7 +150,7 @@ SPFVertex::~SPFVertex()
     }
 
     // delete children
-    while (m_children.size() > 0)
+    while (!m_children.empty())
     {
         // pop out children one by one. Some children may disappear
         // when deleting some other children in the list. As a result,
@@ -347,7 +347,7 @@ SPFVertex::InheritAllRootExitDirections(const SPFVertex* vertex)
 
     // discard all exit direction currently associated with this vertex,
     // and copy all the exit directions from the given vertex
-    if (m_ecmpRootExits.size() > 0)
+    if (!m_ecmpRootExits.empty())
     {
         NS_LOG_WARN("x root exit directions in this vertex are going to be discarded");
     }

@@ -117,7 +117,7 @@ TcpRxBuffer::MaxRxSequence() const
     { // No data allowed beyond FIN
         return m_finSeq;
     }
-    else if (m_data.size() && m_nextRxSeq > m_data.begin()->first)
+    else if (!m_data.empty() && m_nextRxSeq > m_data.begin()->first)
     { // No data allowed beyond Rx window allowed
         return m_data.begin()->first + SequenceNumber32(m_maxBuffer);
     }
@@ -159,7 +159,7 @@ TcpRxBuffer::Add(Ptr<Packet> p, const TcpHeader& tcph)
     {
         headSeq = m_nextRxSeq;
     }
-    if (m_data.size())
+    if (!m_data.empty())
     {
         SequenceNumber32 maxSeq = m_data.begin()->first + SequenceNumber32(m_maxBuffer);
         if (maxSeq < tailSeq)
@@ -388,7 +388,7 @@ TcpRxBuffer::Extract(uint32_t maxSize)
     {
         return nullptr; // No contiguous block to return
     }
-    NS_ASSERT(m_data.size());              // At least we have something to extract
+    NS_ASSERT(!m_data.empty());            // At least we have something to extract
     Ptr<Packet> outPkt = Create<Packet>(); // The packet that contains all the data to return
     BufIterator i;
     while (extractSize)

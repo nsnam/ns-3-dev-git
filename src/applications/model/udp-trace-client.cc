@@ -151,7 +151,7 @@ void
 UdpTraceClient::SetTraceFile(std::string traceFile)
 {
     NS_LOG_FUNCTION(this << traceFile);
-    if (traceFile == "")
+    if (traceFile.empty())
     {
         LoadDefaultTrace();
     }

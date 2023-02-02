@@ -155,7 +155,7 @@ Ipv4GlobalRouting::LookupGlobal(Ipv4Address dest, Ptr<NetDevice> oif)
             NS_LOG_LOGIC(allRoutes.size() << "Found global host route" << *i);
         }
     }
-    if (allRoutes.size() == 0) // if no host route is found
+    if (allRoutes.empty()) // if no host route is found
     {
         NS_LOG_LOGIC("Number of m_networkRoutes" << m_networkRoutes.size());
         for (NetworkRoutesI j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
@@ -177,7 +177,7 @@ Ipv4GlobalRouting::LookupGlobal(Ipv4Address dest, Ptr<NetDevice> oif)
             }
         }
     }
-    if (allRoutes.size() == 0) // consider external if no host/network found
+    if (allRoutes.empty()) // consider external if no host/network found
     {
         for (ASExternalRoutesI k = m_ASexternalRoutes.begin(); k != m_ASexternalRoutes.end(); k++)
         {
@@ -199,7 +199,7 @@ Ipv4GlobalRouting::LookupGlobal(Ipv4Address dest, Ptr<NetDevice> oif)
             }
         }
     }
-    if (allRoutes.size() > 0) // if route(s) is found
+    if (!allRoutes.empty()) // if route(s) is found
     {
         // pick up one of the routes uniformly at random if random
         // ECMP routing is enabled, or always select the first route
@@ -421,7 +421,7 @@ Ipv4GlobalRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit
             // Use not implemented
             *os << "-"
                 << "   ";
-            if (Names::FindName(m_ipv4->GetNetDevice(route.GetInterface())) != "")
+            if (!Names::FindName(m_ipv4->GetNetDevice(route.GetInterface())).empty())
             {
                 *os << Names::FindName(m_ipv4->GetNetDevice(route.GetInterface()));
             }

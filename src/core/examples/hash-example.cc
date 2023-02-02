@@ -291,7 +291,7 @@ class Dictionary
      */
     void Add(const std::string phrase)
     {
-        if (phrase.size() == 0)
+        if (phrase.empty())
         {
             return;
         }
@@ -460,7 +460,7 @@ class DictFiles
      */
     void ReadInto(Dictionary& dict)
     {
-        if (m_files.size() == 0)
+        if (m_files.empty())
         {
             Add(GetDefault());
         }

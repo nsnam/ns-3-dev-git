@@ -146,8 +146,7 @@ YansWavePhyHelper::EnablePcapInternal(std::string prefix,
     }
 
     std::vector<Ptr<WifiPhy>> phys = device->GetPhys();
-    NS_ABORT_MSG_IF(phys.size() == 0,
-                    "EnablePcapInternal(): Phy layer in WaveNetDevice must be set");
+    NS_ABORT_MSG_IF(phys.empty(), "EnablePcapInternal(): Phy layer in WaveNetDevice must be set");
 
     PcapHelper pcapHelper;
 
@@ -303,7 +302,7 @@ WaveHelper::Default()
 void
 WaveHelper::CreateMacForChannel(std::vector<uint32_t> channelNumbers)
 {
-    if (channelNumbers.size() == 0)
+    if (channelNumbers.empty())
     {
         NS_FATAL_ERROR("the WAVE MAC entities is at least one");
     }

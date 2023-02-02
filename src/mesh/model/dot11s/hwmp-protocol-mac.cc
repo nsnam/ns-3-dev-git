@@ -178,7 +178,7 @@ HwmpProtocolMac::ReceiveAction(Ptr<Packet> packet, const WifiMacHeader& header)
             }
         }
     }
-    if (failedDestinations.size() > 0)
+    if (!failedDestinations.empty())
     {
         m_protocol->ReceivePerr(failedDestinations,
                                 header.GetAddr2(),
@@ -327,7 +327,7 @@ HwmpProtocolMac::SendMyPreq()
     {
         return;
     }
-    if (m_myPreq.size() == 0)
+    if (m_myPreq.empty())
     {
         return;
     }

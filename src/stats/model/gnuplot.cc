@@ -223,7 +223,7 @@ Gnuplot2dDataset::Data2d::PrintExpression(std::ostream& os,
         os << "\"" << dataFileName << "\" index " << dataFileDatasetIndex;
     }
 
-    if (m_title.size())
+    if (!m_title.empty())
     {
         os << " title \"" << m_title << "\"";
     }
@@ -284,7 +284,7 @@ Gnuplot2dDataset::Data2d::PrintExpression(std::ostream& os,
         break;
     }
 
-    if (m_extra.size())
+    if (!m_extra.empty())
     {
         os << " " << m_extra;
     }
@@ -334,7 +334,7 @@ Gnuplot2dDataset::Data2d::PrintDataFile(std::ostream& os, bool generateOneOutput
 bool
 Gnuplot2dDataset::Data2d::IsEmpty() const
 {
-    return (m_pointset.size() == 0);
+    return m_pointset.empty();
 }
 
 // --- Gnuplot2dDataset ---------------------------------------------------- //
@@ -474,12 +474,12 @@ Gnuplot2dFunction::Function2d::PrintExpression(std::ostream& os,
 {
     os << m_function;
 
-    if (m_title.size())
+    if (!m_title.empty())
     {
         os << " title \"" << m_title << "\"";
     }
 
-    if (m_extra.size())
+    if (!m_extra.empty())
     {
         os << " " << m_extra;
     }
@@ -559,17 +559,17 @@ Gnuplot3dDataset::Data3d::PrintExpression(std::ostream& os,
 {
     os << "\"-\" ";
 
-    if (m_style.size())
+    if (!m_style.empty())
     {
         os << " " << m_style;
     }
 
-    if (m_title.size())
+    if (!m_title.empty())
     {
         os << " title \"" << m_title << "\"";
     }
 
-    if (m_extra.size())
+    if (!m_extra.empty())
     {
         os << " " << m_extra;
     }
@@ -594,7 +594,7 @@ Gnuplot3dDataset::Data3d::PrintDataFile(std::ostream& os, bool generateOneOutput
 bool
 Gnuplot3dDataset::Data3d::IsEmpty() const
 {
-    return (m_pointset.size() == 0);
+    return m_pointset.empty();
 }
 
 // --- Gnuplot3dDataset ---------------------------------------------------- //
@@ -687,12 +687,12 @@ Gnuplot3dFunction::Function3d::PrintExpression(std::ostream& os,
 {
     os << m_function;
 
-    if (m_title.size())
+    if (!m_title.empty())
     {
         os << " title \"" << m_title << "\"";
     }
 
-    if (m_extra.size())
+    if (!m_extra.empty())
     {
         os << " " << m_extra;
     }
@@ -812,32 +812,32 @@ Gnuplot::GenerateOutput(std::ostream& os)
 void
 Gnuplot::GenerateOutput(std::ostream& osControl, std::ostream& osData, std::string dataFileName)
 {
-    if (m_terminal.size())
+    if (!m_terminal.empty())
     {
         osControl << "set terminal " << m_terminal << std::endl;
     }
 
-    if (m_outputFilename.size())
+    if (!m_outputFilename.empty())
     {
         osControl << "set output \"" << m_outputFilename << "\"" << std::endl;
     }
 
-    if (m_title.size())
+    if (!m_title.empty())
     {
         osControl << "set title \"" << m_title << "\"" << std::endl;
     }
 
-    if (m_xLegend.size())
+    if (!m_xLegend.empty())
     {
         osControl << "set xlabel \"" << m_xLegend << "\"" << std::endl;
     }
 
-    if (m_yLegend.size())
+    if (!m_yLegend.empty())
     {
         osControl << "set ylabel \"" << m_yLegend << "\"" << std::endl;
     }
 
-    if (m_extra.size())
+    if (!m_extra.empty())
     {
         osControl << m_extra << std::endl;
     }
@@ -940,12 +940,12 @@ GnuplotCollection::GenerateOutput(std::ostream& os)
     // If this version of this function is called, it is assumed that a
     // single output file is being generated.
 
-    if (m_terminal.size())
+    if (!m_terminal.empty())
     {
         os << "set terminal " << m_terminal << std::endl;
     }
 
-    if (m_outputFilename.size())
+    if (!m_outputFilename.empty())
     {
         os << "set output \"" << m_outputFilename << "\"" << std::endl;
     }
@@ -964,12 +964,12 @@ GnuplotCollection::GenerateOutput(std::ostream& osControl,
     // If this version of this function is called, it is assumed that
     // separate output and date files are being generated.
 
-    if (m_terminal.size())
+    if (!m_terminal.empty())
     {
         osControl << "set terminal " << m_terminal << std::endl;
     }
 
-    if (m_outputFilename.size())
+    if (!m_outputFilename.empty())
     {
         osControl << "set output \"" << m_outputFilename << "\"" << std::endl;
     }

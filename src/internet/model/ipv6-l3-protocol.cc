@@ -1292,7 +1292,7 @@ Ipv6L3Protocol::SendRealOut(Ptr<Ipv6Route> route, Ptr<Packet> packet, const Ipv6
         {
             NS_LOG_LOGIC("Send to gateway " << route->GetGateway());
 
-            if (fragments.size() != 0)
+            if (!fragments.empty())
             {
                 std::ostringstream oss;
 
@@ -1323,7 +1323,7 @@ Ipv6L3Protocol::SendRealOut(Ptr<Ipv6Route> route, Ptr<Packet> packet, const Ipv6
         {
             NS_LOG_LOGIC("Send to destination " << ipHeader.GetDestination());
 
-            if (fragments.size() != 0)
+            if (!fragments.empty())
             {
                 std::ostringstream oss;
 

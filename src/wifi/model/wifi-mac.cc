@@ -860,7 +860,7 @@ WifiMac::SetWifiRemoteStationManagers(
 {
     NS_LOG_FUNCTION(this);
 
-    NS_ABORT_MSG_UNLESS(m_links.size() == 0 || m_links.size() == stationManagers.size(),
+    NS_ABORT_MSG_UNLESS(m_links.empty() || m_links.size() == stationManagers.size(),
                         "If links have been already created, the number of provided "
                         "Remote Manager objects ("
                             << stationManagers.size()
@@ -926,7 +926,7 @@ WifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
     NS_LOG_FUNCTION(this);
     ResetWifiPhys();
 
-    NS_ABORT_MSG_UNLESS(m_links.size() == 0 || m_links.size() == phys.size(),
+    NS_ABORT_MSG_UNLESS(m_links.empty() || m_links.size() == phys.size(),
                         "If links have been already created, the number of provided "
                         "PHY objects ("
                             << phys.size()

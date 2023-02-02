@@ -681,7 +681,7 @@ void
 UplinkSchedulerMBQoS::CheckDeadline(uint32_t& availableSymbols)
 {
     // for each request in the imermediate queue
-    if (m_uplinkJobs_inter.size() > 0)
+    if (!m_uplinkJobs_inter.empty())
     {
         std::list<Ptr<UlJob>>::iterator iter = m_uplinkJobs_inter.begin();
 

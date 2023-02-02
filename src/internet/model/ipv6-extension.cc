@@ -770,7 +770,7 @@ Ipv6ExtensionFragment::Fragments::SetUnfragmentablePart(Ptr<Packet> unfragmentab
 bool
 Ipv6ExtensionFragment::Fragments::IsEntire() const
 {
-    bool ret = !m_moreFragment && m_packetFragments.size() > 0;
+    bool ret = !m_moreFragment && !m_packetFragments.empty();
 
     if (ret)
     {

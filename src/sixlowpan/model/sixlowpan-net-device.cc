@@ -2589,7 +2589,7 @@ SixLowPanNetDevice::Fragments::IsEntire() const
 {
     NS_LOG_FUNCTION(this);
 
-    bool ret = m_fragments.size() > 0;
+    bool ret = !m_fragments.empty();
     uint16_t lastEndOffset = 0;
 
     if (ret)
