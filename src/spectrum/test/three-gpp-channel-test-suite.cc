@@ -141,6 +141,8 @@ ThreeGppChannelMatrixComputationTest::DoComputeNorm(Ptr<ThreeGppChannelModel> ch
 void
 ThreeGppChannelMatrixComputationTest::DoRun()
 {
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
     // Build the scenario for the test
     uint32_t updatePeriodMs = 100; // update period in ms
 
@@ -154,6 +156,7 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     channelModel->SetAttribute("Scenario", StringValue("RMa"));
     channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
     channelModel->SetAttribute("UpdatePeriod", TimeValue(MilliSeconds(updatePeriodMs - 1)));
+    channelModel->AssignStreams(1);
 
     // create the tx and rx nodes
     NodeContainer nodes;
@@ -728,6 +731,222 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
 /**
  * \ingroup spectrum-tests
  *
+ * Test case for the multi-port antenna operations in spectrum. It checks that
+ * channel matrices after using different multi-port mappings are the same.
+ * The test does the following:
+ * 1) Generates a time domain channel matrix of a fixed size
+ * (num gNB elements = 32 (4x8), num UE elements = 16 (4x4), num Clusters).
+ * This matrix is called channelMatrixM0.
+ * 2) Divides gNB antenna and UE antenna into ports using a fixed element to port
+ * mapping (gNB: 1 vertical port, 4 horizontal ports, UE: 1 vertical port,
+ * 2 horizontal ports). Using the channelMatrixM0, it generates port to port
+ * long term channel matrix using the both gNB and UE having beams directed towards the other.
+ * The resulting long term matrix dimensions are gNBports = 4, UE ports = 2, num Clusters.
+ * This channel matrix is called matrixA.
+ * 3) Constructs a single port to single port long term channel matrix
+ * using the initial time domain channel matrix (channelMatrixM0) and beams
+ * from gNB and UE towards each other. Single port mapping means gNB: 1 vertical port,
+ * 1 horizontal port, UE: 1 vertical port, 1 horizontal port.
+ * Matrix dimensions are: gNBports = 1, UE ports = 1, num Clusters. This long
+ * term channel matrix is called matrixB.
+ * 4) Creates a single port to single port long term channel matrix between
+ * two virtual gNB and UE antenna by using matrixA and beam facing each other.
+ * Matrix dimension of the resulting matrix are gNBports = 1, UE ports = 1, num Clusters.
+ * This long term channel matrix is called matrixC.
+ * 5) Checks that matrixB and matrixC are identical.
+ */
+class ThreeGppCalcLongTermMultiPortTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppCalcLongTermMultiPortTest();
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppCalcLongTermMultiPortTest() override;
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+};
+
+ThreeGppCalcLongTermMultiPortTest::ThreeGppCalcLongTermMultiPortTest()
+    : TestCase("Check long term channel matrix generation when multiple ports at TX and RX are "
+               "being used.")
+{
+}
+
+ThreeGppCalcLongTermMultiPortTest::~ThreeGppCalcLongTermMultiPortTest()
+{
+}
+
+void
+ThreeGppCalcLongTermMultiPortTest::DoRun()
+{
+    // create the channel condition model
+    Ptr<ChannelConditionModel> channelConditionModel =
+        CreateObject<AlwaysLosChannelConditionModel>();
+
+    // create the ThreeGppChannelModel object used to generate the channel matrix
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(2.0e9));
+    channelModel->SetAttribute("Scenario", StringValue("RMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+
+    // create the tx and rx nodes
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    // create the tx and rx devices
+    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
+    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
+
+    // associate the nodes and the devices
+    nodes.Get(0)->AddDevice(txDev);
+    txDev->SetNode(nodes.Get(0));
+    nodes.Get(1)->AddDevice(rxDev);
+    rxDev->SetNode(nodes.Get(1));
+
+    // create the tx and rx mobility models and set their positions
+    Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
+    txMob->SetPosition(Vector(0.0, 0.0, 10.0));
+    Ptr<MobilityModel> rxMob = CreateObject<ConstantPositionMobilityModel>();
+    rxMob->SetPosition(Vector(10.0, 0.0, 10.0));
+
+    // associate the nodes and the mobility models
+    nodes.Get(0)->AggregateObject(txMob);
+    nodes.Get(1)->AggregateObject(rxMob);
+
+    // create the tx and rx antennas and set the their dimensions
+    Ptr<PhasedArrayModel> txAntenna1 = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(8),
+        "NumRows",
+        UintegerValue(4),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(1),
+        "NumHorizontalPorts",
+        UintegerValue(4));
+
+    Ptr<PhasedArrayModel> rxAntenna1 = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(4),
+        "NumRows",
+        UintegerValue(4),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(1),
+        "NumHorizontalPorts",
+        UintegerValue(2));
+
+    // compute the azimuth and the elevation angles
+    Angles completeAngleTxRx(rxMob->GetPosition(), txMob->GetPosition());
+    Angles completeAngleRxTx(txMob->GetPosition(), rxMob->GetPosition());
+
+    txAntenna1->SetBeamformingVector(txAntenna1->GetBeamformingVector(completeAngleTxRx));
+    rxAntenna1->SetBeamformingVector(rxAntenna1->GetBeamformingVector(completeAngleRxTx));
+
+    // generate the channel matrix
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrixM0 =
+        channelModel->GetChannel(txMob, rxMob, txAntenna1, rxAntenna1);
+
+    // create ThreeGppSpectrumPropagationLossModel instance so that we
+    // can call CalcLongTerm
+    Ptr<const ThreeGppSpectrumPropagationLossModel> threeGppSplm =
+        CreateObject<ThreeGppSpectrumPropagationLossModel>();
+
+    Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixA =
+        threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna1, rxAntenna1);
+
+    // create the tx and rx antennas and set the their dimensions
+    Ptr<PhasedArrayModel> txAntenna2 = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(8),
+        "NumRows",
+        UintegerValue(4),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(1),
+        "NumHorizontalPorts",
+        UintegerValue(1));
+
+    Ptr<PhasedArrayModel> rxAntenna2 = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(4),
+        "NumRows",
+        UintegerValue(4),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(1),
+        "NumHorizontalPorts",
+        UintegerValue(1));
+
+    txAntenna2->SetBeamformingVector(txAntenna2->GetBeamformingVector(completeAngleTxRx));
+    rxAntenna2->SetBeamformingVector(rxAntenna2->GetBeamformingVector(completeAngleRxTx));
+
+    Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixB =
+        threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna2, rxAntenna2);
+
+    // create the tx and rx antennas and set the their dimensions
+    Ptr<PhasedArrayModel> txAntenna3 = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(4),
+        "NumRows",
+        UintegerValue(1),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(1),
+        "NumHorizontalPorts",
+        UintegerValue(1),
+        "AntennaHorizontalSpacing",
+        DoubleValue(1));
+
+    Ptr<PhasedArrayModel> rxAntenna3 = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(2),
+        "NumRows",
+        UintegerValue(1),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "NumVerticalPorts",
+        UintegerValue(1),
+        "NumHorizontalPorts",
+        UintegerValue(1),
+        "AntennaHorizontalSpacing",
+        DoubleValue(1));
+
+    Ptr<ThreeGppChannelModel::ChannelMatrix> channelMatrixMA =
+        Create<ThreeGppChannelModel::ChannelMatrix>();
+    channelMatrixMA->m_channel = *matrixA;
+
+    txAntenna3->SetBeamformingVector(txAntenna3->GetBeamformingVector(completeAngleTxRx));
+    rxAntenna3->SetBeamformingVector(rxAntenna3->GetBeamformingVector(completeAngleRxTx));
+
+    Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixC =
+        threeGppSplm->CalcLongTerm(channelMatrixMA, txAntenna3, rxAntenna3);
+
+    NS_TEST_ASSERT_MSG_EQ(matrixB->IsAlmostEqual(*matrixC, 1e-6),
+                          true,
+                          "Matrix B and Matrix C should be equal.");
+
+    Simulator::Run();
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -755,6 +974,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 2, 2), TestCase::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 2), TestCase::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 1), TestCase::QUICK);
+    AddTestCase(new ThreeGppCalcLongTermMultiPortTest(), TestCase::QUICK);
 }
 
 /// Static variable for test initialization

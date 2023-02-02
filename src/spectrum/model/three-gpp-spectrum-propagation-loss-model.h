@@ -30,6 +30,8 @@
 #include <map>
 #include <unordered_map>
 
+class ThreeGppCalcLongTermMultiPortTest;
+
 namespace ns3
 {
 
@@ -51,6 +53,8 @@ class NetDevice;
  */
 class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagationLossModel
 {
+    friend class ::ThreeGppCalcLongTermMultiPortTest;
+
   public:
     /**
      * Constructor
@@ -164,7 +168,6 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
         uint8_t numRxPorts,
         bool isReverse) const;
 
-  private:
     /**
      * Get the operating frequency
      * \return the operating frequency in Hz
