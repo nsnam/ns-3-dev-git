@@ -16,35 +16,35 @@ def get_list_from_file(file_path, list_name):
 
     '''
 
-    list = []
-
     # Read in the file if it exists.
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as file_in:
+    if not os.path.exists(file_path):
+        return []
 
-            # Look for the list.
-            list_string = ""
-            parsing_multiline_list = False
-            for line in file_in:
+    with open(file_path, "r", encoding="utf-8") as file_in:
 
-                # Remove any comments.
-                if '#' in line:
-                    (line, comment) = line.split('#', 1)
+        # Look for the list.
+        list_string = ""
+        parsing_multiline_list = False
+        for line in file_in:
 
-                # Parse the line.
-                if list_name in line or parsing_multiline_list:
-                    list_string += line
+            # Remove any comments.
+            if '#' in line:
+                (line, comment) = line.split('#', 1)
 
-                    # Handle multiline lists.
-                    if ']' not in list_string:
-                        parsing_multiline_list = True
-                    else:
-                        # Evaluate the list once its end is reached.
-                        # Make the split function only split it once.
-                        list = eval(list_string.split('=', 1)[1].strip())
-                        break
+            # Parse the line.
+            if list_name in line or parsing_multiline_list:
+                list_string += line
 
-    return list
+                # Handle multiline lists.
+                if ']' not in list_string:
+                    parsing_multiline_list = True
+                else:
+                    # Evaluate the list once its end is reached.
+                    # Make the split function only split it once.
+                    return eval(list_string.split('=', 1)[1].strip())
+
+    # List name was not found
+    return []
 
 
 def get_bool_from_file(file_path, bool_name, value_if_missing):
@@ -57,29 +57,25 @@ def get_bool_from_file(file_path, bool_name, value_if_missing):
     '''
 
     # Read in the file if it exists.
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as file_in:
-
-            # Look for the boolean variable.
-            bool_found = False
-            for line in file_in:
-
-                # Remove any comments.
-                if '#' in line:
-                    (line, comment) = line.split('#', 1)
-
-                # Parse the line.
-                if bool_name in line:
-                    # Evaluate the variable's line once it is found.  Make
-                    # the split function only split it once.
-                    bool = eval(line.split('=', 1)[1].strip())
-                    bool_found = True
-                    break
-
-    if bool_found:
-        return bool
-    else:
+    if not os.path.exists(file_path):
         return value_if_missing
+
+    with open(file_path, "r", encoding="utf-8") as file_in:
+        # Look for the boolean variable.
+        for line in file_in:
+
+            # Remove any comments.
+            if '#' in line:
+                (line, comment) = line.split('#', 1)
+
+            # Parse the line.
+            if bool_name in line:
+                # Evaluate the variable's line once it is found.  Make
+                # the split function only split it once.
+                return eval(line.split('=', 1)[1].strip())
+
+    # Boolean variable was not found
+    return value_if_missing
 
 
 # Reads the NS-3 configuration file and returns a list of enabled modules.
