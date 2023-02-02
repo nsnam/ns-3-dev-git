@@ -29,6 +29,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 
+#include <click/simclick.h>
 #include <cstdarg>
 #include <cstdlib>
 #include <map>
