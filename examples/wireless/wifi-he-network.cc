@@ -259,6 +259,11 @@ main(int argc, char* argv[])
                      */
                     Ptr<MultiModelSpectrumChannel> spectrumChannel =
                         CreateObject<MultiModelSpectrumChannel>();
+
+                    Ptr<LogDistancePropagationLossModel> lossModel =
+                        CreateObject<LogDistancePropagationLossModel>();
+                    spectrumChannel->AddPropagationLossModel(lossModel);
+
                     SpectrumWifiPhyHelper phy;
                     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                     phy.SetChannel(spectrumChannel);
