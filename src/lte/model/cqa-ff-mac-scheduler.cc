@@ -1366,7 +1366,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
             break;
         }
 
-        while (!availableRBGs.empty() and !itCurrentGroup->second.empty())
+        while (!availableRBGs.empty() && !itCurrentGroup->second.empty())
         {
             bool currentRBchecked = false;
             int currentRB = *(availableRBGs.begin());
