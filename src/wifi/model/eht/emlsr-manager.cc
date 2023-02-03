@@ -79,7 +79,10 @@ EmlsrManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     m_staMac->TraceDisconnectWithoutContext("AckedMpdu", MakeCallback(&EmlsrManager::TxOk, this));
+    m_staMac->TraceDisconnectWithoutContext("DroppedMpdu",
+                                            MakeCallback(&EmlsrManager::TxDropped, this));
     m_staMac = nullptr;
+    m_transitionTimeoutEvent.Cancel();
     Object::DoDispose();
 }
 
@@ -96,6 +99,14 @@ EmlsrManager::SetWifiMac(Ptr<StaWifiMac> mac)
                     "EmlsrManager can only be installed on non-AP MLDs");
 
     m_staMac->TraceConnectWithoutContext("AckedMpdu", MakeCallback(&EmlsrManager::TxOk, this));
+    m_staMac->TraceConnectWithoutContext("DroppedMpdu",
+                                         MakeCallback(&EmlsrManager::TxDropped, this));
+}
+
+const std::set<uint8_t>&
+EmlsrManager::GetEmlsrLinks() const
+{
+    return m_emlsrLinks;
 }
 
 Ptr<StaWifiMac>
@@ -129,7 +140,10 @@ EmlsrManager::SetEmlsrLinks(const std::set<uint8_t>& linkIds)
     NS_LOG_FUNCTION(this);
     NS_ABORT_MSG_IF(linkIds.size() == 1, "Cannot enable EMLSR mode on a single link");
 
-    m_nextEmlsrLinks = linkIds;
+    if (linkIds != m_emlsrLinks)
+    {
+        m_nextEmlsrLinks = linkIds;
+    }
 
     if (GetStaMac() && GetStaMac()->IsAssociated() && GetTransitionTimeout() && m_nextEmlsrLinks)
     {
@@ -153,6 +167,23 @@ EmlsrManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // we just completed ML setup with an AP MLD that supports EMLSR and a non-empty
         // set of EMLSR links have been configured, hence enable EMLSR mode on those links
         SendEmlOperatingModeNotification();
+    }
+
+    if (hdr.IsAction() && hdr.GetAddr2() == m_staMac->GetBssid(linkId))
+    {
+        // this is an action frame sent by an AP of the AP MLD we are associated with
+        auto [category, action] = WifiActionHeader::Peek(mpdu->GetPacket());
+        if (category == WifiActionHeader::PROTECTED_EHT &&
+            action.protectedEhtAction ==
+                WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION)
+        {
+            if (m_transitionTimeoutEvent.IsRunning())
+            {
+                // no need to wait until the expiration of the transition timeout
+                m_transitionTimeoutEvent.PeekEventImpl()->Invoke();
+                m_transitionTimeoutEvent.Cancel();
+            }
+        }
     }
 }
 
@@ -234,6 +265,77 @@ EmlsrManager::TxOk(Ptr<const WifiMpdu> mpdu)
         m_lastAdvPaddingDelay = mle->GetEmlsrPaddingDelay();
         m_lastAdvTransitionDelay = mle->GetEmlsrTransitionDelay();
     }
+
+    if (hdr.IsMgt() && hdr.IsAction())
+    {
+        if (auto [category, action] = WifiActionHeader::Peek(mpdu->GetPacket());
+            category == WifiActionHeader::PROTECTED_EHT &&
+            action.protectedEhtAction ==
+                WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION)
+        {
+            // the EML Operating Mode Notification frame that we sent has been acknowledged.
+            // Start the transition timeout to wait until the request can be made effective
+            NS_ASSERT_MSG(m_emlsrTransitionTimeout, "No transition timeout received from AP");
+            m_transitionTimeoutEvent = Simulator::Schedule(*m_emlsrTransitionTimeout,
+                                                           &EmlsrManager::ChangeEmlsrMode,
+                                                           this);
+        }
+    }
+}
+
+void
+EmlsrManager::TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
+{
+    NS_LOG_FUNCTION(this << reason << *mpdu);
+
+    const auto& hdr = mpdu->GetHeader();
+
+    if (hdr.IsMgt() && hdr.IsAction())
+    {
+        auto pkt = mpdu->GetPacket()->Copy();
+        if (auto [category, action] = WifiActionHeader::Remove(pkt);
+            category == WifiActionHeader::PROTECTED_EHT &&
+            action.protectedEhtAction ==
+                WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION)
+        {
+            // the EML Operating Mode Notification frame has been dropped. Ask the subclass
+            // whether the frame needs to be resent
+            auto linkId = ResendNotification(mpdu);
+            if (linkId)
+            {
+                MgtEmlOperatingModeNotification frame;
+                pkt->RemoveHeader(frame);
+                GetEhtFem(*linkId)->SendEmlOperatingModeNotification(m_staMac->GetBssid(*linkId),
+                                                                     frame);
+            }
+            else
+            {
+                m_nextEmlsrLinks.reset();
+            }
+        }
+    }
+}
+
+void
+EmlsrManager::ChangeEmlsrMode()
+{
+    NS_LOG_FUNCTION(this);
+
+    // After the successful transmission of the EML Operating Mode Notification frame by the
+    // non-AP STA affiliated with the non-AP MLD, the non-AP MLD shall operate in the EMLSR mode
+    // and the other non-AP STAs operating on the corresponding EMLSR links shall transition to
+    // active mode after the transition delay indicated in the Transition Timeout subfield in the
+    // EML Capabilities subfield of the Basic Multi-Link element or immediately after receiving an
+    // EML Operating Mode Notification frame from one of the APs operating on the EMLSR links and
+    // affiliated with the AP MLD. (Sec. 35.3.17 of 802.11be D3.0)
+    NS_ASSERT_MSG(m_nextEmlsrLinks, "No set of EMLSR links stored");
+    m_emlsrLinks.swap(*m_nextEmlsrLinks);
+    m_nextEmlsrLinks.reset();
+
+    // TODO Make other non-AP STAs operating on the corresponding EMLSR links transition to
+    // active mode or passive mode (depending on whether EMLSR mode has been enabled or disabled)
+
+    NotifyEmlsrModeChanged();
 }
 
 } // namespace ns3

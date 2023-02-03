@@ -966,11 +966,26 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         ReceiveAssocResp(mpdu, linkId);
         break;
 
+    case WIFI_MAC_MGT_ACTION:
+        if (auto [category, action] = WifiActionHeader::Peek(packet);
+            category == WifiActionHeader::PROTECTED_EHT &&
+            action.protectedEhtAction ==
+                WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION)
+        {
+            // this is handled by the EMLSR Manager
+            break;
+        }
+
     default:
         // Invoke the receive handler of our parent class to deal with any
         // other frames. Specifically, this will handle Block Ack-related
         // Management Action frames.
         WifiMac::Receive(mpdu, linkId);
+    }
+
+    if (m_emlsrManager)
+    {
+        m_emlsrManager->NotifyMgtFrameReceived(mpdu, linkId);
     }
 }
 

@@ -68,4 +68,18 @@ DefaultEmlsrManager::GetLinkToSendEmlNotification()
     return *m_assocLinkId;
 }
 
+std::optional<uint8_t>
+DefaultEmlsrManager::ResendNotification(Ptr<const WifiMpdu> mpdu)
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(m_assocLinkId, "No recorded link on which Assoc Response was received");
+    return *m_assocLinkId;
+}
+
+void
+DefaultEmlsrManager::NotifyEmlsrModeChanged()
+{
+    NS_LOG_FUNCTION(this);
+}
+
 } // namespace ns3

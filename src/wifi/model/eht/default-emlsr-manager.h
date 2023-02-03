@@ -46,9 +46,11 @@ class DefaultEmlsrManager : public EmlsrManager
 
   protected:
     uint8_t GetLinkToSendEmlNotification() override;
+    std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;
 
   private:
     void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+    void NotifyEmlsrModeChanged() override;
 
     std::optional<uint8_t> m_assocLinkId; /**< ID of the link on which Association Response
                                                was received */

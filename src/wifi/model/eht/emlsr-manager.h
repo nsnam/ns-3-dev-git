@@ -25,6 +25,7 @@
 #include "ns3/object.h"
 #include "ns3/sta-wifi-mac.h"
 
+#include <optional>
 #include <set>
 
 namespace ns3
@@ -79,6 +80,11 @@ class EmlsrManager : public Object
     void SetEmlsrLinks(const std::set<uint8_t>& linkIds);
 
     /**
+     * \return the set of links on which EMLSR mode is enabled
+     */
+    const std::set<uint8_t>& GetEmlsrLinks() const;
+
+    /**
      * Notify the reception of a management frame addressed to us.
      *
      * \param mpdu the received MPDU
@@ -105,6 +111,15 @@ class EmlsrManager : public Object
      */
     virtual uint8_t GetLinkToSendEmlNotification() = 0;
 
+    /**
+     * A previous EML Operating Mode Notification frame was dropped. Ask the subclass whether
+     * the frame needs to be re-sent on the given link (if any).
+     *
+     * \param mpdu the dropped MPDU that includes the EML Operating Mode Notification frame
+     * \return the ID of the link over which to re-send the frame, if needed
+     */
+    virtual std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) = 0;
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
 
@@ -129,14 +144,36 @@ class EmlsrManager : public Object
      */
     void TxOk(Ptr<const WifiMpdu> mpdu);
 
+    /**
+     * Notify that the given MPDU has been discarded for the given reason.
+     *
+     * \param reason the reason why the MPDU was dropped
+     * \param mpdu the dropped MPDU
+     */
+    void TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
+
+    /**
+     * This method is called to make an EMLSR mode change effective after the transition
+     * delay has elapsed or a notification response has been received from the AP.
+     */
+    void ChangeEmlsrMode();
+
+    /**
+     * Notify subclass that EMLSR mode changed.
+     */
+    virtual void NotifyEmlsrModeChanged() = 0;
+
     Ptr<StaWifiMac> m_staMac;                     //!< the MAC of the managed non-AP MLD
     std::optional<Time> m_emlsrTransitionTimeout; /**< Transition timeout advertised by APs with
                                                        EMLSR activated */
+    std::set<uint8_t> m_emlsrLinks; //!< ID of the EMLSR links (empty if EMLSR mode is disabled)
     std::optional<std::set<uint8_t>> m_nextEmlsrLinks; /**< ID of the links that will become the
                                                             EMLSR links when the pending
                                                             notification frame is acknowledged */
     Time m_lastAdvPaddingDelay;                        //!< last advertised padding delay
     Time m_lastAdvTransitionDelay;                     //!< last advertised transition delay
+    EventId m_transitionTimeoutEvent; /**< Timer started after the successful transmission of an
+                                           EML Operating Mode Notification frame */
 };
 
 } // namespace ns3
