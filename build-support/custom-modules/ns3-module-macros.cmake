@@ -125,7 +125,8 @@ function(build_lib)
     ${lib${BLIB_LIBNAME}}
     PROPERTIES
       PUBLIC_HEADER
-      "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${BLIB_PRIVATE_HEADER_FILES};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
+      "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
+      PRIVATE_HEADER "${BLIB_PRIVATE_HEADER_FILES}"
       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} # set output
                                                                  # directory for
                                                                  # DLLs
@@ -244,9 +245,16 @@ function(build_lib)
 
   # Copy all header files to outputfolder/include before each build
   copy_headers_before_building_lib(
-    ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY}
-    "${BLIB_HEADER_FILES};${BLIB_PRIVATE_HEADER_FILES}" public
+    ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY} "${BLIB_HEADER_FILES}"
+    public
   )
+  if(BLIB_PRIVATE_HEADER_FILES)
+    copy_headers_before_building_lib(
+      ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY}
+      "${BLIB_PRIVATE_HEADER_FILES}" private
+    )
+  endif()
+
   if(BLIB_DEPRECATED_HEADER_FILES)
     copy_headers_before_building_lib(
       ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY}
@@ -354,6 +362,7 @@ function(build_lib)
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ns3"
+    PRIVATE_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ns3"
   )
   if(${NS3_VERBOSE})
     message(STATUS "Processed ${FOLDER}")
