@@ -3,7 +3,11 @@ from gi.repository import Gtk
 
 from ns import ns
 
-from visualizer.base import InformationWindow
+try:
+    from nsnam.visualizer.base import InformationWindow
+except ModuleNotFoundError:
+    from visualizer.base import InformationWindow
+
 from kiwi.ui.objectlist import ObjectList, Column
 
 ## ShowLastPackets class

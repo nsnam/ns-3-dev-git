@@ -1,5 +1,9 @@
 from gi.repository import Gtk
-from visualizer.base import InformationWindow
+
+try:
+    from nsnam.visualizer.base import InformationWindow
+except ModuleNotFoundError:
+    from visualizer.base import InformationWindow
 
 NODE_STATISTICS_MEMORY = 10
 

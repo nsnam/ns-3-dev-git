@@ -12,6 +12,13 @@ if(${GTK3_FOUND})
   set(gtk_libraries
       ${GTK3_LIBRARIES}
   )
+  if(${NS3_PIP_PACKAGING})
+    # In case we are packaging ns-3, leave gtk symbols undefined and pray for
+    # the linker to find the correct libraries locally
+    set(gtk_libraries
+        -Wl,--allow-shlib-undefined
+    )
+  endif()
   if(${GCC})
     add_definitions(-Wno-parentheses)
   endif()

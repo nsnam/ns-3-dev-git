@@ -16,4 +16,6 @@ cpp_examples = [
 #     (example_name, do_run).
 #
 # See test.py for more information.
-python_examples = []
+python_examples = [
+    ("brite-generic-example.py", "ENABLE_BRITE == True"),
+]

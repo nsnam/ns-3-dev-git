@@ -86,6 +86,52 @@ trace file and a set of `simple-global-routing-xx-xx.pcap` binary
 pcap trace files, which can be read by `tcpdump -tt -r filename.pcap`
 The program source can be found in the examples/routing directory.
 
+
+## Running ns-3 from python
+
+If you do not plan to modify ns-3 upstream modules, you can get
+a pre-built version of the ns-3 python bindings.
+
+```shell
+pip install --user ns3
+```
+
+If you do not have `pip`, check their documents
+on [how to install it](https://pip.pypa.io/en/stable/installation/).
+
+After installing the `ns3` package, you can then create your simulation python script.
+Below is a trivial demo script to get you started.
+
+```python
+from ns import ns
+
+ns.LogComponentEnable("Simulator", ns.LOG_LEVEL_ALL)
+
+ns.Simulator.Stop(ns.Seconds(10))
+ns.Simulator.Run()
+ns.Simulator.Destroy()
+```
+
+The simulation will take a while to start, while the bindings are loaded.
+The script above will print the logging messages for the called commands.
+
+Use `help(ns)` to check the prototypes for all functions defined in the
+ns3 namespace. To get more useful results, query specific classes of
+interest and their functions e.g. `help(ns.Simulator)`.
+
+Smart pointers `Ptr<>` can be differentiated from objects by checking if
+`__deref__` is listed in `dir(variable)`. To dereference the pointer,
+use `variable.__deref__()`.
+
+Most ns-3 simulations are written in C++ and the documentation is
+oriented towards C++ users. The ns-3 tutorial programs (first.cc,
+second.cc, etc.) have Python equivalents, if you are looking for
+some initial guidance on how to use the Python API. The Python
+API may not be as full-featured as the C++ API, and an API guide
+for what C++ APIs are supported or not from Python do not currently exist.
+The project is looking for additional Python maintainers to improve
+the support for future Python users.
+
 ## Getting access to the ns-3 documentation
 
 Once you have verified that your build of ns-3 works by running

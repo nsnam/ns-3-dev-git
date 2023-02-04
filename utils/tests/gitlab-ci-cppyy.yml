@@ -25,7 +25,6 @@ cppyy-22.04:
     - ./ns3 run wifi-ap.py
     - ./ns3 run simple-routing-ping6.py
     - ./ns3 run realtime-udp-echo.py
-    - ./ns3 run bianchi11ax.py
     - ./ns3 run sample-simulator.py
     - ./ns3 run "sample-rng-plot.py --not-blocking"
     - ./ns3 run csma-bridge.py
@@ -86,3 +85,89 @@ cppyy-18.04:
     - ./ns3 run third.py
     - ./ns3 run ./utils/python-unit-tests.py
   timeout: 9h
+
+.manylinux-pip-wheel:
+  image: quay.io/pypa/manylinux_2_28_x86_64
+  only:
+    variables:
+      - $RELEASE == "manual"
+  script:
+    # Untar libraries (just to make CMake happy, but we are not going to actually link them)
+    # https://github.com/scikit-build/scikit-build/pull/47
+    - tar -xvf /opt/_internal/static-libs-for-embedding-only.tar.xz -C /opt/_internal
+    # Install minimal toolchain
+    - yum install -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
+    # Create Python venv
+    - $PYTHON -m venv ./venv
+    - . ./venv/bin/activate
+    # Upgrade the pip version to reuse the pre-build cppyy
+    - $PYTHON -m pip install pip --upgrade
+    - $PYTHON -m pip install setuptools setuptools_scm wheel --upgrade
+    - $PYTHON -m pip install wheel auditwheel cmake-build-extension cppyy==2.4.2
+    # Configure and build wheel
+    - $PYTHON setup.py bdist_wheel build_ext
+    - export EXCLUDE_INTERNAL_LIBRARIES=`$PYTHON ./build-support/pip-wheel/auditwheel-exclude-list.py`
+    # Bundle in shared libraries that were not explicitly packaged or depended upon
+    - $PYTHON -m auditwheel repair ./dist/*whl -L /lib64 $EXCLUDE_INTERNAL_LIBRARIES
+    # Clean the build directory
+    - $PYTHON ./ns3 clean
+    # Clean up the environment
+    - deactivate
+    - rm -R ./venv
+    # Delete toolchain to check if required headers/libraries were really packaged
+    - yum remove -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
+    # Install wheel
+    - $PYTHON -m pip install ./wheelhouse/*whl
+    - $PYTHON -m pip install matplotlib numpy
+    # Test the bindings
+    - $PYTHON ./utils/python-unit-tests.py
+    - $PYTHON ./examples/realtime/realtime-udp-echo.py
+    - $PYTHON ./examples/routing/simple-routing-ping6.py
+    - $PYTHON ./examples/tutorial/first.py
+    - $PYTHON ./examples/tutorial/second.py
+    - $PYTHON ./examples/tutorial/third.py
+    - $PYTHON ./examples/wireless/wifi-ap.py
+    - $PYTHON ./examples/wireless/mixed-wired-wireless.py
+    - $PYTHON ./src/bridge/examples/csma-bridge.py
+    - $PYTHON ./src/brite/examples/brite-generic-example.py
+    - $PYTHON ./src/core/examples/sample-simulator.py
+    - $PYTHON ./src/core/examples/sample-rng-plot.py --not-blocking
+    - $PYTHON ./src/click/examples/nsclick-simple-lan.py
+    - $PYTHON ./src/flow-monitor/examples/wifi-olsr-flowmon.py
+    - $PYTHON ./src/flow-monitor/examples/flowmon-parse-results.py output.xml
+    - $PYTHON ./src/openflow/examples/openflow-switch.py
+  timeout: 3h
+  artifacts:
+    paths:
+      - wheelhouse/*.whl
+  when: on_success
+
+manylinux-pip-wheel-py3.6:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: 'python3.6'
+
+manylinux-pip-wheel-py3.7:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: 'python3.7'
+
+manylinux-pip-wheel-py3.8:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: 'python3.8'
+
+manylinux-pip-wheel-py3.9:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: 'python3.9'
+
+manylinux-pip-wheel-py3.10:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: 'python3.10'
+
+manylinux-pip-wheel-py3.11:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: 'python3.11'

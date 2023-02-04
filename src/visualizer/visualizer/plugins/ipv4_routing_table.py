@@ -1,6 +1,9 @@
 from gi.repository import Gtk
 
-from visualizer.base import InformationWindow
+try:
+    from nsnam.visualizer.base import InformationWindow
+except ModuleNotFoundError:
+    from visualizer.base import InformationWindow
 
 ## ShowIpv4RoutingTable class
 class ShowIpv4RoutingTable(InformationWindow):

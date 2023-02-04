@@ -1,7 +1,10 @@
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-from visualizer.base import InformationWindow
+try:
+    from nsnam.visualizer.base import InformationWindow
+except ModuleNotFoundError:
+    from visualizer.base import InformationWindow
 
 ## ShowOlsrRoutingTable class
 class ShowOlsrRoutingTable(InformationWindow):

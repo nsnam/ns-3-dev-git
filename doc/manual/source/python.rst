@@ -101,6 +101,20 @@ Here is some example code that is written in Python and that runs |ns3|, which i
 Running Python Scripts
 **********************
 
+For users that want to change upstream modules in C++ and got a copy of
+ns-3 by Git cloning the ns-3-dev repository, or downloaded the
+ns3-allinone package, or is using bake, continue to the next section.
+
+`Note: models implemented in Python are not available from C++. If you want
+your model to be available for both C++ and Python users, you must implement
+it in C++.`
+
+For users that want to exclusively run simulation scenarios and implement
+simple modules in python, jump to the `Using the pip wheel`_ section.
+
+Using the bindings from the ns-3 source
+=======================================
+
 The main prerequisite is to install `cppyy`.  Depending on how you may manage
 Python extensions, the installation instructions may vary, but you can first
 check if it installed by seeing if the `cppyy` module can be
@@ -164,6 +178,133 @@ To run your own Python script that calls |ns3| and that has this path, ``/path/t
 
   $ ./ns3 shell
   $ python3 /path/to/your/example/my-script.py
+
+
+Using the pip wheel
+===================
+
+Starting from ns-3.38, we provide a pip wheel for Python users using Linux.
+
+.. sourcecode:: bash
+
+  $ pip install --user ns3
+
+You can select a specific ns-3 version by specifying the wheel version.
+Specifying a nonexistent version will result in an error message listing the available versions.
+
+.. sourcecode:: bash
+
+  $ pip install --user ns3==3.37
+  Defaulting to user installation because normal site-packages is not writeable
+  ERROR: Could not find a version that satisfies the requirement ns3==3.37 (from versions: 3.37.post415)
+  ERROR: No matching distribution found for ns3==3.37
+
+You can also specify you want at least a specific version (e.g. which shipped a required feature).
+
+.. sourcecode:: bash
+
+  $ pip install --user ns3>=3.37
+  Defaulting to user installation because normal site-packages is not writeable
+  Requirement already satisfied: ns3==3.37.post415 in /home/username/.local/lib/python3.10/site-packages (3.37.post415)
+  Requirement already satisfied: cppyy in /home/username/.local/lib/python3.10/site-packages (from ns3==3.37.post415) (2.4.2)
+  Requirement already satisfied: cppyy-backend==1.14.10 in /home/username/.local/lib/python3.10/site-packages (from cppyy->ns3==3.37.post415) (1.14.10)
+  Requirement already satisfied: CPyCppyy==1.12.12 in /home/username/.local/lib/python3.10/site-packages (from cppyy->ns3==3.37.post415) (1.12.12)
+  Requirement already satisfied: cppyy-cling==6.27.1 in /home/username/.local/lib/python3.10/site-packages (from cppyy->ns3==3.37.post415) (6.27.1)
+
+To check if the pip wheel was installed, use the pip freeze command to list the installed packages,
+then grep ns3 to filter the line of interest.
+
+.. sourcecode:: bash
+
+  $ pip freeze | grep ns3
+  ns3==3.37.post415
+
+.. _ns3 wheel: https://pypi.org/project/ns3/#history
+
+The available versions are also listed on the Pypi page for the `ns3 wheel`_.
+
+After installing it, you can start using ns-3 right away. For example, using the following script.
+
+::
+
+    from ns import ns
+
+    ns.cppyy.cppdef("""
+            using namespace ns3;
+
+            Callback<void,Ptr<const Packet>,const Address&,const Address&>
+            make_sinktrace_callback(void(*func)(Ptr<Packet>,Address,Address))
+            {
+                return MakeCallback(func);
+            }
+        """)
+
+    # Define the trace callback
+    def SinkTracer(packet: ns.Packet, src_address: ns.Address, dst_address: ns.Address) -> None:
+        print(f"At {ns.Simulator.Now().GetSeconds():.0f}s, '{dst_address}' received packet"
+              f" with {packet.__deref__().GetSerializedSize()} bytes from '{src_address}'")
+
+    # Create two nodes
+    csmaNodes = ns.network.NodeContainer()
+    csmaNodes.Create(2)
+
+    # Connect the two nodes
+    csma = ns.csma.CsmaHelper()
+    csma.SetChannelAttribute("DataRate", ns.core.StringValue("100Mbps"))
+    csma.SetChannelAttribute("Delay", ns.core.TimeValue(ns.core.NanoSeconds(6560)))
+    csmaDevices = csma.Install(csmaNodes)
+
+    # Install the internet stack
+    stack = ns.internet.InternetStackHelper()
+    stack.Install(csmaNodes)
+
+    # Assign Ipv4 addresses
+    address = ns.internet.Ipv4AddressHelper()
+    address.SetBase(ns.network.Ipv4Address("10.1.2.0"), ns.network.Ipv4Mask("255.255.255.0"))
+    csmaInterfaces = address.Assign(csmaDevices)
+
+    # Setup applications
+    echoServer = ns.applications.UdpEchoServerHelper(9)
+
+    serverApps = echoServer.Install(csmaNodes.Get(0))
+    serverApps.Start(ns.core.Seconds(1.0))
+    serverApps.Stop(ns.core.Seconds(10.0))
+
+    echoClient = ns.applications.UdpEchoClientHelper(csmaInterfaces.GetAddress(0).ConvertTo(), 9)
+    echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(10))
+    echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds(1.0)))
+    echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
+
+    clientApps = echoClient.Install(csmaNodes.Get(1))
+    clientApps.Start(ns.core.Seconds(2.0))
+    clientApps.Stop(ns.core.Seconds(10.0))
+
+    # Populate routing tables
+    ns.internet.Ipv4GlobalRoutingHelper.PopulateRoutingTables()
+
+    # Setup the trace callback
+    sinkTraceCallback = ns.cppyy.gbl.make_sinktrace_callback(SinkTracer)
+    serverApps.Get(0).__deref__().TraceConnectWithoutContext("RxWithAddresses", sinkTraceCallback);
+
+    # Set the simulation duration to 11 seconds
+    ns.Simulator.Stop(ns.Seconds(11))
+
+    # Run the simulator
+    ns.Simulator.Run()
+    ns.Simulator.Destroy()
+
+Which should print:
+
+.. sourcecode:: bash
+
+  At 2s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
+  At 3s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
+  At 4s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
+  At 5s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
+  At 6s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
+  At 7s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
+  At 8s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
+  At 9s, '04-07-00:00:00:00:09:00:00' received packet with 60 bytes from '04-07-0a:01:02:02:01:c0:00'
 
 Caveats
 *******
@@ -381,6 +522,240 @@ programs provided in |ns3|; some C++ examples have a corresponding Python
 example.  There is no structured documentation for the Python bindings
 like there is Doxygen for the C++ API, but the Doxygen can be consulted
 to understand how the C++ API works.
+
+To inspect what function and classes are available, you can use
+the ``dir`` function. Examples below:
+
+.. sourcecode:: bash
+
+  >>> print(dir(ns.Simulator))
+  ['Cancel', 'Destroy', 'GetContext', 'GetDelayLeft', 'GetEventCount', 'GetImplementation', 'GetMaximumSimulationTime', 'GetSystemId', 'IsExpired', 'IsFinished', 'NO_CONTEXT', 'Now', 'Remove', 'Run', 'Schedule', 'ScheduleDestroy', 'ScheduleNow', 'ScheduleWithContext', 'SetImplementation', 'SetScheduler', 'Stop', '__add__', '__assign__', '__bool__', '__class__', '__delattr__', '__destruct__', '__dict__', '__dir__', '__dispatch__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__invert__', '__le__', '__lt__', '__module__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__python_owns__', '__radd__', '__reduce__', '__reduce_ex__', '__repr__', '__reshape__', '__rmul__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__smartptr__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__weakref__']
+  >>> print(dir(ns.DefaultSimulatorImpl))
+  ['AggregateObject', 'Cancel', 'Destroy', 'Dispose', 'GetAggregateIterator', 'GetAttribute', 'GetAttributeFailSafe', 'GetContext', 'GetDelayLeft', 'GetEventCount', 'GetInstanceTypeId', 'GetMaximumSimulationTime', 'GetObject', 'GetReferenceCount', 'GetSystemId', 'GetTypeId', 'Initialize', 'IsExpired', 'IsFinished', 'IsInitialized', 'Now', 'PreEventHook', 'Ref', 'Remove', 'Run', 'Schedule', 'ScheduleDestroy', 'ScheduleNow', 'ScheduleWithContext', 'SetAttribute', 'SetAttributeFailSafe', 'SetScheduler', 'Stop', 'TraceConnect', 'TraceConnectWithoutContext', 'TraceDisconnect', 'TraceDisconnectWithoutContext', 'Unref', '__add__', '__assign__', '__bool__', '__class__', '__delattr__', '__destruct__', '__dict__', '__dir__', '__dispatch__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__invert__', '__le__', '__lt__', '__module__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__python_owns__', '__radd__', '__reduce__', '__reduce_ex__', '__repr__', '__reshape__', '__rmul__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__smartptr__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__weakref__']
+  >>> print(dir(ns.Time))
+  ['AUTO', 'As', 'Compare', 'D', 'FS', 'From', 'FromDouble', 'FromInteger', 'GetDays', 'GetDouble', 'GetFemtoSeconds', 'GetHours', 'GetInteger', 'GetMicroSeconds', 'GetMilliSeconds', 'GetMinutes', 'GetNanoSeconds', 'GetPicoSeconds', 'GetResolution', 'GetSeconds', 'GetTimeStep', 'GetYears', 'H', 'IsNegative', 'IsPositive', 'IsStrictlyNegative', 'IsStrictlyPositive', 'IsZero', 'LAST', 'MIN', 'MS', 'Max', 'Min', 'NS', 'PS', 'RoundTo', 'S', 'SetResolution', 'StaticInit', 'To', 'ToDouble', 'ToInteger', 'US', 'Y', '__add__', '__assign__', '__bool__', '__class__', '__delattr__', '__destruct__', '__dict__', '__dir__', '__dispatch__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__invert__', '__le__', '__lt__', '__module__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__python_owns__', '__radd__', '__reduce__', '__reduce_ex__', '__repr__', '__reshape__', '__rmul__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__smartptr__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__weakref__']
+
+
+To get more information about expected arguments, you can use the ``help``
+function.
+
+.. sourcecode:: bash
+
+  >>> help(ns.DefaultSimulatorImpl)
+  class DefaultSimulatorImpl(SimulatorImpl)
+  |  Method resolution order:
+  |      DefaultSimulatorImpl
+  |      SimulatorImpl
+  |      Object
+  |      SimpleRefCount<ns3::Object,ns3::ObjectBase,ns3::ObjectDeleter>
+  |      ObjectBase
+  |      cppyy.gbl.CPPInstance
+  |      builtins.object
+  |
+  |  Methods defined here:
+  |
+  |  Cancel(...)
+  |      void ns3::DefaultSimulatorImpl::Cancel(const ns3::EventId& id)
+  |
+  |  Destroy(...)
+  |      void ns3::DefaultSimulatorImpl::Destroy()
+  |
+  |  GetContext(...)
+  |      unsigned int ns3::DefaultSimulatorImpl::GetContext()
+  |
+  |  GetDelayLeft(...)
+  |      ns3::Time ns3::DefaultSimulatorImpl::GetDelayLeft(const ns3::EventId& id)
+  |
+  |  GetEventCount(...)
+  |      unsigned long ns3::DefaultSimulatorImpl::GetEventCount()
+  |
+  |  GetMaximumSimulationTime(...)
+  |      ns3::Time ns3::DefaultSimulatorImpl::GetMaximumSimulationTime()
+  |
+  |  GetSystemId(...)
+  |      unsigned int ns3::DefaultSimulatorImpl::GetSystemId()
+  |
+  |  GetTypeId(...)
+  |      static ns3::TypeId ns3::DefaultSimulatorImpl::GetTypeId()
+  |
+  |  IsExpired(...)
+  |      bool ns3::DefaultSimulatorImpl::IsExpired(const ns3::EventId& id)
+  |
+  |  IsFinished(...)
+  |      bool ns3::DefaultSimulatorImpl::IsFinished()
+  |
+  |  Now(...)
+  |      ns3::Time ns3::DefaultSimulatorImpl::Now()
+  |
+  |  Remove(...)
+  |      void ns3::DefaultSimulatorImpl::Remove(const ns3::EventId& id)
+  |
+  |  Run(...)
+  |      void ns3::DefaultSimulatorImpl::Run()
+
+
+Pip wheel packaging
+*******************
+
+This section is meant exclusively for ns-3 maintainers and ns-3
+users that want to redistribute their work as wheels for python.
+
+The packaging process is defined in the following GitLab job.
+The job is split into blocks explained below.
+
+The manylinux image provides an old glibc compatible with most modern Linux
+distributions, resulting on a pip wheel that is compatible across distributions.
+
+.. sourcecode:: yaml
+
+  .manylinux-pip-wheel:
+    image: quay.io/pypa/manylinux_2_28_x86_64
+
+Then we install the required toolchain and dependencies necessary for both
+ns-3 (e.g. libxml2, gsl, sqlite, gtk, etc) and for the bindings and packaging
+(e.g. setuptools, wheel, auditwheel, cmake-build-extension, cppyy).
+
+.. sourcecode:: yaml
+
+      # Install minimal toolchain
+      - yum install -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
+      # Create Python venv
+      - $PYTHON -m venv ./venv
+      - . ./venv/bin/activate
+      # Upgrade the pip version to reuse the pre-build cppyy
+      - $PYTHON -m pip install pip --upgrade
+      - $PYTHON -m pip install setuptools setuptools_scm --upgrade
+      - $PYTHON -m pip install wheel auditwheel cmake-build-extension cppyy
+
+The project is then configured loading the configuration settings defined
+in the ``ns-3-dev/setup.py`` file.
+
+.. sourcecode:: yaml
+
+      # Configure and build wheel
+      - $PYTHON setup.py bdist_wheel build_ext "-DNS3_USE_LIB64=TRUE"
+
+At this point, we have a wheel that only works in the current system,
+since external libraries are not shipped.
+
+Auditwheel needs to be called resolve and copy external libraries
+that we need to ship along the ns-3 module libraries (e.g. libxml2, sqlite3,
+gtk, gsl, etc). However, we need to prevent auditwheel from shipping copies of
+the libraries built by the ns-3 project. A list of excluded libraries is generated
+by the script ``ns-3-dev/build-support/pip-wheel/auditwheel-exclude-list.py``.
+
+.. sourcecode:: yaml
+
+      - export EXCLUDE_INTERNAL_LIBRARIES=`$PYTHON ./build-support/pip-wheel/auditwheel-exclude-list.py`
+      # Bundle in shared libraries that were not explicitly packaged or depended upon
+      - $PYTHON -m auditwheel repair ./dist/*whl -L /lib64 $EXCLUDE_INTERNAL_LIBRARIES
+
+
+At this point, we should have our final wheel ready, but we need to check if it works
+before submitting it to Pypi servers.
+
+We first clean the environment and uninstall the packages previously installed.
+
+.. sourcecode:: yaml
+
+      # Clean the build directory
+      - $PYTHON ./ns3 clean
+      # Clean up the environment
+      - deactivate
+      - rm -R ./venv
+      # Delete toolchain to check if required headers/libraries were really packaged
+      - yum remove -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
+
+
+Then we can install our newly built wheel and test it.
+
+.. sourcecode:: yaml
+
+      # Install wheel
+      - $PYTHON -m pip install ./wheelhouse/*whl
+      - $PYTHON -m pip install matplotlib numpy
+      # Test the bindings
+      - $PYTHON ./utils/python-unit-tests.py
+      - $PYTHON ./examples/realtime/realtime-udp-echo.py
+      - $PYTHON ./examples/routing/simple-routing-ping6.py
+      - $PYTHON ./examples/tutorial/first.py
+      - $PYTHON ./examples/tutorial/second.py
+      - $PYTHON ./examples/tutorial/third.py
+      - $PYTHON ./examples/wireless/wifi-ap.py
+      - $PYTHON ./examples/wireless/mixed-wired-wireless.py
+      - $PYTHON ./src/bridge/examples/csma-bridge.py
+      - $PYTHON ./src/brite/examples/brite-generic-example.py
+      - $PYTHON ./src/core/examples/sample-simulator.py
+      - $PYTHON ./src/core/examples/sample-rng-plot.py --not-blocking
+      - $PYTHON ./src/click/examples/nsclick-simple-lan.py
+      - $PYTHON ./src/flow-monitor/examples/wifi-olsr-flowmon.py
+      - $PYTHON ./src/flow-monitor/examples/flowmon-parse-results.py output.xml
+      - $PYTHON ./src/openflow/examples/openflow-switch.py
+
+If all programs finish normally, the bindings are working as expected,
+and will be saved as an artifact.
+
+.. sourcecode:: yaml
+
+    artifacts:
+      paths:
+        - wheelhouse/*.whl
+
+One can use ``gitlab-ci-local`` to build the pip wheels locally. After that, the wheels
+will be stored in ``.gitlab-ci-local/artifacts/manylinux-pip-wheel-py3Lg10/wheelhouse``
+(for Python 3.10).
+
+The wheel names are based on the number of commits since the latest release.
+For example, a wheel built 415 after the release 3.37 will be named
+``ns3-3.37.post415-cp310-cp310-manylinux_2_28_x86_64.whl``.
+
+The wheel name (``ns3``) is defined in the ``/ns-3-dev/setup.cfg`` file, and that
+name should match the build prefix specified in ``/ns-3-dev/setup.py`` file.
+
+The ``cp310-cp310`` indicates that this wheel is compatible from Python 3.10 and up to Python 3.10.
+
+The ``manylinux_2_28`` indicates that this is a manylinux wheel targeting glibc 2.28.
+
+The ``x86_64`` indicates that this is a 64-bit build targeting Intel/AMD processors.
+
+.. _Pypi: https://pypi.org/account/register/
+.. _Twine: https://twine.readthedocs.io/en/stable/
+
+After packaging, we can either deploy that wheel locally or upload the wheel to Pypi for general availability.
+
+Local deployment
+****************
+
+To deploy a wheel locally, simply share the wheel file across the desired machines.
+Then install the wheel and its dependencies running the following command:
+
+.. sourcecode:: bash
+
+    $ pip install *.whl
+
+Publishing the pip wheel via Pypi
+*********************************
+
+Publishing a pip wheel requires a `Pypi`_ account.
+
+After creating your account, install `Twine`_, an utility to upload the wheel to Pypi.
+
+Then run twine to upload the wheel to the Pypi servers.
+
+.. sourcecode:: bash
+
+  $ twine upload .gitlab-ci-local/artifacts/manylinux-pip-wheel-py3Lg10/wheelhouse/*.whl
+
+Enter your Pypi username and password as requested.
+
+Your wheel should be up and running. Give it a try just to make sure.
+
+For the upstream pip wheel, try:
+
+.. sourcecode:: bash
+
+  $ pip install ns3
+  $ python3 -c "from ns import ns; print(ns.Simulator.Now())"
 
 Historical Information
 **********************
