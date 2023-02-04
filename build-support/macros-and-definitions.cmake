@@ -141,6 +141,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY})
 set(CMAKE_HEADER_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/include/ns3)
 set(THIRD_PARTY_DIRECTORY ${PROJECT_SOURCE_DIR}/3rd-party)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+link_directories(${CMAKE_OUTPUT_DIRECTORY}/lib)
 
 # Get installation folder default values for each platform and include package
 # configuration macro
@@ -1470,6 +1471,12 @@ macro(process_options)
          ${netanim_SOURCE_DIR}/CMakeLists.txt
     )
     add_subdirectory(${netanim_SOURCE_DIR} ${netanim_BINARY_DIR})
+  endif()
+
+  if(${NS3_FETCH_OPTIONAL_COMPONENTS})
+    include(
+      build-support/custom-modules/ns3-fetch-optional-modules-dependencies.cmake
+    )
   endif()
 endmacro()
 

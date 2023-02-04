@@ -18,14 +18,22 @@ find_external_library(
 
 if((NOT
     brite_FOUND)
-   OR (NOT
-       ${brite_FOUND})
+   AND (NOT
+        ${brite_FOUND})
+   AND (NOT
+        ${NS3_FETCH_OPTIONAL_COMPONENTS})
 )
   message(
     ${HIGHLIGHTED_STATUS}
     "Skipping src/brite"
   )
   return()
+endif()
+
+if(${NS3_FETCH_OPTIONAL_COMPONENTS})
+  set(brite_LIBRARIES
+      brite
+  )
 endif()
 
 # Only process module if include folder and library have been found

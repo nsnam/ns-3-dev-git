@@ -87,3 +87,7 @@ if(${NS3_MONOLIB})
     add_dependencies(timeTraceReport ${lib-ns3-monolib})
   endif()
 endif()
+
+if(${NS3_FETCH_OPTIONAL_COMPONENTS})
+  add_dependency_to_optional_modules_dependencies()
+endif()

@@ -23,12 +23,21 @@ if((NOT
     click_FOUND)
    AND (NOT
         ${click_FOUND})
+   AND (NOT
+        ${NS3_FETCH_OPTIONAL_COMPONENTS})
 )
   message(
     ${HIGHLIGHTED_STATUS}
     "Skipping src/click"
   )
   return()
+endif()
+
+if(${NS3_FETCH_OPTIONAL_COMPONENTS})
+  set(click_LIBRARIES
+      click
+      nsclick
+  )
 endif()
 
 include_directories(${click_INCLUDE_DIRS})

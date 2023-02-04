@@ -20,12 +20,20 @@ if((NOT
     openflow_FOUND)
    AND (NOT
         ${openflow_FOUND})
+   AND (NOT
+        ${NS3_FETCH_OPTIONAL_COMPONENTS})
 )
   message(
     ${HIGHLIGHTED_STATUS}
     "Skipping src/openflow"
   )
   return()
+endif()
+
+if(${NS3_FETCH_OPTIONAL_COMPONENTS})
+  set(openflow_LIBRARIES
+      openflow
+  )
 endif()
 
 check_include_file_cxx(

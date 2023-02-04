@@ -55,6 +55,9 @@ option(NS3_NETANIM "Build netanim" OFF)
 option(NS3_ENABLE_BUILD_VERSION "Embed version info into libraries" OFF)
 option(NS3_CCACHE "Use Ccache to speed up recompilation" ON)
 option(NS3_FAST_LINKERS "Use Mold or LLD to speed up linking if available" ON)
+option(NS3_FETCH_OPTIONAL_COMPONENTS
+       "Fetch Brite, Click and Openflow dependencies" OFF
+)
 option(NS3_GSL "Build with GSL support" ON)
 option(NS3_GTK3 "Build with GTK3 support" ON)
 option(NS3_LINK_TIME_OPTIMIZATION "Build with link-time optimization" OFF)
