@@ -38,6 +38,8 @@
 #include "ns3/spectrum-channel.h"
 #include "ns3/wifi-net-device.h"
 
+#include <algorithm>
+
 namespace ns3
 {
 
@@ -119,11 +121,10 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
     NS_LOG_FUNCTION(this);
     NS_ASSERT(!m_spectrumPhyInterfaces.empty());
     uint16_t channelWidth = GetChannelWidth();
-    m_interference->RemoveBands(WHOLE_WIFI_SPECTRUM);
+    std::vector<WifiSpectrumBand> bands;
     if (channelWidth < 20)
     {
-        WifiSpectrumBand band = GetBand(channelWidth);
-        m_interference->AddBand(band, WHOLE_WIFI_SPECTRUM);
+        bands.push_back(GetBand(channelWidth));
     }
     else
     {
@@ -131,7 +132,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
         {
             for (uint32_t i = 0; i < (channelWidth / bw); ++i)
             {
-                m_interference->AddBand(GetBand(bw, i), WHOLE_WIFI_SPECTRUM);
+                bands.push_back(GetBand(bw, i));
             }
         }
     }
@@ -183,8 +184,20 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
         }
         for (const auto& bandRuPair : m_ruBands[channelWidth])
         {
-            m_interference->AddBand(bandRuPair.first, WHOLE_WIFI_SPECTRUM);
+            bands.push_back(bandRuPair.first);
         }
+    }
+    const auto bandsChanged = std::any_of(bands.cbegin(), bands.cend(), [&](const auto& band) {
+        return !m_interference->HasBand(band, WHOLE_WIFI_SPECTRUM);
+    });
+    if (!bandsChanged)
+    {
+        return;
+    }
+    m_interference->RemoveBands(WHOLE_WIFI_SPECTRUM);
+    for (const auto& band : bands)
+    {
+        m_interference->AddBand(band, WHOLE_WIFI_SPECTRUM);
     }
 }
 

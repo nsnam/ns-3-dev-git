@@ -160,6 +160,15 @@ class InterferenceHelper : public Object
     void RemoveBands(FrequencyRange range);
 
     /**
+     * Check whether a given band is tracked by this interference helper.
+     *
+     * \param band the band to be checked
+     * \param range the frequency range the band to check belongs to
+     * \return true if the band is already tracked by this interference helper, false otherwise
+     */
+    bool HasBand(WifiSpectrumBand band, const FrequencyRange& range) const;
+
+    /**
      * Set the noise figure.
      *
      * \param value noise figure in linear scale

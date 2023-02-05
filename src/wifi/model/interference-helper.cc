@@ -274,6 +274,13 @@ InterferenceHelper::RemoveBands(FrequencyRange range)
     m_firstPowers.erase(range);
 }
 
+bool
+InterferenceHelper::HasBand(WifiSpectrumBand band, const FrequencyRange& range) const
+{
+    NS_LOG_FUNCTION(this << band.first << band.second << range);
+    return (m_niChanges.count(range) > 0 && m_niChanges.at(range).count(band) > 0);
+}
+
 void
 InterferenceHelper::AddBand(WifiSpectrumBand band, const FrequencyRange& range)
 {
