@@ -279,7 +279,7 @@ OfdmaSpectrumWifiPhy::GetCurrentEvent()
 Time
 OfdmaSpectrumWifiPhy::GetEnergyDuration(double energyW, WifiSpectrumBand band)
 {
-    return m_interference->GetEnergyDuration(energyW, band);
+    return m_interference->GetEnergyDuration(energyW, band, WHOLE_WIFI_SPECTRUM);
 }
 
 Ptr<const HePhy>

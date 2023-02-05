@@ -1222,7 +1222,7 @@ WifiPhy::DoChannelSwitch()
     {
         // notify channel switching
         m_state->SwitchToChannelSwitching(GetChannelSwitchDelay());
-        m_interference->EraseEvents();
+        m_interference->EraseEvents(WHOLE_WIFI_SPECTRUM);
         /*
          * Needed here to be able to correctly sensed the medium for the first
          * time after the switching. The actual switching is not performed until
@@ -1834,7 +1834,7 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
         // TODO find a fallback PHY for receiving the PPDU (e.g. 11a for 11ax due to preamble
         // structure)
         NS_LOG_DEBUG("Unsupported modulation received (" << modulation << "), consider as noise");
-        m_interference->Add(ppdu, ppdu->GetTxVector(), rxDuration, rxPowersW);
+        m_interference->Add(ppdu, ppdu->GetTxVector(), rxDuration, rxPowersW, WHOLE_WIFI_SPECTRUM);
         SwitchMaybeToCcaBusy(nullptr);
     }
 }
@@ -2087,7 +2087,7 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
         {
             m_endPhyRxEvent.Cancel();
         }
-        m_interference->NotifyRxEnd(Simulator::Now());
+        m_interference->NotifyRxEnd(Simulator::Now(), WHOLE_WIFI_SPECTRUM);
         if (!m_currentEvent)
         {
             return;

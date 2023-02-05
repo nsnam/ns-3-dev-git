@@ -56,7 +56,7 @@ YansWifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
     WifiSpectrumBand band;
     band.first = 0;
     band.second = 0;
-    m_interference->AddBand(band);
+    m_interference->AddBand(band, WHOLE_WIFI_SPECTRUM);
 }
 
 YansWifiPhy::~YansWifiPhy()
