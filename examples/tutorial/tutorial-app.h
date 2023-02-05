@@ -46,7 +46,7 @@ class TutorialApp : public Application
      * \param address The destination address.
      * \param packetSize The packet size to transmit.
      * \param nPackets The number of packets to transmit.
-     * \param dataRate the datarate to use.
+     * \param dataRate the data rate to use.
      */
     void Setup(Ptr<Socket> socket,
                Address address,
@@ -63,14 +63,14 @@ class TutorialApp : public Application
     /// Send a packet.
     void SendPacket();
 
-    Ptr<Socket> m_socket;   //!< The tranmission socket.
+    Ptr<Socket> m_socket;   //!< The transmission socket.
     Address m_peer;         //!< The destination address.
     uint32_t m_packetSize;  //!< The packet size.
-    uint32_t m_nPackets;    //!< The number of pacts to send.
-    DataRate m_dataRate;    //!< The datarate to use.
+    uint32_t m_nPackets;    //!< The number of packets to send.
+    DataRate m_dataRate;    //!< The data rate to use.
     EventId m_sendEvent;    //!< Send event.
     bool m_running;         //!< True if the application is running.
-    uint32_t m_packetsSent; //!< The number of pacts sent.
+    uint32_t m_packetsSent; //!< The number of packets sent.
 };
 
 } // namespace ns3
