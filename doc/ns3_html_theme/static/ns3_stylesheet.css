@@ -4,12 +4,13 @@ body,
 table,
 div,
 p,
-dl    {
+dl {
   color: black;
   font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
   font-size: 12px;
 }
 
+/* Dark mode is not supported in Doxygen versions earlier than 1.9.6
 @media (prefers-color-scheme: dark) {
   body,
   table,
@@ -18,7 +19,7 @@ dl    {
   dl    {
     color: ivory;
   }
-}
+} */
 
 a {
   color: #91A501;
@@ -51,7 +52,7 @@ p.caption {
 
 /* Sphinx nav links bar (relbar) */
 div.related {
-  background-image:url('tab_b.png')
+  background-image: url('tab_b.png')
 }
 
 div.related h3 {
@@ -91,13 +92,13 @@ div.sphinxsidebar a {
 /* Title bar elements */
 
 #titlearea {
-  background-image:url('bar-top.png');
-  background-repeat:repeat;
+  background-image: url('bar-top.png');
+  background-repeat: repeat;
   border-bottom: 1px solid #5B5B5B;
   color: white;
   position: relative;
   /* Doxygen tab bar ("Main Page", "Related Pages"..) is at z: 9999 */
-  z-index:10000;
+  z-index: 10000;
 }
 
 #projectlogo {
@@ -110,28 +111,28 @@ div.sphinxsidebar a {
 
 #projecttext {
   align: left;
-  font-color:white;
+  font-color: white;
   padding-left: 2em;
   width: 250px;
 }
 
 #projectbrief {
   color: white;
-  font: 120% Tahoma, Arial,sans-serif;
+  font: 120% Tahoma, Arial, sans-serif;
   margin: 0px;
   padding: 0px;
 }
 
 #projectnumber {
   color: white;
-  font: 100% Tahoma, Arial,sans-serif;
+  font: 100% Tahoma, Arial, sans-serif;
   margin: 0px;
   padding: 0px;
 }
 
 #projectsection {
   color: white;
-  font: 24pt  Aldo, Tahoma, Arial,sans-serif;
+  font: 24pt Aldo, Tahoma, Arial, sans-serif;
   margin-right: 10px;
   margin: 10px;
   text-align: right;
@@ -147,26 +148,26 @@ div.sphinxsidebar a {
 
 #ns3-menu .menu {
   background-image: url('menu-bgr-400.png');
-/*   background-origin: padding-box; */
-/*   background-position: -10px 0; */
+  /*   background-origin: padding-box; */
+  /*   background-position: -10px 0; */
   background-repeat: no-repeat;
   background-size: 100% 39px;
   display: table-cell;
-  float:left;
+  float: left;
   height: 40px;
   margin: 0px 0px 0px 0px;
-  padding:0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
   vertical-align: middle;
 }
 
 
 #ns3-menu .menu ul {
-/*   float:left; */
+  /*   float:left; */
   height: 40;
-  list-style:none;
-  margin:0px 0px 0px -2px;
-/*   overflow:hidden; */
-  padding:0px 0px 0px 0px;
+  list-style: none;
+  margin: 0px 0px 0px -2px;
+  /*   overflow:hidden; */
+  padding: 0px 0px 0px 0px;
   z-index: 30;
 }
 
@@ -175,35 +176,38 @@ div.sphinxsidebar a {
   background-origin: padding-box;
   background-position: 0 11px;
   background-repeat: no-repeat;
-  color:#ffffff;
-  float:left;
+  color: #ffffff;
+  float: left;
   font-family: Aldo, Tahoma, Arial, sans-serif;
   font-size: 14px;
-/*   height:40px; */
-  margin:0px 0px 0px 0px;
-/*   overflow:hidden; */
-  padding:11px 13px 0px 12px;
-  text-transform:uppercase;
+  /*   height:40px; */
+  margin: 0px 0px 0px 0px;
+  /*   overflow:hidden; */
+  padding: 11px 13px 0px 12px;
+  text-transform: uppercase;
 }
 
 #ns3-menu .menu ul li a {
-  color:#ffffff;
+  color: #ffffff;
   /* cursor: pointer; */
-  display:block;
-  float:left;
-  font-weight: normal;  /* default anchors are bold */
-  text-decoration:none; /* default anchors are underlined */
+  display: block;
+  float: left;
+  font-weight: normal;
+  /* default anchors are bold */
+  text-decoration: none;
+  /* default anchors are underlined */
 }
 
 #ns3-menu .menu ul li a:hover {
-  color:#cadc48;
-  text-decoration:none; /* don't add underline on hover */
+  color: #cadc48;
+  text-decoration: none;
+  /* don't add underline on hover */
 }
 
 #ns3-menu .menu div {
   background: #94A901;
   background-size: 100%;
-  color:#ffffff;
+  color: #ffffff;
   position: absolute;
   visibility: hidden;
 }
@@ -222,6 +226,7 @@ div.sphinxsidebar a {
 }
 
 #ns3-menu .menu div a:hover {
-  color:#cadc48;
-  text-decoration:none; /* don't add underline on hover */
+  color: #cadc48;
+  text-decoration: none;
+  /* don't add underline on hover */
 }
