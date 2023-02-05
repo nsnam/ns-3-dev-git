@@ -1155,7 +1155,7 @@ class WifiPhy : public Object
      *
      * \return a pair of start and stop indexes that defines the band
      */
-    virtual WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0);
+    virtual WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) = 0;
 
   protected:
     void DoInitialize() override;

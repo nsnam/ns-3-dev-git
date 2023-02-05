@@ -74,6 +74,7 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<Channel> GetChannel() const override;
     uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
+    WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
 
     /**
      * Attach a SpectrumChannel to use for a given frequency range.
@@ -152,16 +153,6 @@ class SpectrumWifiPhy : public WifiPhy
   protected:
     void DoDispose() override;
     void DoInitialize() override;
-
-    /**
-     * Get the start band index and the stop band index for a given band
-     *
-     * \param bandWidth the width of the band to be returned (MHz)
-     * \param bandIndex the index of the band to be returned
-     *
-     * \return a pair of start and stop indexes that defines the band
-     */
-    WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
 
     std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>
         m_spectrumPhyInterfaces; //!< Spectrum PHY interfaces

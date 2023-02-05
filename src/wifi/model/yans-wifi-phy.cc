@@ -109,4 +109,13 @@ YansWifiPhy::GetTxMaskRejectionParams() const
     return std::make_tuple(0.0, 0.0, 0.0);
 }
 
+WifiSpectrumBand
+YansWifiPhy::GetBand(uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
+{
+    WifiSpectrumBand band;
+    band.first = 0;
+    band.second = 0;
+    return band;
+}
+
 } // namespace ns3

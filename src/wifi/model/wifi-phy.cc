@@ -2175,15 +2175,6 @@ WifiPhy::GetAddressedPsduInPpdu(Ptr<const WifiPpdu> ppdu) const
     return GetPhyEntityForPpdu(ppdu)->GetAddressedPsduInPpdu(ppdu);
 }
 
-WifiSpectrumBand
-WifiPhy::GetBand(uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
-{
-    WifiSpectrumBand band;
-    band.first = 0;
-    band.second = 0;
-    return band;
-}
-
 int64_t
 WifiPhy::AssignStreams(int64_t stream)
 {
