@@ -970,7 +970,7 @@ helpers:
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default();
 
 For simplicity, this code uses the default PHY layer configuration and
-channel models which are documented in the API doxygen documentation for
+channel models which are documented in the API Doxygen documentation for
 the ``YansWifiChannelHelper::Default`` and ``YansWifiPhyHelper::Default``
 methods. Once these objects are created, we create a channel object
 and associate it to our PHY layer object manager to make sure
@@ -1524,7 +1524,7 @@ At the device layer, there are device specific queues:
   packets) for QoS stations
 * SimpleNetDevice: The default configuration is to install a DropTail queue of default
   size (100 packets)
-* LTENetDevice: Queueing occurs at the RLC layer (RLC UM default buffer is 10 * 1024 bytes, RLC AM does not have a buffer limit).
+* LteNetDevice: Queueing occurs at the RLC layer (RLC UM default buffer is 10 * 1024 bytes, RLC AM does not have a buffer limit).
 * UanNetDevice: There is a default 10 packet queue at the MAC layer
 
 

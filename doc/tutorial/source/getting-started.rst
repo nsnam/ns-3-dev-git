@@ -199,7 +199,7 @@ Downloading ns-3 Using Bake
 The above two techniques (source archive, or ns-3-allinone repository
 via Git) are useful to get the most basic installation of |ns3| with a
 few addons (pybindgen for generating Python bindings, and netanim
-for network animiations).  The third repository provided by default in
+for network animations).  The third repository provided by default in
 ns-3-allinone is called ``bake``.
 
 Bake is a tool for coordinated software building from multiple repositories,
@@ -735,7 +735,7 @@ that a compiler warning will cause the build to fail.
 
 For instance, ns-3.28 was released prior to Fedora 28, which included
 a new major version of gcc (gcc-8).  Building ns-3.28 or older releases
-on Fedora 28, when Gtk2+ is installed, will result in an error such as::
+on Fedora 28, when GTK+2 is installed, will result in an error such as::
 
   /usr/include/gtk-2.0/gtk/gtkfilechooserbutton.h:59:8: error: unnecessary parentheses in declaration of ‘__gtk_reserved1’ [-Werror=parentheses]
    void (*__gtk_reserved1);
@@ -1081,11 +1081,11 @@ Note: the command above would fail if ``./ns3 build`` was not executed first,
 since the examples won't be built by the test-runner target.
 
 On Windows, the Msys2/MinGW64/bin directory path must be on the PATH environment variable,
-otherwise the dll's required by the C++ runtime will not be found, resulting in crashes
+otherwise the DLL's required by the C++ runtime will not be found, resulting in crashes
 without any explicit reasoning.
 
 Note: The ns-3 script adds only the ns-3 lib directory path to the PATH,
-ensuring the ns-3 dlls will be found by running programs. If you are using CMake directly or
+ensuring the ns-3 DLLs will be found by running programs. If you are using CMake directly or
 an IDE, make sure to also include the path to ns-3-dev/build/lib in the PATH variable.
 
 .. _setx : https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/setx/

@@ -125,7 +125,7 @@ versions of the ``NetDevice`` called ``CsmaNetDevice``,
 Just as an Ethernet NIC is designed to work with an Ethernet network, the
 ``CsmaNetDevice`` is designed to work with a ``CsmaChannel``; the
 ``PointToPointNetDevice`` is designed to work with a
-``PointToPointChannel`` and a ``WifiNetNevice`` is designed to work with
+``PointToPointChannel`` and a ``WifiNetDevice`` is designed to work with
 a ``WifiChannel``.
 
 Topology Helpers
@@ -605,7 +605,7 @@ Similar to many other helper objects, the ``UdpEchoServerHelper`` object
 has an ``Install`` method.  It is the execution of this method that actually
 causes the underlying echo server application to be instantiated and attached
 to a node.  Interestingly, the ``Install`` method takes a
-``NodeContainter`` as a parameter just as the other ``Install`` methods
+``NodeContainer`` as a parameter just as the other ``Install`` methods
 we have seen.  This is actually what is passed to the method even though it
 doesn't look so in this case.  There is a C++ *implicit conversion* at
 work here that takes the result of ``nodes.Get(1)`` (which returns a smart

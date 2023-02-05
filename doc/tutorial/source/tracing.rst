@@ -3,7 +3,7 @@
 .. role:: raw-role(raw)
    :format: html latex
 
-.. Mimic doxygen formatting for parameter names
+.. Mimic Doxygen formatting for parameter names
 
 .. raw:: html
 
@@ -596,7 +596,7 @@ to the eighth Node in the list of nodes created during the simulation
 As described in the Object Model section of the |ns3| Manual, we make
 widespread use of object aggregation.  This allows us to form an
 association between different Objects without building a complicated
-inheritance tree or predeciding what objects will be part of a
+inheritance tree or pre-deciding what objects will be part of a
 Node.  Each Object in an Aggregation can be reached from the other
 Objects.
 
@@ -1566,7 +1566,7 @@ node in a simulation, a pointer to that Node is added to the global
 Take a look at ``src/network/model/node-list.cc`` and search for
 ``NodeList::Add``.  The public static implementation calls into a
 private implementation called ``NodeListPriv::Add``.  This is a
-relatively common idom in |ns3|.  So, take a look at
+relatively common idiom in |ns3|.  So, take a look at
 ``NodeListPriv::Add``.  There you will find,
 
 ::
