@@ -1379,7 +1379,7 @@ The two solutions to this conundrum are
    give the object to the system to use during simulation time.
 
 We took the second approach in the ``fifth.cc`` example.  This
-decision required us to create the ``MyApp`` ``Application``, the
+decision required us to create the ``TutorialApp`` ``Application``, the
 entire purpose of which is to take a ``Socket`` as a parameter.
 
 Walkthrough: ``fifth.cc``
@@ -1406,18 +1406,21 @@ see some familiar looking code::
    * Foundation, Include., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    */
 
-  #include <fstream>
-  #include "ns3/core-module.h"
-  #include "ns3/network-module.h"
-  #include "ns3/internet-module.h"
-  #include "ns3/point-to-point-module.h"
+  #include "tutorial-app.h"
+
   #include "ns3/applications-module.h"
+  #include "ns3/core-module.h"
+  #include "ns3/internet-module.h"
+  #include "ns3/network-module.h"
+  #include "ns3/point-to-point-module.h"
+
+  #include <fstream>
 
   using namespace ns3;
 
   NS_LOG_COMPONENT_DEFINE("FifthScriptExample");
 
-This has all been covered, so we won't rehash it.  The next lines of
+The next lines of
 source are the network illustration and a comment addressing the
 problem described above with ``Socket``.
 
@@ -1460,44 +1463,67 @@ problem described above with ``Socket``.
 
 This should also be self-explanatory.
 
-The next part is the declaration of the ``MyApp`` ``Application`` that
-we put together to allow the ``Socket`` to be created at configuration
-time.
+Previous versions of |ns3| declared a custom application called ``MyApp``
+for use in this program.  Current versions of |ns3| have moved this to
+a separate header file (``tutorial-app.h'') and implementation file
+(``tutorial-app.cc'').  This simple application allows the ``Socket''
+to be created at configuration time.
 
 ::
 
-  class MyApp : public Application
+  /**
+   * Tutorial - a simple Application sending packets.
+   */
+  class TutorialApp : public Application
   {
-  public:
+    public:
+      TutorialApp();
+      ~TutorialApp() override;
 
-    MyApp();
-    virtual ~MyApp();
+      /**
+       * Register this type.
+       * \return The TypeId.
+       */
+      static TypeId GetTypeId();
 
-    void Setup(Ptr<Socket> socket, Address address, uint32_t packetSize,
-      uint32_t nPackets, DataRate dataRate);
+      /**
+       * Setup the socket.
+       * \param socket The socket.
+       * \param address The destination address.
+       * \param packetSize The packet size to transmit.
+       * \param nPackets The number of packets to transmit.
+       * \param dataRate the data rate to use.
+       */
+      void Setup(Ptr<Socket> socket,
+                 Address address,
+                 uint32_t packetSize,
+                 uint32_t nPackets,
+                 DataRate dataRate);
 
-  private:
-    virtual void StartApplication();
-    virtual void StopApplication();
+    private:
+      void StartApplication() override;
+      void StopApplication() override;
 
-    void ScheduleTx();
-    void SendPacket();
+      /// Schedule a new transmission.
+      void ScheduleTx();
+      /// Send a packet.
+      void SendPacket();
 
-    Ptr<Socket>     m_socket;
-    Address         m_peer;
-    uint32_t        m_packetSize;
-    uint32_t        m_nPackets;
-    DataRate        m_dataRate;
-    EventId         m_sendEvent;
-    bool            m_running;
-    uint32_t        m_packetsSent;
+      Ptr<Socket> m_socket;   //!< The transmission socket.
+      Address m_peer;         //!< The destination address.
+      uint32_t m_packetSize;  //!< The packet size.
+      uint32_t m_nPackets;    //!< The number of packets to send.
+      DataRate m_dataRate;    //!< The data rate to use.
+      EventId m_sendEvent;    //!< Send event.
+      bool m_running;         //!< True if the application is running.
+      uint32_t m_packetsSent; //!< The number of packets sent.
   };
 
 You can see that this class inherits from the |ns3| ``Application``
 class.  Take a look at ``src/network/model/application.h`` if you are
-interested in what is inherited.  The ``MyApp`` class is obligated to
+interested in what is inherited.  The ``TutorialApp`` class is obligated to
 override the ``StartApplication`` and ``StopApplication`` methods.
-These methods are automatically called when ``MyApp`` is required to
+These methods are automatically called when ``TutorialApp`` is required to
 start and stop sending data during the simulation.
 
 Starting/Stopping Applications
@@ -1537,13 +1563,13 @@ as a result of the ``apps.Stop`` call.
 
 The ultimate result of these calls is that we want to have the
 simulator automatically make calls into our ``Applications`` to tell
-them when to start and stop.  In the case of ``MyApp``, it inherits
+them when to start and stop.  In the case of ``TutorialApp``, it inherits
 from class ``Application`` and overrides ``StartApplication``, and
 ``StopApplication``.  These are the functions that will be called by
-the simulator at the appropriate time.  In the case of ``MyApp`` you
-will find that ``MyApp::StartApplication`` does the initial ``Bind``,
+the simulator at the appropriate time.  In the case of ``TutorialApp`` you
+will find that ``TutorialApp::StartApplication`` does the initial ``Bind``,
 and ``Connect`` on the socket, and then starts data flowing by calling
-``MyApp::SendPacket``.  ``MyApp::StopApplication`` stops generating
+``TutorialApp::SendPacket``.  ``TutorialApp::StopApplication`` stops generating
 packets by cancelling any pending send events then closes the socket.
 
 One of the nice things about |ns3| is that you can completely ignore
@@ -1618,6 +1644,7 @@ look at ``src/network/model/application.cc`` and you will find::
   void
   Application::DoInitialize()
   {
+    NS_LOG_FUNCTION(this);
     m_startEvent = Simulator::Schedule(m_startTime, &Application::StartApplication, this);
     if (m_stopTime != TimeStep(0))
       {
@@ -1652,27 +1679,27 @@ flow of data from the ``Application``
 This has been another fairly long journey, but it only has to be made
 once, and you now understand another very deep piece of |ns3|.
 
-The MyApp Application
-~~~~~~~~~~~~~~~~~~~~~
+The TutorialApp Application
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``MyApp`` ``Application`` needs a constructor and a destructor, of
+The ``TutorialApp`` ``Application`` needs a constructor and a destructor, of
 course::
 
-  MyApp::MyApp()
-    : m_socket(0),
-      m_peer(),
-      m_packetSize(0),
-      m_nPackets(0),
-      m_dataRate(0),
-      m_sendEvent(),
-      m_running(false),
-      m_packetsSent(0)
+  TutorialApp::TutorialApp()
+      : m_socket(nullptr),
+        m_peer(),
+        m_packetSize(0),
+        m_nPackets(0),
+        m_dataRate(0),
+        m_sendEvent(),
+        m_running(false),
+        m_packetsSent(0)
   {
   }
 
-  MyApp::~MyApp()
+  TutorialApp::~TutorialApp()
   {
-    m_socket = 0;
+      m_socket = nullptr;
   }
 
 The existence of the next bit of code is the whole reason why we wrote
@@ -1681,14 +1708,17 @@ this ``Application`` in the first place.
 ::
 
   void
-  MyApp::Setup(Ptr<Socket> socket, Address address, uint32_t packetSize,
-               uint32_t nPackets, DataRate dataRate)
+  TutorialApp::Setup(Ptr<Socket> socket,
+                     Address address,
+                     uint32_t packetSize,
+                     uint32_t nPackets,
+                     DataRate dataRate)
   {
-    m_socket = socket;
-    m_peer = address;
-    m_packetSize = packetSize;
-    m_nPackets = nPackets;
-    m_dataRate = dataRate;
+      m_socket = socket;
+      m_peer = address;
+      m_packetSize = packetSize;
+      m_nPackets = nPackets;
+      m_dataRate = dataRate;
   }
 
 This code should be pretty self-explanatory.  We are just initializing
@@ -1702,13 +1732,13 @@ passing it to the ``Setup`` method.
 ::
 
   void
-  MyApp::StartApplication()
+  TutorialApp::StartApplication()
   {
-    m_running = true;
-    m_packetsSent = 0;
-    m_socket->Bind();
-    m_socket->Connect(m_peer);
-    SendPacket();
+      m_running = true;
+      m_packetsSent = 0;
+      m_socket->Bind();
+      m_socket->Connect(m_peer);
+      SendPacket();
   }
 
 The above code is the overridden implementation
@@ -1731,18 +1761,18 @@ creating simulation events.
 ::
 
   void
-  MyApp::StopApplication()
+  TutorialApp::StopApplication()
   {
-    m_running = false;
+      m_running = false;
 
-    if (m_sendEvent.IsRunning())
+      if (m_sendEvent.IsRunning())
       {
-        Simulator::Cancel(m_sendEvent);
+          Simulator::Cancel(m_sendEvent);
       }
 
-    if (m_socket)
+      if (m_socket)
       {
-        m_socket->Close();
+          m_socket->Close();
       }
   }
 
@@ -1765,14 +1795,14 @@ chain of events that describes the ``Application`` behavior.
 ::
 
   void
-  MyApp::SendPacket()
+  TutorialApp::SendPacket()
   {
-    Ptr<Packet> packet = Create<Packet>(m_packetSize);
-    m_socket->Send(packet);
+      Ptr<Packet> packet = Create<Packet>(m_packetSize);
+      m_socket->Send(packet);
 
-    if (++m_packetsSent < m_nPackets)
+      if (++m_packetsSent < m_nPackets)
       {
-        ScheduleTx();
+          ScheduleTx();
       }
   }
 
@@ -1788,12 +1818,12 @@ decides it has sent enough.
 ::
 
   void
-  MyApp::ScheduleTx()
+  TutorialApp::ScheduleTx()
   {
-    if (m_running)
+      if (m_running)
       {
-        Time tNext(Seconds(m_packetSize * 8 / static_cast<double>(m_dataRate.GetBitRate())));
-        m_sendEvent = Simulator::Schedule(tNext, &MyApp::SendPacket, this);
+          Time tNext(Seconds(m_packetSize * 8 / static_cast<double>(m_dataRate.GetBitRate())));
+          m_sendEvent = Simulator::Schedule(tNext, &TutorialApp::SendPacket, this);
       }
   }
 
@@ -1819,7 +1849,7 @@ code implements the corresponding trace sink::
   static void
   CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
   {
-    NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
+      NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "\t" << newCwnd);
   }
 
 This should be very familiar to you now, so we won't dwell on the
@@ -1838,7 +1868,7 @@ demonstrate this working.
   static void
   RxDrop(Ptr<const Packet> p)
   {
-    NS_LOG_UNCOND("RxDrop at " << Simulator::Now().GetSeconds());
+      NS_LOG_UNCOND("RxDrop at " << Simulator::Now().GetSeconds());
   }
 
 This trace sink will be connected to the "PhyRxDrop" trace source of
@@ -1858,20 +1888,45 @@ single parameter which is a ``Ptr<const Packet>`` (assuming we use
 Main Program
 ~~~~~~~~~~~~
 
-The following code should be very familiar to you by now::
+The main function starts off by configuring the TCP type to use a legacy
+``NewReno`` congestion control variant, with what is called the ``classic''
+TCP loss recovery mechanism.  When this tutorial program was originally
+written, these were the default TCP configurations, but over time,
+|ns3| TCP has evolved to use the current Linux TCP defaults of ``Cubic``
+and ``Prr'' loss recovery.  The first statements also configure the
+command-line argument processing.
+
+::
 
   int
-  main(int argc, char *argv[])
+  main(int argc, char* argv[])
   {
-    NodeContainer nodes;
-    nodes.Create(2);
+      CommandLine cmd(__FILE__);
+      cmd.Parse(argc, argv);
 
-    PointToPointHelper pointToPoint;
-    pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
-    pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
+      // In the following three lines, TCP NewReno is used as the congestion
+      // control algorithm, the initial congestion window of a TCP connection is
+      // set to 1 packet, and the classic fast recovery algorithm is used. Note
+      // that this configuration is used only to demonstrate how TCP parameters
+      // can be configured in ns-3. Otherwise, it is recommended to use the default
+      // settings of TCP in ns-3.
+      Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::TcpNewReno"));
+      Config::SetDefault("ns3::TcpSocket::InitialCwnd", UintegerValue(1));
+      Config::SetDefault("ns3::TcpL4Protocol::RecoveryType",
+                         TypeIdValue(TypeId::LookupByName("ns3::TcpClassicRecovery")));
 
-    NetDeviceContainer devices;
-    devices = pointToPoint.Install(nodes);
+
+The following code should be very familiar to you by now::
+
+      NodeContainer nodes;
+      nodes.Create(2);
+
+      PointToPointHelper pointToPoint;
+      pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+      pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
+
+      NetDeviceContainer devices;
+      devices = pointToPoint.Install(nodes);
 
 This creates two nodes with a point-to-point channel between them,
 just as shown in the illustration at the start of the file.
@@ -1890,9 +1945,9 @@ into a ``Channel`` at a given *rate*.
 
 ::
 
-  Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
-  em->SetAttribute("ErrorRate", DoubleValue(0.00001));
-  devices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
+    Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
+    em->SetAttribute("ErrorRate", DoubleValue(0.00001));
+    devices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
 
 The above code instantiates a ``RateErrorModel`` Object, and we set
 the "ErrorRate" ``Attribute`` to the desired value.  We then set the
@@ -1902,12 +1957,12 @@ retransmissions and make our plot a little more interesting.
 
 ::
 
-  InternetStackHelper stack;
-  stack.Install(nodes);
+    InternetStackHelper stack;
+    stack.Install(nodes);
 
-  Ipv4AddressHelper address;
-  address.SetBase("10.1.1.0", "255.255.255.252");
-  Ipv4InterfaceContainer interfaces = address.Assign(devices);
+    Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.252");
+    Ipv4InterfaceContainer interfaces = address.Assign(devices);
 
 The above code should be familiar.  It installs internet stacks on our
 two nodes and creates interfaces and assigns IP addresses for the
@@ -1919,20 +1974,20 @@ is commonly used in |ns3| for that purpose.
 
 ::
 
-  uint16_t sinkPort = 8080;
-  Address sinkAddress(InetSocketAddress(interfaces.GetAddress(1), sinkPort));
-  PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory",
-      InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
-  ApplicationContainer sinkApps = packetSinkHelper.Install(nodes.Get(1));
-  sinkApps.Start(Seconds(0.));
-  sinkApps.Stop(Seconds(20.));
+    uint16_t sinkPort = 8080;
+    Address sinkAddress(InetSocketAddress(interfaces.GetAddress(1), sinkPort));
+    PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory",
+                                      InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
+    ApplicationContainer sinkApps = packetSinkHelper.Install(nodes.Get(1));
+    sinkApps.Start(Seconds(0.));
+    sinkApps.Stop(Seconds(20.));
 
 This should all be familiar, with the exception of,
 
 ::
 
-  PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory",
-      InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
+    PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory",
+                                      InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
 
 This code instantiates a ``PacketSinkHelper`` and tells it to create
 sockets using the class ``ns3::TcpSocketFactory``.  This class
@@ -1952,10 +2007,8 @@ trace source.
 
 ::
 
-  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(nodes.Get(0),
-      TcpSocketFactory::GetTypeId());
-  ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow",
-      MakeCallback(&CwndChange));
+    Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(nodes.Get(0), TcpSocketFactory::GetTypeId());
+    ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow", MakeCallback(&CwndChange));
 
 The first statement calls the static member function
 ``Socket::CreateSocket`` and provides a Node and an explicit
@@ -1975,19 +2028,19 @@ didn't go to any trouble to create a helper to manage the
 ``Application`` so we are going to have to create and install it
 "manually".  This is actually quite easy::
 
-  Ptr<MyApp> app = CreateObject<MyApp>();
-  app->Setup(ns3TcpSocket, sinkAddress, 1040, 1000, DataRate("1Mbps"));
-  nodes.Get(0)->AddApplication(app);
-  app->Start(Seconds(1.));
-  app->Stop(Seconds(20.));
+    Ptr<TutorialApp> app = CreateObject<TutorialApp>();
+    app->Setup(ns3TcpSocket, sinkAddress, 1040, 1000, DataRate("1Mbps"));
+    nodes.Get(0)->AddApplication(app);
+    app->Start(Seconds(1.));
+    app->Stop(Seconds(20.));
 
-The first line creates an ``Object`` of type ``MyApp`` -- our
+The first line creates an ``Object`` of type ``TutorialApp`` -- our
 ``Application``.  The second line tells the ``Application`` what
 ``Socket`` to use, what address to connect to, how much data to send
 at each send event, how many send events to generate and the rate at
 which to produce data from those events.
 
-Next, we manually add the ``MyApp Application`` to the source Node and
+Next, we manually add the ``TutorialApp Application`` to the source Node and
 explicitly call the ``Start`` and ``Stop`` methods on the
 ``Application`` to tell it when to start and stop doing its thing.
 
@@ -1996,7 +2049,7 @@ We need to actually do the connect from the receiver point-to-point
 
 ::
 
-  devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback(&RxDrop));
+    devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback(&RxDrop));
 
 It should now be obvious that we are getting a reference to the
 receiving ``Node NetDevice`` from its container and connecting the
@@ -2029,7 +2082,7 @@ Running ``fifth.cc``
 ++++++++++++++++++++
 
 Since we have provided the file ``fifth.cc`` for you, if you have
-built your distribution (in debug mode since it uses ``NS_LOG`` -- recall
+built your distribution (in debug or default mode since it uses ``NS_LOG`` -- recall
 that optimized builds optimize out ``NS_LOG``) it will be waiting for you
 to run.
 
