@@ -272,17 +272,19 @@ SpectrumWifiPhy::DoChannelSwitch()
     if ((frequencyBefore == frequencyAfter) && (widthBefore == widthAfter))
     {
         NS_LOG_DEBUG("Same RF channel as before, do nothing");
+        SwitchMaybeToCcaBusy(nullptr);
         return;
     }
 
     auto newSpectrumPhyInterface = GetInterfaceCoveringChannelBand(frequencyAfter, widthAfter);
+    const auto interfaceChanged = (newSpectrumPhyInterface != m_currentSpectrumPhyInterface);
 
     NS_ABORT_MSG_IF(!newSpectrumPhyInterface,
                     "No spectrum channel covers frequency range ["
                         << frequencyAfter - (widthAfter / 2) << " MHz - "
                         << frequencyAfter + (widthAfter / 2) << " MHz]");
 
-    if (newSpectrumPhyInterface != m_currentSpectrumPhyInterface)
+    if (interfaceChanged)
     {
         NS_LOG_DEBUG("Switch to existing RF interface with frequency/width pair of ("
                      << frequencyAfter << ", " << widthAfter << ")");
@@ -301,6 +303,8 @@ SpectrumWifiPhy::DoChannelSwitch()
     // it again in the entry associated with the new RX spectrum model UID)
     m_currentSpectrumPhyInterface = newSpectrumPhyInterface;
     ResetSpectrumModel();
+
+    SwitchMaybeToCcaBusy(nullptr);
 }
 
 bool
