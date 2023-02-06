@@ -22,6 +22,7 @@
 #include "mgt-headers.h"
 
 #include "ns3/address-utils.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
 
 namespace ns3
@@ -1051,6 +1052,22 @@ TypeId
 WifiActionHeader::GetInstanceTypeId() const
 {
     return GetTypeId();
+}
+
+std::pair<WifiActionHeader::CategoryValue, WifiActionHeader::ActionValue>
+WifiActionHeader::Peek(Ptr<const Packet> pkt)
+{
+    WifiActionHeader actionHdr;
+    pkt->PeekHeader(actionHdr);
+    return {actionHdr.GetCategory(), actionHdr.GetAction()};
+}
+
+std::pair<WifiActionHeader::CategoryValue, WifiActionHeader::ActionValue>
+WifiActionHeader::Remove(Ptr<Packet> pkt)
+{
+    WifiActionHeader actionHdr;
+    pkt->RemoveHeader(actionHdr);
+    return {actionHdr.GetCategory(), actionHdr.GetAction()};
 }
 
 std::string

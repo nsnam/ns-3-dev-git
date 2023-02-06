@@ -51,6 +51,8 @@
 namespace ns3
 {
 
+class Packet;
+
 /**
  * Indicate which Information Elements cannot be included in a Per-STA Profile subelement of
  * a Basic Multi-Link Element (see Sec. 35.3.3.4 of 802.11be D3.1):
@@ -752,6 +754,22 @@ class WifiActionHeader : public Header
      * \return ActionValue
      */
     ActionValue GetAction() const;
+
+    /**
+     * Peek an Action header from the given packet.
+     *
+     * \param pkt the given packet
+     * \return the category value and the action value in the peeked Action header
+     */
+    static std::pair<CategoryValue, ActionValue> Peek(Ptr<const Packet> pkt);
+
+    /**
+     * Remove an Action header from the given packet.
+     *
+     * \param pkt the given packet
+     * \return the category value and the action value in the removed Action header
+     */
+    static std::pair<CategoryValue, ActionValue> Remove(Ptr<Packet> pkt);
 
     /**
      * Register this type.
