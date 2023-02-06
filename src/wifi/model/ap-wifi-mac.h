@@ -48,6 +48,7 @@ class UniformRandomVariable;
 class MgtAssocRequestHeader;
 class MgtReassocRequestHeader;
 class MgtAssocResponseHeader;
+class MgtEmlOperatingModeNotification;
 
 /// variant holding a  reference to a (Re)Association Request
 using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHeader>,
@@ -236,6 +237,18 @@ class ApWifiMac : public WifiMac
      * \param linkId the ID of the link on which the frame was received
      */
     void ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address from, uint8_t linkId);
+
+    /**
+     * Take necessary actions upon receiving the given EML Operating Mode Notification frame
+     * from the given station on the given link.
+     *
+     * \param frame the received EML Operating Mode Notification frame
+     * \param sender the MAC address of the sender of the frame
+     * \param linkId the ID of the link over which the frame was received
+     */
+    void ReceiveEmlNotification(MgtEmlOperatingModeNotification& frame,
+                                const Mac48Address& sender,
+                                uint8_t linkId);
 
     /**
      * The packet we sent was successfully received by the receiver
