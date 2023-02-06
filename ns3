@@ -1457,7 +1457,7 @@ def main():
         args.build = [args.docs] if args.docs != "all" else ["sphinx", "doxygen"]
         if "doxygen" in args.build and (not build_info["ENABLE_EXAMPLES"] or not build_info["ENABLE_TESTS"]):
             print('The "./ns3 docs doxygen" and "./ns3 docs all" commands,\n'
-                  'require examples and tests to generate introspected documentation.\n'
+                  'requires examples and tests to generate introspected documentation.\n'
                   'Try "./ns3 docs doxygen-no-build" or enable examples and tests.')
             exit(1)
 
