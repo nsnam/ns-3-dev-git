@@ -515,9 +515,7 @@ void
 Txop::Queue(Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
-    const auto linkIds =
-        m_mac->GetMacQueueScheduler()->GetLinkIds(m_queue->GetAc(),
-                                                  WifiMacQueueContainer::GetQueueId(mpdu));
+    const auto linkIds = m_mac->GetMacQueueScheduler()->GetLinkIds(m_queue->GetAc(), mpdu);
     for (const auto linkId : linkIds)
     {
         if (m_mac->GetChannelAccessManager(linkId)->NeedBackoffUponAccess(this))

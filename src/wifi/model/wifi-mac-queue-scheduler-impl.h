@@ -73,7 +73,7 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                                                 uint8_t linkId,
                                                 const WifiContainerQueueId& prevQueueId) final;
     /** \copydoc ns3::WifiMacQueueScheduler::GetLinkIds */
-    std::list<uint8_t> GetLinkIds(AcIndex ac, const WifiContainerQueueId& queueId) final;
+    std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) final;
     /** \copydoc ns3::WifiMacQueueScheduler::SetLinkIds */
     void SetLinkIds(AcIndex ac,
                     const WifiContainerQueueId& queueId,
@@ -363,10 +363,9 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::SetPriority(AcIndex ac,
 
 template <class Priority, class Compare>
 std::list<uint8_t>
-WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac,
-                                                         const WifiContainerQueueId& queueId)
+WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu)
 {
-    auto queueInfoIt = InitQueueInfo(ac, queueId);
+    auto queueInfoIt = InitQueueInfo(ac, WifiMacQueueContainer::GetQueueId(mpdu));
 
     if (queueInfoIt->second.linkIds.empty())
     {
