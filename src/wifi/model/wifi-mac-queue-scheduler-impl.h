@@ -167,16 +167,17 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
 
   private:
     /**
-     * Add the information associated with the given container queue (if not already
-     * present) to the map corresponding to the given Access Category and Initialize
-     * the list of the IDs of the links over which packets contained in the given
-     * container queue can be sent over.
+     * If no information for the container queue used to store the given MPDU of the given
+     * Access Category is present in the queue info map, add the information for such a
+     * container queue and initialize the list of the IDs of the links over which packets
+     * contained in that container queue can be sent.
      *
      * \param ac the given Access Category
-     * \param queueId the ID of the given container queue
-     * \return an iterator to the information associated with the given container queue
+     * \param mpdu the given MPDU
+     * \return an iterator to the information associated with the container queue used to
+     *         store the given MPDU of the given Access Category
      */
-    typename QueueInfoMap::iterator InitQueueInfo(AcIndex ac, const WifiContainerQueueId& queueId);
+    typename QueueInfoMap::iterator InitQueueInfo(AcIndex ac, Ptr<const WifiMpdu> mpdu);
 
     /**
      * Get the next queue to serve. The search starts from the given one. The returned
@@ -293,11 +294,11 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetSortedQueues(AcIndex ac) const
 
 template <class Priority, class Compare>
 typename WifiMacQueueSchedulerImpl<Priority, Compare>::QueueInfoMap::iterator
-WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac,
-                                                            const WifiContainerQueueId& queueId)
+WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<const WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << ac << *mpdu);
 
+    auto queueId = WifiMacQueueContainer::GetQueueId(mpdu);
     // insert queueId in the queue info map if not present yet
     auto [queueInfoIt, ret] = m_perAcInfo[ac].queueInfoMap.insert({queueId, QueueInfo()});
 
@@ -334,8 +335,9 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::SetPriority(AcIndex ac,
     NS_ABORT_MSG_IF(GetWifiMacQueue(ac)->GetNBytes(queueId) == 0,
                     "Cannot set the priority of an empty queue");
 
-    // insert queueId in the queue info map if not present yet
-    auto queueInfoIt = InitQueueInfo(ac, queueId);
+    auto queueInfoIt = m_perAcInfo[ac].queueInfoMap.find(queueId);
+    NS_ASSERT_MSG(queueInfoIt != m_perAcInfo[ac].queueInfoMap.end(),
+                  "No queue info for the given container queue");
     typename SortedQueues::iterator sortedQueuesIt;
 
     if (queueInfoIt->second.priorityIt.has_value())
@@ -365,7 +367,7 @@ template <class Priority, class Compare>
 std::list<uint8_t>
 WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu)
 {
-    auto queueInfoIt = InitQueueInfo(ac, WifiMacQueueContainer::GetQueueId(mpdu));
+    auto queueInfoIt = InitQueueInfo(ac, mpdu);
 
     if (queueInfoIt->second.linkIds.empty())
     {
@@ -481,12 +483,12 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyEnqueue(AcIndex ac, Ptr<Wifi
     NS_LOG_FUNCTION(this << +ac << *mpdu);
     NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
 
+    // add information for the queue storing the MPDU to the queue info map, if not present yet
+    auto queueInfoIt = InitQueueInfo(ac, mpdu);
+
     DoNotifyEnqueue(ac, mpdu);
 
-    if (auto queueInfoIt =
-            m_perAcInfo[ac].queueInfoMap.find(WifiMacQueueContainer::GetQueueId(mpdu));
-        queueInfoIt == m_perAcInfo[ac].queueInfoMap.end() ||
-        !queueInfoIt->second.priorityIt.has_value())
+    if (!queueInfoIt->second.priorityIt.has_value())
     {
         NS_ABORT_MSG(
             "No info for the queue the MPDU was stored into (forgot to call SetPriority()?)");
