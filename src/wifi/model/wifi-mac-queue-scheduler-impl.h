@@ -133,8 +133,7 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
             priorityIt;             /**< iterator pointing to the entry
                                          for this queue in the sorted list */
         std::list<uint8_t> linkIds; /**< IDs of the links over which packets contained in this
-                                         queue can be sent over. Empty means that packets in this
-                                         queue can be sent over any link */
+                                         queue can be sent over */
     };
 
     /**
@@ -319,6 +318,14 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
             NS_ASSERT(linkId.has_value());
             queueInfoIt->second.linkIds = {*linkId};
         }
+        else
+        {
+            // all available links can be used. Note that AP's and STA's MACs may update
+            // the set of links upon association
+            const uint8_t nLinks = GetMac() ? GetMac()->GetNLinks() : 1; // make unit test happy
+            queueInfoIt->second.linkIds.resize(nLinks);
+            std::iota(queueInfoIt->second.linkIds.begin(), queueInfoIt->second.linkIds.end(), 0);
+        }
     }
     return queueInfoIt;
 }
@@ -369,14 +376,6 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const W
 {
     auto queueInfoIt = InitQueueInfo(ac, mpdu);
 
-    if (queueInfoIt->second.linkIds.empty())
-    {
-        // return the IDs of all available links
-        NS_ASSERT(GetMac() != nullptr);
-        std::list<uint8_t> linkIds(GetMac()->GetNLinks());
-        std::iota(linkIds.begin(), linkIds.end(), 0);
-        return linkIds;
-    }
     return queueInfoIt->second.linkIds;
 }
 
@@ -432,7 +431,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext(
         const auto& queueInfoPair = sortedQueuesIt->second.get();
         const auto& linkIds = queueInfoPair.second.linkIds;
 
-        if (linkIds.empty() || std::find(linkIds.begin(), linkIds.end(), linkId) != linkIds.end())
+        if (std::find(linkIds.begin(), linkIds.end(), linkId) != linkIds.end())
         {
             // Packets in this queue can be sent over the link we got channel access on.
             // Now remove packets with expired lifetime from this queue.
