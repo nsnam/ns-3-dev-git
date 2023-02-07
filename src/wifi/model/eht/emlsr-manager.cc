@@ -97,4 +97,17 @@ EmlsrManager::GetEhtFem(uint8_t linkId) const
     return StaticCast<EhtFrameExchangeManager>(m_staMac->GetFrameExchangeManager(linkId));
 }
 
+void
+EmlsrManager::SetTransitionTimeout(Time timeout)
+{
+    NS_LOG_FUNCTION(this << timeout.As(Time::US));
+    m_emlsrTransitionTimeout = timeout;
+}
+
+std::optional<Time>
+EmlsrManager::GetTransitionTimeout() const
+{
+    return m_emlsrTransitionTimeout;
+}
+
 } // namespace ns3

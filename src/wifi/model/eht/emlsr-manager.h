@@ -52,6 +52,18 @@ class EmlsrManager : public Object
      */
     void SetWifiMac(Ptr<StaWifiMac> mac);
 
+    /**
+     * Set the Transition Timeout advertised by the associated AP with EMLSR activated.
+     *
+     * \param timeout the advertised Transition Timeout
+     */
+    void SetTransitionTimeout(Time timeout);
+
+    /**
+     * \return the Transition Timeout, if advertised by the associated AP
+     */
+    std::optional<Time> GetTransitionTimeout() const;
+
   protected:
     void DoDispose() override;
 
@@ -70,7 +82,9 @@ class EmlsrManager : public Object
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
 
   private:
-    Ptr<StaWifiMac> m_staMac; //!< the MAC of the managed non-AP MLD
+    Ptr<StaWifiMac> m_staMac;                     //!< the MAC of the managed non-AP MLD
+    std::optional<Time> m_emlsrTransitionTimeout; /**< Transition timeout advertised by APs with
+                                                       EMLSR activated */
 };
 
 } // namespace ns3
