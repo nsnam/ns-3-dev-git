@@ -135,7 +135,7 @@ class LteX2HandoverMeasuresTestCase : public TestCase
     std::list<CheckPointEvent> m_checkPointEventList; ///< check point event list
     std::string m_checkPointEventListName;            ///< check point event list name
     bool m_epc;                                       ///< whether to use EPC
-    bool m_useUdp;                                    ///<  whether to use UDP traffic
+    bool m_useUdp;                                    ///< whether to use UDP traffic
     std::string m_schedulerType;                      ///< scheduler type
     std::string m_handoverAlgorithmType;              ///< handover algorithm type
     bool m_admitHo;                                   ///< whether to configure to admit handover
@@ -717,7 +717,7 @@ LteX2HandoverMeasuresTestCase::CheckStats(uint32_t ueIndex)
 
         NS_LOG_LOGIC("expBytes " << expectedBytes << " dlRx " << dlRx << " ulRx " << ulRx);
 
-        //                                tolerance
+        // tolerance
         if (it->dlSink)
         {
             NS_TEST_ASSERT_MSG_GT(dlRx,
@@ -776,8 +776,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
     std::string ho = "ns3::A2A4RsrqHandoverAlgorithm";
     for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
     {
-        //                                          nEnbs, nUes, nDBearers, celist, name, useUdp,
-        //                                          sched, ho, admitHo, idealRrc
+        // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, ho, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,
                                                       1,
                                                       0,
@@ -882,8 +881,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
     sched = "ns3::RrFfMacScheduler";
     for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
     {
-        //                                          nEnbs, nUes, nDBearers, celist, name, useUdp,
-        //                                          sched, admitHo, idealRrc
+        // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,
                                                       1,
                                                       0,
@@ -923,8 +921,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
     sched = "ns3::PfFfMacScheduler";
     for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
     {
-        //                                          nEnbs, nUes, nDBearers, celist, name, useUdp,
-        //                                          sched, admitHo, idealRrc
+        // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,
                                                       1,
                                                       0,
@@ -963,8 +960,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
     sched = "ns3::RrFfMacScheduler";
     for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
     {
-        //                                          nEnbs, nUes, nDBearers, celist, name, useUdp,
-        //                                          sched, admitHo, idealRrc
+        // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,
                                                       1,
                                                       0,

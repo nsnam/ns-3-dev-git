@@ -75,7 +75,7 @@ ImsiLcidPair_t::ImsiLcidPair_t(const uint64_t a, const uint8_t b)
 }
 
 /**
- * Equaity operator
+ * Equality operator
  *
  * \param a lhs
  * \param b rhs

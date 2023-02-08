@@ -182,7 +182,7 @@ struct VendorSpecificValue : public SimpleRefCount<VendorSpecificValue>
 };
 
 /**
- * \brief See section 4.3.3 vendorSpecifiListElement
+ * \brief See section 4.3.3 vendorSpecificListElement
  * \struct VendorSpecificListElement_s
  */
 struct VendorSpecificListElement_s

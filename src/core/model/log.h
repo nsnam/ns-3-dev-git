@@ -398,7 +398,7 @@ class LogComponent
     typedef std::map<std::string, LogComponent*> ComponentList;
 
     /**
-     * Get the list of LogComponnents.
+     * Get the list of LogComponents.
      *
      * \internal
      * This should really be considered an internal API.

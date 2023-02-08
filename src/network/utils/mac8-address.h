@@ -159,7 +159,7 @@ class Mac8Address
 bool operator<(const Mac8Address& a, const Mac8Address& b);
 
 /**
- * Address comparison, equalit.
+ * Address comparison, equality.
  *
  * \param a First address to compare.
  * \param b Second address to compare.

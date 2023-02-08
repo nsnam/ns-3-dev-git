@@ -385,7 +385,7 @@ TcpHeaderWithRFC793OptionTestCase::DoTeardown()
 /**
  * \ingroup internet-test
  *
- * \brief TCP header Flags to Striing test.
+ * \brief TCP header Flags to String test.
  */
 class TcpHeaderFlagsToString : public TestCase
 {

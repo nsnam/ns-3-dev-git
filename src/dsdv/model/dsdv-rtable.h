@@ -432,7 +432,7 @@ class RoutingTable
      */
     bool ForceDeleteIpv4Event(Ipv4Address address);
     /**
-     * Get the EcentId associated with that address.
+     * Get the EventId associated with that address.
      * \param address destination address for which this event is running.
      * \return EventId on finding out an event is associated else return NULL.
      */

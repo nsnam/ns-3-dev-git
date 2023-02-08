@@ -226,7 +226,7 @@ class WaveBsmStats : public Object
     int m_wavePktSendCount;                            ///< packet sent count
     int m_waveByteSendCount;                           ///< byte sent count
     int m_wavePktReceiveCount;                         ///< packet receive count
-    std::vector<int> m_wavePktInCoverageReceiveCounts; ///< packet in ceoverage receive counts
+    std::vector<int> m_wavePktInCoverageReceiveCounts; ///< packet in coverage receive counts
     std::vector<int> m_wavePktExpectedReceiveCounts;   ///< packet expected receive counts
     std::vector<int>
         m_waveTotalPktInCoverageReceiveCounts; ///< total packet in coverage receive counts

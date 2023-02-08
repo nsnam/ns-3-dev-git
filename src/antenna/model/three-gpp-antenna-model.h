@@ -25,11 +25,9 @@ namespace ns3
 {
 
 /**
- *
  * \brief  Antenna model based on a parabolic approximation of the main lobe radiation pattern.
  *
  * This class implements the parabolic model as described in 3GPP TR 38.901 v15.0.0
- *
  */
 class ThreeGppAntennaModel : public AntennaModel
 {
@@ -65,8 +63,8 @@ class ThreeGppAntennaModel : public AntennaModel
     double GetSlaV() const;
 
     /**
-     * Get the naximum attenuation of the antenna element.
-     * \return the naximum attenuation in dB
+     * Get the maximum attenuation of the antenna element.
+     * \return the maximum attenuation in dB
      */
     double GetMaxAttenuation() const;
 

@@ -18,7 +18,7 @@
 /**
  * \file
  * \ingroup mpi
- * ns3::MpiReciver implementation,
+ * ns3::MpiReceiver implementation,
  * provides an interface to aggregate to MPI-compatible NetDevices.
  */
 

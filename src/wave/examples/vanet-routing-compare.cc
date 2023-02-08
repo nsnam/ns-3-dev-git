@@ -236,7 +236,7 @@ class RoutingStats
     void SetTxPkts(uint32_t txPkts);
 
   private:
-    uint32_t m_RxBytes;           ///< reeive bytes
+    uint32_t m_RxBytes;           ///< receive bytes
     uint32_t m_cumulativeRxBytes; ///< cumulative receive bytes
     uint32_t m_RxPkts;            ///< receive packets
     uint32_t m_cumulativeRxPkts;  ///< cumulative receive packets
@@ -731,7 +731,7 @@ class WifiPhyStats : public Object
     uint32_t GetTxBytes();
 
     /**
-     * \brief Callback signiture for Phy/Tx trace
+     * \brief Callback signature for Phy/Tx trace
      * \param context this object
      * \param packet packet transmitted
      * \param mode wifi mode
@@ -745,14 +745,14 @@ class WifiPhyStats : public Object
                     uint8_t txPower);
 
     /**
-     * \brief Callback signiture for Phy/TxDrop
+     * \brief Callback signature for Phy/TxDrop
      * \param context this object
      * \param packet the tx packet being dropped
      */
     void PhyTxDrop(std::string context, Ptr<const Packet> packet);
 
     /**
-     * \brief Callback signiture for Phy/RxDrop
+     * \brief Callback signature for Phy/RxDrop
      * \param context this object
      * \param packet the rx packet being dropped
      * \param reason the reason for the drop
@@ -2255,7 +2255,7 @@ VanetRoutingExperiment::SetupAdhocDevices()
     wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
     if (m_lossModel == 3)
     {
-        // two-ray requires antenna height (else defaults to Friss)
+        // two-ray requires antenna height (else defaults to Friis)
         wifiChannel.AddPropagationLoss(m_lossModelName,
                                        "Frequency",
                                        DoubleValue(freq),

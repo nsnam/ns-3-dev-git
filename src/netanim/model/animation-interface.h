@@ -627,7 +627,7 @@ class AnimationInterface
     bool m_enablePacketMetadata;           ///< enable packet metadata
     Time m_startTime;                      ///< start time
     Time m_stopTime;                       ///< stop time
-    uint64_t m_maxPktsPerFile;             ///< maximum pakets per file
+    uint64_t m_maxPktsPerFile;             ///< maximum packets per file
     std::string m_originalFileName;        ///< original file name
     Time m_routingStopTime;                ///< routing stop time
     std::string m_routingFileName;         ///< routing file name
@@ -1048,7 +1048,7 @@ class AnimationInterface
      * \param tx the transmit device
      * \param rx the receive device
      * \param txTime the transmit time
-     * \param rxTime the reeive time
+     * \param rxTime the receive time
      */
     void DevTxTrace(std::string context,
                     Ptr<const Packet> p,
@@ -1501,7 +1501,6 @@ class AnimationInterface
  * When Anim receives a Tx Notification we tag the packet with a unique global uint64_t identifier
  * before recording Tx information
  * When Anim receives Rx notifications the tag is used to retrieve Tx information recorded earlier
- *
  */
 
 class AnimByteTag : public Tag
@@ -1510,56 +1509,48 @@ class AnimByteTag : public Tag
     /**
      * \brief Get Type Id
      * \returns Type Id
-     *
      */
     static TypeId GetTypeId();
 
     /**
      * \brief Get Instance Type Id
      * \returns Type Id
-     *
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
      * \brief Get Serialized Size
      * \returns Serialized Size (i.e size of uint64_t)
-     *
      */
     uint32_t GetSerializedSize() const override;
 
     /**
      * \brief Serialize function
      * \param i Tag Buffer
-     *
      */
     void Serialize(TagBuffer i) const override;
 
     /**
      * \brief Deserialize function
      * \param i Tag Buffer
-     *
      */
     void Deserialize(TagBuffer i) override;
 
     /**
      * \brief Print tag info
      * \param os Reference of ostream object
-     *
      */
     void Print(std::ostream& os) const override;
 
     /**
      * \brief Set global Uid in tag
      * \param AnimUid global Uid
-     *
      */
     void Set(uint64_t AnimUid);
 
     /**
      * \brief Get Uid in tag
      * \returns Uid in tag
-     *
      */
     uint64_t Get() const;
 

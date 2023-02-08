@@ -435,7 +435,7 @@ CoDelQueueDiscControlLawTest::_codel_control_law(uint32_t t, uint32_t interval, 
     return t + _reciprocal_scale(interval, recInvSqrt << REC_INV_SQRT_SHIFT_ns3);
 }
 
-// End Linux borrrow
+// End Linux borrow
 
 void
 CoDelQueueDiscControlLawTest::DoRun()

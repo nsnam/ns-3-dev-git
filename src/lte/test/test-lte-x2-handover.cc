@@ -227,7 +227,7 @@ LteX2HandoverTestCase::DoRun()
     uint32_t previousSeed = RngSeedManager::GetSeed();
     uint64_t previousRun = RngSeedManager::GetRun();
     Config::Reset();
-    // This test is sensitive to random variable stream assigments
+    // This test is sensitive to random variable stream assignments
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(3);
     Config::SetDefault("ns3::UdpClient::Interval", TimeValue(m_udpClientInterval));
@@ -765,8 +765,7 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite()
     {
         for (int32_t useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
         {
-            //                                     nUes, nDBearers, helist, name, sched, admitHo,
-            //                                     idealRrc
+            // nUes, nDBearers, helist, name, sched, admitHo, idealRrc
             AddTestCase(
                 new LteX2HandoverTestCase(1, 0, hel0, hel0name, *schedIt, true, useIdealRrc),
                 TestCase::EXTENSIVE);

@@ -186,13 +186,13 @@ class LrWpanMacHeader : public Header
      */
     Mac64Address GetExtSrcAddr() const;
     /**
-     * Get the Auxiliary Security Header - Security Control Octect
-     * \return the Auxiliary Security Header - Security Control Octect
+     * Get the Auxiliary Security Header - Security Control Octet
+     * \return the Auxiliary Security Header - Security Control Octet
      */
     uint8_t GetSecControl() const;
     /**
-     * Get the Auxiliary Security Header - Frame Counter Octects
-     * \return the Auxiliary Security Header - Frame Counter Octects
+     * Get the Auxiliary Security Header - Frame Counter Octets
+     * \return the Auxiliary Security Header - Frame Counter Octets
      */
     uint32_t GetFrmCounter() const;
 
@@ -212,13 +212,13 @@ class LrWpanMacHeader : public Header
      */
     uint8_t GetSecCtrlReserved() const;
     /**
-     * Get the Auxiliary Security Header - Key Identifier - Key Source (2 Octects)
-     * \return the Auxiliary Security Header - Key Identifier - Key Source  (2 Octects)
+     * Get the Auxiliary Security Header - Key Identifier - Key Source (2 Octets)
+     * \return the Auxiliary Security Header - Key Identifier - Key Source  (2 Octets)
      */
     uint32_t GetKeyIdSrc32() const;
     /**
-     * Get the Auxiliary Security Header - Key Identifier - Key Source (4 Octects)
-     * \return the Auxiliary Security Header - Key Identifier - Key Source  (4 Octects)
+     * Get the Auxiliary Security Header - Key Identifier - Key Source (4 Octets)
+     * \return the Auxiliary Security Header - Key Identifier - Key Source  (4 Octets)
      */
     uint64_t GetKeyIdSrc64() const;
     /**
@@ -342,12 +342,12 @@ class LrWpanMacHeader : public Header
     /* Auxiliary Security Header is only set if Sec Enable (SecU) field is set to 1 */
     /**
      * Set the auxiliary security header "Security Control" octet
-     * \param secLevel the "Security Control" octect
+     * \param secLevel the "Security Control" octet
      */
     void SetSecControl(uint8_t secLevel);
     /**
      * Set the auxiliary security header "Frame Counter" octet
-     * \param frmCntr the "Frame Counter" octect
+     * \param frmCntr the "Frame Counter" octet
      */
     void SetFrmCounter(uint32_t frmCntr);
     /**

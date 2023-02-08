@@ -30,7 +30,7 @@
  * \file
  * \ingroup object
  * ns3::ObjectBase declaration and
- * NS_OBJECT_ENSURE_REGISTERED() madro definition.
+ * NS_OBJECT_ENSURE_REGISTERED() macro definition.
  */
 
 /**

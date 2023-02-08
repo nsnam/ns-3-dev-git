@@ -120,7 +120,7 @@ class Angles
     /**
      * This constructor allows to specify azimuth and inclination.
      * Inclination must be in [0, M_PI], while azimuth is
-     * automatically notmalized in [-M_PI, M_PI)
+     * automatically normalized in [-M_PI, M_PI)
      *
      * \param azimuth the azimuth angle in radians
      * \param inclination the inclination angle in radians
@@ -209,7 +209,7 @@ class Angles
      *
      * Note: while an arbitrary value for the azimuth angle is valid
      * and can be wrapped in [-M_PI, M_PI), an inclination angle outside
-     * the [0, M_PI] range can be ambiguos and is thus not valid.
+     * the [0, M_PI] range can be ambiguous and is thus not valid.
      */
     void NormalizeAngles();
 

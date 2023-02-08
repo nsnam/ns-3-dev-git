@@ -79,7 +79,7 @@ class IdCache
 
     /**
      * Return lifetime for existing entries in cache
-     * \returns thhe lifetime
+     * \returns the lifetime
      */
     Time GetLifeTime() const
     {

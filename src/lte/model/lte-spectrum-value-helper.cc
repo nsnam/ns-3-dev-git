@@ -33,7 +33,7 @@ namespace std
 /**
  * \brief Stream insertion operator.
  *
- * \note This function scope is stricly local, and can not be
+ * \note This function scope is strictly local, and can not be
  * used in other source files.
  *
  * \param [in] os The reference to the output stream.
