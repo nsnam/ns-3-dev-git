@@ -28,18 +28,18 @@
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
-#include "ns3/simulator.h"
 
 namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("WifiMpdu");
 
-WifiMpdu::WifiMpdu(Ptr<const Packet> p, const WifiMacHeader& header)
+WifiMpdu::WifiMpdu(Ptr<const Packet> p, const WifiMacHeader& header, Time stamp)
     : m_header(header)
 {
     auto& original = std::get<OriginalInfo>(m_instanceInfo);
     original.m_packet = p;
+    original.m_timestamp = stamp;
 
     if (header.IsQosData() && header.IsQosAmsdu())
     {
@@ -113,6 +113,17 @@ Ptr<const Packet>
 WifiMpdu::GetPacket() const
 {
     return GetOriginalInfo().m_packet;
+}
+
+Time
+WifiMpdu::GetTimestamp() const
+{
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        return original->m_timestamp;
+    }
+    const auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    return std::get<OriginalInfo>(origInstanceInfo).m_timestamp;
 }
 
 const WifiMacHeader&

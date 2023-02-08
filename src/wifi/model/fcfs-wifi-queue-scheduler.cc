@@ -140,7 +140,7 @@ FcfsWifiQueueScheduler::DoNotifyEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu)
         return;
     }
 
-    SetPriority(ac, queueId, {mpdu->GetExpiryTime(), std::get<WifiContainerQueueType>(queueId)});
+    SetPriority(ac, queueId, {mpdu->GetTimestamp(), std::get<WifiContainerQueueType>(queueId)});
 }
 
 void
@@ -161,7 +161,7 @@ FcfsWifiQueueScheduler::DoNotifyDequeue(AcIndex ac, const std::list<Ptr<WifiMpdu
         {
             SetPriority(ac,
                         queueId,
-                        {item->GetExpiryTime(), std::get<WifiContainerQueueType>(queueId)});
+                        {item->GetTimestamp(), std::get<WifiContainerQueueType>(queueId)});
         }
     }
 }
@@ -184,7 +184,7 @@ FcfsWifiQueueScheduler::DoNotifyRemove(AcIndex ac, const std::list<Ptr<WifiMpdu>
         {
             SetPriority(ac,
                         queueId,
-                        {item->GetExpiryTime(), std::get<WifiContainerQueueType>(queueId)});
+                        {item->GetTimestamp(), std::get<WifiContainerQueueType>(queueId)});
         }
     }
 }
