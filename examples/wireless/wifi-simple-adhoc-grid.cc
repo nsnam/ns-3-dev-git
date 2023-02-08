@@ -31,7 +31,7 @@
 // n0   n1   n2   n3   n4
 //
 // the layout is affected by the parameters given to GridPositionAllocator;
-// by default, GridWidth is 5 and numNodes is 25..
+// by default, GridWidth is 5 (nodes per row) and numNodes is 25..
 //
 // There are a number of command-line options available to control
 // the default behavior.  The list of available command-line options
@@ -43,12 +43,26 @@
 //
 // For instance, for this configuration, the physical layer will
 // stop successfully receiving packets when distance increases beyond
-// the default of 500m.
-// To see this effect, try running:
+// the default of 100m.  The cutoff is around 116m; below that value, the
+// received signal strength falls below the (default) RSSI limit of -82 dBm
+// used by Wi-Fi's threshold preamble detection running.
 //
-// ./ns3 run "wifi-simple-adhoc-grid --distance=500"
-// ./ns3 run "wifi-simple-adhoc-grid --distance=1000"
-// ./ns3 run "wifi-simple-adhoc-grid --distance=1500"
+// To see this effect, try running at a larger distance, and no packet
+// reception will be reported:
+//
+// ./ns3 run "wifi-simple-adhoc-grid --distance=200"
+//
+// The default path through the topology will follow the following node
+// numbers:  24->23->18->13->12->11->10->5->0
+//
+// To see this, the following Bash commands will list the UDP packet
+// transmissions hop-by-hop, if tracing is enabled:
+//
+// ./ns3 run "wifi-simple-adhoc-grid --tracing=1"
+// grep ^t wifi-simple-adhoc-grid.tr  | grep Udp | grep -v olsr | less
+//
+// By changing the distance to a smaller value, more nodes can be reached
+// by each transmission, and the number of forwarding hops will decrease.
 //
 // The source node and sink node can be changed like this:
 //
@@ -66,6 +80,9 @@
 // in your directory.  If you have tcpdump installed, you can try this:
 //
 // tcpdump -r wifi-simple-adhoc-grid-0-0.pcap -nn -tt
+//
+// or you can examine the text-based trace wifi-simple-adhoc-grid.tr with
+// an editor.
 //
 
 #include "ns3/command-line.h"
@@ -133,7 +150,7 @@ int
 main(int argc, char* argv[])
 {
     std::string phyMode("DsssRate1Mbps");
-    double distance = 500;      // m
+    double distance = 100;      // m
     uint32_t packetSize = 1000; // bytes
     uint32_t numPackets = 1;
     uint32_t numNodes = 25; // by default, 5x5
