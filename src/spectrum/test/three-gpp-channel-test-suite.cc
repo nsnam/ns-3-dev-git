@@ -26,15 +26,19 @@
 #include "ns3/log.h"
 #include "ns3/node-container.h"
 #include "ns3/pointer.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/spectrum-signal-parameters.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/three-gpp-antenna-model.h"
 #include "ns3/three-gpp-channel-model.h"
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/uinteger.h"
 #include "ns3/uniform-planar-array.h"
+
+#include <valarray>
 
 using namespace ns3;
 
@@ -51,7 +55,14 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
 {
   public:
     /**
-     * Constructor
+     *Constructor
+     * \param txAntennaElements the number of rows and columns of the antenna array of the
+     * transmitter
+     * \param rxAntennaElements the number of rows and columns of the antenna array of
+     * \param txPorts the number of vertical and horizontal ports of the antenna array
+     * of the transmitter
+     * \param rxPorts the number of vertical and horizontal ports of the antenna
+     * array of the receiver
      */
     ThreeGppChannelMatrixComputationTest(uint32_t txAntennaElements = 2,
                                          uint32_t rxAntennaElements = 2,
@@ -282,7 +293,14 @@ class ThreeGppChannelMatrixUpdateTest : public TestCase
 {
   public:
     /**
-     * Constructor
+     *Constructor
+     * \param txAntennaElements the number of rows and columns of the antenna array of the
+     * transmitter
+     * \param rxAntennaElements the number of rows and columns of the antenna array of
+     * \param txPorts the number of vertical and horizontal ports of the antenna array
+     * of the transmitter
+     * \param rxPorts the number of vertical and horizontal ports of the antenna
+     * array of the receiver
      */
     ThreeGppChannelMatrixUpdateTest(uint32_t txAntennaElements = 2,
                                     uint32_t rxAntennaElements = 4,
@@ -511,6 +529,14 @@ class ThreeGppSpectrumPropagationLossModelTest : public TestCase
   public:
     /**
      * Constructor
+     * \param txAntennaElements the number of rows and columns of the antenna array of the
+     * transmitter
+     * \param rxAntennaElements the number of rows and columns of the antenna array of
+     * the receiver
+     * \param txPorts the number of vertical and horizontal ports of the antenna array
+     * of the transmitter
+     * \param rxPorts the number of vertical and horizontal ports of the antenna
+     * array of the receiver
      */
     ThreeGppSpectrumPropagationLossModelTest(uint32_t txAntennaElements = 4,
                                              uint32_t rxAntennaElements = 4,
@@ -731,8 +757,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
 /**
  * \ingroup spectrum-tests
  *
- * Test case for the multi-port antenna operations in spectrum. It checks that
- * channel matrices after using different multi-port mappings are the same.
+ * Test case that test the correct use of the multi-port antennas in spectrum.
  * The test does the following:
  * 1) Generates a time domain channel matrix of a fixed size
  * (num gNB elements = 32 (4x8), num UE elements = 16 (4x4), num Clusters).
@@ -945,6 +970,250 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
 }
 
 /**
+ * Structure that contains some of the main configuration parameters of the antenna
+ * array that are used in the ThreeGppMimoPolarizationTest
+ */
+struct MimoPolarizationAntennaParams
+{
+    uint32_t m_rows = 1;        //!< the number of rows of antenna array
+    uint32_t m_cols = 2;        //!< the number of columns of antenna array
+    uint32_t m_vPorts = 1;      //!< the number of vertical ports of antenna array
+    uint32_t m_hPorts = 2;      //!< the number of horizontal ports of antenna array
+    bool m_isotropic = false;   //!< defines whether the antenna elements are isotropic
+    double m_polSlantAngle = 0; //!< polarization angle of the antenna array
+    double m_bearingAngle = 0;  //!< bearing angle of the antenna array
+
+    /**
+     * Constructor
+     * Currently only configurable through constructor are polSlantAngle and bearingAngle.
+     * \param isotropic whether the antenna elements are isotropic, or 3GPP
+     * \param polSlantAngle the polarization slant angle
+     * \param bearingAngle the bearing angle
+     */
+    MimoPolarizationAntennaParams(bool isotropic, double polSlantAngle = 0, double bearingAngle = 0)
+        : m_isotropic(isotropic),
+          m_polSlantAngle(polSlantAngle),
+          m_bearingAngle(bearingAngle)
+    {
+    }
+};
+
+/**
+ * \ingroup spectrum-tests
+ * This test tests that the channel matrix is correctly generated when dual-polarized
+ * antennas are being used at TX and RX. In the conditions in which the channel between
+ * the TX and Rx device is LOS channel, and the beams of the transmitter and the
+ * receiver are pointing one towards the other, then in the presence of multiple ports
+ * at the TX and RX, and the antenna array at the TX and RX are dual polarized,
+ * the channel matrix should exhibit the strong symmetry between the two polarizations.
+ * E.g. if we have 1x2 antenna elements and two polarizations at both TX and RX,
+ * and the 1x2 ports at the TX and RX, then the channel matrix will have the
+ * structure as:
+ *
+ *                ch00 ch01 |ch02 ch03
+ *   Hvv  Hvh     ch10 ch11 |ch12 ch13
+ *             =  --------------------
+ *   Hhv  Hhh     ch20 ch21 |ch22 ch23
+ *                ch30 ch31 |ch32 ch33
+ *
+ * We test different cases of the polarization slant angles of the TX and RX,
+ * e.g., 0, 30, 45, 90.
+ * In each of these setups we check if the channel matrix in its strongest
+ * cluster experiences strong symmetry, and if the values appear in pairs.
+ * We also test additional cases in which we change the bearing angle and
+ * the height of the TX. In these cases we also observe strong symmetry, with
+ * the difference that in these cases we can observe different values in the
+ * pairs. We can still observe strong impact of the dual polarization on the
+ * channel matrix.
+ */
+class ThreeGppMimoPolarizationTest : public TestCase
+{
+  public:
+    /**
+     * Constructor that receives MIMO polarization parameters of TX and RX
+     * devices
+     * \param testCaseName the test case name
+     * \param txLoc the position of the transmitter
+     * \param txAntennaParams the antenna parameters of the transmitter
+     * \param rxLoc the position of the receiver
+     * \param rxAntennaParams the antenna parameters of the receiver
+     * \param testChannel the test matrix that represent the strongest cluster
+     * \param tolerance the tolerance to be used when testing
+     */
+    ThreeGppMimoPolarizationTest(std::string testCaseName,
+                                 Vector txLoc,
+                                 const MimoPolarizationAntennaParams& txAntennaParams,
+                                 Vector rxLoc,
+                                 const MimoPolarizationAntennaParams& rxAntennaParams,
+                                 std::valarray<std::complex<double>> testChannel,
+                                 double tolerance);
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppMimoPolarizationTest() override;
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+
+    /**
+     * @brief Function that can be used to configure the antenna using the set of
+     * parameters.
+     *
+     * @param params The parameters to be set to the antenna
+     * @return A pointer to the antenna that is created and configured by using input params
+     */
+    Ptr<PhasedArrayModel> CreateAndConfigureAntenna(const MimoPolarizationAntennaParams& params);
+
+    Vector m_txLoc;                           //!< Position of the TX device
+    MimoPolarizationAntennaParams m_txParams; //!< Parameters used to configure the TX antenna array
+    Vector m_rxLoc;                           //!< Position of the RX device
+    MimoPolarizationAntennaParams m_rxParams; //!< Parameters used to configure the RX antenna array
+    std::valarray<std::complex<double>>
+        m_testChannel;  //!< The test value for the matrix representing the strongest cluster
+    double m_tolerance; //!< The tolerance to be used when comparing the channel matrix with the
+                        //!< test matrix
+};
+
+ThreeGppMimoPolarizationTest::ThreeGppMimoPolarizationTest(
+    std::string testCaseName,
+    Vector txLoc,
+    const MimoPolarizationAntennaParams& txParams,
+    Vector rxLoc,
+    const MimoPolarizationAntennaParams& rxParams,
+    std::valarray<std::complex<double>> testChannel,
+    double tolerance)
+    : TestCase("Test MIMO using dual polarization." + testCaseName),
+      m_txLoc(txLoc),
+      m_txParams(txParams),
+      m_rxLoc(rxLoc),
+      m_rxParams(rxParams),
+      m_testChannel(testChannel),
+      m_tolerance(tolerance)
+{
+}
+
+ThreeGppMimoPolarizationTest::~ThreeGppMimoPolarizationTest()
+{
+}
+
+Ptr<PhasedArrayModel>
+ThreeGppMimoPolarizationTest::CreateAndConfigureAntenna(const MimoPolarizationAntennaParams& params)
+{
+    NS_LOG_FUNCTION(this);
+    Ptr<AntennaModel> antenna;
+    if (params.m_isotropic)
+    {
+        antenna = CreateObject<IsotropicAntennaModel>();
+    }
+    else
+    {
+        antenna = CreateObject<ThreeGppAntennaModel>();
+    }
+    // create the tx and rx antennas and set the their dimensions
+    return CreateObjectWithAttributes<UniformPlanarArray>("NumColumns",
+                                                          UintegerValue(params.m_cols),
+                                                          "NumRows",
+                                                          UintegerValue(params.m_rows),
+                                                          "AntennaElement",
+                                                          PointerValue(antenna),
+                                                          "NumVerticalPorts",
+                                                          UintegerValue(params.m_vPorts),
+                                                          "NumHorizontalPorts",
+                                                          UintegerValue(params.m_hPorts),
+                                                          "BearingAngle",
+                                                          DoubleValue(params.m_bearingAngle),
+                                                          "PolSlantAngle",
+                                                          DoubleValue(params.m_polSlantAngle),
+                                                          "IsDualPolarized",
+                                                          BooleanValue(true));
+}
+
+void
+ThreeGppMimoPolarizationTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+    // create the ThreeGppChannelModel object used to generate the channel matrix
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(60e9));
+    channelModel->SetAttribute("Scenario", StringValue("RMa"));
+    channelModel->SetAttribute("ChannelConditionModel",
+                               PointerValue(CreateObject<AlwaysLosChannelConditionModel>()));
+
+    int64_t randomStream = 1;
+    randomStream += channelModel->AssignStreams(randomStream);
+
+    // create the tx and rx nodes
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    // create the tx and rx devices
+    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
+    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
+
+    // associate the nodes and the devices
+    nodes.Get(0)->AddDevice(txDev);
+    txDev->SetNode(nodes.Get(0));
+    nodes.Get(1)->AddDevice(rxDev);
+    rxDev->SetNode(nodes.Get(1));
+
+    // create the tx and rx mobility models and set their positions
+    Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
+    txMob->SetPosition(m_txLoc);
+    Ptr<MobilityModel> rxMob = CreateObject<ConstantPositionMobilityModel>();
+    rxMob->SetPosition(m_rxLoc);
+
+    // associate the nodes and the mobility models
+    nodes.Get(0)->AggregateObject(txMob);
+    nodes.Get(1)->AggregateObject(rxMob);
+
+    // create the tx and rx antennas and set the their dimensions
+    Ptr<PhasedArrayModel> txAntenna = CreateAndConfigureAntenna(m_txParams);
+    Ptr<PhasedArrayModel> rxAntenna = CreateAndConfigureAntenna(m_rxParams);
+
+    // configure direct beamforming vectors to point to each other
+    txAntenna->SetBeamformingVector(
+        txAntenna->GetBeamformingVector(Angles(rxMob->GetPosition(), txMob->GetPosition())));
+    rxAntenna->SetBeamformingVector(
+        rxAntenna->GetBeamformingVector(Angles(txMob->GetPosition(), rxMob->GetPosition())));
+
+    // generate the time domain channel matrix
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix =
+        channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);
+
+    // test whether the channel matrix for the first cluster experiences strong
+    // symmetry that is caused by existence of dual polarized ports at the
+    // transmitter and the receiver
+    const std::complex<double>* strongestClusterPtr = channelMatrix->m_channel.GetPagePtr(0);
+    size_t matrixSize =
+        channelMatrix->m_channel.GetNumRows() * channelMatrix->m_channel.GetNumCols();
+
+    MatrixBasedChannelModel::Complex2DVector strongestCluster(
+        channelMatrix->m_channel.GetNumRows(),
+        channelMatrix->m_channel.GetNumCols(),
+        std::valarray<std::complex<double>>(strongestClusterPtr, matrixSize));
+
+    MatrixBasedChannelModel::Complex2DVector testChannel(channelMatrix->m_channel.GetNumRows(),
+                                                         channelMatrix->m_channel.GetNumCols(),
+                                                         m_testChannel);
+
+    NS_LOG_INFO("Channel matrix:" << strongestCluster);
+    NS_LOG_INFO("Test channel matrix: " << testChannel);
+
+    NS_TEST_ASSERT_MSG_EQ(
+        strongestCluster.IsAlmostEqual(testChannel, m_tolerance),
+        true,
+        "The strongest cluster and the test channel matrix should be almost equal");
+
+    Simulator::Run();
+    Simulator::Destroy();
+}
+
+/**
  * \ingroup spectrum-tests
  *
  * Test suite for the ThreeGppChannelModel class
@@ -975,6 +1244,142 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 2), TestCase::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 1), TestCase::QUICK);
     AddTestCase(new ThreeGppCalcLongTermMultiPortTest(), TestCase::QUICK);
+
+    /**
+     *  The TX and RX antennas are configured face-to-face.
+     *  When polarization slant angles are 0 and 0 at TX and RX,
+     *  we expect the strongest cluster to be similar to the following matrix:
+     *   (5.9,0) (5.9,0) (0,0)     (0,0)
+     *   (5.9,0) (5.9,0) (0,0)     (0,0)
+     *   (0,0)   (0,0)   (-5.8,)   (-5.8,0)
+     *   (0,0)   (0,0)   (-5.8,0)  (-5.8,0)
+     */
+    std::valarray<std::complex<double>> testChannel1 =
+        {5.9, 5.9, 0, 0, 5.9, 5.9, 0, 0, 0, 0, -5.8, -5.8, 0, 0, -5.8, -5.8};
+    AddTestCase(new ThreeGppMimoPolarizationTest("Face-to-face. 0 and 0 pol. slant angles.",
+                                                 Vector{0, 0, 3},
+                                                 MimoPolarizationAntennaParams(false, 0, 0),
+                                                 Vector{9, 0, 3},
+                                                 MimoPolarizationAntennaParams(false, 0, M_PI),
+                                                 testChannel1,
+                                                 0.9),
+                TestCase::QUICK);
+
+    /**
+     *  The TX and RX antennas are configured face-to-face.
+     *  When polarization slant angles are 30 and 0 at TX and RX,
+     *  we expect the strongest cluster to be similar to the following matrix:
+     *   (5,0)   (5,0)   (3,0)   (3,0)
+     *   (5,0)   (5,0)   (3,0)   (3,0)
+     *   (3,0)   (3,0)   (-5,0)  (-5,0)
+     *   (3,0)   (3,0)   (-5,0)  (-5,0)
+     */
+    AddTestCase(
+        new ThreeGppMimoPolarizationTest("Face-to-face. 30 and 0 pol. slant angles.",
+                                         Vector{0, 0, 3},
+                                         MimoPolarizationAntennaParams(false, M_PI / 6, 0),
+                                         Vector{6, 0, 3},
+                                         MimoPolarizationAntennaParams(false, 0, M_PI),
+                                         {5, 5, 3, 3, 5, 5, 3, 3, 3, 3, -5, -5, 3, 3, -5, -5},
+                                         0.8),
+        TestCase::QUICK);
+
+    /**
+     *  The TX and RX antennas are configured face-to-face.
+     *  When polarization slant angles are 45 and 0 at TX and RX,
+     *  we expect the strongest cluster to be similar to the following matrix:
+     *  (4,0)  (4,0)  (4,0)  (4,0)
+     *  (4,0)  (4,0)  (4,0)  (4,0)
+     *  (4,0)  (4,0)  (4,0)  (4,0)
+     *  (4,0)  (4,0)  (4,0)  (4,0)
+     */
+    AddTestCase(
+        new ThreeGppMimoPolarizationTest("Face-to-face. 45 and 0 pol. slant angles.",
+                                         Vector{0, 0, 3},
+                                         MimoPolarizationAntennaParams(false, M_PI / 4, 0),
+                                         Vector{6, 0, 3},
+                                         MimoPolarizationAntennaParams(false, 0, M_PI),
+                                         {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -4, -4, 4, 4, -4, -4},
+                                         0.7),
+        TestCase::QUICK);
+
+    /**
+     *  The TX and RX antennas are configured face-to-face.
+     *  When polarization slant angles are 45 and 0 at TX and RX,
+     *  we expect the strongest cluster to be similar to the following matrix:
+     *  (0,0)  (0,0)  (5.9,0)  (5.9,0)
+     *  (0,0)  (0,0)  (5.9,0)  (5.9,0)
+     *  (5.8,0)  (5.8,0)  (0,0)  (0,0)
+     *  (5.8,0)  (5.8,0)  (0,0)  (0,0)
+     */
+    AddTestCase(new ThreeGppMimoPolarizationTest(
+                    "Face-to-face. 90 and 0 pol. slant angles.",
+                    Vector{0, 0, 3},
+                    MimoPolarizationAntennaParams(false, M_PI / 2, 0),
+                    Vector{6, 0, 3},
+                    MimoPolarizationAntennaParams(false, 0, M_PI),
+                    {0, 0, 5.8, 5.8, 0, 0, 5.8, 5.8, 5.9, 5.9, 0, 0, 5.9, 5.9, 0, 0},
+                    0.9),
+                TestCase::QUICK);
+
+    /**
+     *  The TX and RX antennas are face to face. We test the configuration of
+     *  the bearing angle along with the configuration of the different position
+     *  of the RX antenna, and the bearing angles.
+     *  When polarization slant angles are 0 and 0 at TX and RX,
+     *  we expect the strongest cluster to be similar to the following matrix:
+     *   (5.9,0) (5.9,0) (0,0)     (0,0)
+     *   (5.9,0) (5.9,0) (0,0)     (0,0)
+     *   (0,0)   (0,0)   (-5.8,)   (-5.8,0)
+     *   (0,0)   (0,0)   (-5.8,0)  (-5.8,0)
+     *  Notice that we expect almost the same matrix as in the first case in
+     *  which
+     */
+    AddTestCase(
+        new ThreeGppMimoPolarizationTest("Face-to-face. Different positions. Different bearing "
+                                         "angles. 0 and 0 pol. slant angles.",
+                                         Vector{0, 0, 3},
+                                         MimoPolarizationAntennaParams(false, 0, M_PI / 4),
+                                         Vector{6.363961031, 6.363961031, 3},
+                                         MimoPolarizationAntennaParams(false, 0, -(M_PI / 4) * 3),
+                                         testChannel1,
+                                         0.9),
+        TestCase::QUICK);
+
+    /**
+     *  The TX and RX antenna have different height.
+     *  Bearing angle is configured to point one toward the other.
+     *  When polarization slant angles are 0 and 0 at TX and RX,
+     *  we expect the strongest cluster to be similar to the following matrix:
+     *   (2.5,-4.7)  (2.5,-4.7)   (0,0)     (0,0)
+     *   (2.5,-4.7)  (2.5,-4.7)   (0,0)     (0,0)
+     *   (0,0)   (0,0)    (-2.4,4)    (-2.4,4)
+     *   (0,0)   (0,0)    (-2.4,4)    (-2.4,4)
+     */
+    AddTestCase(new ThreeGppMimoPolarizationTest(
+                    "Not face-to-face. Different heights. 0 and 0 pol. slant angles.",
+                    Vector{0, 0, 10},
+                    MimoPolarizationAntennaParams(false, 0, 0),
+                    Vector{30, 0, 3},
+                    MimoPolarizationAntennaParams(false, 0, M_PI),
+                    {{2.5, -4.7},
+                     {2.5, -4.7},
+                     0,
+                     0,
+                     {2.5, -4.7},
+                     {2.5, -4.7},
+                     0,
+                     0,
+                     0,
+                     0,
+                     {-2.4, 4},
+                     {-2.4, 4},
+                     0,
+                     0,
+                     {-2.4, 4},
+                     {-2.4, 4}},
+                    0.5),
+                TestCase::QUICK);
 }
 
 /// Static variable for test initialization

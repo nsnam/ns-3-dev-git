@@ -31,6 +31,7 @@
 #include <unordered_map>
 
 class ThreeGppCalcLongTermMultiPortTest;
+class ThreeGppMimoPolarizationTest;
 
 namespace ns3
 {
@@ -54,6 +55,7 @@ class NetDevice;
 class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagationLossModel
 {
     friend class ::ThreeGppCalcLongTermMultiPortTest;
+    friend class ::ThreeGppMimoPolarizationTest;
 
   public:
     /**
