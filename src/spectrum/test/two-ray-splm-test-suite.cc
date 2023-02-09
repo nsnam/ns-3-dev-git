@@ -34,6 +34,8 @@
 #include <ns3/uinteger.h>
 #include <ns3/uniform-planar-array.h>
 
+#include <array>
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("TwoRaySplmTestSuite");
