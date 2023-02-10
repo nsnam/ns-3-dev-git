@@ -48,7 +48,6 @@
 // --ns3::ThresholdPreambleDetectionModel::MinimumRssi=-101"
 
 #include "ns3/animation-interface.h"
-#include "ns3/bulk-send-helper.h"
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/internet-stack-helper.h"
@@ -57,7 +56,7 @@
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/packet-sink-helper.h"
+#include "ns3/applications-module.h"
 #include "ns3/point-to-point-dumbbell.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
@@ -69,6 +68,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("Wifi_simul");
 
 int n_nodes = 4;
+
+static void
+GoodputChange(Ptr<OutputStreamWrapper> file, Ptr<PacketSink> sink1, double prevBytesThrough)
+{
+    double recvBytes = sink1->GetTotalRx();
+    double throughput = ((recvBytes - prevBytesThrough) * 8);
+    *file->GetStream() << Simulator::Now().GetSeconds() << "," << throughput << std::endl;
+    Simulator::Schedule(MilliSeconds(1.0), &GoodputChange, file, sink1, recvBytes);
+}
 
 static void
 CwndChange(Ptr<OutputStreamWrapper> file, uint32_t oldval, uint32_t newval)
@@ -84,9 +92,23 @@ TraceCwnd()
     {
         Ptr<OutputStreamWrapper> file =
             asciiTraceHelper.CreateFileStream("wifi_cwnd" + std::to_string(i) + ".csv");
-        Config::ConnectWithoutContext(
-            "/NodeList/" + std::to_string(i) + "/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
-            MakeBoundCallback(&CwndChange, file));
+        Config::ConnectWithoutContext("/NodeList/" + std::to_string(i) +
+                                          "/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+                                      MakeBoundCallback(&CwndChange, file));
+    }
+}
+
+static void
+TraceGoodput(ApplicationContainer* apps)
+{
+    AsciiTraceHelper asciiTraceHelper;
+    for (int i = 0; i < n_nodes; i++)
+    {
+        Ptr<OutputStreamWrapper> file =
+            asciiTraceHelper.CreateFileStream("wifi_goodput" + std::to_string(i) + ".csv");
+        Simulator::Schedule(
+            MilliSeconds(1.0),
+            MakeBoundCallback(&GoodputChange, file, apps->Get(i)->GetObject<PacketSink>(), 0.0));
     }
 }
 
@@ -95,7 +117,7 @@ main(int argc, char* argv[])
 {
     std::string phyMode("DsssRate11Mbps");
     std::string tcp_mode = "TcpCubic";
-    int runtime = 50; //Seconds
+    int runtime = 50; // Seconds
     double rss = -80; // -dBm
     bool enable_log = false;
 
@@ -190,7 +212,8 @@ main(int argc, char* argv[])
     Ptr<MobilityModel> mobModel = dumbbellhelper.GetLeft()->GetObject<MobilityModel>();
     mobModel->SetPosition(Vector(10, 10, 0));
 
-    std::cout << "Delay of wifi nodes = " << std::sqrt(200)*1000000000.0/299792458 << "ns"  << '\n';
+    std::cout << "Delay of wifi nodes = " << std::sqrt(200) * 1000000000.0 / 299792458 << "ns"
+              << '\n';
 
     InternetStackHelper stack;
     dumbbellhelper.InstallStack(stack);
@@ -233,6 +256,7 @@ main(int argc, char* argv[])
     wifiPhy.EnablePcap("wifi_simul", apDevice);
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
+    Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
 
     // AnimationInterface anim("../animwifi.xml");
 
