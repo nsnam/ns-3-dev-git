@@ -47,26 +47,28 @@
 // --ns3::ThresholdPreambleDetectionModel::Threshold=-10
 // --ns3::ThresholdPreambleDetectionModel::MinimumRssi=-101"
 
+#include "ns3/animation-interface.h"
+#include "ns3/bulk-send-helper.h"
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/point-to-point-dumbbell.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
-#include "ns3/point-to-point-dumbbell.h"
-#include "ns3/bulk-send-helper.h"
-#include "ns3/packet-sink-helper.h"
-#include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/animation-interface.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Wifi_simul");
+
+int n_nodes = 4;
 
 static void
 CwndChange(Ptr<OutputStreamWrapper> file, uint32_t oldval, uint32_t newval)
@@ -74,25 +76,26 @@ CwndChange(Ptr<OutputStreamWrapper> file, uint32_t oldval, uint32_t newval)
     *file->GetStream() << Simulator::Now().GetSeconds() << "," << newval << '\n';
 }
 
-static void 
+static void
 TraceCwnd()
 {
     AsciiTraceHelper asciiTraceHelper;
-    Ptr<OutputStreamWrapper> file1 = asciiTraceHelper.CreateFileStream("wifi_cwnd1.csv");
-    Ptr<OutputStreamWrapper> file2 = asciiTraceHelper.CreateFileStream("wifi_cwnd2.csv");
-    Ptr<OutputStreamWrapper> file3 = asciiTraceHelper.CreateFileStream("wifi_cwnd3.csv");
-    Ptr<OutputStreamWrapper> file4 = asciiTraceHelper.CreateFileStream("wifi_cwnd4.csv");
-    Config::ConnectWithoutContext("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file1));
-    Config::ConnectWithoutContext("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file2));
-    Config::ConnectWithoutContext("/NodeList/2/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file3));
-    Config::ConnectWithoutContext("/NodeList/3/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeBoundCallback(&CwndChange, file4));
+    for (int i = 0; i < n_nodes; i++)
+    {
+        Ptr<OutputStreamWrapper> file =
+            asciiTraceHelper.CreateFileStream("wifi_cwnd" + std::to_string(i) + ".csv");
+        Config::ConnectWithoutContext(
+            "/NodeList/" + std::to_string(i) + "/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+            MakeBoundCallback(&CwndChange, file));
+    }
 }
 
 int
 main(int argc, char* argv[])
 {
-    std::string phyMode("DsssRate1Mbps");
-    double rss = -80;           // -dBm
+    std::string phyMode("DsssRate11Mbps");
+    std::string tcp_mode = "TcpNewReno";
+    double rss = -80; // -dBm
     bool enable_log = false;
 
     if (enable_log)
@@ -103,7 +106,7 @@ main(int argc, char* argv[])
 
     // Fix non-unicast data rate to be the same as that of unicast
     Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue(phyMode));
-    Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::TcpCubic"));
+    Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::" + tcp_mode));
 
     PointToPointHelper p2phelper;
     p2phelper.SetChannelAttribute("Delay", StringValue("10ms"));
@@ -113,8 +116,12 @@ main(int argc, char* argv[])
     p2pbottleneckhelper.SetChannelAttribute("Delay", StringValue("100ms"));
     p2pbottleneckhelper.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
 
-    NodeContainer leftwifinodes(4);
-    PointToPointDumbbellHelper dumbbellhelper(0, p2phelper, 4, p2phelper, p2pbottleneckhelper);
+    NodeContainer leftwifinodes(n_nodes);
+    PointToPointDumbbellHelper dumbbellhelper(0,
+                                              p2phelper,
+                                              n_nodes,
+                                              p2phelper,
+                                              p2pbottleneckhelper);
 
     // The below set of helpers will help us to put together the wifi NICs we want
     WifiHelper wifi;
@@ -157,18 +164,26 @@ main(int argc, char* argv[])
     // Note that with FixedRssLossModel, the positions below are not
     // used for received signal strength.
     MobilityHelper mobility;
-    Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
-    positionAlloc->Add(Vector(0.0, 0.0, 0.0));
-    positionAlloc->Add(Vector(10.0, 0.0, 0.0));
-    positionAlloc->Add(Vector(20.0, 0.0, 0.0));
-    positionAlloc->Add(Vector(30.0, 0.0, 0.0));
-    positionAlloc->Add(Vector(15.0, 10.0, 0.0));
-    mobility.SetPositionAllocator(positionAlloc);
+    mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                  "MinX",
+                                  DoubleValue(0.0),
+                                  "MinY",
+                                  DoubleValue(0.0),
+                                  "DeltaX",
+                                  DoubleValue(10.0),
+                                  "DeltaY",
+                                  DoubleValue(10.0),
+                                  "GridWidth",
+                                  UintegerValue(3),
+                                  "LayoutType",
+                                  StringValue("RowFirst"));
+    mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
+                              "Bounds",
+                              RectangleValue(Rectangle(-50, 50, -50, 50)));
+    mobility.Install(leftwifinodes);
+
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-    NodeContainer wifinodes;
-    wifinodes.Add(leftwifinodes);
-    wifinodes.Add(dumbbellhelper.GetLeft());
-    mobility.Install(wifinodes);
+    mobility.Install(dumbbellhelper.GetLeft());
 
     InternetStackHelper stack;
     dumbbellhelper.InstallStack(stack);
@@ -178,31 +193,26 @@ main(int argc, char* argv[])
     ipv4left.SetBase("10.1.1.0", "255.255.255.0");
     ipv4bottleneck.SetBase("10.1.2.0", "255.255.255.0");
     ipv4right.SetBase("10.1.3.0", "255.255.255.0");
-    
+
     Ipv4InterfaceContainer leftwifiinterfaces = ipv4left.Assign(staDevices);
     ipv4left.Assign(apDevice);
     dumbbellhelper.AssignIpv4Addresses(ipv4left, ipv4right, ipv4bottleneck);
 
-    BulkSendHelper blksender0("ns3::TcpSocketFactory", InetSocketAddress(dumbbellhelper.GetRightIpv4Address(0), 800));
-    BulkSendHelper blksender1("ns3::TcpSocketFactory", InetSocketAddress(dumbbellhelper.GetRightIpv4Address(1), 800));
-    BulkSendHelper blksender2("ns3::TcpSocketFactory", InetSocketAddress(dumbbellhelper.GetRightIpv4Address(2), 800));
-    BulkSendHelper blksender3("ns3::TcpSocketFactory", InetSocketAddress(dumbbellhelper.GetRightIpv4Address(3), 800));
-
-    ApplicationContainer senderApps = blksender0.Install(leftwifinodes.Get(0));
-    senderApps.Add(blksender1.Install(leftwifinodes.Get(1)));
-    senderApps.Add(blksender2.Install(leftwifinodes.Get(2)));
-    senderApps.Add(blksender3.Install(leftwifinodes.Get(3)));
-    
-    PacketSinkHelper pktsink0("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), 800));
-    PacketSinkHelper pktsink1("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), 800));
-    PacketSinkHelper pktsink2("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), 800));
-    PacketSinkHelper pktsink3("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), 800));
+    ApplicationContainer senderApps;
+    for (int i = 0; i < n_nodes; i++)
+    {
+        BulkSendHelper blksender("ns3::TcpSocketFactory",
+                                 InetSocketAddress(dumbbellhelper.GetRightIpv4Address(i), 800));
+        senderApps.Add(blksender.Install(leftwifinodes.Get(i)));
+    }
 
     ApplicationContainer recvApps;
-    recvApps.Add(pktsink0.Install(dumbbellhelper.GetRight(0)));
-    recvApps.Add(pktsink1.Install(dumbbellhelper.GetRight(1)));
-    recvApps.Add(pktsink2.Install(dumbbellhelper.GetRight(2)));
-    recvApps.Add(pktsink3.Install(dumbbellhelper.GetRight(3)));
+    for (int i = 0; i < n_nodes; i++)
+    {
+        PacketSinkHelper pktsink("ns3::TcpSocketFactory",
+                                 InetSocketAddress(Ipv4Address::GetAny(), 800));
+        recvApps.Add(pktsink.Install(dumbbellhelper.GetRight(i)));
+    }
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
@@ -217,7 +227,7 @@ main(int argc, char* argv[])
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
 
-    AnimationInterface anim("../animwifi.xml");
+    // AnimationInterface anim("../animwifi.xml");
 
     Simulator::Stop(Seconds(200.0));
     Simulator::Run();
