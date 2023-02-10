@@ -109,12 +109,12 @@ main(int argc, char* argv[])
     Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::" + tcp_mode));
 
     PointToPointHelper p2phelper;
-    p2phelper.SetChannelAttribute("Delay", StringValue("10ms"));
-    p2phelper.SetDeviceAttribute("DataRate", StringValue("100Mbps"));
+    p2phelper.SetChannelAttribute("Delay", StringValue("50ns"));
+    p2phelper.SetDeviceAttribute("DataRate", StringValue("11Mbps"));
 
     PointToPointHelper p2pbottleneckhelper;
-    p2pbottleneckhelper.SetChannelAttribute("Delay", StringValue("100ms"));
-    p2pbottleneckhelper.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
+    p2pbottleneckhelper.SetChannelAttribute("Delay", StringValue("1us"));
+    p2pbottleneckhelper.SetDeviceAttribute("DataRate", StringValue("1Mbps"));
 
     NodeContainer leftwifinodes(n_nodes);
     PointToPointDumbbellHelper dumbbellhelper(0,
@@ -170,20 +170,26 @@ main(int argc, char* argv[])
                                   "MinY",
                                   DoubleValue(0.0),
                                   "DeltaX",
-                                  DoubleValue(10.0),
+                                  DoubleValue(2.0),
                                   "DeltaY",
-                                  DoubleValue(10.0),
+                                  DoubleValue(2.0),
                                   "GridWidth",
                                   UintegerValue(3),
                                   "LayoutType",
                                   StringValue("RowFirst"));
-    mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
-                              "Bounds",
-                              RectangleValue(Rectangle(-50, 50, -50, 50)));
+    // mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
+    //                           "Bounds",
+    //                           RectangleValue(Rectangle(-50, 50, -50, 50)));
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(leftwifinodes);
 
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(dumbbellhelper.GetLeft());
+
+    Ptr<MobilityModel> mobModel = dumbbellhelper.GetLeft()->GetObject<MobilityModel>();
+    mobModel->SetPosition(Vector(10, 10, 0));
+
+    std::cout << "Delay of wifi nodes = " << std::sqrt(200)*1000000000.0/299792458 << "ns"  << '\n';
 
     InternetStackHelper stack;
     dumbbellhelper.InstallStack(stack);
@@ -219,8 +225,8 @@ main(int argc, char* argv[])
     senderApps.Start(Seconds(1.0));
     recvApps.Start(Seconds(0.0));
 
-    senderApps.Stop(Seconds(100.0));
-    recvApps.Stop(Seconds(150.0));
+    senderApps.Stop(Seconds(10.0));
+    recvApps.Stop(Seconds(50.0));
 
     // Tracing
     wifiPhy.EnablePcap("wifi_simul", apDevice);
@@ -229,7 +235,7 @@ main(int argc, char* argv[])
 
     // AnimationInterface anim("../animwifi.xml");
 
-    Simulator::Stop(Seconds(200.0));
+    Simulator::Stop(Seconds(60.0));
     Simulator::Run();
     Simulator::Destroy();
 
