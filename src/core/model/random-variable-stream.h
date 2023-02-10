@@ -1839,15 +1839,21 @@ class DeterministicRandomVariable : public RandomVariableStream
 
     /**
      * \brief Sets the array of values that holds the predetermined sequence.
+     *
+     * Note that the values in the array are copied and stored
+     * (deep-copy).
      * \param [in] values Array of random values to return in sequence.
-     * \param [in] length Number of values in the array.
+     */
+    void SetValueArray(const std::vector<double>& values);
+    /**
+     * \brief Sets the array of values that holds the predetermined sequence.
      *
      * Note that the values in the array are copied and stored
      * (deep-copy).
      * \param [in] values Array of random values to return in sequence.
      * \param [in] length Number of values in the array.
      */
-    void SetValueArray(double* values, std::size_t length);
+    void SetValueArray(const double* values, std::size_t length);
 
     // Inherited
     double GetValue() override;

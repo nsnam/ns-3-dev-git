@@ -1479,7 +1479,13 @@ DeterministicRandomVariable::~DeterministicRandomVariable()
 }
 
 void
-DeterministicRandomVariable::SetValueArray(double* values, std::size_t length)
+DeterministicRandomVariable::SetValueArray(const std::vector<double>& values)
+{
+    SetValueArray(values.data(), values.size());
+}
+
+void
+DeterministicRandomVariable::SetValueArray(const double* values, std::size_t length)
 {
     NS_LOG_FUNCTION(this << values << length);
     // Delete any values currently set.
