@@ -94,7 +94,8 @@ int
 main(int argc, char* argv[])
 {
     std::string phyMode("DsssRate11Mbps");
-    std::string tcp_mode = "TcpNewReno";
+    std::string tcp_mode = "TcpCubic";
+    int runtime = 50; //Seconds
     double rss = -80; // -dBm
     bool enable_log = false;
 
@@ -225,8 +226,8 @@ main(int argc, char* argv[])
     senderApps.Start(Seconds(1.0));
     recvApps.Start(Seconds(0.0));
 
-    senderApps.Stop(Seconds(10.0));
-    recvApps.Stop(Seconds(50.0));
+    senderApps.Stop(Seconds(runtime));
+    recvApps.Stop(Seconds(runtime + 20));
 
     // Tracing
     wifiPhy.EnablePcap("wifi_simul", apDevice);
@@ -235,7 +236,7 @@ main(int argc, char* argv[])
 
     // AnimationInterface anim("../animwifi.xml");
 
-    Simulator::Stop(Seconds(60.0));
+    Simulator::Stop(Seconds(runtime + 30));
     Simulator::Run();
     Simulator::Destroy();
 
