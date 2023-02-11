@@ -89,17 +89,6 @@ class WifiMacQueueScheduler : public Object
      * \return the list of the IDs of the links the given MPDU can be sent over
      */
     virtual std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) = 0;
-    /**
-     * Set the list of the IDs of the links the given container queue (belonging to
-     * the given Access Category) is associated with.
-     *
-     * \param ac the given Access Category
-     * \param queueId the given container queue
-     * \param linkIds the list of the IDs of the links the given container queue is associated with
-     */
-    virtual void SetLinkIds(AcIndex ac,
-                            const WifiContainerQueueId& queueId,
-                            const std::list<uint8_t>& linkIds) = 0;
 
     /**
      * Check whether an MPDU has to be dropped before enqueuing the given MPDU.

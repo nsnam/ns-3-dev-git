@@ -74,10 +74,6 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                                                 const WifiContainerQueueId& prevQueueId) final;
     /** \copydoc ns3::WifiMacQueueScheduler::GetLinkIds */
     std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) final;
-    /** \copydoc ns3::WifiMacQueueScheduler::SetLinkIds */
-    void SetLinkIds(AcIndex ac,
-                    const WifiContainerQueueId& queueId,
-                    const std::list<uint8_t>& linkIds) final;
     /** \copydoc ns3::WifiMacQueueScheduler::HasToDropBeforeEnqueue */
     Ptr<WifiMpdu> HasToDropBeforeEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) final;
     /** \copydoc ns3::WifiMacQueueScheduler::NotifyEnqueue */
@@ -305,26 +301,38 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
     {
         // The given queueid has just been inserted in the queue info map.
         // Initialize the set of link IDs depending on the container queue type
-        auto queueType = std::get<WifiContainerQueueType>(queueId);
-        auto address = std::get<Mac48Address>(queueId);
 
-        if (queueType == WIFI_MGT_QUEUE ||
-            (queueType == WIFI_CTL_QUEUE && GetMac() && address != GetMac()->GetAddress()) ||
-            queueType == WIFI_QOSDATA_BROADCAST_QUEUE)
+        if (GetMac() && GetMac()->GetNLinks() > 1 &&
+            mpdu->GetHeader().GetAddr2() == GetMac()->GetAddress())
         {
-            // these queue types are associated with just one link
-            NS_ASSERT(GetMac());
-            auto linkId = GetMac()->GetLinkIdByAddress(address);
-            NS_ASSERT(linkId.has_value());
-            queueInfoIt->second.linkIds = {*linkId};
+            // this is an MLD and the TA field of the frame contains the MLD address,
+            // which means that the frame can be sent on multiple links
+
+            // this assert checks that association (ML setup) has been established
+            // between sender and receiver (unless the receiver is the broadcast address)
+            const auto rxAddr = mpdu->GetHeader().GetAddr1();
+            NS_ASSERT_MSG(GetMac()->CanForwardPacketsTo(rxAddr),
+                          "Cannot forward frame to " << rxAddr);
+
+            // we have to include all the links in case of broadcast frame (we are an AP)
+            // and the links that have been setup with the receiver in case of unicast frame
+            for (uint8_t linkId = 0; linkId < GetMac()->GetNLinks(); linkId++)
+            {
+                if (rxAddr.IsGroup() ||
+                    GetMac()->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(rxAddr))
+                {
+                    queueInfoIt->second.linkIds.emplace_back(linkId);
+                }
+            }
         }
         else
         {
-            // all available links can be used. Note that AP's and STA's MACs may update
-            // the set of links upon association
-            const uint8_t nLinks = GetMac() ? GetMac()->GetNLinks() : 1; // make unit test happy
-            queueInfoIt->second.linkIds.resize(nLinks);
-            std::iota(queueInfoIt->second.linkIds.begin(), queueInfoIt->second.linkIds.end(), 0);
+            // the TA field of the frame contains a link address, which means that the
+            // frame can only be sent on the corresponding link
+            auto linkId = GetMac() ? GetMac()->GetLinkIdByAddress(mpdu->GetHeader().GetAddr2())
+                                   : SINGLE_LINK_OP_ID; // make unit test happy
+            NS_ASSERT(linkId.has_value());
+            queueInfoIt->second.linkIds = {*linkId};
         }
     }
     return queueInfoIt;
@@ -377,17 +385,6 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const W
     auto queueInfoIt = InitQueueInfo(ac, mpdu);
 
     return queueInfoIt->second.linkIds;
-}
-
-template <class Priority, class Compare>
-void
-WifiMacQueueSchedulerImpl<Priority, Compare>::SetLinkIds(AcIndex ac,
-                                                         const WifiContainerQueueId& queueId,
-                                                         const std::list<uint8_t>& linkIds)
-{
-    NS_LOG_FUNCTION(this << +ac);
-    auto [queueInfoIt, ret] = m_perAcInfo[ac].queueInfoMap.insert({queueId, QueueInfo()});
-    queueInfoIt->second.linkIds = linkIds;
 }
 
 template <class Priority, class Compare>

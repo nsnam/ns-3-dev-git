@@ -1269,11 +1269,6 @@ ApWifiMac::SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId)
     auto linkIdStaAddrMap = GetLinkIdStaAddrMap(assoc, to, linkId);
     SetAid(assoc, linkIdStaAddrMap);
 
-    if (GetNLinks() > 1)
-    {
-        ConfigQueueScheduler(linkIdStaAddrMap, to, linkId);
-    }
-
     Ptr<Packet> packet = Create<Packet>();
     packet->AddHeader(assoc);
 
@@ -1295,39 +1290,6 @@ ApWifiMac::SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId)
     else
     {
         GetVOQueue()->Queue(packet, hdr);
-    }
-}
-
-void
-ApWifiMac::ConfigQueueScheduler(const LinkIdStaAddrMap& linkIdStaAddrMap,
-                                const Mac48Address& to,
-                                uint8_t linkId)
-{
-    NS_LOG_FUNCTION(this << to << +linkId);
-
-    // get a list of the IDs of the links to setup
-    std::list<uint8_t> linkIds;
-    std::transform(linkIdStaAddrMap.cbegin(),
-                   linkIdStaAddrMap.cend(),
-                   std::back_inserter(linkIds),
-                   [](auto&& linkIdStaAddrPair) { return linkIdStaAddrPair.first; });
-
-    // get the MLD address of the STA, if affiliated with a non-AP MLD, or the STA address
-    auto staAddr = to;
-    if (auto mldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(to))
-    {
-        staAddr = *mldAddr;
-    }
-
-    // configure the queue scheduler to only use the links that have been setup for
-    // transmissions to this station
-    for (const auto& [acIndex, wifiAc] : wifiAcList)
-    {
-        for (auto tid : {wifiAc.GetLowTid(), wifiAc.GetHighTid()})
-        {
-            WifiContainerQueueId queueId(WIFI_QOSDATA_UNICAST_QUEUE, staAddr, tid);
-            m_scheduler->SetLinkIds(acIndex, queueId, linkIds);
-        }
     }
 }
 
