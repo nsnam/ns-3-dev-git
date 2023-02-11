@@ -25,6 +25,7 @@
 
 #include "ns3/object.h"
 
+#include <bitset>
 #include <optional>
 
 namespace ns3
@@ -32,6 +33,16 @@ namespace ns3
 
 class WifiMpdu;
 class WifiMac;
+
+/**
+ * \ingroup wifi
+ *
+ * Enumeration of the reasons to block container queues.
+ */
+enum class WifiQueueBlockedReason : uint8_t
+{
+    REASONS_COUNT = 0
+};
 
 /**
  * \ingroup wifi
@@ -89,6 +100,9 @@ class WifiMacQueueScheduler : public Object
      * \return the list of the IDs of the links the given MPDU can be sent over
      */
     virtual std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) = 0;
+
+    /// Bitset identifying the reasons to block individual links for a container queue
+    using Mask = std::bitset<static_cast<std::size_t>(WifiQueueBlockedReason::REASONS_COUNT)>;
 
     /**
      * Check whether an MPDU has to be dropped before enqueuing the given MPDU.

@@ -126,10 +126,12 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
     struct QueueInfo
     {
         std::optional<typename SortedQueues::iterator>
-            priorityIt;             /**< iterator pointing to the entry
-                                         for this queue in the sorted list */
-        std::list<uint8_t> linkIds; /**< IDs of the links over which packets contained in this
-                                         queue can be sent over */
+            priorityIt;                  /**< iterator pointing to the entry
+                                              for this queue in the sorted list */
+        std::map<uint8_t, Mask> linkIds; /**< Maps ID of each link on which packets contained
+                                              in this queue can be sent to a bitset indicating
+                                              whether the link is blocked (at least one bit is
+                                              non-zero) and for which reason */
     };
 
     /**
@@ -321,7 +323,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
                 if (rxAddr.IsGroup() ||
                     GetMac()->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(rxAddr))
                 {
-                    queueInfoIt->second.linkIds.emplace_back(linkId);
+                    queueInfoIt->second.linkIds.emplace(linkId, Mask{});
                 }
             }
         }
@@ -332,7 +334,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
             auto linkId = GetMac() ? GetMac()->GetLinkIdByAddress(mpdu->GetHeader().GetAddr2())
                                    : SINGLE_LINK_OP_ID; // make unit test happy
             NS_ASSERT(linkId.has_value());
-            queueInfoIt->second.linkIds = {*linkId};
+            queueInfoIt->second.linkIds = {{*linkId, Mask{}}};
         }
     }
     return queueInfoIt;
@@ -383,8 +385,18 @@ std::list<uint8_t>
 WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu)
 {
     auto queueInfoIt = InitQueueInfo(ac, mpdu);
+    std::list<uint8_t> linkIds;
 
-    return queueInfoIt->second.linkIds;
+    // include only links that are not blocked in the returned list
+    for (const auto [linkId, mask] : queueInfoIt->second.linkIds)
+    {
+        if (mask.none())
+        {
+            linkIds.emplace_back(linkId);
+        }
+    }
+
+    return linkIds;
 }
 
 template <class Priority, class Compare>
@@ -428,7 +440,8 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext(
         const auto& queueInfoPair = sortedQueuesIt->second.get();
         const auto& linkIds = queueInfoPair.second.linkIds;
 
-        if (std::find(linkIds.begin(), linkIds.end(), linkId) != linkIds.end())
+        if (const auto linkIt = linkIds.find(linkId);
+            linkIt != linkIds.cend() && linkIt->second.none())
         {
             // Packets in this queue can be sent over the link we got channel access on.
             // Now remove packets with expired lifetime from this queue.
