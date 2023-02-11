@@ -157,7 +157,7 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     if (m_baThreshold > 0 &&
         GetMaxDistFromStartingSeq(mpdu, txParams) <
             m_baThreshold * edca->GetBaBufferSize(receiver, tid) &&
-        (edca->GetWifiMacQueue()->GetNPackets({WIFI_QOSDATA_UNICAST_QUEUE, receiver, tid}) -
+        (edca->GetWifiMacQueue()->GetNPackets({WIFI_QOSDATA_QUEUE, WIFI_UNICAST, receiver, tid}) -
              edca->GetBaManager()->GetNBufferedPackets(receiver, tid) >
          1) &&
         !(edca->GetTxopLimit(m_linkId).IsStrictlyPositive() &&

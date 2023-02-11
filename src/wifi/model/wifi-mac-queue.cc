@@ -303,7 +303,7 @@ WifiMacQueue::PeekByTidAndAddress(uint8_t tid, Mac48Address dest, Ptr<const Wifi
 {
     NS_LOG_FUNCTION(this << +tid << dest << item);
     NS_ABORT_IF(dest.IsGroup());
-    WifiContainerQueueId queueId(WIFI_QOSDATA_UNICAST_QUEUE, dest, tid);
+    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, dest, tid);
     return PeekByQueueId(queueId, item);
 }
 
@@ -363,17 +363,15 @@ WifiMacQueue::PeekFirstAvailable(uint8_t linkId,
         queueId = m_scheduler->GetNext(m_ac, linkId);
     }
 
-    NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_UNICAST_QUEUE ||
-              std::get<2>(*queueId));
+    NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_QUEUE || std::get<3>(*queueId));
 
     while (queueId.has_value() && blockedPackets &&
-           std::get<0>(queueId.value()) == WIFI_QOSDATA_UNICAST_QUEUE &&
-           blockedPackets->IsBlocked(std::get<1>(queueId.value()), *std::get<2>(queueId.value())))
+           std::get<0>(queueId.value()) == WIFI_QOSDATA_QUEUE &&
+           blockedPackets->IsBlocked(std::get<2>(queueId.value()), *std::get<3>(queueId.value())))
     {
         queueId = m_scheduler->GetNext(m_ac, linkId, queueId.value());
 
-        NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_UNICAST_QUEUE ||
-                  std::get<2>(*queueId));
+        NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_QUEUE || std::get<3>(*queueId));
     }
 
     if (!queueId.has_value())

@@ -79,23 +79,22 @@ WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
 {
     const WifiMacHeader& hdr = mpdu->GetHeader();
 
+    auto addrType = hdr.GetAddr1().IsGroup() ? WIFI_BROADCAST : WIFI_UNICAST;
+    auto address = hdr.GetAddr1().IsGroup() ? hdr.GetAddr2() : hdr.GetAddr1();
+
     if (hdr.IsCtl())
     {
-        return {WIFI_CTL_QUEUE, hdr.GetAddr2(), std::nullopt};
+        return {WIFI_CTL_QUEUE, addrType, address, std::nullopt};
     }
     if (hdr.IsMgt())
     {
-        return {WIFI_MGT_QUEUE, hdr.GetAddr2(), std::nullopt};
+        return {WIFI_MGT_QUEUE, addrType, address, std::nullopt};
     }
     if (hdr.IsQosData())
     {
-        if (hdr.GetAddr1().IsGroup())
-        {
-            return {WIFI_QOSDATA_BROADCAST_QUEUE, hdr.GetAddr2(), hdr.GetQosTid()};
-        }
-        return {WIFI_QOSDATA_UNICAST_QUEUE, hdr.GetAddr1(), hdr.GetQosTid()};
+        return {WIFI_QOSDATA_QUEUE, addrType, address, hdr.GetQosTid()};
     }
-    return {WIFI_DATA_QUEUE, hdr.GetAddr1(), std::nullopt};
+    return {WIFI_DATA_QUEUE, addrType, address, std::nullopt};
 }
 
 const WifiMacQueueContainer::ContainerQueue&
@@ -207,7 +206,7 @@ WifiMacQueueContainer::GetAllExpiredMpdus() const
 std::size_t
 std::hash<ns3::WifiContainerQueueId>::operator()(ns3::WifiContainerQueueId queueId) const
 {
-    auto [type, address, tid] = queueId;
+    auto [type, addrType, address, tid] = queueId;
     const std::size_t size = tid.has_value() ? 8 : 7;
 
     uint8_t buffer[size];

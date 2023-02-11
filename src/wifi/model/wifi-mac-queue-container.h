@@ -37,37 +37,46 @@ enum WifiContainerQueueType
 {
     WIFI_CTL_QUEUE = 0,
     WIFI_MGT_QUEUE = 1,
-    WIFI_QOSDATA_UNICAST_QUEUE = 2,
-    WIFI_QOSDATA_BROADCAST_QUEUE = 3,
-    WIFI_DATA_QUEUE = 4
+    WIFI_QOSDATA_QUEUE = 2,
+    WIFI_DATA_QUEUE = 3
+};
+
+/// enumeration of frame directions
+enum WifiReceiverAddressType : uint8_t
+{
+    WIFI_UNICAST = 0,
+    WIFI_BROADCAST
 };
 
 /**
- * Tuple (queue type, Address, TID) identifying a container queue.
+ * Tuple (queue type, receiver address type, Address, TID) identifying a container queue.
  *
  * \note that Address has a different meaning depending on container queue type:
- * - if container queue type is WIFI_CTL_QUEUE, Address is the Transmitter Address
- * (TA) of the frames stored in the queue. We have distinct control queues
- * depending on TA to distinguish among control frames that need to be sent
- * over different links by 11be MLDs. MLD address as TA indicates that the frames
- * can be sent on any link. TID is ignored.
- * - if container queue type is WIFI_MGT_QUEUE, Address is the Transmitter Address
- * (TA) of the frames stored in the queue. We have distinct management queues
- * depending on TA to distinguish among management frames that need to be sent
- * over different links by 11be MLDs. TID is ignored.
- * - if container queue type is WIFI_QOSDATA_UNICAST_QUEUE, Address is the Receiver
- * Address (RA) of the frames stored in the queue.
- * - if container queue type is WIFI_QOSDATA_BROADCAST_QUEUE, Address is the
- * Transmitter Address (TA) of the frames stored in the queue. We have distinct
- * broadcast QoS queues depending on TA to distinguish among broadcast QoS Data
- * frames that need to be sent over different links by 11be MLDs.
- * - if container queue type is WIFI_DATA_QUEUE, Address is the Receiver Address
- * (RA) of the frames stored in the queue. We do not need to consider the
- * Transmitter Address (TA) because 11be stations are QoS stations and hence do
- * not send non-QoS Data frames. TID is ignored.
+ *
+ * - for container queue types holding unicast frames, Address is the Receiver Address (RA)
+ *   of the frames stored in the queue. For 11be MLDs, it is expected that:
+ *   + the RA of unicast management frames are link addresses (indicating the link on which
+ *     they must be sent)
+ *   + the RA of unicast QoS data frames are MLD addresses (indicating that they can be sent
+ *     on any link)
+ *   + if the RA of a unicast control frame is a link address, that control frame can only be
+ *     sent on the corresponding link; if the RA is an MLD address, that control frame can be
+ *     sent on any link
+ *
+ * - for container queue types holding broadcast frames, Address is the Transmitter Address (TA)
+ *   of the frames stored in the queue. For 11be MLDs, it is expected that:
+ *   + the TA of broadcast management frames are link addresses (indicating the link on which
+ *     they must be sent)
+ *   + the TA of broadcast QoS data frames are MLD addresses (indicating that they can be sent
+ *     on any link)
+ *   + if the TA of a broadcast control frame is a link address, that control frame can only be
+ *     sent on the corresponding link; if the TA is an MLD address, that control frame can be
+ *     sent on any link
+ *
+ * The TID is only specified for container queue types holding QoS data frames.
  */
-using WifiContainerQueueId =
-    std::tuple<WifiContainerQueueType, Mac48Address, std::optional<uint8_t>>;
+using WifiContainerQueueId = std::
+    tuple<WifiContainerQueueType, WifiReceiverAddressType, Mac48Address, std::optional<uint8_t>>;
 
 } // namespace ns3
 

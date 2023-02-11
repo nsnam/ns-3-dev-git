@@ -669,7 +669,10 @@ BlockAckManager::ScheduleBar(Ptr<WifiMpdu> bar)
     bar->GetPacket()->PeekHeader(reqHdr);
     uint8_t tid = reqHdr.GetTidInfo();
 
-    WifiContainerQueueId queueId(WIFI_CTL_QUEUE, bar->GetHeader().GetAddr2(), std::nullopt);
+    WifiContainerQueueId queueId(WIFI_CTL_QUEUE,
+                                 WIFI_UNICAST,
+                                 bar->GetHeader().GetAddr1(),
+                                 std::nullopt);
     Ptr<WifiMpdu> item = nullptr;
 
     // if a BAR for the given agreement is present, replace it with the new one
