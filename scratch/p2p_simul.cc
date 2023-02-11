@@ -5,9 +5,8 @@
 #include "ns3/log.h"
 #include "ns3/string.h"
 #include "ns3/point-to-point-dumbbell.h"
-#include "ns3/bulk-send-helper.h"
-#include "ns3/packet-sink-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/applications-module.h"
 // #include "ns3/animation-interface.h"
 
 using namespace ns3;
@@ -15,6 +14,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("p2p_simul");
 
 int n_nodes = 4;
+
+static void
+GoodputChange(Ptr<OutputStreamWrapper> file, Ptr<PacketSink> sink1, double prevBytesThrough)
+{
+    double recvBytes = sink1->GetTotalRx();
+    double throughput = ((recvBytes - prevBytesThrough) * 8);
+    *file->GetStream() << Simulator::Now().GetSeconds() << "," << throughput << std::endl;
+    Simulator::Schedule(MilliSeconds(1.0), &GoodputChange, file, sink1, recvBytes);
+}
 
 static void
 CwndChange(Ptr<OutputStreamWrapper> file, uint32_t oldval, uint32_t newval)
@@ -36,11 +44,25 @@ TraceCwnd()
     }
 }
 
+static void
+TraceGoodput(ApplicationContainer* apps)
+{
+    AsciiTraceHelper asciiTraceHelper;
+    for (int i = 0; i < n_nodes; i++)
+    {
+        Ptr<OutputStreamWrapper> file =
+            asciiTraceHelper.CreateFileStream("p2p_goodput" + std::to_string(i) + ".csv");
+        Simulator::Schedule(
+            MilliSeconds(1.0),
+            MakeBoundCallback(&GoodputChange, file, apps->Get(i)->GetObject<PacketSink>(), 0.0));
+    }
+}
+
 int
 main(int argc, char* argv[])
 {
     std::string tcp_mode = "TcpCubic";
-    int runtime = 50; //Seconds
+    int runtime = 50; // Seconds
     bool enable_log = false;
 
     if (enable_log)
@@ -101,6 +123,7 @@ main(int argc, char* argv[])
     p2pbottleneckhelper.EnablePcap("p2p_simul", dumbbellhelper.GetLeft()->GetDevice(0), false);
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
+    Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
 
     // AnimationInterface anim("../animwifi.xml");
 
