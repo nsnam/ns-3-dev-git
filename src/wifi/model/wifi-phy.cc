@@ -1139,11 +1139,7 @@ WifiPhy::GetDelayUntilChannelSwitch()
     {
     case WifiPhyState::RX:
         NS_LOG_DEBUG("drop packet because of channel switching while reception");
-        m_endPhyRxEvent.Cancel();
-        for (auto& phyEntity : m_phyEntities)
-        {
-            phyEntity.second->CancelAllEvents();
-        }
+        AbortCurrentReception(CHANNEL_SWITCHING);
         break;
     case WifiPhyState::TX:
         NS_LOG_DEBUG("channel switching postponed until end of current transmission");
