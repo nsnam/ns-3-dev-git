@@ -1239,7 +1239,6 @@ WifiPhy::DoChannelSwitch()
     {
         // notify channel switching
         m_state->SwitchToChannelSwitching(GetChannelSwitchDelay());
-        m_interference->EraseEvents(GetCurrentFrequencyRange());
         /*
          * Needed here to be able to correctly sensed the medium for the first
          * time after the switching. The actual switching is not performed until
