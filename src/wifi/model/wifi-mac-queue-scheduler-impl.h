@@ -74,6 +74,26 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                                                 const WifiContainerQueueId& prevQueueId) final;
     /** \copydoc ns3::WifiMacQueueScheduler::GetLinkIds */
     std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) final;
+    /** \copydoc ns3::WifiMacQueueScheduler::BlockQueues */
+    void BlockQueues(WifiQueueBlockedReason reason,
+                     AcIndex ac,
+                     const std::list<WifiContainerQueueType>& types,
+                     const Mac48Address& rxAddress,
+                     const Mac48Address& txAddress,
+                     const std::set<uint8_t>& tids,
+                     const std::set<uint8_t>& linkIds) final;
+    /** \copydoc ns3::WifiMacQueueScheduler::UnblockQueues */
+    void UnblockQueues(WifiQueueBlockedReason reason,
+                       AcIndex ac,
+                       const std::list<WifiContainerQueueType>& types,
+                       const Mac48Address& rxAddress,
+                       const Mac48Address& txAddress,
+                       const std::set<uint8_t>& tids,
+                       const std::set<uint8_t>& linkIds) final;
+    /** \copydoc ns3::WifiMacQueueScheduler::GetQueueLinkMask */
+    std::optional<Mask> GetQueueLinkMask(AcIndex ac,
+                                         const WifiContainerQueueId& queueId,
+                                         uint8_t linkId) final;
     /** \copydoc ns3::WifiMacQueueScheduler::HasToDropBeforeEnqueue */
     Ptr<WifiMpdu> HasToDropBeforeEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) final;
     /** \copydoc ns3::WifiMacQueueScheduler::NotifyEnqueue */
@@ -225,6 +245,29 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
      * \param mpdus the list of removed MPDUs
      */
     virtual void DoNotifyRemove(AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) = 0;
+
+    /**
+     * Block or unblock the given set of links for the container queues of the given types and
+     * Access Category that hold frames having the given Receiver Address (RA),
+     * Transmitter Address (TA) and TID (if needed) for the given reason.
+     *
+     * \param block true to block the queues, false to unblock
+     * \param reason the reason for blocking the queues
+     * \param ac the given Access Category
+     * \param types the types of the queues to block
+     * \param rxAddress the Receiver Address (RA) of the frames
+     * \param txAddress the Transmitter Address (TA) of the frames
+     * \param tids the TIDs optionally identifying the queues to block
+     * \param linkIds set of links to block (empty to block all setup links)
+     */
+    void DoBlockQueues(bool block,
+                       WifiQueueBlockedReason reason,
+                       AcIndex ac,
+                       const std::list<WifiContainerQueueType>& types,
+                       const Mac48Address& rxAddress,
+                       const Mac48Address& txAddress,
+                       const std::set<uint8_t>& tids,
+                       const std::set<uint8_t>& linkIds);
 
     std::vector<PerAcInfo> m_perAcInfo{AC_UNDEF}; //!< vector of per-AC information
     NS_LOG_TEMPLATE_DECLARE;                      //!< the log component
@@ -397,6 +440,114 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const W
     }
 
     return linkIds;
+}
+
+template <class Priority, class Compare>
+void
+WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockQueues(
+    bool block,
+    WifiQueueBlockedReason reason,
+    AcIndex ac,
+    const std::list<WifiContainerQueueType>& types,
+    const Mac48Address& rxAddress,
+    const Mac48Address& txAddress,
+    const std::set<uint8_t>& tids,
+    const std::set<uint8_t>& linkIds)
+{
+    NS_LOG_FUNCTION(this << block << reason << ac << rxAddress << txAddress);
+    std::list<WifiMacHeader> headers;
+
+    for (const auto queueType : types)
+    {
+        switch (queueType)
+        {
+        case WIFI_CTL_QUEUE:
+            headers.emplace_back(WIFI_MAC_CTL_BACKREQ);
+            break;
+        case WIFI_MGT_QUEUE:
+            headers.emplace_back(WIFI_MAC_MGT_ACTION);
+            break;
+        case WIFI_QOSDATA_QUEUE:
+            NS_ASSERT_MSG(!tids.empty(),
+                          "TID must be specified for queues containing QoS data frames");
+            for (const auto tid : tids)
+            {
+                headers.emplace_back(WIFI_MAC_QOSDATA);
+                headers.back().SetQosTid(tid);
+            }
+            break;
+        case WIFI_DATA_QUEUE:
+            headers.emplace_back(WIFI_MAC_DATA);
+            break;
+        }
+    }
+    for (auto& hdr : headers)
+    {
+        hdr.SetAddr1(rxAddress);
+        hdr.SetAddr2(txAddress);
+
+        auto queueInfoIt = InitQueueInfo(ac, Create<WifiMpdu>(Create<Packet>(), hdr));
+        for (auto& [linkId, mask] : queueInfoIt->second.linkIds)
+        {
+            if (linkIds.empty() || linkIds.count(linkId) > 0)
+            {
+                mask.set(static_cast<std::size_t>(reason), block);
+            }
+        }
+    }
+}
+
+template <class Priority, class Compare>
+void
+WifiMacQueueSchedulerImpl<Priority, Compare>::BlockQueues(
+    WifiQueueBlockedReason reason,
+    AcIndex ac,
+    const std::list<WifiContainerQueueType>& types,
+    const Mac48Address& rxAddress,
+    const Mac48Address& txAddress,
+    const std::set<uint8_t>& tids,
+    const std::set<uint8_t>& linkIds)
+{
+    DoBlockQueues(true, reason, ac, types, rxAddress, txAddress, tids, linkIds);
+}
+
+template <class Priority, class Compare>
+void
+WifiMacQueueSchedulerImpl<Priority, Compare>::UnblockQueues(
+    WifiQueueBlockedReason reason,
+    AcIndex ac,
+    const std::list<WifiContainerQueueType>& types,
+    const Mac48Address& rxAddress,
+    const Mac48Address& txAddress,
+    const std::set<uint8_t>& tids,
+    const std::set<uint8_t>& linkIds)
+{
+    DoBlockQueues(false, reason, ac, types, rxAddress, txAddress, tids, linkIds);
+}
+
+template <class Priority, class Compare>
+std::optional<WifiMacQueueScheduler::Mask>
+WifiMacQueueSchedulerImpl<Priority, Compare>::GetQueueLinkMask(AcIndex ac,
+                                                               const WifiContainerQueueId& queueId,
+                                                               uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << +ac << +linkId);
+
+    const auto queueInfoIt = m_perAcInfo[ac].queueInfoMap.find(queueId);
+
+    if (queueInfoIt == m_perAcInfo[ac].queueInfoMap.cend())
+    {
+        // the given container queue does not exist
+        return std::nullopt;
+    }
+
+    const auto& linkIds = queueInfoIt->second.linkIds;
+    if (const auto linkIt = linkIds.find(linkId); linkIt != linkIds.cend())
+    {
+        return linkIt->second;
+    }
+
+    return std::nullopt;
 }
 
 template <class Priority, class Compare>

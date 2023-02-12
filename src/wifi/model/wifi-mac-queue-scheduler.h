@@ -45,6 +45,26 @@ enum class WifiQueueBlockedReason : uint8_t
 };
 
 /**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param reason the reason to block container queues
+ * \returns a reference to the stream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, WifiQueueBlockedReason reason)
+{
+    switch (reason)
+    {
+    case WifiQueueBlockedReason::REASONS_COUNT:
+        return (os << "REASONS_COUNT");
+    default:
+        NS_ABORT_MSG("Unknown queue blocked reason");
+        return (os << "unknown");
+    }
+}
+
+/**
  * \ingroup wifi
  *
  * WifiMacQueueScheduler is an abstract base class defining the public interface
@@ -101,8 +121,65 @@ class WifiMacQueueScheduler : public Object
      */
     virtual std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) = 0;
 
+    /**
+     * Block the given set of links for the container queues of the given types and
+     * Access Category that hold frames having the given Receiver Address (RA),
+     * Transmitter Address (TA) and TID (if needed) for the given reason, such that
+     * frames in these queues are not transmitted on the given set of links.
+     *
+     * \param reason the reason for blocking the queues
+     * \param ac the given Access Category
+     * \param types the types of the queues to block
+     * \param rxAddress the Receiver Address (RA) of the frames
+     * \param txAddress the Transmitter Address (TA) of the frames
+     * \param tids the TIDs optionally identifying the queues to block
+     * \param linkIds set of links to block (empty to block all setup links)
+     */
+    virtual void BlockQueues(WifiQueueBlockedReason reason,
+                             AcIndex ac,
+                             const std::list<WifiContainerQueueType>& types,
+                             const Mac48Address& rxAddress,
+                             const Mac48Address& txAddress,
+                             const std::set<uint8_t>& tids = {},
+                             const std::set<uint8_t>& linkIds = {}) = 0;
+    /**
+     * Unblock the given set of links for the container queues of the given types and
+     * Access Category that hold frames having the given Receiver Address (RA),
+     * Transmitter Address (TA) and TID (if needed) for the given reason, such that
+     * frames in these queues can be transmitted on the given set of links.
+     *
+     * \param reason the reason for unblocking the queues
+     * \param ac the given Access Category
+     * \param types the types of the queues to unblock
+     * \param rxAddress the Receiver Address (RA) of the frames
+     * \param txAddress the Transmitter Address (TA) of the frames
+     * \param tids the TIDs optionally identifying the queues to unblock
+     * \param linkIds set of links to unblock (empty to unblock all setup links)
+     */
+    virtual void UnblockQueues(WifiQueueBlockedReason reason,
+                               AcIndex ac,
+                               const std::list<WifiContainerQueueType>& types,
+                               const Mac48Address& rxAddress,
+                               const Mac48Address& txAddress,
+                               const std::set<uint8_t>& tids = {},
+                               const std::set<uint8_t>& linkIds = {}) = 0;
+
     /// Bitset identifying the reasons to block individual links for a container queue
     using Mask = std::bitset<static_cast<std::size_t>(WifiQueueBlockedReason::REASONS_COUNT)>;
+
+    /**
+     * Get the mask associated with the given container queue indicating whether the given link
+     * is blocked and for which reason, provided that the given container queue exists and has
+     * a mask for the given link.
+     *
+     * \param ac the given Access Category
+     * \param queueId the ID of the given container queue
+     * \param linkId the ID of the given link
+     * \return the mask associated with the given container queue for the given link
+     */
+    virtual std::optional<Mask> GetQueueLinkMask(AcIndex ac,
+                                                 const WifiContainerQueueId& queueId,
+                                                 uint8_t linkId) = 0;
 
     /**
      * Check whether an MPDU has to be dropped before enqueuing the given MPDU.
