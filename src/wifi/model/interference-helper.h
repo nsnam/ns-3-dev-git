@@ -304,11 +304,6 @@ class InterferenceHelper : public Object
      * \param range the frequency range in which the signal event has been detected
      */
     void NotifyRxEnd(Time endTime, const FrequencyRange& range);
-    /**
-     * Erase all events that belong to a given frequency range.
-     * \param range the frequency range
-     */
-    void EraseEvents(const FrequencyRange& range);
 
     /**
      * Update event to scale its received power (W) per band.

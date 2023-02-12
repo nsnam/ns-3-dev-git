@@ -748,22 +748,6 @@ InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
     return PhyEntity::SnrPer(snr, per);
 }
 
-void
-InterferenceHelper::EraseEvents(const FrequencyRange& range)
-{
-    NS_LOG_FUNCTION(this << range);
-    NS_ABORT_IF(m_niChanges.count(range) == 0);
-    NS_ABORT_IF(m_firstPowers.count(range) == 0);
-    for (auto niIt = m_niChanges.at(range).begin(); niIt != m_niChanges.at(range).end(); ++niIt)
-    {
-        niIt->second.clear();
-        // Always have a zero power noise event in the list
-        AddNiChangeEvent(Time(0), NiChange(0.0, nullptr), niIt);
-        m_firstPowers.at(range).at(niIt->first) = 0.0;
-    }
-    m_rxing = false;
-}
-
 InterferenceHelper::NiChanges::iterator
 InterferenceHelper::GetNextPosition(Time moment, NiChangesPerBand::iterator niIt)
 {
