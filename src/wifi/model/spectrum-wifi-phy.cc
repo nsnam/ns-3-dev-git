@@ -122,15 +122,16 @@ SpectrumWifiPhy::DoInitialize()
 }
 
 void
-SpectrumWifiPhy::UpdateInterferenceHelperBands()
+SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOffset)
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT(!m_spectrumPhyInterfaces.empty());
     uint16_t channelWidth = GetChannelWidth();
-    std::vector<WifiSpectrumBand> bands;
+    std::vector<WifiSpectrumBand> ccaBands{};
+    std::vector<WifiSpectrumBand> ruBands{};
     if (channelWidth < 20)
     {
-        bands.push_back(GetBand(channelWidth));
+        ccaBands.push_back(GetBand(channelWidth));
     }
     else
     {
@@ -138,7 +139,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
         {
             for (uint32_t i = 0; i < (channelWidth / bw); ++i)
             {
-                bands.push_back(GetBand(bw, i));
+                ccaBands.push_back(GetBand(bw, i));
             }
         }
     }
@@ -190,14 +191,33 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
         }
         for (const auto& bandRuPair : m_ruBands[channelWidth])
         {
-            bands.push_back(bandRuPair.first);
+            ruBands.push_back(bandRuPair.first);
         }
     }
+    auto bands{ccaBands};
+    bands.insert(bands.end(), ruBands.begin(), ruBands.end());
     const auto bandsChanged = std::any_of(bands.cbegin(), bands.cend(), [&](const auto& band) {
         return !m_interference->HasBand(band, GetCurrentFrequencyRange());
     });
     if (!bandsChanged)
     {
+        return;
+    }
+    if (indicesOffset.has_value())
+    {
+        // indicesOffset is computed for multiple of 20 MHz subchannels, and since RU bands are not
+        // used for CCA, we can here safely erase RU bands (UpdateBands will erase them since they
+        // are not passed to the call)
+        m_interference->UpdateBands(ccaBands, GetCurrentFrequencyRange(), *indicesOffset);
+        // add new RU bands
+        if (!ruBands.empty())
+        {
+            for (const auto& band : ruBands)
+            {
+                NS_ASSERT(!m_interference->HasBand(band, GetCurrentFrequencyRange()));
+                m_interference->AddBand(band, GetCurrentFrequencyRange());
+            }
+        }
         return;
     }
     m_interference->RemoveBands(GetCurrentFrequencyRange());
@@ -248,6 +268,14 @@ SpectrumWifiPhy::ResetSpectrumModel()
 {
     NS_LOG_FUNCTION(this);
 
+    std::optional<int32_t> indicesOffset{};
+    if (m_currentSpectrumPhyInterface->GetCenterFrequency() > 0)
+    {
+        indicesOffset =
+            (2e6 * (GetFrequency() - m_currentSpectrumPhyInterface->GetCenterFrequency())) /
+            GetBandBandwidth();
+    }
+
     // Replace existing spectrum model with new one
     const auto channelWidth = GetChannelWidth();
     m_currentSpectrumPhyInterface->SetRxSpectrumModel(GetFrequency(),
@@ -257,7 +285,7 @@ SpectrumWifiPhy::ResetSpectrumModel()
 
     m_currentSpectrumPhyInterface->GetChannel()->AddRx(m_currentSpectrumPhyInterface);
 
-    UpdateInterferenceHelperBands();
+    UpdateInterferenceHelperBands(indicesOffset);
 }
 
 void

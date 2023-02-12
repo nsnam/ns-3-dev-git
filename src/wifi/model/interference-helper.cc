@@ -296,6 +296,74 @@ InterferenceHelper::AddBand(WifiSpectrumBand band, const FrequencyRange& range)
 }
 
 void
+InterferenceHelper::UpdateBands(const std::vector<WifiSpectrumBand>& bands,
+                                const FrequencyRange& range,
+                                int32_t offset)
+{
+    NS_LOG_FUNCTION(this << range << offset);
+    NS_ABORT_IF(m_niChanges.count(range) == 0);
+    auto& niChangesPerBand = m_niChanges.at(range);
+    auto& firstPowerPerBand = m_firstPowers.at(range);
+    // start index of the lowest band
+    const auto minStartIndex =
+        (std::min_element(bands.cbegin(), bands.cend(), [](const auto& lhs, const auto& rhs) {
+            return lhs.first < rhs.first;
+        }))->first;
+    // stop index of the highest band
+    const auto maxStopIndex =
+        (std::max_element(bands.cbegin(), bands.cend(), [](const auto& lhs, const auto& rhs) {
+            return lhs.second < rhs.second;
+        }))->second;
+    // index of DC so that it can be skipped
+    const auto dcIndex =
+        static_cast<uint32_t>(minStartIndex + ((maxStopIndex - minStartIndex) / 2) + 0.5);
+    NiChangesPerBand newNiChangesPerBand{};
+    FirstPowerPerBand newFirstPowerPerBand{};
+    for (auto it = niChangesPerBand.begin(); it != niChangesPerBand.end();)
+    {
+        // apply offset to start index and stop index to get the corresponding ones in the new
+        // spectrum model
+        auto newBandStartIndex =
+            static_cast<uint32_t>(static_cast<int32_t>(it->first.first) + offset);
+        auto newBandStopIndex =
+            static_cast<uint32_t>(static_cast<int32_t>(it->first.second) + offset);
+        const auto erase = std::find_if(bands.cbegin(),
+                                        bands.cend(),
+                                        [newBandStartIndex, newBandStopIndex](const auto& item) {
+                                            return ((newBandStartIndex == item.first) &&
+                                                    (newBandStopIndex == item.second));
+                                        }) == std::end(bands);
+        if (erase)
+        {
+            // band does not belong to the new bands, erase it
+            it->second.clear();
+        }
+        else
+        {
+            if (newBandStartIndex >= dcIndex)
+            {
+                // skip DC
+                newBandStartIndex++;
+            }
+            const auto band = std::make_pair(newBandStartIndex, newBandStopIndex);
+            newNiChangesPerBand.insert({band, std::move(it->second)});
+            newFirstPowerPerBand.insert({band, firstPowerPerBand.at(it->first)});
+        }
+        it = niChangesPerBand.erase(it);
+    }
+    niChangesPerBand.swap(newNiChangesPerBand);
+    firstPowerPerBand.swap(newFirstPowerPerBand);
+    for (const auto& band : bands)
+    {
+        if (!HasBand(band, range))
+        {
+            // this is a new band, add it
+            AddBand(band, range);
+        }
+    }
+}
+
+void
 InterferenceHelper::SetNoiseFigure(double value)
 {
     m_noiseFigure = value;

@@ -169,6 +169,17 @@ class InterferenceHelper : public Object
     bool HasBand(WifiSpectrumBand band, const FrequencyRange& range) const;
 
     /**
+     * Update the frequency bands for a given frequency range when the spectrum model is changed.
+     *
+     * \param bands the bands to be added in the new spectrum model
+     * \param range the frequency range the bands belong to
+     * \param offset the offset to convert start and stop indices from old to new spectrum model
+     */
+    void UpdateBands(const std::vector<WifiSpectrumBand>& bands,
+                     const FrequencyRange& range,
+                     int32_t offset);
+
+    /**
      * Set the noise figure.
      *
      * \param value noise figure in linear scale
