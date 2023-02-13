@@ -109,29 +109,23 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     NetDeviceContainer Install(NodeContainer c);
 
     /**
-     * \brief Associate the nodes to the same PAN
+     * \brief Creates an PAN with associated nodes and assigned addresses(16 and 64)
+     *        from the nodes in the node container.
+     *        The first node in the container becomes the PAN coordinator.
      *
-     * \param c a set of nodes
-     * \param panId the PAN Id
+     * \param c a The node container with the nodes that will form the PAN.
+     * \param panId The PAN identifier.
      */
-    void AssociateToPan(NetDeviceContainer c, uint16_t panId);
+    void CreateAssociatedPan(NetDeviceContainer c, uint16_t panId);
 
     /**
-     * \brief Associate the nodes to the same PAN and initiate beacon enabled mode.
+     * \brief Set the extended 64 bit addresses (EUI-64) for a group of
+     *        LrWpanNetDevices
      *
-     * \param c a set of nodes
-     * \param panId the PAN id
-     * \param coor the address of the PAN coordinator
-     * \param bcnOrd indicates the interval between beacons.
-     *               The value must be an int between 0 and 14.
-     * \param sfrmOrd indicates the length of the superframe.
-     *                The value must be an int between 0 and 14 and less or equal to the bcnOrd
+     * \param c The NetDevice container.
+     *
      */
-    void AssociateToBeaconPan(NetDeviceContainer c,
-                              uint16_t panId,
-                              Mac16Address coor,
-                              uint8_t bcnOrd,
-                              uint8_t sfrmOrd);
+    void SetExtendedAddresses(NetDeviceContainer c);
 
     /**
      * Helper to enable all LrWpan log components with one statement

@@ -231,85 +231,80 @@ LrWpanHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
 }
 
 void
-LrWpanHelper::AssociateToPan(NetDeviceContainer c, uint16_t panId)
+LrWpanHelper::CreateAssociatedPan(NetDeviceContainer c, uint16_t panId)
 {
     NetDeviceContainer devices;
     uint16_t id = 1;
-    uint8_t idBuf[2];
+    uint8_t idBuf[2] = {0, 0};
+    uint8_t idBuf2[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    Mac16Address address16;
+    Mac64Address address64;
+    Mac16Address coordShortAddr;
+    Mac64Address coordExtAddr;
 
     for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); i++)
     {
+        if (id < 0x0001 || id > 0xFFFD)
+        {
+            NS_ABORT_MSG("Only 65533 addresses supported. Range [00:01]-[FF:FD]");
+        }
+
         Ptr<LrWpanNetDevice> device = DynamicCast<LrWpanNetDevice>(*i);
         if (device)
         {
             idBuf[0] = (id >> 8) & 0xff;
             idBuf[1] = (id >> 0) & 0xff;
-            Mac16Address address;
-            address.CopyFrom(idBuf);
+            address16.CopyFrom(idBuf);
 
-            device->GetMac()->SetPanId(panId);
-            device->GetMac()->SetShortAddress(address);
+            idBuf2[6] = (id >> 8) & 0xff;
+            idBuf2[7] = (id >> 0) & 0xff;
+            address64.CopyFrom(idBuf2);
+
+            if (address64 == Mac64Address("00:00:00:00:00:00:00:01"))
+            {
+                // We use the first device in the container as coordinator
+                coordShortAddr = address16;
+                coordExtAddr = address64;
+            }
+
+            // TODO: Change this to device->GetAddress() if GetAddress can guarantee a
+            //  an extended address (currently only gives 48 address or 16 bits addresses)
+            device->GetMac()->SetExtendedAddress(address64);
+            device->SetPanAssociation(panId, coordExtAddr, coordShortAddr, address16);
+
             id++;
         }
     }
 }
 
 void
-LrWpanHelper::AssociateToBeaconPan(NetDeviceContainer c,
-                                   uint16_t panId,
-                                   Mac16Address coor,
-                                   uint8_t bcnOrd,
-                                   uint8_t sfrmOrd)
+LrWpanHelper::SetExtendedAddresses(NetDeviceContainer c)
 {
     NetDeviceContainer devices;
-    uint16_t id = 1;
-    uint8_t idBuf[2];
-    Mac16Address address;
-
-    if (bcnOrd > 14)
-    {
-        NS_LOG_DEBUG("The Beacon Order must be an int between 0 and 14");
-        return;
-    }
-
-    if ((sfrmOrd > 14) || (sfrmOrd > bcnOrd))
-    {
-        NS_LOG_DEBUG("The Superframe Order must be an int between 0 and 14, and less or equal to "
-                     "Beacon Order");
-        return;
-    }
+    uint64_t id = 1;
+    uint8_t idBuf[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    Mac64Address address64;
 
     for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); i++)
     {
         Ptr<LrWpanNetDevice> device = DynamicCast<LrWpanNetDevice>(*i);
         if (device)
         {
-            idBuf[0] = (id >> 8) & 0xff;
-            idBuf[1] = (id >> 0) & 0xff;
-            address.CopyFrom(idBuf);
+            idBuf[0] = (id >> 56) & 0xff;
+            idBuf[1] = (id >> 48) & 0xff;
+            idBuf[2] = (id >> 40) & 0xff;
+            idBuf[3] = (id >> 32) & 0xff;
+            idBuf[4] = (id >> 24) & 0xff;
+            idBuf[5] = (id >> 16) & 0xff;
+            idBuf[6] = (id >> 8) & 0xff;
+            idBuf[7] = (id >> 0) & 0xff;
 
-            device->GetMac()->SetShortAddress(address);
+            address64.CopyFrom(idBuf);
 
-            if (address == coor)
-            {
-                MlmeStartRequestParams params;
-                params.m_panCoor = true;
-                params.m_PanId = panId;
-                params.m_bcnOrd = bcnOrd;
-                params.m_sfrmOrd = sfrmOrd;
+            // TODO: Change this to device->SetAddress() if GetAddress can guarantee
+            //  to set only extended addresses
+            device->GetMac()->SetExtendedAddress(address64);
 
-                Ptr<UniformRandomVariable> uniformRandomVariable =
-                    CreateObject<UniformRandomVariable>();
-                ;
-                Time jitter = Time(MilliSeconds(uniformRandomVariable->GetInteger(0, 10)));
-
-                Simulator::Schedule(jitter, &LrWpanMac::MlmeStartRequest, device->GetMac(), params);
-            }
-            else
-            {
-                device->GetMac()->SetPanId(panId);
-                device->GetMac()->SetAssociatedCoor(coor);
-            }
             id++;
         }
     }

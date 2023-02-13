@@ -1990,7 +1990,7 @@ class LrWpanMac : public Object
     /**
      * The packet which is currently being sent by the MAC layer.
      */
-    Ptr<Packet> m_txPkt; // XXX need packet buffer instead of single packet
+    Ptr<Packet> m_txPkt;
 
     /**
      * The command request packet received. Briefly stored to proceed with operations
@@ -1999,15 +1999,14 @@ class LrWpanMac : public Object
     Ptr<Packet> m_rxPkt;
 
     /**
-     * The short address used by this MAC. Currently we do not have complete
-     * extended address support in the MAC, nor do we have the association
-     * primitives, so this address has to be configured manually.
+     * The short address (16 bit address) used by this MAC. If supported,
+     * the short address must be assigned to the device by the coordinator
+     * during the association process.
      */
     Mac16Address m_shortAddress;
 
     /**
-     * The extended address used by this MAC. Extended addresses are currently not
-     * really supported.
+     * The extended 64 address (IEEE EUI-64) used by this MAC.
      */
     Mac64Address m_selfExt;
 

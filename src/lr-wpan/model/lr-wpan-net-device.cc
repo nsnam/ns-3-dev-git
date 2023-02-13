@@ -257,6 +257,10 @@ LrWpanNetDevice::SetAddress(Address address)
     {
         m_mac->SetShortAddress(Mac16Address::ConvertFrom(address));
     }
+    else if (Mac64Address::IsMatchingType(address))
+    {
+        m_mac->SetExtendedAddress(Mac64Address::ConvertFrom(address));
+    }
     else if (Mac48Address::IsMatchingType(address))
     {
         uint8_t buf[6];
@@ -290,6 +294,19 @@ LrWpanNetDevice::GetAddress() const
     Mac48Address pseudoAddress = BuildPseudoMacAddress(m_mac->GetPanId(), m_mac->GetShortAddress());
 
     return pseudoAddress;
+}
+
+void
+LrWpanNetDevice::SetPanAssociation(uint16_t panId,
+                                   Mac64Address coordExtAddr,
+                                   Mac16Address coordShortAddr,
+                                   Mac16Address assignedShortAddr)
+{
+    NS_LOG_FUNCTION(this);
+    m_mac->SetPanId(panId);
+    m_mac->SetAssociatedCoor(coordExtAddr);
+    m_mac->SetAssociatedCoor(coordShortAddr);
+    m_mac->SetShortAddress(assignedShortAddr);
 }
 
 bool

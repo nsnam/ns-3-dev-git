@@ -216,7 +216,7 @@ LrWpanMac::LrWpanMac()
     m_macBsn = SequenceNumber8(uniformVar->GetValue());
     m_macBeaconPayload = nullptr;
     m_macBeaconPayloadLength = 0;
-    m_shortAddress = Mac16Address("00:00");
+    m_shortAddress = Mac16Address("FF:FF"); // FF:FF = The address is not assigned.
 }
 
 LrWpanMac::~LrWpanMac()
@@ -2894,12 +2894,12 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
                     case CommandPayloadHeader::SUCCESSFUL:
                         confirmParams.m_status =
                             LrWpanMlmeAssociateConfirmStatus::MLMEASSOC_SUCCESS;
-                        confirmParams.m_assocShortAddr =
-                            GetShortAddress(); // the original short address used in the association
-                                               // request
-                        SetShortAddress(
-                            receivedMacPayload
-                                .GetShortAddr()); // the assigned short address by the coordinator
+                        // The original short address used in the association
+                        // used in the association request
+                        confirmParams.m_assocShortAddr = GetShortAddress();
+
+                        // The assigned short address by the coordinator
+                        SetShortAddress(receivedMacPayload.GetShortAddr());
                         m_macPanId = receivedMacHdr.GetSrcPanId();
                         break;
                     case CommandPayloadHeader::FULL_CAPACITY:

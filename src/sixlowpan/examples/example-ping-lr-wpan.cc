@@ -81,10 +81,9 @@ main(int argc, char** argv)
     // Add and install the LrWpanNetDevice for each node
     NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
 
-    // Fake PAN association and short address assignment.
-    // This is needed because the lr-wpan module does not provide (yet)
-    // a full PAN association procedure.
-    lrWpanHelper.AssociateToPan(lrwpanDevices, 1);
+    // Manual PAN association and extended and short address assignment.
+    // Association using the MAC functions can also be used instead of this step.
+    lrWpanHelper.CreateAssociatedPan(lrwpanDevices, 1);
 
     InternetStackHelper internetv6;
     internetv6.Install(nodes);

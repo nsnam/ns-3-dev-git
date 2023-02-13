@@ -43,6 +43,7 @@ Release 3-dev
 - (core) !1236 - Deprecation warnings are silenced while calling `NS_OBJECT_ENSURE_REGISTERED`
 - (wifi) Fixed multiple issues about setting the TXOP holder
 - (wifi) #861 - bianchi validation script can't run with 11ax
+- (lr-wpan) #636 - Ext address, short address and manual assoc adjustments
 
 Release 3.37
 ------------

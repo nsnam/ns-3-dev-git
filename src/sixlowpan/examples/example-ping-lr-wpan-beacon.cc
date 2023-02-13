@@ -31,14 +31,14 @@
 using namespace ns3;
 
 static void
-dataSentMacConfirm(McpsDataConfirmParams params)
+DataSentMacConfirm(Ptr<LrWpanNetDevice> device, McpsDataConfirmParams params)
 {
     // In the case of transmissions with the Ack flag activated, the transaction is only
     // successful if the Ack was received.
     if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
     {
-        NS_LOG_UNCOND("**********" << Simulator::Now().As(Time::S)
-                                   << " | Transmission successfully sent");
+        std::cout << Simulator::Now().As(Time::S) << " | Node " << device->GetNode()->GetId()
+                  << " | Transmission successfully sent\n";
     }
 }
 
@@ -53,8 +53,7 @@ main(int argc, char** argv)
 
     if (verbose)
     {
-        LogComponentEnableAll(LOG_PREFIX_TIME);
-        LogComponentEnableAll(LOG_PREFIX_FUNC);
+        LogComponentEnableAll(LogLevel(LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE));
         LogComponentEnable("LrWpanMac", LOG_LEVEL_INFO);
         LogComponentEnable("LrWpanCsmaCa", LOG_LEVEL_INFO);
         LogComponentEnable("LrWpanHelper", LOG_LEVEL_ALL);
@@ -89,15 +88,13 @@ main(int argc, char** argv)
     Ptr<LrWpanNetDevice> dev1 = lrwpanDevices.Get(0)->GetObject<LrWpanNetDevice>();
     Ptr<LrWpanNetDevice> dev2 = lrwpanDevices.Get(1)->GetObject<LrWpanNetDevice>();
 
-    McpsDataConfirmCallback cb1;
-    cb1 = MakeCallback(&dataSentMacConfirm);
-    dev1->GetMac()->SetMcpsDataConfirmCallback(cb1);
-    dev2->GetMac()->SetMcpsDataConfirmCallback(cb1);
+    dev1->GetMac()->SetMcpsDataConfirmCallback(MakeBoundCallback(&DataSentMacConfirm, dev1));
 
-    // Fake PAN association, coordinator assignment, short address assignment and initialization
+    dev2->GetMac()->SetMcpsDataConfirmCallback(MakeBoundCallback(&DataSentMacConfirm, dev2));
+
+    // Manual PAN association, coordinator assignment, short address assignment and initialization
     // of beacon-enabled mode in 802.15.4-2011.
-    // This is needed because the lr-wpan module does not provide (yet)
-    // a full PAN association procedure.
+    // Association using the MAC functions can also be used instead of a manual association.
 
     // AssociateToBeaconPan (devices, PAN ID, Coordinator Address, Beacon Order, Superframe Order)
 
@@ -113,7 +110,22 @@ main(int argc, char** argv)
     //                            Beacon Interval = 251.65 secs
     //   |-----------------------------------------------------------------------------------------|
 
-    lrWpanHelper.AssociateToBeaconPan(lrwpanDevices, 0, Mac16Address("00:01"), 14, 13);
+    // Manually set an associated PAN, Pan id = 1 the first device (dev1) is used as coordinator
+    lrWpanHelper.CreateAssociatedPan(lrwpanDevices, 5);
+
+    // Start the beacon mode from the MAC layer of the coordinator (dev1)
+    MlmeStartRequestParams params;
+    params.m_panCoor = true;
+    params.m_PanId = 5;
+    params.m_bcnOrd = 14;
+    params.m_sfrmOrd = 13;
+    params.m_logCh = 11;
+
+    Simulator::ScheduleWithContext(dev1->GetNode()->GetId(),
+                                   Seconds(0),
+                                   &LrWpanMac::MlmeStartRequest,
+                                   dev1->GetMac(),
+                                   params);
 
     InternetStackHelper internetv6;
     internetv6.Install(nodes);
@@ -140,13 +152,13 @@ main(int argc, char** argv)
     ApplicationContainer apps = ping.Install(nodes.Get(0));
 
     apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(20.0));
+    apps.Stop(Seconds(7.0));
 
     AsciiTraceHelper ascii;
     lrWpanHelper.EnableAsciiAll(ascii.CreateFileStream("Ping-6LoW-lr-wpan-beacon.tr"));
     lrWpanHelper.EnablePcapAll(std::string("Ping-6LoW-lr-wpan-beacon"), true);
 
-    Simulator::Stop(Seconds(600));
+    Simulator::Stop(Seconds(7));
 
     Simulator::Run();
     Simulator::Destroy();

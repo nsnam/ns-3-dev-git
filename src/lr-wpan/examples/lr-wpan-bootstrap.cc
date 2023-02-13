@@ -30,6 +30,9 @@
  * on the LQI results of the scan. A node may not find any beacons if the coordinator is outside its
  * communication range. An association request may not be send if LQI is too low for an association.
  *
+ * The coordinator in PAN 5 runs in extended addressing mode and do not assign short addresses.
+ * The coordinator in PAN 7 runs in short addressing mode and assign short addresses.
+ *
  * At the end of the simulation, an animation is generated (lrwpan-bootstrap.xml), showing the
  * results of the association with each coordinator. This simulation can take a few seconds to
  * complete.
@@ -104,11 +107,22 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
             // Only request association if the coordinator is permitting association at this moment.
             if (params.m_panDescList[panDescIndex].m_superframeSpec.IsAssocPermit())
             {
+                std::string addressing;
+                if (params.m_panDescList[panDescIndex].m_coorAddrMode == SHORT_ADDR)
+                {
+                    addressing = "Short";
+                }
+                else if (params.m_panDescList[panDescIndex].m_coorAddrMode == EXT_ADDR)
+                {
+                    addressing = "Ext";
+                }
+
                 std::cout << Simulator::Now().As(Time::S) << " Node " << device->GetNode()->GetId()
                           << " [" << device->GetMac()->GetShortAddress() << " | "
                           << device->GetMac()->GetExtendedAddress() << "]"
                           << " MLME-scan.confirm:  Selected PAN ID "
-                          << params.m_panDescList[panDescIndex].m_coorPanId << " | LQI "
+                          << params.m_panDescList[panDescIndex].m_coorPanId
+                          << "| Coord addressing mode: " << addressing << " | LQI "
                           << static_cast<int>(params.m_panDescList[panDescIndex].m_linkQuality)
                           << "\n";
 
@@ -126,6 +140,7 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
                         assocParams.m_coordAddrMode = LrWpanAddressMode::SHORT_ADDR;
                         assocParams.m_coordShortAddr =
                             params.m_panDescList[panDescIndex].m_coorShortAddr;
+                        assocParams.m_capabilityInfo.SetShortAddrAllocOn(true);
                     }
                     else if (assocParams.m_coordAddrMode == LrWpanAddressMode::EXT_ADDR)
                     {
@@ -133,6 +148,7 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
                         assocParams.m_coordExtAddr =
                             params.m_panDescList[panDescIndex].m_coorExtAddr;
                         assocParams.m_coordShortAddr = Mac16Address("ff:fe");
+                        assocParams.m_capabilityInfo.SetShortAddrAllocOn(false);
                     }
 
                     Simulator::ScheduleNow(&LrWpanMac::MlmeAssociateRequest,
@@ -169,13 +185,14 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
 static void
 AssociateIndication(Ptr<LrWpanNetDevice> device, MlmeAssociateIndicationParams params)
 {
-    // This is typically implemented by the  Coordinator next layer (3rd layer or higher).
+    // This is typically implemented by the coordinator next layer (3rd layer or higher).
     // The steps described below are out of the scope of the standard.
 
     // Here the 3rd layer should check:
-    //    a) Whether or not the device was previously associated with this PAN (the coordinator
-    //    keeps a list). b) The coordinator have sufficient resources available to allow the
-    //    association.
+    //    a) Whether or not the device was previously associated with this PAN
+    //       (the coordinator keeps a list).
+    //    b) The coordinator have sufficient resources available to allow the
+    //       association.
     // If the association fails, status = 1 or 2 and assocShortAddr = FFFF.
 
     // In this example, the coordinator accepts every association request and have no association
@@ -360,7 +377,8 @@ main(int argc, char* argv[])
     NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
     lrwpanDevices.Add(lrWpanHelper.Install(coordinators));
 
-    lrWpanHelper.AssociateToPan(lrwpanDevices, 0xffff);
+    // Set the extended address to all devices (EUI-64)
+    lrWpanHelper.SetExtendedAddresses(lrwpanDevices);
 
     // Devices hooks & MAC MLME-scan primitive set
     for (NodeContainer::Iterator i = nodes.Begin(); i != nodes.End(); i++)
@@ -416,6 +434,16 @@ main(int argc, char* argv[])
     Ptr<Node> coor2 = coordinators.Get(1);
     Ptr<NetDevice> netDeviceCoor2 = coor2->GetDevice(0);
     Ptr<LrWpanNetDevice> coor2Device = DynamicCast<LrWpanNetDevice>(netDeviceCoor2);
+
+    // Coordinators require that their short address is explicitly set.
+    // Either FF:FE to indicate that only extended addresses will be used in the following
+    // data communications or any other value (except for FF:FF) to indicate that the coordinator
+    // will use the short address in these communications.
+    // The default short address for all devices is FF:FF (unassigned/no associated).
+
+    // coor1 (PAN 5) = extended addressing mode coor2 (PAN 7) = short addressing mode
+    coor1Device->GetMac()->SetShortAddress(Mac16Address("FF:FE"));
+    coor2Device->GetMac()->SetShortAddress(Mac16Address("CA:FE"));
 
     // PAN coordinator 1 (PAN 5) transmits beacons on channel 12
     MlmeStartRequestParams params;
