@@ -63,8 +63,8 @@ void
 PhasedArrayModel::SetBeamformingVector(const ComplexVector& beamformingVector)
 {
     NS_LOG_FUNCTION(this << beamformingVector);
-    NS_ASSERT_MSG(beamformingVector.GetSize() == GetNumberOfElements(),
-                  beamformingVector.GetSize() << " != " << GetNumberOfElements());
+    NS_ASSERT_MSG(beamformingVector.GetSize() == GetNumElems(),
+                  beamformingVector.GetSize() << " != " << GetNumElems());
     m_beamformingVector = beamformingVector;
     m_isBfVectorValid = true;
 }
@@ -104,7 +104,7 @@ PhasedArrayModel::GetBeamformingVector(Angles a) const
     // number of antenna elements per port.
     double normRes = norm(beamformingVector) / sqrt(GetNumPorts());
 
-    for (size_t i = 0; i < GetNumberOfElements(); i++)
+    for (size_t i = 0; i < GetNumElems(); i++)
     {
         beamformingVector[i] = std::conj(beamformingVector[i]) / normRes;
     }
@@ -115,8 +115,8 @@ PhasedArrayModel::GetBeamformingVector(Angles a) const
 PhasedArrayModel::ComplexVector
 PhasedArrayModel::GetSteeringVector(Angles a) const
 {
-    ComplexVector steeringVector(GetNumberOfElements());
-    for (size_t i = 0; i < GetNumberOfElements(); i++)
+    ComplexVector steeringVector(GetNumElems());
+    for (size_t i = 0; i < GetNumElems(); i++)
     {
         Vector loc = GetElementLocation(i);
         double phase = -2 * M_PI *

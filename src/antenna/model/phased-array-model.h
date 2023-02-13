@@ -84,7 +84,7 @@ class PhasedArrayModel : public Object
      * \brief Returns the number of antenna elements
      * \return the number of antenna elements
      */
-    virtual size_t GetNumberOfElements() const = 0;
+    virtual size_t GetNumElems() const = 0;
 
     /**
      * \brief Returns the horizontal and vertical components of the antenna element field

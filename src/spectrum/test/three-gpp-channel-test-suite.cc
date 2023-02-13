@@ -125,8 +125,8 @@ ThreeGppChannelMatrixComputationTest::DoComputeNorm(Ptr<ThreeGppChannelModel> ch
                                                     Ptr<PhasedArrayModel> txAntenna,
                                                     Ptr<PhasedArrayModel> rxAntenna)
 {
-    uint64_t txAntennaElements = txAntenna->GetNumberOfElements();
-    uint64_t rxAntennaElements = rxAntenna->GetNumberOfElements();
+    uint64_t txAntennaElements = txAntenna->GetNumElems();
+    uint64_t rxAntennaElements = rxAntenna->GetNumElems();
 
     Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix =
         channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);

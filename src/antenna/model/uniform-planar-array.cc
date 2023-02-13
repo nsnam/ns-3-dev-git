@@ -284,7 +284,7 @@ UniformPlanarArray::GetNumPols() const
 }
 
 size_t
-UniformPlanarArray::GetNumberOfElements() const
+UniformPlanarArray::GetNumElems() const
 {
     // From 38.901  [M, N, P, Mg, Ng] = [m_numRows, m_numColumns, 2, 1, 1]
     return GetNumPols() * m_numRows * m_numColumns;

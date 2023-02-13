@@ -108,7 +108,7 @@ class UniformPlanarArray : public PhasedArrayModel
      * is dual-polarized the number of total antenna elements is doubled.
      * \return the number of antenna elements
      */
-    size_t GetNumberOfElements() const override;
+    size_t GetNumElems() const override;
 
     /**
      * Set the number of columns of the phased array

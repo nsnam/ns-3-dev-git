@@ -146,7 +146,7 @@ For details on Phased Array Antennas see for instance [Mailloux]_.
 
 Derived classes must implement the following functions:
 
-* GetNumberOfElements: returns the number of antenna elements
+* GetNumElems: returns the number of antenna elements
 * GetElementLocation: returns the location of the antenna element with the specified index, normalized with respect to the wavelength
 * GetElementFieldPattern: returns the horizontal and vertical components of the antenna element field pattern at the specified direction. Same polarization (configurable) for all antenna elements of the array is considered.
 

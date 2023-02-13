@@ -1870,8 +1870,8 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     // Step 11: Generate channel coefficients for each cluster n and each receiver
     //  and transmitter element pair u,s.
     // where n is cluster index, u and s are receive and transmit antenna element.
-    size_t uSize = uAntenna->GetNumberOfElements();
-    size_t sSize = sAntenna->GetNumberOfElements();
+    size_t uSize = uAntenna->GetNumElems();
+    size_t sSize = sAntenna->GetNumElems();
 
     // NOTE: Since each of the strongest 2 clusters are divided into 3 sub-clusters,
     // the total cluster will generally be numReducedCLuster + 4.

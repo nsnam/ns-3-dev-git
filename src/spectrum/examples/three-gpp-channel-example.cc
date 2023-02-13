@@ -90,7 +90,7 @@ DoBeamforming(Ptr<NetDevice> thisDevice,
     double vAngleRadian = completeAngle.GetInclination(); // the elevation angle
 
     // retrieve the number of antenna elements and resize the vector
-    uint64_t totNoArrayElements = thisAntenna->GetNumberOfElements();
+    uint64_t totNoArrayElements = thisAntenna->GetNumElems();
     PhasedArrayModel::ComplexVector antennaWeights(totNoArrayElements);
 
     // the total power is divided equally among the antenna elements
