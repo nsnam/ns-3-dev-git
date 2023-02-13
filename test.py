@@ -810,18 +810,28 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     elapsed_time = time.time() - start_time
 
     retval = proc.returncode
-    try:
-        stdout_results = stdout_results.decode()
-    except UnicodeDecodeError:
-        print("Non-decodable character in stdout output of %s" % cmd)
-        print(stdout_results)
-        retval = 1
-    try:
-        stderr_results = stderr_results.decode()
-    except UnicodeDecodeError:
-        print("Non-decodable character in stderr output of %s" % cmd)
-        print(stderr_results)
-        retval = 1
+
+    def decode_stream_results(stream_results: bytes, stream_name: str) -> str:
+        try:
+            stream_results = stream_results.decode()
+        except UnicodeDecodeError:
+            def decode(byte_array: bytes):
+                try:
+                    byte_array.decode()
+                except UnicodeDecodeError:
+                    return byte_array
+
+            # Find lines where the decoding error happened
+            non_utf8_lines = list(map(lambda line: decode(line), stream_results.splitlines()))
+            non_utf8_lines = list(filter(lambda line: line is not None, non_utf8_lines))
+            print(f"Non-decodable characters found in {stream_name} output of {cmd}: {non_utf8_lines}")
+
+            # Continue decoding on errors
+            stream_results = stream_results.decode(errors="backslashreplace")
+        return stream_results
+
+    stdout_results = decode_stream_results(stdout_results, "stdout")
+    stderr_results = decode_stream_results(stderr_results, "stderr")
 
     if options.verbose:
         print("Return code = ", retval)
