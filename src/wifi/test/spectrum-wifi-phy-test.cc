@@ -1251,54 +1251,6 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                             this);
     }
 
-    for (const auto txPowerDbm : {-60.0 /* above CCA-ED */, -70.0 /* below CCA-ED */})
-    {
-        for (std::size_t i = 0; i < 4; ++i)
-        {
-            for (std::size_t j = 0; j < 4; ++j)
-            {
-                if (i == j)
-                {
-                    continue;
-                }
-                delay += Seconds(1);
-                auto txPpduPhy = m_txPhys.at(i);
-                Simulator::Schedule(delay,
-                                    &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
-                                    this,
-                                    txPpduPhy,
-                                    txPowerDbm);
-                Simulator::Schedule(delay + txOngoingAfterTxStartedDelay,
-                                    &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
-                                    this,
-                                    j,
-                                    txPpduPhy->GetPhyBand(),
-                                    txPpduPhy->GetChannelNumber(),
-                                    txPpduPhy->GetChannelWidth());
-                for (std::size_t k = 0; k < 4; ++k)
-                {
-                    Simulator::Schedule(delay + flushResultsDelay,
-                                        &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                        this);
-                    if (k == i)
-                    {
-                        continue;
-                    }
-                    const auto expectCcaBusyIndication =
-                        m_trackSignalsInactiveInterfaces
-                            ? (txPowerDbm >= ccaEdThresholdDbm ? (j == k) : false)
-                            : false;
-                    Simulator::Schedule(delay + checkResultsDelay,
-                                        &SpectrumWifiPhyMultipleInterfacesTest::CheckCcaIndication,
-                                        this,
-                                        k,
-                                        expectCcaBusyIndication,
-                                        txOngoingAfterTxStartedDelay);
-                }
-            }
-        }
-    }
-
     // default channels active for all PHYs: each PHY only receives from its associated TX
     std::vector<std::size_t> expectedConnectedPhysPerChannel =
         m_trackSignalsInactiveInterfaces ? std::vector<std::size_t>{5, 5, 5, 5}
@@ -1439,6 +1391,55 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
             Simulator::Schedule(delay + flushResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::Reset,
                                 this);
+        }
+    }
+
+    // verify CCA indication when switching to a channel with an ongoing transmission
+    for (const auto txPowerDbm : {-60.0 /* above CCA-ED */, -70.0 /* below CCA-ED */})
+    {
+        for (std::size_t i = 0; i < 4; ++i)
+        {
+            for (std::size_t j = 0; j < 4; ++j)
+            {
+                if (i == j)
+                {
+                    continue;
+                }
+                delay += Seconds(1);
+                auto txPpduPhy = m_txPhys.at(i);
+                Simulator::Schedule(delay,
+                                    &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
+                                    this,
+                                    txPpduPhy,
+                                    txPowerDbm);
+                Simulator::Schedule(delay + txOngoingAfterTxStartedDelay,
+                                    &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                                    this,
+                                    j,
+                                    txPpduPhy->GetPhyBand(),
+                                    txPpduPhy->GetChannelNumber(),
+                                    txPpduPhy->GetChannelWidth());
+                for (std::size_t k = 0; k < 4; ++k)
+                {
+                    Simulator::Schedule(delay + flushResultsDelay,
+                                        &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                                        this);
+                    if (k == i)
+                    {
+                        continue;
+                    }
+                    const auto expectCcaBusyIndication =
+                        m_trackSignalsInactiveInterfaces
+                            ? (txPowerDbm >= ccaEdThresholdDbm ? (j == k) : false)
+                            : false;
+                    Simulator::Schedule(delay + checkResultsDelay,
+                                        &SpectrumWifiPhyMultipleInterfacesTest::CheckCcaIndication,
+                                        this,
+                                        k,
+                                        expectCcaBusyIndication,
+                                        txOngoingAfterTxStartedDelay);
+                }
+            }
         }
     }
 
