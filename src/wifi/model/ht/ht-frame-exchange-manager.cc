@@ -24,7 +24,6 @@
 #include "ns3/ctrl-headers.h"
 #include "ns3/log.h"
 #include "ns3/mgt-headers.h"
-#include "ns3/qos-blocked-destinations.h"
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/snr-tag.h"
 #include "ns3/wifi-mac-queue.h"
@@ -426,8 +425,7 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
     // we could iterate over all the scheduler's queues and ignore those that do not contain
     // control frames, but it's more efficient to peek frames until we get frames that are
     // not control frames, given that control frames have the highest priority
-    while ((bar = queue->PeekFirstAvailable(m_linkId, nullptr, prevBar)) && bar &&
-           bar->GetHeader().IsCtl())
+    while ((bar = queue->PeekFirstAvailable(m_linkId, prevBar)) && bar && bar->GetHeader().IsCtl())
     {
         if (bar->GetHeader().IsBlockAckReq())
         {

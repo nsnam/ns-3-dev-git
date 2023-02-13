@@ -31,7 +31,6 @@
 namespace ns3
 {
 
-class QosBlockedDestinations;
 class MgtAddBaResponseHeader;
 class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
@@ -464,9 +463,8 @@ class QosTxop : public Txop
      */
     bool IsQosOldPacket(Ptr<const WifiMpdu> mpdu);
 
-    AcIndex m_ac;                                         //!< the access category
-    Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< the QoS blocked destinations
-    Ptr<BlockAckManager> m_baManager;                     //!< the block ack manager
+    AcIndex m_ac;                     //!< the access category
+    Ptr<BlockAckManager> m_baManager; //!< the block ack manager
     uint8_t m_blockAckThreshold; /**< the block ack threshold (use BA mechanism if number of packets
                                     in queue reaches this value. If this value is 0, block ack is
                                     never used. When A-MPDU is enabled, block ack mechanism is used

@@ -35,7 +35,6 @@
 namespace ns3
 {
 
-class QosBlockedDestinations;
 class WifiMacQueueScheduler;
 
 // The following explicit template instantiation declaration prevents modules
@@ -190,15 +189,11 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
      * The packet is not removed from queue.
      *
      * \param linkId the ID of the given link
-     * \param blockedPackets the destination address & TID pairs that are waiting for a
-     * BlockAck response
      * \param item the item after which the search starts from
      *
      * \return the peeked packet or nullptr if no packet was found
      */
-    Ptr<WifiMpdu> PeekFirstAvailable(uint8_t linkId,
-                                     const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
-                                     Ptr<const WifiMpdu> item = nullptr) const;
+    Ptr<WifiMpdu> PeekFirstAvailable(uint8_t linkId, Ptr<const WifiMpdu> item = nullptr) const;
     /**
      * Remove the packet in the front of the queue.
      *

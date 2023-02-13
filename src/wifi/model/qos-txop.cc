@@ -28,7 +28,6 @@
 #include "mgt-headers.h"
 #include "mpdu-aggregator.h"
 #include "msdu-aggregator.h"
-#include "qos-blocked-destinations.h"
 #include "wifi-mac-queue-scheduler.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
@@ -109,7 +108,6 @@ QosTxop::QosTxop(AcIndex ac)
       m_ac(ac)
 {
     NS_LOG_FUNCTION(this);
-    m_qosBlockedDestinations = Create<QosBlockedDestinations>();
     m_baManager = CreateObject<BlockAckManager>();
     m_baManager->SetQueue(m_queue);
     m_baManager->SetBlockDestinationCallback(
@@ -149,7 +147,6 @@ QosTxop::DoDispose()
         m_baManager->Dispose();
     }
     m_baManager = nullptr;
-    m_qosBlockedDestinations = nullptr;
     Txop::DoDispose();
 }
 
@@ -326,7 +323,7 @@ QosTxop::HasFramesToTransmit(uint8_t linkId)
 {
     // remove MSDUs with expired lifetime starting from the head of the queue
     m_queue->WipeAllExpiredMpdus();
-    bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable(linkId, m_qosBlockedDestinations));
+    bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable(linkId));
 
     NS_LOG_FUNCTION(this << queueIsNotEmpty);
     return queueIsNotEmpty;
@@ -379,11 +376,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
     auto peek = [this, &linkId, &tid, &recipient, &mpdu]() -> Ptr<WifiMpdu> {
         if (tid == 8 && recipient.IsBroadcast()) // undefined TID and recipient
         {
-            return m_queue->PeekFirstAvailable(linkId, m_qosBlockedDestinations, mpdu);
-        }
-        if (m_qosBlockedDestinations->IsBlocked(recipient, tid))
-        {
-            return nullptr;
+            return m_queue->PeekFirstAvailable(linkId, mpdu);
         }
         return m_queue->PeekByTidAndAddress(tid, recipient, mpdu);
     };

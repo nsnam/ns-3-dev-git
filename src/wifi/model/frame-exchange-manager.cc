@@ -19,7 +19,6 @@
 
 #include "frame-exchange-manager.h"
 
-#include "qos-blocked-destinations.h"
 #include "snr-tag.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"

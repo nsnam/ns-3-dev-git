@@ -22,7 +22,6 @@
 
 #include "wifi-mac-queue.h"
 
-#include "qos-blocked-destinations.h"
 #include "wifi-mac-queue-scheduler.h"
 
 #include "ns3/simulator.h"
@@ -331,18 +330,13 @@ WifiMacQueue::PeekByQueueId(const WifiContainerQueueId& queueId, Ptr<const WifiM
 }
 
 Ptr<WifiMpdu>
-WifiMacQueue::PeekFirstAvailable(uint8_t linkId,
-                                 const Ptr<QosBlockedDestinations> blockedPackets,
-                                 Ptr<const WifiMpdu> item) const
+WifiMacQueue::PeekFirstAvailable(uint8_t linkId, Ptr<const WifiMpdu> item) const
 {
     NS_LOG_FUNCTION(this << +linkId << item);
     NS_ASSERT(!item || item->IsQueued());
 
     if (item)
     {
-        NS_ASSERT(!item->GetHeader().IsQosData() || !blockedPackets ||
-                  !blockedPackets->IsBlocked(item->GetHeader().GetAddr1(),
-                                             item->GetHeader().GetQosTid()));
         // check if there are other MPDUs in the same container queue as item
         auto mpdu = PeekByQueueId(WifiMacQueueContainer::GetQueueId(item), item);
 
@@ -361,17 +355,6 @@ WifiMacQueue::PeekFirstAvailable(uint8_t linkId,
     else
     {
         queueId = m_scheduler->GetNext(m_ac, linkId);
-    }
-
-    NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_QUEUE || std::get<3>(*queueId));
-
-    while (queueId.has_value() && blockedPackets &&
-           std::get<0>(queueId.value()) == WIFI_QOSDATA_QUEUE &&
-           blockedPackets->IsBlocked(std::get<2>(queueId.value()), *std::get<3>(queueId.value())))
-    {
-        queueId = m_scheduler->GetNext(m_ac, linkId, queueId.value());
-
-        NS_ASSERT(!queueId || std::get<0>(*queueId) != WIFI_QOSDATA_QUEUE || std::get<3>(*queueId));
     }
 
     if (!queueId.has_value())

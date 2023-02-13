@@ -23,7 +23,6 @@
 
 #include "ns3/abort.h"
 #include "ns3/log.h"
-#include "ns3/qos-blocked-destinations.h"
 #include "ns3/wifi-acknowledgment.h"
 #include "ns3/wifi-protection.h"
 
