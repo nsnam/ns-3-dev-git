@@ -646,19 +646,6 @@ macro(process_options)
     endif()
   endif()
 
-  set(ENABLE_EIGEN False)
-  if(${NS3_EIGEN})
-    find_package(Eigen3 QUIET)
-
-    if(${EIGEN3_FOUND})
-      set(ENABLE_EIGEN True)
-      add_definitions(-DHAVE_EIGEN3)
-      include_directories(${EIGEN3_INCLUDE_DIR})
-    else()
-      message(${HIGHLIGHTED_STATUS} "Eigen was not found")
-    endif()
-  endif()
-
   if(${NS3_NATIVE_OPTIMIZATIONS} AND ${GCC})
     add_compile_options(-march=native -mtune=native)
   endif()
@@ -728,6 +715,19 @@ macro(process_options)
        "${PROJECT_SOURCE_DIR}/build-support/custom-modules"
   )
   list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
+
+  set(ENABLE_EIGEN False)
+  if(${NS3_EIGEN})
+    find_package(Eigen3 QUIET)
+
+    if(${EIGEN3_FOUND})
+      set(ENABLE_EIGEN True)
+      add_definitions(-DHAVE_EIGEN3)
+      include_directories(${EIGEN3_INCLUDE_DIR})
+    else()
+      message(${HIGHLIGHTED_STATUS} "Eigen was not found")
+    endif()
+  endif()
 
   # GTK3 Don't search for it if you don't have it installed, as it take an
   # insane amount of time
