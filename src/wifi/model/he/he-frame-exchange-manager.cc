@@ -509,8 +509,9 @@ HeFrameExchangeManager::SendPsduMap()
                 uint8_t tid = *tids.begin();
 
                 NS_ASSERT(m_edca);
-                m_edca->GetBaManager()->ScheduleBar(
-                    m_mac->GetQosTxop(tid)->PrepareBlockAckRequest(psdu.second->GetAddr1(), tid));
+                auto [reqHdr, hdr] =
+                    m_mac->GetQosTxop(tid)->PrepareBlockAckRequest(psdu.second->GetAddr1(), tid);
+                m_edca->GetBaManager()->ScheduleBar(reqHdr, hdr);
             }
         }
 

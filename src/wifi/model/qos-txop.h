@@ -136,14 +136,15 @@ class QosTxop : public Txop
     /**
      * \param recipient Address of recipient.
      * \param tid traffic ID.
-     * \return the BlockAckRequest to send
+     * \return the BlockAckRequest header and the MAC header for the BlockAckReq
      *
      * Prepare a BlockAckRequest to be sent to <i>recipient</i> for Traffic ID
      * <i>tid</i>. The header for the BlockAckRequest is requested to the QosTxop
      * corresponding to the given TID. A block ack agreement with the given recipient
      * for the given TID must have been established by such QosTxop.
      */
-    Ptr<WifiMpdu> PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const;
+    std::pair<CtrlBAckRequestHeader, WifiMacHeader> PrepareBlockAckRequest(Mac48Address recipient,
+                                                                           uint8_t tid) const;
 
     /* Event handlers */
     /**

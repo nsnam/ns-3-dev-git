@@ -287,7 +287,7 @@ QosTxop::GetBaStartingSequence(Mac48Address address, uint8_t tid) const
     return m_baManager->GetOriginatorStartingSequence(address, tid);
 }
 
-Ptr<WifiMpdu>
+std::pair<CtrlBAckRequestHeader, WifiMacHeader>
 QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
 {
     NS_LOG_FUNCTION(this << recipient << +tid);
@@ -297,8 +297,6 @@ QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
 
     CtrlBAckRequestHeader reqHdr =
         m_baManager->GetBlockAckReqHeader(recipientMld.value_or(recipient), tid);
-    Ptr<Packet> bar = Create<Packet>();
-    bar->AddHeader(reqHdr);
 
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_CTL_BACKREQ);
@@ -309,7 +307,7 @@ QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
     hdr.SetNoRetry();
     hdr.SetNoMoreFragments();
 
-    return Create<WifiMpdu>(bar, hdr);
+    return {reqHdr, hdr};
 }
 
 bool

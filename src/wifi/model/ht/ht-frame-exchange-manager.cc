@@ -520,7 +520,10 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         {
             if (queue->PeekByTidAndAddress(tid, recipient))
             {
-                selectedBar = m_mac->GetQosTxop(ac)->PrepareBlockAckRequest(recipient, tid);
+                auto [reqHdr, hdr] = m_mac->GetQosTxop(ac)->PrepareBlockAckRequest(recipient, tid);
+                auto pkt = Create<Packet>();
+                pkt->AddHeader(reqHdr);
+                selectedBar = Create<WifiMpdu>(pkt, hdr);
                 baManager->RemoveFromSendBarIfDataQueuedList(recipient, tid);
                 queue->Enqueue(selectedBar);
                 break;
@@ -1041,7 +1044,8 @@ HtFrameExchangeManager::SendPsdu()
         uint8_t tid = *tids.begin();
 
         Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
-        GetBaManager(tid)->ScheduleBar(edca->PrepareBlockAckRequest(m_psdu->GetAddr1(), tid));
+        auto [reqHdr, hdr] = edca->PrepareBlockAckRequest(m_psdu->GetAddr1(), tid);
+        GetBaManager(tid)->ScheduleBar(reqHdr, hdr);
 
         Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
     }
@@ -1401,7 +1405,8 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
             else
             {
                 // missed block ack after data frame with Implicit BAR Ack policy
-                GetBaManager(tid)->ScheduleBar(edca->PrepareBlockAckRequest(recipient, tid));
+                auto [reqHdr, hdr] = edca->PrepareBlockAckRequest(recipient, tid);
+                GetBaManager(tid)->ScheduleBar(reqHdr, hdr);
             }
             resetCw = false;
         }
