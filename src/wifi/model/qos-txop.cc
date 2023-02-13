@@ -29,6 +29,7 @@
 #include "mpdu-aggregator.h"
 #include "msdu-aggregator.h"
 #include "qos-blocked-destinations.h"
+#include "wifi-mac-queue-scheduler.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-phy.h"
@@ -112,9 +113,23 @@ QosTxop::QosTxop(AcIndex ac)
     m_baManager = CreateObject<BlockAckManager>();
     m_baManager->SetQueue(m_queue);
     m_baManager->SetBlockDestinationCallback(
-        MakeCallback(&QosBlockedDestinations::Block, m_qosBlockedDestinations));
+        Callback<void, Mac48Address, uint8_t>([this](Mac48Address recipient, uint8_t tid) {
+            m_mac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::WAITING_ADDBA_RESP,
+                                                       m_ac,
+                                                       {WIFI_QOSDATA_QUEUE},
+                                                       recipient,
+                                                       m_mac->GetAddress(),
+                                                       {tid});
+        }));
     m_baManager->SetUnblockDestinationCallback(
-        MakeCallback(&QosBlockedDestinations::Unblock, m_qosBlockedDestinations));
+        Callback<void, Mac48Address, uint8_t>([this](Mac48Address recipient, uint8_t tid) {
+            m_mac->GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::WAITING_ADDBA_RESP,
+                                                         m_ac,
+                                                         {WIFI_QOSDATA_QUEUE},
+                                                         recipient,
+                                                         m_mac->GetAddress(),
+                                                         {tid});
+        }));
     m_queue->TraceConnectWithoutContext(
         "Expired",
         MakeCallback(&BlockAckManager::NotifyDiscardedMpdu, m_baManager));

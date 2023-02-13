@@ -41,7 +41,8 @@ class WifiMac;
  */
 enum class WifiQueueBlockedReason : uint8_t
 {
-    REASONS_COUNT = 0
+    WAITING_ADDBA_RESP = 0,
+    REASONS_COUNT
 };
 
 /**
@@ -56,6 +57,8 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
 {
     switch (reason)
     {
+    case WifiQueueBlockedReason::WAITING_ADDBA_RESP:
+        return (os << "WAITING_ADDBA_RESP");
     case WifiQueueBlockedReason::REASONS_COUNT:
         return (os << "REASONS_COUNT");
     default:
