@@ -144,7 +144,8 @@ def get_libraries_list(lib_outdir=usual_lib_outdir):
     @param lib_outdir: path containing libraries
     @return list of built libraries.
     """
-    return glob.glob(lib_outdir + '/*', recursive=True)
+    libraries = glob.glob(lib_outdir + '/*', recursive=True)
+    return list(filter(lambda x: "scratch-nested-subdir-lib" not in x, libraries))
 
 
 def get_headers_list(outdir=usual_outdir):
