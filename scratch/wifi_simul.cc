@@ -48,6 +48,7 @@
 // --ns3::ThresholdPreambleDetectionModel::MinimumRssi=-101"
 
 #include "ns3/animation-interface.h"
+#include "ns3/applications-module.h"
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/internet-stack-helper.h"
@@ -56,7 +57,6 @@
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/applications-module.h"
 #include "ns3/point-to-point-dumbbell.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
@@ -67,7 +67,21 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Wifi_simul");
 
-int n_nodes = 4;
+int n_nodes = 1;
+int total_Packets = 0, dropped_Packets = 0;
+
+static void
+PhyRxBeginTrace(Ptr<const Packet> packet, RxPowerWattPerChannelBand rxPowersW)
+{
+    total_Packets++;
+}
+
+static void
+PhyRxDropTrace(Ptr<const Packet> packet, ns3::WifiPhyRxfailureReason reason)
+{
+    dropped_Packets++;
+    std::cout << reason << std::endl;
+}
 
 static void
 GoodputChange(Ptr<OutputStreamWrapper> file, Ptr<PacketSink> sink1, double prevBytesThrough)
@@ -110,6 +124,17 @@ TraceGoodput(ApplicationContainer* apps)
             MilliSeconds(1.0),
             MakeBoundCallback(&GoodputChange, file, apps->Get(i)->GetObject<PacketSink>(), 0.0));
     }
+}
+
+void
+TraceDropRatio()
+{
+    Config::ConnectWithoutContext(
+        "/NodeList/" + std::to_string(n_nodes) + "/DeviceList/1/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxBegin",
+        MakeBoundCallback(&PhyRxBeginTrace));
+    Config::ConnectWithoutContext(
+        "/NodeList/" + std::to_string(n_nodes) + "/DeviceList/1/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop",
+        MakeBoundCallback(&PhyRxDropTrace));
 }
 
 int
@@ -257,11 +282,15 @@ main(int argc, char* argv[])
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
     Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
+    Simulator::Schedule(Seconds(1.001), &TraceDropRatio);
 
     // AnimationInterface anim("../animwifi.xml");
-
     Simulator::Stop(Seconds(runtime + 30));
     Simulator::Run();
+
+    std::cout << "Ratio of dropped packets on AP: " << dropped_Packets * 1.0 / total_Packets
+              << '\n';
+
     Simulator::Destroy();
 
     return 0;
