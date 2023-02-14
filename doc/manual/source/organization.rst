@@ -56,6 +56,6 @@ sockets API used by Internet applications. The next chapter covers
 applications, and the following chapter describes additional support for
 simulation, such as animators and statistics.
 
-The project maintains a separate manual devoted to testing and validation
-of |ns3| code (see the `ns-3 Testing and Validation manual
-<http://www.nsnam.org/tutorials.html>`_).
+The project maintains a manual section devoted to testing and validation
+of |ns3| code (see the `tests section in the ns-3 manual
+<https://www.nsnam.org/docs/manual/html/tests.html>`_).

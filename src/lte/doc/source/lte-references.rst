@@ -89,7 +89,7 @@ References
    <http://mailman.isi.edu/pipermail/ns-developers/2011-November/009397.html>`_
 
 .. [ViennaLteSim] `"The Vienna LTE Simulators"
-   <https://www.nt.tuwien.ac.at/research/mobile-communications/vccs/vienna-lte-a-simulators/>`_
+   <https://www.tuwien.at/etit/tc/en/vienna-simulators/vienna-lte-a-simulators/lte-a-downlink-system-level-simulator/>`_
 
 .. [LozanoCost] Joan Olmos, Silvia Ruiz, Mario García-Lozano and David Martín-Sacristán,
    "Link Abstraction Models Based on Mutual Information for LTE Downlink",

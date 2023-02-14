@@ -139,7 +139,7 @@ native |ns3| TCP.
 
 To configure behavior of TCP, a number of parameters are exported through the
 |ns3| attribute system. These are documented in the `Doxygen
-<http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>`_ for class
+<https://www.nsnam.org/docs/doxygen/d3/dea/classns3_1_1_tcp_socket.html>`_ for class
 :cpp:class:`TcpSocket`. For example, the maximum segment size is a
 settable attribute.
 
