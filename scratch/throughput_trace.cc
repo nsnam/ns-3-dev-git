@@ -1,6 +1,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
+#include "ns3/flow-monitor-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/netanim-module.h"
 #include "ns3/network-module.h"
@@ -13,23 +14,39 @@
 /*
     Network Topology
 
-         point to point
-    n0 ------- r1 ------- n1
-               tcp
+       point to point
+    n0 ------------- n1
+            tcp
 */
 
 using namespace ns3;
 
-double prevBytesThrough = 0.0;
+static void
+TraceGoodput(Ptr<OutputStreamWrapper> file, Ptr<PacketSink> sink1, double prevBytesThrough)
+{
+    double goodput = ((sink1->GetTotalRx() - prevBytesThrough) * 8);
+    prevBytesThrough = sink1->GetTotalRx();
+    *file->GetStream() << Simulator::Now().GetSeconds() << "," << goodput / 0.1 / 1024 / 1024
+                       << std::endl;
+    Simulator::Schedule(Seconds(0.1), &TraceGoodput, file, sink1, prevBytesThrough);
+}
 
 static void
-TraceThroughput(Ptr<OutputStreamWrapper> file, Ptr<Application> sink1Apps)
+TraceThroughput(Ptr<FlowMonitor> monitor, Ptr<OutputStreamWrapper> file)
 {
-    Ptr<PacketSink> sink1 = DynamicCast<PacketSink>(sink1Apps);
-    double throughput = ((sink1->GetTotalRx() - prevBytesThrough) * 8);
-    prevBytesThrough = sink1->GetTotalRx();
+    FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats();
+    auto i = stats.begin();
+    // for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin();
+    //      i != stats.end();
+    //      ++i)
+    // {
+    double throughput = (double)(i->second.rxBytes * 8.0) /
+                        (double)(i->second.timeLastRxPacket.GetSeconds() -
+                                 i->second.timeFirstTxPacket.GetSeconds()) /
+                        1024 / 1024;
     *file->GetStream() << Simulator::Now().GetSeconds() << "," << throughput << std::endl;
-    Simulator::Schedule(MilliSeconds(1.0), &TraceThroughput, file, sink1Apps);
+    // }
+    Simulator::Schedule(Seconds(0.1), &TraceThroughput, monitor, file);
 }
 
 int
@@ -47,6 +64,12 @@ main(int argc, char* argv[])
 
     InternetStackHelper stack;
     stack.Install(nodes);
+
+    Ptr<FlowMonitor> flowMonitor;
+    FlowMonitorHelper flowhelper;
+    flowMonitor = flowhelper.InstallAll();
+    flowMonitor->CheckForLostPackets();
+    // flowMonitor->SerializeToXmlFile("flow_trace.xml", true, true);
 
     Ipv4AddressHelper address;
     address.SetBase("10.1.1.0", "255.255.255.0");
@@ -70,10 +93,13 @@ main(int argc, char* argv[])
     // sinkApps.Get(0)->GetObject<PacketSink>()->GetTotalRx();
 
     AsciiTraceHelper asciiTraceHelper;
-    Ptr<OutputStreamWrapper> file = asciiTraceHelper.CreateFileStream("goodput.csv");
+    Ptr<OutputStreamWrapper> throughput_file = asciiTraceHelper.CreateFileStream("throughput.csv");
+    Ptr<OutputStreamWrapper> goodput_file = asciiTraceHelper.CreateFileStream("goodput.csv");
+    Simulator::Schedule(Seconds(1.001),
+                        MakeBoundCallback(&TraceThroughput, flowMonitor, throughput_file));
     Simulator::Schedule(
         Seconds(1.001),
-        MakeBoundCallback(&TraceThroughput, file, sinkApps.Get(0)->GetObject<PacketSink>()));
+        MakeBoundCallback(&TraceGoodput, goodput_file, sinkApps.Get(0)->GetObject<PacketSink>(), 0.0));
 
     Simulator::Stop(Seconds(20));
     Simulator::Run();
