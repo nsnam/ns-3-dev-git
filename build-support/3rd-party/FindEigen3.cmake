@@ -1,3 +1,4 @@
+# cmake-format: off
 # - Try to find Eigen3 lib
 #
 # This module supports requiring a minimum version, e.g. you can do
@@ -105,3 +106,4 @@ if(EIGEN3_FOUND AND NOT TARGET Eigen3::Eigen)
   set_target_properties(Eigen3::Eigen PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${EIGEN3_INCLUDE_DIR}")
 endif()
+# cmake-format: on
