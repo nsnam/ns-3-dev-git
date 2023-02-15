@@ -75,7 +75,7 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<Channel> GetChannel() const override;
     uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
-    WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
+    WifiSpectrumBandIndices GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
     FrequencyRange GetCurrentFrequencyRange() const override;
 
     /**
@@ -127,10 +127,10 @@ class SpectrumWifiPhy : public WifiPhy
      *
      * \return a pair of start and stop indexes that defines the band
      */
-    WifiSpectrumBand GetBandForInterface(uint16_t bandWidth,
-                                         uint8_t bandIndex,
-                                         FrequencyRange freqRange,
-                                         uint16_t channelWidth);
+    WifiSpectrumBandIndices GetBandForInterface(uint16_t bandWidth,
+                                                uint8_t bandIndex,
+                                                FrequencyRange freqRange,
+                                                uint16_t channelWidth);
 
     /**
      * Callback invoked when the PHY model starts to process a signal
@@ -220,7 +220,7 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<AntennaModel> m_antenna; //!< antenna model
 
     /// Map a spectrum band associated with an RU to the RU specification
-    typedef std::map<WifiSpectrumBand, HeRu::RuSpec> RuBand;
+    typedef std::map<WifiSpectrumBandIndices, HeRu::RuSpec> RuBand;
 
     std::map<uint16_t, RuBand>
         m_ruBands;               /**< For each channel width, store all the distinct spectrum

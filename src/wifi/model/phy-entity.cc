@@ -404,8 +404,8 @@ PhyEntity::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
     auto it = std::max_element(
         rxPowersW.begin(),
         rxPowersW.end(),
-        [](const std::pair<WifiSpectrumBand, double>& p1,
-           const std::pair<WifiSpectrumBand, double>& p2) { return p1.second < p2.second; });
+        [](const std::pair<WifiSpectrumBandIndices, double>& p1,
+           const std::pair<WifiSpectrumBandIndices, double>& p2) { return p1.second < p2.second; });
     NS_LOG_FUNCTION(this << ppdu << it->second);
 
     auto event = DoGetEvent(ppdu, rxPowersW);
@@ -826,7 +826,7 @@ PhyEntity::GetReceptionStatus(Ptr<const WifiPsdu> psdu,
     }
 }
 
-std::pair<uint16_t, WifiSpectrumBand>
+std::pair<uint16_t, WifiSpectrumBandIndices>
 PhyEntity::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t /* staId */) const
 {
     uint16_t channelWidth = GetRxChannelWidth(txVector);
@@ -1202,7 +1202,7 @@ PhyEntity::GetCurrentEvent() const
     return m_wifiPhy->m_currentEvent;
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 PhyEntity::GetPrimaryBand(uint16_t bandWidth) const
 {
     if (m_wifiPhy->GetChannelWidth() % 20 != 0)
@@ -1213,7 +1213,7 @@ PhyEntity::GetPrimaryBand(uint16_t bandWidth) const
                               m_wifiPhy->m_operatingChannel.GetPrimaryChannelIndex(bandWidth));
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 PhyEntity::GetSecondaryBand(uint16_t bandWidth) const
 {
     NS_ASSERT(m_wifiPhy->GetChannelWidth() >= 40);
@@ -1235,7 +1235,7 @@ PhyEntity::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
 }
 
 Time
-PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, WifiSpectrumBand band)
+PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, WifiSpectrumBandIndices band)
 {
     return m_wifiPhy->m_interference->GetEnergyDuration(DbmToW(thresholdDbm),
                                                         band,

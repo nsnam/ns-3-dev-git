@@ -128,8 +128,8 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOff
     NS_LOG_FUNCTION(this);
     NS_ASSERT(!m_spectrumPhyInterfaces.empty());
     uint16_t channelWidth = GetChannelWidth();
-    std::vector<WifiSpectrumBand> ccaBands{};
-    std::vector<WifiSpectrumBand> ruBands{};
+    std::vector<WifiSpectrumBandIndices> ccaBands{};
+    std::vector<WifiSpectrumBandIndices> ruBands{};
     if (channelWidth < 20)
     {
         ccaBands.push_back(GetBand(channelWidth));
@@ -168,7 +168,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOff
                                 HeRu::GetSubcarrierGroup(bw, ruType, phyIndex);
                             HeRu::SubcarrierRange subcarrierRange =
                                 std::make_pair(group.front().first, group.back().second);
-                            WifiSpectrumBand band =
+                            const auto band =
                                 HePhy::ConvertHeRuSubcarriers(bw,
                                                               GetGuardBandwidth(channelWidth),
                                                               GetSubcarrierSpacing(),
@@ -377,8 +377,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
 
     if ((channelWidth == 5) || (channelWidth == 10))
     {
-        WifiSpectrumBand filteredBand =
-            GetBandForInterface(channelWidth, 0, freqRange, channelWidth);
+        const auto filteredBand = GetBandForInterface(channelWidth, 0, freqRange, channelWidth);
         double rxPowerPerBandW =
             WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand);
         NS_LOG_DEBUG("Signal power received (watts) before antenna gain: " << rxPowerPerBandW);
@@ -396,7 +395,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         for (uint32_t i = 0; i < (channelWidth / bw); i++)
         {
             NS_ASSERT(channelWidth >= bw);
-            WifiSpectrumBand filteredBand = GetBandForInterface(bw, i, freqRange, channelWidth);
+            const auto filteredBand = GetBandForInterface(bw, i, freqRange, channelWidth);
             double rxPowerPerBandW =
                 WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand);
             NS_LOG_DEBUG("Signal power received (watts) before antenna gain for "
@@ -411,7 +410,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
 
     for (uint32_t i = 0; i < (channelWidth / 20); i++)
     {
-        WifiSpectrumBand filteredBand = GetBandForInterface(20, i, freqRange, channelWidth);
+        const auto filteredBand = GetBandForInterface(20, i, freqRange, channelWidth);
         double rxPowerPerBandW =
             WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand);
         NS_LOG_DEBUG("Signal power received (watts) before antenna gain for 20 MHz channel band "
@@ -575,13 +574,13 @@ SpectrumWifiPhy::GetGuardBandwidth(uint16_t currentChannelWidth) const
     return guardBandwidth;
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 SpectrumWifiPhy::GetBand(uint16_t bandWidth, uint8_t bandIndex /* = 0 */)
 {
     return GetBandForInterface(bandWidth, bandIndex, GetCurrentFrequencyRange(), GetChannelWidth());
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 SpectrumWifiPhy::GetBandForInterface(uint16_t bandWidth,
                                      uint8_t bandIndex,
                                      FrequencyRange freqRange,
@@ -599,16 +598,15 @@ SpectrumWifiPhy::GetBandForInterface(uint16_t bandWidth,
     NS_ASSERT_MSG((numBandsInChannel % 2 == 1) && (totalNumBands % 2 == 1),
                   "Should have odd number of bands");
     NS_ASSERT_MSG((bandIndex * bandWidth) < channelWidth, "Band index is out of bound");
-    WifiSpectrumBand band;
     NS_ASSERT(totalNumBands >= numBandsInChannel);
-    band.first = ((totalNumBands - numBandsInChannel) / 2) + (bandIndex * numBandsInBand);
-    band.second = band.first + numBandsInBand - 1;
-    if (band.first >= totalNumBands / 2)
+    auto startIndex = ((totalNumBands - numBandsInChannel) / 2) + (bandIndex * numBandsInBand);
+    auto stopIndex = startIndex + numBandsInBand - 1;
+    if (startIndex >= totalNumBands / 2)
     {
         // step past DC
-        band.first += 1;
+        startIndex += 1;
     }
-    return band;
+    return {startIndex, stopIndex};
 }
 
 std::tuple<double, double, double>

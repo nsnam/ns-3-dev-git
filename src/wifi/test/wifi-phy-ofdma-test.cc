@@ -192,7 +192,7 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
      *          energy on the medium for a given band will
      *          be higher than the requested threshold.
      */
-    Time GetEnergyDuration(double energyW, WifiSpectrumBand band);
+    Time GetEnergyDuration(double energyW, WifiSpectrumBandIndices band);
 
     /**
      * \return a const pointer to the HE PHY instance
@@ -278,7 +278,7 @@ OfdmaSpectrumWifiPhy::GetCurrentEvent()
 }
 
 Time
-OfdmaSpectrumWifiPhy::GetEnergyDuration(double energyW, WifiSpectrumBand band)
+OfdmaSpectrumWifiPhy::GetEnergyDuration(double energyW, WifiSpectrumBandIndices band)
 {
     return m_interference->GetEnergyDuration(energyW, band, WHOLE_WIFI_SPECTRUM);
 }
@@ -2460,7 +2460,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     // Schedule OFDMA part
     Ptr<HePpdu> ppduOfdma = DynamicCast<HePpdu>(ppdu->Copy()); // since flag will be modified
     ppduOfdma->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
-    WifiSpectrumBand band = m_phy->GetHePhy()->GetRuBandForRx(txVector, staId);
+    const auto band = m_phy->GetHePhy()->GetRuBandForRx(txVector, staId);
     Ptr<SpectrumValue> rxPsdOfdma =
         WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(DEFAULT_FREQUENCY,
                                                                       DEFAULT_CHANNEL_WIDTH,
@@ -3052,20 +3052,20 @@ class TestUlOfdmaPhyTransmission : public TestCase
     /**
      * Check the received power for the non-OFDMA of the HE TB PPDUs over the given band
      * \param phy the PHY
-     * \param band the WifiSpectrumBand over which the power is measured
+     * \param band the indices of the band over which the power is measured
      * \param expectedRxPower the expected received power in W
      */
     void CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
-                              WifiSpectrumBand band,
+                              WifiSpectrumBandIndices band,
                               double expectedRxPower);
     /**
      * Check the received power for the OFDMA part of the HE TB PPDUs over the given band
      * \param phy the PHY
-     * \param band the WifiSpectrumBand over which the power is measured
+     * \param band the indices of the band over which the power is measured
      * \param expectedRxPower the expected received power in W
      */
     void CheckOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
-                           WifiSpectrumBand band,
+                           WifiSpectrumBandIndices band,
                            double expectedRxPower);
 
     /**
@@ -3534,7 +3534,7 @@ TestUlOfdmaPhyTransmission::CheckRxFromSta2(uint32_t expectedSuccess,
 
 void
 TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
-                                                 WifiSpectrumBand band,
+                                                 WifiSpectrumBandIndices band,
                                                  double expectedRxPower)
 {
     Ptr<Event> event = phy->GetCurrentEvent();
@@ -3552,7 +3552,7 @@ TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
 
 void
 TestUlOfdmaPhyTransmission::CheckOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
-                                              WifiSpectrumBand band,
+                                              WifiSpectrumBandIndices band,
                                               double expectedRxPower)
 {
     /**
@@ -3986,11 +3986,11 @@ TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks(Time delay,
     NS_ASSERT(nonOfdmaDuration == hePhy->CalculateNonOfdmaDurationForHeTb(txVectorSta1));
 
     std::vector<double> rxPowerNonOfdma{rxPowerNonOfdmaRu1, rxPowerNonOfdmaRu2};
-    std::vector<WifiSpectrumBand> nonOfdmaBand{hePhy->GetNonOfdmaBand(txVectorSta1, 1),
-                                               hePhy->GetNonOfdmaBand(txVectorSta2, 2)};
+    std::vector<WifiSpectrumBandIndices> nonOfdmaBand{hePhy->GetNonOfdmaBand(txVectorSta1, 1),
+                                                      hePhy->GetNonOfdmaBand(txVectorSta2, 2)};
     std::vector<double> rxPowerOfdma{rxPowerOfdmaRu1, rxPowerOfdmaRu2};
-    std::vector<WifiSpectrumBand> ofdmaBand{hePhy->GetRuBandForRx(txVectorSta1, 1),
-                                            hePhy->GetRuBandForRx(txVectorSta2, 2)};
+    std::vector<WifiSpectrumBandIndices> ofdmaBand{hePhy->GetRuBandForRx(txVectorSta1, 1),
+                                                   hePhy->GetRuBandForRx(txVectorSta2, 2)};
 
     for (uint8_t i = 0; i < 2; ++i)
     {

@@ -172,7 +172,7 @@ class HePhy : public VhtPhy
      *
      * \return the RU band in the TX spectrum
      */
-    WifiSpectrumBand GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const;
+    WifiSpectrumBandIndices GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the band in the RX spectrum associated with the RU used by the PSDU
      * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
@@ -182,7 +182,7 @@ class HePhy : public VhtPhy
      *
      * \return the RU band in the RX spectrum
      */
-    WifiSpectrumBand GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const;
+    WifiSpectrumBandIndices GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
      *
@@ -191,7 +191,7 @@ class HePhy : public VhtPhy
      *
      * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
      */
-    WifiSpectrumBand GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const;
+    WifiSpectrumBandIndices GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the width in MHz of the non-OFDMA portion of an HE TB PPDU
      *
@@ -445,11 +445,11 @@ class HePhy : public VhtPhy
      * This is a helper function to convert HE RU subcarriers, which are relative to the center
      * frequency subcarrier, to the indexes used by the Spectrum model.
      */
-    static WifiSpectrumBand ConvertHeRuSubcarriers(uint16_t bandWidth,
-                                                   uint16_t guardBandwidth,
-                                                   uint32_t subcarrierSpacing,
-                                                   HeRu::SubcarrierRange subcarrierRange,
-                                                   uint8_t bandIndex = 0);
+    static WifiSpectrumBandIndices ConvertHeRuSubcarriers(uint16_t bandWidth,
+                                                          uint16_t guardBandwidth,
+                                                          uint32_t subcarrierSpacing,
+                                                          HeRu::SubcarrierRange subcarrierRange,
+                                                          uint8_t bandIndex = 0);
 
   protected:
     PhyFieldRxStatus ProcessSig(Ptr<Event> event,
@@ -458,8 +458,9 @@ class HePhy : public VhtPhy
     Ptr<Event> DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW) override;
     bool IsConfigSupported(Ptr<const WifiPpdu> ppdu) const override;
     Time DoStartReceivePayload(Ptr<Event> event) override;
-    std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand(const WifiTxVector& txVector,
-                                                                 uint16_t staId) const override;
+    std::pair<uint16_t, WifiSpectrumBandIndices> GetChannelWidthAndBand(
+        const WifiTxVector& txVector,
+        uint16_t staId) const override;
     void RxPayloadSucceeded(Ptr<const WifiPsdu> psdu,
                             RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector,

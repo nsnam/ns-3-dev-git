@@ -945,11 +945,9 @@ HePhy::StartReceiveOfdmaPayload(Ptr<Event> event)
     auto it = rxPowersW.end();
     if (g_log.IsEnabled(ns3::LOG_FUNCTION))
     {
-        it = std::max_element(
-            rxPowersW.begin(),
-            rxPowersW.end(),
-            [](const std::pair<WifiSpectrumBand, double>& p1,
-               const std::pair<WifiSpectrumBand, double>& p2) { return p1.second < p2.second; });
+        it = std::max_element(rxPowersW.cbegin(),
+                              rxPowersW.cend(),
+                              [](const auto& p1, const auto& p2) { return p1.second < p2.second; });
     }
     NS_LOG_FUNCTION(this << *event << it->second);
     NS_ASSERT(GetCurrentEvent());
@@ -977,13 +975,13 @@ HePhy::StartReceiveOfdmaPayload(Ptr<Event> event)
     NotifyPayloadBegin(ppdu->GetTxVector(), payloadDuration);
 }
 
-std::pair<uint16_t, WifiSpectrumBand>
+std::pair<uint16_t, WifiSpectrumBandIndices>
 HePhy::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t staId) const
 {
     if (txVector.IsMu())
     {
-        return std::make_pair(HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType()),
-                              GetRuBandForRx(txVector, staId));
+        return {HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType()),
+                GetRuBandForRx(txVector, staId)};
     }
     else
     {
@@ -991,11 +989,10 @@ HePhy::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t staId) cons
     }
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsMu());
-    WifiSpectrumBand band;
     HeRu::RuSpec ru = txVector.GetRu(staId);
     uint16_t channelWidth = txVector.GetChannelWidth();
     NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
@@ -1007,19 +1004,17 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
         std::make_pair(group.front().first, group.back().second);
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
-    band = ConvertHeRuSubcarriers(channelWidth,
+    return ConvertHeRuSubcarriers(channelWidth,
                                   GetGuardBandwidth(channelWidth),
                                   m_wifiPhy->GetSubcarrierSpacing(),
                                   subcarrierRange,
                                   0);
-    return band;
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsMu());
-    WifiSpectrumBand band;
     HeRu::RuSpec ru = txVector.GetRu(staId);
     uint16_t channelWidth = txVector.GetChannelWidth();
     NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
@@ -1031,16 +1026,15 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
         std::make_pair(group.front().first, group.back().second);
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
-    band = ConvertHeRuSubcarriers(
+    return ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
         m_wifiPhy->GetSubcarrierSpacing(),
         subcarrierRange,
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
-    return band;
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsUlMu() && (txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE));
@@ -1841,14 +1835,14 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
     return PhyEntity::GetRxPpduFromTxPpdu(ppdu);
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 HePhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
                               uint16_t guardBandwidth,
                               uint32_t subcarrierSpacing,
                               HeRu::SubcarrierRange subcarrierRange,
                               uint8_t bandIndex)
 {
-    WifiSpectrumBand convertedSubcarriers;
+    WifiSpectrumBandIndices convertedSubcarriers;
     uint32_t nGuardBands =
         static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / subcarrierSpacing) + 0.5);
     uint32_t centerFrequencyIndex = 0;

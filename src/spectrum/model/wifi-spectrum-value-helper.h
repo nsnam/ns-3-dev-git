@@ -28,9 +28,9 @@ namespace ns3
 {
 
 /**
- * typedef for a pair of start and stop sub-band indexes
+ * typedef for a pair of start and stop sub-band indices
  */
-typedef std::pair<uint32_t, uint32_t> WifiSpectrumBand;
+using WifiSpectrumBandIndices = std::pair<uint32_t, uint32_t>;
 
 /**
  * \ingroup spectrum
@@ -202,7 +202,7 @@ class WifiSpectrumValueHelper
                                                                    uint16_t channelWidth,
                                                                    double txPowerW,
                                                                    uint16_t guardBandwidth,
-                                                                   WifiSpectrumBand ru);
+                                                                   WifiSpectrumBandIndices ru);
 
     /**
      * Create a power spectral density corresponding to the noise
@@ -281,15 +281,16 @@ class WifiSpectrumValueHelper
      */
     static void CreateSpectrumMaskForOfdm(
         Ptr<SpectrumValue> c,
-        const std::vector<WifiSpectrumBand>& allocatedSubBands,
-        WifiSpectrumBand maskBand,
+        const std::vector<WifiSpectrumBandIndices>& allocatedSubBands,
+        WifiSpectrumBandIndices maskBand,
         double txPowerPerBandW,
         uint32_t nGuardBands,
         uint32_t innerSlopeWidth,
         double minInnerBandDbr,
         double minOuterbandDbr,
         double lowestPointDbr,
-        const std::vector<WifiSpectrumBand>& puncturedSubBands = std::vector<WifiSpectrumBand>{},
+        const std::vector<WifiSpectrumBandIndices>& puncturedSubBands =
+            std::vector<WifiSpectrumBandIndices>{},
         uint32_t puncturedSlopeWidth = 0);
 
     /**
@@ -320,7 +321,7 @@ class WifiSpectrumValueHelper
      *
      * \return band power in W
      */
-    static double GetBandPowerW(Ptr<SpectrumValue> psd, const WifiSpectrumBand& band);
+    static double GetBandPowerW(Ptr<SpectrumValue> psd, const WifiSpectrumBandIndices& band);
 };
 
 /**

@@ -471,7 +471,7 @@ class SpectrumWifiPhyFilterTest : public TestCase
     uint16_t m_txChannelWidth; ///< TX channel width (MHz)
     uint16_t m_rxChannelWidth; ///< RX channel width (MHz)
 
-    std::set<WifiSpectrumBand> m_ruBands; ///< spectrum bands associated to all the RUs
+    std::set<WifiSpectrumBandIndices> m_ruBands; ///< spectrum bands associated to all the RUs
 };
 
 SpectrumWifiPhyFilterTest::SpectrumWifiPhyFilterTest()
@@ -536,7 +536,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
                           "Total number of bands handled by the receiver is incorrect");
 
     uint16_t channelWidth = std::min(m_txChannelWidth, m_rxChannelWidth);
-    WifiSpectrumBand band = m_rxPhy->GetBand(channelWidth, 0);
+    auto band = m_rxPhy->GetBand(channelWidth, 0);
     auto it = rxPowersW.find(band);
     NS_LOG_INFO("powerW total band: " << it->second << " (" << WToDbm(it->second) << " dBm)");
     int totalRxPower = static_cast<int>(WToDbm(it->second) + 0.5);
@@ -696,7 +696,7 @@ SpectrumWifiPhyFilterTest::RunOne()
                     HeRu::SubcarrierRange subcarrierRange =
                         std::make_pair(subcarrierGroup.front().first,
                                        subcarrierGroup.back().second);
-                    WifiSpectrumBand band =
+                    const auto band =
                         HePhy::ConvertHeRuSubcarriers(bw,
                                                       m_rxPhy->GetGuardBandwidth(m_rxChannelWidth),
                                                       m_rxPhy->GetSubcarrierSpacing(),

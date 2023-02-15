@@ -75,7 +75,7 @@ struct RxSignalInfo
 /**
  * A map of the received power (Watts) for each band
  */
-typedef std::map<WifiSpectrumBand, double> RxPowerWattPerChannelBand;
+typedef std::map<WifiSpectrumBandIndices, double> RxPowerWattPerChannelBand;
 
 class WifiPsdu;
 class WifiPhy;
@@ -775,7 +775,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param staId the station ID of the PSDU
      * \return a pair of channel width (MHz) and band
      */
-    virtual std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand(
+    virtual std::pair<uint16_t, WifiSpectrumBandIndices> GetChannelWidthAndBand(
         const WifiTxVector& txVector,
         uint16_t staId) const;
 
@@ -903,7 +903,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      *
      * \return a pair of start and stop indexes that defines the band
      */
-    WifiSpectrumBand GetPrimaryBand(uint16_t bandWidth) const;
+    WifiSpectrumBandIndices GetPrimaryBand(uint16_t bandWidth) const;
     /**
      * If the channel bonding is used, return the start band index and the stop band index
      * for the secondary channel of the given bandwidth (which must be a multiple of 20 MHz
@@ -913,7 +913,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      *
      * \return a pair of start and stop indexes that defines the band
      */
-    WifiSpectrumBand GetSecondaryBand(uint16_t bandWidth) const;
+    WifiSpectrumBandIndices GetSecondaryBand(uint16_t bandWidth) const;
 
     /**
      * Return the channel width used to measure the RSSI.
@@ -939,7 +939,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param band identify the requested band
      * \return the delay until CCA busy is ended
      */
-    Time GetDelayUntilCcaEnd(double thresholdDbm, WifiSpectrumBand band);
+    Time GetDelayUntilCcaEnd(double thresholdDbm, WifiSpectrumBandIndices band);
 
     /**
      * \param currentChannelWidth channel width of the current transmission (MHz)

@@ -53,10 +53,7 @@ YansWifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 {
     WifiPhy::SetInterferenceHelper(helper);
     // add dummy band for Yans
-    WifiSpectrumBand band;
-    band.first = 0;
-    band.second = 0;
-    m_interference->AddBand(band, GetCurrentFrequencyRange());
+    m_interference->AddBand({0, 0}, GetCurrentFrequencyRange());
 }
 
 YansWifiPhy::~YansWifiPhy()
@@ -109,13 +106,10 @@ YansWifiPhy::GetTxMaskRejectionParams() const
     return std::make_tuple(0.0, 0.0, 0.0);
 }
 
-WifiSpectrumBand
+WifiSpectrumBandIndices
 YansWifiPhy::GetBand(uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
 {
-    WifiSpectrumBand band;
-    band.first = 0;
-    band.second = 0;
-    return band;
+    return {0, 0};
 }
 
 FrequencyRange
