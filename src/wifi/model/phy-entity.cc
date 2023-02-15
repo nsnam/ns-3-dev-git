@@ -1235,7 +1235,7 @@ PhyEntity::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
 }
 
 Time
-PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, WifiSpectrumBandIndices band)
+PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandIndices& band)
 {
     return m_wifiPhy->m_interference->GetEnergyDuration(DbmToW(thresholdDbm),
                                                         band,

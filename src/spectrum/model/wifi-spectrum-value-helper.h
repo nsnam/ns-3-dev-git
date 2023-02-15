@@ -198,11 +198,12 @@ class WifiSpectrumValueHelper
      * \return a pointer to a newly allocated SpectrumValue representing the HE OFDM Transmit Power
      * Spectral Density on the RU used by the STA in W/Hz for each Band
      */
-    static Ptr<SpectrumValue> CreateHeMuOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
-                                                                   uint16_t channelWidth,
-                                                                   double txPowerW,
-                                                                   uint16_t guardBandwidth,
-                                                                   WifiSpectrumBandIndices ru);
+    static Ptr<SpectrumValue> CreateHeMuOfdmTxPowerSpectralDensity(
+        uint32_t centerFrequency,
+        uint16_t channelWidth,
+        double txPowerW,
+        uint16_t guardBandwidth,
+        const WifiSpectrumBandIndices& ru);
 
     /**
      * Create a power spectral density corresponding to the noise
@@ -282,7 +283,7 @@ class WifiSpectrumValueHelper
     static void CreateSpectrumMaskForOfdm(
         Ptr<SpectrumValue> c,
         const std::vector<WifiSpectrumBandIndices>& allocatedSubBands,
-        WifiSpectrumBandIndices maskBand,
+        const WifiSpectrumBandIndices& maskBand,
         double txPowerPerBandW,
         uint32_t nGuardBands,
         uint32_t innerSlopeWidth,

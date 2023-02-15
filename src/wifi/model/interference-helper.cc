@@ -99,7 +99,7 @@ Event::GetRxPowerW() const
 }
 
 double
-Event::GetRxPowerW(WifiSpectrumBandIndices band) const
+Event::GetRxPowerW(const WifiSpectrumBandIndices& band) const
 {
     const auto it = m_rxPowerW.find(band);
     NS_ASSERT(it != m_rxPowerW.cend());
@@ -274,14 +274,15 @@ InterferenceHelper::RemoveBands(FrequencyRange freqRange)
 }
 
 bool
-InterferenceHelper::HasBand(WifiSpectrumBandIndices band, const FrequencyRange& freqRange) const
+InterferenceHelper::HasBand(const WifiSpectrumBandIndices& band,
+                            const FrequencyRange& freqRange) const
 {
     NS_LOG_FUNCTION(this << band.first << band.second << freqRange);
     return (m_niChanges.count(freqRange) > 0 && m_niChanges.at(freqRange).count(band) > 0);
 }
 
 void
-InterferenceHelper::AddBand(WifiSpectrumBandIndices band, const FrequencyRange& freqRange)
+InterferenceHelper::AddBand(const WifiSpectrumBandIndices& band, const FrequencyRange& freqRange)
 {
     NS_LOG_FUNCTION(this << band.first << band.second << freqRange);
     NS_ASSERT(m_niChanges.count(freqRange) == 0 || m_niChanges.at(freqRange).count(band) == 0);
@@ -388,7 +389,7 @@ InterferenceHelper::SetNumberOfReceiveAntennas(uint8_t rx)
 
 Time
 InterferenceHelper::GetEnergyDuration(double energyW,
-                                      WifiSpectrumBandIndices band,
+                                      const WifiSpectrumBandIndices& band,
                                       const FrequencyRange& freqRange)
 {
     NS_LOG_FUNCTION(this << energyW << band.first << band.second << freqRange);
@@ -507,7 +508,7 @@ InterferenceHelper::CalculateSnr(double signal,
 double
 InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
                                                 NiChangesPerBand* nis,
-                                                WifiSpectrumBandIndices band,
+                                                const WifiSpectrumBandIndices& band,
                                                 const FrequencyRange& freqRange) const
 {
     NS_LOG_FUNCTION(this << band.first << band.second << freqRange);
@@ -589,7 +590,7 @@ double
 InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
                                         uint16_t channelWidth,
                                         NiChangesPerBand* nis,
-                                        WifiSpectrumBandIndices band,
+                                        const WifiSpectrumBandIndices& band,
                                         const FrequencyRange& freqRange,
                                         uint16_t staId,
                                         std::pair<Time, Time> window) const
@@ -663,7 +664,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr(
     Ptr<const Event> event,
     NiChangesPerBand* nis,
     uint16_t channelWidth,
-    WifiSpectrumBandIndices band,
+    const WifiSpectrumBandIndices& band,
     const FrequencyRange& freqRange,
     PhyEntity::PhyHeaderSections phyHeaderSections) const
 {
@@ -728,7 +729,7 @@ double
 InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
                                           NiChangesPerBand* nis,
                                           uint16_t channelWidth,
-                                          WifiSpectrumBandIndices band,
+                                          const WifiSpectrumBandIndices& band,
                                           const FrequencyRange& freqRange,
                                           WifiPpduField header) const
 {
@@ -757,7 +758,7 @@ InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
 PhyEntity::SnrPer
 InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
                                            uint16_t channelWidth,
-                                           WifiSpectrumBandIndices band,
+                                           const WifiSpectrumBandIndices& band,
                                            const FrequencyRange& freqRange,
                                            uint16_t staId,
                                            std::pair<Time, Time> relativeMpduStartStop) const
@@ -789,7 +790,7 @@ double
 InterferenceHelper::CalculateSnr(Ptr<Event> event,
                                  uint16_t channelWidth,
                                  uint8_t nss,
-                                 WifiSpectrumBandIndices band,
+                                 const WifiSpectrumBandIndices& band,
                                  const FrequencyRange& freqRange) const
 {
     NiChangesPerBand ni;
@@ -801,7 +802,7 @@ InterferenceHelper::CalculateSnr(Ptr<Event> event,
 PhyEntity::SnrPer
 InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
                                              uint16_t channelWidth,
-                                             WifiSpectrumBandIndices band,
+                                             const WifiSpectrumBandIndices& band,
                                              const FrequencyRange& freqRange,
                                              WifiPpduField header) const
 {

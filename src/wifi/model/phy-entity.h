@@ -939,7 +939,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param band identify the requested band
      * \return the delay until CCA busy is ended
      */
-    Time GetDelayUntilCcaEnd(double thresholdDbm, WifiSpectrumBandIndices band);
+    Time GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandIndices& band);
 
     /**
      * \param currentChannelWidth channel width of the current transmission (MHz)

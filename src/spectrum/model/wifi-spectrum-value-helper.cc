@@ -507,7 +507,7 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(uint32_t centerFre
                                                               uint16_t channelWidth,
                                                               double txPowerW,
                                                               uint16_t guardBandwidth,
-                                                              WifiSpectrumBandIndices ru)
+                                                              const WifiSpectrumBandIndices& ru)
 {
     NS_LOG_FUNCTION(centerFrequency << channelWidth << txPowerW << guardBandwidth << ru.first
                                     << ru.second);
@@ -570,7 +570,7 @@ void
 WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
     Ptr<SpectrumValue> c,
     const std::vector<WifiSpectrumBandIndices>& allocatedSubBands,
-    WifiSpectrumBandIndices maskBand,
+    const WifiSpectrumBandIndices& maskBand,
     double txPowerPerBandW,
     uint32_t nGuardBands,
     uint32_t innerSlopeWidth,
