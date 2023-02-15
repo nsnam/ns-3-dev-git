@@ -26,6 +26,7 @@
 
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
+#include "ns3/wifi-spectrum-value-helper.h"
 
 #include <ostream>
 
@@ -48,7 +49,48 @@ class WifiMode;
 class Time;
 
 /**
+ * typedef for a pair of start and stop frequencies in Hz to represent a band
+ */
+using WifiSpectrumBandFrequencies = std::pair<uint64_t, uint64_t>;
+
+/// WifiSpectrumBandInfo structure containing info about a spectrum band
+struct WifiSpectrumBandInfo
+{
+    WifiSpectrumBandIndices indices;         //!< the start and stop indices of the band
+    WifiSpectrumBandFrequencies frequencies; //!< the start and stop frequencies of the band
+};
+
+/**
  * \ingroup wifi
+ * Compare two bands.
+ *
+ * \param lhs the band on the left of operator<
+ * \param rhs the band on the right of operator<
+ * \return true if the start/stop frequencies of left are lower than the start/stop frequencies of
+ * right, false otherwise
+ */
+inline bool
+operator<(const WifiSpectrumBandInfo& lhs, const WifiSpectrumBandInfo& rhs)
+{
+    return lhs.frequencies < rhs.frequencies;
+}
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param band the band
+ * \returns a reference to the stream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, const WifiSpectrumBandInfo& band)
+{
+    os << "indices: [" << band.indices.first << "-" << band.indices.second << "], frequencies: ["
+       << band.frequencies.first << "Hz-" << band.frequencies.second << "Hz]";
+    return os;
+}
+
+/**
  * These constants define the various convolutional coding rates
  * used for the OFDM transmission modes in the IEEE 802.11
  * standard. DSSS (for example) rates which do not have an explicit
