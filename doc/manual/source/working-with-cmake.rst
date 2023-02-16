@@ -13,7 +13,7 @@
 Working with CMake
 ------------------
 
-The ns-3 project used Waf build system in the past, but it has moved to
+The |ns3| project used Waf build system in the past, but it has moved to
 CMake for the ns-3.36 release.
 
 CMake is very verbose and commands can be very long for basic operations.
@@ -30,7 +30,7 @@ Waf-like interface for command-line users.
 .. _CMake generated : https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 .. _generator options : https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 
-It is the recommended way to work on ns-3, except if you are using an
+It is the recommended way to work on |ns3|, except if you are using an
 IDE that supports projects that can be generated with CMake or CMake projects.
 
 Here is a non-exhaustive list of IDEs that can be used:
@@ -62,8 +62,8 @@ project to work on it.
 There are two ways to configure the project: the easiest way
 is using the ``ns3`` script and the other way directly with CMake.
 
-Configuring the project with ns3
-++++++++++++++++++++++++++++++++
+Configuring the project with ``ns3``
+++++++++++++++++++++++++++++++++++++
 
 Navigate to the ns-3-dev directory, then run ``./ns3 configure --help`` to
 print the configuration options:
@@ -95,7 +95,7 @@ print the configuration options:
 
 Note: the command output was trimmed to the most used options.
 
-To configure ns-3 in release mode, while enabling examples and tests,
+To configure |ns3| in release mode, while enabling examples and tests,
 run ``./ns3 configure -d release --enable-examples --enable-tests``.
 To check what underlying commands dare being executed, add the
 ``--dry-run`` option:
@@ -123,7 +123,7 @@ Now we run it for real:
   ...
   -- Processing src/wifi
   -- Processing src/wimax
-  -- ---- Summary of optional NS-3 features:
+  -- ---- Summary of optional ns-3 features:
   Build profile                 : release
   Build directory               : /mnt/dev/tools/source/ns-3-dev/build
   ...
@@ -162,23 +162,48 @@ Below is a list of enabled modules and modules that cannot be built.
 At the end, notice we print the same commands from ``--dry-run``. This is done
 to familiarize Waf users with CMake and how the options names changed.
 
-The mapping of the ns3 build profiles into the CMake build types is the following:
+The mapping of the ``ns3`` build profiles into the CMake build types is the following:
 
-+---------------------------+------------------------------------------------------------------------------------------+
-| Equivalent build profiles                                                                                            |
-+---------------------------+--------------------------------------------------------+---------------------------------+
-| ns3                       | CMake                                                  | Equivalent GCC compiler flags   |
-|                           +------------------------+-------------------------------+---------------------------------+
-|                           | CMAKE_BUILD_TYPE       | Additional flags              |                                 |
-+===========================+========================+===============================+=================================+
-| debug                     | debug                  |                               | -g                              |
-+---------------------------+------------------------+-------------------------------+---------------------------------+
-| default                   | default|relwithdebinfo |                               | -O2 -g                          |
-+---------------------------+------------------------+-------------------------------+---------------------------------+
-| release                   | release                |                               | -O3                             |
-+---------------------------+------------------------+-------------------------------+---------------------------------+
-| optimized                 | release                | -DNS3_NATIVE_OPTIMIZATIONS=ON | -O3 -march=native -mtune=native |
-+---------------------------+------------------------+-------------------------------+---------------------------------+
++--------------------------------------------------------------------------------------------------------------------+
+| Equivalent build profiles                                                                                          |
++-------------------------+--------------------------------------------------------+---------------------------------+
+| ``ns3 --build-profile`` | CMake                                                  | Equivalent GCC compiler flags   |
+|                         +------------------------+-------------------------------+---------------------------------+
+|                         | CMAKE_BUILD_TYPE       | Additional flags              |                                 |
++=========================+========================+===============================+=================================+
+| debug                   | debug                  |                               | -g                              |
++-------------------------+------------------------+-------------------------------+---------------------------------+
+| default                 | default                |                               | -O2 -g                          |
++-------------------------+------------------------+-------------------------------+---------------------------------+
+| release                 | release                |                               | -O3                             |
++-------------------------+------------------------+-------------------------------+---------------------------------+
+| optimized               | release                | -DNS3_NATIVE_OPTIMIZATIONS=ON | -O3 -march=native -mtune=native |
++-------------------------+------------------------+-------------------------------+---------------------------------+
+| minsizerel              | minsizerel             |                               | -Os                             |
++-------------------------+------------------------+-------------------------------+---------------------------------+
+
+In addition to setting compiler flags each build type also controls whether certain features are enabled or not:
+
++-------------------------+-----------------+-------------+----------------------------+
+| ``ns3 --build-profile`` |  ``NS3_ASSERT`` | ``NS3_LOG`` | ``NS3_WARNINGS_AS_ERRORS`` |
++=========================+=================+=============+============================+
+| debug                   |   ON            |   ON        |   ON                       |
++-------------------------+-----------------+-------------+----------------------------+
+| default                 |   ON            |   ON        |   OFF                      |
++-------------------------+-----------------+-------------+----------------------------+
+| release                 |   OFF           |   OFF       |   OFF                      |
++-------------------------+-----------------+-------------+----------------------------+
+| optimized               |   OFF           |   OFF       |   OFF                      |
++-------------------------+-----------------+-------------+----------------------------+
+| minsizerel              |   OFF           |   OFF       |   OFF                      |
++-------------------------+-----------------+-------------+----------------------------+
+
+``NS3_ASSERT`` and ``NS_LOG`` control whether the assert or logging macros
+are functional or compiled out.
+``NS3_WARNINGS_AS_ERRORS`` controls whether compiler warnings are treated
+as errors and stop the build, or whether they are only warnings and
+allow the build to continue.
+
 
 Configuring the project with CMake
 ++++++++++++++++++++++++++++++++++
@@ -210,9 +235,11 @@ build types and output executable and libraries names, which will receive a suff
 +==================+===================+
 | DEBUG            | -g                |
 +------------------+-------------------+
-| RELEASE          | -O3 -DNDEBUG      |
+| DEFAULT          | -O2 -g -DNDEBUG   |
 +------------------+-------------------+
 | RELWITHDEBINFO   | -O2 -g -DNDEBUG   |
++------------------+-------------------+
+| RELEASE          | -O3 -DNDEBUG      |
 +------------------+-------------------+
 | MINSIZEREL       | -Os -DNDEBUG      |
 +------------------+-------------------+
@@ -314,7 +341,7 @@ The refresh is done by running the CMake command from the CMake cache folder.
 Previous settings stored in the CMakeCache.txt will be preserved, while new modules will be
 scanned and targets will be added.
 
-The cache can also be refreshed with the ns3 wrapper script:
+The cache can also be refreshed with the ``ns3`` wrapper script:
 
 .. sourcecode:: console
 
@@ -330,10 +357,10 @@ calling the underlying build system (e.g. Ninja) directly.
 The last way is omitted, since each underlying build system
 has its own unique command-line syntax.
 
-Building the project with ns3
-+++++++++++++++++++++++++++++
+Building the project with n``s3``
++++++++++++++++++++++++++++++++++
 
-The ns3 wrapper script makes life easier for command line users, accepting module names without
+The ``ns3`` wrapper script makes life easier for command line users, accepting module names without
 the ``lib`` prefix and scratch files without the ``scratch_`` prefix. The following command can
 be used to build the entire project:
 
@@ -384,7 +411,7 @@ Adding a new module
 Adding a module is the only case where
 :ref:`manually refreshing the CMake cache<Manually refresh the CMake cache>` is required.
 
-More information on how to create a new module are provided in :ref:`Adding a New Module to ns3`.
+More information on how to create a new module are provided in :ref:`Adding a New Module to ``ns3```.
 
 Migrating a Waf module to CMake
 *******************************
@@ -564,7 +591,7 @@ You would need to replace it with the following counterparts:
 Running programs
 ****************
 
-Running programs with the ns3 wrapper script is pretty simple. To run the
+Running programs with the ``ns3`` wrapper script is pretty simple. To run the
 scratch program produced by ``scratch/scratch-simulator.cc``, you need the following:
 
 .. sourcecode:: console
@@ -574,7 +601,7 @@ scratch program produced by ``scratch/scratch-simulator.cc``, you need the follo
 Notice the ``--no-build`` indicates that the program should only be executed, and not built
 before execution.
 
-To familiarize users with CMake, ns3 can also print the underlying CMake
+To familiarize users with CMake, ``ns3`` can also print the underlying CMake
 and command line commands used by adding the ``--dry-run`` flag.
 Removing the ``--no-build`` flag and adding ``--dry-run`` to the same example,
 produces the following:
@@ -601,11 +628,11 @@ The next few lines exporting variables guarantee the executable can find python 
 ``PATH`` on Windows). This is not necessary in platforms that support `RPATH`_.
 
 Notice that when the scratch-simulator program is called on the last line, it has
-a ns3-version prefix and could also have a build type suffix.
-This is valid for all libraries and executables, but omitted in ns-3 for simplicity.
+a ``ns3-<version>`` prefix and could also have a build type suffix.
+This is valid for all libraries and executables, but omitted in ``ns3`` for simplicity.
 
 Debugging can be done with GDB. Again, we have the two ways to run the program.
-Using the ns-3 wrapper:
+Using the ``ns3`` wrapper:
 
 .. sourcecode:: console
 
@@ -635,7 +662,7 @@ automatically in the following cases:
 * Module name changes
 
 The following sections will detail some of these cases assuming a hypothetical module defined below.
-Notice that the build_lib is the fundamental piece of every ns-3 module, while user-settable
+Notice that the build_lib is the fundamental piece of every |ns3| module, while user-settable
 options and external libraries checking are optional.
 
 .. sourcecode:: cmake
@@ -694,14 +721,14 @@ the new name. Some IDEs can do this automatically through refactoring tools.
     )
 
 
-Linking ns-3 modules
-++++++++++++++++++++
+Linking |ns3| modules
++++++++++++++++++++++
 
-Adding a dependency to another ns-3 module just requires adding ``${lib${modulename}}``
-to the ``LIBRARIES_TO_LINK`` list, where modulename contains the value of the ns-3
+Adding a dependency to another |ns3| module just requires adding ``${lib${modulename}}``
+to the ``LIBRARIES_TO_LINK`` list, where modulename contains the value of the |ns3|
 module which will be depended upon.
 
-Note: All ns-3 module libraries are prefixed with ``lib``,
+Note: All |ns3| module libraries are prefixed with ``lib``,
 as CMake requires unique global target names.
 
 .. sourcecode:: cmake
@@ -1193,7 +1220,7 @@ associated header directories, forward compile flags and so on.
 We assume the old CMake style is the one being used, which means we need to include the include
 directories provided by the ``Find${Package}.cmake module``, usually exported as a variable
 ``${Package}_INCLUDE_DIRS``, and get a list of libraries for that module so that they can be
-added to the list of libraries to link of the ns-3 modules. Libraries are usually exported as
+added to the list of libraries to link of the |ns3| modules. Libraries are usually exported as
 the variable ``${Package}_LIBRARIES``.
 
 As an example for the above, we use the Boost library
@@ -1257,7 +1284,7 @@ As an example for the above, we use the Boost library
 
 
 If ``Find${Package}.cmake`` does not exist in your module path, CMake will warn you that is the case.
-If ``${Package_FOUND}`` is set to False, other variables such as the ones related to libraries and
+If ``${Package_FOUND}`` is set to ``False``, other variables such as the ones related to libraries and
 include directories might not be set, and can result in CMake failures to configure if used.
 
 In case the ``Find${Package}.cmake`` you need is not distributed by the upstream CMake project,
@@ -1281,7 +1308,7 @@ use the following:
   list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/new-modules")
 
 
-One of the custom Find files currently shipped by ns-3 is the ``FindGTK3.cmake`` file.
+One of the custom Find files currently shipped by |ns3| is the ``FindGTK3.cmake`` file.
 GTK3 requires Harfbuzz, which has its own ``FindHarfBuzz.cmake`` file. Both of them
 are in the ``build-support/3rd-party`` directory.
 
@@ -1578,10 +1605,10 @@ The path is relative to the ``CMAKE_INSTALL_PREFIX`` (e.g. /usr).
 To set custom compiler defines for that specific executable, defines can be passed
 to the ``DEFINITIONS`` argument.
 
-Add the ``STANDALONE`` option to prevent linking the ns-3 static library
+Add the ``STANDALONE`` option to prevent linking the |ns3| static library
 (``NS3_STATIC``) and single shared library (``NS3_MONOLIB``) to the executable.
 This may be necessary in case the executable redefine symbols which are part
-of the ns-3 library. This is the case for the fd-net-device creators and the tap-creator,
+of the |ns3| library. This is the case for the fd-net-device creators and the tap-creator,
 which include the source file ``encode-decode.cc``, which is also part of fd-net-device module
 and tap-bridge module, respectively.
 
@@ -1752,7 +1779,7 @@ block by block.
 The first block declares the arguments received by the macro (in CMake, the
 only difference is that a function has its own scope). Notice that there are
 different types of arguments. Options that can only be set to ON/OFF.
-Options are OFF by default, and are set to ON if the option name is added to
+Options are ``OFF`` by default, and are set to ``ON`` if the option name is added to
 the arguments list (e.g. ``build_lib(... IGNORE_PCH)``).
 
 Note: You can find more information about ``IGNORE_PCH`` at the `PCH side-effects`_ section.
@@ -1856,7 +1883,7 @@ parsing phase of the compilation.
   endfunction()
 
 In the next code block, we create an alias to ``libmodule``, ``ns3::libmodule``,
-which can later be used when importing ns-3 with CMake's ``find_package(ns3)``.
+which can later be used when importing |ns3| with CMake's ``find_package(ns3)``.
 
 Then, we associate configured headers (``config-store-config``, ``core-config.h`` and
 ``version-defines.h``) to the core module.
@@ -1893,8 +1920,8 @@ to make sure CMake will be refreshed in case one of them changes.
 In the next code block, we make the library a dependency to the ClangAnalyzer's time trace report,
 which measures which step of compilation took most time and which files were responsible for that.
 
-Then, the ns-3 libraries are separated from non-ns-3 libraries, that can be propagated or not
-for libraries/executables linked to the current ns-3 module being processed.
+Then, the |ns3| libraries are separated from non-|ns3| libraries, that can be propagated or not
+for libraries/executables linked to the current |ns3| module being processed.
 
 The default is propagating these third-party libraries and their include directories, but this
 can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
@@ -1964,7 +1991,7 @@ can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
 After the lists of libraries to link that should be exported (``PUBLIC``) and
 not exported (``PRIVATE``) are built, we can link them with ``target_link_libraries``.
 
-Next, we set the output name of the module library to n3version-modulename(optional build suffix).
+Next, we set the output name of the module library to ``n3version-modulename``(optional build suffix).
 
 .. sourcecode:: cmake
 
@@ -1982,8 +2009,8 @@ Next, we set the output name of the module library to n3version-modulename(optio
     # ...
   endfunction()
 
-Next we export include directories, to let library consumers importing ns-3 via CMake
-use them just by linking to one of the ns-3 modules.
+Next we export include directories, to let library consumers importing |ns3| via CMake
+use them just by linking to one of the |ns3| modules.
 
 .. sourcecode:: cmake
 
@@ -2003,7 +2030,7 @@ use them just by linking to one of the ns-3 modules.
   endfunction()
 
 We append the list of third-party/external libraries for each processed module,
-and append a list of object libraries that can be later used for the static ns-3 build.
+and append a list of object libraries that can be later used for the static |ns3| build.
 
 .. sourcecode:: cmake
 
@@ -2025,7 +2052,7 @@ and append a list of object libraries that can be later used for the static ns-3
   endfunction()
 
 The following block creates the ``${BLIB_LIBNAME}-module.h`` header for user scripts,
-and copies header files from src/module and contrib/module to the include/ns3 directory.
+and copies header files from ``src/module`` and ``contrib/module`` to the ``include/ns3`` directory.
 
 .. sourcecode:: cmake
 
@@ -2126,8 +2153,8 @@ CMakeLists.txt file, creating the examples. It also scans for python examples.
     # ...
   endfunction()
 
-In the next code block we add the library to the ns3ExportTargets, later used for installation.
-We also print an additional message the folder just finished being processed if NS3_VERBOSE is set to ON.
+In the next code block we add the library to the ``ns3ExportTargets``, later used for installation.
+We also print an additional message the folder just finished being processed if ``NS3_VERBOSE`` is set to ``ON``.
 
 .. sourcecode:: cmake
 
@@ -2173,15 +2200,15 @@ or the src folder.
     # ...
   endfunction()
 
-Then we check if the ns-3 modules required by the example are enabled to be built.
+Then we check if the |ns3| modules required by the example are enabled to be built.
 If the list ``missing_dependencies`` is empty, we create the example. Otherwise, we skip it.
 The example can be linked to the current module (``${lib${BLIB_EXAMPLE_LIBNAME}}``) and
 other libraries to link (``${BLIB_EXAMPLE_LIBRARIES_TO_LINK}``) and optionally to the visualizer
 module (``${optional_visualizer_lib}``).
 If the visualizer module is not enabled, ``optional_visualizer_lib`` is empty.
 
-The example can also be linked to a single ns-3 shared library (``lib-ns3-monolib``) or
-a single ns-3 static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` or ``NS3_STATIC=ON``.
+The example can also be linked to a single |ns3| shared library (``lib-ns3-monolib``) or
+a single |ns3| static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` or ``NS3_STATIC=ON``.
 Note that both of these options are handled by the ``build_exec`` macro.
 
 .. sourcecode:: cmake
@@ -2223,7 +2250,7 @@ Note that both of these options are handled by the ``build_exec`` macro.
 The `build_exec`_ macro will also set resulting folder where the example will end up
 after built (e.g. build/src/module/examples). It does that by forwarding the
 ``EXECUTABLE_DIRECTORY_PATH`` to the macro ``set_runtime_outputdirectory``, which also
-adds the proper ns-3 version prefix and build type suffix to the executable.
+adds the proper |ns3| version prefix and build type suffix to the executable.
 
 As with the module libraries, we can also reuse precompiled headers here to speed up
 the parsing step of compilation.
@@ -2556,8 +2583,8 @@ Other project-wide compiler-dependent flags can be set during compiler checking.
 
 The ``-fno-semantic-interposition`` flag `disables semantic interposition`_, which can
 reduce overhead of function calls in shared libraries built with ``-fPIC``.
-This is the default behaviour for Clang. The inlined ns-3 calls will not be
-correctly interposed by the ``LD_PRELOAD`` trick, which is not know to be used by ns-3 users.
+This is the default behaviour for Clang. The inlined |ns3| calls will not be
+correctly interposed by the ``LD_PRELOAD`` trick, which is not know to be used by |ns3| users.
 To re-enable semantic interposition, comment out the line and reconfigure the project.
 
 Note: the most common use of the ``LD_PRELOAD`` trick is to use custom memory allocators,
@@ -2613,7 +2640,7 @@ CCache and Precompiled Headers
 .. _PCHs: https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html
 
 
-There are a few ways of speeding up the build of ns-3 and its modules.
+There are a few ways of speeding up the build of |ns3| and its modules.
 Partially rebuilding only changed modules is one of the ways, and
 this is already handled by the build system.
 
@@ -2813,7 +2840,7 @@ as shown below:
 .. sourcecode:: cpp
 
 
-   #include "cmake_pch.hxx" // PCH includes ns3/log.h before defining NS_LOG_APPEND_CONTEXT below
+   #include "cmake_pch.hxx" // PCH includes ns3/log.h before defining ``NS_LOG_APPEND_CONTEXT`` below
    ...
    #define NS_LOG_APPEND_CONTEXT                                   \
    if (m_ipv4) { std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; }
