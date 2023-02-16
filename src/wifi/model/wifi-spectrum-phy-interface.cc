@@ -40,12 +40,12 @@ WifiSpectrumPhyInterface::GetTypeId()
     return tid;
 }
 
-WifiSpectrumPhyInterface::WifiSpectrumPhyInterface(FrequencyRange range)
-    : m_range{range},
+WifiSpectrumPhyInterface::WifiSpectrumPhyInterface(FrequencyRange freqRange)
+    : m_frequencyRange{freqRange},
       m_centerFrequency{0},
       m_channelWidth{0}
 {
-    NS_LOG_FUNCTION(this << range);
+    NS_LOG_FUNCTION(this << freqRange);
 }
 
 void
@@ -138,7 +138,7 @@ WifiSpectrumPhyInterface::GetAntenna() const
 const FrequencyRange&
 WifiSpectrumPhyInterface::GetFrequencyRange() const
 {
-    return m_range;
+    return m_frequencyRange;
 }
 
 uint16_t

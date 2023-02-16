@@ -51,9 +51,9 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     /**
      * Constructor
      *
-     * \param range the frequency range covered by the interface
+     * \param freqRange the frequency range covered by the interface
      */
-    WifiSpectrumPhyInterface(FrequencyRange range);
+    WifiSpectrumPhyInterface(FrequencyRange freqRange);
     /**
      * Connect SpectrumWifiPhy object
      * \param phy SpectrumWifiPhy object to be connected to this object
@@ -128,7 +128,7 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
   private:
     void DoDispose() override;
 
-    FrequencyRange m_range;                     ///< frequency range
+    FrequencyRange m_frequencyRange;            ///< frequency range
     Ptr<SpectrumWifiPhy> m_spectrumWifiPhy;     ///< spectrum PHY
     Ptr<NetDevice> m_netDevice;                 ///< the device
     Ptr<SpectrumChannel> m_channel;             ///< spectrum channel

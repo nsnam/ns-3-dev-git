@@ -1003,11 +1003,14 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
         channelWidth,
         ru.GetRuType(),
         ru.GetPhyIndex(channelWidth, m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
-    HeRu::SubcarrierRange range = std::make_pair(group.front().first, group.back().second);
+    HeRu::SubcarrierRange subcarrierRange =
+        std::make_pair(group.front().first, group.back().second);
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
-    band =
-        m_wifiPhy->ConvertHeRuSubcarriers(channelWidth, GetGuardBandwidth(channelWidth), range, 0);
+    band = m_wifiPhy->ConvertHeRuSubcarriers(channelWidth,
+                                             GetGuardBandwidth(channelWidth),
+                                             subcarrierRange,
+                                             0);
     return band;
 }
 
@@ -1023,13 +1026,14 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
         channelWidth,
         ru.GetRuType(),
         ru.GetPhyIndex(channelWidth, m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
-    HeRu::SubcarrierRange range = std::make_pair(group.front().first, group.back().second);
+    HeRu::SubcarrierRange subcarrierRange =
+        std::make_pair(group.front().first, group.back().second);
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
     band = m_wifiPhy->ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
-        range,
+        subcarrierRange,
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
     return band;
 }
@@ -1053,12 +1057,12 @@ HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
         nonOfdmaRu.GetRuType(),
         nonOfdmaRu.GetPhyIndex(channelWidth,
                                m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
-    HeRu::SubcarrierRange range =
+    HeRu::SubcarrierRange subcarrierRange =
         std::make_pair(groupPreamble.front().first, groupPreamble.back().second);
     return m_wifiPhy->ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
-        range,
+        subcarrierRange,
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
 }
 

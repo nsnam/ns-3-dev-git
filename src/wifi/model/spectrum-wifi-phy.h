@@ -134,7 +134,7 @@ class SpectrumWifiPhy : public WifiPhy
      */
     WifiSpectrumBand GetBandForInterface(uint16_t bandWidth,
                                          uint8_t bandIndex,
-                                         FrequencyRange range,
+                                         FrequencyRange freqRange,
                                          uint16_t channelWidth);
 
     /**
@@ -189,20 +189,9 @@ class SpectrumWifiPhy : public WifiPhy
                                        //!< reasons)
 
   private:
-    /**
-     * \param bandWidth the width (MHz) of the band used for the OFDMA transmission. Must be
-     *                  a multiple of 20 MHz
-     * \param guardBandwidth width of the guard band (MHz)
-     * \param range the subcarrier range of the HE RU
-     * \param bandIndex the index (starting at 0) of the band within the operating channel
-     * \return the converted subcarriers
-     *
-     * This is a helper function to convert HE RU subcarriers, which are relative to the center
-     * frequency subcarrier, to the indexes used by the Spectrum model.
-     */
     WifiSpectrumBand ConvertHeRuSubcarriers(uint16_t bandWidth,
                                             uint16_t guardBandwidth,
-                                            HeRu::SubcarrierRange range,
+                                            HeRu::SubcarrierRange subcarrierRange,
                                             uint8_t bandIndex = 0) const override;
 
     /**

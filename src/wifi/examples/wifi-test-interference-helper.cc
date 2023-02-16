@@ -217,8 +217,8 @@ InterferenceExperiment::Run(InterferenceExperiment::Input input)
 {
     m_input = input;
 
-    double range = std::max(std::abs(input.xA), input.xB);
-    Config::SetDefault("ns3::RangePropagationLossModel::MaxRange", DoubleValue(range));
+    double maxRange = std::max(std::abs(input.xA), input.xB);
+    Config::SetDefault("ns3::RangePropagationLossModel::MaxRange", DoubleValue(maxRange));
 
     Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel>();
     channel->SetPropagationDelayModel(CreateObject<ConstantSpeedPropagationDelayModel>());

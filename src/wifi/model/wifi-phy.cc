@@ -1856,14 +1856,13 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
 }
 
 WifiSpectrumBand
-WifiPhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
-                                uint16_t guardBandwidth,
-                                HeRu::SubcarrierRange range,
-                                uint8_t bandIndex) const
+WifiPhy::ConvertHeRuSubcarriers(uint16_t /*bandWidth*/,
+                                uint16_t /*guardBandwidth*/,
+                                HeRu::SubcarrierRange /*subcarrierRange*/,
+                                uint8_t /*bandIndex*/) const
 {
     NS_ASSERT_MSG(false, "802.11ax can only be used with SpectrumWifiPhy");
-    WifiSpectrumBand convertedSubcarriers;
-    return convertedSubcarriers;
+    return {0, 0};
 }
 
 void

@@ -148,35 +148,35 @@ class InterferenceHelper : public Object
      * Add a frequency band.
      *
      * \param band the band to be added
-     * \param range the frequency range the band to add belongs to
+     * \param freqRange the frequency range the band to add belongs to
      */
-    void AddBand(WifiSpectrumBand band, const FrequencyRange& range);
+    void AddBand(WifiSpectrumBand band, const FrequencyRange& freqRange);
 
     /**
      * Remove the frequency bands for a given frequency range.
      *
-     * \param range the frequency range the bands to remove belong to
+     * \param freqRange the frequency range the bands to remove belong to
      */
-    void RemoveBands(FrequencyRange range);
+    void RemoveBands(FrequencyRange freqRange);
 
     /**
      * Check whether a given band is tracked by this interference helper.
      *
      * \param band the band to be checked
-     * \param range the frequency range the band to check belongs to
+     * \param freqRange the frequency range the band to check belongs to
      * \return true if the band is already tracked by this interference helper, false otherwise
      */
-    bool HasBand(WifiSpectrumBand band, const FrequencyRange& range) const;
+    bool HasBand(WifiSpectrumBand band, const FrequencyRange& freqRange) const;
 
     /**
      * Update the frequency bands for a given frequency range when the spectrum model is changed.
      *
      * \param bands the bands to be added in the new spectrum model
-     * \param range the frequency range the bands belong to
+     * \param freqRange the frequency range the bands belong to
      * \param offset the offset to convert start and stop indices from old to new spectrum model
      */
     void UpdateBands(const std::vector<WifiSpectrumBand>& bands,
-                     const FrequencyRange& range,
+                     const FrequencyRange& freqRange,
                      int32_t offset);
 
     /**
@@ -209,13 +209,13 @@ class InterferenceHelper : public Object
     /**
      * \param energyW the minimum energy (W) requested
      * \param band identify the requested band
-     * \param range the frequency range the requested band belongs to
+     * \param freqRange the frequency range the requested band belongs to
      *
      * \returns the expected amount of time the observed
      *          energy on the medium for a given band will
      *          be higher than the requested threshold.
      */
-    Time GetEnergyDuration(double energyW, WifiSpectrumBand band, const FrequencyRange& range);
+    Time GetEnergyDuration(double energyW, WifiSpectrumBand band, const FrequencyRange& freqRange);
 
     /**
      * Add the PPDU-related signal to interference helper.
@@ -224,7 +224,7 @@ class InterferenceHelper : public Object
      * \param txVector the TXVECTOR
      * \param duration the PPDU duration
      * \param rxPower received power per band (W)
-     * \param range the frequency range in which the signal has been detected
+     * \param freqRange the frequency range in which the signal has been detected
      * \param isStartOfdmaRxing flag whether the event corresponds to the start of the OFDMA payload
      * reception (only used for UL-OFDMA) //TODO simplify this once WifiPpdu is subclassed by adding
      * an attribute
@@ -235,18 +235,18 @@ class InterferenceHelper : public Object
                    const WifiTxVector& txVector,
                    Time duration,
                    RxPowerWattPerChannelBand& rxPower,
-                   const FrequencyRange& range,
+                   const FrequencyRange& freqRange,
                    bool isStartOfdmaRxing = false);
 
     /**
      * Add a non-Wifi signal to interference helper.
      * \param duration the duration of the signal
      * \param rxPower received power per band (W)
-     * \param range the frequency range in which the non-wifi signal has been detected
+     * \param freqRange the frequency range in which the non-wifi signal has been detected
      */
     void AddForeignSignal(Time duration,
                           RxPowerWattPerChannelBand& rxPower,
-                          const FrequencyRange& range);
+                          const FrequencyRange& freqRange);
     /**
      * Calculate the SNIR at the start of the payload and accumulate
      * all SNIR changes in the SNIR vector for each MPDU of an A-MPDU.
@@ -257,7 +257,7 @@ class InterferenceHelper : public Object
      * \param event the event corresponding to the first time the corresponding PPDU arrives
      * \param channelWidth the channel width used to transmit the PSDU (in MHz)
      * \param band identify the band used by the PSDU
-     * \param range the frequency range the band belongs to
+     * \param freqRange the frequency range the band belongs to
      * \param staId the station ID of the PSDU (only used for MU)
      * \param relativeMpduStartStop the time window (pair of start and end times) of PHY payload to
      * focus on
@@ -267,7 +267,7 @@ class InterferenceHelper : public Object
     PhyEntity::SnrPer CalculatePayloadSnrPer(Ptr<Event> event,
                                              uint16_t channelWidth,
                                              WifiSpectrumBand band,
-                                             const FrequencyRange& range,
+                                             const FrequencyRange& freqRange,
                                              uint16_t staId,
                                              std::pair<Time, Time> relativeMpduStartStop) const;
     /**
@@ -277,7 +277,7 @@ class InterferenceHelper : public Object
      * \param channelWidth the channel width (in MHz)
      * \param nss the number of spatial streams
      * \param band identify the band used by the PSDU
-     * \param range the frequency range the band belongs to
+     * \param freqRange the frequency range the band belongs to
      *
      * \return the SNR for the PPDU in linear scale
      */
@@ -285,7 +285,7 @@ class InterferenceHelper : public Object
                         uint16_t channelWidth,
                         uint8_t nss,
                         WifiSpectrumBand band,
-                        const FrequencyRange& range) const;
+                        const FrequencyRange& freqRange) const;
     /**
      * Calculate the SNIR at the start of the PHY header and accumulate
      * all SNIR changes in the SNIR vector.
@@ -293,7 +293,7 @@ class InterferenceHelper : public Object
      * \param event the event corresponding to the first time the corresponding PPDU arrives
      * \param channelWidth the channel width (in MHz) for header measurement
      * \param band identify the band used by the PSDU
-     * \param range the frequency range the band belongs to
+     * \param freqRange the frequency range the band belongs to
      * \param header the PHY header to consider
      *
      * \return struct of SNR and PER
@@ -301,7 +301,7 @@ class InterferenceHelper : public Object
     PhyEntity::SnrPer CalculatePhyHeaderSnrPer(Ptr<Event> event,
                                                uint16_t channelWidth,
                                                WifiSpectrumBand band,
-                                               const FrequencyRange& range,
+                                               const FrequencyRange& freqRange,
                                                WifiPpduField header) const;
 
     /**
@@ -312,20 +312,20 @@ class InterferenceHelper : public Object
      * Notify that RX has ended.
      *
      * \param endTime the end time of the signal
-     * \param range the frequency range in which the signal event has been detected
+     * \param freqRange the frequency range in which the signal event has been detected
      */
-    void NotifyRxEnd(Time endTime, const FrequencyRange& range);
+    void NotifyRxEnd(Time endTime, const FrequencyRange& freqRange);
 
     /**
      * Update event to scale its received power (W) per band.
      *
      * \param event the event to be updated
      * \param rxPower the received power (W) per band to be added to the current event
-     * \param range the frequency range in which the signal event has been detected
+     * \param freqRange the frequency range in which the signal event has been detected
      */
     void UpdateEvent(Ptr<Event> event,
                      const RxPowerWattPerChannelBand& rxPower,
-                     const FrequencyRange& range);
+                     const FrequencyRange& freqRange);
 
   protected:
     void DoDispose() override;
@@ -446,11 +446,11 @@ class InterferenceHelper : public Object
      * Append the given Event.
      *
      * \param event the event to be appended
-     * \param range the frequency range in which the signal event has been detected
+     * \param freqRange the frequency range in which the signal event has been detected
      * \param isStartOfdmaRxing flag whether event corresponds to the start of the OFDMA payload
      * reception (only used for UL-OFDMA)
      */
-    void AppendEvent(Ptr<Event> event, const FrequencyRange& range, bool isStartOfdmaRxing);
+    void AppendEvent(Ptr<Event> event, const FrequencyRange& freqRange, bool isStartOfdmaRxing);
 
     /**
      * Calculate noise and interference power in W.
@@ -458,14 +458,14 @@ class InterferenceHelper : public Object
      * \param event the event
      * \param nis the NiChanges
      * \param band the band
-     * \param range the frequency range
+     * \param freqRange the frequency range
      *
      * \return noise and interference power
      */
     double CalculateNoiseInterferenceW(Ptr<Event> event,
                                        NiChangesPerBand* nis,
                                        WifiSpectrumBand band,
-                                       const FrequencyRange& range) const;
+                                       const FrequencyRange& freqRange) const;
     /**
      * Calculate the error rate of the given PHY payload only in the provided time
      * window (thus enabling per MPDU PER information). The PHY payload can be divided into
@@ -475,7 +475,7 @@ class InterferenceHelper : public Object
      * \param channelWidth the channel width used to transmit the PSDU (in MHz)
      * \param nis the NiChanges
      * \param band identify the band used by the PSDU
-     * \param range the frequency range the band belongs to
+     * \param freqRange the frequency range the band belongs to
      * \param staId the station ID of the PSDU (only used for MU)
      * \param window time window (pair of start and end times) of PHY payload to focus on
      *
@@ -485,7 +485,7 @@ class InterferenceHelper : public Object
                                uint16_t channelWidth,
                                NiChangesPerBand* nis,
                                WifiSpectrumBand band,
-                               const FrequencyRange& range,
+                               const FrequencyRange& freqRange,
                                uint16_t staId,
                                std::pair<Time, Time> window) const;
     /**
@@ -496,7 +496,7 @@ class InterferenceHelper : public Object
      * \param nis the NiChanges
      * \param channelWidth the channel width (in MHz) for header measurement
      * \param band the band
-     * \param range the frequency range
+     * \param freqRange the frequency range
      * \param header the PHY header to consider
      *
      * \return the error rate of the HT PHY header
@@ -505,7 +505,7 @@ class InterferenceHelper : public Object
                                  NiChangesPerBand* nis,
                                  uint16_t channelWidth,
                                  WifiSpectrumBand band,
-                                 const FrequencyRange& range,
+                                 const FrequencyRange& freqRange,
                                  WifiPpduField header) const;
     /**
      * Calculate the success rate of the PHY header sections for the provided event.
@@ -514,7 +514,7 @@ class InterferenceHelper : public Object
      * \param nis the NiChanges
      * \param channelWidth the channel width (in MHz) for header measurement
      * \param band the band
-     * \param range the frequency range
+     * \param freqRange the frequency range
      * \param phyHeaderSections the map of PHY header sections (\see PhyEntity::PhyHeaderSections)
      *
      * \return the success rate of the PHY header sections
@@ -523,7 +523,7 @@ class InterferenceHelper : public Object
                                         NiChangesPerBand* nis,
                                         uint16_t channelWidth,
                                         WifiSpectrumBand band,
-                                        const FrequencyRange& range,
+                                        const FrequencyRange& freqRange,
                                         PhyEntity::PhyHeaderSections phyHeaderSections) const;
 
     double m_noiseFigure;                 //!< noise figure (linear)

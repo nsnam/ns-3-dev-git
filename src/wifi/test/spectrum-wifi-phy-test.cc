@@ -691,13 +691,15 @@ SpectrumWifiPhyFilterTest::RunOne()
                 HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
                 for (std::size_t index = 1; index <= HeRu::GetNRus(bw, ruType); index++)
                 {
-                    HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(bw, ruType, index);
-                    HeRu::SubcarrierRange range =
-                        std::make_pair(group.front().first, group.back().second);
+                    HeRu::SubcarrierGroup subcarrierGroup =
+                        HeRu::GetSubcarrierGroup(bw, ruType, index);
+                    HeRu::SubcarrierRange subcarrierRange =
+                        std::make_pair(subcarrierGroup.front().first,
+                                       subcarrierGroup.back().second);
                     WifiSpectrumBand band = m_rxPhy->ConvertHeRuSubcarriers(
                         bw,
                         m_rxPhy->GetGuardBandwidth(m_rxChannelWidth),
-                        range,
+                        subcarrierRange,
                         i);
                     m_ruBands.insert(band);
                 }
@@ -853,24 +855,24 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Schedule now to check the interferences
      * \param phy the PHY for which the check has to be executed
-     * \param range the frequency range for which the check has to be executed
+     * \param freqRange the frequency range for which the check has to be executed
      * \param channelWidth the channel width for which the check has to be executed
      * \param interferencesExpected flag whether interferences are expected to have been tracked
      */
     void CheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
-                            const FrequencyRange& range,
+                            const FrequencyRange& freqRange,
                             uint16_t channelWidth,
                             bool interferencesExpected);
 
     /**
      * Check the interferences
      * \param phy the PHY for which the check has to be executed
-     * \param range the frequency range for which the check has to be executed
+     * \param freqRange the frequency range for which the check has to be executed
      * \param channelWidth the channel width for which the check has to be executed
      * \param interferencesExpected flag whether interferences are expected to have been tracked
      */
     void DoCheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
-                              const FrequencyRange& range,
+                              const FrequencyRange& freqRange,
                               uint16_t channelWidth,
                               bool interferencesExpected);
 
@@ -982,11 +984,11 @@ SpectrumWifiPhyMultipleInterfacesTest::RxCallback(std::size_t index,
 
 void
 SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
-                                                          const FrequencyRange& range,
+                                                          const FrequencyRange& freqRange,
                                                           uint16_t channelWidth,
                                                           bool interferencesExpected)
 {
-    if ((!m_trackSignalsInactiveInterfaces) && (phy->GetCurrentFrequencyRange() != range))
+    if ((!m_trackSignalsInactiveInterfaces) && (phy->GetCurrentFrequencyRange() != freqRange))
     {
         // ignore since no bands for that range exists in interference helper in that case
         return;
@@ -996,24 +998,24 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences(Ptr<ExtSpectrumWifiPhy
     Simulator::ScheduleNow(&SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences,
                            this,
                            phy,
-                           range,
+                           freqRange,
                            channelWidth,
                            interferencesExpected);
 }
 
 void
 SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences(Ptr<ExtSpectrumWifiPhy> phy,
-                                                            const FrequencyRange& range,
+                                                            const FrequencyRange& freqRange,
                                                             uint16_t channelWidth,
                                                             bool interferencesExpected)
 {
-    NS_LOG_FUNCTION(this << phy << range << interferencesExpected);
+    NS_LOG_FUNCTION(this << phy << freqRange << interferencesExpected);
     PointerValue ptr;
     phy->GetAttribute("InterferenceHelper", ptr);
     auto interferenceHelper = DynamicCast<InterferenceHelper>(ptr.Get<InterferenceHelper>());
     NS_ASSERT(interferenceHelper);
-    const auto band = phy->GetBandForInterface(channelWidth, 0, range, channelWidth);
-    const auto energyDuration = interferenceHelper->GetEnergyDuration(0, band, range);
+    const auto band = phy->GetBandForInterface(channelWidth, 0, freqRange, channelWidth);
+    const auto energyDuration = interferenceHelper->GetEnergyDuration(0, band, freqRange);
     NS_TEST_ASSERT_MSG_EQ(energyDuration.IsStrictlyPositive(),
                           interferencesExpected,
                           "Incorrect interferences detection");
