@@ -272,7 +272,7 @@ PhyEntity::GetPhyHeaderSnrPer(WifiPpduField field, Ptr<Event> event) const
     return m_wifiPhy->m_interference->CalculatePhyHeaderSnrPer(
         event,
         measurementChannelWidth,
-        GetPrimaryBand(measurementChannelWidth),
+        GetPrimaryBand(measurementChannelWidth).indices,
         m_wifiPhy->GetCurrentFrequencyRange(),
         field);
 }
@@ -830,7 +830,7 @@ std::pair<uint16_t, WifiSpectrumBandIndices>
 PhyEntity::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t /* staId */) const
 {
     uint16_t channelWidth = GetRxChannelWidth(txVector);
-    return std::make_pair(channelWidth, GetPrimaryBand(channelWidth));
+    return std::make_pair(channelWidth, GetPrimaryBand(channelWidth).indices);
 }
 
 const std::map<std::pair<uint64_t, WifiPreamble>, Ptr<Event>>&
@@ -965,7 +965,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     NS_ASSERT(!m_wifiPhy->m_currentPreambleEvents.empty());
     for (auto preambleEvent : m_wifiPhy->m_currentPreambleEvents)
     {
-        double rxPowerW = preambleEvent.second->GetRxPowerW(measurementBand);
+        double rxPowerW = preambleEvent.second->GetRxPowerW(measurementBand.indices);
         if (rxPowerW > maxRxPowerW)
         {
             maxRxPowerW = rxPowerW;
@@ -998,14 +998,14 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     double snr = m_wifiPhy->m_interference->CalculateSnr(m_wifiPhy->m_currentEvent,
                                                          measurementChannelWidth,
                                                          1,
-                                                         measurementBand,
+                                                         measurementBand.indices,
                                                          m_wifiPhy->GetCurrentFrequencyRange());
     NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
 
     if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW > 0.0) ||
         (m_wifiPhy->m_preambleDetectionModel &&
          m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(
-             m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand),
+             m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand.indices),
              snr,
              measurementChannelWidth)))
     {
@@ -1193,7 +1193,7 @@ PhyEntity::GetRandomValue() const
 double
 PhyEntity::GetRxPowerWForPpdu(Ptr<Event> event) const
 {
-    return event->GetRxPowerW(GetPrimaryBand(GetMeasurementChannelWidth(event->GetPpdu())));
+    return event->GetRxPowerW(GetPrimaryBand(GetMeasurementChannelWidth(event->GetPpdu())).indices);
 }
 
 Ptr<const Event>
@@ -1202,7 +1202,7 @@ PhyEntity::GetCurrentEvent() const
     return m_wifiPhy->m_currentEvent;
 }
 
-WifiSpectrumBandIndices
+WifiSpectrumBandInfo
 PhyEntity::GetPrimaryBand(uint16_t bandWidth) const
 {
     if (m_wifiPhy->GetChannelWidth() % 20 != 0)
@@ -1213,7 +1213,7 @@ PhyEntity::GetPrimaryBand(uint16_t bandWidth) const
                               m_wifiPhy->m_operatingChannel.GetPrimaryChannelIndex(bandWidth));
 }
 
-WifiSpectrumBandIndices
+WifiSpectrumBandInfo
 PhyEntity::GetSecondaryBand(uint16_t bandWidth) const
 {
     NS_ASSERT(m_wifiPhy->GetChannelWidth() >= 40);
@@ -1272,7 +1272,7 @@ PhyEntity::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     NS_LOG_FUNCTION(this << channelWidth);
     const double ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
     const Time delayUntilCcaEnd =
-        GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(channelWidth));
+        GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(channelWidth).indices);
     if (delayUntilCcaEnd.IsStrictlyPositive())
     {
         return std::make_pair(delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY);

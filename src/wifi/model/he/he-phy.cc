@@ -1206,7 +1206,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
          * busy while the threshold continues to be exceeded.
          */
         double ccaThresholdDbm = -62;
-        Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, band);
+        Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, band.indices);
 
         if (ppdu)
         {
@@ -1266,7 +1266,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
                     NS_ASSERT_MSG(false, "Invalid channel width: " << ppduBw);
                 }
             }
-            Time ppduCcaDuration = GetDelayUntilCcaEnd(ccaThresholdDbm, band);
+            Time ppduCcaDuration = GetDelayUntilCcaEnd(ccaThresholdDbm, band.indices);
             delayUntilCcaEnd = std::max(delayUntilCcaEnd, ppduCcaDuration);
         }
         per20MhzDurations.push_back(delayUntilCcaEnd);

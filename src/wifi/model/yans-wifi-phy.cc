@@ -106,10 +106,10 @@ YansWifiPhy::GetTxMaskRejectionParams() const
     return std::make_tuple(0.0, 0.0, 0.0);
 }
 
-WifiSpectrumBandIndices
+WifiSpectrumBandInfo
 YansWifiPhy::GetBand(uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
 {
-    return {0, 0};
+    return {{0, 0}, {0, 0}};
 }
 
 FrequencyRange

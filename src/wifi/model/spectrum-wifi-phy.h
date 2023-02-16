@@ -75,7 +75,7 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<Channel> GetChannel() const override;
     uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
-    WifiSpectrumBandIndices GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
+    WifiSpectrumBandInfo GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
     FrequencyRange GetCurrentFrequencyRange() const override;
 
     /**
@@ -117,20 +117,19 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<AntennaModel> GetAntenna() const;
 
     /**
-     * Get the start band index and the stop band index for a given band and a given spectrum PHY
-     * interface
+     * Get the info of a given band for a given spectrum PHY interface
      *
      * \param bandWidth the width of the band to be returned (MHz)
      * \param bandIndex the index of the band to be returned
      * \param range the frequency range identifying the spectrum PHY interface
      * \param channelWidth the channel width currently used by the spectrum PHY interface
      *
-     * \return a pair of start and stop indexes that defines the band
+     * \return the info that defines the band
      */
-    WifiSpectrumBandIndices GetBandForInterface(uint16_t bandWidth,
-                                                uint8_t bandIndex,
-                                                FrequencyRange freqRange,
-                                                uint16_t channelWidth);
+    WifiSpectrumBandInfo GetBandForInterface(uint16_t bandWidth,
+                                             uint8_t bandIndex,
+                                             FrequencyRange freqRange,
+                                             uint16_t channelWidth);
 
     /**
      * Callback invoked when the PHY model starts to process a signal

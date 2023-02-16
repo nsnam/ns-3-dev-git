@@ -1146,14 +1146,14 @@ class WifiPhy : public Object
     uint8_t GetPrimaryChannelNumber(uint16_t primaryChannelWidth) const;
 
     /**
-     * Get the start band index and the stop band index for a given band
+     * Get the info of a given band
      *
      * \param bandWidth the width of the band to be returned (MHz)
      * \param bandIndex the index of the band to be returned
      *
-     * \return a pair of start and stop indexes that defines the band
+     * \return the info that defines the band
      */
-    virtual WifiSpectrumBandIndices GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) = 0;
+    virtual WifiSpectrumBandInfo GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) = 0;
 
     /**
      * Get the frequency range of the current RF interface.

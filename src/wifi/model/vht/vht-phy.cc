@@ -591,7 +591,7 @@ VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     }
 
     double ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
-    Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(20));
+    Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(20).indices);
     if (delayUntilCcaEnd.IsStrictlyPositive())
     {
         return std::make_pair(
@@ -653,7 +653,7 @@ VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     {
         auto channelType = secondaryChannels.at(secondaryWidth);
         ccaThresholdDbm = GetCcaThreshold(ppdu, channelType);
-        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetSecondaryBand(secondaryWidth));
+        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetSecondaryBand(secondaryWidth).indices);
         if (delayUntilCcaEnd.IsStrictlyPositive())
         {
             return std::make_pair(delayUntilCcaEnd, channelType);
