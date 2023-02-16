@@ -28,6 +28,8 @@ Release 3-dev
 - (core) !1302 - Now test-runner exits if no TestSuite is specified.
 - (spectrum) !1046 - Addition of the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
 - (wifi) Add support for 802.11be Multi-Link Operations (MLO), STR mode only
+- (wifi) Implement 802.11ax dual NAV (basic NAV and intra-BSS NAV)
+- (wifi) Implement 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
 
 ### Bugs fixed
 
@@ -37,6 +39,7 @@ Release 3-dev
 - (internet) !1229 - Fixed a bug in `Icmpv4Header::HandleEcho` when replying to broadcast-type Echo requests, and two bugs in `Ipv4RawSocketImpl::SendTo` in handling sockets bound to a specific address and directed to a broadcast-type address.
 - (internet) - `NeighborCacheHelper::PopulateNeighborCache` is now robust against missing IPv4 or IPv6 stack in nodes.
 - (core) !1236 - Deprecation warnings are silenced while calling `NS_OBJECT_ENSURE_REGISTERED`
+- (wifi) Fixed multiple issues about setting the TXOP holder
 
 Release 3.37
 ------------
