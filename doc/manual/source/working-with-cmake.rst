@@ -411,7 +411,7 @@ Adding a new module
 Adding a module is the only case where
 :ref:`manually refreshing the CMake cache<Manually refresh the CMake cache>` is required.
 
-More information on how to create a new module are provided in :ref:`Adding a New Module to ``ns3```.
+More information on how to create a new module are provided in :ref:`Adding a New Module to ns3`.
 
 Migrating a Waf module to CMake
 *******************************
@@ -1991,7 +1991,7 @@ can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
 After the lists of libraries to link that should be exported (``PUBLIC``) and
 not exported (``PRIVATE``) are built, we can link them with ``target_link_libraries``.
 
-Next, we set the output name of the module library to ``n3version-modulename``(optional build suffix).
+Next, we set the output name of the module library to ``n3version-modulename`` (+ optional build suffix).
 
 .. sourcecode:: cmake
 
