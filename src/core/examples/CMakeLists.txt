@@ -1,4 +1,5 @@
 set(base_examples
+    assert-example
     command-line-example
     fatal-example
     hash-example
