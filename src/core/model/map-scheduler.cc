@@ -85,7 +85,7 @@ MapScheduler::PeekNext() const
     Event ev;
     ev.impl = i->second;
     ev.key = i->first;
-    NS_LOG_DEBUG(this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+    NS_LOG_DEBUG(this << ": " << ev.impl << ", " << ev.key.m_ts << ", " << ev.key.m_uid);
     return ev;
 }
 
@@ -99,7 +99,7 @@ MapScheduler::RemoveNext()
     ev.impl = i->second;
     ev.key = i->first;
     m_list.erase(i);
-    NS_LOG_DEBUG(this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+    NS_LOG_DEBUG("@" << this << ": " << ev.impl << ", " << ev.key.m_ts << ", " << ev.key.m_uid);
     return ev;
 }
 
