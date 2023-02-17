@@ -70,6 +70,7 @@ main(int argc, char* argv[])
     cmd.AddValue("numnodes", "number of senders in simulation", n_nodes);
     cmd.AddValue("logging", "turn on all Application log components", enable_log);
     cmd.AddValue("tcpmode", "specify the type of tcp socket", tcp_mode);
+    cmd.AddValue("runtime", "Time (in Seconds) sender applications run", runtime);
     cmd.Parse(argc, argv);
 
     if (enable_log)
