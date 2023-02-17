@@ -62,6 +62,7 @@
 #include "ns3/string.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
+#include "ns3/command-line.h"
 
 using namespace ns3;
 
@@ -145,6 +146,14 @@ main(int argc, char* argv[])
     int runtime = 50; // Seconds
     double rss = -80; // -dBm
     bool enable_log = false;
+
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("numnodes", "number of senders in simulation", n_nodes);
+    cmd.AddValue("logging", "turn on all Application log components", enable_log);
+    cmd.AddValue("tcpmode", "specify the type of tcp socket", tcp_mode);
+    cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
+    cmd.AddValue("rss", "received signal strength", rss);
+    cmd.Parse(argc, argv);
 
     if (enable_log)
     {
