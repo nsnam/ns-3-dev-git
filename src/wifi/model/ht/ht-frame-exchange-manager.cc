@@ -851,36 +851,52 @@ HtFrameExchangeManager::RetransmitMpduAfterMissedAck(Ptr<WifiMpdu> mpdu) const
 }
 
 void
-HtFrameExchangeManager::ReleaseSequenceNumber(Ptr<WifiMpdu> mpdu) const
+HtFrameExchangeManager::ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const
 {
-    NS_LOG_FUNCTION(this << *mpdu);
+    NS_LOG_FUNCTION(this << *psdu);
 
-    // the MPDU should be still in the queue, unless it expired.
-    const WifiMacHeader& hdr = mpdu->GetOriginal()->GetHeader();
-    if (hdr.IsQosData())
+    auto tids = psdu->GetTids();
+
+    if (tids.empty() || // no QoS data frames included
+        !m_mac->GetBaAgreementEstablishedAsOriginator(psdu->GetAddr1(), *tids.begin()))
     {
-        uint8_t tid = hdr.GetQosTid();
-        Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
-
-        if (m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr1(), tid) && !hdr.IsRetry() &&
-            !mpdu->IsInFlight())
-        {
-            // The MPDU has never been transmitted, so we can make its sequence
-            // number available again if it is lower than the sequence number
-            // maintained by the MAC TX middle
-            uint16_t currentNextSeq = m_txMiddle->PeekNextSequenceNumberFor(&hdr);
-            uint16_t startingSeq = edca->GetBaStartingSequence(hdr.GetAddr1(), tid);
-
-            if (BlockAckAgreement::GetDistance(hdr.GetSequenceNumber(), startingSeq) <
-                BlockAckAgreement::GetDistance(currentNextSeq, startingSeq))
-            {
-                m_txMiddle->SetSequenceNumberFor(&hdr);
-            }
-
-            return;
-        }
+        QosFrameExchangeManager::ReleaseSequenceNumbers(psdu);
+        return;
     }
-    QosFrameExchangeManager::ReleaseSequenceNumber(mpdu);
+
+    // iterate over MPDUs in reverse order (to process them in decreasing order of sequence number)
+    auto mpduIt = psdu->end();
+
+    do
+    {
+        std::advance(mpduIt, -1);
+
+        const WifiMacHeader& hdr = (*mpduIt)->GetOriginal()->GetHeader();
+        if (hdr.IsQosData())
+        {
+            uint8_t tid = hdr.GetQosTid();
+            NS_ASSERT(m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr1(), tid));
+
+            if (!hdr.IsRetry() && !(*mpduIt)->IsInFlight())
+            {
+                // The MPDU has never been transmitted, so we can make its sequence
+                // number available again if it is the highest sequence number
+                // assigned by the MAC TX middle
+                uint16_t currentNextSeq = m_txMiddle->PeekNextSequenceNumberFor(&hdr);
+
+                if ((hdr.GetSequenceNumber() + 1) % SEQNO_SPACE_SIZE == currentNextSeq)
+                {
+                    m_txMiddle->SetSequenceNumberFor(&hdr);
+
+                    NS_LOG_DEBUG("Released " << hdr.GetSequenceNumber()
+                                             << ", next sequence "
+                                                "number for dest="
+                                             << hdr.GetAddr1() << ",tid=" << +tid << " is "
+                                             << m_txMiddle->PeekNextSequenceNumberFor(&hdr));
+                }
+            }
+        }
+    } while (mpduIt != psdu->begin());
 }
 
 Time

@@ -944,17 +944,18 @@ FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
     // been transmitted, both in case the MPDUs have been discarded and in case the
     // MPDUs have to be transmitted (because a new sequence number is assigned to
     // MPDUs that have never been transmitted and are selected for transmission)
-    for (const auto& mpdu : *PeekPointer(psdu))
-    {
-        ReleaseSequenceNumber(mpdu);
-    }
+    ReleaseSequenceNumbers(psdu);
+
     TransmissionFailed();
 }
 
 void
-FrameExchangeManager::ReleaseSequenceNumber(Ptr<WifiMpdu> mpdu) const
+FrameExchangeManager::ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const
 {
-    NS_LOG_FUNCTION(this << *mpdu);
+    NS_LOG_FUNCTION(this << *psdu);
+
+    NS_ASSERT_MSG(psdu->GetNMpdus() == 1, "A-MPDUs should be handled by the HT FEM override");
+    auto mpdu = *psdu->begin();
 
     // the MPDU should be still in the DCF queue, unless it expired.
     // If the MPDU has never been transmitted and is not in-flight, it will be assigned

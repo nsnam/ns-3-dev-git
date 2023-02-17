@@ -432,12 +432,9 @@ HeFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVe
     // been transmitted, both in case the MPDUs have been discarded and in case the
     // MPDUs have to be transmitted (because a new sequence number is assigned to
     // MPDUs that have never been transmitted and are selected for transmission)
-    for (const auto& psdu : m_psduMap)
+    for (const auto& [staId, psdu] : m_psduMap)
     {
-        for (const auto& mpdu : *PeekPointer(psdu.second))
-        {
-            ReleaseSequenceNumber(mpdu);
-        }
+        ReleaseSequenceNumbers(psdu);
     }
     m_psduMap.clear();
     TransmissionFailed();

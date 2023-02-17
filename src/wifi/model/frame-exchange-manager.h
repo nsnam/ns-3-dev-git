@@ -369,12 +369,12 @@ class FrameExchangeManager : public Object
     virtual void RetransmitMpduAfterMissedAck(Ptr<WifiMpdu> mpdu) const;
 
     /**
-     * Make the sequence number of the given MPDU available again if the MPDU has
-     * never been transmitted.
+     * Make the sequence numbers of MPDUs included in the given PSDU available again
+     * if the MPDUs have never been transmitted.
      *
-     * \param mpdu the given MPDU
+     * \param psdu the given PSDU
      */
-    virtual void ReleaseSequenceNumber(Ptr<WifiMpdu> mpdu) const;
+    virtual void ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const;
 
     /**
      * Pass the given MPDU, discarded because of the max retry limit was reached,
