@@ -41,8 +41,16 @@ If logging has been enabled for the ``Ipv4L3Protocol`` component at a severity
 of ``LOGIC`` or above (see below about log severity), the statement
 will be printed out; otherwise, it will be suppressed.
 
+The logging implementation is enabled in ``debug`` and ``default``
+builds, but disabled in all other build profiles,
+so has no impact of execution speed.
+
+You can try the example program `log-example.cc` in `src/core/example`
+with various values for the `NS_LOG` environment variable to see the
+effect of the options discussed below.
+
 Enabling Output
-===============
+***************
 
 There are two ways that users typically control log output.  The
 first is by setting the ``NS_LOG`` environment variable; e.g.:
@@ -76,7 +84,7 @@ program, such as in the ``first`` tutorial program::
 will be discussed below.)
 
 ``NS_LOG`` Syntax
-=================
+*****************
 
 The ``NS_LOG`` environment variable contains a list of log components
 and options.  Log components are separated by \`:' characters:
@@ -282,7 +290,7 @@ The name of the calling function can be included with the options
 
 
 ``NS_LOG`` Wildcards
-####################
+====================
 
 The log component wildcard \`*' will enable all components.  To
 enable all components at a specific severity level
@@ -396,34 +404,6 @@ In case you want to add logging statements to a static member template
 
 2. Add logging statements (macro calls) to your static method.
 
-Controlling timestamp precision
-*******************************
-
-Timestamps are printed out in units of seconds.  When used with the default
-|ns3| time resolution of nanoseconds, the default timestamp precision is 9
-digits, with fixed format, to allow for 9 digits to be consistently printed
-to the right of the decimal point.  Example:
-
-::
-
-  +0.000123456s RandomVariableStream:SetAntithetic(0x805040, 0)
-
-When the |ns3| simulation uses higher time resolution such as picoseconds
-or femtoseconds, the precision is expanded accordingly; e.g. for picosecond:
-
-::
-
-  +0.000123456789s RandomVariableStream:SetAntithetic(0x805040, 0)
-
-When the |ns3| simulation uses a time resolution lower than microseconds,
-the default C++ precision is used.
-
-An example program at ``src\core\examples\sample-log-time-format.cc``
-demonstrates how to change the timestamp formatting.
-
-The maximum useful precision is 20 decimal digits, since Time is signed 64
-bits.
-
 Logging Macros
 ==============
 
@@ -465,10 +445,9 @@ Unconditional Logging
 
 As a convenience, the ``NS_LOG_UNCOND(...);`` macro will always log its
 arguments, even if the associated log-component is not enabled at any
-severity.  This macro does not use any of the prefix options.  Note that
-logging is only enabled in debug builds; this macro won't produce
-output in optimized builds.
-
+severity.  This macro does not use any of the prefix options.  Recall
+that logging is only enabled in ``debug``, ``default`` and ``relwithdebinfo``
+builds, so this macro will only produce output in the same builds.
 
 Guidelines
 ==========
@@ -511,3 +490,97 @@ Guidelines
   Without the cast, the integer is interpreted as a char, and the result
   will be most likely not in line with the expectations.
   This is a well documented C++ 'feature'.
+
+Controlling timestamp precision
+*******************************
+
+Timestamps are printed out in units of seconds.  When used with the default
+|ns3| time resolution of nanoseconds, the default timestamp precision is 9
+digits, with fixed format, to allow for 9 digits to be consistently printed
+to the right of the decimal point.  Example:
+
+::
+
+  +0.000123456s RandomVariableStream:SetAntithetic(0x805040, 0)
+
+When the |ns3| simulation uses higher time resolution such as picoseconds
+or femtoseconds, the precision is expanded accordingly; e.g. for picosecond:
+
+::
+
+  +0.000123456789s RandomVariableStream:SetAntithetic(0x805040, 0)
+
+When the |ns3| simulation uses a time resolution lower than microseconds,
+the default C++ precision is used.
+
+An example program at ``src/core/examples/sample-log-time-format.cc``
+demonstrates how to change the timestamp formatting.
+
+The maximum useful precision is 20 decimal digits, since Time is signed 64
+bits.
+
+
+Asserts
+*******
+
+The |ns3| assert facility can be used to validate that invariant conditions
+are met during execution. If the condition is not met an error message is given
+and the program stops, printing the location of the failed assert.
+
+The assert implementation is enabled in ``debug`` and ``default``
+builds, but disabled in all other build profiles to improve execution speed.
+
+How to add asserts to your code
+===============================
+
+There is only one macro one should use::
+
+  NS_ASSERT_MSG(condition, message);
+
+The ``condition`` should be the invariant you want to test, as a
+boolean expression.  The ``message`` should explain what the
+condition means and/or the possible source of the error.
+
+There is a variant available without a message, ``NS_ASSERT(condition)``,
+but we recommend using the message variant in ns-3 library code,
+as a well-crafted message can help users figure out how to fix the underlying
+issue with their script.
+
+In either case if the condition evaluates to ``false`` the assert will print
+an error message to ``std::cerr`` containing the following
+information:
+
+* Error message: "NS_ASSERT failed, "
+* The ``condition`` expression: "cond="``condition``"
+* The ``message``: "msg="``message``"
+* The simulation time and node, as would be printed by logging.
+  These are printed independent of the flags or prefix set on any
+  logging component.
+* The file and line containing the assert: "file=``file``, line=``line``
+
+Here is an example which doesn't assert:
+
+.. sourcecode:: bash
+
+   $ ./ns3 run assert-example
+   [0/2] Re-checking globbed directories...
+   ninja: no work to do.
+   NS_ASSERT_MSG example
+     if an argument is given this example will assert.
+
+and here is an example which does:
+
+.. sourcecode:: bash
+
+   $ ./ns3 run assert-example -- foo
+   [0/2] Re-checking globbed directories...
+   ninja: no work to do.
+   NS_ASSERT_MSG example
+     if an argument is given this example will assert.
+   NS_ASSERT failed, cond="argc == 1", msg="An argument was given, so we assert", file=/Users/barnes26/Code/netsim/ns3/repos/ns-3-dev/src/core/examples/assert-example.cc, line=44
+   NS_FATAL, terminating
+   terminate called without an active exception
+   Command 'build/debug/src/core/examples/ns3-dev-assert-example-debug foo' died with <Signals.SIGABRT: 6>.
+
+You can try the example program `assert-example.cc` in `src/core/example`
+with or without arguments to see the action of ``NS_ASSERT_MSG``.

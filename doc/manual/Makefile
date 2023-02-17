@@ -26,7 +26,7 @@ SOURCES = \
 	source/hash-functions.rst \
 	source/helpers.rst \
 	source/how-to-write-tests.rst \
-	source/logging.rst \
+	source/logging-asserts.rst \
 	source/new-models.rst \
 	source/new-modules.rst \
 	source/object-model.rst \

@@ -10,7 +10,7 @@ This chapter describes the development ecosystem generally used to create new mo
 
    working-with-git
    working-with-cmake
-   logging
+   logging-asserts
    tests
    new-models
    new-modules
@@ -18,4 +18,3 @@ This chapter describes the development ecosystem generally used to create new mo
    profiling
    working-with-gitlab-ci-local
    windows
-
