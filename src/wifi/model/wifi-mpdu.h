@@ -217,6 +217,22 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
     bool IsInFlight() const;
 
     /**
+     * Set the sequence number of this MPDU (and of the original copy, if this is an alias)
+     * to the given value. Also, record that a sequence number has been assigned to this MPDU.
+     *
+     * \param seqNo the given sequence number
+     */
+    void AssignSeqNo(uint16_t seqNo);
+    /**
+     * \return whether a sequence number has been assigned to this MPDU
+     */
+    bool HasSeqNoAssigned() const;
+    /**
+     * Record that a sequence number is no (longer) assigned to this MPDU.
+     */
+    void UnassignSeqNo();
+
+    /**
      * Create an alias for this MPDU (which must be an original copy) for transmission
      * on the link with the given ID. Aliases have their own copy of the MAC header and
      * cannot be used to perform non-const operations on the frame body.
@@ -264,6 +280,7 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
         Ptr<const Packet> m_packet;        //!< MSDU or A-MSDU contained in this queue item
         DeaggregatedMsdus m_msduList;      //!< list of aggregated MSDUs included in this MPDU
         std::optional<Iterator> m_queueIt; //!< Queue iterator pointing to this MPDU, if queued
+        bool m_seqNoAssigned;              //!< whether a sequence number has been assigned
     };
 
     /**

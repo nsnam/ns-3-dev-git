@@ -332,7 +332,7 @@ FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, uint16_t allowedWidth)
     if (!mpdu->IsFragment() && !mpdu->GetHeader().IsRetry())
     {
         uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor(&mpdu->GetHeader());
-        mpdu->GetHeader().SetSequenceNumber(sequence);
+        mpdu->AssignSeqNo(sequence);
     }
 
     NS_LOG_DEBUG("MPDU payload size=" << mpdu->GetPacketSize()
@@ -963,6 +963,7 @@ FrameExchangeManager::ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const
     // make its sequence number available again
     if (!mpdu->GetHeader().IsRetry() && !mpdu->IsInFlight())
     {
+        mpdu->UnassignSeqNo();
         m_txMiddle->SetSequenceNumberFor(&mpdu->GetOriginal()->GetHeader());
     }
 }

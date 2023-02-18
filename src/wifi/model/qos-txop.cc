@@ -386,7 +386,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
             continue;
         }
 
-        if ((item->GetHeader().IsRetry() || item->IsInFlight()) && IsQosOldPacket(item))
+        if (item->HasSeqNoAssigned() && IsQosOldPacket(item))
         {
             NS_LOG_DEBUG("Removing an old packet from EDCA queue: " << *item);
             if (!m_droppedMpduCallback.IsNull())
@@ -444,9 +444,8 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
 
     // peek the next sequence number and check if it is within the transmit window
     // in case of QoS data frame
-    uint16_t sequence = (hdr.IsRetry() || item->IsInFlight())
-                            ? hdr.GetSequenceNumber()
-                            : m_txMiddle->PeekNextSequenceNumberFor(&hdr);
+    uint16_t sequence = item->HasSeqNoAssigned() ? hdr.GetSequenceNumber()
+                                                 : m_txMiddle->PeekNextSequenceNumberFor(&hdr);
     if (hdr.IsQosData())
     {
         Mac48Address recipient = hdr.GetAddr1();
@@ -462,8 +461,8 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
         }
     }
 
-    // Assign a sequence number if this is not a fragment nor a retransmission nor an in-flight MPDU
-    if (!item->IsFragment() && !hdr.IsRetry() && !item->IsInFlight())
+    // Assign a sequence number if this is not a fragment nor it already has one assigned
+    if (!item->IsFragment() && !item->HasSeqNoAssigned())
     {
         hdr.SetSequenceNumber(sequence);
     }
@@ -515,8 +514,7 @@ QosTxop::GetNextMpdu(uint8_t linkId,
 
         // try A-MSDU aggregation
         if (m_mac->GetHtSupported() && !recipient.IsBroadcast() &&
-            !peekedItem->GetHeader().IsRetry() && !peekedItem->IsFragment() &&
-            !peekedItem->IsInFlight())
+            !peekedItem->HasSeqNoAssigned() && !peekedItem->IsFragment())
         {
             auto htFem = StaticCast<HtFrameExchangeManager>(qosFem);
             mpdu = htFem->GetMsduAggregator()->GetNextAmsdu(peekedItem, txParams, availableTime);
@@ -546,18 +544,12 @@ QosTxop::AssignSequenceNumber(Ptr<WifiMpdu> mpdu) const
 {
     NS_LOG_FUNCTION(this << *mpdu);
 
-    if (!mpdu->IsFragment() && !mpdu->GetHeader().IsRetry() && !mpdu->IsInFlight())
+    if (!mpdu->IsFragment() && !mpdu->HasSeqNoAssigned())
     {
         // in case of 11be MLDs, sequence numbers refer to the MLD address
         auto origMpdu = m_queue->GetOriginal(mpdu);
         uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor(&origMpdu->GetHeader());
-        mpdu->GetHeader().SetSequenceNumber(sequence);
-        // if this is not the original copy of the MPDU, assign the sequence number to
-        // the original copy as well
-        if (!mpdu->IsOriginal())
-        {
-            origMpdu->GetHeader().SetSequenceNumber(sequence);
-        }
+        mpdu->AssignSeqNo(sequence);
     }
 }
 

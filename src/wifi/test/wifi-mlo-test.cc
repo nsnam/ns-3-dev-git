@@ -2647,8 +2647,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
         }
     }
 
-    // Keep commented until the issue with the release of sequence numbers is fixed
-    // AddTestCase(new ReleaseSeqNoAfterCtsTimeoutTest(), TestCase::QUICK);
+    AddTestCase(new ReleaseSeqNoAfterCtsTimeoutTest(), TestCase::QUICK);
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite

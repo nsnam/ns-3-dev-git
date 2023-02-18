@@ -886,6 +886,7 @@ HtFrameExchangeManager::ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const
 
                 if ((hdr.GetSequenceNumber() + 1) % SEQNO_SPACE_SIZE == currentNextSeq)
                 {
+                    (*mpduIt)->UnassignSeqNo();
                     m_txMiddle->SetSequenceNumberFor(&hdr);
 
                     NS_LOG_DEBUG("Released " << hdr.GetSequenceNumber()

@@ -322,6 +322,32 @@ WifiMpdu::IsInFlight() const
     return IsQueued() && !GetQueueIt()->inflights.empty();
 }
 
+void
+WifiMpdu::AssignSeqNo(uint16_t seqNo)
+{
+    NS_LOG_FUNCTION(this << seqNo);
+
+    m_header.SetSequenceNumber(seqNo);
+    // if this is an alias, set the sequence number on the original copy, too
+    if (auto originalPtr = std::get_if<ALIAS>(&m_instanceInfo))
+    {
+        (*originalPtr)->m_header.SetSequenceNumber(seqNo);
+    }
+    GetOriginalInfo().m_seqNoAssigned = true;
+}
+
+bool
+WifiMpdu::HasSeqNoAssigned() const
+{
+    return GetOriginalInfo().m_seqNoAssigned;
+}
+
+void
+WifiMpdu::UnassignSeqNo()
+{
+    GetOriginalInfo().m_seqNoAssigned = false;
+}
+
 WifiMpdu::DeaggregatedMsdusCI
 WifiMpdu::begin() const
 {

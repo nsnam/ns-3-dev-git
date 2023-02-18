@@ -210,6 +210,7 @@ AmpduAggregationTest::DoRun()
 
     // the packet has not been "transmitted", release its sequence number
     m_mac->m_txMiddle->SetSequenceNumberFor(&item->GetHeader());
+    item->UnassignSeqNo();
 
     //-----------------------------------------------------------------------------------------------------
 
