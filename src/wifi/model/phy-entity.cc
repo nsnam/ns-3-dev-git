@@ -272,7 +272,7 @@ PhyEntity::GetPhyHeaderSnrPer(WifiPpduField field, Ptr<Event> event) const
     return m_wifiPhy->m_interference->CalculatePhyHeaderSnrPer(
         event,
         measurementChannelWidth,
-        GetPrimaryBand(measurementChannelWidth).indices,
+        GetPrimaryBand(measurementChannelWidth),
         m_wifiPhy->GetCurrentFrequencyRange(),
         field);
 }
@@ -401,11 +401,10 @@ PhyEntity::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
                                 Time rxDuration)
 {
     // The total RX power corresponds to the maximum over all the bands
-    auto it = std::max_element(
-        rxPowersW.begin(),
-        rxPowersW.end(),
-        [](const std::pair<WifiSpectrumBandIndices, double>& p1,
-           const std::pair<WifiSpectrumBandIndices, double>& p2) { return p1.second < p2.second; });
+    auto it =
+        std::max_element(rxPowersW.begin(), rxPowersW.end(), [](const auto& p1, const auto& p2) {
+            return p1.second < p2.second;
+        });
     NS_LOG_FUNCTION(this << ppdu << it->second);
 
     auto event = DoGetEvent(ppdu, rxPowersW);
@@ -826,11 +825,11 @@ PhyEntity::GetReceptionStatus(Ptr<const WifiPsdu> psdu,
     }
 }
 
-std::pair<uint16_t, WifiSpectrumBandIndices>
+std::pair<uint16_t, WifiSpectrumBandInfo>
 PhyEntity::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t /* staId */) const
 {
     uint16_t channelWidth = GetRxChannelWidth(txVector);
-    return std::make_pair(channelWidth, GetPrimaryBand(channelWidth).indices);
+    return std::make_pair(channelWidth, GetPrimaryBand(channelWidth));
 }
 
 const std::map<std::pair<uint64_t, WifiPreamble>, Ptr<Event>>&
@@ -965,7 +964,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     NS_ASSERT(!m_wifiPhy->m_currentPreambleEvents.empty());
     for (auto preambleEvent : m_wifiPhy->m_currentPreambleEvents)
     {
-        double rxPowerW = preambleEvent.second->GetRxPowerW(measurementBand.indices);
+        double rxPowerW = preambleEvent.second->GetRxPowerW(measurementBand);
         if (rxPowerW > maxRxPowerW)
         {
             maxRxPowerW = rxPowerW;
@@ -998,14 +997,14 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     double snr = m_wifiPhy->m_interference->CalculateSnr(m_wifiPhy->m_currentEvent,
                                                          measurementChannelWidth,
                                                          1,
-                                                         measurementBand.indices,
+                                                         measurementBand,
                                                          m_wifiPhy->GetCurrentFrequencyRange());
     NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
 
     if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW > 0.0) ||
         (m_wifiPhy->m_preambleDetectionModel &&
          m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(
-             m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand.indices),
+             m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand),
              snr,
              measurementChannelWidth)))
     {
@@ -1193,7 +1192,7 @@ PhyEntity::GetRandomValue() const
 double
 PhyEntity::GetRxPowerWForPpdu(Ptr<Event> event) const
 {
-    return event->GetRxPowerW(GetPrimaryBand(GetMeasurementChannelWidth(event->GetPpdu())).indices);
+    return event->GetRxPowerW(GetPrimaryBand(GetMeasurementChannelWidth(event->GetPpdu())));
 }
 
 Ptr<const Event>
@@ -1235,7 +1234,7 @@ PhyEntity::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
 }
 
 Time
-PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandIndices& band)
+PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandInfo& band)
 {
     return m_wifiPhy->m_interference->GetEnergyDuration(DbmToW(thresholdDbm),
                                                         band,
@@ -1272,7 +1271,7 @@ PhyEntity::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     NS_LOG_FUNCTION(this << channelWidth);
     const double ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
     const Time delayUntilCcaEnd =
-        GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(channelWidth).indices);
+        GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(channelWidth));
     if (delayUntilCcaEnd.IsStrictlyPositive())
     {
         return std::make_pair(delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY);

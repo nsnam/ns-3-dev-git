@@ -75,7 +75,7 @@ struct RxSignalInfo
 /**
  * A map of the received power (Watts) for each band
  */
-typedef std::map<WifiSpectrumBandIndices, double> RxPowerWattPerChannelBand;
+using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, double>;
 
 class WifiPsdu;
 class WifiPhy;
@@ -775,7 +775,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param staId the station ID of the PSDU
      * \return a pair of channel width (MHz) and band
      */
-    virtual std::pair<uint16_t, WifiSpectrumBandIndices> GetChannelWidthAndBand(
+    virtual std::pair<uint16_t, WifiSpectrumBandInfo> GetChannelWidthAndBand(
         const WifiTxVector& txVector,
         uint16_t staId) const;
 
@@ -939,7 +939,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param band identify the requested band
      * \return the delay until CCA busy is ended
      */
-    Time GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandIndices& band);
+    Time GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandInfo& band);
 
     /**
      * \param currentChannelWidth channel width of the current transmission (MHz)

@@ -122,16 +122,15 @@ SpectrumWifiPhy::DoInitialize()
 }
 
 void
-SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOffset)
+SpectrumWifiPhy::UpdateInterferenceHelperBands()
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT(!m_spectrumPhyInterfaces.empty());
     uint16_t channelWidth = GetChannelWidth();
-    std::vector<WifiSpectrumBandIndices> ccaBands{};
-    std::vector<WifiSpectrumBandIndices> ruBands{};
+    std::vector<WifiSpectrumBandInfo> bands{};
     if (channelWidth < 20)
     {
-        ccaBands.push_back(GetBand(channelWidth).indices);
+        bands.push_back(GetBand(channelWidth));
     }
     else
     {
@@ -139,49 +138,30 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOff
         {
             for (uint32_t i = 0; i < (channelWidth / bw); ++i)
             {
-                ccaBands.push_back(GetBand(bw, i).indices);
+                bands.push_back(GetBand(bw, i));
             }
         }
     }
     if (GetStandard() >= WIFI_STANDARD_80211ax)
     {
-        auto&& ruBandsMap = HePhy::GetRuBands(this, channelWidth, GetGuardBandwidth(channelWidth));
-        for (const auto& bandRuPair : ruBandsMap)
+        auto&& ruBands = HePhy::GetRuBands(this, channelWidth, GetGuardBandwidth(channelWidth));
+        for (const auto& bandRuPair : ruBands)
         {
-            ruBands.push_back(bandRuPair.first);
+            bands.push_back(bandRuPair.first);
         }
-        m_currentSpectrumPhyInterface->SetRuBands(std::move(ruBandsMap));
+        m_currentSpectrumPhyInterface->SetRuBands(std::move(ruBands));
     }
-    auto bands{ccaBands};
-    bands.insert(bands.end(), ruBands.begin(), ruBands.end());
-    const auto bandsChanged = std::any_of(bands.cbegin(), bands.cend(), [&](const auto& band) {
-        return !m_interference->HasBand(band, GetCurrentFrequencyRange());
-    });
-    if (!bandsChanged)
+
+    if (m_interference->HasBands(GetCurrentFrequencyRange()))
     {
-        return;
+        m_interference->UpdateBands(bands, GetCurrentFrequencyRange());
     }
-    if (indicesOffset.has_value())
+    else
     {
-        // indicesOffset is computed for multiple of 20 MHz subchannels, and since RU bands are not
-        // used for CCA, we can here safely erase RU bands (UpdateBands will erase them since they
-        // are not passed to the call)
-        m_interference->UpdateBands(ccaBands, GetCurrentFrequencyRange(), *indicesOffset);
-        // add new RU bands
-        if (!ruBands.empty())
+        for (const auto& band : bands)
         {
-            for (const auto& band : ruBands)
-            {
-                NS_ASSERT(!m_interference->HasBand(band, GetCurrentFrequencyRange()));
-                m_interference->AddBand(band, GetCurrentFrequencyRange());
-            }
+            m_interference->AddBand(band, GetCurrentFrequencyRange());
         }
-        return;
-    }
-    m_interference->RemoveBands(GetCurrentFrequencyRange());
-    for (const auto& band : bands)
-    {
-        m_interference->AddBand(band, GetCurrentFrequencyRange());
     }
 }
 
@@ -226,14 +206,6 @@ SpectrumWifiPhy::ResetSpectrumModel()
 {
     NS_LOG_FUNCTION(this);
 
-    std::optional<int32_t> indicesOffset{};
-    if (m_currentSpectrumPhyInterface->GetCenterFrequency() > 0)
-    {
-        indicesOffset =
-            (2e6 * (GetFrequency() - m_currentSpectrumPhyInterface->GetCenterFrequency())) /
-            GetSubcarrierSpacing();
-    }
-
     // Replace existing spectrum model with new one
     const auto channelWidth = GetChannelWidth();
     m_currentSpectrumPhyInterface->SetRxSpectrumModel(GetFrequency(),
@@ -243,7 +215,7 @@ SpectrumWifiPhy::ResetSpectrumModel()
 
     m_currentSpectrumPhyInterface->GetChannel()->AddRx(m_currentSpectrumPhyInterface);
 
-    UpdateInterferenceHelperBands(indicesOffset);
+    UpdateInterferenceHelperBands();
 }
 
 void
@@ -339,7 +311,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         NS_LOG_DEBUG("Signal power received (watts) before antenna gain: " << rxPowerPerBandW);
         rxPowerPerBandW *= DbToRatio(GetRxGain());
         totalRxPowerW += rxPowerPerBandW;
-        rxPowerW.insert({filteredBand.indices, rxPowerPerBandW});
+        rxPowerW.insert({filteredBand, rxPowerPerBandW});
         NS_LOG_DEBUG("Signal power received after antenna gain for "
                      << channelWidth << " MHz channel: " << rxPowerPerBandW << " W ("
                      << WToDbm(rxPowerPerBandW) << " dBm)");
@@ -359,7 +331,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
             {
                 totalRxPowerW += rxPowerPerBandW;
             }
-            rxPowerW.insert({filteredBand.indices, rxPowerPerBandW});
+            rxPowerW.insert({filteredBand, rxPowerPerBandW});
             NS_LOG_DEBUG("Signal power received after antenna gain for "
                          << bw << " MHz channel band " << +i << ": " << rxPowerPerBandW << " W ("
                          << WToDbm(rxPowerPerBandW) << " dBm)");
@@ -374,15 +346,16 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         for (const auto& [band, ru] : ruBands)
         {
             double rxPowerPerBandW =
-                WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, band);
+                WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, band.indices);
             NS_LOG_DEBUG("Signal power received (watts) before antenna gain for RU with type "
                          << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
-                         << band.first << "; " << band.second << "): " << rxPowerPerBandW);
+                         << band.indices.first << "; " << band.indices.second
+                         << "): " << rxPowerPerBandW);
             rxPowerPerBandW *= DbToRatio(GetRxGain());
             NS_LOG_DEBUG("Signal power received after antenna gain for RU with type "
                          << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
-                         << band.first << "; " << band.second << "): " << rxPowerPerBandW << " W ("
-                         << WToDbm(rxPowerPerBandW) << " dBm)");
+                         << band.indices.first << "; " << band.indices.second << "): "
+                         << rxPowerPerBandW << " W (" << WToDbm(rxPowerPerBandW) << " dBm)");
             rxPowerW.insert({band, rxPowerPerBandW});
         }
     }

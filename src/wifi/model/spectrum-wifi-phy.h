@@ -195,10 +195,8 @@ class SpectrumWifiPhy : public WifiPhy
 
     /**
      * This function is called to update the bands handled by the InterferenceHelper.
-     * \param indicesOffset the offset to convert start and stop indices from old to new spectrum
-     * model, if bands are already handled by the InterferenceHelper
      */
-    void UpdateInterferenceHelperBands(std::optional<int32_t> indicesOffset);
+    void UpdateInterferenceHelperBands();
 
     /**
      * Determine whether the PHY shall issue a PHY-RXSTART.indication primitive in response to a

@@ -520,8 +520,8 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
 {
     for (const auto& pair : rxPowersW)
     {
-        NS_LOG_INFO("band: (" << pair.first.first << ";" << pair.first.second << ") -> powerW="
-                              << pair.second << " (" << WToDbm(pair.second) << " dBm)");
+        NS_LOG_INFO("band: (" << pair.first << ") -> powerW=" << pair.second << " ("
+                              << WToDbm(pair.second) << " dBm)");
     }
 
     size_t numBands = rxPowersW.size();
@@ -537,7 +537,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
 
     uint16_t channelWidth = std::min(m_txChannelWidth, m_rxChannelWidth);
     auto band = m_rxPhy->GetBand(channelWidth, 0);
-    auto it = rxPowersW.find(band.indices);
+    auto it = rxPowersW.find(band);
     NS_LOG_INFO("powerW total band: " << it->second << " (" << WToDbm(it->second) << " dBm)");
     int totalRxPower = static_cast<int>(WToDbm(it->second) + 0.5);
     int expectedTotalRxPower;
@@ -560,7 +560,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
     if ((m_txChannelWidth <= m_rxChannelWidth) && (channelWidth >= 20))
     {
         band = m_rxPhy->GetBand(20, 0); // primary 20 MHz
-        it = rxPowersW.find(band.indices);
+        it = rxPowersW.find(band);
         NS_LOG_INFO("powerW in primary 20 MHz channel: " << it->second << " (" << WToDbm(it->second)
                                                          << " dBm)");
         int rxPowerPrimaryChannel20 = static_cast<int>(WToDbm(it->second) + 0.5);
@@ -1016,7 +1016,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences(Ptr<ExtSpectrumWifiP
     auto interferenceHelper = DynamicCast<InterferenceHelper>(ptr.Get<InterferenceHelper>());
     NS_ASSERT(interferenceHelper);
     const auto band = phy->GetBandForInterface(channelWidth, 0, freqRange, channelWidth);
-    const auto energyDuration = interferenceHelper->GetEnergyDuration(0, band.indices, freqRange);
+    const auto energyDuration = interferenceHelper->GetEnergyDuration(0, band, freqRange);
     NS_TEST_ASSERT_MSG_EQ(energyDuration.IsStrictlyPositive(),
                           interferencesExpected,
                           "Incorrect interferences detection");

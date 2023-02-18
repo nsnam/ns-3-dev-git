@@ -53,7 +53,7 @@ YansWifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 {
     WifiPhy::SetInterferenceHelper(helper);
     // add dummy band for Yans
-    m_interference->AddBand({0, 0}, GetCurrentFrequencyRange());
+    m_interference->AddBand({{0, 0}, {0, 0}}, GetCurrentFrequencyRange());
 }
 
 YansWifiPhy::~YansWifiPhy()

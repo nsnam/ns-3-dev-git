@@ -90,7 +90,7 @@ class Event : public SimpleRefCount<Event>
      * \param band the band for which the power should be returned
      * \return the received power (W) for a given band
      */
-    double GetRxPowerW(const WifiSpectrumBandIndices& band) const;
+    double GetRxPowerW(const WifiSpectrumBandInfo& band) const;
     /**
      * Return the received power (W) for all bands.
      *
@@ -150,34 +150,25 @@ class InterferenceHelper : public Object
      * \param band the band to be added
      * \param freqRange the frequency range the band to add belongs to
      */
-    void AddBand(const WifiSpectrumBandIndices& band, const FrequencyRange& freqRange);
+    void AddBand(const WifiSpectrumBandInfo& band, const FrequencyRange& freqRange);
 
     /**
-     * Remove the frequency bands for a given frequency range.
+     * Check whether a given frequency range is already tracked by this interference helper.
      *
-     * \param freqRange the frequency range the bands to remove belong to
+     * \param freqRange the frequency range to check
+     * \return true if bands are tracked by this interference helper for a given frequency range,
+     * false otherwise
      */
-    void RemoveBands(FrequencyRange freqRange);
-
-    /**
-     * Check whether a given band is tracked by this interference helper.
-     *
-     * \param band the band to be checked
-     * \param freqRange the frequency range the band to check belongs to
-     * \return true if the band is already tracked by this interference helper, false otherwise
-     */
-    bool HasBand(const WifiSpectrumBandIndices& band, const FrequencyRange& freqRange) const;
+    bool HasBands(const FrequencyRange& freqRange) const;
 
     /**
      * Update the frequency bands for a given frequency range when the spectrum model is changed.
      *
      * \param bands the bands to be added in the new spectrum model
      * \param freqRange the frequency range the bands belong to
-     * \param offset the offset to convert start and stop indices from old to new spectrum model
      */
-    void UpdateBands(const std::vector<WifiSpectrumBandIndices>& bands,
-                     const FrequencyRange& freqRange,
-                     int32_t offset);
+    void UpdateBands(const std::vector<WifiSpectrumBandInfo>& bands,
+                     const FrequencyRange& freqRange);
 
     /**
      * Set the noise figure.
@@ -216,7 +207,7 @@ class InterferenceHelper : public Object
      *          be higher than the requested threshold.
      */
     Time GetEnergyDuration(double energyW,
-                           const WifiSpectrumBandIndices& band,
+                           const WifiSpectrumBandInfo& band,
                            const FrequencyRange& freqRange);
 
     /**
@@ -268,7 +259,7 @@ class InterferenceHelper : public Object
      */
     PhyEntity::SnrPer CalculatePayloadSnrPer(Ptr<Event> event,
                                              uint16_t channelWidth,
-                                             const WifiSpectrumBandIndices& band,
+                                             const WifiSpectrumBandInfo& band,
                                              const FrequencyRange& freqRange,
                                              uint16_t staId,
                                              std::pair<Time, Time> relativeMpduStartStop) const;
@@ -286,7 +277,7 @@ class InterferenceHelper : public Object
     double CalculateSnr(Ptr<Event> event,
                         uint16_t channelWidth,
                         uint8_t nss,
-                        const WifiSpectrumBandIndices& band,
+                        const WifiSpectrumBandInfo& band,
                         const FrequencyRange& freqRange) const;
     /**
      * Calculate the SNIR at the start of the PHY header and accumulate
@@ -302,7 +293,7 @@ class InterferenceHelper : public Object
      */
     PhyEntity::SnrPer CalculatePhyHeaderSnrPer(Ptr<Event> event,
                                                uint16_t channelWidth,
-                                               const WifiSpectrumBandIndices& band,
+                                               const WifiSpectrumBandInfo& band,
                                                const FrequencyRange& freqRange,
                                                WifiPpduField header) const;
 
@@ -427,7 +418,7 @@ class InterferenceHelper : public Object
     /**
      * Map of NiChanges per band
      */
-    using NiChangesPerBand = std::map<WifiSpectrumBandIndices, NiChanges>;
+    using NiChangesPerBand = std::map<WifiSpectrumBandInfo, NiChanges>;
 
     /**
      * Map of NiChanges per band and per range
@@ -437,12 +428,21 @@ class InterferenceHelper : public Object
     /**
      * Map of first power per band
      */
-    using FirstPowerPerBand = std::map<WifiSpectrumBandIndices, double>;
+    using FirstPowerPerBand = std::map<WifiSpectrumBandInfo, double>;
 
     /**
      * Map of first power per band and per range
      */
     using FirstPowerPerBandPerRange = std::map<FrequencyRange, FirstPowerPerBand>;
+
+    /**
+     * Check whether a given band is tracked by this interference helper.
+     *
+     * \param band the band to be checked
+     * \param freqRange the frequency range the band to check belongs to
+     * \return true if the band is already tracked by this interference helper, false otherwise
+     */
+    bool HasBand(const WifiSpectrumBandInfo& band, const FrequencyRange& freqRange) const;
 
     /**
      * Append the given Event.
@@ -466,7 +466,7 @@ class InterferenceHelper : public Object
      */
     double CalculateNoiseInterferenceW(Ptr<Event> event,
                                        NiChangesPerBand* nis,
-                                       const WifiSpectrumBandIndices& band,
+                                       const WifiSpectrumBandInfo& band,
                                        const FrequencyRange& freqRange) const;
     /**
      * Calculate the error rate of the given PHY payload only in the provided time
@@ -486,7 +486,7 @@ class InterferenceHelper : public Object
     double CalculatePayloadPer(Ptr<const Event> event,
                                uint16_t channelWidth,
                                NiChangesPerBand* nis,
-                               const WifiSpectrumBandIndices& band,
+                               const WifiSpectrumBandInfo& band,
                                const FrequencyRange& freqRange,
                                uint16_t staId,
                                std::pair<Time, Time> window) const;
@@ -506,7 +506,7 @@ class InterferenceHelper : public Object
     double CalculatePhyHeaderPer(Ptr<const Event> event,
                                  NiChangesPerBand* nis,
                                  uint16_t channelWidth,
-                                 const WifiSpectrumBandIndices& band,
+                                 const WifiSpectrumBandInfo& band,
                                  const FrequencyRange& freqRange,
                                  WifiPpduField header) const;
     /**
@@ -524,7 +524,7 @@ class InterferenceHelper : public Object
     double CalculatePhyHeaderSectionPsr(Ptr<const Event> event,
                                         NiChangesPerBand* nis,
                                         uint16_t channelWidth,
-                                        const WifiSpectrumBandIndices& band,
+                                        const WifiSpectrumBandInfo& band,
                                         const FrequencyRange& freqRange,
                                         PhyEntity::PhyHeaderSections phyHeaderSections) const;
 

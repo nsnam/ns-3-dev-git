@@ -975,7 +975,7 @@ HePhy::StartReceiveOfdmaPayload(Ptr<Event> event)
     NotifyPayloadBegin(ppdu->GetTxVector(), payloadDuration);
 }
 
-std::pair<uint16_t, WifiSpectrumBandIndices>
+std::pair<uint16_t, WifiSpectrumBandInfo>
 HePhy::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t staId) const
 {
     if (txVector.IsMu())
@@ -989,7 +989,7 @@ HePhy::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t staId) cons
     }
 }
 
-WifiSpectrumBandIndices
+WifiSpectrumBandInfo
 HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsMu());
@@ -1004,14 +1004,16 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
         std::make_pair(group.front().first, group.back().second);
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
-    return ConvertHeRuSubcarriers(channelWidth,
-                                  GetGuardBandwidth(channelWidth),
-                                  m_wifiPhy->GetSubcarrierSpacing(),
-                                  subcarrierRange,
-                                  0);
+    auto indices = ConvertHeRuSubcarriers(channelWidth,
+                                          GetGuardBandwidth(channelWidth),
+                                          m_wifiPhy->GetSubcarrierSpacing(),
+                                          subcarrierRange,
+                                          0);
+    auto frequencies = m_wifiPhy->ConvertIndicesToFrequencies(indices);
+    return {indices, frequencies};
 }
 
-WifiSpectrumBandIndices
+WifiSpectrumBandInfo
 HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsMu());
@@ -1026,15 +1028,17 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
         std::make_pair(group.front().first, group.back().second);
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
-    return ConvertHeRuSubcarriers(
+    auto indices = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
         m_wifiPhy->GetSubcarrierSpacing(),
         subcarrierRange,
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
+    auto frequencies = m_wifiPhy->ConvertIndicesToFrequencies(indices);
+    return {indices, frequencies};
 }
 
-WifiSpectrumBandIndices
+WifiSpectrumBandInfo
 HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsUlMu() && (txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE));
@@ -1055,12 +1059,14 @@ HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
                                m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
     HeRu::SubcarrierRange subcarrierRange =
         std::make_pair(groupPreamble.front().first, groupPreamble.back().second);
-    return ConvertHeRuSubcarriers(
+    auto indices = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
         m_wifiPhy->GetSubcarrierSpacing(),
         subcarrierRange,
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
+    auto frequencies = m_wifiPhy->ConvertIndicesToFrequencies(indices);
+    return {indices, frequencies};
 }
 
 uint16_t
@@ -1206,7 +1212,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
          * busy while the threshold continues to be exceeded.
          */
         double ccaThresholdDbm = -62;
-        Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, band.indices);
+        Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, band);
 
         if (ppdu)
         {
@@ -1266,7 +1272,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
                     NS_ASSERT_MSG(false, "Invalid channel width: " << ppduBw);
                 }
             }
-            Time ppduCcaDuration = GetDelayUntilCcaEnd(ccaThresholdDbm, band.indices);
+            Time ppduCcaDuration = GetDelayUntilCcaEnd(ccaThresholdDbm, band);
             delayUntilCcaEnd = std::max(delayUntilCcaEnd, ppduCcaDuration);
         }
         per20MhzDurations.push_back(delayUntilCcaEnd);
@@ -1365,7 +1371,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         }
         else
         {
-            const auto band = GetRuBandForTx(txVector, GetStaId(ppdu));
+            const auto band = GetRuBandForTx(txVector, GetStaId(ppdu)).indices;
             return WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
                 centerFrequency,
                 channelWidth,
@@ -1906,7 +1912,7 @@ HePhy::GetRuBands(Ptr<const WifiPhy> phy, uint16_t channelWidth, uint16_t guardB
                                       (!primary80IsLower80 && phyIndex > nRus / 2));
                     HeRu::RuSpec ru(ruType, index, primary80);
                     NS_ABORT_IF(ru.GetPhyIndex(bw, p20Index) != phyIndex);
-                    ruBands.insert({band.indices, ru});
+                    ruBands.insert({band, ru});
                 }
             }
         }

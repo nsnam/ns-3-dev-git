@@ -172,7 +172,7 @@ class HePhy : public VhtPhy
      *
      * \return the RU band in the TX spectrum
      */
-    WifiSpectrumBandIndices GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const;
+    WifiSpectrumBandInfo GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the band in the RX spectrum associated with the RU used by the PSDU
      * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
@@ -182,7 +182,7 @@ class HePhy : public VhtPhy
      *
      * \return the RU band in the RX spectrum
      */
-    WifiSpectrumBandIndices GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const;
+    WifiSpectrumBandInfo GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
      *
@@ -191,7 +191,7 @@ class HePhy : public VhtPhy
      *
      * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
      */
-    WifiSpectrumBandIndices GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const;
+    WifiSpectrumBandInfo GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the width in MHz of the non-OFDMA portion of an HE TB PPDU
      *
@@ -452,7 +452,7 @@ class HePhy : public VhtPhy
                                                           uint8_t bandIndex = 0);
 
     /// Map a spectrum band associated with an RU to the RU specification
-    using RuBands = std::map<WifiSpectrumBandIndices, HeRu::RuSpec>;
+    using RuBands = std::map<WifiSpectrumBandInfo, HeRu::RuSpec>;
 
     /**
      * Static function to compute the RU bands that belong to a given channel width.
@@ -473,9 +473,8 @@ class HePhy : public VhtPhy
     Ptr<Event> DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW) override;
     bool IsConfigSupported(Ptr<const WifiPpdu> ppdu) const override;
     Time DoStartReceivePayload(Ptr<Event> event) override;
-    std::pair<uint16_t, WifiSpectrumBandIndices> GetChannelWidthAndBand(
-        const WifiTxVector& txVector,
-        uint16_t staId) const override;
+    std::pair<uint16_t, WifiSpectrumBandInfo> GetChannelWidthAndBand(const WifiTxVector& txVector,
+                                                                     uint16_t staId) const override;
     void RxPayloadSucceeded(Ptr<const WifiPsdu> psdu,
                             RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector,
