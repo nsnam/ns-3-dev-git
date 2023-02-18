@@ -38,7 +38,7 @@ namespace ns3
  * The difference is that the initial values of this parameters are not
  * from uniform distribution but from stationary distribution of RWM model.
  * The implementation of this model is 2D-specific and with nonzero nodes speeds.
- * In the 3D ns-3 coordinate system, the momement occurs on the
+ * In the 3D ns-3 coordinate system, the movement occurs on the
  * \f$ z=\overline{Z} \f$ plane, where \f$ \overline{Z} \f$ is a constant which
  * can be configured using the Z attribute.
  *

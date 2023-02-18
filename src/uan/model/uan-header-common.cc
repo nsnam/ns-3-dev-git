@@ -145,7 +145,7 @@ UanHeaderCommon::GetProtocolNumber() const
     return 0;
 }
 
-// Inherrited methods
+// Inherited methods
 
 uint32_t
 UanHeaderCommon::GetSerializedSize() const

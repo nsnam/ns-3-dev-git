@@ -452,7 +452,7 @@ CobaltQueueDisc::CobaltShouldDrop(Ptr<QueueDiscItem> item, int64_t now)
 
     // If L4S mode is enabled then check if the packet is ECT1 or CE and
     // if sojourn time is greater than CE threshold then the packet is marked.
-    // If packet is marked succesfully then the CoDel steps can be skipped.
+    // If packet is marked successfully then the CoDel steps can be skipped.
     if (item && m_useL4s)
     {
         uint8_t tosByte = 0;

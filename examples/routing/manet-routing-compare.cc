@@ -102,7 +102,7 @@ class RoutingExperiment
     // static void SetMACParam (ns3::NetDeviceContainer & devices,
     //                                  int slotDistance);
     /**
-     * Handles the command-line parmeters.
+     * Handles the command-line parameters.
      * \param argc The argument count.
      * \param argv The argument vector.
      * \return the CSV filename.

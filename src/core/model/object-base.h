@@ -238,7 +238,7 @@ class ObjectBase
      */
     void GetAttribute(std::string name, AttributeValue& value) const;
     /**
-     * Get the value of an attribute without raising erros.
+     * Get the value of an attribute without raising errors.
      *
      * If the attribute could not be read this will return \c false,
      * but not raise any errors.

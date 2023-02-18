@@ -162,7 +162,7 @@ class RandomRoomPositionAllocator : public PositionAllocator
 
   private:
     /**
-     * Room informations
+     * Room information
      */
     struct RoomInfo
     {

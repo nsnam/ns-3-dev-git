@@ -448,7 +448,7 @@ class RoutingHelper : public Object
     void SetupRoutingMessages(NodeContainer& c, Ipv4InterfaceContainer& adhocTxInterfaces);
 
     /**
-     * \brief Sets up a routing packet for tranmission
+     * \brief Sets up a routing packet for transmission
      * \param addr destination address
      * \param node source node
      * \return Socket to be used for sending/receiving a routed data packet

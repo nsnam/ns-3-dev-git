@@ -1058,7 +1058,7 @@ operator*(T lhs, const Time& rhs)
  * Exact division, returning a dimensionless fixed point number.
  *
  * This can be truncated to integer, or converted to double
- * (with loss of precison).  Assuming `ta` and `tb` are Times:
+ * (with loss of precision).  Assuming `ta` and `tb` are Times:
  *
  * \code
  *     int64x64_t ratio = ta / tb;

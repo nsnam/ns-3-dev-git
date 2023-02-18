@@ -79,7 +79,7 @@ class LteUePhySapUser
     virtual ~LteUePhySapUser();
 
     /**
-     * \brief Receive Phy Pdu funtion.
+     * \brief Receive Phy Pdu function.
      *
      * It is called by the Phy to notify the MAC of the reception of a new PHY-PDU
      *

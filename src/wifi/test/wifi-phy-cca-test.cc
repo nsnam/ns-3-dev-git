@@ -289,7 +289,7 @@ WifiPhyCcaThresholdsTest::RunOne()
 
     //-----------------------------------------------------------------------------------------------------------------------------------
 
-    // OFDM PHY: 20 MHz non-HT PPDU in primary channel (20 MHz) if power above CCA sensitivty
+    // OFDM PHY: 20 MHz non-HT PPDU in primary channel (20 MHz) if power above CCA sensitivity
     // threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_OFDM),
                        CreateDummyNonHtPpdu(),
@@ -312,14 +312,14 @@ WifiPhyCcaThresholdsTest::RunOne()
 
     //-----------------------------------------------------------------------------------------------------------------------------------
 
-    // HT PHY: 20 MHz HT PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
+    // HT PHY: 20 MHz HT PPDU in primary channel (20 MHz) if power in primary above CCA sensitivity
     // threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HT),
                        CreateDummyHtPpdu(20),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivityDbm);
 
-    // HT PHY: 40 MHz HT PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
+    // HT PHY: 40 MHz HT PPDU in primary channel (20 MHz) if power in primary above CCA sensitivity
     // threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HT),
                        CreateDummyHtPpdu(40),
@@ -354,29 +354,29 @@ WifiPhyCcaThresholdsTest::RunOne()
 
     //-----------------------------------------------------------------------------------------------------------------------------------
 
-    // VHT PHY: 20 MHz VHT PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
-    // threshold
+    // VHT PHY: 20 MHz VHT PPDU in primary channel (20 MHz) if power in primary above CCA
+    // sensitivity threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_VHT),
                        CreateDummyVhtPpdu(20),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivityDbm);
 
-    // VHT PHY: 40 MHz VHT PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
-    // threshold
+    // VHT PHY: 40 MHz VHT PPDU in primary channel (20 MHz) if power in primary above CCA
+    // sensitivity threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_VHT),
                        CreateDummyVhtPpdu(40),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivityDbm);
 
-    // VHT PHY: 80 MHz VHT PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
-    // threshold
+    // VHT PHY: 80 MHz VHT PPDU in primary channel (20 MHz) if power in primary above CCA
+    // sensitivity threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_VHT),
                        CreateDummyVhtPpdu(80),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivityDbm);
 
     // VHT PHY: 160 MHz VHT PPDU in primary channel (20 MHz) if power in primary above CCA
-    // sensitivty threshold
+    // sensitivity threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_VHT),
                        CreateDummyVhtPpdu(160),
                        WIFI_CHANLIST_PRIMARY,
@@ -454,28 +454,28 @@ WifiPhyCcaThresholdsTest::RunOne()
 
     //-----------------------------------------------------------------------------------------------------------------------------------
 
-    // HE PHY: 20 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
+    // HE PHY: 20 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivity
     // threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
                        CreateDummyHePpdu(20),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivityDbm);
 
-    // HE PHY: 40 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
+    // HE PHY: 40 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivity
     // threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
                        CreateDummyHePpdu(40),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivityDbm);
 
-    // HE PHY: 80 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
+    // HE PHY: 80 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivity
     // threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
                        CreateDummyHePpdu(80),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivityDbm);
 
-    // HE PHY: 160 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivty
+    // HE PHY: 160 MHz HE PPDU in primary channel (20 MHz) if power in primary above CCA sensitivity
     // threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
                        CreateDummyHePpdu(160),

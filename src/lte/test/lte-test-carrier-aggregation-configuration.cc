@@ -136,7 +136,7 @@ class CarrierAggregationConfigTestCase : public TestCase
      */
     std::vector<std::map<uint16_t, ConfigToCheck>> EquallySpacedCcs();
 
-    uint32_t m_numberOfNodes;             ///< Numer of nodes
+    uint32_t m_numberOfNodes;             ///< Number of nodes
     uint16_t m_numberOfComponentCarriers; ///< Number of component carriers
     std::vector<ConfigToCheck>
         m_configToCheck;          ///< Vector containing all the configurations to check

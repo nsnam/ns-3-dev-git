@@ -245,7 +245,7 @@ class EpcEnbApplication : public Application
      * Send a packet to the SGW via the S1-U interface
      *
      * \param packet packet to be sent
-     * \param teid the Tunnel Enpoint IDentifier
+     * \param teid the Tunnel Endpoint IDentifier
      */
     void SendToS1uSocket(Ptr<Packet> packet, uint32_t teid);
 

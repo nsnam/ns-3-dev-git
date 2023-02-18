@@ -55,7 +55,7 @@ class BuildingsPathlossTestCase : public TestCase
      * \param freq Communication frequency
      * \param m1 First MobilityModel Index
      * \param m2 Second MobilityModel Index
-     * \param env Enviroment type
+     * \param env Environment type
      * \param city City size
      * \param refValue Theoretical loss
      * \param name Test name
@@ -81,7 +81,7 @@ class BuildingsPathlossTestCase : public TestCase
     double m_freq;                  //!< Communication frequency
     uint16_t m_mobilityModelIndex1; //!< First MobilityModel Index
     uint16_t m_mobilityModelIndex2; //!< Second MobilityModel Index
-    EnvironmentType m_env;          //!< Enviroment type
+    EnvironmentType m_env;          //!< Environment type
     CitySize m_city;                //!< City size
     double m_lossRef;               //!< Theoretical loss
 };

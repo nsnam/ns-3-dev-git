@@ -36,7 +36,7 @@ def bianchi_ax(data_rate, ack_rate, k, difs):
     T_PHY_ACK = 20e-6              # PHY preamble & header duration in seconds (for ACK)
     T_PHY_DATA = 44e-6             # PHY preamble & header duration in seconds (for DATA)
     L_SERVICE = 16                 # service field length in bits
-    L_TAIL = 6                     # tail lengthh in bits
+    L_TAIL = 6                     # tail length in bits
     L_MAC = (30) * 8               # MAC header size in bits
     L_APP_HDR = 8 * 8              # bits added by the upper layer(s)
     T_SIFS = 16e-6

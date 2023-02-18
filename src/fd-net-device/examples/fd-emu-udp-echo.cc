@@ -40,7 +40,7 @@
 // (OUI) 00:00:00 as a base.  This vendor code is not assigned to any
 // organization and so should not conflict with any real hardware.  We'll use
 // the first n of these addresses, where n is the number of nodes, in this
-// simualtion.  It is up to you to determine that using these MAC addresses is
+// simulation.  It is up to you to determine that using these MAC addresses is
 // okay on your network and won't conflict with anything else (including another
 // simulation using emu devices) on your network.  Once you have made this
 // determination, you need to put the interface you chose into promiscuous mode.

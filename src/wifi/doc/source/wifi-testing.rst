@@ -262,7 +262,7 @@ By default, the program ``src/wifi/examples/wifi-bianchi.cc``
 simulates an 802.11a adhoc ring scenario, with a PHY rate set to
 54 Mbit/s, and loop from 5 stations to 50 stations, by a step of
 5 stations. It generates a plt file, which allows user to quickly
-generate an eps file using gnuplot and vizualize the graph.
+generate an eps file using gnuplot and visualize the graph.
 
 ::
 
@@ -279,7 +279,7 @@ The user has the possibility to select the standard (only
 11a, 11b or 11g currently supported), to select the PHY rate (in Mbit/s),
 as well as to choose between an adhoc or an infrastructure configuration.
 
-When run for 802.11g 6 Mbit/s in infrastucture mode, the output is:
+When run for 802.11g 6 Mbit/s in infrastructure mode, the output is:
 
 ::
 

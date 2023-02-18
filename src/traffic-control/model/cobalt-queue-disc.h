@@ -216,7 +216,7 @@ class CobaltQueueDisc : public QueueDisc
 
     /**
      * Called to decide whether the current packet should be dropped based on decisions taken by
-     * Blue and Codel working parallely
+     * Blue and Codel working parallelly
      *
      * \return true if the packet should be dropped, false otherwise
      * \param item current packet

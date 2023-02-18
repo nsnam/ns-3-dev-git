@@ -85,7 +85,7 @@ welcome.
 Examples
 ++++++++
 
-The examples are in the ``src/olsr/examples/`` directory. However, many other examples esists in the
+The examples are in the ``src/olsr/examples/`` directory. However, many other examples exists in the
 general examples directory, e.g., ``examples/routing/manet-routing-compare.cc``.
 
 For specific examples of the HNA feature, see the examples in ``src/olsr/examples/``.

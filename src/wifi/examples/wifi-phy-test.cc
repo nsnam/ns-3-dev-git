@@ -175,7 +175,7 @@ class CollisionExperiment
         uint32_t nPackets;     ///< number of packets
     };
 
-    /// Output struture
+    /// Output structure
     struct Output
     {
         uint32_t receivedA; ///< received A

@@ -57,7 +57,7 @@ namespace ns3
  * * A unit.
  *
  * Whitespace is allowed but not required between the numeric value and
- * multipler or unit.
+ * multiplier or unit.
  *
  * Supported multiplier prefixes:
  *
@@ -165,7 +165,7 @@ class DataRate
      *
      * \return DataRate object representing the product of this object with rhs
      *
-     * \param rhs the double to multipy to this datarate
+     * \param rhs the double to multiply to this datarate
      */
     DataRate& operator*=(double rhs);
 
@@ -174,7 +174,7 @@ class DataRate
      *
      * \return DataRate object representing the product of this object with rhs
      *
-     * \param rhs the uint64_t to multipy to this datarate
+     * \param rhs the uint64_t to multiply to this datarate
      */
     DataRate operator*(uint64_t rhs) const;
 
@@ -183,7 +183,7 @@ class DataRate
      *
      * \return DataRate object representing the product of this object with rhs
      *
-     * \param rhs the uint64_t to multipy to this datarate
+     * \param rhs the uint64_t to multiply to this datarate
      */
     DataRate& operator*=(uint64_t rhs);
 

@@ -754,7 +754,7 @@ UdpSocketImpl::DoSendTo(Ptr<Packet> p, Ipv6Address dest, uint16_t port)
         tag.SetHopLimit(GetIpv6HopLimit());
         p->AddPacketTag(tag);
     }
-    // There is no analgous to an IPv4 broadcast address in IPv6.
+    // There is no analogous to an IPv4 broadcast address in IPv6.
     // Instead, we use a set of link-local, site-local, and global
     // multicast addresses.  The Ipv6 routing layers should all
     // provide an interface-specific route to these addresses such

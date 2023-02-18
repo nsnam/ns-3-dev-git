@@ -330,13 +330,13 @@ UdpEchoClientSetFillTestCase::DoRun()
 
     ApplicationContainer clientApps = echoClient.Install(nodes.Get(0));
 
-    uint8_t arry[64];
+    uint8_t array[64];
     uint8_t i;
     for (i = 0; i < 64; i++)
     {
-        arry[i] = i;
+        array[i] = i;
     }
-    echoClient.SetFill(clientApps.Get(0), &(arry[0]), (uint32_t)64, (uint32_t)64);
+    echoClient.SetFill(clientApps.Get(0), &(array[0]), (uint32_t)64, (uint32_t)64);
 
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(10.0));

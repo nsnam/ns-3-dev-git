@@ -240,7 +240,7 @@ class UanPhyDual : public UanPhy
 
     /** A packet was received successfully. */
     ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode> m_rxOkLogger;
-    /** A packet was received unsuccessfully. */
+    /** A packet was received unsuccessfuly. */
     ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode> m_rxErrLogger;
     /** A packet was sent from this Phy. */
     ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode> m_txLogger;

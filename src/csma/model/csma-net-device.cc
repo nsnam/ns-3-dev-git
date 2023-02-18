@@ -368,7 +368,7 @@ CsmaNetDevice::AddHeader(Ptr<Packet> p,
 
         //
         // All Ethernet frames must carry a minimum payload of 46 bytes.  The
-        // LLC SNAP header counts as part of this payload.  We need to padd out
+        // LLC SNAP header counts as part of this payload.  We need to pad out
         // if we don't have enough bytes.  These must be real bytes since they
         // will be written to pcap files and compared in regression trace files.
         //

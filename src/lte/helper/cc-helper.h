@@ -74,7 +74,7 @@ class CcHelper : public Object
      * \param dlBandwidth the DL bandwidth
      * \param ulEarfcn the UL EARFCN
      * \param dlEarfcn the DL EARFCN
-     * \param isPrimary ture if primary
+     * \param isPrimary true if primary
      * \returns the component carrier
      */
     ComponentCarrier DoCreateSingleCc(uint16_t ulBandwidth,

@@ -88,7 +88,7 @@ class TcpCongestionOps : public Object
      *
      * Is guaranteed that the congestion control state (\p TcpAckState_t) is
      * changed BEFORE the invocation of this method.
-     * The implementator should return the slow start threshold (and not change
+     * The implementer should return the slow start threshold (and not change
      * it directly) because, in the future, the TCP implementation may require to
      * instantly recover from a loss event (e.g. when there is a network with an high
      * reordering factor).

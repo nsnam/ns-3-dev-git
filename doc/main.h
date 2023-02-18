@@ -115,6 +115,6 @@
  *
  * All environment variables used by ns-3 are documented by module.
  *
- * \section environcore Core Enviroment Variables
+ * \section environcore Core Environment Variables
  * See \ref core-environ
  */

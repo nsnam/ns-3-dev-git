@@ -66,7 +66,7 @@ class BuildingsChannelConditionModelTestCase : public TestCase
         ChannelCondition::LosConditionValue m_losCond; //!< the correct channel condition
     };
 
-    TestVectors<TestVector> m_testVectors; //!< array containg all the test vectors
+    TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
 };
 
 BuildingsChannelConditionModelTestCase::BuildingsChannelConditionModelTestCase()

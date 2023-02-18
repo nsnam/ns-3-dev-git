@@ -178,7 +178,7 @@ static bool IsSetInitialPos(ParseResult pr);
 /**
  * Check if this corresponds to a line like this: $ns_ at 1 "$node_(0) setdest 2 3 4"
  * \param pr the ParseResult to analyze
- * \returns true if the ParseResult looks like a coordinate with a scheduled time and destionation
+ * \returns true if the ParseResult looks like a coordinate with a scheduled time and destination
  */
 static bool IsSchedSetPos(ParseResult pr);
 
@@ -746,7 +746,7 @@ bool
 IsSetInitialPos(ParseResult pr)
 {
     //        number of tokens         has $node_( ?                        has "set"           has
-    //        doble for position?
+    //        double for position?
     return pr.tokens.size() == 4 && HasNodeIdNumber(pr.tokens[0]) && pr.tokens[1] == NS2_SET &&
            pr.has_dval[3]
            // coord name is X_, Y_ or Z_ ?

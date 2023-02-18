@@ -140,7 +140,7 @@ class TcpRxBuffer : public Object
     /**
      * Insert a packet into the buffer and update the availBytes counter to
      * reflect the number of bytes ready to send to the application. This
-     * function handles overlap by triming the head of the inputted packet and
+     * function handles overlap by trimming the head of the inputted packet and
      * removing data from the buffer that overlaps the tail of the inputted
      * packet
      *

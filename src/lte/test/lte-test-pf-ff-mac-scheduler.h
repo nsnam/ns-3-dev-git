@@ -60,7 +60,7 @@ class LenaPfFfMacSchedulerTestCase1 : public TestCase
     /**
      * Build name string
      * \param nUser the number of UE nodes
-     * \param dist the distnace between nodes
+     * \param dist the distance between nodes
      * \returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, double dist);
@@ -98,7 +98,7 @@ class LenaPfFfMacSchedulerTestCase2 : public TestCase
     /**
      * Builds the test name string based on provided parameter values
      * \param nUser the number of UE nodes
-     * \param dist the distnace between nodes
+     * \param dist the distance between nodes
      * \returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, std::vector<double> dist);

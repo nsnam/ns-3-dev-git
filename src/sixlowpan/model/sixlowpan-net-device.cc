@@ -2356,7 +2356,7 @@ SixLowPanNetDevice::DoFragmentation(Ptr<Packet> packet,
     NS_ASSERT_MSG(l2Mtu > frag1Hdr.GetSerializedSize(),
                   "6LoWPAN: can not fragment, 6LoWPAN headers are bigger than MTU");
 
-    // All the headers are substracted to get remaining units for data
+    // All the headers are subtracted to get remaining units for data
     size = l2Mtu - frag1Hdr.GetSerializedSize() - compressedHeaderSize - extraHdrSize;
     size -= size % 8;
     size += compressedHeaderSize;
@@ -2877,7 +2877,7 @@ SixLowPanNetDevice::FindUnicastCompressionContext(Ipv6Address address, uint8_t& 
         {
             if (address.HasPrefix(context.contextPrefix))
             {
-                NS_LOG_LOGIC("Fount context "
+                NS_LOG_LOGIC("Found context "
                              << +contextId << " "
                              << Ipv6Address::GetOnes().CombinePrefix(context.contextPrefix)
                              << context.contextPrefix << " matching");
@@ -2920,7 +2920,7 @@ SixLowPanNetDevice::FindMulticastCompressionContext(Ipv6Address address, uint8_t
                     addressBytes[9] == contextBytes[5] && addressBytes[10] == contextBytes[6] &&
                     addressBytes[11] == contextBytes[7])
                 {
-                    NS_LOG_LOGIC("Fount context "
+                    NS_LOG_LOGIC("Found context "
                                  << +contextId << " "
                                  << Ipv6Address::GetOnes().CombinePrefix(context.contextPrefix)
                                  << context.contextPrefix << " matching");

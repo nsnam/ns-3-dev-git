@@ -253,9 +253,9 @@ class AnimationInterface
     /**
      * \brief Helper function to set Constant Position for a given node
      * \param n Ptr to the node
-     * \param x X co-ordinate of the node
-     * \param y Y co-ordinate of the node
-     * \param z Z co-ordinate of the node
+     * \param x X coordinate of the node
+     * \param y Y coordinate of the node
+     * \param z Z coordinate of the node
      *
      */
     static void SetConstantPosition(Ptr<Node> n, double x, double y, double z = 0);
@@ -334,8 +334,8 @@ class AnimationInterface
     /**
      * \brief Helper function to set the background image
      * \param fileName File name of the background image
-     * \param x X co-ordinate of the image
-     * \param y Y co-ordinate of the image
+     * \param x X coordinate of the image
+     * \param y Y coordinate of the image
      * \param scaleX X scale of the image
      * \param scaleY Y scale of the image
      * \param opacity Opacity of the background: A value between 0.0 and 1.0. 0.0 is transparent,

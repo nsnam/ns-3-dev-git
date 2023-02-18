@@ -54,9 +54,9 @@ struct RxSignalInfo;
 typedef Callback<void, Ptr<const WifiPsdu>, RxSignalInfo, WifiTxVector, std::vector<bool>>
     RxOkCallback;
 /**
- * Callback if PSDU unsuccessfully received
+ * Callback if PSDU unsuccessfuly received
  *
- * arg1: PSDU received unsuccessfully
+ * arg1: PSDU received unsuccessfuly
  */
 typedef Callback<void, Ptr<const WifiPsdu>> RxErrorCallback;
 

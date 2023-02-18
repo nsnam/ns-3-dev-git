@@ -199,7 +199,7 @@ class DsrReceivedRreqEntry
 
     // \}
   private:
-    Ipv4Address m_destination; //!< IPv4 address of the destinaton
+    Ipv4Address m_destination; //!< IPv4 address of the destination
     Ipv4Address m_source;      //!< IPv4 address of the source
     uint16_t m_identification; //!< Route request identification
     Time m_expire;             //!< Route request expire time

@@ -220,9 +220,9 @@ The ``BuildingMobilityLossModel`` parameter configurable with the ns3 attribute 
 
 The ``BuildingPropagationLossModel`` class has the following configurable parameters configurable with the attribute system:
 
-* ``Frequency``: reference frequency (default 2160 MHz), note that by setting the frequency the wavelength is set accordingly automatically and viceversa).
+* ``Frequency``: reference frequency (default 2160 MHz), note that by setting the frequency the wavelength is set accordingly automatically and vice-versa).
 * ``Lambda``: the wavelength (0.139 meters, considering the above frequency).
-* ``ShadowSigmaOutdoor``: the standard deviation of the shadowing for outdoor nodes (defaul 7.0).
+* ``ShadowSigmaOutdoor``: the standard deviation of the shadowing for outdoor nodes (default 7.0).
 * ``ShadowSigmaIndoor``: the standard deviation of the shadowing for indoor nodes (default 8.0).
 * ``ShadowSigmaExtWalls``: the standard deviation of the shadowing due to external walls penetration for outdoor to indoor communications (default 5.0).
 * ``RooftopLevel``: the level of the rooftop of the building in meters (default 20 meters).

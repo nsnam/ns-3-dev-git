@@ -400,7 +400,7 @@ PingTestCase::TxTraceSink(uint16_t seq, Ptr<Packet> p)
     {
         NS_TEST_ASSERT_MSG_EQ(Simulator::Now() - m_lastTx,
                               m_interpacketInterval,
-                              "configured interval did'nt match the observed interval");
+                              "configured interval didn't match the observed interval");
         m_lastTx = Simulator::Now();
     }
 }

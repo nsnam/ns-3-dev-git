@@ -186,18 +186,18 @@ class EpcX2HandoverRequestHeader : public Header
      */
     uint64_t GetUeAggregateMaxBitRateDownlink() const;
     /**
-     * Set UE Aggregrate Max Bit Rate Downlink function
+     * Set UE Aggregate Max Bit Rate Downlink function
      * \param bitRate the bit rate
      */
     void SetUeAggregateMaxBitRateDownlink(uint64_t bitRate);
 
     /**
-     * Get UE Aggregrate Max Bit Rate Uplik function
+     * Get UE Aggregate Max Bit Rate Uplik function
      * \returns the UE aggregate max bit rate uplink
      */
     uint64_t GetUeAggregateMaxBitRateUplink() const;
     /**
-     * Set UE Aggregrate Max Bit Rate Uplik function
+     * Set UE Aggregate Max Bit Rate Uplik function
      * \param bitRate the bit rate
      */
     void SetUeAggregateMaxBitRateUplink(uint64_t bitRate);

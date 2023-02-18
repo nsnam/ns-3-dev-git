@@ -69,7 +69,7 @@ class LteRlcUmTransmitterTestCase : public TestCase
     /**
      * Check data received function
      * \param time the time to check
-     * \param shouldReceived shoul dhave received indicator
+     * \param shouldReceived should have received indicator
      * \param assertMsg the assert message
      */
     void CheckDataReceived(Time time, std::string shouldReceived, std::string assertMsg);

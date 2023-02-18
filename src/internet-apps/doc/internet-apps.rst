@@ -154,7 +154,7 @@ be totally silent.  The fifth statement is a typical ``Install()``
 method that returns an ApplicationContainer (in this case, of size 1).
 The sixth and seventh statements fetch the application instance created and
 configure a trace sink (``TracePingRtt``) for the ``Rtt`` trace source.
-The eigth and ninth statements configure the start and stop time,
+The eighth and ninth statements configure the start and stop time,
 respectively.
 
 The helper is most useful when there are many similarly configured

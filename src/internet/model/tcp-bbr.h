@@ -217,18 +217,18 @@ class TcpBbr : public TcpCongestionOps
     uint32_t InFlight(Ptr<TcpSocketState> tcb, double gain);
 
     /**
-     * \brief Intializes the full pipe estimator.
+     * \brief Initializes the full pipe estimator.
      */
     void InitFullPipe();
 
     /**
-     * \brief Intializes the pacing rate.
+     * \brief Initializes the pacing rate.
      * \param tcb  the socket state.
      */
     void InitPacingRate(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Intializes the round counting related variables.
+     * \brief Initializes the round counting related variables.
      */
     void InitRoundCounting();
 

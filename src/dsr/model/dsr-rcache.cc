@@ -374,7 +374,7 @@ DsrRouteCache::RebuildBestRouteTable(Ipv4Address source)
             if (s.find(ip) == s.end())
             {
                 /*
-                 * \brief The followings are for comparison
+                 * \brief The following are for comparison
                  */
                 if (j->second <= temp)
                 {
@@ -821,7 +821,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
         // Purge the link node cache first
         PurgeLinkNode();
         /*
-         * The followings are for cleaning the broken link in link cache
+         * The following are for cleaning the broken link in link cache
          * We basically remove the link between errorSrc and unreachNode
          */
         Link link1(errorSrc, unreachNode);
@@ -837,7 +837,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
         std::map<Ipv4Address, DsrNodeStab>::iterator i = m_nodeCache.find(errorSrc);
         if (i == m_nodeCache.end())
         {
-            NS_LOG_LOGIC("Update the node stability unsuccessfully");
+            NS_LOG_LOGIC("Update the node stability unsuccessfuly");
         }
         else
         {
@@ -846,7 +846,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
         i = m_nodeCache.find(unreachNode);
         if (i == m_nodeCache.end())
         {
-            NS_LOG_LOGIC("Update the node stability unsuccessfully");
+            NS_LOG_LOGIC("Update the node stability unsuccessfuly");
         }
         else
         {
@@ -858,7 +858,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
     else
     {
         /*
-         * the followings are for cleaning the broken link in pathcache
+         * the following are for cleaning the broken link in pathcache
          *
          */
         Purge();

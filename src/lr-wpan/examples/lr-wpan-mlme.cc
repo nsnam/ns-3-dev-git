@@ -82,7 +82,7 @@ StartConfirm(MlmeStartConfirmParams params)
 {
     if (params.m_status == MLMESTART_SUCCESS)
     {
-        NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "Beacon status SUCESSFUL");
+        NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "Beacon status SUCCESSFUL");
     }
 }
 

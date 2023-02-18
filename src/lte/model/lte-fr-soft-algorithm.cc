@@ -64,7 +64,7 @@ struct FrSoftUplinkDefaultConfiguration
     uint8_t cellId;              ///< cell ID
     uint8_t ulBandwidth;         ///< UL bandwidth
     uint8_t ulEdgeSubBandOffset; ///< UL edge subband offset
-    uint8_t ulEdgeSubBandwidth;  ///< UL endge subbandwidth
+    uint8_t ulEdgeSubBandwidth;  ///< UL edge subbandwidth
 };
 
 /// Soft uplink default configuration

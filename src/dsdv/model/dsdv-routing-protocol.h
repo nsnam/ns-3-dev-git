@@ -179,7 +179,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     bool EnableBuffering;
     /// Flag that is used to enable or disable Weighted Settling Time
     bool EnableWST;
-    /// This is the wighted factor to determine the weighted settling time
+    /// This is the weighted factor to determine the weighted settling time
     double m_weightedFactor;
     /// This is a flag to enable route aggregation. Route aggregation will aggregate all routes for
     /// 'RouteAggregationTime' from the time an update is received by a node and sends them as a

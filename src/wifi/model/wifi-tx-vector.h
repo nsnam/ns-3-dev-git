@@ -100,7 +100,7 @@ using RuAllocation = std::vector<uint8_t>;
 class WifiTxVector
 {
   public:
-    /// map of HE MU specific user info paramters indexed by STA-ID
+    /// map of HE MU specific user info parameters indexed by STA-ID
     typedef std::map<uint16_t /* staId */, HeMuUserInfo /* HE MU specific user info */>
         HeMuUserInfoMap;
 
@@ -509,7 +509,7 @@ class WifiTxVector
  * \param os the output stream
  * \param v the WifiTxVector to stringify
  *
- * \return ouput stream
+ * \return output stream
  */
 std::ostream& operator<<(std::ostream& os, const WifiTxVector& v);
 

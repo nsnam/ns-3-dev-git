@@ -174,7 +174,7 @@ HybridBuildingsPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityM
                 }
                 else
                 {
-                    // Over the rooftop tranmission -> Okumura Hata
+                    // Over the rooftop transmission -> Okumura Hata
                     loss = OkumuraHata(a, b);
                     NS_LOG_INFO(this << " O-O (>1000): above rooftop -> OH : " << loss);
                 }

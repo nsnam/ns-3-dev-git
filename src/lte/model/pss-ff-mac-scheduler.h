@@ -226,7 +226,7 @@ class PssFfMacScheduler : public FfMacScheduler
         const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params);
 
     /**
-     * \brief Sched UL noise inteference request function
+     * \brief Sched UL noise interference request function
      *
      * \param params FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters
      */

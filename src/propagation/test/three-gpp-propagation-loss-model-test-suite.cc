@@ -1020,7 +1020,7 @@ class ThreeGppShadowingTestCase : public TestCase
      *        to be used
      * \param hBs the BS height in meters
      * \param hUt the UT height in meters
-     * \param distance the intial distance between the BS and the UT
+     * \param distance the initial distance between the BS and the UT
      * \param shadowingEnabled true if shadowging must be enabled
      */
     void RunTest(uint16_t testNum,

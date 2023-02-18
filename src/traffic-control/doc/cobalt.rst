@@ -122,7 +122,7 @@ The suite includes 2 test cases:
 * Test 1: Simple enqueue/dequeue with no drops.
 * Test 2: Change of BLUE's drop probability upon queue full
   (Activation of Blue).
-* Test 3: This test verfies ECN marking.
+* Test 3: This test verifies ECN marking.
 * Test 4: CE threshold marking test.
 
 The test suite can be run using the following commands:

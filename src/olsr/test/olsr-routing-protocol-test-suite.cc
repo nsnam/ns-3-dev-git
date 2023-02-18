@@ -81,13 +81,13 @@ OlsrMprTestCase::DoRun()
      *
      * Node 1 must select only one MPR (2 or 3, doesn't matter)
      */
-    NeighborTuple neigbor;
-    neigbor.status = NeighborTuple::STATUS_SYM;
-    neigbor.willingness = OLSR_WILL_DEFAULT;
-    neigbor.neighborMainAddr = Ipv4Address("10.0.0.2");
-    protocol->m_state.InsertNeighborTuple(neigbor);
-    neigbor.neighborMainAddr = Ipv4Address("10.0.0.3");
-    protocol->m_state.InsertNeighborTuple(neigbor);
+    NeighborTuple neighbor;
+    neighbor.status = NeighborTuple::STATUS_SYM;
+    neighbor.willingness = OLSR_WILL_DEFAULT;
+    neighbor.neighborMainAddr = Ipv4Address("10.0.0.2");
+    protocol->m_state.InsertNeighborTuple(neighbor);
+    neighbor.neighborMainAddr = Ipv4Address("10.0.0.3");
+    protocol->m_state.InsertNeighborTuple(neighbor);
     TwoHopNeighborTuple tuple;
     tuple.expirationTime = Seconds(3600);
     tuple.neighborMainAddr = Ipv4Address("10.0.0.2");
@@ -149,9 +149,9 @@ OlsrMprTestCase::DoRun()
      *
      * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
      */
-    neigbor.willingness = OLSR_WILL_ALWAYS;
-    neigbor.neighborMainAddr = Ipv4Address("10.0.0.7");
-    protocol->m_state.InsertNeighborTuple(neigbor);
+    neighbor.willingness = OLSR_WILL_ALWAYS;
+    neighbor.neighborMainAddr = Ipv4Address("10.0.0.7");
+    protocol->m_state.InsertNeighborTuple(neighbor);
 
     protocol->MprComputation();
     mpr = state.GetMprSet();
@@ -171,9 +171,9 @@ OlsrMprTestCase::DoRun()
      * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
      * Node 1 must NOT select node 8 as MPR since it is WILL_NEVER
      */
-    neigbor.willingness = OLSR_WILL_NEVER;
-    neigbor.neighborMainAddr = Ipv4Address("10.0.0.8");
-    protocol->m_state.InsertNeighborTuple(neigbor);
+    neighbor.willingness = OLSR_WILL_NEVER;
+    neighbor.neighborMainAddr = Ipv4Address("10.0.0.8");
+    protocol->m_state.InsertNeighborTuple(neighbor);
     tuple.neighborMainAddr = Ipv4Address("10.0.0.8");
     tuple.twoHopNeighborAddr = Ipv4Address("10.0.0.9");
     protocol->m_state.InsertTwoHopNeighborTuple(tuple);

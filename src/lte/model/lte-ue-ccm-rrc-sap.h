@@ -95,7 +95,7 @@ class LteUeCcmRrcSapProvider
      * \brief Add the Signal Bearer for a specific Ue in LteUeComponenCarrierManager
      * \param lcid the Logical Channel Id
      * \param lcConfig this structure it is hard-coded in the LteEnbRrc
-     * \param msu it is the MacSapUser of the Rlc istance
+     * \param msu it is the MacSapUser of the Rlc instance
      * \return the LteMacSapUser of the ComponentCarrierManager
      *
      */

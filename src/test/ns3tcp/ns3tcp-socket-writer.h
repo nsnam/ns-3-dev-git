@@ -43,7 +43,7 @@ class SocketWriter : public Application
     /**
      * Setup the socket.
      * \param node The node owning the socket.
-     * \param peer The destinaiton address.
+     * \param peer The destination address.
      */
     void Setup(Ptr<Node> node, Address peer);
     /**

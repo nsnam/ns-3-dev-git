@@ -1639,7 +1639,7 @@ For SSRB, it is calculated as:
 
 .. math::  limit = MAX(prrDelivered - prrOut, DeliveredData) + MSS
 
-where ``DeliveredData`` represets the total number of bytes delivered to the
+where ``DeliveredData`` represents the total number of bytes delivered to the
 receiver as indicated by the current ACK and ``MSS`` is the maximum segment size.
 
 After limit calculation, the cWnd is updated as given below:
@@ -1678,7 +1678,7 @@ EnterRecovery is called when packet loss is detected and recovery is triggered.
 While in recovery phase, each time when an ACK arrives, DoRecovery is called which
 performs the necessary congestion window changes as per the recovery algorithm.
 ExitRecovery is called just prior to exiting recovery phase in order to perform the
-required congestion window ajustments. UpdateBytesSent is used to keep track of
+required congestion window adjustments. UpdateBytesSent is used to keep track of
 bytes sent and is called whenever a data packet is sent during recovery phase.
 
 Delivery Rate Estimation
@@ -1936,7 +1936,7 @@ the first SYN-ACK has 0 as advertised window size:
        ....
     }
 
-Pratically, we are checking that every SYN packet sent by the RECEIVER has the
+Practically, we are checking that every SYN packet sent by the RECEIVER has the
 advertised window set to 0. The same thing is done also by checking, in the Rx
 method, that each SYN received by SENDER has the advertised window set to 0.
 Thanks to the log subsystem, we can print what is happening through messages.

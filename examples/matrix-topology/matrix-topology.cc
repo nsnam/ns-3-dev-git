@@ -117,7 +117,7 @@ main(int argc, char* argv[])
     std::vector<std::vector<double>> coord_array;
     coord_array = readCordinatesFile(node_coordinates_file_name);
 
-    // Optionally display node co-ordinates file
+    // Optionally display node coordinates file
     // printCoordinateArray (node_coordinates_file_name.c_str (),coord_array);
 
     int n_nodes = coord_array.size();

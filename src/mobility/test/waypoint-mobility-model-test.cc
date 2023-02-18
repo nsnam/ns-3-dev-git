@@ -195,7 +195,7 @@ class WaypointMobilityModelAddWaypointTest : public TestCase
     void DoRun() override;
     void DoTeardown() override;
     /**
-     * Course change calback
+     * Course change callback
      * \param model the mobility model
      */
     void CourseChangeCallback(Ptr<const MobilityModel> model);

@@ -186,7 +186,7 @@ TcpDctcpCodePointsTest::Rx(const Ptr<const Packet> p, const TcpHeader& h, Socket
                                   0,
                                   "The flag ECE should be not be set in TCP header of the packet "
                                   "sent by the receiver if it receives a packet without CE bit set "
-                                  "in IP header inspite of Sender not sending CWR flags to it");
+                                  "in IP header in spite of Sender not sending CWR flags to it");
         }
     }
 }
@@ -213,7 +213,7 @@ TcpDctcpCodePointsTest::ConfigureEnvironment()
  *
  * The SendDataPacket function of this class sends data packet numbered 1  with CE flags set and
  * also doesn't set CWR flags on receipt of ECE flags for test 3. This is done to verify that DCTCP
- * receiver sends ECE only if it receives CE inspite of sender not sending CWR flags for ECE
+ * receiver sends ECE only if it receives CE in spite of sender not sending CWR flags for ECE
  *
  */
 class TcpDctcpCongestedRouter : public TcpSocketMsgBase

@@ -456,8 +456,8 @@ LteFfrDistributedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults
                 UpdateNeighbourMeasurements(rnti, it->physCellId, it->rsrpResult, it->rsrqResult);
 
                 bool found = false;
-                for (std::vector<uint16_t>::iterator ncIt = m_neigborCell.begin();
-                     ncIt != m_neigborCell.end();
+                for (std::vector<uint16_t>::iterator ncIt = m_neighborCell.begin();
+                     ncIt != m_neighborCell.end();
                      ncIt++)
                 {
                     if ((*ncIt) == it->physCellId)
@@ -467,7 +467,7 @@ LteFfrDistributedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults
                 }
                 if (found == false)
                 {
-                    m_neigborCell.push_back(it->physCellId);
+                    m_neighborCell.push_back(it->physCellId);
                 }
             }
         }
@@ -622,7 +622,8 @@ LteFfrDistributedAlgorithm::Calculate()
         }
     }
 
-    for (std::vector<uint16_t>::iterator ncIt = m_neigborCell.begin(); ncIt != m_neigborCell.end();
+    for (std::vector<uint16_t>::iterator ncIt = m_neighborCell.begin();
+         ncIt != m_neighborCell.end();
          ncIt++)
     {
         SendLoadInformation((*ncIt));

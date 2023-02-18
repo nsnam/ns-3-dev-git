@@ -55,13 +55,13 @@ class BuildingListPriv : public Object
      */
     uint32_t Add(Ptr<Building> building);
     /**
-     * Returns an interator to the start of the list.
+     * Returns an iterator to the start of the list.
      *
      * \returns iterator to the begin of the container.
      */
     BuildingList::Iterator Begin() const;
     /**
-     * Returns an interator to the end of the list.
+     * Returns an iterator to the end of the list.
      *
      * \returns iterator to the end of the container.
      */

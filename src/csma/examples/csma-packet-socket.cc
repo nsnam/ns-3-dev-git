@@ -40,7 +40,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("CsmaPacketSocketExample");
 
-/// Ouput stream.
+/// Output stream.
 std::ofstream g_os;
 
 /**

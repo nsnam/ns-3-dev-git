@@ -114,7 +114,7 @@ operator!=(const Cid& lhs, const Cid& rhs)
 }
 
 /**
- * \brief output stream output opertor
+ * \brief output stream output operator
  * \param os output stream
  * \param cid CID
  * \returns output stream

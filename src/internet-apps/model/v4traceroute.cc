@@ -237,7 +237,7 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
             uint8_t data[8];
             timeoutResp.GetData(data);
 
-            // Get the 7th and 8th Octect to obtain the Sequence number from
+            // Get the 7th and 8th Octet to obtain the Sequence number from
             // the original packet.
             uint16_t recvSeq;
             recvSeq = (uint16_t)data[7] << 0;

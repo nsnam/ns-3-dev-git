@@ -438,7 +438,7 @@ TcpRateLinuxWithSocketsTest::FinalChecks()
  * \ingroup internet-tests
  * \ingroup tests
  *
- * \brief The TcpRateLinuxWithBufferTest tests rate sample functionality with arbitary SACK
+ * \brief The TcpRateLinuxWithBufferTest tests rate sample functionality with arbitrary SACK
  * scenario. Check the value of delivered against a home-made guess
  */
 class TcpRateLinuxWithBufferTest : public TestCase
@@ -470,7 +470,7 @@ class TcpRateLinuxWithBufferTest : public TestCase
     /** \brief Test with acks without drop */
     void TestWithStraightAcks();
 
-    /** \brief Test with arbitary SACK scenario */
+    /** \brief Test with arbitrary SACK scenario */
     void TestWithSackBlocks();
 
     uint32_t m_expectedDelivered{0};   //!< Amount of expected delivered data
@@ -645,12 +645,12 @@ class TcpRateOpsTestSuite : public TestSuite
 
         AddTestCase(
             new TcpRateLinuxWithBufferTest(1000,
-                                           "Checking rate sample values with arbitary SACK Block"),
+                                           "Checking rate sample values with arbitrary SACK Block"),
             TestCase::QUICK);
 
         AddTestCase(
             new TcpRateLinuxWithBufferTest(500,
-                                           "Checking rate sample values with arbitary SACK Block"),
+                                           "Checking rate sample values with arbitrary SACK Block"),
             TestCase::QUICK);
     }
 };

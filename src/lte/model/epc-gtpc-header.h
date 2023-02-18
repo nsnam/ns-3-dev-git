@@ -188,7 +188,7 @@ class GtpcHeader : public Header
 
 /**
  * \ingroup lte
- * GTP-C Information Elemements
+ * GTP-C Information Elements
  */
 class GtpcIes
 {

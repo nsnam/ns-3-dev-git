@@ -295,7 +295,7 @@ WifiMac::GetTypeId()
                             TypeId::OBSOLETE,
                             "Use the AckedMpdu trace instead.")
             .AddTraceSource("TxErrHeader",
-                            "The header of unsuccessfully transmitted packet.",
+                            "The header of unsuccessfuly transmitted packet.",
                             MakeTraceSourceAccessor(&WifiMac::m_txErrCallback),
                             "ns3::WifiMacHeader::TracedCallback",
                             TypeId::OBSOLETE,

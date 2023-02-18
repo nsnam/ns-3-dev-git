@@ -85,7 +85,7 @@ class UanPhyCalcSinr : public Object
      * Convert kilopascals to dB re 1 uPa.
      *
      * \param kp Value in kilopascals.
-     * \return Valeu in dB re 1 uPa
+     * \return Value in dB re 1 uPa
      */
     inline double KpToDb(double kp) const
     {

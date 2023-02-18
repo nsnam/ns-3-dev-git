@@ -210,7 +210,7 @@ class HalfDuplexIdealPhy : public SpectrumPhy
 
     Ptr<MobilityModel> m_mobility;  //!< Mobility model
     Ptr<AntennaModel> m_antenna;    //!< Antenna model
-    Ptr<NetDevice> m_netDevice;     //!< NetDevice connected to theis phy
+    Ptr<NetDevice> m_netDevice;     //!< NetDevice connected to this phy
     Ptr<SpectrumChannel> m_channel; //!< Channel
 
     Ptr<SpectrumValue> m_txPsd;       //!< Tx power spectral density

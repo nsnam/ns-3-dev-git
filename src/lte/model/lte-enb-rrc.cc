@@ -2904,7 +2904,7 @@ LteEnbRrc::DoRecvHandoverRequest(EpcX2SapUser::HandoverRequestParams req)
         Ptr<UeManager> ueManager = GetUeManager(rnti);
         EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg();
         m_x2SapProvider->SendHandoverPreparationFailure(msg);
-        RemoveUe(rnti); // reomve the UE from the target eNB
+        RemoveUe(rnti); // remove the UE from the target eNB
         return;
     }
 
@@ -3476,7 +3476,7 @@ LteEnbRrc::RemoveSrsConfigurationIndex(uint16_t srcCi)
     NS_LOG_FUNCTION(this << srcCi);
     std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find(srcCi);
     NS_ASSERT_MSG(it != m_ueSrsConfigurationIndexSet.end(),
-                  "request to remove unkwown SRS CI " << srcCi);
+                  "request to remove unknown SRS CI " << srcCi);
     m_ueSrsConfigurationIndexSet.erase(it);
 }
 

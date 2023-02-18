@@ -59,14 +59,14 @@ static std::map<uint32_t, bool> firstCwnd;                      //!< First conge
 static std::map<uint32_t, bool> firstSshThr;                    //!< First SlowStart threshold.
 static std::map<uint32_t, bool> firstRtt;                       //!< First RTT.
 static std::map<uint32_t, bool> firstRto;                       //!< First RTO.
-static std::map<uint32_t, Ptr<OutputStreamWrapper>> cWndStream; //!< Congstion window outut stream.
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> cWndStream; //!< Congstion window output stream.
 static std::map<uint32_t, Ptr<OutputStreamWrapper>>
-    ssThreshStream; //!< SlowStart threshold outut stream.
-static std::map<uint32_t, Ptr<OutputStreamWrapper>> rttStream;      //!< RTT outut stream.
-static std::map<uint32_t, Ptr<OutputStreamWrapper>> rtoStream;      //!< RTO outut stream.
-static std::map<uint32_t, Ptr<OutputStreamWrapper>> nextTxStream;   //!< Next TX outut stream.
-static std::map<uint32_t, Ptr<OutputStreamWrapper>> nextRxStream;   //!< Next RX outut stream.
-static std::map<uint32_t, Ptr<OutputStreamWrapper>> inFlightStream; //!< In flight outut stream.
+    ssThreshStream; //!< SlowStart threshold output stream.
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> rttStream;      //!< RTT output stream.
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> rtoStream;      //!< RTO output stream.
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> nextTxStream;   //!< Next TX output stream.
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> nextRxStream;   //!< Next RX output stream.
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> inFlightStream; //!< In flight output stream.
 static std::map<uint32_t, uint32_t> cWndValue;                      //!< congestion window value.
 static std::map<uint32_t, uint32_t> ssThreshValue;                  //!< SlowStart threshold value.
 

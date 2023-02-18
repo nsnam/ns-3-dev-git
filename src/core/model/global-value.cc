@@ -149,7 +149,7 @@ GlobalValue::Bind(std::string name, const AttributeValue& value)
             return;
         }
     }
-    NS_FATAL_ERROR("Non-existant global value: " << name);
+    NS_FATAL_ERROR("Non-existent global value: " << name);
 }
 
 bool

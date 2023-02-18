@@ -212,7 +212,7 @@ class Int64x64IntRoundTestCase : public TestCase
      * Check the int64x64 value for correctness.
      * \param value The int64x64_t value.
      * \param expectInt The expected integer value.
-     * \param expectRnd TThe expected rounding value.
+     * \param expectRnd The expected rounding value.
      */
     void Check(const int64x64_t value, const int64_t expectInt, const int64_t expectRnd);
 };
@@ -866,7 +866,7 @@ class Int64x64CompareTestCase : public TestCase
      * Check the int64x64 for correctness.
      * \param result The actual value.
      * \param expect The expected value.
-     * \param msg The error mesage to print.
+     * \param msg The error message to print.
      */
     void Check(const bool result, const bool expect, const std::string& msg);
 };
@@ -986,7 +986,7 @@ class Int64x64InvertTestCase : public TestCase
      * \param factor The factor used to invert the number.
      * \param result The value.
      * \param expect The expected value.
-     * \param msg The error mesage to print.
+     * \param msg The error message to print.
      * \param tolerance The allowed tolerance.
      */
     void CheckCase(const uint64_t factor,

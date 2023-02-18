@@ -572,7 +572,7 @@ class LteUePhy : public LtePhy
     void DoResetRlfParams();
 
     /**
-     * \brief Start in Snyc detection function
+     * \brief Start in Sync detection function
      *
      * When T310 timer is started, it indicates that physical layer
      * problems are detected at the UE and the recovery process is

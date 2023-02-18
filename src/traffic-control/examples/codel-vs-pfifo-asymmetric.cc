@@ -71,7 +71,7 @@ NS_LOG_COMPONENT_DEFINE("CoDelPfifoFastAsymmetricTest");
 /**
  * TCP Congestion window tracker.
  *
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param oldval Old value.
  * \param newval New value.
  */
@@ -107,7 +107,7 @@ TraceCwnd(std::string cwndTrFileName)
 /**
  * Traffic Control Sojourn tracker.
  *
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param newval New value.
  */
 static void
@@ -142,7 +142,7 @@ TraceSojourn(std::string sojournTrFileName)
 /**
  * Traffic Control Queue length tracker.
  *
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param oldval Old value.
  * \param newval New value.
  */
@@ -178,7 +178,7 @@ TraceQueueLength(std::string queueLengthTrFileName)
 /**
  * Traffic control drop trace.
  *
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param item The dropped item.
  */
 static void
@@ -213,7 +213,7 @@ TraceEveryDrop(std::string everyDropTrFileName)
 /**
  * Traffic Control Dropping state trace.
  *
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param oldVal Old value.
  * \param newVal New value.
  */

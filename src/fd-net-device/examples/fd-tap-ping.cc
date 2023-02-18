@@ -201,7 +201,7 @@ main(int argc, char* argv[])
     // of a hassle and since there is no law that says we cannot mix the
     // helper API with the low level API, let's just use the helper.
     //
-    NS_LOG_INFO("Create Ping Appliation");
+    NS_LOG_INFO("Create Ping Application");
     Ptr<Ping> app = CreateObject<Ping>();
     app->SetAttribute("Destination", AddressValue(remoteIp));
     app->SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::VERBOSE));

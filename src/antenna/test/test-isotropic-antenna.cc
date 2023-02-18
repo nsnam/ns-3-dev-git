@@ -45,7 +45,7 @@ class IsotropicAntennaModelTestCase : public TestCase
     /**
      * Constructor
      * \param a Antenna angle
-     * \param expectedGainDb Expeted antenna gain
+     * \param expectedGainDb Expected antenna gain
      */
     IsotropicAntennaModelTestCase(Angles a, double expectedGainDb);
 

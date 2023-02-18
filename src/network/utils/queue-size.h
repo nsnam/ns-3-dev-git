@@ -66,7 +66,7 @@ enum QueueSizeUnit
  * * A unit.
  *
  * Whitespace is allowed but not required between the numeric value and
- * multipler or unit.
+ * multiplier or unit.
  *
  * Supported multiplier prefixes:
  *

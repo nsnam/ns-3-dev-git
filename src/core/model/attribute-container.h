@@ -228,7 +228,7 @@ template <class A, template <class...> class C = std::list>
 Ptr<const AttributeChecker> MakeAttributeContainerChecker(Ptr<const AttributeChecker> itemchecker);
 
 /**
- * Make unitialized AttributeContainerChecker using explicit types.
+ * Make uninitialized AttributeContainerChecker using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam C Container type returned by Get.
  * \return AttributeContainerChecker.

@@ -103,7 +103,7 @@ class ChannelCondition : public Object
     ~ChannelCondition() override;
 
     /**
-     * Get the LosConditionValue contaning the information about the LOS/NLOS
+     * Get the LosConditionValue containing the information about the LOS/NLOS
      * state of the channel
      *
      * \return the LosConditionValue
@@ -119,7 +119,7 @@ class ChannelCondition : public Object
     void SetLosCondition(LosConditionValue losCondition);
 
     /**
-     * Get the O2iConditionValue contaning the information about the O2I
+     * Get the O2iConditionValue containing the information about the O2I
      * state of the channel
      *
      * \return the O2iConditionValue
@@ -127,7 +127,7 @@ class ChannelCondition : public Object
     O2iConditionValue GetO2iCondition() const;
 
     /**
-     * Set the O2iConditionValue contaning the information about the O2I
+     * Set the O2iConditionValue containing the information about the O2I
      * state of the channel
      *
      * \param o2iCondition the O2iConditionValue
@@ -135,7 +135,7 @@ class ChannelCondition : public Object
     void SetO2iCondition(O2iConditionValue o2iCondition);
 
     /**
-     * Get the O2iLowHighConditionValue contaning the information about the O2I
+     * Get the O2iLowHighConditionValue containing the information about the O2I
      * building penetration losses (low or high)
      *
      * \return the O2iLowHighConditionValue
@@ -143,7 +143,7 @@ class ChannelCondition : public Object
     O2iLowHighConditionValue GetO2iLowHighCondition() const;
 
     /**
-     * Set the O2iLowHighConditionValue contaning the information about the O2I
+     * Set the O2iLowHighConditionValue containing the information about the O2I
      * building penetration losses (low or high)
      *
      * \param o2iLowHighCondition the O2iLowHighConditionValue
@@ -569,8 +569,8 @@ class ThreeGppChannelConditionModel : public ChannelConditionModel
     Time m_updatePeriod;       //!< the update period for the channel condition
 
     double m_o2iThreshold{
-        0}; //!< the threshold for determing what is the ratio of channels with O2I
-    double m_o2iLowLossThreshold{0}; //!< the threshold for determing what is the ratio of low -
+        0}; //!< the threshold for determining what is the ratio of channels with O2I
+    double m_o2iLowLossThreshold{0}; //!< the threshold for determining what is the ratio of low -
                                      //!< high O2I building penetration losses
     double m_linkO2iConditionToAntennaHeight{
         false}; //!< the indicator that determines whether the O2I/O2O condition is determined based

@@ -140,7 +140,7 @@ class ApplicationContainer
      * Applications can be retrieved from the container in two ways.  First,
      * directly by an index into the container, and second, using an iterator.
      * This method is used in the direct method and is used to retrieve the
-     * indexed Ptr<Appliation>.
+     * indexed Ptr<Application>.
      *
      * \code
      *   uint32_t nApplications = container.GetN ();

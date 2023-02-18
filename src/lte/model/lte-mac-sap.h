@@ -51,7 +51,7 @@ class LteMacSapProvider
         uint8_t harqProcessId; /**< the HARQ process id that was passed by the MAC in the call to
                                   NotifyTxOpportunity that generated this PDU */
         uint8_t componentCarrierId; /**< the component carrier id corresponding to the sending Mac
-                                       istance */
+                                       instance */
     };
 
     /**

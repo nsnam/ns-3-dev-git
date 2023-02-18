@@ -321,7 +321,8 @@ class TwoRaySpectrumPropagationLossModel : public PhasedArraySpectrumPropagation
     std::string m_scenario; //!< the 3GPP scenario
 
     /**
-     * Chanel condition model used to retrieve the LOS/NLOS condition of the communicating endpoints
+     * Channel condition model used to retrieve the LOS/NLOS condition of the communicating
+     * endpoints
      */
     Ptr<ChannelConditionModel> m_channelConditionModel;
 };

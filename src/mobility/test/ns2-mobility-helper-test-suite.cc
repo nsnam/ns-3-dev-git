@@ -114,7 +114,7 @@ class Ns2MobilityHelperTest : public TestCase
         /**
          * Less-than operator - used to sort by timestamp
          * \param o object to compare to
-         * \returns true if the timestamp of the 1nd operand is less than the other one's
+         * \returns true if the timestamp of the 1st operand is less than the other one's
          */
         bool operator<(const ReferencePoint& o) const
         {
@@ -508,7 +508,7 @@ class Ns2MobilityHelperTestSuite : public TestSuite
         t->AddReferencePoint("0", 3, Vector(0, -1, 0), Vector(0, 0, 0));
         AddTestCase(t, TestCase::QUICK);
 
-        // Sqare setdest with values in the form 1.0e+2
+        // Square setdest with values in the form 1.0e+2
         t = new Ns2MobilityHelperTest("Foalt numbers in 1.0e+2 format", Seconds(6));
         t->SetTrace("$node_(0) set X_ 0.0\n"
                     "$node_(0) set Y_ 0.0\n"

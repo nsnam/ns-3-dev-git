@@ -54,7 +54,7 @@ class LteInterferenceHardFrTestCase : public TestCase
      *
      * \param name the reference name
      * \param d1 distance between ENB and UE
-     * \param d2 distnace between ENB and other UE
+     * \param d2 distance between ENB and other UE
      * \param dlSinr the DL SINR
      * \param ulSinr the UL SINR
      */
@@ -86,7 +86,7 @@ class LteInterferenceStrictFrTestCase : public TestCase
      *
      * \param name the reference name
      * \param d1 distance between ENB and UE
-     * \param d2 distnace between ENB and other UE
+     * \param d2 distance between ENB and other UE
      * \param commonDlSinr the DL SINR
      * \param commonUlSinr the UL SINR
      * \param edgeDlSinr the DL SINR

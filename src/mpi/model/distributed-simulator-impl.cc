@@ -164,7 +164,7 @@ DistributedSimulatorImpl::CalculateLookAhead()
 {
     NS_LOG_FUNCTION(this);
 
-    /* If runnning sequential simulation can ignore lookahead */
+    /* If running sequential simulation can ignore lookahead */
     if (MpiInterface::GetSize() <= 1)
     {
         m_lookAhead = Seconds(0);

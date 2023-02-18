@@ -34,7 +34,7 @@ namespace ns3
  *
  * This data structure holds a vector of "neighbor-indexes" for
  * a simulation specific routing protocol, nix-vector routing.
- * Theses neighbor-indexes correspond to the net-device which a
+ * These neighbor-indexes correspond to the net-device which a
  * node should use to route a packet.  A nix-vector is built
  * (or fetched from a cache) on-demand. The nix-vector is
  * transmitted with the packet, and along each hop of the

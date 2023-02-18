@@ -247,7 +247,7 @@ class TcpRateLinux : public TcpRateOps
   private:
     // Rate sample related variables
     TcpRateConnection m_rate;   //!< Rate information
-    TcpRateSample m_rateSample; //!< Rate sample (continuosly updated)
+    TcpRateSample m_rateSample; //!< Rate sample (continuously updated)
 
     TracedCallback<const TcpRateConnection&> m_rateTrace;   //!< Rate trace
     TracedCallback<const TcpRateSample&> m_rateSampleTrace; //!< Rate Sample trace

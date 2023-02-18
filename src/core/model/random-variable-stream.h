@@ -354,7 +354,7 @@ class ConstantRandomVariable : public RandomVariableStream
  * This RNG has four configuration attributes:
  *
  *  - An increment, \c Increment.
- *  - A consecutive repeat numer, \c Consecutive.
+ *  - A consecutive repeat number, \c Consecutive.
  *  - The minimum value, \c Min.
  *  - The maximum value, \c Max.
  *

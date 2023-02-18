@@ -495,7 +495,7 @@ the directory where the test lives.  For example,
 ``ns3tcp-loss-NewReno0-response-vectors.pcap`` is a file consisting of a number of TCP
 headers that are used as the expected responses of the |ns3| TCP under test.
 
-Note that Unit Tests are often preferrable to System Tests, as they are more
+Note that Unit Tests are often preferable to System Tests, as they are more
 independent from small changes in the modules that are not the goal of the test.
 
 Examples

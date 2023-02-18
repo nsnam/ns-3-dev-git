@@ -118,7 +118,7 @@ class V4TraceRoute : public Application
     uint16_t m_maxProbes;
     /// The current TTL value
     uint16_t m_ttl;
-    /// The maximium Ttl (Max number of hops to trace)
+    /// The maximum Ttl (Max number of hops to trace)
     uint32_t m_maxTtl;
     /// The wait time until the response is considered lost.
     Time m_waitIcmpReplyTimeout;

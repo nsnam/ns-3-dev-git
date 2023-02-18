@@ -511,7 +511,7 @@ class OfdmDlMapIe
     uint16_t GetSize() const;
 
     /**
-     * Wrtie item
+     * Write item
      * \param start the iterator
      * \returns the updated iterator
      */

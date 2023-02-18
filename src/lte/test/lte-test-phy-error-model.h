@@ -106,7 +106,7 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
     /**
      * Build name string
      * \param nUser the number of UE nodes
-     * \param dist the distnace between nodes
+     * \param dist the distance between nodes
      * \param rngRun the rng run
      * \returns the name string
      */

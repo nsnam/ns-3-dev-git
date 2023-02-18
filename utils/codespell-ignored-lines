@@ -1,0 +1,46 @@
+#lollipop-counter.h: 341, 343
+        LollipopCounter ans = val;
+        return ans;
+
+#arp-header.cc: 202
+    ReadFrom(i, m_macDest, hardwareAddressLen);   // Read THA (size HLN)
+
+#csma-net-device.cc: 351-352
+            Ptr<Packet> padd = Create<Packet>(buffer, 46 - p->GetSize());
+            p->AddAtEnd(padd);
+
+#epc-gtpu-header.h: 236
+     * This field is used to co-ordinate the data transmission for acknowledged mode
+
+#mobility-model.cc:100, 102
+    Vector oPosition = other->DoGetPosition();
+    return CalculateDistance(position, oPosition);
+
+#statistics.rst:299-300
+    read ANS
+    if [ "$ANS" = "yes" -o "$ANS" = "y" ]
+
+#wifi-example-db.sh:34-35
+  read ANS
+  if [ "$ANS" = "yes" -o "$ANS" = "y" ]
+
+#doxygen.warnings.report.sh:483, 485, 544, 549, 556, 561
+filterin=
+    filterin=$(              \
+#     if [ "$filterin" != "" ] ; then
+#         echo "$filterin"
+if [ "$filterin" != "" ] ; then
+    echo "$filterin"
+
+#./src/visualizer/visualizer/hud.py:93-94
+            tbe = math.log10(dx_over_ndiv)#;   /* looking for approx. 'ndiv' divisions in a length 'dx' */
+            div = pow(10, rint(tbe))#;         /* div: power of 10 closest to dx/ndiv */
+
+#./utils/tests/test-ns3.py:2944
+            'convert {image} -colorspace HSI -channel b -separate +channel -scale 1x1 -format "%[fx:100*u]" info:'
+
+#./doc/tutorial/source/introduction.rst:80
+Network Animator nam.  It is not possible to run a simulation
+
+#./src/internet-apps/model/v4ping.h:37
+ * \brief an application which sends one ICMP ECHO request, waits for a REPLYs

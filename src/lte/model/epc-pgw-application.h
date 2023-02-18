@@ -114,7 +114,7 @@ class EpcPgwApplication : public Application
      * Send a data packet to the internet via the SGi interface of the PGW
      *
      * \param packet packet to be sent
-     * \param teid the Tunnel Enpoint Identifier
+     * \param teid the Tunnel Endpoint Identifier
      */
     void SendToTunDevice(Ptr<Packet> packet, uint32_t teid);
 
@@ -123,7 +123,7 @@ class EpcPgwApplication : public Application
      *
      * \param packet packet to be sent
      * \param sgwS5uAddress the address of the SGW
-     * \param teid the Tunnel Enpoint IDentifier
+     * \param teid the Tunnel Endpoint IDentifier
      */
     void SendToS5uSocket(Ptr<Packet> packet, Ipv4Address sgwS5uAddress, uint32_t teid);
 

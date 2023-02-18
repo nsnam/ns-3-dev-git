@@ -125,7 +125,7 @@ Ipv6FlowClassifier::Classify(const Ipv6Header& ipHeader,
     }
 
     // we rely on the fact that for both TCP and UDP the ports are
-    // carried in the first 4 octects.
+    // carried in the first 4 octets.
     // This allows to read the ports even on fragmented packets
     // not carrying a full TCP or UDP header.
 

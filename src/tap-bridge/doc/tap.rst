@@ -233,7 +233,7 @@ configuration of the virtual hosts may be dictated by another system and
 not be changeable to suit ns-3.  For example, a particular VM scheme may create
 virtual "vethx" or "vmnetx" devices that appear local to virtual hosts.  In
 order to connect to such systems, one would need to manually create TAP devices
-on the host system and brigde these TAP devices to the existing (VM) virtual
+on the host system and bridge these TAP devices to the existing (VM) virtual
 devices.  The job of the Tap Bridge in this case is to extend the bridge to
 join a ns-3 net device.
 

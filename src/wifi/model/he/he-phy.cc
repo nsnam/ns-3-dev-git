@@ -877,8 +877,8 @@ HePhy::DoEndReceivePayload(Ptr<const WifiPpdu> ppdu)
         if (m_endRxPayloadEvents.empty())
         {
             // We've got the last PPDU of the UL-OFDMA transmission.
-            // Indicate a successfull reception is terminated if at least one HE TB PPDU
-            // has been successfully received, otherwise indicate a unsuccessfull reception is
+            // Indicate a successful reception is terminated if at least one HE TB PPDU
+            // has been successfully received, otherwise indicate a unsuccessful reception is
             // terminated.
             if (m_rxHeTbPpdus > 0)
             {

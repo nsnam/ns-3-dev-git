@@ -239,7 +239,7 @@ class HePhy : public VhtPhy
 
     /**
      * Fire a EndOfHeSigA callback (if connected) once HE-SIG-A field has been received.
-     * This method is scheduled immediatly after end of HE-SIG-A, once
+     * This method is scheduled immediately after end of HE-SIG-A, once
      * field processing is finished.
      *
      * \param params the HE-SIG-A parameters

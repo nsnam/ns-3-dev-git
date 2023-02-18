@@ -1085,15 +1085,15 @@ DsrOptionRerrUnsupportHeader::GetErrorDst() const
 }
 
 void
-DsrOptionRerrUnsupportHeader::SetUnsupported(uint16_t unsupport)
+DsrOptionRerrUnsupportHeader::SetUnsupported(uint16_t unsupported)
 {
-    m_unsupport = unsupport;
+    m_unsupported = unsupported;
 }
 
 uint16_t
 DsrOptionRerrUnsupportHeader::GetUnsupported() const
 {
-    return m_unsupport;
+    return m_unsupported;
 }
 
 void
@@ -1102,7 +1102,7 @@ DsrOptionRerrUnsupportHeader::Print(std::ostream& os) const
     os << "( type = " << (uint32_t)GetType() << " length = " << (uint32_t)GetLength()
        << " errorType = " << (uint32_t)m_errorType << " salvage = " << (uint32_t)m_salvage
        << " error source = " << m_errorSrcAddress << " error dst = " << m_errorDstAddress
-       << " unsupported option = " << m_unsupport << " )";
+       << " unsupported option = " << m_unsupported << " )";
 }
 
 uint32_t
@@ -1122,7 +1122,7 @@ DsrOptionRerrUnsupportHeader::Serialize(Buffer::Iterator start) const
     i.WriteU8(m_salvage);
     WriteTo(i, m_errorSrcAddress);
     WriteTo(i, m_errorDstAddress);
-    i.WriteU16(m_unsupport);
+    i.WriteU16(m_unsupported);
 }
 
 uint32_t
@@ -1136,7 +1136,7 @@ DsrOptionRerrUnsupportHeader::Deserialize(Buffer::Iterator start)
     m_salvage = i.ReadU8();
     ReadFrom(i, m_errorSrcAddress);
     ReadFrom(i, m_errorDstAddress);
-    m_unsupport = i.ReadU16();
+    m_unsupported = i.ReadU16();
 
     return GetSerializedSize();
 }

@@ -100,7 +100,7 @@ namespace ns3
  * \ingroup core-environ
  *
  * \def NS_LOCAL_LOG(msg)
- * File-local loggging macro for environment-variable.cc
+ * File-local logging macro for environment-variable.cc
  * Our usual Logging doesn't work here because these functions
  * get called during static initialization of Logging itself.
  * \param msg The message stream to log

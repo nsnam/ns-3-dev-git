@@ -176,7 +176,7 @@ class Ping : public Application
      * \returns the application signature.
      *
      * The application signature is the NodeId concatenated with the
-     * application index inthe node.
+     * application index in the node.
      */
     uint64_t GetApplicationSignature() const;
 
@@ -245,7 +245,7 @@ class Ping : public Application
         /**
          * Constructor.
          * \param txTimePar Echo request Tx time.
-         * \param ackedPar True if the Echo request has been acknoledged at leats once.
+         * \param ackedPar True if the Echo request has been acknowledged at least once.
          */
         EchoRequestData(Time txTimePar, bool ackedPar)
             : txTime(txTimePar),

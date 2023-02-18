@@ -998,7 +998,7 @@ CobaltQueueDiscCeThresholdTest::DoRun()
     Time dequeueInterval = MicroSeconds(1100);
     DequeueWithDelay(queue, modeSize, 11, dequeueInterval);
 
-    // First mark occured for the packet enqueued at 11ms, ideally TCP would decrease sending rate
+    // First mark occurred for the packet enqueued at 11ms, ideally TCP would decrease sending rate
     // which can be simulated by increasing interval between subsequent enqueues, so packets are now
     // enqueued with a delay 1.2ms.
     Time waitUntilFirstMark = MilliSeconds(11);

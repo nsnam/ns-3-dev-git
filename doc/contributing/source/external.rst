@@ -24,7 +24,7 @@ student who wishes to make his or her thesis-related code available
 but who does not plan to update it further.
 See :ref:`sec-unmaintained-contributed` below.
 
-However, much of the emphasis of this chaper is on hosting |ns3| extensions
+However, much of the emphasis of this chapter is on hosting |ns3| extensions
 in the |ns3| `App Store <https://apps.nsnam.org>`_.
 
 Rationale for the app store

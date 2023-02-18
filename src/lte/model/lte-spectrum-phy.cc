@@ -923,7 +923,7 @@ LteSpectrumPhy::AddExpectedTb(uint16_t rnti,
     it = m_expectedTbs.find(tbId);
     if (it != m_expectedTbs.end())
     {
-        // migth be a TB of an unreceived packet (due to high progpalosses)
+        // might be a TB of an unreceived packet (due to high progpalosses)
         m_expectedTbs.erase(it);
     }
     // insert new entry

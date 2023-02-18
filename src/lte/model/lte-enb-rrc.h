@@ -1498,7 +1498,7 @@ class LteEnbRrc : public Object
      * \note this method can have the side effect of updating the SRS
      * configuration index of all UEs
      *
-     * \param srcCi the indext to be removed
+     * \param srcCi the index to be removed
      */
     void RemoveSrsConfigurationIndex(uint16_t srcCi);
 

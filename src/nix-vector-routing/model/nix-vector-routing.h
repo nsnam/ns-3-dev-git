@@ -487,7 +487,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     static bool g_isCacheDirty;
 
     /**
-     * Nix Epoch, incremented each time a flush is perfomed.
+     * Nix Epoch, incremented each time a flush is performed.
      */
     static uint32_t g_epoch;
 

@@ -307,7 +307,7 @@ ReceivePacket(Ptr<const Packet> packet, const Address&)
 }
 
 /**
- * Write the troughput to file.
+ * Write the throughput to file.
  *
  * \param firstWrite True if first time writing.
  * \param binSize Bin size.

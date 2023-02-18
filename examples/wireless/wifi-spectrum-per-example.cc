@@ -102,7 +102,7 @@ uint32_t g_samples;    //!< Number of samples
  * Monitor sniffer Rx trace
  *
  * \param packet The sensed packet.
- * \param channelFreqMhz The channel frequancy [MHz].
+ * \param channelFreqMhz The channel frequency [MHz].
  * \param txVector The Tx vector.
  * \param aMpdu The aMPDU.
  * \param signalNoise The signal and noise dBm.

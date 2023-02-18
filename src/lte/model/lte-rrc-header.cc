@@ -142,7 +142,7 @@ RrcAsn1Header::SerializeDrbToAddModList(std::list<LteRrcSap::DrbToAddMod> drbToA
     for (; it != drbToAddModList.end(); it++)
     {
         // Serialize DRB-ToAddMod sequence
-        // 5 otional fields. Extension marker is present.
+        // 5 optional fields. Extension marker is present.
         std::bitset<5> drbToAddModListOptionalFieldsPresent = std::bitset<5>();
         drbToAddModListOptionalFieldsPresent.set(4, 1); // eps-BearerIdentity present
         drbToAddModListOptionalFieldsPresent.set(3, 0); // pdcp-Config not present
@@ -230,7 +230,7 @@ RrcAsn1Header::SerializeSrbToAddModList(std::list<LteRrcSap::SrbToAddMod> srbToA
     for (; it != srbToAddModList.end(); it++)
     {
         // Serialize SRB-ToAddMod sequence
-        // 2 otional fields. Extension marker is present.
+        // 2 optional fields. Extension marker is present.
         std::bitset<2> srbToAddModListOptionalFieldsPresent = std::bitset<2>();
         srbToAddModListOptionalFieldsPresent.set(1, 0); // rlc-Config not present
         srbToAddModListOptionalFieldsPresent.set(0, 1); // logicalChannelConfig present

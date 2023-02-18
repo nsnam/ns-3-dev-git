@@ -1702,7 +1702,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub(GlobalRoutingLinkRecord* l, SPFVertex* v
 
     NS_ASSERT_MSG(m_spfroot, "GlobalRouteManagerImpl::SPFIntraAddStub (): Root pointer not set");
 
-    // XXX simplifed logic for the moment.  There are two cases to consider:
+    // XXX simplified logic for the moment.  There are two cases to consider:
     // 1) the stub network is on this router; do nothing for now
     //    (already handled above)
     // 2) the stub network is on a remote router, so I should use the

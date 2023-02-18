@@ -294,7 +294,7 @@ Regarding Seagliders, the batteries used into the AUV are Electrochem 3B36 Lithi
 
 .. note::
 
-    should I insert the li-ion model deatils here? I think it is better to put them into an Energy-related chapter..
+    should I insert the li-ion model details here? I think it is better to put them into an Energy-related chapter..
 
 Scope and Limitations
 =====================

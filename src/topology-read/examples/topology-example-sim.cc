@@ -35,7 +35,7 @@
 
 /**
  * \ingroup topology
- * Example of TopologyReader: read in a topology in a specificed format.
+ * Example of TopologyReader: read in a topology in a specified format.
  *
  * This example can be used with the following parameters:
  *   - <tt>--format=Inet --input=src/topology-read/examples/Inet_small_toposample.txt</tt>

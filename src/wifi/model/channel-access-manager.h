@@ -170,7 +170,7 @@ class ChannelAccessManager : public Object
     void NotifyRxEndOkNow();
     /**
      * Notify the Txop that a packet reception was just
-     * completed unsuccessfully.
+     * completed unsuccessfuly.
      */
     void NotifyRxEndErrorNow();
     /**

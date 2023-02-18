@@ -143,7 +143,7 @@ class UplinkSchedulerSimple : public UplinkScheduler
     void SetupServiceFlow(SSRecord* ssRecord, ServiceFlow* serviceFlow) override;
 
     /**
-     * Process bandwidth requet function
+     * Process bandwidth request function
      * \param bwRequestHdr the bandwidth request header
      */
     void ProcessBandwidthRequest(const BandwidthRequestHeader& bwRequestHdr) override;

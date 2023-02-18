@@ -28,7 +28,7 @@ Here is an example of what might occur::
     Compilation finished successfully
     Command ['/home/tomh/ns-3-nsc/build/debug/examples/tcp-point-to-point'] exited with code -11
 
-The error message says that the program terminated unsuccessfully, but it is
+The error message says that the program terminated unsuccessfuly, but it is
 not clear from this information what might be wrong. To examine more
 closely, try running it under the `gdb debugger
 <https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/user_guide/chap-gdb>`_:

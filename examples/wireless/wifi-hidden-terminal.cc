@@ -49,7 +49,7 @@ using namespace ns3;
 /**
  * Run single 10 seconds experiment
  *
- * \param enableCtsRts if true, enable RTS/CTS for packets larget than 100 bytes.
+ * \param enableCtsRts if true, enable RTS/CTS for packets larger than 100 bytes.
  * \param wifiManager WiFi manager to use.
  */
 void

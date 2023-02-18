@@ -105,7 +105,7 @@ BuildingsChannelConditionModel::GetChannelCondition(Ptr<const MobilityModel> a,
     {
         cond->SetO2iCondition(ChannelCondition::O2iConditionValue::O2I);
 
-        NS_LOG_DEBUG("a is indoor and b outdoor or viceversa");
+        NS_LOG_DEBUG("a is indoor and b outdoor or vice-versa");
         cond->SetLosCondition(ChannelCondition::LosConditionValue::NLOS);
     }
 

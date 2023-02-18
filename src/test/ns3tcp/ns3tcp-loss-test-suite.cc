@@ -101,7 +101,7 @@ class Ns3TcpLossTestCase : public TestCase
     std::string m_tcpModel;         //!< The TCP model name.
 
     /**
-     * Check that the transmitted packets are consitent with the trace.
+     * Check that the transmitted packets are consistent with the trace.
      * This callback is hooked to ns3::Ipv4L3Protocol/Tx.
      *
      * \param context The callback context (unused).

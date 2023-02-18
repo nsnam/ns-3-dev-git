@@ -55,7 +55,7 @@ class EventImpl;
  * `(ts / m_width) % m_nBuckets`.  This class automatically adjusts
  * the number of buckets to keep the average occupancy around 2.
  * Buckets themselves are implemented as a `std::list<>`, and events are
- * kept sorted withing the buckets.
+ * kept sorted within the buckets.
  *
  * \par Time Complexity
  *

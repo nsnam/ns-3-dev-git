@@ -97,7 +97,7 @@ class BasicCallbackTestCase : public TestCase
 };
 
 /**
- * Variable to verify that a calback has been called.
+ * Variable to verify that a callback has been called.
  * @{
  */
 static bool gBasicCallbackTest5;
@@ -138,7 +138,7 @@ BasicCallbackTarget7(int a)
 }
 
 BasicCallbackTestCase::BasicCallbackTestCase()
-    : TestCase("Check basic Callback mechansim")
+    : TestCase("Check basic Callback mechanism")
 {
 }
 
@@ -294,7 +294,7 @@ class MakeCallbackTestCase : public TestCase
 };
 
 /**
- * Variable to verify that a calback has been called.
+ * Variable to verify that a callback has been called.
  * @{
  */
 static bool gMakeCallbackTest5;
@@ -449,7 +449,7 @@ class MakeBoundCallbackTestCase : public TestCase
 };
 
 /**
- * Variable to verify that a calback has been called.
+ * Variable to verify that a callback has been called.
  * @{
  */
 static int gMakeBoundCallbackTest1;

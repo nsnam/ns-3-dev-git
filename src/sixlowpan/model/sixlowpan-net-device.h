@@ -80,7 +80,7 @@ class SixLowPanNetDevice : public NetDevice
         DROP_FRAGMENT_TIMEOUT = 1,           //!< Fragment timeout exceeded
         DROP_FRAGMENT_BUFFER_FULL,           //!< Fragment buffer size exceeded
         DROP_UNKNOWN_EXTENSION,              //!< Unsupported compression kind
-        DROP_DISALLOWED_COMPRESSION,         //!< HC1 while in IPHC mode or viceversa
+        DROP_DISALLOWED_COMPRESSION,         //!< HC1 while in IPHC mode or vice-versa
         DROP_SATETFUL_DECOMPRESSION_PROBLEM, //!< Decompression failed due to missing or expired
                                              //!< context
     };
@@ -178,7 +178,7 @@ class SixLowPanNetDevice : public NetDevice
                                        uint32_t ifindex);
 
     /**
-     * TracedCallback signature fo packet drop events
+     * TracedCallback signature for packet drop events
      *
      * \param [in] reason The reason for the drop.
      * \param [in] packet The packet.
@@ -382,7 +382,7 @@ class SixLowPanNetDevice : public NetDevice
      * \param [in] packet The packet to be compressed.
      * \param [in] src The MAC source address.
      * \param [in] dst The MAC destination address.
-     * \return true if the packet can not be decompressed due to wrong context informations.
+     * \return true if the packet can not be decompressed due to wrong context information.
      */
     bool DecompressLowPanIphc(Ptr<Packet> packet, const Address& src, const Address& dst);
 
@@ -407,7 +407,7 @@ class SixLowPanNetDevice : public NetDevice
      * \param [in] srcAddress The IPv6 source address.
      * \param [in] dstAddress The IPv6 destination address.
      * \return A std::pair containing the decompressed header type and a flag - true if the packet
-     * can not be decompressed due to wrong context informations.
+     * can not be decompressed due to wrong context information.
      */
     std::pair<uint8_t, bool> DecompressLowPanNhc(Ptr<Packet> packet,
                                                  const Address& src,
@@ -641,7 +641,7 @@ class SixLowPanNetDevice : public NetDevice
     Ptr<UniformRandomVariable> m_rng; //!< Rng for the fragments tag.
 
     /**
-     * Structure holding the informations for a context (used in compression and decompression)
+     * Structure holding the information for a context (used in compression and decompression)
      */
     struct ContextEntry
     {

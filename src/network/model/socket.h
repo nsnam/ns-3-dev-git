@@ -180,7 +180,7 @@ class Socket : public Object
      *        completed. The callback is passed  back a pointer to
      *        the same socket object.
      * \param connectionFailed this callback is invoked when the
-     *        connection request initiated by the user is unsuccessfully
+     *        connection request initiated by the user is unsuccessfuly
      *        completed. The callback is passed back a pointer to the
      *        same socket object.
      */

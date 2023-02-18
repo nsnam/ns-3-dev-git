@@ -236,7 +236,7 @@ DynamicNeighborCacheTest::DoRun()
     }
     net.Add(tx2Dev);
 
-    // Recieve node
+    // Receive node
     Ptr<SimpleNetDevice> rxDev;
     {
         rxDev = CreateObject<SimpleNetDevice>();

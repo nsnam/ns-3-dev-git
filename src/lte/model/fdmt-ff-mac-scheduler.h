@@ -269,7 +269,7 @@ class FdMtFfMacScheduler : public FfMacScheduler
      */
     void UpdateDlRlcBufferInfo(uint16_t rnti, uint8_t lcid, uint16_t size);
     /**
-     * Update UL RLC b uffer info function
+     * Update UL RLC buffer info function
      * \param rnti the RNTI
      * \param size the size
      */

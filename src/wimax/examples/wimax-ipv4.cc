@@ -28,7 +28,7 @@
 // scheduling type UGS, the second one rtPS and the third one BE.
 // Senders SSs send some stamped IP packets with variable bitrate to receiver SSs
 // through the BS station. receiver SSs receive the IP packets analyze them and
-// based on a sequnece number decide if all the packets are coorectly received
+// based on a sequence number decide if all the packets are coorectly received
 
 //      +-----+    +-----+    +-----+
 //      | SS0 |    | SS1 |    | SS2 |

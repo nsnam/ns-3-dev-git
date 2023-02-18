@@ -98,7 +98,7 @@ class Ns3TcpStateTestCase : public TestCase
     bool m_needToClose;         //!< Check if the sending socket need to be closed.
 
     /**
-     * Check that the transmitted packets are consitent with the trace.
+     * Check that the transmitted packets are consistent with the trace.
      * This callback is hooked to ns3::Ipv4L3Protocol/Tx.
      *
      * \param context The callback context (unused).
@@ -111,7 +111,7 @@ class Ns3TcpStateTestCase : public TestCase
                   Ptr<Ipv4> ipv4,
                   uint32_t interface);
     /**
-     * Check that the received packets are consitent with the trace.
+     * Check that the received packets are consistent with the trace.
      * This callback is hooked to ns3::Ipv4L3Protocol/Tx.
      *
      * \param context The callback context (unused).

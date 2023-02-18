@@ -64,7 +64,7 @@ class Experiment
   private:
     /**
      * Receive a packet.
-     * \param socket The recieving socket.
+     * \param socket The receiving socket.
      */
     void ReceivePacket(Ptr<Socket> socket);
     /**

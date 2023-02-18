@@ -798,7 +798,7 @@ that usage is consistent within a file.
   };
 
 All the functions and variables must be documented, with the exception of
-member functions inherited from parent classes (the documentaion is copied
+member functions inherited from parent classes (the documentation is copied
 automatically from the parent class), and default constructor/destructor.
 
 It is strongly suggested to use grouping to bind together logically related

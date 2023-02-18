@@ -76,7 +76,7 @@ class ThreeGppV2vBuildingsChCondModelTestCase : public TestCase
         TypeId m_typeId; //!< the type ID of the channel condition model to be used
     };
 
-    TestVectors<TestVector> m_testVectors; //!< array containg all the test vectors
+    TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
 };
 
 ThreeGppV2vBuildingsChCondModelTestCase::ThreeGppV2vBuildingsChCondModelTestCase()

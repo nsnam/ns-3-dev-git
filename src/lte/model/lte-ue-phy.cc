@@ -870,7 +870,7 @@ LteUePhy::CreateDlCqiFeedbackMessage(const SpectrumValue& sinr)
         }
         dlcqi.m_rnti = m_rnti;
         dlcqi.m_ri = 1;                          // not yet used
-        dlcqi.m_cqiType = CqiListElement_s::P10; // Peridic CQI using PUCCH wideband
+        dlcqi.m_cqiType = CqiListElement_s::P10; // Periodic CQI using PUCCH wideband
         NS_ASSERT_MSG(nLayer > 0, " nLayer negative");
         NS_ASSERT_MSG(nLayer < 3, " nLayer limit is 2s");
         for (uint8_t i = 0; i < nLayer; i++)
@@ -1653,7 +1653,7 @@ LteUePhy::RlfDetection(double sinrDb)
     if (m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQoutEvalSf)
     {
         NS_LOG_LOGIC("At " << Simulator::Now().As(Time::MS)
-                           << " ms UE PHY sending out of snyc indication to UE RRC layer");
+                           << " ms UE PHY sending out of sync indication to UE RRC layer");
         m_ueCphySapUser->NotifyOutOfSync();
         m_numOfFrames = 0;
     }
@@ -1692,7 +1692,7 @@ LteUePhy::RlfDetection(double sinrDb)
     if (!m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQinEvalSf)
     {
         NS_LOG_LOGIC("At " << Simulator::Now().As(Time::MS)
-                           << " ms UE PHY sending in snyc indication to UE RRC layer");
+                           << " ms UE PHY sending in sync indication to UE RRC layer");
         m_ueCphySapUser->NotifyInSync();
         m_numOfFrames = 0;
     }

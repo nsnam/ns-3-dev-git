@@ -110,7 +110,7 @@ of an OcbWifiMac.
 5. ConfigureEdca
 
    This method will allow the user to set EDCA parameters of WAVE channels
-   including CCH ans SCHs. And the OcbWifiMac itself also uses this method
+   including CCH and SCHs. And the OcbWifiMac itself also uses this method
    to configure default 802.11p EDCA parameters.
 
 6. Wildcard BSSID
@@ -140,7 +140,7 @@ to wifi MAC classes, then a relevant subclass is defined; if some
 feature has no relation to wifi MAC classes, then a new class
 will be defined. This approach was selected to be non-intrusive to the
 |ns3| wifi module. All of these classes will be hosted in a 'container'
-class called ``ns3:: WaveNetDevice``. This class is a subclass inherting
+class called ``ns3:: WaveNetDevice``. This class is a subclass inheriting
 from ``ns3::NetDeivce``, composed of the objects of
 ``ns3::ChannelScheduler``, ``ns3::ChannelManager``,
 ``ns3::ChannelCoordinator`` and ``ns3::VsaManager``

@@ -257,7 +257,7 @@
  * ---------------
  *    --n0TcpType:           First TCP type (bic, dctcp, or reno) [bic]
  *    --n1TcpType:           Second TCP type (cubic, dctcp, or reno) []
- *    --scenarioNum:         Scenario number from the scenarios avalaible in the file (1-9) [0]
+ *    --scenarioNum:         Scenario number from the scenarios available in the file (1-9) [0]
  *    --bottleneckQueueType: n2 queue type (fq or codel) [fq]
  *    --baseRtt:             base RTT [80ms]
  *    --useCeThreshold:      use CE threshold [false]
@@ -532,7 +532,7 @@ main(int argc, char* argv[])
     cmd.AddValue("n0TcpType", "n0 TCP type (bic, dctcp, or reno)", n0TcpType);
     cmd.AddValue("n1TcpType", "n1 TCP type (bic, dctcp, or reno)", n1TcpType);
     cmd.AddValue("scenarioNum",
-                 "Scenario number from the scenarios avalaible in the file (1-9)",
+                 "Scenario number from the scenarios available in the file (1-9)",
                  scenarioNum);
     cmd.AddValue("bottleneckQueueType", "n2 queue type (fq or codel)", queueType);
     cmd.AddValue("baseRtt", "base RTT", baseRtt);

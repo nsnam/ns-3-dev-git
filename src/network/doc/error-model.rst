@@ -77,7 +77,7 @@ The base class API is as follows:
   Some models could potentially alter the contents of the packet bit buffer.
 * ``void ErrorModel::Reset ()``:  Reset any state.
 * ``void ErrorModel::Enable ()``:  Enable the model
-* ``void ErrorModel::Disble ()``:  Disable the model; IsCorrupt() will
+* ``void ErrorModel::Disable ()``:  Disable the model; IsCorrupt() will
   always return false.
 * ``bool ErrorModel::IsEnabled () const``:  Return the enabled state
 

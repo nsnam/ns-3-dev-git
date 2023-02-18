@@ -40,7 +40,7 @@ class LteSpectrumModelTestCase : public TestCase
      *
      * \param str the test reference name
      * \param earfcn the central carrier frequency
-     * \param bw bandwidth tha bandwidth
+     * \param bw bandwidth the bandwidth
      * \param fcs the expected spectrum model
      */
     LteSpectrumModelTestCase(const char* str, uint16_t earfcn, uint8_t bw, std::vector<double> fcs);

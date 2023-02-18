@@ -366,7 +366,7 @@ TestActiveScanPanDescriptors::DoRun()
      * the scanned channels). On reception of such commands, coordinators reply with a single beacon
      * which contains a PAN descriptor. The test makes sure that the PAN descriptors are received (2
      * PAN descriptors) and because both PAN coordinators are set to a different distance from the
-     * end device, their LQI values should be bellow 255 but above 0. Likewise, Coordinator 2 LQI
+     * end device, their LQI values should be below 255 but above 0. Likewise, Coordinator 2 LQI
      * value should be less than Coordinator 1 LQI value. The exact expected value of LQI is not
      * tested, this is dependable on the LQI implementation.
      */

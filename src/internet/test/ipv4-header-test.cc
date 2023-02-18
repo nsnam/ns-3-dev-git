@@ -62,7 +62,7 @@ class Ipv4HeaderTest : public TestCase
     Ipv4Header m_receivedHeader;  //!< Received header.
 
     /**
-     * \brief Send a packet with speciic DSCP and ECN fields.
+     * \brief Send a packet with specific DSCP and ECN fields.
      * \param socket The source socket.
      * \param to The destination address.
      * \param dscp The DSCP field.
@@ -74,7 +74,7 @@ class Ipv4HeaderTest : public TestCase
                                Ipv4Header::EcnType ecn);
 
     /**
-     * \brief Send a packet with speciic DSCP and ECN fields.
+     * \brief Send a packet with specific DSCP and ECN fields.
      * \param socket The source socket.
      * \param to The destination address.
      * \param dscp The DSCP field.

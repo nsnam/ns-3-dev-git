@@ -2582,7 +2582,7 @@ class Issue40TestCase : public TestCase
     uint16_t m_rxCount; ///< Count number of successfully received data packets
     uint16_t m_txCount; ///< Count number of transmitted data packets
     uint16_t
-        m_txMacFinalDataFailedCount; ///< Count number of unsuccessfully transmitted data packets
+        m_txMacFinalDataFailedCount; ///< Count number of unsuccessfuly transmitted data packets
 };
 
 Issue40TestCase::Issue40TestCase()
@@ -2699,7 +2699,7 @@ Issue40TestCase::RunOne(bool useAmpdu)
                         staDevice.Get(0)->GetAddress());
 
     // Transmit a second data packet once the station is away from the access point: it should be
-    // sent with the same high modulation and be unsuccessfully received
+    // sent with the same high modulation and be unsuccessfuly received
     Simulator::Schedule(Seconds(2.0),
                         &Issue40TestCase::SendPackets,
                         this,
@@ -3505,7 +3505,7 @@ IdealRateManagerMimoTest::DoRun()
                         staDevice.Get(0)->GetAddress());
     // Selected NSS should be 2 since both TX and RX support 2 antennas
     Simulator::Schedule(Seconds(9.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 2);
-    // Selecte rate should be the same as without diversity, as it uses 2 spatial streams so there
+    // Selected rate should be the same as without diversity, as it uses 2 spatial streams so there
     // is no more benefits from diversity in AWGN channels
     Simulator::Schedule(Seconds(9.2),
                         &IdealRateManagerMimoTest::CheckLastSelectedMode,

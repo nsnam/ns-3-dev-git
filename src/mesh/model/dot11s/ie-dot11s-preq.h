@@ -214,7 +214,7 @@ class IePreq : public WifiInformationElement
      */
     Mac48Address GetOriginatorAddress() const;
     /**
-     * Get originator sequence numnber value
+     * Get originator sequence number value
      * \returns the originator sequence number
      */
     uint32_t GetOriginatorSeqNumber() const;

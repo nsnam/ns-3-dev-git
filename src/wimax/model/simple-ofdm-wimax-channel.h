@@ -109,7 +109,7 @@ class SimpleOfdmWimaxChannel : public WimaxChannel
 
   private:
     /**
-     * Attach functiion
+     * Attach function
      * \param phy the phy layer
      */
     void DoAttach(Ptr<WimaxPhy> phy) override;

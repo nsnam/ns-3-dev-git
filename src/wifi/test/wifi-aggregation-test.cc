@@ -584,7 +584,7 @@ TwoLevelAggregationTest::DoRun()
  * \ingroup tests
  *
  * \brief 802.11ax aggregation test which permits 64 or 256 MPDUs in A-MPDU according to the
- * negociated buffer size.
+ * negotiated buffer size.
  */
 class HeAggregationTest : public TestCase
 {
@@ -708,7 +708,7 @@ HeAggregationTest::DoRunSubTest(uint16_t bufferSize)
     m_mac->GetBEQueue()->GetBaManager()->UpdateOriginatorAgreement(respHdr, hdr.GetAddr1(), 0);
 
     /*
-     * Test behavior when 300 packets are ready for transmission but negociated buffer size is 64
+     * Test behavior when 300 packets are ready for transmission but negotiated buffer size is 64
      */
     Ptr<HtFrameExchangeManager> htFem = DynamicCast<HtFrameExchangeManager>(fem);
     Ptr<MpduAggregator> mpduAggregator = htFem->GetMpduAggregator();
@@ -741,7 +741,7 @@ HeAggregationTest::DoRunSubTest(uint16_t bufferSize)
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), false, "MPDU aggregation failed");
     NS_TEST_EXPECT_MSG_EQ(mpduList.size(),
                           bufferSize,
-                          "A-MPDU should countain " << bufferSize << " MPDUs");
+                          "A-MPDU should contain " << bufferSize << " MPDUs");
     uint16_t expectedRemainingPacketsInQueue = 300 - bufferSize;
     NS_TEST_EXPECT_MSG_EQ(m_mac->GetBEQueue()->GetWifiMacQueue()->GetNPackets(),
                           expectedRemainingPacketsInQueue,

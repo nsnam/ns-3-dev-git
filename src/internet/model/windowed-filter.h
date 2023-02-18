@@ -136,14 +136,14 @@ class WindowedFilter
 {
   public:
     /**
-     * \brief contructor
+     * \brief constructor
      */
     WindowedFilter()
     {
     }
 
     /**
-     * \brief contructor
+     * \brief constructor
      * \param windowLength is the period after which a best estimate expires.
      * \param zeroValue is used as the uninitialized value for objects of T. Importantly,
      * zeroValue should be an invalid value for a true sample.

@@ -272,7 +272,7 @@ ThreeGppSpectrumPropagationLossModel::GetLongTerm(
         longTerm; // vector containing the long term component for each cluster
 
     // check if the channel matrix was generated considering a as the s-node and
-    // b as the u-node or viceversa
+    // b as the u-node or vice-versa
     PhasedArrayModel::ComplexVector sW;
     PhasedArrayModel::ComplexVector uW;
     if (!channelMatrix->IsReverse(aPhasedArrayModel->GetId(), bPhasedArrayModel->GetId()))

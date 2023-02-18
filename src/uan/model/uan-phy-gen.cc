@@ -620,7 +620,7 @@ UanPhyGen::GetTypeId()
                             MakeTraceSourceAccessor(&UanPhyGen::m_rxOkLogger),
                             "ns3::UanPhy::TracedCallback")
             .AddTraceSource("RxError",
-                            "A packet was received unsuccessfully.",
+                            "A packet was received unsuccessfuly.",
                             MakeTraceSourceAccessor(&UanPhyGen::m_rxErrLogger),
                             "ns3::UanPhy::TracedCallback")
             .AddTraceSource("Tx",

@@ -182,7 +182,7 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     typedef std::map<uint16_t, MeasurementRow_t> MeasurementTable_t;
     MeasurementTable_t m_ueMeasures; ///< UE measures
 
-    std::vector<uint16_t> m_neigborCell; ///< neighbor cell
+    std::vector<uint16_t> m_neighborCell; ///< neighbor cell
 
     uint8_t m_rsrpDifferenceThreshold; ///< RSRP difference threshold
 

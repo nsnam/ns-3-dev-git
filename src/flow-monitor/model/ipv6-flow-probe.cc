@@ -62,7 +62,7 @@ class Ipv6FlowProbeTag : public Tag
     void Print(std::ostream& os) const override;
     Ipv6FlowProbeTag();
     /**
-     * \brief Consructor
+     * \brief Constructor
      * \param flowId the flow identifier
      * \param packetId the packet identifier
      * \param packetSize the packet size

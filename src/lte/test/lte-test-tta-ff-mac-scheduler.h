@@ -61,7 +61,7 @@ class LenaTtaFfMacSchedulerTestCase : public TestCase
     /**
      * Build name string
      * \param nUser the number of UE nodes
-     * \param dist the distnace between nodes
+     * \param dist the distance between nodes
      * \returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, double dist);

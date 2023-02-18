@@ -367,11 +367,11 @@ class ChannelAccessManagerTest : public TestCase
      * \param ackDelay the delay of the Ack after txEnd
      * \param from the index of the requesting Txop
      */
-    void AddAccessRequestWithSuccessfullAck(uint64_t at,
-                                            uint64_t txTime,
-                                            uint64_t expectedGrantTime,
-                                            uint32_t ackDelay,
-                                            uint32_t from);
+    void AddAccessRequestWithSuccessfulAck(uint64_t at,
+                                           uint64_t txTime,
+                                           uint64_t expectedGrantTime,
+                                           uint32_t ackDelay,
+                                           uint32_t from);
     /**
      * Add access request with successful Ack
      * \param txTime the transmit time
@@ -759,7 +759,7 @@ ChannelAccessManagerTest<TxopType>::AddAccessRequest(uint64_t at,
                                                      uint64_t expectedGrantTime,
                                                      uint32_t from)
 {
-    AddAccessRequestWithSuccessfullAck(at, txTime, expectedGrantTime, 0, from);
+    AddAccessRequestWithSuccessfulAck(at, txTime, expectedGrantTime, 0, from);
 }
 
 template <typename TxopType>
@@ -779,11 +779,11 @@ ChannelAccessManagerTest<TxopType>::AddAccessRequestWithAckTimeout(uint64_t at,
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::AddAccessRequestWithSuccessfullAck(uint64_t at,
-                                                                       uint64_t txTime,
-                                                                       uint64_t expectedGrantTime,
-                                                                       uint32_t ackDelay,
-                                                                       uint32_t from)
+ChannelAccessManagerTest<TxopType>::AddAccessRequestWithSuccessfulAck(uint64_t at,
+                                                                      uint64_t txTime,
+                                                                      uint64_t expectedGrantTime,
+                                                                      uint32_t ackDelay,
+                                                                      uint32_t from)
 {
     NS_ASSERT(ackDelay < m_ackTimeoutValue);
     Simulator::Schedule(MicroSeconds(at) - Now(),
@@ -1043,7 +1043,7 @@ ChannelAccessManagerTest<Txop>::DoRun()
     StartTest(4, 6, 10);
     AddTxop(0); // high priority DCF
     AddTxop(2); // low priority DCF
-    AddAccessRequestWithSuccessfullAck(20, 20, 34, 2, 1);
+    AddAccessRequestWithSuccessfulAck(20, 20, 34, 2, 1);
     AddAccessRequest(55, 10, 62, 0);
     EndTest();
 

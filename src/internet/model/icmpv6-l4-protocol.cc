@@ -703,7 +703,7 @@ Icmpv6L4Protocol::HandleNS(Ptr<Packet> packet,
             }
             break;
         default:
-            /* unknow option, quit */
+            /* unknown option, quit */
             next = false;
         }
         if (packet->GetSize() == 0)
@@ -1383,7 +1383,7 @@ Icmpv6L4Protocol::SendRS(Ipv6Address src, Ipv6Address dst, Address hardwareAddre
         }
         else
         {
-            // Following RS transmission - adding further jitter is unnecesary.
+            // Following RS transmission - adding further jitter is unnecessary.
             rsTimeout = m_rsPrevRetransmissionTimeout * (2 + m_rsRetransmissionJitter->GetValue());
             if (rsTimeout > m_rsMaxRetransmissionTime)
             {

@@ -90,7 +90,7 @@ class LteSpectrumValueHelper
     /**
      *
      *
-     * \param txBandwidthConf the tranmission bandwidth
+     * \param txBandwidthConf the transmission bandwidth
      * configuration in number of resource blocks
      *
      * \return the nominal channel bandwidth in Hz as per 3GPP TS 36.101

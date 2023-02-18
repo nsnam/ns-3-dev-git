@@ -266,7 +266,7 @@ RealtimeSimulatorImpl::ProcessOneEvent()
         //
         // It's easiest to understand if you just consider a short tsDelay that only
         // requires a SpinWait down in the synchronizer.  What will happen is that
-        // whan Synchronize calls SpinWait, SpinWait will look directly at its
+        // when Synchronize calls SpinWait, SpinWait will look directly at its
         // condition variable.  Note that we set this condition variable to false
         // inside the critical section above.
         //

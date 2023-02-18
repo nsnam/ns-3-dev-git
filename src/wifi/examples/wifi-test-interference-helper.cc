@@ -71,9 +71,9 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("test-interference-helper");
 
-bool checkResults = false;         //!< True if results have to be checked.
-bool expectRxASuccessfull = false; //!< True if Rx from A is expected to be successful.
-bool expectRxBSuccessfull = false; //!< True if Rx from B is expected to be successful.
+bool checkResults = false;        //!< True if results have to be checked.
+bool expectRxASuccessful = false; //!< True if Rx from A is expected to be successful.
+bool expectRxBSuccessful = false; //!< True if Rx from B is expected to be successful.
 
 /// InterferenceExperiment
 class InterferenceExperiment
@@ -307,7 +307,7 @@ InterferenceExperiment::Run(struct InterferenceExperiment::Input input)
     m_txA->Dispose();
     rx->Dispose();
 
-    if (checkResults && (m_droppedA == expectRxASuccessfull || m_droppedB == expectRxBSuccessfull))
+    if (checkResults && (m_droppedA == expectRxASuccessful || m_droppedB == expectRxBSuccessful))
     {
         NS_LOG_ERROR("Results are not expected!");
         exit(1);
@@ -344,12 +344,12 @@ main(int argc, char* argv[])
     cmd.AddValue("enableCapture", "Enable/disable physical layer capture", input.captureEnabled);
     cmd.AddValue("captureMargin", "Margin used for physical layer capture", input.captureMargin);
     cmd.AddValue("checkResults", "Used to check results at the end of the test", checkResults);
-    cmd.AddValue("expectRxASuccessfull",
+    cmd.AddValue("expectRxASuccessful",
                  "Indicate whether packet A is expected to be successfully received",
-                 expectRxASuccessfull);
-    cmd.AddValue("expectRxBSuccessfull",
+                 expectRxASuccessful);
+    cmd.AddValue("expectRxBSuccessful",
                  "Indicate whether packet B is expected to be successfully received",
-                 expectRxBSuccessfull);
+                 expectRxBSuccessful);
     cmd.Parse(argc, argv);
 
     input.interval = MicroSeconds(delay);

@@ -339,7 +339,7 @@ void
 WifiTxopTest::CheckResults()
 {
     Time tEnd;                        // TX end for a frame
-    Time tStart;                      // TX start fot the next frame
+    Time tStart;                      // TX start for the next frame
     Time txopStart;                   // TXOP start time
     Time tolerance = NanoSeconds(50); // due to propagation delay
     Time sifs = DynamicCast<WifiNetDevice>(m_apDevices.Get(0))->GetPhy()->GetSifs();

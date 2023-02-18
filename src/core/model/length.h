@@ -134,7 +134,7 @@ namespace ns3
  * Length::Unit
  *
  * \code
- *   //These two contructors are equivalent
+ *   //These two constructors are equivalent
  *   Length l1 (1, "cm");
  *   Length l2 (1, Length::Unit::Centimeter);
  * \endcode
@@ -146,7 +146,7 @@ namespace ns3
  * from boost::unit quantities.
  *
  * \code
- *   //construct length from a boost::units quantitiy
+ *   //construct length from a boost::units quantity
  *   boost::units::quantity<boost::units::si::length> q
  *       = 5 * boost::units::si::meter;
  *   Length meters (q);
@@ -445,7 +445,7 @@ class Length
      * Initialize an object with the value from \p other.
      *
      * After the move completes, \p other is left in an undefined but
-     * useable state.
+     * usable state.
      *
      * \param other Length object to move
      */

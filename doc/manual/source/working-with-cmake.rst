@@ -2182,7 +2182,7 @@ Module macros: build_lib_example
 The second most important macro from a module author perspective is the ``build_lib_example``, which
 builds the examples for their module. As with ``build_lib`` we explain what it does block-by-block.
 
-In the first block, arguments are parsed and we check wether the current module is in the contrib
+In the first block, arguments are parsed and we check whether the current module is in the contrib
 or the src folder.
 
 .. sourcecode:: cmake

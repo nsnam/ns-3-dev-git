@@ -272,7 +272,7 @@ TcpDropRatioErrorModel::ShouldDrop(const Ipv4Header& ipHeader,
  *
  *   m_tcb->m_rxBuffer->MaxBufferSize ()
  *
- * This change was introduced with regard to situations in which the receiviing
+ * This change was introduced with regard to situations in which the receiving
  * application does not read from the socket as fast as possible (see bug 2559
  * for details). This test ensures that no regression is introduced for other,
  * "normal" cases.

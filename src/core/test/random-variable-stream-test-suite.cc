@@ -1835,7 +1835,7 @@ ErlangTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
     double lambda = 1.0;
 
     // Note that Erlang distribution is equal to the gamma distribution
-    // when k is an iteger, which is why the gamma distribution's cdf
+    // when k is an integer, which is why the gamma distribution's cdf
     // function can be used here.
     for (std::size_t i = 0; i < N_BINS; ++i)
     {
@@ -1930,7 +1930,7 @@ ErlangAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
     double lambda = 1.0;
 
     // Note that Erlang distribution is equal to the gamma distribution
-    // when k is an iteger, which is why the gamma distribution's cdf
+    // when k is an integer, which is why the gamma distribution's cdf
     // function can be used here.
     for (std::size_t i = 0; i < N_BINS; ++i)
     {

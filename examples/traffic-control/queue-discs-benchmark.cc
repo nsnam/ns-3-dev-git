@@ -67,9 +67,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("BenchmarkQueueDiscs");
 
 /**
- * Print the queue limitis.
+ * Print the queue limits.
  *
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param oldVal Old value.
  * \param newVal New value.
  */
@@ -82,7 +82,7 @@ LimitsTrace(Ptr<OutputStreamWrapper> stream, uint32_t oldVal, uint32_t newVal)
 /**
  * Print the bytes in the queue.
  *
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param oldVal Old value.
  * \param newVal New value.
  */
@@ -96,7 +96,7 @@ BytesInQueueTrace(Ptr<OutputStreamWrapper> stream, uint32_t oldVal, uint32_t new
  * Sample and print the queue goodput.
  *
  * \param app The Tx app.
- * \param stream The ouput stream.
+ * \param stream The output stream.
  * \param period The sampling period.
  */
 static void

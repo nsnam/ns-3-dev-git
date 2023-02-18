@@ -32,7 +32,7 @@
 //  STA1 and AP1 are in one BSS (with color set to 1), while STA2 and AP2 are in
 //  another BSS (with color set to 2). The distances are configurable (d1 through d3).
 //
-//  STA1 is continously transmitting data to AP1, while STA2 is continuously sending data to AP2.
+//  STA1 is continuously transmitting data to AP1, while STA2 is continuously sending data to AP2.
 //  Each STA has configurable traffic loads (inter packet interval and packet size).
 //  It is also possible to configure TX power per node as well as their CCA-ED tresholds.
 //  OBSS_PD spatial reuse feature can be enabled (default) or disabled, and the OBSS_PD

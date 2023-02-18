@@ -200,7 +200,7 @@ class Average
  * Print avg (err) [min, max]
  * \param os The output stream
  * \param x The Average value to print
- * \return the ouput stream.
+ * \return the output stream.
  */
 template <typename T>
 std::ostream&

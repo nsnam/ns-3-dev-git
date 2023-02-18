@@ -8,7 +8,7 @@ delays_vehicularEVA = [0 30e-9 150e-9 310e-9 370e-9 710e-9 1090e-9 1730e-9 2510e
 delays_urbanETU = [0 50e-9 120e-9 200e-9 230e-9 500e-9 1600e-9 2300e-9 5000e-9];
 Td = 100/c;
 
-% Realtive power of taps (according to 3GPP TS 36.104 Annex B.2)
+% Relative power of taps (according to 3GPP TS 36.104 Annex B.2)
 power_pedestrianEPA = [0.0 -1.0 -2.0 -3.0 -8.0 -17.2 -20.8];
 power_vehicularEVA = [0.0 -1.5 -1.4 -3.6 -0.6 -9.1 -7.0 -12.0 -16.9];
 power_urbanETU = [-1.0 -1.0 -1.0 0.0 0.0 0.0 -3.0 -5.0 -7.0];

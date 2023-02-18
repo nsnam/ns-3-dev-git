@@ -96,7 +96,7 @@ class SsServiceFlowManager : public ServiceFlowManager
     EventId GetDsaRspTimeoutEvent() const;
     /**
      * Get DSA ack timeout event
-     * \returns the DSA ack timeput event
+     * \returns the DSA ack timeout event
      */
     EventId GetDsaAckTimeoutEvent() const;
 

@@ -2199,7 +2199,7 @@ AnimationInterface::SetOutputFile(const std::string& fn, bool routing)
 void
 AnimationInterface::CheckMaxPktsPerTraceFile()
 {
-    // Start a new trace file if the current packet count exceeded nax packets per file
+    // Start a new trace file if the current packet count exceeded max packets per file
     ++m_currentPktCount;
     if (m_currentPktCount <= m_maxPktsPerFile)
     {

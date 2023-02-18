@@ -1284,10 +1284,10 @@ ReadFileTestCase::DoRun()
         NS_TEST_ASSERT_MSG_EQ(f.Fail(), false, "Read() of known good pcap file returns error");
         NS_TEST_ASSERT_MSG_EQ(tsSec,
                               p.tsSec,
-                              "Incorrectly read seconds timestap from known good pcap file");
+                              "Incorrectly read seconds timestamp from known good pcap file");
         NS_TEST_ASSERT_MSG_EQ(tsUsec,
                               p.tsUsec,
-                              "Incorrectly read microseconds timestap from known good pcap file");
+                              "Incorrectly read microseconds timestamp from known good pcap file");
         NS_TEST_ASSERT_MSG_EQ(inclLen,
                               p.inclLen,
                               "Incorrectly read included length from known good packet");

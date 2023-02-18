@@ -633,7 +633,7 @@ TestDlOfdmaPhyTransmission::CheckResultsSta1(uint32_t expectedRxSuccess,
                           "The number of successfully received packets by STA 1 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxFailureSta1,
                           expectedRxFailure,
-                          "The number of unsuccessfully received packets by STA 1 is not correct!");
+                          "The number of unsuccessfuly received packets by STA 1 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesSta1,
                           expectedRxBytes,
                           "The number of bytes received by STA 1 is not correct!");
@@ -649,7 +649,7 @@ TestDlOfdmaPhyTransmission::CheckResultsSta2(uint32_t expectedRxSuccess,
                           "The number of successfully received packets by STA 2 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxFailureSta2,
                           expectedRxFailure,
-                          "The number of unsuccessfully received packets by STA 2 is not correct!");
+                          "The number of unsuccessfuly received packets by STA 2 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesSta2,
                           expectedRxBytes,
                           "The number of bytes received by STA 2 is not correct!");
@@ -665,7 +665,7 @@ TestDlOfdmaPhyTransmission::CheckResultsSta3(uint32_t expectedRxSuccess,
                           "The number of successfully received packets by STA 3 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxFailureSta3,
                           expectedRxFailure,
-                          "The number of unsuccessfully received packets by STA 3 is not correct!");
+                          "The number of unsuccessfuly received packets by STA 3 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesSta3,
                           expectedRxBytes,
                           "The number of bytes received by STA 3 is not correct!");
@@ -1006,7 +1006,7 @@ TestDlOfdmaPhyTransmission::RunOne()
                         m_phySta3,
                         WifiPhyState::CCA_BUSY);
 
-    // One PSDU of 1000 bytes should have been unsuccessfully received by STA 1 (since interference
+    // One PSDU of 1000 bytes should have been unsuccessfuly received by STA 1 (since interference
     // occupies RU 1)
     Simulator::Schedule(Seconds(3.1), &TestDlOfdmaPhyTransmission::CheckResultsSta1, this, 0, 1, 0);
     // One PSDU of 1500 bytes should have been successfully received by STA 2
@@ -1082,7 +1082,7 @@ TestDlOfdmaPhyTransmission::RunOne()
                         1,
                         0,
                         1000);
-    // One PSDU of 1500 bytes should have been unsuccessfully received by STA 2 (since interference
+    // One PSDU of 1500 bytes should have been unsuccessfuly received by STA 2 (since interference
     // occupies RU 2)
     Simulator::Schedule(Seconds(4.1), &TestDlOfdmaPhyTransmission::CheckResultsSta2, this, 0, 1, 0);
     // No PSDU should have been received by STA3
@@ -1144,10 +1144,10 @@ TestDlOfdmaPhyTransmission::RunOne()
                         m_phySta3,
                         WifiPhyState::CCA_BUSY);
 
-    // One PSDU of 1000 bytes should have been unsuccessfully received by STA 1 (since interference
+    // One PSDU of 1000 bytes should have been unsuccessfuly received by STA 1 (since interference
     // occupies RU 1)
     Simulator::Schedule(Seconds(5.1), &TestDlOfdmaPhyTransmission::CheckResultsSta1, this, 0, 1, 0);
-    // One PSDU of 1500 bytes should have been unsuccessfully received by STA 2 (since interference
+    // One PSDU of 1500 bytes should have been unsuccessfuly received by STA 2 (since interference
     // occupies RU 2)
     Simulator::Schedule(Seconds(5.1), &TestDlOfdmaPhyTransmission::CheckResultsSta2, this, 0, 1, 0);
     // No PSDU should have been received by STA3
@@ -1496,7 +1496,7 @@ TestDlOfdmaPhyPuncturing::CheckResultsSta1(uint32_t expectedRxSuccess,
                           "The number of successfully received packets by STA 1 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxFailureSta1,
                           expectedRxFailure,
-                          "The number of unsuccessfully received packets by STA 1 is not correct!");
+                          "The number of unsuccessfuly received packets by STA 1 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesSta1,
                           expectedRxBytes,
                           "The number of bytes received by STA 1 is not correct!");
@@ -1512,7 +1512,7 @@ TestDlOfdmaPhyPuncturing::CheckResultsSta2(uint32_t expectedRxSuccess,
                           "The number of successfully received packets by STA 2 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxFailureSta2,
                           expectedRxFailure,
-                          "The number of unsuccessfully received packets by STA 2 is not correct!");
+                          "The number of unsuccessfuly received packets by STA 2 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesSta2,
                           expectedRxBytes,
                           "The number of bytes received by STA 2 is not correct!");
@@ -1710,7 +1710,7 @@ TestDlOfdmaPhyPuncturing::RunOne()
 
     if (m_indexSubchannel < 2) // interference in RU 1
     {
-        // One PSDU of 1000 bytes should have been unsuccessfully received by STA 1
+        // One PSDU of 1000 bytes should have been unsuccessfuly received by STA 1
         Simulator::Schedule(Seconds(1.1),
                             &TestDlOfdmaPhyPuncturing::CheckResultsSta1,
                             this,
@@ -1734,7 +1734,7 @@ TestDlOfdmaPhyPuncturing::RunOne()
                             1,
                             0,
                             1000);
-        // One PSDU of 1500 bytes should have been unsuccessfully received by STA 2
+        // One PSDU of 1500 bytes should have been unsuccessfuly received by STA 2
         Simulator::Schedule(Seconds(1.1),
                             &TestDlOfdmaPhyPuncturing::CheckResultsSta2,
                             this,
@@ -2905,8 +2905,8 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
     }
 
     /**
-     * Return whether last RX has been successfull.
-     * \return true if last RX has been successfull, false otherwise
+     * Return whether last RX has been successful.
+     * \return true if last RX has been successful, false otherwise
      */
     bool IsLastRxSuccess() const
     {
@@ -2918,7 +2918,7 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
     uint32_t m_notifyRxEnd{0};      ///< count number of RX end notifications
     Time m_lastRxStart{Seconds(0)}; ///< last time a RX start notification has been received
     Time m_lastRxEnd{Seconds(0)};   ///< last time a RX end notification has been received
-    bool m_lastRxSuccess{false};    ///< flag whether last RX has been successfull
+    bool m_lastRxSuccess{false};    ///< flag whether last RX has been successful
 };
 
 /**
@@ -3503,7 +3503,7 @@ TestUlOfdmaPhyTransmission::CheckRxFromSta1(uint32_t expectedSuccess,
     NS_TEST_ASSERT_MSG_EQ(
         m_countRxFailureFromSta1,
         expectedFailures,
-        "The number of unsuccessfully received packets from STA 1 is not correct!");
+        "The number of unsuccessfuly received packets from STA 1 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesFromSta1,
                           expectedBytes,
                           "The number of bytes received from STA 1 is not correct!");
@@ -3520,7 +3520,7 @@ TestUlOfdmaPhyTransmission::CheckRxFromSta2(uint32_t expectedSuccess,
     NS_TEST_ASSERT_MSG_EQ(
         m_countRxFailureFromSta2,
         expectedFailures,
-        "The number of unsuccessfully received packets from STA 2 is not correct!");
+        "The number of unsuccessfuly received packets from STA 2 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesFromSta2,
                           expectedBytes,
                           "The number of bytes received from STA 2 is not correct!");
@@ -3871,7 +3871,7 @@ TestUlOfdmaPhyTransmission::ScheduleTest(Time delay,
                         0);
     if (!solicited)
     {
-        // UID of TB PPDUs will be different than the one of the preceeding frame
+        // UID of TB PPDUs will be different than the one of the preceding frame
         ++uid;
     }
     else
@@ -4142,7 +4142,7 @@ TestUlOfdmaPhyTransmission::RunOne()
      * are sent on RU 1 for STA 1 and RU 2 for STA 2.
      * The difference between solicited and unsolicited lies in that their PPDU
      * ID correspond to the one of the immediately preceding HE SU PPDU (thus
-     * mimicing trigger frame reception).
+     * mimicking trigger frame reception).
      */
 
     //---------------------------------------------------------------------------
@@ -5030,7 +5030,7 @@ TestPhyPaddingExclusion::CheckRxFromSta1(uint32_t expectedSuccess,
     NS_TEST_ASSERT_MSG_EQ(
         m_countRxFailureFromSta1,
         expectedFailures,
-        "The number of unsuccessfully received packets from STA 1 is not correct!");
+        "The number of unsuccessfuly received packets from STA 1 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesFromSta1,
                           expectedBytes,
                           "The number of bytes received from STA 1 is not correct!");
@@ -5047,7 +5047,7 @@ TestPhyPaddingExclusion::CheckRxFromSta2(uint32_t expectedSuccess,
     NS_TEST_ASSERT_MSG_EQ(
         m_countRxFailureFromSta2,
         expectedFailures,
-        "The number of unsuccessfully received packets from STA 2 is not correct!");
+        "The number of unsuccessfuly received packets from STA 2 is not correct!");
     NS_TEST_ASSERT_MSG_EQ(m_countRxBytesFromSta2,
                           expectedBytes,
                           "The number of bytes received from STA 2 is not correct!");

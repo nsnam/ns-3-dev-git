@@ -184,7 +184,7 @@ class PriorityUlJob : public Object
     void SetPriority(int priority);
 
     /**
-     * Get UL job functiion
+     * Get UL job function
      * \returns the UL job
      */
     Ptr<UlJob> GetUlJob();

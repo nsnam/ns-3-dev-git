@@ -117,7 +117,7 @@ class TestThresholdPreambleDetectionWithoutFrameCapture : public TestCase
     /**
      * Check the number of received packets
      * \param expectedSuccessCount the number of successfully received packets
-     * \param expectedFailureCount the number of unsuccessfully received packets
+     * \param expectedFailureCount the number of unsuccessfuly received packets
      */
     void CheckRxPacketCount(uint32_t expectedSuccessCount, uint32_t expectedFailureCount);
 
@@ -790,7 +790,7 @@ class TestThresholdPreambleDetectionWithFrameCapture : public TestCase
     /**
      * Check the number of received packets
      * \param expectedSuccessCount the number of successfully received packets
-     * \param expectedFailureCount the number of unsuccessfully received packets
+     * \param expectedFailureCount the number of unsuccessfuly received packets
      */
     void CheckRxPacketCount(uint32_t expectedSuccessCount, uint32_t expectedFailureCount);
 
@@ -2613,8 +2613,8 @@ class TestAmpduReception : public TestCase
     uint8_t m_rxSuccessBitmapAmpdu1; ///< bitmap of successfully received MPDUs in A-MPDU #1
     uint8_t m_rxSuccessBitmapAmpdu2; ///< bitmap of successfully received MPDUs in A-MPDU #2
 
-    uint8_t m_rxFailureBitmapAmpdu1; ///< bitmap of unsuccessfully received MPDUs in A-MPDU #1
-    uint8_t m_rxFailureBitmapAmpdu2; ///< bitmap of unsuccessfully received MPDUs in A-MPDU #2
+    uint8_t m_rxFailureBitmapAmpdu1; ///< bitmap of unsuccessfuly received MPDUs in A-MPDU #1
+    uint8_t m_rxFailureBitmapAmpdu2; ///< bitmap of unsuccessfuly received MPDUs in A-MPDU #2
 
     uint8_t m_rxDroppedBitmapAmpdu1; ///< bitmap of dropped MPDUs in A-MPDU #1
     uint8_t m_rxDroppedBitmapAmpdu2; ///< bitmap of dropped MPDUs in A-MPDU #2
@@ -4334,7 +4334,7 @@ class TestUnsupportedBandwidthReception : public TestCase
                    std::vector<bool> statusPerMpdu);
 
     /**
-     * Function called upon a PSDU received unsuccessfully
+     * Function called upon a PSDU received unsuccessfuly
      * \param psdu the PSDU
      */
     void RxFailure(Ptr<const WifiPsdu> psdu);

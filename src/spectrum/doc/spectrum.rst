@@ -314,7 +314,7 @@ Output
  * Both ``SingleModelSpectrumChannel`` and
    ``MultiModelSpectrumChannel`` provide a trace source called
    ``PathLoss`` which is fired whenever a new path loss value is
-   calclulated. **Note**: only single-frequency path loss is accounted
+   calculated. **Note**: only single-frequency path loss is accounted
    for, see the attribute description.
 
  * The example implementations described in :ref:`sec-example-model-implementations` also provide some trace sources.
@@ -991,8 +991,8 @@ Python companion script. In particular, reference ECDFs are obtained from the ch
 model of [TR38901]_. In turn, the reference ECDFs (one for each LoS condition, channel model scenario
 and carrier frequency combination) are compared to FTR distributions ECDFs obtained using different values
 of the parameters. Finally, the parameters which provide the best fit (in a goodness-of-fit sense) for
-the specific scenario, LOS condition and carrier frequency are found. The paramters to test are picked initially
-by performing an exhaustive seach within a discrete grid of possible values, and then by iteratively refining
+the specific scenario, LOS condition and carrier frequency are found. The parameters to test are picked initially
+by performing an exhaustive search within a discrete grid of possible values, and then by iteratively refining
 the previous search runs by scanning the neighborhood of the most recent identified values.
 In such regard, the Anderson-Darling statistical test is used to rank the various FTR distributions
 and eventually pick the one providing the closest approximation to the reference statistics.

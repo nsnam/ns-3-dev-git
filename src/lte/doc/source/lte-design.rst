@@ -707,7 +707,7 @@ MIMO Model
 
 The use of multiple antennas both at transmitter and receiver side, known as multiple-input and multiple-output (MIMO), is a problem well studied in literature during the past years. Most of the work concentrate on evaluating analytically the gain that the different MIMO schemes might have in term of capacity; however someones provide also information of the gain in terms of received power [CatreuxMIMO]_.
 
-According to the considerations above, a model more flexible can be obtained considering the gain that MIMO schemes bring in the system from a statistical point of view. As highlighted before, [CatreuxMIMO]_ presents the statistical gain of several MIMO solutions respect to the SISO one in case of no correlation between the antennas. In the work the gain is presented as the cumulative distribution function (CDF) of the output SINR for what concern SISO, MIMO-Alamouti, MIMO-MMSE, MIMO-OSIC-MMSE and MIMO-ZF schemes. Elaborating the results, the output SINR distribution can be approximated with a log-normal one with different mean and variance as function of the scheme considered. However, the variances are not so different and they are approximatively equal to the one of the SISO mode already included in the shadowing component of the ``BuildingsPropagationLossModel``, in detail:
+According to the considerations above, a model more flexible can be obtained considering the gain that MIMO schemes bring in the system from a statistical point of view. As highlighted before, [CatreuxMIMO]_ presents the statistical gain of several MIMO solutions respect to the SISO one in case of no correlation between the antennas. In the work the gain is presented as the cumulative distribution function (CDF) of the output SINR for what concern SISO, MIMO-Alamouti, MIMO-MMSE, MIMO-OSIC-MMSE and MIMO-ZF schemes. Elaborating the results, the output SINR distribution can be approximated with a log-normal one with different mean and variance as function of the scheme considered. However, the variances are not so different and they are approximately equal to the one of the SISO mode already included in the shadowing component of the ``BuildingsPropagationLossModel``, in detail:
 
  * SISO: :math:`\mu = 13.5` and :math:`\sigma = 20` [dB].
  * MIMO-Alamouti: :math:`\mu = 17.7` and :math:`\sigma = 11.1` [dB].
@@ -2269,7 +2269,7 @@ the PCFICH errors [R4-081920]_ (also refer to
 :ref:`sec-control-channles-phy-error-model`). Once, the UE is unable to decode
 20 consecutive frames, i.e., the Qout evaluation period (200ms) is reached, an
 out-of-sync indication is sent to the UE RRC layer (see ``LteUeRrc::DoNotifyOutOfSync``).
-Else, the counter for the unsuccessfully decoded frames is reset to zero. At the
+Else, the counter for the unsuccessfuly decoded frames is reset to zero. At the
 LteUeRrc, when the number of consecutive out-of-sync indications matches with the
 value of N310 parameter, the T310 timer is started and LteUePhy is notified to start
 measuring for in-sync indications (see ``LteUePhy::DoStartInSnycDetection``). We note
@@ -3371,7 +3371,7 @@ SGW node, it is delivered locally (as the destination address of
 the outmost IP header matches the address of the point-to-point net
 device). The local delivery process will forward the packet to the
 EpcSgwApplication via the corresponding UDP socket. The
-EpcSgwApplication then perfoms the following operations:
+EpcSgwApplication then performs the following operations:
 
  #. it removes the GTP header and retrieves the S1-U TEID;
  #. it maps the S1-U TEID to get the S5 TEID to which the packet
@@ -3604,7 +3604,7 @@ The X2 service interface is used by the RRC entity to send and receive messages 
 
   * the ``EpcX2SapProvider`` part is provided by the X2 entity and used by the RRC entity and
 
-  * the ``EpcX2SapUser`` part is provided by the RRC entity and used by the RRC enity.
+  * the ``EpcX2SapUser`` part is provided by the RRC entity and used by the RRC entity.
 
 The primitives that are supported in our X2-C model are described in the following subsections.
 

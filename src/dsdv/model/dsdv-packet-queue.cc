@@ -53,7 +53,7 @@ PacketQueue::GetSize()
 bool
 PacketQueue::Enqueue(QueueEntry& entry)
 {
-    NS_LOG_FUNCTION("Enqueing packet destined for" << entry.GetIpv4Header().GetDestination());
+    NS_LOG_FUNCTION("Enqueuing packet destined for" << entry.GetIpv4Header().GetDestination());
     Purge();
     uint32_t numPacketswithdst;
     for (std::vector<QueueEntry>::const_iterator i = m_queue.begin(); i != m_queue.end(); ++i)
@@ -74,7 +74,7 @@ PacketQueue::Enqueue(QueueEntry& entry)
     }
     else
     {
-        // NS_LOG_DEBUG("Packet size while enqueing "<<entry.GetPacket()->GetSize());
+        // NS_LOG_DEBUG("Packet size while enqueuing "<<entry.GetPacket()->GetSize());
         entry.SetExpireTime(m_queueTimeout);
         m_queue.push_back(entry);
         return true;

@@ -72,7 +72,7 @@ const char* NS_ATTRIBUTE_DEFAULT = "name=value[;...]";
  * message, used when building documentation.
  *
  * This is used primarily by the documentation builds, which execute each
- * registered example to gather their ns3::CommmandLine::Usage information.
+ * registered example to gather their ns3::CommandLine::Usage information.
  * This wouldn't normally be useful to users.
  *
  * <dl class="params">

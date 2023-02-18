@@ -232,8 +232,8 @@ class EpcX2Sap
         uint16_t sourceCellId;                  ///< source cell ID
         uint16_t targetCellId;                  ///< target cell ID
         uint32_t mmeUeS1apId;                   ///< MME UE S1 AP ID
-        uint64_t ueAggregateMaxBitRateDownlink; ///< UE aggregrate max bit rate downlink
-        uint64_t ueAggregateMaxBitRateUplink;   ///< UE aggregrate max bit rate uplink
+        uint64_t ueAggregateMaxBitRateDownlink; ///< UE aggregate max bit rate downlink
+        uint64_t ueAggregateMaxBitRateUplink;   ///< UE aggregate max bit rate uplink
         std::vector<ErabToBeSetupItem> bearers; ///< bearers
         Ptr<Packet> rrcContext;                 ///< RRC context
     };

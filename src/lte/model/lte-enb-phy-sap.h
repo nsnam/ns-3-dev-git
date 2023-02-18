@@ -105,14 +105,14 @@ class LteEnbPhySapUser
     virtual void UlCqiReport(FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) = 0;
 
     /**
-     * Notify the HARQ on the UL tranmission status
+     * Notify the HARQ on the UL transmission status
      *
      * \param params
      */
     virtual void UlInfoListElementHarqFeeback(UlInfoListElement_s params) = 0;
 
     /**
-     * Notify the HARQ on the DL tranmission status
+     * Notify the HARQ on the DL transmission status
      *
      * \param params
      */

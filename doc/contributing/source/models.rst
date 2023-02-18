@@ -148,7 +148,7 @@ For example, if you have made changes to optimize one module, and in the
 course of doing so, you fixed a bug in another module, make sure you separate
 these two sets of changes in two separate submissions.
 
-When splitting a large submission into seprate submissions, (ideally) these
+When splitting a large submission into separate submissions, (ideally) these
 submissions should be prefaced (in the Merge Request description) by a
 detailed explanation of the overall plan
 such that code reviewers can review each submission separately but within a

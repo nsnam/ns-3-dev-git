@@ -1626,7 +1626,7 @@ FqCobaltQueueDiscL4sMode::DoRun()
                           "Cobalt keeps drop_next as now and the next packet is marked. With "
                           "second dequeue count increases to 2, drop_next becomes now plus around"
                           "70ms which is less than the running time(140), and as the queue delay "
-                          "is persistantly higher than 5ms, second packet is marked.");
+                          "is persistently higher than 5ms, second packet is marked.");
     NS_TEST_EXPECT_MSG_EQ(q1->GetStats().GetNDroppedPackets(CobaltQueueDisc::TARGET_EXCEEDED_DROP),
                           0,
                           "There should not be any dropped packets");

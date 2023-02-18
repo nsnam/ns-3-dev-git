@@ -64,7 +64,7 @@ class LteSignalingRadioBearerInfo : public LteRadioBearerInfo
      */
     static TypeId GetTypeId();
 
-    uint8_t m_srbIdentity;                                  ///< SRB indentity
+    uint8_t m_srbIdentity;                                  ///< SRB identity
     LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config
 };
 

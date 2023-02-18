@@ -355,7 +355,7 @@ SequentialRandomVariable::GetValue()
     NS_LOG_FUNCTION(this);
     if (!m_isCurrentSet)
     {
-        // Start the sequence at its minimium value.
+        // Start the sequence at its minimum value.
         m_current = m_min;
         m_isCurrentSet = true;
     }

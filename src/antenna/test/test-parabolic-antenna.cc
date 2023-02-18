@@ -66,7 +66,7 @@ class ParabolicAntennaModelTestCase : public TestCase
      * \param b Beamwidth
      * \param o Orientation
      * \param g MaxGain
-     * \param expectedGainDb Expeted antenna gain
+     * \param expectedGainDb Expected antenna gain
      * \param cond Test condition
      */
     ParabolicAntennaModelTestCase(Angles a,

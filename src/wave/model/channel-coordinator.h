@@ -242,7 +242,7 @@ class ChannelCoordinator : public Object
     Time m_schi; ///< SchInterval
     Time m_gi;   ///< GuardInterval
 
-    /// Listeners typdef
+    /// Listeners typedef
     typedef std::vector<Ptr<ChannelCoordinationListener>> Listeners;
     /// Listeners iterator typedef
     typedef std::vector<Ptr<ChannelCoordinationListener>>::iterator ListenersI;

@@ -1136,7 +1136,7 @@ class DsrOptionRerrUnsupportHeader : public DsrOptionRerrHeader
     /**
      * \brief The unsupported option
      */
-    uint16_t m_unsupport;
+    uint16_t m_unsupported;
 };
 
 /**

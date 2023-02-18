@@ -26,7 +26,7 @@ can expect that emulation support using Netmap will support higher packets
 per second than emulation using FdNetDevice with raw sockets (which pass
 through the Linux networking kernel).
 
-.. [Rizzo2012] Luigi Rizzo, "netmap: A Novel Framework for Fast Packet I/O", Proceedings of 2012 USENIX Annual Techincal Conference, June 2012.
+.. [Rizzo2012] Luigi Rizzo, "netmap: A Novel Framework for Fast Packet I/O", Proceedings of 2012 USENIX Annual Technical Conference, June 2012.
 
 .. [Imputato2019] Pasquale Imputato, Stefano Avallone, Enhancing the fidelity of network emulation through direct access to device buffers, Journal of Network and Computer Applications, Volume 130, 2019, Pages 63-75, (http://www.sciencedirect.com/science/article/pii/S1084804519300220)
 

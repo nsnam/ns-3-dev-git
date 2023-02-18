@@ -144,8 +144,8 @@ class LteUeMeasurementsPiecewiseTestSuite1 : public TestSuite
  *        the placement of UE is being changed several times. Four different
  *        cases are considered: UE is very near to eNodeB, UE is near to eNodeB,
  *        UE is far from eNodeB and UE is very far from eNodeB. Test checks
- *        if the measurments correspond to the real conditions of the UE, i.e.
- *        wnen the signal from serving cell becomes weak, the measurements should
+ *        if the measurements correspond to the real conditions of the UE, i.e.
+ *        when the signal from serving cell becomes weak, the measurements should
  *        also start to correspond to the new channel conditions. Additionally, it
  *        is checked if UE detects some neighboring signal, if it does the test
  *        fails because there is no neighbor in this configuration. Also, test

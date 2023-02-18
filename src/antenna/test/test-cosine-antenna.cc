@@ -66,7 +66,7 @@ class CosineAntennaModelTestCase : public TestCase
      * \param b Horizontal and Vertical Beamwidth
      * \param o Orientation
      * \param g MaxGain
-     * \param expectedGainDb Expeted antenna gain
+     * \param expectedGainDb Expected antenna gain
      * \param cond Test condition
      */
     CosineAntennaModelTestCase(Angles a,

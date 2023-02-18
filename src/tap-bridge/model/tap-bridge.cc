@@ -292,7 +292,7 @@ TapBridge::CreateTap()
     // In ConfigureLocal mode, the user is asking the TapBridge to do the
     // configuration and create a TAP with the provided "DeviceName" with which
     // the user can later do what she wants.  We need to extract values for the
-    // MAC address, IP address, net mask, etc, from the simualtion itself and
+    // MAC address, IP address, net mask, etc, from the simulation itself and
     // use them to initialize corresponding values on the created tap device.
     //
     // In UseBridge mode, the user is asking us to use an existing tap device

@@ -125,7 +125,7 @@ BasicMultiLinkElementTest::DoRun()
 
     commonInfo.m_bssParamsChangeCount = 1;
 
-    // Adding BSS Paraemeters Change Count
+    // Adding BSS Parameters Change Count
     TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
 
     commonInfo.m_mediumSyncDelayInfo =

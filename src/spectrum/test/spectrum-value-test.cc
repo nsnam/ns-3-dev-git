@@ -54,10 +54,10 @@ class SpectrumValueTestCase : public TestCase
 
   private:
     /**
-     * Check that two SpectrumValue are equal withing a tolerance
+     * Check that two SpectrumValue are equal within a tolerance
      * \param x first SpectrumValue
      * \param y second SpectrumValue
-     * \return true if the two values are withing the tolerance
+     * \return true if the two values are within the tolerance
      */
     bool MoreOrLessEqual(SpectrumValue x, SpectrumValue y);
 

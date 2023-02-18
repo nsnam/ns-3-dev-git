@@ -1125,7 +1125,7 @@ CoDelQueueDiscBasicMark::Dequeue(Ptr<CoDelQueueDisc> queue, uint32_t modeSize, u
                         nPacketsBeforeFirstMark,
                         "Number of packets in the queue before drop should be equal"
                         "to number of packets in the queue before first mark as the behavior "
-                        "untill packet N should be the same.");
+                        "until packet N should be the same.");
                     NS_TEST_ASSERT_MSG_EQ(
                         currentCeThreshMarkCount,
                         0,

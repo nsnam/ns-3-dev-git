@@ -63,13 +63,13 @@ class OcbWifiMac : public WifiMac
      * \param oi Organization Identifier field
      * see 7.3.1.31 Organization Identifier field and 10.3.29 Vendor-specific action
      *
-     * management information can be transmitted over vender specific action frame.
+     * management information can be transmitted over vendor specific action frame.
      * This will be mainly called by IEEE Std 1609.4 to send WSA from IEEE Std 1609.3
      */
     void SendVsc(Ptr<Packet> vsc, Mac48Address peer, OrganizationIdentifier oi);
     /**
      * \param oi Organization Identifier
-     * \param cb callback to invoke whenever a vender specific action frame has been received and
+     * \param cb callback to invoke whenever a vendor specific action frame has been received and
      * must be forwarded to the higher layers. every node shall register first if it wants to
      * receive specific vendor specific content.
      */

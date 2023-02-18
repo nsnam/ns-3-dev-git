@@ -94,7 +94,7 @@ class TimeSimpleTestCase : public TestCase
      * \tparam T type of division value
      *
      * \param t Time value to divide
-     * \param expected Expected result of the divsion
+     * \param expected Expected result of the division
      * \param val Value to divide by
      * \param msg Error message to print if test fails
      */
@@ -152,7 +152,7 @@ TimeSimpleTestCase::DoTimeOperations()
 
     t1 = Time(101LL * oneSec);
     NS_TEST_ASSERT_MSG_EQ((t2 % t1).GetSeconds(), 81, "Remainder Operation (2000 % 101 = 81)");
-    NS_TEST_ASSERT_MSG_EQ(Div(t2, t1), 19, "Modular Divison");
+    NS_TEST_ASSERT_MSG_EQ(Div(t2, t1), 19, "Modular Division");
     NS_TEST_ASSERT_MSG_EQ(Rem(t2, t1).GetSeconds(), 81, "Remainder Operation (2000 % 101 = 81)");
 }
 

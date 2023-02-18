@@ -34,7 +34,7 @@
 
 // This program is designed to observe long-running TCP congestion control
 // behavior over a configurable bottleneck link.  The program is also
-// instrumented to check progam data against validated results, when
+// instrumented to check program data against validated results, when
 // the validation option is enabled.
 //
 // ---> downstream (primary data transfer from servers to clients)

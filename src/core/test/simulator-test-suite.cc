@@ -73,7 +73,7 @@ class SimulatorEventsTestCase : public TestCase
      */
     uint64_t NowUs();
     /**
-     * Checks that the events has been detroyed.
+     * Checks that the events has been destroyed.
      */
     void Destroy();
     /**

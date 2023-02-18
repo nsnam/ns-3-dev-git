@@ -166,7 +166,7 @@ class OfdmDownlinkFramePrefix : public Header
     void SetConfigurationChangeCount(uint8_t configurationChangeCount);
     /**
      * Add DL frame prefix element field
-     * \param dlFramePrefixElement the DL frane prefix element
+     * \param dlFramePrefixElement the DL frame prefix element
      */
     void AddDlFramePrefixElement(DlFramePrefixIe dlFramePrefixElement);
     /**

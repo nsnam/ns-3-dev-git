@@ -788,7 +788,7 @@ class CsmaPingTestCase : public TestCase
     void SinkRx(Ptr<const Packet>, const Address&);
 
     /**
-     * Sink called when a PING ois received.
+     * Sink called when a PING is received.
      */
     void PingRtt(std::string, uint16_t, Time);
 
@@ -1146,7 +1146,7 @@ CsmaStarTestCase::DoRun()
     // assign addresses to them as well.  We put all of the fill devices into
     // a single device container, so the first nFill devices are associated
     // with the channel connected to spokeDevices.Get (0), the second nFill
-    // devices afe associated with the channel connected to spokeDevices.Get (1)
+    // devices are associated with the channel connected to spokeDevices.Get (1)
     // etc.
     //
     Ipv4AddressHelper address;

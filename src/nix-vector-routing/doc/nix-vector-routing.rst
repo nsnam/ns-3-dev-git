@@ -166,7 +166,7 @@ There are examples which use both IPv4 and IPv6 networking.
    n2 has 3 neighbors i.e. n1, n3 and n0. The n2 net-device for n1 -- n2
    p2p link was created before the n2 net-device for n2 -- n3 p2p link
    which was before the n2 netdevice for n0 -- n2 p2p link. This, n3
-   has neighbor-index of 01 (n1 has 00 and n0 has 10) with repect to n2.
+   has neighbor-index of 01 (n1 has 00 and n0 has 10) with respect to n2.
 
    Thus, the nix-vector for the path from n0 to n3 is 101.
 

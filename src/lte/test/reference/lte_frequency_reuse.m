@@ -11,7 +11,7 @@ dlp = 10.^((dlpdBm - 30)/10); %% tx pow in W in DL
 %%DOWNLINK
 P_A = 0;   %% << change this value to simulate Downlink Power Allocation
 PdschPower = 10.^((dlpdBm+ P_A - 30)/10);
-printf("Expexted Pdsch Power: %f \n", PdschPower)
+printf("Expected Pdsch Power: %f \n", PdschPower)
 
 
 %%UPLINK
@@ -69,5 +69,5 @@ if (PuschPowerdB < Pcmin)
 endif
 
 PuschPower = 10.^((PuschPowerdB - 30 )/10);
-printf("Expexted Pusch Power: %f \n", PuschPower)
+printf("Expected Pusch Power: %f \n", PuschPower)
 

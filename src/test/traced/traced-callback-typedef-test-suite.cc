@@ -143,7 +143,7 @@ TypeName(int N)
 /**
  * \ingroup system-tests-traced
  *
- * Returns a sting representing the type of a class.
+ * Returns a string representing the type of a class.
  */
 #define TYPENAME(T)                                                                                \
     template <>                                                                                    \
@@ -249,7 +249,7 @@ class TracedCbSink
   public:
     /**
      * \brief Sink function, called by a TracedCallback.
-     * \tparam Ts prameters of the TracedCallback.
+     * \tparam Ts parameters of the TracedCallback.
      */
     static void Sink(Ts...)
     {
@@ -325,7 +325,7 @@ TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase()
 /**
  * \ingroup system-tests-traced
  *
- * Check the TracedCallback duplicate by checking if it maches the TracedCallback
+ * Check the TracedCallback duplicate by checking if it matches the TracedCallback
  * it is supposed to be equal to.
  */
 #define DUPE(U, T1)                                                                                \

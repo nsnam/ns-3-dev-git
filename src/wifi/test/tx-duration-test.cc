@@ -1308,7 +1308,7 @@ class HeSigBDurationTest : public TestCase
 
   private:
     /**
-     * Build a TXVECTOR for HE MU with the given bandwidth and user informations.
+     * Build a TXVECTOR for HE MU with the given bandwidth and user information.
      *
      * \param bw the channel width of the PPDU in MHz
      * \param userInfos the list of HE MU specific user transmission parameters

@@ -920,7 +920,7 @@ BaseStationNetDevice::CreateMapMessages()
 
     /*either DCD and UCD must be created first because CCC is set during their
      creation, or CCC must be calculated first so that it could be set during
-     creation of DL-MAP and UL-MAP and then set duirng creation of DCD and UCD*/
+     creation of DL-MAP and UL-MAP and then set during creation of DCD and UCD*/
 
     if (sendDcd)
     {

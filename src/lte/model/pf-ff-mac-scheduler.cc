@@ -966,11 +966,13 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
                     // UE already allocated for HARQ or without HARQ process available -> drop it
                     if (itRnti != rntiAllocated.end())
                     {
-                        NS_LOG_DEBUG(this << " RNTI discared for HARQ tx" << (uint16_t)(*it).first);
+                        NS_LOG_DEBUG(this << " RNTI discarded for HARQ tx"
+                                          << (uint16_t)(*it).first);
                     }
                     if (!HarqProcessAvailability((*it).first))
                     {
-                        NS_LOG_DEBUG(this << " RNTI discared for HARQ id" << (uint16_t)(*it).first);
+                        NS_LOG_DEBUG(this << " RNTI discarded for HARQ id"
+                                          << (uint16_t)(*it).first);
                     }
                     continue;
                 }
@@ -1590,7 +1592,8 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
         if ((itRnti != rntiAllocated.end()) || ((*it).second == 0))
         {
             // UE already allocated for UL-HARQ -> skip it
-            NS_LOG_DEBUG(this << " UE already allocated in HARQ -> discared, RNTI " << (*it).first);
+            NS_LOG_DEBUG(this << " UE already allocated in HARQ -> discarded, RNTI "
+                              << (*it).first);
             it++;
             if (it == m_ceBsrRxed.end())
             {

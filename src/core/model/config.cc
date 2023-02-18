@@ -129,7 +129,7 @@ MatchContainer::Connect(std::string name, const CallbackBase& cb)
 {
     if (!ConnectFailSafe(name, cb))
     {
-        NS_FATAL_ERROR("Cound not connect callback to " << name);
+        NS_FATAL_ERROR("Could not connect callback to " << name);
     }
 }
 

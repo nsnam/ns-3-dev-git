@@ -754,7 +754,7 @@ def make_paths():
 #     ...
 #   }
 #
-# You need to add a supression name which will only be printed out by valgrind in
+# You need to add a suppression name which will only be printed out by valgrind in
 # verbose mode (but it needs to be there in any case).  The entire stack frame is
 # shown to completely characterize the error, but in most cases you won't need
 # all of that info.  For example, if you want to turn off all errors that happen

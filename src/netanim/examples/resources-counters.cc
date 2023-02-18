@@ -29,7 +29,7 @@ using namespace ns3;
 
 AnimationInterface* pAnim = nullptr;
 
-/// RGB struture
+/// RGB structure
 struct Rgb
 {
     uint8_t r; ///< red

@@ -102,9 +102,10 @@ ClassicRecoveryTest::DoRun()
     uint32_t cWndInflPrevious = m_state->m_cWndInfl;
     uint32_t cWndPrevious = m_state->m_cWnd;
     recovery->DoRecovery(m_state, 500);
-    NS_TEST_ASSERT_MSG_EQ(m_state->m_cWndInfl,
-                          (cWndInflPrevious + m_state->m_segmentSize),
-                          "m_cWndInfl should be incresed by one segmentSize on calling DoRecovery");
+    NS_TEST_ASSERT_MSG_EQ(
+        m_state->m_cWndInfl,
+        (cWndInflPrevious + m_state->m_segmentSize),
+        "m_cWndInfl should be increased by one segmentSize on calling DoRecovery");
     NS_TEST_ASSERT_MSG_EQ(m_state->m_cWnd, cWndPrevious, "cWnd should not change in recovery");
 
     recovery->ExitRecovery(m_state);

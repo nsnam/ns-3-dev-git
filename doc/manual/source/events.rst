@@ -261,7 +261,7 @@ For example one can use noisy local clocks with the real time adapter.
 
 A single adapter can be added on top of the `DefaultSimulatorImpl` by the same
 two methods above: binding the `"SimulatorImplementationType"` global value or
-using the command line argument.  To chain multipe adapters a different
+using the command line argument.  To chain multiple adapters a different
 approach must be used; see the `SimulatorAdapter::AddAdapter()`
 API documentation.
 
@@ -335,7 +335,7 @@ complexity of the other API calls.
 +=======================+=====================================+=============+==============+==========+==============+
 | CalendarScheduler     | `<std::list> []`                    | Constant    | Constant     | 24 bytes | 16 bytes     |
 +-----------------------+-------------------------------------+-------------+--------------+----------+--------------+
-| HeapScheduler         | Heap on `std::vector`               | Logarithmic | Logaritmic   | 24 bytes | 0            |
+| HeapScheduler         | Heap on `std::vector`               | Logarithmic | Logarithmic  | 24 bytes | 0            |
 +-----------------------+-------------------------------------+-------------+--------------+----------+--------------+
 | ListScheduler         | `std::list`                         | Linear      | Constant     | 24 bytes | 16 bytes     |
 +-----------------------+-------------------------------------+-------------+--------------+----------+--------------+

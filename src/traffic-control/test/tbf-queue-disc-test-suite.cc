@@ -477,7 +477,7 @@ TbfQueueDiscTestCase::RunTbfTest(QueueSizeUnit mode)
     }
 
     // The pattern being checked is a pattern of dequeue followed by blocked.  The delay between
-    // enqueues is not sufficient to allow ptokens to refill befor the next dequeue.  The first
+    // enqueues is not sufficient to allow ptokens to refill before the next dequeue.  The first
     // enqueue is at 1.08s in the future, and the attempted dequeue is at 1.10s in the future.  The
     // first dequeue will always succeed.  The second enqueue is 1.12s and attempted dequeue is
     // at 1.14s in the future, but the last dequeue was 0.04s prior; only 800 tokens can be refilled

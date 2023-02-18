@@ -734,7 +734,7 @@ class LteUeRrc : public Object
     void StartConnection();
     /**
      * \brief Leave connected mode method
-     * Resets the UE back to an appropiate state depending
+     * Resets the UE back to an appropriate state depending
      * on the nature of cause. For example, the UE is move
      * to the IDLE_START state upon radio link failure. At
      * RRC, all radio bearers except SRB 0 are removed,
@@ -821,7 +821,7 @@ class LteUeRrc : public Object
 
     uint8_t m_lastRrcTransactionIdentifier; ///< last RRC transaction identifier
 
-    LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated; ///< the PDSCH condig dedicated
+    LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated; ///< the PDSCH config dedicated
 
     uint16_t m_dlBandwidth; /**< Downlink bandwidth in RBs. */
     uint16_t m_ulBandwidth; /**< Uplink bandwidth in RBs. */
