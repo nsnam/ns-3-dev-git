@@ -266,6 +266,15 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
         std::optional<Iterator> m_queueIt; //!< Queue iterator pointing to this MPDU, if queued
     };
 
+    /**
+     * \return a reference to the information held by the original copy of the MPDU.
+     */
+    OriginalInfo& GetOriginalInfo();
+    /**
+     * \return a const reference to the information held by the original copy of the MPDU.
+     */
+    const OriginalInfo& GetOriginalInfo() const;
+
     /// Information stored by the original copy and an alias, respectively
     using InstanceInfo = std::variant<OriginalInfo, Ptr<WifiMpdu>>;
 
