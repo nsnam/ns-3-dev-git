@@ -1,0 +1,3 @@
+[codespell]
+skip = .git,.gitlab-ci-local
+ignore-words = ./utils/codespell_ignored_words

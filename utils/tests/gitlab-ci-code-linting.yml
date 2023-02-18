@@ -100,3 +100,13 @@ emacs-line:
       (echo "Found Emacs lines on the above C++ files" && exit 1)
     - echo "No Emacs lines found on C++ files"
   timeout: 1h
+
+# Spell checking
+spell-check:
+  stage: code-linting
+  image: python:latest
+  before_script:
+    - pip install codespell
+  script:
+    - codespell ./
+  timeout: 1h
