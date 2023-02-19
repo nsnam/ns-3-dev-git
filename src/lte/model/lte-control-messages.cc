@@ -69,7 +69,7 @@ DlDciLteControlMessage::SetDci(DlDciListElement_s dci)
     m_dci = dci;
 }
 
-DlDciListElement_s
+const DlDciListElement_s&
 DlDciLteControlMessage::GetDci()
 {
     return m_dci;
@@ -92,7 +92,7 @@ UlDciLteControlMessage::SetDci(UlDciListElement_s dci)
     m_dci = dci;
 }
 
-UlDciListElement_s
+const UlDciListElement_s&
 UlDciLteControlMessage::GetDci()
 {
     return m_dci;

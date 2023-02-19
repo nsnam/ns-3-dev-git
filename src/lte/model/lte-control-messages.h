@@ -106,7 +106,7 @@ class DlDciLteControlMessage : public LteControlMessage
      * \brief Get dic information
      * \return dci messages
      */
-    DlDciListElement_s GetDci();
+    const DlDciListElement_s& GetDci();
 
   private:
     DlDciListElement_s m_dci; ///< DCI
@@ -135,7 +135,7 @@ class UlDciLteControlMessage : public LteControlMessage
      * \brief Get dic information
      * \return dci messages
      */
-    UlDciListElement_s GetDci();
+    const UlDciListElement_s& GetDci();
 
   private:
     UlDciListElement_s m_dci; ///< DCI

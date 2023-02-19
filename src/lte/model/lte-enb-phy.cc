@@ -706,7 +706,7 @@ LteEnbPhy::StartSubFrame()
                     mask = (mask << 1);
                 }
                 // fire trace of DL Tx PHY stats
-                for (uint8_t i = 0; i < dci->GetDci().m_mcs.size(); i++)
+                for (std::size_t i = 0; i < dci->GetDci().m_mcs.size(); i++)
                 {
                     PhyTransmissionStatParameters params;
                     params.m_cellId = m_cellId;
