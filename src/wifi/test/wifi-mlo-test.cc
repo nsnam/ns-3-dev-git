@@ -2299,6 +2299,201 @@ MultiLinkMuTxTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test release of sequence numbers upon CTS timeout in multi-link operations
+ *
+ * In this test, an AP MLD and a non-AP MLD setup 3 links. Usage of RTS/CTS protection is
+ * enabled for frames whose length is at least 1000 bytes. The AP MLD receives a first set
+ * of 4 packets from the upper layer and sends an RTS frame, which is corrupted at the
+ * receiver, on a first link. When the RTS frame is transmitted, the AP MLD receives another
+ * set of 4 packets, which are transmitted after a successful RTS/CTS exchange on a second
+ * link. In the meantime, a new RTS/CTS exchange is successfully carried out (on the first
+ * link or on the third link) to transmit the first set of 4 packets. When the transmission
+ * of the first set of 4 packets starts, the AP MLD receives the third set of 4 packets from
+ * the upper layer, which are transmitted after a successful RTS/CTS exchange.
+ *
+ * This test checks that sequence numbers are correctly assigned to all the MPDUs carrying data.
+ */
+class ReleaseSeqNoAfterCtsTimeoutTest : public MultiLinkOperationsTestBase
+{
+  public:
+    ReleaseSeqNoAfterCtsTimeoutTest();
+    ~ReleaseSeqNoAfterCtsTimeoutTest() override = default;
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(uint8_t linkId,
+                  std::string context,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+  private:
+    void StartTraffic() override;
+
+    /**
+     * \return the client application generating 4 packets addressed to the non-AP MLD
+     */
+    Ptr<PacketSocketClient> GetApplication() const;
+
+    PacketSocketAddress m_socket;     //!< packet socket address
+    std::size_t m_nQosDataFrames;     //!< counter for transmitted QoS data frames
+    Ptr<ListErrorModel> m_errorModel; //!< error rate model to corrupt first RTS frame
+    bool m_rtsCorrupted;              //!< whether the first RTS frame has been corrupted
+};
+
+ReleaseSeqNoAfterCtsTimeoutTest::ReleaseSeqNoAfterCtsTimeoutTest()
+    : MultiLinkOperationsTestBase(
+          "Check sequence numbers after CTS timeout",
+          1,
+          {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+          {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"}),
+      m_nQosDataFrames(0),
+      m_errorModel(CreateObject<ListErrorModel>()),
+      m_rtsCorrupted(false)
+{
+}
+
+void
+ReleaseSeqNoAfterCtsTimeoutTest::DoSetup()
+{
+    // Enable RTS/CTS
+    Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue("1000"));
+
+    MultiLinkOperationsTestBase::DoSetup();
+
+    // install post reception error model on all STAs affiliated with non-AP MLD
+    for (std::size_t linkId = 0; linkId < m_staMacs[0]->GetNLinks(); linkId++)
+    {
+        m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
+    }
+}
+
+Ptr<PacketSocketClient>
+ReleaseSeqNoAfterCtsTimeoutTest::GetApplication() const
+{
+    const Time duration = Seconds(1);
+
+    auto client = CreateObject<PacketSocketClient>();
+    client->SetAttribute("PacketSize", UintegerValue(1000));
+    client->SetAttribute("MaxPackets", UintegerValue(4));
+    client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+    client->SetRemote(m_socket);
+    client->SetStartTime(Seconds(0)); // now
+    client->SetStopTime(duration);
+
+    return client;
+}
+
+void
+ReleaseSeqNoAfterCtsTimeoutTest::StartTraffic()
+{
+    const Time duration = Seconds(1);
+
+    PacketSocketHelper packetSocket;
+    packetSocket.Install(m_apMac->GetDevice()->GetNode());
+    packetSocket.Install(m_staMacs[0]->GetDevice()->GetNode());
+
+    m_socket.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+    m_socket.SetPhysicalAddress(m_staMacs[0]->GetAddress());
+    m_socket.SetProtocol(1);
+
+    // install client application generating 4 packets
+    m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication());
+
+    // install a server on all nodes
+    for (auto nodeIt = NodeList::Begin(); nodeIt != NodeList::End(); nodeIt++)
+    {
+        Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
+        server->SetLocal(m_socket);
+        (*nodeIt)->AddApplication(server);
+        server->SetStartTime(Seconds(0)); // now
+        server->SetStopTime(duration);
+    }
+}
+
+void
+ReleaseSeqNoAfterCtsTimeoutTest::Transmit(uint8_t linkId,
+                                          std::string context,
+                                          WifiConstPsduMap psduMap,
+                                          WifiTxVector txVector,
+                                          double txPowerW)
+{
+    auto psdu = psduMap.begin()->second;
+
+    if (psdu->GetHeader(0).IsRts() && !m_rtsCorrupted)
+    {
+        m_errorModel->SetList({psdu->GetPacket()->GetUid()});
+        m_rtsCorrupted = true;
+        // generate other packets when the first RTS is transmitted
+        m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication());
+    }
+    else if (psdu->GetHeader(0).IsQosData())
+    {
+        m_nQosDataFrames++;
+
+        if (m_nQosDataFrames == 2)
+        {
+            // generate other packets when the second QoS data frame is transmitted
+            m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication());
+        }
+    }
+
+    MultiLinkOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
+}
+
+void
+ReleaseSeqNoAfterCtsTimeoutTest::DoRun()
+{
+    Simulator::Stop(Seconds(1.0));
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_nQosDataFrames, 3, "Unexpected number of transmitted QoS data frames");
+
+    std::size_t count{};
+
+    for (const auto& txPsdu : m_txPsdus)
+    {
+        auto psdu = txPsdu.psduMap.begin()->second;
+
+        if (!psdu->GetHeader(0).IsQosData())
+        {
+            continue;
+        }
+
+        NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(), 4, "Unexpected number of MPDUs in A-MPDU");
+
+        count++;
+        uint16_t expectedSeqNo{};
+
+        switch (count)
+        {
+        case 1:
+            expectedSeqNo = 4;
+            break;
+        case 2:
+            expectedSeqNo = 0;
+            break;
+        case 3:
+            expectedSeqNo = 8;
+            break;
+        }
+
+        for (const auto& mpdu : *PeekPointer(psdu))
+        {
+            NS_TEST_EXPECT_MSG_EQ(mpdu->GetHeader().GetSequenceNumber(),
+                                  expectedSeqNo++,
+                                  "Unexpected sequence number");
+        }
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi 11be MLD Test Suite
  */
 class WifiMultiLinkOperationsTestSuite : public TestSuite
@@ -2451,6 +2646,9 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
             }
         }
     }
+
+    // Keep commented until the issue with the release of sequence numbers is fixed
+    // AddTestCase(new ReleaseSeqNoAfterCtsTimeoutTest(), TestCase::QUICK);
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite
