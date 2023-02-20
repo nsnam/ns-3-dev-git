@@ -223,13 +223,7 @@ class SpectrumWifiPhy : public WifiPhy
 
     Ptr<AntennaModel> m_antenna; //!< antenna model
 
-    /// Map a spectrum band associated with an RU to the RU specification
-    typedef std::map<WifiSpectrumBandIndices, HeRu::RuSpec> RuBand;
-
-    std::map<uint16_t, RuBand>
-        m_ruBands;               /**< For each channel width, store all the distinct spectrum
-                                      bands associated with every RU in a channel of that width */
-    bool m_disableWifiReception; //!< forces this PHY to fail to sync on any signal
+    bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
 

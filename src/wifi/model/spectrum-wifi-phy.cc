@@ -111,7 +111,6 @@ SpectrumWifiPhy::DoDispose()
     m_spectrumPhyInterfaces.clear();
     m_currentSpectrumPhyInterface = nullptr;
     m_antenna = nullptr;
-    m_ruBands.clear();
     WifiPhy::DoDispose();
 }
 
@@ -152,13 +151,16 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOff
         // the first nine 26-tone RUs over the lowest 40 MHz subchannel. Therefore, we
         // need to store all the bands in a set (which removes duplicates) and then
         // pass the elements in the set to AddBand (to which we cannot pass duplicates)
-        if (m_ruBands[channelWidth].empty())
+        WifiSpectrumPhyInterface::RuBands ruBandsMap{};
+        for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
         {
-            for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
+            for (uint32_t i = 0; i < (channelWidth / bw); ++i)
             {
-                for (uint32_t i = 0; i < (channelWidth / bw); ++i)
+                for (uint32_t type = 0; type < 7; type++)
                 {
-                    for (uint32_t type = 0; type < 7; type++)
+                    HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
+                    std::size_t nRus = HeRu::GetNRus(bw, ruType);
+                    for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
                     {
                         HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
                         std::size_t nRus = HeRu::GetNRus(bw, ruType);
@@ -185,16 +187,17 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOff
                             NS_ABORT_IF(ru.GetPhyIndex(bw,
                                                        GetOperatingChannel().GetPrimaryChannelIndex(
                                                            20)) != phyIndex);
-                            m_ruBands[channelWidth].insert({band, ru});
+                            ruBandsMap.insert({band, ru});
                         }
                     }
                 }
             }
         }
-        for (const auto& bandRuPair : m_ruBands[channelWidth])
+        for (const auto& bandRuPair : ruBandsMap)
         {
             ruBands.push_back(bandRuPair.first);
         }
+        m_currentSpectrumPhyInterface->SetRuBands(std::move(ruBandsMap));
     }
     auto bands{ccaBands};
     bands.insert(bands.end(), ruBands.begin(), ruBands.end());
@@ -425,22 +428,22 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
 
     if (GetStandard() >= WIFI_STANDARD_80211ax)
     {
-        NS_ASSERT(!m_ruBands[channelWidth].empty());
-        for (const auto& bandRuPair : m_ruBands[channelWidth])
+        const auto ruBands =
+            interface ? interface->GetRuBands() : m_currentSpectrumPhyInterface->GetRuBands();
+        NS_ASSERT(!ruBands.empty());
+        for (const auto& [band, ru] : ruBands)
         {
             double rxPowerPerBandW =
-                WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, bandRuPair.first);
+                WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, band);
             NS_LOG_DEBUG("Signal power received (watts) before antenna gain for RU with type "
-                         << bandRuPair.second.GetRuType() << " and index "
-                         << bandRuPair.second.GetIndex() << " -> (" << bandRuPair.first.first
-                         << "; " << bandRuPair.first.second << "): " << rxPowerPerBandW);
+                         << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
+                         << band.first << "; " << band.second << "): " << rxPowerPerBandW);
             rxPowerPerBandW *= DbToRatio(GetRxGain());
             NS_LOG_DEBUG("Signal power received after antenna gain for RU with type "
-                         << bandRuPair.second.GetRuType() << " and index "
-                         << bandRuPair.second.GetIndex() << " -> (" << bandRuPair.first.first
-                         << "; " << bandRuPair.first.second << "): " << rxPowerPerBandW << " W ("
+                         << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
+                         << band.first << "; " << band.second << "): " << rxPowerPerBandW << " W ("
                          << WToDbm(rxPowerPerBandW) << " dBm)");
-            rxPowerW.insert({bandRuPair.first, rxPowerPerBandW});
+            rxPowerW.insert({band, rxPowerPerBandW});
         }
     }
 
