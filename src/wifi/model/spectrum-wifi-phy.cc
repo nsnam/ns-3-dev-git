@@ -331,7 +331,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     double totalRxPowerW = 0;
     RxPowerWattPerChannelBand rxPowerW;
 
-    if ((channelWidth == 5) || (channelWidth == 10))
+    if (channelWidth < 20)
     {
         const auto filteredBand = GetBandForInterface(channelWidth, 0, freqRange, channelWidth);
         double rxPowerPerBandW =
@@ -345,38 +345,25 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
                      << WToDbm(rxPowerPerBandW) << " dBm)");
     }
 
-    // 20 MHz is handled apart since the totalRxPowerW is computed through it
-    for (uint16_t bw = 160; bw > 20; bw = bw / 2)
+    for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
     {
         for (uint32_t i = 0; i < (channelWidth / bw); i++)
         {
-            NS_ASSERT(channelWidth >= bw);
             const auto filteredBand = GetBandForInterface(bw, i, freqRange, channelWidth);
             double rxPowerPerBandW =
                 WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand.indices);
             NS_LOG_DEBUG("Signal power received (watts) before antenna gain for "
                          << bw << " MHz channel band " << +i << ": " << rxPowerPerBandW);
             rxPowerPerBandW *= DbToRatio(GetRxGain());
+            if (bw == 20)
+            {
+                totalRxPowerW += rxPowerPerBandW;
+            }
             rxPowerW.insert({filteredBand.indices, rxPowerPerBandW});
             NS_LOG_DEBUG("Signal power received after antenna gain for "
                          << bw << " MHz channel band " << +i << ": " << rxPowerPerBandW << " W ("
                          << WToDbm(rxPowerPerBandW) << " dBm)");
         }
-    }
-
-    for (uint32_t i = 0; i < (channelWidth / 20); i++)
-    {
-        const auto filteredBand = GetBandForInterface(20, i, freqRange, channelWidth);
-        double rxPowerPerBandW =
-            WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand.indices);
-        NS_LOG_DEBUG("Signal power received (watts) before antenna gain for 20 MHz channel band "
-                     << +i << ": " << rxPowerPerBandW);
-        rxPowerPerBandW *= DbToRatio(GetRxGain());
-        totalRxPowerW += rxPowerPerBandW;
-        rxPowerW.insert({filteredBand.indices, rxPowerPerBandW});
-        NS_LOG_DEBUG("Signal power received after antenna gain for 20 MHz channel band "
-                     << +i << ": " << rxPowerPerBandW << " W (" << WToDbm(rxPowerPerBandW)
-                     << " dBm)");
     }
 
     if (GetStandard() >= WIFI_STANDARD_80211ax)
