@@ -119,21 +119,6 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<AntennaModel> GetAntenna() const;
 
     /**
-     * Get the info of a given band for a given spectrum PHY interface
-     *
-     * \param bandWidth the width of the band to be returned (MHz)
-     * \param bandIndex the index of the band to be returned
-     * \param range the frequency range identifying the spectrum PHY interface
-     * \param channelWidth the channel width currently used by the spectrum PHY interface
-     *
-     * \return the info that defines the band
-     */
-    WifiSpectrumBandInfo GetBandForInterface(uint16_t bandWidth,
-                                             uint8_t bandIndex,
-                                             FrequencyRange freqRange,
-                                             uint16_t channelWidth);
-
-    /**
      * Callback invoked when the PHY model starts to process a signal
      *
      * \param signalType Whether signal is WiFi (true) or foreign (false)
@@ -185,9 +170,6 @@ class SpectrumWifiPhy : public WifiPhy
                                        //!< reasons)
 
   private:
-    WifiSpectrumBandFrequencies ConvertIndicesForInterface(const WifiSpectrumBandIndices& indices,
-                                                           const FrequencyRange& freqRange) const;
-
     /**
      * Perform run-time spectrum model change
      */

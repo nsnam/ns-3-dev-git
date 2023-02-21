@@ -55,7 +55,6 @@ static const uint16_t GUARD_WIDTH =
 class ExtSpectrumWifiPhy : public SpectrumWifiPhy
 {
   public:
-    using SpectrumWifiPhy::GetBandForInterface;
     using SpectrumWifiPhy::SpectrumWifiPhy;
     using WifiPhy::GetBand;
 
@@ -75,6 +74,36 @@ class ExtSpectrumWifiPhy : public SpectrumWifiPhy
     Ptr<WifiSpectrumPhyInterface> GetCurrentSpectrumPhyInterface() const
     {
         return m_currentSpectrumPhyInterface;
+    }
+
+    /**
+     * Get the info of a given band for a given spectrum PHY interface
+     *
+     * \param bandWidth the width of the band to be returned (MHz)
+     * \param bandIndex the index of the band to be returned
+     * \param freqRange the frequency range identifying the spectrum PHY interface
+     * \param channelWidth the channel width currently used by the spectrum PHY interface
+     *
+     * \return the info that defines the band
+     */
+    WifiSpectrumBandInfo GetBandForInterface(uint16_t bandWidth,
+                                             uint8_t bandIndex,
+                                             const FrequencyRange& freqRange,
+                                             uint16_t channelWidth)
+    {
+        auto subcarrierSpacing = GetSubcarrierSpacing();
+        auto numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
+        auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
+        auto rxSpectrumModel = m_spectrumPhyInterfaces.at(freqRange)->GetRxSpectrumModel();
+        size_t totalNumBands = rxSpectrumModel->GetNumBands();
+        auto startIndex = ((totalNumBands - numBandsInChannel) / 2) + (bandIndex * numBandsInBand);
+        auto stopIndex = startIndex + numBandsInBand - 1;
+        auto startGuardBand = rxSpectrumModel->Begin();
+        auto startChannel = startGuardBand + startIndex;
+        auto endChannel = startGuardBand + stopIndex + 1;
+        auto lowFreq = static_cast<uint64_t>(startChannel->fc);
+        auto highFreq = static_cast<uint64_t>(endChannel->fc);
+        return {{startIndex, stopIndex}, {lowFreq, highFreq}};
     }
 };
 
