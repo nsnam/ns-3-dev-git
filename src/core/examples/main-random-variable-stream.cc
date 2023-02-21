@@ -564,8 +564,17 @@ main(int argc, char* argv[])
 
         std::cout << "done\nGenerating " << plotFile << ".pdf..." << std::flush;
         std::string shellcmd = "gnuplot " + gnuFile;
-        std::system(shellcmd.c_str());
-        std::cout << "done" << std::endl;
+        int returnValue = std::system(shellcmd.c_str());
+        if (returnValue)
+        {
+            std::cout << std::endl
+                      << "Error: shell command failed with " << returnValue << "; no pdf generated."
+                      << std::endl;
+        }
+        else
+        {
+            std::cout << "done" << std::endl;
+        }
     }
 
     return 0;
