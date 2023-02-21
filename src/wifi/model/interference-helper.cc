@@ -295,6 +295,15 @@ InterferenceHelper::UpdateBands(const std::vector<WifiSpectrumBandInfo>& bands,
     for (auto it = niChangesPerBand.begin(); it != niChangesPerBand.end();)
     {
         const auto frequencies = it->first.frequencies;
+        const auto isInFrequencyRange = ((frequencies.second > (freqRange.minFrequency * 1e6)) &&
+                                         (frequencies.first < (freqRange.maxFrequency * 1e6)));
+        if (!isInFrequencyRange)
+        {
+            NS_ASSERT(newNiChangesPerBand.count(it->first) == 0);
+            newNiChangesPerBand.insert({it->first, std::move(it->second)});
+            newFirstPowerPerBand.insert({it->first, firstPowerPerBand.at(it->first)});
+            continue;
+        }
         const auto itEqual =
             std::find_if(bands.cbegin(), bands.cend(), [frequencies](const auto& item) {
                 return frequencies == item.frequencies;
