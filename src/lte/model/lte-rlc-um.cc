@@ -68,7 +68,21 @@ LteRlcUm::GetTypeId()
                           "Value of the t-Reordering timer (See section 7.3 of 3GPP TS 36.322)",
                           TimeValue(MilliSeconds(100)),
                           MakeTimeAccessor(&LteRlcUm::m_reorderingTimerValue),
-                          MakeTimeChecker());
+                          MakeTimeChecker())
+            .AddAttribute(
+                "EnablePdcpDiscarding",
+                "Whether to use the PDCP discarding, i.e., perform discarding at the moment "
+                "of passing the PDCP SDU to RLC)",
+                BooleanValue(true),
+                MakeBooleanAccessor(&LteRlcUm::m_enablePdcpDiscarding),
+                MakeBooleanChecker())
+            .AddAttribute("DiscardTimerMs",
+                          "Discard timer in milliseconds to be used to discard packets. "
+                          "If set to 0 then packet delay budget will be used as the discard "
+                          "timer value, otherwise it will be used this value.",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&LteRlcUm::m_discardTimerMs),
+                          MakeUintegerChecker<uint32_t>());
     return tid;
 }
 
@@ -93,6 +107,29 @@ LteRlcUm::DoTransmitPdcpPdu(Ptr<Packet> p)
 
     if (m_txBufferSize + p->GetSize() <= m_maxTxBufferSize)
     {
+        if (m_enablePdcpDiscarding)
+        {
+            // discart the packet
+            uint32_t headOfLineDelayInMs = 0;
+            uint32_t discardTimerMs =
+                (m_discardTimerMs > 0) ? m_discardTimerMs : m_packetDelayBudgetMs;
+
+            if (!m_txBuffer.empty())
+            {
+                headOfLineDelayInMs =
+                    (Simulator::Now() - m_txBuffer.begin()->m_waitingSince).GetMilliSeconds();
+            }
+            NS_LOG_DEBUG("head of line delay in MS:" << headOfLineDelayInMs);
+            if (headOfLineDelayInMs > discardTimerMs)
+            {
+                NS_LOG_DEBUG("Tx HOL is higher than this packet can allow. RLC SDU discarded");
+                NS_LOG_DEBUG("headOfLineDelayInMs    = " << headOfLineDelayInMs);
+                NS_LOG_DEBUG("m_packetDelayBudgetMs    = " << m_packetDelayBudgetMs);
+                NS_LOG_DEBUG("packet size     = " << p->GetSize());
+                m_txDropTrace(p);
+            }
+        }
+
         /** Store PDCP PDU */
         LteRlcSduStatusTag tag;
         tag.SetStatus(LteRlcSduStatusTag::FULL_SDU);

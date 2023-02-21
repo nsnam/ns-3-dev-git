@@ -436,6 +436,7 @@ UeManager::SetupDataRadioBearer(EpsBearer bearer,
     Ptr<LteRlc> rlc = rlcObjectFactory.Create()->GetObject<LteRlc>();
     rlc->SetLteMacSapProvider(m_rrc->m_macSapProvider);
     rlc->SetRnti(m_rnti);
+    rlc->SetPacketDelayBudgetMs(bearer.GetPacketDelayBudgetMs());
 
     drbInfo->m_rlc = rlc;
 

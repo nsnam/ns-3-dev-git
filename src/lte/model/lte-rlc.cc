@@ -145,6 +145,13 @@ LteRlc::SetLcId(uint8_t lcId)
 }
 
 void
+LteRlc::SetPacketDelayBudgetMs(uint16_t packetDelayBudget)
+{
+    NS_LOG_FUNCTION(this << +packetDelayBudget);
+    m_packetDelayBudgetMs = packetDelayBudget;
+}
+
+void
 LteRlc::SetLteRlcSapUser(LteRlcSapUser* s)
 {
     NS_LOG_FUNCTION(this << s);

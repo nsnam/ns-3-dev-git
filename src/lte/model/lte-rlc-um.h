@@ -143,9 +143,12 @@ class LteRlcUm : public LteRlc
     /**
      * Timers. See section 7.3 in TS 36.322
      */
-    Time m_reorderingTimerValue; ///< reordering timer value
-    EventId m_reorderingTimer;   ///< reordering timer
-    EventId m_rbsTimer;          ///< RBS timer
+    Time m_reorderingTimerValue;        ///< reordering timer value
+    EventId m_reorderingTimer;          ///< reordering timer
+    EventId m_rbsTimer;                 ///< RBS timer
+    bool m_enablePdcpDiscarding{false}; //!< whether to use the PDCP discarding (perform discarding
+                                        //!< at the moment of passing the PDCP SDU to RLC)
+    uint32_t m_discardTimerMs{0};       //!< the discard timer value in milliseconds
 
     /**
      * Reassembling state

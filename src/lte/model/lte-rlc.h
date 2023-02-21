@@ -76,6 +76,11 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
     void SetLcId(uint8_t lcId);
 
     /**
+     * \param packetDelayBudget
+     */
+    void SetPacketDelayBudgetMs(uint16_t packetDelayBudget);
+
+    /**
      *
      *
      * \param s the RLC SAP user to be used by this LTE_RLC
@@ -165,6 +170,8 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
 
     uint16_t m_rnti; ///< RNTI
     uint8_t m_lcid;  ///< LCID
+    uint16_t m_packetDelayBudgetMs{
+        UINT16_MAX}; //!< the packet delay budget in ms of the corresponding logical channel
 
     /**
      * Used to inform of a PDU delivery to the MAC SAP provider
