@@ -79,10 +79,10 @@ struct AllocationRetentionPriority
  *
  * Please note that from Release 8 (the latest when the LENA project finished)
  * to Release 11, the bearers ID and requirements are the same. From Release 12,
- * they started to change, and the latest version is now Release 15. However,
- * we do not support intermediate types: in other words, you can select from
- * Release 8 to Release 11, or Release 15. Any other value will result in a
- * program crash.
+ * they started to change, and the latest version is now Release 18. However,
+ * we do not support intermediate types between releases 11 and 15: in other words,
+ * you can select from Release 8 to Release 11, or Release 15 or 18.
+ * Any other value will result in a program crash.
  *
  * The release version only affect Bearer definitions. Other part of the LTE
  * module are not affected when changing the Release attribute.
@@ -100,7 +100,7 @@ class EpsBearer : public ObjectBase
 
     /**
      * QoS Class Indicator. See 3GPP 23.203 Section 6.1.7.2 for standard values.
-     * Updated to Release 15.
+     * Updated to Release 18.
      */
     enum Qci : uint8_t
     {
@@ -112,6 +112,11 @@ class EpsBearer : public ObjectBase
         GBR_NMC_PUSH_TO_TALK = 66, ///< GBR Non-Mission-Critical User Plane Push To Talk voice
         GBR_MC_VIDEO = 67,         ///< GBR Mission Critical Video User Plane
         GBR_V2X = 75,              ///< GBR V2X Messages
+        GBR_LIVE_UL_71 = 71,       ///< GBR Live UL streaming
+        GBR_LIVE_UL_72 = 72,       ///< GBR Live UL streaming
+        GBR_LIVE_UL_73 = 73,       ///< GBR Live UL streaming
+        GBR_LIVE_UL_74 = 74,       ///< GBR Live UL streaming
+        GBR_LIVE_UL_76 = 76,       ///< GBR Live UL streaming
         NGBR_IMS = 5,              ///< Non-GBR IMS Signalling
         NGBR_VIDEO_TCP_OPERATOR =
             6, ///< Non-GBR TCP-based Video (Buffered Streaming, e.g., www, e-mail...)
@@ -131,7 +136,16 @@ class EpsBearer : public ObjectBase
             83,        ///< Delay-Critical GBR Discrete Automation Large Packets (TS 22.261)
         DGBR_ITS = 84, ///< Delay-Critical GBR Intelligent Transport Systems (TS 22.261)
         DGBR_ELECTRICITY =
-            85, ///< Delay-Critical GBR Electricity Distribution High Voltage (TS 22.261)
+            85,        ///< Delay-Critical GBR Electricity Distribution High Voltage (TS 22.261)
+        DGBR_V2X = 86, ///< Delay-Critical GBR V2X Messages (TS 23.501)
+        DGBR_INTER_SERV_87 =
+            87, ///< Delay-Critical GBR Interactive Service - Motion tracking data (TS 23.501)
+        DGBR_INTER_SERV_88 =
+            88, ///< Delay-Critical GBR Interactive Service - Motion tracking data (TS 23.501)
+        DGBR_VISUAL_CONTENT_89 =
+            89, ///< Delay-Critical GBR Visual Content for cloud/edge/split rendering (TS 23.501)
+        DGBR_VISUAL_CONTENT_90 =
+            90, ///< Delay-Critical GBR Visual Content for cloud/edge/split rendering (TS 23.501)
     };
 
     Qci qci; ///< Qos class indicator
@@ -335,7 +349,7 @@ class EpsBearer : public ObjectBase
      *
      * To be revisited when GCC 4.9 will not be supported anymore.
      */
-    static BearerRequirementsMap* GetRequirementsRel11();
+    static const BearerRequirementsMap& GetRequirementsRel11();
 
     /**
      * \brief Retrieve requirements for Rel. 15
@@ -348,16 +362,22 @@ class EpsBearer : public ObjectBase
      *
      * To be revisited when GCC 4.9 will not be supported anymore.
      */
-    static BearerRequirementsMap* GetRequirementsRel15();
+    static const BearerRequirementsMap& GetRequirementsRel15();
+
+    /**
+     * \brief Retrieve requirements for Rel. 18
+     * \return the BearerRequirementsMap for Release 18
+     */
+    static const BearerRequirementsMap& GetRequirementsRel18();
 
     /**
      * \brief Requirements pointer per bearer
      *
      * It will point to a static map.
      */
-    BearerRequirementsMap* m_requirements;
+    BearerRequirementsMap m_requirements;
 
-    uint8_t m_release{30}; //!< Release (10 or 15)
+    uint8_t m_release{30}; //!< Release (10 or 15 or 18)
 };
 
 } // namespace ns3
