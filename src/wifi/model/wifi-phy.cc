@@ -1846,11 +1846,7 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
         // TODO find a fallback PHY for receiving the PPDU (e.g. 11a for 11ax due to preamble
         // structure)
         NS_LOG_DEBUG("Unsupported modulation received (" << modulation << "), consider as noise");
-        m_interference->Add(ppdu,
-                            ppdu->GetTxVector(),
-                            rxDuration,
-                            rxPowersW,
-                            GetCurrentFrequencyRange());
+        m_interference->Add(ppdu, ppdu->GetTxVector(), rxDuration, rxPowersW);
         SwitchMaybeToCcaBusy(nullptr);
     }
 }

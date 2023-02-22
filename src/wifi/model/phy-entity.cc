@@ -273,7 +273,6 @@ PhyEntity::GetPhyHeaderSnrPer(WifiPpduField field, Ptr<Event> event) const
         event,
         measurementChannelWidth,
         GetPrimaryBand(measurementChannelWidth),
-        m_wifiPhy->GetCurrentFrequencyRange(),
         field);
 }
 
@@ -711,8 +710,7 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
     double snr = m_wifiPhy->m_interference->CalculateSnr(event,
                                                          channelWidthAndBand.first,
                                                          txVector.GetNss(staId),
-                                                         channelWidthAndBand.second,
-                                                         m_wifiPhy->GetCurrentFrequencyRange());
+                                                         channelWidthAndBand.second);
 
     Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu(ppdu);
     m_wifiPhy->NotifyRxEnd(psdu);
@@ -793,7 +791,6 @@ PhyEntity::GetReceptionStatus(Ptr<const WifiPsdu> psdu,
         event,
         channelWidthAndBand.first,
         channelWidthAndBand.second,
-        m_wifiPhy->GetCurrentFrequencyRange(),
         staId,
         std::make_pair(relativeMpduStart, relativeMpduStart + mpduDuration));
 
@@ -896,14 +893,13 @@ PhyEntity::CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
                                           ppdu->GetTxVector(),
                                           duration,
                                           rxPower,
-                                          m_wifiPhy->GetCurrentFrequencyRange(),
                                           isStartOfdmaRxing);
 }
 
 void
 PhyEntity::UpdateInterferenceEvent(Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower)
 {
-    m_wifiPhy->m_interference->UpdateEvent(event, rxPower, m_wifiPhy->GetCurrentFrequencyRange());
+    m_wifiPhy->m_interference->UpdateEvent(event, rxPower);
 }
 
 void
@@ -997,8 +993,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     double snr = m_wifiPhy->m_interference->CalculateSnr(m_wifiPhy->m_currentEvent,
                                                          measurementChannelWidth,
                                                          1,
-                                                         measurementBand,
-                                                         m_wifiPhy->GetCurrentFrequencyRange());
+                                                         measurementBand);
     NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
 
     if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW > 0.0) ||
@@ -1236,9 +1231,7 @@ PhyEntity::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
 Time
 PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandInfo& band)
 {
-    return m_wifiPhy->m_interference->GetEnergyDuration(DbmToW(thresholdDbm),
-                                                        band,
-                                                        m_wifiPhy->GetCurrentFrequencyRange());
+    return m_wifiPhy->m_interference->GetEnergyDuration(DbmToW(thresholdDbm), band);
 }
 
 void

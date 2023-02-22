@@ -1045,7 +1045,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences(Ptr<ExtSpectrumWifiP
     auto interferenceHelper = DynamicCast<InterferenceHelper>(ptr.Get<InterferenceHelper>());
     NS_ASSERT(interferenceHelper);
     const auto band = phy->GetBandForInterface(channelWidth, 0, freqRange, channelWidth);
-    const auto energyDuration = interferenceHelper->GetEnergyDuration(0, band, freqRange);
+    const auto energyDuration = interferenceHelper->GetEnergyDuration(0, band);
     NS_TEST_ASSERT_MSG_EQ(energyDuration.IsStrictlyPositive(),
                           interferencesExpected,
                           "Incorrect interferences detection");
