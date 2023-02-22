@@ -51,16 +51,15 @@ WifiAssocManager::ApInfoCompare::operator()(const StaWifiMac::ApInfo& lhs,
         return true;
     }
 
-    // the Compare method implemented by subclass may be such that the two ApInfo objects
-    // compare equal; in such a case, use the BSSID as tie breaker
     bool rhsBefore = m_manager.Compare(rhs, lhs);
     if (rhsBefore)
     {
         return false;
     }
 
-    WifiAddressHash hash;
-    return hash(lhs.m_bssid) > hash(rhs.m_bssid);
+    // the Compare method implemented by subclass may be such that the two ApInfo objects
+    // compare equal; in such a case, use the BSSID as tie breaker
+    return lhs.m_bssid < rhs.m_bssid;
 }
 
 TypeId
