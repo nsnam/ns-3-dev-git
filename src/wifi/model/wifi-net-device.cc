@@ -94,7 +94,7 @@ WifiNetDevice::GetTypeId()
                           ObjectVectorValue(),
                           MakeObjectVectorAccessor(&WifiNetDevice::GetRemoteStationManager,
                                                    &WifiNetDevice::GetNRemoteStationManagers),
-                          MakeObjectVectorChecker<WifiPhy>())
+                          MakeObjectVectorChecker<WifiRemoteStationManager>())
             .AddAttribute("HtConfiguration",
                           "The HtConfiguration object.",
                           PointerValue(),
