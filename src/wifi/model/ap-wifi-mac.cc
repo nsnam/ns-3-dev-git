@@ -1976,7 +1976,18 @@ ApWifiMac::ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address fr
             return;
         }
 
+        auto emlCapabilities = std::make_shared<CommonInfoBasicMle::EmlCapabilities>();
+        if (mle->HasEmlCapabilities())
+        {
+            emlCapabilities->emlsrSupport = mle->IsEmlsrSupported() ? 1 : 0;
+            emlCapabilities->emlsrPaddingDelay =
+                CommonInfoBasicMle::EncodeEmlsrPaddingDelay(mle->GetEmlsrPaddingDelay());
+            emlCapabilities->emlsrTransitionDelay =
+                CommonInfoBasicMle::EncodeEmlsrTransitionDelay(mle->GetEmlsrTransitionDelay());
+        }
+
         GetWifiRemoteStationManager(linkId)->SetMldAddress(from, mle->GetMldMacAddress());
+        GetWifiRemoteStationManager(linkId)->AddStationEmlCapabilities(from, emlCapabilities);
 
         for (std::size_t i = 0; i < mle->GetNPerStaProfileSubelements(); i++)
         {
@@ -2004,6 +2015,9 @@ ApWifiMac::ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address fr
                                 newLinkId);
             GetWifiRemoteStationManager(newLinkId)->SetMldAddress(perStaProfile.GetStaMacAddress(),
                                                                   mle->GetMldMacAddress());
+            GetWifiRemoteStationManager(newLinkId)->AddStationEmlCapabilities(
+                perStaProfile.GetStaMacAddress(),
+                emlCapabilities);
         }
     };
 

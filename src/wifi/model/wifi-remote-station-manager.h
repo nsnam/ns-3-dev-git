@@ -30,6 +30,7 @@
 #include "ns3/he-capabilities.h"
 #include "ns3/ht-capabilities.h"
 #include "ns3/mac48-address.h"
+#include "ns3/multi-link-element.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/vht-capabilities.h"
@@ -113,6 +114,8 @@ struct WifiRemoteStationState
     Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
     Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
     Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
+    /// remote station EML capabilities
+    std::shared_ptr<CommonInfoBasicMle::EmlCapabilities> m_emlCapabilities;
 
     uint16_t m_channelWidth;  //!< Channel width (in MHz) supported by the remote station
     uint16_t m_guardInterval; //!< HE Guard interval duration (in nanoseconds) supported by the
@@ -261,6 +264,15 @@ class WifiRemoteStationManager : public Object
      */
     void AddStationEhtCapabilities(Mac48Address from, EhtCapabilities ehtCapabilities);
     /**
+     * Records EML capabilities of the remote station.
+     *
+     * \param from the address of the station being recorded
+     * \param emlCapabilities the EML capabilities of the station
+     */
+    void AddStationEmlCapabilities(
+        Mac48Address from,
+        const std::shared_ptr<CommonInfoBasicMle::EmlCapabilities>& emlCapabilities);
+    /**
      * Return the HT capabilities sent by the remote station.
      *
      * \param from the address of the remote station
@@ -288,6 +300,12 @@ class WifiRemoteStationManager : public Object
      * \return the EHT capabilities sent by the remote station
      */
     Ptr<const EhtCapabilities> GetStationEhtCapabilities(Mac48Address from);
+    /**
+     * \param from the (MLD or link) address of the remote non-AP MLD
+     * \return the EML Capabilities advertised by the remote non-AP MLD
+     */
+    std::shared_ptr<CommonInfoBasicMle::EmlCapabilities> GetStationEmlCapabilities(
+        const Mac48Address& from);
     /**
      * Return whether the device has HT capability support enabled.
      *
@@ -610,6 +628,11 @@ class WifiRemoteStationManager : public Object
      *         false otherwise
      */
     bool GetEhtSupported(Mac48Address address) const;
+    /**
+     * \param address the (MLD or link) address of the non-AP MLD
+     * \return whether the non-AP MLD supports EMLSR
+     */
+    bool GetEmlsrSupported(const Mac48Address& address) const;
 
     /**
      * Return a mode for non-unicast packets.
@@ -1113,6 +1136,11 @@ class WifiRemoteStationManager : public Object
      *         false otherwise
      */
     bool GetEhtSupported(const WifiRemoteStation* station) const;
+    /**
+     * \param station the station of a non-AP MLD
+     * \return whether the non-AP MLD supports EMLSR
+     */
+    bool GetEmlsrSupported(const WifiRemoteStation* station) const;
     /**
      * Return the WifiMode supported by the specified station at the specified index.
      *

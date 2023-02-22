@@ -1388,6 +1388,7 @@ WifiRemoteStationManager::LookupState(Mac48Address address) const
     state->m_vhtCapabilities = nullptr;
     state->m_heCapabilities = nullptr;
     state->m_ehtCapabilities = nullptr;
+    state->m_emlCapabilities = nullptr;
     state->m_channelWidth = m_wifiPhy->GetChannelWidth();
     state->m_guardInterval = GetGuardInterval();
     state->m_ness = 0;
@@ -1556,6 +1557,15 @@ WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
     SetQosSupport(from, true);
 }
 
+void
+WifiRemoteStationManager::AddStationEmlCapabilities(
+    Mac48Address from,
+    const std::shared_ptr<CommonInfoBasicMle::EmlCapabilities>& emlCapabilities)
+{
+    NS_LOG_FUNCTION(this << from);
+    LookupState(from)->m_emlCapabilities = emlCapabilities;
+}
+
 Ptr<const HtCapabilities>
 WifiRemoteStationManager::GetStationHtCapabilities(Mac48Address from)
 {
@@ -1578,6 +1588,12 @@ Ptr<const EhtCapabilities>
 WifiRemoteStationManager::GetStationEhtCapabilities(Mac48Address from)
 {
     return LookupState(from)->m_ehtCapabilities;
+}
+
+std::shared_ptr<CommonInfoBasicMle::EmlCapabilities>
+WifiRemoteStationManager::GetStationEmlCapabilities(const Mac48Address& from)
+{
+    return LookupState(from)->m_emlCapabilities;
 }
 
 bool
@@ -1953,6 +1969,13 @@ WifiRemoteStationManager::GetEhtSupported(const WifiRemoteStation* station) cons
     return (bool)(station->m_state->m_ehtCapabilities);
 }
 
+bool
+WifiRemoteStationManager::GetEmlsrSupported(const WifiRemoteStation* station) const
+{
+    auto emlCapabilities = station->m_state->m_emlCapabilities;
+    return emlCapabilities && emlCapabilities->emlsrSupport == 1;
+}
+
 uint8_t
 WifiRemoteStationManager::GetNMcsSupported(const WifiRemoteStation* station) const
 {
@@ -2052,6 +2075,13 @@ bool
 WifiRemoteStationManager::GetEhtSupported(Mac48Address address) const
 {
     return (bool)(LookupState(address)->m_ehtCapabilities);
+}
+
+bool
+WifiRemoteStationManager::GetEmlsrSupported(const Mac48Address& address) const
+{
+    auto emlCapabilities = LookupState(address)->m_emlCapabilities;
+    return emlCapabilities && emlCapabilities->emlsrSupport == 1;
 }
 
 void
