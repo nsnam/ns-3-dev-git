@@ -1389,6 +1389,7 @@ WifiRemoteStationManager::LookupState(Mac48Address address) const
     state->m_heCapabilities = nullptr;
     state->m_ehtCapabilities = nullptr;
     state->m_emlCapabilities = nullptr;
+    state->m_emlsrEnabled = false;
     state->m_channelWidth = m_wifiPhy->GetChannelWidth();
     state->m_guardInterval = GetGuardInterval();
     state->m_ness = 0;
@@ -1430,6 +1431,13 @@ WifiRemoteStationManager::SetQosSupport(Mac48Address from, bool qosSupported)
 {
     NS_LOG_FUNCTION(this << from << qosSupported);
     LookupState(from)->m_qosSupported = qosSupported;
+}
+
+void
+WifiRemoteStationManager::SetEmlsrEnabled(const Mac48Address& from, bool emlsrEnabled)
+{
+    NS_LOG_FUNCTION(this << from << emlsrEnabled);
+    LookupState(from)->m_emlsrEnabled = emlsrEnabled;
 }
 
 void
@@ -1976,6 +1984,12 @@ WifiRemoteStationManager::GetEmlsrSupported(const WifiRemoteStation* station) co
     return emlCapabilities && emlCapabilities->emlsrSupport == 1;
 }
 
+bool
+WifiRemoteStationManager::GetEmlsrEnabled(const WifiRemoteStation* station) const
+{
+    return station->m_state->m_emlsrEnabled;
+}
+
 uint8_t
 WifiRemoteStationManager::GetNMcsSupported(const WifiRemoteStation* station) const
 {
@@ -2082,6 +2096,16 @@ WifiRemoteStationManager::GetEmlsrSupported(const Mac48Address& address) const
 {
     auto emlCapabilities = LookupState(address)->m_emlCapabilities;
     return emlCapabilities && emlCapabilities->emlsrSupport == 1;
+}
+
+bool
+WifiRemoteStationManager::GetEmlsrEnabled(const Mac48Address& address) const
+{
+    if (auto stateIt = m_states.find(address); stateIt != m_states.cend())
+    {
+        return stateIt->second->m_emlsrEnabled;
+    }
+    return false;
 }
 
 void

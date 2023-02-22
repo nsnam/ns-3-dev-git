@@ -527,6 +527,8 @@ class ApWifiMac : public WifiMac
     bool m_enableNonErpProtection; //!< Flag whether protection mechanism is used or not when
                                    //!< non-ERP STAs are present within the BSS
     Time m_bsrLifetime;            //!< Lifetime of Buffer Status Reports
+    /// transition timeout events running for EMLSR clients
+    std::map<Mac48Address, EventId> m_transitionTimeoutEvents;
 
     /// store value and timestamp for each Buffer Status Report
     struct BsrType

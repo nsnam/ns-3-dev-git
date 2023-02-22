@@ -116,6 +116,7 @@ struct WifiRemoteStationState
     Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
     /// remote station EML capabilities
     std::shared_ptr<CommonInfoBasicMle::EmlCapabilities> m_emlCapabilities;
+    bool m_emlsrEnabled; //!< whether EMLSR mode is enabled on this link
 
     uint16_t m_channelWidth;  //!< Channel width (in MHz) supported by the remote station
     uint16_t m_guardInterval; //!< HE Guard interval duration (in nanoseconds) supported by the
@@ -235,6 +236,11 @@ class WifiRemoteStationManager : public Object
      * \param qosSupported whether the station supports QoS
      */
     void SetQosSupport(Mac48Address from, bool qosSupported);
+    /**
+     * \param from the address of the station being recorded
+     * \param emlsrEnabled whether EMLSR mode is enabled for the station on this link
+     */
+    void SetEmlsrEnabled(const Mac48Address& from, bool emlsrEnabled);
     /**
      * Records HT capabilities of the remote station.
      *
@@ -633,6 +639,11 @@ class WifiRemoteStationManager : public Object
      * \return whether the non-AP MLD supports EMLSR
      */
     bool GetEmlsrSupported(const Mac48Address& address) const;
+    /**
+     * \param address the (MLD or link) address of the non-AP MLD
+     * \return whether EMLSR mode is enabled for the non-AP MLD on this link
+     */
+    bool GetEmlsrEnabled(const Mac48Address& address) const;
 
     /**
      * Return a mode for non-unicast packets.
@@ -1141,6 +1152,11 @@ class WifiRemoteStationManager : public Object
      * \return whether the non-AP MLD supports EMLSR
      */
     bool GetEmlsrSupported(const WifiRemoteStation* station) const;
+    /**
+     * \param station the station of a non-AP MLD
+     * \return whether EMLSR mode is enabled for the non-AP MLD on this link
+     */
+    bool GetEmlsrEnabled(const WifiRemoteStation* station) const;
     /**
      * Return the WifiMode supported by the specified station at the specified index.
      *
