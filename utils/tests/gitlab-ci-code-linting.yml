@@ -109,5 +109,14 @@ spell-check:
   before_script:
     - pip install codespell
   script:
-    - codespell ./
+    # Get commit messages
+    - if (git remote | grep -qw upstream) ; then
+      git remote set-url upstream https://gitlab.com/nsnam/ns-3-dev.git ;
+      else
+      git remote add upstream https://gitlab.com/nsnam/ns-3-dev.git ;
+      fi
+    - git fetch upstream master
+    - git log --pretty=%B HEAD...upstream/master ^upstream/master > git_messages.txt
+    # Check source code and commit messages
+    - codespell -f -C0 ./
   timeout: 1h

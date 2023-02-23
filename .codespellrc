@@ -1,4 +1,5 @@
 [codespell]
-skip = .git,.gitlab-ci-local,*.eps,*.pdf,*.css_t,AUTHORS
+skip = .git,.gitlab-ci-local,*.eps,*.pdf,*.css_t,AUTHORS,*build*,*.mob
 ignore-words = ./utils/codespell-ignored-words
 exclude-file = ./utils/codespell-ignored-lines
+regex = (?<![a-z])[a-z']+|[A-Z][a-z']*|[a-z]+'[a-z]*|[a-z]+(?=[_-])|[a-z]+(?=[A-Z])|\d+
