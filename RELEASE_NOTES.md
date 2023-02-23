@@ -47,6 +47,7 @@ This release has discontinued support for g++-8 compilers.
 - (wifi) Implement 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
 - (wifi) Add support for 802.11ax MU-RTS/CTS protection
 - (lr-wpan) !1006 - Add rx Sensitivity configuration support.
+- (core) !1269 - Add new template classes `ValArray` and `MatrixArray` for efficient storage and operations on 1D, 2D, and 3D arrays.
 
 ### Bugs fixed
 
