@@ -55,7 +55,7 @@ class WifiSpectrumValueHelper
      *
      * \param centerFrequency center frequency (MHz)
      * \param channelWidth channel width (MHz)
-     * \param bandBandwidth width of each band (Hz)
+     * \param carrierSpacing carrier spacing (Hz)
      * \param guardBandwidth width of the guard band (MHz)
      *
      * \return the static SpectrumModel instance corresponding to the
@@ -63,7 +63,7 @@ class WifiSpectrumValueHelper
      */
     static Ptr<SpectrumModel> GetSpectrumModel(uint32_t centerFrequency,
                                                uint16_t channelWidth,
-                                               uint32_t bandBandwidth,
+                                               uint32_t carrierSpacing,
                                                uint16_t guardBandwidth);
 
     /**
@@ -209,7 +209,7 @@ class WifiSpectrumValueHelper
      *
      * \param centerFrequency center frequency (MHz)
      * \param channelWidth channel width (MHz)
-     * \param bandBandwidth width of each band (Hz)
+     * \param carrierSpacing carrier spacing (Hz)
      * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
      * \param guardBandwidth width of the guard band (MHz)
      * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral
@@ -217,7 +217,7 @@ class WifiSpectrumValueHelper
      */
     static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity(uint32_t centerFrequency,
                                                               uint16_t channelWidth,
-                                                              uint32_t bandBandwidth,
+                                                              uint32_t carrierSpacing,
                                                               double noiseFigure,
                                                               uint16_t guardBandwidth);
 

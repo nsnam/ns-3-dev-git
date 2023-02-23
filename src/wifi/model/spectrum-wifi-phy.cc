@@ -273,14 +273,14 @@ SpectrumWifiPhy::ResetSpectrumModel()
     {
         indicesOffset =
             (2e6 * (GetFrequency() - m_currentSpectrumPhyInterface->GetCenterFrequency())) /
-            GetBandBandwidth();
+            GetSubcarrierSpacing();
     }
 
     // Replace existing spectrum model with new one
     const auto channelWidth = GetChannelWidth();
     m_currentSpectrumPhyInterface->SetRxSpectrumModel(GetFrequency(),
                                                       channelWidth,
-                                                      GetBandBandwidth(),
+                                                      GetSubcarrierSpacing(),
                                                       GetGuardBandwidth(channelWidth));
 
     m_currentSpectrumPhyInterface->GetChannel()->AddRx(m_currentSpectrumPhyInterface);
@@ -552,9 +552,9 @@ SpectrumWifiPhy::Transmit(Ptr<WifiSpectrumSignalParameters> txParams)
 }
 
 uint32_t
-SpectrumWifiPhy::GetBandBandwidth() const
+SpectrumWifiPhy::GetSubcarrierSpacing() const
 {
-    uint32_t bandBandwidth = 0;
+    uint32_t subcarrierSpacing = 0;
     switch (GetStandard())
     {
     case WIFI_STANDARD_80211a:
@@ -562,31 +562,27 @@ SpectrumWifiPhy::GetBandBandwidth() const
     case WIFI_STANDARD_80211b:
     case WIFI_STANDARD_80211n:
     case WIFI_STANDARD_80211ac:
-        // Use OFDM subcarrier width of 312.5 KHz as band granularity
-        bandBandwidth = 312500;
+        subcarrierSpacing = 312500;
         break;
     case WIFI_STANDARD_80211p:
         if (GetChannelWidth() == 5)
         {
-            // Use OFDM subcarrier width of 78.125 KHz as band granularity
-            bandBandwidth = 78125;
+            subcarrierSpacing = 78125;
         }
         else
         {
-            // Use OFDM subcarrier width of 156.25 KHz as band granularity
-            bandBandwidth = 156250;
+            subcarrierSpacing = 156250;
         }
         break;
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
-        // Use OFDM subcarrier width of 78.125 KHz as band granularity
-        bandBandwidth = 78125;
+        subcarrierSpacing = 78125;
         break;
     default:
         NS_FATAL_ERROR("Standard unknown: " << GetStandard());
         break;
     }
-    return bandBandwidth;
+    return subcarrierSpacing;
 }
 
 uint16_t
@@ -623,9 +619,9 @@ SpectrumWifiPhy::GetBandForInterface(uint16_t bandWidth,
                                      FrequencyRange freqRange,
                                      uint16_t channelWidth)
 {
-    uint32_t bandBandwidth = GetBandBandwidth();
-    size_t numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / bandBandwidth);
-    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / bandBandwidth);
+    uint32_t subcarrierSpacing = GetSubcarrierSpacing();
+    size_t numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
+    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
     if (numBandsInBand % 2 == 0)
     {
         numBandsInChannel += 1; // symmetry around center frequency
@@ -655,7 +651,7 @@ SpectrumWifiPhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
 {
     WifiSpectrumBand convertedSubcarriers;
     uint32_t nGuardBands =
-        static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / GetBandBandwidth()) + 0.5);
+        static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / GetSubcarrierSpacing()) + 0.5);
     uint32_t centerFrequencyIndex = 0;
     switch (bandWidth)
     {
@@ -676,7 +672,7 @@ SpectrumWifiPhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
         break;
     }
 
-    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / GetBandBandwidth());
+    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / GetSubcarrierSpacing());
     centerFrequencyIndex += numBandsInBand * bandIndex;
 
     convertedSubcarriers.first = centerFrequencyIndex + subcarrierRange.first;

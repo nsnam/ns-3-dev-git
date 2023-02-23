@@ -117,9 +117,9 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<AntennaModel> GetAntenna() const;
 
     /**
-     * \return the width of each band (Hz)
+     * \return the subcarrier spacing corresponding to the configure standard (Hz)
      */
-    uint32_t GetBandBandwidth() const;
+    uint32_t GetSubcarrierSpacing() const;
 
     /**
      * Get the start band index and the stop band index for a given band and a given spectrum PHY
