@@ -433,6 +433,24 @@ class HePhy : public VhtPhy
      */
     static WifiMode CreateHeMcs(uint8_t index);
 
+    /**
+     * \param bandWidth the width (MHz) of the band used for the OFDMA transmission. Must be
+     *                  a multiple of 20 MHz
+     * \param guardBandwidth width of the guard band (MHz)
+     * \param subcarrierSpacing the subcarrier spacing (MHz)
+     * \param subcarrierRange the subcarrier range of the HE RU
+     * \param bandIndex the index (starting at 0) of the band within the operating channel
+     * \return the converted subcarriers
+     *
+     * This is a helper function to convert HE RU subcarriers, which are relative to the center
+     * frequency subcarrier, to the indexes used by the Spectrum model.
+     */
+    static WifiSpectrumBand ConvertHeRuSubcarriers(uint16_t bandWidth,
+                                                   uint16_t guardBandwidth,
+                                                   uint32_t subcarrierSpacing,
+                                                   HeRu::SubcarrierRange subcarrierRange,
+                                                   uint8_t bandIndex = 0);
+
   protected:
     PhyFieldRxStatus ProcessSig(Ptr<Event> event,
                                 PhyFieldRxStatus status,

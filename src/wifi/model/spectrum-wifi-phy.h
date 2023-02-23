@@ -117,11 +117,6 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<AntennaModel> GetAntenna() const;
 
     /**
-     * \return the subcarrier spacing corresponding to the configure standard (Hz)
-     */
-    uint32_t GetSubcarrierSpacing() const;
-
-    /**
      * Get the start band index and the stop band index for a given band and a given spectrum PHY
      * interface
      *
@@ -189,11 +184,6 @@ class SpectrumWifiPhy : public WifiPhy
                                        //!< reasons)
 
   private:
-    WifiSpectrumBand ConvertHeRuSubcarriers(uint16_t bandWidth,
-                                            uint16_t guardBandwidth,
-                                            HeRu::SubcarrierRange subcarrierRange,
-                                            uint8_t bandIndex = 0) const override;
-
     /**
      * Perform run-time spectrum model change
      */

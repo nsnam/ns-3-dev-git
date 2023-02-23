@@ -1007,10 +1007,11 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
         std::make_pair(group.front().first, group.back().second);
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
-    band = m_wifiPhy->ConvertHeRuSubcarriers(channelWidth,
-                                             GetGuardBandwidth(channelWidth),
-                                             subcarrierRange,
-                                             0);
+    band = ConvertHeRuSubcarriers(channelWidth,
+                                  GetGuardBandwidth(channelWidth),
+                                  m_wifiPhy->GetSubcarrierSpacing(),
+                                  subcarrierRange,
+                                  0);
     return band;
 }
 
@@ -1030,9 +1031,10 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
         std::make_pair(group.front().first, group.back().second);
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
-    band = m_wifiPhy->ConvertHeRuSubcarriers(
+    band = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
+        m_wifiPhy->GetSubcarrierSpacing(),
         subcarrierRange,
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
     return band;
@@ -1059,9 +1061,10 @@ HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
                                m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
     HeRu::SubcarrierRange subcarrierRange =
         std::make_pair(groupPreamble.front().first, groupPreamble.back().second);
-    return m_wifiPhy->ConvertHeRuSubcarriers(
+    return ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
+        m_wifiPhy->GetSubcarrierSpacing(),
         subcarrierRange,
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
 }
@@ -1836,6 +1839,44 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
         }
     }
     return PhyEntity::GetRxPpduFromTxPpdu(ppdu);
+}
+
+WifiSpectrumBand
+HePhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
+                              uint16_t guardBandwidth,
+                              uint32_t subcarrierSpacing,
+                              HeRu::SubcarrierRange subcarrierRange,
+                              uint8_t bandIndex)
+{
+    WifiSpectrumBand convertedSubcarriers;
+    uint32_t nGuardBands =
+        static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / subcarrierSpacing) + 0.5);
+    uint32_t centerFrequencyIndex = 0;
+    switch (bandWidth)
+    {
+    case 20:
+        centerFrequencyIndex = (nGuardBands / 2) + 6 + 122;
+        break;
+    case 40:
+        centerFrequencyIndex = (nGuardBands / 2) + 12 + 244;
+        break;
+    case 80:
+        centerFrequencyIndex = (nGuardBands / 2) + 12 + 500;
+        break;
+    case 160:
+        centerFrequencyIndex = (nGuardBands / 2) + 12 + 1012;
+        break;
+    default:
+        NS_FATAL_ERROR("ChannelWidth " << bandWidth << " unsupported");
+        break;
+    }
+
+    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
+    centerFrequencyIndex += numBandsInBand * bandIndex;
+
+    convertedSubcarriers.first = centerFrequencyIndex + subcarrierRange.first;
+    convertedSubcarriers.second = centerFrequencyIndex + subcarrierRange.second;
+    return convertedSubcarriers;
 }
 
 } // namespace ns3

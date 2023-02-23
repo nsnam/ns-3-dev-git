@@ -696,11 +696,12 @@ SpectrumWifiPhyFilterTest::RunOne()
                     HeRu::SubcarrierRange subcarrierRange =
                         std::make_pair(subcarrierGroup.front().first,
                                        subcarrierGroup.back().second);
-                    WifiSpectrumBand band = m_rxPhy->ConvertHeRuSubcarriers(
-                        bw,
-                        m_rxPhy->GetGuardBandwidth(m_rxChannelWidth),
-                        subcarrierRange,
-                        i);
+                    WifiSpectrumBand band =
+                        HePhy::ConvertHeRuSubcarriers(bw,
+                                                      m_rxPhy->GetGuardBandwidth(m_rxChannelWidth),
+                                                      m_rxPhy->GetSubcarrierSpacing(),
+                                                      subcarrierRange,
+                                                      i);
                     m_ruBands.insert(band);
                 }
             }

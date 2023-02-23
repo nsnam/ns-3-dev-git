@@ -32,6 +32,7 @@
 
 #include "ns3/boolean.h"
 #include "ns3/double.h"
+#include "ns3/he-phy.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
@@ -168,10 +169,11 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOff
                             HeRu::SubcarrierRange subcarrierRange =
                                 std::make_pair(group.front().first, group.back().second);
                             WifiSpectrumBand band =
-                                ConvertHeRuSubcarriers(bw,
-                                                       GetGuardBandwidth(channelWidth),
-                                                       subcarrierRange,
-                                                       i);
+                                HePhy::ConvertHeRuSubcarriers(bw,
+                                                              GetGuardBandwidth(channelWidth),
+                                                              GetSubcarrierSpacing(),
+                                                              subcarrierRange,
+                                                              i);
                             std::size_t index =
                                 (bw == 160 && phyIndex > nRus / 2 ? phyIndex - nRus / 2 : phyIndex);
                             bool primary80IsLower80 =
@@ -551,40 +553,6 @@ SpectrumWifiPhy::Transmit(Ptr<WifiSpectrumSignalParameters> txParams)
     m_currentSpectrumPhyInterface->StartTx(txParams);
 }
 
-uint32_t
-SpectrumWifiPhy::GetSubcarrierSpacing() const
-{
-    uint32_t subcarrierSpacing = 0;
-    switch (GetStandard())
-    {
-    case WIFI_STANDARD_80211a:
-    case WIFI_STANDARD_80211g:
-    case WIFI_STANDARD_80211b:
-    case WIFI_STANDARD_80211n:
-    case WIFI_STANDARD_80211ac:
-        subcarrierSpacing = 312500;
-        break;
-    case WIFI_STANDARD_80211p:
-        if (GetChannelWidth() == 5)
-        {
-            subcarrierSpacing = 78125;
-        }
-        else
-        {
-            subcarrierSpacing = 156250;
-        }
-        break;
-    case WIFI_STANDARD_80211ax:
-    case WIFI_STANDARD_80211be:
-        subcarrierSpacing = 78125;
-        break;
-    default:
-        NS_FATAL_ERROR("Standard unknown: " << GetStandard());
-        break;
-    }
-    return subcarrierSpacing;
-}
-
 uint16_t
 SpectrumWifiPhy::GetGuardBandwidth(uint16_t currentChannelWidth) const
 {
@@ -641,43 +609,6 @@ SpectrumWifiPhy::GetBandForInterface(uint16_t bandWidth,
         band.first += 1;
     }
     return band;
-}
-
-WifiSpectrumBand
-SpectrumWifiPhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
-                                        uint16_t guardBandwidth,
-                                        HeRu::SubcarrierRange subcarrierRange,
-                                        uint8_t bandIndex) const
-{
-    WifiSpectrumBand convertedSubcarriers;
-    uint32_t nGuardBands =
-        static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / GetSubcarrierSpacing()) + 0.5);
-    uint32_t centerFrequencyIndex = 0;
-    switch (bandWidth)
-    {
-    case 20:
-        centerFrequencyIndex = (nGuardBands / 2) + 6 + 122;
-        break;
-    case 40:
-        centerFrequencyIndex = (nGuardBands / 2) + 12 + 244;
-        break;
-    case 80:
-        centerFrequencyIndex = (nGuardBands / 2) + 12 + 500;
-        break;
-    case 160:
-        centerFrequencyIndex = (nGuardBands / 2) + 12 + 1012;
-        break;
-    default:
-        NS_FATAL_ERROR("ChannelWidth " << bandWidth << " unsupported");
-        break;
-    }
-
-    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / GetSubcarrierSpacing());
-    centerFrequencyIndex += numBandsInBand * bandIndex;
-
-    convertedSubcarriers.first = centerFrequencyIndex + subcarrierRange.first;
-    convertedSubcarriers.second = centerFrequencyIndex + subcarrierRange.second;
-    return convertedSubcarriers;
 }
 
 std::tuple<double, double, double>
