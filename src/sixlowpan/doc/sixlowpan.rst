@@ -112,8 +112,8 @@ attribute.
 Scope and Limitations
 =====================
 
-Contex-based compression
-########################
+Context-based compression
+#########################
 
 IPHC sateful (context-based) compression is supported but, since :rfc:`6775`
 ("Neighbor Discovery Optimization for IPv6 over Low-Power Wireless Personal Area Networks (6LoWPANs)")

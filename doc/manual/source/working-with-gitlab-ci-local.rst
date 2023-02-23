@@ -5,7 +5,7 @@
 Working with gitlab-ci-local
 ----------------------------
 
-.. _continuos integration (CI) : https://docs.gitlab.com/ee/ci/
+.. _continuous integration (CI) : https://docs.gitlab.com/ee/ci/
 .. _pipelines : https://docs.gitlab.com/ee/ci/introduction/index.html#continuous-integration
 .. _daily and weekly pipelines : https://gitlab.com/nsnam/ns-3-dev/-/pipeline_schedules
 .. _crypto miners abuse : https://about.gitlab.com/blog/2021/05/17/prevent-crypto-mining-abuse/
@@ -15,7 +15,7 @@ Working with gitlab-ci-local
 .. _rootless mode : https://docs.docker.com/engine/security/rootless/
 
 The ns-3 project repository is currently hosted in GitLab, which includes
-`continuos integration (CI)`_ tools to automate build, tests, packaging and
+`continuous integration (CI)`_ tools to automate build, tests, packaging and
 distribution of software. The CI works based on jobs, that are defined
 on YAML files.
 

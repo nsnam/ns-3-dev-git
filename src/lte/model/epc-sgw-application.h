@@ -144,7 +144,7 @@ class EpcSgwApplication : public Application
      *
      * \param packet packet to be sent
      * \param enbS1uAddress the address of the eNB
-     * \param teid the Tunnel Endpoint IDentifier
+     * \param teid the Tunnel Endpoint Identifier
      */
     void SendToS1uSocket(Ptr<Packet> packet, Ipv4Address enbS1uAddress, uint32_t teid);
 

@@ -170,7 +170,7 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
     ~WifiRadioEnergyModel() override;
 
     /**
-     * \brief Sets pointer to EnergySouce installed on node.
+     * \brief Sets pointer to EnergySource installed on node.
      *
      * \param source Pointer to EnergySource installed on node.
      *

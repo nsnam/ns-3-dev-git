@@ -180,7 +180,7 @@ SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy()
     m_txPower = 30;         // dBm
     SetBandwidth(10000000); // 10Mhz
     m_nbErroneousBlock = 0;
-    m_nrRecivedFecBlocks = 0;
+    m_nrReceivedFecBlocks = 0;
     m_snrToBlockErrorRateManager = new SNRToBlockErrorRateManager();
 }
 
@@ -412,7 +412,7 @@ SimpleOfdmWimaxPhy::StartReceive(uint32_t burstSize,
     delete record;
 
     NS_LOG_INFO("PHY: Receive rxPower=" << rxPower << ", Nwb=" << Nwb << ", SNR=" << SNR
-                                        << ", Modulation=" << modulationType << ", BlocErrorRate="
+                                        << ", Modulation=" << modulationType << ", BlockErrorRate="
                                         << blockErrorRate << ", drop=" << std::boolalpha << drop);
 
     switch (GetState())
@@ -433,7 +433,7 @@ SimpleOfdmWimaxPhy::StartReceive(uint32_t burstSize,
             {
                 NotifyRxBegin(burst);
                 m_receivedFecBlocks->clear();
-                m_nrRecivedFecBlocks = 0;
+                m_nrReceivedFecBlocks = 0;
                 SetBlockParameters(burstSize, modulationType);
                 m_blockTime = GetBlockTransmissionTime(modulationType);
             }
@@ -469,14 +469,14 @@ SimpleOfdmWimaxPhy::EndReceiveFecBlock(uint32_t burstSize,
                                        Ptr<PacketBurst> burst)
 {
     SetState(PHY_STATE_IDLE);
-    m_nrRecivedFecBlocks++;
+    m_nrReceivedFecBlocks++;
 
     if (drop == true)
     {
         m_nbErroneousBlock++;
     }
 
-    if ((uint32_t)m_nrRecivedFecBlocks * m_blockSize == burstSize * 8 + m_paddingBits)
+    if ((uint32_t)m_nrReceivedFecBlocks * m_blockSize == burstSize * 8 + m_paddingBits)
     {
         NotifyRxEnd(burst);
         if (m_nbErroneousBlock == 0)
@@ -488,7 +488,7 @@ SimpleOfdmWimaxPhy::EndReceiveFecBlock(uint32_t burstSize,
             NotifyRxDrop(burst);
         }
         m_nbErroneousBlock = 0;
-        m_nrRecivedFecBlocks = 0;
+        m_nrReceivedFecBlocks = 0;
     }
 }
 
@@ -619,8 +619,8 @@ SimpleOfdmWimaxPhy::RecreateBuffer()
     uint32_t i = 0;
     for (uint32_t j = 0; j < m_nrBlocks; j++)
     {
-        Bvec tmpRecFecBloc = m_receivedFecBlocks->front();
-        buffer.insert(buffer.begin() + i, tmpRecFecBloc.begin(), tmpRecFecBloc.end());
+        Bvec tmpRecFecBlock = m_receivedFecBlocks->front();
+        buffer.insert(buffer.begin() + i, tmpRecFecBlock.begin(), tmpRecFecBlock.end());
         m_receivedFecBlocks->pop_front();
         i += m_blockSize;
     }

@@ -407,7 +407,7 @@ class RoutingTableEntry
     /// List of precursors
     std::vector<Ipv4Address> m_precursorList;
     /// When I can send another request
-    Time m_routeRequestTimout;
+    Time m_routeRequestTimeout;
     /// Number of route requests
     uint8_t m_reqCount;
     /// Indicate if this entry is in "blacklist"

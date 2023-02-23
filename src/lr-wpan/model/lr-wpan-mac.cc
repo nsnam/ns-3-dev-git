@@ -833,7 +833,7 @@ LrWpanMac::MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAt
     switch (id)
     {
     case macBeaconPayload:
-        if (attribute->macBeaconPayload->GetSize() > lrwpan::aMaxBeaconPayloadLenght)
+        if (attribute->macBeaconPayload->GetSize() > lrwpan::aMaxBeaconPayloadLength)
         {
             confirmParams.m_status = MLMESET_INVALID_PARAMETER;
         }

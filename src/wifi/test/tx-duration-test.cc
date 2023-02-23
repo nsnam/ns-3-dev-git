@@ -303,7 +303,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
                 MicroSeconds(6); // 2.4 GHz band should be at the end of the bands to test
         }
         Time calculatedDuration = NanoSeconds(0);
-        uint32_t longuestSize = 0;
+        uint32_t longestSize = 0;
         auto iterStaId = staIds.begin();
         for (auto& size : sizes)
         {
@@ -313,7 +313,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
             {
                 calculatedDuration = ppduDurationForSta;
                 staId = *iterStaId;
-                longuestSize = size;
+                longestSize = size;
             }
             ++iterStaId;
         }
@@ -322,7 +322,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
         if (calculatedDuration != knownDuration ||
             calculatedDuration != calculatedDurationUsingList)
         {
-            std::cerr << "size=" << longuestSize << " band=" << testedBand << " staId=" << staId
+            std::cerr << "size=" << longestSize << " band=" << testedBand << " staId=" << staId
                       << " nss=" << +txVector.GetNss(staId) << " mode=" << txVector.GetMode(staId)
                       << " channelWidth=" << channelWidth << " guardInterval=" << guardInterval
                       << " datarate="

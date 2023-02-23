@@ -35,7 +35,7 @@ namespace ns3
  * This class uses the definitions from Table 345 in ieee-802.16-2004 to
  * allocate cids in different integer ranges according to their type.
  * The relative allocation of the ranges is controlled by the parameter 'm'
- * introduced in the above-mentionned table.
+ * introduced in the above-mentioned table.
  *
  * Note: The current implementation merely allocates cids sequentially from
  * the start of the allowed range. A proper implementation would be able

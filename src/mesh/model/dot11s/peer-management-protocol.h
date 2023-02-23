@@ -300,13 +300,13 @@ class PeerManagementProtocol : public Object
      * \brief Indicates changes in peer links
      * \param interface the interface
      * \param peerAddress the peer address
-     * \param peerMeshPointAddres the peer mesh point address
+     * \param peerMeshPointAddress the peer mesh point address
      * \param ostate old state
      * \param nstate new state
      */
     void PeerLinkStatus(uint32_t interface,
                         Mac48Address peerAddress,
-                        Mac48Address peerMeshPointAddres,
+                        Mac48Address peerMeshPointAddress,
                         PeerLink::PeerState ostate,
                         PeerLink::PeerState nstate);
     /**

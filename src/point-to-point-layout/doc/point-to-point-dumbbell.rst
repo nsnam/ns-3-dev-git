@@ -38,7 +38,7 @@ nodes, function ``AssignIpv4Addresses`` which takes ``Ipv4AddressHelper``
 objects for the left, right and router nodes for assigning IPv4 address to
 each node. It provides a function ``AssignIpv6Addresses`` which takes a
 ``Ipv6Address`` address base and a ``Ipv6Prefix`` prefix for assigning
-IPv6Adddress to every node.
+IPv6Address to every node.
 
 Node Positioning
 ================

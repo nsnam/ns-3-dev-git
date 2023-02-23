@@ -119,7 +119,7 @@ constexpr uint32_t aMaxBeaconOverhead{75};
  * The maximum size, in octets, of a beacon payload.
  * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
  */
-constexpr uint32_t aMaxBeaconPayloadLenght{aMaxPhyPacketSize - aMaxBeaconOverhead};
+constexpr uint32_t aMaxBeaconPayloadLength{aMaxPhyPacketSize - aMaxBeaconOverhead};
 
 /** @} */
 

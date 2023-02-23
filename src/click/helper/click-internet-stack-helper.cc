@@ -488,7 +488,7 @@ ClickInternetStackHelper::EnableAsciiIpv4Internal(Ptr<OutputStreamWrapper> strea
                 "Drop",
                 MakeBoundCallback(&Ipv4L3ProtocolDropSinkWithoutContext, theStream));
             NS_ASSERT_MSG(result == true,
-                          "ClickInternetStackHelper::EanableAsciiIpv4Internal():  "
+                          "ClickInternetStackHelper::EnableAsciiIpv4Internal():  "
                           "Unable to connect ipv4L3Protocol \"Drop\"");
         }
 

@@ -109,14 +109,14 @@ class LteEnbPhySapUser
      *
      * \param params
      */
-    virtual void UlInfoListElementHarqFeeback(UlInfoListElement_s params) = 0;
+    virtual void UlInfoListElementHarqFeedback(UlInfoListElement_s params) = 0;
 
     /**
      * Notify the HARQ on the DL transmission status
      *
      * \param params
      */
-    virtual void DlInfoListElementHarqFeeback(DlInfoListElement_s params) = 0;
+    virtual void DlInfoListElementHarqFeedback(DlInfoListElement_s params) = 0;
 };
 
 } // namespace ns3

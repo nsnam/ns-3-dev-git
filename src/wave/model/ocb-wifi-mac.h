@@ -169,7 +169,7 @@ class OcbWifiMac : public WifiMac
      * To support MAC extension for multiple channel operation,
      * Cancel transmit operation for internal queue associated with a specified Access Category.
      */
-    void CancleTx(AcIndex ac);
+    void CancelTx(AcIndex ac);
     /**
      * To support MAC extension for multiple channel operation,
      * Reset current MAC entity and flush its internal queues.

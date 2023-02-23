@@ -199,7 +199,7 @@ typedef uint8_t WifiInformationElementId;
 #define IE_CLUSTER_REPORT ((WifiInformationElementId)166)
 #define IE_RELAY_CAPABILITIES ((WifiInformationElementId)167)
 #define IE_RELAY_TRANSFER_PARAMETER_SET ((WifiInformationElementId)168)
-#define IE_BEAMLINK_MAINENANCE ((WifiInformationElementId)169)
+#define IE_BEAMLINK_MAINTENANCE ((WifiInformationElementId)169)
 // 170 to 171 are reserved
 #define IE_DMG_LINK_ADAPTATION_ACKNOWLEDGMENT ((WifiInformationElementId)172)
 // 173 is reserved

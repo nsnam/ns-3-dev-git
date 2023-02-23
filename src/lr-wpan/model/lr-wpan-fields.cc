@@ -268,18 +268,18 @@ GtsFields::Serialize(Buffer::Iterator i) const
 
     if (m_gtsSpecDescCount > 0)
     {
-        uint8_t gtsDescStartAndLenght;
+        uint8_t gtsDescStartAndLength;
         i.WriteU8(GetGtsDirectionField());
 
         for (int j = 0; j < m_gtsSpecDescCount; j++)
         {
             WriteTo(i, m_gtsList[j].m_gtsDescDevShortAddr);
 
-            gtsDescStartAndLenght =
+            gtsDescStartAndLength =
                 (m_gtsList[j].m_gtsDescStartSlot & 0x0F) | // GTS descriptor bits 16-19
                 (m_gtsList[j].m_gtsDescLength & 0xF0);     // GTS descriptor bits 20-23
 
-            i.WriteU8(gtsDescStartAndLenght);
+            i.WriteU8(gtsDescStartAndLength);
         }
     }
     return i;
@@ -296,14 +296,14 @@ GtsFields::Deserialize(Buffer::Iterator i)
         uint8_t gtsDirectionField = i.ReadU8();
         SetGtsDirectionField(gtsDirectionField);
 
-        uint8_t gtsDescStartAndLenght;
+        uint8_t gtsDescStartAndLength;
         for (int j = 0; j < m_gtsSpecDescCount; j++)
         {
             ReadFrom(i, m_gtsList[j].m_gtsDescDevShortAddr);
 
-            gtsDescStartAndLenght = i.ReadU8();
-            m_gtsList[j].m_gtsDescStartSlot = (gtsDescStartAndLenght) & (0x0F);
-            m_gtsList[j].m_gtsDescLength = (gtsDescStartAndLenght >> 4) & (0x0F);
+            gtsDescStartAndLength = i.ReadU8();
+            m_gtsList[j].m_gtsDescStartSlot = (gtsDescStartAndLength) & (0x0F);
+            m_gtsList[j].m_gtsDescLength = (gtsDescStartAndLength >> 4) & (0x0F);
         }
     }
     return i;

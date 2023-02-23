@@ -1308,7 +1308,7 @@ FqCobaltQueueDiscEcnMarking::DoRun()
  *
  * The variable outerhash stores the nearest multiple of 8 that is lesser than
  * the hash. When a flow hash of 20 arrives, the value of outerhash
- * is 16. Since m_flowIndices[16] wasn’t previously allotted, a new flow
+ * is 16. Since m_flowIndices[16] wasn't previously allotted, a new flow
  * is created, and the tag corresponding to this queue is set to 20.
  */
 class FqCobaltQueueDiscSetLinearProbing : public TestCase

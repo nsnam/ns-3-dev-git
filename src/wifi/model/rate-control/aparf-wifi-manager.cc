@@ -70,13 +70,13 @@ AparfWifiManager::GetTypeId()
                           "The minimum number of successful transmissions in \"High\" state to try "
                           "a new power or rate.",
                           UintegerValue(3),
-                          MakeUintegerAccessor(&AparfWifiManager::m_succesMax1),
+                          MakeUintegerAccessor(&AparfWifiManager::m_successMax1),
                           MakeUintegerChecker<uint32_t>())
             .AddAttribute("SuccessThreshold2",
                           "The minimum number of successful transmissions in \"Low\" state to try "
                           "a new power or rate.",
                           UintegerValue(10),
-                          MakeUintegerAccessor(&AparfWifiManager::m_succesMax2),
+                          MakeUintegerAccessor(&AparfWifiManager::m_successMax2),
                           MakeUintegerChecker<uint32_t>())
             .AddAttribute("FailThreshold",
                           "The minimum number of failed transmissions to try a new power or rate.",
@@ -162,7 +162,7 @@ AparfWifiManager::DoCreateStation() const
     NS_LOG_FUNCTION(this);
     AparfWifiRemoteStation* station = new AparfWifiRemoteStation();
 
-    station->m_successThreshold = m_succesMax1;
+    station->m_successThreshold = m_successMax1;
     station->m_failThreshold = m_failMax;
     station->m_nSuccess = 0;
     station->m_nFailed = 0;
@@ -217,12 +217,12 @@ AparfWifiManager::DoReportDataFailed(WifiRemoteStation* st)
     if (station->m_aparfState == AparfWifiManager::Low)
     {
         station->m_aparfState = AparfWifiManager::High;
-        station->m_successThreshold = m_succesMax1;
+        station->m_successThreshold = m_successMax1;
     }
     else if (station->m_aparfState == AparfWifiManager::Spread)
     {
         station->m_aparfState = AparfWifiManager::Low;
-        station->m_successThreshold = m_succesMax2;
+        station->m_successThreshold = m_successMax2;
     }
 
     if (station->m_nFailed == station->m_failThreshold)
@@ -291,7 +291,7 @@ AparfWifiManager::DoReportDataOk(WifiRemoteStation* st,
     else if (station->m_aparfState == AparfWifiManager::Spread)
     {
         station->m_aparfState = AparfWifiManager::High;
-        station->m_successThreshold = m_succesMax1;
+        station->m_successThreshold = m_successMax1;
     }
 
     if (station->m_nSuccess == station->m_successThreshold)

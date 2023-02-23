@@ -488,7 +488,7 @@ OcbWifiMac::MakeVirtualBusy(Time duration)
 }
 
 void
-OcbWifiMac::CancleTx(AcIndex ac)
+OcbWifiMac::CancelTx(AcIndex ac)
 {
     NS_LOG_FUNCTION(this << ac);
     Ptr<QosTxop> queue = GetQosTxop(ac);

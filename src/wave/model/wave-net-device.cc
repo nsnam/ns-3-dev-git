@@ -476,7 +476,7 @@ WaveNetDevice::CancelTx(uint32_t channelNumber, AcIndex ac)
         return;
     }
     Ptr<OcbWifiMac> mac = GetMac(channelNumber);
-    mac->CancleTx(ac);
+    mac->CancelTx(ac);
 }
 
 void

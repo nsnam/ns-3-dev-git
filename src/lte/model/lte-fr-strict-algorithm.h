@@ -141,7 +141,7 @@ class LteFrStrictAlgorithm : public LteFfrAlgorithm
     };
 
     std::map<uint16_t, uint8_t> m_ues; ///< UEs
-    std::vector<uint16_t> m_egdeUes;   ///< Edge UEs
+    std::vector<uint16_t> m_edgeUes;   ///< Edge UEs
 
     uint8_t m_edgeSubBandThreshold; ///< Edge subband threshold
 

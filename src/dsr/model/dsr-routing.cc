@@ -3720,21 +3720,21 @@ DsrRouting::Receive(Ptr<Packet> p, const Ipv4Header& ip, Ptr<Ipv4Interface> inco
          */
         uint8_t salvage = 0;
 
-        DsrOptionRerrUnsupportHeader rerrUnsupportHeader;
-        rerrUnsupportHeader.SetErrorType(3); // The error type 3 means Option not supported
-        rerrUnsupportHeader.SetErrorSrc(
+        DsrOptionRerrUnsupportedHeader rerrUnsupportedHeader;
+        rerrUnsupportedHeader.SetErrorType(3); // The error type 3 means Option not supported
+        rerrUnsupportedHeader.SetErrorSrc(
             m_mainAddress); // The error source address is our own address
-        rerrUnsupportHeader.SetUnsupported(optionType); // The unsupported option type number
-        rerrUnsupportHeader.SetErrorDst(
+        rerrUnsupportedHeader.SetUnsupported(optionType); // The unsupported option type number
+        rerrUnsupportedHeader.SetErrorDst(
             src); // Error destination address is the destination of the data packet
-        rerrUnsupportHeader.SetSalvage(
+        rerrUnsupportedHeader.SetSalvage(
             salvage); // Set the value about whether to salvage a packet or not
 
         /*
          * The unknown option error is not supported currently in this implementation, and it's also
          * not likely to happen in simulations
          */
-        //            SendError (rerrUnsupportHeader, 0, protocol); // Send the error packet
+        //            SendError (rerrUnsupportedHeader, 0, protocol); // Send the error packet
     }
     return IpL4Protocol::RX_OK;
 }

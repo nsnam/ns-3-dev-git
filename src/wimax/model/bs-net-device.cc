@@ -639,7 +639,7 @@ BaseStationNetDevice::DoSend(Ptr<Packet> packet,
     NS_LOG_INFO("BS (" << source << "):");
     NS_LOG_INFO("\tSending packet...");
     NS_LOG_INFO("\t\tDestination: " << dest);
-    NS_LOG_INFO("\t\tPaket Size:  " << packet->GetSize());
+    NS_LOG_INFO("\t\tPacket Size:  " << packet->GetSize());
     NS_LOG_INFO("\t\tProtocol:    " << protocolNumber);
 
     if (protocolNumber == 2048)

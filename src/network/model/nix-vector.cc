@@ -257,13 +257,13 @@ NixVector::Deserialize(const uint32_t* buffer, uint32_t size)
         m_used = *p++;
 
         // NixVector is packed in 32-bit unsigned ints.
-        uint32_t nixVectorLenth = m_totalBitSize / 32;
-        nixVectorLenth += (m_totalBitSize % 32) ? 1 : 0;
+        uint32_t nixVectorLength = m_totalBitSize / 32;
+        nixVectorLength += (m_totalBitSize % 32) ? 1 : 0;
 
-        NS_ASSERT_MSG(size >= 16 + nixVectorLenth,
-                      "NixVector serialized length should have been " << 16 + nixVectorLenth
+        NS_ASSERT_MSG(size >= 16 + nixVectorLength,
+                      "NixVector serialized length should have been " << 16 + nixVectorLength
                                                                       << " but buffer is shorter");
-        if (size < 16 + nixVectorLenth * 4)
+        if (size < 16 + nixVectorLength * 4)
         {
             // return zero if an entire nix-vector was
             // not deserialized
@@ -273,7 +273,7 @@ NixVector::Deserialize(const uint32_t* buffer, uint32_t size)
         // make sure the nix-vector
         // is empty
         m_nixVector.clear();
-        for (uint32_t j = 0; j < nixVectorLenth; j++)
+        for (uint32_t j = 0; j < nixVectorLength; j++)
         {
             uint32_t nix = *p++;
             m_nixVector.push_back(nix);

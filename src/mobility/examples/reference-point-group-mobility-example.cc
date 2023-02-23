@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Michele Polese <michele.polese@gmail.com>
- * Heavily edited by Tom Henderson (to reuse HierachicalMobilityModel)
+ * Heavily edited by Tom Henderson (to reuse HierarchicalMobilityModel)
  */
 
 /**
@@ -140,7 +140,7 @@ main(int argc, char* argv[])
     waypointMm->AddWaypoint(Waypoint(Seconds(700), Vector(90, 10, 0)));
     waypointMm->AddWaypoint(Waypoint(Seconds(800), Vector(10, 10, 0)));
 
-    // Each HierachicalMobilityModel contains the above model as the Parent,
+    // Each HierarchicalMobilityModel contains the above model as the Parent,
     // and a user defined model as the Child.  Two MobilityModel objects are
     // instantiated per node (one hierarchical, and one child model), and
     // a single parent model is reused across all nodes.

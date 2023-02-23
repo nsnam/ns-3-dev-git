@@ -123,7 +123,7 @@ class EpcPgwApplication : public Application
      *
      * \param packet packet to be sent
      * \param sgwS5uAddress the address of the SGW
-     * \param teid the Tunnel Endpoint IDentifier
+     * \param teid the Tunnel Endpoint Identifier
      */
     void SendToS5uSocket(Ptr<Packet> packet, Ipv4Address sgwS5uAddress, uint32_t teid);
 

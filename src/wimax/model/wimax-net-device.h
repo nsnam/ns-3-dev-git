@@ -64,7 +64,7 @@ class UplinkScheduler;
  * \ingroup wimax
  *
  * This class holds together ns3::WimaxPhy, ns3::WimaxConnection,
- * ns3::ConectionManager, ns3::BurstProfileManager, and
+ * ns3::ConnectionManager, ns3::BurstProfileManager, and
  * ns3::BandwidthManager.
  */
 class WimaxNetDevice : public NetDevice

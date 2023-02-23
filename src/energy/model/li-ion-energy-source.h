@@ -46,7 +46,7 @@ namespace ns3
  *
  *
  * The model requires several parameters to approximates the discharge curves:
- * - IntialCellVoltage, maximum voltage of the fully charged cell
+ * - InitialCellVoltage, maximum voltage of the fully charged cell
  * - NominalCellVoltage, nominal cell's voltage, is used to determine the end of the
  *   nominal zone.
  * - ExpCellVoltage, cell's voltage at the end of the exponential zone

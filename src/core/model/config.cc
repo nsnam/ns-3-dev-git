@@ -638,7 +638,7 @@ class ConfigImpl : public Singleton<ConfigImpl>
 {
   public:
     // Keep Set and SetFailSafe since their errors are triggered
-    // by the underlying ObjecBase functions.
+    // by the underlying ObjectBase functions.
     /** \copydoc ns3::Config::Set() */
     void Set(std::string path, const AttributeValue& value);
     /** \copydoc ns3::Config::SetFailSafe() */

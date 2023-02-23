@@ -1083,8 +1083,8 @@ PacketMetadata::ItemIterator::Next()
     m_current = smallItem.next;
     uint32_t uid = (smallItem.typeUid & 0xfffffffe) >> 1;
     item.tid.SetUid(uid);
-    item.currentTrimedFromStart = extraItem.fragmentStart;
-    item.currentTrimedFromEnd = extraItem.fragmentEnd - smallItem.size;
+    item.currentTrimmedFromStart = extraItem.fragmentStart;
+    item.currentTrimmedFromEnd = extraItem.fragmentEnd - smallItem.size;
     item.currentSize = extraItem.fragmentEnd - extraItem.fragmentStart;
     if (extraItem.fragmentStart != 0 || extraItem.fragmentEnd != smallItem.size)
     {

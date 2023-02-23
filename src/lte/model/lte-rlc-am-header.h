@@ -74,7 +74,7 @@ class LteRlcAmHeader : public Header
     };
 
     /// ControlPduType_t enumeration
-    enum ControPduType_t
+    enum ControlPduType_t
     {
         STATUS_PDU = 000,
     };

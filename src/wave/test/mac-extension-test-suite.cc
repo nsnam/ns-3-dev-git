@@ -1178,7 +1178,7 @@ ChannelAccessTestCase::DoRun()
             Ptr<WaveNetDevice> device = DynamicCast<WaveNetDevice>(m_devices.Get(i));
             device->SetReceiveCallback(MakeCallback(&ChannelAccessTestCase::Receive, this));
 
-            // at 0s, receivers are assigned ContinuosAccess from CCH, SCH1 to SCH6
+            // at 0s, receivers are assigned ContinuousAccess from CCH, SCH1 to SCH6
             static std::vector<uint32_t> WaveChannels = ChannelManager::GetWaveChannels();
             uint32_t channel = WaveChannels[i - 1];
             const SchInfo info = SchInfo(channel, false, EXTENDED_CONTINUOUS);
@@ -1301,7 +1301,7 @@ ChannelAccessTestCase::DoRun()
             Ptr<WaveNetDevice> device = DynamicCast<WaveNetDevice>(m_devices.Get(i));
             device->SetReceiveCallback(MakeCallback(&ChannelAccessTestCase::Receive, this));
 
-            // at 0s, receivers are assigned ContinuosAccess from CCH, SCH1 to SCH6
+            // at 0s, receivers are assigned ContinuousAccess from CCH, SCH1 to SCH6
             static std::vector<uint32_t> WaveChannels = ChannelManager::GetWaveChannels();
             uint32_t channel = WaveChannels[i - 1];
             const SchInfo info = SchInfo(channel, false, EXTENDED_CONTINUOUS);
@@ -1318,7 +1318,7 @@ ChannelAccessTestCase::DoRun()
         Simulator::Schedule(Seconds(0.1), &ChannelAccessTestCase::SendX, this, SCH5, 0);
         Simulator::Schedule(Seconds(0.1), &ChannelAccessTestCase::SendX, this, SCH6, 0);
 
-        // at 1s, the sender is assigned ContinuosAccess for SCH1, so only node-2 can receive
+        // at 1s, the sender is assigned ContinuousAccess for SCH1, so only node-2 can receive
         // packets.
         SchInfo info = SchInfo(SCH1, false, EXTENDED_ALTERNATING);
         Simulator::Schedule(Seconds(1), &WaveNetDevice::StartSch, m_sender, info);

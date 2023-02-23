@@ -186,7 +186,7 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
      * Set peer manager protocol function
      * \param protocol the peer manager protocol
      */
-    void SetPeerManagerProtcol(Ptr<PeerManagementProtocol> protocol);
+    void SetPeerManagerProtocol(Ptr<PeerManagementProtocol> protocol);
     /**
      * Send peer link management frame function
      * \param peerAddress the peer MAC address

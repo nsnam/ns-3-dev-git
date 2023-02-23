@@ -30,7 +30,7 @@ applications to transmit information using WAVE.
 
 In |ns3|, the focus of the ``wave`` module is on both the MAC layer and the
 multi-channel coordination layer.
-The key design aspect of 802.11p-compilant MAC layer is that they allow
+The key design aspect of 802.11p-compliant MAC layer is that they allow
 communications outside the context of a basic service set (BSS).
 The literature uses the acronym OCB to denote "outside the context
 of a BSS", and the class ``ns3::OcbWifiMac`` models this in |ns3|.
@@ -43,7 +43,7 @@ small delay in the MAC layer. Users can create IEEE802.11p-compliant device
 (the object of the class ``ns3::WifiNetDevice`` associating with
 ``ns3::OcbWifiMac``) .
 
-The key design aspect of the WAVE-compilant MAC layer (including 802.11p MAC
+The key design aspect of the WAVE-compliant MAC layer (including 802.11p MAC
 layer and 1609.4 MAC extension layer) is that, based on OCB features, they
 provide devices with the capability of switching between control and service channels, using a single radio or using multiple radios.
 Therefore devices can communicate with others in single or multiple
@@ -141,7 +141,7 @@ feature has no relation to wifi MAC classes, then a new class
 will be defined. This approach was selected to be non-intrusive to the
 |ns3| wifi module. All of these classes will be hosted in a 'container'
 class called ``ns3:: WaveNetDevice``. This class is a subclass inheriting
-from ``ns3::NetDeivce``, composed of the objects of
+from ``ns3::NetDevice``, composed of the objects of
 ``ns3::ChannelScheduler``, ``ns3::ChannelManager``,
 ``ns3::ChannelCoordinator`` and ``ns3::VsaManager``
 classes to provide the features described in 1609.4 while still
@@ -262,7 +262,7 @@ is the data plane of the standard.
 
 Channel coordination
 
-The class ``ns3::ChannelCoordinator`` defines the CCH Interval, SCH Interval and GuardInteval. Users can be aware of which interval the current time or
+The class ``ns3::ChannelCoordinator`` defines the CCH Interval, SCH Interval and GuardInterval. Users can be aware of which interval the current time or
 future time will be in. If channel access mode is assigned to
 alternating CCH and SCH access,
 channel interval events will be notified repeatedly for class
@@ -509,7 +509,7 @@ From <Your Vanet Routing Application>, usage is as follows:
     // declare WAVE BSM helper instance
     WaveBsmHelper m_waveBsmHelper;
 
-    // the following are passed to the WaveBsmHelpe::Install()
+    // the following are passed to the WaveBsmHelper::Install()
     // method, and they are thus assumed to be created and
     // initialized themselves, based on the user's
     // simulation setup criteria.

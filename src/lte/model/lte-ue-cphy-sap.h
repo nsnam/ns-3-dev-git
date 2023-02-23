@@ -194,7 +194,7 @@ class LteUeCphySapProvider
      * started by checking if the radio frames are in-sync for N311
      * consecutive times.
      */
-    virtual void StartInSnycDetection() = 0;
+    virtual void StartInSyncDetection() = 0;
 
     /**
      * \brief A method call by UE RRC to communicate the IMSI to the UE PHY
@@ -327,7 +327,7 @@ class MemberLteUeCphySapProvider : public LteUeCphySapProvider
     void SetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient) override;
     void ResetPhyAfterRlf() override;
     void ResetRlfParams() override;
-    void StartInSnycDetection() override;
+    void StartInSyncDetection() override;
     void SetImsi(uint64_t imsi) override;
 
   private:
@@ -454,9 +454,9 @@ MemberLteUeCphySapProvider<C>::ResetRlfParams()
 
 template <class C>
 void
-MemberLteUeCphySapProvider<C>::StartInSnycDetection()
+MemberLteUeCphySapProvider<C>::StartInSyncDetection()
 {
-    m_owner->DoStartInSnycDetection();
+    m_owner->DoStartInSyncDetection();
 }
 
 template <class C>

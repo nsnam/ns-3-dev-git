@@ -3374,7 +3374,7 @@ LteUeRrc::DoNotifyOutOfSync()
         {
             NS_LOG_INFO("t310 started");
         }
-        m_cphySapProvider.at(0)->StartInSnycDetection();
+        m_cphySapProvider.at(0)->StartInSyncDetection();
         m_noOfSyncIndications = 0;
     }
 }

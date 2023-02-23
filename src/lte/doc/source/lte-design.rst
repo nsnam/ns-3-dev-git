@@ -685,7 +685,7 @@ The model can be disabled for working with a zero-losses channel by setting the 
 
   Config::SetDefault("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue(false));
 
-.. _sec-control-channles-phy-error-model:
+.. _sec-control-channels-phy-error-model:
 
 Control Channels PHY Error Model
 ++++++++++++++++++++++++++++++++
@@ -2266,13 +2266,13 @@ is less than a defined threshold Qout (default: -5dB), the frame cannot be decod
 (see``LteUePhy::RadioLinkFailureDetection``). The Qout threshold corresponds to 10%
 block error rate (BLER) of a hypothetical PDCCH transmission taking into account
 the PCFICH errors [R4-081920]_ (also refer to
-:ref:`sec-control-channles-phy-error-model`). Once, the UE is unable to decode
+:ref:`sec-control-channels-phy-error-model`). Once, the UE is unable to decode
 20 consecutive frames, i.e., the Qout evaluation period (200ms) is reached, an
 out-of-sync indication is sent to the UE RRC layer (see ``LteUeRrc::DoNotifyOutOfSync``).
 Else, the counter for the unsuccessfuly decoded frames is reset to zero. At the
 LteUeRrc, when the number of consecutive out-of-sync indications matches with the
 value of N310 parameter, the T310 timer is started and LteUePhy is notified to start
-measuring for in-sync indications (see ``LteUePhy::DoStartInSnycDetection``). We note
+measuring for in-sync indications (see ``LteUePhy::DoStartInSyncDetection``). We note
 that, the UE RRC state is not changed till the expiration of T310 timer. If the
 resultant SINR values averaged over a downlink frame is greater than a defined
 threshold Qin (default: -3.8dB), the frame is considered to be successfully
@@ -2468,7 +2468,7 @@ where:
  - :math:`F_{n-1}` is the old filtered measurement result, where
    :math:`F_0 = M_1` (i.e. the first measurement is not filtered); and
  - :math:`a = (\frac{1}{2})^{\frac{k}{4}}`, where :math:`k` is the configurable
-   `filterCoefficent` provided by the ``QuantityConfig``;
+   `filterCoefficient` provided by the ``QuantityConfig``;
 
 :math:`k = 4` is the default value, but can be configured by setting the
 `RsrpFilterCoefficient` and `RsrqFilterCoefficient` attributes in

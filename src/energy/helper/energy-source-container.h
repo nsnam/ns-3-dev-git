@@ -63,7 +63,7 @@ class EnergySourceContainer : public Object
     /**
      * \param source Pointer to an EnergySource.
      *
-     * Creates an EnergySourceContianer with exactly one EnergySource previously
+     * Creates an EnergySourceContainer with exactly one EnergySource previously
      * instantiated.
      */
     EnergySourceContainer(Ptr<EnergySource> source);

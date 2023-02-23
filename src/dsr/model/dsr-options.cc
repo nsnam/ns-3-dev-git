@@ -1634,12 +1634,12 @@ DsrOptionRerr::Process(Ptr<Packet> packet,
         /*
          * Remove the route error header from the packet, and get the error type
          */
-        DsrOptionRerrUnsupportHeader rerrUnsupport;
-        p->RemoveHeader(rerrUnsupport);
+        DsrOptionRerrUnsupportedHeader rerrUnsupported;
+        p->RemoveHeader(rerrUnsupported);
 
         /// \todo This is for the other two error options, not supporting for now
-        // uint32_t rerrSize = rerrUnsupport.GetSerializedSize();
-        // uint32_t serialized = DoSendError (p, rerrUnsupport, rerrSize, ipv4Address, protocol);
+        // uint32_t rerrSize = rerrUnsupported.GetSerializedSize();
+        // uint32_t serialized = DoSendError (p, rerrUnsupported, rerrSize, ipv4Address, protocol);
         uint32_t serialized = 0;
         return serialized;
     }

@@ -179,13 +179,13 @@ class MatrixArray : public ValArray<T>
     /**
      * \brief operator+ definition for MatrixArray<T>.
      * \param rhs The rhs MatrixArray object
-     * \returns The result of operator+ of this MatrixArray and rhs MatrixAray
+     * \returns The result of operator+ of this MatrixArray and rhs MatrixArray
      */
     MatrixArray<T> operator+(const MatrixArray<T>& rhs) const;
     /**
      * \brief binary operator- definition for MatrixArray<T>.
      * \param rhs The rhs MatrixArray object
-     * \returns The result of operator- of this MatrixArray and rhs MatrixAray
+     * \returns The result of operator- of this MatrixArray and rhs MatrixArray
      */
     MatrixArray<T> operator-(const MatrixArray<T>& rhs) const;
     /**

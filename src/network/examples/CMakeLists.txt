@@ -3,7 +3,7 @@ set(base_examples
     main-packet-header
     main-packet-tag
     packet-socket-apps
-    lollipop-comparisions
+    lollipop-comparisons
 )
 
 foreach(

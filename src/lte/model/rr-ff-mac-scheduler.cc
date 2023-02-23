@@ -978,10 +978,10 @@ RrFfMacScheduler::DoSchedDlTriggerReq(
         if ((itLcRnti == lcActivesPerRnti.end()) || (itRnti != rntiAllocated.end()))
         {
             // skip this RNTI (no active queue or yet allocated for HARQ)
-            uint16_t rntiDiscared = (*it).m_rnti;
+            uint16_t rntiDiscarded = (*it).m_rnti;
             while (it != m_rlcBufferReq.end())
             {
-                if ((*it).m_rnti != rntiDiscared)
+                if ((*it).m_rnti != rntiDiscarded)
                 {
                     break;
                 }

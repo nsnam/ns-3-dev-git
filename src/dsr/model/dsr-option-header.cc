@@ -1018,25 +1018,25 @@ DsrOptionRerrUnreachHeader::GetAlignment() const
     return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED(DsrOptionRerrUnsupportHeader);
+NS_OBJECT_ENSURE_REGISTERED(DsrOptionRerrUnsupportedHeader);
 
 TypeId
-DsrOptionRerrUnsupportHeader::GetTypeId()
+DsrOptionRerrUnsupportedHeader::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::dsr::DsrOptionRerrUnsupportHeader")
-                            .AddConstructor<DsrOptionRerrUnsupportHeader>()
+    static TypeId tid = TypeId("ns3::dsr::DsrOptionRerrUnsupportedHeader")
+                            .AddConstructor<DsrOptionRerrUnsupportedHeader>()
                             .SetParent<DsrOptionRerrHeader>()
                             .SetGroupName("Dsr");
     return tid;
 }
 
 TypeId
-DsrOptionRerrUnsupportHeader::GetInstanceTypeId() const
+DsrOptionRerrUnsupportedHeader::GetInstanceTypeId() const
 {
     return GetTypeId();
 }
 
-DsrOptionRerrUnsupportHeader::DsrOptionRerrUnsupportHeader()
+DsrOptionRerrUnsupportedHeader::DsrOptionRerrUnsupportedHeader()
     : m_salvage(0)
 {
     SetType(3);
@@ -1044,60 +1044,60 @@ DsrOptionRerrUnsupportHeader::DsrOptionRerrUnsupportHeader()
     SetErrorType(3);
 }
 
-DsrOptionRerrUnsupportHeader::~DsrOptionRerrUnsupportHeader()
+DsrOptionRerrUnsupportedHeader::~DsrOptionRerrUnsupportedHeader()
 {
 }
 
 void
-DsrOptionRerrUnsupportHeader::SetSalvage(uint8_t salvage)
+DsrOptionRerrUnsupportedHeader::SetSalvage(uint8_t salvage)
 {
     m_salvage = salvage;
 }
 
 uint8_t
-DsrOptionRerrUnsupportHeader::GetSalvage() const
+DsrOptionRerrUnsupportedHeader::GetSalvage() const
 {
     return m_salvage;
 }
 
 void
-DsrOptionRerrUnsupportHeader::SetErrorSrc(Ipv4Address errorSrcAddress)
+DsrOptionRerrUnsupportedHeader::SetErrorSrc(Ipv4Address errorSrcAddress)
 {
     m_errorSrcAddress = errorSrcAddress;
 }
 
 Ipv4Address
-DsrOptionRerrUnsupportHeader::GetErrorSrc() const
+DsrOptionRerrUnsupportedHeader::GetErrorSrc() const
 {
     return m_errorSrcAddress;
 }
 
 void
-DsrOptionRerrUnsupportHeader::SetErrorDst(Ipv4Address errorDstAddress)
+DsrOptionRerrUnsupportedHeader::SetErrorDst(Ipv4Address errorDstAddress)
 {
     m_errorDstAddress = errorDstAddress;
 }
 
 Ipv4Address
-DsrOptionRerrUnsupportHeader::GetErrorDst() const
+DsrOptionRerrUnsupportedHeader::GetErrorDst() const
 {
     return m_errorDstAddress;
 }
 
 void
-DsrOptionRerrUnsupportHeader::SetUnsupported(uint16_t unsupported)
+DsrOptionRerrUnsupportedHeader::SetUnsupported(uint16_t unsupported)
 {
     m_unsupported = unsupported;
 }
 
 uint16_t
-DsrOptionRerrUnsupportHeader::GetUnsupported() const
+DsrOptionRerrUnsupportedHeader::GetUnsupported() const
 {
     return m_unsupported;
 }
 
 void
-DsrOptionRerrUnsupportHeader::Print(std::ostream& os) const
+DsrOptionRerrUnsupportedHeader::Print(std::ostream& os) const
 {
     os << "( type = " << (uint32_t)GetType() << " length = " << (uint32_t)GetLength()
        << " errorType = " << (uint32_t)m_errorType << " salvage = " << (uint32_t)m_salvage
@@ -1106,13 +1106,13 @@ DsrOptionRerrUnsupportHeader::Print(std::ostream& os) const
 }
 
 uint32_t
-DsrOptionRerrUnsupportHeader::GetSerializedSize() const
+DsrOptionRerrUnsupportedHeader::GetSerializedSize() const
 {
     return 16;
 }
 
 void
-DsrOptionRerrUnsupportHeader::Serialize(Buffer::Iterator start) const
+DsrOptionRerrUnsupportedHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
 
@@ -1126,7 +1126,7 @@ DsrOptionRerrUnsupportHeader::Serialize(Buffer::Iterator start) const
 }
 
 uint32_t
-DsrOptionRerrUnsupportHeader::Deserialize(Buffer::Iterator start)
+DsrOptionRerrUnsupportedHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
 
@@ -1142,7 +1142,7 @@ DsrOptionRerrUnsupportHeader::Deserialize(Buffer::Iterator start)
 }
 
 DsrOptionHeader::Alignment
-DsrOptionRerrUnsupportHeader::GetAlignment() const
+DsrOptionRerrUnsupportedHeader::GetAlignment() const
 {
     Alignment retVal = {4, 0};
     return retVal;

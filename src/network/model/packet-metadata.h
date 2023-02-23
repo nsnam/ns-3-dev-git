@@ -117,12 +117,12 @@ class PacketMetadata
          * how many bytes were trimmed from the start of a fragment.
          * if isFragment is true, this field is zero.
          */
-        uint32_t currentTrimedFromStart;
+        uint32_t currentTrimmedFromStart;
         /**
          * how many bytes were trimmed from the end of a fragment.
          * if isFragment is true, this field is zero.
          */
-        uint32_t currentTrimedFromEnd;
+        uint32_t currentTrimmedFromEnd;
         /**
          * an iterator which can be fed to Deserialize. Valid only
          * if isFragment and isPayload are false.

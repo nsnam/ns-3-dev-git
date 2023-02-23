@@ -632,7 +632,7 @@ UplinkSchedulerRtps::ULSchedulerRTPSConnection(uint32_t& symbolsToAllocation,
         NS_LOG_INFO("\t\tUpdateGrantedBandwidth for " << i << " = " << allocSizeBytes);
         if (record_[i]->GetRequestedBandwidth() < allocSizeBytes)
         {
-            // the flow need new poll to set the newer requredBandwidth
+            // the flow need new poll to set the newer requiredBandwidth
             record_[i]->SetGrantedBandwidth(0);
             record_[i]->SetRequestedBandwidth(0);
         }

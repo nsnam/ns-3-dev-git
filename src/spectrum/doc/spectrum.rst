@@ -263,7 +263,7 @@ Here are some notes on how the spectrum module is expected to be used.
    is one of the main features of the
    spectrum module, to support inter-technology interference. For
    example, if you implement a WifiSpectrumPhy and a
-   BluetoohSpectrumPhy, and plug both on a SpectrumChannel, then you'll
+   BluetoothSpectrumPhy, and plug both on a SpectrumChannel, then you'll
    be able to simulate interference between wifi and bluetooth and
    vice versa.
 

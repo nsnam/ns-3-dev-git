@@ -672,7 +672,7 @@ SubscriberStationNetDevice::DoSend(Ptr<Packet> packet,
     else
     {
         NS_LOG_DEBUG("SS (" << GetMacAddress() << ")");
-        NS_LOG_INFO("\tCan't send packet! (NotRegitered with the network)");
+        NS_LOG_INFO("\tCan't send packet! (NotRegistered with the network)");
         return false;
     }
 

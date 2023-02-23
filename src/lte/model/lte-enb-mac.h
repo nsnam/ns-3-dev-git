@@ -365,12 +365,12 @@ class LteEnbMac : public Object
      * \brief UL Info List ELements HARQ Feedback function
      * \param params UlInfoListElement_s
      */
-    void DoUlInfoListElementHarqFeeback(UlInfoListElement_s params);
+    void DoUlInfoListElementHarqFeedback(UlInfoListElement_s params);
     /**
      * \brief DL Info List ELements HARQ Feedback function
      * \param params DlInfoListElement_s
      */
-    void DoDlInfoListElementHarqFeeback(DlInfoListElement_s params);
+    void DoDlInfoListElementHarqFeedback(DlInfoListElement_s params);
 
     /// RNTI, LC ID, SAP of the RLC instance
     std::map<uint16_t, std::map<uint8_t, LteMacSapUser*>> m_rlcAttached;

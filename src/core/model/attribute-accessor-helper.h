@@ -247,7 +247,7 @@ template <typename V, typename T, typename U>
 inline Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne(U T::*memberVariable)
 {
-    /* AttributeAcessor implementation for a class member variable. */
+    /* AttributeAccessor implementation for a class member variable. */
     class MemberVariable : public AccessorHelper<T, V>
     {
       public:

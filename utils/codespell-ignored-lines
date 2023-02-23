@@ -44,3 +44,80 @@ Network Animator nam.  It is not possible to run a simulation
 
 #./src/internet-apps/model/v4ping.h:37
  * \brief an application which sends one ICMP ECHO request, waits for a REPLYs
+
+#./src/openflow/model/openflow-switch-net-device.cc:544, 548
+                arp_h->ar_tha);                                       // Target hardware address.
+            arp_h->ar_hln = sizeof arp_h->ar_tha;                     // Hardware address length.
+
+./src/dsr/model/dsr-routing.cc:243, 246, 3360, 3363
+            .AddAttribute("GratReplyHoldoff",
+                          MakeTimeAccessor(&DsrRouting::m_gratReplyHoldoff),
+                                   m_gratReplyHoldoff))) // Find the gratuitous reply entry
+        GraReplyEntry graReplyEntry(source, srcAddress, m_gratReplyHoldoff + Simulator::Now());
+
+./src/dsr/model/dsr-routing.h:882
+    Time m_gratReplyHoldoff; ///< The max gratuitous reply hold off time
+
+./src/dsr/model/dsr-gratuitous-reply-table.cc:75, 76
+            i->m_gratReplyHoldoff =
+                std::max(gratReplyHoldoff + Simulator::Now(), i->m_gratReplyHoldoff);
+
+./src/dsr/model/dsr-gratuitous-reply-table.h:54, 66, 137
+    Time m_gratReplyHoldoff; ///< gratuitous reply holdoff time
+          m_gratReplyHoldoff(h)
+            return (b.m_gratReplyHoldoff < Simulator::Now());
+
+./RELEASE_NOTES.md:1087
+- Bug 2530 - aodv: Rename aodv::SetBalckListTimeout to aodv::SetBlackListTimeout
+
+./doc/installation/source/linux.rst:122
+  apt install gir1.2-goocanvas-2.0 python3-gi python3-gi-cairo python3-pygraphviz gir1.2-gtk-3.0 ipython3
+
+./doc/tutorial/source/getting-started.rst:347:
+  >> Searching for system dependency gir-bindings - OK
+
+./src/wave/examples/vanet-routing-compare.cc:1565, 1971
+static ns3::GlobalValue g_rate("VRCrate",
+    GlobalValue::GetValueByName("VRCrate", stringValue);
+
+./src/lte/model/lte-mi-error-model.h:23:
+ *      for mobIlE Video AppLications) project, which is a
+
+./src/traffic-control/model/codel-queue-disc.h:17:
+ * Codel, the COntrolled DELay Queueing discipline
+
+./src/internet/model/global-route-manager-impl.h:555:
+     * \param vs a list of SPFVertexes
+
+./src/internet/model/candidate-queue.h:166:
+     * SPFVertexes are added into the queue according to the ordering
+
+./src/internet/model/global-route-manager-impl.h:555
+    typedef std::list<SPFVertex*> ListOfSPFVertex_t; //!< container of SPFVertexes
+
+./CHANGES.md:
+* (mesh) The spelling of the function `PeerManagementProtocolMac::SetPeerManagerProtcol` from `peer-management-protocol-mac.h` was corrected to `PeerManagementProtocolMac::SetPeerManagerProtocol`; this will affect existing users who were using the function with the misspelling.
+* The spelling of the attribute `IntialCellVoltage` from `LiIonEnergySource` was corrected to `InitialCellVoltage`; this will affect existing users who were using the attribute with the misspelling.
+* (dsr) The spelling of the class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was corrected to `DsrOptionRerrUnsupportedHeader`; this will affect existing users who were using the class with the misspelling.
+* (internet) The spelling of the enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was corrected to `IPV6_EXT_AUTHENTICATION`; this will affect existing users who were using the enumerated value with the misspelling.
+* (lte) The spelling of the enumeration `ControPduType_t` from `lte-rlc-am-header.h` was corrected to `ControlPduType_t`; this will affect existing users who were using the enumeration with the misspelling.
+* (lte) The spelling of the function `LteUeCphySapProvider::StartInSnycDetection()` from `lte-ue-cphy-sap.h` was corrected to `LteUeCphySapProvider::StartInSyncDetection()`; this will affect existing users who were using the function with the misspelling.
+* (lte) The spelling of the function `MemberLteUeCphySapProvider::StartInSnycDetection()` from `lte-ue-cphy-sap.h` was corrected to `MemberLteUeCphySapProvider::StartInSyncDetection()`; this will affect existing users who were using the function with the misspelling.
+* (lte) The spelling of the function `LteUePhy::StartInSnycDetection()` from `lte-ue-phy.h` was corrected to `LteUePhy::StartInSyncDetection()`; this will affect existing users who were using the function with the misspelling.
+* (network) The spelling of the file `lollipop-comparisions.cc` was corrected to `lollipop-comparisons.cc`.
+* (network) The spelling of the attribute `currentTrimedFromStart` from `packet-metadata.h` was corrected to `currentTrimmedFromStart`; this will affect existing users who were using the attribute with the misspelling.
+* (network) The spelling of the attribute `currentTrimedFromEnd` from `packet-metadata.h` was corrected to `currentTrimmedFromEnd`; this will affect existing users who were using the attribute with the misspelling.
+* (wave) The spelling of the function `OcbWifiMac::CancleTx()` from `ocb-wifi-mac.h` was corrected to `OcbWifiMac::CancelTx()`; this will affect existing users who were using the function with the misspelling.
+* (wifi) The spelling of the attribute `m_succesMax1` from `aparf-wifi-manager.h` was corrected to `m_successMax1`; this will affect existing users who were using the attribute with the misspelling.
+* (wifi) The spelling of the attribute `m_succesMax2` from `aparf-wifi-manager.h` was corrected to `m_successMax2`; this will affect existing users who were using the attribute with the misspelling.
+* (wifi) The spelling of the enumerated value `MDAOP_ADVERTISMENT_REQUEST` from `mgmt-headers.h` was corrected to `MDAOP_ADVERTISEMENT_REQUEST`; this will affect existing users who were using the enumerated value with the misspelling.
+* (wifi) The spelling of the enumerated value `MDAOP_ADVERTISMENTS` from `mgmt-headers.h` was corrected to `MDAOP_ADVERTISEMENTS`; this will affect existing users who were using the enumerated value with the misspelling.
+* (wifi) The spelling of the define `IE_BEAMLINK_MAINENANCE` from `wifi-information-element.h` was corrected to `IE_BEAMLINK_MAINTENANCE`; this will affect existing users who were using the define with the misspelling.
+* (wimax) The spelling of the attribute `m_nrRecivedFecBlocks` from `simple-ofdm-wimax-phy.h` was corrected to `m_nrReceivedFecBlocks`; this will affect existing users who were using the attribute with the misspelling.
+* (lte) The spelling of the function `DoUlInfoListElementHarqFeeback` from `lte-enb-phy-sap.h` and `lte-enb-mac.h` was corrected to `DoUlInfoListElementHarqFeedback`; this will affect existing users who were using the function with the mispelling.
+* (lte) The spelling of the function `DoDlInfoListElementHarqFeeback` from `lte-enb-phy-sap.h` and `lte-enb-mac.h` was corrected to `DoDlInfoListElementHarqFeedback`; this will affect existing users who were using the function with the mispelling.
+* (lr-wpan) The spelling of the constant `aMaxBeaconPayloadLenght` from `lr-wpan-constants.h` was corrected to `aMaxBeaconPayloadLength`; this will affect existing users who were using the constant value with the misspelling.
+* (sixlowpan) The spelling of the function `SixLowPanNetDevice::Fragments::GetFraments` from `sixlowpan-net-device.cc` was corrected to `SixLowPanNetDevice::Fragments::GetFragments`; this will affect existing users who were using the function with the misspelling.
+* The attribute `Recievers` in class `YansWifiPhy` was misspelled, so this has been corrected to `Receivers`.
+
+

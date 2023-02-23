@@ -467,7 +467,7 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
     uint16_t m_blockSize;               ///< block size
     uint32_t m_paddingBits;             ///< padding bits
     uint16_t m_nbErroneousBlock;        ///< erroneous blocks
-    uint16_t m_nrRecivedFecBlocks;      ///< number received FEC blocks
+    uint16_t m_nrReceivedFecBlocks;     ///< number received FEC blocks
     uint16_t m_nfft;                    ///< NFFT
     double m_g;                         ///< G value
     double m_bandWidth;                 ///< bandwidth

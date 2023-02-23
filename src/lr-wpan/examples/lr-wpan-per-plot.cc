@@ -86,7 +86,7 @@ main(int argc, char* argv[])
 
     Gnuplot perplot = Gnuplot("802.15.4-per-vs-rxSignal.eps");
     Gnuplot2dDataset perdatasetExperimental("Experimental");
-    Gnuplot2dDataset perdatasetTheorical("Theoretical");
+    Gnuplot2dDataset perdatasetTheoretical("Theoretical");
 
     Ptr<Node> n0 = CreateObject<Node>();
     Ptr<Node> n1 = CreateObject<Node>();
@@ -214,7 +214,7 @@ main(int argc, char* argv[])
             sensThreshold = false;
         }
 
-        perdatasetTheorical.Add(j, perTheoretical);
+        perdatasetTheoretical.Add(j, perTheoretical);
     }
 
     std::cout << "_____________________________________________________________________________\n";
@@ -229,7 +229,7 @@ main(int argc, char* argv[])
        << "Rx Sensitivity (Theo) = " << sensitivityTheo << " dBm";
 
     perplot.AddDataset(perdatasetExperimental);
-    perplot.AddDataset(perdatasetTheorical);
+    perplot.AddDataset(perdatasetTheoretical);
 
     perplot.SetTitle(os.str());
     perplot.SetTerminal("postscript eps color enh \"Times-BoldItalic\"");

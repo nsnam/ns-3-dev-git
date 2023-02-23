@@ -250,7 +250,7 @@ class LrWpanNetDevice : public NetDevice
      *
      * \param panId The PanID
      * \param shortAddr The Short MAC address
-     * \return a Pseudo-Mac48Adress
+     * \return a Pseudo-Mac48Address
      */
     Mac48Address BuildPseudoMacAddress(uint16_t panId, Mac16Address shortAddr) const;
 
@@ -309,8 +309,8 @@ class LrWpanNetDevice : public NetDevice
     /**
      * How the pseudo MAC address is created.
      *
-     * According to \RFC{4944} the psudo-MAC is YYYY:0000:XXXX (with U/L bit set to local)
-     * According to \RFC{6282} the psudo-MAC is 0200:0000:XXXX
+     * According to \RFC{4944} the pseudo-MAC is YYYY:0000:XXXX (with U/L bit set to local)
+     * According to \RFC{6282} the pseudo-MAC is 0200:0000:XXXX
      */
     PseudoMacAddressMode_e m_pseudoMacMode;
 };

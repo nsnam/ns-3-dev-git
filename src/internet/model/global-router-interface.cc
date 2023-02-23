@@ -831,29 +831,29 @@ GlobalRouter::ProcessSingleBroadcastLink(Ptr<NetDevice> nd,
         // case.
         //
         ClearBridgesVisited();
-        Ipv4Address desigRtr;
-        desigRtr = FindDesignatedRouterForLink(nd);
+        Ipv4Address designatedRtr;
+        designatedRtr = FindDesignatedRouterForLink(nd);
 
         //
         // Let's double-check that any designated router we find out on our
         // network is really on our network.
         //
-        if (desigRtr != "255.255.255.255")
+        if (designatedRtr != "255.255.255.255")
         {
             Ipv4Address networkHere = addrLocal.CombineMask(maskLocal);
-            Ipv4Address networkThere = desigRtr.CombineMask(maskLocal);
+            Ipv4Address networkThere = designatedRtr.CombineMask(maskLocal);
             NS_ABORT_MSG_UNLESS(
                 networkHere == networkThere,
                 "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion ("
-                    << addrLocal << "/" << maskLocal.GetPrefixLength() << ", " << desigRtr << "/"
-                    << maskLocal.GetPrefixLength() << ")");
+                    << addrLocal << "/" << maskLocal.GetPrefixLength() << ", " << designatedRtr
+                    << "/" << maskLocal.GetPrefixLength() << ")");
         }
-        if (desigRtr == addrLocal)
+        if (designatedRtr == addrLocal)
         {
             c.Add(nd);
             NS_LOG_LOGIC("Node " << node->GetId() << " elected a designated router");
         }
-        plr->SetLinkId(desigRtr);
+        plr->SetLinkId(designatedRtr);
 
         //
         // OSPF says that the Link Data is this router's own IP address.
@@ -921,7 +921,7 @@ GlobalRouter::ProcessBridgedBroadcastLink(Ptr<NetDevice> nd,
   //
 
   bool areTransitNetwork = false;
-  Ipv4Address desigRtr ("255.255.255.255");
+  Ipv4Address designatedRtr ("255.255.255.255");
 
   for (uint32_t i = 0; i < bnd->GetNBridgePorts (); ++i)
     {
@@ -945,24 +945,24 @@ GlobalRouter::ProcessBridgedBroadcastLink(Ptr<NetDevice> nd,
           // all.
           //
           ClearBridgesVisited ();
-          Ipv4Address desigRtrTemp = FindDesignatedRouterForLink (ndTemp);
+          Ipv4Address designatedRtrTemp = FindDesignatedRouterForLink (ndTemp);
 
           //
           // Let's double-check that any designated router we find out on our
           // network is really on our network.
           //
-          if (desigRtrTemp != "255.255.255.255")
+          if (designatedRtrTemp != "255.255.255.255")
             {
               Ipv4Address networkHere = addrLocal.CombineMask (maskLocal);
-              Ipv4Address networkThere = desigRtrTemp.CombineMask (maskLocal);
+              Ipv4Address networkThere = designatedRtrTemp.CombineMask (maskLocal);
               NS_ABORT_MSG_UNLESS (networkHere == networkThere,
                                    "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion (" <<
                                    addrLocal << "/" << maskLocal.GetPrefixLength () << ", " <<
-                                   desigRtrTemp << "/" << maskLocal.GetPrefixLength () << ")");
+                                   designatedRtrTemp << "/" << maskLocal.GetPrefixLength () << ")");
             }
-          if (desigRtrTemp < desigRtr)
+          if (designatedRtrTemp < designatedRtr)
             {
-              desigRtr = desigRtrTemp;
+              designatedRtr = designatedRtrTemp;
             }
         }
     }
@@ -1013,12 +1013,12 @@ GlobalRouter::ProcessBridgedBroadcastLink(Ptr<NetDevice> nd,
       // gets the IP interface address of the designated router in this
       // case.
       //
-      if (desigRtr == addrLocal)
+      if (designatedRtr == addrLocal)
         {
           c.Add (nd);
           NS_LOG_LOGIC ("Node " << node->GetId () << " elected a designated router");
         }
-      plr->SetLinkId (desigRtr);
+      plr->SetLinkId (designatedRtr);
 
       //
       // OSPF says that the Link Data is this router's own IP address.
@@ -1337,7 +1337,7 @@ GlobalRouter::FindDesignatedRouterForLink(Ptr<NetDevice> ndLocal) const
     NS_LOG_LOGIC("Looking for designated router off of net device " << ndLocal << " on node "
                                                                     << ndLocal->GetNode()->GetId());
 
-    Ipv4Address desigRtr("255.255.255.255");
+    Ipv4Address designatedRtr("255.255.255.255");
 
     //
     // Look through all of the devices on the channel to which the net device
@@ -1402,8 +1402,8 @@ GlobalRouter::FindDesignatedRouterForLink(Ptr<NetDevice> ndLocal) const
                                     "primary one");
                     }
                     Ipv4Address addrOther = ipv4->GetAddress(interfaceOther, 0).GetLocal();
-                    desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
-                    NS_LOG_LOGIC("designated router now " << desigRtr);
+                    designatedRtr = addrOther < designatedRtr ? addrOther : designatedRtr;
+                    NS_LOG_LOGIC("designated router now " << designatedRtr);
                 }
             }
 
@@ -1433,8 +1433,8 @@ GlobalRouter::FindDesignatedRouterForLink(Ptr<NetDevice> ndLocal) const
 
                 NS_LOG_LOGIC("Recursively looking for routers down bridge port " << ndBridged);
                 Ipv4Address addrOther = FindDesignatedRouterForLink(ndBridged);
-                desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
-                NS_LOG_LOGIC("designated router now " << desigRtr);
+                designatedRtr = addrOther < designatedRtr ? addrOther : designatedRtr;
+                NS_LOG_LOGIC("designated router now " << designatedRtr);
             }
         }
         else
@@ -1466,13 +1466,13 @@ GlobalRouter::FindDesignatedRouterForLink(Ptr<NetDevice> ndLocal) const
                                     "primary one");
                     }
                     Ipv4Address addrOther = ipv4->GetAddress(interfaceOther, 0).GetLocal();
-                    desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
-                    NS_LOG_LOGIC("designated router now " << desigRtr);
+                    designatedRtr = addrOther < designatedRtr ? addrOther : designatedRtr;
+                    NS_LOG_LOGIC("designated router now " << designatedRtr);
                 }
             }
         }
     }
-    return desigRtr;
+    return designatedRtr;
 }
 
 //

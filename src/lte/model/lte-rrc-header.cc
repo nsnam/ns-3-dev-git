@@ -1934,7 +1934,7 @@ RrcAsn1Header::SerializeRadioResourceConfigCommonSCell(
         SerializeInteger(rrccsc.ulConfiguration.ulFreqInfo.ulCarrierFreq, 0, MAX_EARFCN);
         SerializeInteger(rrccsc.ulConfiguration.ulFreqInfo.ulBandwidth, 6, 100);
 
-        // Serialize UlPowerControllCommonSCell
+        // Serialize UlPowerControlCommonSCell
         std::bitset<2> UlPowerControlCommonSCell_r10;
         UlPowerControlCommonSCell_r10.set(1, 0); // p0-NominalPUSCH-r10 Not Implemented
         UlPowerControlCommonSCell_r10.set(0, 1); // alpha
@@ -5384,7 +5384,7 @@ RrcConnectionReconfigurationHeader::PreSerialize() const
         // Serialize t304
         SerializeEnum(8, 0);
 
-        // Serialize newUE-Identitiy
+        // Serialize newUE-Identity
         SerializeBitstring(std::bitset<16>(m_mobilityControlInfo.newUeIdentity));
 
         // Serialize radioResourceConfigCommon
@@ -6258,7 +6258,7 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize() const
 
     SerializeUlCcchMessage(0);
 
-    // Serialize RrcConnectionReestablishmentReques sequence:
+    // Serialize RrcConnectionReestablishmentRequest sequence:
     // no default or optional fields. Extension marker not present.
     SerializeSequence(std::bitset<0>(), false);
 

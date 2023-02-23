@@ -347,7 +347,7 @@ class LteUeRrc : public Object
     typedef void (*ImsiCidRntiTracedCallback)(uint64_t imsi, uint16_t cellId, uint16_t rnti);
 
     /**
-     * TracedCallback signature for MIBRecieved, Sib1Received and
+     * TracedCallback signature for MIBReceived, Sib1Received and
      * HandoverStart events.
      *
      * \param [in] imsi

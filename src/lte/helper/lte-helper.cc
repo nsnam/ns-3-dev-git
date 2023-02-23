@@ -939,7 +939,7 @@ LteHelper::InstallSingleUeDevice(Ptr<Node> n)
     // number of component carriers in UE RRC
     ccmUe->SetNumberOfComponentCarriers(m_noOfCcs);
 
-    // run intializeSap to create the proper number of MAC and PHY control sap provider/users
+    // run initializeSap to create the proper number of MAC and PHY control sap provider/users
     rrc->InitializeSap();
 
     if (m_useIdealRrc)

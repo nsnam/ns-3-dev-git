@@ -180,7 +180,7 @@ RrMultiUserScheduler::SelectTxFormat()
 
 template <class Func>
 WifiTxVector
-RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
+RrMultiUserScheduler::GetTxVectorForUlMu(Func canBeSolicited)
 {
     NS_LOG_FUNCTION(this);
 
@@ -214,7 +214,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canbeSolicited)
     {
         NS_LOG_DEBUG("Next candidate STA (MAC=" << staIt->address << ", AID=" << staIt->aid << ")");
 
-        if (!canbeSolicited(*staIt))
+        if (!canBeSolicited(*staIt))
         {
             NS_LOG_DEBUG("Skipping station based on provided function object");
             staIt++;

@@ -580,7 +580,7 @@ class LteUePhy : public LtePhy
      * consecutive times.
      *
      */
-    void DoStartInSnycDetection();
+    void DoStartInSyncDetection();
 
     /**
      * \brief Radio link failure detection function

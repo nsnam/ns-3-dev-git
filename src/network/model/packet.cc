@@ -471,8 +471,8 @@ Packet::Print(std::ostream& os) const
                 os << item.tid.GetName();
                 break;
             }
-            os << " Fragment [" << item.currentTrimedFromStart << ":"
-               << (item.currentTrimedFromStart + item.currentSize) << "]";
+            os << " Fragment [" << item.currentTrimmedFromStart << ":"
+               << (item.currentTrimmedFromStart + item.currentSize) << "]";
         }
         else
         {
@@ -540,8 +540,8 @@ Packet::Print(std::ostream& os) const
               os << item.tid.GetName ();
               break;
             }
-          os << " Fragment [" << item.currentTrimedFromStart<<":"
-             << (item.currentTrimedFromStart + item.currentSize) << "]";
+          os << " Fragment [" << item.currentTrimmedFromStart<<":"
+             << (item.currentTrimmedFromStart + item.currentSize) << "]";
         }
       else
         {

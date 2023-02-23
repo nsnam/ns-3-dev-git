@@ -150,7 +150,7 @@ class EpcEnbApplication : public Application
     struct EpsFlowId_t
     {
         uint16_t m_rnti; ///< RNTI
-        uint8_t m_bid;   ///< Bid, the EPS Bearer IDentifier
+        uint8_t m_bid;   ///< Bid, the EPS Bearer Identifier
 
       public:
         EpsFlowId_t();
@@ -237,7 +237,7 @@ class EpcEnbApplication : public Application
      *
      * \param packet t
      * \param rnti maps to enbUeS1Id
-     * \param bid the EPS Bearer IDentifier
+     * \param bid the EPS Bearer Identifier
      */
     void SendToLteSocket(Ptr<Packet> packet, uint16_t rnti, uint8_t bid);
 
@@ -245,16 +245,16 @@ class EpcEnbApplication : public Application
      * Send a packet to the SGW via the S1-U interface
      *
      * \param packet packet to be sent
-     * \param teid the Tunnel Endpoint IDentifier
+     * \param teid the Tunnel Endpoint Identifier
      */
     void SendToS1uSocket(Ptr<Packet> packet, uint32_t teid);
 
     /**
      * internal method used for the actual setup of the S1 Bearer
      *
-     * \param teid the Tunnel Endpoint IDentifier
+     * \param teid the Tunnel Endpoint Identifier
      * \param rnti maps to enbUeS1Id
-     * \param bid the S1-U Bearer IDentifier
+     * \param bid the S1-U Bearer Identifier
      */
     void SetupS1Bearer(uint32_t teid, uint16_t rnti, uint8_t bid);
 

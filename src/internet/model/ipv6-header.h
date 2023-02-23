@@ -88,7 +88,7 @@ class Ipv6Header : public Header
         IPV6_EXT_ROUTING = 43,
         IPV6_EXT_FRAGMENTATION = 44,
         IPV6_EXT_CONFIDENTIALITY = 50,
-        IPV6_EXT_AUTHENTIFICATION = 51,
+        IPV6_EXT_AUTHENTICATION = 51,
         IPV6_ICMPV6 = 58,
         IPV6_EXT_END = 59,
         IPV6_EXT_DESTINATION = 60,

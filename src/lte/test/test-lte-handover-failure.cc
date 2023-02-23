@@ -110,7 +110,7 @@ class LteHandoverFailureTestCase : public TestCase
           m_handoverJoiningTimeout(handoverJoiningTimeout),
           m_handoverLeavingTimeout(handoverLeavingTimeout),
           m_targeteNodeBPosition(targeteNodeBPosition),
-          m_hasHandoverFailureOccured(false)
+          m_hasHandoverFailureOccurred(false)
     {
     }
 
@@ -198,8 +198,8 @@ class LteHandoverFailureTestCase : public TestCase
     uint8_t m_raResponseWindowSize; ///< window length for reception of RAR
     Time m_handoverJoiningTimeout;  ///< handover joining timeout duration at target eNodeB
     Time m_handoverLeavingTimeout;  ///< handover leaving timeout duration at source eNodeB
-    uint16_t m_targeteNodeBPosition;  ///< position of the target eNodeB
-    bool m_hasHandoverFailureOccured; ///< has handover failure occurred in simulation
+    uint16_t m_targeteNodeBPosition;   ///< position of the target eNodeB
+    bool m_hasHandoverFailureOccurred; ///< has handover failure occurred in simulation
 
 }; // end of class LteHandoverFailureTestCase
 
@@ -321,7 +321,7 @@ LteHandoverFailureTestCase::HandoverFailureMaxRach(std::string context,
                                                    uint16_t targetCellId)
 {
     NS_LOG_FUNCTION(this << context << imsi << rnti << targetCellId);
-    m_hasHandoverFailureOccured = true;
+    m_hasHandoverFailureOccurred = true;
 }
 
 void
@@ -331,7 +331,7 @@ LteHandoverFailureTestCase::HandoverFailureNoPreamble(std::string context,
                                                       uint16_t targetCellId)
 {
     NS_LOG_FUNCTION(this << context << imsi << rnti << targetCellId);
-    m_hasHandoverFailureOccured = true;
+    m_hasHandoverFailureOccurred = true;
 }
 
 void
@@ -341,7 +341,7 @@ LteHandoverFailureTestCase::HandoverFailureJoining(std::string context,
                                                    uint16_t targetCellId)
 {
     NS_LOG_FUNCTION(this << context << imsi << rnti << targetCellId);
-    m_hasHandoverFailureOccured = true;
+    m_hasHandoverFailureOccurred = true;
 }
 
 void
@@ -351,14 +351,14 @@ LteHandoverFailureTestCase::HandoverFailureLeaving(std::string context,
                                                    uint16_t targetCellId)
 {
     NS_LOG_FUNCTION(this << context << imsi << rnti << targetCellId);
-    m_hasHandoverFailureOccured = true;
+    m_hasHandoverFailureOccurred = true;
 }
 
 void
 LteHandoverFailureTestCase::DoTeardown()
 {
     NS_LOG_FUNCTION(this);
-    NS_TEST_ASSERT_MSG_EQ(m_hasHandoverFailureOccured, true, "Handover failure did not occur");
+    NS_TEST_ASSERT_MSG_EQ(m_hasHandoverFailureOccurred, true, "Handover failure did not occur");
 }
 
 /**

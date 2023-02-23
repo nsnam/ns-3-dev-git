@@ -1028,7 +1028,7 @@ class DsrOptionRerrUnreachHeader : public DsrOptionRerrHeader
    \endverbatim
  */
 
-class DsrOptionRerrUnsupportHeader : public DsrOptionRerrHeader
+class DsrOptionRerrUnsupportedHeader : public DsrOptionRerrHeader
 {
   public:
     /**
@@ -1044,11 +1044,11 @@ class DsrOptionRerrUnsupportHeader : public DsrOptionRerrHeader
     /**
      * \brief Constructor.
      */
-    DsrOptionRerrUnsupportHeader();
+    DsrOptionRerrUnsupportedHeader();
     /**
      * \brief Destructor.
      */
-    ~DsrOptionRerrUnsupportHeader() override;
+    ~DsrOptionRerrUnsupportedHeader() override;
     /**
      * \brief Set the route error source address
      * \param errorSrcAddress The error source address

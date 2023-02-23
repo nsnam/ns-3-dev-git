@@ -262,7 +262,7 @@ struct RlcPduListElement_s
 };
 
 /**
- * \brief See section 4.3.8 builDataListElement
+ * \brief See section 4.3.8 buildDataListElement
  * \struct BuildDataListElement_s
  */
 struct BuildDataListElement_s
