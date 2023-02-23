@@ -60,6 +60,9 @@ Changes from ns-3.38 to ns-3-dev
 * (lr-wpan) Block the reception of orphan notification commands to devices other than PAN coordinators or coordinators.
 * (lr-wpan) Block the reception of broadcast messages in the same device that issues it. This is done in both cases when the src address is either short or extended address.
 * (lr-wpan) Adds a new variable flag `m_coor` to the MAC to differentiate between coordinators and PAN coordinators.
+* (lte) Add support for DC-GBR. The member `QosBearerType_e` of the structure `LogicalChannelConfigListElement_s` is extended to include DC-GBR resource type. Based on this change, the method **IsGbr** of `EpsBearer`, is renamed to **GetResourceType**. LTE code using this method, is updated according to this change.
+* (lte) The `EpsBearer` is extended to include 3GPP Release 18 5QIs.
+* (lte) Add PDCP discard timer. If enabled using the attribute `EnablePdcpDiscarding`, in case that the buffering time (head-of-line delay) of a packet is greater than the PDB or a value set by the user, it will perform discarding at the moment of passing the PDCP SDU to RLC.
 
 ### Changes to build system
 
