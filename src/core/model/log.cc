@@ -277,10 +277,10 @@ LogComponent::Disable(const LogLevel level)
     m_levels &= ~level;
 }
 
-const char*
+std::string
 LogComponent::Name() const
 {
-    return m_name.c_str();
+    return m_name;
 }
 
 std::string
@@ -302,7 +302,7 @@ LogComponent::GetLevelLabel(const LogLevel level)
 }
 
 void
-LogComponentEnable(const char* name, LogLevel level)
+LogComponentEnable(const std::string& name, LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
     LogComponent::ComponentList::const_iterator i;
@@ -338,7 +338,7 @@ LogComponentEnableAll(LogLevel level)
 }
 
 void
-LogComponentDisable(const char* name, LogLevel level)
+LogComponentDisable(const std::string& name, LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
     for (LogComponent::ComponentList::const_iterator i = components->begin();
@@ -448,12 +448,11 @@ LogComponentPrintList()
 static bool
 ComponentExists(std::string componentName)
 {
-    const char* name = componentName.c_str();
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
     LogComponent::ComponentList::const_iterator i;
     for (i = components->begin(); i != components->end(); i++)
     {
-        if (i->first == name)
+        if (i->first == componentName)
         {
             return true;
         }
