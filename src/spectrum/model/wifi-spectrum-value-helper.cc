@@ -39,28 +39,11 @@ NS_LOG_COMPONENT_DEFINE("WifiSpectrumValueHelper");
 ///< Wifi Spectrum Model structure
 struct WifiSpectrumModelId
 {
-    /**
-     * Constructor
-     * \param f the frequency (in MHz)
-     * \param w the channel width (in MHz)
-     * \param b the width of each band (in Hz)
-     * \param g the guard band width (in MHz)
-     */
-    WifiSpectrumModelId(uint32_t f, uint16_t w, double b, uint16_t g);
     uint32_t m_centerFrequency; ///< center frequency (in MHz)
     uint16_t m_channelWidth;    ///< channel width (in MHz)
-    double m_bandBandwidth;     ///< width of each band (in Hz)
+    uint32_t m_bandBandwidth;   ///< width of each band (in Hz)
     uint16_t m_guardBandwidth;  ///< guard band width (in MHz)
 };
-
-WifiSpectrumModelId::WifiSpectrumModelId(uint32_t f, uint16_t w, double b, uint16_t g)
-    : m_centerFrequency(f),
-      m_channelWidth(w),
-      m_bandBandwidth(b),
-      m_guardBandwidth(g)
-{
-    NS_LOG_FUNCTION(this << f << w << b << g);
-}
 
 /**
  * Less than operator
@@ -93,7 +76,7 @@ WifiSpectrumValueHelper::GetSpectrumModel(uint32_t centerFrequency,
 {
     NS_LOG_FUNCTION(centerFrequency << channelWidth << bandBandwidth << guardBandwidth);
     Ptr<SpectrumModel> ret;
-    WifiSpectrumModelId key(centerFrequency, channelWidth, bandBandwidth, guardBandwidth);
+    WifiSpectrumModelId key{centerFrequency, channelWidth, bandBandwidth, guardBandwidth};
     std::map<WifiSpectrumModelId, Ptr<SpectrumModel>>::iterator it =
         g_wifiSpectrumModelMap.find(key);
     if (it != g_wifiSpectrumModelMap.end())
