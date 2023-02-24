@@ -2593,13 +2593,18 @@ Experiment::Run(const WifiHelper& helper,
                         MakeCallback(&DisassociationLog));
     }
 
+    std::string txop =
+        StaticCast<WifiNetDevice>(wifiNodes.Get(0)->GetDevice(0))->GetMac()->GetQosSupported()
+            ? "BE_Txop"
+            : "Txop";
     // Trace CW evolution
-    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/Txop/CwTrace",
+    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/" + txop +
+                        "/CwTrace",
                     MakeCallback(&CwTrace));
     // Trace backoff evolution
-    Config::Connect(
-        "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/Txop/BackoffTrace",
-        MakeCallback(&BackoffTrace));
+    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/" + txop +
+                        "/BackoffTrace",
+                    MakeCallback(&BackoffTrace));
     // Trace PHY Tx start events
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyTxBegin",
                     MakeCallback(&PhyTxTrace));
