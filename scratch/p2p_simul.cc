@@ -121,22 +121,28 @@ main(int argc, char* argv[])
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    senderApps.Start(Seconds(1.0));
+    senderApps.Start(Seconds(0.0));
     recvApps.Start(Seconds(0.0));
 
     senderApps.Stop(Seconds(runtime));
-    recvApps.Stop(Seconds(runtime + 20));
+    recvApps.Stop(Seconds(runtime));
 
     // Tracing
     p2pbottleneckhelper.EnablePcap("p2p_simul", dumbbellhelper.GetLeft()->GetDevice(0), false);
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
-    Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
+    // Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
 
     // AnimationInterface anim("../animwifi.xml");
-
-    Simulator::Stop(Seconds(runtime + 30));
+    Simulator::Stop(Seconds(runtime));
     Simulator::Run();
+
+    for (int i = 0; i < n_nodes; i++)
+    {
+        std::cout << "Avg. Goodput (Mbps) for flow " + std::to_string(i) + ": "
+                  << recvApps.Get(i)->GetObject<PacketSink>()->GetTotalRx() * 8.0 / (runtime * 1024 * 1024) << '\n';
+    }
+
     Simulator::Destroy();
 
     return 0;

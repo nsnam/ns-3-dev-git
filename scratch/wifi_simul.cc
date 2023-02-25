@@ -49,6 +49,7 @@
 
 #include "ns3/animation-interface.h"
 #include "ns3/applications-module.h"
+#include "ns3/command-line.h"
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/internet-stack-helper.h"
@@ -62,7 +63,6 @@
 #include "ns3/string.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
-#include "ns3/command-line.h"
 
 using namespace ns3;
 
@@ -131,10 +131,12 @@ void
 TraceDropRatio()
 {
     Config::ConnectWithoutContext(
-        "/NodeList/" + std::to_string(n_nodes) + "/DeviceList/1/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxBegin",
+        "/NodeList/" + std::to_string(n_nodes) +
+            "/DeviceList/1/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxBegin",
         MakeBoundCallback(&PhyRxBeginTrace));
     Config::ConnectWithoutContext(
-        "/NodeList/" + std::to_string(n_nodes) + "/DeviceList/1/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop",
+        "/NodeList/" + std::to_string(n_nodes) +
+            "/DeviceList/1/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop",
         MakeBoundCallback(&PhyRxDropTrace));
 }
 
@@ -281,25 +283,31 @@ main(int argc, char* argv[])
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    senderApps.Start(Seconds(1.0));
+    senderApps.Start(Seconds(0.0));
     recvApps.Start(Seconds(0.0));
 
     senderApps.Stop(Seconds(runtime));
-    recvApps.Stop(Seconds(runtime + 20));
+    recvApps.Stop(Seconds(runtime));
 
     // Tracing
     wifiPhy.EnablePcap("wifi_simul", apDevice);
 
     Simulator::Schedule(Seconds(1.001), &TraceCwnd);
-    Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
+    // Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
     Simulator::Schedule(Seconds(1.001), &TraceDropRatio);
 
     // AnimationInterface anim("../animwifi.xml");
-    Simulator::Stop(Seconds(runtime + 30));
+    Simulator::Stop(Seconds(runtime));
     Simulator::Run();
 
     std::cout << "Ratio of dropped packets on AP: " << dropped_Packets * 1.0 / total_Packets
               << '\n';
+
+    for (int i = 0; i < n_nodes; i++)
+    {
+        std::cout << "Avg. Goodput (Mbps) for flow " + std::to_string(i) + ": "
+                  << recvApps.Get(i)->GetObject<PacketSink>()->GetTotalRx() * 8.0 / (runtime * 1024 * 1024) << '\n';
+    }
 
     Simulator::Destroy();
 
