@@ -579,31 +579,6 @@ WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(double noiseFigureDb,
     return noisePsd;
 }
 
-Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateRfFilter(uint32_t centerFrequency,
-                                        uint16_t totalChannelWidth,
-                                        uint32_t bandBandwidth,
-                                        uint16_t guardBandwidth,
-                                        WifiSpectrumBand band)
-{
-    uint32_t startIndex = band.first;
-    uint32_t stopIndex = band.second;
-    NS_LOG_FUNCTION(centerFrequency << totalChannelWidth << bandBandwidth << guardBandwidth
-                                    << startIndex << stopIndex);
-    Ptr<SpectrumValue> c = Create<SpectrumValue>(
-        GetSpectrumModel(centerFrequency, totalChannelWidth, bandBandwidth, guardBandwidth));
-    Bands::const_iterator bit = c->ConstBandsBegin();
-    Values::iterator vit = c->ValuesBegin();
-    vit += startIndex;
-    bit += startIndex;
-    for (size_t i = startIndex; i <= stopIndex; i++, vit++, bit++)
-    {
-        *vit = 1;
-    }
-    NS_LOG_LOGIC("Added subbands " << startIndex << " to " << stopIndex << " to filter");
-    return c;
-}
-
 void
 WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
     Ptr<SpectrumValue> c,
@@ -914,22 +889,6 @@ WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity(double txPower, uint8
     (*txPsd)[channel + 10] = txPowerDensity * 1e-4;     // -40dB
 
     return txPsd;
-}
-
-Ptr<SpectrumValue>
-WifiSpectrumValue5MhzFactory::CreateRfFilter(uint8_t channel)
-{
-    Ptr<SpectrumValue> rf = Create<SpectrumValue>(g_WifiSpectrumModel5Mhz);
-
-    NS_ASSERT(channel >= 1);
-    NS_ASSERT(channel <= 13);
-
-    (*rf)[channel + 3] = 1;
-    (*rf)[channel + 4] = 1;
-    (*rf)[channel + 5] = 1;
-    (*rf)[channel + 6] = 1;
-
-    return rf;
 }
 
 bool

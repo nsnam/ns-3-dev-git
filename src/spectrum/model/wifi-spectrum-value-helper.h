@@ -233,24 +233,6 @@ class WifiSpectrumValueHelper
                                                               Ptr<SpectrumModel> spectrumModel);
 
     /**
-     * Create a spectral density corresponding to the RF filter
-     *
-     * \param centerFrequency the center frequency (MHz)
-     * \param totalChannelWidth the total channel width (MHz)
-     * \param bandBandwidth the width of each band (MHz)
-     * \param guardBandwidth the width of the guard band (MHz)
-     * \param band the pair of start and stop indexes that defines the band to be filtered
-     *
-     * \return a pointer to a SpectrumValue representing the RF filter applied
-     * to an received power spectral density
-     */
-    static Ptr<SpectrumValue> CreateRfFilter(uint32_t centerFrequency,
-                                             uint16_t totalChannelWidth,
-                                             uint32_t bandBandwidth,
-                                             uint16_t guardBandwidth,
-                                             WifiSpectrumBand band);
-
-    /**
      * Create a transmit power spectral density corresponding to OFDM
      * transmit spectrum mask requirements for 11a/11g/11n/11ac/11ax
      * Channel width may vary between 5, 10, 20, 40, 80, and 160 MHz.
@@ -383,16 +365,6 @@ class WifiSpectrumValue5MhzFactory
      * @return a Ptr to a newly created SpectrumValue
      */
     virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity(double txPower, uint8_t channel);
-    /**
-     * Creates a SpectrumValue instance which
-     * represents the frequency response of the RF filter which is used
-     * by a wifi device to receive signals when tuned to a particular channel
-     *
-     * @param channel the number of the channel (1 <= channel <= 13)
-     *
-     * @return a Ptr to a newly created SpectrumValue
-     */
-    virtual Ptr<SpectrumValue> CreateRfFilter(uint8_t channel);
 };
 
 /**
