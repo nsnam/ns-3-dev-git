@@ -21,6 +21,7 @@
 #include <ns3/applications-module.h>
 #include <ns3/core-module.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
+#include <ns3/ism-spectrum-value-helper.h>
 #include <ns3/log.h>
 #include <ns3/microwave-oven-spectrum-value-helper.h>
 #include <ns3/mobility-module.h>
@@ -35,7 +36,6 @@
 #include <ns3/spectrum-model-ism2400MHz-res1MHz.h>
 #include <ns3/waveform-generator-helper.h>
 #include <ns3/waveform-generator.h>
-#include <ns3/wifi-spectrum-value-helper.h>
 
 #include <iostream>
 #include <string>
@@ -196,7 +196,7 @@ main(int argc, char** argv)
     // Configure ofdm nodes
     ////////////////////////
 
-    WifiSpectrumValue5MhzFactory sf;
+    SpectrumValue5MhzFactory sf;
 
     double txPower = 0.1; // Watts
     uint32_t channelNumber = 4;

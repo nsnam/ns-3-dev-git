@@ -21,6 +21,7 @@
 #include <ns3/config.h>
 #include <ns3/data-rate.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
+#include <ns3/ism-spectrum-value-helper.h>
 #include <ns3/log.h>
 #include <ns3/math.h>
 #include <ns3/mobility-helper.h>
@@ -43,7 +44,6 @@
 #include <ns3/test.h>
 #include <ns3/uinteger.h>
 #include <ns3/waveform-generator.h>
-#include <ns3/wifi-spectrum-value-helper.h>
 
 #include <iomanip>
 #include <iostream>
@@ -170,7 +170,7 @@ SpectrumIdealPhyTestCase::DoRun()
     channelHelper.AddPropagationLoss(propLoss);
     Ptr<SpectrumChannel> channel = channelHelper.Create();
 
-    WifiSpectrumValue5MhzFactory sf;
+    SpectrumValue5MhzFactory sf;
 
     uint32_t channelNumber = 1;
     Ptr<SpectrumValue> txPsd = sf.CreateTxPowerSpectralDensity(txPowerW, channelNumber);

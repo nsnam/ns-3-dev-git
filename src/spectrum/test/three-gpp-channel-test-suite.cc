@@ -21,6 +21,7 @@
 #include "ns3/config.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/double.h"
+#include "ns3/ism-spectrum-value-helper.h"
 #include "ns3/isotropic-antenna-model.h"
 #include "ns3/log.h"
 #include "ns3/node-container.h"
@@ -34,7 +35,6 @@
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/uinteger.h"
 #include "ns3/uniform-planar-array.h"
-#include "ns3/wifi-spectrum-value-helper.h"
 
 using namespace ns3;
 
@@ -636,7 +636,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     DoBeamforming(rxDev, rxAntenna, txDev, txAntenna);
 
     // create the tx psd
-    WifiSpectrumValue5MhzFactory sf;
+    SpectrumValue5MhzFactory sf;
     double txPower = 0.1; // Watts
     uint32_t channelNumber = 1;
     Ptr<SpectrumValue> txPsd = sf.CreateTxPowerSpectralDensity(txPower, channelNumber);
