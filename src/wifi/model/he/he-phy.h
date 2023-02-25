@@ -451,6 +451,21 @@ class HePhy : public VhtPhy
                                                           HeRu::SubcarrierRange subcarrierRange,
                                                           uint8_t bandIndex = 0);
 
+    /// Map a spectrum band associated with an RU to the RU specification
+    using RuBands = std::map<WifiSpectrumBandIndices, HeRu::RuSpec>;
+
+    /**
+     * Static function to compute the RU bands that belong to a given channel width.
+     *
+     * \param phy the PHY that issued the function call
+     * \param channelWidth the channelWidth the channel width in MHz
+     * \param guardBandwidth width of the guard band in MHz
+     * \returns the computed RU bands that belong to the channel width
+     */
+    static RuBands GetRuBands(Ptr<const WifiPhy> phy,
+                              uint16_t channelWidth,
+                              uint16_t guardBandwidth);
+
   protected:
     PhyFieldRxStatus ProcessSig(Ptr<Event> event,
                                 PhyFieldRxStatus status,

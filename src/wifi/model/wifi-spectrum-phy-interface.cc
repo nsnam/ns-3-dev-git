@@ -156,12 +156,12 @@ WifiSpectrumPhyInterface::GetChannelWidth() const
 }
 
 void
-WifiSpectrumPhyInterface::SetRuBands(WifiSpectrumPhyInterface::RuBands&& ruBands)
+WifiSpectrumPhyInterface::SetRuBands(HePhy::RuBands&& ruBands)
 {
     m_ruBands = std::move(ruBands);
 }
 
-const WifiSpectrumPhyInterface::RuBands&
+const HePhy::RuBands&
 WifiSpectrumPhyInterface::GetRuBands() const
 {
     return m_ruBands;

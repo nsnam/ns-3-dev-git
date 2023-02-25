@@ -22,6 +22,7 @@
 
 #include "spectrum-wifi-phy.h"
 
+#include "ns3/he-phy.h"
 #include "ns3/spectrum-phy.h"
 
 namespace ns3
@@ -125,21 +126,18 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
                             uint32_t bandBandwidth,
                             uint16_t guardBandwidth);
 
-    /// Map a spectrum band associated with an RU to the RU specification
-    using RuBands = std::map<WifiSpectrumBandIndices, HeRu::RuSpec>;
-
     /**
      * Set the HE RU spectrum bands handled by this interface (if any)
      *
      * \param ruBands the HE RU spectrum bands
      */
-    void SetRuBands(RuBands&& ruBands);
+    void SetRuBands(HePhy::RuBands&& ruBands);
     /**
      * Get the HE RU spectrum bands handled by this interface
      *
      * \return the HE RU spectrum bands
      */
-    const RuBands& GetRuBands() const;
+    const HePhy::RuBands& GetRuBands() const;
 
   private:
     void DoDispose() override;
@@ -152,7 +150,7 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     uint16_t m_channelWidth;                    ///< channel width in MHz
     Ptr<const SpectrumModel> m_rxSpectrumModel; ///< receive spectrum model
 
-    RuBands m_ruBands; /**< Store all the distinct spectrum bands associated with every RU */
+    HePhy::RuBands m_ruBands; /**< Store all the distinct spectrum bands associated with every RU */
 };
 
 } // namespace ns3

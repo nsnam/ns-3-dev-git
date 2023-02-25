@@ -145,54 +145,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands(std::optional<int32_t> indicesOff
     }
     if (GetStandard() >= WIFI_STANDARD_80211ax)
     {
-        // For a given RU type, some RUs over a channel occupy the same tones as
-        // the corresponding RUs over a subchannel, while some others not. For instance,
-        // the first nine 26-tone RUs over an 80 MHz channel occupy the same tones as
-        // the first nine 26-tone RUs over the lowest 40 MHz subchannel. Therefore, we
-        // need to store all the bands in a set (which removes duplicates) and then
-        // pass the elements in the set to AddBand (to which we cannot pass duplicates)
-        WifiSpectrumPhyInterface::RuBands ruBandsMap{};
-        for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
-        {
-            for (uint32_t i = 0; i < (channelWidth / bw); ++i)
-            {
-                for (uint32_t type = 0; type < 7; type++)
-                {
-                    HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
-                    std::size_t nRus = HeRu::GetNRus(bw, ruType);
-                    for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
-                    {
-                        HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
-                        std::size_t nRus = HeRu::GetNRus(bw, ruType);
-                        for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
-                        {
-                            HeRu::SubcarrierGroup group =
-                                HeRu::GetSubcarrierGroup(bw, ruType, phyIndex);
-                            HeRu::SubcarrierRange subcarrierRange =
-                                std::make_pair(group.front().first, group.back().second);
-                            const auto band =
-                                HePhy::ConvertHeRuSubcarriers(bw,
-                                                              GetGuardBandwidth(channelWidth),
-                                                              GetSubcarrierSpacing(),
-                                                              subcarrierRange,
-                                                              i);
-                            std::size_t index =
-                                (bw == 160 && phyIndex > nRus / 2 ? phyIndex - nRus / 2 : phyIndex);
-                            bool primary80IsLower80 =
-                                (GetOperatingChannel().GetPrimaryChannelIndex(20) < bw / 40);
-                            bool primary80 = (bw < 160 || ruType == HeRu::RU_2x996_TONE ||
-                                              (primary80IsLower80 && phyIndex <= nRus / 2) ||
-                                              (!primary80IsLower80 && phyIndex > nRus / 2));
-                            HeRu::RuSpec ru(ruType, index, primary80);
-                            NS_ABORT_IF(ru.GetPhyIndex(bw,
-                                                       GetOperatingChannel().GetPrimaryChannelIndex(
-                                                           20)) != phyIndex);
-                            ruBandsMap.insert({band, ru});
-                        }
-                    }
-                }
-            }
-        }
+        auto&& ruBandsMap = HePhy::GetRuBands(this, channelWidth, GetGuardBandwidth(channelWidth));
         for (const auto& bandRuPair : ruBandsMap)
         {
             ruBands.push_back(bandRuPair.first);
