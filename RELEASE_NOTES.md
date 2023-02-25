@@ -41,6 +41,7 @@ Release 3-dev
 - (internet) - `NeighborCacheHelper::PopulateNeighborCache` is now robust against missing IPv4 or IPv6 stack in nodes.
 - (core) !1236 - Deprecation warnings are silenced while calling `NS_OBJECT_ENSURE_REGISTERED`
 - (wifi) Fixed multiple issues about setting the TXOP holder
+- (wifi) #861 - bianchi validation script can't run with 11ax
 
 Release 3.37
 ------------
