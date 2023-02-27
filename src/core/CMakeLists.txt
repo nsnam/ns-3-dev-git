@@ -313,6 +313,7 @@ set(header_files
     model/watchdog.h
     model/realtime-simulator-impl.h
     model/wall-clock-synchronizer.h
+    model/val-array.h
 )
 
 set(test_sources
@@ -348,6 +349,7 @@ set(test_sources
     test/type-id-test-suite.cc
     test/type-traits-test-suite.cc
     test/watchdog-test-suite.cc
+    test/val-array-test-suite.cc
 )
 
 # Build core lib
