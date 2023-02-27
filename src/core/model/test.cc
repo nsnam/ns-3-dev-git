@@ -19,6 +19,7 @@
 
 #include "abort.h"
 #include "assert.h"
+#include "config.h"
 #include "des-metrics.h"
 #include "log.h"
 #include "singleton.h"
@@ -351,6 +352,7 @@ TestCase::Run(TestRunnerImpl* runner)
     NS_LOG_FUNCTION(this << runner);
     m_result = new Result();
     m_runner = runner;
+    Config::Reset();
     DoSetup();
     m_result->clock.Start();
     for (auto i = m_children.begin(); i != m_children.end(); ++i)
@@ -366,6 +368,7 @@ TestCase::Run(TestRunnerImpl* runner)
 out:
     m_result->clock.End();
     DoTeardown();
+    Config::Reset();
     m_runner = nullptr;
 }
 

@@ -1234,7 +1234,12 @@ class TestCase
 
     // methods called by TestRunnerImpl
     /**
-     * \brief Actually run this TestCase
+     * \brief Executes DoSetup(), DoRun(), and DoTeardown() for the TestCase
+     *
+     * Config::Reset() is called at both the beginning and end of this method
+     * so that any changes to attribute default values (Config::SetDefault(...))
+     * or global values (e.g., RngRun) that are made within the test case's
+     * DoRun() method do not propagate beyond the scope of running the TestCase.
      *
      * \param [in] runner The test runner implementation.
      */
