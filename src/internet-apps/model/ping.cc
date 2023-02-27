@@ -69,7 +69,7 @@ Ping::GetTypeId()
             .AddAttribute("VerboseMode",
                           "Configure verbose, quiet, or silent output",
                           EnumValue(VerboseMode::VERBOSE),
-                          MakeEnumAccessor(&Ping::m_verbose),
+                          MakeEnumAccessor<VerboseMode>(&Ping::m_verbose),
                           MakeEnumChecker(VerboseMode::VERBOSE,
                                           "Verbose",
                                           VerboseMode::QUIET,

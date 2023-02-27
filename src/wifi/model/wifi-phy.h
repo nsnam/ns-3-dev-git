@@ -887,7 +887,7 @@ class WifiPhy : public Object
     using ChannelTuple =
         std::tuple<uint8_t /* channel number */,
                    uint16_t /* channel width */,
-                   int /* WifiPhyBand */,
+                   WifiPhyBand /* WifiPhyBand */,
                    uint8_t /* primary20 index*/>; //!< Tuple identifying an operating channel
 
     /**

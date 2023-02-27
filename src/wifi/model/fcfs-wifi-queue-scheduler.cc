@@ -66,19 +66,20 @@ NS_OBJECT_ENSURE_REGISTERED(FcfsWifiQueueScheduler);
 TypeId
 FcfsWifiQueueScheduler::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::FcfsWifiQueueScheduler")
-                            .SetParent<WifiMacQueueSchedulerImpl<Time>>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<FcfsWifiQueueScheduler>()
-                            .AddAttribute("DropPolicy",
-                                          "Upon enqueue with full queue, drop oldest (DropOldest) "
-                                          "or newest (DropNewest) packet",
-                                          EnumValue(DROP_NEWEST),
-                                          MakeEnumAccessor(&FcfsWifiQueueScheduler::m_dropPolicy),
-                                          MakeEnumChecker(FcfsWifiQueueScheduler::DROP_OLDEST,
-                                                          "DropOldest",
-                                                          FcfsWifiQueueScheduler::DROP_NEWEST,
-                                                          "DropNewest"));
+    static TypeId tid =
+        TypeId("ns3::FcfsWifiQueueScheduler")
+            .SetParent<WifiMacQueueSchedulerImpl<Time>>()
+            .SetGroupName("Wifi")
+            .AddConstructor<FcfsWifiQueueScheduler>()
+            .AddAttribute("DropPolicy",
+                          "Upon enqueue with full queue, drop oldest (DropOldest) "
+                          "or newest (DropNewest) packet",
+                          EnumValue(DROP_NEWEST),
+                          MakeEnumAccessor<DropPolicy>(&FcfsWifiQueueScheduler::m_dropPolicy),
+                          MakeEnumChecker(FcfsWifiQueueScheduler::DROP_OLDEST,
+                                          "DropOldest",
+                                          FcfsWifiQueueScheduler::DROP_NEWEST,
+                                          "DropNewest"));
     return tid;
 }
 

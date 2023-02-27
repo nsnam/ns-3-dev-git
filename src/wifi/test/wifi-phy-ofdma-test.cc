@@ -822,13 +822,13 @@ TestDlOfdmaPhyTransmission::RunOne()
                                                                       WIFI_PHY_BAND_5GHZ));
 
     m_phyAp->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta1->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta2->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta3->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
     Simulator::Schedule(Seconds(0.5), &TestDlOfdmaPhyTransmission::ResetResults, this);
 
@@ -1922,7 +1922,7 @@ TestUlOfdmaPpduUid::DoSetup()
                                                                       WIFI_STANDARD_80211ax,
                                                                       WIFI_PHY_BAND_5GHZ));
     m_phyAp->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});
     m_phyAp->SetDevice(apDev);
     m_phyAp->TraceConnectWithoutContext("TxPpduUid",
                                         MakeCallback(&TestUlOfdmaPpduUid::TxPpduAp, this));
@@ -1944,7 +1944,7 @@ TestUlOfdmaPpduUid::DoSetup()
     m_phySta1->AddChannel(spectrumChannel);
     m_phySta1->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phySta1->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta1->SetDevice(sta1Dev);
     m_phySta1->TraceConnectWithoutContext("TxPpduUid",
                                           MakeCallback(&TestUlOfdmaPpduUid::TxPpduSta1, this));
@@ -1964,7 +1964,7 @@ TestUlOfdmaPpduUid::DoSetup()
     m_phySta2->AddChannel(spectrumChannel);
     m_phySta2->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phySta2->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta2->SetDevice(sta2Dev);
     m_phySta2->TraceConnectWithoutContext("TxPpduUid",
                                           MakeCallback(&TestUlOfdmaPpduUid::TxPpduSta2, this));
@@ -4124,13 +4124,13 @@ TestUlOfdmaPhyTransmission::RunOne()
                                                                       WIFI_PHY_BAND_5GHZ));
 
     m_phyAp->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta1->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta2->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
     m_phySta3->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, m_channelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
     Time delay = Seconds(0.0);
     Simulator::Schedule(delay, &TestUlOfdmaPhyTransmission::Reset, this);
@@ -5095,7 +5095,7 @@ TestPhyPaddingExclusion::DoSetup()
                                                                       WIFI_PHY_BAND_5GHZ));
 
     m_phyAp->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});
     m_phyAp->SetReceiveOkCallback(MakeCallback(&TestPhyPaddingExclusion::RxSuccess, this));
     m_phyAp->SetReceiveErrorCallback(MakeCallback(&TestPhyPaddingExclusion::RxFailure, this));
     Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel>();
@@ -5119,7 +5119,7 @@ TestPhyPaddingExclusion::DoSetup()
     m_phySta1->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phySta1->AssignStreams(streamNumber);
     m_phySta1->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});
     Ptr<ConstantPositionMobilityModel> sta1Mobility = CreateObject<ConstantPositionMobilityModel>();
     m_phySta1->SetMobility(sta1Mobility);
     sta1Dev->SetPhy(m_phySta1);
@@ -5140,7 +5140,7 @@ TestPhyPaddingExclusion::DoSetup()
     m_phySta2->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phySta2->AssignStreams(streamNumber);
     m_phySta2->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});
     Ptr<ConstantPositionMobilityModel> sta2Mobility = CreateObject<ConstantPositionMobilityModel>();
     m_phySta2->SetMobility(sta2Mobility);
     sta2Dev->SetPhy(m_phySta2);

@@ -328,7 +328,7 @@ void
 InterferenceHelperSequenceTest::SwitchCh(Ptr<WifiNetDevice> dev)
 {
     Ptr<WifiPhy> p = dev->GetPhy();
-    p->SetOperatingChannel(WifiPhy::ChannelTuple{40, 0, (int)(WIFI_PHY_BAND_5GHZ), 0});
+    p->SetOperatingChannel(WifiPhy::ChannelTuple{40, 0, WIFI_PHY_BAND_5GHZ, 0});
 }
 
 Ptr<Node>
@@ -1772,8 +1772,8 @@ Bug2831TestCase::~Bug2831TestCase()
 void
 Bug2831TestCase::ChangeSupportedChannelWidth()
 {
-    m_apPhy->SetOperatingChannel(WifiPhy::ChannelTuple{38, 40, (int)(WIFI_PHY_BAND_5GHZ), 0});
-    m_staPhy->SetOperatingChannel(WifiPhy::ChannelTuple{38, 40, (int)(WIFI_PHY_BAND_5GHZ), 0});
+    m_apPhy->SetOperatingChannel(WifiPhy::ChannelTuple{38, 40, WIFI_PHY_BAND_5GHZ, 0});
+    m_staPhy->SetOperatingChannel(WifiPhy::ChannelTuple{38, 40, WIFI_PHY_BAND_5GHZ, 0});
 }
 
 void
@@ -1843,7 +1843,7 @@ Bug2831TestCase::DoRun()
     m_apPhy->SetMobility(apMobility);
     m_apPhy->SetDevice(apDev);
     m_apPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
-    m_apPhy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, (int)(WIFI_PHY_BAND_5GHZ), 0});
+    m_apPhy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, WIFI_PHY_BAND_5GHZ, 0});
 
     ObjectFactory mac;
     mac.SetTypeId("ns3::ApWifiMac");
@@ -1884,7 +1884,7 @@ Bug2831TestCase::DoRun()
     m_staPhy->SetMobility(staMobility);
     m_staPhy->SetDevice(apDev);
     m_staPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
-    m_staPhy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, (int)(WIFI_PHY_BAND_5GHZ), 0});
+    m_staPhy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, WIFI_PHY_BAND_5GHZ, 0});
 
     mac.SetTypeId("ns3::StaWifiMac");
     auto staMac = mac.Create<WifiMac>();

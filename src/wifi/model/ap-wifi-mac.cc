@@ -719,7 +719,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         mldCapabilities.emplace();
         mldCapabilities->maxNSimultaneousLinks = GetNLinks() - 1; // assuming STR for now
         mldCapabilities->srsSupport = 0;
-        EnumValue negSupport;
+        EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
         ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
         mldCapabilities->tidToLinkMappingSupport = negSupport.Get();
         mldCapabilities->freqSepForStrApMld = 0; // not supported yet
@@ -1978,7 +1978,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                     return failure("Incorrect directions in TID-to-Link Mapping IEs");
                 }
 
-                EnumValue negSupport;
+                EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
                 ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
                 if (negSupport.Get() == 0)

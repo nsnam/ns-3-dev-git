@@ -48,21 +48,22 @@ OkumuraHataPropagationLossModel::GetTypeId()
                           DoubleValue(2160e6),
                           MakeDoubleAccessor(&OkumuraHataPropagationLossModel::m_frequency),
                           MakeDoubleChecker<double>())
-            .AddAttribute("Environment",
-                          "Environment Scenario",
-                          EnumValue(UrbanEnvironment),
-                          MakeEnumAccessor(&OkumuraHataPropagationLossModel::m_environment),
-                          MakeEnumChecker(UrbanEnvironment,
-                                          "Urban",
-                                          SubUrbanEnvironment,
-                                          "SubUrban",
-                                          OpenAreasEnvironment,
-                                          "OpenAreas"))
+            .AddAttribute(
+                "Environment",
+                "Environment Scenario",
+                EnumValue(UrbanEnvironment),
+                MakeEnumAccessor<EnvironmentType>(&OkumuraHataPropagationLossModel::m_environment),
+                MakeEnumChecker(UrbanEnvironment,
+                                "Urban",
+                                SubUrbanEnvironment,
+                                "SubUrban",
+                                OpenAreasEnvironment,
+                                "OpenAreas"))
             .AddAttribute(
                 "CitySize",
                 "Dimension of the city",
                 EnumValue(LargeCity),
-                MakeEnumAccessor(&OkumuraHataPropagationLossModel::m_citySize),
+                MakeEnumAccessor<CitySize>(&OkumuraHataPropagationLossModel::m_citySize),
                 MakeEnumChecker(SmallCity, "Small", MediumCity, "Medium", LargeCity, "Large"));
     return tid;
 }

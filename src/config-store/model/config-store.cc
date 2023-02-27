@@ -56,7 +56,7 @@ ConfigStore::GetTypeId()
             .AddAttribute("Mode",
                           "Configuration mode",
                           EnumValue(ConfigStore::NONE),
-                          MakeEnumAccessor(&ConfigStore::SetMode),
+                          MakeEnumAccessor<Mode>(&ConfigStore::SetMode),
                           MakeEnumChecker(ConfigStore::NONE,
                                           "None",
                                           ConfigStore::LOAD,
@@ -72,7 +72,7 @@ ConfigStore::GetTypeId()
                 "FileFormat",
                 "Type of file format",
                 EnumValue(ConfigStore::RAW_TEXT),
-                MakeEnumAccessor(&ConfigStore::SetFileFormat),
+                MakeEnumAccessor<FileFormat>(&ConfigStore::SetFileFormat),
                 MakeEnumChecker(ConfigStore::RAW_TEXT, "RawText", ConfigStore::XML, "Xml"))
             .AddAttribute("SaveDeprecated",
                           "Save DEPRECATED attributes",

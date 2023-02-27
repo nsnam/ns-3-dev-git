@@ -135,7 +135,7 @@ TapBridge::GetTypeId()
             .AddAttribute("Mode",
                           "The operating and configuration mode to use.",
                           EnumValue(USE_LOCAL),
-                          MakeEnumAccessor(&TapBridge::SetMode),
+                          MakeEnumAccessor<Mode>(&TapBridge::SetMode),
                           MakeEnumChecker(CONFIGURE_LOCAL,
                                           "ConfigureLocal",
                                           USE_LOCAL,

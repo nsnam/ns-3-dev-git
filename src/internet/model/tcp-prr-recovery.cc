@@ -35,15 +35,16 @@ NS_OBJECT_ENSURE_REGISTERED(TcpPrrRecovery);
 TypeId
 TcpPrrRecovery::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::TcpPrrRecovery")
-                            .SetParent<TcpClassicRecovery>()
-                            .AddConstructor<TcpPrrRecovery>()
-                            .SetGroupName("Internet")
-                            .AddAttribute("ReductionBound",
-                                          "Type of Reduction Bound",
-                                          EnumValue(SSRB),
-                                          MakeEnumAccessor(&TcpPrrRecovery::m_reductionBoundMode),
-                                          MakeEnumChecker(CRB, "CRB", SSRB, "SSRB"));
+    static TypeId tid =
+        TypeId("ns3::TcpPrrRecovery")
+            .SetParent<TcpClassicRecovery>()
+            .AddConstructor<TcpPrrRecovery>()
+            .SetGroupName("Internet")
+            .AddAttribute("ReductionBound",
+                          "Type of Reduction Bound",
+                          EnumValue(SSRB),
+                          MakeEnumAccessor<ReductionBound_t>(&TcpPrrRecovery::m_reductionBoundMode),
+                          MakeEnumChecker(CRB, "CRB", SSRB, "SSRB"));
     return tid;
 }
 

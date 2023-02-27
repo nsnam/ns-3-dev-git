@@ -287,10 +287,10 @@ InterferenceExperiment::Run(InterferenceExperiment::Input input)
     devRx->SetPhy(rx);
     nodeRx->AddDevice(devRx);
 
-    m_txA->SetOperatingChannel(WifiPhy::ChannelTuple{input.channelA, 0, (int)(input.band), 0});
-    m_txB->SetOperatingChannel(WifiPhy::ChannelTuple{input.channelB, 0, (int)(input.band), 0});
+    m_txA->SetOperatingChannel(WifiPhy::ChannelTuple{input.channelA, 0, input.band, 0});
+    m_txB->SetOperatingChannel(WifiPhy::ChannelTuple{input.channelB, 0, input.band, 0});
     rx->SetOperatingChannel(
-        WifiPhy::ChannelTuple{std::max(input.channelA, input.channelB), 0, (int)(input.band), 0});
+        WifiPhy::ChannelTuple{std::max(input.channelA, input.channelB), 0, input.band, 0});
 
     rx->TraceConnectWithoutContext("PhyRxDrop",
                                    MakeCallback(&InterferenceExperiment::PacketDropped, this));

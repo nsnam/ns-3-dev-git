@@ -150,7 +150,7 @@ main(int argc, char* argv[])
     WifiMacHelper mac;
     WifiHelper wifi;
     Ssid ssid = Ssid("ns3");
-    TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> channelValue;
+    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue> channelValue;
 
     const auto& [staStandard, staBand] = ConvertStringToStandardAndBand(staVersion);
     wifi.SetStandard(staStandard);

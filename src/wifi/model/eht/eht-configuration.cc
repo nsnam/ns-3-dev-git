@@ -98,7 +98,8 @@ EhtConfiguration::GetTypeId()
                 "TidToLinkMappingNegSupport",
                 "TID-to-Link Mapping Negotiation Support.",
                 EnumValue(WifiTidToLinkMappingNegSupport::WIFI_TID_TO_LINK_MAPPING_ANY_LINK_SET),
-                MakeEnumAccessor(&EhtConfiguration::m_tidLinkMappingSupport),
+                MakeEnumAccessor<WifiTidToLinkMappingNegSupport>(
+                    &EhtConfiguration::m_tidLinkMappingSupport),
                 MakeEnumChecker(
                     WifiTidToLinkMappingNegSupport::WIFI_TID_TO_LINK_MAPPING_NOT_SUPPORTED,
                     "NOT_SUPPORTED",

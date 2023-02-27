@@ -67,7 +67,8 @@ LteSimpleHelper::GetTypeId()
                             .AddAttribute("RlcEntity",
                                           "Specify which type of RLC will be used. ",
                                           EnumValue(RLC_UM),
-                                          MakeEnumAccessor(&LteSimpleHelper::m_lteRlcEntityType),
+                                          MakeEnumAccessor<LteRlcEntityType_t>(
+                                              &LteSimpleHelper::m_lteRlcEntityType),
                                           MakeEnumChecker(RLC_UM, "RlcUm", RLC_AM, "RlcAm"));
     return tid;
 }

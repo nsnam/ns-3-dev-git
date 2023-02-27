@@ -62,7 +62,8 @@ RealtimeSimulatorImpl::GetTypeId()
                 "SynchronizationMode",
                 "What to do if the simulation cannot keep up with real time.",
                 EnumValue(SYNC_BEST_EFFORT),
-                MakeEnumAccessor(&RealtimeSimulatorImpl::SetSynchronizationMode),
+                MakeEnumAccessor<SynchronizationMode>(
+                    &RealtimeSimulatorImpl::SetSynchronizationMode),
                 MakeEnumChecker(SYNC_BEST_EFFORT, "BestEffort", SYNC_HARD_LIMIT, "HardLimit"))
             .AddAttribute("HardLimit",
                           "Maximum acceptable real-time jitter (used in conjunction with "

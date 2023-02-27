@@ -106,7 +106,7 @@ FdNetDevice::GetTypeId()
             .AddAttribute("EncapsulationMode",
                           "The link-layer encapsulation type to use.",
                           EnumValue(DIX),
-                          MakeEnumAccessor(&FdNetDevice::m_encapMode),
+                          MakeEnumAccessor<EncapsulationMode>(&FdNetDevice::m_encapMode),
                           MakeEnumChecker(DIX, "Dix", LLC, "Llc", DIXPI, "DixPi"))
             .AddAttribute("RxQueueSize",
                           "Maximum size of the read queue.  "

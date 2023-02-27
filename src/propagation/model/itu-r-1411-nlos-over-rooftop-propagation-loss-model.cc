@@ -48,22 +48,23 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId()
                 DoubleValue(2160e6),
                 MakeDoubleAccessor(&ItuR1411NlosOverRooftopPropagationLossModel::SetFrequency),
                 MakeDoubleChecker<double>())
-            .AddAttribute(
-                "Environment",
-                "Environment Scenario",
-                EnumValue(UrbanEnvironment),
-                MakeEnumAccessor(&ItuR1411NlosOverRooftopPropagationLossModel::m_environment),
-                MakeEnumChecker(UrbanEnvironment,
-                                "Urban",
-                                SubUrbanEnvironment,
-                                "SubUrban",
-                                OpenAreasEnvironment,
-                                "OpenAreas"))
+            .AddAttribute("Environment",
+                          "Environment Scenario",
+                          EnumValue(UrbanEnvironment),
+                          MakeEnumAccessor<EnvironmentType>(
+                              &ItuR1411NlosOverRooftopPropagationLossModel::m_environment),
+                          MakeEnumChecker(UrbanEnvironment,
+                                          "Urban",
+                                          SubUrbanEnvironment,
+                                          "SubUrban",
+                                          OpenAreasEnvironment,
+                                          "OpenAreas"))
             .AddAttribute(
                 "CitySize",
                 "Dimension of the city",
                 EnumValue(LargeCity),
-                MakeEnumAccessor(&ItuR1411NlosOverRooftopPropagationLossModel::m_citySize),
+                MakeEnumAccessor<CitySize>(
+                    &ItuR1411NlosOverRooftopPropagationLossModel::m_citySize),
                 MakeEnumChecker(SmallCity, "Small", MediumCity, "Medium", LargeCity, "Large"))
             .AddAttribute(
                 "RooftopLevel",

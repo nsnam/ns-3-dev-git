@@ -88,9 +88,15 @@ WifiPhy::GetTypeId()
                 "Note that the channel width can be left unspecified (0) if the channel "
                 "number uniquely identify a frequency channel for the given standard and band.",
                 StringValue("{0, 0, BAND_UNSPECIFIED, 0}"),
-                MakeTupleAccessor<UintegerValue, UintegerValue, EnumValue, UintegerValue>(
-                    (void(WifiPhy::*)(const ChannelTuple&)) & WifiPhy::SetOperatingChannel),
-                MakeTupleChecker<UintegerValue, UintegerValue, EnumValue, UintegerValue>(
+                MakeTupleAccessor<UintegerValue,
+                                  UintegerValue,
+                                  EnumValue<WifiPhyBand>,
+                                  UintegerValue>((void(WifiPhy::*)(const ChannelTuple&)) &
+                                                 WifiPhy::SetOperatingChannel),
+                MakeTupleChecker<UintegerValue,
+                                 UintegerValue,
+                                 EnumValue<WifiPhyBand>,
+                                 UintegerValue>(
                     MakeUintegerChecker<uint8_t>(0, 233),
                     MakeUintegerChecker<uint16_t>(0, 160),
                     MakeEnumChecker(WifiPhyBand::WIFI_PHY_BAND_2_4GHZ,
@@ -1175,9 +1181,9 @@ WifiPhy::DoChannelSwitch()
     // Update unspecified parameters with default values
     {
         auto& [number, width, band, primary20] = m_channelSettings;
-        if (band == static_cast<int>(WIFI_PHY_BAND_UNSPECIFIED))
+        if (band == WIFI_PHY_BAND_UNSPECIFIED)
         {
-            band = static_cast<int>(GetDefaultPhyBand(m_standard));
+            band = GetDefaultPhyBand(m_standard);
         }
         if (width == 0 && number == 0)
         {

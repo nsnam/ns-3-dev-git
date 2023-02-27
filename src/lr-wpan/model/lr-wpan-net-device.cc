@@ -68,15 +68,16 @@ LrWpanNetDevice::GetTypeId()
                           BooleanValue(true),
                           MakeBooleanAccessor(&LrWpanNetDevice::m_useAcks),
                           MakeBooleanChecker())
-            .AddAttribute("PseudoMacAddressMode",
-                          "Build the pseudo-MAC Address according to RFC 4944 or RFC 6282 "
-                          "(default: RFC 6282).",
-                          EnumValue(LrWpanNetDevice::RFC6282),
-                          MakeEnumAccessor(&LrWpanNetDevice::m_pseudoMacMode),
-                          MakeEnumChecker(LrWpanNetDevice::RFC6282,
-                                          "RFC 6282 (don't use PanId)",
-                                          LrWpanNetDevice::RFC4944,
-                                          "RFC 4944 (use PanId)"));
+            .AddAttribute(
+                "PseudoMacAddressMode",
+                "Build the pseudo-MAC Address according to RFC 4944 or RFC 6282 "
+                "(default: RFC 6282).",
+                EnumValue(LrWpanNetDevice::RFC6282),
+                MakeEnumAccessor<PseudoMacAddressMode_e>(&LrWpanNetDevice::m_pseudoMacMode),
+                MakeEnumChecker(LrWpanNetDevice::RFC6282,
+                                "RFC 6282 (don't use PanId)",
+                                LrWpanNetDevice::RFC4944,
+                                "RFC 4944 (use PanId)"));
     return tid;
 }
 

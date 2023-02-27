@@ -160,7 +160,7 @@ RateErrorModel::GetTypeId()
             .AddAttribute("ErrorUnit",
                           "The error unit",
                           EnumValue(ERROR_UNIT_BYTE),
-                          MakeEnumAccessor(&RateErrorModel::m_unit),
+                          MakeEnumAccessor<ErrorUnit>(&RateErrorModel::m_unit),
                           MakeEnumChecker(ERROR_UNIT_BIT,
                                           "ERROR_UNIT_BIT",
                                           ERROR_UNIT_BYTE,

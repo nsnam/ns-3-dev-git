@@ -38,18 +38,18 @@ ProbabilisticV2vUrbanChannelConditionModel::GetTypeId()
             .SetParent<ThreeGppChannelConditionModel>()
             .SetGroupName("Propagation")
             .AddConstructor<ProbabilisticV2vUrbanChannelConditionModel>()
-            .AddAttribute(
-                "Density",
-                "Specifies the density of the vehicles in the scenario."
-                "It can be set to Low, Medium or High.",
-                EnumValue(VehicleDensity::LOW),
-                MakeEnumAccessor(&ProbabilisticV2vUrbanChannelConditionModel::m_densityUrban),
-                MakeEnumChecker(VehicleDensity::LOW,
-                                "Low",
-                                VehicleDensity::MEDIUM,
-                                "Medium",
-                                VehicleDensity::HIGH,
-                                "High"));
+            .AddAttribute("Density",
+                          "Specifies the density of the vehicles in the scenario."
+                          "It can be set to Low, Medium or High.",
+                          EnumValue(VehicleDensity::LOW),
+                          MakeEnumAccessor<VehicleDensity>(
+                              &ProbabilisticV2vUrbanChannelConditionModel::m_densityUrban),
+                          MakeEnumChecker(VehicleDensity::LOW,
+                                          "Low",
+                                          VehicleDensity::MEDIUM,
+                                          "Medium",
+                                          VehicleDensity::HIGH,
+                                          "High"));
     return tid;
 }
 
@@ -141,18 +141,18 @@ ProbabilisticV2vHighwayChannelConditionModel::GetTypeId()
             .SetParent<ThreeGppChannelConditionModel>()
             .SetGroupName("Propagation")
             .AddConstructor<ProbabilisticV2vHighwayChannelConditionModel>()
-            .AddAttribute(
-                "Density",
-                "Specifies the density of the vehicles in the scenario."
-                "It can be set to Low, Medium or High.",
-                EnumValue(VehicleDensity::LOW),
-                MakeEnumAccessor(&ProbabilisticV2vHighwayChannelConditionModel::m_densityHighway),
-                MakeEnumChecker(VehicleDensity::LOW,
-                                "Low",
-                                VehicleDensity::MEDIUM,
-                                "Medium",
-                                VehicleDensity::HIGH,
-                                "High"));
+            .AddAttribute("Density",
+                          "Specifies the density of the vehicles in the scenario."
+                          "It can be set to Low, Medium or High.",
+                          EnumValue(VehicleDensity::LOW),
+                          MakeEnumAccessor<VehicleDensity>(
+                              &ProbabilisticV2vHighwayChannelConditionModel::m_densityHighway),
+                          MakeEnumChecker(VehicleDensity::LOW,
+                                          "Low",
+                                          VehicleDensity::MEDIUM,
+                                          "Medium",
+                                          VehicleDensity::HIGH,
+                                          "High"));
     return tid;
 }
 

@@ -54,7 +54,7 @@ TcpWestwoodPlus::GetTypeId()
                 "FilterType",
                 "Use this to choose no filter or Tustin's approximation filter",
                 EnumValue(TcpWestwoodPlus::TUSTIN),
-                MakeEnumAccessor(&TcpWestwoodPlus::m_fType),
+                MakeEnumAccessor<FilterType>(&TcpWestwoodPlus::m_fType),
                 MakeEnumChecker(TcpWestwoodPlus::NONE, "None", TcpWestwoodPlus::TUSTIN, "Tustin"))
             .AddTraceSource("EstimatedBW",
                             "The estimated bandwidth",

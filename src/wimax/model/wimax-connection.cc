@@ -43,7 +43,7 @@ WimaxConnection::GetTypeId()
                             .AddAttribute("Type",
                                           "Connection type",
                                           EnumValue(Cid::INITIAL_RANGING),
-                                          MakeEnumAccessor(&WimaxConnection::GetType),
+                                          MakeEnumAccessor<Cid::Type>(&WimaxConnection::GetType),
                                           MakeEnumChecker(Cid::BROADCAST,
                                                           "Broadcast",
                                                           Cid::INITIAL_RANGING,

@@ -104,7 +104,7 @@ GenericBatteryModel::GetTypeId()
             .AddAttribute("BatteryType",
                           "Indicates the battery type used by the model",
                           EnumValue(LION_LIPO),
-                          MakeEnumAccessor(&GenericBatteryModel::m_batteryType),
+                          MakeEnumAccessor<GenericBatteryType>(&GenericBatteryModel::m_batteryType),
                           MakeEnumChecker(LION_LIPO,
                                           "LION_LIPO",
                                           NIMH_NICD,

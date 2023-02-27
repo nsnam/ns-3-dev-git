@@ -83,7 +83,8 @@ HybridBuildingsPropagationLossModel::GetTypeId()
             .AddAttribute("Environment",
                           "Environment Scenario",
                           EnumValue(UrbanEnvironment),
-                          MakeEnumAccessor(&HybridBuildingsPropagationLossModel::SetEnvironment),
+                          MakeEnumAccessor<EnvironmentType>(
+                              &HybridBuildingsPropagationLossModel::SetEnvironment),
                           MakeEnumChecker(UrbanEnvironment,
                                           "Urban",
                                           SubUrbanEnvironment,
@@ -95,7 +96,7 @@ HybridBuildingsPropagationLossModel::GetTypeId()
                 "CitySize",
                 "Dimension of the city",
                 EnumValue(LargeCity),
-                MakeEnumAccessor(&HybridBuildingsPropagationLossModel::SetCitySize),
+                MakeEnumAccessor<CitySize>(&HybridBuildingsPropagationLossModel::SetCitySize),
                 MakeEnumChecker(SmallCity, "Small", MediumCity, "Medium", LargeCity, "Large"))
 
             .AddAttribute(

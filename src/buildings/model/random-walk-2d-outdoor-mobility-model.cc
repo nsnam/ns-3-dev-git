@@ -68,7 +68,7 @@ RandomWalk2dOutdoorMobilityModel::GetTypeId()
                           "The mode indicates the condition used to "
                           "change the current speed and direction",
                           EnumValue(RandomWalk2dOutdoorMobilityModel::MODE_DISTANCE),
-                          MakeEnumAccessor(&RandomWalk2dOutdoorMobilityModel::m_mode),
+                          MakeEnumAccessor<Mode>(&RandomWalk2dOutdoorMobilityModel::m_mode),
                           MakeEnumChecker(RandomWalk2dOutdoorMobilityModel::MODE_DISTANCE,
                                           "Distance",
                                           RandomWalk2dOutdoorMobilityModel::MODE_TIME,

@@ -635,7 +635,7 @@ SpectrumWifiPhyFilterTest::RunOne()
                                                                         WIFI_STANDARD_80211ax,
                                                                         WIFI_PHY_BAND_5GHZ));
     m_txPhy->SetOperatingChannel(
-        WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
     uint16_t rxFrequency;
     switch (m_rxChannelWidth)
@@ -660,7 +660,7 @@ SpectrumWifiPhyFilterTest::RunOne()
                                                                         WIFI_STANDARD_80211ax,
                                                                         WIFI_PHY_BAND_5GHZ));
     m_rxPhy->SetOperatingChannel(
-        WifiPhy::ChannelTuple{rxChannelNum, m_rxChannelWidth, (int)(WIFI_PHY_BAND_5GHZ), 0});
+        WifiPhy::ChannelTuple{rxChannelNum, m_rxChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
     m_ruBands.clear();
     for (uint16_t bw = 160; bw >= 20; bw = bw / 2)

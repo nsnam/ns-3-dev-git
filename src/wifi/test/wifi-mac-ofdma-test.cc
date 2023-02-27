@@ -100,11 +100,12 @@ TestMultiUserScheduler::GetTypeId()
             .SetParent<MultiUserScheduler>()
             .SetGroupName("Wifi")
             .AddConstructor<TestMultiUserScheduler>()
-            .AddAttribute("ModulationClass",
-                          "Modulation class for DL MU PPDUs and TB PPDUs.",
-                          EnumValue(WIFI_MOD_CLASS_HE),
-                          MakeEnumAccessor(&TestMultiUserScheduler::m_modClass),
-                          MakeEnumChecker(WIFI_MOD_CLASS_HE, "HE", WIFI_MOD_CLASS_EHT, "EHT"));
+            .AddAttribute(
+                "ModulationClass",
+                "Modulation class for DL MU PPDUs and TB PPDUs.",
+                EnumValue(WIFI_MOD_CLASS_HE),
+                MakeEnumAccessor<WifiModulationClass>(&TestMultiUserScheduler::m_modClass),
+                MakeEnumChecker(WIFI_MOD_CLASS_HE, "HE", WIFI_MOD_CLASS_EHT, "EHT"));
     return tid;
 }
 

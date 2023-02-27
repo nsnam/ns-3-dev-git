@@ -226,7 +226,7 @@ RoutingProtocol::GetTypeId()
             .AddAttribute("Willingness",
                           "Willingness of a node to carry and forward traffic for other nodes.",
                           EnumValue(Willingness::DEFAULT),
-                          MakeEnumAccessor(&RoutingProtocol::m_willingness),
+                          MakeEnumAccessor<Willingness>(&RoutingProtocol::m_willingness),
                           MakeEnumChecker(Willingness::NEVER,
                                           "never",
                                           Willingness::LOW,

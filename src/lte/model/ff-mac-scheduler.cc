@@ -49,17 +49,18 @@ FfMacScheduler::DoDispose()
 TypeId
 FfMacScheduler::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::FfMacScheduler")
-                            .SetParent<Object>()
-                            .SetGroupName("Lte")
-                            .AddAttribute("UlCqiFilter",
-                                          "The filter to apply on UL CQIs received",
-                                          EnumValue(FfMacScheduler::SRS_UL_CQI),
-                                          MakeEnumAccessor(&FfMacScheduler::m_ulCqiFilter),
-                                          MakeEnumChecker(FfMacScheduler::SRS_UL_CQI,
-                                                          "SRS_UL_CQI",
-                                                          FfMacScheduler::PUSCH_UL_CQI,
-                                                          "PUSCH_UL_CQI"));
+    static TypeId tid =
+        TypeId("ns3::FfMacScheduler")
+            .SetParent<Object>()
+            .SetGroupName("Lte")
+            .AddAttribute("UlCqiFilter",
+                          "The filter to apply on UL CQIs received",
+                          EnumValue(FfMacScheduler::SRS_UL_CQI),
+                          MakeEnumAccessor<UlCqiFilter_t>(&FfMacScheduler::m_ulCqiFilter),
+                          MakeEnumChecker(FfMacScheduler::SRS_UL_CQI,
+                                          "SRS_UL_CQI",
+                                          FfMacScheduler::PUSCH_UL_CQI,
+                                          "PUSCH_UL_CQI"));
     return tid;
 }
 

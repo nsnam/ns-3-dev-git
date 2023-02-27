@@ -64,7 +64,7 @@ TcpCubic::GetTypeId()
                           "Hybrid Slow Start detection mechanisms:"
                           "packet train, delay, both",
                           EnumValue(HybridSSDetectionMode::BOTH),
-                          MakeEnumAccessor(&TcpCubic::m_hystartDetect),
+                          MakeEnumAccessor<HybridSSDetectionMode>(&TcpCubic::m_hystartDetect),
                           MakeEnumChecker(HybridSSDetectionMode::PACKET_TRAIN,
                                           "PACKET_TRAIN",
                                           HybridSSDetectionMode::DELAY,

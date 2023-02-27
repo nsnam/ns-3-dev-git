@@ -62,7 +62,7 @@ CsmaNetDevice::GetTypeId()
             .AddAttribute("EncapsulationMode",
                           "The link-layer encapsulation type to use.",
                           EnumValue(DIX),
-                          MakeEnumAccessor(&CsmaNetDevice::SetEncapsulationMode),
+                          MakeEnumAccessor<EncapsulationMode>(&CsmaNetDevice::SetEncapsulationMode),
                           MakeEnumChecker(DIX, "Dix", LLC, "Llc"))
             .AddAttribute("SendEnable",
                           "Enable or disable the transmitter section of the device.",

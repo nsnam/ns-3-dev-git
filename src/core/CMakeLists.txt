@@ -154,7 +154,6 @@ set(source_files
     model/boolean.cc
     model/integer.cc
     model/uinteger.cc
-    model/enum.cc
     model/double.cc
     model/int64x64.cc
     model/string.cc

@@ -390,7 +390,7 @@ WifiPrimaryChannelsTest::DoSetup()
                 "WaitBeaconTimeout",
                 TimeValue(MicroSeconds(102400))); // same as BeaconInterval
 
-    TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> channelValue;
+    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue> channelValue;
 
     // Each BSS uses a distinct primary20 channel
     for (uint8_t bss = 0; bss < m_nBss; bss++)

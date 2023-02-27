@@ -62,8 +62,9 @@ class TupleObject : public Object
 
     // NOTE EnumValue::Get() return an int, so the tuple element type must be an int
     // in place of the enum type
-    using Tuple1Value = TupleValue<StringValue, StringValue, EnumValue>; //!< Tuple1 attribute value
-    using Tuple1 = Tuple1Value::result_type;                             //!< tuple of values
+    using Tuple1Value =
+        TupleValue<StringValue, StringValue, EnumValue<TupleTestEnum>>; //!< Tuple1 attribute value
+    using Tuple1 = Tuple1Value::result_type;                            //!< tuple of values
     using Tuple1Pack = Tuple1Value::value_type; //!< tuple of attribute values
 
     using Tuple2 = std::tuple<double, uint16_t, std::string>; //!< Tuple2 typedef
@@ -207,7 +208,7 @@ TupleValueTestCase::DoRun()
             TupleObject::Tuple1{"Norwegian", "Wood", TupleObject::VALUE2}));
     NS_TEST_ASSERT_MSG_EQ(ret1, true, "Setting valid values to tuple 1 failed");
 
-    TupleValue<StringValue, StringValue, EnumValue> tupleValue1;
+    TupleValue<StringValue, StringValue, EnumValue<TupleObject::TupleTestEnum>> tupleValue1;
     ret1 = tupleObject->GetAttributeFailSafe("StringStringEnumTuple", tupleValue1);
     NS_TEST_ASSERT_MSG_EQ(ret1, true, "Getting values for tuple 1 failed");
 

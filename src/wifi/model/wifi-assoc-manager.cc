@@ -305,7 +305,7 @@ WifiAssocManager::CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr)
     {
         auto ehtConfig = m_mac->GetEhtConfiguration();
         NS_ASSERT(ehtConfig);
-        EnumValue negSupport;
+        EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
         ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
         // A non-AP MLD that performs multi-link (re)setup on at least two links with an AP MLD

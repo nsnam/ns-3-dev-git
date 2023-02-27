@@ -99,7 +99,7 @@ RipNg::GetTypeId()
             .AddAttribute("SplitHorizon",
                           "Split Horizon strategy.",
                           EnumValue(RipNg::POISON_REVERSE),
-                          MakeEnumAccessor(&RipNg::m_splitHorizonStrategy),
+                          MakeEnumAccessor<SplitHorizonType_e>(&RipNg::m_splitHorizonStrategy),
                           MakeEnumChecker(RipNg::NO_SPLIT_HORIZON,
                                           "NoSplitHorizon",
                                           RipNg::SPLIT_HORIZON,

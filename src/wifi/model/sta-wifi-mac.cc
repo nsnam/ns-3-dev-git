@@ -481,7 +481,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
 
     auto ehtConfiguration = GetEhtConfiguration();
     NS_ASSERT(ehtConfiguration);
-    EnumValue negSupport;
+    EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
     ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
     mldCapabilities->tidToLinkMappingSupport = negSupport.Get();
@@ -529,7 +529,7 @@ StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
     auto ehtConfig = GetEhtConfiguration();
     NS_ASSERT(ehtConfig);
 
-    EnumValue negSupport;
+    EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
     ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
     NS_ABORT_MSG_IF(negSupport.Get() == 0,

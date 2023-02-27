@@ -57,7 +57,7 @@ MultiUserScheduler::GetTypeId()
                           "The Access Category for which the MultiUserScheduler makes requests "
                           "for channel access.",
                           EnumValue(AcIndex::AC_BE),
-                          MakeEnumAccessor(&MultiUserScheduler::m_accessReqAc),
+                          MakeEnumAccessor<AcIndex>(&MultiUserScheduler::m_accessReqAc),
                           MakeEnumChecker(AcIndex::AC_BE,
                                           "AC_BE",
                                           AcIndex::AC_VI,

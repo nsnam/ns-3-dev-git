@@ -481,7 +481,7 @@ LteAmc::GetTypeId()
                 "AmcModel",
                 "AMC model used to assign CQI",
                 EnumValue(LteAmc::MiErrorModel),
-                MakeEnumAccessor(&LteAmc::m_amcModel),
+                MakeEnumAccessor<AmcModel>(&LteAmc::m_amcModel),
                 MakeEnumChecker(LteAmc::MiErrorModel, "Vienna", LteAmc::PiroEW2010, "PiroEW2010"));
     return tid;
 }

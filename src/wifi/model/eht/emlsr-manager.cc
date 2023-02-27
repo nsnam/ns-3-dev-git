@@ -80,7 +80,7 @@ EmlsrManager::GetTypeId()
                           TypeId::ATTR_GET |
                               TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           EnumValue(WIFI_MOD_CLASS_OFDM),
-                          MakeEnumAccessor(&EmlsrManager::m_auxPhyMaxModClass),
+                          MakeEnumAccessor<WifiModulationClass>(&EmlsrManager::m_auxPhyMaxModClass),
                           MakeEnumChecker(WIFI_MOD_CLASS_HR_DSSS,
                                           "HR-DSSS",
                                           WIFI_MOD_CLASS_ERP_OFDM,

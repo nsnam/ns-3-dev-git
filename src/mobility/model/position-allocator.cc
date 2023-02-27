@@ -185,7 +185,7 @@ GridPositionAllocator::GetTypeId()
             .AddAttribute("LayoutType",
                           "The type of layout.",
                           EnumValue(ROW_FIRST),
-                          MakeEnumAccessor(&GridPositionAllocator::m_layoutType),
+                          MakeEnumAccessor<LayoutType>(&GridPositionAllocator::m_layoutType),
                           MakeEnumChecker(ROW_FIRST, "RowFirst", COLUMN_FIRST, "ColumnFirst"));
     return tid;
 }

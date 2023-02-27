@@ -99,7 +99,7 @@ Rip::GetTypeId()
             .AddAttribute("SplitHorizon",
                           "Split Horizon strategy.",
                           EnumValue(Rip::POISON_REVERSE),
-                          MakeEnumAccessor(&Rip::m_splitHorizonStrategy),
+                          MakeEnumAccessor<SplitHorizonType_e>(&Rip::m_splitHorizonStrategy),
                           MakeEnumChecker(Rip::NO_SPLIT_HORIZON,
                                           "NoSplitHorizon",
                                           Rip::SPLIT_HORIZON,

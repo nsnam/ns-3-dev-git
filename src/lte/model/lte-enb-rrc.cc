@@ -1940,18 +1940,19 @@ LteEnbRrc::GetTypeId()
                           UintegerValue(0), // default tx-mode
                           MakeUintegerAccessor(&LteEnbRrc::m_defaultTransmissionMode),
                           MakeUintegerChecker<uint8_t>())
-            .AddAttribute("EpsBearerToRlcMapping",
-                          "Specify which type of RLC will be used for each type of EPS bearer.",
-                          EnumValue(RLC_SM_ALWAYS),
-                          MakeEnumAccessor(&LteEnbRrc::m_epsBearerToRlcMapping),
-                          MakeEnumChecker(RLC_SM_ALWAYS,
-                                          "RlcSmAlways",
-                                          RLC_UM_ALWAYS,
-                                          "RlcUmAlways",
-                                          RLC_AM_ALWAYS,
-                                          "RlcAmAlways",
-                                          PER_BASED,
-                                          "PacketErrorRateBased"))
+            .AddAttribute(
+                "EpsBearerToRlcMapping",
+                "Specify which type of RLC will be used for each type of EPS bearer.",
+                EnumValue(RLC_SM_ALWAYS),
+                MakeEnumAccessor<LteEpsBearerToRlcMapping_t>(&LteEnbRrc::m_epsBearerToRlcMapping),
+                MakeEnumChecker(RLC_SM_ALWAYS,
+                                "RlcSmAlways",
+                                RLC_UM_ALWAYS,
+                                "RlcUmAlways",
+                                RLC_AM_ALWAYS,
+                                "RlcAmAlways",
+                                PER_BASED,
+                                "PacketErrorRateBased"))
             .AddAttribute("SystemInformationPeriodicity",
                           "The interval for sending system information (Time value)",
                           TimeValue(MilliSeconds(80)),

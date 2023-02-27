@@ -60,16 +60,17 @@ WifiDefaultAckManager::GetTypeId()
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&WifiDefaultAckManager::m_baThreshold),
                           MakeDoubleChecker<double>(0.0, 1.0))
-            .AddAttribute("DlMuAckSequenceType",
-                          "Type of the acknowledgment sequence for DL MU PPDUs.",
-                          EnumValue(WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE),
-                          MakeEnumAccessor(&WifiDefaultAckManager::m_dlMuAckType),
-                          MakeEnumChecker(WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
-                                          "DL_MU_BAR_BA_SEQUENCE",
-                                          WifiAcknowledgment::DL_MU_TF_MU_BAR,
-                                          "DL_MU_TF_MU_BAR",
-                                          WifiAcknowledgment::DL_MU_AGGREGATE_TF,
-                                          "DL_MU_AGGREGATE_TF"))
+            .AddAttribute(
+                "DlMuAckSequenceType",
+                "Type of the acknowledgment sequence for DL MU PPDUs.",
+                EnumValue(WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE),
+                MakeEnumAccessor<WifiAcknowledgment::Method>(&WifiDefaultAckManager::m_dlMuAckType),
+                MakeEnumChecker(WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
+                                "DL_MU_BAR_BA_SEQUENCE",
+                                WifiAcknowledgment::DL_MU_TF_MU_BAR,
+                                "DL_MU_TF_MU_BAR",
+                                WifiAcknowledgment::DL_MU_AGGREGATE_TF,
+                                "DL_MU_AGGREGATE_TF"))
             .AddAttribute("MaxBlockAckMcs",
                           "The MCS used to send a BlockAck in a TB PPDU is the minimum between "
                           "the MCS used for the PSDU sent in the preceding DL MU PPDU and the "

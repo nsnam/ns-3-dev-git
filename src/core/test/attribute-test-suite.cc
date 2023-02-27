@@ -203,13 +203,13 @@ class AttributeObjectTest : public Object
                 .AddAttribute("TestEnum",
                               "help text",
                               EnumValue(TEST_A),
-                              MakeEnumAccessor(&AttributeObjectTest::m_enum),
+                              MakeEnumAccessor<Test_e>(&AttributeObjectTest::m_enum),
                               MakeEnumChecker(TEST_A, "TestA", TEST_B, "TestB", TEST_C, "TestC"))
                 .AddAttribute("TestEnumSetGet",
                               "help text",
                               EnumValue(TEST_B),
-                              MakeEnumAccessor(&AttributeObjectTest::DoSetEnum,
-                                               &AttributeObjectTest::DoGetEnum),
+                              MakeEnumAccessor<Test_e>(&AttributeObjectTest::DoSetEnum,
+                                                       &AttributeObjectTest::DoGetEnum),
                               MakeEnumChecker(TEST_A, "TestA", TEST_B, "TestB", TEST_C, "TestC"))
                 .AddAttribute("TestRandom",
                               "help text",
@@ -268,11 +268,12 @@ class AttributeObjectTest : public Object
                               BooleanValue(false),
                               MakeBooleanAccessor(&AttributeObjectTest::m_boolSrc),
                               MakeBooleanChecker())
-                .AddAttribute("EnumTraceSource",
-                              "help text",
-                              EnumValue(TEST_A),
-                              MakeEnumAccessor(&AttributeObjectTest::m_enumSrc),
-                              MakeEnumChecker(TEST_A, "TestA"))
+                .AddAttribute(
+                    "EnumTraceSource",
+                    "help text",
+                    EnumValue(TEST_A),
+                    MakeEnumAccessor<TracedValue<Test_e>>(&AttributeObjectTest::m_enumSrc),
+                    MakeEnumChecker(TEST_A, "TestA"))
                 .AddAttribute("ValueClassSource",
                               "help text",
                               ValueClassTestValue(ValueClassTest()),
@@ -950,7 +951,7 @@ AttributeTestCase<DoubleValue>::DoRun()
 
 template <>
 void
-AttributeTestCase<EnumValue>::DoRun()
+AttributeTestCase<EnumValue<AttributeObjectTest::Test_e>>::DoRun()
 {
     Ptr<AttributeObjectTest> p;
     bool ok;
@@ -1981,7 +1982,8 @@ AttributesTestSuite::AttributesTestSuite()
                 TestCase::QUICK);
     AddTestCase(new AttributeTestCase<DoubleValue>("Check Attributes of type DoubleValue"),
                 TestCase::QUICK);
-    AddTestCase(new AttributeTestCase<EnumValue>("Check Attributes of type EnumValue"),
+    AddTestCase(new AttributeTestCase<EnumValue<AttributeObjectTest::Test_e>>(
+                    "Check Attributes of type EnumValue"),
                 TestCase::QUICK);
     AddTestCase(new AttributeTestCase<TimeValue>("Check Attributes of type TimeValue"),
                 TestCase::QUICK);

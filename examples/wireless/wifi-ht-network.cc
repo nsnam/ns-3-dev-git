@@ -177,7 +177,8 @@ main(int argc, char* argv[])
                 wifi.ConfigHtOptions("ShortGuardIntervalSupported", BooleanValue(sgi));
 
                 Ssid ssid = Ssid("ns3-80211n");
-                TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> channelValue;
+                TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>
+                    channelValue;
                 WifiPhyBand band = (frequency == 5.0 ? WIFI_PHY_BAND_5GHZ : WIFI_PHY_BAND_2_4GHZ);
                 channelValue.Set(WifiPhy::ChannelTuple{0, channelWidth, band, 0});
 

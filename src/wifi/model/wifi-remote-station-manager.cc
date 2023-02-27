@@ -100,7 +100,8 @@ WifiRemoteStationManager::GetTypeId()
                           "Protection mode used when non-ERP STAs are connected to an ERP AP: "
                           "Rts-Cts or Cts-To-Self",
                           EnumValue(WifiRemoteStationManager::CTS_TO_SELF),
-                          MakeEnumAccessor(&WifiRemoteStationManager::m_erpProtectionMode),
+                          MakeEnumAccessor<WifiRemoteStationManager::ProtectionMode>(
+                              &WifiRemoteStationManager::m_erpProtectionMode),
                           MakeEnumChecker(WifiRemoteStationManager::RTS_CTS,
                                           "Rts-Cts",
                                           WifiRemoteStationManager::CTS_TO_SELF,
@@ -109,7 +110,8 @@ WifiRemoteStationManager::GetTypeId()
                           "Protection mode used when non-HT STAs are connected to a HT AP: Rts-Cts "
                           "or Cts-To-Self",
                           EnumValue(WifiRemoteStationManager::CTS_TO_SELF),
-                          MakeEnumAccessor(&WifiRemoteStationManager::m_htProtectionMode),
+                          MakeEnumAccessor<WifiRemoteStationManager::ProtectionMode>(
+                              &WifiRemoteStationManager::m_htProtectionMode),
                           MakeEnumChecker(WifiRemoteStationManager::RTS_CTS,
                                           "Rts-Cts",
                                           WifiRemoteStationManager::CTS_TO_SELF,
