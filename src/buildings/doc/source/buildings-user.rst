@@ -194,6 +194,14 @@ Building-aware channel condition models
 The class BuildingsChannelConditionModel implements a `channel condition model <propagation.html#channelconditionmodel>`_
 which determines the LOS/NLOS channel state based on the buildings deployed in
 the scenario.
+In addition, based on the wall material of the building, low/high building
+penetration losses are considered, as defined in 3GPP TS 38.901 7.4.3.1.
+In particular, for O2I condition, in case of Wood or ConcreteWithWindows material,
+low losses are considered in the pathloss calculation. In case the material has
+been set to ConcreteWithoutWindows or StoneBlocks, high losses are considered.
+Notice that in certain corner cases, such as the I2O2I interference, the model
+underestimates losses by applying either low or high losses based on the wall material
+of the involved nodes. For a more accurate estimation the model can be further extended.
 
 The classes ``ThreeGppV2vUrbanChannelConditionModel`` and
 ``ThreeGppV2vHighwayChannelConditionModel`` implement hybrid channel condition

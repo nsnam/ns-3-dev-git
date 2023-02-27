@@ -78,6 +78,14 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
      */
     double GetFrequency() const;
 
+    /**
+     * \brief Return true if the O2I Building Penetration loss
+     *        corresponds to a low loss condition.
+     * \param cond The ptr to the channel condition model
+     * \return True for low loss, false for high
+     */
+    bool IsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond) const;
+
   private:
     /**
      * Computes the received power by applying the pathloss model described in
@@ -172,6 +180,20 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     virtual double GetO2iHighPenetrationLoss(Ptr<MobilityModel> a,
                                              Ptr<MobilityModel> b,
                                              ChannelCondition::LosConditionValue cond) const;
+
+    /**
+     * \brief Indicates the condition of the o2i building penetration loss
+     *        (defined in 3GPP TR 38.901 7.4.3.1).
+     *        The default implementation returns the condition as set
+     *        (either based on the buildings materials, or if the probabilistic
+     *        model is used in the ThreeGppChannelConditionModel, then
+     *        based on the result of a random variable).
+     *        The derived classes can change the default behavior by overriding
+     *        this method.
+     * \param cond the ptr to the channel condition model
+     * \return True for low losses, false for high losses
+     */
+    virtual bool DoIsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond) const;
 
     /**
      * \brief Computes the pathloss between a and b considering that the line of
@@ -373,6 +395,14 @@ class ThreeGppRmaPropagationLossModel : public ThreeGppPropagationLossModel
      * \return Returns 02i 2D distance (in meters) used to calculate low/high losses.
      */
     double GetO2iDistance2dIn() const override;
+
+    /**
+     * \brief Indicates the condition of the o2i building penetration loss
+     *        (defined in 3GPP TR 38.901 7.4.3.1).
+     * \param cond the ptr to the channel condition model
+     * \return True for low losses, false for high losses
+     */
+    bool DoIsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond) const override;
 
     /**
      * \brief Computes the pathloss between a and b considering that the line of

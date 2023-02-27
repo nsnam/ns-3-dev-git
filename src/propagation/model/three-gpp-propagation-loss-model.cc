@@ -144,6 +144,12 @@ ThreeGppPropagationLossModel::GetFrequency() const
     return m_frequency;
 }
 
+bool
+ThreeGppPropagationLossModel::IsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond) const
+{
+    return DoIsO2iLowPenetrationLoss(cond);
+}
+
 double
 ThreeGppPropagationLossModel::DoCalcRxPower(double txPowerDbm,
                                             Ptr<MobilityModel> a,
@@ -179,17 +185,26 @@ ThreeGppPropagationLossModel::DoCalcRxPower(double txPowerDbm,
     if (cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::O2I &&
         m_buildingPenLossesEnabled)
     {
-        if (cond->GetO2iLowHighCondition() == ChannelCondition::O2iLowHighConditionValue::LOW)
+        if (IsO2iLowPenetrationLoss(cond))
         {
             rxPow -= GetO2iLowPenetrationLoss(a, b, cond->GetLosCondition());
         }
-        else if (cond->GetO2iLowHighCondition() == ChannelCondition::O2iLowHighConditionValue::HIGH)
+        else
         {
             rxPow -= GetO2iHighPenetrationLoss(a, b, cond->GetLosCondition());
         }
+    }
+    else if (cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::I2I &&
+             cond->GetLosCondition() == ChannelCondition::LosConditionValue::NLOS &&
+             m_buildingPenLossesEnabled)
+    {
+        if (IsO2iLowPenetrationLoss(cond))
+        {
+            rxPow -= GetO2iLowPenetrationLoss(a, b, cond->GetLosCondition());
+        }
         else
         {
-            NS_ABORT_MSG("If we have set the O2I condition, we shouldn't be here");
+            rxPow -= GetO2iHighPenetrationLoss(a, b, cond->GetLosCondition());
         }
     }
 
@@ -366,6 +381,23 @@ ThreeGppPropagationLossModel::GetO2iHighPenetrationLoss(
     it->second.m_condition = cond;
 
     return o2iLossValue;
+}
+
+bool
+ThreeGppPropagationLossModel::DoIsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond) const
+{
+    if (cond->GetO2iLowHighCondition() == ChannelCondition::O2iLowHighConditionValue::LOW)
+    {
+        return true;
+    }
+    else if (cond->GetO2iLowHighCondition() == ChannelCondition::O2iLowHighConditionValue::HIGH)
+    {
+        return false;
+    }
+    else
+    {
+        NS_ABORT_MSG("If we have set the O2I condition, we shouldn't be here");
+    }
 }
 
 double
@@ -545,6 +577,15 @@ ThreeGppRmaPropagationLossModel::GetO2iDistance2dIn() const
     // distance2dIn is minimum of two independently generated uniformly distributed variables
     // between 0 and 10 m for RMa. 2D−in d shall be UT-specifically generated.
     return std::min(m_randomO2iVar1->GetValue(0, 10), m_randomO2iVar2->GetValue(0, 10));
+}
+
+bool
+ThreeGppRmaPropagationLossModel::DoIsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond
+                                                           [[maybe_unused]]) const
+{
+    // Based on 3GPP 38.901 7.4.3.1 in RMa only low losses are applied.
+    // Therefore enforce low losses.
+    return true;
 }
 
 double
