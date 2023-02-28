@@ -28,19 +28,6 @@
  * \defgroup olsr-test olsr module tests
  */
 
-/********** Willingness **********/
-
-/// Willingness for forwarding packets from other nodes: never.
-#define OLSR_WILL_NEVER 0
-/// Willingness for forwarding packets from other nodes: low.
-#define OLSR_WILL_LOW 1
-/// Willingness for forwarding packets from other nodes: medium.
-#define OLSR_WILL_DEFAULT 3
-/// Willingness for forwarding packets from other nodes: high.
-#define OLSR_WILL_HIGH 6
-/// Willingness for forwarding packets from other nodes: always.
-#define OLSR_WILL_ALWAYS 7
-
 using namespace ns3;
 using namespace olsr;
 
@@ -83,7 +70,7 @@ OlsrMprTestCase::DoRun()
      */
     NeighborTuple neighbor;
     neighbor.status = NeighborTuple::STATUS_SYM;
-    neighbor.willingness = OLSR_WILL_DEFAULT;
+    neighbor.willingness = Willingness::DEFAULT;
     neighbor.neighborMainAddr = Ipv4Address("10.0.0.2");
     protocol->m_state.InsertNeighborTuple(neighbor);
     neighbor.neighborMainAddr = Ipv4Address("10.0.0.3");
@@ -139,7 +126,7 @@ OlsrMprTestCase::DoRun()
                           true,
                           "Node 1 must select node 3 as MPR");
     /*
-     *  7 (OLSR_WILL_ALWAYS)
+     *  7 (Willingness::ALWAYS)
      *  |
      *  1 -- 2 -- 5
      *  |    |
@@ -147,9 +134,9 @@ OlsrMprTestCase::DoRun()
      *  |
      *  6
      *
-     * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
+     * Node 1 must select nodes 2, 3 and 7 (since it is Willingness::ALWAYS) as MPRs.
      */
-    neighbor.willingness = OLSR_WILL_ALWAYS;
+    neighbor.willingness = olsr::Willingness::ALWAYS;
     neighbor.neighborMainAddr = Ipv4Address("10.0.0.7");
     protocol->m_state.InsertNeighborTuple(neighbor);
 
@@ -160,18 +147,18 @@ OlsrMprTestCase::DoRun()
                           true,
                           "Node 1 must select node 7 as MPR");
     /*
-     *                7 <- WILL_ALWAYS
-     *                |
-     *      9 -- 8 -- 1 -- 2 -- 5
-     *                |    |
-     *           ^    3 -- 4
-     *           |    |
-     *   WILL_NEVER   6
+     *                        7 <- Willingness::ALWAYS
+     *                        |
+     *              9 -- 8 -- 1 -- 2 -- 5
+     *                        |    |
+     *                   ^    3 -- 4
+     *                   |    |
+     *   Willingness::NEVER   6
      *
-     * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
-     * Node 1 must NOT select node 8 as MPR since it is WILL_NEVER
+     * Node 1 must select nodes 2, 3 and 7 (since it is Willingness::ALWAYS) as MPRs.
+     * Node 1 must NOT select node 8 as MPR since it is Willingness::NEVER
      */
-    neighbor.willingness = OLSR_WILL_NEVER;
+    neighbor.willingness = Willingness::NEVER;
     neighbor.neighborMainAddr = Ipv4Address("10.0.0.8");
     protocol->m_state.InsertNeighborTuple(neighbor);
     tuple.neighborMainAddr = Ipv4Address("10.0.0.8");

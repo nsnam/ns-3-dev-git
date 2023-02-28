@@ -115,7 +115,7 @@ The list of configurabel attributes is:
 * TcInterval (time, default 5s), TC messages emission interval.
 * MidInterval (time, default 5s), MID messages emission interval.
 * HnaInterval (time, default 5s), HNA messages emission interval.
-* Willingness (enum, default OLSR_WILL_DEFAULT), Willingness of a node to carry and forward traffic for other nodes.
+* Willingness (enum, default olsr::Willingness::DEFAULT), Willingness of a node to carry and forward traffic for other nodes.
 
 Tracing
 +++++++

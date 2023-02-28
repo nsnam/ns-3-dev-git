@@ -76,6 +76,21 @@ struct RoutingTableEntry
 
 class RoutingProtocol;
 
+/**
+ * \ingroup olsr
+ *
+ * Willingness for forwarding packets from other nodes
+ * See \RFC{3626} section 18.8
+ */
+enum Willingness
+{
+    NEVER = 0,
+    LOW = 1,
+    DEFAULT = 3, // medium
+    HIGH = 6,
+    ALWAYS = 7,
+};
+
 ///
 /// \ingroup olsr
 ///

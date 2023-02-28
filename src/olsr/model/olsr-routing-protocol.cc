@@ -104,19 +104,6 @@
 /// Asymmetric neighbor type.
 #define OLSR_MPR_NEIGH 2
 
-/********** Willingness **********/
-
-/// Willingness for forwarding packets from other nodes: never.
-#define OLSR_WILL_NEVER 0
-/// Willingness for forwarding packets from other nodes: low.
-#define OLSR_WILL_LOW 1
-/// Willingness for forwarding packets from other nodes: medium.
-#define OLSR_WILL_DEFAULT 3
-/// Willingness for forwarding packets from other nodes: high.
-#define OLSR_WILL_HIGH 6
-/// Willingness for forwarding packets from other nodes: always.
-#define OLSR_WILL_ALWAYS 7
-
 /********** Miscellaneous constants **********/
 
 /// Maximum allowed jitter.
@@ -180,17 +167,17 @@ RoutingProtocol::GetTypeId()
                           MakeTimeChecker())
             .AddAttribute("Willingness",
                           "Willingness of a node to carry and forward traffic for other nodes.",
-                          EnumValue(OLSR_WILL_DEFAULT),
+                          EnumValue(Willingness::DEFAULT),
                           MakeEnumAccessor(&RoutingProtocol::m_willingness),
-                          MakeEnumChecker(OLSR_WILL_NEVER,
+                          MakeEnumChecker(Willingness::NEVER,
                                           "never",
-                                          OLSR_WILL_LOW,
+                                          Willingness::LOW,
                                           "low",
-                                          OLSR_WILL_DEFAULT,
+                                          Willingness::DEFAULT,
                                           "default",
-                                          OLSR_WILL_HIGH,
+                                          Willingness::HIGH,
                                           "high",
-                                          OLSR_WILL_ALWAYS,
+                                          Willingness::ALWAYS,
                                           "always"))
             .AddTraceSource("Rx",
                             "Receive OLSR packet.",
@@ -696,7 +683,7 @@ RoutingProtocol::MprComputation()
 
     // N2 is the set of 2-hop neighbors reachable from "the interface
     // I", excluding:
-    // (i)   the nodes only reachable by members of N with willingness WILL_NEVER
+    // (i)   the nodes only reachable by members of N with willingness Willingness::NEVER
     // (ii)  the node performing the computation
     // (iii) all the symmetric neighbors: the nodes for which there exists a symmetric
     //       link to this node on some interface.
@@ -713,13 +700,13 @@ RoutingProtocol::MprComputation()
         }
 
         //  excluding:
-        // (i)   the nodes only reachable by members of N with willingness WILL_NEVER
+        // (i)   the nodes only reachable by members of N with willingness Willingness::NEVER
         bool ok = false;
         for (NeighborSet::const_iterator neigh = N.begin(); neigh != N.end(); neigh++)
         {
             if (neigh->neighborMainAddr == twoHopNeigh->neighborMainAddr)
             {
-                if (neigh->willingness == OLSR_WILL_NEVER)
+                if (neigh->willingness == Willingness::NEVER)
                 {
                     ok = false;
                     break;
@@ -774,10 +761,10 @@ RoutingProtocol::MprComputation()
 #endif // NS3_LOG_ENABLE
 
     // 1. Start with an MPR set made of all members of N with
-    // N_willingness equal to WILL_ALWAYS
+    // N_willingness equal to Willingness::ALWAYS
     for (NeighborSet::const_iterator neighbor = N.begin(); neighbor != N.end(); neighbor++)
     {
-        if (neighbor->willingness == OLSR_WILL_ALWAYS)
+        if (neighbor->willingness == Willingness::ALWAYS)
         {
             mprSet.insert(neighbor->neighborMainAddr);
             // (not in RFC but I think is needed: remove the 2-hop
@@ -1058,7 +1045,7 @@ RoutingProtocol::RoutingTableComputation()
     //  neighbor node or the node itself, and such that there exist at
     //  least one entry in the 2-hop neighbor set where
     //  N_neighbor_main_addr correspond to a neighbor node with
-    //  willingness different of WILL_NEVER,
+    //  willingness different of Willingness::NEVER,
     const TwoHopNeighborSet& twoHopNeighbors = m_state.GetTwoHopNeighbors();
     for (TwoHopNeighborSet::const_iterator it = twoHopNeighbors.begin();
          it != twoHopNeighbors.end();
@@ -1083,14 +1070,14 @@ RoutingProtocol::RoutingTableComputation()
 
         // ...and such that there exist at least one entry in the 2-hop
         // neighbor set where N_neighbor_main_addr correspond to a
-        // neighbor node with willingness different of WILL_NEVER...
+        // neighbor node with willingness different of Willingness::NEVER...
         bool nb2hopOk = false;
         for (NeighborSet::const_iterator neighbor = neighborSet.begin();
              neighbor != neighborSet.end();
              neighbor++)
         {
             if (neighbor->neighborMainAddr == nb2hop_tuple.neighborMainAddr &&
-                neighbor->willingness != OLSR_WILL_NEVER)
+                neighbor->willingness != Willingness::NEVER)
             {
                 nb2hopOk = true;
                 break;
@@ -2386,7 +2373,7 @@ RoutingProtocol::NeighborLoss(const LinkTuple& tuple)
 {
     NS_LOG_DEBUG(Simulator::Now().As(Time::S) << ": OLSR Node " << m_mainAddress << " LinkTuple "
                                               << tuple.neighborIfaceAddr << " -> neighbor loss.");
-    LinkTupleUpdated(tuple, OLSR_WILL_DEFAULT);
+    LinkTupleUpdated(tuple, Willingness::DEFAULT);
     m_state.EraseTwoHopNeighborTuples(GetMainAddress(tuple.neighborIfaceAddr));
     m_state.EraseMprSelectorTuples(GetMainAddress(tuple.neighborIfaceAddr));
 
