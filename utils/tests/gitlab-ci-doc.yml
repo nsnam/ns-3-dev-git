@@ -72,8 +72,8 @@ manual:
     - make latexpdf
     # - mv build/html ../../public/manual
     # - mv build/latex/ns-3-manual.pdf ../../public/
-  only:
-    - master
+  # only:
+  #   - master
 
 tutorial:
   extends: .doc
@@ -84,8 +84,8 @@ tutorial:
     - make latexpdf
     # - mv build/html ../../public/manual
     # - mv build/latex/ns-3-tutorial.pdf ../../public/
-  only:
-    - master
+  # only:
+  #   - master
 
 models:
   extends: .doc
@@ -96,5 +96,5 @@ models:
     - make latexpdf
     # - mv build/html ../../public/models
     # - mv build/latex/ns-3-model-library.pdf ../../public
-  only:
-    - master
+  # only:
+  #   - master
