@@ -1650,6 +1650,10 @@ Ipv6L3Protocol::BuildHeader(Ipv6Address src,
 void
 Ipv6L3Protocol::RegisterExtensions()
 {
+    if (m_node->GetObject<Ipv6ExtensionDemux>())
+    {
+        return;
+    }
     Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = CreateObject<Ipv6ExtensionDemux>();
     ipv6ExtensionDemux->SetNode(m_node);
 
@@ -1686,6 +1690,10 @@ Ipv6L3Protocol::RegisterExtensions()
 void
 Ipv6L3Protocol::RegisterOptions()
 {
+    if (m_node->GetObject<Ipv6OptionDemux>())
+    {
+        return;
+    }
     Ptr<Ipv6OptionDemux> ipv6OptionDemux = CreateObject<Ipv6OptionDemux>();
     ipv6OptionDemux->SetNode(m_node);
 

@@ -144,8 +144,8 @@ class InternetStackHelper : public PcapHelperForIpv4,
 
     /**
      * Aggregate implementations of the ns3::Ipv4, ns3::Ipv6, ns3::Udp, and ns3::Tcp classes
-     * onto the provided node.  This method will assert if called on a node that
-     * already has an Ipv4 object aggregated to it.
+     * onto the provided node.  This method will do nothing if the stacks are already installed,
+     * and will not overwrite existing stacks parameters.
      *
      * \param nodeName The name of the node on which to install the stack.
      */
@@ -153,8 +153,8 @@ class InternetStackHelper : public PcapHelperForIpv4,
 
     /**
      * Aggregate implementations of the ns3::Ipv4, ns3::Ipv6, ns3::Udp, and ns3::Tcp classes
-     * onto the provided node.  This method will assert if called on a node that
-     * already has an Ipv4 object aggregated to it.
+     * onto the provided node.  This method will do nothing if the stacks are already installed,
+     * and will not overwrite existing stacks parameters.
      *
      * \param node The node on which to install the stack.
      */
@@ -162,9 +162,8 @@ class InternetStackHelper : public PcapHelperForIpv4,
 
     /**
      * For each node in the input container, aggregate implementations of the
-     * ns3::Ipv4, ns3::Ipv6, ns3::Udp, and, ns3::Tcp classes.  The program will assert
-     * if this method is called on a container with a node that already has
-     * an Ipv4 object aggregated to it.
+     * ns3::Ipv4, ns3::Ipv6, ns3::Udp, and, ns3::Tcp classes.  This method will do nothing if the
+     * stacks are already installed, and will not overwrite existing stacks parameters.
      *
      * \param c NodeContainer that holds the set of nodes on which to install the
      * new stacks.
@@ -306,7 +305,8 @@ class InternetStackHelper : public PcapHelperForIpv4,
     const Ipv6RoutingHelper* m_routingv6;
 
     /**
-     * \brief create an object from its TypeId and aggregates it to the node
+     * \brief create an object from its TypeId and aggregates it to the node. Does nothing if
+     * an object of the same type is already aggregated to the node.
      * \param node the node
      * \param typeId the object TypeId
      */

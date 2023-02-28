@@ -75,6 +75,7 @@ This release has discontinued support for g++-8 compilers.
 - (wifi) Added 802.11ax dual NAV (basic NAV and intra-BSS NAV)
 - (wifi) Added 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
 - (wifi) Added support for 802.11ax MU-RTS/CTS protection
+- (internet) InternetStackHelper can be now used on nodes with an InternetStack already installed (it will not install IPv[4,6] twice).
 
 ### Bugs fixed
 

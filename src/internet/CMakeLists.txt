@@ -262,6 +262,7 @@ endif()
 set(test_sources
     test/global-route-manager-impl-test-suite.cc
     test/icmp-test.cc
+    test/internet-stack-helper-test-suite.cc
     test/ipv4-address-generator-test-suite.cc
     test/ipv4-address-helper-test-suite.cc
     test/ipv4-deduplication-test.cc

@@ -383,12 +383,14 @@ class Ipv6 : public Object
                       Ptr<Ipv6Route> route) = 0;
 
     /**
-     * \brief Register the IPv6 Extensions.
+     * \brief Register the IPv6 Extensions. Does nothing if the Extensions have been already
+     * registered.
      */
     virtual void RegisterExtensions() = 0;
 
     /**
-     * \brief Register the IPv6 Options.
+     * \brief Register the IPv6 Options. Does nothing if the Options have been already
+     * registered.
      */
     virtual void RegisterOptions() = 0;
 

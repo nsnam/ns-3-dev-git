@@ -55,6 +55,7 @@ Changes from ns-3.38 to ns-3-dev
 * (internet) The function signature of `Ipv4RoutingProtocol::RouteInput` and `Ipv6RoutingProtocol::RouteInput` have changed. The `UnicastForwardCallback` (ucb), `MulticastForwardCallback` (mcb), `LocalDeliverCallback` (lcb) and `ErrorCallback` (ecb) should now be passed as const references.
 * (olsr) The defines `OLSR_WILL_*` have been replaced by enum `Willingness`.
 * (wifi) The `WifiCodeRate` typedef was converted to an enum.
+* (internet) `InternetStackHelper` can be now used on nodes with an `InternetStack` already installed (it will not install IPv[4,6] twice).
 
 ### Changes to build system
 

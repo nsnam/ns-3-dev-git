@@ -368,14 +368,7 @@ class Ipv6L3Protocol : public Ipv6
                                      Ipv6Prefix mask,
                                      Ipv6Address defaultRouter);
 
-    /**
-     * \brief Register the IPv6 Extensions.
-     */
     void RegisterExtensions() override;
-
-    /**
-     * \brief Register the IPv6 Options.
-     */
     void RegisterOptions() override;
 
     /**
