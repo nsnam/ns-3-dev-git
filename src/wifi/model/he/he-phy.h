@@ -27,6 +27,7 @@
 #include "ns3/callback.h"
 #include "ns3/vht-phy.h"
 #include "ns3/wifi-phy-band.h"
+#include "ns3/wifi-types.h"
 
 #include <optional>
 

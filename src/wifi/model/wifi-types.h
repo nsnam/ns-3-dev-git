@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018
+ * Copyright (c) 2023 DERONNE SOFTWARE ENGINEERING
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,8 +17,10 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#ifndef WIFI_MPDU_TYPE_H
-#define WIFI_MPDU_TYPE_H
+#ifndef WIFI_TYPES_H
+#define WIFI_TYPES_H
+
+#include <cstdint>
 
 namespace ns3
 {
@@ -43,6 +45,27 @@ enum MpduType
     LAST_MPDU_IN_AGGREGATE
 };
 
+/// SignalNoiseDbm structure
+struct SignalNoiseDbm
+{
+    double signal; ///< signal strength in dBm
+    double noise;  ///< noise power in dBm
+};
+
+/// MpduInfo structure
+struct MpduInfo
+{
+    MpduType type;          ///< type of MPDU
+    uint32_t mpduRefNumber; ///< MPDU ref number
+};
+
+/// RxSignalInfo structure containing info on the received signal
+struct RxSignalInfo
+{
+    double snr;  ///< SNR in linear scale
+    double rssi; ///< RSSI in dBm
+};
+
 } // namespace ns3
 
-#endif /* WIFI_MPDU_TYPE_H */
+#endif /* WIFI_TYPES_H */

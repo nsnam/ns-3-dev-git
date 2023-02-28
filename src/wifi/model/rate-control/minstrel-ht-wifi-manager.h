@@ -27,8 +27,8 @@
 
 #include "minstrel-wifi-manager.h"
 
-#include "ns3/wifi-mpdu-type.h"
 #include "ns3/wifi-remote-station-manager.h"
+#include "ns3/wifi-types.h"
 
 namespace ns3
 {

@@ -298,7 +298,6 @@ set(header_files
     model/wifi-mac.h
     model/wifi-mgt-header.h
     model/wifi-mode.h
-    model/wifi-mpdu-type.h
     model/wifi-mpdu.h
     model/wifi-net-device.h
     model/wifi-opt-field.h
@@ -323,6 +322,7 @@ set(header_files
     model/wifi-tx-parameters.h
     model/wifi-tx-timer.h
     model/wifi-tx-vector.h
+    model/wifi-types.h
     model/wifi-utils.h
     model/yans-error-rate-model.h
     model/yans-wifi-channel.h
