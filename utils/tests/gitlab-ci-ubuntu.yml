@@ -28,7 +28,7 @@
       libsqlite3-dev sqlite3
       libeigen3-dev
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      bison flex ssh
+      ssh
 
   variables:
     COMPILER: g++
@@ -54,7 +54,7 @@ weekly-build-ubuntu-18.04-debug:
       libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
       libsqlite3-dev sqlite3
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      bison flex ssh
+      ssh
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
@@ -80,7 +80,7 @@ weekly-build-ubuntu-18.04-default:
       libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
       libsqlite3-dev sqlite3
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      bison flex ssh
+      ssh
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
@@ -106,7 +106,7 @@ weekly-build-ubuntu-18.04-optimized:
       libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
       libsqlite3-dev sqlite3
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      bison flex ssh
+      ssh
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
