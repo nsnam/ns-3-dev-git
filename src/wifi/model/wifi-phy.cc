@@ -105,7 +105,7 @@ WifiPhy::GetTypeId()
                                  EnumValue<WifiPhyBand>,
                                  UintegerValue>(
                     MakeUintegerChecker<uint8_t>(0, 233),
-                    MakeUintegerChecker<uint16_t>(0, 160),
+                    MakeUintegerChecker<ChannelWidthMhz>(0, 160),
                     MakeEnumChecker(WifiPhyBand::WIFI_PHY_BAND_2_4GHZ,
                                     "BAND_2_4GHZ",
                                     WifiPhyBand::WIFI_PHY_BAND_5GHZ,
@@ -133,7 +133,7 @@ WifiPhy::GetTypeId()
                 TypeId::ATTR_GET,
                 UintegerValue(0),
                 MakeUintegerAccessor(&WifiPhy::GetChannelWidth),
-                MakeUintegerChecker<uint16_t>(5, 160))
+                MakeUintegerChecker<ChannelWidthMhz>(5, 160))
             .AddAttribute(
                 "Primary20MHzIndex",
                 "The index of the primary 20 MHz channel within the current operating channel "
@@ -1079,7 +1079,7 @@ WifiPhy::GetChannelNumber() const
     return m_operatingChannel.GetNumber();
 }
 
-uint16_t
+ChannelWidthMhz
 WifiPhy::GetChannelWidth() const
 {
     return m_operatingChannel.GetWidth();
@@ -1103,8 +1103,8 @@ WifiPhy::HasFixedPhyBand() const
     return m_fixedPhyBand;
 }
 
-uint16_t
-WifiPhy::GetTxBandwidth(WifiMode mode, uint16_t maxAllowedWidth) const
+ChannelWidthMhz
+WifiPhy::GetTxBandwidth(WifiMode mode, ChannelWidthMhz maxAllowedWidth) const
 {
     auto modulation = mode.GetModulationClass();
     if (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS)
@@ -1241,7 +1241,7 @@ WifiPhy::DoChannelSwitch()
     m_band = static_cast<WifiPhyBand>(std::get<2>(m_channelSettings));
 
     // check that the channel width is supported
-    uint16_t chWidth = std::get<1>(m_channelSettings);
+    ChannelWidthMhz chWidth = std::get<1>(m_channelSettings);
 
     if (m_device)
     {
@@ -2275,7 +2275,7 @@ WifiPhy::GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const
     }
 
     // Apply power density constraint on EIRP
-    uint16_t channelWidth = ppdu->GetTxChannelWidth();
+    const auto channelWidth = ppdu->GetTxChannelWidth();
     double txPowerDbmPerMhz =
         (txPowerDbm + GetTxGain()) - RatioToDb(channelWidth); // account for antenna gain since EIRP
     NS_LOG_INFO("txPowerDbm=" << txPowerDbm << " with txPowerDbmPerMhz=" << txPowerDbmPerMhz
@@ -2313,7 +2313,7 @@ operator<<(std::ostream& os, RxSignalInfo rxSignalInfo)
 }
 
 uint8_t
-WifiPhy::GetPrimaryChannelNumber(uint16_t primaryChannelWidth) const
+WifiPhy::GetPrimaryChannelNumber(ChannelWidthMhz primaryChannelWidth) const
 {
     return m_operatingChannel.GetPrimaryChannelNumber(primaryChannelWidth, m_standard);
 }

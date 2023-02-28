@@ -244,7 +244,7 @@ DsssPhy::EndReceiveHeader(Ptr<Event> event)
     return status;
 }
 
-uint16_t
+ChannelWidthMhz
 DsssPhy::GetRxChannelWidth(const WifiTxVector& txVector) const
 {
     if (m_wifiPhy->GetChannelWidth() > 20)
@@ -260,7 +260,7 @@ DsssPhy::GetRxChannelWidth(const WifiTxVector& txVector) const
     return PhyEntity::GetRxChannelWidth(txVector);
 }
 
-uint16_t
+ChannelWidthMhz
 DsssPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 {
     return ppdu ? GetRxChannelWidth(ppdu->GetTxVector()) : 22;
@@ -271,7 +271,7 @@ DsssPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) co
 {
     const auto& txVector = ppdu->GetTxVector();
     uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
-    uint16_t channelWidth = txVector.GetChannelWidth();
+    const auto channelWidth = txVector.GetChannelWidth();
     NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW);
     NS_ABORT_MSG_IF(channelWidth != 22, "Invalid channel width for DSSS");
     Ptr<SpectrumValue> v =

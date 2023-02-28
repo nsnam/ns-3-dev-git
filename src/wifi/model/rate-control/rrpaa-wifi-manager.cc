@@ -261,7 +261,7 @@ RrpaaWifiManager::CheckInit(RrpaaWifiRemoteStation* station)
         station->m_prevPowerLevel = m_maxPowerLevel;
         station->m_powerLevel = m_maxPowerLevel;
         WifiMode mode = GetSupported(station, 0);
-        uint16_t channelWidth = GetChannelWidth(station);
+        auto channelWidth = GetChannelWidth(station);
         DataRate rate(mode.GetDataRate(channelWidth));
         double power = GetPhy()->GetPowerDbm(station->m_powerLevel);
         m_rateChange(rate, rate, station->m_state->m_address);
@@ -372,7 +372,7 @@ RrpaaWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                  double ackSnr,
                                  WifiMode ackMode,
                                  double dataSnr,
-                                 uint16_t dataChannelWidth,
+                                 ChannelWidthMhz dataChannelWidth,
                                  uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -397,11 +397,11 @@ RrpaaWifiManager::DoReportFinalDataFailed(WifiRemoteStation* st)
 }
 
 WifiTxVector
-RrpaaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
+RrpaaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<RrpaaWifiRemoteStation*>(st);
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;
@@ -439,7 +439,7 @@ RrpaaWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 {
     NS_LOG_FUNCTION(this << st);
     auto station = static_cast<RrpaaWifiRemoteStation*>(st);
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;

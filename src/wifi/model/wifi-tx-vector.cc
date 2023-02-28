@@ -62,7 +62,7 @@ WifiTxVector::WifiTxVector(WifiMode mode,
                            uint8_t nTx,
                            uint8_t nss,
                            uint8_t ness,
-                           uint16_t channelWidth,
+                           ChannelWidthMhz channelWidth,
                            bool aggregation,
                            bool stbc,
                            bool ldpc,
@@ -181,7 +181,7 @@ WifiTxVector::GetPreambleType() const
     return m_preamble;
 }
 
-uint16_t
+ChannelWidthMhz
 WifiTxVector::GetChannelWidth() const
 {
     return m_channelWidth;
@@ -309,7 +309,7 @@ WifiTxVector::SetPreambleType(WifiPreamble preamble)
 }
 
 void
-WifiTxVector::SetChannelWidth(uint16_t channelWidth)
+WifiTxVector::SetChannelWidth(ChannelWidthMhz channelWidth)
 {
     m_channelWidth = channelWidth;
 }

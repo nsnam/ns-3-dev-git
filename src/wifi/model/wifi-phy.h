@@ -921,7 +921,7 @@ class WifiPhy : public Object
 
     using ChannelTuple =
         std::tuple<uint8_t /* channel number */,
-                   uint16_t /* channel width */,
+                   ChannelWidthMhz /* channel width */,
                    WifiPhyBand /* WifiPhyBand */,
                    uint8_t /* primary20 index*/>; //!< Tuple identifying an operating channel
 
@@ -981,9 +981,9 @@ class WifiPhy : public Object
      * \param maxAllowedBandWidth the maximum allowed TX bandwidth
      * \return the bandwidth for the transmission
      */
-    uint16_t GetTxBandwidth(
+    ChannelWidthMhz GetTxBandwidth(
         WifiMode mode,
-        uint16_t maxAllowedBandWidth = std::numeric_limits<uint16_t>::max()) const;
+        ChannelWidthMhz maxAllowedBandWidth = std::numeric_limits<ChannelWidthMhz>::max()) const;
     /**
      * \param antennas the number of antennas on this node.
      */
@@ -1082,7 +1082,7 @@ class WifiPhy : public Object
     /**
      * \return the channel width in MHz
      */
-    uint16_t GetChannelWidth() const;
+    ChannelWidthMhz GetChannelWidth() const;
 
     /**
      * Get the power of the given power level in dBm.
@@ -1215,7 +1215,7 @@ class WifiPhy : public Object
      *
      * This method is only relevant for SpectrumWifiPhy.
      */
-    virtual uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const = 0;
+    virtual ChannelWidthMhz GetGuardBandwidth(ChannelWidthMhz currentChannelWidth) const = 0;
     /**
      * \return a tuple containing the minimum rejection (in dBr) for the inner band,
      *                            the minimum rejection (in dBr) for the outer band, and
@@ -1232,7 +1232,7 @@ class WifiPhy : public Object
      *
      * \return channel number of the primary channel
      */
-    uint8_t GetPrimaryChannelNumber(uint16_t primaryChannelWidth) const;
+    uint8_t GetPrimaryChannelNumber(ChannelWidthMhz primaryChannelWidth) const;
 
     /**
      * Get the info of a given band
@@ -1242,7 +1242,7 @@ class WifiPhy : public Object
      *
      * \return the info that defines the band
      */
-    virtual WifiSpectrumBandInfo GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) = 0;
+    virtual WifiSpectrumBandInfo GetBand(ChannelWidthMhz bandWidth, uint8_t bandIndex = 0) = 0;
 
     /**
      * Get the frequency range of the current RF interface.

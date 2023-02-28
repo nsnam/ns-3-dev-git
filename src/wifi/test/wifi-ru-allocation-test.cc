@@ -51,7 +51,7 @@ class Wifi20MHzIndicesCoveringRuTest : public TestCase
      */
     void RunOne(uint8_t primary20,
                 HeRu::RuSpec ru,
-                uint16_t width,
+                ChannelWidthMhz width,
                 const std::set<uint8_t>& indices);
 
   private:
@@ -68,7 +68,7 @@ Wifi20MHzIndicesCoveringRuTest::Wifi20MHzIndicesCoveringRuTest()
 void
 Wifi20MHzIndicesCoveringRuTest::RunOne(uint8_t primary20,
                                        HeRu::RuSpec ru,
-                                       uint16_t width,
+                                       ChannelWidthMhz width,
                                        const std::set<uint8_t>& indices)
 {
     auto printToStr = [](const std::set<uint8_t>& s) {
@@ -103,7 +103,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
 
     /* 20 MHz PPDU */
     {
-        const uint16_t width = 20;
+        const ChannelWidthMhz width = 20;
         const uint8_t p20Index = 0;
 
         // All the 9 26-tone RUs are covered by the unique 20 MHz channel
@@ -133,7 +133,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 20 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 2; p20Index++)
     {
-        const uint16_t width = 20;
+        const ChannelWidthMhz width = 20;
 
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
@@ -157,7 +157,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 40 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 2; p20Index++)
     {
-        const uint16_t width = 40;
+        const ChannelWidthMhz width = 40;
 
         // The first 9 26-tone RUs are covered by the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
@@ -205,7 +205,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 20 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 4; p20Index++)
     {
-        const uint16_t width = 20;
+        const ChannelWidthMhz width = 20;
 
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
@@ -229,7 +229,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 40 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 4; p20Index++)
     {
-        const uint16_t width = 40;
+        const ChannelWidthMhz width = 40;
         // PPDU is transmitted on P40, which may be in the lower or higher 40 MHz
         const uint8_t p40Index = p20Index / 2;
         // RUs can be allocated in one (or both) of the two 20 MHz channels in P40
@@ -277,7 +277,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 80 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 4; p20Index++)
     {
-        const uint16_t width = 80;
+        const ChannelWidthMhz width = 80;
 
         // The first 9 26-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
@@ -365,7 +365,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 20 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 8; p20Index++)
     {
-        const uint16_t width = 20;
+        const ChannelWidthMhz width = 20;
 
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
@@ -389,7 +389,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 40 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 8; p20Index++)
     {
-        const uint16_t width = 40;
+        const ChannelWidthMhz width = 40;
         // PPDU is transmitted on P40, which is one of the four 40 MHz channels
         const uint8_t p40Index = p20Index / 2;
         // RUs can be allocated in one (or both) of the two 20 MHz channels in P40
@@ -437,7 +437,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 80 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 8; p20Index++)
     {
-        const uint16_t width = 80;
+        const ChannelWidthMhz width = 80;
         // PPDU is transmitted on P80, which is one of the two 80 MHz channels
         const uint8_t p80Index = p20Index / 4;
         // RUs can be allocated in one (or more) of the four 20 MHz channels in P80
@@ -530,7 +530,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /* 160 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 8; p20Index++)
     {
-        const uint16_t width = 160;
+        const ChannelWidthMhz width = 160;
 
         for (auto primary80MHz : {true, false})
         {

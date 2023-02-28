@@ -56,7 +56,7 @@ class WifiMode
      * \param channelWidth the considered channel width in MHz
      * \param nss the considered number of streams
      */
-    bool IsAllowed(uint16_t channelWidth, uint8_t nss) const;
+    bool IsAllowed(ChannelWidthMhz channelWidth, uint8_t nss) const;
     /**
      * \returns true if this TXVECTOR combination is allowed, false otherwise.
      *
@@ -74,7 +74,7 @@ class WifiMode
      * If a transmission mode uses 1/2 FEC, and if its
      * data rate is 3.25Mbps, the PHY rate is 6.5Mbps
      */
-    uint64_t GetPhyRate(uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
+    uint64_t GetPhyRate(ChannelWidthMhz channelWidth, uint16_t guardInterval, uint8_t nss) const;
     /**
      * \param txVector the const WifiTxVector& of the signal
      * \param staId the station ID for MU (unused if SU)
@@ -90,7 +90,7 @@ class WifiMode
      *
      * \returns the physical bit rate of this non-HT signal.
      */
-    uint64_t GetPhyRate(uint16_t channelWidth) const;
+    uint64_t GetPhyRate(ChannelWidthMhz channelWidth) const;
     /**
      *
      * \param channelWidth the considered channel width in MHz
@@ -99,7 +99,7 @@ class WifiMode
      *
      * \returns the data bit rate of this signal in bps.
      */
-    uint64_t GetDataRate(uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
+    uint64_t GetDataRate(ChannelWidthMhz channelWidth, uint16_t guardInterval, uint8_t nss) const;
     /**
      * \param txVector the const WifiTxVector& of the signal
      * \param staId the station ID for MU (unused if SU)
@@ -112,7 +112,7 @@ class WifiMode
      *
      * \returns the data bit rate of this non-HT.
      */
-    uint64_t GetDataRate(uint16_t channelWidth) const;
+    uint64_t GetDataRate(ChannelWidthMhz channelWidth) const;
 
     /**
      * \returns the coding rate of this transmission mode

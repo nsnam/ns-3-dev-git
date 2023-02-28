@@ -295,7 +295,7 @@ FrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration
 }
 
 bool
-FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, uint16_t allowedWidth)
+FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << dcf << allowedWidth);
 

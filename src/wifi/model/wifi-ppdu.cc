@@ -142,7 +142,7 @@ WifiPpdu::GetModulation() const
     return m_modulation;
 }
 
-uint16_t
+ChannelWidthMhz
 WifiPpdu::GetTxChannelWidth() const
 {
     return m_txChannelWidth;

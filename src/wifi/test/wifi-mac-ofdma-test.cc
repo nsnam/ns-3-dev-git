@@ -292,7 +292,7 @@ TestMultiUserScheduler::ComputeWifiTxVector()
         return;
     }
 
-    uint16_t bw = m_apMac->GetWifiPhy()->GetChannelWidth();
+    const auto bw = m_apMac->GetWifiPhy()->GetChannelWidth();
 
     m_txVector.SetPreambleType(m_modClass == WIFI_MOD_CLASS_HE ? WIFI_PREAMBLE_HE_MU
                                                                : WIFI_PREAMBLE_EHT_MU);
@@ -416,7 +416,7 @@ class OfdmaAckSequenceTest : public TestCase
      * \param muEdcaParameterSet the MU EDCA Parameter Set
      * \param scenario the OFDMA scenario to test
      */
-    OfdmaAckSequenceTest(uint16_t width,
+    OfdmaAckSequenceTest(ChannelWidthMhz width,
                          WifiAcknowledgment::Method dlType,
                          uint32_t maxAmpduSize,
                          uint16_t txopLimit,
@@ -475,7 +475,7 @@ class OfdmaAckSequenceTest : public TestCase
     NetDeviceContainer m_staDevices;            ///< stations' devices
     Ptr<WifiNetDevice> m_apDevice;              ///< AP's device
     std::vector<PacketSocketAddress> m_sockets; ///< packet socket addresses for STAs
-    uint16_t m_channelWidth;                    ///< PHY channel bandwidth in MHz
+    ChannelWidthMhz m_channelWidth;             ///< PHY channel bandwidth in MHz
     uint8_t m_muRtsRuAllocation;                ///< B7-B1 of RU Allocation subfield of MU-RTS
     std::vector<FrameInfo> m_txPsdus;           ///< transmitted PSDUs
     WifiAcknowledgment::Method m_dlMuAckType;   ///< DL MU ack sequence type
@@ -493,7 +493,7 @@ class OfdmaAckSequenceTest : public TestCase
     std::vector<uint32_t> m_cwValues; ///< CW used by stations after MU exchange
 };
 
-OfdmaAckSequenceTest::OfdmaAckSequenceTest(uint16_t width,
+OfdmaAckSequenceTest::OfdmaAckSequenceTest(ChannelWidthMhz width,
                                            WifiAcknowledgment::Method dlType,
                                            uint32_t maxAmpduSize,
                                            uint16_t txopLimit,

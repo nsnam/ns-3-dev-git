@@ -105,7 +105,7 @@ ConstantRateWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                         double ackSnr,
                                         WifiMode ackMode,
                                         double dataSnr,
-                                        uint16_t dataChannelWidth,
+                                        ChannelWidthMhz dataChannelWidth,
                                         uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -124,7 +124,7 @@ ConstantRateWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
 }
 
 WifiTxVector
-ConstantRateWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
+ConstantRateWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     uint8_t nss = std::min(GetMaxNumberOfTransmitStreams(), GetNumberOfSupportedStreams(st));

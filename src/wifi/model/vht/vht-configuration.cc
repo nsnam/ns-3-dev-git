@@ -107,7 +107,7 @@ VhtConfiguration::GetSecondaryCcaSensitivityThresholds() const
             m_secondaryCcaSensitivityThresholds.at(80)};
 }
 
-const std::map<uint16_t, double>&
+const std::map<ChannelWidthMhz, double>&
 VhtConfiguration::GetSecondaryCcaSensitivityThresholdsPerBw() const
 {
     return m_secondaryCcaSensitivityThresholds;

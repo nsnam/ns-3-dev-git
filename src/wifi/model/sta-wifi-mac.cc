@@ -311,7 +311,7 @@ WifiScanParams::Channel
 StaWifiMac::GetCurrentChannel(uint8_t linkId) const
 {
     auto phy = GetWifiPhy(linkId);
-    uint16_t width = phy->GetOperatingChannel().IsOfdm() ? 20 : phy->GetChannelWidth();
+    const auto width = phy->GetOperatingChannel().IsOfdm() ? 20 : phy->GetChannelWidth();
     uint8_t ch = phy->GetPrimaryChannelNumber(width);
     return {ch, phy->GetPhyBand()};
 }

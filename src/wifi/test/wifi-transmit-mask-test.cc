@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/wifi-phy-band.h"
+#include "ns3/wifi-phy-common.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/wifi-standards.h"
 
@@ -67,7 +68,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
     WifiOfdmMaskSlopesTestCase(const std::string& name,
                                WifiStandard standard,
                                WifiPhyBand band,
-                               uint16_t channelWidth,
+                               ChannelWidthMhz channelWidth,
                                const IndexPowerVect& maskRefs,
                                double tolerance,
                                std::size_t precision,
@@ -91,9 +92,9 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                     IndexPowerPair start,
                                     IndexPowerPair stop) const;
 
-    WifiStandard m_standard; ///< the wifi standard to use for the test
-    WifiPhyBand m_band;      ///< the wifi PHY band to use for the test
-    uint16_t m_channelWidth; ///< the channel width in MHz to use for the test
+    WifiStandard m_standard;        ///< the wifi standard to use for the test
+    WifiPhyBand m_band;             ///< the wifi PHY band to use for the test
+    ChannelWidthMhz m_channelWidth; ///< the channel width in MHz to use for the test
     std::vector<bool>
         m_puncturedSubchannels; ///< bitmap indicating whether a 20 MHz subchannel is punctured or
                                 ///< not (only used for 802.11ax and later)
@@ -107,7 +108,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase(
     const std::string& name,
     WifiStandard standard,
     WifiPhyBand band,
-    uint16_t channelWidth,
+    ChannelWidthMhz channelWidth,
     const IndexPowerVect& maskRefs,
     double tolerance,
     std::size_t precision,

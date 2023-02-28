@@ -573,7 +573,7 @@ WifiPhyStateHelper::SwitchFromSleep()
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxAbort(uint16_t operatingWidth)
+WifiPhyStateHelper::SwitchFromRxAbort(ChannelWidthMhz operatingWidth)
 {
     NS_LOG_FUNCTION(this << operatingWidth);
     NS_ASSERT(IsStateCcaBusy()); // abort is called (with OBSS_PD_CCA_RESET reason) before RX is set

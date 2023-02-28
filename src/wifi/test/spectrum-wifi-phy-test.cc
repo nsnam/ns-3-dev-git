@@ -48,8 +48,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SpectrumWifiPhyTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const uint16_t CHANNEL_WIDTH = 20; // MHz
-static const uint16_t GUARD_WIDTH =
+static const ChannelWidthMhz CHANNEL_WIDTH = 20; // MHz
+static const ChannelWidthMhz GUARD_WIDTH =
     CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
 /**
@@ -484,8 +484,8 @@ class SpectrumWifiPhyFilterTest : public TestCase
     Ptr<ExtSpectrumWifiPhy> m_txPhy; ///< TX PHY
     Ptr<ExtSpectrumWifiPhy> m_rxPhy; ///< RX PHY
 
-    uint16_t m_txChannelWidth; ///< TX channel width (MHz)
-    uint16_t m_rxChannelWidth; ///< RX channel width (MHz)
+    ChannelWidthMhz m_txChannelWidth; ///< TX channel width (MHz)
+    ChannelWidthMhz m_rxChannelWidth; ///< RX channel width (MHz)
 
     std::set<WifiSpectrumBandIndices> m_ruBands; ///< spectrum bands associated to all the RUs
 };
@@ -551,7 +551,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
                           expectedNumBands,
                           "Total number of bands handled by the receiver is incorrect");
 
-    uint16_t channelWidth = std::min(m_txChannelWidth, m_rxChannelWidth);
+    ChannelWidthMhz channelWidth = std::min(m_txChannelWidth, m_rxChannelWidth);
     auto band = m_rxPhy->GetBand(channelWidth, 0);
     auto it = rxPowersW.find(band);
     NS_LOG_INFO("powerW total band: " << it->second << " (" << WToDbm(it->second) << " dBm)");
@@ -698,7 +698,7 @@ SpectrumWifiPhyFilterTest::RunOne()
         WifiPhy::ChannelTuple{rxChannelNum, m_rxChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
     m_ruBands.clear();
-    for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
+    for (ChannelWidthMhz bw = 160; bw >= 20; bw = bw / 2)
     {
         for (uint16_t i = 0; i < (m_rxChannelWidth / bw); ++i)
         {
@@ -858,7 +858,7 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     void SwitchChannel(Ptr<SpectrumWifiPhy> phy,
                        WifiPhyBand band,
                        uint8_t channelNumber,
-                       uint16_t channelWidth,
+                       ChannelWidthMhz channelWidth,
                        std::optional<std::size_t> listenerIndex);
 
     /**
@@ -1005,7 +1005,7 @@ void
 SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel(Ptr<SpectrumWifiPhy> phy,
                                                      WifiPhyBand band,
                                                      uint8_t channelNumber,
-                                                     uint16_t channelWidth,
+                                                     ChannelWidthMhz channelWidth,
                                                      std::optional<std::size_t> listenerIndex)
 {
     NS_LOG_FUNCTION(this << phy << band << +channelNumber << channelWidth);
@@ -1550,7 +1550,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                                        20,
                                                        WIFI_STANDARD_80211ax,
                                                        txPpduPhy->GetPhyBand());
-                for (uint16_t bw = txPpduPhy->GetChannelWidth(); bw >= 20; bw /= 2)
+                for (auto bw = txPpduPhy->GetChannelWidth(); bw >= 20; bw /= 2)
                 {
                     [[maybe_unused]] const auto [channel, frequency, channelWidth, type, band] =
                         (*WifiPhyOperatingChannel::FindFirst(0,

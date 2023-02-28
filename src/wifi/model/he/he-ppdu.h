@@ -154,7 +154,7 @@ class HePpdu : public OfdmPpdu
     Ptr<WifiPpdu> Copy() const override;
     WifiPpduType GetType() const override;
     uint16_t GetStaId() const override;
-    uint16_t GetTxChannelWidth() const override;
+    ChannelWidthMhz GetTxChannelWidth() const override;
 
     /**
      * Get the payload of the PPDU.
@@ -200,7 +200,7 @@ class HePpdu : public OfdmPpdu
      * \return a pair containing the number of RUs in each HE-SIG-B content channel (resp. 1 and 2)
      */
     static std::pair<std::size_t, std::size_t> GetNumRusPerHeSigBContentChannel(
-        uint16_t channelWidth,
+        ChannelWidthMhz channelWidth,
         const RuAllocation& ruAllocation,
         bool sigBCompression,
         uint8_t numMuMimoUsers);
@@ -224,7 +224,7 @@ class HePpdu : public OfdmPpdu
      * \param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      * \return field size in bytes
      */
-    static uint32_t GetSigBFieldSize(uint16_t channelWidth,
+    static uint32_t GetSigBFieldSize(ChannelWidthMhz channelWidth,
                                      const RuAllocation& ruAllocation,
                                      bool sigBCompression,
                                      std::size_t numMuMimoUsers);
@@ -258,7 +258,7 @@ class HePpdu : public OfdmPpdu
      * \param channelWidth the channel width in MHz
      * \return the value used to encode the bandwidth field in HE-SIG-A
      */
-    static uint8_t GetChannelWidthEncodingFromMhz(uint16_t channelWidth);
+    static uint8_t GetChannelWidthEncodingFromMhz(ChannelWidthMhz channelWidth);
 
     /**
      * Convert number of spatial streams to NSTS field encoding in HE-SIG-A.
@@ -291,7 +291,7 @@ class HePpdu : public OfdmPpdu
      * \param bandwidth the value of the bandwidth field in HE-SIG-A
      * \return the channel width in MHz
      */
-    static uint16_t GetChannelWidthMhzFromEncoding(uint8_t bandwidth);
+    static ChannelWidthMhz GetChannelWidthMhzFromEncoding(uint8_t bandwidth);
 
     /**
      * Convert guard interval (in ns) from its encoding in HE-SIG-A.

@@ -169,7 +169,7 @@ CaraWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                 double ackSnr,
                                 WifiMode ackMode,
                                 double dataSnr,
-                                uint16_t dataChannelWidth,
+                                ChannelWidthMhz dataChannelWidth,
                                 uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -204,11 +204,11 @@ CaraWifiManager::DoReportFinalDataFailed(WifiRemoteStation* st)
 }
 
 WifiTxVector
-CaraWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
+CaraWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<CaraWifiRemoteStation*>(st);
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;
@@ -239,7 +239,7 @@ CaraWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     auto station = static_cast<CaraWifiRemoteStation*>(st);
     /// \todo we could/should implement the Arf algorithm for
     /// RTS only by picking a single rate within the BasicRateSet.
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;

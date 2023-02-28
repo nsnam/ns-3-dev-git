@@ -80,11 +80,11 @@ operator<<(std::ostream& os, McsGroupType type)
  */
 struct McsGroup
 {
-    uint8_t streams;   ///< number of spatial streams
-    uint16_t gi;       ///< guard interval duration (nanoseconds)
-    uint16_t chWidth;  ///< channel width (MHz)
-    McsGroupType type; ///< identifies the group, \see McsGroupType
-    bool isSupported;  ///< flag whether group is  supported
+    uint8_t streams;         ///< number of spatial streams
+    uint16_t gi;             ///< guard interval duration (nanoseconds)
+    ChannelWidthMhz chWidth; ///< channel width (MHz)
+    McsGroupType type;       ///< identifies the group, \see McsGroupType
+    bool isSupported;        ///< flag whether group is  supported
     // To accurately account for TX times, we separate the TX time of the first
     // MPDU in an A-MPDU from the rest of the MPDUs.
     TxTime ratesTxTimeTable;          ///< rates transmit time table
@@ -270,18 +270,19 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
                         double ackSnr,
                         WifiMode ackMode,
                         double dataSnr,
-                        uint16_t dataChannelWidth,
+                        ChannelWidthMhz dataChannelWidth,
                         uint8_t dataNss) override;
     void DoReportFinalRtsFailed(WifiRemoteStation* station) override;
     void DoReportFinalDataFailed(WifiRemoteStation* station) override;
-    WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, uint16_t allowedWidth) override;
+    WifiTxVector DoGetDataTxVector(WifiRemoteStation* station,
+                                   ChannelWidthMhz allowedWidth) override;
     WifiTxVector DoGetRtsTxVector(WifiRemoteStation* station) override;
     void DoReportAmpduTxStatus(WifiRemoteStation* station,
                                uint16_t nSuccessfulMpdus,
                                uint16_t nFailedMpdus,
                                double rxSnr,
                                double dataSnr,
-                               uint16_t dataChannelWidth,
+                               ChannelWidthMhz dataChannelWidth,
                                uint8_t dataNss) override;
     bool DoNeedRetransmission(WifiRemoteStation* st,
                               Ptr<const Packet> packet,
@@ -296,7 +297,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * \param mode the wifi mode
      * \returns true if the combination is valid
      */
-    bool IsValidMcs(Ptr<WifiPhy> phy, uint8_t streams, uint16_t chWidth, WifiMode mode);
+    bool IsValidMcs(Ptr<WifiPhy> phy, uint8_t streams, ChannelWidthMhz chWidth, WifiMode mode);
 
     /**
      * Estimates the TxTime of a frame with a given mode and group (stream, guard interval and
@@ -313,7 +314,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     Time CalculateMpduTxDuration(Ptr<WifiPhy> phy,
                                  uint8_t streams,
                                  uint16_t gi,
-                                 uint16_t chWidth,
+                                 ChannelWidthMhz chWidth,
                                  WifiMode mode,
                                  MpduType mpduType);
 
@@ -581,7 +582,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * \param chWidth the channel width (MHz)
      * \returns the HT group ID
      */
-    uint8_t GetHtGroupId(uint8_t txstreams, uint16_t gi, uint16_t chWidth);
+    uint8_t GetHtGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth);
 
     /**
      * Returns the groupId of a VHT MCS with the given number of streams, GI and channel width used.
@@ -591,7 +592,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * \param chWidth the channel width (MHz)
      * \returns the VHT group ID
      */
-    uint8_t GetVhtGroupId(uint8_t txstreams, uint16_t gi, uint16_t chWidth);
+    uint8_t GetVhtGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth);
 
     /**
      * Returns the groupId of an HE MCS with the given number of streams, GI and channel width used.
@@ -601,7 +602,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * \param chWidth the channel width (MHz)
      * \returns the HE group ID
      */
-    uint8_t GetHeGroupId(uint8_t txstreams, uint16_t gi, uint16_t chWidth);
+    uint8_t GetHeGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth);
 
     /**
      * Returns the lowest global index of the rates supported by the station.
@@ -652,7 +653,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * \return the index of a TX rate whose channel width is not greater than the
      *         allowed width, if found (otherwise, the simulation aborts)
      */
-    uint16_t UpdateRateAfterAllowedWidth(uint16_t txRate, uint16_t allowedWidth);
+    uint16_t UpdateRateAfterAllowedWidth(uint16_t txRate, ChannelWidthMhz allowedWidth);
 
     Time m_updateStats;            //!< How frequent do we calculate the stats.
     Time m_legacyUpdateStats;      //!< How frequent do we calculate the stats for legacy

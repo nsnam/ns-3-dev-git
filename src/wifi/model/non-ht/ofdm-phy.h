@@ -104,7 +104,7 @@ class OfdmPhy : public PhyEntity
      * \param bw the bandwidth in MHz
      * \return a WifiMode for OFDM
      */
-    static WifiMode GetOfdmRate(uint64_t rate, uint16_t bw = 20);
+    static WifiMode GetOfdmRate(uint64_t rate, ChannelWidthMhz bw = 20);
     /**
      * Return a WifiMode for OFDM at 6 Mbps.
      *
@@ -278,7 +278,7 @@ class OfdmPhy : public PhyEntity
      *
      * \return the physical bit rate of this signal in bps.
      */
-    static uint64_t GetPhyRate(const std::string& name, uint16_t channelWidth);
+    static uint64_t GetPhyRate(const std::string& name, ChannelWidthMhz channelWidth);
 
     /**
      * Return the PHY rate corresponding to
@@ -312,7 +312,7 @@ class OfdmPhy : public PhyEntity
      *
      * \return the data bit rate of this signal in bps.
      */
-    static uint64_t GetDataRate(const std::string& name, uint16_t channelWidth);
+    static uint64_t GetDataRate(const std::string& name, ChannelWidthMhz channelWidth);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.
@@ -327,7 +327,7 @@ class OfdmPhy : public PhyEntity
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
                                                  Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
-    uint16_t GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;
+    ChannelWidthMhz GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;
 
     /**
      * \param txVector the transmission parameters
@@ -410,7 +410,7 @@ class OfdmPhy : public PhyEntity
      */
     static uint64_t CalculateDataRate(WifiCodeRate codeRate,
                                       uint16_t constellationSize,
-                                      uint16_t channelWidth);
+                                      ChannelWidthMhz channelWidth);
     /**
      * Calculates data rate from the supplied parameters.
      *
@@ -435,7 +435,7 @@ class OfdmPhy : public PhyEntity
      * \param channelWidth the channel width in MHz
      * \return the symbol duration
      */
-    static Time GetSymbolDuration(uint16_t channelWidth);
+    static Time GetSymbolDuration(ChannelWidthMhz channelWidth);
 
   private:
     /**

@@ -202,7 +202,7 @@ class VhtPhy : public HtPhy
      * \return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
-                               uint16_t channelWidth,
+                               ChannelWidthMhz channelWidth,
                                uint16_t guardInterval,
                                uint8_t nss);
     /**
@@ -240,7 +240,7 @@ class VhtPhy : public HtPhy
      * \return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
-                                uint16_t channelWidth,
+                                ChannelWidthMhz channelWidth,
                                 uint16_t guardInterval,
                                 uint8_t nss);
     /**
@@ -261,7 +261,7 @@ class VhtPhy : public HtPhy
      * \param nss the considered number of streams
      * \returns true if this <MCS, channel width, NSS> combination is allowed, false otherwise.
      */
-    static bool IsCombinationAllowed(uint8_t mcsValue, uint16_t channelWidth, uint8_t nss);
+    static bool IsCombinationAllowed(uint8_t mcsValue, ChannelWidthMhz channelWidth, uint8_t nss);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.
@@ -333,7 +333,7 @@ class VhtPhy : public HtPhy
      * \param channelWidth the channel width in MHz
      * \return he number of usable subcarriers for data
      */
-    static uint16_t GetUsableSubcarriers(uint16_t channelWidth);
+    static uint16_t GetUsableSubcarriers(ChannelWidthMhz channelWidth);
 
   private:
     void BuildModeList() override;
@@ -351,9 +351,10 @@ class VhtPhy : public HtPhy
     /**
      * Typedef for storing exceptions in the number of BCC encoders for VHT MCSs
      */
-    typedef std::map<
-        std::tuple<uint16_t /* channelWidth in MHz */, uint8_t /* Nss */, uint8_t /* MCS index */>,
-        uint8_t /* Nes */>
+    typedef std::map<std::tuple<ChannelWidthMhz /* channelWidth in MHz */,
+                                uint8_t /* Nss */,
+                                uint8_t /* MCS index */>,
+                     uint8_t /* Nes */>
         NesExceptionMap;
     static const NesExceptionMap m_exceptionsMap; //!< exception map for number of BCC encoders
                                                   //!< (extracted from VHT-MCS tables)

@@ -40,9 +40,9 @@ namespace ns3
  */
 struct RateStats
 {
-    WifiMode mode;         ///< MCS
-    uint16_t channelWidth; ///< channel width in MHz
-    uint8_t nss;           ///< Number of spatial streams
+    WifiMode mode;                ///< MCS
+    ChannelWidthMhz channelWidth; ///< channel width in MHz
+    uint8_t nss;                  ///< Number of spatial streams
 
     double success{0.0}; ///< averaged number of successful transmissions
     double fails{0.0};   ///< averaged number of failed transmissions
@@ -123,7 +123,7 @@ ThompsonSamplingWifiManager::InitializeStation(WifiRemoteStation* st) const
     // Add HT, VHT or HE MCSes
     for (const auto& mode : GetPhy()->GetMcsList())
     {
-        for (uint16_t j = 20; j <= GetPhy()->GetChannelWidth(); j *= 2)
+        for (ChannelWidthMhz j = 20; j <= GetPhy()->GetChannelWidth(); j *= 2)
         {
             WifiModulationClass modulationClass = WIFI_MOD_CLASS_HT;
             if (GetVhtSupported())
@@ -254,7 +254,7 @@ ThompsonSamplingWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                             double ackSnr,
                                             WifiMode ackMode,
                                             double dataSnr,
-                                            uint16_t dataChannelWidth,
+                                            ChannelWidthMhz dataChannelWidth,
                                             uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode.GetUniqueName() << dataSnr);
@@ -271,7 +271,7 @@ ThompsonSamplingWifiManager::DoReportAmpduTxStatus(WifiRemoteStation* st,
                                                    uint16_t nFailedMpdus,
                                                    double rxSnr,
                                                    double dataSnr,
-                                                   uint16_t dataChannelWidth,
+                                                   ChannelWidthMhz dataChannelWidth,
                                                    uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr);
@@ -317,7 +317,7 @@ ThompsonSamplingWifiManager::GetModeGuardInterval(WifiRemoteStation* st, WifiMod
 }
 
 WifiTxVector
-ThompsonSamplingWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
+ThompsonSamplingWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     InitializeStation(st);
@@ -325,7 +325,7 @@ ThompsonSamplingWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t a
 
     auto& stats = station->m_mcsStats.at(station->m_nextMode);
     WifiMode mode = stats.mode;
-    uint16_t channelWidth = std::min(stats.channelWidth, allowedWidth);
+    const auto channelWidth = std::min(stats.channelWidth, allowedWidth);
     uint8_t nss = stats.nss;
     uint16_t guardInterval = GetModeGuardInterval(st, mode);
 

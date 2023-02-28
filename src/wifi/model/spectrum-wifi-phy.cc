@@ -138,9 +138,9 @@ SpectrumWifiPhy::ComputeBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
     }
     else
     {
-        for (uint16_t bw = channelWidth; bw >= 20; bw = bw / 2)
+        for (ChannelWidthMhz bw = channelWidth; bw >= 20; bw = bw / 2)
         {
-            for (uint32_t i = 0; i < (channelWidth / bw); ++i)
+            for (uint16_t i = 0; i < (channelWidth / bw); ++i)
             {
                 bands.push_back(GetBandForInterface(spectrumPhyInterface, bw, i));
             }
@@ -151,11 +151,11 @@ SpectrumWifiPhy::ComputeBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
 
 HeRuBands
 SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                              uint16_t guardBandwidth)
+                              ChannelWidthMhz guardBandwidth)
 {
     HeRuBands heRuBands{};
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
-    for (uint16_t bw = channelWidth; bw >= 20; bw = bw / 2)
+    for (ChannelWidthMhz bw = channelWidth; bw >= 20; bw = bw / 2)
     {
         for (uint32_t i = 0; i < (channelWidth / bw); ++i)
         {
@@ -264,7 +264,7 @@ SpectrumWifiPhy::AddChannel(const Ptr<SpectrumChannel> channel, const FrequencyR
 void
 SpectrumWifiPhy::ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
                                     uint16_t centerFrequency,
-                                    uint16_t channelWidth)
+                                    ChannelWidthMhz channelWidth)
 {
     NS_LOG_FUNCTION(this << spectrumPhyInterface << centerFrequency << channelWidth);
 
@@ -364,7 +364,7 @@ SpectrumWifiPhy::NotifyChannelSwitched()
 }
 
 void
-SpectrumWifiPhy::ConfigureInterface(uint16_t frequency, uint16_t width)
+SpectrumWifiPhy::ConfigureInterface(uint16_t frequency, ChannelWidthMhz width)
 {
     NS_LOG_FUNCTION(this << frequency << width);
 
@@ -436,10 +436,10 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     const auto rxGainRatio = DbToRatio(GetRxGain());
 
     std::size_t index = 0;
-    uint16_t prevBw = 0;
+    ChannelWidthMhz prevBw = 0;
     for (const auto& band : bands)
     {
-        uint16_t bw = (band.frequencies.second - band.frequencies.first) / 1e6;
+        ChannelWidthMhz bw = (band.frequencies.second - band.frequencies.first) / 1e6;
         NS_ASSERT(bw <= channelWidth);
         index = ((bw != prevBw) ? 0 : (index + 1));
         double rxPowerPerBandW =
@@ -584,10 +584,10 @@ SpectrumWifiPhy::Transmit(Ptr<WifiSpectrumSignalParameters> txParams)
     m_currentSpectrumPhyInterface->StartTx(txParams);
 }
 
-uint16_t
-SpectrumWifiPhy::GetGuardBandwidth(uint16_t currentChannelWidth) const
+ChannelWidthMhz
+SpectrumWifiPhy::GetGuardBandwidth(ChannelWidthMhz currentChannelWidth) const
 {
-    uint16_t guardBandwidth = 0;
+    ChannelWidthMhz guardBandwidth = 0;
     if (currentChannelWidth == 22)
     {
         // handle case of DSSS transmission
@@ -608,7 +608,7 @@ SpectrumWifiPhy::GetGuardBandwidth(uint16_t currentChannelWidth) const
 
 WifiSpectrumBandInfo
 SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                                     uint16_t bandWidth,
+                                     ChannelWidthMhz bandWidth,
                                      uint8_t bandIndex /* = 0 */)
 {
     const auto subcarrierSpacing = GetSubcarrierSpacing();
@@ -642,7 +642,7 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
 }
 
 WifiSpectrumBandInfo
-SpectrumWifiPhy::GetBand(uint16_t bandWidth, uint8_t bandIndex /* = 0 */)
+SpectrumWifiPhy::GetBand(ChannelWidthMhz bandWidth, uint8_t bandIndex /* = 0 */)
 {
     NS_ABORT_IF(!m_currentSpectrumPhyInterface);
     return GetBandForInterface(m_currentSpectrumPhyInterface, bandWidth, bandIndex);
@@ -692,7 +692,7 @@ SpectrumWifiPhy::GetSpectrumPhyInterfaces() const
 }
 
 Ptr<WifiSpectrumPhyInterface>
-SpectrumWifiPhy::GetInterfaceCoveringChannelBand(uint16_t frequency, uint16_t width) const
+SpectrumWifiPhy::GetInterfaceCoveringChannelBand(uint16_t frequency, ChannelWidthMhz width) const
 {
     const auto lowFreq = frequency - (width / 2);
     const auto highFreq = frequency + (width / 2);

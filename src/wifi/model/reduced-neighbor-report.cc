@@ -200,7 +200,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     NS_ASSERT(nbrApInfoId < m_nbrApInfoFields.size());
 
     WifiPhyBand band = WIFI_PHY_BAND_UNSPECIFIED;
-    uint16_t width = 0;
+    ChannelWidthMhz width = 0;
 
     switch (m_nbrApInfoFields.at(nbrApInfoId).operatingClass)
     {

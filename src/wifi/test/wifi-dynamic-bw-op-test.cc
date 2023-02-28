@@ -56,7 +56,7 @@ class WifiUseAvailBwTest : public TestCase
      * \param channelStr channel setting strings for BSS 0 and BSS 1
      * \param bss0Width width (MHz) of the transmission in BSS 0 started when BSS 1 is transmitting
      */
-    WifiUseAvailBwTest(std::initializer_list<std::string> channelStr, uint16_t bss0Width);
+    WifiUseAvailBwTest(std::initializer_list<std::string> channelStr, ChannelWidthMhz bss0Width);
     ~WifiUseAvailBwTest() override;
 
     /**
@@ -94,7 +94,7 @@ class WifiUseAvailBwTest : public TestCase
     };
 
     std::vector<std::string> m_channelStr;        ///< channel setting strings
-    uint16_t m_bss0Width;                         ///< width (MHz) of the transmission in BSS 0
+    ChannelWidthMhz m_bss0Width;                  ///< width (MHz) of the transmission in BSS 0
                                                   ///< started when BSS 1 is transmitting
     NetDeviceContainer m_staDevices;              ///< container for stations' NetDevices
     NetDeviceContainer m_apDevices;               ///< container for AP's NetDevice
@@ -106,7 +106,7 @@ class WifiUseAvailBwTest : public TestCase
 };
 
 WifiUseAvailBwTest::WifiUseAvailBwTest(std::initializer_list<std::string> channelStr,
-                                       uint16_t bss0Width)
+                                       ChannelWidthMhz bss0Width)
     : TestCase("Check transmission on available bandwidth"),
       m_channelStr(channelStr),
       m_bss0Width(bss0Width),

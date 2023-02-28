@@ -149,7 +149,7 @@ class ErpOfdmPhy : public OfdmPhy
      *
      * \return the physical bit rate of this signal in bps.
      */
-    static uint64_t GetPhyRate(const std::string& name, uint16_t channelWidth);
+    static uint64_t GetPhyRate(const std::string& name, ChannelWidthMhz channelWidth);
     /**
      * Return the PHY rate corresponding to
      * the supplied TXVECTOR.
@@ -182,7 +182,7 @@ class ErpOfdmPhy : public OfdmPhy
      *
      * \return the data bit rate of this signal in bps.
      */
-    static uint64_t GetDataRate(const std::string& name, uint16_t channelWidth);
+    static uint64_t GetDataRate(const std::string& name, ChannelWidthMhz channelWidth);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.

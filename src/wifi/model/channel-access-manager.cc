@@ -374,7 +374,7 @@ ChannelAccessManager::InitLastBusyStructs()
         return;
     }
 
-    uint16_t width = m_phy->GetChannelWidth();
+    const auto width = m_phy->GetChannelWidth();
 
     if (width >= 40)
     {
@@ -747,7 +747,7 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
     }
 }
 
-uint16_t
+ChannelWidthMhz
 ChannelAccessManager::GetLargestIdlePrimaryChannel(Time interval, Time end)
 {
     NS_LOG_FUNCTION(this << interval.As(Time::US) << end.As(Time::S));
@@ -762,7 +762,7 @@ ChannelAccessManager::GetLargestIdlePrimaryChannel(Time interval, Time end)
     // also be called before starting a TXOP gained through EDCA.
     UpdateLastIdlePeriod();
 
-    uint16_t width = 0;
+    ChannelWidthMhz width = 0;
 
     // we iterate over the different types of channels in the same order as they
     // are listed in WifiChannelListType

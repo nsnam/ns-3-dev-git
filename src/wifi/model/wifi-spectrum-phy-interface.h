@@ -104,7 +104,7 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
      * \return the channel width in MHz covered by the spectrum channel this interface is attached
      * to to
      */
-    uint16_t GetChannelWidth() const;
+    ChannelWidthMhz GetChannelWidth() const;
 
     /**
      * Start transmission over the spectrum channel
@@ -122,9 +122,9 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
      * \param guardBandwidth the width of the guard band in MHz
      */
     void SetRxSpectrumModel(uint32_t centerFrequency,
-                            uint16_t channelWidth,
+                            ChannelWidthMhz channelWidth,
                             uint32_t bandBandwidth,
-                            uint16_t guardBandwidth);
+                            ChannelWidthMhz guardBandwidth);
 
     /**
      * Set the vector of spectrum bands handled by this interface
@@ -160,7 +160,7 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     Ptr<NetDevice> m_netDevice;                 ///< the device
     Ptr<SpectrumChannel> m_channel;             ///< spectrum channel
     uint16_t m_centerFrequency;                 ///< center frequency in MHz
-    uint16_t m_channelWidth;                    ///< channel width in MHz
+    ChannelWidthMhz m_channelWidth;             ///< channel width in MHz
     Ptr<const SpectrumModel> m_rxSpectrumModel; ///< receive spectrum model
 
     WifiSpectrumBands

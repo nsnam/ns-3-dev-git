@@ -328,7 +328,7 @@ class EmlsrManager : public Object
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
-    uint16_t m_auxPhyMaxWidth;               //!< max channel width (MHz) supported by aux PHYs
+    ChannelWidthMhz m_auxPhyMaxWidth;        //!< max channel width (MHz) supported by aux PHYs
     WifiModulationClass m_auxPhyMaxModClass; //!< max modulation class supported by aux PHYs
     bool m_auxPhyTxCapable;                  //!< whether Aux PHYs are capable of transmitting PPDUs
 

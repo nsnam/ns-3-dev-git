@@ -199,7 +199,7 @@ class EhtPhy : public HePhy
      * \return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
-                               uint16_t channelWidth,
+                               ChannelWidthMhz channelWidth,
                                uint16_t guardInterval,
                                uint8_t nss);
 
@@ -238,7 +238,7 @@ class EhtPhy : public HePhy
      * \return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
-                                uint16_t channelWidth,
+                                ChannelWidthMhz channelWidth,
                                 uint16_t guardInterval,
                                 uint8_t nss);
 

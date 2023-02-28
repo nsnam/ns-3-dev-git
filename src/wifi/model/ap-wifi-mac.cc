@@ -995,7 +995,7 @@ ApWifiMac::GetVhtOperation(uint8_t linkId) const
     auto phy = GetWifiPhy(linkId);
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
 
-    const uint16_t bssBandwidth = phy->GetChannelWidth();
+    const auto bssBandwidth = phy->GetChannelWidth();
     // Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
     // Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
     operation.SetChannelWidth((bssBandwidth > 40) ? 1 : 0);

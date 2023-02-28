@@ -1124,17 +1124,17 @@ class CtrlTriggerHeader : public Header
      */
     bool GetCsRequired() const;
     /**
-     * Set the bandwidth of the solicited HE TB PPDU.
+     * Set the bandwidth of the solicited HE TB PPDU (in MHz).
      *
      * \param bw bandwidth (allowed values: 20, 40, 80, 160)
      */
-    void SetUlBandwidth(uint16_t bw);
+    void SetUlBandwidth(ChannelWidthMhz bw);
     /**
-     * Get the bandwidth of the solicited HE TB PPDU.
+     * Get the bandwidth of the solicited HE TB PPDU (in MHz).
      *
      * \return the bandwidth (20, 40, 80 or 160)
      */
-    uint16_t GetUlBandwidth() const;
+    ChannelWidthMhz GetUlBandwidth() const;
     /**
      * Set the GI And LTF Type subfield of the Common Info field.
      * Allowed combinations are:

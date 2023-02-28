@@ -120,7 +120,7 @@ struct WifiRemoteStationState
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
     bool m_emlsrEnabled; //!< whether EMLSR mode is enabled on this link
 
-    uint16_t m_channelWidth;  //!< Channel width (in MHz) supported by the remote station
+    ChannelWidthMhz m_channelWidth; //!< Channel width (in MHz) supported by the remote station
     uint16_t m_guardInterval; //!< HE Guard interval duration (in nanoseconds) supported by the
                               //!< remote station
     uint8_t m_ness;           //!< Number of extended spatial streams of the remote station
@@ -572,7 +572,7 @@ class WifiRemoteStationManager : public Object
      *
      * \return the channel width supported by the station
      */
-    uint16_t GetChannelWidthSupported(Mac48Address address) const;
+    ChannelWidthMhz GetChannelWidthSupported(Mac48Address address) const;
     /**
      * Return whether the station supports HT/VHT short guard interval.
      *
@@ -836,7 +836,7 @@ class WifiRemoteStationManager : public Object
      * \param allowedWidth the allowed width in MHz to send this packet
      * \return the TXVECTOR to use to send this packet
      */
-    WifiTxVector GetDataTxVector(const WifiMacHeader& header, uint16_t allowedWidth);
+    WifiTxVector GetDataTxVector(const WifiMacHeader& header, ChannelWidthMhz allowedWidth);
     /**
      * \param address remote address
      * \param allowedWidth the allowed width in MHz for the data frame being protected
@@ -1234,7 +1234,7 @@ class WifiRemoteStationManager : public Object
      *
      * \return the channel width (in MHz) supported by the station
      */
-    uint16_t GetChannelWidth(const WifiRemoteStation* station) const;
+    ChannelWidthMhz GetChannelWidth(const WifiRemoteStation* station) const;
     /**
      * Return whether the given station supports HT/VHT short guard interval.
      *
@@ -1343,7 +1343,8 @@ class WifiRemoteStationManager : public Object
      * Note: This method is called before sending a unicast packet or a fragment
      *       of a unicast packet to decide which transmission mode to use.
      */
-    virtual WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, uint16_t allowedWidth) = 0;
+    virtual WifiTxVector DoGetDataTxVector(WifiRemoteStation* station,
+                                           ChannelWidthMhz allowedWidth) = 0;
     /**
      * \param station the station that we need to communicate
      *
@@ -1396,7 +1397,7 @@ class WifiRemoteStationManager : public Object
                                 double ackSnr,
                                 WifiMode ackMode,
                                 double dataSnr,
-                                uint16_t dataChannelWidth,
+                                ChannelWidthMhz dataChannelWidth,
                                 uint8_t dataNss) = 0;
     /**
      * This method is a pure virtual method that must be implemented by the sub-class.
@@ -1441,7 +1442,7 @@ class WifiRemoteStationManager : public Object
                                        uint16_t nFailedMpdus,
                                        double rxSnr,
                                        double dataSnr,
-                                       uint16_t dataChannelWidth,
+                                       ChannelWidthMhz dataChannelWidth,
                                        uint8_t dataNss);
 
     /**

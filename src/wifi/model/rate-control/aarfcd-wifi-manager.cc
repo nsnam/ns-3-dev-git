@@ -279,7 +279,7 @@ AarfcdWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                   double ackSnr,
                                   WifiMode ackMode,
                                   double dataSnr,
-                                  uint16_t dataChannelWidth,
+                                  ChannelWidthMhz dataChannelWidth,
                                   uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -325,11 +325,11 @@ AarfcdWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
 }
 
 WifiTxVector
-AarfcdWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
+AarfcdWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<AarfcdWifiRemoteStation*>(st);
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;
@@ -360,7 +360,7 @@ AarfcdWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     /// \todo we could/should implement the AARF algorithm for
     /// RTS only by picking a single rate within the BasicRateSet.
     auto station = static_cast<AarfcdWifiRemoteStation*>(st);
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;

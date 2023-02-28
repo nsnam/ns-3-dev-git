@@ -59,9 +59,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyReceptionTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const uint32_t FREQUENCY = 5180;   // MHz
-static const uint16_t CHANNEL_WIDTH = 20; // MHz
-static const uint16_t GUARD_WIDTH =
+static const uint32_t FREQUENCY = 5180;          // MHz
+static const ChannelWidthMhz CHANNEL_WIDTH = 20; // MHz
+static const ChannelWidthMhz GUARD_WIDTH =
     CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
 /**
@@ -4228,7 +4228,7 @@ class TestUnsupportedBandwidthReception : public TestCase
      * \param centerFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
      * \param bandwidthMhz the bandwidth used for the transmission of the PPDU (in MHz)
      */
-    void SendPpdu(uint16_t centerFreqMhz, uint16_t bandwidthMhz);
+    void SendPpdu(uint16_t centerFreqMhz, ChannelWidthMhz bandwidthMhz);
 
     /**
      * Function called upon a PSDU received successfully
@@ -4298,7 +4298,7 @@ TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
 }
 
 void
-TestUnsupportedBandwidthReception::SendPpdu(uint16_t centerFreqMhz, uint16_t bandwidthMhz)
+TestUnsupportedBandwidthReception::SendPpdu(uint16_t centerFreqMhz, ChannelWidthMhz bandwidthMhz)
 {
     auto txVector =
         WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidthMhz, false);

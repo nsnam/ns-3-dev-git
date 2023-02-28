@@ -139,7 +139,7 @@ YansWifiChannel::Receive(Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, double 
     // Do no further processing if signal is too weak
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity
-    uint16_t txWidth = ppdu->GetTxChannelWidth();
+    const auto txWidth = ppdu->GetTxChannelWidth();
     if (totalRxPowerDbm < phy->GetRxSensitivity() + RatioToDb(txWidth / 20.0))
     {
         NS_LOG_INFO("Received signal too weak to process: " << rxPowerDbm << " dBm");

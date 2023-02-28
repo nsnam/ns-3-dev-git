@@ -76,9 +76,9 @@ class SpectrumWifiPhy : public WifiPhy
     void SetDevice(const Ptr<WifiNetDevice> device) override;
     void StartTx(Ptr<const WifiPpdu> ppdu) override;
     Ptr<Channel> GetChannel() const override;
-    uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
+    ChannelWidthMhz GetGuardBandwidth(ChannelWidthMhz currentChannelWidth) const override;
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
-    WifiSpectrumBandInfo GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
+    WifiSpectrumBandInfo GetBand(ChannelWidthMhz bandWidth, uint8_t bandIndex = 0) override;
     FrequencyRange GetCurrentFrequencyRange() const override;
     WifiSpectrumBandFrequencies ConvertIndicesToFrequencies(
         const WifiSpectrumBandIndices& indices) const override;
@@ -143,7 +143,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \param frequency the center frequency in MHz the PHY interface should use
      * \param width the channel width in MHz the PHY interface should use
      */
-    void ConfigureInterface(uint16_t frequency, uint16_t width);
+    void ConfigureInterface(uint16_t frequency, ChannelWidthMhz width);
 
     /**
      * This function is sending the signal to the Spectrum channel
@@ -204,7 +204,7 @@ class SpectrumWifiPhy : public WifiPhy
      */
     void ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
                             uint16_t centerFrequency,
-                            uint16_t channelWidth);
+                            ChannelWidthMhz channelWidth);
 
     /**
      * This function is called to update the bands handled by the InterferenceHelper.
@@ -220,7 +220,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \returns the computed RU bands for the spectrum PHY interface
      */
     HeRuBands GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                           uint16_t guardBandwidth);
+                           ChannelWidthMhz guardBandwidth);
 
     /**
      * This function computes the bands that belong to a given spectrum PHY interface.
@@ -240,7 +240,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \return the info that defines the band
      */
     WifiSpectrumBandInfo GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                                             uint16_t bandWidth,
+                                             ChannelWidthMhz bandWidth,
                                              uint8_t bandIndex = 0);
 
     /**
@@ -272,7 +272,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \return the spectrum PHY interface that covers the indicated band of the RF channel
      */
     Ptr<WifiSpectrumPhyInterface> GetInterfaceCoveringChannelBand(uint16_t frequency,
-                                                                  uint16_t width) const;
+                                                                  ChannelWidthMhz width) const;
 
     /**
      * Notify the spectrum channel has switched

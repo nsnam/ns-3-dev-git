@@ -43,18 +43,7 @@ class ThresholdPreambleDetectionModel : public PreambleDetectionModel
 
     ThresholdPreambleDetectionModel();
     ~ThresholdPreambleDetectionModel() override;
-
-    /**
-     * This method returns whether the preamble detection was successful.
-     *
-     * \param rssi the RSSI of the received signal (in Watts).
-     * \param snr the SNR ratio (linear scale) of the received signal.
-     * \param channelWidth the channel width of the received signal in MHz.
-     *
-     * \return true if the preamble has been detected,
-     *         false otherwise
-     */
-    bool IsPreambleDetected(double rssi, double snr, double channelWidth) const override;
+    bool IsPreambleDetected(double rssi, double snr, ChannelWidthMhz channelWidth) const override;
 
   private:
     double m_threshold; ///< SNR threshold in dB used to decide whether a preamble is successfully

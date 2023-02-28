@@ -134,7 +134,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      *
      * \return the effective channel width (in MHz) used for the tranmsission
      */
-    virtual uint16_t GetTxChannelWidth() const;
+    virtual ChannelWidthMhz GetTxChannelWidth() const;
 
     /**
      * \return the center frequency (MHz) used for the transmission of this PPDU

@@ -188,7 +188,7 @@ AparfWifiManager::CheckInit(AparfWifiRemoteStation* station)
         station->m_prevPowerLevel = m_maxPower;
         station->m_critRateIndex = 0;
         WifiMode mode = GetSupported(station, station->m_rateIndex);
-        uint16_t channelWidth = GetChannelWidth(station);
+        auto channelWidth = GetChannelWidth(station);
         DataRate rate(mode.GetDataRate(channelWidth));
         double power = GetPhy()->GetPowerDbm(m_maxPower);
         m_powerChange(power, power, station->m_state->m_address);
@@ -267,7 +267,7 @@ AparfWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                  double ackSnr,
                                  WifiMode ackMode,
                                  double dataSnr,
-                                 uint16_t dataChannelWidth,
+                                 ChannelWidthMhz dataChannelWidth,
                                  uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -348,11 +348,11 @@ AparfWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
 }
 
 WifiTxVector
-AparfWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
+AparfWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<AparfWifiRemoteStation*>(st);
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;
@@ -392,7 +392,7 @@ AparfWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     /// \todo we could/should implement the ARF algorithm for
     /// RTS only by picking a single rate within the BasicRateSet.
     auto station = static_cast<AparfWifiRemoteStation*>(st);
-    uint16_t channelWidth = GetChannelWidth(station);
+    auto channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
         channelWidth = 20;

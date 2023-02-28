@@ -337,7 +337,10 @@ EhtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-EhtPhy::GetPhyRate(uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+EhtPhy::GetPhyRate(uint8_t mcsValue,
+                   ChannelWidthMhz channelWidth,
+                   uint16_t guardInterval,
+                   uint8_t nss)
 {
     WifiCodeRate codeRate = GetCodeRate(mcsValue);
     uint64_t dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
@@ -347,7 +350,7 @@ EhtPhy::GetPhyRate(uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterv
 uint64_t
 EhtPhy::GetPhyRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* = SU_STA_ID */)
 {
-    uint16_t bw = txVector.GetChannelWidth();
+    auto bw = txVector.GetChannelWidth();
     if (txVector.IsMu())
     {
         bw = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
@@ -361,7 +364,7 @@ EhtPhy::GetPhyRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* =
 uint64_t
 EhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* = SU_STA_ID */)
 {
-    uint16_t bw = txVector.GetChannelWidth();
+    auto bw = txVector.GetChannelWidth();
     if (txVector.IsMu())
     {
         bw = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
@@ -373,7 +376,10 @@ EhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* 
 }
 
 uint64_t
-EhtPhy::GetDataRate(uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+EhtPhy::GetDataRate(uint8_t mcsValue,
+                    ChannelWidthMhz channelWidth,
+                    uint16_t guardInterval,
+                    uint8_t nss)
 {
     NS_ASSERT(guardInterval == 800 || guardInterval == 1600 || guardInterval == 3200);
     NS_ASSERT(nss <= 8);

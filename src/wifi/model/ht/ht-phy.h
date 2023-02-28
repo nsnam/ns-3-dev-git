@@ -403,7 +403,7 @@ class HtPhy : public OfdmPhy
      * \return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
-                               uint16_t channelWidth,
+                               ChannelWidthMhz channelWidth,
                                uint16_t guardInterval,
                                uint8_t nss);
     /**
@@ -441,7 +441,7 @@ class HtPhy : public OfdmPhy
      * \return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
-                                uint16_t channelWidth,
+                                ChannelWidthMhz channelWidth,
                                 uint16_t guardInterval,
                                 uint8_t nss);
     /**
@@ -541,7 +541,7 @@ class HtPhy : public OfdmPhy
      * \param channelWidth the channel width in MHz
      * \return the number of usable subcarriers for data
      */
-    static uint16_t GetUsableSubcarriers(uint16_t channelWidth);
+    static uint16_t GetUsableSubcarriers(ChannelWidthMhz channelWidth);
 
     /**
      * \param guardInterval the guard interval duration

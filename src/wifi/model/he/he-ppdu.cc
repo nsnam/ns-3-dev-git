@@ -414,15 +414,15 @@ HePpdu::GetStaId() const
     return m_psdus.begin()->first;
 }
 
-uint16_t
+ChannelWidthMhz
 HePpdu::GetTxChannelWidth() const
 {
     if (const auto& txVector = GetTxVector();
         txVector.IsValid() && txVector.IsUlMu() && GetStaId() != SU_STA_ID)
     {
         TxPsdFlag flag = GetTxPsdFlag();
-        uint16_t ruWidth = HeRu::GetBandwidth(txVector.GetRu(GetStaId()).GetRuType());
-        uint16_t channelWidth = (flag == PSD_NON_HE_PORTION && ruWidth < 20) ? 20 : ruWidth;
+        ChannelWidthMhz ruWidth = HeRu::GetBandwidth(txVector.GetRu(GetStaId()).GetRuType());
+        ChannelWidthMhz channelWidth = (flag == PSD_NON_HE_PORTION && ruWidth < 20) ? 20 : ruWidth;
         NS_LOG_INFO("Use channelWidth=" << channelWidth << " MHz for HE TB from " << GetStaId()
                                         << " for " << flag);
         return channelWidth;
@@ -483,7 +483,7 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
 }
 
 std::pair<std::size_t, std::size_t>
-HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth,
+HePpdu::GetNumRusPerHeSigBContentChannel(ChannelWidthMhz channelWidth,
                                          const RuAllocation& ruAllocation,
                                          bool sigBCompression,
                                          uint8_t numMuMimoUsers)
@@ -636,7 +636,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
 }
 
 uint32_t
-HePpdu::GetSigBFieldSize(uint16_t channelWidth,
+HePpdu::GetSigBFieldSize(ChannelWidthMhz channelWidth,
                          const RuAllocation& ruAllocation,
                          bool sigBCompression,
                          std::size_t numMuMimoUsers)
@@ -692,7 +692,7 @@ HePpdu::PrintPayload() const
 }
 
 uint8_t
-HePpdu::GetChannelWidthEncodingFromMhz(uint16_t channelWidth)
+HePpdu::GetChannelWidthEncodingFromMhz(ChannelWidthMhz channelWidth)
 {
     if (channelWidth == 160)
     {
@@ -712,7 +712,7 @@ HePpdu::GetChannelWidthEncodingFromMhz(uint16_t channelWidth)
     }
 }
 
-uint16_t
+ChannelWidthMhz
 HePpdu::GetChannelWidthMhzFromEncoding(uint8_t bandwidth)
 {
     if (bandwidth == 3)

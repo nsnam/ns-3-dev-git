@@ -1533,7 +1533,7 @@ class Bug2843TestCase : public TestCase
      * A tuple of {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation
      * type}
      */
-    typedef std::tuple<double, uint16_t, uint32_t, WifiModulationClass>
+    typedef std::tuple<double, ChannelWidthMhz, uint32_t, WifiModulationClass>
         FreqWidthSubbandModulationTuple;
     std::vector<FreqWidthSubbandModulationTuple>
         m_distinctTuples; ///< vector of distinct {starting frequency, channelWidth, Number of
@@ -1556,7 +1556,7 @@ class Bug2843TestCase : public TestCase
                          Ptr<NetDevice> sourceDevice,
                          Address& destination) const;
 
-    uint16_t m_channelWidth; ///< channel width (in MHz)
+    ChannelWidthMhz m_channelWidth; ///< channel width (in MHz)
 };
 
 Bug2843TestCase::Bug2843TestCase()
@@ -1618,7 +1618,7 @@ Bug2843TestCase::SendPacketBurst(uint8_t numPackets,
 void
 Bug2843TestCase::DoRun()
 {
-    uint16_t channelWidth = 40; // at least 40 MHz expected here
+    ChannelWidthMhz channelWidth = 40; // at least 40 MHz expected here
 
     NodeContainer wifiStaNode;
     wifiStaNode.Create(1);
@@ -2975,7 +2975,7 @@ class IdealRateManagerChannelWidthTest : public TestCase
      * Change the configured channel width for all nodes
      * \param channelWidth the channel width (in MHz)
      */
-    void ChangeChannelWidth(uint16_t channelWidth);
+    void ChangeChannelWidth(ChannelWidthMhz channelWidth);
 
     /**
      * Triggers the transmission of a 1000 Byte-long data packet from the source device
@@ -3015,7 +3015,7 @@ IdealRateManagerChannelWidthTest::~IdealRateManagerChannelWidthTest()
 }
 
 void
-IdealRateManagerChannelWidthTest::ChangeChannelWidth(uint16_t channelWidth)
+IdealRateManagerChannelWidthTest::ChangeChannelWidth(ChannelWidthMhz channelWidth)
 {
     Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelSettings",
                 StringValue("{0, " + std::to_string(channelWidth) + ", BAND_5GHZ, 0}"));

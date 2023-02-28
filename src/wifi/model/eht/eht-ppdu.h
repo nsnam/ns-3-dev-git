@@ -115,7 +115,7 @@ class EhtPpdu : public HePpdu
      * \return a pair containing the number of RUs in each EHT-SIG-B content channel (resp. 1 and 2)
      */
     static std::pair<std::size_t, std::size_t> GetNumRusPerEhtSigBContentChannel(
-        uint16_t channelWidth,
+        ChannelWidthMhz channelWidth,
         uint8_t ehtPpduType,
         const std::vector<uint8_t>& ruAllocation,
         bool compression,
@@ -141,7 +141,7 @@ class EhtPpdu : public HePpdu
      * \param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      * \return field size in bytes
      */
-    static uint32_t GetEhtSigFieldSize(uint16_t channelWidth,
+    static uint32_t GetEhtSigFieldSize(ChannelWidthMhz channelWidth,
                                        const std::vector<uint8_t>& ruAllocation,
                                        uint8_t ehtPpduType,
                                        bool compression,

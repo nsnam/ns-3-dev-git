@@ -405,7 +405,7 @@ InterferenceHelper::UpdateEvent(Ptr<Event> event, const RxPowerWattPerChannelBan
 double
 InterferenceHelper::CalculateSnr(double signal,
                                  double noiseInterference,
-                                 uint16_t channelWidth,
+                                 ChannelWidthMhz channelWidth,
                                  uint8_t nss) const
 {
     NS_LOG_FUNCTION(this << signal << noiseInterference << channelWidth << +nss);
@@ -567,7 +567,7 @@ InterferenceHelper::CalculatePayloadChunkSuccessRate(double snir,
 
 double
 InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
-                                        uint16_t channelWidth,
+                                        ChannelWidthMhz channelWidth,
                                         NiChangesPerBand* nis,
                                         const WifiSpectrumBandInfo& band,
                                         uint16_t staId,
@@ -651,7 +651,7 @@ double
 InterferenceHelper::CalculatePhyHeaderSectionPsr(
     Ptr<const Event> event,
     NiChangesPerBand* nis,
-    uint16_t channelWidth,
+    ChannelWidthMhz channelWidth,
     const WifiSpectrumBandInfo& band,
     PhyEntity::PhyHeaderSections phyHeaderSections) const
 {
@@ -714,7 +714,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr(
 double
 InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
                                           NiChangesPerBand* nis,
-                                          uint16_t channelWidth,
+                                          ChannelWidthMhz channelWidth,
                                           const WifiSpectrumBandInfo& band,
                                           WifiPpduField header) const
 {
@@ -743,7 +743,7 @@ InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
 
 PhyEntity::SnrPer
 InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
-                                           uint16_t channelWidth,
+                                           ChannelWidthMhz channelWidth,
                                            const WifiSpectrumBandInfo& band,
                                            uint16_t staId,
                                            std::pair<Time, Time> relativeMpduStartStop) const
@@ -767,7 +767,7 @@ InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
 
 double
 InterferenceHelper::CalculateSnr(Ptr<Event> event,
-                                 uint16_t channelWidth,
+                                 ChannelWidthMhz channelWidth,
                                  uint8_t nss,
                                  const WifiSpectrumBandInfo& band) const
 {
@@ -779,7 +779,7 @@ InterferenceHelper::CalculateSnr(Ptr<Event> event,
 
 PhyEntity::SnrPer
 InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
-                                             uint16_t channelWidth,
+                                             ChannelWidthMhz channelWidth,
                                              const WifiSpectrumBandInfo& band,
                                              WifiPpduField header) const
 {

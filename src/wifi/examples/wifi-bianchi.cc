@@ -2709,8 +2709,8 @@ main(int argc, char* argv[])
     double maxRelativeError =
         0.015; ///< Maximum relative error tolerated between ns-3 results and the Bianchi model
                ///< (used for regression, i.e. when the validate flag is set)
-    double frequency = 5;           ///< The operating frequency band in GHz: 2.4, 5 or 6
-    uint16_t channelWidth = 20;     ///< The constant channel width in MHz (only for 11n/ac/ax)
+    double frequency = 5;              ///< The operating frequency band in GHz: 2.4, 5 or 6
+    ChannelWidthMhz channelWidth = 20; ///< The constant channel width in MHz (only for 11n/ac/ax)
     uint16_t guardIntervalNs = 800; ///< The guard interval in nanoseconds (800 or 400 for 11n/ac,
                                     ///< 800 or 1600 or 3200 for 11 ax)
     uint16_t pktInterval =

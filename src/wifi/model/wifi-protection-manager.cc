@@ -80,7 +80,7 @@ WifiProtectionManager::SetLinkId(uint8_t linkId)
 
 void
 WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
-                                          uint16_t txWidth,
+                                          ChannelWidthMhz txWidth,
                                           const Mac48Address& receiver) const
 {
     NS_LOG_FUNCTION(this << muRts << txWidth << receiver);
@@ -91,7 +91,7 @@ WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
     auto apMac = StaticCast<ApWifiMac>(m_mac);
     ui.SetAid12(apMac->GetAssociationId(receiver, m_linkId));
 
-    const uint16_t ctsTxWidth =
+    const auto ctsTxWidth =
         std::min(txWidth, GetWifiRemoteStationManager()->GetChannelWidthSupported(receiver));
     auto phy = m_mac->GetWifiPhy(m_linkId);
     std::size_t primaryIdx = phy->GetOperatingChannel().GetPrimaryChannelIndex(ctsTxWidth);

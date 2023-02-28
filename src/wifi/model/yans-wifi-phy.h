@@ -59,9 +59,9 @@ class YansWifiPhy : public WifiPhy
     void SetInterferenceHelper(const Ptr<InterferenceHelper> helper) override;
     void StartTx(Ptr<const WifiPpdu> ppdu) override;
     Ptr<Channel> GetChannel() const override;
-    uint16_t GetGuardBandwidth(uint16_t currentChannelWidth) const override;
+    ChannelWidthMhz GetGuardBandwidth(ChannelWidthMhz currentChannelWidth) const override;
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
-    WifiSpectrumBandInfo GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
+    WifiSpectrumBandInfo GetBand(ChannelWidthMhz bandWidth, uint8_t bandIndex = 0) override;
     FrequencyRange GetCurrentFrequencyRange() const override;
     WifiSpectrumBandFrequencies ConvertIndicesToFrequencies(
         const WifiSpectrumBandIndices& indices) const override;

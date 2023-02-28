@@ -464,7 +464,7 @@ HtPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) cons
 {
     const auto& txVector = ppdu->GetTxVector();
     uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
-    uint16_t channelWidth = txVector.GetChannelWidth();
+    const auto channelWidth = txVector.GetChannelWidth();
     NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW);
     const auto& txMaskRejectionParams = GetTxMaskRejectionParams();
     Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
@@ -649,7 +649,10 @@ HtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-HtPhy::GetPhyRate(uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+HtPhy::GetPhyRate(uint8_t mcsValue,
+                  ChannelWidthMhz channelWidth,
+                  uint16_t guardInterval,
+                  uint8_t nss)
 {
     WifiCodeRate codeRate = GetHtCodeRate(mcsValue);
     uint64_t dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
@@ -693,7 +696,10 @@ HtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId *
 }
 
 uint64_t
-HtPhy::GetDataRate(uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+HtPhy::GetDataRate(uint8_t mcsValue,
+                   ChannelWidthMhz channelWidth,
+                   uint16_t guardInterval,
+                   uint8_t nss)
 {
     NS_ASSERT(guardInterval == 800 || guardInterval == 400);
     NS_ASSERT(nss <= 4);
@@ -718,7 +724,7 @@ HtPhy::CalculateDataRate(Time symbolDuration,
 }
 
 uint16_t
-HtPhy::GetUsableSubcarriers(uint16_t channelWidth)
+HtPhy::GetUsableSubcarriers(ChannelWidthMhz channelWidth)
 {
     return (channelWidth == 40) ? 108 : 52;
 }
@@ -838,7 +844,7 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     }
     if (ppdu)
     {
-        const uint16_t primaryWidth = 20;
+        const ChannelWidthMhz primaryWidth = 20;
         uint16_t p20MinFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) -
             (primaryWidth / 2);
@@ -855,7 +861,7 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
         }
     }
 
-    const uint16_t secondaryWidth = 20;
+    const ChannelWidthMhz secondaryWidth = 20;
     uint16_t s20MinFreq =
         m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(secondaryWidth) -
         (secondaryWidth / 2);

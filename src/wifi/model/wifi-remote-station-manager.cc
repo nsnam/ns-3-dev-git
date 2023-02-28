@@ -588,7 +588,7 @@ WifiRemoteStationManager::GetAffiliatedStaAddress(const Mac48Address& mldAddress
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, uint16_t allowedWidth)
+WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, ChannelWidthMhz allowedWidth)
 {
     NS_LOG_FUNCTION(this << header << allowedWidth);
     Mac48Address address = header.GetAddr1();
@@ -624,10 +624,10 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, uint16_t 
         txVector.SetPreambleType(
             GetPreambleForTransmission(mgtMode.GetModulationClass(), GetShortPreambleEnabled()));
         txVector.SetTxPowerLevel(m_defaultTxPowerLevel);
-        uint16_t channelWidth = allowedWidth;
+        auto channelWidth = allowedWidth;
         if (!header.GetAddr1().IsGroup())
         {
-            if (uint16_t rxWidth = GetChannelWidthSupported(header.GetAddr1());
+            if (const auto rxWidth = GetChannelWidthSupported(header.GetAddr1());
                 rxWidth < channelWidth)
             {
                 channelWidth = rxWidth;
@@ -1917,7 +1917,7 @@ WifiRemoteStationManager::DoReportAmpduTxStatus(WifiRemoteStation* station,
                                                 uint16_t nFailedMpdus,
                                                 double rxSnr,
                                                 double dataSnr,
-                                                uint16_t dataChannelWidth,
+                                                ChannelWidthMhz dataChannelWidth,
                                                 uint8_t dataNss)
 {
     NS_LOG_DEBUG("DoReportAmpduTxStatus received but the manager does not handle A-MPDUs!");
@@ -1973,7 +1973,7 @@ WifiRemoteStationManager::GetAddress(const WifiRemoteStation* station) const
     return station->m_state->m_address;
 }
 
-uint16_t
+ChannelWidthMhz
 WifiRemoteStationManager::GetChannelWidth(const WifiRemoteStation* station) const
 {
     return station->m_state->m_channelWidth;
@@ -2110,7 +2110,7 @@ WifiRemoteStationManager::GetNNonErpSupported(const WifiRemoteStation* station) 
     return size;
 }
 
-uint16_t
+ChannelWidthMhz
 WifiRemoteStationManager::GetChannelWidthSupported(Mac48Address address) const
 {
     return LookupState(address)->m_channelWidth;

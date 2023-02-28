@@ -642,7 +642,7 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
  * \param modulation the modulation class
  * \return the maximum channel width in MHz allowed for the given modulation class
  */
-uint16_t GetMaximumChannelWidth(WifiModulationClass modulation);
+ChannelWidthMhz GetMaximumChannelWidth(WifiModulationClass modulation);
 
 /**
  * Return true if a preamble corresponds to an EHT transmission.

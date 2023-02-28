@@ -259,7 +259,7 @@ class WifiPhyStateHelper : public Object
      * Abort current reception following a CCA reset request.
      * \param operatingWidth the channel width the PHY is operating on (in MHz)
      */
-    void SwitchFromRxAbort(uint16_t operatingWidth);
+    void SwitchFromRxAbort(ChannelWidthMhz operatingWidth);
     /**
      * Switch to CCA busy.
      *

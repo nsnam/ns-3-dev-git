@@ -158,7 +158,7 @@ VhtPpdu::VhtSigHeader::SetMuFlag(bool mu)
 }
 
 void
-VhtPpdu::VhtSigHeader::SetChannelWidth(uint16_t channelWidth)
+VhtPpdu::VhtSigHeader::SetChannelWidth(ChannelWidthMhz channelWidth)
 {
     if (channelWidth == 160)
     {
@@ -178,7 +178,7 @@ VhtPpdu::VhtSigHeader::SetChannelWidth(uint16_t channelWidth)
     }
 }
 
-uint16_t
+ChannelWidthMhz
 VhtPpdu::VhtSigHeader::GetChannelWidth() const
 {
     if (m_bw == 3)

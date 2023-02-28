@@ -70,13 +70,13 @@ class HtPpdu : public OfdmPpdu
          *
          * \param channelWidth the channel width (in MHz)
          */
-        void SetChannelWidth(uint16_t channelWidth);
+        void SetChannelWidth(ChannelWidthMhz channelWidth);
         /**
          * Return the channel width (in MHz).
          *
          * \return the channel width (in MHz)
          */
-        uint16_t GetChannelWidth() const;
+        ChannelWidthMhz GetChannelWidth() const;
         /**
          * Fill the aggregation field of HT-SIG.
          *
