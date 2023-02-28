@@ -7,123 +7,166 @@
 # We support from 8 to the latest version. Check if everything builds fine
 # under debug, default, and optimized, on Linux.
 
-.weekly-build-gcc:
+.weekly-build-gcc-base:
   extends: .base-build
   only:
     variables:
       - $RELEASE == "weekly"
-      - $GCC_BUILD_ENABLE == "True"
+      - $UBUNTU == "True"
   before_script:
     - apt update
-    - update-alternatives --install /usr/bin/gfortran gfortran /usr/local/bin/gfortran 999
+    - apt upgrade -y
     - DEBIAN_FRONTEND=noninteractive apt install -y
-      g++ cmake ninja-build ccache
+      $COMPILER cmake ninja-build ccache
       python3 python3-dev
-      libgsl0-dev gsl-bin
+      gsl-bin libgsl-dev $LIBGSL
       libboost-all-dev
-      libeigen3-dev
       libgtk-3-dev
       libfl-dev
       libxml2 libxml2-dev
       libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
       libsqlite3-dev sqlite3
+      libeigen3-dev
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      bison flex ssh
+      ssh
   variables:
-    COMPILER: g++
     ENABLE_MPI: --enable-mpi
 
 # GCC 8
 weekly-build-gcc-8-debug:
-  extends: .weekly-build-gcc
-  image: gcc:8
+  extends: .weekly-build-gcc-base
+  image: ubuntu:20.04
   variables:
     MODE: debug
+    COMPILER: g++-8
+    LIBGSL: libgsl23
 
 weekly-build-gcc-8-default:
-  extends: .weekly-build-gcc
-  image: gcc:8
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: default
+    COMPILER: g++-8
+    LIBGSL: libgsl23
 
 weekly-build-gcc-8-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:8
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: optimized
+    COMPILER: g++-8
+    LIBGSL: libgsl23
 
 # GCC 9
 weekly-build-gcc-9-debug:
-  extends: .weekly-build-gcc
-  image: gcc:9
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: debug
+    COMPILER: g++-9
+    LIBGSL: libgsl23
 
 weekly-build-gcc-9-default:
-  extends: .weekly-build-gcc
-  image: gcc:9
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: default
+    COMPILER: g++-9
+    LIBGSL: libgsl23
 
 weekly-build-gcc-9-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:9
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: optimized
+    COMPILER: g++-9
+    LIBGSL: libgsl23
 
 # GCC 10
 weekly-build-gcc-10-debug:
-  extends: .weekly-build-gcc
-  image: gcc:10
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: debug
+    COMPILER: g++-10
+    LIBGSL: libgsl23
 
 weekly-build-gcc-10-default:
-  extends: .weekly-build-gcc
-  image: gcc:10
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: default
+    COMPILER: g++-10
+    LIBGSL: libgsl23
 
 weekly-build-gcc-10-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:10
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:20.04
   variables:
     MODE: optimized
+    COMPILER: g++-10
+    LIBGSL: libgsl23
 
 # GCC 11
 weekly-build-gcc-11-debug:
-  extends: .weekly-build-gcc
-  image: gcc:11
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:22.04
   variables:
     MODE: debug
+    COMPILER: g++-11
+    LIBGSL: libgsl27
 
 weekly-build-gcc-11-default:
-  extends: .weekly-build-gcc
-  image: gcc:11
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:22.04
   variables:
     MODE: default
+    COMPILER: g++-11
+    LIBGSL: libgsl27
 
 weekly-build-gcc-11-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:11
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:22.04
   variables:
     MODE: optimized
+    COMPILER: g++-11
+    LIBGSL: libgsl27
 
 # GCC 12
 weekly-build-gcc-12-debug:
-  extends: .weekly-build-gcc
-  image: gcc:12
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:22.04
   variables:
     MODE: debug
+    COMPILER: g++-12
+    LIBGSL: libgsl27
 
 weekly-build-gcc-12-default:
-  extends: .weekly-build-gcc
-  image: gcc:12
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:22.04
   variables:
     MODE: default
+    COMPILER: g++-12
+    LIBGSL: libgsl27
 
 weekly-build-gcc-12-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:12
+  extends: .weekly-build-gcc-base
+
+  image: ubuntu:22.04
   variables:
     MODE: optimized
+    COMPILER: g++-12
+    LIBGSL: libgsl27
