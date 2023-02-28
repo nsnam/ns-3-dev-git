@@ -81,7 +81,7 @@ class MyEventObject : public Object
     }
 
     /** Destructor. */
-    ~MyEventObject()
+    ~MyEventObject() override
     {
         NS_LOG_FUNCTION(this);
     }
