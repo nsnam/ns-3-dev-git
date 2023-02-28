@@ -954,22 +954,19 @@ HtFrameExchangeManager::SendPsduWithProtection(Ptr<WifiPsdu> psdu, WifiTxParamet
         }
     }
 
-    if (m_txParams.m_protection->method == WifiProtection::RTS_CTS)
-    {
-        SendRts(m_txParams);
-    }
-    else if (m_txParams.m_protection->method == WifiProtection::CTS_TO_SELF)
-    {
-        SendCtsToSelf(m_txParams);
-    }
-    else if (m_txParams.m_protection->method == WifiProtection::NONE)
+    StartProtection(m_txParams);
+}
+
+void
+HtFrameExchangeManager::ProtectionCompleted()
+{
+    NS_LOG_FUNCTION(this);
+    if (m_psdu)
     {
         SendPsdu();
+        return;
     }
-    else
-    {
-        NS_ABORT_MSG("Unknown protection type");
-    }
+    QosFrameExchangeManager::ProtectionCompleted();
 }
 
 void
@@ -1552,7 +1549,9 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyCtsTimeoutResetNow();
-            Simulator::Schedule(m_phy->GetSifs(), &HtFrameExchangeManager::SendPsdu, this);
+            Simulator::Schedule(m_phy->GetSifs(),
+                                &HtFrameExchangeManager::ProtectionCompleted,
+                                this);
         }
         else if (hdr.IsBlockAck() && m_txTimer.IsRunning() &&
                  m_txTimer.GetReason() == WifiTxTimer::WAIT_BLOCK_ACK && hdr.GetAddr1() == m_self)

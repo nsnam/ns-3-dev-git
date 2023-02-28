@@ -300,6 +300,18 @@ class FrameExchangeManager : public Object
     void SendMpduWithProtection(Ptr<WifiMpdu> mpdu, WifiTxParameters& txParams);
 
     /**
+     * Start the protection mechanism indicated by the given TX parameters
+     *
+     * \param txParams the TX parameters
+     */
+    virtual void StartProtection(const WifiTxParameters& txParams);
+
+    /**
+     * Transmit prepared frame upon successful protection mechanism.
+     */
+    virtual void ProtectionCompleted();
+
+    /**
      * Update the NAV, if needed, based on the Duration/ID of the given <i>psdu</i>.
      *
      * \param psdu the received PSDU

@@ -414,26 +414,42 @@ FrameExchangeManager::SendMpduWithProtection(Ptr<WifiMpdu> mpdu, WifiTxParameter
         m_mpdu->SetInFlight(m_linkId);
     }
 
-    switch (m_txParams.m_protection->method)
-    {
-    case WifiProtection::RTS_CTS:
-        SendRts(m_txParams);
-        break;
-    case WifiProtection::CTS_TO_SELF:
-        SendCtsToSelf(m_txParams);
-        break;
-    case WifiProtection::NONE:
-        SendMpdu();
-        break;
-    default:
-        NS_ABORT_MSG("Unknown protection type");
-    }
+    StartProtection(m_txParams);
 
     if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
         // we are done with frames that do not require acknowledgment
         m_mpdu = nullptr;
     }
+}
+
+void
+FrameExchangeManager::StartProtection(const WifiTxParameters& txParams)
+{
+    NS_LOG_FUNCTION(this << &txParams);
+
+    switch (txParams.m_protection->method)
+    {
+    case WifiProtection::RTS_CTS:
+        SendRts(txParams);
+        break;
+    case WifiProtection::CTS_TO_SELF:
+        SendCtsToSelf(txParams);
+        break;
+    case WifiProtection::NONE:
+        ProtectionCompleted();
+        break;
+    default:
+        NS_ABORT_MSG("Unknown protection type: " << txParams.m_protection.get());
+    }
+}
+
+void
+FrameExchangeManager::ProtectionCompleted()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(m_mpdu);
+    SendMpdu();
 }
 
 void
@@ -794,7 +810,9 @@ FrameExchangeManager::SendCtsToSelf(const WifiTxParameters& txParams)
     Time ctsDuration = m_phy->CalculateTxDuration(GetCtsSize(),
                                                   ctsToSelfProtection->ctsTxVector,
                                                   m_phy->GetPhyBand());
-    Simulator::Schedule(ctsDuration + m_phy->GetSifs(), &FrameExchangeManager::SendMpdu, this);
+    Simulator::Schedule(ctsDuration + m_phy->GetSifs(),
+                        &FrameExchangeManager::ProtectionCompleted,
+                        this);
 }
 
 void
@@ -1269,7 +1287,7 @@ FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyCtsTimeoutResetNow();
-            Simulator::Schedule(m_phy->GetSifs(), &FrameExchangeManager::SendMpdu, this);
+            Simulator::Schedule(m_phy->GetSifs(), &FrameExchangeManager::ProtectionCompleted, this);
         }
         else if (hdr.IsAck() && m_mpdu && m_txTimer.IsRunning() &&
                  m_txTimer.GetReason() == WifiTxTimer::WAIT_NORMAL_ACK)

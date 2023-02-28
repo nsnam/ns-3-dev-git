@@ -200,6 +200,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     void FinalizeMacHeader(Ptr<const WifiPsdu> psdu) override;
     void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
     void TransmissionSucceeded() override;
+    void ProtectionCompleted() override;
 
     /**
      * Get a PSDU containing the given MPDU

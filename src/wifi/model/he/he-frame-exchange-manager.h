@@ -156,6 +156,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
     void UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void NavResetTimeout() override;
+    void StartProtection(const WifiTxParameters& txParams) override;
+    void ProtectionCompleted() override;
 
     /**
      * Clear the TXOP holder if the intra-BSS NAV counted down to zero (includes the case
