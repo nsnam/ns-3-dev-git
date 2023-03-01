@@ -401,6 +401,13 @@ class Txop : public Object
      */
     void StartBackoffNow(uint32_t nSlots, uint8_t linkId);
 
+    /**
+     * Check if the Txop has frames to transmit over the given link
+     * \param linkId the ID of the given link.
+     * \return true if the Txop has frames to transmit.
+     */
+    virtual bool HasFramesToTransmit(uint8_t linkId);
+
   protected:
     ///< ChannelAccessManager associated class
     friend class ChannelAccessManager;
@@ -416,12 +423,6 @@ class Txop : public Object
      */
     virtual void NotifyAccessRequested(uint8_t linkId);
 
-    /**
-     * Check if the Txop has frames to transmit over the given link
-     * \param linkId the ID of the given link.
-     * \return true if the Txop has frames to transmit.
-     */
-    virtual bool HasFramesToTransmit(uint8_t linkId);
     /**
      * Generate a new backoff for the given link now.
      *

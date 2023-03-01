@@ -203,6 +203,13 @@ class WifiMac : public Object
     virtual Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const;
 
     /**
+     * Check if the MAC has frames to transmit over the given link
+     * \param linkId the ID of the given link.
+     * \return whether the MAC has frames to transmit.
+     */
+    virtual bool HasFramesToTransmit(uint8_t linkId);
+
+    /**
      * Set the wifi MAC queue scheduler
      *
      * \param scheduler the wifi MAC queue scheduler

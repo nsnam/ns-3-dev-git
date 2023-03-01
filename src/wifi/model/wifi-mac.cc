@@ -547,6 +547,23 @@ WifiMac::GetTxopQueue(AcIndex ac) const
     return (txop ? txop->GetWifiMacQueue() : nullptr);
 }
 
+bool
+WifiMac::HasFramesToTransmit(uint8_t linkId)
+{
+    if (m_txop && m_txop->HasFramesToTransmit(linkId))
+    {
+        return true;
+    }
+    for (const auto& [aci, qosTxop] : m_edca)
+    {
+        if (qosTxop->HasFramesToTransmit(linkId))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void
 WifiMac::SetMacQueueScheduler(Ptr<WifiMacQueueScheduler> scheduler)
 {
