@@ -203,6 +203,9 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     WifiConstPsduMap m_psdus;         //!< the PSDUs contained in this PPDU
     uint16_t m_txCenterFreq; //!< the center frequency (MHz) used for the transmission of this PPDU
     uint64_t m_uid;          //!< the unique ID of this PPDU
+    mutable std::optional<WifiTxVector>
+        m_txVector; //!< the TXVECTOR at TX PHY or the reconstructed TXVECTOR at RX PHY (or
+                    //!< std::nullopt if TXVECTOR has not been reconstructed yet)
 
 #ifdef NS3_BUILD_PROFILE_DEBUG
     Ptr<Packet> m_phyHeaders; //!< the PHY headers contained in this PPDU
@@ -221,11 +224,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     uint8_t m_txPowerLevel; //!< the transmission power level (used only for TX and initializing the
                             //!< returned WifiTxVector)
     uint8_t m_txAntennas;   //!< the number of antennas used to transmit this PPDU
-
-    mutable std::optional<WifiTxVector>
-        m_txVector; //!< the TXVECTOR at TX PHY or the reconstructed TXVECTOR at RX PHY (or
-                    //!< std::nullopt if TXVECTOR has not been reconstructed yet)
-};                  // class WifiPpdu
+};                          // class WifiPpdu
 
 /**
  * \brief Stream insertion operator.

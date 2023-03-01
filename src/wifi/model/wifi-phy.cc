@@ -695,7 +695,8 @@ const Ptr<const PhyEntity>
 WifiPhy::GetStaticPhyEntity(WifiModulationClass modulation)
 {
     const auto it = GetStaticPhyEntities().find(modulation);
-    NS_ABORT_MSG_IF(it == GetStaticPhyEntities().cend(), "Unimplemented Wi-Fi modulation class");
+    NS_ABORT_MSG_IF(it == GetStaticPhyEntities().cend(),
+                    "Unimplemented Wi-Fi modulation class " << modulation);
     return it->second;
 }
 
@@ -1817,7 +1818,8 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
                               RxPowerWattPerChannelBand& rxPowersW,
                               Time rxDuration)
 {
-    WifiModulationClass modulation = ppdu->GetTxVector().GetModulationClass();
+    NS_LOG_FUNCTION(this << ppdu << rxDuration);
+    WifiModulationClass modulation = ppdu->GetModulation();
     auto it = m_phyEntities.find(modulation);
     if (it != m_phyEntities.end())
     {

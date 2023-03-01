@@ -77,7 +77,8 @@ const PhyEntity::PpduFormats HePhy::m_hePpduFormats { // Ignoring PE (Packet Ext
 
 HePhy::HePhy(bool buildModeList /* = true */)
     : VhtPhy(false), // don't add VHT modes to list
-      m_trigVectorExpirationTime(Seconds(0)),
+      m_trigVector(std::nullopt),
+      m_trigVectorExpirationTime(std::nullopt),
       m_currentTxVector(std::nullopt),
       m_rxHeTbPpdus(0),
       m_lastPer20MHzDurations()
@@ -323,9 +324,13 @@ HePhy::SetTrigVector(const WifiTxVector& trigVector, Time validity)
     NS_LOG_FUNCTION(this << trigVector << validity);
     NS_ASSERT_MSG(trigVector.GetGuardInterval() > 800,
                   "Invalid guard interval " << trigVector.GetGuardInterval());
+    if (auto mac = m_wifiPhy->GetDevice()->GetMac(); mac && mac->GetTypeOfStation() != AP)
+    {
+        return;
+    }
     m_trigVector = trigVector;
     m_trigVectorExpirationTime = Simulator::Now() + validity;
-    NS_LOG_FUNCTION(this << m_trigVector << m_trigVectorExpirationTime.As(Time::US));
+    NS_LOG_FUNCTION(this << m_trigVector.value() << m_trigVectorExpirationTime->As(Time::US));
 }
 
 Ptr<WifiPpdu>
@@ -351,7 +356,7 @@ HePhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
     const auto& txVector = ppdu->GetTxVector();
     auto hePpdu = DynamicCast<const HePpdu>(ppdu);
     NS_ASSERT(hePpdu);
-    HePpdu::TxPsdFlag psdFlag = hePpdu->GetTxPsdFlag();
+    const auto psdFlag = hePpdu->GetTxPsdFlag();
     if (psdFlag == HePpdu::PSD_HE_PORTION)
     {
         NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
@@ -652,18 +657,21 @@ HePhy::ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status)
 
         // When SIG-A is decoded, we know the type of frame being received. If we stored a
         // valid TRIGVECTOR and we are not receiving a TB PPDU, we drop the frame.
-        if (m_trigVectorExpirationTime >= Simulator::Now() && !txVector.IsUlMu())
+        Ptr<const WifiPpdu> ppdu = event->GetPpdu();
+        if (m_trigVectorExpirationTime.has_value() &&
+            (m_trigVectorExpirationTime.value() >= Simulator::Now()) &&
+            (ppdu->GetType() != WIFI_PPDU_TYPE_UL_MU))
         {
             NS_LOG_DEBUG("Expected an HE TB PPDU, receiving a " << txVector.GetPreambleType());
             return PhyFieldRxStatus(false, FILTERED, DROP);
         }
 
-        Ptr<const WifiPpdu> ppdu = event->GetPpdu();
-        if (txVector.IsUlMu())
+        if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
         {
             NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
             // check that the stored TRIGVECTOR is still valid
-            if (m_trigVectorExpirationTime < Simulator::Now())
+            if (!m_trigVectorExpirationTime.has_value() ||
+                (m_trigVectorExpirationTime < Simulator::Now()))
             {
                 NS_LOG_DEBUG("No valid TRIGVECTOR, the PHY was not expecting a TB PPDU");
                 return PhyFieldRxStatus(false, FILTERED, DROP);
@@ -673,27 +681,31 @@ HePhy::ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status)
             // OBSS, as BSS Colors are not guaranteed to be different for all APs in
             // range (an example is when BSS Color is 0). We can detect this situation
             // by comparing the TRIGVECTOR with the TXVECTOR of the TB PPDU being received
-            if (m_trigVector.GetChannelWidth() != txVector.GetChannelWidth())
+            NS_ABORT_IF(!m_trigVector.has_value());
+            if (m_trigVector->GetChannelWidth() != txVector.GetChannelWidth())
             {
                 NS_LOG_DEBUG("Received channel width different than in TRIGVECTOR");
                 return PhyFieldRxStatus(false, FILTERED, DROP);
             }
-            if (m_trigVector.GetLength() != txVector.GetLength())
+            if (m_trigVector->GetLength() != txVector.GetLength())
             {
                 NS_LOG_DEBUG("Received UL Length (" << txVector.GetLength()
                                                     << ") different than in TRIGVECTOR ("
-                                                    << m_trigVector.GetLength() << ")");
+                                                    << m_trigVector->GetLength() << ")");
                 return PhyFieldRxStatus(false, FILTERED, DROP);
             }
             uint16_t staId = ppdu->GetStaId();
-            if (m_trigVector.GetHeMuUserInfoMap().find(staId) ==
-                    m_trigVector.GetHeMuUserInfoMap().end() ||
-                m_trigVector.GetHeMuUserInfo(staId) != txVector.GetHeMuUserInfo(staId))
+            if (m_trigVector->GetHeMuUserInfoMap().find(staId) ==
+                m_trigVector->GetHeMuUserInfoMap().end())
             {
-                NS_LOG_DEBUG(
-                    "User Info map of TB PPDU being received differs from that of TRIGVECTOR");
+                NS_LOG_DEBUG("TB PPDU received from un unexpected STA ID");
                 return PhyFieldRxStatus(false, FILTERED, DROP);
             }
+
+            NS_ASSERT(txVector.GetGuardInterval() == m_trigVector->GetGuardInterval());
+            NS_ASSERT(txVector.GetMode(staId) == m_trigVector->GetMode(staId));
+            NS_ASSERT(txVector.GetNss(staId) == m_trigVector->GetNss(staId));
+            NS_ASSERT(txVector.GetHeMuUserInfo(staId) == m_trigVector->GetHeMuUserInfo(staId));
 
             m_currentMuPpduUid =
                 ppdu->GetUid(); // to be able to correctly schedule start of OFDMA payload
@@ -767,6 +779,11 @@ HePhy::ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status)
 bool
 HePhy::IsConfigSupported(Ptr<const WifiPpdu> ppdu) const
 {
+    if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
+    {
+        return true; // evaluated in ProcessSigA
+    }
+
     const WifiTxVector& txVector = ppdu->GetTxVector();
     uint16_t staId = GetStaId(ppdu);
     WifiMode txMode = txVector.GetMode(staId);
@@ -943,6 +960,7 @@ HePhy::DoEndReceivePayload(Ptr<const WifiPpdu> ppdu)
 void
 HePhy::StartReceiveOfdmaPayload(Ptr<Event> event)
 {
+    NS_LOG_FUNCTION(this << event);
     Ptr<const WifiPpdu> ppdu = event->GetPpdu();
     const RxPowerWattPerChannelBand& rxPowersW = event->GetRxPowerWPerBand();
     // The total RX power corresponds to the maximum over all the bands.
@@ -1820,13 +1838,25 @@ HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const
 Ptr<const WifiPpdu>
 HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
 {
-    // We only copy if the AP that is expecting a HE TB PPDU, since the content
-    // of the TXVECTOR is reconstructed from the TRIGVECTOR, hence the other RX
-    // PHYs should not have this information.
-    if ((ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU) &&
-        (Simulator::Now() <= m_trigVectorExpirationTime))
+    if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
     {
-        return ppdu->Copy();
+        Ptr<const WifiPpdu> rxPpdu;
+        if ((m_trigVectorExpirationTime.has_value()) &&
+            (Simulator::Now() <= m_trigVectorExpirationTime.value()))
+        {
+            // We only copy if the AP that is expecting a HE TB PPDU, since the content
+            // of the TXVECTOR is reconstructed from the TRIGVECTOR, hence the other RX
+            // PHYs should not have this information.
+            rxPpdu = ppdu->Copy();
+        }
+        else
+        {
+            rxPpdu = ppdu;
+        }
+        auto hePpdu = DynamicCast<const HePpdu>(rxPpdu);
+        NS_ASSERT(hePpdu);
+        hePpdu->UpdateTxVectorForUlMu(m_trigVector);
+        return rxPpdu;
     }
     else if (auto txVector = ppdu->GetTxVector();
              m_currentTxVector.has_value() &&

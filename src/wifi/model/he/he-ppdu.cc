@@ -155,7 +155,10 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
     }
     heSig.SetBssColor(txVector.GetBssColor());
     heSig.SetChannelWidth(txVector.GetChannelWidth());
-    heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(), 2 /*NLTF currently unused*/);
+    if (!txVector.IsUlMu())
+    {
+        heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(), 2 /*NLTF currently unused*/);
+    }
 }
 
 WifiTxVector
@@ -192,16 +195,25 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
                                   const LSigHeader& lSig,
                                   const HeSigHeader& heSig) const
 {
-    txVector.SetMode(HePhy::GetHeMcs(heSig.GetMcs()));
     txVector.SetChannelWidth(heSig.GetChannelWidth());
-    txVector.SetNss(heSig.GetNStreams());
-    txVector.SetGuardInterval(heSig.GetGuardInterval());
     txVector.SetBssColor(heSig.GetBssColor());
     txVector.SetLength(lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
-    for (const auto& muUserInfo : m_muUserInfos)
+    if (!IsMu())
     {
-        txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
+        txVector.SetMode(HePhy::GetHeMcs(heSig.GetMcs()));
+        txVector.SetNss(heSig.GetNStreams());
+    }
+    if (!IsUlMu())
+    {
+        txVector.SetGuardInterval(heSig.GetGuardInterval());
+    }
+    if (IsDlMu())
+    {
+        for (const auto& muUserInfo : m_muUserInfos)
+        {
+            txVector.SetHeMuUserInfo(muUserInfo.first, muUserInfo.second);
+        }
     }
     if (txVector.IsDlMu())
     {
@@ -336,8 +348,8 @@ HePpdu::GetStaId() const
 uint16_t
 HePpdu::GetTransmissionChannelWidth() const
 {
-    WifiTxVector txVector = GetTxVector();
-    if (txVector.GetPreambleType() == WIFI_PREAMBLE_HE_TB && GetStaId() != SU_STA_ID)
+    const WifiTxVector& txVector = GetTxVector();
+    if (txVector.IsUlMu() && GetStaId() != SU_STA_ID)
     {
         TxPsdFlag flag = GetTxPsdFlag();
         uint16_t ruWidth = HeRu::GetBandwidth(txVector.GetRu(GetStaId()).GetRuType());
@@ -363,6 +375,42 @@ HePpdu::SetTxPsdFlag(TxPsdFlag flag) const
 {
     NS_LOG_FUNCTION(this << flag);
     m_txPsdFlag = flag;
+}
+
+void
+HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) const
+{
+    if (trigVector.has_value())
+    {
+        NS_LOG_FUNCTION(this << trigVector.value());
+    }
+    else
+    {
+        NS_LOG_FUNCTION(this);
+    }
+    if (!m_txVector.has_value())
+    {
+        m_txVector = GetTxVector();
+    }
+    NS_ASSERT(GetModulation() >= WIFI_MOD_CLASS_HE);
+    NS_ASSERT(GetType() == WIFI_PPDU_TYPE_UL_MU);
+    // HE TB PPDU reception needs information from the TRIGVECTOR to be able to receive the PPDU
+    const auto staId = GetStaId();
+    if (trigVector.has_value() && trigVector->IsUlMu() &&
+        (trigVector->GetHeMuUserInfoMap().count(staId) > 0))
+    {
+        // These information are not carried in HE-SIG-A for a HE TB PPDU,
+        // but they are carried in the Trigger frame soliciting the HE TB PPDU
+        m_txVector->SetGuardInterval(trigVector->GetGuardInterval());
+        m_txVector->SetHeMuUserInfo(staId, trigVector->GetHeMuUserInfo(staId));
+    }
+    else
+    {
+        // Set dummy user info, PPDU will be dropped later after decoding PHY headers.
+        m_txVector->SetHeMuUserInfo(
+            staId,
+            {{HeRu::GetRuType(m_txVector->GetChannelWidth()), 1, true}, 0, 1});
+    }
 }
 
 bool

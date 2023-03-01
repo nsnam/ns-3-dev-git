@@ -225,6 +225,15 @@ class HePpdu : public OfdmPpdu
     void SetTxPsdFlag(TxPsdFlag flag) const;
 
     /**
+     * Update the TXVECTOR for HE TB PPDUs, since the information to decode HE TB PPDUs
+     * is not available from the PHY headers but it requires information from the TRIGVECTOR
+     * of the AP expecting these HE TB PPDUs.
+     *
+     * \param trigVector the TRIGVECTOR or std::nullopt if no TRIGVECTOR is available at the caller
+     */
+    void UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) const;
+
+    /**
      * Check if STA ID is in HE SIG-B Content Channel ID
      * \param staId STA ID
      * \param channelId Content Channel ID

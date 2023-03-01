@@ -37,12 +37,12 @@ WifiPpdu::WifiPpdu(Ptr<const WifiPsdu> psdu,
       m_modulation(txVector.IsValid() ? txVector.GetModulationClass() : WIFI_MOD_CLASS_UNKNOWN),
       m_txCenterFreq(txCenterFreq),
       m_uid(uid),
+      m_txVector(txVector),
 #ifdef NS3_BUILD_PROFILE_DEBUG
       m_phyHeaders(Create<Packet>()),
 #endif
       m_truncatedTx(false),
-      m_txPowerLevel(txVector.GetTxPowerLevel()),
-      m_txVector(txVector)
+      m_txPowerLevel(txVector.GetTxPowerLevel())
 {
     NS_LOG_FUNCTION(this << *psdu << txVector << txCenterFreq << uid);
     m_psdus.insert(std::make_pair(SU_STA_ID, psdu));
@@ -57,13 +57,13 @@ WifiPpdu::WifiPpdu(const WifiConstPsduMap& psdus,
                                       : WIFI_MOD_CLASS_UNKNOWN),
       m_txCenterFreq(txCenterFreq),
       m_uid(uid),
+      m_txVector(txVector),
 #ifdef NS3_BUILD_PROFILE_DEBUG
       m_phyHeaders(Create<Packet>()),
 #endif
       m_truncatedTx(false),
       m_txPowerLevel(txVector.GetTxPowerLevel()),
-      m_txAntennas(txVector.GetNTx()),
-      m_txVector(txVector)
+      m_txAntennas(txVector.GetNTx())
 {
     NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << uid);
     m_psdus = psdus;

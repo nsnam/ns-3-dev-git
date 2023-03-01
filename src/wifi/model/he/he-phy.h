@@ -523,11 +523,11 @@ class HePhy : public VhtPhy
         m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events
                                      //!< (indexed by STA-ID)
 
-    EndOfHeSigACallback m_endOfHeSigACallback;     //!< end of HE-SIG-A callback
-    WifiTxVector m_trigVector;                     //!< the TRIGVECTOR
-    Time m_trigVectorExpirationTime;               //!< expiration time of the TRIGVECTOR
-    std::optional<WifiTxVector> m_currentTxVector; //!< If the STA is an AP STA, this holds the
-                                                   //!< TXVECTOR of the PPDU that has been sent
+    EndOfHeSigACallback m_endOfHeSigACallback;      //!< end of HE-SIG-A callback
+    std::optional<WifiTxVector> m_trigVector;       //!< the TRIGVECTOR
+    std::optional<Time> m_trigVectorExpirationTime; //!< expiration time of the TRIGVECTOR
+    std::optional<WifiTxVector> m_currentTxVector;  //!< If the STA is an AP STA, this holds the
+                                                    //!< TXVECTOR of the PPDU that has been sent
 
   private:
     void BuildModeList() override;
