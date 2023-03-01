@@ -26,6 +26,7 @@
 #include "ns3/mgt-headers.h"
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/snr-tag.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-utils.h"
 
@@ -1077,6 +1078,23 @@ HtFrameExchangeManager::NotifyTxToEdca(Ptr<const WifiPsdu> psdu) const
 {
     NS_LOG_FUNCTION(this << psdu);
 
+    for (const auto& mpdu : *PeekPointer(psdu))
+    {
+        auto& hdr = mpdu->GetHeader();
+
+        if (hdr.IsQosData() && hdr.HasData())
+        {
+            auto tid = hdr.GetQosTid();
+            m_mac->GetQosTxop(tid)->CompleteMpduTx(mpdu);
+        }
+    }
+}
+
+void
+HtFrameExchangeManager::FinalizeMacHeader(Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << psdu);
+
     // use an array to avoid computing the queue size for every MPDU in the PSDU
     std::array<std::optional<uint8_t>, 8> queueSizeForTid;
 
@@ -1087,7 +1105,7 @@ HtFrameExchangeManager::NotifyTxToEdca(Ptr<const WifiPsdu> psdu) const
         if (hdr.IsQosData())
         {
             uint8_t tid = hdr.GetQosTid();
-            Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
+            auto edca = m_mac->GetQosTxop(tid);
 
             if (m_mac->GetTypeOfStation() == STA && (m_setQosQueueSize || hdr.IsQosEosp()))
             {
@@ -1100,13 +1118,10 @@ HtFrameExchangeManager::NotifyTxToEdca(Ptr<const WifiPsdu> psdu) const
                 hdr.SetQosEosp();
                 hdr.SetQosQueueSize(queueSizeForTid[tid].value());
             }
-
-            if (hdr.HasData())
-            {
-                edca->CompleteMpduTx(mpdu);
-            }
         }
     }
+
+    QosFrameExchangeManager::FinalizeMacHeader(psdu);
 }
 
 void
@@ -1126,6 +1141,7 @@ HtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& 
     NS_LOG_FUNCTION(this << psdu << txVector);
 
     NS_LOG_DEBUG("Transmitting a PSDU: " << *psdu << " TXVECTOR: " << txVector);
+    FinalizeMacHeader(psdu);
     NotifyTxToEdca(psdu);
 
     if (psdu->IsAggregate())

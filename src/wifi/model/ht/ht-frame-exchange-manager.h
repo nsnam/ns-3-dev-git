@@ -197,6 +197,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     void RetransmitMpduAfterMissedAck(Ptr<WifiMpdu> mpdu) const override;
     void ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const override;
     void ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
+    void FinalizeMacHeader(Ptr<const WifiPsdu> psdu) override;
     void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
     void TransmissionSucceeded() override;
 

@@ -873,9 +873,10 @@ HeFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVecto
         NS_LOG_DEBUG("Transmitting: [STAID=" << psdu.first << ", " << *psdu.second << "]");
     }
     NS_LOG_DEBUG("TXVECTOR: " << txVector);
-    for (const auto& psdu : psduMap)
+    for (const auto& [staId, psdu] : psduMap)
     {
-        NotifyTxToEdca(psdu.second);
+        FinalizeMacHeader(psdu);
+        NotifyTxToEdca(psdu);
     }
     if (psduMap.size() > 1 || psduMap.begin()->second->IsAggregate() ||
         psduMap.begin()->second->IsSingle())

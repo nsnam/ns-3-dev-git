@@ -20,6 +20,7 @@
 #include "frame-exchange-manager.h"
 
 #include "snr-tag.h"
+#include "sta-wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-utils.h"
@@ -498,7 +499,39 @@ FrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector
 {
     NS_LOG_FUNCTION(this << *mpdu << txVector);
 
-    m_phy->Send(Create<WifiPsdu>(mpdu, false), txVector);
+    auto psdu = Create<WifiPsdu>(mpdu, false);
+    FinalizeMacHeader(psdu);
+    m_phy->Send(psdu, txVector);
+}
+
+void
+FrameExchangeManager::FinalizeMacHeader(Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << psdu);
+
+    if (m_mac->GetTypeOfStation() != STA)
+    {
+        return;
+    }
+
+    auto pmMode = StaticCast<StaWifiMac>(m_mac)->GetPmMode(m_linkId);
+
+    for (const auto& mpdu : *PeekPointer(psdu))
+    {
+        switch (pmMode)
+        {
+        case WIFI_PM_ACTIVE:
+        case WIFI_PM_SWITCHING_TO_ACTIVE:
+            mpdu->GetHeader().SetNoPowerManagement();
+            break;
+        case WIFI_PM_POWERSAVE:
+        case WIFI_PM_SWITCHING_TO_PS:
+            mpdu->GetHeader().SetPowerManagement();
+            break;
+        default:
+            NS_ABORT_MSG("Unknown PM mode: " << +pmMode);
+        }
+    }
 }
 
 void

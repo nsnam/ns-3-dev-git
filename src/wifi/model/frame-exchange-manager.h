@@ -456,6 +456,14 @@ class FrameExchangeManager : public Object
     AckedMpdu m_ackedMpduCallback;     //!< the acknowledged MPDU callback
 
     /**
+     * Finalize the MAC header of the MPDUs in the given PSDU before transmission. Tasks
+     * performed by this method include setting the Power Management flag in the MAC header.
+     *
+     * \param psdu the given PSDU
+     */
+    virtual void FinalizeMacHeader(Ptr<const WifiPsdu> psdu);
+
+    /**
      * Forward an MPDU down to the PHY layer.
      *
      * \param mpdu the MPDU to forward down
