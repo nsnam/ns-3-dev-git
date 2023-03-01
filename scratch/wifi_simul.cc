@@ -81,7 +81,7 @@ static void
 PhyRxDropTrace(Ptr<const Packet> packet, ns3::WifiPhyRxfailureReason reason)
 {
     dropped_Packets++;
-    std::cout << reason << std::endl;
+    // std::cout << reason << std::endl;
 }
 
 static void
@@ -143,7 +143,7 @@ TraceDropRatio()
 int
 main(int argc, char* argv[])
 {
-    std::string phyMode("DsssRate11Mbps");
+    std::string phyMode("OfdmRate12MbpsBW10MHz");
     std::string tcp_mode = "TcpCubic";
     int runtime = 50; // Seconds
     double rss = -80; // -dBm
@@ -167,14 +167,16 @@ main(int argc, char* argv[])
     // Fix non-unicast data rate to be the same as that of unicast
     Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue(phyMode));
     Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::" + tcp_mode));
-
+    // Config::SetDefault("ns3::DropTailQueue<Packet>::MaxSize", StringValue("1p"));
+    // Config::SetDefault("ns3::TcpSocket::SndBufSize", UintegerValue(2341072));
+    // Config::SetDefault("ns3::TcpSocket::RcvBufSize", UintegerValue(2431072));
     PointToPointHelper p2phelper;
     p2phelper.SetChannelAttribute("Delay", StringValue("50ns"));
     p2phelper.SetDeviceAttribute("DataRate", StringValue("11Mbps"));
 
     PointToPointHelper p2pbottleneckhelper;
-    p2pbottleneckhelper.SetChannelAttribute("Delay", StringValue("1us"));
-    p2pbottleneckhelper.SetDeviceAttribute("DataRate", StringValue("1Mbps"));
+    p2pbottleneckhelper.SetChannelAttribute("Delay", StringValue("100ns"));
+    p2pbottleneckhelper.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
 
     NodeContainer leftwifinodes(n_nodes);
     PointToPointDumbbellHelper dumbbellhelper(0,
@@ -185,7 +187,7 @@ main(int argc, char* argv[])
 
     // The below set of helpers will help us to put together the wifi NICs we want
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211n);
+    wifi.SetStandard(WIFI_STANDARD_80211ax);
     // wifi.EnableLogComponents(); // Turn on all Wifi logging
 
     YansWifiPhyHelper wifiPhy;
@@ -297,7 +299,7 @@ main(int argc, char* argv[])
     Simulator::Schedule(Seconds(1.001), &TraceDropRatio);
 
     // AnimationInterface anim("../animwifi.xml");
-    Simulator::Stop(Seconds(runtime));
+    Simulator::Stop(Seconds(runtime + 1));
     Simulator::Run();
 
     std::cout << "Ratio of dropped packets on AP: " << dropped_Packets * 1.0 / total_Packets

@@ -81,14 +81,15 @@ main(int argc, char* argv[])
 
     // Fix non-unicast data rate to be the same as that of unicast
     Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::" + tcp_mode));
+    // Config::SetDefault("ns3::DropTailQueue<Packet>::MaxSize", StringValue("1p"));
 
     PointToPointHelper p2phelper;
     p2phelper.SetChannelAttribute("Delay", StringValue("50ns"));
     p2phelper.SetDeviceAttribute("DataRate", StringValue("11Mbps"));
 
     PointToPointHelper p2pbottleneckhelper;
-    p2pbottleneckhelper.SetChannelAttribute("Delay", StringValue("1us"));
-    p2pbottleneckhelper.SetDeviceAttribute("DataRate", StringValue("1Mbps"));
+    p2pbottleneckhelper.SetChannelAttribute("Delay", StringValue("100ns"));
+    p2pbottleneckhelper.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
 
     
     PointToPointDumbbellHelper dumbbellhelper(n_nodes, p2phelper, n_nodes, p2phelper, p2pbottleneckhelper);
@@ -134,7 +135,7 @@ main(int argc, char* argv[])
     // Simulator::Schedule(Seconds(1.001), MakeBoundCallback(&TraceGoodput, &recvApps));
 
     // AnimationInterface anim("../animwifi.xml");
-    Simulator::Stop(Seconds(runtime));
+    Simulator::Stop(Seconds(runtime + 1));
     Simulator::Run();
 
     for (int i = 0; i < n_nodes; i++)

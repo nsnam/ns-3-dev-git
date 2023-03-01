@@ -83,18 +83,18 @@ int main()
     apps.Add(sinkhelper.Install(p2pnodes.Get(1)));
 
     apps.Get(0)->SetStartTime(Seconds(1.0));
-    apps.Get(0)->SetStopTime(Seconds(20.0));
+    apps.Get(0)->SetStopTime(Seconds(100.0));
 
     apps.Get(1)->SetStartTime(Seconds(0.0));
-    apps.Get(1)->SetStopTime(Seconds(50.0));
+    apps.Get(1)->SetStopTime(Seconds(200.0));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     Simulator::Schedule(Seconds(1.001), TraceCwnd);
 
     // AnimationInterface anim("../anim.xml");
-
-    p2phelper.EnablePcapAll("p2p");
+    Simulator::Stop(Seconds(300.0));
+    // p2phelper.EnablePcapAll("p2p");
 
     Simulator::Run();
     Simulator::Destroy();
