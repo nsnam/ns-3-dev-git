@@ -650,7 +650,6 @@ void
 PacketMetadata::AddHeader(const Header& header, uint32_t size)
 {
     NS_LOG_FUNCTION(this << &header << size);
-    NS_ASSERT(IsStateOk());
     uint32_t uid = header.GetInstanceTypeId().GetUid() << 1;
     DoAddHeader(uid, size);
     NS_ASSERT(IsStateOk());
@@ -682,7 +681,6 @@ PacketMetadata::RemoveHeader(const Header& header, uint32_t size)
 {
     uint32_t uid = header.GetInstanceTypeId().GetUid() << 1;
     NS_LOG_FUNCTION(this << &header << size);
-    NS_ASSERT(IsStateOk());
     if (!m_enable)
     {
         m_metadataSkipped = true;
@@ -728,7 +726,6 @@ PacketMetadata::AddTrailer(const Trailer& trailer, uint32_t size)
 {
     uint32_t uid = trailer.GetInstanceTypeId().GetUid() << 1;
     NS_LOG_FUNCTION(this << &trailer << size);
-    NS_ASSERT(IsStateOk());
     if (!m_enable)
     {
         m_metadataSkipped = true;
@@ -751,7 +748,6 @@ PacketMetadata::RemoveTrailer(const Trailer& trailer, uint32_t size)
 {
     uint32_t uid = trailer.GetInstanceTypeId().GetUid() << 1;
     NS_LOG_FUNCTION(this << &trailer << size);
-    NS_ASSERT(IsStateOk());
     if (!m_enable)
     {
         m_metadataSkipped = true;
@@ -796,7 +792,6 @@ void
 PacketMetadata::AddAtEnd(const PacketMetadata& o)
 {
     NS_LOG_FUNCTION(this << &o);
-    NS_ASSERT(IsStateOk());
     if (!m_enable)
     {
         m_metadataSkipped = true;
@@ -884,7 +879,6 @@ void
 PacketMetadata::RemoveAtStart(uint32_t start)
 {
     NS_LOG_FUNCTION(this << start);
-    NS_ASSERT(IsStateOk());
     if (!m_enable)
     {
         m_metadataSkipped = true;
@@ -946,7 +940,6 @@ void
 PacketMetadata::RemoveAtEnd(uint32_t end)
 {
     NS_LOG_FUNCTION(this << end);
-    NS_ASSERT(IsStateOk());
     if (!m_enable)
     {
         m_metadataSkipped = true;
