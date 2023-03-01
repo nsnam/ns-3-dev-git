@@ -32,37 +32,9 @@
   variables:
     ENABLE_MPI: --enable-mpi
 
-# GCC 8
-weekly-build-gcc-8-debug:
-  extends: .weekly-build-gcc-base
-  image: ubuntu:20.04
-  variables:
-    MODE: debug
-    COMPILER: g++-8
-    LIBGSL: libgsl23
-
-weekly-build-gcc-8-default:
-  extends: .weekly-build-gcc-base
-
-  image: ubuntu:20.04
-  variables:
-    MODE: default
-    COMPILER: g++-8
-    LIBGSL: libgsl23
-
-weekly-build-gcc-8-optimized:
-  extends: .weekly-build-gcc-base
-
-  image: ubuntu:20.04
-  variables:
-    MODE: optimized
-    COMPILER: g++-8
-    LIBGSL: libgsl23
-
 # GCC 9
 weekly-build-gcc-9-debug:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:20.04
   variables:
     MODE: debug
@@ -71,7 +43,6 @@ weekly-build-gcc-9-debug:
 
 weekly-build-gcc-9-default:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:20.04
   variables:
     MODE: default
@@ -80,7 +51,6 @@ weekly-build-gcc-9-default:
 
 weekly-build-gcc-9-optimized:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:20.04
   variables:
     MODE: optimized
@@ -90,7 +60,6 @@ weekly-build-gcc-9-optimized:
 # GCC 10
 weekly-build-gcc-10-debug:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:20.04
   variables:
     MODE: debug
@@ -99,7 +68,6 @@ weekly-build-gcc-10-debug:
 
 weekly-build-gcc-10-default:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:20.04
   variables:
     MODE: default
@@ -108,7 +76,6 @@ weekly-build-gcc-10-default:
 
 weekly-build-gcc-10-optimized:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:20.04
   variables:
     MODE: optimized
@@ -118,7 +85,6 @@ weekly-build-gcc-10-optimized:
 # GCC 11
 weekly-build-gcc-11-debug:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:22.04
   variables:
     MODE: debug
@@ -127,7 +93,6 @@ weekly-build-gcc-11-debug:
 
 weekly-build-gcc-11-default:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:22.04
   variables:
     MODE: default
@@ -136,7 +101,6 @@ weekly-build-gcc-11-default:
 
 weekly-build-gcc-11-optimized:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:22.04
   variables:
     MODE: optimized
@@ -146,7 +110,6 @@ weekly-build-gcc-11-optimized:
 # GCC 12
 weekly-build-gcc-12-debug:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:22.04
   variables:
     MODE: debug
@@ -155,7 +118,6 @@ weekly-build-gcc-12-debug:
 
 weekly-build-gcc-12-default:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:22.04
   variables:
     MODE: default
@@ -164,7 +126,6 @@ weekly-build-gcc-12-default:
 
 weekly-build-gcc-12-optimized:
   extends: .weekly-build-gcc-base
-
   image: ubuntu:22.04
   variables:
     MODE: optimized
