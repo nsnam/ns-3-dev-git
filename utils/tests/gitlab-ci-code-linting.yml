@@ -4,7 +4,7 @@
 
 # Clang-format
 check-style-clang-format:
-  stage: code-linting
+  stage: .pre
   image: ubuntu:latest
   before_script:
     - apt update
@@ -71,7 +71,7 @@ clang-tidy:
 
 # Emacs line
 emacs-line:
-  stage: code-linting
+  stage: .pre
   image: ubuntu:latest
   script:
     - (! grep -rn --include="*.h" --include="*.cc" "c-file-style:\"gnu\"" ) ||
@@ -81,7 +81,7 @@ emacs-line:
 
 # Spell checking
 spell-check:
-  stage: code-linting
+  stage: .pre
   image: python:latest
   before_script:
     - pip install codespell

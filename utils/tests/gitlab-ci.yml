@@ -18,6 +18,7 @@
 # configuration, still in definition. It will be in the documentation.
 
 stages:
+  - pre-build
   - build
   - test
   - code-linting
@@ -30,7 +31,6 @@ stages:
 # the following variables: COMPILER (g++, clang++, ...) and
 # MODE (debug, default, optimized)
 .base-build:
-  stage: build
   script:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
@@ -39,7 +39,15 @@ stages:
     - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts $ENABLE_MPI
     - ccache -z
     - ./ns3 build
-    - if [ "$MODE" != "debug" ] && [ "`./utils/ccache-miss-rate.py`" != "0" ]; then ./test.py -n; fi
+    - if [ "$CI_JOB_STAGE" == "build" ] && [ "`./utils/ccache-miss-rate.py`" != "0" ];
+      then `touch $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt`;
+      fi
+    - if [ "$CI_JOB_STAGE" == "test" ] && [ "$MODE" != "debug" ] && [[ -f $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt ]];
+      then ./test.py -n;
+      if [ $? == 0 ];
+      then `rm $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt` || true;
+      fi;
+      fi
     - ccache -s
     - ./ns3 clean
   cache:
@@ -58,57 +66,16 @@ stages:
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
 
-# Defines the per-commit jobs. They are executed for any branch
-.base-per-commit-compile:
-  extends: .base-build
-  except:
-    variables:
-      - $CPPYY == "True"
-      - $RELEASE == "weekly"
-      - $RELEASE == "daily"
-  image: archlinux
-  before_script:
-    - pacman-key --init
-    - pacman -Syu --noconfirm
-      base-devel gcc clang cmake ninja ccache
-      python
-      boost gsl gtk3 openmpi
-      openssh
-  variables:
-    ENABLE_MPI: --enable-mpi
-
-per-commit-clang-debug:
-  extends: .base-per-commit-compile
-  variables:
-    MODE: debug
-    COMPILER: clang++
-
-per-commit-gcc-debug:
-  extends: .base-per-commit-compile
-  variables:
-    MODE: debug
-    COMPILER: g++
-
-per-commit-gcc-default:
-  extends: .base-per-commit-compile
-  variables:
-    MODE: default
-    COMPILER: g++
-
-per-commit-gcc-optimized:
-  extends: .base-per-commit-compile
-  variables:
-    MODE: optimized
-    COMPILER: g++
 
 # Weekly jobs for other distribution and compilers
 include:
+  - "utils/tests/gitlab-ci-per-commit.yml"
   - "utils/tests/gitlab-ci-alpine.yml"
   - "utils/tests/gitlab-ci-ubuntu.yml"
   - "utils/tests/gitlab-ci-fedora.yml"
   - "utils/tests/gitlab-ci-gcc.yml"
   - "utils/tests/gitlab-ci-clang.yml"
-  - "utils/tests/gitlab-ci-test.yml"
+  - "utils/tests/gitlab-ci-daily.yml"
   - "utils/tests/gitlab-ci-code-linting.yml"
   - "utils/tests/gitlab-ci-doc.yml"
   - "utils/tests/gitlab-ci-cppyy.yml"

@@ -6,7 +6,6 @@
 # MODE (debug, default, optimized)
 
 .base-test:
-  stage: test
   image: archlinux
   before_script:
     # add the core-debug repo to pacman.conf
@@ -24,12 +23,13 @@
     # missing the flag --disable-python
     - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --disable-gtk
     - ./ns3 build
-    - ./test.py -n $VALGRIND_FLAG $FULLNESS
+    - if [ "$CI_JOB_STAGE" == "test" ];
+      then ./test.py -n $VALGRIND_FLAG $FULLNESS;
+      fi
   cache:
     key: "ccache-$CI_JOB_NAME"
     paths:
       - $CCACHE_BASEDIR_VALUE/
-    when: "always"
   variables:
     COMPILER: g++
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
@@ -38,98 +38,160 @@
     # workaround for Valgrind on Archlinux https://bbs.archlinux.org/viewtopic.php?pid=2036171#p2036171
     DEBUGINFOD_URLS: "https://debuginfod.archlinux.org"
 
+daily-jobs:
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+  stage: pre-build
+  script:
+    - echo "Starting daily jobs"
+
+weekly-slow-jobs:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+  stage: pre-build
+  script:
+    - echo "Starting weekly jobs"
+
 # Run the test.py script with files compiled in debug mode
-daily-test-debug:
+daily-build-test-debug:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["daily-jobs"]
+  stage: build
   variables:
     MODE: debug
-  only:
-    variables:
-      - $RELEASE == "daily"
   tags:
     - nsnam
     - linux
 
 # Run the test.py script with files compiled in default mode
-daily-test-default:
+daily-build-default:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["daily-jobs"]
+  stage: build
   variables:
     MODE: default
-  only:
-    variables:
-      - $RELEASE == "daily"
+
+daily-test-default:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["daily-build-default"]
+  stage: test
+  cache:
+    key: "ccache-daily-build-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
 
 # Run the test.py script with files compiled in optimized mode
-daily-test-optimized:
+daily-build-optimized:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["daily-jobs"]
+  stage: build
   variables:
     MODE: optimized
-  only:
-    variables:
-      - $RELEASE == "daily"
+
+daily-test-optimized:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["daily-build-optimized"]
+  stage: test
+  cache:
+    key: "ccache-daily-build-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
 
 ### Valgrind tests
 # Run the test.py script with files compiled in optimized mode + valgrind (daily)
-daily-test-optimized-valgrind:
+daily-build-test-optimized-valgrind:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["daily-jobs"]
+  stage: build
   variables:
     MODE: optimized
     VALGRIND_FLAG: -g
-  only:
-    variables:
-      - $RELEASE == "daily"
   tags:
     - nsnam
     - linux
 
 # Run the test.py script with files compiled in debug mode
-weekly-test-debug-valgrind:
+weekly-build-test-debug-valgrind:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["weekly-slow-jobs"]
+  stage: build
   variables:
     MODE: debug
     VALGRIND_FLAG: -g
-  only:
-    variables:
-      - $RELEASE == "weekly"
   tags:
     - nsnam
     - linux
 
 # Run the test.py script with files compiled in default mode
-weekly-test-default-valgrind:
+weekly-build-test-default-valgrind:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["weekly-slow-jobs"]
+  stage: build
   variables:
     MODE: default
     VALGRIND_FLAG: -g
-  only:
-    variables:
-      - $RELEASE == "weekly"
   tags:
     - nsnam
     - linux
 
 # Run the test.py script with files compiled in optimized mode
-weekly-test-optimized-valgrind:
+weekly-build-test-optimized-valgrind:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["weekly-slow-jobs"]
+  stage: build
   variables:
     MODE: optimized
     VALGRIND_FLAG: -g
-  only:
-    variables:
-      - $RELEASE == "weekly"
   tags:
     - nsnam
     - linux
 
 # Do a check for the TAKES_FOREVER jobs, only in optimized mode
-weekly-test-takes-forever-optimized:
+weekly-build-test-takes-forever-optimized:
   extends: .base-test
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs: ["weekly-slow-jobs"]
+  stage: build
   variables:
     MODE: optimized
     FULLNESS: "-f TAKES_FOREVER"
-  only:
-    variables:
-      - $RELEASE == "weekly"
   tags:
     - nsnam
     - linux

@@ -1,0 +1,75 @@
+# NS3 CI script for per-commit jobs
+
+# Defines the per-commit jobs. They are executed for any branch
+.base-per-commit-compile:
+  extends: .base-build
+  except:
+    variables:
+      - $CPPYY == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
+  interruptible: true
+  image: archlinux
+  before_script:
+    - pacman-key --init
+    - pacman -Syu --noconfirm
+      base-devel gcc clang cmake ninja ccache
+      python
+      boost gsl gtk3 openmpi
+      openssh
+  variables:
+    ENABLE_MPI: --enable-mpi
+
+per-commit-clang-debug:
+  extends: .base-per-commit-compile
+  stage: build
+  variables:
+    MODE: debug
+    COMPILER: clang++
+
+per-commit-gcc-debug:
+  extends: .base-per-commit-compile
+  stage: build
+  variables:
+    MODE: debug
+    COMPILER: g++
+
+per-commit-gcc-default:
+  extends: .base-per-commit-compile
+  stage: build
+  variables:
+    MODE: default
+    COMPILER: g++
+
+per-commit-gcc-optimized:
+  extends: .base-per-commit-compile
+  stage: build
+  variables:
+    MODE: optimized
+    COMPILER: g++
+
+per-commit-gcc-default-test:
+  extends: .base-per-commit-compile
+  stage: test
+  needs: ["per-commit-gcc-default"]
+  cache:
+    # Reuse the ccache from the per-commit-gcc-default job
+    key: "ccache-per-commit-gcc-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    COMPILER: g++
+
+per-commit-gcc-optimized-test:
+  extends: .base-per-commit-compile
+  stage: test
+  needs: ["per-commit-gcc-optimized"]
+  cache:
+    # Reuse the ccache from the per-commit-gcc-optimized job
+    key: "ccache-per-commit-gcc-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
+    COMPILER: g++

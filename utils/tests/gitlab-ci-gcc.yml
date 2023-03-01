@@ -7,12 +7,12 @@
 # We support from 8 to the latest version. Check if everything builds fine
 # under debug, default, and optimized, on Linux.
 
-.weekly-build-gcc-base:
+.weekly-gcc-base:
   extends: .base-build
-  only:
-    variables:
-      - $RELEASE == "weekly"
-      - $UBUNTU == "True"
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $UBUNTU == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
     - apt update
     - apt upgrade -y
@@ -32,26 +32,129 @@
   variables:
     ENABLE_MPI: --enable-mpi
 
+weekly-gcc:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $UBUNTU == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+  stage: pre-build
+  script:
+    - echo "Starting GCC jobs"
+
+# GCC 8
+weekly-build-gcc-8-debug:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: debug
+    COMPILER: g++-8
+    LIBGSL: libgsl23
+
+weekly-build-gcc-8-default:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: default
+    COMPILER: g++-8
+    LIBGSL: libgsl23
+
+weekly-build-gcc-8-optimized:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: optimized
+    COMPILER: g++-8
+    LIBGSL: libgsl23
+
+weekly-test-gcc-8-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-8-default"]
+  cache:
+    key: "ccache-weekly-build-gcc-8-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    COMPILER: g++-8
+    LIBGSL: libgsl23
+
+weekly-test-gcc-8-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-8-optimized"]
+  cache:
+    key: "ccache-weekly-build-gcc-8-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
+    COMPILER: g++-8
+    LIBGSL: libgsl23
+
 # GCC 9
 weekly-build-gcc-9-debug:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:20.04
+  stage: build
   variables:
     MODE: debug
     COMPILER: g++-9
     LIBGSL: libgsl23
 
 weekly-build-gcc-9-default:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:20.04
+  stage: build
   variables:
     MODE: default
     COMPILER: g++-9
     LIBGSL: libgsl23
 
 weekly-build-gcc-9-optimized:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: optimized
+    COMPILER: g++-9
+    LIBGSL: libgsl23
+
+weekly-test-gcc-9-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-9-default"]
+  cache:
+    key: "ccache-weekly-build-gcc-9-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    COMPILER: g++-9
+    LIBGSL: libgsl23
+
+weekly-test-gcc-9-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-9-optimized"]
+  cache:
+    key: "ccache-weekly-build-gcc-9-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     MODE: optimized
     COMPILER: g++-9
@@ -59,24 +162,58 @@ weekly-build-gcc-9-optimized:
 
 # GCC 10
 weekly-build-gcc-10-debug:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:20.04
+  stage: build
   variables:
     MODE: debug
     COMPILER: g++-10
     LIBGSL: libgsl23
 
 weekly-build-gcc-10-default:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:20.04
+  stage: build
   variables:
     MODE: default
     COMPILER: g++-10
     LIBGSL: libgsl23
 
 weekly-build-gcc-10-optimized:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: optimized
+    COMPILER: g++-10
+    LIBGSL: libgsl23
+
+weekly-test-gcc-10-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-10-default"]
+  cache:
+    key: "ccache-weekly-build-gcc-10-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    COMPILER: g++-10
+    LIBGSL: libgsl23
+
+weekly-test-gcc-10-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-10-optimized"]
+  cache:
+    key: "ccache-weekly-build-gcc-10-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     MODE: optimized
     COMPILER: g++-10
@@ -84,24 +221,58 @@ weekly-build-gcc-10-optimized:
 
 # GCC 11
 weekly-build-gcc-11-debug:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:22.04
+  stage: build
   variables:
     MODE: debug
     COMPILER: g++-11
     LIBGSL: libgsl27
 
 weekly-build-gcc-11-default:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:22.04
+  stage: build
   variables:
     MODE: default
     COMPILER: g++-11
     LIBGSL: libgsl27
 
 weekly-build-gcc-11-optimized:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:22.04
+  stage: build
+  variables:
+    MODE: optimized
+    COMPILER: g++-11
+    LIBGSL: libgsl27
+
+weekly-test-gcc-11-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-gcc-11-default"]
+  cache:
+    key: "ccache-weekly-build-gcc-11-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    COMPILER: g++-11
+    LIBGSL: libgsl27
+
+weekly-test-gcc-11-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-gcc-11-optimized"]
+  cache:
+    key: "ccache-weekly-build-gcc-11-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     MODE: optimized
     COMPILER: g++-11
@@ -109,24 +280,58 @@ weekly-build-gcc-11-optimized:
 
 # GCC 12
 weekly-build-gcc-12-debug:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:22.04
+  stage: build
   variables:
     MODE: debug
     COMPILER: g++-12
     LIBGSL: libgsl27
 
 weekly-build-gcc-12-default:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:22.04
+  stage: build
   variables:
     MODE: default
     COMPILER: g++-12
     LIBGSL: libgsl27
 
 weekly-build-gcc-12-optimized:
-  extends: .weekly-build-gcc-base
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
   image: ubuntu:22.04
+  stage: build
+  variables:
+    MODE: optimized
+    COMPILER: g++-12
+    LIBGSL: libgsl27
+
+weekly-test-gcc-12-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-gcc-12-default"]
+  cache:
+    key: "ccache-weekly-build-gcc-12-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    COMPILER: g++-12
+    LIBGSL: libgsl27
+
+weekly-test-gcc-12-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-gcc-12-optimized"]
+  cache:
+    key: "ccache-weekly-build-gcc-12-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     MODE: optimized
     COMPILER: g++-12

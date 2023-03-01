@@ -9,10 +9,10 @@
 # Weekly jobs: Fedora
 .weekly-build-fedora:
   extends: .base-build
-  only:
-    variables:
-      - $RELEASE == "weekly"
-      - $FEDORA == "True"
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $FEDORA == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
     - dnf update --assumeyes
     - dnf install --assumeyes
@@ -33,59 +33,114 @@
   variables:
     COMPILER: g++
 
-# Fedora 34
-# weekly-build-fedora-34-debug:
-#   extends: .weekly-build-fedora
-#   image: fedora:34
-#   variables:
-#     MODE: debug
+weekly-fedora:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $FEDORA == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+  stage: pre-build
+  script:
+    - echo "Starting Fedora jobs"
 
-# weekly-build-fedora-34-default:
-#   extends: .weekly-build-fedora
-#   image: fedora:34
-#   variables:
-#     MODE: default
-
-# weekly-build-fedora-34-optimized:
-#   extends: .weekly-build-fedora
-#   image: fedora:34
-#   variables:
-#     MODE: optimized
-
-# Fedora 35
+# Fedora 35 build
 weekly-build-fedora-35-debug:
   extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
   image: fedora:35
+  stage: build
   variables:
     MODE: debug
+    PHASE: build
 
 weekly-build-fedora-35-default:
   extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
   image: fedora:35
+  stage: build
   variables:
     MODE: default
 
 weekly-build-fedora-35-optimized:
   extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
   image: fedora:35
+  stage: build
   variables:
     MODE: optimized
+
+# Fedora 35 test
+weekly-test-fedora-35-default:
+  extends: .weekly-build-fedora
+  image: fedora:35
+  stage: test
+  needs: ["weekly-build-fedora-35-default"]
+  cache:
+    key: "ccache-weekly-build-fedora-35-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+
+weekly-test-fedora-35-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:35
+  stage: test
+  needs: ["weekly-build-fedora-35-optimized"]
+  cache:
+    key: "ccache-weekly-build-fedora-35-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
+
 
 # Fedora 36
 weekly-build-fedora-36-debug:
   extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
   image: fedora:36
+  stage: build
   variables:
     MODE: debug
 
 weekly-build-fedora-36-default:
   extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
   image: fedora:36
+  stage: build
   variables:
     MODE: default
 
 weekly-build-fedora-36-optimized:
   extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
   image: fedora:36
+  stage: build
+  variables:
+    MODE: optimized
+
+# Fedora 36 test
+weekly-test-fedora-36-default:
+  extends: .weekly-build-fedora
+  image: fedora:36
+  stage: test
+  needs: ["weekly-build-fedora-36-default"]
+  cache:
+    key: "ccache-weekly-build-fedora-36-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+
+weekly-test-fedora-36-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:36
+  stage: test
+  needs: ["weekly-build-fedora-36-optimized"]
+  cache:
+    key: "ccache-weekly-build-fedora-36-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     MODE: optimized

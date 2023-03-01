@@ -1,8 +1,9 @@
 cppyy-22.04:
   image: ubuntu:22.04 # python 3.10
-  only:
-    variables:
-      - $RELEASE == "weekly"
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
   tags:
     - nsnam
     - linux
@@ -35,9 +36,8 @@ cppyy-22.04:
 
 cppyy-20.04:
   image: ubuntu:20.04 # python 3.8
-  only:
-    variables:
-      - $RELEASE == "manual"
+  rules:
+    - if: $RELEASE == "manual"
   tags:
     - nsnam
     - linux
@@ -60,9 +60,8 @@ cppyy-20.04:
 
 cppyy-18.04:
   image: ubuntu:18.04 # python 3.6
-  only:
-    variables:
-      - $RELEASE == "manual"
+  rules:
+    - if: $RELEASE == "manual"
   tags:
     - nsnam
     - linux

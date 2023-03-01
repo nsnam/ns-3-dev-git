@@ -8,13 +8,13 @@
 # We test only CLANG 6 and 10 on Ubuntu 18.04, and 11 and 14 on Ubuntu 22.04
 # The test is done under Linux.
 
-.weekly-build-clang-ubuntu18.04:
+.weekly-clang-ubuntu18.04:
   image: ubuntu:18.04
   extends: .base-build
-  only:
-    variables:
-      - $RELEASE == "weekly"
-      - $CLANG_BUILD_ENABLE == "True"
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CLANG_BUILD_ENABLE == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
     - apt update
     - apt upgrade -y
@@ -31,13 +31,13 @@
     COMPILER: clang++-$CLANG
     LIBGSL: libgsl23
 
-.weekly-build-clang-ubuntu22.04:
+.weekly-clang-ubuntu22.04:
   image: ubuntu:22.04
   extends: .base-build
-  only:
-    variables:
-      - $RELEASE == "weekly"
-      - $CLANG_BUILD_ENABLE == "True"
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CLANG_BUILD_ENABLE == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
     - apt update
     - apt upgrade -y
@@ -54,78 +54,208 @@
     COMPILER: clang++-$CLANG
     LIBGSL: libgsl27
 
+weekly-clang:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CLANG_BUILD_ENABLE == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+  stage: pre-build
+  script:
+    - echo "Starting clang jobs"
+
 # CLANG 6
 weekly-build-clang-6-debug:
-  extends: .weekly-build-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu18.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: "6.0"
     MODE: debug
 
 weekly-build-clang-6-default:
-  extends: .weekly-build-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu18.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: "6.0"
     MODE: default
 
 weekly-build-clang-6-optimized:
-  extends: .weekly-build-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu18.04
+  needs: ["weekly-clang"]
+  stage: build
+  variables:
+    CLANG: "6.0"
+    MODE: optimized
+
+weekly-test-clang-6-default:
+  extends: .weekly-clang-ubuntu18.04
+  stage: test
+  needs: ["weekly-build-clang-6-default"]
+  cache:
+    key: "ccache-weekly-build-clang-6-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    CLANG: "6.0"
+    MODE: default
+
+weekly-test-clang-6-optimized:
+  extends: .weekly-clang-ubuntu18.04
+  stage: test
+  needs: ["weekly-build-clang-6-optimized"]
+  cache:
+    key: "ccache-weekly-build-clang-6-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     CLANG: "6.0"
     MODE: optimized
 
 # CLANG 10
 weekly-build-clang-10-debug:
-  extends: .weekly-build-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu18.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: 10
     MODE: debug
 
 weekly-build-clang-10-default:
-  extends: .weekly-build-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu18.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: 10
     MODE: default
 
 weekly-build-clang-10-optimized:
-  extends: .weekly-build-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu18.04
+  needs: ["weekly-clang"]
+  stage: build
+  variables:
+    CLANG: 10
+    MODE: optimized
+
+weekly-test-clang-10-default:
+  extends: .weekly-clang-ubuntu18.04
+  stage: test
+  needs: ["weekly-build-clang-10-default"]
+  cache:
+    key: "ccache-weekly-build-clang-10-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    CLANG: 10
+    MODE: default
+
+weekly-test-clang-10-optimized:
+  extends: .weekly-clang-ubuntu18.04
+  stage: test
+  needs: ["weekly-build-clang-10-optimized"]
+  cache:
+    key: "ccache-weekly-build-clang-10-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     CLANG: 10
     MODE: optimized
 
 # CLANG 11
 weekly-build-clang-11-debug:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-clang-ubuntu22.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: 11
     MODE: debug
 
 weekly-build-clang-11-default:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-clang-ubuntu22.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: 11
     MODE: default
 
 weekly-build-clang-11-optimized:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-clang-ubuntu22.04
+  needs: ["weekly-clang"]
+  stage: build
+  variables:
+    CLANG: 11
+    MODE: optimized
+
+weekly-test-clang-11-default:
+  extends: .weekly-clang-ubuntu22.04
+  stage: test
+  needs: ["weekly-build-clang-11-default"]
+  cache:
+    key: "ccache-weekly-build-clang-11-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    CLANG: 11
+    MODE: default
+
+weekly-test-clang-11-optimized:
+  extends: .weekly-clang-ubuntu22.04
+  stage: test
+  needs: ["weekly-build-clang-11-optimized"]
+  cache:
+    key: "ccache-weekly-build-clang-11-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     CLANG: 11
     MODE: optimized
 
 # CLANG 14
 weekly-build-clang-14-debug:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-clang-ubuntu22.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: 14
     MODE: debug
 
 weekly-build-clang-14-default:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-clang-ubuntu22.04
+  needs: ["weekly-clang"]
+  stage: build
   variables:
     CLANG: 14
     MODE: default
 
 weekly-build-clang-14-optimized:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-clang-ubuntu22.04
+  needs: ["weekly-clang"]
+  stage: build
+  variables:
+    CLANG: 14
+    MODE: optimized
+
+weekly-test-clang-14-default:
+  extends: .weekly-clang-ubuntu22.04
+  stage: test
+  needs: ["weekly-build-clang-14-default"]
+  cache:
+    key: "ccache-weekly-build-clang-14-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    CLANG: 14
+    MODE: default
+
+weekly-test-clang-14-optimized:
+  extends: .weekly-clang-ubuntu22.04
+  stage: test
+  needs: ["weekly-build-clang-14-optimized"]
+  cache:
+    key: "ccache-weekly-build-clang-14-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
   variables:
     CLANG: 14
     MODE: optimized

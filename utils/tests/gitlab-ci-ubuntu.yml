@@ -7,17 +7,21 @@
 # Please take a look at .gitlab-ci.yml to check the dependencies of Ubuntu jobs.
 
 # Ubuntu base
-.weekly-build-ubuntu:
+.weekly-base-ubuntu:
   extends: .base-build
-  only:
-    variables:
-      - $RELEASE == "weekly"
-      - $UBUNTU == "True"
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $UBUNTU == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
+    # The following ppa is needed only for Ubuntu 18.04 to install g++9
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y software-properties-common
+    - add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - apt update
     - apt upgrade -y
     - DEBIAN_FRONTEND=noninteractive apt install -y
-      g++ cmake ninja-build ccache
+      $COMPILER cmake ninja-build ccache
       python3 python3-dev
       gsl-bin libgsl-dev $LIBGSL
       libboost-all-dev
@@ -30,194 +34,232 @@
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
       ssh
 
-  variables:
-    COMPILER: g++
+weekly-ubuntu:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $UBUNTU == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+  stage: pre-build
+  script:
+    - echo "Starting Ubuntu jobs"
 
 # Ubuntu 18.04 (Until April 2023)
 weekly-build-ubuntu-18.04-debug:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:18.04
-  before_script:
-    - apt update
-    - apt upgrade -y
-    - apt install -y software-properties-common
-    - add-apt-repository ppa:ubuntu-toolchain-r/test -y
-    - apt update
-    - DEBIAN_FRONTEND=noninteractive apt install -y
-      g++-9 cmake ninja-build ccache
-      python3 python3-dev
-      gsl-bin libgsl-dev $LIBGSL
-      libboost-all-dev
-      libgtk-3-dev
-      libfl-dev
-      libxml2 libxml2-dev
-      libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
-      libsqlite3-dev sqlite3
-      qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      ssh
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+  stage: build
   variables:
     MODE: debug
     LIBGSL: libgsl23
+    COMPILER: g++-9
 
 weekly-build-ubuntu-18.04-default:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:18.04
-  before_script:
-    - apt update
-    - apt install -y software-properties-common
-    - add-apt-repository ppa:ubuntu-toolchain-r/test -y
-    - apt update
-    - DEBIAN_FRONTEND=noninteractive apt install -y
-      g++-9 cmake ninja-build ccache
-      python3 python3-dev
-      gsl-bin libgsl-dev $LIBGSL
-      libboost-all-dev
-      libgtk-3-dev
-      libfl-dev
-      libxml2 libxml2-dev
-      libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
-      libsqlite3-dev sqlite3
-      qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      ssh
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+  stage: build
   variables:
     MODE: default
     LIBGSL: libgsl23
+    COMPILER: g++-9
 
 weekly-build-ubuntu-18.04-optimized:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:18.04
-  before_script:
-    - apt update
-    - apt install -y software-properties-common
-    - add-apt-repository ppa:ubuntu-toolchain-r/test -y
-    - apt update
-    - DEBIAN_FRONTEND=noninteractive apt install -y
-      g++-9 cmake ninja-build ccache
-      python3 python3-dev
-      gsl-bin libgsl-dev $LIBGSL
-      libboost-all-dev
-      libgtk-3-dev
-      libfl-dev
-      libxml2 libxml2-dev
-      libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
-      libsqlite3-dev sqlite3
-      qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      ssh
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+  stage: build
   variables:
     MODE: optimized
     LIBGSL: libgsl23
+    COMPILER: g++-9
+
+weekly-test-ubuntu-18.04-default:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:18.04
+  stage: test
+  needs: ["weekly-build-ubuntu-18.04-default"]
+  cache:
+    key: "ccache-weekly-build-ubuntu-18.04-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    LIBGSL: libgsl23
+    COMPILER: g++-9
+
+weekly-test-ubuntu-18.04-optimized:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:18.04
+  stage: test
+  needs: ["weekly-build-ubuntu-18.04-optimized"]
+  cache:
+    key: "ccache-weekly-build-ubuntu-18.04-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl23
+    COMPILER: g++-9
 
 # # Ubuntu 20.04 (Until April 2025)
 # weekly-build-ubuntu-20.04-debug:
-#   extends: .weekly-build-ubuntu
+#   extends: .weekly-base-ubuntu
 #   image: ubuntu:20.04
 #   variables:
 #     MODE: debug
 #     LIBGSL: libgsl23
 
 # weekly-build-ubuntu-20.04-default:
-#   extends: .weekly-build-ubuntu
+#   extends: .weekly-base-ubuntu
 #   image: ubuntu:20.04
 #   variables:
 #     MODE: default
 #     LIBGSL: libgsl23
 
 # weekly-build-ubuntu-20.04-optimized:
-#   extends: .weekly-build-ubuntu
+#   extends: .weekly-base-ubuntu
 #   image: ubuntu:20.04
 #   variables:
 #     MODE: optimized
 #     LIBGSL: libgsl23
 
-# # Ubuntu 21.04 (Until January 2022)
-# weekly-build-ubuntu-21.04-debug:
-#   extends: .weekly-build-ubuntu
-#   image: ubuntu:21.04
-#   variables:
-#     MODE: debug
-#     LIBGSL: libgsl25
-
-# weekly-build-ubuntu-21.04-default:
-#   extends: .weekly-build-ubuntu
-#   image: ubuntu:21.04
-#   variables:
-#     MODE: default
-#     LIBGSL: libgsl25
-
-# weekly-build-ubuntu-21.04-optimized:
-#   extends: .weekly-build-ubuntu
-#   image: ubuntu:21.04
-#   variables:
-#     MODE: optimized
-#     LIBGSL: libgsl25
-
 # Ubuntu 22.04 (Until January 2032)
 weekly-build-ubuntu-22.04-debug:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:22.04
+  stage: build
   variables:
     MODE: debug
     LIBGSL: libgsl27
+    COMPILER: g++
 
 weekly-build-ubuntu-22.04-default:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:22.04
+  stage: build
   variables:
     MODE: default
     LIBGSL: libgsl27
+    COMPILER: g++
 
 weekly-build-ubuntu-22.04-optimized:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:22.04
+  stage: build
   variables:
     MODE: optimized
     LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-test-ubuntu-22.04-default:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-ubuntu-22.04-default"]
+  cache:
+    key: "ccache-weekly-build-ubuntu-22.04-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-test-ubuntu-22.04-optimized:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-ubuntu-22.04-optimized"]
+  cache:
+    key: "ccache-weekly-build-ubuntu-22.04-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl27
+    COMPILER: g++
 
 # Ubuntu Latest
 weekly-build-ubuntu-latest-debug:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:latest
+  stage: build
   variables:
     MODE: debug
     LIBGSL: libgsl27
+    COMPILER: g++
 
 weekly-build-ubuntu-latest-default:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:latest
+  stage: build
   variables:
     MODE: default
     LIBGSL: libgsl27
+    COMPILER: g++
 
 weekly-build-ubuntu-latest-optimized:
-  extends: .weekly-build-ubuntu
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
   image: ubuntu:latest
+  stage: build
   variables:
     MODE: optimized
     LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-test-ubuntu-latest-default:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:latest
+  stage: test
+  needs: ["weekly-build-ubuntu-latest-default"]
+  cache:
+    key: "ccache-weekly-build-ubuntu-latest-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+    LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-test-ubuntu-latest-optimized:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:latest
+  stage: test
+  needs: ["weekly-build-ubuntu-latest-optimized"]
+  cache:
+    key: "ccache-weekly-build-ubuntu-latest-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl27
+    COMPILER: g++
 
 # Ubuntu Rolling
 # weekly-build-ubuntu-rolling-debug:
-#   extends: .weekly-build-ubuntu
+#   extends: .weekly-base-ubuntu
 #   image: ubuntu:rolling
 #   variables:
 #     MODE: debug
 #     LIBGSL: libgsl27
 
 # weekly-build-ubuntu-rolling-default:
-#   extends: .weekly-build-ubuntu
+#   extends: .weekly-base-ubuntu
 #   image: ubuntu:rolling
 #   variables:
 #     MODE: default
 #     LIBGSL: libgsl27
 
 # weekly-build-ubuntu-rolling-optimized:
-#   extends: .weekly-build-ubuntu
+#   extends: .weekly-base-ubuntu
 #   image: ubuntu:rolling
 #   variables:
 #     MODE: optimized

@@ -7,16 +7,10 @@
 # Alpine base
 .weekly-build-alpine:
   extends: .base-build
-  only:
-    variables:
-      - $RELEASE == "weekly"
-      - $ALPINE == "True"
-  variables:
-    COMPILER: g++
-
-weekly-build-alpine-latest-default:
-  extends: .weekly-build-alpine
-  image: alpine:latest
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $ALPINE == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
     - apk update
     - apk upgrade
@@ -26,4 +20,35 @@ weekly-build-alpine-latest-default:
       bash
       iproute2 linux-headers
   variables:
+    COMPILER: g++
+
+weekly-alpine:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $ALPINE == "True"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+  stage: pre-build
+  script:
+    - echo "Starting Alpine jobs"
+
+weekly-alpine-latest-default:
+  extends: .weekly-build-alpine
+  needs: ["weekly-alpine"]
+  image: alpine:latest
+  stage: build
+  variables:
     MODE: default
+
+weekly-alpine-latest-default-test:
+  extends: .weekly-build-alpine
+  image: alpine:latest
+  stage: test
+  needs: ["weekly-alpine-latest-default"]
+  cache:
+    key: "ccache-weekly-alpine-latest-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+
