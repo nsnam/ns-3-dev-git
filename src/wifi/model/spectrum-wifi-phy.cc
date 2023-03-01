@@ -61,6 +61,12 @@ SpectrumWifiPhy::GetTypeId()
                           MakeBooleanAccessor(&SpectrumWifiPhy::m_disableWifiReception),
                           MakeBooleanChecker())
             .AddAttribute(
+                "TrackSignalsFromInactiveInterfaces",
+                "Enable or disable tracking signals coming from inactive spectrum PHY interfaces",
+                BooleanValue(false),
+                MakeBooleanAccessor(&SpectrumWifiPhy::m_trackSignalsInactiveInterfaces),
+                MakeBooleanChecker())
+            .AddAttribute(
                 "TxMaskInnerBandMinimumRejection",
                 "Minimum rejection (dBr) for the inner band of the transmit spectrum mask",
                 DoubleValue(-20.0),
@@ -249,6 +255,8 @@ SpectrumWifiPhy::ResetSpectrumModel()
                                                       GetBandBandwidth(),
                                                       GetGuardBandwidth(channelWidth));
 
+    m_currentSpectrumPhyInterface->GetChannel()->AddRx(m_currentSpectrumPhyInterface);
+
     UpdateInterferenceHelperBands();
 }
 
@@ -278,7 +286,7 @@ SpectrumWifiPhy::DoChannelSwitch()
     {
         NS_LOG_DEBUG("Switch to existing RF interface with frequency/width pair of ("
                      << frequencyAfter << ", " << widthAfter << ")");
-        if (m_currentSpectrumPhyInterface)
+        if (m_currentSpectrumPhyInterface && !m_trackSignalsInactiveInterfaces)
         {
             m_currentSpectrumPhyInterface->GetChannel()->RemoveRx(m_currentSpectrumPhyInterface);
         }
@@ -293,7 +301,6 @@ SpectrumWifiPhy::DoChannelSwitch()
     // it again in the entry associated with the new RX spectrum model UID)
     m_currentSpectrumPhyInterface = newSpectrumPhyInterface;
     ResetSpectrumModel();
-    m_currentSpectrumPhyInterface->GetChannel()->AddRx(m_currentSpectrumPhyInterface);
 }
 
 bool
@@ -306,10 +313,7 @@ void
 SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
                          Ptr<const WifiSpectrumPhyInterface> interface)
 {
-    NS_ASSERT(!interface ||
-              interface == m_currentSpectrumPhyInterface); // TODO: Add support for receiving from
-                                                           // multiple RF interfaces
-    const auto range = GetCurrentFrequencyRange();
+    const auto range = interface ? interface->GetFrequencyRange() : GetCurrentFrequencyRange();
     NS_LOG_FUNCTION(this << rxParams << interface << range);
     Time rxDuration = rxParams->duration;
     Ptr<SpectrumValue> receivedSignalPsd = rxParams->psd;
@@ -327,13 +331,13 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     // spectral mask representing our filtering allows) to find the
     // total energy apparent to the "demodulator".
     // This is done per 20 MHz channel band.
-    uint16_t channelWidth = GetChannelWidth();
+    const auto channelWidth = interface ? interface->GetChannelWidth() : GetChannelWidth();
     double totalRxPowerW = 0;
     RxPowerWattPerChannelBand rxPowerW;
 
     if ((channelWidth == 5) || (channelWidth == 10))
     {
-        WifiSpectrumBand filteredBand = GetBand(channelWidth);
+        WifiSpectrumBand filteredBand = GetBandForInterface(channelWidth, 0, range, channelWidth);
         double rxPowerPerBandW =
             WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand);
         NS_LOG_DEBUG("Signal power received (watts) before antenna gain: " << rxPowerPerBandW);
@@ -351,7 +355,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         for (uint32_t i = 0; i < (channelWidth / bw); i++)
         {
             NS_ASSERT(channelWidth >= bw);
-            WifiSpectrumBand filteredBand = GetBand(bw, i);
+            WifiSpectrumBand filteredBand = GetBandForInterface(bw, i, range, channelWidth);
             double rxPowerPerBandW =
                 WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand);
             NS_LOG_DEBUG("Signal power received (watts) before antenna gain for "
@@ -366,7 +370,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
 
     for (uint32_t i = 0; i < (channelWidth / 20); i++)
     {
-        WifiSpectrumBand filteredBand = GetBand(20, i);
+        WifiSpectrumBand filteredBand = GetBandForInterface(20, i, range, channelWidth);
         double rxPowerPerBandW =
             WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, filteredBand);
         NS_LOG_DEBUG("Signal power received (watts) before antenna gain for 20 MHz channel band "
@@ -416,6 +420,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
+
     if (wifiRxParams && m_disableWifiReception)
     {
         NS_LOG_INFO("Received Wi-Fi signal but blocked from syncing");
@@ -423,6 +428,16 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
+
+    if (m_trackSignalsInactiveInterfaces && interface &&
+        (interface != m_currentSpectrumPhyInterface))
+    {
+        NS_LOG_INFO("Received Wi-Fi signal from a non-active PHY interface");
+        m_interference->AddForeignSignal(rxDuration, rxPowerW, range);
+        SwitchMaybeToCcaBusy(nullptr);
+        return;
+    }
+
     // Do no further processing if signal is too weak
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity

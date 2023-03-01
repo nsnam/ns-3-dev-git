@@ -236,6 +236,9 @@ class SpectrumWifiPhy : public WifiPhy
         m_ruBands;               /**< For each channel width, store all the distinct spectrum
                                       bands associated with every RU in a channel of that width */
     bool m_disableWifiReception; //!< forces this PHY to fail to sync on any signal
+    bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
+                                           //!< PHY interfaces are tracked
+
     TracedCallback<bool, uint32_t, double, Time> m_signalCb; //!< Signal callback
 
     double m_txMaskInnerBandMinimumRejection; //!< The minimum rejection (in dBr) for the inner band
