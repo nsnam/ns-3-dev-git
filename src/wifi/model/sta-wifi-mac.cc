@@ -924,6 +924,12 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             NotifyRxDrop(packet);
             return;
         }
+        if (!hdr->HasData())
+        {
+            NS_LOG_LOGIC("Received (QoS) Null Data frame: ignore");
+            NotifyRxDrop(packet);
+            return;
+        }
         if (hdr->IsQosData())
         {
             if (hdr->IsQosAmsdu())
@@ -937,7 +943,7 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 ForwardUp(packet, hdr->GetAddr3(), hdr->GetAddr1());
             }
         }
-        else if (hdr->HasData())
+        else
         {
             ForwardUp(packet, hdr->GetAddr3(), hdr->GetAddr1());
         }

@@ -1562,7 +1562,7 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                         DeaggregateAmsduAndForward(mpdu);
                         packet = nullptr;
                     }
-                    else
+                    else if (hdr->HasData())
                     {
                         ForwardUp(packet, from, GetAddress());
                     }
@@ -1590,7 +1590,7 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 }
                 ForwardUp(packet, from, to);
             }
-            else
+            else if (hdr->HasData())
             {
                 ForwardUp(packet, from, to);
             }

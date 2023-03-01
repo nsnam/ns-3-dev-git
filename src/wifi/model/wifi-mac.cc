@@ -1150,6 +1150,12 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
+    // Nothing to do with (QoS) Null Data frames
+    if (hdr->IsData() && !hdr->HasData())
+    {
+        return;
+    }
+
     if (hdr->IsMgt() && hdr->IsAction())
     {
         // There is currently only any reason for Management Action

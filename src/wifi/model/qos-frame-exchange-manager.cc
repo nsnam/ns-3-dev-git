@@ -786,11 +786,8 @@ QosFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                 rxSnr);
         }
 
-        // Forward up the frame if it is not a QoS Null frame
-        if (hdr.HasData())
-        {
-            m_rxMiddle->Receive(mpdu, m_linkId);
-        }
+        // Forward up the frame
+        m_rxMiddle->Receive(mpdu, m_linkId);
 
         // the received data frame has been processed
         return;
