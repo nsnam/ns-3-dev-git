@@ -42,6 +42,7 @@ class WifiMac;
 enum class WifiQueueBlockedReason : uint8_t
 {
     WAITING_ADDBA_RESP = 0,
+    POWER_SAVE_MODE,
     REASONS_COUNT
 };
 
@@ -59,6 +60,8 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
     {
     case WifiQueueBlockedReason::WAITING_ADDBA_RESP:
         return (os << "WAITING_ADDBA_RESP");
+    case WifiQueueBlockedReason::POWER_SAVE_MODE:
+        return (os << "POWER_SAVE_MODE");
     case WifiQueueBlockedReason::REASONS_COUNT:
         return (os << "REASONS_COUNT");
     default:

@@ -1498,6 +1498,56 @@ ApWifiMac::TxFailed(WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu)
     }
 }
 
+void
+ApWifiMac::ProcessPowerManagementFlag(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << *mpdu << linkId);
+
+    Mac48Address staAddr = mpdu->GetHeader().GetAddr2();
+    bool staInPsMode = GetWifiRemoteStationManager(linkId)->IsInPsMode(staAddr);
+
+    if (!staInPsMode && mpdu->GetHeader().IsPowerManagement())
+    {
+        // the sending STA is switching to Power Save mode
+        StaSwitchingToPsMode(staAddr, linkId);
+    }
+    else if (staInPsMode && !mpdu->GetHeader().IsPowerManagement())
+    {
+        // the sending STA is switching back to Active mode
+        StaSwitchingToActiveModeOrDeassociated(staAddr, linkId);
+    }
+}
+
+void
+ApWifiMac::StaSwitchingToPsMode(const Mac48Address& staAddr, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << staAddr << linkId);
+
+    GetWifiRemoteStationManager(linkId)->SetPsMode(staAddr, true);
+
+    // Block frames addressed to the STA in PS mode
+    NS_LOG_DEBUG("Block destination " << staAddr << " on link " << +linkId);
+    auto staMldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
+    BlockUnicastTxOnLinks(WifiQueueBlockedReason::POWER_SAVE_MODE, staMldAddr, {linkId});
+}
+
+void
+ApWifiMac::StaSwitchingToActiveModeOrDeassociated(const Mac48Address& staAddr, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << staAddr << linkId);
+
+    GetWifiRemoteStationManager(linkId)->SetPsMode(staAddr, false);
+
+    if (GetWifiRemoteStationManager(linkId)->IsAssociated(staAddr))
+    {
+        // the station is still associated, unblock its frames
+        NS_LOG_DEBUG("Unblock destination " << staAddr << " on link " << +linkId);
+        auto staMldAddr =
+            GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
+        UnblockUnicastTxOnLinks(WifiQueueBlockedReason::POWER_SAVE_MODE, staMldAddr, {linkId});
+    }
+}
+
 std::optional<uint8_t>
 ApWifiMac::IsAssociated(const Mac48Address& address) const
 {
@@ -1546,6 +1596,10 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             (apLinkId = IsAssociated(mpdu->GetHeader().GetAddr2())) &&
             mpdu->GetHeader().GetAddr1() == GetFrameExchangeManager(*apLinkId)->GetAddress())
         {
+            // this MPDU is being acknowledged by the AP, so we can process
+            // the Power Management flag
+            ProcessPowerManagementFlag(mpdu, *apLinkId);
+
             Mac48Address to = hdr->GetAddr3();
             // Address3 can be our MLD address (e.g., this is an MPDU containing a single MSDU
             // addressed to us) or a BSSID (e.g., this is an MPDU containing an A-MSDU)
@@ -1611,6 +1665,13 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     }
     else if (hdr->IsMgt())
     {
+        if (hdr->GetAddr1() == GetFrameExchangeManager(linkId)->GetAddress() &&
+            GetWifiRemoteStationManager(linkId)->IsAssociated(from))
+        {
+            // this MPDU is being acknowledged by the AP, so we can process
+            // the Power Management flag
+            ProcessPowerManagementFlag(mpdu, linkId);
+        }
         if (hdr->IsProbeReq() && (hdr->GetAddr1().IsGroup() ||
                                   hdr->GetAddr1() == GetFrameExchangeManager(linkId)->GetAddress()))
         {
@@ -1685,6 +1746,7 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                         }
                         UpdateShortSlotTimeEnabled(linkId);
                         UpdateShortPreambleEnabled(linkId);
+                        StaSwitchingToActiveModeOrDeassociated(from, linkId);
                         break;
                     }
                 }

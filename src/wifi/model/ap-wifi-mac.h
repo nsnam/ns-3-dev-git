@@ -358,6 +358,31 @@ class ApWifiMac : public WifiMac
     void SendOneBeacon(uint8_t linkId);
 
     /**
+     * Process the Power Management bit in the Frame Control field of an MPDU
+     * successfully received on the given link.
+     *
+     * \param mpdu the successfully received MPDU
+     * \param linkId the ID of the given link
+     */
+    void ProcessPowerManagementFlag(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+    /**
+     * Perform the necessary actions when a given station switches from active mode
+     * to powersave mode.
+     *
+     * \param staAddr the MAC address of the given station
+     * \param linkId the ID of the link on which the given station is operating
+     */
+    void StaSwitchingToPsMode(const Mac48Address& staAddr, uint8_t linkId);
+    /**
+     * Perform the necessary actions when a given station deassociates or switches
+     * from powersave mode to active mode.
+     *
+     * \param staAddr the MAC address of the given station
+     * \param linkId the ID of the link on which the given station is operating
+     */
+    void StaSwitchingToActiveModeOrDeassociated(const Mac48Address& staAddr, uint8_t linkId);
+
+    /**
      * Return the Capability information of the current AP for the given link.
      *
      * \param linkId the ID of the given link
