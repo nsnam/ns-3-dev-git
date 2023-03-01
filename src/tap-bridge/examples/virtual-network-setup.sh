@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 brctl addbr br-left
 brctl addbr br-right
 tunctl -t tap-left

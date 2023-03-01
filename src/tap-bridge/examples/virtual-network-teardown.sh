@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 lxc-stop -n left
 lxc-stop -n right
 lxc-destroy -n left
