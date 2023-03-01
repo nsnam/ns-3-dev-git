@@ -552,6 +552,18 @@ WifiRemoteStationManager::GetStaId(Mac48Address address, const WifiTxVector& txV
     return staId;
 }
 
+bool
+WifiRemoteStationManager::IsInPsMode(const Mac48Address& address) const
+{
+    return LookupState(address)->m_isInPsMode;
+}
+
+void
+WifiRemoteStationManager::SetPsMode(const Mac48Address& address, bool isInPsMode)
+{
+    LookupState(address)->m_isInPsMode = isInPsMode;
+}
+
 void
 WifiRemoteStationManager::SetMldAddress(const Mac48Address& address, const Mac48Address& mldAddress)
 {
@@ -1381,6 +1393,7 @@ WifiRemoteStationManager::LookupState(Mac48Address address) const
     state->m_ness = 0;
     state->m_aggregation = false;
     state->m_qosSupported = false;
+    state->m_isInPsMode = false;
     const_cast<WifiRemoteStationManager*>(this)->m_states.insert({address, state});
     NS_LOG_DEBUG("WifiRemoteStationManager::LookupState returning new state");
     return state;

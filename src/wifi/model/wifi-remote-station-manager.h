@@ -122,6 +122,7 @@ struct WifiRemoteStationState
     bool m_shortPreamble;     //!< Flag if short PHY preamble is supported by the remote station
     bool m_shortSlotTime;     //!< Flag if short ERP slot time is supported by the remote station
     bool m_qosSupported;      //!< Flag if QoS is supported by the station
+    bool m_isInPsMode;        //!< Flag if the STA is currently in PS mode
 };
 
 /**
@@ -732,6 +733,22 @@ class WifiRemoteStationManager : public Object
      * \param address the address of the station
      */
     void RecordAssocRefused(Mac48Address address);
+
+    /**
+     * Return whether the STA is currently in Power Save mode.
+     *
+     * \param address the address of the station
+     *
+     * \return true if the station is in Power Save mode, false otherwise
+     */
+    bool IsInPsMode(const Mac48Address& address) const;
+    /**
+     * Register whether the STA is in Power Save mode or not.
+     *
+     * \param address the address of the station
+     * \param isInPsMode whether the STA is in PS mode or not
+     */
+    void SetPsMode(const Mac48Address& address, bool isInPsMode);
 
     /**
      * Set the address of the MLD the given station is affiliated with.
