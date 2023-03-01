@@ -22,6 +22,7 @@
 
 #include "qos-utils.h"
 #include "ssid.h"
+#include "wifi-mac-queue-scheduler.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-standards.h"
 
@@ -50,7 +51,6 @@ class EhtConfiguration;
 class FrameExchangeManager;
 class ChannelAccessManager;
 class ExtendedCapabilities;
-class WifiMacQueueScheduler;
 class OriginatorBlockAckAgreement;
 class RecipientBlockAckAgreement;
 
@@ -279,6 +279,32 @@ class WifiMac : public Object
      * \param linkId the ID of the given link
      */
     void SetBssid(Mac48Address bssid, uint8_t linkId);
+
+    /**
+     * Block the transmission on the given links of all unicast frames addressed to
+     * the station with the given address for the given reason. The given MAC address
+     * must be the MLD address in case the addressed device is multi-link.
+     *
+     * \param reason the reason for blocking transmissions
+     * \param address the MAC address of the given device
+     * \param linkIds the IDs of the links to block
+     */
+    void BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
+                               const Mac48Address& address,
+                               const std::set<uint8_t>& linkIds);
+
+    /**
+     * Unblock the transmission on the given links of all unicast frames addressed to
+     * the station with the given address for the given reason. The given MAC address
+     * must be the MLD address in case the addressed device is multi-link.
+     *
+     * \param reason the reason for unblocking transmissions
+     * \param address the MAC address of the given device
+     * \param linkIds the IDs of the links to unblock
+     */
+    void UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
+                                 const Mac48Address& address,
+                                 const std::set<uint8_t>& linkIds);
 
     /**
      * Return true if packets can be forwarded to the given destination,
