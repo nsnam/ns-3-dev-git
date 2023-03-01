@@ -16,6 +16,21 @@ and references prefixed by '!' refer to a
 Release 3-dev
 -------------
 
+### Supported platforms
+
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-9 or later, or LLVM/clang++-6 or later
+- Python 3.6 or later
+- CMake 3.10 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).
+
+This release has discontinued support for g++-8 compilers.
+
 ### New user-visible features
 
 - (network) !938 - Add class `TimestampTag` for associating a timestamp with a packet.
