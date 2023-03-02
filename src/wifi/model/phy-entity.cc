@@ -1210,7 +1210,7 @@ PhyEntity::GetPrimaryBand(ChannelWidthMhz bandWidth) const
         return m_wifiPhy->GetBand(bandWidth);
     }
     return m_wifiPhy->GetBand(bandWidth,
-                              m_wifiPhy->m_operatingChannel.GetPrimaryChannelIndex(bandWidth));
+                              m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(bandWidth));
 }
 
 WifiSpectrumBandInfo
@@ -1218,7 +1218,7 @@ PhyEntity::GetSecondaryBand(ChannelWidthMhz bandWidth) const
 {
     NS_ASSERT(m_wifiPhy->GetChannelWidth() >= 40);
     return m_wifiPhy->GetBand(bandWidth,
-                              m_wifiPhy->m_operatingChannel.GetSecondaryChannelIndex(bandWidth));
+                              m_wifiPhy->GetOperatingChannel().GetSecondaryChannelIndex(bandWidth));
 }
 
 ChannelWidthMhz
