@@ -761,7 +761,7 @@ CommandLine::AddValue(const std::string& name,
 void
 CommandLine::AddValue(const std::string& name,
                       const std::string& help,
-                      ns3::Callback<bool, std::string> callback,
+                      ns3::Callback<bool, const std::string&> callback,
                       const std::string& defaultValue /* = "" */)
 
 {

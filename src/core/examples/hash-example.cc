@@ -437,7 +437,7 @@ class DictFiles
      * \param [in] file The word file to add.
      * \return \c true If the file is new to the list.
      */
-    bool Add(const std::string file)
+    bool Add(const std::string& file)
     {
         if (std::find(m_files.begin(), m_files.end(), file) == m_files.end())
         {
