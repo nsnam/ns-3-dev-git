@@ -913,16 +913,16 @@ CallbackEqualityTestCase::DoRun()
     // Make sure that a callback pointing to a lambda and a copy of it compare equal,
     // after binding the first argument.
     //
-    Callback<double, int> target8b = target7b.Bind(1);
-    Callback<double, int> target8c(target7c, 1);
+    Callback<double, double> target8b = target7b.Bind(1);
+    Callback<double, double> target8c(target7c, 1);
     NS_TEST_ASSERT_MSG_EQ(target8b.IsEqual(target8c), true, "Equality test failed");
 
     //
     // Make sure that a callback pointing to a lambda and a copy of it compare equal,
     // after binding the first two arguments.
     //
-    Callback<double> target9b = target8b.Bind(2);
-    Callback<double> target9c(target8c, 2);
+    Callback<double> target9b = target8b.Bind(2.0);
+    Callback<double> target9c(target8c, 2.0);
     NS_TEST_ASSERT_MSG_EQ(target9b.IsEqual(target9c), true, "Equality test failed");
 
     //
