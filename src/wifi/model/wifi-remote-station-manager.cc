@@ -30,6 +30,7 @@
 #include "ns3/boolean.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/enum.h"
+#include "ns3/erp-ofdm-phy.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/ht-phy.h"
@@ -744,6 +745,39 @@ WifiRemoteStationManager::GetCtsTxVector(Mac48Address to, WifiMode rtsTxMode) co
     v.SetGuardInterval(ctsTxGuardInterval);
     v.SetNss(1);
     return v;
+}
+
+void
+WifiRemoteStationManager::AdjustTxVectorForIcf(WifiTxVector& txVector) const
+{
+    NS_LOG_FUNCTION(this << txVector);
+
+    auto txMode = txVector.GetMode();
+    if (txMode.GetModulationClass() >= WIFI_MOD_CLASS_HT)
+    {
+        auto rate = txMode.GetDataRate(txVector);
+        if (rate >= 24e6)
+        {
+            rate = 24e6;
+        }
+        else if (rate >= 12e6)
+        {
+            rate = 12e6;
+        }
+        else
+        {
+            rate = 6e6;
+        }
+        txVector.SetPreambleType(WIFI_PREAMBLE_LONG);
+        if (m_wifiPhy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
+        {
+            txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(rate));
+        }
+        else
+        {
+            txVector.SetMode(OfdmPhy::GetOfdmRate(rate));
+        }
+    }
 }
 
 WifiTxVector

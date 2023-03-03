@@ -68,14 +68,22 @@ WifiDefaultProtectionManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxP
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
-    // For a DL MU PPDU containing more than one PSDU, call a separate method.
+    // Call a separate method that handles MU-RTS/CTS protection in case of DL MU PPDU containing
+    // more than one PSDU or in case the MPDU being added is addressed to an EMLSR client or in
+    // case the protection method is already MU-RTS/CTS.
     // A DL MU PPDU contains more than one PSDU if either the TX params' PSDU info map
     // contains more than one entry or it contains one entry but the MPDU being added is
     // addressed to a different receiver (hence generating a new entry if the MPDU is added)
-    if (const auto& psduInfoMap = txParams.GetPsduInfoMap();
+    const auto& psduInfoMap = txParams.GetPsduInfoMap();
+    auto dlMuPpdu =
         txParams.m_txVector.IsDlMu() &&
         (psduInfoMap.size() > 1 ||
-         (psduInfoMap.size() == 1 && psduInfoMap.begin()->first != mpdu->GetHeader().GetAddr1())))
+         (psduInfoMap.size() == 1 && psduInfoMap.begin()->first != mpdu->GetHeader().GetAddr1()));
+    auto isEmlsrDestination =
+        GetWifiRemoteStationManager()->GetEmlsrEnabled(mpdu->GetHeader().GetAddr1());
+
+    if (dlMuPpdu || isEmlsrDestination ||
+        (txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS))
     {
         return TryAddMpduToMuPpdu(mpdu, txParams);
     }
@@ -208,13 +216,24 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
                                                  const WifiTxParameters& txParams)
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
-    NS_ASSERT(txParams.m_txVector.IsDlMu());
 
     auto receiver = mpdu->GetHeader().GetAddr1();
+    const auto& psduInfoMap = txParams.GetPsduInfoMap();
+    auto dlMuPpdu = txParams.m_txVector.IsDlMu() &&
+                    (psduInfoMap.size() > 1 ||
+                     (psduInfoMap.size() == 1 && psduInfoMap.begin()->first != receiver));
+    auto isEmlsrDestination = GetWifiRemoteStationManager()->GetEmlsrEnabled(receiver);
+    NS_ASSERT(
+        dlMuPpdu || isEmlsrDestination ||
+        (txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS));
+
     auto isProtected =
         m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(receiver) == 1;
+    bool needMuRts =
+        (txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS) ||
+        (dlMuPpdu && m_sendMuRts && !isProtected) || (isEmlsrDestination && !isProtected);
 
-    if (!m_sendMuRts || isProtected)
+    if (!needMuRts)
     {
         // No protection needed
         if (txParams.m_protection && txParams.m_protection->method == WifiProtection::NONE)
@@ -235,7 +254,10 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
         // we get here if this is the first MPDU for this receiver.
         NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send DL MU PPDUs");
         auto apMac = StaticCast<ApWifiMac>(m_mac);
-        auto txWidth = txParams.m_txVector.GetChannelWidth();
+        auto modClass = txParams.m_txVector.GetModulationClass();
+        auto txWidth = modClass == WIFI_MOD_CLASS_DSSS || modClass == WIFI_MOD_CLASS_HR_DSSS
+                           ? 20
+                           : txParams.m_txVector.GetChannelWidth();
 
         if (protection != nullptr)
         {
@@ -256,15 +278,12 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
             protection->muRts.SetType(TriggerFrameType::MU_RTS_TRIGGER);
             protection->muRts.SetUlBandwidth(txWidth);
 
-            NS_ASSERT_MSG(txParams.GetPsduInfoMap().size() == 1,
-                          "There should be one PSDU in the DL MU PPDU when creating a new "
-                          "WifiMuRtsCtsProtection object");
-
-            // this is the first MPDU for the second receiver added to the DL MU PPDU.
-            // Add a User Info field for the first receiver
-            AddUserInfoToMuRts(protection->muRts,
-                               txWidth,
-                               txParams.GetPsduInfoMap().cbegin()->first);
+            // Add a User Info field for each of the receivers already in the TX params
+            for (const auto& [address, info] : txParams.GetPsduInfoMap())
+            {
+                NS_ASSERT_MSG(address != receiver, "This must be the first MPDU for " << receiver);
+                AddUserInfoToMuRts(protection->muRts, txWidth, address);
+            }
 
             // compute the TXVECTOR to use to send the MU-RTS Trigger Frame
             protection->muRtsTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(receiver);
@@ -272,6 +291,20 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
             // a CTS frame response in a 20 MHz channel that is not occupied by the PPDU that
             // contains the MU-RTS Trigger frame. (Sec. 26.2.6.2 of 802.11ax)
             protection->muRtsTxVector.SetChannelWidth(txWidth);
+            // OFDM is needed to transmit the PPDU over a bandwidth that is a multiple of 20 MHz
+            const auto modulation = protection->muRtsTxVector.GetModulationClass();
+            if (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS)
+            {
+                protection->muRtsTxVector.SetMode(ErpOfdmPhy::GetErpOfdmRate6Mbps());
+            }
+        }
+
+        // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU or
+        // non-HT duplicate PPDU format using a rate of 6 Mb/s, 12 Mb/s, or 24 Mb/s.
+        // (Sec. 35.3.17 of 802.11be D3.0)
+        if (isEmlsrDestination && !isProtected)
+        {
+            GetWifiRemoteStationManager()->AdjustTxVectorForIcf(protection->muRtsTxVector);
         }
 
         // Add a User Info field for the new receiver
@@ -296,12 +329,6 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
     NS_ASSERT(mpdu->GetHeader().IsTrigger());
 
-    if (!m_sendMuRts)
-    {
-        // No protection because sending MU-RTS is disabled
-        return std::make_unique<WifiNoProtection>();
-    }
-
     CtrlTriggerHeader trigger;
     mpdu->GetPacket()->PeekHeader(trigger);
     NS_ASSERT(trigger.GetNUserInfoFields() > 0);
@@ -321,6 +348,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     std::remove_reference_t<decltype(staList)>::const_iterator staIt;
 
     bool allProtected = true;
+    bool isUnprotectedEmlsrDst = false;
 
     for (const auto& userInfo : trigger)
     {
@@ -330,12 +358,18 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
         staIt = staList.find(userInfo.GetAid12());
         NS_ASSERT(staIt != staList.cend());
         AddUserInfoToMuRts(protection->muRts, txWidth, staIt->second);
-        allProtected =
-            allProtected &&
+        bool isProtected =
             m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(staIt->second) == 1;
+        allProtected = allProtected && isProtected;
+
+        isUnprotectedEmlsrDst =
+            isUnprotectedEmlsrDst ||
+            (!isProtected && GetWifiRemoteStationManager()->GetEmlsrEnabled(staIt->second));
     }
 
-    if (allProtected)
+    bool needMuRts = (m_sendMuRts && !allProtected) || isUnprotectedEmlsrDst;
+
+    if (!needMuRts)
     {
         // No protection needed
         return std::make_unique<WifiNoProtection>();
@@ -353,6 +387,13 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     if (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS)
     {
         protection->muRtsTxVector.SetMode(ErpOfdmPhy::GetErpOfdmRate6Mbps());
+    }
+    // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU or
+    // non-HT duplicate PPDU format using a rate of 6 Mb/s, 12 Mb/s, or 24 Mb/s.
+    // (Sec. 35.3.17 of 802.11be D3.0)
+    if (isUnprotectedEmlsrDst)
+    {
+        GetWifiRemoteStationManager()->AdjustTxVectorForIcf(protection->muRtsTxVector);
     }
 
     return protection;

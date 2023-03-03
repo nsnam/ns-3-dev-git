@@ -843,6 +843,13 @@ class WifiRemoteStationManager : public Object
      */
     WifiTxVector GetCtsToSelfTxVector();
     /**
+     * Adjust the TXVECTOR for an initial Control frame to ensure that the modulation class
+     * is non-HT and the rate is 6 Mbps, 12 Mbps or 24 Mbps.
+     *
+     * \param txVector the TXVECTOR to adjust
+     */
+    void AdjustTxVectorForIcf(WifiTxVector& txVector) const;
+    /**
      * Return a TXVECTOR for the Ack frame given the destination and the mode of the Data
      * used by the sender.
      *
