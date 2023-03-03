@@ -1442,7 +1442,17 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
                 GetWifiRemoteStationManager(*linkId)->GetMldAddress(hdr.GetAddr1());
             staMldAddress.has_value())
         {
-            // the STA is affiliated with an MLD
+            /**
+             * The STA is affiliated with an MLD. From Sec. 35.3.7.1.4 of 802.11be D3.0:
+             * When a link becomes enabled for a non-AP STA that is affiliated with a non-AP MLD
+             * after successful association with an AP MLD with (Re)Association Request/Response
+             * frames transmitted on another link [...], the power management mode of the non-AP
+             * STA, immediately after the acknowledgement of the (Re)Association Response frame
+             * [...], is power save mode, and its power state is doze.
+             *
+             * Thus, STAs operating on all the links but the link used to establish association
+             * transition to power save mode.
+             */
             for (uint8_t i = 0; i < GetNLinks(); i++)
             {
                 auto stationManager = GetWifiRemoteStationManager(i);
@@ -1453,6 +1463,7 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
                     NS_LOG_DEBUG("AP=" << GetFrameExchangeManager(i)->GetAddress()
                                        << " associated with STA=" << *staAddress);
                     stationManager->RecordGotAssocTxOk(*staAddress);
+                    StaSwitchingToPsMode(*staAddress, i);
                 }
             }
         }
