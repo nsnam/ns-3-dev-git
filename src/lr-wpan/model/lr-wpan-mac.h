@@ -455,11 +455,11 @@ struct MlmeAssociateResponseParams
  */
 struct MlmeStartRequestParams
 {
-    uint16_t m_PanId{0}; //!< Pan Identifier used by the device.
-    uint8_t m_logCh{
-        11}; //!< Logical channel on which to start using the new superframe configuration.
-    uint32_t m_logChPage{
-        0}; //!< Logical channel page on which to start using the new superframe configuration.
+    uint16_t m_PanId{0};     //!< Pan Identifier used by the device.
+    uint8_t m_logCh{11};     //!< Logical channel on which to start using the
+                             //!< new superframe configuration.
+    uint32_t m_logChPage{0}; //!< Logical channel page on which to start using the
+                             //!< new superframe configuration.
     uint32_t m_startTime{0}; //!< Time at which to begin transmitting beacons (Used by Coordinator
                              //!< not PAN Coordinators). The time is specified in symbols.
     uint8_t m_bcnOrd{15};    //!< Beacon Order, Used to calculate the beacon interval, a value of 15
@@ -507,7 +507,9 @@ struct MlmeScanRequestParams
 {
     LrWpanMlmeScanType m_scanType{MLMESCAN_PASSIVE}; //!< Indicates the type of scan performed as
                                                      //!< described in IEEE 802.15.4-2011 (5.1.2.1).
-    uint32_t m_scanChannels{0x7FFFFFF};              //!< The channel numbers to be scanned.
+    uint32_t m_scanChannels{0x7FFF800};              //!< The channel numbers to be scanned.
+                                                     //!< Default: (0x7FFF800 = Ch11-Ch26)
+                                                     //!< 27 LSB (b0,b1,...,b26) = channels
     uint8_t m_scanDuration{14}; //!< A value used to calculate the length of time to spend scanning
                                 //!< [aBaseSuperframeDuration * (2^m_scanDuration +)].
     uint32_t m_chPage{0};       //!< The channel page on which to perform scan.
@@ -520,16 +522,17 @@ struct MlmeScanRequestParams
  */
 struct MlmeScanConfirmParams
 {
-    LrWpanMlmeScanConfirmStatus m_status{
-        MLMESCAN_INVALID_PARAMETER}; //!< The status of the scan request.
-    LrWpanMlmeScanType m_scanType{
-        MLMESCAN_PASSIVE}; //!< Indicates the type of scan performed (ED,ACTIVE,PASSIVE,ORPHAN).
-    uint32_t m_chPage{0};  //!< The channel page on which the scan was performed.
-    std::vector<uint8_t> m_unscannedCh; //!< A list of channels given in the request which were not
-                                        //!< scanned (Not valid for ED scans).
-    std::vector<uint8_t>
-        m_energyDetList; //!< A list of energy measurements, one for each channel searched during ED
-                         //!< scan (Not valid for Active, Passive or Orphan Scans)
+    LrWpanMlmeScanConfirmStatus m_status{MLMESCAN_INVALID_PARAMETER}; //!< The status the request.
+    LrWpanMlmeScanType m_scanType{MLMESCAN_PASSIVE}; //!< Indicates the type of scan
+                                                     //!<  performed (ED,ACTIVE,PASSIVE,ORPHAN).
+    uint32_t m_chPage{0};                 //!< The channel page on which the scan was performed.
+    std::vector<uint8_t> m_unscannedCh;   //!< A list of channels given in the request which
+                                          //!<  were not scanned (Not valid for ED scans).
+    uint8_t m_resultListSize{0};          //!< The number of elements returned in the appropriate
+                                          //!<  result list. (Not valid for Orphan scan).
+    std::vector<uint8_t> m_energyDetList; //!< A list of energy measurements, one for each
+                                          //!< channel searched during ED scan
+                                          //!< (Not valid for Active, Passive or Orphan Scans)
     std::vector<PanDescriptor> m_panDescList; //!< A list of PAN descriptor, one for each beacon
                                               //!< found (Not valid for ED and Orphan scans).
 };
@@ -620,11 +623,33 @@ struct MlmeCommStatusIndicationParams
     Mac64Address m_srcExtAddr; //!< The extended address of the entity from which the frame causing
                                //!< the error originated.
     uint8_t m_dstAddrMode{SHORT_ADDR}; //!< The destination addressing mode for this primitive.
-    Mac16Address
-        m_dstShortAddr; //!< The short address of the device for which the frame was intended.
-    Mac64Address
-        m_dstExtAddr; //!< The extended address of the device for which the frame was intended.
+    Mac16Address m_dstShortAddr;       //!< The short address of the device for
+                                       //!< which the frame was intended.
+    Mac64Address m_dstExtAddr;         //!< The extended address of the device for
+                                       //!< which the frame was intended.
     LrWpanMlmeCommStatus m_status{MLMECOMMSTATUS_INVALID_PARAMETER}; //!< The communication status
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-ORPHAN.indication params. See  802.15.4-2011   Section 6.2.7.1
+ */
+struct MlmeOrphanIndicationParams
+{
+    Mac64Address m_orphanAddr; //!< The address of the orphaned device.
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-ORPHAN.response params. See  802.15.4-2011   Section 6.2.7.2
+ */
+struct MlmeOrphanResponseParams
+{
+    Mac64Address m_orphanAddr; //!< The address of the orphaned device.
+    Mac16Address m_shortAddr;  //!< The short address allocated.
+    bool m_assocMember{false}; //!< T = allocated with this coord |  F = otherwise
 };
 
 /**
@@ -750,6 +775,17 @@ typedef Callback<void, MlmeAssociateIndicationParams> MlmeAssociateIndicationCal
  *  See 802.15.4-2011 6.2.4.2
  */
 typedef Callback<void, MlmeCommStatusIndicationParams> MlmeCommStatusIndicationCallback;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called by the MLME and issued to its next higher layer following
+ * the reception of a orphan notification.
+ *
+ *  Security related parameters and not handle.
+ *  See 802.15.4-2011 6.2.7.1
+ */
+typedef Callback<void, MlmeOrphanIndicationParams> MlmeOrphanIndicationCallback;
 
 /**
  * \ingroup lr-wpan
@@ -902,6 +938,16 @@ class LrWpanMac : public Object
     void MlmeAssociateResponse(MlmeAssociateResponseParams params);
 
     /**
+     * IEEE 802.15.4-2011, section 6.2.7.2
+     * MLME-ORPHAN.response
+     * Primitive used to initiatte a response to an MLME-ORPHAN.indication
+     * primitive.
+     *
+     * \param params the orphan response parameters
+     */
+    void MlmeOrphanResponse(MlmeOrphanResponseParams params);
+
+    /**
      * IEEE 802.15.4-2011, section 6.2.13.1
      * MLME-SYNC.request
      * Request to synchronize with the coordinator by acquiring and,
@@ -977,6 +1023,15 @@ class LrWpanMac : public Object
      * \param c the callback
      */
     void SetMlmeCommStatusIndicationCallback(MlmeCommStatusIndicationCallback c);
+
+    /**
+     * Set the callback for the indication to the reception of an orphan notification.
+     * The callback implements MLME-ORPHAN.indication SAP of IEEE 802.15.4-2011,
+     * section 6.2.7.1.
+     *
+     * \param c the callback
+     */
+    void SetMlmeOrphanIndicationCallback(MlmeOrphanIndicationCallback c);
 
     /**
      * Set the callback for the confirmation of a data transmission request.
@@ -1564,6 +1619,13 @@ class LrWpanMac : public Object
     void SendBeaconRequestCommand();
 
     /**
+     * Called to send a orphan notification command. This is used by an associated device that
+     * has lost synchronization with its coordinator.
+     * As described in IEEE 802.15.4-2011 (Section 5.3.6)
+     */
+    void SendOrphanNotificationCommand();
+
+    /**
      * Called to end a MLME-START.request after changing the page and channel number.
      */
     void EndStartRequest();
@@ -1961,6 +2023,12 @@ class LrWpanMac : public Object
     MlmeCommStatusIndicationCallback m_mlmeCommStatusIndicationCallback;
 
     /**
+     * This callback is used to indicate the reception of a orphan notification command.
+     * See IEEE 802.15.4-2011, section 6.2.7.1
+     */
+    MlmeOrphanIndicationCallback m_mlmeOrphanIndicationCallback;
+
+    /**
      * This callback is used to report data transmission request status to the
      * upper layers.
      * See IEEE 802.15.4-2006, section 7.1.1.2.
@@ -2043,8 +2111,13 @@ class LrWpanMac : public Object
     std::vector<uint8_t> m_energyDetectList;
 
     /**
+     * The list of unscanned channels during a scan operation.
+     */
+    std::vector<uint8_t> m_unscannedChannels;
+
+    /**
      * The parameters used during a MLME-SCAN.request. These parameters are stored here while
-     * PLME-SET operations (set channel page, set channel number) and multiple ed scans take place.
+     * PLME-SET (set channel page, set channel number) and other operations take place.
      */
     MlmeScanRequestParams m_scanParams;
 
@@ -2139,9 +2212,14 @@ class LrWpanMac : public Object
     EventId m_trackingEvent;
 
     /**
-     * Scheduler event for the end of a channel scan.
+     * Scheduler event for the end of an ACTIVE or PASSIVE channel scan.
      */
     EventId m_scanEvent;
+
+    /**
+     * Scheduler event for the end of an ORPHAN channel scan.
+     */
+    EventId m_scanOrphanEvent;
 
     /**
      * Scheduler event for the end of a ED channel scan.

@@ -39,7 +39,8 @@
 #include <ns3/uinteger.h>
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT std::clog << "[address " << m_shortAddress << "] ";
+#define NS_LOG_APPEND_CONTEXT                                                                      \
+    std::clog << "[address " << m_shortAddress << " | " << m_selfExt << "] ";
 
 namespace ns3
 {
@@ -276,7 +277,15 @@ LrWpanMac::DoDispose()
     m_mlmeAssociateConfirmCallback = MakeNullCallback<void, MlmeAssociateConfirmParams>();
     m_mlmeAssociateIndicationCallback = MakeNullCallback<void, MlmeAssociateIndicationParams>();
     m_mlmeCommStatusIndicationCallback = MakeNullCallback<void, MlmeCommStatusIndicationParams>();
+    m_mlmeOrphanIndicationCallback = MakeNullCallback<void, MlmeOrphanIndicationParams>();
 
+    m_panDescriptorList.clear();
+    m_energyDetectList.clear();
+    m_unscannedChannels.clear();
+
+    m_scanEvent.Cancel();
+    m_scanEnergyEvent.Cancel();
+    m_scanOrphanEvent.Cancel();
     m_beaconEvent.Cancel();
 
     Object::DoDispose();
@@ -495,7 +504,7 @@ LrWpanMac::McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p)
         p->AddHeader(macHdr);
 
         LrWpanMacTrailer macTrailer;
-        // Calculate FCS if the global attribute ChecksumEnable is set.
+        // Calculate FCS if the global attribute ChecksumEnabled is set.
         if (Node::ChecksumEnabled())
         {
             macTrailer.EnableFcs(true);
@@ -520,7 +529,7 @@ LrWpanMac::McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p)
         p->AddHeader(macHdr);
 
         LrWpanMacTrailer macTrailer;
-        // Calculate FCS if the global attribute ChecksumEnable is set.
+        // Calculate FCS if the global attribute ChecksumEnabled is set.
         if (Node::ChecksumEnabled())
         {
             macTrailer.EnableFcs(true);
@@ -584,7 +593,7 @@ LrWpanMac::MlmeScanRequest(MlmeScanRequestParams params)
     confirmParams.m_scanType = params.m_scanType;
     confirmParams.m_chPage = params.m_chPage;
 
-    if (m_scanEvent.IsRunning() || m_scanEnergyEvent.IsRunning())
+    if ((m_scanEvent.IsRunning() || m_scanEnergyEvent.IsRunning()) || m_scanOrphanEvent.IsRunning())
     {
         if (!m_mlmeScanConfirmCallback.IsNull())
         {
@@ -595,7 +604,7 @@ LrWpanMac::MlmeScanRequest(MlmeScanRequestParams params)
         return;
     }
 
-    if (params.m_scanDuration > 14 || params.m_scanType > MLMESCAN_PASSIVE)
+    if (params.m_scanDuration > 14 || params.m_scanType > MLMESCAN_ORPHAN)
     {
         if (!m_mlmeScanConfirmCallback.IsNull())
         {
@@ -611,6 +620,7 @@ LrWpanMac::MlmeScanRequest(MlmeScanRequestParams params)
 
     m_panDescriptorList.clear();
     m_energyDetectList.clear();
+    m_unscannedChannels.clear();
 
     // TODO: stop beacon transmission
 
@@ -758,7 +768,7 @@ LrWpanMac::MlmeAssociateResponse(MlmeAssociateResponseParams params)
     commandPacket->AddHeader(macPayload);
     commandPacket->AddHeader(macHdr);
 
-    // Calculate FCS if the global attribute ChecksumEnable is set.
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
     if (Node::ChecksumEnabled())
     {
         macTrailer.EnableFcs(true);
@@ -769,6 +779,66 @@ LrWpanMac::MlmeAssociateResponse(MlmeAssociateResponseParams params)
 
     // Save packet in the Pending Transaction list.
     EnqueueInd(commandPacket);
+}
+
+void
+LrWpanMac::MlmeOrphanResponse(MlmeOrphanResponseParams params)
+{
+    NS_LOG_FUNCTION(this);
+    // Mac header Coordinator realigment Command
+    // See 802.15.4-2011 (Section 6.2.7.2)
+    LrWpanMacHeader macHdr(LrWpanMacHeader::LRWPAN_MAC_COMMAND, m_macDsn.GetValue());
+    m_macDsn++;
+    LrWpanMacTrailer macTrailer;
+    Ptr<Packet> commandPacket = Create<Packet>();
+    macHdr.SetPanIdComp();
+    macHdr.SetDstAddrMode(LrWpanMacHeader::EXTADDR);
+    macHdr.SetDstAddrFields(0xffff, params.m_orphanAddr);
+
+    macHdr.SetSrcAddrMode(LrWpanMacHeader::EXTADDR);
+    macHdr.SetSrcAddrFields(m_macPanId, GetExtendedAddress());
+    macHdr.SetSrcAddrFields(m_macPanId, Mac16Address("FF:FF"));
+
+    macHdr.SetFrameVer(0x01);
+    macHdr.SetSecDisable();
+    macHdr.SetAckReq();
+
+    CommandPayloadHeader macPayload(CommandPayloadHeader::COOR_REALIGN);
+    macPayload.SetPanId(m_macPanId);
+    macPayload.SetCoordShortAddr(GetShortAddress());
+    macPayload.SetChannel(m_phy->GetCurrentChannelNum());
+    macPayload.SetPage(m_phy->GetCurrentPage());
+
+    if (params.m_assocMember)
+    {
+        // The orphan device was associated with the coordinator
+
+        // Either FF:FE for extended address mode
+        // or the short address assigned by the coord.
+        macPayload.SetShortAddr(params.m_shortAddr);
+    }
+    else
+    {
+        // The orphan device was NOT associated with the coordinator
+        macPayload.SetShortAddr(Mac16Address("FF:FF"));
+    }
+
+    commandPacket->AddHeader(macPayload);
+    commandPacket->AddHeader(macHdr);
+
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
+    if (Node::ChecksumEnabled())
+    {
+        macTrailer.EnableFcs(true);
+        macTrailer.SetFcs(commandPacket);
+    }
+
+    commandPacket->AddTrailer(macTrailer);
+
+    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+    txQElement->txQPkt = commandPacket;
+    EnqueueTxQElement(txQElement);
+    CheckQueue();
 }
 
 void
@@ -906,7 +976,7 @@ LrWpanMac::SendOneBeacon()
     beaconPacket->AddHeader(macPayload);
     beaconPacket->AddHeader(macHdr);
 
-    // Calculate FCS if the global attribute ChecksumEnable is set.
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
     if (Node::ChecksumEnabled())
     {
         macTrailer.EnableFcs(true);
@@ -944,8 +1014,8 @@ LrWpanMac::SendBeaconRequestCommand()
     macHdr.SetDstAddrMode(LrWpanMacHeader::SHORTADDR);
     macHdr.SetSrcAddrMode(LrWpanMacHeader::NOADDR);
 
-    macHdr.SetDstAddrFields(0xFFFF,
-                            Mac16Address("FF:FF")); // Not associated PAN, broadcast dst address
+    // Not associated PAN, broadcast dst address
+    macHdr.SetDstAddrFields(0xFFFF, Mac16Address("FF:FF"));
 
     macHdr.SetSecDisable();
     macHdr.SetNoAckReq();
@@ -956,7 +1026,48 @@ LrWpanMac::SendBeaconRequestCommand()
     commandPacket->AddHeader(macPayload);
     commandPacket->AddHeader(macHdr);
 
-    // Calculate FCS if the global attribute ChecksumEnable is set.
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
+    if (Node::ChecksumEnabled())
+    {
+        macTrailer.EnableFcs(true);
+        macTrailer.SetFcs(commandPacket);
+    }
+
+    commandPacket->AddTrailer(macTrailer);
+
+    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+    txQElement->txQPkt = commandPacket;
+    EnqueueTxQElement(txQElement);
+    CheckQueue();
+}
+
+void
+LrWpanMac::SendOrphanNotificationCommand()
+{
+    LrWpanMacHeader macHdr(LrWpanMacHeader::LRWPAN_MAC_COMMAND, m_macDsn.GetValue());
+    m_macDsn++;
+    LrWpanMacTrailer macTrailer;
+    Ptr<Packet> commandPacket = Create<Packet>();
+
+    // See IEEE 802.15.4-2011 (5.3.6)
+    macHdr.SetPanIdComp();
+
+    macHdr.SetSrcAddrMode(LrWpanMacHeader::EXTADDR);
+    macHdr.SetSrcAddrFields(0xFFFF, GetExtendedAddress());
+
+    macHdr.SetDstAddrMode(LrWpanMacHeader::SHORTADDR);
+    macHdr.SetDstAddrFields(0xFFFF, Mac16Address("FF:FF"));
+
+    macHdr.SetSecDisable();
+    macHdr.SetNoAckReq();
+
+    CommandPayloadHeader macPayload;
+    macPayload.SetCommandFrameType(CommandPayloadHeader::ORPHAN_NOTIF);
+
+    commandPacket->AddHeader(macPayload);
+    commandPacket->AddHeader(macHdr);
+
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
     if (Node::ChecksumEnabled())
     {
         macTrailer.EnableFcs(true);
@@ -1005,7 +1116,7 @@ LrWpanMac::SendAssocRequestCommand()
     commandPacket->AddHeader(macPayload);
     commandPacket->AddHeader(macHdr);
 
-    // Calculate FCS if the global attribute ChecksumEnable is set.
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
     if (Node::ChecksumEnabled())
     {
         macTrailer.EnableFcs(true);
@@ -1063,7 +1174,7 @@ LrWpanMac::SendDataRequestCommand()
     commandPacket->AddHeader(macPayload);
     commandPacket->AddHeader(macHdr);
 
-    // Calculate FCS if the global attribute ChecksumEnable is set.
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
     if (Node::ChecksumEnabled())
     {
         macTrailer.EnableFcs(true);
@@ -1160,6 +1271,7 @@ LrWpanMac::EndStartRequest()
             m_incCfpEvent.Cancel();
             m_trackingEvent.Cancel();
             m_scanEvent.Cancel();
+            m_scanOrphanEvent.Cancel();
             m_scanEnergyEvent.Cancel();
 
             m_csmaCa->SetUnSlottedCsmaCa();
@@ -1227,21 +1339,59 @@ LrWpanMac::EndChannelScan()
     }
     else
     {
-        // All scans on the channel list completed
-        // Return to the MAC values previous to start of the first scan.
+        // All channels in the list scan completed.
+        // Return variables to the values before the scan and return the status to the next layer.
         m_macPanId = m_macPanIdScan;
         m_macPanIdScan = 0;
 
         // TODO: restart beacon transmissions that were active before the beginning of the scan
         // (i.e when a coordinator perform a scan and it was already transmitting beacons)
-
-        // All channels scanned, report success
         MlmeScanConfirmParams confirmParams;
-        confirmParams.m_status = MLMESCAN_SUCCESS;
         confirmParams.m_chPage = m_scanParams.m_chPage;
         confirmParams.m_scanType = m_scanParams.m_scanType;
         confirmParams.m_energyDetList = {};
-        confirmParams.m_panDescList = m_panDescriptorList;
+        confirmParams.m_unscannedCh = m_unscannedChannels;
+        confirmParams.m_resultListSize = m_panDescriptorList.size();
+
+        // See IEEE 802.15.4-2011, Table 31 (panDescriptorList value on macAutoRequest)
+        // and Section 6.2.10.2
+        switch (confirmParams.m_scanType)
+        {
+        case MLMESCAN_PASSIVE:
+            if (m_macAutoRequest)
+            {
+                confirmParams.m_panDescList = m_panDescriptorList;
+            }
+            confirmParams.m_status = MLMESCAN_SUCCESS;
+            break;
+        case MLMESCAN_ACTIVE:
+            if (m_panDescriptorList.empty())
+            {
+                confirmParams.m_status = MLMESCAN_NO_BEACON;
+            }
+            else
+            {
+                if (m_macAutoRequest)
+                {
+                    confirmParams.m_panDescList = m_panDescriptorList;
+                }
+                confirmParams.m_status = MLMESCAN_SUCCESS;
+            }
+            break;
+        case MLMESCAN_ORPHAN:
+            confirmParams.m_panDescList = {};
+            confirmParams.m_status = MLMESCAN_NO_BEACON;
+            confirmParams.m_resultListSize = 0;
+            // The device lost track of the coordinator and was unable
+            // to locate it, disassociate from the network.
+            m_macPanId = 0xffff;
+            m_shortAddress = Mac16Address("FF:FF");
+            m_macCoordShortAddress = Mac16Address("ff:ff");
+            m_macCoordExtendedAddress = Mac64Address("ff:ff:ff:ff:ff:ff:ff:ed");
+            break;
+        default:
+            NS_LOG_ERROR(this << " Invalid scan type");
+        }
 
         if (!m_mlmeScanConfirmCallback.IsNull())
         {
@@ -1259,7 +1409,7 @@ LrWpanMac::EndChannelEnergyScan()
 {
     NS_LOG_FUNCTION(this);
     // Add the results of channel energy scan to the detectList
-    m_energyDetectList.push_back(m_maxEnergyLevel);
+    m_energyDetectList.emplace_back(m_maxEnergyLevel);
     m_maxEnergyLevel = 0;
 
     m_channelScanIndex++;
@@ -1300,6 +1450,7 @@ LrWpanMac::EndChannelEnergyScan()
             confirmParams.m_chPage = m_phy->GetCurrentPage();
             confirmParams.m_scanType = m_scanParams.m_scanType;
             confirmParams.m_energyDetList = m_energyDetectList;
+            confirmParams.m_resultListSize = m_energyDetectList.size();
             m_mlmeScanConfirmCallback(confirmParams);
         }
         m_pendPrimitive = MLME_NONE;
@@ -1597,6 +1748,12 @@ LrWpanMac::SetMlmeCommStatusIndicationCallback(MlmeCommStatusIndicationCallback 
 }
 
 void
+LrWpanMac::SetMlmeOrphanIndicationCallback(MlmeOrphanIndicationCallback c)
+{
+    m_mlmeOrphanIndicationCallback = c;
+}
+
+void
 LrWpanMac::SetMcpsDataConfirmCallback(McpsDataConfirmCallback c)
 {
     m_mcpsDataConfirmCallback = c;
@@ -1805,15 +1962,23 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                 acceptFrame = (receivedMacHdr.GetExtDstAddr() == m_selfExt);
             }
 
-            // When PASSIVE or ACTIVE scan is running, reject any frames other than BEACON frames
-            if (acceptFrame && (!receivedMacHdr.IsBeacon() && m_scanEvent.IsRunning()))
+            if (acceptFrame && m_scanEvent.IsRunning())
             {
-                acceptFrame = false;
+                if (!receivedMacHdr.IsBeacon())
+                {
+                    acceptFrame = false;
+                }
             }
-
-            // Energy Scan is running, reject any frames
-            if (m_scanEnergyEvent.IsRunning())
+            else if (acceptFrame && m_scanOrphanEvent.IsRunning())
             {
+                if (!receivedMacHdr.IsCommand())
+                {
+                    acceptFrame = false;
+                }
+            }
+            else if (m_scanEnergyEvent.IsRunning())
+            {
+                // Reject any frames if energy scan is running
                 acceptFrame = false;
             }
 
@@ -2073,7 +2238,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 
                             if (!descriptorExists)
                             {
-                                m_panDescriptorList.push_back(panDescriptor);
+                                m_panDescriptorList.emplace_back(panDescriptor);
                             }
                             return;
                         }
@@ -2130,13 +2295,14 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                 }
                 else if (receivedMacHdr.IsCommand())
                 {
-                    // Handle the reception of frame commands that do not require ACK (i.e. Beacon
-                    // Request Command)
+                    // Handle the reception of frame commands that do not require ACK
+                    // (i.e. Beacon Request, Orphan notification, Coordinator Realigment)
                     CommandPayloadHeader receivedMacPayload;
                     p->PeekHeader(receivedMacPayload);
-                    if (receivedMacPayload.GetCommandFrameType() ==
-                        CommandPayloadHeader::BEACON_REQ)
+
+                    switch (receivedMacPayload.GetCommandFrameType())
                     {
+                    case CommandPayloadHeader::BEACON_REQ:
                         // TODO: check that node is any coordinator not just pan coordinator
                         if (m_csmaCa->IsUnSlottedCsmaCa() && m_panCoor)
                         {
@@ -2146,6 +2312,48 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                         {
                             m_macRxDropTrace(originalPkt);
                         }
+                        break;
+                    case CommandPayloadHeader::ORPHAN_NOTIF:
+                        if (!m_mlmeOrphanIndicationCallback.IsNull())
+                        {
+                            MlmeOrphanIndicationParams orphanParams;
+                            orphanParams.m_orphanAddr = receivedMacHdr.GetExtSrcAddr();
+                            m_mlmeOrphanIndicationCallback(orphanParams);
+                        }
+                        break;
+                    case CommandPayloadHeader::COOR_REALIGN:
+                        if (m_scanOrphanEvent.IsRunning())
+                        {
+                            // Coordinator located, no need to keep scanning other channels
+                            m_scanOrphanEvent.Cancel();
+
+                            m_macPanIdScan = 0;
+                            m_pendPrimitive = MLME_NONE;
+                            m_channelScanIndex = 0;
+
+                            // Update the device information with the received information
+                            // from the Coordinator Realigment command.
+                            m_macPanId = receivedMacPayload.GetPanId();
+                            m_shortAddress = receivedMacPayload.GetShortAddr();
+                            m_macCoordExtendedAddress = receivedMacHdr.GetExtSrcAddr();
+                            m_macCoordShortAddress = receivedMacPayload.GetCoordShortAddr();
+
+                            if (!m_mlmeScanConfirmCallback.IsNull())
+                            {
+                                MlmeScanConfirmParams confirmParams;
+                                confirmParams.m_scanType = m_scanParams.m_scanType;
+                                confirmParams.m_chPage = m_scanParams.m_chPage;
+                                confirmParams.m_status = MLMESCAN_SUCCESS;
+                                m_mlmeScanConfirmCallback(confirmParams);
+                            }
+                            m_scanParams = {};
+                        }
+                        // TODO: handle Coordinator realignment when not
+                        //       used during an orphan scan.
+                        break;
+                    default:
+                        m_macRxDropTrace(originalPkt);
+                        break;
                     }
                 }
                 else if (receivedMacHdr.IsData() && !m_mcpsDataIndicationCallback.IsNull())
@@ -2316,7 +2524,7 @@ LrWpanMac::SendAck(uint8_t seqno)
     LrWpanMacTrailer macTrailer;
     Ptr<Packet> ackPacket = Create<Packet>(0);
     ackPacket->AddHeader(macHdr);
-    // Calculate FCS if the global attribute ChecksumEnable is set.
+    // Calculate FCS if the global attribute ChecksumEnabled is set.
     if (Node::ChecksumEnabled())
     {
         macTrailer.EnableFcs(true);
@@ -2834,8 +3042,38 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
             }
             else if (macHdr.IsCommand())
             {
-                // We handle commands that do not require ACK (e.g. BeaconReq command)
-                // other command are handle by the previous if statement.
+                // We handle commands that do not require ACK
+                // (e.g. Coordinator realigment command in an orphan response)
+                // Other command with ACK required are handle by the previous if statement.
+
+                // Check the transmitted packet command type and issue the appropriate indication.
+                Ptr<Packet> txOriginalPkt = m_txPkt->Copy();
+                LrWpanMacHeader txMacHdr;
+                txOriginalPkt->RemoveHeader(txMacHdr);
+                CommandPayloadHeader txMacPayload;
+                txOriginalPkt->RemoveHeader(txMacPayload);
+
+                if (txMacPayload.GetCommandFrameType() == CommandPayloadHeader::COOR_REALIGN)
+                {
+                    if (!m_mlmeCommStatusIndicationCallback.IsNull())
+                    {
+                        MlmeCommStatusIndicationParams commStatusParams;
+                        commStatusParams.m_panId = m_macPanId;
+
+                        commStatusParams.m_srcAddrMode = macHdr.GetSrcAddrMode();
+                        commStatusParams.m_srcExtAddr = macHdr.GetExtSrcAddr();
+                        commStatusParams.m_srcShortAddr = macHdr.GetShortSrcAddr();
+
+                        commStatusParams.m_dstAddrMode = macHdr.GetDstAddrMode();
+                        commStatusParams.m_dstExtAddr = macHdr.GetExtDstAddr();
+                        commStatusParams.m_dstShortAddr = macHdr.GetShortDstAddr();
+
+                        commStatusParams.m_status = LrWpanMlmeCommStatus::MLMECOMMSTATUS_SUCCESS;
+                        m_mlmeCommStatusIndicationCallback(commStatusParams);
+                    }
+                }
+
+                ifsWaitTime = Seconds(static_cast<double>(GetIfsSize()) / symbolRate);
                 RemoveFirstTxQElement();
             }
             else
@@ -3115,9 +3353,19 @@ LrWpanMac::PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttribu
         if (status == LrWpanPhyEnumeration::IEEE_802_15_4_PHY_SUCCESS)
         {
             uint64_t symbolRate = static_cast<uint64_t>(m_phy->GetDataOrSymbolRate(false));
-            uint64_t scanDuration = lrwpan::aBaseSuperframeDuration *
-                                    ((static_cast<uint32_t>(1 << m_scanParams.m_scanDuration)) + 1);
-            Time nextScanTime = Seconds(static_cast<double>(scanDuration / symbolRate));
+            Time nextScanTime;
+
+            if (m_scanParams.m_scanType == MLMESCAN_ORPHAN)
+            {
+                nextScanTime = Seconds(static_cast<double>(m_macResponseWaitTime) / symbolRate);
+            }
+            else
+            {
+                uint64_t scanDuration =
+                    lrwpan::aBaseSuperframeDuration *
+                    ((static_cast<uint32_t>(1 << m_scanParams.m_scanDuration)) + 1);
+                nextScanTime = Seconds(static_cast<double>(scanDuration / symbolRate));
+            }
 
             switch (m_scanParams.m_scanType)
             {
@@ -3138,8 +3386,9 @@ LrWpanMac::PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttribu
                 m_phy->PlmeSetTRXStateRequest(IEEE_802_15_4_PHY_RX_ON);
                 break;
             case MLMESCAN_ORPHAN:
-                // TODO: add orphan scan support
-                NS_LOG_ERROR("Scan Type currently not supported");
+                m_scanOrphanEvent =
+                    Simulator::Schedule(nextScanTime, &LrWpanMac::EndChannelScan, this);
+                SendOrphanNotificationCommand();
                 break;
 
             default:
@@ -3378,8 +3627,41 @@ LrWpanMac::SetLrWpanMacState(LrWpanMacState macState)
                 }
                 break;
             }
+            case CommandPayloadHeader::COOR_REALIGN: {
+                if (!m_mlmeCommStatusIndicationCallback.IsNull())
+                {
+                    MlmeCommStatusIndicationParams commStatusParams;
+                    commStatusParams.m_panId = m_macPanId;
+                    commStatusParams.m_srcAddrMode = LrWpanMacHeader::EXTADDR;
+                    commStatusParams.m_srcExtAddr = macHdr.GetExtSrcAddr();
+                    commStatusParams.m_dstAddrMode = LrWpanMacHeader::EXTADDR;
+                    commStatusParams.m_dstExtAddr = macHdr.GetExtDstAddr();
+                    commStatusParams.m_status =
+                        LrWpanMlmeCommStatus::MLMECOMMSTATUS_CHANNEL_ACCESS_FAILURE;
+                    m_mlmeCommStatusIndicationCallback(commStatusParams);
+                }
+                break;
+            }
+            case CommandPayloadHeader::ORPHAN_NOTIF: {
+                if (m_scanOrphanEvent.IsRunning())
+                {
+                    m_unscannedChannels.emplace_back(m_phy->GetCurrentChannelNum());
+                }
+                // TODO: Handle orphan notification command during a
+                //       channel access failure when not is not scanning.
+                break;
+            }
+            case CommandPayloadHeader::BEACON_REQ: {
+                if (m_scanEvent.IsRunning())
+                {
+                    m_unscannedChannels.emplace_back(m_phy->GetCurrentChannelNum());
+                }
+                // TODO: Handle beacon request command during a
+                //       channel access failure when not scanning.
+                break;
+            }
             default: {
-                // TODO: Other commands(e.g. Orphan Request)
+                // TODO: Other commands(e.g. Disassociation notification, etc)
                 break;
             }
             }

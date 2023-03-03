@@ -98,6 +98,9 @@ class BeaconPayloadHeader : public Header
  * \ingroup lr-wpan
  * Implements the header for the MAC payload command frame according to
  * the IEEE 802.15.4-2011 Std.
+ * - Association Response Command (See 5.3.2.2.)
+ * - Coordinator Realigment Command (See 5.3.8.)
+ * - Association Request Command (See 5.3.1.)
  */
 class CommandPayloadHeader : public Header
 {
@@ -160,7 +163,28 @@ class CommandPayloadHeader : public Header
      */
     void SetCapabilityField(CapabilityField cap);
     /**
-     * Set the Short Address Assigned by the coordinator (Association Response Command).
+     *  Set the coordinator short address (16 bit address).
+     * \param addr The coordinator short address.
+     */
+    void SetCoordShortAddr(Mac16Address addr);
+    /**
+     *  Set the logical channel number.
+     * \param channel The channel number.
+     */
+    void SetChannel(uint8_t channel);
+    /**
+     *  Set the logical channel page number.
+     * \param page The page number.
+     */
+    void SetPage(uint8_t page);
+    /**
+     * Get the PAN identifier.
+     * \param id The PAN identifier.
+     */
+    void SetPanId(uint16_t id);
+    /**
+     * Set the Short Address Assigned by the coordinator
+     * (Association Response and Coordinator Realigment Commands).
      * \param shortAddr The short address assigned by the coordinator
      */
     void SetShortAddr(Mac16Address shortAddr);
@@ -170,7 +194,8 @@ class CommandPayloadHeader : public Header
      */
     void SetAssociationStatus(AssocStatus status);
     /**
-     * Get the Short address assigned by the coordinator (Association Response Command).
+     * Get the Short address assigned by the coordinator
+     * (Association Response and Coordinator Realigment commands).
      * \return The Mac16Address assigned by the coordinator
      */
     Mac16Address GetShortAddr() const;
@@ -185,19 +210,44 @@ class CommandPayloadHeader : public Header
      */
     MacCommand GetCommandFrameType() const;
     /**
-     * Get the Capability Information Field from the command payload header. (Association Request
-     * Command)
+     * Get the Capability Information Field from the command payload header.
+     * (Association Request Command)
      * \return The Capability Information Field
      */
     CapabilityField GetCapabilityField() const;
+    /**
+     *  Get the coordinator short address.
+     * \return The coordinator short address (16 bit address)
+     */
+    Mac16Address GetCoordShortAddr() const;
+    /**
+     *  Get the logical channel number.
+     * \return The channel number
+     */
+    uint8_t GetChannel() const;
+    /**
+     *  Get the logical channel page number.
+     * \return The page number.
+     */
+    uint8_t GetPage() const;
+    /**
+     * Get the PAN identifier.
+     * \return The PAN Identifier
+     */
+    uint16_t GetPanId() const;
 
   private:
-    MacCommand m_cmdFrameId; //!< The command Frame Identifier
-    CapabilityField
-        m_capabilityInfo;      //!< Capability Information Field (Association Request Command)
-    Mac16Address m_shortAddr;  //!< Contains the short address assigned by the coordinator
-                               //!< (Association Response Command) See IEEE 802.15.4-2011 5.3.2.2.
-    AssocStatus m_assocStatus; //!< Association Status (Association Response Command)
+    MacCommand m_cmdFrameId;          //!< The command Frame Identifier (Used by all commands)
+    CapabilityField m_capabilityInfo; //!< Capability Information Field
+                                      //!< (Association Request Command)
+    Mac16Address m_shortAddr;         //!< Contains the short address assigned by the coordinator
+                              //!< (Association Response and Coordinator Realiagment Command)
+    Mac16Address m_coordShortAddr; //!< The coordinator short address
+                                   //!< (Coordinator realigment command)
+    uint16_t m_panid;              //!< The PAN identifier (Coordinator realigment command)
+    uint8_t m_logCh;               //!< The channel number (Coordinator realigment command)
+    uint8_t m_logChPage;           //!< The channel page number (Coordinator realigment command)
+    AssocStatus m_assocStatus;     //!< Association Status (Association Response Command)
 };
 
 } // namespace ns3

@@ -20,6 +20,8 @@ Release 3-dev
 
 ### New user-visible features
 
+- (lr-wpan) !1399 - Add orphan scan support.
+
 ### Bugs fixed
 
 Release 3.38

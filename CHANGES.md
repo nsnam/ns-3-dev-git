@@ -18,6 +18,8 @@ Changes from ns-3.38 to ns-3-dev
 
 ### New API
 
+* (lr-wpan) Added support for orphan scans. Orphan scans can now be performed using the existing `LrWpanMac::MlmeScanRequest`; This orphan scan use the added orphan notification commands and coordinator realigment commands. Usage is shown in added `lr-wpan-orphan-scan.cc` example and in the `TestOrphanScan` included in `lr-wpan-mac-test.cc`.
+
 ### Changes to existing API
 
 * (dsr) The spelling of the class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was corrected to `DsrOptionRerrUnsupportedHeader`; this will affect existing users who were using the class with the misspelling.

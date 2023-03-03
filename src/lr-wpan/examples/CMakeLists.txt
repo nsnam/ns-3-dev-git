@@ -5,6 +5,7 @@ set(base_examples
     lr-wpan-phy-test
     lr-wpan-ed-scan
     lr-wpan-active-scan
+    lr-wpan-orphan-scan
 )
 
 foreach(
