@@ -285,6 +285,14 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
      */
     Ptr<WifiMpdu> GetOriginal(Ptr<WifiMpdu> mpdu);
 
+    /**
+     * \param mpdu the given MPDU
+     * \param linkId the ID of the given link
+     * \return the alias of the given MPDU that is inflight on the given link, if any, or
+     *         a null pointer, otherwise
+     */
+    Ptr<WifiMpdu> GetAlias(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+
   protected:
     using Queue<WifiMpdu, WifiMacQueueContainer>::GetContainer;
 

@@ -99,6 +99,21 @@ WifiMacQueue::GetOriginal(Ptr<WifiMpdu> mpdu)
     return GetIt(mpdu)->mpdu;
 }
 
+Ptr<WifiMpdu>
+WifiMacQueue::GetAlias(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
+{
+    if (!mpdu->IsQueued())
+    {
+        return nullptr;
+    }
+    if (auto aliasIt = GetIt(mpdu)->inflights.find(linkId);
+        aliasIt != GetIt(mpdu)->inflights.cend())
+    {
+        return aliasIt->second;
+    }
+    return nullptr;
+}
+
 void
 WifiMacQueue::ExtractExpiredMpdus(const WifiContainerQueueId& queueId) const
 {
