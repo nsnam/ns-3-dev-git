@@ -441,6 +441,9 @@ class CallbackBase
 template <typename R, typename... UArgs>
 class Callback : public CallbackBase
 {
+    template <typename ROther, typename... UArgsOther>
+    friend class Callback;
+
   public:
     Callback()
     {
@@ -464,18 +467,17 @@ class Callback : public CallbackBase
      * \param [in] bargs The values of the bound arguments
      */
     template <typename... BArgs>
-    Callback(const CallbackBase& cb, BArgs... bargs)
+    Callback(const Callback<R, BArgs..., UArgs...>& cb, BArgs... bargs)
     {
-        auto cbDerived =
-            static_cast<const CallbackImpl<R, BArgs..., UArgs...>*>(PeekPointer(cb.GetImpl()));
+        auto f = cb.DoPeekImpl()->GetFunction();
 
-        std::function<R(BArgs..., UArgs...)> f(cbDerived->GetFunction());
-
-        CallbackComponentVector components(cbDerived->GetComponents());
+        CallbackComponentVector components(cb.DoPeekImpl()->GetComponents());
         components.insert(components.end(), {std::make_shared<CallbackComponent<BArgs>>(bargs)...});
 
         m_impl = Create<CallbackImpl<R, UArgs...>>(
-            [f, bargs...](UArgs... uargs) -> R { return f(bargs..., uargs...); },
+            [f, bargs...](auto&&... uargs) -> R {
+                return f(bargs..., std::forward<decltype(uargs)>(uargs)...);
+            },
             components);
     }
 
@@ -508,7 +510,9 @@ class Callback : public CallbackBase
                                             std::make_shared<CallbackComponent<BArgs>>(bargs)...});
 
         m_impl = Create<CallbackImpl<R, UArgs...>>(
-            [f, bargs...](UArgs... uargs) -> R { return f(bargs..., uargs...); },
+            [f, bargs...](auto&&... uargs) -> R {
+                return f(bargs..., std::forward<decltype(uargs)>(uargs)...);
+            },
             components);
     }
 
@@ -525,11 +529,23 @@ class Callback : public CallbackBase
      * The integer sequence is 0..N-1, where N is the number of arguments left unbound.
      */
     template <std::size_t... INDEX, typename... BoundArgs>
-    auto BindImpl(std::index_sequence<INDEX...> seq, BoundArgs... bargs)
+    auto BindImpl(std::index_sequence<INDEX...> seq, BoundArgs&&... bargs)
     {
-        return Callback<R, std::tuple_element_t<sizeof...(bargs) + INDEX, std::tuple<UArgs...>>...>(
-            *this,
-            bargs...);
+        Callback<R, std::tuple_element_t<sizeof...(bargs) + INDEX, std::tuple<UArgs...>>...> cb;
+
+        const auto f = DoPeekImpl()->GetFunction();
+
+        CallbackComponentVector components(DoPeekImpl()->GetComponents());
+        components.insert(components.end(),
+                          {std::make_shared<CallbackComponent<BoundArgs>>(bargs)...});
+
+        cb.m_impl = Create<std::remove_pointer_t<decltype(cb.DoPeekImpl())>>(
+            [f, bargs...](auto&&... uargs) mutable {
+                return f(bargs..., std::forward<decltype(uargs)>(uargs)...);
+            },
+            components);
+
+        return cb;
     }
 
   public:
@@ -541,7 +557,7 @@ class Callback : public CallbackBase
      * \return The bound callback
      */
     template <typename... BoundArgs>
-    auto Bind(BoundArgs... bargs)
+    auto Bind(BoundArgs&&... bargs)
     {
         static_assert(sizeof...(UArgs) > 0);
         return BindImpl(std::make_index_sequence<sizeof...(UArgs) - sizeof...(BoundArgs)>{},
@@ -749,9 +765,9 @@ MakeNullCallback()
  */
 template <typename R, typename... Args, typename... BArgs>
 auto
-MakeBoundCallback(R (*fnPtr)(Args...), BArgs... bargs)
+MakeBoundCallback(R (*fnPtr)(Args...), BArgs&&... bargs)
 {
-    return Callback<R, Args...>(fnPtr).Bind(bargs...);
+    return Callback<R, Args...>(fnPtr).Bind(std::forward<BArgs>(bargs)...);
 }
 
 /**
