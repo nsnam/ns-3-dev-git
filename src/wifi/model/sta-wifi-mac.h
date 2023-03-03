@@ -86,6 +86,19 @@ struct WifiScanParams
 /**
  * \ingroup wifi
  *
+ * Enumeration for power management modes
+ */
+enum WifiPowerManagementMode : uint8_t
+{
+    WIFI_PM_ACTIVE = 0,
+    WIFI_PM_SWITCHING_TO_PS,
+    WIFI_PM_POWERSAVE,
+    WIFI_PM_SWITCHING_TO_ACTIVE
+};
+
+/**
+ * \ingroup wifi
+ *
  * The Wifi MAC high model for a non-AP STA in a BSS. The state
  * machine is as follows:
  *
@@ -246,6 +259,35 @@ class StaWifiMac : public WifiMac
      */
     uint16_t GetAssociationId() const;
 
+    /**
+     * Enable or disable Power Save mode on the given link.
+     *
+     * \param enableLinkIdPair a pair indicating whether to enable or not power save mode on
+     *                         the link with the given ID
+     */
+    void SetPowerSaveMode(const std::pair<bool, uint8_t>& enableLinkIdPair);
+
+    /**
+     * \param linkId the ID of the given link
+     * \return the current Power Management mode of the STA operating on the given link
+     */
+    WifiPowerManagementMode GetPmMode(uint8_t linkId) const;
+
+    /**
+     * Set the Power Management mode of the setup links after association.
+     *
+     * \param linkId the ID of the link used to establish association
+     */
+    void SetPmModeAfterAssociation(uint8_t linkId);
+
+    /**
+     * Notify that the MPDU we sent was successfully received by the receiver
+     * (i.e. we received an Ack from the receiver).
+     *
+     * \param mpdu the MPDU that we successfully sent
+     */
+    void TxOk(Ptr<const WifiMpdu> mpdu);
+
     void NotifyChannelSwitching(uint8_t linkId) override;
 
     /**
@@ -277,6 +319,9 @@ class StaWifiMac : public WifiMac
         std::optional<Mac48Address> bssid; //!< BSSID of the AP to associate with over this link
         EventId beaconWatchdog;            //!< beacon watchdog
         Time beaconWatchdogEnd{0};         //!< beacon watchdog end
+        WifiPowerManagementMode pmMode{WIFI_PM_ACTIVE}; /**< the current PM mode, if the STA is
+                                                             associated, or the PM mode to switch
+                                                             to upon association, otherwise */
     };
 
     /**
@@ -520,6 +565,7 @@ class StaWifiMac : public WifiMac
     bool m_activeProbing;                   ///< active probing
     Ptr<RandomVariableStream> m_probeDelay; ///< RandomVariable used to randomize the time
                                             ///< of the first Probe Response on each channel
+    Time m_pmModeSwitchTimeout;             ///< PM mode switch timeout
 
     TracedCallback<Mac48Address> m_assocLogger;             ///< association logger
     TracedCallback<uint8_t, Mac48Address> m_setupCompleted; ///< link setup completed logger

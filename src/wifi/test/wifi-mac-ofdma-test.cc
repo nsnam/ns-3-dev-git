@@ -1923,8 +1923,8 @@ OfdmaAckSequenceTest::DoRun()
 {
     uint32_t previousSeed = RngSeedManager::GetSeed();
     uint64_t previousRun = RngSeedManager::GetRun();
-    Config::SetGlobal("RngSeed", UintegerValue(1));
-    Config::SetGlobal("RngRun", UintegerValue(1));
+    Config::SetGlobal("RngSeed", UintegerValue(2));
+    Config::SetGlobal("RngRun", UintegerValue(2));
     int64_t streamNumber = 10;
 
     NodeContainer wifiApNode;

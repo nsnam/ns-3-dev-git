@@ -27,6 +27,7 @@
 #include "qos-txop.h"
 #include "snr-tag.h"
 #include "wifi-assoc-manager.h"
+#include "wifi-mac-queue.h"
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
@@ -36,6 +37,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/pair.h"
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
@@ -96,6 +98,23 @@ StaWifiMac::GetTypeId()
                           StringValue("ns3::UniformRandomVariable[Min=50.0|Max=250.0]"),
                           MakePointerAccessor(&StaWifiMac::m_probeDelay),
                           MakePointerChecker<RandomVariableStream>())
+            .AddAttribute(
+                "PowerSaveMode",
+                "Enable/disable power save mode on the given link. The power management mode is "
+                "actually changed when the AP acknowledges a frame sent with the Power Management "
+                "field set to the value corresponding to the requested mode",
+                TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
+                PairValue<BooleanValue, UintegerValue>(),
+                MakePairAccessor<BooleanValue, UintegerValue>(&StaWifiMac::SetPowerSaveMode),
+                MakePairChecker<BooleanValue, UintegerValue>(MakeBooleanChecker(),
+                                                             MakeUintegerChecker<uint8_t>()))
+            .AddAttribute("PmModeSwitchTimeout",
+                          "If switching to a new Power Management mode is not completed within "
+                          "this amount of time, make another attempt at switching Power "
+                          "Management mode.",
+                          TimeValue(Seconds(0.1)),
+                          MakeTimeAccessor(&StaWifiMac::m_pmModeSwitchTimeout),
+                          MakeTimeChecker())
             .AddTraceSource("Assoc",
                             "Associated with an access point. If this is an MLD that associated "
                             "with an AP MLD, the AP MLD address is provided.",
@@ -144,6 +163,8 @@ StaWifiMac::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
     StartScanning();
+    NS_ABORT_IF(!TraceConnectWithoutContext("AckedMpdu", MakeCallback(&StaWifiMac::TxOk, this)));
+    WifiMac::DoInitialize();
 }
 
 void
@@ -1225,7 +1246,90 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         NS_LOG_DEBUG("association refused");
         SetState(REFUSED);
         StartScanning();
+        return;
     }
+
+    SetPmModeAfterAssociation(linkId);
+}
+
+void
+StaWifiMac::SetPmModeAfterAssociation(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    // STAs operating on setup links may need to transition to a new PM mode after the
+    // acknowledgement of the Association Response. For this purpose, we connect a callback to
+    // the PHY TX begin trace to catch the Ack transmitted after the Association Response.
+    CallbackBase cb = Callback<void, WifiConstPsduMap, WifiTxVector, double>(
+        [=](WifiConstPsduMap psduMap, WifiTxVector txVector, double /* txPowerW */) {
+            NS_ASSERT_MSG(psduMap.size() == 1 && psduMap.begin()->second->GetNMpdus() == 1 &&
+                              psduMap.begin()->second->GetHeader(0).IsAck(),
+                          "Expected a Normal Ack after Association Response frame");
+
+            auto ackDuration =
+                WifiPhy::CalculateTxDuration(psduMap, txVector, GetLink(linkId).phy->GetPhyBand());
+
+            for (uint8_t id = 0; id < GetNLinks(); id++)
+            {
+                auto& link = GetLink(id);
+
+                if (!link.bssid)
+                {
+                    // link has not been setup
+                    continue;
+                }
+
+                if (id == linkId)
+                {
+                    /**
+                     * When a link becomes enabled for a non-AP STA that is affiliated with a
+                     * non-AP MLD after successful association with an AP MLD with (Re)Association
+                     * Request/Response  frames transmitted on that link [..], the power management
+                     * mode of the non-AP STA, immediately after the acknowledgement of the
+                     * (Re)Association Response frame [..], is active mode.
+                     * (Sec. 35.3.7.1.4 of 802.11be D3.0)
+                     */
+                    // if the user requested this link to be in powersave mode, we have to
+                    // switch PM mode
+                    if (link.pmMode == WIFI_PM_POWERSAVE)
+                    {
+                        Simulator::Schedule(ackDuration,
+                                            &StaWifiMac::SetPowerSaveMode,
+                                            this,
+                                            std::pair<bool, uint8_t>{true, id});
+                    }
+                    link.pmMode = WIFI_PM_ACTIVE;
+                }
+                else
+                {
+                    /**
+                     * When a link becomes enabled for a non-AP STA that is affiliated with a
+                     * non-AP MLD after successful association with an AP MLD with (Re)Association
+                     * Request/Response frames transmitted on another link [..], the power
+                     * management mode of the non-AP STA, immediately after the acknowledgement of
+                     * the (Re)Association Response frame [..], is power save mode, and its power
+                     * state is doze. (Sec. 35.3.7.1.4 of 802.11be D3.0)
+                     */
+                    // if the user requested this link to be in active mode, we have to
+                    // switch PM mode
+                    if (link.pmMode == WIFI_PM_ACTIVE)
+                    {
+                        Simulator::Schedule(ackDuration,
+                                            &StaWifiMac::SetPowerSaveMode,
+                                            this,
+                                            std::pair<bool, uint8_t>{false, id});
+                    }
+                    link.pmMode = WIFI_PM_POWERSAVE;
+                }
+            }
+        });
+
+    // connect the callback to the PHY TX begin trace to catch the Ack and disconnect
+    // after its transmission begins
+    auto phy = GetLink(linkId).phy;
+    phy->TraceConnectWithoutContext("PhyTxPsduBegin", cb);
+    Simulator::Schedule(phy->GetSifs() + NanoSeconds(1),
+                        [=]() { phy->TraceDisconnectWithoutContext("PhyTxPsduBegin", cb); });
 }
 
 bool
@@ -1467,6 +1571,111 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
 
     // process Information Elements included in the current frame variant
     std::visit(commonOps, frame);
+}
+
+void
+StaWifiMac::SetPowerSaveMode(const std::pair<bool, uint8_t>& enableLinkIdPair)
+{
+    const auto [enable, linkId] = enableLinkIdPair;
+    NS_LOG_FUNCTION(this << enable << linkId);
+
+    auto& link = GetLink(linkId);
+
+    if (!IsAssociated())
+    {
+        NS_LOG_DEBUG("Not associated yet, record the PM mode to switch to upon association");
+        link.pmMode = enable ? WIFI_PM_POWERSAVE : WIFI_PM_ACTIVE;
+        return;
+    }
+
+    if (!link.bssid)
+    {
+        NS_LOG_DEBUG("Link " << +linkId << " has not been setup, ignore request");
+        return;
+    }
+
+    if ((enable && link.pmMode == WIFI_PM_POWERSAVE) || (!enable && link.pmMode == WIFI_PM_ACTIVE))
+    {
+        NS_LOG_DEBUG("No PM mode change needed");
+        return;
+    }
+
+    link.pmMode = enable ? WIFI_PM_SWITCHING_TO_PS : WIFI_PM_SWITCHING_TO_ACTIVE;
+
+    // reschedule a call to this function to make sure that the PM mode switch
+    // is eventually completed
+    Simulator::Schedule(m_pmModeSwitchTimeout,
+                        &StaWifiMac::SetPowerSaveMode,
+                        this,
+                        enableLinkIdPair);
+
+    if (HasFramesToTransmit(linkId))
+    {
+        NS_LOG_DEBUG("Next transmitted frame will be sent with PM=" << enable);
+        return;
+    }
+
+    // No queued frames. Enqueue a Data Null frame to inform the AP of the PM mode change
+    WifiMacHeader hdr(WIFI_MAC_DATA_NULL);
+
+    hdr.SetAddr1(GetBssid(linkId));
+    hdr.SetAddr2(GetFrameExchangeManager(linkId)->GetAddress());
+    hdr.SetAddr3(GetBssid(linkId));
+    hdr.SetDsNotFrom();
+    hdr.SetDsTo();
+    enable ? hdr.SetPowerManagement() : hdr.SetNoPowerManagement();
+    if (GetQosSupported())
+    {
+        GetQosTxop(AC_BE)->Queue(Create<WifiMpdu>(Create<Packet>(), hdr));
+    }
+    else
+    {
+        m_txop->Queue(Create<WifiMpdu>(Create<Packet>(), hdr));
+    }
+}
+
+WifiPowerManagementMode
+StaWifiMac::GetPmMode(uint8_t linkId) const
+{
+    return GetLink(linkId).pmMode;
+}
+
+void
+StaWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
+{
+    NS_LOG_FUNCTION(this << *mpdu);
+
+    auto linkId = GetLinkIdByAddress(mpdu->GetHeader().GetAddr2());
+
+    if (!linkId)
+    {
+        // the given MPDU may be the original copy containing MLD addresses and not carrying
+        // a valid PM bit (which is set on the aliases).
+        auto linkIds = mpdu->GetInFlightLinkIds();
+        NS_ASSERT_MSG(!linkIds.empty(),
+                      "The TA of the acked MPDU (" << *mpdu
+                                                   << ") is not a link "
+                                                      "address and the MPDU is not inflight");
+        // in case the ack'ed MPDU is inflight on multiple links, we cannot really know if
+        // it was received by the AP on all links or only on some links. Hence, we only
+        // consider the first link ID in the set, given that in the most common case of MPDUs
+        // that cannot be sent concurrently on multiple links, there will be only one link ID
+        linkId = *linkIds.begin();
+        mpdu = GetTxopQueue(mpdu->GetQueueAc())->GetAlias(mpdu, *linkId);
+    }
+
+    auto& link = GetLink(*linkId);
+    const WifiMacHeader& hdr = mpdu->GetHeader();
+
+    // we received an acknowledgment while switching PM mode; the PM mode change is effective now
+    if (hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_PS)
+    {
+        link.pmMode = WIFI_PM_POWERSAVE;
+    }
+    else if (!hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_ACTIVE)
+    {
+        link.pmMode = WIFI_PM_ACTIVE;
+    }
 }
 
 AllSupportedRates
