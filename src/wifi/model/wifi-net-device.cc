@@ -61,7 +61,8 @@ WifiNetDevice::GetTypeId()
                           MakePointerAccessor(&WifiNetDevice::GetChannel),
                           MakePointerChecker<Channel>(),
                           TypeId::DEPRECATED,
-                          "Use the Channel attribute of WifiPhy")
+                          "class WifiNetDevice; use the Channel "
+                          "attribute of WifiPhy")
             .AddAttribute("Phy",
                           "The PHY layer attached to this device.",
                           PointerValue(),
