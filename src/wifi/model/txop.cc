@@ -68,8 +68,8 @@ Txop::GetTypeId()
                 "The minimum values of the contention window for all the links",
                 TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
                 AttributeContainerValue<UintegerValue>(),
-                MakeAttributeContainerAccessor<IntegerValue, std::list>(&Txop::SetMinCws,
-                                                                        &Txop::GetMinCws),
+                MakeAttributeContainerAccessor<UintegerValue, std::list>(&Txop::SetMinCws,
+                                                                         &Txop::GetMinCws),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint32_t>()))
             .AddAttribute("MaxCw",
                           "The maximum value of the contention window (just for the first link, "
@@ -84,8 +84,8 @@ Txop::GetTypeId()
                 "The maximum values of the contention window for all the links",
                 TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
                 AttributeContainerValue<UintegerValue>(),
-                MakeAttributeContainerAccessor<IntegerValue, std::list>(&Txop::SetMaxCws,
-                                                                        &Txop::GetMaxCws),
+                MakeAttributeContainerAccessor<UintegerValue, std::list>(&Txop::SetMaxCws,
+                                                                         &Txop::GetMaxCws),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint32_t>()))
             .AddAttribute(
                 "Aifsn",
@@ -101,8 +101,8 @@ Txop::GetTypeId()
                 "The values of AIFSN for all the links",
                 TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
                 AttributeContainerValue<UintegerValue>(),
-                MakeAttributeContainerAccessor<IntegerValue, std::list>(&Txop::SetAifsns,
-                                                                        &Txop::GetAifsns),
+                MakeAttributeContainerAccessor<UintegerValue, std::list>(&Txop::SetAifsns,
+                                                                         &Txop::GetAifsns),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>()))
             .AddAttribute("TxopLimit",
                           "The TXOP limit: the default value conforms to non-QoS "
