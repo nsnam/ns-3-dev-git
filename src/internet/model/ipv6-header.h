@@ -20,7 +20,6 @@
 #ifndef IPV6_HEADER_H
 #define IPV6_HEADER_H
 
-#include "ns3/deprecated.h"
 #include "ns3/header.h"
 #include "ns3/ipv6-address.h"
 

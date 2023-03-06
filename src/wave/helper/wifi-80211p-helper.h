@@ -22,7 +22,6 @@
  */
 #ifndef WIFI_802_11P_HELPER_H
 #define WIFI_802_11P_HELPER_H
-#include "ns3/deprecated.h"
 #include "ns3/wifi-helper.h"
 
 namespace ns3

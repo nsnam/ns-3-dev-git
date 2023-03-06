@@ -24,7 +24,6 @@
 
 #include "wifi-mac-helper.h"
 
-#include "ns3/deprecated.h"
 #include "ns3/qos-utils.h"
 #include "ns3/trace-helper.h"
 #include "ns3/wifi-phy.h"

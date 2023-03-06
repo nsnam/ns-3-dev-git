@@ -22,7 +22,6 @@
 
 #include "ns3/attribute-helper.h"
 #include "ns3/attribute.h"
-#include "ns3/deprecated.h"
 #include "ns3/nstime.h"
 
 #include <iostream>

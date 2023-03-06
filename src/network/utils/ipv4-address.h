@@ -22,7 +22,6 @@
 
 #include "ns3/address.h"
 #include "ns3/attribute-helper.h"
-#include "ns3/deprecated.h"
 
 #include <ostream>
 #include <stdint.h>

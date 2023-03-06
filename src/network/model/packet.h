@@ -30,7 +30,6 @@
 
 #include "ns3/assert.h"
 #include "ns3/callback.h"
-#include "ns3/deprecated.h"
 #include "ns3/mac48-address.h"
 #include "ns3/ptr.h"
 

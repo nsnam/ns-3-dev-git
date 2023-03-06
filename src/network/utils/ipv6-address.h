@@ -24,7 +24,6 @@
 
 #include "ns3/address.h"
 #include "ns3/attribute-helper.h"
-#include "ns3/deprecated.h"
 #include "ns3/ipv4-address.h"
 
 #include <cstring>

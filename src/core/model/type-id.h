@@ -23,7 +23,6 @@
 #include "attribute-helper.h"
 #include "attribute.h"
 #include "callback.h"
-#include "deprecated.h"
 #include "hash.h"
 #include "trace-source-accessor.h"
 
