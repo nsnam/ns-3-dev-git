@@ -508,8 +508,7 @@ WifiPhyOperatingChannel::GetPrimaryChannelNumber(uint16_t primaryChannelWidth,
 {
     auto frequency = GetPrimaryChannelCenterFrequency(primaryChannelWidth);
     NS_ASSERT_MSG(IsSet(), "No channel set");
-    auto& [chanNumber, centerFreq, channelWidth, channelType, band] = *m_channelIt;
-    auto primaryChanIt = FindFirst(0, frequency, primaryChannelWidth, standard, band);
+    auto primaryChanIt = FindFirst(0, frequency, primaryChannelWidth, standard, GetPhyBand());
     NS_ASSERT_MSG(primaryChanIt != m_frequencyChannels.end(), "Primary channel number not found");
     return std::get<0>(*primaryChanIt);
 }
