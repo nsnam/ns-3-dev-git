@@ -61,7 +61,7 @@ class PhasedArrayModel : public Object
      * \param complexVector on which to calculate Frobenius norm
      * \return the Frobenius norm of the complex vector
      */
-    double norm(ComplexVector& complexVector) const
+    double norm(const ComplexVector& complexVector) const
     {
         double norm = 0;
         for (size_t i = 0; i < complexVector.GetSize(); i++)

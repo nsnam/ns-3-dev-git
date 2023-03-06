@@ -261,11 +261,14 @@ class MatrixArray : public ValArray<T>
     using ValArray<T>::m_values;
 };
 
-using IntMatrixArray = MatrixArray<int>; //!< Create an alias for MatrixArray using int type
-using DoubleMatrixArray =
-    MatrixArray<double>; //!< Create an alias for MatrixArray using double type
-using ComplexMatrixArray =
-    MatrixArray<std::complex<double>>; //!< Create an alias for MatrixArray using complex type
+/// Create an alias for MatrixArray using int type
+using IntMatrixArray = MatrixArray<int>;
+
+/// Create an alias for MatrixArray using double type
+using DoubleMatrixArray = MatrixArray<double>;
+
+/// Create an alias for MatrixArray using complex type
+using ComplexMatrixArray = MatrixArray<std::complex<double>>;
 
 /*************************************************
  **  Class MatrixArray inline implementations

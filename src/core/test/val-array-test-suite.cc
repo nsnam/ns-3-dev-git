@@ -75,7 +75,6 @@ class ValArrayTestCase : public TestCase
      */
     ValArrayTestCase<T>& operator=(ValArrayTestCase<T>&&) noexcept = default;
 
-  protected:
   private:
     void DoRun() override;
 };
@@ -96,9 +95,9 @@ void
 ValArrayTestCase<T>::DoRun()
 {
     ValArray<T> v1 = ValArray<T>(2, 3);
-    for (auto i = 0; i < v1.GetNumRows(); ++i)
+    for (uint16_t i = 0; i < v1.GetNumRows(); ++i)
     {
-        for (auto j = 0; j < v1.GetNumCols(); ++j)
+        for (uint16_t j = 0; j < v1.GetNumCols(); ++j)
         {
             v1(i, j) = 1;
         }
@@ -109,9 +108,9 @@ ValArrayTestCase<T>::DoRun()
     NS_TEST_ASSERT_MSG_EQ(v1.GetNumCols(), v2.GetNumCols(), "The number of cols are not equal.");
 
     // test copy constructor
-    for (auto i = 0; i < v1.GetNumRows(); ++i)
+    for (uint16_t i = 0; i < v1.GetNumRows(); ++i)
     {
-        for (auto j = 0; j < v1.GetNumCols(); ++j)
+        for (uint16_t j = 0; j < v1.GetNumCols(); ++j)
         {
             NS_TEST_ASSERT_MSG_EQ(v1(i, j), v2(i, j), "The elements are not equal.");
         }
@@ -121,9 +120,9 @@ ValArrayTestCase<T>::DoRun()
     ValArray<T> v3 = v1;
     NS_TEST_ASSERT_MSG_EQ(v1.GetNumRows(), v3.GetNumRows(), "The number of rows are not equal.");
     NS_TEST_ASSERT_MSG_EQ(v1.GetNumCols(), v3.GetNumCols(), "The number of cols are not equal.");
-    for (auto i = 0; i < v1.GetNumRows(); ++i)
+    for (uint16_t i = 0; i < v1.GetNumRows(); ++i)
     {
-        for (auto j = 0; j < v1.GetNumCols(); ++j)
+        for (uint16_t j = 0; j < v1.GetNumCols(); ++j)
         {
             NS_TEST_ASSERT_MSG_EQ(v1(i, j), v2(i, j), "The elements are not equal.");
         }
@@ -153,7 +152,7 @@ ValArrayTestCase<T>::DoRun()
     }
     ValArray<T> v6 = ValArray<T>(2, 4, valArray1);
 
-    // test constructro that moves valArray
+    // test constructor that moves valArray
     NS_LOG_INFO("valarray1 size before move: " << valArray1.size());
     ValArray<T> v11 = ValArray<T>(2, 4, std::move(valArray1));
     NS_LOG_INFO("valarray1 size after move: " << valArray1.size());
@@ -163,9 +162,9 @@ ValArrayTestCase<T>::DoRun()
     // also in the access operator if we iterate over rows first we should find 0, 2, 4, 6, ...
     std::valarray<int> initArray2{0, 2, 4, 6, 1, 3, 5, 7};
     auto testIndex = 0;
-    for (auto i = 0; i < v6.GetNumRows(); ++i)
+    for (uint16_t i = 0; i < v6.GetNumRows(); ++i)
     {
-        for (auto j = 0; j < v6.GetNumCols(); ++j)
+        for (uint16_t j = 0; j < v6.GetNumCols(); ++j)
         {
             NS_TEST_ASSERT_MSG_EQ(v6(i, j),
                                   static_cast<T>(initArray2[testIndex]),
@@ -188,11 +187,11 @@ ValArrayTestCase<T>::DoRun()
     // if we iterate over rows first we should find 0, 2, 4, 6, ...
     std::valarray<int> initArray4{0, 2, 4, 6, 1, 3, 5, 7, 0, 2, 4, 6, 1, 3, 5, 7};
     testIndex = 0;
-    for (auto p = 0; p < v7.GetNumPages(); ++p)
+    for (uint16_t p = 0; p < v7.GetNumPages(); ++p)
     {
-        for (auto i = 0; i < v7.GetNumRows(); ++i)
+        for (uint16_t i = 0; i < v7.GetNumRows(); ++i)
         {
-            for (auto j = 0; j < v7.GetNumCols(); ++j)
+            for (uint16_t j = 0; j < v7.GetNumCols(); ++j)
             {
                 NS_TEST_ASSERT_MSG_EQ(v7(i, j, p),
                                       static_cast<T>(initArray4[testIndex]),
@@ -204,11 +203,11 @@ ValArrayTestCase<T>::DoRun()
 
     // multiplication with a scalar value with 3D array
     ValArray<T> v8 = v7 * (static_cast<T>(5.0));
-    for (auto p = 0; p < v8.GetNumPages(); ++p)
+    for (uint16_t p = 0; p < v8.GetNumPages(); ++p)
     {
-        for (auto i = 0; i < v8.GetNumRows(); ++i)
+        for (uint16_t i = 0; i < v8.GetNumRows(); ++i)
         {
-            for (auto j = 0; j < v8.GetNumCols(); ++j)
+            for (uint16_t j = 0; j < v8.GetNumCols(); ++j)
             {
                 NS_TEST_ASSERT_MSG_EQ(v7(i, j, p) * (static_cast<T>(5.0)),
                                       v8(i, j, p),
@@ -246,7 +245,7 @@ ValArrayTestCase<T>::DoRun()
                           true,
                           "Matrices should be almost equal, but not equal.");
 
-    // test the inicialization with std::vector
+    // test the initialization with std::vector
     ValArray<T> v12 = ValArray(std::vector<T>({1, 2, 3}));
     NS_LOG_INFO("v12:" << v12);
 }
