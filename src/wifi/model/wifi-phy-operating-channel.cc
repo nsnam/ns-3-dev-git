@@ -695,4 +695,31 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, uint16_t wid
     return indices;
 }
 
+bool
+WifiPhyOperatingChannel::operator==(const WifiPhyOperatingChannel& other) const
+{
+    return m_channelIt == other.m_channelIt;
+}
+
+bool
+WifiPhyOperatingChannel::operator!=(const WifiPhyOperatingChannel& other) const
+{
+    return !(*this == other);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const WifiPhyOperatingChannel& channel)
+{
+    if (channel.IsSet())
+    {
+        os << "channel " << +channel.GetNumber() << " in band " << channel.GetPhyBand()
+           << " frequency " << channel.GetFrequency() << " width " << channel.GetWidth();
+    }
+    else
+    {
+        os << "channel not set";
+    }
+    return os;
+}
+
 } // namespace ns3

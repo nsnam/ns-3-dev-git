@@ -64,6 +64,27 @@ class WifiPhyOperatingChannel
 
     virtual ~WifiPhyOperatingChannel();
 
+    /**
+     * Check if the given WifiPhyOperatingChannel is equivalent.
+     * Note that the primary20 channels are not compared.
+     *
+     * \param other another WifiPhyOperatingChannel
+     *
+     * \return true if the given WifiPhyOperatingChannel is equivalent,
+     *         false otherwise
+     */
+    bool operator==(const WifiPhyOperatingChannel& other) const;
+
+    /**
+     * Check if the given WifiPhyOperatingChannel is different.
+     *
+     * \param other another WifiPhyOperatingChannel
+     *
+     * \return true if the given WifiPhyOperatingChannel is different,
+     *         false otherwise
+     */
+    bool operator!=(const WifiPhyOperatingChannel& other) const;
+
     static const std::set<FrequencyChannelInfo>
         m_frequencyChannels; //!< Available frequency channels
 
@@ -280,6 +301,15 @@ class WifiPhyOperatingChannel
     uint8_t m_primary20Index;  /**< index of the primary20 channel (0 indicates the 20 MHz
                                     subchannel with the lowest center frequency) */
 };
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param channel the operating channel
+ * \returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const WifiPhyOperatingChannel& channel);
 
 } // namespace ns3
 
