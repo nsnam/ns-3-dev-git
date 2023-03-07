@@ -269,13 +269,14 @@ DsssPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 Ptr<SpectrumValue>
 DsssPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {
+    const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
+    NS_ASSERT(centerFrequencies.size() == 1);
     const auto& txVector = ppdu->GetTxVector();
-    uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
     const auto channelWidth = txVector.GetChannelWidth();
-    NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW);
+    NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPowerW);
     NS_ABORT_MSG_IF(channelWidth != 22, "Invalid channel width for DSSS");
     Ptr<SpectrumValue> v =
-        WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(centerFrequency,
+        WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(centerFrequencies.front(),
                                                                   txPowerW,
                                                                   GetGuardBandwidth(channelWidth));
     return v;

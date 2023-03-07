@@ -462,13 +462,14 @@ HtPhy::IsConfigSupported(Ptr<const WifiPpdu> ppdu) const
 Ptr<SpectrumValue>
 HtPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {
+    const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
+    NS_ASSERT(centerFrequencies.size() == 1);
     const auto& txVector = ppdu->GetTxVector();
-    uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
     const auto channelWidth = txVector.GetChannelWidth();
-    NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW);
+    NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPowerW);
     const auto& txMaskRejectionParams = GetTxMaskRejectionParams();
     Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
-        centerFrequency,
+        centerFrequencies.front(),
         channelWidth,
         txPowerW,
         GetGuardBandwidth(channelWidth),

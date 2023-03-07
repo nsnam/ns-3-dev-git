@@ -367,16 +367,17 @@ OfdmPhy::IsAllConfigSupported(WifiPpduField /* field */, Ptr<const WifiPpdu> ppd
 Ptr<SpectrumValue>
 OfdmPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {
+    const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
+    NS_ASSERT(centerFrequencies.size() == 1);
     const auto& txVector = ppdu->GetTxVector();
-    uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
     const auto channelWidth = txVector.GetChannelWidth();
-    NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW);
+    NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPowerW);
     const auto& txMaskRejectionParams = GetTxMaskRejectionParams();
     Ptr<SpectrumValue> v;
     if (txVector.IsNonHtDuplicate())
     {
         v = WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-            centerFrequency,
+            centerFrequencies.front(),
             channelWidth,
             txPowerW,
             GetGuardBandwidth(channelWidth),
@@ -386,8 +387,9 @@ OfdmPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) co
     }
     else
     {
+        NS_ASSERT(centerFrequencies.size() == 1);
         v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(
-            centerFrequency,
+            centerFrequencies.front(),
             channelWidth,
             txPowerW,
             GetGuardBandwidth(channelWidth),

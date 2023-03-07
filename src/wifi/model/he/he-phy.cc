@@ -1324,9 +1324,18 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
                                  HePpdu::TxPsdFlag flag) const
 {
     const auto& txVector = ppdu->GetTxVector();
-    uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
+    const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
     auto channelWidth = txVector.GetChannelWidth();
-    NS_LOG_FUNCTION(this << centerFrequency << channelWidth << txPowerW << txVector);
+    auto printFrequencies = [](const std::vector<uint16_t>& v) {
+        std::stringstream ss;
+        for (const auto& centerFrequency : v)
+        {
+            ss << centerFrequency << " ";
+        }
+        return ss.str();
+    };
+    NS_LOG_FUNCTION(this << printFrequencies(centerFrequencies) << channelWidth << txPowerW
+                         << txVector);
     const auto& puncturedSubchannels = txVector.GetInactiveSubchannels();
     if (!puncturedSubchannels.empty())
     {
@@ -1345,11 +1354,10 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         {
             // non-HE portion is sent only on the 20 MHz channels covering the RU
             const uint16_t staId = GetStaId(ppdu);
-            centerFrequency = GetCenterFrequencyForNonHePart(txVector, staId);
             const auto ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
             channelWidth = (ruWidth < 20) ? 20 : ruWidth;
             return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-                centerFrequency,
+                GetCenterFrequenciesForNonHePart(ppdu, staId).front(),
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1362,7 +1370,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         {
             const auto band = GetRuBandForTx(txVector, GetStaId(ppdu)).indices;
             return WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
-                centerFrequency,
+                centerFrequencies.front(),
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1373,7 +1381,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         if (flag == HePpdu::PSD_NON_HE_PORTION)
         {
             return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-                centerFrequency,
+                centerFrequencies.front(),
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1385,7 +1393,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         else
         {
             return WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
-                centerFrequency,
+                centerFrequencies.front(),
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1399,7 +1407,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
     default: {
         NS_ASSERT(puncturedSubchannels.empty());
         return WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
-            centerFrequency,
+            centerFrequencies.front(),
             channelWidth,
             txPowerW,
             GetGuardBandwidth(channelWidth),
@@ -1410,12 +1418,13 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
     }
 }
 
-uint16_t
-HePhy::GetCenterFrequencyForNonHePart(const WifiTxVector& txVector, uint16_t staId) const
+std::vector<uint16_t>
+HePhy::GetCenterFrequenciesForNonHePart(Ptr<const WifiPpdu> ppdu, uint16_t staId) const
 {
-    NS_LOG_FUNCTION(this << txVector << staId);
+    NS_LOG_FUNCTION(this << ppdu << staId);
+    const auto& txVector = ppdu->GetTxVector();
     NS_ASSERT(txVector.IsUlMu() && (txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE));
-    uint16_t centerFrequency = GetCenterFrequencyForChannelWidth(txVector);
+    auto centerFrequencies = ppdu->GetTxCenterFreqs();
     const auto currentWidth = txVector.GetChannelWidth();
 
     HeRu::RuSpec ru = txVector.GetRu(staId);
@@ -1426,8 +1435,8 @@ HePhy::GetCenterFrequencyForNonHePart(const WifiTxVector& txVector, uint16_t sta
         HeRu::RuSpec nonOfdmaRu =
             HeRu::FindOverlappingRu(currentWidth, ru, HeRu::GetRuType(nonOfdmaWidth));
 
-        uint16_t startingFrequency = centerFrequency - (currentWidth / 2);
-        centerFrequency =
+        uint16_t startingFrequency = centerFrequencies.front() - (currentWidth / 2);
+        centerFrequencies.front() =
             startingFrequency +
             nonOfdmaWidth * (nonOfdmaRu.GetPhyIndex(
                                  currentWidth,
@@ -1435,7 +1444,7 @@ HePhy::GetCenterFrequencyForNonHePart(const WifiTxVector& txVector, uint16_t sta
                              1) +
             nonOfdmaWidth / 2;
     }
-    return centerFrequency;
+    return centerFrequencies;
 }
 
 void

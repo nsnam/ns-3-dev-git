@@ -2435,7 +2435,8 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
 
     // Send non-OFDMA part
     Time nonOfdmaDuration = m_phy->GetHePhy()->CalculateNonHeDurationForHeTb(txVector);
-    uint32_t centerFrequency = m_phy->GetHePhy()->GetCenterFrequencyForNonHePart(txVector, staId);
+    uint32_t centerFrequency =
+        m_phy->GetHePhy()->GetCenterFrequenciesForNonHePart(ppdu, staId).front();
     ChannelWidthMhz ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     ChannelWidthMhz channelWidth = ruWidth < 20 ? 20 : ruWidth;
     Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(

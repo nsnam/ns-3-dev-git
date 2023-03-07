@@ -858,16 +858,6 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
                                                          Ptr<const WifiPpdu> ppdu) const = 0;
 
     /**
-     * Get the center frequency of the channel corresponding the current TxVector rather than
-     * that of the supported channel width.
-     * Consider that this "primary channel" is on the lower part for the time being.
-     *
-     * \param txVector the TXVECTOR that has the channel width that is to be used
-     * \return the center frequency in MHz corresponding to the channel width to be used
-     */
-    uint16_t GetCenterFrequencyForChannelWidth(const WifiTxVector& txVector) const;
-
-    /**
      * Fire the trace indicating that the PHY is starting to receive the payload of a PPDU.
      *
      * \param txVector the TXVECTOR used to transmit the PPDU

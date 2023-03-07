@@ -1301,15 +1301,6 @@ PhyEntity::GetMaxDelayPpduSameUid(const WifiTxVector& /*txVector*/)
     return Seconds(0);
 }
 
-uint16_t
-PhyEntity::GetCenterFrequencyForChannelWidth(const WifiTxVector& txVector) const
-{
-    NS_LOG_FUNCTION(this << txVector);
-
-    return m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
-        txVector.GetChannelWidth());
-}
-
 void
 PhyEntity::NotifyPayloadBegin(const WifiTxVector& txVector, const Time& payloadDuration)
 {

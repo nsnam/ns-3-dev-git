@@ -216,15 +216,15 @@ class HePhy : public VhtPhy
     void SetTrigVector(const WifiTxVector& trigVector, Time validity);
 
     /**
-     * Get the center frequency of the non-HE portion of the current TxVector for the
-     * given STA-ID.
-     * Note this method is only to be used for UL MU.
+     * Get the center frequency per segment of the non-HE portion of the current PPDU for the given
+     * STA-ID. Note this method is only to be used for UL MU.
      *
-     * \param txVector the TXVECTOR that has the RU allocation
+     * \param ppdu the PPDU
      * \param staId the STA-ID of the station taking part of the UL MU
      * \return the center frequency in MHz corresponding to the non-HE portion of the HE TB PPDU
      */
-    uint16_t GetCenterFrequencyForNonHePart(const WifiTxVector& txVector, uint16_t staId) const;
+    std::vector<uint16_t> GetCenterFrequenciesForNonHePart(const Ptr<const WifiPpdu> ppdu,
+                                                           uint16_t staId) const;
 
     /**
      * Sets the OBSS-PD algorithm.
