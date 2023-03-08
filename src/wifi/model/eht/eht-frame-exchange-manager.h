@@ -66,9 +66,33 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      */
     std::optional<double> GetMostRecentRssi(const Mac48Address& address) const override;
 
+    /**
+     * \param psdu the given PSDU
+     * \param aid the AID of an EMLSR client
+     * \param address the link MAC address of an EMLSR client
+     * \return whether the EMLSR client having the given AID and MAC address shall switch back to
+     *         the listening operation when receiving the given PSDU
+     */
+    bool GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
+                                   uint16_t aid,
+                                   const Mac48Address& address) const;
+
   protected:
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
+    void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void SendMuRts(const WifiTxParameters& txParams) override;
+
+    /**
+     * This method is intended to be called when an AP MLD detects that an EMLSR client previously
+     * involved in the current TXOP will start waiting for the transition delay interval (to switch
+     * back to listening operation) after the given delay.
+     * This method blocks the transmissions on all the EMLSR links of the given EMLSR client until
+     * the transition delay advertised by the EMLSR client expires.
+     *
+     * \param address the link MAC address of the given EMLSR client
+     * \param delay the given delay
+     */
+    void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
 };
 
 } // namespace ns3

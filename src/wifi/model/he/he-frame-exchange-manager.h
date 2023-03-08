@@ -256,7 +256,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * \param psduMap the map of PSDUs to transmit
      * \param txVector the TXVECTOR used to transmit the MU PPDU
      */
-    void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector);
+    virtual void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector);
 
     /**
      * Take the necessary actions after that some BlockAck frames are missing

@@ -120,7 +120,113 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
         txVector.SetSigBMode(sigBMode);
     }
 
+    if (!m_apMac)
+    {
+        HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
+        return;
+    }
+
+    auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
+
+    // check if the EMLSR clients shall switch back to listening operation at the end of this PPDU
+    for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
+    {
+        auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
+
+        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
+            GetEmlsrSwitchToListening(psdu, aid, *clientIt))
+        {
+            EmlsrSwitchToListening(*clientIt, txDuration);
+            // this client is no longer involved in the current TXOP
+            clientIt = m_protectedStas.erase(clientIt);
+        }
+        else
+        {
+            clientIt++;
+        }
+    }
+
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
+}
+
+void
+EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psduMap << txVector);
+
+    if (!m_apMac)
+    {
+        HeFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
+        return;
+    }
+
+    auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, m_phy->GetPhyBand());
+
+    // check if the EMLSR clients shall switch back to listening operation at the end of this PPDU
+    for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
+    {
+        auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
+
+        if (auto psduMapIt = psduMap.find(aid);
+            GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
+            (psduMapIt == psduMap.cend() ||
+             GetEmlsrSwitchToListening(psduMapIt->second, aid, *clientIt)))
+        {
+            EmlsrSwitchToListening(*clientIt, txDuration);
+            // this client is no longer involved in the current TXOP
+            clientIt = m_protectedStas.erase(clientIt);
+        }
+        else
+        {
+            clientIt++;
+        }
+    }
+
+    HeFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
+}
+
+void
+EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, const Time& delay)
+{
+    NS_LOG_FUNCTION(this << address << delay.As(Time::US));
+
+    // this EMLSR client switches back to listening operation a transition delay
+    // after the given delay
+    auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
+    NS_ASSERT(mldAddress);
+    auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
+    NS_ASSERT(emlCapabilities);
+
+    for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
+    {
+        if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+        {
+            Simulator::Schedule(delay, [=]() {
+                if (linkId != m_linkId)
+                {
+                    // the reason for blocking the other EMLSR links has changed now
+                    m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                                   *mldAddress,
+                                                   {linkId});
+                }
+
+                // block DL transmissions on this link until transition delay elapses
+                m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                             *mldAddress,
+                                             {linkId});
+            });
+
+            // unblock all EMLSR links when the transition delay elapses
+            Simulator::Schedule(delay + CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
+                                            emlCapabilities->emlsrTransitionDelay),
+                                [=]() {
+                                    m_mac->UnblockUnicastTxOnLinks(
+                                        WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                        *mldAddress,
+                                        {linkId});
+                                });
+        }
+    }
 }
 
 void
@@ -238,6 +344,72 @@ EhtFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
     }
 
     HeFrameExchangeManager::SendMuRts(txParams);
+}
+
+bool
+EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
+                                                   uint16_t aid,
+                                                   const Mac48Address& address) const
+{
+    NS_LOG_FUNCTION(this << psdu << aid << address);
+
+    // Sec. 35.3.17 of 802.11be D3.0:
+    // The non-AP MLD shall be switched back to the listening operation on the EMLSR links after
+    // the EMLSR transition delay time if [...] the non-AP STA affiliated with the non-AP MLD
+    // does not detect [...] any of the following frames:
+    // - an individually addressed frame with the RA equal to the MAC address of the non-AP STA
+    // affiliated with the non-AP MLD
+    if (psdu->GetAddr1() == address)
+    {
+        return false;
+    }
+
+    // - a Trigger frame that has one of the User Info fields addressed to the non-AP STA
+    // affiliated with the non-AP MLD
+    for (const auto& mpdu : *PeekPointer(psdu))
+    {
+        if (mpdu->GetHeader().IsTrigger())
+        {
+            CtrlTriggerHeader trigger;
+            mpdu->GetPacket()->PeekHeader(trigger);
+            if (trigger.FindUserInfoWithAid(aid) != trigger.end())
+            {
+                return false;
+            }
+        }
+    }
+
+    // - a CTS-to-self frame with the RA equal to the MAC address of the AP affiliated with
+    // the AP MLD
+    if (psdu->GetHeader(0).IsCts())
+    {
+        if (m_apMac && psdu->GetAddr1() == m_self)
+        {
+            return false;
+        }
+        if (m_staMac && psdu->GetAddr1() == m_bssid)
+        {
+            return false;
+        }
+    }
+
+    // - a Multi-STA BlockAck frame that has one of the Per AID TID Info fields addressed to
+    // the non-AP STA affiliated with the non-AP MLD
+    if (psdu->GetHeader(0).IsBlockAck())
+    {
+        CtrlBAckResponseHeader blockAck;
+        psdu->GetPayload(0)->PeekHeader(blockAck);
+        if (blockAck.IsMultiSta() && !blockAck.FindPerAidTidInfoWithAid(aid).empty())
+        {
+            return false;
+        }
+    }
+
+    // - a NDP Announcement frame that has one of the STA Info fields addressed to the non-AP
+    // STA affiliated with the non-AP MLD and a sounding NDP
+    // TODO NDP Announcement frame not supported yet
+
+    return true;
 }
 
 } // namespace ns3
