@@ -68,6 +68,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
   protected:
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
+    void SendMuRts(const WifiTxParameters& txParams) override;
 };
 
 } // namespace ns3

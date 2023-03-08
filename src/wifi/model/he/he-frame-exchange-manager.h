@@ -204,7 +204,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      *
      * \param txParams the TX parameters for the data frame
      */
-    void SendMuRts(const WifiTxParameters& txParams);
+    virtual void SendMuRts(const WifiTxParameters& txParams);
 
     /**
      * Called when no CTS frame is received after an MU-RTS.
