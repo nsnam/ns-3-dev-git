@@ -132,16 +132,32 @@ ValArrayTestCase<T>::DoRun()
     ValArray<T> v4;
     NS_LOG_INFO("v1 size before move: " << v1.GetSize());
     NS_LOG_INFO("v4 size before move: " << v4.GetSize());
+    size_t v1size = v1.GetSize();
     v4 = std::move(v1);
-    NS_LOG_INFO("v1 size after move: " << v1.GetSize());
     NS_LOG_INFO("v4 size after move: " << v4.GetSize());
-    NS_TEST_ASSERT_MSG_NE(v1.GetSize(), v4.GetSize(), "The number of elements are equal.");
+    NS_TEST_ASSERT_MSG_EQ(v1size, v4.GetSize(), "The number of elements are not equal.");
+    for (uint16_t i = 0; i < v4.GetNumRows(); ++i)
+    {
+        for (uint16_t j = 0; j < v4.GetNumCols(); ++j)
+        {
+            // Use v3 for comparison since it hasn't moved
+            NS_TEST_ASSERT_MSG_EQ(v3(i, j), v4(i, j), "The elements are not equal.");
+        }
+    }
 
     // test move constructor
     NS_LOG_INFO("v3 size before move: " << v3.GetSize());
+    size_t v3size = v3.GetSize();
     ValArray<T> v5(std::move(v3));
-    NS_LOG_INFO("v3 size after move: " << v3.GetSize());
-    NS_TEST_ASSERT_MSG_NE(v3.GetSize(), v5.GetSize(), "The number of elements are equal.");
+    NS_TEST_ASSERT_MSG_EQ(v3size, v5.GetSize(), "The number of elements are not equal.");
+    for (uint16_t i = 0; i < v5.GetNumRows(); ++i)
+    {
+        for (uint16_t j = 0; j < v5.GetNumCols(); ++j)
+        {
+            // Use v4 for comparison since it hasn't moved
+            NS_TEST_ASSERT_MSG_EQ(v4(i, j), v5(i, j), "The elements are not equal.");
+        }
+    }
 
     // test constructor with initialization valArray
     std::valarray<int> initArray1{0, 1, 2, 3, 4, 5, 6, 7};
