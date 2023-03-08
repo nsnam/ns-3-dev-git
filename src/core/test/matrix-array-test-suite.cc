@@ -69,13 +69,13 @@ class MatrixArrayTestCase : public TestCase
      * \brief Move constructor.
      * Instruct the compiler to generate the implicitly declared move constructor
      */
-    MatrixArrayTestCase<T>(MatrixArrayTestCase<T>&&) noexcept = default;
+    MatrixArrayTestCase<T>(MatrixArrayTestCase<T>&&) = default;
     /**
      * \brief Move assignment operator.
      * Instruct the compiler to generate the implicitly declared copy constructor
      * \return A reference to this MatrixArrayTestCase
      */
-    MatrixArrayTestCase<T>& operator=(MatrixArrayTestCase<T>&&) noexcept = default;
+    MatrixArrayTestCase<T>& operator=(MatrixArrayTestCase<T>&&) = default;
 
   protected:
   private:

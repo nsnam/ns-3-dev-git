@@ -67,13 +67,13 @@ class ValArrayTestCase : public TestCase
      * \brief Move constructor.
      * Instruct the compiler to generate the implicitly declared move constructor
      */
-    ValArrayTestCase<T>(ValArrayTestCase<T>&&) noexcept = default;
+    ValArrayTestCase<T>(ValArrayTestCase<T>&&) = default;
     /**
      * \brief Move assignment operator.
      * Instruct the compiler to generate the implicitly declared copy constructor
      * \return A reference to this ValArrayTestCase
      */
-    ValArrayTestCase<T>& operator=(ValArrayTestCase<T>&&) noexcept = default;
+    ValArrayTestCase<T>& operator=(ValArrayTestCase<T>&&) = default;
 
   private:
     void DoRun() override;

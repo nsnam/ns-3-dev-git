@@ -158,13 +158,13 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      */
     ValArray<T>& operator=(const ValArray<T>&) = default;
     /** instruct the compiler to generate the implicitly declared move constructor*/
-    ValArray<T>(ValArray<T>&&) noexcept = default;
+    ValArray<T>(ValArray<T>&&) = default;
     /**
      * \brief Move assignment operator.
      * Instruct the compiler to generate the implicitly declared move assignment operator.
      * \return a reference to the assigned object
      */
-    ValArray<T>& operator=(ValArray<T>&&) noexcept = default;
+    ValArray<T>& operator=(ValArray<T>&&) = default;
     /**
      * \returns Number of rows
      */
