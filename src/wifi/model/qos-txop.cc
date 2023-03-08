@@ -378,7 +378,13 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
         {
             return m_queue->PeekFirstAvailable(linkId, mpdu);
         }
-        return m_queue->PeekByTidAndAddress(tid, recipient, mpdu);
+        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, recipient, tid);
+        if (auto mask = m_mac->GetMacQueueScheduler()->GetQueueLinkMask(m_ac, queueId, linkId);
+            !mask || mask->none())
+        {
+            return m_queue->PeekByQueueId(queueId, mpdu);
+        }
+        return nullptr;
     };
 
     auto item = peek();
