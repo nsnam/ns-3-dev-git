@@ -2520,7 +2520,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         doc_folder = os.path.abspath(os.sep.join([".", "doc"]))
 
         # For each sphinx doc target.
-        for target in ["contributing", "manual", "models", "tutorial"]:
+        for target in ["installation", "contributing", "manual", "models", "tutorial"]:
             # First we need to clean old docs, or it will not make any sense.
             doc_build_folder = os.sep.join([doc_folder, target, "build"])
             doc_temp_folder = os.sep.join([doc_folder, target, "source-temp"])
