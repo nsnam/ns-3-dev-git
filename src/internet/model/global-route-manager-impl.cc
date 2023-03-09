@@ -1137,7 +1137,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation(SPFVertex* v,
         // Above, when we were considering the root node, we calculated the next hop
         // address and outgoing interface required to get off of the root network.
         // At this point, we are further away from the root network along one of the
-        // (shortest) paths.  So the next hop and outoing interface remain the same
+        // (shortest) paths.  So the next hop and outgoing interface remain the same
         // (are inherited).
         //
         w->InheritAllRootExitDirections(v);

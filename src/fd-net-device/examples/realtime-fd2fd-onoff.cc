@@ -28,7 +28,7 @@
 //  |  fd-net-device |--------------|  fd-net-device |
 //  +----------------+              +----------------+
 //
-// This example is aimed at meassuring the thoughput of the FdNetDevice
+// This example is aimed at measuring the thoughput of the FdNetDevice
 // in a pure simulation. For this purpose two FdNetDevices, attached to
 // different nodes but in a same simulation, are connected using a socket pair.
 // TCP traffic is sent at a saturating data rate. Then the thoughput can

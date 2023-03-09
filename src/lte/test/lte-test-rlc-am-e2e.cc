@@ -270,7 +270,7 @@ LteRlcAmE2eTestCase::DoRun()
     //      retransmitted is much lower. This effect can be best noteed
     //      at very high loss rates, and can be adjusted by timers and
     //      params.
-    //   2) throuhgput is not meaningful, you need to evaluate the time
+    //   2) throughput is not meaningful, you need to evaluate the time
     //      it takes for all PDUs to be (re)transmitted successfully,
     //      i.e., how long it takes for the TX and reTX queues to deplete.
 

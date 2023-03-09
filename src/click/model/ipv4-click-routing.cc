@@ -818,7 +818,7 @@ simclick_sim_command(simclick_node_t* simnode, int cmd, ...)
         // Try to fill the buffer with up to size bytes.
         // If this is not enough space, write the required buffer size into
         // the size variable and return an error code.
-        // Otherwise return the bytes actually writte into the buffer in size.
+        // Otherwise return the bytes actually written into the buffer in size.
 
         // Append key/value pair, separated by \0.
         std::map<std::string, std::string> defines = clickInstance->GetDefines();

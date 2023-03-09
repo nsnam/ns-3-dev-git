@@ -44,7 +44,7 @@ class SpectrumConverter : public SimpleRefCount<SpectrumConverter>
     /**
      * Create a SpectrumConverter class that will be able to convert ValueVsFreq
      * instances defined over one SpectrumModel to corresponding ValueVsFreq
-     * instances defined over a diffent SpectrumModel
+     * instances defined over a different SpectrumModel
      *
      * @param fromSpectrumModel the SpectrumModel to convert from
      * @param toSpectrumModel the SpectrumModel to convert to

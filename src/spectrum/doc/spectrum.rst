@@ -177,7 +177,7 @@ of the available implementations:
    interference model (implemented in ``SpectrumInterference``)
    together with an error model based on Shannon capacity (described
    in [Baldo2009Spectrum]_ and implemented in ``SpectrumErrorModel``. This PHY
-   uses the ``GenericPhy`` interface. Its addditional custom signal
+   uses the ``GenericPhy`` interface. Its additional custom signal
    parameters are defined in ``HalfDuplexIdealPhySignalParameters``.
 
  * ``WifiSpectrumValueHelper`` is an helper object that makes it easy

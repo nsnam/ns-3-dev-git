@@ -38,7 +38,7 @@ Changes from ns-3.37 to ns-3.38
 * (core) Now test-runner exits if no TestSuite is specified.
 * (lr-wpan) Adds the possibility to modify the Rx sensitivity in **LrWpanPhy**.
 * (lr-wpan) `LrWpanHelper::CreateAssociatedPan` replace `LrWpanHelper::AssociateToPan` and is able to create an associated PAN of the devices with both short addresses (16-bits) and extended addresses (EUI-64 bits).
-* (antenna, spectrum) `ComplexVector` definition has changed. Its API is implemented in `MatrixArray`. Some functions such as `push_back` and `resize` are not supported any more. On the other hand, the size inicialization through constructor and access operator[] are maintained. Instead of `size ()` users can call `GetSize()`.
+* (antenna, spectrum) `ComplexVector` definition has changed. Its API is implemented in `MatrixArray`. Some functions such as `push_back` and `resize` are not supported any more. On the other hand, the size initialization through constructor and access operator[] are maintained. Instead of `size ()` users can call `GetSize()`.
 
 ### Changes to build system
 
@@ -450,7 +450,7 @@ Changes from ns-3.29 to ns-3.30
 * A new buffer has been introduced in the LteEnbRrc class. This buffer will be used by a target eNB during handover to buffer the packets coming from a source eNB on X2 interface. The target eNB will buffer this data until it receives RRC Connection Reconfiguration Complete from a UE.
 * The default qdisc installed on single-queue devices (such as PointToPoint, Csma and Simple) is now `FqCoDel` (instead of PfifoFast). On multi-queue devices (such as Wifi), the default root qdisc is now `Mq` with as many FqCoDel child qdiscs as the number of device queues. The new defaults are motivated by the willingness to align with the behavior of major Linux distributions and by the need to preserve the effectiveness of Wifi EDCA Functions in differentiating Access Categories (see issue #35).
 * LTE RLC TM mode does not report anymore the layer-to-layer delay, as it misses (by standard) an header to which attach the timestamp tag. Users can switch to the PDCP layer delay measurements, which must be the same.
-* Token Bank Fair Queue Scheduler (`ns3::FdTbfqFfMacScheduler`) will not anymore schedule a UE, which does not have any RBG left after removng the RBG from its allocation map if the computed TB size is greater than the "budget" computed in the scheduler.
+* Token Bank Fair Queue Scheduler (`ns3::FdTbfqFfMacScheduler`) will not anymore schedule a UE, which does not have any RBG left after removing the RBG from its allocation map if the computed TB size is greater than the "budget" computed in the scheduler.
 * LTE module now supports the **Radio Link Failure (RLF)** functionality. This implementation introduced following key behavioral changes:
   * The UE RRC state will not remain in `CONNECTED_NORMALLY` state if the DL control channel SINR is below a set threshold.
   * The LTE RRC protocol APIs of UE i.e., LteUeRrcProtocolIdeal, LteUeRrcProtocolReal have been extended to send an ideal (i.e., using SAPs instead to transmitting over the air) UE context remove request to the eNB. Similarly, the eNB RRC protocol APIs, i.e, LteEnbRrcProtocolIdeal and LteEnbRrcProtocolReal have been extended to receive this ideal UE context remove request.

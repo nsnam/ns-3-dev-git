@@ -1046,7 +1046,7 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const ChannelCondition> channelCondit
     }
     else
     {
-        NS_FATAL_ERROR("unkonw scenarios");
+        NS_FATAL_ERROR("unknown scenarios");
     }
 
     return table3gpp;

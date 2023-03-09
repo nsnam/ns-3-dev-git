@@ -31,7 +31,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LenaX2HandoverExample");
 
 /**
- * UE Connection established noticication.
+ * UE Connection established notification.
  *
  * \param context The context.
  * \param imsi The IMSI of the connected terminal.
@@ -82,7 +82,7 @@ NotifyHandoverEndOkUe(std::string context, uint64_t imsi, uint16_t cellid, uint1
 }
 
 /**
- * eNB Connection established noticication.
+ * eNB Connection established notification.
  *
  * \param context The context.
  * \param imsi The IMSI of the connected terminal.

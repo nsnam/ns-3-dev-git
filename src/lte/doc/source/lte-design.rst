@@ -1037,7 +1037,7 @@ In detail, the index :math:`\widehat{i}_{k}(t)` to which RBG :math:`k` is assign
    \widehat{i}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
     \left( \frac{ R_{j}(k,t) }{ T_\mathrm{j}(t) } \right)
 
-where :math:`T_{j}(t)` is the past througput performance perceived by the
+where :math:`T_{j}(t)` is the past throughput performance perceived by the
 user :math:`j`.
 According to the above scheduling algorithm, a user can be allocated to
 different RBGs, which can be either adjacent or not, depending on the current
@@ -4252,7 +4252,7 @@ Distributed Fractional Frequency Reuse
 This Distributed Fractional Frequency Reuse Algorithm was presented in [DKimura2012]_. It
 automatically optimizes cell-edge sub-bands by focusing on user distribution (in particular,
 receive-power distribution). This algorithm adaptively selects RBs for cell-edge sub-band on
-basis of coordination information from adjecent cells and notifies the base stations of the
+basis of coordination information from adjacent cells and notifies the base stations of the
 adjacent cells, which RBs it selected to use in edge sub-band. The base station of each cell
 uses the received information and the following equation to compute cell-edge-band metric
 :math:`A_{k}` for each RB.

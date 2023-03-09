@@ -1945,7 +1945,7 @@ EPC scenarios.
 With Distributed Fractional Frequency Reuse  Algorithm, eNb uses entire cell bandwidth and there can
 be two sub-bands: center sub-band and edge sub-band . Within these sub-bands UEs can be served with
 different power level. Algorithm adaptively selects RBs for cell-edge sub-band on basis of
-coordination information (i.e. RNTP) from adjecent cells and notifies the base stations of the adjacent cells,
+coordination information (i.e. RNTP) from adjacent cells and notifies the base stations of the adjacent cells,
 which RBs it selected to use in edge sub-band. If there are no UE classified as edge UE in cell,
 eNB will not use any RBs as edge sub-band.
 
