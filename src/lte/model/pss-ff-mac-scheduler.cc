@@ -1111,38 +1111,23 @@ PssFfMacScheduler::DoSchedDlTriggerReq(
                     nMux = (int)((ueSet1.size() + ueSet2.size()) / 2);
                 }
             }
-            for (it = m_flowStatsDl.begin(); it != m_flowStatsDl.end(); it--)
+
+            std::vector<std::pair<double, uint16_t>>::iterator itSet;
+            for (itSet = ueSet1.begin(); itSet != ueSet1.end() && nMux != 0; itSet++)
             {
-                std::vector<std::pair<double, uint16_t>>::iterator itSet;
-                for (itSet = ueSet1.begin(); itSet != ueSet1.end() && nMux != 0; itSet++)
-                {
-                    std::map<uint16_t, pssFlowPerf_t>::iterator itUe;
-                    itUe = m_flowStatsDl.find((*itSet).second);
-                    tdUeSet.insert(
-                        std::pair<uint16_t, pssFlowPerf_t>((*itUe).first, (*itUe).second));
-                    nMux--;
-                }
+                std::map<uint16_t, pssFlowPerf_t>::iterator itUe;
+                itUe = m_flowStatsDl.find((*itSet).second);
+                tdUeSet.insert(std::pair<uint16_t, pssFlowPerf_t>((*itUe).first, (*itUe).second));
+                nMux--;
+            }
 
-                if (nMux == 0)
-                {
-                    break;
-                }
-
-                for (itSet = ueSet2.begin(); itSet != ueSet2.end() && nMux != 0; itSet++)
-                {
-                    std::map<uint16_t, pssFlowPerf_t>::iterator itUe;
-                    itUe = m_flowStatsDl.find((*itSet).second);
-                    tdUeSet.insert(
-                        std::pair<uint16_t, pssFlowPerf_t>((*itUe).first, (*itUe).second));
-                    nMux--;
-                }
-
-                if (nMux == 0)
-                {
-                    break;
-                }
-
-            } // end of m_flowStatsDl
+            for (itSet = ueSet2.begin(); itSet != ueSet2.end() && nMux != 0; itSet++)
+            {
+                std::map<uint16_t, pssFlowPerf_t>::iterator itUe;
+                itUe = m_flowStatsDl.find((*itSet).second);
+                tdUeSet.insert(std::pair<uint16_t, pssFlowPerf_t>((*itUe).first, (*itUe).second));
+                nMux--;
+            }
 
             if (m_fdSchedulerType == "CoItA")
             {
