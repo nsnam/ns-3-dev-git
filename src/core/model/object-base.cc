@@ -35,6 +35,10 @@
 
 namespace ns3
 {
+// Explicit instantiation declaration
+template Callback<ObjectBase*> MakeCallback<ObjectBase*>(ObjectBase* (*)());
+template Callback<ObjectBase*>::Callback();
+template class CallbackImpl<ObjectBase*>;
 
 NS_LOG_COMPONENT_DEFINE("ObjectBase");
 
