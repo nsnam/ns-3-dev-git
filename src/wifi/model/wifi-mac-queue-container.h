@@ -170,7 +170,7 @@ class WifiMacQueueContainer
     uint32_t GetNBytes(const WifiContainerQueueId& queueId) const;
 
     /**
-     * Transfer MPDUs with expired lifetime in the container queue identified by
+     * Transfer non-inflight MPDUs with expired lifetime in the container queue identified by
      * the given QueueId to the container queue storing MPDUs with expired lifetime.
      *
      * \param queueId the QueueId identifying the container queue
@@ -179,8 +179,8 @@ class WifiMacQueueContainer
      */
     std::pair<iterator, iterator> ExtractExpiredMpdus(const WifiContainerQueueId& queueId) const;
     /**
-     * Transfer MPDUs with expired lifetime in all the container queues to the container
-     * queue storing MPDUs with expired lifetime.
+     * Transfer non-inflight MPDUs with expired lifetime in all the container queues to the
+     * container queue storing MPDUs with expired lifetime.
      *
      * \return the range [first, last) of iterators pointing to the MPDUs transferred
      *         to the container queue storing MPDUs with expired lifetime
@@ -197,7 +197,7 @@ class WifiMacQueueContainer
 
   private:
     /**
-     * Transfer MPDUs with expired lifetime in the given container queue to the
+     * Transfer non-inflight MPDUs with expired lifetime in the given container queue to the
      * container queue storing MPDUs with expired lifetime.
      *
      * \param queue the given container queue

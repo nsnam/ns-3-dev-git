@@ -123,53 +123,73 @@ WifiMacQueueContainer::ExtractExpiredMpdus(const WifiContainerQueueId& queueId) 
 std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>
 WifiMacQueueContainer::DoExtractExpiredMpdus(ContainerQueue& queue) const
 {
+    std::optional<std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>> ret;
     iterator firstExpiredIt = queue.begin();
     iterator lastExpiredIt = firstExpiredIt;
     Time now = Simulator::Now();
 
-    while (lastExpiredIt != queue.end() && lastExpiredIt->expiryTime <= now)
+    do
     {
-        lastExpiredIt->expired = true;
-        // this MPDU is no longer queued
-        lastExpiredIt->ac = AC_UNDEF;
-        lastExpiredIt->inflights.clear();
-        lastExpiredIt->deleter(lastExpiredIt->mpdu);
+        // advance firstExpiredIt and lastExpiredIt to skip all inflight MPDUs
+        for (firstExpiredIt = lastExpiredIt;
+             firstExpiredIt != queue.end() && !firstExpiredIt->inflights.empty();
+             ++firstExpiredIt, ++lastExpiredIt)
+        {
+        }
 
-        WifiContainerQueueId queueId = GetQueueId(lastExpiredIt->mpdu);
-        auto it = m_nBytesPerQueue.find(queueId);
-        NS_ASSERT(it != m_nBytesPerQueue.end());
-        NS_ASSERT(it->second >= lastExpiredIt->mpdu->GetSize());
-        it->second -= lastExpiredIt->mpdu->GetSize();
+        if (!ret)
+        {
+            // we get here in the first iteration only
+            ret = std::make_pair(firstExpiredIt, lastExpiredIt);
+        }
 
-        ++lastExpiredIt;
-    }
+        // advance lastExpiredIt as we encounter MPDUs with expired lifetime that are not inflight
+        while (lastExpiredIt != queue.end() && lastExpiredIt->expiryTime <= now &&
+               lastExpiredIt->inflights.empty())
+        {
+            lastExpiredIt->expired = true;
+            // this MPDU is no longer queued
+            lastExpiredIt->ac = AC_UNDEF;
+            lastExpiredIt->deleter(lastExpiredIt->mpdu);
 
-    if (lastExpiredIt != firstExpiredIt)
-    {
-        // transfer MPDUs with expired lifetime to the tail of m_expiredQueue
-        m_expiredQueue.splice(m_expiredQueue.end(), queue, firstExpiredIt, lastExpiredIt);
-        return {firstExpiredIt, m_expiredQueue.end()};
-    }
+            WifiContainerQueueId queueId = GetQueueId(lastExpiredIt->mpdu);
+            auto it = m_nBytesPerQueue.find(queueId);
+            NS_ASSERT(it != m_nBytesPerQueue.end());
+            NS_ASSERT(it->second >= lastExpiredIt->mpdu->GetSize());
+            it->second -= lastExpiredIt->mpdu->GetSize();
 
-    return {m_expiredQueue.end(), m_expiredQueue.end()};
+            ++lastExpiredIt;
+        }
+
+        if (lastExpiredIt != firstExpiredIt)
+        {
+            // transfer non-inflight MPDUs with expired lifetime to the tail of m_expiredQueue
+            m_expiredQueue.splice(m_expiredQueue.end(), queue, firstExpiredIt, lastExpiredIt);
+            ret->second = m_expiredQueue.end();
+        }
+
+    } while (lastExpiredIt != firstExpiredIt);
+
+    return *ret;
 }
 
 std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>
 WifiMacQueueContainer::ExtractAllExpiredMpdus() const
 {
-    iterator firstExpiredIt = m_expiredQueue.end();
+    std::optional<WifiMacQueueContainer::iterator> firstExpiredIt;
 
     for (auto& queue : m_queues)
     {
         auto [firstIt, lastIt] = DoExtractExpiredMpdus(queue.second);
 
-        if (firstIt != lastIt && firstExpiredIt == m_expiredQueue.end())
+        if (firstIt != lastIt && !firstExpiredIt)
         {
             // this is the first queue with MPDUs with expired lifetime
             firstExpiredIt = firstIt;
         }
     }
-    return {firstExpiredIt, m_expiredQueue.end()};
+    return std::make_pair(firstExpiredIt ? *firstExpiredIt : m_expiredQueue.end(),
+                          m_expiredQueue.end());
 }
 
 std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>
