@@ -783,18 +783,6 @@ class WifiActionHeader : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
-    /**
-     * Category value to string function
-     * \param value the category value
-     * \returns the category value string
-     */
-    std::string CategoryValueToString(CategoryValue value) const;
-    /**
-     * Self protected action value to string function
-     * \param value the protected action value
-     * \returns the self protected action value string
-     */
-    std::string SelfProtectedActionValueToString(SelfProtectedActionValue value) const;
     uint8_t m_category;    //!< Category of the action
     uint8_t m_actionValue; //!< Action value
 };

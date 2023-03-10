@@ -1070,78 +1070,189 @@ WifiActionHeader::Remove(Ptr<Packet> pkt)
     return {actionHdr.GetCategory(), actionHdr.GetAction()};
 }
 
-std::string
-WifiActionHeader::CategoryValueToString(CategoryValue value) const
-{
-    switch (value)
-    {
-    case QOS:
-        return "QoS";
-    case BLOCK_ACK:
-        return "BlockAck";
-    case PUBLIC:
-        return "Public";
-    case RADIO_MEASUREMENT:
-        return "RadioMeasurement";
-    case MESH:
-        return "Mesh";
-    case MULTIHOP:
-        return "Multihop";
-    case SELF_PROTECTED:
-        return "SelfProtected";
-    case DMG:
-        return "Dmg";
-    case FST:
-        return "Fst";
-    case UNPROTECTED_DMG:
-        return "UnprotectedDmg";
-    case PROTECTED_EHT:
-        return "ProtectedEht";
-    case VENDOR_SPECIFIC_ACTION:
-        return "VendorSpecificAction";
-    default:
-        std::ostringstream convert;
-        convert << value;
-        return convert.str();
-    }
-}
-
-std::string
-WifiActionHeader::SelfProtectedActionValueToString(SelfProtectedActionValue value) const
-{
-    if (value == PEER_LINK_OPEN)
-    {
-        return "PeerLinkOpen";
-    }
-    else if (value == PEER_LINK_CONFIRM)
-    {
-        return "PeerLinkConfirm";
-    }
-    else if (value == PEER_LINK_CLOSE)
-    {
-        return "PeerLinkClose";
-    }
-    else if (value == GROUP_KEY_INFORM)
-    {
-        return "GroupKeyInform";
-    }
-    else if (value == GROUP_KEY_ACK)
-    {
-        return "GroupKeyAck";
-    }
-    else
-    {
-        std::ostringstream convert;
-        convert << value;
-        return convert.str();
-    }
-}
-
 void
 WifiActionHeader::Print(std::ostream& os) const
 {
-    os << "category=" << CategoryValueToString((CategoryValue)m_category)
-       << ", value=" << SelfProtectedActionValueToString((SelfProtectedActionValue)m_actionValue);
+#define CASE_ACTION_VALUE(x)                                                                       \
+    case x:                                                                                        \
+        os << #x << "]";                                                                           \
+        break;
+
+    switch (m_category)
+    {
+    case QOS:
+        os << "QOS[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(ADDTS_REQUEST);
+            CASE_ACTION_VALUE(ADDTS_RESPONSE);
+            CASE_ACTION_VALUE(DELTS);
+            CASE_ACTION_VALUE(SCHEDULE);
+            CASE_ACTION_VALUE(QOS_MAP_CONFIGURE);
+        default:
+            NS_FATAL_ERROR("Unknown qos action code");
+        }
+        break;
+    case BLOCK_ACK:
+        os << "BLOCK_ACK[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(BLOCK_ACK_ADDBA_REQUEST);
+            CASE_ACTION_VALUE(BLOCK_ACK_ADDBA_RESPONSE);
+            CASE_ACTION_VALUE(BLOCK_ACK_DELBA);
+        default:
+            NS_FATAL_ERROR("Unknown block ack action code");
+        }
+        break;
+    case PUBLIC:
+        os << "PUBLIC[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(QAB_REQUEST);
+            CASE_ACTION_VALUE(QAB_RESPONSE);
+        default:
+            NS_FATAL_ERROR("Unknown public action code");
+        }
+        break;
+    case RADIO_MEASUREMENT:
+        os << "RADIO_MEASUREMENT[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(RADIO_MEASUREMENT_REQUEST);
+            CASE_ACTION_VALUE(RADIO_MEASUREMENT_REPORT);
+            CASE_ACTION_VALUE(LINK_MEASUREMENT_REQUEST);
+            CASE_ACTION_VALUE(LINK_MEASUREMENT_REPORT);
+            CASE_ACTION_VALUE(NEIGHBOR_REPORT_REQUEST);
+            CASE_ACTION_VALUE(NEIGHBOR_REPORT_RESPONSE);
+        default:
+            NS_FATAL_ERROR("Unknown radio measurement action code");
+        }
+        break;
+    case MESH:
+        os << "MESH[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(LINK_METRIC_REPORT);
+            CASE_ACTION_VALUE(PATH_SELECTION);
+            CASE_ACTION_VALUE(PORTAL_ANNOUNCEMENT);
+            CASE_ACTION_VALUE(CONGESTION_CONTROL_NOTIFICATION);
+            CASE_ACTION_VALUE(MDA_SETUP_REQUEST);
+            CASE_ACTION_VALUE(MDA_SETUP_REPLY);
+            CASE_ACTION_VALUE(MDAOP_ADVERTISEMENT_REQUEST);
+            CASE_ACTION_VALUE(MDAOP_ADVERTISEMENTS);
+            CASE_ACTION_VALUE(MDAOP_SET_TEARDOWN);
+            CASE_ACTION_VALUE(TBTT_ADJUSTMENT_REQUEST);
+            CASE_ACTION_VALUE(TBTT_ADJUSTMENT_RESPONSE);
+        default:
+            NS_FATAL_ERROR("Unknown mesh peering management action code");
+        }
+        break;
+    case MULTIHOP:
+        os << "MULTIHOP[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(PROXY_UPDATE);              // not used so far
+            CASE_ACTION_VALUE(PROXY_UPDATE_CONFIRMATION); // not used so far
+        default:
+            NS_FATAL_ERROR("Unknown mesh peering management action code");
+        }
+        break;
+    case SELF_PROTECTED:
+        os << "SELF_PROTECTED[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(PEER_LINK_OPEN);
+            CASE_ACTION_VALUE(PEER_LINK_CONFIRM);
+            CASE_ACTION_VALUE(PEER_LINK_CLOSE);
+            CASE_ACTION_VALUE(GROUP_KEY_INFORM);
+            CASE_ACTION_VALUE(GROUP_KEY_ACK);
+        default:
+            NS_FATAL_ERROR("Unknown mesh peering management action code");
+        }
+        break;
+    case DMG:
+        os << "DMG[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(DMG_POWER_SAVE_CONFIGURATION_REQUEST);
+            CASE_ACTION_VALUE(DMG_POWER_SAVE_CONFIGURATION_RESPONSE);
+            CASE_ACTION_VALUE(DMG_INFORMATION_REQUEST);
+            CASE_ACTION_VALUE(DMG_INFORMATION_RESPONSE);
+            CASE_ACTION_VALUE(DMG_HANDOVER_REQUEST);
+            CASE_ACTION_VALUE(DMG_HANDOVER_RESPONSE);
+            CASE_ACTION_VALUE(DMG_DTP_REQUEST);
+            CASE_ACTION_VALUE(DMG_DTP_RESPONSE);
+            CASE_ACTION_VALUE(DMG_RELAY_SEARCH_REQUEST);
+            CASE_ACTION_VALUE(DMG_RELAY_SEARCH_RESPONSE);
+            CASE_ACTION_VALUE(DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REQUEST);
+            CASE_ACTION_VALUE(DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REPORT);
+            CASE_ACTION_VALUE(DMG_RLS_REQUEST);
+            CASE_ACTION_VALUE(DMG_RLS_RESPONSE);
+            CASE_ACTION_VALUE(DMG_RLS_ANNOUNCEMENT);
+            CASE_ACTION_VALUE(DMG_RLS_TEARDOWN);
+            CASE_ACTION_VALUE(DMG_RELAY_ACK_REQUEST);
+            CASE_ACTION_VALUE(DMG_RELAY_ACK_RESPONSE);
+            CASE_ACTION_VALUE(DMG_TPA_REQUEST);
+            CASE_ACTION_VALUE(DMG_TPA_RESPONSE);
+            CASE_ACTION_VALUE(DMG_ROC_REQUEST);
+            CASE_ACTION_VALUE(DMG_ROC_RESPONSE);
+        default:
+            NS_FATAL_ERROR("Unknown DMG management action code");
+        }
+        break;
+    case FST:
+        os << "FST[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(FST_SETUP_REQUEST);
+            CASE_ACTION_VALUE(FST_SETUP_RESPONSE);
+            CASE_ACTION_VALUE(FST_TEAR_DOWN);
+            CASE_ACTION_VALUE(FST_ACK_REQUEST);
+            CASE_ACTION_VALUE(FST_ACK_RESPONSE);
+            CASE_ACTION_VALUE(ON_CHANNEL_TUNNEL_REQUEST);
+        default:
+            NS_FATAL_ERROR("Unknown FST management action code");
+        }
+        break;
+    case UNPROTECTED_DMG:
+        os << "UNPROTECTED_DMG[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(UNPROTECTED_DMG_ANNOUNCE);
+            CASE_ACTION_VALUE(UNPROTECTED_DMG_BRP);
+            CASE_ACTION_VALUE(UNPROTECTED_MIMO_BF_SETUP);
+            CASE_ACTION_VALUE(UNPROTECTED_MIMO_BF_POLL);
+            CASE_ACTION_VALUE(UNPROTECTED_MIMO_BF_FEEDBACK);
+            CASE_ACTION_VALUE(UNPROTECTED_MIMO_BF_SELECTION);
+        default:
+            NS_FATAL_ERROR("Unknown Unprotected DMG action code");
+        }
+        break;
+    case PROTECTED_EHT:
+        os << "PROTECTED_EHT[";
+        switch (m_actionValue)
+        {
+            CASE_ACTION_VALUE(PROTECTED_EHT_TID_TO_LINK_MAPPING_REQUEST);
+            CASE_ACTION_VALUE(PROTECTED_EHT_TID_TO_LINK_MAPPING_RESPONSE);
+            CASE_ACTION_VALUE(PROTECTED_EHT_TID_TO_LINK_MAPPING_TEARDOWN);
+            CASE_ACTION_VALUE(PROTECTED_EHT_EPCS_PRIORITY_ACCESS_ENABLE_REQUEST);
+            CASE_ACTION_VALUE(PROTECTED_EHT_EPCS_PRIORITY_ACCESS_ENABLE_RESPONSE);
+            CASE_ACTION_VALUE(PROTECTED_EHT_EPCS_PRIORITY_ACCESS_TEARDOWN);
+            CASE_ACTION_VALUE(PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION);
+            CASE_ACTION_VALUE(PROTECTED_EHT_LINK_RECOMMENDATION);
+            CASE_ACTION_VALUE(PROTECTED_EHT_MULTI_LINK_OPERATION_UPDATE_REQUEST);
+            CASE_ACTION_VALUE(PROTECTED_EHT_MULTI_LINK_OPERATION_UPDATE_RESPONSE);
+        default:
+            NS_FATAL_ERROR("Unknown Protected EHT action code");
+        }
+        break;
+    case VENDOR_SPECIFIC_ACTION:
+        os << "VENDOR_SPECIFIC_ACTION";
+        break;
+    default:
+        NS_FATAL_ERROR("Unknown action value");
+    }
+#undef CASE_ACTION_VALUE
 }
 
 uint32_t
