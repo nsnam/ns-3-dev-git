@@ -293,6 +293,7 @@ GetChannelWidthInMhz(WifiChannelWidthType width)
     case WifiChannelWidthType::CW_80MHZ:
         return 80;
     case WifiChannelWidthType::CW_160MHZ:
+    case WifiChannelWidthType::CW_80_PLUS_80MHZ:
         return 160;
     case WifiChannelWidthType::CW_2160MHZ:
         return 2160;
