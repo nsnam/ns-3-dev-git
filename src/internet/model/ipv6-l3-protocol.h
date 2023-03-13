@@ -23,6 +23,7 @@
 #include "ns3/ipv6-address.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-pmtu-cache.h"
+#include "ns3/ipv6-routing-protocol.h"
 #include "ns3/ipv6.h"
 #include "ns3/net-device.h"
 #include "ns3/traced-callback.h"
@@ -836,6 +837,11 @@ class Ipv6L3Protocol : public Ipv6
      * \brief List of multicast IP addresses of interest for all the interfaces.
      */
     Ipv6RegisteredMulticastAddressNoInterface_t m_multicastAddressesNoInterface;
+
+    Ipv6RoutingProtocol::UnicastForwardCallback m_ucb;   ///< Unicast forward callback
+    Ipv6RoutingProtocol::MulticastForwardCallback m_mcb; ///< Multicast forward callback
+    Ipv6RoutingProtocol::LocalDeliverCallback m_lcb;     ///< Local delivery callback
+    Ipv6RoutingProtocol::ErrorCallback m_ecb;            ///< Error callback
 };
 
 } /* namespace ns3 */

@@ -134,6 +134,10 @@ Ipv6L3Protocol::Ipv6L3Protocol()
 
     Ptr<Ipv6RawSocketFactoryImpl> rawFactoryImpl = CreateObject<Ipv6RawSocketFactoryImpl>();
     AggregateObject(rawFactoryImpl);
+    m_ucb = MakeCallback(&Ipv6L3Protocol::IpForward, this);
+    m_mcb = MakeCallback(&Ipv6L3Protocol::IpMulticastForward, this);
+    m_lcb = MakeCallback(&Ipv6L3Protocol::LocalDeliver, this);
+    m_ecb = MakeCallback(&Ipv6L3Protocol::RouteInputError, this);
 }
 
 Ipv6L3Protocol::~Ipv6L3Protocol()
@@ -1186,13 +1190,7 @@ Ipv6L3Protocol::Receive(Ptr<NetDevice> device,
         }
     }
 
-    if (!m_routingProtocol->RouteInput(packet,
-                                       hdr,
-                                       device,
-                                       MakeCallback(&Ipv6L3Protocol::IpForward, this),
-                                       MakeCallback(&Ipv6L3Protocol::IpMulticastForward, this),
-                                       MakeCallback(&Ipv6L3Protocol::LocalDeliver, this),
-                                       MakeCallback(&Ipv6L3Protocol::RouteInputError, this)))
+    if (!m_routingProtocol->RouteInput(packet, hdr, device, m_ucb, m_mcb, m_lcb, m_ecb))
     {
         NS_LOG_WARN("No route found for forwarding packet.  Drop.");
         // Drop trace and ICMPs are courtesy of RouteInputError

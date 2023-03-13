@@ -870,10 +870,10 @@ bool
 NixVectorRouting<T>::RouteInput(Ptr<const Packet> p,
                                 const IpHeader& header,
                                 Ptr<const NetDevice> idev,
-                                UnicastForwardCallback ucb,
-                                MulticastForwardCallback mcb,
-                                LocalDeliverCallback lcb,
-                                ErrorCallback ecb)
+                                const UnicastForwardCallback& ucb,
+                                const MulticastForwardCallback& mcb,
+                                const LocalDeliverCallback& lcb,
+                                const ErrorCallback& ecb)
 {
     NS_LOG_FUNCTION(this << p << header << header.GetSource() << header.GetDestination() << idev);
 

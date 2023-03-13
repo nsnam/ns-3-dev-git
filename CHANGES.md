@@ -51,6 +51,7 @@ Changes from ns-3.38 to ns-3-dev
 * (lr-wpan) Modified `LrWpanPhy::PlmeGetAttributeRequest` to include support for a few attributes (none were supported before the change).
 * (lr-wpan) Added `macShortAddress`, `macExtendendAddress` and `macPanId` to the attributes that can be use with MLME-GET and MLME-SET functions.
 * (wifi) The QosBlockedDestinations class has been removed and its functionality is now provided via a new framework for blocking/unblocking packets that is based on the queue scheduler.
+* (internet) The function signature of `Ipv4RoutingProtocol::RouteInput` and `Ipv6RoutingProtocol::RouteInput` have changed. The `UnicastForwardCallback` (ucb), `MulticastForwardCallback` (mcb), `LocalDeliverCallback` (lcb) and `ErrorCallback` (ecb) should now be passed as const references.
 
 ### Changes to build system
 

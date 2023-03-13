@@ -630,6 +630,11 @@ class Ipv4L3Protocol : public Ipv4
     Time m_expire;      //!< duplicate entry expiration delay
     Time m_purge;       //!< time between purging expired duplicate entries
     EventId m_cleanDpd; //!< event to cleanup expired duplicate entries
+
+    Ipv4RoutingProtocol::UnicastForwardCallback m_ucb;   ///< Unicast forward callback
+    Ipv4RoutingProtocol::MulticastForwardCallback m_mcb; ///< Multicast forward callback
+    Ipv4RoutingProtocol::LocalDeliverCallback m_lcb;     ///< Local delivery callback
+    Ipv4RoutingProtocol::ErrorCallback m_ecb;            ///< Error callback
 };
 
 } // Namespace ns3
