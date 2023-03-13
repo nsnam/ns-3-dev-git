@@ -105,6 +105,8 @@ For MacPorts packages we show the most recent package version available as of ea
   |                             |                                  | ``pyXX-sphinx``, with    |
   |                             |                                  | `XX`` the Python version |
   +-----------------------------+----------------------------------+--------------------------+
+  | Eigen3                      | ``eigen``                        | ``eigen3``               |
+  +-----------------------------+----------------------------------+--------------------------+
   | GNU Scientific Library      | ``gsl``                          | ``gsl``                  |
   +-----------------------------+----------------------------------+--------------------------+
   | XML config store            | ``libxml2``                      | ``libxml2``              |

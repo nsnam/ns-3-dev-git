@@ -183,6 +183,12 @@ The ns-3 manual (``doc/manual``), tutorial (``doc/tutorial``) and others are wri
 reStructuredText for Sphinx, and figures are typically in dia.  To build PDF versions,
 `texlive <https://www.tug.org/texlive/>`_ packages are needed.
 
+Eigen3 support
+==============
+`Eigen3 <https://gitlab.com/libeigen/eigen>`_ is used to support more efficient calculations
+when using the `3GPP propagation loss models <https://www.nsnam.org/docs//models/html/propagation.html#threegpppropagationlossmodel>`_
+in LTE and NR simulations.
+
 GNU Scientific Library (GSL)
 ============================
 

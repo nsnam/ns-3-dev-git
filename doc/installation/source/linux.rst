@@ -86,6 +86,8 @@ Please see below subsections for Python-related package requirements.
   |                             | ``texlive-extra-utils texlive-latex-extra``                |
   |                             | ``texlive-font-utils``                                     |
   +-----------------------------+------------------------------------------------------------+
+  | Eigen3                      | ``libeigen3-dev``                                          |
+  +-----------------------------+------------------------------------------------------------+
   | GNU Scientific Library      | ``gsl-bin libgsl-dev libgslcblas0``                        |
   +-----------------------------+------------------------------------------------------------+
   | XML config store            | ``libxml2 libxml2-dev``                                    |
