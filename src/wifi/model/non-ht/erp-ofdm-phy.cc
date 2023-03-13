@@ -113,12 +113,14 @@ ErpOfdmPhy::BuildPpdu(const WifiConstPsduMap& psdus,
                       Time /* ppduDuration */)
 {
     NS_LOG_FUNCTION(this << psdus << txVector);
-    return Create<ErpOfdmPpdu>(psdus.begin()->second,
-                               txVector,
-                               m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
-                                   txVector.GetChannelWidth()),
-                               m_wifiPhy->GetPhyBand(),
-                               ObtainNextUid(txVector));
+    return Create<ErpOfdmPpdu>(
+        psdus.begin()->second,
+        txVector,
+        m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
+            txVector.GetChannelWidth()),
+        m_wifiPhy->GetPhyBand(),
+        m_wifiPhy->GetLatestPhyEntity()->ObtainNextUid(
+            txVector)); // use latest PHY entity to handle MU-RTS sent with non-HT rate
 }
 
 void
