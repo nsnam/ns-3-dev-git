@@ -13,8 +13,8 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-Release 3-dev
--------------
+Release 3.38
+------------
 
 ### Supported platforms
 
@@ -33,33 +33,41 @@ This release has discontinued support for g++-8 compilers.
 
 ### New user-visible features
 
-- (network) !938 - Add class `TimestampTag` for associating a timestamp with a packet.
-- (network) !1163 - Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
-- (internet) !1186 - `TcpWestwood` model has been removed, and the class has been renamed `TcpWestwoodPlus`.
-- (internet) !1229 - You can now ping broadcast addresses.
 - (core) !1236 - Added some macros to silence compiler warnings. The new macros are in **warnings.h**, and their use is not suggested unless for very specific cases.
+- (core) !1269 - Added new template classes `ValArray` and `MatrixArray` for efficient storage and operations on 1D, 2D, and 3D arrays.
+- (documentation) - Added an Installation Guide to replace the ns-3 wiki's installation page
+- (internet) !1229 - Ping now supports broadcast addresses.
+- (internet) !1186 - `TcpWestwood` model has been removed, and the class has been renamed `TcpWestwoodPlus`.
 - (internet-apps) - A new Ping model that works for both IPv4 and IPv6 has been added, to replace the address family specific v4Ping and Ping6.
-- (lr-wpan) !1268 - Adding beacon payload now its possible using MLME-SET.request primitive.
-- (core) !1302 - Now test-runner exits if no TestSuite is specified.
-- (spectrum) !1046 - Addition of the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
-- (wifi) Add support for 802.11be Multi-Link Operations (MLO), STR mode only
-- (wifi) Implement 802.11ax dual NAV (basic NAV and intra-BSS NAV)
-- (wifi) Implement 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
-- (wifi) Add support for 802.11ax MU-RTS/CTS protection
-- (lr-wpan) !1006 - Add rx Sensitivity configuration support.
-- (core) !1269 - Add new template classes `ValArray` and `MatrixArray` for efficient storage and operations on 1D, 2D, and 3D arrays.
+- (lr-wpan) !1006 - Added RX sensitivity configuration support.
+- (lr-wpan) !1268 - Added beacon payload via MLME-SET.request primitive.
+- (netanim) Added helper function to update the size of a node
+- (network) !938 - Added class `TimestampTag` for associating a timestamp with a packet.
+- (network) !1163 - Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
+- (spectrum) !1046 - Added the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
+- (wifi) Added support for 802.11be Multi-Link Operations (MLO), STR mode only
+- (wifi) Added more fields to the EHT Capabilities information element
+- (wifi) Added an initial 802.11be-based example program
+- (wifi) Added 802.11ax dual NAV (basic NAV and intra-BSS NAV)
+- (wifi) Added 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
+- (wifi) Added support for 802.11ax MU-RTS/CTS protection
 
 ### Bugs fixed
 
+- (core) !1236 - Deprecation warnings are silenced while calling `NS_OBJECT_ENSURE_REGISTERED`
 - (build) #808 - Handle profile setting changes in the first ns3 run
 - (build) #815 - Configure find_program to search for programs in PATH first, then AppBundles in MacOS
-- (network) !1229 - Fixed a bug in `Ipv4Address::IsSubnetDirectedBroadcast`
+- (lr-wpan) #636 - Ext address, short address and manual assoc adjustments
 - (internet) !1229 - Fixed a bug in `Icmpv4Header::HandleEcho` when replying to broadcast-type Echo requests, and two bugs in `Ipv4RawSocketImpl::SendTo` in handling sockets bound to a specific address and directed to a broadcast-type address.
 - (internet) - `NeighborCacheHelper::PopulateNeighborCache` is now robust against missing IPv4 or IPv6 stack in nodes.
-- (core) !1236 - Deprecation warnings are silenced while calling `NS_OBJECT_ENSURE_REGISTERED`
+- (network) !1229 - Fixed a bug in `Ipv4Address::IsSubnetDirectedBroadcast`
 - (wifi) Fixed multiple issues about setting the TXOP holder
-- (wifi) #861 - bianchi validation script can't run with 11ax
-- (lr-wpan) #636 - Ext address, short address and manual assoc adjustments
+- (wifi) #861 - Bianchi validation program was not compatible with 11ax
+- (wifi) Fixed 10 MHz offset in center frequencies for 6 GHz channels
+- (wifi) Fixed setting of Duration/ID field of a Multi-STA Block Ack
+- (wifi) Fixed handling of the HE TB TXVECTOR and TRIGVECTOR parameters
+- (wifi) Prevent extraction of in-flight MPDUs due to lifetime expired
+- (wifi) Fixed getting the primary 80 MHz channel number in the 6 GHz band
 
 Release 3.37
 ------------
