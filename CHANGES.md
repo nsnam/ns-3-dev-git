@@ -57,6 +57,8 @@ Changes from ns-3.38 to ns-3-dev
 
 ### Changed behavior
 
+* (network) The function `Buffer::Allocate` will over-provision `ALLOC_OVER_PROVISION` bytes when allocating buffers for packets. `ALLOC_OVER_PROVISION` is currently set to 100 bytes.
+
 Changes from ns-3.37 to ns-3.38
 -------------------------------
 

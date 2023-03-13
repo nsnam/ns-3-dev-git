@@ -160,6 +160,8 @@ Buffer::Create(uint32_t size)
 }
 #endif /* BUFFER_FREE_LIST */
 
+constexpr uint32_t ALLOC_OVER_PROVISION = 100; //!< Additional bytes to over-provision.
+
 struct Buffer::Data*
 Buffer::Allocate(uint32_t reqSize)
 {
@@ -169,6 +171,7 @@ Buffer::Allocate(uint32_t reqSize)
         reqSize = 1;
     }
     NS_ASSERT(reqSize >= 1);
+    reqSize += ALLOC_OVER_PROVISION;
     uint32_t size = reqSize - 1 + sizeof(struct Buffer::Data);
     uint8_t* b = new uint8_t[size];
     struct Buffer::Data* data = reinterpret_cast<struct Buffer::Data*>(b);
