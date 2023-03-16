@@ -25,7 +25,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 dummy routing class (A)
  */
@@ -92,7 +91,6 @@ class Ipv6ARouting : public Ipv6RoutingProtocol
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 dummy routing class (B)
  */
@@ -159,7 +157,6 @@ class Ipv6BRouting : public Ipv6RoutingProtocol
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 ListRouting negative test.
  */
@@ -194,7 +191,6 @@ Ipv6ListRoutingNegativeTestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 ListRouting positive test.
  */
@@ -234,7 +230,6 @@ Ipv6ListRoutingPositiveTestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 ListRouting TestSuite
  */

@@ -186,7 +186,7 @@ main(int argc, char* argv[])
     WifiHelper wifi;
     if (verbose)
     {
-        wifi.EnableLogComponents();
+        WifiHelper::EnableLogComponents();
     }
     wifi.SetStandard(WIFI_STANDARD_80211b);
 

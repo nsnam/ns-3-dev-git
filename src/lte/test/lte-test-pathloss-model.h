@@ -29,7 +29,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test 1.1 pathloss calculation
  */
@@ -41,7 +40,6 @@ class LtePathlossModelTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief  Tests that the BuildingPathlossModel works according to
  * the expected theoretical values. Theoretical reference values

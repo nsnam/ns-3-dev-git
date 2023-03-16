@@ -24,7 +24,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 network number allocator Test
  */
@@ -83,7 +82,6 @@ NetworkNumber6AllocatorTestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 address allocator Test
  */
@@ -148,7 +146,6 @@ AddressAllocator6TestCase::DoTeardown()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 network number and address allocator Test
  */
@@ -200,7 +197,6 @@ NetworkAndAddress6TestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 example of an address generator Test
  */
@@ -265,7 +261,6 @@ ExampleAddress6GeneratorTestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 address collision Test
  */
@@ -338,7 +333,6 @@ AddressCollision6TestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 address generator TestSuite
  */

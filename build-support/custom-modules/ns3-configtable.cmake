@@ -113,11 +113,17 @@ function(print_formatted_table_with_modules table_name modules output)
 endfunction()
 
 macro(write_configtable)
-  set(out "---- Summary of optional ns-3 features:\n")
+  set(out "---- Summary of ns-3 settings:\n")
   string(APPEND out "Build profile                 : ${build_profile}\n")
   string(APPEND out
          "Build directory               : ${CMAKE_OUTPUT_DIRECTORY}\n"
   )
+
+  string(APPEND out "Build with runtime asserts    : ")
+  check_on_or_off("${NS3_ASSERT}" "${NS3_ASSERT}")
+
+  string(APPEND out "Build with runtime logging    : ")
+  check_on_or_off("${NS3_LOG}" "${NS3_LOG}")
 
   string(APPEND out "Build version embedding       : ")
   check_on_or_off("${NS3_ENABLE_BUILD_VERSION}" "${ENABLE_BUILD_VERSION}")
@@ -211,4 +217,8 @@ macro(write_configtable)
 
   file(WRITE ${PROJECT_BINARY_DIR}/ns3config.txt ${out})
   message(STATUS ${out})
+
+  if(NOT (${NS3RC} STREQUAL "NS3RC-NOTFOUND"))
+    message(STATUS "Applying configuration override from: ${NS3RC}")
+  endif()
 endmacro()

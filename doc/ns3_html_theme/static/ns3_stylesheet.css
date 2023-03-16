@@ -10,6 +10,16 @@ dl    {
   font-size: 12px;
 }
 
+@media (prefers-color-scheme: dark) {
+  body,
+  table,
+  div,
+  p,
+  dl    {
+    color: ivory;
+  }
+}
+
 a {
   color: #91A501;
   font-weight: bold;

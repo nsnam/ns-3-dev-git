@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Waypoint Mobility Model Notify Test
  */
@@ -172,7 +171,6 @@ WaypointMobilityModelNotifyTest::CourseChangeCallback(Ptr<const MobilityModel> m
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Waypoint Mobility Model Add Waypoint Test
  */
@@ -257,7 +255,6 @@ WaypointMobilityModelAddWaypointTest::CourseChangeCallback(Ptr<const MobilityMod
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Waypoint Mobility Model Test Suite
  */

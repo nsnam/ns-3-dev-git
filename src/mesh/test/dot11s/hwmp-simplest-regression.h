@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup dot11s-test
- * \ingroup tests
  *
  * \brief Peering Management & HWM Protocol regression test
  * Initiate scenario with 2 stations. Procedure of opening peer link

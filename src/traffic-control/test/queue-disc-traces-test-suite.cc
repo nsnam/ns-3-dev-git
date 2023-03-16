@@ -30,7 +30,6 @@ using namespace ns3;
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Queue Disc Test Item
  */
@@ -71,7 +70,6 @@ QdTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test Child Queue Disc that may drop packets before enqueue or after dequeue
  */
@@ -142,7 +140,6 @@ TestChildQueueDisc::InitializeParams()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test Parent Queue Disc having a child of type TestChildQueueDisc
  */
@@ -197,7 +194,6 @@ TestParentQueueDisc::InitializeParams()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Keep statistics based on traces
  */
@@ -304,7 +300,6 @@ TestCounter::ConnectTraces(Ptr<QueueDisc> qd)
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Queue Disc Traces Test Case
  *
@@ -590,7 +585,6 @@ QueueDiscTracesTestCase::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Queue Disc Traces Test Suite
  */

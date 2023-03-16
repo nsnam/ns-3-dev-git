@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Test for bug 2211.
  *
@@ -151,7 +150,6 @@ TcpEndPointBug2211Test::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TestSuite for bug 2211 - It must be used with valgrind.
  */

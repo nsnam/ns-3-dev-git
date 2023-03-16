@@ -169,6 +169,10 @@ LenaTestTdMtFfMacSchedulerSuite::LenaTestTdMtFfMacSchedulerSuite()
     AddTestCase(new LenaTdMtFfMacSchedulerTestCase(1, 100000, 0, 0, errorModel), TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LenaTestTdMtFfMacSchedulerSuite lenaTestTdMtFfMacSchedulerSuite;
 
 // --------------- T E S T - C A S E ------------------------------

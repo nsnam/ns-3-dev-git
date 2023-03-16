@@ -34,7 +34,6 @@ namespace ns3
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Simple Frequency Reuse algorithm implementation which uses only 1 sub-band.
  *                Used to test Downlink Power Allocation. When Simple FR receives UE measurements

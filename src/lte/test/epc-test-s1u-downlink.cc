@@ -45,7 +45,6 @@ NS_LOG_COMPONENT_DEFINE("EpcTestS1uDownlink");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Custom structure for testing UE downlink data
  */
@@ -74,7 +73,6 @@ UeDlTestData::UeDlTestData(uint32_t n, uint32_t s)
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Custom structure for testing eNodeB downlink data, contains
  * the list of data structures for UEs
@@ -86,7 +84,6 @@ struct EnbDlTestData
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief EpcS1uDlTestCase class
  */

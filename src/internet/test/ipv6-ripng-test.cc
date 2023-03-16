@@ -45,7 +45,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 RIPng Test
  */
@@ -276,7 +275,6 @@ Ipv6RipngTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 RIPng count to infinity Test
  */
@@ -509,7 +507,6 @@ Ipv6RipngCountToInfinityTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 RIPng SplitHorizon strategy Test
  */
@@ -698,7 +695,6 @@ Ipv6RipngSplitHorizonStrategyTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 RIPng TestSuite
  */

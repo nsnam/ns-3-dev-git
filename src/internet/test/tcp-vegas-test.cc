@@ -202,7 +202,6 @@ TcpVegasTest::GetSsThresh(Ptr<TcpVegas> cong)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Vegas TestSuite
  */

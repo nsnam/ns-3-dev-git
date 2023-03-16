@@ -361,7 +361,7 @@ Ipv6Interface::RemoveAddress(Ipv6Address address)
 {
     NS_LOG_FUNCTION(this << address);
 
-    if (address == address.GetLoopback())
+    if (address == Ipv6Address::GetLoopback())
     {
         NS_LOG_WARN("Cannot remove loopback address.");
         return Ipv6InterfaceAddress();

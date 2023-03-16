@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test 1.3 Link adaptation
  */
@@ -39,7 +38,6 @@ class LteLinkAdaptationTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test that LTE link adaptation works according to the theoretical model.
  */

@@ -45,7 +45,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test that UE Measurements (see 36.214) calculation works fine in a
  * multi-cell interference scenario.
@@ -58,7 +57,6 @@ class LteUeMeasurementsTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test that UE measurements calculation works properly in a scenario
  * with 2 eNodeBs and 2UEs. Test that RSRP and RSRQ of the serving cell and of
@@ -128,7 +126,6 @@ class LteUeMeasurementsTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for generating calls to UE measurements test case
  *        ns3::LteUeMeasurementsPiecewiseTestCase1.
@@ -141,7 +138,6 @@ class LteUeMeasurementsPiecewiseTestSuite1 : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Testing UE measurements in LTE with simulation of 1 eNodeB and 1 UE in
  *        piecewise configuration and 120 ms report interval. During the simulation
@@ -265,7 +261,6 @@ class LteUeMeasurementsPiecewiseTestCase1 : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for generating calls to UE measurements test case
  *        ns3::LteUeMeasurementsPiecewiseTestCase2.
@@ -278,7 +273,6 @@ class LteUeMeasurementsPiecewiseTestSuite2 : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
  *        piecewise configuration and 240 ms report interval.
@@ -402,7 +396,6 @@ class LteUeMeasurementsPiecewiseTestCase2 : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for generating calls to UE measurements test case
  *        ns3::LteUeMeasurementsPiecewiseTestCase3.
@@ -415,7 +408,6 @@ class LteUeMeasurementsPiecewiseTestSuite3 : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Testing UE measurements in LTE with simulation of 3 eNodeB and 1 UE in
  *        piecewise configuration and 240 ms report interval.
@@ -537,7 +529,6 @@ class LteUeMeasurementsPiecewiseTestCase3 : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test suite for generating calls to UE measurements test case
  *        ns3::LteUeMeasurementsHandoverTestCase.
@@ -550,7 +541,6 @@ class LteUeMeasurementsHandoverTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
  *        a handover configuration.

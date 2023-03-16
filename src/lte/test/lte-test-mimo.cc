@@ -81,6 +81,10 @@ LenaTestMimoSuite::LenaTestMimoSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LenaTestMimoSuite lenaTestMimoSuite;
 
 std::string

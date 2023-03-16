@@ -51,7 +51,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Ipv6 routing test case.
  */
@@ -396,4 +395,8 @@ LteIpv6RoutingTestSuite::LteIpv6RoutingTestSuite()
     AddTestCase(new LteIpv6RoutingTestCase, TestCase::QUICK);
 }
 
-static LteIpv6RoutingTestSuite lteipv6testsuite;
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
+static LteIpv6RoutingTestSuite g_lteipv6testsuite;

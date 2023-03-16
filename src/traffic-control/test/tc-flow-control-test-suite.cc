@@ -41,7 +41,6 @@ using namespace ns3;
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Queue Disc Test Item
  */
@@ -87,7 +86,6 @@ QueueDiscTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Traffic Control Flow Control Test Case
  */
@@ -496,7 +494,6 @@ TcFlowControlTestCase::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Traffic Control Flow Control Test Suite
  */

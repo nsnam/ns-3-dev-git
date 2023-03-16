@@ -36,7 +36,6 @@ NS_LOG_COMPONENT_DEFINE("TcpHtcpTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the congestion avoidance increment on TcpHtcp
  */
@@ -148,7 +147,6 @@ TcpHtcpIncrementTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Htcp TestSuite.
  *

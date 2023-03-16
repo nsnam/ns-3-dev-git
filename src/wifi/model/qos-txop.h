@@ -271,8 +271,8 @@ class QosTxop : public Txop
     /**
      * Peek the next frame to transmit on the given link to the given receiver and of the given TID
      * from the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
-     * is the broadcast address, the first available frame is returned. If <i>item</i>
-     * is not a null pointer, the search starts from the packet following <i>item</i>
+     * is the broadcast address, the first available frame is returned. If <i>mpdu</i>
+     * is not a null pointer, the search starts from the MPDU following <i>mpdu</i>
      * in the queue; otherwise, the search starts from the head of the queue.
      * Note that A-MSDU aggregation is never attempted. If the frame has never been
      * transmitted, it is assigned a sequence number peeked from MacTxMiddle.
@@ -281,13 +281,13 @@ class QosTxop : public Txop
      * \param linkId the ID of the given link
      * \param tid traffic ID.
      * \param recipient the receiver station address.
-     * \param item the item after which the search starts from
+     * \param mpdu the MPDU after which the search starts from
      * \returns the peeked frame.
      */
     Ptr<WifiMpdu> PeekNextMpdu(uint8_t linkId,
                                uint8_t tid = 8,
                                Mac48Address recipient = Mac48Address::GetBroadcast(),
-                               Ptr<WifiMpdu> item = nullptr);
+                               Ptr<const WifiMpdu> mpdu = nullptr);
     /**
      * Prepare the frame to transmit on the given link starting from the MPDU that has been
      * previously peeked by calling PeekNextMpdu. A frame is only returned if it meets the

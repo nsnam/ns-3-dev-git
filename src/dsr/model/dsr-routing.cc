@@ -551,7 +551,7 @@ DsrRouting::GetElementsFromContext(std::string context)
     std::vector<std::string> elements;
     size_t pos1 = 0;
     size_t pos2;
-    while (pos1 != context.npos)
+    while (pos1 != std::string::npos)
     {
         pos1 = context.find('/', pos1);
         pos2 = context.find('/', pos1 + 1);

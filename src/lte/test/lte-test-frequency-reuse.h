@@ -37,7 +37,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test the fractional frequency reuse algorithms.
  */
@@ -49,7 +48,6 @@ class LteFrequencyReuseTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
@@ -102,7 +100,6 @@ class LteFrTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test hard frequency reuse algorithm. Test fails if the muted
  *  frequencies are being used.
@@ -152,7 +149,6 @@ class LteHardFrTestCase : public LteFrTestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test stric frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
@@ -208,7 +204,6 @@ class LteStrictFrTestCase : public LteFrTestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test frequency reuse algorithm by teleporing UEs to different
  * parts of area and checking if the frequency is used according to the
@@ -303,7 +298,6 @@ class LteFrAreaTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Fr Area Test Case
  */
@@ -325,7 +319,6 @@ class LteStrictFrAreaTestCase : public LteFrAreaTestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Soft Fr Area Test Case
  */
@@ -347,7 +340,6 @@ class LteSoftFrAreaTestCase : public LteFrAreaTestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Soft Ffr Area Test Case
  */
@@ -369,7 +361,6 @@ class LteSoftFfrAreaTestCase : public LteFrAreaTestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Enhanced Ffr Area Test Case
  */
@@ -391,7 +382,6 @@ class LteEnhancedFfrAreaTestCase : public LteFrAreaTestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Distributed Ffr Area Test Case
  */

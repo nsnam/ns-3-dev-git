@@ -28,7 +28,6 @@ namespace ns3
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Defines a simplified LtePhy class that is used for testing purposes
  * of downlink and uplink SINR generation. Used in LteDownlinkDataSinrTestCase

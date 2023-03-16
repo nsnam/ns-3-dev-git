@@ -76,7 +76,6 @@ AreVectorsEqual(const Vector& actual, const Vector& limit, double tol)
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Every test case is supposed to:
  *  1. Generate short mobility trace file
@@ -322,7 +321,6 @@ class Ns2MobilityHelperTest : public TestCase
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief The test suite
  */

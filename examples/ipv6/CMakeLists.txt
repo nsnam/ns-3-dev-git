@@ -35,8 +35,8 @@ build_example(
 )
 
 build_example(
-  NAME ping6
-  SOURCE_FILES ping6.cc
+  NAME ping6-example
+  SOURCE_FILES ping6-example.cc
   LIBRARIES_TO_LINK
     ${libcsma}
     ${libinternet}
@@ -44,8 +44,8 @@ build_example(
 )
 
 build_example(
-  NAME radvd
-  SOURCE_FILES radvd.cc
+  NAME radvd-one-prefix
+  SOURCE_FILES radvd-one-prefix.cc
   LIBRARIES_TO_LINK
     ${libcsma}
     ${libinternet}

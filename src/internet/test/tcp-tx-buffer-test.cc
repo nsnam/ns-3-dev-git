@@ -432,7 +432,6 @@ TcpTxBufferTestCase::DoTeardown()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief the TestSuite for the TcpTxBuffer test case
  */

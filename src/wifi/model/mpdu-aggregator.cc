@@ -35,6 +35,7 @@
 
 #include "ns3/he-capabilities.h"
 #include "ns3/ht-capabilities.h"
+#include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/vht-capabilities.h"
@@ -60,6 +61,7 @@ void
 MpduAggregator::DoDispose()
 {
     m_mac = nullptr;
+    m_htFem = nullptr;
     Object::DoDispose();
 }
 
@@ -68,6 +70,7 @@ MpduAggregator::SetWifiMac(const Ptr<WifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
     m_mac = mac;
+    m_htFem = DynamicCast<HtFrameExchangeManager>(m_mac->GetFrameExchangeManager(m_linkId));
 }
 
 void
@@ -75,6 +78,10 @@ MpduAggregator::SetLinkId(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);
     m_linkId = linkId;
+    if (m_mac)
+    {
+        m_htFem = DynamicCast<HtFrameExchangeManager>(m_mac->GetFrameExchangeManager(m_linkId));
+    }
 }
 
 void
@@ -205,6 +212,7 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
     Mac48Address recipient = mpdu->GetHeader().GetAddr1();
     NS_ASSERT(mpdu->GetHeader().IsQosData() && !recipient.IsBroadcast());
     uint8_t tid = mpdu->GetHeader().GetQosTid();
+    auto origRecipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
 
     Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
     NS_ASSERT(qosTxop);
@@ -227,16 +235,18 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
             mpduList.push_back(nextMpdu);
 
             // If allowed by the BA agreement, get the next MPDU
-            auto peekedMpdu = qosTxop->PeekNextMpdu(m_linkId, tid, recipient, nextMpdu);
+            auto peekedMpdu =
+                qosTxop->PeekNextMpdu(m_linkId, tid, origRecipient, nextMpdu->GetOriginal());
             nextMpdu = nullptr;
 
             if (peekedMpdu)
             {
                 // PeekNextMpdu() does not return an MPDU that is beyond the transmit window
                 NS_ASSERT(IsInWindow(peekedMpdu->GetHeader().GetSequenceNumber(),
-                                     qosTxop->GetBaStartingSequence(recipient, tid),
-                                     qosTxop->GetBaBufferSize(recipient, tid)));
+                                     qosTxop->GetBaStartingSequence(origRecipient, tid),
+                                     qosTxop->GetBaBufferSize(origRecipient, tid)));
 
+                peekedMpdu = m_htFem->CreateAliasIfNeeded(peekedMpdu);
                 // get the next MPDU to aggregate, provided that the constraints on size
                 // and duration limit are met. Note that the returned MPDU differs from
                 // the peeked MPDU if A-MSDU aggregation is enabled.

@@ -100,7 +100,7 @@ class QosFrameExchangeManager : public FrameExchangeManager
      * \param mpdu the given MPDU
      * \return the alias of the given MPDU for transmission on this link
      */
-    virtual Ptr<WifiMpdu> CreateAlias(Ptr<WifiMpdu> mpdu) const;
+    virtual Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const;
 
   protected:
     void DoDispose() override;

@@ -35,7 +35,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 extensions Test: Empty option field.
  */
@@ -76,7 +75,6 @@ class TestEmptyOptionField : public TestCase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 extensions Test: Option without alignment.
  */
@@ -100,7 +98,6 @@ class OptionWithoutAlignmentHeader : public Ipv6OptionHeader
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 extensions Test: Test the option without alignment.
  */
@@ -151,7 +148,6 @@ class TestOptionWithoutAlignment : public TestCase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 extensions Test: Option with alignment.
  */
@@ -180,7 +176,6 @@ class OptionWithAlignmentHeader : public Ipv6OptionHeader
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 extensions Test: Test the option with alignment.
  */
@@ -238,7 +233,6 @@ class TestOptionWithAlignment : public TestCase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 extensions Test: Test an option already aligned.
  */
@@ -278,7 +272,6 @@ class TestFulfilledAlignment : public TestCase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 extensions TestSuite.
  */

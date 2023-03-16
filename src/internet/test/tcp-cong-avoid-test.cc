@@ -28,7 +28,6 @@ NS_LOG_COMPONENT_DEFINE("TcpNewRenoCongAvoidTest");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Test the behavior of RFC congestion avoidance
  *
@@ -181,7 +180,6 @@ TcpNewRenoCongAvoidNormalTest::NormalClose(SocketWho who)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TestSuite for the behavior of RFC congestion avoidance
  */

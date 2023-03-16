@@ -849,6 +849,4 @@ Miles(double value)
     return Length(value, Length::Unit::Mile);
 }
 
-/**@}*/
-
 } // namespace ns3

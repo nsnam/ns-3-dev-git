@@ -184,7 +184,6 @@ TcpRateLinuxBasicTest::SkbDelivered(TcpTxItem* skb)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Behaves as NewReno except HasCongControl returns true
  */
@@ -595,7 +594,6 @@ TcpRateLinuxWithBufferTest::DoTeardown()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief the TestSuite for the TcpRateLinux test case
  */

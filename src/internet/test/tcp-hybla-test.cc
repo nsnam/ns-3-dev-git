@@ -28,7 +28,6 @@ NS_LOG_COMPONENT_DEFINE("TcpHyblaTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the congestion avoidance increment on TcpHybla
  */
@@ -149,7 +148,6 @@ TcpHyblaIncrementTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Hybla TestSuite
  */

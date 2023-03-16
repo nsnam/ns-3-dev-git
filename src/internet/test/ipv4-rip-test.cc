@@ -46,7 +46,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 RIP Test
  */
@@ -276,7 +275,6 @@ Ipv4RipTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 RIP count to infinity Test
  */
@@ -510,7 +508,6 @@ Ipv4RipCountToInfinityTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 RIP SplitHorizon strategy Test
  */
@@ -699,7 +696,6 @@ Ipv4RipSplitHorizonStrategyTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 RIP TestSuite
  */

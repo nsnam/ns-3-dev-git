@@ -118,7 +118,6 @@ NS_LOG_COMPONENT_DEFINE("Ipv4GlobalRoutingTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 GlobalRouting Link test
  */
@@ -203,7 +202,6 @@ LinkTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 GlobalRouting LAN test
  */
@@ -285,7 +283,6 @@ LanTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 GlobalRouting Two Link test
  */
@@ -405,7 +402,6 @@ TwoLinkTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 GlobalRouting Two LAN test
  */
@@ -506,7 +502,6 @@ TwoLanTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 GlobalRouting Bridge test
  */
@@ -690,7 +685,6 @@ BridgeTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 GlobalRouting Two bridges test
  */
@@ -848,7 +842,6 @@ TwoBridgeTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Dynamic GlobalRouting test
  */
@@ -1159,7 +1152,6 @@ Ipv4DynamicGlobalRoutingTestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 Dynamic GlobalRouting /32 test
  */
@@ -1323,7 +1315,6 @@ Ipv4GlobalRoutingSlash32TestCase::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv4 GlobalRouting TestSuite
  */

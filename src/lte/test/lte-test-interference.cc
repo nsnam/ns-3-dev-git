@@ -187,6 +187,10 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteInterferenceTestSuite lteLinkAdaptationWithInterferenceTestSuite;
 
 /**

@@ -30,7 +30,6 @@ namespace aodv
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for neighbors
  */
@@ -136,7 +135,6 @@ NeighborTest::DoRun()
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Type header test case
  */
@@ -164,7 +162,6 @@ struct TypeHeaderTest : public TestCase
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for RREQ
  */
@@ -224,7 +221,6 @@ struct RreqHeaderTest : public TestCase
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for RREP
  */
@@ -282,7 +278,6 @@ struct RrepHeaderTest : public TestCase
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for RREP-ACK
  */
@@ -307,7 +302,6 @@ struct RrepAckHeaderTest : public TestCase
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for RERR
  */
@@ -342,7 +336,6 @@ struct RerrHeaderTest : public TestCase
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for AODV routing table entry
  */
@@ -559,7 +552,6 @@ AodvRqueueTest::CheckTimeout()
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for AODV routing table entry
  */
@@ -653,7 +645,6 @@ struct AodvRtableEntryTest : public TestCase
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief Unit test for AODV routing table
  */
@@ -741,7 +732,6 @@ struct AodvRtableTest : public TestCase
 
 /**
  * \ingroup aodv-test
- * \ingroup tests
  *
  * \brief AODV test suite
  */

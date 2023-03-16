@@ -28,7 +28,6 @@ NS_LOG_COMPONENT_DEFINE("TcpHighSpeedTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the congestion avoidance increment on TcpHighSpeed
  */
@@ -83,7 +82,6 @@ TcpHighSpeedIncrementTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the congestion avoidance decrement on TcpHighSpeed
  */
@@ -137,7 +135,6 @@ TcpHighSpeedDecrementTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TcpHighSpeed Congestion window values to test.
  */
@@ -179,7 +176,6 @@ static const HighSpeedImportantValues highSpeedImportantValues[]{
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP HighSpeed TestSuite
  */

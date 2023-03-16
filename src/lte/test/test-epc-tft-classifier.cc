@@ -39,7 +39,6 @@ NS_LOG_COMPONENT_DEFINE("TestEpcTftClassifier");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test case to check the functionality of the Tft Classifier. Test
  * consist of defining different TFT configurations, i.e. direction, ports,
@@ -206,7 +205,6 @@ EpcTftClassifierTestCase::DoRun()
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Epc Tft Classifier Test Suite
  */
@@ -216,6 +214,10 @@ class EpcTftClassifierTestSuite : public TestSuite
     EpcTftClassifierTestSuite();
 };
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static EpcTftClassifierTestSuite g_lteTftClassifierTestSuite;
 
 EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()

@@ -78,6 +78,13 @@ class WifiDefaultAckManager : public WifiAckManager
      */
     bool IsResponseNeeded(Ptr<const WifiMpdu> mpdu, const WifiTxParameters& txParams) const;
 
+    /**
+     * \param mpdu the given MPDU
+     * \return whether there exist MPDUs with lower sequence number than the given MPDU that are
+     * inflight on the same link as the given MPDU
+     */
+    bool ExistInflightOnSameLink(Ptr<const WifiMpdu> mpdu) const;
+
   private:
     /**
      * Compute the information about the acknowledgment of the current multi-user frame

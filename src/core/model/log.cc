@@ -181,9 +181,15 @@ LogComponent::EnvVarCheck()
         std::tie(found, value) = EnvironmentVariable::Get("NS_LOG", "***", ":");
     }
 
-    if (!found || value.empty())
+    if (!found)
     {
         return;
+    }
+
+    if (value.empty())
+    {
+        // Default is enable all levels, all prefixes
+        value = "**";
     }
 
     // Got a value, might have flags
@@ -268,7 +274,10 @@ LogComponent::GetLevelLabel(const LogLevel level)
             {
                 std::string pad{label};
                 // Add whitespace for alignment with "ERROR", "DEBUG" etc.
-                pad.insert(pad.size(), 5 - pad.size(), ' ');
+                if (pad.size() < 5)
+                {
+                    pad.insert(pad.size(), 5 - pad.size(), ' ');
+                }
                 std::transform(pad.begin(), pad.end(), pad.begin(), ::toupper);
                 levels[lev] = pad;
             }

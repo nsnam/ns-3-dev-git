@@ -238,7 +238,7 @@ TcpRateLinux::SkbSent(TcpTxItem* skb, bool isStartOfTransmission)
 }
 
 std::ostream&
-operator<<(std::ostream& os, const TcpRateLinux::TcpRateConnection& rate)
+operator<<(std::ostream& os, const TcpRateOps::TcpRateConnection& rate)
 {
     os << "m_delivered      = " << rate.m_delivered << std::endl;
     os << "m_deliveredTime  = " << rate.m_deliveredTime << std::endl;
@@ -252,7 +252,7 @@ operator<<(std::ostream& os, const TcpRateLinux::TcpRateConnection& rate)
 }
 
 std::ostream&
-operator<<(std::ostream& os, const TcpRateLinux::TcpRateSample& sample)
+operator<<(std::ostream& os, const TcpRateOps::TcpRateSample& sample)
 {
     os << "m_deliveryRate  = " << sample.m_deliveryRate << std::endl;
     os << " m_isAppLimited = " << sample.m_isAppLimited << std::endl;

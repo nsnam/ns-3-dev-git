@@ -41,7 +41,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Dynamic Neighbor Cache Test
  */
@@ -542,7 +541,6 @@ DynamicNeighborCacheTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Neighbor cache on Channel Test
  */
@@ -632,7 +630,6 @@ ChannelTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Neighbor Cache on NetDeviceContainer Test
  */
@@ -723,7 +720,6 @@ NetDeviceContainerTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Neighbor Cache on InterfaceContainer Test
  */
@@ -814,7 +810,6 @@ InterfaceContainerTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Neighbor Cache Flush Test
  */
@@ -922,7 +917,6 @@ FlushTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Neighbor Cache on Overlapped Scope Test
  */
@@ -1022,7 +1016,6 @@ DuplicateTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Dynamic Neighbor Cache on Reduced Scope Test
  */
@@ -1230,7 +1223,6 @@ DynamicPartialTest::DoRun()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief NeighborCache TestSuite
  */

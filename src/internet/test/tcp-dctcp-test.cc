@@ -39,7 +39,6 @@ NS_LOG_COMPONENT_DEFINE("TcpDctcpTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Validates the setting of ECT and ECE codepoints for DCTCP enabled traffic
  */
@@ -209,7 +208,6 @@ TcpDctcpCodePointsTest::ConfigureEnvironment()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief A TCP socket which sends a data packet with CE flags set for test 3.
  *
@@ -554,7 +552,6 @@ TcpDctcpCodePointsTest::CreateReceiverSocket(Ptr<Node> node)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief DCTCP should be same as Linux during slow start
  */
@@ -655,7 +652,6 @@ TcpDctcpToLinuxReno::ExecuteTest()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP DCTCP TestSuite
  */

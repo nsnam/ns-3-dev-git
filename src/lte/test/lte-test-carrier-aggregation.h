@@ -30,8 +30,7 @@
 using namespace ns3;
 
 /**
- * \ingroup wifi-test
- * \ingroup tests wifi-test wifi module tests
+ * \ingroup lte-test
  *
  * \brief This system test program creates different test cases with a single eNB and
  * several UEs, all having the same Radio Bearer specification. In each test
@@ -118,8 +117,7 @@ class CarrierAggregationTestCase : public TestCase
 };
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * \ingroup lte-test
  *
  * \brief Test Carrier Aggregation Suite
  */

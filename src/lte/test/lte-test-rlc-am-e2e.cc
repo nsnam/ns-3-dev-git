@@ -98,6 +98,10 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite()
     }
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteRlcAmE2eTestSuite lteRlcAmE2eTestSuite;
 
 LteRlcAmE2eTestCase::LteRlcAmE2eTestCase(std::string name,

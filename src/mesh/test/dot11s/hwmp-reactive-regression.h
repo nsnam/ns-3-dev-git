@@ -26,7 +26,6 @@ using namespace ns3;
 
 /**
  * \ingroup dot11s-test
- * \ingroup tests
  *
  * \brief test for multihop path establishing and path error
  * procedures

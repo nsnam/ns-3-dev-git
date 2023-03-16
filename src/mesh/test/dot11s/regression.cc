@@ -29,7 +29,6 @@ using namespace ns3;
 
 /**
  * \ingroup dot11s-test
- * \ingroup tests
  *
  * \brief Dot11s Regression Suite
  */

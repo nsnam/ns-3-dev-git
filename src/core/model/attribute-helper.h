@@ -111,7 +111,12 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
 
         std::string GetValueTypeName() const override
         {
-            return m_type;
+            if (m_type.rfind("ns3::", 0) == 0)
+            {
+                // m_type already starts with "ns3::"
+                return m_type;
+            }
+            return "ns3::" + m_type;
         }
 
         bool HasUnderlyingTypeInformation() const override

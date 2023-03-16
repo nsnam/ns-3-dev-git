@@ -176,6 +176,10 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite()
     AddTestCase(new LenaRrFfMacSchedulerTestCase(1, 100000, 0, 0, errorModel), TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LenaTestRrFfMacSchedulerSuite lenaTestRrFfMacSchedulerSuite;
 
 std::string

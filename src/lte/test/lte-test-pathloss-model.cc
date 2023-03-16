@@ -141,6 +141,10 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite()
     }
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LtePathlossModelTestSuite ltePathlossModelTestSuite;
 
 LtePathlossModelSystemTestCase::LtePathlossModelSystemTestCase(std::string name,

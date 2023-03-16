@@ -35,7 +35,6 @@ NS_LOG_COMPONENT_DEFINE("TcpVenoTestSuite");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Testing the additive increase and multiplicative decrease of TcpVeno
  */
@@ -300,7 +299,6 @@ TcpVenoTest::NewReno_CongestionAvoidance(Ptr<TcpSocketState> state, uint32_t seg
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Veno TestSuite
  */

@@ -50,8 +50,17 @@ MODEL_H_TEMPLATE = '''\
 #ifndef {INCLUDE_GUARD}
 #define {INCLUDE_GUARD}
 
+// Add a doxygen group for this module.
+// If you have more than one file, this should be in only one of them.
+/**
+ * \defgroup {MODULE} Description of the {MODULE}
+ */
+
 namespace ns3
 {{
+
+// Each class should be documented using Doxygen,
+// and have an \ingroup {MODULE} directive
 
 /* ... */
 
@@ -82,6 +91,9 @@ HELPER_H_TEMPLATE = '''\
 namespace ns3
 {{
 
+// Each class should be documented using Doxygen,
+// and have an \ingroup {MODULE} directive
+
 /* ... */
 
 }}
@@ -102,6 +114,12 @@ build_lib_example(
 EXAMPLE_CC_TEMPLATE = '''\
 #include "ns3/core-module.h"
 #include "ns3/{MODULE}-helper.h"
+
+/**
+ * \\file
+ *
+ * Explain here what the example does.
+ */
 
 using namespace ns3;
 
@@ -136,7 +154,19 @@ TEST_CC_TEMPLATE = '''\
 // to use the using directive to access the ns3 namespace directly
 using namespace ns3;
 
+// Add a doxygen group for tests.
+// If you have more than one test, this should be in only one of them.
+/**
+ * \defgroup {MODULE}-tests Tests for {MODULE}
+ * \ingroup {MODULE}
+ * \ingroup tests
+ */
+
 // This is an example TestCase.
+/**
+ * \ingroup {MODULE}-tests
+ * Test case for feature 1
+ */
 class {CAPITALIZED}TestCase1 : public TestCase
 {{
   public:
@@ -175,7 +205,11 @@ void
 // The TestSuite class names the TestSuite, identifies what type of TestSuite,
 // and enables the TestCases to be run.  Typically, only the constructor for
 // this class must be defined
-//
+
+/**
+ * \ingroup {MODULE}-tests
+ * TestSuite for module {MODULE}
+ */
 class {CAPITALIZED}TestSuite : public TestSuite
 {{
   public:
@@ -190,6 +224,10 @@ class {CAPITALIZED}TestSuite : public TestSuite
 }}
 
 // Do not forget to allocate an instance of this TestSuite
+/**
+ * \ingroup {MODULE}-tests
+ * Static variable for test initialization
+ */
 static {CAPITALIZED}TestSuite s{COMPOUND}TestSuite;
 '''
 

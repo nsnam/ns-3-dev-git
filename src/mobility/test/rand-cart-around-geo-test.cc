@@ -57,7 +57,6 @@ static const double EARTH_RADIUS = 6371e3;
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Rand Cart Around Geo Test Case
  */
@@ -174,7 +173,6 @@ RandCartAroundGeoTestCase::DoRun()
 
 /**
  * \ingroup mobility-test
- * \ingroup tests
  *
  * \brief Rand Cart Around Geo Test Suite
  */
@@ -209,4 +207,8 @@ RandCartAroundGeoTestSuite::RandCartAroundGeoTestSuite()
     }
 }
 
-static RandCartAroundGeoTestSuite g_RandCartAroundGeoTestSuite; ///< the test suite
+/**
+ * \ingroup mobility-test
+ * Static variable for test initialization
+ */
+static RandCartAroundGeoTestSuite g_RandCartAroundGeoTestSuite;

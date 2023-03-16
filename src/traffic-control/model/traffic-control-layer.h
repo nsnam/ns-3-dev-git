@@ -36,8 +36,10 @@ class QueueDisc;
 class NetDeviceQueueInterface;
 
 /**
- * \defgroup traffic-control
- *
+ * \defgroup traffic-control Traffic Control model
+ */
+
+/**
  * The Traffic Control layer aims at introducing an equivalent of the Linux Traffic
  * Control infrastructure into ns-3. The Traffic Control layer sits in between
  * the NetDevices (L2) and any network protocol (e.g., IP). It is in charge of

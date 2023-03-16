@@ -284,15 +284,6 @@ class Ipv4RoutingHelper
                                    Time::Unit unit = Time::S);
 };
 
-/**
- * \brief Request a specified routing protocol &lt;T&gt; from Ipv4RoutingProtocol protocol
- *
- * If protocol is Ipv4ListRouting, then protocol will be searched in the list,
- * otherwise a simple DynamicCast will be performed
- *
- * \param protocol Smart pointer to Ipv4RoutingProtocol object
- * \return a Smart Pointer to the requested protocol (zero if the protocol can't be found)
- */
 template <class T>
 Ptr<T>
 Ipv4RoutingHelper::GetRouting(Ptr<Ipv4RoutingProtocol> protocol)

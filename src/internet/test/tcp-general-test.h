@@ -31,7 +31,6 @@ namespace ns3
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Class for inserting callbacks special points of the flow of TCP sockets
  *
@@ -151,7 +150,6 @@ class TcpSocketMsgBase : public ns3::TcpSocketBase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief A TCP socket which sends ACKs smaller than the segment received.
  *
@@ -215,7 +213,6 @@ class TcpSocketSmallAcks : public TcpSocketMsgBase
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief General infrastructure for TCP testing
  *
@@ -1159,21 +1156,6 @@ class TcpGeneralTest : public TestCase
 
     InetSocketAddress m_remoteAddr; //!< Remote peer address.
 };
-
-/**
- * \ingroup internet-test
- * \ingroup tests
- *
- * \brief Convenience function to retrieve the ACK state from a TCB
- *
- * \param tcb Transmission control block
- * \return the state of the ACK state machine
- */
-static inline TcpSocketState::TcpCongState_t
-GetCongStateFrom(Ptr<const TcpSocketState> tcb)
-{
-    return tcb->m_congState.Get();
-}
 
 } // namespace ns3
 

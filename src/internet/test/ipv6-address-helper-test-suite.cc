@@ -29,7 +29,6 @@ using namespace ns3;
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 AddressHelper Test
  */
@@ -170,7 +169,6 @@ IpAddressHelperTestCasev6::DoTeardown()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief IPv6 AddressHelper TestSuite
  */

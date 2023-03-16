@@ -97,7 +97,11 @@ LenaTestBearerDeactivateSuite::LenaTestBearerDeactivateSuite()
         TestCase::QUICK);
 }
 
-static LenaTestBearerDeactivateSuite lenaTestBearerDeactivateSuite; ///< the test suite
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
+static LenaTestBearerDeactivateSuite lenaTestBearerDeactivateSuite;
 
 std::string
 LenaDeactivateBearerTestCase::BuildNameString(uint16_t nUser, std::vector<uint16_t> dist)

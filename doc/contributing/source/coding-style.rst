@@ -798,6 +798,70 @@ that usage is consistent within a file.
       MyClass(int n);
   };
 
+All the functions and variables must be documented, with the exception of
+member functions inherited from parent classes (the documentaion is copied
+automatically from the parent class), and default constructor/destructor.
+
+It is strongly suggested to use grouping to bind together logically related
+classes (e.g., all the classes in a module). E.g.;
+
+.. sourcecode:: cpp
+
+  /**
+   * \defgroup mynewmodule This is a new module
+   */
+
+  /**
+   * \ingroup mynewmodule
+   *
+   * MyClassOne description.
+   */
+  class MyClassOne
+  {
+  };
+
+  /**
+   * \ingroup mynewmodule
+   *
+   * MyClassTwo description.
+   */
+  class MyClassTwo
+  {
+  };
+
+In the tests for the module, it is suggested to add an ancillary group:
+
+.. sourcecode:: cpp
+
+  /**
+   * \defgroup mynewmodule-test Tests for new module
+   * \ingroup mynewmodule
+   * \ingroup tests
+   */
+
+  /**
+   * \ingroup mynewmodule-tests
+   * \brief MyNewModule Test
+   */
+  class MyNewModuleTest : public TestCase
+  {
+  };
+
+  /**
+   * \ingroup mynewmodule-tests
+   * \brief MyNewModule TestSuite
+   */
+  class MyNewModuleTestSuite : public TestSuite
+  {
+    public:
+      MyNewModuleTestSuite();
+  };
+
+  /**
+   * \ingroup mynewmodule-tests
+   * Static variable for test initialization
+   */
+  static MyNewModuleTestSuite g_myNewModuleTestSuite;
 
 As for comments within the code, comments should be used to describe intention
 or algorithmic overview where is it not immediately obvious from reading the
@@ -1253,6 +1317,18 @@ of rules that should be observed while developing code.
     if (ptr.get()) { ... }
 
 - Avoid declaring trivial destructors, to optimize performance.
+
+- Avoid accessing class static functions and members through objects.
+  Instead, prefer to access them through the class.
+
+  .. sourcecode:: cpp
+
+    // OK
+    MyClass::StaticFunction();
+
+    // Avoid
+    MyClass myClass;
+    MyClass.StaticFunction();
 
 - Prefer to use ``static_assert()`` over ``NS_ASSERT()`` when conditions can be
   evaluated at compile-time.

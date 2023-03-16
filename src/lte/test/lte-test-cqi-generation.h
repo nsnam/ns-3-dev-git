@@ -28,7 +28,6 @@ using namespace ns3;
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Cqi Generation Test Suite
  */
@@ -41,7 +40,6 @@ class LteCqiGenerationTestSuite : public TestSuite
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This is the test case for testing different configuration of CQI generation.
  *  The topology consists of the two UEs and two eNbs. UEs have the same position,
@@ -97,7 +95,6 @@ class LteCqiGenerationTestCase : public TestCase
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief This test is very similar to LteCqiGenerationTestCase. The difference is that in this
  * test is enabled the downlink power control.

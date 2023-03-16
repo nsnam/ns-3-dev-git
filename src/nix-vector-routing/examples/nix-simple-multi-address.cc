@@ -214,7 +214,7 @@ main(int argc, char* argv[])
                                   interfaces12.GetAddress(1, 1),
                                   routingStream);
     // Trace routing tables.
-    nixRouting.PrintRoutingTableAllAt(Seconds(4), routingStream);
+    Ipv4NixVectorHelper::PrintRoutingTableAllAt(Seconds(4), routingStream);
     // Assign address5 addresses to n2 and n3.
     // n2 gets 10.2.3.1 and n3 gets 10.2.3.2 on the same interface.
     Simulator::Schedule(Seconds(5), &Ipv4AddressHelper::Assign, &address5, devices34);
@@ -223,7 +223,7 @@ main(int argc, char* argv[])
     // Notice that NixCache and Ipv4RouteCache becomes empty for each node.
     // This happens because new addresses are added at t = +5s, due to which
     // existing caches get flushed.
-    nixRouting.PrintRoutingTableAllAt(Seconds(6), routingStream);
+    Ipv4NixVectorHelper::PrintRoutingTableAllAt(Seconds(6), routingStream);
 
     // Check the path from n0 to n3 (10.2.3.2).
     nixRouting.PrintRoutingPathAt(Seconds(7),

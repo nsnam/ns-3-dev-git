@@ -35,7 +35,6 @@ using namespace dot11s;
 
 /**
  * \ingroup dot11s-test
- * \ingroup tests
  *
  * \brief Built-in self test for MeshHeader
  */
@@ -95,7 +94,6 @@ MeshHeaderTest::DoRun()
 
 /**
  * \ingroup mesh-test
- * \ingroup tests
  *
  * \brief Unit test for HwmpRtable
  */
@@ -278,7 +276,6 @@ PeerLinkFrameStartTest::DoRun()
 
 /**
  * \ingroup mesh-test
- * \ingroup tests
  *
  * \brief Dot11s Test Suite
  */

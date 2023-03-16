@@ -31,12 +31,12 @@ using namespace ns3;
 
 /**
  * \ingroup traffic-control
+ * \ingroup tests
  * \defgroup traffic-control-test traffic-control module tests
  */
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Ared Queue Disc Test Item
  */
@@ -83,7 +83,6 @@ AredQueueDiscTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Ared Queue Disc Test Case
  */
@@ -413,7 +412,6 @@ AredQueueDiscTestCase::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Ared Queue Disc Test Suite
  */

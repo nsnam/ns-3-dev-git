@@ -710,8 +710,7 @@ main(int argc, char* argv[])
         Create<OutputStreamWrapper>("global-routing-multi-switch-plus-router.routes",
                                     std::ios::out);
 
-    Ipv4GlobalRoutingHelper g;
-    g.PrintRoutingTableAllAt(Seconds(0.1), routingStream);
+    Ipv4RoutingHelper::PrintRoutingTableAllAt(Seconds(0.1), routingStream);
 
     // ======================================================================
     // Configure PCAP traces

@@ -1,6 +1,6 @@
 build_lib_example(
-  NAME li-ion-energy-source
-  SOURCE_FILES li-ion-energy-source.cc
+  NAME li-ion-energy-source-example
+  SOURCE_FILES li-ion-energy-source-example.cc
   LIBRARIES_TO_LINK ${libcore}
                     ${libenergy}
 )

@@ -182,7 +182,6 @@ TcpBbrCheckGainValuesTest::ExecuteTest()
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP BBR TestSuite
  */

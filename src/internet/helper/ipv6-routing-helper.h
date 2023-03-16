@@ -284,15 +284,6 @@ class Ipv6RoutingHelper
                                      Time::Unit unit = Time::S);
 };
 
-/**
- * \brief Request a specified routing protocol &lt;T&gt; from Ipv6RoutingProtocol protocol
- *
- * If protocol is Ipv6ListRouting, then protocol will be searched in the list,
- * otherwise a simple DynamicCast will be performed
- *
- * \param protocol Smart pointer to Ipv6RoutingProtocol object
- * \return a Smart Pointer to the requested protocol (zero if the protocol can't be found)
- */
 template <class T>
 Ptr<T>
 Ipv6RoutingHelper::GetRouting(Ptr<Ipv6RoutingProtocol> protocol)

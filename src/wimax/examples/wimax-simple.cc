@@ -136,7 +136,7 @@ main(int argc, char* argv[])
 
     if (verbose)
     {
-        wimax.EnableLogComponents(); // Turn on all wimax logging
+        WimaxHelper::EnableLogComponents(); // Turn on all wimax logging
     }
     /*------------------------------*/
     UdpServerHelper udpServer;

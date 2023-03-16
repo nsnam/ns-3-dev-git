@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup dot11s-test
- * \ingroup tests
  *
  * \brief This is a test for intermediate reply and saving routing
  * information about neighbour. 4 stations and 3 UDP ping streams are initiated.

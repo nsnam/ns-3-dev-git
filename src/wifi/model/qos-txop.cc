@@ -281,7 +281,8 @@ QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
     NS_LOG_FUNCTION(this << recipient << +tid);
     NS_ASSERT(QosUtilsMapTidToAc(tid) == m_ac);
 
-    CtrlBAckRequestHeader reqHdr = m_baManager->GetBlockAckReqHeader(recipient, tid);
+    CtrlBAckRequestHeader reqHdr =
+        m_baManager->GetBlockAckReqHeader(m_mac->GetMldAddress(recipient).value_or(recipient), tid);
     Ptr<Packet> bar = Create<Packet>();
     bar->AddHeader(reqHdr);
 
@@ -363,24 +364,24 @@ QosTxop::IsQosOldPacket(Ptr<const WifiMpdu> mpdu)
 }
 
 Ptr<WifiMpdu>
-QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<WifiMpdu> item)
+QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<const WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(this << +linkId << +tid << recipient << item);
+    NS_LOG_FUNCTION(this << +linkId << +tid << recipient << mpdu);
 
     // lambda to peek the next frame
-    auto peek = [this, &linkId, &tid, &recipient, &item]() -> Ptr<WifiMpdu> {
+    auto peek = [this, &linkId, &tid, &recipient, &mpdu]() -> Ptr<WifiMpdu> {
         if (tid == 8 && recipient.IsBroadcast()) // undefined TID and recipient
         {
-            return m_queue->PeekFirstAvailable(linkId, m_qosBlockedDestinations, item);
+            return m_queue->PeekFirstAvailable(linkId, m_qosBlockedDestinations, mpdu);
         }
         if (m_qosBlockedDestinations->IsBlocked(recipient, tid))
         {
             return nullptr;
         }
-        return m_queue->PeekByTidAndAddress(tid, recipient, item);
+        return m_queue->PeekByTidAndAddress(tid, recipient, mpdu);
     };
 
-    item = peek();
+    auto item = peek();
     // remove old packets (must be retransmissions or in flight, otherwise they did
     // not get a sequence number assigned)
     while (item && !item->IsFragment())
@@ -392,13 +393,13 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
             {
                 m_droppedMpduCallback(WIFI_MAC_DROP_QOS_OLD_PACKET, item);
             }
-            auto oldItem = item;
+            mpdu = item;
             item = peek();
-            m_queue->Remove(oldItem);
+            m_queue->Remove(mpdu);
             continue;
         }
 
-        if (auto linkIds = item->GetInFlight(); !linkIds.empty()) // MPDU is in-flight
+        if (auto linkIds = item->GetInFlightLinkIds(); !linkIds.empty()) // MPDU is in-flight
         {
             // if the MPDU is not already in-flight on the link for which we are requesting an
             // MPDU and the number of links on which the MPDU is in-flight is less than the
@@ -418,6 +419,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
             }
 
             NS_LOG_DEBUG("Skipping in flight MPDU: " << *item);
+            mpdu = item;
             item = peek();
             continue;
         }
@@ -426,6 +428,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
             !m_mac->CanForwardPacketsTo(item->GetHeader().GetAddr1()))
         {
             NS_LOG_DEBUG("Skipping frame that cannot be forwarded: " << *item);
+            mpdu = item;
             item = peek();
             continue;
         }
@@ -505,9 +508,10 @@ QosTxop::GetNextMpdu(uint8_t linkId,
         // Note that PeekNextMpdu() temporarily assigns the next available sequence number
         // to the peeked frame
         NS_ASSERT(!m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid) ||
-                  IsInWindow(peekedItem->GetHeader().GetSequenceNumber(),
-                             GetBaStartingSequence(recipient, tid),
-                             GetBaBufferSize(recipient, tid)));
+                  IsInWindow(
+                      peekedItem->GetHeader().GetSequenceNumber(),
+                      GetBaStartingSequence(peekedItem->GetOriginal()->GetHeader().GetAddr1(), tid),
+                      GetBaBufferSize(peekedItem->GetOriginal()->GetHeader().GetAddr1(), tid)));
 
         // try A-MSDU aggregation
         if (m_mac->GetHtSupported() && !recipient.IsBroadcast() &&
@@ -672,7 +676,9 @@ QosTxop::CompleteMpduTx(Ptr<WifiMpdu> mpdu)
     if (m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
                                                      mpdu->GetHeader().GetQosTid()))
     {
-        m_baManager->StorePacket(mpdu);
+        NS_ASSERT(mpdu->IsQueued());
+        NS_ASSERT(m_queue->GetAc() == mpdu->GetQueueAc());
+        m_baManager->StorePacket(m_queue->GetOriginal(mpdu));
     }
 }
 

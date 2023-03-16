@@ -203,10 +203,9 @@ main(int argc, char** argv)
     apps.Start(Seconds(2.0));
     apps.Stop(Seconds(5.0));
 
-    Ipv6StaticRoutingHelper routingHelper;
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
-    routingHelper.PrintRoutingTableAt(Seconds(2.0), n0, routingStream);
-    routingHelper.PrintRoutingTableAt(Seconds(10.0), n0, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(2.0), n0, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(10.0), n0, routingStream);
 
     IpAddressHelper ipAddressHelper;
     /* RA should be received, two prefixes + routes + default route should be present */

@@ -1539,7 +1539,10 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             mpdu->GetHeader().GetAddr1() == GetFrameExchangeManager(*apLinkId)->GetAddress())
         {
             Mac48Address to = hdr->GetAddr3();
-            if (to == GetAddress())
+            // Address3 can be our MLD address (e.g., this is an MPDU containing a single MSDU
+            // addressed to us) or a BSSID (e.g., this is an MPDU containing an A-MSDU)
+            if (to == GetAddress() ||
+                (hdr->IsQosData() && hdr->IsQosAmsdu() && to == mpdu->GetHeader().GetAddr1()))
             {
                 NS_LOG_DEBUG("frame for me from=" << from);
                 if (hdr->IsQosData())
@@ -1910,17 +1913,16 @@ ApWifiMac::DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu)
     NS_LOG_FUNCTION(this << *mpdu);
     for (auto& i : *PeekPointer(mpdu))
     {
-        if (i.second.GetDestinationAddr() == GetAddress())
+        auto from = i.second.GetSourceAddr();
+        auto to = i.second.GetDestinationAddr();
+
+        if (to.IsGroup() || IsAssociated(to))
         {
-            ForwardUp(i.first, i.second.GetSourceAddr(), i.second.GetDestinationAddr());
-        }
-        else
-        {
-            Mac48Address from = i.second.GetSourceAddr();
-            Mac48Address to = i.second.GetDestinationAddr();
             NS_LOG_DEBUG("forwarding QoS frame from=" << from << ", to=" << to);
             ForwardDown(i.first->Copy(), from, to, mpdu->GetHeader().GetQosTid());
         }
+
+        ForwardUp(i.first, from, to);
     }
 }
 

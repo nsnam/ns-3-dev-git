@@ -31,7 +31,6 @@ NS_LOG_COMPONENT_DEFINE("LteRrcTest");
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Test rrc connection establishment.
  */
@@ -584,7 +583,6 @@ LteRrcConnectionEstablishmentTestCase::ConnectionTimeoutCallback(std::string con
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Rrc Connection Establishment Error Test Case
  */
@@ -765,7 +763,6 @@ LteRrcConnectionEstablishmentErrorTestCase::JumpBack()
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Lte Rrc Test Suite
  */
@@ -895,4 +892,8 @@ LteRrcTestSuite::LteRrcTestSuite()
         TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteRrcTestSuite g_lteRrcTestSuiteInstance;

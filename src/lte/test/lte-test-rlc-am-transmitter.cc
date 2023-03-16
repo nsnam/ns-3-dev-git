@@ -47,6 +47,10 @@ LteRlcAmTransmitterTestSuite::LteRlcAmTransmitterTestSuite()
                 TestCase::QUICK);
 }
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LteRlcAmTransmitterTestSuite lteRlcAmTransmitterTestSuite;
 
 LteRlcAmTransmitterTestCase::LteRlcAmTransmitterTestCase(std::string name)

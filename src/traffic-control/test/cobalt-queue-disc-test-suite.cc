@@ -34,7 +34,6 @@ using namespace ns3;
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Cobalt Queue Disc Test Item
  */
@@ -92,7 +91,6 @@ CobaltQueueDiscTestItem::Mark()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 1: simple enqueue/dequeue with no drops
  */
@@ -263,7 +261,6 @@ CobaltQueueDiscBasicEnqueueDequeue::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 2: Cobalt Queue Disc Drop Test Item
  */
@@ -384,7 +381,6 @@ CobaltQueueDiscDropTest::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 3: Cobalt Queue Disc ECN marking Test Item
  */
@@ -838,7 +834,6 @@ CobaltQueueDiscMarkTest::Dequeue(Ptr<CobaltQueueDisc> queue, uint32_t modeSize, 
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 4: Cobalt Queue Disc CE Threshold marking Test Item
  */
@@ -1050,7 +1045,6 @@ CobaltQueueDiscCeThresholdTest::DoRun()
 
 /**
  * \ingroup traffic-control-test
- * \ingroup tests
  *
  * \brief Test 5: Cobalt Queue Disc Enhanced Blue Test Item
  * This test checks that the Blue Enhancement is working correctly. This test checks that Pdrop
@@ -1199,6 +1193,7 @@ CobaltQueueDiscEnhancedBlueTest::DequeueWithDelay(Ptr<CobaltQueueDisc> queue,
 }
 
 /**
+ * \ingroup traffic-control-test
  * The COBALT queue disc test suite.
  */
 static class CobaltQueueDiscTestSuite : public TestSuite

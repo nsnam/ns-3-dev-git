@@ -95,16 +95,20 @@
 
 #else /* NS3_ASSERT_ENABLE */
 
+// NOTE: The no-op macros are not inserted into the final code.
+// However, the use of sizeof() allows the compiler to silently check if the condition is
+// syntactically valid.
+
 #define NS_ASSERT(condition)                                                                       \
     do                                                                                             \
     {                                                                                              \
-        sizeof(condition);                                                                         \
+        (void)sizeof(condition);                                                                   \
     } while (false)
 
 #define NS_ASSERT_MSG(condition, message)                                                          \
     do                                                                                             \
     {                                                                                              \
-        sizeof(condition);                                                                         \
+        (void)sizeof(condition);                                                                   \
     } while (false)
 
 #endif /* NS3_ASSERT_ENABLE */

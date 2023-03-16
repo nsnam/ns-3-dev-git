@@ -30,7 +30,6 @@ NS_LOG_COMPONENT_DEFINE("TcpSlowStartTest");
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief Test the normal behavior for slow start
  *
@@ -208,7 +207,6 @@ TcpSlowStartNormalTest::Rx(const Ptr<const Packet> p, const TcpHeader& h, Socket
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief A slow start test using a socket which sends smaller ACKs
  *
@@ -262,7 +260,6 @@ TcpSlowStartAttackerTest::CreateReceiverSocket(Ptr<Node> node)
 
 /**
  * \ingroup internet-test
- * \ingroup tests
  *
  * \brief TCP Slow Start TestSuite.
  */

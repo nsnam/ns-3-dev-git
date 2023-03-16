@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup dot11s-test
- * \ingroup tests
  *
  * \brief Peering Management Protocol regression test
  *

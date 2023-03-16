@@ -30,14 +30,13 @@
 // //
 // // - Tracing of queues and packet receptions to file "radvd.tr"
 
-#include "ns3/radvd.h"
-
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-apps-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/radvd-interface.h"
 #include "ns3/radvd-prefix.h"
+#include "ns3/radvd.h"
 
 #include <fstream>
 

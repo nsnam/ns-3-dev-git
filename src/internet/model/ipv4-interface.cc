@@ -387,7 +387,7 @@ Ipv4Interface::RemoveAddress(Ipv4Address address)
 {
     NS_LOG_FUNCTION(this << address);
 
-    if (address == address.GetLoopback())
+    if (address == Ipv4Address::GetLoopback())
     {
         NS_LOG_WARN("Cannot remove loopback address.");
         return Ipv4InterfaceAddress();

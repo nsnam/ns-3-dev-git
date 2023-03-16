@@ -377,7 +377,7 @@ DsdvManetExample::InstallInternetStack(std::string tr_name)
     {
         Ptr<OutputStreamWrapper> routingStream =
             Create<OutputStreamWrapper>((tr_name + ".routes"), std::ios::out);
-        dsdv.PrintRoutingTableAllAt(Seconds(m_periodicUpdateInterval), routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAllAt(Seconds(m_periodicUpdateInterval), routingStream);
     }
 }
 

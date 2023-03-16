@@ -96,6 +96,10 @@ LtePrimaryCellChangeTestSuite::LtePrimaryCellChangeTestSuite()
                 TestCase::QUICK);
 } // end of LtePrimaryCellChangeTestSuite::LtePrimaryCellChangeTestSuite ()
 
+/**
+ * \ingroup lte-test
+ * Static variable for test initialization
+ */
 static LtePrimaryCellChangeTestSuite g_ltePrimaryCellChangeTestSuite;
 
 /*
