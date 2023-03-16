@@ -35,8 +35,8 @@ namespace ns3
 /**
  * A tuple (number, frequency, width, type, band) identifying a frequency channel
  */
-typedef std::tuple<uint8_t, uint16_t, ChannelWidthMhz, FrequencyChannelType, WifiPhyBand>
-    FrequencyChannelInfo;
+using FrequencyChannelInfo =
+    std::tuple<uint8_t, uint16_t, ChannelWidthMhz, FrequencyChannelType, WifiPhyBand>;
 
 /**
  * \ingroup wifi
@@ -47,7 +47,7 @@ class WifiPhyOperatingChannel
 {
   public:
     /// Typedef for a const iterator pointing to a channel in the set of available channels
-    typedef std::set<FrequencyChannelInfo>::const_iterator ConstIterator;
+    using ConstIterator = std::set<FrequencyChannelInfo>::const_iterator;
 
     /**
      * Create an uninitialized PHY operating channel.
