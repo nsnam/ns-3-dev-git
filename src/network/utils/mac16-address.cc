@@ -104,6 +104,12 @@ Mac16Address::Mac16Address(const char* str)
     NS_ASSERT(i == 2);
 }
 
+Mac16Address::Mac16Address(uint16_t addr)
+{
+    m_address[1] = addr & 0xFF;
+    m_address[0] = (addr >> 8) & 0xFF;
+}
+
 void
 Mac16Address::CopyFrom(const uint8_t buffer[2])
 {
