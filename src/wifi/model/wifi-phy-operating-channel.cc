@@ -378,7 +378,7 @@ WifiPhyOperatingChannel::FindFirst(uint8_t number,
         {
             return false;
         }
-        if (channel.band != band)
+        if (band != WIFI_PHY_BAND_UNSPECIFIED && channel.band != band)
         {
             return false;
         }
