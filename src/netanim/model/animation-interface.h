@@ -50,7 +50,7 @@ namespace ns3
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
 #define PURGE_INTERVAL 5
-#define NETANIM_VERSION "netanim-3.108"
+#define NETANIM_VERSION "netanim-3.109"
 #define CHECK_STARTED_INTIMEWINDOW                                                                 \
     {                                                                                              \
         if (!m_started || !IsInTimeWindow())                                                       \

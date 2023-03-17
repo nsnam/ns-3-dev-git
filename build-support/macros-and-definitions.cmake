@@ -1479,7 +1479,7 @@ macro(process_options)
     include(FetchContent)
     FetchContent_Declare(
       netanim GIT_REPOSITORY https://gitlab.com/nsnam/netanim.git
-      GIT_TAG netanim-3.108
+      GIT_TAG netanim-3.109
     )
     FetchContent_Populate(netanim)
     file(COPY build-support/3rd-party/netanim-cmakelists.cmake
