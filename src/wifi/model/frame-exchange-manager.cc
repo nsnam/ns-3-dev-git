@@ -319,7 +319,7 @@ FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, uint16_t allowedWidth)
     if (!mpdu)
     {
         NS_LOG_DEBUG("Queue empty");
-        m_dcf->NotifyChannelReleased(m_linkId);
+        NotifyChannelReleased(m_dcf);
         m_dcf = nullptr;
         return false;
     }
@@ -896,7 +896,7 @@ FrameExchangeManager::TransmissionSucceeded()
     }
     else
     {
-        m_dcf->NotifyChannelReleased(m_linkId);
+        NotifyChannelReleased(m_dcf);
         m_dcf = nullptr;
     }
 }
@@ -906,8 +906,15 @@ FrameExchangeManager::TransmissionFailed()
 {
     NS_LOG_FUNCTION(this);
     // A non-QoS station always releases the channel upon a transmission failure
-    m_dcf->NotifyChannelReleased(m_linkId);
+    NotifyChannelReleased(m_dcf);
     m_dcf = nullptr;
+}
+
+void
+FrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
+{
+    NS_LOG_FUNCTION(this << txop);
+    txop->NotifyChannelReleased(m_linkId);
 }
 
 void

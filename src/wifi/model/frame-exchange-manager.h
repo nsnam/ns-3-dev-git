@@ -450,6 +450,13 @@ class FrameExchangeManager : public Object
      */
     virtual uint32_t GetPsduSize(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector) const;
 
+    /**
+     * Notify the given Txop that channel has been released.
+     *
+     * \param txop the given Txop
+     */
+    virtual void NotifyChannelReleased(Ptr<Txop> txop);
+
     Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
     WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
     EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
