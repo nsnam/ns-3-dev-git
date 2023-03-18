@@ -2810,10 +2810,15 @@ class NS3QualityControlTestCase(unittest.TestCase):
                 if "build" in root or "_static" in root or "source-temp" in root or 'html' in root:
                     continue
                 for file in files:
+                    filepath = os.path.join(root, file)
+
+                    # skip everything that isn't a file
+                    if not os.path.isfile(filepath):
+                        continue
+
                     # skip svg files
                     if file.endswith(".svg"):
                         continue
-                    filepath = os.path.join(root, file)
 
                     try:
                         with open(filepath, "r") as f:
