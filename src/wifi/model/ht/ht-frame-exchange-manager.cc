@@ -963,6 +963,8 @@ HtFrameExchangeManager::ProtectionCompleted()
     NS_LOG_FUNCTION(this);
     if (m_psdu)
     {
+        m_protectedStas.merge(m_sentRtsTo);
+        m_sentRtsTo.clear();
         SendPsdu();
         return;
     }

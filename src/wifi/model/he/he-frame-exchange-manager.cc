@@ -295,6 +295,7 @@ HeFrameExchangeManager::StartProtection(const WifiTxParameters& txParams)
                     "Cannot use RTS/CTS with MU PPDUs");
     if (txParams.m_protection->method == WifiProtection::MU_RTS_CTS)
     {
+        RecordSentMuRtsTo(txParams);
         SendMuRts(txParams);
     }
     else
@@ -304,11 +305,35 @@ HeFrameExchangeManager::StartProtection(const WifiTxParameters& txParams)
 }
 
 void
+HeFrameExchangeManager::RecordSentMuRtsTo(const WifiTxParameters& txParams)
+{
+    NS_LOG_FUNCTION(this << &txParams);
+
+    NS_ASSERT(txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS);
+    WifiMuRtsCtsProtection* protection =
+        static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
+
+    NS_ASSERT(protection->muRts.IsMuRts());
+    NS_ASSERT_MSG(m_apMac, "APs only can send MU-RTS TF");
+    const auto& aidAddrMap = m_apMac->GetStaList(m_linkId);
+    NS_ASSERT(m_sentRtsTo.empty());
+
+    for (const auto& userInfo : protection->muRts)
+    {
+        const auto addressIt = aidAddrMap.find(userInfo.GetAid12());
+        NS_ASSERT_MSG(addressIt != aidAddrMap.end(), "AID not found");
+        m_sentRtsTo.insert(addressIt->second);
+    }
+}
+
+void
 HeFrameExchangeManager::ProtectionCompleted()
 {
     NS_LOG_FUNCTION(this);
     if (!m_psduMap.empty())
     {
+        m_protectedStas.merge(m_sentRtsTo);
+        m_sentRtsTo.clear();
         SendPsduMap();
         return;
     }
@@ -409,6 +434,7 @@ HeFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVe
         return;
     }
 
+    m_sentRtsTo.clear();
     for (const auto& psdu : m_psduMap)
     {
         for (const auto& mpdu : *PeekPointer(psdu.second))

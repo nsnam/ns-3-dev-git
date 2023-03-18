@@ -186,6 +186,13 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
                                     Time response) const;
 
     /**
+     * Record the stations being solicited by an MU-RTS TF.
+     *
+     * \param txParams the TX parameters for the data frame protected by the MU-RTS TF.
+     */
+    void RecordSentMuRtsTo(const WifiTxParameters& txParams);
+
+    /**
      * Send an MU-RTS to begin an MU-RTS/CTS frame exchange protecting an MU PPDU.
      *
      * \param txParams the TX parameters for the data frame

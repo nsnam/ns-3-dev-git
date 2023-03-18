@@ -448,8 +448,16 @@ void
 FrameExchangeManager::ProtectionCompleted()
 {
     NS_LOG_FUNCTION(this);
+    m_protectedStas.merge(m_sentRtsTo);
+    m_sentRtsTo.clear();
     NS_ASSERT(m_mpdu);
     SendMpdu();
+}
+
+const std::set<Mac48Address>&
+FrameExchangeManager::GetProtectedStas() const
+{
+    return m_protectedStas;
 }
 
 void
@@ -723,6 +731,8 @@ FrameExchangeManager::SendRts(const WifiTxParameters& txParams)
                   mpdu,
                   rtsCtsProtection->rtsTxVector);
     m_channelAccessManager->NotifyCtsTimeoutStartNow(timeout);
+    NS_ASSERT(m_sentRtsTo.empty());
+    m_sentRtsTo = {receiver};
 
     ForwardMpduDown(mpdu, rtsCtsProtection->rtsTxVector);
 }
@@ -915,6 +925,7 @@ FrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
     txop->NotifyChannelReleased(m_linkId);
+    m_protectedStas.clear();
 }
 
 void
@@ -970,6 +981,7 @@ FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
 {
     NS_LOG_FUNCTION(this << *psdu);
 
+    m_sentRtsTo.clear();
     for (const auto& mpdu : *PeekPointer(psdu))
     {
         if (mpdu->IsQueued())

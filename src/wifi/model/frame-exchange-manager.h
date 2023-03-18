@@ -241,6 +241,11 @@ class FrameExchangeManager : public Object
     virtual bool VirtualCsMediumIdle() const;
 
     /**
+     * \return the set of stations that have successfully received an RTS in this TXOP.
+     */
+    const std::set<Mac48Address>& GetProtectedStas() const;
+
+    /**
      * Notify that an internal collision has occurred for the given Txop
      *
      * \param txop the Txop for which an internal collision has occurred
@@ -468,7 +473,9 @@ class FrameExchangeManager : public Object
     Mac48Address m_self;                              //!< the MAC address of this device
     Mac48Address m_bssid;                             //!< BSSID address (Mac48Address)
     Time m_navEnd;                                    //!< NAV expiration time
-    uint8_t m_linkId;                  //!< the ID of the link this object is associated with
+    std::set<Mac48Address> m_sentRtsTo; //!< the STA(s) which we sent an RTS to (waiting for CTS)
+    std::set<Mac48Address> m_protectedStas; //!< STAs that have replied to an RTS in this TXOP
+    uint8_t m_linkId;                       //!< the ID of the link this object is associated with
     uint16_t m_allowedWidth;           //!< the allowed width in MHz for the current transmission
     bool m_promisc;                    //!< Flag if the device is operating in promiscuous mode
     DroppedMpdu m_droppedMpduCallback; //!< the dropped MPDU callback
