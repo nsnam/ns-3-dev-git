@@ -282,7 +282,7 @@ def parse_args(argv):
                                         help='Try "./ns3 docs --help" for more documentation options')
     parser_docs.add_argument('docs',
                              help='Build project documentation',
-                             choices=["manual", "models", "tutorial", "contributing",
+                             choices=["contributing", "installation", "manual", "models", "tutorial",
                                       "sphinx", "doxygen-no-build", "doxygen", "all"],
                              action="store", type=str, default=None)
 
@@ -794,7 +794,7 @@ def get_program_shortcuts(build_profile, ns3_version):
 
             ns3_program_map[shortcut_path] = [program]
 
-            # Add an additional shortcut with .exe suffix when running on Windows
+            # Add a shortcut with .exe suffix when running on Windows
             if sys.platform == "win32":
                 ns3_program_map[shortcut_path.replace("\\", "/")] = [program]
                 ns3_program_map[shortcut_path + ".exe"] = [program]
@@ -1045,6 +1045,7 @@ def build_step(args,
                                   "docs",
                                   "doxygen",
                                   "doxygen-no-build",
+                                  "installation",
                                   "sphinx",
                                   "manual",
                                   "models",
@@ -1063,7 +1064,7 @@ def build_step(args,
                 target = get_target_to_build(target, ns3_version, build_profile)
             else:
                 # Sphinx target should have the sphinx prefix
-                if target in ["contributing", "manual", "models", "tutorial"]:
+                if target in ["contributing", "installation", "manual", "models", "tutorial"]:
                     target = "sphinx_%s" % target
 
                 # Docs should build both doxygen and sphinx based docs
